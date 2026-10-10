@@ -9,7 +9,7 @@
 | E1 | 프로젝트 루트는 `C:\Users\kcw\Documents\dungeon-and-stone`(project.godot·godot_mcp 플러그인이 있는 곳)이고, 그 안의 `Dungeon And Stone/` 폴더(GitHub `Dungeon-And-Stone-Local` 클론, .gitattributes만 있음)는 건드리지 않는다 | 사용자가 편집기로 만든 Godot 프로젝트가 바깥 폴더에 있다 | 원격 저장소와 합치려면 바깥 저장소에 remote를 추가하고 `Dungeon And Stone/`을 정리한다(사용자 확인 후) |
 | E2 | Godot **4.7.2**에 맞춘다 | 이 PC에 설치된 버전(`--version` 확인) | `project.godot` features와 CLAUDE.md 경로 수정 |
 | E3 | 렌더러를 Forward+ → **GL Compatibility**로 바꿨다 | 웹 내보내기는 Compatibility만 지원, 2D 게임이라 손해 없음 | `project.godot [rendering] renderer/rendering_method` |
-| E4 | 한글 폰트: `assets/fonts/`에 폰트가 없으면 시스템 한글 폰트(SystemFont: Noto Sans KR, 맑은 고딕 …)로 대체 | OFL 폰트 파일을 받으려면 사용자 허락이 필요. 데스크톱은 시스템 폰트로 정상 표시됨(스크린샷 확인) | `assets/fonts/`에 OFL 한글 폰트(.ttf/.otf)를 넣으면 자동 사용. 특정 파일은 `render.json font.path`. **웹 내보내기 전에는 반드시 번들** |
+| E4 | 한글 폰트는 **Noto Sans KR Regular(한국어 서브셋 OTF, 4.6MB, OFL 1.1)** — 출처 notofonts/noto-cjk `Sans/SubsetOTF/KR`. 폰트가 없으면 시스템 한글 폰트로 대체 | Google Fonts 변수 폰트(10.4MB)보다 웹 내보내기 용량이 절반 이하. 굵은 글씨가 필요하면 같은 폴더의 Bold를 추가 | `render.json font.path`를 다른 파일로. 폴더에 넣은 첫 폰트가 기본값 |
 | E5 | 기본 해상도 1280×720, stretch `canvas_items`/`expand` | 2D UI 기본값 | `project.godot [display]` |
 | E6 | `untyped_declaration` 경고를 켰다(오류 아님) | 정적 타이핑 강제를 돕되 addons는 제외 | `project.godot [debug]` |
 

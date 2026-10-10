@@ -36,7 +36,7 @@
     "log_max_lines": 200
   },
   "font": {
-    "path": "",
+    "path": "res://assets/fonts/NotoSansKR-Regular.otf",
     "dir": "res://assets/fonts",
     "system_fallbacks": ["Noto Sans KR", "Noto Sans CJK KR", "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "NanumGothic", "sans-serif"]
   },

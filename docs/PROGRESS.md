@@ -82,7 +82,7 @@
 
 ## 메모 / 알려진 이슈
 
-- 번들 한글 폰트가 아직 없다(시스템 폰트 사용). **웹 내보내기 전에 OFL 폰트를 `assets/fonts/`에 넣어야 한다.** (ASSUMPTIONS E4)
+- 한글 폰트: `assets/fonts/NotoSansKR-Regular.otf`(OFL, 라이선스 `assets/fonts/OFL.txt`)를 번들했다. (ASSUMPTIONS E4)
 - 내보내기 시 `data/**/*.json`이 포함되도록 export 필터 확인 필요(M4 무렵 export_presets.cfg 작성).
 - `--import` 중 godot_mcp 플러그인의 포트 오류 메시지는 무시해도 된다.
 - 원격 저장소 연결 미정: 바깥 폴더 저장소에는 remote가 없고, 안쪽 `Dungeon And Stone/`이 GitHub 클론이다(ASSUMPTIONS E1).
