@@ -17,7 +17,7 @@ func _has_error(v: DataValidator, needle: String) -> bool:
 
 func test_loads_without_errors() -> void:
 	assert_eq(db.load_errors.size(), 0, "\n".join(db.load_errors))
-	for s: String in ["balance", "render", "tags", "audio"]:
+	for s: String in ["balance", "render", "tags", "audio", "input"]:
 		assert_false((db.singletons.get(s, {}) as Dictionary).is_empty(), s)
 
 
@@ -28,7 +28,7 @@ func test_validator_passes_real_data() -> void:
 
 
 func test_manifest_collections_loaded() -> void:
-	for col: String in ["stats", "resources", "statuses", "races", "classes", "monsters", "skills"]:
+	for col: String in ["stats", "resources", "statuses", "races", "classes", "monsters", "skills", "tiles", "landmarks", "floors", "items"]:
 		assert_true(db.get_collection(col).size() > 0, col)
 
 
@@ -84,5 +84,25 @@ func test_validator_detects_parent_cycle() -> void:
 func test_validator_checks_effect_types_when_registry_given() -> void:
 	var v := DataValidator.new()
 	v.effect_types = PackedStringArray(["damage"])
+	v.check_skill_effects = true
 	v.validate(db)
 	assert_true(_has_error(v, "effect type 'apply_status'"), "등록 안 된 효과 타입 검출")
+	assert_true(_has_error(v, "effect type 'light_source'"), "아이템 효과도 검사")
+
+
+func test_registry_validator_passes_and_checks_items() -> void:
+	var reg := ContentRegistries.new()
+	var v := reg.make_validator()
+	v.validate(db)
+	assert_eq(v.errors.size(), 0, "
+" + "
+".join(v.errors))
+	var d := _fresh_db()
+	d.put_entry("items", {"id": "bad_item", "name_ko": "x", "category": "food", "price": 1,
+		"use_effects": [{"type": "restore_resource", "resource": "gold", "amount": 1}, {"type": "teleport"}]})
+	d.put_entry("floors", {"id": "bad_floor", "name_ko": "x", "generator": "maze", "close_hours": 0, "visibility_cap_m": 12})
+	v = reg.make_validator()
+	v.validate(d)
+	for needle: String in ["resource 'gold'", "effect type 'teleport'", "generator 'maze'", "close_hours"]:
+		assert_true(_has_error(v, needle), "검출해야 함: " + needle)
+	assert_true(v.warnings.any(func(w: String) -> bool: return w.contains("10m 이상")), "시야 상한 10m 경고")

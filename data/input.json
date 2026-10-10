@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "_comment": "액션 → 키 이름(OS.find_keycode_from_string 형식). 물리 키 위치 기준이라 한글 입력 상태에서도 같은 자리의 키로 동작한다. 키 재설정의 기반.",
+  "actions": {
+    "move_up": ["W", "Up"],
+    "move_down": ["S", "Down"],
+    "move_left": ["A", "Left"],
+    "move_right": ["D", "Right"],
+    "wait": ["Space"],
+    "rest": ["Z"],
+    "torch": ["T"],
+    "eat": ["E"],
+    "interact": ["F", "Enter"],
+    "debug_toggle": ["F1"]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "ration",
+  "name_ko": "마른 식량",
+  "category": "food",
+  "price": 300,
+  "stack": 20,
+  "consumable": true,
+  "desc_ko": "딱딱하게 말린 빵과 고기. 맛은 없지만 배는 찬다.",
+  "use_effects": [
+    {"type": "restore_resource", "resource": "hunger", "amount": 40}
+  ],
+  "tags": ["food"],
+  "sprite": "res://assets/sprites/items/ration.png",
+  "source": "placeholder"
+}

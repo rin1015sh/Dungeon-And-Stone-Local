@@ -22,6 +22,8 @@ var _overrides: Dictionary = {}   # id -> 숫자|수식 (몬스터 고정 최대
 var _current: Dictionary = {}
 var _max: Dictionary = {}
 var _depleted: Dictionary = {}
+var _last_source: Dictionary = {} # id -> 마지막으로 값을 바꾼 출처(사인 판정용)
+var _mins: Dictionary = {}        # id -> 하한(디버그 무적 등). 기본 0
 var _context: Dictionary = {}     # "dungeon" / "combat" -> bool
 
 
@@ -76,6 +78,19 @@ func is_depleted(id: String) -> bool:
 	return _depleted.get(id, false)
 
 
+## 마지막으로 이 자원을 바꾼 출처(예: "status:starvation"). 사망 원인 표시에 쓴다.
+func get_last_source(id: String) -> String:
+	return _last_source.get(id, "")
+
+
+## 현재값 하한. 디버그 무적은 생명력 하한을 1로 둔다.
+func set_min_value(id: String, value: float) -> void:
+	if value <= 0.0:
+		_mins.erase(id)
+	else:
+		_mins[id] = value
+
+
 func get_level() -> int:
 	return _level
 
@@ -125,8 +140,7 @@ func fill(id: String) -> void:
 
 
 func fill_all() -> void:
-	for id in _ids:
-		fill(id)
+	for id in _ids: fill(id)
 
 
 func can_afford(costs: Dictionary) -> bool:
@@ -170,7 +184,7 @@ func regen_per_unit(id: String, trigger: String) -> float:
 		if JsonUtil.get_str(rule, "trigger") != trigger:
 			continue
 		any = true
-		var rate := Formula.value(rule.get("rate", 0.0), _resolve)
+		var rate := Formula.value(rule.get("rate", 0.0), resolve)
 		if JsonUtil.get_str(rule, "basis", "flat") == "max_ratio":
 			rate *= get_max(id)
 		total += rate
@@ -220,9 +234,9 @@ func load_dict(d: Dictionary) -> void:
 		changed.emit(id, _current[id], _max[id])
 
 
-func _apply(id: String, value: float, _source: String) -> float:
+func _apply(id: String, value: float, source: String) -> float:
 	var maximum: float = _max[id]
-	var nv := clampf(value, 0.0, maximum)
+	var nv := clampf(value, minf(float(_mins.get(id, 0.0)), maximum), maximum)
 	if nv < EPSILON:
 		nv = 0.0
 	var old: float = _current[id]
@@ -230,6 +244,7 @@ func _apply(id: String, value: float, _source: String) -> float:
 		return 0.0
 	var old_ratio := get_ratio(id)
 	_current[id] = nv
+	_last_source[id] = source
 	changed.emit(id, nv, maximum)
 	_check_thresholds(id, old_ratio, get_ratio(id))
 	_check_zero(id)
@@ -264,7 +279,7 @@ func _check_zero(id: String) -> void:
 
 func _calc_max(id: String) -> float:
 	var src: Variant = _overrides.get(id, get_def(id).max_value)
-	var base := Formula.value(src, _resolve)
+	var base := Formula.value(src, resolve)
 	return maxf(0.0, _stats.apply_modifiers("max:" + id, base))
 
 
@@ -277,8 +292,8 @@ func _start_value(id: String) -> float:
 	return get_max(id)
 
 
-## 수식 키 해석: level / bal.<경로> / 스탯 id.
-func _resolve(key: String) -> float:
+## 수식 키 해석: level / bal.<경로> / 스탯 id. (상태이상·효과 수식도 이것을 쓴다)
+func resolve(key: String) -> float:
 	if key == "level":
 		return float(_level)
 	if key.begins_with("bal."):

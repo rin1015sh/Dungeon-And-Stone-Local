@@ -6,7 +6,6 @@
   },
   "menu": {
     "new_game": "새 탐험가",
-    "locked_until": "아직 열리지 않았다 ({milestone} 이후)",
     "foundation": "기반 점검",
     "quit": "종료",
     "back": "돌아가기"
@@ -60,7 +59,9 @@
     "floors": "층",
     "rifts": "균열",
     "events": "이벤트",
-    "facilities": "시설"
+    "facilities": "시설",
+    "tiles": "타일",
+    "landmarks": "랜드마크"
   },
   "stat_group": {
     "body": "육체",
@@ -89,5 +90,99 @@
     "recovered": "{resource}이(가) 다시 차오른다.",
     "level": "레벨 {level}. 영혼의 그릇이 달라졌다.",
     "restore": "숨을 고르고 몸을 추슬렀다."
+  },
+  "create": {
+    "title": "새 탐험가",
+    "who": "누구인가",
+    "name": "이름",
+    "default_name": "이름 없는 탐험가",
+    "race": "종족",
+    "template": "시작 템플릿",
+    "reroll": "다시 굴리기 (남은 {left}회)",
+    "body_header": "타고난 몸",
+    "resources_header": "자원",
+    "items_header": "가진 것",
+    "items_none": "빈손이다.",
+    "enter_header": "차원광장",
+    "floor_hint": "포탈이 열렸다. 들어가면 {floor}의 어딘가에 떨어진다. 돌아오는 길은 층이 닫힐 때뿐이다.",
+    "enter": "미궁으로 들어간다"
+  },
+  "explore": {
+    "enter": "{floor}. 발밑이 차갑다. 포탈은 등 뒤에서 닫혔다.",
+    "wait": "숨을 죽이고 {hours}시간을 기다렸다.",
+    "rest_safe": "기념비 곁에서 {hours}시간을 잤다. 몸이 조금 풀렸다.",
+    "rest_unsafe": "벽에 기대 {hours}시간을 졸았다. 쉰 것 같지 않다.",
+    "no_item": "{item}이(가) 없다.",
+    "no_category": "가진 {category}이(가) 없다.",
+    "portal_locked": "{floor}층으로 가는 포탈이다. 아직 그 너머로 갈 준비가 되지 않았다. (2층은 M6에서 열린다)",
+    "monument": "대현자 기념비. 이 근처에는 아무것도 다가오지 않는다.",
+    "nothing_here": "살펴볼 만한 것이 없다.",
+    "closing_soon": "공기가 무거워진다. 층이 닫히기까지 {hours}시간.",
+    "closed": "층이 닫힌다. 보이지 않는 힘이 몸을 끌어당긴다.",
+    "landmark_found": "{name}을(를) 발견했다. {desc}",
+    "portal_found": "{dir}에서 포탈의 빛을 보았다.",
+    "portal_here": "포탈 위에 섰다. (살피기로 확인)",
+    "safe_enter": "기념비의 고요함이 감싼다. 안전지대다.",
+    "safe_leave": "안전지대를 벗어났다.",
+    "dark_enter": "수정 빛이 닿지 않는 곳이다. 한 치 앞도 보이지 않는다.",
+    "status_on": "[{status}] 상태가 되었다.",
+    "status_off": "[{status}] 상태에서 벗어났다.",
+    "light_out": "{item}이(가) 꺼졌다. 어둠이 다가온다.",
+    "died": "숨이 멎었다.",
+    "hud_time": "미궁 {day}일차 {time} · 폐쇄까지 {left}시간",
+    "light_torch": "횃불 (남은 {hours}시간) · 시야 {vision}m",
+    "light_ambient": "수정 빛 · 시야 {vision}m",
+    "light_dark": "암흑 · 시야 {vision}m",
+    "hud_safe": "안전지대",
+    "hud_found": "발견: 랜드마크 {landmarks}/{landmarks_total} · 포탈 {portals}/{portals_total}",
+    "hud_name": "{name} · {race} {template} · 레벨 {level}",
+    "hud_status": "상태: {list}",
+    "hud_status_none": "상태: 이상 없음",
+    "hud_items": "소지품: {list}",
+    "hud_items_none": "소지품: 없음",
+    "keys": "이동 {up}{left}{down}{right}/방향키 · 대기 {wait} · 휴식 {rest} · 횃불 {torch} · 식사 {eat} · 살피기 {interact} · 디버그 {debug}"
+  },
+  "effect": {
+    "restore": "{resource}이(가) {amount}만큼 변했다.",
+    "restore_none": "{resource}은(는) 이미 가득하다.",
+    "light_on": "횃불에 불을 붙였다. {hours}시간쯤 탈 것이다.",
+    "light_already": "이미 횃불이 타고 있다. (남은 {hours}시간)",
+    "status_on": "[{status}] 상태가 되었다.",
+    "status_off": "[{status}] 상태가 풀렸다."
+  },
+  "debug": {
+    "title": "디버그 (F1)",
+    "skip": "+{hours}시간",
+    "close_soon": "폐쇄 1시간 전",
+    "reveal": "안개 걷기",
+    "to_monument": "기념비로",
+    "to_portal": "가까운 포탈로",
+    "level_up": "레벨 +1",
+    "level_down": "레벨 -1",
+    "stat_up": "{stat} +{amount}",
+    "hunger_zero": "허기 0",
+    "restore": "모두 회복",
+    "invulnerable": "무적 (생명력 1 아래로 안 떨어짐)",
+    "seed_placeholder": "시드 (현재 {seed})",
+    "regenerate": "다시 생성",
+    "essence_locked": "정수 지급 (M3)",
+    "monster_locked": "몬스터 소환 (M2)",
+    "portal_open_locked": "포탈 즉시 개방 (M4)",
+    "later": "다음 마일스톤에서: {list}"
+  },
+  "end": {
+    "closed_title": "강제 귀환",
+    "closed_body": "{floor}이(가) 닫혔다. {name}은(는) 차원광장의 돌바닥 위로 내던져졌다.",
+    "died_title": "죽었다.",
+    "died_body": "{name}. {floor}에서. 사인: {cause}.",
+    "summary_time": "미궁 {day}일차 · 머문 시간 {hours}시간",
+    "summary_steps": "걸음 {steps}",
+    "summary_found": "발견한 랜드마크 {landmarks}/{landmarks_total} · 포탈 {portals}/{portals_total}",
+    "later": "도시 귀환·저장·묘비 목록은 M4에서 이어진다.",
+    "to_title": "타이틀로"
+  },
+  "cause": {
+    "unknown": "알 수 없음",
+    "debug": "알 수 없는 힘"
   }
 }

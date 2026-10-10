@@ -1,12 +1,14 @@
 extends Node
 ## 데이터 레지스트리(오토로드). 시작할 때 data/를 읽고 검증한다.
 ## 실제 저장소는 GameDatabase(db) — 게임 코드는 DataRegistry.db로 접근한다.
-## 핵심 로직(src/core)은 이 오토로드를 직접 참조하지 않고 db를 인자로 받는다.
+## 스크립트 레지스트리(효과 타입·층 생성기)는 registries(ContentRegistries)에 있다.
+## 핵심 로직(src/core 등)은 이 오토로드를 직접 참조하지 않고 인자로 받는다.
 
 const DATA_ROOT := "res://data"
 
 var db: GameDatabase = GameDatabase.new()
 var validator: DataValidator = DataValidator.new()
+var registries: ContentRegistries
 
 
 func _ready() -> void:
@@ -14,9 +16,10 @@ func _ready() -> void:
 
 
 func reload() -> bool:
+	registries = ContentRegistries.new()
 	db = GameDatabase.new()
 	db.load_all(DATA_ROOT)
-	validator = DataValidator.new()
+	validator = registries.make_validator()
 	validator.validate(db)
 	validator.errors.append_array(Strings.load_locale())
 	for e: String in validator.errors:

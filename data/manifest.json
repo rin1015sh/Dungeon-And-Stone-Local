@@ -5,7 +5,8 @@
     "balance": "balance.json",
     "render": "render.json",
     "tags": "tags.json",
-    "audio": "audio.json"
+    "audio": "audio.json",
+    "input": "input.json"
   },
   "collections": {
     "stats": {"file": "stats.json"},
@@ -14,6 +15,8 @@
     "injuries": {"file": "injuries.json"},
     "races": {"file": "races.json"},
     "classes": {"file": "classes.json"},
+    "tiles": {"file": "tiles.json"},
+    "landmarks": {"file": "landmarks.json"},
     "monsters": {"dir": "monsters"},
     "essences": {"dir": "essences"},
     "skills": {"dir": "skills"},

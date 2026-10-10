@@ -61,9 +61,15 @@
     "flee_agi_coef": 0.02
   },
   "explore": {
+    "start_floor": "f1_crystal_cave",
     "meters_per_tile": 1.0,
     "move_hours_base": 0.02,
-    "move_agi_coef": 0.02
+    "move_agi_coef": 0.02,
+    "min_vision_m": 1.0,
+    "vision_bonus_formula": "{field_of_view} * 0.1 + {sight} * 0.05",
+    "wait_hours": 1.0,
+    "rest_hours": 8.0,
+    "closing_warning_hours": [24, 6, 1]
   },
   "exp": {
     "grade_base": 10,
@@ -78,6 +84,9 @@
     "sandbox_soul_cost": 5,
     "sandbox_food": 30,
     "sandbox_buff_str": 10,
-    "sandbox_buff_hours": 3
+    "sandbox_buff_hours": 3,
+    "skip_hours_short": 1,
+    "skip_hours_long": 12,
+    "stat_bump": 5
   }
 }

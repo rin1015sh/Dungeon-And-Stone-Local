@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 EventBus="*res://src/autoload/EventBus.gd"
 DataRegistry="*res://src/autoload/DataRegistry.gd"
 GameState="*res://src/autoload/GameState.gd"
+TimeSystem="*res://src/autoload/TimeSystem.gd"
 AudioBus="*res://src/autoload/AudioBus.gd"
 
 [debug]

@@ -1,0 +1,47 @@
+{
+  "id": "f1_crystal_cave",
+  "name_ko": "1층 수정동굴",
+  "floor": 1,
+  "generator": "crystal_cave",
+  "close_hours": 168,
+  "resets_each_entry": true,
+  "_comment": "벽·천장의 수정이 빛을 내서 횃불 없이도 보인다(ambient). 암흑지대(dark zone)에서만 횃불이 필요하다. 시야 상한은 광원이 있어도 넘지 못하는 값(10m 미만).",
+  "visibility_cap_m": 9.0,
+  "visibility_source": "placeholder",
+  "ambient_light_m": 6.0,
+  "ambient_source": "placeholder",
+  "ambient_color": "#c4bcff",
+  "gen": {
+    "size": [72, 72],
+    "fill_ratio": 0.45,
+    "smooth_steps": 5,
+    "min_region": 30,
+    "center_radius": 5,
+    "landmark_min_distance": 10,
+    "portal_pick_band": 2,
+    "crystal_wall_chance": 0.06,
+    "dark_zone_count": [2, 3],
+    "dark_zone_radius": [4, 6],
+    "dark_zone_min_distance": 12,
+    "entry_min_distance": 14,
+    "tiles": {"floor": "cave_floor", "wall": "rock_wall", "crystal": "crystal_wall", "portal": "portal"}
+  },
+  "landmarks": [
+    {"id": "sage_monument", "placement": "center", "safe_zone_radius": 4},
+    {"id": "square_crystal_junction", "placement": "random", "count": 1},
+    {"id": "boulder_pond", "placement": "random", "count": 1}
+  ],
+  "regions": [
+    {"id": "f1_east", "dir": "east", "name_ko": "동쪽", "monsters": ["blade_wolf"]},
+    {"id": "f1_west", "dir": "west", "name_ko": "서쪽", "monsters": []},
+    {"id": "f1_south", "dir": "south", "name_ko": "남쪽", "monsters": []},
+    {"id": "f1_north", "dir": "north", "name_ko": "북쪽", "monsters": []}
+  ],
+  "portals": [
+    {"id": "to_f2_east", "dir": "east", "to_floor": 2},
+    {"id": "to_f2_west", "dir": "west", "to_floor": 2},
+    {"id": "to_f2_south", "dir": "south", "to_floor": 2},
+    {"id": "to_f2_north", "dir": "north", "to_floor": 2}
+  ],
+  "source": "original"
+}

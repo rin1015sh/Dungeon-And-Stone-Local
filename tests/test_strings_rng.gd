@@ -1,7 +1,8 @@
 extends TestCase
 ## Strings(문자열 로더), Rng(시드 고정 난수), CharacterRoller(스탯 굴림).
 
-const KEY_PATTERN := "Strings\\.t\\(\\s*\"([^\"]+)\""
+## Strings.t("키")와, 키를 넘기는 say/_say/_log("키") 호출을 모두 찾는다.
+const KEY_PATTERN := "(?:Strings\\.t|\\bsay|_say|_log)\\(\\s*\"([a-z_]+\\.[a-z_.]*)\""
 
 
 func test_strings_lookup_and_format() -> void:

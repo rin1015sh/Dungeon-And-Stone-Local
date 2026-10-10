@@ -91,6 +91,17 @@ static func metric(key: String, fallback: int = 0) -> int:
 	return JsonUtil.get_int(JsonUtil.get_dict(_render, "ui"), key, fallback)
 
 
+static func ui_float(key: String, fallback: float = 0.0) -> float:
+	return JsonUtil.get_float(JsonUtil.get_dict(_render, "ui"), key, fallback)
+
+
+## 반투명 패널(탐험 화면 위에 겹치는 HUD·기록창·디버그 패널용).
+static func translucent_panel() -> StyleBoxFlat:
+	var bg := color("panel")
+	bg.a = ui_float("panel_alpha", 0.82)
+	return box(bg, color("panel_border"), metric("corner_radius", 2), metric("padding", 8))
+
+
 static func box(bg: Color, border: Color, radius: int, padding: int) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = bg

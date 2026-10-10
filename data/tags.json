@@ -56,6 +56,25 @@
     {"id": "priest", "name_ko": "신관"},
     {"id": "mage", "name_ko": "마법사"}
   ],
+  "item_categories": [
+    {"id": "light", "name_ko": "광원"},
+    {"id": "food", "name_ko": "식량"},
+    {"id": "potion", "name_ko": "포션"},
+    {"id": "scroll", "name_ko": "스크롤"},
+    {"id": "tool", "name_ko": "탐험 용품"},
+    {"id": "weapon", "name_ko": "무기"},
+    {"id": "armor", "name_ko": "방어구"},
+    {"id": "material", "name_ko": "소재"},
+    {"id": "magic_stone", "name_ko": "마석"},
+    {"id": "numbers", "name_ko": "넘버스"},
+    {"id": "misc", "name_ko": "잡동사니"}
+  ],
+  "directions": [
+    {"id": "east", "name_ko": "동쪽"},
+    {"id": "west", "name_ko": "서쪽"},
+    {"id": "south", "name_ko": "남쪽"},
+    {"id": "north", "name_ko": "북쪽"}
+  ],
   "skill_targets": [
     {"id": "self", "name_ko": "자신"},
     {"id": "enemy_single", "name_ko": "적 하나"},

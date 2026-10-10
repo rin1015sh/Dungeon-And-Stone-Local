@@ -1,0 +1,49 @@
+[
+  {
+    "id": "sage_monument",
+    "name_ko": "대현자 기념비",
+    "desc_ko": "동굴 한가운데 선 오래된 비석. 주변은 이상하리만치 조용하다.",
+    "_comment": "stamp의 각 글자는 legend의 타일로 바뀐다. null(?)은 원래 지형 유지. anchor 글자의 칸이 랜드마크 위치.",
+    "stamp": [
+      "?.....?",
+      ".......",
+      "...M...",
+      ".......",
+      "?.....?"
+    ],
+    "legend": {".": "cave_floor", "M": "monument", "?": null},
+    "anchor": "M",
+    "source": "original"
+  },
+  {
+    "id": "square_crystal_junction",
+    "name_ko": "네모 수정 삼거리",
+    "desc_ko": "세 갈래 길이 만나는 자리에 네모반듯한 수정이 박혀 있다.",
+    "stamp": [
+      "##...##",
+      "#.....#",
+      "...C...",
+      "#.....#",
+      "#######"
+    ],
+    "legend": {".": "cave_floor", "C": "square_crystal", "#": "rock_wall", "?": null},
+    "anchor": "C",
+    "source": "original"
+  },
+  {
+    "id": "boulder_pond",
+    "name_ko": "큰바위 옆 연못",
+    "desc_ko": "집채만 한 바위 곁에 검은 물이 고여 있다.",
+    "stamp": [
+      "?......?",
+      "..BB....",
+      ".BBB~~~.",
+      "..B~~~~.",
+      "...~~~..",
+      "?......?"
+    ],
+    "legend": {".": "cave_floor", "B": "boulder", "~": "pond_water", "?": null},
+    "anchor": "B",
+    "source": "original"
+  }
+]

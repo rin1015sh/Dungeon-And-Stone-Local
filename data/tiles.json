@@ -1,0 +1,54 @@
+[
+  {
+    "id": "cave_floor", "name_ko": "동굴 바닥", "kind": "floor",
+    "walkable": true, "blocks_sight": false,
+    "colors": {"floor": "#57505f"},
+    "sprite": "res://assets/sprites/tiles/cave_floor.png", "source": "placeholder"
+  },
+  {
+    "id": "rock_wall", "name_ko": "바위벽", "kind": "wall",
+    "walkable": false, "blocks_sight": true,
+    "colors": {"top": "#2a2530", "face": "#6a6074"},
+    "sprite": "res://assets/sprites/tiles/rock_wall.png", "source": "placeholder"
+  },
+  {
+    "id": "crystal_wall", "name_ko": "수정벽", "kind": "wall",
+    "walkable": false, "blocks_sight": true,
+    "colors": {"top": "#3b3160", "face": "#8a74d0"},
+    "light": {"radius_m": 2.5, "color": "#8f6cff", "intensity": 0.8},
+    "sprite": "res://assets/sprites/tiles/crystal_wall.png", "source": "original"
+  },
+  {
+    "id": "pond_water", "name_ko": "연못", "kind": "floor",
+    "walkable": false, "blocks_sight": false,
+    "colors": {"floor": "#24384c"},
+    "sprite": "res://assets/sprites/tiles/pond_water.png", "source": "original"
+  },
+  {
+    "id": "boulder", "name_ko": "큰바위", "kind": "wall", "face_px": 14,
+    "walkable": false, "blocks_sight": true,
+    "colors": {"top": "#4a454c", "face": "#77707a"},
+    "sprite": "res://assets/sprites/tiles/boulder.png", "source": "original"
+  },
+  {
+    "id": "square_crystal", "name_ko": "네모 수정", "kind": "wall", "face_px": 28,
+    "walkable": false, "blocks_sight": false,
+    "colors": {"top": "#9d8ae0", "face": "#7a66c0"},
+    "light": {"radius_m": 3.5, "color": "#b39cff", "intensity": 1.0},
+    "sprite": "res://assets/sprites/tiles/square_crystal.png", "source": "original"
+  },
+  {
+    "id": "monument", "name_ko": "대현자 기념비", "kind": "wall", "face_px": 40,
+    "walkable": false, "blocks_sight": true, "interact": "monument",
+    "colors": {"top": "#b0a890", "face": "#8a8270"},
+    "light": {"radius_m": 3.0, "color": "#e8d9a8", "intensity": 0.7},
+    "sprite": "res://assets/sprites/tiles/monument.png", "source": "original"
+  },
+  {
+    "id": "portal", "name_ko": "포탈", "kind": "floor",
+    "walkable": true, "blocks_sight": false, "interact": "portal",
+    "colors": {"floor": "#5e3a78", "mark": "#e0b8ff"},
+    "light": {"radius_m": 2.0, "color": "#c58cff", "intensity": 0.9},
+    "sprite": "res://assets/sprites/tiles/portal.png", "source": "original"
+  }
+]

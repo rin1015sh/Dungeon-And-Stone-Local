@@ -38,6 +38,27 @@
 | R19 | 지속시간 단위는 `turn`(전투)과 `hour`(게임 내 시간) 두 가지 | 전투 버프와 비약류를 모두 표현 | `Modifier.unit`, `statuses.json duration.unit` |
 | R20 | 피해 유형: 참격·관통·타격(물리) + 화염·냉기·번개·대지·독·신성·어둠·태양(마법). 몬스터 계열에 인간형·구조체·슬라임 추가 | 둔기 약점(스톤골렘), 태양 약점(어둠 계열), 골렘·고블린·슬라임 분류 필요 | `tags.json` |
 
+## 탐험 (M1)
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| X1 | 1층 지도 72×72칸 | 생성 0.1~0.2초, 탐험 수십 시간 분량. 원작 규모 수치 없음 | `floors/f1_crystal_cave.json gen.size` |
+| X2 | 1층 시야 상한 9m, 수정 빛(주변광) 6m, 횃불 7m — 모두 임시값 | 원문: "광원이 있어도 10m 미만", 1층은 수정 빛으로 횃불이 필요 없음, 횃불 반경 수치 없음 | `visibility_cap_m`, `ambient_light_m`, `items/torch.json radius_m` |
+| X3 | 암흑지대 2~3곳, 반경 4~6칸. 그 안에서는 맨몸 시야 1m | 원문: 1층 암흑지대는 "극히 일부" | `gen.dark_zone_*`, `balance.explore.min_vision_m` |
+| X4 | 한 칸 이동 = 0.02시간(1.2분) ÷ (1 + 민첩×0.02) | 168시간 폐쇄 안에서 탐험 분량이 의미 있게 | `balance.explore.move_*` |
+| X5 | 미궁 시계는 입장 시 0부터. 도시 달력과 분리 | 원작: 도시 귀환은 항상 입장 다음 날 정오 | M4 `TimeSystem`에 도시 달력 추가 |
+| X6 | 휴식(8시간)은 기념비 안전지대에서만 회복이 붙는다. 바깥 휴식의 습격 위험은 M2 | 안전지대의 의미 | `ExploreSession.rest`, `balance.rest.*` |
+| X7 | 횃불은 한 번 켜면 끌 수 없고(약 72시간), 이미 타고 있으면 새로 켜지 않는다 | 원문: 한 번 켜면 약 3일 | `light_source` 효과 |
+| X8 | 마른 식량 = 허기 +40, 300스톤. 모든 시작 템플릿이 횃불 2·식량 3을 가진다 | 원작 경제(한 끼 300스톤) 기준, 식량 없이 1층에 버티면 굶어 죽게(약 128시간) | `items/ration.json`, `classes.json start_items` |
+| X9 | 층 폐쇄 경고는 24·6·1시간 전, 폐쇄되면 임시 결과 화면 → 타이틀(도시는 M4) | 강제 귀환 체감 | `balance.explore.closing_warning_hours` |
+| X10 | 포탈은 동서남북 방향으로 가장 멀리 나간 바닥 칸 근처. 2층은 M6에서 열리므로 지금은 살피기만 가능 | 원작: 동서남북 4개의 2층 포탈 | `gen.portal_pick_band`, M6 |
+| X11 | 층 시드 = 세션 시드·층 번호·입장 횟수의 해시. 디버그로 고정 가능 | 입장마다 지형이 바뀌되 재현 가능 | `GameState.next_floor_seed` |
+| X12 | 그리기: 어둠은 CanvasModulate가 아니라 칸 꼭짓점 색으로 만들고(안개 기억과 함께 다루기 쉬움), PointLight2D는 횃불 빛 번짐만, CanvasModulate는 약한 색조만 | 셰이더·광원 차폐 없이 웹 호환, FOV와 일관 | `render.json view/lighting`, `FloorView` |
+| X13 | 벽 타일 32×56(앞면 24px), 카메라 1.5배 | 지시서 "32×48 이상", 시야 원 전체가 화면에 들어오게 | `render.json view` |
+| X14 | 캐릭터 스프라이트 시트는 가로 4프레임 [아래, 왼쪽, 오른쪽, 위] | 4방향 최소 | `ActorView.FRAME_ORDER` |
+| X15 | 같은 상태이상을 두 출처가 걸어도 하나로 관리(먼저 풀리는 쪽이 해제) | 1차 단순화 | M2 StatusSet에서 출처별 관리 |
+| X16 | 디버그 무적 = 생명력 하한 1 | 죽지 않되 규칙은 그대로 체감 | `DebugPanel` |
+
 ## 데이터·구조
 
 | # | 가정 | 이유 | 바꾸는 방법 |
@@ -45,5 +66,7 @@
 | D1 | `_`로 시작하는 데이터 파일/키는 템플릿·주석으로 보고 읽지 않는다 | JSON에는 주석이 없음 | `JsonUtil.list_json`, `Strings._flatten` |
 | D2 | 데이터 항목 이름은 각 JSON의 `name_ko`, UI 문구는 `strings/ko.json` | 지시서 스키마 예시 | — |
 | D3 | 정수 데이터는 사용자 요청으로 비워 두고, 칼날늑대의 `essence_drops`도 비움 | "정수 관련 설정은 우선 공백" | `data/essences/<id>.json` 추가 후 몬스터에 드롭 연결 |
-| D4 | 상태이상의 실제 부여·해제는 M2 `StatusSet`이 맡고, M0 기반 점검 화면은 수정자만 임시로 붙였다 뗀다 | M0 범위는 자원·스탯까지 | M2에서 `FoundationScreen._set_status`를 StatusSet으로 교체 |
+| D4 | (M1에서 해소) 상태이상 부여·해제는 `StatusSet`이 맡고, 기반 점검 화면도 `Actor`를 쓴다 | — | — |
 | D5 | 오토로드에는 `class_name`을 두지 않는다 | 오토로드 이름과 충돌 | — |
+| D6 | 효과 타입·층 생성기는 "폴더의 파일 하나 = 항목 하나"(파일 이름이 id) | 새 타입을 기존 코드 수정 없이 추가 | `ScriptRegistry` |
+| D7 | 입력 키는 data/input.json에서 물리 키 위치로 등록 | 한글 입력 상태에서도 WASD 동작, 키 재설정 기반 | `InputSetup` |
