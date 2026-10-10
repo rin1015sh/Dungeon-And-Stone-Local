@@ -1,0 +1,97 @@
+[
+  {
+    "id": "hp",
+    "name_ko": "생명력",
+    "color": "#8e2b2b",
+    "max_formula": "{bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res} + {str} * {bal.hp.per_str}",
+    "start": "full",
+    "scope": "always",
+    "visible": true,
+    "cost_strict": true,
+    "regen": [
+      {"trigger": "time", "basis": "flat", "rate": "{natural_regen} * {bal.hp.regen_per_natural_regen_per_hour}"},
+      {"trigger": "rest", "basis": "max_ratio", "rate": "{bal.rest.hp_ratio_per_hour}"}
+    ],
+    "thresholds": [],
+    "on_zero": "kill"
+  },
+  {
+    "id": "soul",
+    "name_ko": "영혼력",
+    "color": "#4a5d8a",
+    "max_formula": "{bal.soul.base} + min({level} - 1, {bal.soul.early_level_cap} - 1) * {bal.soul.per_level_early} + max({level} - {bal.soul.early_level_cap}, 0) * {bal.soul.per_level_late}",
+    "start": "full",
+    "scope": "always",
+    "visible": true,
+    "regen": [
+      {"trigger": "turn", "basis": "max_ratio", "rate": "{bal.soul.regen_ratio_per_turn} * (1 + {soul_regen} * {bal.soul.regen_stat_coef})"},
+      {"trigger": "time", "basis": "max_ratio", "rate": "{bal.soul.regen_ratio_per_hour} * (1 + {soul_regen} * {bal.soul.regen_stat_coef})"},
+      {"trigger": "rest", "basis": "max_ratio", "rate": "{bal.rest.soul_ratio_per_hour}"}
+    ],
+    "thresholds": [],
+    "on_zero": {"status": "soul_exhaustion", "recover_at_ratio": 0.0}
+  },
+  {
+    "id": "hunger",
+    "name_ko": "허기",
+    "_comment": "값은 포만도(100=배부름, 0=아사 직전). display_inverted=true로 바꾸면 게이지가 '허기도'(차오를수록 배고픔)로 보인다.",
+    "color": "#8a6d3b",
+    "max": 100,
+    "start": "full",
+    "scope": "dungeon_only",
+    "visible": true,
+    "display_inverted": false,
+    "regen": [
+      {"trigger": "time", "basis": "flat", "rate": "-{bal.hunger.decay_per_hour} * (1 + {appetite} * {bal.hunger.appetite_coef})"}
+    ],
+    "thresholds": [
+      {"at_ratio": 0.3, "direction": "down", "apply_status": "hungry"},
+      {"at_ratio": 0.1, "direction": "down", "apply_status": "starving"}
+    ],
+    "on_zero": {"status": "starvation"}
+  },
+  {
+    "id": "stamina",
+    "name_ko": "기력",
+    "_comment": "예약 자원(정의만). 10% 이하에서 행동 불가.",
+    "enabled": false,
+    "color": "#6b7a4a",
+    "max_formula": "{bal.reserved.stamina_base} + {endurance} * {bal.reserved.stamina_per_endurance}",
+    "scope": "always",
+    "thresholds": [
+      {"at_ratio": 0.1, "direction": "down", "apply_status": "stamina_depleted"}
+    ],
+    "on_zero": {"status": "stamina_depleted"}
+  },
+  {
+    "id": "mana",
+    "name_ko": "마력",
+    "_comment": "예약 자원(정의만). 마법사 직군.",
+    "enabled": false,
+    "color": "#5a4a8a",
+    "max_formula": "{bal.reserved.mana_base} + {int} * {bal.reserved.mana_per_int}",
+    "scope": "always"
+  },
+  {
+    "id": "divinity",
+    "name_ko": "신성력",
+    "_comment": "예약 자원(정의만). 신관 직군.",
+    "enabled": false,
+    "color": "#b8a46a",
+    "max_formula": "{bal.reserved.divinity_base}",
+    "scope": "always"
+  },
+  {
+    "id": "stress",
+    "name_ko": "스트레스",
+    "_comment": "예약 자원(정의만). 차오를수록 나쁨. 간식으로 완화.",
+    "enabled": false,
+    "color": "#7a3d5c",
+    "max": 100,
+    "start": "empty",
+    "scope": "dungeon_only",
+    "thresholds": [
+      {"at_ratio": 0.8, "direction": "up", "apply_status": "stressed"}
+    ]
+  }
+]

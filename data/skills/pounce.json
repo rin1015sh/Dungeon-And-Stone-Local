@@ -1,0 +1,13 @@
+{
+  "id": "pounce",
+  "name_ko": "덮치기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 20,
+  "cooldown": 2,
+  "effects": [
+    {"type": "damage", "scaling": "phys", "power": 1.3, "damage_type": "slash"},
+    {"type": "apply_status", "status": "bleeding", "chance": 0.2}
+  ],
+  "source": "placeholder"
+}

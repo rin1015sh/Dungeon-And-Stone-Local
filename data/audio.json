@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "_comment": "효과음/BGM 키 → 파일 경로. 파일이 없으면 AudioBus가 조용히 건너뛴다.",
+  "sfx_voices": 4,
+  "sfx": {
+    "ui_click": "res://assets/audio/sfx/ui_click.ogg",
+    "ui_back": "res://assets/audio/sfx/ui_back.ogg",
+    "ui_denied": "res://assets/audio/sfx/ui_denied.ogg"
+  },
+  "bgm": {
+    "title": "res://assets/audio/bgm/title.ogg"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 층은 M1에서 채운다. visibility_cap_m은 광원이 있어도 넘지 못하는 상한.",
+  "id": "f1_crystal_cave",
+  "name_ko": "1층 수정동굴",
+  "floor": 1,
+  "generator": "crystal_cave",
+  "close_hours": 168,
+  "resets_each_entry": true,
+  "visibility_cap_m": 8.0,
+  "visibility_source": "placeholder",
+  "ambient_light": "crystal",
+  "landmarks": ["square_crystal_junction", "boulder_pond"],
+  "safe_zones": ["sage_monument"],
+  "regions": [
+    {"id": "f1_east", "dir": "east", "monsters": ["blade_wolf"]}
+  ],
+  "portals": [{"to": "f2", "count": 4}],
+  "source": "original"
+}

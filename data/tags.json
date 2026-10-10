@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "_comment": "검증기가 참조하는 태그 목록. 새 속성/계열/부위는 여기에 한 줄 추가.",
+  "damage_categories": ["physical", "magical"],
+  "damage_types": [
+    {"id": "slash", "name_ko": "참격", "category": "physical"},
+    {"id": "pierce", "name_ko": "관통", "category": "physical"},
+    {"id": "blunt", "name_ko": "타격", "category": "physical"},
+    {"id": "fire", "name_ko": "화염", "category": "magical"},
+    {"id": "cold", "name_ko": "냉기", "category": "magical"},
+    {"id": "lightning", "name_ko": "번개", "category": "magical"},
+    {"id": "earth", "name_ko": "대지", "category": "magical"},
+    {"id": "poison", "name_ko": "독", "category": "magical"},
+    {"id": "holy", "name_ko": "신성", "category": "magical"},
+    {"id": "dark", "name_ko": "어둠", "category": "magical"},
+    {"id": "sun", "name_ko": "태양", "category": "magical"}
+  ],
+  "monster_types": [
+    {"id": "ability", "name_ko": "이능계"},
+    {"id": "spirit", "name_ko": "영체류"},
+    {"id": "body", "name_ko": "육체"}
+  ],
+  "families": [
+    {"id": "undead", "name_ko": "언데드"},
+    {"id": "frost_beast", "name_ko": "냉기·짐승"},
+    {"id": "dark", "name_ko": "어둠"},
+    {"id": "wraith", "name_ko": "망령"},
+    {"id": "hexer", "name_ko": "디버프 주술사"},
+    {"id": "tower", "name_ko": "타워형"},
+    {"id": "flying", "name_ko": "비행종"},
+    {"id": "beast", "name_ko": "야수종"},
+    {"id": "nature", "name_ko": "자연종"},
+    {"id": "demon", "name_ko": "악마형"},
+    {"id": "plant", "name_ko": "식물종"},
+    {"id": "mage", "name_ko": "메이지 클래스"},
+    {"id": "parasite", "name_ko": "기생 개체"},
+    {"id": "phantasm", "name_ko": "환상종"},
+    {"id": "fish", "name_ko": "어류종"},
+    {"id": "humanoid", "name_ko": "인간형"},
+    {"id": "construct", "name_ko": "구조체"},
+    {"id": "slime", "name_ko": "슬라임"}
+  ],
+  "body_parts": [
+    {"id": "head", "name_ko": "머리"},
+    {"id": "torso", "name_ko": "몸통"},
+    {"id": "arm_l", "name_ko": "왼팔"},
+    {"id": "arm_r", "name_ko": "오른팔"},
+    {"id": "leg_l", "name_ko": "왼다리"},
+    {"id": "leg_r", "name_ko": "오른다리"}
+  ],
+  "roles": [
+    {"id": "tank", "name_ko": "수호자"},
+    {"id": "melee", "name_ko": "근접 딜러"},
+    {"id": "ranged", "name_ko": "원거리 딜러"},
+    {"id": "scout", "name_ko": "탐색꾼"},
+    {"id": "priest", "name_ko": "신관"},
+    {"id": "mage", "name_ko": "마법사"}
+  ],
+  "skill_targets": [
+    {"id": "self", "name_ko": "자신"},
+    {"id": "enemy_single", "name_ko": "적 하나"},
+    {"id": "enemy_all", "name_ko": "적 전체"},
+    {"id": "enemy_row", "name_ko": "적 한 열"},
+    {"id": "ally_single", "name_ko": "아군 하나"},
+    {"id": "ally_all", "name_ko": "아군 전체"},
+    {"id": "any_single", "name_ko": "아무나 하나"}
+  ]
+}

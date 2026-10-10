@@ -1,0 +1,40 @@
+[
+  {
+    "id": "human", "name_ko": "인간", "enabled": true,
+    "desc_ko": "어디에나 있는 종족. 모든 면에서 무난하다.",
+    "stat_ranges": {"str": [6, 10], "agi": [6, 10], "p_res": [5, 8], "m_res": [5, 9], "int": [5, 9]},
+    "sprite": "res://assets/sprites/races/human.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "barbarian", "name_ko": "바바리안", "enabled": true,
+    "desc_ko": "거구의 전사 종족. 힘과 맷집은 타고났지만 이능에는 둔하다.",
+    "stat_ranges": {"str": [10, 14], "agi": [5, 9], "p_res": [8, 12], "m_res": [2, 5], "int": [1, 4], "muscle_mass": [1, 3], "appetite": [10, 20]},
+    "sprite": "res://assets/sprites/races/barbarian.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "dwarf", "name_ko": "드워프", "enabled": false,
+    "stat_ranges": {"str": [8, 12], "agi": [3, 7], "p_res": [9, 13], "m_res": [4, 8], "int": [3, 7], "bone_strength": [1, 3]},
+    "sprite": "res://assets/sprites/races/dwarf.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "fairy", "name_ko": "요정", "enabled": false,
+    "stat_ranges": {"str": [3, 6], "agi": [8, 12], "p_res": [2, 5], "m_res": [8, 12], "int": [9, 13]},
+    "sprite": "res://assets/sprites/races/fairy.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "beastkin", "name_ko": "수인", "enabled": false,
+    "stat_ranges": {"str": [7, 11], "agi": [9, 13], "p_res": [5, 8], "m_res": [3, 6], "int": [3, 6], "smell": [3, 6], "hearing": [2, 5]},
+    "sprite": "res://assets/sprites/races/beastkin.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "dragonkin", "name_ko": "용인", "enabled": false,
+    "stat_ranges": {"str": [9, 13], "agi": [5, 9], "p_res": [8, 12], "m_res": [6, 10], "int": [5, 9], "resist_fire": [3, 6]},
+    "sprite": "res://assets/sprites/races/dragonkin.png",
+    "source": "placeholder"
+  }
+]

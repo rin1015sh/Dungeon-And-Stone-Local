@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "_comment": "모든 수치는 여기서 조정한다. 원작 근거가 없는 값은 임시값(placeholder)이다. 수식에서는 {bal.<경로>}로 참조한다.",
+  "char_creation": {
+    "max_rerolls": 3,
+    "start_level": 1
+  },
+  "level": {
+    "min": 1,
+    "max_initial": 5,
+    "max_cap": 11,
+    "essence_slots_per_level": 1
+  },
+  "hp": {
+    "base": 50,
+    "per_level": 5,
+    "per_p_res": 2.0,
+    "per_str": 1.0,
+    "regen_per_natural_regen_per_hour": 0.1
+  },
+  "soul": {
+    "base": 10,
+    "early_level_cap": 5,
+    "per_level_early": 10,
+    "per_level_late": 30,
+    "regen_ratio_per_turn": 0.02,
+    "regen_ratio_per_hour": 0.05,
+    "regen_stat_coef": 0.01
+  },
+  "hunger": {
+    "decay_per_hour": 1.0,
+    "appetite_coef": 0.01,
+    "starvation_hp_per_hour": 2.0
+  },
+  "rest": {
+    "hp_ratio_per_hour": 0.05,
+    "soul_ratio_per_hour": 0.1
+  },
+  "status": {
+    "bleed_per_turn": 3,
+    "poison_per_turn": 2,
+    "burn_per_turn": 4
+  },
+  "reserved": {
+    "stamina_base": 100,
+    "stamina_per_endurance": 2,
+    "mana_base": 20,
+    "mana_per_int": 2,
+    "divinity_base": 20
+  },
+  "combat": {
+    "gauge_threshold": 100,
+    "timeline_preview": 10,
+    "crit_base": 0.05,
+    "crit_per_agi": 0.005,
+    "crit_mult": 1.5,
+    "defense_k": 100,
+    "phys_atk_per_str": 1.0,
+    "mag_atk_per_int": 1.0,
+    "lethal_chance_base": 0.01,
+    "flee_agi_coef": 0.02
+  },
+  "explore": {
+    "meters_per_tile": 1.0,
+    "move_hours_base": 0.02,
+    "move_agi_coef": 0.02
+  },
+  "exp": {
+    "grade_base": 10,
+    "mutant_bonus": 1,
+    "rift_guardian_bonus": 3,
+    "guardian_floor8_bonus": 5,
+    "floor_lord_bonus": 15,
+    "portal_first_open": 2
+  },
+  "debug": {
+    "sandbox_damage": 10,
+    "sandbox_soul_cost": 5,
+    "sandbox_food": 30,
+    "sandbox_buff_str": 10,
+    "sandbox_buff_hours": 3
+  }
+}

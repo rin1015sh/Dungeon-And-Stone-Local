@@ -1,0 +1,24 @@
+[
+  {
+    "id": "laceration",
+    "name_ko": "열상",
+    "parts": ["any"],
+    "applies_status": "bleeding",
+    "heal": {"item_tags": ["bandage"], "hours": 24},
+    "source": "placeholder"
+  },
+  {
+    "id": "fracture",
+    "name_ko": "골절",
+    "parts": ["arm_l", "arm_r", "leg_l", "leg_r", "torso"],
+    "modifiers_by_part": {
+      "arm_l": [{"target": "str", "percent": -0.2}],
+      "arm_r": [{"target": "str", "percent": -0.2}],
+      "leg_l": [{"target": "agi", "percent": -0.25}],
+      "leg_r": [{"target": "agi", "percent": -0.25}],
+      "torso": [{"target": "p_res", "percent": -0.15}]
+    },
+    "heal": {"facility": "temple", "hours": 168},
+    "source": "placeholder"
+  }
+]

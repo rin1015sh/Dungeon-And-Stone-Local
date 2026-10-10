@@ -1,0 +1,13 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 정수 설정은 사용자 요청에 따라 아직 비워 둔다. 실제 항목은 이 형식으로 <id>.json을 만든다.",
+  "id": "blade_wolf_red",
+  "name_ko": "칼날늑대의 정수(붉음)",
+  "grade": 9,
+  "color": "red",
+  "source_monster": "blade_wolf",
+  "stat_ranges": {"agi": [2, 5], "str": [0, 2]},
+  "resource_mods": {"soul": 0},
+  "skills": [{"id": "swift_slash", "type": "active"}],
+  "tags": [],
+  "source": "placeholder"
+}

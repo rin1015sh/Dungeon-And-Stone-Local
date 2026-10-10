@@ -1,0 +1,10 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 이벤트 타입은 핸들러 레지스트리(src/explore/events/)에 등록된다.",
+  "id": "hidden_wall_basic",
+  "name_ko": "숨은 벽",
+  "type": "hidden_passage",
+  "detect": {"stat": "sixth_sense", "difficulty": 10},
+  "effects": [],
+  "once": true,
+  "source": "placeholder"
+}

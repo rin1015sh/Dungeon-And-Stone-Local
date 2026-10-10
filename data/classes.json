@@ -1,0 +1,34 @@
+[
+  {
+    "id": "warrior", "name_ko": "전사", "role": "tank", "enabled": true,
+    "desc_ko": "방패를 들고 앞을 막는다.",
+    "stat_bonus_ranges": {"str": [1, 3], "p_res": [2, 4]},
+    "start_items": [],
+    "allowed_races": [],
+    "source": "placeholder"
+  },
+  {
+    "id": "swordsman", "name_ko": "검사", "role": "melee", "enabled": true,
+    "desc_ko": "검 한 자루로 길을 연다.",
+    "stat_bonus_ranges": {"str": [2, 3], "agi": [1, 3]},
+    "start_items": [],
+    "allowed_races": [],
+    "source": "placeholder"
+  },
+  {
+    "id": "spearman", "name_ko": "창술사", "role": "melee", "enabled": true,
+    "desc_ko": "긴 창으로 거리를 지배한다.",
+    "stat_bonus_ranges": {"str": [1, 3], "agi": [1, 2], "p_res": [0, 2]},
+    "start_items": [],
+    "allowed_races": [],
+    "source": "placeholder"
+  },
+  {
+    "id": "archer", "name_ko": "궁수", "role": "ranged", "enabled": true,
+    "desc_ko": "어둠 너머를 노린다. 가까이 붙으면 끝이다.",
+    "stat_bonus_ranges": {"agi": [3, 5], "str": [0, 1], "sight": [1, 3]},
+    "start_items": [],
+    "allowed_races": [],
+    "source": "placeholder"
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "_comment": "시점·타일·UI 수치와 팔레트. view 값은 M1의 3/4 시점 렌더링이 읽는다.",
+  "view": {
+    "projection": "oblique_3_4",
+    "floor_tile_px": [32, 32],
+    "wall_tile_px": [32, 48],
+    "wall_face_px": 16,
+    "sprite_directions": 4,
+    "actor_sprite_px": [32, 48],
+    "occluded_actor_alpha": 0.45,
+    "texture_filter": "nearest"
+  },
+  "lighting": {
+    "canvas_modulate": "#1c1a22",
+    "vignette_strength": 0.45,
+    "grain_strength": 0.06
+  },
+  "ui": {
+    "font_size": 16,
+    "small_font_size": 14,
+    "header_font_size": 20,
+    "subtitle_font_size": 18,
+    "title_font_size": 56,
+    "margin": 16,
+    "spacing": 8,
+    "padding": 8,
+    "corner_radius": 2,
+    "caption_width": 96,
+    "bar_label_width": 72,
+    "bar_value_width": 104,
+    "bar_height": 14,
+    "left_column_width": 340,
+    "right_column_width": 380,
+    "menu_button_width": 260,
+    "log_max_lines": 200
+  },
+  "font": {
+    "path": "",
+    "dir": "res://assets/fonts",
+    "system_fallbacks": ["Noto Sans KR", "Noto Sans CJK KR", "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "NanumGothic", "sans-serif"]
+  },
+  "palette": {
+    "bg": "#0b0a0d",
+    "panel": "#141217",
+    "panel_border": "#2e2a30",
+    "button": "#1d1a20",
+    "button_hover": "#29242b",
+    "button_pressed": "#3a2224",
+    "button_disabled": "#121014",
+    "bar_bg": "#1a171c",
+    "text": "#c9c0b6",
+    "text_dim": "#7a726b",
+    "text_title": "#ddd3c7",
+    "text_disabled": "#4d4743",
+    "accent": "#8a2f2a",
+    "accent_dim": "#4a2422",
+    "good": "#7d9a68",
+    "warn": "#b08a3e",
+    "bad": "#b2433a",
+    "log_info": "#a9a097",
+    "log_system": "#8f8aa8",
+    "log_good": "#7d9a68",
+    "log_warn": "#b08a3e",
+    "log_danger": "#c0473d"
+  }
+}

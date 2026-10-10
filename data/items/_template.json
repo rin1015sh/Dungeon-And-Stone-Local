@@ -1,0 +1,19 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 아이템은 M3에서 채운다.",
+  "id": "torch",
+  "name_ko": "횃불",
+  "category": "explore_tool",
+  "price": 10000,
+  "stack": 5,
+  "weight": 1.0,
+  "tags": ["light"],
+  "light_radius_m": 4.0,
+  "light_radius_source": "placeholder",
+  "burn_hours": 72,
+  "use_effects": [],
+  "equip": null,
+  "numbers": null,
+  "bound": false,
+  "sprite": "res://assets/sprites/items/torch.png",
+  "source": "original"
+}

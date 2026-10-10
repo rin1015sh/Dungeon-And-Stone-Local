@@ -1,0 +1,12 @@
+{
+  "id": "flee",
+  "name_ko": "도주",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {"type": "flee"}
+  ],
+  "source": "placeholder"
+}

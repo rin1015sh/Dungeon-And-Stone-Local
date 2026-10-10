@@ -1,0 +1,93 @@
+{
+  "app": {
+    "title": "던전 앤 스톤",
+    "subtitle": "라프도니아 차원광장 — 탐험가 기록",
+    "build": "M0 기반 빌드 · 비상업 팬 프로젝트"
+  },
+  "menu": {
+    "new_game": "새 탐험가",
+    "locked_until": "아직 열리지 않았다 ({milestone} 이후)",
+    "foundation": "기반 점검",
+    "quit": "종료",
+    "back": "돌아가기"
+  },
+  "error": {
+    "data_title": "데이터 검증 실패",
+    "data_hint": "data/ 폴더의 JSON을 고친 뒤 다시 실행하라. (tools/validate_data.gd로 같은 결과를 볼 수 있다)",
+    "count": "오류 {errors}건 · 경고 {warnings}건"
+  },
+  "foundation": {
+    "title": "기반 점검 — 스탯 · 자원 · 데이터",
+    "character": "탐험가",
+    "race": "종족",
+    "template": "시작 템플릿",
+    "reroll": "다시 굴리기 (남은 {left}회)",
+    "info": "레벨 {level} · 시드 {seed}",
+    "level_up": "레벨 +1",
+    "level_down": "레벨 -1",
+    "stats_header": "핵심 스탯",
+    "col_stat": "스탯",
+    "col_base": "기본",
+    "col_value": "최종",
+    "sub_stats": "세부 스탯 {count}종 등록 · 투명 {hidden}종 · 효과 연결 {wired}종",
+    "resources_header": "자원",
+    "in_dungeon": "미궁 안에 있다",
+    "actions_header": "조작",
+    "act_damage": "피해 {amount}",
+    "act_spend_soul": "영혼력 {amount} 소모",
+    "act_turn": "1턴 경과",
+    "act_hour": "1시간 경과",
+    "act_eat": "식사 (+{amount})",
+    "act_buff_on": "근력의 비약 (+{amount}, {hours}시간)",
+    "act_buff_off": "비약 효과 지우기 (남은 {left}시간)",
+    "act_restore": "완전 회복",
+    "data_header": "불러온 데이터",
+    "data_line": "{name} {count}",
+    "data_ok": "검증 통과",
+    "data_warn": "경고 {count}건 (콘솔 참고)"
+  },
+  "collection": {
+    "stats": "스탯",
+    "resources": "자원",
+    "statuses": "상태이상",
+    "injuries": "부상",
+    "races": "종족",
+    "classes": "템플릿",
+    "monsters": "몬스터",
+    "essences": "정수",
+    "skills": "스킬",
+    "items": "아이템",
+    "floors": "층",
+    "rifts": "균열",
+    "events": "이벤트",
+    "facilities": "시설"
+  },
+  "stat_group": {
+    "body": "육체",
+    "mind": "정신",
+    "ability": "이능",
+    "special": "특수"
+  },
+  "log": {
+    "header": "기록",
+    "welcome": "차원광장의 돌바닥은 차갑다. 기록을 시작한다.",
+    "rolled": "{race} {template}. 타고난 몸을 확인했다.",
+    "damage": "{amount}의 피해를 입었다.",
+    "spend_ok": "영혼력 {amount}을 태웠다.",
+    "spend_fail": "영혼력이 모자란다. 아무 일도 일어나지 않았다.",
+    "turn": "한 턴이 지났다.",
+    "hour": "한 시간이 지났다.",
+    "hour_city": "한 시간이 지났다. 도시에서는 허기가 줄지 않는다.",
+    "eat": "마른 식량을 씹어 삼켰다.",
+    "buff_on": "근력의 비약을 들이켰다. 근력 +{amount}.",
+    "buff_off": "비약 기운을 털어냈다.",
+    "buff_expired": "근력의 비약 기운이 빠져나갔다.",
+    "status_on": "[{status}] 상태가 되었다.",
+    "status_off": "[{status}] 상태에서 벗어났다.",
+    "depleted": "{resource}이(가) 바닥났다.",
+    "depleted_hp": "생명력이 다했다. 이 몸은 여기서 끝이다. (기반 점검: 기록만 남긴다)",
+    "recovered": "{resource}이(가) 다시 차오른다.",
+    "level": "레벨 {level}. 영혼의 그릇이 달라졌다.",
+    "restore": "숨을 고르고 몸을 추슬렀다."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 균열은 M5에서 채운다.",
+  "id": "glacier_cave",
+  "name_ko": "빙하굴",
+  "host_floor": 1,
+  "open_condition": {"offer_item_tag": "magic_stone_grade_8", "from_region": "f2_beast_den", "at": "sage_monument"},
+  "field_effects": ["hypothermia"],
+  "chapters": [
+    {"id": "ch1", "monsters": ["frost_wolf"], "clear": "kill_all"}
+  ],
+  "guardian": "tyrant_tarunbas",
+  "guardian_drops": {"essence": 0.33, "numbers": 0.33, "rift_stone": 0.66},
+  "hidden_pieces": [],
+  "source": "original"
+}

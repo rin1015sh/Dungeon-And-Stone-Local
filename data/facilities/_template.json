@@ -1,0 +1,11 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설은 M4에서 채운다.",
+  "id": "exchange",
+  "name_ko": "환전소",
+  "district": 7,
+  "handler": "exchange",
+  "services": [
+    {"id": "sell_magic_stone", "rates": {"9": 20, "8": 100}}
+  ],
+  "source": "original"
+}
