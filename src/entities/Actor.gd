@@ -1,7 +1,7 @@
 class_name Actor
 extends RefCounted
 ## 탐험·전투의 개체(플레이어·동료·몬스터 공통). 컴포넌트 조합:
-##   StatBlock(스탯) · ResourcePool(자원) · StatusSet(상태이상) · Inventory(소지품) · LightSource(광원)
+##   StatBlock(스탯) · ResourcePool(자원) · StatusSet(상태이상) · Inventory(격자 가방) · Equipment(장비) · LightSource(광원)
 ## 자원 임계값·고갈을 상태이상으로 잇고, 생명력이 0이 되면 died를 낸다.
 ## 오토로드를 참조하지 않는다(테스트에서 직접 만든다).
 
@@ -15,6 +15,7 @@ var stats: StatBlock
 var pool: ResourcePool
 var statuses: StatusSet
 var inventory: Inventory
+var equipment: Equipment
 var light: LightSource
 var dead: bool = false
 var death_cause: String = ""
@@ -31,7 +32,8 @@ func _init(p_db: GameDatabase, bases: Dictionary = {}, level: int = 1, resource_
 	stats.set_bases(bases)
 	pool = ResourcePool.new(db, stats, resource_ids, overrides, level)
 	statuses = StatusSet.new(db, stats, pool)
-	inventory = Inventory.new()
+	inventory = Inventory.new(db, int(db.bal("inventory.width", 10)), int(db.bal("inventory.height", 6)))
+	equipment = Equipment.new(db)
 	light = LightSource.new()
 	pool.threshold_crossed.connect(_on_threshold)
 	pool.depleted.connect(_on_depleted)
@@ -114,9 +116,21 @@ func damage_affinity(_damage_type: String, _category: String) -> float:
 	return 1.0
 
 
-## 기본 공격의 피해 유형(무기 — M3 장비 전까지는 템플릿/몬스터 기본값).
+## 기본 공격의 피해 유형: 주무기가 있으면 무기의 유형, 없으면 개체 기본값(템플릿·몬스터).
 func attack_damage_type() -> String:
+	var w := equipment.weapon()
+	return JsonUtil.get_str(w, "damage_type") if not w.is_empty() else base_attack_type()
+
+
+## 맨손(무기 없음)일 때의 피해 유형. 하위 클래스가 덮어쓴다.
+func base_attack_type() -> String:
 	return "blunt"
+
+
+## 무기 공격력. 맨손이면 -1(피해 공식이 맨손 값을 쓴다).
+func weapon_attack() -> float:
+	var w := equipment.weapon()
+	return JsonUtil.get_float(w, "attack", -1.0) if not w.is_empty() else -1.0
 
 
 ## 약점 정보 {name_ko, …}. 없으면 빈 사전.

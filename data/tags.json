@@ -70,6 +70,25 @@
     {"id": "numbers", "name_ko": "넘버스"},
     {"id": "misc", "name_ko": "잡동사니"}
   ],
+  "equip_slots": [
+    {"id": "main_hand", "name_ko": "주무기"},
+    {"id": "off_hand", "name_ko": "보조"},
+    {"id": "head", "name_ko": "머리"},
+    {"id": "body", "name_ko": "몸"},
+    {"id": "cloak", "name_ko": "망토"},
+    {"id": "hands", "name_ko": "장갑"},
+    {"id": "waist", "name_ko": "허리"},
+    {"id": "feet", "name_ko": "신발"},
+    {"id": "ring_l", "name_ko": "반지"},
+    {"id": "ring_r", "name_ko": "반지"},
+    {"id": "neck", "name_ko": "목걸이"},
+    {"id": "ring", "name_ko": "반지"}
+  ],
+  "rarities": [
+    {"id": "common", "name_ko": "평범한", "color": "#c9c0b6"},
+    {"id": "fine", "name_ko": "좋은", "color": "#7fae6a"},
+    {"id": "numbers", "name_ko": "넘버스", "color": "#c9a24a"}
+  ],
   "directions": [
     {"id": "east", "name_ko": "동쪽"},
     {"id": "west", "name_ko": "서쪽"},

@@ -1,0 +1,25 @@
+{
+  "id": "bone_amulet",
+  "name_ko": "뼈 목걸이",
+  "category": "armor",
+  "size": [
+    1,
+    2
+  ],
+  "stack": 1,
+  "price": 900,
+  "icon": "amulet",
+  "color": "#d8cfb8",
+  "rarity": "common",
+  "desc_ko": "짐승 뼈를 깎은 부적. 마음이 가라앉는다.",
+  "equip": {
+    "slot": "neck",
+    "modifiers": [
+      {
+        "target": "max:soul",
+        "flat": 2
+      }
+    ]
+  },
+  "source": "placeholder"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "iron_mace",
+  "name_ko": "철퇴",
+  "category": "weapon",
+  "size": [
+    1,
+    3
+  ],
+  "stack": 1,
+  "price": 1500,
+  "icon": "mace",
+  "color": "#8d8d92",
+  "rarity": "common",
+  "desc_ko": "쇠뭉치를 박은 곤봉. 단단한 것을 깨는 데 좋다.",
+  "equip": {
+    "slot": "main_hand",
+    "weapon": {
+      "damage_type": "blunt",
+      "attack": 4
+    }
+  },
+  "source": "placeholder"
+}

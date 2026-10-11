@@ -32,7 +32,7 @@ func understands_speech() -> bool:
 	return JsonUtil.get_bool(JsonUtil.get_dict(def, "talk"), "understands")
 
 
-func attack_damage_type() -> String:
+func base_attack_type() -> String:
 	return "blunt"
 
 

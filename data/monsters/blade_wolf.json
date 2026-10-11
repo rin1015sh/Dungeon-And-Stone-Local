@@ -64,5 +64,6 @@
   ],
   "desc_ko": "빠른 야수. 무리 지어 다니며 물러설 줄도 안다.",
   "sprite": "res://assets/sprites/monsters/blade_wolf.png",
-  "source": "placeholder"
+  "source": "placeholder",
+  "drops": []
 }

@@ -1,0 +1,16 @@
+{
+  "id": "magic_stone_9",
+  "name_ko": "9등급 마석",
+  "category": "magic_stone",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 50,
+  "price": 20,
+  "icon": "stone",
+  "color": "#6d7fa0",
+  "rarity": "common",
+  "desc_ko": "가장 흔한 마석. 환전소에서 스톤으로 바꾼다.",
+  "source": "placeholder"
+}

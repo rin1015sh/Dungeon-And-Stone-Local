@@ -23,5 +23,12 @@
     "potion"
   ],
   "sprite": "res://assets/sprites/items/minor_potion.png",
-  "source": "placeholder"
+  "source": "placeholder",
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#b04040",
+  "rarity": "common"
 }

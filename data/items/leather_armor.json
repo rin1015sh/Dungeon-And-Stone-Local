@@ -1,0 +1,25 @@
+{
+  "id": "leather_armor",
+  "name_ko": "가죽 갑옷",
+  "category": "armor",
+  "size": [
+    2,
+    3
+  ],
+  "stack": 1,
+  "price": 1400,
+  "icon": "armor",
+  "color": "#7a5a3a",
+  "rarity": "common",
+  "desc_ko": "무두질한 가죽 조끼. 움직이기 편하다.",
+  "equip": {
+    "slot": "body",
+    "modifiers": [
+      {
+        "target": "p_res",
+        "flat": 2
+      }
+    ]
+  },
+  "source": "placeholder"
+}

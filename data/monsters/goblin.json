@@ -56,5 +56,11 @@
   ],
   "desc_ko": "최약체. 단검에 독을 바른다. 혼자 다니는 일은 드물다.",
   "sprite": "res://assets/sprites/monsters/goblin.png",
-  "source": "placeholder"
+  "source": "placeholder",
+  "drops": [
+    {
+      "item": "copper_ring",
+      "chance": 0.06
+    }
+  ]
 }

@@ -314,7 +314,7 @@ func test_invalid_actions_do_not_use_the_turn() -> void:
 
 func test_party_and_monsters_act_in_agility_order() -> void:
 	var pc := PlayerCharacter.create(db, "human", "warrior", "빠름", {"str": 10, "agi": 12})
-	var ally := PlayerCharacter.create(db, "human", "archer", "느림", {"str": 10, "agi": 5})
+	var ally := PlayerCharacter.create(db, "human", "archer", "느림", {"str": 10, "agi": 2})
 	var party: Array[Actor] = [pc, ally]
 	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(4), party, ["goblin", "blade_wolf"], true)
 	for u in b.units:

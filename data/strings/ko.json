@@ -237,12 +237,27 @@
     "talk_provoke": "{source}의 말이 {target}을(를) 자극했다. 서둘러 덤벼든다!",
     "talk_withdraw": "{target}이(가) {source}의 말에 무기를 내리고 뒷걸음질 친다.",
     "withdraw": "{name}이(가) 싸움에서 물러났다.",
-    "info_monster": "[조사] {name} — {grade}등급, {family}. 생명력 {hp}%. {desc} (약점·상성은 직접 겪거나 정보를 사야 안다 — M3)",
+    "info_monster": "[조사] {name} — {grade}등급 {family}. 생명력 {hp_now}/{hp_max}. 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}. 상성: {aff}. {desc}",
     "info_ally": "[조사] {name} — 생명력 {hp}%.",
     "float_miss": "빗나감",
     "result_victory": "승리",
     "result_defeat": "패배",
     "result_fled": "도주",
     "continue": "계속"
+  },
+  "knowledge": {
+    "unknown": "???",
+    "aff_weak": "{type} 약점 ×{mult}",
+    "aff_resist": "{type} 저항 ×{mult}",
+    "aff_immune": "{type} 면역",
+    "learned_weak": "{name}은(는) {type}에 약하다. (도감에 기록)",
+    "learned_resist": "{name}은(는) {type}을(를) 견딘다. (도감에 기록)",
+    "learned_immune": "{name}에게 {type}은(는) 통하지 않는다. (도감에 기록)"
+  },
+  "reward": {
+    "first_kill": "처음 쓰러뜨린 {name} — 공적 {exp}.",
+    "loot": "{item} ×{count}을(를) 주웠다.",
+    "bag_full": "가방에 자리가 없어 {item} ×{count}을(를) 두고 간다.",
+    "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots})."
   }
 }

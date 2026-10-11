@@ -1,0 +1,24 @@
+{
+  "id": "steel_spear",
+  "name_ko": "강철 창",
+  "category": "weapon",
+  "size": [
+    1,
+    4
+  ],
+  "stack": 1,
+  "price": 2200,
+  "icon": "spear",
+  "color": "#a9adb5",
+  "rarity": "common",
+  "desc_ko": "두 손으로 쥐는 긴 창. 다가오기 전에 찌른다.",
+  "equip": {
+    "slot": "main_hand",
+    "weapon": {
+      "damage_type": "pierce",
+      "attack": 6
+    },
+    "two_handed": true
+  },
+  "source": "placeholder"
+}

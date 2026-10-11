@@ -1,0 +1,30 @@
+{
+  "id": "hunting_bow",
+  "name_ko": "사냥 활",
+  "category": "weapon",
+  "size": [
+    2,
+    3
+  ],
+  "stack": 1,
+  "price": 1800,
+  "icon": "bow",
+  "color": "#8a6a44",
+  "rarity": "common",
+  "desc_ko": "짐승을 잡던 활. 어둠 속에서는 겨눌 곳이 마땅치 않다.",
+  "equip": {
+    "slot": "main_hand",
+    "weapon": {
+      "damage_type": "pierce",
+      "attack": 4
+    },
+    "two_handed": true,
+    "modifiers": [
+      {
+        "target": "agi",
+        "flat": 1
+      }
+    ]
+  },
+  "source": "placeholder"
+}

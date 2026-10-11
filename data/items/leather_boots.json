@@ -1,0 +1,25 @@
+{
+  "id": "leather_boots",
+  "name_ko": "가죽 장화",
+  "category": "armor",
+  "size": [
+    2,
+    2
+  ],
+  "stack": 1,
+  "price": 450,
+  "icon": "boots",
+  "color": "#5d4330",
+  "rarity": "common",
+  "desc_ko": "발목까지 오는 장화. 소리가 덜 난다.",
+  "equip": {
+    "slot": "feet",
+    "modifiers": [
+      {
+        "target": "agi",
+        "flat": 1
+      }
+    ]
+  },
+  "source": "placeholder"
+}

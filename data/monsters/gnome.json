@@ -52,5 +52,15 @@
   ],
   "desc_ko": "진흙 인형. [일체화] — 3m 안에 들어와야 보인다.",
   "sprite": "res://assets/sprites/monsters/gnome.png",
-  "source": "placeholder"
+  "source": "placeholder",
+  "drops": [
+    {
+      "item": "magic_stone_8",
+      "chance": 0.1,
+      "count": [
+        1,
+        1
+      ]
+    }
+  ]
 }

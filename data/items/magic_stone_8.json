@@ -1,0 +1,16 @@
+{
+  "id": "magic_stone_8",
+  "name_ko": "8등급 마석",
+  "category": "magic_stone",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 50,
+  "price": 100,
+  "icon": "stone",
+  "color": "#7fb0c8",
+  "rarity": "common",
+  "desc_ko": "9등급보다 맑게 빛난다.",
+  "source": "placeholder"
+}

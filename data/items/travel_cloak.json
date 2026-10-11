@@ -1,0 +1,25 @@
+{
+  "id": "travel_cloak",
+  "name_ko": "여행용 망토",
+  "category": "armor",
+  "size": [
+    2,
+    3
+  ],
+  "stack": 1,
+  "price": 500,
+  "icon": "cloak",
+  "color": "#4a3f35",
+  "rarity": "common",
+  "desc_ko": "찬 바닥에서 잘 때 덮을 수 있다.",
+  "equip": {
+    "slot": "cloak",
+    "modifiers": [
+      {
+        "target": "p_res",
+        "flat": 1
+      }
+    ]
+  },
+  "source": "placeholder"
+}

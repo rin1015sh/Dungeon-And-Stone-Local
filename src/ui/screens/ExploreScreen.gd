@@ -143,7 +143,7 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 		_combat = null
 		for id in killed:
 			EventBus.monster_killed.emit(id, session.player.id)
-		session.resolve_encounter(group, result, turns))
+		session.resolve_encounter(group, result, turns, killed))
 
 
 func _build_pause_overlay() -> void:

@@ -276,8 +276,11 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 
 
 ## 전투가 끝났다. result: victory/fled/defeat. 전투 차례 수만큼 시간이 흐른다.
-func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int) -> void:
+func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
+	if not killed.is_empty() and not player.dead:
+		for m: Dictionary in Rewards.grant(player, killed, rng):
+			message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	if result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)
 	elif result == Battle.RESULT_FLED:

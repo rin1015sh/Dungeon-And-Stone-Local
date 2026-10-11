@@ -1,9 +1,16 @@
 class_name PlayerCharacter
 extends Actor
-## 플레이어 캐릭터: 종족·시작 템플릿·이름. 시작 소지품은 템플릿의 start_items.
+## 플레이어 캐릭터: 종족·시작 템플릿·이름 + 성장(Progression)·정보(Knowledge)·단축칸(hotbar).
+## 시작 소지품은 템플릿의 start_items, 시작 장비는 start_equipment(장착된 채로), 시작 돈은 char_creation.start_stones.
+
+const HOTBAR_SIZE := 10
 
 var race_id: String = ""
 var class_id: String = ""
+var progression: Progression = Progression.new()
+var knowledge: Knowledge = Knowledge.new()
+## 단축칸 1~0: 아이템 id(빈 칸은 ""). 소지품이 없으면 흐리게 보이고 쓸 수 없다.
+var hotbar: Array[String] = []
 
 
 ## 종족·템플릿 범위에서 굴린 기본 스탯(bases)으로 캐릭터를 만든다.
@@ -15,10 +22,19 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 	pc.race_id = p_race
 	pc.class_id = p_class
 	pc.display_name = p_name
-	for item: Variant in JsonUtil.get_array(p_db.get_entry("classes", p_class), "start_items"):
+	var cls := p_db.get_entry("classes", p_class)
+	for item: Variant in JsonUtil.get_array(cls, "start_equipment"):
+		var id := str(item)
+		var slot := pc.equipment.pick_slot(id)
+		if not slot.is_empty():
+			pc.equipment.equip(pc.stats, id, slot)
+	for item: Variant in JsonUtil.get_array(cls, "start_items"):
 		if item is Dictionary:
 			pc.inventory.add(JsonUtil.get_str(item, "id"), JsonUtil.get_int(item, "count", 1))
+	pc.inventory.add_money(int(p_db.bal("char_creation.start_stones", 0)))
+	pc.pool.fill_all()  # 장비 수정자로 최대치가 바뀌었을 수 있다
 	grant_innate_skills(pc)
+	pc.auto_fill_hotbar()
 	return pc
 
 
@@ -38,5 +54,51 @@ func template_name() -> String:
 	return JsonUtil.get_str(db.get_entry("classes", class_id), "name_ko", class_id)
 
 
-func attack_damage_type() -> String:
+func base_attack_type() -> String:
 	return JsonUtil.get_str(db.get_entry("classes", class_id), "attack_type", "blunt")
+
+
+## 단축칸 i(0~9)에 아이템을 놓는다(""이면 비운다). 같은 아이템이 다른 칸에 있으면 그 칸은 비운다.
+func set_hotbar(i: int, item_id: String) -> void:
+	_ensure_hotbar()
+	if i < 0 or i >= HOTBAR_SIZE:
+		return
+	if not item_id.is_empty():
+		var old := hotbar.find(item_id)
+		if old >= 0:
+			hotbar[old] = ""
+	hotbar[i] = item_id
+
+
+## 쓸 수 있는(use_effects가 있는) 소지품을 빈 단축칸에 차례로 놓는다.
+func auto_fill_hotbar() -> void:
+	_ensure_hotbar()
+	for id in inventory.ids():
+		if hotbar.has(id) or JsonUtil.get_array(db.get_entry("items", id), "use_effects").is_empty():
+			continue
+		var free := hotbar.find("")
+		if free < 0:
+			return
+		hotbar[free] = id
+
+
+func _ensure_hotbar() -> void:
+	while hotbar.size() < HOTBAR_SIZE:
+		hotbar.append("")
+
+
+## 저장용(M4 저장 시스템이 쓴다): 성장·정보·장비·가방·단축칸.
+func progress_to_dict() -> Dictionary:
+	return {"progression": progression.to_dict(), "knowledge": knowledge.to_dict(),
+		"equipment": equipment.to_dict(), "inventory": inventory.to_dict(), "hotbar": hotbar.duplicate()}
+
+
+func progress_load_dict(d: Dictionary) -> void:
+	progression.load_dict(JsonUtil.get_dict(d, "progression"))
+	knowledge.load_dict(JsonUtil.get_dict(d, "knowledge"))
+	equipment.load_dict(stats, JsonUtil.get_dict(d, "equipment"))
+	inventory.load_dict(JsonUtil.get_dict(d, "inventory"))
+	hotbar.clear()
+	for v: Variant in JsonUtil.get_array(d, "hotbar"):
+		hotbar.append(str(v))
+	_ensure_hotbar()

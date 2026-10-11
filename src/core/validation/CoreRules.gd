@@ -138,6 +138,10 @@ static func _races_and_classes(v: ValidatorBase) -> void:
 			v.err(w, "role '%s' 미등록(tags.roles)" % c.get("role"))
 		for r: Variant in JsonUtil.get_array(c, "allowed_races"):
 			v.ref(w, "races", r)
+		for eq: Variant in JsonUtil.get_array(c, "start_equipment"):
+			v.ref(w + ".start_equipment", "items", eq)
+			if v.db.has_entry("items", str(eq)) and JsonUtil.get_dict(v.db.get_entry("items", str(eq)), "equip").is_empty():
+				v.err(w + ".start_equipment", "'%s'은(는) 장비가 아니다" % eq)
 		for it: Variant in JsonUtil.get_array(c, "start_items"):
 			var item: Dictionary = it if it is Dictionary else {}
 			v.ref(w + ".start_items", "items", item.get("id"))

@@ -1,7 +1,7 @@
 class_name DamageCalc
 extends RefCounted
 ## 피해 공식(DESIGN §5, PROMPT §6.4). 계수는 balance.json combat.
-##   공격력: 물리 = 맨손/무기 + 근력×계수, 마법 = 스킬 기본값 + 정신력×계수
+##   공격력: 물리 = (주무기 공격력, 없으면 맨손 값) + 근력×계수, 마법 = 스킬 기본값 + 정신력×계수
 ##   피해 = 공격력 × 위력 × 100/(100+방어) × 상성(약점·면역) × 받는/주는 피해 수정자 × 편차 (치명타면 ×배율)
 ##   명중 = 기본 + (공격자 민첩 − 방어자 민첩)×계수 (약점 노리기면 ×배율), 치명타 = 기본 + 민첩×계수 + 행운×계수
 ##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다.
@@ -49,7 +49,9 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 static func attack_power(db: GameDatabase, attacker: Actor, effect: Dictionary) -> float:
 	if JsonUtil.get_str(effect, "scaling", "phys") == "magic":
 		return JsonUtil.get_float(effect, "base", 0.0) + attacker.stats.get_value("int") * _c(db, "mag_atk_per_int", 1.0)
-	return _c(db, "unarmed_atk", 2.0) + attacker.stats.get_value("str") * _c(db, "phys_atk_per_str", 1.0)
+	var weapon := attacker.weapon_attack()
+	var base := weapon if weapon >= 0.0 else _c(db, "unarmed_atk", 2.0)
+	return base + attacker.stats.get_value("str") * _c(db, "phys_atk_per_str", 1.0)
 
 
 static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_weak: bool) -> float:

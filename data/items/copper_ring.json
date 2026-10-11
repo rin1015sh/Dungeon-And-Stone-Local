@@ -1,0 +1,25 @@
+{
+  "id": "copper_ring",
+  "name_ko": "구리 반지",
+  "category": "armor",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 800,
+  "icon": "ring",
+  "color": "#b07a4a",
+  "rarity": "common",
+  "desc_ko": "녹이 슨 구리 반지. 손가락이 조금 서늘하다.",
+  "equip": {
+    "slot": "ring",
+    "modifiers": [
+      {
+        "target": "m_res",
+        "flat": 2
+      }
+    ]
+  },
+  "source": "placeholder"
+}

@@ -81,6 +81,7 @@ func start(party_first: bool) -> void:
 		if u.side == Combatant.SIDE_ENEMY:
 			names.append(u.label())
 	message.emit("combat.start" if party_first else "combat.start_ambushed", {"enemies": ", ".join(names)}, "danger")
+	BattleKnowledge.on_start(self)
 
 
 func side_units(side: int) -> Array[Combatant]:
@@ -271,6 +272,8 @@ func _relay(ctx: EffectContext, c: Combatant) -> void:
 					wu.fled = true
 					message.emit("combat.withdraw", {"name": wu.label()}, "warn")
 					event.emit({"type": "fled", "unit": wu})
+			"damage":
+				BattleKnowledge.on_damage(self, c, e)
 		var ev := e.duplicate()
 		ev["unit"] = unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
 		ev.erase("target")

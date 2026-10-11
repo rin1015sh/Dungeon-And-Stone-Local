@@ -58,6 +58,11 @@ static func _monsters(v: ValidatorBase) -> void:
 		var pack := JsonUtil.get_array(beh, "pack_size")
 		if pack.size() != 2 or int(pack[0]) < 1 or int(pack[0]) > int(pack[1]):
 			v.err(w, "behavior.pack_size는 [최소 1 이상, 최대]")
+		for drop: Variant in JsonUtil.get_array(m, "drops"):
+			var dr: Dictionary = drop if drop is Dictionary else {}
+			v.ref(w + ".drops", "items", dr.get("item"))
+			if dr.has("chance"):
+				v.check_chance(w + ".drops", dr.get("chance"))
 		for drop: Variant in JsonUtil.get_array(m, "essence_drops"):
 			var dd: Dictionary = drop if drop is Dictionary else {}
 			v.ref(w, "essences", dd.get("essence"))
@@ -113,3 +118,29 @@ static func _items(v: ValidatorBase) -> void:
 		if JsonUtil.get_int(it, "stack", 1) < 1:
 			v.err(w, "stack은 1 이상")
 		v.check_effects(w + ".use_effects", JsonUtil.get_array(it, "use_effects"), true)
+		_item_shape(v, w, it)
+
+
+## 격자 크기·장비 정보·희귀도(M3).
+static func _item_shape(v: ValidatorBase, w: String, it: Dictionary) -> void:
+	var size := JsonUtil.get_array(it, "size")
+	if it.has("size") and (size.size() != 2 or int(size[0]) < 1 or int(size[1]) < 1 or int(size[0]) > 4 or int(size[1]) > 4):
+		v.err(w, "size는 [가로, 세로] 1~4칸")
+	if it.has("rarity") and not v.db.tag_ids("rarities").has(JsonUtil.get_str(it, "rarity")):
+		v.err(w, "rarity '%s' 미등록(tags.rarities)" % it.get("rarity"))
+	if not it.has("equip") or it["equip"] == null:
+		return
+	var e := JsonUtil.get_dict(it, "equip")
+	if not v.db.tag_ids("equip_slots").has(JsonUtil.get_str(e, "slot")):
+		v.err(w + ".equip", "slot '%s' 미등록(tags.equip_slots)" % e.get("slot"))
+	if JsonUtil.get_int(it, "stack", 1) != 1:
+		v.err(w, "장비는 stack 1")
+	v.check_modifier_list(w + ".equip.modifiers", JsonUtil.get_array(e, "modifiers"))
+	if e.has("weapon"):
+		var wp := JsonUtil.get_dict(e, "weapon")
+		if JsonUtil.get_str(e, "slot") != "main_hand":
+			v.err(w + ".equip", "weapon은 main_hand 장비만")
+		if not v.damage_ids().has(JsonUtil.get_str(wp, "damage_type")):
+			v.err(w + ".equip.weapon", "damage_type '%s' 미등록" % wp.get("damage_type"))
+		if JsonUtil.get_float(wp, "attack", -1.0) < 0.0:
+			v.err(w + ".equip.weapon", "attack은 0 이상")

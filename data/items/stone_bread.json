@@ -1,0 +1,24 @@
+{
+  "id": "stone_bread",
+  "name_ko": "돌빵",
+  "category": "food",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 20,
+  "icon": "bread",
+  "color": "#a08660",
+  "rarity": "common",
+  "desc_ko": "이름처럼 딱딱하다. 한 끼라기보다 간식.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 15
+    }
+  ],
+  "consumable": true,
+  "source": "placeholder"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "leather_belt",
+  "name_ko": "가죽 허리띠",
+  "category": "armor",
+  "size": [
+    2,
+    1
+  ],
+  "stack": 1,
+  "price": 250,
+  "icon": "belt",
+  "color": "#7a4a2a",
+  "rarity": "common",
+  "desc_ko": "주머니를 몇 개 달 수 있다.",
+  "equip": {
+    "slot": "waist",
+    "modifiers": [
+      {
+        "target": "p_res",
+        "flat": 1
+      }
+    ]
+  },
+  "source": "placeholder"
+}

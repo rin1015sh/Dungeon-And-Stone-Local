@@ -3,15 +3,28 @@
   "name_ko": "횃불",
   "category": "light",
   "price": 10000,
-  "stack": 10,
+  "stack": 5,
   "consumable": true,
   "desc_ko": "한 번 불을 붙이면 사흘쯤 탄다. 투구 홈에 꽂아 두면 손이 자유롭다.",
   "use_effects": [
-    {"type": "light_source", "radius_m": 7.0, "hours": 72}
+    {
+      "type": "light_source",
+      "radius_m": 7.0,
+      "hours": 72
+    }
   ],
   "light_radius_source": "placeholder",
   "burn_hours_source": "original",
-  "tags": ["light"],
+  "tags": [
+    "light"
+  ],
   "sprite": "res://assets/sprites/items/torch.png",
-  "source": "original"
+  "source": "original",
+  "size": [
+    1,
+    2
+  ],
+  "icon": "torch",
+  "color": "#a0703a",
+  "rarity": "common"
 }

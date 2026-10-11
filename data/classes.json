@@ -27,11 +27,22 @@
       {
         "id": "minor_potion",
         "count": 1
+      },
+      {
+        "id": "stone_bread",
+        "count": 2
       }
     ],
     "allowed_races": [],
     "source": "placeholder",
-    "attack_type": "blunt"
+    "attack_type": "blunt",
+    "start_equipment": [
+      "iron_mace",
+      "wooden_shield",
+      "padded_armor",
+      "leather_belt",
+      "leather_boots"
+    ]
   },
   {
     "id": "swordsman",
@@ -61,11 +72,21 @@
       {
         "id": "minor_potion",
         "count": 1
+      },
+      {
+        "id": "stone_bread",
+        "count": 2
       }
     ],
     "allowed_races": [],
     "source": "placeholder",
-    "attack_type": "slash"
+    "attack_type": "slash",
+    "start_equipment": [
+      "steel_sword",
+      "leather_armor",
+      "travel_cloak",
+      "leather_boots"
+    ]
   },
   {
     "id": "spearman",
@@ -99,11 +120,21 @@
       {
         "id": "minor_potion",
         "count": 1
+      },
+      {
+        "id": "stone_bread",
+        "count": 2
       }
     ],
     "allowed_races": [],
     "source": "placeholder",
-    "attack_type": "pierce"
+    "attack_type": "pierce",
+    "start_equipment": [
+      "steel_spear",
+      "leather_armor",
+      "leather_gloves",
+      "leather_boots"
+    ]
   },
   {
     "id": "archer",
@@ -137,10 +168,24 @@
       {
         "id": "minor_potion",
         "count": 1
+      },
+      {
+        "id": "hunting_dagger",
+        "count": 1
+      },
+      {
+        "id": "stone_bread",
+        "count": 2
       }
     ],
     "allowed_races": [],
     "source": "placeholder",
-    "attack_type": "pierce"
+    "attack_type": "pierce",
+    "start_equipment": [
+      "hunting_bow",
+      "leather_hood",
+      "travel_cloak",
+      "leather_boots"
+    ]
   }
 ]

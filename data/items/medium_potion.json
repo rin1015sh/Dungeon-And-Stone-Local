@@ -1,0 +1,30 @@
+{
+  "id": "medium_potion",
+  "name_ko": "중급 포션",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 50000,
+  "icon": "potion",
+  "color": "#c04848",
+  "rarity": "common",
+  "desc_ko": "깊은 상처도 아물지만 통증이 오래 간다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 60
+    },
+    {
+      "type": "apply_status",
+      "status": "hyperalgesia",
+      "chance": 0.5
+    }
+  ],
+  "consumable": true,
+  "combat_usable": true,
+  "source": "placeholder"
+}

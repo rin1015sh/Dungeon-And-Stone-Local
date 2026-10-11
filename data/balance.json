@@ -3,13 +3,23 @@
   "_comment": "모든 수치는 여기서 조정한다. 원작 근거가 없는 값은 임시값(placeholder)이다. 수식에서는 {bal.<경로>}로 참조한다.",
   "char_creation": {
     "max_rerolls": 3,
-    "start_level": 1
+    "start_level": 1,
+    "start_stones": 500
   },
   "level": {
     "min": 1,
     "max_initial": 5,
     "max_cap": 11,
-    "essence_slots_per_level": 1
+    "essence_slots_per_level": 1,
+    "_exp_table_comment": "레벨 n에 필요한 누적 경험치(1레벨 = 0). 1~4층 몬스터를 다 잡아도 5레벨에 조금 못 미치게(원작) — 임시값",
+    "exp_table": [0, 3, 8, 18, 40, 80, 150, 260, 420, 650, 1000]
+  },
+  "inventory": {
+    "width": 10,
+    "height": 6
+  },
+  "loot": {
+    "magic_stone_chance": 0.85
   },
   "hp": {
     "base": 50,
