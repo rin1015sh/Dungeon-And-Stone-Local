@@ -1,0 +1,22 @@
+{
+  "id": "poison_stab",
+  "name_ko": "독 바른 단검",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.7,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.4
+    }
+  ],
+  "source": "placeholder"
+}

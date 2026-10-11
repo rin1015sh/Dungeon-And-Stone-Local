@@ -1,0 +1,18 @@
+{
+  "id": "basic_attack",
+  "name_ko": "공격",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.0,
+      "damage_type": "weapon"
+    }
+  ],
+  "desc_ko": "손에 든 것으로 친다.",
+  "source": "placeholder"
+}

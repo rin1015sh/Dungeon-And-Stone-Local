@@ -6,7 +6,9 @@
   "delay_cost": 0,
   "cooldown": 0,
   "effects": [
-    {"type": "flee"}
+    {
+      "type": "flee"
+    }
   ],
   "source": "placeholder"
 }

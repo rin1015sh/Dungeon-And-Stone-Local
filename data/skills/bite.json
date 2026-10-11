@@ -6,7 +6,12 @@
   "delay_cost": 0,
   "cooldown": 0,
   "effects": [
-    {"type": "damage", "scaling": "phys", "power": 1.0, "damage_type": "pierce"}
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.0,
+      "damage_type": "pierce"
+    }
   ],
   "source": "placeholder"
 }

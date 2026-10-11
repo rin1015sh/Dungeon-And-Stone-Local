@@ -10,6 +10,10 @@ var rng: Rng
 var item_id: String = ""
 var success: bool = false
 var messages: Array[Dictionary] = []  # {"key": String, "args": Dictionary, "kind": String}
+## 전투 정보(전투 중일 때): {"aim_weak": bool, …}
+var info: Dictionary = {}
+## 화면 연출·전투 처리용 사건: {"type": "damage"|"flee", …}
+var events: Array[Dictionary] = []
 
 
 func _init(p_db: GameDatabase, p_source: Actor, p_target: Actor, p_rng: Rng) -> void:

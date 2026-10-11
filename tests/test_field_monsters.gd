@@ -1,0 +1,209 @@
+extends TestCase
+## 필드 몬스터: 지역 스폰, 접촉·추적, 비선공, 은신, 유예, 리스폰·증가, 휴식 습격, 전투 결과 반영.
+
+const FLOOR := "f1_crystal_cave"
+
+
+func _session(d: GameDatabase = null, seed_value: int = 5) -> ExploreSession:
+	var dbx := d if d != null else db
+	var reg := ContentRegistries.new()
+	var def := dbx.get_entry("floors", FLOOR)
+	var map := reg.generator("crystal_cave").generate(dbx, def, Rng.new(seed_value))
+	var pc := PlayerCharacter.create(dbx, "human", "warrior", "시험", {"agi": 8})
+	var s := ExploreSession.new(dbx, def, map, pc, GameClock.new(), Rng.new(seed_value + 1), reg.effects)
+	s.start()
+	return s
+
+
+## 15×15 빈 방 + 동쪽 지역 하나(monster_id)짜리 필드.
+func _room_field(monster_id: String) -> FieldMonsters:
+	var map := FloorMap.new(db, 15, 15, "rock_wall")
+	for y in range(1, 14):
+		for x in range(1, 14):
+			map.set_tile(Vector2i(x, y), "cave_floor")
+	map.center = Vector2i(7, 7)
+	map.visible_now.fill(1)
+	var def := {"regions": [{"id": "r", "dir": "east", "monsters": [monster_id]}],
+		"spawn": {"groups_per_region": [1, 1], "respawn_hours": 24, "growth_every_hours": 24, "max_extra_groups": 2}}
+	return FieldMonsters.new(db, map, def, Rng.new(1))
+
+
+func _place(fm: FieldMonsters, monster_id: String, at: Vector2i) -> FieldMonsters.Group:
+	var g := fm.spawn_group({"id": "r", "monsters": [monster_id]}, Vector2i(-99, -99), at)
+	g.pos = at
+	g.home = at
+	return g
+
+
+func _move_hours(monster_id: String) -> float:
+	var agi := JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("monsters", monster_id), "stats"), "agi")
+	return float(db.bal("explore.move_hours_base")) / (1.0 + agi * float(db.bal("explore.move_agi_coef")))
+
+
+func test_initial_spawns_by_region() -> void:
+	var s := _session()
+	var fm := s.monsters
+	assert_true(fm.groups.size() >= 8, "4지역 × 2~3무리 (%d)" % fm.groups.size())
+	var bad := 0
+	for g in fm.groups:
+		for r: Variant in JsonUtil.get_array(s.floor_def, "regions"):
+			if JsonUtil.get_str(r, "id") == g.region and not JsonUtil.get_array(r, "monsters").has(g.leader()):
+				bad += 1
+		if s.map.in_safe_zone(g.pos) or not s.map.is_walkable(g.pos):
+			bad += 1
+	assert_eq(bad, 0, "지역 몬스터·걸을 수 있는 칸·안전지대 밖")
+	var east := fm.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.leader() == "blade_wolf")
+	assert_true(not east.is_empty() and east.all(func(g: FieldMonsters.Group) -> bool: return g.pos.x > s.map.center.x), "칼날늑대는 동쪽")
+
+
+func test_bumping_a_group_starts_combat() -> void:
+	var s := _session()
+	var g: FieldMonsters.Group = s.monsters.groups[0]
+	var spot := Vector2i(-1, -1)
+	for d in FloorMap.DIRS4:
+		if s.map.is_walkable(g.pos - d) and s.monsters.group_at(g.pos - d) == null:
+			spot = g.pos - d
+			break
+	assert_true(ExploreDebug.teleport(s, spot))
+	if s.in_combat:
+		return  # 순간이동만으로 이미 붙었다(다른 무리) — 다음 단언은 건너뛴다
+	var seen := [null, false]
+	s.encounter.connect(func(group: FieldMonsters.Group, party_first: bool) -> void:
+		seen[0] = group
+		seen[1] = party_first)
+	var t0 := s.clock.total_hours
+	assert_true(s.try_move(g.pos - spot))
+	assert_true(seen[0] == g and bool(seen[1]), "부딪히면 먼저 발견한 쪽으로 전투")
+	assert_true(s.in_combat)
+	assert_near(s.clock.total_hours, t0, 0.0001, "전투 시작에는 시간이 들지 않는다")
+	assert_false(s.try_move(Vector2i(1, 0)), "전투 중에는 움직일 수 없다")
+
+
+func test_chase_until_contact() -> void:
+	var fm := _room_field("blade_wolf")
+	var g := _place(fm, "blade_wolf", Vector2i(12, 7))
+	var player := Vector2i(8, 7)
+	var hit := fm.update(player, _move_hours("blade_wolf") * 3.0 + 0.00001, 0.0, false)
+	assert_eq(g.pos, Vector2i(9, 7), "세 걸음 다가온다")
+	assert_true(hit == g, "붙으면 전투")
+
+
+func test_non_aggressive_waits_and_grace() -> void:
+	var fm := _room_field("ghoul")
+	var g := _place(fm, "ghoul", Vector2i(12, 7))
+	var player := Vector2i(3, 7)
+	assert_true(fm.update(player, _move_hours("ghoul") * 5.0, 0.0, false) == null, "구울은 멀리서는 덤비지 않는다")
+	assert_true(g.state != FieldMonsters.STATE_CHASE)
+	g.pos = Vector2i(4, 7)
+	assert_true(fm.update(player, 0.0, 0.0, false) == g, "바로 옆이면 싸운다")
+	fm.set_grace(g, 0.0)
+	assert_true(fm.update(player, 0.0, 0.0, false) == null, "도망친 직후에는 쫓지 않는다")
+	assert_true(fm.update(player, 0.0, 1.0, false) == g, "유예가 지나면 다시")
+	assert_true(fm.update(player, 0.0, 1.0, true) == null, "안전지대에서는 덤비지 않는다")
+
+
+func test_gnome_hides_until_close() -> void:
+	var fm := _room_field("gnome")
+	var g := _place(fm, "gnome", Vector2i(12, 7))
+	assert_false(fm.is_visible(g, Vector2i(8, 7)), "4m 밖에서는 안 보인다")
+	assert_true(fm.is_visible(g, Vector2i(10, 7)), "3m 안이면 보인다")
+
+
+func test_respawn_and_growth() -> void:
+	var fm := _room_field("goblin")
+	var g := _place(fm, "goblin", Vector2i(12, 7))
+	fm.remove(g, 0.0)
+	assert_eq(fm.groups.size(), 0)
+	fm.update(Vector2i(2, 2), 0.0, 10.0, false)
+	assert_eq(fm.groups.size(), 0, "리스폰 전")
+	fm.update(Vector2i(2, 2), 0.0, 25.0, false)
+	assert_eq(fm.groups.size(), 2, "리스폰 + 하루 지나 1무리 증가")
+	fm.update(Vector2i(2, 2), 0.0, 200.0, false)
+	assert_eq(fm.groups.size(), 3, "증가는 최대 2무리까지")
+
+
+func test_rest_outside_can_be_ambushed() -> void:
+	var d := GameDatabase.new()
+	d.load_all("res://data")
+	(d.singletons["balance"]["monsters"] as Dictionary)["rest_ambush_chance_per_hour"] = 1.0
+	var s := _session(d)
+	s.monsters.groups.clear()
+	var seen := [false]
+	s.encounter.connect(func(_g: FieldMonsters.Group, party_first: bool) -> void: seen[0] = not party_first)
+	var t0 := s.clock.total_hours
+	s.rest()
+	assert_true(seen[0], "잠결에 습격(적이 먼저)")
+	assert_true(s.in_combat)
+	assert_near(s.clock.total_hours - t0, 1.0, 0.0001, "첫 시간에 깨어난다")
+
+
+func test_resolve_victory_and_flee() -> void:
+	var s := _session()
+	var g: FieldMonsters.Group = s.monsters.groups[0]
+	var n := s.monsters.groups.size()
+	s.engage(g, true)
+	s.resolve_encounter(g, Battle.RESULT_VICTORY, 10)
+	assert_false(s.in_combat)
+	assert_eq(s.monsters.groups.size(), n - 1, "이긴 무리는 사라진다")
+	assert_near(s.clock.total_hours, 10.0 * float(db.bal("combat.hours_per_turn")), 0.0001, "전투 차례만큼 시간이 흐른다")
+	var g2: FieldMonsters.Group = s.monsters.groups[0]
+	s.engage(g2, false)
+	s.resolve_encounter(g2, Battle.RESULT_FLED, 1)
+	assert_true(s.monsters.groups.has(g2), "도망치면 무리는 남는다")
+	assert_true(g2.grace_until > s.clock.total_hours, "도망친 뒤 잠시 쫓지 않는다")
+
+
+## 플레이어가 가만히 있어도 실시간으로 몬스터가 다가와 전투가 시작되고, 전투 중에는 시간이 멈추고, 끝나면 다시 흐른다.
+func test_monsters_move_in_realtime_while_player_stands_still() -> void:
+	var s := _session()
+	s.monsters.groups.clear()
+	var spot := _straight_corridor(s, 4)
+	assert_true(spot.size() == 2, "직선 4칸 빈 곳")
+	if spot.size() != 2:
+		return
+	var at: Vector2i = spot[0]
+	var dir: Vector2i = spot[1]
+	assert_true(ExploreDebug.teleport(s, at))
+	var region: Dictionary = JsonUtil.get_array(s.floor_def, "regions")[0]
+	var g := s.monsters.spawn_group(region, Vector2i(-99, -99), at, "goblin")
+	assert_true(g != null)
+	g.pos = at + dir * 4
+	g.home = g.pos
+	var seen := [null]
+	s.encounter.connect(func(group: FieldMonsters.Group, _pf: bool) -> void: seen[0] = group)
+	var p0 := s.pos
+	var g0 := g.pos
+	for i in 100:
+		if s.in_combat:
+			break
+		s.tick_realtime(0.05)
+	assert_eq(s.pos, p0, "플레이어는 움직이지 않았다")
+	assert_true(g.pos != g0, "몬스터는 스스로 다가왔다")
+	assert_true(seen[0] == g and s.in_combat, "붙으면 전투가 시작된다")
+	var t_combat := s.clock.total_hours
+	for i in 20:
+		s.tick_realtime(0.1)
+	assert_near(s.clock.total_hours, t_combat, 0.0000001, "전투 중에는 탐험 시간이 멈춘다")
+	s.resolve_encounter(g, Battle.RESULT_VICTORY, 5)
+	assert_near(s.clock.total_hours - t_combat, 5.0 * float(db.bal("combat.hours_per_turn")), 0.0001, "전투가 끝나면 차례 수만큼 시간이 반영된다")
+	var t_after := s.clock.total_hours
+	s.tick_realtime(0.25)
+	assert_true(s.clock.total_hours > t_after, "탐험으로 돌아오면 다시 흐른다")
+
+
+## 안전지대 밖에서 한 방향으로 n칸 넘게 트인 자리 [위치, 방향]. 없으면 [].
+func _straight_corridor(s: ExploreSession, n: int) -> Array:
+	for i in s.map.tiles.size():
+		var p := s.map.pos_of(i)
+		if not s.map.is_walkable(p) or s.map.in_safe_zone(p):
+			continue
+		for d in FloorMap.DIRS4:
+			var ok := true
+			for k in range(1, n + 2):
+				var q := p + d * k
+				if not s.map.is_walkable(q) or s.map.in_safe_zone(q) or s.map.blocks_sight(q):
+					ok = false
+					break
+			if ok:
+				return [p, d]
+	return []

@@ -2,20 +2,67 @@
   "id": "blade_wolf",
   "name_ko": "칼날늑대",
   "grade": 9,
-  "floor_tags": ["f1_east"],
+  "floor_tags": [
+    "f1_east"
+  ],
   "type": "body",
-  "family": ["beast"],
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "size": 1.0,
+  "color": "#8a8f99",
   "immunities": [],
-  "weaknesses": {"lightning": 1.5},
+  "weaknesses": {
+    "lightning": 1.5
+  },
   "weak_point": null,
-  "stats": {"str": 8, "agi": 14, "p_res": 3, "m_res": 1, "int": 0},
-  "resources": {"hp": 40, "soul": 0},
-  "behavior": {"aggressive": true, "pack_size": [1, 3], "leash_tiles": 0},
+  "stats": {
+    "str": 6,
+    "agi": 14,
+    "p_res": 3,
+    "m_res": 1,
+    "int": 0
+  },
+  "resources": {
+    "hp": 32,
+    "soul": 0
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      2
+    ],
+    "reveal_radius_m": 0
+  },
   "exp_first_kill": 1,
   "magic_stone_grade": 9,
   "essence_drops": [],
-  "skills": ["bite", "pounce"],
-  "ai": [{"if": "hp_below_30", "use": "flee"}],
+  "skills": [
+    "bite",
+    "pounce",
+    "flee"
+  ],
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.3,
+      "use": "flee"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "pounce"
+    },
+    {
+      "if": "always",
+      "use": "bite"
+    }
+  ],
+  "desc_ko": "빠른 야수. 무리 지어 다니며 물러설 줄도 안다.",
   "sprite": "res://assets/sprites/monsters/blade_wolf.png",
   "source": "placeholder"
 }

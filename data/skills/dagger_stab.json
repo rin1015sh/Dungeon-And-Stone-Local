@@ -1,0 +1,17 @@
+{
+  "id": "dagger_stab",
+  "name_ko": "단검 찌르기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce"
+    }
+  ],
+  "source": "placeholder"
+}

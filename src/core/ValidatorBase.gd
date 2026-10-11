@@ -20,6 +20,8 @@ var check_skill_effects: bool = false
 var generator_ids: PackedStringArray = PackedStringArray()
 ## 층 정의의 생성기 전용 검사: (floor_def, db) -> PackedStringArray. 없으면 생략.
 var generator_checker: Callable = Callable()
+## 등록된 몬스터 AI 조건 id(src/combat/ai/). 비어 있으면 생략.
+var ai_condition_ids: PackedStringArray = PackedStringArray()
 
 var _skipped_effect_types: bool = false
 
@@ -143,7 +145,7 @@ func check_effects(where: String, list: Array, strict: bool) -> void:
 		if known and effect_checker.is_valid():
 			for problem: String in effect_checker.call(ed, db):
 				err(where, problem)
-		if ed.has("damage_type") and not damage.has(str(ed["damage_type"])):
+		if ed.has("damage_type") and not (damage.has(str(ed["damage_type"])) or str(ed["damage_type"]) == "weapon"):
 			err(where, "damage_type '%s' 미등록" % ed["damage_type"])
 		if ed.has("status"):
 			ref(where, "statuses", ed["status"])

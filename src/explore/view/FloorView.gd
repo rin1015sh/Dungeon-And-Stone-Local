@@ -17,6 +17,7 @@ var edge_shade: float = 0.45
 var rim_shade: float = 2.2
 var player_view: ActorView
 
+var _monster_views: Dictionary = {}  # 무리 id -> MonsterView
 var _floor_chunks: Dictionary = {}  # Vector2i(청크 x, 청크 y) -> FloorChunk
 var _wall_rows: Dictionary = {}     # Vector2i(청크 x, 줄) -> WallRow
 var _last_rect: Rect2i = Rect2i()
@@ -71,6 +72,7 @@ func _ready() -> void:
 	player_view.setup_for(session.player, session.db.render)
 	add_child(player_view)
 	player_view.position = feet_position(session.pos)
+	session.monsters.changed.connect(sync_monsters)
 	refresh(true)
 
 
@@ -109,9 +111,35 @@ func refresh(full: bool = false) -> void:
 			wr.queue_redraw()
 	player_view.face(session.facing)
 	player_view.set_occluded(_occludes(session.pos + Vector2i(0, 1)))
+	sync_monsters()
 	player_view.set_light(_light_color, kind == "torch", _vision * tile)
 	var tint_k := JsonUtil.get_float(_cfg, "actor_light_tint", 0.5)
 	player_view.self_modulate = Color.WHITE.lerp(_light_color, tint_k)
+
+
+## 몬스터 무리 그림을 세션 상태에 맞춘다: 새 무리는 만들고, 사라진 무리는 지우고, 보이는 것만 표시.
+func sync_monsters() -> void:
+	var alive := {}
+	var move_sec := JsonUtil.get_float(_cfg, "move_tween_sec", 0.08)
+	for g in session.monsters.groups:
+		alive[g.id] = true
+		var mv: MonsterView = _monster_views.get(g.id)
+		if mv == null:
+			mv = MonsterView.new()
+			mv.setup(g, session.db)
+			add_child(mv)
+			mv.position = feet_position(g.pos)
+			_monster_views[g.id] = mv
+		var target := feet_position(g.pos)
+		if mv.position.distance_to(target) > 0.5:
+			var tw := mv.create_tween()
+			tw.tween_property(mv, "position", target, move_sec)
+		mv.face_toward(feet_position(session.pos))
+		mv.visible = session.monsters.is_visible(g, session.pos)
+	for id: int in _monster_views.keys():
+		if not alive.has(id):
+			(_monster_views[id] as Node).queue_free()
+			_monster_views.erase(id)
 
 
 ## 꼭짓점 (vx, vy)의 최종 색: 보이면 빛을 곱하고, 기억만 있으면 어둡고 차갑게.

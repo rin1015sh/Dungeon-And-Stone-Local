@@ -53,8 +53,10 @@
 
 ## 5. 전투 (§8) — M2
 
-- 맵에서 적과 접촉/발각 시 시작(랜덤 인카운터 없음). CTB: 틱마다 `gauge += agi`, 임계값(100) 이상이면 행동 후 `gauge -= 100 + delay_cost`. 상단에 다음 행동 10개 타임라인.
-- 커맨드: 공격, 스킬(코스트는 임의 자원), 방어, 아이템, 도주, 정보, 약점 노리기.
+- 맵에서 적과 접촉/발각 시 시작(랜덤 인카운터 없음). CTB: 틱마다 `gauge += agi`, 임계값(100) 이상이면 행동 후 `gauge -= 100 + delay_cost`. 아군·몬스터 구분 없이 민첩 순. **화면에 순서 목록은 띄우지 않는다**(현재 차례 카드만 강조, `Battle.preview()`는 로직·테스트용으로 남김).
+- 기본 행동창(2026-10-11 재구성): **공격**(대상 선택, 약점이 있는 적은 "약점 노리기"도) · **방어** · **스킬**(보유 스킬 하위 메뉴, 맨 아래 "아이템…") · **도주**.
+- 기본 스킬: 모든 아군(플레이어·동료)이 시작부터 **대화**·**조사**를 가진다(`balance.party.innate_skills`, 스킬 데이터 `"innate": true` → 잊을 수 없음). 조사는 옛 '정보' 커맨드를 대신하며 차례를 쓴다. 대화는 말이 통하는 상대(`Actor.understands_speech()`)에게만 결과(머뭇거림·무시·자극·물러남)가 있고, **마수는 전부 통하지 않는다**(계열별 반응 문장만, 차례 소모).
+- 전투 상태: `Battle.phase` idle → await_input → executing → turn_end → … → ended. `act()`는 현재 차례·await_input일 때 한 번만 적용, 잘못된 행동(모르는 스킬·코스트·쿨타임·봉인·사라진 대상)은 차례를 쓰지 않고 false(`ActionCheck`). 몬스터 AI는 `MonsterAi`.
 - 하드코어: 치명상(`lethal_chance`)은 끌 수 없다(확률만 데이터).
 - 스킬/효과 데이터 기반: `SkillDef{target, cost, delay_cost, cooldown, effects[]}`, 효과 타입 = `src/combat/effects/` 1파일 1타입 핸들러 레지스트리. 검증기는 `effect_types`가 주어지면 효과 type도 검사한다.
 - 상태이상(`statuses.json`): `modifiers[]`, `periodic[{trigger, resource, amount}]`, `flags[]`(no_skills, skip_turn …), `duration{amount, unit}`, `stackable`.
@@ -64,7 +66,7 @@
 
 - 4방향 그리드, 1타일 = 1m(`balance.explore.meters_per_tile`). 로직은 바닥 평면, **렌더링만 3/4 시점**(벽 윗면+앞면, Y-정렬, 가려지면 반투명/실루엣). 수치는 `render.json.view`.
 - 시야: 층 `visibility_cap_m`(광원이 있어도 넘지 못하는 상한) vs 광원 `light_radius_m` → **유효 시야 = min(상한, 광원)**. 원문 수치가 없으면 `"source": "placeholder"`. 드레드피어 소환 중 2m.
-- 시간: 이동·전투·휴식이 시간을 쓴다. 층 폐쇄(1층 168h, 2층 240h, 3층 15일 …) 시 강제 귀환. 1~5층은 입장마다 리셋.
+- 시간(2026-10-11 실시간화): 탐험 중 시간은 **실시간으로 흐른다**(`RealtimeDriver`, 실제 1초 = 게임 `realtime_hours_per_sec`시간, 고정 틱 `realtime_tick_sec`, 프레임당 최대 `realtime_max_frame_sec`). 가만히 있어도 허기·광원·몬스터가 진행된다. 이동은 시간을 쓰지 않고 민첩에 따른 **이동 간격**(`move_hours`)만 둔다(몬스터와 같은 공식, 연타해도 빨라지지 않음). 시간이 멈추는 때: 전투 중(끝나면 차례 수 × `hours_per_turn` 반영) · 일시정지(Esc/P) · 디버그 패널 · 입력칸 입력 · 창 포커스 잃음 · 탐험 종료. 대기(Space, 1시간)·휴식(Z, 8시간)은 즉시 넘기기. 층 폐쇄(1층 168h, 2층 240h, 3층 15일 …) 시 강제 귀환. 1~5층은 입장마다 리셋.
 - 맵: 층 입장마다 절차 생성(`FloorGenerator` 인터페이스). 수정동굴 = 셀룰러 오토마타 + 고정 랜드마크 + 중심 대현자 기념비(안전지대) + 동서남북 2층 포탈.
 - 저장: 단일 슬롯, 사망 시 삭제, 버전 필드 + 마이그레이션. 저장은 id 참조와 롤된 값만.
 

@@ -42,8 +42,22 @@ static func _monsters(v: ValidatorBase) -> void:
 		for s: Variant in JsonUtil.get_array(m, "skills"):
 			v.ref(w, "skills", s)
 		for rule: Variant in JsonUtil.get_array(m, "ai"):
-			if rule is Dictionary and (rule as Dictionary).has("use"):
-				v.ref(w + ".ai", "skills", rule["use"])
+			var rd: Dictionary = rule if rule is Dictionary else {}
+			v.ref(w + ".ai", "skills", rd.get("use"))
+			if not v.ai_condition_ids.is_empty() and not v.ai_condition_ids.has(JsonUtil.get_str(rd, "if")):
+				v.err(w + ".ai", "조건 '%s' 없음(src/combat/ai/)" % rd.get("if"))
+			if not JsonUtil.get_array(m, "skills").has(rd.get("use")):
+				v.warn(w + ".ai", "스킬 '%s'이(가) skills 목록에 없다" % rd.get("use"))
+		if not v.db.tag_ids("monster_shapes").has(JsonUtil.get_str(m, "shape", "humanoid")):
+			v.err(w, "shape '%s' 미등록(tags.monster_shapes)" % m.get("shape"))
+		v.check_color(w, JsonUtil.get_str(m, "color"))
+		var wp: Variant = m.get("weak_point")
+		if wp != null and not (wp is Dictionary and (wp as Dictionary).has("name_ko")):
+			v.err(w, "weak_point는 null 또는 {name_ko, …}")
+		var beh := JsonUtil.get_dict(m, "behavior")
+		var pack := JsonUtil.get_array(beh, "pack_size")
+		if pack.size() != 2 or int(pack[0]) < 1 or int(pack[0]) > int(pack[1]):
+			v.err(w, "behavior.pack_size는 [최소 1 이상, 최대]")
 		for drop: Variant in JsonUtil.get_array(m, "essence_drops"):
 			var dd: Dictionary = drop if drop is Dictionary else {}
 			v.ref(w, "essences", dd.get("essence"))
@@ -64,6 +78,12 @@ static func _skills(v: ValidatorBase) -> void:
 			elif not JsonUtil.is_number(cost[r]) or float(cost[r]) < 0.0:
 				v.err(w, "cost 값은 0 이상의 숫자")
 		v.check_effects(w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
+		if s.has("innate") and not s["innate"] is bool:
+			v.err(w, "innate는 true/false")
+	for id: Variant in v.db.bal("party.innate_skills", []):
+		v.ref("balance.party.innate_skills", "skills", id)
+		if v.db.has_entry("skills", str(id)) and not JsonUtil.get_bool(v.db.get_entry("skills", str(id)), "innate"):
+			v.err("skills/" + str(id), "기본 스킬(party.innate_skills)은 \"innate\": true여야 한다")
 
 
 static func _essences(v: ValidatorBase) -> void:

@@ -51,6 +51,8 @@ func _ready() -> void:
 static func describe_cause(db: GameDatabase, cause: String) -> String:
 	if cause.begins_with("status:"):
 		return DataNames.entry(db, "statuses", cause.trim_prefix("status:"))
+	if cause.begins_with("attack:"):
+		return DataNames.entry(db, "monsters", cause.trim_prefix("attack:"))
 	if cause == "debug":
 		return Strings.t("cause.debug")
 	return Strings.t("cause.unknown")

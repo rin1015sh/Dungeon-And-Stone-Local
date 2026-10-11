@@ -1,5 +1,5 @@
 extends TestCase
-## 탐험 규칙(ExploreSession): 이동 시간·충돌·허기·휴식·폐쇄·아사·아이템·발견·성능.
+## 탐험 규칙(ExploreSession): 실시간 시간 흐름·이동 간격·충돌·허기·휴식·폐쇄·아사·아이템·발견·성능.
 
 const FLOOR := "f1_crystal_cave"
 
@@ -10,6 +10,7 @@ func _session(seed_value: int = 5, agi: float = 0.0) -> ExploreSession:
 	var map := reg.generator("crystal_cave").generate(db, def, Rng.new(seed_value))
 	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"agi": agi})
 	var s := ExploreSession.new(db, def, map, pc, GameClock.new(), Rng.new(seed_value + 1), reg.effects)
+	s.monsters_enabled = false
 	s.start()
 	return s
 
@@ -29,7 +30,7 @@ func _face_wall(s: ExploreSession) -> Vector2i:
 			continue
 		for d in FloorMap.DIRS4:
 			if not s.map.is_walkable(p + d):
-				s.debug_teleport(p)
+				ExploreDebug.teleport(s, p)
 				return d
 	return Vector2i.ZERO
 
@@ -38,15 +39,55 @@ func _b(path: String) -> float:
 	return float(db.bal(path, 0.0))
 
 
-func test_move_costs_time_by_agility() -> void:
+func test_move_interval_by_agility() -> void:
 	var s := _session(5, 0.0)
 	assert_near(s.move_hours(), _b("explore.move_hours_base"), 0.000001, "민첩 0")
 	var t0 := s.clock.total_hours
-	assert_true(s.try_move(_open_dir(s)))
-	assert_near(s.clock.total_hours - t0, s.move_hours(), 0.000001)
+	var d := _open_dir(s)
+	assert_true(s.try_move(d))
+	assert_near(s.clock.total_hours, t0, 0.000001, "이동 자체는 시간을 쓰지 않는다(시간은 실시간으로 흐른다)")
+	var moved := 0
+	for i in 10:
+		if s.try_move(-d if i % 2 == 0 else d):
+			moved += 1
+	assert_eq(moved, 0, "이동 간격이 차기 전에는 연타해도 움직이지 않는다")
+	s.pass_time(s.move_hours())
+	assert_true(s.try_move(-d), "간격만큼 시간이 흐르면 다시 움직인다")
 	var fast := _session(5, 50.0)
 	assert_near(fast.move_hours(), _b("explore.move_hours_base") / (1.0 + 50.0 * _b("explore.move_agi_coef")), 0.000001)
 	assert_true(fast.move_hours() < s.move_hours(), "민첩이 높으면 빠르다")
+
+
+func test_time_flows_while_standing_still() -> void:
+	var s := _session()
+	var p0 := s.pos
+	var rate := _b("explore.realtime_hours_per_sec")
+	for i in 40:
+		s.tick_realtime(0.25)
+	assert_eq(s.pos, p0, "가만히 서 있다")
+	assert_near(s.clock.total_hours, 10.0 * rate, 0.0001, "실제 10초 = 게임 %.1f시간" % (10.0 * rate))
+	assert_near(s.player.pool.get_current("hunger"), 100.0 - 10.0 * rate * _b("hunger.decay_per_hour"), 0.0001, "허기도 줄어든다")
+
+
+func test_realtime_frame_clamp_and_pause() -> void:
+	var s := _session()
+	var tick := _b("explore.realtime_tick_sec")
+	var rate := _b("explore.realtime_hours_per_sec")
+	s.tick_realtime(5.0)
+	var expect := floorf(_b("explore.realtime_max_frame_sec") / tick) * tick * rate
+	assert_near(s.clock.total_hours, expect, 0.00001, "멈칫한 프레임의 시간은 잘라서 반영한다")
+	var t0 := s.clock.total_hours
+	for reason: String in ["menu", "debug", "typing", "focus"]:
+		s.realtime.set_paused(reason, true)
+		s.tick_realtime(0.25)
+		assert_near(s.clock.total_hours, t0, 0.0000001, "정지 사유 '%s'면 시간이 멈춘다" % reason)
+		s.realtime.set_paused(reason, false)
+	s.in_combat = true
+	s.tick_realtime(0.25)
+	assert_near(s.clock.total_hours, t0, 0.0000001, "전투 중에는 탐험 시간이 멈춘다")
+	s.in_combat = false
+	s.tick_realtime(0.25)
+	assert_true(s.clock.total_hours > t0, "다시 흐른다")
 
 
 func test_bumping_a_wall_costs_nothing() -> void:
@@ -75,7 +116,7 @@ func test_wait_and_rest() -> void:
 	s.rest()
 	assert_near(s.player.pool.get_current("hp"), hp_max - 30.0, 0.0001, "안전지대 밖 휴식은 회복이 없다")
 	for r in range(1, 4):
-		if s.debug_teleport(s.map.center + Vector2i(0, r)):
+		if ExploreDebug.teleport(s, s.map.center + Vector2i(0, r)):
 			break
 	assert_true(s.in_safe_zone())
 	s.rest()
@@ -89,7 +130,7 @@ func test_closing_warnings_and_forced_return() -> void:
 	var closed := [false]
 	s.closing_warning.connect(func(h: float) -> void: warns.append(h))
 	s.floor_closed.connect(func() -> void: closed[0] = true)
-	s.debug_close_in(30.0)
+	ExploreDebug.close_in(s, 30.0)
 	assert_eq(warns.size(), 0)
 	s.wait(7.0)
 	s.wait(20.0)
@@ -134,13 +175,13 @@ func test_discovery_and_interaction() -> void:
 	s.message.connect(func(k: String, _a: Dictionary, _kind: String) -> void: keys.append(k))
 	assert_true(s.map.explored.count(1) > 0, "입장하자마자 주변을 본다")
 	assert_eq(s.map.visible_now[s.map.idx(s.pos)], 1)
-	assert_true(s.debug_teleport(s.nearest_portal()))
+	assert_true(ExploreDebug.teleport(s, ExploreDebug.nearest_portal(s)))
 	assert_true(keys.has("explore.portal_found"))
 	assert_true(keys.has("explore.portal_here"))
 	s.interact()
 	assert_true(keys.has("explore.portal_locked"))
 	for r in range(1, 4):
-		if s.debug_teleport(s.map.center + Vector2i(0, r)):
+		if ExploreDebug.teleport(s, s.map.center + Vector2i(0, r)):
 			break
 	assert_true(keys.has("explore.landmark_found"), "기념비 발견")
 	assert_true(keys.has("explore.safe_enter"))
@@ -154,6 +195,7 @@ func test_step_performance() -> void:
 	var moves := 0
 	var t := Time.get_ticks_usec()
 	for i in 200:
+		s.pass_time(s.move_hours())
 		var d := FloorMap.DIRS4[i % 4] if s.map.is_walkable(s.pos + FloorMap.DIRS4[i % 4]) else _open_dir(s)
 		if s.try_move(d):
 			moves += 1

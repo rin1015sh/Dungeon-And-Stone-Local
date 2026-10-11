@@ -11,6 +11,7 @@
     "torch": ["T"],
     "eat": ["E"],
     "interact": ["F", "Enter"],
+    "pause": ["Escape", "P"],
     "debug_toggle": ["F1"]
   }
 }

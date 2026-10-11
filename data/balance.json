@@ -50,26 +50,51 @@
   },
   "combat": {
     "gauge_threshold": 100,
-    "timeline_preview": 10,
+    "min_speed": 1,
     "crit_base": 0.05,
     "crit_per_agi": 0.005,
+    "crit_per_luck": 0.01,
+    "crit_max": 0.6,
     "crit_mult": 1.5,
     "defense_k": 100,
     "phys_atk_per_str": 1.0,
     "mag_atk_per_int": 1.0,
-    "lethal_chance_base": 0.01,
-    "flee_agi_coef": 0.02
+    "unarmed_atk": 2,
+    "hit_base": 0.9,
+    "hit_agi_coef": 0.01,
+    "hit_min": 0.3,
+    "hit_max": 0.98,
+    "damage_variance": 0.1,
+    "min_damage": 1,
+    "lethal_chance_base": 0.1,
+    "lethal_hp_ratio": 0.3,
+    "weak_point_hit_mult": 0.6,
+    "weak_point_damage_mult": 2.0,
+    "flee_base": 0.5,
+    "flee_agi_coef": 0.03,
+    "flee_min": 0.05,
+    "flee_max": 0.95,
+    "ambush_gauge": 50,
+    "hours_per_turn": 0.01,
+    "flee_grace_hours": 0.5
   },
   "explore": {
     "start_floor": "f1_crystal_cave",
     "meters_per_tile": 1.0,
     "move_hours_base": 0.02,
     "move_agi_coef": 0.02,
+    "realtime_hours_per_sec": 0.1,
+    "realtime_tick_sec": 0.1,
+    "realtime_max_frame_sec": 0.25,
     "min_vision_m": 1.0,
     "vision_bonus_formula": "{field_of_view} * 0.1 + {sight} * 0.05",
     "wait_hours": 1.0,
     "rest_hours": 8.0,
-    "closing_warning_hours": [24, 6, 1]
+    "closing_warning_hours": [
+      24,
+      6,
+      1
+    ]
   },
   "exp": {
     "grade_base": 10,
@@ -88,5 +113,16 @@
     "skip_hours_short": 1,
     "skip_hours_long": 12,
     "stat_bump": 5
+  },
+  "party": {
+    "innate_skills": ["talk", "investigate"]
+  },
+  "monsters": {
+    "wander_chance": 0.3,
+    "wander_radius": 4,
+    "update_max_moves": 12,
+    "chase_path_radius": 24,
+    "spawn_min_dist_from_entry": 10,
+    "rest_ambush_chance_per_hour": 0.04
   }
 }

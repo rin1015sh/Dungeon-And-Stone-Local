@@ -108,34 +108,7 @@ func paint(canvas: CanvasItem, silhouette: bool) -> void:
 		canvas.draw_texture_rect_region(_texture, Rect2(-size.x * 0.5, -size.y, size.x, size.y), src,
 			Color.WHITE if not silhouette else Color(1, 1, 1, 1))
 		return
-	var s := size.y / 48.0
-	var body := Color.WHITE if silhouette else body_color
-	var dark := Color.WHITE if silhouette else body_color.darkened(0.45)
-	if not silhouette:
-		canvas.draw_set_transform(Vector2(0, -1), 0.0, Vector2(1.0, 0.4))
-		canvas.draw_circle(Vector2.ZERO, 10.0 * s, Color(0, 0, 0, 0.45))
-		canvas.draw_set_transform(Vector2.ZERO)
-	canvas.draw_rect(Rect2(-6 * s, -14 * s, 5 * s, 14 * s), dark)
-	canvas.draw_rect(Rect2(1 * s, -14 * s, 5 * s, 14 * s), dark)
-	canvas.draw_rect(Rect2(-8 * s, -31 * s, 16 * s, 18 * s), body)
-	canvas.draw_circle(Vector2(0, -38 * s), 7.0 * s, body.lightened(0.15) if not silhouette else body)
-	if silhouette:
-		return
-	var eye := Color(0.08, 0.06, 0.06)
-	if facing == Vector2i(0, 1):
-		canvas.draw_rect(Rect2(-4 * s, -39 * s, 2 * s, 2 * s), eye)
-		canvas.draw_rect(Rect2(2 * s, -39 * s, 2 * s, 2 * s), eye)
-	elif facing == Vector2i(-1, 0):
-		canvas.draw_rect(Rect2(-6 * s, -39 * s, 2 * s, 2 * s), eye)
-	elif facing == Vector2i(1, 0):
-		canvas.draw_rect(Rect2(4 * s, -39 * s, 2 * s, 2 * s), eye)
-	else:
-		canvas.draw_circle(Vector2(0, -40 * s), 5.0 * s, body.darkened(0.3))
-	if holding_torch:
-		var hand := Vector2(-10 * s if facing == Vector2i(1, 0) else 10 * s, -24 * s)
-		canvas.draw_line(hand, hand + Vector2(0, -10 * s), Color(0.35, 0.22, 0.12), 2.0 * s)
-		canvas.draw_circle(hand + Vector2(0, -13 * s), 3.5 * s, Color(1.0, 0.62, 0.2))
-		canvas.draw_circle(hand + Vector2(0, -14 * s), 1.8 * s, Color(1.0, 0.92, 0.6))
+	FigurePainter.paint(canvas, "humanoid", size.y / 48.0, body_color, facing, silhouette, holding_torch)
 
 
 func _redraw_all() -> void:

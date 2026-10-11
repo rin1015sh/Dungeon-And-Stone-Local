@@ -1,0 +1,56 @@
+{
+  "id": "gnome",
+  "name_ko": "노움",
+  "grade": 9,
+  "floor_tags": [
+    "f1_west"
+  ],
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "shape": "blob",
+  "size": 0.8,
+  "color": "#7a6a52",
+  "immunities": [],
+  "weaknesses": {
+    "fire": 1.3
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 7,
+    "agi": 6,
+    "p_res": 8,
+    "m_res": 2,
+    "int": 0
+  },
+  "resources": {
+    "hp": 40,
+    "soul": 0
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 2.0,
+    "leash_tiles": 8,
+    "pack_size": [
+      1,
+      2
+    ],
+    "reveal_radius_m": 3.0
+  },
+  "exp_first_kill": 1,
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "mud_fist"
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "mud_fist"
+    }
+  ],
+  "desc_ko": "진흙 인형. [일체화] — 3m 안에 들어와야 보인다.",
+  "sprite": "res://assets/sprites/monsters/gnome.png",
+  "source": "placeholder"
+}

@@ -2,6 +2,8 @@ class_name ExploreScreen
 extends Control
 ## 탐험 화면: 3/4 시점 월드(SubViewport) + HUD + 기록창 + 디버그 패널(F1).
 ## 키 입력을 ExploreSession에 넘기고, 세션 시그널로 그림·기록을 갱신한다.
+## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
+## 입력칸 입력·창 포커스 잃음·전투 중에는 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
 
 signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망)
 signal regenerate_requested(seed_value: int)
@@ -13,9 +15,9 @@ var session: ExploreSession
 var _view: FloorView
 var _hud: ExploreHud
 var _debug: DebugPanel
-var _held: Vector2i = Vector2i.ZERO
-var _repeat_left: float = 0.0
 var _ended: bool = false
+var _combat: CombatScreen = null
+var _pause_overlay: Control
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -52,27 +54,30 @@ func _ready() -> void:
 	session.closing_warning.connect(func(h: float) -> void: EventBus.floor_closing.emit(session.map.floor_id, h))
 	session.floor_closed.connect(func() -> void: _end("closed"))
 	session.player_died.connect(func(_cause: String) -> void: _end("died"))
+	session.encounter.connect(_on_encounter)
+	_build_pause_overlay()
 	session.start()
 
 
 func _process(delta: float) -> void:
-	if _ended or _typing():
-		_held = Vector2i.ZERO
+	session.realtime.set_paused("debug", _debug.visible)
+	session.realtime.set_paused("typing", _typing())
+	session.tick_realtime(delta)
+	if _ended or _combat != null or session.realtime.is_paused():
 		return
+	# 누르고 있는 동안 매 프레임 시도한다. 실제 간격은 세션이 민첩으로 정한다(연타해도 같다).
 	var dir := _input_dir()
-	if dir == Vector2i.ZERO:
-		_held = Vector2i.ZERO
-		return
-	var view_cfg := JsonUtil.get_dict(session.db.render, "view")
-	if dir != _held:
-		_held = dir
+	if dir != Vector2i.ZERO:
 		session.try_move(dir)
-		_repeat_left = JsonUtil.get_float(view_cfg, "move_first_delay_sec", 0.22)
+
+
+func _notification(what: int) -> void:
+	if session == null or session.realtime == null:
 		return
-	_repeat_left -= delta
-	if _repeat_left <= 0.0:
-		session.try_move(dir)
-		_repeat_left = JsonUtil.get_float(view_cfg, "move_repeat_sec", 0.11)
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		session.realtime.set_paused("focus", true)
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		session.realtime.set_paused("focus", false)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -80,7 +85,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		_debug.visible = not _debug.visible
 		get_viewport().set_input_as_handled()
 		return
-	if _ended or _typing():
+	if _ended or _typing() or _combat != null:
+		return
+	if event.is_action_pressed("pause"):
+		set_paused(not is_paused())
+		get_viewport().set_input_as_handled()
+		return
+	if is_paused():
 		return
 	var handled := true
 	if event.is_action_pressed("wait"):
@@ -101,6 +112,53 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func is_debug_open() -> bool:
 	return _debug.visible
+
+
+## 일시정지 메뉴: 시간이 멈추고 이동·단축키를 막는다.
+func set_paused(on: bool) -> void:
+	session.realtime.set_paused("menu", on)
+	_pause_overlay.visible = on
+
+
+func is_paused() -> bool:
+	return session.realtime.is_paused("menu")
+
+
+func combat_screen() -> CombatScreen:
+	return _combat
+
+
+## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.
+func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
+	var party: Array[Actor] = [session.player]
+	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
+	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, party_first)
+	_debug.visible = false
+	_combat = CombatScreen.new()
+	_combat.setup(battle)
+	add_child(_combat)
+	_combat.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_combat.finished.connect(func(result: String, turns: int, killed: Array[String]) -> void:
+		_combat.queue_free()
+		_combat = null
+		for id in killed:
+			EventBus.monster_killed.emit(id, session.player.id)
+		session.resolve_encounter(group, result, turns))
+
+
+func _build_pause_overlay() -> void:
+	_pause_overlay = CenterContainer.new()
+	_pause_overlay.visible = false
+	_pause_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_pause_overlay)
+	_pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", UiTheme.translucent_panel())
+	_pause_overlay.add_child(panel)
+	var v := VBoxContainer.new()
+	panel.add_child(v)
+	v.add_child(UiTheme.label(Strings.t("explore.paused"), "header", "text_title"))
+	v.add_child(UiTheme.label(Strings.t("explore.paused_hint", {"key": InputSetup.key_label("pause")}), "small", "text_dim"))
 
 
 func _build_world() -> void:
@@ -166,5 +224,7 @@ func _end(kind: String) -> void:
 		"day": session.clock.day(), "hours": session.clock.total_hours, "steps": session.steps,
 		"landmarks": session.found_count(session.map.landmarks), "landmarks_total": session.map.landmarks.size(),
 		"portals": session.found_count(session.map.portals), "portals_total": session.map.portals.size()}
+	if _combat != null:
+		await _combat.finished
 	await get_tree().create_timer(UiTheme.ui_float("end_delay_sec", 1.2)).timeout
 	run_ended.emit(kind, info)

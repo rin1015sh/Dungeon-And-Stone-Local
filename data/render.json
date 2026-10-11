@@ -13,8 +13,6 @@
     "camera_zoom": 1.5,
     "chunk_size": 16,
     "move_tween_sec": 0.08,
-    "move_first_delay_sec": 0.22,
-    "move_repeat_sec": 0.11,
     "face_shade": 0.9,
     "edge_shade": 0.45,
     "rim_shade": 2.2,
@@ -60,7 +58,15 @@
     "explore_log_height": 200,
     "debug_panel_width": 300,
     "panel_alpha": 0.82,
-    "end_delay_sec": 1.2
+    "end_delay_sec": 1.2,
+    "combat_ai_delay_sec": 0.45,
+    "combat_dim_alpha": 0.9,
+    "combat_card_width": 150,
+    "combat_figure_height": 110,
+    "combat_stage_gap": 160,
+    "combat_bottom_height": 230,
+    "combat_button_width": 150,
+    "float_text_sec": 0.8
   },
   "font": {
     "path": "res://assets/fonts/NotoSansKR-Regular.otf",

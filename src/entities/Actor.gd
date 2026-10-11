@@ -18,6 +18,9 @@ var inventory: Inventory
 var light: LightSource
 var dead: bool = false
 var death_cause: String = ""
+## 쓸 수 있는 스킬 id(전투). 기본 공격(basic_attack)은 커맨드로 따로 쓴다.
+## 기본 스킬(대화·조사, 스킬 데이터의 "innate": true)도 여기에 들어간다.
+var skills: Array[String] = []
 
 
 ## bases: 기본 스탯. resource_ids가 비면 활성 자원 전부. overrides: 자원 최대치 고정값(몬스터).
@@ -83,6 +86,42 @@ func kill(cause: String) -> void:
 	dead = true
 	death_cause = cause
 	died.emit(cause)
+
+
+## 스킬을 익힌다(이미 있으면 그대로). 새로 익혔으면 true.
+func learn_skill(skill_id: String) -> bool:
+	if skill_id.is_empty() or skills.has(skill_id):
+		return false
+	skills.append(skill_id)
+	return true
+
+
+## 스킬을 잊는다. 기본 스킬(innate)은 잊을 수 없다. 잊었으면 true.
+func forget_skill(skill_id: String) -> bool:
+	if JsonUtil.get_bool(db.get_entry("skills", skill_id), "innate") or not skills.has(skill_id):
+		return false
+	skills.erase(skill_id)
+	return true
+
+
+## 말이 통하는가(전투 스킬 '대화'). 사람은 통한다. 몬스터가 덮어쓴다.
+func understands_speech() -> bool:
+	return true
+
+
+## 받는 피해 배율(상성): 1 = 보통, 0 = 면역. 몬스터가 덮어쓴다.
+func damage_affinity(_damage_type: String, _category: String) -> float:
+	return 1.0
+
+
+## 기본 공격의 피해 유형(무기 — M3 장비 전까지는 템플릿/몬스터 기본값).
+func attack_damage_type() -> String:
+	return "blunt"
+
+
+## 약점 정보 {name_ko, …}. 없으면 빈 사전.
+func weak_point() -> Dictionary:
+	return {}
 
 
 ## 개발용(기반 점검·디버그): 사망 상태를 되돌린다. 게임 규칙상 죽음은 영구다.

@@ -5,6 +5,7 @@ extends Node
 ##   1) 기반 점검: 버튼으로 허기 임계값·영혼탈진·사망 판정까지
 ##   2) 새 탐험가 → 미궁 입장 → 이동·대기·횃불 → 디버그 패널 → 폐쇄 → 강제 귀환 화면 → 타이틀
 ##   3) 새 탐험가 → 굶주림 → 아사 → 사망 화면 → 타이틀
+##   4) 새 탐험가 → 가만히 있어도 시간이 흐름 → 일시정지 → 몬스터 소환 → 전투(행동창 4개·조사·공격) → 탐험 복귀
 ## 오류 없이 끝나면 종료 코드 0.
 
 const WAIT_LIMIT_MS := 8000
@@ -26,6 +27,7 @@ func _run() -> void:
 	await _foundation_flow()
 	await _closing_flow()
 	await _starvation_flow()
+	await _realtime_combat_flow()
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
 	get_tree().quit(1 if _failed else 0)
@@ -106,6 +108,118 @@ func _starvation_flow() -> void:
 		_press(end, Strings.t("end.to_title"))
 	var back := await _screen(TitleScreen)
 	_expect(back != null, "타이틀로 복귀")
+
+
+## 실시간 시간 흐름 · 일시정지 · 전투 진입/이탈 시 시간 · 기본 행동창 · 조사
+func _realtime_combat_flow() -> void:
+	var explore := await _enter_dungeon("실시간 탐험가")
+	if explore == null:
+		return
+	var s := explore.session
+	var t0 := s.clock.total_hours
+	var p0 := s.pos
+	await _seconds(0.6)
+	_expect(s.pos == p0 and s.clock.total_hours > t0, "가만히 있어도 시간이 흐른다")
+	await _action("pause")
+	_expect(explore.is_paused(), "일시정지")
+	var tp := s.clock.total_hours
+	await _seconds(0.4)
+	_expect(is_equal_approx(s.clock.total_hours, tp), "일시정지 중에는 시간이 멈춘다")
+	await _action("pause")
+	_expect(not explore.is_paused(), "일시정지 해제")
+	GameState.debug_fast_combat = true
+	await _action("debug_toggle")
+	_toggle(explore, Strings.t("debug.invulnerable"))
+	_press(explore, Strings.t("debug.spawn_monster"))
+	await _frames(3)
+	var combat := explore.combat_screen()
+	if not _expect(combat != null and s.in_combat, "몬스터 소환 → 전투 화면"):
+		return
+	var tc := s.clock.total_hours
+	var menu := await _open_menu(combat)
+	if not _expect(menu != null, "행동창이 열린다"):
+		return
+	var labels := _button_texts(menu)
+	_expect(labels == [Strings.t("combat.cmd_attack"), Strings.t("combat.cmd_guard"), Strings.t("combat.cmd_skill"),
+		Strings.t("combat.cmd_flee", {"chance": roundi(combat.battle.flee_chance(combat.battle.current) * 100.0)})],
+		"기본 행동창: 공격·방어·스킬·도주 (%s)" % ", ".join(PackedStringArray(labels)))
+	_expect(not _has_node_named(combat, "TimelineBar"), "상단 순서 표시 없음")
+	var me := combat.battle.current
+	var gauge := me.gauge
+	_press(combat, Strings.t("combat.cmd_skill"))
+	var skill_labels := _button_texts(menu)
+	_expect(skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "talk")) and skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "investigate")),
+		"스킬 메뉴에 대화·조사")
+	_press(combat, DataNames.entry(DataRegistry.db, "skills", "investigate"))
+	_press_first(menu)
+	_expect_log("[조사]", "조사 결과")
+	_expect(me.gauge < gauge, "조사가 행동 기회를 쓴다")
+	for i in 60:
+		if not combat.battle.result.is_empty():
+			break
+		if await _open_menu(combat) == null:
+			break
+		_press(combat, Strings.t("combat.cmd_attack"))
+		_press_first(menu)
+	await _frames(2)
+	_expect(not combat.battle.result.is_empty(), "전투가 끝난다 (%s)" % combat.battle.result)
+	_expect(is_equal_approx(s.clock.total_hours, tc), "전투 중에는 탐험 시간이 멈춘다")
+	var turns := combat.battle.turns
+	_press(combat, Strings.t("combat.continue"))
+	await _frames(3)
+	_expect(explore.combat_screen() == null and not s.in_combat, "탐험으로 복귀")
+	_expect(s.clock.total_hours >= tc + turns * float(DataRegistry.db.bal("combat.hours_per_turn")) - 0.0001, "전투 차례만큼 시간 반영")
+	var tr := s.clock.total_hours
+	await _seconds(0.4)
+	_expect(s.clock.total_hours > tr, "복귀 뒤 다시 시간이 흐른다")
+	GameState.debug_fast_combat = false
+	await _action("debug_toggle")
+	_press(explore, Strings.t("debug.close_soon"))
+	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
+	var end := (await _screen(EndScreen)) as EndScreen
+	if _expect(end != null, "결과 화면"):
+		_press(end, Strings.t("end.to_title"))
+
+
+## 아군 차례가 와서 행동창이 열릴 때까지 기다린다. 전투가 끝나면 null.
+func _open_menu(combat: CombatScreen) -> CommandMenu:
+	var deadline := Time.get_ticks_msec() + WAIT_LIMIT_MS
+	while Time.get_ticks_msec() < deadline and combat.battle.result.is_empty():
+		for n: Node in combat.find_children("*", "", true, false):
+			if n is CommandMenu and (n as CommandMenu).visible:
+				return n as CommandMenu
+		await get_tree().process_frame
+	return null
+
+
+func _button_texts(menu: Node) -> Array:
+	var out: Array = []
+	for b: Node in menu.find_children("*", "Button", true, false):
+		if (b as Button).is_visible_in_tree() and not b.is_queued_for_deletion():
+			out.append((b as Button).text)
+	return out
+
+
+## 메뉴의 첫 번째(뒤로가 아닌) 버튼을 누른다 — 대상 목록의 첫 대상.
+func _press_first(menu: Node) -> void:
+	for b: Node in menu.find_children("*", "Button", true, false):
+		var btn := b as Button
+		if btn.is_visible_in_tree() and not btn.disabled and not btn.is_queued_for_deletion() and btn.text != Strings.t("menu.back"):
+			btn.pressed.emit()
+			return
+	_expect(false, "메뉴의 첫 버튼")
+
+
+func _has_node_named(root: Node, class_label: String) -> bool:
+	for n: Node in root.find_children("*", "", true, false):
+		var sc := n.get_script() as Script
+		if sc != null and sc.get_global_name() == class_label:
+			return true
+	return false
+
+
+func _seconds(sec: float) -> void:
+	await get_tree().create_timer(sec).timeout
 
 
 func _enter_dungeon(explorer_name: String) -> ExploreScreen:

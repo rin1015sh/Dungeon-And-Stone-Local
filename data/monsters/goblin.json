@@ -1,0 +1,60 @@
+{
+  "id": "goblin",
+  "name_ko": "고블린",
+  "grade": 9,
+  "floor_tags": [
+    "f1_north"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 0.7,
+  "color": "#5f7a4a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 4,
+    "agi": 9,
+    "p_res": 2,
+    "m_res": 2,
+    "int": 0
+  },
+  "resources": {
+    "hp": 22,
+    "soul": 0
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      3
+    ],
+    "reveal_radius_m": 0
+  },
+  "exp_first_kill": 1,
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "dagger_stab",
+    "poison_stab"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "poison_stab"
+    },
+    {
+      "if": "always",
+      "use": "dagger_stab"
+    }
+  ],
+  "desc_ko": "최약체. 단검에 독을 바른다. 혼자 다니는 일은 드물다.",
+  "sprite": "res://assets/sprites/monsters/goblin.png",
+  "source": "placeholder"
+}

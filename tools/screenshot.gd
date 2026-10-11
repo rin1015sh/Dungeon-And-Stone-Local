@@ -3,7 +3,7 @@ extends Node
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / explore
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
-## --torch: 횃불 켜기, --reveal: 안개 걷기
+## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 
 var _main: Control
 var _args: Dictionary = {"screen": "title", "out": "user://screenshot.png", "seed": "0", "walk": "0"}
@@ -41,12 +41,17 @@ func _run() -> void:
 			explore.session.use_category("light")
 		var steps := str(_args["walk"]).to_int()
 		for i in steps:
+			explore.session.pass_time(explore.session.move_hours())  # 이동 간격을 채운다(실시간을 기다리지 않음)
 			var dir := Vector2i(1, 0) if i % 2 == 0 else Vector2i(0, 1)
 			if not explore.session.try_move(dir):
 				explore.session.try_move(Vector2i(0, -1) if i % 2 == 0 else Vector2i(-1, 0))
 			await _frames(2)
 		if _args.has("reveal"):
-			explore.session.debug_reveal()
+			ExploreDebug.reveal(explore.session)
+		if _args.has("pause"):
+			explore.set_paused(true)
+		if _args.has("combat"):
+			ExploreDebug.spawn_and_engage(explore.session)
 		if _args.has("debug"):
 			var ev := InputEventAction.new()
 			ev.action = "debug_toggle"

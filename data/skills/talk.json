@@ -1,0 +1,22 @@
+{
+  "id": "talk",
+  "name_ko": "대화",
+  "target": "enemy_single",
+  "innate": true,
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "talk",
+      "outcomes": [
+        {"id": "waver", "weight": 1, "weight_low_hp": 3, "gauge": -40},
+        {"id": "ignore", "weight": 3, "weight_low_hp": 1},
+        {"id": "provoke", "weight": 1, "weight_low_hp": 0, "gauge": 25},
+        {"id": "withdraw", "weight": 0, "weight_low_hp": 1, "withdraw": true}
+      ]
+    }
+  ],
+  "desc_ko": "말을 건다. 말이 통하는 상대라면 흔들 수도, 자극할 수도 있다. 마수에게는 통하지 않는다.",
+  "source": "placeholder"
+}

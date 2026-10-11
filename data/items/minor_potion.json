@@ -1,0 +1,27 @@
+{
+  "id": "minor_potion",
+  "name_ko": "하급 포션",
+  "category": "potion",
+  "price": 20000,
+  "stack": 10,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "상처가 빠르게 아문다. 아무는 동안 신경이 곤두선다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 25
+    },
+    {
+      "type": "apply_status",
+      "status": "hyperalgesia",
+      "chance": 0.2
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "sprite": "res://assets/sprites/items/minor_potion.png",
+  "source": "placeholder"
+}

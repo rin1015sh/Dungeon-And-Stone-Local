@@ -1,0 +1,57 @@
+{
+  "id": "ghoul",
+  "name_ko": "구울",
+  "grade": 9,
+  "floor_tags": [
+    "f1_south"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "beast",
+  "size": 1.0,
+  "color": "#6f7a6a",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.3
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 9,
+    "agi": 10,
+    "p_res": 4,
+    "m_res": 2,
+    "int": 0
+  },
+  "resources": {
+    "hp": 44,
+    "soul": 0
+  },
+  "behavior": {
+    "aggressive": false,
+    "aggro_radius_m": 1.0,
+    "leash_tiles": 10,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0
+  },
+  "exp_first_kill": 1,
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "claw"
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "claw"
+    }
+  ],
+  "desc_ko": "네 발로 기는 시체. 다가가기 전에는 먼저 덤비지 않는다. 공격은 단순하다.",
+  "sprite": "res://assets/sprites/monsters/ghoul.png",
+  "source": "placeholder"
+}

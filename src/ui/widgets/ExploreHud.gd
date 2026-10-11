@@ -95,7 +95,7 @@ func _build() -> void:
 		"down": InputSetup.key_label("move_down"), "right": InputSetup.key_label("move_right"),
 		"wait": InputSetup.key_label("wait"), "rest": InputSetup.key_label("rest"),
 		"torch": InputSetup.key_label("torch"), "eat": InputSetup.key_label("eat"),
-		"interact": InputSetup.key_label("interact"), "debug": InputSetup.key_label("debug_toggle")}), "small", "text_dim")
+		"interact": InputSetup.key_label("interact"), "pause": InputSetup.key_label("pause"), "debug": InputSetup.key_label("debug_toggle")}), "small", "text_dim")
 	col.add_child(keys)
 
 

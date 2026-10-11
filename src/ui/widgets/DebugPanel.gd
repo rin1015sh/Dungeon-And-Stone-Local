@@ -30,10 +30,10 @@ func _ready() -> void:
 	var bump := int(db.bal("debug.stat_bump", 5))
 	_btn(grid, Strings.t("debug.skip", {"hours": short}), func() -> void: _session.wait(short))
 	_btn(grid, Strings.t("debug.skip", {"hours": long}), func() -> void: _session.wait(long))
-	_btn(grid, Strings.t("debug.close_soon"), func() -> void: _session.debug_close_in(1.0))
-	_btn(grid, Strings.t("debug.reveal"), func() -> void: _session.debug_reveal())
-	_btn(grid, Strings.t("debug.to_monument"), _to_monument)
-	_btn(grid, Strings.t("debug.to_portal"), func() -> void: _session.debug_teleport(_session.nearest_portal()))
+	_btn(grid, Strings.t("debug.close_soon"), func() -> void: ExploreDebug.close_in(_session, 1.0))
+	_btn(grid, Strings.t("debug.reveal"), func() -> void: ExploreDebug.reveal(_session))
+	_btn(grid, Strings.t("debug.to_monument"), func() -> void: ExploreDebug.to_monument(_session))
+	_btn(grid, Strings.t("debug.to_portal"), func() -> void: ExploreDebug.teleport(_session, ExploreDebug.nearest_portal(_session)))
 	_btn(grid, Strings.t("debug.level_up"), func() -> void: _change_level(1))
 	_btn(grid, Strings.t("debug.level_down"), func() -> void: _change_level(-1))
 	_btn(grid, Strings.t("debug.stat_up", {"stat": DataNames.entry(db, "stats", "str"), "amount": bump}), func() -> void: _bump("str", bump))
@@ -55,7 +55,8 @@ func _ready() -> void:
 	seed_row.add_child(_seed_edit)
 	_btn(seed_row, Strings.t("debug.regenerate"), _regenerate)
 	var later := PackedStringArray()
-	for key: String in ["debug.essence_locked", "debug.monster_locked", "debug.portal_open_locked"]:
+	_btn(v, Strings.t("debug.spawn_monster"), func() -> void: ExploreDebug.spawn_and_engage(_session))
+	for key: String in ["debug.essence_locked", "debug.portal_open_locked"]:
 		later.append(Strings.t(key))
 	var later_label := UiTheme.label(Strings.t("debug.later", {"list": " · ".join(later)}), "small", "text_dim")
 	later_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -68,13 +69,6 @@ func _btn(parent: Control, text: String, cb: Callable) -> Button:
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	parent.add_child(b)
 	return b
-
-
-func _to_monument() -> void:
-	for r in range(1, 4):
-		for d in FloorMap.DIRS4:
-			if _session.debug_teleport(_session.map.center + d * r):
-				return
 
 
 func _change_level(delta: int) -> void:

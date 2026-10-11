@@ -6,8 +6,17 @@
   "delay_cost": 20,
   "cooldown": 2,
   "effects": [
-    {"type": "damage", "scaling": "phys", "power": 1.3, "damage_type": "slash"},
-    {"type": "apply_status", "status": "bleeding", "chance": 0.2}
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.3,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.25
+    }
   ],
   "source": "placeholder"
 }

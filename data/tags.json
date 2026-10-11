@@ -20,6 +20,7 @@
     {"id": "spirit", "name_ko": "영체류"},
     {"id": "body", "name_ko": "육체"}
   ],
+  "monster_shapes": ["humanoid", "beast", "blob"],
   "families": [
     {"id": "undead", "name_ko": "언데드"},
     {"id": "frost_beast", "name_ko": "냉기·짐승"},

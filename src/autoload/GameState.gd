@@ -8,6 +8,7 @@ var player: PlayerCharacter = null
 var floor_entries: int = 0
 var debug_seed_override: int = 0
 var debug_invulnerable: bool = false
+var debug_fast_combat: bool = false  ## 적 차례 연출 지연 없음(테스트·스모크용)
 
 
 func _ready() -> void:

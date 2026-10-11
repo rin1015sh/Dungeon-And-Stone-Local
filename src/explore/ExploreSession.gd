@@ -1,6 +1,7 @@
 class_name ExploreSession
 extends RefCounted
-## 탐험 한 판의 규칙(순수 로직, 화면과 분리): 그리드 이동·시간·시야·광원·허기·포탈·안전지대·층 폐쇄.
+## 탐험 한 판의 규칙(순수 로직, 화면과 분리): 그리드 이동·시간·시야·광원·허기·포탈·안전지대·층 폐쇄·몬스터 조우.
+## 시간은 실시간으로 흐른다(realtime: RealtimeDriver). 이동은 시간을 쓰지 않고, 민첩에 따른 이동 간격만 둔다.
 ## 화면(ExploreScreen)은 시그널을 받아 그린다. 메시지는 문자열 키로만 낸다(번역은 화면 몫).
 
 signal moved(from: Vector2i, to: Vector2i)
@@ -11,6 +12,7 @@ signal message(key: String, args: Dictionary, kind: String)
 signal closing_warning(hours_left: float)
 signal floor_closed
 signal player_died(cause: String)
+signal encounter(group: FieldMonsters.Group, party_first: bool)
 
 var db: GameDatabase
 var floor_def: Dictionary
@@ -20,6 +22,10 @@ var clock: GameClock
 var rng: Rng
 var effects: EffectRegistry
 var lights: LightField
+var monsters: FieldMonsters
+var realtime: RealtimeDriver
+var monsters_enabled: bool = true  ## false면 몬스터가 나타나지 않는다(규칙 테스트용). start() 전에 정한다.
+var in_combat: bool = false
 var pos: Vector2i
 var facing: Vector2i = Vector2i(0, 1)
 var vision_m: float = 0.0
@@ -29,6 +35,8 @@ var steps: int = 0
 var _mpt: float = 1.0
 var _warned: Dictionary = {}
 var _was_safe: bool = false
+var _since_move: float = INF  # 마지막 걸음 뒤 흐른 게임 시간
+var _view_dirty: bool = false  # 시간 흐름으로 시야가 바뀌었다(광원 꺼짐·상태이상)
 
 
 func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_player: PlayerCharacter,
@@ -43,6 +51,8 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	_mpt = maxf(0.01, float(db.bal("explore.meters_per_tile", 1.0)))
 	pos = map.entry
 	lights = LightField.build(map, _mpt)
+	monsters = FieldMonsters.new(db, map, floor_def, rng)
+	realtime = RealtimeDriver.new()
 	player.pool.set_context("dungeon", true)
 	player.died.connect(_on_player_died)
 	player.status_changed.connect(_on_status_changed)
@@ -53,6 +63,8 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 func start() -> void:
 	_say("explore.enter", {"floor": floor_name()}, "system")
 	_was_safe = in_safe_zone()
+	if monsters_enabled:
+		monsters.spawn_initial(pos)
 	refresh_view()
 
 
@@ -81,7 +93,7 @@ func light_kind() -> String:
 	return Vision.light_kind(floor_def, map, player, pos)
 
 
-## 한 칸 이동에 드는 시간 = 기본값 / (1 + 민첩 × 계수)
+## 한 칸 이동 간격(게임 시간) = 기본값 / (1 + 민첩 × 계수). 몬스터도 같은 공식으로 움직인다.
 func move_hours() -> float:
 	var base := float(db.bal("explore.move_hours_base", 0.02))
 	var coef := float(db.bal("explore.move_agi_coef", 0.02))
@@ -98,29 +110,47 @@ func found_count(list: Array[Dictionary]) -> int:
 
 # ── 행동 ─────────────────────────────────────────────────
 
-## 4방향 한 칸 이동. 막히면 시간이 흐르지 않는다.
+## 실시간 진행: 화면이 매 프레임 실제 경과 초를 넘긴다. 시간 흐름으로 시야가 바뀌었으면 다시 계산한다.
+func tick_realtime(real_sec: float) -> void:
+	realtime.tick(self, real_sec)
+	if _view_dirty and not ended:
+		_view_dirty = false
+		refresh_view()
+
+
+## 지난 걸음 뒤로 이동 간격만큼 시간이 흘렀는가(연타해도 빨라지지 않는다).
+func can_step() -> bool:
+	return _since_move + realtime.pending_hours(self) >= move_hours() - 0.000001
+
+
+## 4방향 한 칸 이동. 시간을 쓰지 않는다(시간은 실시간으로 흐른다). 이동 간격이 안 찼으면 false.
+## 막히면 간격도 쓰지 않는다.
 func try_move(dir: Vector2i) -> bool:
-	if ended:
+	if ended or in_combat or not can_step():
 		return false
 	facing = dir
 	var to := pos + dir
+	var group := monsters.group_at(to)
+	if group != null:
+		engage(group, true)
+		return true
 	if not map.is_walkable(to):
 		bumped.emit(to)
 		return false
 	var from := pos
 	pos = to
 	steps += 1
+	var mh := move_hours()
+	# 계속 걷는 중이면 남은 몫을 이어 받고, 오래 서 있었으면 처음부터 센다.
+	_since_move = _since_move - mh if _since_move < mh * 2.0 else 0.0
 	moved.emit(from, to)
-	pass_time(move_hours())
-	if ended:
-		return true
 	refresh_view()
 	_on_enter_cell(from)
 	return true
 
 
 func wait(hours: float = -1.0) -> void:
-	if ended:
+	if ended or in_combat:
 		return
 	var h := hours if hours > 0.0 else float(db.bal("explore.wait_hours", 1.0))
 	_say("explore.wait", {"hours": roundi(h)})
@@ -129,23 +159,33 @@ func wait(hours: float = -1.0) -> void:
 		refresh_view()
 
 
-## 휴식(수면). 안전지대에서만 휴식 회복이 붙는다. (M2: 바깥에서는 습격 위험)
+## 휴식(수면). 안전지대에서만 휴식 회복이 붙는다. 바깥에서는 시간마다 습격 위험이 있다.
 func rest() -> void:
-	if ended:
+	if ended or in_combat:
 		return
-	var hours := float(db.bal("explore.rest_hours", 8.0))
+	var hours := int(db.bal("explore.rest_hours", 8.0))
 	if in_safe_zone():
 		player.pool.tick("rest", hours)
-		_say("explore.rest_safe", {"hours": roundi(hours)}, "good")
+		_say("explore.rest_safe", {"hours": hours}, "good")
+		pass_time(hours)
 	else:
-		_say("explore.rest_unsafe", {"hours": roundi(hours)}, "warn")
-	pass_time(hours)
+		_say("explore.rest_unsafe", {"hours": hours}, "warn")
+		for i in hours:
+			pass_time(1.0)
+			if ended or in_combat:
+				break
+			if monsters_enabled and rng.chance(float(db.bal("monsters.rest_ambush_chance_per_hour", 0.04))):
+				var g := monsters.ambush_near(pos)
+				if g != null:
+					_say("explore.ambush", {}, "danger")
+					engage(g, false)
+					break
 	if not ended:
 		refresh_view()
 
 
 func use_item(item_id: String) -> bool:
-	if ended:
+	if ended or in_combat:
 		return false
 	var ctx := ItemUser.use(effects, player, item_id, rng)
 	if ctx == null:
@@ -190,10 +230,15 @@ func pass_time(hours: float) -> void:
 	var h := minf(hours, hours_until_close())
 	if h > 0.0:
 		clock.advance(h)
+		_since_move += h
 		player.advance_hours(h)
 		time_passed.emit(h)
 	if not ended:
 		_check_closing()
+	if monsters_enabled and not ended and not in_combat and h > 0.0:
+		var g := monsters.update(pos, h, clock.total_hours, in_safe_zone())
+		if g != null:
+			engage(g, false)
 
 
 ## 시야를 다시 계산하고 탐험 기록·발견을 갱신한다.
@@ -205,10 +250,9 @@ func refresh_view() -> void:
 	view_changed.emit()
 
 
-# ── 디버그 ───────────────────────────────────────────────
-
-func debug_teleport(to: Vector2i) -> bool:
-	if not map.is_walkable(to):
+## 순간이동(디버그·함정 등): 시간 없이 위치만 바꾼다.
+func relocate(to: Vector2i) -> bool:
+	if not map.is_walkable(to) or monsters.group_at(to) != null:
 		return false
 	var from := pos
 	pos = to
@@ -218,24 +262,29 @@ func debug_teleport(to: Vector2i) -> bool:
 	return true
 
 
-func debug_reveal() -> void:
-	map.explored.fill(1)
-	view_changed.emit()
+# ── 조우 ─────────────────────────────────────────────────
+
+## 몬스터 무리와 전투를 시작한다(화면이 encounter를 받아 전투 화면을 연다). party_first: 플레이어가 먼저 발견.
+func engage(group: FieldMonsters.Group, party_first: bool) -> void:
+	if in_combat or ended or group == null:
+		return
+	in_combat = true
+	realtime.tick(self, 0.0)
+	encounter.emit(group, party_first)
 
 
-## 폐쇄까지 hours_left만 남도록 시계를 돌린다(개체 상태는 흐르지 않는다).
-func debug_close_in(hours_left: float) -> void:
-	clock.total_hours = maxf(clock.total_hours, close_hours() - hours_left)
-	_check_closing()
-
-
-func nearest_portal() -> Vector2i:
-	var best := Vector2i(-1, -1)
-	for portal: Dictionary in map.portals:
-		var p: Vector2i = portal["pos"]
-		if best.x < 0 or (p - pos).length_squared() < (best - pos).length_squared():
-			best = p
-	return best
+## 전투가 끝났다. result: victory/fled/defeat. 전투 차례 수만큼 시간이 흐른다.
+func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int) -> void:
+	in_combat = false
+	if result == Battle.RESULT_VICTORY:
+		monsters.remove(group, clock.total_hours)
+	elif result == Battle.RESULT_FLED:
+		monsters.set_grace(group, clock.total_hours)
+	if ended:
+		return
+	pass_time(turns * float(db.bal("combat.hours_per_turn", 0.01)))
+	if not ended:
+		refresh_view()
 
 
 # ── 내부 ─────────────────────────────────────────────────
@@ -281,11 +330,13 @@ func _on_enter_cell(from: Vector2i) -> void:
 
 
 func _on_status_changed(status_id: String, active: bool) -> void:
+	_view_dirty = true
 	_say("explore.status_on" if active else "explore.status_off", {"status": DataNames.entry(db, "statuses", status_id)},
 		"warn" if active else "good")
 
 
 func _on_light_out(item_id: String) -> void:
+	_view_dirty = true
 	_say("explore.light_out", {"item": DataNames.entry(db, "items", item_id)}, "warn")
 
 

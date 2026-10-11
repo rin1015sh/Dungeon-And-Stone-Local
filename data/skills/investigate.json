@@ -1,0 +1,14 @@
+{
+  "id": "investigate",
+  "name_ko": "조사",
+  "target": "any_single",
+  "innate": true,
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {"type": "investigate"}
+  ],
+  "desc_ko": "상대를 찬찬히 살펴 알아낸다. 살피는 동안 손은 놀고 있다.",
+  "source": "placeholder"
+}

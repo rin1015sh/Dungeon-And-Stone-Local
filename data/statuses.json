@@ -1,80 +1,229 @@
 [
   {
-    "id": "hungry", "name_ko": "허기", "kind": "debuff",
+    "id": "hungry",
+    "name_ko": "허기",
+    "kind": "debuff",
     "desc_ko": "배가 고프다. 몸이 조금 무겁다.",
-    "modifiers": [{"target": "str", "percent": -0.05}, {"target": "agi", "percent": -0.05}],
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.05
+      },
+      {
+        "target": "agi",
+        "percent": -0.05
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "starving", "name_ko": "굶주림", "kind": "debuff",
+    "id": "starving",
+    "name_ko": "굶주림",
+    "kind": "debuff",
     "desc_ko": "굶주림에 손이 떨린다. 상처도 아물지 않는다.",
-    "modifiers": [{"target": "str", "percent": -0.3}, {"target": "agi", "percent": -0.3}, {"target": "regen:hp", "percent": -1.0}],
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.3
+      },
+      {
+        "target": "agi",
+        "percent": -0.3
+      },
+      {
+        "target": "regen:hp",
+        "percent": -1.0
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "starvation", "name_ko": "아사", "kind": "debuff",
+    "id": "starvation",
+    "name_ko": "아사",
+    "kind": "debuff",
     "desc_ko": "몸이 스스로를 갉아먹는다.",
-    "periodic": [{"trigger": "time", "resource": "hp", "amount": "-{bal.hunger.starvation_hp_per_hour}"}],
+    "periodic": [
+      {
+        "trigger": "time",
+        "resource": "hp",
+        "amount": "-{bal.hunger.starvation_hp_per_hour}"
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "soul_exhaustion", "name_ko": "영혼탈진", "kind": "debuff",
+    "id": "soul_exhaustion",
+    "name_ko": "영혼탈진",
+    "kind": "debuff",
     "desc_ko": "영혼이 바닥났다. 이능을 쓸 수 없다.",
-    "flags": ["no_skills"],
-    "modifiers": [{"target": "int", "percent": -0.2}, {"target": "m_res", "percent": -0.2}],
+    "flags": [
+      "no_skills"
+    ],
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": -0.2
+      },
+      {
+        "target": "m_res",
+        "percent": -0.2
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "bleeding", "name_ko": "출혈", "kind": "debuff", "stackable": true,
-    "duration": {"amount": 3, "unit": "turn"},
-    "periodic": [{"trigger": "turn", "resource": "hp", "amount": "-{bal.status.bleed_per_turn}"}],
+    "id": "bleeding",
+    "name_ko": "출혈",
+    "kind": "debuff",
+    "stackable": true,
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "periodic": [
+      {
+        "trigger": "turn",
+        "resource": "hp",
+        "amount": "-{bal.status.bleed_per_turn}"
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "poison", "name_ko": "중독", "kind": "debuff", "stackable": true,
-    "duration": {"amount": 5, "unit": "turn"},
-    "periodic": [{"trigger": "turn", "resource": "hp", "amount": "-{bal.status.poison_per_turn}"}],
+    "id": "poison",
+    "name_ko": "중독",
+    "kind": "debuff",
+    "stackable": true,
+    "duration": {
+      "amount": 5,
+      "unit": "turn"
+    },
+    "periodic": [
+      {
+        "trigger": "turn",
+        "resource": "hp",
+        "amount": "-{bal.status.poison_per_turn}"
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "stun", "name_ko": "기절", "kind": "debuff",
-    "duration": {"amount": 1, "unit": "turn"},
-    "flags": ["skip_turn"],
+    "id": "stun",
+    "name_ko": "기절",
+    "kind": "debuff",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "flags": [
+      "skip_turn"
+    ],
     "source": "placeholder"
   },
   {
-    "id": "fear", "name_ko": "공포", "kind": "debuff",
-    "duration": {"amount": 3, "unit": "turn"},
-    "flags": ["may_skip_turn"],
-    "modifiers": [{"target": "agi", "percent": -0.1}],
+    "id": "fear",
+    "name_ko": "공포",
+    "kind": "debuff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "may_skip_turn"
+    ],
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.1
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "hyperalgesia", "name_ko": "통각강화", "kind": "debuff",
-    "duration": {"amount": 3, "unit": "turn"},
-    "modifiers": [{"target": "dmg_taken:all", "percent": 0.25}],
+    "id": "hyperalgesia",
+    "name_ko": "통각강화",
+    "kind": "debuff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.25
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "hypothermia", "name_ko": "저체온증", "kind": "debuff",
+    "id": "hypothermia",
+    "name_ko": "저체온증",
+    "kind": "debuff",
     "desc_ko": "몸이 얼어붙는다. 냉기에 두 배로 다친다.",
-    "modifiers": [{"target": "agi", "percent": -0.2}, {"target": "dmg_taken:cold", "percent": 1.0}],
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.2
+      },
+      {
+        "target": "dmg_taken:cold",
+        "percent": 1.0
+      }
+    ],
     "source": "original"
   },
   {
-    "id": "burn", "name_ko": "화상", "kind": "debuff",
-    "duration": {"amount": 3, "unit": "turn"},
-    "periodic": [{"trigger": "turn", "resource": "hp", "amount": "-{bal.status.burn_per_turn}"}],
+    "id": "burn",
+    "name_ko": "화상",
+    "kind": "debuff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "periodic": [
+      {
+        "trigger": "turn",
+        "resource": "hp",
+        "amount": "-{bal.status.burn_per_turn}"
+      }
+    ],
     "source": "placeholder"
   },
   {
-    "id": "stamina_depleted", "name_ko": "기력 고갈", "kind": "debuff",
-    "flags": ["skip_turn"],
+    "id": "stamina_depleted",
+    "name_ko": "기력 고갈",
+    "kind": "debuff",
+    "flags": [
+      "skip_turn"
+    ],
     "source": "placeholder"
   },
   {
-    "id": "stressed", "name_ko": "극심한 긴장", "kind": "debuff",
-    "modifiers": [{"target": "int", "percent": -0.1}],
+    "id": "stressed",
+    "name_ko": "극심한 긴장",
+    "kind": "debuff",
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": -0.1
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "guarding",
+    "name_ko": "방어 태세",
+    "kind": "buff",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.5
+      }
+    ],
     "source": "placeholder"
   }
 ]
