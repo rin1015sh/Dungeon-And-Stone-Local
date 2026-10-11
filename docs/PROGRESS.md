@@ -6,7 +6,7 @@
 
 - **M0 기반: 완료 · 검증됨**, **M1 탐험: 완료 · 검증됨** (Godot 4.7.2, Windows, `tools/check.sh` 전 단계 통과 + 스크린샷 확인)
 - 실행하면 타이틀 → **새 탐험가**(이름·종족·템플릿·스탯 굴림) → **1층 수정동굴**(매번 새로 생성)을 3/4 시점으로 탐험한다. 시야·안개·횃불·허기·시간·층 폐쇄·아사가 작동하고, F1로 디버그 패널을 연다. 층이 닫히거나 죽으면 결과 화면 → 타이틀(도시는 M4).
-- 원격 저장소: GitHub `rin1015sh/Dungeon-And-Stone-Local`의 `main`에 연결됨(바깥 폴더 저장소). 안쪽 `Dungeon And Stone/` 폴더는 예전 클론으로 이제 필요 없다(사용자가 지워도 된다).
+- 원격 저장소: GitHub `rin1015sh/Dungeon-And-Stone-Local`의 `main`에 연결됨(바깥 폴더 저장소). **2026-10-11 커밋 4개(b807905 M2, 83e890a 부드러운 이동, bdd38b7 M3 로직, bf2dc37 M3 UI·문서)는 로컬에만 있고 아직 푸시하지 않았다**(`git push` 필요, 사용자 확인 후). 안쪽 `Dungeon And Stone/` 폴더는 예전 클론으로 이제 필요 없다(사용자가 지워도 된다).
 - **M3 성장: 완료 · 검증됨 (2026-10-11)** — 부드러운 이동(연속 좌표·충돌), 경험치·도감·레벨업, Knowledge(`???`), 마석 드롭, 장비 11칸·격자 가방, 스톤샤드풍 UI(소지품·캐릭터·도감 창, 하단 바·단축칸). 정수는 사용자 요청으로 보류.
 - **M2 전투: 완료 · 검증됨** — 전투·필드 몬스터 구현 위에 2026-10-11 사용자 요청으로 **탐험 실시간화 · 전투 행동창 4개 · 기본 스킬(대화·조사) · 상단 순서 표시 제거**를 반영했다. check.sh 전 단계 통과(테스트 102/102, UI 스모크 4흐름) + 전투·일시정지 스크린샷 확인.
 
@@ -28,9 +28,9 @@
 - [x] 3/4 시점 렌더링: 벽 윗면(어두운 천장)+앞면(돌 줄눈)+모서리·테두리 선, 줄 단위 Y-정렬, 남쪽 벽에 가려지면 실루엣 — 수치는 `render.json.view`
 - [x] FloorGenerator 인터페이스 + 생성기 레지스트리(`src/explore/generators/` 파일 하나 = 생성기 하나)
 - [x] 수정동굴 생성기: 셀룰러 오토마타, 영역 잇기, 고정 랜드마크(대현자 기념비·네모 수정 삼거리·큰바위 옆 연못), 동서남북 포탈, 암흑지대, 빛나는 수정벽, 무작위 시작 위치. 시드 결정적·전부 연결됨(테스트)
-- [x] 그리드 이동(4방향, 누르고 있으면 반복), 벽에 막히면 시간 0
+- [x] 그리드 이동(4방향, 누르고 있으면 반복), 벽에 막히면 시간 0 — **2026-10-11 부드러운 8방향 연속 이동·실시간 시간으로 대체됨**(아래 세션 기록)
 - [x] FOV(그림자 투사) + 안개 기억 + 횃불(유효 시야 = min(층 상한, max(수정 빛, 광원, 최소) + 스탯))
-- [x] TimeSystem·GameClock: 이동·대기·휴식이 시간 소모, 폐쇄 경고(24/6/1h)·강제 귀환, `EventBus.time_advanced`
+- [x] TimeSystem·GameClock: 이동·대기·휴식이 시간 소모(2026-10-11부터 이동은 시간 소모 없음, 시간은 실시간으로 흐름), 폐쇄 경고(24/6/1h)·강제 귀환, `EventBus.time_advanced`
 - [x] 포탈(발견·살피기, 2층은 M6), 기념비(살피기), 안전지대(휴식 회복)
 - [x] 디버그 패널(F1): 시간 스킵, 폐쇄 직전, 안개 걷기, 기념비/포탈로 이동, 레벨·근력·민첩, 허기 0, 회복, 무적, 시드 지정 재생성. (정수 지급 M3·몬스터 소환 M2·포탈 개방일 M4는 자리만)
 - [x] 연출: 꼭짓점 색 조명(정적 광원 LightField + 시야 빛), 횃불 PointLight2D 빛 번짐·불꽃 흔들림, 약한 CanvasModulate, 후처리 셰이더(채도·비네트·필름 그레인)
@@ -44,8 +44,8 @@
 - 테스트 방법: `GODOT=<경로> bash tools/check.sh`, `tools/screenshot.tscn -- --screen=explore --torch --debug`, README의 M1 체크리스트.
 
 ### M2 전투 ✅
-- [x] Timeline(CTB: 틱마다 gauge += agi, 100 이상이면 행동, delay_cost), 다음 10행동 미리보기
-- [x] CombatManager + 전투 화면(같은 3/4 무대에서 대열 마주보기), 커맨드 UI(공격·스킬·방어·아이템·도주·정보·약점 노리기)
+- [x] Timeline(CTB: 틱마다 gauge += agi, 100 이상이면 행동, delay_cost), 다음 10행동 미리보기(로직만 — 화면 표시는 2026-10-11 제거)
+- [x] CombatManager + 전투 화면(같은 3/4 무대에서 대열 마주보기), 커맨드 UI(2026-10-11 공격·방어·스킬·도주 4개로 재구성: 약점 노리기 → 공격 대상 목록, 아이템 → 스킬 메뉴 "아이템…", 정보 → 기본 스킬 '조사')
 - [x] 전투 효과 핸들러: damage(§6.4 공식·치명타·치명상), flee 등 → `check_skill_effects = true`로 스킬 효과도 엄격 검사
 - [x] Monster(Actor 상속, overrides로 고정 최대치) / Party, 탐험 맵에 보이는 적·경계/추적·접촉 시 전투 시작
 - [x] 1층 몬스터 4종(칼날늑대·노움·구울·고블린) + 규칙 기반 AI(`ai: [{if, use}]` 조건 레지스트리), 상성·약점
@@ -54,7 +54,7 @@
 **M2 범위 / 완료 기준 / 테스트 방법** (2026-10-10 시작)
 - 범위: 위 항목 전부. 경험치·드롭·정수·Knowledge(정보의 `???` 공개)는 M3, 동료 파티는 M4. 전투는 플레이어 단독 파티.
 - 완료 기준: ① check.sh 통과 ② Timeline 테스트(민첩 2배 ≈ 행동 2배, delay_cost, 미리보기 = 실제 순서) ③ 피해 공식 테스트(방어·약점·면역·dmg_taken·방어 태세·치명타·치명상) ④ 전투 테스트(끝까지 진행, 도주, 스킬 코스트·쿨타임·영혼탈진 봉인, 몬스터 AI) ⑤ 필드 몬스터 테스트(지역 스폰, 추적·영역 이탈, 접촉 시 전투, 노움 은신, 휴식 습격, 리스폰) ⑥ UI 스모크로 탐험 → 몬스터 접촉 → 전투 화면 → 승리/도주 → 탐험 복귀 ⑦ 스크린샷으로 필드 몬스터·전투 화면 확인.
-- 테스트 방법: check.sh, `tools/screenshot.tscn -- --screen=combat`, README M2 체크리스트.
+- 테스트 방법: check.sh, `tools/screenshot.tscn -- --screen=explore --combat`, README M2 체크리스트.
 
 **2026-10-11 변경 요청(실시간 탐험 · 전투 행동창) — 범위 / 완료 기준 / 테스트 방법**
 - 범위: ① 탐험 시간 실시간 진행(가만히 있어도 시간·허기·몬스터 진행, 이동은 시간 대신 민첩 이동 간격) ② 일시정지·디버그·입력·포커스·전투 중 시간 정지, 전투 끝나면 차례 수만큼 반영 ③ 행동창 공격/방어/스킬/도주(약점 노리기 → 공격 안, 아이템 → 스킬 안) ④ 모든 아군 기본 스킬 대화·조사(조사 = 옛 정보, 차례 소모 / 대화 = 마수에게 무효) ⑤ 상단 순서 표시 제거(로직 유지) ⑥ 전투 상태(phase)·중복 실행 방지·잘못된 행동은 차례 미소모.
@@ -63,7 +63,7 @@
   - [x] 플레이어가 정지해도 적이 움직이고 붙으면 전투 — `test_monsters_move_in_realtime_while_player_stands_still`
   - [x] 전투 진입 시 시간 정지, 이탈 시 차례 수만큼 반영 후 다시 흐름 — 같은 테스트 + UI 스모크
   - [x] 일시정지·디버그·입력·포커스 정지, 프레임 시간 자르기 — `test_realtime_frame_clamp_and_pause`, UI 스모크(Esc)
-  - [x] 이동 간격은 민첩 비례, 연타해도 빨라지지 않음 — `test_move_interval_by_agility`
+  - [x] 이동 속도는 민첩 비례(처음엔 "이동 간격"이었으나 부드러운 이동으로 바뀜) — 현재 `test_move_speed_by_agility`, `test_diagonal_is_not_faster`
   - [x] 행동창 네 항목 — UI 스모크(버튼 = 공격·방어·스킬·도주, 스킬 → 조사 → 대상, 공격 → 대상 반복으로 승리), 기존 방어·도주 테스트
   - [x] 모든 아군이 대화·조사 보유(동료 템플릿 포함), 잊을 수 없음, 중복 없음, 몬스터 미보유 — `test_party_has_innate_talk_and_investigate`
   - [x] 조사가 행동 기회를 쓴다 — `test_investigate_uses_a_turn`, UI 스모크
@@ -87,7 +87,48 @@
 **M3 범위 / 완료 기준 / 테스트 방법** (2026-10-11)
 - 범위: 위 항목. 레퍼런스: 스톤샤드 인벤토리(장비 인형 + 크기 있는 격자 + 돈 + 툴팁 비교)와 하단 바(체력·에너지 막대 + 단축칸 + 좌우 창 버튼), 사용자 첨부 스크린샷 4장.
 - 완료 기준: ① check.sh 통과 ② 인벤토리 테스트(격자 배치·겹침·쌓기·자리 없음·이동·저장 왕복) ③ 장비 테스트(슬롯·양손·반지 2칸·수정자 부착/해제·무기 피해) ④ 성장 테스트(같은 몬스터는 첫 처치만 경험치, 레벨업·영혼력 증가, 상한) ⑤ Knowledge 테스트(조사·상성 공개, `???`) ⑥ 전리품 테스트(마석 등급·확률, 가방이 가득 찼을 때) ⑦ UI 스모크: I/C/B 창 열기(시간 정지), 장착·해제, 단축칸 사용, 전투 승리 후 경험치·마석 ⑧ 스크린샷으로 소지품 창·하단 바 확인.
-- 테스트 방법: check.sh, `tools/screenshot.tscn -- --screen=explore --inventory`, README M3 체크리스트.
+- 테스트 방법: check.sh, `tools/screenshot.tscn -- --screen=explore --loot --inventory --character`(또는 `--bestiary`, `--tooltip`), README M3 체크리스트.
+
+## 2026-10-11 세션 작업 기록 (다른 세션 이어받기용)
+
+사용자 요청 순서: ① 실시간 탐험 + 행동창 4개 + 기본 스킬 대화·조사 + 상단 순서 표시 제거 ② 플레이어·몬스터 부드러운 이동 + 물리 검토 ③ M3(인벤토리·UI는 스톤샤드와 첨부 스크린샷 참고). 사용자 결정: **모든 몬스터는 대화가 통하지 않는다**, **정수 설정은 계속 보류**.
+
+**A. 실시간 탐험 · 전투 행동창 (커밋 b807905에 포함)**
+- `src/explore/RealtimeDriver.gd`: 정지 사유(menu·debug·typing·focus·window) 모음, 매 프레임 `pass_time`(프레임 최대 `realtime_max_frame_sec` 0.25초, `realtime_max_step_sec` 0.05초로 쪼갬), 실제 1초 = `realtime_hours_per_sec` 0.1시간. 세션을 필드로 들지 않는다(순환 참조 누수 방지 — 실제로 겪음).
+- 일시정지 키 `pause`(Esc/P) + 화면 가운데 표시. 대기(Space)=1시간 즉시, 휴식(Z)=8시간 유지. 전투 시간은 끝날 때 차례 수 × `combat.hours_per_turn`.
+- `Battle.phase`(idle → await_input → executing → turn_end → ended), `act()`는 bool, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모. 몬스터 AI는 `MonsterAi`로 분리. 
+- 기본 스킬: `data/skills/talk.json`, `investigate.json`(`"innate": true`), 효과 `effects/talk.gd`(말이 통하는지 = `Actor.understands_speech()`, Monster는 데이터 `talk.understands`, 기본 false → 계열별 `combat.talk_no_reply_<계열>` 문장만), `effects/investigate.gd`. 부여 = `balance.party.innate_skills` + `PlayerCharacter.grant_innate_skills`(중복 없음), `Actor.forget_skill`은 innate 거부.
+- `CommandMenu` 4개 버튼, `CombatScreen`에서 `TimelineBar` 삭제(파일도 삭제), 재진입 방지 `_looping`, AI 실패 시 기본 공격 → 방어.
+- 덤으로 고친 버그: 전투 카드 도형 위치(`FigurePainter.paint`에 `base` 변환 인자), 행동창 지연 포커스 오류(`CommandMenu._grab_first`).
+
+**B. 부드러운 이동 (커밋 83e890a)**
+- `src/explore/Kinematics.gd`: 반폭 0.3칸 AABB vs 걸을 수 없는 칸, 축 분리 미끄러짐, 0.25칸 분할(터널링 방지), 모서리 보정 0.45칸. **Godot 물리 엔진은 쓰지 않음**(이유: ASSUMPTIONS V1).
+- `ExploreSession`: `fpos`(연속 좌표, 칸 중심 = x+0.5) + `pos`(중심 칸), `move_dir(dir, real_sec)`(실시간 입력), `try_move(dir)`(1칸 거리, 테스트·디버그·캡처용), `enter_cell`, 시그널 `body_moved`. 이동 로직은 `src/explore/PlayerMotion.gd`.
+- 몬스터: `src/explore/MonsterSteering.gd`(decide/walk/거리 장 캐시/경유점), `FieldMonsters.Group`에 `fpos`·`waypoint`·`place(cell)`, `update(player: Vector2, …)`, `touching(player, delta)`. 닿음 = `monsters.contact_tiles` 1.05, 직접 추적 `direct_chase_tiles` 2.0.
+- 그리기: `FloorView.feet_of(fpos)`, ActorView 트윈 제거, MonsterView는 매 갱신 위치 직접 설정. 입력 8방향(`ExploreScreen._input_dir`).
+- 새 balance 키: `explore.body_half_extent/corner_assist/max_substep_tiles/realtime_max_step_sec`, `monsters.contact_tiles/direct_chase_tiles/body_half_extent`. render `move_tween_sec/move_first_delay_sec/move_repeat_sec` 삭제.
+
+**C. M3 로직 (커밋 bdd38b7)**
+- `src/items/`: `ItemInfo`(size/stack/equip/icon/color/price), `Inventory`(격자 10×6, 쌓기·자리 찾기·move_stack·place·take_stack·fits·money, 옛 API 유지), `Equipment`(11칸, 양손, 반지 l/r, `equip:<칸>` 수정자), `InventoryActions`(가방↔장비, 자리 없으면 실패).
+- `src/progress/`: `Progression`(exp_total·kills·portals_opened, `level.exp_table`, 상한 `max_initial` 5), `Knowledge`(seen/stats/aff), `Loot`(마석 `magic_stone_<등급>` 확률 `loot.magic_stone_chance` 0.85 + 몬스터 `drops`), `Rewards.grant`(공적·전리품·레벨업 메시지).
+- 연결: `Actor.equipment`·`weapon_attack()`·`base_attack_type()`, `DamageCalc.attack_power`가 무기 공격력 사용, `BattleKnowledge`(전투 시작 = seen, 명중 = 상성 기록), 조사 메시지에 스탯·상성(모르면 ???), `ExploreSession.resolve_encounter(group, result, turns, killed)`가 보상 지급.
+- `PlayerCharacter`: `progression`·`knowledge`·`hotbar`(10칸, `auto_fill_hotbar`, `set_hotbar`), 시작 장비 착용(`classes.json start_equipment`), 시작 돈 `char_creation.start_stones` 500, 저장용 `progress_to_dict/progress_load_dict`(M4 저장 시스템이 쓸 것).
+- 데이터: 아이템 20개 추가(무기 5·방어구 11·마석 2·돌빵·중급 포션), 기존 3개에 size/icon/color, `tags.equip_slots`·`tags.rarities`, 몬스터 `drops`, balance `inventory`·`loot`·`level.exp_table`. 검증 규칙(크기·장비 칸·무기 유형·drops·start_equipment) 추가.
+
+**D. M3 UI (커밋 bf2dc37)**
+- `src/ui/theme/GothicStyle.gd`(돌판·칸·이름판·아치 그리기), `ui/widgets/`: `GothicWindow`, `InventoryGrid`(끌어놓기·툴팁·오른쪽 클릭), `PaperDoll`(+`EquipSlot`), `ItemTooltip`(비교), `ItemIconPainter`(아이템 그림 코드로), `ItemDragPreview`, `BottomBar`(+`HotbarSlot`), `ui/windows/`: `InventoryWindow`(정렬 포함), `CharacterWindow`, `BestiaryWindow`, `WindowManager`(창 열리면 시간 정지 "window").
+- `ExploreHud`는 왼쪽 위 정보만(자원·소지품 패널 제거 → 하단 바), 기록창은 왼쪽 아래. 새 키: `inventory`(I/Tab), `character`(C), `bestiary`(B), `hotbar_1`~`hotbar_0`(1~0), Esc = 창 닫기 우선. 새 탐험가 화면에 "(착용)" 장비 표시.
+- `tools/screenshot.gd` 옵션: `--combat --pause --loot --inventory --character --bestiary --tooltip`(`--walk`는 1칸씩 `try_move`).
+- 스모크: `_realtime_combat_flow`(실시간·일시정지·행동창·조사·승리 공적), `_inventory_flow`(창·끌어놓기 장착/해제·오른쪽 클릭·단축칸·C/B).
+
+**테스트 목록(추가·변경)**: `test_kinematics.gd` 5개, `test_items.gd` 7개, `test_progress.gd` 7개, `test_explore_rules`의 `test_move_speed_by_agility`·`test_diagonal_is_not_faster`·`test_time_flows_while_standing_still`·`test_realtime_frame_clamp_and_pause`, `test_field_monsters`의 `test_monsters_move_in_realtime_while_player_stands_still`, `test_combat`의 대화·조사·잘못된 행동·민첩 순서 테스트. 합계 122개 통과.
+
+**미확인·남은 문제**
+- 실제 키보드 플레이 체감(실시간 속도 1초=6분, 이동 속도, 모서리 보정), 웹 내보내기 성능 — 미확인.
+- 밸런스: 장비로 1층이 쉬워짐(ASSUMPTIONS C8) — 미조정.
+- 하단 바 폭이 넓다(화면의 약 77%) — 사용자 판단 대기.
+- 300줄 초과: `ExploreSession.gd` 355줄, `Battle.gd` 317줄(분리 후보: 휴식·습격, 보상 처리).
+- 내구도·무게·상점·정수·포탈 최초 개방 공적 호출 — 미구현(범위 밖/보류).
 
 ### M4 도시 ⬜
 - [ ] 길드(정보·고용), 환전, 잡화점, 대장간, 대신전, 여관, 월 달력(포탈 개방일)
