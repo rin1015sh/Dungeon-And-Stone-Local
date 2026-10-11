@@ -4,6 +4,7 @@ extends Node
 ## --screen: title(기본) / foundation / create / explore
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
+## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 
 var _main: Control
 var _args: Dictionary = {"screen": "title", "out": "user://screenshot.png", "seed": "0", "walk": "0"}
@@ -48,6 +49,25 @@ func _run() -> void:
 			await _frames(2)
 		if _args.has("reveal"):
 			ExploreDebug.reveal(explore.session)
+		if _args.has("loot"):
+			var pc := explore.session.player
+			pc.inventory.add("magic_stone_9", 7)
+			pc.inventory.add("steel_spear")
+			pc.inventory.add("copper_ring")
+			pc.inventory.add("iron_helm")
+			pc.inventory.add("medium_potion", 2)
+			for id: String in ["goblin", "blade_wolf"]:
+				pc.knowledge.see(id)
+				pc.progression.gain(pc, pc.progression.record_kill(pc.db, id))
+			pc.knowledge.learn_stats("blade_wolf")
+			pc.knowledge.learn_affinity("blade_wolf", "lightning", 1.5)
+		for w: String in ["inventory", "character", "bestiary"]:
+			if _args.has(w):
+				explore.windows().open(w)
+		if _args.has("tooltip"):  # 툴팁 모양 확인: 가방의 창(장착 중인 무기와 비교)
+			var tip := ItemTooltip.build(explore.session.db, "steel_spear", explore.session.player)
+			explore.add_child(tip)
+			tip.position = Vector2(80, 80)
 		if _args.has("pause"):
 			explore.set_paused(true)
 		if _args.has("combat"):

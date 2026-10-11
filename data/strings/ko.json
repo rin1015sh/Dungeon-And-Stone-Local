@@ -105,7 +105,8 @@
     "items_none": "빈손이다.",
     "enter_header": "차원광장",
     "floor_hint": "포탈이 열렸다. 들어가면 {floor}의 어딘가에 떨어진다. 돌아오는 길은 층이 닫힐 때뿐이다.",
-    "enter": "미궁으로 들어간다"
+    "enter": "미궁으로 들어간다",
+    "equipped_item": "{item} (착용)"
   },
   "explore": {
     "enter": "{floor}. 발밑이 차갑다. 포탈은 등 뒤에서 닫혔다.",
@@ -140,7 +141,7 @@
     "hud_status_none": "상태: 이상 없음",
     "hud_items": "소지품: {list}",
     "hud_items_none": "소지품: 없음",
-    "keys": "이동 {up}{left}{down}{right}/방향키 · 1시간 대기 {wait} · 휴식 {rest} · 횃불 {torch} · 식사 {eat} · 살피기 {interact} · 일시정지 {pause} · 디버그 {debug}",
+    "keys": "이동 {up}{left}{down}{right}/방향키(대각선 가능) · 단축칸 1~0 · 소지품 {inventory} · 캐릭터 C · 도감 B · 1시간 대기 {wait} · 휴식 {rest} · 횃불 {torch} · 식사 {eat} · 살피기 {interact} · 일시정지 {pause} · 디버그 {debug}",
     "paused": "일시정지",
     "paused_hint": "시간이 멈췄다. {key}로 계속한다.",
     "ambush": "잠결에 무언가가 다가왔다!"
@@ -259,5 +260,54 @@
     "loot": "{item} ×{count}을(를) 주웠다.",
     "bag_full": "가방에 자리가 없어 {item} ×{count}을(를) 두고 간다.",
     "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots})."
+  },
+  "window": {
+    "close": "닫기"
+  },
+  "inventory": {
+    "title": "소지품",
+    "equipped": "장착 중",
+    "weapon_line": "공격력 {attack} · {type}",
+    "two_handed": "양손",
+    "size": "크기",
+    "price": "◆ {price} 스톤",
+    "max_of": "{res} 최대치",
+    "regen_of": "{res} 재생",
+    "eff_restore": "{res} +{amount}",
+    "eff_light": "빛 {m}m · {hours}시간",
+    "eff_status": "{status} ({chance}%)",
+    "sort": "정렬",
+    "money": "◆ {amount}",
+    "summary": "공격 {attack} ({type}) · 물리내성 {p_res}"
+  },
+  "character": {
+    "title": "캐릭터",
+    "name_line": "{name} · {race} {template}",
+    "level_line": "레벨 {level} · 공적 {exp} / {next}",
+    "max": "최대",
+    "attack": "공격력",
+    "crit": "치명타율",
+    "attack_type": "기본 공격: {type}",
+    "essence_slots": "정수 슬롯 {n}칸",
+    "essence_empty": "비어 있는 정수 슬롯",
+    "essence_note": "정수(흡수·삭제)는 설정 자료를 받은 뒤에 열린다. 레벨이 오르면 슬롯이 늘어난다."
+  },
+  "bestiary": {
+    "title": "도감",
+    "entry": "{name} ({kills})",
+    "empty": "아직 마주친 몬스터가 없다.",
+    "head": "{name} — {grade}등급 · {family}",
+    "kills": "처치 {kills} · 첫 처치 공적 {exp}",
+    "stats": "생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}",
+    "stats_unknown": "생명력·스탯: ??? (전투 중 '조사'로 알아낸다)",
+    "affinity": "상성: {aff}"
+  },
+  "bottom": {
+    "inventory": "소지품 {key}",
+    "character": "캐릭터 {key}",
+    "bestiary": "도감 {key}",
+    "wait": "대기 {key}",
+    "rest": "휴식 {key}",
+    "pause": "정지 {key}"
   }
 }

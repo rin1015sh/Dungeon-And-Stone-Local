@@ -5,6 +5,7 @@ extends Node
 ##   1) 기반 점검: 버튼으로 허기 임계값·영혼탈진·사망 판정까지
 ##   2) 새 탐험가 → 미궁 입장 → 이동·대기·횃불 → 디버그 패널 → 폐쇄 → 강제 귀환 화면 → 타이틀
 ##   3) 새 탐험가 → 굶주림 → 아사 → 사망 화면 → 타이틀
+##   5) 새 탐험가 → 소지품 창(시간 정지)·끌어놓기 장착/해제·오른쪽 클릭 장착·단축칸 사용·캐릭터/도감 창
 ##   4) 새 탐험가 → 가만히 있어도 시간이 흐름 → 일시정지 → 몬스터 소환 → 전투(행동창 4개·조사·공격) → 탐험 복귀
 ## 오류 없이 끝나면 종료 코드 0.
 
@@ -28,6 +29,7 @@ func _run() -> void:
 	await _closing_flow()
 	await _starvation_flow()
 	await _realtime_combat_flow()
+	await _inventory_flow()
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
 	get_tree().quit(1 if _failed else 0)
@@ -164,14 +166,67 @@ func _realtime_combat_flow() -> void:
 	_expect(not combat.battle.result.is_empty(), "전투가 끝난다 (%s)" % combat.battle.result)
 	_expect(is_equal_approx(s.clock.total_hours, tc), "전투 중에는 탐험 시간이 멈춘다")
 	var turns := combat.battle.turns
+	var won := combat.battle.result == Battle.RESULT_VICTORY
 	_press(combat, Strings.t("combat.continue"))
 	await _frames(3)
 	_expect(explore.combat_screen() == null and not s.in_combat, "탐험으로 복귀")
+	if won:
+		_expect(s.player.progression.exp_total > 0, "첫 처치 공적")
 	_expect(s.clock.total_hours >= tc + turns * float(DataRegistry.db.bal("combat.hours_per_turn")) - 0.0001, "전투 차례만큼 시간 반영")
 	var tr := s.clock.total_hours
 	await _seconds(0.4)
 	_expect(s.clock.total_hours > tr, "복귀 뒤 다시 시간이 흐른다")
 	GameState.debug_fast_combat = false
+	await _action("debug_toggle")
+	_press(explore, Strings.t("debug.close_soon"))
+	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
+	var end := (await _screen(EndScreen)) as EndScreen
+	if _expect(end != null, "결과 화면"):
+		_press(end, Strings.t("end.to_title"))
+
+
+## 소지품 창 · 장비 끌어놓기 · 단축칸 · 캐릭터/도감 창
+func _inventory_flow() -> void:
+	var explore := await _enter_dungeon("소지품 탐험가")
+	if explore == null:
+		return
+	var s := explore.session
+	var pc := s.player
+	await _action("inventory")
+	var win := explore.windows().window("inventory") as InventoryWindow
+	if not _expect(win != null, "I로 소지품 창"):
+		return
+	_expect(s.realtime.is_paused("window"), "창이 열리면 시간이 멈춘다")
+	var t0 := s.clock.total_hours
+	await _seconds(0.3)
+	_expect(is_equal_approx(s.clock.total_hours, t0), "창이 열린 동안 시계가 그대로")
+	pc.inventory.add("steel_spear")
+	var idx := pc.inventory.stacks().size() - 1
+	var slot: PaperDoll.EquipSlot = win.doll.slots["main_hand"]
+	_expect(slot.drop({"type": "item", "from": "grid", "index": idx, "id": "steel_spear"}), "창을 주무기 칸에 끌어놓기")
+	_expect(pc.equipment.item_in("main_hand") == "steel_spear" and pc.inventory.count("iron_mace") == 1, "창 장착, 철퇴는 가방으로")
+	_expect(pc.equipment.is_empty("off_hand"), "양손 무기면 방패가 빠진다")
+	var spot := pc.inventory.free_spot("leather_boots")
+	_expect(win.grid.drop({"type": "item", "from": "slot", "slot": "feet", "id": "leather_boots"}, spot), "장화를 가방으로 끌어 벗기")
+	_expect(pc.equipment.is_empty("feet") and pc.inventory.count("leather_boots") == 1, "장화가 가방에")
+	for i in pc.inventory.stacks().size():
+		if pc.inventory.stacks()[i]["id"] == "leather_boots":
+			win.grid.activated.emit(i)
+			break
+	_expect(pc.equipment.item_in("feet") == "leather_boots", "오른쪽 클릭으로 다시 장착")
+	await _action("pause")
+	_expect(not explore.windows().any_open() and not s.realtime.is_paused("window"), "Esc로 창 닫기 → 시간 다시 흐름")
+	_expect(not explore.is_paused(), "창을 닫은 Esc는 일시정지가 아니다")
+	explore.bottom_bar().slot(4).assign("medium_potion")
+	_expect(pc.hotbar[4] == "medium_potion", "단축칸에 등록")
+	_expect(pc.hotbar[0] == "torch", "횃불은 1번 칸")
+	await _action("hotbar_1")
+	_expect(pc.light.is_lit(), "1번 키로 횃불")
+	await _action("character")
+	_expect(explore.windows().is_open("character"), "C로 캐릭터 창")
+	await _action("bestiary")
+	_expect(explore.windows().is_open("bestiary"), "B로 도감 창")
+	explore.windows().close_all()
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))

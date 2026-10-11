@@ -139,6 +139,8 @@ func _roll() -> void:
 	_reroll_btn.text = Strings.t("create.reroll", {"left": _rerolls_left})
 	_reroll_btn.disabled = _rerolls_left <= 0
 	var items := PackedStringArray()
+	for id in _pc.equipment.equipped_ids():
+		items.append(Strings.t("create.equipped_item", {"item": DataNames.entry(_db, "items", id)}))
 	for id in _pc.inventory.ids():
 		items.append("%s ×%d" % [DataNames.entry(_db, "items", id), _pc.inventory.count(id)])
 	_items_label.text = "\n".join(items) if not items.is_empty() else Strings.t("create.items_none")

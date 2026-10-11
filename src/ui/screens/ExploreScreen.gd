@@ -1,9 +1,10 @@
 class_name ExploreScreen
 extends Control
-## 탐험 화면: 3/4 시점 월드(SubViewport) + HUD + 기록창 + 디버그 패널(F1).
+## 탐험 화면: 3/4 시점 월드(SubViewport) + 왼쪽 위 정보(HUD) + 왼쪽 아래 기록창 + 하단 바(BottomBar) +
+## 창(소지품 I · 캐릭터 C · 도감 B, WindowManager) + 디버그 패널(F1).
 ## 키 입력을 ExploreSession에 넘기고, 세션 시그널로 그림·기록을 갱신한다.
 ## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
-## 입력칸 입력·창 포커스 잃음·전투 중에는 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
+## 입력칸 입력·창 포커스 잃음·전투 중·창(소지품 등)이 열려 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
 
 signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망)
 signal regenerate_requested(seed_value: int)
@@ -18,6 +19,8 @@ var _debug: DebugPanel
 var _ended: bool = false
 var _combat: CombatScreen = null
 var _pause_overlay: Control
+var _bar: BottomBar
+var _windows: WindowManager
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -34,11 +37,30 @@ func _ready() -> void:
 	log_panel.translucent = true
 	add_child(log_panel)
 	var m := UiTheme.metric("margin", 16)
-	log_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	log_panel.offset_left = -m - UiTheme.metric("explore_log_width", 380)
-	log_panel.offset_right = -m
-	log_panel.offset_top = m
-	log_panel.offset_bottom = m + UiTheme.metric("explore_log_height", 260)
+	_bar = BottomBar.new()
+	_bar.setup(session.player)
+	add_child(_bar)
+	_bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_bar.offset_left = -_bar.get_combined_minimum_size().x * 0.5
+	_bar.offset_right = _bar.get_combined_minimum_size().x * 0.5
+	_bar.offset_bottom = -m * 0.5
+	_bar.offset_top = _bar.offset_bottom - _bar.get_combined_minimum_size().y
+	_bar.window_requested.connect(func(kind: String) -> void: _windows.toggle(kind))
+	_bar.action_requested.connect(_on_bar_action)
+	_bar.use_requested.connect(_use_item)
+	log_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	log_panel.offset_left = m
+	log_panel.offset_right = m + UiTheme.metric("explore_log_width", 380)
+	log_panel.offset_bottom = _bar.offset_top - m * 0.5
+	log_panel.offset_top = log_panel.offset_bottom - UiTheme.metric("explore_log_height", 200)
+	_windows = WindowManager.new()
+	_windows.setup(session.player)
+	add_child(_windows)
+	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_windows.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("window", on))
+	_windows.use_requested.connect(_use_item)
 	_debug = DebugPanel.new()
 	_debug.bind(session)
 	_debug.visible = false
@@ -88,10 +110,27 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _ended or _typing() or _combat != null:
 		return
 	if event.is_action_pressed("pause"):
-		set_paused(not is_paused())
+		if _windows.any_open():
+			_windows.close_all()
+		else:
+			set_paused(not is_paused())
 		get_viewport().set_input_as_handled()
 		return
 	if is_paused():
+		return
+	for kind: String in WindowManager.KINDS:
+		if event.is_action_pressed(kind):
+			_windows.toggle(kind)
+			get_viewport().set_input_as_handled()
+			return
+	for i in PlayerCharacter.HOTBAR_SIZE:
+		if event.is_action_pressed("hotbar_%d" % ((i + 1) % 10)):
+			var id: String = session.player.hotbar[i]
+			if not id.is_empty():
+				_use_item(id)
+			get_viewport().set_input_as_handled()
+			return
+	if _windows.any_open():
 		return
 	var handled := true
 	if event.is_action_pressed("wait"):
@@ -114,6 +153,35 @@ func is_debug_open() -> bool:
 	return _debug.visible
 
 
+func windows() -> WindowManager:
+	return _windows
+
+
+func bottom_bar() -> BottomBar:
+	return _bar
+
+
+## 소지품 사용(단축칸·소지품 창). 탐험 규칙(ExploreSession)이 판정한다.
+func _use_item(item_id: String) -> void:
+	if _ended or _combat != null:
+		return
+	session.use_item(item_id)
+	_windows.refresh()
+	_bar.refresh()
+
+
+func _on_bar_action(action: String) -> void:
+	if _ended or _combat != null:
+		return
+	match action:
+		"wait":
+			session.wait()
+		"rest":
+			session.rest()
+		"pause":
+			set_paused(not is_paused())
+
+
 ## 일시정지 메뉴: 시간이 멈추고 이동·단축키를 막는다.
 func set_paused(on: bool) -> void:
 	session.realtime.set_paused("menu", on)
@@ -134,6 +202,7 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
 	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, party_first)
 	_debug.visible = false
+	_windows.close_all()
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
 	add_child(_combat)

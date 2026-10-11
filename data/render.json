@@ -65,7 +65,20 @@
     "combat_stage_gap": 160,
     "combat_bottom_height": 230,
     "combat_button_width": 150,
-    "float_text_sec": 0.8
+    "float_text_sec": 0.8,
+    "inv_cell": 38,
+    "inv_window_width": 432,
+    "doll_slot": 58,
+    "doll_ring": 30,
+    "window_header_height": 92,
+    "tooltip_width": 270,
+    "hotbar_slot": 46,
+    "bottom_bar_width": 720,
+    "bar_big_height": 22,
+    "side_button": 40,
+    "char_window_width": 420,
+    "bestiary_window_width": 640,
+    "window_height": 660
   },
   "font": {
     "path": "res://assets/fonts/NotoSansKR-Regular.otf",
@@ -94,6 +107,24 @@
     "log_system": "#8f8aa8",
     "log_good": "#7d9a68",
     "log_warn": "#b08a3e",
-    "log_danger": "#c0473d"
+    "log_danger": "#c0473d",
+    "frame": "#26242b",
+    "frame_edge": "#4d4955",
+    "frame_light": "#6a6573",
+    "frame_dark": "#0f0e12",
+    "slot": "#151419",
+    "slot_border": "#2c2a31",
+    "slot_hover": "#2f2b36",
+    "slot_ok": "#3e5a3a",
+    "slot_bad": "#5a2a2a",
+    "plaque": "#1b1a20",
+    "gold": "#c9a24a",
+    "stat_pos": "#7fae6a",
+    "stat_neg": "#c0473d",
+    "bar_hp": "#9b2a2a",
+    "bar_soul": "#2f5a9b",
+    "bar_hunger": "#8a6d3b",
+    "arch": "#1f1d24",
+    "arch_line": "#3a3742"
   }
 }
