@@ -39,23 +39,49 @@ func _b(path: String) -> float:
 	return float(db.bal(path, 0.0))
 
 
-func test_move_interval_by_agility() -> void:
+func test_move_speed_by_agility() -> void:
 	var s := _session(5, 0.0)
 	assert_near(s.move_hours(), _b("explore.move_hours_base"), 0.000001, "민첩 0")
+	var d := Vector2(_open_dir(s))
 	var t0 := s.clock.total_hours
-	var d := _open_dir(s)
-	assert_true(s.try_move(d))
-	assert_near(s.clock.total_hours, t0, 0.000001, "이동 자체는 시간을 쓰지 않는다(시간은 실시간으로 흐른다)")
-	var moved := 0
-	for i in 10:
-		if s.try_move(-d if i % 2 == 0 else d):
-			moved += 1
-	assert_eq(moved, 0, "이동 간격이 차기 전에는 연타해도 움직이지 않는다")
-	s.pass_time(s.move_hours())
-	assert_true(s.try_move(-d), "간격만큼 시간이 흐르면 다시 움직인다")
+	var f0 := s.fpos
+	s.move_dir(d, 0.05)
+	var speed := _b("explore.realtime_hours_per_sec") / s.move_hours()
+	assert_near(s.fpos.distance_to(f0), 0.05 * speed, 0.0001, "실제 0.05초만큼 연속으로 걷는다(%.3f칸)" % (0.05 * speed))
+	assert_near(s.clock.total_hours, t0, 0.000001, "걷기 자체는 시간을 쓰지 않는다(시간은 실시간으로 흐른다)")
+	s.realtime.set_paused("menu", true)
+	var f1 := s.fpos
+	s.move_dir(d, 0.05)
+	assert_eq(s.fpos, f1, "일시정지 중에는 걷지 않는다")
 	var fast := _session(5, 50.0)
 	assert_near(fast.move_hours(), _b("explore.move_hours_base") / (1.0 + 50.0 * _b("explore.move_agi_coef")), 0.000001)
 	assert_true(fast.move_hours() < s.move_hours(), "민첩이 높으면 빠르다")
+	var g0 := fast.fpos
+	fast.move_dir(Vector2(_open_dir(fast)), 0.05)
+	assert_true(fast.fpos.distance_to(g0) > 0.05 * speed * 1.5, "같은 시간에 더 멀리 간다")
+
+
+func test_diagonal_is_not_faster() -> void:
+	var s := _session()
+	var open := Vector2i(-1, -1)
+	for i in s.map.tiles.size():
+		var p := s.map.pos_of(i)
+		var ok := true
+		for y in range(-2, 3):
+			for x in range(-2, 3):
+				if not s.map.is_walkable(p + Vector2i(x, y)):
+					ok = false
+		if ok and not s.map.in_safe_zone(p):
+			open = p
+			break
+	assert_true(open.x >= 0, "트인 5×5 자리")
+	ExploreDebug.teleport(s, open)
+	var f0 := s.fpos
+	s.move_dir(Vector2(1, 1), 0.05)
+	var diag := s.fpos.distance_to(f0)
+	ExploreDebug.teleport(s, open)
+	s.move_dir(Vector2(1, 0), 0.05)
+	assert_near(diag, s.fpos.distance_to(Kinematics.center_of(open)), 0.0001, "대각선도 같은 속력")
 
 
 func test_time_flows_while_standing_still() -> void:
@@ -71,10 +97,9 @@ func test_time_flows_while_standing_still() -> void:
 
 func test_realtime_frame_clamp_and_pause() -> void:
 	var s := _session()
-	var tick := _b("explore.realtime_tick_sec")
 	var rate := _b("explore.realtime_hours_per_sec")
 	s.tick_realtime(5.0)
-	var expect := floorf(_b("explore.realtime_max_frame_sec") / tick) * tick * rate
+	var expect := _b("explore.realtime_max_frame_sec") * rate
 	assert_near(s.clock.total_hours, expect, 0.00001, "멈칫한 프레임의 시간은 잘라서 반영한다")
 	var t0 := s.clock.total_hours
 	for reason: String in ["menu", "debug", "typing", "focus"]:
@@ -195,7 +220,6 @@ func test_step_performance() -> void:
 	var moves := 0
 	var t := Time.get_ticks_usec()
 	for i in 200:
-		s.pass_time(s.move_hours())
 		var d := FloorMap.DIRS4[i % 4] if s.map.is_walkable(s.pos + FloorMap.DIRS4[i % 4]) else _open_dir(s)
 		if s.try_move(d):
 			moves += 1

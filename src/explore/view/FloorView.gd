@@ -71,20 +71,32 @@ func _ready() -> void:
 	player_view = ActorView.new()
 	player_view.setup_for(session.player, session.db.render)
 	add_child(player_view)
-	player_view.position = feet_position(session.pos)
+	player_view.position = feet_of(session.fpos)
+	session.body_moved.connect(_on_body_moved)
 	session.monsters.changed.connect(sync_monsters)
 	refresh(true)
 
 
-## 칸 p에 선 캐릭터의 발 위치(월드 좌표). 같은 줄의 벽보다 먼저 그려지도록 칸 아래쪽에서 조금 올린다.
+## 칸 p 중심에 선 캐릭터의 발 위치(월드 좌표).
 func feet_position(p: Vector2i) -> Vector2:
+	return feet_of(Kinematics.center_of(p))
+
+
+## 몸 중심 연속 좌표 c(칸 단위)에 선 캐릭터의 발 위치. 칸 중심이면 칸 아래쪽에서 inset만큼 올린 자리.
+## 몸 반폭(0.3칸) 덕분에 발은 늘 (북쪽 벽 줄, 남쪽 벽 줄) 사이에 있어 벽과의 y 정렬이 뒤집히지 않는다.
+func feet_of(c: Vector2) -> Vector2:
 	var inset := JsonUtil.get_int(_cfg, "actor_feet_inset_px", 4)
-	return Vector2(p.x * tile + tile * 0.5, (p.y + 1) * tile - inset)
+	return Vector2(c.x * tile, (c.y + 0.5) * tile - inset)
 
 
-func move_player(to: Vector2i) -> void:
+## 칸이 바뀌었다(시야 갱신은 refresh가 한다).
+func move_player(_to: Vector2i) -> void:
 	player_view.face(session.facing)
-	player_view.move_to(feet_position(to), JsonUtil.get_float(_cfg, "move_tween_sec", 0.08))
+
+
+func _on_body_moved(at: Vector2) -> void:
+	player_view.position = feet_of(at)
+	player_view.face(session.facing)
 
 
 ## 시야가 바뀌면 부른다. full이면 전부 다시 그린다.
@@ -120,7 +132,6 @@ func refresh(full: bool = false) -> void:
 ## 몬스터 무리 그림을 세션 상태에 맞춘다: 새 무리는 만들고, 사라진 무리는 지우고, 보이는 것만 표시.
 func sync_monsters() -> void:
 	var alive := {}
-	var move_sec := JsonUtil.get_float(_cfg, "move_tween_sec", 0.08)
 	for g in session.monsters.groups:
 		alive[g.id] = true
 		var mv: MonsterView = _monster_views.get(g.id)
@@ -128,13 +139,9 @@ func sync_monsters() -> void:
 			mv = MonsterView.new()
 			mv.setup(g, session.db)
 			add_child(mv)
-			mv.position = feet_position(g.pos)
 			_monster_views[g.id] = mv
-		var target := feet_position(g.pos)
-		if mv.position.distance_to(target) > 0.5:
-			var tw := mv.create_tween()
-			tw.tween_property(mv, "position", target, move_sec)
-		mv.face_toward(feet_position(session.pos))
+		mv.position = feet_of(g.fpos)
+		mv.face_toward(feet_of(session.fpos))
 		mv.visible = session.monsters.is_visible(g, session.pos)
 	for id: int in _monster_views.keys():
 		if not alive.has(id):

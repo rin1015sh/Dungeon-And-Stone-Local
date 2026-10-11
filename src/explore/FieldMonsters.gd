@@ -1,7 +1,9 @@
 class_name FieldMonsters
 extends RefCounted
 ## 탐험 맵 위의 몬스터 무리(순수 로직): 지역별 스폰, 리스폰, 머문 시간에 따른 증가, 배회·추적·영역 이탈, 접촉.
-## 무리 하나 = 지도 한 칸을 차지하는 대표 + 구성(몬스터 id 목록). 접촉하면 무리 전체와 전투한다.
+## 무리 하나 = 대표 하나(연속 좌표 fpos, 칸 단위) + 구성(몬스터 id 목록). 닿으면(contact_tiles) 무리 전체와 전투한다.
+## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
+## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
 ## 몬스터는 게임 시간에 따라 움직인다. 탐험 시간은 실시간으로 흐르므로(RealtimeDriver) 플레이어가 가만히 있어도 움직인다.
 
 signal changed
@@ -15,14 +17,21 @@ class Group extends RefCounted:
 	var id: int = 0
 	var monster_ids: Array[String] = []
 	var region: String = ""
-	var pos: Vector2i
+	var pos: Vector2i                    ## 몸 중심이 있는 칸
+	var fpos: Vector2 = Vector2.ZERO      ## 몸 중심의 연속 좌표
 	var home: Vector2i
 	var state: String = "idle"
-	var budget: float = 0.0
 	var grace_until: float = -1.0
+	var waypoint: Vector2 = Vector2(-1, -1)  ## 걸어가는 중인 칸 중심(없으면 x < 0)
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
+
+	## 칸 cell의 중심에 세운다(스폰·테스트).
+	func place(cell: Vector2i) -> void:
+		pos = cell
+		fpos = Kinematics.center_of(cell)
+		waypoint = Vector2(-1, -1)
 
 
 var groups: Array[Group] = []
@@ -36,6 +45,7 @@ var _respawns: Array[Dictionary] = []  # {"region": id, "at": 시각}
 var _extra_added: int = 0
 var _next_id: int = 1
 var _mpt: float = 1.0
+var _steer: MonsterSteering
 
 
 func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> void:
@@ -44,6 +54,7 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 	_floor_def = floor_def
 	_rng = rng
 	_mpt = maxf(0.01, float(db.bal("explore.meters_per_tile", 1.0)))
+	_steer = MonsterSteering.new(db, map, rng, groups)
 	var keep_out := 3.0
 	for z: Dictionary in map.safe_zones:
 		keep_out = maxf(keep_out, float(z["radius"]) + 3.0)
@@ -81,7 +92,7 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	for i in (_rng.randi_range(int(pack[0]), int(pack[1])) if pack.size() == 2 else 1):
 		g.monster_ids.append(mid)
 	g.region = JsonUtil.get_str(region, "id")
-	g.pos = cell
+	g.place(cell)
 	g.home = cell
 	groups.append(g)
 	return g
@@ -107,30 +118,32 @@ func set_grace(g: Group, now: float) -> void:
 	g.state = STATE_RETURN
 
 
-## 시간이 hours만큼 흘렀다. 몬스터를 움직이고, 플레이어에게 붙은 무리가 있으면 돌려준다(전투 시작).
-func update(player: Vector2i, hours: float, now: float, player_safe: bool) -> Group:
-	_process_respawns(player, now)
-	var field := _distance_field(player)
-	var max_moves := int(_db.bal("monsters.update_max_moves", 12))
+## 시간이 hours만큼 흘렀다. 몬스터를 움직이고, 플레이어(연속 좌표 player)에 닿은 무리가 있으면 돌려준다(전투 시작).
+func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Group:
+	var pcell := Kinematics.cell_of(player)
+	_process_respawns(pcell, now)
+	var max_moves := float(_db.bal("monsters.update_max_moves", 12))
 	var moved := false
 	for g in groups:
-		var mh := _move_hours(g.leader())
-		g.budget += hours / mh
-		var moves := mini(floori(g.budget), max_moves)
-		g.budget = 0.0 if floori(g.budget) > max_moves else g.budget - moves
-		_decide(g, player, now)
-		for i in moves:
-			if _adjacent(g.pos, player) and g.state == STATE_CHASE:
-				break
-			if _step(g, player, field):
-				moved = true
-		_decide(g, player, now)
+		var budget := minf(hours / _steer.move_hours(g.leader()), max_moves)
+		_steer.decide(g, pcell, now)
+		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
+			moved = true
+		_steer.decide(g, pcell, now)
 	if moved:
 		changed.emit()
 	if player_safe:
 		return null
 	for g in groups:
-		if _adjacent(g.pos, player) and g.grace_until <= now and (g.state == STATE_CHASE or _aggressive(g.leader())):
+		if _steer.in_contact(g, player) and g.grace_until <= now and (g.state == STATE_CHASE or _aggressive(g.leader())):
+			return g
+	return null
+
+
+## 플레이어가 delta 쪽으로 움직이려 할 때 닿아 있고 그쪽으로 다가가는 무리(플레이어가 먼저 건 전투).
+func touching(player: Vector2, delta: Vector2) -> Group:
+	for g in groups:
+		if _steer.in_contact(g, player) and (g.fpos - player).dot(delta) > 0.0:
 			return g
 	return null
 
@@ -171,85 +184,6 @@ func region_cells(region_id: String) -> Array[Vector2i]:
 
 # ── 내부 ─────────────────────────────────────────────────
 
-func _decide(g: Group, player: Vector2i, now: float) -> void:
-	var leash := JsonUtil.get_int(_behavior(g.leader()), "leash_tiles")
-	if g.grace_until > now:
-		g.state = STATE_RETURN
-	elif leash > 0 and Vector2(g.pos - g.home).length() > leash:
-		g.state = STATE_RETURN
-	elif _notices(g, player):
-		g.state = STATE_CHASE
-	elif g.state == STATE_CHASE:
-		g.state = STATE_RETURN
-	if g.state == STATE_RETURN and g.pos == g.home:
-		g.state = STATE_IDLE
-
-
-func _notices(g: Group, player: Vector2i) -> bool:
-	var radius := JsonUtil.get_float(_behavior(g.leader()), "aggro_radius_m", 4.0) / _mpt
-	return Vector2(g.pos - player).length() <= radius and _line_of_sight(g.pos, player)
-
-
-## 한 칸 움직인다. 추적: 플레이어까지의 거리 장을 따라 내려간다. 귀환: 집 쪽으로. 대기: 가끔 배회.
-func _step(g: Group, player: Vector2i, field: Dictionary) -> bool:
-	var best := g.pos
-	match g.state:
-		STATE_CHASE:
-			var here: int = field.get(g.pos, 1 << 20)
-			for d in FloorMap.DIRS4:
-				var q := g.pos + d
-				if q != player and _can_enter(q) and int(field.get(q, 1 << 20)) < here:
-					here = field[q]
-					best = q
-		STATE_RETURN:
-			for d in FloorMap.DIRS4:
-				var q := g.pos + d
-				if _can_enter(q) and (q - g.home).length_squared() < (best - g.home).length_squared():
-					best = q
-		_:
-			if _rng.chance(float(_db.bal("monsters.wander_chance", 0.3))):
-				var q := g.pos + FloorMap.DIRS4[_rng.randi_range(0, 3)]
-				if _can_enter(q) and Vector2(q - g.home).length() <= float(_db.bal("monsters.wander_radius", 4)):
-					best = q
-	if best == g.pos:
-		return false
-	g.pos = best
-	return true
-
-
-func _can_enter(p: Vector2i) -> bool:
-	return _map.is_walkable(p) and not _map.in_safe_zone(p) and group_at(p) == null
-
-
-## 플레이어에서 시작하는 걸음 수 장(BFS). 몬스터는 안전지대에 들어가지 못한다.
-func _distance_field(player: Vector2i) -> Dictionary:
-	var field := {player: 0}
-	var queue: Array[Vector2i] = [player]
-	var radius := int(_db.bal("monsters.chase_path_radius", 24))
-	var head := 0
-	while head < queue.size():
-		var p := queue[head]
-		head += 1
-		var d: int = field[p]
-		if d >= radius:
-			continue
-		for dir in FloorMap.DIRS4:
-			var q := p + dir
-			if not field.has(q) and _map.is_walkable(q) and not _map.in_safe_zone(q):
-				field[q] = d + 1
-				queue.append(q)
-	return field
-
-
-func _line_of_sight(a: Vector2i, b: Vector2i) -> bool:
-	var n := maxi(absi(b.x - a.x), absi(b.y - a.y))
-	for i in range(1, n):
-		var p := Vector2i(Vector2(a).lerp(Vector2(b), float(i) / n).round())
-		if _map.blocks_sight(p):
-			return false
-	return true
-
-
 func _process_respawns(player: Vector2i, now: float) -> void:
 	var due: Array[Dictionary] = []
 	for r in _respawns:
@@ -285,18 +219,9 @@ func _free_cell_near(p: Vector2i) -> Vector2i:
 	for r in range(1, 4):
 		for d in FloorMap.DIRS4:
 			var q := p + d * r
-			if _can_enter(q):
+			if _steer.can_enter(q):
 				return q
 	return Vector2i(-1, -1)
-
-
-func _adjacent(a: Vector2i, b: Vector2i) -> bool:
-	return absi(a.x - b.x) + absi(a.y - b.y) == 1
-
-
-func _move_hours(monster_id: String) -> float:
-	var agi := JsonUtil.get_float(JsonUtil.get_dict(_db.get_entry("monsters", monster_id), "stats"), "agi")
-	return maxf(0.0001, float(_db.bal("explore.move_hours_base", 0.02)) / (1.0 + agi * float(_db.bal("explore.move_agi_coef", 0.02))))
 
 
 func _aggressive(monster_id: String) -> bool:

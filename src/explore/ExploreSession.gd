@@ -1,10 +1,13 @@
 class_name ExploreSession
 extends RefCounted
-## 탐험 한 판의 규칙(순수 로직, 화면과 분리): 그리드 이동·시간·시야·광원·허기·포탈·안전지대·층 폐쇄·몬스터 조우.
-## 시간은 실시간으로 흐른다(realtime: RealtimeDriver). 이동은 시간을 쓰지 않고, 민첩에 따른 이동 간격만 둔다.
+## 탐험 한 판의 규칙(순수 로직, 화면과 분리): 이동·시간·시야·광원·허기·포탈·안전지대·층 폐쇄·몬스터 조우.
+## 시간은 실시간으로 흐른다(realtime: RealtimeDriver). 이동은 부드러운 연속 좌표(fpos, 칸 단위)이고
+## 충돌은 Kinematics(벽 = 걸을 수 없는 칸). 속도 = 1칸 / move_hours (게임 시간) — 몬스터와 같은 공식.
+## 시야·안전지대·포탈·발견은 몸 중심이 있는 칸(pos)으로 판정한다. 이동 자체는 시간을 쓰지 않는다.
 ## 화면(ExploreScreen)은 시그널을 받아 그린다. 메시지는 문자열 키로만 낸다(번역은 화면 몫).
 
-signal moved(from: Vector2i, to: Vector2i)
+signal moved(from: Vector2i, to: Vector2i)  ## 몸 중심이 다른 칸으로 넘어갔다
+signal body_moved(at: Vector2)              ## 연속 좌표가 바뀌었다(그리기용, 매 프레임)
 signal bumped(at: Vector2i)
 signal view_changed
 signal time_passed(hours: float)
@@ -26,7 +29,8 @@ var monsters: FieldMonsters
 var realtime: RealtimeDriver
 var monsters_enabled: bool = true  ## false면 몬스터가 나타나지 않는다(규칙 테스트용). start() 전에 정한다.
 var in_combat: bool = false
-var pos: Vector2i
+var pos: Vector2i                ## 몸 중심이 있는 칸
+var fpos: Vector2 = Vector2.ZERO  ## 몸 중심의 연속 좌표(칸 단위, 칸 (x, y)의 중심 = x + 0.5, y + 0.5)
 var facing: Vector2i = Vector2i(0, 1)
 var vision_m: float = 0.0
 var ended: bool = false
@@ -35,7 +39,6 @@ var steps: int = 0
 var _mpt: float = 1.0
 var _warned: Dictionary = {}
 var _was_safe: bool = false
-var _since_move: float = INF  # 마지막 걸음 뒤 흐른 게임 시간
 var _view_dirty: bool = false  # 시간 흐름으로 시야가 바뀌었다(광원 꺼짐·상태이상)
 
 
@@ -50,6 +53,7 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	effects = p_effects
 	_mpt = maxf(0.01, float(db.bal("explore.meters_per_tile", 1.0)))
 	pos = map.entry
+	fpos = Kinematics.center_of(pos)
 	lights = LightField.build(map, _mpt)
 	monsters = FieldMonsters.new(db, map, floor_def, rng)
 	realtime = RealtimeDriver.new()
@@ -93,7 +97,7 @@ func light_kind() -> String:
 	return Vision.light_kind(floor_def, map, player, pos)
 
 
-## 한 칸 이동 간격(게임 시간) = 기본값 / (1 + 민첩 × 계수). 몬스터도 같은 공식으로 움직인다.
+## 한 칸을 가는 데 드는 게임 시간 = 기본값 / (1 + 민첩 × 계수). 몬스터도 같은 공식으로 움직인다.
 func move_hours() -> float:
 	var base := float(db.bal("explore.move_hours_base", 0.02))
 	var coef := float(db.bal("explore.move_agi_coef", 0.02))
@@ -118,35 +122,32 @@ func tick_realtime(real_sec: float) -> void:
 		refresh_view()
 
 
-## 지난 걸음 뒤로 이동 간격만큼 시간이 흘렀는가(연타해도 빨라지지 않는다).
-func can_step() -> bool:
-	return _since_move + realtime.pending_hours(self) >= move_hours() - 0.000001
+## 실시간 이동: 방향 dir(8방향 가능, 길이는 무시)으로 이번 프레임만큼 걷는다. 시간이 멈춰 있으면 걷지 않는다.
+## 속도(칸/실제 초) = realtime_hours_per_sec / move_hours.
+func move_dir(dir: Vector2, real_sec: float) -> void:
+	var sec := realtime.frame_sec(self, real_sec)
+	if dir == Vector2.ZERO or sec <= 0.0:
+		return
+	PlayerMotion.move_by(self, dir.normalized() * sec * realtime.hours_per_sec(self) / move_hours())
 
 
-## 4방향 한 칸 이동. 시간을 쓰지 않는다(시간은 실시간으로 흐른다). 이동 간격이 안 찼으면 false.
-## 막히면 간격도 쓰지 않는다.
+## 한 칸 거리만큼 dir로 걷는다(테스트·디버그·캡처용, 시간 정지와 무관). 칸이 바뀌었거나 전투가 시작되면 true.
 func try_move(dir: Vector2i) -> bool:
-	if ended or in_combat or not can_step():
-		return false
-	facing = dir
-	var to := pos + dir
-	var group := monsters.group_at(to)
-	if group != null:
-		engage(group, true)
-		return true
-	if not map.is_walkable(to):
-		bumped.emit(to)
+	if ended or in_combat or dir == Vector2i.ZERO:
 		return false
 	var from := pos
-	pos = to
+	PlayerMotion.move_by(self, Vector2(dir))
+	return pos != from or in_combat
+
+
+## 몸 중심이 다른 칸으로 넘어갔다(PlayerMotion이 부른다): 시야·발견·구역 알림.
+func enter_cell(cell: Vector2i) -> void:
+	var from := pos
+	pos = cell
 	steps += 1
-	var mh := move_hours()
-	# 계속 걷는 중이면 남은 몫을 이어 받고, 오래 서 있었으면 처음부터 센다.
-	_since_move = _since_move - mh if _since_move < mh * 2.0 else 0.0
-	moved.emit(from, to)
+	moved.emit(from, cell)
 	refresh_view()
 	_on_enter_cell(from)
-	return true
 
 
 func wait(hours: float = -1.0) -> void:
@@ -230,13 +231,12 @@ func pass_time(hours: float) -> void:
 	var h := minf(hours, hours_until_close())
 	if h > 0.0:
 		clock.advance(h)
-		_since_move += h
 		player.advance_hours(h)
 		time_passed.emit(h)
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
-		var g := monsters.update(pos, h, clock.total_hours, in_safe_zone())
+		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
 			engage(g, false)
 
@@ -256,6 +256,8 @@ func relocate(to: Vector2i) -> bool:
 		return false
 	var from := pos
 	pos = to
+	fpos = Kinematics.center_of(to)
+	body_moved.emit(fpos)
 	moved.emit(from, to)
 	refresh_view()
 	_on_enter_cell(from)

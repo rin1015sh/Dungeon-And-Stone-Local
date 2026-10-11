@@ -18,7 +18,6 @@ var _texture: Texture2D = null
 var _ghost: Node2D
 var _glow: PointLight2D
 var _camera: Camera2D
-var _tween: Tween
 var _glow_energy: float = 0.35
 var _flicker: float = 0.06
 var _time: float = 0.0
@@ -69,16 +68,6 @@ func face(dir: Vector2i) -> void:
 	if dir != Vector2i.ZERO and dir != facing:
 		facing = dir
 		_redraw_all()
-
-
-func move_to(target: Vector2, seconds: float) -> void:
-	if _tween != null and _tween.is_valid():
-		_tween.kill()
-	if seconds <= 0.0 or not is_inside_tree():
-		position = target
-		return
-	_tween = create_tween()
-	_tween.tween_property(self, "position", target, seconds)
 
 
 func set_occluded(on: bool) -> void:

@@ -144,8 +144,7 @@ func _realtime_combat_flow() -> void:
 		Strings.t("combat.cmd_flee", {"chance": roundi(combat.battle.flee_chance(combat.battle.current) * 100.0)})],
 		"기본 행동창: 공격·방어·스킬·도주 (%s)" % ", ".join(PackedStringArray(labels)))
 	_expect(not _has_node_named(combat, "TimelineBar"), "상단 순서 표시 없음")
-	var me := combat.battle.current
-	var gauge := me.gauge
+	var turns_before := combat.battle.turns
 	_press(combat, Strings.t("combat.cmd_skill"))
 	var skill_labels := _button_texts(menu)
 	_expect(skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "talk")) and skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "investigate")),
@@ -153,7 +152,7 @@ func _realtime_combat_flow() -> void:
 	_press(combat, DataNames.entry(DataRegistry.db, "skills", "investigate"))
 	_press_first(menu)
 	_expect_log("[조사]", "조사 결과")
-	_expect(me.gauge < gauge, "조사가 행동 기회를 쓴다")
+	_expect(combat.battle.turns > turns_before or not combat.battle.result.is_empty(), "조사가 행동 기회를 쓴다(차례가 넘어감)")
 	for i in 60:
 		if not combat.battle.result.is_empty():
 			break

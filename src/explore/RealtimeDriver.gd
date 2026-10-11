@@ -1,7 +1,7 @@
 class_name RealtimeDriver
 extends RefCounted
 ## 탐험의 실시간 시간 진행(순수 로직). 화면이 매 프레임 실제 경과 초를 넘기면,
-## 고정 틱(realtime_tick_sec)으로 잘라 게임 시간(realtime_hours_per_sec)으로 바꿔 세션에 흘린다.
+## 게임 시간(realtime_hours_per_sec)으로 바꿔 세션에 흘린다(큰 프레임은 realtime_max_step_sec 단위로 쪼갬).
 ## 플레이어가 가만히 있어도 시간·허기·광원·몬스터가 진행된다(피어 앤 헝거식 압박).
 ##
 ## 시간이 멈추는 경우: 전투 중(세션 in_combat) · 탐험 종료 · 정지 사유가 하나라도 있을 때
@@ -10,7 +10,6 @@ extends RefCounted
 
 ## 세션을 필드로 들고 있지 않는다(세션이 이 객체를 가지므로 RefCounted 순환 참조가 된다) — 호출마다 받는다.
 
-var _acc: float = 0.0
 var _reasons: Dictionary = {}  # 정지 사유 -> true
 
 
@@ -34,24 +33,25 @@ func hours_per_sec(s: ExploreSession) -> float:
 	return maxf(0.0, float(s.db.bal("explore.realtime_hours_per_sec", 0.1)))
 
 
-## 아직 틱으로 흘리지 않은 누적분(게임 시간). 이동 준비 판정이 프레임 단위로 매끄럽도록 쓴다.
-func pending_hours(s: ExploreSession) -> float:
-	return _acc * hours_per_sec(s) if is_running(s) else 0.0
-
-
-## 실제 경과 초를 받아 고정 틱 단위로 게임 시간을 흘린다. 흘린 틱 수를 돌려준다.
-func tick(s: ExploreSession, real_sec: float) -> int:
+## 이번 프레임에 반영할 실제 시간(초): 정지 중이면 0, 멈칫한 프레임은 realtime_max_frame_sec로 자른다.
+func frame_sec(s: ExploreSession, real_sec: float) -> float:
 	if not is_running(s) or real_sec <= 0.0:
-		_acc = 0.0 if not is_running(s) else _acc
+		return 0.0
+	return minf(real_sec, float(s.db.bal("explore.realtime_max_frame_sec", 0.25)))
+
+
+## 실제 경과 초만큼 게임 시간을 흘린다(매 프레임 → 몬스터가 프레임마다 부드럽게 움직인다).
+## 한 번에 흘리는 양은 realtime_max_step_sec 이하로 쪼갠다(몬스터 이동·충돌 안정). 흘린 단계 수를 돌려준다.
+func tick(s: ExploreSession, real_sec: float) -> int:
+	var sec := frame_sec(s, real_sec)
+	if sec <= 0.0:
 		return 0
-	var step := maxf(0.001, float(s.db.bal("explore.realtime_tick_sec", 0.1)))
-	_acc += minf(real_sec, float(s.db.bal("explore.realtime_max_frame_sec", 0.25)))
-	var ticks := 0
-	# 부동소수 오차로 마지막 틱을 놓치지 않게 아주 작은 여유를 둔다.
-	while _acc >= step - 0.000001 and is_running(s):
-		_acc = maxf(0.0, _acc - step)
-		ticks += 1
-		s.pass_time(step * hours_per_sec(s))
-	if not is_running(s):
-		_acc = 0.0
-	return ticks
+	var max_step := maxf(0.001, float(s.db.bal("explore.realtime_max_step_sec", 0.05)))
+	var n := maxi(1, ceili(sec / max_step - 0.000001))
+	var steps := 0
+	for i in n:
+		if not is_running(s):
+			break
+		steps += 1
+		s.pass_time(sec / n * hours_per_sec(s))
+	return steps

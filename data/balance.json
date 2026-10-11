@@ -84,7 +84,10 @@
     "move_hours_base": 0.02,
     "move_agi_coef": 0.02,
     "realtime_hours_per_sec": 0.1,
-    "realtime_tick_sec": 0.1,
+    "realtime_max_step_sec": 0.05,
+    "body_half_extent": 0.3,
+    "corner_assist": 0.45,
+    "max_substep_tiles": 0.25,
     "realtime_max_frame_sec": 0.25,
     "min_vision_m": 1.0,
     "vision_bonus_formula": "{field_of_view} * 0.1 + {sight} * 0.05",
@@ -123,6 +126,9 @@
     "update_max_moves": 12,
     "chase_path_radius": 24,
     "spawn_min_dist_from_entry": 10,
-    "rest_ambush_chance_per_hour": 0.04
+    "rest_ambush_chance_per_hour": 0.04,
+    "contact_tiles": 1.05,
+    "direct_chase_tiles": 2.0,
+    "body_half_extent": 0.3
   }
 }

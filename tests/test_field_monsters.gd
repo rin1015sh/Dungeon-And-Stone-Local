@@ -30,9 +30,13 @@ func _room_field(monster_id: String) -> FieldMonsters:
 
 func _place(fm: FieldMonsters, monster_id: String, at: Vector2i) -> FieldMonsters.Group:
 	var g := fm.spawn_group({"id": "r", "monsters": [monster_id]}, Vector2i(-99, -99), at)
-	g.pos = at
+	g.place(at)
 	g.home = at
 	return g
+
+
+func _c(cell: Vector2i) -> Vector2:
+	return Kinematics.center_of(cell)
 
 
 func _move_hours(monster_id: String) -> float:
@@ -83,7 +87,7 @@ func test_chase_until_contact() -> void:
 	var fm := _room_field("blade_wolf")
 	var g := _place(fm, "blade_wolf", Vector2i(12, 7))
 	var player := Vector2i(8, 7)
-	var hit := fm.update(player, _move_hours("blade_wolf") * 3.0 + 0.00001, 0.0, false)
+	var hit := fm.update(_c(player), _move_hours("blade_wolf") * 3.0 + 0.00001, 0.0, false)
 	assert_eq(g.pos, Vector2i(9, 7), "세 걸음 다가온다")
 	assert_true(hit == g, "붙으면 전투")
 
@@ -92,14 +96,14 @@ func test_non_aggressive_waits_and_grace() -> void:
 	var fm := _room_field("ghoul")
 	var g := _place(fm, "ghoul", Vector2i(12, 7))
 	var player := Vector2i(3, 7)
-	assert_true(fm.update(player, _move_hours("ghoul") * 5.0, 0.0, false) == null, "구울은 멀리서는 덤비지 않는다")
+	assert_true(fm.update(_c(player), _move_hours("ghoul") * 5.0, 0.0, false) == null, "구울은 멀리서는 덤비지 않는다")
 	assert_true(g.state != FieldMonsters.STATE_CHASE)
-	g.pos = Vector2i(4, 7)
-	assert_true(fm.update(player, 0.0, 0.0, false) == g, "바로 옆이면 싸운다")
+	g.place(Vector2i(4, 7))
+	assert_true(fm.update(_c(player), 0.0, 0.0, false) == g, "바로 옆이면 싸운다")
 	fm.set_grace(g, 0.0)
-	assert_true(fm.update(player, 0.0, 0.0, false) == null, "도망친 직후에는 쫓지 않는다")
-	assert_true(fm.update(player, 0.0, 1.0, false) == g, "유예가 지나면 다시")
-	assert_true(fm.update(player, 0.0, 1.0, true) == null, "안전지대에서는 덤비지 않는다")
+	assert_true(fm.update(_c(player), 0.0, 0.0, false) == null, "도망친 직후에는 쫓지 않는다")
+	assert_true(fm.update(_c(player), 0.0, 1.0, false) == g, "유예가 지나면 다시")
+	assert_true(fm.update(_c(player), 0.0, 1.0, true) == null, "안전지대에서는 덤비지 않는다")
 
 
 func test_gnome_hides_until_close() -> void:
@@ -114,11 +118,11 @@ func test_respawn_and_growth() -> void:
 	var g := _place(fm, "goblin", Vector2i(12, 7))
 	fm.remove(g, 0.0)
 	assert_eq(fm.groups.size(), 0)
-	fm.update(Vector2i(2, 2), 0.0, 10.0, false)
+	fm.update(_c(Vector2i(2, 2)), 0.0, 10.0, false)
 	assert_eq(fm.groups.size(), 0, "리스폰 전")
-	fm.update(Vector2i(2, 2), 0.0, 25.0, false)
+	fm.update(_c(Vector2i(2, 2)), 0.0, 25.0, false)
 	assert_eq(fm.groups.size(), 2, "리스폰 + 하루 지나 1무리 증가")
-	fm.update(Vector2i(2, 2), 0.0, 200.0, false)
+	fm.update(_c(Vector2i(2, 2)), 0.0, 200.0, false)
 	assert_eq(fm.groups.size(), 3, "증가는 최대 2무리까지")
 
 
@@ -167,7 +171,7 @@ func test_monsters_move_in_realtime_while_player_stands_still() -> void:
 	var region: Dictionary = JsonUtil.get_array(s.floor_def, "regions")[0]
 	var g := s.monsters.spawn_group(region, Vector2i(-99, -99), at, "goblin")
 	assert_true(g != null)
-	g.pos = at + dir * 4
+	g.place(at + dir * 4)
 	g.home = g.pos
 	var seen := [null]
 	s.encounter.connect(func(group: FieldMonsters.Group, _pf: bool) -> void: seen[0] = group)

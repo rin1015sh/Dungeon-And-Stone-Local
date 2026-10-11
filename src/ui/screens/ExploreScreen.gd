@@ -65,10 +65,10 @@ func _process(delta: float) -> void:
 	session.tick_realtime(delta)
 	if _ended or _combat != null or session.realtime.is_paused():
 		return
-	# 누르고 있는 동안 매 프레임 시도한다. 실제 간격은 세션이 민첩으로 정한다(연타해도 같다).
+	# 누르고 있는 동안 매 프레임 그만큼 걷는다(8방향, 속도는 세션이 민첩으로 정한다).
 	var dir := _input_dir()
-	if dir != Vector2i.ZERO:
-		session.try_move(dir)
+	if dir != Vector2.ZERO:
+		session.move_dir(dir, delta)
 
 
 func _notification(what: int) -> void:
@@ -193,16 +193,17 @@ func _build_world() -> void:
 		vp.add_child(layer)
 
 
-func _input_dir() -> Vector2i:
+func _input_dir() -> Vector2:
+	var d := Vector2.ZERO
 	if Input.is_action_pressed("move_up"):
-		return Vector2i(0, -1)
+		d.y -= 1.0
 	if Input.is_action_pressed("move_down"):
-		return Vector2i(0, 1)
+		d.y += 1.0
 	if Input.is_action_pressed("move_left"):
-		return Vector2i(-1, 0)
+		d.x -= 1.0
 	if Input.is_action_pressed("move_right"):
-		return Vector2i(1, 0)
-	return Vector2i.ZERO
+		d.x += 1.0
+	return d
 
 
 ## 입력칸에 글을 쓰는 중이면 이동·단축키를 막는다.
