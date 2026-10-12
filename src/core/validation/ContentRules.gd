@@ -19,6 +19,14 @@ static func _monsters(v: ValidatorBase) -> void:
 		var w := "monsters/" + id
 		v.check_grade(w, m.get("grade"))
 		v.check_grade(w + ".magic_stone_grade", m.get("magic_stone_grade", m.get("grade")))
+		if m.has("rank") and not v.db.tag_ids("monster_ranks").has(JsonUtil.get_str(m, "rank")):
+			v.err(w, "rank '%s' 미등록(tags.monster_ranks)" % m.get("rank"))
+		if m.has("upper_variant") and not m["upper_variant"] is bool:
+			v.err(w, "upper_variant는 true/false")
+		if m.has("variant_of"):
+			v.ref(w, "monsters", m["variant_of"])
+		if m.has("floor") and JsonUtil.get_int(m, "floor") < 1:
+			v.err(w, "floor는 1 이상의 층 번호")
 		if not types.has(JsonUtil.get_str(m, "type")):
 			v.err(w, "type '%s' 미등록(tags.monster_types)" % m.get("type"))
 		for f: Variant in JsonUtil.get_array(m, "family"):

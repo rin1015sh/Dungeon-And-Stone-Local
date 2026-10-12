@@ -10,6 +10,8 @@ var class_id: String = ""
 var progression: Progression = Progression.new()
 var knowledge: Knowledge = Knowledge.new()
 var essences: EssenceSet = EssenceSet.new()
+## 레벨 하락 때 잠글 정수 슬롯을 고르는 난수(테스트에서 시드를 고정할 수 있다).
+var essence_rng: Rng = Rng.new()
 ## 단축칸 1~0: 아이템 id(빈 칸은 ""). 소지품이 없으면 흐리게 보이고 쓸 수 없다.
 var hotbar: Array[String] = []
 
@@ -37,6 +39,17 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 	grant_innate_skills(pc)
 	pc.auto_fill_hotbar()
 	return pc
+
+
+## 레벨을 바꾸면 정수 슬롯 잠금도 맞춘다(레벨 하락 = 무작위 잠금, 상승 = 해제).
+func set_level(level: int) -> void:
+	change_level(level, essence_rng)
+
+
+func change_level(level: int, rng: Rng = null) -> void:
+	super.set_level(level)
+	if essences != null:
+		essences.sync_slots(self, rng if rng != null else essence_rng)
 
 
 ## 모든 아군(플레이어·동료)이 시작부터 가진 기본 스킬(balance party.innate_skills: 대화·조사)을 준다.

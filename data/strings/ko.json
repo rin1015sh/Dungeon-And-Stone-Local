@@ -260,7 +260,10 @@
     "loot": "{item} ×{count}을(를) 주웠다.",
     "bag_full": "가방에 자리가 없어 {item} ×{count}을(를) 두고 간다.",
     "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots}).",
-    "essence": "{color} {name}이(가) 떨어졌다. 캐릭터 창(C)에서 흡수할 수 있다 — 오래 두면 흩어진다."
+    "essence": "{color} {name}이(가) 떨어졌다. 캐릭터 창(C)에서 흡수할 수 있다 — 오래 두면 흩어진다.",
+    "guardian_bonus": "수호자 {name}을(를) 쓰러뜨렸다 — 공적 {exp}.",
+    "lord_bonus": "계층군주 {name}을(를) 처음으로 쓰러뜨렸다 — 공적 {exp}.",
+    "level_down": "영혼이 깎여 나갔다. 레벨 {level} — 정수 {locked}개가 잠들었다."
   },
   "window": {
     "close": "닫기"
@@ -323,6 +326,7 @@
     "reason_unknown": "알 수 없는 정수다.",
     "reason_no_slot": "빈 정수 슬롯이 없다.",
     "reason_duplicate": "이미 같은 이능이 영혼에 새겨져 있어 받아들일 수 없다.",
-    "expired": "흡수하지 않은 {name}이(가) 빛 먼지가 되어 흩어졌다."
+    "expired": "흡수하지 않은 {name}이(가) 빛 먼지가 되어 흩어졌다.",
+    "locked_suffix": " (잠김 — 레벨이 오르면 깨어난다)"
   }
 }

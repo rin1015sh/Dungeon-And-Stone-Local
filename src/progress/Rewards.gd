@@ -12,9 +12,16 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hour
 	for id in killed:
 		pc.knowledge.see(id)
 		var gained := pc.progression.record_kill(db, id)
+		var parts := pc.progression.last_kill
+		var mname := DataNames.entry(db, "monsters", id)
+		if int(parts.get("first", 0)) > 0:
+			msgs.append(_m("reward.first_kill", {"name": mname, "exp": int(parts["first"])}, "good"))
+		if int(parts.get("guardian", 0)) > 0:
+			msgs.append(_m("reward.guardian_bonus", {"name": mname, "exp": int(parts["guardian"])}, "good"))
+		if int(parts.get("lord", 0)) > 0:
+			msgs.append(_m("reward.lord_bonus", {"name": mname, "exp": int(parts["lord"])}, "good"))
 		if gained > 0:
-			pc.progression.gain(pc, gained)
-			msgs.append(_m("reward.first_kill", {"name": DataNames.entry(db, "monsters", id), "exp": gained}, "good"))
+			pc.progression.gain(pc, gained, rng)
 		for drop in Loot.roll(db, id, rng):
 			var want := int(drop["count"])
 			var got := pc.inventory.add(str(drop["id"]), want)

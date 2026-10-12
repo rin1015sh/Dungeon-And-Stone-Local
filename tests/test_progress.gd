@@ -11,19 +11,17 @@ func test_first_kill_exp_only_once() -> void:
 	assert_eq(p.record_kill(db, "goblin"), 1, "9등급 = 10 − 9")
 	assert_eq(p.record_kill(db, "goblin"), 0, "같은 몬스터는 다시 주지 않는다")
 	assert_eq(p.kill_count("goblin"), 2)
-	assert_eq(Progression.first_kill_exp(db, {"grade": 7}), 3, "데이터에 없으면 (10 − 등급)")
-	assert_eq(p.record_portal(db, "east"), 2)
-	assert_eq(p.record_portal(db, "east"), 0)
+	assert_eq(Progression.first_kill_exp(db, {"grade": 7}), 3, "(10 − 등급)")
 
 
-func test_level_up_raises_soul_and_caps() -> void:
+func test_level_up_raises_soul_and_slots() -> void:
 	var pc := _pc()
 	var soul := pc.pool.get_max("soul")
-	var table: Array = db.bal("level.exp_table")
+	var table := Progression.exp_table(db)
 	assert_eq(pc.progression.gain(pc, int(table[1])), 2)
 	assert_true(pc.pool.get_max("soul") > soul, "레벨업 → 영혼력 최대치 증가")
 	pc.progression.gain(pc, 100000)
-	assert_eq(pc.get_level(), int(db.bal("level.max_initial")), "1차 상한")
+	assert_eq(pc.get_level(), Progression.max_level(db), "만렙")
 	assert_eq(Progression.exp_for_next(db, pc.get_level()), -1)
 	assert_eq(Progression.essence_slots(db, 3), 3)
 

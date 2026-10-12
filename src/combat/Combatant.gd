@@ -25,8 +25,9 @@ func is_active() -> bool:
 	return not fled and not actor.dead
 
 
-func speed(min_speed: float) -> float:
-	return maxf(min_speed, actor.stats.get_value("agi"))
+## 행동 게이지 속도 = 민첩 + speed_base(balance combat.speed_base). speed_base가 크면 민첩 차이가 행동 횟수에 덜 반영된다.
+func speed(min_speed: float, speed_base: float = 0.0) -> float:
+	return maxf(min_speed, actor.stats.get_value("agi") + speed_base)
 
 
 func label() -> String:

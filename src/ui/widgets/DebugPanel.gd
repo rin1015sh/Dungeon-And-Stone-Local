@@ -74,8 +74,8 @@ func _btn(parent: Control, text: String, cb: Callable) -> Button:
 
 func _change_level(delta: int) -> void:
 	var pc := _session.player
-	var lo := int(_session.db.bal("level.min", 1))
-	var hi := int(_session.db.bal("level.max_cap", 11))
+	var lo := int(_session.db.prog("level.min", 1))
+	var hi := Progression.max_level(_session.db)
 	pc.set_level(clampi(pc.get_level() + delta, lo, hi))
 	_session.refresh_view()
 

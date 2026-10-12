@@ -89,6 +89,16 @@
     {"id": "fine", "name_ko": "좋은", "color": "#7fae6a"},
     {"id": "numbers", "name_ko": "넘버스", "color": "#c9a24a"}
   ],
+  "monster_ranks": [
+    {"id": "ungraded", "name_ko": "무등급"},
+    {"id": "normal", "name_ko": "일반"},
+    {"id": "elite", "name_ko": "정예"},
+    {"id": "midboss", "name_ko": "중간 보스"},
+    {"id": "guardian", "name_ko": "수호자"},
+    {"id": "variant_guardian", "name_ko": "변종 수호자"},
+    {"id": "lord", "name_ko": "계층군주"},
+    {"id": "token", "name_ko": "토큰"}
+  ],
   "essence_colors": [
     {"id": "red", "name_ko": "붉은", "color": "#b5483f"},
     {"id": "blue", "name_ko": "푸른", "color": "#4a72b5"},

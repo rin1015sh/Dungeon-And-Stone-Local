@@ -17,7 +17,7 @@ func _build() -> void:
 	var db := pc.db
 	var es := pc.essences
 	var slots := Progression.essence_slots(db, pc.get_level())
-	add_child(UiTheme.label(Strings.t("essence.slots", {"used": es.absorbed.size(), "n": slots}), "body", "text_title"))
+	add_child(UiTheme.label(Strings.t("essence.slots", {"used": es.absorbed.size() - es.locked_count(), "n": slots}), "body", "text_title"))
 	var row := HFlowContainer.new()
 	add_child(row)
 	for i in maxi(slots, es.absorbed.size()):
@@ -26,6 +26,8 @@ func _build() -> void:
 		if i < es.absorbed.size():
 			var b := GothicStyle.slot_box()
 			b.bg_color = color_of(db, JsonUtil.get_str(es.absorbed[i], "color"))
+			if EssenceSet.is_locked(es.absorbed[i]):
+				b.bg_color = b.bg_color.darkened(UiTheme.metric("essence_locked_darken", 70) / 100.0)
 			s.add_theme_stylebox_override("panel", b)
 			s.tooltip_text = describe(db, es.absorbed[i])
 		else:
@@ -62,10 +64,11 @@ func _absorb(i: int) -> void:
 	changed.emit()
 
 
-## "붉은 고블린의 정수" 꼴.
+## "붉은 고블린의 정수" 꼴(잠겼으면 뒤에 표시).
 static func title_of(db: GameDatabase, inst: Dictionary) -> String:
-	return Strings.t("essence.title", {"color": DataNames.tag(db, "essence_colors", JsonUtil.get_str(inst, "color")),
+	var t := Strings.t("essence.title", {"color": DataNames.tag(db, "essence_colors", JsonUtil.get_str(inst, "color")),
 		"name": DataNames.entry(db, "essences", JsonUtil.get_str(inst, "essence"))})
+	return t + Strings.t("essence.locked_suffix") if EssenceSet.is_locked(inst) else t
 
 
 ## 마우스 설명: 이름 · 패시브 · 액티브 · 스탯.

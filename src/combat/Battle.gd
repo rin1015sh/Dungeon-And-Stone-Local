@@ -43,7 +43,8 @@ func _init(p_db: GameDatabase, p_effects: EffectRegistry, p_ai: ScriptRegistry, 
 	effects = p_effects
 	ai = p_ai
 	rng = p_rng
-	timeline = Timeline.new(float(db.bal("combat.gauge_threshold", 100)), float(db.bal("combat.min_speed", 1)))
+	timeline = Timeline.new(float(db.bal("combat.gauge_threshold", 100)), float(db.bal("combat.min_speed", 1)),
+		float(db.bal("combat.speed_base", 0)))
 
 
 ## 탐험 조우로 전투를 꾸린다. 같은 몬스터가 여럿이면 이름 뒤에 A, B, C를 붙인다.

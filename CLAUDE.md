@@ -57,6 +57,7 @@
 - `:=`로 Variant(`Dictionary.get()`, 배열 원소, `JSON` 결과)를 추론하면 컴파일 오류 → 명시 타입을 쓴다.
 - JSON 숫자는 전부 float. 표시용 인자는 `int`로 넘겨야 "10.0"이 안 나온다.
 - 새 `class_name`을 추가했으면 `--import`로 클래스 캐시를 갱신해야 헤드리스 실행에서 보인다.
+- **스크립트끼리 클래스 이름으로 서로 참조하면(예: Progression ↔ PlayerCharacter) 종료 시 "resources still in use" 오류**가 난다. 한쪽은 `has_method`/`call`로 부른다(`Progression._apply_level`).
 - **RefCounted 객체가 자기 자식(컴포넌트)의 시그널에 `self`를 쓰는 람다를 연결하면 순환 참조로 누수**된다(종료 시 "ObjectDB instances were leaked"). 메서드로 연결한다(`Actor._on_status_applied` 참고). Node는 해당 없음.
 - `await`와 `as`를 함께 쓸 때는 괄호: `(await f()) as T`.
 - SubViewport의 빈 곳은 기본 배경색(회색)으로 칠해진다 → `RenderingServer.set_default_clear_color()`를 Main에서 팔레트 bg로 맞춘다.
@@ -69,7 +70,7 @@
 project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSystem, AudioBus
 CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS}.md
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
-  manifest.json balance.json render.json tags.json audio.json input.json
+  manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json injuries.json races.json classes.json tiles.json landmarks.json
   monsters/ essences/ skills/ items/ floors/ rifts/ events/ facilities/   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
   strings/ko.json
@@ -85,7 +86,7 @@ src/
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
-  progress/              Progression(공적·도감·레벨), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제), EssenceDrop(드롭)
+  progress/              Progression(공적·레벨·획득원), ExpBudget, Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  (M4에서 채움)
   ui/InputSetup.gd       data/input.json → InputMap
@@ -96,7 +97,7 @@ src/
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/screens/            TitleScreen, CharacterCreateScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd, smoke_ui.gd/.tscn
-tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn
+tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, sim_battle.gd(전투 승률), exp_budget.gd(경험치 예산 → docs/balance/)
 assets/                  fonts/ sprites/ audio/ shaders/
 ```
 
@@ -109,7 +110,8 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **시야**: 유효 시야 = min(층 상한 `visibility_cap_m`, max(주변광 `ambient_light_m`(암흑지대 0), 광원, 최소 시야) + 시야 스탯 보정). `Vision`.
 - **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛).
 - **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / (기본/(1+민첩×계수)) 게임 시간(몬스터와 같은 공식), 충돌은 `Kinematics`. 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.
-- **전투**: `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
+- **성장**: `data/progression.json`(레벨 표 0/8/50/250/660/…/18000, 만렙 11, 획득원) → `db.prog("경로")`. 레벨 변경은 `PlayerCharacter.set_level/change_level`(정수 슬롯 잠금 동기화). 레벨업 생명력·영혼력은 `balance.hp/soul` 수식.
+- **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나.

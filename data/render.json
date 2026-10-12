@@ -78,6 +78,7 @@
     "side_button": 40,
     "char_window_width": 420,
     "essence_panel_height": 130,
+    "essence_locked_darken": 70,
     "bestiary_window_width": 640,
     "window_height": 660
   },

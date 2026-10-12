@@ -6,14 +6,6 @@
     "start_level": 1,
     "start_stones": 500
   },
-  "level": {
-    "min": 1,
-    "max_initial": 5,
-    "max_cap": 11,
-    "essence_slots_per_level": 1,
-    "_exp_table_comment": "레벨 n에 필요한 누적 경험치(1레벨 = 0). 1~4층 몬스터를 다 잡아도 5레벨에 조금 못 미치게(원작) — 임시값",
-    "exp_table": [0, 3, 8, 18, 40, 80, 150, 260, 420, 650, 1000]
-  },
   "inventory": {
     "width": 10,
     "height": 6
@@ -36,14 +28,16 @@
     "weaken": {"_comment": "정수판 기본 약화(스킬 데이터를 만들 때의 기준 — 실행 중 자동 적용하지 않는다)", "power": 0.85, "status_chance": 0.75, "duration_minus": 1, "cost": 1.2, "passive": 0.5}
   },
   "hp": {
+    "_comment": "최대 생명력 = 50 + 레벨×10 + 근력×1.5 + 물리내성×3 (PROMPT_FLOOR1_V2 §1)",
     "base": 50,
-    "per_level": 5,
-    "per_p_res": 2.0,
-    "per_str": 1.0,
+    "per_level": 10,
+    "per_p_res": 3.0,
+    "per_str": 1.5,
     "regen_per_natural_regen_per_hour": 0.1
   },
   "soul": {
-    "base": 10,
+    "_comment": "최대 영혼력 = base + 5레벨까지 레벨당 +10, 이후 +30 (PROMPT_FLOOR1_V2 §5.1, Lv1 30은 [창])",
+    "base": 30,
     "early_level_cap": 5,
     "per_level_early": 10,
     "per_level_late": 30,
@@ -76,6 +70,8 @@
   "combat": {
     "gauge_threshold": 100,
     "min_speed": 1,
+    "_speed_base_comment": "CTB 속도 = 민첩 + speed_base. 0이면 민첩 2배 = 행동 2배, 5면 민첩 10 vs 20 = 1.67배(작은 차이는 순서 위주, 큰 차이는 추가 행동). tools/sim_battle.gd로 확인 — ASSUMPTIONS C9",
+    "speed_base": 5,
     "crit_base": 0.05,
     "crit_per_agi": 0.005,
     "crit_per_luck": 0.01,
@@ -123,14 +119,6 @@
       6,
       1
     ]
-  },
-  "exp": {
-    "grade_base": 10,
-    "mutant_bonus": 1,
-    "rift_guardian_bonus": 3,
-    "guardian_floor8_bonus": 5,
-    "floor_lord_bonus": 15,
-    "portal_first_open": 2
   },
   "debug": {
     "sandbox_damage": 10,

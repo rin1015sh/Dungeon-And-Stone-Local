@@ -53,6 +53,22 @@ func test_timeline_speed_ratio() -> void:
 	assert_eq(n[slow], 20)
 
 
+func test_timeline_speed_base_softens_agility_gap() -> void:
+	var tl := Timeline.new(100.0, 1.0, 5.0)
+	var fast := _unit(20.0, 0, 0)
+	var slow := _unit(10.0, 1, 1)
+	tl.add(fast)
+	tl.add(slow)
+	var n := {fast: 0, slow: 0}
+	for i in 80:
+		var c := tl.next()
+		n[c] = int(n[c]) + 1
+		tl.consume(c)
+	assert_eq(n[fast], 50, "속도 = 민첩 + 5 → 25 : 15")
+	assert_eq(n[slow], 30)
+	assert_eq(float(db.bal("combat.speed_base")), 5.0, "balance 기본값")
+
+
 func test_timeline_delay_cost_and_min_speed() -> void:
 	var tl := Timeline.new(100.0, 1.0)
 	var a := _unit(10.0, 0, 0)

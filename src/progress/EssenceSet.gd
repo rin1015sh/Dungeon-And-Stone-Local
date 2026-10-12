@@ -7,6 +7,8 @@ extends RefCounted
 ##   예외: 같은 정수의 일반 → 수호자(무지갯빛) 업그레이드는 그 자리를 바꾼다.
 ##   제거(삭제)는 비용이 처음 delete_cost_base, 이후 매번 × delete_cost_mult(돈 지불은 시설 몫).
 ##   효과는 수정자 출처 "essence:<정수 id>"로 붙이고 뗀다. 스킬은 Actor.learn_skill / forget_skill.
+##   레벨이 내려가면(§5.1) 흡수한 정수 중 (흡수 수 − 슬롯 수)개가 무작위로 잠긴다("locked": true, 효과 없음, 슬롯은 계속 차지).
+##   레벨이 다시 오르면 먼저 흡수한 순서대로 풀린다 — sync_slots.
 ## 개체를 필드로 들지 않는다(순환 참조 방지) — 바꿀 때만 Actor를 인자로 받는다.
 
 const SOURCE_PREFIX := "essence:"
@@ -44,6 +46,7 @@ func absorb(a: Actor, inst: Dictionary) -> String:
 	if up >= 0:
 		_detach(a, absorbed[up])
 		absorbed[up] = inst.duplicate(true)
+		absorbed[up].erase("locked")
 	else:
 		absorbed.append(inst.duplicate(true))
 	_attach(a, inst)
@@ -67,7 +70,48 @@ func remove(a: Actor, i: int) -> bool:
 	_detach(a, absorbed[i])
 	absorbed.remove_at(i)
 	deletions += 1
+	sync_slots(a)
 	return true
+
+
+static func is_locked(inst: Dictionary) -> bool:
+	return JsonUtil.get_bool(inst, "locked")
+
+
+func locked_count() -> int:
+	var n := 0
+	for e in absorbed:
+		if is_locked(e):
+			n += 1
+	return n
+
+
+## 레벨에 맞춰 정수 슬롯을 잠그거나 푼다. 잠글 정수는 rng로 고른다(rng가 없으면 나중에 흡수한 것부터).
+## 바뀐 정수 수(잠금 + 해제).
+func sync_slots(a: Actor, rng: Rng = null) -> int:
+	var allowed := Progression.essence_slots(a.db, a.get_level())
+	var active: Array[int] = []
+	var locked: Array[int] = []
+	for i in absorbed.size():
+		if is_locked(absorbed[i]):
+			locked.append(i)
+		else:
+			active.append(i)
+	var changed := 0
+	while active.size() > allowed:
+		var k := rng.randi_range(0, active.size() - 1) if rng != null else active.size() - 1
+		var idx := active[k]
+		active.remove_at(k)
+		_detach(a, absorbed[idx])
+		absorbed[idx]["locked"] = true
+		changed += 1
+	while active.size() < allowed and not locked.is_empty():
+		var idx: int = locked.pop_front()
+		absorbed[idx].erase("locked")
+		_attach(a, absorbed[idx])
+		active.append(idx)
+		changed += 1
+	return changed
 
 
 ## 다음 삭제 비용(스톤).
@@ -144,7 +188,8 @@ func has_essence(essence_id: String) -> bool:
 func reattach_all(a: Actor) -> void:
 	for e in absorbed:
 		_detach(a, e)
-		_attach(a, e)
+		if not is_locked(e):
+			_attach(a, e)
 
 
 func to_dict() -> Dictionary:

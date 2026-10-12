@@ -33,7 +33,7 @@ func refresh() -> void:
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
 	bar.custom_minimum_size.y = UiTheme.metric("bar_height", 14)
-	var prev := int((db.bal("level.exp_table", [0]) as Array)[lv - 1])
+	var prev := Progression.exp_for_level(db, lv)
 	bar.max_value = maxf(1.0, float(next - prev)) if next >= 0 else 1.0
 	bar.value = float(pc.progression.exp_total - prev) if next >= 0 else 1.0
 	bar.add_theme_stylebox_override("fill", UiTheme.box(UiTheme.color("gold"), Color.TRANSPARENT, 2, 0))

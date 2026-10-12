@@ -21,6 +21,7 @@ static func run(v: ValidatorBase) -> void:
 	_statuses(v)
 	_injuries(v)
 	_races_and_classes(v)
+	_progression(v)
 
 
 static func _stats(v: ValidatorBase) -> void:
@@ -149,3 +150,20 @@ static func _races_and_classes(v: ValidatorBase) -> void:
 				v.err(w, "start_items.count는 1 이상")
 	if v.db.enabled_ids("classes").is_empty():
 		v.err("classes", "활성화된 시작 템플릿이 하나도 없다")
+
+
+## progression.json: 레벨 표는 0부터 엄격히 증가, 길이 = 최대 레벨.
+static func _progression(v: ValidatorBase) -> void:
+	var w := "progression"
+	var table := Progression.exp_table(v.db)
+	if table.size() != Progression.max_level(v.db):
+		v.err(w, "level.exp_table 길이(%d)는 level.max(%d)와 같아야 한다" % [table.size(), Progression.max_level(v.db)])
+	for i in table.size():
+		if not JsonUtil.is_number(table[i]) or (i == 0 and int(table[i]) != 0) or (i > 0 and int(table[i]) <= int(table[i - 1])):
+			v.err(w, "level.exp_table은 0에서 시작해 엄격히 증가해야 한다(%d번째)" % i)
+			break
+	var ranks := v.db.tag_ids("monster_ranks")
+	for key: String in ["exp.no_exp_ranks", "exp.guardian_ranks"]:
+		for r: Variant in v.db.prog(key, []):
+			if not ranks.has(str(r)):
+				v.err(w, "%s의 '%s' 미등록(tags.monster_ranks)" % [key, r])
