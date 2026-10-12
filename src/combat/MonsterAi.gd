@@ -2,7 +2,10 @@ class_name MonsterAi
 extends RefCounted
 ## 몬스터 AI: 데이터 ai 규칙을 위에서부터 보고, 조건이 모두 참이고 지금 쓸 수 있는 첫 스킬을 고른다.
 ## 규칙: {"if": "<조건 id>", "value": …, "status": …, "also": [{"if": …}, …], "use": "<스킬 id>",
-##        "target": "random|lowest_hp|highest_hp|with_status|without_status", "target_status": "<상태 id>"}
+##        "target": "random|lowest_hp|highest_hp|with_status|without_status|highest_meter|guard_front",
+##        "target_status": "<상태 id>", "target_meter": "<게이지 id>"}
+## 규칙에 target이 없으면 보스 페이즈의 대상 규칙(memo target_rule)을 쓴다.
+## guard_front: 방어 중이거나 끌어들이는 상태(draws_attacks)인 적 → 전열 → 무작위.
 ## 맞는 규칙이 없으면 ai_cycle(고정 순환, 예: 할퀴기 → 할퀴기 → 달려들기)의 이번 차례 스킬, 그것도 없으면 기본 공격.
 ## 조건은 src/combat/ai/<조건>.gd(AiCondition). 아군을 자동으로 돌릴 때(테스트)도 같은 함수를 쓴다 → 기본 공격.
 
@@ -50,13 +53,28 @@ static func target(b: Battle, c: Combatant, rule: Dictionary) -> Combatant:
 	if foes.is_empty():
 		return null
 	var st := JsonUtil.get_str(rule, "target_status")
-	match JsonUtil.get_str(rule, "target"):
+	var mode := JsonUtil.get_str(rule, "target", str(c.memo.get("target_rule", "")))
+	match mode:
+		"highest_meter":
+			var mid := JsonUtil.get_str(rule, "target_meter")
+			var best := foes[0]
+			for f in foes:
+				if Meters.value(f.actor, mid) > Meters.value(best.actor, mid):
+					best = f
+			return best
+		"guard_front":
+			var lure := foes.filter(func(f: Combatant) -> bool:
+				return f.actor.statuses.has("guarding") or f.actor.statuses.has_flag("draws_attacks"))
+			if lure.is_empty():
+				lure = foes.filter(func(f: Combatant) -> bool: return f.row == "front")
+			if not lure.is_empty():
+				return b.rng.pick(lure) as Combatant
 		"lowest_hp":
 			return _by_hp(foes, true)
 		"highest_hp":
 			return _by_hp(foes, false)
 		"with_status", "without_status":
-			var want := JsonUtil.get_str(rule, "target") == "with_status"
+			var want := mode == "with_status"
 			var fit := foes.filter(func(f: Combatant) -> bool: return f.actor.statuses.has(st) == want)
 			if not fit.is_empty():
 				return b.rng.pick(fit) as Combatant

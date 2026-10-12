@@ -101,6 +101,7 @@
     "flee_max": 0.9,
     "no_flee_ranks": ["guardian", "variant_guardian", "lord"],
     "ambush_gauge": 50,
+    "may_skip_chance": 0.3,
     "max_side_units": 6,
     "hours_per_turn": 0.01,
     "flee_grace_hours": 0.5

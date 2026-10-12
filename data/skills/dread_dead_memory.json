@@ -1,0 +1,30 @@
+{
+  "id": "dread_dead_memory",
+  "name_ko": "죽은 자의 기억",
+  "target": "self",
+  "cost": {
+    "soul": 40
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 2,
+      "hits": 3,
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "magic",
+          "base": 0,
+          "power": 1.2,
+          "damage_type": "dark"
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "desc_ko": "죽은 자들의 기억을 불러 모은다. 잠시 뒤 어둠이 세 번 떨어진다.",
+  "source": "original",
+  "notes": "명세 §7.3 [원→변] 2R 뒤 마어둠 120 × 3발, 끌어들이는 대상 우선"
+}

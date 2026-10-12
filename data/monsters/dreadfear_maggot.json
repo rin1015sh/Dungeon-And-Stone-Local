@@ -1,0 +1,72 @@
+{
+  "id": "dreadfear_maggot",
+  "name_ko": "드레드피어의 구더기",
+  "grade": 9,
+  "rank": "token",
+  "floor": 1,
+  "floor_tags": [
+    "f1_lord"
+  ],
+  "type": "body",
+  "family": [
+    "parasite"
+  ],
+  "shape": "blob",
+  "size": 0.35,
+  "color": "#d9cfa8",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 6,
+    "agi": 4,
+    "p_res": 2,
+    "m_res": 2,
+    "int": 2
+  },
+  "resources": {
+    "hp": 30,
+    "soul": 0
+  },
+  "natural_weapon": {
+    "attack": 4,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "maggot_crawl_bite"
+  ],
+  "passives": [
+    {
+      "id": "dread_maggot_cling",
+      "name_ko": "들러붙는 구더기",
+      "desc_ko": "맞힌 상대의 공포를 키운다.",
+      "on_hit": [
+        {
+          "type": "meter",
+          "meter": "dread_fear",
+          "amount": 5
+        }
+      ]
+    }
+  ],
+  "ai_cycle": [
+    "maggot_crawl_bite"
+  ],
+  "desc_ko": "드레드피어의 몸에서 떨어져 나온 엄지손가락만 한 구더기. 들러붙어 공포를 옮긴다.",
+  "sprite": "res://assets/sprites/monsters/dreadfear_maggot.png",
+  "source": "original",
+  "notes": "명세 §7.5 토큰 — 경험치·드롭 없음"
+}

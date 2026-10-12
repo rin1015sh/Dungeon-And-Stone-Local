@@ -71,7 +71,7 @@ project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSy
 CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS}.md
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
-  stats.json resources.json statuses.json injuries.json races.json classes.json tiles.json landmarks.json
+  stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
   monsters/ essences/ skills/ items/ floors/ rifts/ events/ facilities/   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
   strings/ko.json
 src/
@@ -82,11 +82,13 @@ src/
                          ValidatorBase, DataValidator, validation/{Core,Content,World}Rules   (오토로드 비의존)
   entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, StatusSet,
                          LightSource, CharacterRoller
-  combat/                Battle, BattleRules(은신·증원·사건), Timeline, DamageCalc, Passives, MonsterAi + ai/<조건>.gd,
+  combat/                Battle, BattleRules(은신·증원·도주·사건·정리), BattleTargets(대상·오인), Timeline, DamageCalc, Passives,
+                         MonsterAi + ai/<조건>.gd, Meters(전투 게이지), BossHooks + BossPattern + patterns/<id>.gd(보스 페이즈·라운드),
+                         BattleDelayed(예고 공격),
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
-                         PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
+                         PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  (M4에서 채움)
@@ -115,6 +117,7 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **피해 공식(명세 §1)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 정신력×2, 방어 100/(100+방어×4), 명중 = (스킬 accuracy 95 + 명중률 스탯) × (1 + 민첩 차×0.005). 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`. 도주 = 50% + (아군 평균 − 적 평균 민첩)×2%p(10~90%), 수호자·군주전 불가.
 - **패시브**: 몬스터 `passives[]`·정수 `passive` 같은 형식 → `Actor.passives`(`Passives.gd`: on_hit/on_crit/crit_bonus/power_vs_status/reflect_melee/status_immune/start_gauge/see_hidden/flee_penalty, 수정자는 소유자가 붙임).
 - **몬스터 AI**: `ai: [{if, also[], use, target(lowest_hp|highest_hp|with_status|without_status), target_status}]` → 없으면 `ai_cycle` → 기본 공격. 상태 지속은 자기 차례 시작 때 준다(자기 행동에 거는 상태는 +1).
+- **보스(G3)**: 몬스터 `pattern`(`src/combat/patterns/<id>.gd`, 수치는 `pattern_params`) + `phases`[{id, hp_above, message, self/foe_statuses, self_passives, target_rule, round_effects}]. **라운드 = 보스 자기 차례**(`BossHooks.turn_end`, 기절로 건너뛰어도 센다). 게이지는 `Actor.meters`(전투 끝에 비움), 전투 한정 상태는 `"battle_only": true`. 계층군주 소환은 층 JSON `lord` → `LordWatch`(혼자면 자연 소환 안 됨 — 디버그 버튼). 가정 DF1~DF15.
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.

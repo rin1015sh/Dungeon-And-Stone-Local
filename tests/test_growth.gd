@@ -74,7 +74,7 @@ func test_guardian_repeats_and_lord_once() -> void:
 	var p := Progression.new()
 	assert_eq(p.record_kill(d, "test_guardian"), 4 + 3, "첫 처치 4 + 수호자 3")
 	assert_eq(p.record_kill(d, "test_guardian"), 3, "수호자 보너스는 반복")
-	assert_eq(p.record_kill(d, "test_lord"), 5 + 15, "첫 처치 5 + 군주 15")
+	assert_eq(p.record_kill(d, "test_lord"), 15, "군주는 첫 처치 경험치 없이 보너스 15만(명세 §5.6)")
 	assert_eq(p.record_kill(d, "test_lord"), 0, "군주 보너스는 1회")
 
 
@@ -133,8 +133,8 @@ func test_level_down_locks_and_unlocks_essence_slots() -> void:
 func test_exp_budget_report() -> void:
 	var r := ExpBudget.report(db)
 	var floors: Dictionary = r["floors"]
-	assert_eq(int(floors[1]["actual"]), 10, "지금 1층 데이터: 필드 10종 × 1 (명세 §5.6)")
-	assert_eq(int(floors[1]["species"]), 10)
+	assert_eq(int(floors[1]["actual"]), 25, "지금 1층 데이터: 필드 10종 × 1 + 드레드피어 15 (명세 §5.6)")
+	assert_eq(int(floors[1]["species"]), 11, "필드 10 + 군주 1(구더기 토큰은 0이라 빠짐)")
 	assert_eq(int(r["lv5_need"]), 660)
 	assert_eq(int(r["lv5_total"]), 640, "1~4층 목표 합(데이터가 모자라면 목표치) 640")
 	assert_true(bool(r["ok"]), "640 / 660 = 97% — 93~99% 범위")

@@ -34,6 +34,7 @@ var result: String = ""
 var phase: String = PHASE_IDLE
 var turns: int = 0
 var killed: Array[String] = []  ## 쓰러뜨린 몬스터 id (도감·경험치는 M3)
+var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
 
 var _announced: Dictionary = {}  # Combatant -> true (쓰러짐을 알렸다)
 
@@ -82,6 +83,7 @@ func start(party_first: bool) -> void:
 		if u.side == Combatant.SIDE_ENEMY:
 			names.append(u.label())
 	BattleRules.on_start(self)
+	BossHooks.on_start(self)
 	message.emit("combat.start" if party_first else "combat.start_ambushed", {"enemies": ", ".join(names)}, "danger")
 	BattleKnowledge.on_start(self)
 
@@ -119,15 +121,18 @@ func next_turn() -> Combatant:
 			_check_end()
 			return null
 		turns += 1
-		var stunned := c.actor.statuses.has_flag("skip_turn")
+		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
 		c.actor.advance_turns(1.0)
 		c.tick_cooldowns()
+		BattleDelayed.tick(self, c)
 		_after_effects()
 		if not result.is_empty() or not c.is_active():
 			continue
 		if stunned:
 			message.emit("combat.skip", {"name": c.label()}, "warn")
 			timeline.consume(c)
+			BossHooks.turn_end(self, c, true)
+			_after_effects()
 			continue
 		current = c
 		phase = PHASE_AWAIT
@@ -162,6 +167,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	c.acted += 1
 	c.was_hit = false
 	timeline.consume(c, delay)
+	BossHooks.turn_end(self, c, false)
 	current = null
 	event.emit({"type": "turn_end", "unit": c})
 	_after_effects()
@@ -209,11 +215,20 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		c.cooldowns[skill_id] = cooldown + 1
 	if skill_id != BASIC_ATTACK:
 		message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
-	for t in _targets(c, JsonUtil.get_str(sk, "target"), chosen):
+	var kind := JsonUtil.get_str(sk, "target")
+	var fx := JsonUtil.get_array(sk, "effects")
+	var targets := BattleTargets.resolve(self, c, kind, chosen)
+	var mis := BattleTargets.misdirect(self, c, kind) if not targets.is_empty() else {}
+	if not mis.is_empty():
+		targets.clear()
+		targets.append(mis["target"] as Combatant)
+		fx = BattleTargets.boosted(fx, mis)
+		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
+	for t in targets:
 		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
-		ctx.info = {"aim_weak": aim_weak}
+		ctx.info = {"aim_weak": aim_weak, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}
 		ctx.registry = effects
-		effects.apply_all(ctx, JsonUtil.get_array(sk, "effects"))
+		effects.apply_all(ctx, fx)
 		_relay(ctx, c)
 	return JsonUtil.get_float(sk, "delay_cost")
 
@@ -225,35 +240,6 @@ func _use_item(c: Combatant, item_id: String) -> void:
 		return
 	message.emit("combat.use_item", {"name": c.label(), "item": DataNames.entry(db, "items", item_id)}, "system")
 	_relay(ctx, c)
-
-
-func _targets(c: Combatant, kind: String, chosen: Variant) -> Array[Combatant]:
-	var foes := opponents(c)
-	var picked: Combatant = chosen as Combatant if chosen is Combatant and (chosen as Combatant).is_active() else null
-	var out: Array[Combatant] = []
-	match kind:
-		"self":
-			out.append(c)
-		"enemy_all":
-			out = foes
-		"ally_all":
-			out = side_units(c.side)
-		"ally_single":
-			out.append(picked if picked != null and picked.side == c.side else c)
-		"any_single":
-			if picked != null:
-				out.append(picked)
-		"enemy_row":
-			var row := picked.row if picked != null else "front"
-			for u in foes:
-				if u.row == row:
-					out.append(u)
-		_:
-			if picked == null or picked.side == c.side or not BattleRules.is_targetable(self, c, picked):
-				picked = rng.pick(BattleRules.targetable(self, c)) as Combatant
-			if picked != null:
-				out.append(picked)
-	return out
 
 
 func _relay(ctx: EffectContext, c: Combatant) -> void:
@@ -279,6 +265,7 @@ func _after_effects() -> void:
 			else:
 				message.emit("combat.down_party", {"name": u.label()}, "danger")
 			event.emit({"type": "down", "unit": u})
+	BossHooks.check_all(self)
 	_check_end()
 
 
@@ -293,5 +280,6 @@ func _check_end() -> void:
 	if not result.is_empty():
 		phase = PHASE_ENDED
 		current = null
+		BattleRules.cleanup(self)
 		message.emit("combat.end_" + result, {}, "good" if result == RESULT_VICTORY else "warn")
 		event.emit({"type": "end", "result": result})

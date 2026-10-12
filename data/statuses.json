@@ -502,5 +502,249 @@
       }
     ],
     "source": "placeholder"
+  },
+  {
+    "id": "lethargy",
+    "name_ko": "무기력증",
+    "kind": "debuff",
+    "desc_ko": "영혼이 축 늘어졌다. 이능을 쓸 수 없고 영혼력이 차오르지 않는다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "no_skills"
+    ],
+    "modifiers": [
+      {
+        "target": "regen:soul",
+        "percent": -1.0
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.2 역병 게이지가 가득 참. 지속은 임시"
+  },
+  {
+    "id": "exhaustion",
+    "name_ko": "탈진",
+    "kind": "debuff",
+    "desc_ko": "몸이 말을 듣지 않는다. 근력·민첩·물리내성이 크게 떨어진다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.3
+      },
+      {
+        "target": "agi",
+        "percent": -0.3
+      },
+      {
+        "target": "p_res",
+        "percent": -0.3
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.2 원망 게이지. '행동 비용이 영혼력으로 전환'은 아직 없음(ASSUMPTIONS DF8)"
+  },
+  {
+    "id": "isolated",
+    "name_ko": "고립",
+    "kind": "debuff",
+    "desc_ko": "대열에서 떨어져 홀로 남았다. 받는 피해가 늘어난다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.25
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §7.3 면죄부 [고립] 2R. 효과 수치는 [창]"
+  },
+  {
+    "id": "dread_proliferating",
+    "name_ko": "공포의 증식",
+    "kind": "buff",
+    "desc_ko": "공포가 불어난다. 중첩마다 근력·정신력이 오르고, 많이 쌓이면 더 자주 움직인다.",
+    "stackable": true,
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.1
+      },
+      {
+        "target": "int",
+        "percent": 0.1
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.4 P1: 4R마다 1중첩, 4중첩부터 라운드당 행동 +1"
+  },
+  {
+    "id": "dread_seeping",
+    "name_ko": "스며드는 공포",
+    "kind": "debuff",
+    "desc_ko": "공포가 스며들어 손이 떨린다. 명중률이 떨어지고 가끔 동료를 친다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -30
+      }
+    ],
+    "misdirect": {
+      "chance": 0.15,
+      "power_mult": 1.0,
+      "ignore_defense": false
+    },
+    "source": "original",
+    "notes": "명세 §7.4 P2: 명중 −30%, 단일 행동 15% 아군 오인"
+  },
+  {
+    "id": "dread_veil",
+    "name_ko": "배신의 장막",
+    "kind": "debuff",
+    "desc_ko": "서로를 알아볼 수 없다. 동료 하나를 고르는 이능을 쓸 수 없고, 공격이 자주 동료에게 향한다.",
+    "battle_only": true,
+    "flags": [
+      "no_ally_single"
+    ],
+    "misdirect": {
+      "chance": 0.4,
+      "power_mult": 5.0,
+      "ignore_defense": true
+    },
+    "source": "original",
+    "notes": "명세 §7.4 P3: 3R, 단일 행동 40% 무작위 아군, 오인 피해 ×5 내성 무시. 패턴이 걸고 푼다"
+  },
+  {
+    "id": "dread_groggy",
+    "name_ko": "보호기제",
+    "kind": "debuff",
+    "desc_ko": "껍질 속으로 숨어 움직이지 않는다. 받는 피해가 늘어난다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "flags": [
+      "skip_turn"
+    ],
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.5
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.4 P3 그로기 2R, 받는 피해 ×1.5"
+  },
+  {
+    "id": "dread_rage",
+    "name_ko": "분노",
+    "kind": "buff",
+    "desc_ko": "분노로 모든 피해가 두 배가 된다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 1.0
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.2 분노 게이지. 지속 3R(+1)은 [창](ASSUMPTIONS DF3)"
+  },
+  {
+    "id": "dread_hatred_burst",
+    "name_ko": "증오 폭발",
+    "kind": "buff",
+    "desc_ko": "증오가 넘쳐흐른다. 매 차례 모두를 덮친다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "명세 §7.2 증오 게이지 — AI가 증오 폭발만 쓴다"
+  },
+  {
+    "id": "dread_human_form",
+    "name_ko": "사람의 형체",
+    "kind": "buff",
+    "desc_ko": "구더기가 흩어지고 사람의 모습이 드러났다. 라운드마다 두 번 움직인다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "명세 §7.4 P4"
+  },
+  {
+    "id": "dread_buff_bone_memory",
+    "name_ko": "뼈에 새겨진 기억",
+    "kind": "buff",
+    "desc_ko": "주는 피해가 늘고, 맞힌 상대의 영혼을 빨아들여 증오를 키운다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.3
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.4 버프 [원]. 영혼력 흡수는 패시브(pattern_params.buffs)"
+  },
+  {
+    "id": "dread_buff_wax_armor",
+    "name_ko": "밀랍 갑주",
+    "kind": "buff",
+    "desc_ko": "녹아내린 밀랍이 몸을 덮어 물리 피해를 덜 받는다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.3
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 새로 정함"
+  },
+  {
+    "id": "dread_buff_staring_eye",
+    "name_ko": "응시하는 눈",
+    "kind": "buff",
+    "desc_ko": "수많은 눈이 열려 빈틈을 노린다. 명중률과 치명타율이 오른다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": 20
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 새로 정함. 치명타 보정은 패시브"
+  },
+  {
+    "id": "dread_buff_maggot_nest",
+    "name_ko": "구더기 둥지",
+    "kind": "buff",
+    "desc_ko": "몸이 둥지가 되어 라운드마다 구더기가 기어 나온다.",
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 라운드 끝마다 구더기 1체(패턴)"
+  },
+  {
+    "id": "dread_buff_echo",
+    "name_ko": "원망의 메아리",
+    "kind": "buff",
+    "desc_ko": "공격이 맞을 때마다 원망이 메아리친다.",
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 적중 시 원망 +6(패시브)"
   }
 ]

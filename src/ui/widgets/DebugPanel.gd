@@ -57,6 +57,7 @@ func _ready() -> void:
 	var later := PackedStringArray()
 	_btn(v, Strings.t("debug.spawn_monster"), func() -> void: ExploreDebug.spawn_and_engage(_session))
 	_btn(v, Strings.t("debug.give_essence"), _give_essence)
+	_btn(v, Strings.t("debug.summon_lord"), func() -> void: _session.lord.summon(_session))
 	for key: String in ["debug.portal_open_locked"]:
 		later.append(Strings.t(key))
 	var later_label := UiTheme.label(Strings.t("debug.later", {"list": " · ".join(later)}), "small", "text_dim")

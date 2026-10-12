@@ -12,6 +12,8 @@ extends RefCounted
 ##   start_gauge      전투 시작 때 행동 게이지 보너스(네 발 짐승의 첫 차례 선공)
 ##   see_hidden       true — 은신한 대상도 고를 수 있다(추적 후각)
 ##   flee_penalty     비율 — 상대 진영의 도주 확률을 깎는다(추적 후각)
+##   meter_on_damaged {meter, per_percent} — 피해를 받으면 최대 생명력 1%당 그만큼 자기 게이지(드레드피어 분노)
+##   attacker_meter   {meter, amount} — 이 개체를 공격해 맞힌 쪽의 게이지가 오른다(드레드피어 P2 원망)
 
 
 static func of(a: Actor) -> Array[Dictionary]:
@@ -73,6 +75,7 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_hit"), tgt)
 		if crit:
 			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_crit"), tgt)
+	_meters_after_hit(ctx, dealt)
 	if ranged or tgt.dead or dealt <= 0:
 		return
 	var reflect := sum(tgt, "reflect_melee")
@@ -87,6 +90,18 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 		if bool(r["hit"]) and int(r["amount"]) > 0:
 			src.pool.modify("hp", -float(r["amount"]), "counter:" + tgt.id)
 			ctx.say("combat.counter", {"source": tgt.display_name, "target": src.display_name, "amount": r["amount"]}, "warn")
+
+
+static func _meters_after_hit(ctx: EffectContext, dealt: int) -> void:
+	var tgt := ctx.target
+	for p in tgt.passives:
+		var md := JsonUtil.get_dict(p, "meter_on_damaged")
+		if not md.is_empty() and dealt > 0 and not tgt.dead:
+			var pct := float(dealt) / maxf(1.0, tgt.pool.get_max("hp")) * 100.0
+			Meters.add(ctx.db, tgt, JsonUtil.get_str(md, "meter"), pct * JsonUtil.get_float(md, "per_percent", 1.0), ctx)
+		var am := JsonUtil.get_dict(p, "attacker_meter")
+		if not am.is_empty():
+			Meters.add(ctx.db, ctx.source, JsonUtil.get_str(am, "meter"), JsonUtil.get_float(am, "amount"), ctx)
 
 
 static func _filter_ok(f: Dictionary, ranged: bool, dtype: String) -> bool:

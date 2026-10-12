@@ -15,6 +15,7 @@ var cooldowns: Dictionary = {}  ## 스킬 id -> 남은 자기 차례 수
 var uses: Dictionary = {}       ## 스킬 id -> 이번 전투에서 쓴 횟수(uses_per_battle)
 var acted: int = 0              ## 이번 전투에서 행동한 횟수(AI 첫 차례·순환)
 var was_hit: bool = false       ## 마지막 자기 행동 뒤에 피해를 받았는가(AI)
+var memo: Dictionary = {}       ## 보스 패턴·예고 공격의 전투 중 기록(BossHooks, BattleDelayed)
 
 
 func _init(p_actor: Actor, p_side: int, p_row: String = "front", p_order: int = 0) -> void:

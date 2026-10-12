@@ -26,6 +26,7 @@ var rng: Rng
 var effects: EffectRegistry
 var lights: LightField
 var monsters: FieldMonsters
+var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var realtime: RealtimeDriver
 var monsters_enabled: bool = true  ## false면 몬스터가 나타나지 않는다(규칙 테스트용). start() 전에 정한다.
 var in_combat: bool = false
@@ -57,6 +58,7 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	fpos = Kinematics.center_of(pos)
 	lights = LightField.build(map, _mpt)
 	monsters = FieldMonsters.new(db, map, floor_def, rng)
+	lord = LordWatch.new(JsonUtil.get_dict(floor_def, "lord"))
 	realtime = RealtimeDriver.new()
 	player.pool.set_context("dungeon", true)
 	player.died.connect(_on_player_died)
@@ -103,6 +105,11 @@ func move_hours() -> float:
 	var base := float(db.bal("explore.move_hours_base", 0.02))
 	var coef := float(db.bal("explore.move_agi_coef", 0.02))
 	return base / (1.0 + maxf(0.0, player.stats.get_value("agi")) * coef)
+
+
+## 한곳에 함께 있는 탐험가 수(계층군주 소환 조건). 동료는 M4 — 지금은 혼자.
+func party_size() -> int:
+	return 1
 
 
 func found_count(list: Array[Dictionary]) -> int:
@@ -239,6 +246,7 @@ func pass_time(hours: float) -> void:
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
+		lord.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
@@ -248,6 +256,8 @@ func pass_time(hours: float) -> void:
 ## 시야를 다시 계산하고 탐험 기록·발견을 갱신한다.
 func refresh_view() -> void:
 	vision_m = Vision.radius_m(db, floor_def, map, player, pos)
+	if lord.is_active():
+		vision_m = minf(vision_m, lord.vision_cap_m())
 	map.visible_now = Fov.compute(map, pos, vision_m / _mpt)
 	map.remember_visible()
 	_discover()
@@ -285,7 +295,9 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 	if not killed.is_empty() and not player.dead:
 		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
-	if result == Battle.RESULT_VICTORY:
+	if lord.on_battle_end(self, group, result):
+		pass
+	elif result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)
 	elif result == Battle.RESULT_FLED:
 		monsters.set_grace(group, clock.total_hours)

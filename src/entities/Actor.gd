@@ -24,6 +24,8 @@ var death_cause: String = ""
 var skills: Array[String] = []
 ## 패시브 정의 목록(Passives 참고). 몬스터는 데이터 passives, 탐험가는 흡수한 정수의 패시브.
 var passives: Array[Dictionary] = []
+## 전투 게이지(data/meters.json id -> 값). 전투가 끝나면 비운다(Meters).
+var meters: Dictionary = {}
 
 
 ## bases: 기본 스탯. resource_ids가 비면 활성 자원 전부. overrides: 자원 최대치 고정값(몬스터).

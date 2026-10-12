@@ -1,6 +1,7 @@
 class_name BattleRules
 extends RefCounted
-## Battle을 돕는 규칙 모음(Battle.gd를 짧게 유지): 은신 대상 고르기, 증원, 전투 시작 선공, 전투당 사용 횟수, 도주 확률.
+## Battle을 돕는 규칙 모음(Battle.gd를 짧게 유지): 은신 대상 고르기, 증원, 전투 시작 선공, 전투당 사용 횟수, 도주 확률,
+## 공포의 행동 실패, 전투 종료 정리(게이지·전투 한정 상태), 효과 사건 반영.
 
 
 ## c가 고를 수 있는 상대: 은신(untargetable)은 빼되, 고를 수 있는 상대가 하나도 없으면 전부.
@@ -57,6 +58,30 @@ static func _avg_agi(list: Array[Combatant]) -> float:
 	return s / float(list.size())
 
 
+## 공포(flag may_skip_turn): 차례마다 combat.may_skip_chance 확률로 움직이지 못한다.
+static func fear_skip(b: Battle, c: Combatant) -> bool:
+	return c.actor.statuses.has_flag("may_skip_turn") and b.rng.chance(float(b.db.bal("combat.may_skip_chance", 0.3)))
+
+
+## 전투가 끝났다: 게이지를 비우고 전투 한정 상태(statuses "battle_only": true)를 지운다.
+static func cleanup(b: Battle) -> void:
+	for u in b.units:
+		u.actor.meters.clear()
+		for id in u.actor.statuses.ids():
+			if JsonUtil.get_bool(b.db.get_entry("statuses", id), "battle_only"):
+				u.actor.statuses.remove(id)
+
+
+## 대열 섞기: 그 진영의 전열·후열 값을 무작위로 다시 나눠 준다.
+static func shuffle_rows(b: Battle, side: int) -> void:
+	var list := b.side_units(side)
+	var rows: Array = list.map(func(u: Combatant) -> String: return u.row)
+	b.rng.shuffle(rows)
+	for i in list.size():
+		list[i].row = str(rows[i])
+	b.message.emit("combat.rows_shuffled", {}, "warn")
+
+
 ## 증원(효과 summon의 사건): 같은 진영에 몬스터를 더한다(한 진영 최대 combat.max_side_units).
 static func summon(b: Battle, c: Combatant, e: Dictionary) -> void:
 	var mid := str(e.get("monster", ""))
@@ -95,6 +120,14 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 					hu.was_hit = true
 			"summon":
 				summon(b, c, e)
+				continue
+			"delayed":
+				BattleDelayed.schedule(c, e)
+				continue
+			"shuffle_rows":
+				var su := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
+				if su != null:
+					shuffle_rows(b, su.side)
 				continue
 		var ev := e.duplicate()
 		ev["unit"] = b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null

@@ -49,6 +49,7 @@
     "stats": "스탯",
     "resources": "자원",
     "statuses": "상태이상",
+    "meters": "전투 게이지",
     "injuries": "부상",
     "races": "종족",
     "classes": "템플릿",
@@ -109,6 +110,11 @@
     "equipped_item": "{item} (착용)"
   },
   "explore": {
+    "lord_omen": "동굴 벽의 수정이 보랏빛으로 불안하게 일렁인다. 너무 오래 한곳에 머문 것 같다.",
+    "lord_summoned": "수정의 광채가 핏빛으로 바뀐다. 무언가가 깨어났다 — {name}!",
+    "lord_bond": "동료들과의 결속이 끊어진 듯 서로의 기척이 멀어진다. 눈앞이 어둑해진다.",
+    "lord_defeated": "{name}이(가) 무너져 구더기 더미가 된다. 수정의 빛이 제 색을 되찾는다.",
+    "lord_vanished": "핏빛 광채가 걷히고, 그것은 소리 없이 사라졌다.",
     "enter": "{floor}. 발밑이 차갑다. 포탈은 등 뒤에서 닫혔다.",
     "wait": "숨을 죽이고 {hours}시간을 기다렸다.",
     "rest_safe": "기념비 곁에서 {hours}시간을 잤다. 몸이 조금 풀렸다.",
@@ -156,6 +162,7 @@
     "status_immune": "{name}에게는 [{status}]이(가) 듣지 않는다."
   },
   "debug": {
+    "summon_lord": "계층군주 소환(드레드피어)",
     "title": "디버그 (F1)",
     "skip": "+{hours}시간",
     "close_soon": "폐쇄 1시간 전",
@@ -252,7 +259,25 @@
     "summon": "{name}의 울부짖음에 {monster}이(가) 달려왔다!",
     "summon_fail": "{name}이(가) 울부짖었지만 아무도 오지 않았다.",
     "reason_hidden": "그 상대는 모습을 감추고 있다.",
-    "reason_no_flee": "도망칠 길이 없다."
+    "reason_no_flee": "도망칠 길이 없다.",
+    "reason_veiled": "장막 너머의 동료를 알아볼 수 없다.",
+    "meter_full": "{name}의 {meter}이(가) 가득 찼다 — {status}!",
+    "meter_damage_none": "{target}의 마음에는 비출 공포가 없다.",
+    "delayed_warn": "{name}의 주위로 죽은 자들의 기억이 모여든다…",
+    "delayed_fire": "{name}이(가) 불러 모은 기억이 쏟아진다!",
+    "misdirect": "{name}의 공격이 빗나가 {target}에게 향한다!",
+    "rows_shuffled": "대열이 뒤엉켰다!",
+    "extra_action": "{name}이(가) 한 번 더 움직인다!",
+    "dread_p1": "수정의 빛이 핏빛으로 물든다. {name}이(가) 구더기를 흩뿌리며 다가온다.",
+    "dread_p2": "{name}의 공포가 스며든다. 손끝이 떨리고, 원망이 쌓이기 시작한다.",
+    "dread_p3": "{name}을(를) 둘러싼 증오가 짙어진다. 동료의 얼굴이 낯설게 보인다.",
+    "dread_p4": "구더기가 흩어지고 {name}의 사람 형체가 드러난다!",
+    "dread_proliferate": "{name}의 공포가 불어난다({stacks}중첩).",
+    "dread_veil": "배신의 장막이 내려앉는다 — 누가 동료인지 알 수 없다.",
+    "dread_groggy": "{name}이(가) 껍질 속으로 숨어 웅크린다. 지금이 기회다!",
+    "dread_buff": "{name}이(가) 껍질을 벗고 새 모습을 얻었다: {buff}.",
+    "dread_flag_old_memory": "{name}에게서 아주 오래된 기억이 스친다.",
+    "dread_flag_twisted_memory": "마비독의 냄새에 {name}의 기억이 뒤틀린다."
   },
   "knowledge": {
     "unknown": "???",

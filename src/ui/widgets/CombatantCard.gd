@@ -1,6 +1,6 @@
 class_name CombatantCard
 extends PanelContainer
-## 전투 무대의 참가자 하나: 도형(서로 마주 봄) · 이름 · 생명력 막대 · 상태이상.
+## 전투 무대의 참가자 하나: 도형(서로 마주 봄) · 이름 · 생명력 막대 · 전투 게이지(공포 등, 0보다 클 때만) · 상태이상.
 ## 현재 차례면 테두리를 강조하고, 피해를 입으면 숫자가 떠오른다. 쓰러지거나 도망치면 흐려진다.
 
 var unit: Combatant
@@ -9,6 +9,7 @@ var _figure: _Figure
 var _bar: ProgressBar
 var _hp_label: Label
 var _status: Label
+var _meters: RichTextLabel
 var _normal_box: StyleBoxFlat
 var _current_box: StyleBoxFlat
 
@@ -46,6 +47,13 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_hp_label = UiTheme.label("", "small", "text_dim")
 	_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(_hp_label)
+	_meters = RichTextLabel.new()
+	_meters.bbcode_enabled = true
+	_meters.fit_content = true
+	_meters.scroll_active = false
+	_meters.add_theme_font_size_override("normal_font_size", UiTheme.metric("small_font_size", UiTheme.metric("font_size", 16)))
+	_meters.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(_meters)
 	_status = UiTheme.label("", "small", "warn")
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -58,6 +66,11 @@ func refresh() -> void:
 	_bar.max_value = maxf(1.0, pool.get_max("hp"))
 	_bar.value = pool.get_current("hp")
 	_hp_label.text = "%d / %d" % [ceili(pool.get_current("hp")), roundi(pool.get_max("hp"))]
+	var parts := PackedStringArray()
+	for m: Dictionary in Meters.list(unit.actor.db, unit.actor):
+		parts.append("[color=%s]%s %d/%d[/color]" % [str(m["color"]), str(m["name"]), roundi(float(m["value"])), roundi(float(m["max"]))])
+	_meters.text = " · ".join(parts)
+	_meters.visible = not parts.is_empty()
 	var names := PackedStringArray()
 	for id in unit.actor.statuses.ids():
 		names.append(DataNames.entry(unit.actor.db, "statuses", id))

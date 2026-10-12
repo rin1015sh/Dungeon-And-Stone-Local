@@ -13,6 +13,8 @@ const POST_SHADER := "res://assets/shaders/post_grade.gdshader"
 const POST_PARAMS := ["saturation", "vignette_strength", "vignette_radius", "grain_strength"]
 
 var session: ExploreSession
+var _tone: CanvasModulate
+var _tone_base: Color = Color.WHITE
 var _view: FloorView
 var _hud: ExploreHud
 var _debug: DebugPanel
@@ -85,6 +87,8 @@ func _process(delta: float) -> void:
 	session.realtime.set_paused("debug", _debug.visible)
 	session.realtime.set_paused("typing", _typing())
 	session.tick_realtime(delta)
+	# 계층군주 소환 중: 수정이 붉게 물든다(층 JSON lord.tint).
+	_tone.color = _tone_base * Color.from_string(JsonUtil.get_str(session.lord.def, "tint"), Color.WHITE) if session.lord.is_active() else _tone_base
 	if _ended or _combat != null or session.realtime.is_paused():
 		return
 	# 누르고 있는 동안 매 프레임 그만큼 걷는다(8방향, 속도는 세션이 민첩으로 정한다).
@@ -240,9 +244,10 @@ func _build_world() -> void:
 	vp.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	container.add_child(vp)
 	var lighting := JsonUtil.get_dict(session.db.render, "lighting")
-	var tone := CanvasModulate.new()
-	tone.color = Color.from_string(JsonUtil.get_str(lighting, "canvas_modulate"), Color.WHITE)
-	vp.add_child(tone)
+	_tone = CanvasModulate.new()
+	_tone_base = Color.from_string(JsonUtil.get_str(lighting, "canvas_modulate"), Color.WHITE)
+	_tone.color = _tone_base
+	vp.add_child(_tone)
 	_view = FloorView.new()
 	_view.setup(session)
 	vp.add_child(_view)
