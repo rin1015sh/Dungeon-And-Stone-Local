@@ -32,6 +32,7 @@ var in_combat: bool = false
 var pos: Vector2i                ## 몸 중심이 있는 칸
 var fpos: Vector2 = Vector2.ZERO  ## 몸 중심의 연속 좌표(칸 단위, 칸 (x, y)의 중심 = x + 0.5, y + 0.5)
 var facing: Vector2i = Vector2i(0, 1)
+var last_move_hours: float = -1.0  ## 마지막으로 움직인 게임 시각(은신 정수의 '정지 중' 판정)
 var vision_m: float = 0.0
 var ended: bool = false
 var steps: int = 0
@@ -238,6 +239,7 @@ func pass_time(hours: float) -> void:
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
+		monsters.set_player_stealth(FieldStealth.of(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
 			engage(g, false)

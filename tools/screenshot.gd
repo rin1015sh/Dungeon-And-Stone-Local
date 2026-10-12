@@ -4,6 +4,7 @@ extends Node
 ## --screen: title(기본) / foundation / create / explore
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
+## --monster=<id>: --combat에서 부를 몬스터, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
@@ -82,7 +83,13 @@ func _run() -> void:
 		if _args.has("pause"):
 			explore.set_paused(true)
 		if _args.has("combat"):
-			ExploreDebug.spawn_and_engage(explore.session)
+			ExploreDebug.spawn_and_engage(explore.session, str(_args.get("monster", "")))
+			if _args.has("summon"):
+				await _frames(3)
+				for n: Node in _main.find_children("*", "", true, false):
+					if n is CombatScreen:
+						var cs := n as CombatScreen
+						BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
 		if _args.has("debug"):
 			var ev := InputEventAction.new()
 			ev.action = "debug_toggle"

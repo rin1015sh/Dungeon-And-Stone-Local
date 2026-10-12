@@ -1,6 +1,9 @@
 extends EffectHandler
-## 피해: {"type": "damage", "scaling": "phys"|"magic", "power": 1.0, "damage_type": "slash"|"weapon"|…, "base": 0}
+## 피해: {"type": "damage", "scaling": "phys"|"magic", "power": 1.0, "damage_type": "slash"|"weapon"|…, "base": 0,
+##        "accuracy": 95, "crit_bonus": 0.15, "ranged": false, "power_if_status": {status, power},
+##        "drain_if_status": {"status": "bleeding", "ratio": 0.4}}
 ## 계산은 DamageCalc. 치명상(급소)이면 생명력을 0으로 만든다. 출처는 "attack:<공격자 id>".
+## 맞힌 뒤 Passives.after_hit(적중 시 효과·반사·반격), 흡혈.
 
 
 func apply(ctx: EffectContext, data: Dictionary) -> bool:
@@ -34,6 +37,15 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if bool(r["lethal"]) and not target.dead:
 		target.pool.set_current("hp", 0.0, origin)
 		ctx.say("combat.lethal", args, "danger")
+	var drain := JsonUtil.get_dict(data, "drain_if_status")
+	if not drain.is_empty() and target.statuses.has(JsonUtil.get_str(drain, "status")) and not source.dead:
+		var healed := roundi(float(r["amount"]) * JsonUtil.get_float(drain, "ratio"))
+		if healed > 0:
+			source.pool.modify("hp", float(healed), "drain")
+			ctx.say("combat.drain", {"source": source.display_name, "amount": healed}, "info")
+	var ranged := JsonUtil.get_bool(data, "ranged") if data.has("ranged") else \
+		(JsonUtil.get_str(data, "damage_type", "blunt") == "weapon" and source.weapon_is_ranged())
+	Passives.after_hit(ctx, ctx.registry, int(r["amount"]), bool(r["crit"]), ranged, str(r["damage_type"]))
 	return true
 
 

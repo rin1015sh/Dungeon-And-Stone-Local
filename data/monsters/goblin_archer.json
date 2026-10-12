@@ -1,0 +1,96 @@
+{
+  "id": "goblin_archer",
+  "name_ko": "고블린 궁수",
+  "grade": 9,
+  "rank": "normal",
+  "lineage": "goblin",
+  "variant_of": "goblin",
+  "floor": 1,
+  "floor_tags": [
+    "f1_north"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 0.7,
+  "color": "#4f6a42",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 5,
+    "agi": 13,
+    "p_res": 3,
+    "m_res": 4,
+    "int": 4
+  },
+  "resources": {
+    "hp": 40,
+    "soul": 25
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "pierce",
+    "ranged": true
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "goblin_thief_step",
+    "goblin_poison_shot",
+    "goblin_aimed_shot"
+  ],
+  "passives": [
+    {
+      "id": "goblin_poison_arrow",
+      "name_ko": "독화살",
+      "desc_ko": "활로 맞히면 가끔 독이 퍼진다.",
+      "on_hit_filter": {
+        "ranged": true
+      },
+      "on_hit": [
+        {
+          "type": "apply_status",
+          "status": "poison",
+          "chance": 0.3
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "goblin_thief_step"
+    },
+    {
+      "if": "self_status",
+      "use": "goblin_aimed_shot",
+      "status": "hidden"
+    },
+    {
+      "if": "foe_status",
+      "use": "goblin_poison_shot",
+      "status": "poison",
+      "not": true,
+      "target": "without_status",
+      "target_status": "poison"
+    }
+  ],
+  "desc_ko": "키키키 웃으며 작은 단궁을 쏜다. 화살촉엔 독, 몸에는 은신의 이능.",
+  "sprite": "res://assets/sprites/monsters/goblin_archer.png",
+  "source": "original",
+  "drops": []
+}

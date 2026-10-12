@@ -2,6 +2,9 @@
   "id": "ghoul",
   "name_ko": "구울",
   "grade": 9,
+  "rank": "normal",
+  "lineage": "ghoul",
+  "floor": 1,
   "floor_tags": [
     "f1_south"
   ],
@@ -15,44 +18,57 @@
   "immunities": [],
   "weaknesses": {
     "holy": 1.5,
-    "fire": 1.3
+    "fire": 1.25
   },
   "weak_point": null,
   "stats": {
     "str": 9,
-    "agi": 10,
-    "p_res": 4,
+    "agi": 15,
+    "p_res": 6,
     "m_res": 2,
-    "int": 0
+    "int": 1
   },
   "resources": {
-    "hp": 44,
-    "soul": 0
+    "hp": 60,
+    "soul": 10
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "slash"
   },
   "behavior": {
     "aggressive": false,
-    "aggro_radius_m": 1.0,
+    "aggro_radius_m": 2.0,
     "leash_tiles": 10,
     "pack_size": [
       1,
-      1
+      2
     ],
-    "reveal_radius_m": 0
+    "reveal_radius_m": 0,
+    "row": "front"
   },
   "magic_stone_grade": 9,
   "essence_drops": [],
   "skills": [
-    "claw"
+    "ghoul_claw",
+    "ghoul_pounce"
   ],
-  "ai": [
+  "passives": [
     {
-      "if": "always",
-      "use": "claw"
+      "id": "ghoul_four_legs",
+      "name_ko": "네 발 짐승",
+      "desc_ko": "네 발로 튀어나가 먼저 덤벼든다.",
+      "start_gauge": 30
     }
   ],
-  "desc_ko": "네 발로 기는 시체. 다가가기 전에는 먼저 덤비지 않는다. 공격은 단순하다.",
+  "ai_cycle": [
+    "ghoul_claw",
+    "ghoul_claw",
+    "ghoul_pounce"
+  ],
+  "desc_ko": "썩은 살갗에 긴 손톱, 네 발로 긴다. 가까이 가기 전에는 먼저 덤비지 않고, 늘 같은 순서로 할퀸다.",
   "sprite": "res://assets/sprites/monsters/ghoul.png",
-  "source": "placeholder",
+  "source": "original",
   "drops": [
     {
       "item": "bone_amulet",

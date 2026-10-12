@@ -10,6 +10,10 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if data.has("chance") and not ctx.rng.chance(JsonUtil.get_float(data, "chance", 1.0)):
 		return false
 	var status_id := JsonUtil.get_str(data, "status")
+	if Passives.is_immune(actor, status_id):
+		ctx.say("effect.status_immune", {"name": actor.display_name,
+			"status": JsonUtil.get_str(ctx.db.get_entry("statuses", status_id), "name_ko", status_id)}, "info")
+		return false
 	if not actor.statuses.apply(status_id, JsonUtil.get_float(data, "duration", -1.0)):
 		return false
 	var status_name := JsonUtil.get_str(ctx.db.get_entry("statuses", status_id), "name_ko", status_id)

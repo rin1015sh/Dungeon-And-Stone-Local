@@ -1,0 +1,17 @@
+{
+  "id": "goblin_thief_step",
+  "name_ko": "도둑걸음",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden"
+    }
+  ],
+  "source": "original"
+}

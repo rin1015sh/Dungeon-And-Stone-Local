@@ -1,0 +1,23 @@
+{
+  "id": "ess_goblin_thief_step",
+  "name_ko": "도둑걸음(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden"
+    }
+  ],
+  "essence_of": "goblin_thief_step",
+  "field_stealth": {
+    "still": 0.7,
+    "moving": 0.3
+  },
+  "source": "placeholder",
+  "notes": "[원] 탐험 중 정지하면 몬스터 인식 반경 −70%, 이동 중 −30% (field_stealth)"
+}

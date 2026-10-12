@@ -106,5 +106,6 @@ func test_weapon_changes_damage() -> void:
 	var with_weapon := DamageCalc.attack_power(db, pc, {"scaling": "phys"})
 	pc.equipment.unequip(pc.stats, "main_hand")
 	var bare := DamageCalc.attack_power(db, pc, {"scaling": "phys"})
-	assert_near(with_weapon - bare, 4.0 - float(db.bal("combat.unarmed_atk")), 0.001, "철퇴 공격력 4")
+	var mace := float(ItemInfo.weapon(db, "iron_mace")["attack"])
+	assert_near(with_weapon - bare, mace - float(db.bal("combat.unarmed_atk")), 0.001, "철퇴 공격력")
 	assert_eq(pc.attack_damage_type(), "blunt", "맨손은 템플릿 기본 유형")

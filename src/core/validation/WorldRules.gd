@@ -86,6 +86,8 @@ static func _floors(v: ValidatorBase) -> void:
 				v.err(w, "regions.dir '%s' 미등록(tags.directions)" % rd.get("dir"))
 			for m: Variant in JsonUtil.get_array(rd, "monsters"):
 				v.ref(w + ".regions", "monsters", m)
+			for m: Variant in JsonUtil.get_array(JsonUtil.get_dict(rd, "variants"), "monsters"):
+				v.ref(w + ".regions.variants", "monsters", m)
 		for portal: Variant in JsonUtil.get_array(f, "portals"):
 			var pd: Dictionary = portal if portal is Dictionary else {}
 			if not dirs.has(JsonUtil.get_str(pd, "dir")):

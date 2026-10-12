@@ -5,7 +5,8 @@ extends RefCounted
 ## - periodic: 턴/시간마다 자원을 바꾼다(출혈·아사 …). 수식은 ResourcePool.resolve로 푼다.
 ## - duration {amount, unit: turn|hour}: 다 되면 해제. 없으면 영구(조건이 풀릴 때 소유자가 해제).
 ## - stackable: 다시 걸리면 중첩(수정자·주기 효과가 중첩 수만큼).
-## - flags: no_skills, skip_turn … (M2 전투가 읽는다)
+## - flags: no_skills, skip_turn, untargetable(은신), no_flee(속박) … (전투가 읽는다)
+## - 지속시간은 자기 차례가 시작될 때 준다. 자기 행동에 영향을 주는 상태(실명·버프)는 '효과를 볼 차례 수 + 1'로 준다.
 
 signal applied(status_id: String)
 signal removed(status_id: String)
@@ -79,6 +80,14 @@ func has_flag(flag: String) -> bool:
 		if JsonUtil.get_array(_db.get_entry("statuses", id), "flags").has(flag):
 			return true
 	return false
+
+
+## 반격 태세: 걸린 상태 정의의 "counter": {"power": 0.7} 중 가장 큰 위력(없으면 0).
+func counter_power() -> float:
+	var best := 0.0
+	for id: String in _active:
+		best = maxf(best, JsonUtil.get_float(JsonUtil.get_dict(_db.get_entry("statuses", id), "counter"), "power"))
+	return best
 
 
 func tick_turns(n: float = 1.0) -> void:

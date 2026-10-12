@@ -12,6 +12,9 @@ var gauge: float = 0.0
 var fled: bool = false
 var order: int = 0              ## 같은 조건일 때 순서를 정하는 등록 순번
 var cooldowns: Dictionary = {}  ## 스킬 id -> 남은 자기 차례 수
+var uses: Dictionary = {}       ## 스킬 id -> 이번 전투에서 쓴 횟수(uses_per_battle)
+var acted: int = 0              ## 이번 전투에서 행동한 횟수(AI 첫 차례·순환)
+var was_hit: bool = false       ## 마지막 자기 행동 뒤에 피해를 받았는가(AI)
 
 
 func _init(p_actor: Actor, p_side: int, p_row: String = "front", p_order: int = 0) -> void:

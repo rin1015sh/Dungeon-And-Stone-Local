@@ -1,0 +1,19 @@
+{
+  "id": "ess_giant_menacing_roar",
+  "name_ko": "위협 포효(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "intimidated",
+      "duration": 2
+    }
+  ],
+  "essence_of": "giant_menacing_roar",
+  "source": "placeholder"
+}

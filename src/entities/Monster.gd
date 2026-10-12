@@ -17,6 +17,10 @@ static func create(p_db: GameDatabase, p_monster_id: String, label: String = "")
 	m.display_name = JsonUtil.get_str(d, "name_ko", p_monster_id) + label
 	for s: Variant in JsonUtil.get_array(d, "skills"):
 		m.skills.append(str(s))
+	for p: Variant in JsonUtil.get_array(d, "passives"):
+		if p is Dictionary:
+			m.add_passive(p)
+			m.stats.add_modifiers_from_data("passive:" + JsonUtil.get_str(p, "id"), JsonUtil.get_array(p, "modifiers"))
 	return m
 
 
@@ -32,8 +36,27 @@ func understands_speech() -> bool:
 	return JsonUtil.get_bool(JsonUtil.get_dict(def, "talk"), "understands")
 
 
+## 기본 공격: natural_weapon {attack, damage_type, ranged}(명세 §1 "몬스터는 natural_weapon").
 func base_attack_type() -> String:
-	return "blunt"
+	return JsonUtil.get_str(JsonUtil.get_dict(def, "natural_weapon"), "damage_type", "blunt")
+
+
+func attack_damage_type() -> String:
+	return base_attack_type()
+
+
+func weapon_attack() -> float:
+	var w := JsonUtil.get_dict(def, "natural_weapon")
+	return JsonUtil.get_float(w, "attack", -1.0) if not w.is_empty() else -1.0
+
+
+func weapon_is_ranged() -> bool:
+	return JsonUtil.get_bool(JsonUtil.get_dict(def, "natural_weapon"), "ranged")
+
+
+## 계열(도감 묶음·공유 이능 안내). 데이터 lineage, 없으면 자기 id.
+func lineage() -> String:
+	return JsonUtil.get_str(def, "lineage", monster_id)
 
 
 func weak_point() -> Dictionary:

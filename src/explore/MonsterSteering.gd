@@ -41,8 +41,15 @@ func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
 		g.waypoint = Vector2(-1, -1)  # 상태가 바뀌면 새로 길을 정한다
 
 
+## 플레이어 은신(FieldStealth, 0~1). FieldMonsters가 넣는다.
+var player_stealth: float = 0.0
+
+
 func _notices(g: FieldMonsters.Group, player: Vector2i) -> bool:
-	var radius := JsonUtil.get_float(_behavior(g.leader()), "aggro_radius_m", 4.0) / _mpt
+	var beh := _behavior(g.leader())
+	var radius := JsonUtil.get_float(beh, "aggro_radius_m", 4.0) / _mpt
+	if not JsonUtil.get_bool(beh, "ignores_stealth"):
+		radius *= 1.0 - player_stealth
 	return Vector2(g.pos - player).length() <= radius and _line_of_sight(g.pos, player)
 
 

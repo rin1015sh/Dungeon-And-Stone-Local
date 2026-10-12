@@ -16,7 +16,8 @@
     "slot": "main_hand",
     "weapon": {
       "damage_type": "pierce",
-      "attack": 4
+      "attack": 9,
+      "ranged": true
     },
     "two_handed": true,
     "modifiers": [

@@ -1,0 +1,57 @@
+{
+  "id": "goblin_swordsman",
+  "name_ko": "고블린 검사의 정수",
+  "grade": 9,
+  "source_monster": "goblin_swordsman",
+  "family": "goblin",
+  "passive": {
+    "id": "goblin_crude_swordplay",
+    "name_ko": "어설픈 검술",
+    "desc_ko": "베기 공격의 치명타가 조금 잦아지고, 치명타는 가끔 출혈을 남긴다.",
+    "crit_bonus": {
+      "value": 0.05,
+      "damage_types": [
+        "slash"
+      ]
+    },
+    "on_crit": [
+      {
+        "type": "apply_status",
+        "status": "bleeding",
+        "chance": 0.5
+      }
+    ],
+    "implemented": true,
+    "notes": "×0.5: 치명 +5%p, 출혈 50%"
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_goblin_downward_slash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_goblin_parry_stab"
+    },
+    {
+      "color": "green",
+      "skill": "ess_goblin_crude_combo"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      1,
+      3
+    ],
+    "cutting_power": [
+      2,
+      6
+    ],
+    "dexterity": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "§6.2"
+}

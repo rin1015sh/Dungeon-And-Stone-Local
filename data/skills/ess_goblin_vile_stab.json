@@ -6,16 +6,23 @@
     "soul": 6
   },
   "delay_cost": 0,
-  "cooldown": 1,
+  "cooldown": 0,
   "effects": [
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.77,
-      "damage_type": "pierce"
+      "power": 0.765,
+      "damage_type": "pierce",
+      "crit_bonus": 0.15,
+      "power_if_status": {
+        "status": [
+          "snare",
+          "goblin_paralysis"
+        ],
+        "power": 1.275
+      }
     }
   ],
   "essence_of": "goblin_vile_stab",
-  "source": "placeholder",
-  "notes": "[창] 위력 90×0.85. 치명타율 +15%p·속박/마비 대상 위력 150은 미구현"
+  "source": "placeholder"
 }

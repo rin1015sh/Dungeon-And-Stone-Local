@@ -9,6 +9,8 @@ signal finished(result: String, turns: int, killed: Array[String])
 var battle: Battle
 
 var _cards: Dictionary = {}  # Combatant -> CombatantCard
+var _foe_row: HBoxContainer   # 증원(summon)된 적 카드를 붙일 줄
+var _party_row: HBoxContainer
 var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방지)
 var _menu: CommandMenu
 var _party_panel: VBoxContainer
@@ -49,18 +51,24 @@ func _build_stage() -> Control:
 	stage.alignment = BoxContainer.ALIGNMENT_CENTER
 	var party := HBoxContainer.new()
 	var foes := HBoxContainer.new()
+	_party_row = party
+	_foe_row = foes
 	for u in battle.units:
-		var card := CombatantCard.new()
-		card.setup(u, battle.db)
-		card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		(party if u.side == Combatant.SIDE_PARTY else foes).add_child(card)
-		_cards[u] = card
+		_add_card(u)
 	stage.add_child(party)
 	var gap := Control.new()
 	gap.custom_minimum_size.x = UiTheme.metric("combat_stage_gap", 160)
 	stage.add_child(gap)
 	stage.add_child(foes)
 	return stage
+
+
+func _add_card(u: Combatant) -> void:
+	var card := CombatantCard.new()
+	card.setup(u, battle.db)
+	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	(_party_row if u.side == Combatant.SIDE_PARTY else _foe_row).add_child(card)
+	_cards[u] = card
 
 
 func _build_bottom() -> Control:
@@ -140,6 +148,9 @@ func _on_event(e: Dictionary) -> void:
 		"down", "fled":
 			if card != null:
 				card.refresh()
+		"summon":
+			if u != null and card == null:
+				_add_card(u)
 	_refresh()
 
 

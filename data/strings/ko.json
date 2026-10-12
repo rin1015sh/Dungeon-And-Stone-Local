@@ -152,7 +152,8 @@
     "light_on": "횃불에 불을 붙였다. {hours}시간쯤 탈 것이다.",
     "light_already": "이미 횃불이 타고 있다. (남은 {hours}시간)",
     "status_on": "[{status}] 상태가 되었다.",
-    "status_off": "[{status}] 상태가 풀렸다."
+    "status_off": "[{status}] 상태가 풀렸다.",
+    "status_immune": "{name}에게는 [{status}]이(가) 듣지 않는다."
   },
   "debug": {
     "title": "디버그 (F1)",
@@ -244,7 +245,13 @@
     "result_victory": "승리",
     "result_defeat": "패배",
     "result_fled": "도주",
-    "continue": "계속"
+    "continue": "계속",
+    "reflect": "{source}의 칼날털이 {target}에게 {amount}만큼 되돌려 베었다.",
+    "counter": "{source}이(가) 막아 내고 {target}을(를) 찔렀다 — {amount}.",
+    "drain": "{source}이(가) 피를 핥아 {amount} 회복했다.",
+    "summon": "{name}의 울부짖음에 {monster}이(가) 달려왔다!",
+    "summon_fail": "{name}이(가) 울부짖었지만 아무도 오지 않았다.",
+    "reason_hidden": "그 상대는 모습을 감추고 있다."
   },
   "knowledge": {
     "unknown": "???",
@@ -304,7 +311,9 @@
     "kills": "처치 {kills} · 첫 처치 공적 {exp}",
     "stats": "생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}",
     "stats_unknown": "생명력·스탯: ??? (전투 중 '조사'로 알아낸다)",
-    "affinity": "상성: {aff}"
+    "affinity": "상성: {aff}",
+    "variant_of": "{name}의 변이종.",
+    "shared": "[{skill}] 이능을 함께 지닌 종: {list} — 이 이능이 든 정수는 둘 중 하나만 받아들일 수 있다."
   },
   "bottom": {
     "inventory": "소지품 {key}",

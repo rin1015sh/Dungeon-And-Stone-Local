@@ -11,11 +11,10 @@
     {
       "type": "apply_status",
       "status": "blind",
-      "chance": 0.75,
-      "duration": 1
+      "chance": 0.675,
+      "duration": 2
     }
   ],
   "essence_of": "goblin_sand",
-  "source": "placeholder",
-  "notes": "[창] 실명 2R−1. 명중 90은 확률 0.75로 합쳐 근사"
+  "source": "placeholder"
 }

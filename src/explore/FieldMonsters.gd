@@ -4,6 +4,8 @@ extends RefCounted
 ## 무리 하나 = 대표 하나(연속 좌표 fpos, 칸 단위) + 구성(몬스터 id 목록). 닿으면(contact_tiles) 무리 전체와 전투한다.
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
+## 변이종(명세 §6.0): 지역 variants {monsters, min_day, outer_ratio, chance} — min_day일 차부터 지역 바깥쪽
+## (중심에서 지역 최대 거리의 outer_ratio 이상, 2층 포탈 쪽)에 생긴 무리의 각 마리가 chance 확률로 변이종이 된다.
 ## 몬스터는 게임 시간에 따라 움직인다. 탐험 시간은 실시간으로 흐르므로(RealtimeDriver) 플레이어가 가만히 있어도 움직인다.
 
 signal changed
@@ -46,6 +48,8 @@ var _extra_added: int = 0
 var _next_id: int = 1
 var _mpt: float = 1.0
 var _steer: MonsterSteering
+var _now: float = 0.0
+var _region_far: Dictionary = {}  # 지역 id -> 중심에서 가장 먼 칸까지의 거리
 
 
 func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> void:
@@ -66,6 +70,10 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 					and _direction_of(p - map.center) == JsonUtil.get_str(region, "dir"):
 				cells.append(p)
 		_region_cells[JsonUtil.get_str(region, "id")] = cells
+		var far := 0.0
+		for c in cells:
+			far = maxf(far, Vector2(c - map.center).length())
+		_region_far[JsonUtil.get_str(region, "id")] = far
 
 
 func spawn_initial(avoid: Vector2i) -> void:
@@ -91,6 +99,8 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	var pack := JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("monsters", mid), "behavior"), "pack_size")
 	for i in (_rng.randi_range(int(pack[0]), int(pack[1])) if pack.size() == 2 else 1):
 		g.monster_ids.append(mid)
+	if monster_id.is_empty():
+		_mix_variants(g, region, cell)
 	g.region = JsonUtil.get_str(region, "id")
 	g.place(cell)
 	g.home = cell
@@ -120,6 +130,7 @@ func set_grace(g: Group, now: float) -> void:
 
 ## 시간이 hours만큼 흘렀다. 몬스터를 움직이고, 플레이어(연속 좌표 player)에 닿은 무리가 있으면 돌려준다(전투 시작).
 func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Group:
+	_now = now
 	var pcell := Kinematics.cell_of(player)
 	_process_respawns(pcell, now)
 	var max_moves := float(_db.bal("monsters.update_max_moves", 12))
@@ -180,6 +191,24 @@ func region_cells(region_id: String) -> Array[Vector2i]:
 		return _region_cells[region_id]
 	var empty: Array[Vector2i] = []
 	return empty
+
+
+func set_player_stealth(v: float) -> void:
+	_steer.player_stealth = v
+
+
+## 지금 시각(미궁 n일 차)과 칸 위치로 무리에 변이종을 섞는다.
+func _mix_variants(g: Group, region: Dictionary, cell: Vector2i) -> void:
+	var v := JsonUtil.get_dict(region, "variants")
+	var list := JsonUtil.get_array(v, "monsters")
+	if list.is_empty() or floori(_now / 24.0) + 1 < JsonUtil.get_int(v, "min_day", 3):
+		return
+	var far := float(_region_far.get(g.region, 0.0))
+	if Vector2(cell - _map.center).length() < far * JsonUtil.get_float(v, "outer_ratio", 0.5):
+		return
+	for i in g.monster_ids.size():
+		if _rng.chance(JsonUtil.get_float(v, "chance", 0.2)):
+			g.monster_ids[i] = str(_rng.pick(list))
 
 
 # ── 내부 ─────────────────────────────────────────────────

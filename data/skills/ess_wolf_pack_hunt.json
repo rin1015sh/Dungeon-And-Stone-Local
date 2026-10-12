@@ -6,7 +6,7 @@
     "soul": 10
   },
   "delay_cost": 0,
-  "cooldown": 3,
+  "cooldown": 4,
   "effects": [
     {
       "type": "apply_status",
@@ -15,5 +15,5 @@
   ],
   "essence_of": "wolf_pack_hunt",
   "source": "placeholder",
-  "notes": "[창] 정수판: 아군 전체 근력 +(5%×아군 수, 최대 20%) → 고정 +10% 2R로 근사"
+  "notes": "정수판: 아군 전체 근력 +(5%×아군 수, 최대 20%) → 고정 +10%로 근사"
 }

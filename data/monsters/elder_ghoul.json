@@ -1,0 +1,83 @@
+{
+  "id": "elder_ghoul",
+  "name_ko": "엘더 구울",
+  "grade": 9,
+  "rank": "normal",
+  "lineage": "ghoul",
+  "variant_of": "ghoul",
+  "floor": 1,
+  "floor_tags": [
+    "f1_south"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "beast",
+  "size": 1.5,
+  "color": "#5e6858",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 13,
+    "agi": 12,
+    "p_res": 8,
+    "m_res": 3,
+    "int": 2
+  },
+  "resources": {
+    "hp": 95,
+    "soul": 15
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": false,
+    "aggro_radius_m": 2.0,
+    "leash_tiles": 10,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "ghoul_claw",
+    "elder_crush",
+    "elder_rot_claw"
+  ],
+  "passives": [
+    {
+      "id": "elder_rotten_bulk",
+      "name_ko": "썩은 거구",
+      "desc_ko": "두꺼운 썩은 살이 충격을 먹고, 피도 흐르지 않는다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:physical",
+          "percent": -0.1
+        }
+      ],
+      "status_immune": [
+        "bleeding"
+      ]
+    }
+  ],
+  "ai_cycle": [
+    "ghoul_claw",
+    "elder_crush",
+    "elder_rot_claw"
+  ],
+  "desc_ko": "보통 구울의 두 배쯤 되는 몸집.",
+  "sprite": "res://assets/sprites/monsters/elder_ghoul.png",
+  "source": "original",
+  "drops": []
+}

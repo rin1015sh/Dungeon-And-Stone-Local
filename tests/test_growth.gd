@@ -133,7 +133,8 @@ func test_level_down_locks_and_unlocks_essence_slots() -> void:
 func test_exp_budget_report() -> void:
 	var r := ExpBudget.report(db)
 	var floors: Dictionary = r["floors"]
-	assert_eq(int(floors[1]["actual"]), 4, "지금 1층 데이터: 원종 4종 × 1")
+	assert_eq(int(floors[1]["actual"]), 10, "지금 1층 데이터: 필드 10종 × 1 (명세 §5.6)")
+	assert_eq(int(floors[1]["species"]), 10)
 	assert_eq(int(r["lv5_need"]), 660)
 	assert_eq(int(r["lv5_total"]), 640, "1~4층 목표 합(데이터가 모자라면 목표치) 640")
 	assert_true(bool(r["ok"]), "640 / 660 = 97% — 93~99% 범위")

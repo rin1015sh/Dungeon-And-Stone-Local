@@ -15,10 +15,9 @@
     {
       "type": "apply_status",
       "status": "bleeding",
-      "chance": 0.19
+      "chance": 0.188
     }
   ],
   "essence_of": "wolf_bite",
-  "source": "placeholder",
-  "notes": "[창] 위력 100×0.85, 출혈 25%×0.75"
+  "source": "placeholder"
 }

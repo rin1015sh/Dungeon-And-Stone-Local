@@ -3,15 +3,15 @@
   "name_ko": "칼날 스치기(정수)",
   "target": "enemy_single",
   "cost": {
-    "soul": 7
+    "soul": 8
   },
   "delay_cost": 0,
-  "cooldown": 1,
+  "cooldown": 0,
   "effects": [
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.47,
+      "power": 0.468,
       "damage_type": "slash"
     },
     {
@@ -22,7 +22,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.47,
+      "power": 0.468,
       "damage_type": "slash"
     },
     {
@@ -32,6 +32,5 @@
     }
   ],
   "essence_of": "wolf_blade_graze",
-  "source": "placeholder",
-  "notes": "[창] 55×2 → 0.47×2, 각 출혈 20%×0.75"
+  "source": "placeholder"
 }

@@ -1,0 +1,23 @@
+{
+  "id": "blood_lick",
+  "name_ko": "피 핥기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.7,
+      "damage_type": "pierce",
+      "drain_if_status": {
+        "status": "bleeding",
+        "ratio": 0.4
+      }
+    }
+  ],
+  "source": "placeholder"
+}

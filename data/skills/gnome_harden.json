@@ -1,0 +1,17 @@
+{
+  "id": "gnome_harden",
+  "name_ko": "굳히기",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "mud_hardened"
+    }
+  ],
+  "source": "placeholder"
+}

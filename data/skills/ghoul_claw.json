@@ -1,6 +1,6 @@
 {
-  "id": "bite",
-  "name_ko": "물어뜯기",
+  "id": "ghoul_claw",
+  "name_ko": "할퀴기",
   "target": "enemy_single",
   "cost": {},
   "delay_cost": 0,
@@ -10,7 +10,12 @@
       "type": "damage",
       "scaling": "phys",
       "power": 1.0,
-      "damage_type": "pierce"
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.2
     }
   ],
   "source": "placeholder"

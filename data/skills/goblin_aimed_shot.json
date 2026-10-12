@@ -1,0 +1,22 @@
+{
+  "id": "goblin_aimed_shot",
+  "name_ko": "조준 사격",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 50,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.3,
+      "damage_type": "pierce",
+      "ranged": true,
+      "accuracy": 105
+    }
+  ],
+  "source": "placeholder",
+  "notes": "다음 차례가 늦어진다(delay_cost)"
+}

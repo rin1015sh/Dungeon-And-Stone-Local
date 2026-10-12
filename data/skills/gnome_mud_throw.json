@@ -1,0 +1,25 @@
+{
+  "id": "gnome_mud_throw",
+  "name_ko": "진흙 던지기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.5,
+      "damage_type": "earth",
+      "base": 10
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

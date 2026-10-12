@@ -6,14 +6,22 @@
     "soul": 12
   },
   "delay_cost": 0,
-  "cooldown": 3,
+  "cooldown": 1,
   "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden"
+    },
     {
       "type": "apply_status",
       "status": "merged"
     }
   ],
   "essence_of": "gnome_merge",
+  "field_stealth": {
+    "still": 1.0,
+    "moving": 0.0
+  },
   "source": "placeholder",
-  "notes": "[원] 정수판: 다음 공격 +30%. 은신·아군 1명 동반·field_use(정지 중 인식 차단)는 미구현"
+  "notes": "[원] 정수판: 은신 + 다음 공격 +30%. 탐험 중 정지하면 몬스터 인식에서 숨는다(field_stealth). 아군 동반 은신은 파티가 생기면"
 }

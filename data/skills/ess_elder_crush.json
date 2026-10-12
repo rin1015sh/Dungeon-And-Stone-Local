@@ -1,0 +1,25 @@
+{
+  "id": "ess_elder_crush",
+  "name_ko": "짓누르기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.02,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.225
+    }
+  ],
+  "essence_of": "elder_crush",
+  "source": "placeholder"
+}

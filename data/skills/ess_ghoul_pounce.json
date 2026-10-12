@@ -5,17 +5,17 @@
   "cost": {
     "soul": 6
   },
-  "delay_cost": 20,
-  "cooldown": 2,
+  "delay_cost": 50,
+  "cooldown": 0,
   "effects": [
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.23,
-      "damage_type": "slash"
+      "power": 1.232,
+      "damage_type": "slash",
+      "accuracy": 80
     }
   ],
   "essence_of": "ghoul_pounce",
-  "source": "placeholder",
-  "notes": "[창] 위력 145×0.85. '다음 라운드 맨 뒤'는 delay_cost로 근사, 명중 80은 미반영"
+  "source": "placeholder"
 }

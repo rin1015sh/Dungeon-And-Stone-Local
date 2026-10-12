@@ -1,0 +1,44 @@
+{
+  "id": "blood_blade_wolf",
+  "name_ko": "핏빛 칼날늑대의 정수",
+  "grade": 9,
+  "source_monster": "blood_blade_wolf",
+  "family": "blade_wolf",
+  "passive": {
+    "id": "wolf_blood_scent",
+    "name_ko": "피 냄새",
+    "desc_ko": "피 흘리는 상대에게 조금 더 아프게 들어간다.",
+    "power_vs_status": {
+      "status": "bleeding",
+      "mult": 1.125
+    },
+    "implemented": true,
+    "notes": "×0.5"
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_blood_rending_fang"
+    },
+    {
+      "color": "purple",
+      "skill": "ess_blood_lick"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_wolf_blade_graze"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      2,
+      4
+    ],
+    "smell": [
+      5,
+      10
+    ]
+  },
+  "source": "placeholder",
+  "notes": "§6.8. 노랑 = 칼날 스치기(칼날늑대와 공유)"
+}

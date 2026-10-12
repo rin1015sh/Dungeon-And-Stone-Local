@@ -8,9 +8,9 @@
     "id": "ghoul_four_legs",
     "name_ko": "네 발 짐승",
     "desc_ko": "전투가 시작되면 남보다 먼저 몸을 날린다.",
-    "modifiers": [],
-    "implemented": false,
-    "notes": "정수판 첫 라운드 우선도 +1 — 우선도 체계 미구현"
+    "start_gauge": 30,
+    "implemented": true,
+    "notes": "정수판: 첫 차례 선공만"
   },
   "actives": [
     {
@@ -37,5 +37,5 @@
     ]
   },
   "source": "placeholder",
-  "notes": "§6.4. 할퀴기(ghoul_claw)는 엘더 구울과 공유 — 중복 흡수 불가"
+  "notes": "§6.4. 할퀴기는 엘더 구울과 공유"
 }

@@ -108,10 +108,10 @@ func test_preview_matches_actual() -> void:
 func test_damage_formula() -> void:
 	var atk := Actor.new(db, {"str": 10})
 	var soft := Actor.new(db, {"p_res": 0})
-	var tough := Actor.new(db, {"p_res": 100})
+	var tough := Actor.new(db, {"p_res": 25})
 	var base := (_b("unarmed_atk") + 10.0 * _b("phys_atk_per_str"))
 	assert_eq(DamageCalc.resolve(db, atk, soft, SLASH, NO_ROLL)["amount"], roundi(base))
-	assert_eq(DamageCalc.resolve(db, atk, tough, SLASH, NO_ROLL)["amount"], roundi(base * 100.0 / (100.0 + 100.0)), "방어 100 → 절반")
+	assert_eq(DamageCalc.resolve(db, atk, tough, SLASH, NO_ROLL)["amount"], roundi(base * 0.5), "방어 25 × 4 = 100 → 절반 (명세 §1)")
 	var weak := DamageCalc.resolve(db, atk, soft, {"type": "damage", "power": 2.0, "damage_type": "slash"}, NO_ROLL)
 	assert_eq(weak["amount"], roundi(base * 2.0), "위력 배율")
 	var miss := DamageCalc.resolve(db, atk, soft, SLASH, {"hit": 0.999, "crit": 1.0, "var": 0.5, "lethal": 1.0})
@@ -157,7 +157,7 @@ func test_weak_point_and_lethal() -> void:
 	assert_true(DamageCalc.hit_chance(d, atk, skel, true) < DamageCalc.hit_chance(d, atk, skel, false), "약점은 맞히기 어렵다")
 	var lethal_roll := {"hit": 0.0, "crit": 0.0, "var": 0.5, "lethal": 0.0}
 	assert_false(DamageCalc.resolve(d, atk, skel, SLASH, lethal_roll)["lethal"], "생명력이 넉넉하면 치명상 없음")
-	skel.pool.set_current("hp", 30.0)
+	skel.pool.set_current("hp", 40.0)
 	assert_true(DamageCalc.resolve(d, atk, skel, SLASH, lethal_roll)["lethal"], "치명타로 30% 이하가 되면 급소 판정")
 
 
@@ -168,16 +168,16 @@ func test_battle_always_ends() -> void:
 
 
 func test_win_rates_print() -> void:
-	for group: Array in [["goblin", "goblin"], ["blade_wolf"], ["ghoul"], ["gnome"], ["blade_wolf", "blade_wolf"]]:
+	for group: Array in [["goblin"], ["goblin", "goblin"], ["blade_wolf"], ["ghoul"], ["gnome"], ["blade_wolf", "blade_wolf"]]:
 		var wins := 0
 		for seed_value in range(1, 31):
 			if _auto(_battle(seed_value, group)) == Battle.RESULT_VICTORY:
 				wins += 1
 		print("    %s 상대 승률 %d/30" % [" + ".join(PackedStringArray(group)), wins])
-		if group == ["goblin", "goblin"]:
-			assert_true(wins >= 21, "고블린 둘은 대체로 이긴다")
+		if group == ["goblin"]:
+			assert_true(wins >= 28, "고블린 하나는 거의 이긴다(명세 §15 95%+)")
 		if group == ["blade_wolf"]:
-			assert_true(wins >= 15, "칼날늑대 하나는 절반 이상 이긴다")
+			assert_true(wins >= 24, "칼날늑대 하나는 대체로 이긴다")
 
 
 func test_skill_cost_cooldown_and_seal() -> void:
@@ -216,22 +216,26 @@ func test_guard_and_flee() -> void:
 
 
 func test_monster_ai_flees_when_hurt() -> void:
-	var b := _battle(7, ["blade_wolf"], false)
-	var wolf: Combatant = b.side_units(Combatant.SIDE_ENEMY)[0]
-	wolf.actor.pool.set_current("hp", wolf.actor.pool.get_max("hp") * 0.2)
-	assert_eq(b.ai_action(wolf)["skill"], "flee", "생명력 30% 이하면 도주")
-	wolf.actor.pool.fill("hp")
+	var b := _battle(7, ["goblin"], false)
+	var gob: Combatant = b.side_units(Combatant.SIDE_ENEMY)[0]
+	gob.acted = 1
+	gob.actor.pool.set_current("hp", gob.actor.pool.get_max("hp") * 0.2)
+	assert_eq(b.ai_action(gob)["skill"], "goblin_howl", "혼자 남고 50% 이하면 하울링")
+	gob.uses["goblin_howl"] = 1
 	var picks := {}
-	for i in 40:
-		picks[b.ai_action(wolf)["skill"]] = true
-	assert_true(picks.has("bite") and picks.has("pounce"), "확률 규칙과 기본 규칙을 섞어 쓴다")
+	for i in 60:
+		picks[b.ai_action(gob)["skill"]] = true
+	assert_true(picks.has("flee"), "생명력 25% 이하면 가끔 도주(30%), 하울링은 전투당 1회")
+	var b2 := _battle(7, ["goblin"], false)
+	var g2: Combatant = b2.side_units(Combatant.SIDE_ENEMY)[0]
+	assert_eq(b2.ai_action(g2)["skill"], "goblin_trap", "첫 차례는 덫")
 
 
 func test_ai_and_effect_registries() -> void:
 	var reg := ContentRegistries.new()
-	for id: String in ["always", "hp_below", "chance"]:
+	for id: String in ["always", "hp_below", "chance", "first_turn", "allies_at_least", "alone", "self_status", "foe_status", "was_hit"]:
 		assert_true(reg.ai_conditions.has(id), id)
-	for id: String in ["damage", "flee"]:
+	for id: String in ["damage", "flee", "summon"]:
 		assert_true(reg.effects.has_type(id), id)
 
 

@@ -117,8 +117,8 @@
 | J3 | 중복 흡수 판정 키 = 패시브 id + 스킬의 `essence_of`(원래 스킬 id). 같은 몬스터 다른 색은 패시브가 겹쳐 거부 | 원작 규칙 + 변이종 공유 스킬 id(§6.0) | `EssenceSet.conflict_keys` |
 | J4 | 수호자 정수 = 색 `rainbow`, 액티브 전부(unique 제외) + 스탯 ×1.5. 같은 정수의 일반 → 무지갯빛은 그 자리를 바꾼다(업그레이드) | 원작 규칙 | `balance.essence.guardian_*`, `EssenceSet.upgrade_index` |
 | J5 | 흡수하지 않은 정수가 사라지는 시간은 **게임 3시간**(원작 30분) | 실시간 1초 = 6분이라 30분이면 실제 5초 — 창을 열 틈이 없다. 실제 약 30초로 늘림 | `balance.essence.expire_hours` |
-| J6 | 패시브 중 수정자로 표현할 수 없는 것(마비독 칼날·네 발 짐승·추적 후각의 탐험 효과)은 `"implemented": false`로 두고 툴팁에 "일부만 들어가 있다"를 띄운다 | 적중 시 발동·우선도·맵 오버레이 체계가 아직 없음 | 해당 체계를 만든 뒤 `passive`에 필드 추가 |
-| J7 | 덫 생성은 다음 차례에 고정 피해(`status.trap_damage` 6)를 주는 상태이상 `trap_set`, 실명은 민첩 −30%, 일체화는 주는 피해 +30% 1차례로 근사. 속박·은신·명중 감소는 없음 | 해당 전투 체계(속박·은신·명중 스탯)가 G4 범위 | `statuses.json` |
+| J6 | (G2에서 대부분 해소 — 지금은 추적 후각의 냄새 흔적 오버레이만 남음) 패시브 중 표현할 수 없는 것은 `"implemented": false`로 두고 툴팁에 "일부만 들어가 있다"를 띄운다 | 적중 시 발동·우선도·맵 오버레이 체계가 아직 없음 | 해당 체계를 만든 뒤 `passive`에 필드 추가 |
+| J7 | (G2: 실명은 명중률 −30, 일체화는 은신 + 공격 +30%) 덫 생성은 다음 차례에 고정 피해(`status.trap_damage` 6)를 주는 상태이상 `trap_set`, 실명은 민첩 −30%, 일체화는 주는 피해 +30% 1차례로 근사. 속박·은신·명중 감소는 없음 | 해당 전투 체계(속박·은신·명중 스탯)가 G4 범위 | `statuses.json` |
 | J8 | 정수 스탯 `patience`(인내심)·`dexterity`(손재주)·`stealth`(인식방해)를 추가했지만 효과는 아직 없다 | 원작 정수 스탯 표기 | `stats.json` |
 | J9 | 정수 드롭 확률: 등급별 2~4%(9→5등급), 무등급 0.5%, 중간 보스 10%, 수호자 33%, 균열 안 ×4. `drop_mode: "original"`이면 0.01% | 명세 §3 | `balance.essence.drop_*` |
 | J10 | 정수 삭제(제거)는 로직과 비용(500만 → ×2)만 있고 버튼은 없다 — 대신전(M4)에서 붙인다 | 시설이 아직 없음 | `EssenceSet.remove/next_delete_cost` |
@@ -137,6 +137,23 @@
 | L8 | 몬스터 층 = `floor` 필드, 없으면 `floor_tags`의 `f<n>_` | 기존 데이터 호환 | `Progression.monster_floor` |
 | L9 | 경험치 예산은 데이터가 목표보다 적은 층을 목표치로 대체해 '예상' 합산(지금 1층 실제 4 / 목표 110) | 명세 §5.5 | `ExpBudget` |
 | L10 | 지금 1층 몬스터는 v1 수치라 새 생명력 공식으로 1층이 쉬워졌다(시뮬레이터 승률 98~100%). G2에서 명세 수치로 바꾸며 다시 맞춘다 | 몬스터 개편은 G2 범위 | `tools/sim_battle.gd` |
+
+## 1층 필드 G2 (2026-10-12, docs/PROMPT_FLOOR1_V2.md §1·§6)
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| F1 | 전투 공식을 명세 §1로 바꿨다(근력×2, 방어×4, 명중 95 × (1 + 민첩 차×0.005), 치명 5% + 민첩×0.3%). 명중 상한 100% | 명세 몬스터 수치가 이 공식 기준 | `balance.combat` |
+| F2 | 몬스터 기본 공격 = `natural_weapon {attack, damage_type, ranged}` | 명세 "몬스터는 natural_weapon" | 몬스터 JSON |
+| F3 | 패시브는 몬스터 `passives`와 정수 `passive`가 같은 형식(수정자·on_hit·on_crit·crit_bonus·power_vs_status·reflect_melee·status_immune·start_gauge·see_hidden·flee_penalty) | 정수판 = 몬스터판의 약화본이라 한 체계로 | `Passives.gd` |
+| F4 | 우선도(+1)는 CTB라 없다. 구울 '첫 라운드 우선도 +1' = 전투 시작 게이지 +30, '다음 라운드 맨 뒤' = delay_cost 50 | 라운드가 없음(C7·C9) | `start_gauge`, `delay_cost` |
+| F5 | 상태이상 지속시간은 자기 차례 시작 때 준다 → 자기 행동에 걸리는 상태(실명·공격 버프·은신)는 '효과 볼 차례 + 1'로 준다(명세 2R 실명 = 3) | 기존 StatusSet 규칙 유지 | `statuses.json duration` |
+| F6 | 은신(hidden) = 다른 상대가 있으면 고를 수 없음. 추적 후각(see_hidden)은 꿰뚫음 | 명세 §6.3·§6.6 | `BattleRules.targetable` |
+| F7 | 덫 생성 = 다음 차례 고정 피해(trap_damage) + 속박(도주 불가·민첩 −20%). 무리 사냥 = 고정 근력 +20%(정수판 +10%) | 상태이상 체계로 근사 | `statuses.json`, 스킬 JSON |
+| F8 | 몬스터 계열은 새 필드 `lineage`(goblin·ghoul·blade_wolf·gnome). 기존 `family`(상성 태그 배열)와 이름이 겹쳐서 | 명세 §2의 family | 몬스터 JSON |
+| F9 | 무리 크기는 v1 크기(고블린 2~3, 칼날늑대 1~2) 유지. 명세 "서너 마리"는 혼자인 Lv1에게 승률 10~40% | 동료(M4) 전까지 | `behavior.pack_size` |
+| F10 | 변이종: 지역 `variants` — 3일 차부터, 지역 바깥쪽(중심에서 지역 최대 거리의 50% 이상) 무리의 각 마리가 20% 확률로 같은 계열 변이종 | 명세 §6.0 "외곽에서 무리의 20%" | 층 JSON `regions[].variants` |
+| F11 | 필드 은신: 스킬 `field_stealth {still, moving}`을 가진 탐험가는 몬스터 인식 반경이 그만큼 준다. '서 있음' = 마지막 이동 뒤 게임 0.02시간(실제 약 0.2초) | 명세 도둑걸음·일체화 field_use | `explore.stealth_still_hours` |
+| F12 | 무기 공격력과 종족 스탯 범위를 명세 기준 탐험가에 맞춰 올렸다(`docs/balance/floor1.md`) | 공식 변경으로 옛 수치가 너무 약함 | `items/*.json`, `races.json` |
 
 ## 데이터·구조
 

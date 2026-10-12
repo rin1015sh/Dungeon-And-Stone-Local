@@ -47,7 +47,7 @@
 - 원작 실명 인물 등장 금지(NPC는 "길드 접수원"처럼 직함만). 현실 쪽 설정(빙의·커뮤니티·GM 등) 금지.
 - 원작 문장·대사 복사 금지. 설정(규칙·수치·명칭)만 가져오고 문장은 새로 쓴다.
 - 원문에 수치가 없는 값은 임시값을 쓰고 데이터에 `"source": "placeholder"`로 표기한다.
-- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 1층 필드 원종 4종만. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
+- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 1층 필드 10종(원종 4 + 변이종 6). 공유 이능은 같은 정수판 스킬 파일(`essence_of`)을 쓴다. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
 
 ## 함정 (실제로 겪은 것)
 
@@ -82,11 +82,12 @@ src/
                          ValidatorBase, DataValidator, validation/{Core,Content,World}Rules   (오토로드 비의존)
   entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, StatusSet,
                          LightSource, CharacterRoller
-  combat/                EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
+  combat/                Battle, BattleRules(은신·증원·사건), Timeline, DamageCalc, Passives, MonsterAi + ai/<조건>.gd,
+                         EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
-                         PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
-  progress/              Progression(공적·레벨·획득원), ExpBudget, Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭)
+                         PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
+  progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  (M4에서 채움)
   ui/InputSetup.gd       data/input.json → InputMap
@@ -111,6 +112,9 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛).
 - **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / (기본/(1+민첩×계수)) 게임 시간(몬스터와 같은 공식), 충돌은 `Kinematics`. 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.
 - **성장**: `data/progression.json`(레벨 표 0/8/50/250/660/…/18000, 만렙 11, 획득원) → `db.prog("경로")`. 레벨 변경은 `PlayerCharacter.set_level/change_level`(정수 슬롯 잠금 동기화). 레벨업 생명력·영혼력은 `balance.hp/soul` 수식.
+- **피해 공식(명세 §1)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 정신력×2, 방어 100/(100+방어×4), 명중 = (스킬 accuracy 95 + 명중률 스탯) × (1 + 민첩 차×0.005). 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`.
+- **패시브**: 몬스터 `passives[]`·정수 `passive` 같은 형식 → `Actor.passives`(`Passives.gd`: on_hit/on_crit/crit_bonus/power_vs_status/reflect_melee/status_immune/start_gauge/see_hidden/flee_penalty, 수정자는 소유자가 붙임).
+- **몬스터 AI**: `ai: [{if, also[], use, target(lowest_hp|highest_hp|with_status|without_status), target_status}]` → 없으면 `ai_cycle` → 기본 공격. 상태 지속은 자기 차례 시작 때 준다(자기 행동에 거는 상태는 +1).
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.

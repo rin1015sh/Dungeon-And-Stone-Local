@@ -1,0 +1,18 @@
+{
+  "id": "ess_goblin_parry_stab",
+  "name_ko": "막고 찌르기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "counter_stance"
+    }
+  ],
+  "essence_of": "goblin_parry_stab",
+  "source": "placeholder"
+}

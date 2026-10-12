@@ -1,0 +1,17 @@
+{
+  "id": "giant_menacing_roar",
+  "name_ko": "위협 포효",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "intimidated"
+    }
+  ],
+  "source": "placeholder"
+}

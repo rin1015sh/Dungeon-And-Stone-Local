@@ -20,6 +20,7 @@ static func move_by(s: ExploreSession, delta: Vector2) -> void:
 		s.bumped.emit(Kinematics.cell_of(s.fpos + delta.normalized()))
 		return
 	s.fpos = to
+	s.last_move_hours = s.clock.total_hours
 	s.body_moved.emit(s.fpos)
 	var cell := Kinematics.cell_of(s.fpos)
 	if cell != s.pos:

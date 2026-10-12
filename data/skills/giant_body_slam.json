@@ -1,9 +1,11 @@
 {
-  "id": "mud_fist",
-  "name_ko": "진흙 주먹",
+  "id": "giant_body_slam",
+  "name_ko": "몸통 박치기",
   "target": "enemy_single",
-  "cost": {},
-  "delay_cost": 10,
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
   "cooldown": 0,
   "effects": [
     {
@@ -11,6 +13,11 @@
       "scaling": "phys",
       "power": 1.1,
       "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.15
     }
   ],
   "source": "placeholder"

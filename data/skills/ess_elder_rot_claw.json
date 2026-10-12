@@ -1,0 +1,25 @@
+{
+  "id": "ess_elder_rot_claw",
+  "name_ko": "썩은 손톱(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.68,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "rot",
+      "duration": 2
+    }
+  ],
+  "essence_of": "elder_rot_claw",
+  "source": "placeholder"
+}

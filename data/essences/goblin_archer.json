@@ -1,0 +1,78 @@
+{
+  "id": "goblin_archer",
+  "name_ko": "고블린 궁수의 정수",
+  "grade": 9,
+  "source_monster": "goblin_archer",
+  "family": "goblin",
+  "passive": {
+    "id": "goblin_poison_arrow",
+    "name_ko": "독화살",
+    "desc_ko": "활로 맞히면 가끔 독이 퍼진다.",
+    "on_hit_filter": {
+      "ranged": true
+    },
+    "on_hit": [
+      {
+        "type": "apply_status",
+        "status": "poison",
+        "chance": 0.2
+      }
+    ],
+    "implemented": true,
+    "notes": "[원] 정수판 20%"
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_goblin_thief_step"
+    },
+    {
+      "color": "purple",
+      "skill": "ess_goblin_poison_shot"
+    },
+    {
+      "color": "red",
+      "skill": "ess_goblin_aimed_shot"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      0,
+      4
+    ],
+    "flexibility": [
+      2,
+      6
+    ],
+    "sight": [
+      4,
+      8
+    ],
+    "smell": [
+      0,
+      4
+    ],
+    "cognition": [
+      0,
+      4
+    ],
+    "stealth": [
+      4,
+      8
+    ],
+    "accuracy": [
+      6,
+      10
+    ],
+    "resist_poison": [
+      2,
+      6
+    ],
+    "obsession": [
+      5,
+      9
+    ]
+  },
+  "source": "placeholder",
+  "notes": "§6.3 [원] 원작 수치 ±2. 집착은 효과 없음"
+}

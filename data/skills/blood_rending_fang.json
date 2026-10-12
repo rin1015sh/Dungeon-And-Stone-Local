@@ -1,21 +1,23 @@
 {
-  "id": "poison_stab",
-  "name_ko": "독 바른 단검",
+  "id": "blood_rending_fang",
+  "name_ko": "찢는 이빨",
   "target": "enemy_single",
-  "cost": {},
+  "cost": {
+    "soul": 4
+  },
   "delay_cost": 0,
-  "cooldown": 2,
+  "cooldown": 0,
   "effects": [
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.7,
+      "power": 0.9,
       "damage_type": "pierce"
     },
     {
       "type": "apply_status",
-      "status": "poison",
-      "chance": 0.4
+      "status": "bleeding",
+      "chance": 0.45
     }
   ],
   "source": "placeholder"

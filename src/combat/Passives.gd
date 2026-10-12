@@ -1,0 +1,106 @@
+class_name Passives
+extends RefCounted
+## 패시브(몬스터 데이터 passives · 정수 패시브 공통, docs/PROMPT_FLOOR1_V2.md §6). Actor.passives에 정의(Dictionary)가 들어 있다.
+## 정의 키(모두 선택):
+##   modifiers        [수정자] — 붙이는 것은 소유자 몫(Monster.create / EssenceSet)
+##   on_hit           [효과] — 피해를 맞혔을 때 대상에게(예: 마비독 30%). on_hit_filter {ranged: bool, damage_types: [..]}
+##   on_crit          [효과] — 치명타를 냈을 때 대상에게(예: 어설픈 검술의 출혈)
+##   crit_bonus       {value, damage_types} — 치명타율 보정(피해 유형이 맞을 때)
+##   power_vs_status  {status, mult} — 그 상태의 대상에게 피해 배율(피 냄새)
+##   reflect_melee    비율 — 근접 공격을 받으면 받은 피해의 그만큼을 공격자에게(두꺼운 칼날털)
+##   status_immune    [상태이상 id] — 걸리지 않는다(썩은 거구의 출혈 면역)
+##   start_gauge      전투 시작 때 행동 게이지 보너스(네 발 짐승의 첫 차례 선공)
+##   see_hidden       true — 은신한 대상도 고를 수 있다(추적 후각)
+##   flee_penalty     비율 — 상대 진영의 도주 확률을 깎는다(추적 후각)
+
+
+static func of(a: Actor) -> Array[Dictionary]:
+	return a.passives
+
+
+## 치명타율 보정 합.
+static func crit_bonus(a: Actor, dtype: String) -> float:
+	var v := 0.0
+	for p in a.passives:
+		var cb := JsonUtil.get_dict(p, "crit_bonus")
+		if cb.is_empty():
+			continue
+		var types := JsonUtil.get_array(cb, "damage_types")
+		if types.is_empty() or types.has(dtype):
+			v += JsonUtil.get_float(cb, "value")
+	return v
+
+
+## 공격자 패시브의 대상 상태별 피해 배율.
+static func damage_mult_vs(attacker: Actor, defender: Actor) -> float:
+	var m := 1.0
+	for p in attacker.passives:
+		var pv := JsonUtil.get_dict(p, "power_vs_status")
+		if not pv.is_empty() and defender.statuses.has(JsonUtil.get_str(pv, "status")):
+			m *= JsonUtil.get_float(pv, "mult", 1.0)
+	return m
+
+
+static func is_immune(a: Actor, status_id: String) -> bool:
+	for p in a.passives:
+		if JsonUtil.get_array(p, "status_immune").has(status_id):
+			return true
+	return false
+
+
+static func has_flag(a: Actor, key: String) -> bool:
+	for p in a.passives:
+		if JsonUtil.get_bool(p, key):
+			return true
+	return false
+
+
+static func sum(a: Actor, key: String) -> float:
+	var v := 0.0
+	for p in a.passives:
+		v += JsonUtil.get_float(p, key)
+	return v
+
+
+## 피해를 맞힌 뒤: 공격자의 on_hit·on_crit, 맞은 쪽의 반사·반격. ranged = 원거리 공격.
+static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, crit: bool, ranged: bool, dtype: String) -> void:
+	var src := ctx.source
+	var tgt := ctx.target
+	if src == null or tgt == null:
+		return
+	for p in src.passives:
+		if _filter_ok(JsonUtil.get_dict(p, "on_hit_filter"), ranged, dtype):
+			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_hit"), tgt)
+		if crit:
+			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_crit"), tgt)
+	if ranged or tgt.dead or dealt <= 0:
+		return
+	var reflect := sum(tgt, "reflect_melee")
+	if reflect > 0.0 and not src.dead:
+		var back := maxi(1, roundi(dealt * reflect))
+		src.pool.modify("hp", -float(back), "reflect:" + tgt.id)
+		ctx.say("combat.reflect", {"source": tgt.display_name, "target": src.display_name, "amount": back}, "warn")
+	var counter := tgt.statuses.counter_power()
+	if counter > 0.0 and not src.dead:
+		var rolls := {"hit": ctx.rng.randf(), "crit": ctx.rng.randf(), "var": ctx.rng.randf(), "lethal": 1.0}
+		var r := DamageCalc.resolve(ctx.db, tgt, src, {"scaling": "phys", "power": counter, "damage_type": "weapon"}, rolls)
+		if bool(r["hit"]) and int(r["amount"]) > 0:
+			src.pool.modify("hp", -float(r["amount"]), "counter:" + tgt.id)
+			ctx.say("combat.counter", {"source": tgt.display_name, "target": src.display_name, "amount": r["amount"]}, "warn")
+
+
+static func _filter_ok(f: Dictionary, ranged: bool, dtype: String) -> bool:
+	if f.has("ranged") and JsonUtil.get_bool(f, "ranged") != ranged:
+		return false
+	var types := JsonUtil.get_array(f, "damage_types")
+	return types.is_empty() or types.has(dtype)
+
+
+static func _apply_list(ctx: EffectContext, registry: EffectRegistry, list: Array, target: Actor) -> void:
+	if list.is_empty() or registry == null:
+		return
+	var sub := EffectContext.new(ctx.db, ctx.source, target, ctx.rng)
+	sub.info = ctx.info
+	registry.apply_all(sub, list)
+	ctx.messages.append_array(sub.messages)
+	ctx.events.append_array(sub.events)

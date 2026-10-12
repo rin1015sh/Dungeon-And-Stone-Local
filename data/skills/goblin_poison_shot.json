@@ -1,0 +1,25 @@
+{
+  "id": "goblin_poison_shot",
+  "name_ko": "독화살 사격",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "pierce",
+      "ranged": true
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

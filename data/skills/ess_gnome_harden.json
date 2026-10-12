@@ -3,7 +3,7 @@
   "name_ko": "굳히기(정수)",
   "target": "self",
   "cost": {
-    "soul": 7
+    "soul": 8
   },
   "delay_cost": 0,
   "cooldown": 3,
@@ -14,6 +14,5 @@
     }
   ],
   "essence_of": "gnome_harden",
-  "source": "placeholder",
-  "notes": "[창] 물리내성 +50% 2R−1"
+  "source": "placeholder"
 }

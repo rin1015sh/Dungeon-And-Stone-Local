@@ -7,15 +7,16 @@
   "passive": {
     "id": "wolf_tracking_scent",
     "name_ko": "추적 후각",
-    "desc_ko": "코끝으로 숨은 것을 쫓는다.",
+    "desc_ko": "코끝으로 숨은 것을 찾아낸다(전투 중 은신한 상대도 노릴 수 있다).",
     "modifiers": [
       {
         "target": "smell",
         "flat": 3
       }
     ],
+    "see_hidden": true,
     "implemented": false,
-    "notes": "정수판: 냄새 흔적 오버레이·은신 대상 지정 — 미구현. 지금은 후각 +3만"
+    "notes": "정수판: 탐험 맵 냄새 흔적 오버레이는 미구현"
   },
   "actives": [
     {

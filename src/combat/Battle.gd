@@ -81,6 +81,7 @@ func start(party_first: bool) -> void:
 		u.gauge = bonus if (u.side == Combatant.SIDE_PARTY) == party_first else 0.0
 		if u.side == Combatant.SIDE_ENEMY:
 			names.append(u.label())
+	BattleRules.on_start(self)
 	message.emit("combat.start" if party_first else "combat.start_ambushed", {"enemies": ", ".join(names)}, "danger")
 	BattleKnowledge.on_start(self)
 
@@ -156,8 +157,10 @@ func act(c: Combatant, action: Dictionary) -> bool:
 		"item":
 			_use_item(c, str(action.get("item", "")))
 		"flee":
-			_try_flee(c)
+			try_flee(c)
 	phase = PHASE_TURN_END
+	c.acted += 1
+	c.was_hit = false
 	timeline.consume(c, delay)
 	current = null
 	event.emit({"type": "turn_end", "unit": c})
@@ -170,7 +173,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 func can_use(c: Combatant, skill_id: String) -> String:
 	if skill_id != BASIC_ATTACK and c.actor.statuses.has_flag("no_skills"):
 		return "combat.reason_sealed"
-	if c.cooldowns.has(skill_id):
+	if c.cooldowns.has(skill_id) or not BattleRules.uses_left(self, c, skill_id):
 		return "combat.reason_cooldown"
 	if not c.actor.pool.can_afford(JsonUtil.get_dict(db.get_entry("skills", skill_id), "cost")):
 		return "combat.reason_cost"
@@ -182,6 +185,9 @@ func flee_chance(c: Combatant) -> float:
 	for o in opponents(c):
 		fastest = maxf(fastest, o.actor.stats.get_value("agi"))
 	var k := float(db.bal("combat.flee_base", 0.5)) + (c.actor.stats.get_value("agi") - fastest) * float(db.bal("combat.flee_agi_coef", 0.03))
+	k = BattleRules.flee_adjust(self, c, k)
+	if is_zero_approx(k):
+		return 0.0
 	return clampf(k, float(db.bal("combat.flee_min", 0.05)), float(db.bal("combat.flee_max", 0.95)))
 
 
@@ -204,6 +210,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		message.emit(why if not why.is_empty() else "combat.reason_unknown", {"name": c.label()}, "warn")
 		return 0.0
 	c.actor.pool.spend(JsonUtil.get_dict(sk, "cost"), "skill:" + skill_id)
+	c.uses[skill_id] = int(c.uses.get(skill_id, 0)) + 1
 	var cooldown := JsonUtil.get_int(sk, "cooldown")
 	if cooldown > 0:
 		c.cooldowns[skill_id] = cooldown + 1
@@ -212,6 +219,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	for t in _targets(c, JsonUtil.get_str(sk, "target"), chosen):
 		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
 		ctx.info = {"aim_weak": aim_weak}
+		ctx.registry = effects
 		effects.apply_all(ctx, JsonUtil.get_array(sk, "effects"))
 		_relay(ctx, c)
 	return JsonUtil.get_float(sk, "delay_cost")
@@ -248,40 +256,18 @@ func _targets(c: Combatant, kind: String, chosen: Variant) -> Array[Combatant]:
 				if u.row == row:
 					out.append(u)
 		_:
-			if picked == null or picked.side == c.side:
-				picked = rng.pick(foes) as Combatant
+			if picked == null or picked.side == c.side or not BattleRules.is_targetable(self, c, picked):
+				picked = rng.pick(BattleRules.targetable(self, c)) as Combatant
 			if picked != null:
 				out.append(picked)
 	return out
 
 
 func _relay(ctx: EffectContext, c: Combatant) -> void:
-	for m: Dictionary in ctx.messages:
-		message.emit(str(m["key"]), m["args"], str(m["kind"]))
-	for e: Dictionary in ctx.events:
-		match str(e.get("type")):
-			"flee":
-				_try_flee(c)
-				continue
-			"gauge":
-				var gu := unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
-				if gu != null:
-					gu.gauge += float(e.get("amount", 0.0))
-			"withdraw":
-				var wu := unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
-				if wu != null and wu.is_active():
-					wu.fled = true
-					message.emit("combat.withdraw", {"name": wu.label()}, "warn")
-					event.emit({"type": "fled", "unit": wu})
-			"damage":
-				BattleKnowledge.on_damage(self, c, e)
-		var ev := e.duplicate()
-		ev["unit"] = unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
-		ev.erase("target")
-		event.emit(ev)
+	BattleRules.relay(self, ctx, c)
 
 
-func _try_flee(c: Combatant) -> void:
+func try_flee(c: Combatant) -> void:
 	if rng.chance(flee_chance(c)):
 		c.fled = true
 		message.emit("combat.flee_ok", {"name": c.label()}, "warn")

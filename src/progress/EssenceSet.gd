@@ -216,7 +216,10 @@ func _attach(a: Actor, inst: Dictionary) -> void:
 	var id := JsonUtil.get_str(inst, "essence")
 	var def := db.get_entry("essences", id)
 	var src := SOURCE_PREFIX + id
-	a.stats.add_modifiers_from_data(src, JsonUtil.get_array(JsonUtil.get_dict(def, "passive"), "modifiers"))
+	var passive := JsonUtil.get_dict(def, "passive")
+	a.stats.add_modifiers_from_data(src, JsonUtil.get_array(passive, "modifiers"))
+	if not passive.is_empty():
+		a.add_passive(passive)
 	var st := JsonUtil.get_dict(inst, "stats")
 	for k: String in st:
 		a.stats.add_modifier(Modifier.new(src, k, float(st[k])))
@@ -230,5 +233,6 @@ func _attach(a: Actor, inst: Dictionary) -> void:
 
 func _detach(a: Actor, inst: Dictionary) -> void:
 	a.stats.remove_source(SOURCE_PREFIX + JsonUtil.get_str(inst, "essence"))
+	a.remove_passive(JsonUtil.get_str(JsonUtil.get_dict(a.db.get_entry("essences", JsonUtil.get_str(inst, "essence")), "passive"), "id"))
 	for sid: String in granted_skills(a.db, inst):
 		a.forget_skill(sid)
