@@ -1,0 +1,24 @@
+{
+  "id": "ess_wolf_bite",
+  "name_ko": "물어뜯기(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.85,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.19
+    }
+  ],
+  "essence_of": "wolf_bite",
+  "source": "placeholder",
+  "notes": "[창] 위력 100×0.85, 출혈 25%×0.75"
+}

@@ -25,6 +25,7 @@
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --torch --reveal --debug`
   - 렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다).
+- **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **Godot이 없는 환경**(모바일 웹 등): 정적 검토만 하고 PROGRESS.md에 **"미검증(Godot 실행 필요)"**을 명시한다. 검증하지 않은 것을 검증했다고 쓰지 않는다.
 
 ## 코드 규칙
@@ -46,7 +47,7 @@
 - 원작 실명 인물 등장 금지(NPC는 "길드 접수원"처럼 직함만). 현실 쪽 설정(빙의·커뮤니티·GM 등) 금지.
 - 원작 문장·대사 복사 금지. 설정(규칙·수치·명칭)만 가져오고 문장은 새로 쓴다.
 - 원문에 수치가 없는 값은 임시값을 쓰고 데이터에 `"source": "placeholder"`로 표기한다.
-- **정수(essence) 설정은 사용자 요청으로 당분간 비워 둔다**(`data/essences/`는 템플릿만).
+- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 1층 필드 원종 4종만. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
 
 ## 함정 (실제로 겪은 것)
 
@@ -66,7 +67,7 @@
 
 ```
 project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSystem, AudioBus
-CLAUDE.md  README.md  docs/{PROMPT,DESIGN,PROGRESS,ASSUMPTIONS}.md
+CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS}.md
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json render.json tags.json audio.json input.json
   stats.json resources.json statuses.json injuries.json races.json classes.json tiles.json landmarks.json
@@ -84,14 +85,14 @@ src/
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
-  progress/              Progression(공적·도감·레벨), Knowledge(???), Loot, Rewards
+  progress/              Progression(공적·도감·레벨), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제), EssenceDrop(드롭)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  (M4에서 채움)
   ui/InputSetup.gd       data/input.json → InputMap
   ui/theme/UiTheme.gd    render.json → Theme, 위젯 생성 도우미
   ui/theme/GothicStyle   스톤샤드풍 창 꾸밈(돌판·칸·이름판·아치)
   ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel, DataSummary, ExploreHud, DebugPanel, BottomBar,
-                         GothicWindow, InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, ItemDragPreview, CommandMenu …
+                         GothicWindow, InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, ItemDragPreview, CommandMenu, EssencePanel …
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/screens/            TitleScreen, CharacterCreateScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd, smoke_ui.gd/.tscn
@@ -109,5 +110,6 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛).
 - **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / (기본/(1+민첩×계수)) 게임 시간(몬스터와 같은 공식), 충돌은 `Kinematics`. 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.
 - **전투**: `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
+- **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나.

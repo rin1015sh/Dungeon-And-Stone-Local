@@ -1,0 +1,21 @@
+{
+  "id": "ess_goblin_vile_stab",
+  "name_ko": "비열한 찌르기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.77,
+      "damage_type": "pierce"
+    }
+  ],
+  "essence_of": "goblin_vile_stab",
+  "source": "placeholder",
+  "notes": "[창] 위력 90×0.85. 치명타율 +15%p·속박/마비 대상 위력 150은 미구현"
+}

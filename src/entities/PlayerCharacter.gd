@@ -9,6 +9,7 @@ var race_id: String = ""
 var class_id: String = ""
 var progression: Progression = Progression.new()
 var knowledge: Knowledge = Knowledge.new()
+var essences: EssenceSet = EssenceSet.new()
 ## 단축칸 1~0: 아이템 id(빈 칸은 ""). 소지품이 없으면 흐리게 보이고 쓸 수 없다.
 var hotbar: Array[String] = []
 
@@ -87,10 +88,11 @@ func _ensure_hotbar() -> void:
 		hotbar.append("")
 
 
-## 저장용(M4 저장 시스템이 쓴다): 성장·정보·장비·가방·단축칸.
+## 저장용(M4 저장 시스템이 쓴다): 성장·정보·장비·가방·단축칸·정수.
 func progress_to_dict() -> Dictionary:
 	return {"progression": progression.to_dict(), "knowledge": knowledge.to_dict(),
-		"equipment": equipment.to_dict(), "inventory": inventory.to_dict(), "hotbar": hotbar.duplicate()}
+		"equipment": equipment.to_dict(), "inventory": inventory.to_dict(), "hotbar": hotbar.duplicate(),
+		"essences": essences.to_dict()}
 
 
 func progress_load_dict(d: Dictionary) -> void:
@@ -98,6 +100,7 @@ func progress_load_dict(d: Dictionary) -> void:
 	knowledge.load_dict(JsonUtil.get_dict(d, "knowledge"))
 	equipment.load_dict(stats, JsonUtil.get_dict(d, "equipment"))
 	inventory.load_dict(JsonUtil.get_dict(d, "inventory"))
+	essences.load_dict(self, JsonUtil.get_dict(d, "essences"))
 	hotbar.clear()
 	for v: Variant in JsonUtil.get_array(d, "hotbar"):
 		hotbar.append(str(v))

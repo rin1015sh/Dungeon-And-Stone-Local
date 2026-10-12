@@ -1,0 +1,19 @@
+{
+  "id": "ess_gnome_merge",
+  "name_ko": "일체화(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "merged"
+    }
+  ],
+  "essence_of": "gnome_merge",
+  "source": "placeholder",
+  "notes": "[원] 정수판: 다음 공격 +30%. 은신·아군 1명 동반·field_use(정지 중 인식 차단)는 미구현"
+}

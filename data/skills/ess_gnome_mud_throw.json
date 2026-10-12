@@ -1,0 +1,28 @@
+{
+  "id": "ess_gnome_mud_throw",
+  "name_ko": "진흙 던지기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.43,
+      "damage_type": "earth",
+      "base": 10
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.45,
+      "duration": 1
+    }
+  ],
+  "essence_of": "gnome_mud_throw",
+  "source": "placeholder",
+  "notes": "[창] 위력 50×0.85, 실명 60%×0.75"
+}

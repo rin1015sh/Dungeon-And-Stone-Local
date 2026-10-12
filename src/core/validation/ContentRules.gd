@@ -85,13 +85,18 @@ static func _skills(v: ValidatorBase) -> void:
 		v.check_effects(w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
 		if s.has("innate") and not s["innate"] is bool:
 			v.err(w, "innate는 true/false")
+		if s.has("essence_of") and JsonUtil.get_str(s, "essence_of").is_empty():
+			v.err(w, "essence_of는 원래 스킬 id 문자열")
 	for id: Variant in v.db.bal("party.innate_skills", []):
 		v.ref("balance.party.innate_skills", "skills", id)
 		if v.db.has_entry("skills", str(id)) and not JsonUtil.get_bool(v.db.get_entry("skills", str(id)), "innate"):
 			v.err("skills/" + str(id), "기본 스킬(party.innate_skills)은 \"innate\": true여야 한다")
 
 
+## 정수(docs/PROMPT_FLOOR1_V2.md §2·§3): 패시브 1개 + 색 → 액티브. 고유(unique) 스킬은 넣지 않는다.
 static func _essences(v: ValidatorBase) -> void:
+	var colors := v.db.tag_ids("essence_colors")
+	var guardian_color := str(v.db.bal("essence.guardian_color", "rainbow"))
 	for id: String in v.entries("essences"):
 		var e := v.db.get_entry("essences", id)
 		var w := "essences/" + id
@@ -102,8 +107,26 @@ static func _essences(v: ValidatorBase) -> void:
 		for r: String in JsonUtil.get_dict(e, "resource_mods"):
 			if not v.db.resources.has(r):
 				v.err(w, "resource_mods '%s' 없는 자원" % r)
-		for sk: Variant in JsonUtil.get_array(e, "skills"):
-			v.ref(w, "skills", (sk as Dictionary).get("id") if sk is Dictionary else sk)
+		var passive := JsonUtil.get_dict(e, "passive")
+		if JsonUtil.get_str(passive, "id").is_empty() or JsonUtil.get_str(passive, "name_ko").is_empty():
+			v.err(w, "passive는 {id, name_ko, desc_ko, modifiers}")
+		v.check_modifier_list(w + ".passive.modifiers", JsonUtil.get_array(passive, "modifiers"))
+		var actives := JsonUtil.get_array(e, "actives")
+		if actives.is_empty():
+			v.err(w, "actives가 비어 있다")
+		var seen := PackedStringArray()
+		for a: Variant in actives:
+			var ad: Dictionary = a if a is Dictionary else {}
+			var c := JsonUtil.get_str(ad, "color")
+			if not colors.has(c) or c == guardian_color:
+				v.err(w + ".actives", "color '%s' 미등록(tags.essence_colors, 무지갯빛 제외)" % c)
+			if seen.has(c):
+				v.err(w + ".actives", "color '%s' 중복" % c)
+			seen.append(c)
+			var sid := JsonUtil.get_str(ad, "skill")
+			v.ref(w + ".actives", "skills", sid)
+			if JsonUtil.get_bool(v.db.get_entry("skills", sid), "unique"):
+				v.err(w + ".actives", "고유(unique) 스킬 '%s'은(는) 정수에 넣을 수 없다" % sid)
 
 
 static func _items(v: ValidatorBase) -> void:

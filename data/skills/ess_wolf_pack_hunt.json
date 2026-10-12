@@ -1,0 +1,19 @@
+{
+  "id": "ess_wolf_pack_hunt",
+  "name_ko": "무리 사냥(정수)",
+  "target": "ally_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "pack_hunt"
+    }
+  ],
+  "essence_of": "wolf_pack_hunt",
+  "source": "placeholder",
+  "notes": "[창] 정수판: 아군 전체 근력 +(5%×아군 수, 최대 20%) → 고정 +10% 2R로 근사"
+}

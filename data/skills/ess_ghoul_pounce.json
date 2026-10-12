@@ -1,0 +1,21 @@
+{
+  "id": "ess_ghoul_pounce",
+  "name_ko": "달려들기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 20,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.23,
+      "damage_type": "slash"
+    }
+  ],
+  "essence_of": "ghoul_pounce",
+  "source": "placeholder",
+  "notes": "[창] 위력 145×0.85. '다음 라운드 맨 뒤'는 delay_cost로 근사, 명중 80은 미반영"
+}

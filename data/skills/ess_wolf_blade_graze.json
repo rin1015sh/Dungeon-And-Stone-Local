@@ -1,0 +1,37 @@
+{
+  "id": "ess_wolf_blade_graze",
+  "name_ko": "칼날 스치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.47,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.15
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.47,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.15
+    }
+  ],
+  "essence_of": "wolf_blade_graze",
+  "source": "placeholder",
+  "notes": "[창] 55×2 → 0.47×2, 각 출혈 20%×0.75"
+}

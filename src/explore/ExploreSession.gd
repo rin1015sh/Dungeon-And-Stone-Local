@@ -233,6 +233,8 @@ func pass_time(hours: float) -> void:
 		clock.advance(h)
 		player.advance_hours(h)
 		time_passed.emit(h)
+		for gone: String in player.essences.expire_pending(clock.total_hours):
+			message.emit("essence.expired", {"name": DataNames.entry(db, "essences", gone)}, "warn")
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
@@ -279,7 +281,7 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
 	if not killed.is_empty() and not player.dead:
-		for m: Dictionary in Rewards.grant(player, killed, rng):
+		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	if result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)

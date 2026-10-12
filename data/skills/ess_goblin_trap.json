@@ -1,0 +1,20 @@
+{
+  "id": "ess_goblin_trap",
+  "name_ko": "덫 생성(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "trap_set",
+      "duration": 1
+    }
+  ],
+  "essence_of": "goblin_trap",
+  "source": "placeholder",
+  "notes": "원작: 고블린 정수의 덫 생성. 정수판 위력 45 → 덫 피해 bal.status.trap_damage로 근사. 속박·맵 설치(field_use)는 미구현"
+}

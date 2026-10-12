@@ -5,6 +5,7 @@ extends Node
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
+## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
 
 var _main: Control
 var _args: Dictionary = {"screen": "title", "out": "user://screenshot.png", "seed": "0", "walk": "0"}
@@ -61,6 +62,12 @@ func _run() -> void:
 				pc.progression.gain(pc, pc.progression.record_kill(pc.db, id))
 			pc.knowledge.learn_stats("blade_wolf")
 			pc.knowledge.learn_affinity("blade_wolf", "lightning", 1.5)
+		if _args.has("essence"):
+			var epc := explore.session.player
+			epc.set_level(3)
+			epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "stealth": 5}})
+			epc.essences.add_pending(epc.db, {"essence": "goblin", "color": "red", "stats": {"agi": 1, "dexterity": 4}})
+			epc.essences.add_pending(epc.db, {"essence": "gnome", "color": "green", "stats": {"p_res": 2}})
 		for w: String in ["inventory", "character", "bestiary"]:
 			if _args.has(w):
 				explore.windows().open(w)

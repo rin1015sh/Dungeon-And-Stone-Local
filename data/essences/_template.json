@@ -1,13 +1,38 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 정수 설정은 사용자 요청에 따라 아직 비워 둔다. 실제 항목은 이 형식으로 <id>.json을 만든다.",
-  "id": "blade_wolf_red",
-  "name_ko": "칼날늑대의 정수(붉음)",
+  "_comment": "스키마 템플릿(로드되지 않음). 정수 하나 = 몬스터 하나(id는 보통 몬스터 id). 색에 따라 액티브가 정해지고(actives), 수호자 정수(무지갯빛)는 액티브 전부 + 스탯 ×guardian_stat_mult. 액티브 skill은 '정수판' 스킬(skills/ess_*.json, essence_of = 원래 스킬 id — 중복 흡수 판정에 쓴다). 고유(unique) 스킬은 넣지 않는다. docs/PROMPT_FLOOR1_V2.md §2·§3",
+  "id": "blade_wolf",
+  "name_ko": "칼날늑대의 정수",
   "grade": 9,
-  "color": "red",
   "source_monster": "blade_wolf",
-  "stat_ranges": {"agi": [2, 5], "str": [0, 2]},
-  "resource_mods": {"soul": 0},
-  "skills": [{"id": "swift_slash", "type": "active"}],
-  "tags": [],
-  "source": "placeholder"
+  "family": "blade_wolf",
+  "rank": "normal",
+  "passive": {
+    "id": "wolf_tracking_scent",
+    "name_ko": "추적 후각",
+    "desc_ko": "…",
+    "modifiers": [
+      {
+        "target": "smell",
+        "flat": 3
+      }
+    ],
+    "implemented": false
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_wolf_bite"
+    }
+  ],
+  "stat_ranges": {
+    "smell": [
+      8,
+      15
+    ]
+  },
+  "resource_mods": {
+    "soul": 0
+  },
+  "source": "placeholder",
+  "notes": ""
 }

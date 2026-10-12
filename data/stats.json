@@ -38,6 +38,9 @@
   {"id": "adaptability", "name_ko": "적응력", "group": "body", "rarity": "uncommon", "desc_ko": "디버프 감쇠"},
   {"id": "restoration", "name_ko": "수복력", "group": "body", "rarity": "uncommon", "desc_ko": "회복량 보정"},
   {"id": "hearing", "name_ko": "청각", "group": "body", "rarity": "common", "desc_ko": "소리로 적 감지"},
+  {"id": "patience", "name_ko": "인내심", "group": "mind", "rarity": "common", "desc_ko": "버티는 힘(정수 스탯, 효과는 아직 없음)"},
+  {"id": "dexterity", "name_ko": "손재주", "group": "ability", "rarity": "common", "desc_ko": "덫·손기술(정수 스탯, 효과는 아직 없음)"},
+  {"id": "stealth", "name_ko": "인식방해", "group": "ability", "rarity": "uncommon", "desc_ko": "남의 눈에 덜 띈다(정수 스탯, 효과는 아직 없음)"},
   {"id": "fame", "name_ko": "명성", "group": "special", "rarity": "common", "desc_ko": "도시 평판"},
   {"id": "support", "name_ko": "지지도", "group": "special", "rarity": "common", "desc_ko": "동료·세력의 지지"}
 ]

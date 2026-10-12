@@ -225,5 +225,91 @@
       }
     ],
     "source": "placeholder"
+  },
+  {
+    "id": "blind",
+    "name_ko": "실명",
+    "kind": "debuff",
+    "desc_ko": "눈에 무언가 들어갔다. 움직임이 굼떠진다(명중 감소 대신 민첩 감소로 근사).",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.3
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "trap_set",
+    "name_ko": "덫",
+    "kind": "debuff",
+    "desc_ko": "발밑에 덫이 놓였다. 다음 차례에 덫이 문다(속박은 아직 없음).",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "periodic": [
+      {
+        "trigger": "turn",
+        "resource": "hp",
+        "amount": "-{bal.status.trap_damage}"
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "hardened",
+    "name_ko": "굳히기",
+    "kind": "buff",
+    "desc_ko": "몸을 진흙처럼 굳혔다. 물리 공격에 단단해진다.",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.5
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "pack_hunt",
+    "name_ko": "무리 사냥",
+    "kind": "buff",
+    "desc_ko": "함께 사냥하는 기세로 힘이 오른다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.1
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "merged",
+    "name_ko": "일체화",
+    "kind": "buff",
+    "desc_ko": "주변과 하나가 되어 다음 일격을 노린다(은신 판정은 아직 없음).",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.3
+      }
+    ],
+    "source": "placeholder"
   }
 ]
