@@ -1,0 +1,17 @@
+{
+  "id": "bk_vitality_drain",
+  "name_ko": "생기 흡수",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "vitality_drain"
+    }
+  ],
+  "source": "original"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "rat_hide",
+  "name_ko": "숨기",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden",
+      "duration": 2
+    }
+  ],
+  "source": "placeholder",
+  "notes": "자신 [은신] 1R(+1)"
+}

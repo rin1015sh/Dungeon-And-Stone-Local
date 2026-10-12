@@ -1,0 +1,27 @@
+{
+  "id": "ess_golem_corpse_bomb",
+  "name_ko": "시체폭탄(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.765,
+      "damage_type": "poison",
+      "base": 10,
+      "accuracy": 90
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.3
+    }
+  ],
+  "essence_of": "golem_corpse_bomb",
+  "source": "placeholder"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "ess_vamp_blood_brand",
+  "name_ko": "피의 낙인(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "sacrifice_mark"
+    }
+  ],
+  "essence_of": "vamp_blood_brand",
+  "source": "placeholder"
+}

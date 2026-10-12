@@ -1,0 +1,169 @@
+{
+  "host_floor": 1,
+  "stand_in": true,
+  "guardian": "rift_warden_standin",
+  "variant": null,
+  "guardian_drops": [
+    {
+      "item": "rift_stone",
+      "chance": 0.66
+    }
+  ],
+  "numbers": [],
+  "numbers_chance": 0.33,
+  "source": "original",
+  "id": "rift_green_mine",
+  "name_ko": "녹색 탄광",
+  "weight": 1,
+  "desc_ko": "철로가 깔린 음산한 갱도. 나무 폐자재가 널려 있다.",
+  "force_open": {
+    "item": "magic_stone_goblin_forest",
+    "at": "monument"
+  },
+  "look": {
+    "tiles": {
+      "floor": "mine_floor",
+      "wall": "mine_wall",
+      "exit": "rift_exit"
+    },
+    "ambient_color": "#c8ffb0",
+    "ambient_light_m": 6.0,
+    "visibility_cap_m": 8.0
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "name_ko": "일자 갱도",
+      "desc_ko": "고블린 광부가 곡괭이를 휘두른다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "goblin",
+            "goblin",
+            "goblin"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "goblin_swordsman",
+            "goblin"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "name_ko": "무너진 다리",
+      "desc_ko": "3분의 2가 무너진 다리. 중간 보스 고블린 폭탄병.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "gnome",
+            "goblin"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "goblin_archer",
+            "goblin_swordsman"
+          ],
+          "midboss": true
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "name_ko": "절벽의 원형 계단",
+      "desc_ko": "절벽 가장자리를 따라 내려간다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "chain",
+          "battles": [
+            [
+              "gnome",
+              "gnome"
+            ],
+            [
+              "corrupted_gnome",
+              "gnome"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "name_ko": "무너진 공동",
+      "desc_ko": "반경 50m의 공동에서 슬라임과 수호자.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "guardian",
+          "with": [
+            "gnome"
+          ]
+        }
+      ]
+    }
+  ],
+  "hidden_pieces": [
+    {
+      "id": "green_gem",
+      "name_ko": "초록 보석",
+      "notes": "G7"
+    },
+    {
+      "id": "gobl_quartz",
+      "name_ko": "고블 쿼츠",
+      "notes": "G7"
+    }
+  ],
+  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G7(녹색 탄광)에서 채운다. 변종 수호자 없음(명세)"
+}

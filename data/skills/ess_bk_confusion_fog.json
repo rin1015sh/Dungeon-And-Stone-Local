@@ -1,0 +1,20 @@
+{
+  "id": "ess_bk_confusion_fog",
+  "name_ko": "착란의 안개(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "confusion",
+      "chance": 0.188,
+      "duration": 1
+    }
+  ],
+  "essence_of": "bk_confusion_fog",
+  "source": "placeholder"
+}

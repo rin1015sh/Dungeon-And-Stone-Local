@@ -1,0 +1,101 @@
+{
+  "id": "skeleton_archer",
+  "name_ko": "스켈레톤 아처",
+  "grade": 9,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#d8d0b8",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": {
+    "name_ko": "핵",
+    "multiplier": 1.5,
+    "ignore_reduction": true,
+    "requires": "aim"
+  },
+  "stats": {
+    "str": 7,
+    "agi": 12,
+    "p_res": 5,
+    "m_res": 3,
+    "int": 4
+  },
+  "resources": {
+    "hp": 45,
+    "soul": 15
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "pierce",
+    "ranged": true
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "skeleton_bone_arrow",
+    "skeleton_volley"
+  ],
+  "passives": [
+    {
+      "id": "skeleton_core",
+      "name_ko": "갈비뼈 속 핵",
+      "desc_ko": "베고 찌르는 공격은 갈비뼈에 막힌다. 핵을 노리거나 부숴라.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.4
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.4
+        }
+      ]
+    }
+  ],
+  "magic_stone_grade": 9,
+  "ai": [
+    {
+      "if": "allies_at_least",
+      "value": 2,
+      "use": "skeleton_volley",
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.4
+        }
+      ]
+    }
+  ],
+  "ai_cycle": [
+    "skeleton_bone_arrow"
+  ],
+  "lineage": "skeleton",
+  "magic_stone_chance": 0.35,
+  "desc_ko": "뼈로 된 활을 쏜다.",
+  "sprite": "res://assets/sprites/monsters/skeleton_archer.png",
+  "source": "original",
+  "notes": "명세 §9"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "magic_stone_rock_desert",
+  "name_ko": "바위사막 8등급 마석",
+  "category": "magic_stone",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 50,
+  "price": 300,
+  "icon": "stone",
+  "color": "#c8b07f",
+  "rarity": "fine",
+  "desc_ko": "2층 바위사막 8등급 몬스터의 마석. 대현자 기념비에 바치면 강철의 묘가 열린다.",
+  "source": "original",
+  "notes": "명세 §8.1"
+}

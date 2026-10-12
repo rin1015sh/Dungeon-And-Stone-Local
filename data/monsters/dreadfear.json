@@ -1,0 +1,290 @@
+{
+  "id": "dreadfear",
+  "name_ko": "드레드피어",
+  "grade": 6,
+  "rank": "lord",
+  "floor": 1,
+  "floor_tags": [
+    "f1_lord"
+  ],
+  "type": "spirit",
+  "family": [
+    "humanoid",
+    "parasite"
+  ],
+  "shape": "humanoid",
+  "size": 0.9,
+  "color": "#6b4a5a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 60,
+    "agi": 28,
+    "p_res": 30,
+    "m_res": 45,
+    "int": 50
+  },
+  "resources": {
+    "hp": 5000,
+    "soul": 500
+  },
+  "natural_weapon": {
+    "attack": 40,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 40.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front",
+    "ignores_stealth": true
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "dread_bone_cleave",
+    "dread_indulgence",
+    "dread_inner_mirror",
+    "dread_dead_memory",
+    "dread_hate_explosion",
+    "dread_summon_maggots"
+  ],
+  "passives": [
+    {
+      "id": "dread_gnawing_fear",
+      "name_ko": "갉아먹는 공포",
+      "desc_ko": "라운드가 끝날 때마다 주변의 공포를 키우고, 상처 입을수록 분노한다.",
+      "meter_on_damaged": {
+        "meter": "dread_rage",
+        "per_percent": 1.0
+      }
+    }
+  ],
+  "ai": [
+    {
+      "if": "self_status",
+      "status": "dread_hatred_burst",
+      "use": "dread_hate_explosion"
+    },
+    {
+      "if": "foe_meter_at_least",
+      "meter": "dread_fear",
+      "value": 40,
+      "use": "dread_inner_mirror",
+      "target": "highest_meter",
+      "target_meter": "dread_fear"
+    },
+    {
+      "if": "chance",
+      "value": 0.25,
+      "use": "dread_dead_memory"
+    },
+    {
+      "if": "chance",
+      "value": 0.25,
+      "use": "dread_indulgence"
+    }
+  ],
+  "ai_cycle": [
+    "dread_bone_cleave"
+  ],
+  "pattern": "dreadfear",
+  "pattern_params": {
+    "gnaw": [
+      {
+        "type": "meter",
+        "meter": "dread_fear",
+        "amount": "max(3, 10 - {int} / 10)"
+      }
+    ],
+    "proliferate": {
+      "every": 4,
+      "status": "dread_proliferating",
+      "extra_at": 4,
+      "phases": [
+        "p1"
+      ]
+    },
+    "maggots": {
+      "every": 3,
+      "skill": "dread_summon_maggots",
+      "phases": [
+        "p1"
+      ]
+    },
+    "hatred": {
+      "meter": "dread_hatred",
+      "per_round": 5,
+      "phases": [
+        "p3",
+        "p4"
+      ]
+    },
+    "cycle": {
+      "phases": [
+        "p3"
+      ],
+      "veil_status": "dread_veil",
+      "veil_rounds": 3,
+      "groggy_status": "dread_groggy",
+      "groggy_rounds": 2
+    },
+    "buffs": [
+      {
+        "status": "dread_buff_bone_memory",
+        "passive": {
+          "id": "dread_bone_memory",
+          "name_ko": "뼈에 새겨진 기억",
+          "on_hit": [
+            {
+              "type": "restore_resource",
+              "resource": "soul",
+              "amount": -15
+            },
+            {
+              "type": "meter",
+              "meter": "dread_hatred",
+              "amount": 5,
+              "to": "self"
+            }
+          ]
+        }
+      },
+      {
+        "status": "dread_buff_wax_armor"
+      },
+      {
+        "status": "dread_buff_staring_eye",
+        "passive": {
+          "id": "dread_staring_eye",
+          "name_ko": "응시하는 눈",
+          "crit_bonus": {
+            "value": 0.1
+          }
+        }
+      },
+      {
+        "status": "dread_buff_maggot_nest",
+        "round_self_effects": [
+          {
+            "type": "summon",
+            "monster": "dreadfear_maggot"
+          }
+        ]
+      },
+      {
+        "status": "dread_buff_echo",
+        "passive": {
+          "id": "dread_echo",
+          "name_ko": "원망의 메아리",
+          "on_hit": [
+            {
+              "type": "meter",
+              "meter": "dread_resentment",
+              "amount": 6
+            }
+          ]
+        }
+      }
+    ],
+    "extra_status": "dread_human_form",
+    "flags": {
+      "phase": "p4",
+      "old_memory_max_party": 5,
+      "twisted_status": "goblin_paralysis",
+      "twisted_passive": "goblin_paralytic_blade"
+    }
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.7,
+      "message": "combat.dread_p1"
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.4,
+      "message": "combat.dread_p2",
+      "foe_statuses": [
+        "dread_seeping"
+      ],
+      "target_rule": "guard_front",
+      "self_passives": [
+        {
+          "id": "dread_resentment_aura",
+          "name_ko": "원망",
+          "attacker_meter": {
+            "meter": "dread_resentment",
+            "amount": 4
+          }
+        },
+        {
+          "id": "dread_cleave_resentment",
+          "name_ko": "원망 새기기",
+          "on_hit_filter": {
+            "damage_types": [
+              "slash"
+            ]
+          },
+          "on_hit": [
+            {
+              "type": "meter",
+              "meter": "dread_resentment",
+              "amount": 10
+            }
+          ]
+        }
+      ],
+      "round_effects": [
+        {
+          "type": "meter",
+          "meter": "dread_plague",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "hp_above": 0.15,
+      "message": "combat.dread_p3",
+      "round_effects": [
+        {
+          "type": "meter",
+          "meter": "dread_plague",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "hp_above": 0.0,
+      "message": "combat.dread_p4",
+      "self_statuses": [
+        "dread_human_form"
+      ],
+      "remove_foe_statuses": [
+        "dread_veil"
+      ],
+      "remove_self_statuses": [
+        "dread_groggy"
+      ],
+      "round_effects": [
+        {
+          "type": "meter",
+          "meter": "dread_plague",
+          "amount": 8
+        }
+      ]
+    }
+  ],
+  "desc_ko": "1층의 계층군주. 왜소한 사람의 형체에 구더기가 들끓고, 뼈로 된 대검을 휘두른다. 여럿이 한곳에 오래 머물면 나타난다.",
+  "sprite": "res://assets/sprites/monsters/dreadfear.png",
+  "source": "original",
+  "notes": "명세 §7. 권장 Lv4~5 × 5인, 도주 불가. 정수 없음, 부산물은 왜곡 마법이 있어야 얻는다(드롭 없음). 등급 6은 [창] — 경험치는 군주 보너스 15만"
+}

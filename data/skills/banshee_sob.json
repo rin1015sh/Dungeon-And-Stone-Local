@@ -1,0 +1,17 @@
+{
+  "id": "banshee_sob",
+  "name_ko": "흐느낌",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "banshee_sob"
+    }
+  ],
+  "source": "placeholder"
+}

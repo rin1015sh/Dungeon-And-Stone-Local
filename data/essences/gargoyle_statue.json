@@ -1,0 +1,53 @@
+{
+  "id": "gargoyle_statue",
+  "name_ko": "가고일 석상의 정수",
+  "grade": 8,
+  "source_monster": "gargoyle_statue",
+  "family": "gargoyle_statue",
+  "rank": "normal",
+  "passive": {
+    "id": "gargoyle_stone_skin",
+    "name_ko": "돌 피부",
+    "desc_ko": "베고 찌르는 공격에 조금 강하고 둔기에 조금 약하다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:blunt",
+        "percent": 0.15
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "gray",
+      "skill": "ess_gargoyle_evil_sound"
+    },
+    {
+      "color": "red",
+      "skill": "ess_gargoyle_petrify"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_gargoyle_stone_claw"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      3,
+      6
+    ],
+    "bone_strength": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

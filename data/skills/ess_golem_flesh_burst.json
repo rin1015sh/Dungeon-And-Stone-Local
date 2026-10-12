@@ -1,0 +1,26 @@
+{
+  "id": "ess_golem_flesh_burst",
+  "name_ko": "살점폭발(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.425,
+      "damage_type": "poison",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.225
+    }
+  ],
+  "essence_of": "golem_flesh_burst",
+  "source": "placeholder"
+}

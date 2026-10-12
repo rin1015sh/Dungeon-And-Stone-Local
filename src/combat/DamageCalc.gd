@@ -7,6 +7,8 @@ extends RefCounted
 ##   치명타 = 5% + 민첩×0.3% + 행운×계수 + 스킬 crit_bonus + 패시브 crit_bonus
 ##   조건부 위력: 효과 "power_if_status": {"status": [..], "power": 1.5} — 대상이 그 상태면 위력을 바꾼다.
 ##   패시브 power_vs_status {"status", "mult"}: 그 상태의 대상에게 피해 배율.
+##   "ignore_defense": true면 방어 계수를 1로 본다(배신의 장막 오인 공격).
+##   약점: 몬스터 weak_point {name_ko, multiplier(없으면 combat.weak_point_damage_mult), ignore_reduction, requires_status}.
 ##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다.
 ## 무작위 값은 rolls(0~1)로 받아서 순수 계산만 한다(테스트 가능).
 
@@ -25,18 +27,21 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 		return out
 	out["hit"] = true
 	var magic := JsonUtil.get_str(effect, "scaling", "phys") == "magic"
-	var defense := defender.stats.get_value("m_res" if magic else "p_res")
+	var defense := 0.0 if JsonUtil.get_bool(effect, "ignore_defense") else defender.stats.get_value("m_res" if magic else "p_res")
 	var k := _c(db, "defense_k", 100.0)
 	var amount := attack_power(db, attacker, effect) * _power(effect, defender) * k \
 		/ (k + maxf(0.0, defense) * _c(db, "defense_per_point", 4.0))
 	amount *= Passives.damage_mult_vs(attacker, defender)
 	amount *= float(out["affinity"])
-	amount *= _modifier_mult(defender.stats, "dmg_taken", dtype, category)
+	# 약점(weak_point)을 노려 성공하면 "ignore_reduction": true인 몬스터는 받는 피해 감소를 무시한다(스켈레톤 핵).
+	var wp := defender.weak_point()
+	var taken := _modifier_mult(defender.stats, "dmg_taken", dtype, category)
+	amount *= maxf(1.0, taken) if weak and JsonUtil.get_bool(wp, "ignore_reduction") else taken
 	amount *= _modifier_mult(attacker.stats, "dmg_dealt", dtype, category)
 	var variance := _c(db, "damage_variance", 0.1)
 	amount *= 1.0 + (JsonUtil.get_float(rolls, "var", 0.5) * 2.0 - 1.0) * variance
 	if weak:
-		amount *= _c(db, "weak_point_damage_mult", 2.0)
+		amount *= JsonUtil.get_float(wp, "multiplier", _c(db, "weak_point_damage_mult", 2.0))
 	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker, Passives.crit_bonus(attacker, dtype) + JsonUtil.get_float(effect, "crit_bonus")):
 		out["crit"] = true
 		amount *= _c(db, "crit_mult", 1.5)

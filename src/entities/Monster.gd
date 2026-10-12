@@ -59,8 +59,11 @@ func lineage() -> String:
 	return JsonUtil.get_str(def, "lineage", monster_id)
 
 
+## 약점. requires_status가 있으면 그 상태일 때만 드러난다(시체골렘 뼈대 형태의 마력핵).
 func weak_point() -> Dictionary:
-	return JsonUtil.get_dict(def, "weak_point")
+	var wp := JsonUtil.get_dict(def, "weak_point")
+	var need := JsonUtil.get_str(wp, "requires_status")
+	return wp if need.is_empty() or statuses.has(need) else {}
 
 
 func behavior() -> Dictionary:

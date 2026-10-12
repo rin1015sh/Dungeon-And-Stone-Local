@@ -1,0 +1,18 @@
+{
+  "id": "ess_deathfiend_shield_arm",
+  "name_ko": "방패팔 막기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "shield_arm"
+    }
+  ],
+  "essence_of": "deathfiend_shield_arm",
+  "source": "placeholder"
+}

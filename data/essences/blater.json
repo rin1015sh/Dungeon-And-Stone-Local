@@ -1,0 +1,47 @@
+{
+  "id": "blater",
+  "name_ko": "저주받은 기사 블라터의 정수",
+  "grade": 6,
+  "source_monster": "blater",
+  "family": "blater",
+  "rank": "guardian",
+  "passive": {
+    "id": "blater_grudge_aura",
+    "name_ko": "원한",
+    "desc_ko": "전투가 시작되면 적 전원의 치유가 줄어든다.",
+    "foe_statuses_on_start": [
+      "blater_grudge_weak"
+    ],
+    "notes": "원작 정수: 켜고 끄는 오오라(켜 둔 동안 자기 영혼력 재생 정지) — 켜고 끄기는 아직 없음(ASSUMPTIONS BF7)"
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_blater_cursed_slash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_blater_oath"
+    },
+    {
+      "color": "green",
+      "skill": "ess_blater_death_sentence"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      8,
+      12
+    ],
+    "p_res": [
+      6,
+      10
+    ],
+    "resist_dark": [
+      10,
+      20
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9 수호자 정수(무지갯빛) — 액티브 전부"
+}

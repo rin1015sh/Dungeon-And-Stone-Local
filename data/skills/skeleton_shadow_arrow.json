@@ -1,0 +1,20 @@
+{
+  "id": "skeleton_shadow_arrow",
+  "name_ko": "그림자 화살",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 1.0,
+      "damage_type": "dark",
+      "base": 6
+    }
+  ],
+  "source": "placeholder"
+}

@@ -58,7 +58,10 @@ static func _monsters(v: ValidatorBase) -> void:
 				var cond := JsonUtil.get_str(cd if cd is Dictionary else {}, "if", "always")
 				if not v.ai_condition_ids.is_empty() and not v.ai_condition_ids.has(cond):
 					v.err(w + ".ai", "조건 '%s' 없음(src/combat/ai/)" % cond)
-			if rd.get("use") != Battle.BASIC_ATTACK and not JsonUtil.get_array(m, "skills").has(rd.get("use")):
+			var type_skills: Array = []
+			for t: Variant in JsonUtil.get_array(m, "types"):
+				type_skills.append_array(JsonUtil.get_array(t if t is Dictionary else {}, "skills"))
+			if rd.get("use") != Battle.BASIC_ATTACK and not JsonUtil.get_array(m, "skills").has(rd.get("use")) and not type_skills.has(rd.get("use")):
 				v.warn(w + ".ai", "스킬 '%s'이(가) skills 목록에 없다" % rd.get("use"))
 		for sk: Variant in JsonUtil.get_array(m, "ai_cycle"):
 			v.ref(w + ".ai_cycle", "skills", sk)

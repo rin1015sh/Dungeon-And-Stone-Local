@@ -1,0 +1,17 @@
+{
+  "id": "skeleton_curse_whisper",
+  "name_ko": "저주 속삭임",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "curse_whisper"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -9,6 +9,7 @@ const STAT_SOURCE := "debug:stat_bump"
 
 var _session: ExploreSession
 var _seed_edit: LineEdit
+var _rift_pick: OptionButton
 
 
 func bind(session: ExploreSession) -> void:
@@ -57,6 +58,8 @@ func _ready() -> void:
 	var later := PackedStringArray()
 	_btn(v, Strings.t("debug.spawn_monster"), func() -> void: ExploreDebug.spawn_and_engage(_session))
 	_btn(v, Strings.t("debug.give_essence"), _give_essence)
+	_btn(v, Strings.t("debug.summon_lord"), func() -> void: _session.lord.summon(_session))
+	_add_rift_row(v)
 	for key: String in ["debug.portal_open_locked"]:
 		later.append(Strings.t(key))
 	var later_label := UiTheme.label(Strings.t("debug.later", {"list": " · ".join(later)}), "small", "text_dim")
@@ -105,3 +108,27 @@ func _give_essence() -> void:
 	_session.player.essences.add_pending(_session.db, inst)
 	_session.message.emit("reward.essence", {"name": DataNames.entry(_session.db, "essences", str(inst["essence"])),
 		"color": DataNames.tag(_session.db, "essence_colors", str(inst["color"]))}, "good")
+
+
+## 균열: 바깥 층이면 종류를 골라 강제 개방(옆에 포탈), 균열 안이면 이 챕터 조우 치우기.
+func _add_rift_row(v: VBoxContainer) -> void:
+	if _session.rift_run != null:
+		_btn(v, Strings.t("debug.rift_clear_chapter"), func() -> void:
+			_session.rift_run.debug_clear()
+			_session.message.emit("explore.rift_exit_escape" if _session.rift_run.is_last_chapter() else "explore.rift_exit_open", {}, "good"))
+		return
+	var row := HBoxContainer.new()
+	v.add_child(row)
+	_rift_pick = OptionButton.new()
+	for id in RiftWatch.rifts_for(_session):
+		_rift_pick.add_item(DataNames.entry(_session.db, "rifts", id))
+		_rift_pick.set_item_metadata(_rift_pick.item_count - 1, id)
+	row.add_child(_rift_pick)
+	_btn(row, Strings.t("debug.rift_force_open"), func() -> void:
+		if _rift_pick.item_count > 0:
+			_session.rifts.force_open(_session, str(_rift_pick.get_item_metadata(_rift_pick.selected)), _session.pos))
+	_btn(v, Strings.t("debug.give_rift_stones"), func() -> void:
+		for id in RiftWatch.rifts_for(_session):
+			var item := JsonUtil.get_str(JsonUtil.get_dict(_session.db.get_entry("rifts", id), "force_open"), "item")
+			if not item.is_empty():
+				_session.player.inventory.add(item, 1))

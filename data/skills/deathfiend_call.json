@@ -1,0 +1,18 @@
+{
+  "id": "deathfiend_call",
+  "name_ko": "망자의 부름",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "ghoul"
+    }
+  ],
+  "uses_per_battle": 2,
+  "source": "original"
+}

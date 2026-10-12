@@ -1,0 +1,22 @@
+{
+  "id": "dread_summon_maggots",
+  "name_ko": "구더기 소환",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "dreadfear_maggot"
+    },
+    {
+      "type": "summon",
+      "monster": "dreadfear_maggot"
+    }
+  ],
+  "unique": true,
+  "desc_ko": "몸에서 구더기 떼가 쏟아져 나온다.",
+  "source": "original",
+  "notes": "명세 §7.3 P1 3R마다 2체 — 패턴이 라운드 끝에 쓴다"
+}

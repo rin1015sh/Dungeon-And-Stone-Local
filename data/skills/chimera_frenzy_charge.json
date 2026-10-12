@@ -1,0 +1,20 @@
+{
+  "id": "chimera_frenzy_charge",
+  "name_ko": "광폭 돌진",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.4,
+      "damage_type": "blunt",
+      "accuracy": 80
+    }
+  ],
+  "source": "placeholder"
+}

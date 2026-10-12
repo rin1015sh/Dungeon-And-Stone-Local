@@ -1,0 +1,85 @@
+{
+  "id": "skull_rat",
+  "name_ko": "스컬 랫",
+  "grade": 9,
+  "rank": "ungraded",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead",
+    "beast"
+  ],
+  "shape": "beast",
+  "size": 0.4,
+  "color": "#c8c0a8",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 3,
+    "agi": 14,
+    "p_res": 1,
+    "m_res": 1,
+    "int": 1
+  },
+  "resources": {
+    "hp": 15,
+    "soul": 0
+  },
+  "natural_weapon": {
+    "attack": 3,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      4
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "rat_gnaw",
+    "rat_hide"
+  ],
+  "passives": [
+    {
+      "id": "rat_swarm",
+      "name_ko": "쥐떼",
+      "desc_ko": "늘 떼로 몰려다닌다.",
+      "start_gauge": 10
+    }
+  ],
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "rat_hide",
+      "also": [
+        {
+          "if": "self_status",
+          "status": "hidden",
+          "not": true
+        }
+      ]
+    }
+  ],
+  "ai_cycle": [
+    "rat_gnaw"
+  ],
+  "desc_ko": "뼈만 남은 쥐.",
+  "sprite": "res://assets/sprites/monsters/skull_rat.png",
+  "source": "original",
+  "notes": "명세 §9"
+}

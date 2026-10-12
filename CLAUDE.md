@@ -47,7 +47,7 @@
 - 원작 실명 인물 등장 금지(NPC는 "길드 접수원"처럼 직함만). 현실 쪽 설정(빙의·커뮤니티·GM 등) 금지.
 - 원작 문장·대사 복사 금지. 설정(규칙·수치·명칭)만 가져오고 문장은 새로 쓴다.
 - 원문에 수치가 없는 값은 임시값을 쓰고 데이터에 `"source": "placeholder"`로 표기한다.
-- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 1층 필드 10종(원종 4 + 변이종 6). 공유 이능은 같은 정수판 스킬 파일(`essence_of`)을 쓴다. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
+- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 1층 필드 10종(원종 4 + 변이종 6) + 핏빛성채 14종(수호자 정수 2). 공유 이능은 같은 정수판 스킬 파일(`essence_of`)을 쓴다. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
 
 ## 함정 (실제로 겪은 것)
 
@@ -62,6 +62,8 @@
 - `await`와 `as`를 함께 쓸 때는 괄호: `(await f()) as T`.
 - SubViewport의 빈 곳은 기본 배경색(회색)으로 칠해진다 → `RenderingServer.set_default_clear_color()`를 Main에서 팔레트 bg로 맞춘다.
 - 테스트에서 일부러 오류를 내는 호출(push_error)을 하지 않는다 — check.sh가 출력의 `ERROR:`를 실패로 본다.
+- **멈춘 Godot을 `pkill -f <패턴>`으로 죽이지 않는다** — 같은 셸 명령줄에 그 문자열(예: Godot 경로)이 있으면 셸 자신이 죽는다(exit 144). `for p in $(pgrep -f "[G]odot_v4"); do kill $p; done`을 **경로가 없는 별도 명령**으로 실행한다.
+- UI 스크립트에 파싱 오류가 있으면 UI 스모크가 끝나지 않고 멈춘다(check.sh가 타임아웃까지 대기). 멈추면 `godot --headless --path . --check-only --script res://<파일>`로 파싱 오류를 찾는다(오토로드 이름 오류는 무시).
 - `--import` 중 `[Godot MCP] Failed to start server on port 6505` 오류가 나올 수 있다(편집기가 이미 포트를 쓰는 중). 게임과 무관하며 check.sh는 이 출력을 무시한다.
 
 ## 구조
@@ -71,7 +73,7 @@ project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSy
 CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS}.md
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
-  stats.json resources.json statuses.json injuries.json races.json classes.json tiles.json landmarks.json
+  stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
   monsters/ essences/ skills/ items/ floors/ rifts/ events/ facilities/   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
   strings/ko.json
 src/
@@ -82,11 +84,14 @@ src/
                          ValidatorBase, DataValidator, validation/{Core,Content,World}Rules   (오토로드 비의존)
   entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, StatusSet,
                          LightSource, CharacterRoller
-  combat/                Battle, BattleRules(은신·증원·사건), Timeline, DamageCalc, Passives, MonsterAi + ai/<조건>.gd,
+  combat/                Battle, BattleRules(은신·증원·도주·사건·정리), BattleTargets(대상·오인), Timeline, DamageCalc, Passives,
+                         MonsterAi + ai/<조건>.gd, Meters(전투 게이지), BossHooks + BossPattern + patterns/<id>.gd(보스 페이즈·라운드),
+                         BattleDelayed(예고 공격), BattleTargets, BattleObjective(생존 웨이브), BattlePassives(전투 단위 패시브),
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
-                         PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
+                         PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환),
+                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), ExploreInteract(살피기·포탈), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  (M4에서 채움)
@@ -98,7 +103,7 @@ src/
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/screens/            TitleScreen, CharacterCreateScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd, smoke_ui.gd/.tscn
-tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, sim_battle.gd(전투 승률), exp_budget.gd(경험치 예산 → docs/balance/)
+tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
 assets/                  fonts/ sprites/ audio/ shaders/
 ```
 
@@ -112,9 +117,13 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛).
 - **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / (기본/(1+민첩×계수)) 게임 시간(몬스터와 같은 공식), 충돌은 `Kinematics`. 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.
 - **성장**: `data/progression.json`(레벨 표 0/8/50/250/660/…/18000, 만렙 11, 획득원) → `db.prog("경로")`. 레벨 변경은 `PlayerCharacter.set_level/change_level`(정수 슬롯 잠금 동기화). 레벨업 생명력·영혼력은 `balance.hp/soul` 수식.
-- **피해 공식(명세 §1)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 정신력×2, 방어 100/(100+방어×4), 명중 = (스킬 accuracy 95 + 명중률 스탯) × (1 + 민첩 차×0.005). 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`.
+- **피해 공식(명세 §1)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 정신력×2, 방어 100/(100+방어×4), 명중 = (스킬 accuracy 95 + 명중률 스탯) × (1 + 민첩 차×0.005). 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`. 도주 = 50% + (아군 평균 − 적 평균 민첩)×2%p(10~90%), 수호자·군주전 불가.
 - **패시브**: 몬스터 `passives[]`·정수 `passive` 같은 형식 → `Actor.passives`(`Passives.gd`: on_hit/on_crit/crit_bonus/power_vs_status/reflect_melee/status_immune/start_gauge/see_hidden/flee_penalty, 수정자는 소유자가 붙임).
 - **몬스터 AI**: `ai: [{if, also[], use, target(lowest_hp|highest_hp|with_status|without_status), target_status}]` → 없으면 `ai_cycle` → 기본 공격. 상태 지속은 자기 차례 시작 때 준다(자기 행동에 거는 상태는 +1).
+- **보스(G3)**: 몬스터 `pattern`(`src/combat/patterns/<id>.gd`, 수치는 `pattern_params`) + `phases`[{id, hp_above, message, self/foe_statuses, self_passives, target_rule, round_effects}]. **라운드 = 보스 자기 차례**(`BossHooks.turn_end`, 기절로 건너뛰어도 센다). 게이지는 `Actor.meters`(전투 끝에 비움), 전투 한정 상태는 `"battle_only": true`. 계층군주 소환은 층 JSON `lord` → `LordWatch`(혼자면 자연 소환 안 됨 — 디버그 버튼). 가정 DF1~DF15.
+- **균열(G4)**: `rifts/<id>.json` = 개방 마석 `force_open`·`look` 타일·`chapters[]{map, encounters[battle|chain|waves|guardian], field_effects, on_enter}`·`guardian`·`variant`·`guardian_drops`·`numbers`. 입장하면 챕터마다 새 `ExploreSession`(생성기 `rift_chapter`)을 만들어 `transfer` 시그널 → Main이 화면을 바꾼다. 챕터 세션이 `rift_run`을 붙잡고 `RiftRun.session`은 약한 참조(순환 누수 방지). 지금 균열 내용은 임시(`stand_in`) — G5~G8에서 교체. 가정 RF1~RF15.
+- **핏빛성채(G5)에서 생긴 키**: 패시브 `ally_aura`·`start_summons`·`foe_statuses_on_start`·`regen_per_round`·`status_duration_cap`·`dot_mult`·`mark_first_attacker`·`basic_attack_effects`, 몬스터 `types`(본 나이트)·`magic_stone_chance`·약점 `{multiplier, ignore_reduction, requires_status, on_hit_status}`, 범용 보스 패턴 `guardian`(`every`·`extra_status`·`mumbles`·`force_phase`·`per_foe_status`·`intro`), 예고 `guarded_mult`(추가 행동 차례엔 예고가 진행되지 않음), 균열 챕터 `exit_requires`·`hidden`, 아이템 `rift_bound`. **명세 수치가 시뮬레이터 목표를 벗어나면 몬스터 수치를 바꾸고 notes에 원래 값을 남긴다**(ASSUMPTIONS BF1). 대량 데이터는 스크래치 파이썬 생성기로 만들고 커밋하지 않는다.
+- **상태이상 키(G4)**: `resist {stats}`(남이 건 것만 저항), `immune_if {stat, at_least}`, `on_max_stacks {status}`, `break_on_damage(_types)`, `heal_mult`, `misdirect {chance, pool, power_mult, ignore_defense}`, `battle_only`, 수정자 값에 수식 문자열(걸릴 때 계산).
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.

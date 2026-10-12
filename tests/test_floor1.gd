@@ -194,3 +194,22 @@ func test_essence_passive_works_for_player() -> void:
 	assert_true(got, "정수판 마비독 20%")
 	pc.essences.remove(pc, 0)
 	assert_true(pc.passives.is_empty(), "제거하면 패시브도 사라진다")
+
+
+func test_flee_matches_spec() -> void:
+	var b := _battle(["goblin"])
+	var me := b.side_units(Combatant.SIDE_PARTY)[0]
+	var gob := b.side_units(Combatant.SIDE_ENEMY)[0]
+	var diff := me.actor.stats.get_value("agi") - gob.actor.stats.get_value("agi")
+	assert_near(b.flee_chance(me), 0.5 + diff * 0.02, 0.0001, "50% + 평균 민첩 차×2%p")
+	me.actor.stats.set_base("agi", 200.0)
+	assert_near(b.flee_chance(me), 0.9, 0.0001, "최대 90%")
+	var guardian := Monster.create(db, "goblin")
+	guardian.def = guardian.def.duplicate()
+	guardian.def["rank"] = "guardian"
+	var reg := ContentRegistries.new()
+	var b2 := Battle.new(db, reg.effects, reg.ai_conditions, Rng.new(1))
+	var me2 := b2.add(_pc(), Combatant.SIDE_PARTY)
+	b2.add(guardian, Combatant.SIDE_ENEMY)
+	assert_eq(b2.flee_chance(me2), 0.0, "수호자·계층군주전은 도주 불가")
+	assert_eq(ActionCheck.reason(b2, me2, {"kind": "flee"}), "combat.reason_no_flee", "도주 불가면 차례를 쓰지 않는다")

@@ -1,0 +1,115 @@
+{
+  "id": "bone_knight",
+  "name_ko": "본 나이트",
+  "grade": 7,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.2,
+  "color": "#c8c0a8",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 30,
+    "agi": 14,
+    "p_res": 18,
+    "m_res": 10,
+    "int": 8
+  },
+  "resources": {
+    "hp": 380,
+    "soul": 60
+  },
+  "natural_weapon": {
+    "attack": 14,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "bk_bone_slash"
+  ],
+  "passives": [
+    {
+      "id": "bk_preservative",
+      "name_ko": "방부제",
+      "desc_ko": "중독·출혈·부패의 피해가 절반이다.",
+      "dot_mult": 0.5
+    }
+  ],
+  "magic_stone_grade": 7,
+  "ai": [
+    {
+      "if": "self_status",
+      "status": "vitality_drain",
+      "not": true,
+      "use": "bk_vitality_drain"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "bk_confusion_fog"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "bk_soul_slash"
+    }
+  ],
+  "ai_cycle": [
+    "bk_bone_slash"
+  ],
+  "types": [
+    {
+      "id": "craving",
+      "name_ko": "갈망",
+      "skills": [
+        "bk_vitality_drain"
+      ],
+      "essence_color": "red"
+    },
+    {
+      "id": "sorrow",
+      "name_ko": "슬픔",
+      "skills": [
+        "bk_confusion_fog"
+      ],
+      "essence_color": "blue"
+    },
+    {
+      "id": "hatred",
+      "name_ko": "증오",
+      "skills": [
+        "bk_soul_slash"
+      ],
+      "essence_color": "black",
+      "message": "combat.bone_knight_hatred"
+    }
+  ],
+  "desc_ko": "뼈 장검을 든 기사. 갈망·슬픔·증오 중 하나의 기운을 띤다. 증오의 기사는 영혼을 벤다.",
+  "sprite": "res://assets/sprites/monsters/bone_knight.png",
+  "source": "original",
+  "notes": "명세 §9 · 시뮬레이터 조정: 생명력 240→380, 근력 22→30"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "deadman_bite",
+  "name_ko": "물어뜯기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "ess_deadman_grab",
+  "name_ko": "붙잡기(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.375
+    }
+  ],
+  "essence_of": "deadman_grab",
+  "source": "placeholder"
+}

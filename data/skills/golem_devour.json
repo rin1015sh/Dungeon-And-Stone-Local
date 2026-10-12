@@ -1,0 +1,20 @@
+{
+  "id": "golem_devour",
+  "name_ko": "잡아먹기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "blunt",
+      "drain": 0.5
+    }
+  ],
+  "source": "original"
+}

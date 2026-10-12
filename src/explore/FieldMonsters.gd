@@ -25,6 +25,9 @@ class Group extends RefCounted:
 	var state: String = "idle"
 	var grace_until: float = -1.0
 	var waypoint: Vector2 = Vector2(-1, -1)  ## 걸어가는 중인 칸 중심(없으면 x < 0)
+	var tag: String = ""                  ## 균열 조우 종류(battle/chain/waves/guardian), 필드 무리는 ""
+	var waves: Array = []                 ## 연전: 이기면 바로 이어지는 다음 구성들(몬스터 id 배열)
+	var battle_rules: Dictionary = {}     ## 전투 목표(BattleObjective — 생존 웨이브)
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
@@ -105,6 +108,23 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	g.place(cell)
 	g.home = cell
 	groups.append(g)
+	return g
+
+
+## 정해진 구성의 무리를 칸 cell 근처에 세운다(균열 고정 조우). 지역이 없어 리스폰하지 않는다.
+func add_fixed(ids: Array, cell: Vector2i) -> Group:
+	var at := cell if _steer.can_enter(cell) else _free_cell_near(cell)
+	if at.x < 0 or ids.is_empty():
+		return null
+	var g := Group.new()
+	g.id = _next_id
+	_next_id += 1
+	for id: Variant in ids:
+		g.monster_ids.append(str(id))
+	g.place(at)
+	g.home = at
+	groups.append(g)
+	changed.emit()
 	return g
 
 
@@ -197,6 +217,11 @@ func set_player_stealth(v: float) -> void:
 	_steer.player_stealth = v
 
 
+## 플레이어에게 걸린 상태(원한의 징표 등). ExploreSession이 시간 흐름마다 넣는다.
+func set_player_marks(ids: Array) -> void:
+	_steer.player_marks = ids
+
+
 ## 지금 시각(미궁 n일 차)과 칸 위치로 무리에 변이종을 섞는다.
 func _mix_variants(g: Group, region: Dictionary, cell: Vector2i) -> void:
 	var v := JsonUtil.get_dict(region, "variants")
@@ -254,7 +279,11 @@ func _free_cell_near(p: Vector2i) -> Vector2i:
 
 
 func _aggressive(monster_id: String) -> bool:
-	return JsonUtil.get_bool(_behavior(monster_id), "aggressive", true)
+	var beh := _behavior(monster_id)
+	var need := JsonUtil.get_str(beh, "passive_unless_status")
+	if not need.is_empty() and _steer.player_marks.has(need):
+		return true
+	return JsonUtil.get_bool(beh, "aggressive", true)
 
 
 func _behavior(monster_id: String) -> Dictionary:

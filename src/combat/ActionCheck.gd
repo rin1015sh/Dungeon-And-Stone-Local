@@ -12,8 +12,10 @@ static func reason(b: Battle, c: Combatant, action: Dictionary) -> String:
 	match str(action.get("kind", "")):
 		"skill":
 			return _skill(b, c, str(action.get("skill", Battle.BASIC_ATTACK)), action.get("target"))
-		"guard", "flee":
+		"guard":
 			return ""
+		"flee":
+			return "combat.reason_no_flee" if is_zero_approx(b.flee_chance(c)) else ""
 		"item":
 			var id := str(action.get("item", ""))
 			if c.actor.inventory.count(id) <= 0 or not JsonUtil.get_bool(b.db.get_entry("items", id), "combat_usable"):
@@ -30,6 +32,10 @@ static func _skill(b: Battle, c: Combatant, skill_id: String, target: Variant) -
 	if not why.is_empty():
 		return why
 	match JsonUtil.get_str(sk, "target"):
+		"ally_single":
+			# 배신의 장막: 아군을 알아볼 수 없어 아군 하나를 고르는 스킬을 못 쓴다(자기 자신만 고르면 괜찮다).
+			if c.actor.statuses.has_flag("no_ally_single") and target is Combatant and target != c:
+				return "combat.reason_veiled"
 		"any_single":
 			# 아무나 하나(조사 등): 고른 대상이 있어야 하고, 아직 전장에 있어야 한다.
 			if not target is Combatant or not (target as Combatant).is_active():

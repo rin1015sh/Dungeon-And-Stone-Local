@@ -5,6 +5,9 @@ extends Node
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
+## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian]]: 들어가서 n번째 챕터로
+## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
+## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
@@ -82,8 +85,26 @@ func _run() -> void:
 			tip.position = Vector2(80, 80)
 		if _args.has("pause"):
 			explore.set_paused(true)
+		if _args.has("rift_open"):
+			explore.session.rifts.force_open(explore.session, str(_args["rift_open"]), explore.session.pos)
+		if _args.has("rift"):
+			explore = await _enter_rift(explore)
+		if _args.has("lord"):
+			explore.session.lord.summon(explore.session)
 		if _args.has("combat"):
 			ExploreDebug.spawn_and_engage(explore.session, str(_args.get("monster", "")))
+			if _args.has("meters"):
+				await _frames(3)
+				for n: Node in _main.find_children("*", "", true, false):
+					if n is CombatScreen:
+						var cb := (n as CombatScreen).battle
+						var me := cb.side_units(Combatant.SIDE_PARTY)[0]
+						me.actor.meters["dread_fear"] = 45.0
+						me.actor.meters["dread_plague"] = 16.0
+						var boss := cb.side_units(Combatant.SIDE_ENEMY)[0]
+						boss.actor.pool.set_current("hp", boss.actor.pool.get_max("hp") * 0.6)
+						BossHooks.check_all(cb)
+						BossHooks.turn_end(cb, boss, false)
 			if _args.has("summon"):
 				await _frames(3)
 				for n: Node in _main.find_children("*", "", true, false):
@@ -107,3 +128,30 @@ func _run() -> void:
 func _frames(n: int) -> void:
 	for i in n:
 		await get_tree().process_frame
+
+
+func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
+	var s := explore.session
+	s.rifts.force_open(s, str(_args["rift"]), s.pos)
+	var portal: Dictionary = s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0]
+	s.relocate(portal["pos"])
+	s.interact()
+	await _frames(4)
+	explore = _main.current_screen() as ExploreScreen
+	for i in int(str(_args.get("chapter", "1"))) - 1:
+		explore.session.rift_run.debug_clear()
+		var req := JsonUtil.get_dict(explore.session.rift_run.chapters()[explore.session.rift_run.chapter], "exit_requires")
+		if not req.is_empty():
+			explore.session.player.inventory.add(JsonUtil.get_str(req, "item"), 1)
+		explore.session.relocate(explore.session.map.portals[0]["pos"])
+		explore.session.interact()
+		await _frames(4)
+		explore = _main.current_screen() as ExploreScreen
+	if _args.has("engage"):
+		var run := explore.session.rift_run
+		var pick: FieldMonsters.Group = run.remaining[0]
+		for g: FieldMonsters.Group in run.remaining:
+			if g.tag == str(_args["engage"]):
+				pick = g
+		explore.session.engage(pick, true)
+	return explore

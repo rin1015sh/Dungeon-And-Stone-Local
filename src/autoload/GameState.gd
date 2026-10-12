@@ -9,6 +9,7 @@ var floor_entries: int = 0
 var debug_seed_override: int = 0
 var debug_invulnerable: bool = false
 var debug_fast_combat: bool = false  ## 적 차례 연출 지연 없음(테스트·스모크용)
+var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달). 탐험가마다 새로(M4에서 도시 달력·저장으로)
 
 
 func _ready() -> void:
@@ -26,6 +27,7 @@ func new_session(seed_override: int = 0) -> void:
 func start_run(pc: PlayerCharacter) -> void:
 	player = pc
 	floor_entries = 0
+	rift_calendar = RiftCalendar.new(DataRegistry.db)
 
 
 ## 층 생성 시드: 디버그로 고정했으면 그 값, 아니면 세션 시드·층·입장 횟수로 정한다.

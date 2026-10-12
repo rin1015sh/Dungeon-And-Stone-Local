@@ -1,0 +1,18 @@
+{
+  "id": "ess_bk_vitality_drain",
+  "name_ko": "생기 흡수(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "vitality_drain"
+    }
+  ],
+  "essence_of": "bk_vitality_drain",
+  "source": "placeholder"
+}

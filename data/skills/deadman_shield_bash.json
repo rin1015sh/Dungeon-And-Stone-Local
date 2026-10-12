@@ -1,0 +1,22 @@
+{
+  "id": "deadman_shield_bash",
+  "name_ko": "방패 밀치기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "push_back",
+      "amount": 60
+    }
+  ],
+  "source": "placeholder",
+  "notes": "대상 다음 라운드 맨 뒤 → 행동 게이지 −60"
+}

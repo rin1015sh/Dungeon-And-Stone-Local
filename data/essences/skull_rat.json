@@ -1,0 +1,36 @@
+{
+  "id": "skull_rat",
+  "name_ko": "스컬 랫의 정수",
+  "grade": 9,
+  "source_monster": "skull_rat",
+  "family": "skull_rat",
+  "rank": "normal",
+  "passive": {
+    "id": "rat_swarm",
+    "name_ko": "쥐떼",
+    "desc_ko": "몸이 날래 남보다 조금 먼저 움직인다.",
+    "start_gauge": 5
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_rat_gnaw"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_rat_hide"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      1,
+      2
+    ],
+    "hearing": [
+      2,
+      4
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

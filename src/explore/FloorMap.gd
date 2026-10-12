@@ -17,6 +17,7 @@ var visible_now: PackedByteArray  ## 지금 보이는 칸
 var landmarks: Array[Dictionary] = []  ## {"id", "pos": Vector2i(기준 칸), "rect": Rect2i, "found": bool}
 var portals: Array[Dictionary] = []    ## {"id", "pos", "dir", "to_floor", "found"}
 var safe_zones: Array[Dictionary] = [] ## {"center": Vector2i, "radius": float}
+var slots: Array[Vector2i] = []        ## 고정 조우 자리(균열 챕터: 방 가운데, 입구 쪽부터)
 var entry: Vector2i = Vector2i(-1, -1)
 var center: Vector2i = Vector2i(-1, -1)
 

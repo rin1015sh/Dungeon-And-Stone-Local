@@ -1,0 +1,259 @@
+{
+  "host_floor": 1,
+  "guardian": "blater",
+  "variant": {
+    "monster": "kambormir",
+    "chance": 0.03
+  },
+  "guardian_drops": [
+    {
+      "item": "rift_stone",
+      "chance": 0.66
+    }
+  ],
+  "numbers": [],
+  "numbers_chance": 0.33,
+  "source": "original",
+  "id": "rift_blood_fortress",
+  "name_ko": "핏빛성채",
+  "weight": 1,
+  "desc_ko": "검은 포탈 너머 붉은 하늘과 까마귀 떼, 멀리 흑빛 성채가 보인다.",
+  "force_open": {
+    "item": "magic_stone_deathfiend",
+    "at": "monument"
+  },
+  "look": {
+    "tiles": {
+      "floor": "fortress_floor",
+      "wall": "fortress_wall",
+      "exit": "rift_exit"
+    },
+    "ambient_color": "#ff9a8a",
+    "ambient_light_m": 7.0,
+    "visibility_cap_m": 9.0
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "name_ko": "외곽 검문소",
+      "desc_ko": "데드맨들이 지키는 검문소. 지휘관이 뿔피리를 지녔다.",
+      "map": {
+        "size": [
+          48,
+          20
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "deadman",
+            "deadman",
+            "soldier_deadman"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "deadman_commander",
+            "soldier_deadman",
+            "deadman"
+          ]
+        }
+      ],
+      "exit_requires": {
+        "item": "rift_horn",
+        "message": "explore.fortress_horn"
+      }
+    },
+    {
+      "id": "ch2",
+      "name_ko": "도개교",
+      "desc_ko": "도개교가 내려올 때까지 해자에서 기어오르는 데드맨을 버텨라.",
+      "map": {
+        "size": [
+          48,
+          20
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "waves",
+          "survive_rounds": 6,
+          "start": [
+            "deadman",
+            "deadman"
+          ],
+          "reinforce": {
+            "monsters": [
+              "deadman",
+              "deadman",
+              "soldier_deadman"
+            ],
+            "count": [
+              1,
+              2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "name_ko": "외성벽 시가지",
+      "desc_ko": "한 무리에 수십 마리 — 쉴 틈 없는 연전. 광장 한가운데 마른 분수대가 있다.",
+      "map": {
+        "size": [
+          48,
+          20
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "chain",
+          "battles": [
+            [
+              "skeleton_archer",
+              "skeleton_archer",
+              "skeleton_mage"
+            ],
+            [
+              "ghoul",
+              "ghoul",
+              "skeleton_archer"
+            ],
+            [
+              "deathfiend",
+              "skeleton_mage"
+            ]
+          ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "goddess_tear",
+          "item": "goddess_tear",
+          "tile": "fountain_statue",
+          "message": "explore.fortress_tear"
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "name_ko": "내성벽 지하 감옥",
+      "desc_ko": "축축한 감옥. 쥐와 영체가 떠돌고, 깊은 곳에 시체골렘이 웅얼거린다.",
+      "map": {
+        "size": [
+          48,
+          20
+        ],
+        "rooms": 6,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "skull_rat",
+            "skull_rat",
+            "skull_rat"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "banshee",
+            "chimera_wolf"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "ghoul_lord"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "corpse_golem"
+          ],
+          "midboss": true
+        }
+      ]
+    },
+    {
+      "id": "ch5",
+      "name_ko": "영주성 악마 숭배실",
+      "desc_ko": "'ㅁ'자 회랑 끝 숭배실. 썩은 책장들 너머에서 수호자가 깨어난다.",
+      "map": {
+        "size": [
+          48,
+          20
+        ],
+        "rooms": 5,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "gargoyle_statue",
+            "deathfiend"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "bone_knight",
+            "chimera_wolf"
+          ]
+        },
+        {
+          "kind": "guardian"
+        }
+      ],
+      "hidden": [
+        {
+          "id": "necronomicon",
+          "item": "necronomicon",
+          "tile": "bookshelf",
+          "message": "explore.fortress_necronomicon"
+        }
+      ]
+    }
+  ],
+  "hidden_pieces": [
+    {
+      "id": "goddess_tear",
+      "name_ko": "여신의 눈물",
+      "chapter": "ch3"
+    },
+    {
+      "id": "necronomicon",
+      "name_ko": "네크로노미콘",
+      "chapter": "ch5"
+    }
+  ],
+  "notes": "명세 §9. 넘버스 후보는 다음 배치(명세) — numbers 비움"
+}

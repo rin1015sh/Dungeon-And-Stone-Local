@@ -1,0 +1,18 @@
+{
+  "id": "ess_deadman_march_order",
+  "name_ko": "진군 명령(정수)",
+  "target": "ally_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "march_order"
+    }
+  ],
+  "essence_of": "deadman_march_order",
+  "source": "placeholder"
+}

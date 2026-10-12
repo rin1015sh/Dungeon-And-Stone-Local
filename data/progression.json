@@ -9,10 +9,10 @@
     "essence_slots_per_level": 1
   },
   "exp": {
-    "_comment": "획득원. 종별 첫 처치 = grade_base − 등급(+ 상위 변이종 upper_variant_bonus). no_exp_ranks는 0",
+    "_comment": "획득원. 종별 첫 처치 = grade_base − 등급(+ 상위 변이종 upper_variant_bonus). no_exp_ranks는 0(계층군주는 첫 처치 대신 lord_bonus만)",
     "grade_base": 10,
     "upper_variant_bonus": 1,
-    "no_exp_ranks": ["ungraded", "token"],
+    "no_exp_ranks": ["ungraded", "token", "lord"],
     "guardian_ranks": ["guardian", "variant_guardian"],
     "guardian_bonus": 3,
     "guardian_bonus_deep": 5,
@@ -26,6 +26,7 @@
     "dreaming_soul_min_level": 10
   },
   "budget": {
+    "exclude_ranks": ["variant_guardian"],
     "_comment": "층별 1회성 경험치 목표(§5.4). tools/exp_budget.gd가 실제 데이터와 비교한다. 데이터가 목표보다 적은 층은 목표치로 '예상' 합산",
     "floor_targets": {"1": 110, "2": 190, "3": 230, "4": 110, "5": 400, "6": 600, "7": 360, "8": 260, "9": 400, "10": 140},
     "hidden_target": 1100,

@@ -12,6 +12,18 @@ extends RefCounted
 ##   start_gauge      전투 시작 때 행동 게이지 보너스(네 발 짐승의 첫 차례 선공)
 ##   see_hidden       true — 은신한 대상도 고를 수 있다(추적 후각)
 ##   flee_penalty     비율 — 상대 진영의 도주 확률을 깎는다(추적 후각)
+##   meter_on_damaged {meter, per_percent} — 피해를 받으면 최대 생명력 1%당 그만큼 자기 게이지(드레드피어 분노)
+##   attacker_meter   {meter, amount} — 이 개체를 공격해 맞힌 쪽의 게이지가 오른다(드레드피어 P2 원망)
+##   mark_first_attacker 상태 id — 전투에서 이 개체를 처음 공격한 쪽에게 그 상태(벤시 원령 → 원한의 징표)
+##   status_duration_cap {상태: 턴} — 자기에게 걸리는 그 상태의 지속 상한(데스핀드 육체보존: 출혈 1)
+##   regen_per_round  비율 — 자기 차례가 끝날 때 최대 생명력의 그만큼 회복(flag no_regen 상태면 멈춤)
+##   dot_mult         배율 — 자기에게 걸린 지속 피해(본 나이트 방부제 0.5). Actor가 StatusSet에 맞춘다
+##   ally_aura        {lineages|monsters, modifiers} — 전투 중 같은 편 해당 개체에 수정자(지휘관 데드맨·구울로드)
+##   start_summons    [몬스터 id] — 전투 시작 때 같은 편으로 함께 나온다(구울로드)
+##   foe_statuses_on_start [상태 id] — 전투 시작 때 상대 전원에게(블라터 원한)
+##   basic_attack_effects [효과] — 기본 공격을 이 효과들로 바꾼다(키메라 울프 여러 개의 머리)
+##   basic_extra_hit_chance 확률 — 기본 공격 뒤 한 번 더(키메라 정수판)
+##   meter_on_damaged에 damage_types·per_point를 주면 그 유형 피해량 × per_point(시체골렘 화염 누적)
 
 
 static func of(a: Actor) -> Array[Dictionary]:
@@ -73,6 +85,7 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_hit"), tgt)
 		if crit:
 			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_crit"), tgt)
+	_meters_after_hit(ctx, dealt, dtype)
 	if ranged or tgt.dead or dealt <= 0:
 		return
 	var reflect := sum(tgt, "reflect_melee")
@@ -87,6 +100,44 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 		if bool(r["hit"]) and int(r["amount"]) > 0:
 			src.pool.modify("hp", -float(r["amount"]), "counter:" + tgt.id)
 			ctx.say("combat.counter", {"source": tgt.display_name, "target": src.display_name, "amount": r["amount"]}, "warn")
+
+
+## 공격받았다(맞든 안 맞든, 면역이어도): 처음 공격한 쪽에게 표식.
+static func on_attacked(ctx: EffectContext) -> void:
+	var tgt := ctx.target
+	var src := ctx.source
+	for p in tgt.passives:
+		var st := JsonUtil.get_str(p, "mark_first_attacker")
+		if not st.is_empty() and not tgt.has_meta("marked_first") and src != null and src != tgt:
+			tgt.set_meta("marked_first", true)
+			src.statuses.apply(st)
+			ctx.say("combat.marked", {"name": src.display_name, "source": tgt.display_name,
+				"status": DataNames.entry(ctx.db, "statuses", st)}, "danger")
+
+
+## 자기에게 걸리는 상태의 지속 상한(없으면 -1).
+static func duration_cap(a: Actor, status_id: String) -> float:
+	var cap := -1.0
+	for p in a.passives:
+		var c := JsonUtil.get_dict(p, "status_duration_cap")
+		if c.has(status_id):
+			cap = float(c[status_id]) if cap < 0.0 else minf(cap, float(c[status_id]))
+	return cap
+
+
+static func _meters_after_hit(ctx: EffectContext, dealt: int, dtype: String = "") -> void:
+	var tgt := ctx.target
+	for p in tgt.passives:
+		var md := JsonUtil.get_dict(p, "meter_on_damaged")
+		var types := JsonUtil.get_array(md, "damage_types")
+		if not md.is_empty() and dealt > 0 and not tgt.dead and (types.is_empty() or types.has(dtype)):
+			var pct := float(dealt) / maxf(1.0, tgt.pool.get_max("hp")) * 100.0
+			var amount := float(dealt) * JsonUtil.get_float(md, "per_point") if md.has("per_point") \
+				else pct * JsonUtil.get_float(md, "per_percent", 1.0)
+			Meters.add(ctx.db, tgt, JsonUtil.get_str(md, "meter"), amount, ctx)
+		var am := JsonUtil.get_dict(p, "attacker_meter")
+		if not am.is_empty():
+			Meters.add(ctx.db, ctx.source, JsonUtil.get_str(am, "meter"), JsonUtil.get_float(am, "amount"), ctx)
 
 
 static func _filter_ok(f: Dictionary, ranged: bool, dtype: String) -> bool:

@@ -1,0 +1,53 @@
+{
+  "id": "bone_knight",
+  "name_ko": "본 나이트의 정수",
+  "grade": 7,
+  "source_monster": "bone_knight",
+  "family": "bone_knight",
+  "rank": "normal",
+  "passive": {
+    "id": "bk_preservative",
+    "name_ko": "방부제",
+    "desc_ko": "중독·출혈·부패의 피해가 절반이다.",
+    "dot_mult": 0.5,
+    "notes": "정수판도 원작대로 절반(약화 규칙 예외)"
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_bk_vitality_drain"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_bk_confusion_fog"
+    },
+    {
+      "color": "black",
+      "skill": "ess_bk_soul_slash"
+    }
+  ],
+  "stat_ranges": {
+    "cutting_power": [
+      10,
+      14
+    ],
+    "bone_strength": [
+      53,
+      57
+    ],
+    "agi": [
+      13,
+      17
+    ],
+    "endurance": [
+      13,
+      17
+    ],
+    "flexibility": [
+      -9,
+      -5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9 타입이 곧 색 [원]. 신장 −25는 스탯이 없어 뺐다"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "ess_deadman_bite",
+  "name_ko": "물어뜯기(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.765,
+      "damage_type": "pierce"
+    }
+  ],
+  "essence_of": "deadman_bite",
+  "source": "placeholder"
+}

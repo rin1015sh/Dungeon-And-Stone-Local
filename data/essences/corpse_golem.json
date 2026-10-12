@@ -1,0 +1,53 @@
+{
+  "id": "corpse_golem",
+  "name_ko": "시체골렘의 정수",
+  "grade": 7,
+  "source_monster": "corpse_golem",
+  "family": "corpse_golem",
+  "rank": "midboss",
+  "passive": {
+    "id": "golem_corpse_mass",
+    "name_ko": "시체 덩어리",
+    "desc_ko": "물리 피해에 강해지지만 불에 약해진다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:fire",
+        "percent": 0.25
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_golem_corpse_bomb"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_golem_devour"
+    },
+    {
+      "color": "green",
+      "skill": "ess_golem_flesh_burst"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      3,
+      6
+    ],
+    "p_res": [
+      2,
+      5
+    ],
+    "resist_poison": [
+      5,
+      10
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9 정수 내용 [창]"
+}

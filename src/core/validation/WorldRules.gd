@@ -88,6 +88,13 @@ static func _floors(v: ValidatorBase) -> void:
 				v.ref(w + ".regions", "monsters", m)
 			for m: Variant in JsonUtil.get_array(JsonUtil.get_dict(rd, "variants"), "monsters"):
 				v.ref(w + ".regions.variants", "monsters", m)
+		var lord := JsonUtil.get_dict(f, "lord")
+		if not lord.is_empty():
+			v.ref(w + ".lord", "monsters", lord.get("monster"))
+			for k in ["min_day", "min_party", "stay_radius_m", "hazard_base_per_hour", "hazard_doubling_hours", "respawn_hours", "vision_m"]:
+				if JsonUtil.get_float(lord, k, -1.0) <= 0.0:
+					v.err(w + ".lord", "%s는 양수" % k)
+			v.check_color(w + ".lord.tint", JsonUtil.get_str(lord, "tint", "#ffffff"))
 		for portal: Variant in JsonUtil.get_array(f, "portals"):
 			var pd: Dictionary = portal if portal is Dictionary else {}
 			if not dirs.has(JsonUtil.get_str(pd, "dir")):

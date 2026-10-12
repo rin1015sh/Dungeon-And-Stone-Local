@@ -1,54 +1,307 @@
 [
   {
-    "id": "cave_floor", "name_ko": "동굴 바닥", "kind": "floor",
-    "walkable": true, "blocks_sight": false,
-    "colors": {"floor": "#57505f"},
-    "sprite": "res://assets/sprites/tiles/cave_floor.png", "source": "placeholder"
+    "id": "cave_floor",
+    "name_ko": "동굴 바닥",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f"
+    },
+    "sprite": "res://assets/sprites/tiles/cave_floor.png",
+    "source": "placeholder"
   },
   {
-    "id": "rock_wall", "name_ko": "바위벽", "kind": "wall",
-    "walkable": false, "blocks_sight": true,
-    "colors": {"top": "#2a2530", "face": "#6a6074"},
-    "sprite": "res://assets/sprites/tiles/rock_wall.png", "source": "placeholder"
+    "id": "rock_wall",
+    "name_ko": "바위벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#2a2530",
+      "face": "#6a6074"
+    },
+    "sprite": "res://assets/sprites/tiles/rock_wall.png",
+    "source": "placeholder"
   },
   {
-    "id": "crystal_wall", "name_ko": "수정벽", "kind": "wall",
-    "walkable": false, "blocks_sight": true,
-    "colors": {"top": "#3b3160", "face": "#8a74d0"},
-    "light": {"radius_m": 2.5, "color": "#8f6cff", "intensity": 0.8},
-    "sprite": "res://assets/sprites/tiles/crystal_wall.png", "source": "original"
+    "id": "crystal_wall",
+    "name_ko": "수정벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#3b3160",
+      "face": "#8a74d0"
+    },
+    "light": {
+      "radius_m": 2.5,
+      "color": "#8f6cff",
+      "intensity": 0.8
+    },
+    "sprite": "res://assets/sprites/tiles/crystal_wall.png",
+    "source": "original"
   },
   {
-    "id": "pond_water", "name_ko": "연못", "kind": "floor",
-    "walkable": false, "blocks_sight": false,
-    "colors": {"floor": "#24384c"},
-    "sprite": "res://assets/sprites/tiles/pond_water.png", "source": "original"
+    "id": "pond_water",
+    "name_ko": "연못",
+    "kind": "floor",
+    "walkable": false,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#24384c"
+    },
+    "sprite": "res://assets/sprites/tiles/pond_water.png",
+    "source": "original"
   },
   {
-    "id": "boulder", "name_ko": "큰바위", "kind": "wall", "face_px": 14,
-    "walkable": false, "blocks_sight": true,
-    "colors": {"top": "#4a454c", "face": "#77707a"},
-    "sprite": "res://assets/sprites/tiles/boulder.png", "source": "original"
+    "id": "boulder",
+    "name_ko": "큰바위",
+    "kind": "wall",
+    "face_px": 14,
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#4a454c",
+      "face": "#77707a"
+    },
+    "sprite": "res://assets/sprites/tiles/boulder.png",
+    "source": "original"
   },
   {
-    "id": "square_crystal", "name_ko": "네모 수정", "kind": "wall", "face_px": 28,
-    "walkable": false, "blocks_sight": false,
-    "colors": {"top": "#9d8ae0", "face": "#7a66c0"},
-    "light": {"radius_m": 3.5, "color": "#b39cff", "intensity": 1.0},
-    "sprite": "res://assets/sprites/tiles/square_crystal.png", "source": "original"
+    "id": "square_crystal",
+    "name_ko": "네모 수정",
+    "kind": "wall",
+    "face_px": 28,
+    "walkable": false,
+    "blocks_sight": false,
+    "colors": {
+      "top": "#9d8ae0",
+      "face": "#7a66c0"
+    },
+    "light": {
+      "radius_m": 3.5,
+      "color": "#b39cff",
+      "intensity": 1.0
+    },
+    "sprite": "res://assets/sprites/tiles/square_crystal.png",
+    "source": "original"
   },
   {
-    "id": "monument", "name_ko": "대현자 기념비", "kind": "wall", "face_px": 40,
-    "walkable": false, "blocks_sight": true, "interact": "monument",
-    "colors": {"top": "#b0a890", "face": "#8a8270"},
-    "light": {"radius_m": 3.0, "color": "#e8d9a8", "intensity": 0.7},
-    "sprite": "res://assets/sprites/tiles/monument.png", "source": "original"
+    "id": "monument",
+    "name_ko": "대현자 기념비",
+    "kind": "wall",
+    "face_px": 40,
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "monument",
+    "colors": {
+      "top": "#b0a890",
+      "face": "#8a8270"
+    },
+    "light": {
+      "radius_m": 3.0,
+      "color": "#e8d9a8",
+      "intensity": 0.7
+    },
+    "sprite": "res://assets/sprites/tiles/monument.png",
+    "source": "original"
   },
   {
-    "id": "portal", "name_ko": "포탈", "kind": "floor",
-    "walkable": true, "blocks_sight": false, "interact": "portal",
-    "colors": {"floor": "#5e3a78", "mark": "#e0b8ff"},
-    "light": {"radius_m": 2.0, "color": "#c58cff", "intensity": 0.9},
-    "sprite": "res://assets/sprites/tiles/portal.png", "source": "original"
+    "id": "portal",
+    "name_ko": "포탈",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "interact": "portal",
+    "colors": {
+      "floor": "#5e3a78",
+      "mark": "#e0b8ff"
+    },
+    "light": {
+      "radius_m": 2.0,
+      "color": "#c58cff",
+      "intensity": 0.9
+    },
+    "sprite": "res://assets/sprites/tiles/portal.png",
+    "source": "original"
+  },
+  {
+    "id": "rift_portal",
+    "name_ko": "균열 포탈",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "interact": "rift_portal",
+    "colors": {
+      "floor": "#4a1f2a",
+      "mark": "#ff6a6a"
+    },
+    "light": {
+      "radius_m": 2.5,
+      "color": "#ff4a5a",
+      "intensity": 1.0
+    },
+    "sprite": "res://assets/sprites/tiles/rift_portal.png",
+    "source": "original",
+    "notes": "원작: 균열이 열리면 층 전역에 포탈이 생긴다(명세 §8.1)"
+  },
+  {
+    "id": "rift_exit",
+    "name_ko": "균열 출구",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "interact": "rift_exit",
+    "colors": {
+      "floor": "#2a3a4a",
+      "mark": "#bfe6ff"
+    },
+    "light": {
+      "radius_m": 2.5,
+      "color": "#9fd8ff",
+      "intensity": 0.9
+    },
+    "sprite": "res://assets/sprites/tiles/rift_exit.png",
+    "source": "placeholder",
+    "notes": "다음 챕터로 가는 길 / 수호자를 잡으면 열리는 탈출 포탈"
+  },
+  {
+    "id": "fortress_floor",
+    "name_ko": "핏빛 포석",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4b3236"
+    },
+    "sprite": "res://assets/sprites/tiles/fortress_floor.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "fortress_wall",
+    "name_ko": "흑빛 성벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#1e1215",
+      "face": "#5a3a40"
+    },
+    "sprite": "res://assets/sprites/tiles/fortress_wall.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "ice_floor",
+    "name_ko": "얼음 바닥",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#7c95a8"
+    },
+    "sprite": "res://assets/sprites/tiles/ice_floor.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "ice_wall",
+    "name_ko": "얼음벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#2b3d4c",
+      "face": "#a9c6da"
+    },
+    "sprite": "res://assets/sprites/tiles/ice_wall.png",
+    "source": "placeholder",
+    "light": {
+      "radius_m": 1.5,
+      "color": "#bfe3ff",
+      "intensity": 0.4
+    }
+  },
+  {
+    "id": "mine_floor",
+    "name_ko": "갱도 바닥",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#5a4a3a"
+    },
+    "sprite": "res://assets/sprites/tiles/mine_floor.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "mine_wall",
+    "name_ko": "갱도 벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#241c15",
+      "face": "#6b5845"
+    },
+    "sprite": "res://assets/sprites/tiles/mine_wall.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "metal_floor",
+    "name_ko": "금속 바닥",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4f5358"
+    },
+    "sprite": "res://assets/sprites/tiles/metal_floor.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "metal_wall",
+    "name_ko": "벽화가 새겨진 금속벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "colors": {
+      "top": "#202326",
+      "face": "#7a8088"
+    },
+    "sprite": "res://assets/sprites/tiles/metal_wall.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "fountain_statue",
+    "name_ko": "분수대 조각상",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#5a6a7a",
+      "face": "#9ab0c0"
+    },
+    "light": {
+      "radius_m": 1.5,
+      "color": "#bfe6ff",
+      "intensity": 0.5
+    },
+    "sprite": "res://assets/sprites/tiles/fountain_statue.png",
+    "source": "original"
+  },
+  {
+    "id": "bookshelf",
+    "name_ko": "썩은 책장",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a2a20",
+      "face": "#6a4a30"
+    },
+    "sprite": "res://assets/sprites/tiles/bookshelf.png",
+    "source": "placeholder"
   }
 ]

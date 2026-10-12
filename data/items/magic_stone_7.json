@@ -1,0 +1,16 @@
+{
+  "id": "magic_stone_7",
+  "name_ko": "7등급 마석",
+  "category": "magic_stone",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 50,
+  "price": 300,
+  "icon": "stone",
+  "color": "#a0c0d8",
+  "rarity": "common",
+  "desc_ko": "더 깊은 빛을 품은 마석.",
+  "source": "placeholder"
+}

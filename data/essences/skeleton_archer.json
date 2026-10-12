@@ -1,0 +1,49 @@
+{
+  "id": "skeleton_archer",
+  "name_ko": "스켈레톤 아처의 정수",
+  "grade": 9,
+  "source_monster": "skeleton_archer",
+  "family": "skeleton_archer",
+  "rank": "normal",
+  "passive": {
+    "id": "skeleton_core",
+    "name_ko": "갈비뼈 속 핵",
+    "desc_ko": "베고 찌르는 공격에 조금 강하지만 둔기에 약하다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:blunt",
+        "percent": 0.1
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_skeleton_bone_arrow"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_skeleton_volley"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      1,
+      3
+    ],
+    "sight": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

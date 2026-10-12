@@ -1,0 +1,30 @@
+{
+  "id": "blater_death_sentence",
+  "name_ko": "사형 선고",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 4.5,
+          "damage_type": "slash",
+          "accuracy": 120
+        }
+      ],
+      "guarded_mult": 0.3
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1라운드 전에 대상을 예고하고 다음 라운드에 발동. [방어]로 대응 · 시뮬레이터 조정: 위력 2.2→4.5, 방어하면 ×0.3(guarded_mult) — \"[방어]로 대응하는 패턴\"이 결정적이 되게"
+}

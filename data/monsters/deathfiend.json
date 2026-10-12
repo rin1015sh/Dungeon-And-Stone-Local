@@ -1,0 +1,106 @@
+{
+  "id": "deathfiend",
+  "name_ko": "데스핀드",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.5,
+  "color": "#5a4a52",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": {
+    "name_ko": "머리",
+    "multiplier": 2.0,
+    "requires": "aim"
+  },
+  "stats": {
+    "str": 16,
+    "agi": 7,
+    "p_res": 14,
+    "m_res": 6,
+    "int": 4
+  },
+  "resources": {
+    "hp": 160,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 12,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 4.0,
+    "leash_tiles": 4,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "deathfiend_call",
+    "deathfiend_halfmoon",
+    "deathfiend_shield_arm"
+  ],
+  "passives": [
+    {
+      "id": "deathfiend_preservation",
+      "name_ko": "육체보존",
+      "desc_ko": "출혈이 금세 멎고, 상처가 빠르게 아문다.",
+      "status_duration_cap": {
+        "bleeding": 1
+      },
+      "regen_per_round": 0.04
+    }
+  ],
+  "magic_stone_grade": 8,
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "deathfiend_call"
+    },
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "deathfiend_shield_arm",
+      "also": [
+        {
+          "if": "self_status",
+          "status": "shield_arm",
+          "not": true
+        },
+        {
+          "if": "was_hit"
+        }
+      ]
+    },
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "deathfiend_halfmoon"
+    }
+  ],
+  "ai_cycle": [
+    "deathfiend_halfmoon",
+    "basic_attack"
+  ],
+  "desc_ko": "키가 3m 넘는 언데드. 양팔에 칼과 방패가 달렸다. 느리고 영역 밖으로는 쫓지 않는다.",
+  "sprite": "res://assets/sprites/monsters/deathfiend.png",
+  "source": "original",
+  "notes": "명세 §9"
+}

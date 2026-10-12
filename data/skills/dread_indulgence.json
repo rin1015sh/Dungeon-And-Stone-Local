@@ -1,0 +1,24 @@
+{
+  "id": "dread_indulgence",
+  "name_ko": "면죄부",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "shuffle_rows"
+    },
+    {
+      "type": "apply_status",
+      "status": "isolated",
+      "duration": 2
+    }
+  ],
+  "unique": true,
+  "desc_ko": "대열을 흐트러뜨리고 한 명을 홀로 떼어 놓는다.",
+  "source": "original",
+  "notes": "명세 §7.3 [원→변] 대열 섞기 + 고립 2R"
+}

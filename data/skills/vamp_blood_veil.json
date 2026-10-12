@@ -1,0 +1,17 @@
+{
+  "id": "vamp_blood_veil",
+  "name_ko": "흑마법: 피의 장막",
+  "target": "self",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "vamp_blood_veil"
+    }
+  ],
+  "source": "placeholder"
+}

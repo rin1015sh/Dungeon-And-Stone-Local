@@ -13,6 +13,7 @@
     "stats": {"file": "stats.json"},
     "resources": {"file": "resources.json"},
     "statuses": {"file": "statuses.json"},
+    "meters": {"file": "meters.json"},
     "injuries": {"file": "injuries.json"},
     "races": {"file": "races.json"},
     "classes": {"file": "classes.json"},

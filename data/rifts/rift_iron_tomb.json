@@ -1,0 +1,146 @@
+{
+  "host_floor": 1,
+  "stand_in": true,
+  "guardian": "rift_warden_standin",
+  "variant": null,
+  "guardian_drops": [
+    {
+      "item": "rift_stone",
+      "chance": 0.66
+    }
+  ],
+  "numbers": [],
+  "numbers_chance": 0.33,
+  "source": "original",
+  "id": "rift_iron_tomb",
+  "name_ko": "강철의 묘",
+  "weight": 1,
+  "desc_ko": "사방이 어둡고 좁은 금속 복도. 벽화 같은 문양이 새겨져 있다.",
+  "force_open": {
+    "item": "magic_stone_rock_desert",
+    "at": "monument"
+  },
+  "look": {
+    "tiles": {
+      "floor": "metal_floor",
+      "wall": "metal_wall",
+      "exit": "rift_exit"
+    },
+    "ambient_color": "#d0d8e0",
+    "ambient_light_m": 4.0,
+    "visibility_cap_m": 6.0
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "name_ko": "함정 복도",
+      "desc_ko": "압력판과 화살 함정이 숨은 복도.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "gnome",
+            "gnome"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "corrupted_gnome"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "name_ko": "회전 칼날의 방",
+      "desc_ko": "칼날이 도는 방을 지난다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "goblin_swordsman",
+            "gnome"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "corrupted_gnome",
+            "gnome"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "name_ko": "수수께끼 문 앞",
+      "desc_ko": "문지기가 수수께끼를 낸다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "corrupted_gnome",
+            "corrupted_gnome"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "name_ko": "강철의 분묘",
+      "desc_ko": "분묘의 주인 철인 일디움.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "guardian"
+        }
+      ]
+    }
+  ],
+  "hidden_pieces": [],
+  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G8(강철의 묘)에서 채운다. 함정·수수께끼 문지기·벽화 힌트도 G8. 변종 수호자 없음"
+}

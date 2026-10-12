@@ -1,0 +1,18 @@
+{
+  "id": "ess_banshee_sob",
+  "name_ko": "흐느낌(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "banshee_sob"
+    }
+  ],
+  "essence_of": "banshee_sob",
+  "source": "placeholder"
+}

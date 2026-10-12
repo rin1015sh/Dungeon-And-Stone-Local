@@ -1,0 +1,25 @@
+{
+  "id": "ess_gargoyle_evil_sound",
+  "name_ko": "악의 소리(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.51,
+      "damage_type": "dark",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "evil_sound"
+    }
+  ],
+  "essence_of": "gargoyle_evil_sound",
+  "source": "placeholder"
+}

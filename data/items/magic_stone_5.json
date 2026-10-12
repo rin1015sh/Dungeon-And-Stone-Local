@@ -1,0 +1,16 @@
+{
+  "id": "magic_stone_5",
+  "name_ko": "5등급 마석",
+  "category": "magic_stone",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 50,
+  "price": 4000,
+  "icon": "stone",
+  "color": "#e0b070",
+  "rarity": "common",
+  "desc_ko": "더 깊은 빛을 품은 마석.",
+  "source": "placeholder"
+}

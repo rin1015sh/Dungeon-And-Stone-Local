@@ -1,0 +1,23 @@
+{
+  "id": "ess_vamp_killing_intent",
+  "name_ko": "살의(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.225
+    },
+    {
+      "type": "apply_status",
+      "status": "vamp_intent"
+    }
+  ],
+  "essence_of": "vamp_killing_intent",
+  "source": "placeholder"
+}

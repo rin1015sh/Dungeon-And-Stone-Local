@@ -24,6 +24,8 @@ var death_cause: String = ""
 var skills: Array[String] = []
 ## 패시브 정의 목록(Passives 참고). 몬스터는 데이터 passives, 탐험가는 흡수한 정수의 패시브.
 var passives: Array[Dictionary] = []
+## 전투 게이지(data/meters.json id -> 값). 전투가 끝나면 비운다(Meters).
+var meters: Dictionary = {}
 
 
 ## bases: 기본 스탯. resource_ids가 비면 활성 자원 전부. overrides: 자원 최대치 고정값(몬스터).
@@ -133,12 +135,22 @@ func base_attack_type() -> String:
 func add_passive(p: Dictionary) -> void:
 	remove_passive(JsonUtil.get_str(p, "id"))
 	passives.append(p)
+	_sync_passive_flags()
 
 
 func remove_passive(passive_id: String) -> void:
 	for i in range(passives.size() - 1, -1, -1):
 		if JsonUtil.get_str(passives[i], "id") == passive_id:
 			passives.remove_at(i)
+	_sync_passive_flags()
+
+
+## 패시브가 바뀌면 컴포넌트에 반영할 값(지속 피해 배율 dot_mult).
+func _sync_passive_flags() -> void:
+	var m := 1.0
+	for p in passives:
+		m *= JsonUtil.get_float(p, "dot_mult", 1.0)
+	statuses.dot_mult = m
 
 
 ## 기본 공격이 원거리인가(활 등 무기 데이터 "ranged": true).

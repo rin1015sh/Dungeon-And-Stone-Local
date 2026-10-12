@@ -1,0 +1,40 @@
+{
+  "id": "soldier_deadman",
+  "name_ko": "병사 데드맨의 정수",
+  "grade": 9,
+  "source_monster": "soldier_deadman",
+  "family": "soldier_deadman",
+  "rank": "normal",
+  "passive": {
+    "id": "deadman_rotten_body",
+    "name_ko": "썩은 몸",
+    "desc_ko": "썩어 버린 몸이라 출혈도 독도 듣지 않는다.",
+    "status_immune": [
+      "bleeding",
+      "poison"
+    ],
+    "notes": "공유 패시브(데드맨·병사 데드맨) — 면역은 수치가 아니라 약화하지 않음"
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_deadman_rusty_slash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_deadman_shield_bash"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      1,
+      2
+    ],
+    "pain_tolerance": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

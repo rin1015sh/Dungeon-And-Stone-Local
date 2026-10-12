@@ -1,0 +1,21 @@
+{
+  "id": "dread_inner_mirror",
+  "name_ko": "내면의 거울",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 30
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "meter_damage",
+      "meter": "dread_fear",
+      "mult": 2.0
+    }
+  ],
+  "unique": true,
+  "desc_ko": "마음속 공포를 비춰 그만큼 상처를 입힌다. 피하거나 막을 수 없다.",
+  "source": "original",
+  "notes": "명세 §7.3 공포 게이지 ×2 고정 피해. 우선도 +2는 CTB라 없음(ASSUMPTIONS DF6)"
+}

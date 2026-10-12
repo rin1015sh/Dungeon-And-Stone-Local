@@ -1,0 +1,23 @@
+{
+  "id": "ess_rat_gnaw",
+  "name_ko": "갉기(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.51,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.075
+    }
+  ],
+  "essence_of": "rat_gnaw",
+  "source": "placeholder"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "ess_skeleton_volley",
+  "name_ko": "일제 사격(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.383,
+      "damage_type": "pierce",
+      "ranged": true
+    }
+  ],
+  "repeat_per_ally": "skeleton_archer",
+  "essence_of": "skeleton_volley",
+  "source": "placeholder"
+}

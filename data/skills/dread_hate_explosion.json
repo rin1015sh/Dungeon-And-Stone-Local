@@ -1,0 +1,22 @@
+{
+  "id": "dread_hate_explosion",
+  "name_ko": "증오 폭발",
+  "target": "enemy_all",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "base": 0,
+      "power": 2.0,
+      "damage_type": "dark",
+      "accuracy": 200
+    }
+  ],
+  "unique": true,
+  "desc_ko": "쌓인 증오가 터져 모두를 집어삼킨다.",
+  "source": "original",
+  "notes": "명세 §7.2 증오 게이지 가득 — 매 라운드 적 전체 위력 200(사실상 실패)"
+}

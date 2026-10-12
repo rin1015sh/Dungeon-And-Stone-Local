@@ -1,0 +1,46 @@
+{
+  "id": "ghoul_lord",
+  "name_ko": "구울로드의 정수",
+  "grade": 8,
+  "source_monster": "ghoul_lord",
+  "family": "ghoul_lord",
+  "rank": "normal",
+  "passive": {
+    "id": "ghoullord_master",
+    "name_ko": "무리의 주인",
+    "desc_ko": "불러낸 구울 계열 동료의 근력이 오른다.",
+    "ally_aura": {
+      "lineages": [
+        "ghoul"
+      ],
+      "modifiers": [
+        {
+          "target": "str",
+          "percent": 0.1
+        }
+      ]
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_ghoullord_summon_elder"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_ghoullord_predator_claw"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      2,
+      4
+    ],
+    "control": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

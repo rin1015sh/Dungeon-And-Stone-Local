@@ -1,0 +1,22 @@
+{
+  "id": "warden_sweep",
+  "name_ko": "휩쓸기",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.55,
+      "damage_type": "blunt"
+    }
+  ],
+  "unique": true,
+  "desc_ko": "주위를 크게 휩쓴다.",
+  "source": "placeholder",
+  "notes": "G4 임시 수호자"
+}

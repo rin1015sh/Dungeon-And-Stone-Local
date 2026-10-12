@@ -1,0 +1,25 @@
+{
+  "id": "gargoyle_evil_sound",
+  "name_ko": "악의 소리",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.6,
+      "damage_type": "dark",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "evil_sound"
+    }
+  ],
+  "source": "original",
+  "notes": "이름 [원] / 효과 [창]"
+}

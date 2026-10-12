@@ -1,0 +1,26 @@
+{
+  "id": "ess_banshee_wail",
+  "name_ko": "비명(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.765,
+      "damage_type": "dark",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.15
+    }
+  ],
+  "essence_of": "banshee_wail",
+  "source": "placeholder"
+}

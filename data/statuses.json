@@ -118,7 +118,16 @@
     "flags": [
       "skip_turn"
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "desc_ko": "정신이 아득해져 한 차례 움직일 수 없다.",
+    "mental": true,
+    "resist": {
+      "stats": [
+        "int",
+        "m_res"
+      ]
+    },
+    "notes": "명세 §4 정신계 — 정신력·항마력으로 저항"
   },
   {
     "id": "fear",
@@ -159,18 +168,20 @@
     "id": "hypothermia",
     "name_ko": "저체온증",
     "kind": "debuff",
-    "desc_ko": "몸이 얼어붙는다. 냉기에 두 배로 다친다.",
+    "desc_ko": "뼛속까지 얼어붙는다. 냉기 내성이 낮을수록 굼떠지고, 냉기에 두 배로 다친다.",
     "modifiers": [
       {
         "target": "agi",
-        "percent": -0.2
+        "flat": "-max(0, 30 - {resist_cold})"
       },
       {
         "target": "dmg_taken:cold",
-        "percent": 1.0
+        "percent": "1.0 - 0.5 * min(1, floor({resist_cold} / 20))"
       }
     ],
-    "source": "original"
+    "source": "original",
+    "field_effect": true,
+    "notes": "명세 §4 필드 효과: 민첩 −max(0, 30 − 냉기 내성), 받는 냉기 피해 ×2(냉기 내성 20 이상이면 ×1.5). 수식은 걸릴 때 계산"
   },
   {
     "id": "burn",
@@ -338,7 +349,13 @@
     "flags": [
       "skip_turn"
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "resist": {
+      "stats": [
+        "p_res"
+      ]
+    },
+    "notes": "명세 §4 육체계 — 물리내성으로 저항"
   },
   {
     "id": "snare",
@@ -502,5 +519,717 @@
       }
     ],
     "source": "placeholder"
+  },
+  {
+    "id": "lethargy",
+    "name_ko": "무기력증",
+    "kind": "debuff",
+    "desc_ko": "영혼이 축 늘어졌다. 이능을 쓸 수 없고 영혼력이 차오르지 않는다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "no_skills"
+    ],
+    "modifiers": [
+      {
+        "target": "regen:soul",
+        "percent": -1.0
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.2 역병 게이지가 가득 참. 지속은 임시"
+  },
+  {
+    "id": "exhaustion",
+    "name_ko": "탈진",
+    "kind": "debuff",
+    "desc_ko": "몸이 말을 듣지 않는다. 근력·민첩·물리내성이 크게 떨어진다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.3
+      },
+      {
+        "target": "agi",
+        "percent": -0.3
+      },
+      {
+        "target": "p_res",
+        "percent": -0.3
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.2 원망 게이지. '행동 비용이 영혼력으로 전환'은 아직 없음(ASSUMPTIONS DF8)"
+  },
+  {
+    "id": "isolated",
+    "name_ko": "고립",
+    "kind": "debuff",
+    "desc_ko": "대열에서 떨어져 홀로 남았다. 받는 피해가 늘어난다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.25
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §7.3 면죄부 [고립] 2R. 효과 수치는 [창]"
+  },
+  {
+    "id": "dread_proliferating",
+    "name_ko": "공포의 증식",
+    "kind": "buff",
+    "desc_ko": "공포가 불어난다. 중첩마다 근력·정신력이 오르고, 많이 쌓이면 더 자주 움직인다.",
+    "stackable": true,
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.1
+      },
+      {
+        "target": "int",
+        "percent": 0.1
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.4 P1: 4R마다 1중첩, 4중첩부터 라운드당 행동 +1"
+  },
+  {
+    "id": "dread_seeping",
+    "name_ko": "스며드는 공포",
+    "kind": "debuff",
+    "desc_ko": "공포가 스며들어 손이 떨린다. 명중률이 떨어지고 가끔 동료를 친다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -30
+      }
+    ],
+    "misdirect": {
+      "chance": 0.15,
+      "power_mult": 1.0,
+      "ignore_defense": false
+    },
+    "source": "original",
+    "notes": "명세 §7.4 P2: 명중 −30%, 단일 행동 15% 아군 오인"
+  },
+  {
+    "id": "dread_veil",
+    "name_ko": "배신의 장막",
+    "kind": "debuff",
+    "desc_ko": "서로를 알아볼 수 없다. 동료 하나를 고르는 이능을 쓸 수 없고, 공격이 자주 동료에게 향한다.",
+    "battle_only": true,
+    "flags": [
+      "no_ally_single"
+    ],
+    "misdirect": {
+      "chance": 0.4,
+      "power_mult": 5.0,
+      "ignore_defense": true
+    },
+    "source": "original",
+    "notes": "명세 §7.4 P3: 3R, 단일 행동 40% 무작위 아군, 오인 피해 ×5 내성 무시. 패턴이 걸고 푼다"
+  },
+  {
+    "id": "dread_groggy",
+    "name_ko": "보호기제",
+    "kind": "debuff",
+    "desc_ko": "껍질 속으로 숨어 움직이지 않는다. 받는 피해가 늘어난다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "flags": [
+      "skip_turn"
+    ],
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.5
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.4 P3 그로기 2R, 받는 피해 ×1.5"
+  },
+  {
+    "id": "dread_rage",
+    "name_ko": "분노",
+    "kind": "buff",
+    "desc_ko": "분노로 모든 피해가 두 배가 된다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 1.0
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.2 분노 게이지. 지속 3R(+1)은 [창](ASSUMPTIONS DF3)"
+  },
+  {
+    "id": "dread_hatred_burst",
+    "name_ko": "증오 폭발",
+    "kind": "buff",
+    "desc_ko": "증오가 넘쳐흐른다. 매 차례 모두를 덮친다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "명세 §7.2 증오 게이지 — AI가 증오 폭발만 쓴다"
+  },
+  {
+    "id": "dread_human_form",
+    "name_ko": "사람의 형체",
+    "kind": "buff",
+    "desc_ko": "구더기가 흩어지고 사람의 모습이 드러났다. 라운드마다 두 번 움직인다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "명세 §7.4 P4"
+  },
+  {
+    "id": "dread_buff_bone_memory",
+    "name_ko": "뼈에 새겨진 기억",
+    "kind": "buff",
+    "desc_ko": "주는 피해가 늘고, 맞힌 상대의 영혼을 빨아들여 증오를 키운다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.3
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §7.4 버프 [원]. 영혼력 흡수는 패시브(pattern_params.buffs)"
+  },
+  {
+    "id": "dread_buff_wax_armor",
+    "name_ko": "밀랍 갑주",
+    "kind": "buff",
+    "desc_ko": "녹아내린 밀랍이 몸을 덮어 물리 피해를 덜 받는다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.3
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 새로 정함"
+  },
+  {
+    "id": "dread_buff_staring_eye",
+    "name_ko": "응시하는 눈",
+    "kind": "buff",
+    "desc_ko": "수많은 눈이 열려 빈틈을 노린다. 명중률과 치명타율이 오른다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": 20
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 새로 정함. 치명타 보정은 패시브"
+  },
+  {
+    "id": "dread_buff_maggot_nest",
+    "name_ko": "구더기 둥지",
+    "kind": "buff",
+    "desc_ko": "몸이 둥지가 되어 라운드마다 구더기가 기어 나온다.",
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 라운드 끝마다 구더기 1체(패턴)"
+  },
+  {
+    "id": "dread_buff_echo",
+    "name_ko": "원망의 메아리",
+    "kind": "buff",
+    "desc_ko": "공격이 맞을 때마다 원망이 메아리친다.",
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "명세 §7.4 [창] 효과 미정 → 적중 시 원망 +6(패시브)"
+  },
+  {
+    "id": "petrify",
+    "name_ko": "석화",
+    "kind": "debuff",
+    "desc_ko": "몸이 돌로 굳었다. 두 차례 움직일 수 없지만 단단해진다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "flags": [
+      "skip_turn"
+    ],
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 1.0
+      }
+    ],
+    "resist": {
+      "stats": [
+        "m_res"
+      ]
+    },
+    "purifiable": true,
+    "source": "original",
+    "notes": "명세 §4 [원] 가고일 석상. 정화·해주로 해제(remove_status)"
+  },
+  {
+    "id": "suppress",
+    "name_ko": "진압",
+    "kind": "debuff",
+    "desc_ko": "짓눌려 움직일 수 없다. 피해를 조금이라도 받으면 풀린다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "skip_turn"
+    ],
+    "break_on_damage": true,
+    "immune_if": {
+      "stat": "m_res",
+      "at_least": 25
+    },
+    "resist": {
+      "stats": [
+        "m_res"
+      ]
+    },
+    "source": "original",
+    "notes": "명세 §4 [원] 스톤골렘 [진압] · 항마력 25 이상 면역 [창] · 지속 3은 [창]"
+  },
+  {
+    "id": "frost",
+    "name_ko": "서리",
+    "kind": "debuff",
+    "desc_ko": "서리가 내려앉는다. 쌓일수록 굼떠지고, 세 겹이면 얼어붙는다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "stackable": true,
+    "max_stacks": 3,
+    "on_max_stacks": {
+      "status": "frozen"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.1
+      }
+    ],
+    "resist": {
+      "stats": [
+        "resist_cold"
+      ]
+    },
+    "source": "placeholder",
+    "notes": "명세 §4 [창] 중첩당 민첩 −10%, 3중첩 → 빙결 1R"
+  },
+  {
+    "id": "frozen",
+    "name_ko": "빙결",
+    "kind": "debuff",
+    "desc_ko": "얼음에 갇혔다. 한 차례 움직일 수 없다. 불에 닿으면 녹는다.",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "flags": [
+      "skip_turn"
+    ],
+    "break_on_damage_types": [
+      "fire"
+    ],
+    "resist": {
+      "stats": [
+        "resist_cold"
+      ]
+    },
+    "source": "placeholder",
+    "notes": "명세 §4 [창]"
+  },
+  {
+    "id": "slow",
+    "name_ko": "둔화",
+    "kind": "debuff",
+    "desc_ko": "냉기에 몸이 무거워진다. 쌓일수록 굼떠진다.",
+    "stackable": true,
+    "max_stacks": 5,
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.08
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §4 [원] 아이스 골렘 오러. 전투 끝에 해제"
+  },
+  {
+    "id": "confusion",
+    "name_ko": "혼란",
+    "kind": "debuff",
+    "desc_ko": "정신이 흐려져 아무나 공격한다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "misdirect": {
+      "chance": 0.5,
+      "pool": "any",
+      "power_mult": 1.0,
+      "ignore_defense": false
+    },
+    "mental": true,
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    },
+    "source": "original",
+    "notes": "명세 §4 [원] 본 나이트 '정신 착란 안개'. 지속 [창]"
+  },
+  {
+    "id": "grudge_mark",
+    "name_ko": "원한의 징표",
+    "kind": "debuff",
+    "desc_ko": "벤시의 원한이 새겨졌다. 미궁이 닫힐 때까지 벤시가 멀리서도 알아보고 먼저 노린다.",
+    "persist": "dungeon",
+    "source": "original",
+    "notes": "명세 §4 [원]. 벤시 인식 ×3·우선 공격은 G5"
+  },
+  {
+    "id": "sacrifice_mark",
+    "name_ko": "제물",
+    "kind": "debuff",
+    "desc_ko": "제물로 찍혔다. 표식마다 캠보르미어가 강해진다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "명세 §4 [원]. 캠보르미어 근력·민첩 +10%/명은 G5"
+  },
+  {
+    "id": "seal",
+    "name_ko": "봉인",
+    "kind": "debuff",
+    "desc_ko": "이능 하나가 봉인되었다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    },
+    "source": "placeholder",
+    "notes": "명세 §4 [창] 액티브 1개 2R 사용 불가 — 효과 seal_skill"
+  },
+  {
+    "id": "heal_block",
+    "name_ko": "원한",
+    "kind": "debuff",
+    "desc_ko": "원한이 상처를 붙든다. 받는 치유와 재생이 절반이 된다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "heal_mult": 0.5,
+    "modifiers": [
+      {
+        "target": "regen:hp",
+        "percent": -0.5
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §4 [원] 데스나이트 [원한]. 지속 [창]"
+  },
+  {
+    "id": "telegraphed",
+    "name_ko": "예고",
+    "kind": "debuff",
+    "desc_ko": "무언가가 이쪽을 노리고 있다. 막을 준비를 하라.",
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "예고 공격(delayed target cast)의 대상 표시 — 터지면 풀린다"
+  },
+  {
+    "id": "march_order",
+    "name_ko": "진군 명령",
+    "kind": "buff",
+    "desc_ko": "다음 공격이 강해진다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "consume_on_attack": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "bone_barrier",
+    "name_ko": "뼈 방벽",
+    "kind": "buff",
+    "desc_ko": "뼈가 몸을 감싸 단단해진다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.4
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "curse_whisper",
+    "name_ko": "저주 속삭임",
+    "kind": "debuff",
+    "desc_ko": "저주가 마법 저항을 갉아먹는다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "m_res",
+        "percent": -0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "banshee_sob",
+    "name_ko": "흐느낌",
+    "kind": "debuff",
+    "desc_ko": "흐느낌이 정신을 흐린다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": -0.15
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "shield_arm",
+    "name_ko": "방패팔 막기",
+    "kind": "buff",
+    "desc_ko": "방패팔을 세워 물리 피해를 막는다.",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.5
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "evil_sound",
+    "name_ko": "악의 소리",
+    "kind": "debuff",
+    "desc_ko": "귀를 긁는 소리에 정신이 흔들린다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": -0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "vitality_drain",
+    "name_ko": "생기 흡수",
+    "kind": "buff",
+    "desc_ko": "공격이 맞으면 준 피해의 일부를 빨아들인다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "lifesteal": 0.3,
+    "source": "original"
+  },
+  {
+    "id": "golem_burned",
+    "name_ko": "타오른 살점",
+    "kind": "debuff",
+    "desc_ko": "살점이 타 버렸다.",
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "golem_skeleton",
+    "name_ko": "뼈대 형태",
+    "kind": "debuff",
+    "desc_ko": "살점이 떨어져 뼈대만 남았다. 마력핵이 드러난다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": -0.5
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "blater_grudge",
+    "name_ko": "원한",
+    "kind": "debuff",
+    "desc_ko": "데스나이트의 원한이 상처를 붙든다. 받는 치유와 재생이 절반이 된다.",
+    "battle_only": true,
+    "heal_mult": 0.5,
+    "modifiers": [
+      {
+        "target": "regen:hp",
+        "percent": -0.5
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "blater_grudge_weak",
+    "name_ko": "옅은 원한",
+    "kind": "debuff",
+    "desc_ko": "받는 치유가 줄어든다.",
+    "battle_only": true,
+    "heal_mult": 0.75,
+    "source": "original",
+    "notes": "블라터 정수판 오오라"
+  },
+  {
+    "id": "guardian_frenzy",
+    "name_ko": "광분",
+    "kind": "buff",
+    "desc_ko": "궁지에 몰려 연달아 움직인다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "수호자 규칙: 생명력 50% 이하 라운드당 2회 행동"
+  },
+  {
+    "id": "vamp_blood_feast",
+    "name_ko": "피의 향연",
+    "kind": "buff",
+    "desc_ko": "제물의 수만큼 육체가 강해진다.",
+    "stackable": true,
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.1
+      },
+      {
+        "target": "agi",
+        "percent": 0.1
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "vamp_intent",
+    "name_ko": "살의",
+    "kind": "debuff",
+    "desc_ko": "살이 저릿하다. 몸이 굳는다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.15
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "vamp_blood_veil",
+    "name_ko": "피의 장막",
+    "kind": "buff",
+    "desc_ko": "피의 장막이 몸을 감싼다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.4
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "regen_stopped",
+    "name_ko": "재생 정지",
+    "kind": "debuff",
+    "desc_ko": "심장이 꿰뚫려 재생이 멎었다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "no_regen"
+    ],
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "tear_sealed",
+    "name_ko": "봉인된 저항",
+    "kind": "debuff",
+    "desc_ko": "여신의 눈물이 악의 저항을 봉인했다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "m_res",
+        "percent": -1.0
+      },
+      {
+        "target": "p_res",
+        "percent": -0.3
+      }
+    ],
+    "source": "original"
   }
 ]

@@ -1,0 +1,22 @@
+{
+  "id": "ess_deadman_shield_bash",
+  "name_ko": "방패 밀치기(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.51,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "push_back",
+      "amount": 60
+    }
+  ],
+  "essence_of": "deadman_shield_bash",
+  "source": "placeholder"
+}

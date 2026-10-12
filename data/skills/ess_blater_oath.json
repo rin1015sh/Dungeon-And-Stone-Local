@@ -1,0 +1,22 @@
+{
+  "id": "ess_blater_oath",
+  "name_ko": "망자의 맹세(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 18
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "soldier_deadman"
+    },
+    {
+      "type": "summon",
+      "monster": "soldier_deadman"
+    }
+  ],
+  "essence_of": "blater_oath",
+  "source": "placeholder"
+}
