@@ -131,10 +131,9 @@ func test_variants_spawn_outer_after_day3() -> void:
 	var reg := ContentRegistries.new()
 	var def := db.get_entry("floors", "f1_crystal_cave")
 	var map := reg.generator("crystal_cave").generate(db, def, Rng.new(9))
-	var region: Dictionary = {}
-	for r: Variant in JsonUtil.get_array(def, "regions"):
-		if JsonUtil.get_str(r, "id") == "f1_north":
-			region = r
+	# 1층 데이터엔 변이종이 없다(사용자 결정 2026-10-12) — 규칙(variants)은 그대로 살아 있는지 가짜 지역으로 확인한다.
+	var region := {"id": "f1_north", "zone": "north", "monsters": ["goblin"],
+		"variants": {"monsters": ["goblin_swordsman", "goblin_archer"], "min_day": 3, "outer_ratio": 0.5, "chance": 0.2}}
 	var early := FieldMonsters.new(db, map, def, Rng.new(2))
 	var late := FieldMonsters.new(db, map, def, Rng.new(2))
 	late.update(Vector2(-50, -50), 0.0, 24.0 * 3, false)  # 4일 차

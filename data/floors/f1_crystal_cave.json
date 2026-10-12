@@ -5,34 +5,89 @@
   "generator": "crystal_cave",
   "close_hours": 168,
   "resets_each_entry": true,
-  "_comment": "벽·천장의 수정이 빛을 내서 횃불 없이도 보인다(ambient). 암흑지대(dark zone)에서만 횃불이 필요하다. 시야 상한은 광원이 있어도 넘지 못하는 값(10m 미만).",
+  "_comment": "벽·천장의 수정이 빛을 내서 횃불 없이도 보인다(ambient). 암흑지대는 네 팔 끝(포탈 주변)에만 있고 거기서만 횃불이 필요하다. 시야 상한은 광원이 있어도 넘지 못하는 값(10m 미만).",
   "visibility_cap_m": 9.0,
   "visibility_source": "placeholder",
   "ambient_light_m": 6.0,
   "ambient_source": "placeholder",
   "ambient_color": "#c4bcff",
   "gen": {
-    "size": [
-      72,
-      72
-    ],
-    "fill_ratio": 0.45,
-    "smooth_steps": 5,
-    "min_region": 30,
+    "_comment": "거대한 십자가(CrossLayout) + 스파게티 동굴(CaveCarver). 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. 매 입장 새로: 동굴 지형. 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률).",
+    "core_size": 31,
+    "arm_length": 44,
+    "arm_width": 25,
+    "margin": 2,
+    "outline_jitter": 2,
     "center_radius": 5,
+    "core_fill_ratio": 0.45,
+    "core_smooth_steps": 4,
+    "min_region": 20,
+    "wide_chance": 0.28,
+    "spine": {
+      "_comment": "등뼈 길(기념비 → 포탈, 뒤로 가지 않음 = 나침반 경로 보장). 구간 종류 가중치 out(직진)·side(옆걸음)·stair(계단식 대각), 구간 길이 [최소, 최대].",
+      "weights": {
+        "out": 0.3,
+        "side": 0.42,
+        "stair": 0.28
+      },
+      "outward_run": [
+        2,
+        4
+      ],
+      "side_run": [
+        2,
+        7
+      ],
+      "stair_run": [
+        2,
+        5
+      ],
+      "long_run_chance": 0.06,
+      "long_run": [
+        6,
+        9
+      ]
+    },
+    "branches": {
+      "_comment": "곁가지로 팔을 채운다. density = 팔 사각형 중 바닥 비율 목표. heading_weights = [바깥, 왼, 오른, 안쪽]. join_after걸음 뒤 다른 길에 닿으면 합류(순환). 합류 못 하면 loop_chance로 loop_reach칸 떨어진 길에 다시 잇고, 아니면 dead_end_room_chance로 끝에 작은 공동.",
+      "density": 0.4,
+      "max_per_arm": 140,
+      "steps": [
+        14,
+        40
+      ],
+      "seg_run": [
+        2,
+        6
+      ],
+      "heading_weights": [
+        0.34,
+        0.26,
+        0.26,
+        0.14
+      ],
+      "join_after": 4,
+      "empty_clearance": 3,
+      "loop_chance": 0.35,
+      "loop_reach": [
+        5,
+        12
+      ],
+      "dead_end_room_chance": 0.3,
+      "room_radius": [
+        1.4,
+        2.4
+      ]
+    },
+    "roughen_chance": 0.08,
+    "dark_depth": 10,
+    "portal_inset": 4,
+    "portal_room_radius": 2.5,
+    "crystal_wall_chance": 0.07,
+    "crystal_dark_margin": 3,
     "landmark_min_distance": 10,
-    "portal_pick_band": 2,
-    "crystal_wall_chance": 0.06,
-    "dark_zone_count": [
-      2,
-      3
-    ],
-    "dark_zone_radius": [
-      4,
-      6
-    ],
-    "dark_zone_min_distance": 12,
-    "entry_min_distance": 14,
+    "entry_min_distance": 18,
+    "entry_dark_margin": 4,
     "tiles": {
       "floor": "cave_floor",
       "wall": "rock_wall",
@@ -57,71 +112,71 @@
       "count": 1
     }
   ],
+  "_regions_comment": "구역별 스폰 표(zone = CrossLayout 구역, monsters = 나올 수 있는 몬스터, weights = 뽑힐 가중치). 변이종(variants: {monsters, min_day, outer_ratio, chance})은 사용자 결정(2026-10-12)으로 1층에서 뺐다 — 다시 넣으려면 지역에 variants를 추가.",
   "regions": [
     {
+      "id": "f1_center",
+      "zone": "center",
+      "name_ko": "중심부",
+      "monsters": [
+        "blade_wolf",
+        "gnome",
+        "ghoul",
+        "goblin"
+      ],
+      "weights": {
+        "blade_wolf": 1,
+        "gnome": 1,
+        "ghoul": 1,
+        "goblin": 1
+      }
+    },
+    {
       "id": "f1_east",
+      "zone": "east",
       "dir": "east",
       "name_ko": "동쪽",
       "monsters": [
         "blade_wolf"
       ],
-      "variants": {
-        "monsters": [
-          "giant_blade_wolf",
-          "blood_blade_wolf"
-        ],
-        "min_day": 3,
-        "outer_ratio": 0.5,
-        "chance": 0.2
+      "weights": {
+        "blade_wolf": 1
       }
     },
     {
       "id": "f1_west",
+      "zone": "west",
       "dir": "west",
       "name_ko": "서쪽",
       "monsters": [
         "gnome"
       ],
-      "variants": {
-        "monsters": [
-          "corrupted_gnome"
-        ],
-        "min_day": 3,
-        "outer_ratio": 0.5,
-        "chance": 0.2
+      "weights": {
+        "gnome": 1
       }
     },
     {
       "id": "f1_south",
+      "zone": "south",
       "dir": "south",
       "name_ko": "남쪽",
       "monsters": [
         "ghoul"
       ],
-      "variants": {
-        "monsters": [
-          "elder_ghoul"
-        ],
-        "min_day": 3,
-        "outer_ratio": 0.5,
-        "chance": 0.2
+      "weights": {
+        "ghoul": 1
       }
     },
     {
       "id": "f1_north",
+      "zone": "north",
       "dir": "north",
       "name_ko": "북쪽",
       "monsters": [
         "goblin"
       ],
-      "variants": {
-        "monsters": [
-          "goblin_swordsman",
-          "goblin_archer"
-        ],
-        "min_day": 3,
-        "outer_ratio": 0.5,
-        "chance": 0.2
+      "weights": {
+        "goblin": 1
       }
     }
   ],
@@ -129,22 +184,26 @@
     {
       "id": "to_f2_east",
       "dir": "east",
-      "to_floor": 2
+      "to_floor": 2,
+      "dest": "floor2_east"
     },
     {
       "id": "to_f2_west",
       "dir": "west",
-      "to_floor": 2
+      "to_floor": 2,
+      "dest": "floor2_west"
     },
     {
       "id": "to_f2_south",
       "dir": "south",
-      "to_floor": 2
+      "to_floor": 2,
+      "dest": "floor2_south"
     },
     {
       "id": "to_f2_north",
       "dir": "north",
-      "to_floor": 2
+      "to_floor": 2,
+      "dest": "floor2_north"
     }
   ],
   "source": "original",

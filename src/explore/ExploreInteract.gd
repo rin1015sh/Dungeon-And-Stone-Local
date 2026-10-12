@@ -19,7 +19,7 @@ static func run(s: ExploreSession) -> void:
 					if next != null:
 						s.transfer.emit(next)
 			_:
-				s.message.emit("explore.portal_locked", {"floor": int(portal["to_floor"])}, "system")
+				_use_floor_portal(s, portal)
 		return
 	for d in FloorMap.DIRS4:
 		var def := s.map.def_at(s.pos + d)
@@ -30,6 +30,12 @@ static func run(s: ExploreSession) -> void:
 				s.message.emit("explore.monument", {}, "system")
 			return
 	s.message.emit("explore.nothing_here", {}, "info")
+
+
+## 층 포탈: portal["dest"](예: floor2_east)가 다음 층의 도착 지점이다. 2층은 아직 없어서(M6) 안내만 한다.
+## 2층이 생기면 여기서 dest로 다음 층 세션을 만들어 s.transfer로 넘기면 된다(포탈 데이터는 그대로).
+static func _use_floor_portal(s: ExploreSession, portal: Dictionary) -> void:
+	s.message.emit("explore.portal_locked", {"floor": int(portal["to_floor"])}, "system")
 
 
 static func portal_found(s: ExploreSession, portal: Dictionary) -> void:

@@ -3,7 +3,7 @@ extends Node
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / explore
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
-## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
+## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
 ## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
@@ -52,6 +52,9 @@ func _run() -> void:
 			var dir := Vector2i(1, 0) if i % 2 == 0 else Vector2i(0, 1)
 			if not explore.session.try_move(dir):
 				explore.session.try_move(Vector2i(0, -1) if i % 2 == 0 else Vector2i(-1, 0))
+			await _frames(2)
+		if _args.has("portal"):
+			ExploreDebug.teleport(explore.session, ExploreDebug.nearest_portal(explore.session))
 			await _frames(2)
 		if _args.has("reveal"):
 			ExploreDebug.reveal(explore.session)

@@ -47,7 +47,7 @@ func _move_hours(monster_id: String) -> float:
 func test_initial_spawns_by_region() -> void:
 	var s := _session()
 	var fm := s.monsters
-	assert_true(fm.groups.size() >= 8, "4지역 × 2~3무리 (%d)" % fm.groups.size())
+	assert_true(fm.groups.size() >= 8, "5지역(중심부·4팔) × 2~3무리 (%d)" % fm.groups.size())
 	var bad := 0
 	for g in fm.groups:
 		for r: Variant in JsonUtil.get_array(s.floor_def, "regions"):
@@ -56,8 +56,8 @@ func test_initial_spawns_by_region() -> void:
 		if s.map.in_safe_zone(g.pos) or not s.map.is_walkable(g.pos):
 			bad += 1
 	assert_eq(bad, 0, "지역 몬스터·걸을 수 있는 칸·안전지대 밖")
-	var east := fm.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.leader() == "blade_wolf")
-	assert_true(not east.is_empty() and east.all(func(g: FieldMonsters.Group) -> bool: return g.pos.x > s.map.center.x), "칼날늑대는 동쪽")
+	var east := fm.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region == "f1_east")
+	assert_true(not east.is_empty() and east.all(func(g: FieldMonsters.Group) -> bool: return g.pos.x > s.map.center.x and g.leader() == "blade_wolf"), "동쪽 팔은 칼날늑대")
 
 
 func test_bumping_a_group_starts_combat() -> void:

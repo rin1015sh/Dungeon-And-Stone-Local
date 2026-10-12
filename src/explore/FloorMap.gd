@@ -12,10 +12,12 @@ var seed_value: int = 0
 var tiles: PackedInt32Array       ## 칸마다 타일 인덱스(defs의 인덱스)
 var defs: Array[TileDef] = []
 var dark: PackedByteArray         ## 암흑지대(주변 수정 빛이 닿지 않는 곳)
+var zones: PackedByteArray        ## 칸마다 구역 번호(zone_ids의 인덱스, 0 = 구역 없음) — 1층 십자가의 중심부·팔
+var zone_ids: PackedStringArray = PackedStringArray([""])
 var explored: PackedByteArray     ## 한 번이라도 본 칸(안개 기억)
 var visible_now: PackedByteArray  ## 지금 보이는 칸
 var landmarks: Array[Dictionary] = []  ## {"id", "pos": Vector2i(기준 칸), "rect": Rect2i, "found": bool}
-var portals: Array[Dictionary] = []    ## {"id", "pos", "dir", "to_floor", "found"}
+var portals: Array[Dictionary] = []    ## {"id", "pos", "dir", "to_floor", "dest", "found"} (균열 포탈은 "kind": "rift")
 var safe_zones: Array[Dictionary] = [] ## {"center": Vector2i, "radius": float}
 var slots: Array[Vector2i] = []        ## 고정 조우 자리(균열 챕터: 방 가운데, 입구 쪽부터)
 var entry: Vector2i = Vector2i(-1, -1)
@@ -37,6 +39,7 @@ func _init(db: GameDatabase, p_width: int, p_height: int, fill_tile: String) -> 
 	tiles.resize(n)
 	tiles.fill(index_of(fill_tile))
 	dark = _zeros(n)
+	zones = _zeros(n)
 	explored = _zeros(n)
 	visible_now = _zeros(n)
 
@@ -89,6 +92,25 @@ func is_wall(p: Vector2i) -> bool:
 
 func is_dark(p: Vector2i) -> bool:
 	return in_bounds(p) and dark[idx(p)] != 0
+
+
+## 구역 id("center", "east" …). 구역이 없으면 "".
+func zone_at(p: Vector2i) -> String:
+	return zone_ids[zones[idx(p)]] if in_bounds(p) else ""
+
+
+func set_zone(p: Vector2i, zone_id: String) -> void:
+	if not in_bounds(p):
+		return
+	var k := zone_ids.find(zone_id)
+	if k < 0:
+		zone_ids.append(zone_id)
+		k = zone_ids.size() - 1
+	zones[idx(p)] = k
+
+
+func has_zones() -> bool:
+	return zone_ids.size() > 1
 
 
 func in_safe_zone(p: Vector2i) -> bool:

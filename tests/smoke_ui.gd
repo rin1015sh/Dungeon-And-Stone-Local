@@ -165,7 +165,8 @@ func _realtime_combat_flow() -> void:
 		_press(combat, Strings.t("combat.cmd_attack"))
 		_press_first(menu)
 	await _frames(2)
-	_expect(not combat.battle.result.is_empty(), "전투가 끝난다 (%s)" % combat.battle.result)
+	_expect(not combat.battle.result.is_empty(), "전투가 끝난다 (%s, 차례 %d, 적 %s)" % [combat.battle.result, combat.battle.turns,
+		combat.battle.side_units(Combatant.SIDE_ENEMY).map(func(u: Combatant) -> String: return "%s:%d" % [(u.actor as Monster).monster_id, int(u.actor.pool.get_current("hp"))])])
 	_expect(is_equal_approx(s.clock.total_hours, tc), "전투 중에는 탐험 시간이 멈춘다")
 	var turns := combat.battle.turns
 	var won := combat.battle.result == Battle.RESULT_VICTORY

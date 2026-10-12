@@ -4,6 +4,8 @@ extends RefCounted
 ## 무리 하나 = 대표 하나(연속 좌표 fpos, 칸 단위) + 구성(몬스터 id 목록). 닿으면(contact_tiles) 무리 전체와 전투한다.
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
+## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}} — 몬스터 표는 층 JSON에만 둔다.
+##   zone이 있고 지도에 구역 층(FloorMap.zones)이 있으면 그 구역 칸에만(1층 십자가), 없으면 중심에서 본 방향(dir) 원뿔.
 ## 변이종(명세 §6.0): 지역 variants {monsters, min_day, outer_ratio, chance} — min_day일 차부터 지역 바깥쪽
 ## (중심에서 지역 최대 거리의 outer_ratio 이상, 2층 포탈 쪽)에 생긴 무리의 각 마리가 chance 확률로 변이종이 된다.
 ## 몬스터는 게임 시간에 따라 움직인다. 탐험 시간은 실시간으로 흐르므로(RealtimeDriver) 플레이어가 가만히 있어도 움직인다.
@@ -70,7 +72,7 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 		for i in map.tiles.size():
 			var p := map.pos_of(i)
 			if map.is_walkable(p) and map.portal_at(p).is_empty() and Vector2(p - map.center).length() > keep_out \
-					and _direction_of(p - map.center) == JsonUtil.get_str(region, "dir"):
+					and _area_of(p) == _region_area(region):
 				cells.append(p)
 		_region_cells[JsonUtil.get_str(region, "id")] = cells
 		var far := 0.0
@@ -92,7 +94,7 @@ func spawn_initial(avoid: Vector2i) -> void:
 
 ## 지역의 몬스터로 무리를 만든다. near가 주어지면 그 옆 칸에(습격·디버그), 아니면 지역 안 무작위 칸에.
 func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(-1, -1), monster_id: String = "") -> Group:
-	var mid := monster_id if not monster_id.is_empty() else str(_rng.pick(JsonUtil.get_array(region, "monsters")))
+	var mid := monster_id if not monster_id.is_empty() else pick_monster(region)
 	var cell := _free_cell_near(near) if near.x >= 0 else _free_region_cell(JsonUtil.get_str(region, "id"), avoid)
 	if cell.x < 0 or not _db.has_entry("monsters", mid):
 		return null
@@ -179,14 +181,14 @@ func touching(player: Vector2, delta: Vector2) -> Group:
 	return null
 
 
-## 휴식 중 습격: 플레이어 옆에 무리를 만든다(플레이어가 있는 방향의 지역 몬스터).
+## 휴식 중 습격: 플레이어 옆에 무리를 만든다(플레이어가 있는 구역·방향의 지역 몬스터).
 func ambush_near(player: Vector2i) -> Group:
-	var dir := _direction_of(player - _map.center)
+	var area := _area_of(player)
 	var choices: Array = []
 	for region in _regions():
 		if not JsonUtil.get_array(region, "monsters").is_empty():
 			choices.append(region)
-			if JsonUtil.get_str(region, "dir") == dir:
+			if _region_area(region) == area:
 				choices = [region]
 				break
 	if choices.is_empty():
@@ -196,6 +198,19 @@ func ambush_near(player: Vector2i) -> Group:
 		g.state = STATE_CHASE
 		changed.emit()
 	return g
+
+
+## 지역 몬스터 표에서 하나(weights 가중치, 없으면 같은 확률).
+func pick_monster(region: Dictionary) -> String:
+	var list := JsonUtil.get_array(region, "monsters")
+	var wt := JsonUtil.get_dict(region, "weights")
+	if wt.is_empty():
+		return str(_rng.pick(list))
+	var weights: Array = []
+	for id: Variant in list:
+		weights.append(JsonUtil.get_float(wt, str(id), 1.0))
+	var k := _rng.weighted_index(weights)
+	return str(list[k]) if k >= 0 else ""
 
 
 ## 플레이어에게 보이는가: 지금 보이는 칸이고, 은신(reveal_radius_m)이면 그 거리 안.
@@ -307,6 +322,16 @@ func _region(id: String) -> Dictionary:
 		if JsonUtil.get_str(r, "id") == id:
 			return r
 	return {}
+
+
+## 칸이 속한 스폰 영역: 지도에 구역 층이 있으면 그 구역 id, 없으면 중심에서 본 방향.
+func _area_of(p: Vector2i) -> String:
+	return _map.zone_at(p) if _map.has_zones() else _direction_of(p - _map.center)
+
+
+func _region_area(region: Dictionary) -> String:
+	var zone := JsonUtil.get_str(region, "zone")
+	return zone if not zone.is_empty() and _map.has_zones() else JsonUtil.get_str(region, "dir")
 
 
 static func _direction_of(d: Vector2i) -> String:

@@ -128,5 +128,21 @@
     "bar_hunger": "#8a6d3b",
     "arch": "#1f1d24",
     "arch_line": "#3a3742"
+  },
+  "debug_map": {
+    "_comment": "tools/floor_map.gd(층 전체 지도 PNG) 색. 구역 바닥 = zones, 그 구역 벽 = 같은 색 × wall_shade, 암흑지대 = × dark_shade + 빗금.",
+    "scale": 5,
+    "zones": {"center": "#d8c27a", "east": "#d9695f", "west": "#6fbf73", "south": "#a07ad8", "north": "#5f9ad9"},
+    "rock": "#121016",
+    "wall_shade": 0.32,
+    "dark_shade": 0.42,
+    "dark_hatch": "#000000",
+    "crystal": "#c9b6ff",
+    "monument": "#ffffff",
+    "portal": "#ff3df5",
+    "entry": "#3df5ff",
+    "landmark": "#ffe14a",
+    "monsters": {"blade_wolf": "#ff2a2a", "gnome": "#2aff4a", "ghoul": "#c02aff", "goblin": "#ffd02a"},
+    "monster_default": "#ffffff"
   }
 }

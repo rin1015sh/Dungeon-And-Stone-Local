@@ -82,10 +82,14 @@ static func _floors(v: ValidatorBase) -> void:
 			v.ref(w + ".landmarks", "landmarks", (lm as Dictionary).get("id") if lm is Dictionary else lm)
 		for region: Variant in JsonUtil.get_array(f, "regions"):
 			var rd: Dictionary = region if region is Dictionary else {}
-			if not dirs.has(JsonUtil.get_str(rd, "dir")):
-				v.err(w, "regions.dir '%s' 미등록(tags.directions)" % rd.get("dir"))
+			if JsonUtil.get_str(rd, "zone").is_empty() and not dirs.has(JsonUtil.get_str(rd, "dir")):
+				v.err(w, "regions.dir '%s' 미등록(tags.directions) — zone이 없으면 dir이 필요" % rd.get("dir"))
 			for m: Variant in JsonUtil.get_array(rd, "monsters"):
 				v.ref(w + ".regions", "monsters", m)
+			var weights := JsonUtil.get_dict(rd, "weights")
+			for m: String in weights:
+				if not JsonUtil.get_array(rd, "monsters").has(m) or JsonUtil.get_float(weights, m) <= 0.0:
+					v.err(w, "regions.weights '%s'는 monsters에 있고 양수여야 한다" % m)
 			for m: Variant in JsonUtil.get_array(JsonUtil.get_dict(rd, "variants"), "monsters"):
 				v.ref(w + ".regions.variants", "monsters", m)
 		var lord := JsonUtil.get_dict(f, "lord")

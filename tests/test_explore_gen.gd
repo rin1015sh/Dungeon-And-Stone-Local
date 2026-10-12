@@ -1,5 +1,5 @@
 extends TestCase
-## 수정동굴 생성기(결정성·연결성·랜드마크·포탈·암흑지대), FOV, 시야 규칙.
+## 수정동굴 생성기(결정성·연결성·랜드마크·포탈·암흑지대), FOV, 시야 규칙. 십자가 구조 자체는 test_floor1_layout.gd.
 
 const FLOOR := "f1_crystal_cave"
 
@@ -44,9 +44,9 @@ func test_deterministic_with_seed() -> void:
 
 func test_size_and_border() -> void:
 	var map := _gen(1)
-	var size: Array = JsonUtil.get_array(JsonUtil.get_dict(db.get_entry("floors", FLOOR), "gen"), "size")
-	assert_eq(map.width, int(size[0]))
-	assert_eq(map.height, int(size[1]))
+	var lay := CrossLayout.new(JsonUtil.get_dict(db.get_entry("floors", FLOOR), "gen"))
+	assert_eq(map.width, lay.side)
+	assert_eq(map.height, lay.side)
 	var bad := 0
 	for x in map.width:
 		for y: int in [0, map.height - 1]:
@@ -97,7 +97,7 @@ func test_four_portals_in_their_directions() -> void:
 				"north": ok = d.y < 0
 			assert_true(ok, "%s 포탈 방향 (시드 %d)" % [portal["dir"], seed_value])
 			assert_eq(map.tile_id_at(p), "portal")
-			assert_false(map.is_dark(p), "포탈은 암흑지대 밖")
+			assert_true(map.is_dark(p), "포탈은 팔 끝 암흑지대 안")
 
 
 func test_crystals_and_dark_zones() -> void:
