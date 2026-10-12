@@ -1,0 +1,18 @@
+{
+  "id": "goblin_parry_stab",
+  "name_ko": "막고 찌르기",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "counter_stance"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "우선도 +1은 CTB라 없음"
+}

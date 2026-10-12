@@ -1,0 +1,90 @@
+{
+  "id": "blood_blade_wolf",
+  "name_ko": "핏빛 칼날늑대",
+  "grade": 9,
+  "rank": "normal",
+  "lineage": "blade_wolf",
+  "variant_of": "blade_wolf",
+  "floor": 1,
+  "floor_tags": [
+    "f1_east"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "size": 1.0,
+  "color": "#8f4a4a",
+  "immunities": [],
+  "weaknesses": {
+    "lightning": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 9,
+    "agi": 19,
+    "p_res": 4,
+    "m_res": 2,
+    "int": 2
+  },
+  "resources": {
+    "hp": 50,
+    "soul": 25
+  },
+  "natural_weapon": {
+    "attack": 7,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front",
+    "ignores_stealth": true
+  },
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "blood_rending_fang",
+    "blood_lick",
+    "wolf_blade_graze"
+  ],
+  "passives": [
+    {
+      "id": "wolf_blood_scent",
+      "name_ko": "피 냄새",
+      "desc_ko": "피 흘리는 상대에게 더 사납게 덤빈다.",
+      "power_vs_status": {
+        "status": "bleeding",
+        "mult": 1.25
+      }
+    }
+  ],
+  "ai": [
+    {
+      "if": "foe_status",
+      "use": "blood_rending_fang",
+      "status": "bleeding",
+      "not": true,
+      "target": "without_status",
+      "target_status": "bleeding"
+    },
+    {
+      "if": "foe_status",
+      "use": "blood_lick",
+      "status": "bleeding",
+      "target": "with_status",
+      "target_status": "bleeding"
+    }
+  ],
+  "desc_ko": "털끝이 피에 젖은 듯 붉다. 상처 난 먹잇감을 놓지 않는다.",
+  "sprite": "res://assets/sprites/monsters/blood_blade_wolf.png",
+  "source": "placeholder",
+  "drops": []
+}

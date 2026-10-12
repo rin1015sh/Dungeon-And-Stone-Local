@@ -89,6 +89,26 @@
     {"id": "fine", "name_ko": "좋은", "color": "#7fae6a"},
     {"id": "numbers", "name_ko": "넘버스", "color": "#c9a24a"}
   ],
+  "monster_ranks": [
+    {"id": "ungraded", "name_ko": "무등급"},
+    {"id": "normal", "name_ko": "일반"},
+    {"id": "elite", "name_ko": "정예"},
+    {"id": "midboss", "name_ko": "중간 보스"},
+    {"id": "guardian", "name_ko": "수호자"},
+    {"id": "variant_guardian", "name_ko": "변종 수호자"},
+    {"id": "lord", "name_ko": "계층군주"},
+    {"id": "token", "name_ko": "토큰"}
+  ],
+  "essence_colors": [
+    {"id": "red", "name_ko": "붉은", "color": "#b5483f"},
+    {"id": "blue", "name_ko": "푸른", "color": "#4a72b5"},
+    {"id": "green", "name_ko": "초록", "color": "#5c9a52"},
+    {"id": "yellow", "name_ko": "노란", "color": "#c9a93f"},
+    {"id": "purple", "name_ko": "보랏빛", "color": "#8a5ab0"},
+    {"id": "gray", "name_ko": "잿빛", "color": "#8c8a86"},
+    {"id": "brown", "name_ko": "갈색", "color": "#8a6440"},
+    {"id": "rainbow", "name_ko": "무지갯빛", "color": "#e8d8f0"}
+  ],
   "directions": [
     {"id": "east", "name_ko": "동쪽"},
     {"id": "west", "name_ko": "서쪽"},

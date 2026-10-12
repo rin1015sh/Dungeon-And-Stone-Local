@@ -1,0 +1,25 @@
+{
+  "id": "ess_blood_rending_fang",
+  "name_ko": "찢는 이빨(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.765,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.338
+    }
+  ],
+  "essence_of": "blood_rending_fang",
+  "source": "placeholder"
+}

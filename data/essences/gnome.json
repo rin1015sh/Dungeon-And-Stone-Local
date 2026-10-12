@@ -1,0 +1,58 @@
+{
+  "id": "gnome",
+  "name_ko": "노움의 정수",
+  "grade": 9,
+  "source_monster": "gnome",
+  "family": "gnome",
+  "passive": {
+    "id": "gnome_mud_body",
+    "name_ko": "진흙 몸",
+    "desc_ko": "베기·찌르기에 덜 다치지만 둔기에는 더 다친다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.125
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.125
+      },
+      {
+        "target": "dmg_taken:blunt",
+        "percent": 0.125
+      }
+    ],
+    "implemented": true,
+    "notes": "몬스터판 ±25%의 ×0.5"
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_gnome_merge"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_gnome_mud_throw"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_gnome_harden"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      2,
+      4
+    ],
+    "m_res": [
+      1,
+      2
+    ],
+    "stealth": [
+      3,
+      8
+    ]
+  },
+  "source": "placeholder",
+  "notes": "§6.9. 일체화는 타락한 노움과 공유"
+}

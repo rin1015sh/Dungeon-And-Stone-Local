@@ -167,8 +167,8 @@ func _roll() -> void:
 
 
 func _change_level(delta: int) -> void:
-	var lo := int(_db.bal("level.min", 1))
-	var hi := int(_db.bal("level.max_cap", 11))
+	var lo := int(_db.prog("level.min", 1))
+	var hi := Progression.max_level(_db)
 	var next := clampi(_level + delta, lo, hi)
 	if next == _level:
 		return

@@ -2,6 +2,9 @@
   "id": "goblin",
   "name_ko": "고블린",
   "grade": 9,
+  "rank": "normal",
+  "lineage": "goblin",
+  "floor": 1,
   "floor_tags": [
     "f1_north"
   ],
@@ -16,15 +19,19 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 4,
-    "agi": 9,
-    "p_res": 2,
-    "m_res": 2,
-    "int": 0
+    "str": 6,
+    "agi": 11,
+    "p_res": 4,
+    "m_res": 3,
+    "int": 3
   },
   "resources": {
-    "hp": 22,
-    "soul": 0
+    "hp": 45,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "pierce"
   },
   "behavior": {
     "aggressive": true,
@@ -34,29 +41,86 @@
       2,
       3
     ],
-    "reveal_radius_m": 0
+    "reveal_radius_m": 0,
+    "row": "front"
   },
-  "exp_first_kill": 1,
   "magic_stone_grade": 9,
   "essence_drops": [],
   "skills": [
-    "dagger_stab",
-    "poison_stab"
+    "goblin_trap",
+    "goblin_vile_stab",
+    "goblin_sand",
+    "goblin_howl",
+    "flee"
+  ],
+  "passives": [
+    {
+      "id": "goblin_paralytic_blade",
+      "name_ko": "마비독 칼날",
+      "desc_ko": "근접 공격이 맞으면 가끔 상대를 마비독에 빠뜨린다.",
+      "on_hit_filter": {
+        "ranged": false
+      },
+      "on_hit": [
+        {
+          "type": "apply_status",
+          "status": "goblin_paralysis",
+          "chance": 0.3
+        }
+      ]
+    }
   ],
   "ai": [
     {
-      "if": "chance",
-      "value": 0.4,
-      "use": "poison_stab"
+      "if": "first_turn",
+      "use": "goblin_trap"
     },
     {
-      "if": "always",
-      "use": "dagger_stab"
+      "if": "foe_status",
+      "use": "goblin_vile_stab",
+      "status": "snare",
+      "target": "with_status",
+      "target_status": "snare"
+    },
+    {
+      "if": "foe_status",
+      "use": "goblin_vile_stab",
+      "status": "goblin_paralysis",
+      "target": "with_status",
+      "target_status": "goblin_paralysis"
+    },
+    {
+      "if": "alone",
+      "use": "goblin_howl",
+      "also": [
+        {
+          "if": "hp_below",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "if": "hp_below",
+      "use": "flee",
+      "value": 0.25,
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.3
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "use": "goblin_sand",
+      "value": 0.15,
+      "target": "without_status",
+      "target_status": "blind"
     }
   ],
-  "desc_ko": "최약체. 단검에 독을 바른다. 혼자 다니는 일은 드물다.",
+  "desc_ko": "가장 약한 마물. 짧은 단검에 마비독을 바르고 덫을 놓는다. 서너 마리씩 몰려다닌다.",
   "sprite": "res://assets/sprites/monsters/goblin.png",
-  "source": "placeholder",
+  "source": "original",
   "drops": [
     {
       "item": "copper_ring",

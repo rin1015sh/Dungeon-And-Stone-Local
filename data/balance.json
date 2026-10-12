@@ -6,14 +6,6 @@
     "start_level": 1,
     "start_stones": 500
   },
-  "level": {
-    "min": 1,
-    "max_initial": 5,
-    "max_cap": 11,
-    "essence_slots_per_level": 1,
-    "_exp_table_comment": "레벨 n에 필요한 누적 경험치(1레벨 = 0). 1~4층 몬스터를 다 잡아도 5레벨에 조금 못 미치게(원작) — 임시값",
-    "exp_table": [0, 3, 8, 18, 40, 80, 150, 260, 420, 650, 1000]
-  },
   "inventory": {
     "width": 10,
     "height": 6
@@ -21,15 +13,31 @@
   "loot": {
     "magic_stone_chance": 0.85
   },
+  "essence": {
+    "_comment": "정수 규칙(docs/PROMPT_FLOOR1_V2.md §2·§3). drop_mode game = 게임용 확률, original = 원작(일반 몬스터 0.01%). 모두 임시값",
+    "drop_mode": "game",
+    "drop_chance_by_grade": {"9": 0.02, "8": 0.025, "7": 0.03, "6": 0.035, "5": 0.04, "4": 0.045, "3": 0.05, "2": 0.055, "1": 0.06},
+    "drop_chance_original": 0.0001,
+    "drop_chance_by_rank": {"ungraded": 0.005, "midboss": 0.1, "guardian": 0.33, "variant_guardian": 0.33, "lord": 0.0, "token": 0.0},
+    "rift_mult": 4,
+    "guardian_stat_mult": 1.5,
+    "guardian_color": "rainbow",
+    "expire_hours": 3.0,
+    "delete_cost_base": 5000000,
+    "delete_cost_mult": 2,
+    "weaken": {"_comment": "정수판 기본 약화(스킬 데이터를 만들 때의 기준 — 실행 중 자동 적용하지 않는다)", "power": 0.85, "status_chance": 0.75, "duration_minus": 1, "cost": 1.2, "passive": 0.5}
+  },
   "hp": {
+    "_comment": "최대 생명력 = 50 + 레벨×10 + 근력×1.5 + 물리내성×3 (PROMPT_FLOOR1_V2 §1)",
     "base": 50,
-    "per_level": 5,
-    "per_p_res": 2.0,
-    "per_str": 1.0,
+    "per_level": 10,
+    "per_p_res": 3.0,
+    "per_str": 1.5,
     "regen_per_natural_regen_per_hour": 0.1
   },
   "soul": {
-    "base": 10,
+    "_comment": "최대 영혼력 = base + 5레벨까지 레벨당 +10, 이후 +30 (PROMPT_FLOOR1_V2 §5.1, Lv1 30은 [창])",
+    "base": 30,
     "early_level_cap": 5,
     "per_level_early": 10,
     "per_level_late": 30,
@@ -49,7 +57,9 @@
   "status": {
     "bleed_per_turn": 3,
     "poison_per_turn": 2,
-    "burn_per_turn": 4
+    "burn_per_turn": 4,
+    "trap_damage": 6,
+    "rot_per_turn": 2
   },
   "reserved": {
     "stamina_base": 100,
@@ -61,19 +71,23 @@
   "combat": {
     "gauge_threshold": 100,
     "min_speed": 1,
+    "_speed_base_comment": "CTB 속도 = 민첩 + speed_base. 0이면 민첩 2배 = 행동 2배, 5면 민첩 10 vs 20 = 1.67배(작은 차이는 순서 위주, 큰 차이는 추가 행동). tools/sim_battle.gd로 확인 — ASSUMPTIONS C9",
+    "speed_base": 5,
     "crit_base": 0.05,
-    "crit_per_agi": 0.005,
+    "crit_per_agi": 0.003,
     "crit_per_luck": 0.01,
     "crit_max": 0.6,
     "crit_mult": 1.5,
+    "_formula_comment": "명세 §1: 물리 공격력 = 근력×2 + 무기, 마법 = 정신력×2 + 기본값, 방어 계수 = 100/(100 + 방어×4), 명중 = 스킬 명중 × (1 + 민첩 차×0.005)",
     "defense_k": 100,
-    "phys_atk_per_str": 1.0,
-    "mag_atk_per_int": 1.0,
+    "defense_per_point": 4,
+    "phys_atk_per_str": 2.0,
+    "mag_atk_per_int": 2.0,
     "unarmed_atk": 2,
-    "hit_base": 0.9,
-    "hit_agi_coef": 0.01,
+    "default_accuracy": 95,
+    "hit_agi_coef": 0.005,
     "hit_min": 0.3,
-    "hit_max": 0.98,
+    "hit_max": 1.0,
     "damage_variance": 0.1,
     "min_damage": 1,
     "lethal_chance_base": 0.1,
@@ -85,10 +99,12 @@
     "flee_min": 0.05,
     "flee_max": 0.95,
     "ambush_gauge": 50,
+    "max_side_units": 6,
     "hours_per_turn": 0.01,
     "flee_grace_hours": 0.5
   },
   "explore": {
+    "stealth_still_hours": 0.02,
     "start_floor": "f1_crystal_cave",
     "meters_per_tile": 1.0,
     "move_hours_base": 0.02,
@@ -108,14 +124,6 @@
       6,
       1
     ]
-  },
-  "exp": {
-    "grade_base": 10,
-    "mutant_bonus": 1,
-    "rift_guardian_bonus": 3,
-    "guardian_floor8_bonus": 5,
-    "floor_lord_bonus": 15,
-    "portal_first_open": 2
   },
   "debug": {
     "sandbox_damage": 10,

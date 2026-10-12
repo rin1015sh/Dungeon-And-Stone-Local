@@ -1,0 +1,66 @@
+{
+  "id": "goblin",
+  "name_ko": "고블린의 정수",
+  "grade": 9,
+  "source_monster": "goblin",
+  "family": "goblin",
+  "passive": {
+    "id": "goblin_paralytic_blade",
+    "name_ko": "마비독 칼날",
+    "desc_ko": "근접 무기로 맞힐 때 가끔 상대를 마비독에 빠뜨린다.",
+    "on_hit_filter": {
+      "ranged": false
+    },
+    "on_hit": [
+      {
+        "type": "apply_status",
+        "status": "goblin_paralysis",
+        "chance": 0.2
+      }
+    ],
+    "implemented": true,
+    "notes": "[원] 정수판 근접 적중 시 20%"
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_goblin_trap"
+    },
+    {
+      "color": "red",
+      "skill": "ess_goblin_vile_stab"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_goblin_sand"
+    }
+  ],
+  "stat_ranges": {
+    "patience": [
+      3,
+      8
+    ],
+    "smell": [
+      2,
+      6
+    ],
+    "resist_poison": [
+      4,
+      10
+    ],
+    "dexterity": [
+      3,
+      8
+    ],
+    "sight": [
+      2,
+      6
+    ],
+    "agi": [
+      0,
+      2
+    ]
+  },
+  "source": "placeholder",
+  "notes": "§6.1. 그륵 하울링은 고유라 제외"
+}

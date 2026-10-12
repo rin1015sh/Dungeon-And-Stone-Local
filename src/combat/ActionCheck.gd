@@ -38,4 +38,8 @@ static func _skill(b: Battle, c: Combatant, skill_id: String, target: Variant) -
 			# 고른 적이 사라졌으면 Battle이 다른 적을 고른다. 적이 아예 없을 때만 실패.
 			if b.opponents(c).is_empty():
 				return "combat.reason_no_target"
+			# 은신한 적은 (다른 적이 있으면) 고를 수 없다.
+			if target is Combatant and (target as Combatant).is_active() and (target as Combatant).side != c.side \
+					and not BattleRules.is_targetable(b, c, target as Combatant):
+				return "combat.reason_hidden"
 	return ""

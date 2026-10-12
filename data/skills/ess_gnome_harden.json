@@ -1,0 +1,18 @@
+{
+  "id": "ess_gnome_harden",
+  "name_ko": "굳히기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hardened"
+    }
+  ],
+  "essence_of": "gnome_harden",
+  "source": "placeholder"
+}

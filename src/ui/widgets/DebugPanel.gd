@@ -1,7 +1,7 @@
 class_name DebugPanel
 extends PanelContainer
 ## 디버그 패널(F1). 테스트 플레이를 빠르게 하는 치트 모음.
-## 다음 마일스톤 항목(정수 지급·몬스터 소환·포탈 개방일)은 자리만 있고 비활성이다.
+## 다음 마일스톤 항목(포탈 개방일)은 자리만 있고 비활성이다.
 
 signal regenerate_requested(seed_value: int)
 
@@ -56,7 +56,8 @@ func _ready() -> void:
 	_btn(seed_row, Strings.t("debug.regenerate"), _regenerate)
 	var later := PackedStringArray()
 	_btn(v, Strings.t("debug.spawn_monster"), func() -> void: ExploreDebug.spawn_and_engage(_session))
-	for key: String in ["debug.essence_locked", "debug.portal_open_locked"]:
+	_btn(v, Strings.t("debug.give_essence"), _give_essence)
+	for key: String in ["debug.portal_open_locked"]:
 		later.append(Strings.t(key))
 	var later_label := UiTheme.label(Strings.t("debug.later", {"list": " · ".join(later)}), "small", "text_dim")
 	later_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -73,8 +74,8 @@ func _btn(parent: Control, text: String, cb: Callable) -> Button:
 
 func _change_level(delta: int) -> void:
 	var pc := _session.player
-	var lo := int(_session.db.bal("level.min", 1))
-	var hi := int(_session.db.bal("level.max_cap", 11))
+	var lo := int(_session.db.prog("level.min", 1))
+	var hi := Progression.max_level(_session.db)
 	pc.set_level(clampi(pc.get_level() + delta, lo, hi))
 	_session.refresh_view()
 
@@ -92,3 +93,15 @@ func _set_invulnerable(on: bool) -> void:
 func _regenerate() -> void:
 	var text := _seed_edit.text.strip_edges()
 	regenerate_requested.emit(text.to_int() if text.is_valid_int() else 0)
+
+
+## 무작위 정수 하나를 흡수 대기 목록에 넣는다(시간 제한 없음).
+func _give_essence() -> void:
+	var ids: Array = _session.db.get_collection("essences").keys()
+	if ids.is_empty():
+		return
+	ids.sort()
+	var inst := EssenceDrop.make(_session.db, str(_session.rng.pick(ids)), "", _session.rng)
+	_session.player.essences.add_pending(_session.db, inst)
+	_session.message.emit("reward.essence", {"name": DataNames.entry(_session.db, "essences", str(inst["essence"])),
+		"color": DataNames.tag(_session.db, "essence_colors", str(inst["color"]))}, "good")

@@ -152,7 +152,8 @@
     "light_on": "횃불에 불을 붙였다. {hours}시간쯤 탈 것이다.",
     "light_already": "이미 횃불이 타고 있다. (남은 {hours}시간)",
     "status_on": "[{status}] 상태가 되었다.",
-    "status_off": "[{status}] 상태가 풀렸다."
+    "status_off": "[{status}] 상태가 풀렸다.",
+    "status_immune": "{name}에게는 [{status}]이(가) 듣지 않는다."
   },
   "debug": {
     "title": "디버그 (F1)",
@@ -169,10 +170,10 @@
     "invulnerable": "무적 (생명력 1 아래로 안 떨어짐)",
     "seed_placeholder": "시드 (현재 {seed})",
     "regenerate": "다시 생성",
-    "essence_locked": "정수 지급 (M3)",
     "portal_open_locked": "포탈 즉시 개방 (M4)",
     "later": "다음 마일스톤에서: {list}",
-    "spawn_monster": "몬스터 소환(바로 전투)"
+    "spawn_monster": "몬스터 소환(바로 전투)",
+    "give_essence": "정수 지급(무작위, 흡수 대기로)"
   },
   "end": {
     "closed_title": "강제 귀환",
@@ -244,7 +245,13 @@
     "result_victory": "승리",
     "result_defeat": "패배",
     "result_fled": "도주",
-    "continue": "계속"
+    "continue": "계속",
+    "reflect": "{source}의 칼날털이 {target}에게 {amount}만큼 되돌려 베었다.",
+    "counter": "{source}이(가) 막아 내고 {target}을(를) 찔렀다 — {amount}.",
+    "drain": "{source}이(가) 피를 핥아 {amount} 회복했다.",
+    "summon": "{name}의 울부짖음에 {monster}이(가) 달려왔다!",
+    "summon_fail": "{name}이(가) 울부짖었지만 아무도 오지 않았다.",
+    "reason_hidden": "그 상대는 모습을 감추고 있다."
   },
   "knowledge": {
     "unknown": "???",
@@ -259,7 +266,11 @@
     "first_kill": "처음 쓰러뜨린 {name} — 공적 {exp}.",
     "loot": "{item} ×{count}을(를) 주웠다.",
     "bag_full": "가방에 자리가 없어 {item} ×{count}을(를) 두고 간다.",
-    "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots})."
+    "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots}).",
+    "essence": "{color} {name}이(가) 떨어졌다. 캐릭터 창(C)에서 흡수할 수 있다 — 오래 두면 흩어진다.",
+    "guardian_bonus": "수호자 {name}을(를) 쓰러뜨렸다 — 공적 {exp}.",
+    "lord_bonus": "계층군주 {name}을(를) 처음으로 쓰러뜨렸다 — 공적 {exp}.",
+    "level_down": "영혼이 깎여 나갔다. 레벨 {level} — 정수 {locked}개가 잠들었다."
   },
   "window": {
     "close": "닫기"
@@ -290,7 +301,7 @@
     "attack_type": "기본 공격: {type}",
     "essence_slots": "정수 슬롯 {n}칸",
     "essence_empty": "비어 있는 정수 슬롯",
-    "essence_note": "정수(흡수·삭제)는 설정 자료를 받은 뒤에 열린다. 레벨이 오르면 슬롯이 늘어난다."
+    "essence_note": "레벨만큼 정수 슬롯이 열린다. 패시브나 이능이 하나라도 겹치는 정수는 받아들일 수 없다. 정수 삭제는 대신전(M4)."
   },
   "bestiary": {
     "title": "도감",
@@ -300,7 +311,9 @@
     "kills": "처치 {kills} · 첫 처치 공적 {exp}",
     "stats": "생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}",
     "stats_unknown": "생명력·스탯: ??? (전투 중 '조사'로 알아낸다)",
-    "affinity": "상성: {aff}"
+    "affinity": "상성: {aff}",
+    "variant_of": "{name}의 변이종.",
+    "shared": "[{skill}] 이능을 함께 지닌 종: {list} — 이 이능이 든 정수는 둘 중 하나만 받아들일 수 있다."
   },
   "bottom": {
     "inventory": "소지품 {key}",
@@ -309,5 +322,20 @@
     "wait": "대기 {key}",
     "rest": "휴식 {key}",
     "pause": "정지 {key}"
+  },
+  "essence": {
+    "slots": "정수 {used} / {n}칸",
+    "title": "{color} {name}",
+    "pending_title": "흡수를 기다리는 정수",
+    "absorb": "흡수",
+    "tip_passive": "패시브 · {name}: {desc}",
+    "tip_skills": "이능 · {list}",
+    "tip_stats": "능력치 · {list}",
+    "not_implemented": "(이 패시브의 효과는 아직 일부만 들어가 있다)",
+    "reason_unknown": "알 수 없는 정수다.",
+    "reason_no_slot": "빈 정수 슬롯이 없다.",
+    "reason_duplicate": "이미 같은 이능이 영혼에 새겨져 있어 받아들일 수 없다.",
+    "expired": "흡수하지 않은 {name}이(가) 빛 먼지가 되어 흩어졌다.",
+    "locked_suffix": " (잠김 — 레벨이 오르면 깨어난다)"
   }
 }

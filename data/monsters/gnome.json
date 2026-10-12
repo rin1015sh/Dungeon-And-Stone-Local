@@ -2,6 +2,9 @@
   "id": "gnome",
   "name_ko": "노움",
   "grade": 9,
+  "rank": "normal",
+  "lineage": "gnome",
+  "floor": 1,
   "floor_tags": [
     "f1_west"
   ],
@@ -13,20 +16,22 @@
   "size": 0.8,
   "color": "#7a6a52",
   "immunities": [],
-  "weaknesses": {
-    "fire": 1.3
-  },
+  "weaknesses": {},
   "weak_point": null,
   "stats": {
     "str": 7,
     "agi": 6,
-    "p_res": 8,
-    "m_res": 2,
-    "int": 0
+    "p_res": 10,
+    "m_res": 6,
+    "int": 7
   },
   "resources": {
-    "hp": 40,
-    "soul": 0
+    "hp": 55,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "blunt"
   },
   "behavior": {
     "aggressive": true,
@@ -36,23 +41,75 @@
       1,
       2
     ],
-    "reveal_radius_m": 3.0
+    "reveal_radius_m": 3.0,
+    "row": "front"
   },
-  "exp_first_kill": 1,
   "magic_stone_grade": 9,
   "essence_drops": [],
   "skills": [
-    "mud_fist"
+    "gnome_merge",
+    "gnome_mud_throw",
+    "gnome_harden"
+  ],
+  "passives": [
+    {
+      "id": "gnome_mud_body",
+      "name_ko": "진흙 몸",
+      "desc_ko": "베고 찌르는 것엔 무르지만 내려치면 잘 부서진다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.25
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.25
+        },
+        {
+          "target": "dmg_taken:blunt",
+          "percent": 0.25
+        }
+      ]
+    }
   ],
   "ai": [
     {
+      "if": "self_status",
+      "use": "basic_attack",
+      "status": "mud_merged"
+    },
+    {
+      "if": "hp_below",
+      "use": "gnome_harden",
+      "value": 0.5,
+      "also": [
+        {
+          "if": "self_status",
+          "status": "mud_hardened",
+          "not": true
+        }
+      ]
+    },
+    {
+      "if": "self_status",
+      "use": "gnome_merge",
+      "status": "hidden",
+      "not": true,
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.5
+        }
+      ]
+    },
+    {
       "if": "always",
-      "use": "mud_fist"
+      "use": "gnome_mud_throw"
     }
   ],
-  "desc_ko": "진흙 인형. [일체화] — 3m 안에 들어와야 보인다.",
+  "desc_ko": "진흙 인형. [일체화]로 주변과 하나가 되어, 3m 안에 들어와야 모습이 보인다.",
   "sprite": "res://assets/sprites/monsters/gnome.png",
-  "source": "placeholder",
+  "source": "original",
   "drops": [
     {
       "item": "magic_stone_8",

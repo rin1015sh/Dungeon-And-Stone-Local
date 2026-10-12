@@ -110,7 +110,17 @@ func enabled_resource_ids() -> Array[String]:
 
 ## balance.json 값을 "a.b.c" 경로로 꺼낸다.
 func bal(path: String, default: Variant = null) -> Variant:
-	var node: Variant = balance
+	return single(balance, path, default)
+
+
+## progression.json(레벨·경험치) 값. 예: db.prog("level.exp_table")
+func prog(path: String, default: Variant = null) -> Variant:
+	return single(singletons.get("progression", {}), path, default)
+
+
+## 단일 파일 데이터에서 "a.b.c" 경로 값. 없으면 default.
+static func single(root: Dictionary, path: String, default: Variant = null) -> Variant:
+	var node: Variant = root
 	for part in path.split("."):
 		if node is Dictionary and (node as Dictionary).has(part):
 			node = (node as Dictionary)[part]

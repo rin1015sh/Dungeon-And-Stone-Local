@@ -1,0 +1,113 @@
+{
+  "id": "corrupted_gnome",
+  "name_ko": "타락한 노움",
+  "grade": 9,
+  "rank": "normal",
+  "lineage": "gnome",
+  "variant_of": "gnome",
+  "floor": 1,
+  "floor_tags": [
+    "f1_west"
+  ],
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "shape": "blob",
+  "size": 0.8,
+  "color": "#5a5a3a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 7,
+    "agi": 7,
+    "p_res": 9,
+    "m_res": 8,
+    "int": 10
+  },
+  "resources": {
+    "hp": 55,
+    "soul": 50
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 2.0,
+    "leash_tiles": 8,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 3.0,
+    "row": "front"
+  },
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "skills": [
+    "gnome_merge",
+    "corrupt_curse_mud",
+    "corrupt_rot_swamp"
+  ],
+  "passives": [
+    {
+      "id": "gnome_corrupted_mud",
+      "name_ko": "오염된 진흙",
+      "desc_ko": "독이 스민 진흙. 맞으면 가끔 중독되고, 진흙 몸의 성질도 반쯤 남아 있다.",
+      "on_hit": [
+        {
+          "type": "apply_status",
+          "status": "poison",
+          "chance": 0.2
+        }
+      ],
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.12
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.12
+        },
+        {
+          "target": "dmg_taken:blunt",
+          "percent": 0.12
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "self_status",
+      "use": "gnome_merge",
+      "status": "hidden",
+      "not": true,
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "if": "foe_status",
+      "use": "corrupt_curse_mud",
+      "status": "cursed_mud",
+      "not": true,
+      "target": "without_status",
+      "target_status": "cursed_mud"
+    },
+    {
+      "if": "always",
+      "use": "corrupt_rot_swamp"
+    }
+  ],
+  "desc_ko": "검게 썩은 진흙으로 빚어진 노움. 저주를 던진다.",
+  "sprite": "res://assets/sprites/monsters/corrupted_gnome.png",
+  "source": "placeholder",
+  "drops": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "ess_goblin_downward_slash",
+  "name_ko": "내려베기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.02,
+      "damage_type": "slash",
+      "accuracy": 85
+    }
+  ],
+  "essence_of": "goblin_downward_slash",
+  "source": "placeholder"
+}

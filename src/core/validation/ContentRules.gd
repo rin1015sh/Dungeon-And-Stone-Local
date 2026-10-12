@@ -19,6 +19,14 @@ static func _monsters(v: ValidatorBase) -> void:
 		var w := "monsters/" + id
 		v.check_grade(w, m.get("grade"))
 		v.check_grade(w + ".magic_stone_grade", m.get("magic_stone_grade", m.get("grade")))
+		if m.has("rank") and not v.db.tag_ids("monster_ranks").has(JsonUtil.get_str(m, "rank")):
+			v.err(w, "rank '%s' 미등록(tags.monster_ranks)" % m.get("rank"))
+		if m.has("upper_variant") and not m["upper_variant"] is bool:
+			v.err(w, "upper_variant는 true/false")
+		if m.has("variant_of"):
+			v.ref(w, "monsters", m["variant_of"])
+		if m.has("floor") and JsonUtil.get_int(m, "floor") < 1:
+			v.err(w, "floor는 1 이상의 층 번호")
 		if not types.has(JsonUtil.get_str(m, "type")):
 			v.err(w, "type '%s' 미등록(tags.monster_types)" % m.get("type"))
 		for f: Variant in JsonUtil.get_array(m, "family"):
@@ -44,10 +52,23 @@ static func _monsters(v: ValidatorBase) -> void:
 		for rule: Variant in JsonUtil.get_array(m, "ai"):
 			var rd: Dictionary = rule if rule is Dictionary else {}
 			v.ref(w + ".ai", "skills", rd.get("use"))
-			if not v.ai_condition_ids.is_empty() and not v.ai_condition_ids.has(JsonUtil.get_str(rd, "if")):
-				v.err(w + ".ai", "조건 '%s' 없음(src/combat/ai/)" % rd.get("if"))
-			if not JsonUtil.get_array(m, "skills").has(rd.get("use")):
+			var conds: Array = [rd]
+			conds.append_array(JsonUtil.get_array(rd, "also"))
+			for cd: Variant in conds:
+				var cond := JsonUtil.get_str(cd if cd is Dictionary else {}, "if", "always")
+				if not v.ai_condition_ids.is_empty() and not v.ai_condition_ids.has(cond):
+					v.err(w + ".ai", "조건 '%s' 없음(src/combat/ai/)" % cond)
+			if rd.get("use") != Battle.BASIC_ATTACK and not JsonUtil.get_array(m, "skills").has(rd.get("use")):
 				v.warn(w + ".ai", "스킬 '%s'이(가) skills 목록에 없다" % rd.get("use"))
+		for sk: Variant in JsonUtil.get_array(m, "ai_cycle"):
+			v.ref(w + ".ai_cycle", "skills", sk)
+		if m.has("lineage") and JsonUtil.get_str(m, "lineage").is_empty():
+			v.err(w, "lineage는 계열 id 문자열")
+		var nw := JsonUtil.get_dict(m, "natural_weapon")
+		if not nw.is_empty() and (not damage.has(JsonUtil.get_str(nw, "damage_type")) or JsonUtil.get_float(nw, "attack", -1.0) < 0.0):
+			v.err(w, "natural_weapon은 {attack ≥ 0, damage_type: 피해 유형, ranged?}")
+		for p: Variant in JsonUtil.get_array(m, "passives"):
+			_passive(v, w + ".passives", p if p is Dictionary else {})
 		if not v.db.tag_ids("monster_shapes").has(JsonUtil.get_str(m, "shape", "humanoid")):
 			v.err(w, "shape '%s' 미등록(tags.monster_shapes)" % m.get("shape"))
 		v.check_color(w, JsonUtil.get_str(m, "color"))
@@ -85,13 +106,18 @@ static func _skills(v: ValidatorBase) -> void:
 		v.check_effects(w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
 		if s.has("innate") and not s["innate"] is bool:
 			v.err(w, "innate는 true/false")
+		if s.has("essence_of") and JsonUtil.get_str(s, "essence_of").is_empty():
+			v.err(w, "essence_of는 원래 스킬 id 문자열")
 	for id: Variant in v.db.bal("party.innate_skills", []):
 		v.ref("balance.party.innate_skills", "skills", id)
 		if v.db.has_entry("skills", str(id)) and not JsonUtil.get_bool(v.db.get_entry("skills", str(id)), "innate"):
 			v.err("skills/" + str(id), "기본 스킬(party.innate_skills)은 \"innate\": true여야 한다")
 
 
+## 정수(docs/PROMPT_FLOOR1_V2.md §2·§3): 패시브 1개 + 색 → 액티브. 고유(unique) 스킬은 넣지 않는다.
 static func _essences(v: ValidatorBase) -> void:
+	var colors := v.db.tag_ids("essence_colors")
+	var guardian_color := str(v.db.bal("essence.guardian_color", "rainbow"))
 	for id: String in v.entries("essences"):
 		var e := v.db.get_entry("essences", id)
 		var w := "essences/" + id
@@ -102,8 +128,34 @@ static func _essences(v: ValidatorBase) -> void:
 		for r: String in JsonUtil.get_dict(e, "resource_mods"):
 			if not v.db.resources.has(r):
 				v.err(w, "resource_mods '%s' 없는 자원" % r)
-		for sk: Variant in JsonUtil.get_array(e, "skills"):
-			v.ref(w, "skills", (sk as Dictionary).get("id") if sk is Dictionary else sk)
+		_passive(v, w + ".passive", JsonUtil.get_dict(e, "passive"))
+		var actives := JsonUtil.get_array(e, "actives")
+		if actives.is_empty():
+			v.err(w, "actives가 비어 있다")
+		var seen := PackedStringArray()
+		for a: Variant in actives:
+			var ad: Dictionary = a if a is Dictionary else {}
+			var c := JsonUtil.get_str(ad, "color")
+			if not colors.has(c) or c == guardian_color:
+				v.err(w + ".actives", "color '%s' 미등록(tags.essence_colors, 무지갯빛 제외)" % c)
+			if seen.has(c):
+				v.err(w + ".actives", "color '%s' 중복" % c)
+			seen.append(c)
+			var sid := JsonUtil.get_str(ad, "skill")
+			v.ref(w + ".actives", "skills", sid)
+			if JsonUtil.get_bool(v.db.get_entry("skills", sid), "unique"):
+				v.err(w + ".actives", "고유(unique) 스킬 '%s'은(는) 정수에 넣을 수 없다" % sid)
+
+
+## 패시브 정의(Passives): id·name_ko, 수정자, 적중 시 효과, 면역 상태이상.
+static func _passive(v: ValidatorBase, w: String, p: Dictionary) -> void:
+	if JsonUtil.get_str(p, "id").is_empty() or JsonUtil.get_str(p, "name_ko").is_empty():
+		v.err(w, "패시브는 {id, name_ko, desc_ko, …}")
+	v.check_modifier_list(w + ".modifiers", JsonUtil.get_array(p, "modifiers"))
+	for key: String in ["on_hit", "on_crit"]:
+		v.check_effects(w + "." + key, JsonUtil.get_array(p, key), true)
+	for sid: Variant in JsonUtil.get_array(p, "status_immune"):
+		v.ref(w + ".status_immune", "statuses", sid)
 
 
 static func _items(v: ValidatorBase) -> void:

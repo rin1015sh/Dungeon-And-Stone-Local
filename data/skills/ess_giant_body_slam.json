@@ -1,0 +1,25 @@
+{
+  "id": "ess_giant_body_slam",
+  "name_ko": "몸통 박치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.935,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.112
+    }
+  ],
+  "essence_of": "giant_body_slam",
+  "source": "placeholder"
+}

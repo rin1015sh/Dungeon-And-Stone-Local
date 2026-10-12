@@ -1,6 +1,6 @@
 {
-  "id": "dagger_stab",
-  "name_ko": "단검 찌르기",
+  "id": "wolf_bite",
+  "name_ko": "물어뜯기",
   "target": "enemy_single",
   "cost": {},
   "delay_cost": 0,
@@ -9,8 +9,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.9,
+      "power": 1.0,
       "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.25
     }
   ],
   "source": "placeholder"

@@ -1,0 +1,18 @@
+{
+  "id": "wolf_pack_hunt",
+  "name_ko": "무리 사냥",
+  "target": "ally_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "wolf_pack"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "명세: 근력 +(10%×늑대 수) → 고정 +20%로 근사, 중첩 불가"
+}

@@ -1,9 +1,12 @@
 class_name DamageCalc
 extends RefCounted
-## 피해 공식(DESIGN §5, PROMPT §6.4). 계수는 balance.json combat.
-##   공격력: 물리 = (주무기 공격력, 없으면 맨손 값) + 근력×계수, 마법 = 스킬 기본값 + 정신력×계수
-##   피해 = 공격력 × 위력 × 100/(100+방어) × 상성(약점·면역) × 받는/주는 피해 수정자 × 편차 (치명타면 ×배율)
-##   명중 = 기본 + (공격자 민첩 − 방어자 민첩)×계수 (약점 노리기면 ×배율), 치명타 = 기본 + 민첩×계수 + 행운×계수
+## 피해 공식(docs/PROMPT_FLOOR1_V2.md §1). 계수는 balance.json combat.
+##   공격력: 물리 = (무기 공격력 — 몬스터는 natural_weapon, 없으면 맨손 값) + 근력×2, 마법 = 스킬 기본값(base) + 정신력×2
+##   피해 = 공격력 × 위력 × 100/(100 + 방어×4) × 상성(약점·면역) × 받는/주는 피해 수정자 × 조건부 위력 × 편차 (치명타면 ×1.5)
+##   명중 = (스킬 명중 accuracy, 기본 95 + 명중률 스탯) × (1 + (공격 민첩 − 대상 민첩)×0.005), 30~100%로 제한(약점 노리기 ×배율)
+##   치명타 = 5% + 민첩×0.3% + 행운×계수 + 스킬 crit_bonus + 패시브 crit_bonus
+##   조건부 위력: 효과 "power_if_status": {"status": [..], "power": 1.5} — 대상이 그 상태면 위력을 바꾼다.
+##   패시브 power_vs_status {"status", "mult"}: 그 상태의 대상에게 피해 배율.
 ##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다.
 ## 무작위 값은 rolls(0~1)로 받아서 순수 계산만 한다(테스트 가능).
 
@@ -18,13 +21,15 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	var weak := aim_weak and not defender.weak_point().is_empty()
 	var out := {"hit": false, "crit": false, "lethal": false, "weak": weak, "amount": 0, "damage_type": dtype,
 		"affinity": defender.damage_affinity(dtype, category)}
-	if JsonUtil.get_float(rolls, "hit") >= hit_chance(db, attacker, defender, weak):
+	if JsonUtil.get_float(rolls, "hit") >= hit_chance(db, attacker, defender, weak, JsonUtil.get_float(effect, "accuracy", -1.0)):
 		return out
 	out["hit"] = true
 	var magic := JsonUtil.get_str(effect, "scaling", "phys") == "magic"
 	var defense := defender.stats.get_value("m_res" if magic else "p_res")
 	var k := _c(db, "defense_k", 100.0)
-	var amount := attack_power(db, attacker, effect) * JsonUtil.get_float(effect, "power", 1.0) * k / (k + maxf(0.0, defense))
+	var amount := attack_power(db, attacker, effect) * _power(effect, defender) * k \
+		/ (k + maxf(0.0, defense) * _c(db, "defense_per_point", 4.0))
+	amount *= Passives.damage_mult_vs(attacker, defender)
 	amount *= float(out["affinity"])
 	amount *= _modifier_mult(defender.stats, "dmg_taken", dtype, category)
 	amount *= _modifier_mult(attacker.stats, "dmg_dealt", dtype, category)
@@ -32,7 +37,7 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	amount *= 1.0 + (JsonUtil.get_float(rolls, "var", 0.5) * 2.0 - 1.0) * variance
 	if weak:
 		amount *= _c(db, "weak_point_damage_mult", 2.0)
-	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker):
+	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker, Passives.crit_bonus(attacker, dtype) + JsonUtil.get_float(effect, "crit_bonus")):
 		out["crit"] = true
 		amount *= _c(db, "crit_mult", 1.5)
 	var dealt := 0 if float(out["affinity"]) <= 0.0 else maxi(int(_c(db, "min_damage", 1.0)), roundi(amount))
@@ -54,17 +59,29 @@ static func attack_power(db: GameDatabase, attacker: Actor, effect: Dictionary) 
 	return base + attacker.stats.get_value("str") * _c(db, "phys_atk_per_str", 1.0)
 
 
-static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_weak: bool) -> float:
-	var h := _c(db, "hit_base", 0.9) + (attacker.stats.get_value("agi") - defender.stats.get_value("agi")) * _c(db, "hit_agi_coef", 0.01)
+## accuracy: 스킬 명중(퍼센트, 음수면 기본값). 명중률 스탯(accuracy)이 더해진다(실명은 이것을 깎는다).
+static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_weak: bool, accuracy: float = -1.0) -> float:
+	var acc := (accuracy if accuracy >= 0.0 else _c(db, "default_accuracy", 95.0)) + attacker.stats.get_value("accuracy")
+	var h := acc / 100.0 * (1.0 + (attacker.stats.get_value("agi") - defender.stats.get_value("agi")) * _c(db, "hit_agi_coef", 0.005))
 	if aim_weak:
 		h *= _c(db, "weak_point_hit_mult", 0.6)
-	return clampf(h, _c(db, "hit_min", 0.3), _c(db, "hit_max", 0.98))
+	return clampf(h, _c(db, "hit_min", 0.3), _c(db, "hit_max", 1.0))
 
 
-static func crit_chance(db: GameDatabase, attacker: Actor) -> float:
-	var c := _c(db, "crit_base", 0.05) + attacker.stats.get_value("agi") * _c(db, "crit_per_agi", 0.005) \
-		+ attacker.stats.get_value("luck") * _c(db, "crit_per_luck", 0.01)
+static func crit_chance(db: GameDatabase, attacker: Actor, bonus: float = 0.0) -> float:
+	var c := _c(db, "crit_base", 0.05) + attacker.stats.get_value("agi") * _c(db, "crit_per_agi", 0.003) \
+		+ attacker.stats.get_value("luck") * _c(db, "crit_per_luck", 0.01) + bonus
 	return clampf(c, 0.0, _c(db, "crit_max", 0.6))
+
+
+## 위력: 대상이 power_if_status의 상태 중 하나면 그 위력, 아니면 power.
+static func _power(effect: Dictionary, defender: Actor) -> float:
+	var cond := JsonUtil.get_dict(effect, "power_if_status")
+	if not cond.is_empty():
+		for st: Variant in JsonUtil.get_array(cond, "status"):
+			if defender.statuses.has(str(st)):
+				return JsonUtil.get_float(cond, "power", 1.0)
+	return JsonUtil.get_float(effect, "power", 1.0)
 
 
 ## 피해 유형의 분류(physical / magical). tags.json damage_types.

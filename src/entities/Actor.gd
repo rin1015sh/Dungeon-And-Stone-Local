@@ -22,6 +22,8 @@ var death_cause: String = ""
 ## 쓸 수 있는 스킬 id(전투). 기본 공격(basic_attack)은 커맨드로 따로 쓴다.
 ## 기본 스킬(대화·조사, 스킬 데이터의 "innate": true)도 여기에 들어간다.
 var skills: Array[String] = []
+## 패시브 정의 목록(Passives 참고). 몬스터는 데이터 passives, 탐험가는 흡수한 정수의 패시브.
+var passives: Array[Dictionary] = []
 
 
 ## bases: 기본 스탯. resource_ids가 비면 활성 자원 전부. overrides: 자원 최대치 고정값(몬스터).
@@ -125,6 +127,23 @@ func attack_damage_type() -> String:
 ## 맨손(무기 없음)일 때의 피해 유형. 하위 클래스가 덮어쓴다.
 func base_attack_type() -> String:
 	return "blunt"
+
+
+## 패시브를 단다(같은 id가 있으면 바꾼다). 수정자는 붙이지 않는다 — 소유자 몫.
+func add_passive(p: Dictionary) -> void:
+	remove_passive(JsonUtil.get_str(p, "id"))
+	passives.append(p)
+
+
+func remove_passive(passive_id: String) -> void:
+	for i in range(passives.size() - 1, -1, -1):
+		if JsonUtil.get_str(passives[i], "id") == passive_id:
+			passives.remove_at(i)
+
+
+## 기본 공격이 원거리인가(활 등 무기 데이터 "ranged": true).
+func weapon_is_ranged() -> bool:
+	return JsonUtil.get_bool(equipment.weapon(), "ranged")
 
 
 ## 무기 공격력. 맨손이면 -1(피해 공식이 맨손 값을 쓴다).

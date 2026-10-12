@@ -1,22 +1,23 @@
 {
-  "id": "poison_stab",
-  "name_ko": "독 바른 단검",
+  "id": "ess_ghoul_claw",
+  "name_ko": "할퀴기(정수)",
   "target": "enemy_single",
   "cost": {},
   "delay_cost": 0,
-  "cooldown": 2,
+  "cooldown": 0,
   "effects": [
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.7,
-      "damage_type": "pierce"
+      "power": 0.85,
+      "damage_type": "slash"
     },
     {
       "type": "apply_status",
-      "status": "poison",
-      "chance": 0.4
+      "status": "bleeding",
+      "chance": 0.15
     }
   ],
+  "essence_of": "ghoul_claw",
   "source": "placeholder"
 }

@@ -1,0 +1,26 @@
+{
+  "id": "ess_corrupt_curse_mud",
+  "name_ko": "저주 진흙(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.425,
+      "damage_type": "earth",
+      "base": 10
+    },
+    {
+      "type": "apply_status",
+      "status": "cursed_mud",
+      "duration": 2
+    }
+  ],
+  "essence_of": "corrupt_curse_mud",
+  "source": "placeholder"
+}

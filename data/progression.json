@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "_comment": "레벨·경험치(docs/PROMPT_FLOOR1_V2.md §5). 레벨업 시 생명력·영혼력 증가는 resources.json 수식 + balance.hp/soul. 수치는 [창](원작 기준점에 맞춘 임시값)",
+  "level": {
+    "min": 1,
+    "max": 11,
+    "_exp_table_comment": "레벨 n이 되는 누적 경험치(표[n-1]). 1~4층 전 종 처치(약 640)로는 5레벨(660)에 아슬아슬하게 못 미친다. 11레벨은 꿈꾸는 영혼 필수",
+    "exp_table": [0, 8, 50, 250, 660, 1000, 1400, 2600, 3400, 4400, 18000],
+    "essence_slots_per_level": 1
+  },
+  "exp": {
+    "_comment": "획득원. 종별 첫 처치 = grade_base − 등급(+ 상위 변이종 upper_variant_bonus). no_exp_ranks는 0",
+    "grade_base": 10,
+    "upper_variant_bonus": 1,
+    "no_exp_ranks": ["ungraded", "token"],
+    "guardian_ranks": ["guardian", "variant_guardian"],
+    "guardian_bonus": 3,
+    "guardian_bonus_deep": 5,
+    "guardian_deep_floor": 8,
+    "lord_rank": "lord",
+    "lord_bonus": 15,
+    "portal_monthly": 2,
+    "portal_monthly_reset_max_floor": 5,
+    "hidden_portal_first": 99,
+    "dreaming_soul": 10000,
+    "dreaming_soul_min_level": 10
+  },
+  "budget": {
+    "_comment": "층별 1회성 경험치 목표(§5.4). tools/exp_budget.gd가 실제 데이터와 비교한다. 데이터가 목표보다 적은 층은 목표치로 '예상' 합산",
+    "floor_targets": {"1": 110, "2": 190, "3": 230, "4": 110, "5": 400, "6": 600, "7": 360, "8": 260, "9": 400, "10": 140},
+    "hidden_target": 1100,
+    "lv5_floors": [1, 2, 3, 4],
+    "lv5_ratio_range": [0.93, 0.99]
+  },
+  "source": "placeholder"
+}

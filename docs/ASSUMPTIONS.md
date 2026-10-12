@@ -103,8 +103,57 @@
 | C4 | 조사는 아무나 하나(적·아군)를 대상으로, 옛 정보와 같은 내용(등급·계열·생명력%·설명)을 알려 주고 차례를 쓴다(delay_cost 0) | 옛 정보 기능 유지 + 무료 행동 금지 | `skills/investigate.json`, `effects/investigate.gd` |
 | C5 | 기본 스킬은 `"innate": true`로 표시해 잊을 수 없고(`Actor.forget_skill`), 다시 줘도 중복되지 않는다(불러오기 대비) | 앞으로의 스킬 습득·슬롯·삭제와 충돌하지 않게 | `PlayerCharacter.grant_innate_skills` |
 | C6 | 잘못된 행동(모르는 스킬·코스트 부족·쿨타임·봉인·사라진 조사 대상·전투용이 아닌 아이템)은 차례를 쓰지 않는다. 고른 적이 이미 쓰러졌으면 다른 적을 친다 | 예외 처리 요구 | `ActionCheck`, `Battle._targets` |
-| C8 | 장비가 생겨 1층이 쉬워졌다(테스트 캐릭터 기준 칼날늑대 둘 상대 승률 12/30 → 19/30, 단일 몬스터 30/30). 아직 조정하지 않음 | 실제 플레이로 확인 후 조정 | 무기 attack, 몬스터 stats |
+| C8 | (G2에서 다시 봄 — L10) 장비가 생겨 1층이 쉬워졌다(테스트 캐릭터 기준 칼날늑대 둘 상대 승률 12/30 → 19/30, 단일 몬스터 30/30). 아직 조정하지 않음 | 실제 플레이로 확인 후 조정 | 무기 attack, 몬스터 stats |
+| C9 | (2026-10-12) **CTB 유지**(사용자 결정, 명세 v2 §1의 라운드제·추가 행동은 쓰지 않음). 속도 = 민첩 + `speed_base` **5**. 민첩 10 vs 20이면 행동 1.67배(0이면 2배), 18 vs 12면 1.35배, 30 vs 12면 2.06배 — 작은 차이는 순서 위주, 큰 차이는 추가 행동이라는 명세 의도에 가깝게 | `tools/sim_battle.gd` 300회: speed_base 0에서 칼날늑대 둘 상대 승률이 가장 낮고(93%, 적/아군 행동 2.08) 5에서 98%(1.85). 10 이상은 민첩 투자 가치가 너무 줄어든다 | `balance.combat.speed_base` |
+| C10 | (2026-10-12) Lv1 탐험가 민첩이 종족 범위상 5~10으로 명세 기준 탐험가(인간 Lv1 민첩 12)보다 낮다. G2에서 몬스터를 명세 수치(칼날늑대 민첩 18 등)로 바꾸면 차이가 커지므로 그때 종족 범위·speed_base를 시뮬레이터로 다시 맞춘다 | 몬스터는 아직 v1 임시 수치 | `races.json stat_ranges`, `speed_base` |
 | C7 | 라운드 개념은 두지 않는다(CTB). 쿨타임·지속시간은 자기 차례 시작 때 줄고, 차례 종료 시 turn_end 사건을 낸다 | 민첩 기반 CTB와 일관 | `Battle.phase` |
+
+## 정수 (2026-10-12, docs/PROMPT_FLOOR1_V2.md §2·§3·§6)
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| J1 | 정수 데이터는 몬스터당 파일 하나(`essences/<몬스터 id>.json`), 색은 `actives[{color, skill}]`로 고른다. 사례(떨어진 정수) = `{essence, color, stats}` | 원작 규칙 "색이 액티브를 정한다"를 그대로 데이터로 | `EssenceDrop.make`, 템플릿 `_template.json` |
+| J2 | 정수판 스킬은 별도 파일 `skills/ess_*.json`으로 만들고 수치를 미리 약화(위력 ×0.85·확률 ×0.75·지속 −1·비용 ×1.2)해 둔다. 실행 중 자동 약화는 하지 않는다 | 몬스터판(G2에서 만들 `ghoul_claw` 등)과 독립적으로 조정 가능, 기존 몬스터 전투를 바꾸지 않음 | `balance.essence.weaken`은 기준값 기록용 |
+| J3 | 중복 흡수 판정 키 = 패시브 id + 스킬의 `essence_of`(원래 스킬 id). 같은 몬스터 다른 색은 패시브가 겹쳐 거부 | 원작 규칙 + 변이종 공유 스킬 id(§6.0) | `EssenceSet.conflict_keys` |
+| J4 | 수호자 정수 = 색 `rainbow`, 액티브 전부(unique 제외) + 스탯 ×1.5. 같은 정수의 일반 → 무지갯빛은 그 자리를 바꾼다(업그레이드) | 원작 규칙 | `balance.essence.guardian_*`, `EssenceSet.upgrade_index` |
+| J5 | 흡수하지 않은 정수가 사라지는 시간은 **게임 3시간**(원작 30분) | 실시간 1초 = 6분이라 30분이면 실제 5초 — 창을 열 틈이 없다. 실제 약 30초로 늘림 | `balance.essence.expire_hours` |
+| J6 | (G2에서 대부분 해소 — 지금은 추적 후각의 냄새 흔적 오버레이만 남음) 패시브 중 표현할 수 없는 것은 `"implemented": false`로 두고 툴팁에 "일부만 들어가 있다"를 띄운다 | 적중 시 발동·우선도·맵 오버레이 체계가 아직 없음 | 해당 체계를 만든 뒤 `passive`에 필드 추가 |
+| J7 | (G2: 실명은 명중률 −30, 일체화는 은신 + 공격 +30%) 덫 생성은 다음 차례에 고정 피해(`status.trap_damage` 6)를 주는 상태이상 `trap_set`, 실명은 민첩 −30%, 일체화는 주는 피해 +30% 1차례로 근사. 속박·은신·명중 감소는 없음 | 해당 전투 체계(속박·은신·명중 스탯)가 G4 범위 | `statuses.json` |
+| J8 | 정수 스탯 `patience`(인내심)·`dexterity`(손재주)·`stealth`(인식방해)를 추가했지만 효과는 아직 없다 | 원작 정수 스탯 표기 | `stats.json` |
+| J9 | 정수 드롭 확률: 등급별 2~4%(9→5등급), 무등급 0.5%, 중간 보스 10%, 수호자 33%, 균열 안 ×4. `drop_mode: "original"`이면 0.01% | 명세 §3 | `balance.essence.drop_*` |
+| J10 | 정수 삭제(제거)는 로직과 비용(500만 → ×2)만 있고 버튼은 없다 — 대신전(M4)에서 붙인다 | 시설이 아직 없음 | `EssenceSet.remove/next_delete_cost` |
+
+## 성장 체계 G1 (2026-10-12, docs/PROMPT_FLOOR1_V2.md §5)
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| L1 | 레벨 표·경험치 획득원·예산은 `data/progression.json`(새 단일 파일, `db.prog()`), 레벨업 때 오르는 생명력·영혼력 수치는 자원 수식이 쓰는 `balance.hp`/`balance.soul`에 둔다 | 자원 수식(`{bal.…}`)이 balance만 읽는다 | `progression.json`, `balance.hp/soul` |
+| L2 | 최대 생명력 = 50 + 레벨×10 + 근력×1.5 + 물리내성×3, 영혼력 Lv1 30 → 5레벨까지 +10 → 이후 +30 | 명세 §1·§5.1 | `balance.hp`, `balance.soul` |
+| L3 | 몬스터의 `exp_first_kill` 필드를 없애고 경험치는 항상 계산(10 − 등급, `upper_variant` +1, `rank` ungraded/token 0) | 명세 §14 "경험치 = 10 − 등급" 검사와 한 곳에서 맞추기 | `Progression.first_kill_exp` |
+| L4 | 레벨 하락 시 정수는 **사라지지 않고 잠긴다**(무작위, 효과 없음, 슬롯 차지), 레벨이 돌아오면 먼저 흡수한 순서대로 풀린다 | 명세 §5.1 본문(G1 항목의 "초과 정수 소실"보다 자세한 쪽을 따름) | `EssenceSet.sync_slots` |
+| L5 | 포탈 경험치: 1~5층 포탈은 (포탈, 달)마다 첫 통과에 +2, 6층부터는 포탈마다 한 번. 몇 월인지는 호출하는 쪽이 넘긴다 | 달력은 M4 | `Progression.record_portal(db, id, floor, month)` |
+| L6 | 포탈 통과·숨겨진 포탈·꿈꾸는 영혼은 API만 있고 아직 부르는 곳이 없다(2층 이동·히든 지역·아이템은 G4·M6) | 해당 콘텐츠가 없음 | `record_portal`, `record_hidden_portal`, `use_dreaming_soul` |
+| L7 | 꿈꾸는 영혼: 먹으면 대기, 10레벨에 닿는 순간 +10,000(이미 10레벨이면 바로) | 명세 "복용 후 10레벨 도달 시" | `Progression.gain` |
+| L8 | 몬스터 층 = `floor` 필드, 없으면 `floor_tags`의 `f<n>_` | 기존 데이터 호환 | `Progression.monster_floor` |
+| L9 | 경험치 예산은 데이터가 목표보다 적은 층을 목표치로 대체해 '예상' 합산(지금 1층 실제 4 / 목표 110) | 명세 §5.5 | `ExpBudget` |
+| L10 | 지금 1층 몬스터는 v1 수치라 새 생명력 공식으로 1층이 쉬워졌다(시뮬레이터 승률 98~100%). G2에서 명세 수치로 바꾸며 다시 맞춘다 | 몬스터 개편은 G2 범위 | `tools/sim_battle.gd` |
+
+## 1층 필드 G2 (2026-10-12, docs/PROMPT_FLOOR1_V2.md §1·§6)
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| F1 | 전투 공식을 명세 §1로 바꿨다(근력×2, 방어×4, 명중 95 × (1 + 민첩 차×0.005), 치명 5% + 민첩×0.3%). 명중 상한 100% | 명세 몬스터 수치가 이 공식 기준 | `balance.combat` |
+| F2 | 몬스터 기본 공격 = `natural_weapon {attack, damage_type, ranged}` | 명세 "몬스터는 natural_weapon" | 몬스터 JSON |
+| F3 | 패시브는 몬스터 `passives`와 정수 `passive`가 같은 형식(수정자·on_hit·on_crit·crit_bonus·power_vs_status·reflect_melee·status_immune·start_gauge·see_hidden·flee_penalty) | 정수판 = 몬스터판의 약화본이라 한 체계로 | `Passives.gd` |
+| F4 | 우선도(+1)는 CTB라 없다. 구울 '첫 라운드 우선도 +1' = 전투 시작 게이지 +30, '다음 라운드 맨 뒤' = delay_cost 50 | 라운드가 없음(C7·C9) | `start_gauge`, `delay_cost` |
+| F5 | 상태이상 지속시간은 자기 차례 시작 때 준다 → 자기 행동에 걸리는 상태(실명·공격 버프·은신)는 '효과 볼 차례 + 1'로 준다(명세 2R 실명 = 3) | 기존 StatusSet 규칙 유지 | `statuses.json duration` |
+| F6 | 은신(hidden) = 다른 상대가 있으면 고를 수 없음. 추적 후각(see_hidden)은 꿰뚫음 | 명세 §6.3·§6.6 | `BattleRules.targetable` |
+| F7 | 덫 생성 = 다음 차례 고정 피해(trap_damage) + 속박(도주 불가·민첩 −20%). 무리 사냥 = 고정 근력 +20%(정수판 +10%) | 상태이상 체계로 근사 | `statuses.json`, 스킬 JSON |
+| F8 | 몬스터 계열은 새 필드 `lineage`(goblin·ghoul·blade_wolf·gnome). 기존 `family`(상성 태그 배열)와 이름이 겹쳐서 | 명세 §2의 family | 몬스터 JSON |
+| F9 | 무리 크기는 v1 크기(고블린 2~3, 칼날늑대 1~2) 유지. 명세 "서너 마리"는 혼자인 Lv1에게 승률 10~40% | 동료(M4) 전까지 | `behavior.pack_size` |
+| F10 | 변이종: 지역 `variants` — 3일 차부터, 지역 바깥쪽(중심에서 지역 최대 거리의 50% 이상) 무리의 각 마리가 20% 확률로 같은 계열 변이종 | 명세 §6.0 "외곽에서 무리의 20%" | 층 JSON `regions[].variants` |
+| F11 | 필드 은신: 스킬 `field_stealth {still, moving}`을 가진 탐험가는 몬스터 인식 반경이 그만큼 준다. '서 있음' = 마지막 이동 뒤 게임 0.02시간(실제 약 0.2초) | 명세 도둑걸음·일체화 field_use | `explore.stealth_still_hours` |
+| F12 | 무기 공격력과 종족 스탯 범위를 명세 기준 탐험가에 맞춰 올렸다(`docs/balance/floor1.md`) | 공식 변경으로 옛 수치가 너무 약함 | `items/*.json`, `races.json` |
 
 ## 데이터·구조
 
@@ -112,7 +161,7 @@
 |---|---|---|---|
 | D1 | `_`로 시작하는 데이터 파일/키는 템플릿·주석으로 보고 읽지 않는다 | JSON에는 주석이 없음 | `JsonUtil.list_json`, `Strings._flatten` |
 | D2 | 데이터 항목 이름은 각 JSON의 `name_ko`, UI 문구는 `strings/ko.json` | 지시서 스키마 예시 | — |
-| D3 | 정수 데이터는 사용자 요청으로 비워 두고, 칼날늑대의 `essence_drops`도 비움 | "정수 관련 설정은 우선 공백" | `data/essences/<id>.json` 추가 후 몬스터에 드롭 연결 |
+| D3 | (2026-10-12 해소) 정수는 사용자 요청으로 `docs/PROMPT_FLOOR1_V2.md` 기준 1층 필드 원종 4종부터 채웠다. 몬스터 `essence_drops`는 비워 두면 등급별 확률로 자동 드롭 | — | 아래 "정수" 절 |
 | D4 | (M1에서 해소) 상태이상 부여·해제는 `StatusSet`이 맡고, 기반 점검 화면도 `Actor`를 쓴다 | — | — |
 | D5 | 오토로드에는 `class_name`을 두지 않는다 | 오토로드 이름과 충돌 | — |
 | D6 | 효과 타입·층 생성기는 "폴더의 파일 하나 = 항목 하나"(파일 이름이 id) | 새 타입을 기존 코드 수정 없이 추가 | `ScriptRegistry` |

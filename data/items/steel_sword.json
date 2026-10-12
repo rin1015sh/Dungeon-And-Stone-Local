@@ -16,7 +16,7 @@
     "slot": "main_hand",
     "weapon": {
       "damage_type": "slash",
-      "attack": 5
+      "attack": 10
     }
   },
   "source": "placeholder"

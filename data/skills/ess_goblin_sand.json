@@ -1,0 +1,20 @@
+{
+  "id": "ess_goblin_sand",
+  "name_ko": "모래 뿌리기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.675,
+      "duration": 2
+    }
+  ],
+  "essence_of": "goblin_sand",
+  "source": "placeholder"
+}

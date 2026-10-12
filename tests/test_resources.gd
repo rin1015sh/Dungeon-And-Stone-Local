@@ -28,11 +28,11 @@ func test_core_resources_present() -> void:
 func test_hp_max_formula_uses_stats_and_level() -> void:
 	var sb := _stats({"str": 10, "p_res": 8})
 	var pool := ResourcePool.new(db, sb, [], {}, 2)
-	var expected := _b("hp.base") + 2 * _b("hp.per_level") + 8 * _b("hp.per_p_res") + 10 * _b("hp.per_str")
+	var expected := floorf(_b("hp.base") + 2 * _b("hp.per_level") + 8 * _b("hp.per_p_res") + 10 * _b("hp.per_str"))
 	assert_near(pool.get_max("hp"), expected)
 	assert_near(pool.get_current("hp"), expected, 0.0001, "시작은 가득")
 	sb.set_base("str", 15)
-	assert_near(pool.get_max("hp"), expected + 5 * _b("hp.per_str"), 0.0001, "스탯 변화 → 최대치 재계산")
+	assert_near(pool.get_max("hp"), floorf(expected + 5 * _b("hp.per_str")), 0.0001, "스탯 변화 → 최대치 재계산(내림)")
 	assert_near(pool.get_current("hp"), expected, 0.0001, "현재값은 유지")
 
 

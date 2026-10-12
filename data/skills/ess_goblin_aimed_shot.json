@@ -1,0 +1,21 @@
+{
+  "id": "ess_goblin_aimed_shot",
+  "name_ko": "조준 사격(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 9
+  },
+  "delay_cost": 50,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.105,
+      "damage_type": "pierce",
+      "accuracy": 105
+    }
+  ],
+  "essence_of": "goblin_aimed_shot",
+  "source": "placeholder"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "goblin_vile_stab",
+  "name_ko": "비열한 찌르기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce",
+      "crit_bonus": 0.15,
+      "power_if_status": {
+        "status": [
+          "snare",
+          "goblin_paralysis"
+        ],
+        "power": 1.5
+      }
+    }
+  ],
+  "source": "placeholder"
+}

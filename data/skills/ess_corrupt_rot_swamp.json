@@ -1,0 +1,26 @@
+{
+  "id": "ess_corrupt_rot_swamp",
+  "name_ko": "썩은 진흙 늪(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.255,
+      "damage_type": "poison",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.225
+    }
+  ],
+  "essence_of": "corrupt_rot_swamp",
+  "source": "placeholder"
+}

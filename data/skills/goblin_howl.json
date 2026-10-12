@@ -1,0 +1,21 @@
+{
+  "id": "goblin_howl",
+  "name_ko": "그륵 하울링",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "goblin",
+      "chance": 0.5
+    }
+  ],
+  "unique": true,
+  "uses_per_battle": 1,
+  "source": "placeholder",
+  "notes": "고유 — 정수에 들어가지 않는다"
+}

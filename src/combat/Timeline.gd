@@ -1,17 +1,23 @@
 class_name Timeline
 extends RefCounted
-## CTB 행동 순서(33원정대식): 참가자마다 행동 게이지가 있고, 틱마다 게이지 += 속도(민첩).
+## CTB 행동 순서(33원정대식): 참가자마다 행동 게이지가 있고, 틱마다 게이지 += 속도(민첩 + speed_base).
 ## 게이지가 임계값 이상이면 행동하고, 행동 뒤 게이지 -= 임계값 + 스킬 delay_cost.
 ## 2배 빠르면 대략 2배 자주 행동한다. 틱 반복 대신 "다음 도달까지 필요한 틱"을 계산해 한 번에 넘긴다.
 
 var threshold: float = 100.0
 var min_speed: float = 1.0
+var speed_base: float = 0.0
 var units: Array[Combatant] = []
 
 
-func _init(p_threshold: float = 100.0, p_min_speed: float = 1.0) -> void:
+func _init(p_threshold: float = 100.0, p_min_speed: float = 1.0, p_speed_base: float = 0.0) -> void:
 	threshold = maxf(1.0, p_threshold)
 	min_speed = maxf(0.001, p_min_speed)
+	speed_base = maxf(0.0, p_speed_base)
+
+
+func speed_of(c: Combatant) -> float:
+	return c.speed(min_speed, speed_base)
 
 
 func add(c: Combatant) -> void:
@@ -26,7 +32,7 @@ func next() -> Combatant:
 	var ticks := _ticks_needed(c, c.gauge)
 	for u in units:
 		if u.is_active():
-			u.gauge += u.speed(min_speed) * ticks
+			u.gauge += speed_of(u) * ticks
 	return c
 
 
@@ -46,7 +52,7 @@ func preview(n: int) -> Array[Combatant]:
 		var ticks := _ticks_needed(c, g[c])
 		for u in units:
 			if u.is_active():
-				g[u] = float(g[u]) + u.speed(min_speed) * ticks
+				g[u] = float(g[u]) + speed_of(u) * ticks
 		g[c] = float(g[c]) - threshold
 		out.append(c)
 	return out
@@ -69,13 +75,13 @@ func _pick(list: Array[Combatant], g: Dictionary) -> Combatant:
 func _before(a: Combatant, b: Combatant, g: Dictionary) -> bool:
 	if not is_equal_approx(float(g[a]), float(g[b])):
 		return float(g[a]) > float(g[b])
-	if not is_equal_approx(a.speed(min_speed), b.speed(min_speed)):
-		return a.speed(min_speed) > b.speed(min_speed)
+	if not is_equal_approx(speed_of(a), speed_of(b)):
+		return speed_of(a) > speed_of(b)
 	return a.order < b.order
 
 
 func _ticks_needed(c: Combatant, gauge: float) -> float:
-	return maxf(0.0, (threshold - gauge) / c.speed(min_speed))
+	return maxf(0.0, (threshold - gauge) / speed_of(c))
 
 
 func _gauges(list: Array[Combatant]) -> Dictionary:

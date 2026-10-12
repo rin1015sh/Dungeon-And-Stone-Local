@@ -32,6 +32,7 @@ var in_combat: bool = false
 var pos: Vector2i                ## 몸 중심이 있는 칸
 var fpos: Vector2 = Vector2.ZERO  ## 몸 중심의 연속 좌표(칸 단위, 칸 (x, y)의 중심 = x + 0.5, y + 0.5)
 var facing: Vector2i = Vector2i(0, 1)
+var last_move_hours: float = -1.0  ## 마지막으로 움직인 게임 시각(은신 정수의 '정지 중' 판정)
 var vision_m: float = 0.0
 var ended: bool = false
 var steps: int = 0
@@ -233,9 +234,12 @@ func pass_time(hours: float) -> void:
 		clock.advance(h)
 		player.advance_hours(h)
 		time_passed.emit(h)
+		for gone: String in player.essences.expire_pending(clock.total_hours):
+			message.emit("essence.expired", {"name": DataNames.entry(db, "essences", gone)}, "warn")
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
+		monsters.set_player_stealth(FieldStealth.of(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
 			engage(g, false)
@@ -279,7 +283,7 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
 	if not killed.is_empty() and not player.dead:
-		for m: Dictionary in Rewards.grant(player, killed, rng):
+		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	if result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)

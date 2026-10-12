@@ -1,0 +1,22 @@
+{
+  "id": "goblin_trap",
+  "name_ko": "덫 생성",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "trap_set"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare"
+    }
+  ],
+  "source": "original",
+  "notes": "[원] 대상이 다음 차례에 덫(고정 피해 bal.status.trap_damage) + 속박. 명세 위력 60은 고정 피해로 근사"
+}

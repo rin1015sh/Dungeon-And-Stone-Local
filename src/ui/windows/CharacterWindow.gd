@@ -1,6 +1,6 @@
 class_name CharacterWindow
 extends GothicWindow
-## 캐릭터 창: 이름·종족·템플릿 · 레벨과 공적(경험치) · 자원 · 핵심 스탯과 장비 보정 · 정수 슬롯(정수 설정 보류).
+## 캐릭터 창: 이름·종족·템플릿 · 레벨과 공적(경험치) · 자원 · 핵심 스탯과 장비 보정 · 정수(슬롯·흡수 대기, EssencePanel).
 
 var pc: PlayerCharacter
 
@@ -33,7 +33,7 @@ func refresh() -> void:
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
 	bar.custom_minimum_size.y = UiTheme.metric("bar_height", 14)
-	var prev := int((db.bal("level.exp_table", [0]) as Array)[lv - 1])
+	var prev := Progression.exp_for_level(db, lv)
 	bar.max_value = maxf(1.0, float(next - prev)) if next >= 0 else 1.0
 	bar.value = float(pc.progression.exp_total - prev) if next >= 0 else 1.0
 	bar.add_theme_stylebox_override("fill", UiTheme.box(UiTheme.color("gold"), Color.TRANSPARENT, 2, 0))
@@ -51,19 +51,15 @@ func refresh() -> void:
 	_stat(grid, Strings.t("character.crit"), DamageCalc.crit_chance(db, pc) * 100.0, 0.0, "%")
 	_body.add_child(UiTheme.label(Strings.t("character.attack_type", {"type": DataNames.tag(db, "damage_types", pc.attack_damage_type())}), "small", "text_dim"))
 	_body.add_child(HSeparator.new())
-	var slots := Progression.essence_slots(db, lv)
-	_body.add_child(UiTheme.label(Strings.t("character.essence_slots", {"n": slots}), "body", "text_title"))
-	var row := HFlowContainer.new()
-	_body.add_child(row)
-	for i in slots:
-		var s := Panel.new()
-		s.custom_minimum_size = Vector2.ONE * UiTheme.metric("hotbar_slot", 46)
-		s.add_theme_stylebox_override("panel", GothicStyle.slot_box())
-		s.tooltip_text = Strings.t("character.essence_empty")
-		row.add_child(s)
-	var note := UiTheme.label(Strings.t("character.essence_note"), "small", "text_dim")
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_body.add_child(note)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = UiTheme.metric("essence_panel_height", 130)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_body.add_child(scroll)
+	var essences := EssencePanel.new()
+	essences.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	essences.setup(pc)
+	essences.changed.connect(refresh)
+	scroll.add_child(essences)
 
 
 func _stat(grid: GridContainer, label: String, value: float, bonus: float, suffix: String = "") -> void:

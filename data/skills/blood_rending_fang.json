@@ -1,16 +1,23 @@
 {
-  "id": "bite",
-  "name_ko": "물어뜯기",
+  "id": "blood_rending_fang",
+  "name_ko": "찢는 이빨",
   "target": "enemy_single",
-  "cost": {},
+  "cost": {
+    "soul": 4
+  },
   "delay_cost": 0,
   "cooldown": 0,
   "effects": [
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.0,
+      "power": 0.9,
       "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.45
     }
   ],
   "source": "placeholder"

@@ -83,4 +83,12 @@ func show_monster(id: String) -> void:
 	else:
 		lines.append(Strings.t("bestiary.stats_unknown"))
 	lines.append(Strings.t("bestiary.affinity", {"aff": BattleKnowledge.describe_affinities(db, k, id)}))
+	if d.has("variant_of"):
+		lines.append(Strings.t("bestiary.variant_of", {"name": DataNames.entry(db, "monsters", JsonUtil.get_str(d, "variant_of"))}))
+	var shared := Lineage.shared_skills(db, id)
+	for sk: Variant in shared:
+		var names := PackedStringArray()
+		for o: Variant in shared[sk]:
+			names.append(DataNames.entry(db, "monsters", str(o)) if k.has_seen(str(o)) else unknown)
+		lines.append(Strings.t("bestiary.shared", {"skill": DataNames.entry(db, "skills", str(sk)), "list": ", ".join(names)}))
 	_detail.text = "\n".join(lines)

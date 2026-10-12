@@ -7,6 +7,8 @@ var db: GameDatabase
 var source: Actor
 var target: Actor
 var rng: Rng
+## 효과 레지스트리(전투 중이면 Battle이 넣는다) — 패시브의 적중 시 효과를 적용할 때 쓴다.
+var registry: EffectRegistry = null
 var item_id: String = ""
 var success: bool = false
 var messages: Array[Dictionary] = []  # {"key": String, "args": Dictionary, "kind": String}

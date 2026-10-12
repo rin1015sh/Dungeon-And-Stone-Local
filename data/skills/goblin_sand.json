@@ -1,0 +1,19 @@
+{
+  "id": "goblin_sand",
+  "name_ko": "모래 뿌리기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.9
+    }
+  ],
+  "source": "placeholder",
+  "notes": "명중 90 → 부여 확률 0.9"
+}
