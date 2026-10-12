@@ -53,7 +53,29 @@ static func problems(map: FloorMap, lay: CrossLayout) -> PackedStringArray:
 		out.append("암흑지대가 팔 끝 정의와 다른 칸 %d개" % dark_bad)
 	if lit_in_dark > 0:
 		out.append("암흑지대 안 빛나는 타일 %d개" % lit_in_dark)
+	var narrow := GridWiden.count_narrow(GridWiden.walk_cells(map), map.width, map.height)
+	if narrow > 0:
+		out.append("한 칸 폭 목 %d곳(통로 폭은 최소 2칸)" % narrow)
+	var spur := max_dead_end(map)
+	if spur > DEAD_END_LIMIT:
+		out.append("막다른 길 %d칸(허용 %d칸 이하의 작은 홈만)" % [spur, DEAD_END_LIMIT])
 	return out
+
+
+## 허용하는 막다른 곳 크기(칸). 생성기가 막다른 곳을 메우므로 남는 것은 그 뒤 폭 맞추기에서 생긴 2×2 홈 정도.
+const DEAD_END_LIMIT := 6
+
+
+static func hubs(map: FloorMap) -> Array[Vector2i]:
+	var out: Array[Vector2i] = [map.center]
+	for portal: Dictionary in map.portals:
+		out.append(portal["pos"])
+	return out
+
+
+## 가장 큰 막다른 곳(GridSpurs)의 칸 수.
+static func max_dead_end(map: FloorMap) -> int:
+	return GridSpurs.max_spur(GridWiden.walk_cells(map), map.width, map.height, hubs(map))
 
 
 ## 지역 스폰 검사: 각 지역에서 n무리를 뽑아 표에 없는 몬스터·구역 밖 칸이 나오면 문제로 적는다.

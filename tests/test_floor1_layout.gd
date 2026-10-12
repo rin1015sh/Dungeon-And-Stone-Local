@@ -26,6 +26,34 @@ func test_layout_checks_pass_for_many_seeds() -> void:
 		assert_eq(problems.size(), 0, "시드 %d: %s" % [seed_value, ", ".join(problems)])
 
 
+func test_corridors_two_wide_and_no_dead_ends() -> void:
+	for seed_value in [1, 2, 3]:
+		var map := _gen(seed_value)
+		assert_eq(GridWiden.count_narrow(GridWiden.walk_cells(map), map.width, map.height), 0, "한 칸 폭 목 없음 (시드 %d)" % seed_value)
+		assert_eq(CrossLayoutCheck.max_dead_end(map), 0, "막다른 길 없음 — 모든 길이 다른 길로 이어진다 (시드 %d)" % seed_value)
+
+
+func test_spur_detector() -> void:
+	# 2칸 폭 고리 + 고리에서 뻗은 2칸 폭 막다른 길 6칸 → 막다른 길만 잡힌다
+	var w := 20
+	var cells := PackedByteArray()
+	cells.resize(w * w)
+	cells.fill(1)
+	for y in range(2, 10):
+		for x in range(2, 10):
+			if x < 4 or x > 7 or y < 4 or y > 7:
+				cells[y * w + x] = 0
+	for x in range(10, 16):
+		for y in range(2, 4):
+			cells[y * w + x] = 0
+	var hubs: Array[Vector2i] = []
+	var spurs := GridSpurs.spur_cells(cells, w, w, hubs)
+	assert_eq(spurs[3 * w + 15], 1, "막다른 끝")
+	assert_eq(spurs[3 * w + 5], 0, "고리는 막다른 길이 아니다")
+	assert_eq(GridSpurs.max_spur(cells, w, w, hubs), 12)
+	assert_eq(GridWiden.count_narrow(cells, w, w), 0)
+
+
 func test_cross_shape_and_compass_directions() -> void:
 	var map := _gen(1)
 	var lay := _lay()

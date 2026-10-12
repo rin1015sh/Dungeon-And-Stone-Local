@@ -2,7 +2,7 @@ extends SceneTree
 ## 층 전체 지도를 PNG로 그리고 검사 결과를 출력한다(디버그 미니맵).
 ##   godot --headless --path . --script res://tools/floor_map.gd -- --seed=5 --out=C:/tmp/f1.png [--floor=f1_crystal_cave] [--scale=5] [--no-spawns]
 ## 색(data/render.json "debug_map"): 구역별 바닥색(중심부·동·서·남·북), 같은 색의 어두운 벽, 수정벽, 암흑지대(어둡게 + 빗금),
-## 기념비(흰색), 2층 포탈(분홍), 시작 위치(하늘색), 무작위 랜드마크(노란 테두리), 몬스터 무리(몬스터별 점).
+## 기념비(흰색), 2층 포탈(분홍), 시작 위치(하늘색), 무작위 랜드마크(노란 테두리), 몬스터 무리(몬스터별 점), 막다른 곳(주황).
 ## 검사(CrossLayoutCheck): 네 포탈 도달·나침반 경로·연결·암흑지대 위치·지역 스폰. 문제가 있으면 종료 코드 1.
 
 var _args: Dictionary = {"seed": "1", "out": "user://floor_map.png", "floor": "f1_crystal_cave", "scale": ""}
@@ -59,6 +59,7 @@ func _print_stats(map: FloorMap, lay: CrossLayout) -> void:
 		var straight := absi((portal["pos"] as Vector2i).x - map.center.x) + absi((portal["pos"] as Vector2i).y - map.center.y)
 		print("  %s 포탈 %s → %s, 기념비에서 최단 %d걸음(직선 %d, 굴곡 %.2f배)" % [portal["dir"], portal["pos"], portal["dest"], path, straight, float(path) / maxf(1.0, straight)])
 	print("  시작 위치 %s (%s), 암흑지대 깊이 %d칸" % [map.entry, map.zone_at(map.entry), lay.dark_depth])
+	print("  한 칸 폭 목 %d곳, 가장 큰 막다른 곳 %d칸" % [GridWiden.count_narrow(GridWiden.walk_cells(map), map.width, map.height), CrossLayoutCheck.max_dead_end(map)])
 
 
 func _path_len(map: FloorMap, a: Vector2i, b: Vector2i) -> int:
@@ -98,6 +99,11 @@ func _draw(map: FloorMap, fm: FieldMonsters, cfg: Dictionary, s: int) -> Image:
 		img.fill_rect(Rect2i(p * s, Vector2i(s, s)), col)
 		if map.dark[i] != 0 and s >= 3:
 			img.set_pixel(p.x * s + (p.y % 2) * (s - 1), p.y * s, hatch)
+	if map.has_zones():
+		var dead := GridSpurs.spur_cells(GridWiden.walk_cells(map), map.width, map.height, CrossLayoutCheck.hubs(map))
+		for i in dead.size():
+			if dead[i] != 0:
+				img.fill_rect(Rect2i(map.pos_of(i) * s, Vector2i(s, s)), _c(cfg, "dead_end"))
 	for rec: Dictionary in map.landmarks:
 		var r: Rect2i = rec["rect"]
 		_outline(img, Rect2i(r.position * s, r.size * s), _c(cfg, "landmark"))

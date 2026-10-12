@@ -12,17 +12,18 @@
   "ambient_source": "placeholder",
   "ambient_color": "#c4bcff",
   "gen": {
-    "_comment": "거대한 십자가(CrossLayout) + 스파게티 동굴(CaveCarver). 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. 매 입장 새로: 동굴 지형. 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률).",
-    "core_size": 31,
-    "arm_length": 44,
-    "arm_width": 25,
+    "_comment": "거대한 십자가(CrossLayout) + 스파게티 동굴(CaveCarver). 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. 매 입장 새로: 동굴 지형. 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
+    "core_size": 51,
+    "arm_length": 96,
+    "arm_width": 45,
     "margin": 2,
     "outline_jitter": 2,
-    "center_radius": 5,
+    "center_radius": 6,
     "core_fill_ratio": 0.45,
     "core_smooth_steps": 4,
-    "min_region": 20,
-    "wide_chance": 0.28,
+    "min_region": 30,
+    "wide3_chance": 0.35,
+    "widen_passes": 8,
     "spine": {
       "_comment": "등뼈 길(기념비 → 포탈, 뒤로 가지 않음 = 나침반 경로 보장). 구간 종류 가중치 out(직진)·side(옆걸음)·stair(계단식 대각), 구간 길이 [최소, 최대].",
       "weights": {
@@ -31,34 +32,34 @@
         "stair": 0.28
       },
       "outward_run": [
-        2,
-        4
+        3,
+        6
       ],
       "side_run": [
-        2,
-        7
+        3,
+        10
       ],
       "stair_run": [
-        2,
-        5
+        3,
+        7
       ],
       "long_run_chance": 0.06,
       "long_run": [
-        6,
-        9
+        8,
+        12
       ]
     },
     "branches": {
-      "_comment": "곁가지로 팔을 채운다. density = 팔 사각형 중 바닥 비율 목표. heading_weights = [바깥, 왼, 오른, 안쪽]. join_after걸음 뒤 다른 길에 닿으면 합류(순환). 합류 못 하면 loop_chance로 loop_reach칸 떨어진 길에 다시 잇고, 아니면 dead_end_room_chance로 끝에 작은 공동.",
-      "density": 0.4,
-      "max_per_arm": 140,
+      "_comment": "곁가지로 팔을 채운다. density = 팔 사각형 중 바닥 비율 목표. heading_weights = [빈 땅 쪽, 왼, 오른, 반대]. join_after걸음 뒤 다른 길에 닿으면 합류(순환). 끝까지 못 닿으면 reconnect_radius 안의 가장 가까운 굴로 다시 잇고, 그것도 안 되면 되돌린다(막다른 길 없음). 합류 자리에 join_room_chance로 작은 공동(room_radius).",
+      "density": 0.45,
+      "max_per_arm": 400,
       "steps": [
-        14,
-        40
+        20,
+        60
       ],
       "seg_run": [
-        2,
-        6
+        3,
+        8
       ],
       "heading_weights": [
         0.34,
@@ -66,28 +67,24 @@
         0.26,
         0.14
       ],
-      "join_after": 4,
-      "empty_clearance": 3,
-      "loop_chance": 0.35,
-      "loop_reach": [
-        5,
-        12
-      ],
-      "dead_end_room_chance": 0.3,
+      "join_after": 5,
+      "empty_clearance": 4,
+      "reconnect_radius": 30,
+      "join_room_chance": 0.2,
       "room_radius": [
-        1.4,
-        2.4
+        2.0,
+        3.2
       ]
     },
-    "roughen_chance": 0.08,
-    "dark_depth": 10,
-    "portal_inset": 4,
-    "portal_room_radius": 2.5,
+    "roughen_chance": 0.06,
+    "dark_depth": 18,
+    "portal_inset": 6,
+    "portal_room_radius": 3.5,
     "crystal_wall_chance": 0.07,
     "crystal_dark_margin": 3,
-    "landmark_min_distance": 10,
-    "entry_min_distance": 18,
-    "entry_dark_margin": 4,
+    "landmark_min_distance": 20,
+    "entry_min_distance": 30,
+    "entry_dark_margin": 6,
     "tiles": {
       "floor": "cave_floor",
       "wall": "rock_wall",
@@ -209,12 +206,12 @@
   "source": "original",
   "spawn": {
     "groups_per_region": [
-      2,
-      3
+      5,
+      7
     ],
     "respawn_hours": 24,
     "growth_every_hours": 24,
-    "max_extra_groups": 2
+    "max_extra_groups": 6
   },
   "lord": {
     "_comment": "계층군주 소환(LordWatch, 명세 §7.1). 원작: 3일 차 이후 5인 이상이 한곳에 머물면 확률 소환, 하루 안에 사실상 확정, 6시간마다 재소환, 시야 2m",

@@ -7,7 +7,7 @@
 - **M0 기반: 완료 · 검증됨**, **M1 탐험: 완료 · 검증됨** (Godot 4.7.2, Windows, `tools/check.sh` 전 단계 통과 + 스크린샷 확인)
 - 실행하면 타이틀 → **새 탐험가**(이름·종족·템플릿·스탯 굴림) → **1층 수정동굴**(매번 새로 생성)을 3/4 시점으로 탐험한다. 시야·안개·횃불·허기·시간·층 폐쇄·아사가 작동하고, F1로 디버그 패널을 연다. 층이 닫히거나 죽으면 결과 화면 → 타이틀(도시는 M4).
 - 원격 저장소: GitHub `rin1015sh/Dungeon-And-Stone-Local`. 2026-10-12 클라우드 세션 작업(정수 1차·G1~G8)은 PR #1~#3으로 `main`에 병합됐다(`d0b380e`). 안쪽 `Dungeon And Stone/` 폴더는 예전 클론으로 이제 필요 없다(사용자가 지워도 된다).
-- **1층 십자가 재설계: 완료 (2026-10-12)** — 1층 = 거대한 십자가(중심부 + 4팔), 팔 안 스파게티 굴, 팔 끝 암흑지대·2층 포탈(고정), 구역별 스폰 표, 통로 중간 시야 축소 오류 제거. 아래 "1층 십자가 재설계" 절.
+- **1층 십자가 재설계: 완료 (2026-10-12)** — 1층 = 거대한 십자가(247×247, 중심부 + 4팔), 팔 안 스파게티 굴(폭 2~3칸, 막다른 길 없음), 팔 끝 암흑지대·2층 포탈(고정), 구역별 스폰 표, 통로 중간 시야 축소 오류 제거. 아래 "1층 십자가 재설계" 절.
 - **사용자 결정 (2026-10-12)**: ① 전투는 **CTB 유지**(명세 v2 §1의 라운드제는 쓰지 않음) — 민첩 차이를 완화하는 `speed_base` 5 도입 ② **도시(M4)는 미궁 1층을 완전히 완성한 뒤**에 한다 → 순서는 G1 → G2 → G3 → G4 → G5~G8 → M4.
 - **G8 강철의 묘: 완료 · 검증됨 (2026-10-12) — 미궁 1층 완성** — 명세 몬스터 7종·정수 7종·철인 일디움, 숨은 함정(탐지·해제), 수수께끼 문지기(대화창·벽화 힌트·지식), 임시 문지기 삭제, 경험치 1층 합계 108(명세), 시뮬레이터 21/21(수치 조정 GI5). 아래 "G8" 절.
 - **G7 녹색 탄광: 완료 · 검증됨 (2026-10-12)** — 명세 몬스터 7종·정수 7종·킹 슬라임·고블린 폭탄병·히든 피스 2개(초록 보석·고블 쿼츠)·폭약 출구, 새 전투 규칙(분열·흡수·소환 만료·자폭·유도 폭발·상태 적중 효과·방어 무시), 소화력 스탯, 시뮬레이터 20/20(수치 조정 GM5). 아래 "G7" 절.
@@ -163,7 +163,15 @@
 - `FloorMap.zones/zone_ids`(구역 층), `FieldMonsters`(지역 `zone`·`weights`, 구역 층이 없으면 예전 방향 원뿔), `ExploreInteract._use_floor_portal`(dest — 2층이 생기면 여기서 연결), `WorldRules`(zone·weights 검사).
 - 데이터: `floors/f1_crystal_cave.json` gen 전면 교체·regions 5개(zone·weights, variants 삭제)·portals `dest`, `render.json debug_map`(지도 색).
 - 도구 `tools/floor_map.gd`, 테스트 `tests/test_floor1_layout.gd` 10개, `test_explore_gen`·`test_field_monsters`·`test_floor1`(변이종 규칙은 가짜 지역으로) 수정.
-- 조정 값(전부 `data/floors/f1_crystal_cave.json` gen): 크기 `core_size`·`arm_length`·`arm_width`·`margin`, 윤곽 `outline_jitter`, 굴곡 `spine`(weights·run 길이·long_run_chance), 굴 밀도·갈림 `branches`(density·steps·seg_run·heading_weights·loop_chance·dead_end_room_chance), 통로 폭 `wide_chance`, 벽면 `roughen_chance`, 암흑지대 `dark_depth`, 포탈 `portal_inset`·`portal_room_radius`, 수정 `crystal_wall_chance`·`crystal_dark_margin`, 시작 `entry_min_distance`·`entry_dark_margin`. 스폰 표: 같은 파일 `regions`. 가정 CR1~CR9.
+- 조정 값(전부 `data/floors/f1_crystal_cave.json` gen): 크기 `core_size`·`arm_length`·`arm_width`·`margin`, 윤곽 `outline_jitter`, 굴곡 `spine`(weights·run 길이·long_run_chance), 굴 밀도·갈림 `branches`(density·steps·seg_run·heading_weights — 2차 항목은 아래), 벽면 `roughen_chance`, 암흑지대 `dark_depth`, 포탈 `portal_inset`·`portal_room_radius`, 수정 `crystal_wall_chance`·`crystal_dark_margin`, 시작 `entry_min_distance`·`entry_dark_margin`. 스폰 표: 같은 파일 `regions`. 가정 CR1~CR9.
+
+**2차 (같은 날, 사용자 요청)**: ① 통로 폭 최소 2 ~ 3칸 ② "위에 공간만 있고 벽으로 막혀 못 가는" 곳을 없애고 모든 길이 주요 거점(기념비·포탈)으로 이어지게 ③ 맵 2~3배 이상.
+- 원인 ②: 1칸 폭 가로 통로는 3/4 시점에서 남쪽 벽 윗면(앞면 높이만큼 위로 그림)에 거의 다 가려 바닥이 위쪽에 조금만 보였고, 곁가지 끝이 막다른 길이었다(1차는 일부러 막다른 길을 섞었다).
+- 굴 파기: 2칸/3칸 정사각 붓(`wide3_chance`), 곁가지는 다른 굴에 합류하거나 다시 이어지고 못 하면 되돌림(`reconnect_radius`·`reconnect_keep_off`), 합류 자리 공동(`join_room_chance`).
+- 새 `GridWiden`(한 칸 폭 목 없애기 — 지형·지도 두 단계), 새 `GridSpurs`(막다른 곳 찾기 → 생성기가 메움, `trim_passes`). 도장은 벽을 찍지 않게(네모 수정 삼거리 → 7×7 공터).
+- 크기: 지도 123 → 247(한 변 2배, 넓이 4배), 암흑지대 깊이 18, 무리 지역마다 5~7. 생성 약 0.8~1초(찍을 때마다 하던 전체 지도 검사를 없애고 루프를 줄였다).
+- 검사·테스트: `CrossLayoutCheck`에 통로 폭·막다른 길 추가, `test_floor1_layout`에 2개(폭·막다른 길, 막다른 길 찾기 단위 테스트). `tools/floor_map.gd`가 막다른 곳을 주황으로 칠한다.
+- 조정 값 추가(같은 gen): 굴 폭 `wide3_chance`, 폭 맞추기 `widen_passes`, 막다른 곳 메우기 `trim_passes`, 다시 잇기 `branches.reconnect_radius`·`reconnect_keep_off`, 합류 공동 `branches.join_room_chance`. 1차의 `wide_chance`·`loop_chance`·`loop_reach`·`dead_end_room_chance`는 없앴다. 가정 CR1·CR2·CR4·CR5·CR8 갱신, CR10~CR13.
 
 **아직 안 된 것**: 2층(포탈은 안내만), 실제 키보드로 팔 하나를 끝까지 걸어 보는 체감 확인.
 
@@ -436,6 +444,7 @@
 
 | 날짜 | 범위 | 환경 | 결과 |
 |---|---|---|---|
+| 2026-10-12 | 1층 십자가 2차(통로 폭 2~3·막다른 길 없음·247×247) | Godot 4.7.2 / Windows 11 | check.sh 통과: 데이터 검증 오류 0(경고 1: 스프라이트 없음 95), 단위 테스트 220/220(test_floor1_layout 2 추가), UI 스모크, 메인 씬 스모크. 생성 약 0.8~1초, 한 걸음 약 3ms. `tools/floor_map.gd` 시드 1~17: 한 칸 폭 목 0, 막다른 곳 0, 검사 통과. 캡처: 팔 통로(2~3칸 폭, 가로 통로 바닥이 보임)·횃불+안개 걷기. UI 스모크 혼자 7/7 통과(다른 Godot과 겹친 1번은 "+1시간" 버튼 단계에서 실패 — 1차와 같은 겹침 증상). 실제 키보드로 팔을 끝까지 걷는 체감은 미확인 |
 | 2026-10-12 | 1층 십자가 재설계 | Godot 4.7.2 / Windows 11 | check.sh 통과: 데이터 검증 오류 0(경고 1: 스프라이트 없음 95), 단위 테스트 218/218(test_floor1_layout 10 추가), UI 스모크, 메인 씬 스모크. 생성 0.25~0.45초, 한 걸음 1.4ms. `tools/floor_map.gd` 검사 시드 1~3·9~20 통과(테스트는 1~8), 지도 PNG로 십자가·구역·암흑지대·고정 장소 확인. 캡처: 팔 통로 "수정 빛 · 시야 6.0m", 포탈 "암흑 · 시야 1.0m", 횃불+안개 걷기. UI 스모크 혼자 12/12 통과 — 첫 실행 1번 "전투가 끝난다" 실패는 재현 안 됨(실패 문구에 적 목록을 넣어 둠), 다른 Godot과 동시에 돌리면 시간 제한 실패가 난다. 캡처 1장이 흰 화면이었고 다시 찍으니 정상. 실제 키보드로 팔을 끝까지 걷는 체감은 미확인 |
 | 2026-10-10 | M0 전체 | Godot 4.7.2 / Windows 11 | check.sh 통과: 데이터 검증(오류 0), 단위 테스트 43/43, UI 스모크, 메인 씬 스모크. 스크린샷으로 한글 확인 |
 | 2026-10-10 | 폰트 번들 | 〃 | Noto Sans KR Regular 적용 스크린샷 확인 |

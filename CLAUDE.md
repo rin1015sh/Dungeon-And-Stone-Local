@@ -91,7 +91,7 @@ src/
                          BattleSpawns(분열·흡수·소환 만료),
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
-                         CrossLayout·CrossTerrain·CaveCarver·CrossLayoutCheck(1층 십자가 뼈대·굴 파기·검사),
+                         CrossLayout·CrossTerrain·CaveCarver·CrossLayoutCheck(1층 십자가 뼈대·굴 파기·검사), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환),
                          RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}

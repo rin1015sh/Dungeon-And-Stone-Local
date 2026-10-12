@@ -142,6 +142,7 @@
     "portal": "#ff3df5",
     "entry": "#3df5ff",
     "landmark": "#ffe14a",
+    "dead_end": "#ff8a00",
     "monsters": {"blade_wolf": "#ff2a2a", "gnome": "#2aff4a", "ghoul": "#c02aff", "goblin": "#ffd02a"},
     "monster_default": "#ffffff"
   }

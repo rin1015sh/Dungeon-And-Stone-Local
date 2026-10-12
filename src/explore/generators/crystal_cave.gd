@@ -3,7 +3,8 @@ extends FloorGenerator
 ## 1층 수정동굴 생성기 — 거대한 두꺼운 십자가(CrossLayout: 중심부 + 동·서·남·북 팔).
 ## 고정(시드 무관): 십자가 구역, 중앙 대현자 기념비, 팔 끝 2층 포탈 4개, 팔 끝 암흑지대 4곳.
 ## 입장마다 새로(시드): 중심부 동굴(셀룰러 오토마타), 팔 안의 스파게티 동굴(CaveCarver), 무작위 랜드마크, 수정벽, 시작 위치.
-## 순서: 동굴 지형(CrossTerrain) → 타일·구역·암흑지대 → 기념비 → 포탈 → 무작위 랜드마크 → 수정벽(암흑지대 제외) → 시작 위치.
+## 순서: 동굴 지형(CrossTerrain) → 타일·구역·암흑지대 → 기념비 → 포탈 → 무작위 랜드마크 → 통로 폭 다시 맞추기
+##       → 수정벽(암흑지대 제외) → 시작 위치.
 ## 불변식(테스트가 확인): 걷는 칸은 모두 이어져 있고, 기념비 옆에서 네 포탈 모두 그 팔 방향으로만(뒤로 가지 않고) 걸어 닿는다.
 
 const STAMP_TRIES := 60
@@ -18,6 +19,8 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	_place_monument(db, map, floor_def)
 	_place_portals(map, lay, floor_def, tiles)
 	_place_random_landmarks(db, map, lay, floor_def, rng)
+	_widen_map(map, g, tiles)
+	_trim_dead_ends(map, g, tiles)
 	_place_crystals(map, lay, g, tiles, rng)
 	_place_entry(map, lay, g, JsonUtil.get_str(tiles, "floor"), rng)
 	return map
@@ -74,7 +77,7 @@ func _to_map(db: GameDatabase, floor_def: Dictionary, lay: CrossLayout, cells: P
 			map.tiles[i] = floor_index
 		var zone := lay.zone_of(p)
 		if not zone.is_empty():
-			map.set_zone(p, zone)
+			map.zones[i] = map.zone_ids.find(zone)
 		if lay.is_dark(p):
 			map.dark[i] = 1
 	return map
@@ -116,7 +119,8 @@ func _stamp_at(map: FloorMap, lm: Dictionary, at: Vector2i) -> Dictionary:
 	return record
 
 
-## 무작위 랜드마크: 암흑지대 밖 바닥에 찍되, 연결성과 나침반 경로가 그대로일 때만 남긴다(아니면 되돌리고 다시).
+## 무작위 랜드마크: 십자가 안·암흑지대 밖 바닥에 찍는다. 도장은 벽을 찍지 않고 바닥과 그 바닥으로 둘러싼 장식(수정·바위·연못)만
+## 찍으므로 연결과 나침반 경로를 깨지 않는다(둘레 바닥으로 옆걸음해 돌아갈 수 있다 — CrossLayoutCheck가 여러 시드로 확인).
 func _place_random_landmarks(db: GameDatabase, map: FloorMap, lay: CrossLayout, floor_def: Dictionary, rng: Rng) -> void:
 	var min_dist := JsonUtil.get_float(JsonUtil.get_dict(floor_def, "gen"), "landmark_min_distance", 10.0)
 	for spec: Variant in JsonUtil.get_array(floor_def, "landmarks"):
@@ -136,19 +140,15 @@ func _stamp_random(map: FloorMap, lay: CrossLayout, lm: Dictionary, min_dist: fl
 			continue
 		if not _far_from(map, at, min_dist):
 			continue
-		var backup := map.tiles.duplicate()
-		var record := _stamp_at(map, lm, at)
-		if _all_walkable_connected(map) and _compass_ok(map):
-			return
-		map.tiles = backup
-		map.landmarks.erase(record)
+		_stamp_at(map, lm, at)
+		return
 	push_warning("crystal_cave: 랜드마크 '%s'를 놓을 자리를 찾지 못했다" % lm.get("id"))
 
 
-## 도장 전체(한 칸 둘레 포함)가 십자가 안이고 암흑지대 밖인가.
+## 도장 전체(두 칸 둘레 포함)가 십자가 안이고 암흑지대 밖인가.
 func _rect_inside(map: FloorMap, lay: CrossLayout, at: Vector2i, lm: Dictionary) -> bool:
 	var stamp := JsonUtil.get_array(lm, "stamp")
-	var r := Rect2i(at - GridAlgo.stamp_anchor(stamp, JsonUtil.get_str(lm, "anchor")), GridAlgo.stamp_size(stamp)).grow(1)
+	var r := Rect2i(at - GridAlgo.stamp_anchor(stamp, JsonUtil.get_str(lm, "anchor")), GridAlgo.stamp_size(stamp)).grow(2)
 	for y in range(r.position.y, r.end.y):
 		for x in range(r.position.x, r.end.x):
 			if map.zone_at(Vector2i(x, y)).is_empty() or lay.is_dark(Vector2i(x, y)):
@@ -168,20 +168,36 @@ static func monument_side(map: FloorMap, dir: String) -> Vector2i:
 	return map.center + CrossLayout.axis(dir) * 2
 
 
-func _compass_ok(map: FloorMap) -> bool:
-	for portal: Dictionary in map.portals:
-		var dir := str(portal["dir"])
-		if not CrossLayout.compass_path(map, monument_side(map, dir), dir, portal["pos"]):
-			return false
-	return true
+## 도장(연못·바위·수정)이 지형과 맞닿아 생긴 한 칸 폭 목을 둘레 바위벽을 깎아 2칸으로(GridWiden, 메우지는 않는다).
+func _widen_map(map: FloorMap, g: Dictionary, tiles: Dictionary) -> void:
+	var cells := GridWiden.walk_cells(map)
+	var can := PackedByteArray()
+	can.resize(cells.size())
+	var wall_index := map.index_of(JsonUtil.get_str(tiles, "wall"))
+	for i in cells.size():
+		can[i] = 1 if map.tiles[i] == wall_index and map.zones[i] != 0 else 0
+	GridWiden.widen(cells, can, map.width, map.height, JsonUtil.get_int(g, "widen_passes", 6), false)
+	var floor_index := map.index_of(JsonUtil.get_str(tiles, "floor"))
+	for i in cells.size():
+		if cells[i] == 0 and map.tiles[i] == wall_index:
+			map.tiles[i] = floor_index
 
 
-func _all_walkable_connected(map: FloorMap) -> bool:
-	var reach := map.reachable_from(monument_side(map, "south"))
-	for i in map.tiles.size():
-		if map.defs[map.tiles[i]].walkable and reach[i] == 0:
-			return false
-	return true
+## 막다른 곳(GridSpurs — 순환로·거점 사이 길에 속하지 않는 곁가지·홈)을 바위벽으로 메우고 폭을 다시 맞춘다(trim_passes번).
+## → 어느 길로 들어가도 다른 길로 이어져 기념비·포탈로 갈 수 있다.
+func _trim_dead_ends(map: FloorMap, g: Dictionary, tiles: Dictionary) -> void:
+	var wall_index := map.index_of(JsonUtil.get_str(tiles, "wall"))
+	var floor_index := map.index_of(JsonUtil.get_str(tiles, "floor"))
+	for t in JsonUtil.get_int(g, "trim_passes", 2):
+		var spurs := GridSpurs.spur_cells(GridWiden.walk_cells(map), map.width, map.height, CrossLayoutCheck.hubs(map))
+		var filled := 0
+		for i in spurs.size():
+			if spurs[i] != 0 and map.tiles[i] == floor_index:
+				map.tiles[i] = wall_index
+				filled += 1
+		if filled == 0:
+			return
+		_widen_map(map, g, tiles)
 
 
 # ── 수정벽·시작 위치 ─────────────────────────────────────
@@ -190,23 +206,24 @@ func _all_walkable_connected(map: FloorMap) -> bool:
 func _place_crystals(map: FloorMap, lay: CrossLayout, g: Dictionary, tiles: Dictionary, rng: Rng) -> void:
 	var chance := JsonUtil.get_float(g, "crystal_wall_chance", 0.07)
 	var margin := JsonUtil.get_int(g, "crystal_dark_margin", 3)
-	var no_light: Array[Rect2i] = []
+	var no_light := PackedByteArray()
+	no_light.resize(map.tiles.size())
 	for dir in CrossLayout.ARMS:
-		no_light.append(lay.dark_rect(dir).grow(margin))
+		var r := lay.dark_rect(dir).grow(margin).intersection(Rect2i(0, 0, map.width, map.height))
+		for y in range(r.position.y, r.end.y):
+			for x in range(r.position.x, r.end.x):
+				no_light[y * map.width + x] = 1
 	var wall_index := map.index_of(JsonUtil.get_str(tiles, "wall"))
-	for i in map.tiles.size():
-		if map.tiles[i] != wall_index:
-			continue
-		var p := map.pos_of(i)
-		if no_light.any(func(r: Rect2i) -> bool: return r.has_point(p)):
-			continue
-		var open := false
-		for d in FloorMap.DIRS4:
-			if map.is_walkable(p + d):
-				open = true
-				break
-		if open and rng.chance(chance):
-			map.set_tile(p, JsonUtil.get_str(tiles, "crystal"))
+	var crystal_index := map.index_of(JsonUtil.get_str(tiles, "crystal"))
+	var walk := GridWiden.walk_cells(map)
+	var w := map.width
+	for y in range(1, map.height - 1):
+		for x in range(1, w - 1):
+			var i := y * w + x
+			if map.tiles[i] != wall_index or no_light[i] != 0:
+				continue
+			if (walk[i - 1] == 0 or walk[i + 1] == 0 or walk[i - w] == 0 or walk[i + w] == 0) and rng.chance(chance):
+				map.tiles[i] = crystal_index
 
 
 ## 시작 위치: 팔 안(암흑지대에서 entry_dark_margin칸 이상 떨어진 곳), 기념비에서 entry_min_distance 이상.

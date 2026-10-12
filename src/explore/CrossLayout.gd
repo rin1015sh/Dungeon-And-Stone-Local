@@ -103,7 +103,9 @@ static func compass_path(map: FloorMap, from: Vector2i, dir: String, to: Vector2
 	var a := axis(dir)
 	if not map.is_walkable(from):
 		return false
-	var seen := {from: true}
+	var seen := PackedByteArray()
+	seen.resize(map.width * map.height)
+	seen[map.idx(from)] = 1
 	var queue: Array[Vector2i] = [from]
 	var head := 0
 	while head < queue.size():
@@ -113,8 +115,8 @@ static func compass_path(map: FloorMap, from: Vector2i, dir: String, to: Vector2
 			return true
 		for d in FloorMap.DIRS4:
 			var q := p + d
-			if d.x * a.x + d.y * a.y >= 0 and not seen.has(q) and map.is_walkable(q):
-				seen[q] = true
+			if d.x * a.x + d.y * a.y >= 0 and map.is_walkable(q) and seen[map.idx(q)] == 0:
+				seen[map.idx(q)] = 1
 				queue.append(q)
 	return false
 
