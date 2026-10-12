@@ -251,7 +251,8 @@
     "drain": "{source}이(가) 피를 핥아 {amount} 회복했다.",
     "summon": "{name}의 울부짖음에 {monster}이(가) 달려왔다!",
     "summon_fail": "{name}이(가) 울부짖었지만 아무도 오지 않았다.",
-    "reason_hidden": "그 상대는 모습을 감추고 있다."
+    "reason_hidden": "그 상대는 모습을 감추고 있다.",
+    "reason_no_flee": "도망칠 길이 없다."
   },
   "knowledge": {
     "unknown": "???",

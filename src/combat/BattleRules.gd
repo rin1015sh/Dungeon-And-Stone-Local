@@ -1,6 +1,6 @@
 class_name BattleRules
 extends RefCounted
-## Battle을 돕는 규칙 모음(Battle.gd를 짧게 유지): 은신 대상 고르기, 증원, 전투 시작 선공, 전투당 사용 횟수, 도주 보정.
+## Battle을 돕는 규칙 모음(Battle.gd를 짧게 유지): 은신 대상 고르기, 증원, 전투 시작 선공, 전투당 사용 횟수, 도주 확률.
 
 
 ## c가 고를 수 있는 상대: 은신(untargetable)은 빼되, 고를 수 있는 상대가 하나도 없으면 전부.
@@ -32,14 +32,29 @@ static func uses_left(b: Battle, c: Combatant, skill_id: String) -> bool:
 	return limit <= 0 or int(c.uses.get(skill_id, 0)) < limit
 
 
-## 도주 확률 보정: 속박(no_flee)이면 0, 상대 패시브 flee_penalty만큼 깎는다. 기본 확률 k를 받아 최종 확률.
-static func flee_adjust(b: Battle, c: Combatant, k: float) -> float:
+## 도주 확률(명세 §1): flee_base + (아군 평균 민첩 − 적 평균 민첩)×flee_agi_coef, flee_min~flee_max.
+## 수호자·계층군주(combat.no_flee_ranks)가 상대에 있거나 속박(no_flee)이면 0. 상대 패시브 flee_penalty만큼 깎는다.
+static func flee_chance(b: Battle, c: Combatant) -> float:
 	if c.actor.statuses.has_flag("no_flee"):
 		return 0.0
+	var no_flee: Array = b.db.bal("combat.no_flee_ranks", [])
 	var pen := 0.0
 	for o in b.opponents(c):
+		if o.actor is Monster and JsonUtil.get_str((o.actor as Monster).def, "rank") in no_flee:
+			return 0.0
 		pen += Passives.sum(o.actor, "flee_penalty")
-	return k - pen
+	var k := float(b.db.bal("combat.flee_base", 0.5)) \
+		+ (_avg_agi(b.side_units(c.side)) - _avg_agi(b.opponents(c))) * float(b.db.bal("combat.flee_agi_coef", 0.02))
+	return clampf(k - pen, float(b.db.bal("combat.flee_min", 0.1)), float(b.db.bal("combat.flee_max", 0.9)))
+
+
+static func _avg_agi(list: Array[Combatant]) -> float:
+	if list.is_empty():
+		return 0.0
+	var s := 0.0
+	for u in list:
+		s += u.actor.stats.get_value("agi")
+	return s / float(list.size())
 
 
 ## 증원(효과 summon의 사건): 같은 진영에 몬스터를 더한다(한 진영 최대 combat.max_side_units).

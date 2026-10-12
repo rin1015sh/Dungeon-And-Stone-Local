@@ -181,14 +181,7 @@ func can_use(c: Combatant, skill_id: String) -> String:
 
 
 func flee_chance(c: Combatant) -> float:
-	var fastest := 0.0
-	for o in opponents(c):
-		fastest = maxf(fastest, o.actor.stats.get_value("agi"))
-	var k := float(db.bal("combat.flee_base", 0.5)) + (c.actor.stats.get_value("agi") - fastest) * float(db.bal("combat.flee_agi_coef", 0.03))
-	k = BattleRules.flee_adjust(self, c, k)
-	if is_zero_approx(k):
-		return 0.0
-	return clampf(k, float(db.bal("combat.flee_min", 0.05)), float(db.bal("combat.flee_max", 0.95)))
+	return BattleRules.flee_chance(self, c)
 
 
 ## 몬스터 AI 행동(규칙은 MonsterAi).

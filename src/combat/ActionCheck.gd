@@ -12,8 +12,10 @@ static func reason(b: Battle, c: Combatant, action: Dictionary) -> String:
 	match str(action.get("kind", "")):
 		"skill":
 			return _skill(b, c, str(action.get("skill", Battle.BASIC_ATTACK)), action.get("target"))
-		"guard", "flee":
+		"guard":
 			return ""
+		"flee":
+			return "combat.reason_no_flee" if is_zero_approx(b.flee_chance(c)) else ""
 		"item":
 			var id := str(action.get("item", ""))
 			if c.actor.inventory.count(id) <= 0 or not JsonUtil.get_bool(b.db.get_entry("items", id), "combat_usable"):

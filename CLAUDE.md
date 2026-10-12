@@ -98,7 +98,7 @@ src/
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/screens/            TitleScreen, CharacterCreateScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd, smoke_ui.gd/.tscn
-tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, sim_battle.gd(전투 승률), exp_budget.gd(경험치 예산 → docs/balance/)
+tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, sim_battle.gd(전투 승률), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
 assets/                  fonts/ sprites/ audio/ shaders/
 ```
 
@@ -112,7 +112,7 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛).
 - **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / (기본/(1+민첩×계수)) 게임 시간(몬스터와 같은 공식), 충돌은 `Kinematics`. 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.
 - **성장**: `data/progression.json`(레벨 표 0/8/50/250/660/…/18000, 만렙 11, 획득원) → `db.prog("경로")`. 레벨 변경은 `PlayerCharacter.set_level/change_level`(정수 슬롯 잠금 동기화). 레벨업 생명력·영혼력은 `balance.hp/soul` 수식.
-- **피해 공식(명세 §1)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 정신력×2, 방어 100/(100+방어×4), 명중 = (스킬 accuracy 95 + 명중률 스탯) × (1 + 민첩 차×0.005). 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`.
+- **피해 공식(명세 §1)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 정신력×2, 방어 100/(100+방어×4), 명중 = (스킬 accuracy 95 + 명중률 스탯) × (1 + 민첩 차×0.005). 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`. 도주 = 50% + (아군 평균 − 적 평균 민첩)×2%p(10~90%), 수호자·군주전 불가.
 - **패시브**: 몬스터 `passives[]`·정수 `passive` 같은 형식 → `Actor.passives`(`Passives.gd`: on_hit/on_crit/crit_bonus/power_vs_status/reflect_melee/status_immune/start_gauge/see_hidden/flee_penalty, 수정자는 소유자가 붙임).
 - **몬스터 AI**: `ai: [{if, also[], use, target(lowest_hp|highest_hp|with_status|without_status), target_status}]` → 없으면 `ai_cycle` → 기본 공격. 상태 지속은 자기 차례 시작 때 준다(자기 행동에 거는 상태는 +1).
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).

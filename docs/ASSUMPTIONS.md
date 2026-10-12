@@ -154,6 +154,7 @@
 | F10 | 변이종: 지역 `variants` — 3일 차부터, 지역 바깥쪽(중심에서 지역 최대 거리의 50% 이상) 무리의 각 마리가 20% 확률로 같은 계열 변이종 | 명세 §6.0 "외곽에서 무리의 20%" | 층 JSON `regions[].variants` |
 | F11 | 필드 은신: 스킬 `field_stealth {still, moving}`을 가진 탐험가는 몬스터 인식 반경이 그만큼 준다. '서 있음' = 마지막 이동 뒤 게임 0.02시간(실제 약 0.2초) | 명세 도둑걸음·일체화 field_use | `explore.stealth_still_hours` |
 | F12 | 무기 공격력과 종족 스탯 범위를 명세 기준 탐험가에 맞춰 올렸다(`docs/balance/floor1.md`) | 공식 변경으로 옛 수치가 너무 약함 | `items/*.json`, `races.json` |
+| F13 | 도주 확률을 명세 §1로 맞춤: 50% + (아군 평균 민첩 − 적 평균 민첩)×2%p, 10~90%. 상대에 수호자·계층군주(`no_flee_ranks`)가 있거나 속박이면 0이고, 도주 명령은 차례를 쓰지 않고 거부(`combat.reason_no_flee`). 이전엔 "자기 민첩 − 가장 빠른 적"×3%, 5~95% | 2026-10-12 공식 점검에서 명세와 어긋난 유일한 항목 | `balance.combat.flee_*`, `BattleRules.flee_chance` |
 
 ## 데이터·구조
 
