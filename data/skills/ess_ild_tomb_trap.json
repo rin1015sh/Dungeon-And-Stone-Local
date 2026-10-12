@@ -1,0 +1,31 @@
+{
+  "id": "ess_ild_tomb_trap",
+  "name_ko": "분묘의 함정(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 18
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 0.4,
+      "warn": "combat.ildium_trap_warn",
+      "fire": "combat.ildium_trap_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 1.6,
+          "damage_type": "pierce"
+        }
+      ]
+    }
+  ],
+  "essence_of": "ild_tomb_trap",
+  "source": "placeholder"
+}

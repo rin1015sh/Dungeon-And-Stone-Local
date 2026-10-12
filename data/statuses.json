@@ -1589,5 +1589,174 @@
       }
     ],
     "source": "placeholder"
+  },
+  {
+    "id": "curse_touch",
+    "name_ko": "저주의 손길",
+    "kind": "debuff",
+    "desc_ko": "차가운 손길에 팔이 저린다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.15
+      }
+    ],
+    "resist": {
+      "stats": [
+        "m_res"
+      ]
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "dust_curse",
+    "name_ko": "흙먼지 저주",
+    "kind": "debuff",
+    "desc_ko": "무덤 흙먼지가 눈을 가린다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -15
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "steel_stance",
+    "name_ko": "강철 자세",
+    "kind": "buff",
+    "desc_ko": "강철처럼 굳게 버틴다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.5
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "shield_wall",
+    "name_ko": "방패 벽",
+    "kind": "buff",
+    "desc_ko": "방패를 맞대어 벽을 세웠다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "ildium_overheat",
+    "name_ko": "과열",
+    "kind": "buff",
+    "desc_ko": "강철 몸이 벌겋게 달아올랐다. 힘은 세지고 몸은 물러졌다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.3
+      },
+      {
+        "target": "p_res",
+        "percent": -0.3
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "magnetized",
+    "name_ko": "자석",
+    "kind": "debuff",
+    "desc_ko": "몸이 강철 거인 쪽으로 끌려간다. 다음 일격은 피할 수 없다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "flags": [
+      "always_hit"
+    ],
+    "break_on_damage": true,
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "riddle_weakened",
+    "name_ko": "풀린 봉인",
+    "kind": "debuff",
+    "desc_ko": "수수께끼가 풀려 문지기를 묶던 힘이 빠졌다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.3
+      },
+      {
+        "target": "agi",
+        "percent": -0.3
+      },
+      {
+        "target": "p_res",
+        "percent": -0.3
+      },
+      {
+        "target": "m_res",
+        "percent": -0.3
+      },
+      {
+        "target": "int",
+        "percent": -0.3
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 정답 → 모든 스탯 −30%"
+  },
+  {
+    "id": "riddle_empowered",
+    "name_ko": "분노한 봉인",
+    "kind": "buff",
+    "desc_ko": "틀린 답에 문지기의 봉인이 성을 낸다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.2
+      },
+      {
+        "target": "agi",
+        "percent": 0.2
+      },
+      {
+        "target": "p_res",
+        "percent": 0.2
+      },
+      {
+        "target": "m_res",
+        "percent": 0.2
+      },
+      {
+        "target": "int",
+        "percent": 0.2
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 오답 → +20%"
   }
 ]

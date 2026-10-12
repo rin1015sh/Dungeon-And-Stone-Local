@@ -1,0 +1,25 @@
+{
+  "id": "ess_liz_tail_whip",
+  "name_ko": "꼬리 후려치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.765,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "push_back",
+      "amount": 60,
+      "chance": 0.375
+    }
+  ],
+  "essence_of": "liz_tail_whip",
+  "source": "placeholder"
+}

@@ -18,7 +18,7 @@ func _battle(n_party: int = 1) -> Battle:
 	var party: Array[Actor] = []
 	for i in n_party:
 		party.append(PlayerCharacter.create(db, "human", "warrior", "시험%d" % i, {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10}))
-	return Battle.from_encounter(db, reg, Rng.new(4), party, ["rift_warden_standin"], true)
+	return Battle.from_encounter(db, reg, Rng.new(4), party, ["blater"], true)
 
 
 func test_skip_turn_family() -> void:
@@ -88,7 +88,7 @@ func test_heal_block_and_seal_and_confusion() -> void:
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
 	BossHooks.apply_effects(b, me, boss, [{"type": "seal_skill", "rounds": 2}])
 	assert_true(boss.actor.statuses.has("seal"))
-	var sealed := boss.cooldowns.keys().filter(func(k: String) -> bool: return k in ["warden_mark_smash", "warden_sweep"])
+	var sealed := boss.cooldowns.keys().filter(func(k: String) -> bool: return k in ["blater_cursed_slash", "blater_oath", "blater_death_sentence"])
 	assert_eq(sealed.size(), 1, "봉인: 액티브 하나가 쿨타임으로 막힌다")
 	me.actor.statuses.apply("confusion")
 	var sides := {}
@@ -127,7 +127,7 @@ func test_telegraph_hits_marked_target() -> void:
 	var boss := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var party := b.side_units(Combatant.SIDE_PARTY)
 	var mark := party[2]
-	BossHooks.apply_effects(b, boss, mark, JsonUtil.get_array(db.get_entry("skills", "warden_mark_smash"), "effects"))
+	BossHooks.apply_effects(b, boss, mark, JsonUtil.get_array(db.get_entry("skills", "blater_death_sentence"), "effects"))
 	assert_true(mark.actor.statuses.has("telegraphed"), "찍힌 대상에 [예고]")
 	var hp := []
 	for u in party:

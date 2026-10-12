@@ -29,6 +29,8 @@ extends RefCounted
 ##   defense_ignore 비율 — 자기 공격이 대상 방어의 그만큼을 무시(홉고블린 광부 곡괭이 0.25)
 ##   on_damaged_by {damage_types, chance, self_damage_ratio, message} — 그 유형 피해를 받으면 확률로 자기 최대 생명력 비율 피해(폭탄병 유도 폭발)
 ##   death_effects [효과] — 쓰러지면 상대 전원에게(폭탄병 자폭). low_hp_summons {ratio, monsters} — 처음 비율 이하가 되면 한 번 소환(킹 슬라임 정수)
+##   revive_once {ratio | hp, message} — 전투당 한 번, 쓰러질 피해를 받으면 그 생명력으로 버틴다(배리드언 30%, 정수판 1)
+##   trap_watcher 비율 — 살아 있는 동안 그 균열 챕터 함정 발동 확률 ×(1+값)(수호자의 눈, RiftHazards)
 ##   걸린 상태 정의의 on_hit [효과]도 적중 시 대상에게 적용한다(독성부여)
 ##   meter_on_damaged에 damage_types·per_point를 주면 그 유형 피해량 × per_point(시체골렘 화염 누적)
 
@@ -109,6 +111,25 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 		if bool(r["hit"]) and int(r["amount"]) > 0:
 			src.pool.modify("hp", -float(r["amount"]), "counter:" + tgt.id)
 			ctx.say("combat.counter", {"source": tgt.display_name, "target": src.display_name, "amount": r["amount"]}, "warn")
+
+
+## 쓰러질 피해(incoming ≥ 남은 생명력)를 revive_once로 버티면 생명력을 정하고 true(전투가 끝나면 다시 쓸 수 있다 — META).
+const REVIVED_META := "revived_once"
+
+
+static func endure(ctx: EffectContext, target: Actor, incoming: int) -> bool:
+	if target.dead or float(incoming) < target.pool.get_current("hp") or target.has_meta(REVIVED_META):
+		return false
+	for p in target.passives:
+		var rv := JsonUtil.get_dict(p, "revive_once")
+		if rv.is_empty():
+			continue
+		target.set_meta(REVIVED_META, true)
+		var hp := JsonUtil.get_float(rv, "hp") if rv.has("hp") else roundf(target.pool.get_max("hp") * JsonUtil.get_float(rv, "ratio", 0.3))
+		target.pool.set_current("hp", maxf(1.0, hp), "revive")
+		ctx.say(JsonUtil.get_str(rv, "message", "combat.revive"), {"name": target.display_name}, "danger")
+		return true
+	return false
 
 
 ## 피해를 받았다(맞은 뒤): on_damaged_by — 그 유형이면 확률로 자기 피해(폭탄병 폭약 주머니 유도 폭발).

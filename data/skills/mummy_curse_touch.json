@@ -1,0 +1,24 @@
+{
+  "id": "mummy_curse_touch",
+  "name_ko": "저주의 손길",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.7,
+      "damage_type": "dark",
+      "base": 6
+    },
+    {
+      "type": "apply_status",
+      "status": "curse_touch"
+    }
+  ],
+  "source": "placeholder"
+}

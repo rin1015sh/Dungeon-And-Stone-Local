@@ -13,7 +13,8 @@
     {"id": "poison", "name_ko": "독", "category": "magical"},
     {"id": "holy", "name_ko": "신성", "category": "magical"},
     {"id": "dark", "name_ko": "어둠", "category": "magical"},
-    {"id": "sun", "name_ko": "태양", "category": "magical"}
+    {"id": "sun", "name_ko": "태양", "category": "magical"},
+    {"id": "arcane", "name_ko": "무속성", "category": "magical"}
   ],
   "monster_types": [
     {"id": "ability", "name_ko": "이능계"},

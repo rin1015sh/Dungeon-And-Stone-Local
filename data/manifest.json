@@ -25,6 +25,7 @@
     "items": {"dir": "items"},
     "floors": {"dir": "floors"},
     "rifts": {"dir": "rifts"},
+    "riddles": {"dir": "riddles"},
     "events": {"dir": "events"},
     "facilities": {"dir": "facilities"}
   }

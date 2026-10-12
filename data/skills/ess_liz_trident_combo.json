@@ -1,0 +1,26 @@
+{
+  "id": "ess_liz_trident_combo",
+  "name_ko": "삼지창 연격(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.51,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.51,
+      "damage_type": "pierce"
+    }
+  ],
+  "essence_of": "liz_trident_combo",
+  "source": "placeholder"
+}

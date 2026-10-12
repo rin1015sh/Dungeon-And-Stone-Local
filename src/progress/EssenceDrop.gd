@@ -10,18 +10,18 @@ extends RefCounted
 const GUARDIAN_RANKS := ["guardian", "variant_guardian"]
 
 
-## 몬스터 하나의 정수 드롭. 없으면 {}.
-static func roll(db: GameDatabase, monster_id: String, rng: Rng, in_rift: bool = false) -> Dictionary:
+## 몬스터 하나의 정수 드롭. 없으면 {}. mult: 확률 배율(수수께끼 문지기 약화 ×2).
+static func roll(db: GameDatabase, monster_id: String, rng: Rng, in_rift: bool = false, mult: float = 1.0) -> Dictionary:
 	var def := db.get_entry("monsters", monster_id)
 	var explicit := JsonUtil.get_array(def, "essence_drops")
 	if not explicit.is_empty():
 		for d: Variant in explicit:
 			var dd: Dictionary = d if d is Dictionary else {}
-			if db.has_entry("essences", JsonUtil.get_str(dd, "essence")) and rng.chance(JsonUtil.get_float(dd, "chance")):
+			if db.has_entry("essences", JsonUtil.get_str(dd, "essence")) and rng.chance(JsonUtil.get_float(dd, "chance") * mult):
 				return make(db, JsonUtil.get_str(dd, "essence"), "", rng, _is_guardian(def))
 		return {}
 	var essence_id := essence_of_monster(db, monster_id)
-	if essence_id.is_empty() or not rng.chance(drop_chance(db, def, in_rift)):
+	if essence_id.is_empty() or not rng.chance(minf(1.0, drop_chance(db, def, in_rift) * mult)):
 		return {}
 	return make(db, essence_id, "", rng, _is_guardian(def))
 

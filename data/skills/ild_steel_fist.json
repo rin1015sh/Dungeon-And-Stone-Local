@@ -1,0 +1,17 @@
+{
+  "id": "ild_steel_fist",
+  "name_ko": "강철 주먹",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.4,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "original"
+}

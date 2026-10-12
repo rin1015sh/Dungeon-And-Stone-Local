@@ -1,0 +1,46 @@
+{
+  "id": "iron_cavalry",
+  "name_ko": "철기병의 정수",
+  "grade": 7,
+  "source_monster": "iron_cavalry",
+  "family": "iron_cavalry",
+  "rank": "normal",
+  "passive": {
+    "id": "steel_plate",
+    "name_ko": "강철 갑주",
+    "desc_ko": "칼날에 조금 강해지고 첫 차례가 조금 빠르다.",
+    "start_gauge": 15,
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.12
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.12
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_cav_charge"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_cav_shield_wall"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      3,
+      5
+    ],
+    "body_weight": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12"
+}

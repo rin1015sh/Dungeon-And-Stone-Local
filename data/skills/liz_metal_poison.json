@@ -1,0 +1,18 @@
+{
+  "id": "liz_metal_poison",
+  "name_ko": "금속 독",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

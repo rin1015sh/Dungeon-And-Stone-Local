@@ -1,0 +1,22 @@
+{
+  "id": "ess_eye_alarm",
+  "name_ko": "경보(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "pick": [
+        "mummy",
+        "iron_cavalry"
+      ]
+    }
+  ],
+  "uses_per_battle": 1,
+  "essence_of": "eye_alarm",
+  "source": "placeholder"
+}

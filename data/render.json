@@ -55,7 +55,7 @@
     "hud_panel_width": 360,
     "explore_log_width": 380,
     "explore_log_height": 200,
-    "debug_panel_width": 300,
+    "debug_panel_width": 300, "riddle_width": 520,
     "panel_alpha": 0.82,
     "end_delay_sec": 1.2,
     "combat_ai_delay_sec": 0.45,

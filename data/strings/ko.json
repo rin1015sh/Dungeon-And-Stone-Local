@@ -59,6 +59,7 @@
     "items": "아이템",
     "floors": "층",
     "rifts": "균열",
+    "riddles": "수수께끼",
     "events": "이벤트",
     "facilities": "시설",
     "tiles": "타일",
@@ -192,7 +193,17 @@
     "hazard_bridge_pass": "무너진 다리의 남은 들보를 딛고 건넜다.",
     "hazard_bridge_fail": "들보가 부러져 아래로 떨어졌다!",
     "hazard_stairs_pass": "절벽의 원형 계단을 조심조심 내려갔다.",
-    "hazard_stairs_fail": "계단이 무너져 몇 단을 굴러떨어졌다!"
+    "hazard_stairs_fail": "계단이 무너져 몇 단을 굴러떨어졌다!",
+    "trap_detected": "바닥 문양이 미묘하게 어긋나 있다 — 함정이다!",
+    "trap_disarmed": "함정의 장치를 조심스럽게 풀었다.",
+    "trap_crushed": "함정을 밟아 그대로 짓뭉갰다. 이 정도로는 흠집도 안 난다.",
+    "trap_plate_fail": "딸깍 — 압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!",
+    "trap_arrow_fail": "벽 틈에서 화살이 쏟아졌다!",
+    "trap_blades_fail": "회전 칼날에 베였다!",
+    "mural_read": "벽화를 들여다본다. {hint}",
+    "riddle_pass": "문지기가 창을 거두고 옆으로 비켜선다.",
+    "riddle_weaken": "문지기를 묶던 봉인이 풀린다 — 약해진 문지기가 창을 겨눈다.",
+    "riddle_wrong": "틀렸다. 문지기의 문양이 붉게 타오른다!"
   },
   "effect": {
     "smite_heal": "여신의 눈물이 {name}의 상처를 감싼다.",
@@ -377,7 +388,14 @@
     "king_jump_fire": "{name}이(가) 떨어져 내리며 모두를 짓누른다!",
     "bomber_intro": "{name}이(가) 폭약 주머니를 흔들며 낄낄댄다.",
     "king_slime_intro": "'뀨이이잇!' — 공동 한가운데에서 {name}이(가) 출렁인다.",
-    "king_slime_split": "{name}의 몸이 찢어지며 슬라임들이 떨어져 나온다!"
+    "king_slime_split": "{name}의 몸이 찢어지며 슬라임들이 떨어져 나온다!",
+    "revive": "{name}이(가) 다시 일어난다!",
+    "buried_rise": "관 뚜껑이 열리듯 {name}이(가) 흙을 털며 다시 일어난다!",
+    "endure": "{name}이(가) 쓰러질 일격을 버텨 냈다!",
+    "ildium_intro": "분묘 한가운데에서 {name}이(가) 삐걱거리며 몸을 일으킨다.",
+    "ildium_overheat": "{name}의 강철 몸이 벌겋게 달아오른다 — 힘이 세지고 몸이 물러진다!",
+    "ildium_trap_warn": "{name}이(가) 바닥을 내리친다 — 분묘 곳곳에서 장치가 맞물리는 소리가 난다!",
+    "ildium_trap_fire": "분묘의 함정이 일제히 튀어 오른다!"
   },
   "knowledge": {
     "unknown": "???",
@@ -463,5 +481,12 @@
     "reason_duplicate": "이미 같은 이능이 영혼에 새겨져 있어 받아들일 수 없다.",
     "expired": "흡수하지 않은 {name}이(가) 빛 먼지가 되어 흩어졌다.",
     "locked_suffix": " (잠김 — 레벨이 오르면 깨어난다)"
+  },
+  "riddle": {
+    "title": "수수께끼 문지기",
+    "hints_known": "벽화에서 본 것 덕분에 답이 아닌 것 {n}개를 지웠다.",
+    "correct": "\"맞았다.\" 문지기가 묻는다 — 그냥 지나가겠는가, 봉인이 풀린 나와 겨루겠는가?",
+    "choose_pass": "그냥 지나간다",
+    "choose_weaken": "약해진 문지기와 싸운다(정수를 얻기 쉽다)"
   }
 }

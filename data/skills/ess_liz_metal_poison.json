@@ -1,0 +1,19 @@
+{
+  "id": "ess_liz_metal_poison",
+  "name_ko": "금속 독(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.45
+    }
+  ],
+  "essence_of": "liz_metal_poison",
+  "source": "placeholder"
+}

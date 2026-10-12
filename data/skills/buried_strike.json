@@ -1,0 +1,19 @@
+{
+  "id": "buried_strike",
+  "name_ko": "매장된 일격",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

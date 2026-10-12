@@ -1,0 +1,57 @@
+{
+  "id": "ildium",
+  "name_ko": "철인 일디움의 정수",
+  "grade": 6,
+  "source_monster": "ildium",
+  "family": "ildium",
+  "rank": "guardian",
+  "passive": {
+    "id": "immortal_steel",
+    "name_ko": "불멸의 강철",
+    "desc_ko": "칼날에 강해진다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.15
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_ild_steel_fist"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_ild_magnet_pull"
+    },
+    {
+      "color": "green",
+      "skill": "ess_ild_tomb_trap"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_ild_reassemble"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      6,
+      10
+    ],
+    "bone_strength": [
+      6,
+      10
+    ],
+    "str": [
+      4,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12 수호자 정수(무지갯빛) — 액티브 전부"
+}

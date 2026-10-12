@@ -1,0 +1,19 @@
+{
+  "id": "eye_paralysis_gaze",
+  "name_ko": "마비 시선",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "paralysis",
+      "chance": 0.26
+    }
+  ],
+  "source": "placeholder",
+  "notes": "명중 85 × [마비] 30% → 26%"
+}

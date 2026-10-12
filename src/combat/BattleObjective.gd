@@ -12,7 +12,9 @@ static func after_turn(b: Battle, c: Combatant) -> void:
 	var r := int(b.objective.get("round", 0)) + 1
 	b.objective["round"] = r
 	var need := JsonUtil.get_int(b.objective, "survive_rounds", 0)
-	if need > 0 and r >= need:
+	if need <= 0:
+		return  # 생존 목표가 없는 전투 규칙(수수께끼 문지기 상태 등)
+	if r >= need:
 		b.message.emit("combat.survived", {"rounds": r}, "good")
 		b.finish(Battle.RESULT_VICTORY)
 		return

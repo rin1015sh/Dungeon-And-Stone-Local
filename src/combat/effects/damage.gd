@@ -5,7 +5,7 @@ extends EffectHandler
 ## 공격자의 상태 lifesteal(생기 흡수)도 흡혈. 공격자의 "consume_on_attack" 상태(진군 명령)는 이 공격으로 사라진다.
 ## 맞든 안 맞든 대상의 패시브 mark_first_attacker(벤시 원령)를 먼저 처리한다.
 ## "rider": {"damage_type": "cold", "ratio": 0.3 | "flat": 5} — 맞히면 그 유형 추가 피해(공격자 패시브 hit_rider {on_types, …}도 같다).
-## 대상의 보호막(강철빙벽)이 피해를 먼저 흡수한다.
+## 대상의 보호막(강철빙벽)이 피해를 먼저 흡수한다. 쓰러질 피해는 패시브 revive_once로 한 번 버틸 수 있다.
 ## 계산은 DamageCalc. 치명상(급소)이면 생명력을 0으로 만든다. 출처는 "attack:<공격자 id>".
 ## 맞힌 뒤 Passives.after_hit(적중 시 효과·반사·반격), 흡혈.
 
@@ -50,7 +50,7 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if float(r["affinity"]) > 1.0:
 		ctx.say("combat.effective", args, "good")
 	_riders(ctx, data, int(r["amount"]), str(r["damage_type"]), origin)
-	if bool(r["lethal"]) and not target.dead:
+	if bool(r["lethal"]) and not target.dead and not Passives.endure(ctx, target, int(target.pool.get_current("hp"))):
 		target.pool.set_current("hp", 0.0, origin)
 		ctx.say("combat.lethal", args, "danger")
 	var drain := JsonUtil.get_dict(data, "drain_if_status")
@@ -73,6 +73,8 @@ func _hurt(ctx: EffectContext, target: Actor, amount: int, origin: String) -> vo
 	var left := target.statuses.absorb(amount) if target.statuses.barrier_total() > 0.0 else amount
 	if left < amount:
 		ctx.say("combat.barrier_absorb", {"name": target.display_name, "amount": amount - left}, "info")
+	if Passives.endure(ctx, target, left):
+		return
 	target.pool.modify("hp", -float(left), origin)
 
 

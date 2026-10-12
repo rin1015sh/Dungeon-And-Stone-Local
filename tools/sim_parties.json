@@ -109,33 +109,6 @@
   "potion_hp_ratio": 0.35,
   "scenarios": [
     {
-      "name": "임시 수호자 · 첫 시도(예고 무시)",
-      "monsters": [
-        "rift_warden_standin"
-      ],
-      "ai": "naive",
-      "min": 0.4,
-      "max": 0.6
-    },
-    {
-      "name": "임시 수호자 · 예고 대응(방어)",
-      "monsters": [
-        "rift_warden_standin"
-      ],
-      "ai": "smart",
-      "min": 0.75,
-      "max": 1.0
-    },
-    {
-      "name": "변종 임시 수호자",
-      "monsters": [
-        "rift_warden_standin_variant"
-      ],
-      "ai": "smart",
-      "min": 0.0,
-      "max": 0.1
-    },
-    {
       "name": "핏빛성채 · 8등급 혼합 3체",
       "monsters": [
         "deathfiend",
@@ -310,6 +283,46 @@
       "name": "녹색 탄광 · 킹 슬라임 예고 대응(방어)",
       "monsters": [
         "king_slime"
+      ],
+      "ai": "smart",
+      "min": 0.75,
+      "max": 1.0
+    },
+    {
+      "name": "강철의 묘 · 8등급 혼합 3체",
+      "monsters": [
+        "buried_one",
+        "guardian_eye",
+        "buried_one"
+      ],
+      "ai": "naive",
+      "min": 0.85,
+      "max": 1.0
+    },
+    {
+      "name": "강철의 묘 · 7등급 혼합 3체",
+      "monsters": [
+        "iron_cavalry",
+        "iron_lizardman",
+        "iron_lizardman"
+      ],
+      "ai": "naive",
+      "min": 0.7,
+      "max": 0.85
+    },
+    {
+      "name": "강철의 묘 · 일디움 첫 시도(예고 무시)",
+      "monsters": [
+        "ildium"
+      ],
+      "ai": "naive",
+      "min": 0.4,
+      "max": 0.6
+    },
+    {
+      "name": "강철의 묘 · 일디움 예고 대응(방어)",
+      "monsters": [
+        "ildium"
       ],
       "ai": "smart",
       "min": 0.75,

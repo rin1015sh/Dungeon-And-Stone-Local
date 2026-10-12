@@ -1,0 +1,110 @@
+[
+  {
+    "id": "riddle_steel",
+    "name_ko": "수수께끼",
+    "set": "iron_tomb",
+    "question_ko": "불 속에서 태어나 망치 아래에서 자란다. 물을 만나면 늙고, 기름을 먹으면 다시 젊어진다. 나는 무엇인가?",
+    "choices_ko": [
+      "도자기",
+      "강철",
+      "유리"
+    ],
+    "answer": 1,
+    "hints_ko": [
+      "벽화: 대장장이가 붉게 달군 덩어리를 망치로 두드린다.",
+      "벽화: 녹슨 갑옷 곁에서 누군가 천에 기름을 묻혀 닦는다."
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 — 문항은 새로 씀"
+  },
+  {
+    "id": "riddle_coffin",
+    "name_ko": "수수께끼",
+    "set": "iron_tomb",
+    "question_ko": "만든 이는 쓰지 않고, 산 사람은 들지 않으며, 쓰는 이는 그것을 보지 못한다. 나는 무엇인가?",
+    "choices_ko": [
+      "왕관",
+      "문",
+      "관"
+    ],
+    "answer": 2,
+    "hints_ko": [
+      "벽화: 사람들이 긴 상자를 어깨에 메고 줄지어 걷는다.",
+      "벽화: 상자 뚜껑에 눈을 감은 얼굴이 새겨져 있다."
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 — 문항은 새로 씀"
+  },
+  {
+    "id": "riddle_shadow",
+    "name_ko": "수수께끼",
+    "set": "iron_tomb",
+    "question_ko": "눈이 없어도 길을 알고, 다리가 없어도 너를 따라간다. 빛이 사라지면 나도 사라진다. 나는 무엇인가?",
+    "choices_ko": [
+      "그림자",
+      "메아리",
+      "바람"
+    ],
+    "answer": 0,
+    "hints_ko": [
+      "벽화: 횃불을 든 사람 뒤로 검은 형체가 길게 늘어진다.",
+      "벽화: 해가 머리 위에 오자 검은 형체가 발밑으로 숨는다."
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 — 문항은 새로 씀"
+  },
+  {
+    "id": "riddle_silence",
+    "name_ko": "수수께끼",
+    "set": "iron_tomb",
+    "question_ko": "이름을 부르는 순간 깨지는 것은 무엇인가?",
+    "choices_ko": [
+      "거울",
+      "약속",
+      "침묵"
+    ],
+    "answer": 2,
+    "hints_ko": [
+      "벽화: 무덤지기들이 입에 손가락을 대고 걷는다.",
+      "벽화: 누군가 소리치자 벽화 속 사람들이 모두 귀를 막는다."
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 — 문항은 새로 씀"
+  },
+  {
+    "id": "riddle_dark",
+    "name_ko": "수수께끼",
+    "set": "iron_tomb",
+    "question_ko": "가질수록 덜 보이는 것은 무엇인가?",
+    "choices_ko": [
+      "지식",
+      "어둠",
+      "금화"
+    ],
+    "answer": 1,
+    "hints_ko": [
+      "벽화: 등불이 하나씩 꺼질수록 사람들의 얼굴이 지워진다.",
+      "벽화: 묘실 맨 끝 벽은 온통 칠흑으로 칠해져 있다."
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 — 문항은 새로 씀"
+  },
+  {
+    "id": "riddle_fire",
+    "name_ko": "수수께끼",
+    "set": "iron_tomb",
+    "question_ko": "먹이면 살고, 물을 주면 죽는다. 나는 무엇인가?",
+    "choices_ko": [
+      "불",
+      "나무",
+      "소금"
+    ],
+    "answer": 0,
+    "hints_ko": [
+      "벽화: 사람들이 장작을 던져 넣자 불꽃이 높이 치솟는다.",
+      "벽화: 물동이를 쏟자 불꽃이 사그라든다."
+    ],
+    "source": "placeholder",
+    "notes": "명세 §12.3 — 문항은 새로 씀"
+  }
+]

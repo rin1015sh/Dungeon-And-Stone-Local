@@ -1,0 +1,18 @@
+{
+  "id": "ess_buried_dust_curse",
+  "name_ko": "흙먼지 저주(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "dust_curse"
+    }
+  ],
+  "essence_of": "buried_dust_curse",
+  "source": "placeholder"
+}

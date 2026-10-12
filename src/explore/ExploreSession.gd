@@ -17,6 +17,7 @@ signal floor_closed
 signal player_died(cause: String)
 signal encounter(group: FieldMonsters.Group, party_first: bool)
 signal transfer(target: ExploreSession)       ## 다른 세션(균열 챕터 ↔ 바깥 층)으로 넘어간다 — 화면이 바꿔 끼운다
+signal riddle_asked(group: FieldMonsters.Group)  ## 수수께끼 문지기(RiftRiddle) — 화면이 문항을 띄우고 answer_riddle을 부른다
 
 var db: GameDatabase
 var floor_def: Dictionary
@@ -288,16 +289,26 @@ func relocate(to: Vector2i) -> bool:
 func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 	if in_combat or ended or group == null:
 		return
+	if rift_run != null and rift_run.riddle != null and rift_run.riddle.blocks(group):
+		riddle_asked.emit(group)
+		return
 	in_combat = true
 	realtime.tick(self, 0.0)
 	encounter.emit(group, party_first)
+
+
+## 수수께끼에 답했다(RiftRiddle.PASS/WEAKEN/WRONG). 전투가 필요하면 바로 시작한다.
+func answer_riddle(group: FieldMonsters.Group, outcome: String) -> void:
+	if rift_run != null and rift_run.riddle != null and rift_run.riddle.apply(self, group, outcome):
+		engage(group, false)
 
 
 ## 전투가 끝났다. result: victory/fled/defeat. 전투 차례 수만큼 시간이 흐른다.
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
 	if not killed.is_empty() and not player.dead:
-		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null):
+		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null,
+				JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result)):
 		pass

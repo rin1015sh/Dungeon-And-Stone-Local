@@ -1,0 +1,46 @@
+{
+  "id": "riddle_gatekeeper",
+  "name_ko": "수수께끼 문지기의 정수",
+  "grade": 7,
+  "source_monster": "riddle_gatekeeper",
+  "family": "riddle_gatekeeper",
+  "rank": "normal",
+  "passive": {
+    "id": "riddle_seal",
+    "name_ko": "수수께끼의 봉인",
+    "desc_ko": "봉인이 듣지 않는다.",
+    "status_immune": [
+      "seal"
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_gate_spear_judgement"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_gate_seal_glyph"
+    },
+    {
+      "color": "green",
+      "skill": "ess_gate_steel_stance"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      3,
+      5
+    ],
+    "m_res": [
+      3,
+      5
+    ],
+    "cognition": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12 정수 패시브는 명세에 없음 → 봉인 면역 [창]"
+}

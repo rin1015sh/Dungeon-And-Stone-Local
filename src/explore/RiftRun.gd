@@ -12,8 +12,8 @@ extends RefCounted
 ## 탈출하면 1층(outer)의 포탈 자리로 돌아간다. 다른 탈출 방법은 없다.
 ## 챕터 "exit_requires": {"item", "message", "bypass": {stat, at_least, message}} — 출구를 지나려면 그 아이템이 있어야 하고 쓰인다
 ##   (핏빛성채 뿔피리, 녹색 탄광 폭약). bypass 스탯이 넘으면 아이템 없이 지난다.
-## 챕터 "hidden": [{"id", "item", "tile", "message", "near_entry"}] — 방 안에 살필 수 있는 물체(tile)를 두고, 옆에서 E로 아이템을 얻는다(히든 피스).
-##   near_entry: true면 시작 자리 가까이(빙하굴 빙정 연못). 챕터 "hazards"는 RiftHazards(탐험 위험).
+## 챕터 "hidden"(히든 피스·벽화)은 RiftHidden, "hazards"(탐험 위험·함정)는 RiftHazards, 균열 "riddle"(수수께끼 문지기)은 RiftRiddle.
+## 조우 {"riddle": true}는 태그 "riddle" — 마주치면 전투 대신 수수께끼.
 ## 아이템 "rift_bound": "<균열 id>" — 그 균열 밖으로 가져갈 수 없다(나갈 때 사라진다: 여신의 눈물).
 
 var db: GameDatabase
@@ -30,9 +30,12 @@ var remaining: Array = []            ## 이 챕터에서 아직 치우지 않은
 var guardian_down: bool = false
 var finished: bool = false
 var _session_ref: WeakRef = null
-var hidden_at: Dictionary = {}  ## 이 챕터의 히든 피스 물체 칸 -> 정의
-var taken: Dictionary = {}      ## 얻은 히든 피스 id -> true
+var hidden: RiftHidden = RiftHidden.new()
+var hidden_at: Dictionary:  ## 이 챕터의 살필 수 있는 물체 칸 -> 정의
+	get:
+		return hidden.at
 var hazards: RiftHazards = RiftHazards.new()
+var riddle: RiftRiddle = null
 
 
 func _init(p_outer: ExploreSession, p_rift_id: String) -> void:
@@ -42,6 +45,8 @@ func _init(p_outer: ExploreSession, p_rift_id: String) -> void:
 	def = db.get_entry("rifts", rift_id)
 	var v: Variant = def.get("variant")
 	variant = v is Dictionary and outer.rng.chance(JsonUtil.get_float(v, "chance"))
+	if def.has("riddle"):
+		riddle = RiftRiddle.new(db, JsonUtil.get_dict(def, "riddle"), outer.rng)
 
 
 ## 첫 챕터 세션을 만들어 돌려준다(받은 쪽이 붙잡아야 한다).
@@ -88,7 +93,7 @@ func build_chapter(i: int) -> ExploreSession:
 			remaining.append(g)
 	for st: Variant in JsonUtil.get_array(ch, "field_effects"):
 		outer.player.statuses.apply(str(st))
-	_place_hidden(cs, ch)
+	hidden.place(cs, ch, outer.rng)
 	hazards.place(cs, ch, _floor_tile(), outer.rng)
 	var fx := JsonUtil.get_array(ch, "on_enter")
 	if not fx.is_empty():
@@ -212,7 +217,7 @@ func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> FieldMonsters.Gr
 	var g := s.monsters.add_fixed(ids, cell)
 	if g == null:
 		return null
-	g.tag = kind
+	g.tag = "riddle" if JsonUtil.get_bool(e, "riddle") else kind
 	g.waves = waves
 	if kind == "waves":
 		g.battle_rules = {"survive_rounds": JsonUtil.get_int(e, "survive_rounds", 6), "reinforce": JsonUtil.get_dict(e, "reinforce")}
@@ -254,46 +259,9 @@ func _leave_field_effects() -> void:
 		outer.player.statuses.remove(str(st))
 
 
-## 히든 피스 물체를 방 안쪽 칸(사방 8칸이 모두 바닥이고 조우·출구·시작 자리가 아닌 곳)에 둔다.
-func _place_hidden(cs: ExploreSession, ch: Dictionary) -> void:
-	hidden_at.clear()
-	for h: Variant in JsonUtil.get_array(ch, "hidden"):
-		var hd: Dictionary = h if h is Dictionary else {}
-		if taken.has(JsonUtil.get_str(hd, "id")):
-			continue
-		var cells: Array[Vector2i] = []
-		for i in cs.map.tiles.size():
-			var p := cs.map.pos_of(i)
-			if _interior(cs.map, p) and not cs.map.slots.has(p) and p != cs.map.entry and cs.map.portal_at(p).is_empty() \
-					and not hidden_at.has(p) and Vector2(p - cs.map.entry).length() > 3.0:
-				cells.append(p)
-		var near := cells.filter(func(p: Vector2i) -> bool: return Vector2(p - cs.map.entry).length() <= float(db.bal("rift.near_entry_m", 8)))
-		if JsonUtil.get_bool(hd, "near_entry") and not near.is_empty():
-			cells.assign(near)
-		if cells.is_empty():
-			continue
-		var at: Vector2i = outer.rng.pick(cells)
-		cs.map.set_tile(at, JsonUtil.get_str(hd, "tile"))
-		hidden_at[at] = hd
-
-
-## 히든 피스 물체를 살핀다(옆 칸 at). 얻었으면 true.
+## 살필 수 있는 물체(옆 칸 at). 무언가 했으면 true.
 func take_hidden(cs: ExploreSession, at: Vector2i) -> bool:
-	var hd: Dictionary = hidden_at.get(at, {})
-	if hd.is_empty():
-		return false
-	hidden_at.erase(at)
-	taken[JsonUtil.get_str(hd, "id")] = true
-	cs.map.set_tile(at, _floor_tile())
-	var item := JsonUtil.get_str(hd, "item")
-	outer.player.inventory.add(item, 1)
-	cs.message.emit(JsonUtil.get_str(hd, "message", "explore.hidden_found"), {"item": DataNames.entry(db, "items", item)}, "good")
-	cs.refresh_view()
-	return true
-
-
-func _interior(map: FloorMap, p: Vector2i) -> bool:
-	return RiftHazards._interior(map, p)
+	return hidden.take(cs, at, _floor_tile(), riddle)
 
 
 func _floor_tile() -> String:

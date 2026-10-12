@@ -7,6 +7,7 @@ extends Node
 ##   3) 새 탐험가 → 굶주림 → 아사 → 사망 화면 → 타이틀
 ##   5) 새 탐험가 → 소지품 창(시간 정지)·끌어놓기 장착/해제·오른쪽 클릭 장착·단축칸 사용·캐릭터/도감 창
 ##   4) 새 탐험가 → 가만히 있어도 시간이 흐름 → 일시정지 → 몬스터 소환 → 전투(행동창 4개·조사·공격) → 탐험 복귀
+##   6) 새 탐험가 → 강철의 묘 3챕터 → 수수께끼 문지기 대화창(시간 정지) → 오답 → 강화된 문지기와 전투 → 승리 → 문이 열림
 ## 오류 없이 끝나면 종료 코드 0.
 
 const WAIT_LIMIT_MS := 8000
@@ -30,6 +31,7 @@ func _run() -> void:
 	await _starvation_flow()
 	await _realtime_combat_flow()
 	await _inventory_flow()
+	await _riddle_flow()
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
 	get_tree().quit(1 if _failed else 0)
@@ -177,6 +179,64 @@ func _realtime_combat_flow() -> void:
 	await _seconds(0.4)
 	_expect(s.clock.total_hours > tr, "복귀 뒤 다시 시간이 흐른다")
 	GameState.debug_fast_combat = false
+	await _action("debug_toggle")
+	_press(explore, Strings.t("debug.close_soon"))
+	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
+	var end := (await _screen(EndScreen)) as EndScreen
+	if _expect(end != null, "결과 화면"):
+		_press(end, Strings.t("end.to_title"))
+
+
+## 강철의 묘 수수께끼 문지기: 대화창 → 오답 → 강화 전투 → 승리
+func _riddle_flow() -> void:
+	var explore := await _enter_dungeon("수수께끼 탐험가")
+	if explore == null:
+		return
+	var s := explore.session
+	s.rifts.force_open(s, "rift_iron_tomb", s.pos)
+	s.relocate(s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0]["pos"])
+	s.interact()
+	await _frames(4)
+	for i in 2:
+		explore = _main.current_screen() as ExploreScreen
+		explore.session.rift_run.debug_clear()
+		explore.session.relocate(explore.session.map.portals[0]["pos"])
+		explore.session.interact()
+		await _frames(4)
+	explore = _main.current_screen() as ExploreScreen
+	var run := explore.session.rift_run
+	if not _expect(run != null and run.chapter == 2, "강철의 묘 3챕터"):
+		return
+	var gate: FieldMonsters.Group = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "riddle")[0]
+	explore.session.engage(gate, true)
+	await _frames(2)
+	var dlg := explore.get_node_or_null("RiddleDialog")
+	if not _expect(dlg != null and explore.session.realtime.is_paused() and not explore.session.in_combat, "수수께끼 대화창(전투 대신, 시간 정지)"):
+		return
+	var rd := run.riddle
+	var wrong := ""
+	for i in rd.choices(explore.session.player):
+		if not rd.is_correct(i):
+			wrong = str(JsonUtil.get_array(rd.data, "choices_ko")[i])
+	_press(dlg, wrong)
+	await _frames(3)
+	var combat := explore.combat_screen()
+	if not _expect(combat != null and combat.battle.side_units(Combatant.SIDE_ENEMY)[0].actor.statuses.has("riddle_empowered"), "오답 → 강화된 문지기와 전투"):
+		return
+	combat.battle.side_units(Combatant.SIDE_ENEMY)[0].actor.pool.set_current("hp", 1.0)
+	for i in 40:
+		if not combat.battle.result.is_empty():
+			break
+		var menu := await _open_menu(combat)
+		if menu == null:
+			break
+		_press(combat, Strings.t("combat.cmd_attack"))
+		_press_first(menu)
+	await _frames(2)
+	_expect(combat.battle.result == Battle.RESULT_VICTORY, "강화된 문지기를 쓰러뜨린다")
+	_press(combat, Strings.t("combat.continue"))
+	await _frames(3)
+	_expect(not run.remaining.has(gate) and not explore.session.realtime.is_paused(), "문이 열리고 시간이 다시 흐른다")
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))

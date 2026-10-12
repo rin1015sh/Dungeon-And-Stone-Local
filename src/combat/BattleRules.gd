@@ -28,6 +28,14 @@ static func on_start(b: Battle) -> void:
 		u.gauge += Passives.sum(u.actor, "start_gauge")
 
 
+## 전투 목표를 정한다(화면이 조우의 battle_rules로). enemy_statuses(수수께끼 문지기 약화·강화)는 적 전원에게 건다.
+static func set_objective(b: Battle, rules: Dictionary) -> void:
+	b.objective = rules.duplicate()
+	for st: Variant in JsonUtil.get_array(rules, "enemy_statuses"):
+		for u in b.side_units(Combatant.SIDE_ENEMY):
+			u.actor.statuses.apply(str(st))
+
+
 ## 전투당 사용 횟수(skill "uses_per_battle")가 남았는가.
 static func uses_left(b: Battle, c: Combatant, skill_id: String) -> bool:
 	var limit := JsonUtil.get_int(b.db.get_entry("skills", skill_id), "uses_per_battle", 0)
@@ -68,6 +76,8 @@ static func fear_skip(b: Battle, c: Combatant) -> bool:
 static func cleanup(b: Battle) -> void:
 	for u in b.units:
 		u.actor.meters.clear()
+		if u.actor.has_meta(Passives.REVIVED_META):
+			u.actor.remove_meta(Passives.REVIVED_META)
 		for id in u.actor.statuses.ids():
 			if JsonUtil.get_bool(b.db.get_entry("statuses", id), "battle_only"):
 				u.actor.statuses.remove(id)

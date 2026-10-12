@@ -71,6 +71,8 @@ static func attack_power(db: GameDatabase, attacker: Actor, effect: Dictionary) 
 
 ## accuracy: 스킬 명중(퍼센트, 음수면 기본값). 명중률 스탯(accuracy)이 더해진다(실명은 이것을 깎는다).
 static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_weak: bool, accuracy: float = -1.0) -> float:
+	if defender.statuses.has_flag("always_hit") and not aim_weak:
+		return 1.0  # 자석에 끌려온 대상(일디움 자석 끌어당기기)
 	var acc := (accuracy if accuracy >= 0.0 else _c(db, "default_accuracy", 95.0)) + attacker.stats.get_value("accuracy")
 	var h := acc / 100.0 * (1.0 + (attacker.stats.get_value("agi") - defender.stats.get_value("agi")) * _c(db, "hit_agi_coef", 0.005))
 	if aim_weak:
