@@ -23,6 +23,8 @@ static func run(s: ExploreSession) -> void:
 		return
 	for d in FloorMap.DIRS4:
 		var def := s.map.def_at(s.pos + d)
+		if def != null and def.interact == "hidden_piece" and s.rift_run != null and s.rift_run.take_hidden(s, s.pos + d):
+			return
 		if def != null and def.interact == "monument":
 			if not s.rifts.try_offer(s, s.pos + d):
 				s.message.emit("explore.monument", {}, "system")

@@ -1,0 +1,32 @@
+{
+  "id": "goddess_tear",
+  "name_ko": "여신의 눈물",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#bfe6ff",
+  "rarity": "numbers",
+  "desc_ko": "분수대 조각상 속 작은 상자에 있던 맑은 눈물. 악한 존재의 저항을 봉인하고 큰 상처를 입히거나, 상처를 감싼다. 성채 밖으로는 가져갈 수 없다.",
+  "rift_bound": "rift_blood_fortress",
+  "combat_usable": true,
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "families": [
+        "undead",
+        "demon"
+      ],
+      "amount": 600,
+      "status": "tear_sealed",
+      "heal": 120
+    }
+  ],
+  "source": "original",
+  "notes": "명세 §9.1 히든 피스 — 반출 불가(rift_bound). 캠보르미어 공략의 열쇠"
+}

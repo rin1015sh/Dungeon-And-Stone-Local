@@ -43,11 +43,18 @@ func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
 
 ## 플레이어 은신(FieldStealth, 0~1). FieldMonsters가 넣는다.
 var player_stealth: float = 0.0
+## 플레이어에게 걸린 상태 id들(벤시: behavior "passive_unless_status"가 없으면 알아채지 않고, 있으면 반경 × aggro_mult_if_status).
+var player_marks: Array = []
 
 
 func _notices(g: FieldMonsters.Group, player: Vector2i) -> bool:
 	var beh := _behavior(g.leader())
 	var radius := JsonUtil.get_float(beh, "aggro_radius_m", 4.0) / _mpt
+	var need := JsonUtil.get_str(beh, "passive_unless_status")
+	if not need.is_empty():
+		if not player_marks.has(need):
+			return false
+		radius *= JsonUtil.get_float(beh, "aggro_mult_if_status", 1.0)
 	if not JsonUtil.get_bool(beh, "ignores_stealth"):
 		radius *= 1.0 - player_stealth
 	return Vector2(g.pos - player).length() <= radius and _line_of_sight(g.pos, player)

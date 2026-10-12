@@ -1,0 +1,17 @@
+{
+  "id": "skeleton_bone_barrier",
+  "name_ko": "뼈 방벽",
+  "target": "ally_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "bone_barrier"
+    }
+  ],
+  "source": "placeholder"
+}

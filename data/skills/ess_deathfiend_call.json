@@ -1,0 +1,19 @@
+{
+  "id": "ess_deathfiend_call",
+  "name_ko": "망자의 부름(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "ghoul"
+    }
+  ],
+  "uses_per_battle": 2,
+  "essence_of": "deathfiend_call",
+  "source": "placeholder"
+}

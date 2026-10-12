@@ -4,7 +4,9 @@
     "name_ko": "공포",
     "desc_ko": "마음을 갉아먹는 두려움. 가득 차면 공포에 질린다.",
     "max": 100,
-    "on_full": {"status": "fear"},
+    "on_full": {
+      "status": "fear"
+    },
     "reset_on_full": true,
     "color": "#9a7fd1",
     "source": "original",
@@ -15,7 +17,9 @@
     "name_ko": "역병",
     "desc_ko": "영혼을 좀먹는 역병. 가득 차면 무기력증에 빠진다.",
     "max": 100,
-    "on_full": {"status": "lethargy"},
+    "on_full": {
+      "status": "lethargy"
+    },
     "reset_on_full": true,
     "color": "#7fa35a",
     "source": "original",
@@ -26,7 +30,9 @@
     "name_ko": "원망",
     "desc_ko": "몸에 쌓이는 원망. 가득 차면 탈진한다.",
     "max": 100,
-    "on_full": {"status": "exhaustion"},
+    "on_full": {
+      "status": "exhaustion"
+    },
     "reset_on_full": true,
     "color": "#b0584a",
     "source": "original",
@@ -37,7 +43,9 @@
     "name_ko": "분노",
     "desc_ko": "받은 상처만큼 끓어오른다. 가득 차면 모든 피해가 두 배가 된다.",
     "max": 50,
-    "on_full": {"status": "dread_rage"},
+    "on_full": {
+      "status": "dread_rage"
+    },
     "reset_on_full": true,
     "color": "#d0503c",
     "source": "placeholder",
@@ -48,10 +56,25 @@
     "name_ko": "증오",
     "desc_ko": "가득 차면 증오가 폭발해 매 차례 모두를 덮친다.",
     "max": 100,
-    "on_full": {"status": "dread_hatred_burst"},
+    "on_full": {
+      "status": "dread_hatred_burst"
+    },
     "reset_on_full": false,
     "color": "#5a1f2a",
     "source": "original",
     "notes": "명세 §7.2 보스 게이지. 오르는 방법은 ASSUMPTIONS DF4"
+  },
+  {
+    "id": "golem_fire",
+    "name_ko": "타는 살점",
+    "desc_ko": "받은 화염 피해가 쌓인다. 가득 차면 살점이 타 버린다.",
+    "max": 150,
+    "on_full": {
+      "status": "golem_burned"
+    },
+    "reset_on_full": false,
+    "color": "#e07a3a",
+    "source": "original",
+    "notes": "명세 §9.3 화염 피해 누적 150"
   }
 ]

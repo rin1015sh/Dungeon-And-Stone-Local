@@ -1,0 +1,18 @@
+{
+  "id": "ess_skeleton_bone_barrier",
+  "name_ko": "뼈 방벽(정수)",
+  "target": "ally_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "bone_barrier"
+    }
+  ],
+  "essence_of": "skeleton_bone_barrier",
+  "source": "placeholder"
+}

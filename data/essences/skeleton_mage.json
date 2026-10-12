@@ -1,0 +1,53 @@
+{
+  "id": "skeleton_mage",
+  "name_ko": "스켈레톤 메이지의 정수",
+  "grade": 9,
+  "source_monster": "skeleton_mage",
+  "family": "skeleton_mage",
+  "rank": "normal",
+  "passive": {
+    "id": "skeleton_core",
+    "name_ko": "갈비뼈 속 핵",
+    "desc_ko": "베고 찌르는 공격에 조금 강하지만 둔기에 약하다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:blunt",
+        "percent": 0.1
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_skeleton_shadow_arrow"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_skeleton_bone_barrier"
+    },
+    {
+      "color": "green",
+      "skill": "ess_skeleton_curse_whisper"
+    }
+  ],
+  "stat_ranges": {
+    "int": [
+      1,
+      3
+    ],
+    "m_res": [
+      1,
+      2
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

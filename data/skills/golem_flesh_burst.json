@@ -1,0 +1,25 @@
+{
+  "id": "golem_flesh_burst",
+  "name_ko": "살점폭발",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.5,
+      "damage_type": "poison",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.3
+    }
+  ],
+  "source": "original"
+}

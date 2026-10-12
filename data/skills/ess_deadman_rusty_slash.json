@@ -1,0 +1,23 @@
+{
+  "id": "ess_deadman_rusty_slash",
+  "name_ko": "녹슨 베기(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.85,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.112
+    }
+  ],
+  "essence_of": "deadman_rusty_slash",
+  "source": "placeholder"
+}

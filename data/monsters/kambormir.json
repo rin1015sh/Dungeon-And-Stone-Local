@@ -1,0 +1,121 @@
+{
+  "id": "kambormir",
+  "name_ko": "뱀파이어 공작 캠보르미어",
+  "grade": 5,
+  "rank": "variant_guardian",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.1,
+  "color": "#d8c8d0",
+  "immunities": [],
+  "weaknesses": {
+    "sun": 2.0,
+    "holy": 1.5
+  },
+  "weak_point": {
+    "name_ko": "심장",
+    "multiplier": 2.0,
+    "requires": "aim",
+    "on_hit_status": "regen_stopped"
+  },
+  "stats": {
+    "str": 48,
+    "agi": 30,
+    "p_res": 32,
+    "m_res": 40,
+    "int": 52
+  },
+  "resources": {
+    "hp": 3200,
+    "soul": 300
+  },
+  "natural_weapon": {
+    "attack": 26,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "vamp_blood_brand",
+    "vamp_killing_intent",
+    "vamp_blood_spear",
+    "vamp_blood_veil"
+  ],
+  "passives": [
+    {
+      "id": "vamp_flesh",
+      "name_ko": "뱀파이어의 육신",
+      "desc_ko": "상처가 순식간에 아문다.",
+      "regen_per_round": 0.06
+    }
+  ],
+  "magic_stone_grade": 5,
+  "ai": [
+    {
+      "if": "foe_status",
+      "status": "sacrifice_mark",
+      "not": true,
+      "use": "vamp_blood_brand",
+      "target": "without_status",
+      "target_status": "sacrifice_mark"
+    },
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "vamp_blood_veil",
+      "also": [
+        {
+          "if": "self_status",
+          "status": "vamp_blood_veil",
+          "not": true
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "vamp_killing_intent"
+    }
+  ],
+  "ai_cycle": [
+    "vamp_blood_spear",
+    "basic_attack"
+  ],
+  "upper_variant": true,
+  "pattern": "guardian",
+  "pattern_params": {
+    "per_foe_status": {
+      "status": "sacrifice_mark",
+      "buff": "vamp_blood_feast"
+    },
+    "intro": "combat.kambormir_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.0
+    }
+  ],
+  "desc_ko": "창백한 피부의 흡혈귀 공작. 피로 문신을 새겨 제물로 삼는다. 태양에 약하다.",
+  "sprite": "res://assets/sprites/monsters/kambormir.png",
+  "source": "original",
+  "notes": "명세 §9 변종 수호자 3%. 권장 파티로는 사실상 이길 수 없다"
+}

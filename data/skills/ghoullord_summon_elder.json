@@ -1,0 +1,18 @@
+{
+  "id": "ghoullord_summon_elder",
+  "name_ko": "엘더 소환",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "elder_ghoul"
+    }
+  ],
+  "uses_per_battle": 2,
+  "source": "placeholder"
+}

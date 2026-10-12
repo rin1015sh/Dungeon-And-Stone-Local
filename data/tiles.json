@@ -270,5 +270,38 @@
     },
     "sprite": "res://assets/sprites/tiles/metal_wall.png",
     "source": "placeholder"
+  },
+  {
+    "id": "fountain_statue",
+    "name_ko": "분수대 조각상",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#5a6a7a",
+      "face": "#9ab0c0"
+    },
+    "light": {
+      "radius_m": 1.5,
+      "color": "#bfe6ff",
+      "intensity": 0.5
+    },
+    "sprite": "res://assets/sprites/tiles/fountain_statue.png",
+    "source": "original"
+  },
+  {
+    "id": "bookshelf",
+    "name_ko": "썩은 책장",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a2a20",
+      "face": "#6a4a30"
+    },
+    "sprite": "res://assets/sprites/tiles/bookshelf.png",
+    "source": "placeholder"
   }
 ]

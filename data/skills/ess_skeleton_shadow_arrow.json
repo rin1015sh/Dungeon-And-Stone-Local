@@ -1,0 +1,21 @@
+{
+  "id": "ess_skeleton_shadow_arrow",
+  "name_ko": "그림자 화살(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.85,
+      "damage_type": "dark",
+      "base": 6
+    }
+  ],
+  "essence_of": "skeleton_shadow_arrow",
+  "source": "placeholder"
+}

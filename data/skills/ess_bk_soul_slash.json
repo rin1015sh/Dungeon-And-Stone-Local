@@ -1,0 +1,19 @@
+{
+  "id": "ess_bk_soul_slash",
+  "name_ko": "영혼 베기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "soul_slash",
+      "soul_ratio": 0.3
+    }
+  ],
+  "notes": "정수판 [변]: 레벨 하락 대신 대상 영혼력 30% 소실",
+  "essence_of": "bk_soul_slash",
+  "source": "placeholder"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "deathfiend",
+  "name_ko": "데스핀드의 정수",
+  "grade": 8,
+  "source_monster": "deathfiend",
+  "family": "deathfiend",
+  "rank": "normal",
+  "passive": {
+    "id": "deathfiend_preservation",
+    "name_ko": "육체보존",
+    "desc_ko": "상처가 빨리 아물고 출혈이 일찍 멎는다.",
+    "regen_per_round": 0.02,
+    "status_duration_cap": {
+      "bleeding": 2
+    }
+  },
+  "actives": [
+    {
+      "color": "gray",
+      "skill": "ess_deathfiend_call"
+    },
+    {
+      "color": "red",
+      "skill": "ess_deathfiend_halfmoon"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_deathfiend_shield_arm"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      3,
+      5
+    ],
+    "p_res": [
+      3,
+      5
+    ],
+    "natural_regen": [
+      5,
+      10
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9 초반 정수 중 최상위권 [원]"
+}

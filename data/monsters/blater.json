@@ -1,0 +1,101 @@
+{
+  "id": "blater",
+  "name_ko": "저주받은 기사 블라터",
+  "grade": 6,
+  "rank": "guardian",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.4,
+  "color": "#3a2a30",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 24,
+    "agi": 12,
+    "p_res": 20,
+    "m_res": 18,
+    "int": 14
+  },
+  "resources": {
+    "hp": 800,
+    "soul": 120
+  },
+  "natural_weapon": {
+    "attack": 22,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "blater_cursed_slash",
+    "blater_oath",
+    "blater_death_sentence"
+  ],
+  "passives": [
+    {
+      "id": "blater_grudge_aura",
+      "name_ko": "원한",
+      "desc_ko": "데스나이트의 원한이 적의 치유와 재생을 절반으로 만든다.",
+      "foe_statuses_on_start": [
+        "blater_grudge"
+      ]
+    }
+  ],
+  "magic_stone_grade": 6,
+  "ai_cycle": [
+    "blater_cursed_slash",
+    "blater_cursed_slash",
+    "blater_death_sentence"
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "every": [
+      {
+        "rounds": 3,
+        "skill": "blater_oath"
+      }
+    ],
+    "extra_status": "guardian_frenzy",
+    "intro": "combat.blater_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.guardian_frenzy",
+      "self_statuses": [
+        "guardian_frenzy"
+      ]
+    }
+  ],
+  "desc_ko": "핏빛성채의 수호자. 원한에 사로잡힌 데스나이트.",
+  "sprite": "res://assets/sprites/monsters/blater.png",
+  "source": "original",
+  "notes": "명세 §9 수호자. 넘버스 후보는 다음 배치 · 시뮬레이터 조정(명세 §15, docs/balance/floor1.md G5): 생명력 1600→800, 민첩 20→12, 근력 40→24, 물리내성 30→20"
+}

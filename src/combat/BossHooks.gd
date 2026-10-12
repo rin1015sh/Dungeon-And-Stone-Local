@@ -5,7 +5,8 @@ extends RefCounted
 ##   "pattern": "<src/combat/patterns/ 파일 이름>", "pattern_params": { … 패턴 수치 … }
 ##   "phases": [{"id": "p1", "hp_above": 0.7, "message": "<문자열 키>", "self_statuses": [..], "foe_statuses": [..],
 ##               "remove_foe_statuses": [..], "remove_self_statuses": [..], "self_passives": [{패시브}],
-##               "target_rule": "guard_front", "round_effects": [{효과 — 라운드 끝에 적 전원에게}]}, …]
+##               "target_rule": "guard_front", "round_effects": [{효과 — 라운드 끝에 적 전원에게}],
+##               "cast": "<스킬 id — 들어설 때 한 번 자동으로 쓴다(시체골렘 살점폭발)>"}, …]
 ##   위에서부터 체력 비율이 hp_above보다 큰 첫 페이즈. 페이즈는 앞으로만 간다.
 ## 상태는 Combatant.memo: {round, phase, in_extra, …패턴이 쓰는 값}.
 
@@ -66,6 +67,20 @@ static func check_phase(b: Battle, c: Combatant) -> bool:
 	return true
 
 
+## 체력과 무관하게 그 페이즈로 옮긴다(패턴이 조건을 판단할 때 — 시체골렘의 화염 누적). 앞으로만.
+static func enter_phase(b: Battle, c: Combatant, phase_id: String) -> void:
+	var phases := JsonUtil.get_array(_def(c), "phases")
+	var cur := -1
+	var want := -1
+	for i in phases.size():
+		if JsonUtil.get_str(phases[i], "id") == str(c.memo.get("phase", "")):
+			cur = i
+		if JsonUtil.get_str(phases[i], "id") == phase_id:
+			want = i
+	for i in range(cur + 1, want + 1):
+		_enter(b, c, phases[i])
+
+
 static func check_all(b: Battle) -> void:
 	for u in b.units:
 		if not JsonUtil.get_array(_def(u), "phases").is_empty():
@@ -120,6 +135,12 @@ static func _enter(b: Battle, c: Combatant, ph: Dictionary) -> void:
 				f.actor.statuses.apply(str(st))
 	if ph.has("target_rule"):
 		c.memo["target_rule"] = JsonUtil.get_str(ph, "target_rule")
+	var cast := b.db.get_entry("skills", JsonUtil.get_str(ph, "cast"))
+	if not cast.is_empty():
+		b.message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(cast, "name_ko")}, "system")
+		var targets: Array = b.opponents(c) if JsonUtil.get_str(cast, "target") == "enemy_all" else [c]
+		for t: Combatant in targets:
+			apply_effects(b, c, t, JsonUtil.get_array(cast, "effects"))
 	var p := pattern(b, c)
 	if p != null:
 		p.on_phase(b, c, ph)

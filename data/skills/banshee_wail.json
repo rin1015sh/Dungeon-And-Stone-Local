@@ -1,0 +1,25 @@
+{
+  "id": "banshee_wail",
+  "name_ko": "비명",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.9,
+      "damage_type": "dark",
+      "base": 8
+    },
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.2
+    }
+  ],
+  "source": "placeholder"
+}

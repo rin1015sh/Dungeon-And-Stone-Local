@@ -1,0 +1,21 @@
+{
+  "id": "ess_golem_devour",
+  "name_ko": "잡아먹기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.02,
+      "damage_type": "blunt",
+      "drain": 0.5
+    }
+  ],
+  "essence_of": "golem_devour",
+  "source": "placeholder"
+}

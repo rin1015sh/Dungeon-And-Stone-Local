@@ -970,5 +970,266 @@
     "battle_only": true,
     "source": "placeholder",
     "notes": "예고 공격(delayed target cast)의 대상 표시 — 터지면 풀린다"
+  },
+  {
+    "id": "march_order",
+    "name_ko": "진군 명령",
+    "kind": "buff",
+    "desc_ko": "다음 공격이 강해진다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "consume_on_attack": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "bone_barrier",
+    "name_ko": "뼈 방벽",
+    "kind": "buff",
+    "desc_ko": "뼈가 몸을 감싸 단단해진다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.4
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "curse_whisper",
+    "name_ko": "저주 속삭임",
+    "kind": "debuff",
+    "desc_ko": "저주가 마법 저항을 갉아먹는다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "m_res",
+        "percent": -0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "banshee_sob",
+    "name_ko": "흐느낌",
+    "kind": "debuff",
+    "desc_ko": "흐느낌이 정신을 흐린다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": -0.15
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "shield_arm",
+    "name_ko": "방패팔 막기",
+    "kind": "buff",
+    "desc_ko": "방패팔을 세워 물리 피해를 막는다.",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.5
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "evil_sound",
+    "name_ko": "악의 소리",
+    "kind": "debuff",
+    "desc_ko": "귀를 긁는 소리에 정신이 흔들린다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": -0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "vitality_drain",
+    "name_ko": "생기 흡수",
+    "kind": "buff",
+    "desc_ko": "공격이 맞으면 준 피해의 일부를 빨아들인다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "lifesteal": 0.3,
+    "source": "original"
+  },
+  {
+    "id": "golem_burned",
+    "name_ko": "타오른 살점",
+    "kind": "debuff",
+    "desc_ko": "살점이 타 버렸다.",
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "golem_skeleton",
+    "name_ko": "뼈대 형태",
+    "kind": "debuff",
+    "desc_ko": "살점이 떨어져 뼈대만 남았다. 마력핵이 드러난다.",
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": -0.5
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "blater_grudge",
+    "name_ko": "원한",
+    "kind": "debuff",
+    "desc_ko": "데스나이트의 원한이 상처를 붙든다. 받는 치유와 재생이 절반이 된다.",
+    "battle_only": true,
+    "heal_mult": 0.5,
+    "modifiers": [
+      {
+        "target": "regen:hp",
+        "percent": -0.5
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "blater_grudge_weak",
+    "name_ko": "옅은 원한",
+    "kind": "debuff",
+    "desc_ko": "받는 치유가 줄어든다.",
+    "battle_only": true,
+    "heal_mult": 0.75,
+    "source": "original",
+    "notes": "블라터 정수판 오오라"
+  },
+  {
+    "id": "guardian_frenzy",
+    "name_ko": "광분",
+    "kind": "buff",
+    "desc_ko": "궁지에 몰려 연달아 움직인다.",
+    "battle_only": true,
+    "source": "original",
+    "notes": "수호자 규칙: 생명력 50% 이하 라운드당 2회 행동"
+  },
+  {
+    "id": "vamp_blood_feast",
+    "name_ko": "피의 향연",
+    "kind": "buff",
+    "desc_ko": "제물의 수만큼 육체가 강해진다.",
+    "stackable": true,
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.1
+      },
+      {
+        "target": "agi",
+        "percent": 0.1
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "vamp_intent",
+    "name_ko": "살의",
+    "kind": "debuff",
+    "desc_ko": "살이 저릿하다. 몸이 굳는다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.15
+      }
+    ],
+    "source": "original"
+  },
+  {
+    "id": "vamp_blood_veil",
+    "name_ko": "피의 장막",
+    "kind": "buff",
+    "desc_ko": "피의 장막이 몸을 감싼다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.4
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "regen_stopped",
+    "name_ko": "재생 정지",
+    "kind": "debuff",
+    "desc_ko": "심장이 꿰뚫려 재생이 멎었다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "no_regen"
+    ],
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "tear_sealed",
+    "name_ko": "봉인된 저항",
+    "kind": "debuff",
+    "desc_ko": "여신의 눈물이 악의 저항을 봉인했다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "m_res",
+        "percent": -1.0
+      },
+      {
+        "target": "p_res",
+        "percent": -0.3
+      }
+    ],
+    "source": "original"
   }
 ]

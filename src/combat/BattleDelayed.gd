@@ -7,14 +7,15 @@ extends RefCounted
 
 static func schedule(c: Combatant, e: Dictionary) -> void:
 	var q: Array = c.memo.get("delayed", [])
-	q.append({"left": int(e.get("rounds", 1)), "hits": int(e.get("hits", 1)), "effects": e.get("effects", []), "marked": e.get("marked")})
+	q.append({"left": int(e.get("rounds", 1)), "hits": int(e.get("hits", 1)), "effects": e.get("effects", []), "marked": e.get("marked"),
+		"guarded_mult": float(e.get("guarded_mult", 1.0))})
 	c.memo["delayed"] = q
 
 
-## 시전자 c의 차례가 시작됐다.
+## 시전자 c의 차례가 시작됐다. 추가 행동(같은 라운드의 두 번째 차례)에서는 세지 않는다 — 예고를 받고 대응할 틈을 준다.
 static func tick(b: Battle, c: Combatant) -> void:
 	var q: Array = c.memo.get("delayed", [])
-	if q.is_empty():
+	if q.is_empty() or bool(c.memo.get("in_extra", false)):
 		return
 	var keep: Array = []
 	for item: Dictionary in q:
@@ -29,7 +30,11 @@ static func tick(b: Battle, c: Combatant) -> void:
 		for i in int(item["hits"]):
 			var t := mk if mk != null and mk.is_active() else pick_target(b, c)
 			if t != null:
-				BossHooks.apply_effects(b, c, t, item["effects"])
+				var fx: Array = item["effects"]
+				if t.actor.statuses.has("guarding") and float(item.get("guarded_mult", 1.0)) < 1.0:
+					fx = BattleTargets.boosted(fx, {"power_mult": float(item["guarded_mult"]), "ignore_defense": false})
+					b.message.emit("combat.telegraph_guarded", {"name": t.label()}, "good")
+				BossHooks.apply_effects(b, c, t, fx)
 	c.memo["delayed"] = keep
 
 

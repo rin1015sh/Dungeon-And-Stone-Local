@@ -1,0 +1,17 @@
+{
+  "id": "deadman_march_order",
+  "name_ko": "진군 명령",
+  "target": "ally_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "march_order"
+    }
+  ],
+  "source": "placeholder"
+}

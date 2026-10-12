@@ -5,7 +5,8 @@ extends Node
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
-## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage]: 들어가서 n번째 챕터로(앞 챕터는 디버그로 치움), 첫 조우와 전투
+## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian]]: 들어가서 n번째 챕터로
+## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
@@ -139,11 +140,18 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 	explore = _main.current_screen() as ExploreScreen
 	for i in int(str(_args.get("chapter", "1"))) - 1:
 		explore.session.rift_run.debug_clear()
+		var req := JsonUtil.get_dict(explore.session.rift_run.chapters()[explore.session.rift_run.chapter], "exit_requires")
+		if not req.is_empty():
+			explore.session.player.inventory.add(JsonUtil.get_str(req, "item"), 1)
 		explore.session.relocate(explore.session.map.portals[0]["pos"])
 		explore.session.interact()
 		await _frames(4)
 		explore = _main.current_screen() as ExploreScreen
 	if _args.has("engage"):
 		var run := explore.session.rift_run
-		explore.session.engage(run.remaining[0], true)
+		var pick: FieldMonsters.Group = run.remaining[0]
+		for g: FieldMonsters.Group in run.remaining:
+			if g.tag == str(_args["engage"]):
+				pick = g
+		explore.session.engage(pick, true)
 	return explore

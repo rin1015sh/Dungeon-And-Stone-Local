@@ -1,0 +1,17 @@
+{
+  "id": "ess_rat_hide",
+  "name_ko": "숨기(정수)",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden",
+      "duration": 1
+    }
+  ],
+  "essence_of": "rat_hide",
+  "source": "placeholder"
+}

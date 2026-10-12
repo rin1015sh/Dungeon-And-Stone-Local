@@ -1,0 +1,58 @@
+{
+  "id": "kambormir",
+  "name_ko": "뱀파이어 공작 캠보르미어의 정수",
+  "grade": 5,
+  "source_monster": "kambormir",
+  "family": "kambormir",
+  "rank": "variant_guardian",
+  "passive": {
+    "id": "vamp_flesh",
+    "name_ko": "뱀파이어의 육신",
+    "desc_ko": "상처가 빨리 아물지만 태양에 약해진다.",
+    "regen_per_round": 0.02,
+    "modifiers": [
+      {
+        "target": "dmg_taken:sun",
+        "percent": 1.0
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_vamp_blood_brand"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_vamp_killing_intent"
+    },
+    {
+      "color": "green",
+      "skill": "ess_vamp_blood_spear"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_vamp_blood_veil"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      10,
+      14
+    ],
+    "agi": [
+      8,
+      12
+    ],
+    "int": [
+      10,
+      14
+    ],
+    "natural_regen": [
+      10,
+      20
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9 수호자 정수 — 태양 약점도 함께"
+}

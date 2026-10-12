@@ -1,0 +1,21 @@
+{
+  "id": "ess_gargoyle_petrify",
+  "name_ko": "석화(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "petrify",
+      "chance": 0.675,
+      "duration": 1
+    }
+  ],
+  "notes": "정수판 예외: [석화] 1R, 영혼력 비용 ×1.5",
+  "essence_of": "gargoyle_petrify",
+  "source": "placeholder"
+}

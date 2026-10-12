@@ -1,0 +1,20 @@
+{
+  "id": "bk_soul_slash",
+  "name_ko": "영혼 베기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "soul_slash",
+      "base": 0.01,
+      "per_level": 0.005,
+      "ref_level": 8
+    }
+  ],
+  "source": "original",
+  "notes": "피해 없음. 레벨 하락 확률 1% + (8 − 대상 레벨) × 0.5% [창]"
+}

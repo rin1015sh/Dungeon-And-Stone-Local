@@ -1,0 +1,18 @@
+{
+  "id": "deathfiend_shield_arm",
+  "name_ko": "방패팔 막기",
+  "target": "self",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "shield_arm"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "우선도 +2는 CTB라 없음 — 다음 자기 차례까지 받는 물리 −50%"
+}

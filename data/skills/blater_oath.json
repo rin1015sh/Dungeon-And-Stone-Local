@@ -1,0 +1,21 @@
+{
+  "id": "blater_oath",
+  "name_ko": "망자의 맹세",
+  "target": "self",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "soldier_deadman"
+    },
+    {
+      "type": "summon",
+      "monster": "soldier_deadman"
+    }
+  ],
+  "source": "placeholder"
+}

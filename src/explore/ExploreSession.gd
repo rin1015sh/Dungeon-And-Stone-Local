@@ -251,6 +251,7 @@ func pass_time(hours: float) -> void:
 		lord.update(self, h)
 		rifts.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
+		monsters.set_player_marks(player.statuses.ids())
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
 			engage(g, false)

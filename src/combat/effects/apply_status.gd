@@ -19,7 +19,12 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 		ctx.say("effect.status_resisted", {"name": actor.display_name,
 			"status": JsonUtil.get_str(ctx.db.get_entry("statuses", status_id), "name_ko", status_id)}, "info")
 		return false
-	if not actor.statuses.apply(status_id, JsonUtil.get_float(data, "duration", -1.0)):
+	var dur := JsonUtil.get_float(data, "duration", -1.0)
+	var cap := Passives.duration_cap(actor, status_id)
+	if cap >= 0.0:
+		var base := dur if dur >= 0.0 else JsonUtil.get_float(JsonUtil.get_dict(ctx.db.get_entry("statuses", status_id), "duration"), "amount", cap)
+		dur = minf(base, cap)
+	if not actor.statuses.apply(status_id, dur):
 		return false
 	var status_name := JsonUtil.get_str(ctx.db.get_entry("statuses", status_id), "name_ko", status_id)
 	ctx.say("effect.status_on", {"status": status_name}, "warn")

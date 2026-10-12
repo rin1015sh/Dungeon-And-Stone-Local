@@ -1,0 +1,22 @@
+{
+  "id": "rat_gnaw",
+  "name_ko": "갉기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.1
+    }
+  ],
+  "source": "placeholder"
+}

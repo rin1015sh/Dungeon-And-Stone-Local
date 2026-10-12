@@ -217,6 +217,11 @@ func set_player_stealth(v: float) -> void:
 	_steer.player_stealth = v
 
 
+## 플레이어에게 걸린 상태(원한의 징표 등). ExploreSession이 시간 흐름마다 넣는다.
+func set_player_marks(ids: Array) -> void:
+	_steer.player_marks = ids
+
+
 ## 지금 시각(미궁 n일 차)과 칸 위치로 무리에 변이종을 섞는다.
 func _mix_variants(g: Group, region: Dictionary, cell: Vector2i) -> void:
 	var v := JsonUtil.get_dict(region, "variants")
@@ -274,7 +279,11 @@ func _free_cell_near(p: Vector2i) -> Vector2i:
 
 
 func _aggressive(monster_id: String) -> bool:
-	return JsonUtil.get_bool(_behavior(monster_id), "aggressive", true)
+	var beh := _behavior(monster_id)
+	var need := JsonUtil.get_str(beh, "passive_unless_status")
+	if not need.is_empty() and _steer.player_marks.has(need):
+		return true
+	return JsonUtil.get_bool(beh, "aggressive", true)
 
 
 func _behavior(monster_id: String) -> Dictionary:

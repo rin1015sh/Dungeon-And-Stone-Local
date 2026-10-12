@@ -132,6 +132,7 @@ func next_turn() -> Combatant:
 		if stunned:
 			message.emit("combat.skip", {"name": c.label()}, "warn")
 			timeline.consume(c)
+			BattlePassives.turn_end(self, c)
 			BossHooks.turn_end(self, c, true)
 			_after_effects()
 			continue
@@ -168,6 +169,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	c.acted += 1
 	c.was_hit = false
 	timeline.consume(c, delay)
+	BattlePassives.turn_end(self, c)
 	BossHooks.turn_end(self, c, false)
 	BattleObjective.after_turn(self, c)
 	current = null
@@ -218,7 +220,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	if skill_id != BASIC_ATTACK:
 		message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
 	var kind := JsonUtil.get_str(sk, "target")
-	var fx := JsonUtil.get_array(sk, "effects")
+	var fx := BattlePassives.skill_effects(self, c, skill_id, sk)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
 	var mis := BattleTargets.misdirect(self, c, kind) if not targets.is_empty() else {}
 	if not mis.is_empty():
@@ -236,7 +238,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 
 
 func _use_item(c: Combatant, item_id: String) -> void:
-	var ctx := ItemUser.use(effects, c.actor, item_id, rng)
+	var ctx := ItemUser.use(effects, c.actor, item_id, rng, null, {"in_battle": true})
 	if ctx == null:
 		message.emit("combat.no_item", {"name": c.label()}, "warn")
 		return

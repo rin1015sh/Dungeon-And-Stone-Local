@@ -20,7 +20,9 @@ const DEFAULT_MAX_STACKS := 99
 var _db: GameDatabase
 var _stats: StatBlock
 var _pool: ResourcePool
-var _active: Dictionary = {}  # id -> {"stacks": int, "remaining": float(음수 = 영구), "unit": String}
+var _active: Dictionary = {}
+## 지속 피해(주기 효과로 생명력이 줄어드는 것) 배율 — 소유자 패시브 dot_mult(본 나이트 방부제)의 곱. Actor가 맞춘다.
+var dot_mult: float = 1.0  # id -> {"stacks": int, "remaining": float(음수 = 영구), "unit": String}
 
 
 func _init(db: GameDatabase, stats: StatBlock, pool: ResourcePool) -> void:
@@ -92,6 +94,14 @@ func on_damaged(damage_type: String) -> Array[String]:
 			remove(id)
 			out.append(id)
 	return out
+
+
+## 걸린 상태 정의의 숫자 키 합(중첩 수만큼) — 예: lifesteal.
+func sum_key(key: String) -> float:
+	var v := 0.0
+	for id: String in _active:
+		v += JsonUtil.get_float(_db.get_entry("statuses", id), key) * stacks(id)
+	return v
 
 
 ## 받는 치유 배율(걸린 상태들의 heal_mult 곱).
@@ -180,6 +190,8 @@ func _periodic(trigger: String, amount: float) -> void:
 			var res := JsonUtil.get_str(pd, "resource")
 			if _pool.has_resource(res):
 				var per := Formula.value(pd.get("amount", 0.0), _pool.resolve)
+				if res == "hp" and per < 0.0:
+					per *= dot_mult
 				_pool.modify(res, per * n * amount, SOURCE_PREFIX + id)
 
 

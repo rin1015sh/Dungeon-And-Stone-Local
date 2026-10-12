@@ -135,12 +135,22 @@ func base_attack_type() -> String:
 func add_passive(p: Dictionary) -> void:
 	remove_passive(JsonUtil.get_str(p, "id"))
 	passives.append(p)
+	_sync_passive_flags()
 
 
 func remove_passive(passive_id: String) -> void:
 	for i in range(passives.size() - 1, -1, -1):
 		if JsonUtil.get_str(passives[i], "id") == passive_id:
 			passives.remove_at(i)
+	_sync_passive_flags()
+
+
+## 패시브가 바뀌면 컴포넌트에 반영할 값(지속 피해 배율 dot_mult).
+func _sync_passive_flags() -> void:
+	var m := 1.0
+	for p in passives:
+		m *= JsonUtil.get_float(p, "dot_mult", 1.0)
+	statuses.dot_mult = m
 
 
 ## 기본 공격이 원거리인가(활 등 무기 데이터 "ranged": true).

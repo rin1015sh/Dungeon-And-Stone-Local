@@ -1,0 +1,37 @@
+{
+  "id": "ess_chimera_triple_bite",
+  "name_ko": "삼중 물기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.425,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.425,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.425,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.15
+    }
+  ],
+  "essence_of": "chimera_triple_bite",
+  "source": "placeholder"
+}

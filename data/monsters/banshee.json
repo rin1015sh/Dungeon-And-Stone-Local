@@ -1,0 +1,83 @@
+{
+  "id": "banshee",
+  "name_ko": "벤시",
+  "grade": 9,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "spirit",
+  "family": [
+    "wraith"
+  ],
+  "shape": "humanoid",
+  "size": 0.8,
+  "color": "#b8c8e0",
+  "immunities": [
+    "slash",
+    "pierce",
+    "blunt"
+  ],
+  "weaknesses": {
+    "holy": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 2,
+    "agi": 12,
+    "p_res": 0,
+    "m_res": 10,
+    "int": 9
+  },
+  "resources": {
+    "hp": 35,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 1,
+    "damage_type": "dark"
+  },
+  "behavior": {
+    "aggressive": false,
+    "aggro_radius_m": 4.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back",
+    "passive_unless_status": "grudge_mark",
+    "aggro_mult_if_status": 3.0
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "banshee_wail",
+    "banshee_sob"
+  ],
+  "passives": [
+    {
+      "id": "banshee_wraith",
+      "name_ko": "원령",
+      "desc_ko": "물리 공격이 통하지 않는다. 먼저 손댄 자에게 원한을 새긴다.",
+      "mark_first_attacker": "grudge_mark"
+    }
+  ],
+  "magic_stone_grade": 9,
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "banshee_sob"
+    }
+  ],
+  "ai_cycle": [
+    "banshee_wail"
+  ],
+  "desc_ko": "흐느끼는 영체. 거의 먼저 덤비지 않는다.",
+  "sprite": "res://assets/sprites/monsters/banshee.png",
+  "source": "original",
+  "notes": "명세 §9"
+}

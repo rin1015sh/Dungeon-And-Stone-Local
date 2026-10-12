@@ -1,0 +1,19 @@
+{
+  "id": "ess_skeleton_bone_arrow",
+  "name_ko": "뼈화살(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.765,
+      "damage_type": "pierce",
+      "ranged": true
+    }
+  ],
+  "essence_of": "skeleton_bone_arrow",
+  "source": "placeholder"
+}

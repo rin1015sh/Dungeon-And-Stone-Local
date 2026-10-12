@@ -107,7 +107,7 @@
     {"id": "purple", "name_ko": "보랏빛", "color": "#8a5ab0"},
     {"id": "gray", "name_ko": "잿빛", "color": "#8c8a86"},
     {"id": "brown", "name_ko": "갈색", "color": "#8a6440"},
-    {"id": "rainbow", "name_ko": "무지갯빛", "color": "#e8d8f0"}
+    {"id": "black", "name_ko": "검은", "color": "#2a2428"}, {"id": "rainbow", "name_ko": "무지갯빛", "color": "#e8d8f0"}
   ],
   "directions": [
     {"id": "east", "name_ko": "동쪽"},

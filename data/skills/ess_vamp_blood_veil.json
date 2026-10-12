@@ -1,0 +1,18 @@
+{
+  "id": "ess_vamp_blood_veil",
+  "name_ko": "흑마법: 피의 장막(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 24
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "vamp_blood_veil"
+    }
+  ],
+  "essence_of": "vamp_blood_veil",
+  "source": "placeholder"
+}

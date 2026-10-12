@@ -1,0 +1,46 @@
+{
+  "id": "deadman_commander",
+  "name_ko": "지휘관 데드맨의 정수",
+  "grade": 9,
+  "source_monster": "deadman_commander",
+  "family": "deadman_commander",
+  "rank": "normal",
+  "passive": {
+    "id": "deadman_rotten_command",
+    "name_ko": "썩은 지휘",
+    "desc_ko": "곁의 데드맨 계열 동료가 조금 더 힘을 낸다.",
+    "ally_aura": {
+      "lineages": [
+        "deadman"
+      ],
+      "modifiers": [
+        {
+          "target": "str",
+          "percent": 0.075
+        }
+      ]
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_deadman_march_order"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_deadman_chop"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      1,
+      2
+    ],
+    "pain_tolerance": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

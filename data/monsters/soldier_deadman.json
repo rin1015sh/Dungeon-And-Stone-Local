@@ -1,0 +1,81 @@
+{
+  "id": "soldier_deadman",
+  "name_ko": "병사 데드맨",
+  "grade": 9,
+  "rank": "ungraded",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#6a7060",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 11,
+    "agi": 6,
+    "p_res": 8,
+    "m_res": 1,
+    "int": 1
+  },
+  "resources": {
+    "hp": 60,
+    "soul": 0
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "deadman_rusty_slash",
+    "deadman_shield_bash"
+  ],
+  "passives": [
+    {
+      "id": "deadman_rotten_body",
+      "name_ko": "썩은 몸",
+      "desc_ko": "썩어 버린 몸이라 출혈도 독도 듣지 않는다.",
+      "status_immune": [
+        "bleeding",
+        "poison"
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "deadman_shield_bash"
+    }
+  ],
+  "ai_cycle": [
+    "deadman_rusty_slash"
+  ],
+  "lineage": "deadman",
+  "desc_ko": "녹슨 갑옷을 걸친 데드맨.",
+  "sprite": "res://assets/sprites/monsters/soldier_deadman.png",
+  "source": "original",
+  "notes": "명세 §9"
+}

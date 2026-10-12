@@ -1,0 +1,22 @@
+{
+  "id": "vamp_killing_intent",
+  "name_ko": "살의",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.3
+    },
+    {
+      "type": "apply_status",
+      "status": "vamp_intent"
+    }
+  ],
+  "source": "original"
+}

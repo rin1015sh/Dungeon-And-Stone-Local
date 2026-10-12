@@ -1,0 +1,41 @@
+{
+  "id": "banshee",
+  "name_ko": "벤시의 정수",
+  "grade": 9,
+  "source_monster": "banshee",
+  "family": "banshee",
+  "rank": "normal",
+  "passive": {
+    "id": "banshee_wraith",
+    "name_ko": "원령",
+    "desc_ko": "받는 물리 피해가 조금 줄어든다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.1
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_banshee_wail"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_banshee_sob"
+    }
+  ],
+  "stat_ranges": {
+    "m_res": [
+      2,
+      4
+    ],
+    "int": [
+      2,
+      4
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §9"
+}

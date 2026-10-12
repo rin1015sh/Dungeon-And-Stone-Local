@@ -1,0 +1,19 @@
+{
+  "id": "gargoyle_petrify",
+  "name_ko": "석화",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "petrify",
+      "chance": 0.9
+    }
+  ],
+  "source": "original",
+  "notes": "명중 90 → 확률 0.9. 첫 라운드는 선공(start_gauge)"
+}

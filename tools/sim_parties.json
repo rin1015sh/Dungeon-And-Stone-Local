@@ -1,22 +1,197 @@
 {
   "_comment": "균열 파티 시뮬레이터(tools/sim_party.gd, 명세 §15). 균열 기준 탐험가 Lv4 4인(전열 2·후열 2), 하급 포션 3개씩, 1층 정수 2~3개씩. ai: naive = 예고를 무시하고 때림(첫 시도), smart = [예고]가 찍히면 방어.",
   "party": [
-    {"name": "전열 A", "race": "human", "class": "warrior", "row": "front", "stats": {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10},
-     "essences": [{"essence": "goblin", "color": "red"}, {"essence": "ghoul", "color": "blue"}, {"essence": "gnome", "color": "red"}]},
-    {"name": "전열 B", "race": "barbarian", "class": "warrior", "row": "front", "stats": {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10},
-     "essences": [{"essence": "blade_wolf", "color": "red"}, {"essence": "goblin_swordsman", "color": "red"}]},
-    {"name": "후열 C", "race": "human", "class": "spearman", "row": "back", "stats": {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10},
-     "essences": [{"essence": "goblin_archer", "color": "red"}, {"essence": "elder_ghoul", "color": "red"}]},
-    {"name": "후열 D", "race": "human", "class": "archer", "row": "back", "stats": {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10},
-     "essences": [{"essence": "corrupted_gnome", "color": "red"}, {"essence": "giant_blade_wolf", "color": "red"}, {"essence": "blood_blade_wolf", "color": "red"}]}
+    {
+      "name": "전열 A",
+      "race": "human",
+      "class": "warrior",
+      "row": "front",
+      "stats": {
+        "str": 18,
+        "agi": 16,
+        "p_res": 14,
+        "m_res": 8,
+        "int": 10
+      },
+      "essences": [
+        {
+          "essence": "goblin",
+          "color": "red"
+        },
+        {
+          "essence": "ghoul",
+          "color": "blue"
+        },
+        {
+          "essence": "gnome",
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "name": "전열 B",
+      "race": "barbarian",
+      "class": "warrior",
+      "row": "front",
+      "stats": {
+        "str": 18,
+        "agi": 16,
+        "p_res": 14,
+        "m_res": 8,
+        "int": 10
+      },
+      "essences": [
+        {
+          "essence": "blade_wolf",
+          "color": "red"
+        },
+        {
+          "essence": "goblin_swordsman",
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "name": "후열 C",
+      "race": "human",
+      "class": "spearman",
+      "row": "back",
+      "stats": {
+        "str": 18,
+        "agi": 16,
+        "p_res": 14,
+        "m_res": 8,
+        "int": 10
+      },
+      "essences": [
+        {
+          "essence": "goblin_archer",
+          "color": "red"
+        },
+        {
+          "essence": "elder_ghoul",
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "name": "후열 D",
+      "race": "human",
+      "class": "archer",
+      "row": "back",
+      "stats": {
+        "str": 18,
+        "agi": 16,
+        "p_res": 14,
+        "m_res": 8,
+        "int": 10
+      },
+      "essences": [
+        {
+          "essence": "corrupted_gnome",
+          "color": "red"
+        },
+        {
+          "essence": "giant_blade_wolf",
+          "color": "red"
+        },
+        {
+          "essence": "blood_blade_wolf",
+          "color": "red"
+        }
+      ]
+    }
   ],
   "level": 4,
-  "items": {"minor_potion": 3},
+  "items": {
+    "minor_potion": 3
+  },
   "potion_hp_ratio": 0.35,
   "scenarios": [
-    {"name": "임시 수호자 · 첫 시도(예고 무시)", "monsters": ["rift_warden_standin"], "ai": "naive", "min": 0.4, "max": 0.6},
-    {"name": "임시 수호자 · 예고 대응(방어)", "monsters": ["rift_warden_standin"], "ai": "smart", "min": 0.75, "max": 1.0},
-    {"name": "변종 임시 수호자", "monsters": ["rift_warden_standin_variant"], "ai": "smart", "min": 0.0, "max": 0.1},
-    {"name": "1층 필드 혼합 3체(참고)", "monsters": ["elder_ghoul", "giant_blade_wolf", "goblin_swordsman"], "ai": "naive", "min": 0.85, "max": 1.0}
+    {
+      "name": "임시 수호자 · 첫 시도(예고 무시)",
+      "monsters": [
+        "rift_warden_standin"
+      ],
+      "ai": "naive",
+      "min": 0.4,
+      "max": 0.6
+    },
+    {
+      "name": "임시 수호자 · 예고 대응(방어)",
+      "monsters": [
+        "rift_warden_standin"
+      ],
+      "ai": "smart",
+      "min": 0.75,
+      "max": 1.0
+    },
+    {
+      "name": "변종 임시 수호자",
+      "monsters": [
+        "rift_warden_standin_variant"
+      ],
+      "ai": "smart",
+      "min": 0.0,
+      "max": 0.1
+    },
+    {
+      "name": "핏빛성채 · 8등급 혼합 3체",
+      "monsters": [
+        "deathfiend",
+        "chimera_wolf",
+        "gargoyle_statue"
+      ],
+      "ai": "naive",
+      "min": 0.85,
+      "max": 1.0
+    },
+    {
+      "name": "핏빛성채 · 7등급 혼합 3체(본 나이트)",
+      "monsters": [
+        "bone_knight",
+        "bone_knight",
+        "bone_knight"
+      ],
+      "ai": "naive",
+      "min": 0.7,
+      "max": 0.85
+    },
+    {
+      "name": "핏빛성채 · 중간 보스 시체골렘",
+      "monsters": [
+        "corpse_golem"
+      ],
+      "ai": "naive",
+      "min": 0.7,
+      "max": 0.8
+    },
+    {
+      "name": "핏빛성채 · 블라터 첫 시도(예고 무시)",
+      "monsters": [
+        "blater"
+      ],
+      "ai": "naive",
+      "min": 0.4,
+      "max": 0.6
+    },
+    {
+      "name": "핏빛성채 · 블라터 예고 대응(방어)",
+      "monsters": [
+        "blater"
+      ],
+      "ai": "smart",
+      "min": 0.75,
+      "max": 1.0
+    },
+    {
+      "name": "핏빛성채 · 변종 캠보르미어",
+      "monsters": [
+        "kambormir"
+      ],
+      "ai": "smart",
+      "min": 0.0,
+      "max": 0.1
+    }
   ]
 }

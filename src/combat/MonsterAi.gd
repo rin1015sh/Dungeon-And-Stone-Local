@@ -5,7 +5,7 @@ extends RefCounted
 ##        "target": "random|lowest_hp|highest_hp|with_status|without_status|highest_meter|guard_front",
 ##        "target_status": "<상태 id>", "target_meter": "<게이지 id>"}
 ## 규칙에 target이 없으면 보스 페이즈의 대상 규칙(memo target_rule)을 쓴다.
-## guard_front: 방어 중이거나 끌어들이는 상태(draws_attacks)인 적 → 전열 → 무작위.
+## guard_front: 방어 중이거나 끌어들이는 상태(draws_attacks)인 적 → 전열 → 무작위. taunt_first: 끌어들이는 적 → 무작위(가고일 석화).
 ## 맞는 규칙이 없으면 ai_cycle(고정 순환, 예: 할퀴기 → 할퀴기 → 달려들기)의 이번 차례 스킬, 그것도 없으면 기본 공격.
 ## 조건은 src/combat/ai/<조건>.gd(AiCondition). 아군을 자동으로 돌릴 때(테스트)도 같은 함수를 쓴다 → 기본 공격.
 
@@ -62,6 +62,10 @@ static func target(b: Battle, c: Combatant, rule: Dictionary) -> Combatant:
 				if Meters.value(f.actor, mid) > Meters.value(best.actor, mid):
 					best = f
 			return best
+		"taunt_first":
+			var lured := foes.filter(func(f: Combatant) -> bool: return f.actor.statuses.has_flag("draws_attacks"))
+			if not lured.is_empty():
+				return b.rng.pick(lured) as Combatant
 		"guard_front":
 			var lure := foes.filter(func(f: Combatant) -> bool:
 				return f.actor.statuses.has("guarding") or f.actor.statuses.has_flag("draws_attacks"))

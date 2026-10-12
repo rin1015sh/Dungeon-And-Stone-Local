@@ -26,6 +26,7 @@
     "dreaming_soul_min_level": 10
   },
   "budget": {
+    "exclude_ranks": ["variant_guardian"],
     "_comment": "층별 1회성 경험치 목표(§5.4). tools/exp_budget.gd가 실제 데이터와 비교한다. 데이터가 목표보다 적은 층은 목표치로 '예상' 합산",
     "floor_targets": {"1": 110, "2": 190, "3": 230, "4": 110, "5": 400, "6": 600, "7": 360, "8": 260, "9": 400, "10": 140},
     "hidden_target": 1100,

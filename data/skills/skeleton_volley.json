@@ -1,0 +1,22 @@
+{
+  "id": "skeleton_volley",
+  "name_ko": "일제 사격",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.45,
+      "damage_type": "pierce",
+      "ranged": true
+    }
+  ],
+  "repeat_per_ally": "skeleton_archer",
+  "source": "placeholder",
+  "notes": "아군 아처 수만큼 연속, 각 위력 45 [창]"
+}

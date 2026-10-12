@@ -1,9 +1,8 @@
 {
   "host_floor": 1,
-  "stand_in": true,
-  "guardian": "rift_warden_standin",
+  "guardian": "blater",
   "variant": {
-    "monster": "rift_warden_standin_variant",
+    "monster": "kambormir",
     "chance": 0.03
   },
   "guardian_drops": [
@@ -40,8 +39,8 @@
       "desc_ko": "데드맨들이 지키는 검문소. 지휘관이 뿔피리를 지녔다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          20
         ],
         "rooms": 4,
         "room_size": [
@@ -53,27 +52,33 @@
         {
           "kind": "battle",
           "monsters": [
-            "ghoul",
-            "ghoul"
+            "deadman",
+            "deadman",
+            "soldier_deadman"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "elder_ghoul",
-            "ghoul"
+            "deadman_commander",
+            "soldier_deadman",
+            "deadman"
           ]
         }
-      ]
+      ],
+      "exit_requires": {
+        "item": "rift_horn",
+        "message": "explore.fortress_horn"
+      }
     },
     {
       "id": "ch2",
       "name_ko": "도개교",
-      "desc_ko": "뿔피리를 불자 해자에 핏물이 차오르고 데드맨이 기어오른다. 도개교가 내려올 때까지 버텨라.",
+      "desc_ko": "도개교가 내려올 때까지 해자에서 기어오르는 데드맨을 버텨라.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          20
         ],
         "rooms": 3,
         "room_size": [
@@ -86,11 +91,14 @@
           "kind": "waves",
           "survive_rounds": 6,
           "start": [
-            "ghoul"
+            "deadman",
+            "deadman"
           ],
           "reinforce": {
             "monsters": [
-              "ghoul"
+              "deadman",
+              "deadman",
+              "soldier_deadman"
             ],
             "count": [
               1,
@@ -103,11 +111,11 @@
     {
       "id": "ch3",
       "name_ko": "외성벽 시가지",
-      "desc_ko": "한 무리에 수십 마리 — 쉴 틈 없는 연전.",
+      "desc_ko": "한 무리에 수십 마리 — 쉴 틈 없는 연전. 광장 한가운데 마른 분수대가 있다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          20
         ],
         "rooms": 3,
         "room_size": [
@@ -120,32 +128,41 @@
           "kind": "chain",
           "battles": [
             [
-              "ghoul",
-              "ghoul"
+              "skeleton_archer",
+              "skeleton_archer",
+              "skeleton_mage"
             ],
             [
               "ghoul",
-              "elder_ghoul"
+              "ghoul",
+              "skeleton_archer"
             ],
             [
-              "elder_ghoul",
-              "ghoul",
-              "ghoul"
+              "deathfiend",
+              "skeleton_mage"
             ]
           ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "goddess_tear",
+          "item": "goddess_tear",
+          "tile": "fountain_statue",
+          "message": "explore.fortress_tear"
         }
       ]
     },
     {
       "id": "ch4",
       "name_ko": "내성벽 지하 감옥",
-      "desc_ko": "축축한 감옥 깊은 곳에 시체골렘이 기다린다.",
+      "desc_ko": "축축한 감옥. 쥐와 영체가 떠돌고, 깊은 곳에 시체골렘이 웅얼거린다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          20
         ],
-        "rooms": 4,
+        "rooms": 6,
         "room_size": [
           5,
           8
@@ -155,15 +172,28 @@
         {
           "kind": "battle",
           "monsters": [
-            "ghoul",
-            "ghoul"
+            "skull_rat",
+            "skull_rat",
+            "skull_rat"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "elder_ghoul",
-            "elder_ghoul"
+            "banshee",
+            "chimera_wolf"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "ghoul_lord"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "corpse_golem"
           ],
           "midboss": true
         }
@@ -172,13 +202,13 @@
     {
       "id": "ch5",
       "name_ko": "영주성 악마 숭배실",
-      "desc_ko": "'ㅁ'자 회랑 끝, 숭배실의 주인이 깨어난다.",
+      "desc_ko": "'ㅁ'자 회랑 끝 숭배실. 썩은 책장들 너머에서 수호자가 깨어난다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          20
         ],
-        "rooms": 4,
+        "rooms": 5,
         "room_size": [
           5,
           8
@@ -188,27 +218,42 @@
         {
           "kind": "battle",
           "monsters": [
-            "elder_ghoul",
-            "ghoul"
+            "gargoyle_statue",
+            "deathfiend"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "bone_knight",
+            "chimera_wolf"
           ]
         },
         {
           "kind": "guardian"
+        }
+      ],
+      "hidden": [
+        {
+          "id": "necronomicon",
+          "item": "necronomicon",
+          "tile": "bookshelf",
+          "message": "explore.fortress_necronomicon"
         }
       ]
     }
   ],
   "hidden_pieces": [
     {
-      "id": "necronomicon",
-      "name_ko": "네크로노미콘",
-      "notes": "G5"
-    },
-    {
       "id": "goddess_tear",
       "name_ko": "여신의 눈물",
-      "notes": "G5 — 캠보르미어 공략의 열쇠"
+      "chapter": "ch3"
+    },
+    {
+      "id": "necronomicon",
+      "name_ko": "네크로노미콘",
+      "chapter": "ch5"
     }
   ],
-  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G5(핏빛성채)에서 채운다. 변종 수호자는 캠보르미어"
+  "notes": "명세 §9. 넘버스 후보는 다음 배치(명세) — numbers 비움"
 }

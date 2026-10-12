@@ -1,0 +1,17 @@
+{
+  "id": "gargoyle_stone_claw",
+  "name_ko": "돌 발톱",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.1,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

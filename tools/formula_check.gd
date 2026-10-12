@@ -4,7 +4,8 @@ extends SceneTree
 ## --legacy: G2 이전 공식(근력×1, 방어×1, 옛 무기값)으로 같은 표를 출력만 한다(파일은 쓰지 않음).
 ## 몬스터마다 기본 공격·가장 센 피해 스킬의 평균 피해(명중·편차 중간, 치명 없음)를 기준 탐험가 셋에게 계산하고,
 ## 기준 탐험가의 평타가 몬스터를 몇 번에 잡는지 계산해 docs/balance/formula.md에 쓴다.
-## 목표: 균열 Lv4 기준 탐험가에게 평타 9등급 ~15, 8등급 ~25, 7등급 ~35(±40%면 통과로 본다). 벗어나면 종료 코드 1
+## 목표: 균열 Lv4 기준 탐험가에게 평타 9등급 ~15, 8등급 ~25, 7등급 ~35(±40%면 통과로 본다). 벗어나면 종료 코드 1.
+## 일반·정예만 판정하고(마법형은 평타와 스킬 중 큰 값), 무등급·보스급은 참고로 적는다
 ## (변이종이 위로 벗어나는 것은 원작 2층 필드급이라 참고로만 적는다).
 
 const OUT := "res://docs/balance/formula.md"
@@ -16,6 +17,8 @@ const BENCHES := [
 ]
 const TARGET_BY_GRADE := {9: 15.0, 8: 25.0, 7: 35.0}
 const TOLERANCE := 0.4
+## 목표로 판정하는 랭크. 무등급(전투력이 약한 쥐·잡몹)과 중간 보스·수호자·군주(파티 시뮬레이터로 맞춤)는 참고로만.
+const JUDGED_RANKS := ["normal", "elite"]
 const ROLLS := {"hit": 0.0, "crit": 1.0, "var": 0.5, "lethal": 1.0}
 
 
@@ -61,9 +64,10 @@ func _initialize() -> void:
 			for sid: String in _monster_skills(m):
 				best = maxf(best, _avg(db, m, d, _skill_damage(db, sid)))
 			row += " %d / %d (%d%%) |" % [roundi(basic), roundi(best), roundi(maxf(basic, best) / d.pool.get_max("hp") * 100.0)]
-			lv4_basic = basic
-		var verdict := "—"
-		if TARGET_BY_GRADE.has(grade):
+			# 마법형(평타가 약하고 스킬이 주력)은 둘 중 큰 값으로 본다.
+			lv4_basic = maxf(basic, best) if natural_weak(m) else basic
+		var verdict := "참고(%s)" % JsonUtil.get_str(m.def, "rank", "normal")
+		if TARGET_BY_GRADE.has(grade) and JsonUtil.get_str(m.def, "rank", "normal") in JUDGED_RANKS:
 			var t: float = TARGET_BY_GRADE[grade]
 			var ok := absf(lv4_basic - t) <= t * TOLERANCE
 			# 변이종은 원작에서 한 층 아래(2층 필드) 몬스터라 위로 벗어나는 것은 참고로만 적는다(명세 §6).
@@ -147,3 +151,8 @@ func _monster_skills(m: Monster) -> Array[String]:
 		if not out.has(str(s)):
 			out.append(str(s))
 	return out
+
+
+## 평타가 스킬보다 약한 마법형(정신력이 근력보다 높다).
+func natural_weak(m: Monster) -> bool:
+	return m.stats.get_value("int") > m.stats.get_value("str")

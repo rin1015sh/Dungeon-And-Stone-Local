@@ -1,0 +1,22 @@
+{
+  "id": "ess_vamp_blood_spear",
+  "name_ko": "흑마법: 핏빛 창(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 18
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 1.105,
+      "damage_type": "dark",
+      "base": 20,
+      "drain": 0.3
+    }
+  ],
+  "essence_of": "vamp_blood_spear",
+  "source": "placeholder"
+}

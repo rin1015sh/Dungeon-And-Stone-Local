@@ -1,0 +1,94 @@
+{
+  "id": "deadman_commander",
+  "name_ko": "지휘관 데드맨",
+  "grade": 9,
+  "rank": "ungraded",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_blood_fortress"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.15,
+  "color": "#5a6050",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 14,
+    "agi": 7,
+    "p_res": 10,
+    "m_res": 2,
+    "int": 2
+  },
+  "resources": {
+    "hp": 110,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 10,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [
+    {
+      "item": "rift_horn",
+      "chance": 1.0
+    }
+  ],
+  "skills": [
+    "deadman_march_order",
+    "deadman_chop"
+  ],
+  "passives": [
+    {
+      "id": "deadman_rotten_command",
+      "name_ko": "썩은 지휘",
+      "desc_ko": "곁의 데드맨들이 더 힘껏 휘두른다.",
+      "ally_aura": {
+        "lineages": [
+          "deadman"
+        ],
+        "modifiers": [
+          {
+            "target": "str",
+            "percent": 0.15
+          }
+        ]
+      }
+    }
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "deadman_march_order"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "deadman_chop"
+    }
+  ],
+  "lineage": "deadman",
+  "desc_ko": "조금 큰 체구의 데드맨. 뿔피리를 지녔다.",
+  "sprite": "res://assets/sprites/monsters/deadman_commander.png",
+  "source": "original",
+  "notes": "명세 §9"
+}
