@@ -1,0 +1,61 @@
+{
+  "id": "slime",
+  "name_ko": "슬라임의 정수",
+  "grade": 9,
+  "source_monster": "slime",
+  "family": "slime",
+  "rank": "normal",
+  "passive": {
+    "id": "soft_body",
+    "name_ko": "말랑한 몸",
+    "desc_ko": "둔기에 조금 강해지지만 베기에 조금 약해진다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:blunt",
+        "percent": -0.2
+      },
+      {
+        "target": "dmg_taken:slash",
+        "percent": 0.1
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_slime_splash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_slime_split"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      -2,
+      -1
+    ],
+    "agi": [
+      -2,
+      -1
+    ],
+    "bone_strength": [
+      -2,
+      -1
+    ],
+    "resist_poison": [
+      5,
+      10
+    ],
+    "sixth_sense": [
+      3,
+      6
+    ],
+    "digestion": [
+      5,
+      10
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11 원작: 9등급 중 최악의 정수 — 육체 수치가 떨어지고 쓸모없는 스탯만 붙는다"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ess_hob_pick_sweep",
+  "name_ko": "대형 곡괭이 휘두르기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.595,
+      "damage_type": "pierce"
+    }
+  ],
+  "essence_of": "hob_pick_sweep",
+  "source": "placeholder"
+}

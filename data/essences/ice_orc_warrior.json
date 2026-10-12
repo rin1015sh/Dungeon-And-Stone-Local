@@ -1,0 +1,45 @@
+{
+  "id": "ice_orc_warrior",
+  "name_ko": "아이스 오크 전사의 정수",
+  "grade": 7,
+  "source_monster": "ice_orc_warrior",
+  "family": "ice_orc_warrior",
+  "rank": "normal",
+  "passive": {
+    "id": "ice_skin",
+    "name_ko": "얼음 피부",
+    "desc_ko": "냉기에 조금 강하지만 불에 조금 약해진다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:cold",
+        "percent": -0.25
+      },
+      {
+        "target": "dmg_taken:fire",
+        "percent": 0.12
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_orc_ice_axe"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_orc_war_cry"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      3,
+      5
+    ],
+    "resist_cold": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10"
+}

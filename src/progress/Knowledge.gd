@@ -5,8 +5,24 @@ extends RefCounted
 ##   stats     '조사'했다 → 생명력 최대치·핵심 스탯
 ##   affinity  그 피해 유형으로 직접 쳐 봤다 → 약점(배율 > 1)·면역(0)·저항(< 1)
 ## (길드 정보 구매 = M4에서 learn_all을 부른다.)
+## 사실(fact): 몬스터 밖의 알게 된 것(강철의 묘 벽화 힌트 "riddle:<문항>:<번호>"). 저장 dict의 "_facts".
+
+const FACTS_KEY := "_facts"
 
 var _m: Dictionary = {}  # 몬스터 id -> {"seen": bool, "stats": bool, "aff": {피해 유형: 배율}}
+var _facts: Dictionary = {}
+
+
+## 사실을 알게 됐다. 새로 알았으면 true.
+func learn_fact(key: String) -> bool:
+	if _facts.has(key):
+		return false
+	_facts[key] = true
+	return true
+
+
+func knows_fact(key: String) -> bool:
+	return _facts.has(key)
 
 
 func see(id: String) -> bool:
@@ -64,12 +80,17 @@ func seen_ids() -> Array[String]:
 
 
 func to_dict() -> Dictionary:
-	return _m.duplicate(true)
+	var out := _m.duplicate(true)
+	out[FACTS_KEY] = _facts.duplicate()
+	return out
 
 
 func load_dict(d: Dictionary) -> void:
 	_m.clear()
+	_facts = JsonUtil.get_dict(d, FACTS_KEY).duplicate()
 	for id: String in d:
+		if id == FACTS_KEY:
+			continue
 		var e: Dictionary = d[id] if d[id] is Dictionary else {}
 		_m[id] = {"seen": JsonUtil.get_bool(e, "seen"), "stats": JsonUtil.get_bool(e, "stats"),
 			"aff": JsonUtil.get_dict(e, "aff").duplicate()}

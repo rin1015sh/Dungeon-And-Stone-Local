@@ -172,11 +172,11 @@ func test_guardian_drops_variant_and_rift_essence() -> void:
 	assert_false(RiftRun.new(s, "rift_green_mine").variant, "녹색 탄광은 변종 없음")
 	var g := db.get_entry("monsters", "goblin")
 	assert_near(EssenceDrop.drop_chance(db, g, true), EssenceDrop.drop_chance(db, g) * float(db.bal("essence.rift_mult")), 0.0001, "균열 안 정수 ×4")
-	var w := db.get_entry("monsters", "rift_warden_standin")
+	var w := db.get_entry("monsters", "blater")
 	assert_near(EssenceDrop.drop_chance(db, w, true), 0.33, 0.0001, "수호자 정수 33%")
 	var p := Progression.new()
-	p.record_kill(db, "rift_warden_standin")
-	assert_eq(p.record_kill(db, "rift_warden_standin"), int(db.prog("exp.guardian_bonus")), "수호자 +3 반복")
+	p.record_kill(db, "blater")
+	assert_eq(p.record_kill(db, "blater"), int(db.prog("exp.guardian_bonus")), "수호자 +3 반복")
 
 
 func test_field_effect_and_on_enter() -> void:

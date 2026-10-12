@@ -1,0 +1,18 @@
+{
+  "id": "ess_miner_shaft_shake",
+  "name_ko": "갱도 흔들기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "shaft_shake"
+    }
+  ],
+  "essence_of": "miner_shaft_shake",
+  "source": "placeholder"
+}

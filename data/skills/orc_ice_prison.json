@@ -1,0 +1,19 @@
+{
+  "id": "orc_ice_prison",
+  "name_ko": "얼음 감옥",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "frozen",
+      "chance": 0.85
+    }
+  ],
+  "source": "placeholder",
+  "notes": "명중 85 → 확률 0.85"
+}

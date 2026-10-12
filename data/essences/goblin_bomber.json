@@ -1,0 +1,53 @@
+{
+  "id": "goblin_bomber",
+  "name_ko": "고블린 폭탄병의 정수",
+  "grade": 6,
+  "source_monster": "goblin_bomber",
+  "family": "goblin_bomber",
+  "rank": "midboss",
+  "passive": {
+    "id": "powder_pouch",
+    "name_ko": "폭약 주머니",
+    "desc_ko": "불을 더 잘 다루지만 불에 더 다친다.",
+    "modifiers": [
+      {
+        "target": "dmg_dealt:fire",
+        "percent": 0.15
+      },
+      {
+        "target": "dmg_taken:fire",
+        "percent": 0.15
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_bomber_throw"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_bomber_delayed_bomb"
+    },
+    {
+      "color": "green",
+      "skill": "ess_bomber_smoke"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      3,
+      5
+    ],
+    "affinity_fire": [
+      4,
+      8
+    ],
+    "dexterity": [
+      4,
+      8
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11 드롭률 10%(중간 보스). 지원 요청은 고유라 제외"
+}

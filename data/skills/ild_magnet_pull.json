@@ -1,0 +1,23 @@
+{
+  "id": "ild_magnet_pull",
+  "name_ko": "자석 끌어당기기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "duration": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "magnetized"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "[속박] 1R + 다음 강철 주먹 확정 명중([자석] — 맞으면 풀림). 금속 장비 조건은 뺐다(ASSUMPTIONS GI6)"
+}

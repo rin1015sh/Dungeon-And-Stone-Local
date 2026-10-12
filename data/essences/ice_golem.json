@@ -1,0 +1,39 @@
+{
+  "id": "ice_golem",
+  "name_ko": "아이스 골렘의 정수",
+  "grade": 8,
+  "source_monster": "ice_golem",
+  "family": "ice_golem",
+  "rank": "normal",
+  "passive": {
+    "id": "cold_aura",
+    "name_ko": "냉기 오러",
+    "desc_ko": "자기 차례가 끝날 때마다 적 하나를 굼뜨게 한다.",
+    "turn_end_foe_status": {
+      "status": "slow",
+      "target": "random"
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_golem_ice_fist"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_golem_ice_armor"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      3,
+      5
+    ],
+    "resist_cold": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10 정수판: 적 1명에게만 [둔화] +1 [명세]"
+}

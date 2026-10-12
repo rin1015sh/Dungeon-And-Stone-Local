@@ -1,0 +1,39 @@
+{
+  "id": "buried_one",
+  "name_ko": "배리드언의 정수",
+  "grade": 8,
+  "source_monster": "buried_one",
+  "family": "buried_one",
+  "rank": "normal",
+  "passive": {
+    "id": "coffin_dead",
+    "name_ko": "관 속의 망자",
+    "desc_ko": "전투마다 한 번, 쓰러질 일격을 생명력 1로 버틴다.",
+    "revive_once": {
+      "hp": 1,
+      "message": "combat.endure"
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_buried_strike"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_buried_dust_curse"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      2,
+      4
+    ],
+    "p_res": [
+      2,
+      4
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12"
+}

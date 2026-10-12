@@ -1,0 +1,19 @@
+{
+  "id": "king_absorb",
+  "name_ko": "흡수",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "absorb_ally",
+      "monsters": [
+        "slime"
+      ],
+      "heal_ratio": 0.1
+    }
+  ],
+  "source": "placeholder",
+  "notes": "아군 슬라임 1체를 흡수해 생명력 10% 회복"
+}

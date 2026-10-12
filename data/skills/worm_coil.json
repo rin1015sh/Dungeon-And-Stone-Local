@@ -1,0 +1,24 @@
+{
+  "id": "worm_coil",
+  "name_ko": "몸통 휘감기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

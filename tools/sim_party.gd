@@ -5,6 +5,7 @@ extends SceneTree
 ## tools/sim_parties.json의 파티(Lv4 4인·포션·정수)로 시나리오마다 n번 싸워 승률을 보고 docs/balance/rift.md에 쓴다.
 ## 아군 AI: 생명력이 potion_hp_ratio 아래면 하급 포션, smart면 [예고]가 찍혔을 때 방어, 아니면 기본 공격
 ## (수호자·중간 보스가 있으면 그중 — 졸개가 셋 이상 쌓이면 졸개부터 —, 없으면 생명력이 가장 낮은 적).
+## 시나리오 "party_statuses": [..] — 전투 전에 아군 전원에게 건다(빙하굴 3·4챕터 저체온증).
 ## 공격은 쓸 수 있는 정수 액티브 중 위력 합이 가장 큰 것, 없으면 기본 공격.
 
 const CFG := "res://tools/sim_parties.json"
@@ -66,6 +67,8 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 			pc.essences.absorb(pc, {"essence": e["essence"], "color": e["color"], "stats": {}})
 		for item: String in cfg["items"]:
 			pc.inventory.add(item, int(cfg["items"][item]))
+		for st: Variant in sc.get("party_statuses", []):
+			pc.statuses.apply(str(st))
 		pc.pool.fill_all()
 		party.append(pc)
 		b.add(pc, Combatant.SIDE_PARTY, str(m["row"]))

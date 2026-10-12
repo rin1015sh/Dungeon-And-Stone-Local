@@ -61,6 +61,8 @@ func check_formula(where: String, value: Variant) -> void:
 		if key.begins_with("bal."):
 			if not JsonUtil.is_number(db.bal(key.substr(4))):
 				err(where, "balance 값 없음/숫자 아님: {%s}" % key)
+		elif key.begins_with("max_") and db.resources.has(key.substr(4)):
+			continue  # 자원 최대치(ResourcePool.resolve)
 		elif not db.stats.has(key):
 			err(where, "알 수 없는 수식 키 {%s}" % key)
 

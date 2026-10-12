@@ -1,0 +1,22 @@
+{
+  "id": "tarun_club_smash",
+  "name_ko": "얼음몽둥이 강타",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "blunt",
+      "rider": {
+        "damage_type": "cold",
+        "ratio": 0.15
+      }
+    }
+  ],
+  "source": "original",
+  "notes": "물둔·냉기 [원 기반]. [서리]는 패시브(근접 적중) · 조정(GC5): 명세 위력 140 → 90, 냉기 추가 15%"
+}

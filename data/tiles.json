@@ -303,5 +303,218 @@
     },
     "sprite": "res://assets/sprites/tiles/bookshelf.png",
     "source": "placeholder"
+  },
+  {
+    "id": "ice_pond",
+    "name_ko": "작은 연못",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a6a8a",
+      "face": "#5a8aa8"
+    },
+    "light": {
+      "radius_m": 1.2,
+      "color": "#ff7a8a",
+      "intensity": 0.35
+    },
+    "sprite": "res://assets/sprites/tiles/ice_pond.png",
+    "source": "original",
+    "notes": "빙정이 잠긴 연못(시작 지점 근처)"
+  },
+  {
+    "id": "ice_pillar_cracked",
+    "name_ko": "금 간 얼음 기둥",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#4a6a80",
+      "face": "#c8e4f4"
+    },
+    "light": {
+      "radius_m": 1.5,
+      "color": "#9fd8ff",
+      "intensity": 0.4
+    },
+    "sprite": "res://assets/sprites/tiles/ice_pillar_cracked.png",
+    "source": "original",
+    "notes": "세 번째 기둥 — 부수면 마력이 깃든 얼음 조각"
+  },
+  {
+    "id": "ice_slick",
+    "name_ko": "미끄러운 얼음",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#a8c8e0",
+      "mark": "#e8f6ff"
+    },
+    "sprite": "res://assets/sprites/tiles/ice_slick.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "ice_slope",
+    "name_ko": "얼음 급경사",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#6f8aa0",
+      "mark": "#d0e4f0"
+    },
+    "sprite": "res://assets/sprites/tiles/ice_slope.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "rope_span",
+    "name_ko": "로프 구간",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#5a6a78",
+      "mark": "#b08a5a"
+    },
+    "sprite": "res://assets/sprites/tiles/rope_span.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "rail_wall_cracked",
+    "name_ko": "철로가 끊긴 벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a3428",
+      "face": "#6a5a40"
+    },
+    "sprite": "res://assets/sprites/tiles/rail_wall_cracked.png",
+    "source": "original",
+    "notes": "부수면 샛길 → 초록 보석"
+  },
+  {
+    "id": "ore_vein",
+    "name_ko": "광맥",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#2a3a2a",
+      "face": "#6a9a5a"
+    },
+    "light": {
+      "radius_m": 1.2,
+      "color": "#9ad08a",
+      "intensity": 0.35
+    },
+    "sprite": "res://assets/sprites/tiles/ore_vein.png",
+    "source": "original",
+    "notes": "부수면 고블 쿼츠"
+  },
+  {
+    "id": "explosive_crate",
+    "name_ko": "폭약 상자",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#5a3a28",
+      "face": "#a05a3a"
+    },
+    "sprite": "res://assets/sprites/tiles/explosive_crate.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "broken_bridge",
+    "name_ko": "무너진 다리",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4a3a2a",
+      "mark": "#a08060"
+    },
+    "sprite": "res://assets/sprites/tiles/broken_bridge.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "cliff_stairs",
+    "name_ko": "절벽 원형 계단",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#3a3a34",
+      "mark": "#8a8a70"
+    },
+    "sprite": "res://assets/sprites/tiles/cliff_stairs.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "tomb_mural",
+    "name_ko": "벽화",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a3e44",
+      "face": "#b8a070"
+    },
+    "light": {
+      "radius_m": 1.0,
+      "color": "#e0c890",
+      "intensity": 0.3
+    },
+    "sprite": "res://assets/sprites/tiles/tomb_mural.png",
+    "source": "placeholder",
+    "notes": "강철의 묘 벽화 — 수수께끼 힌트"
+  },
+  {
+    "id": "trap_pressure_plate",
+    "name_ko": "압력판",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#505860",
+      "mark": "#d08040"
+    },
+    "sprite": "res://assets/sprites/tiles/trap_pressure_plate.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "trap_arrow",
+    "name_ko": "화살 함정",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#505860",
+      "mark": "#c0c0a0"
+    },
+    "sprite": "res://assets/sprites/tiles/trap_arrow.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "trap_blades",
+    "name_ko": "회전 칼날",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4a4a50",
+      "mark": "#e0e0f0"
+    },
+    "sprite": "res://assets/sprites/tiles/trap_blades.png",
+    "source": "placeholder"
   }
 ]

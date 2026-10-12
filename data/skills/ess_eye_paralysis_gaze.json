@@ -1,0 +1,19 @@
+{
+  "id": "ess_eye_paralysis_gaze",
+  "name_ko": "마비 시선(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "paralysis",
+      "chance": 0.195
+    }
+  ],
+  "essence_of": "eye_paralysis_gaze",
+  "source": "placeholder"
+}

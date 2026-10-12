@@ -1,0 +1,113 @@
+{
+  "id": "tarunbas",
+  "name_ko": "폭군 타룬바스",
+  "grade": 7,
+  "rank": "guardian",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_glacier_cave"
+  ],
+  "type": "body",
+  "family": [
+    "beast",
+    "frost_beast"
+  ],
+  "shape": "humanoid",
+  "size": 1.8,
+  "color": "#d0d0c8",
+  "immunities": [
+    "cold"
+  ],
+  "weaknesses": {
+    "lightning": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 22,
+    "agi": 10,
+    "p_res": 16,
+    "m_res": 14,
+    "int": 12
+  },
+  "resources": {
+    "hp": 555,
+    "soul": 150
+  },
+  "natural_weapon": {
+    "attack": 20,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "tarun_club_smash",
+    "tarun_frenzied_claws",
+    "tarun_ground_collapse",
+    "tarun_roar"
+  ],
+  "passives": [
+    {
+      "id": "tyrant_of_frost",
+      "name_ko": "혹한의 폭군",
+      "desc_ko": "냉기가 듣지 않고 전기에 약하다. 가까이서 맞으면 서리가 맺힌다.",
+      "on_hit": [
+        {
+          "type": "apply_status",
+          "status": "frost",
+          "chance": 0.35
+        }
+      ],
+      "on_hit_filter": {
+        "ranged": false
+      }
+    }
+  ],
+  "magic_stone_grade": 7,
+  "ai_cycle": [
+    "tarun_club_smash",
+    "tarun_frenzied_claws",
+    "tarun_club_smash"
+  ],
+  "lineage": "lycanthrope",
+  "pattern": "guardian",
+  "pattern_params": {
+    "every": [
+      {
+        "rounds": 3,
+        "skill": "tarun_ground_collapse"
+      }
+    ],
+    "extra_status": "guardian_frenzy",
+    "intro": "combat.tarunbas_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.tarunbas_roar",
+      "self_statuses": [
+        "guardian_frenzy"
+      ],
+      "cast": "tarun_roar"
+    }
+  ],
+  "desc_ko": "회백색 털의 거대한 라이칸스로프. 얼음몽둥이로 땅을 무너뜨린다.",
+  "sprite": "res://assets/sprites/monsters/tarunbas.png",
+  "source": "original",
+  "notes": "명세 §10 수호자. 넘버스 후보(설원의 몽둥이 No.9712)는 다음 배치 · 시뮬레이터 조정(GC5): 명세 생명력 1200·근 38·민 26·물 24, 근접 [서리] 확정 → 555·22·10·16, 35%"
+}

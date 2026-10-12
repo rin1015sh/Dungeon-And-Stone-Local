@@ -1,0 +1,44 @@
+{
+  "id": "guardian_eye",
+  "name_ko": "수호자의 눈의 정수",
+  "grade": 8,
+  "source_monster": "guardian_eye",
+  "family": "guardian_eye",
+  "rank": "normal",
+  "passive": {
+    "id": "watcher",
+    "name_ko": "감시자",
+    "desc_ko": "숨은 적도 겨눌 수 있다.",
+    "see_hidden": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_eye_ray"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_eye_paralysis_gaze"
+    },
+    {
+      "color": "green",
+      "skill": "ess_eye_alarm"
+    }
+  ],
+  "stat_ranges": {
+    "int": [
+      2,
+      4
+    ],
+    "sight": [
+      4,
+      8
+    ],
+    "sixth_sense": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12"
+}

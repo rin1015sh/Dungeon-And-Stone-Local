@@ -1,0 +1,23 @@
+{
+  "id": "eye_ray",
+  "name_ko": "투시 광선",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.8,
+      "damage_type": "arcane",
+      "base": 10,
+      "defense_ignore": 0.3,
+      "ranged": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": " · 조정(GI5): 명세 위력 100 → 80(formula_check 8등급 목표 ~25)"
+}

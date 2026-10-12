@@ -1,0 +1,21 @@
+{
+  "id": "orc_frost_arrow",
+  "name_ko": "서리 화살",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 1.1,
+      "damage_type": "cold",
+      "base": 12,
+      "ranged": true
+    }
+  ],
+  "source": "placeholder"
+}

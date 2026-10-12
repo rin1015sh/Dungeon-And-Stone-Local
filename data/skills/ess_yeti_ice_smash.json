@@ -1,0 +1,25 @@
+{
+  "id": "ess_yeti_ice_smash",
+  "name_ko": "얼음 강타(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.19,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.112
+    }
+  ],
+  "essence_of": "yeti_ice_smash",
+  "source": "placeholder"
+}

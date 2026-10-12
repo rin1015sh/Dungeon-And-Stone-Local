@@ -1,0 +1,17 @@
+{
+  "id": "bomber_smoke",
+  "name_ko": "연막탄",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "smoke_screen"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "ess_copper_fist",
+  "name_ko": "구리 주먹(정수)",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.02,
+      "damage_type": "blunt"
+    }
+  ],
+  "essence_of": "copper_fist",
+  "source": "placeholder"
+}

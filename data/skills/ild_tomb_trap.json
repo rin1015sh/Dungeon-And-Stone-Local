@@ -1,0 +1,31 @@
+{
+  "id": "ild_tomb_trap",
+  "name_ko": "분묘의 함정",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 0.4,
+      "warn": "combat.ildium_trap_warn",
+      "fire": "combat.ildium_trap_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 1.9,
+          "damage_type": "pierce"
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1라운드 전 예고. [방어]하면 절반(방어 태세 −50%) [명세] · 조정(GI5): 명세 위력 100(방어하면 절반) → 190, 방어하면 ×0.4(방어 태세 −50%와 합쳐 ×0.2)"
+}

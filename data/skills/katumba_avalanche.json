@@ -1,0 +1,20 @@
+{
+  "id": "katumba_avalanche",
+  "name_ko": "눈사태",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.9,
+      "damage_type": "cold",
+      "base": 15
+    }
+  ],
+  "source": "placeholder"
+}

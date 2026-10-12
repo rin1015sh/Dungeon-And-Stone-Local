@@ -1,0 +1,20 @@
+{
+  "id": "miner_pick_strike",
+  "name_ko": "곡괭이 찍기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "pierce",
+      "defense_ignore": 0.15
+    }
+  ],
+  "source": "placeholder"
+}

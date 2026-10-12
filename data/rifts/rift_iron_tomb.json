@@ -1,7 +1,6 @@
 {
   "host_floor": 1,
-  "stand_in": true,
-  "guardian": "rift_warden_standin",
+  "guardian": "ildium",
   "variant": null,
   "guardian_drops": [
     {
@@ -34,104 +33,317 @@
     {
       "id": "ch1",
       "name_ko": "함정 복도",
-      "desc_ko": "압력판과 화살 함정이 숨은 복도.",
+      "desc_ko": "사방이 어둡고 좁은 금속 복도. 벽에는 벽화 같은 문양이 새겨져 있고, 바닥 어딘가에 압력판과 화살 함정이 숨어 있다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          16
         ],
         "rooms": 4,
         "room_size": [
           5,
-          8
+          7
         ]
       },
       "encounters": [
         {
           "kind": "battle",
           "monsters": [
-            "gnome",
-            "gnome"
+            "mummy",
+            "mummy",
+            "mummy"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "corrupted_gnome"
+            "buried_one",
+            "mummy"
           ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "mural_1",
+          "tile": "tomb_mural",
+          "mural": true,
+          "message": "explore.mural_read"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "plate",
+          "tile": "trap_pressure_plate",
+          "count": 2,
+          "hidden": true,
+          "detect": {
+            "stat": "sixth_sense",
+            "dc": 2
+          },
+          "disarm": {
+            "stat": "dexterity",
+            "dc": -6
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
+          "bypass": {
+            "stat": "p_res",
+            "at_least": 30,
+            "message": "explore.trap_crushed"
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.08)"
+            }
+          ],
+          "detect_message": "explore.trap_detected",
+          "fail_message": "explore.trap_plate_fail"
+        },
+        {
+          "id": "arrow",
+          "tile": "trap_arrow",
+          "count": 1,
+          "hidden": true,
+          "detect": {
+            "stat": "sixth_sense",
+            "dc": 2
+          },
+          "disarm": {
+            "stat": "dexterity",
+            "dc": -6
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
+          "bypass": {
+            "stat": "p_res",
+            "at_least": 30,
+            "message": "explore.trap_crushed"
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.1)"
+            }
+          ],
+          "detect_message": "explore.trap_detected",
+          "fail_message": "explore.trap_arrow_fail"
         }
       ]
     },
     {
       "id": "ch2",
       "name_ko": "회전 칼날의 방",
-      "desc_ko": "칼날이 도는 방을 지난다.",
+      "desc_ko": "칼날이 도는 방을 지난다. 떠다니는 눈이 복도를 지켜본다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          16
         ],
-        "rooms": 4,
+        "rooms": 5,
         "room_size": [
           5,
-          8
+          7
         ]
       },
       "encounters": [
         {
           "kind": "battle",
           "monsters": [
-            "goblin_swordsman",
-            "gnome"
+            "guardian_eye",
+            "mummy",
+            "mummy"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "corrupted_gnome",
-            "gnome"
+            "iron_lizardman",
+            "buried_one"
           ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "iron_cavalry"
+          ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "mural_2",
+          "tile": "tomb_mural",
+          "mural": true,
+          "message": "explore.mural_read"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "blades",
+          "tile": "trap_blades",
+          "count": 2,
+          "hidden": true,
+          "detect": {
+            "stat": "sixth_sense",
+            "dc": 2
+          },
+          "disarm": {
+            "stat": "dexterity",
+            "dc": -6
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
+          "bypass": {
+            "stat": "p_res",
+            "at_least": 30,
+            "message": "explore.trap_crushed"
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.12)"
+            }
+          ],
+          "detect_message": "explore.trap_detected",
+          "fail_message": "explore.trap_blades_fail"
         }
       ]
     },
     {
       "id": "ch3",
       "name_ko": "수수께끼 문 앞",
-      "desc_ko": "문지기가 수수께끼를 낸다.",
+      "desc_ko": "묘실로 가는 마지막 복도. 문 앞에 강철 문지기가 창을 세우고 서 있다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          16
         ],
-        "rooms": 3,
+        "rooms": 5,
         "room_size": [
           5,
-          8
+          7
         ]
       },
       "encounters": [
         {
           "kind": "battle",
           "monsters": [
-            "corrupted_gnome",
-            "corrupted_gnome"
+            "guardian_eye",
+            "iron_cavalry"
           ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "iron_lizardman",
+            "iron_lizardman"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "riddle_gatekeeper"
+          ],
+          "riddle": true
+        }
+      ],
+      "hidden": [
+        {
+          "id": "mural_3",
+          "tile": "tomb_mural",
+          "mural": true,
+          "message": "explore.mural_read"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "plate",
+          "tile": "trap_pressure_plate",
+          "count": 1,
+          "hidden": true,
+          "detect": {
+            "stat": "sixth_sense",
+            "dc": 2
+          },
+          "disarm": {
+            "stat": "dexterity",
+            "dc": -6
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
+          "bypass": {
+            "stat": "p_res",
+            "at_least": 30,
+            "message": "explore.trap_crushed"
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.08)"
+            }
+          ],
+          "detect_message": "explore.trap_detected",
+          "fail_message": "explore.trap_plate_fail"
+        },
+        {
+          "id": "arrow",
+          "tile": "trap_arrow",
+          "count": 1,
+          "hidden": true,
+          "detect": {
+            "stat": "sixth_sense",
+            "dc": 2
+          },
+          "disarm": {
+            "stat": "dexterity",
+            "dc": -6
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
+          "bypass": {
+            "stat": "p_res",
+            "at_least": 30,
+            "message": "explore.trap_crushed"
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.1)"
+            }
+          ],
+          "detect_message": "explore.trap_detected",
+          "fail_message": "explore.trap_arrow_fail"
         }
       ]
     },
     {
       "id": "ch4",
       "name_ko": "강철의 분묘",
-      "desc_ko": "분묘의 주인 철인 일디움.",
+      "desc_ko": "강철로 된 분묘. 거대한 강철 거인이 몸을 일으킨다.",
       "map": {
         "size": [
-          46,
-          18
+          48,
+          16
         ],
         "rooms": 3,
         "room_size": [
           5,
-          8
+          7
         ]
       },
       "encounters": [
@@ -142,5 +354,11 @@
     }
   ],
   "hidden_pieces": [],
-  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G8(강철의 묘)에서 채운다. 함정·수수께끼 문지기·벽화 힌트도 G8. 변종 수호자 없음"
+  "notes": "명세 §12. 변종 수호자 없음(명세). 넘버스는 다음 배치 — numbers 비움. 함정은 RiftHazards(숨음·탐지·해제), 수수께끼는 RiftRiddle + data/riddles",
+  "riddle": {
+    "set": "iron_tomb",
+    "weakened_status": "riddle_weakened",
+    "empowered_status": "riddle_empowered",
+    "essence_mult": 2.0
+  }
 }

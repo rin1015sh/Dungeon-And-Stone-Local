@@ -1,0 +1,17 @@
+{
+  "id": "golem_ice_fist",
+  "name_ko": "얼음 주먹",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.1,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

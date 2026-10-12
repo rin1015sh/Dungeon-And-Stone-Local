@@ -1,0 +1,87 @@
+{
+  "id": "buried_one",
+  "name_ko": "배리드언",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_iron_tomb"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#7a7060",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 15,
+    "agi": 9,
+    "p_res": 16,
+    "m_res": 10,
+    "int": 8
+  },
+  "resources": {
+    "hp": 150,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 12,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "buried_strike",
+    "buried_dust_curse"
+  ],
+  "passives": [
+    {
+      "id": "coffin_dead",
+      "name_ko": "관 속의 망자",
+      "desc_ko": "한 번 쓰러져도 관에서 다시 일어난다.",
+      "revive_once": {
+        "ratio": 0.3,
+        "message": "combat.buried_rise"
+      }
+    }
+  ],
+  "magic_stone_grade": 8,
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "buried_dust_curse",
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.45,
+      "use": "buried_strike"
+    }
+  ],
+  "desc_ko": "묘지 철퇴를 든 매장된 자. 쓰러뜨려도 한 번은 일어난다.",
+  "sprite": "res://assets/sprites/monsters/buried_one.png",
+  "source": "original",
+  "notes": "명세 §12 이름 [원] / '매장된 자' 해석 [창]"
+}

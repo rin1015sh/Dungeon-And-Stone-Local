@@ -13,7 +13,8 @@
     {"id": "poison", "name_ko": "독", "category": "magical"},
     {"id": "holy", "name_ko": "신성", "category": "magical"},
     {"id": "dark", "name_ko": "어둠", "category": "magical"},
-    {"id": "sun", "name_ko": "태양", "category": "magical"}
+    {"id": "sun", "name_ko": "태양", "category": "magical"},
+    {"id": "arcane", "name_ko": "무속성", "category": "magical"}
   ],
   "monster_types": [
     {"id": "ability", "name_ko": "이능계"},
@@ -38,6 +39,8 @@
     {"id": "phantasm", "name_ko": "환상종"},
     {"id": "fish", "name_ko": "어류종"},
     {"id": "humanoid", "name_ko": "인간형"},
+    {"id": "orc", "name_ko": "오크"},
+    {"id": "troll", "name_ko": "트롤"},
     {"id": "construct", "name_ko": "구조체"},
     {"id": "slime", "name_ko": "슬라임"}
   ],
@@ -107,7 +110,7 @@
     {"id": "purple", "name_ko": "보랏빛", "color": "#8a5ab0"},
     {"id": "gray", "name_ko": "잿빛", "color": "#8c8a86"},
     {"id": "brown", "name_ko": "갈색", "color": "#8a6440"},
-    {"id": "black", "name_ko": "검은", "color": "#2a2428"}, {"id": "rainbow", "name_ko": "무지갯빛", "color": "#e8d8f0"}
+    {"id": "white", "name_ko": "하얀", "color": "#e8eef2"}, {"id": "black", "name_ko": "검은", "color": "#2a2428"}, {"id": "rainbow", "name_ko": "무지갯빛", "color": "#e8d8f0"}
   ],
   "directions": [
     {"id": "east", "name_ko": "동쪽"},

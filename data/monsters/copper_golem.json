@@ -1,0 +1,99 @@
+{
+  "id": "copper_golem",
+  "name_ko": "코퍼 골렘",
+  "grade": 7,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_green_mine"
+  ],
+  "type": "ability",
+  "family": [
+    "construct"
+  ],
+  "shape": "humanoid",
+  "size": 1.4,
+  "color": "#b87333",
+  "immunities": [],
+  "weaknesses": {
+    "lightning": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 26,
+    "agi": 8,
+    "p_res": 26,
+    "m_res": 14,
+    "int": 4
+  },
+  "resources": {
+    "hp": 360,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 14,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "copper_fist",
+    "copper_overheat",
+    "copper_vibration"
+  ],
+  "passives": [
+    {
+      "id": "copper_body",
+      "name_ko": "구리 몸체",
+      "desc_ko": "베고 찌르는 공격에 강하지만 전기가 잘 통한다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.3
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.3
+        }
+      ]
+    }
+  ],
+  "magic_stone_grade": 7,
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.7,
+      "use": "copper_overheat",
+      "also": [
+        {
+          "if": "self_status",
+          "status": "overheat",
+          "not": true
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "copper_vibration"
+    }
+  ],
+  "ai_cycle": [
+    "copper_fist"
+  ],
+  "desc_ko": "구리로 만든 골렘. 달아오르면 더 세게 친다.",
+  "sprite": "res://assets/sprites/monsters/copper_golem.png",
+  "source": "original",
+  "notes": "명세 §11 · 시뮬레이터 조정(GM5): 명세 생명력 280·근 20 → 360·26"
+}

@@ -1,0 +1,49 @@
+{
+  "id": "iron_lizardman",
+  "name_ko": "아이언 리자드맨의 정수",
+  "grade": 7,
+  "source_monster": "iron_lizardman",
+  "family": "iron_lizardman",
+  "rank": "normal",
+  "passive": {
+    "id": "steel_scales",
+    "name_ko": "강철 비늘",
+    "desc_ko": "베기에 조금 강해지지만 추위를 더 탄다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:cold",
+        "percent": 0.25
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_liz_trident_combo"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_liz_tail_whip"
+    },
+    {
+      "color": "green",
+      "skill": "ess_liz_metal_poison"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      2,
+      4
+    ],
+    "p_res": [
+      2,
+      4
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12"
+}

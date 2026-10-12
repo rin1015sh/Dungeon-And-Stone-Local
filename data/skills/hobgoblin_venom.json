@@ -1,0 +1,18 @@
+{
+  "id": "hobgoblin_venom",
+  "name_ko": "독성부여",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "venom_weapon"
+    }
+  ],
+  "source": "original",
+  "notes": "홉고블린 이능 [원] — 2층 홉고블린과 공유"
+}

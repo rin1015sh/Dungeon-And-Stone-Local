@@ -106,9 +106,9 @@
       ]
     }
   ],
-  "guardian": "rift_warden_standin",
+  "guardian": "blater",
   "variant": {
-    "monster": "rift_warden_standin_variant",
+    "monster": "kambormir",
     "chance": 0.03
   },
   "guardian_drops": [

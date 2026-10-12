@@ -1,0 +1,20 @@
+{
+  "id": "ess_buried_strike",
+  "name_ko": "매장된 일격(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.02,
+      "damage_type": "blunt"
+    }
+  ],
+  "essence_of": "buried_strike",
+  "source": "placeholder"
+}

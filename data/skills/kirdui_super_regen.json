@@ -1,0 +1,24 @@
+{
+  "id": "kirdui_super_regen",
+  "name_ko": "초재생",
+  "target": "self",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "floor({max_hp} * 0.25)"
+    },
+    {
+      "type": "remove_status",
+      "kind": "debuff",
+      "count": 1
+    }
+  ],
+  "uses_per_battle": 2,
+  "source": "original"
+}

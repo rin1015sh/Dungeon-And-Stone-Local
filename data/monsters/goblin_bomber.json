@@ -1,0 +1,122 @@
+{
+  "id": "goblin_bomber",
+  "name_ko": "고블린 폭탄병",
+  "grade": 6,
+  "rank": "midboss",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_green_mine"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#a05a3a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 20,
+    "agi": 18,
+    "p_res": 16,
+    "m_res": 10,
+    "int": 15
+  },
+  "resources": {
+    "hp": 1000,
+    "soul": 150
+  },
+  "natural_weapon": {
+    "attack": 10,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "bomber_throw",
+    "bomber_delayed_bomb",
+    "bomber_smoke",
+    "bomber_support"
+  ],
+  "passives": [
+    {
+      "id": "powder_pouch",
+      "name_ko": "폭약 주머니",
+      "desc_ko": "허리춤에 폭약이 잔뜩 — 쓰러지면 터지고, 불이 닿으면 가끔 제 몸에서 터진다.",
+      "death_effects": [
+        {
+          "type": "damage",
+          "scaling": "magic",
+          "power": 1.0,
+          "damage_type": "fire",
+          "base": 30,
+          "accuracy": 1000
+        }
+      ],
+      "on_damaged_by": {
+        "damage_types": [
+          "fire"
+        ],
+        "chance": 0.5,
+        "self_damage_ratio": 0.3,
+        "message": "combat.bomber_cookoff"
+      }
+    }
+  ],
+  "magic_stone_grade": 6,
+  "ai": [
+    {
+      "if": "alone",
+      "use": "bomber_support"
+    },
+    {
+      "if": "chance",
+      "value": 0.25,
+      "use": "bomber_smoke",
+      "also": [
+        {
+          "if": "foe_status",
+          "status": "smoke_screen",
+          "not": true
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "bomber_delayed_bomb"
+    }
+  ],
+  "ai_cycle": [
+    "bomber_throw",
+    "basic_attack"
+  ],
+  "lineage": "goblin",
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.bomber_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.0
+    }
+  ],
+  "desc_ko": "폭약 주머니를 주렁주렁 단 고블린. 불을 대면 제 폭약에 다친다.",
+  "sprite": "res://assets/sprites/monsters/goblin_bomber.png",
+  "source": "original",
+  "notes": "명세 §11 중간 보스. 이름 [원] / 나머지 [창] · 시뮬레이터 조정(GM5): 명세 생명력 900·정 10 → 1000·15"
+}

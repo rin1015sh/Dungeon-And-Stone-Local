@@ -1,0 +1,25 @@
+{
+  "id": "yeti_chill",
+  "name_ko": "오한",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.7,
+      "damage_type": "cold",
+      "base": 12
+    },
+    {
+      "type": "apply_status",
+      "status": "frost"
+    }
+  ],
+  "source": "original",
+  "notes": "예티·카툼바 공유 이능 [원]"
+}

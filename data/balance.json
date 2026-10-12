@@ -48,6 +48,8 @@
   "hunger": {
     "decay_per_hour": 1.0,
     "appetite_coef": 0.01,
+    "digestion_coef": 0.01,
+    "digestion_min": 0.2,
     "starvation_hp_per_hour": 2.0
   },
   "rest": {
@@ -81,7 +83,14 @@
     "portal_min_distance": 8,
     "waterfall_ratio": 0.1,
     "fall_damage": 20,
-    "_fall_comment": "빙하굴 3챕터: 폭포(최대 생명력 10%) + 낙하(명세 '위력 40' → 고정 피해 임시값)"
+    "_fall_comment": "빙하굴 3챕터: 폭포(최대 생명력 10%) + 낙하(명세 '위력 40' → 고정 피해 임시값)",
+    "_hazard_comment": "챕터 탐험 위험(RiftHazards): 성공 확률 = clamp(base + (스탯 − dc) × per_point, min, max). min_gap = 묶음 사이·시작·조우 자리와의 거리(칸). near_entry_m = 히든 피스 near_entry 반경",
+    "hazard_base": 0.5,
+    "hazard_per_point": 0.04,
+    "hazard_min": 0.1,
+    "hazard_max": 0.95,
+    "hazard_min_gap": 5,
+    "near_entry_m": 8
   },
   "combat": {
     "gauge_threshold": 100,
@@ -119,7 +128,11 @@
     "may_skip_chance": 0.3,
     "max_side_units": 6,
     "hours_per_turn": 0.01,
-    "flee_grace_hours": 0.5
+    "flee_grace_hours": 0.5,
+    "_element_comment": "속성 피해(G6, ASSUMPTIONS GC1): 대상 resist_<유형> 1점당 피해 −1%(최대 75%), 공격자 affinity_<유형> 1점당 +2%",
+    "element_resist_per_point": 0.01,
+    "element_resist_max": 0.75,
+    "affinity_per_point": 0.02
   },
   "explore": {
     "stealth_still_hours": 0.02,

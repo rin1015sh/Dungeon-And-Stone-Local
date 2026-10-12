@@ -21,7 +21,9 @@
           "damage_type": "slash",
           "accuracy": 120
         }
-      ]
+      ],
+      "warn": "combat.blater_sentence_warn",
+      "fire": "combat.blater_sentence_fire"
     }
   ],
   "essence_of": "blater_death_sentence",

@@ -1,0 +1,44 @@
+{
+  "id": "kirdui",
+  "name_ko": "타락한 짐승 키르뒤의 정수",
+  "grade": 5,
+  "source_monster": "kirdui",
+  "family": "kirdui",
+  "rank": "variant_guardian",
+  "passive": {
+    "id": "troll_regen",
+    "name_ko": "트롤의 재생",
+    "desc_ko": "상처가 빠르게 아문다.",
+    "regen_per_round": 0.02
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_kirdui_frenzy"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_kirdui_super_regen"
+    },
+    {
+      "color": "green",
+      "skill": "ess_kirdui_stomp"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      10,
+      14
+    ],
+    "natural_regen": [
+      15,
+      25
+    ],
+    "m_res": [
+      6,
+      10
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10 수호자 정수 — 광분·초재생 [원], 휘두르기는 고유라 제외"
+}

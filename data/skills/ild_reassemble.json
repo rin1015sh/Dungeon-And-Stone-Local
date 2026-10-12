@@ -1,0 +1,19 @@
+{
+  "id": "ild_reassemble",
+  "name_ko": "강철 재조립",
+  "target": "self",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "floor({max_hp} * 0.15)"
+    }
+  ],
+  "uses_per_battle": 2,
+  "source": "placeholder"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "ess_frost_bite",
+  "name_ko": "서리 물기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.85,
+      "damage_type": "pierce",
+      "rider": {
+        "damage_type": "cold",
+        "ratio": 0.2
+      }
+    }
+  ],
+  "essence_of": "frost_bite",
+  "source": "placeholder"
+}

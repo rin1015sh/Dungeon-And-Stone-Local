@@ -133,8 +133,8 @@ func test_level_down_locks_and_unlocks_essence_slots() -> void:
 func test_exp_budget_report() -> void:
 	var r := ExpBudget.report(db)
 	var floors: Dictionary = r["floors"]
-	assert_eq(int(floors[1]["actual"]), 46, "지금 1층 데이터: 필드 10 + 드레드피어 15 + 핏빛성채 21 (명세 §5.6, 변종 수호자 제외)")
-	assert_eq(int(floors[1]["species"]), 21, "필드 10 + 군주 1 + 핏빛성채 10(무등급·토큰·변종 수호자 제외)")
+	assert_eq(int(floors[1]["actual"]), 108, "1층 데이터 완성: 필드 10 + 드레드피어 15 + 핏빛성채 21 + 빙하굴 25 + 녹색 탄광 19 + 강철의 묘 18 = 명세 §5.6 합계 108(변종 수호자 제외)")
+	assert_eq(int(floors[1]["species"]), 45, "필드 10 + 군주 1 + 핏빛성채 10 + 빙하굴 10 + 녹색 탄광 7 + 강철의 묘 7(무등급·토큰·변종 수호자 제외)")
 	assert_eq(int(r["lv5_need"]), 660)
 	assert_eq(int(r["lv5_total"]), 640, "1~4층 목표 합(데이터가 모자라면 목표치) 640")
 	assert_true(bool(r["ok"]), "640 / 660 = 97% — 93~99% 범위")

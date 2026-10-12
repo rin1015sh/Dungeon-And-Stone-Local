@@ -1,0 +1,91 @@
+{
+  "id": "goblin_miner",
+  "name_ko": "고블린 광부",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_green_mine"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 0.9,
+  "color": "#8a9a50",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 15,
+    "agi": 10,
+    "p_res": 12,
+    "m_res": 5,
+    "int": 4
+  },
+  "resources": {
+    "hp": 130,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 11,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      3
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "miner_pick_strike",
+    "miner_ore_throw",
+    "miner_shaft_shake"
+  ],
+  "passives": [
+    {
+      "id": "miner_helmet",
+      "name_ko": "광부모",
+      "desc_ko": "광부모가 첫 일격을 받아 낸다.",
+      "self_statuses_on_start": [
+        "miner_helmet"
+      ]
+    }
+  ],
+  "magic_stone_grade": 8,
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "miner_shaft_shake",
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.3
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "miner_pick_strike"
+    },
+    {
+      "if": "chance",
+      "value": 0.2,
+      "use": "miner_ore_throw"
+    }
+  ],
+  "lineage": "goblin",
+  "desc_ko": "광부모를 쓰고 곡괭이를 멘 다부진 고블린. 1층 균열에서만 나온다.",
+  "sprite": "res://assets/sprites/monsters/goblin_miner.png",
+  "source": "original",
+  "notes": "명세 §11"
+}

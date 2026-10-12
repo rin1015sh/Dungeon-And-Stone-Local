@@ -1,0 +1,37 @@
+{
+  "id": "tarun_frenzied_claws",
+  "name_ko": "광폭한 손톱",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.35,
+      "damage_type": "slash"
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.35,
+      "damage_type": "slash"
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.35,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.2
+    }
+  ],
+  "source": "original",
+  "notes": " · 조정(GC5): 명세 60×3 → 35×3"
+}

@@ -1,0 +1,93 @@
+{
+  "id": "wormstone",
+  "name_ko": "웜스톤",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_glacier_cave"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "size": 1.2,
+  "color": "#8a8a90",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 14,
+    "agi": 8,
+    "p_res": 18,
+    "m_res": 8,
+    "int": 4
+  },
+  "resources": {
+    "hp": 160,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 10,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "worm_coil",
+    "worm_lurk"
+  ],
+  "passives": [
+    {
+      "id": "rock_shell",
+      "name_ko": "암석 껍질",
+      "desc_ko": "바위 껍질이 베고 찌르는 공격을 막는다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.25
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.25
+        }
+      ]
+    }
+  ],
+  "magic_stone_grade": 8,
+  "ai": [
+    {
+      "if": "self_status",
+      "status": "hidden",
+      "not": true,
+      "use": "worm_lurk",
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.3
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "worm_coil"
+    }
+  ],
+  "desc_ko": "바위 껍질을 두른 커다란 벌레. 얼음 틈에 숨어 있다 튀어나온다.",
+  "sprite": "res://assets/sprites/monsters/wormstone.png",
+  "source": "original",
+  "notes": "명세 §10"
+}

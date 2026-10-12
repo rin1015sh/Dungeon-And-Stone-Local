@@ -1,0 +1,17 @@
+{
+  "id": "hob_mine_command",
+  "name_ko": "갱도 지휘",
+  "target": "ally_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "mine_command"
+    }
+  ],
+  "source": "placeholder"
+}

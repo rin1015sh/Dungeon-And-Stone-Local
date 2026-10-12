@@ -8,7 +8,7 @@ extends RefCounted
 static func schedule(c: Combatant, e: Dictionary) -> void:
 	var q: Array = c.memo.get("delayed", [])
 	q.append({"left": int(e.get("rounds", 1)), "hits": int(e.get("hits", 1)), "effects": e.get("effects", []), "marked": e.get("marked"),
-		"guarded_mult": float(e.get("guarded_mult", 1.0))})
+		"guarded_mult": float(e.get("guarded_mult", 1.0)), "fire": str(e.get("fire", "combat.delayed_fire"))})
 	c.memo["delayed"] = q
 
 
@@ -23,7 +23,9 @@ static func tick(b: Battle, c: Combatant) -> void:
 		if int(item["left"]) > 0:
 			keep.append(item)
 			continue
-		b.message.emit("combat.delayed_fire", {"name": c.label()}, "danger")
+		if not bool(c.memo.get("fired_now", false)):
+			b.message.emit(str(item.get("fire", "combat.delayed_fire")), {"name": c.label()}, "danger")
+		c.memo["fired_now"] = true
 		var mk: Combatant = b.unit_of(item["marked"] as Actor) if item.get("marked") is Actor else null
 		if mk != null:
 			mk.actor.statuses.remove("telegraphed")
@@ -36,6 +38,7 @@ static func tick(b: Battle, c: Combatant) -> void:
 					b.message.emit("combat.telegraph_guarded", {"name": t.label()}, "good")
 				BossHooks.apply_effects(b, c, t, fx)
 	c.memo["delayed"] = keep
+	c.memo.erase("fired_now")
 
 
 static func pick_target(b: Battle, c: Combatant) -> Combatant:

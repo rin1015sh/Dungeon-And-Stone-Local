@@ -1,0 +1,25 @@
+{
+  "id": "liz_tail_whip",
+  "name_ko": "꼬리 후려치기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "push_back",
+      "amount": 60,
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder",
+  "notes": "50%로 다음 차례가 늦어진다(행동 게이지 −60)"
+}

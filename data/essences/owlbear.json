@@ -1,0 +1,42 @@
+{
+  "id": "owlbear",
+  "name_ko": "아울베어의 정수",
+  "grade": 8,
+  "source_monster": "owlbear",
+  "family": "owlbear",
+  "rank": "normal",
+  "passive": {
+    "id": "night_sight",
+    "name_ko": "야행 시각",
+    "desc_ko": "숨은 적도 겨눌 수 있고, 조금 더 잘 맞힌다.",
+    "see_hidden": true,
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": 5
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_owlbear_paw"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_owlbear_hoot"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      2,
+      4
+    ],
+    "sight": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10"
+}

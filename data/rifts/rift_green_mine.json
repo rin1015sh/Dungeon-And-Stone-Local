@@ -1,7 +1,6 @@
 {
   "host_floor": 1,
-  "stand_in": true,
-  "guardian": "rift_warden_standin",
+  "guardian": "king_slime",
   "variant": null,
   "guardian_drops": [
     {
@@ -34,10 +33,10 @@
     {
       "id": "ch1",
       "name_ko": "일자 갱도",
-      "desc_ko": "고블린 광부가 곡괭이를 휘두른다.",
+      "desc_ko": "천장이 무너져 막힌 곳에서 시작한다. 철로를 따라 곡괭이 소리가 울린다. 어딘가 철로가 끊긴 벽이 있다.",
       "map": {
         "size": [
-          46,
+          48,
           18
         ],
         "rooms": 4,
@@ -50,27 +49,108 @@
         {
           "kind": "battle",
           "monsters": [
-            "goblin",
-            "goblin",
-            "goblin"
+            "goblin_miner",
+            "goblin_miner"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "goblin_swordsman",
-            "goblin"
+            "slime",
+            "slime",
+            "goblin_miner"
           ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "green_gem",
+          "item": "green_gem",
+          "tile": "rail_wall_cracked",
+          "message": "explore.mine_gem"
         }
       ]
     },
     {
       "id": "ch2",
       "name_ko": "무너진 다리",
-      "desc_ko": "3분의 2가 무너진 다리. 중간 보스 고블린 폭탄병.",
+      "desc_ko": "3분의 2가 무너진 다리. 옆 통로로 돌거나 건너뛸 수 있다. 다리 너머에서 폭약 냄새가 난다.",
       "map": {
         "size": [
-          46,
+          48,
+          18
+        ],
+        "rooms": 6,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "goblin_miner",
+            "mineral_slime"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "hobgoblin_miner",
+            "goblin_miner"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "copper_golem"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "goblin_bomber"
+          ],
+          "midboss": true
+        }
+      ],
+      "hidden": [
+        {
+          "id": "gobl_quartz",
+          "item": "gobl_quartz",
+          "tile": "ore_vein",
+          "message": "explore.mine_quartz"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "bridge",
+          "tile": "broken_bridge",
+          "count": 1,
+          "check": {
+            "stat": "agi",
+            "dc": 13
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.1)"
+            }
+          ],
+          "pass_message": "explore.hazard_bridge_pass",
+          "fail_message": "explore.hazard_bridge_fail"
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "name_ko": "절벽의 원형 계단",
+      "desc_ko": "절벽 가장자리를 따라 원형 계단을 내려간다. 아래 갱도는 무너져 막혀 있다 — 어딘가 폭약이 있을 것이다.",
+      "map": {
+        "size": [
+          48,
           18
         ],
         "rooms": 4,
@@ -83,58 +163,64 @@
         {
           "kind": "battle",
           "monsters": [
-            "gnome",
-            "goblin"
+            "mineral_slime",
+            "slime",
+            "slime"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "goblin_archer",
-            "goblin_swordsman"
-          ],
-          "midboss": true
-        }
-      ]
-    },
-    {
-      "id": "ch3",
-      "name_ko": "절벽의 원형 계단",
-      "desc_ko": "절벽 가장자리를 따라 내려간다.",
-      "map": {
-        "size": [
-          46,
-          18
-        ],
-        "rooms": 3,
-        "room_size": [
-          5,
-          8
-        ]
-      },
-      "encounters": [
-        {
-          "kind": "chain",
-          "battles": [
-            [
-              "gnome",
-              "gnome"
-            ],
-            [
-              "corrupted_gnome",
-              "gnome"
-            ]
+            "hobgoblin_miner",
+            "copper_golem"
           ]
         }
-      ]
+      ],
+      "hidden": [
+        {
+          "id": "mine_explosive",
+          "item": "mine_explosive",
+          "tile": "explosive_crate",
+          "message": "explore.mine_explosive"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "stairs",
+          "tile": "cliff_stairs",
+          "count": 2,
+          "check": {
+            "stat": "agi",
+            "dc": 11
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.06)"
+            }
+          ],
+          "pass_message": "explore.hazard_stairs_pass",
+          "fail_message": "explore.hazard_stairs_fail"
+        }
+      ],
+      "exit_requires": {
+        "item": "mine_explosive",
+        "message": "explore.mine_blast",
+        "bypass": {
+          "stat": "str",
+          "at_least": 40,
+          "message": "explore.mine_smash"
+        }
+      }
     },
     {
       "id": "ch4",
       "name_ko": "무너진 공동",
-      "desc_ko": "반경 50m의 공동에서 슬라임과 수호자.",
+      "desc_ko": "폭약으로 뚫은 갱도 끝, 반경 50m의 공동. 끈적한 소리가 사방에서 들린다.",
       "map": {
         "size": [
-          46,
+          48,
           18
         ],
         "rooms": 3,
@@ -145,10 +231,15 @@
       },
       "encounters": [
         {
-          "kind": "guardian",
-          "with": [
-            "gnome"
+          "kind": "battle",
+          "monsters": [
+            "slime",
+            "slime",
+            "slime"
           ]
+        },
+        {
+          "kind": "guardian"
         }
       ]
     }
@@ -157,13 +248,13 @@
     {
       "id": "green_gem",
       "name_ko": "초록 보석",
-      "notes": "G7"
+      "chapter": "ch1"
     },
     {
       "id": "gobl_quartz",
       "name_ko": "고블 쿼츠",
-      "notes": "G7"
+      "chapter": "ch2"
     }
   ],
-  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G7(녹색 탄광)에서 채운다. 변종 수호자 없음(명세)"
+  "notes": "명세 §11. 변종 수호자 없음(명세). 넘버스는 다음 배치 — numbers 비움. 3챕터 출구는 폭약(근력 40이면 그냥 부숨)"
 }

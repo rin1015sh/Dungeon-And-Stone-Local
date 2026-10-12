@@ -1,0 +1,60 @@
+{
+  "id": "king_slime",
+  "name_ko": "킹 슬라임의 정수",
+  "grade": 6,
+  "source_monster": "king_slime",
+  "family": "king_slime",
+  "rank": "guardian",
+  "passive": {
+    "id": "slime_king",
+    "name_ko": "슬라임의 왕",
+    "desc_ko": "둔기에 강해지고, 처음 크게 다치면 슬라임 둘이 도우러 나온다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:blunt",
+        "percent": -0.2
+      }
+    ],
+    "low_hp_summons": {
+      "ratio": 0.3,
+      "monsters": [
+        "slime",
+        "slime"
+      ]
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_king_pounce"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_king_acid_rain"
+    },
+    {
+      "color": "green",
+      "skill": "ess_king_absorb"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_king_jump_crush"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      5,
+      8
+    ],
+    "resist_poison": [
+      8,
+      12
+    ],
+    "natural_regen": [
+      5,
+      10
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11 수호자 정수(무지갯빛) — 액티브 전부. 흡수 정수판은 자기 소환수(슬라임)를 삼킨다"
+}

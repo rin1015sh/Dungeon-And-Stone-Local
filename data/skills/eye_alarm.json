@@ -1,0 +1,22 @@
+{
+  "id": "eye_alarm",
+  "name_ko": "경보",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "pick": [
+        "mummy",
+        "iron_cavalry"
+      ]
+    }
+  ],
+  "uses_per_battle": 1,
+  "source": "placeholder",
+  "notes": "머미 또는 철기병 1체 증원, 1회 [명세 '다음 라운드' → 바로]"
+}

@@ -1,0 +1,45 @@
+{
+  "id": "wormstone",
+  "name_ko": "웜스톤의 정수",
+  "grade": 8,
+  "source_monster": "wormstone",
+  "family": "wormstone",
+  "rank": "normal",
+  "passive": {
+    "id": "rock_shell",
+    "name_ko": "암석 껍질",
+    "desc_ko": "베고 찌르는 공격을 조금 막는다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.12
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.12
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_worm_coil"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_worm_lurk"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      2,
+      4
+    ],
+    "bone_strength": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10"
+}

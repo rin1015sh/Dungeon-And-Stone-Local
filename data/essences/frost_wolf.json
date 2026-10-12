@@ -1,0 +1,51 @@
+{
+  "id": "frost_wolf",
+  "name_ko": "서리 늑대의 정수",
+  "grade": 9,
+  "source_monster": "frost_wolf",
+  "family": "frost_wolf",
+  "rank": "normal",
+  "passive": {
+    "id": "frost_fur",
+    "name_ko": "서리 털가죽",
+    "desc_ko": "냉기에 조금 강하고, 가끔 물린 쪽에 서리가 내려앉는다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:cold",
+        "percent": -0.25
+      }
+    ],
+    "on_hit": [
+      {
+        "type": "apply_status",
+        "status": "frost",
+        "chance": 0.25
+      }
+    ],
+    "on_hit_filter": {
+      "ranged": false
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_frost_bite"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_wolf_pack_howl"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      1,
+      3
+    ],
+    "resist_cold": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10"
+}

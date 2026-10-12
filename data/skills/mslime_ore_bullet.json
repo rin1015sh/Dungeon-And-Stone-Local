@@ -1,0 +1,20 @@
+{
+  "id": "mslime_ore_bullet",
+  "name_ko": "광석 탄환",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.0,
+      "damage_type": "blunt",
+      "ranged": true
+    }
+  ],
+  "source": "placeholder"
+}

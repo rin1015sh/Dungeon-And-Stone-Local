@@ -1,0 +1,18 @@
+{
+  "id": "ess_cav_shield_wall",
+  "name_ko": "방패 벽(정수)",
+  "target": "ally_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "shield_wall"
+    }
+  ],
+  "essence_of": "cav_shield_wall",
+  "source": "placeholder"
+}

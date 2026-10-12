@@ -80,6 +80,7 @@ func _ready() -> void:
 	session.floor_closed.connect(func() -> void: _end("closed"))
 	session.player_died.connect(func(_cause: String) -> void: _end("died"))
 	session.encounter.connect(_on_encounter)
+	session.riddle_asked.connect(_on_riddle)
 	session.transfer.connect(func(t: ExploreSession) -> void: session_switch.emit.call_deferred(t))
 	_build_pause_overlay()
 	session.start()
@@ -204,12 +205,30 @@ func combat_screen() -> CombatScreen:
 	return _combat
 
 
+## 수수께끼 문지기와 마주쳤다: 대화창을 띄우고 답하는 동안 시간을 멈춘다. 물러나면 조금 떨어질 때까지 다시 묻지 않는다.
+func _on_riddle(group: FieldMonsters.Group) -> void:
+	if session.rift_run == null or has_node("RiddleDialog"):
+		return
+	var dlg := RiddleDialog.new()
+	dlg.name = "RiddleDialog"
+	dlg.setup(session.rift_run.riddle, session.player)
+	add_child(dlg)
+	dlg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	session.realtime.set_paused("riddle", true)
+	dlg.answered.connect(func(outcome: String) -> void:
+		session.realtime.set_paused("riddle", false)
+		session.answer_riddle(group, outcome))
+	dlg.cancelled.connect(func() -> void:
+		session.realtime.set_paused("riddle", false)
+		session.monsters.set_grace(group, session.clock.total_hours))
+
+
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.
 func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	var party: Array[Actor] = [session.player]
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
 	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, party_first)
-	battle.objective = group.battle_rules.duplicate()
+	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_windows.close_all()
 	_combat = CombatScreen.new()

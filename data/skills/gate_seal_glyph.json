@@ -1,0 +1,17 @@
+{
+  "id": "gate_seal_glyph",
+  "name_ko": "봉인 문양",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "seal_skill",
+      "rounds": 2
+    }
+  ],
+  "source": "placeholder"
+}

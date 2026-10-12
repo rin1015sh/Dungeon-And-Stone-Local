@@ -139,8 +139,9 @@ static func _enter(b: Battle, c: Combatant, ph: Dictionary) -> void:
 	if not cast.is_empty():
 		b.message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(cast, "name_ko")}, "system")
 		var targets: Array = b.opponents(c) if JsonUtil.get_str(cast, "target") == "enemy_all" else [c]
+		var info := {"skill_name": JsonUtil.get_str(cast, "name_ko")}
 		for t: Combatant in targets:
-			apply_effects(b, c, t, JsonUtil.get_array(cast, "effects"))
+			apply_effects(b, c, t, JsonUtil.get_array(cast, "effects"), info)
 	var p := pattern(b, c)
 	if p != null:
 		p.on_phase(b, c, ph)

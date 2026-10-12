@@ -22,7 +22,9 @@
           "accuracy": 120
         }
       ],
-      "guarded_mult": 0.3
+      "guarded_mult": 0.3,
+      "warn": "combat.blater_sentence_warn",
+      "fire": "combat.blater_sentence_fire"
     }
   ],
   "source": "placeholder",

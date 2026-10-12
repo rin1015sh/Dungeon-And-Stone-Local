@@ -1,0 +1,22 @@
+{
+  "id": "worm_lurk",
+  "name_ko": "얼음 틈 잠복",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden",
+      "duration": 2
+    },
+    {
+      "type": "apply_status",
+      "status": "worm_lurk_strike"
+    }
+  ],
+  "source": "placeholder"
+}

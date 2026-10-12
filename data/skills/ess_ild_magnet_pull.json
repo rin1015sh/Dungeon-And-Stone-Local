@@ -1,0 +1,23 @@
+{
+  "id": "ess_ild_magnet_pull",
+  "name_ko": "자석 끌어당기기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "duration": 1
+    },
+    {
+      "type": "apply_status",
+      "status": "magnetized"
+    }
+  ],
+  "essence_of": "ild_magnet_pull",
+  "source": "placeholder"
+}

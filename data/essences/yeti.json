@@ -1,0 +1,53 @@
+{
+  "id": "yeti",
+  "name_ko": "예티의 정수",
+  "grade": 7,
+  "source_monster": "yeti",
+  "family": "yeti",
+  "rank": "normal",
+  "passive": {
+    "id": "yeti_fur",
+    "name_ko": "설인의 털",
+    "desc_ko": "냉기에 강해지지만 불에 약해진다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:cold",
+        "percent": -0.4
+      },
+      {
+        "target": "dmg_taken:fire",
+        "percent": 0.25
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "white",
+      "skill": "ess_yeti_chill"
+    },
+    {
+      "color": "red",
+      "skill": "ess_yeti_ice_smash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_yeti_roar"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      3,
+      5
+    ],
+    "resist_cold": [
+      5,
+      10
+    ],
+    "body_weight": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10 원작: 정수는 있으나 내용 미상 → 창작"
+}

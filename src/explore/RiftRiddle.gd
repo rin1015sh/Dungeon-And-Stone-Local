@@ -1,0 +1,105 @@
+class_name RiftRiddle
+extends RefCounted
+## 수수께끼 문지기(강철의 묘 — 명세 §12.3). 균열 정의 "riddle": {"set", "weakened_status", "empowered_status", "essence_mult"}.
+## 입장할 때 data/riddles의 그 set에서 문항 하나를 고른다. 문항: {id, set, question_ko, choices_ko[3], answer, hints_ko[]}.
+## 조우 {"riddle": true}(문지기)와 마주치면 전투 대신 수수께끼(ExploreSession.riddle_asked → 화면 RiddleDialog).
+##   정답 → "pass"(전투 없이 통과) 또는 "weaken"(문지기 약화 상태로 전투, 처치 시 정수 드롭률 ×essence_mult)
+##   오답 → "wrong"(문지기 강화 상태로 전투)
+## 벽화(RiftHidden mural)를 읽으면 힌트를 하나씩 알게 되고(캐릭터 Knowledge 사실 "riddle:<문항>:<번호>" — 다음 균열에도 남는다),
+## 아는 힌트 수만큼 오답 선택지를 하나씩 지운다(정답은 늘 남는다).
+
+const PASS := "pass"
+const WEAKEN := "weaken"
+const WRONG := "wrong"
+
+var spec: Dictionary = {}
+var data: Dictionary = {}     ## 고른 문항
+var resolved: bool = false
+var _mural_hint: Dictionary = {}  ## 벽화 칸 -> 그 벽화가 보여 준 힌트 번호
+
+
+func _init(db: GameDatabase, p_spec: Dictionary, rng: Rng) -> void:
+	spec = p_spec
+	var pool: Array = []
+	for id: Variant in db.get_collection("riddles").keys():
+		var r := db.get_entry("riddles", str(id))
+		if JsonUtil.get_str(r, "set") == JsonUtil.get_str(spec, "set"):
+			pool.append(r)
+	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["id"]) < str(b["id"]))
+	if not pool.is_empty():
+		data = rng.pick(pool)
+
+
+func is_ready() -> bool:
+	return not data.is_empty()
+
+
+## 이 조우가 수수께끼로 막혀 있는가.
+func blocks(g: FieldMonsters.Group) -> bool:
+	return is_ready() and not resolved and g != null and g.tag == "riddle"
+
+
+func hints() -> Array:
+	return JsonUtil.get_array(data, "hints_ko")
+
+
+## 캐릭터가 아는 이 문항 힌트 수.
+func known(pc: PlayerCharacter) -> int:
+	var n := 0
+	for i in hints().size():
+		if pc.knowledge.knows_fact(_fact(i)):
+			n += 1
+	return n
+
+
+## 벽화를 읽는다: 그 벽화가 이미 보여 준 힌트, 아니면 아직 모르는 다음 힌트(모두 알면 마지막 것).
+func read_mural(pc: PlayerCharacter, at: Vector2i) -> String:
+	if hints().is_empty():
+		return ""
+	if not _mural_hint.has(at):
+		var i := 0
+		while i < hints().size() - 1 and pc.knowledge.knows_fact(_fact(i)):
+			i += 1
+		_mural_hint[at] = i
+		pc.knowledge.learn_fact(_fact(i))
+	return str(hints()[int(_mural_hint[at])])
+
+
+## 보여 줄 선택지 번호들(아는 힌트 수만큼 오답을 앞에서부터 지운다).
+func choices(pc: PlayerCharacter) -> Array[int]:
+	var answer := JsonUtil.get_int(data, "answer")
+	var out: Array[int] = []
+	var drop := known(pc)
+	for i in JsonUtil.get_array(data, "choices_ko").size():
+		if i != answer and drop > 0:
+			drop -= 1
+			continue
+		out.append(i)
+	return out
+
+
+func is_correct(choice: int) -> bool:
+	return choice == JsonUtil.get_int(data, "answer")
+
+
+## 결과를 조우에 반영한다. pass면 조우를 치운 것으로(RiftRun.on_battle_end 승리), 아니면 전투 규칙에 문지기 상태를 넣는다.
+## 전투를 시작해야 하면 true.
+func apply(cs: ExploreSession, g: FieldMonsters.Group, outcome: String) -> bool:
+	resolved = true
+	match outcome:
+		PASS:
+			cs.message.emit("explore.riddle_pass", {}, "good")
+			cs.rift_run.on_battle_end(cs, g, Battle.RESULT_VICTORY)
+			return false
+		WEAKEN:
+			g.battle_rules["enemy_statuses"] = [JsonUtil.get_str(spec, "weakened_status")]
+			g.battle_rules["essence_mult"] = JsonUtil.get_float(spec, "essence_mult", 2.0)
+			cs.message.emit("explore.riddle_weaken", {}, "good")
+		_:
+			g.battle_rules["enemy_statuses"] = [JsonUtil.get_str(spec, "empowered_status")]
+			cs.message.emit("explore.riddle_wrong", {}, "danger")
+	return true
+
+
+func _fact(i: int) -> String:
+	return "riddle:%s:%d" % [JsonUtil.get_str(data, "id"), i]

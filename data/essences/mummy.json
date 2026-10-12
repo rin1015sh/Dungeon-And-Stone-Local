@@ -1,0 +1,44 @@
+{
+  "id": "mummy",
+  "name_ko": "머미의 정수",
+  "grade": 9,
+  "source_monster": "mummy",
+  "family": "mummy",
+  "rank": "normal",
+  "passive": {
+    "id": "mummy_bandage",
+    "name_ko": "미라 붕대",
+    "desc_ko": "출혈이 듣지 않지만 불에 조금 약해진다.",
+    "status_immune": [
+      "bleeding"
+    ],
+    "modifiers": [
+      {
+        "target": "dmg_taken:fire",
+        "percent": 0.25
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_mummy_bandage_wrap"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_mummy_curse_touch"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      1,
+      3
+    ],
+    "pain_tolerance": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §12"
+}
