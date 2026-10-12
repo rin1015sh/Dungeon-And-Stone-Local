@@ -9,6 +9,8 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if actor == null or not actor.pool.has_resource(res):
 		return false
 	var amount := Formula.value(data.get("amount", 0.0), actor.pool.resolve)
+	if res == "hp" and amount > 0.0:
+		amount *= actor.statuses.heal_mult()  # 원한(heal_block)
 	var changed := actor.pool.modify(res, amount, "effect:restore_resource")
 	var name_ko := actor.pool.get_def(res).name_ko
 	if changed == 0.0:

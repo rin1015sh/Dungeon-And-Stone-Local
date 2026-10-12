@@ -1,0 +1,270 @@
+{
+  "host_floor": 1,
+  "stand_in": true,
+  "guardian": "rift_warden_standin",
+  "variant": {
+    "monster": "rift_warden_standin_variant",
+    "chance": 0.03
+  },
+  "guardian_drops": [
+    {
+      "item": "rift_stone",
+      "chance": 0.66
+    }
+  ],
+  "numbers": [],
+  "numbers_chance": 0.33,
+  "source": "original",
+  "id": "rift_glacier_cave",
+  "name_ko": "빙하굴",
+  "weight": 1,
+  "desc_ko": "얼어붙은 설산과 눈송이, 얼음에 반사된 햇빛. 호수 지대를 지나면 땅속으로 이어지는 굴이 나온다.",
+  "force_open": {
+    "item": "magic_stone_beast_den",
+    "at": "monument"
+  },
+  "look": {
+    "tiles": {
+      "floor": "ice_floor",
+      "wall": "ice_wall",
+      "exit": "rift_exit"
+    },
+    "ambient_color": "#d8eeff",
+    "ambient_light_m": 8.0,
+    "visibility_cap_m": 9.0
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "name_ko": "문지기와 얼음 동굴",
+      "desc_ko": "문지기 예티를 지나면 서리 늑대가 사는 얼음 동굴. 일정한 간격의 기둥이 길잡이다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "giant_blade_wolf"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "blade_wolf",
+            "blade_wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "name_ko": "얼음 계단과 토템",
+      "desc_ko": "중심 토템에서 끝없이 쏟아지는 무리 — 9연전 뒤 카툼바.",
+      "map": {
+        "size": [
+          40,
+          16
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "chain",
+          "battles": [
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            {
+              "pick": [
+                "blade_wolf",
+                "gnome"
+              ],
+              "count": [
+                1,
+                4
+              ]
+            },
+            [
+              "giant_blade_wolf"
+            ]
+          ],
+          "midboss": true
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "name_ko": "지하수맥",
+      "desc_ko": "천장이 무너져 떨어지고 폭포에 떠밀렸다. 뼛속까지 춥다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 4,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "blood_blade_wolf",
+            "blade_wolf"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "giant_blade_wolf",
+            "blade_wolf"
+          ]
+        }
+      ],
+      "field_effects": [
+        "hypothermia"
+      ],
+      "on_enter": [
+        {
+          "type": "restore_resource",
+          "resource": "hp",
+          "amount": "-floor({max_hp} * {bal.rift.waterfall_ratio})"
+        },
+        {
+          "type": "restore_resource",
+          "resource": "hp",
+          "amount": "-{bal.rift.fall_damage}"
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "name_ko": "얼음 가루가 쏟아지는 공동",
+      "desc_ko": "천장에서 얼음 가루가 쏟아지며 수호자가 내려온다.",
+      "map": {
+        "size": [
+          46,
+          18
+        ],
+        "rooms": 3,
+        "room_size": [
+          5,
+          8
+        ]
+      },
+      "encounters": [
+        {
+          "kind": "guardian"
+        }
+      ],
+      "field_effects": [
+        "hypothermia"
+      ]
+    }
+  ],
+  "hidden_pieces": [
+    {
+      "id": "ice_crystal",
+      "name_ko": "빙정",
+      "notes": "G6"
+    },
+    {
+      "id": "mana_ice_shard",
+      "name_ko": "마력이 깃든 얼음 조각",
+      "notes": "G6"
+    }
+  ],
+  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G6(빙하굴)에서 채운다. 변종 수호자는 키르뒤"
+}

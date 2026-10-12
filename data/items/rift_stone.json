@@ -1,0 +1,17 @@
+{
+  "id": "rift_stone",
+  "name_ko": "균열석",
+  "category": "material",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 20,
+  "price": 2000,
+  "icon": "stone",
+  "color": "#ff7a8a",
+  "rarity": "fine",
+  "desc_ko": "균열의 수호자가 남긴 붉은 돌. 균열의 힘이 응축되어 있다.",
+  "source": "original",
+  "notes": "명세 §8.2 수호자 드롭 66%. 쓰임은 도시(M4)"
+}

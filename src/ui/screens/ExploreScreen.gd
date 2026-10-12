@@ -8,6 +8,7 @@ extends Control
 
 signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망)
 signal regenerate_requested(seed_value: int)
+signal session_switch(target: ExploreSession)  ## 균열 챕터 ↔ 바깥 층(Main이 화면을 새로 만든다)
 
 const POST_SHADER := "res://assets/shaders/post_grade.gdshader"
 const POST_PARAMS := ["saturation", "vignette_strength", "vignette_radius", "grain_strength"]
@@ -79,8 +80,11 @@ func _ready() -> void:
 	session.floor_closed.connect(func() -> void: _end("closed"))
 	session.player_died.connect(func(_cause: String) -> void: _end("died"))
 	session.encounter.connect(_on_encounter)
+	session.transfer.connect(func(t: ExploreSession) -> void: session_switch.emit.call_deferred(t))
 	_build_pause_overlay()
 	session.start()
+	for pm: Dictionary in session.take_pending():
+		_on_message(str(pm["key"]), pm["args"], str(pm["kind"]))
 
 
 func _process(delta: float) -> void:
@@ -205,6 +209,7 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	var party: Array[Actor] = [session.player]
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
 	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, party_first)
+	battle.objective = group.battle_rules.duplicate()
 	_debug.visible = false
 	_windows.close_all()
 	_combat = CombatScreen.new()

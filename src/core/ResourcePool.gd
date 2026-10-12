@@ -298,4 +298,6 @@ func resolve(key: String) -> float:
 		return float(_level)
 	if key.begins_with("bal."):
 		return float(_db.bal(key.substr(4), 0.0))
+	if key.begins_with("max_") and has_resource(key.substr(4)):
+		return get_max(key.substr(4))
 	return _stats.get_value(key)

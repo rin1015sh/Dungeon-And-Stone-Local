@@ -124,6 +124,11 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 			"delayed":
 				BattleDelayed.schedule(c, e)
 				continue
+			"seal":
+				var lu := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
+				if lu != null:
+					lu.cooldowns[str(e.get("skill", ""))] = int(e.get("rounds", 2)) + 1
+				continue
 			"shuffle_rows":
 				var su := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
 				if su != null:

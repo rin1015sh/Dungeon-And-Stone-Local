@@ -3,7 +3,7 @@ extends RefCounted
 ## 스킬 대상 정하기(Battle._use_skill이 부른다)와 오인 공격.
 ## 오인(상태이상 "misdirect": {"chance", "power_mult", "ignore_defense"}): 적 하나를 노린 행동이 chance 확률로
 ## 무작위 아군(자신 제외)에게 간다. 피해 위력 ×power_mult, ignore_defense면 방어 무시(배신의 장막).
-## 아군이 없으면 오인하지 않는다.
+## 아군이 없으면 오인하지 않는다. "pool": "any"면 전장의 아무나(혼란 — 적일 수도 있다).
 
 
 static func resolve(b: Battle, c: Combatant, kind: String, chosen: Variant) -> Array[Combatant]:
@@ -46,10 +46,12 @@ static func misdirect(b: Battle, c: Combatant, kind: String) -> Dictionary:
 			best = m
 	if best.is_empty() or not b.rng.chance(JsonUtil.get_float(best, "chance")):
 		return {}
-	var allies := b.side_units(c.side).filter(func(u: Combatant) -> bool: return u != c)
-	if allies.is_empty():
+	# pool "any"(혼란): 자기 빼고 전장의 아무나. 기본은 다른 아군.
+	var pool: Array = b.units.filter(func(u: Combatant) -> bool: return u != c and u.is_active()) \
+		if JsonUtil.get_str(best, "pool") == "any" else b.side_units(c.side).filter(func(u: Combatant) -> bool: return u != c)
+	if pool.is_empty():
 		return {}
-	return {"target": b.rng.pick(allies), "power_mult": JsonUtil.get_float(best, "power_mult", 1.0),
+	return {"target": b.rng.pick(pool), "power_mult": JsonUtil.get_float(best, "power_mult", 1.0),
 		"ignore_defense": JsonUtil.get_bool(best, "ignore_defense")}
 
 

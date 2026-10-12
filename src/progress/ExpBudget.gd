@@ -17,6 +17,8 @@ static func report(db: GameDatabase) -> Dictionary:
 	ids.sort()
 	for id: Variant in ids:
 		var def := db.get_entry("monsters", str(id))
+		if JsonUtil.get_bool(def, "placeholder_content"):
+			continue  # 임시 콘텐츠(G4 균열 문지기 등)는 예산에 넣지 않는다
 		var fl := Progression.monster_floor(def)
 		var e := Progression.first_kill_exp(db, def)
 		if JsonUtil.get_str(def, "rank") == str(db.prog("exp.lord_rank", "lord")):

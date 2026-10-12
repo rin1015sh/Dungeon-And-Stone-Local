@@ -20,6 +20,7 @@ func validate(p_db: GameDatabase) -> bool:
 	CoreRules.run(self)
 	ContentRules.run(self)
 	BossRules.run(self)
+	RiftRules.run(self)
 	WorldRules.run(self)
 	_check_common_fields()
 	if _skipped_effect_types:

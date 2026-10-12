@@ -1,0 +1,17 @@
+{
+  "id": "magic_stone_goblin_forest",
+  "name_ko": "홉고블린 마석",
+  "category": "magic_stone",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 50,
+  "price": 300,
+  "icon": "stone",
+  "color": "#a8c87f",
+  "rarity": "fine",
+  "desc_ko": "2층 고블린 숲 홉고블린(7등급)의 마석. 대현자 기념비에 바치면 녹색 탄광이 열린다.",
+  "source": "original",
+  "notes": "명세 §8.1 원작 불일치 — 고블린 숲에 8등급이 없어 홉고블린 마석 허용(ASSUMPTIONS RF3)"
+}

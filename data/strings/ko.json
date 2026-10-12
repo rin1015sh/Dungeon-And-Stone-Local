@@ -110,6 +110,21 @@
     "equipped_item": "{item} (착용)"
   },
   "explore": {
+    "rift_opened": "공기가 찢어지는 소리가 울린다. 동굴 곳곳에 균열 포탈 {count}개가 열렸다!",
+    "rift_forced": "기념비가 마석을 삼키고, 옆에 {name}(으)로 통하는 균열 포탈이 열렸다.",
+    "rift_offer": "대현자 기념비에 {item}을(를) 바쳤다.",
+    "rift_portal_found": "붉게 일렁이는 균열 포탈이 보인다.",
+    "rift_portal_here": "균열 포탈 앞이다. 살피기(E)로 들어간다 — 수호자를 쓰러뜨리기 전엔 나올 수 없다.",
+    "rift_enter": "균열 속으로 발을 들였다 — {name}.",
+    "rift_chapter": "[{rift} {n}/{total}] {chapter} — {desc}",
+    "rift_variant": "공기가 무겁다. 이곳의 수호자는 평소와 다르다…",
+    "rift_next_wave": "숨 돌릴 틈도 없이 다음 무리가 덮친다! (남은 무리 {left})",
+    "rift_exit_found": "앞쪽에 출구가 보인다.",
+    "rift_exit_here": "출구 앞이다. 살피기(E)로 나아간다.",
+    "rift_exit_open": "이 구역을 정리했다. 출구가 열렸다.",
+    "rift_exit_escape": "수호자가 쓰러졌다. 출구가 바깥으로 이어진다!",
+    "rift_exit_locked": "아직 길이 막혀 있다. (남은 무리 {left})",
+    "rift_left": "{name}에서 빠져나왔다. 수정동굴의 공기가 반갑다.",
     "lord_omen": "동굴 벽의 수정이 보랏빛으로 불안하게 일렁인다. 너무 오래 한곳에 머문 것 같다.",
     "lord_summoned": "수정의 광채가 핏빛으로 바뀐다. 무언가가 깨어났다 — {name}!",
     "lord_bond": "동료들과의 결속이 끊어진 듯 서로의 기척이 멀어진다. 눈앞이 어둑해진다.",
@@ -153,6 +168,8 @@
     "ambush": "잠결에 무언가가 다가왔다!"
   },
   "effect": {
+    "status_resisted": "{name}은(는) [{status}]을(를) 버텨 냈다.",
+    "status_broken": "{name}의 [{status}]이(가) 풀렸다.",
     "restore": "{resource}이(가) {amount}만큼 변했다.",
     "restore_none": "{resource}은(는) 이미 가득하다.",
     "light_on": "횃불에 불을 붙였다. {hours}시간쯤 탈 것이다.",
@@ -162,6 +179,9 @@
     "status_immune": "{name}에게는 [{status}]이(가) 듣지 않는다."
   },
   "debug": {
+    "rift_force_open": "균열 강제 개방",
+    "rift_clear_chapter": "이 챕터 조우 치우기",
+    "give_rift_stones": "균열 개방 마석 4종 받기",
     "summon_lord": "계층군주 소환(드레드피어)",
     "title": "디버그 (F1)",
     "skip": "+{hours}시간",
@@ -261,6 +281,10 @@
     "reason_hidden": "그 상대는 모습을 감추고 있다.",
     "reason_no_flee": "도망칠 길이 없다.",
     "reason_veiled": "장막 너머의 동료를 알아볼 수 없다.",
+    "sealed": "{name}의 [{skill}]이(가) 봉인되었다.",
+    "survive_round": "버텨라! ({round}/{total})",
+    "survived": "{rounds}라운드를 버텨 냈다!",
+    "reinforce": "{monster}이(가) 기어오른다!",
     "meter_full": "{name}의 {meter}이(가) 가득 찼다 — {status}!",
     "meter_damage_none": "{target}의 마음에는 비출 공포가 없다.",
     "delayed_warn": "{name}의 주위로 죽은 자들의 기억이 모여든다…",

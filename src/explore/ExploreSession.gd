@@ -16,6 +16,7 @@ signal closing_warning(hours_left: float)
 signal floor_closed
 signal player_died(cause: String)
 signal encounter(group: FieldMonsters.Group, party_first: bool)
+signal transfer(target: ExploreSession)       ## 다른 세션(균열 챕터 ↔ 바깥 층)으로 넘어간다 — 화면이 바꿔 끼운다
 
 var db: GameDatabase
 var floor_def: Dictionary
@@ -27,6 +28,9 @@ var effects: EffectRegistry
 var lights: LightField
 var monsters: FieldMonsters
 var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
+var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
+var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
+var pending_messages: Array[Dictionary] = []  ## 화면이 붙기 전에 남긴 메시지(화면이 붙을 때 다시 보여 준다)
 var realtime: RealtimeDriver
 var monsters_enabled: bool = true  ## false면 몬스터가 나타나지 않는다(규칙 테스트용). start() 전에 정한다.
 var in_combat: bool = false
@@ -41,6 +45,7 @@ var steps: int = 0
 var _mpt: float = 1.0
 var _warned: Dictionary = {}
 var _was_safe: bool = false
+var _started: bool = false
 var _view_dirty: bool = false  # 시간 흐름으로 시야가 바뀌었다(광원 꺼짐·상태이상)
 
 
@@ -67,8 +72,15 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 
 
 ## 입장 직후 한 번 부른다.
+## 두 번째부터는(균열에서 돌아와 화면이 다시 붙을 때) 시야만 새로 그린다.
 func start() -> void:
+	if _started:
+		refresh_view()
+		return
+	_started = true
 	_say("explore.enter", {"floor": floor_name()}, "system")
+	if rift_run == null:
+		rifts.begin(self)
 	_was_safe = in_safe_zone()
 	if monsters_enabled:
 		monsters.spawn_initial(pos)
@@ -218,18 +230,8 @@ func use_category(category: String) -> bool:
 
 ## 발밑의 포탈이나 바로 옆의 기념비를 살핀다.
 func interact() -> void:
-	if ended:
-		return
-	var portal := map.portal_at(pos)
-	if not portal.is_empty():
-		_say("explore.portal_locked", {"floor": int(portal["to_floor"])}, "system")
-		return
-	for d in FloorMap.DIRS4:
-		var def := map.def_at(pos + d)
-		if def != null and def.interact == "monument":
-			_say("explore.monument", {}, "system")
-			return
-	_say("explore.nothing_here")
+	if not ended:
+		ExploreInteract.run(self)
 
 
 ## 시간을 흘린다. 층 폐쇄 시각을 넘지 않게 자르고, 경고·폐쇄를 판정한다.
@@ -247,6 +249,7 @@ func pass_time(hours: float) -> void:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
 		lord.update(self, h)
+		rifts.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
@@ -293,9 +296,9 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
 	if not killed.is_empty() and not player.dead:
-		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours):
+		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
-	if lord.on_battle_end(self, group, result):
+	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result)):
 		pass
 	elif result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)
@@ -306,6 +309,26 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 	pass_time(turns * float(db.bal("combat.hours_per_turn", 0.01)))
 	if not ended:
 		refresh_view()
+
+
+## 화면이 아직 없을 때(새 챕터 세션) 남길 메시지. 화면이 붙으면 take_pending으로 꺼내 보여 준다.
+func say_later(key: String, args: Dictionary = {}, kind: String = "info") -> void:
+	pending_messages.append({"key": key, "args": args, "kind": kind})
+
+
+func take_pending() -> Array[Dictionary]:
+	var out := pending_messages.duplicate()
+	pending_messages.clear()
+	return out
+
+
+## 플레이어 시그널 연결을 끊는다(균열 챕터 세션을 버릴 때 — 같은 플레이어에 세션이 쌓이지 않게).
+func detach() -> void:
+	ended = true
+	if player.died.is_connected(_on_player_died):
+		player.died.disconnect(_on_player_died)
+		player.status_changed.disconnect(_on_status_changed)
+		player.light.went_out.disconnect(_on_light_out)
 
 
 # ── 내부 ─────────────────────────────────────────────────
@@ -336,7 +359,7 @@ func _discover() -> void:
 	for portal: Dictionary in map.portals:
 		if not bool(portal["found"]) and map.visible_now[map.idx(portal["pos"])] != 0:
 			portal["found"] = true
-			_say("explore.portal_found", {"dir": DataNames.tag(db, "directions", str(portal["dir"]))}, "good")
+			ExploreInteract.portal_found(self, portal)
 
 
 func _on_enter_cell(from: Vector2i) -> void:
@@ -347,7 +370,7 @@ func _on_enter_cell(from: Vector2i) -> void:
 	if map.is_dark(pos) and not map.is_dark(from):
 		_say("explore.dark_enter", {}, "warn")
 	if not map.portal_at(pos).is_empty():
-		_say("explore.portal_here", {}, "system")
+		ExploreInteract.portal_here(self, map.portal_at(pos))
 
 
 func _on_status_changed(status_id: String, active: bool) -> void:

@@ -35,6 +35,7 @@ var phase: String = PHASE_IDLE
 var turns: int = 0
 var killed: Array[String] = []  ## 쓰러뜨린 몬스터 id (도감·경험치는 M3)
 var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
+var objective: Dictionary = {}       ## 전투 목표(BattleObjective — 생존 웨이브). 비면 없음
 
 var _announced: Dictionary = {}  # Combatant -> true (쓰러짐을 알렸다)
 
@@ -168,6 +169,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	c.was_hit = false
 	timeline.consume(c, delay)
 	BossHooks.turn_end(self, c, false)
+	BattleObjective.after_turn(self, c)
 	current = null
 	event.emit({"type": "turn_end", "unit": c})
 	_after_effects()
@@ -274,12 +276,18 @@ func _check_end() -> void:
 		return
 	if side_units(Combatant.SIDE_PARTY).is_empty():
 		var any_fled := units.any(func(u: Combatant) -> bool: return u.side == Combatant.SIDE_PARTY and u.fled and not u.actor.dead)
-		result = RESULT_FLED if any_fled else RESULT_DEFEAT
+		finish(RESULT_FLED if any_fled else RESULT_DEFEAT)
 	elif side_units(Combatant.SIDE_ENEMY).is_empty():
-		result = RESULT_VICTORY
+		finish(RESULT_VICTORY)
+
+
+## 전투를 끝낸다(전멸·도주 판정 또는 목표 달성).
+func finish(r: String) -> void:
 	if not result.is_empty():
-		phase = PHASE_ENDED
-		current = null
-		BattleRules.cleanup(self)
-		message.emit("combat.end_" + result, {}, "good" if result == RESULT_VICTORY else "warn")
-		event.emit({"type": "end", "result": result})
+		return
+	result = r
+	phase = PHASE_ENDED
+	current = null
+	BattleRules.cleanup(self)
+	message.emit("combat.end_" + result, {}, "good" if result == RESULT_VICTORY else "warn")
+	event.emit({"type": "end", "result": result})

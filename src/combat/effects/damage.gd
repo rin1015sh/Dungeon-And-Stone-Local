@@ -26,6 +26,9 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 		return true
 	var origin := "attack:" + source.id
 	target.pool.modify("hp", -float(r["amount"]), origin)
+	if int(r["amount"]) > 0:
+		for broken in target.statuses.on_damaged(str(r["damage_type"])):
+			ctx.say("effect.status_broken", {"name": target.display_name, "status": DataNames.entry(ctx.db, "statuses", broken)}, "info")
 	if bool(r["crit"]):
 		ctx.say("combat.crit", args, "danger")
 	elif bool(r["weak"]):

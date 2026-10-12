@@ -59,7 +59,10 @@
     "poison_per_turn": 2,
     "burn_per_turn": 4,
     "trap_damage": 6,
-    "rot_per_turn": 2
+    "rot_per_turn": 2,
+    "_resist_comment": "상태이상 저항(statuses resist.stats): 확률 = min(resist_max, Σ 스탯 × resist_per_point). 적이 건 것만",
+    "resist_per_point": 0.01,
+    "resist_max": 0.6
   },
   "reserved": {
     "stamina_base": 100,
@@ -67,6 +70,18 @@
     "mana_base": 20,
     "mana_per_int": 2,
     "divinity_base": 20
+  },
+  "rift": {
+    "_comment": "균열(명세 §8). 자연 개방: 직전 개방 뒤 달(원정) 수 → 이번 달 열릴 확률(8달이면 확정). 열리면 open_after_hours 이후 무작위 시각에 포탈 portal_count개",
+    "open_chance_by_months": {"0": 0.0, "1": 0.0, "2": 0.1, "3": 0.2, "4": 0.45, "5": 0.6, "6": 0.5, "7": 0.5, "8": 1.0},
+    "start_months_since_open": 4,
+    "open_after_hours": 48,
+    "open_before_close_hours": 24,
+    "portal_count": [3, 5],
+    "portal_min_distance": 8,
+    "waterfall_ratio": 0.1,
+    "fall_damage": 20,
+    "_fall_comment": "빙하굴 3챕터: 폭포(최대 생명력 10%) + 낙하(명세 '위력 40' → 고정 피해 임시값)"
   },
   "combat": {
     "gauge_threshold": 100,
