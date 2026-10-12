@@ -5,6 +5,7 @@ extends RefCounted
 ##   증원 뒤 — ally_aura 다시 계산
 ##   전투 시작 — self_statuses_on_start(자기에게: 샤벨 타이거 기습 사냥꾼)
 ##   자기 차례 끝 — regen_per_round(재생, flag no_regen이면 멈춤), turn_end_foe_status {status, target: all|random}(아이스 골렘 냉기 오러)
+##   쓰러짐 — death_effects(상대 전원에게: 폭탄병 자폭), 차례 끝마다 low_hp_summons(처음 비율 이하 → 한 번 소환), 소환수 만료(BattleSpawns)
 ##   ally_aura {"all": true}면 같은 편 전원(아이스 오크 주술사 한기의 매개)
 ##   스킬 효과 — skill "repeat_per_ally"(같은 편 그 몬스터 수만큼 반복), 기본 공격 basic_attack_effects·basic_extra_hit_chance
 
@@ -51,6 +52,8 @@ static func refresh_auras(b: Battle) -> void:
 
 ## 자기 차례가 끝났다(행동했거나 건너뛰었다).
 static func turn_end(b: Battle, c: Combatant) -> void:
+	BattleSpawns.tick_expire(b, c)
+	_low_hp_summons(b)
 	var r := Passives.sum(c.actor, "regen_per_round")
 	if r > 0.0 and c.is_active() and not c.actor.statuses.has_flag("no_regen"):
 		var amount := roundi(c.actor.pool.get_max("hp") * r * c.actor.statuses.heal_mult())
@@ -70,6 +73,30 @@ static func turn_end(b: Battle, c: Combatant) -> void:
 			if not Passives.is_immune(f.actor, st):
 				f.actor.statuses.apply(st)
 		b.message.emit("combat.aura_tick", {"name": c.label(), "status": DataNames.entry(b.db, "statuses", st)}, "warn")
+
+
+## u가 쓰러졌다: death_effects를 상대 전원에게. 무언가 했으면 true.
+static func on_down(b: Battle, u: Combatant) -> bool:
+	var fx := _list(u.actor, "death_effects")
+	if fx.is_empty():
+		return false
+	b.message.emit("combat.death_blast", {"name": u.label()}, "danger")
+	var info := {"skill_name": ""}
+	for f in b.opponents(u):
+		BossHooks.apply_effects(b, u, f, fx, info)
+	return true
+
+
+static func _low_hp_summons(b: Battle) -> void:
+	for u in b.units.duplicate():
+		if not u.is_active() or u.memo.has("low_hp_summoned"):
+			continue
+		for p in u.actor.passives:
+			var ls := JsonUtil.get_dict(p, "low_hp_summons")
+			if not ls.is_empty() and u.actor.pool.get_ratio("hp") <= JsonUtil.get_float(ls, "ratio", 0.3):
+				u.memo["low_hp_summoned"] = true
+				for id: Variant in JsonUtil.get_array(ls, "monsters"):
+					BattleRules.summon(b, u, {"monster": str(id), "rounds": JsonUtil.get_int(ls, "rounds", 0)})
 
 
 ## 이번 스킬 사용의 효과 목록(반복·기본 공격 대체 반영).

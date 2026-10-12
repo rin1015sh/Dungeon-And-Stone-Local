@@ -1,0 +1,18 @@
+{
+  "id": "ess_hobgoblin_venom",
+  "name_ko": "독성부여(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "venom_weapon"
+    }
+  ],
+  "essence_of": "hobgoblin_venom",
+  "source": "placeholder"
+}

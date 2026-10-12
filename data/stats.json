@@ -10,6 +10,7 @@
   {"id": "sight", "name_ko": "시각", "group": "body", "rarity": "common", "desc_ko": "원거리 사거리·가시 범위 (시야 상한 안에서만)"},
   {"id": "body_weight", "name_ko": "체중", "group": "body", "rarity": "common", "desc_ko": "넉백 저항·둔기 피해"},
   {"id": "appetite", "name_ko": "식욕", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "허기 감소율 보정"},
+  {"id": "digestion", "name_ko": "소화력", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "1당 허기 감소율 −1% (슬라임 정수, 명세 §11.3)"},
   {"id": "cognition", "name_ko": "인지력", "group": "mind", "rarity": "uncommon", "desc_ko": "주변 인지 (시야 상한 안에서만)"},
   {"id": "pain_tolerance", "name_ko": "고통내성", "group": "mind", "rarity": "common", "desc_ko": "통증·포션 부작용 완화"},
   {"id": "natural_regen", "name_ko": "자연재생력", "group": "body", "rarity": "uncommon", "implemented": true, "desc_ko": "생명력 시간당 재생"},

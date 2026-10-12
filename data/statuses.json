@@ -1430,5 +1430,164 @@
     ],
     "source": "original",
     "notes": "명세 §10.3 [원] 광분 3R"
+  },
+  {
+    "id": "miner_helmet",
+    "name_ko": "광부모",
+    "kind": "buff",
+    "desc_ko": "단단한 광부모가 첫 일격을 받아 낸다.",
+    "battle_only": true,
+    "break_on_damage": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.5
+      }
+    ],
+    "source": "placeholder",
+    "notes": "명세 §11.3 전투당 첫 피격 −50%"
+  },
+  {
+    "id": "miner_helmet_weak",
+    "name_ko": "광부모",
+    "kind": "buff",
+    "desc_ko": "첫 일격을 조금 덜 아프게 받는다.",
+    "battle_only": true,
+    "break_on_damage": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.25
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "shaft_shake",
+    "name_ko": "갱도 흔들기",
+    "kind": "debuff",
+    "desc_ko": "발밑이 흔들려 겨누기 어렵다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -20
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "hardened_goo",
+    "name_ko": "굳은 점액",
+    "kind": "debuff",
+    "desc_ko": "굳은 점액이 몸을 붙잡는다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.3
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "venom_weapon",
+    "name_ko": "독성부여",
+    "kind": "buff",
+    "desc_ko": "무기에 독이 발렸다. 맞히면 중독시킨다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "on_hit": [
+      {
+        "type": "apply_status",
+        "status": "poison",
+        "chance": 0.6
+      }
+    ],
+    "source": "original",
+    "notes": "명세 §11.3 [원] 3R 무기 적중 시 [중독] 60%"
+  },
+  {
+    "id": "mine_command",
+    "name_ko": "갱도 지휘",
+    "kind": "buff",
+    "desc_ko": "지휘에 맞춰 곡괭이를 힘껏 휘두른다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.15
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "overheat",
+    "name_ko": "과열",
+    "kind": "buff",
+    "desc_ko": "몸이 벌겋게 달아올라 힘이 세지지만, 스스로 녹아내린다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.3
+      }
+    ],
+    "periodic": [
+      {
+        "trigger": "turn",
+        "resource": "hp",
+        "amount": "-floor({max_hp} * 0.05)"
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "smoke_screen",
+    "name_ko": "연막",
+    "kind": "debuff",
+    "desc_ko": "자욱한 연기 때문에 앞이 보이지 않는다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -30
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "acid_corrosion",
+    "name_ko": "산성 부식",
+    "kind": "debuff",
+    "desc_ko": "산성 점액이 갑옷과 살갗을 녹인다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": -0.2
+      }
+    ],
+    "source": "placeholder"
   }
 ]

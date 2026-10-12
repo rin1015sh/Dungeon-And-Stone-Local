@@ -35,6 +35,7 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	var origin := "attack:" + source.id
 	_hurt(ctx, target, int(r["amount"]), origin)
 	if int(r["amount"]) > 0:
+		Passives.on_damaged(ctx, str(r["damage_type"]))
 		for broken in target.statuses.on_damaged(str(r["damage_type"])):
 			ctx.say("effect.status_broken", {"name": target.display_name, "status": DataNames.entry(ctx.db, "statuses", broken)}, "info")
 	var wp_status := JsonUtil.get_str(target.weak_point(), "on_hit_status") if bool(r["weak"]) else ""

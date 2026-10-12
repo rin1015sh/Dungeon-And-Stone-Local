@@ -1,0 +1,40 @@
+{
+  "id": "hobgoblin_miner",
+  "name_ko": "홉고블린 광부의 정수",
+  "grade": 7,
+  "source_monster": "hobgoblin_miner",
+  "family": "hobgoblin_miner",
+  "rank": "normal",
+  "passive": {
+    "id": "miner_strength",
+    "name_ko": "광부의 근력",
+    "desc_ko": "공격이 방어를 조금 파고든다.",
+    "defense_ignore": 0.12
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_hobgoblin_venom"
+    },
+    {
+      "color": "red",
+      "skill": "ess_hob_pick_sweep"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_hob_mine_command"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      3,
+      5
+    ],
+    "resist_poison": [
+      3,
+      6
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11 초록 = 독성부여(2층 홉고블린 정수와 중복 관계 [원])"
+}

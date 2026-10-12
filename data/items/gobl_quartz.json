@@ -1,0 +1,27 @@
+{
+  "id": "gobl_quartz",
+  "name_ko": "고블 쿼츠",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#9ad08a",
+  "rarity": "numbers",
+  "desc_ko": "광맥에서 캐낸 탁한 초록 수정. 갈아 마시면 독에 강해진다. 한 사람이 한 번만 효과를 본다.",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "permanent_stat",
+      "stat": "resist_poison",
+      "amount": 3,
+      "key": "gobl_quartz",
+      "max_times": 1
+    }
+  ],
+  "source": "original",
+  "notes": "명세 §11.1 히든 피스 [원] — 독내성 +3 영구, 중복 불가"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "bomber_delayed_bomb",
+  "name_ko": "지연 폭탄",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 0.3,
+      "warn": "combat.bomber_fuse_warn",
+      "fire": "combat.bomber_fuse_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "magic",
+          "power": 2.0,
+          "damage_type": "fire",
+          "base": 30,
+          "accuracy": 1000
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1라운드 전 예고 [명세]. 방어하면 ×0.3 [창]"
+}

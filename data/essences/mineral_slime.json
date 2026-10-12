@@ -1,0 +1,53 @@
+{
+  "id": "mineral_slime",
+  "name_ko": "광물 슬라임의 정수",
+  "grade": 8,
+  "source_monster": "mineral_slime",
+  "family": "mineral_slime",
+  "rank": "normal",
+  "passive": {
+    "id": "mineral_shell",
+    "name_ko": "광물 외피",
+    "desc_ko": "칼날에 조금 강해지지만 마법에 조금 약해진다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.17
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.17
+      },
+      {
+        "target": "dmg_taken:magical",
+        "percent": 0.12
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_mslime_ore_bullet"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_mslime_hardened_goo"
+    },
+    {
+      "color": "green",
+      "skill": "ess_slime_split"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      3,
+      5
+    ],
+    "bone_strength": [
+      2,
+      4
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11 초록 = 분열(슬라임과 공유 → 중복 거부)"
+}

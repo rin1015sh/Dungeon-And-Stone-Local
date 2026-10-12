@@ -107,6 +107,8 @@ static func summon(b: Battle, c: Combatant, e: Dictionary) -> void:
 		return
 	var m := Monster.create(b.db, mid, " +")
 	var u := b.add(m, c.side, JsonUtil.get_str(m.behavior(), "row", "front"))
+	if int(e.get("rounds", 0)) > 0:
+		u.memo[BattleSpawns.EXPIRE] = int(e["rounds"])
 	b.message.emit("combat.summon", {"name": c.label(), "monster": m.display_name}, "danger")
 	b.event.emit({"type": "summon", "unit": u})
 	BattlePassives.refresh_auras(b)
@@ -138,6 +140,12 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 					hu.was_hit = true
 			"summon":
 				summon(b, c, e)
+				continue
+			"split":
+				BattleSpawns.split(b, c, e)
+				continue
+			"absorb_ally":
+				BattleSpawns.absorb(b, c, e)
 				continue
 			"delayed":
 				BattleDelayed.schedule(c, e)

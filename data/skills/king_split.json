@@ -1,0 +1,21 @@
+{
+  "id": "king_split",
+  "name_ko": "왕의 분열",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "slime"
+    },
+    {
+      "type": "summon",
+      "monster": "slime"
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "패시브 슬라임의 왕: 생명력 25% 깎일 때마다 슬라임 2체 — 페이즈 cast로만 쓴다"
+}

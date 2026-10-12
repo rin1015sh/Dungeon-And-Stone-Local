@@ -382,5 +382,80 @@
     },
     "sprite": "res://assets/sprites/tiles/rope_span.png",
     "source": "placeholder"
+  },
+  {
+    "id": "rail_wall_cracked",
+    "name_ko": "철로가 끊긴 벽",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a3428",
+      "face": "#6a5a40"
+    },
+    "sprite": "res://assets/sprites/tiles/rail_wall_cracked.png",
+    "source": "original",
+    "notes": "부수면 샛길 → 초록 보석"
+  },
+  {
+    "id": "ore_vein",
+    "name_ko": "광맥",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#2a3a2a",
+      "face": "#6a9a5a"
+    },
+    "light": {
+      "radius_m": 1.2,
+      "color": "#9ad08a",
+      "intensity": 0.35
+    },
+    "sprite": "res://assets/sprites/tiles/ore_vein.png",
+    "source": "original",
+    "notes": "부수면 고블 쿼츠"
+  },
+  {
+    "id": "explosive_crate",
+    "name_ko": "폭약 상자",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#5a3a28",
+      "face": "#a05a3a"
+    },
+    "sprite": "res://assets/sprites/tiles/explosive_crate.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "broken_bridge",
+    "name_ko": "무너진 다리",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4a3a2a",
+      "mark": "#a08060"
+    },
+    "sprite": "res://assets/sprites/tiles/broken_bridge.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "cliff_stairs",
+    "name_ko": "절벽 원형 계단",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#3a3a34",
+      "mark": "#8a8a70"
+    },
+    "sprite": "res://assets/sprites/tiles/cliff_stairs.png",
+    "source": "placeholder"
   }
 ]

@@ -1,0 +1,24 @@
+{
+  "id": "ess_slime_split",
+  "name_ko": "분열(정수)",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "-floor({max_hp} * 0.3)"
+    },
+    {
+      "type": "summon",
+      "monster": "slime",
+      "rounds": 2
+    }
+  ],
+  "uses_per_battle": 1,
+  "notes": "정수판 [변]: 전투당 1회, 생명력 30%를 들여 슬라임 소환수 1체(자기 차례 2번 유지)",
+  "essence_of": "slime_split",
+  "source": "placeholder"
+}

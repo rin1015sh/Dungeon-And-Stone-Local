@@ -1,0 +1,25 @@
+{
+  "id": "ess_king_acid_rain",
+  "name_ko": "산성 점액비(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.51,
+      "damage_type": "poison",
+      "base": 15
+    },
+    {
+      "type": "apply_status",
+      "status": "acid_corrosion"
+    }
+  ],
+  "essence_of": "king_acid_rain",
+  "source": "placeholder"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "bomber_support",
+  "name_ko": "지원 요청",
+  "target": "self",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "goblin_miner"
+    }
+  ],
+  "uses_per_battle": 2,
+  "unique": true,
+  "source": "placeholder",
+  "notes": "고유 — 정수에 포함하지 않음"
+}

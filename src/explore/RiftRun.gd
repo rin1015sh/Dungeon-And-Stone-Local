@@ -10,7 +10,8 @@ extends RefCounted
 ##   구성 = 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}(무작위)
 ## 챕터의 조우를 다 치우면 출구(rift_exit)가 열리고, 마지막 챕터에서 수호자를 쓰러뜨리면 출구가 탈출 포탈이 된다.
 ## 탈출하면 1층(outer)의 포탈 자리로 돌아간다. 다른 탈출 방법은 없다.
-## 챕터 "exit_requires": {"item", "message"} — 출구를 지나려면 그 아이템이 있어야 하고 쓰인다(핏빛성채 뿔피리).
+## 챕터 "exit_requires": {"item", "message", "bypass": {stat, at_least, message}} — 출구를 지나려면 그 아이템이 있어야 하고 쓰인다
+##   (핏빛성채 뿔피리, 녹색 탄광 폭약). bypass 스탯이 넘으면 아이템 없이 지난다.
 ## 챕터 "hidden": [{"id", "item", "tile", "message", "near_entry"}] — 방 안에 살필 수 있는 물체(tile)를 두고, 옆에서 E로 아이템을 얻는다(히든 피스).
 ##   near_entry: true면 시작 자리 가까이(빙하굴 빙정 연못). 챕터 "hazards"는 RiftHazards(탐험 위험).
 ## 아이템 "rift_bound": "<균열 id>" — 그 균열 밖으로 가져갈 수 없다(나갈 때 사라진다: 여신의 눈물).
@@ -147,7 +148,10 @@ func use_exit(s: ExploreSession) -> ExploreSession:
 		s.message.emit("explore.rift_exit_locked", {"left": remaining.size()}, "warn")
 		return null
 	var req := JsonUtil.get_dict(chapters()[chapter], "exit_requires")
-	if not req.is_empty():
+	var strong := JsonUtil.get_dict(req, "bypass")  # {stat, at_least}: 그만큼 강하면 아이템 없이 지난다(녹색 탄광 — 고렙은 그냥 부순다)
+	if not strong.is_empty() and outer.player.stats.get_value(JsonUtil.get_str(strong, "stat")) >= JsonUtil.get_float(strong, "at_least"):
+		s.say_later(JsonUtil.get_str(strong, "message", "explore.rift_exit_forced"), {}, "system")
+	elif not req.is_empty():
 		var item := JsonUtil.get_str(req, "item")
 		if outer.player.inventory.count(item) <= 0:
 			s.message.emit("explore.rift_exit_needs", {"item": DataNames.entry(db, "items", item)}, "warn")

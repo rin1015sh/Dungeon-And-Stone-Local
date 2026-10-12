@@ -182,7 +182,17 @@
     "hazard_slope_pass": "얼음 급경사를 버티며 내려갔다.",
     "hazard_slope_fail": "급경사에서 미끄러져 바닥까지 굴렀다!",
     "hazard_rope_pass": "언 로프를 붙잡고 끝까지 건넜다.",
-    "hazard_rope_fail": "언 로프를 놓쳐 아래로 떨어졌다!"
+    "hazard_rope_fail": "언 로프를 놓쳐 아래로 떨어졌다!",
+    "mine_gem": "철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 [{item}]이(가) 초록빛으로 반짝인다.",
+    "mine_quartz": "광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다 — [{item}].",
+    "mine_explosive": "낡은 상자 속에 광부들이 숨겨 둔 [{item}]이(가) 있다.",
+    "mine_blast": "폭약을 설치하고 물러섰다 — 굉음과 함께 무너진 갱도가 뚫렸다.",
+    "mine_smash": "무너진 바위를 맨손으로 밀어 치웠다.",
+    "rift_exit_forced": "힘으로 길을 열었다.",
+    "hazard_bridge_pass": "무너진 다리의 남은 들보를 딛고 건넜다.",
+    "hazard_bridge_fail": "들보가 부러져 아래로 떨어졌다!",
+    "hazard_stairs_pass": "절벽의 원형 계단을 조심조심 내려갔다.",
+    "hazard_stairs_fail": "계단이 무너져 몇 단을 굴러떨어졌다!"
   },
   "effect": {
     "smite_heal": "여신의 눈물이 {name}의 상처를 감싼다.",
@@ -353,7 +363,21 @@
     "katumba_intro": "토템이 부서지며 거대한 흰 그림자가 내려선다. {name}이(가) 눈보라를 몰고 온다.",
     "tarunbas_intro": "얼음 가루가 쏟아지는 천장에서 {name}이(가) 뛰어내린다. 얼음몽둥이가 바닥을 울린다.",
     "tarunbas_roar": "{name}이(가) 울부짖는다 — 몸이 부풀어 오르고 연달아 움직인다!",
-    "kirdui_intro": "검은 거체가 몸을 일으킨다. {name}의 송곳니 사이로 김이 새어 나온다."
+    "kirdui_intro": "검은 거체가 몸을 일으킨다. {name}의 송곳니 사이로 김이 새어 나온다.",
+    "split": "{name}이(가) 둘로 갈라진다 — {monster}!",
+    "absorb": "{name}이(가) {target}을(를) 집어삼켰다. 생명력 {amount} 회복.",
+    "absorb_none": "{name}이(가) 삼킬 것을 찾지 못했다.",
+    "summon_expired": "{name}이(가) 녹아 사라졌다.",
+    "death_blast": "{name}이(가) 쓰러지며 폭발한다!",
+    "self_blast": "{name}이(가) 제 몸의 폭발에 휘말렸다({amount}).",
+    "bomber_cookoff": "불길이 폭약 주머니에 옮겨붙었다 — {name}의 허리춤이 터진다({amount})!",
+    "bomber_fuse_warn": "{name}이(가) 심지에 불을 붙인 폭탄을 굴린다 — 한 사람의 발밑에서 치익거린다!",
+    "bomber_fuse_fire": "{name}의 지연 폭탄이 터진다!",
+    "king_jump_warn": "{name}이(가) 몸을 잔뜩 웅크린다 — 천장까지 뛰어오를 기세다!",
+    "king_jump_fire": "{name}이(가) 떨어져 내리며 모두를 짓누른다!",
+    "bomber_intro": "{name}이(가) 폭약 주머니를 흔들며 낄낄댄다.",
+    "king_slime_intro": "'뀨이이잇!' — 공동 한가운데에서 {name}이(가) 출렁인다.",
+    "king_slime_split": "{name}의 몸이 찢어지며 슬라임들이 떨어져 나온다!"
   },
   "knowledge": {
     "unknown": "???",

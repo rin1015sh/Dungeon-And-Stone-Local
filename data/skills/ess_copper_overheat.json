@@ -1,0 +1,18 @@
+{
+  "id": "ess_copper_overheat",
+  "name_ko": "과열(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "overheat"
+    }
+  ],
+  "essence_of": "copper_overheat",
+  "source": "placeholder"
+}

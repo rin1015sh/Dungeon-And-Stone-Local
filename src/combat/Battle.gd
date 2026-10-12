@@ -228,7 +228,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		targets.append(mis["target"] as Combatant)
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
-	var info := {"aim_weak": aim_weak, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
+	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
 	for t in targets:
 		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
 		ctx.info = info
@@ -261,15 +261,19 @@ func try_flee(c: Combatant) -> void:
 
 
 func _after_effects() -> void:
-	for u in units:
-		if u.actor.dead and not _announced.has(u):
-			_announced[u] = true
-			if u.actor is Monster:
-				killed.append((u.actor as Monster).monster_id)
-				message.emit("combat.down_monster", {"name": u.label()}, "good")
-			else:
-				message.emit("combat.down_party", {"name": u.label()}, "danger")
-			event.emit({"type": "down", "unit": u})
+	var again := true
+	while again:  # 쓰러지며 터지는 것(death_effects)이 또 쓰러뜨릴 수 있다
+		again = false
+		for u in units.duplicate():
+			if u.actor.dead and not _announced.has(u):
+				_announced[u] = true
+				if u.actor is Monster:
+					killed.append((u.actor as Monster).monster_id)
+					message.emit("combat.down_monster", {"name": u.label()}, "good")
+				else:
+					message.emit("combat.down_party", {"name": u.label()}, "danger")
+				event.emit({"type": "down", "unit": u})
+				again = BattlePassives.on_down(self, u) or again
 	BossHooks.check_all(self)
 	_check_end()
 

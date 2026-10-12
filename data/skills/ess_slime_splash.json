@@ -1,0 +1,26 @@
+{
+  "id": "ess_slime_splash",
+  "name_ko": "점액 튀기기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.425,
+      "damage_type": "poison",
+      "base": 4
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.225
+    }
+  ],
+  "essence_of": "slime_splash",
+  "source": "placeholder"
+}

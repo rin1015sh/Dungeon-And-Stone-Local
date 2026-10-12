@@ -30,7 +30,7 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	out["hit"] = true
 	var magic := JsonUtil.get_str(effect, "scaling", "phys") == "magic"
 	var defense := 0.0 if JsonUtil.get_bool(effect, "ignore_defense") else defender.stats.get_value("m_res" if magic else "p_res")
-	defense *= 1.0 - clampf(JsonUtil.get_float(effect, "defense_ignore"), 0.0, 1.0)  # 방어 일부 무시(송곳니 관통 0.2)
+	defense *= 1.0 - clampf(JsonUtil.get_float(effect, "defense_ignore") + Passives.sum(attacker, "defense_ignore"), 0.0, 1.0)  # 방어 일부 무시(송곳니 관통 0.2)
 	var k := _c(db, "defense_k", 100.0)
 	var amount := attack_power(db, attacker, effect) * _power(effect, defender) * k \
 		/ (k + maxf(0.0, defense) * _c(db, "defense_per_point", 4.0))

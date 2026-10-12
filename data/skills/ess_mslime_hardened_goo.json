@@ -1,0 +1,18 @@
+{
+  "id": "ess_mslime_hardened_goo",
+  "name_ko": "굳은 점액(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hardened_goo"
+    }
+  ],
+  "essence_of": "mslime_hardened_goo",
+  "source": "placeholder"
+}

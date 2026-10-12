@@ -1,0 +1,16 @@
+{
+  "id": "slime_split",
+  "name_ko": "분열",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "split"
+    }
+  ],
+  "uses_per_battle": 1,
+  "source": "placeholder",
+  "notes": "생명력 50% 이하에서 1회. 남은 생명력을 반으로 나눠 같은 슬라임 하나 [창]"
+}

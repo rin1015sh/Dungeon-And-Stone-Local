@@ -1,0 +1,20 @@
+{
+  "id": "miner_ore_throw",
+  "name_ko": "광석 투척",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "blunt",
+      "ranged": true
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "mine_explosive",
+  "name_ko": "갱도 폭약",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "bomb",
+  "color": "#c0503a",
+  "rarity": "fine",
+  "desc_ko": "광부들이 숨겨 둔 폭약. 무너진 갱도를 뚫을 수 있다. 탄광 밖으로는 가져갈 수 없다.",
+  "rift_bound": "rift_green_mine",
+  "source": "original",
+  "notes": "명세 §11.1 4챕터 '숨겨진 폭발물로 길을 연다' — 3챕터 출구 조건(근력이 높으면 없어도 됨)"
+}

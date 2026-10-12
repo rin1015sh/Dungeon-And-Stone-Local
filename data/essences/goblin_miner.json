@@ -1,0 +1,46 @@
+{
+  "id": "goblin_miner",
+  "name_ko": "고블린 광부의 정수",
+  "grade": 8,
+  "source_monster": "goblin_miner",
+  "family": "goblin_miner",
+  "rank": "normal",
+  "passive": {
+    "id": "miner_helmet",
+    "name_ko": "광부모",
+    "desc_ko": "전투의 첫 피격을 조금 덜 아프게 받는다.",
+    "self_statuses_on_start": [
+      "miner_helmet_weak"
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_miner_pick_strike"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_miner_ore_throw"
+    },
+    {
+      "color": "green",
+      "skill": "ess_miner_shaft_shake"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      2,
+      4
+    ],
+    "bone_strength": [
+      2,
+      4
+    ],
+    "dexterity": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11"
+}

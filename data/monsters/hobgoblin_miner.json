@@ -1,0 +1,96 @@
+{
+  "id": "hobgoblin_miner",
+  "name_ko": "홉고블린 광부",
+  "grade": 7,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_green_mine"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.2,
+  "color": "#6a7a40",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 22,
+    "agi": 12,
+    "p_res": 16,
+    "m_res": 8,
+    "int": 6
+  },
+  "resources": {
+    "hp": 400,
+    "soul": 50
+  },
+  "natural_weapon": {
+    "attack": 15,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "hobgoblin_venom",
+    "hob_pick_sweep",
+    "hob_mine_command"
+  ],
+  "passives": [
+    {
+      "id": "miner_strength",
+      "name_ko": "광부의 근력",
+      "desc_ko": "곡괭이가 갑옷 틈을 파고든다.",
+      "defense_ignore": 0.25
+    }
+  ],
+  "magic_stone_grade": 7,
+  "ai": [
+    {
+      "if": "self_status",
+      "status": "venom_weapon",
+      "not": true,
+      "use": "hobgoblin_venom",
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "if": "first_turn",
+      "use": "hob_mine_command",
+      "also": [
+        {
+          "if": "allies_at_least",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "hob_pick_sweep"
+    }
+  ],
+  "lineage": "goblin",
+  "desc_ko": "홉고블린의 변이종. 대형 곡괭이를 휘두르고 무기에 독을 바른다.",
+  "sprite": "res://assets/sprites/monsters/hobgoblin_miner.png",
+  "source": "original",
+  "notes": "명세 §11 · 시뮬레이터 조정(GM5): 명세 생명력 240 → 400(근력은 평타 목표 때문에 그대로)"
+}

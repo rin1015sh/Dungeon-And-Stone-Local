@@ -1,0 +1,87 @@
+{
+  "id": "slime",
+  "name_ko": "슬라임",
+  "grade": 9,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_green_mine"
+  ],
+  "type": "body",
+  "family": [
+    "slime"
+  ],
+  "shape": "blob",
+  "size": 0.6,
+  "color": "#6ad06a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 7,
+    "agi": 5,
+    "p_res": 6,
+    "m_res": 2,
+    "int": 2
+  },
+  "resources": {
+    "hp": 45,
+    "soul": 10
+  },
+  "natural_weapon": {
+    "attack": 3,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      3
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "slime_splash",
+    "slime_split"
+  ],
+  "passives": [
+    {
+      "id": "soft_body",
+      "name_ko": "말랑한 몸",
+      "desc_ko": "둔기는 튕겨 내지만 베이면 잘 갈라진다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:blunt",
+          "percent": -0.4
+        },
+        {
+          "target": "dmg_taken:slash",
+          "percent": 0.2
+        }
+      ]
+    }
+  ],
+  "magic_stone_grade": 9,
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "slime_split"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "slime_splash"
+    }
+  ],
+  "lineage": "slime",
+  "desc_ko": "초록 점액 덩어리. 반쯤 다치면 둘로 갈라진다.",
+  "sprite": "res://assets/sprites/monsters/slime.png",
+  "source": "original",
+  "notes": "명세 §11 · 조정(GM5): 명세 근력 4 → 7(formula_check 9등급 평타 목표 ~15 ±40%)"
+}

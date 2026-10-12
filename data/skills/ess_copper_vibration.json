@@ -1,0 +1,25 @@
+{
+  "id": "ess_copper_vibration",
+  "name_ko": "진동 강타(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.51,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.075
+    }
+  ],
+  "essence_of": "copper_vibration",
+  "source": "placeholder"
+}

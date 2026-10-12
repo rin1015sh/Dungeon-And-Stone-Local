@@ -1,0 +1,18 @@
+{
+  "id": "ess_hob_mine_command",
+  "name_ko": "갱도 지휘(정수)",
+  "target": "ally_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "mine_command"
+    }
+  ],
+  "essence_of": "hob_mine_command",
+  "source": "placeholder"
+}

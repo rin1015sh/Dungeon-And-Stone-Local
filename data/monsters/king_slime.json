@@ -1,0 +1,120 @@
+{
+  "id": "king_slime",
+  "name_ko": "킹 슬라임",
+  "grade": 6,
+  "rank": "guardian",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_green_mine"
+  ],
+  "type": "body",
+  "family": [
+    "slime"
+  ],
+  "shape": "blob",
+  "size": 2.2,
+  "color": "#4ac04a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 28,
+    "agi": 10,
+    "p_res": 20,
+    "m_res": 22,
+    "int": 16
+  },
+  "resources": {
+    "hp": 1100,
+    "soul": 200
+  },
+  "natural_weapon": {
+    "attack": 18,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "king_pounce",
+    "king_acid_rain",
+    "king_absorb",
+    "king_jump_crush"
+  ],
+  "passives": [
+    {
+      "id": "slime_king",
+      "name_ko": "슬라임의 왕",
+      "desc_ko": "둔기는 튕겨 낸다. 크게 다칠 때마다 슬라임이 떨어져 나온다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:blunt",
+          "percent": -0.4
+        }
+      ]
+    }
+  ],
+  "magic_stone_grade": 6,
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.6,
+      "use": "king_absorb",
+      "also": [
+        {
+          "if": "allies_at_least",
+          "value": 2
+        }
+      ]
+    }
+  ],
+  "ai_cycle": [
+    "king_pounce",
+    "king_acid_rain",
+    "king_pounce",
+    "king_jump_crush"
+  ],
+  "lineage": "slime",
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.king_slime_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.75
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.5,
+      "message": "combat.king_slime_split",
+      "cast": "king_split"
+    },
+    {
+      "id": "p3",
+      "hp_above": 0.25,
+      "message": "combat.king_slime_split",
+      "cast": "king_split"
+    },
+    {
+      "id": "p4",
+      "hp_above": 0.0,
+      "message": "combat.king_slime_split",
+      "cast": "king_split"
+    }
+  ],
+  "desc_ko": "'뀨이이잇' 소리를 내는 거대한 초록 점액. 반경 50m 공동의 주인.",
+  "sprite": "res://assets/sprites/monsters/king_slime.png",
+  "source": "original",
+  "notes": "명세 §11 수호자. 넘버스는 다음 배치 · 시뮬레이터 조정(GM5): 명세 생명력 1800·근 36·물 30 → 1100·28·20"
+}

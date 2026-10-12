@@ -1,0 +1,53 @@
+{
+  "id": "copper_golem",
+  "name_ko": "코퍼 골렘의 정수",
+  "grade": 7,
+  "source_monster": "copper_golem",
+  "family": "copper_golem",
+  "rank": "normal",
+  "passive": {
+    "id": "copper_body",
+    "name_ko": "구리 몸체",
+    "desc_ko": "칼날에 조금 강해지지만 전기를 더 탄다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:lightning",
+        "percent": 0.25
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_copper_fist"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_copper_overheat"
+    },
+    {
+      "color": "green",
+      "skill": "ess_copper_vibration"
+    }
+  ],
+  "stat_ranges": {
+    "p_res": [
+      3,
+      6
+    ],
+    "bone_strength": [
+      3,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §11"
+}
