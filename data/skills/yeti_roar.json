@@ -1,0 +1,17 @@
+{
+  "id": "yeti_roar",
+  "name_ko": "포효",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "yeti_roar"
+    }
+  ],
+  "source": "placeholder"
+}

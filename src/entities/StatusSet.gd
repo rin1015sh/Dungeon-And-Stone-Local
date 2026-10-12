@@ -9,6 +9,8 @@ extends RefCounted
 ## - modifiers의 flat/percent가 문자열이면 걸릴 때 소유자 스탯으로 푼 수식(저체온증 "-max(0, 30 - {resist_cold})").
 ## - immune_if {stat, at_least}: 그 스탯이 넘으면 걸리지 않는다(진압). on_max_stacks {status}: 최대 중첩이 되면 그 상태로 바뀐다(서리 → 빙결).
 ## - break_on_damage / break_on_damage_types: 피해를 받으면(그 유형이면) 풀린다(진압, 빙결 ← 화염). heal_mult: 받는 치유 배율(원한).
+## - grants_immunity [상태 id]: 이 상태가 걸린 동안 그 상태들에 걸리지 않는다(키르뒤 광분 → 공포·기절).
+## - barrier: true — 보호막 상태. 양은 set_barrier로 정하고, 받는 피해를 먼저 흡수한다(absorb). 다 닳으면 풀린다(강철빙벽).
 ## - 지속시간은 자기 차례가 시작될 때 준다. 자기 행동에 영향을 주는 상태(실명·버프)는 '효과를 볼 차례 수 + 1'로 준다.
 
 signal applied(status_id: String)
@@ -71,10 +73,53 @@ func remove(id: String) -> bool:
 	return true
 
 
-## 스탯 문턱(immune_if) 때문에 걸리지 않는가.
+## 스탯 문턱(immune_if)이나 걸린 상태의 grants_immunity 때문에 걸리지 않는가.
 func immune(id: String) -> bool:
+	for a: String in _active:
+		if JsonUtil.get_array(_db.get_entry("statuses", a), "grants_immunity").has(id):
+			return true
 	var im := JsonUtil.get_dict(_db.get_entry("statuses", id), "immune_if")
 	return not im.is_empty() and _stats.get_value(JsonUtil.get_str(im, "stat")) >= JsonUtil.get_float(im, "at_least")
+
+
+## 보호막 양을 정한다(걸려 있을 때만). 이미 있으면 큰 쪽.
+func set_barrier(id: String, amount: float) -> void:
+	if _active.has(id):
+		var st: Dictionary = _active[id]
+		st["barrier"] = maxf(float(st.get("barrier", 0.0)), amount)
+
+
+func barrier_total() -> float:
+	var v := 0.0
+	for id: String in _active:
+		v += float((_active[id] as Dictionary).get("barrier", 0.0))
+	return v
+
+
+## 피해를 보호막으로 먼저 받는다. 남은 피해를 돌려준다(다 닳은 보호막 상태는 풀린다).
+func absorb(amount: int) -> int:
+	var left := amount
+	for id: String in _active.keys():
+		var st: Dictionary = _active[id]
+		var b := float(st.get("barrier", 0.0))
+		if left <= 0 or b <= 0.0:
+			continue
+		var used := mini(left, int(ceil(b)))
+		left -= used
+		st["barrier"] = b - used
+		if float(st["barrier"]) <= 0.0:
+			remove(id)
+	return left
+
+
+## 약화 상태(kind debuff) 중 하나를 고른다(필드 효과·전투 한정 표식은 뺀다). 없으면 "".
+func pick_debuff(rng: Rng) -> String:
+	var pool: Array[String] = []
+	for id: String in _active:
+		var def := _db.get_entry("statuses", id)
+		if JsonUtil.get_str(def, "kind") == "debuff" and not JsonUtil.get_bool(def, "field_effect") and not def.has("persist"):
+			pool.append(id)
+	return "" if pool.is_empty() else str(rng.pick(pool))
 
 
 ## 남이 건 그 상태를 버틸 확률: 정의 resist {stats}의 합 × status.resist_per_point, 최대 status.resist_max.

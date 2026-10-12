@@ -1,0 +1,104 @@
+{
+  "id": "frost_wolf",
+  "name_ko": "서리 늑대",
+  "grade": 9,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_glacier_cave"
+  ],
+  "type": "body",
+  "family": [
+    "beast",
+    "frost_beast"
+  ],
+  "shape": "beast",
+  "size": 0.9,
+  "color": "#d8e8f0",
+  "immunities": [],
+  "weaknesses": {
+    "lightning": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 9,
+    "agi": 16,
+    "p_res": 5,
+    "m_res": 4,
+    "int": 2
+  },
+  "resources": {
+    "hp": 55,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 7,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      3
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "frost_bite",
+    "wolf_pack_howl"
+  ],
+  "passives": [
+    {
+      "id": "frost_fur",
+      "name_ko": "서리 털가죽",
+      "desc_ko": "냉기에 강하고, 물리면 서리가 내려앉는다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:cold",
+          "percent": -0.5
+        }
+      ],
+      "on_hit": [
+        {
+          "type": "apply_status",
+          "status": "frost"
+        }
+      ],
+      "on_hit_filter": {
+        "ranged": false
+      }
+    }
+  ],
+  "magic_stone_grade": 9,
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "wolf_pack_howl",
+      "also": [
+        {
+          "if": "allies_at_least",
+          "value": 2
+        },
+        {
+          "if": "chance",
+          "value": 0.5
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "frost_bite"
+    }
+  ],
+  "lineage": "wolf",
+  "desc_ko": "흰 털에 서리가 낀 늑대. 균열을 빼면 6층에서야 만난다.",
+  "sprite": "res://assets/sprites/monsters/frost_wolf.png",
+  "source": "original",
+  "notes": "명세 §10"
+}

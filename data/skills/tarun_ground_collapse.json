@@ -1,0 +1,35 @@
+{
+  "id": "tarun_ground_collapse",
+  "name_ko": "지면 붕괴",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 0.15,
+      "warn": "combat.tarun_collapse_warn",
+      "fire": "combat.tarun_collapse_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 2.0,
+          "damage_type": "blunt"
+        },
+        {
+          "type": "push_back",
+          "amount": 25
+        }
+      ]
+    }
+  ],
+  "source": "original",
+  "notes": "[원 연출 기반] 3R마다. 한 라운드 전에 천장에 금이 가고(예고) 다음 라운드에 무너진다 — [방어]로 대응(GC3). 맞으면 행동 순서 뒤로 · 조정(GC5): 명세 위력 80 → 200(예고 — 방어하면 ×0.15), 순서 밀기 25"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "wolf_pack_howl",
+  "name_ko": "무리 울음",
+  "target": "ally_all",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "pack_howl"
+    }
+  ],
+  "source": "placeholder"
+}

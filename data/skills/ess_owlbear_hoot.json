@@ -1,0 +1,18 @@
+{
+  "id": "ess_owlbear_hoot",
+  "name_ko": "부엉이 울음(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "owl_hoot"
+    }
+  ],
+  "essence_of": "owlbear_hoot",
+  "source": "placeholder"
+}

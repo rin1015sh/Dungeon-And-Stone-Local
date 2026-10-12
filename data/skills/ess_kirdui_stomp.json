@@ -1,0 +1,25 @@
+{
+  "id": "ess_kirdui_stomp",
+  "name_ko": "짓밟기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.68,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.112
+    }
+  ],
+  "essence_of": "kirdui_stomp",
+  "source": "placeholder"
+}

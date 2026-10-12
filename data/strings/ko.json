@@ -172,7 +172,17 @@
     "keys": "이동 {up}{left}{down}{right}/방향키(대각선 가능) · 단축칸 1~0 · 소지품 {inventory} · 캐릭터 C · 도감 B · 1시간 대기 {wait} · 휴식 {rest} · 횃불 {torch} · 식사 {eat} · 살피기 {interact} · 일시정지 {pause} · 디버그 {debug}",
     "paused": "일시정지",
     "paused_hint": "시간이 멈췄다. {key}로 계속한다.",
-    "ambush": "잠결에 무언가가 다가왔다!"
+    "ambush": "잠결에 무언가가 다가왔다!",
+    "glacier_crystal": "연못 바닥에서 붉게 빛나는 얼음 구슬을 건졌다 — [{item}].",
+    "glacier_shard": "금 간 기둥을 부수자 마력이 서린 얼음 조각이 굴러 나왔다 — [{item}].",
+    "hazard_pass": "위험한 길을 무사히 지났다.",
+    "hazard_fail": "발을 헛디뎠다!",
+    "hazard_slick_pass": "미끄러운 얼음 위를 조심조심 건넜다.",
+    "hazard_slick_fail": "얼음에 미끄러져 크게 넘어졌다!",
+    "hazard_slope_pass": "얼음 급경사를 버티며 내려갔다.",
+    "hazard_slope_fail": "급경사에서 미끄러져 바닥까지 굴렀다!",
+    "hazard_rope_pass": "언 로프를 붙잡고 끝까지 건넜다.",
+    "hazard_rope_fail": "언 로프를 놓쳐 아래로 떨어졌다!"
   },
   "effect": {
     "smite_heal": "여신의 눈물이 {name}의 상처를 감싼다.",
@@ -184,7 +194,10 @@
     "light_already": "이미 횃불이 타고 있다. (남은 {hours}시간)",
     "status_on": "[{status}] 상태가 되었다.",
     "status_off": "[{status}] 상태가 풀렸다.",
-    "status_immune": "{name}에게는 [{status}]이(가) 듣지 않는다."
+    "status_immune": "{name}에게는 [{status}]이(가) 듣지 않는다.",
+    "barrier_on": "{name} 앞에 보호막이 선다({amount}).",
+    "boon": "{stat}이(가) 영구히 {amount} 올랐다. ({n}/{max})",
+    "boon_limit": "{name}은(는) 이미 이 효과를 {max}번 받았다. 더는 듣지 않는다."
   },
   "debug": {
     "rift_force_open": "균열 강제 개방",
@@ -317,6 +330,10 @@
     "meter_damage_none": "{target}의 마음에는 비출 공포가 없다.",
     "delayed_warn": "{name}의 주위로 죽은 자들의 기억이 모여든다…",
     "delayed_fire": "{name}이(가) 불러 모은 기억이 쏟아진다!",
+    "tarun_collapse_warn": "{name}이(가) 얼음몽둥이를 높이 쳐든다 — 천장과 바닥에 금이 쩍쩍 간다!",
+    "tarun_collapse_fire": "{name}의 몽둥이가 지면을 내리찍는다 — 발밑이 무너진다!",
+    "blater_sentence_warn": "{name}이(가) 대검으로 한 사람을 가리킨다 — 사형 선고.",
+    "blater_sentence_fire": "{name}의 선고가 집행된다!",
     "misdirect": "{name}의 공격이 빗나가 {target}에게 향한다!",
     "rows_shuffled": "대열이 뒤엉켰다!",
     "extra_action": "{name}이(가) 한 번 더 움직인다!",
@@ -329,7 +346,14 @@
     "dread_groggy": "{name}이(가) 껍질 속으로 숨어 웅크린다. 지금이 기회다!",
     "dread_buff": "{name}이(가) 껍질을 벗고 새 모습을 얻었다: {buff}.",
     "dread_flag_old_memory": "{name}에게서 아주 오래된 기억이 스친다.",
-    "dread_flag_twisted_memory": "마비독의 냄새에 {name}의 기억이 뒤틀린다."
+    "dread_flag_twisted_memory": "마비독의 냄새에 {name}의 기억이 뒤틀린다.",
+    "barrier_absorb": "{name}의 보호막이 피해 {amount}을(를) 받아 냈다.",
+    "rider_hit": "{target}에게 {type} 피해 {amount}.",
+    "aura_tick": "{name}의 기운이 퍼진다 — [{status}].",
+    "katumba_intro": "토템이 부서지며 거대한 흰 그림자가 내려선다. {name}이(가) 눈보라를 몰고 온다.",
+    "tarunbas_intro": "얼음 가루가 쏟아지는 천장에서 {name}이(가) 뛰어내린다. 얼음몽둥이가 바닥을 울린다.",
+    "tarunbas_roar": "{name}이(가) 울부짖는다 — 몸이 부풀어 오르고 연달아 움직인다!",
+    "kirdui_intro": "검은 거체가 몸을 일으킨다. {name}의 송곳니 사이로 김이 새어 나온다."
   },
   "knowledge": {
     "unknown": "???",

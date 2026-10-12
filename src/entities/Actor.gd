@@ -26,6 +26,8 @@ var skills: Array[String] = []
 var passives: Array[Dictionary] = []
 ## 전투 게이지(data/meters.json id -> 값). 전투가 끝나면 비운다(Meters).
 var meters: Dictionary = {}
+## 영구 강화를 받은 횟수(효과 permanent_stat의 key → 횟수 — 빙정 최대 3회). 저장은 PlayerCharacter.progress_to_dict.
+var boons: Dictionary = {}
 
 
 ## bases: 기본 스탯. resource_ids가 비면 활성 자원 전부. overrides: 자원 최대치 고정값(몬스터).

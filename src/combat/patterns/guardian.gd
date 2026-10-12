@@ -54,8 +54,9 @@ func _use(b: Battle, c: Combatant, skill_id: String) -> void:
 		return
 	b.message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
 	var targets: Array = b.opponents(c) if JsonUtil.get_str(sk, "target") == "enemy_all" else [c]
+	var info := {"skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
 	for t: Combatant in targets:
-		BossHooks.apply_effects(b, c, t, JsonUtil.get_array(sk, "effects"))
+		BossHooks.apply_effects(b, c, t, JsonUtil.get_array(sk, "effects"), info)
 
 
 func validate(def: Dictionary, db: GameDatabase) -> PackedStringArray:

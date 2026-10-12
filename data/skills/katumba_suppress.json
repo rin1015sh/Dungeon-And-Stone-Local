@@ -1,0 +1,19 @@
+{
+  "id": "katumba_suppress",
+  "name_ko": "진압",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "suppress"
+    }
+  ],
+  "unique": true,
+  "source": "original",
+  "notes": "스톤골렘의 이능 — 정수에 포함하지 않음 [원]"
+}

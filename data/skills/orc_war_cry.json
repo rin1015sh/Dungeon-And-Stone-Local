@@ -1,0 +1,17 @@
+{
+  "id": "orc_war_cry",
+  "name_ko": "전투 함성",
+  "target": "ally_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "orc_war_cry"
+    }
+  ],
+  "source": "placeholder"
+}

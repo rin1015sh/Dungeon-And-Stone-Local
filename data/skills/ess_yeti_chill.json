@@ -1,0 +1,25 @@
+{
+  "id": "ess_yeti_chill",
+  "name_ko": "오한(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.595,
+      "damage_type": "cold",
+      "base": 12
+    },
+    {
+      "type": "apply_status",
+      "status": "frost"
+    }
+  ],
+  "essence_of": "yeti_chill",
+  "source": "placeholder"
+}

@@ -228,9 +228,10 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		targets.append(mis["target"] as Combatant)
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
+	var info := {"aim_weak": aim_weak, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
 	for t in targets:
 		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
-		ctx.info = {"aim_weak": aim_weak, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}
+		ctx.info = info
 		ctx.registry = effects
 		effects.apply_all(ctx, fx)
 		_relay(ctx, c)

@@ -1,0 +1,18 @@
+{
+  "id": "ess_wolf_pack_howl",
+  "name_ko": "무리 울음(정수)",
+  "target": "ally_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "pack_howl"
+    }
+  ],
+  "essence_of": "wolf_pack_howl",
+  "source": "placeholder"
+}

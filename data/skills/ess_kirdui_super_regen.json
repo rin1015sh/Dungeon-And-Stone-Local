@@ -1,0 +1,25 @@
+{
+  "id": "ess_kirdui_super_regen",
+  "name_ko": "초재생(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 24
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "floor({max_hp} * 0.25)"
+    },
+    {
+      "type": "remove_status",
+      "kind": "debuff",
+      "count": 1
+    }
+  ],
+  "uses_per_battle": 2,
+  "essence_of": "kirdui_super_regen",
+  "source": "placeholder"
+}

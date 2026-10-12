@@ -1,0 +1,38 @@
+{
+  "id": "sabertooth",
+  "name_ko": "샤벨 타이거의 정수",
+  "grade": 8,
+  "source_monster": "sabertooth",
+  "family": "sabertooth",
+  "rank": "normal",
+  "passive": {
+    "id": "ambush_hunter",
+    "name_ko": "기습 사냥꾼",
+    "desc_ko": "전투의 첫 일격 치명타율이 오른다.",
+    "self_statuses_on_start": [
+      "ambush_hunter_weak"
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_sabre_fang_pierce"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_sabre_leap_claw"
+    }
+  ],
+  "stat_ranges": {
+    "agi": [
+      2,
+      4
+    ],
+    "str": [
+      1,
+      3
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10"
+}

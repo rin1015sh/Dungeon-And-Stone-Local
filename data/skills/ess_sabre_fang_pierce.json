@@ -1,0 +1,21 @@
+{
+  "id": "ess_sabre_fang_pierce",
+  "name_ko": "송곳니 관통(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.105,
+      "damage_type": "pierce",
+      "defense_ignore": 0.2
+    }
+  ],
+  "essence_of": "sabre_fang_pierce",
+  "source": "placeholder"
+}

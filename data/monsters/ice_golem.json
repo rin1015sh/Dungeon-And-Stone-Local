@@ -1,0 +1,93 @@
+{
+  "id": "ice_golem",
+  "name_ko": "아이스 골렘",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_glacier_cave"
+  ],
+  "type": "ability",
+  "family": [
+    "construct"
+  ],
+  "shape": "humanoid",
+  "size": 1.4,
+  "color": "#a9d0e8",
+  "immunities": [],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 15,
+    "agi": 6,
+    "p_res": 20,
+    "m_res": 12,
+    "int": 4
+  },
+  "resources": {
+    "hp": 180,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 11,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "golem_ice_fist",
+    "golem_ice_armor"
+  ],
+  "passives": [
+    {
+      "id": "cold_aura",
+      "name_ko": "냉기 오러",
+      "desc_ko": "주위에 냉기를 뿌린다. 시간이 지날수록 몸이 무거워진다.",
+      "turn_end_foe_status": {
+        "status": "slow",
+        "target": "all"
+      },
+      "modifiers": [
+        {
+          "target": "dmg_taken:cold",
+          "percent": -0.5
+        }
+      ]
+    }
+  ],
+  "magic_stone_grade": 8,
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.6,
+      "use": "golem_ice_armor",
+      "also": [
+        {
+          "if": "self_status",
+          "status": "ice_armor",
+          "not": true
+        }
+      ]
+    }
+  ],
+  "ai_cycle": [
+    "golem_ice_fist"
+  ],
+  "desc_ko": "얼음으로 빚은 거인. 곁에 있으면 몸이 점점 굳는다.",
+  "sprite": "res://assets/sprites/monsters/ice_golem.png",
+  "source": "original",
+  "notes": "명세 §10"
+}

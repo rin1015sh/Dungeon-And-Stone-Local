@@ -303,5 +303,84 @@
     },
     "sprite": "res://assets/sprites/tiles/bookshelf.png",
     "source": "placeholder"
+  },
+  {
+    "id": "ice_pond",
+    "name_ko": "작은 연못",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": false,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#3a6a8a",
+      "face": "#5a8aa8"
+    },
+    "light": {
+      "radius_m": 1.2,
+      "color": "#ff7a8a",
+      "intensity": 0.35
+    },
+    "sprite": "res://assets/sprites/tiles/ice_pond.png",
+    "source": "original",
+    "notes": "빙정이 잠긴 연못(시작 지점 근처)"
+  },
+  {
+    "id": "ice_pillar_cracked",
+    "name_ko": "금 간 얼음 기둥",
+    "kind": "wall",
+    "walkable": false,
+    "blocks_sight": true,
+    "interact": "hidden_piece",
+    "colors": {
+      "top": "#4a6a80",
+      "face": "#c8e4f4"
+    },
+    "light": {
+      "radius_m": 1.5,
+      "color": "#9fd8ff",
+      "intensity": 0.4
+    },
+    "sprite": "res://assets/sprites/tiles/ice_pillar_cracked.png",
+    "source": "original",
+    "notes": "세 번째 기둥 — 부수면 마력이 깃든 얼음 조각"
+  },
+  {
+    "id": "ice_slick",
+    "name_ko": "미끄러운 얼음",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#a8c8e0",
+      "mark": "#e8f6ff"
+    },
+    "sprite": "res://assets/sprites/tiles/ice_slick.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "ice_slope",
+    "name_ko": "얼음 급경사",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#6f8aa0",
+      "mark": "#d0e4f0"
+    },
+    "sprite": "res://assets/sprites/tiles/ice_slope.png",
+    "source": "placeholder"
+  },
+  {
+    "id": "rope_span",
+    "name_ko": "로프 구간",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#5a6a78",
+      "mark": "#b08a5a"
+    },
+    "sprite": "res://assets/sprites/tiles/rope_span.png",
+    "source": "placeholder"
   }
 ]

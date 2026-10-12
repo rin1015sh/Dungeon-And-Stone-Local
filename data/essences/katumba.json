@@ -1,0 +1,42 @@
+{
+  "id": "katumba",
+  "name_ko": "설원의 군주 카툼바의 정수",
+  "grade": 7,
+  "source_monster": "katumba",
+  "family": "katumba",
+  "rank": "midboss",
+  "passive": {
+    "id": "snow_lord",
+    "name_ko": "설원의 군주",
+    "desc_ko": "냉기에 강해지고 상처가 아주 조금씩 아문다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:cold",
+        "percent": -0.4
+      }
+    ],
+    "regen_per_round": 0.01
+  },
+  "actives": [
+    {
+      "color": "white",
+      "skill": "ess_yeti_chill"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_katumba_avalanche"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      4,
+      6
+    ],
+    "resist_cold": [
+      8,
+      12
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10 드롭률 10%(중간 보스). 하양 = 오한(예티와 공유 → 중복 거부). 진압은 고유라 제외"
+}

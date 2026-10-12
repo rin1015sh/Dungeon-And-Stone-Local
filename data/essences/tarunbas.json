@@ -1,0 +1,60 @@
+{
+  "id": "tarunbas",
+  "name_ko": "폭군 타룬바스의 정수",
+  "grade": 7,
+  "source_monster": "tarunbas",
+  "family": "tarunbas",
+  "rank": "guardian",
+  "passive": {
+    "id": "tyrant_of_frost",
+    "name_ko": "혹한의 폭군",
+    "desc_ko": "냉기에 강해지고, 둔기로 때리면 냉기가 함께 들어간다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:cold",
+        "percent": -0.5
+      }
+    ],
+    "hit_rider": {
+      "on_types": [
+        "blunt"
+      ],
+      "damage_type": "cold",
+      "flat": 5
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_tarun_club_smash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_tarun_frenzied_claws"
+    },
+    {
+      "color": "green",
+      "skill": "ess_tarun_ground_collapse"
+    },
+    {
+      "color": "yellow",
+      "skill": "ess_tarun_roar"
+    }
+  ],
+  "stat_ranges": {
+    "str": [
+      6,
+      9
+    ],
+    "resist_cold": [
+      8,
+      12
+    ],
+    "affinity_cold": [
+      4,
+      8
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10 수호자 정수(무지갯빛) — 액티브 전부"
+}

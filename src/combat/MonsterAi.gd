@@ -6,6 +6,7 @@ extends RefCounted
 ##        "target_status": "<상태 id>", "target_meter": "<게이지 id>"}
 ## 규칙에 target이 없으면 보스 페이즈의 대상 규칙(memo target_rule)을 쓴다.
 ## guard_front: 방어 중이거나 끌어들이는 상태(draws_attacks)인 적 → 전열 → 무작위. taunt_first: 끌어들이는 적 → 무작위(가고일 석화).
+## ally_lowest_hp: 같은 편(자기 포함)에서 생명력 비율이 가장 낮은 개체(아군에게 거는 스킬 — 강철빙벽).
 ## 맞는 규칙이 없으면 ai_cycle(고정 순환, 예: 할퀴기 → 할퀴기 → 달려들기)의 이번 차례 스킬, 그것도 없으면 기본 공격.
 ## 조건은 src/combat/ai/<조건>.gd(AiCondition). 아군을 자동으로 돌릴 때(테스트)도 같은 함수를 쓴다 → 기본 공격.
 
@@ -49,6 +50,8 @@ static func _action(b: Battle, c: Combatant, skill_id: String, rule: Dictionary)
 
 ## 대상 고르기(은신한 적은 빼고 — BattleRules.targetable).
 static func target(b: Battle, c: Combatant, rule: Dictionary) -> Combatant:
+	if JsonUtil.get_str(rule, "target") == "ally_lowest_hp":
+		return _by_hp(b.side_units(c.side), true)
 	var foes := BattleRules.targetable(b, c)
 	if foes.is_empty():
 		return null

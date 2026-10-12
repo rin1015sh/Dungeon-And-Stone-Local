@@ -1,0 +1,19 @@
+{
+  "id": "orc_steel_ice_wall",
+  "name_ko": "강철빙벽",
+  "target": "ally_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "barrier",
+      "status": "steel_ice_wall",
+      "amount": "{int} * 4"
+    }
+  ],
+  "source": "original",
+  "notes": "보호막 = 시전자 정신력 × 4, 3R [원 이름·효과 / 수치 창]"
+}

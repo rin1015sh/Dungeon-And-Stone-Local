@@ -1,0 +1,22 @@
+{
+  "id": "kirdui_swing",
+  "name_ko": "휘두르기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.6,
+      "damage_type": "blunt",
+      "str_bonus": 1.0
+    }
+  ],
+  "unique": true,
+  "source": "original",
+  "notes": "오우거의 이능 — 정수에 포함하지 않음 [원]. 위력 160 + 근력×1"
+}

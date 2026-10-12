@@ -1,0 +1,19 @@
+{
+  "id": "ess_orc_steel_ice_wall",
+  "name_ko": "강철빙벽(정수)",
+  "target": "ally_single",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "barrier",
+      "status": "steel_ice_wall",
+      "amount": "{int} * 4"
+    }
+  ],
+  "essence_of": "orc_steel_ice_wall",
+  "source": "placeholder"
+}

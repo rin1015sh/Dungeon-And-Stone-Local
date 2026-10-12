@@ -1,0 +1,52 @@
+{
+  "id": "ice_orc_shaman",
+  "name_ko": "아이스 오크 주술사의 정수",
+  "grade": 7,
+  "source_monster": "ice_orc_shaman",
+  "family": "ice_orc_shaman",
+  "rank": "normal",
+  "passive": {
+    "id": "chill_medium",
+    "name_ko": "한기의 매개",
+    "desc_ko": "동료가 다루는 냉기가 조금 강해진다.",
+    "ally_aura": {
+      "all": true,
+      "modifiers": [
+        {
+          "target": "dmg_dealt:cold",
+          "percent": 0.075
+        }
+      ]
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_orc_steel_ice_wall"
+    },
+    {
+      "color": "white",
+      "skill": "ess_orc_frost_arrow"
+    },
+    {
+      "color": "red",
+      "skill": "ess_orc_ice_prison"
+    }
+  ],
+  "stat_ranges": {
+    "int": [
+      2,
+      4
+    ],
+    "m_res": [
+      2,
+      4
+    ],
+    "affinity_cold": [
+      2,
+      5
+    ]
+  },
+  "source": "placeholder",
+  "notes": "명세 §10 원작 정수: (A) 강철빙벽"
+}

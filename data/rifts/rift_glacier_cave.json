@@ -1,9 +1,8 @@
 {
   "host_floor": 1,
-  "stand_in": true,
-  "guardian": "rift_warden_standin",
+  "guardian": "tarunbas",
   "variant": {
-    "monster": "rift_warden_standin_variant",
+    "monster": "kirdui",
     "chance": 0.03
   },
   "guardian_drops": [
@@ -37,13 +36,13 @@
     {
       "id": "ch1",
       "name_ko": "문지기와 얼음 동굴",
-      "desc_ko": "문지기 예티를 지나면 서리 늑대가 사는 얼음 동굴. 일정한 간격의 기둥이 길잡이다.",
+      "desc_ko": "문지기 예티를 지나면 서리 늑대가 사는 얼음 동굴. 일정한 간격의 기둥이 길잡이다. 시작 자리 옆에 작은 연못이 있다.",
       "map": {
         "size": [
           46,
           18
         ],
-        "rooms": 4,
+        "rooms": 5,
         "room_size": [
           5,
           8
@@ -53,28 +52,45 @@
         {
           "kind": "battle",
           "monsters": [
-            "giant_blade_wolf"
+            "yeti"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "blade_wolf",
-            "blade_wolf"
+            "frost_wolf",
+            "frost_wolf",
+            "frost_wolf"
           ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "frost_wolf",
+            "frost_wolf"
+          ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "ice_crystal",
+          "item": "ice_crystal",
+          "tile": "ice_pond",
+          "near_entry": true,
+          "message": "explore.glacier_crystal"
         }
       ]
     },
     {
       "id": "ch2",
       "name_ko": "얼음 계단과 토템",
-      "desc_ko": "중심 토템에서 끝없이 쏟아지는 무리 — 9연전 뒤 카툼바.",
+      "desc_ko": "얼음 계단 아래 중심 토템에서 끝없이 쏟아지는 무리 — 아홉 물결 뒤 설원의 군주. 길잡이 기둥 하나에 금이 가 있다.",
       "map": {
         "size": [
-          40,
-          16
+          46,
+          18
         ],
-        "rooms": 3,
+        "rooms": 4,
         "room_size": [
           5,
           8
@@ -83,11 +99,11 @@
       "encounters": [
         {
           "kind": "chain",
+          "midboss": true,
           "battles": [
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf"
               ],
               "count": [
                 1,
@@ -96,8 +112,7 @@
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf"
               ],
               "count": [
                 1,
@@ -106,8 +121,7 @@
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf"
               ],
               "count": [
                 1,
@@ -116,8 +130,9 @@
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf",
+                "frost_wolf",
+                "sabertooth"
               ],
               "count": [
                 1,
@@ -126,8 +141,9 @@
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf",
+                "frost_wolf",
+                "wormstone"
               ],
               "count": [
                 1,
@@ -136,8 +152,9 @@
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf",
+                "frost_wolf",
+                "owlbear"
               ],
               "count": [
                 1,
@@ -146,52 +163,62 @@
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf",
+                "sabertooth",
+                "ice_golem"
               ],
               "count": [
                 1,
-                4
+                3
               ]
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf",
+                "wormstone",
+                "owlbear"
               ],
               "count": [
                 1,
-                4
+                3
               ]
             },
             {
               "pick": [
-                "blade_wolf",
-                "gnome"
+                "frost_wolf",
+                "sabertooth",
+                "ice_golem"
               ],
               "count": [
                 1,
-                4
+                3
               ]
             },
             [
-              "giant_blade_wolf"
+              "katumba"
             ]
-          ],
-          "midboss": true
+          ]
+        }
+      ],
+      "hidden": [
+        {
+          "id": "mana_ice_shard",
+          "item": "mana_ice_shard",
+          "tile": "ice_pillar_cracked",
+          "message": "explore.glacier_shard"
         }
       ]
     },
     {
       "id": "ch3",
       "name_ko": "지하수맥",
-      "desc_ko": "천장이 무너져 떨어지고 폭포에 떠밀렸다. 뼛속까지 춥다.",
+      "desc_ko": "타룬바스가 지면을 무너뜨려 떨어졌고, 지하수맥 폭포에 떠밀렸다. 뼛속까지 춥다. 얼음벽 너머에서 무언가 움직이고, 공동의 얼음 기둥 속에 오크들이 갇혀 있다.",
       "map": {
         "size": [
           46,
           18
         ],
-        "rooms": 4,
+        "rooms": 5,
         "room_size": [
           5,
           8
@@ -201,15 +228,23 @@
         {
           "kind": "battle",
           "monsters": [
-            "blood_blade_wolf",
-            "blade_wolf"
+            "sabertooth",
+            "wormstone"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "giant_blade_wolf",
-            "blade_wolf"
+            "owlbear",
+            "ice_golem"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "ice_orc_shaman",
+            "ice_orc_warrior",
+            "ice_orc_warrior"
           ]
         }
       ],
@@ -226,6 +261,62 @@
           "type": "restore_resource",
           "resource": "hp",
           "amount": "-{bal.rift.fall_damage}"
+        }
+      ],
+      "hazards": [
+        {
+          "id": "slick",
+          "tile": "ice_slick",
+          "count": 2,
+          "check": {
+            "stat": "agi",
+            "dc": 12
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.06)"
+            }
+          ],
+          "pass_message": "explore.hazard_slick_pass",
+          "fail_message": "explore.hazard_slick_fail"
+        },
+        {
+          "id": "slope",
+          "tile": "ice_slope",
+          "count": 1,
+          "check": {
+            "stat": "agi",
+            "dc": 14
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.1)"
+            }
+          ],
+          "pass_message": "explore.hazard_slope_pass",
+          "fail_message": "explore.hazard_slope_fail"
+        },
+        {
+          "id": "rope",
+          "tile": "rope_span",
+          "count": 1,
+          "check": {
+            "stat": "str",
+            "dc": 14
+          },
+          "fail": [
+            {
+              "type": "restore_resource",
+              "resource": "hp",
+              "amount": "-floor({max_hp} * 0.12)"
+            }
+          ],
+          "pass_message": "explore.hazard_rope_pass",
+          "fail_message": "explore.hazard_rope_fail"
         }
       ]
     },
@@ -258,13 +349,13 @@
     {
       "id": "ice_crystal",
       "name_ko": "빙정",
-      "notes": "G6"
+      "chapter": "ch1"
     },
     {
       "id": "mana_ice_shard",
       "name_ko": "마력이 깃든 얼음 조각",
-      "notes": "G6"
+      "chapter": "ch2"
     }
   ],
-  "notes": "G4 임시: 조우 몬스터는 1층 필드 몬스터로 대신하고 수호자는 임시 균열 문지기. 챕터 구조·이름·개방 마석은 명세. 몬스터·수호자·히든 피스·넘버스는 G6(빙하굴)에서 채운다. 변종 수호자는 키르뒤"
+  "notes": "명세 §10. 넘버스 후보(설원의 몽둥이 No.9712)는 다음 배치(명세) — numbers 비움. 3챕터 탐험 위험은 RiftHazards"
 }

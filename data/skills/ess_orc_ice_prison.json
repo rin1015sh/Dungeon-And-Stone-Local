@@ -1,0 +1,19 @@
+{
+  "id": "ess_orc_ice_prison",
+  "name_ko": "얼음 감옥(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "frozen",
+      "chance": 0.637
+    }
+  ],
+  "essence_of": "orc_ice_prison",
+  "source": "placeholder"
+}

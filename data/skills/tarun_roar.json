@@ -1,0 +1,17 @@
+{
+  "id": "tarun_roar",
+  "name_ko": "포효",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "tarun_roar"
+    }
+  ],
+  "source": "placeholder"
+}

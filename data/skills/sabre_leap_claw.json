@@ -1,0 +1,20 @@
+{
+  "id": "sabre_leap_claw",
+  "name_ko": "도약 할퀴기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "slash"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "우선도 +1은 CTB라 없음(ASSUMPTIONS GC4)"
+}

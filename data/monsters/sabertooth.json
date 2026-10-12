@@ -1,0 +1,86 @@
+{
+  "id": "sabertooth",
+  "name_ko": "샤벨 타이거",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 1,
+  "floor_tags": [
+    "f1_rift_glacier_cave"
+  ],
+  "type": "body",
+  "family": [
+    "beast",
+    "frost_beast"
+  ],
+  "shape": "beast",
+  "size": 1.0,
+  "color": "#e0d8c8",
+  "immunities": [],
+  "weaknesses": {
+    "lightning": 1.5
+  },
+  "weak_point": null,
+  "stats": {
+    "str": 16,
+    "agi": 18,
+    "p_res": 9,
+    "m_res": 5,
+    "int": 3
+  },
+  "resources": {
+    "hp": 140,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 12,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "sabre_fang_pierce",
+    "sabre_leap_claw"
+  ],
+  "passives": [
+    {
+      "id": "ambush_hunter",
+      "name_ko": "기습 사냥꾼",
+      "desc_ko": "첫 일격에 급소를 노린다.",
+      "self_statuses_on_start": [
+        "ambush_hunter"
+      ]
+    }
+  ],
+  "magic_stone_grade": 8,
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "sabre_fang_pierce"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "sabre_fang_pierce"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "sabre_leap_claw"
+    }
+  ],
+  "desc_ko": "긴 송곳니의 큰 고양이. 빙하굴 개체는 털빛이 희다.",
+  "sprite": "res://assets/sprites/monsters/sabertooth.png",
+  "source": "original",
+  "notes": "명세 §10"
+}

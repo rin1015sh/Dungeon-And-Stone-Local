@@ -11,7 +11,8 @@ extends RefCounted
 ## 챕터의 조우를 다 치우면 출구(rift_exit)가 열리고, 마지막 챕터에서 수호자를 쓰러뜨리면 출구가 탈출 포탈이 된다.
 ## 탈출하면 1층(outer)의 포탈 자리로 돌아간다. 다른 탈출 방법은 없다.
 ## 챕터 "exit_requires": {"item", "message"} — 출구를 지나려면 그 아이템이 있어야 하고 쓰인다(핏빛성채 뿔피리).
-## 챕터 "hidden": [{"id", "item", "tile", "message"}] — 방 안에 살필 수 있는 물체(tile)를 두고, 옆에서 E로 아이템을 얻는다(히든 피스).
+## 챕터 "hidden": [{"id", "item", "tile", "message", "near_entry"}] — 방 안에 살필 수 있는 물체(tile)를 두고, 옆에서 E로 아이템을 얻는다(히든 피스).
+##   near_entry: true면 시작 자리 가까이(빙하굴 빙정 연못). 챕터 "hazards"는 RiftHazards(탐험 위험).
 ## 아이템 "rift_bound": "<균열 id>" — 그 균열 밖으로 가져갈 수 없다(나갈 때 사라진다: 여신의 눈물).
 
 var db: GameDatabase
@@ -30,6 +31,7 @@ var finished: bool = false
 var _session_ref: WeakRef = null
 var hidden_at: Dictionary = {}  ## 이 챕터의 히든 피스 물체 칸 -> 정의
 var taken: Dictionary = {}      ## 얻은 히든 피스 id -> true
+var hazards: RiftHazards = RiftHazards.new()
 
 
 func _init(p_outer: ExploreSession, p_rift_id: String) -> void:
@@ -86,6 +88,7 @@ func build_chapter(i: int) -> ExploreSession:
 	for st: Variant in JsonUtil.get_array(ch, "field_effects"):
 		outer.player.statuses.apply(str(st))
 	_place_hidden(cs, ch)
+	hazards.place(cs, ch, _floor_tile(), outer.rng)
 	var fx := JsonUtil.get_array(ch, "on_enter")
 	if not fx.is_empty():
 		var ctx := EffectContext.new(db, null, outer.player, outer.rng)
@@ -260,6 +263,9 @@ func _place_hidden(cs: ExploreSession, ch: Dictionary) -> void:
 			if _interior(cs.map, p) and not cs.map.slots.has(p) and p != cs.map.entry and cs.map.portal_at(p).is_empty() \
 					and not hidden_at.has(p) and Vector2(p - cs.map.entry).length() > 3.0:
 				cells.append(p)
+		var near := cells.filter(func(p: Vector2i) -> bool: return Vector2(p - cs.map.entry).length() <= float(db.bal("rift.near_entry_m", 8)))
+		if JsonUtil.get_bool(hd, "near_entry") and not near.is_empty():
+			cells.assign(near)
 		if cells.is_empty():
 			continue
 		var at: Vector2i = outer.rng.pick(cells)
@@ -274,7 +280,7 @@ func take_hidden(cs: ExploreSession, at: Vector2i) -> bool:
 		return false
 	hidden_at.erase(at)
 	taken[JsonUtil.get_str(hd, "id")] = true
-	cs.map.set_tile(at, JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(def, "look"), "tiles"), "floor"))
+	cs.map.set_tile(at, _floor_tile())
 	var item := JsonUtil.get_str(hd, "item")
 	outer.player.inventory.add(item, 1)
 	cs.message.emit(JsonUtil.get_str(hd, "message", "explore.hidden_found"), {"item": DataNames.entry(db, "items", item)}, "good")
@@ -283,8 +289,8 @@ func take_hidden(cs: ExploreSession, at: Vector2i) -> bool:
 
 
 func _interior(map: FloorMap, p: Vector2i) -> bool:
-	for dy in range(-1, 2):
-		for dx in range(-1, 2):
-			if not map.in_bounds(p + Vector2i(dx, dy)) or not map.is_walkable(p + Vector2i(dx, dy)):
-				return false
-	return true
+	return RiftHazards._interior(map, p)
+
+
+func _floor_tile() -> String:
+	return JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(def, "look"), "tiles"), "floor")

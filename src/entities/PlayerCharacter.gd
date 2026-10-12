@@ -105,7 +105,7 @@ func _ensure_hotbar() -> void:
 func progress_to_dict() -> Dictionary:
 	return {"progression": progression.to_dict(), "knowledge": knowledge.to_dict(),
 		"equipment": equipment.to_dict(), "inventory": inventory.to_dict(), "hotbar": hotbar.duplicate(),
-		"essences": essences.to_dict()}
+		"essences": essences.to_dict(), "boons": boons.duplicate(), "base_stats": _boosted_bases()}
 
 
 func progress_load_dict(d: Dictionary) -> void:
@@ -114,7 +114,21 @@ func progress_load_dict(d: Dictionary) -> void:
 	equipment.load_dict(stats, JsonUtil.get_dict(d, "equipment"))
 	inventory.load_dict(JsonUtil.get_dict(d, "inventory"))
 	essences.load_dict(self, JsonUtil.get_dict(d, "essences"))
+	boons = JsonUtil.get_dict(d, "boons").duplicate()
+	var bases := JsonUtil.get_dict(d, "base_stats")
+	for k: String in bases:
+		stats.set_base(k, float(bases[k]))
 	hotbar.clear()
 	for v: Variant in JsonUtil.get_array(d, "hotbar"):
 		hotbar.append(str(v))
 	_ensure_hotbar()
+
+
+## 영구 강화로 바뀐 기본값(빙정·얼음 조각 같은 영약) — 저장용.
+func _boosted_bases() -> Dictionary:
+	var out := {}
+	for k: String in boons:
+		var stat := k.get_slice("@", 1)
+		if not stat.is_empty() and stats.has_stat(stat):
+			out[stat] = stats.get_base(stat)
+	return out

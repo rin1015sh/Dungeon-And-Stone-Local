@@ -1,0 +1,17 @@
+{
+  "id": "golem_ice_armor",
+  "name_ko": "얼음 갑옷",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "ice_armor"
+    }
+  ],
+  "source": "placeholder"
+}

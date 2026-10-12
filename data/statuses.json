@@ -168,11 +168,11 @@
     "id": "hypothermia",
     "name_ko": "저체온증",
     "kind": "debuff",
-    "desc_ko": "뼛속까지 얼어붙는다. 냉기 내성이 낮을수록 굼떠지고, 냉기에 두 배로 다친다.",
+    "desc_ko": "뼛속까지 얼어붙는다. 냉기 내성이 낮을수록 굼떠지고(최대 민첩 −30%), 냉기에 두 배로 다친다.",
     "modifiers": [
       {
         "target": "agi",
-        "flat": "-max(0, 30 - {resist_cold})"
+        "percent": "-max(0, 30 - {resist_cold}) / 100"
       },
       {
         "target": "dmg_taken:cold",
@@ -181,7 +181,7 @@
     ],
     "source": "original",
     "field_effect": true,
-    "notes": "명세 §4 필드 효과: 민첩 −max(0, 30 − 냉기 내성), 받는 냉기 피해 ×2(냉기 내성 20 이상이면 ×1.5). 수식은 걸릴 때 계산"
+    "notes": "명세 §4 필드 효과: 민첩 −max(0, 30 − 냉기 내성) → CTB라 퍼센트(%)로 바꿈(ASSUMPTIONS GC2: 원문 −30은 민첩 16 탐험가의 차례를 1/4로 만든다), 받는 냉기 피해 ×2(냉기 내성 20 이상이면 ×1.5). 수식은 걸릴 때 계산"
   },
   {
     "id": "burn",
@@ -1231,5 +1231,204 @@
       }
     ],
     "source": "original"
+  },
+  {
+    "id": "pack_howl",
+    "name_ko": "무리 울음",
+    "kind": "buff",
+    "desc_ko": "무리의 울음에 발걸음이 빨라진다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.15
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "yeti_roar",
+    "name_ko": "설인의 포효",
+    "kind": "buff",
+    "desc_ko": "포효로 근육이 부풀었다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "ambush_hunter",
+    "name_ko": "기습 사냥꾼",
+    "kind": "buff",
+    "desc_ko": "첫 일격을 노린다. 치명타율이 크게 오른다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "crit_bonus": 0.3,
+    "consume_on_attack": true,
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "명세 §10.3 첫 라운드 치명타율 +30%p"
+  },
+  {
+    "id": "ambush_hunter_weak",
+    "name_ko": "기습",
+    "kind": "buff",
+    "desc_ko": "첫 일격의 치명타율이 오른다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "crit_bonus": 0.15,
+    "consume_on_attack": true,
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "worm_lurk_strike",
+    "name_ko": "잠복",
+    "kind": "buff",
+    "desc_ko": "얼음 틈에서 튀어나올 때를 노린다. 다음 공격이 강하다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "consume_on_attack": true,
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.5
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "ice_armor",
+    "name_ko": "얼음 갑옷",
+    "kind": "buff",
+    "desc_ko": "몸에 두꺼운 얼음이 덮였다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.4
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "owl_hoot",
+    "name_ko": "부엉이 울음",
+    "kind": "debuff",
+    "desc_ko": "귀를 찢는 울음에 손이 떨린다. 명중이 떨어진다.",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -15
+      }
+    ],
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "orc_war_cry",
+    "name_ko": "전투 함성",
+    "kind": "buff",
+    "desc_ko": "함성에 피가 끓는다.",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.15
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "steel_ice_wall",
+    "name_ko": "강철빙벽",
+    "kind": "buff",
+    "desc_ko": "강철처럼 단단한 얼음벽이 피해를 먼저 받아 낸다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "barrier": true,
+    "battle_only": true,
+    "source": "original",
+    "notes": "명세 §10.3 보호막 정신력×4, 3R"
+  },
+  {
+    "id": "tarun_roar",
+    "name_ko": "폭군의 포효",
+    "kind": "buff",
+    "desc_ko": "폭군이 울부짖으며 힘을 끌어올린다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.25
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "troll_frenzy",
+    "name_ko": "트롤의 광분",
+    "kind": "buff",
+    "desc_ko": "통증이 사라지고 육체가 부풀어 오른다. 공포도 기절도 듣지 않는다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.4
+      },
+      {
+        "target": "agi",
+        "percent": 0.4
+      },
+      {
+        "target": "p_res",
+        "percent": 0.4
+      }
+    ],
+    "grants_immunity": [
+      "fear",
+      "stun"
+    ],
+    "source": "original",
+    "notes": "명세 §10.3 [원] 광분 3R"
   }
 ]

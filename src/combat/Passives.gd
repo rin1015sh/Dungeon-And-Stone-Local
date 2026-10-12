@@ -23,6 +23,9 @@ extends RefCounted
 ##   foe_statuses_on_start [상태 id] — 전투 시작 때 상대 전원에게(블라터 원한)
 ##   basic_attack_effects [효과] — 기본 공격을 이 효과들로 바꾼다(키메라 울프 여러 개의 머리)
 ##   basic_extra_hit_chance 확률 — 기본 공격 뒤 한 번 더(키메라 정수판)
+##   self_statuses_on_start [상태 id] — 전투 시작 때 자기에게(샤벨 타이거 기습 사냥꾼)
+##   turn_end_foe_status {status, target: all|random} — 자기 차례가 끝날 때 상대에게(아이스 골렘 냉기 오러)
+##   hit_rider {on_types, damage_type, flat|ratio} — 그 유형으로 맞히면 추가 속성 피해(타룬바스 정수 냉기 +5)
 ##   meter_on_damaged에 damage_types·per_point를 주면 그 유형 피해량 × per_point(시체골렘 화염 누적)
 
 

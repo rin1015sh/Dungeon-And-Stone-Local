@@ -372,6 +372,8 @@ func _on_enter_cell(from: Vector2i) -> void:
 		_say("explore.dark_enter", {}, "warn")
 	if not map.portal_at(pos).is_empty():
 		ExploreInteract.portal_here(self, map.portal_at(pos))
+	if rift_run != null:
+		rift_run.hazards.on_step(self, pos)
 
 
 func _on_status_changed(status_id: String, active: bool) -> void:

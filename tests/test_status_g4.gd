@@ -103,10 +103,10 @@ func test_heal_block_and_seal_and_confusion() -> void:
 func test_hypothermia_formula_and_marks() -> void:
 	var cold := _a({"agi": 40, "resist_cold": 0})
 	cold.statuses.apply("hypothermia")
-	assert_near(cold.stats.get_value("agi"), 10.0, 0.001, "냉기 내성 0 → 민첩 −30")
+	assert_near(cold.stats.get_value("agi"), 28.0, 0.001, "냉기 내성 0 → 민첩 −30%(CTB, GC2)")
 	var warm := _a({"agi": 40, "resist_cold": 25})
 	warm.statuses.apply("hypothermia")
-	assert_near(warm.stats.get_value("agi"), 35.0, 0.001, "냉기 내성 25 → −5")
+	assert_near(warm.stats.get_value("agi"), 38.0, 0.001, "냉기 내성 25 → −5%")
 	var hit := {"hit": 0.0, "crit": 1.0, "var": 0.5, "lethal": 1.0}
 	var atk := _a({"int": 10})
 	var fx := {"scaling": "magic", "base": 20, "power": 1.0, "damage_type": "cold", "accuracy": 1000}
@@ -117,7 +117,7 @@ func test_hypothermia_formula_and_marks() -> void:
 	var c20 := _a({"m_res": 0, "resist_cold": 20})
 	c20.statuses.apply("hypothermia")
 	assert_near(float(DamageCalc.resolve(db, atk, c0, fx, hit)["amount"]), base_dmg * 2.0, 1.0, "받는 냉기 피해 ×2")
-	assert_near(float(DamageCalc.resolve(db, atk, c20, fx, hit)["amount"]), base_dmg * 1.5, 1.0, "냉기 내성 20 이상 ×1.5")
+	assert_near(float(DamageCalc.resolve(db, atk, c20, fx, hit)["amount"]), base_dmg * 1.5 * 0.8, 1.0, "냉기 내성 20 이상 ×1.5, 내성 20 → −20%(GC1)")
 	var g := _a()
 	assert_true(g.statuses.apply("grudge_mark") and g.statuses.apply("sacrifice_mark"), "원한의 징표·제물")
 
