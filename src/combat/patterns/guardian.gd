@@ -19,14 +19,14 @@ func wants_extra_action(_b: Battle, c: Combatant) -> bool:
 	return not st.is_empty() and c.actor.statuses.has(st)
 
 
-func on_round_end(b: Battle, c: Combatant) -> void:
+func on_round_end(b: Battle, c: Combatant, skipped: bool = false) -> void:
 	var p := BossHooks.params(c)
 	var r := int(c.memo["round"])
 	for e: Variant in JsonUtil.get_array(p, "every"):
 		var ed: Dictionary = e if e is Dictionary else {}
 		var n := JsonUtil.get_int(ed, "rounds", 0)
-		if n > 0 and r % n == 0:
-			_use(b, c, JsonUtil.get_str(ed, "skill"))
+		if n > 0 and r % n == 0 and not skipped:
+			BossHooks.use_skill(b, c, JsonUtil.get_str(ed, "skill"))
 	var mumbles := JsonUtil.get_array(p, "mumbles")
 	if not mumbles.is_empty():
 		b.message.emit(str(b.rng.pick(mumbles)), {"name": c.label()}, "system")

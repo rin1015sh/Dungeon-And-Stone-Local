@@ -4,6 +4,8 @@ extends EffectHandler
 
 
 func apply(ctx: EffectContext, data: Dictionary) -> bool:
+	if ctx.source != null and ctx.source.dead:
+		return false
 	if data.has("chance") and not ctx.rng.chance(JsonUtil.get_float(data, "chance", 1.0)):
 		ctx.say("combat.summon_fail", {"name": ctx.source.display_name if ctx.source != null else ""}, "info")
 		return false

@@ -60,8 +60,11 @@ static func boosted(effects: Array, mis: Dictionary) -> Array:
 	var out: Array = []
 	for e: Variant in effects:
 		if e is Dictionary and JsonUtil.get_str(e, "type") == "damage":
-			var d: Dictionary = (e as Dictionary).duplicate()
+			var d: Dictionary = (e as Dictionary).duplicate(true)
 			d["power"] = JsonUtil.get_float(d, "power", 1.0) * float(mis["power_mult"])
+			if d.has("power_if_status"):  # 조건부 위력도 같은 배율(조건이 맞으면 power 대신 쓰인다)
+				var cond: Dictionary = d["power_if_status"]
+				cond["power"] = JsonUtil.get_float(cond, "power", 1.0) * float(mis["power_mult"])
 			if bool(mis["ignore_defense"]):
 				d["ignore_defense"] = true
 			out.append(d)

@@ -23,7 +23,8 @@ func wants_extra_action(_b: Battle, _c: Combatant) -> bool:
 
 
 ## 라운드 종료(보스 차례가 끝났다). c.memo["round"]는 이미 1 늘어 있다.
-func on_round_end(_b: Battle, _c: Combatant) -> void:
+## skipped = 기절 등으로 이 차례를 건너뛰었다 — 라운드는 세되 스킬·소환 같은 '행동'은 하지 않는다.
+func on_round_end(_b: Battle, _c: Combatant, _skipped: bool = false) -> void:
 	pass
 
 

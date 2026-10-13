@@ -62,6 +62,23 @@ static func damage_mult_vs(attacker: Actor, defender: Actor) -> float:
 	return m
 
 
+## source가 target에게 상태를 건다: 면역(패시브·grants_immunity·immune_if) → 저항(남이 건 것만) → 지속 상한(status_duration_cap).
+## "" = 걸렸다, "immune" | "resisted" | "failed". 모든 전투 부여 경로가 이것을 쓴다(메시지는 부르는 쪽).
+static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor, status_id: String, duration: float = -1.0) -> String:
+	if target == null or target.dead:
+		return "failed"
+	if is_immune(target, status_id) or target.statuses.immune(status_id):
+		return "immune"
+	if source != null and source != target and rng != null and rng.chance(target.statuses.resist_chance(status_id)):
+		return "resisted"
+	var dur := duration
+	var cap := duration_cap(target, status_id)
+	if cap >= 0.0:
+		var base := dur if dur >= 0.0 else JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("statuses", status_id), "duration"), "amount", cap)
+		dur = minf(base, cap)
+	return "" if target.statuses.apply(status_id, dur) else "failed"
+
+
 static func is_immune(a: Actor, status_id: String) -> bool:
 	for p in a.passives:
 		if JsonUtil.get_array(p, "status_immune").has(status_id):
@@ -89,32 +106,36 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 	var tgt := ctx.target
 	if src == null or tgt == null:
 		return
-	for p in src.passives:
-		if _filter_ok(JsonUtil.get_dict(p, "on_hit_filter"), ranged, dtype):
-			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_hit"), tgt)
-		if crit:
-			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_crit"), tgt)
-	for st in src.statuses.ids():
-		_apply_list(ctx, registry, JsonUtil.get_array(ctx.db.get_entry("statuses", st), "on_hit"), tgt)
+	if dealt <= 0:
+		return  # 보호막이 다 막았다 — 적중 효과·반사·반격 없음
+	if not tgt.dead:
+		for p in src.passives:
+			if _filter_ok(JsonUtil.get_dict(p, "on_hit_filter"), ranged, dtype):
+				_apply_list(ctx, registry, JsonUtil.get_array(p, "on_hit"), tgt)
+			if crit:
+				_apply_list(ctx, registry, JsonUtil.get_array(p, "on_crit"), tgt)
+		for st in src.statuses.ids():
+			_apply_list(ctx, registry, JsonUtil.get_array(ctx.db.get_entry("statuses", st), "on_hit"), tgt)
 	_meters_after_hit(ctx, dealt, dtype)
-	if ranged or tgt.dead or dealt <= 0:
+	if ranged or tgt.dead:
 		return
 	var reflect := sum(tgt, "reflect_melee")
 	if reflect > 0.0 and not src.dead:
 		var back := maxi(1, roundi(dealt * reflect))
-		src.pool.modify("hp", -float(back), "reflect:" + tgt.id)
 		ctx.say("combat.reflect", {"source": tgt.display_name, "target": src.display_name, "amount": back}, "warn")
+		DamageApply.hurt(ctx, src, back, "reflect:" + tgt.id)
 	var counter := tgt.statuses.counter_power()
 	if counter > 0.0 and not src.dead:
 		var rolls := {"hit": ctx.rng.randf(), "crit": ctx.rng.randf(), "var": ctx.rng.randf(), "lethal": 1.0}
 		var r := DamageCalc.resolve(ctx.db, tgt, src, {"scaling": "phys", "power": counter, "damage_type": "weapon"}, rolls)
 		if bool(r["hit"]) and int(r["amount"]) > 0:
-			src.pool.modify("hp", -float(r["amount"]), "counter:" + tgt.id)
 			ctx.say("combat.counter", {"source": tgt.display_name, "target": src.display_name, "amount": r["amount"]}, "warn")
+			DamageApply.hurt(ctx, src, int(r["amount"]), "counter:" + tgt.id, str(r["damage_type"]))
 
 
 ## 쓰러질 피해(incoming ≥ 남은 생명력)를 revive_once로 버티면 생명력을 정하고 true(전투가 끝나면 다시 쓸 수 있다 — META).
 const REVIVED_META := "revived_once"
+const MARKED_META := "marked_first"  ## mark_first_attacker를 이번 전투에 이미 썼다(전투가 끝나면 지운다)
 
 
 static func endure(ctx: EffectContext, target: Actor, incoming: int) -> bool:
@@ -141,8 +162,8 @@ static func on_damaged(ctx: EffectContext, dtype: String) -> void:
 			continue
 		if ctx.rng.chance(JsonUtil.get_float(od, "chance", 1.0)):
 			var amount := roundi(tgt.pool.get_max("hp") * JsonUtil.get_float(od, "self_damage_ratio"))
-			tgt.pool.modify("hp", -float(amount), "self:" + tgt.id)
 			ctx.say(JsonUtil.get_str(od, "message", "combat.self_blast"), {"name": tgt.display_name, "amount": amount}, "good")
+			DamageApply.hurt(ctx, tgt, amount, "self:" + tgt.id)
 
 
 ## 공격받았다(맞든 안 맞든, 면역이어도): 처음 공격한 쪽에게 표식.
@@ -151,9 +172,10 @@ static func on_attacked(ctx: EffectContext) -> void:
 	var src := ctx.source
 	for p in tgt.passives:
 		var st := JsonUtil.get_str(p, "mark_first_attacker")
-		if not st.is_empty() and not tgt.has_meta("marked_first") and src != null and src != tgt:
-			tgt.set_meta("marked_first", true)
-			src.statuses.apply(st)
+		if not st.is_empty() and not tgt.has_meta(MARKED_META) and src != null and src != tgt:
+			tgt.set_meta(MARKED_META, true)
+			if not try_status(ctx.db, null, tgt, src, st).is_empty():
+				continue
 			ctx.say("combat.marked", {"name": src.display_name, "source": tgt.display_name,
 				"status": DataNames.entry(ctx.db, "statuses", st)}, "danger")
 

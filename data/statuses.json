@@ -87,7 +87,8 @@
         "amount": "-{bal.status.bleed_per_turn}"
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "lingers": true
   },
   {
     "id": "poison",
@@ -105,7 +106,8 @@
         "amount": "-{bal.status.poison_per_turn}"
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "lingers": true
   },
   {
     "id": "stun",
@@ -162,7 +164,8 @@
         "percent": 0.25
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "lingers": true
   },
   {
     "id": "hypothermia",
@@ -172,11 +175,11 @@
     "modifiers": [
       {
         "target": "agi",
-        "percent": "-max(0, 30 - {resist_cold}) / 100"
+        "percent": "-max(0.0, 30.0 - max(0.0, {resist_cold})) / 100.0"
       },
       {
         "target": "dmg_taken:cold",
-        "percent": "1.0 - 0.5 * min(1, floor({resist_cold} / 20))"
+        "percent": "1.0 - 0.5 * min(1.0, floor(max(0.0, {resist_cold}) / 20.0))"
       }
     ],
     "source": "original",
@@ -198,7 +201,8 @@
         "amount": "-{bal.status.burn_per_turn}"
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "lingers": true
   },
   {
     "id": "stamina_depleted",
@@ -413,7 +417,8 @@
         "percent": -1.0
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "lingers": true
   },
   {
     "id": "counter_stance",
@@ -565,7 +570,8 @@
       }
     ],
     "source": "original",
-    "notes": "명세 §7.2 원망 게이지. '행동 비용이 영혼력으로 전환'은 아직 없음(ASSUMPTIONS DF8)"
+    "notes": "명세 §7.2 원망 게이지. '행동 비용이 영혼력으로 전환'은 아직 없음(ASSUMPTIONS DF8)",
+    "lingers": true
   },
   {
     "id": "isolated",
@@ -960,7 +966,8 @@
       }
     ],
     "source": "original",
-    "notes": "명세 §4 [원] 데스나이트 [원한]. 지속 [창]"
+    "notes": "명세 §4 [원] 데스나이트 [원한]. 지속 [창]",
+    "lingers": true
   },
   {
     "id": "telegraphed",
@@ -1588,7 +1595,8 @@
         "percent": -0.2
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "lingers": true
   },
   {
     "id": "curse_touch",

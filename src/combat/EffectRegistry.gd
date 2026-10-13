@@ -34,6 +34,8 @@ func apply_all(ctx: EffectContext, effects: Array) -> bool:
 		if h == null:
 			push_error("EffectRegistry: 핸들러 없는 효과 타입 '%s'" % type)
 			continue
+		if ctx.landed == 0 and type != "damage" and not JsonUtil.get_bool(e, "always") and JsonUtil.get_str(e, "to") != "self":
+			continue  # 앞의 공격이 빗나갔거나 면역 — 그 공격에 딸린 효과는 걸리지 않는다
 		if h.apply(ctx, e):
 			ctx.success = true
 	return ctx.success

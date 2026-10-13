@@ -8,6 +8,9 @@ extends RefCounted
 ##               "target_rule": "guard_front", "round_effects": [{효과 — 라운드 끝에 적 전원에게}],
 ##               "cast": "<스킬 id — 들어설 때 한 번 자동으로 쓴다(시체골렘 살점폭발)>"}, …]
 ##   위에서부터 체력 비율이 hp_above보다 큰 첫 페이즈. 페이즈는 앞으로만 간다.
+##   한 번에 여러 구간을 넘으면 건너뛴 페이즈의 상태·패시브·대상 규칙만 쌓고, 메시지·시전(cast)은 마지막 페이즈만(ASSUMPTIONS GM3).
+##   self_passives의 modifiers는 붙인다(출처 "phase:<패시브 id>").
+##   기절 등으로 건너뛴 라운드는 세지만 패턴의 행동(주기 스킬·소환)은 하지 않는다(BossPattern.on_round_end의 skipped).
 ## 상태는 Combatant.memo: {round, phase, in_extra, …패턴이 쓰는 값}.
 
 const PATTERN_DIR := "res://src/combat/patterns"
@@ -35,13 +38,21 @@ static func phase(c: Combatant) -> Dictionary:
 
 static func on_start(b: Battle) -> void:
 	for u in b.units.duplicate():
-		var p := pattern(b, u)
-		if p == null:
-			continue
-		u.memo["round"] = 0
-		u.memo["phase"] = ""
+		on_join(b, u)
+
+
+## 패턴·페이즈가 있는 개체의 시작 처리(전투 시작, 또는 전투 중에 들어왔을 때).
+static func on_join(b: Battle, u: Combatant) -> void:
+	if u.memo.has("round"):
+		return
+	var p := pattern(b, u)
+	if p == null and JsonUtil.get_array(_def(u), "phases").is_empty():
+		return
+	u.memo["round"] = 0
+	u.memo["phase"] = ""
+	if p != null:
 		p.on_start(b, u)
-		check_phase(b, u)
+	check_phase(b, u)
 
 
 ## 체력 비율에 맞는 페이즈로 옮긴다(앞으로만). 바뀌었으면 true.
@@ -63,7 +74,7 @@ static func check_phase(b: Battle, c: Combatant) -> bool:
 	if want <= cur:
 		return false
 	for i in range(cur + 1, want + 1):
-		_enter(b, c, phases[i])
+		_enter(b, c, phases[i], i == want)
 	return true
 
 
@@ -78,13 +89,16 @@ static func enter_phase(b: Battle, c: Combatant, phase_id: String) -> void:
 		if JsonUtil.get_str(phases[i], "id") == phase_id:
 			want = i
 	for i in range(cur + 1, want + 1):
-		_enter(b, c, phases[i])
+		_enter(b, c, phases[i], i == want)
 
 
-static func check_all(b: Battle) -> void:
-	for u in b.units:
+## 페이즈를 다시 본다. 하나라도 바뀌었으면 true.
+static func check_all(b: Battle) -> bool:
+	var any := false
+	for u in b.units.duplicate():
 		if not JsonUtil.get_array(_def(u), "phases").is_empty():
-			check_phase(b, u)
+			any = check_phase(b, u) or any
+	return any
 
 
 ## 보스 차례가 끝났다(skipped = 기절 등으로 건너뜀). 추가 행동이면 라운드를 끝내지 않고 바로 다시 행동하게 한다.
@@ -103,7 +117,7 @@ static func turn_end(b: Battle, c: Combatant, skipped: bool) -> void:
 	if not fx.is_empty():
 		for f in b.opponents(c):
 			apply_effects(b, c, f, fx)
-	p.on_round_end(b, c)
+	p.on_round_end(b, c, skipped)
 
 
 ## 효과 목록을 c가 target에게 적용하고 결과를 전투에 반영한다.
@@ -115,37 +129,62 @@ static func apply_effects(b: Battle, c: Combatant, target: Combatant, fx: Array,
 	BattleRules.relay(b, ctx, c)
 
 
-static func _enter(b: Battle, c: Combatant, ph: Dictionary) -> void:
+## last = 이번에 도착한 페이즈(건너뛰는 중간 페이즈는 메시지·시전 없이 상태·패시브만).
+static func _enter(b: Battle, c: Combatant, ph: Dictionary, last: bool = true) -> void:
 	c.memo["phase"] = JsonUtil.get_str(ph, "id")
 	var msg := JsonUtil.get_str(ph, "message")
-	if not msg.is_empty():
+	if not msg.is_empty() and last:
 		b.message.emit(msg, {"name": c.label()}, "danger")
 	for st: Variant in JsonUtil.get_array(ph, "remove_self_statuses"):
 		c.actor.statuses.remove(str(st))
 	for st: Variant in JsonUtil.get_array(ph, "self_statuses"):
-		c.actor.statuses.apply(str(st))
+		Passives.try_status(b.db, null, c.actor, c.actor, str(st))
 	for pa: Variant in JsonUtil.get_array(ph, "self_passives"):
 		if pa is Dictionary:
-			c.actor.add_passive(pa)
+			add_phase_passive(b, c, pa)
 	for f in b.opponents(c):
 		for st: Variant in JsonUtil.get_array(ph, "remove_foe_statuses"):
 			f.actor.statuses.remove(str(st))
 		for st: Variant in JsonUtil.get_array(ph, "foe_statuses"):
-			if not Passives.is_immune(f.actor, str(st)):
-				f.actor.statuses.apply(str(st))
+			Passives.try_status(b.db, null, c.actor, f.actor, str(st))
 	if ph.has("target_rule"):
 		c.memo["target_rule"] = JsonUtil.get_str(ph, "target_rule")
 	var cast := b.db.get_entry("skills", JsonUtil.get_str(ph, "cast"))
-	if not cast.is_empty():
-		b.message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(cast, "name_ko")}, "system")
-		var targets: Array = b.opponents(c) if JsonUtil.get_str(cast, "target") == "enemy_all" else [c]
-		var info := {"skill_name": JsonUtil.get_str(cast, "name_ko")}
-		for t: Combatant in targets:
-			apply_effects(b, c, t, JsonUtil.get_array(cast, "effects"), info)
+	if not cast.is_empty() and last:
+		use_skill(b, c, JsonUtil.get_str(ph, "cast"))
 	var p := pattern(b, c)
 	if p != null:
 		p.on_phase(b, c, ph)
 	b.event.emit({"type": "phase", "unit": c, "phase": c.memo["phase"]})
+
+
+## 패턴·페이즈가 스킬을 자동으로 쓴다: 대상 종류(target)를 따른다 — 적 전체·적 하나(무작위)·아군 전체·자기.
+static func use_skill(b: Battle, c: Combatant, skill_id: String) -> void:
+	var sk := b.db.get_entry("skills", skill_id)
+	if sk.is_empty() or not c.is_active():
+		return
+	b.message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
+	var targets: Array[Combatant] = []
+	match JsonUtil.get_str(sk, "target"):
+		"enemy_all", "ally_all", "enemy_row":
+			targets = BattleTargets.resolve(b, c, JsonUtil.get_str(sk, "target"), null)
+		"enemy_single", "any_single", "":
+			targets = BattleTargets.resolve(b, c, "enemy_single", null)
+		_:
+			targets = [c]
+	var info := {"skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
+	for t in targets:
+		apply_effects(b, c, t, JsonUtil.get_array(sk, "effects"), info)
+
+
+## 페이즈·패턴이 주는 패시브: 패시브를 달고 modifiers도 붙인다(ally_aura는 다시 계산).
+static func add_phase_passive(b: Battle, c: Combatant, pa: Dictionary) -> void:
+	var src := "phase:" + JsonUtil.get_str(pa, "id")
+	c.actor.stats.remove_source(src)
+	c.actor.add_passive(pa)
+	c.actor.stats.add_modifiers_from_data(src, JsonUtil.get_array(pa, "modifiers"))
+	if pa.has("ally_aura"):
+		BattlePassives.refresh_auras(b)
 
 
 static func _def(c: Combatant) -> Dictionary:

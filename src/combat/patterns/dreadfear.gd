@@ -37,7 +37,7 @@ func wants_extra_action(_b: Battle, c: Combatant) -> bool:
 	return c.actor.statuses.stacks(JsonUtil.get_str(pr, "status")) >= JsonUtil.get_int(pr, "extra_at", 999)
 
 
-func on_round_end(b: Battle, c: Combatant) -> void:
+func on_round_end(b: Battle, c: Combatant, skipped: bool = false) -> void:
 	var p := BossHooks.params(c)
 	var r := int(c.memo["round"])
 	for f in b.opponents(c):
@@ -47,13 +47,13 @@ func on_round_end(b: Battle, c: Combatant) -> void:
 		c.actor.statuses.apply(JsonUtil.get_str(pr, "status"))
 		b.message.emit("combat.dread_proliferate", {"name": c.label(), "stacks": c.actor.statuses.stacks(JsonUtil.get_str(pr, "status"))}, "danger")
 	var mg := JsonUtil.get_dict(p, "maggots")
-	if _due(c, mg, r):
-		_use(b, c, JsonUtil.get_str(mg, "skill"))
+	if _due(c, mg, r) and not skipped:
+		BossHooks.use_skill(b, c, JsonUtil.get_str(mg, "skill"))
 	var ht := JsonUtil.get_dict(p, "hatred")
 	if JsonUtil.get_array(ht, "phases").has(str(c.memo.get("phase", ""))):
 		BossHooks.apply_effects(b, c, c, [{"type": "meter", "meter": JsonUtil.get_str(ht, "meter"), "amount": JsonUtil.get_float(ht, "per_round"), "to": "self"}])
 	for buff: Variant in JsonUtil.get_array(p, "buffs"):
-		if buff is Dictionary and c.actor.statuses.has(JsonUtil.get_str(buff, "status")):
+		if buff is Dictionary and c.actor.statuses.has(JsonUtil.get_str(buff, "status")) and not skipped:
 			BossHooks.apply_effects(b, c, c, JsonUtil.get_array(buff, "round_self_effects"))
 	if c.memo.has("cycle"):
 		_advance_cycle(b, c, JsonUtil.get_dict(p, "cycle"))
@@ -76,7 +76,7 @@ func _use(b: Battle, c: Combatant, skill_id: String) -> void:
 func _start_veil(b: Battle, c: Combatant, cyc: Dictionary) -> void:
 	c.memo["cycle"] = {"stage": "veil", "left": JsonUtil.get_int(cyc, "veil_rounds", 3)}
 	for f in b.opponents(c):
-		f.actor.statuses.apply(JsonUtil.get_str(cyc, "veil_status"))
+		Passives.try_status(b.db, null, c.actor, f.actor, JsonUtil.get_str(cyc, "veil_status"))
 	b.message.emit("combat.dread_veil", {"name": c.label()}, "danger")
 
 
@@ -109,7 +109,7 @@ func _grant_buff(b: Battle, c: Combatant) -> void:
 	have.append(JsonUtil.get_str(buff, "status"))
 	c.actor.statuses.apply(JsonUtil.get_str(buff, "status"))
 	if buff.has("passive"):
-		c.actor.add_passive(JsonUtil.get_dict(buff, "passive"))
+		BossHooks.add_phase_passive(b, c, JsonUtil.get_dict(buff, "passive"))
 	b.message.emit("combat.dread_buff", {"name": c.label(), "buff": DataNames.entry(b.db, "statuses", JsonUtil.get_str(buff, "status"))}, "danger")
 
 

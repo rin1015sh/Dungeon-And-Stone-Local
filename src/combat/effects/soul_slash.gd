@@ -27,6 +27,6 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if pc.essences.absorbed.size() > slots:
 		var i := ctx.rng.randi_range(0, pc.essences.absorbed.size() - 1)
 		var gone := str(pc.essences.absorbed[i].get("essence", ""))
-		pc.essences.remove(pc, i)
+		pc.essences.remove(pc, i, false)
 		ctx.say("combat.soul_slash_essence", {"name": t.display_name, "essence": DataNames.entry(ctx.db, "essences", gone)}, "danger")
 	return true

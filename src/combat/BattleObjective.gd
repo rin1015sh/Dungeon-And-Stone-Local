@@ -7,7 +7,7 @@ extends RefCounted
 
 
 static func after_turn(b: Battle, c: Combatant) -> void:
-	if b.objective.is_empty() or not b.result.is_empty() or c != _leader(b):
+	if b.objective.is_empty() or b.is_over() or c != _leader(b):
 		return
 	var r := int(b.objective.get("round", 0)) + 1
 	b.objective["round"] = r
@@ -29,6 +29,7 @@ static func after_turn(b: Battle, c: Combatant) -> void:
 			break
 		var m := Monster.create(b.db, str(b.rng.pick(pool)), " +")
 		var u := b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))
+		BattleRules.joined(b, u)
 		b.message.emit("combat.reinforce", {"monster": m.display_name}, "danger")
 		b.event.emit({"type": "summon", "unit": u})
 

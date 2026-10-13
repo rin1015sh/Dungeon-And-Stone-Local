@@ -17,17 +17,24 @@ static func on_start(b: Battle) -> void:
 		for id: Variant in _list(u.actor, "start_summons"):
 			if b.side_units(u.side).size() < int(b.db.bal("combat.max_side_units", 6)):
 				var m := Monster.create(b.db, str(id), " +")
-				b.add(m, u.side, JsonUtil.get_str(m.behavior(), "row", "front"))
+				var su := b.add(m, u.side, JsonUtil.get_str(m.behavior(), "row", "front"))
+				su.summoned = true
 				b.message.emit("combat.summon", {"name": u.label(), "monster": m.display_name}, "danger")
 	for u in b.units:
 		for st: Variant in _list(u.actor, "foe_statuses_on_start"):
 			for f in b.opponents(u):
-				f.actor.statuses.apply(str(st))
+				Passives.try_status(b.db, b.rng, u.actor, f.actor, str(st))
 		for st: Variant in _list(u.actor, "self_statuses_on_start"):
-			u.actor.statuses.apply(str(st))
+			Passives.try_status(b.db, null, u.actor, u.actor, str(st))
 		if u.actor is Monster:
 			_pick_type(b, u)
 	refresh_auras(b)
+
+
+## 전투 중에 들어온 개체(BattleRules.joined): 몬스터 타입만 정한다(동반 소환·상대 시작 상태는 전투 시작 때 한 번).
+static func on_join(b: Battle, u: Combatant) -> void:
+	if u.actor is Monster:
+		_pick_type(b, u)
 
 
 ## 같은 편 ally_aura를 모두 떼고 다시 붙인다.
@@ -50,10 +57,12 @@ static func refresh_auras(b: Battle) -> void:
 						JsonUtil.get_array(aura, "modifiers"))
 
 
-## 자기 차례가 끝났다(행동했거나 건너뛰었다).
+## 자기 차례가 끝났다(행동했거나 건너뛰었다). 보스의 추가 행동 차례(memo in_extra)는 재생·오러를 다시 주지 않는다.
 static func turn_end(b: Battle, c: Combatant) -> void:
 	BattleSpawns.tick_expire(b, c)
 	_low_hp_summons(b)
+	if bool(c.memo.get("in_extra", false)):
+		return
 	var r := Passives.sum(c.actor, "regen_per_round")
 	if r > 0.0 and c.is_active() and not c.actor.statuses.has_flag("no_regen"):
 		var amount := roundi(c.actor.pool.get_max("hp") * r * c.actor.statuses.heal_mult())
@@ -70,8 +79,7 @@ static func turn_end(b: Battle, c: Combatant) -> void:
 		var targets: Array = foes if JsonUtil.get_str(aura, "target", "all") == "all" else [b.rng.pick(foes)]
 		var st := JsonUtil.get_str(aura, "status")
 		for f: Combatant in targets:
-			if not Passives.is_immune(f.actor, st):
-				f.actor.statuses.apply(st)
+			Passives.try_status(b.db, b.rng, c.actor, f.actor, st)
 		b.message.emit("combat.aura_tick", {"name": c.label(), "status": DataNames.entry(b.db, "statuses", st)}, "warn")
 
 

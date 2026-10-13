@@ -14,9 +14,23 @@
       "power": 0.383,
       "damage_type": "pierce",
       "ranged": true
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.383,
+      "damage_type": "pierce",
+      "ranged": true
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.383,
+      "damage_type": "pierce",
+      "ranged": true
     }
   ],
-  "repeat_per_ally": "skeleton_archer",
   "essence_of": "skeleton_volley",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수판: 탐험가에게는 아처 동료가 없으므로 3연사 고정(원래는 같은 편 아처 수만큼)"
 }

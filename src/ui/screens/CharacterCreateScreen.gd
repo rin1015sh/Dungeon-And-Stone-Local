@@ -129,6 +129,7 @@ func _on_reroll() -> void:
 
 func _roll() -> void:
 	var race_id := _race_ids[maxi(0, _race_opt.selected)]
+	_limit_classes(race_id)
 	var class_id := _class_ids[maxi(0, _class_opt.selected)]
 	var bases := CharacterRoller.roll_base_stats(_db, race_id, class_id, _rng)
 	_pc = PlayerCharacter.create(_db, race_id, class_id, "", bases)
@@ -144,6 +145,19 @@ func _roll() -> void:
 	for id in _pc.inventory.ids():
 		items.append("%s ×%d" % [DataNames.entry(_db, "items", id), _pc.inventory.count(id)])
 	_items_label.text = "\n".join(items) if not items.is_empty() else Strings.t("create.items_none")
+
+
+## 템플릿의 allowed_races(비면 모두)에 맞지 않는 템플릿은 고를 수 없다. 지금 고른 것이 막히면 처음 되는 것으로 바꾼다.
+func _limit_classes(race_id: String) -> void:
+	var first_ok := -1
+	for i in _class_ids.size():
+		var allowed := JsonUtil.get_array(_db.get_entry("classes", _class_ids[i]), "allowed_races")
+		var ok := allowed.is_empty() or allowed.has(race_id)
+		_class_opt.set_item_disabled(i, not ok)
+		if ok and first_ok < 0:
+			first_ok = i
+	if first_ok >= 0 and _class_opt.is_item_disabled(maxi(0, _class_opt.selected)):
+		_class_opt.select(first_ok)
 
 
 func _on_enter() -> void:

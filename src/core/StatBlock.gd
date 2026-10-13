@@ -109,6 +109,19 @@ func remove_source(source_id: String) -> int:
 	return removed
 
 
+## 출처 id가 prefix로 시작하는 수정자를 모두 뗀다(전투 오러 "aura:" 정리). 뗀 개수.
+func remove_source_prefix(prefix: String) -> int:
+	var kept: Array[Modifier] = []
+	for m: Modifier in _mods:
+		if not m.source_id.begins_with(prefix):
+			kept.append(m)
+	var removed := _mods.size() - kept.size()
+	if removed > 0:
+		_mods = kept
+		_invalidate()
+	return removed
+
+
 func has_source(source_id: String) -> bool:
 	for m: Modifier in _mods:
 		if m.source_id == source_id:

@@ -17,7 +17,7 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	var amount := JsonUtil.get_float(data, "amount")
 	a.stats.set_base(stat, a.stats.get_base(stat) + amount)
 	a.boons[key] = times + 1
-	ctx.say("effect.boon", {"stat": (ctx.db.stats[stat] as StatDef).name_ko, "amount": int(amount), "n": times + 1, "max": limit}, "good")
+	ctx.say("effect.boon", {"stat": (ctx.db.stats[stat] as StatDef).name_ko, "amount": ("%d" % int(amount)) if is_equal_approx(amount, roundf(amount)) else ("%.1f" % amount), "n": times + 1, "max": limit}, "good")
 	return true
 
 
@@ -27,4 +27,8 @@ func validate(data: Dictionary, db: GameDatabase) -> PackedStringArray:
 		out.append("permanent_stat: stat '%s' 없음" % data.get("stat"))
 	if JsonUtil.get_float(data, "amount") == 0.0:
 		out.append("permanent_stat: amount가 0")
+	if data.has("max_times") and JsonUtil.get_int(data, "max_times") < 1:
+		out.append("permanent_stat: max_times는 1 이상")
+	if JsonUtil.get_str(data, "key").is_empty():
+		out.append("permanent_stat: key가 없다(같은 영약끼리 횟수를 센다 — 스킬에서 쓰면 겹친다)")
 	return out

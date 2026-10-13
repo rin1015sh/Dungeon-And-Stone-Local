@@ -54,7 +54,9 @@ func test_status_flags() -> void:
 	assert_true(a.statuses.has("soul_exhaustion"), "영혼력 0 → 영혼탈진")
 	assert_true(a.statuses.has_flag("no_skills"))
 	a.advance_turns(1.0)
-	assert_false(a.statuses.has("soul_exhaustion"), "재생으로 0을 벗어나면 해제")
+	assert_true(a.statuses.has("soul_exhaustion"), "조금 차올라서는 풀리지 않는다(R13 — 10%)")
+	a.pool.set_current("soul", a.pool.get_max("soul") * 0.1)
+	assert_false(a.statuses.has("soul_exhaustion"), "10%까지 차오르면 해제")
 
 
 func test_hunger_thresholds_drive_statuses() -> void:

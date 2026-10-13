@@ -28,11 +28,10 @@ static func add(db: GameDatabase, a: Actor, id: String, amount: float, ctx: Effe
 	if now < mx:
 		return false
 	var st := JsonUtil.get_str(JsonUtil.get_dict(def, "on_full"), "status")
-	if not st.is_empty() and not Passives.is_immune(a, st):
-		a.statuses.apply(st)
+	var took := st.is_empty() or Passives.try_status(db, null, null, a, st).is_empty()
 	if JsonUtil.get_bool(def, "reset_on_full", true):
 		a.meters[id] = 0.0
-	if ctx != null:
+	if ctx != null and took:
 		ctx.say("combat.meter_full", {"name": a.display_name, "meter": JsonUtil.get_str(def, "name_ko", id),
 			"status": DataNames.entry(db, "statuses", st)}, "danger")
 	return true

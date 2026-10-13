@@ -187,9 +187,13 @@ func rest() -> void:
 		return
 	var hours := int(db.bal("explore.rest_hours", 8.0))
 	if in_safe_zone():
-		player.pool.tick("rest", hours)
 		_say("explore.rest_safe", {"hours": hours}, "good")
-		pass_time(hours)
+		var left := minf(float(hours), hours_until_close())  # 폐쇄 시각에서 잘리면 그만큼만 회복한다
+		while left > 0.0 and not ended:
+			var h := minf(1.0, left)
+			left -= h
+			player.pool.tick("rest", h)
+			pass_time(h)
 	else:
 		_say("explore.rest_unsafe", {"hours": hours}, "warn")
 		for i in hours:
@@ -304,13 +308,20 @@ func answer_riddle(group: FieldMonsters.Group, outcome: String) -> void:
 
 
 ## 전투가 끝났다. result: victory/fled/defeat. 전투 차례 수만큼 시간이 흐른다.
+## 몇 마리 쓰러뜨리고 도망쳤으면 쓰러뜨린 몬스터는 무리에서 빠진다(다시 만나도 되살아나지 않는다). 다 빠졌으면 승리로 친다.
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
+	if result == Battle.RESULT_FLED and group != null and not killed.is_empty():
+		for id in killed:
+			group.monster_ids.erase(id)
+		if group.monster_ids.is_empty():
+			result = Battle.RESULT_VICTORY
+	var chained := result == Battle.RESULT_VICTORY and group != null and not group.waves.is_empty()  # 연전: 다음 웨이브까지 맵 시간 없이(RF7)
 	if not killed.is_empty() and not player.dead:
 		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null,
 				JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
-	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result)):
+	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result, killed)):
 		pass
 	elif result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)
@@ -318,7 +329,8 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 		monsters.set_grace(group, clock.total_hours)
 	if ended:
 		return
-	pass_time(turns * float(db.bal("combat.hours_per_turn", 0.01)))
+	if not chained:
+		pass_time(turns * float(db.bal("combat.hours_per_turn", 0.01)))
 	if not ended:
 		refresh_view()
 
@@ -389,6 +401,8 @@ func _on_enter_cell(from: Vector2i) -> void:
 
 func _on_status_changed(status_id: String, active: bool) -> void:
 	_view_dirty = true
+	if in_combat and active:
+		return  # 전투 중 걸린 상태는 전투 기록(effect.status_on_named)이 알린다
 	_say("explore.status_on" if active else "explore.status_off", {"status": DataNames.entry(db, "statuses", status_id)},
 		"warn" if active else "good")
 

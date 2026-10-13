@@ -64,7 +64,11 @@
     "rot_per_turn": 2,
     "_resist_comment": "상태이상 저항(statuses resist.stats): 확률 = min(resist_max, Σ 스탯 × resist_per_point). 적이 건 것만",
     "resist_per_point": 0.01,
-    "resist_max": 0.6
+    "resist_max": 0.6,
+    "_linger_comment": "전투가 끝나도 남는 상태(statuses lingers: 독·출혈 …)는 탐험 중 이 시간(게임 시간)을 한 차례로 쳐서 주기 효과·지속시간이 흐른다",
+    "linger_hours_per_turn": 0.25,
+    "_tick_comment": "긴 시간 경과(휴식 8시간)는 이 단위로 나눠 흐른다 — 도중에 허기가 바닥나면 그 뒤 시간만 아사 피해",
+    "max_tick_hours": 1.0
   },
   "reserved": {
     "stamina_base": 100,

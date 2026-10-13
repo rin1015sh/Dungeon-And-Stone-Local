@@ -10,9 +10,16 @@
   "effects": [
     {
       "type": "apply_status",
+      "status": "vamp_blood_feast",
+      "to": "self",
+      "unless_target_status": "sacrifice_mark"
+    },
+    {
+      "type": "apply_status",
       "status": "sacrifice_mark"
     }
   ],
   "essence_of": "vamp_blood_brand",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수판: 처음 낙인을 찍는 대상마다 자신에게 [피의 향연] 1중첩(근력·민첩 +10%). 캠보르미어 패턴(per_foe_status)은 몬스터 전용이라 효과로 옮김"
 }

@@ -12,6 +12,9 @@ extends RefCounted
 ## - grants_immunity [상태 id]: 이 상태가 걸린 동안 그 상태들에 걸리지 않는다(키르뒤 광분 → 공포·기절).
 ## - barrier: true — 보호막 상태. 양은 set_barrier로 정하고, 받는 피해를 먼저 흡수한다(absorb). 다 닳으면 풀린다(강철빙벽).
 ## - 지속시간은 자기 차례가 시작될 때 준다. 자기 행동에 영향을 주는 상태(실명·버프)는 '효과를 볼 차례 수 + 1'로 준다.
+## - 차례 단위 상태는 전투가 끝나면 풀린다(clear_temporary). "lingers": true(독·출혈 …)는 남아서 전투 밖에서는
+##   게임 시간 status.linger_hours_per_turn시간을 한 차례로 쳐서 주기 효과·지속시간이 흐른다(tick_hours).
+## - 수식 수정자는 소유자 스탯이 바뀌면 다시 계산한다(냉기 내성을 올리면 저체온증이 바로 약해진다).
 
 signal applied(status_id: String)
 signal removed(status_id: String)
@@ -22,15 +25,19 @@ const DEFAULT_MAX_STACKS := 99
 var _db: GameDatabase
 var _stats: StatBlock
 var _pool: ResourcePool
-var _active: Dictionary = {}
+var _active: Dictionary = {}  # id -> {"stacks": int, "remaining": float(음수 = 영구), "unit": String, "mods"?: Array}
 ## 지속 피해(주기 효과로 생명력이 줄어드는 것) 배율 — 소유자 패시브 dot_mult(본 나이트 방부제)의 곱. Actor가 맞춘다.
-var dot_mult: float = 1.0  # id -> {"stacks": int, "remaining": float(음수 = 영구), "unit": String}
+var dot_mult: float = 1.0
+## 소유자 패시브 status_immune의 합(썩은 거구의 출혈 면역 …). Actor가 맞춘다 — 모든 부여 경로가 immune()에서 막힌다.
+var passive_immune: Array[String] = []
+var _refreshing: bool = false
 
 
 func _init(db: GameDatabase, stats: StatBlock, pool: ResourcePool) -> void:
 	_db = db
 	_stats = stats
 	_pool = pool
+	_stats.changed.connect(_refresh_formulas)
 
 
 ## duration < 0이면 정의의 지속시간을 쓴다. 성공하면 true.
@@ -50,6 +57,7 @@ func apply(id: String, duration: float = -1.0, unit: String = "") -> bool:
 		if JsonUtil.get_bool(def, "stackable") and int(st["stacks"]) < max_stacks:
 			st["stacks"] = int(st["stacks"]) + 1
 			_stats.add_modifiers_from_data(SOURCE_PREFIX + id, _mods(def))
+			_remember_mods(id, def)
 			var conv := JsonUtil.get_str(JsonUtil.get_dict(def, "on_max_stacks"), "status")
 			if int(st["stacks"]) >= max_stacks and not conv.is_empty():
 				remove(id)
@@ -60,6 +68,7 @@ func apply(id: String, duration: float = -1.0, unit: String = "") -> bool:
 		return true
 	_active[id] = {"stacks": 1, "remaining": dur, "unit": dur_unit}
 	_stats.add_modifiers_from_data(SOURCE_PREFIX + id, _mods(def))
+	_remember_mods(id, def)
 	applied.emit(id)
 	return true
 
@@ -73,8 +82,10 @@ func remove(id: String) -> bool:
 	return true
 
 
-## 스탯 문턱(immune_if)이나 걸린 상태의 grants_immunity 때문에 걸리지 않는가.
+## 패시브 면역(status_immune), 스탯 문턱(immune_if), 걸린 상태의 grants_immunity 때문에 걸리지 않는가.
 func immune(id: String) -> bool:
+	if passive_immune.has(id):
+		return true
 	for a: String in _active:
 		if JsonUtil.get_array(_db.get_entry("statuses", a), "grants_immunity").has(id):
 			return true
@@ -112,14 +123,36 @@ func absorb(amount: int) -> int:
 	return left
 
 
-## 약화 상태(kind debuff) 중 하나를 고른다(필드 효과·전투 한정 표식은 뺀다). 없으면 "".
+## 약화 상태(kind debuff) 중 하나를 고른다(필드 효과·전투 한정 표식·자원이 거는 상태(허기·아사 …)는 뺀다). 없으면 "".
 func pick_debuff(rng: Rng) -> String:
 	var pool: Array[String] = []
 	for id: String in _active:
 		var def := _db.get_entry("statuses", id)
-		if JsonUtil.get_str(def, "kind") == "debuff" and not JsonUtil.get_bool(def, "field_effect") and not def.has("persist"):
+		if JsonUtil.get_str(def, "kind") == "debuff" and not JsonUtil.get_bool(def, "field_effect") and not def.has("persist") 				and not _resource_bound(id):
 			pool.append(id)
 	return "" if pool.is_empty() else str(rng.pick(pool))
+
+
+## 자원 임계값·고갈이 거는 상태인가(자원이 돌아와야 풀린다 — 해제 효과로 지우지 않는다).
+func _resource_bound(id: String) -> bool:
+	for rid in _pool.ids():
+		var rd := _pool.get_def(rid)
+		if rd.on_zero_kind == ResourceDef.ON_ZERO_STATUS and rd.on_zero_id == id:
+			return true
+		for t: Dictionary in rd.thresholds:
+			if JsonUtil.get_str(t, "apply_status") == id:
+				return true
+	return false
+
+
+## 걸리는 순간 면역(grants_immunity)을 주는 상태가 생겼다: 이미 걸린 그 상태들을 푼다. 푼 id 목록.
+func purge_immune() -> Array[String]:
+	var out: Array[String] = []
+	for id in ids():
+		if immune(id) and _active.has(id):
+			remove(id)
+			out.append(id)
+	return out
 
 
 ## 남이 건 그 상태를 버틸 확률: 정의 resist {stats}의 합 × status.resist_per_point, 최대 status.resist_max.
@@ -192,9 +225,25 @@ func tick_turns(n: float = 1.0) -> void:
 	_countdown("turn", n)
 
 
+## 게임 시간 경과(탐험). 차례 단위 상태(전투 뒤 남은 독·출혈 등)는 status.linger_hours_per_turn시간 = 한 차례로 흐른다.
 func tick_hours(hours: float) -> void:
 	_periodic("time", hours)
 	_countdown("hour", hours)
+	var per_turn := float(_db.bal("status.linger_hours_per_turn", 0.25))
+	if per_turn > 0.0:
+		_periodic("turn", hours / per_turn, "turn")
+		_countdown("turn", hours / per_turn)
+
+
+## 전투가 끝났다: 차례 단위 상태 중 남지 않는 것(lingers가 아닌 것 — 속박·방어 태세·기절 …)을 푼다. 푼 id 목록.
+func clear_temporary() -> Array[String]:
+	var out: Array[String] = []
+	for id in ids():
+		var st: Dictionary = _active[id]
+		if str(st["unit"]) == "turn" and float(st["remaining"]) >= 0.0 				and not JsonUtil.get_bool(_db.get_entry("statuses", id), "lingers"):
+			remove(id)
+			out.append(id)
+	return out
 
 
 func to_dict() -> Dictionary:
@@ -223,9 +272,45 @@ func _mods(def: Dictionary) -> Array:
 	return out
 
 
-func _periodic(trigger: String, amount: float) -> void:
+## unit_only가 있으면 그 지속 단위의 상태만.
+## 수식 수정자(문자열 값)가 있는 상태면 지금 계산한 값을 기억한다(_refresh_formulas가 비교).
+func _remember_mods(id: String, def: Dictionary) -> void:
+	if _has_formula_mods(def) and _active.has(id):
+		(_active[id] as Dictionary)["mods"] = _mods(def)
+
+
+static func _has_formula_mods(def: Dictionary) -> bool:
+	for m: Variant in JsonUtil.get_array(def, "modifiers"):
+		if m is Dictionary and ((m as Dictionary).get("flat") is String or (m as Dictionary).get("percent") is String):
+			return true
+	return false
+
+
+## 스탯이 바뀌었다: 수식 수정자의 값이 달라진 상태는 수정자를 다시 붙인다(중첩 수만큼).
+func _refresh_formulas() -> void:
+	if _refreshing:
+		return
+	_refreshing = true
+	for id: String in _active.keys():
+		var st: Dictionary = _active[id]
+		if not st.has("mods"):
+			continue
+		var def := _db.get_entry("statuses", id)
+		var now := _mods(def)
+		if now == st["mods"]:
+			continue
+		st["mods"] = now
+		_stats.remove_source(SOURCE_PREFIX + id)
+		for i in int(st["stacks"]):
+			_stats.add_modifiers_from_data(SOURCE_PREFIX + id, now)
+	_refreshing = false
+
+
+func _periodic(trigger: String, amount: float, unit_only: String = "") -> void:
 	for id: String in _active.keys():
 		if not _active.has(id):
+			continue
+		if not unit_only.is_empty() and str((_active[id] as Dictionary)["unit"]) != unit_only:
 			continue
 		var n := stacks(id)
 		for p: Variant in JsonUtil.get_array(_db.get_entry("statuses", id), "periodic"):

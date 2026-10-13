@@ -47,6 +47,7 @@ func _init(p_db: GameDatabase, bases: Dictionary = {}, level: int = 1, resource_
 	# 람다로 self를 잡으면 RefCounted 순환 참조(누수)가 생기므로 메서드로 잇는다.
 	statuses.applied.connect(_on_status_applied)
 	statuses.removed.connect(_on_status_removed)
+	pool.sync_initial()
 
 
 func get_level() -> int:
@@ -58,15 +59,19 @@ func set_level(level: int) -> void:
 
 
 ## 게임 내 시간 경과(탐험): 자원 재생·감소 → 상태이상 주기 효과·지속시간 → 수정자 지속시간 → 광원.
+## 긴 시간은 status.max_tick_hours씩 나눠 흐른다(도중에 허기가 바닥나면 그 뒤 시간만 아사 피해).
 func advance_hours(hours: float) -> void:
-	if dead or hours <= 0.0:
-		return
-	pool.tick("time", hours)
-	if dead:
-		return
-	statuses.tick_hours(hours)
-	stats.tick("hour", hours)
-	light.burn(hours)
+	var step := maxf(0.01, float(db.bal("status.max_tick_hours", 1.0)))
+	var left := hours
+	while left > 0.000001 and not dead:
+		var h := minf(step, left)
+		left -= h
+		pool.tick("time", h)
+		if dead:
+			return
+		statuses.tick_hours(h)
+		stats.tick("hour", h)
+		light.burn(h)
 
 
 ## 전투 턴 경과(M2 CTB가 부른다).
@@ -80,12 +85,15 @@ func advance_turns(n: float = 1.0) -> void:
 	stats.tick("turn", n)
 
 
-## 휴식: 휴식 회복을 먼저 더하고 그만큼 시간이 흐른다.
+## 휴식: 한 시간씩(status.max_tick_hours) 휴식 회복을 더하고 그만큼 시간이 흐른다.
 func rest(hours: float) -> void:
-	if dead:
-		return
-	pool.tick("rest", hours)
-	advance_hours(hours)
+	var step := maxf(0.01, float(db.bal("status.max_tick_hours", 1.0)))
+	var left := hours
+	while left > 0.000001 and not dead:
+		var h := minf(step, left)
+		left -= h
+		pool.tick("rest", h)
+		advance_hours(h)
 
 
 func kill(cause: String) -> void:
@@ -147,12 +155,16 @@ func remove_passive(passive_id: String) -> void:
 	_sync_passive_flags()
 
 
-## 패시브가 바뀌면 컴포넌트에 반영할 값(지속 피해 배율 dot_mult).
+## 패시브가 바뀌면 컴포넌트에 반영할 값(지속 피해 배율 dot_mult, 상태 면역 status_immune).
 func _sync_passive_flags() -> void:
 	var m := 1.0
+	var immune: Array[String] = []
 	for p in passives:
 		m *= JsonUtil.get_float(p, "dot_mult", 1.0)
+		for st: Variant in JsonUtil.get_array(p, "status_immune"):
+			immune.append(str(st))
 	statuses.dot_mult = m
+	statuses.passive_immune = immune
 
 
 ## 기본 공격이 원거리인가(활 등 무기 데이터 "ranged": true).
@@ -179,6 +191,8 @@ func debug_revive() -> void:
 
 func _on_status_applied(status_id: String) -> void:
 	status_changed.emit(status_id, true)
+	if not JsonUtil.get_array(db.get_entry("statuses", status_id), "grants_immunity").is_empty():
+		statuses.purge_immune()  # 광분: 이미 걸린 공포·기절도 풀린다
 
 
 func _on_status_removed(status_id: String) -> void:

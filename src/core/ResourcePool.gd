@@ -25,6 +25,7 @@ var _depleted: Dictionary = {}
 var _last_source: Dictionary = {} # id -> 마지막으로 값을 바꾼 출처(사인 판정용)
 var _mins: Dictionary = {}        # id -> 하한(디버그 무적 등). 기본 0
 var _context: Dictionary = {}     # "dungeon" / "combat" -> bool
+var _clipped: Dictionary = {}     # id -> 최대치가 줄어 잘린 현재값(최대치가 다시 늘면 그만큼 돌려준다)
 
 
 ## ids가 비면 활성화된(enabled) 모든 자원을 가진다.
@@ -190,7 +191,18 @@ func regen_per_unit(id: String, trigger: String) -> float:
 		total += rate
 	if not any:
 		return 0.0
-	return _stats.apply_modifiers("regen:" + id, total)
+	# 수정자 "regen:<id>": percent는 모든 기준에, flat은 휴식(rest)이 아닌 기준에만 더한다(휴식은 시간 경과와 함께 흐르므로 두 번 들지 않게).
+	# "regen:<id>:<trigger>"는 그 기준에만.
+	var flat := 0.0
+	var pct := 0.0
+	for mod: Modifier in _stats.get_modifiers("regen:" + id):
+		pct += mod.percent
+		if trigger != "rest":
+			flat += mod.flat
+	for mod: Modifier in _stats.get_modifiers("regen:%s:%s" % [id, trigger]):
+		pct += mod.percent
+		flat += mod.flat
+	return (total + flat) * maxf(0.0, 1.0 + pct)
 
 
 ## 현재 들어가 있는 임계 구간 목록(불러오기 후 상태 동기화용).
@@ -211,11 +223,31 @@ func recompute_max() -> void:
 			continue
 		var old_ratio := get_ratio(id)
 		_max[id] = new_max
-		var cur := minf(float(_current[id]), new_max)
+		var cur := float(_current[id])
+		var clipped := float(_clipped.get(id, 0.0))
+		if cur > new_max:
+			clipped += cur - new_max
+			cur = new_max
+		elif new_max > old_max and clipped > 0.0:
+			var back := minf(clipped, new_max - old_max)  # 일시 약화가 풀리면 잘렸던 만큼 돌아온다(R11)
+			cur = minf(new_max, cur + back)
+			clipped -= back
+		_clipped[id] = clipped
 		_current[id] = cur
 		changed.emit(id, cur, new_max)
 		_check_thresholds(id, old_ratio, get_ratio(id))
 		_check_zero(id)
+
+
+## 소유자가 시그널을 이은 뒤 부른다: 처음부터 임계 구간·고갈인 자원의 상태를 알린다.
+func sync_initial() -> void:
+	for id in _ids:
+		var r := get_ratio(id)
+		for t: Dictionary in get_def(id).thresholds:
+			if _in_zone(t, r):
+				threshold_crossed.emit(id, t, true)
+		if float(_current[id]) <= 0.0 and get_max(id) > 0.0:
+			depleted.emit(id)
 
 
 ## 저장용: 레벨·현재값·문맥만. 최대치는 불러올 때 수식으로 다시 계산한다.
@@ -227,6 +259,7 @@ func load_dict(d: Dictionary) -> void:
 	_level = JsonUtil.get_int(d, "level", _level)
 	_context = JsonUtil.get_dict(d, "context").duplicate()
 	var cur := JsonUtil.get_dict(d, "current")
+	_clipped.clear()
 	for id in _ids:
 		_max[id] = _calc_max(id)
 		_current[id] = clampf(JsonUtil.get_float(cur, id, _max[id]), 0.0, _max[id])

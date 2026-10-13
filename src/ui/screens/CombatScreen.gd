@@ -38,6 +38,8 @@ func _ready() -> void:
 	margin.add_child(col)
 	col.add_child(_build_stage())
 	col.add_child(_build_bottom())
+	for h: Dictionary in battle.history:  # 화면이 열리기 전에 나온 안내(전투 시작·수호자 대사·몬스터 타입)
+		EventBus.log_message.emit(Strings.t(str(h["key"]), h["args"]), str(h["kind"]))
 	battle.message.connect(func(key: String, args: Dictionary, kind: String) -> void:
 		EventBus.log_message.emit(Strings.t(key, args), kind))
 	battle.event.connect(_on_event)

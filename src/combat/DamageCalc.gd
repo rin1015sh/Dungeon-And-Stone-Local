@@ -12,6 +12,8 @@ extends RefCounted
 ##   "str_bonus": k — 물리 공격력에 근력×k를 더한다(키르뒤 휘두르기). 공격자 상태의 crit_bonus도 치명타율에 더한다(샤벨 타이거 기습).
 ##   약점: 몬스터 weak_point {name_ko, multiplier(없으면 combat.weak_point_damage_mult), ignore_reduction, requires_status}.
 ##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다.
+##   받는/주는 피해 수정자는 하나하나 곱한다(방어 −50% × 피의 장막 −40% = ×0.3 — 더해서 0이 되지 않는다).
+##   결과 raw = 상성·피해 수정자·속성을 곱하기 전 피해(비율형 추가 피해의 기준).
 ## 무작위 값은 rolls(0~1)로 받아서 순수 계산만 한다(테스트 가능).
 
 
@@ -32,24 +34,24 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	var defense := 0.0 if JsonUtil.get_bool(effect, "ignore_defense") else defender.stats.get_value("m_res" if magic else "p_res")
 	defense *= 1.0 - clampf(JsonUtil.get_float(effect, "defense_ignore") + Passives.sum(attacker, "defense_ignore"), 0.0, 1.0)  # 방어 일부 무시(송곳니 관통 0.2)
 	var k := _c(db, "defense_k", 100.0)
-	var amount := attack_power(db, attacker, effect) * _power(effect, defender) * k \
+	var raw := attack_power(db, attacker, effect) * _power(effect, defender) * k \
 		/ (k + maxf(0.0, defense) * _c(db, "defense_per_point", 4.0))
-	amount *= Passives.damage_mult_vs(attacker, defender)
-	amount *= float(out["affinity"])
-	# 약점(weak_point)을 노려 성공하면 "ignore_reduction": true인 몬스터는 받는 피해 감소를 무시한다(스켈레톤 핵).
-	var wp := defender.weak_point()
-	var taken := _modifier_mult(defender.stats, "dmg_taken", dtype, category)
-	amount *= maxf(1.0, taken) if weak and JsonUtil.get_bool(wp, "ignore_reduction") else taken
-	amount *= _modifier_mult(attacker.stats, "dmg_dealt", dtype, category)
-	amount *= element_mult(db, attacker, defender, dtype)
+	raw *= Passives.damage_mult_vs(attacker, defender)
 	var variance := _c(db, "damage_variance", 0.1)
-	amount *= 1.0 + (JsonUtil.get_float(rolls, "var", 0.5) * 2.0 - 1.0) * variance
+	raw *= 1.0 + (JsonUtil.get_float(rolls, "var", 0.5) * 2.0 - 1.0) * variance
+	# 약점(weak_point)을 노려 성공하면 "ignore_reduction": true인 몬스터는 받는 피해 감소만 무시한다(스켈레톤 핵 — 늘어나는 것은 그대로).
+	var wp := defender.weak_point()
 	if weak:
-		amount *= JsonUtil.get_float(wp, "multiplier", _c(db, "weak_point_damage_mult", 2.0))
+		raw *= JsonUtil.get_float(wp, "multiplier", _c(db, "weak_point_damage_mult", 2.0))
 	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker, Passives.crit_bonus(attacker, dtype) + JsonUtil.get_float(effect, "crit_bonus")
 			+ attacker.statuses.sum_key("crit_bonus")):
 		out["crit"] = true
-		amount *= _c(db, "crit_mult", 1.5)
+		raw *= _c(db, "crit_mult", 1.5)
+	out["raw"] = raw
+	var amount := raw * float(out["affinity"])
+	amount *= _modifier_mult(defender.stats, "dmg_taken", dtype, category, weak and JsonUtil.get_bool(wp, "ignore_reduction"))
+	amount *= _modifier_mult(attacker.stats, "dmg_dealt", dtype, category)
+	amount *= element_mult(db, attacker, defender, dtype)
 	var dealt := 0 if float(out["affinity"]) <= 0.0 else maxi(int(_c(db, "min_damage", 1.0)), roundi(amount))
 	out["amount"] = dealt
 	if bool(out["crit"]) and dealt > 0:
@@ -104,7 +106,7 @@ static func rider(db: GameDatabase, attacker: Actor, defender: Actor, dtype: Str
 	return maxi(0, roundi(amount))
 
 
-## 위력: 대상이 power_if_status의 상태 중 하나면 그 위력, 아니면 power.
+## 위력: 대상이 power_if_status의 상태 중 하나면 그 위력, 아니면 power. 오인·예고 배율(BattleTargets.boosted)은 둘 다에 곱해져 있다.
 static func _power(effect: Dictionary, defender: Actor) -> float:
 	var cond := JsonUtil.get_dict(effect, "power_if_status")
 	if not cond.is_empty():
@@ -122,12 +124,17 @@ static func damage_category(db: GameDatabase, dtype: String) -> String:
 	return "physical"
 
 
-## "dmg_taken:<유형|분류|all>" 수정자를 곱으로 모은다.
-static func _modifier_mult(stats: StatBlock, prefix: String, dtype: String, category: String) -> float:
-	var m := 1.0
+## "dmg_taken:<유형|분류|all>" 수정자를 하나하나 곱으로 모은다(flat은 기준 1에 더한다). skip_reductions면 1 미만으로 줄이는 것은 뺀다.
+static func _modifier_mult(stats: StatBlock, prefix: String, dtype: String, category: String, skip_reductions: bool = false) -> float:
+	var base := 1.0
+	var mult := 1.0
 	for key: String in [dtype, category, "all"]:
-		m *= stats.apply_modifiers(prefix + ":" + key, 1.0)
-	return maxf(0.0, m)
+		for mod: Modifier in stats.get_modifiers(prefix + ":" + key):
+			if skip_reductions and (mod.percent < 0.0 or mod.flat < 0.0):
+				continue
+			base += mod.flat
+			mult *= maxf(0.0, 1.0 + mod.percent)
+	return maxf(0.0, base * mult)
 
 
 static func _c(db: GameDatabase, key: String, fallback: float) -> float:

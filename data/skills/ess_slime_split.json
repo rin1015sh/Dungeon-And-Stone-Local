@@ -9,7 +9,8 @@
     {
       "type": "restore_resource",
       "resource": "hp",
-      "amount": "-floor({max_hp} * 0.3)"
+      "amount": "-floor({max_hp} * 0.3)",
+      "non_lethal": true
     },
     {
       "type": "summon",
@@ -18,7 +19,8 @@
     }
   ],
   "uses_per_battle": 1,
-  "notes": "정수판 [변]: 전투당 1회, 생명력 30%를 들여 슬라임 소환수 1체(자기 차례 2번 유지)",
+  "notes": "정수판 [변]: 전투당 1회, 생명력 30%를 들여 슬라임 소환수 1체(자기 차례 2번 유지). 생명력이 30% 이하면 쓸 수 없고(min_hp_ratio), 대가로 쓰러지지 않는다(non_lethal)",
   "essence_of": "slime_split",
-  "source": "placeholder"
+  "source": "placeholder",
+  "min_hp_ratio": 0.3
 }

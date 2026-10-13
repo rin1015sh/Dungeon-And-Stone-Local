@@ -13,6 +13,15 @@ static func on_start(b: Battle) -> void:
 				(p.actor as PlayerCharacter).knowledge.see((e.actor as Monster).monster_id)
 
 
+## 전투 중에 새로 나타난 몬스터(증원·소환)도 "봤다".
+static func see(b: Battle, u: Combatant) -> void:
+	if not u.actor is Monster:
+		return
+	for p in b.units:
+		if p.actor is PlayerCharacter:
+			(p.actor as PlayerCharacter).knowledge.see((u.actor as Monster).monster_id)
+
+
 ## 피해 사건 하나(공격자 c): 명중했으면 그 유형의 상성을 기록하고, 처음 알게 된 약점·면역·저항은 알린다.
 static func on_damage(b: Battle, c: Combatant, e: Dictionary) -> void:
 	var target: Variant = e.get("target")

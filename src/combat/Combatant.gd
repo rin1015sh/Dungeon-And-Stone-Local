@@ -16,6 +16,7 @@ var uses: Dictionary = {}       ## 스킬 id -> 이번 전투에서 쓴 횟수(u
 var acted: int = 0              ## 이번 전투에서 행동한 횟수(AI 첫 차례·순환)
 var was_hit: bool = false       ## 마지막 자기 행동 뒤에 피해를 받았는가(AI)
 var memo: Dictionary = {}       ## 보스 패턴·예고 공격의 전투 중 기록(BossHooks, BattleDelayed)
+var summoned: bool = false      ## 전투 중 생겨난 개체(소환·분열·동반·증원). 아군 소환수는 AI가 움직이고 승패에 들지 않는다
 
 
 func _init(p_actor: Actor, p_side: int, p_row: String = "front", p_order: int = 0) -> void:

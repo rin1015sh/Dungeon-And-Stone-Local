@@ -28,12 +28,35 @@ static func on_start(b: Battle) -> void:
 		u.gauge += Passives.sum(u.actor, "start_gauge")
 
 
-## 전투 목표를 정한다(화면이 조우의 battle_rules로). enemy_statuses(수수께끼 문지기 약화·강화)는 적 전원에게 건다.
+## 전투 목표를 정한다(화면이 조우의 battle_rules로). enemy_statuses(수수께끼 문지기 약화·강화)는 적 전원에게 건다
+## (나중에 들어오는 증원·소환에도 — joined).
 static func set_objective(b: Battle, rules: Dictionary) -> void:
 	b.objective = rules.duplicate()
-	for st: Variant in JsonUtil.get_array(rules, "enemy_statuses"):
-		for u in b.side_units(Combatant.SIDE_ENEMY):
-			u.actor.statuses.apply(str(st))
+	for u in b.side_units(Combatant.SIDE_ENEMY):
+		_objective_statuses(b, u)
+
+
+static func _objective_statuses(b: Battle, u: Combatant) -> void:
+	if u.side != Combatant.SIDE_ENEMY:
+		return
+	for st: Variant in JsonUtil.get_array(b.objective, "enemy_statuses"):
+		Passives.try_status(b.db, null, null, u.actor, str(st))
+
+
+## 전투 중에 새 개체가 들어왔다(소환·분열·증원): 소환수 표시, 전투 시작 처리(몬스터 타입·보스 패턴·목표 상태·도감).
+static func joined(b: Battle, u: Combatant) -> void:
+	u.summoned = true
+	_objective_statuses(b, u)
+	BattlePassives.on_join(b, u)
+	BossHooks.on_join(b, u)
+	BattleKnowledge.see(b, u)
+
+
+## 공격 스킬을 한 번 썼다: 공격자의 consume_on_attack 상태(진군 명령·기습)를 푼다.
+static func consume_on_attack(b: Battle, c: Combatant) -> void:
+	for st in c.actor.statuses.ids():
+		if JsonUtil.get_bool(b.db.get_entry("statuses", st), "consume_on_attack"):
+			c.actor.statuses.remove(st)
 
 
 ## 전투당 사용 횟수(skill "uses_per_battle")가 남았는가.
@@ -72,15 +95,25 @@ static func fear_skip(b: Battle, c: Combatant) -> bool:
 	return c.actor.statuses.has_flag("may_skip_turn") and b.rng.chance(float(b.db.bal("combat.may_skip_chance", 0.3)))
 
 
-## 전투가 끝났다: 게이지를 비우고 전투 한정 상태(statuses "battle_only": true)를 지운다.
+## 전투가 끝났다: 게이지·전투 표식·오러를 비우고, 전투 한정 상태(statuses "battle_only": true)와
+## 차례 단위 일시 상태(속박·방어 태세·기절 …)를 지운다. "lingers": true인 상태(독·출혈 …)는 남는다(StatusSet.clear_temporary).
 static func cleanup(b: Battle) -> void:
 	for u in b.units:
 		u.actor.meters.clear()
-		if u.actor.has_meta(Passives.REVIVED_META):
-			u.actor.remove_meta(Passives.REVIVED_META)
+		for meta: String in [Passives.REVIVED_META, Passives.MARKED_META]:
+			if u.actor.has_meta(meta):
+				u.actor.remove_meta(meta)
+		u.actor.stats.remove_source_prefix(BattlePassives.AURA_SOURCE)
 		for id in u.actor.statuses.ids():
 			if JsonUtil.get_bool(b.db.get_entry("statuses", id), "battle_only"):
 				u.actor.statuses.remove(id)
+		u.actor.statuses.clear_temporary()
+
+
+## 개체가 전장을 떠났다(도주·물러남·흡수·만료): 그 개체의 예고를 거두고 오러를 다시 계산한다.
+static func left_battle(b: Battle, u: Combatant) -> void:
+	BattleDelayed.drop(b, u)
+	BattlePassives.refresh_auras(b)
 
 
 ## 대열 섞기: 그 진영의 전열·후열 값을 무작위로 다시 나눠 준다.
@@ -94,16 +127,20 @@ static func shuffle_rows(b: Battle, side: int) -> void:
 
 
 ## 여신의 눈물: 상대 진영의 해당 계열에게 고정 신성 피해 + 상태. 해당하는 적이 없으면 사용자 회복.
+## 피해는 보호막·버티기(revive_once)·피해로 풀리는 상태를 거친다(DamageApply).
 static func smite(b: Battle, c: Combatant, e: Dictionary) -> void:
 	var hit := false
 	for f in b.opponents(c):
 		var fam: Array = JsonUtil.get_array((f.actor as Monster).def, "family") if f.actor is Monster else []
 		if fam.any(func(x: Variant) -> bool: return (e.get("families", []) as Array).has(x)):
 			hit = true
-			f.actor.pool.modify("hp", -float(e.get("amount", 0.0)), "smite")
-			if not str(e.get("status", "")).is_empty():
-				f.actor.statuses.apply(str(e["status"]))
+			var ctx := EffectContext.new(b.db, c.actor, f.actor, b.rng)
 			b.message.emit("combat.smite", {"target": f.label(), "amount": int(e.get("amount", 0.0))}, "good")
+			DamageApply.hurt(ctx, f.actor, int(e.get("amount", 0.0)), "smite", "holy")
+			if not str(e.get("status", "")).is_empty():
+				Passives.try_status(b.db, null, c.actor, f.actor, str(e["status"]))
+			for m: Dictionary in ctx.messages:
+				b.message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	if not hit:
 		c.actor.pool.modify("hp", float(e.get("heal", 0.0)) * c.actor.statuses.heal_mult(), "smite")
 		b.message.emit("effect.smite_heal", {"name": c.label()}, "good")
@@ -115,10 +152,13 @@ static func summon(b: Battle, c: Combatant, e: Dictionary) -> void:
 	if not b.db.has_entry("monsters", mid) or b.side_units(c.side).size() >= int(b.db.bal("combat.max_side_units", 6)):
 		b.message.emit("combat.summon_fail", {"name": c.label()}, "info")
 		return
+	if c.actor.dead:
+		return  # 시전하다 쓰러졌다(정수판 분열의 생명력 소모 등)
 	var m := Monster.create(b.db, mid, " +")
 	var u := b.add(m, c.side, JsonUtil.get_str(m.behavior(), "row", "front"))
 	if int(e.get("rounds", 0)) > 0:
 		u.memo[BattleSpawns.EXPIRE] = int(e["rounds"])
+	joined(b, u)
 	b.message.emit("combat.summon", {"name": c.label(), "monster": m.display_name}, "danger")
 	b.event.emit({"type": "summon", "unit": u})
 	BattlePassives.refresh_auras(b)
@@ -143,6 +183,7 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 					wu.fled = true
 					b.message.emit("combat.withdraw", {"name": wu.label()}, "warn")
 					b.event.emit({"type": "fled", "unit": wu})
+					left_battle(b, wu)
 			"damage":
 				BattleKnowledge.on_damage(b, c, e)
 				var hu := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
@@ -165,8 +206,9 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 				continue
 			"seal":
 				var lu := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
-				if lu != null:
-					lu.cooldowns[str(e.get("skill", ""))] = int(e.get("rounds", 2)) + 1
+				if lu != null:  # 자기 차례 시작에 하나씩 준다 → rounds번의 자기 차례 동안 막힌다(이미 더 긴 쿨타임이면 그대로)
+					var sid := str(e.get("skill", ""))
+					lu.cooldowns[sid] = maxi(int(lu.cooldowns.get(sid, 0)), int(e.get("rounds", 2)) + 1)
 				continue
 			"shuffle_rows":
 				var su := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null

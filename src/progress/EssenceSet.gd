@@ -44,9 +44,13 @@ func absorb(a: Actor, inst: Dictionary) -> String:
 		return why
 	var up := upgrade_index(a.db, inst)
 	if up >= 0:
+		var was_locked := is_locked(absorbed[up])
 		_detach(a, absorbed[up])
 		absorbed[up] = inst.duplicate(true)
 		absorbed[up].erase("locked")
+		if was_locked:  # 잠긴 자리를 바꿨다 — 잠금은 그대로(슬롯 수를 넘지 않는다)
+			absorbed[up]["locked"] = true
+			return ""
 	else:
 		absorbed.append(inst.duplicate(true))
 	_attach(a, inst)
@@ -64,12 +68,14 @@ func absorb_pending(a: Actor, i: int) -> String:
 
 
 ## 흡수한 정수 i를 제거한다(삭제 비용 계산·지불은 부르는 쪽). 제거했으면 true.
-func remove(a: Actor, i: int) -> bool:
+## paid = 돈을 내고 지운 것(다음 삭제 비용이 오른다). 영혼 베기처럼 빼앗긴 것은 false.
+func remove(a: Actor, i: int, paid: bool = true) -> bool:
 	if i < 0 or i >= absorbed.size():
 		return false
 	_detach(a, absorbed[i])
 	absorbed.remove_at(i)
-	deletions += 1
+	if paid:
+		deletions += 1
 	sync_slots(a)
 	return true
 

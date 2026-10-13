@@ -82,7 +82,9 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 		if c == null:
 			break
 		t += 1
-		b.act(c, _party_action(b, c, cfg, str(sc["ai"])) if c.side == Combatant.SIDE_PARTY else b.ai_action(c))
+		var action := _party_action(b, c, cfg, str(sc["ai"])) if b.is_player_controlled(c) else b.ai_action(c)
+		if not b.act(c, action) and not b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null}):
+			b.act(c, {"kind": "guard"})  # 거부된 행동이 같은 차례를 되풀이하지 않게(화면과 같은 대체 순서)
 	var downs := party.filter(func(a: Actor) -> bool: return a.dead).size()
 	return {"win": b.result == Battle.RESULT_VICTORY, "turns": t, "downs": downs}
 

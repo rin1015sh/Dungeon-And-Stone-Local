@@ -21,6 +21,7 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 		bases: Dictionary) -> PlayerCharacter:
 	var level := int(p_db.bal("char_creation.start_level", 1))
 	var pc := PlayerCharacter.new(p_db, bases, level)
+	pc.progression.exp_total = Progression.exp_for_level(p_db, level)  # 시작 레벨만큼의 경험치(첫 경험치에 레벨이 내려가지 않게)
 	pc.id = "player"
 	pc.race_id = p_race
 	pc.class_id = p_class
@@ -117,18 +118,18 @@ func progress_load_dict(d: Dictionary) -> void:
 	boons = JsonUtil.get_dict(d, "boons").duplicate()
 	var bases := JsonUtil.get_dict(d, "base_stats")
 	for k: String in bases:
-		stats.set_base(k, float(bases[k]))
+		if stats.has_stat(k):
+			stats.set_base(k, float(bases[k]))
+	change_level(Progression.level_for(db, progression.exp_total))  # 레벨(자원 최대치)과 정수 슬롯 잠금을 경험치에 맞춘다
 	hotbar.clear()
 	for v: Variant in JsonUtil.get_array(d, "hotbar"):
 		hotbar.append(str(v))
 	_ensure_hotbar()
 
 
-## 영구 강화로 바뀐 기본값(빙정·얼음 조각 같은 영약) — 저장용.
+## 기본 스탯 전부(캐릭터 생성 때 굴린 값 + 영약으로 오른 값) — 저장용.
 func _boosted_bases() -> Dictionary:
 	var out := {}
-	for k: String in boons:
-		var stat := k.get_slice("@", 1)
-		if not stat.is_empty() and stats.has_stat(stat):
-			out[stat] = stats.get_base(stat)
+	for k in stats.ids():
+		out[k] = stats.get_base(k)
 	return out

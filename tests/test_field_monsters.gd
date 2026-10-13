@@ -155,6 +155,15 @@ func test_resolve_victory_and_flee() -> void:
 	s.resolve_encounter(g2, Battle.RESULT_FLED, 1)
 	assert_true(s.monsters.groups.has(g2), "도망치면 무리는 남는다")
 	assert_true(g2.grace_until > s.clock.total_hours, "도망친 뒤 잠시 쫓지 않는다")
+	var g3: FieldMonsters.Group = s.monsters.groups[1] if s.monsters.groups[0] == g2 else s.monsters.groups[0]
+	var first := g3.monster_ids[0]
+	var size := g3.monster_ids.size()
+	s.engage(g3, false)
+	s.resolve_encounter(g3, Battle.RESULT_FLED, 1, [first] as Array[String])
+	if size > 1:
+		assert_eq(g3.monster_ids.size(), size - 1, "쓰러뜨리고 도망치면 쓰러뜨린 몬스터는 무리에서 빠진다")
+	else:
+		assert_false(s.monsters.groups.has(g3), "다 쓰러뜨렸으면 도망쳐도 이긴 것")
 
 
 ## 플레이어가 가만히 있어도 실시간으로 몬스터가 다가와 전투가 시작되고, 전투 중에는 시간이 멈추고, 끝나면 다시 흐른다.

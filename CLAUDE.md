@@ -82,13 +82,14 @@ src/
   autoload/              EventBus, DataRegistry, GameState, AudioBus
   core/                  JsonUtil, Formula, StatDef, StatBlock, Modifier, ResourceDef, ResourcePool, Rng, Strings,
                          GameClock, DataNames, GameDatabase, ScriptRegistry, ContentRegistries,
-                         ValidatorBase, DataValidator, validation/{Core,Content,World}Rules   (오토로드 비의존)
+                         ValidatorBase, DataValidator, validation/{Core,Content,World,Boss,Rift,Effect,Passive,BossParam}Rules   (오토로드 비의존)
   entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, StatusSet,
                          LightSource, CharacterRoller
   combat/                Battle, BattleRules(은신·증원·도주·사건·정리), BattleTargets(대상·오인), Timeline, DamageCalc, Passives,
                          MonsterAi + ai/<조건>.gd, Meters(전투 게이지), BossHooks + BossPattern + patterns/<id>.gd(보스 페이즈·라운드),
                          BattleDelayed(예고 공격), BattleTargets, BattleObjective(생존 웨이브), BattlePassives(전투 단위 패시브),
                          BattleSpawns(분열·흡수·소환 만료),
+                         DamageApply(모든 피해 공통: 보호막→버티기→생명력→피해로 풀리는 상태),
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          CrossLayout·CrossTerrain·CaveCarver·CrossLayoutCheck(1층 십자가 뼈대·굴 파기·검사), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
@@ -129,6 +130,7 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **빙하굴(G6)에서 생긴 키**: 효과 `barrier`(보호막 상태 `barrier: true`, 양 = 시전자 스탯 수식)·`permanent_stat`(영구 스탯, `key`·`max_times` — `Actor.boons`), `remove_status` `{"kind": "debuff", "count"}`, 피해 `rider {damage_type, ratio|flat}`·`str_bonus`·`defense_ignore`, 패시브 `hit_rider`·`self_statuses_on_start`·`turn_end_foe_status {status, target: all|random}`, `ally_aura {"all": true}`, 상태 `grants_immunity`·`crit_bonus`, AI 조건 `ally_hp_below`·대상 `ally_lowest_hp`, 예고 `warn`/`fire` 문구 키(대상이 여럿이어도 안내 한 번), 챕터 `hazards`(RiftHazards)·히든 피스 `near_entry`, 시뮬레이터 시나리오 `party_statuses`. **속성 내성·감응도**(`resist_<유형>`·`affinity_<유형>`)가 피해에 들어간다(GC1). 저체온증 민첩은 −30%(CTB, GC2).
 - **녹색 탄광(G7)에서 생긴 키**: 효과 `split`(분열 — 같은 몬스터, 생명력 반씩)·`absorb_ally {monsters, heal_ratio}`, `summon` `rounds`(소환수 유지 차례), 패시브 `defense_ignore`·`on_damaged_by {damage_types, chance, self_damage_ratio}`·`death_effects`(쓰러지면 상대 전원)·`low_hp_summons {ratio, monsters}`, 상태 정의 `on_hit`(상태가 주는 적중 효과 — 독성부여), 챕터 `exit_requires.bypass {stat, at_least}`, 세부 스탯 `digestion`(소화력 → 허기). 수식 키 `{max_<자원>}`은 상태 periodic에서도 된다.
 - **강철의 묘(G8)에서 생긴 키**: 함정 `hazards[].hidden·detect·disarm·bypass`(육감 탐지·손재주 해제·물리내성으로 밟아 부숨), 패시브 `trap_watcher`·`revive_once {ratio|hp}`, 상태 flag `always_hit`, `push_back` `chance`, `summon` `pick`, 균열 `riddle {set, weakened_status, empowered_status, essence_mult}` + 조우 `"riddle": true` + 벽화 `hidden[].mural` + 컬렉션 `riddles`(data/riddles), `Knowledge` 사실(`learn_fact`), 전투 규칙 `enemy_statuses`·`essence_mult`(`BattleRules.set_objective`), 피해 유형 `arcane`(무속성).
+- **감사 수정(2026-10-13)에서 생긴 규칙**: 상태 `lingers`(전투 뒤 남음 — 나머지 차례 단위 상태는 전투 끝에 풀림, 탐험 중 `status.linger_hours_per_turn`시간 = 1차례), 아군 소환수 `Combatant.summoned`(AI·처치 아님·승패 제외), 피해가 빗나가거나 면역이면 딸린 효과 생략(`EffectContext.landed`, 효과 `always`/`to: self` 예외), 상태 부여는 `Passives.try_status`(면역·저항·지속 상한), 피해는 `DamageApply.hurt`, 효과 `apply_status` `to: self`·`unless_target_status`, `restore_resource` `non_lethal`, 스킬 `min_hp_ratio`, 수정자 `regen:<자원>:<기준>`. 가정 AU1~AU26.
 - **상태이상 키(G4)**: `resist {stats}`(남이 건 것만 저항), `immune_if {stat, at_least}`, `on_max_stacks {status}`, `break_on_damage(_types)`, `heal_mult`, `misdirect {chance, pool, power_mult, ignore_defense}`, `battle_only`, 수정자 값에 수식 문자열(걸릴 때 계산).
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.

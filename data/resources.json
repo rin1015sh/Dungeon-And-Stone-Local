@@ -29,7 +29,7 @@
       {"trigger": "rest", "basis": "max_ratio", "rate": "{bal.rest.soul_ratio_per_hour}"}
     ],
     "thresholds": [],
-    "on_zero": {"status": "soul_exhaustion", "recover_at_ratio": 0.0}
+    "on_zero": {"status": "soul_exhaustion", "recover_at_ratio": 0.1}
   },
   {
     "id": "hunger",

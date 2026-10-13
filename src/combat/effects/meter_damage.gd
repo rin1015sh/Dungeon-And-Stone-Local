@@ -12,8 +12,8 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if amount <= 0:
 		ctx.say("combat.meter_damage_none", args, "info")
 		return false
-	t.pool.modify("hp", -float(amount), "attack:" + ctx.source.id)
 	ctx.say("combat.hit", args, "danger")
+	DamageApply.hurt(ctx, t, amount, "attack:" + ctx.source.id, "dark")
 	ctx.events.append({"type": "damage", "target": t, "hit": true, "amount": amount, "crit": false, "weak": false,
 		"damage_type": "dark", "affinity": 1.0})
 	return true

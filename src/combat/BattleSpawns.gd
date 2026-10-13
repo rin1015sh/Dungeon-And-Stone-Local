@@ -21,6 +21,7 @@ static func split(b: Battle, c: Combatant, e: Dictionary) -> void:
 	m.pool.set_current("hp", half)
 	var u := b.add(m, c.side, c.row)
 	u.uses[str(e.get("skill", ""))] = 99
+	BattleRules.joined(b, u)
 	b.message.emit("combat.split", {"name": c.label(), "monster": m.display_name}, "danger")
 	b.event.emit({"type": "summon", "unit": u})
 	BattlePassives.refresh_auras(b)
@@ -34,7 +35,7 @@ static func absorb(b: Battle, c: Combatant, e: Dictionary) -> void:
 			var healed := c.actor.pool.modify("hp", c.actor.pool.get_max("hp") * float(e.get("heal_ratio", 0.1)) * c.actor.statuses.heal_mult(), "absorb")
 			b.message.emit("combat.absorb", {"name": c.label(), "target": u.label(), "amount": roundi(healed)}, "danger")
 			b.event.emit({"type": "fled", "unit": u})
-			BattlePassives.refresh_auras(b)
+			BattleRules.left_battle(b, u)
 			return
 	b.message.emit("combat.absorb_none", {"name": c.label()}, "info")
 
@@ -48,4 +49,4 @@ static func tick_expire(b: Battle, c: Combatant) -> void:
 		c.fled = true
 		b.message.emit("combat.summon_expired", {"name": c.label()}, "info")
 		b.event.emit({"type": "fled", "unit": c})
-		BattlePassives.refresh_auras(b)
+		BattleRules.left_battle(b, c)

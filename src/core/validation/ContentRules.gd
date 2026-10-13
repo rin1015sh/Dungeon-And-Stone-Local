@@ -1,6 +1,13 @@
 class_name ContentRules
 extends RefCounted
-## 검사 규칙: 몬스터·스킬·정수·아이템.
+## 검사 규칙: 몬스터·스킬·정수·아이템. 패시브 정의는 PassiveRules, 효과 목록의 깊은 검사는 EffectRules.
+
+## 몬스터 AI 규칙의 대상 고르기(MonsterAi.target).
+const AI_TARGETS := ["random", "lowest_hp", "highest_hp", "with_status", "without_status", "highest_meter",
+	"guard_front", "taunt_first", "ally_lowest_hp"]
+## AI 조건(src/combat/ai/) -> 그 조건이 읽는 참조 키 [키, 컬렉션].
+const AI_CONDITION_REFS := {"foe_status": ["status", "statuses"], "self_status": ["status", "statuses"],
+	"foe_meter_at_least": ["meter", "meters"]}
 
 
 static func run(v: ValidatorBase) -> void:
@@ -49,20 +56,7 @@ static func _monsters(v: ValidatorBase) -> void:
 			v.check_formula(w + ".resources", res[r])
 		for s: Variant in JsonUtil.get_array(m, "skills"):
 			v.ref(w, "skills", s)
-		for rule: Variant in JsonUtil.get_array(m, "ai"):
-			var rd: Dictionary = rule if rule is Dictionary else {}
-			v.ref(w + ".ai", "skills", rd.get("use"))
-			var conds: Array = [rd]
-			conds.append_array(JsonUtil.get_array(rd, "also"))
-			for cd: Variant in conds:
-				var cond := JsonUtil.get_str(cd if cd is Dictionary else {}, "if", "always")
-				if not v.ai_condition_ids.is_empty() and not v.ai_condition_ids.has(cond):
-					v.err(w + ".ai", "조건 '%s' 없음(src/combat/ai/)" % cond)
-			var type_skills: Array = []
-			for t: Variant in JsonUtil.get_array(m, "types"):
-				type_skills.append_array(JsonUtil.get_array(t if t is Dictionary else {}, "skills"))
-			if rd.get("use") != Battle.BASIC_ATTACK and not JsonUtil.get_array(m, "skills").has(rd.get("use")) and not type_skills.has(rd.get("use")):
-				v.warn(w + ".ai", "스킬 '%s'이(가) skills 목록에 없다" % rd.get("use"))
+		_ai(v, w, m)
 		for sk: Variant in JsonUtil.get_array(m, "ai_cycle"):
 			v.ref(w + ".ai_cycle", "skills", sk)
 		if m.has("lineage") and JsonUtil.get_str(m, "lineage").is_empty():
@@ -71,7 +65,9 @@ static func _monsters(v: ValidatorBase) -> void:
 		if not nw.is_empty() and (not damage.has(JsonUtil.get_str(nw, "damage_type")) or JsonUtil.get_float(nw, "attack", -1.0) < 0.0):
 			v.err(w, "natural_weapon은 {attack ≥ 0, damage_type: 피해 유형, ranged?}")
 		for p: Variant in JsonUtil.get_array(m, "passives"):
-			_passive(v, w + ".passives", p if p is Dictionary else {})
+			PassiveRules.check(v, w + ".passives", p if p is Dictionary else {})
+		for t: Variant in JsonUtil.get_array(m, "types"):
+			EffectRules.ref_list(v, w + ".types.skills", "skills", JsonUtil.get_array(t if t is Dictionary else {}, "skills"))
 		if not v.db.tag_ids("monster_shapes").has(JsonUtil.get_str(m, "shape", "humanoid")):
 			v.err(w, "shape '%s' 미등록(tags.monster_shapes)" % m.get("shape"))
 		v.check_color(w, JsonUtil.get_str(m, "color"))
@@ -93,6 +89,46 @@ static func _monsters(v: ValidatorBase) -> void:
 			v.check_chance(w, dd.get("chance"))
 
 
+## 몬스터 ai[] 규칙: 쓸 스킬, 조건 id와 조건이 읽는 상태·게이지, 대상 규칙, phase 조건의 페이즈 id.
+static func _ai(v: ValidatorBase, w: String, m: Dictionary) -> void:
+	var phase_ids: Array = []
+	for ph: Variant in JsonUtil.get_array(m, "phases"):
+		phase_ids.append(JsonUtil.get_str(ph if ph is Dictionary else {}, "id"))
+	var type_skills: Array = []
+	for t: Variant in JsonUtil.get_array(m, "types"):
+		type_skills.append_array(JsonUtil.get_array(t if t is Dictionary else {}, "skills"))
+	for rule: Variant in JsonUtil.get_array(m, "ai"):
+		var rd: Dictionary = rule if rule is Dictionary else {}
+		var aw := w + ".ai"
+		v.ref(aw, "skills", rd.get("use"))
+		if rd.has("target") and not JsonUtil.get_str(rd, "target") in AI_TARGETS:
+			v.err(aw, "target '%s'은(는) %s 중 하나" % [rd.get("target"), AI_TARGETS])
+		if rd.has("target_status"):
+			v.ref(aw + ".target_status", "statuses", rd["target_status"])
+		if rd.has("target_meter") or JsonUtil.get_str(rd, "target") == "highest_meter":
+			v.ref(aw + ".target_meter", "meters", rd.get("target_meter"))
+		var conds: Array = [rd]
+		conds.append_array(JsonUtil.get_array(rd, "also"))
+		for cd: Variant in conds:
+			var cdd: Dictionary = cd if cd is Dictionary else {}
+			var cond := JsonUtil.get_str(cdd, "if", "always")
+			if not v.ai_condition_ids.is_empty() and not v.ai_condition_ids.has(cond):
+				v.err(aw, "조건 '%s' 없음(src/combat/ai/)" % cond)
+			if AI_CONDITION_REFS.has(cond):
+				var pair: Array = AI_CONDITION_REFS[cond]
+				v.ref("%s.%s.%s" % [aw, cond, pair[0]], str(pair[1]), cdd.get(str(pair[0])))
+			if cond == "phase":
+				var want: Variant = cdd.get("value")
+				if not want is Array:
+					v.err(aw + ".phase", "value는 페이즈 id 배열")
+				else:
+					for pid: Variant in (want as Array):
+						if not phase_ids.has(str(pid)):
+							v.err(aw + ".phase", "페이즈 '%s' 없음(이 몬스터의 phases)" % pid)
+		if rd.get("use") != Battle.BASIC_ATTACK and not JsonUtil.get_array(m, "skills").has(rd.get("use")) and not type_skills.has(rd.get("use")):
+			v.warn(aw, "스킬 '%s'이(가) skills 목록에 없다" % rd.get("use"))
+
+
 static func _skills(v: ValidatorBase) -> void:
 	var targets := v.db.tag_ids("skill_targets")
 	for id: String in v.entries("skills"):
@@ -106,11 +142,13 @@ static func _skills(v: ValidatorBase) -> void:
 				v.err(w, "cost '%s' 없는 자원" % r)
 			elif not JsonUtil.is_number(cost[r]) or float(cost[r]) < 0.0:
 				v.err(w, "cost 값은 0 이상의 숫자")
-		v.check_effects(w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
+		EffectRules.check(v, w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
 		if s.has("innate") and not s["innate"] is bool:
 			v.err(w, "innate는 true/false")
 		if s.has("essence_of") and JsonUtil.get_str(s, "essence_of").is_empty():
 			v.err(w, "essence_of는 원래 스킬 id 문자열")
+		elif s.has("essence_of"):
+			v.ref(w + ".essence_of", "skills", s["essence_of"])
 	for id: Variant in v.db.bal("party.innate_skills", []):
 		v.ref("balance.party.innate_skills", "skills", id)
 		if v.db.has_entry("skills", str(id)) and not JsonUtil.get_bool(v.db.get_entry("skills", str(id)), "innate"):
@@ -131,7 +169,7 @@ static func _essences(v: ValidatorBase) -> void:
 		for r: String in JsonUtil.get_dict(e, "resource_mods"):
 			if not v.db.resources.has(r):
 				v.err(w, "resource_mods '%s' 없는 자원" % r)
-		_passive(v, w + ".passive", JsonUtil.get_dict(e, "passive"))
+		PassiveRules.check(v, w + ".passive", JsonUtil.get_dict(e, "passive"))
 		var actives := JsonUtil.get_array(e, "actives")
 		if actives.is_empty():
 			v.err(w, "actives가 비어 있다")
@@ -150,17 +188,6 @@ static func _essences(v: ValidatorBase) -> void:
 				v.err(w + ".actives", "고유(unique) 스킬 '%s'은(는) 정수에 넣을 수 없다" % sid)
 
 
-## 패시브 정의(Passives): id·name_ko, 수정자, 적중 시 효과, 면역 상태이상.
-static func _passive(v: ValidatorBase, w: String, p: Dictionary) -> void:
-	if JsonUtil.get_str(p, "id").is_empty() or JsonUtil.get_str(p, "name_ko").is_empty():
-		v.err(w, "패시브는 {id, name_ko, desc_ko, …}")
-	v.check_modifier_list(w + ".modifiers", JsonUtil.get_array(p, "modifiers"))
-	for key: String in ["on_hit", "on_crit"]:
-		v.check_effects(w + "." + key, JsonUtil.get_array(p, key), true)
-	for sid: Variant in JsonUtil.get_array(p, "status_immune"):
-		v.ref(w + ".status_immune", "statuses", sid)
-
-
 static func _items(v: ValidatorBase) -> void:
 	var categories := v.db.tag_ids("item_categories")
 	for id: String in v.entries("items"):
@@ -172,7 +199,7 @@ static func _items(v: ValidatorBase) -> void:
 			v.err(w, "price는 0 이상의 숫자")
 		if JsonUtil.get_int(it, "stack", 1) < 1:
 			v.err(w, "stack은 1 이상")
-		v.check_effects(w + ".use_effects", JsonUtil.get_array(it, "use_effects"), true)
+		EffectRules.check(v, w + ".use_effects", JsonUtil.get_array(it, "use_effects"), true)
 		_item_shape(v, w, it)
 
 

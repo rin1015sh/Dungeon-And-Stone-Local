@@ -111,6 +111,8 @@ func check_ranges(where: String, ranges: Dictionary) -> void:
 			err(where, "'%s' 범위는 [최소, 최대]" % k)
 		elif float(r[0]) > float(r[1]):
 			err(where, "'%s' 범위 최소 > 최대" % k)
+		elif float(r[0]) != floorf(float(r[0])) or float(r[1]) != floorf(float(r[1])):
+			err(where, "'%s' 범위는 정수(굴림이 정수로 한다)" % k)
 
 
 func check_grade(where: String, g: Variant) -> void:

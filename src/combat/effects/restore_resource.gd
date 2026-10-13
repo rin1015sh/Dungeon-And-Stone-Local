@@ -6,11 +6,13 @@ extends EffectHandler
 func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	var actor := ctx.subject()
 	var res := JsonUtil.get_str(data, "resource")
-	if actor == null or not actor.pool.has_resource(res):
+	if actor == null or actor.dead or not actor.pool.has_resource(res):
 		return false
 	var amount := Formula.value(data.get("amount", 0.0), actor.pool.resolve)
 	if res == "hp" and amount > 0.0:
 		amount *= actor.statuses.heal_mult()  # 원한(heal_block)
+	if JsonUtil.get_bool(data, "non_lethal") and amount < 0.0:  # 스스로 치르는 값(정수판 분열): 1은 남긴다
+		amount = maxf(amount, 1.0 - actor.pool.get_current(res))
 	var changed := actor.pool.modify(res, amount, "effect:restore_resource")
 	var name_ko := actor.pool.get_def(res).name_ko
 	if changed == 0.0:

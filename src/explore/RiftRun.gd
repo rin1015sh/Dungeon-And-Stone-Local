@@ -123,9 +123,14 @@ func chapter_floor_def(i: int) -> Dictionary:
 
 
 ## 조우 전투가 끝났다. 균열 조우였으면 true(필드 리스폰 처리를 하지 않는다).
-func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String) -> bool:
+## killed: 이번 전투에서 쓰러뜨린 몬스터 — 수호자를 쓰러뜨리고 (동반이 남은 채) 도망쳐도 수호자는 쓰러진 것이다.
+func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String, killed: Array[String] = []) -> bool:
 	if not remaining.has(g):
 		return false
+	if g.tag == "guardian" and not guardian_down and killed.has(guardian_id()):
+		guardian_down = true
+		_guardian_drops(s)
+		g.tag = "battle"  # 남은 동반은 보통 무리
 	if result == Battle.RESULT_FLED:
 		s.monsters.set_grace(g, s.clock.total_hours)
 		return true

@@ -36,8 +36,12 @@ var turns: int = 0
 var killed: Array[String] = []  ## 쓰러뜨린 몬스터 id (도감·경험치는 M3)
 var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
 var objective: Dictionary = {}       ## 전투 목표(BattleObjective — 생존 웨이브). 비면 없음
+## 지금까지 나온 메시지 {key, args, kind} — 화면이 시그널을 잇기 전(전투 시작 안내·수호자 대사)의 것도 다시 보여 준다.
+var history: Array[Dictionary] = []
 
 var _announced: Dictionary = {}  # Combatant -> true (쓰러짐을 알렸다)
+var _busy: int = 0               # 행동·차례 처리 중이면 > 0 — 그동안 finish는 처리가 끝난 뒤 한 번에
+var _finish_req: String = ""
 
 
 func _init(p_db: GameDatabase, p_effects: EffectRegistry, p_ai: ScriptRegistry, p_rng: Rng) -> void:
@@ -47,6 +51,11 @@ func _init(p_db: GameDatabase, p_effects: EffectRegistry, p_ai: ScriptRegistry, 
 	rng = p_rng
 	timeline = Timeline.new(float(db.bal("combat.gauge_threshold", 100)), float(db.bal("combat.min_speed", 1)),
 		float(db.bal("combat.speed_base", 0)))
+	message.connect(_record)
+
+
+func _record(key: String, args: Dictionary, kind: String) -> void:
+	history.append({"key": key, "args": args, "kind": kind})
 
 
 ## 탐험 조우로 전투를 꾸린다. 같은 몬스터가 여럿이면 이름 뒤에 A, B, C를 붙인다.
@@ -77,15 +86,18 @@ func add(actor: Actor, side: int, row: String = "front") -> Combatant:
 
 ## 먼저 발견한 쪽이 행동 게이지를 앞서 시작한다.
 func start(party_first: bool) -> void:
-	var bonus := float(db.bal("combat.ambush_gauge", 50))
 	var names := PackedStringArray()
 	for u in units:
-		u.gauge = bonus if (u.side == Combatant.SIDE_PARTY) == party_first else 0.0
+		u.gauge = 0.0
 		if u.side == Combatant.SIDE_ENEMY:
 			names.append(u.label())
-	BattleRules.on_start(self)
-	BossHooks.on_start(self)
 	message.emit("combat.start" if party_first else "combat.start_ambushed", {"enemies": ", ".join(names)}, "danger")
+	BattleRules.on_start(self)  # 동반 소환(start_summons)도 여기서 생긴다 — 선공 게이지는 그 뒤에 준다
+	var bonus := float(db.bal("combat.ambush_gauge", 50))
+	for u in units:
+		if (u.side == Combatant.SIDE_PARTY) == party_first:
+			u.gauge += bonus
+	BossHooks.on_start(self)
 	BattleKnowledge.on_start(self)
 
 
@@ -101,8 +113,9 @@ func opponents(c: Combatant) -> Array[Combatant]:
 	return side_units(Combatant.SIDE_ENEMY if c.side == Combatant.SIDE_PARTY else Combatant.SIDE_PARTY)
 
 
+## 아군 소환수(전투 중 생겨난 개체)는 AI가 움직인다.
 func is_player_controlled(c: Combatant) -> bool:
-	return c.side == Combatant.SIDE_PARTY
+	return c.side == Combatant.SIDE_PARTY and not c.summoned
 
 
 func preview(n: int) -> Array[Combatant]:
@@ -122,24 +135,32 @@ func next_turn() -> Combatant:
 			_check_end()
 			return null
 		turns += 1
+		_busy += 1
 		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
-		c.actor.advance_turns(1.0)
-		c.tick_cooldowns()
+		if not bool(c.memo.get("in_extra", false)):  # 추가 행동(같은 라운드의 두 번째 차례)은 지속시간·쿨타임을 다시 세지 않는다
+			c.actor.advance_turns(1.0)
+			c.tick_cooldowns()
 		BattleDelayed.tick(self, c)
 		_after_effects()
-		if not result.is_empty() or not c.is_active():
-			continue
-		if stunned:
+		if _finish_req.is_empty() and c.is_active() and stunned:
 			message.emit("combat.skip", {"name": c.label()}, "warn")
 			timeline.consume(c)
 			BattlePassives.turn_end(self, c)
 			BossHooks.turn_end(self, c, true)
 			_after_effects()
+			BattleObjective.after_turn(self, c)  # 건너뛴 차례도 생존 라운드로 센다
+			event.emit({"type": "turn_end", "unit": c})
+			_after_effects()
+			_end_busy()
+			continue
+		_end_busy()
+		if not result.is_empty() or not c.is_active():
 			continue
 		current = c
 		phase = PHASE_AWAIT
 		event.emit({"type": "turn", "unit": c})
 		return c
+	finish(RESULT_FLED)  # 아무도 움직일 수 없다(모두 기절 등) — 전투를 거둔다
 	return null
 
 
@@ -154,6 +175,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 		message.emit(why, {"name": c.label()}, "warn")
 		return false
 	phase = PHASE_EXECUTING
+	_busy += 1
 	var delay := 0.0
 	match str(action.get("kind", "")):
 		"skill":
@@ -171,10 +193,12 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	timeline.consume(c, delay)
 	BattlePassives.turn_end(self, c)
 	BossHooks.turn_end(self, c, false)
+	_after_effects()  # 마지막 적을 쓰러뜨렸으면 증원보다 승리가 먼저
 	BattleObjective.after_turn(self, c)
 	current = null
 	event.emit({"type": "turn_end", "unit": c})
 	_after_effects()
+	_end_busy()
 	phase = PHASE_ENDED if not result.is_empty() else PHASE_IDLE
 	return true
 
@@ -185,9 +209,17 @@ func can_use(c: Combatant, skill_id: String) -> String:
 		return "combat.reason_sealed"
 	if c.cooldowns.has(skill_id) or not BattleRules.uses_left(self, c, skill_id):
 		return "combat.reason_cooldown"
-	if not c.actor.pool.can_afford(JsonUtil.get_dict(db.get_entry("skills", skill_id), "cost")):
+	var sk := db.get_entry("skills", skill_id)
+	if not c.actor.pool.can_afford(JsonUtil.get_dict(sk, "cost")):
 		return "combat.reason_cost"
+	if c.actor.pool.get_ratio("hp") <= JsonUtil.get_float(sk, "min_hp_ratio", 0.0):
+		return "combat.reason_cost"  # 생명력을 대가로 치르는 스킬(정수판 분열): 그만큼 남아 있어야 쓴다
 	return ""
+
+
+## 끝났거나(result) 끝내기로 정해졌다(처리 중 finish).
+func is_over() -> bool:
+	return not result.is_empty() or not _finish_req.is_empty()
 
 
 func flee_chance(c: Combatant) -> float:
@@ -230,11 +262,15 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
 	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
 	for t in targets:
+		if c.actor.dead:
+			break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다
 		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
 		ctx.info = info
 		ctx.registry = effects
 		effects.apply_all(ctx, fx)
 		_relay(ctx, c)
+	if fx.any(func(e: Variant) -> bool: return e is Dictionary and JsonUtil.get_str(e, "type") == "damage"):
+		BattleRules.consume_on_attack(self, c)  # 진군 명령 등: 스킬 한 번(광역·연타 전체)에 쓰고 사라진다
 	return JsonUtil.get_float(sk, "delay_cost")
 
 
@@ -256,43 +292,65 @@ func try_flee(c: Combatant) -> void:
 		c.fled = true
 		message.emit("combat.flee_ok", {"name": c.label()}, "warn")
 		event.emit({"type": "fled", "unit": c})
+		BattleRules.left_battle(self, c)
 	else:
 		message.emit("combat.flee_fail", {"name": c.label()}, "info")
 
 
 func _after_effects() -> void:
-	var again := true
-	while again:  # 쓰러지며 터지는 것(death_effects)이 또 쓰러뜨릴 수 있다
-		again = false
+	for i in MAX_SKIPS:  # 쓰러지며 터지는 것(death_effects)·페이즈 진입 시전이 또 쓰러뜨릴 수 있다
+		var downed := false
 		for u in units.duplicate():
 			if u.actor.dead and not _announced.has(u):
 				_announced[u] = true
-				if u.actor is Monster:
+				downed = true
+				if u.side == Combatant.SIDE_ENEMY and u.actor is Monster:
 					killed.append((u.actor as Monster).monster_id)
 					message.emit("combat.down_monster", {"name": u.label()}, "good")
+				elif u.summoned:
+					message.emit("combat.down_summon", {"name": u.label()}, "warn")
 				else:
 					message.emit("combat.down_party", {"name": u.label()}, "danger")
 				event.emit({"type": "down", "unit": u})
-				again = BattlePassives.on_down(self, u) or again
-	BossHooks.check_all(self)
+				BattleDelayed.drop(self, u)
+				BattlePassives.on_down(self, u)
+		if downed:
+			BattlePassives.refresh_auras(self)  # 오러를 주던 개체가 쓰러지면 버프도 사라진다
+		BossHooks.check_all(self)
+		if not units.any(func(u: Combatant) -> bool: return u.actor.dead and not _announced.has(u)):
+			break
 	_check_end()
 
 
+## 승패: 적이 모두 없으면 승리. 아군은 소환수가 아닌 참가자가 모두 없으면 끝(도망친 사람이 있으면 도주).
 func _check_end() -> void:
-	if not result.is_empty():
+	if not result.is_empty() or not _finish_req.is_empty():
 		return
-	if side_units(Combatant.SIDE_PARTY).is_empty():
-		var any_fled := units.any(func(u: Combatant) -> bool: return u.side == Combatant.SIDE_PARTY and u.fled and not u.actor.dead)
+	var core := units.filter(func(u: Combatant) -> bool: return u.side == Combatant.SIDE_PARTY and not u.summoned)
+	if not core.any(func(u: Combatant) -> bool: return u.is_active()):
+		var any_fled := core.any(func(u: Combatant) -> bool: return u.fled and not u.actor.dead)
 		finish(RESULT_FLED if any_fled else RESULT_DEFEAT)
 	elif side_units(Combatant.SIDE_ENEMY).is_empty():
 		finish(RESULT_VICTORY)
 
 
-## 전투를 끝낸다(전멸·도주 판정 또는 목표 달성).
+## 전투를 끝낸다(전멸·도주 판정 또는 목표 달성). 행동을 처리하는 중이면 그 처리가 끝난 뒤에 한 번 끝낸다.
 func finish(r: String) -> void:
-	if not result.is_empty():
+	if not result.is_empty() or not _finish_req.is_empty():
 		return
-	result = r
+	_finish_req = r
+	if _busy <= 0:
+		_do_finish()
+
+
+func _end_busy() -> void:
+	_busy = maxi(0, _busy - 1)
+	if _busy == 0 and not _finish_req.is_empty() and result.is_empty():
+		_do_finish()
+
+
+func _do_finish() -> void:
+	result = _finish_req
 	phase = PHASE_ENDED
 	current = null
 	BattleRules.cleanup(self)
