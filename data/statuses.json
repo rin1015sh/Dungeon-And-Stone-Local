@@ -103,9 +103,16 @@
       {
         "trigger": "turn",
         "resource": "hp",
-        "amount": "-{bal.status.poison_per_turn}"
+        "amount": "-{bal.status.poison_per_turn}",
+        "damage_type": "poison"
       }
     ],
+    "resist": {
+      "stats": [
+        "resist_poison"
+      ]
+    },
+    "desc_ko": "독이 돈다. 차례마다 생명력이 깎인다. 독 저항이 높으면 덜 걸리고 덜 아프다.",
     "source": "placeholder",
     "lingers": true
   },
@@ -198,7 +205,8 @@
       {
         "trigger": "turn",
         "resource": "hp",
-        "amount": "-{bal.status.burn_per_turn}"
+        "amount": "-{bal.status.burn_per_turn}",
+        "damage_type": "fire"
       }
     ],
     "source": "placeholder",
@@ -262,7 +270,7 @@
     "id": "trap_set",
     "name_ko": "덫",
     "kind": "debuff",
-    "desc_ko": "발밑에 덫이 놓였다. 다음 차례에 덫이 문다(속박은 아직 없음).",
+    "desc_ko": "발밑에 덫이 놓였다. 다음 차례에 덫이 문다.",
     "duration": {
       "amount": 1,
       "unit": "turn"

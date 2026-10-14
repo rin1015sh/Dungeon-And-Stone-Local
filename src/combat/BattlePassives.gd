@@ -143,6 +143,16 @@ static func _pick_type(b: Battle, u: Combatant) -> void:
 	b.message.emit(JsonUtil.get_str(t, "message", "combat.monster_type"), {"name": m.display_name}, "danger" if t.has("message") else "info")
 
 
+## 타입이 정한 정수 색("타입이 곧 색"). 타입이 없거나 색을 정하지 않으면 "".
+static func type_essence_color(m: Monster) -> String:
+	if not m.has_meta("monster_type"):
+		return ""
+	for t: Variant in JsonUtil.get_array(m.def, "types"):
+		if t is Dictionary and JsonUtil.get_str(t, "id") == str(m.get_meta("monster_type")):
+			return JsonUtil.get_str(t, "essence_color")
+	return ""
+
+
 static func _aura_fits(a: Combatant, aura: Dictionary) -> bool:
 	if JsonUtil.get_bool(aura, "all"):
 		return true

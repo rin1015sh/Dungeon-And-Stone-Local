@@ -48,6 +48,7 @@ var _warned: Dictionary = {}
 var _was_safe: bool = false
 var _started: bool = false
 var _view_dirty: bool = false  # 시간 흐름으로 시야가 바뀌었다(광원 꺼짐·상태이상)
+var _pending_warn: Dictionary = {}  # 흡수 대기 정수 경고: {"action", "at"} — 곧바로 같은 동작을 다시 하면 그대로 한다
 
 
 func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_player: PlayerCharacter,
@@ -172,7 +173,7 @@ func enter_cell(cell: Vector2i) -> void:
 
 
 func wait(hours: float = -1.0) -> void:
-	if ended or in_combat:
+	if ended or in_combat or not _confirm_pending("wait"):
 		return
 	var h := hours if hours > 0.0 else float(db.bal("explore.wait_hours", 1.0))
 	_say("explore.wait", {"hours": roundi(h)})
@@ -183,7 +184,7 @@ func wait(hours: float = -1.0) -> void:
 
 ## 휴식(수면). 안전지대에서만 휴식 회복이 붙는다. 바깥에서는 시간마다 습격 위험이 있다.
 func rest() -> void:
-	if ended or in_combat:
+	if ended or in_combat or not _confirm_pending("rest"):
 		return
 	var hours := int(db.bal("explore.rest_hours", 8.0))
 	if in_safe_zone():
@@ -210,6 +211,19 @@ func rest() -> void:
 		refresh_view()
 
 
+## 흡수하지 않은 정수가 있으면 시간을 몰아 쓰기 전에 한 번 경고하고 멈춘다(금방 같은 동작을 다시 하면 그대로 한다).
+func _confirm_pending(action: String) -> bool:
+	if player.essences.pending.is_empty():
+		return true
+	if str(_pending_warn.get("action", "")) == action \
+			and clock.total_hours - float(_pending_warn.get("at", -INF)) <= float(db.bal("essence.warn_confirm_hours", 0.5)):
+		_pending_warn = {}
+		return true
+	_pending_warn = {"action": action, "at": clock.total_hours}
+	_say("essence.pending_warn", {}, "warn")
+	return false
+
+
 func use_item(item_id: String) -> bool:
 	if ended or in_combat:
 		return false
@@ -219,6 +233,8 @@ func use_item(item_id: String) -> bool:
 		return false
 	for m: Dictionary in ctx.messages:
 		message.emit(str(m["key"]), m["args"], str(m["kind"]))
+	if ctx.messages.is_empty() and not ctx.success:  # 쓸 효과가 없는 물건(장비 등) — 조용히 끝나지 않게
+		_say("explore.cannot_use", {"item": DataNames.entry(db, "items", item_id)}, "info")
 	if ctx.success:
 		refresh_view()
 	return ctx.success
@@ -309,7 +325,9 @@ func answer_riddle(group: FieldMonsters.Group, outcome: String) -> void:
 
 ## 전투가 끝났다. result: victory/fled/defeat. 전투 차례 수만큼 시간이 흐른다.
 ## 몇 마리 쓰러뜨리고 도망쳤으면 쓰러뜨린 몬스터는 무리에서 빠진다(다시 만나도 되살아나지 않는다). 다 빠졌으면 승리로 친다.
-func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
+## colors: killed와 같은 순서의 정수 색(타입이 정한 것, 없으면 "" — Battle.killed_colors).
+func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = [],
+		colors: Array[String] = []) -> void:
 	in_combat = false
 	if result == Battle.RESULT_FLED and group != null and not killed.is_empty():
 		for id in killed:
@@ -319,7 +337,7 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 	var chained := result == Battle.RESULT_VICTORY and group != null and not group.waves.is_empty()  # 연전: 다음 웨이브까지 맵 시간 없이(RF7)
 	if not killed.is_empty() and not player.dead:
 		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null,
-				JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0):
+				JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0, colors):
 			message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result, killed)):
 		pass

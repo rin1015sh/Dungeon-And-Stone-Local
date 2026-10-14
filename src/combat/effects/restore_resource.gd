@@ -13,8 +13,11 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 		amount *= actor.statuses.heal_mult()  # 원한(heal_block)
 	if JsonUtil.get_bool(data, "non_lethal") and amount < 0.0:  # 스스로 치르는 값(정수판 분열): 1은 남긴다
 		amount = maxf(amount, 1.0 - actor.pool.get_current(res))
-	var changed := actor.pool.modify(res, amount, "effect:restore_resource")
 	var name_ko := actor.pool.get_def(res).name_ko
+	if amount > 0.0 and actor.pool.get_max(res) - actor.pool.get_current(res) < 0.5:
+		ctx.say("effect.restore_none", {"resource": name_ko}, "info")  # 거의 가득 — "0만큼 변했다"로 물건만 쓰지 않게
+		return false
+	var changed := actor.pool.modify(res, amount, "effect:restore_resource")
 	if changed == 0.0:
 		ctx.say("effect.restore_none", {"resource": name_ko}, "info")
 		return amount < 0.0

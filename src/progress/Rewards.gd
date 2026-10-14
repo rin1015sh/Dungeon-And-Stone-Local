@@ -7,12 +7,14 @@ extends RefCounted
 
 ## in_rift: 균열 안이면 일반 몬스터 정수 확률 ×essence.rift_mult.
 ## essence_mult: 정수 드롭 확률 배율(수수께끼 정답 뒤 약화된 문지기 ×2).
+## colors: killed와 같은 순서의 정해진 정수 색(본 나이트 타입 — 비면 무작위).
 static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hours: float = -1.0, in_rift: bool = false,
-		essence_mult: float = 1.0) -> Array[Dictionary]:
+		essence_mult: float = 1.0, colors: Array[String] = []) -> Array[Dictionary]:
 	var db := pc.db
 	var msgs: Array[Dictionary] = []
 	var before := pc.get_level()
-	for id in killed:
+	for k in killed.size():
+		var id := killed[k]
 		pc.knowledge.see(id)
 		var gained := pc.progression.record_kill(db, id)
 		var parts := pc.progression.last_kill
@@ -33,7 +35,7 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hour
 				msgs.append(_m("reward.loot", {"item": item_name, "count": got}, "good"))
 			if got < want:
 				msgs.append(_m("reward.bag_full", {"item": item_name, "count": want - got}, "warn"))
-		var ess := EssenceDrop.roll(db, id, rng, in_rift, essence_mult)
+		var ess := EssenceDrop.roll(db, id, rng, in_rift, essence_mult, colors[k] if k < colors.size() else "")
 		if not ess.is_empty():
 			pc.essences.add_pending(db, ess, now_hours)
 			msgs.append(_m("reward.essence", {"name": DataNames.entry(db, "essences", str(ess["essence"])),

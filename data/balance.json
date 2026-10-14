@@ -14,6 +14,7 @@
     "magic_stone_chance": 0.85
   },
   "essence": {
+    "warn_confirm_hours": 0.5,
     "_comment": "정수 규칙(docs/PROMPT_FLOOR1_V2.md §2·§3). drop_mode game = 게임용 확률, original = 원작(일반 몬스터 0.01%). 모두 임시값",
     "drop_mode": "game",
     "drop_chance_by_grade": {"9": 0.02, "8": 0.025, "7": 0.03, "6": 0.035, "5": 0.04, "4": 0.045, "3": 0.05, "2": 0.055, "1": 0.06},

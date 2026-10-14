@@ -135,8 +135,13 @@ static func smite(b: Battle, c: Combatant, e: Dictionary) -> void:
 		if fam.any(func(x: Variant) -> bool: return (e.get("families", []) as Array).has(x)):
 			hit = true
 			var ctx := EffectContext.new(b.db, c.actor, f.actor, b.rng)
-			b.message.emit("combat.smite", {"target": f.label(), "amount": int(e.get("amount", 0.0))}, "good")
-			DamageApply.hurt(ctx, f.actor, int(e.get("amount", 0.0)), "smite", "holy")
+			# 신성 피해도 약점·면역을 따른다(성수에 약한 언데드 ×배율). 알아낸 상성은 도감에 남는다.
+			var aff := (f.actor as Monster).damage_affinity("holy", "magical")
+			var amount := roundi(float(e.get("amount", 0.0)) * aff)
+			b.message.emit("combat.smite", {"target": f.label(), "amount": amount}, "good")
+			DamageApply.hurt(ctx, f.actor, amount, "smite", "holy")
+			b.event.emit({"type": "damage", "unit": f, "hit": true, "amount": amount, "crit": false})
+			BattleKnowledge.on_damage(b, c, {"target": f.actor, "hit": true, "damage_type": "holy", "affinity": aff})
 			if not str(e.get("status", "")).is_empty():
 				Passives.try_status(b.db, null, c.actor, f.actor, str(e["status"]))
 			for m: Dictionary in ctx.messages:

@@ -33,7 +33,8 @@ var current: Combatant = null
 var result: String = ""
 var phase: String = PHASE_IDLE
 var turns: int = 0
-var killed: Array[String] = []  ## 쓰러뜨린 몬스터 id (도감·경험치는 M3)
+var killed: Array[String] = []  ## 쓰러뜨린 몬스터 id (도감·경험치)
+var killed_colors: Array[String] = []  ## killed와 같은 순서: 타입이 정수 색을 정하면 그 색(본 나이트 types[].essence_color), 아니면 ""
 var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
 var objective: Dictionary = {}       ## 전투 목표(BattleObjective — 생존 웨이브). 비면 없음
 ## 지금까지 나온 메시지 {key, args, kind} — 화면이 시그널을 잇기 전(전투 시작 안내·수호자 대사)의 것도 다시 보여 준다.
@@ -309,6 +310,7 @@ func _after_effects() -> void:
 				downed = true
 				if u.side == Combatant.SIDE_ENEMY and u.actor is Monster:
 					killed.append((u.actor as Monster).monster_id)
+					killed_colors.append(BattlePassives.type_essence_color(u.actor as Monster))
 					message.emit("combat.down_monster", {"name": u.label()}, "good")
 				elif u.summoned:
 					message.emit("combat.down_summon", {"name": u.label()}, "warn")

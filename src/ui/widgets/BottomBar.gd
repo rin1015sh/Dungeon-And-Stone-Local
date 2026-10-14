@@ -25,6 +25,9 @@ func setup(p_pc: PlayerCharacter) -> void:
 	add_child(outer)
 	_status = UiTheme.label("", "small", "warn")
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_status.mouse_filter = Control.MOUSE_FILTER_PASS  # 마우스를 올리면 상태 설명
+	# 상태가 없어도 줄 높이를 늘 차지한다 — 상태가 생길 때 바가 위로 자라 기록창 아랫줄을 가리지 않게.
+	_status.custom_minimum_size.y = UiTheme.metric("small_font_size", 14) + 6
 	outer.add_child(_status)
 	var row := HBoxContainer.new()
 	outer.add_child(row)
@@ -78,10 +81,12 @@ func refresh() -> void:
 		_hunger.value = pc.pool.get_current("hunger")
 		_hunger.visible = pc.pool.is_active("hunger")
 	var names := PackedStringArray()
+	var tips := PackedStringArray()
 	for id in pc.statuses.ids():
 		names.append("[%s]" % DataNames.entry(pc.db, "statuses", id))
+		tips.append(StatusTips.line(pc.db, id))
 	_status.text = " ".join(names)
-	_status.visible = not names.is_empty()
+	_status.tooltip_text = "\n".join(tips)
 	for s in _slots:
 		s.queue_redraw()
 
@@ -160,7 +165,7 @@ class HotbarSlot extends Control:
 			var t := str(n)
 			draw_string_outline(font, Vector2(size.x - font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x - 3, size.y - 3), t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 3, Color.BLACK)
 			draw_string(font, Vector2(size.x - font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x - 3, size.y - 3), t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, UiTheme.color("text_title"))
-		var key := str((index + 1) % 10)
+		var key := InputSetup.key_label("hotbar_%d" % ((index + 1) % 10))
 		draw_string_outline(font, Vector2(3, fs), key, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 2, 3, Color.BLACK)
 		draw_string(font, Vector2(3, fs), key, HORIZONTAL_ALIGNMENT_LEFT, -1, fs - 2, UiTheme.color("text_dim"))
 
@@ -185,8 +190,10 @@ class HotbarSlot extends Control:
 	func _make_custom_tooltip(_for_text: String) -> Object:
 		return null if item_id().is_empty() else ItemTooltip.panel(pc.db, item_id(), false, pc.inventory.count(item_id()))
 
+	## 쓸 수 있는 아이템(use_effects)만 등록한다 — 장비를 올려 두면 눌러도 아무 일도 없다.
 	func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-		return data is Dictionary and str((data as Dictionary).get("type")) == "item"
+		return data is Dictionary and str((data as Dictionary).get("type")) == "item" \
+			and not JsonUtil.get_array(pc.db.get_entry("items", str((data as Dictionary).get("id"))), "use_effects").is_empty()
 
 	func _drop_data(_at_position: Vector2, data: Variant) -> void:
 		assign(str((data as Dictionary)["id"]))

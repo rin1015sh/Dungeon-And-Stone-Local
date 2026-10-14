@@ -57,6 +57,7 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_status = UiTheme.label("", "small", "warn")
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_status.mouse_filter = Control.MOUSE_FILTER_PASS  # 마우스를 올리면 상태 설명
 	v.add_child(_status)
 	refresh()
 
@@ -75,6 +76,7 @@ func refresh() -> void:
 	for id in unit.actor.statuses.ids():
 		names.append(DataNames.entry(unit.actor.db, "statuses", id))
 	_status.text = ", ".join(names)
+	_status.tooltip_text = StatusTips.lines(unit.actor.db, unit.actor.statuses.ids())
 	modulate.a = 1.0 if unit.is_active() else 0.35
 
 

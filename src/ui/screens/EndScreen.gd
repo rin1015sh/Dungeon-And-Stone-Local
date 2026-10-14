@@ -1,7 +1,7 @@
 class_name EndScreen
 extends Control
-## 탐험이 끝났을 때의 짧은 결과 화면: 층 폐쇄로 강제 귀환 / 사망.
-## (도시 귀환·저장·묘비 목록은 M4. 지금은 타이틀로 돌아간다)
+## 탐험이 끝났을 때의 짧은 결과 화면: 층 폐쇄로 강제 귀환 / 사망 / 탐험 포기.
+## (도시 귀환·저장·묘비 목록은 도시 단계에서. 지금은 타이틀로 돌아간다)
 
 signal done
 
@@ -23,10 +23,11 @@ func _ready() -> void:
 	v.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) * 2)
 	v.custom_minimum_size.x = UiTheme.metric("menu_button_width", 260) * 2
 	center.add_child(v)
-	var title := UiTheme.label(Strings.t("end.died_title" if died else "end.closed_title"), "title", "bad" if died else "text_title")
+	var kind := _kind if _kind in ["died", "closed", "abandoned"] else "closed"
+	var title := UiTheme.label(Strings.t("end." + kind + "_title"), "title", "bad" if died else "text_title")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
-	var body_key := "end.died_body" if died else "end.closed_body"
+	var body_key := "end." + kind + "_body"
 	var body := UiTheme.label(Strings.t(body_key, {"name": _info.get("name", ""), "floor": _info.get("floor", ""),
 		"cause": describe_cause(DataRegistry.db, str(_info.get("cause", "")))}), "subtitle", "text")
 	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -36,8 +37,7 @@ func _ready() -> void:
 			Strings.t("end.summary_time", {"day": _info.get("day", 1), "hours": roundi(float(_info.get("hours", 0.0)))}),
 			Strings.t("end.summary_steps", {"steps": _info.get("steps", 0)}),
 			Strings.t("end.summary_found", {"landmarks": _info.get("landmarks", 0), "landmarks_total": _info.get("landmarks_total", 0),
-				"portals": _info.get("portals", 0), "portals_total": _info.get("portals_total", 0)}),
-			Strings.t("end.later")]:
+				"portals": _info.get("portals", 0), "portals_total": _info.get("portals_total", 0)})]:
 		var l := UiTheme.label(line, "small", "text_dim")
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(l)
@@ -55,4 +55,11 @@ static func describe_cause(db: GameDatabase, cause: String) -> String:
 		return DataNames.entry(db, "monsters", cause.trim_prefix("attack:"))
 	if cause == "debug":
 		return Strings.t("cause.debug")
+	for k: String in ["reflect", "counter"]:  # "reflect:<몬스터 id>" — 상대의 반사·반격
+		if cause.begins_with(k + ":"):
+			return Strings.t("cause." + k, {"name": DataNames.entry(db, "monsters", cause.trim_prefix(k + ":"))})
+	if cause.begins_with("self:") or cause.begins_with("skill:"):
+		return Strings.t("cause.self")
+	if cause.begins_with("effect:") or cause.begins_with("hazard"):
+		return Strings.t("cause.hazard")
 	return Strings.t("cause.unknown")

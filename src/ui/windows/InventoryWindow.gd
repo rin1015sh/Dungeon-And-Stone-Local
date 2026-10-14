@@ -2,7 +2,8 @@ class_name InventoryWindow
 extends GothicWindow
 ## 소지품 창(스톤샤드식): 장비 인형 · [정렬] · 스톤 · 격자 가방.
 ## 오른쪽 클릭/두 번 클릭: 장비면 장착, 쓸 수 있으면 사용(use_requested — 탐험 규칙이 처리).
-## 끌어놓기: 가방 ↔ 장비 칸, 가방 안 옮기기·쌓기, 단축칸에 끌어 등록(BottomBar).
+## 끌어놓기: 가방 ↔ 장비 칸, 가방 안 옮기기·쌓기, 단축칸에 끌어 등록(BottomBar), [버리기] 칸에 놓으면 그 묶음을 버린다.
+## 장착·벗기가 가방 자리 때문에 안 되면 기록에 알린다.
 
 signal use_requested(item_id: String)
 
@@ -39,6 +40,10 @@ func setup(p_actor: Actor) -> void:
 	bar.add_child(_stats)
 	_money = UiTheme.label("", "body", "gold")
 	bar.add_child(_money)
+	var trash := DiscardZone.new()
+	trash.actor = actor
+	trash.discarded.connect(refresh)
+	bar.add_child(trash)
 	var grid_box := PanelContainer.new()
 	grid_box.add_theme_stylebox_override("panel", GothicStyle.inset_box())
 	content.add_child(grid_box)
@@ -66,7 +71,8 @@ func refresh() -> void:
 func _activate(i: int) -> void:
 	var id := str(actor.inventory.stacks()[i]["id"])
 	if not ItemInfo.equip(actor.db, id).is_empty():
-		InventoryActions.equip_stack(actor, i)
+		if not InventoryActions.equip_stack(actor, i):
+			EventBus.log_message.emit(Strings.t("inventory.no_room_swap", {"item": DataNames.entry(actor.db, "items", id)}), "warn")
 	elif not JsonUtil.get_array(ItemInfo.def(actor.db, id), "use_effects").is_empty():
 		use_requested.emit(id)
 	refresh()
@@ -88,3 +94,37 @@ func _sort() -> void:
 			actor.inventory.load_dict(saved)  # 다시 놓을 수 없으면 원래대로
 			break
 	refresh()
+
+
+## [버리기] 칸: 가방에서 끌어온 묶음을 통째로 버린다(가방이 찼을 때 자리를 비우는 길).
+class DiscardZone:
+	extends PanelContainer
+
+	signal discarded
+
+	var actor: Actor
+
+	func _init() -> void:
+		add_theme_stylebox_override("panel", GothicStyle.slot_box("bad"))
+		var l := UiTheme.label(Strings.t("inventory.discard"), "small", "text")
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		add_child(l)
+		custom_minimum_size.x = UiTheme.metric("inv_discard_width", 64)
+		tooltip_text = Strings.t("inventory.discard_tip")
+
+	func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+		return data is Dictionary and str((data as Dictionary).get("from")) == "grid"
+
+	func _drop_data(_at_position: Vector2, data: Variant) -> void:
+		drop(data as Dictionary)
+
+	## 가방 자리 d.index의 묶음을 버린다(스모크 테스트도 쓴다). 버렸으면 true.
+	func drop(d: Dictionary) -> bool:
+		var i := int(d.get("index", -1))
+		if i < 0 or i >= actor.inventory.stacks().size():
+			return false
+		var st := actor.inventory.take_stack(i)
+		EventBus.log_message.emit(Strings.t("inventory.discarded", {"item": DataNames.entry(actor.db, "items", str(st.get("id", ""))),
+			"count": int(st.get("count", 1))}), "warn")
+		discarded.emit()
+		return true

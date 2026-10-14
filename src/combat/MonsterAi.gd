@@ -65,13 +65,12 @@ static func target(b: Battle, c: Combatant, rule: Dictionary) -> Combatant:
 				if Meters.value(f.actor, mid) > Meters.value(best.actor, mid):
 					best = f
 			return best
-		"taunt_first":
-			var lured := foes.filter(func(f: Combatant) -> bool: return f.actor.statuses.has_flag("draws_attacks"))
-			if not lured.is_empty():
-				return b.rng.pick(lured) as Combatant
-		"guard_front":
-			var lure := foes.filter(func(f: Combatant) -> bool:
-				return f.actor.statuses.has("guarding") or f.actor.statuses.has_flag("draws_attacks"))
+		"taunt_first", "guard_front":
+			# 도발(draws_attacks) → 방어 중 → 전열 → 무작위(ASSUMPTIONS AU4). taunt_first는 도발한 쪽만 먼저 본다.
+			var lure := foes.filter(func(f: Combatant) -> bool: return f.actor.statuses.has_flag("draws_attacks"))
+			if lure.is_empty() or mode == "guard_front":
+				lure.append_array(foes.filter(func(f: Combatant) -> bool:
+					return f.actor.statuses.has("guarding") and not lure.has(f)))
 			if lure.is_empty():
 				lure = foes.filter(func(f: Combatant) -> bool: return f.row == "front")
 			if not lure.is_empty():

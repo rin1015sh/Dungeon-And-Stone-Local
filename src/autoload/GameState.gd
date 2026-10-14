@@ -24,8 +24,10 @@ func new_session(seed_override: int = 0) -> void:
 	floor_entries = 0
 
 
+## 새 탐험마다 지도 시드를 새로 굴린다(같은 실행 안에서 매 판 같은 층이 나오지 않게). 세션 rng로 굴려 재현은 된다.
 func start_run(pc: PlayerCharacter) -> void:
 	player = pc
+	master_seed = rng.randi_range(1, 2147483646)
 	floor_entries = 0
 	rift_calendar = RiftCalendar.new(DataRegistry.db)
 
@@ -40,3 +42,4 @@ func next_floor_seed(floor_number: int) -> int:
 
 func end_run() -> void:
 	player = null
+	debug_invulnerable = false  # 디버그 무적은 다음 탐험으로 넘기지 않는다
