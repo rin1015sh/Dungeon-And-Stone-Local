@@ -168,6 +168,7 @@ func enter_cell(cell: Vector2i) -> void:
 	var from := pos
 	pos = cell
 	steps += 1
+	player.fatigue.on_dungeon(Fatigue.DUNGEON_STEP, 1.0)  # 피로도 연결 지점(규칙 미정 — null이면 변화 없음)
 	moved.emit(from, cell)
 	refresh_view()
 	_on_enter_cell(from)
@@ -195,10 +196,12 @@ func rest() -> void:
 			var h := minf(1.0, left)
 			left -= h
 			player.pool.tick("rest", h)
+			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, h)
 			pass_time(h)
 	else:
 		_say("explore.rest_unsafe", {"hours": hours}, "warn")
 		for i in hours:
+			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, 1.0)
 			pass_time(1.0)
 			if ended or in_combat:
 				break
@@ -264,6 +267,7 @@ func pass_time(hours: float) -> void:
 	if h > 0.0:
 		clock.advance(h)
 		player.advance_hours(h)
+		player.fatigue.on_dungeon(Fatigue.DUNGEON_HOUR, h)
 		time_passed.emit(h)
 		for gone: String in player.essences.expire_pending(clock.total_hours):
 			message.emit("essence.expired", {"name": DataNames.entry(db, "essences", gone)}, "warn")
@@ -347,6 +351,7 @@ func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], col
 
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
+	player.fatigue.on_dungeon(Fatigue.DUNGEON_COMBAT_TURN, float(turns))
 	if result == Battle.RESULT_FLED and group != null and not killed.is_empty():
 		for id in killed:
 			group.monster_ids.erase(id)

@@ -1,0 +1,15 @@
+{
+  "id": "library",
+  "name_ko": "도서관",
+  "order": 2,
+  "x": 300,
+  "building": "res://assets/city/buildings/library.png",
+  "interior": "res://assets/city/interiors/library.png",
+  "activities": [
+    "library_read"
+  ],
+  "shows": [
+    "lore"
+  ],
+  "source": "original"
+}

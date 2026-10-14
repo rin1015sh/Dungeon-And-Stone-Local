@@ -1,0 +1,13 @@
+{
+  "id": "shop",
+  "name_ko": "상점",
+  "order": 4,
+  "x": 690,
+  "building": "res://assets/city/buildings/shop.png",
+  "interior": "res://assets/city/interiors/shop.png",
+  "activities": [
+    "shop_trade"
+  ],
+  "shows": [],
+  "source": "original"
+}

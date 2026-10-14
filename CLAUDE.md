@@ -13,8 +13,8 @@
 
 ## 실행·검증
 
-- 엔진: **Godot 4.7.2** (`project.godot`의 features "4.7"). 이 PC의 실행 파일:
-  `C:\Users\kcw\Downloads\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe`
+- 엔진: **Godot 4.7.2** (`project.godot`의 features "4.7"). 이 PC의 실행 파일(2026-10-14):
+  `C:\Users\kcw\Desktop\Godot_v4.7.2-stable_win64.exe` — Downloads의 `_console.exe` 래퍼는 본체가 옮겨져 실행되지 않는다.
 - **전체 검증(완료 판정 기준)**: `GODOT=<godot 경로> bash tools/check.sh` → "모든 검증 통과"여야 한다. 내부 단계:
   1. `godot --headless --path . --import` — 클래스 캐시 갱신(새 `class_name` 추가 후 필수)
   2. `godot --headless --path . --script res://tools/validate_data.gd` — 데이터 스키마·참조 검사
@@ -23,8 +23,10 @@
   5. `godot --headless --path . --quit-after 120` — 메인 씬 스모크
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로>` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과.
-- 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|explore --out=<png 경로>`
+- 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --torch --reveal --debug`
+  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --info`
+- 도시 그림 다시 만들기: `godot --headless --path . --script res://tools/paint_city.gd` → `assets/city/`(데이터가 가리키는 경로).
   - 렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다).
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **Godot이 없는 환경**(모바일 웹 등): 정적 검토만 하고 PROGRESS.md에 **"미검증(Godot 실행 필요)"**을 명시한다. 검증하지 않은 것을 검증했다고 쓰지 않는다.
@@ -75,16 +77,17 @@ CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS}
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
-  monsters/ essences/ skills/ items/ floors/ rifts/ riddles/ events/ facilities/   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
+  city.json(도시 규칙 — 미정 null)
+  monsters/ essences/ skills/ items/ floors/ rifts/ riddles/ events/ facilities/ activities/ city_info/   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
   strings/ko.json
 src/
   Main.gd/.tscn          진입점, 화면 전환
   autoload/              EventBus, DataRegistry, GameState, AudioBus
   core/                  JsonUtil, Formula, StatDef, StatBlock, Modifier, ResourceDef, ResourcePool, Rng, Strings,
                          GameClock, DataNames, GameDatabase, ScriptRegistry, ContentRegistries,
-                         ValidatorBase, DataValidator, validation/{Core,Content,World,Boss,Rift,Effect,Passive,BossParam}Rules   (오토로드 비의존)
+                         ValidatorBase, DataValidator, validation/{Core,Content,World,Boss,Rift,Effect,Passive,BossParam,City}Rules   (오토로드 비의존)
   entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, StatusSet,
-                         LightSource, CharacterRoller
+                         LightSource, CharacterRoller, Fatigue(피로도 — 도시·미궁 공용)
   combat/                Battle, BattleRules(은신·증원·도주·사건·정리), BattleTargets(대상·오인), Timeline, DamageCalc, Passives,
                          MonsterAi + ai/<조건>.gd, Meters(전투 게이지), BossHooks + BossPattern + patterns/<id>.gd(보스 페이즈·라운드),
                          BattleDelayed(예고 공격), BattleTargets, BattleObjective(생존 웨이브), BattlePassives(전투 단위 패시브),
@@ -98,17 +101,19 @@ src/
                          RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
-  city/                  (M4에서 채움)
+  city/                  CityState(순 달력·행동력·공적치·잔액·소문/정보·디버그 임시값), CityValues(null 경로·임시값), CityActions(활동 실행),
+                         CityEffect + effects/<type>.gd(fatigue·stat_chance·learn_info·temple_merit), CityShop·CityBank·CityTemple(패널형), CityContext, CityInfo
   ui/InputSetup.gd       data/input.json → InputMap
   ui/theme/UiTheme.gd    render.json → Theme, 위젯 생성 도우미
   ui/theme/GothicStyle   스톤샤드풍 창 꾸밈(돌판·칸·이름판·아치)
   ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel(탐험 기록 이어 보기), DataSummary, ExploreHud, DebugPanel, BottomBar, ChoiceGrid(전투 고정 칸 선택판), SkillBrief, StatusTips, PauseMenu,
                          GothicWindow, InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, ItemDragPreview, CommandMenu, EssencePanel, RiddleDialog …
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
-  ui/screens/            TitleScreen, CharacterCreateScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
+  ui/city/               CityStreet(횡스크롤 거리), CityHud, FacilityView(시설 내부), CityPanel + ShopPanel·BankPanel·EssenceRemovePanel, CityDebugPanel
+  ui/screens/            TitleScreen, CharacterCreateScreen, CityScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd, smoke_ui.gd/.tscn
-tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
-assets/                  fonts/ sprites/ audio/ shaders/
+tools/                   check.sh, validate_data.gd, screenshot.gd/.tscn, paint_city.gd + city_art/(도시 픽셀아트 생성 → assets/city/), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
+assets/                  fonts/ sprites/ audio/ shaders/ city/(거리·건물·시설 내부 PNG)
 ```
 
 ## 핵심 개념 빠른 참조
@@ -136,4 +141,5 @@ assets/                  fonts/ sprites/ audio/ shaders/
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
-- **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나.
+- **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1), 활동은 `activities/<id>`(`ap_cost`·`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, 미궁 입장·귀환은 달력 그대로(`CityState`, `GameState.city`). **미정 = null = 효과 없음**(검증기는 경고 한 줄, `CityValues.nulls`), 디버그 F1 임시값은 `CityState.overrides`(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 효과 `effects()` 비움). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 저장 기능 없음(직렬화만). 가정 CT1~CT20.
+- **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "test_rumor_1",
+    "kind": "rumor",
+    "name_ko": "테스트용 소문 1",
+    "text_ko": "(테스트용) 소문 항목 구조 확인용 문장 1.",
+    "test_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "test_rumor_2",
+    "kind": "rumor",
+    "name_ko": "테스트용 소문 2",
+    "text_ko": "(테스트용) 소문 항목 구조 확인용 문장 2.",
+    "test_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "test_lore_1",
+    "kind": "lore",
+    "name_ko": "테스트용 정보 1",
+    "text_ko": "(테스트용) 정보 항목 구조 확인용 문장 1.",
+    "test_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "test_lore_2",
+    "kind": "lore",
+    "name_ko": "테스트용 정보 2",
+    "text_ko": "(테스트용) 정보 항목 구조 확인용 문장 2.",
+    "test_only": true,
+    "source": "placeholder"
+  }
+]

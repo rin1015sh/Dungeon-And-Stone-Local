@@ -1,0 +1,13 @@
+{
+  "id": "training",
+  "name_ko": "훈련장",
+  "order": 6,
+  "x": 1090,
+  "building": "res://assets/city/buildings/training.png",
+  "interior": "res://assets/city/interiors/training.png",
+  "activities": [
+    "training_train"
+  ],
+  "shows": [],
+  "source": "original"
+}

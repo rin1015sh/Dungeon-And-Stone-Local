@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "_comment": "도시(M4 라비기온) 규칙 값. null = 미정(검증기가 경고 목록으로 출력, 게임은 'null이면 효과 없음'으로 처리). 디버그 패널(F1)에서 실행 중에만 임시 값을 넣어 볼 수 있다(저장·파일 변경 없음).",
+  "place": {"city_ko": "라프도니아", "district_ko": "라비기온 구역", "source": "original"},
+  "calendar": {
+    "_comment": "미궁 밖의 시간 = 순(旬). 한 달 = periods 순서대로. 연·월 이름 정의가 없으므로 시작부터 센 달 수로 표시한다.",
+    "periods": [
+      {"id": "early", "name_ko": "상순"},
+      {"id": "mid", "name_ko": "중순"},
+      {"id": "late", "name_ko": "하순"}
+    ],
+    "months_per_year": 12,
+    "action_points_per_period": 3,
+    "start": {"month": 1, "period": "early"},
+    "portal_rule": null,
+    "return_date_rule": null
+  },
+  "street": {"_comment": "거리 배경 그림(옆에서 본 긴 그림). 건물 위치는 각 시설의 x(밑그림 픽셀), 크기·확대는 render.json city.", "backdrop": "res://assets/city/street.png"},
+  "facility_entry_cost": 1,
+  "facility_order": ["inn", "library", "temple", "shop", "bank", "training"],
+  "fatigue": {
+    "_comment": "피로도: 핵심 스탯이 아닌 별도 수치(PlayerCharacter.fatigue). 도시·미궁 공용. start null이면 0, min/max null이면 제한 없음. dungeon = 미궁 시간 소모 처리의 연결 지점(값 = 단위당 변화량, null이면 변화 없음). effects = 피로도에 따른 효과(미정 — 비움).",
+    "start": null,
+    "min": null,
+    "max": null,
+    "dungeon": {"per_hour": null, "per_rest_hour": null, "per_combat_turn": null, "per_step": null},
+    "effects": null
+  },
+  "shop": {
+    "_comment": "상점: 기존 상점 데이터가 없어 아이템의 price를 그대로 쓴다. stock null = 임시로 price > 0인 아이템(마석·균열 귀속 제외) 전부. sell_ratio null = 임시로 1(수수료 없음). accepts_magic_stones null = 받지 않음.",
+    "stock": null,
+    "sell_ratio": null,
+    "accepts_magic_stones": null
+  },
+  "bank": {
+    "_comment": "은행: 맡긴 돈의 쓰임(이자·수수료·미궁 입장 시 소지금 처리)은 미정. null이면 없음.",
+    "deposit_fee": null,
+    "withdraw_fee": null,
+    "interest_per_period": null,
+    "on_dungeon_enter": null
+  },
+  "temple": {
+    "_comment": "신관 영입 조건·기능은 미정(이번에 만들지 않음). 정수 제거 비용은 기존 balance essence.delete_cost_*를 따른다.",
+    "recruit_merit": null
+  },
+  "source": "original"
+}

@@ -1,7 +1,7 @@
 class_name EndScreen
 extends Control
 ## 탐험이 끝났을 때의 짧은 결과 화면: 층 폐쇄로 강제 귀환 / 사망 / 탐험 포기.
-## (도시 귀환·저장·묘비 목록은 도시 단계에서. 지금은 타이틀로 돌아간다)
+## 살아 있으면 도시로(Main), 죽었으면 타이틀로 돌아간다. (저장·묘비 목록은 아직 없다)
 
 signal done
 
@@ -41,7 +41,7 @@ func _ready() -> void:
 		var l := UiTheme.label(line, "small", "text_dim")
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(l)
-	var back := UiTheme.button(Strings.t("end.to_title"), func() -> void: done.emit())
+	var back := UiTheme.button(Strings.t("end.to_title" if died else "end.to_city"), func() -> void: done.emit())
 	back.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	v.add_child(back)
 	back.grab_focus.call_deferred()

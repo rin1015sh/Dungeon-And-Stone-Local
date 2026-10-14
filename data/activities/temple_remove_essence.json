@@ -1,0 +1,11 @@
+{
+  "id": "temple_remove_essence",
+  "name_ko": "정수 제거",
+  "facility": "temple",
+  "desc_ko": "흡수한 정수 하나를 골라 몸에서 지운다. 비용은 지울수록 오른다.",
+  "ap_cost": null,
+  "cost_stones": null,
+  "panel": "essence_remove",
+  "effects": [],
+  "source": "original"
+}

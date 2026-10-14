@@ -165,5 +165,27 @@
     "dead_end": "#ff8a00",
     "monsters": {"blade_wolf": "#ff2a2a", "gnome": "#2aff4a", "ghoul": "#c02aff", "goblin": "#ffd02a"},
     "monster_default": "#ffffff"
+  },
+  "city": {
+    "_comment": "도시 거리 화면(M4). 그림은 픽셀아트 밑그림을 pixel_scale배로 확대(가장 가까운 픽셀). baseline = 밑그림에서 건물이 서는 y. 스크롤 속도는 화면 픽셀/초.",
+    "pixel_scale": 3,
+    "baseline": 196,
+    "scroll_px_per_sec": 900,
+    "wheel_step_px": 140,
+    "drag_threshold_px": 10,
+    "plate_offset_px": 10,
+    "hover_brighten": 0.18,
+    "selected_outline": "#e0c070",
+    "dim_unaffordable": 0.35,
+    "interior_panel_width": 440,
+    "result_lines": 14,
+    "hud_height": 64,
+    "list_height": 92,
+    "result_min_height": 72,
+    "debug_width": 420,
+    "debug_list_height": 300,
+    "debug_edit_width": 110,
+    "info_width": 520,
+    "info_height": 420
   }
 }
