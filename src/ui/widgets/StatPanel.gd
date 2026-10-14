@@ -6,6 +6,7 @@ extends VBoxContainer
 var _stats: StatBlock = null
 var _grid: GridContainer
 var _summary: Label
+var show_dev_summary: bool = true  ## 세부 스탯 등록·연결 수(기반 점검용). 새 탐험가 화면은 끈다.
 
 
 func _init() -> void:
@@ -52,6 +53,7 @@ func refresh() -> void:
 		if def.implemented:
 			wired_count += 1
 	_summary.text = Strings.t("foundation.sub_stats", {"count": subs.size(), "hidden": hidden_count, "wired": wired_count})
+	_summary.visible = show_dev_summary
 
 
 func _add_row(a: String, b: String, c: String, base_tone: String, value_tone: String) -> void:

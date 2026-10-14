@@ -19,20 +19,31 @@ func setup(p_pc: PlayerCharacter) -> void:
 	var row := HBoxContainer.new()
 	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(row)
+	# 몬스터가 많아 목록·설명 모두 높이를 고정하고 스크롤한다(창이 화면 밖으로 늘어나지 않게).
+	var h := UiTheme.metric("bestiary_list_height", 440)
 	var left := PanelContainer.new()
 	left.add_theme_stylebox_override("panel", GothicStyle.inset_box())
-	left.custom_minimum_size.x = 200
+	left.custom_minimum_size = Vector2(UiTheme.metric("bestiary_list_width", 200), h)
 	row.add_child(left)
+	var list_scroll := ScrollContainer.new()
+	list_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	left.add_child(list_scroll)
 	_list = VBoxContainer.new()
-	left.add_child(_list)
+	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	list_scroll.add_child(_list)
 	var right := PanelContainer.new()
 	right.add_theme_stylebox_override("panel", GothicStyle.inset_box())
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right.custom_minimum_size.y = h
 	row.add_child(right)
+	var detail_scroll := ScrollContainer.new()
+	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	right.add_child(detail_scroll)
 	_detail = UiTheme.label("", "body")
 	_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_detail.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	right.add_child(_detail)
+	_detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	detail_scroll.add_child(_detail)
 	refresh()
 
 
@@ -50,6 +61,7 @@ func refresh() -> void:
 			if seen else Strings.t("knowledge.unknown")
 		var b := UiTheme.button(text, func() -> void: show_monster(id))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.focus_mode = Control.FOCUS_NONE  # 포커스를 잡으면 Tab(소지품)이 포커스 이동에 먹힌다
 		b.disabled = not seen
 		_list.add_child(b)
 		if seen and first.is_empty():

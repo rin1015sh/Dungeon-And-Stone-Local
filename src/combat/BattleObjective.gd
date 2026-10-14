@@ -27,7 +27,8 @@ static func after_turn(b: Battle, c: Combatant) -> void:
 	for i in b.rng.randi_range(int(cnt[0]), int(cnt[1])) if cnt.size() == 2 else 1:
 		if b.side_units(Combatant.SIDE_ENEMY).size() >= int(b.db.bal("combat.max_side_units", 6)):
 			break
-		var m := Monster.create(b.db, str(b.rng.pick(pool)), " +")
+		var pick := str(b.rng.pick(pool))
+		var m := Monster.create(b.db, pick, b.spawn_label(pick))
 		var u := b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))
 		BattleRules.joined(b, u)
 		b.message.emit("combat.reinforce", {"monster": m.display_name}, "danger")

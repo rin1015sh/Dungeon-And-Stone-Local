@@ -12,8 +12,8 @@
     "desc_ko": "…",
     "modifiers": [
       {
-        "target": "smell",
-        "flat": 3
+        "target": "int",
+        "flat": 2
       }
     ],
     "implemented": false
@@ -25,9 +25,9 @@
     }
   ],
   "stat_ranges": {
-    "smell": [
-      8,
-      15
+    "int": [
+      4,
+      8
     ]
   },
   "resource_mods": {

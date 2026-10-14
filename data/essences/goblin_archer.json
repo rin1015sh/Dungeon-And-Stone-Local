@@ -37,26 +37,10 @@
   ],
   "stat_ranges": {
     "agi": [
-      0,
-      4
-    ],
-    "flexibility": [
-      2,
-      6
+      3,
+      11
     ],
     "sight": [
-      4,
-      8
-    ],
-    "smell": [
-      0,
-      4
-    ],
-    "cognition": [
-      0,
-      4
-    ],
-    "stealth": [
       4,
       8
     ],
@@ -68,9 +52,13 @@
       2,
       6
     ],
-    "obsession": [
-      5,
-      9
+    "int": [
+      0,
+      4
+    ],
+    "m_res": [
+      3,
+      5
     ]
   },
   "source": "placeholder",

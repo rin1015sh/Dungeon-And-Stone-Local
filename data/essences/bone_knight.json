@@ -27,25 +27,17 @@
     }
   ],
   "stat_ranges": {
-    "cutting_power": [
-      10,
-      14
-    ],
-    "bone_strength": [
-      53,
-      57
-    ],
     "agi": [
-      13,
-      17
+      9,
+      15
     ],
-    "endurance": [
-      13,
-      17
+    "str": [
+      5,
+      7
     ],
-    "flexibility": [
-      -9,
-      -5
+    "p_res": [
+      34,
+      38
     ]
   },
   "source": "placeholder",

@@ -6,7 +6,7 @@ extends Control
 ## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
 ## 입력칸 입력·창 포커스 잃음·전투 중·창(소지품 등)이 열려 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
 
-signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망)
+signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망) / "abandoned"(일시정지 메뉴에서 포기)
 signal regenerate_requested(seed_value: int)
 signal session_switch(target: ExploreSession)  ## 균열 챕터 ↔ 바깥 층(Main이 화면을 새로 만든다)
 
@@ -21,7 +21,7 @@ var _hud: ExploreHud
 var _debug: DebugPanel
 var _ended: bool = false
 var _combat: CombatScreen = null
-var _pause_overlay: Control
+var _pause_overlay: PauseMenu
 var _bar: BottomBar
 var _windows: WindowManager
 
@@ -38,6 +38,7 @@ func _ready() -> void:
 	_hud.bind(session)
 	var log_panel := LogPanel.new()
 	log_panel.translucent = true
+	log_panel.keeps_history = true
 	add_child(log_panel)
 	var m := UiTheme.metric("margin", 16)
 	_bar = BottomBar.new()
@@ -60,6 +61,7 @@ func _ready() -> void:
 	log_panel.offset_top = log_panel.offset_bottom - UiTheme.metric("explore_log_height", 200)
 	_windows = WindowManager.new()
 	_windows.setup(session.player)
+	_windows.now_hours = func() -> float: return session.clock.total_hours
 	add_child(_windows)
 	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_windows.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("window", on))
@@ -86,6 +88,11 @@ func _ready() -> void:
 	session.start()
 	for pm: Dictionary in session.take_pending():
 		_on_message(str(pm["key"]), pm["args"], str(pm["kind"]))
+	# 화면이 생기기 전에 끝났을 수 있다(빙하굴 3챕터 입장 피해로 사망 등) — 결과 화면으로 넘긴다.
+	if session.player.dead:
+		_end("died")
+	elif session.ended:
+		_end("closed")
 
 
 func _process(delta: float) -> void:
@@ -112,11 +119,18 @@ func _notification(what: int) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _ended or _typing() or _combat != null:
+		return  # 전투 중에는 디버그 패널도 열지 않는다(전투 화면 뒤에 숨어 버린다)
 	if event.is_action_pressed("debug_toggle"):
 		_debug.visible = not _debug.visible
 		get_viewport().set_input_as_handled()
 		return
-	if _ended or _typing() or _combat != null:
+	var riddle := get_node_or_null("RiddleDialog") as RiddleDialog
+	if riddle != null:  # 수수께끼 대화창이 떠 있으면 탐험 키는 먹지 않는다. 정지 키 = 물러나기
+		if event.is_action_pressed("pause"):
+			riddle.cancel()
+		if event is InputEventKey or event is InputEventAction:
+			get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("pause"):
 		if _windows.any_open():
@@ -172,7 +186,7 @@ func bottom_bar() -> BottomBar:
 
 ## 소지품 사용(단축칸·소지품 창). 탐험 규칙(ExploreSession)이 판정한다.
 func _use_item(item_id: String) -> void:
-	if _ended or _combat != null:
+	if _ended or _combat != null or is_paused():
 		return
 	session.use_item(item_id)
 	_windows.refresh()
@@ -180,7 +194,7 @@ func _use_item(item_id: String) -> void:
 
 
 func _on_bar_action(action: String) -> void:
-	if _ended or _combat != null:
+	if _ended or _combat != null or (is_paused() and action != "pause"):
 		return
 	match action:
 		"wait":
@@ -194,7 +208,7 @@ func _on_bar_action(action: String) -> void:
 ## 일시정지 메뉴: 시간이 멈추고 이동·단축키를 막는다.
 func set_paused(on: bool) -> void:
 	session.realtime.set_paused("menu", on)
-	_pause_overlay.visible = on
+	_pause_overlay.show_menu(on)
 
 
 func is_paused() -> bool:
@@ -233,6 +247,9 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	_windows.close_all()
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
+	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.
+	_combat.reward_provider = func(_result: String, killed: Array[String], colors: Array[String]) -> Array:
+		return session.grant_battle_rewards(group, killed, colors)
 	add_child(_combat)
 	_combat.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_combat.finished.connect(func(result: String, turns: int, killed: Array[String]) -> void:
@@ -244,18 +261,11 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 
 
 func _build_pause_overlay() -> void:
-	_pause_overlay = CenterContainer.new()
-	_pause_overlay.visible = false
-	_pause_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_pause_overlay = PauseMenu.new()
 	add_child(_pause_overlay)
 	_pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", UiTheme.translucent_panel())
-	_pause_overlay.add_child(panel)
-	var v := VBoxContainer.new()
-	panel.add_child(v)
-	v.add_child(UiTheme.label(Strings.t("explore.paused"), "header", "text_title"))
-	v.add_child(UiTheme.label(Strings.t("explore.paused_hint", {"key": InputSetup.key_label("pause")}), "small", "text_dim"))
+	_pause_overlay.resume_requested.connect(func() -> void: set_paused(false))
+	_pause_overlay.abandon_requested.connect(func() -> void: _end("abandoned"))
 
 
 func _build_world() -> void:
@@ -265,7 +275,9 @@ func _build_world() -> void:
 	add_child(container)
 	container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var vp := SubViewport.new()
-	vp.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+	var linear := JsonUtil.get_str(JsonUtil.get_dict(session.db.render, "view"), "texture_filter", "nearest") == "linear"
+	vp.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR if linear \
+		else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	container.add_child(vp)
 	var lighting := JsonUtil.get_dict(session.db.render, "lighting")
 	_tone = CanvasModulate.new()
@@ -309,20 +321,27 @@ func _typing() -> bool:
 	return get_viewport().gui_get_focus_owner() is LineEdit
 
 
+## 문구의 {interact}는 지금 묶인 살피기 키로 채운다(키를 바꿔도 안내가 맞게).
 func _on_message(key: String, args: Dictionary, kind: String) -> void:
-	EventBus.log_message.emit(Strings.t(key, args), kind)
+	var a := args
+	if not a.has("interact"):
+		a = args.duplicate()
+		a["interact"] = InputSetup.key_label("interact")
+	EventBus.log_message.emit(Strings.t(key, a), kind)
 
 
 func _end(kind: String) -> void:
 	if _ended:
 		return
 	_ended = true
+	set_paused(false)
 	var pc := session.player
+	var base := session.rift_run.outer if session.rift_run != null and session.rift_run.outer != null else session  # 균열 안이면 바깥 층 기준
 	var info := {
-		"name": pc.display_name, "floor": session.floor_name(), "cause": pc.death_cause,
-		"day": session.clock.day(), "hours": session.clock.total_hours, "steps": session.steps,
-		"landmarks": session.found_count(session.map.landmarks), "landmarks_total": session.map.landmarks.size(),
-		"portals": session.found_count(session.map.portals), "portals_total": session.map.portals.size()}
+		"name": pc.display_name, "floor": base.floor_name(), "cause": pc.death_cause,
+		"day": session.clock.day(), "hours": session.clock.total_hours, "steps": base.steps + (session.steps if base != session else 0),
+		"landmarks": base.found_count(base.map.landmarks), "landmarks_total": base.map.landmarks.size(),
+		"portals": base.found_count(base.map.portals), "portals_total": base.map.portals.size()}
 	if _combat != null:
 		await _combat.finished
 	await get_tree().create_timer(UiTheme.ui_float("end_delay_sec", 1.2)).timeout

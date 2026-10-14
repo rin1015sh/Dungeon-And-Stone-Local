@@ -27,16 +27,12 @@
   ],
   "stat_ranges": {
     "int": [
-      2,
-      4
+      3,
+      7
     ],
     "sight": [
       4,
       8
-    ],
-    "sixth_sense": [
-      2,
-      5
     ]
   },
   "source": "placeholder",

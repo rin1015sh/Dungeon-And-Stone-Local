@@ -67,6 +67,7 @@ func _build() -> void:
 
 	var mid := _column(cols, UiTheme.metric("left_column_width", 340))
 	_stat_panel = StatPanel.new()
+	_stat_panel.show_dev_summary = false
 	UiTheme.section(mid, Strings.t("create.body_header")).add_child(_stat_panel)
 	_res_panel = ResourcePanel.new()
 	UiTheme.section(mid, Strings.t("create.resources_header")).add_child(_res_panel)

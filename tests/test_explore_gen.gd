@@ -150,5 +150,5 @@ func test_vision_rules() -> void:
 	a.light.ignite("sun", 30.0, 10.0)
 	assert_near(Vision.radius_m(db, def, map, a, p), 9.0, 0.0001, "아무리 밝아도 상한")
 	a.light.ignite("torch", 7.0, 10.0)
-	a.stats.set_base("field_of_view", 10)
+	a.stats.set_base("sight", 10)
 	assert_true(Vision.radius_m(db, def, map, a, p) > 7.0, "시야 스탯 보정")

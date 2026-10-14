@@ -56,7 +56,7 @@
     "_comment": "예약 자원(정의만). 10% 이하에서 행동 불가.",
     "enabled": false,
     "color": "#6b7a4a",
-    "max_formula": "{bal.reserved.stamina_base} + {endurance} * {bal.reserved.stamina_per_endurance}",
+    "max_formula": "{bal.reserved.stamina_base} + {p_res} * {bal.reserved.stamina_per_p_res}",
     "scope": "always",
     "thresholds": [
       {"at_ratio": 0.1, "direction": "down", "apply_status": "stamina_depleted"}

@@ -1,6 +1,6 @@
 class_name ExploreInteract
 extends RefCounted
-## 살피기(E)와 포탈 안내(ExploreSession이 부른다 — 세션 파일을 짧게 유지).
+## 살피기(interact 키)와 포탈 안내(ExploreSession이 부른다 — 세션 파일을 짧게 유지).
 ##   층 포탈: 아래층은 아직 잠김(M6) · 균열 포탈: 들어간다(RiftWatch.enter → 세션 transfer)
 ##   균열 출구: 다음 챕터 / 탈출(RiftRun.use_exit) · 대현자 기념비: 마석이 있으면 바쳐 균열을 연다(RiftWatch.try_offer)
 
@@ -30,6 +30,18 @@ static func run(s: ExploreSession) -> void:
 				s.message.emit("explore.monument", {}, "system")
 			return
 	s.message.emit("explore.nothing_here", {}, "info")
+
+
+## 지금 살피기를 누르면 다룰 대상의 이름(HUD 안내). 없으면 "". run과 같은 순서로 본다.
+static func target_name(s: ExploreSession) -> String:
+	if not s.map.portal_at(s.pos).is_empty():
+		var here := s.map.def_at(s.pos)
+		return here.name_ko if here != null else ""
+	for d in FloorMap.DIRS4:
+		var def := s.map.def_at(s.pos + d)
+		if def != null and (def.interact == "monument" or (def.interact == "hidden_piece" and s.rift_run != null)):
+			return def.name_ko
+	return ""
 
 
 ## 층 포탈: portal["dest"](예: floor2_east)가 다음 층의 도착 지점이다. 2층은 아직 없어서(M6) 안내만 한다.

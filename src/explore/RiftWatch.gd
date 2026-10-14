@@ -61,9 +61,12 @@ func try_offer(s: ExploreSession, monument: Vector2i) -> bool:
 	for id in rifts_for(s):
 		var item := JsonUtil.get_str(JsonUtil.get_dict(s.db.get_entry("rifts", id), "force_open"), "item")
 		if not item.is_empty() and s.player.inventory.count(item) > 0:
-			s.player.inventory.remove(item, 1)
 			s.message.emit("explore.rift_offer", {"item": DataNames.entry(s.db, "items", item)}, "system")
-			return force_open(s, id, monument)
+			if force_open(s, id, monument):
+				s.player.inventory.remove(item, 1)  # 열렸을 때만 마석을 쓴다(자리를 못 찾으면 그대로 남는다)
+			else:
+				s.message.emit("explore.rift_offer_failed", {}, "warn")
+			return true  # 바치려 했다 — 기념비 기본 문구는 내지 않는다
 	return false
 
 

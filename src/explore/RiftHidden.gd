@@ -43,10 +43,13 @@ func take(cs: ExploreSession, p: Vector2i, floor_tile: String, riddle: RiftRiddl
 		var hint := riddle.read_mural(cs.player, p)
 		cs.message.emit(JsonUtil.get_str(hd, "message", "explore.mural_read"), {"hint": hint}, "system")
 		return true
+	var item := JsonUtil.get_str(hd, "item")
+	if not cs.player.inventory.fits(item, 1):  # 가방이 찼으면 그 자리에 둔다(탈출에 필요한 물건을 잃지 않게)
+		cs.message.emit("explore.hidden_no_room", {"item": DataNames.entry(cs.db, "items", item)}, "warn")
+		return true
 	at.erase(p)
 	taken[JsonUtil.get_str(hd, "id")] = true
 	cs.map.set_tile(p, floor_tile)
-	var item := JsonUtil.get_str(hd, "item")
 	cs.player.inventory.add(item, 1)
 	cs.message.emit(JsonUtil.get_str(hd, "message", "explore.hidden_found"), {"item": DataNames.entry(cs.db, "items", item)}, "good")
 	cs.refresh_view()

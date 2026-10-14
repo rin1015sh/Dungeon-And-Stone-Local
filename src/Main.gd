@@ -60,6 +60,7 @@ func _show_foundation() -> void:
 
 func _start_run(pc: PlayerCharacter) -> void:
 	GameState.start_run(pc)
+	LogPanel.clear_history()
 	_enter_floor(str(DataRegistry.db.bal("explore.start_floor", "")))
 
 

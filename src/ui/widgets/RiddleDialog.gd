@@ -13,9 +13,7 @@ func setup(riddle: RiftRiddle, pc: PlayerCharacter) -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_win = GothicWindow.new(Strings.t("riddle.title"))
 	_win.custom_minimum_size.x = UiTheme.metric("riddle_width", 520)
-	_win.close_requested.connect(func() -> void:
-		cancelled.emit()
-		queue_free())
+	_win.close_requested.connect(cancel)
 	add_child(_win)
 	var q := UiTheme.label(JsonUtil.get_str(riddle.data, "question_ko"), "body", "text")
 	q.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -27,6 +25,23 @@ func setup(riddle: RiftRiddle, pc: PlayerCharacter) -> void:
 	for i in riddle.choices(pc):
 		var idx := i
 		_win.content.add_child(UiTheme.button(str(choices[i]), func() -> void: _pick(riddle, idx)))
+	_focus_first.call_deferred()
+
+
+## 고르지 않고 물러난다(✕ · 정지 키).
+func cancel() -> void:
+	if is_queued_for_deletion():
+		return
+	cancelled.emit()
+	queue_free()
+
+
+## 키보드로도 답하게 첫 선택지에 포커스(위아래 화살표·Tab으로 옮기고 Space/Enter로 고른다).
+func _focus_first() -> void:
+	for c in _win.content.get_children():
+		if c is Button and not c.is_queued_for_deletion():
+			(c as Button).grab_focus()
+			return
 
 
 func _pick(riddle: RiftRiddle, idx: int) -> void:
@@ -41,6 +56,7 @@ func _pick(riddle: RiftRiddle, idx: int) -> void:
 	_win.content.add_child(ok)
 	_win.content.add_child(UiTheme.button(Strings.t("riddle.choose_pass"), func() -> void: _done(RiftRiddle.PASS)))
 	_win.content.add_child(UiTheme.button(Strings.t("riddle.choose_weaken"), func() -> void: _done(RiftRiddle.WEAKEN)))
+	_focus_first.call_deferred()
 
 
 func _done(outcome: String) -> void:

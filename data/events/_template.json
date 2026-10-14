@@ -3,7 +3,7 @@
   "id": "hidden_wall_basic",
   "name_ko": "숨은 벽",
   "type": "hidden_passage",
-  "detect": {"stat": "sixth_sense", "difficulty": 10},
+  "detect": {"stat": "int", "difficulty": 10},
   "effects": [],
   "once": true,
   "source": "placeholder"

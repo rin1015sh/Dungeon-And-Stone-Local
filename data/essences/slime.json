@@ -39,21 +39,21 @@
       -2,
       -1
     ],
-    "bone_strength": [
-      -2,
-      -1
-    ],
     "resist_poison": [
       5,
       10
     ],
-    "sixth_sense": [
-      3,
-      6
-    ],
     "digestion": [
       5,
       10
+    ],
+    "p_res": [
+      -1,
+      0
+    ],
+    "int": [
+      2,
+      3
     ]
   },
   "source": "placeholder",

@@ -29,6 +29,7 @@ var variant: bool = false            ## 변종 수호자
 var remaining: Array = []            ## 이 챕터에서 아직 치우지 않은 조우 무리
 var guardian_down: bool = false
 var finished: bool = false
+var held: Dictionary = {}              ## 출구에 필요한데 가방에 자리가 없어 손에 쥔 물건(아이템 id -> 개수). 출구에서 가방보다 먼저 쓴다
 var _session_ref: WeakRef = null
 var hidden: RiftHidden = RiftHidden.new()
 var hidden_at: Dictionary:  ## 이 챕터의 살필 수 있는 물체 칸 -> 정의
@@ -163,10 +164,13 @@ func use_exit(s: ExploreSession) -> ExploreSession:
 		s.say_later(JsonUtil.get_str(strong, "message", "explore.rift_exit_forced"), {}, "system")
 	elif not req.is_empty():
 		var item := JsonUtil.get_str(req, "item")
-		if outer.player.inventory.count(item) <= 0:
+		if outer.player.inventory.count(item) + int(held.get(item, 0)) <= 0:
 			s.message.emit("explore.rift_exit_needs", {"item": DataNames.entry(db, "items", item)}, "warn")
 			return null
-		outer.player.inventory.remove(item, 1)
+		if int(held.get(item, 0)) > 0:
+			held[item] = int(held[item]) - 1
+		else:
+			outer.player.inventory.remove(item, 1)
 		s.say_later(JsonUtil.get_str(req, "message", "explore.rift_exit_used"), {"item": DataNames.entry(db, "items", item)}, "system")
 	if not is_last_chapter():
 		var next := build_chapter(chapter + 1)
@@ -176,9 +180,20 @@ func use_exit(s: ExploreSession) -> ExploreSession:
 	return outer
 
 
+## 가방에 들어가지 못한 전리품: 이 균열의 출구에 필요한 물건이면 손에 쥔다(잃어서 균열에 갇히지 않게). 쥐었으면 true.
+func keep_overflow(s: ExploreSession, item: String, count: int) -> bool:
+	for ch: Variant in chapters():
+		if JsonUtil.get_str(JsonUtil.get_dict(ch if ch is Dictionary else {}, "exit_requires"), "item") == item:
+			held[item] = int(held.get(item, 0)) + count
+			s.message.emit("explore.rift_key_held", {"item": DataNames.entry(db, "items", item)}, "good")
+			return true
+	return false
+
+
 ## 균열을 나간다(필드 효과를 걷고 챕터 세션을 떼어 낸다).
 func finish() -> void:
 	finished = true
+	held.clear()
 	_leave_field_effects()
 	var cs := session
 	if cs != null:
@@ -254,7 +269,8 @@ func _guardian_drops(s: ExploreSession) -> void:
 		var item := JsonUtil.get_str(dd, "item")
 		if db.has_entry("items", item) and outer.rng.chance(JsonUtil.get_float(dd, "chance")):
 			var got := outer.player.inventory.add(item, 1)
-			s.message.emit("reward.loot" if got > 0 else "reward.bag_full", {"item": DataNames.entry(db, "items", item), "count": 1}, "good")
+			s.message.emit("reward.loot" if got > 0 else "reward.bag_full", {"item": DataNames.entry(db, "items", item), "count": 1},
+				"good" if got > 0 else "warn")
 
 
 func _leave_field_effects() -> void:

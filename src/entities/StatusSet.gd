@@ -100,6 +100,11 @@ func set_barrier(id: String, amount: float) -> void:
 		st["barrier"] = maxf(float(st.get("barrier", 0.0)), amount)
 
 
+## 상태 하나가 남긴 보호막 양(카드 표시용).
+func barrier_of(id: String) -> float:
+	return float((_active[id] as Dictionary).get("barrier", 0.0)) if _active.has(id) else 0.0
+
+
 func barrier_total() -> float:
 	var v := 0.0
 	for id: String in _active:
@@ -321,8 +326,16 @@ func _periodic(trigger: String, amount: float, unit_only: String = "") -> void:
 			if _pool.has_resource(res):
 				var per := Formula.value(pd.get("amount", 0.0), _pool.resolve)
 				if res == "hp" and per < 0.0:
-					per *= dot_mult
+					per *= dot_mult * _element_resist(JsonUtil.get_str(pd, "damage_type"))
 				_pool.modify(res, per * n * amount, SOURCE_PREFIX + id)
+
+
+## 주기 피해의 속성 내성(periodic.damage_type — 중독 = poison): 공격 피해와 같은 resist_<유형> 규칙(DamageCalc.element_mult).
+func _element_resist(dtype: String) -> float:
+	if dtype.is_empty() or not _stats.has_stat("resist_" + dtype):
+		return 1.0
+	var per_point := float(_db.bal("combat.element_resist_per_point", 0.01))
+	return 1.0 - minf(float(_db.bal("combat.element_resist_max", 0.75)), maxf(0.0, _stats.get_value("resist_" + dtype)) * per_point)
 
 
 func _countdown(unit: String, amount: float) -> void:

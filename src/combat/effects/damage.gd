@@ -36,12 +36,14 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 		return true
 	if float(r["affinity"]) <= 0.0:
 		ctx.landed = 0
+		ev["immune"] = true
 		ctx.say("combat.immune", args, "warn")
 		return true
 	ctx.landed = 1
 	var origin := "attack:" + source.id
 	var dtype := str(r["damage_type"])
 	var lost := DamageApply.hurt(ctx, target, int(r["amount"]), origin, dtype)
+	ev["lost"] = lost  # 화면에 떠오르는 숫자 = 실제로 깎인 생명력(보호막에 막힌 만큼은 빼고). amount는 계산된 피해 그대로
 	var landed_amount := int(r["amount"]) if lost > 0 else 0  # 보호막이 다 막았으면 맞힌 것으로 치지 않는다
 	if lost > 0:
 		Passives.on_damaged(ctx, dtype)

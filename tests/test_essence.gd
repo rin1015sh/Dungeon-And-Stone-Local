@@ -101,7 +101,7 @@ func test_drop_chance_and_pending_expiry() -> void:
 
 func test_absorb_pending_and_save_roundtrip() -> void:
 	var pc := _pc()
-	pc.essences.add_pending(db, _inst("blade_wolf", "yellow", {"smell": 9}))
+	pc.essences.add_pending(db, _inst("blade_wolf", "yellow", {"int": 9}))
 	assert_eq(pc.essences.absorb_pending(pc, 0), "")
 	assert_eq(pc.essences.pending.size(), 0)
 	pc.essences.add_pending(db, _inst("goblin", "green"))
@@ -110,7 +110,7 @@ func test_absorb_pending_and_save_roundtrip() -> void:
 	copy.progress_load_dict(data)
 	assert_true(copy.essences.has_essence("blade_wolf"))
 	assert_true(copy.skills.has("ess_wolf_blade_graze"), "불러오면 스킬도 다시 붙는다")
-	assert_eq(copy.stats.get_value("smell"), pc.stats.get_value("smell"))
+	assert_eq(copy.stats.get_value("int"), pc.stats.get_value("int"))
 	assert_eq(copy.essences.pending.size(), 1)
 
 
@@ -125,3 +125,51 @@ func test_essence_skill_usable_in_battle() -> void:
 		c = b.next_turn()
 	assert_true(c != null, "플레이어 차례가 온다")
 	assert_true(b.act(c, {"kind": "skill", "skill": "ess_ghoul_claw", "target": b.opponents(c)[0]}), "정수 스킬 사용")
+
+
+## 모든 정수(수호자 = 액티브 전부)의 스킬이 전투에서 실제로 쓰인다(대상 종류별로 행동창이 고르는 대상을 넘긴다).
+func test_every_essence_skill_usable_in_battle() -> void:
+	for eid: String in db.get_collection("essences").keys():
+		var inst := _inst(eid, str(db.bal("essence.guardian_color", "rainbow")))
+		for sid: String in EssenceSet.granted_skills(db, inst):
+			var pc := _pc(11)
+			assert_eq(pc.essences.absorb(pc, inst), "", "%s 흡수" % eid)
+			pc.pool.set_current("soul", pc.pool.get_max("soul"))
+			var party: Array[Actor] = [pc]
+			var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["goblin"], true)
+			var c := b.next_turn()
+			while c != null and c.actor != pc:
+				b.act(c, b.ai_action(c))
+				c = b.next_turn()
+			assert_true(c != null, "%s: 플레이어 차례" % sid)
+			if c == null:
+				continue
+			assert_eq(b.can_use(c, sid), "", "%s: 쓸 수 있다" % sid)
+			var kind := JsonUtil.get_str(db.get_entry("skills", sid), "target")
+			var tgt: Variant = b.opponents(c)[0] if kind in ["enemy_single", "enemy_row"] else (c if kind in ["ally_single", "any_single"] else null)
+			var before := b.history.size()
+			assert_true(b.act(c, {"kind": "skill", "skill": sid, "target": tgt}), "%s: 사용" % sid)
+			assert_true(b.history.size() >= before + 2, "%s: 사용 안내 + 결과(효과가 없어도 알린다)" % sid)
+
+
+## 확률 상태 스킬이 빗나가도 조용히 끝나지 않는다.
+func test_failed_status_skill_reports_no_effect() -> void:
+	var seen := false
+	for seed_value in 40:
+		var pc := _pc()
+		pc.essences.absorb(pc, _inst("guardian_eye", "blue"))
+		assert_true(pc.skills.has("ess_eye_paralysis_gaze"))
+		var party: Array[Actor] = [pc]
+		var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"], true)
+		var c := b.next_turn()
+		while c != null and c.actor != pc:
+			b.act(c, b.ai_action(c))
+			c = b.next_turn()
+		if c == null:
+			continue
+		b.act(c, {"kind": "skill", "skill": "ess_eye_paralysis_gaze", "target": b.opponents(c)[0]})
+		var keys := b.history.map(func(h: Dictionary) -> String: return str(h["key"]))
+		if keys.has("combat.no_effect"):
+			seen = true
+			break
+	assert_true(seen, "마비 시선이 안 걸리면 '아무 효과도 내지 못했다'를 알린다")

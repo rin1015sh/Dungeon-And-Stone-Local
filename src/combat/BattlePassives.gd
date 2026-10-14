@@ -16,7 +16,7 @@ static func on_start(b: Battle) -> void:
 	for u in b.units.duplicate():
 		for id: Variant in _list(u.actor, "start_summons"):
 			if b.side_units(u.side).size() < int(b.db.bal("combat.max_side_units", 6)):
-				var m := Monster.create(b.db, str(id), " +")
+				var m := Monster.create(b.db, str(id), b.spawn_label(str(id)))
 				var su := b.add(m, u.side, JsonUtil.get_str(m.behavior(), "row", "front"))
 				su.summoned = true
 				b.message.emit("combat.summon", {"name": u.label(), "monster": m.display_name}, "danger")
@@ -141,6 +141,16 @@ static func _pick_type(b: Battle, u: Combatant) -> void:
 			m.skills.append(str(s))
 	m.display_name += " (%s)" % JsonUtil.get_str(t, "name_ko")
 	b.message.emit(JsonUtil.get_str(t, "message", "combat.monster_type"), {"name": m.display_name}, "danger" if t.has("message") else "info")
+
+
+## 타입이 정한 정수 색("타입이 곧 색"). 타입이 없거나 색을 정하지 않으면 "".
+static func type_essence_color(m: Monster) -> String:
+	if not m.has_meta("monster_type"):
+		return ""
+	for t: Variant in JsonUtil.get_array(m.def, "types"):
+		if t is Dictionary and JsonUtil.get_str(t, "id") == str(m.get_meta("monster_type")):
+			return JsonUtil.get_str(t, "essence_color")
+	return ""
 
 
 static func _aura_fits(a: Combatant, aura: Dictionary) -> bool:

@@ -5,7 +5,7 @@ extends RefCounted
 ## 통로 칸(방 안쪽이 아닌 칸)에 3×3 묶음으로 tile을 깔고, 처음 밟으면 한 번 판정한다:
 ##   성공 확률 = clamp(rift.hazard_base + (스탯 − dc) × rift.hazard_per_point, hazard_min, hazard_max). 실패면 fail 효과.
 ## 판정이 끝난 묶음은 원래 바닥으로 돌아간다. RiftRun이 챕터를 만들 때 place, ExploreSession이 칸에 들어설 때 on_step.
-## 함정(강철의 묘 — 명세 §12.1 "탐지와 해제는 손재주·육감"):
+## 함정(강철의 묘 — 명세 §12.1 "탐지와 해제는 손재주·육감" → 이 게임은 주 스탯으로: 탐지 = 정신력, 해제 = 민첩, ASSUMPTIONS ST3):
 ##   "hidden": true — 바닥처럼 보이다가 옆 칸에 오면 detect {stat, dc}로 한 번 탐지(성공하면 tile이 드러난다)
 ##   "disarm": {stat, dc} — 드러난 함정을 밟으면 해제 판정(성공 = 무사, 실패 = 발동). 드러나지 않았으면 check(피하기)
 ##   "bypass": {stat, at_least} — 그만큼 단단하면 밟아 부순다(고렙). 살아 있는 조우에 패시브 trap_watcher(수호자의 눈)가
