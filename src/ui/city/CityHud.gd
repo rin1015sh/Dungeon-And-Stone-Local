@@ -1,7 +1,11 @@
 class_name CityHud
-extends PanelContainer
-## 도시 상단 정보 띠: 장소 이름 · 날짜(○번째 달 상순) · 남은 행동력 · 생명력 · 피로도 · 소지금
-## + 버튼(기록 보기 · 소지품 · 캐릭터 · 미궁 입장(임시) · 타이틀로).
+extends Control
+## 도시 화면 정보(위 띠 하나에 몰지 않고 화면 네 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
+##   왼쪽 위 = 달력 카드(장소 · 날짜 · 상순/중순/하순 진행 · 행동력 구슬),
+##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 생명력 막대 · 피로도 · 소지금 · 은행 잔액 · 신전 공적치),
+##   오른쪽 위 = 거리 지도(CityStreetMap, 거리에서만) + 그 아래 메뉴(소지품 · 캐릭터 · 소문·정보 · 미궁 입장(임시) · 타이틀로),
+##   위 가운데 = 건물 정보 카드(CityFacilityCard, 거리에서만).
+##   아래 가운데·오른쪽은 비워 둔다(건물 이름판 자리).
 
 signal dungeon_requested
 signal title_requested
@@ -10,12 +14,20 @@ signal window_requested(kind: String)
 
 var _state: CityState
 var _pc: PlayerCharacter
-var _place: Label
 var _date: Label
+var _periods: Array[Label] = []
+var _pips: Label
 var _ap: Label
+var _name: Label
+var _hp_bar: ProgressBar
 var _hp: Label
 var _fatigue: Label
 var _money: Label
+var _extra: Label
+var _dock: PanelContainer
+var _right: VBoxContainer  # 오른쪽 위 기둥: 지도 + 메뉴
+var map: CityStreetMap
+var card: CityFacilityCard
 
 
 func setup(state: CityState, pc: PlayerCharacter) -> void:
@@ -24,54 +36,162 @@ func setup(state: CityState, pc: PlayerCharacter) -> void:
 
 
 func _ready() -> void:
-	add_theme_stylebox_override("panel", UiTheme.translucent_panel())
-	mouse_filter = Control.MOUSE_FILTER_STOP
-	var row := HFlowContainer.new()  # 좁은 화면(모바일 웹)에서는 줄을 바꾼다
-	row.add_theme_constant_override("h_separation", UiTheme.metric("spacing", 8) + UiTheme.metric("spacing", 8) / 2)
-	add_child(row)
-	var place: Dictionary = CityValues.city_section(_state.db, {}, "place")
-	_place = _add(row, UiTheme.label(Strings.t("city.place", {"city": JsonUtil.get_str(place, "city_ko"),
-		"district": JsonUtil.get_str(place, "district_ko")}), "body", "text_title"))
-	_date = _add(row, UiTheme.label("", "body", "gold"))
-	_ap = _add(row, UiTheme.label("", "body", "text"))
-	_hp = _add(row, UiTheme.label("", "body", "text"))
-	_fatigue = _add(row, UiTheme.label("", "body", "text"))
-	_money = _add(row, UiTheme.label("", "body", "gold"))
-	_btn(row, Strings.t("city.btn_info"), func() -> void: info_requested.emit())
-	_btn(row, Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")}), func() -> void: window_requested.emit("inventory"))
-	_btn(row, Strings.t("city.btn_character", {"key": InputSetup.key_label("character")}), func() -> void: window_requested.emit("character"))
-	_btn(row, Strings.t("city.btn_dungeon"), func() -> void: dungeon_requested.emit())
-	_btn(row, Strings.t("city.btn_title"), func() -> void: title_requested.emit())
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var m := UiTheme.metric("margin", 16)
+	_build_calendar(m)
+	_build_vitals(m)
+	_right = VBoxContainer.new()
+	_right.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
+	_right.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_right)
+	_right.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, m)
+	_right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_build_dock()
 	_state.changed.connect(refresh)
 	_pc.inventory.money_changed.connect(func(_m: int) -> void: refresh())
 	_pc.fatigue.changed.connect(func(_v: float, _d: float, _s: String) -> void: refresh())
 	refresh()
 
 
+## 거리를 붙인다(지도·정보 카드가 거리 스크롤·가리킨 건물을 따른다).
+func attach_street(street: CityStreet) -> void:
+	var m := UiTheme.metric("margin", 16)
+	map = CityStreetMap.new()
+	map.setup(_state, street)
+	_right.add_child(map)
+	_right.move_child(map, 0)
+	card = CityFacilityCard.new()
+	card.setup(_state, _pc, street)
+	add_child(card)
+	card.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, m)
+	card.grow_horizontal = Control.GROW_DIRECTION_BOTH
+
+
+## 시설 안: 거리 지도·건물 카드를 숨긴다(달력·탐험가 카드·메뉴는 그대로).
+func set_facility_mode(on: bool) -> void:
+	if map != null:
+		map.visible = not on
+	if card != null:
+		card.visible = not on
+
+
+## 시설 패널이 비워 둘 위쪽 높이(메뉴 아래부터).
+func dock_bottom() -> float:
+	return UiTheme.metric("margin", 16) + _dock.get_combined_minimum_size().y
+
+
+func _build_calendar(m: int) -> void:
+	var box := CityUi.card()
+	box.custom_minimum_size.x = UiTheme.render_float("city.calendar_width", 300.0)
+	add_child(box)
+	box.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, m)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	box.add_child(v)
+	var place: Dictionary = CityValues.city_section(_state.db, {}, "place")
+	v.add_child(CityUi.label(Strings.t("city.place", {"city": JsonUtil.get_str(place, "city_ko"), "district": JsonUtil.get_str(place, "district_ko")}), "small", "dim"))
+	_date = CityUi.label("", "header", "bone")
+	v.add_child(_date)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	v.add_child(row)
+	for i in _state.periods().size():
+		var l := CityUi.label(_state.period_name(i), "small", "dim")
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(l)
+		_periods.append(l)
+	var ap := HBoxContainer.new()
+	v.add_child(ap)
+	ap.add_child(CityUi.label(Strings.t("city.ap_label"), "body", "bone"))
+	_pips = CityUi.label("", "body", "accent")
+	_pips.add_theme_font_size_override("font_size", int(UiTheme.render_float("city.pip_font_size", 24.0)))
+	_pips.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	ap.add_child(_pips)
+	_ap = CityUi.label("", "body", "bone")
+	ap.add_child(_ap)
+	var hint := CityUi.label(Strings.t("city.period_hint"), "small", "dim")
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.custom_minimum_size.x = box.custom_minimum_size.x - UiTheme.render_float("city.ui.card_padding", 12.0) * 2.0
+	v.add_child(hint)
+
+
+func _build_vitals(m: int) -> void:
+	var box := CityUi.card()
+	box.custom_minimum_size.x = UiTheme.render_float("city.vitals_width", 300.0)
+	add_child(box)
+	box.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, m)
+	box.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	box.add_child(v)
+	var top := HBoxContainer.new()
+	v.add_child(top)
+	_name = CityUi.label("", "body", "bone")
+	_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_name.clip_text = true
+	top.add_child(_name)
+	_money = CityUi.label("", "body", "accent")
+	top.add_child(_money)
+	var hp := HBoxContainer.new()
+	v.add_child(hp)
+	hp.add_child(CityUi.label(Strings.t("city.hp_label"), "small", "dim"))
+	_hp_bar = CityUi.bar(UiTheme.render_color("city.ui.blood").lightened(0.15))
+	hp.add_child(_hp_bar)
+	_hp = CityUi.label("", "small", "bone")
+	hp.add_child(_hp)
+	var low := HBoxContainer.new()
+	v.add_child(low)
+	_fatigue = CityUi.label("", "small", "bone")
+	low.add_child(_fatigue)
+	_extra = CityUi.label("", "small", "dim")
+	_extra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_extra.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	low.add_child(_extra)
+
+
+func _build_dock() -> void:
+	_dock = CityUi.card()
+	_dock.custom_minimum_size.x = UiTheme.render_float("city.dock_width", 440.0)
+	_right.add_child(_dock)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	_dock.add_child(v)
+	var r1 := HBoxContainer.new()
+	v.add_child(r1)
+	r1.add_child(CityUi.button(Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")}), func() -> void: window_requested.emit("inventory")))
+	r1.add_child(CityUi.button(Strings.t("city.btn_character", {"key": InputSetup.key_label("character")}), func() -> void: window_requested.emit("character")))
+	r1.add_child(CityUi.button(Strings.t("city.btn_info"), func() -> void: info_requested.emit()))
+	var r2 := HBoxContainer.new()
+	v.add_child(r2)
+	r2.add_child(CityUi.button(Strings.t("city.btn_dungeon"), func() -> void: dungeon_requested.emit(), true))
+	r2.add_child(CityUi.button(Strings.t("city.btn_title"), func() -> void: title_requested.emit()))
+
+
 func refresh() -> void:
 	_date.text = date_text(_state)
-	var pips := ""
+	for i in _periods.size():
+		var now := i == _state.period
+		_periods[i].add_theme_color_override("font_color", CityUi.c("accent" if now else "dim"))
+		_periods[i].text = ("▸ %s" if now else "%s") % _state.period_name(i)
+	var pips := PackedStringArray()
 	for i in _state.ap_per_period():
-		pips += "●" if i < _state.ap else "○"
-	_ap.text = Strings.t("city.hud_ap", {"pips": pips, "ap": _state.ap, "max": _state.ap_per_period()})
-	_hp.text = Strings.t("city.hud_hp", {"hp": roundi(_pc.pool.get_current("hp")), "max": roundi(_pc.pool.get_max("hp"))})
+		pips.append("●" if i < _state.ap else "○")
+	_pips.text = " ".join(pips)
+	_ap.text = Strings.t("city.ap_value", {"ap": _state.ap, "max": _state.ap_per_period()})
+	_name.text = Strings.t("city.vitals_name", {"name": _pc.display_name, "level": _pc.get_level()})
+	var hp := _pc.pool.get_current("hp")
+	var hp_max := _pc.pool.get_max("hp")
+	_hp_bar.max_value = maxf(1.0, hp_max)
+	_hp_bar.value = hp
+	_hp.text = Strings.t("city.hp_value", {"hp": roundi(hp), "max": roundi(hp_max)})
 	_fatigue.text = Strings.t("city.hud_fatigue", {"value": CityContext.fmt(_pc.fatigue.value)})
 	_money.text = Strings.t("city.hud_money", {"money": _pc.inventory.money})
+	_extra.text = "%s · %s" % [Strings.t("city.info_balance", {"balance": _state.bank_balance}),
+		Strings.t("city.info_merit", {"merit": CityContext.fmt(_state.temple_merit)})]
 
 
 ## "○번째 달 상순"(2년째부터는 연도를 붙인다). 연·월 이름 정의가 없어 시작부터 센 달로 표시한다.
 static func date_text(state: CityState) -> String:
 	var args := {"month": state.month_of_year(), "period": state.period_name(), "year": state.year()}
 	return Strings.t("city.date_year" if state.year() > 1 else "city.date", args)
-
-
-func _add(parent: Control, l: Label) -> Label:
-	parent.add_child(l)
-	return l
-
-
-func _btn(parent: Control, text: String, cb: Callable) -> void:
-	var b := UiTheme.button(text, cb)
-	b.focus_mode = Control.FOCUS_NONE
-	b.add_theme_font_size_override("font_size", UiTheme.metric("small_font_size", 14))
-	parent.add_child(b)

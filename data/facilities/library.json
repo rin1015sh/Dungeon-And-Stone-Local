@@ -1,10 +1,11 @@
 {
   "id": "library",
   "name_ko": "도서관",
+  "desc_ko": "오래된 기록이 쌓인 도서관. 책을 읽으며 미궁에 대한 정보를 모은다.",
   "order": 2,
-  "x": 300,
-  "building": "res://assets/city/buildings/library.png",
-  "interior": "res://assets/city/interiors/library.png",
+  "x": 786,
+  "building": "res://assets/city/buildings/library.webp",
+  "interior": "res://assets/city/interiors/library.webp",
   "activities": [
     "library_read"
   ],

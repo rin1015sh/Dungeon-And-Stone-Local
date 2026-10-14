@@ -1,10 +1,11 @@
 {
   "id": "shop",
   "name_ko": "상점",
+  "desc_ko": "탐험에 필요한 물건을 사고파는 상점.",
   "order": 4,
-  "x": 690,
-  "building": "res://assets/city/buildings/shop.png",
-  "interior": "res://assets/city/interiors/shop.png",
+  "x": 1866,
+  "building": "res://assets/city/buildings/shop.webp",
+  "interior": "res://assets/city/interiors/shop.webp",
   "activities": [
     "shop_trade"
   ],

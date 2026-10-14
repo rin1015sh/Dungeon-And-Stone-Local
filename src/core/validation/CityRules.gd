@@ -14,6 +14,7 @@ static func run(v: ValidatorBase) -> void:
 		return
 	_calendar(v, JsonUtil.get_dict(city, "calendar"))
 	_city_numbers(v, city)
+	_street(v, JsonUtil.get_dict(city, "street"))
 	_facilities(v, city)
 	_activities(v)
 	_info(v)
@@ -54,6 +55,29 @@ static func _city_numbers(v: ValidatorBase, city: Dictionary) -> void:
 			v.ref("city.shop.stock", "items", id)
 	elif stock != null:
 		v.err("city.shop", "stock은 아이템 id 배열 또는 null")
+
+
+## 거리 레이어: id·경로(res://)·시차 0~1·배율 > 0, 거리 길이 > 0. 그림 파일이 없어도 게임은 돈다(경로만 검사).
+static func _street(v: ValidatorBase, street: Dictionary) -> void:
+	if JsonUtil.get_float(street, "width", 0.0) <= 0.0:
+		v.err("city.street", "width(거리 길이)는 0보다 커야 한다")
+	var ids := {}
+	for layer: Variant in JsonUtil.get_array(street, "layers"):
+		var d := layer as Dictionary
+		if d == null:
+			v.err("city.street.layers", "레이어는 객체여야 한다")
+			continue
+		var id := JsonUtil.get_str(d, "id")
+		if id.is_empty() or ids.has(id):
+			v.err("city.street.layers", "레이어 id가 비었거나 겹친다: '%s'" % id)
+		ids[id] = true
+		if not JsonUtil.get_str(d, "path").begins_with(IMAGE_PREFIX):
+			v.err("city.street.layers." + id, "path는 res:// 경로여야 한다")
+		var par := JsonUtil.get_float(d, "parallax", 1.0)
+		if par < 0.0 or par > 1.0:
+			v.err("city.street.layers." + id, "parallax는 0~1")
+		if JsonUtil.get_float(d, "scale", 1.0) <= 0.0 or JsonUtil.get_float(d, "height", 720.0) <= 0.0:
+			v.err("city.street.layers." + id, "scale·height는 0보다 커야 한다")
 
 
 static func _facilities(v: ValidatorBase, city: Dictionary) -> void:

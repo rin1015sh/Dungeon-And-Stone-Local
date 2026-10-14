@@ -1,10 +1,11 @@
 {
   "id": "training",
   "name_ko": "훈련장",
+  "desc_ko": "교관이 지켜보는 훈련장. 몸을 단련해 능력치를 올린다.",
   "order": 6,
-  "x": 1090,
-  "building": "res://assets/city/buildings/training.png",
-  "interior": "res://assets/city/interiors/training.png",
+  "x": 2946,
+  "building": "res://assets/city/buildings/training.webp",
+  "interior": "res://assets/city/interiors/training.webp",
   "activities": [
     "training_train"
   ],

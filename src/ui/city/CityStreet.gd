@@ -1,25 +1,31 @@
 class_name CityStreet
 extends Control
-## 라비기온 거리(옆에서 본 가로로 긴 그림)를 좌우로 스크롤하며 시설 건물을 고른다.
-##   스크롤: 마우스 드래그·휠, A/D·←/→(이동 키). 고르기: 클릭·탭, 또는 화면 가운데 건물을 Space/F/Enter.
-##   고를 수 있는(행동력이 되는) 건물은 이름판이 강조되고, 마우스를 올리거나 가운데에 오면 밝아진다.
-## 건물 위치·그림 경로는 data(facilities x·building, city.json street.backdrop), 크기·속도는 render.json city.
+## 라비기온 거리(옆에서 본 긴 풍경)를 좌우로 스크롤하며 시설 건물을 고른다.
+##   레이어(data/city.json street.layers): 하늘·원경·중경·안개는 시차(parallax)로 천천히 움직이는 실제 도시 풍경(고를 수 없음),
+##   거리 레이어 위에 시설 건물(고를 수 있음 — 마우스·가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
+##   스크롤: 마우스 드래그·휠, A/D·←/→. 고르기: 클릭·탭, 또는 화면 가운데 건물을 Space/F/Enter.
+## 좌표는 거리 단위(화면 높이 render.json city.street_height 기준) — 화면 높이에 맞춰 확대·축소한다.
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
 
 signal facility_chosen(facility_id: String)
+signal target_changed(facility_id: String)  ## 마우스를 올린 건물(없으면 가운데 건물) — 정보 카드용
 
-const STREET_H := 240.0  ## 밑그림 높이(px) — 화면 높이에 맞춰 확대한다
-const FALLBACK_SIZE := Vector2(140, 140)
+const FALLBACK_SIZE := Vector2(400, 400)
+const HIGHLIGHT := preload("res://assets/shaders/city_highlight.gdshader")
 
 var _state: CityState
-var _content: Control
-var _backdrop: TextureRect
-var _buildings: Array[Dictionary] = []  # {id, node: Control, art: TextureRect, plate: PanelContainer, label: Label, x, w, h}
+var _back: Control  # 시차 레이어(뒤)
+var _content: Control  # 거리 레이어 + 건물 + 이름판(스크롤 1배)
+var _front: Control  # 화면 고정 레이어(앞)
+var _layers: Array[Dictionary] = []  # {node: TextureRect, parallax, y, height, scale, screen}
+var _buildings: Array[Dictionary] = []  # {id, node: TextureRect, plate, label, x, w, h}
 var _offset: float = 0.0
-var _scale: float = 3.0
-var _street_w: float = 1360.0
+var _scale: float = 1.0
+var _street_w: float = 3600.0
 var _hover: int = -1
 var _focus: int = -1
+var _target: String = ""
+var _outline_tex: float = 3.0  # 윤곽 두께(그림 픽셀)
 var _press_pos: Vector2 = Vector2.ZERO
 var _pressing: bool = false
 var _dragged: bool = false
@@ -32,18 +38,16 @@ func setup(state: CityState) -> void:
 func _ready() -> void:
 	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	_content = Control.new()
-	_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_content)
-	_backdrop = TextureRect.new()
-	_backdrop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_backdrop.stretch_mode = TextureRect.STRETCH_SCALE
-	_backdrop.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_backdrop.texture = _tex(JsonUtil.get_str(CityValues.city_section(_state.db, {}, "street"), "backdrop"))
-	_content.add_child(_backdrop)
-	if _backdrop.texture != null:
-		_street_w = _backdrop.texture.get_width()
+	var street := CityValues.city_section(_state.db, {}, "street")
+	_street_w = JsonUtil.get_float(street, "width", _street_w)
+	_back = _plain()
+	_content = _plain()
+	_front = _plain()
+	for v: Variant in JsonUtil.get_array(street, "layers"):
+		var d := v as Dictionary
+		var front := JsonUtil.get_bool(d, "front")
+		var parent := _front if front else (_content if JsonUtil.get_float(d, "parallax", 1.0) >= 1.0 and not JsonUtil.get_bool(d, "screen") else _back)
+		_add_layer(d, parent)
 	for id in _state.facility_ids():
 		_add_building(id)
 	resized.connect(_layout)
@@ -52,28 +56,46 @@ func _ready() -> void:
 	refresh()
 
 
+func _plain() -> Control:
+	var c := Control.new()
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(c)
+	return c
+
+
+func _add_layer(d: Dictionary, parent: Control) -> void:
+	var tr := TextureRect.new()
+	tr.texture = _tex(JsonUtil.get_str(d, "path"))
+	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED if JsonUtil.get_bool(d, "screen") else TextureRect.STRETCH_SCALE
+	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(tr)
+	_layers.append({"node": tr, "parallax": JsonUtil.get_float(d, "parallax", 1.0), "y": JsonUtil.get_float(d, "y"),
+		"height": JsonUtil.get_float(d, "height", 720.0), "scale": JsonUtil.get_float(d, "scale", 1.0), "screen": JsonUtil.get_bool(d, "screen")})
+
+
 func _add_building(id: String) -> void:
 	var f := _state.db.get_entry("facilities", id)
-	var node := Control.new()
-	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content.add_child(node)
 	var art := TextureRect.new()
-	art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	art.stretch_mode = TextureRect.STRETCH_SCALE
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_SCALE
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art.texture = _tex(JsonUtil.get_str(f, "building"))
-	node.add_child(art)
-	var size_px := Vector2(art.texture.get_size()) if art.texture != null else FALLBACK_SIZE
+	var mat := ShaderMaterial.new()
+	mat.shader = HIGHLIGHT
+	mat.set_shader_parameter("outline_color", UiTheme.render_color("city.selected_outline", UiTheme.color("gold")))
+	art.material = mat
+	_content.add_child(art)
+	var k := UiTheme.render_float("city.building_scale", 0.85)
+	var size_u := Vector2(art.texture.get_size()) * k if art.texture != null else FALLBACK_SIZE
 	var plate := PanelContainer.new()
 	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var label := UiTheme.label(JsonUtil.get_str(f, "name_ko", id), "body", "text_title")
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	plate.add_child(label)
-	_content.add_child(plate)
-	_buildings.append({"id": id, "node": node, "art": art, "plate": plate, "label": label,
-		"x": float(JsonUtil.get_int(f, "x")), "w": size_px.x, "h": size_px.y})
-	_street_w = maxf(_street_w, float(JsonUtil.get_int(f, "x")) + size_px.x)
+	add_child(plate)  # 이름판은 비네트보다 앞
+	_buildings.append({"id": id, "node": art, "plate": plate, "label": label,
+		"x": float(JsonUtil.get_int(f, "x")), "w": size_u.x, "h": size_u.y})
 
 
 func _tex(path: String) -> Texture2D:
@@ -83,20 +105,22 @@ func _tex(path: String) -> Texture2D:
 func _layout() -> void:
 	if size.y <= 0.0:
 		return
-	_scale = size.y / STREET_H
-	var baseline := float(UiTheme.render_float("city.baseline", 196.0))
-	_backdrop.position = Vector2.ZERO
-	_backdrop.size = Vector2(_street_w, STREET_H) * _scale
+	_scale = size.y / UiTheme.render_float("city.street_height", 720.0)
+	var baseline := UiTheme.render_float("city.baseline", 600.0)
+	for L in _layers:
+		var tr: TextureRect = L["node"]
+		if bool(L["screen"]):
+			tr.position = Vector2(0, float(L["y"]) * _scale)
+			tr.size = Vector2(size.x, float(L["height"]) * _scale)
+		elif tr.texture != null:
+			tr.size = Vector2(tr.texture.get_size()) * float(L["scale"]) * _scale
 	for b in _buildings:
-		var node: Control = b["node"]
+		var node: TextureRect = b["node"]
 		node.position = Vector2(float(b["x"]), baseline - float(b["h"])) * _scale
 		node.size = Vector2(float(b["w"]), float(b["h"])) * _scale
-		(b["art"] as TextureRect).size = node.size
-		var plate: PanelContainer = b["plate"]
-		plate.reset_size()
-		plate.position = Vector2((float(b["x"]) + float(b["w"]) / 2.0) * _scale - plate.size.x / 2.0,
-			baseline * _scale + UiTheme.render_float("city.plate_offset_px", 10.0))
+	_outline_tex = UiTheme.render_float("city.outline_px", 3.0) / maxf(0.01, _scale * UiTheme.render_float("city.building_scale", 0.85))
 	scroll_to(_offset)
+	refresh()
 
 
 func max_offset() -> float:
@@ -106,6 +130,12 @@ func max_offset() -> float:
 func scroll_to(x: float) -> void:
 	_offset = clampf(x, 0.0, max_offset())
 	_content.position.x = -roundf(_offset)
+	for L in _layers:
+		if not bool(L["screen"]) and float(L["parallax"]) < 1.0:
+			(L["node"] as TextureRect).position = Vector2(-roundf(_offset * float(L["parallax"])), float(L["y"]) * _scale)
+		elif not bool(L["screen"]):
+			(L["node"] as TextureRect).position = Vector2(0, float(L["y"]) * _scale)
+	_place_plates()
 	_update_focus()
 
 
@@ -117,7 +147,34 @@ func offset() -> float:
 	return _offset
 
 
-## 화면에 보이는 건물을 강조(행동력이 되는 건물 = 이름판 금테, 안 되는 건물 = 흐리게).
+## 지도용: 거리 전체 길이(화면 px)와 보이는 너비.
+func street_px() -> float:
+	return _street_w * _scale
+
+
+## 지도용: 시설 가운데 위치(거리 전체에 대한 0~1 비율).
+func facility_ratio(id: String) -> float:
+	for b in _buildings:
+		if str(b["id"]) == id:
+			return (float(b["x"]) + float(b["w"]) / 2.0) / _street_w
+	return 0.0
+
+
+## 그 시설이 화면 가운데에 오게 스크롤한다.
+func center_on(id: String) -> void:
+	scroll_to(facility_ratio(id) * street_px() - size.x / 2.0)
+
+
+func _place_plates() -> void:
+	var baseline := UiTheme.render_float("city.baseline", 600.0)
+	for b in _buildings:
+		var plate: PanelContainer = b["plate"]
+		plate.reset_size()
+		plate.position = Vector2((float(b["x"]) + float(b["w"]) / 2.0) * _scale - plate.size.x / 2.0 - _offset,
+			baseline * _scale + UiTheme.render_float("city.plate_offset_px", 8.0))
+
+
+## 강조: 행동력이 되면 가리킨 건물은 밝고 윤곽, 안 되면 모두 흐리게(이름판도 흐림).
 func refresh() -> void:
 	if _state == null:
 		return
@@ -125,16 +182,23 @@ func refresh() -> void:
 	for i in _buildings.size():
 		var b := _buildings[i]
 		var lit := i == _hover or (i == _focus and _hover < 0)
-		var bright := 1.0 + (UiTheme.render_float("city.hover_brighten", 0.18) if lit and can else 0.0)
-		var dim := 1.0 - (UiTheme.render_float("city.dim_unaffordable", 0.35) if not can else 0.0)
-		(b["node"] as Control).modulate = Color(bright * dim, bright * dim, bright * dim * 0.97)
+		var mat := (b["node"] as TextureRect).material as ShaderMaterial
+		mat.set_shader_parameter("brighten", UiTheme.render_float("city.hover_brighten", 0.15) if lit and can else 0.0)
+		mat.set_shader_parameter("dim", UiTheme.render_float("city.dim_unaffordable", 0.35) if not can else 0.0)
+		mat.set_shader_parameter("outline", _outline_tex if lit and can else 0.0)
 		var plate: PanelContainer = b["plate"]
-		var box := GothicStyle.plaque_box()
-		if can:
-			box.border_color = UiTheme.color("gold") if not lit else UiTheme.render_color("city.selected_outline", UiTheme.color("gold"))
-			box.set_border_width_all(2 if lit else 1)
-		plate.add_theme_stylebox_override("panel", box)
+		plate.add_theme_stylebox_override("panel", CityUi.plate_box(lit and can))
 		(b["label"] as Label).add_theme_color_override("font_color", UiTheme.color("text_title" if can else "text_disabled"))
+	var t := target_id()
+	if t != _target:
+		_target = t
+		target_changed.emit(t)
+
+
+## 정보 카드가 보여 줄 건물: 마우스를 올린 건물, 없으면 화면 가운데 건물.
+func target_id() -> String:
+	var i := _hover if _hover >= 0 else _focus
+	return str(_buildings[i]["id"]) if i >= 0 and i < _buildings.size() else ""
 
 
 func focused_id() -> String:
@@ -171,7 +235,7 @@ func _hit(local: Vector2) -> int:
 	for i in range(_buildings.size() - 1, -1, -1):
 		var node: Control = _buildings[i]["node"]
 		var plate: PanelContainer = _buildings[i]["plate"]
-		if Rect2(node.position, node.size).has_point(p) or Rect2(plate.position, plate.size).has_point(p):
+		if Rect2(node.position, node.size).has_point(p) or Rect2(plate.position, plate.size).has_point(local):
 			return i
 	return -1
 

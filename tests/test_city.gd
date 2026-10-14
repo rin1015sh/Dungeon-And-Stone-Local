@@ -295,3 +295,39 @@ func test_entry_is_not_refunded() -> void:
 	assert_eq(s.enter_facility("bank"), "city.reason_inside", "안에서 다른 시설로 못 간다")
 	s.leave_facility()
 	assert_eq(s.ap, 2, "나와도 행동력은 돌려받지 않는다")
+
+
+## 거리 그림: 레이어·건물·내부 그림이 모두 있고, 건물은 거리 안에서 서로 겹치지 않는다. 잘못된 레이어는 검증 오류.
+func test_street_layers_and_art() -> void:
+	var city: Dictionary = db.singletons.get("city", {})
+	var street := JsonUtil.get_dict(city, "street")
+	var width := JsonUtil.get_float(street, "width")
+	var layers := JsonUtil.get_array(street, "layers")
+	assert_true(layers.size() >= 4, "뒷배경 레이어가 여럿(하늘·원경·중경·거리…)")
+	var far_layers := 0
+	for v: Variant in layers:
+		var d := v as Dictionary
+		assert_true(ResourceLoader.exists(JsonUtil.get_str(d, "path")), "레이어 그림 있음: " + JsonUtil.get_str(d, "id"))
+		if not JsonUtil.get_bool(d, "screen") and JsonUtil.get_float(d, "parallax", 1.0) < 1.0:
+			far_layers += 1
+	assert_true(far_layers >= 2, "시차로 움직이는 뒷배경 레이어가 둘 이상")
+	var k := float(GameDatabase.single(db.render, "city.building_scale", 0.85))
+	var spans: Array = []
+	for id: String in db.get_collection("facilities"):
+		var f := db.get_entry("facilities", id)
+		for key: String in ["building", "interior"]:
+			assert_true(ResourceLoader.exists(JsonUtil.get_str(f, key)), "%s %s 그림 있음" % [id, key])
+		var tex := load(JsonUtil.get_str(f, "building")) as Texture2D
+		var x := float(JsonUtil.get_int(f, "x"))
+		spans.append([x, x + tex.get_width() * k])
+		assert_true(x >= 0.0 and x + tex.get_width() * k <= width, id + "는 거리 안에")
+	spans.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
+	for i in range(1, spans.size()):
+		assert_true(float(spans[i][0]) >= float(spans[i - 1][1]), "건물끼리 겹치지 않음")
+	var bad := city.duplicate(true)
+	bad["street"]["layers"].append({"id": "sky", "path": "assets/x.webp", "parallax": 2.0})
+	db.singletons["city"] = bad
+	var v2 := ContentRegistries.new().make_validator()
+	v2.validate(db)
+	db.load_all("res://data")
+	assert_true(v2.errors.size() >= 3, "겹친 id·res:// 아닌 경로·시차 범위는 오류")

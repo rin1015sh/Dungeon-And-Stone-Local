@@ -1,148 +1,154 @@
 extends RefCounted
-## 라비기온 거리 배경(옆에서 본 긴 그림): 흐린 하늘 · 먼 성벽과 지붕 · 나무 줄 · 뒤쪽 풀밭 · 진흙 길(바퀴 자국·웅덩이)
-## + 건물 사이 소품(사과나무·울타리·우물·등불·수레). 건물 자체는 Buildings가 따로 그린다. tools/paint_city.gd 전용.
+## 거리 레이어(시설 건물과 같은 깊이, 시차 1): 건물 밑 인도 판석 · 연석 · 젖은 포석길(앞으로 올수록 큰 돌) · 웅덩이 ·
+## 건물 사이 골목(낮은 돌담 + 쇠 난간, 가로등, 마른 나무·우물·수레·게시판) · 건물 발치 그늘 · 문 앞 불빛 웅덩이.
+## 투명 배경(인도 위쪽은 건물 사이 소품만) — 뒤의 중경 레이어가 보인다. tools/paint_city.gd 전용.
 
-const Px := preload("res://tools/city_art/Px.gd")
+const Paint := preload("res://tools/city_art/Paint.gd")
+const Ink := preload("res://tools/city_art/Ink.gd")
+const Mat := preload("res://tools/city_art/Mat.gd")
 const Props := preload("res://tools/city_art/Props.gd")
 
-const HEIGHT := 240
+const HEIGHT := 720
+const CURB := 26  ## 인도 폭(건물 바닥 아래)
 
 
-## spans = [[x0, x1] …] 건물이 차지하는 가로 구간(밑그림 좌표), baseline = 건물이 서는 y.
-static func paint(width: int, baseline: int, spans: Array, seed_value: int) -> Px:
-	var p := Px.new(width, HEIGHT, seed_value)
-	_sky(p, baseline)
-	_far_city(p, baseline)
-	_tree_line(p, baseline)
+## spans = [[x0, x1] …] 건물이 차지하는 가로 구간, baseline = 건물이 서는 y.
+static func paint(width: int, baseline: int, spans: Array, seed_value: int) -> Paint:
+	var p := Paint.new(width, HEIGHT, seed_value)
+	_gaps(p, baseline, spans)
 	_ground(p, baseline)
-	_gap_props(p, baseline, spans)
+	for s: Array in spans:
+		var x0: float = s[0]
+		var x1: float = s[1]
+		Ink.shade(p, Paint.rect_poly(x0 - 10, baseline, x1 - x0 + 20, CURB), Vector2(0, baseline), Vector2(0, baseline + CURB), 0.6, 0.0)
+		Ink.glow(p, (x0 + x1) / 2.0, baseline + 40, (x1 - x0) * 0.45, Color("#ffb45c"), 0.12, true, 0.35)
+	Ink.grade(p, 0.3, 1.08)
+	Ink.finish(p, 0.03)
 	return p
 
 
-static func _sky(p: Px, baseline: int) -> void:
-	p.gradient_v(0, 0, p.w, baseline, Color("#66737a"), Color("#c3bfac"), 0.008)
-	for i in p.w / 90:  # 옅은 가로 구름 띠
-		var cx := p.rng.randi_range(-40, p.w)
-		var cy := p.rng.randi_range(8, 70)
-		var span := p.rng.randi_range(60, 160)
-		for k in span:
-			var t := float(k) / span
-			var thick := int(3 * sin(t * PI)) + 1
-			for yy in thick:
-				p.px(cx + k, cy + yy - thick / 2, Color(0.86, 0.85, 0.79, 0.16))
-			if p.rng.randf() < 0.3:
-				p.px(cx + k, cy + thick, Color(0.4, 0.44, 0.48, 0.08))
-
-
-## 먼 도시: 뾰족한 지붕 실루엣(안개로 흐린 푸른 회색) + 드문 탑 + 성벽(총안).
-static func _far_city(p: Px, baseline: int) -> void:
-	var wall_top := baseline - 46
-	for layer in 2:
-		var far := Color("#8b9396") if layer == 0 else Color("#727c81")
-		var x := -10
+static func _ground(p: Paint, baseline: int) -> void:
+	var walk := Paint.rect_poly(0, baseline, p.w, CURB)
+	p.fill_poly(walk, Mat.ashlar(p, Color("#4b4943"), 0, baseline, 58, CURB))
+	var curb := Paint.rect_poly(0, baseline + CURB, p.w, 8)
+	p.fill_poly(curb, p.flat(Color("#67645b"), 0.2))
+	Ink.path(p, curb, 1.6, false)
+	var y := float(baseline + CURB + 8)
+	p.fill_rect(0, y, p.w, HEIGHT - y, p.flat(Color("#22211d"), 0.3))
+	var row := 0
+	var rh := 9.0
+	while y < HEIGHT:  # 포석: 줄마다 높이가 커진다(가까울수록 크다)
+		var x := -p.rng.randf() * rh * 2.0
 		while x < p.w:
-			var bw := p.rng.randi_range(12, 26)
-			var top := wall_top - p.rng.randi_range(14, 38) + layer * 10
-			var roof := p.rng.randi_range(8, 16)
-			for xx in bw:
-				var peak := top - roof + absi(xx - bw / 2) * roof * 2 / maxi(1, bw)
-				for yy in range(peak, wall_top + 2):
-					p.px(x + xx, yy, far.darkened(0.06 if xx > bw / 2 else 0.0))
-			if layer == 1 and p.rng.randf() < 0.3:
-				p.px(x + bw / 3, top + 5, Color("#d8b070"))
-				p.px(x + bw / 3, top + 6, Color("#a07a40"))
-			if layer == 0 and p.rng.randf() < 0.06:  # 탑(원뿔 지붕)
-				var tx := x + bw / 2
-				var th := p.rng.randi_range(26, 40)
-				for yy in range(top - th, top):
-					for xx in range(-4, 5):
-						p.px(tx + xx, yy, far.darkened(0.1 if xx > 0 else 0.04))
-				for yy in 12:
-					for xx in range(-(yy * 5 / 12) - 1, (yy * 5 / 12) + 2):
-						p.px(tx + xx, top - th - 12 + yy, far.darkened(0.2))
-			x += bw - p.rng.randi_range(2, 7)
-	var wall := Color("#646d71")
-	p.noisy_rect(0, wall_top, p.w, 20, wall, 0.025)
-	for xx in range(0, p.w, 8):
-		p.rect(xx, wall_top - 4, 5, 4, wall)
-	p.rect(0, wall_top, p.w, 1, wall.lightened(0.15))
-	p.shade_grad(0, wall_top + 8, p.w, 12, 0.0, -0.15)
+			var sw := rh * p.rng.randf_range(1.1, 2.4)
+			_cobble(p, x, y, sw, rh)
+			x += sw
+		y += rh
+		rh *= 1.12
+		row += 1
+	Ink.shade(p, Paint.rect_poly(0, baseline + CURB + 8, p.w, HEIGHT - baseline - CURB - 8), Vector2(0, baseline + CURB + 8), Vector2(0, HEIGHT), 0.25, 0.0)
+	for i in int(p.w / 260.0):  # 웅덩이: 하늘·불빛 반사
+		var cx := p.rng.randf() * p.w
+		var cy := p.rng.randf_range(baseline + 60, HEIGHT - 20)
+		var rw := p.rng.randf_range(40, 90)
+		var pud: Array = []
+		for k in 18:
+			var a := TAU * k / 18.0
+			pud.append(Vector2(cx + cos(a) * rw * p.rng.randf_range(0.8, 1.1), cy + sin(a) * rw * 0.18))
+		var pp := Paint.poly(pud)
+		p.fill_poly(pp, func(x2: int, y2: int) -> Color:
+			return p.vary(Color("#1f2422").lerp(Color("#55593f"), clampf((cy - y2) / (rw * 0.2) * 0.5 + 0.5, 0.0, 1.0)), x2, y2, 0.2), 0.8)
+		Ink.line(p, Vector2(cx - rw * 0.5, cy - 2), Vector2(cx + rw * 0.3, cy - 3), 1.6, Color("#b9b07a"), 0.35, 0.5)
 
 
-static func _tree_line(p: Px, baseline: int) -> void:
-	for i in p.w / 6:
-		p.blob(p.rng.randi_range(0, p.w), baseline - p.rng.randi_range(22, 34), p.rng.randi_range(7, 12), Color("#4a5a48"), PackedVector2Array(), 0.95)
-	for i in p.w / 7:
-		p.blob(p.rng.randi_range(0, p.w), baseline - p.rng.randi_range(12, 22), p.rng.randi_range(6, 10), Color("#3a4a35"), PackedVector2Array(), 0.95)
+static func _cobble(p: Paint, x: float, y: float, sw: float, sh: float) -> void:
+	var pts: Array = []
+	var cx := x + sw / 2.0
+	var cy := y + sh / 2.0
+	for k in 10:
+		var a := TAU * k / 10.0
+		var rr := 0.92 + p.rng.randf_range(-0.08, 0.06)
+		pts.append(Vector2(cx + cos(a) * (sw / 2.0 - 1.0) * rr, cy + sin(a) * (sh / 2.0 - 0.8) * rr))
+	var poly := Paint.poly(pts)
+	var tone := Color("#3e3d37").lightened(p.rng.randf_range(-0.1, 0.1)).lerp(Color("#3d3528"), p.rng.randf() * 0.4)
+	p.fill_poly(poly, func(x2: int, y2: int) -> Color:
+		var t := (y2 - y) / sh
+		var c := tone.lightened(0.1 * (1.0 - t)).darkened(0.18 * t * t)
+		if p.nz("mid", x2, y2) > 0.68:
+			c = c.lightened(0.12)  # 젖은 반들거림
+		return p.vary(c, x2, y2, 0.22), 0.92)
 
 
-static func _ground(p: Px, baseline: int) -> void:
-	p.noisy_rect(0, baseline - 14, p.w, 16, Color("#4d6a2c"), 0.08)  # 뒤쪽 풀밭
-	Props.grass_tufts(p, 0, baseline - 12, p.w, p.w / 3)
-	var road := Color("#6b5a44")
-	for yy in range(baseline, HEIGHT):
-		var t := float(yy - baseline) / float(HEIGHT - baseline)
-		for xx in p.w:
-			var c := road.darkened(0.12 - t * 0.12)
-			if p.rng.randf() < 0.08:
-				c = c.darkened(0.12)
-			p.px(xx, yy, p.jit(c, 0.05))
-	for k in 4:  # 바퀴 자국
-		var ty := baseline + 12 + k * 7 + p.rng.randi_range(-1, 1)
-		var y := float(ty)
-		for xx in p.w:
-			y += p.rng.randf_range(-0.25, 0.25)
-			y = clampf(y, ty - 2, ty + 2)
-			p.px(xx, int(y), road.darkened(0.3))
-			if p.rng.randf() < 0.5:
-				p.px(xx, int(y) + 1, road.lightened(0.06))
-	for i in p.w / 30:  # 진흙 얼룩
-		p.blob(p.rng.randi_range(0, p.w), p.rng.randi_range(baseline + 6, HEIGHT - 4), p.rng.randi_range(4, 9), road.darkened(0.18), PackedVector2Array(), 0.5)
-	for i in p.w / 110:  # 웅덩이(납작하게)
-		var cx := p.rng.randi_range(0, p.w)
-		var cy := p.rng.randi_range(baseline + 14, HEIGHT - 8)
-		var rw := p.rng.randi_range(5, 11)
-		for xx in range(-rw, rw + 1):
-			var hh := 2 if absi(xx) < rw - 2 else 1
-			for yy in hh:
-				p.px(cx + xx, cy + yy, Color("#5c6a70") if yy > 0 else Color("#8a989c"))
-	for i in p.w / 8:  # 돌멩이·나무 조각
-		var sx := p.rng.randi_range(0, p.w)
-		var sy := p.rng.randi_range(baseline + 2, HEIGHT - 2)
-		if p.rng.randf() < 0.6:
-			p.px(sx, sy, Color("#8a8074"))
-			p.px(sx + 1, sy, Color("#4d463d"))
-		else:
-			p.line(Vector2i(sx, sy), Vector2i(sx + p.rng.randi_range(3, 6), sy + p.rng.randi_range(-1, 1)), Color("#5a4630"))
-	p.shade_grad(0, baseline, p.w, 6, -0.25, 0.0)
-
-
-## 건물 사이 빈 곳에 소품. 순서대로 나무·우물·수레·등불을 돌려 쓴다.
-static func _gap_props(p: Px, baseline: int, spans: Array) -> void:
+## 건물 사이: 돌담 + 난간, 그리고 소품 하나씩(가로등은 늘).
+static func _gaps(p: Paint, baseline: int, spans: Array) -> void:
 	var gaps: Array = []
-	var prev := 0
+	var prev := 0.0
 	for s: Array in spans:
-		gaps.append([prev, int(s[0])])
-		prev = int(s[1])
-	gaps.append([prev, p.w])
+		gaps.append([prev, float(s[0])])
+		prev = float(s[1])
+	gaps.append([prev, float(p.w)])
+	var g := float(baseline)
 	for i in gaps.size():
-		var a: int = gaps[i][0]
-		var b: int = gaps[i][1]
-		var mid := (a + b) / 2
-		var room := b - a
-		if room < 16:
+		var a: float = gaps[i][0]
+		var b: float = gaps[i][1]
+		if b - a < 60.0:
 			continue
-		match i % 4:
+		var wall := Paint.rect_poly(a - 4, g - 58, b - a + 8, 58)
+		p.fill_poly(wall, Mat.rubble(p, Color("#4a473f")))
+		Ink.shade(p, wall, Vector2(0, g - 58), Vector2(0, g), 0.1, 0.5)
+		Ink.path(p, wall, 2.0)
+		var cap := Paint.rect_poly(a - 6, g - 64, b - a + 12, 8)
+		p.fill_poly(cap, p.flat(Color("#5d5a50"), 0.2))
+		Ink.path(p, cap, 1.6)
+		var x := a + 6.0
+		while x < b - 4.0:  # 쇠 난간
+			Ink.line(p, Vector2(x, g - 64), Vector2(x, g - 100), 2.0, Color("#1c1a17"), 0.95, 0.2)
+			Ink.line(p, Vector2(x - 2, g - 100), Vector2(x, g - 106), 1.6, Color("#1c1a17"), 0.95, 0.1)
+			x += 12.0
+		Ink.line(p, Vector2(a, g - 96), Vector2(b, g - 96), 2.4, Color("#1c1a17"), 0.95, 0.3)
+		var mid := (a + b) / 2.0
+		match i % 5:
 			0:
-				Props.tree(p, mid, baseline + 2, clampf(room / 30.0, 1.3, 1.9))
-				Props.bush(p, mid + 14, baseline + 3, 12)
+				_dead_tree(p, mid, g - 60, 1.0)
 			1:
-				Props.tree(p, mid, baseline, 1.5)
-				Props.fence(p, a + 4, b - 6, baseline + 2)
+				Props.well(p, mid + 10, g + 18)
 			2:
-				Props.well(p, mid, baseline + 6)
-				Props.lamp_post(p, a + 6, baseline + 3)
+				_notice_board(p, mid, g + 16)
 			3:
-				Props.tree(p, mid - 6, baseline + 1, 1.4)
-				Props.cart(p, mid + 4, baseline + 10)
-		Props.grass_tufts(p, a, baseline + 1, room, room / 4)
+				Props.cart(p, mid, g + 22)
+			4:
+				_dead_tree(p, mid - 20, g - 60, 0.85)
+				Props.barrel(p, mid + 40, g + 16, 30, 40)
+		Props.lamp_post(p, a + 22 if i > 0 else b - 30, g + 20, 190)
+
+
+## 마른 나무: 뒤틀린 가지(잉크 획) — 잎 없음.
+static func _dead_tree(p: Paint, cx: float, ground: float, s: float) -> void:
+	_branch(p, Vector2(cx, ground + 60), -PI / 2.0 + p.rng.randf_range(-0.1, 0.1), 150.0 * s, 9.0 * s, 0)
+
+
+static func _branch(p: Paint, from: Vector2, angle: float, length: float, width: float, depth: int) -> void:
+	var to := from + Vector2.from_angle(angle) * length
+	Ink.line(p, from, to, width, Color("#1d1814"), 1.0, 2.0)
+	if depth >= 4 or length < 14.0:
+		return
+	for k in 2 + (p.rng.randi() % 2):
+		_branch(p, to, angle + p.rng.randf_range(-0.75, 0.75), length * p.rng.randf_range(0.5, 0.7), width * 0.62, depth + 1)
+
+
+static func _notice_board(p: Paint, cx: float, ground: float) -> void:
+	for lx: float in [cx - 40, cx + 40]:
+		Ink.line(p, Vector2(lx, ground), Vector2(lx, ground - 130), 6.0, Color("#3a2a1e"), 1.0, 0.3)
+	var board := Paint.rect_poly(cx - 50, ground - 128, 100, 66)
+	p.fill_poly(board, Mat.planks(p, Color("#4a3624"), int(cx), 0, false, 11))
+	Ink.path(p, board, 2.0)
+	for k in 5:
+		var px := cx - 42 + p.rng.randf() * 64
+		var py := ground - 122 + p.rng.randf() * 34
+		var paper := Paint.rect_poly(px, py, p.rng.randf_range(16, 24), p.rng.randf_range(18, 26))
+		p.fill_poly(paper, p.flat(Color("#b4aa8a"), 0.2))
+		Ink.path(p, paper, 1.0, true, Ink.INK, 0.6)
+		Ink.line(p, Vector2(px + 4, py + 7), Vector2(px + 14, py + 7), 1.0, Ink.INK, 0.5)
+	var roof := Paint.poly([Vector2(cx - 58, ground - 126), Vector2(cx, ground - 150), Vector2(cx + 58, ground - 126)])
+	p.fill_poly(roof, Mat.planks(p, Color("#3a2a1e"), 0, 0, false, 6))
+	Ink.path(p, roof, 2.0)

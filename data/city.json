@@ -15,7 +15,18 @@
     "portal_rule": null,
     "return_date_rule": null
   },
-  "street": {"_comment": "거리 배경 그림(옆에서 본 긴 그림). 건물 위치는 각 시설의 x(밑그림 픽셀), 크기·확대는 render.json city.", "backdrop": "res://assets/city/street.png"},
+  "street": {
+    "_comment": "거리 = 옆에서 본 긴 그림. 좌표는 '거리 단위'(화면 높이 720 기준 px). width = 거리 길이, 건물 위치는 각 시설의 x. layers = 뒤에서 앞 순서(시설 건물은 parallax 1 레이어 바로 위에 그린다). parallax 0~1 = 스크롤을 따라가는 비율(작을수록 멀다), y·height = 레이어가 차지하는 세로 구간, scale = 그림 1px이 몇 거리 단위인가, screen = 화면에 고정(스크롤 안 함), front = 건물보다 앞.",
+    "width": 3596,
+    "layers": [
+      {"id": "sky", "path": "res://assets/city/layers/sky.webp", "screen": true, "y": 0, "height": 720, "scale": 2},
+      {"id": "far", "path": "res://assets/city/layers/far.webp", "parallax": 0.2, "y": 110, "height": 480, "scale": 2},
+      {"id": "mid", "path": "res://assets/city/layers/mid.webp", "parallax": 0.5, "y": 110, "height": 500, "scale": 2},
+      {"id": "haze", "path": "res://assets/city/layers/haze.webp", "parallax": 0.75, "y": 380, "height": 260, "scale": 2},
+      {"id": "street", "path": "res://assets/city/layers/street.webp", "parallax": 1.0, "y": 0, "height": 720, "scale": 1},
+      {"id": "vignette", "path": "res://assets/city/layers/vignette.webp", "screen": true, "front": true, "y": 0, "height": 720, "scale": 2}
+    ]
+  },
   "facility_entry_cost": 1,
   "facility_order": ["inn", "library", "temple", "shop", "bank", "training"],
   "fatigue": {

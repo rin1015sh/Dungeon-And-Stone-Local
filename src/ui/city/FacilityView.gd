@@ -1,6 +1,7 @@
 class_name FacilityView
 extends Control
-## 시설 내부: 뒷배경 일러스트(data facilities.interior) + 왼쪽 패널(시설 이름·정보·활동 선택지·결과 텍스트).
+## 시설 내부: 뒷배경 일러스트(data facilities.interior) + 오른쪽 패널(시설 이름·정보·활동 선택지·결과 텍스트).
+## 왼쪽의 달력·탐험가 카드와 오른쪽 위 메뉴(CityHud)는 그대로 보인다 — 패널은 메뉴 아래부터(top_reserve).
 ## 들어올 때 행동력을 이미 썼으므로 '뒤로'(취소)는 없다. 활동을 한 번 하거나(패널형은 연 순간) 할 수 있는 활동이 없을 때만
 ## "거리로 나간다"가 열린다. 패널형 활동(상점·은행·정수 제거)은 선택지 자리를 그 패널로 바꾼다.
 
@@ -16,6 +17,7 @@ var _results: VBoxContainer
 var _scroll: ScrollContainer
 var _leave: Button
 var _did_something: bool = false
+var top_reserve: float = 0.0  ## 패널 위에 비워 둘 높이(메뉴 자리)
 
 
 func setup(state: CityState, pc: PlayerCharacter, registry: ScriptRegistry, facility_id: String) -> void:
@@ -32,7 +34,6 @@ func facility_id() -> String:
 func _ready() -> void:
 	var f := _state.db.get_entry("facilities", _facility_id)
 	var bg := TextureRect.new()
-	bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	var path := JsonUtil.get_str(f, "interior")
@@ -41,36 +42,51 @@ func _ready() -> void:
 	add_child(bg)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
-	var panel := GothicWindow.new(JsonUtil.get_str(f, "name_ko", _facility_id))
+	var panel := CityUi.card()
 	panel.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
-	panel.close_requested.connect(_try_leave)
 	add_child(panel)
-	panel.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
-	panel.offset_left = m
-	panel.offset_top = UiTheme.render_float("city.hud_height", 64.0) + m
+	var content := VBoxContainer.new()
+	content.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
+	panel.add_child(content)
+	var head := HBoxContainer.new()
+	content.add_child(head)
+	var title := CityUi.label(JsonUtil.get_str(f, "name_ko", _facility_id), "header", "bone")
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(title)
+	var close := CityUi.button("✕", _try_leave)
+	close.size_flags_horizontal = Control.SIZE_SHRINK_END
+	close.tooltip_text = Strings.t("window.close")
+	head.add_child(close)
+	var desc := CityUi.label(JsonUtil.get_str(f, "desc_ko"), "small", "dim")
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.visible = not desc.text.is_empty()
+	content.add_child(desc)
+	panel.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
+	panel.offset_right = -m
+	panel.offset_left = -m - panel.custom_minimum_size.x
+	panel.offset_top = maxf(float(m), top_reserve)
 	panel.offset_bottom = -m
-	panel.offset_right = m + panel.custom_minimum_size.x
-	_info = UiTheme.label("", "small", "gold")
+	_info = CityUi.label("", "small", "accent")
 	_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	panel.content.add_child(_info)
+	content.add_child(_info)
 	_body = VBoxContainer.new()
 	_body.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
-	panel.content.add_child(_body)
-	panel.content.add_child(HSeparator.new())
-	panel.content.add_child(UiTheme.label(Strings.t("city.results"), "small", "text_dim"))
+	content.add_child(_body)
+	content.add_child(HSeparator.new())
+	content.add_child(CityUi.label(Strings.t("city.results"), "small", "dim"))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.custom_minimum_size.y = UiTheme.render_float("city.result_min_height", 72.0)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.follow_focus = true
-	panel.content.add_child(scroll)
+	content.add_child(scroll)
 	_scroll = scroll
-	panel.content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_results = VBoxContainer.new()
 	_results.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_results)
-	_leave = UiTheme.button(Strings.t("city.leave"), _try_leave)
-	panel.content.add_child(_leave)
+	_leave = CityUi.button(Strings.t("city.leave"), _try_leave, true)
+	content.add_child(_leave)
 	_state.changed.connect(_refresh_info)
 	_show_choices()
 	_say(Strings.t("city.entered", {"name": JsonUtil.get_str(f, "name_ko", _facility_id), "ap": _state.ap}), "info")
@@ -82,7 +98,7 @@ func _show_choices() -> void:
 	for act_id in CityActions.activities_of(_state, _facility_id):
 		var act := _state.activity(act_id)
 		var why := CityActions.check(_state, _pc, act_id)
-		var b := UiTheme.button(_choice_text(act), func() -> void: _choose(act_id))
+		var b := CityUi.button(_choice_text(act), func() -> void: _choose(act_id))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.disabled = not why.is_empty()
 		b.tooltip_text = JsonUtil.get_str(act, "desc_ko")
