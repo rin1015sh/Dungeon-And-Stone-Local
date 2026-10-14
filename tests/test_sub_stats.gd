@@ -1,14 +1,15 @@
 extends TestCase
-## 세부 스탯 정리(ASSUMPTIONS ST1~ST4): 주 스탯 5종으로 대체할 수 없는 세부 스탯 17종이 실제 규칙에 들어가는지 하나씩 본다.
-## 시각(시야) · 식욕·소화력(허기) · 자연재생력·영혼 재생력(재생) · 명중률(명중·실명) · 감응도 4 · 내성 7(속성 피해·상태 저항·지속 피해).
+## 세부 스탯 정리(ASSUMPTIONS ST1~ST5): 주 스탯 5종으로 대체할 수 없는 세부 스탯 12종이 실제 규칙에 들어가는지 하나씩 본다.
+## 시각(시야) · 식욕·소화력(허기) · 자연재생력·영혼 재생력(재생) · 명중률(명중·실명) · 감응도 2(화염·냉기) · 내성 4(화염·냉기·독·어둠)(속성 피해·상태 저항·지속 피해).
 ## 그리고 지운 세부 스탯이 주 스탯으로 옮겨졌는지(정수 굴림·종족·함정 판정).
 
 const KEPT := ["sight", "appetite", "digestion", "natural_regen", "soul_regen", "accuracy",
-	"affinity_fire", "affinity_cold", "affinity_lightning", "affinity_earth",
-	"resist_fire", "resist_lightning", "resist_earth", "resist_cold", "resist_poison", "resist_holy", "resist_dark"]
+	"affinity_fire", "affinity_cold",
+	"resist_fire", "resist_cold", "resist_poison", "resist_dark"]
 const REMOVED := ["muscle_mass", "cutting_power", "bone_strength", "body_weight", "endurance", "flexibility", "leap", "stealth",
 	"dexterity", "pain_tolerance", "fighting_spirit", "adaptability", "patience", "obsession", "smell", "hearing", "cognition",
-	"control", "sixth_sense", "restoration", "luck", "fame", "support", "field_of_view"]
+	"control", "sixth_sense", "restoration", "luck", "fame", "support", "field_of_view",
+	"affinity_lightning", "affinity_earth", "resist_lightning", "resist_earth", "resist_holy"]
 
 
 func _actor(stats: Dictionary = {}) -> Actor:
@@ -76,13 +77,15 @@ func test_accuracy_and_blind() -> void:
 
 
 func test_affinities_and_resistances_by_element() -> void:
-	for t: String in ["fire", "cold", "lightning", "earth"]:
+	for t: String in ["fire", "cold"]:
 		var mult := DamageCalc.element_mult(db, _actor({"affinity_" + t: 10}), _actor(), t)
 		assert_near(mult, 1.0 + 10 * float(db.bal("combat.affinity_per_point")), 0.0001, "감응도: %s" % t)
-	for t: String in ["fire", "lightning", "earth", "cold", "poison", "holy", "dark"]:
+	for t: String in ["fire", "cold", "poison", "dark"]:
 		var mult := DamageCalc.element_mult(db, _actor(), _actor({"resist_" + t: 10}), t)
 		assert_near(mult, 1.0 - 10 * float(db.bal("combat.element_resist_per_point")), 0.0001, "내성: %s" % t)
 	assert_near(DamageCalc.element_mult(db, _actor(), _actor({"resist_fire": 10}), "slash"), 1.0, 0.0001, "다른 유형엔 무관")
+	for t: String in ["lightning", "earth", "holy"]:  # 내성·감응도 스탯을 지운 속성: 몬스터 약점·면역만 남고 배율은 1
+		assert_near(DamageCalc.element_mult(db, _actor(), _actor(), t), 1.0, 0.0001, "스탯 없는 속성: %s" % t)
 
 
 func test_resistances_resist_statuses() -> void:

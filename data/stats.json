@@ -12,14 +12,9 @@
   {"id": "soul_regen", "name_ko": "영혼 재생력", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "영혼력 재생 보정"},
   {"id": "affinity_fire", "name_ko": "화염 감응도", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "화염 속성 피해 보정"},
   {"id": "affinity_cold", "name_ko": "냉기 감응도", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "냉기 속성 피해 보정"},
-  {"id": "affinity_lightning", "name_ko": "번개 감응도", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "번개 속성 피해 보정"},
-  {"id": "affinity_earth", "name_ko": "대지 감응도", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "대지 속성 피해 보정"},
   {"id": "resist_fire", "name_ko": "화염 내성", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "화염 피해 감소"},
-  {"id": "resist_lightning", "name_ko": "번개 내성", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "번개 피해 감소"},
-  {"id": "resist_earth", "name_ko": "대지 내성", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "대지 피해 감소"},
   {"id": "resist_cold", "name_ko": "냉기 내성", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "냉기 피해 감소"},
   {"id": "resist_poison", "name_ko": "독 내성", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "독 피해·중독 감소"},
-  {"id": "resist_holy", "name_ko": "신성 내성", "group": "body", "rarity": "uncommon", "implemented": true, "desc_ko": "신성 피해 감소"},
   {"id": "resist_dark", "name_ko": "어둠 내성", "group": "body", "rarity": "uncommon", "implemented": true, "desc_ko": "어둠 피해 감소"},
   {"id": "accuracy", "name_ko": "명중률", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "명중 확률(퍼센트 포인트). 실명이 깎는다"}
 ]

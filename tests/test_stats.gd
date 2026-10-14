@@ -113,7 +113,7 @@ func test_save_roundtrip() -> void:
 func test_registry_from_data() -> void:
 	var sb := StatBlock.new(db.stats)
 	assert_eq(sb.ids("core").size(), 5, "핵심 스탯 5종")
-	assert_true(sb.ids("sub").size() >= 15, "세부 스탯 정의 등록(주 스탯으로 대체할 수 없는 것만 — ASSUMPTIONS ST1)")
+	assert_true(sb.ids("sub").size() >= 10, "세부 스탯 정의 등록(주 스탯으로 대체할 수 없는 것만 — ASSUMPTIONS ST1)")
 	for id in sb.ids("sub"):
 		assert_true(sb.get_def(id).implemented, "남은 세부 스탯은 모두 규칙에 연결돼 있다: %s" % id)
 	# 자식 스탯 → 부모 합산(parent·coef) 규칙 자체는 남아 있다(지금 데이터에는 없음)
