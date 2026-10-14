@@ -260,6 +260,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		targets.append(mis["target"] as Combatant)
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
+	var said := history.size()
 	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
 	for t in targets:
 		if c.actor.dead:
@@ -271,6 +272,8 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		_relay(ctx, c)
 	if fx.any(func(e: Variant) -> bool: return e is Dictionary and JsonUtil.get_str(e, "type") == "damage"):
 		BattleRules.consume_on_attack(self, c)  # 진군 명령 등: 스킬 한 번(광역·연타 전체)에 쓰고 사라진다
+	if skill_id != BASIC_ATTACK and history.size() == said:  # 확률 상태가 안 걸리는 등 조용히 끝났다 — 썼다는 것은 알린다
+		message.emit("combat.no_effect", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "info")
 	return JsonUtil.get_float(sk, "delay_cost")
 
 

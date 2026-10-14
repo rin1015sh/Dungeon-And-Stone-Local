@@ -83,9 +83,11 @@ func _build_bottom() -> Control:
 			var rp := ResourcePanel.new()
 			_party_panel.add_child(rp)
 			rp.bind(u.actor.pool)
+	var mid_panel := PanelContainer.new()  # 행동창 배경(뒤의 탐험 화면이 비치지 않게)
+	mid_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(mid_panel)
 	var mid := VBoxContainer.new()
-	mid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(mid)
+	mid_panel.add_child(mid)
 	_menu = CommandMenu.new()
 	_menu.visible = false
 	_menu.chosen.connect(_on_chosen)

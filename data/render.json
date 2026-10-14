@@ -63,7 +63,7 @@
     "combat_card_width": 150,
     "combat_figure_height": 110,
     "combat_stage_gap": 160,
-    "combat_bottom_height": 230,
+    "combat_bottom_height": 280,
     "combat_button_width": 150,
     "float_text_sec": 0.8,
     "inv_cell": 38,

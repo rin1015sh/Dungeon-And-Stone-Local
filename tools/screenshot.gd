@@ -76,6 +76,10 @@ func _run() -> void:
 			epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "stealth": 5}})
 			epc.essences.add_pending(epc.db, {"essence": "goblin", "color": "red", "stats": {"agi": 1, "dexterity": 4}})
 			epc.essences.add_pending(epc.db, {"essence": "gnome", "color": "green", "stats": {"p_res": 2}})
+			if _args.has("many"):  # 만렙 + 수호자 정수 여럿(스킬이 많은 행동창 확인)
+				epc.set_level(11)
+				for id: String in ["goblin", "ghoul", "blade_wolf", "chimera_wolf", "blater", "bone_knight"]:
+					epc.essences.absorb(epc, {"essence": id, "color": "rainbow", "stats": {}})
 			if _args.has("lock"):
 				epc.essences.absorb(epc, {"essence": "ghoul", "color": "red", "stats": {"agi": 3}})
 				epc.set_level(1)
@@ -114,6 +118,12 @@ func _run() -> void:
 					if n is CombatScreen:
 						var cs := n as CombatScreen
 						BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
+		if _args.has("skills"):  # 전투 행동창에서 "스킬"을 눌러 스킬 목록을 띄운다(정수 스킬 표시 확인)
+			await _frames(10)
+			for m: Node in _main.find_children("*", "CommandMenu", true, false):
+				for b: Node in m.find_children("*", "Button", true, false):
+					if (b as Button).text == Strings.t("combat.cmd_skill"):
+						(b as Button).pressed.emit()
 		if _args.has("debug"):
 			var ev := InputEventAction.new()
 			ev.action = "debug_toggle"
