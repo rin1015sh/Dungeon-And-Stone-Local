@@ -12,6 +12,7 @@ extends RefCounted
 signal message(key: String, args: Dictionary, kind: String)
 signal event(e: Dictionary)
 
+const LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const BASIC_ATTACK := "basic_attack"
 const RESULT_VICTORY := "victory"
 const RESULT_DEFEAT := "defeat"
@@ -71,7 +72,7 @@ static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: R
 	var seen := {}
 	for id: Variant in monster_ids:
 		seen[id] = int(seen.get(id, 0)) + 1
-		var label := " " + "ABCDEFGH"[mini(int(seen[id]) - 1, 7)] if int(total[id]) > 1 else ""
+		var label := " " + LETTERS[mini(int(seen[id]) - 1, LETTERS.length() - 1)] if int(total[id]) > 1 else ""
 		var m := Monster.create(p_db, str(id), label)
 		b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))
 	b.start(party_first)
@@ -139,7 +140,9 @@ func next_turn() -> Combatant:
 		_busy += 1
 		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
 		if not bool(c.memo.get("in_extra", false)):  # 추가 행동(같은 라운드의 두 번째 차례)은 지속시간·쿨타임을 다시 세지 않는다
+			var hp_before := c.actor.pool.get_current("hp")
 			c.actor.advance_turns(1.0)
+			BattleRules.report_dot(self, c, hp_before)
 			c.tick_cooldowns()
 		BattleDelayed.tick(self, c)
 		_after_effects()
@@ -185,7 +188,10 @@ func act(c: Combatant, action: Dictionary) -> bool:
 			c.actor.statuses.apply("guarding")
 			message.emit("combat.guard", {"name": c.label()}, "info")
 		"item":
-			_use_item(c, str(action.get("item", "")))
+			if not _use_item(c, str(action.get("item", ""))):
+				phase = PHASE_AWAIT  # 아무 일도 일어나지 않았다(생명력이 이미 가득 등) — 차례를 쓰지 않는다
+				_busy -= 1
+				return false
 		"flee":
 			try_flee(c)
 	phase = PHASE_TURN_END
@@ -206,7 +212,8 @@ func act(c: Combatant, action: Dictionary) -> bool:
 
 ## 스킬을 쓸 수 있으면 "", 아니면 이유(문자열 키).
 func can_use(c: Combatant, skill_id: String) -> String:
-	if skill_id != BASIC_ATTACK and c.actor.statuses.has_flag("no_skills"):
+	if skill_id != BASIC_ATTACK and c.actor.statuses.has_flag("no_skills") \
+			and not JsonUtil.get_bool(db.get_entry("skills", skill_id), "innate"):  # 대화·조사는 이능이 아니다(seal_skill과 같게)
 		return "combat.reason_sealed"
 	if c.cooldowns.has(skill_id) or not BattleRules.uses_left(self, c, skill_id):
 		return "combat.reason_cooldown"
@@ -278,13 +285,28 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	return JsonUtil.get_float(sk, "delay_cost")
 
 
-func _use_item(c: Combatant, item_id: String) -> void:
+## 아이템을 쓴다. 효과가 하나도 일어나지 않았으면(소모도 없음) 이유만 알리고 false.
+func _use_item(c: Combatant, item_id: String) -> bool:
 	var ctx := ItemUser.use(effects, c.actor, item_id, rng, null, {"in_battle": true})
 	if ctx == null:
 		message.emit("combat.no_item", {"name": c.label()}, "warn")
-		return
+		return false
+	if not ctx.success:
+		for m: Dictionary in ctx.messages:
+			message.emit(str(m["key"]), m["args"], str(m["kind"]))
+		return false
 	message.emit("combat.use_item", {"name": c.label(), "item": DataNames.entry(db, "items", item_id)}, "system")
 	_relay(ctx, c)
+	return true
+
+
+## 전투 중 새로 생긴 몬스터의 이름 꼬리표: 같은 몬스터가 이미 n마리 있었으면 n+1번째 글자(" B", " C" …).
+func spawn_label(monster_id: String) -> String:
+	var n := 0
+	for u in units:
+		if u.actor is Monster and (u.actor as Monster).monster_id == monster_id:
+			n += 1
+	return " " + (LETTERS[n] if n < LETTERS.length() else str(n + 1))
 
 
 func _relay(ctx: EffectContext, c: Combatant) -> void:

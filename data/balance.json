@@ -81,7 +81,8 @@
   "rift": {
     "_comment": "균열(명세 §8). 자연 개방: 직전 개방 뒤 달(원정) 수 → 이번 달 열릴 확률(8달이면 확정). 열리면 open_after_hours 이후 무작위 시각에 포탈 portal_count개",
     "open_chance_by_months": {"0": 0.0, "1": 0.0, "2": 0.1, "3": 0.2, "4": 0.45, "5": 0.6, "6": 0.5, "7": 0.5, "8": 1.0},
-    "start_months_since_open": 4,
+    "start_months_since_open": 8,
+    "_start_comment": "도시 달력(다음 달로 넘어가기)이 생기기 전까지는 원정마다 확정 개방(8). 예전 4는 45%라 절반 넘는 판에서 균열을 볼 수 없었다(ASSUMPTIONS PA9)",
     "open_after_hours": 48,
     "open_before_close_hours": 24,
     "portal_count": [3, 5],

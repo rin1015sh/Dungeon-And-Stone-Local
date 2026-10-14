@@ -159,17 +159,34 @@ static func summon(b: Battle, c: Combatant, e: Dictionary) -> void:
 		return
 	if c.actor.dead:
 		return  # 시전하다 쓰러졌다(정수판 분열의 생명력 소모 등)
-	var m := Monster.create(b.db, mid, " +")
+	var m := Monster.create(b.db, mid, b.spawn_label(mid))
 	var u := b.add(m, c.side, JsonUtil.get_str(m.behavior(), "row", "front"))
 	if int(e.get("rounds", 0)) > 0:
 		u.memo[BattleSpawns.EXPIRE] = int(e["rounds"])
 	joined(b, u)
-	b.message.emit("combat.summon", {"name": c.label(), "monster": m.display_name}, "danger")
+	b.message.emit("combat.summon" if c.side == Combatant.SIDE_ENEMY else "combat.summon_ally", {"name": c.label(), "monster": m.display_name},
+		"danger" if c.side == Combatant.SIDE_ENEMY else "good")
 	b.event.emit({"type": "summon", "unit": u})
 	BattlePassives.refresh_auras(b)
 
 
 ## 효과 문맥의 메시지·사건을 전투에 반영한다(도주·게이지·물러남·피해 기록·증원).
+## 차례 시작의 지속 피해(중독·출혈·덫 …): 깎인 만큼 알리고 숫자를 띄운다(조용히 생명력만 줄지 않게).
+static func report_dot(b: Battle, c: Combatant, hp_before: float) -> void:
+	var lost := roundi(hp_before - c.actor.pool.get_current("hp"))
+	if lost <= 0:
+		return
+	var names := PackedStringArray()
+	for sid in c.actor.statuses.ids():
+		for p: Variant in JsonUtil.get_array(b.db.get_entry("statuses", sid), "periodic"):
+			if p is Dictionary and JsonUtil.get_str(p, "resource") == "hp" and str((p as Dictionary).get("amount", "")).begins_with("-"):
+				names.append(DataNames.entry(b.db, "statuses", sid))
+				break
+	b.message.emit("combat.dot" if not names.is_empty() else "combat.dot_plain",
+		{"name": c.label(), "amount": lost, "list": ", ".join(names)}, "warn")
+	b.event.emit({"type": "damage", "unit": c, "hit": true, "amount": lost, "crit": false})
+
+
 static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 	for m: Dictionary in ctx.messages:
 		b.message.emit(str(m["key"]), m["args"], str(m["kind"]))

@@ -51,7 +51,7 @@ func _init() -> void:
 		grid.add_child(_make_slot(i))
 	_desc = UiTheme.label("", "small", "text_dim")
 	_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_desc.max_lines_visible = 2
+	_desc.max_lines_visible = UiTheme.metric("combat_desc_lines", 3)
 	_desc.custom_minimum_size.y = UiTheme.metric("combat_desc_height", 40)
 	_desc.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(_desc)
@@ -69,6 +69,7 @@ func show_choices(title: String, options: Array[Dictionary], back: Callable = Ca
 	_hint.text = Strings.t("menu.grid_hint", {"move": _keys(["menu_up", "menu_left", "menu_down", "menu_right"]),
 		"ok": InputSetup.key_label("menu_confirm"), "back": InputSetup.key_label("menu_back")})
 	_render()
+	cursor_moved.emit(_cursor)  # 처음 자리도 알린다(대상 카드 강조)
 
 
 func clear() -> void:
@@ -84,6 +85,11 @@ func title_text() -> String:
 
 func cursor() -> int:
 	return _cursor
+
+
+## 커서가 놓인 선택지(없으면 {}).
+func current_option() -> Dictionary:
+	return _options[_cursor] if _cursor >= 0 and _cursor < _options.size() else {}
 
 
 func page_size() -> int:

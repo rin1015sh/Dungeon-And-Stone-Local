@@ -1,7 +1,8 @@
 class_name CombatantCard
 extends PanelContainer
 ## 전투 무대의 참가자 하나: 도형(서로 마주 봄) · 이름 · 생명력 막대 · 전투 게이지(공포 등, 0보다 클 때만) · 상태이상.
-## 현재 차례면 테두리를 강조하고, 피해를 입으면 숫자가 떠오른다. 쓰러지거나 도망치면 흐려진다.
+## 현재 차례면 테두리를 강조하고(행동창에서 대상으로 고르는 중이면 금색), 피해를 입으면 숫자가 떠오른다. 쓰러지거나 도망치면 흐려진다.
+## 상태는 중첩(×n)·보호막 남은 양을 함께 보이고, 마우스를 올리면 설명. 폭은 CombatScreen이 참가자 수에 맞춰 줄인다(set_width).
 
 var unit: Combatant
 
@@ -12,6 +13,10 @@ var _status: Label
 var _meters: RichTextLabel
 var _normal_box: StyleBoxFlat
 var _current_box: StyleBoxFlat
+var _target_box: StyleBoxFlat
+var _name: Label
+var _is_current: bool = false
+var _is_target: bool = false
 
 
 func setup(u: Combatant, db: GameDatabase) -> void:
@@ -21,6 +26,8 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_normal_box = UiTheme.box(UiTheme.color("panel"), UiTheme.color("panel_border"), r, pad)
 	_current_box = UiTheme.box(UiTheme.color("panel"), UiTheme.color("warn"), r, pad)
 	_current_box.set_border_width_all(2)
+	_target_box = UiTheme.box(UiTheme.color("slot_hover"), UiTheme.color("gold"), r, pad)
+	_target_box.set_border_width_all(3)
 	add_theme_stylebox_override("panel", _normal_box)
 	custom_minimum_size.x = UiTheme.metric("combat_card_width", 150)
 	var v := VBoxContainer.new()
@@ -36,9 +43,13 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 		var race := db.get_entry("races", (u.actor as PlayerCharacter).race_id)
 		_figure.setup("humanoid", 1.0, Color.from_string(JsonUtil.get_str(race, "color"), Color.GRAY), facing)
 	v.add_child(_figure)
-	var name_label := UiTheme.label(u.label(), "body", "text_title")
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(name_label)
+	_name = UiTheme.label(u.label(), "body", "text_title")
+	_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_name.clip_text = true
+	_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_name.tooltip_text = u.label()
+	_name.mouse_filter = Control.MOUSE_FILTER_PASS
+	v.add_child(_name)
 	_bar = ProgressBar.new()
 	_bar.show_percentage = false
 	_bar.custom_minimum_size.y = UiTheme.metric("bar_height", 14)
@@ -58,6 +69,7 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.mouse_filter = Control.MOUSE_FILTER_PASS  # 마우스를 올리면 상태 설명
+	_status.max_lines_visible = UiTheme.metric("combat_card_status_lines", 3)  # 상태가 많아도 카드가 아래 칸을 밀지 않게
 	v.add_child(_status)
 	refresh()
 
@@ -73,23 +85,46 @@ func refresh() -> void:
 	_meters.text = " · ".join(parts)
 	_meters.visible = not parts.is_empty()
 	var names := PackedStringArray()
-	for id in unit.actor.statuses.ids():
-		names.append(DataNames.entry(unit.actor.db, "statuses", id))
+	var st := unit.actor.statuses
+	for id in st.ids():
+		var n := DataNames.entry(unit.actor.db, "statuses", id)
+		if st.stacks(id) > 1:
+			n += Strings.t("combat.card_stacks", {"n": st.stacks(id)})
+		if st.barrier_of(id) > 0.0:
+			n += Strings.t("combat.card_barrier", {"n": roundi(st.barrier_of(id))})
+		names.append(n)
 	_status.text = ", ".join(names)
 	_status.tooltip_text = StatusTips.lines(unit.actor.db, unit.actor.statuses.ids())
 	modulate.a = 1.0 if unit.is_active() else 0.35
 
 
 func set_current(on: bool) -> void:
-	add_theme_stylebox_override("panel", _current_box if on else _normal_box)
+	_is_current = on
+	_apply_box()
 
 
-## 머리 위로 떠오르는 숫자/글자.
+## 행동창에서 이 참가자를 대상으로 고르는 중(커서가 올라가 있음).
+func set_targeted(on: bool) -> void:
+	_is_target = on
+	_apply_box()
+
+
+func _apply_box() -> void:
+	add_theme_stylebox_override("panel", _target_box if _is_target else (_current_box if _is_current else _normal_box))
+
+
+func set_width(w: int) -> void:
+	custom_minimum_size.x = w
+
+
+## 머리 위로 떠오르는 숫자/글자(카드 가운데). 컨테이너 배치를 받지 않게 top_level로 띄운다.
 func float_text(text: String, color: Color) -> void:
 	var l := UiTheme.label(text, "header", "text")
 	l.add_theme_color_override("font_color", color)
-	l.position = Vector2(size.x * 0.5 - 12, 10)
+	l.top_level = true
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(l)
+	l.position = global_position + Vector2(size.x * 0.5 - l.get_combined_minimum_size().x * 0.5, 10)
 	var tw := l.create_tween()
 	tw.tween_property(l, "position:y", l.position.y - 36, UiTheme.ui_float("float_text_sec", 0.8))
 	tw.parallel().tween_property(l, "modulate:a", 0.0, UiTheme.ui_float("float_text_sec", 0.8))

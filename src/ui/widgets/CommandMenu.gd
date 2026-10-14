@@ -9,6 +9,7 @@ extends VBoxContainer
 ## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 메뉴를 닫아 중복 선택을 막는다).
 
 signal chosen(action: Dictionary)
+signal target_hovered(target: Combatant)  ## 대상 고르기에서 커서가 놓인 참가자(아니면 null) — 무대 카드 강조
 
 const ROOT_ATTACK := 0
 const ROOT_SKILL := 1
@@ -28,6 +29,7 @@ func _init() -> void:
 	_grid = ChoiceGrid.new()
 	_grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(_grid)
+	_grid.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(_grid.current_option().get("target")))
 
 
 func open(battle: Battle, unit: Combatant) -> void:
@@ -40,6 +42,7 @@ func open(battle: Battle, unit: Combatant) -> void:
 func close() -> void:
 	visible = false
 	_grid.clear()
+	target_hovered.emit(null)
 
 
 func grid() -> ChoiceGrid:
@@ -119,10 +122,15 @@ func _skill_target(skill_id: String, skill_index: int) -> void:
 			return
 	var opts: Array[Dictionary] = []
 	var start := 0
+	var veiled := kind == "ally_single" and _unit.actor.statuses.has_flag("no_ally_single")
 	for t in list:
 		if t == _last_target.get(_unit.get_instance_id()):
 			start = opts.size()
-		opts.append(_target_opt(t, t.label(), func() -> void: _choose_skill(skill_id, t)))
+		var o := _target_opt(t, t.label(), func() -> void: _choose_skill(skill_id, t))
+		if veiled and t != _unit:  # 배신의 장막: 다른 아군을 알아볼 수 없다(자기 자신은 된다)
+			o["enabled"] = false
+			o["desc"] = Strings.t("combat.reason_veiled")
+		opts.append(o)
 	_grid.show_choices(Strings.t("combat.menu_target"), opts, func() -> void: _skills(skill_index), start)
 
 
@@ -150,7 +158,9 @@ func _target_opt(t: Combatant, text: String, cb: Callable) -> Dictionary:
 	var ok := t.side == _unit.side or BattleRules.is_targetable(_battle, _unit, t)
 	var desc := Strings.t("combat.reason_hidden") if not ok else \
 		(Strings.t("combat.target_statuses", {"list": ", ".join(names)}) if not names.is_empty() else "")
-	return _opt(text, Strings.t("combat.sub_hp", {"hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)}), desc, cb, ok)
+	var o := _opt(text, Strings.t("combat.sub_hp", {"hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)}), desc, cb, ok)
+	o["target"] = t
+	return o
 
 
 func _opt(text: String, sub: String, desc: String, cb: Callable, enabled: bool = true) -> Dictionary:

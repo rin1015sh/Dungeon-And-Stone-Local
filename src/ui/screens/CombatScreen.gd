@@ -7,6 +7,9 @@ extends Control
 signal finished(result: String, turns: int, killed: Array[String])
 
 var battle: Battle
+## 결과가 정해지면 부른다: (result, killed, colors) -> Array[{key, args, kind}] — 보상(공적·전리품·정수)을 주고 그 안내를 돌려준다.
+## 결과 칸에 보이고, 탐험 기록에도 남는다(ExploreScreen이 세션에 맡긴다). 없으면 결과만 보인다.
+var reward_provider: Callable = Callable()
 
 var _cards: Dictionary = {}  # Combatant -> CombatantCard
 var _foe_row: HBoxContainer   # 증원(summon)된 적 카드를 붙일 줄
@@ -15,6 +18,8 @@ var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방�
 var _menu: CommandMenu
 var _party_panel: VBoxContainer
 var _result_box: VBoxContainer
+var _gap: Control
+var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 
 
 func setup(b: Battle) -> void:
@@ -51,6 +56,7 @@ func _build_stage() -> Control:
 	var stage := HBoxContainer.new()
 	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	stage.alignment = BoxContainer.ALIGNMENT_CENTER
+	stage.add_theme_constant_override("separation", UiTheme.metric("combat_card_sep", 4))  # _fit_cards 계산과 같게
 	var party := HBoxContainer.new()
 	var foes := HBoxContainer.new()
 	_party_row = party
@@ -58,10 +64,10 @@ func _build_stage() -> Control:
 	for u in battle.units:
 		_add_card(u)
 	stage.add_child(party)
-	var gap := Control.new()
-	gap.custom_minimum_size.x = UiTheme.metric("combat_stage_gap", 160)
-	stage.add_child(gap)
+	_gap = Control.new()
+	stage.add_child(_gap)
 	stage.add_child(foes)
+	_fit_cards()
 	return stage
 
 
@@ -91,6 +97,7 @@ func _build_bottom() -> Control:
 	_menu = CommandMenu.new()
 	_menu.visible = false
 	_menu.chosen.connect(_on_chosen)
+	_menu.target_hovered.connect(_on_target_hovered)
 	mid.add_child(_menu)
 	_result_box = VBoxContainer.new()
 	_result_box.visible = false
@@ -147,15 +154,65 @@ func _on_event(e: Dictionary) -> void:
 			if card != null:
 				if not bool(e.get("hit")):
 					card.float_text(Strings.t("combat.float_miss"), UiTheme.color("text_dim"))
+				elif bool(e.get("immune", false)):
+					card.float_text(Strings.t("combat.float_immune"), UiTheme.color("text_dim"))
+				elif int(e.get("lost", e.get("amount", 0))) <= 0:
+					card.float_text(Strings.t("combat.float_blocked"), UiTheme.color("text_dim"))
 				else:
-					card.float_text(str(e.get("amount")) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("bad"))
+					card.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("bad"))
 		"down", "fled":
 			if card != null:
 				card.refresh()
+				if _drops_card(u):
+					_remove_card.call_deferred(u)  # 떠오른 숫자를 잠깐 보인 뒤(다음 프레임) 치운다
 		"summon":
 			if u != null and card == null:
 				_add_card(u)
+				_fit_cards()
 	_refresh()
+
+
+## 쓰러지거나 물러난 참가자의 카드를 치울지: 적·소환수는 치운다(웨이브·증원으로 카드가 화면 밖으로 밀리지 않게).
+## 탐험가 본인과 수호자·계층군주급은 흐린 채 남긴다.
+func _drops_card(u: Combatant) -> bool:
+	if u.side == Combatant.SIDE_PARTY and not u.summoned:
+		return false
+	return not (u.actor is Monster and JsonUtil.get_str((u.actor as Monster).def, "rank", "normal") != "normal")
+
+
+func _remove_card(u: Combatant) -> void:
+	var card: CombatantCard = _cards.get(u)
+	if card == null:
+		return
+	_cards.erase(u)
+	card.queue_free()
+	_fit_cards()
+
+
+## 카드 폭을 참가자 수에 맞춘다(기본 폭 ~ 최소 폭). 넘치면 가운데 틈부터 줄인다.
+## 간격 수 = 카드 수(줄 안 (p−1)+(f−1) + 무대의 두 틈) — 합이 화면 폭을 넘지 않는다.
+func _fit_cards() -> void:
+	var n := _cards.size()
+	if n == 0:
+		return
+	var sep := UiTheme.metric("combat_card_sep", 4)
+	var avail := get_viewport_rect().size.x - UiTheme.metric("margin", 16) * 2.0
+	var gap := UiTheme.metric("combat_stage_gap", 160)
+	var full := UiTheme.metric("combat_card_width", 150)
+	var need := n * (full + sep) + gap
+	if need > avail:
+		gap = maxi(UiTheme.metric("combat_stage_gap_min", 24), gap - int(need - avail))
+	var w := clampi(int((avail - gap) / n) - sep, UiTheme.metric("combat_card_min_width", 88), full)
+	_gap.custom_minimum_size.x = gap
+	for row: HBoxContainer in [_party_row, _foe_row]:
+		row.add_theme_constant_override("separation", sep)
+	for c: CombatantCard in _cards.values():
+		c.set_width(w)
+
+
+func _on_target_hovered(t: Combatant) -> void:
+	for u: Combatant in _cards:
+		(_cards[u] as CombatantCard).set_targeted(u == t)
 
 
 func _refresh() -> void:
@@ -172,9 +229,29 @@ func _show_result() -> void:
 		c.queue_free()
 	var key := "combat.result_" + (battle.result if not battle.result.is_empty() else Battle.RESULT_FLED)
 	_result_box.add_child(UiTheme.label(Strings.t(key), "header", "good" if battle.result == Battle.RESULT_VICTORY else "bad"))
-	var go := UiTheme.button(Strings.t("combat.continue"), func() -> void: finished.emit(battle.result, battle.turns, battle.killed))
+	var rewards: Array = reward_provider.call(battle.result, battle.killed, battle.killed_colors) if reward_provider.is_valid() else []
+	if not rewards.is_empty():  # 이번 전투로 얻은 것(공적·레벨·전리품·정수) — 웨이브가 이어져도 여기서 한 번 본다
+		var scroll := ScrollContainer.new()
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.custom_minimum_size.y = UiTheme.metric("combat_reward_height", 150)
+		_result_box.add_child(scroll)
+		var list := VBoxContainer.new()
+		list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll.add_child(list)
+		for m: Dictionary in rewards:
+			var l := UiTheme.label(Strings.t(str(m["key"]), m["args"]), "small", "log_" + str(m["kind"]))
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			list.add_child(l)
+	var go := UiTheme.button(Strings.t("combat.continue"), _finish)
 	_result_box.add_child(go)
 	go.grab_focus.call_deferred()
+
+
+func _finish() -> void:
+	if _finished:
+		return
+	_finished = true
+	finished.emit(battle.result, battle.turns, battle.killed)
 
 
 func _ai_delay() -> float:

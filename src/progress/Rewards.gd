@@ -34,7 +34,7 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hour
 			if got > 0:
 				msgs.append(_m("reward.loot", {"item": item_name, "count": got}, "good"))
 			if got < want:
-				msgs.append(_m("reward.bag_full", {"item": item_name, "count": want - got}, "warn"))
+				msgs.append(_m("reward.bag_full", {"item": item_name, "count": want - got, "item_id": str(drop["id"])}, "warn"))
 		var ess := EssenceDrop.roll(db, id, rng, in_rift, essence_mult, colors[k] if k < colors.size() else "")
 		if not ess.is_empty():
 			pc.essences.add_pending(db, ess, now_hours)

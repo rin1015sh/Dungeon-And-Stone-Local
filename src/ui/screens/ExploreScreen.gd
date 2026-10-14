@@ -88,6 +88,11 @@ func _ready() -> void:
 	session.start()
 	for pm: Dictionary in session.take_pending():
 		_on_message(str(pm["key"]), pm["args"], str(pm["kind"]))
+	# 화면이 생기기 전에 끝났을 수 있다(빙하굴 3챕터 입장 피해로 사망 등) — 결과 화면으로 넘긴다.
+	if session.player.dead:
+		_end("died")
+	elif session.ended:
+		_end("closed")
 
 
 func _process(delta: float) -> void:
@@ -242,15 +247,17 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	_windows.close_all()
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
+	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.
+	_combat.reward_provider = func(_result: String, killed: Array[String], colors: Array[String]) -> Array:
+		return session.grant_battle_rewards(group, killed, colors)
 	add_child(_combat)
 	_combat.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_combat.finished.connect(func(result: String, turns: int, killed: Array[String]) -> void:
-		var colors := battle.killed_colors
 		_combat.queue_free()
 		_combat = null
 		for id in killed:
 			EventBus.monster_killed.emit(id, session.player.id)
-		session.resolve_encounter(group, result, turns, killed, colors))
+		session.resolve_encounter(group, result, turns, killed))
 
 
 func _build_pause_overlay() -> void:

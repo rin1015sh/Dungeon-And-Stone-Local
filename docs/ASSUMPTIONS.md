@@ -334,6 +334,25 @@
 | UI5 | 맨 위 메뉴 커서는 차례마다 "공격"에서 시작하고, 스킬 목록 커서와 마지막으로 고른 대상은 기억한다. 뒤로 가면 들어갔던 칸에 커서가 있다 | 같은 스킬·같은 대상을 거듭 쓰는 흐름을 짧게 | `CommandMenu._skill_cursor`·`_last_target` |
 | UI6 | desc_ko가 없는 스킬(정수판 대부분)은 대상·피해 유형·거는 상태·재사용을 데이터에서 뽑아 설명줄에 보인다 | 정수 스킬이 무엇을 하는지 알 수 없었다 | `SkillBrief` |
 
+## 플레이 감사 수정 (2026-10-14)
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| PA1 | 아이템의 첫 use_effect가 본 효과다. 본 효과가 일어나지 않으면(생명력 가득 등) 부작용도 걸지 않고 소모하지 않는다. 전투에서는 차례도 쓰지 않는다. 여신의 눈물은 전투 밖·생명력 가득이면 쓰이지 않는다 | 가득 찬 생명력에 포션을 먹으면 부작용만 걸리고 포션이 사라졌다 | `ItemUser.use`, `Battle.act`(item), `effects/smite.gd` |
+| PA2 | 소지품 [버리기] 칸에 끌어 놓으면 그 묶음을 통째로 버린다(땅에 떨어진 물건 체계는 없다) | 가방이 차면 비울 길이 없었다 | `InventoryWindow.DiscardZone` |
+| PA3 | 흡수 대기 정수가 있으면 대기·휴식을 처음 누를 때 경고하고 멈춘다. 0.5게임시간 안에 같은 동작을 다시 하면 그대로 한다. 캐릭터 창·HUD에 남은 시간을 보인다 | 실시간 30초면 흩어지는데 남은 시간이 안 보였고, 휴식 한 번에 사라졌다 | `ExploreSession._confirm_pending`, balance `essence.warn_confirm_hours` |
+| PA4 | 일시정지 메뉴의 [탐험 포기]는 두 번 눌러야 확정하고, 결과 화면("탐험 포기")을 거쳐 타이틀로 간다 | 판을 끝낼 길이 사망·층 폐쇄뿐이었다(웹 빌드는 창을 닫을 수도 없다) | `PauseMenu`, `EndScreen` |
+| PA5 | 새 탐험마다 지도 시드를 세션 rng로 새로 굴린다 | 같은 실행 안에서 매 판 같은 층이 나왔다 | `GameState.start_run` |
+| PA6 | 전투 보상(공적·레벨·전리품·정수)은 결과가 정해질 때 바로 주고 결과 칸에 보인다(탐험 기록에도 남는다) | "승리"만 보이고, 균열 연전에서는 보상 안내가 다음 전투에 묻혔다 | `CombatScreen.reward_provider`, `ExploreSession.grant_battle_rewards` |
+| PA7 | 쓰러지거나 물러난 일반 몬스터·소환수 카드는 치우고, 탐험가와 수호자·군주급은 흐린 채 남긴다. 카드 폭은 참가자 수에 맞춰 88~150px로 줄인다 | 웨이브·소환으로 카드가 화면 밖으로 밀리고 행동창·기록창까지 밀었다 | `CombatScreen._drops_card/_fit_cards`, render `combat_card_*` |
+| PA8 | 균열 출구에 필요한 물건(뿔피리)이 가방에 안 들어가면 손에 쥔다(RiftRun.held, 출구에서 먼저 쓴다). 히든 피스는 가방이 차면 그 자리에 남는다 | 가방이 차 있으면 균열에서 영영 나갈 수 없었다 | `RiftRun.keep_overflow/use_exit`, `RiftHidden.take` |
+| PA9 | 도시 달력이 생기기 전까지 균열은 원정마다 확정 개방(start_months_since_open 8) | 4(45%)면 절반 넘는 판에서 균열 콘텐츠를 볼 수 없었고, 강제 개방 마석은 얻을 길이 없다 | balance `rift.start_months_since_open` |
+| PA10 | 중독은 독 저항(resist_poison)으로 버티고(상태 저항), 주기 피해도 속성 내성만큼 준다(periodic `damage_type`). 화상은 fire | 독 저항 스탯이 중독에 아무 효과가 없었다 | statuses `resist`·`periodic[].damage_type`, `StatusSet._element_resist` |
+| PA11 | 몬스터 대상 규칙 taunt_first도 도발 → 방어 중 → 전열 → 무작위로 떨어진다(AU4 그대로) | 도발 상태가 없으면 바로 무작위였다 | `MonsterAi.target` |
+| PA12 | 이능 봉인(no_skills — 영혼탈진·무기력증)은 기본 스킬(대화·조사)을 막지 않는다 | seal_skill과 어긋났다 | `Battle.can_use` |
+| PA13 | 아직 규칙에 연결되지 않은 세부 스탯(stats.json implemented false)은 정수 설명에 "(아직 효과 없음)", 캐릭터 창에 "*"로 표시한다 | 정수 스탯 굴림 5개 중 1개가 효과 없는 스탯인데 알 수 없었다 | `EssencePanel.describe`, `CharacterWindow._details` |
+| PA14 | 본 나이트 정수 색은 그 전투에서 정해진 타입의 essence_color를 따른다 | 타입이 곧 색인데 무작위였다 | `Battle.killed_colors`, `BattlePassives.type_essence_color` |
+
 ## 데이터·구조
 
 | # | 가정 | 이유 | 바꾸는 방법 |

@@ -1,8 +1,9 @@
 extends TestCase
 ## Strings(문자열 로더), Rng(시드 고정 난수), CharacterRoller(스탯 굴림).
 
-## Strings.t("키")와, 키를 넘기는 say/_say/_log("키") 호출을 모두 찾는다.
-const KEY_PATTERN := "(?:Strings\\.t|\\bsay|_say|_log)\\(\\s*\"([a-z_]+\\.[a-z_.]*)\""
+## Strings.t("키")와, 키를 넘기는 say/_say/_log/say_later("키") · 시그널 emit("키") 호출을 모두 찾는다
+## (전투·탐험 메시지는 message.emit("combat.…")로 나간다 — 빠진 키가 화면에 [키]로 보이지 않게).
+const KEY_PATTERN := "(?:Strings\\.t|\\bsay|_say|_log|say_later|\\bemit)\\(\\s*\"([a-z_]+\\.[a-z_.]*)\""
 
 
 func test_strings_lookup_and_format() -> void:
@@ -20,8 +21,8 @@ func test_every_code_string_key_exists() -> void:
 		scanned += 1
 		for m: RegExMatch in re.search_all(FileAccess.get_file_as_string(path)):
 			var key := m.get_string(1)
-			# "collection." + col 처럼 동적으로 잇는 접두어는 그 아래 키가 하나라도 있으면 된다.
-			var ok := _has_prefix(key) if key.ends_with(".") else Strings.has(key)
+			# "collection." + col, "combat.end_" + r 처럼 동적으로 잇는 접두어는 그 아래 키가 하나라도 있으면 된다.
+			var ok := _has_prefix(key) if key.ends_with(".") or key.ends_with("_") else Strings.has(key)
 			if not ok:
 				missing.append("%s: %s" % [path.get_file(), key])
 	assert_true(scanned > 0, "src 스캔")

@@ -48,6 +48,7 @@ var _warned: Dictionary = {}
 var _was_safe: bool = false
 var _started: bool = false
 var _view_dirty: bool = false  # 시간 흐름으로 시야가 바뀌었다(광원 꺼짐·상태이상)
+var _rewarded: bool = false  # 이번 전투 보상을 이미 줬다(전투 결과 화면에서 — grant_battle_rewards)
 var _pending_warn: Dictionary = {}  # 흡수 대기 정수 경고: {"action", "at"} — 곧바로 같은 동작을 다시 하면 그대로 한다
 
 
@@ -313,6 +314,7 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 		riddle_asked.emit(group)
 		return
 	in_combat = true
+	_rewarded = false
 	realtime.tick(self, 0.0)
 	encounter.emit(group, party_first)
 
@@ -325,9 +327,25 @@ func answer_riddle(group: FieldMonsters.Group, outcome: String) -> void:
 
 ## 전투가 끝났다. result: victory/fled/defeat. 전투 차례 수만큼 시간이 흐른다.
 ## 몇 마리 쓰러뜨리고 도망쳤으면 쓰러뜨린 몬스터는 무리에서 빠진다(다시 만나도 되살아나지 않는다). 다 빠졌으면 승리로 친다.
+## 전투 보상(처치 기록·공적·전리품·정수)을 주고 안내를 내보낸다. 낸 안내 목록(전투 결과 칸에도 보인다).
+## 한 전투에 한 번 — 이미 줬으면 resolve_encounter는 다시 주지 않는다.
 ## colors: killed와 같은 순서의 정수 색(타입이 정한 것, 없으면 "" — Battle.killed_colors).
-func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = [],
-		colors: Array[String] = []) -> void:
+func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], colors: Array[String] = []) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	_rewarded = true
+	if killed.is_empty() or player.dead:
+		return out
+	for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null,
+			JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0, colors):
+		if str(m["key"]) == "reward.bag_full" and rift_run != null \
+				and rift_run.keep_overflow(self, str(m["args"].get("item_id", "")), int(m["args"].get("count", 1))):
+			continue  # 출구에 필요한 물건은 손에 쥐었다(RiftRun.held)
+		message.emit(str(m["key"]), m["args"], str(m["kind"]))
+		out.append(m)
+	return out
+
+
+func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
 	if result == Battle.RESULT_FLED and group != null and not killed.is_empty():
 		for id in killed:
@@ -335,10 +353,9 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 		if group.monster_ids.is_empty():
 			result = Battle.RESULT_VICTORY
 	var chained := result == Battle.RESULT_VICTORY and group != null and not group.waves.is_empty()  # 연전: 다음 웨이브까지 맵 시간 없이(RF7)
-	if not killed.is_empty() and not player.dead:
-		for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null,
-				JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0, colors):
-			message.emit(str(m["key"]), m["args"], str(m["kind"]))
+	if not _rewarded:
+		grant_battle_rewards(group, killed)
+	_rewarded = false
 	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result, killed)):
 		pass
 	elif result == Battle.RESULT_VICTORY:

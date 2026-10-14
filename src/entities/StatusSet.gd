@@ -100,6 +100,11 @@ func set_barrier(id: String, amount: float) -> void:
 		st["barrier"] = maxf(float(st.get("barrier", 0.0)), amount)
 
 
+## 상태 하나가 남긴 보호막 양(카드 표시용).
+func barrier_of(id: String) -> float:
+	return float((_active[id] as Dictionary).get("barrier", 0.0)) if _active.has(id) else 0.0
+
+
 func barrier_total() -> float:
 	var v := 0.0
 	for id: String in _active:
