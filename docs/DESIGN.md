@@ -20,7 +20,7 @@
 
 ### 스탯 레지스트리 (`data/stats.json` → `StatDef`, 계산은 `StatBlock`)
 - 핵심 5종: `str` 근력, `agi` 민첩, `p_res` 물리내성, `m_res` 항마력, `int` 정신력(이 프로젝트에선 마법 공격력).
-- 세부 스탯 35종을 **정의만** 등록(유연성, 골강도, 시각, 체중, 식욕, … 지지도). `implemented: true`인 것만 규칙에 연결됨(현재: 골강도→물리내성, 근질량→근력, 식욕→허기 감소, 자연재생력→생명력 재생, 영혼 재생력→영혼력 재생).
+- 세부 스탯은 **주 스탯 5종(근력·민첩·물리내성·항마력·정신력)으로 대체할 수 없는 17종만** 남긴다(2026-10-14, ASSUMPTIONS ST1~ST4): 시각(시야) · 식욕·소화력(허기) · 자연재생력·영혼 재생력(재생) · 명중률(명중·실명) · 감응도 4(화염·냉기·번개·대지 피해 +) · 내성 7(화염·번개·대지·냉기·독·신성·어둠 피해 −, 냉기·독은 상태 저항도). 나머지(근질량·골강도·절삭력·유연성·후각·육감·손재주·행운 …)는 지우고 주 스탯 ×0.5로 옮겼다. 모두 `implemented: true`.
 - 필드: `id, name_ko, group(body/mind/ability/special), tier(core/sub), rarity, parent, coef, visible(false=투명), implemented, default, min, max, desc_ko`.
 - 계산: `클램프((기본 + Σflat + Σ(자식 값 × coef)) × max(0, 1 + Σpercent))`. percent는 **합산 후 한 번** 곱한다.
 - `Modifier{source_id, target, flat, percent, duration, unit(turn/hour)}` — 출처별 추가/제거, `tick(unit, amount)`로 만료.

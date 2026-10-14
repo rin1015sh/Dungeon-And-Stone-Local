@@ -40,16 +40,12 @@
   ],
   "stat_ranges": {
     "str": [
-      1,
-      3
-    ],
-    "cutting_power": [
       2,
       6
     ],
-    "dexterity": [
-      2,
-      5
+    "agi": [
+      1,
+      3
     ]
   },
   "source": "placeholder",

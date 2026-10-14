@@ -11,6 +11,7 @@ extends Node
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
 ## --summon=N: 적 N마리 증원, --ally_summon: 아군 소환수, --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
+## --details: (--character와 함께) 캐릭터 창 세부 능력 탭
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 
@@ -75,8 +76,8 @@ func _run() -> void:
 		if _args.has("essence"):
 			var epc := explore.session.player
 			epc.set_level(3)
-			epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "stealth": 5}})
-			epc.essences.add_pending(epc.db, {"essence": "goblin", "color": "red", "stats": {"agi": 1, "dexterity": 4}})
+			epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "agi": 2}})
+			epc.essences.add_pending(epc.db, {"essence": "goblin", "color": "red", "stats": {"agi": 3}})
 			epc.essences.add_pending(epc.db, {"essence": "gnome", "color": "green", "stats": {"p_res": 2}})
 			if _args.has("many"):  # 만렙 + 수호자 정수 여럿(스킬이 많은 행동창 확인)
 				epc.set_level(11)
@@ -88,6 +89,9 @@ func _run() -> void:
 		for w: String in ["inventory", "character", "bestiary"]:
 			if _args.has(w):
 				explore.windows().open(w)
+		if _args.has("details"):  # 캐릭터 창 "세부 능력" 탭
+			for t: Node in _main.find_children("*", "TabContainer", true, false):
+				(t as TabContainer).current_tab = 1
 		if _args.has("tooltip"):  # 툴팁 모양 확인: 가방의 창(장착 중인 무기와 비교)
 			var tip := ItemTooltip.build(explore.session.db, "steel_spear", explore.session.player)
 			explore.add_child(tip)

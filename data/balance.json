@@ -73,7 +73,7 @@
   },
   "reserved": {
     "stamina_base": 100,
-    "stamina_per_endurance": 2,
+    "stamina_per_p_res": 2,
     "mana_base": 20,
     "mana_per_int": 2,
     "divinity_base": 20
@@ -105,7 +105,6 @@
     "speed_base": 5,
     "crit_base": 0.05,
     "crit_per_agi": 0.003,
-    "crit_per_luck": 0.01,
     "crit_max": 0.6,
     "crit_mult": 1.5,
     "_formula_comment": "명세 §1: 물리 공격력 = 근력×2 + 무기, 마법 = 정신력×2 + 기본값, 방어 계수 = 100/(100 + 방어×4), 명중 = 스킬 명중 × (1 + 민첩 차×0.005)",
@@ -153,7 +152,7 @@
     "max_substep_tiles": 0.25,
     "realtime_max_frame_sec": 0.25,
     "min_vision_m": 1.0,
-    "vision_bonus_formula": "{field_of_view} * 0.1 + {sight} * 0.05",
+    "vision_bonus_formula": "{sight} * 0.1",
     "wait_hours": 1.0,
     "rest_hours": 8.0,
     "closing_warning_hours": [

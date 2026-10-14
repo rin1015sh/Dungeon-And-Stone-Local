@@ -113,8 +113,13 @@ func test_save_roundtrip() -> void:
 func test_registry_from_data() -> void:
 	var sb := StatBlock.new(db.stats)
 	assert_eq(sb.ids("core").size(), 5, "핵심 스탯 5종")
-	assert_true(sb.ids("sub").size() >= 30, "세부 스탯 정의 등록")
-	sb.set_base("str", 10)
-	sb.set_base("muscle_mass", 2)
-	var coef := sb.get_def("muscle_mass").coef
-	assert_near(sb.get_value("str"), 10.0 + 2.0 * coef, 0.0001, "근질량 → 근력")
+	assert_true(sb.ids("sub").size() >= 15, "세부 스탯 정의 등록(주 스탯으로 대체할 수 없는 것만 — ASSUMPTIONS ST1)")
+	for id in sb.ids("sub"):
+		assert_true(sb.get_def(id).implemented, "남은 세부 스탯은 모두 규칙에 연결돼 있다: %s" % id)
+	# 자식 스탯 → 부모 합산(parent·coef) 규칙 자체는 남아 있다(지금 데이터에는 없음)
+	var defs := db.stats.duplicate()
+	defs["test_child"] = StatDef.from_dict({"id": "test_child", "name_ko": "시험", "parent": "str", "coef": 0.5})
+	var sc := StatBlock.new(defs)
+	sc.set_base("str", 10)
+	sc.set_base("test_child", 2)
+	assert_near(sc.get_value("str"), 11.0, 0.0001, "자식 스탯 × coef가 부모에 더해진다")

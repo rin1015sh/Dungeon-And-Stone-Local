@@ -47,16 +47,16 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 	var group: Dictionary = hz.at[cell]
 	assert_true(JsonUtil.get_bool(group, "hidden"))
 	assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(JsonUtil.get_dict(run.def["look"], "tiles"), "floor"), "숨은 함정은 바닥처럼 보인다")
-	cs.player.stats.set_base("sixth_sense", 60.0)
+	cs.player.stats.set_base("int", 60.0)
 	hz.on_step(cs, cell + Vector2i(1, 1) if not hz.at.has(cell + Vector2i(1, 1)) else cell + Vector2i(2, 2))
 	var near := false
 	for q: Variant in group["cells"]:
 		near = near or maxi(absi((q as Vector2i).x - (cell + Vector2i(1, 1)).x), absi((q as Vector2i).y - (cell + Vector2i(1, 1)).y)) <= 1
 	if near:
-		assert_true(bool(group.get("detected", false)), "육감이 높으면 옆에서 알아챈다")
+		assert_true(bool(group.get("detected", false)), "정신력이 높으면 옆에서 알아챈다(옛 육감)")
 		assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(group, "tile"), "드러난다")
-	var nimble := Actor.new(db, {"dexterity": 40})
-	assert_near(RiftHazards.success_chance(db, nimble, JsonUtil.get_dict(group, "disarm")), float(db.bal("rift.hazard_max")), 0.001, "손재주로 해제")
+	var nimble := Actor.new(db, {"agi": 40})
+	assert_near(RiftHazards.success_chance(db, nimble, JsonUtil.get_dict(group, "disarm")), float(db.bal("rift.hazard_max")), 0.001, "민첩으로 해제(옛 손재주)")
 	assert_true(hz.watcher_bonus(cs) == 0.0, "1챕터엔 수호자의 눈이 없다")
 	run.debug_clear()
 	cs = run.use_exit(cs)

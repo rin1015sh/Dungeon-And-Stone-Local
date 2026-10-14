@@ -38,8 +38,8 @@
     "desc_ko": "거구의 전사 종족. 힘과 맷집은 타고났지만 이능에는 둔하다.",
     "stat_ranges": {
       "str": [
-        14,
-        18
+        15,
+        20
       ],
       "agi": [
         7,
@@ -56,10 +56,6 @@
       "int": [
         2,
         6
-      ],
-      "muscle_mass": [
-        1,
-        3
       ],
       "appetite": [
         10,
@@ -84,8 +80,8 @@
         7
       ],
       "p_res": [
-        9,
-        13
+        10,
+        15
       ],
       "m_res": [
         4,
@@ -94,10 +90,6 @@
       "int": [
         3,
         7
-      ],
-      "bone_strength": [
-        1,
-        3
       ]
     },
     "sprite": "res://assets/sprites/races/dwarf.png",
@@ -156,16 +148,8 @@
         6
       ],
       "int": [
-        3,
-        6
-      ],
-      "smell": [
-        3,
-        6
-      ],
-      "hearing": [
-        2,
-        5
+        6,
+        12
       ]
     },
     "sprite": "res://assets/sprites/races/beastkin.png",

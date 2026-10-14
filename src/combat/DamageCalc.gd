@@ -4,7 +4,7 @@ extends RefCounted
 ##   공격력: 물리 = (무기 공격력 — 몬스터는 natural_weapon, 없으면 맨손 값) + 근력×2, 마법 = 스킬 기본값(base) + 정신력×2
 ##   피해 = 공격력 × 위력 × 100/(100 + 방어×4) × 상성(약점·면역) × 받는/주는 피해 수정자 × 조건부 위력 × 편차 (치명타면 ×1.5)
 ##   명중 = (스킬 명중 accuracy, 기본 95 + 명중률 스탯) × (1 + (공격 민첩 − 대상 민첩)×0.005), 30~100%로 제한(약점 노리기 ×배율)
-##   치명타 = 5% + 민첩×0.3% + 행운×계수 + 스킬 crit_bonus + 패시브 crit_bonus
+##   치명타 = 5% + 민첩×0.3% + 스킬 crit_bonus + 패시브 crit_bonus
 ##   조건부 위력: 효과 "power_if_status": {"status": [..], "power": 1.5} — 대상이 그 상태면 위력을 바꾼다.
 ##   패시브 power_vs_status {"status", "mult"}: 그 상태의 대상에게 피해 배율.
 ##   "ignore_defense": true면 방어 계수를 1로 본다(배신의 장막 오인 공격). "defense_ignore": 0.2면 방어의 20%를 무시.
@@ -83,8 +83,7 @@ static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_w
 
 
 static func crit_chance(db: GameDatabase, attacker: Actor, bonus: float = 0.0) -> float:
-	var c := _c(db, "crit_base", 0.05) + attacker.stats.get_value("agi") * _c(db, "crit_per_agi", 0.003) \
-		+ attacker.stats.get_value("luck") * _c(db, "crit_per_luck", 0.01) + bonus
+	var c := _c(db, "crit_base", 0.05) + attacker.stats.get_value("agi") * _c(db, "crit_per_agi", 0.003) + bonus
 	return clampf(c, 0.0, _c(db, "crit_max", 0.6))
 
 

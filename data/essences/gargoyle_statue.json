@@ -40,12 +40,8 @@
   ],
   "stat_ranges": {
     "p_res": [
-      3,
-      6
-    ],
-    "bone_strength": [
-      3,
-      6
+      5,
+      9
     ]
   },
   "source": "placeholder",

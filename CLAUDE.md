@@ -115,6 +115,7 @@ assets/                  fonts/ sprites/ audio/ shaders/
 
 - **수식**: `{키}` 자리표시자 + 사칙연산/`min`/`max`/`floor`(Godot Expression). 키 = `level`, `bal.<balance 경로>`, `<스탯 id>`. 예: `"{bal.hp.base} + {level} * {bal.hp.per_level} + {str} * {bal.hp.per_str}"`.
 - **스탯 계산**: `(기본 + Σflat + Σ자식×coef) × max(0, 1+Σpercent)` → 클램프. 수정자는 출처(`source_id`)별로 붙이고 뗀다.
+- **스탯 구성(2026-10-14)**: 주 스탯 5종(근력·민첩·물리내성·항마력·정신력) + 주 스탯으로 대체할 수 없는 세부 스탯 17종(시각·식욕·소화력·자연재생력·영혼 재생력·명중률·감응도 4·내성 7)만 둔다. 새 세부 스탯은 고유 효과가 있을 때만 추가하고 규칙에 연결한다(`tests/test_sub_stats.gd`가 남은 목록·연결을 검사). 가정 ST1~ST5.
 - **수정자 대상**: 스탯 id / `max:<자원>` / `regen:<자원>` / `dmg_taken:<피해유형|physical|magical|all>` / `dmg_dealt:…`.
 - **자원(ResourcePool)**: 최대치 = 수식 → `max:<id>` 수정자. 코스트는 `{"soul": 5}`처럼 아무 자원이나. 임계값·고갈·회복은 시그널만 낸다(상태이상 부여는 소유자 몫). scope `dungeon_only`(허기)는 미궁 밖에서 정지·숨김.
 - **시야**: 유효 시야 = min(층 상한 `visibility_cap_m`, max(주변광 `ambient_light_m`(암흑지대 0), 광원, 최소 시야) + 시야 스탯 보정). `Vision`.

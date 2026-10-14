@@ -36,14 +36,10 @@
   ],
   "stat_ranges": {
     "agi": [
-      3,
-      5
+      5,
+      9
     ],
     "affinity_fire": [
-      4,
-      8
-    ],
-    "dexterity": [
       4,
       8
     ]

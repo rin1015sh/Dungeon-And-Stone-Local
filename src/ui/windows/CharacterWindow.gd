@@ -88,20 +88,24 @@ func _details() -> Control:
 	var grid := GridContainer.new()
 	grid.columns = 4
 	var shown := 0
+	var any_inert := false
 	for id in pc.stats.ids("sub"):
 		var def := pc.stats.get_def(id)
 		var v := pc.stats.get_value(id)
 		var bonus := v - pc.stats.get_base(id)
 		if (def != null and not def.visible) or (is_zero_approx(v) and is_zero_approx(bonus)):
 			continue
-		var name := DataNames.entry(db, "stats", id) + ("" if def == null or def.implemented else Strings.t("character.inert_mark"))
+		var inert := def != null and not def.implemented
+		any_inert = any_inert or inert
+		var name := DataNames.entry(db, "stats", id) + (Strings.t("character.inert_mark") if inert else "")
 		_stat(grid, name, v, bonus)
 		shown += 1
 	box.add_child(UiTheme.label(Strings.t("character.sub_stats"), "body", "text_title"))
 	box.add_child(grid if shown > 0 else UiTheme.label(Strings.t("character.none"), "small", "text_dim"))
-	var inert := UiTheme.label(Strings.t("character.inert_note"), "small", "text_dim")
-	inert.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(inert)
+	if any_inert:  # 규칙에 아직 연결되지 않은 스탯이 보일 때만 안내(지금 데이터에는 없다 — ASSUMPTIONS ST1)
+		var note := UiTheme.label(Strings.t("character.inert_note"), "small", "text_dim")
+		note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(note)
 	if not pc.boons.is_empty():
 		box.add_child(UiTheme.label(Strings.t("character.boons"), "body", "text_title"))
 		for k: String in pc.boons:  # 키 = "<아이템 key>@<스탯>"

@@ -101,7 +101,7 @@ func test_drop_chance_and_pending_expiry() -> void:
 
 func test_absorb_pending_and_save_roundtrip() -> void:
 	var pc := _pc()
-	pc.essences.add_pending(db, _inst("blade_wolf", "yellow", {"smell": 9}))
+	pc.essences.add_pending(db, _inst("blade_wolf", "yellow", {"int": 9}))
 	assert_eq(pc.essences.absorb_pending(pc, 0), "")
 	assert_eq(pc.essences.pending.size(), 0)
 	pc.essences.add_pending(db, _inst("goblin", "green"))
@@ -110,7 +110,7 @@ func test_absorb_pending_and_save_roundtrip() -> void:
 	copy.progress_load_dict(data)
 	assert_true(copy.essences.has_essence("blade_wolf"))
 	assert_true(copy.skills.has("ess_wolf_blade_graze"), "불러오면 스킬도 다시 붙는다")
-	assert_eq(copy.stats.get_value("smell"), pc.stats.get_value("smell"))
+	assert_eq(copy.stats.get_value("int"), pc.stats.get_value("int"))
 	assert_eq(copy.essences.pending.size(), 1)
 
 

@@ -32,13 +32,13 @@
       2,
       4
     ],
-    "bone_strength": [
-      2,
-      4
+    "p_res": [
+      1,
+      2
     ],
-    "dexterity": [
-      2,
-      5
+    "agi": [
+      1,
+      3
     ]
   },
   "source": "placeholder",
