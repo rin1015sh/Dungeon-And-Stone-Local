@@ -80,6 +80,29 @@
     ],
     "debug_toggle": [
       "F1"
+    ],
+    "menu_up": [
+      "W",
+      "Up"
+    ],
+    "menu_down": [
+      "S",
+      "Down"
+    ],
+    "menu_left": [
+      "A",
+      "Left"
+    ],
+    "menu_right": [
+      "D",
+      "Right"
+    ],
+    "menu_confirm": [
+      "Space"
+    ],
+    "menu_back": [
+      "Enter",
+      "Kp Enter"
     ]
   }
 }

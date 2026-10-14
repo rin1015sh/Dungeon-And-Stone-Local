@@ -102,7 +102,7 @@ src/
   ui/InputSetup.gd       data/input.json → InputMap
   ui/theme/UiTheme.gd    render.json → Theme, 위젯 생성 도우미
   ui/theme/GothicStyle   스톤샤드풍 창 꾸밈(돌판·칸·이름판·아치)
-  ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel, DataSummary, ExploreHud, DebugPanel, BottomBar,
+  ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel, DataSummary, ExploreHud, DebugPanel, BottomBar, ChoiceGrid(전투 고정 칸 선택판), SkillBrief,
                          GothicWindow, InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, ItemDragPreview, CommandMenu, EssencePanel, RiddleDialog …
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/screens/            TitleScreen, CharacterCreateScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen

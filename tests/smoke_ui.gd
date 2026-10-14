@@ -143,14 +143,20 @@ func _realtime_combat_flow() -> void:
 	var menu := await _open_menu(combat)
 	if not _expect(menu != null, "행동창이 열린다"):
 		return
-	var labels := _button_texts(menu)
-	_expect(labels == [Strings.t("combat.cmd_attack"), Strings.t("combat.cmd_guard"), Strings.t("combat.cmd_skill"),
-		Strings.t("combat.cmd_flee", {"chance": roundi(combat.battle.flee_chance(combat.battle.current) * 100.0)})],
-		"기본 행동창: 공격·방어·스킬·도주 (%s)" % ", ".join(PackedStringArray(labels)))
+	var labels := Array(menu.grid().option_texts())
+	_expect(labels == [Strings.t("combat.cmd_attack"), Strings.t("combat.cmd_skill"), Strings.t("combat.cmd_guard"),
+		Strings.t("combat.cmd_item"), Strings.t("combat.cmd_flee")],
+		"기본 행동창: 공격·스킬·방어·아이템·도주 (%s)" % ", ".join(PackedStringArray(labels)))
+	var slots := _button_texts(menu)
+	_expect(slots.size() == menu.grid().page_size(), "고정 칸 %d개(빈 칸도 테두리) — %d" % [menu.grid().page_size(), slots.size()])
 	_expect(not _has_node_named(combat, "TimelineBar"), "상단 순서 표시 없음")
+	await _keyboard_menu(combat, menu)
+	menu = await _open_menu(combat)
+	if not _expect(menu != null, "키보드 공격 뒤 다시 행동창"):
+		return
 	var turns_before := combat.battle.turns
 	_press(combat, Strings.t("combat.cmd_skill"))
-	var skill_labels := _button_texts(menu)
+	var skill_labels := Array(menu.grid().option_texts())
 	_expect(skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "talk")) and skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "investigate")),
 		"스킬 메뉴에 대화·조사")
 	_press(combat, DataNames.entry(DataRegistry.db, "skills", "investigate"))
@@ -294,6 +300,30 @@ func _inventory_flow() -> void:
 	var end := (await _screen(EndScreen)) as EndScreen
 	if _expect(end != null, "결과 화면"):
 		_press(end, Strings.t("end.to_title"))
+
+
+## 행동창 키 조작: D → 스킬 칸, Space → 스킬 목록, Enter → 맨 위(커서는 스킬 칸), A → 공격, Space·Space → 첫 적을 친다.
+func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
+	var g := menu.grid()
+	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "처음 커서는 공격")
+	await _action("menu_right")
+	_expect(g.cursor() == CommandMenu.ROOT_SKILL, "D → 스킬 칸 (%d)" % g.cursor())
+	await _action("menu_confirm")
+	_expect(Array(g.option_texts()).has(DataNames.entry(DataRegistry.db, "skills", "talk")), "Space → 스킬 목록")
+	await _action("menu_back")
+	_expect(Array(g.option_texts()).has(Strings.t("combat.cmd_flee")) and g.cursor() == CommandMenu.ROOT_SKILL,
+		"Enter → 맨 위 메뉴, 커서는 스킬 칸")
+	await _action("menu_down")
+	_expect(g.cursor() == CommandMenu.ROOT_ITEM, "S → 아래 칸 (%d)" % g.cursor())
+	await _action("menu_up")
+	await _action("menu_left")
+	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "W·A → 공격 칸")
+	var turns := combat.battle.turns
+	await _action("menu_confirm")
+	_expect(g.title_text() == Strings.t("combat.menu_target"), "Space → 대상 고르기")
+	await _action("menu_confirm")
+	await _frames(2)
+	_expect(combat.battle.turns > turns or not combat.battle.result.is_empty(), "Space로 고른 공격이 차례를 쓴다")
 
 
 ## 아군 차례가 와서 행동창이 열릴 때까지 기다린다. 전투가 끝나면 null.

@@ -10,6 +10,7 @@ extends Node
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
+## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 
 var _main: Control
@@ -118,12 +119,22 @@ func _run() -> void:
 					if n is CombatScreen:
 						var cs := n as CombatScreen
 						BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
+		if _args.has("drain"):  # 영혼력을 바닥내 "대가 부족" 칸을 보인다
+			explore.session.player.pool.set_current("soul", 0.0)
 		if _args.has("skills"):  # 전투 행동창에서 "스킬"을 눌러 스킬 목록을 띄운다(정수 스킬 표시 확인)
 			await _frames(10)
 			for m: Node in _main.find_children("*", "CommandMenu", true, false):
 				for b: Node in m.find_children("*", "Button", true, false):
 					if (b as Button).text == Strings.t("combat.cmd_skill"):
 						(b as Button).pressed.emit()
+		if _args.has("keys"):  # 행동창 키 입력 흉내: --keys=menu_right,menu_right,menu_confirm (쪽 넘김·커서 확인)
+			await _frames(10)
+			for a: String in str(_args["keys"]).split(","):
+				var kev := InputEventAction.new()
+				kev.action = a
+				kev.pressed = true
+				Input.parse_input_event(kev)
+				await _frames(2)
 		if _args.has("debug"):
 			var ev := InputEventAction.new()
 			ev.action = "debug_toggle"

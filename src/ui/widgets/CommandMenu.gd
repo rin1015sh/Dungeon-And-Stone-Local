@@ -1,93 +1,109 @@
 class_name CommandMenu
 extends VBoxContainer
-## 전투 기본 행동창: 공격 · 방어 · 스킬 · 도주.
-##   공격 → 대상 선택(약점이 있는 적은 "약점 노리기" 버튼이 함께 나온다)
-##   스킬 → 보유 스킬(대화·조사 포함) 목록 → 필요하면 대상 선택. 맨 아래 "아이템…" → 전투용 소지품.
+## 전투 행동창. 모든 단계가 같은 고정 칸 선택판(ChoiceGrid — 한 쪽 6칸, 넘치면 쪽 넘김)을 쓴다.
+##   맨 위: 공격 · 스킬 · 방어 · 아이템 · 도주
+##   공격 → 대상(약점이 있는 적은 "약점 노리기"가 함께 나온다)
+##   스킬 → 보유 스킬(대화·조사 포함, 칸 오른쪽 아래에 대가 또는 못 쓰는 이유) → 필요하면 대상
+##   아이템 → 전투용 소지품
+## 뒤로(menu_back)는 한 단계 위로, 돌아가면 커서는 들어갔던 칸에 있다. 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
 ## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 메뉴를 닫아 중복 선택을 막는다).
-## 버튼은 스크롤 영역에 놓는다 — 정수 스킬이 많아도 행동창이 화면 밖으로 넘치지 않는다. "돌아가기"·"아이템…"은 아래에 고정.
-## 지금 못 쓰는 스킬은 이름 옆에 이유(남은 차례·대가 부족·봉인)를 붙인다.
 
 signal chosen(action: Dictionary)
 
+const ROOT_ATTACK := 0
+const ROOT_SKILL := 1
+const ROOT_GUARD := 2
+const ROOT_ITEM := 3
+const ROOT_FLEE := 4
+
 var _battle: Battle
 var _unit: Combatant
-var _title: Label
-var _scroll: ScrollContainer
-var _buttons: HFlowContainer
-var _footer: HBoxContainer
+var _grid: ChoiceGrid
+var _skill_cursor: Dictionary = {}  # 유닛 instance id -> 스킬 칸 커서
+var _last_target: Dictionary = {}   # 유닛 instance id -> 마지막으로 고른 대상(Combatant)
 
 
 func _init() -> void:
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_title = UiTheme.label("", "body", "text_title")
-	add_child(_title)
-	_scroll = ScrollContainer.new()
-	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_scroll.follow_focus = true
-	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(_scroll)
-	_buttons = HFlowContainer.new()
-	_buttons.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_scroll.add_child(_buttons)
-	_footer = HBoxContainer.new()
-	add_child(_footer)
+	_grid = ChoiceGrid.new()
+	_grid.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(_grid)
 
 
 func open(battle: Battle, unit: Combatant) -> void:
 	_battle = battle
 	_unit = unit
 	visible = true
-	_root()
+	_root(ROOT_ATTACK)
 
 
 func close() -> void:
 	visible = false
-	_clear()
+	_grid.clear()
 
 
-func _root() -> void:
-	_set_title(Strings.t("combat.menu_root", {"name": _unit.label()}))
-	_add(Strings.t("combat.cmd_attack"), _attack)
-	_add(Strings.t("combat.cmd_guard"), func() -> void: _choose({"kind": "guard"}))
-	_add(Strings.t("combat.cmd_skill"), _skills)
-	_add(Strings.t("combat.cmd_flee", {"chance": roundi(_battle.flee_chance(_unit) * 100.0)}), func() -> void: _choose({"kind": "flee"}))
-	_focus_first()
+func grid() -> ChoiceGrid:
+	return _grid
+
+
+func _root(start: int) -> void:
+	var items := _usable_items()
+	var flee := roundi(_battle.flee_chance(_unit) * 100.0)
+	var opts: Array[Dictionary] = [
+		_opt(Strings.t("combat.cmd_attack"), "", Strings.t("combat.desc_attack"), _attack),
+		_opt(Strings.t("combat.cmd_skill"), Strings.t("combat.sub_count", {"n": _unit.actor.skills.size()}),
+			Strings.t("combat.desc_skill"), func() -> void: _skills(_skill_cursor.get(_unit.get_instance_id(), 0))),
+		_opt(Strings.t("combat.cmd_guard"), "", Strings.t("combat.desc_guard"), func() -> void: _choose({"kind": "guard"})),
+		_opt(Strings.t("combat.cmd_item"), Strings.t("combat.sub_count", {"n": items.size()}),
+			Strings.t("combat.desc_item") if not items.is_empty() else Strings.t("combat.no_usable_item"), _items, not items.is_empty()),
+		_opt(Strings.t("combat.cmd_flee"), Strings.t("combat.sub_chance", {"chance": flee}),
+			Strings.t("combat.desc_flee") if flee > 0 else Strings.t("combat.reason_no_flee"),
+			func() -> void: _choose({"kind": "flee"}), flee > 0),
+	]
+	_grid.show_choices(Strings.t("combat.menu_root", {"name": _unit.label()}), opts, Callable(), start)
 
 
 ## 공격: 적 목록. 약점이 있는 적은 약점 노리기(명중이 낮고 피해가 크다)도 고를 수 있다.
 func _attack() -> void:
-	_set_title(Strings.t("combat.menu_target"))
+	var opts: Array[Dictionary] = []
+	var start := 0
 	for t: Combatant in _battle.opponents(_unit):
-		_add(_target_line(t), func() -> void: _choose_skill(Battle.BASIC_ATTACK, t))
+		if t == _last_target.get(_unit.get_instance_id()):
+			start = opts.size()
+		opts.append(_target_opt(t, t.label(), func() -> void: _choose_skill(Battle.BASIC_ATTACK, t)))
 		if not t.actor.weak_point().is_empty():
-			_add(Strings.t("combat.target_weak", {"name": t.label()}), func() -> void:
-				_choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t, "aim_weak": true}))
-	_add_back()
+			var aim := func() -> void:
+				_remember_target(t)
+				_choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t, "aim_weak": true})
+			var weak := _target_opt(t, Strings.t("combat.target_weak", {"name": t.label()}), aim)
+			weak["desc"] = Strings.t("combat.desc_weak")
+			opts.append(weak)
+	_grid.show_choices(Strings.t("combat.menu_target"), opts, func() -> void: _root(ROOT_ATTACK), start)
 
 
-func _skills() -> void:
-	_set_title(Strings.t("combat.menu_skill"))
+func _skills(start: int = 0) -> void:
 	var db := _battle.db
-	for id in _unit.actor.skills:
+	var opts: Array[Dictionary] = []
+	for i in _unit.actor.skills.size():
+		var id := _unit.actor.skills[i]
 		var sk := db.get_entry("skills", id)
-		var cost := PackedStringArray()
-		var costs := JsonUtil.get_dict(sk, "cost")
-		for r: String in costs:
-			cost.append("%s %d" % [db.resources[r].name_ko, int(costs[r])])
-		var label := JsonUtil.get_str(sk, "name_ko", id) + ((" (" + ", ".join(cost) + ")") if not cost.is_empty() else "")
 		var why := _battle.can_use(_unit, id)
+		var sub := _short_reason(id, why) if not why.is_empty() else _cost_text(sk)
+		var desc := SkillBrief.describe(db, sk)
 		if not why.is_empty():
-			label += " · " + _short_reason(id, why)
-		var b := _add(label, func() -> void: _skill_target(id))
-		b.disabled = not why.is_empty()
-		b.tooltip_text = Strings.t(why) if not why.is_empty() else JsonUtil.get_str(sk, "desc_ko")
-	var item_btn := _add(Strings.t("combat.cmd_item"), _items, true)
-	item_btn.disabled = _usable_items().is_empty()
-	_add_back()
+			desc = Strings.t(why) + "  " + desc
+		var pick := func() -> void:
+			_skill_cursor[_unit.get_instance_id()] = i
+			_skill_target(id, i)
+		opts.append(_opt(JsonUtil.get_str(sk, "name_ko", id), sub, desc, pick, why.is_empty()))
+	var back := func() -> void:
+		_skill_cursor[_unit.get_instance_id()] = _grid.cursor()
+		_root(ROOT_SKILL)
+	_grid.show_choices(Strings.t("combat.menu_skill"), opts, back, start)
 
 
 ## 스킬 대상: 적 하나 → 적 목록, 아무나 하나 → 전장의 모두, 아군 하나 → 아군 목록. 그 밖은 바로 쓴다.
-func _skill_target(skill_id: String) -> void:
+func _skill_target(skill_id: String, skill_index: int) -> void:
 	var kind := JsonUtil.get_str(_battle.db.get_entry("skills", skill_id), "target")
 	var list: Array[Combatant] = []
 	match kind:
@@ -101,20 +117,21 @@ func _skill_target(skill_id: String) -> void:
 		_:
 			_choose({"kind": "skill", "skill": skill_id})
 			return
-	_set_title(Strings.t("combat.menu_target"))
+	var opts: Array[Dictionary] = []
+	var start := 0
 	for t in list:
-		_add(_target_line(t), func() -> void: _choose_skill(skill_id, t))
-	_add(Strings.t("menu.back"), _skills, true)
-	_focus_first()
+		if t == _last_target.get(_unit.get_instance_id()):
+			start = opts.size()
+		opts.append(_target_opt(t, t.label(), func() -> void: _choose_skill(skill_id, t)))
+	_grid.show_choices(Strings.t("combat.menu_target"), opts, func() -> void: _skills(skill_index), start)
 
 
 func _items() -> void:
-	_set_title(Strings.t("combat.menu_item"))
+	var opts: Array[Dictionary] = []
 	for id in _usable_items():
-		_add("%s ×%d" % [DataNames.entry(_battle.db, "items", id), _unit.actor.inventory.count(id)],
-			func() -> void: _choose({"kind": "item", "item": id}))
-	_add(Strings.t("menu.back"), _skills, true)
-	_focus_first()
+		opts.append(_opt(DataNames.entry(_battle.db, "items", id), Strings.t("combat.sub_stack", {"n": _unit.actor.inventory.count(id)}),
+			JsonUtil.get_str(_battle.db.get_entry("items", id), "desc_ko"), func() -> void: _choose({"kind": "item", "item": id})))
+	_grid.show_choices(Strings.t("combat.menu_item"), opts, func() -> void: _root(ROOT_ITEM))
 
 
 func _usable_items() -> Array[String]:
@@ -125,7 +142,30 @@ func _usable_items() -> Array[String]:
 	return out
 
 
-## 못 쓰는 이유를 버튼에 붙일 짧은 말로: 재사용 대기(남은 자기 차례 수) · 횟수 소진 · 대가 부족 · 봉인.
+## 대상 칸: 이름 + 생명력 %, 설명줄에 걸린 상태. 적 쪽에서 고를 수 없는 대상(은신)은 꺼 둔다.
+func _target_opt(t: Combatant, text: String, cb: Callable) -> Dictionary:
+	var names := PackedStringArray()
+	for sid in t.actor.statuses.ids():
+		names.append(DataNames.entry(_battle.db, "statuses", sid))
+	var ok := t.side == _unit.side or BattleRules.is_targetable(_battle, _unit, t)
+	var desc := Strings.t("combat.reason_hidden") if not ok else \
+		(Strings.t("combat.target_statuses", {"list": ", ".join(names)}) if not names.is_empty() else "")
+	return _opt(text, Strings.t("combat.sub_hp", {"hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)}), desc, cb, ok)
+
+
+func _opt(text: String, sub: String, desc: String, cb: Callable, enabled: bool = true) -> Dictionary:
+	return {"text": text, "sub": sub, "desc": desc, "on_pick": cb, "enabled": enabled}
+
+
+func _cost_text(sk: Dictionary) -> String:
+	var cost := PackedStringArray()
+	var costs := JsonUtil.get_dict(sk, "cost")
+	for r: String in costs:
+		cost.append("%s %d" % [_battle.db.resources[r].name_ko, int(costs[r])])
+	return ", ".join(cost)
+
+
+## 못 쓰는 이유를 칸에 붙일 짧은 말로: 재사용 대기(남은 자기 차례 수) · 횟수 소진 · 대가 부족 · 봉인.
 func _short_reason(skill_id: String, why: String) -> String:
 	match why:
 		"combat.reason_cooldown":
@@ -139,11 +179,12 @@ func _short_reason(skill_id: String, why: String) -> String:
 	return Strings.t("combat.skill_unusable")
 
 
-func _target_line(t: Combatant) -> String:
-	return Strings.t("combat.target_line", {"name": t.label(), "hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)})
+func _remember_target(t: Combatant) -> void:
+	_last_target[_unit.get_instance_id()] = t
 
 
 func _choose_skill(skill_id: String, target: Combatant) -> void:
+	_remember_target(target)
 	_choose({"kind": "skill", "skill": skill_id, "target": target})
 
 
@@ -152,43 +193,3 @@ func _choose(action: Dictionary) -> void:
 		return
 	close()
 	chosen.emit(action)
-
-
-## footer = 스크롤 밖 아래 줄(돌아가기·아이템…)에 둔다.
-func _add(text: String, cb: Callable, footer: bool = false) -> Button:
-	var b := UiTheme.button(text, cb)
-	b.custom_minimum_size.x = UiTheme.metric("combat_button_width", 150)
-	(_footer if footer else _buttons).add_child(b)
-	return b
-
-
-func _add_back() -> void:
-	_add(Strings.t("menu.back"), _root, true)
-	_focus_first()
-
-
-func _set_title(text: String) -> void:
-	_clear()
-	_title.text = text
-
-
-func _clear() -> void:
-	for box: Container in [_buttons, _footer]:
-		for c in box.get_children():
-			box.remove_child(c)
-			c.queue_free()
-	_scroll.scroll_vertical = 0
-
-
-## 첫 버튼에 포커스(키보드 조작). 다음 프레임에 그때 남아 있는 버튼으로 잡는다(그사이 메뉴가 바뀌어도 안전).
-func _focus_first() -> void:
-	_grab_first.call_deferred()
-
-
-func _grab_first() -> void:
-	if not is_inside_tree() or not visible:
-		return
-	for c in _buttons.get_children() + _footer.get_children():
-		if c is Button and not (c as Button).disabled and (c as Button).is_inside_tree():
-			(c as Button).grab_focus()
-			return
