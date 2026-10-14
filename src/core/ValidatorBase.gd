@@ -22,6 +22,9 @@ var generator_ids: PackedStringArray = PackedStringArray()
 var generator_checker: Callable = Callable()
 ## 등록된 몬스터 AI 조건 id(src/combat/ai/). 비어 있으면 생략.
 var ai_condition_ids: PackedStringArray = PackedStringArray()
+## 등록된 도시 활동 효과 타입(src/city/effects/)과 그 데이터 검사기 (data, db) -> PackedStringArray. 비어 있으면 생략.
+var city_effect_ids: PackedStringArray = PackedStringArray()
+var city_effect_checker: Callable = Callable()
 
 var _skipped_effect_types: bool = false
 

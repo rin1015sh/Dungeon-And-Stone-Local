@@ -1,0 +1,16 @@
+{
+  "id": "inn",
+  "name_ko": "여관",
+  "order": 1,
+  "x": 70,
+  "building": "res://assets/city/buildings/inn.png",
+  "interior": "res://assets/city/interiors/inn.png",
+  "activities": [
+    "inn_rest",
+    "inn_meal"
+  ],
+  "shows": [
+    "rumors"
+  ],
+  "source": "original"
+}

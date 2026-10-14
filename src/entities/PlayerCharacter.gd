@@ -14,6 +14,10 @@ var essences: EssenceSet = EssenceSet.new()
 var essence_rng: Rng = Rng.new()
 ## 단축칸 1~0: 아이템 id(빈 칸은 ""). 소지품이 없으면 흐리게 보이고 쓸 수 없다.
 var hotbar: Array[String] = []
+## 피로도(도시·미궁 공용, 핵심 스탯이 아닌 별도 수치). 규칙은 data/city.json fatigue.
+var fatigue: Fatigue = Fatigue.new()
+## 활동으로 오른 능력치 기록 [{stat, amount, activity, month, period}] — 도시 독서·훈련(CityEffect stat_chance).
+var stat_history: Array[Dictionary] = []
 
 
 ## 종족·템플릿 범위에서 굴린 기본 스탯(bases)으로 캐릭터를 만든다.
@@ -37,6 +41,7 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 			pc.inventory.add(JsonUtil.get_str(item, "id"), JsonUtil.get_int(item, "count", 1))
 	pc.inventory.add_money(int(p_db.bal("char_creation.start_stones", 0)))
 	pc.pool.fill_all()  # 장비 수정자로 최대치가 바뀌었을 수 있다
+	pc.fatigue.setup(JsonUtil.get_dict(p_db.singletons.get("city", {}), "fatigue"))
 	grant_innate_skills(pc)
 	pc.auto_fill_hotbar()
 	return pc
@@ -102,11 +107,12 @@ func _ensure_hotbar() -> void:
 		hotbar.append("")
 
 
-## 저장용(M4 저장 시스템이 쓴다): 성장·정보·장비·가방·단축칸·정수.
+## 저장용(저장 시스템이 생기면 쓴다): 성장·정보·장비·가방·단축칸·정수·피로도·활동 능력치 기록.
 func progress_to_dict() -> Dictionary:
 	return {"progression": progression.to_dict(), "knowledge": knowledge.to_dict(),
 		"equipment": equipment.to_dict(), "inventory": inventory.to_dict(), "hotbar": hotbar.duplicate(),
-		"essences": essences.to_dict(), "boons": boons.duplicate(), "base_stats": _boosted_bases()}
+		"essences": essences.to_dict(), "boons": boons.duplicate(), "base_stats": _boosted_bases(),
+		"fatigue": fatigue.to_dict(), "stat_history": stat_history.duplicate(true)}
 
 
 func progress_load_dict(d: Dictionary) -> void:
@@ -116,6 +122,11 @@ func progress_load_dict(d: Dictionary) -> void:
 	inventory.load_dict(JsonUtil.get_dict(d, "inventory"))
 	essences.load_dict(self, JsonUtil.get_dict(d, "essences"))
 	boons = JsonUtil.get_dict(d, "boons").duplicate()
+	fatigue.load_dict(JsonUtil.get_dict(d, "fatigue"))
+	stat_history.clear()
+	for h: Variant in JsonUtil.get_array(d, "stat_history"):
+		if h is Dictionary:
+			stat_history.append(h)
 	var bases := JsonUtil.get_dict(d, "base_stats")
 	for k: String in bases:
 		if stats.has_stat(k):

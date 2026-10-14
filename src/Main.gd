@@ -1,6 +1,6 @@
 extends Control
 ## 진입점(Main.tscn). 테마·입력 설정을 입히고 화면 흐름을 맡는다(화면은 시그널만 낸다).
-##   타이틀 → 새 탐험가 → 미궁(탐험) → 결과(강제 귀환/사망) → 타이틀
+##   타이틀 → 새 탐험가 → 도시(라비기온) ⇄ 미궁(탐험) → 결과(강제 귀환·포기 → 도시 / 사망 → 타이틀)
 ##   타이틀 → 기반 점검(개발용)
 
 var _screen: Control = null
@@ -61,7 +61,19 @@ func _show_foundation() -> void:
 func _start_run(pc: PlayerCharacter) -> void:
 	GameState.start_run(pc)
 	LogPanel.clear_history()
-	_enter_floor(str(DataRegistry.db.bal("explore.start_floor", "")))
+	_show_city()
+
+
+## 도시 화면. 새 게임 시작 후·미궁 귀환 후 모두 여기로 온다. 미궁 입장·귀환은 달력을 바꾸지 않는다.
+func _show_city() -> void:
+	if GameState.player == null or GameState.city == null:
+		_show_title()
+		return
+	var c := CityScreen.new()
+	c.setup(GameState.city, GameState.player, DataRegistry.registries.city_effects)
+	c.dungeon_requested.connect(func() -> void: _enter_floor(str(DataRegistry.db.bal("explore.start_floor", ""))))
+	c.title_requested.connect(_show_title)
+	_show(c)
 
 
 ## 층을 새로 만들어 들어간다. seed_override가 0이면 세션 시드로 정한다.
@@ -94,7 +106,7 @@ func _show_session(session: ExploreSession, floor_id: String) -> void:
 func _on_run_ended(kind: String, info: Dictionary) -> void:
 	var end := EndScreen.new()
 	end.setup(kind, info)
-	end.done.connect(_show_title)
+	end.done.connect(_show_title if kind == "died" else _show_city)
 	_show(end)
 
 

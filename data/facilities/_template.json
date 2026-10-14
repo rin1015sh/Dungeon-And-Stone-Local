@@ -1,11 +1,17 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설은 M4에서 채운다.",
-  "id": "exchange",
-  "name_ko": "환전소",
-  "district": 7,
-  "handler": "exchange",
-  "services": [
-    {"id": "sell_magic_stone", "rates": {"9": 20, "8": 100}}
+  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설(M4). 거리의 배치 순서는 city.json facility_order(없으면 order), 그림은 building(거리)·interior(내부 배경) 경로 — 파일이 없으면 이름판만 있는 빈 자리로 그린다. activities = data/activities의 id. x = 거리 그림(밑그림 픽셀) 위 왼쪽 끝 위치. shows = 시설 패널 정보 줄(temple_merit·bank_balance·rumors·lore).",
+  "id": "inn",
+  "name_ko": "여관",
+  "order": 1,
+  "x": 70,
+  "building": "res://assets/city/buildings/inn.png",
+  "interior": "res://assets/city/interiors/inn.png",
+  "activities": [
+    "inn_rest",
+    "inn_meal"
+  ],
+  "shows": [
+    "rumors"
   ],
   "source": "original"
 }

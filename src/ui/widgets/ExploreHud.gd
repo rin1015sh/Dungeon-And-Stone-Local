@@ -1,12 +1,13 @@
 class_name ExploreHud
 extends MarginContainer
 ## 탐험 HUD(읽기 전용 표시, 스톤샤드의 퀘스트 표시처럼 왼쪽 위에 작게).
-##   층 이름 · 미궁 n일차 시각 · 폐쇄까지 남은 시간 · 빛/시야 · 안전지대 · 발견 현황 · 조작 안내(키는 data/input.json)
+##   층 이름 · 미궁 n일차 시각 · 폐쇄까지 남은 시간 · 피로도(도시와 공용) · 빛/시야 · 안전지대 · 발견 현황 · 조작 안내(키는 data/input.json)
 ## 자원·상태이상·단축칸은 하단 바(BottomBar), 소지품은 소지품 창(InventoryWindow).
 
 var _session: ExploreSession
 var _floor_label: Label
 var _time_label: Label
+var _fatigue_label: Label
 var _light_label: Label
 var _zone_label: Label
 var _found_label: Label
@@ -21,6 +22,7 @@ func bind(session: ExploreSession) -> void:
 	session.view_changed.connect(refresh)
 	session.moved.connect(func(_a: Vector2i, _b: Vector2i) -> void: refresh())
 	session.message.connect(func(_k: String, _a: Dictionary, _kind: String) -> void: refresh())
+	session.player.fatigue.changed.connect(func(_v: float, _d: float, _s: String) -> void: refresh())
 	refresh()
 
 
@@ -29,6 +31,7 @@ func refresh() -> void:
 	var pc := s.player
 	_floor_label.text = s.floor_name()
 	_time_label.text = Strings.t("explore.hud_time", {"day": s.clock.day(), "time": s.clock.hhmm(), "left": ceili(s.hours_until_close())})
+	_fatigue_label.text = Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(pc.fatigue.value)})
 	var vision := "%.1f" % s.vision_m
 	match s.light_kind():
 		"torch":
@@ -67,6 +70,7 @@ func _build() -> void:
 	var top := _panel(col)
 	_floor_label = _add(top, UiTheme.label("", "header", "text_title"))
 	_time_label = _add(top, UiTheme.label(""))
+	_fatigue_label = _add(top, UiTheme.label("", "small", "text"))
 	_light_label = _add(top, UiTheme.label("", "small", "text"))
 	_zone_label = _add(top, UiTheme.label(Strings.t("explore.hud_safe"), "small", "good"))
 	_found_label = _add(top, UiTheme.label("", "small", "text_dim"))

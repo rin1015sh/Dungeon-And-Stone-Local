@@ -1,6 +1,6 @@
 extends Node
 ## 현재 게임 진행 상태(오토로드): 세션 시드, 플레이어 캐릭터, 층 입장 횟수, 디버그 설정.
-## (도시·달력·파티·저장은 M4에서 여기에 붙는다)
+## 도시(M4): city = 순 달력·행동력·신전 공적치·은행·소문/정보(CityState). 파티·저장은 아직 없다.
 
 var master_seed: int = 0
 var rng: Rng = null
@@ -9,7 +9,8 @@ var floor_entries: int = 0
 var debug_seed_override: int = 0
 var debug_invulnerable: bool = false
 var debug_fast_combat: bool = false  ## 적 차례 연출 지연 없음(테스트·스모크용)
-var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달). 탐험가마다 새로(M4에서 도시 달력·저장으로)
+var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달). 탐험가마다 새로(도시 달력과의 관계는 미정 — ASSUMPTIONS CT)
+var city: CityState = null  ## 도시 진행 상태(탐험가마다 새로)
 
 
 func _ready() -> void:
@@ -30,6 +31,8 @@ func start_run(pc: PlayerCharacter) -> void:
 	master_seed = rng.randi_range(1, 2147483646)
 	floor_entries = 0
 	rift_calendar = RiftCalendar.new(DataRegistry.db)
+	city = CityState.new(DataRegistry.db, absi(hash([master_seed, "city"])) + 1)
+	city.start()
 
 
 ## 층 생성 시드: 디버그로 고정했으면 그 값, 아니면 세션 시드·층·입장 횟수로 정한다.
@@ -42,4 +45,5 @@ func next_floor_seed(floor_number: int) -> int:
 
 func end_run() -> void:
 	player = null
+	city = null
 	debug_invulnerable = false  # 디버그 무적은 다음 탐험으로 넘기지 않는다

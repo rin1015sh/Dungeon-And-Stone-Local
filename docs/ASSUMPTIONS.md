@@ -46,7 +46,7 @@
 | X2 | 1층 시야 상한 9m, 수정 빛(주변광) 6m, 횃불 7m — 모두 임시값 | 원문: "광원이 있어도 10m 미만", 1층은 수정 빛으로 횃불이 필요 없음, 횃불 반경 수치 없음 | `visibility_cap_m`, `ambient_light_m`, `items/torch.json radius_m` |
 | X3 | (2026-10-12 바뀜 → CR4) 암흑지대는 네 팔 끝뿐. 그 안에서는 맨몸 시야 1m. 예전엔 맵 아무 데나 원형 2~3곳을 찍어 통로 중간에서 시야가 줄었다(오류) | 사용자 지시 | `gen.dark_depth`, `balance.explore.min_vision_m` |
 | X4 | 한 칸 이동 = 0.02시간(1.2분) ÷ (1 + 민첩×0.02) | 168시간 폐쇄 안에서 탐험 분량이 의미 있게 | `balance.explore.move_*` |
-| X5 | 미궁 시계는 입장 시 0부터. 도시 달력과 분리 | 원작: 도시 귀환은 항상 입장 다음 날 정오 | M4 `TimeSystem`에 도시 달력 추가 |
+| X5 | 미궁 시계는 입장 시 0부터. 도시 달력(M4 순 달력, CT5·CT6)과 분리 | 원작: 도시 귀환은 항상 입장 다음 날 정오 | M4 `TimeSystem`에 도시 달력 추가 |
 | X6 | 휴식(8시간)은 기념비 안전지대에서만 회복이 붙는다. 바깥 휴식의 습격 위험은 M2 | 안전지대의 의미 | `ExploreSession.rest`, `balance.rest.*` |
 | X7 | 횃불은 한 번 켜면 끌 수 없고(약 72시간), 이미 타고 있으면 새로 켜지 않는다 | 원문: 한 번 켜면 약 3일 | `light_source` 효과 |
 | X8 | 마른 식량 = 허기 +40, 300스톤. 모든 시작 템플릿이 횃불 2·식량 3을 가진다 | 원작 경제(한 끼 300스톤) 기준, 식량 없이 1층에 버티면 굶어 죽게(약 128시간) | `items/ration.json`, `classes.json start_items` |
@@ -139,7 +139,7 @@
 | J7 | (G2: 실명은 명중률 −30, 일체화는 은신 + 공격 +30%) 덫 생성은 다음 차례에 고정 피해(`status.trap_damage` 6)를 주는 상태이상 `trap_set`, 실명은 민첩 −30%, 일체화는 주는 피해 +30% 1차례로 근사. 속박·은신·명중 감소는 없음 | 해당 전투 체계(속박·은신·명중 스탯)가 G4 범위 | `statuses.json` |
 | J8 | 정수 스탯 `patience`(인내심)·`dexterity`(손재주)·`stealth`(인식방해)를 추가했지만 효과는 아직 없다 | 원작 정수 스탯 표기 | `stats.json` |
 | J9 | 정수 드롭 확률: 등급별 2~4%(9→5등급), 무등급 0.5%, 중간 보스 10%, 수호자 33%, 균열 안 ×4. `drop_mode: "original"`이면 0.01% | 명세 §3 | `balance.essence.drop_*` |
-| J10 | 정수 삭제(제거)는 로직과 비용(500만 → ×2)만 있고 버튼은 없다 — 대신전(M4)에서 붙인다 | 시설이 아직 없음 | `EssenceSet.remove/next_delete_cost` |
+| J10 | (2026-10-14 해소) 정수 삭제(제거)는 도시 신전의 "정수 제거"(CT13)에서 기존 로직·비용으로 한다 | 시설이 아직 없음 | `EssenceSet.remove/next_delete_cost` |
 
 ## 성장 체계 G1 (2026-10-12, docs/PROMPT_FLOOR1_V2.md §5)
 
@@ -362,6 +362,31 @@
 | ST3 | 강철의 묘 함정: 탐지 = 정신력(난이도 2 → 9), 해제 = 민첩(−6 → 4). 평균 캐릭터(정신력 7·민첩 10)의 성공률이 예전(육감·손재주 0)과 같게 난이도를 올렸다(탐지 42%, 해제 74%) | 명세 §12.1은 손재주·육감이지만 두 스탯을 지웠다 | `rifts/rift_iron_tomb.json` hazards |
 | ST4 | 시야 보정 = 시각 × 0.1m(예전 시야×0.1 + 시각×0.05). 치명타는 민첩만(행운 항 삭제). 예약 자원 기력 최대치는 물리내성 기준(비활성) | 시야·행운 스탯을 지웠다 | balance `explore.vision_bonus_formula`, `DamageCalc.crit_chance`, resources `stamina` |
 | ST5 | 번개·대지 감응도와 번개·대지·신성 내성은 지웠다(올려 주는 데이터가 없었다 — 사용자 결정). 그 속성 피해는 몬스터 약점·면역만 따르고 플레이어 쪽 배율은 늘 1이다(`resist_<유형>` 스탯이 없으면 DamageCalc가 건너뛴다). 영혼 재생력은 남긴다 — 지금은 올려 주는 곳이 없다 | 사용자 결정 | 다시 필요하면 stats.json에 `resist_lightning` 같은 id로 한 줄 더하면 규칙은 그대로 붙는다 |
+
+## 도시 M4 — 라비기온 구역 (2026-10-14, 사용자 명세 "작업 M4 도시")
+
+| # | 가정 | 이유 | 바꾸는 방법 |
+|---|---|---|---|
+| CT1 | **미정(null) = 효과 없음**: 활동 행동력·이용 비용 0, 피로도 변화 0, 확률 0(능력치·소문·정보 없음), 공적치 0, 은행 수수료 0. 예외(명세): 피로도 시작값 null → 0, 최솟값·최댓값 null → 제한 없음. 결과 문구에 "(미정)"을 붙여 알린다 | 명세 §10 "미정은 null". 한 규칙으로 통일해야 디버그 임시값으로 하나씩 켜 볼 수 있다 | 데이터 값 넣기(`data/city.json`, `data/activities/*.json`) 또는 디버그 패널(F1) 임시값 |
+| CT2 | 시설 입장 = 행동력 `facility_entry_cost`(1). 활동의 `ap_cost`는 그와 별도로 더 쓴다. 상점·은행·정수 제거는 **거래마다** 그 활동의 `ap_cost`(미정 → 0)를 쓴다 — "방문마다"는 입장 비용이 이미 맡는다 | 명세: 시설을 고르면 1 소모, 활동별 소모는 미정, 거래마다/방문마다 미정 | `city.json facility_entry_cost`, `activities/<id>.ap_cost` |
+| CT3 | "한 번 시설로 이동하면 뒤로 갈 수 없다" = 취소·환불이 없고, **활동을 한 번 하기 전에는 거리로 못 나간다**(할 수 있는 활동이 하나도 없으면 나갈 수 있다, 패널형은 연 순간 한 것으로 본다) | 행동력을 되돌려 받는 '뒤로'를 막되 갇히지는 않게 | `FacilityView.can_leave` |
+| CT4 | 다음 순으로 넘어가는 시점 = 행동력 0인 채 거리로 나올 때(시설 안에서는 0이 돼도 나올 때까지 머문다). 도시 화면에 들어올 때 0이면 바로 넘긴다 | 시설 안에서 갑자기 행동력이 다시 차면 어색하다 | `CityState.leave_facility/advance_if_spent` |
+| CT5 | 날짜 표시 = "N번째 달 상순"(한 해 12달, 13번째 달부터 "2년째 1번째 달"). 연·월 이름 정의가 없다 | 명세 §4 | `city.json calendar`, `CityHud.date_text`, 문자열 `city.date*` |
+| CT6 | 미궁 입장·귀환은 달력을 바꾸지 않는다. 입장 = HUD "미궁 입장(임시)", 귀환(폐쇄·포기) = 결과 화면 → 도시, 사망 = 타이틀. 포탈 개방 시점·귀환 날짜(`calendar.portal_rule`·`return_date_rule`)는 미정이라 코드에 연결하지 않았다. 균열 자연 개방 달력(`RiftCalendar`)은 여전히 원정 1회 = 1달(도시 달력과의 관계는 미정) | 명세 §4 | 규칙이 정해지면 `CityState`에 포탈 날짜를 두고 `Main._show_city`의 입장 버튼을 그 날짜로 제한 |
+| CT7 | 피로도는 `Fatigue` 컴포넌트(PlayerCharacter.fatigue)로 둔다 — ResourcePool에 넣지 않았다 | 최소·최대가 null(제한 없음)일 수 있어 비율 임계값·게이지 구조가 맞지 않는다. 저장(`progress_to_dict`)·표시는 자원과 같은 방식 | 상한이 정해지면 resources.json으로 옮겨도 된다(`Fatigue`의 호출 지점만 바꾸면 됨) |
+| CT8 | 미궁 연결 지점 4개: `per_hour`(시간 경과) · `per_rest_hour`(휴식 — 시간 경과와 함께 둘 다 적용) · `per_combat_turn`(전투 차례) · `per_step`(칸 이동). 피로도 효과는 `Fatigue.effects()` 한 곳(비어 있음) | 명세 §5: 연결 지점만, 내용은 비움 | `city.json fatigue.dungeon`, `Fatigue.effects` |
+| CT9 | 능력치 상승은 기본 스탯(`set_base`)에 영구 반영하고 `PlayerCharacter.stat_history`에 {stat, amount, activity, month, period}를 남긴다. 훈련 대상 `stats` null(미정), 고르는 방식 `pick` null → 임시로 무작위 하나. 독서 대상은 정신력(`pick: all`) | 명세 §6 | `activities/training_train.json` effects[0] |
+| CT10 | 소문·정보: 판정에 성공하면 아직 모르는 그 종류 항목 하나를 시드 난수로 고른다(이미 다 알면 "새로 없음"). 항목은 `data/city_info`(구조 확인용 테스트 항목 4개, `test_only`) — 문장은 창작하지 않았다. 식사는 허기에 영향 없음 | 명세 §6 시설별 메모 | `data/city_info/*.json`에 항목 추가, `learn_info` chance |
+| CT11 | 상점: 기존 상점 데이터가 없어 아이템 `price`를 그대로 쓴다. `stock` null → 임시로 가격 > 0인 아이템 전부(마석·균열 귀속 제외), `sell_ratio` null → 임시로 1(수수료 없음과 같은 취급), `accepts_magic_stones` null → 마석을 받지 않는다. 한 번에 1개씩 거래 | 명세: 상점 데이터가 여러 개면 지정만 하고 고르지 않는다 → 없음 | `city.json shop` |
+| CT12 | 은행: 금액은 직접 입력(+ "소지금 전부"·"잔액 전부"). 수수료는 금액에 대한 비율(null → 0). 이자·미궁 입장 시 소지금 처리는 null로만 두고 코드에 연결하지 않았다 | 명세 §6 | `city.json bank`, `CityBank` |
+| CT13 | 정수 제거 비용 = 기존 삭제 비용(`EssenceSet.next_delete_cost`, 500만 → ×2) + 활동 `cost_stones`(미정 0). 고르면 한 번 더 확인 | 명세: 기존 정수 삭제 로직을 다시 쓴다 | `CityTemple`, balance `essence.delete_cost_*` |
+| CT14 | 그림은 `tools/paint_city.gd`가 레퍼런스 톤(나무 판자·돌 기단·이끼 지붕·담쟁이·흙길)을 흉내 낸 픽셀아트 PNG로 만들어 데이터가 가리키는 경로에 저장한다(거리 1360×240, 건물 6, 내부 427×240, 화면에서 3배·가장 가까운 픽셀). 그림 파일이 없으면 이름판만 보인다 | 원화가 없다. 사용자 요청 "도시 건물이 이런 그림체로" | 같은 경로에 손으로 그린 PNG를 덮어쓴다(위치는 facilities `x`, 땅 높이 render.json `city.baseline`) |
+| CT15 | 도시 난수 = `hash(세션 시드, "city")`로 시드한 `CityState.rng`(직렬화에 상태 포함). 같은 시드면 같은 판정 | 명세 §6 | `GameState.start_run` |
+| CT16 | 저장 기능은 아직 없다(새로 만들지 않음). `CityState.to_dict/load_dict`와 `progress_to_dict`(피로도·능력치 기록)만 준비하고 왕복 테스트로 확인 | 명세 §7 | 저장 시스템을 만들 때 이 둘을 넣는다 |
+| CT17 | 디버그 임시값은 `CityState.overrides`(경로 → JSON 값)에만 두고 저장하지 않는다. 피로도 규칙 임시값은 적용 즉시 캐릭터에 반영. 순당 행동력 임시값은 다음 순부터 | 명세 §7 | `CityDebugPanel` |
+| CT18 | 도시에서는 시계가 흐르지 않는다(허기 정지·숨김 그대로, 자연 회복 없음). 소지품 창은 볼 수 있지만 아이템 사용은 연결하지 않았다 | 명세 §9 "허기 등 기존 자원이 도시에서 변하는 방식은 바꾸지 않는다" | `CityScreen`(WindowManager use_requested) |
+| CT19 | 조작: 이동 키(A/D/←/→)로 스크롤, 화면 가운데 건물이 키보드 선택 대상(Space/F/Enter로 들어감). 마우스 드래그(10px 넘게 움직이면 드래그)·휠·클릭, 터치는 마우스 에뮬레이션(모바일 웹) | 명세 §3 "키보드는 기존 조작 체계" | render.json `city`, `CityStreet` |
+| CT20 | 시설 패널 정보 줄은 데이터 `shows`(temple_merit·bank_balance·rumors·lore) | 새 시설을 데이터만으로 | `facilities/<id>.json shows` |
 
 ## 데이터·구조
 

@@ -3,7 +3,7 @@ extends ValidatorBase
 ## data/ 스키마·참조 무결성 검사기. errors가 비어 있어야 통과.
 ## tools/validate_data.gd, tests/, DataRegistry가 같은 검사기를 쓴다(ContentRegistries.make_validator()).
 ## 규칙은 그룹별 파일: CoreRules(스탯·자원·상태이상·부상·종족·템플릿), ContentRules(몬스터·스킬·정수·아이템),
-## WorldRules(타일·랜드마크·층·입력).
+## WorldRules(타일·랜드마크·층·입력), CityRules(도시 달력·시설·활동·소문/정보 — 미정 null은 경고).
 
 const REQUIRED_SINGLETONS := ["balance", "render", "tags", "input"]
 
@@ -22,6 +22,7 @@ func validate(p_db: GameDatabase) -> bool:
 	BossRules.run(self)
 	RiftRules.run(self)
 	WorldRules.run(self)
+	CityRules.run(self)
 	_check_common_fields()
 	if _skipped_effect_types:
 		warnings.append("일부 효과 타입(전투용)의 핸들러가 아직 없어 검사를 건너뛰었다 — M2에서 연결")

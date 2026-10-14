@@ -1,7 +1,8 @@
 extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
-## --screen: title(기본) / foundation / create / explore
+## --screen: title(기본) / foundation / create / city / explore(도시에서 임시 입장 버튼으로 들어간다)
+## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기), --debug 도시 디버그 패널, --info 소문·정보 창
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
@@ -40,11 +41,16 @@ func _run() -> void:
 		else:
 			title.new_game_requested.emit()
 		await _frames(3)
-	if screen == "explore":
+	if screen == "explore" or screen == "city":
 		var create := _main.current_screen() as CharacterCreateScreen
 		for b: Node in create.find_children("*", "Button", true, false):
 			if (b as Button).text == Strings.t("create.enter"):
 				(b as Button).pressed.emit()
+		await _frames(3)
+	if screen == "city":
+		await _city(_main.current_screen() as CityScreen)
+	if screen == "explore":
+		(_main.current_screen() as CityScreen).dungeon_requested.emit()
 		await _frames(3)
 		var explore := _main.current_screen() as ExploreScreen
 		if _args.has("torch"):
@@ -163,6 +169,25 @@ func _run() -> void:
 	var err := img.save_png(out)
 	print("스크린샷 %s → %s" % ["저장" if err == OK else "실패(%d)" % err, ProjectSettings.globalize_path(out)])
 	get_tree().quit(0 if err == OK else 1)
+
+
+func _city(city: CityScreen) -> void:
+	await _frames(2)
+	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
+	if _args.has("facility"):
+		city.choose_facility(str(_args["facility"]))
+		await _frames(2)
+		if _args.has("activity"):
+			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
+			for b: Node in city.facility_view().find_children("*", "Button", true, false):
+				if (b as Button).text.begins_with(name):
+					(b as Button).pressed.emit()
+					break
+	if _args.has("debug"):
+		city.debug_panel().visible = true
+	if _args.has("info"):
+		city.toggle_info()
+	await _frames(4)
 
 
 func _frames(n: int) -> void:

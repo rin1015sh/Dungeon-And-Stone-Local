@@ -8,6 +8,9 @@ extends Node
 ##   5) 새 탐험가 → 소지품 창(시간 정지)·끌어놓기 장착/해제·오른쪽 클릭 장착·단축칸 사용·캐릭터/도감 창
 ##   4) 새 탐험가 → 가만히 있어도 시간이 흐름 → 일시정지 → 몬스터 소환 → 전투(행동창 4개·조사·공격) → 탐험 복귀
 ##   6) 새 탐험가 → 강철의 묘 3챕터 → 수수께끼 문지기 대화창(시간 정지) → 오답 → 강화된 문지기와 전투 → 승리 → 문이 열림
+##   7) 새 탐험가 → 도시(M4): 키 스크롤·건물 클릭(행동력 1) → 휴식(미정 값) → 나가기 잠금/해제 → 디버그 임시값 → 휴식으로 피로도 감소
+##      → 순 넘김 → 상점 사기 → 은행 맡기기/찾기 → 소문·정보 창 → 미궁 입장 → 피로도 유지 → 귀환 → 같은 날짜로 도시
+## (2~6의 강제 귀환 결과 화면은 이제 도시로 간 뒤 "타이틀로"를 누른다)
 ## 오류 없이 끝나면 종료 코드 0.
 
 const WAIT_LIMIT_MS := 8000
@@ -32,6 +35,7 @@ func _run() -> void:
 	await _realtime_combat_flow()
 	await _inventory_flow()
 	await _riddle_flow()
+	await _city_flow()
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
 	get_tree().quit(1 if _failed else 0)
@@ -92,7 +96,7 @@ func _closing_flow() -> void:
 	_expect_log(Strings.t("explore.closed"), "층 폐쇄 메시지")
 	var end := (await _screen(EndScreen)) as EndScreen
 	if _expect(end != null, "강제 귀환 화면"):
-		_press(end, Strings.t("end.to_title"))
+		await _city_to_title(end)
 
 
 ## 새 탐험가 → 허기 0 → 시간 스킵 → 아사 → 사망 화면 → 타이틀
@@ -191,7 +195,7 @@ func _realtime_combat_flow() -> void:
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
 	var end := (await _screen(EndScreen)) as EndScreen
 	if _expect(end != null, "결과 화면"):
-		_press(end, Strings.t("end.to_title"))
+		await _city_to_title(end)
 
 
 ## 강철의 묘 수수께끼 문지기: 대화창 → 오답 → 강화 전투 → 승리
@@ -249,7 +253,7 @@ func _riddle_flow() -> void:
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
 	var end := (await _screen(EndScreen)) as EndScreen
 	if _expect(end != null, "결과 화면"):
-		_press(end, Strings.t("end.to_title"))
+		await _city_to_title(end)
 
 
 ## 소지품 창 · 장비 끌어놓기 · 단축칸 · 캐릭터/도감 창
@@ -299,7 +303,7 @@ func _inventory_flow() -> void:
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
 	var end := (await _screen(EndScreen)) as EndScreen
 	if _expect(end != null, "결과 화면"):
-		_press(end, Strings.t("end.to_title"))
+		await _city_to_title(end)
 
 
 ## 행동창 키 조작: D → 스킬 칸, Space → 스킬 목록, Enter → 맨 위(커서는 스킬 칸), A → 공격, Space·Space → 첫 적을 친다.
@@ -367,7 +371,8 @@ func _seconds(sec: float) -> void:
 	await get_tree().create_timer(sec).timeout
 
 
-func _enter_dungeon(explorer_name: String) -> ExploreScreen:
+## 타이틀 → 새 탐험가 → 도시 화면.
+func _new_city(explorer_name: String) -> CityScreen:
 	var title := (await _screen(TitleScreen)) as TitleScreen
 	if not _expect(title != null, "타이틀 화면"):
 		return null
@@ -379,6 +384,25 @@ func _enter_dungeon(explorer_name: String) -> ExploreScreen:
 	for edit: Node in create.find_children("*", "LineEdit", true, false):
 		(edit as LineEdit).text = explorer_name
 	_press(create, Strings.t("create.enter"))
+	var city := (await _screen(CityScreen)) as CityScreen
+	_expect(city != null, "새 게임 시작 후 도시(" + explorer_name + ")")
+	await _frames(2)
+	return city
+
+
+## 결과 화면(살아서 귀환) → 도시 → 타이틀.
+func _city_to_title(end: EndScreen) -> void:
+	_press(end, Strings.t("end.to_city"))
+	var city := (await _screen(CityScreen)) as CityScreen
+	if _expect(city != null, "귀환 후 도시"):
+		_press(city, Strings.t("city.btn_title"))
+
+
+func _enter_dungeon(explorer_name: String) -> ExploreScreen:
+	var city := await _new_city(explorer_name)
+	if city == null:
+		return null
+	_press(city, Strings.t("city.btn_dungeon"))
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
 	_expect(explore != null and explore.session.player.display_name == explorer_name, "미궁 입장(" + explorer_name + ")")
 	await _frames(2)
@@ -444,3 +468,126 @@ func _expect(cond: bool, what: String) -> bool:
 		_failed = true
 		print("FAIL  UI 스모크: " + what)
 	return cond
+
+## 도시(M4): 스크롤·건물 고르기·활동·나가기·순 넘김·상점·은행·디버그 임시값·미궁 왕복.
+func _city_flow() -> void:
+	var city := await _new_city("도시 탐험가")
+	if city == null:
+		return
+	var st := city.state
+	var pc := city.pc
+	_expect(st.ap == 3 and st.month == 1 and st.period == 0, "첫 달 상순, 행동력 3")
+	var street := city.street()
+	street.scroll_to(0.0)
+	Input.action_press("move_right")
+	await _frames(8)
+	Input.action_release("move_right")
+	_expect(street.offset() > 0.0, "D로 거리를 스크롤한다")
+	street.scroll_to(0.0)
+	await _frames(1)
+	var r := street.building_rect("inn")
+	for pressed: bool in [true, false]:
+		var ev := InputEventMouseButton.new()
+		ev.button_index = MOUSE_BUTTON_LEFT
+		ev.pressed = pressed
+		ev.position = r.get_center()
+		ev.global_position = r.get_center()
+		get_viewport().push_input(ev, true)
+		await _frames(1)
+	var fv := city.facility_view()
+	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 2, "건물 클릭 → 행동력 1을 쓰고 여관 안으로"):
+		return
+	_expect(not fv.can_leave(), "들어오면 무언가 하기 전엔 못 나간다")
+	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
+	_expect(_has_label(fv, Strings.t("city.fx.fatigue_undecided")), "미정 값 휴식 결과 문구")
+	_expect(fv.can_leave(), "활동 뒤엔 나갈 수 있다")
+	_press(fv, Strings.t("city.leave"))
+	await _frames(2)
+	_expect(city.facility_view() == null and street.is_visible_in_tree(), "거리로 나왔다")
+	await _action("debug_toggle")
+	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")
+	city.debug_panel().set_edit("activities/inn_rest/effects/0/amount", "3")
+	_press(city.debug_panel(), Strings.t("city.debug_apply_overrides"))
+	pc.fatigue.set_value(10.0)
+	await _action("debug_toggle")
+	street.scroll_to(0.0)
+	await _frames(1)
+	await _action("menu_confirm")
+	fv = city.facility_view()
+	if not _expect(fv != null and fv.facility_id() == street.focused_id() and st.ap == 1, "Space로 가운데 건물에 들어간다"):
+		return
+	if fv.facility_id() == "inn":
+		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
+		_expect(is_equal_approx(pc.fatigue.value, 7.0), "임시값(3) 휴식 → 피로도 10 → 7")
+	_press(fv, Strings.t("city.leave"))
+	await _frames(1)
+	city.choose_facility("shop")
+	fv = city.facility_view()
+	if not _expect(fv != null and st.ap == 0, "상점(행동력 0)"):
+		return
+	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "shop_trade"))
+	var money := pc.inventory.money
+	_press(fv, Strings.t("city.shop_buy"))
+	_expect(pc.inventory.money < money, "상점에서 샀다")
+	_press(fv, Strings.t("city.leave"))
+	await _frames(1)
+	_expect(st.period == 1 and st.ap == 3, "행동력을 다 써서 중순(행동력 3)")
+	_expect(city.toast_text().contains(st.period_name()), "순 넘김 안내")
+	city.choose_facility("bank")
+	fv = city.facility_view()
+	if _expect(fv != null, "은행"):
+		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "bank_account"))
+		var bank := fv.find_children("*", "BankPanel", true, false)
+		if _expect(bank.size() == 1, "은행 패널"):
+			var total := pc.inventory.money + st.bank_balance
+			(bank[0] as BankPanel).set_amount(100)
+			_press(fv, Strings.t("city.bank_deposit"))
+			_expect(st.bank_balance == 100 and pc.inventory.money + st.bank_balance == total, "맡기기(합 그대로)")
+			await _frames(1)
+			bank = fv.find_children("*", "BankPanel", true, false)
+			(bank[0] as BankPanel).set_amount(40)
+			_press(fv, Strings.t("city.bank_withdraw"))
+			_expect(st.bank_balance == 60 and pc.inventory.money + st.bank_balance == total, "찾기(합 그대로)")
+		_press(fv, Strings.t("city.leave"))
+	await _frames(1)
+	_press(city, Strings.t("city.btn_info"))
+	_expect(_has_label(city, Strings.t("city.info_kind_rumor")), "소문·정보 창")
+	city.toggle_info()
+	var date := [st.month, st.period]
+	var fatigue := pc.fatigue.value
+	_press(city, Strings.t("city.btn_dungeon"))
+	var explore := (await _screen(ExploreScreen)) as ExploreScreen
+	if not _expect(explore != null, "도시 → 미궁 입장"):
+		return
+	await _frames(2)
+	_expect(is_equal_approx(explore.session.player.fatigue.value, fatigue), "미궁에서도 피로도 그대로")
+	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(fatigue)})), "미궁 HUD에 피로도")
+	await _action("debug_toggle")
+	_press(explore, Strings.t("debug.close_soon"))
+	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
+	var end := (await _screen(EndScreen)) as EndScreen
+	if not _expect(end != null, "강제 귀환 화면"):
+		return
+	_press(end, Strings.t("end.to_city"))
+	var back := (await _screen(CityScreen)) as CityScreen
+	if _expect(back != null, "귀환 → 도시"):
+		_expect([back.state.month, back.state.period] == date, "미궁 입장·귀환은 달력을 바꾸지 않는다")
+		_expect(is_equal_approx(back.pc.fatigue.value, fatigue), "도시로 돌아와도 피로도 그대로")
+		_press(back, Strings.t("city.btn_title"))
+	_expect((await _screen(TitleScreen)) != null, "타이틀로")
+
+
+func _press_prefix(screen: Node, prefix: String) -> void:
+	for b: Node in screen.find_children("*", "Button", true, false):
+		var btn := b as Button
+		if btn.text.begins_with(prefix) and not btn.disabled and btn.is_visible_in_tree():
+			btn.pressed.emit()
+			return
+	_expect(false, "버튼 '%s…'" % prefix)
+
+
+func _has_label(root: Node, text: String) -> bool:
+	for l: Node in root.find_children("*", "Label", true, false):
+		if (l as Label).text.contains(text):
+			return true
+	return false

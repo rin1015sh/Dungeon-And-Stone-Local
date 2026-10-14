@@ -1,0 +1,15 @@
+{
+  "id": "temple_service",
+  "name_ko": "봉사활동",
+  "facility": "temple",
+  "desc_ko": "신전 일을 거들어 신전 공적치를 쌓는다.",
+  "ap_cost": null,
+  "cost_stones": null,
+  "effects": [
+    {
+      "type": "temple_merit",
+      "amount": null
+    }
+  ],
+  "source": "original"
+}

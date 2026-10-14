@@ -1,0 +1,11 @@
+{
+  "id": "shop_trade",
+  "name_ko": "구매·판매",
+  "facility": "shop",
+  "desc_ko": "물건을 사고판다.",
+  "ap_cost": null,
+  "cost_stones": null,
+  "panel": "shop",
+  "effects": [],
+  "source": "original"
+}
