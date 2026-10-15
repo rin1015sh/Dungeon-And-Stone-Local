@@ -21,6 +21,8 @@ var _hp: Label
 var _fatigue: Label
 var _money: Label
 var _dock: PanelContainer
+## 달력 카드의 장소 이름(city.json place의 키) — 차원광장은 plaza_ko.
+var place_key: String = "district_ko"
 
 
 func setup(state: CityState, pc: PlayerCharacter) -> void:
@@ -59,7 +61,7 @@ func _build_calendar(m: int) -> void:
 	v.add_theme_constant_override("separation", 4)
 	box.add_child(v)
 	var place: Dictionary = CityValues.city_section(_state.db, {}, "place")
-	v.add_child(CityUi.label(Strings.t("city.place", {"city": JsonUtil.get_str(place, "city_ko"), "district": JsonUtil.get_str(place, "district_ko")}), "small", "dim"))
+	v.add_child(CityUi.label(Strings.t("city.place", {"city": JsonUtil.get_str(place, "city_ko"), "district": JsonUtil.get_str(place, place_key)}), "small", "dim"))
 	_date = CityUi.label("", "header", "bone")
 	v.add_child(_date)
 	var row := HBoxContainer.new()
@@ -132,7 +134,7 @@ func refresh() -> void:
 	for i in _periods.size():
 		var now := i == _state.period
 		_periods[i].add_theme_color_override("font_color", CityUi.c("accent" if now else "dim"))
-		_periods[i].text = ("▸ %s" if now else "%s") % _state.period_name(i)
+		_periods[i].text = ("› %s" if now else "%s") % _state.period_name(i)
 	var pips := PackedStringArray()
 	for i in _state.ap_per_period():
 		pips.append("●" if i < _state.ap else "○")

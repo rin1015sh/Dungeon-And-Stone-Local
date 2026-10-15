@@ -458,3 +458,35 @@ func test_inn_rest_restores_hp_and_soul() -> void:
 	assert_true(ctx.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.restore"))
 	var again := CityActions.perform(s, pc, "inn_rest", _reg())
 	assert_true(again.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.restore_full"), "가득이면 다른 문구")
+
+
+func test_inn_meal_eases_fatigue_and_gives_leftovers() -> void:
+	var s := _state()
+	var pc := _pc()
+	pc.fatigue.set_value(40.0)
+	var before := pc.inventory.count("leftovers")
+	_inside(s, "inn")
+	var ctx := CityActions.perform(s, pc, "inn_meal", _reg())
+	assert_true(ctx.ok)
+	assert_near(pc.fatigue.value, 25.0, 0.01, "식사 → 피로도 −15")
+	assert_eq(pc.inventory.count("leftovers"), before + 1, "남은 음식 1개")
+	assert_true(ctx.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.item_got"))
+
+
+func test_dungeon_opens_once_a_month() -> void:
+	var s := _state()
+	var due: Array[int] = []
+	s.expedition_due.connect(func() -> void: due.append(1))
+	s.period = s.periods().size() - 1
+	s.ap = 0
+	s.advance_if_spent()
+	assert_eq(due.size(), 1, "하순이 끝나면 포탈이 열린다")
+	assert_eq(s.expedition_month, 1)
+	s.ap = 0
+	s.advance_if_spent()  # 같은 달에 또 하순이 끝난 것처럼(날짜를 그대로 두는 귀환 규칙 등)
+	assert_eq(due.size(), 1, "같은 달에는 다시 열리지 않는다")
+	assert_eq([s.month, s.period_name()], [2, "상순"], "대신 다음 달로 넘어간다")
+	var copy := CityState.new(db, 1)
+	copy.start()
+	copy.load_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
+	assert_eq(copy.expedition_month, 1, "저장에 포탈 연 달이 남는다")

@@ -4,3 +4,6 @@
 
 # 사용자 편집기 연동 플러그인(게임 코드와 무관, PC마다 따로 설치)
 /addons/godot_mcp/
+
+# 내보내기 결과물(tools/export_web.sh)
+/build/

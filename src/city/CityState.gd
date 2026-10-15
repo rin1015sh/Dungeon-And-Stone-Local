@@ -23,6 +23,8 @@ var bank_balance: int = 0
 var known_info: Array[String] = []
 ## 지금 날씨 id(city.json weather.kinds — 순마다 새로).
 var weather: String = ""
+## 미궁(포탈)이 열린 달 — 한 달에 한 번만 연다(사용자 결정 2026-10-15). 0 = 아직.
+var expedition_month: int = 0
 ## 지금 들어가 있는 시설 id(거리면 "").
 var facility: String = ""
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
@@ -171,11 +173,12 @@ func leave_facility() -> bool:
 	return advance_if_spent()
 
 
-## 거리에 있고 행동력이 0이면 다음 순으로. 하순이면 순을 넘기지 않고 expedition_due를 낸다.
+## 거리에 있고 행동력이 0이면 다음 순으로. 하순이면 순을 넘기지 않고 expedition_due를 낸다(그 달에 이미 열었으면 다음 달로 넘어간다).
 func advance_if_spent() -> bool:
 	if not facility.is_empty() or ap > 0:
 		return false
-	if is_last_period() and _calendar_rule("portal_rule") == "after_late_period":
+	if is_last_period() and _calendar_rule("portal_rule") == "after_late_period" and expedition_month != month:
+		expedition_month = month
 		expedition_due.emit()
 	else:
 		next_period()
@@ -240,7 +243,7 @@ func learn_info(id: String) -> bool:
 ## 저장 대상(저장 기능이 생기면 쓴다): 날짜·행동력·공적치·잔액·얻은 소문/정보. 디버그 임시값은 넣지 않는다.
 func to_dict() -> Dictionary:
 	return {"month": month, "period": period, "ap": ap, "temple_merit": temple_merit,
-		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "rng": rng.get_state_string()}
+		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "expedition_month": expedition_month, "rng": rng.get_state_string()}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -253,6 +256,7 @@ func load_dict(d: Dictionary) -> void:
 	for v: Variant in JsonUtil.get_array(d, "known_info"):
 		known_info.append(str(v))
 	weather = JsonUtil.get_str(d, "weather", weather)
+	expedition_month = JsonUtil.get_int(d, "expedition_month")
 	if d.has("rng"):
 		rng.set_state_string(JsonUtil.get_str(d, "rng"))
 	facility = ""

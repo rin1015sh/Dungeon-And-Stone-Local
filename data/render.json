@@ -195,6 +195,23 @@
     "debug_list_height": 300,
     "debug_edit_width": 110,
     "info_width": 520,
-    "info_height": 420
+    "info_height": 420,
+    "plaza": {
+      "_comment": "차원광장(미궁 입구) 화면: 하늘(날씨)·원경 far 레이어 일부(far_region = 그림 px, 화면 y·height 거리 단위) 위에 background(tools/paint_city.gd --only=plaza). portal_rect = 돌 고리 안쪽 타원의 상자(화면 720 기준 px, Plaza.gd RING_C ± RING_IN). 초 = 도착 뒤 열리기까지·열리는 데·들어갈 때 걸리는 시간.",
+      "background": "res://assets/city/plaza.webp",
+      "far_region": [0, 0, 640, 240],
+      "far_y": 110,
+      "far_height": 480,
+      "portal_rect": [498, 152, 284, 296],
+      "open_delay": 0.8,
+      "open_seconds": 2.6,
+      "enter_seconds": 1.1,
+      "glow_scale": 2.6,
+      "glow_strength": 0.8,
+      "portal_core": "#d8f0ff",
+      "portal_edge": "#7a5ad8",
+      "portal_deep": "#120a26",
+      "panel_width": 280
+    }
   }
 }

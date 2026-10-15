@@ -15,12 +15,15 @@ extends Node
 
 const WAIT_LIMIT_MS := 8000
 
+const TEST_SAVE := "user://dungeon_and_stone/smoke_save.json"
 var _main: Control
 var _logs: PackedStringArray = PackedStringArray()
 var _failed: bool = false
 
 
 func _ready() -> void:
+	GameState.save_path = TEST_SAVE  # 실제 저장(한 칸)을 덮지 않는다
+	SaveGame.delete(TEST_SAVE)
 	EventBus.log_message.connect(func(text: String, _kind: String) -> void: _logs.append(text))
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
 	add_child(_main)
@@ -36,6 +39,7 @@ func _run() -> void:
 	await _inventory_flow()
 	await _riddle_flow()
 	await _city_flow()
+	SaveGame.delete(TEST_SAVE)
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
 	get_tree().quit(1 if _failed else 0)
@@ -403,6 +407,11 @@ func _enter_dungeon(explorer_name: String) -> ExploreScreen:
 	if city == null:
 		return null
 	city.dungeon_requested.emit()  # 하순이 끝난 것처럼(임시 버튼은 없다)
+	var plaza := (await _screen(PlazaScreen)) as PlazaScreen
+	if not _expect(plaza != null, "차원광장(" + explorer_name + ")"):
+		return null
+	plaza.open_now()
+	plaza.enter_requested.emit()
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
 	_expect(explore != null and explore.session.player.display_name == explorer_name, "미궁 입장(" + explorer_name + ")")
 	await _frames(2)
@@ -582,8 +591,22 @@ func _city_flow() -> void:
 		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
 		_expect(st.ap == 0, "시설 안 활동은 행동력을 쓰지 않는다")
 		fatigue = pc.fatigue.value  # 휴식(임시값)으로 줄어든 값이 미궁으로 이어진다(활동 뒤 저절로 나와 하순이 끝난다)
+	var plaza := (await _screen(PlazaScreen)) as PlazaScreen
+	if not _expect(plaza != null, "하순이 끝나면 저절로 차원광장으로"):
+		return
+	_expect(not _has_button(plaza, Strings.t("plaza.enter")), "포탈이 열리기 전에는 들어갈 수 없다")
+	var opened_by := Time.get_ticks_msec() + WAIT_LIMIT_MS
+	while not plaza.is_open() and Time.get_ticks_msec() < opened_by:
+		await _frames(1)
+	_expect(plaza.is_open() and _has_button(plaza, Strings.t("plaza.enter")), "포탈이 열리면 들어갈 수 있다")
+	_press(plaza, Strings.t("plaza.save"))
+	_expect(GameState.has_save() and _has_button(plaza, Strings.t("plaza.saved")), "차원광장에서 기록(한 칸 저장)")
+	var saved_month := st.month
+	var saved_name := pc.display_name
+	var saved_money := pc.inventory.money
+	_press(plaza, Strings.t("plaza.enter"))
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
-	if not _expect(explore != null, "하순이 끝나면 저절로 미궁으로"):
+	if not _expect(explore != null, "포탈로 들어가 미궁으로"):
 		return
 	await _frames(2)
 	var in_dungeon := explore.session.player.fatigue.value
@@ -601,7 +624,17 @@ func _city_flow() -> void:
 		_expect([back.state.month, back.state.period, back.state.ap] == [month + 1, 0, 3], "귀환하면 다음 달 상순(행동력 3)")
 		_expect(back.pc.fatigue.value > fatigue, "미궁에서 쌓인 피로도가 도시로 이어진다")
 		_press(back, Strings.t("city.btn_title"))
-	_expect((await _screen(TitleScreen)) != null, "타이틀로")
+	var title := (await _screen(TitleScreen)) as TitleScreen
+	if not _expect(title != null, "타이틀로"):
+		return
+	_press(title, Strings.t("menu.continue"))
+	var again := (await _screen(PlazaScreen)) as PlazaScreen
+	if _expect(again != null, "이어하기 → 차원광장"):
+		_expect(again.state.month == saved_month and again.pc.display_name == saved_name and again.pc.inventory.money == saved_money, "저장한 날짜·탐험가·소지금 그대로")
+		again.open_now()
+		_expect(not again.state.is_last_period() or again.state.expedition_month == saved_month, "미궁은 그 달에 한 번")
+	GameState.on_death()
+	_expect(not GameState.has_save(), "죽으면 기록이 지워진다")
 
 
 func _press_prefix(screen: Node, prefix: String) -> void:

@@ -1,7 +1,7 @@
 extends SceneTree
 ## 도시 그림 생성기: 거리 레이어(하늘·원경·중경·안개·거리·비네트) · 시설 건물 · 시설 내부를
 ## 손으로 칠한 듯한 어두운 일러스트(피어 앤 헝거 2풍 — 거친 붓결·잉크 윤곽·빗금·탁한 색·그레인)로 그려 data가 가리키는 경로에 저장한다.
-##   godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors]
+##   godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors|plaza]
 ## 좌표 = '거리 단위'(화면 높이 720 기준 px). 건물 위치는 data/facilities x, 레이어 목록·경로는 data/city.json street,
 ## 땅 높이·건물 배율은 render.json city.baseline·building_scale. 손으로 그린 그림으로 바꾸려면 같은 경로에 덮어쓰면 된다.
 
@@ -9,6 +9,7 @@ const Buildings := preload("res://tools/city_art/Buildings.gd")
 const Interiors := preload("res://tools/city_art/Interiors.gd")
 const Street := preload("res://tools/city_art/Street.gd")
 const Backdrop := preload("res://tools/city_art/Backdrop.gd")
+const Plaza := preload("res://tools/city_art/Plaza.gd")
 const SEED := 1015
 const MAX_VIEW := 1700.0  ## 이 너비(거리 단위)까지 보이는 화면에서 시차 레이어가 끊기지 않게 그린다
 
@@ -47,6 +48,11 @@ func _init() -> void:
 			if JsonUtil.get_str(kind as Dictionary, "sky_style") == "clear" and not sky_path.is_empty():
 				Backdrop.sky_clear(640, 360, SEED + 7).save(sky_path)
 				print("그림: 맑은 하늘 → " + sky_path)
+	if only.is_empty() or only == "plaza":
+		var plaza_path := str(GameDatabase.single(db.render, "city.plaza.background", ""))
+		if not plaza_path.is_empty():
+			Plaza.paint(SEED + 31).save(plaza_path)
+			print("그림: 차원광장 → " + plaza_path)
 	quit(0)
 
 

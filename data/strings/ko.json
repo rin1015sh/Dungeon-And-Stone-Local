@@ -2,7 +2,7 @@
   "app": {
     "title": "던전 앤 스톤",
     "subtitle": "라프도니아 차원광장 — 탐험가 기록",
-    "build": "M0 기반 빌드 · 비상업 팬 프로젝트"
+    "build": "비상업 팬 프로젝트"
   },
   "target_kind": {
     "enemy_single": "적 하나",
@@ -15,6 +15,7 @@
   },
   "menu": {
     "new_game": "새 탐험가",
+    "continue": "이어하기",
     "foundation": "기반 점검",
     "quit": "종료",
     "back": "돌아가기",
@@ -122,9 +123,9 @@
     "resources_header": "자원",
     "items_header": "가진 것",
     "items_none": "빈손이다.",
-    "enter_header": "차원광장",
+    "enter_header": "라비기온 구역",
     "floor_hint": "포탈이 열렸다. 들어가면 {floor}의 어딘가에 떨어진다. 돌아오는 길은 층이 닫힐 때뿐이다.",
-    "enter": "미궁으로 들어간다",
+    "enter": "도시로 간다",
     "equipped_item": "{item} (착용)"
   },
   "explore": {
@@ -579,6 +580,12 @@
     "choose_pass": "그냥 지나간다",
     "choose_weaken": "약해진 문지기와 싸운다(정수를 얻기 쉽다)"
   },
+  "plaza": {
+    "save": "기록을 남긴다",
+    "saved": "기록을 남겼다",
+    "save_failed": "기록을 남기지 못했다",
+    "enter": "포탈로 들어간다"
+  },
   "city": {
     "place": "{city} · {district}",
     "date": "{month}번째 달 {period}",
@@ -638,7 +645,10 @@
       "fatigue_down": "몸이 한결 가볍다.",
       "restore": "상처가 아물고 머리가 맑아졌다.",
       "restore_full": "다친 데도 없이 개운하게 일어났다.",
-      "restore_undecided": "몸 상태는 그대로다. (미정)"
+      "restore_undecided": "몸 상태는 그대로다. (미정)",
+      "item_got": "{name}을(를) 챙겼다.",
+      "item_no_room": "{name}을(를) 넣을 자리가 없다.",
+      "item_undecided": "받을 것이 정해지지 않았다. (미정)"
     },
     "shop_buy_title": "사기",
     "shop_sell_title": "팔기",
@@ -706,17 +716,20 @@
         "spent_stones": {
           "1": "밥값으로 {n} 스톤을 냈다."
         },
-        "info_new_rumor": {
-          "1": "옆자리 술꾼들이 목소리를 낮춘다. {name}: {text}",
-          "2": "주인장이 행주질을 하다 슬쩍 귀띔한다. {name}: {text}"
+        "fatigue_down": {
+          "1": "기름진 스튜 한 그릇에 굳은 어깨가 풀렸다.",
+          "2": "뜨끈한 국물을 들이켜니 그제야 살 것 같다.",
+          "3": "시끄러운 홀 구석에서 배불리 먹었다."
         },
-        "info_fail_rumor": {
-          "1": "기름진 스튜만 실컷 먹었다. 귀에 남는 이야기는 없다.",
-          "2": "주정뱅이의 허풍만 잔뜩 들었다.",
-          "3": "식은 빵을 씹으며 멍하니 앉아 있었다."
+        "fatigue_same": {
+          "1": "배는 불렀지만 딱히 달라진 건 없다."
         },
-        "info_none_rumor": {
-          "1": "들리는 건 다 아는 이야기뿐이다."
+        "item_got": {
+          "1": "주인장이 먹다 남은 빵과 고기를 기름종이에 싸 주었다.",
+          "2": "남은 음식을 챙겨 품에 넣었다."
+        },
+        "item_no_room": {
+          "1": "싸 준 음식을 넣을 데가 없어 도로 내려놓았다."
         }
       },
       "library_read": {

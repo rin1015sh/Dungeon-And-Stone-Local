@@ -4,6 +4,7 @@ extends RefCounted
 ## look: body(male|female|stout) · skin · top · bottom · lower(trousers|dress|robe) · apron · belt · arms(down|counter|crossed|book)
 ##   · hands_v(counter일 때 손 높이) · bare_arms · hair(short|bald|bun|scarf|hood|long) · hair_c · hood_c · beard(full|mustache|stubble)
 ##   · glasses · stole · collar · scar · light(-1 = 왼쪽에서 빛, 1 = 오른쪽)
+##   · back(뒷모습 — 얼굴 대신 뒤통수) · pack(등짐 색) · spear(창을 세워 든다)
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -54,8 +55,17 @@ static func figure(p: Paint, cx: float, ground: float, h: float, look: Dictionar
 			_part(p, o, _m([[0.022, 0.85], [0.05, 0.85], [0.056, 0.26], [0.028, 0.26]], s), look["stole"], lw * 0.8, lit, false)
 	if look.has("collar"):
 		_part(p, o, [[-0.034, 0.865], [0.034, 0.865], [0.05, 0.835], [0.0, 0.808], [-0.05, 0.835]], look["collar"], lw * 0.7, lit, false)
+	if look.has("pack") and look.get("back", false):
+		_part(p, o, [[-0.085, 0.8], [0.085, 0.8], [0.095, 0.5], [-0.095, 0.5]], look["pack"], lw, lit)
+		Ink.line(p, _q(o, -0.08, 0.66), _q(o, 0.08, 0.66), lw, Ink.INK, 0.6)
 	_arms(p, o, str(look.get("arms", "down")), sw, arm_c, skin, top, float(look.get("hands_v", 0.55)), lw, lit)
-	_head(p, o, look, skin, hair_c, lw, lit)
+	if look.get("spear", false):
+		Ink.line(p, _q(o, sw + 0.03, -0.02), _q(o, sw + 0.03, 1.25), lw * 1.6, Color("#3a2a1c"), 1.0, 0.3)
+		_part(p, o, [[sw + 0.03, 1.36], [sw + 0.05, 1.25], [sw + 0.01, 1.25]], Color("#8a8a84"), lw * 0.7, lit, false)
+	if look.get("back", false):
+		_back_head(p, o, look, skin, hair_c, lw, lit)
+	else:
+		_head(p, o, look, skin, hair_c, lw, lit)
 
 
 static func _arms(p: Paint, o: Vector3, pose: String, sw: float, c: Color, skin: Color, sleeve: Color, hv: float, lw: float, lit: float) -> void:
@@ -138,6 +148,21 @@ static func _head(p: Paint, o: Vector3, look: Dictionary, skin: Color, hair_c: C
 		for s: float in [-1.0, 1.0]:
 			Ink.path(p, _ellipse(o, Vector2(s * 0.02, 0.928), Vector2(0.013, 0.011)), lw * 0.55, true, Color("#3a3226"), 0.9, 0.2)
 		Ink.line(p, _q(o, -0.007, 0.93), _q(o, 0.007, 0.93), lw * 0.5, Color("#3a3226"), 0.9, 0.1)
+
+
+## 뒷모습 머리: 목 + 뒤통수(머리카락·두건이 다 덮는다).
+static func _back_head(p: Paint, o: Vector3, look: Dictionary, skin: Color, hair_c: Color, lw: float, lit: float) -> void:
+	var hair := str(look.get("hair", "short"))
+	var hood_c: Color = look.get("hood_c", Color("#a49c86"))
+	if hair == "hood":
+		_part(p, o, [[-0.1, 0.8], [-0.078, 0.9], [-0.064, 0.98], [-0.03, 1.02], [0.03, 1.02], [0.064, 0.98], [0.078, 0.9], [0.1, 0.8], [0.0, 0.79]], hood_c, lw, lit)
+		return
+	var head := _ellipse(o, Vector2(0, 0.925), Vector2(0.05, 0.064))
+	_poly_part(p, head, skin if hair == "bald" else hair_c, lw, lit, o, false)
+	if hair == "long":
+		_part(p, o, [[-0.05, 0.93], [0.05, 0.93], [0.07, 0.76], [-0.07, 0.76]], hair_c, lw, lit, false)
+	elif hair == "bun":
+		_ellipse_fill(p, o, Vector2(0, 0.95), Vector2(0.028, 0.026), hair_c.darkened(0.15), 1.0, lw, lit)
 
 
 ## 한 조각: 채움(붓결) + 빛 반대쪽 그늘 + (그늘 쪽 빗금) + 잉크 윤곽.

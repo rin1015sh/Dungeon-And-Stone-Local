@@ -1,0 +1,26 @@
+{
+  "id": "leftovers",
+  "name_ko": "남은 음식",
+  "category": "food",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 10,
+  "icon": "food",
+  "color": "#8a6a44",
+  "rarity": "common",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 25
+    }
+  ],
+  "consumable": true,
+  "tags": [
+    "food"
+  ],
+  "source": "placeholder"
+}

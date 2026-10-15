@@ -171,6 +171,10 @@
     "skip_hours_long": 12,
     "stat_bump": 5
   },
+  "save": {
+    "_comment": "한 칸 저장(SaveGame): 차원광장에서만 남길 수 있다. delete_on_death = 사망하면 저장을 지운다(하드코어).",
+    "delete_on_death": true
+  },
   "party": {
     "innate_skills": ["talk", "investigate"]
   },

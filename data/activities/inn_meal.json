@@ -5,9 +5,14 @@
   "cost_stones": 20,
   "effects": [
     {
-      "type": "learn_info",
-      "kind": "rumor",
-      "chance": 0.5
+      "type": "fatigue",
+      "direction": "down",
+      "amount": 15
+    },
+    {
+      "type": "give_item",
+      "item": "leftovers",
+      "count": 1
     }
   ],
   "source": "placeholder"

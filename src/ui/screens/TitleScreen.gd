@@ -1,8 +1,9 @@
 class_name TitleScreen
 extends Control
-## 타이틀 화면. 새 탐험가 / 기반 점검(개발용) / 종료.
+## 타이틀 화면. 이어하기(저장이 있을 때) / 새 탐험가 / 기반 점검(개발용 — 디버그 빌드만) / 종료(웹에서는 숨김 — 브라우저 탭은 게임이 닫을 수 없다).
 
 signal new_game_requested
+signal continue_requested
 signal foundation_requested
 signal quit_requested
 
@@ -26,11 +27,17 @@ func _ready() -> void:
 	menu.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	menu.custom_minimum_size.x = UiTheme.metric("menu_button_width", 260)
 	v.add_child(menu)
+	var first: Button = null
+	if GameState.has_save():
+		first = UiTheme.button(Strings.t("menu.continue"), _on_continue)
+		menu.add_child(first)
 	var new_game := UiTheme.button(Strings.t("menu.new_game"), _on_new_game)
 	menu.add_child(new_game)
-	menu.add_child(UiTheme.button(Strings.t("menu.foundation"), _on_foundation))
-	menu.add_child(UiTheme.button(Strings.t("menu.quit"), _on_quit))
-	new_game.grab_focus.call_deferred()
+	if OS.is_debug_build():
+		menu.add_child(UiTheme.button(Strings.t("menu.foundation"), _on_foundation))
+	if not OS.has_feature("web"):
+		menu.add_child(UiTheme.button(Strings.t("menu.quit"), _on_quit))
+	(first if first != null else new_game).grab_focus.call_deferred()
 
 	var footer := UiTheme.label(Strings.t("app.build"), "small", "text_dim")
 	add_child(footer)
@@ -40,6 +47,11 @@ func _ready() -> void:
 func _on_new_game() -> void:
 	AudioBus.play_sfx("ui_click")
 	new_game_requested.emit()
+
+
+func _on_continue() -> void:
+	AudioBus.play_sfx("ui_click")
+	continue_requested.emit()
 
 
 func _on_foundation() -> void:
