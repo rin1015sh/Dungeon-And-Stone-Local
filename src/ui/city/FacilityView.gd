@@ -58,10 +58,6 @@ func _ready() -> void:
 	close.size_flags_horizontal = Control.SIZE_SHRINK_END
 	close.tooltip_text = Strings.t("window.close")
 	head.add_child(close)
-	var desc := CityUi.label(JsonUtil.get_str(f, "desc_ko"), "small", "dim")
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc.visible = not desc.text.is_empty()
-	content.add_child(desc)
 	panel.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 	panel.offset_right = -m
 	panel.offset_left = -m - panel.custom_minimum_size.x
@@ -74,7 +70,6 @@ func _ready() -> void:
 	_body.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	content.add_child(_body)
 	content.add_child(HSeparator.new())
-	content.add_child(CityUi.label(Strings.t("city.results"), "small", "dim"))
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.custom_minimum_size.y = UiTheme.render_float("city.result_min_height", 72.0)
@@ -90,7 +85,6 @@ func _ready() -> void:
 	content.add_child(_leave)
 	_state.changed.connect(_refresh_info)
 	_show_choices()
-	_say(Strings.t("city.entered", {"name": JsonUtil.get_str(f, "name_ko", _facility_id), "ap": _state.ap}), "info")
 
 
 ## 활동 선택지(데이터 순서). 못 하는 활동은 이유와 함께 흐리게.
@@ -102,11 +96,11 @@ func _show_choices() -> void:
 		var b := CityUi.button(_choice_text(act), func() -> void: _choose(act_id))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.disabled = not why.is_empty()
-		b.tooltip_text = JsonUtil.get_str(act, "desc_ko")
 		_body.add_child(b)
-		var hint := UiTheme.label(JsonUtil.get_str(act, "desc_ko") if why.is_empty() else Strings.t(why), "small", "text_dim" if why.is_empty() else "warn")
-		hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_body.add_child(hint)
+		if not why.is_empty():
+			var reason := UiTheme.label(Strings.t(why), "small", "warn")
+			reason.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			_body.add_child(reason)
 	_refresh_info()
 
 
@@ -159,7 +153,7 @@ func show_result(ctx: CityContext) -> void:
 		_say(did, "info")
 		_summary.append(did)
 	for msg: Dictionary in ctx.messages:
-		var text := Strings.t(str(msg["key"]), msg["args"])
+		var text := CityLines.text(_state, ctx.activity_id, msg)
 		_say(text, str(msg["kind"]))
 		if ctx.ok:
 			_summary.append(text)

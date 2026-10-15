@@ -112,7 +112,7 @@ static func hatch(p: Paint, poly: PackedVector2Array, spacing: float, angle_deg:
 		var base := center + nrm * (off + p.rng.randf_range(-spacing * 0.25, spacing * 0.25))
 		var a := base - dir * reach
 		var b := base + dir * reach
-		var seg := Geometry2D.clip_polyline_with_polygon(PackedVector2Array([a, b]), poly)
+		var seg := Geometry2D.intersect_polyline_with_polygon(PackedVector2Array([a, b]), poly)
 		for s: PackedVector2Array in seg:
 			if s.size() >= 2 and p.rng.randf() < 0.88:
 				var t0 := p.rng.randf_range(0.0, 0.12)

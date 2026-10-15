@@ -21,6 +21,8 @@ var temple_merit: float = 0.0
 var bank_balance: int = 0
 ## 얻은 소문·정보 id(얻은 순서). 내용은 data/city_info.
 var known_info: Array[String] = []
+## 지금 날씨 id(city.json weather.kinds — 순마다 새로).
+var weather: String = ""
 ## 지금 들어가 있는 시설 id(거리면 "").
 var facility: String = ""
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
@@ -39,7 +41,38 @@ func start() -> void:
 	period = maxi(0, period_index(JsonUtil.get_str(st, "period")))
 	ap = ap_per_period()
 	facility = ""
+	roll_weather()
 	changed.emit()
+
+
+## 날씨를 weight 비율로 새로 고른다(종류가 없으면 "").
+func roll_weather() -> void:
+	var kinds := weather_kinds()
+	var total := 0.0
+	for k: Variant in kinds:
+		total += maxf(0.0, JsonUtil.get_float(k as Dictionary, "weight", 1.0))
+	weather = ""
+	if kinds.is_empty() or total <= 0.0:
+		return
+	var roll := rng.randf() * total
+	for k: Variant in kinds:
+		roll -= maxf(0.0, JsonUtil.get_float(k as Dictionary, "weight", 1.0))
+		if roll < 0.0:
+			weather = JsonUtil.get_str(k as Dictionary, "id")
+			return
+	weather = JsonUtil.get_str(kinds[-1] as Dictionary, "id")
+
+
+func weather_kinds() -> Array:
+	return JsonUtil.get_array(CityValues.city_section(db, overrides, "weather"), "kinds")
+
+
+## 지금 날씨 정의(없으면 {}).
+func weather_def() -> Dictionary:
+	for k: Variant in weather_kinds():
+		if JsonUtil.get_str(k as Dictionary, "id") == weather:
+			return k
+	return {}
 
 
 func calendar() -> Dictionary:
@@ -97,6 +130,7 @@ func next_period() -> void:
 ## 새 순 시작: 행동력을 채우고 은행 이자(bank.interest_per_period)를 붙인다.
 func _begin_period() -> void:
 	ap = ap_per_period()
+	roll_weather()
 	var rate := CityValues.num(CityValues.city_section(db, overrides, "bank"), "interest_per_period")
 	if rate > 0.0 and bank_balance > 0:
 		bank_balance += floori(bank_balance * rate)
@@ -206,7 +240,7 @@ func learn_info(id: String) -> bool:
 ## 저장 대상(저장 기능이 생기면 쓴다): 날짜·행동력·공적치·잔액·얻은 소문/정보. 디버그 임시값은 넣지 않는다.
 func to_dict() -> Dictionary:
 	return {"month": month, "period": period, "ap": ap, "temple_merit": temple_merit,
-		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "rng": rng.get_state_string()}
+		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "rng": rng.get_state_string()}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -218,6 +252,7 @@ func load_dict(d: Dictionary) -> void:
 	known_info.clear()
 	for v: Variant in JsonUtil.get_array(d, "known_info"):
 		known_info.append(str(v))
+	weather = JsonUtil.get_str(d, "weather", weather)
 	if d.has("rng"):
 		rng.set_state_string(JsonUtil.get_str(d, "rng"))
 	facility = ""

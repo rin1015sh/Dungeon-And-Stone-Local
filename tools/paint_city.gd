@@ -42,6 +42,11 @@ func _init() -> void:
 	if only.is_empty() or only == "street":
 		for layer: Variant in JsonUtil.get_array(street, "layers"):
 			_paint_layer(layer as Dictionary, width, baseline, spans)
+		for kind: Variant in JsonUtil.get_array(JsonUtil.get_dict(db.singletons.get("city", {}), "weather"), "kinds"):
+			var sky_path := JsonUtil.get_str(kind as Dictionary, "sky")
+			if JsonUtil.get_str(kind as Dictionary, "sky_style") == "clear" and not sky_path.is_empty():
+				Backdrop.sky_clear(640, 360, SEED + 7).save(sky_path)
+				print("그림: 맑은 하늘 → " + sky_path)
 	quit(0)
 
 

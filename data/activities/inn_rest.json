@@ -2,7 +2,6 @@
   "id": "inn_rest",
   "name_ko": "휴식",
   "facility": "inn",
-  "desc_ko": "침대에 누워 쉰다. 피로도가 줄어든다.",
   "cost_stones": 50,
   "effects": [
     {

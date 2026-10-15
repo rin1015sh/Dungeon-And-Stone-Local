@@ -86,6 +86,51 @@
       }
     ]
   },
+  "weather": {
+    "_comment": "날씨: 순이 바뀔 때마다(시작·귀환 포함) weight 비율로 무작위(CityState.rng). sky = 하늘 그림(없으면 street.layers의 sky), sky_style clear = tools/paint_city.gd가 맑은 하늘을 그린다. tint = 하늘 밖 레이어·건물에 곱하는 색(1보다 크면 밝게), haze = 안개 레이어 짙기(1 = 그림 그대로), vignette = 화면 가장자리 어둠 짙기.",
+    "kinds": [
+      {
+        "id": "clear",
+        "name_ko": "맑음",
+        "weight": 3,
+        "sky": "res://assets/city/layers/sky_clear.webp",
+        "sky_style": "clear",
+        "tint": [
+          1.32,
+          1.28,
+          1.18
+        ],
+        "haze": 0.35,
+        "vignette": 0.45
+      },
+      {
+        "id": "overcast",
+        "name_ko": "흐림",
+        "weight": 2,
+        "sky": "res://assets/city/layers/sky.webp",
+        "tint": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "haze": 1.0,
+        "vignette": 1.0
+      },
+      {
+        "id": "fog",
+        "name_ko": "안개",
+        "weight": 1,
+        "sky": "res://assets/city/layers/sky.webp",
+        "tint": [
+          0.95,
+          0.97,
+          0.95
+        ],
+        "haze": 1.9,
+        "vignette": 1.1
+      }
+    ]
+  },
   "facility_entry_cost": 1,
   "facility_order": [
     "inn",
@@ -177,7 +222,7 @@
   },
   "temple": {
     "_comment": "recruit_merit = 신관 영입에 필요한 신전 공적치(영입 기능은 아직 없다 — 값만 정해 둠). 정수 제거 비용은 balance essence.delete_cost_*.",
-    "recruit_merit": 100
+    "recruit_merit": 5000
   },
   "source": "placeholder"
 }

@@ -27,6 +27,3 @@ func build() -> void:
 			row(list, text, Strings.t("city.essence_remove"), func() -> void:
 				_confirm = idx
 				rebuild())
-	var note := UiTheme.label(Strings.t("city.essence_note"), "small", "text_dim")
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(note)

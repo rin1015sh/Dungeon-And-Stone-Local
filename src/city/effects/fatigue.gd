@@ -13,8 +13,8 @@ func apply(ctx: CityContext, data: Dictionary) -> void:
 	if is_zero_approx(d):
 		ctx.say("city.fx.fatigue_same", {"value": CityContext.fmt(before)})
 	else:
-		ctx.say("city.fx.fatigue", {"from": CityContext.fmt(before), "to": CityContext.fmt(ctx.pc.fatigue.value),
-			"delta": CityContext.signed(d)}, "good" if d < 0.0 else "warn")
+		ctx.say("city.fx.fatigue_down" if d < 0.0 else "city.fx.fatigue_up", {"from": CityContext.fmt(before),
+			"to": CityContext.fmt(ctx.pc.fatigue.value), "delta": CityContext.signed(d)}, "good" if d < 0.0 else "warn")
 
 
 func validate(data: Dictionary, _db: GameDatabase) -> PackedStringArray:

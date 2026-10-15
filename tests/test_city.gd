@@ -424,3 +424,21 @@ func test_street_layers_and_art() -> void:
 	v2.validate(db)
 	db.load_all("res://data")
 	assert_true(v2.errors.size() >= 3, "겹친 id·res:// 아닌 경로·시차 범위는 오류")
+
+
+## 날씨: 순마다 weight 비율로 새로(같은 시드면 같은 날씨), 저장 왕복, 신관 영입 공적치 5000.
+func test_weather_rolls_per_period() -> void:
+	var seen := {}
+	var a := _state(99)
+	var b := _state(99)
+	for i in 30:
+		assert_eq(a.weather, b.weather, "같은 시드 → 같은 날씨")
+		assert_false(a.weather_def().is_empty(), "정의된 날씨")
+		seen[a.weather] = true
+		a.next_period()
+		b.next_period()
+	assert_true(seen.has("clear") and seen.has("overcast"), "맑은 날과 흐린 날이 섞인다")
+	var copy := CityState.new(db, 1)
+	copy.load_dict(JSON.parse_string(JSON.stringify(a.to_dict())))
+	assert_eq(copy.weather, a.weather, "날씨도 저장된다")
+	assert_eq(JsonUtil.get_float(JsonUtil.get_dict(db.singletons["city"], "temple"), "recruit_merit"), 5000.0)

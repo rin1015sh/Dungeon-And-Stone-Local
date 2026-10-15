@@ -1,7 +1,6 @@
 {
   "id": "inn",
   "name_ko": "여관",
-  "desc_ko": "지친 탐험가들이 묵어 가는 여관. 쉬거나 밥을 먹으며 오가는 소문에 귀를 기울인다.",
   "order": 1,
   "x": 140,
   "building": "res://assets/city/buildings/inn.webp",

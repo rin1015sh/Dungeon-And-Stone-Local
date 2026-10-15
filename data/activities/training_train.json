@@ -2,7 +2,6 @@
   "id": "training_train",
   "name_ko": "훈련",
   "facility": "training",
-  "desc_ko": "몸을 단련한다. 능력치가 오를 때가 있다. 피로도가 오른다.",
   "cost_stones": 100,
   "effects": [
     {

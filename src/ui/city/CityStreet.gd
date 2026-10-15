@@ -2,6 +2,7 @@ class_name CityStreet
 extends Control
 ## 라비기온 거리(옆에서 본 긴 풍경)를 좌우로 스크롤하며 시설 건물을 고른다.
 ##   레이어(data/city.json street.layers): 하늘·원경·중경·안개는 시차(parallax)로 천천히 움직이는 실제 도시 풍경(고를 수 없음),
+##   날씨(CityState.weather — city.json weather)에 따라 하늘 그림을 바꾸고 나머지 레이어·건물에 색을 곱한다(맑음 = 밝게).
 ##   거리 레이어 위에 시설 건물(고를 수 있음 — 마우스·가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
 ##   스크롤: 마우스 드래그·휠, A/D·←/→. 고르기: 클릭·탭, 또는 화면 가운데 건물을 Space/F/Enter.
 ## 좌표는 거리 단위(화면 높이 render.json city.street_height 기준) — 화면 높이에 맞춰 확대·축소한다.
@@ -16,7 +17,8 @@ var _state: CityState
 var _back: Control  # 시차 레이어(뒤)
 var _content: Control  # 거리 레이어 + 건물 + 이름판(스크롤 1배)
 var _front: Control  # 화면 고정 레이어(앞)
-var _layers: Array[Dictionary] = []  # {node: TextureRect, parallax, y, height, scale, screen}
+var _layers: Array[Dictionary] = []  # {id, node: TextureRect, parallax, y, height, scale, screen}
+var _weather: String = "?"
 var _buildings: Array[Dictionary] = []  # {id, node: TextureRect, plate, label, x, w, h}
 var _offset: float = 0.0
 var _scale: float = 1.0
@@ -68,7 +70,7 @@ func _add_layer(d: Dictionary, parent: Control) -> void:
 	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED if JsonUtil.get_bool(d, "screen") else TextureRect.STRETCH_SCALE
 	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(tr)
-	_layers.append({"node": tr, "parallax": JsonUtil.get_float(d, "parallax", 1.0), "y": JsonUtil.get_float(d, "y"),
+	_layers.append({"id": JsonUtil.get_str(d, "id"), "path": JsonUtil.get_str(d, "path"), "node": tr, "parallax": JsonUtil.get_float(d, "parallax", 1.0), "y": JsonUtil.get_float(d, "y"),
 		"height": JsonUtil.get_float(d, "height", 720.0), "scale": JsonUtil.get_float(d, "scale", 1.0), "screen": JsonUtil.get_bool(d, "screen")})
 
 
@@ -158,6 +160,7 @@ func _place_plates() -> void:
 func refresh() -> void:
 	if _state == null:
 		return
+	_apply_weather()
 	var can := _state.can_spend(_state.entry_cost()) and _state.facility.is_empty()
 	for i in _buildings.size():
 		var b := _buildings[i]
@@ -169,6 +172,35 @@ func refresh() -> void:
 		var plate: PanelContainer = b["plate"]
 		plate.add_theme_stylebox_override("panel", CityUi.plate_box(lit and can))
 		(b["label"] as Label).add_theme_color_override("font_color", UiTheme.color("text_title" if can else "text_disabled"))
+
+
+## 날씨가 바뀌었으면 하늘 그림·색을 맞춘다.
+func _apply_weather() -> void:
+	if _state.weather == _weather:
+		return
+	_weather = _state.weather
+	var w := _state.weather_def()
+	var tint := _rgb(w.get("tint"))
+	for L in _layers:
+		var tr: TextureRect = L["node"]
+		match str(L["id"]):
+			"sky":
+				var sky := _tex(JsonUtil.get_str(w, "sky", str(L["path"])))
+				tr.texture = sky if sky != null else _tex(str(L["path"]))
+			"vignette":
+				tr.modulate = Color(1, 1, 1, JsonUtil.get_float(w, "vignette", 1.0))
+			"haze":
+				tr.modulate = Color(tint.r, tint.g, tint.b, JsonUtil.get_float(w, "haze", 1.0))
+			_:
+				if tr.get_parent() == _back:
+					tr.modulate = tint
+	_content.modulate = tint
+
+
+static func _rgb(v: Variant) -> Color:
+	if v is Array and (v as Array).size() >= 3:
+		return Color(float(v[0]), float(v[1]), float(v[2]))
+	return Color.WHITE
 
 
 func focused_id() -> String:

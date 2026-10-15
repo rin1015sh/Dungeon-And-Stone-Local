@@ -77,7 +77,6 @@ func _build() -> void:
 	var bag := UiTheme.section(right, Strings.t("create.items_header"))
 	_items_label = _desc(bag)
 	var go := UiTheme.section(right, Strings.t("create.enter_header"))
-	_desc(go, Strings.t("create.floor_hint", {"floor": DataNames.entry(_db, "floors", str(_db.bal("explore.start_floor", "")))}))
 	var enter := UiTheme.button(Strings.t("create.enter"), _on_enter)
 	go.add_child(enter)
 	enter.grab_focus.call_deferred()

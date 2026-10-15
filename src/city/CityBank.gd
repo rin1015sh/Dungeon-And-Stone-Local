@@ -39,6 +39,6 @@ static func withdraw(state: CityState, pc: PlayerCharacter, act_id: String, amou
 	var f := fee(state, "withdraw_fee", amount)
 	state.bank_balance -= amount
 	pc.inventory.add_money(amount - f)
-	ctx.say("city.bank_withdrew", {"amount": amount, "fee": f, "balance": state.bank_balance, "money": pc.inventory.money}, "good")
+	ctx.say("city.bank_withdrew_fee" if f > 0 else "city.bank_withdrew", {"amount": amount, "fee": f, "balance": state.bank_balance, "money": pc.inventory.money}, "good")
 	state.changed.emit()
 	return ctx

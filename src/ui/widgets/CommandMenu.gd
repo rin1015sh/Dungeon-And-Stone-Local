@@ -53,14 +53,14 @@ func _root(start: int) -> void:
 	var items := _usable_items()
 	var flee := roundi(_battle.flee_chance(_unit) * 100.0)
 	var opts: Array[Dictionary] = [
-		_opt(Strings.t("combat.cmd_attack"), "", Strings.t("combat.desc_attack"), _attack),
+		_opt(Strings.t("combat.cmd_attack"), "", "", _attack),
 		_opt(Strings.t("combat.cmd_skill"), Strings.t("combat.sub_count", {"n": _unit.actor.skills.size()}),
-			Strings.t("combat.desc_skill"), func() -> void: _skills(_skill_cursor.get(_unit.get_instance_id(), 0))),
-		_opt(Strings.t("combat.cmd_guard"), "", Strings.t("combat.desc_guard"), func() -> void: _choose({"kind": "guard"})),
+			"", func() -> void: _skills(_skill_cursor.get(_unit.get_instance_id(), 0))),
+		_opt(Strings.t("combat.cmd_guard"), "", "", func() -> void: _choose({"kind": "guard"})),
 		_opt(Strings.t("combat.cmd_item"), Strings.t("combat.sub_count", {"n": items.size()}),
-			Strings.t("combat.desc_item") if not items.is_empty() else Strings.t("combat.no_usable_item"), _items, not items.is_empty()),
+			"" if not items.is_empty() else Strings.t("combat.no_usable_item"), _items, not items.is_empty()),
 		_opt(Strings.t("combat.cmd_flee"), Strings.t("combat.sub_chance", {"chance": flee}),
-			Strings.t("combat.desc_flee") if flee > 0 else Strings.t("combat.reason_no_flee"),
+			"" if flee > 0 else Strings.t("combat.reason_no_flee"),
 			func() -> void: _choose({"kind": "flee"}), flee > 0),
 	]
 	_grid.show_choices(Strings.t("combat.menu_root", {"name": _unit.label()}), opts, Callable(), start)
@@ -79,7 +79,6 @@ func _attack() -> void:
 				_remember_target(t)
 				_choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t, "aim_weak": true})
 			var weak := _target_opt(t, Strings.t("combat.target_weak", {"name": t.label()}), aim)
-			weak["desc"] = Strings.t("combat.desc_weak")
 			opts.append(weak)
 	_grid.show_choices(Strings.t("combat.menu_target"), opts, func() -> void: _root(ROOT_ATTACK), start)
 

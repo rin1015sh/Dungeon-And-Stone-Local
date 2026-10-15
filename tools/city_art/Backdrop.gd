@@ -44,6 +44,43 @@ static func sky(w: int, h: int, seed_value: int) -> Paint:
 	return p
 
 
+## 맑은 하늘(날씨 clear): 위는 바랜 푸른빛, 지평선은 따뜻한 연무, 왼쪽 위 해와 빛 번짐, 뭉게구름(밝은 윗면·그늘진 아랫면), 새 떼.
+static func sky_clear(w: int, h: int, seed_value: int) -> Paint:
+	var p := Paint.new(w, h, seed_value)
+	var horizon := h * 0.74
+	p.fill_rect(0, 0, w, h, func(x: int, y: int) -> Color:
+		var t := clampf(y / horizon, 0.0, 1.0)
+		var c := Color("#4d6d86").lerp(Color("#88a2ad"), clampf(t * 1.2, 0.0, 1.0))
+		if t > 0.55:
+			c = c.lerp(Color("#d6cfa8"), (t - 0.55) / 0.45 * 0.85)
+		return p.vary(c, x, y, 0.06))
+	var sun := Vector2(w * 0.24, h * 0.17)
+	Ink.glow(p, sun.x, sun.y, h * 0.7, Color("#f3dca0"), 0.35)
+	Ink.glow(p, sun.x, sun.y, h * 0.18, Color("#fff4d0"), 0.6)
+	p.fill_poly(_circle(sun, h * 0.05), p.flat(Color("#fffbe8"), 0.02))
+	for i in int(w / 70.0):  # 뭉게구름: 둥근 덩이를 겹쳐 쌓고 아래를 그늘지게
+		var cx := p.rng.randf() * w
+		var cy := h * p.rng.randf_range(0.18, 0.55)
+		var size := p.rng.randf_range(14, 30) * (0.6 + cy / h)
+		for k in 9:
+			var q := Vector2(cx + p.rng.randf_range(-2.2, 2.2) * size, cy + p.rng.randf_range(-0.6, 0.3) * size)
+			var r := size * p.rng.randf_range(0.5, 0.95)
+			for yy in range(int(q.y - r), int(q.y + r) + 1):
+				for xx in range(int(q.x - r), int(q.x + r) + 1):
+					var d := Vector2(xx - q.x, (yy - q.y) * 1.3).length() / r
+					if d < 1.0:
+						var under := clampf((yy - (cy - size * 0.3)) / (size * 1.1), 0.0, 1.0)
+						var c := Color("#f1ece0").lerp(Color("#a3a596"), under * 0.8)
+						p.blend(xx, yy, c, (1.0 - d * d) * 0.55 * (0.7 + 0.5 * p.nz("mid", xx * 2, yy * 2)))
+	for i in 7:
+		var b := Vector2(w * p.rng.randf_range(0.4, 0.9), h * p.rng.randf_range(0.15, 0.4))
+		Ink.line(p, b, b + Vector2(5, 3), 1.2, Ink.INK, 0.7, 0.2)
+		Ink.line(p, b + Vector2(5, 3), b + Vector2(10, 0), 1.2, Ink.INK, 0.7, 0.2)
+	Ink.grade(p, 0.15, 1.02)
+	Ink.finish(p, 0.025)
+	return p
+
+
 ## 원경: 오른쪽 언덕 위 성채와 대성당, 가운데 쌍첨탑 교회, 빽빽한 지붕 물결, 성벽 탑, 연기 기둥. 아래로 갈수록 안개.
 static func far(w: int, h: int, seed_value: int) -> Paint:
 	var p := Paint.new(w, h, seed_value)

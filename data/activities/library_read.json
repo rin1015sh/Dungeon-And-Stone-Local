@@ -2,7 +2,6 @@
   "id": "library_read",
   "name_ko": "독서",
   "facility": "library",
-  "desc_ko": "책을 읽어 정보를 모은다. 정신력이 오를 때가 있다. 피로도가 오른다.",
   "cost_stones": 30,
   "effects": [
     {

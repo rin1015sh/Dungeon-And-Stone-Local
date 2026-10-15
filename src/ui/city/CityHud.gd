@@ -1,7 +1,7 @@
 class_name CityHud
 extends Control
 ## 도시 화면 정보(위 띠 하나에 몰지 않고 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
-##   왼쪽 위 = 달력 카드(장소 · 날짜 · 상순/중순/하순 진행 · 행동력 구슬 · 순 넘김 안내),
+##   왼쪽 위 = 달력 카드(장소 · 날짜·날씨 · 상순/중순/하순 진행 · 행동력 구슬). 설명 문장은 넣지 않는다(CLAUDE.md "부연설명 금지").
 ##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 소지금 · 생명력 막대 · 피로도),
 ##   오른쪽 위 = 메뉴(소지품 · 캐릭터 · 타이틀로). 미궁은 하순이 끝나면 저절로 들어간다(디버그 F1에 바로 가기).
 ## 은행 잔액·신전 공적치는 그 시설 안에서만 보인다(facilities shows). 아래 가운데·오른쪽은 건물 이름판 자리.
@@ -75,10 +75,6 @@ func _build_calendar(m: int) -> void:
 	ap.add_child(_pips)
 	_ap = CityUi.label("", "body", "bone")
 	ap.add_child(_ap)
-	var hint := CityUi.label(Strings.t("city.period_hint"), "small", "dim")
-	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hint.custom_minimum_size.x = box.custom_minimum_size.x - UiTheme.render_float("city.ui.card_padding", 12.0) * 2.0
-	v.add_child(hint)
 
 
 func _build_vitals(m: int) -> void:
@@ -126,7 +122,8 @@ func _build_dock(m: int) -> void:
 
 
 func refresh() -> void:
-	_date.text = date_text(_state)
+	var w := JsonUtil.get_str(_state.weather_def(), "name_ko")
+	_date.text = date_text(_state) if w.is_empty() else Strings.t("city.date_weather", {"date": date_text(_state), "weather": w})
 	for i in _periods.size():
 		var now := i == _state.period
 		_periods[i].add_theme_color_override("font_color", CityUi.c("accent" if now else "dim"))

@@ -3,7 +3,6 @@
   "id": "inn_rest",
   "name_ko": "휴식",
   "facility": "inn",
-  "desc_ko": "침대에 누워 쉰다.",
   "cost_stones": null,
   "panel": null,
   "effects": [

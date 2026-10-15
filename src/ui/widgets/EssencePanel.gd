@@ -42,9 +42,6 @@ func _build() -> void:
 		l.tooltip_text = describe(db, e)
 		l.mouse_filter = Control.MOUSE_FILTER_PASS
 		add_child(l)
-	var note := UiTheme.label(Strings.t("character.essence_note"), "small", "text_dim")
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(note)
 
 
 ## 흡수 대기: 이름(마우스 = 내용) · 남은 시간 · [흡수](못 하면 이유를 곁에 적는다).
