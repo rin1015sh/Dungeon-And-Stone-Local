@@ -596,7 +596,6 @@
     "btn_character": "캐릭터({key})",
     "btn_title": "타이틀로",
     "period_started": "{date}이 되었다.",
-    "leave": "거리로 나간다",
     "leave_locked": "아직 볼일이 남았다.",
     "choice": "{name}  ({cost})",
     "cost_stones": "{n} 스톤",

@@ -189,7 +189,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 	if event.is_action_pressed("pause"):
-		if _windows.any_open():
+		if _facility != null:
+			_facility.try_leave()
+		elif _windows.any_open():
 			for kind: String in WindowManager.KINDS:
 				_windows.close(kind)
 		get_viewport().set_input_as_handled()

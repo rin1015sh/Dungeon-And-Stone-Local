@@ -2,8 +2,9 @@ class_name FacilityView
 extends Control
 ## 시설 내부: 뒷배경 일러스트(data facilities.interior) + 오른쪽 패널(시설 이름·정보·활동 선택지·결과 텍스트).
 ## 왼쪽의 달력·탐험가 카드는 그대로 보이고, 오른쪽 위 메뉴(소지품·캐릭터)는 숨긴다(시설 안에서는 창을 쓰지 않는다).
-## 들어올 때 행동력을 이미 썼으므로 '뒤로'(취소)는 없다. 활동을 한 번 하거나(패널형은 연 순간) 할 수 있는 활동이 없을 때만
-## "거리로 나간다"가 열린다. 패널형 활동(상점·은행·정수 제거)은 선택지 자리를 그 패널로 바꾼다.
+## 나가기 버튼은 없다(사용자 결정 2026-10-15). 들어올 때 행동력을 이미 썼으므로 활동 전에는 못 나가고, 활동 한 번이면 저절로 나간다.
+## 패널형 활동(상점·은행·정수 제거)은 선택지 자리를 그 패널로 바꾸고, 거래를 마치면 정지 키(Esc)나 빈 곳 오른쪽 클릭으로 나간다.
+## 할 수 있는 활동이 하나도 없으면 들어오자마자 그 이유를 들고 나간다.
 
 signal leave_requested
 
@@ -15,7 +16,6 @@ var _info: Label
 var _body: VBoxContainer  # 선택지 또는 패널
 var _results: VBoxContainer
 var _scroll: ScrollContainer
-var _leave: Button
 var _did_something: bool = false
 var top_reserve: float = 0.0  ## 패널 위에 비워 둘 높이(메뉴 자리)
 var _summary: PackedStringArray = []  # 마지막 활동 결과(거리로 나간 뒤 알림으로 보여 준다)
@@ -49,15 +49,7 @@ func _ready() -> void:
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	panel.add_child(content)
-	var head := HBoxContainer.new()
-	content.add_child(head)
-	var title := CityUi.label(JsonUtil.get_str(f, "name_ko", _facility_id), "header", "bone")
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	head.add_child(title)
-	var close := CityUi.button("✕", _try_leave)
-	close.size_flags_horizontal = Control.SIZE_SHRINK_END
-	close.tooltip_text = Strings.t("window.close")
-	head.add_child(close)
+	content.add_child(CityUi.label(JsonUtil.get_str(f, "name_ko", _facility_id), "header", "bone"))
 	panel.set_anchors_and_offsets_preset(Control.PRESET_RIGHT_WIDE)
 	panel.offset_right = -m
 	panel.offset_left = -m - panel.custom_minimum_size.x
@@ -81,10 +73,10 @@ func _ready() -> void:
 	_results = VBoxContainer.new()
 	_results.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_results)
-	_leave = CityUi.button(Strings.t("city.leave"), _try_leave, true)
-	content.add_child(_leave)
 	_state.changed.connect(_refresh_info)
 	_show_choices()
+	if can_leave():  # 할 게 없다: 이유만 남기고 나간다
+		_leave_empty()
 
 
 ## 활동 선택지(데이터 순서). 못 하는 활동은 이유와 함께 흐리게.
@@ -127,7 +119,7 @@ func _choose(act_id: String) -> void:
 		_say(Strings.t(why), "warn")
 		return
 	_did_something = true
-	_clear_body()  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 "거리로 나간다"
+	_clear_body()  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 Esc·오른쪽 클릭으로 나간다
 	var p: CityPanel
 	match panel:
 		"shop":
@@ -181,7 +173,7 @@ func _scroll_to_end() -> void:
 		_scroll.scroll_vertical = int(_scroll.get_v_scroll_bar().max_value)
 
 
-## 시설별 정보 줄(data facilities.shows: 신전 공적치·은행 잔액·얻은 소문/정보 수) + 나가기 버튼 상태.
+## 시설별 정보 줄(data facilities.shows: 신전 공적치·은행 잔액·얻은 소문/정보 수).
 func _refresh_info() -> void:
 	if _info == null:
 		return
@@ -198,8 +190,6 @@ func _refresh_info() -> void:
 				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state, "lore").size()}))
 	_info.text = "  ·  ".join(lines)
 	_info.visible = not lines.is_empty()
-	_leave.disabled = not can_leave()
-	_leave.tooltip_text = "" if can_leave() else Strings.t("city.leave_locked")
 
 
 ## 나갈 수 있는가: 활동을 했거나, 할 수 있는 활동이 하나도 없을 때.
@@ -212,11 +202,29 @@ func can_leave() -> bool:
 	return true
 
 
-func _try_leave() -> void:
+## 정지 키(Esc)·빈 곳 오른쪽 클릭. 활동 전이면 못 나간다.
+func try_leave() -> void:
 	if can_leave():
 		leave_requested.emit()
 	else:
 		_say(Strings.t("city.leave_locked"), "warn")
+
+
+func _gui_input(event: InputEvent) -> void:
+	var mb := event as InputEventMouseButton
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT:
+		try_leave()
+		accept_event()
+
+
+## 들어왔지만 할 수 있는 활동이 없다: 못 하는 이유(겹치면 한 번)를 알림으로 들고 거리로.
+func _leave_empty() -> void:
+	_summary.clear()
+	for act_id in CityActions.activities_of(_state, _facility_id):
+		var why := Strings.t(CityActions.check(_state, _pc, act_id))
+		if not why in _summary:
+			_summary.append(why)
+	leave_requested.emit.call_deferred()
 
 
 func _clear_body() -> void:

@@ -544,8 +544,9 @@ func _city_flow() -> void:
 	var money := pc.inventory.money
 	_press(fv, Strings.t("city.shop_buy"))
 	_expect(pc.inventory.money < money, "상점에서 샀다")
-	_press(fv, Strings.t("city.leave"))
+	await _action("pause")
 	await _frames(1)
+	_expect(city.facility_view() == null, "창구에서 Esc → 거리로")
 	_expect(st.period == 1 and st.ap == 3, "행동력을 다 써서 중순(행동력 3)")
 	_expect(city.toast_text().contains(st.period_name()), "순 넘김 안내")
 	city.choose_facility("bank")
@@ -563,8 +564,14 @@ func _city_flow() -> void:
 			(bank[0] as BankPanel).set_amount(40)
 			_press(fv, Strings.t("city.bank_withdraw"))
 			_expect(st.bank_balance == 60 and pc.inventory.money + st.bank_balance == total, "찾기(합 그대로)")
-		_press(fv, Strings.t("city.leave"))
+		fv.try_leave()
 	await _frames(1)
+	var cash := pc.inventory.money
+	pc.inventory.money = 0
+	city.choose_facility("inn")
+	await _frames(2)
+	_expect(city.facility_view() == null and city.toast_text().contains(Strings.t("city.reason_no_money")), "할 게 없으면 이유를 들고 바로 나온다")
+	pc.inventory.money = cash
 	var fatigue := pc.fatigue.value
 	var month := st.month
 	st.period = st.periods().size() - 1  # 하순으로 건너뛰고 마지막 행동력으로 시설 하나
