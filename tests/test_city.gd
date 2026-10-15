@@ -99,7 +99,7 @@ func test_late_period_ends_in_dungeon_and_return_starts_next_month() -> void:
 func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	var s := _state()
 	var pc := _pc()
-	for kv: Array in [["activities/inn_rest/effects/0/amount", 5], ["activities/library_read/effects/2/amount", 3],
+	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_read/effects/2/amount", 3],
 			["activities/library_read/effects/1/chance", 1.0], ["activities/library_read/effects/1/amount", 2],
 			["activities/training_train/effects/0/stats", ["str"]], ["activities/training_train/effects/0/chance", 1.0],
 			["activities/training_train/effects/0/amount", 1], ["activities/training_train/effects/1/amount", 4]]:
@@ -301,12 +301,12 @@ func test_state_and_player_round_trip() -> void:
 func test_overrides_do_not_touch_data() -> void:
 	var s := _state()
 	assert_true(CityValues.nulls(db).is_empty(), "미정 값이 없다(2026-10-15 모두 채움)")
-	assert_true(CityValues.tunables(db).has("activities/inn_rest/effects/0/amount"), "디버그로 바꿀 수 있는 값 목록")
+	assert_true(CityValues.tunables(db).has("activities/inn_rest/effects/1/amount"), "디버그로 바꿀 수 있는 값 목록")
 	assert_true(CityValues.tunables(db).has("city/fatigue/max"))
-	assert_eq(CityValues.value_at(db, "activities/inn_rest/effects/0/amount"), 40.0)
-	s.set_override("activities/inn_rest/effects/0/amount", 9)
-	assert_eq(JsonUtil.get_float(JsonUtil.get_array(s.activity("inn_rest"), "effects")[0], "amount"), 9.0, "임시값 반영")
-	assert_eq(JsonUtil.get_array(db.get_entry("activities", "inn_rest"), "effects")[0]["amount"], 40.0, "원본 데이터는 그대로")
+	assert_eq(CityValues.value_at(db, "activities/inn_rest/effects/1/amount"), 40.0)
+	s.set_override("activities/inn_rest/effects/1/amount", 9)
+	assert_eq(JsonUtil.get_float(JsonUtil.get_array(s.activity("inn_rest"), "effects")[1], "amount"), 9.0, "임시값 반영")
+	assert_eq(JsonUtil.get_array(db.get_entry("activities", "inn_rest"), "effects")[1]["amount"], 40.0, "원본 데이터는 그대로")
 
 
 func test_validator_lists_undecided_as_warnings() -> void:
@@ -442,3 +442,19 @@ func test_weather_rolls_per_period() -> void:
 	copy.load_dict(JSON.parse_string(JSON.stringify(a.to_dict())))
 	assert_eq(copy.weather, a.weather, "날씨도 저장된다")
 	assert_eq(JsonUtil.get_float(JsonUtil.get_dict(db.singletons["city"], "temple"), "recruit_merit"), 5000.0)
+
+
+## 여관 휴식: 생명력·영혼력을 다 채운다(이미 가득이면 restore_full).
+func test_inn_rest_restores_hp_and_soul() -> void:
+	var s := _state()
+	var pc := _pc()
+	pc.pool.modify("hp", -40.0)
+	pc.pool.modify("soul", -5.0)
+	_inside(s, "inn")
+	var ctx := CityActions.perform(s, pc, "inn_rest", _reg())
+	assert_true(ctx.ok)
+	assert_near(pc.pool.get_current("hp"), pc.pool.get_max("hp"), 0.01, "생명력 회복")
+	assert_near(pc.pool.get_current("soul"), pc.pool.get_max("soul"), 0.01, "영혼력 회복")
+	assert_true(ctx.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.restore"))
+	var again := CityActions.perform(s, pc, "inn_rest", _reg())
+	assert_true(again.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.restore_full"), "가득이면 다른 문구")

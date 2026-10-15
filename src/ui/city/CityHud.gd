@@ -40,6 +40,11 @@ func _ready() -> void:
 	refresh()
 
 
+## 시설 안: 메뉴(소지품·캐릭터·타이틀로)를 숨긴다.
+func set_facility_mode(on: bool) -> void:
+	_dock.visible = not on
+
+
 ## 시설 패널이 비워 둘 위쪽 높이(메뉴 아래부터).
 func dock_bottom() -> float:
 	return UiTheme.metric("margin", 16) + _dock.get_combined_minimum_size().y

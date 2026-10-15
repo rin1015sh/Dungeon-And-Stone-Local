@@ -498,15 +498,28 @@ func _city_flow() -> void:
 	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 2, "건물 클릭 → 행동력 1을 쓰고 여관 안으로"):
 		return
 	_expect(not fv.can_leave(), "들어오면 무언가 하기 전엔 못 나간다")
+	await _action("inventory")
+	_expect(not city.windows_open() and not _has_button(city, Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")})), "시설 안에서는 소지품 창·버튼이 없다")
+	pc.pool.modify("hp", -30.0)
 	pc.fatigue.set_value(60.0)
 	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
 	await _frames(2)
 	_expect(city.facility_view() == null and street.is_visible_in_tree(), "활동 한 번 → 저절로 거리로 나온다")
 	_expect(is_equal_approx(pc.fatigue.value, 20.0), "휴식(−40) → 피로도 60 → 20")
+	_expect(is_equal_approx(pc.pool.get_current("hp"), pc.pool.get_max("hp")), "여관 휴식 → 생명력 회복")
+	pc.pool.modify("hp", -30.0)
+	pc.inventory.add("minor_potion", 1)
+	var hp_before := pc.pool.get_current("hp")
+	var potions := pc.inventory.count("minor_potion")
+	city.use_item("minor_potion")
+	_expect(pc.pool.get_current("hp") > hp_before and pc.inventory.count("minor_potion") == potions - 1, "거리에서 포션을 마셨다")
+	pc.inventory.add("ration", 1)
+	city.use_item("ration")
+	_expect(pc.inventory.has("ration"), "식량은 도시에서 쓰지 않는다")
 	_expect(not city.toast_text().is_empty(), "결과가 화면 위 알림으로")
 	await _action("debug_toggle")
 	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")
-	city.debug_panel().set_edit("activities/inn_rest/effects/0/amount", "3")
+	city.debug_panel().set_edit("activities/inn_rest/effects/1/amount", "3")
 	_press(city.debug_panel(), Strings.t("city.debug_apply_overrides"))
 	pc.fatigue.set_value(10.0)
 	await _action("debug_toggle")
@@ -591,6 +604,14 @@ func _press_prefix(screen: Node, prefix: String) -> void:
 			btn.pressed.emit()
 			return
 	_expect(false, "버튼 '%s…'" % prefix)
+
+
+## 보이는 버튼 중 그 글자의 버튼이 있는가.
+func _has_button(root: Node, text: String) -> bool:
+	for b: Node in root.find_children("*", "Button", true, false):
+		if (b as Button).text == text and (b as Button).is_visible_in_tree():
+			return true
+	return false
 
 
 func _has_label(root: Node, text: String) -> bool:

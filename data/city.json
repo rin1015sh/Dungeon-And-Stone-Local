@@ -140,6 +140,12 @@
     "bank",
     "training"
   ],
+  "item_use": {
+    "_comment": "도시(거리)에서 소지품 창으로 쓸 수 있는 아이템 분류. 시설 안에서는 소지품·캐릭터 창을 열 수 없다.",
+    "categories": [
+      "potion"
+    ]
+  },
   "fatigue": {
     "_comment": "피로도: 핵심 스탯이 아닌 별도 수치(PlayerCharacter.fatigue). 도시·미궁 공용. start null이면 0, min/max null이면 제한 없음. dungeon = 미궁 시간 소모 처리의 연결 지점(값 = 단위당 변화량 — 휴식 시간은 per_hour와 per_rest_hour가 함께 붙는다). effects = 단계[{at_least, name_ko, modifiers}] — 피로도가 at_least 이상인 가장 높은 단계의 수정자가 붙는다(출처 fatigue).",
     "start": 0,

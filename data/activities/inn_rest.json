@@ -5,6 +5,13 @@
   "cost_stones": 50,
   "effects": [
     {
+      "type": "restore",
+      "resources": {
+        "hp": 1.0,
+        "soul": 1.0
+      }
+    },
+    {
       "type": "fatigue",
       "direction": "down",
       "amount": 40

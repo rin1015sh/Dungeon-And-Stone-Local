@@ -59,6 +59,7 @@ func _ready() -> void:
 	move_child(_toast_box, -1)
 	_windows = WindowManager.new()
 	_windows.setup(pc)
+	_windows.use_requested.connect(use_item)
 	add_child(_windows)
 	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_debug = CityDebugPanel.new()
@@ -102,7 +103,8 @@ func choose_facility(id: String) -> void:
 	_facility = FacilityView.new()
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
-	_facility.top_reserve = _hud.dock_bottom() + UiTheme.metric("margin", 16)
+	_windows.close_all()  # 시설 안에서는 소지품·캐릭터 창을 쓰지 않는다
+	_hud.set_facility_mode(true)
 	add_child(_facility)
 	move_child(_facility, _street.get_index() + 1)
 	_facility.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -117,6 +119,7 @@ func leave_facility() -> void:
 	_facility.queue_free()
 	_facility = null
 	_street.visible = true
+	_hud.set_facility_mode(false)
 	state.leave_facility()
 	_street.refresh()
 
@@ -132,6 +135,28 @@ func _on_expedition_due() -> void:
 	dungeon_requested.emit()
 
 
+## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 위 알림으로.
+func use_item(item_id: String) -> void:
+	if _facility != null:
+		return
+	var db := state.db
+	var cats := JsonUtil.get_array(CityValues.city_section(db, state.overrides, "item_use"), "categories")
+	if not JsonUtil.get_str(db.get_entry("items", item_id), "category") in cats:
+		toast(Strings.t("city.cannot_use_here"))
+		return
+	var ctx := ItemUser.use(DataRegistry.registries.effects, pc, item_id, state.rng)
+	if ctx == null:
+		return
+	var lines := PackedStringArray()
+	for m: Dictionary in ctx.messages:
+		lines.append(Strings.t(str(m["key"]), m["args"]))
+	if lines.is_empty():
+		lines.append(Strings.t("city.item_no_effect", {"item": DataNames.entry(db, "items", item_id)}))
+	toast("\n".join(lines))
+	_windows.refresh()
+	_hud.refresh()
+
+
 ## 화면 위 알림 카드(활동 결과·순 넘김·못 들어가는 이유). 빈 글이면 숨긴다. 몇 초 뒤 저절로 사라진다.
 func toast(text: String) -> void:
 	_toast.text = text
@@ -141,6 +166,10 @@ func toast(text: String) -> void:
 	_toast_box.offset_right = _toast_box.size.x / 2.0
 	if _toast_box.visible:
 		_toast_timer.start(UiTheme.render_float("city.toast_seconds", 7.0))
+
+
+func windows_open() -> bool:
+	return _windows.any_open()
 
 
 func toast_text() -> String:
@@ -155,7 +184,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if get_viewport().gui_get_focus_owner() is LineEdit:
 		return
 	for kind: String in WindowManager.KINDS:
-		if event.is_action_pressed(kind):
+		if event.is_action_pressed(kind) and _facility == null:
 			_windows.toggle(kind)
 			get_viewport().set_input_as_handled()
 			return
