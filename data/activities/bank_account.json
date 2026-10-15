@@ -3,8 +3,8 @@
   "name_ko": "돈 맡기기·찾기",
   "facility": "bank",
   "desc_ko": "소지금을 맡기거나 맡긴 돈을 찾는다.",
-  "cost_stones": null,
+  "cost_stones": 0,
   "panel": "bank",
   "effects": [],
-  "source": "original"
+  "source": "placeholder"
 }

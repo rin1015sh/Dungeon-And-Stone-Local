@@ -3,8 +3,8 @@
   "name_ko": "정수 제거",
   "facility": "temple",
   "desc_ko": "흡수한 정수 하나를 골라 몸에서 지운다. 비용은 지울수록 오른다.",
-  "cost_stones": null,
+  "cost_stones": 0,
   "panel": "essence_remove",
   "effects": [],
-  "source": "original"
+  "source": "placeholder"
 }

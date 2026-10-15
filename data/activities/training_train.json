@@ -3,20 +3,24 @@
   "name_ko": "훈련",
   "facility": "training",
   "desc_ko": "몸을 단련한다. 능력치가 오를 때가 있다. 피로도가 오른다.",
-  "cost_stones": null,
+  "cost_stones": 100,
   "effects": [
     {
       "type": "stat_chance",
-      "stats": null,
-      "pick": null,
-      "chance": null,
-      "amount": null
+      "stats": [
+        "str",
+        "agi",
+        "p_res"
+      ],
+      "pick": "random",
+      "chance": 0.3,
+      "amount": 1
     },
     {
       "type": "fatigue",
       "direction": "up",
-      "amount": null
+      "amount": 20
     }
   ],
-  "source": "original"
+  "source": "placeholder"
 }

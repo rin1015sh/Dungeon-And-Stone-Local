@@ -49,6 +49,25 @@ static func _city_numbers(v: ValidatorBase, city: Dictionary) -> void:
 	var hi: Variant = fat.get("max")
 	if (lo is float or lo is int) and (hi is float or hi is int) and float(lo) > float(hi):
 		v.err("city.fatigue", "min이 max보다 크다")
+	var tiers: Variant = fat.get("effects")
+	if tiers is Array:
+		for t: Variant in tiers:
+			if not t is Dictionary or not (t as Dictionary).has("at_least") or not JsonUtil.get_array(t, "modifiers") is Array:
+				v.err("city.fatigue.effects", "단계는 {at_least, name_ko, modifiers[]}")
+				continue
+			for m: Variant in JsonUtil.get_array(t, "modifiers"):
+				if not m is Dictionary or not v.db.stats.has(JsonUtil.get_str(m, "target")):
+					v.err("city.fatigue.effects", "수정자 target은 스탯 id: %s" % [m])
+	elif tiers != null:
+		v.err("city.fatigue", "effects는 단계 배열 또는 null")
+	var cal := JsonUtil.get_dict(city, "calendar")
+	for pair: Array in [["portal_rule", ["after_late_period"]], ["return_date_rule", ["next_month_early"]]]:
+		var rv: Variant = cal.get(pair[0])
+		if rv != null and not str(rv) in pair[1]:
+			v.err("city.calendar", "%s는 %s 또는 null" % [pair[0], pair[1]])
+	var enter: Variant = JsonUtil.get_dict(city, "bank").get("on_dungeon_enter")
+	if enter != null and str(enter) != "keep":
+		v.err("city.bank", "on_dungeon_enter는 keep 또는 null")
 	var stock: Variant = JsonUtil.get_dict(city, "shop").get("stock")
 	if stock is Array:
 		for id: Variant in stock:

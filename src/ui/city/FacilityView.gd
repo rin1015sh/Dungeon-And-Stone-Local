@@ -18,6 +18,7 @@ var _scroll: ScrollContainer
 var _leave: Button
 var _did_something: bool = false
 var top_reserve: float = 0.0  ## 패널 위에 비워 둘 높이(메뉴 자리)
+var _summary: PackedStringArray = []  # 마지막 활동 결과(거리로 나간 뒤 알림으로 보여 준다)
 
 
 func setup(state: CityState, pc: PlayerCharacter, registry: ScriptRegistry, facility_id: String) -> void:
@@ -120,17 +121,19 @@ func _choose(act_id: String) -> void:
 	var act := _state.activity(act_id)
 	var panel := JsonUtil.get_str(act, "panel")
 	if panel.is_empty():
-		show_result(CityActions.perform(_state, _pc, act_id, _registry))
-		_show_choices()
+		var ctx := CityActions.perform(_state, _pc, act_id, _registry)
+		show_result(ctx)
+		if ctx.ok:  # 활동 한 번 = 이 방문의 끝: 저절로 거리로 나간다
+			leave_requested.emit.call_deferred()
+		else:
+			_show_choices()
 		return
 	var why := CityActions.check(_state, _pc, act_id)
 	if not why.is_empty():
 		_say(Strings.t(why), "warn")
 		return
 	_did_something = true
-	_clear_body()
-	var back := UiTheme.button(Strings.t("city.back_to_choices"), _show_choices)
-	_body.add_child(back)
+	_clear_body()  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 "거리로 나간다"
 	var p: CityPanel
 	match panel:
 		"shop":
@@ -149,11 +152,22 @@ func _choose(act_id: String) -> void:
 
 ## 활동 결과(무엇이 얼마나 바뀌었는지)를 결과 칸에 쌓는다.
 func show_result(ctx: CityContext) -> void:
+	_summary.clear()
 	if ctx.ok:
 		_did_something = true
-		_say(Strings.t("city.did", {"name": JsonUtil.get_str(_state.activity(ctx.activity_id), "name_ko")}), "info")
+		var did := Strings.t("city.did", {"name": JsonUtil.get_str(_state.activity(ctx.activity_id), "name_ko")})
+		_say(did, "info")
+		_summary.append(did)
 	for msg: Dictionary in ctx.messages:
-		_say(Strings.t(str(msg["key"]), msg["args"]), str(msg["kind"]))
+		var text := Strings.t(str(msg["key"]), msg["args"])
+		_say(text, str(msg["kind"]))
+		if ctx.ok:
+			_summary.append(text)
+
+
+## 마지막 활동 결과 문구(거리로 나간 뒤 화면 위 알림에 쓴다).
+func summary() -> PackedStringArray:
+	return _summary
 	_refresh_info()
 
 

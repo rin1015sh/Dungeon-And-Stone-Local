@@ -91,7 +91,15 @@ func next_period() -> void:
 	if period >= maxi(1, periods().size()):
 		period = 0
 		month += 1
+	_begin_period()
+
+
+## 새 순 시작: 행동력을 채우고 은행 이자(bank.interest_per_period)를 붙인다.
+func _begin_period() -> void:
 	ap = ap_per_period()
+	var rate := CityValues.num(CityValues.city_section(db, overrides, "bank"), "interest_per_period")
+	if rate > 0.0 and bank_balance > 0:
+		bank_balance += floori(bank_balance * rate)
 	period_started.emit(month, period)
 	changed.emit()
 
@@ -133,7 +141,7 @@ func leave_facility() -> bool:
 func advance_if_spent() -> bool:
 	if not facility.is_empty() or ap > 0:
 		return false
-	if is_last_period():
+	if is_last_period() and _calendar_rule("portal_rule") == "after_late_period":
 		expedition_due.emit()
 	else:
 		next_period()
@@ -144,14 +152,18 @@ func is_last_period() -> bool:
 	return period >= periods().size() - 1
 
 
-## 미궁에서 돌아왔다: 다음 달 상순, 행동력을 새로 채운다.
+## 미궁에서 돌아왔다: return_date_rule next_month_early면 다음 달 상순(그 밖이면 날짜 그대로), 행동력을 새로 채운다.
 func return_from_dungeon() -> void:
 	facility = ""
-	period = 0
-	month += 1
-	ap = ap_per_period()
-	period_started.emit(month, period)
-	changed.emit()
+	if _calendar_rule("return_date_rule") == "next_month_early":
+		period = 0
+		month += 1
+	_begin_period()
+
+
+func _calendar_rule(key: String) -> String:
+	var v: Variant = CityValues.city_section(db, overrides, "calendar").get(key)
+	return str(v) if v is String else ""
 
 
 ## 거리 순서(facility_order, 없으면 각 시설의 order).
@@ -173,11 +185,14 @@ func activity(id: String) -> Dictionary:
 	return CityValues.entry(db, overrides, "activities", id)
 
 
+## 디버그 임시값(null도 값 — "미정으로 되돌려 보기"). 지우려면 clear_override.
 func set_override(path: String, value: Variant) -> void:
-	if value == null:
-		overrides.erase(path)
-	else:
-		overrides[path] = value
+	overrides[path] = value
+	changed.emit()
+
+
+func clear_override(path: String) -> void:
+	overrides.erase(path)
 	changed.emit()
 
 

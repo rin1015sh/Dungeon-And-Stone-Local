@@ -402,7 +402,7 @@ func _enter_dungeon(explorer_name: String) -> ExploreScreen:
 	var city := await _new_city(explorer_name)
 	if city == null:
 		return null
-	_press(city, Strings.t("city.btn_dungeon"))
+	city.dungeon_requested.emit()  # 하순이 끝난 것처럼(임시 버튼은 없다)
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
 	_expect(explore != null and explore.session.player.display_name == explorer_name, "미궁 입장(" + explorer_name + ")")
 	await _frames(2)
@@ -498,12 +498,12 @@ func _city_flow() -> void:
 	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 2, "건물 클릭 → 행동력 1을 쓰고 여관 안으로"):
 		return
 	_expect(not fv.can_leave(), "들어오면 무언가 하기 전엔 못 나간다")
+	pc.fatigue.set_value(60.0)
 	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
-	_expect(_has_label(fv, Strings.t("city.fx.fatigue_undecided")), "미정 값 휴식 결과 문구")
-	_expect(fv.can_leave(), "활동 뒤엔 나갈 수 있다")
-	_press(fv, Strings.t("city.leave"))
 	await _frames(2)
-	_expect(city.facility_view() == null and street.is_visible_in_tree(), "거리로 나왔다")
+	_expect(city.facility_view() == null and street.is_visible_in_tree(), "활동 한 번 → 저절로 거리로 나온다")
+	_expect(is_equal_approx(pc.fatigue.value, 20.0), "휴식(−40) → 피로도 60 → 20")
+	_expect(not city.toast_text().is_empty(), "결과가 화면 위 알림으로")
 	await _action("debug_toggle")
 	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")
 	city.debug_panel().set_edit("activities/inn_rest/effects/0/amount", "3")
@@ -519,8 +519,10 @@ func _city_flow() -> void:
 	if fv.facility_id() == "inn":
 		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
 		_expect(is_equal_approx(pc.fatigue.value, 7.0), "임시값(3) 휴식 → 피로도 10 → 7")
-	_press(fv, Strings.t("city.leave"))
-	await _frames(1)
+	else:
+		city.leave_facility()
+	await _frames(2)
+	_expect(city.facility_view() == null, "거리로 나왔다")
 	city.choose_facility("shop")
 	fv = city.facility_view()
 	if not _expect(fv != null and st.ap == 0, "상점(행동력 0)"):
@@ -559,14 +561,14 @@ func _city_flow() -> void:
 	if _expect(fv != null and st.ap == 0, "하순 마지막 행동력으로 여관"):
 		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
 		_expect(st.ap == 0, "시설 안 활동은 행동력을 쓰지 않는다")
-		fatigue = pc.fatigue.value  # 휴식(임시값)으로 줄어든 값이 미궁으로 이어진다
-		_press(fv, Strings.t("city.leave"))
+		fatigue = pc.fatigue.value  # 휴식(임시값)으로 줄어든 값이 미궁으로 이어진다(활동 뒤 저절로 나와 하순이 끝난다)
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
 	if not _expect(explore != null, "하순이 끝나면 저절로 미궁으로"):
 		return
 	await _frames(2)
-	_expect(is_equal_approx(explore.session.player.fatigue.value, fatigue), "미궁에서도 피로도 그대로")
-	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(fatigue)})), "미궁 HUD에 피로도")
+	var in_dungeon := explore.session.player.fatigue.value
+	_expect(in_dungeon >= fatigue and in_dungeon < fatigue + 1.0, "미궁으로 피로도가 이어진다(시간이 흐르면 조금씩 오른다)")
+	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(in_dungeon)}).left(4)), "미궁 HUD에 피로도")
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
@@ -577,7 +579,7 @@ func _city_flow() -> void:
 	var back := (await _screen(CityScreen)) as CityScreen
 	if _expect(back != null, "귀환 → 도시"):
 		_expect([back.state.month, back.state.period, back.state.ap] == [month + 1, 0, 3], "귀환하면 다음 달 상순(행동력 3)")
-		_expect(is_equal_approx(back.pc.fatigue.value, fatigue), "도시로 돌아와도 피로도 그대로")
+		_expect(back.pc.fatigue.value > fatigue, "미궁에서 쌓인 피로도가 도시로 이어진다")
 		_press(back, Strings.t("city.btn_title"))
 	_expect((await _screen(TitleScreen)) != null, "타이틀로")
 

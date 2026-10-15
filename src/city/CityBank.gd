@@ -1,8 +1,8 @@
 class_name CityBank
 extends RefCounted
 ## 은행(돈 맡기기·찾기): 금액은 플레이어가 정한다. 잔액은 CityState.bank_balance.
-## 수수료(city.json bank.deposit_fee·withdraw_fee = 금액에 대한 비율)는 미정 — null이면 0(맡기기·찾기 전후 소지금 + 잔액 합이 같다).
-## 이자·미궁 입장 시 소지금 처리 등 맡긴 돈의 쓰임은 미정이라 만들지 않았다. 거래마다 활동(bank_account)의 행동력·비용을 낸다.
+## 수수료(city.json bank.deposit_fee·withdraw_fee = 금액에 대한 비율, null이면 0). 이자는 순이 바뀔 때 CityState가 붙인다(interest_per_period).
+## 미궁 입장 시 소지금 처리 on_dungeon_enter = keep(그대로 들고 간다). 거래마다 활동(bank_account)의 이용료를 낸다.
 
 
 static func fee(state: CityState, key: String, amount: int) -> int:

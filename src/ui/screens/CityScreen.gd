@@ -3,7 +3,7 @@ extends Control
 ## 도시 화면(라비기온 구역): 횡스크롤 거리(CityStreet) ↔ 시설 내부(FacilityView), 귀퉁이 정보 카드(CityHud — 달력·탐험가·메뉴).
 ## 시설을 고르면 행동력(facility_entry_cost)을 쓰고 들어간다. 나오면 행동력이 0일 때 다음 순으로 넘어간다.
 ## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
-## 미궁 입장 임시 버튼(HUD)도 남겨 둔다.
+## 시설 안에서 활동을 한 번 하면 저절로 거리로 나오고, 결과는 화면 위 알림 카드에 남는다.
 ## 창(소지품 I·캐릭터 C·도감 B)과 디버그 패널(F1)을 쓸 수 있다.
 
 signal dungeon_requested
@@ -16,6 +16,8 @@ var _street: CityStreet
 var _facility: FacilityView
 var _hud: CityHud
 var _toast: Label
+var _toast_box: PanelContainer
+var _toast_timer: Timer
 var _windows: WindowManager
 var _debug: CityDebugPanel
 
@@ -33,28 +35,35 @@ func _ready() -> void:
 	add_child(_street)
 	_street.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
-	_toast = UiTheme.label("", "body", "gold")
-	_toast.add_theme_color_override("font_outline_color", Color.BLACK)
-	_toast.add_theme_constant_override("outline_size", UiTheme.metric("outline_size", 4))
-	_toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_toast_box = CityUi.card()
+	_toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_toast_box.visible = false
+	add_child(_toast_box)
+	_toast_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, m)
+	_toast_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_toast = CityUi.label("", "body", "bone")
 	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	add_child(_toast)
-	_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, m)
-	_toast.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_toast.custom_minimum_size.x = UiTheme.render_float("city.toast_width", 420.0)
+	_toast_box.add_child(_toast)
+	_toast_timer = Timer.new()
+	_toast_timer.one_shot = true
+	_toast_timer.timeout.connect(func() -> void: _toast_box.visible = false)
+	add_child(_toast_timer)
 	_hud = CityHud.new()
 	_hud.setup(state, pc)
-	_hud.dungeon_requested.connect(func() -> void: dungeon_requested.emit())
 	_hud.title_requested.connect(func() -> void: title_requested.emit())
 	_hud.window_requested.connect(func(kind: String) -> void: _windows.toggle(kind))
 	add_child(_hud)
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	move_child(_toast, -1)
+	move_child(_toast_box, -1)
 	_windows = WindowManager.new()
 	_windows.setup(pc)
 	add_child(_windows)
 	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_debug = CityDebugPanel.new()
 	_debug.setup(state, pc)
+	_debug.dungeon_requested.connect(func() -> void: dungeon_requested.emit())
 	_debug.visible = false
 	add_child(_debug)
 	_debug.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -104,6 +113,7 @@ func choose_facility(id: String) -> void:
 func leave_facility() -> void:
 	if _facility == null:
 		return
+	toast("\n".join(_facility.summary()))
 	_facility.queue_free()
 	_facility = null
 	_street.visible = true
@@ -112,7 +122,8 @@ func leave_facility() -> void:
 
 
 func _on_period_started(_month: int, _period: int) -> void:
-	toast(Strings.t("city.period_started", {"date": CityHud.date_text(state), "ap": state.ap}))
+	var msg := Strings.t("city.period_started", {"date": CityHud.date_text(state), "ap": state.ap})
+	toast(msg if _toast.text.is_empty() else _toast.text + "\n" + msg)
 
 
 ## 하순이 끝났다: 미궁으로 떠난다(미궁 기록 첫 줄에 남긴다).
@@ -121,8 +132,15 @@ func _on_expedition_due() -> void:
 	dungeon_requested.emit()
 
 
+## 화면 위 알림 카드(활동 결과·순 넘김·못 들어가는 이유). 빈 글이면 숨긴다. 몇 초 뒤 저절로 사라진다.
 func toast(text: String) -> void:
 	_toast.text = text
+	_toast_box.visible = not text.is_empty()
+	_toast_box.reset_size()
+	_toast_box.offset_left = -_toast_box.size.x / 2.0
+	_toast_box.offset_right = _toast_box.size.x / 2.0
+	if _toast_box.visible:
+		_toast_timer.start(UiTheme.render_float("city.toast_seconds", 7.0))
 
 
 func toast_text() -> String:

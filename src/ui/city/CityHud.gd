@@ -3,10 +3,9 @@ extends Control
 ## 도시 화면 정보(위 띠 하나에 몰지 않고 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
 ##   왼쪽 위 = 달력 카드(장소 · 날짜 · 상순/중순/하순 진행 · 행동력 구슬 · 순 넘김 안내),
 ##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 소지금 · 생명력 막대 · 피로도),
-##   오른쪽 위 = 메뉴(소지품 · 캐릭터 · 미궁 입장(임시) · 타이틀로).
+##   오른쪽 위 = 메뉴(소지품 · 캐릭터 · 타이틀로). 미궁은 하순이 끝나면 저절로 들어간다(디버그 F1에 바로 가기).
 ## 은행 잔액·신전 공적치는 그 시설 안에서만 보인다(facilities shows). 아래 가운데·오른쪽은 건물 이름판 자리.
 
-signal dungeon_requested
 signal title_requested
 signal window_requested(kind: String)
 
@@ -123,10 +122,7 @@ func _build_dock(m: int) -> void:
 	v.add_child(r1)
 	r1.add_child(CityUi.button(Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")}), func() -> void: window_requested.emit("inventory")))
 	r1.add_child(CityUi.button(Strings.t("city.btn_character", {"key": InputSetup.key_label("character")}), func() -> void: window_requested.emit("character")))
-	var r2 := HBoxContainer.new()
-	v.add_child(r2)
-	r2.add_child(CityUi.button(Strings.t("city.btn_dungeon"), func() -> void: dungeon_requested.emit(), true))
-	r2.add_child(CityUi.button(Strings.t("city.btn_title"), func() -> void: title_requested.emit()))
+	r1.add_child(CityUi.button(Strings.t("city.btn_title"), func() -> void: title_requested.emit()))
 
 
 func refresh() -> void:
@@ -146,7 +142,13 @@ func refresh() -> void:
 	_hp_bar.max_value = maxf(1.0, hp_max)
 	_hp_bar.value = hp
 	_hp.text = Strings.t("city.hp_value", {"hp": roundi(hp), "max": roundi(hp_max)})
-	_fatigue.text = Strings.t("city.hud_fatigue", {"value": CityContext.fmt(_pc.fatigue.value)})
+	var fmax: Variant = _pc.fatigue.rules.get("max")
+	_fatigue.text = Strings.t("city.hud_fatigue_max", {"value": CityContext.fmt(_pc.fatigue.value), "max": CityContext.fmt(float(fmax))}) \
+		if (fmax is float or fmax is int) else Strings.t("city.hud_fatigue", {"value": CityContext.fmt(_pc.fatigue.value)})
+	var tier := _pc.fatigue.tier_name()
+	if not tier.is_empty():
+		_fatigue.text += Strings.t("city.hud_fatigue_tier", {"tier": tier})
+	_fatigue.add_theme_color_override("font_color", CityUi.c("bone" if tier.is_empty() else "accent"))
 	_money.text = Strings.t("city.hud_money", {"money": _pc.inventory.money})
 
 

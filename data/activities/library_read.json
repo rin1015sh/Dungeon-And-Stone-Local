@@ -3,12 +3,12 @@
   "name_ko": "독서",
   "facility": "library",
   "desc_ko": "책을 읽어 정보를 모은다. 정신력이 오를 때가 있다. 피로도가 오른다.",
-  "cost_stones": null,
+  "cost_stones": 30,
   "effects": [
     {
       "type": "learn_info",
       "kind": "lore",
-      "chance": null
+      "chance": 0.4
     },
     {
       "type": "stat_chance",
@@ -16,14 +16,14 @@
         "int"
       ],
       "pick": "all",
-      "chance": null,
-      "amount": null
+      "chance": 0.25,
+      "amount": 1
     },
     {
       "type": "fatigue",
       "direction": "up",
-      "amount": null
+      "amount": 10
     }
   ],
-  "source": "original"
+  "source": "placeholder"
 }

@@ -185,6 +185,8 @@
     "vitals_width": 330,
     "dock_width": 400,
     "pip_font_size": 24,
+    "toast_width": 420,
+    "toast_seconds": 7,
     "result_lines": 14,
     "hud_height": 230,
     "list_height": 92,
