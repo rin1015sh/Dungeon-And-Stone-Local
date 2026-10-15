@@ -10,6 +10,8 @@ var buf: PackedFloat32Array  # r,g,b,a 순서(곱하지 않은 알파)
 var _noise: Dictionary = {}  # 종류 → PackedFloat32Array(w*h, 0~1)
 var _stroke: PackedFloat32Array  # 잉크 한 획의 덮임(최댓값) — 겹쳐 찍어도 진해지지 않게
 var _seed: int
+## 사람 등 '어둠을 덜 받는' 자리(0~1) — NpcParts.stamp가 채우고 Interiors.light가 읽는다. 비어 있으면 없음.
+var keep: PackedFloat32Array
 
 
 func _init(p_w: int, p_h: int, seed_value: int) -> void:
