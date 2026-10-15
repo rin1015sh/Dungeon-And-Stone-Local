@@ -10,6 +10,9 @@ extends VBoxContainer
 
 signal cursor_moved(index: int)
 
+## 키 입력을 받는가(전투 행동창은 명령 칸과 목록 칸 두 판 중 하나만 받는다). 꺼져 있으면 커서는 그대로 보인다.
+var active: bool = true
+
 var _title: Label
 var _prev: Label
 var _page: Label
@@ -23,12 +26,18 @@ var _back: Callable = Callable()
 var _cursor: int = 0
 var _cols: int = 2
 var _rows: int = 3
+var _slot_h: int = 50
+var _compact: bool = false
 
 
-func _init() -> void:
-	_cols = maxi(1, UiTheme.metric("combat_menu_columns", 2))
-	_rows = maxi(1, UiTheme.metric("combat_menu_rows", 3))
+## cols·rows 0이면 render.json combat_menu_columns·rows. slot_h 0이면 combat_slot_height. compact = 제목줄·설명줄 없이 칸만.
+func _init(cols: int = 0, rows: int = 0, slot_h: int = 0, compact: bool = false) -> void:
+	_cols = maxi(1, cols if cols > 0 else UiTheme.metric("combat_menu_columns", 2))
+	_rows = maxi(1, rows if rows > 0 else UiTheme.metric("combat_menu_rows", 3))
+	_slot_h = slot_h if slot_h > 0 else UiTheme.metric("combat_slot_height", 50)
+	_compact = compact
 	var head := HBoxContainer.new()
+	head.visible = not compact
 	add_child(head)
 	_title = UiTheme.label("", "body", "text_title")
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -53,6 +62,7 @@ func _init() -> void:
 	_desc.max_lines_visible = UiTheme.metric("combat_desc_lines", 3)
 	_desc.custom_minimum_size.y = UiTheme.metric("combat_desc_height", 40)
 	_desc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_desc.visible = not compact
 	add_child(_desc)
 
 
@@ -86,6 +96,19 @@ func current_option() -> Dictionary:
 	return _options[_cursor] if _cursor >= 0 and _cursor < _options.size() else {}
 
 
+func option_count() -> int:
+	return _options.size()
+
+
+func option(i: int) -> Dictionary:
+	return _options[i] if i >= 0 and i < _options.size() else {}
+
+
+## 커서를 i번 선택지로(마우스로 무대의 대상을 눌렀을 때).
+func select(i: int) -> void:
+	_set_cursor(i)
+
+
 func page_size() -> int:
 	return _cols * _rows
 
@@ -103,7 +126,7 @@ func option_texts() -> PackedStringArray:
 
 
 func _input(event: InputEvent) -> void:
-	if not is_visible_in_tree() or not (event.is_pressed()):
+	if not active or not is_visible_in_tree() or not (event.is_pressed()):
 		return
 	var act := ""
 	for a: String in ["menu_up", "menu_down", "menu_left", "menu_right"]:
@@ -221,7 +244,7 @@ func _make_slot(i: int) -> Button:
 	b.clip_text = true
 	b.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	b.custom_minimum_size = Vector2(UiTheme.metric("combat_slot_min_width", 160), UiTheme.metric("combat_slot_height", 50))
+	b.custom_minimum_size = Vector2(UiTheme.metric("combat_slot_min_width", 160), _slot_h)
 	b.pressed.connect(_on_slot_pressed.bind(i))
 	b.mouse_entered.connect(_on_slot_hover.bind(i))
 	var mark := UiTheme.label(Strings.t("menu.cursor"), "small", "gold")
@@ -252,7 +275,7 @@ func _style(b: Button, state: String) -> void:
 	box.content_margin_left = UiTheme.metric("combat_slot_text_x", 22)
 	box.content_margin_right = UiTheme.metric("combat_slot_pad", 8)
 	box.content_margin_top = 2
-	box.content_margin_bottom = UiTheme.metric("combat_slot_sub_height", 18)  # 아래쪽은 작은 글씨(sub) 자리
+	box.content_margin_bottom = 2 if _compact else UiTheme.metric("combat_slot_sub_height", 18)  # 아래쪽은 작은 글씨(sub) 자리
 	for s: String in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
 		b.add_theme_stylebox_override(s, box)
 	var fg := UiTheme.color("text_title" if state == "selected" else "text")
@@ -262,6 +285,8 @@ func _style(b: Button, state: String) -> void:
 
 
 func _on_slot_pressed(i: int) -> void:
+	if not active:
+		return
 	var idx := (_cursor / page_size()) * page_size() + i
 	if idx < _options.size():
 		_set_cursor(idx)
@@ -269,6 +294,8 @@ func _on_slot_pressed(i: int) -> void:
 
 
 func _on_slot_hover(i: int) -> void:
+	if not active:
+		return
 	_set_cursor((_cursor / page_size()) * page_size() + i)
 
 

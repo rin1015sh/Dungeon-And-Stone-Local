@@ -1,8 +1,10 @@
 class_name CombatScreen
 extends Control
-## 전투 화면(탐험 화면 위에 겹친다): 가운데 무대(아군과 적이 마주 봄) ·
-## 아래 왼쪽 파티 상태 · 가운데 행동창 · 오른쪽 기록. 전투 규칙은 Battle, 이 화면은 차례 진행과 연출만.
-## 행동 순서는 Battle/Timeline이 정하고 화면에는 순서 목록을 띄우지 않는다(현재 차례 카드만 강조).
+## 전투 화면(탐험 화면 위에 겹친다) — 피어 앤 헝거식으로 정면에서 맞닥뜨린다(2026-10-15 사용자 요청):
+##   무대(BattleStage) = 어둠 속 빛 웅덩이 위 가운데에 적(정면), 아래 앞줄에 아군(뒷모습)
+##   아래 창(CommandMenu) = 왼쪽 명령 칸(공격·스킬·방어·아이템) + 오른쪽 파티 창(PartyRoster: 이름·상태·생명력·영혼력)
+##   위 가운데 = 방금 일어난 일 한두 줄(전투 기록은 탐험 기록에도 남는다).
+## 전투 규칙은 Battle, 이 화면은 차례 진행과 연출만. 행동 순서는 Battle/Timeline이 정하고, 지금 차례인 사람의 줄·발밑이 밝다.
 
 signal finished(result: String, turns: int, killed: Array[String])
 
@@ -11,14 +13,16 @@ var battle: Battle
 ## 결과 칸에 보이고, 탐험 기록에도 남는다(ExploreScreen이 세션에 맡긴다). 없으면 결과만 보인다.
 var reward_provider: Callable = Callable()
 
-var _cards: Dictionary = {}  # Combatant -> CombatantCard
-var _foe_row: HBoxContainer   # 증원(summon)된 적 카드를 붙일 줄
-var _party_row: HBoxContainer
+var _stage: BattleStage
+var _roster: PartyRoster
 var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방지)
 var _menu: CommandMenu
-var _party_panel: VBoxContainer
+var _result_panel: PanelContainer
 var _result_box: VBoxContainer
-var _gap: Control
+var _banner: Label
+var _banner_box: PanelContainer
+var _banner_timer: Timer
+var _banner_lines: PackedStringArray = []
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 
 
@@ -27,85 +31,89 @@ func setup(b: Battle) -> void:
 
 
 func _ready() -> void:
-	var dim := ColorRect.new()
-	var bg := UiTheme.color("bg")
-	bg.a = UiTheme.ui_float("combat_dim_alpha", 0.9)
-	dim.color = bg
-	add_child(dim)
-	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var margin := MarginContainer.new()
-	add_child(margin)
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var m := UiTheme.metric("margin", 16)
-	for side: String in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, m)
-	var col := VBoxContainer.new()
-	margin.add_child(col)
-	col.add_child(_build_stage())
-	col.add_child(_build_bottom())
+	_stage = BattleStage.new()
+	_stage.setup(battle.db)
+	add_child(_stage)
+	_stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_stage.unit_clicked.connect(func(u: Combatant) -> void: _menu.pick_target(u))
+	_roster = PartyRoster.new()
+	_roster.setup(battle.db)
+	_roster.clicked.connect(func(u: Combatant) -> void: _menu.pick_target(u))
+	_menu = CommandMenu.new()
+	_menu.set_roster(_roster)
+	_menu.chosen.connect(_on_chosen)
+	_menu.target_hovered.connect(_on_target_hovered)
+	_place_bottom(_menu)
+	_menu.close()
+	_result_panel = CommandMenu._window()
+	_result_panel.visible = false
+	_place_bottom(_result_panel, UiTheme.metric("combat_result_height", 280))
+	_result_box = VBoxContainer.new()
+	_result_panel.add_child(_result_box)
+	_build_banner()
+	for u in battle.units:
+		_add_unit(u)
 	for h: Dictionary in battle.history:  # 화면이 열리기 전에 나온 안내(전투 시작·수호자 대사·몬스터 타입)
-		EventBus.log_message.emit(Strings.t(str(h["key"]), h["args"]), str(h["kind"]))
-	battle.message.connect(func(key: String, args: Dictionary, kind: String) -> void:
-		EventBus.log_message.emit(Strings.t(key, args), kind))
+		_say(Strings.t(str(h["key"]), h["args"]), str(h["kind"]))
+	battle.message.connect(func(key: String, args: Dictionary, kind: String) -> void: _say(Strings.t(key, args), kind))
 	battle.event.connect(_on_event)
 	_refresh()
 	_loop.call_deferred()
 
 
-func _build_stage() -> Control:
-	var stage := HBoxContainer.new()
-	stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	stage.alignment = BoxContainer.ALIGNMENT_CENTER
-	stage.add_theme_constant_override("separation", UiTheme.metric("combat_card_sep", 4))  # _fit_cards 계산과 같게
-	var party := HBoxContainer.new()
-	var foes := HBoxContainer.new()
-	_party_row = party
-	_foe_row = foes
-	for u in battle.units:
-		_add_card(u)
-	stage.add_child(party)
-	_gap = Control.new()
-	stage.add_child(_gap)
-	stage.add_child(foes)
-	_fit_cards()
-	return stage
+## 아래 창 자리: 가운데, 폭 combat_bottom_width(화면이 좁으면 여백만 남기고), 높이 combat_bottom_height.
+func _place_bottom(c: Control, height: int = 0) -> void:
+	add_child(c)
+	var m := UiTheme.metric("margin", 16)
+	var w := UiTheme.metric("combat_bottom_width", 1040)
+	c.anchor_left = 0.5
+	c.anchor_right = 0.5
+	c.anchor_top = 1.0
+	c.anchor_bottom = 1.0
+	c.offset_left = -w / 2.0
+	c.offset_right = w / 2.0
+	c.offset_top = -m - (height if height > 0 else UiTheme.metric("combat_bottom_height", 200))
+	c.offset_bottom = -m
+	resized.connect(func() -> void:
+		var half := minf(w / 2.0, size.x / 2.0 - m)
+		c.offset_left = -half
+		c.offset_right = half)
 
 
-func _add_card(u: Combatant) -> void:
-	var card := CombatantCard.new()
-	card.setup(u, battle.db)
-	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	(_party_row if u.side == Combatant.SIDE_PARTY else _foe_row).add_child(card)
-	_cards[u] = card
+func _build_banner() -> void:
+	_banner_box = CommandMenu._window()
+	_banner_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_banner_box.visible = false
+	add_child(_banner_box)
+	_banner_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, UiTheme.metric("margin", 16))
+	_banner_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_banner = UiTheme.label("", "body", "text_title")
+	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_banner.custom_minimum_size.x = UiTheme.metric("combat_banner_width", 560)
+	_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_banner_box.add_child(_banner)
+	_banner_timer = Timer.new()
+	_banner_timer.one_shot = true
+	_banner_timer.timeout.connect(func() -> void:
+		_banner_lines.clear()
+		_banner_box.visible = false)
+	add_child(_banner_timer)
 
 
-func _build_bottom() -> Control:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = UiTheme.metric("combat_bottom_height", 230)
-	_party_panel = UiTheme.section(row, Strings.t("combat.party"))
-	_party_panel.custom_minimum_size.x = UiTheme.metric("hud_panel_width", 360)
-	for u in battle.units:
-		if u.side == Combatant.SIDE_PARTY:
-			var rp := ResourcePanel.new()
-			_party_panel.add_child(rp)
-			rp.bind(u.actor.pool)
-	var mid_panel := PanelContainer.new()  # 행동창 배경(뒤의 탐험 화면이 비치지 않게)
-	mid_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(mid_panel)
-	var mid := VBoxContainer.new()
-	mid_panel.add_child(mid)
-	_menu = CommandMenu.new()
-	_menu.visible = false
-	_menu.chosen.connect(_on_chosen)
-	_menu.target_hovered.connect(_on_target_hovered)
-	mid.add_child(_menu)
-	_result_box = VBoxContainer.new()
-	_result_box.visible = false
-	mid.add_child(_result_box)
-	var log_panel := LogPanel.new()
-	log_panel.custom_minimum_size.x = UiTheme.metric("explore_log_width", 380)
-	row.add_child(log_panel)
-	return row
+## 전투 안내: 위 가운데에 최근 몇 줄(잠깐 뒤 사라짐) + 탐험 기록.
+func _say(text: String, kind: String) -> void:
+	EventBus.log_message.emit(text, kind)
+	_banner_lines.append(text)
+	while _banner_lines.size() > UiTheme.metric("combat_banner_lines", 2):
+		_banner_lines.remove_at(0)
+	_banner.text = "\n".join(_banner_lines)
+	_banner_box.visible = true
+	_banner_timer.start(UiTheme.ui_float("combat_banner_sec", 2.6))
+
+
+func _add_unit(u: Combatant) -> void:
+	_stage.add_unit(u)
+	_roster.add_unit(u)
 
 
 ## 차례를 돌린다. 아군 차례면 행동창을 열고 멈추고(행동 선택 대기), 적 차례면 잠깐 쉬었다가 AI 행동을 적용한다.
@@ -148,83 +156,61 @@ func _on_chosen(action: Dictionary) -> void:
 
 func _on_event(e: Dictionary) -> void:
 	var u: Combatant = e.get("unit")
-	var card: CombatantCard = _cards.get(u) if u != null else null
+	var v: BattlerView = _stage.view(u) if u != null else null
 	match str(e.get("type")):
 		"damage":
-			if card != null:
+			if v != null:
 				if not bool(e.get("hit")):
-					card.float_text(Strings.t("combat.float_miss"), UiTheme.color("text_dim"))
+					v.float_text(Strings.t("combat.float_miss"), UiTheme.color("text_dim"))
 				elif bool(e.get("immune", false)):
-					card.float_text(Strings.t("combat.float_immune"), UiTheme.color("text_dim"))
+					v.float_text(Strings.t("combat.float_immune"), UiTheme.color("text_dim"))
 				elif int(e.get("lost", e.get("amount", 0))) <= 0:
-					card.float_text(Strings.t("combat.float_blocked"), UiTheme.color("text_dim"))
+					v.float_text(Strings.t("combat.float_blocked"), UiTheme.color("text_dim"))
 				else:
-					card.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("bad"))
+					v.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("bad"))
 		"down", "fled":
-			if card != null:
-				card.refresh()
-				if _drops_card(u):
-					_remove_card.call_deferred(u)  # 떠오른 숫자를 잠깐 보인 뒤(다음 프레임) 치운다
+			if v != null:
+				v.refresh()
+				if _drops_view(u):
+					_remove_unit.call_deferred(u)  # 떠오른 숫자를 잠깐 보인 뒤(다음 프레임) 치운다
 		"summon":
-			if u != null and card == null:
-				_add_card(u)
-				_fit_cards()
+			if u != null and v == null:
+				_add_unit(u)
 	_refresh()
 
 
-## 쓰러지거나 물러난 참가자의 카드를 치울지: 적·소환수는 치운다(웨이브·증원으로 카드가 화면 밖으로 밀리지 않게).
+## 쓰러지거나 물러난 참가자를 무대에서 치울지: 적·소환수는 치운다(웨이브·증원으로 무대가 넘치지 않게).
 ## 탐험가 본인과 수호자·계층군주급은 흐린 채 남긴다.
-func _drops_card(u: Combatant) -> bool:
+func _drops_view(u: Combatant) -> bool:
 	if u.side == Combatant.SIDE_PARTY and not u.summoned:
 		return false
 	return not (u.actor is Monster and JsonUtil.get_str((u.actor as Monster).def, "rank", "normal") != "normal")
 
 
-func _remove_card(u: Combatant) -> void:
-	var card: CombatantCard = _cards.get(u)
-	if card == null:
-		return
-	_cards.erase(u)
-	card.queue_free()
-	_fit_cards()
-
-
-## 카드 폭을 참가자 수에 맞춘다(기본 폭 ~ 최소 폭). 넘치면 가운데 틈부터 줄인다.
-## 간격 수 = 카드 수(줄 안 (p−1)+(f−1) + 무대의 두 틈) — 합이 화면 폭을 넘지 않는다.
-func _fit_cards() -> void:
-	var n := _cards.size()
-	if n == 0:
-		return
-	var sep := UiTheme.metric("combat_card_sep", 4)
-	var avail := get_viewport_rect().size.x - UiTheme.metric("margin", 16) * 2.0
-	var gap := UiTheme.metric("combat_stage_gap", 160)
-	var full := UiTheme.metric("combat_card_width", 150)
-	var need := n * (full + sep) + gap
-	if need > avail:
-		gap = maxi(UiTheme.metric("combat_stage_gap_min", 24), gap - int(need - avail))
-	var w := clampi(int((avail - gap) / n) - sep, UiTheme.metric("combat_card_min_width", 88), full)
-	_gap.custom_minimum_size.x = gap
-	for row: HBoxContainer in [_party_row, _foe_row]:
-		row.add_theme_constant_override("separation", sep)
-	for c: CombatantCard in _cards.values():
-		c.set_width(w)
+func _remove_unit(u: Combatant) -> void:
+	_stage.remove_unit(u)
+	_roster.remove_unit(u)
 
 
 func _on_target_hovered(t: Combatant) -> void:
-	for u: Combatant in _cards:
-		(_cards[u] as CombatantCard).set_targeted(u == t)
+	for u: Combatant in _stage.views():
+		(_stage.views()[u] as BattlerView).set_targeted(u == t)
+	_roster.set_target(t)
 
 
 func _refresh() -> void:
-	for u: Combatant in _cards:
-		var card: CombatantCard = _cards[u]
-		card.refresh()
-		card.set_current(u == battle.current)
+	for u: Combatant in _stage.views():
+		var v: BattlerView = _stage.views()[u]
+		v.refresh()
+		v.set_current(u == battle.current)
+	_roster.set_current(battle.current)
+	_roster.refresh()
 
 
 func _show_result() -> void:
 	_menu.close()
-	_result_box.visible = true
+	_menu.visible = false
+	_result_panel.visible = true
 	for c in _result_box.get_children():
 		c.queue_free()
 	var key := "combat.result_" + (battle.result if not battle.result.is_empty() else Battle.RESULT_FLED)
