@@ -163,6 +163,10 @@ func _realtime_combat_flow() -> void:
 	menu = await _open_menu(combat)
 	if not _expect(menu != null, "키보드 공격 뒤 다시 행동창"):
 		return
+	await _plan_flow(combat, menu)
+	menu = await _open_menu(combat)
+	if not _expect(menu != null, "행동 정하기 뒤 다시 행동창"):
+		return
 	var turns_before := combat.battle.turns
 	_press(combat, Strings.t("combat.cmd_skill"))
 	var skill_labels := Array(menu.grid().option_texts())
@@ -333,6 +337,30 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	await _action("menu_confirm")
 	await _frames(2)
 	_expect(combat.battle.turns > turns or not combat.battle.result.is_empty(), "Space로 고른 공격이 차례를 쓴다")
+
+
+## 행동 정하기(피어 앤 헝거식): 동료가 있으면 차례가 온 사람 + 아직 안 정한 동료의 행동을 먼저 다 고르고 나서 움직인다.
+## 뒤로(Enter)는 앞사람 행동을 다시 고른다. 시험 뒤 동료는 전투에서 빠진다(쓰러진 것으로).
+func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
+	var b := combat.battle
+	var mate := PlayerCharacter.create(DataRegistry.db, "human", "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+	var mu := b.add(mate, Combatant.SIDE_PARTY)
+	combat._add_unit(mu)
+	menu.close()
+	combat._begin_planning(b.current)
+	var turns := b.turns
+	_press(combat, Strings.t("combat.cmd_guard"))
+	_expect(b.turns == turns and menu.is_open() and combat._planning.size() == 2 and combat._plan_i == 1, "한 사람을 정하면 다음 사람 차례(아직 움직이지 않음)")
+	_expect(_has_label(combat, Strings.t("combat.cmd_guard")), "파티 창에 정해 둔 행동")
+	await _action("menu_back")
+	_expect(combat._plan_i == 0 and combat._plan.is_empty(), "뒤로 → 앞사람 다시 고르기")
+	_press(combat, Strings.t("combat.cmd_guard"))
+	_press(combat, Strings.t("combat.cmd_guard"))
+	await _frames(2)
+	_expect(b.turns > turns or not b.result.is_empty(), "모두 정하면 차례대로 움직인다")
+	mate.pool.set_current("hp", 0.0)
+	combat._refresh()
+	await _frames(2)
 
 
 ## 아군 차례가 와서 행동창이 열릴 때까지 기다린다. 전투가 끝나면 null.

@@ -9,6 +9,8 @@ extends HBoxContainer
 
 signal chosen(action: Dictionary)
 signal target_hovered(target: Combatant)
+## 명령 칸에서 뒤로(Enter) — 앞사람의 행동을 다시 고른다.
+signal root_back
 
 const ROOT_ATTACK := 0
 const ROOT_SKILL := 1
@@ -121,7 +123,7 @@ func _root(start: int) -> void:
 		_opt(Strings.t("combat.cmd_item"), "", "" if not items.is_empty() else Strings.t("combat.no_usable_item"), _items, not items.is_empty()),
 	]
 	_show_list(false)
-	_cmds.show_choices("", opts, Callable(), start)
+	_cmds.show_choices("", opts, func() -> void: root_back.emit(), start)
 
 
 func _sub(title: String, opts: Array[Dictionary], back: Callable, start: int = 0) -> void:

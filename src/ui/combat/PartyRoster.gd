@@ -36,6 +36,11 @@ func add_unit(u: Combatant) -> void:
 	nm.clip_text = true
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	h.add_child(nm)
+	var plan := UiTheme.label("", "small", "gold")
+	plan.custom_minimum_size.x = UiTheme.metric("combat_roster_plan_width", 150)
+	plan.clip_text = true
+	plan.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	h.add_child(plan)
 	var status := UiTheme.label("", "small", "warn")
 	status.custom_minimum_size.x = UiTheme.metric("combat_roster_status_width", 130)
 	status.clip_text = true
@@ -64,7 +69,7 @@ func add_unit(u: Combatant) -> void:
 		bar.add_theme_stylebox_override("background", UiTheme.box(Color(0, 0, 0, 0.5), Color.TRANSPARENT, 1, 0))
 		box.add_child(bar)
 		bars[r] = [bar, val]
-	_rows[u] = {"panel": panel, "name": nm, "status": status, "bars": bars}
+	_rows[u] = {"panel": panel, "name": nm, "plan": plan, "status": status, "bars": bars}
 	refresh()
 
 
@@ -72,6 +77,12 @@ func remove_unit(u: Combatant) -> void:
 	if _rows.has(u):
 		(_rows[u]["panel"] as Node).queue_free()
 		_rows.erase(u)
+
+
+## 정해 둔 행동(행동 정하기에서 고른 것 — 차례가 와서 하면 지운다).
+func set_plan(u: Combatant, text: String) -> void:
+	if _rows.has(u):
+		(_rows[u]["plan"] as Label).text = text
 
 
 func set_current(u: Combatant) -> void:
@@ -111,6 +122,7 @@ func _style() -> void:
 		var bg := UiTheme.color("slot_hover") if cur else Color(0, 0, 0, 0)
 		var border := UiTheme.color("gold") if tgt else (UiTheme.color("slot_border") if cur else Color(0, 0, 0, 0))
 		var box := UiTheme.box(bg, border, 2, UiTheme.metric("combat_roster_pad", 6))
-		box.set_border_width_all(2 if tgt else 1)
+		if tgt:
+			box.set_border_width_all(2)
 		(row["panel"] as PanelContainer).add_theme_stylebox_override("panel", box)
 		(row["name"] as Label).add_theme_color_override("font_color", UiTheme.color("gold" if cur else "text"))

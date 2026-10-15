@@ -301,6 +301,7 @@
     "party": "탐험가",
     "menu_root": "{name}의 차례",
     "menu_target": "누구를?",
+    "plan_target": "{act} → {target}",
     "menu_skill": "스킬",
     "menu_item": "아이템",
     "cmd_attack": "공격",
