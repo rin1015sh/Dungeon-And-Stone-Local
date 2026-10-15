@@ -28,6 +28,8 @@
   - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
 - 도시 그림 다시 만들기(약 2분): `godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors|plaza]` → `assets/city/`(데이터가 가리키는 경로, WebP). 그림체 = 피어 앤 헝거 2풍 손그림 일러스트(ASSUMPTIONS CT21~CT25).
   - 렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다).
+- 몬스터 전투 그림 다시 만들기(약 4분): `godot --headless --path . --script res://tools/paint_monsters.gd [-- --only=<id,id>]` → `assets/monsters/<id>.webp` + `index.json`(몸 높이). 그림체 = 피어 앤 헝거 몬스터 그림풍(ASSUMPTIONS UI8), 설계는 `tools/monster_art/Specs.gd`·`Specs2.gd`. 새로 그렸으면 `--import` 후 `screenshot.tscn -- --screen=explore --combat --monster=<id>`로 본다.
+  - `--script` 도구가 파싱 오류로 멈추면(출력 없이 시간 초과) `--check-only --script res://tools/monster_art/<파일>.gd`로 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다.
   - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(Noto Sans KR)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
@@ -115,11 +117,11 @@ src/
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/city/               CityStreet(레이어 시차 스크롤 거리 + 강조 셰이더), CityHud(귀퉁이 카드 — 달력·탐험가·메뉴), CityUi(카드 스타일),
                          FacilityView(시설 내부), CityPanel + ShopPanel·BankPanel·EssenceRemovePanel, CityDebugPanel
-  ui/combat/             BattleStage(전투 무대 — 어둠·빛 웅덩이, 적 정면·아군 뒷모습 배치), BattlerView, CombatFigure(전투 몸 그리기), PartyRoster(파티 창)
+  ui/combat/             BattleStage(전투 무대 — 어둠·빛 웅덩이, 적 정면·아군 뒷모습 배치), BattlerView, MonsterArt(몬스터 그림·몸 높이 색인), CombatFigure(그림 없을 때 몸 그리기), PartyRoster(파티 창)
   ui/screens/            TitleScreen(이어하기), CharacterCreateScreen, CityScreen, PlazaScreen(차원광장·포탈·저장), ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd(test_save 저장 · test_web 웹 배포 점검), smoke_ui.gd/.tscn
-tools/                   check.sh, export_web.sh(웹 내보내기), validate_data.gd, screenshot.gd/.tscn, paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
-assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(layers/ 거리 레이어 · buildings/ · interiors/ · plaza.webp — WebP)
+tools/                   check.sh, export_web.sh(웹 내보내기), validate_data.gd, screenshot.gd/.tscn, paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), paint_monsters.gd + monster_art/(몬스터 전투 그림 → assets/monsters/: Clay 3D 덩어리 조형·Render 붓 칠/잉크/빗금·Rig 뼈대·Anatomy 몸·Face 얼굴·Hair·Kit 옷·Arms 무기·Extras 날개/꼬리·Fur 털·Beast(Head) 네발짐승·Things(2) 기괴체·Finish 피/마감·Specs(2) 52종 설계), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
+assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(layers/ 거리 레이어 · buildings/ · interiors/ · plaza.webp — WebP) monsters/(<id>.webp 전투 그림 + index.json 몸 높이)
 ```
 
 ## 핵심 개념 빠른 참조

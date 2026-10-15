@@ -72,16 +72,17 @@ func layout() -> void:
 	var gap := float(UiTheme.metric("combat_enemy_gap", 24))
 	for u in foes:
 		var v: BattlerView = _views[u]
-		var h := minf(base_h * sqrt(clampf(v.size_k, 0.35, 2.4)), floor_y - 40.0)
+		var room := floor_y - float(UiTheme.metric("combat_enemy_top_room", 96))  # 위 안내 줄·이름표 자리를 남긴다
+		var h := minf(base_h * sqrt(clampf(v.size_k, 0.35, 2.4)), room / maxf(1.0, v.height_ratio()))
 		heights.append(h)
-		total += CombatFigure.width_of(v.shape, h) + gap
+		total += v.width_for(h) + gap
 	var avail := size.x * 0.92
 	var fit := minf(1.0, avail / maxf(1.0, total))
 	var x := (size.x - total * fit) / 2.0 + gap * fit / 2.0
 	for i in foes.size():
 		var v: BattlerView = _views[foes[i]]
 		var h := heights[i] * fit
-		var w := CombatFigure.width_of(v.shape, h)
+		var w := v.width_for(h)
 		v.place(Vector2(x + w / 2.0, floor_y), h)
 		x += w + gap * fit
 	var ph := stage_h * UiTheme.ui_float("combat_party_height", 0.38)

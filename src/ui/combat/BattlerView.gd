@@ -1,6 +1,7 @@
 class_name BattlerView
 extends Control
-## 전투 무대 위의 참가자 하나(CombatFigure로 그린 몸). 적은 정면 + 머리 위 이름·발밑 생명력 막대·상태,
+## 전투 무대 위의 참가자 하나. 몬스터는 일러스트(MonsterArt — 없으면 CombatFigure 도형), 아군은 CombatFigure 뒷모습.
+## 적은 정면 + 머리 위 이름·발밑 생명력 막대·상태,
 ## 아군은 뒷모습만(이름·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
 ## 쓰러지거나 도망치면 흐려진다. 누르면 clicked(대상 고르기 중이면 그 대상을 고른다).
 
@@ -11,6 +12,8 @@ var shape: String = "humanoid"
 var color: Color = Color.GRAY
 var size_k: float = 1.0
 var front: bool = true
+var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
+var _art_body: float = 1.0  ## 그림 속 몸 높이 px
 var _current: bool = false
 var _target: bool = false
 var _name: Label
@@ -26,6 +29,10 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 		shape = JsonUtil.get_str(def, "shape", "humanoid")
 		size_k = JsonUtil.get_float(def, "size", 1.0)
 		color = Color.from_string(JsonUtil.get_str(def, "color"), Color.GRAY)
+		if front:  # 아군 소환수는 뒷모습 도형 그대로(그림은 정면뿐)
+			art = MonsterArt.texture((u.actor as Monster).monster_id)
+		if art != null:
+			_art_body = MonsterArt.body_height((u.actor as Monster).monster_id, art)
 	elif u.actor is PlayerCharacter:
 		color = Color.from_string(JsonUtil.get_str(db.get_entry("races", (u.actor as PlayerCharacter).race_id), "color"), Color.GRAY)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -49,15 +56,30 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	add_child(_status)
 
 
+## 키 h일 때 그림 전체 높이 / h(들어 올린 무기·뿔·이름표 자리 포함 — 무대가 화면 위로 넘치지 않게 줄일 때).
+func height_ratio() -> float:
+	if art != null:
+		return art.get_height() / _art_body
+	return CombatFigure.top_of(shape)
+
+
+## 키 h일 때 차지하는 폭(무대 배치용).
+func width_for(h: float) -> float:
+	if art != null:
+		return art.get_width() * h / _art_body
+	return CombatFigure.width_of(shape, h)
+
+
 ## 무대가 정한 자리: 발 위치 · 키. 이름은 머리 위, 막대·상태는 발밑.
 func place(foot: Vector2, h: float) -> void:
-	var w := CombatFigure.width_of(shape, h)
-	size = Vector2(w, h * 1.12)
+	var w := width_for(h)
+	size = Vector2(w, art.get_height() * h / _art_body if art != null else h * 1.12)
 	position = foot - Vector2(w / 2.0, size.y)
 	if front:
 		var lw := maxf(w, UiTheme.metric("combat_enemy_label_width", 150))
+		var top := h if art != null else h * CombatFigure.top_of(shape)
 		_name.size = Vector2(lw, 20)
-		_name.position = Vector2((w - lw) / 2.0, size.y - h * CombatFigure.top_of(shape) - 26)
+		_name.position = Vector2((w - lw) / 2.0, size.y - top - 26)
 		_bar.size = Vector2(minf(w * 0.7, 160.0), _bar.custom_minimum_size.y)
 		_bar.position = Vector2((w - _bar.size.x) / 2.0, size.y + 8)
 		_status.size = Vector2(lw, 20)
@@ -95,6 +117,11 @@ func set_targeted(on: bool) -> void:
 
 func _draw() -> void:
 	var glow := 1.0 if _target else (0.55 if _current else 0.0)
+	if art != null:
+		var foot := Vector2(size.x / 2.0, size.y)
+		CombatFigure.ground(self, foot, minf(size.x * 0.42, size.y * 0.5), size.y, glow)
+		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
+		return
 	var c := color.lightened(0.12) if _current and not front else color
 	CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)
 

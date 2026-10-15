@@ -22,6 +22,15 @@ static func paint(c: CanvasItem, shape: String, color: Color, front: bool, foot:
 		_outline_glow(c, foot, h, glow)
 
 
+## 그림 파일(MonsterArt)을 쓸 때의 발밑: 그림자 + (고른 대상·차례면) 금빛 고리. rx = 그림 폭의 절반.
+static func ground(c: CanvasItem, foot: Vector2, rx: float, h: float, glow: float) -> void:
+	_shadow(c, foot, rx, h / 100.0)
+	if glow > 0.0:
+		var ring := _ellipse(foot + Vector2(0, 2), rx * 1.05, rx * 0.19, 32)
+		ring.append(ring[0])
+		c.draw_polyline(ring, Color(0.95, 0.78, 0.35, glow), maxf(2.0, h / 60.0), true)
+
+
 ## 발에서 머리 꼭대기까지(키 h에 대한 비율) — 이름표 자리.
 static func top_of(shape: String) -> float:
 	match shape:

@@ -52,6 +52,19 @@ godot --headless --path . --script res://tools/paint_city.gd            # 전부
 godot --headless --path . --script res://tools/paint_city.gd -- --only=street   # street | buildings | interiors
 ```
 
+## 몬스터 그림
+
+전투 화면의 몬스터 그림(`assets/monsters/<id>.webp` 52장 + `index.json` 몸 높이)은 `tools/paint_monsters.gd`가 **피어 앤 헝거 몬스터 그림풍**(밝은 살과 적갈색 그늘의 붓 칠 · 근육 사이 잉크 골 · 펜 빗금 · 털 붓결 · 피)으로 그린 것입니다. 몸을 3D 덩어리로 빚은 뒤 칠합니다(`tools/monster_art/`).
+- 모습 설계는 `tools/monster_art/Specs.gd`·`Specs2.gd`에 몬스터 id마다 한 항목(자세·체형·머리·옷·무기·색).
+- 그림이 없는 몬스터는 예전처럼 도형으로 보입니다. 새 몬스터를 넣으면 설계를 추가하고 그 id만 다시 그리세요.
+
+```bash
+godot --headless --path . --script res://tools/paint_monsters.gd                       # 전부(약 4분)
+godot --headless --path . --script res://tools/paint_monsters.gd -- --only=goblin,slime  # 일부
+```
+
+손으로 그린 원화로 바꾸려면 같은 경로에 덮어쓰고(발이 그림 아래 끝), `index.json`에 그 그림 속 몸 높이(px)를 적으세요.
+
 ## 한글 폰트
 
 Noto Sans KR Regular(SIL OFL 1.1, `assets/fonts/OFL.txt`)를 번들했습니다. 다른 OFL 한글 폰트를 쓰려면 `assets/fonts/`에 넣고 `data/render.json`의 `font.path`를 바꾸세요.
@@ -59,6 +72,17 @@ Noto Sans KR Regular(SIL OFL 1.1, `assets/fonts/OFL.txt`)를 번들했습니다.
 ---
 
 ## 테스트 플레이 체크리스트
+
+### 몬스터 그림 (2026-10-15)
+
+| # | 할 일 | 기대 결과 |
+|---|---|---|
+| 1 | 미궁 1층에서 고블린·칼날늑대·구울·노움과 싸운다 | 도형 대신 손으로 칠한 듯한 그림(잉크 윤곽·붓 칠·빗금). 늑대는 다가오는 3/4 정면, 구울은 네발로 기는 모습 |
+| 2 | 적이 여럿일 때 | 그림이 바닥선에 발을 딛고 나란히 선다. 덩치 큰 몬스터(시체골렘·킹 슬라임)가 더 크다 |
+| 3 | 무기를 치켜든 몬스터(고블린 광부·타룬바스·블라터) | 무기가 잘리지 않고, 이름표는 머리 위(무기 끝이 아니라) |
+| 4 | 적을 대상으로 고른다 | 그림 발밑에 금빛 고리 |
+| 5 | 적이 쓰러진다 | 그림이 흐려진다 |
+| 6 | 웹 빌드에서 전투 | 같은 그림이 보인다(index.json 포함) |
 
 ### 전투 화면 (2026-10-15)
 

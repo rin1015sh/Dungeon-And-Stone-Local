@@ -59,6 +59,8 @@
     "panel_alpha": 0.82,
     "end_delay_sec": 1.2,
     "combat_ai_delay_sec": 0.45,
+    "combat_art_dir": "res://assets/monsters",
+    "combat_enemy_top_room": 96,
     "combat_dim_alpha": 1.0,
     "combat_card_width": 150,
     "combat_figure_height": 110,
