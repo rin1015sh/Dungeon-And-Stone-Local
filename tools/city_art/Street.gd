@@ -107,18 +107,25 @@ static func _gaps(p: Paint, baseline: int, spans: Array) -> void:
 			x += 12.0
 		Ink.line(p, Vector2(a, g - 96), Vector2(b, g - 96), 2.4, Color("#1c1a17"), 0.95, 0.3)
 		var mid := (a + b) / 2.0
-		match i % 5:
-			0:
-				_dead_tree(p, mid, g - 60, 1.0)
-			1:
-				Props.well(p, mid + 10, g + 18)
-			2:
-				_notice_board(p, mid, g + 16)
-			3:
-				Props.cart(p, mid, g + 22)
-			4:
-				_dead_tree(p, mid - 20, g - 60, 0.85)
-				Props.barrel(p, mid + 40, g + 16, 30, 40)
+		if b - a < 150.0:  # 좁은 틈: 폭이 작은 소품만
+			if i % 2 == 0:
+				_dead_tree(p, mid + 8, g - 60, 0.8)
+			else:
+				Props.barrel(p, mid + 12, g + 16, 30, 40)
+				Props.crate(p, mid + 34, g + 16, 26)
+		else:
+			match i % 5:
+				0:
+					_dead_tree(p, mid, g - 60, 1.0)
+				1:
+					Props.well(p, mid + 10, g + 18)
+				2:
+					_notice_board(p, mid, g + 16)
+				3:
+					Props.cart(p, mid, g + 22)
+				4:
+					_dead_tree(p, mid - 20, g - 60, 0.85)
+					Props.barrel(p, mid + 40, g + 16, 30, 40)
 		Props.lamp_post(p, a + 22 if i > 0 else b - 30, g + 20, 190)
 
 

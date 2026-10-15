@@ -3,7 +3,7 @@
   "name_ko": "도서관",
   "desc_ko": "오래된 기록이 쌓인 도서관. 책을 읽으며 미궁에 대한 정보를 모은다.",
   "order": 2,
-  "x": 786,
+  "x": 716,
   "building": "res://assets/city/buildings/library.webp",
   "interior": "res://assets/city/interiors/library.webp",
   "activities": [

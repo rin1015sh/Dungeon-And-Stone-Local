@@ -16,9 +16,9 @@ static func sky(w: int, h: int, seed_value: int) -> Paint:
 	var horizon := h * 0.74
 	p.fill_rect(0, 0, w, h, func(x: int, y: int) -> Color:
 		var t := y / horizon
-		var c := Color("#181d20").lerp(Color("#3a423d"), clampf(t * 1.3, 0.0, 1.0))
+		var c := Color("#2c3438").lerp(Color("#57604f"), clampf(t * 1.3, 0.0, 1.0))
 		if t > 0.6:
-			c = c.lerp(Color("#867f55"), clampf((t - 0.6) / 0.4, 0.0, 1.0) * 0.8)
+			c = c.lerp(Color("#a19a6a"), clampf((t - 0.6) / 0.4, 0.0, 1.0) * 0.8)
 		return p.vary(c, x, y, 0.08))
 	var moon := Vector2(w * 0.72, h * 0.2)
 	Ink.glow(p, moon.x, moon.y, h * 0.5, Color("#6f7a52"), 0.35)
@@ -30,7 +30,7 @@ static func sky(w: int, h: int, seed_value: int) -> Paint:
 		return c.darkened(p.nz("mid", x * 4, y * 4) * 0.2))
 	for band in 7:  # 구름 띠: 가로로 늘인 붓질
 		var cy := h * (0.12 + band * 0.1) + p.rng.randf_range(-8, 8)
-		var c := Color("#2a302c").lerp(Color("#6b6a4c"), band / 7.0)
+		var c := Color("#3c443f").lerp(Color("#7e7c5a"), band / 7.0)
 		for i in int(w / 6.0):
 			var x := p.rng.randf() * w
 			var yy := cy + p.rng.randf_range(-10, 10) + sin(x * 0.01 + band) * 8.0
@@ -111,7 +111,7 @@ static func vignette(w: int, h: int, seed_value: int) -> Paint:
 	var p := Paint.new(w, h, seed_value)
 	p.fill_rect(0, 0, w, h, func(x: int, y: int) -> Color:
 		var d := Vector2((x - w / 2.0) / (w / 2.0), (y - h * 0.55) / (h * 0.6)).length()
-		var a := smoothstep(0.55, 1.35, d) * 0.75 + (1.0 - float(y) / h) * (1.0 - float(y) / h) * 0.25
+		var a := smoothstep(0.55, 1.35, d) * 0.65 + (1.0 - float(y) / h) * (1.0 - float(y) / h) * 0.1
 		return Color(0.04, 0.04, 0.035, clampf(a, 0.0, 0.85)))
 	return p
 

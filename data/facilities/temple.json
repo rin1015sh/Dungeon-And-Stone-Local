@@ -3,7 +3,7 @@
   "name_ko": "신전",
   "desc_ko": "신관들이 지키는 신전. 봉사활동을 하거나 몸에 깃든 정수를 지울 수 있다.",
   "order": 3,
-  "x": 1330,
+  "x": 1190,
   "building": "res://assets/city/buildings/temple.webp",
   "interior": "res://assets/city/interiors/temple.webp",
   "activities": [
