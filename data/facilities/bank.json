@@ -2,9 +2,9 @@
   "id": "bank",
   "name_ko": "은행",
   "order": 5,
-  "x": 895,
-  "building": "res://assets/city/buildings/bank.png",
-  "interior": "res://assets/city/interiors/bank.png",
+  "x": 2096,
+  "building": "res://assets/city/buildings/bank.webp",
+  "interior": "res://assets/city/interiors/bank.webp",
   "activities": [
     "bank_account"
   ],

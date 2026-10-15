@@ -14,6 +14,7 @@ static func run(v: ValidatorBase) -> void:
 		return
 	_calendar(v, JsonUtil.get_dict(city, "calendar"))
 	_city_numbers(v, city)
+	_street(v, JsonUtil.get_dict(city, "street"))
 	_facilities(v, city)
 	_activities(v)
 	_info(v)
@@ -48,12 +49,54 @@ static func _city_numbers(v: ValidatorBase, city: Dictionary) -> void:
 	var hi: Variant = fat.get("max")
 	if (lo is float or lo is int) and (hi is float or hi is int) and float(lo) > float(hi):
 		v.err("city.fatigue", "min이 max보다 크다")
+	var tiers: Variant = fat.get("effects")
+	if tiers is Array:
+		for t: Variant in tiers:
+			if not t is Dictionary or not (t as Dictionary).has("at_least") or not JsonUtil.get_array(t, "modifiers") is Array:
+				v.err("city.fatigue.effects", "단계는 {at_least, name_ko, modifiers[]}")
+				continue
+			for m: Variant in JsonUtil.get_array(t, "modifiers"):
+				if not m is Dictionary or not v.db.stats.has(JsonUtil.get_str(m, "target")):
+					v.err("city.fatigue.effects", "수정자 target은 스탯 id: %s" % [m])
+	elif tiers != null:
+		v.err("city.fatigue", "effects는 단계 배열 또는 null")
+	var cal := JsonUtil.get_dict(city, "calendar")
+	for pair: Array in [["portal_rule", ["after_late_period"]], ["return_date_rule", ["next_month_early"]]]:
+		var rv: Variant = cal.get(pair[0])
+		if rv != null and not str(rv) in pair[1]:
+			v.err("city.calendar", "%s는 %s 또는 null" % [pair[0], pair[1]])
+	var enter: Variant = JsonUtil.get_dict(city, "bank").get("on_dungeon_enter")
+	if enter != null and str(enter) != "keep":
+		v.err("city.bank", "on_dungeon_enter는 keep 또는 null")
 	var stock: Variant = JsonUtil.get_dict(city, "shop").get("stock")
 	if stock is Array:
 		for id: Variant in stock:
 			v.ref("city.shop.stock", "items", id)
 	elif stock != null:
 		v.err("city.shop", "stock은 아이템 id 배열 또는 null")
+
+
+## 거리 레이어: id·경로(res://)·시차 0~1·배율 > 0, 거리 길이 > 0. 그림 파일이 없어도 게임은 돈다(경로만 검사).
+static func _street(v: ValidatorBase, street: Dictionary) -> void:
+	if JsonUtil.get_float(street, "width", 0.0) <= 0.0:
+		v.err("city.street", "width(거리 길이)는 0보다 커야 한다")
+	var ids := {}
+	for layer: Variant in JsonUtil.get_array(street, "layers"):
+		var d := layer as Dictionary
+		if d == null:
+			v.err("city.street.layers", "레이어는 객체여야 한다")
+			continue
+		var id := JsonUtil.get_str(d, "id")
+		if id.is_empty() or ids.has(id):
+			v.err("city.street.layers", "레이어 id가 비었거나 겹친다: '%s'" % id)
+		ids[id] = true
+		if not JsonUtil.get_str(d, "path").begins_with(IMAGE_PREFIX):
+			v.err("city.street.layers." + id, "path는 res:// 경로여야 한다")
+		var par := JsonUtil.get_float(d, "parallax", 1.0)
+		if par < 0.0 or par > 1.0:
+			v.err("city.street.layers." + id, "parallax는 0~1")
+		if JsonUtil.get_float(d, "scale", 1.0) <= 0.0 or JsonUtil.get_float(d, "height", 720.0) <= 0.0:
+			v.err("city.street.layers." + id, "scale·height는 0보다 커야 한다")
 
 
 static func _facilities(v: ValidatorBase, city: Dictionary) -> void:
@@ -83,7 +126,9 @@ static func _activities(v: ValidatorBase) -> void:
 		var a := v.db.get_entry("activities", id)
 		var w := "activities/" + id
 		v.ref(w + ".facility", "facilities", a.get("facility"))
-		for key: String in ["ap_cost", "cost_stones"]:
+		if a.has("ap_cost"):
+			v.err(w, "ap_cost는 쓰지 않는다 — 시설 안 활동은 행동력을 쓰지 않는다(입장 비용은 city.json facility_entry_cost)")
+		for key: String in ["cost_stones"]:
 			if a.get(key) != null and JsonUtil.get_float(a, key, -1.0) < 0.0:
 				v.err(w, key + "는 0 이상의 수 또는 null")
 		var panel := JsonUtil.get_str(a, "panel")

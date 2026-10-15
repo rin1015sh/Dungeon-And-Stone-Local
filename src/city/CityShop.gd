@@ -2,7 +2,7 @@ class_name CityShop
 extends RefCounted
 ## 상점(구매·판매): 기존 아이템 데이터의 price를 그대로 쓴다. 규칙 값은 city.json shop.
 ##   stock null → 임시로 price > 0인 아이템 전부(마석·균열 귀속 제외), sell_ratio null → 임시로 1,
-##   accepts_magic_stones null → 마석을 받지 않는다. 거래마다 활동(shop_trade)의 행동력·비용을 낸다.
+##   accepts_magic_stones null → 마석을 받지 않는다, magic_stone_ratio = 마석 매입가 비율. 거래마다 활동(shop_trade)의 이용료를 낸다.
 
 const MAGIC_STONE := "magic_stone"
 
@@ -47,8 +47,13 @@ static func can_sell(state: CityState, item_id: String) -> bool:
 	return true
 
 
+## 판매가: 마석은 magic_stone_ratio(없으면 sell_ratio), 그 밖은 sell_ratio.
 static func sell_price(state: CityState, item_id: String) -> int:
-	return floori(price(state.db, item_id) * sell_ratio(state))
+	var c := config(state)
+	var ratio := sell_ratio(state)
+	if JsonUtil.get_str(state.db.get_entry("items", item_id), "category") == MAGIC_STONE and CityValues.is_set(c, "magic_stone_ratio"):
+		ratio = maxf(0.0, CityValues.num(c, "magic_stone_ratio"))
+	return floori(price(state.db, item_id) * ratio)
 
 
 ## 가방에서 팔 수 있는 아이템 id.

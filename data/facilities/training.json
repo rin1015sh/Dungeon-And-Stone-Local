@@ -2,9 +2,9 @@
   "id": "training",
   "name_ko": "훈련장",
   "order": 6,
-  "x": 1090,
-  "building": "res://assets/city/buildings/training.png",
-  "interior": "res://assets/city/interiors/training.png",
+  "x": 2596,
+  "building": "res://assets/city/buildings/training.webp",
+  "interior": "res://assets/city/interiors/training.webp",
   "activities": [
     "training_train"
   ],

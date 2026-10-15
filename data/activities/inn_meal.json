@@ -2,15 +2,18 @@
   "id": "inn_meal",
   "name_ko": "식사",
   "facility": "inn",
-  "desc_ko": "여관에서 밥을 먹으며 오가는 소문에 귀를 기울인다.",
-  "ap_cost": null,
-  "cost_stones": null,
+  "cost_stones": 20,
   "effects": [
     {
-      "type": "learn_info",
-      "kind": "rumor",
-      "chance": null
+      "type": "fatigue",
+      "direction": "down",
+      "amount": 15
+    },
+    {
+      "type": "give_item",
+      "item": "leftovers",
+      "count": 1
     }
   ],
-  "source": "original"
+  "source": "placeholder"
 }

@@ -110,7 +110,6 @@ class DiscardZone:
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		add_child(l)
 		custom_minimum_size.x = UiTheme.metric("inv_discard_width", 64)
-		tooltip_text = Strings.t("inventory.discard_tip")
 
 	func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 		return data is Dictionary and str((data as Dictionary).get("from")) == "grid"

@@ -1,7 +1,9 @@
 class_name CityDebugPanel
 extends PanelContainer
-## 도시 디버그 패널(F1): 날짜·순 바꾸기, 행동력·피로도 설정, 미정(null) 값을 실행 중에만 임시로 넣어 보기.
+## 도시 디버그 패널(F1): 날짜·순 바꾸기, 바로 미궁으로, 행동력·피로도 설정, 도시 규칙 값을 실행 중에만 임시로 바꿔 보기.
 ## 임시값은 CityState.overrides에만 들어간다 — 저장되지 않고 데이터 파일도 바뀌지 않는다. 값은 JSON으로 읽는다(숫자, ["str","agi"], true …).
+
+signal dungeon_requested
 
 var _state: CityState
 var _pc: PlayerCharacter
@@ -34,6 +36,7 @@ func _ready() -> void:
 	date.add_child(_period)
 	_btn(date, Strings.t("city.debug_set_date"), _set_date)
 	_btn(date, Strings.t("city.debug_next_period"), func() -> void: _state.next_period())
+	_btn(date, Strings.t("city.debug_dungeon"), func() -> void: dungeon_requested.emit())
 	var ap := HBoxContainer.new()
 	v.add_child(ap)
 	ap.add_child(UiTheme.label(Strings.t("city.debug_ap"), "small", "text"))
@@ -54,14 +57,14 @@ func _ready() -> void:
 	grid.columns = 2
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(grid)
-	for path in CityValues.nulls(_state.db):
+	for path in CityValues.tunables(_state.db):
 		var l := UiTheme.label(path, "small", "text")
 		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		l.clip_text = true
 		l.tooltip_text = path
 		grid.add_child(l)
 		var e := LineEdit.new()
-		e.placeholder_text = Strings.t("city.debug_null")
+		e.placeholder_text = JSON.stringify(CityValues.value_at(_state.db, path))
 		e.custom_minimum_size.x = UiTheme.render_float("city.debug_edit_width", 110.0)
 		if _state.overrides.has(path):
 			e.text = JSON.stringify(_state.overrides[path])
@@ -90,7 +93,7 @@ func _set_date() -> void:
 	_state.changed.emit()
 
 
-## 입력칸을 읽어 임시값으로 넣는다(빈 칸 = 미정 그대로). 피로도 규칙은 캐릭터에 바로 반영한다.
+## 입력칸을 읽어 임시값으로 넣는다(빈 칸 = 데이터 값 그대로). 피로도 규칙은 캐릭터에 바로 반영한다.
 func apply_overrides() -> void:
 	var n := 0
 	var bad := PackedStringArray()

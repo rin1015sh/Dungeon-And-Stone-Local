@@ -1,10 +1,8 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 도시 활동(M4). ap_cost·cost_stones null = 미정(0으로 처리). effects = 효과 목록(타입 = src/city/effects/<type>.gd). panel = 패널형 활동(shop|bank|essence_remove) — 거래마다 ap_cost·cost_stones를 쓴다. 값 null은 '효과 없음'.",
+  "_comment": "스키마 템플릿(로드되지 않음). 도시 활동(M4). cost_stones null = 미정(0으로 처리). 활동은 행동력을 쓰지 않는다(시설 입장만 facility_entry_cost). effects = 효과 목록(타입 = src/city/effects/<type>.gd). panel = 패널형 활동(shop|bank|essence_remove) — 거래마다 cost_stones를 쓴다. 값 null은 '효과 없음'.",
   "id": "inn_rest",
   "name_ko": "휴식",
   "facility": "inn",
-  "desc_ko": "침대에 누워 쉰다.",
-  "ap_cost": null,
   "cost_stones": null,
   "panel": null,
   "effects": [

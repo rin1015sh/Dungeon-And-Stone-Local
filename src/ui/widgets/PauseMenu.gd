@@ -20,7 +20,6 @@ func _init() -> void:
 	v.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	panel.add_child(v)
 	v.add_child(UiTheme.label(Strings.t("explore.paused"), "header", "text_title"))
-	v.add_child(UiTheme.label(Strings.t("explore.paused_hint", {"key": InputSetup.key_label("pause")}), "small", "text_dim"))
 	var resume := UiTheme.button(Strings.t("pause.resume"), func() -> void: resume_requested.emit())
 	resume.focus_mode = Control.FOCUS_NONE
 	v.add_child(resume)

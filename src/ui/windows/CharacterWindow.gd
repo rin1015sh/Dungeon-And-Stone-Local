@@ -102,10 +102,6 @@ func _details() -> Control:
 		shown += 1
 	box.add_child(UiTheme.label(Strings.t("character.sub_stats"), "body", "text_title"))
 	box.add_child(grid if shown > 0 else UiTheme.label(Strings.t("character.none"), "small", "text_dim"))
-	if any_inert:  # 규칙에 아직 연결되지 않은 스탯이 보일 때만 안내(지금 데이터에는 없다 — ASSUMPTIONS ST1)
-		var note := UiTheme.label(Strings.t("character.inert_note"), "small", "text_dim")
-		note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		box.add_child(note)
 	if not pc.boons.is_empty():
 		box.add_child(UiTheme.label(Strings.t("character.boons"), "body", "text_title"))
 		for k: String in pc.boons:  # 키 = "<아이템 key>@<스탯>"

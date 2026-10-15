@@ -18,7 +18,6 @@ var _slots: Array[Button] = []
 var _subs: Array[Label] = []
 var _marks: Array[Label] = []
 var _desc: Label
-var _hint: Label
 var _options: Array[Dictionary] = []
 var _back: Callable = Callable()
 var _cursor: int = 0
@@ -55,9 +54,6 @@ func _init() -> void:
 	_desc.custom_minimum_size.y = UiTheme.metric("combat_desc_height", 40)
 	_desc.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(_desc)
-	_hint = UiTheme.label("", "small", "text_dim")
-	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	add_child(_hint)
 
 
 ## 선택지를 채운다. back이 없으면(맨 위 메뉴) 뒤로 키는 아무 일도 하지 않는다. start = 처음 커서 자리.
@@ -66,8 +62,6 @@ func show_choices(title: String, options: Array[Dictionary], back: Callable = Ca
 	_options = options
 	_back = back
 	_cursor = clampi(start, 0, maxi(0, _options.size() - 1))
-	_hint.text = Strings.t("menu.grid_hint", {"move": _keys(["menu_up", "menu_left", "menu_down", "menu_right"]),
-		"ok": InputSetup.key_label("menu_confirm"), "back": InputSetup.key_label("menu_back")})
 	_render()
 	cursor_moved.emit(_cursor)  # 처음 자리도 알린다(대상 카드 강조)
 
@@ -286,10 +280,3 @@ func _arrow(text: String, d: int) -> Label:
 				and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 			turn_page(d))
 	return l
-
-
-func _keys(actions: Array) -> String:
-	var out := ""
-	for a: String in actions:
-		out += InputSetup.key_label(a)
-	return out

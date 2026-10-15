@@ -1,208 +1,174 @@
 extends RefCounted
-## 도시 그림 소품(통·상자·자루·나무·덤불·울타리·등불·간판·허수아비·무기걸이·수레·우물·촛불).
-## 모두 (p: Px, 발 위치 x, 바닥 y) 기준 — 아래쪽 가운데가 땅에 닿는다. tools/paint_city.gd 전용.
+## 소품(건물 앞·거리·실내 공용): 술통 · 상자 · 자루 · 긴 의자 · 촛불 · 담쟁이 · 가로등 · 허수아비 · 무기걸이 · 깃발 · 수레 · 우물 · 울타리.
+## 모두 같은 잉크 굵기와 붓결. (x, ground) = 아래 가운데(또는 왼쪽 아래) 기준.
 
-const Px := preload("res://tools/city_art/Px.gd")
+const Paint := preload("res://tools/city_art/Paint.gd")
+const Ink := preload("res://tools/city_art/Ink.gd")
+const Mat := preload("res://tools/city_art/Mat.gd")
 
-const WOOD := Color("#6b4f36")
-const WOOD_D := Color("#3e2c1f")
-const IRON := Color("#3a3a3e")
-const LEAF := Color("#4a6a2a")
-const APPLE := Color("#b0352a")
-
-## 간판 그림(7×7). 글자 → 색은 SIGN_COLORS.
-const ICONS := {
-	"mug": ["..www..", ".wwwww.", "ybbbbby", "ybbbbbbb", "ybbbbby", "ybbbbby", ".yyyyy."],
-	"book": ["rrrrrr.", "rwwwwr.", "rwwwwr.", "rwwwwr.", "rwwwwr.", "rrrrrr.", "......."],
-	"sun": ["...y...", ".y.y.y.", "..yyy..", "yyyyyyy", "..yyy..", ".y.y.y.", "...y..."],
-	"bag": ["..bb...", ".b..b..", "..yy...", ".yyyy..", "yyyyyy.", "yyyyyy.", ".yyyy.."],
-	"key": [".yyy...", "y...y..", "y...y..", ".yyy...", "..y....", "..yy...", "..yyy.."],
-	"swords": ["s.....s", ".s...s.", "..s.s..", "...s...", "..s.s..", ".b...b.", "b.....b"],
-}
-const SIGN_COLORS := {"w": Color("#e8e2d0"), "y": Color("#c9a24a"), "b": Color("#6b4a2c"), "r": Color("#8a2f2a"), "s": Color("#b8bcc4")}
+const WOOD := Color("#4d3726")
+const IRON := Color("#24221f")
 
 
-static func barrel(p: Px, x: int, ground: int, bw: int = 9, bh: int = 11) -> void:
-	var top := ground - bh
-	for yy in bh:
-		var bulge := 1 if (yy > 1 and yy < bh - 2) else 0
-		for xx in range(-bulge, bw + bulge):
-			var c := WOOD
-			if (xx + 1) % 3 == 0:
-				c = WOOD_D
-			if xx <= 0:
-				c = c.lightened(0.1)
-			elif xx >= bw - 1:
-				c = c.darkened(0.3)
-			p.px(x - bw / 2 + xx, top + yy, p.jit(c, 0.05))
-	for hy in [top + 2, ground - 3]:
-		for xx in range(-1, bw + 1):
-			p.px(x - bw / 2 + xx, hy, IRON.lightened(0.15) if xx < bw / 2 else IRON)
-	p.rect(x - bw / 2, top, bw, 1, WOOD.lightened(0.15))
+static func barrel(p: Paint, cx: float, ground: float, bw: float, bh: float) -> void:
+	var pts: Array = []
+	for i in 13:
+		var t := float(i) / 12.0
+		pts.append(Vector2(cx - bw / 2.0 - sin(t * PI) * bw * 0.08, ground - bh * t))
+	for i in 13:
+		var t := 1.0 - float(i) / 12.0
+		pts.append(Vector2(cx + bw / 2.0 + sin(t * PI) * bw * 0.08, ground - bh * t))
+	var poly := Paint.poly(pts)
+	p.fill_poly(poly, Mat.planks(p, WOOD, int(cx - bw / 2.0), 0, true, int(maxf(5.0, bw / 5.0))))
+	Ink.shade(p, poly, Vector2(cx - bw / 2.0, 0), Vector2(cx + bw / 2.0, 0), 0.0, 0.5)
+	for t: float in [0.15, 0.5, 0.85]:
+		var y := ground - bh * t
+		Ink.line(p, Vector2(cx - bw / 2.0 - bw * 0.06, y), Vector2(cx + bw / 2.0 + bw * 0.06, y), 2.6, IRON, 0.95, 0.2)
+	Ink.path(p, poly, 2.0)
 
 
-static func crate(p: Px, x: int, ground: int, s: int = 9) -> void:
-	var x0 := x - s / 2
-	var y0 := ground - s
-	p.planks_h(x0, y0, s, s, Color("#7a5b3c"), 3)
-	p.rect(x0, y0, s, 1, WOOD_D)
-	p.rect(x0, ground - 1, s, 1, WOOD_D)
-	p.rect(x0, y0, 1, s, WOOD_D)
-	p.rect(x0 + s - 1, y0, 1, s, WOOD_D)
-	p.line(Vector2i(x0 + 1, y0 + 1), Vector2i(x0 + s - 2, ground - 2), WOOD_D.lightened(0.1))
+static func crate(p: Paint, cx: float, ground: float, s: float) -> void:
+	var poly := Paint.rect_poly(cx - s / 2.0, ground - s, s, s)
+	p.fill_poly(poly, Mat.planks(p, WOOD.lightened(0.12), int(cx), 0, false, int(maxf(5.0, s / 4.0))))
+	Ink.shade(p, poly, Vector2(cx - s / 2.0, 0), Vector2(cx + s / 2.0, 0), 0.0, 0.35)
+	Ink.line(p, Vector2(cx - s / 2.0, ground - s), Vector2(cx + s / 2.0, ground), 3.0, Color("#2c1f15"), 1.0, 0.2)
+	Ink.path(p, poly, 2.0)
 
 
-static func sack(p: Px, x: int, ground: int) -> void:
-	var c := Color("#a08a62")
-	for yy in 8:
-		var half := 2 + mini(yy, 3)
-		for xx in range(-half, half + 1):
-			p.px(x + xx, ground - 8 + yy, p.jit(c.darkened(0.2) if xx > half - 2 else c, 0.05))
-	p.rect(x - 1, ground - 9, 3, 1, Color("#6d5a3c"))
+static func sack(p: Paint, cx: float, ground: float, s: float = 30.0) -> void:
+	var poly := Paint.poly([Vector2(cx - s * 0.2, ground - s), Vector2(cx + s * 0.2, ground - s), Vector2(cx + s * 0.55, ground - s * 0.3), Vector2(cx + s * 0.45, ground), Vector2(cx - s * 0.45, ground), Vector2(cx - s * 0.55, ground - s * 0.3)])
+	p.fill_poly(poly, p.flat(Color("#7b6a4c"), 0.25))
+	Ink.shade(p, poly, Vector2(cx - s * 0.5, 0), Vector2(cx + s * 0.5, 0), 0.0, 0.4)
+	Ink.path(p, poly, 1.8)
 
 
-## 사과나무(레퍼런스의 붉은 열매 나무). size 1 = 보통.
-static func tree(p: Px, x: int, ground: int, size: float = 1.0, apples: bool = true) -> void:
-	var th := int(22 * size)
-	for yy in th:
-		var tw := 3 if yy < th - 4 else 4 + (yy - th + 4)
-		for xx in tw:
-			p.px(x - tw / 2 + xx, ground - th + yy, p.jit(Color("#4b3626") if xx < tw - 1 else Color("#33241a"), 0.06))
-	p.line(Vector2i(x, ground - th + 4), Vector2i(x - int(7 * size), ground - th - 2), Color("#4b3626"))
-	p.line(Vector2i(x, ground - th + 6), Vector2i(x + int(8 * size), ground - th), Color("#4b3626"))
-	var cy := ground - th - int(6 * size)
-	for i in int(14 * size):
-		var bx := x + p.rng.randi_range(int(-13 * size), int(13 * size))
-		var by := cy + p.rng.randi_range(int(-8 * size), int(6 * size))
-		p.blob(bx, by, p.rng.randi_range(4, 7), LEAF.darkened(0.15) if by > cy else LEAF, PackedVector2Array(), 0.9)
-	for i in int(10 * size):
-		var bx := x + p.rng.randi_range(int(-12 * size), int(12 * size))
-		var by := cy + p.rng.randi_range(int(-10 * size), int(-2 * size))
-		p.blob(bx, by, 2, LEAF.lightened(0.15), PackedVector2Array(), 0.6)
-	if apples:
-		for i in int(12 * size):
-			var ax := x + p.rng.randi_range(int(-12 * size), int(12 * size))
-			var ay := cy + p.rng.randi_range(int(-8 * size), int(6 * size))
-			if p.opaque(ax, ay):
-				p.px(ax, ay, APPLE)
-				p.px(ax + 1, ay, APPLE.darkened(0.3))
+static func bench(p: Paint, cx: float, ground: float, bw: float) -> void:
+	var seat := Paint.rect_poly(cx - bw / 2.0, ground - 26, bw, 7)
+	for lx: float in [cx - bw / 2.0 + 8, cx + bw / 2.0 - 14]:
+		var leg := Paint.rect_poly(lx, ground - 22, 6, 22)
+		p.fill_poly(leg, p.flat(WOOD.darkened(0.2), 0.2))
+		Ink.path(p, leg, 1.6)
+	p.fill_poly(seat, Mat.planks(p, WOOD, 0, 0, false, 7))
+	Ink.path(p, seat, 1.8)
 
 
-static func bush(p: Px, x: int, ground: int, rw: int = 10) -> void:
-	for i in rw / 2:
-		p.blob(x + p.rng.randi_range(-rw / 2, rw / 2), ground - p.rng.randi_range(2, 5), p.rng.randi_range(2, 4), LEAF.darkened(0.1))
+static func candle(p: Paint, cx: float, ground: float, ch: float = 14.0) -> void:
+	var body := Paint.rect_poly(cx - 3, ground - ch, 6, ch)
+	p.fill_poly(body, p.flat(Color("#d8cfb4"), 0.1))
+	Ink.path(p, body, 1.2)
+	var flame := Paint.poly([Vector2(cx, ground - ch - 10), Vector2(cx + 3, ground - ch - 3), Vector2(cx, ground - ch), Vector2(cx - 3, ground - ch - 3)])
+	p.fill_poly(flame, p.flat(Color("#ffd58a"), 0.05))
+	Ink.glow(p, cx, ground - ch - 5, 26.0, Color("#ffb45c"), 0.3, false)
 
 
-static func grass_tufts(p: Px, x: int, ground: int, rw: int, count: int) -> void:
-	for i in count:
-		var gx := x + p.rng.randi_range(0, rw)
-		for k in p.rng.randi_range(1, 3):
-			p.px(gx + k - 1, ground - p.rng.randi_range(1, 3), LEAF.lightened(p.rng.randf_range(0.0, 0.25)))
+## 담쟁이: 벽 위에 잎 덩이(짙은 녹갈색) + 늘어진 줄기.
+static func ivy(p: Paint, x: float, y: float, iw: float, ih: float, c: Color = Color("#34402a")) -> void:
+	for i in int(iw * ih / 420.0):
+		var cx := x + p.rng.randf() * iw
+		var cy := y + pow(p.rng.randf(), 1.6) * ih
+		var r := p.rng.randf_range(3.0, 7.0)
+		for yy in range(int(cy - r), int(cy + r) + 1):
+			for xx in range(int(cx - r), int(cx + r) + 1):
+				var d := Vector2(xx - cx, yy - cy).length() / r
+				if d < 1.0 and p.nz("mid", xx * 3, yy * 3) > 0.35:
+					var t := p.nz("hi", xx, yy)
+					p.tint(xx, yy, c.lightened(0.25) if t > 0.75 else (c.darkened(0.4) if t < 0.3 else c), 0.92 * (1.0 - d * d * 0.5))
+	for i in int(iw / 14.0):
+		var vx := x + p.rng.randf() * iw
+		Ink.line(p, Vector2(vx, y + p.rng.randf() * ih * 0.3), Vector2(vx + p.rng.randf_range(-8, 8), y + ih * p.rng.randf_range(0.5, 1.0)), 1.2, c.darkened(0.3), 0.7, 2.0)
 
 
-static func fence(p: Px, x0: int, x1: int, ground: int, fh: int = 9) -> void:
-	for x in range(x0, x1 + 1, 6):
-		p.rect(x, ground - fh, 2, fh, WOOD)
-		p.px(x, ground - fh, WOOD.lightened(0.15))
-		p.rect(x + 1, ground - fh, 1, fh, WOOD_D)
-	for ry in [ground - fh + 2, ground - fh + 5]:
-		for x in range(x0, x1 + 2):
-			p.px(x, ry, p.jit(WOOD.lightened(0.05), 0.08))
-			p.px(x, ry + 1, WOOD_D)
+## 쇠 가로등(길가 공용) — 기둥 + 등 + 빛 번짐.
+static func lamp_post(p: Paint, cx: float, ground: float, ph: float = 150.0) -> void:
+	Ink.line(p, Vector2(cx, ground), Vector2(cx, ground - ph), 5.0, IRON, 1.0, 0.3)
+	Ink.line(p, Vector2(cx - 9, ground), Vector2(cx + 9, ground), 6.0, IRON, 1.0, 0.2)
+	Ink.line(p, Vector2(cx, ground - ph + 20), Vector2(cx + 16, ground - ph + 4), 2.4, IRON, 1.0, 0.2)
+	var lamp := Paint.poly([Vector2(cx - 10, ground - ph - 4), Vector2(cx + 10, ground - ph - 4), Vector2(cx + 7, ground - ph + 18), Vector2(cx - 7, ground - ph + 18)])
+	p.fill_poly(lamp, p.flat(Color("#ffd08a"), 0.08))
+	Ink.path(p, lamp, 2.2, true, IRON, 1.0, 0.2)
+	Ink.line(p, Vector2(cx - 13, ground - ph - 6), Vector2(cx + 13, ground - ph - 6), 4.0, IRON, 1.0, 0.1)
+	Ink.glow(p, cx, ground - ph + 7, 90.0, Color("#ffb45c"), 0.3)
 
 
-## 등불 기둥(따뜻한 빛 번짐 포함).
-static func lamp_post(p: Px, x: int, ground: int) -> void:
-	p.rect(x, ground - 26, 2, 26, Color("#2b2522"))
-	p.rect(x - 1, ground - 2, 4, 2, Color("#2b2522"))
-	p.rect(x - 2, ground - 30, 6, 5, Color("#2b2522"))
-	p.rect(x - 1, ground - 29, 4, 3, Color("#f2c46c"))
-	for r in range(6, 1, -1):
-		for yy in range(-r, r + 1):
-			for xx in range(-r, r + 1):
-				if xx * xx + yy * yy <= r * r:
-					p.px(x + 1 + xx, ground - 28 + yy, Color(1.0, 0.75, 0.4, 0.05))
+## 훈련용 허수아비: 말뚝 + 가로대 팔(끝에 짚 뭉치) + 밧줄로 묶은 짚 몸통 + 둥근 자루 머리(꿰맨 자국) + 핏빛 천.
+static func dummy(p: Paint, cx: float, ground: float, s: float = 1.0) -> void:
+	Ink.line(p, Vector2(cx, ground), Vector2(cx, ground - 118 * s), 7.0 * s, WOOD.lightened(0.1), 1.0, 0.3)
+	Ink.line(p, Vector2(cx - 44 * s, ground - 90 * s), Vector2(cx + 44 * s, ground - 94 * s), 6.0 * s, WOOD.lightened(0.1), 1.0, 0.3)
+	for sgn: float in [-1.0, 1.0]:
+		var hand := Paint.poly([Vector2(cx + sgn * 40 * s, ground - 100 * s), Vector2(cx + sgn * 52 * s, ground - 98 * s), Vector2(cx + sgn * 54 * s, ground - 84 * s), Vector2(cx + sgn * 40 * s, ground - 84 * s)])
+		p.fill_poly(hand, Mat.thatch(p, Color("#8c7646")))
+		Ink.path(p, hand, 1.6)
+	var body := Paint.poly([Vector2(cx - 16 * s, ground - 102 * s), Vector2(cx + 16 * s, ground - 102 * s), Vector2(cx + 24 * s, ground - 74 * s), Vector2(cx + 20 * s, ground - 44 * s), Vector2(cx - 20 * s, ground - 44 * s), Vector2(cx - 24 * s, ground - 74 * s)])
+	p.fill_poly(body, Mat.thatch(p, Color("#9a8150")))
+	Ink.shade(p, body, Vector2(cx - 24 * s, 0), Vector2(cx + 24 * s, 0), 0.0, 0.5)
+	for t: float in [0.3, 0.7]:
+		var y := ground - (102.0 - 58.0 * t) * s
+		Ink.line(p, Vector2(cx - 22 * s, y), Vector2(cx + 22 * s, y + 2 * s), 2.4 * s, Color("#3a2a1a"), 1.0, 0.3)
+	Ink.path(p, body, 2.0)
+	var head: Array = []
+	for i in 18:
+		head.append(Vector2(cx, ground - 118 * s) + Vector2.from_angle(TAU * i / 18.0) * Vector2(15 * s, 16 * s))
+	var hp := Paint.poly(head)
+	p.fill_poly(hp, p.flat(Color("#a8956c"), 0.25))
+	Ink.shade(p, hp, Vector2(cx - 15 * s, 0), Vector2(cx + 15 * s, 0), 0.0, 0.5)
+	Ink.path(p, hp, 2.0)
+	Ink.line(p, Vector2(cx - 9 * s, ground - 122 * s), Vector2(cx + 7 * s, ground - 112 * s), 1.4, Ink.INK, 0.8, 0.3)
+	Ink.line(p, Vector2(cx + 7 * s, ground - 122 * s), Vector2(cx - 9 * s, ground - 112 * s), 1.4, Ink.INK, 0.8, 0.3)
+	Ink.line(p, Vector2(cx - 18 * s, ground - 80 * s), Vector2(cx + 14 * s, ground - 62 * s), 4.0 * s, Color("#7a2219"), 0.95, 0.6)
 
 
-## 매달린 간판: 벽에서 튀어나온 쇠 팔 + 판 + 그림(ICONS).
-static func sign(p: Px, x: int, y: int, icon: String, facing_right: bool = true) -> void:
-	var dir := 1 if facing_right else -1
-	for i in 10:
-		p.px(x + i * dir, y, IRON)
-	p.px(x + 1 * dir, y + 1, IRON)
-	var bx := x + (2 if facing_right else -11)
-	p.px(bx + 1, y + 1, IRON)
-	p.px(bx + 8, y + 1, IRON)
-	p.rect(bx, y + 2, 10, 10, Color("#2a1e15"))
-	p.noisy_rect(bx + 1, y + 3, 8, 8, Color("#5e4430"), 0.06)
-	var rows: Array = ICONS.get(icon, [])
-	p.sprite(bx + 1, y + 4, PackedStringArray(rows), SIGN_COLORS)
-
-
-static func dummy(p: Px, x: int, ground: int) -> void:
-	p.rect(x, ground - 22, 2, 22, WOOD)
-	p.rect(x - 5, ground - 18, 12, 2, WOOD)
-	for yy in 9:
-		for xx in range(-3, 5):
-			p.px(x + xx, ground - 17 + yy, p.jit(Color("#b89a55"), 0.08))
-	for yy in 5:
-		for xx in range(-1, 3):
-			p.px(x + xx, ground - 25 + yy, p.jit(Color("#a08a62"), 0.06))
-	p.rect(x - 3, ground - 13, 8, 1, Color("#6d5a3c"))
-	p.px(x, ground - 23, Color("#2a1e15"))
-	p.px(x + 1, ground - 23, Color("#2a1e15"))
-
-
-static func weapon_rack(p: Px, x: int, ground: int) -> void:
-	p.rect(x - 7, ground - 14, 2, 14, WOOD)
-	p.rect(x + 6, ground - 14, 2, 14, WOOD)
-	p.rect(x - 7, ground - 12, 15, 1, WOOD_D)
-	p.rect(x - 7, ground - 4, 15, 1, WOOD_D)
+static func weapon_rack(p: Paint, cx: float, ground: float) -> void:
+	for lx: float in [cx - 34, cx + 34]:
+		Ink.line(p, Vector2(lx, ground), Vector2(lx, ground - 90), 5.0, WOOD, 1.0, 0.2)
+	Ink.line(p, Vector2(cx - 40, ground - 80), Vector2(cx + 40, ground - 80), 5.0, WOOD, 1.0, 0.2)
+	Ink.line(p, Vector2(cx - 40, ground - 30), Vector2(cx + 40, ground - 30), 4.0, WOOD, 1.0, 0.2)
 	for i in 4:
-		var wx := x - 4 + i * 3
-		p.rect(wx, ground - 17 + (i % 2) * 2, 1, 14, Color("#b8bcc4") if i % 2 == 0 else Color("#6b4f36"))
-		p.px(wx, ground - 18 + (i % 2) * 2, Color("#e0e2e6"))
+		var x := cx - 24 + i * 16
+		Ink.line(p, Vector2(x, ground - 26), Vector2(x + 4, ground - 112 + (i % 2) * 14), 3.0, Color("#8c8a84") if i % 2 == 0 else WOOD.lightened(0.15), 1.0, 0.1)
 
 
-static func banner(p: Px, x: int, ground: int, c: Color) -> void:
-	p.rect(x, ground - 34, 1, 34, Color("#2b2522"))
-	for yy in 14:
-		var ww := 7 - (1 if yy > 10 else 0)
-		for xx in ww:
-			if yy > 11 and xx == ww / 2:
-				continue
-			p.px(x + 1 + xx, ground - 33 + yy, p.jit(c.darkened(0.2) if xx > ww - 3 else c, 0.05))
+static func banner(p: Paint, cx: float, ground: float, c: Color, ph: float = 170.0) -> void:
+	Ink.line(p, Vector2(cx, ground), Vector2(cx, ground - ph), 4.0, WOOD.darkened(0.2), 1.0, 0.2)
+	var cloth := Paint.poly([Vector2(cx + 2, ground - ph + 6), Vector2(cx + 44, ground - ph + 4), Vector2(cx + 42, ground - ph + 84), Vector2(cx + 23, ground - ph + 70), Vector2(cx + 4, ground - ph + 86)])
+	p.fill_poly(cloth, p.flat(c, 0.25))
+	Ink.shade(p, cloth, Vector2(0, ground - ph), Vector2(0, ground - ph + 86), 0.0, 0.4)
+	Ink.path(p, cloth, 1.8)
 
 
-static func cart(p: Px, x: int, ground: int) -> void:
-	p.planks_h(x - 10, ground - 12, 20, 6, Color("#6e5238"), 3)
-	p.rect(x - 10, ground - 6, 20, 1, WOOD_D)
-	p.line(Vector2i(x + 10, ground - 9), Vector2i(x + 20, ground - 4), WOOD)
-	for wx in [x - 6, x + 6]:
-		for yy in range(-4, 5):
-			for xx in range(-4, 5):
-				var d := Vector2(xx, yy).length()
-				if d <= 4.2 and d >= 3.0:
-					p.px(wx + xx, ground - 4 + yy, WOOD_D)
-				elif d < 1.2:
-					p.px(wx + xx, ground - 4 + yy, IRON)
+static func cart(p: Paint, cx: float, ground: float) -> void:
+	var bed := Paint.rect_poly(cx - 50, ground - 52, 100, 24)
+	p.fill_poly(bed, Mat.planks(p, WOOD, int(cx), 0, false, 8))
+	Ink.path(p, bed, 2.0)
+	Ink.line(p, Vector2(cx + 50, ground - 40), Vector2(cx + 96, ground - 24), 3.0, WOOD, 1.0, 0.3)
+	var wheel: Array = []
+	for i in 20:
+		wheel.append(Vector2(cx - 14, ground - 22) + Vector2.from_angle(TAU * i / 20.0) * 22.0)
+	var wp := Paint.poly(wheel)
+	Ink.path(p, wp, 4.0, true, Color("#2a1e15"))
+	for i in 4:
+		var a := TAU * i / 8.0
+		Ink.line(p, Vector2(cx - 14, ground - 22) - Vector2.from_angle(a) * 20.0, Vector2(cx - 14, ground - 22) + Vector2.from_angle(a) * 20.0, 2.0, Color("#2a1e15"), 1.0, 0.1)
+	sack(p, cx + 10, ground - 52, 26)
 
 
-static func well(p: Px, x: int, ground: int) -> void:
-	p.stones(x - 9, ground - 8, 18, 8, Color("#5d625e"), Color("#2b2e2c"), 3, 5)
-	p.rect(x - 8, ground - 22, 2, 14, WOOD)
-	p.rect(x + 6, ground - 22, 2, 14, WOOD)
-	p.shingles(PackedVector2Array([Vector2(x - 12, ground - 21), Vector2(x, ground - 29), Vector2(x + 12, ground - 21)]), Color("#5b4535"), 3, 2)
-	p.rect(x - 6, ground - 17, 12, 1, WOOD_D)
-	p.rect(x - 1, ground - 16, 1, 5, Color("#8a7a5a"))
-	barrel(p, x, ground - 9, 4, 4)
+static func well(p: Paint, cx: float, ground: float) -> void:
+	var ring := Paint.rect_poly(cx - 40, ground - 46, 80, 46)
+	p.fill_poly(ring, Mat.rubble(p, Color("#5e5a52")))
+	Ink.shade(p, ring, Vector2(cx - 40, 0), Vector2(cx + 40, 0), 0.0, 0.4)
+	Ink.path(p, ring, 2.2)
+	for lx: float in [cx - 34, cx + 34]:
+		Ink.line(p, Vector2(lx, ground - 46), Vector2(lx, ground - 120), 5.0, WOOD, 1.0, 0.2)
+	var roof := Paint.poly([Vector2(cx - 52, ground - 112), Vector2(cx, ground - 146), Vector2(cx + 52, ground - 112)])
+	p.fill_poly(roof, Mat.slate(p, Color("#3a4044"), 0, 0, 10, 7, 0.4))
+	Ink.path(p, roof, 2.0)
+	Ink.line(p, Vector2(cx, ground - 112), Vector2(cx, ground - 74), 1.4, IRON, 1.0, 0.1)
+	crate(p, cx, ground - 64, 14)
 
 
-static func candle(p: Px, x: int, y: int) -> void:
-	p.rect(x, y, 1, 3, Color("#e8e0c8"))
-	p.px(x, y - 1, Color("#ffd27a"))
-	for r in [3, 2]:
-		for yy in range(-r, r + 1):
-			for xx in range(-r, r + 1):
-				if xx * xx + yy * yy <= r * r:
-					p.px(x + xx, y - 1 + yy, Color(1.0, 0.8, 0.45, 0.08))
+static func fence(p: Paint, x0: float, x1: float, ground: float, fh: float = 54.0) -> void:
+	var x := x0
+	while x < x1:
+		Ink.line(p, Vector2(x, ground), Vector2(x, ground - fh - p.rng.randf_range(-4, 4)), 4.0, WOOD.darkened(0.1), 1.0, 0.4)
+		x += 18.0
+	for yy: float in [ground - fh * 0.75, ground - fh * 0.35]:
+		Ink.line(p, Vector2(x0 - 4, yy), Vector2(x1, yy + p.rng.randf_range(-3, 3)), 3.0, WOOD.darkened(0.1), 1.0, 0.8)

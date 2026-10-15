@@ -26,9 +26,6 @@ func build() -> void:
 	add_child(acts)
 	acts.add_child(UiTheme.button(Strings.t("city.bank_deposit"), func() -> void: done(CityBank.deposit(state, pc, activity_id, amount()))))
 	acts.add_child(UiTheme.button(Strings.t("city.bank_withdraw"), func() -> void: done(CityBank.withdraw(state, pc, activity_id, amount()))))
-	var note := UiTheme.label(Strings.t("city.bank_note"), "small", "text_dim")
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(note)
 
 
 func amount() -> int:

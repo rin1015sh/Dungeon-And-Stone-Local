@@ -1,6 +1,7 @@
 extends Node
 ## 현재 게임 진행 상태(오토로드): 세션 시드, 플레이어 캐릭터, 층 입장 횟수, 디버그 설정.
-## 도시(M4): city = 순 달력·행동력·신전 공적치·은행·소문/정보(CityState). 파티·저장은 아직 없다.
+## 도시(M4): city = 순 달력·행동력·신전 공적치·은행·소문/정보(CityState). 파티는 아직 없다.
+## 저장: 한 칸(SaveGame) — 차원광장에서만 save_run(), 타이틀 "이어하기" = load_run(). 사망하면 지운다(balance save.delete_on_death).
 
 var master_seed: int = 0
 var rng: Rng = null
@@ -11,6 +12,7 @@ var debug_invulnerable: bool = false
 var debug_fast_combat: bool = false  ## 적 차례 연출 지연 없음(테스트·스모크용)
 var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달). 탐험가마다 새로(도시 달력과의 관계는 미정 — ASSUMPTIONS CT)
 var city: CityState = null  ## 도시 진행 상태(탐험가마다 새로)
+var save_path: String = SaveGame.DEFAULT_PATH  ## 테스트는 다른 경로를 쓴다(실제 저장을 덮지 않게)
 
 
 func _ready() -> void:
@@ -47,3 +49,38 @@ func end_run() -> void:
 	player = null
 	city = null
 	debug_invulnerable = false  # 디버그 무적은 다음 탐험으로 넘기지 않는다
+
+
+## 지금 탐험가·도시를 한 칸에 저장한다(차원광장에서만 부른다).
+func save_run() -> bool:
+	if player == null or city == null:
+		return false
+	return SaveGame.write(SaveGame.capture(player, city, rift_calendar, master_seed, floor_entries), save_path)
+
+
+func has_save() -> bool:
+	return SaveGame.exists(save_path)
+
+
+## 저장을 불러와 진행 상태를 갈아 끼운다. 실패하면 false(상태는 그대로).
+func load_run() -> bool:
+	var data := SaveGame.read(save_path)
+	if data.is_empty():
+		return false
+	var db: GameDatabase = DataRegistry.db
+	var game := JsonUtil.get_dict(data, "game")
+	player = SaveGame.restore_player(db, data)
+	master_seed = JsonUtil.get_int(game, "master_seed", master_seed)
+	floor_entries = JsonUtil.get_int(game, "floor_entries")
+	rift_calendar = RiftCalendar.new(db)
+	rift_calendar.load_dict(JsonUtil.get_dict(data, "rift_calendar"))
+	city = CityState.new(db, absi(hash([master_seed, "city"])) + 1)
+	city.start()
+	city.load_dict(JsonUtil.get_dict(data, "city"))
+	return true
+
+
+## 사망: 하드코어 — 저장을 지운다(balance save.delete_on_death가 false면 남긴다).
+func on_death() -> void:
+	if bool(DataRegistry.db.bal("save.delete_on_death", true)):
+		SaveGame.delete(save_path)

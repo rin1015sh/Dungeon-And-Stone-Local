@@ -2,9 +2,9 @@
   "id": "library",
   "name_ko": "도서관",
   "order": 2,
-  "x": 300,
-  "building": "res://assets/city/buildings/library.png",
-  "interior": "res://assets/city/interiors/library.png",
+  "x": 716,
+  "building": "res://assets/city/buildings/library.webp",
+  "interior": "res://assets/city/interiors/library.webp",
   "activities": [
     "library_read"
   ],

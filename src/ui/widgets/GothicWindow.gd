@@ -25,7 +25,7 @@ func _init(title: String = "") -> void:
 	header.add_child(plaque)
 	plaque.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
 	plaque.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	var close := UiTheme.button("✕", func() -> void: close_requested.emit())
+	var close := UiTheme.button("×", func() -> void: close_requested.emit())
 	close.focus_mode = Control.FOCUS_NONE
 	close.tooltip_text = Strings.t("window.close")
 	header.add_child(close)

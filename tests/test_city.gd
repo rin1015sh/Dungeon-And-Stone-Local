@@ -17,6 +17,16 @@ func _reg() -> ScriptRegistry:
 	return ContentRegistries.new().city_effects
 
 
+## 모든 도시 규칙 값을 미정(null)으로 덮는다(임시값 — 데이터는 그대로). "미정이면 효과 없음" 규칙을 볼 때.
+func _all_undecided(s: CityState, pc: PlayerCharacter = null) -> void:
+	for path in CityValues.tunables(db):
+		if path.begins_with("activities/") and (path.ends_with("/stats") or path.ends_with("/pick")) or path.contains("/calendar/") and not path.ends_with("_rule"):
+			continue
+		s.set_override(path, null)
+	if pc != null:
+		pc.fatigue.setup(CityValues.city_section(db, s.overrides, "fatigue"), false)
+
+
 ## 시설에 들어가 있게 한다(행동력 소모 없이 — 활동 규칙만 볼 때).
 func _inside(s: CityState, facility: String) -> void:
 	s.facility = facility
@@ -48,31 +58,48 @@ func test_spending_all_ap_moves_to_next_period() -> void:
 	assert_eq(s.ap, 3)
 
 
-func test_ap_shortage_blocks_and_never_goes_negative() -> void:
+## 행동력은 시설에 들어갈 때만 1 쓴다(어느 시설이든). 시설 안 활동은 행동력을 쓰지 않는다.
+func test_only_entry_costs_ap() -> void:
 	var s := _state()
 	var pc := _pc()
-	s.set_override("activities/inn_rest/ap_cost", 2)
-	assert_eq(s.enter_facility("inn"), "", "들어가며 행동력 1")
-	assert_eq(s.ap, 2)
-	assert_true(CityActions.perform(s, pc, "inn_rest", _reg()).ok, "행동력 2 → 휴식(2)")
-	assert_eq(s.ap, 0)
-	var ctx := CityActions.perform(s, pc, "inn_rest", _reg())
-	assert_false(ctx.ok, "행동력이 모자라면 할 수 없다")
-	assert_eq(str(ctx.messages[0]["key"]), "city.reason_no_ap")
-	assert_eq(s.ap, 0, "0 아래로 내려가지 않는다")
-	assert_false(s.spend_ap(1), "모자라면 쓰지 않는다")
-	assert_eq(s.ap, 0)
+	for f: String in s.facility_ids():
+		var t := _state()
+		assert_eq(t.enter_facility(f), "", "들어가기 " + f)
+		assert_eq(t.ap, 2, f + " 입장 = 행동력 1")
+	assert_eq(s.enter_facility("inn"), "")
+	for i in 5:
+		assert_true(CityActions.perform(s, pc, "inn_rest", _reg()).ok, "안에서는 몇 번이든")
+	assert_eq(s.ap, 2, "시설 안 활동은 행동력을 쓰지 않는다")
+	assert_false(s.spend_ap(3), "모자라면 쓰지 않는다")
+	assert_eq(s.ap, 2, "0 아래로 내려가지 않는다")
 	s.leave_facility()
-	assert_eq(s.ap, 3, "다 쓰고 나오면 다음 순")
 	s.ap = 0
-	s.facility = ""
 	assert_eq(s.enter_facility("library"), "city.reason_no_ap", "행동력 0이면 시설에 못 들어간다")
+	assert_eq(s.ap, 0)
+
+
+## 하순에 행동력을 다 쓰고 나오면 순을 넘기지 않고 미궁으로(expedition_due). 돌아오면 다음 달 상순·행동력 3.
+func test_late_period_ends_in_dungeon_and_return_starts_next_month() -> void:
+	var s := _state()
+	var due: Array[int] = []
+	s.expedition_due.connect(func() -> void: due.append(1))
+	for p in 3:
+		for f: String in ["inn", "library", "temple"]:
+			s.enter_facility(f)
+			s.leave_facility()
+	assert_eq(due.size(), 1, "하순이 끝나면 미궁으로 떠난다")
+	assert_eq([s.month, s.period_name(), s.ap], [1, "하순", 0], "순은 넘기지 않는다(미궁에 가 있는 동안)")
+	s.return_from_dungeon()
+	assert_eq([s.month, s.period_name(), s.ap], [2, "상순", 3], "귀환하면 다음 달 상순")
+	s.period = 1
+	s.return_from_dungeon()
+	assert_eq([s.month, s.period_name()], [3, "상순"], "중간에 들어갔다 와도 다음 달 상순")
 
 
 func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	var s := _state()
 	var pc := _pc()
-	for kv: Array in [["activities/inn_rest/effects/0/amount", 5], ["activities/library_read/effects/2/amount", 3],
+	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_read/effects/2/amount", 3],
 			["activities/library_read/effects/1/chance", 1.0], ["activities/library_read/effects/1/amount", 2],
 			["activities/training_train/effects/0/stats", ["str"]], ["activities/training_train/effects/0/chance", 1.0],
 			["activities/training_train/effects/0/amount", 1], ["activities/training_train/effects/1/amount", 4]]:
@@ -96,21 +123,20 @@ func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	assert_eq(str(pc.stat_history[1]["stat"]), "str")
 
 
-func test_failed_roll_still_costs_fatigue_and_ap() -> void:
+func test_failed_roll_still_costs_fatigue() -> void:
 	var s := _state()
 	var pc := _pc()
 	s.set_override("activities/training_train/effects/0/stats", ["str"])
 	s.set_override("activities/training_train/effects/0/chance", 0.0)
 	s.set_override("activities/training_train/effects/0/amount", 1)
 	s.set_override("activities/training_train/effects/1/amount", 4)
-	s.set_override("activities/training_train/ap_cost", 1)
 	_inside(s, "training")
 	var before := pc.stats.get_base("str")
 	var ctx := CityActions.perform(s, pc, "training_train", _reg())
 	assert_true(ctx.ok)
 	assert_eq(pc.stats.get_base("str"), before, "판정 실패 → 능력치 그대로")
 	assert_near(pc.fatigue.value, 4.0, 0.001, "피로도는 판정과 상관없이")
-	assert_eq(s.ap, 2, "행동력도 판정과 상관없이")
+	assert_eq(s.ap, 3, "활동은 행동력을 쓰지 않는다")
 
 
 func test_same_seed_same_rolls() -> void:
@@ -136,6 +162,7 @@ func test_every_activity_runs_with_all_values_null() -> void:
 	pc.inventory.add("torch", 1)
 	var inst := EssenceDrop.make(db, "goblin", "", Rng.new(3))
 	assert_eq(pc.essences.absorb(pc, inst), "", "정수 흡수(제거 시험용)")
+	_all_undecided(s, pc)
 	s.ap = 99
 	var fatigue_before := pc.fatigue.value
 	for f in s.facility_ids():
@@ -166,6 +193,7 @@ func test_every_activity_runs_with_all_values_null() -> void:
 func test_bank_conserves_money_without_fee() -> void:
 	var s := _state()
 	var pc := _pc()
+	s.set_override("city/bank/withdraw_fee", 0)
 	_inside(s, "bank")
 	var total := pc.inventory.money + s.bank_balance
 	for step: Array in [["d", 300], ["w", 120], ["d", 77], ["w", 257]]:
@@ -181,6 +209,7 @@ func test_bank_conserves_money_without_fee() -> void:
 func test_shop_uses_item_prices() -> void:
 	var s := _state()
 	var pc := _pc()
+	_all_undecided(s)
 	_inside(s, "shop")
 	var stock := CityShop.stock(s)
 	assert_false(stock.is_empty(), "stock null → 가격 있는 아이템")
@@ -194,10 +223,17 @@ func test_shop_uses_item_prices() -> void:
 	pc.inventory.add("magic_stone_9", 1)
 	assert_false(CityShop.sell(s, pc, "shop_trade", "magic_stone_9").ok, "마석 매입 미정 → 받지 않음")
 	assert_false(CityShop.buy(s, pc, "shop_trade", "magic_stone_9").ok, "판매 목록에 없는 것은 못 산다")
+	var t := _state()  # 정한 값: 판매 목록 · 판매가 50% · 마석은 제값
+	_inside(t, "shop")
+	assert_eq(CityShop.stock(t), JsonUtil.get_array(JsonUtil.get_dict(db.singletons["city"], "shop"), "stock").map(func(v: Variant) -> String: return str(v)))
+	assert_eq(CityShop.sell_price(t, "torch"), CityShop.price(db, "torch") / 2, "판매가 = 가격 50%")
+	assert_eq(CityShop.sell_price(t, "magic_stone_9"), CityShop.price(db, "magic_stone_9"), "마석 = 제값")
+	assert_true(CityShop.sell(t, pc, "shop_trade", "magic_stone_9").ok, "마석을 받는다")
 
 
 func test_fatigue_carries_over_city_dungeon_city() -> void:
 	var pc := _pc()
+	pc.fatigue.setup({"min": 0}, false)  # 미궁 규칙 미정
 	pc.fatigue.set_value(7.0)
 	var reg := ContentRegistries.new()
 	var def := db.get_entry("floors", "f1_crystal_cave")
@@ -211,6 +247,7 @@ func test_fatigue_carries_over_city_dungeon_city() -> void:
 	sess.resolve_encounter(null, "", 5)  # 전투 차례 소모 연결 지점(무리 없음)
 	assert_near(pc.fatigue.value, 7.0, 0.001, "미궁에서 규칙이 미정이면 피로도 그대로 이어진다")
 	var s := _state()
+	_all_undecided(s)
 	_inside(s, "inn")
 	CityActions.perform(s, pc, "inn_rest", reg.city_effects)
 	assert_near(pc.fatigue.value, 7.0, 0.001, "도시로 돌아와도 같은 값(초기화 없음)")
@@ -263,30 +300,86 @@ func test_state_and_player_round_trip() -> void:
 
 func test_overrides_do_not_touch_data() -> void:
 	var s := _state()
-	var nulls := CityValues.nulls(db)
-	assert_true(nulls.has("activities/inn_rest/effects/0/amount"), "미정 목록")
-	assert_true(nulls.has("city/fatigue/start"))
-	s.set_override("activities/inn_rest/effects/0/amount", 9)
-	assert_eq(JsonUtil.get_float(JsonUtil.get_array(s.activity("inn_rest"), "effects")[0], "amount"), 9.0, "임시값 반영")
-	assert_eq(JsonUtil.get_array(db.get_entry("activities", "inn_rest"), "effects")[0]["amount"], null, "원본 데이터는 그대로")
-	assert_eq(CityValues.nulls(db), nulls)
+	assert_true(CityValues.nulls(db).is_empty(), "미정 값이 없다(2026-10-15 모두 채움)")
+	assert_true(CityValues.tunables(db).has("activities/inn_rest/effects/1/amount"), "디버그로 바꿀 수 있는 값 목록")
+	assert_true(CityValues.tunables(db).has("city/fatigue/max"))
+	assert_eq(CityValues.value_at(db, "activities/inn_rest/effects/1/amount"), 40.0)
+	s.set_override("activities/inn_rest/effects/1/amount", 9)
+	assert_eq(JsonUtil.get_float(JsonUtil.get_array(s.activity("inn_rest"), "effects")[1], "amount"), 9.0, "임시값 반영")
+	assert_eq(JsonUtil.get_array(db.get_entry("activities", "inn_rest"), "effects")[1]["amount"], 40.0, "원본 데이터는 그대로")
 
 
 func test_validator_lists_undecided_as_warnings() -> void:
 	var v := ContentRegistries.new().make_validator()
 	assert_true(v.validate(db), "도시 데이터 오류 없음: " + ", ".join(v.errors))
-	var found := false
 	for w in v.warnings:
-		found = found or w.contains("도시 미정 값")
-	assert_true(found, "null은 경고 목록으로")
+		assert_false(w.contains("도시 미정 값"), "미정 값이 없으면 경고도 없다")
 	var bad := db.get_entry("activities", "inn_rest").duplicate(true)
 	bad["effects"] = [{"type": "no_such_effect"}]
 	bad["panel"] = "nope"
+	bad["ap_cost"] = 1
+	bad["cost_stones"] = null
 	db.put_entry("activities", bad)
 	var v2 := ContentRegistries.new().make_validator()
 	v2.validate(db)
 	db.load_all("res://data")
-	assert_true(v2.errors.size() >= 2, "모르는 효과·패널은 오류")
+	assert_true(v2.errors.size() >= 3, "모르는 효과·패널·ap_cost(활동은 행동력을 안 쓴다)는 오류")
+	var found := false
+	for w in v2.warnings:
+		found = found or w.contains("도시 미정 값")
+	assert_true(found, "null은 경고 목록으로")
+
+
+## 피로도 단계: 50 이상 지침(민첩·정신력 −10%), 80 이상 탈진(근력·민첩·정신력 −20%). 내려가면 풀린다.
+func test_fatigue_tiers_apply_modifiers() -> void:
+	var pc := _pc()
+	var agi := pc.stats.get_value("agi")
+	pc.fatigue.set_value(55.0)
+	assert_eq(pc.fatigue.tier_name(), "지침")
+	assert_near(pc.stats.get_value("agi"), agi * 0.9, 0.01, "지침: 민첩 −10%")
+	pc.fatigue.set_value(90.0)
+	assert_eq(pc.fatigue.tier_name(), "탈진")
+	assert_near(pc.stats.get_value("agi"), agi * 0.8, 0.01, "탈진: 민첩 −20%(겹치지 않는다)")
+	pc.fatigue.set_value(150.0)
+	assert_near(pc.fatigue.value, 100.0, 0.001, "최댓값 100")
+	pc.fatigue.set_value(10.0)
+	assert_eq(pc.fatigue.tier_name(), "")
+	assert_near(pc.stats.get_value("agi"), agi, 0.01, "피로가 풀리면 원래대로")
+	pc.fatigue.set_value(-5.0)
+	assert_near(pc.fatigue.value, 0.0, 0.001, "최솟값 0")
+
+
+## 은행 이자: 순이 바뀔 때마다 잔액 × 1%(내림). 찾을 때 수수료 1%.
+func test_bank_interest_and_fee() -> void:
+	var s := _state()
+	var pc := _pc()
+	s.bank_balance = 1000
+	s.next_period()
+	assert_eq(s.bank_balance, 1010, "순이 바뀌면 이자 1%")
+	s.return_from_dungeon()
+	assert_eq(s.bank_balance, 1020, "귀환(새 순)에도 이자")
+	_inside(s, "bank")
+	var money := pc.inventory.money
+	assert_true(CityBank.withdraw(s, pc, "bank_account", 500).ok)
+	assert_eq(pc.inventory.money, money + 495, "찾을 때 수수료 1%")
+	assert_eq(s.bank_balance, 520)
+
+
+## 달력 규칙을 비우면(null) 하순 뒤에도 미궁으로 가지 않고 다음 달로 넘어간다.
+func test_calendar_rules_can_be_turned_off() -> void:
+	var s := _state()
+	s.set_override("city/calendar/portal_rule", null)
+	s.set_override("city/calendar/return_date_rule", null)
+	var due: Array[int] = []
+	s.expedition_due.connect(func() -> void: due.append(1))
+	s.period = 2
+	s.ap = 0
+	s.advance_if_spent()
+	assert_eq(due.size(), 0)
+	assert_eq([s.month, s.period], [2, 0], "그냥 다음 달 상순")
+	s.period = 1
+	s.return_from_dungeon()
+	assert_eq([s.month, s.period, s.ap], [2, 1, 3], "귀환해도 날짜 그대로(행동력만 채움)")
 
 
 func test_entry_is_not_refunded() -> void:
@@ -295,3 +388,105 @@ func test_entry_is_not_refunded() -> void:
 	assert_eq(s.enter_facility("bank"), "city.reason_inside", "안에서 다른 시설로 못 간다")
 	s.leave_facility()
 	assert_eq(s.ap, 2, "나와도 행동력은 돌려받지 않는다")
+
+
+## 거리 그림: 레이어·건물·내부 그림이 모두 있고, 건물은 거리 안에서 서로 겹치지 않는다. 잘못된 레이어는 검증 오류.
+func test_street_layers_and_art() -> void:
+	var city: Dictionary = db.singletons.get("city", {})
+	var street := JsonUtil.get_dict(city, "street")
+	var width := JsonUtil.get_float(street, "width")
+	var layers := JsonUtil.get_array(street, "layers")
+	assert_true(layers.size() >= 4, "뒷배경 레이어가 여럿(하늘·원경·중경·거리…)")
+	var far_layers := 0
+	for v: Variant in layers:
+		var d := v as Dictionary
+		assert_true(ResourceLoader.exists(JsonUtil.get_str(d, "path")), "레이어 그림 있음: " + JsonUtil.get_str(d, "id"))
+		if not JsonUtil.get_bool(d, "screen") and JsonUtil.get_float(d, "parallax", 1.0) < 1.0:
+			far_layers += 1
+	assert_true(far_layers >= 2, "시차로 움직이는 뒷배경 레이어가 둘 이상")
+	var k := float(GameDatabase.single(db.render, "city.building_scale", 0.85))
+	var spans: Array = []
+	for id: String in db.get_collection("facilities"):
+		var f := db.get_entry("facilities", id)
+		for key: String in ["building", "interior"]:
+			assert_true(ResourceLoader.exists(JsonUtil.get_str(f, key)), "%s %s 그림 있음" % [id, key])
+		var tex := load(JsonUtil.get_str(f, "building")) as Texture2D
+		var x := float(JsonUtil.get_int(f, "x"))
+		spans.append([x, x + tex.get_width() * k])
+		assert_true(x >= 0.0 and x + tex.get_width() * k <= width, id + "는 거리 안에")
+	spans.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
+	for i in range(1, spans.size()):
+		assert_true(float(spans[i][0]) >= float(spans[i - 1][1]), "건물끼리 겹치지 않음")
+	var bad := city.duplicate(true)
+	bad["street"]["layers"].append({"id": "sky", "path": "assets/x.webp", "parallax": 2.0})
+	db.singletons["city"] = bad
+	var v2 := ContentRegistries.new().make_validator()
+	v2.validate(db)
+	db.load_all("res://data")
+	assert_true(v2.errors.size() >= 3, "겹친 id·res:// 아닌 경로·시차 범위는 오류")
+
+
+## 날씨: 순마다 weight 비율로 새로(같은 시드면 같은 날씨), 저장 왕복, 신관 영입 공적치 5000.
+func test_weather_rolls_per_period() -> void:
+	var seen := {}
+	var a := _state(99)
+	var b := _state(99)
+	for i in 30:
+		assert_eq(a.weather, b.weather, "같은 시드 → 같은 날씨")
+		assert_false(a.weather_def().is_empty(), "정의된 날씨")
+		seen[a.weather] = true
+		a.next_period()
+		b.next_period()
+	assert_true(seen.has("clear") and seen.has("overcast"), "맑은 날과 흐린 날이 섞인다")
+	var copy := CityState.new(db, 1)
+	copy.load_dict(JSON.parse_string(JSON.stringify(a.to_dict())))
+	assert_eq(copy.weather, a.weather, "날씨도 저장된다")
+	assert_eq(JsonUtil.get_float(JsonUtil.get_dict(db.singletons["city"], "temple"), "recruit_merit"), 5000.0)
+
+
+## 여관 휴식: 생명력·영혼력을 다 채운다(이미 가득이면 restore_full).
+func test_inn_rest_restores_hp_and_soul() -> void:
+	var s := _state()
+	var pc := _pc()
+	pc.pool.modify("hp", -40.0)
+	pc.pool.modify("soul", -5.0)
+	_inside(s, "inn")
+	var ctx := CityActions.perform(s, pc, "inn_rest", _reg())
+	assert_true(ctx.ok)
+	assert_near(pc.pool.get_current("hp"), pc.pool.get_max("hp"), 0.01, "생명력 회복")
+	assert_near(pc.pool.get_current("soul"), pc.pool.get_max("soul"), 0.01, "영혼력 회복")
+	assert_true(ctx.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.restore"))
+	var again := CityActions.perform(s, pc, "inn_rest", _reg())
+	assert_true(again.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.restore_full"), "가득이면 다른 문구")
+
+
+func test_inn_meal_eases_fatigue_and_gives_leftovers() -> void:
+	var s := _state()
+	var pc := _pc()
+	pc.fatigue.set_value(40.0)
+	var before := pc.inventory.count("leftovers")
+	_inside(s, "inn")
+	var ctx := CityActions.perform(s, pc, "inn_meal", _reg())
+	assert_true(ctx.ok)
+	assert_near(pc.fatigue.value, 25.0, 0.01, "식사 → 피로도 −15")
+	assert_eq(pc.inventory.count("leftovers"), before + 1, "남은 음식 1개")
+	assert_true(ctx.messages.any(func(m: Dictionary) -> bool: return str(m["key"]) == "city.fx.item_got"))
+
+
+func test_dungeon_opens_once_a_month() -> void:
+	var s := _state()
+	var due: Array[int] = []
+	s.expedition_due.connect(func() -> void: due.append(1))
+	s.period = s.periods().size() - 1
+	s.ap = 0
+	s.advance_if_spent()
+	assert_eq(due.size(), 1, "하순이 끝나면 포탈이 열린다")
+	assert_eq(s.expedition_month, 1)
+	s.ap = 0
+	s.advance_if_spent()  # 같은 달에 또 하순이 끝난 것처럼(날짜를 그대로 두는 귀환 규칙 등)
+	assert_eq(due.size(), 1, "같은 달에는 다시 열리지 않는다")
+	assert_eq([s.month, s.period_name()], [2, "상순"], "대신 다음 달로 넘어간다")
+	var copy := CityState.new(db, 1)
+	copy.start()
+	copy.load_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
+	assert_eq(copy.expedition_month, 1, "저장에 포탈 연 달이 남는다")

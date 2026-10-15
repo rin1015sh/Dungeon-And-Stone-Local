@@ -16,6 +16,7 @@ var essence_rng: Rng = Rng.new()
 var hotbar: Array[String] = []
 ## 피로도(도시·미궁 공용, 핵심 스탯이 아닌 별도 수치). 규칙은 data/city.json fatigue.
 var fatigue: Fatigue = Fatigue.new()
+const FATIGUE_SOURCE := "fatigue"
 ## 활동으로 오른 능력치 기록 [{stat, amount, activity, month, period}] — 도시 독서·훈련(CityEffect stat_chance).
 var stat_history: Array[Dictionary] = []
 
@@ -41,10 +42,19 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 			pc.inventory.add(JsonUtil.get_str(item, "id"), JsonUtil.get_int(item, "count", 1))
 	pc.inventory.add_money(int(p_db.bal("char_creation.start_stones", 0)))
 	pc.pool.fill_all()  # 장비 수정자로 최대치가 바뀌었을 수 있다
+	pc.fatigue.changed.connect(pc._on_fatigue_changed)
 	pc.fatigue.setup(JsonUtil.get_dict(p_db.singletons.get("city", {}), "fatigue"))
 	grant_innate_skills(pc)
 	pc.auto_fill_hotbar()
 	return pc
+
+
+## 피로도 단계 효과(수정자 출처 "fatigue")를 지금 값에 맞춰 다시 붙인다.
+func _on_fatigue_changed(_value: float, _delta: float, _source: String) -> void:
+	stats.remove_source(FATIGUE_SOURCE)
+	var mods := fatigue.effects()
+	if not mods.is_empty():
+		stats.add_modifiers_from_data(FATIGUE_SOURCE, mods)
 
 
 ## 레벨을 바꾸면 정수 슬롯 잠금도 맞춘다(레벨 하락 = 무작위 잠금, 상승 = 해제).
@@ -123,6 +133,7 @@ func progress_load_dict(d: Dictionary) -> void:
 	essences.load_dict(self, JsonUtil.get_dict(d, "essences"))
 	boons = JsonUtil.get_dict(d, "boons").duplicate()
 	fatigue.load_dict(JsonUtil.get_dict(d, "fatigue"))
+	_on_fatigue_changed(fatigue.value, 0.0, "load")
 	stat_history.clear()
 	for h: Variant in JsonUtil.get_array(d, "stat_history"):
 		if h is Dictionary:

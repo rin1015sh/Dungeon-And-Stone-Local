@@ -2,7 +2,8 @@ class_name Fatigue
 extends RefCounted
 ## 피로도: 핵심 스탯 5종이 아닌 별도 수치(플레이어 상태). 도시·미궁 공용이며 미궁에 들어가고 나와도 그대로 이어진다.
 ## 규칙 값은 data/city.json fatigue — start(null → 0), min·max(null → 제한 없음),
-## dungeon{per_hour, per_rest_hour, per_combat_turn, per_step}(미궁 연결 지점, null → 변화 없음), effects(미정).
+## dungeon{per_hour, per_rest_hour, per_combat_turn, per_step}(미궁 연결 지점, null → 변화 없음),
+## effects = 단계 [{at_least, name_ko, modifiers}] — 피로도가 at_least 이상인 가장 높은 단계의 수정자(소유자가 출처 "fatigue"로 붙인다).
 ## 오토로드를 참조하지 않는다.
 
 signal changed(value: float, delta: float, source: String)
@@ -23,6 +24,7 @@ func setup(p_rules: Dictionary, reset_value: bool = true) -> void:
 	if reset_value:
 		value = JsonUtil.get_float(rules, "start", 0.0)
 	value = clamp_value(value)
+	changed.emit(value, 0.0, "setup")  # 규칙이 바뀌었다 — 소유자가 효과를 다시 붙인다
 
 
 ## min·max가 null이면 그쪽은 제한하지 않는다.
@@ -59,10 +61,28 @@ func on_dungeon(key: String, amount: float) -> float:
 	return add(float(rate) * amount, "dungeon:" + key)
 
 
-## 피로도에 따른 효과(도시·미궁이 함께 쓰는 한 곳). 효과 내용은 미정이라 비어 있다 — 정해지면 rules.effects를 해석해 여기서 돌려준다.
-## 반환 형식(예정): [{"stat": id, "flat": n} …] 같은 수정자 목록.
+## 지금 피로도 단계(at_least 이하로 가장 높은 단계). 없으면 {}.
+func tier() -> Dictionary:
+	var best: Dictionary = {}
+	for t: Variant in JsonUtil.get_array(rules, "effects"):
+		if t is Dictionary and value >= JsonUtil.get_float(t, "at_least", INF):
+			if best.is_empty() or JsonUtil.get_float(t, "at_least") > JsonUtil.get_float(best, "at_least"):
+				best = t
+	return best
+
+
+## 피로도에 따른 효과(도시·미궁이 함께 쓰는 한 곳): 지금 단계의 수정자 목록 [{target, flat, percent} …].
 func effects() -> Array[Dictionary]:
-	return []
+	var out: Array[Dictionary] = []
+	for m: Variant in JsonUtil.get_array(tier(), "modifiers"):
+		if m is Dictionary:
+			out.append(m)
+	return out
+
+
+## 단계 이름(없으면 "").
+func tier_name() -> String:
+	return JsonUtil.get_str(tier(), "name_ko")
 
 
 func to_dict() -> Dictionary:

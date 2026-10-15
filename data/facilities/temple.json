@@ -2,9 +2,9 @@
   "id": "temple",
   "name_ko": "신전",
   "order": 3,
-  "x": 500,
-  "building": "res://assets/city/buildings/temple.png",
-  "interior": "res://assets/city/interiors/temple.png",
+  "x": 1190,
+  "building": "res://assets/city/buildings/temple.webp",
+  "interior": "res://assets/city/interiors/temple.webp",
   "activities": [
     "temple_remove_essence",
     "temple_service"

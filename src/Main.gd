@@ -1,6 +1,7 @@
 extends Control
 ## 진입점(Main.tscn). 테마·입력 설정을 입히고 화면 흐름을 맡는다(화면은 시그널만 낸다).
-##   타이틀 → 새 탐험가 → 도시(라비기온) ⇄ 미궁(탐험) → 결과(강제 귀환·포기 → 도시 / 사망 → 타이틀)
+##   타이틀 → 새 탐험가 → 도시(라비기온) → (하순 끝, 한 달에 한 번) 차원광장 → 미궁(탐험) → 결과(강제 귀환·포기 → 도시 / 사망 → 타이틀)
+##   타이틀 → 이어하기(한 칸 저장 — 차원광장에서 남긴 것) → 차원광장
 ##   타이틀 → 기반 점검(개발용)
 
 var _screen: Control = null
@@ -40,6 +41,7 @@ func _show_title() -> void:
 	GameState.end_run()
 	var t := TitleScreen.new()
 	t.new_game_requested.connect(_show_create)
+	t.continue_requested.connect(_continue)
 	t.foundation_requested.connect(_show_foundation)
 	t.quit_requested.connect(_quit)
 	_show(t)
@@ -64,16 +66,37 @@ func _start_run(pc: PlayerCharacter) -> void:
 	_show_city()
 
 
-## 도시 화면. 새 게임 시작 후·미궁 귀환 후 모두 여기로 온다. 미궁 입장·귀환은 달력을 바꾸지 않는다.
+## 도시 화면. 새 게임 시작 후·미궁 귀환 후 모두 여기로 온다. 귀환하면 다음 달 상순(_return_to_city).
 func _show_city() -> void:
 	if GameState.player == null or GameState.city == null:
 		_show_title()
 		return
 	var c := CityScreen.new()
 	c.setup(GameState.city, GameState.player, DataRegistry.registries.city_effects)
-	c.dungeon_requested.connect(func() -> void: _enter_floor(str(DataRegistry.db.bal("explore.start_floor", ""))))
+	c.dungeon_requested.connect(_show_plaza)
 	c.title_requested.connect(_show_title)
 	_show(c)
+
+
+## 차원광장: 포탈이 열리면 기록(한 칸 저장)을 남기거나 미궁으로 들어간다.
+func _show_plaza() -> void:
+	if GameState.player == null or GameState.city == null:
+		_show_title()
+		return
+	var p := PlazaScreen.new()
+	p.setup(GameState.city, GameState.player)
+	p.save_requested.connect(func() -> void: p.save_done(GameState.save_run()))
+	p.enter_requested.connect(func() -> void: _enter_floor(str(DataRegistry.db.bal("explore.start_floor", ""))))
+	_show(p)
+
+
+## 이어하기: 저장을 불러와 차원광장에서 시작한다.
+func _continue() -> void:
+	if not GameState.load_run():
+		_show_title()
+		return
+	LogPanel.clear_history()
+	_show_plaza()
 
 
 ## 층을 새로 만들어 들어간다. seed_override가 0이면 세션 시드로 정한다.
@@ -104,10 +127,19 @@ func _show_session(session: ExploreSession, floor_id: String) -> void:
 
 
 func _on_run_ended(kind: String, info: Dictionary) -> void:
+	if kind == "died":
+		GameState.on_death()
 	var end := EndScreen.new()
 	end.setup(kind, info)
-	end.done.connect(_show_title if kind == "died" else _show_city)
+	end.done.connect(_show_title if kind == "died" else _return_to_city)
 	_show(end)
+
+
+## 미궁에서 살아 돌아왔다: 다음 달 상순(행동력 새로)으로 도시.
+func _return_to_city() -> void:
+	if GameState.city != null:
+		GameState.city.return_from_dungeon()
+	_show_city()
 
 
 func _quit() -> void:

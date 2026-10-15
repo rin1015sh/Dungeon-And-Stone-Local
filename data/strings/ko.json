@@ -2,7 +2,7 @@
   "app": {
     "title": "던전 앤 스톤",
     "subtitle": "라프도니아 차원광장 — 탐험가 기록",
-    "build": "M0 기반 빌드 · 비상업 팬 프로젝트"
+    "build": "비상업 팬 프로젝트"
   },
   "target_kind": {
     "enemy_single": "적 하나",
@@ -15,6 +15,7 @@
   },
   "menu": {
     "new_game": "새 탐험가",
+    "continue": "이어하기",
     "foundation": "기반 점검",
     "quit": "종료",
     "back": "돌아가기",
@@ -122,9 +123,9 @@
     "resources_header": "자원",
     "items_header": "가진 것",
     "items_none": "빈손이다.",
-    "enter_header": "차원광장",
+    "enter_header": "라비기온 구역",
     "floor_hint": "포탈이 열렸다. 들어가면 {floor}의 어딘가에 떨어진다. 돌아오는 길은 층이 닫힐 때뿐이다.",
-    "enter": "미궁으로 들어간다",
+    "enter": "도시로 간다",
     "equipped_item": "{item} (착용)"
   },
   "explore": {
@@ -579,43 +580,38 @@
     "choose_pass": "그냥 지나간다",
     "choose_weaken": "약해진 문지기와 싸운다(정수를 얻기 쉽다)"
   },
+  "plaza": {
+    "save": "기록을 남긴다",
+    "saved": "기록을 남겼다",
+    "save_failed": "기록을 남기지 못했다",
+    "enter": "포탈로 들어간다"
+  },
   "city": {
     "place": "{city} · {district}",
     "date": "{month}번째 달 {period}",
     "date_year": "{year}년째 {month}번째 달 {period}",
-    "hud_ap": "행동력 {pips} {ap}/{max}",
-    "hud_hp": "생명력 {hp}/{max}",
     "hud_fatigue": "피로도 {value}",
+    "hud_fatigue_max": "피로도 {value} / {max}",
+    "hud_fatigue_tier": " · {tier}",
     "hud_money": "소지금 {money} 스톤",
-    "btn_info": "소문·정보",
+    "ap_label": "행동력",
+    "ap_value": "{ap} / {max}",
+    "vitals_name": "{name} · 레벨 {level}",
+    "hp_label": "생명력",
+    "hp_value": "{hp} / {max}",
     "btn_inventory": "소지품({key})",
     "btn_character": "캐릭터({key})",
-    "btn_dungeon": "미궁 입장(임시)",
     "btn_title": "타이틀로",
-    "hint": "{left}/{right}·드래그·휠로 거리를 둘러본다 · 건물을 누르거나 {enter}로 들어간다(행동력 {cost})",
-    "period_started": "행동력을 다 썼다. {date}이 되었다(행동력 {ap}).",
-    "entered": "{name}에 들어왔다. 남은 행동력 {ap}.",
-    "results": "결과",
-    "leave": "거리로 나간다",
-    "leave_locked": "들어온 이상 무언가를 하고 나가야 한다.",
-    "back_to_choices": "◀ 다른 활동",
+    "period_started": "{date}이 되었다.",
+    "leave_locked": "아직 볼일이 남았다.",
     "choice": "{name}  ({cost})",
-    "cost_ap": "행동력 {n}",
-    "cost_ap_undecided": "행동력 미정",
     "cost_stones": "{n} 스톤",
     "did": "— {name} —",
-    "spent_ap": "행동력 −{n} (남은 {left})",
-    "spent_stones": "이용료 −{n} 스톤",
-    "info_ap": "남은 행동력 {ap}",
+    "spent_stones": "{n} 스톤을 치렀다.",
     "info_merit": "신전 공적치 {merit}",
     "info_balance": "은행 잔액 {balance} 스톤",
     "info_rumors": "들은 소문 {n}개",
     "info_lore": "모은 정보 {n}개",
-    "info_title": "소문·정보",
-    "info_kind_rumor": "여관에서 들은 소문",
-    "info_kind_lore": "도서관에서 모은 정보",
-    "info_empty": "아직 없다.",
-    "info_entry": "· {name} — {text}",
     "reason_unknown": "알 수 없는 시설·활동이다.",
     "reason_inside": "이미 시설 안에 있다.",
     "reason_no_ap": "행동력이 모자란다.",
@@ -629,62 +625,167 @@
     "reason_no_balance": "맡긴 돈이 그만큼 없다.",
     "reason_no_essence": "그 정수는 없다.",
     "fx": {
-      "fatigue": "피로도 {from} → {to} ({delta})",
-      "fatigue_same": "피로도 {value} 그대로",
+      "fatigue_same": "몸 상태는 그대로다.",
       "fatigue_undecided": "피로도 변화량이 정해지지 않았다(미정) — 피로도 그대로",
-      "stat_up": "{stat} {delta} → {value}",
-      "stat_fail": "능력치는 오르지 않았다.",
+      "stat_up": "{stat}이 늘었다.",
+      "stat_fail": "별다른 소득은 없었다.",
       "stat_no_amount": "능력치 상승량이 정해지지 않았다(미정) — 오르지 않음",
       "stat_undecided": "능력치 상승 대상·확률이 정해지지 않았다(미정) — 오르지 않음",
-      "info_new_rumor": "소문을 들었다: {name} — {text}",
-      "info_new_lore": "정보를 얻었다: {name} — {text}",
-      "info_fail_rumor": "쓸 만한 소문은 들리지 않았다.",
-      "info_fail_lore": "쓸 만한 내용은 찾지 못했다.",
-      "info_none_rumor": "새로 들을 소문이 없다.",
-      "info_none_lore": "새로 찾을 정보가 없다.",
+      "info_new_rumor": "귀에 걸리는 이야기가 있었다. {name}: {text}",
+      "info_new_lore": "눈에 띄는 기록을 찾았다. {name}: {text}",
+      "info_fail_rumor": "시끄럽기만 할 뿐, 들을 만한 이야기는 없었다.",
+      "info_fail_lore": "한참을 뒤졌지만 건진 것이 없다.",
+      "info_none_rumor": "오가는 이야기는 죄다 이미 아는 것들이다.",
+      "info_none_lore": "더 읽을 만한 책이 남아 있지 않다.",
       "info_undecided_rumor": "소문을 얻는 규칙이 정해지지 않았다(미정) — 얻은 것 없음",
       "info_undecided_lore": "정보를 얻는 규칙이 정해지지 않았다(미정) — 얻은 것 없음",
-      "merit": "신전 공적치 {delta} → {total}",
-      "merit_undecided": "봉사활동 공적치가 정해지지 않았다(미정) — 공적치 그대로"
+      "merit": "신전 일을 거들었다. 신관이 고개를 끄덕인다.",
+      "merit_undecided": "봉사활동 공적치가 정해지지 않았다(미정) — 공적치 그대로",
+      "fatigue_up": "몸이 무겁다.",
+      "fatigue_down": "몸이 한결 가볍다.",
+      "restore": "상처가 아물고 머리가 맑아졌다.",
+      "restore_full": "다친 데도 없이 개운하게 일어났다.",
+      "restore_undecided": "몸 상태는 그대로다. (미정)",
+      "item_got": "{name}을(를) 챙겼다.",
+      "item_no_room": "{name}을(를) 넣을 자리가 없다.",
+      "item_undecided": "받을 것이 정해지지 않았다. (미정)"
     },
-    "shop_buy_title": "사기 (소지금 {money} 스톤)",
-    "shop_sell_title": "팔기 (판매가 = 가격의 {ratio}%)",
+    "shop_buy_title": "사기",
+    "shop_sell_title": "팔기",
     "shop_line": "{item} — {price} 스톤",
     "shop_sell_line": "{item} ×{n} — {price} 스톤",
     "shop_buy": "사기",
     "shop_sell": "팔기",
     "shop_nothing_to_sell": "팔 수 있는 물건이 없다.",
-    "shop_bought": "{item} {n}개를 {price} 스톤에 샀다. 소지금 {money} 스톤.",
-    "shop_sold": "{item} {n}개를 {price} 스톤에 팔았다. 소지금 {money} 스톤.",
+    "shop_bought": "{item} {n}개를 {price} 스톤에 샀다.",
+    "shop_sold": "{item} {n}개를 {price} 스톤에 넘겼다.",
     "bank_status": "잔액 {balance} 스톤 · 소지금 {money} 스톤",
     "bank_amount": "금액",
     "bank_all_money": "소지금 전부",
     "bank_all_balance": "잔액 전부",
     "bank_deposit": "맡기기",
     "bank_withdraw": "찾기",
-    "bank_note": "이자·수수료·맡긴 돈의 쓰임은 아직 정해지지 않았다.",
-    "bank_deposited": "{amount} 스톤을 맡겼다(수수료 {fee}). 잔액 {balance} · 소지금 {money}.",
-    "bank_withdrew": "{amount} 스톤을 찾았다(수수료 {fee}). 잔액 {balance} · 소지금 {money}.",
+    "bank_deposited": "{amount} 스톤을 맡겼다.",
+    "bank_withdrew": "{amount} 스톤을 찾았다.",
     "essence_cost": "제거 비용 {cost} 스톤 (소지금 {money})",
     "essence_line": "{name} ({color})",
     "essence_locked": " [잠김]",
     "essence_none": "흡수한 정수가 없다.",
     "essence_remove": "제거",
     "essence_confirm": "정말 제거 ({cost})",
-    "essence_note": "제거한 정수는 되돌릴 수 없다. 지울 때마다 비용이 오른다.",
-    "essence_removed": "{name} 정수를 지웠다(−{cost} 스톤). 다음 제거 비용 {next} 스톤.",
+    "essence_removed": "{name} 정수가 몸에서 빠져나갔다. {cost} 스톤을 치렀다.",
     "debug_title": "도시 디버그 (F1)",
     "debug_set_date": "날짜 바꾸기",
     "debug_next_period": "다음 순",
     "debug_ap": "행동력",
     "debug_fatigue": "피로도",
     "debug_apply": "적용",
-    "debug_undecided": "미정 값 임시로 넣기 (JSON, 저장 안 됨 · 파일 안 바뀜)",
-    "debug_null": "미정",
+    "debug_undecided": "도시 규칙 값 임시로 바꾸기(JSON, 빈 칸 = 데이터 값)",
     "debug_apply_overrides": "임시값 적용",
     "debug_clear_overrides": "임시값 모두 지우기",
     "debug_applied": "임시값 {n}개 적용.",
     "debug_bad": "읽을 수 없는 값: {list}",
-    "debug_cleared": "임시값을 모두 지웠다."
+    "debug_cleared": "임시값을 모두 지웠다.",
+    "expedition_auto": "{date}이 저물었다. 미궁으로 향한다.",
+    "debug_dungeon": "미궁으로",
+    "date_weather": "{date} · {weather}",
+    "bank_withdrew_fee": "{amount} 스톤을 찾았다. 수수료로 {fee} 스톤이 빠졌다.",
+    "lines": {
+      "_comment": "활동별 결과 문구(city.fx.<결과>·city.spent_stones 대신). 번호가 여럿이면 그중 하나(CityLines). 게임 용어·수치 나열 대신 장면을 쓴다.",
+      "inn_rest": {
+        "spent_stones": {
+          "1": "숙박비로 {n} 스톤을 냈다."
+        },
+        "fatigue_down": {
+          "1": "삐걱거리는 침대였지만 오랜만에 깊이 잠들었다.",
+          "2": "푹 자고 일어나니 몸이 한결 가볍다.",
+          "3": "옆방 코골이에도 아랑곳없이 곯아떨어졌다."
+        },
+        "fatigue_same": {
+          "1": "피곤하지도 않은데 괜히 침대에서 뒹굴었다."
+        },
+        "restore": {
+          "1": "눅눅한 이불이었지만 상처가 꾸덕하게 아물었다.",
+          "2": "깊이 자고 나니 쑤시던 곳이 잠잠하다."
+        },
+        "restore_full": {
+          "1": "멀쩡한 몸으로 하룻밤을 늘어지게 잤다."
+        }
+      },
+      "inn_meal": {
+        "spent_stones": {
+          "1": "밥값으로 {n} 스톤을 냈다."
+        },
+        "fatigue_down": {
+          "1": "기름진 스튜 한 그릇에 굳은 어깨가 풀렸다.",
+          "2": "뜨끈한 국물을 들이켜니 그제야 살 것 같다.",
+          "3": "시끄러운 홀 구석에서 배불리 먹었다."
+        },
+        "fatigue_same": {
+          "1": "배는 불렀지만 딱히 달라진 건 없다."
+        },
+        "item_got": {
+          "1": "주인장이 먹다 남은 빵과 고기를 기름종이에 싸 주었다.",
+          "2": "남은 음식을 챙겨 품에 넣었다."
+        },
+        "item_no_room": {
+          "1": "싸 준 음식을 넣을 데가 없어 도로 내려놓았다."
+        }
+      },
+      "library_read": {
+        "spent_stones": {
+          "1": "사서에게 열람료 {n} 스톤을 건넸다."
+        },
+        "info_new_lore": {
+          "1": "먼지 쌓인 기록 사이에서 쓸 만한 대목을 찾았다. {name}: {text}",
+          "2": "누군가 여백에 남긴 메모가 눈에 걸렸다. {name}: {text}"
+        },
+        "info_fail_lore": {
+          "1": "한참을 뒤졌지만 건진 것이 없다.",
+          "2": "책장을 넘기다 깜빡 졸았다."
+        },
+        "info_none_lore": {
+          "1": "이 서가의 책은 이미 다 훑어보았다."
+        },
+        "stat_up": {
+          "1": "읽은 내용이 머릿속에 차곡차곡 쌓인다. {stat}이 늘었다."
+        },
+        "stat_fail": {
+          "1": "글자가 좀처럼 눈에 들어오지 않았다.",
+          "2": "같은 줄만 몇 번이고 다시 읽었다."
+        },
+        "fatigue_up": {
+          "1": "눈이 뻑뻑하다.",
+          "2": "어깨가 뻐근하다."
+        }
+      },
+      "training_train": {
+        "spent_stones": {
+          "1": "교관에게 {n} 스톤을 건넸다."
+        },
+        "stat_up": {
+          "1": "땀 흘린 보람이 있다. {stat}이 늘었다.",
+          "2": "몸이 달라진 게 느껴진다. {stat}이 늘었다."
+        },
+        "stat_fail": {
+          "1": "고된 훈련으로 근육통만 생겼다.",
+          "2": "교관의 호통만 실컷 들었다.",
+          "3": "허수아비만 애꿎게 두들겼다."
+        },
+        "fatigue_up": {
+          "1": "온몸이 욱신거린다.",
+          "2": "팔다리가 천근만근이다."
+        }
+      },
+      "temple_service": {
+        "merit": {
+          "1": "신전 바닥을 닦고 촛농을 긁어냈다. 신관이 고개를 끄덕인다.",
+          "2": "구호소에서 죽을 나눠 주었다. 손등이 데었다.",
+          "3": "제단의 향로를 닦았다. 손에 밴 향이 좀처럼 빠지지 않는다."
+        }
+      }
+    },
+    "cannot_use_here": "여기서는 쓸 수 없다.",
+    "item_no_effect": "{item}을(를) 꺼냈다가 도로 넣었다."
   }
 }

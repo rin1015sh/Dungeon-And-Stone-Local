@@ -15,12 +15,15 @@ extends Node
 
 const WAIT_LIMIT_MS := 8000
 
+const TEST_SAVE := "user://dungeon_and_stone/smoke_save.json"
 var _main: Control
 var _logs: PackedStringArray = PackedStringArray()
 var _failed: bool = false
 
 
 func _ready() -> void:
+	GameState.save_path = TEST_SAVE  # 실제 저장(한 칸)을 덮지 않는다
+	SaveGame.delete(TEST_SAVE)
 	EventBus.log_message.connect(func(text: String, _kind: String) -> void: _logs.append(text))
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
 	add_child(_main)
@@ -36,6 +39,7 @@ func _run() -> void:
 	await _inventory_flow()
 	await _riddle_flow()
 	await _city_flow()
+	SaveGame.delete(TEST_SAVE)
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
 	get_tree().quit(1 if _failed else 0)
@@ -402,7 +406,12 @@ func _enter_dungeon(explorer_name: String) -> ExploreScreen:
 	var city := await _new_city(explorer_name)
 	if city == null:
 		return null
-	_press(city, Strings.t("city.btn_dungeon"))
+	city.dungeon_requested.emit()  # 하순이 끝난 것처럼(임시 버튼은 없다)
+	var plaza := (await _screen(PlazaScreen)) as PlazaScreen
+	if not _expect(plaza != null, "차원광장(" + explorer_name + ")"):
+		return null
+	plaza.open_now()
+	plaza.enter_requested.emit()
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
 	_expect(explore != null and explore.session.player.display_name == explorer_name, "미궁 입장(" + explorer_name + ")")
 	await _frames(2)
@@ -498,15 +507,28 @@ func _city_flow() -> void:
 	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 2, "건물 클릭 → 행동력 1을 쓰고 여관 안으로"):
 		return
 	_expect(not fv.can_leave(), "들어오면 무언가 하기 전엔 못 나간다")
+	await _action("inventory")
+	_expect(not city.windows_open() and not _has_button(city, Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")})), "시설 안에서는 소지품 창·버튼이 없다")
+	pc.pool.modify("hp", -30.0)
+	pc.fatigue.set_value(60.0)
 	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
-	_expect(_has_label(fv, Strings.t("city.fx.fatigue_undecided")), "미정 값 휴식 결과 문구")
-	_expect(fv.can_leave(), "활동 뒤엔 나갈 수 있다")
-	_press(fv, Strings.t("city.leave"))
 	await _frames(2)
-	_expect(city.facility_view() == null and street.is_visible_in_tree(), "거리로 나왔다")
+	_expect(city.facility_view() == null and street.is_visible_in_tree(), "활동 한 번 → 저절로 거리로 나온다")
+	_expect(is_equal_approx(pc.fatigue.value, 20.0), "휴식(−40) → 피로도 60 → 20")
+	_expect(is_equal_approx(pc.pool.get_current("hp"), pc.pool.get_max("hp")), "여관 휴식 → 생명력 회복")
+	pc.pool.modify("hp", -30.0)
+	pc.inventory.add("minor_potion", 1)
+	var hp_before := pc.pool.get_current("hp")
+	var potions := pc.inventory.count("minor_potion")
+	city.use_item("minor_potion")
+	_expect(pc.pool.get_current("hp") > hp_before and pc.inventory.count("minor_potion") == potions - 1, "거리에서 포션을 마셨다")
+	pc.inventory.add("ration", 1)
+	city.use_item("ration")
+	_expect(pc.inventory.has("ration"), "식량은 도시에서 쓰지 않는다")
+	_expect(not city.toast_text().is_empty(), "결과가 화면 위 알림으로")
 	await _action("debug_toggle")
 	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")
-	city.debug_panel().set_edit("activities/inn_rest/effects/0/amount", "3")
+	city.debug_panel().set_edit("activities/inn_rest/effects/1/amount", "3")
 	_press(city.debug_panel(), Strings.t("city.debug_apply_overrides"))
 	pc.fatigue.set_value(10.0)
 	await _action("debug_toggle")
@@ -519,8 +541,10 @@ func _city_flow() -> void:
 	if fv.facility_id() == "inn":
 		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
 		_expect(is_equal_approx(pc.fatigue.value, 7.0), "임시값(3) 휴식 → 피로도 10 → 7")
-	_press(fv, Strings.t("city.leave"))
-	await _frames(1)
+	else:
+		city.leave_facility()
+	await _frames(2)
+	_expect(city.facility_view() == null, "거리로 나왔다")
 	city.choose_facility("shop")
 	fv = city.facility_view()
 	if not _expect(fv != null and st.ap == 0, "상점(행동력 0)"):
@@ -529,8 +553,9 @@ func _city_flow() -> void:
 	var money := pc.inventory.money
 	_press(fv, Strings.t("city.shop_buy"))
 	_expect(pc.inventory.money < money, "상점에서 샀다")
-	_press(fv, Strings.t("city.leave"))
+	await _action("pause")
 	await _frames(1)
+	_expect(city.facility_view() == null, "창구에서 Esc → 거리로")
 	_expect(st.period == 1 and st.ap == 3, "행동력을 다 써서 중순(행동력 3)")
 	_expect(city.toast_text().contains(st.period_name()), "순 넘김 안내")
 	city.choose_facility("bank")
@@ -548,20 +573,45 @@ func _city_flow() -> void:
 			(bank[0] as BankPanel).set_amount(40)
 			_press(fv, Strings.t("city.bank_withdraw"))
 			_expect(st.bank_balance == 60 and pc.inventory.money + st.bank_balance == total, "찾기(합 그대로)")
-		_press(fv, Strings.t("city.leave"))
+		fv.try_leave()
 	await _frames(1)
-	_press(city, Strings.t("city.btn_info"))
-	_expect(_has_label(city, Strings.t("city.info_kind_rumor")), "소문·정보 창")
-	city.toggle_info()
-	var date := [st.month, st.period]
+	var cash := pc.inventory.money
+	pc.inventory.money = 0
+	city.choose_facility("inn")
+	await _frames(2)
+	_expect(city.facility_view() == null and city.toast_text().contains(Strings.t("city.reason_no_money")), "할 게 없으면 이유를 들고 바로 나온다")
+	pc.inventory.money = cash
 	var fatigue := pc.fatigue.value
-	_press(city, Strings.t("city.btn_dungeon"))
+	var month := st.month
+	st.period = st.periods().size() - 1  # 하순으로 건너뛰고 마지막 행동력으로 시설 하나
+	st.ap = 1
+	city.choose_facility("inn")
+	fv = city.facility_view()
+	if _expect(fv != null and st.ap == 0, "하순 마지막 행동력으로 여관"):
+		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
+		_expect(st.ap == 0, "시설 안 활동은 행동력을 쓰지 않는다")
+		fatigue = pc.fatigue.value  # 휴식(임시값)으로 줄어든 값이 미궁으로 이어진다(활동 뒤 저절로 나와 하순이 끝난다)
+	var plaza := (await _screen(PlazaScreen)) as PlazaScreen
+	if not _expect(plaza != null, "하순이 끝나면 저절로 차원광장으로"):
+		return
+	_expect(not _has_button(plaza, Strings.t("plaza.enter")), "포탈이 열리기 전에는 들어갈 수 없다")
+	var opened_by := Time.get_ticks_msec() + WAIT_LIMIT_MS
+	while not plaza.is_open() and Time.get_ticks_msec() < opened_by:
+		await _frames(1)
+	_expect(plaza.is_open() and _has_button(plaza, Strings.t("plaza.enter")), "포탈이 열리면 들어갈 수 있다")
+	_press(plaza, Strings.t("plaza.save"))
+	_expect(GameState.has_save() and _has_button(plaza, Strings.t("plaza.saved")), "차원광장에서 기록(한 칸 저장)")
+	var saved_month := st.month
+	var saved_name := pc.display_name
+	var saved_money := pc.inventory.money
+	_press(plaza, Strings.t("plaza.enter"))
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
-	if not _expect(explore != null, "도시 → 미궁 입장"):
+	if not _expect(explore != null, "포탈로 들어가 미궁으로"):
 		return
 	await _frames(2)
-	_expect(is_equal_approx(explore.session.player.fatigue.value, fatigue), "미궁에서도 피로도 그대로")
-	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(fatigue)})), "미궁 HUD에 피로도")
+	var in_dungeon := explore.session.player.fatigue.value
+	_expect(in_dungeon >= fatigue and in_dungeon < fatigue + 1.0, "미궁으로 피로도가 이어진다(시간이 흐르면 조금씩 오른다)")
+	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(in_dungeon)}).left(4)), "미궁 HUD에 피로도")
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
@@ -571,10 +621,20 @@ func _city_flow() -> void:
 	_press(end, Strings.t("end.to_city"))
 	var back := (await _screen(CityScreen)) as CityScreen
 	if _expect(back != null, "귀환 → 도시"):
-		_expect([back.state.month, back.state.period] == date, "미궁 입장·귀환은 달력을 바꾸지 않는다")
-		_expect(is_equal_approx(back.pc.fatigue.value, fatigue), "도시로 돌아와도 피로도 그대로")
+		_expect([back.state.month, back.state.period, back.state.ap] == [month + 1, 0, 3], "귀환하면 다음 달 상순(행동력 3)")
+		_expect(back.pc.fatigue.value > fatigue, "미궁에서 쌓인 피로도가 도시로 이어진다")
 		_press(back, Strings.t("city.btn_title"))
-	_expect((await _screen(TitleScreen)) != null, "타이틀로")
+	var title := (await _screen(TitleScreen)) as TitleScreen
+	if not _expect(title != null, "타이틀로"):
+		return
+	_press(title, Strings.t("menu.continue"))
+	var again := (await _screen(PlazaScreen)) as PlazaScreen
+	if _expect(again != null, "이어하기 → 차원광장"):
+		_expect(again.state.month == saved_month and again.pc.display_name == saved_name and again.pc.inventory.money == saved_money, "저장한 날짜·탐험가·소지금 그대로")
+		again.open_now()
+		_expect(not again.state.is_last_period() or again.state.expedition_month == saved_month, "미궁은 그 달에 한 번")
+	GameState.on_death()
+	_expect(not GameState.has_save(), "죽으면 기록이 지워진다")
 
 
 func _press_prefix(screen: Node, prefix: String) -> void:
@@ -584,6 +644,14 @@ func _press_prefix(screen: Node, prefix: String) -> void:
 			btn.pressed.emit()
 			return
 	_expect(false, "버튼 '%s…'" % prefix)
+
+
+## 보이는 버튼 중 그 글자의 버튼이 있는가.
+func _has_button(root: Node, text: String) -> bool:
+	for b: Node in root.find_children("*", "Button", true, false):
+		if (b as Button).text == text and (b as Button).is_visible_in_tree():
+			return true
+	return false
 
 
 func _has_label(root: Node, text: String) -> bool:

@@ -77,17 +77,6 @@ func _build() -> void:
 	_interact_label = _add(top, UiTheme.label("", "small", "text_title"))
 	_essence_label = _add(top, UiTheme.label("", "small", "gold"))
 
-	var keys := UiTheme.label(Strings.t("explore.keys", {
-		"up": InputSetup.key_label("move_up"), "left": InputSetup.key_label("move_left"),
-		"down": InputSetup.key_label("move_down"), "right": InputSetup.key_label("move_right"),
-		"wait": InputSetup.key_label("wait"), "rest": InputSetup.key_label("rest"),
-		"torch": InputSetup.key_label("torch"), "eat": InputSetup.key_label("eat"),
-		"interact": InputSetup.key_label("interact"), "pause": InputSetup.key_label("pause"),
-		"inventory": InputSetup.key_label("inventory"), "character": InputSetup.key_label("character"),
-		"bestiary": InputSetup.key_label("bestiary"), "debug": InputSetup.key_label("debug_toggle")}), "small", "text_dim")
-	keys.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	keys.custom_minimum_size.x = UiTheme.metric("hud_panel_width", 360)
-	top.add_child(keys)
 
 
 ## 반투명 패널 + 내용 상자. 내용 상자(VBox)를 돌려준다.
