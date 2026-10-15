@@ -550,14 +550,19 @@ func _city_flow() -> void:
 			_expect(st.bank_balance == 60 and pc.inventory.money + st.bank_balance == total, "찾기(합 그대로)")
 		_press(fv, Strings.t("city.leave"))
 	await _frames(1)
-	_press(city, Strings.t("city.btn_info"))
-	_expect(_has_label(city, Strings.t("city.info_kind_rumor")), "소문·정보 창")
-	city.toggle_info()
-	var date := [st.month, st.period]
 	var fatigue := pc.fatigue.value
-	_press(city, Strings.t("city.btn_dungeon"))
+	var month := st.month
+	st.period = st.periods().size() - 1  # 하순으로 건너뛰고 마지막 행동력으로 시설 하나
+	st.ap = 1
+	city.choose_facility("inn")
+	fv = city.facility_view()
+	if _expect(fv != null and st.ap == 0, "하순 마지막 행동력으로 여관"):
+		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
+		_expect(st.ap == 0, "시설 안 활동은 행동력을 쓰지 않는다")
+		fatigue = pc.fatigue.value  # 휴식(임시값)으로 줄어든 값이 미궁으로 이어진다
+		_press(fv, Strings.t("city.leave"))
 	var explore := (await _screen(ExploreScreen)) as ExploreScreen
-	if not _expect(explore != null, "도시 → 미궁 입장"):
+	if not _expect(explore != null, "하순이 끝나면 저절로 미궁으로"):
 		return
 	await _frames(2)
 	_expect(is_equal_approx(explore.session.player.fatigue.value, fatigue), "미궁에서도 피로도 그대로")
@@ -571,7 +576,7 @@ func _city_flow() -> void:
 	_press(end, Strings.t("end.to_city"))
 	var back := (await _screen(CityScreen)) as CityScreen
 	if _expect(back != null, "귀환 → 도시"):
-		_expect([back.state.month, back.state.period] == date, "미궁 입장·귀환은 달력을 바꾸지 않는다")
+		_expect([back.state.month, back.state.period, back.state.ap] == [month + 1, 0, 3], "귀환하면 다음 달 상순(행동력 3)")
 		_expect(is_equal_approx(back.pc.fatigue.value, fatigue), "도시로 돌아와도 피로도 그대로")
 		_press(back, Strings.t("city.btn_title"))
 	_expect((await _screen(TitleScreen)) != null, "타이틀로")

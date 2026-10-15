@@ -48,25 +48,42 @@ func test_spending_all_ap_moves_to_next_period() -> void:
 	assert_eq(s.ap, 3)
 
 
-func test_ap_shortage_blocks_and_never_goes_negative() -> void:
+## 행동력은 시설에 들어갈 때만 1 쓴다(어느 시설이든). 시설 안 활동은 행동력을 쓰지 않는다.
+func test_only_entry_costs_ap() -> void:
 	var s := _state()
 	var pc := _pc()
-	s.set_override("activities/inn_rest/ap_cost", 2)
-	assert_eq(s.enter_facility("inn"), "", "들어가며 행동력 1")
-	assert_eq(s.ap, 2)
-	assert_true(CityActions.perform(s, pc, "inn_rest", _reg()).ok, "행동력 2 → 휴식(2)")
-	assert_eq(s.ap, 0)
-	var ctx := CityActions.perform(s, pc, "inn_rest", _reg())
-	assert_false(ctx.ok, "행동력이 모자라면 할 수 없다")
-	assert_eq(str(ctx.messages[0]["key"]), "city.reason_no_ap")
-	assert_eq(s.ap, 0, "0 아래로 내려가지 않는다")
-	assert_false(s.spend_ap(1), "모자라면 쓰지 않는다")
-	assert_eq(s.ap, 0)
+	for f: String in s.facility_ids():
+		var t := _state()
+		assert_eq(t.enter_facility(f), "", "들어가기 " + f)
+		assert_eq(t.ap, 2, f + " 입장 = 행동력 1")
+	assert_eq(s.enter_facility("inn"), "")
+	for i in 5:
+		assert_true(CityActions.perform(s, pc, "inn_rest", _reg()).ok, "안에서는 몇 번이든")
+	assert_eq(s.ap, 2, "시설 안 활동은 행동력을 쓰지 않는다")
+	assert_false(s.spend_ap(3), "모자라면 쓰지 않는다")
+	assert_eq(s.ap, 2, "0 아래로 내려가지 않는다")
 	s.leave_facility()
-	assert_eq(s.ap, 3, "다 쓰고 나오면 다음 순")
 	s.ap = 0
-	s.facility = ""
 	assert_eq(s.enter_facility("library"), "city.reason_no_ap", "행동력 0이면 시설에 못 들어간다")
+	assert_eq(s.ap, 0)
+
+
+## 하순에 행동력을 다 쓰고 나오면 순을 넘기지 않고 미궁으로(expedition_due). 돌아오면 다음 달 상순·행동력 3.
+func test_late_period_ends_in_dungeon_and_return_starts_next_month() -> void:
+	var s := _state()
+	var due: Array[int] = []
+	s.expedition_due.connect(func() -> void: due.append(1))
+	for p in 3:
+		for f: String in ["inn", "library", "temple"]:
+			s.enter_facility(f)
+			s.leave_facility()
+	assert_eq(due.size(), 1, "하순이 끝나면 미궁으로 떠난다")
+	assert_eq([s.month, s.period_name(), s.ap], [1, "하순", 0], "순은 넘기지 않는다(미궁에 가 있는 동안)")
+	s.return_from_dungeon()
+	assert_eq([s.month, s.period_name(), s.ap], [2, "상순", 3], "귀환하면 다음 달 상순")
+	s.period = 1
+	s.return_from_dungeon()
+	assert_eq([s.month, s.period_name()], [3, "상순"], "중간에 들어갔다 와도 다음 달 상순")
 
 
 func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
@@ -96,21 +113,20 @@ func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	assert_eq(str(pc.stat_history[1]["stat"]), "str")
 
 
-func test_failed_roll_still_costs_fatigue_and_ap() -> void:
+func test_failed_roll_still_costs_fatigue() -> void:
 	var s := _state()
 	var pc := _pc()
 	s.set_override("activities/training_train/effects/0/stats", ["str"])
 	s.set_override("activities/training_train/effects/0/chance", 0.0)
 	s.set_override("activities/training_train/effects/0/amount", 1)
 	s.set_override("activities/training_train/effects/1/amount", 4)
-	s.set_override("activities/training_train/ap_cost", 1)
 	_inside(s, "training")
 	var before := pc.stats.get_base("str")
 	var ctx := CityActions.perform(s, pc, "training_train", _reg())
 	assert_true(ctx.ok)
 	assert_eq(pc.stats.get_base("str"), before, "판정 실패 → 능력치 그대로")
 	assert_near(pc.fatigue.value, 4.0, 0.001, "피로도는 판정과 상관없이")
-	assert_eq(s.ap, 2, "행동력도 판정과 상관없이")
+	assert_eq(s.ap, 3, "활동은 행동력을 쓰지 않는다")
 
 
 func test_same_seed_same_rolls() -> void:
@@ -282,11 +298,12 @@ func test_validator_lists_undecided_as_warnings() -> void:
 	var bad := db.get_entry("activities", "inn_rest").duplicate(true)
 	bad["effects"] = [{"type": "no_such_effect"}]
 	bad["panel"] = "nope"
+	bad["ap_cost"] = 1
 	db.put_entry("activities", bad)
 	var v2 := ContentRegistries.new().make_validator()
 	v2.validate(db)
 	db.load_all("res://data")
-	assert_true(v2.errors.size() >= 2, "모르는 효과·패널은 오류")
+	assert_true(v2.errors.size() >= 3, "모르는 효과·패널·ap_cost(활동은 행동력을 안 쓴다)는 오류")
 
 
 func test_entry_is_not_refunded() -> void:

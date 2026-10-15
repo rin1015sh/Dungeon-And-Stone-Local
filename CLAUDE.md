@@ -25,7 +25,7 @@
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로>` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과.
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --torch --reveal --debug`
-  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --info`
+  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug`
 - 도시 그림 다시 만들기(약 2분): `godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors]` → `assets/city/`(데이터가 가리키는 경로, WebP). 그림체 = 피어 앤 헝거 2풍 손그림 일러스트(ASSUMPTIONS CT21~CT25).
   - 렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다).
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
@@ -109,7 +109,7 @@ src/
   ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel(탐험 기록 이어 보기), DataSummary, ExploreHud, DebugPanel, BottomBar, ChoiceGrid(전투 고정 칸 선택판), SkillBrief, StatusTips, PauseMenu,
                          GothicWindow, InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, ItemDragPreview, CommandMenu, EssencePanel, RiddleDialog …
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
-  ui/city/               CityStreet(레이어 시차 스크롤 거리 + 강조 셰이더), CityHud(네 귀퉁이 카드) + CityStreetMap·CityFacilityCard, CityUi(카드 스타일),
+  ui/city/               CityStreet(레이어 시차 스크롤 거리 + 강조 셰이더), CityHud(귀퉁이 카드 — 달력·탐험가·메뉴), CityUi(카드 스타일),
                          FacilityView(시설 내부), CityPanel + ShopPanel·BankPanel·EssenceRemovePanel, CityDebugPanel
   ui/screens/            TitleScreen, CharacterCreateScreen, CityScreen, ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd, smoke_ui.gd/.tscn
@@ -142,5 +142,5 @@ assets/                  fonts/ sprites/ audio/ shaders/ city/(layers/ 거리 �
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 행동창 공격·방어·스킬·도주(`CommandMenu`), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
-- **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리 좌표 = 화면 높이 720 기준 거리 단위(`render.json city`), 거리 = `city.json street.layers`(시차) 위에 시설 건물. 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1), 활동은 `activities/<id>`(`ap_cost`·`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, 미궁 입장·귀환은 달력 그대로(`CityState`, `GameState.city`). **미정 = null = 효과 없음**(검증기는 경고 한 줄, `CityValues.nulls`), 디버그 F1 임시값은 `CityState.overrides`(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 효과 `effects()` 비움). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 저장 기능 없음(직렬화만). 가정 CT1~CT20.
+- **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리 좌표 = 화면 높이 720 기준 거리 단위(`render.json city`), 거리 = `city.json street.layers`(시차) 위에 시설 건물. 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1) — **행동력은 입장에만 쓰고 시설 안 활동은 쓰지 않는다**, 활동은 `activities/<id>`(`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, **하순이 끝나면 저절로 미궁**(`expedition_due`), 귀환하면 다음 달 상순(`return_from_dungeon`) (`CityState`, `GameState.city`). **미정 = null = 효과 없음**(검증기는 경고 한 줄, `CityValues.nulls`), 디버그 F1 임시값은 `CityState.overrides`(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 효과 `effects()` 비움). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 저장 기능 없음(직렬화만). 가정 CT1~CT20.
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.

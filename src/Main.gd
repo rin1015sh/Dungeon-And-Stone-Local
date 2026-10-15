@@ -64,7 +64,7 @@ func _start_run(pc: PlayerCharacter) -> void:
 	_show_city()
 
 
-## 도시 화면. 새 게임 시작 후·미궁 귀환 후 모두 여기로 온다. 미궁 입장·귀환은 달력을 바꾸지 않는다.
+## 도시 화면. 새 게임 시작 후·미궁 귀환 후 모두 여기로 온다. 귀환하면 다음 달 상순(_return_to_city).
 func _show_city() -> void:
 	if GameState.player == null or GameState.city == null:
 		_show_title()
@@ -106,8 +106,15 @@ func _show_session(session: ExploreSession, floor_id: String) -> void:
 func _on_run_ended(kind: String, info: Dictionary) -> void:
 	var end := EndScreen.new()
 	end.setup(kind, info)
-	end.done.connect(_show_title if kind == "died" else _show_city)
+	end.done.connect(_show_title if kind == "died" else _return_to_city)
 	_show(end)
+
+
+## 미궁에서 살아 돌아왔다: 다음 달 상순(행동력 새로)으로 도시.
+func _return_to_city() -> void:
+	if GameState.city != null:
+		GameState.city.return_from_dungeon()
+	_show_city()
 
 
 func _quit() -> void:

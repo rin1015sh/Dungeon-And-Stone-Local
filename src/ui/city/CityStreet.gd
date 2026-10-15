@@ -8,7 +8,6 @@ extends Control
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
 
 signal facility_chosen(facility_id: String)
-signal target_changed(facility_id: String)  ## 마우스를 올린 건물(없으면 가운데 건물) — 정보 카드용
 
 const FALLBACK_SIZE := Vector2(400, 400)
 const HIGHLIGHT := preload("res://assets/shaders/city_highlight.gdshader")
@@ -24,7 +23,6 @@ var _scale: float = 1.0
 var _street_w: float = 3600.0
 var _hover: int = -1
 var _focus: int = -1
-var _target: String = ""
 var _outline_tex: float = 3.0  # 윤곽 두께(그림 픽셀)
 var _press_pos: Vector2 = Vector2.ZERO
 var _pressing: bool = false
@@ -147,24 +145,6 @@ func offset() -> float:
 	return _offset
 
 
-## 지도용: 거리 전체 길이(화면 px)와 보이는 너비.
-func street_px() -> float:
-	return _street_w * _scale
-
-
-## 지도용: 시설 가운데 위치(거리 전체에 대한 0~1 비율).
-func facility_ratio(id: String) -> float:
-	for b in _buildings:
-		if str(b["id"]) == id:
-			return (float(b["x"]) + float(b["w"]) / 2.0) / _street_w
-	return 0.0
-
-
-## 그 시설이 화면 가운데에 오게 스크롤한다.
-func center_on(id: String) -> void:
-	scroll_to(facility_ratio(id) * street_px() - size.x / 2.0)
-
-
 func _place_plates() -> void:
 	var baseline := UiTheme.render_float("city.baseline", 600.0)
 	for b in _buildings:
@@ -189,16 +169,6 @@ func refresh() -> void:
 		var plate: PanelContainer = b["plate"]
 		plate.add_theme_stylebox_override("panel", CityUi.plate_box(lit and can))
 		(b["label"] as Label).add_theme_color_override("font_color", UiTheme.color("text_title" if can else "text_disabled"))
-	var t := target_id()
-	if t != _target:
-		_target = t
-		target_changed.emit(t)
-
-
-## 정보 카드가 보여 줄 건물: 마우스를 올린 건물, 없으면 화면 가운데 건물.
-func target_id() -> String:
-	var i := _hover if _hover >= 0 else _focus
-	return str(_buildings[i]["id"]) if i >= 0 and i < _buildings.size() else ""
 
 
 func focused_id() -> String:

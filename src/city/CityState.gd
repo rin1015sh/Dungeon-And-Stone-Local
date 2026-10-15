@@ -1,12 +1,14 @@
 class_name CityState
 extends RefCounted
 ## 도시(라비기온) 진행 상태: 순(旬) 달력 · 행동력 · 신전 공적치 · 은행 잔액 · 얻은 소문/정보 · 지금 들어가 있는 시설.
-## 미궁 안에서는 순이 흐르지 않는다(미궁 입장·귀환은 달력을 바꾸지 않는다).
+## 행동력은 시설에 들어갈 때만 쓴다(시설 안 활동은 행동력을 쓰지 않는다).
+## 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(expedition_due). 미궁에서 돌아오면 다음 달 상순(return_from_dungeon).
 ## 규칙 값은 data/city.json. 디버그 임시값(overrides)은 저장하지 않는다.
 ## 오토로드를 참조하지 않는다.
 
 signal changed
 signal period_started(month: int, period: int)
+signal expedition_due  ## 하순이 끝났다 — 미궁으로 떠날 차례
 
 var db: GameDatabase
 var rng: Rng
@@ -127,12 +129,29 @@ func leave_facility() -> bool:
 	return advance_if_spent()
 
 
-## 거리에 있고 행동력이 0이면 다음 순으로.
+## 거리에 있고 행동력이 0이면 다음 순으로. 하순이면 순을 넘기지 않고 expedition_due를 낸다.
 func advance_if_spent() -> bool:
-	if facility.is_empty() and ap <= 0:
+	if not facility.is_empty() or ap > 0:
+		return false
+	if is_last_period():
+		expedition_due.emit()
+	else:
 		next_period()
-		return true
-	return false
+	return true
+
+
+func is_last_period() -> bool:
+	return period >= periods().size() - 1
+
+
+## 미궁에서 돌아왔다: 다음 달 상순, 행동력을 새로 채운다.
+func return_from_dungeon() -> void:
+	facility = ""
+	period = 0
+	month += 1
+	ap = ap_per_period()
+	period_started.emit(month, period)
+	changed.emit()
 
 
 ## 거리 순서(facility_order, 없으면 각 시설의 order).

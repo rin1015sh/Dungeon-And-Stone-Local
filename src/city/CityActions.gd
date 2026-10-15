@@ -1,15 +1,12 @@
 class_name CityActions
 extends RefCounted
-## 도시 활동 실행: 조건 검사 → 행동력·비용 지불 → 효과 목록 적용(레지스트리 src/city/effects/).
-## 패널형 활동(shop·bank·essence_remove)은 거래마다 charge()로 행동력·비용을 낸다(CityShop·CityBank·CityTemple).
-## ap_cost·cost_stones가 null(미정)이면 0. 오토로드를 참조하지 않는다.
+## 도시 활동 실행: 조건 검사 → 이용 비용 지불 → 효과 목록 적용(레지스트리 src/city/effects/).
+## 시설 안 활동은 행동력을 쓰지 않는다(행동력은 시설에 들어갈 때 facility_entry_cost만 — 사용자 결정 2026-10-15).
+## 패널형 활동(shop·bank·essence_remove)은 거래마다 charge()로 비용을 낸다(CityShop·CityBank·CityTemple).
+## cost_stones가 null(미정)이면 0. 오토로드를 참조하지 않는다.
 
 const EFFECT_DIR := "res://src/city/effects"
 const PANELS := ["shop", "bank", "essence_remove"]
-
-
-static func ap_cost(act: Dictionary) -> int:
-	return maxi(0, int(CityValues.num(act, "ap_cost")))
 
 
 static func stone_cost(act: Dictionary) -> int:
@@ -23,21 +20,14 @@ static func check(state: CityState, pc: PlayerCharacter, act_id: String, extra_s
 		return "city.reason_unknown"
 	if state.facility != JsonUtil.get_str(act, "facility"):
 		return "city.reason_not_here"
-	if not state.can_spend(ap_cost(act)):
-		return "city.reason_no_ap"
 	if pc.inventory.money < stone_cost(act) + extra_stones:
 		return "city.reason_no_money"
 	return ""
 
 
-## 행동력·이용 비용을 낸다(check를 통과했다고 본다). 결과 문구를 ctx에 남긴다.
+## 이용 비용을 낸다(check를 통과했다고 본다). 결과 문구를 ctx에 남긴다.
 static func charge(ctx: CityContext, act_id: String) -> void:
-	var act := ctx.state.activity(act_id)
-	var ap := ap_cost(act)
-	var stones := stone_cost(act)
-	ctx.state.spend_ap(ap)
-	if ap > 0:
-		ctx.say("city.spent_ap", {"n": ap, "left": ctx.state.ap})
+	var stones := stone_cost(ctx.state.activity(act_id))
 	if stones > 0:
 		ctx.pc.inventory.add_money(-stones)
 		ctx.say("city.spent_stones", {"n": stones})

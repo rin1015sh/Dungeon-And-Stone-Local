@@ -107,7 +107,9 @@ static func _activities(v: ValidatorBase) -> void:
 		var a := v.db.get_entry("activities", id)
 		var w := "activities/" + id
 		v.ref(w + ".facility", "facilities", a.get("facility"))
-		for key: String in ["ap_cost", "cost_stones"]:
+		if a.has("ap_cost"):
+			v.err(w, "ap_cost는 쓰지 않는다 — 시설 안 활동은 행동력을 쓰지 않는다(입장 비용은 city.json facility_entry_cost)")
+		for key: String in ["cost_stones"]:
 			if a.get(key) != null and JsonUtil.get_float(a, key, -1.0) < 0.0:
 				v.err(w, key + "는 0 이상의 수 또는 null")
 		var panel := JsonUtil.get_str(a, "panel")

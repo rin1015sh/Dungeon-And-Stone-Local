@@ -109,14 +109,11 @@ func _show_choices() -> void:
 	_refresh_info()
 
 
+## 활동 이름(+ 이용료가 있으면 이용료). 시설 안 활동은 행동력을 쓰지 않는다.
 func _choice_text(act: Dictionary) -> String:
-	var parts := PackedStringArray()
-	var ap := CityActions.ap_cost(act)
+	var name := JsonUtil.get_str(act, "name_ko")
 	var stones := CityActions.stone_cost(act)
-	parts.append(Strings.t("city.cost_ap", {"n": ap}) if CityValues.is_set(act, "ap_cost") else Strings.t("city.cost_ap_undecided"))
-	if stones > 0:
-		parts.append(Strings.t("city.cost_stones", {"n": stones}))
-	return Strings.t("city.choice", {"name": JsonUtil.get_str(act, "name_ko"), "cost": " · ".join(parts)})
+	return Strings.t("city.choice", {"name": name, "cost": Strings.t("city.cost_stones", {"n": stones})}) if stones > 0 else name
 
 
 func _choose(act_id: String) -> void:
@@ -180,7 +177,7 @@ func _scroll_to_end() -> void:
 func _refresh_info() -> void:
 	if _info == null:
 		return
-	var lines := PackedStringArray([Strings.t("city.info_ap", {"ap": _state.ap})])
+	var lines := PackedStringArray()
 	for key: Variant in JsonUtil.get_array(_state.db.get_entry("facilities", _facility_id), "shows"):
 		match str(key):
 			"temple_merit":
@@ -192,6 +189,7 @@ func _refresh_info() -> void:
 			"lore":
 				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state, "lore").size()}))
 	_info.text = "  ·  ".join(lines)
+	_info.visible = not lines.is_empty()
 	_leave.disabled = not can_leave()
 	_leave.tooltip_text = "" if can_leave() else Strings.t("city.leave_locked")
 

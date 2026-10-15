@@ -1,15 +1,13 @@
 class_name CityHud
 extends Control
-## 도시 화면 정보(위 띠 하나에 몰지 않고 화면 네 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
-##   왼쪽 위 = 달력 카드(장소 · 날짜 · 상순/중순/하순 진행 · 행동력 구슬),
-##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 생명력 막대 · 피로도 · 소지금 · 은행 잔액 · 신전 공적치),
-##   오른쪽 위 = 거리 지도(CityStreetMap, 거리에서만) + 그 아래 메뉴(소지품 · 캐릭터 · 소문·정보 · 미궁 입장(임시) · 타이틀로),
-##   위 가운데 = 건물 정보 카드(CityFacilityCard, 거리에서만).
-##   아래 가운데·오른쪽은 비워 둔다(건물 이름판 자리).
+## 도시 화면 정보(위 띠 하나에 몰지 않고 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
+##   왼쪽 위 = 달력 카드(장소 · 날짜 · 상순/중순/하순 진행 · 행동력 구슬 · 순 넘김 안내),
+##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 소지금 · 생명력 막대 · 피로도),
+##   오른쪽 위 = 메뉴(소지품 · 캐릭터 · 미궁 입장(임시) · 타이틀로).
+## 은행 잔액·신전 공적치는 그 시설 안에서만 보인다(facilities shows). 아래 가운데·오른쪽은 건물 이름판 자리.
 
 signal dungeon_requested
 signal title_requested
-signal info_requested
 signal window_requested(kind: String)
 
 var _state: CityState
@@ -23,11 +21,7 @@ var _hp_bar: ProgressBar
 var _hp: Label
 var _fatigue: Label
 var _money: Label
-var _extra: Label
 var _dock: PanelContainer
-var _right: VBoxContainer  # 오른쪽 위 기둥: 지도 + 메뉴
-var map: CityStreetMap
-var card: CityFacilityCard
 
 
 func setup(state: CityState, pc: PlayerCharacter) -> void:
@@ -40,39 +34,11 @@ func _ready() -> void:
 	var m := UiTheme.metric("margin", 16)
 	_build_calendar(m)
 	_build_vitals(m)
-	_right = VBoxContainer.new()
-	_right.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
-	_right.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_right)
-	_right.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, m)
-	_right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_build_dock()
+	_build_dock(m)
 	_state.changed.connect(refresh)
 	_pc.inventory.money_changed.connect(func(_m: int) -> void: refresh())
 	_pc.fatigue.changed.connect(func(_v: float, _d: float, _s: String) -> void: refresh())
 	refresh()
-
-
-## 거리를 붙인다(지도·정보 카드가 거리 스크롤·가리킨 건물을 따른다).
-func attach_street(street: CityStreet) -> void:
-	var m := UiTheme.metric("margin", 16)
-	map = CityStreetMap.new()
-	map.setup(_state, street)
-	_right.add_child(map)
-	_right.move_child(map, 0)
-	card = CityFacilityCard.new()
-	card.setup(_state, _pc, street)
-	add_child(card)
-	card.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, m)
-	card.grow_horizontal = Control.GROW_DIRECTION_BOTH
-
-
-## 시설 안: 거리 지도·건물 카드를 숨긴다(달력·탐험가 카드·메뉴는 그대로).
-func set_facility_mode(on: bool) -> void:
-	if map != null:
-		map.visible = not on
-	if card != null:
-		card.visible = not on
 
 
 ## 시설 패널이 비워 둘 위쪽 높이(메뉴 아래부터).
@@ -140,20 +106,16 @@ func _build_vitals(m: int) -> void:
 	hp.add_child(_hp_bar)
 	_hp = CityUi.label("", "small", "bone")
 	hp.add_child(_hp)
-	var low := HBoxContainer.new()
-	v.add_child(low)
 	_fatigue = CityUi.label("", "small", "bone")
-	low.add_child(_fatigue)
-	_extra = CityUi.label("", "small", "dim")
-	_extra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_extra.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	low.add_child(_extra)
+	v.add_child(_fatigue)
 
 
-func _build_dock() -> void:
+func _build_dock(m: int) -> void:
 	_dock = CityUi.card()
-	_dock.custom_minimum_size.x = UiTheme.render_float("city.dock_width", 440.0)
-	_right.add_child(_dock)
+	_dock.custom_minimum_size.x = UiTheme.render_float("city.dock_width", 400.0)
+	add_child(_dock)
+	_dock.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, m)
+	_dock.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 6)
 	_dock.add_child(v)
@@ -161,7 +123,6 @@ func _build_dock() -> void:
 	v.add_child(r1)
 	r1.add_child(CityUi.button(Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")}), func() -> void: window_requested.emit("inventory")))
 	r1.add_child(CityUi.button(Strings.t("city.btn_character", {"key": InputSetup.key_label("character")}), func() -> void: window_requested.emit("character")))
-	r1.add_child(CityUi.button(Strings.t("city.btn_info"), func() -> void: info_requested.emit()))
 	var r2 := HBoxContainer.new()
 	v.add_child(r2)
 	r2.add_child(CityUi.button(Strings.t("city.btn_dungeon"), func() -> void: dungeon_requested.emit(), true))
@@ -187,8 +148,6 @@ func refresh() -> void:
 	_hp.text = Strings.t("city.hp_value", {"hp": roundi(hp), "max": roundi(hp_max)})
 	_fatigue.text = Strings.t("city.hud_fatigue", {"value": CityContext.fmt(_pc.fatigue.value)})
 	_money.text = Strings.t("city.hud_money", {"money": _pc.inventory.money})
-	_extra.text = "%s · %s" % [Strings.t("city.info_balance", {"balance": _state.bank_balance}),
-		Strings.t("city.info_merit", {"merit": CityContext.fmt(_state.temple_merit)})]
 
 
 ## "○번째 달 상순"(2년째부터는 연도를 붙인다). 연·월 이름 정의가 없어 시작부터 센 달로 표시한다.
