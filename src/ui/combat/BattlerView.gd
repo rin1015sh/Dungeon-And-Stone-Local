@@ -11,6 +11,7 @@ var unit: Combatant
 var shape: String = "humanoid"
 var color: Color = Color.GRAY
 var size_k: float = 1.0
+var boss: bool = false  ## 보스 등급(render.json ui.combat_boss_ranks) — 크기와 상관없이 무대를 거의 채운다
 var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
@@ -28,6 +29,7 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 		var def := (u.actor as Monster).def
 		shape = JsonUtil.get_str(def, "shape", "humanoid")
 		size_k = JsonUtil.get_float(def, "size", 1.0)
+		boss = UiTheme.render_array("ui.combat_boss_ranks").has(JsonUtil.get_str(def, "rank"))
 		color = Color.from_string(JsonUtil.get_str(def, "color"), Color.GRAY)
 		if front:  # 아군 소환수는 뒷모습 도형 그대로(그림은 정면뿐)
 			art = MonsterArt.texture((u.actor as Monster).monster_id)
@@ -79,7 +81,7 @@ func place(foot: Vector2, h: float) -> void:
 		var lw := maxf(w, UiTheme.metric("combat_enemy_label_width", 150))
 		var top := h if art != null else h * CombatFigure.top_of(shape)
 		_name.size = Vector2(lw, 20)
-		_name.position = Vector2((w - lw) / 2.0, size.y - top - 26)
+		_name.position = Vector2((w - lw) / 2.0, maxf(size.y - top - 26, 4.0 - position.y))  # 화면 위로 넘치는 큰 보스도 이름은 보이게
 		_bar.size = Vector2(minf(w * 0.7, 160.0), _bar.custom_minimum_size.y)
 		_bar.position = Vector2((w - _bar.size.x) / 2.0, size.y + 8)
 		_status.size = Vector2(lw, 20)

@@ -56,13 +56,15 @@ func _bottom() -> float:
 	return float(UiTheme.metric("combat_bottom_height", 200)) + UiTheme.metric("margin", 16)
 
 
-## 적: 가운데 한 줄(덩치 = 크기^0.5, 화면 폭을 넘으면 다 같이 줄인다). 아군: 아래 앞줄에 고르게.
+## 적: 가운데 한 줄(키 = 사람 키 × 크기 — 작은 건 작게·큰 건 크게, 보스 등급은 크기와 상관없이 무대를 거의 채운다.
+## 화면 폭을 넘으면 다 같이 줄인다). 아군: 아래 앞줄에 고르게.
 func layout() -> void:
 	if size.x <= 0.0:
 		return
 	var stage_h := size.y - _bottom()
-	var floor_y := stage_h * UiTheme.ui_float("combat_enemy_floor", 0.8)
-	var base_h := stage_h * UiTheme.ui_float("combat_enemy_height", 0.6)
+	var floor_y := stage_h * UiTheme.ui_float("combat_enemy_floor", 0.92)
+	var base_h := stage_h * UiTheme.ui_float("combat_enemy_height", 0.4)  # 크기 1(사람 키)일 때
+	var size_exp := UiTheme.ui_float("combat_enemy_size_exp", 1.0)
 	var foes: Array[Combatant] = []
 	var party: Array[Combatant] = []
 	for u: Combatant in _views:
@@ -72,8 +74,13 @@ func layout() -> void:
 	var gap := float(UiTheme.metric("combat_enemy_gap", 24))
 	for u in foes:
 		var v: BattlerView = _views[u]
-		var room := floor_y - float(UiTheme.metric("combat_enemy_top_room", 96))  # 위 안내 줄·이름표 자리를 남긴다
-		var h := minf(base_h * sqrt(clampf(v.size_k, 0.35, 2.4)), room / maxf(1.0, v.height_ratio()))
+		var h: float
+		if v.boss:  # 보스: 크기 값과 상관없이 크게. 머리는 위 안내 줄 아래, 치켜든 무기·뿔은 위로 넘쳐도 된다
+			var broom := floor_y - float(UiTheme.metric("combat_boss_top_room", 72))
+			h = minf(stage_h * UiTheme.ui_float("combat_boss_height", 0.92), broom / clampf(v.height_ratio(), 1.0, UiTheme.ui_float("combat_boss_head_room", 1.15)))
+		else:  # 나머지: 키 = 사람 키 × 크기(작은 건 작게, 큰 건 크게). 위 안내 줄·이름표 자리를 남긴다
+			var room := floor_y - float(UiTheme.metric("combat_enemy_top_room", 96))
+			h = minf(base_h * pow(clampf(v.size_k, 0.3, 2.4), size_exp), room / maxf(1.0, v.height_ratio()))
 		heights.append(h)
 		total += v.width_for(h) + gap
 	var avail := size.x * 0.92
@@ -86,7 +93,7 @@ func layout() -> void:
 		v.place(Vector2(x + w / 2.0, floor_y), h)
 		x += w + gap * fit
 	var ph := stage_h * UiTheme.ui_float("combat_party_height", 0.38)
-	var pfoot := stage_h + UiTheme.metric("combat_party_sink", 70)
+	var pfoot := stage_h + UiTheme.metric("combat_party_sink", 100)
 	var n := party.size()
 	for i in n:
 		(_views[party[i]] as BattlerView).place(Vector2(size.x * _party_x(i, n), pfoot), ph)
@@ -111,7 +118,7 @@ static func _party_x(i: int, n: int) -> float:
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color(0.02, 0.018, 0.016, UiTheme.ui_float("combat_dim_alpha", 0.96)))
 	var stage_h := size.y - _bottom()
-	var c := Vector2(size.x / 2.0, stage_h * UiTheme.ui_float("combat_enemy_floor", 0.8))
+	var c := Vector2(size.x / 2.0, stage_h * UiTheme.ui_float("combat_enemy_floor", 0.92))
 	var light := UiTheme.color("combat_floor", Color(0.42, 0.36, 0.3))
 	var cone := PackedVector2Array([Vector2(c.x - size.x * 0.12, 0), Vector2(c.x + size.x * 0.12, 0), Vector2(c.x + size.x * 0.34, c.y), Vector2(c.x - size.x * 0.34, c.y)])
 	draw_colored_polygon(cone, Color(light.r, light.g, light.b, 0.035))

@@ -101,6 +101,11 @@ static func render_float(path: String, fallback: float = 0.0) -> float:
 	return float(v) if (v is float or v is int) else fallback
 
 
+static func render_array(path: String) -> Array:
+	var v: Variant = GameDatabase.single(_render, path, [])
+	return v if v is Array else []
+
+
 static func render_str(path: String, fallback: String = "") -> String:
 	return str(GameDatabase.single(_render, path, fallback))
 
