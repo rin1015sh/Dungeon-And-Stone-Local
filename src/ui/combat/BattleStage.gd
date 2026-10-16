@@ -93,10 +93,16 @@ func layout() -> void:
 		v.place(Vector2(x + w / 2.0, floor_y), h)
 		x += w + gap * fit
 	var ph := stage_h * UiTheme.ui_float("combat_party_height", 0.38)
-	var pfoot := stage_h + UiTheme.metric("combat_party_sink", 100)
+	var sink := float(UiTheme.metric("combat_party_sink", 100))
+	var side_from := UiTheme.ui_float("combat_party_side_from", 0.2)
 	var n := party.size()
-	for i in n:
-		(_views[party[i]] as BattlerView).place(Vector2(size.x * _party_x(i, n), pfoot), ph)
+	for i in n:  # 가장자리 탐험가는 무대 가운데(적)를 보며 비스듬히 돌아선 옆모습, 소환수는 크기만큼(작은 것은 덜 가라앉혀 보이게)
+		var v: BattlerView = _views[party[i]]
+		var px := _party_x(i, n)
+		v.set_view(absf(px - 0.5) >= side_from, px > 0.5)
+		var k := clampf(v.size_k, 0.5, UiTheme.ui_float("combat_party_size_max", 1.2)) if v.unit.actor is Monster else 1.0
+		var half := v.width_for(ph * k) * 0.5  # 화면 밖으로 넘치지 않게
+		v.place(Vector2(clampf(size.x * px, half, maxf(half, size.x - half)), stage_h + sink * minf(1.0, k) * minf(1.0, k)), ph * k)
 	queue_redraw()
 
 
@@ -110,7 +116,7 @@ static func _party_x(i: int, n: int) -> float:
 		3:
 			return [0.18, 0.5, 0.82][i]
 		4:
-			return [0.13, 0.37, 0.63, 0.87][i]
+			return [0.11, 0.3, 0.7, 0.89][i]
 	return 0.08 + 0.84 * i / maxf(1.0, n - 1)
 
 

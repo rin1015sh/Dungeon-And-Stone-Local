@@ -70,7 +70,8 @@ static func slime(cl: Clay, foot: Vector2, H: float, sp: Dictionary, rng: Random
 			var u := lerpf(-0.11, 0.11, k / 6.0) * H
 			cl.cap(g3, top + Vector3(u, 0, -absf(u) * 0.3), top + Vector3(u * 1.15, -(0.08 if k % 2 == 0 else 0.05) * H, -absf(u) * 0.3), 0.014 * H, 0.004 * H, cm, 0.004 * H)
 		cl.cap(g3, top + Vector3(-0.12 * H, 0.0, -0.03 * H), top + Vector3(0.12 * H, 0.0, -0.03 * H), 0.02 * H, 0.02 * H, cm, 0.01 * H)
-	post["eyes2"] = [Vector2(c.x - r * 0.25, c.y - r * 0.12), Vector2(c.x + r * 0.22, c.y - r * 0.1)]
+	if not sp.get("back", false):  # 뒷모습(아군 소환)이면 눈이 없다
+		post["eyes2"] = [Vector2(c.x - r * 0.25, c.y - r * 0.12), Vector2(c.x + r * 0.22, c.y - r * 0.1)]
 	return post
 
 

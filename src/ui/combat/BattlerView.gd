@@ -1,6 +1,7 @@
 class_name BattlerView
 extends Control
-## 전투 무대 위의 참가자 하나. 몬스터는 일러스트(MonsterArt — 없으면 CombatFigure 도형), 아군은 CombatFigure 뒷모습.
+## 전투 무대 위의 참가자 하나. 그림은 MonsterArt(없으면 CombatFigure 도형): 적은 정면 그림, 아군 소환수는 뒷모습(<id>_back),
+## 탐험가는 종족 그림 — 뒷모습(back)과 비스듬히 돌아선 옆모습(side)을 무대가 자리에 따라 고른다(set_view, 오른쪽 자리는 좌우 반전).
 ## 적은 정면 + 머리 위 이름·발밑 생명력 막대·상태,
 ## 아군은 뒷모습만(이름·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
 ## 쓰러지거나 도망치면 흐려진다. 누르면 clicked(대상 고르기 중이면 그 대상을 고른다).
@@ -14,7 +15,9 @@ var size_k: float = 1.0
 var boss: bool = false  ## 보스 등급(render.json ui.combat_boss_ranks) — 크기와 상관없이 무대를 거의 채운다
 var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
+var flip: bool = false  ## 좌우 반전(오른쪽 자리의 옆모습이 무대 가운데를 보게)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
+var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이]
 var _current: bool = false
 var _target: bool = false
 var _name: Label
@@ -31,12 +34,18 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 		size_k = JsonUtil.get_float(def, "size", 1.0)
 		boss = UiTheme.render_array("ui.combat_boss_ranks").has(JsonUtil.get_str(def, "rank"))
 		color = Color.from_string(JsonUtil.get_str(def, "color"), Color.GRAY)
-		if front:  # 아군 소환수는 뒷모습 도형 그대로(그림은 정면뿐)
-			art = MonsterArt.texture((u.actor as Monster).monster_id)
+		var art_id := (u.actor as Monster).monster_id + ("" if front else "_back")  # 아군 소환수는 뒷모습
+		art = MonsterArt.texture(art_id)
 		if art != null:
-			_art_body = MonsterArt.body_height((u.actor as Monster).monster_id, art)
+			_art_body = MonsterArt.body_height(art_id, art)
 	elif u.actor is PlayerCharacter:
-		color = Color.from_string(JsonUtil.get_str(db.get_entry("races", (u.actor as PlayerCharacter).race_id), "color"), Color.GRAY)
+		var race := (u.actor as PlayerCharacter).race_id
+		color = Color.from_string(JsonUtil.get_str(db.get_entry("races", race), "color"), Color.GRAY)
+		for view: String in ["back", "side"]:
+			var tex := MonsterArt.texture_in(MonsterArt.party_dir(), race + "_" + view)
+			if tex != null:
+				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex)]
+		set_view(false, false)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	if not front:
 		return
@@ -56,6 +65,17 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_status.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_status.clip_text = true
 	add_child(_status)
+
+
+## 탐험가 그림 고르기: side면 옆모습(없으면 뒷모습), mirror면 좌우 반전(옆모습일 때만).
+func set_view(side: bool, mirror: bool) -> void:
+	var key := "side" if side and _views.has("side") else "back"
+	if not _views.has(key):
+		return
+	art = _views[key][0]
+	_art_body = _views[key][1]
+	flip = mirror and key == "side"
+	queue_redraw()
 
 
 ## 키 h일 때 그림 전체 높이 / h(들어 올린 무기·뿔·이름표 자리 포함 — 무대가 화면 위로 넘치지 않게 줄일 때).
@@ -120,9 +140,12 @@ func set_targeted(on: bool) -> void:
 func _draw() -> void:
 	var glow := 1.0 if _target else (0.55 if _current else 0.0)
 	if art != null:
-		var foot := Vector2(size.x / 2.0, size.y)
-		CombatFigure.ground(self, foot, minf(size.x * 0.42, size.y * 0.5), size.y, glow)
+		if front:  # 아군 발은 아래 창 뒤로 가라앉아 있다(차례는 밝기로)
+			CombatFigure.ground(self, Vector2(size.x / 2.0, size.y), minf(size.x * 0.42, size.y * 0.5), size.y, glow)
+		if flip:
+			draw_set_transform(Vector2(size.x, 0.0), 0.0, Vector2(-1.0, 1.0))
 		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		return
 	var c := color.lightened(0.12) if _current and not front else color
 	CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)

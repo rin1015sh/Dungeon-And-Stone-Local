@@ -11,7 +11,8 @@ extends Node
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
-## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon: 아군 소환수, --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
+## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
+## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --details: (--character와 함께) 캐릭터 창 세부 능력 탭
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
@@ -152,18 +153,23 @@ func _run() -> void:
 						else:  # --summon=id,id: 그 몬스터들(그림 확인)
 							for mid in sv.split(","):
 								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": mid})
-						if _args.has("ally_summon"):  # 아군 소환수 카드(정수판 망자의 맹세)
-							BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": "deadman"})
+						if _args.has("ally_summon"):  # 아군 소환수(뒷모습 그림 확인)
+							var av := str(_args["ally_summon"])
+							for aid in ("soldier_deadman" if av == "true" else av).split(","):
+								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": aid})
 		if _args.has("mate"):  # 동료를 하나 붙여 "행동 정하기"(첫 사람 방어 → 동료 차례)를 본다
 			await _frames(5)
 			for n: Node in _main.find_children("*", "", true, false):
 				if n is CombatScreen:
 					var ms := n as CombatScreen
-					var mate := PlayerCharacter.create(DataRegistry.db, "human", "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
-					ms._add_unit(ms.battle.add(mate, Combatant.SIDE_PARTY))
-					ms._menu.close()
-					ms._begin_planning(ms.battle.current)
-					ms._on_chosen({"kind": "guard"})
+					var mv := str(_args["mate"])
+					for race in ("human" if mv == "true" else mv).split(","):
+						var mate := PlayerCharacter.create(DataRegistry.db, race, "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+						ms._add_unit(ms.battle.add(mate, Combatant.SIDE_PARTY))
+					if mv == "true":
+						ms._menu.close()
+						ms._begin_planning(ms.battle.current)
+						ms._on_chosen({"kind": "guard"})
 		if _args.has("win"):  # 전투 승리 결과 칸(보상 안내) 확인: 적을 모두 쓰러뜨리고 방어로 차례를 넘긴다
 			await _frames(10)
 			for n: Node in _main.find_children("*", "", true, false):
