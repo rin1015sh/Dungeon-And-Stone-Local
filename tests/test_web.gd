@@ -23,7 +23,8 @@ func test_bundled_font_has_every_on_screen_character() -> void:
 		return
 	var missing := {}
 	for path in _files("res://data", ".json"):
-		_missing(FileAccess.get_file_as_string(path), font, missing)
+		if not path.begins_with("res://data/maps/"):  # 고정 지도(글자 = 타일, 화면에 나오지 않는다)
+			_missing(FileAccess.get_file_as_string(path), font, missing)
 	var re := RegEx.create_from_string(REGEX)
 	for path in _files("res://src", ".gd"):
 		for line in FileAccess.get_file_as_string(path).split("\n"):

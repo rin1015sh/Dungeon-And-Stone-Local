@@ -151,11 +151,18 @@ func count_tile(tile_id: String) -> int:
 	return tiles.count(index_of(tile_id))
 
 
-## 지금 보이는 칸을 탐험 기록에 더한다.
-func remember_visible() -> void:
-	for i in visible_now.size():
-		if visible_now[i] != 0:
-			explored[i] = 1
+## 지금 보이는 칸을 탐험 기록에 더한다. rect를 주면 그 안만 본다(시야는 시야 반경 안에만 있다 — 큰 지도에서 전체를 훑지 않게).
+func remember_visible(rect: Rect2i = Rect2i()) -> void:
+	if not rect.has_area():
+		for i in visible_now.size():
+			if visible_now[i] != 0:
+				explored[i] = 1
+		return
+	var r := rect.intersection(Rect2i(0, 0, width, height))
+	for y in range(r.position.y, r.end.y):
+		for i in range(y * width + r.position.x, y * width + r.end.x):
+			if visible_now[i] != 0:
+				explored[i] = 1
 
 
 static func _zeros(n: int) -> PackedByteArray:

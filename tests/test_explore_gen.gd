@@ -39,7 +39,7 @@ func test_deterministic_with_seed() -> void:
 	assert_eq(a.entry, b.entry)
 	assert_true(a.dark == b.dark)
 	var c := gen.generate(db, def, Rng.new(43))
-	assert_false(a.tiles == c.tiles, "다른 시드 → 다른 지형")
+	assert_true(a.tiles == c.tiles, "고정 지도 — 다른 시드여도 같은 지형")
 
 
 func test_size_and_border() -> void:

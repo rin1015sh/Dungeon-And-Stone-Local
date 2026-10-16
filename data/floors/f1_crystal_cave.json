@@ -4,7 +4,7 @@
   "floor": 1,
   "generator": "crystal_cave",
   "close_hours": 168,
-  "resets_each_entry": true,
+  "resets_each_entry": false,
   "_comment": "벽·천장의 수정이 빛을 내서 횃불 없이도 보인다(ambient). 암흑지대는 네 팔 끝(포탈 주변)에만 있고 거기서만 횃불이 필요하다. 시야 상한은 광원이 있어도 넘지 못하는 값(10m 미만).",
   "visibility_cap_m": 9.0,
   "visibility_source": "placeholder",
@@ -13,49 +13,33 @@
   "ambient_color": "#c4bcff",
   "gen": {
     "_comment": "거대한 십자가(CrossLayout) + 스파게티 동굴(CaveCarver). 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. 매 입장 새로: 동굴 지형. 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
-    "core_size": 51,
-    "arm_length": 96,
-    "arm_width": 45,
+    "core_size": 153,
+    "arm_length": 288,
+    "arm_width": 135,
     "margin": 2,
-    "outline_jitter": 2,
+    "outline_jitter": 6,
     "center_radius": 6,
-    "core_fill_ratio": 0.45,
-    "core_smooth_steps": 4,
-    "min_region": 30,
+    "min_region": 60,
     "wide3_chance": 0.35,
     "widen_passes": 8,
     "spine": {
-      "_comment": "등뼈 길(기념비 → 포탈, 뒤로 가지 않음 = 나침반 경로 보장). 구간 종류 가중치 out(직진)·side(옆걸음)·stair(계단식 대각), 구간 길이 [최소, 최대].",
-      "weights": {
-        "out": 0.3,
-        "side": 0.42,
-        "stair": 0.28
-      },
-      "outward_run": [
-        3,
-        6
+      "_comment": "등뼈 길(기념비 → 포탈, 축 방향으로 뒤로 가지 않음 = 나침반 경로 보장 — CaveLinks.spine). 원판 반지름 radius, 구간마다 wide_chance로 넓은 회랑(wide_radius), wiggle = 걸음마다 방향 흔들림, max_angle = 축에서 벗어날 수 있는 최대 각(라디안, 90° 미만).",
+      "radius": [
+        1.2,
+        2.2
       ],
-      "side_run": [
-        3,
-        10
-      ],
-      "stair_run": [
-        3,
-        7
-      ],
-      "long_run_chance": 0.06,
-      "long_run": [
-        8,
-        12
-      ]
+      "wide_chance": 0.2,
+      "wide_radius": 3.0,
+      "wiggle": 0.12,
+      "max_angle": 1.15
     },
     "branches": {
       "_comment": "곁가지로 팔을 채운다. density = 팔 사각형 중 바닥 비율 목표. heading_weights = [빈 땅 쪽, 왼, 오른, 반대]. join_after걸음 뒤 다른 길에 닿으면 합류(순환). 끝까지 못 닿으면 reconnect_radius 안의 가장 가까운 굴로 다시 잇고, 그것도 안 되면 되돌린다(막다른 길 없음). 합류 자리에 join_room_chance로 작은 공동(room_radius).",
-      "density": 0.45,
-      "max_per_arm": 400,
+      "density": 0.0,
+      "max_per_arm": 1600,
       "steps": [
-        20,
-        60
+        30,
+        90
       ],
       "seg_run": [
         3,
@@ -69,28 +53,184 @@
       ],
       "join_after": 5,
       "empty_clearance": 4,
-      "reconnect_radius": 30,
+      "reconnect_radius": 45,
       "join_room_chance": 0.2,
       "room_radius": [
         2.0,
         3.2
       ]
     },
-    "roughen_chance": 0.06,
-    "dark_depth": 18,
-    "portal_inset": 6,
+    "roughen_chance": 0.14,
+    "dark_depth": 54,
+    "portal_inset": 18,
     "portal_room_radius": 3.5,
     "crystal_wall_chance": 0.07,
     "crystal_dark_margin": 3,
-    "landmark_min_distance": 20,
-    "entry_min_distance": 30,
-    "entry_dark_margin": 6,
+    "landmark_min_distance": 60,
+    "entry_min_distance": 90,
+    "entry_dark_margin": 18,
     "tiles": {
       "floor": "cave_floor",
       "wall": "rock_wall",
       "crystal": "crystal_wall",
-      "portal": "portal"
-    }
+      "portal": "portal",
+      "pond": "pond_water",
+      "boulder": "boulder"
+    },
+    "chambers": {
+      "_comment": "방·공동(CaveChambers·CaveLinks·CaveDecor). kinds = 크기별 공동(radius 본체 반지름, aspect 짧은 축 비율, lobes 덧붙는 타원 수, wobble 윤곽 물결, count 구역마다 개수 center/arm). center_hall = 기념비 대공동, portal_hall = 포탈 공동, spine_every = 등뼈 길 몇 칸마다 쉼터 공동(spine_kinds). gap = 공동끼리 최소 틈, edge_margin = 구역 가장자리에서 떨어질 칸.",
+      "edge_margin": 5,
+      "gap": 5,
+      "center_hall": {
+        "radius": [
+          22,
+          22
+        ],
+        "aspect": [
+          0.7,
+          0.85
+        ],
+        "lobes": [
+          3,
+          4
+        ],
+        "wobble": 0.2
+      },
+      "portal_hall": {
+        "radius": [
+          10,
+          12
+        ],
+        "aspect": [
+          0.7,
+          0.9
+        ],
+        "lobes": [
+          1,
+          2
+        ],
+        "wobble": 0.2
+      },
+      "spine_every": [
+        50,
+        80
+      ],
+      "spine_kinds": [
+        "cavern",
+        "room",
+        "room"
+      ],
+      "kinds": [
+        {
+          "id": "grand",
+          "radius": [
+            22,
+            32
+          ],
+          "aspect": [
+            0.5,
+            0.85
+          ],
+          "lobes": [
+            1,
+            3
+          ],
+          "wobble": 0.26,
+          "count": {
+            "center": 2,
+            "arm": 4
+          }
+        },
+        {
+          "id": "cavern",
+          "radius": [
+            11,
+            17
+          ],
+          "aspect": [
+            0.5,
+            0.9
+          ],
+          "lobes": [
+            0,
+            2
+          ],
+          "wobble": 0.28,
+          "count": {
+            "center": 8,
+            "arm": 14
+          }
+        },
+        {
+          "id": "room",
+          "radius": [
+            4.5,
+            8
+          ],
+          "aspect": [
+            0.6,
+            1.0
+          ],
+          "lobes": [
+            0,
+            1
+          ],
+          "wobble": 0.24,
+          "count": {
+            "center": 16,
+            "arm": 40
+          },
+          "gap": 3
+        }
+      ],
+      "links": {
+        "_comment": "공동 잇기: 최소 신장 트리 + 이음 하나뿐인 공동은 하나 더 + 가까운 neighbors개 중 loop_chance(틈 max_extra_gap 이하). max_link = 이을 수 있는 중심 거리. 굴 = 원판 반지름 tunnel_radius, wide_chance로 넓은 회랑(wide_radius), wiggle = 걸음마다 방향 흔들림, max_turn = 목표에서 벗어날 수 있는 최대 각(라디안).",
+        "max_link": 120,
+        "neighbors": 3,
+        "loop_chance": 0.4,
+        "max_extra_gap": 60,
+        "tunnel_radius": [
+          1.2,
+          2.2
+        ],
+        "wide_chance": 0.2,
+        "wide_radius": 2.7,
+        "wiggle": 0.16,
+        "max_turn": 1.0,
+        "bulge_chance": 0.03,
+        "bulge_radius": [
+          1.8,
+          3.2
+        ]
+      },
+      "decor": {
+        "_comment": "공동 안 꾸밈(큰 공동·공동만). pond_chance = 지하 호수 확률(종류별), pond_ratio = 호수 반지름/공동 반지름, pillars_per_100 = 넓이 100칸당 석순 기둥, crystal_ratio = 기둥 중 수정 무리 비율, boulders_per_100 = 바위, keep_clear = 등뼈 길 둘레 꾸밈 금지 칸.",
+        "pond_chance": {
+          "grand": 0.55,
+          "cavern": 0.15
+        },
+        "pond_ratio": [
+          0.25,
+          0.42
+        ],
+        "pond_max_depth": 0.62,
+        "pillars_per_100": 0.5,
+        "pillar_radius": [
+          0.8,
+          2.2
+        ],
+        "pillar_spacing": 6,
+        "pillar_max_depth": 0.65,
+        "crystal_ratio": 0.3,
+        "boulders_per_100": 0.25,
+        "boulder_depth": [
+          0.6,
+          0.9
+        ],
+        "keep_clear": 3
+      }
+    },
+    "roughen_passes": 3
   },
   "landmarks": [
     {
@@ -206,12 +346,12 @@
   "source": "original",
   "spawn": {
     "groups_per_region": [
-      5,
-      7
+      20,
+      26
     ],
     "respawn_hours": 24,
     "growth_every_hours": 24,
-    "max_extra_groups": 6
+    "max_extra_groups": 18
   },
   "lord": {
     "_comment": "계층군주 소환(LordWatch, 명세 §7.1). 원작: 3일 차 이후 5인 이상이 한곳에 머물면 확률 소환, 하루 안에 사실상 확정, 6시간마다 재소환, 시야 2m",
@@ -227,5 +367,10 @@
     "spawn_distance_tiles": 4,
     "tint": "#ff6a5a",
     "source": "placeholder"
+  },
+  "fixed_map": {
+    "_comment": "모든 게임에서 같은 지도. file = tools/bake_floor.gd가 seed로 구운 지도(없으면 seed로 바로 만든다). 시작 위치만 입장마다 무작위.",
+    "file": "res://data/maps/f1_crystal_cave.json",
+    "seed": 6
   }
 }

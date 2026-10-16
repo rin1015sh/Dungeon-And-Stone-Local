@@ -123,3 +123,30 @@ static func compass_path(map: FloorMap, from: Vector2i, dir: String, to: Vector2
 
 func core_rect() -> Rect2i:
 	return Rect2i(center - Vector2i(core_half, core_half), Vector2i(core_half * 2 + 1, core_half * 2 + 1))
+
+
+## 지도에 구역 번호·암흑지대·중심을 적는다(지형과 무관한 고정 뼈대).
+func mark_zones(map: FloorMap) -> void:
+	map.center = center
+	map.zone_ids = PackedStringArray([""])
+	for z: String in [ZONE_CENTER] + Array(ARMS):
+		map.zone_ids.append(z)
+	_fill(map.zones, map.width, core_rect(), 1)
+	for dir in ARMS:
+		_fill(map.zones, map.width, arm_rect(dir), map.zone_ids.find(dir))
+		_fill(map.dark, map.width, dark_rect(dir), 1)
+
+
+## 빛나는 타일을 두면 안 되는 칸(암흑지대와 그 둘레 margin칸) = 1.
+func no_light_mask(map: FloorMap, margin: int) -> PackedByteArray:
+	var out := PackedByteArray()
+	out.resize(map.tiles.size())
+	for dir in ARMS:
+		_fill(out, map.width, dark_rect(dir).grow(margin).intersection(Rect2i(0, 0, map.width, map.height)), 1)
+	return out
+
+
+static func _fill(arr: PackedByteArray, w: int, r: Rect2i, value: int) -> void:
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			arr[y * w + x] = value

@@ -182,6 +182,7 @@
     "wander_chance": 0.3,
     "wander_radius": 4,
     "update_max_moves": 12,
+    "active_radius_tiles": 80,
     "chase_path_radius": 24,
     "spawn_min_dist_from_entry": 10,
     "rest_ambush_chance_per_hour": 0.04,

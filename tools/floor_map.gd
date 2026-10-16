@@ -1,6 +1,8 @@
 extends SceneTree
 ## 층 전체 지도를 PNG로 그리고 검사 결과를 출력한다(디버그 미니맵).
-##   godot --headless --path . --script res://tools/floor_map.gd -- --seed=5 --out=C:/tmp/f1.png [--floor=f1_crystal_cave] [--scale=5] [--no-spawns]
+##   godot --headless --path . --script res://tools/floor_map.gd -- --seed=5 --out=C:/tmp/f1.png [--floor=f1_crystal_cave] [--scale=5] [--no-spawns] [--procedural]
+## 고정 지도(층 JSON fixed_map)가 있는 층은 그 지도를 그린다(시드는 시작 위치·무리만 바꾼다). --procedural이면 고정 지도를 무시하고
+## 그 시드로 새로 만든다(굽기 전에 시드 고르기).
 ## 색(data/render.json "debug_map"): 구역별 바닥색(중심부·동·서·남·북), 같은 색의 어두운 벽, 수정벽, 암흑지대(어둡게 + 빗금),
 ## 기념비(흰색), 2층 포탈(분홍), 시작 위치(하늘색), 무작위 랜드마크(노란 테두리), 몬스터 무리(몬스터별 점), 막다른 곳(주황).
 ## 검사(CrossLayoutCheck): 네 포탈 도달·나침반 경로·연결·암흑지대 위치·지역 스폰. 문제가 있으면 종료 코드 1.
@@ -18,6 +20,8 @@ func _initialize() -> void:
 	db.load_all("res://data")
 	var reg := ContentRegistries.new()
 	var def := db.get_entry("floors", str(_args["floor"]))
+	if _args.has("procedural"):
+		def = CrystalCaveGenerator.procedural(def)
 	var seed_value := str(_args["seed"]).to_int()
 	var t := Time.get_ticks_usec()
 	var map := reg.generator(JsonUtil.get_str(def, "generator")).generate(db, def, Rng.new(seed_value))

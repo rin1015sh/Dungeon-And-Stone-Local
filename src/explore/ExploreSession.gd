@@ -288,8 +288,10 @@ func refresh_view() -> void:
 	vision_m = Vision.radius_m(db, floor_def, map, player, pos)
 	if lord.is_active():
 		vision_m = minf(vision_m, lord.vision_cap_m())
-	map.visible_now = Fov.compute(map, pos, vision_m / _mpt)
-	map.remember_visible()
+	var radius := vision_m / _mpt
+	map.visible_now = Fov.compute(map, pos, radius)
+	var r := ceili(radius) + 1
+	map.remember_visible(Rect2i(pos - Vector2i(r, r), Vector2i(r * 2 + 1, r * 2 + 1)))
 	_discover()
 	view_changed.emit()
 
