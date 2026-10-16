@@ -1,0 +1,18 @@
+{
+  "_comment": "1층 수정동굴 기준 장면(탐험 맵 그림 작업 전후 비교). 좌표 = 고정 지도 data/maps/f1_crystal_cave.json 칸. 찍기: godot --path . res://tools/screenshot.tscn -- --screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>",
+  "bench": {"at": [366, 371], "steps": 60},
+  "shots": [
+    {"name": "monument", "at": [366, 371]},
+    {"name": "junction", "at": [399, 466]},
+    {"name": "pond", "at": [287, 415]},
+    {"name": "east", "at": [550, 366]},
+    {"name": "west", "at": [189, 374]},
+    {"name": "south", "at": [364, 552]},
+    {"name": "north", "at": [373, 175]},
+    {"name": "lake", "at": [322, 676]},
+    {"name": "feature_corpse", "at": [510, 370]},
+    {"name": "portal_dark", "at": [366, 26]},
+    {"name": "portal_torch", "at": [366, 26], "torch": true},
+    {"name": "monument_lord", "at": [366, 371], "lord": true}
+  ]
+}

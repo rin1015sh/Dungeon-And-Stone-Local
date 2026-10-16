@@ -18,6 +18,9 @@ extends Node
 ## --details: (--character와 함께) 캐릭터 창 세부 능력 탭
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
+## --shots=<목록 json> --out=<폴더>: (explore) 장면 목록을 한 번에 찍어 <폴더>/<name>.png로(tools/ShotList.gd, 목록 예 tools/shots/floor1.json)
+
+const ShotList := preload("res://tools/ShotList.gd")
 
 var _main: Control
 var _quick := false  ## --hit: 떠오른 숫자가 사라지기 전에 바로 찍는다
@@ -73,6 +76,9 @@ func _run() -> void:
 		plaza_screen.enter_requested.emit()
 		await _frames(3)
 		var explore := _main.current_screen() as ExploreScreen
+		if _args.has("shots"):  # 장면 목록 일괄 캡처 → --out 폴더
+			get_tree().quit(await ShotList.run(self, explore, str(_args["shots"]), str(_args["out"])))
+			return
 		if _args.has("torch"):
 			explore.session.use_category("light")
 		var steps := str(_args["walk"]).to_int()
