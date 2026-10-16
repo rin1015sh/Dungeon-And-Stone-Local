@@ -5,18 +5,22 @@ extends Node
 ## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --at=x,y: 그 칸으로 순간이동(고정 지도 좌표 — 공동·이벤트 자리 확인), --interact: 그 자리에서 살피기(E), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
-## --monster=<id>: --combat에서 부를 몬스터, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
+## --monster=<id>: --combat에서 부를 몬스터, --mate: 동료를 붙여 행동 정하기 화면, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
 ## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
-## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
-## --summon=N: 적 N마리 증원, --ally_summon: 아군 소환수, --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
+## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
+## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
+## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
+## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
+## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
 ## --details: (--character와 함께) 캐릭터 창 세부 능력 탭
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 
 var _main: Control
+var _quick := false  ## --hit: 떠오른 숫자가 사라지기 전에 바로 찍는다
 var _args: Dictionary = {"screen": "title", "out": "user://screenshot.png", "seed": "0", "walk": "0"}
 
 
@@ -106,8 +110,6 @@ func _run() -> void:
 			var epc := explore.session.player
 			epc.set_level(3)
 			epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "agi": 2}})
-			epc.essences.add_pending(epc.db, {"essence": "goblin", "color": "red", "stats": {"agi": 3}})
-			epc.essences.add_pending(epc.db, {"essence": "gnome", "color": "green", "stats": {"p_res": 2}})
 			if _args.has("many"):  # 만렙 + 수호자 정수 여럿(스킬이 많은 행동창 확인)
 				epc.set_level(11)
 				for id: String in ["goblin", "ghoul", "blade_wolf", "chimera_wolf", "blater", "bone_knight"]:
@@ -152,10 +154,41 @@ func _run() -> void:
 				for n: Node in _main.find_children("*", "", true, false):
 					if n is CombatScreen:
 						var cs := n as CombatScreen
-						for k in int(str(_args["summon"]).to_int()) if str(_args["summon"]).is_valid_int() else 1:  # --summon=N: N마리
-							BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
-						if _args.has("ally_summon"):  # 아군 소환수 카드(정수판 망자의 맹세)
-							BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": "deadman"})
+						var sv := str(_args["summon"])
+						if sv.is_valid_int() or sv == "true":  # --summon=N: 고블린 N마리
+							for k in (sv.to_int() if sv.is_valid_int() else 1):
+								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
+						else:  # --summon=id,id: 그 몬스터들(그림 확인)
+							for mid in sv.split(","):
+								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": mid})
+						if _args.has("ally_summon"):  # 아군 소환수(뒷모습 그림 확인)
+							var av := str(_args["ally_summon"])
+							for aid in ("soldier_deadman" if av == "true" else av).split(","):
+								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": aid})
+		if _args.has("mate"):  # 동료를 하나 붙여 "행동 정하기"(첫 사람 방어 → 동료 차례)를 본다
+			await _frames(5)
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var ms := n as CombatScreen
+					var mv := str(_args["mate"])
+					for race in ("human" if mv == "true" else mv).split(","):
+						var mate := PlayerCharacter.create(DataRegistry.db, race, "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+						ms._add_unit(ms.battle.add(mate, Combatant.SIDE_PARTY))
+					if mv == "true":
+						ms._menu.close()
+						ms._begin_planning(ms.battle.current)
+						ms._on_chosen({"kind": "guard"})
+		if _args.has("drops"):
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var ds := n as CombatScreen
+					var orig := ds.reward_provider
+					ds.reward_provider = func(r: String, k: Array[String], c: Array[String]) -> Array:
+						var msgs: Array = orig.call(r, k, c)
+						var ess := EssenceDrop.make(ds.battle.db, EssenceDrop.essence_of_monster(ds.battle.db, k[0]), "", Rng.new(7), false) if not k.is_empty() else {}
+						if not ess.is_empty():
+							ds.drops.append({"kind": "essence", "inst": ess, "slot": 0, "monster": k[0]})
+						return msgs
 		if _args.has("win"):  # 전투 승리 결과 칸(보상 안내) 확인: 적을 모두 쓰러뜨리고 방어로 차례를 넘긴다
 			await _frames(10)
 			for n: Node in _main.find_children("*", "", true, false):
@@ -164,6 +197,18 @@ func _run() -> void:
 					for u in wb.side_units(Combatant.SIDE_ENEMY):
 						u.actor.pool.set_current("hp", 0.0)
 					(n as CombatScreen)._on_chosen({"kind": "guard"})
+		if _args.has("drops"):
+			for k in 300:
+				if not _main.find_children("*", "ChoicePopup", true, false).is_empty():
+					break
+				await _frames(1)
+			if str(_args["drops"]) == "who":
+				await _frames(2)
+				var ev := InputEventAction.new()
+				ev.action = "menu_confirm"
+				ev.pressed = true
+				Input.parse_input_event(ev)
+				await _frames(4)
 		if _args.has("drain"):  # 영혼력을 바닥내 "대가 부족" 칸을 보인다
 			explore.session.player.pool.set_current("soul", 0.0)
 		if _args.has("skills"):  # 전투 행동창에서 "스킬"을 눌러 스킬 목록을 띄운다(정수 스킬 표시 확인)
@@ -172,6 +217,18 @@ func _run() -> void:
 				for b: Node in m.find_children("*", "Button", true, false):
 					if (b as Button).text == Strings.t("combat.cmd_skill"):
 						(b as Button).pressed.emit()
+		if _args.has("hit"):
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var hs := n as CombatScreen
+					for k in 400:  # 내 차례(행동 정하기)가 열릴 때까지
+						if not hs._planning.is_empty():
+							break
+						await _frames(1)
+					hs._on_chosen({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": hs.battle.side_units(Combatant.SIDE_ENEMY)[0]})
+			var hv := str(_args["hit"])
+			await get_tree().create_timer(hv.to_float() if hv.is_valid_float() else 0.25).timeout
+			_quick = true
 		if _args.has("keys"):  # 행동창 키 입력 흉내: --keys=menu_right,menu_right,menu_confirm (쪽 넘김·커서 확인)
 			await _frames(10)
 			for a: String in str(_args["keys"]).split(","):
@@ -185,8 +242,9 @@ func _run() -> void:
 			ev.action = "debug_toggle"
 			ev.pressed = true
 			Input.parse_input_event(ev)
-		await _frames(30)
-	await _frames(6)
+		if not _quick:
+			await _frames(30)
+	await _frames(2 if _quick else 6)
 	var img := get_viewport().get_texture().get_image()
 	var out := str(_args["out"])
 	var err := img.save_png(out)

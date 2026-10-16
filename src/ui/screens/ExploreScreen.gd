@@ -61,7 +61,6 @@ func _ready() -> void:
 	log_panel.offset_top = log_panel.offset_bottom - UiTheme.metric("explore_log_height", 200)
 	_windows = WindowManager.new()
 	_windows.setup(session.player)
-	_windows.now_hours = func() -> float: return session.clock.total_hours
 	add_child(_windows)
 	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_windows.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("window", on))
@@ -127,16 +126,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	var riddle := get_node_or_null("RiddleDialog") as RiddleDialog
-	if riddle != null:  # 수수께끼 대화창이 떠 있으면 탐험 키는 먹지 않는다. 정지 키 = 물러나기
-		if event.is_action_pressed("pause"):
+	if riddle != null:  # 수수께끼 대화창이 떠 있으면 탐험 키는 먹지 않는다. 정지 키·취소 키(Backspace) = 물러나기
+		if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):
 			riddle.cancel()
 		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
 		return
-	var feature := get_node_or_null("FeatureDialog") as FeatureDialog
-	if feature != null:  # 동굴 요소 선택창도 같다
+	var feature := get_node_or_null("FeatureChoice") as ChoicePopup
+	if feature != null:  # 동굴 요소 선택 창: 탐험 키는 먹지 않는다(W/S·Enter·Backspace는 창이 먼저 받는다). 정지 키 = 그만두기
 		if event.is_action_pressed("pause"):
-			feature.cancel()
+			feature.picked.emit(-1)
 		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
 		return
@@ -145,6 +144,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			_windows.close_all()
 		else:
 			set_paused(not is_paused())
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("menu_back") and (_windows.any_open() or is_paused()):  # 취소: 열린 창을 닫고, 없으면 일시정지를 푼다
+		if _windows.any_open():
+			_windows.close_all()
+		else:
+			set_paused(false)
 		get_viewport().set_input_as_handled()
 		return
 	if is_paused():
@@ -245,18 +251,25 @@ func _on_riddle(group: FieldMonsters.Group) -> void:
 		session.monsters.set_grace(group, session.clock.total_hours))
 
 
-## 동굴 요소의 행동이 여럿이다: 고르는 동안 시간을 멈춘다.
+## 동굴 요소의 행동이 여럿이다(맑은 샘 등): 작은 선택 창(ChoicePopup — W/S·Enter, Backspace = 그만두기). 고르는 동안 시간을 멈춘다.
 func _on_feature_choice(at: Vector2i) -> void:
-	if has_node("FeatureDialog"):
+	if has_node("FeatureChoice"):
 		return
-	var dlg := FeatureDialog.new()
-	dlg.name = "FeatureDialog"
-	dlg.setup(session.features.name_at(at), session.features.actions_at(at))
-	add_child(dlg)
-	dlg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var acts := session.features.actions_at(at)
+	var opts: Array[Dictionary] = []
+	for a in acts:
+		opts.append({"text": str(a["name_ko"])})
 	session.realtime.set_paused("feature", true)
-	dlg.closed.connect(func() -> void: session.realtime.set_paused("feature", false))
-	dlg.picked.connect(func(aid: String) -> void: session.features.act(session, at, aid))
+	var pop := ChoicePopup.new()
+	pop.name = "FeatureChoice"
+	add_child(pop)
+	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pop.open(session.features.name_at(at), opts, true, Vector2(-1, -1))
+	var i: int = await pop.picked
+	pop.queue_free()
+	session.realtime.set_paused("feature", false)
+	if i >= 0 and i < acts.size():
+		session.features.act(session, at, str(acts[i]["id"]))
 
 
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.
@@ -270,8 +283,15 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
 	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.
+	# 정수·전리품은 쓰러진 자리에 남기고 전투 장면에서 하나씩 묻는다(CombatDrops — 받을 사람 고르기).
+	var cs := _combat
 	_combat.reward_provider = func(_result: String, killed: Array[String], colors: Array[String]) -> Array:
-		return session.grant_battle_rewards(group, killed, colors)
+		var msgs := session.grant_battle_rewards(group, killed, colors, true)
+		cs.drops = session.battle_drops.duplicate()
+		session.battle_drops.clear()
+		return msgs
+	_combat.drop_taker = func(d: Dictionary, pc: PlayerCharacter) -> Dictionary: return session.take_drop(d, pc)
+	_combat.drop_leaver = func(d: Dictionary, reason: String) -> Dictionary: return session.leave_drop(d, reason)
 	add_child(_combat)
 	_combat.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_combat.finished.connect(func(result: String, turns: int, killed: Array[String]) -> void:

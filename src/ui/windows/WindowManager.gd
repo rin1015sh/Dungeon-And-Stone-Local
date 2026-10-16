@@ -9,7 +9,6 @@ signal use_requested(item_id: String)
 const KINDS := ["inventory", "character", "bestiary"]
 
 var pc: PlayerCharacter
-var now_hours: Callable = Callable()  ## 지금 게임 시각(캐릭터 창의 정수 남은 시간)
 
 var _windows: Dictionary = {}  # 종류 -> GothicWindow
 
@@ -50,7 +49,7 @@ func open(kind: String) -> GothicWindow:
 			w = inv
 		"character":
 			var ch := CharacterWindow.new()
-			ch.setup(pc, now_hours)
+			ch.setup(pc)
 			w = ch
 		"bestiary":
 			var be := BestiaryWindow.new()

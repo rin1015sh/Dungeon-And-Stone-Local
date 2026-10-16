@@ -188,7 +188,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_windows.toggle(kind)
 			get_viewport().set_input_as_handled()
 			return
-	if event.is_action_pressed("pause"):
+	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):  # Esc·취소(Backspace): 시설에서 나가기 · 창 닫기
 		if _facility != null:
 			_facility.try_leave()
 		elif _windows.any_open():

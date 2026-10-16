@@ -105,6 +105,8 @@ static func light(p: Paint, lights: Array) -> void:
 				if d < 1.0:
 					f += (1.0 - d) * (1.0 - d) * float(L[3])
 			f = minf(f, 1.25)
+			if not p.keep.is_empty() and p.keep[y * W + x] > 0.0 and f < 1.0:
+				f = lerpf(f, 1.0, p.keep[y * W + x])
 			for j in 3:
 				p.buf[k + j] *= f
 	for L: Array in lights:

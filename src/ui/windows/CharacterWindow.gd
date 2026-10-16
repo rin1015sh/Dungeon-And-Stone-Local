@@ -1,23 +1,21 @@
 class_name CharacterWindow
 extends GothicWindow
 ## 캐릭터 창(2단): 왼쪽 = 이름·종족·템플릿 · 레벨과 공적 · 자원 · 핵심 스탯과 장비 보정,
-## 오른쪽 탭 = 정수(흡수 대기가 맨 위 — EssencePanel) · 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태).
+## 오른쪽 탭 = 정수(EssencePanel — 보여 주기만) · 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태).
 ## 탭 내용은 높이를 고정하고 스크롤한다(창이 화면 밖으로 늘어나지 않게).
 
 var pc: PlayerCharacter
 
 var _left: VBoxContainer
 var _tabs: TabContainer
-var _now: Callable = Callable()  # 지금 게임 시각(정수 흡수 대기 남은 시간 표시용) — 없으면 숨김
 
 
 func _init() -> void:
 	super(Strings.t("character.title"))
 
 
-func setup(p_pc: PlayerCharacter, now_hours: Callable = Callable()) -> void:
+func setup(p_pc: PlayerCharacter) -> void:
 	pc = p_pc
-	_now = now_hours
 	custom_minimum_size.x = UiTheme.metric("char_window_width", 780)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) * 2)
@@ -43,8 +41,7 @@ func refresh() -> void:
 	_build_summary()
 	var essences := EssencePanel.new()
 	essences.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	essences.setup(pc, float(_now.call()) if _now.is_valid() else -1.0)
-	essences.changed.connect(refresh)
+	essences.setup(pc)
 	_add_tab(Strings.t("character.tab_essence"), essences)
 	_add_tab(Strings.t("character.tab_details"), _details())
 	_tabs.current_tab = clampi(keep, 0, _tabs.get_tab_count() - 1)

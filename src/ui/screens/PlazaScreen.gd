@@ -134,7 +134,7 @@ func _on_opened() -> void:
 	_panel.visible = true
 
 
-## Space(menu_confirm) = 포탈로 들어간다(열린 뒤에만).
+## Enter(menu_confirm) = 포탈로 들어간다(열린 뒤에만).
 func _unhandled_input(event: InputEvent) -> void:
 	if _opened and event.is_action_pressed("menu_confirm"):
 		get_viewport().set_input_as_handled()

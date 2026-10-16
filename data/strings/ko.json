@@ -270,7 +270,7 @@
     "portal_open_locked": "포탈 즉시 개방 (M4)",
     "later": "다음 마일스톤에서: {list}",
     "spawn_monster": "몬스터 소환(바로 전투)",
-    "give_essence": "정수 지급(무작위, 흡수 대기로)"
+    "give_essence": "정수 흡수(무작위)"
   },
   "end": {
     "closed_title": "강제 귀환",
@@ -304,6 +304,7 @@
     "party": "탐험가",
     "menu_root": "{name}의 차례",
     "menu_target": "누구를?",
+    "plan_target": "{act} → {target}",
     "menu_skill": "스킬",
     "menu_item": "아이템",
     "cmd_attack": "공격",
@@ -377,7 +378,15 @@
     "info_ally": "[조사] {name} — 생명력 {hp}%.",
     "float_immune": "면역",
     "float_blocked": "막힘",
-    "float_miss": "빗나감",
+    "float_miss": "회피",
+    "drop_ask": "{what} — 획득할까?",
+    "drop_take": "획득한다",
+    "drop_leave": "두고 간다",
+    "drop_who": "누가 받을까?",
+    "drop_essence": "{color} {name}",
+    "drop_item": "{item} ×{count}",
+    "drop_cannot": "받을 수 없다.",
+    "drop_no_room": "가방에 다 들어가지 않는다.",
     "result_victory": "승리",
     "result_defeat": "패배",
     "result_fled": "도주",
@@ -483,9 +492,14 @@
   "reward": {
     "first_kill": "처음 쓰러뜨린 {name} — 공적 {exp}.",
     "loot": "{item} ×{count}을(를) 주웠다.",
+    "loot_by": "{who}이(가) {item} ×{count}을(를) 주웠다.",
+    "loot_left": "{what}을(를) 두고 간다.",
+    "essence_absorbed": "{who}의 몸속으로 {what}이(가) 스며들었다.",
+    "essence_refused": "{what}이(가) {who}에게 스며들지 못했다. {reason}",
+    "essence_left": "{what}이(가) 빛 먼지가 되어 흩어졌다.",
+    "essence_nobody": "{what}이(가) 떨어졌지만 받아들일 수 있는 이가 없어 빛 먼지로 흩어졌다. {reason}",
     "bag_full": "가방에 자리가 없어 {item} ×{count}을(를) 두고 간다.",
     "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots}).",
-    "essence": "{color} {name}이(가) 떨어졌다. 캐릭터 창에서 흡수할 수 있다 — 오래 두면 흩어진다.",
     "guardian_bonus": "수호자 {name}을(를) 쓰러뜨렸다 — 공적 {exp}.",
     "lord_bonus": "계층군주 {name}을(를) 처음으로 쓰러뜨렸다 — 공적 {exp}.",
     "level_down": "영혼이 깎여 나갔다. 레벨 {level} — 정수 {locked}개가 잠들었다."
@@ -560,12 +574,7 @@
   "essence": {
     "slots": "정수 {used} / {n}칸",
     "title": "{color} {name}",
-    "pending_title": "흡수를 기다리는 정수 — 오래 두면 흩어진다",
-    "pending_left": "남은 {hours}시간",
     "stat_inert": "(아직 효과 없음)",
-    "pending_warn": "흡수하지 않은 정수가 있다 — 시간을 보내면 흩어진다. 그래도 하려면 한 번 더 누른다. (캐릭터 창에서 흡수)",
-    "pending_alert": "흡수를 기다리는 정수 {n}개 — 남은 {hours}시간 (캐릭터 {key})",
-    "absorb": "흡수",
     "tip_passive": "패시브 · {name}: {desc}",
     "tip_skills": "이능 · {list}",
     "tip_stats": "능력치 · {list}",
@@ -573,7 +582,6 @@
     "reason_unknown": "알 수 없는 정수다.",
     "reason_no_slot": "빈 정수 슬롯이 없다.",
     "reason_duplicate": "이미 같은 이능이 영혼에 새겨져 있어 받아들일 수 없다.",
-    "expired": "흡수하지 않은 {name}이(가) 빛 먼지가 되어 흩어졌다.",
     "locked_suffix": " (잠김 — 레벨이 오르면 깨어난다)"
   },
   "riddle": {

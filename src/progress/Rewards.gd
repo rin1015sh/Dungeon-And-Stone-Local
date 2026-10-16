@@ -1,15 +1,14 @@
 class_name Rewards
 extends RefCounted
-## 전투 승리 보상을 플레이어에게 준다: 처치 기록(도감)·첫 처치 경험치·레벨업·전리품(가방)·정수(대기 목록).
-## now_hours(게임 시각)를 주면 대기 정수가 essence.expire_hours 뒤에 사라진다.
+## 전투 승리 보상을 플레이어에게 준다: 처치 기록(도감)·첫 처치 경험치·레벨업·(with_drops면) 전리품(가방).
+## 정수는 여기서 주지 않는다 — 전투 장면에서 쓰러진 자리의 정수를 바로 흡수하거나 버린다(DropPickup·CombatDrops).
 ## 하고 싶은 말은 메시지 목록 {key, args, kind}로 돌려준다(번역은 화면 몫).
 
 
-## in_rift: 균열 안이면 일반 몬스터 정수 확률 ×essence.rift_mult.
-## essence_mult: 정수 드롭 확률 배율(수수께끼 정답 뒤 약화된 문지기 ×2).
-## colors: killed와 같은 순서의 정해진 정수 색(본 나이트 타입 — 비면 무작위).
-static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hours: float = -1.0, in_rift: bool = false,
-		essence_mult: float = 1.0, colors: Array[String] = []) -> Array[Dictionary]:
+## in_rift·essence_mult·colors는 예전 호출과 맞추려고 받는다(정수 굴림은 DropPickup.roll).
+## with_drops = false면 전리품도 주지 않는다(전투 장면에서 하나씩 묻고 주울 때 — DropPickup).
+static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, _now_hours: float = -1.0, _in_rift: bool = false,
+		_essence_mult: float = 1.0, _colors: Array[String] = [], with_drops: bool = true) -> Array[Dictionary]:
 	var db := pc.db
 	var msgs: Array[Dictionary] = []
 	var before := pc.get_level()
@@ -27,6 +26,8 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hour
 			msgs.append(_m("reward.lord_bonus", {"name": mname, "exp": int(parts["lord"])}, "good"))
 		if gained > 0:
 			pc.progression.gain(pc, gained, rng)
+		if not with_drops:
+			continue
 		for drop in Loot.roll(db, id, rng):
 			var want := int(drop["count"])
 			var got := pc.inventory.add(str(drop["id"]), want)
@@ -35,11 +36,6 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hour
 				msgs.append(_m("reward.loot", {"item": item_name, "count": got}, "good"))
 			if got < want:
 				msgs.append(_m("reward.bag_full", {"item": item_name, "count": want - got, "item_id": str(drop["id"])}, "warn"))
-		var ess := EssenceDrop.roll(db, id, rng, in_rift, essence_mult, colors[k] if k < colors.size() else "")
-		if not ess.is_empty():
-			pc.essences.add_pending(db, ess, now_hours)
-			msgs.append(_m("reward.essence", {"name": DataNames.entry(db, "essences", str(ess["essence"])),
-				"color": DataNames.tag(db, "essence_colors", str(ess["color"]))}, "good"))
 	if pc.get_level() > before:
 		msgs.append(_m("reward.level_up", {"level": pc.get_level(),
 			"slots": Progression.essence_slots(db, pc.get_level())}, "good"))

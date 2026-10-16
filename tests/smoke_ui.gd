@@ -139,6 +139,12 @@ func _realtime_combat_flow() -> void:
 	_expect(is_equal_approx(s.clock.total_hours, tp), "일시정지 중에는 시간이 멈춘다")
 	await _action("pause")
 	_expect(not explore.is_paused(), "일시정지 해제")
+	await _action("pause")
+	await _action("menu_back")
+	_expect(not explore.is_paused(), "취소(Backspace)로도 일시정지 해제")
+	await _action("inventory")
+	await _action("menu_back")
+	_expect(not explore.windows().any_open() and not explore.is_paused(), "취소(Backspace)로 창 닫기(일시정지 아님)")
 	GameState.debug_fast_combat = true
 	await _action("debug_toggle")
 	_toggle(explore, Strings.t("debug.invulnerable"))
@@ -153,22 +159,39 @@ func _realtime_combat_flow() -> void:
 		return
 	var labels := Array(menu.grid().option_texts())
 	_expect(labels == [Strings.t("combat.cmd_attack"), Strings.t("combat.cmd_skill"), Strings.t("combat.cmd_guard"),
-		Strings.t("combat.cmd_item"), Strings.t("combat.cmd_flee")],
-		"기본 행동창: 공격·스킬·방어·아이템·도주 (%s)" % ", ".join(PackedStringArray(labels)))
-	var slots := _button_texts(menu)
-	_expect(slots.size() == menu.grid().page_size(), "고정 칸 %d개(빈 칸도 테두리) — %d" % [menu.grid().page_size(), slots.size()])
+		Strings.t("combat.cmd_item")],
+		"기본 명령: 공격·스킬·방어·아이템 (%s)" % ", ".join(PackedStringArray(labels)))
+	var slots := _button_texts(menu.root_grid())
+	_expect(slots.size() == menu.root_grid().page_size(), "명령 칸 %d개 — %d" % [menu.root_grid().page_size(), slots.size()])
+	_expect(_has_node_named(combat, "PartyRoster") and _has_node_named(combat, "BattleStage"), "파티 창·무대")
 	_expect(not _has_node_named(combat, "TimelineBar"), "상단 순서 표시 없음")
+	var bars := 0
+	for v: Node in combat.find_children("*", "BattlerView", true, false):
+		bars += v.find_children("*", "ProgressBar", true, false).size()
+	_expect(bars == 0, "무대에 생명력 막대 없음(적 생명력은 보이지 않는다) — %d" % bars)
+	var foe: Combatant = combat.battle.side_units(Combatant.SIDE_ENEMY)[0]
+	for ev: Dictionary in [{"hit": false}, {"hit": true, "immune": true}, {"hit": true, "lost": 0, "amount": 0}]:
+		ev["type"] = "damage"
+		ev["unit"] = foe
+		combat._on_event(ev)
+	_expect(_has_label(combat, Strings.t("combat.float_miss")) and _has_label(combat, Strings.t("combat.float_immune"))
+		and _has_label(combat, Strings.t("combat.float_blocked")), "빗나감 = 회피, 면역 = 면역, 보호막에 막힘 = 막힘 — 각자 그 글자로 뜬다")
 	await _keyboard_menu(combat, menu)
 	menu = await _open_menu(combat)
 	if not _expect(menu != null, "키보드 공격 뒤 다시 행동창"):
+		return
+	await _plan_flow(combat, menu)
+	menu = await _open_menu(combat)
+	if not _expect(menu != null, "행동 정하기 뒤 다시 행동창"):
 		return
 	var turns_before := combat.battle.turns
 	_press(combat, Strings.t("combat.cmd_skill"))
 	var skill_labels := Array(menu.grid().option_texts())
 	_expect(skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "talk")) and skill_labels.has(DataNames.entry(DataRegistry.db, "skills", "investigate")),
 		"스킬 메뉴에 대화·조사")
+	_expect(skill_labels.has(Strings.t("combat.cmd_flee")), "도주는 스킬 목록에")
 	_press(combat, DataNames.entry(DataRegistry.db, "skills", "investigate"))
-	_press_first(menu)
+	_press_first(menu.grid())
 	_expect_log("[조사]", "조사 결과")
 	_expect(combat.battle.turns > turns_before or not combat.battle.result.is_empty(), "조사가 행동 기회를 쓴다(차례가 넘어감)")
 	for i in 60:
@@ -177,13 +200,16 @@ func _realtime_combat_flow() -> void:
 		if await _open_menu(combat) == null:
 			break
 		_press(combat, Strings.t("combat.cmd_attack"))
-		_press_first(menu)
+		_press_first(menu.grid())
 	await _frames(2)
 	_expect(not combat.battle.result.is_empty(), "전투가 끝난다 (%s, 차례 %d, 적 %s)" % [combat.battle.result, combat.battle.turns,
 		combat.battle.side_units(Combatant.SIDE_ENEMY).map(func(u: Combatant) -> String: return "%s:%d" % [(u.actor as Monster).monster_id, int(u.actor.pool.get_current("hp"))])])
 	_expect(is_equal_approx(s.clock.total_hours, tc), "전투 중에는 탐험 시간이 멈춘다")
 	var turns := combat.battle.turns
 	var won := combat.battle.result == Battle.RESULT_VICTORY
+	var picked := await _take_drops(combat, true)
+	if picked > 0:
+		_expect("\n".join(_logs).contains("주웠다") or "\n".join(_logs).contains("스며들었다"), "드롭을 주웠다(기록)")
 	_press(combat, Strings.t("combat.continue"))
 	await _frames(3)
 	_expect(explore.combat_screen() == null and not s.in_combat, "탐험으로 복귀")
@@ -246,9 +272,10 @@ func _riddle_flow() -> void:
 		if menu == null:
 			break
 		_press(combat, Strings.t("combat.cmd_attack"))
-		_press_first(menu)
+		_press_first(menu.grid())
 	await _frames(2)
 	_expect(combat.battle.result == Battle.RESULT_VICTORY, "강화된 문지기를 쓰러뜨린다")
+	await _take_drops(combat, false)
 	_press(combat, Strings.t("combat.continue"))
 	await _frames(3)
 	_expect(not run.remaining.has(gate) and not explore.session.realtime.is_paused(), "문이 열리고 시간이 다시 흐른다")
@@ -310,28 +337,75 @@ func _inventory_flow() -> void:
 		await _city_to_title(end)
 
 
-## 행동창 키 조작: D → 스킬 칸, Space → 스킬 목록, Enter → 맨 위(커서는 스킬 칸), A → 공격, Space·Space → 첫 적을 친다.
+## 행동창 키 조작: S → 스킬 칸, Enter → 스킬 목록, Backspace → 맨 위(커서는 스킬 칸), W → 공격, Enter·Enter → 첫 적을 친다.
 func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	var g := menu.grid()
 	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "처음 커서는 공격")
-	await _action("menu_right")
-	_expect(g.cursor() == CommandMenu.ROOT_SKILL, "D → 스킬 칸 (%d)" % g.cursor())
-	await _action("menu_confirm")
-	_expect(Array(g.option_texts()).has(DataNames.entry(DataRegistry.db, "skills", "talk")), "Space → 스킬 목록")
-	await _action("menu_back")
-	_expect(Array(g.option_texts()).has(Strings.t("combat.cmd_flee")) and g.cursor() == CommandMenu.ROOT_SKILL,
-		"Enter → 맨 위 메뉴, 커서는 스킬 칸")
 	await _action("menu_down")
-	_expect(g.cursor() == CommandMenu.ROOT_ITEM, "S → 아래 칸 (%d)" % g.cursor())
+	_expect(g.cursor() == CommandMenu.ROOT_SKILL, "S → 스킬 (%d)" % g.cursor())
+	await _action("menu_confirm")
+	_expect(Array(menu.grid().option_texts()).has(DataNames.entry(DataRegistry.db, "skills", "talk")), "Enter → 스킬 목록")
+	await _action("menu_back")
+	_expect(menu.grid() == g and g.cursor() == CommandMenu.ROOT_SKILL, "Backspace → 명령 칸, 커서는 스킬")
+	await _action("menu_down")
+	_expect(g.cursor() == CommandMenu.ROOT_GUARD, "S → 방어 (%d)" % g.cursor())
 	await _action("menu_up")
-	await _action("menu_left")
-	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "W·A → 공격 칸")
+	await _action("menu_up")
+	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "W·W → 공격")
 	var turns := combat.battle.turns
 	await _action("menu_confirm")
-	_expect(g.title_text() == Strings.t("combat.menu_target"), "Space → 대상 고르기")
+	_expect(menu.grid().title_text() == Strings.t("combat.menu_target"), "Enter → 대상 고르기")
 	await _action("menu_confirm")
 	await _frames(2)
-	_expect(combat.battle.turns > turns or not combat.battle.result.is_empty(), "Space로 고른 공격이 차례를 쓴다")
+	_expect(combat.battle.turns > turns or not combat.battle.result.is_empty(), "Enter로 고른 공격이 차례를 쓴다")
+
+
+## 행동 정하기(피어 앤 헝거식): 동료가 있으면 차례가 온 사람 + 아직 안 정한 동료의 행동을 먼저 다 고르고 나서 움직인다.
+## 뒤로(Backspace)는 앞사람 행동을 다시 고른다. 시험 뒤 동료는 전투에서 빠진다(쓰러진 것으로).
+func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
+	var b := combat.battle
+	var mate := PlayerCharacter.create(DataRegistry.db, "human", "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+	var mu := b.add(mate, Combatant.SIDE_PARTY)
+	combat._add_unit(mu)
+	menu.close()
+	combat._begin_planning(b.current)
+	var turns := b.turns
+	_press(combat, Strings.t("combat.cmd_guard"))
+	_expect(b.turns == turns and menu.is_open() and combat._planning.size() == 2 and combat._plan_i == 1, "한 사람을 정하면 다음 사람 차례(아직 움직이지 않음)")
+	_expect(_has_label(combat, Strings.t("combat.cmd_guard")), "파티 창에 정해 둔 행동")
+	await _action("menu_back")
+	_expect(combat._plan_i == 0 and combat._plan.is_empty(), "뒤로 → 앞사람 다시 고르기")
+	_press(combat, Strings.t("combat.cmd_guard"))
+	_press(combat, Strings.t("combat.cmd_guard"))
+	await _frames(2)
+	_expect(b.turns > turns or not b.result.is_empty(), "모두 정하면 차례대로 움직인다")
+	mate.pool.set_current("hp", 0.0)
+	combat._refresh()
+	await _frames(2)
+
+
+## 전투가 끝나고 무대에 남은 드롭(정수·전리품)의 작은 창을 모두 넘긴다 — Enter = 획득한다.
+## keys면 첫 창에서 S(두고 간다로)·W(다시 획득한다로)를 눌러 커서를 본다. "계속" 버튼이 나오면 끝. 고른 수.
+func _take_drops(combat: CombatScreen, keys: bool) -> int:
+	var n := 0
+	var deadline := Time.get_ticks_msec() + WAIT_LIMIT_MS
+	while Time.get_ticks_msec() < deadline:
+		await _frames(2)
+		var pops := combat.find_children("*", "ChoicePopup", true, false)
+		if pops.is_empty():
+			if _has_button(combat, Strings.t("combat.continue")):
+				break
+			continue
+		var pop := pops[0] as ChoicePopup
+		if keys and n == 0:
+			await _action("menu_down")
+			_expect(pop.grid.cursor() == 1, "드롭 창: S → 두고 간다")
+			await _action("menu_up")
+			_expect(pop.grid.cursor() == 0, "드롭 창: W → 획득한다")
+		await _action("menu_confirm")
+		n += 1
+	_expect(_has_button(combat, Strings.t("combat.continue")), "드롭을 다 고르면 계속 버튼")
+	return n
 
 
 ## 아군 차례가 와서 행동창이 열릴 때까지 기다린다. 전투가 끝나면 null.
@@ -339,7 +413,7 @@ func _open_menu(combat: CombatScreen) -> CommandMenu:
 	var deadline := Time.get_ticks_msec() + WAIT_LIMIT_MS
 	while Time.get_ticks_msec() < deadline and combat.battle.result.is_empty():
 		for n: Node in combat.find_children("*", "", true, false):
-			if n is CommandMenu and (n as CommandMenu).visible:
+			if n is CommandMenu and (n as CommandMenu).is_open():
 				return n as CommandMenu
 		await get_tree().process_frame
 	return null
