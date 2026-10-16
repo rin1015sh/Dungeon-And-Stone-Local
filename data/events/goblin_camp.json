@@ -1,0 +1,53 @@
+{
+  "id": "goblin_camp",
+  "name_ko": "고블린 모닥불",
+  "type": "feature",
+  "tile": "feat_goblin_camp",
+  "guard": {
+    "monster": "goblin"
+  },
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "뒤진다",
+      "limit": "once",
+      "line": "field.goblin_camp",
+      "give": [
+        {
+          "item": "ration",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.6
+        },
+        {
+          "item": "leftovers",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.5
+        },
+        {
+          "item": "magic_stone_9",
+          "count": [
+            2,
+            4
+          ],
+          "chance": 0.8
+        },
+        {
+          "item": "hunting_bow",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.05
+        }
+      ],
+      "done": "field.goblin_camp_done"
+    }
+  ],
+  "source": "placeholder"
+}

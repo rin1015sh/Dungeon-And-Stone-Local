@@ -1,0 +1,52 @@
+{
+  "id": "clear_spring",
+  "name_ko": "맑은 샘",
+  "type": "feature",
+  "tile": "feat_spring",
+  "actions": [
+    {
+      "id": "drink",
+      "name_ko": "마신다",
+      "limit": "day",
+      "line": "field.spring_drink",
+      "effects": [
+        {
+          "type": "fatigue",
+          "amount": -8
+        }
+      ],
+      "done": "field.spring_full"
+    },
+    {
+      "id": "wash",
+      "name_ko": "상처를 씻는다",
+      "limit": "always",
+      "line": "field.spring_wash",
+      "needs_status": "bleeding",
+      "effects": [
+        {
+          "type": "remove_status",
+          "status": "bleeding"
+        }
+      ],
+      "missing": "field.spring_no_wound"
+    },
+    {
+      "id": "fill",
+      "name_ko": "물을 담는다",
+      "limit": "day",
+      "line": "field.spring_fill",
+      "give": [
+        {
+          "item": "spring_water",
+          "count": [
+            1,
+            1
+          ]
+        }
+      ],
+      "done": "field.spring_filled"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "gnome_trinkets",
+  "name_ko": "노움의 잡동사니",
+  "type": "feature",
+  "tile": "feat_gnome_trinkets",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.gnome_trinkets"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "hidden_cache",
+  "name_ko": "돌무더기",
+  "type": "feature",
+  "tile": "feat_cache",
+  "hidden": {
+    "stat": "int",
+    "dc": 6,
+    "line": "field.cache_found"
+  },
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "들어낸다",
+      "limit": "once",
+      "line": "field.cache",
+      "give": [
+        {
+          "item": "ration",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.8
+        },
+        {
+          "item": "minor_potion",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.35
+        },
+        {
+          "item": "torch",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.25
+        }
+      ],
+      "done": "field.cache_done"
+    }
+  ],
+  "source": "placeholder"
+}

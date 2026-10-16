@@ -352,5 +352,179 @@
     "_comment": "모든 게임에서 같은 지도. file = tools/bake_floor.gd가 seed로 구운 지도(없으면 seed로 바로 만든다). 시작 위치만 입장마다 무작위.",
     "file": "res://data/maps/f1_crystal_cave.json",
     "seed": 1
-  }
+  },
+  "features_gap": 6,
+  "features": [
+    {
+      "event": "explorer_corpse",
+      "count": 28,
+      "spot": "room",
+      "gap": 45
+    },
+    {
+      "event": "abandoned_stones",
+      "count": 10,
+      "spot": "wall",
+      "gap": 60
+    },
+    {
+      "event": "dead_campfire",
+      "count": 12,
+      "spot": "room",
+      "gap": 55
+    },
+    {
+      "event": "broken_gear",
+      "count": 10,
+      "spot": "wall",
+      "gap": 60
+    },
+    {
+      "event": "hidden_cache",
+      "count": 8,
+      "spot": "wall",
+      "gap": 70
+    },
+    {
+      "event": "offering_pile",
+      "count": 1,
+      "spot": "near_monument",
+      "gap": 10
+    },
+    {
+      "event": "clear_spring",
+      "count": 8,
+      "spot": "wall",
+      "gap": 80
+    },
+    {
+      "event": "crystal_drip",
+      "count": 10,
+      "spot": "crystal",
+      "gap": 55
+    },
+    {
+      "event": "stalagmite_grove",
+      "count": 12,
+      "spot": "room",
+      "gap": 50
+    },
+    {
+      "event": "glow_mushroom",
+      "count": 16,
+      "spot": "wall",
+      "gap": 40
+    },
+    {
+      "event": "wolf_den",
+      "count": 3,
+      "spot": "room",
+      "gap": 70,
+      "zones": [
+        "east"
+      ]
+    },
+    {
+      "event": "gnome_trinkets",
+      "count": 4,
+      "spot": "wall",
+      "gap": 50,
+      "zones": [
+        "west"
+      ]
+    },
+    {
+      "event": "gnome_stash",
+      "count": 4,
+      "spot": "wall",
+      "gap": 60,
+      "zones": [
+        "west"
+      ]
+    },
+    {
+      "event": "ghoul_feast",
+      "count": 5,
+      "spot": "room",
+      "gap": 55,
+      "zones": [
+        "south"
+      ]
+    },
+    {
+      "event": "rot_smell",
+      "count": 6,
+      "spot": "corridor",
+      "gap": 45,
+      "zones": [
+        "south"
+      ]
+    },
+    {
+      "event": "goblin_camp",
+      "count": 3,
+      "spot": "room",
+      "gap": 70,
+      "zones": [
+        "north"
+      ]
+    },
+    {
+      "event": "goblin_snare",
+      "count": 10,
+      "spot": "corridor",
+      "gap": 35,
+      "zones": [
+        "north"
+      ]
+    },
+    {
+      "event": "wet_slope",
+      "count": 8,
+      "spot": "corridor",
+      "gap": 70
+    },
+    {
+      "event": "portal_footprints",
+      "count": 4,
+      "spot": "near_portal",
+      "gap": 40
+    },
+    {
+      "event": "torch_stubs",
+      "count": 8,
+      "spot": "dark_edge",
+      "gap": 35
+    },
+    {
+      "event": "old_skeleton",
+      "count": 5,
+      "spot": "room",
+      "gap": 90
+    },
+    {
+      "event": "crystal_glow",
+      "count": 6,
+      "spot": "crystal_room",
+      "gap": 70
+    },
+    {
+      "event": "mud_tracks",
+      "count": 8,
+      "spot": "corridor",
+      "gap": 60
+    },
+    {
+      "event": "breeze_crack",
+      "count": 8,
+      "spot": "wall",
+      "gap": 70
+    },
+    {
+      "event": "cairn",
+      "count": 6,
+      "spot": "room",
+      "gap": 80
+    }
+  ]
 }

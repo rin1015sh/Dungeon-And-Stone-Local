@@ -20,6 +20,7 @@ var landmarks: Array[Dictionary] = []  ## {"id", "pos": Vector2i(기준 칸), "r
 var portals: Array[Dictionary] = []    ## {"id", "pos", "dir", "to_floor", "dest", "found"} (균열 포탈은 "kind": "rift")
 var safe_zones: Array[Dictionary] = [] ## {"center": Vector2i, "radius": float}
 var slots: Array[Vector2i] = []        ## 고정 조우 자리(균열 챕터: 방 가운데, 입구 쪽부터)
+var features: Array[Dictionary] = []   ## 동굴 요소 {"id"(data/events), "pos": Vector2i} — FieldFeaturePlacer가 놓고 FieldFeatures가 다룬다
 var entry: Vector2i = Vector2i(-1, -1)
 var center: Vector2i = Vector2i(-1, -1)
 

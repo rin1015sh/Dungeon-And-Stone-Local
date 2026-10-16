@@ -1,0 +1,28 @@
+{
+  "id": "crystal_mushroom",
+  "name_ko": "수정 버섯",
+  "category": "food",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 50,
+  "icon": "food",
+  "color": "#7af0e0",
+  "rarity": "common",
+  "source": "placeholder",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 15
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.15
+    }
+  ],
+  "consumable": true
+}

@@ -4,7 +4,7 @@ extends FloorGenerator
 ## 고정 지도(층 JSON fixed_map — 모든 게임에서 같은 지도): fixed_map.file이 있으면 그 파일의 지형을 읽고 시작 위치만 시드로 고른다.
 ##   파일은 tools/bake_floor.gd가 fixed_map.seed로 아래 절차를 돌려 만든다(파일이 없으면 그 시드로 바로 만든다).
 ## 절차(시드): 동굴 지형(CrossTerrain) → 타일·구역·암흑지대 → 공동 꾸밈(수정·호수·바위) → 기념비 → 포탈 → 무작위 랜드마크
-##       → 통로 폭 다시 맞추기 → 막다른 곳 메우기 → 수정벽(암흑지대 제외) → 시작 위치.
+##       → 통로 폭 다시 맞추기 → 막다른 곳 메우기 → 수정벽(암흑지대 제외) → 동굴 요소(FieldFeaturePlacer) → 시작 위치.
 ## 불변식(테스트가 확인): 걷는 칸은 모두 이어져 있고, 기념비 옆에서 네 포탈 모두 그 팔 방향으로만(뒤로 가지 않고) 걸어 닿는다.
 
 const STAMP_TRIES := 60
@@ -24,6 +24,7 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 		map.floor_id = JsonUtil.get_str(floor_def, "id")
 		map.seed_value = JsonUtil.get_int(data, "seed")
 		FloorMapFile.apply(data, map)
+		FieldFeaturePlacer.apply_tiles(db, map)
 		lay.mark_zones(map)
 		_add_safe_zones(map, floor_def)
 		_add_portals(map, lay, floor_def)
@@ -55,6 +56,8 @@ func build(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	_widen_map(map, g, tiles)
 	_trim_dead_ends(map, g, tiles)
 	_place_crystals(map, lay, g, tiles, rng)
+	FieldFeaturePlacer.place(db, map, lay, floor_def, g, rng)
+	FieldFeaturePlacer.apply_tiles(db, map)
 	_place_entry(map, lay, g, JsonUtil.get_str(tiles, "floor"), rng)
 	return map
 

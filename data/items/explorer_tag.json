@@ -1,0 +1,15 @@
+{
+  "id": "explorer_tag",
+  "name_ko": "탐험가 신원패",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 20,
+  "price": 1000,
+  "icon": "stone",
+  "color": "#b8a070",
+  "rarity": "common",
+  "source": "placeholder"
+}

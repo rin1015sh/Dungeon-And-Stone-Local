@@ -1,0 +1,23 @@
+{
+  "id": "crystal_drip",
+  "name_ko": "물방울 떨어지는 종유석",
+  "type": "feature",
+  "tile": "feat_drip",
+  "actions": [
+    {
+      "id": "drink",
+      "name_ko": "받아 마신다",
+      "limit": "day",
+      "line": "field.drip",
+      "effects": [
+        {
+          "type": "restore_resource",
+          "resource": "soul",
+          "amount": 4
+        }
+      ],
+      "done": "field.drip_done"
+    }
+  ],
+  "source": "placeholder"
+}

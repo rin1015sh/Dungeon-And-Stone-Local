@@ -1,0 +1,33 @@
+{
+  "id": "abandoned_stones",
+  "name_ko": "버려진 마석 더미",
+  "type": "feature",
+  "tile": "feat_stone_heap",
+  "actions": [
+    {
+      "id": "take",
+      "name_ko": "줍는다",
+      "limit": "once",
+      "line": "field.stones",
+      "give": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            3,
+            7
+          ]
+        },
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.3
+        }
+      ],
+      "clear": true
+    }
+  ],
+  "source": "placeholder"
+}

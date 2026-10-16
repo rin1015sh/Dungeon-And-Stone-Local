@@ -516,5 +516,266 @@
     },
     "sprite": "res://assets/sprites/tiles/trap_blades.png",
     "source": "placeholder"
+  },
+  {
+    "id": "feat_corpse",
+    "name_ko": "탐험가의 시체",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#c8b8a0"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_ghoul_feast",
+    "name_ko": "갉아먹힌 시체 더미",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#8a9a6a"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_stone_heap",
+    "name_ko": "버려진 마석 더미",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#8fa0c8"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_dead_campfire",
+    "name_ko": "꺼진 모닥불 자리",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#7a6a5a"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_broken_gear",
+    "name_ko": "부서진 장비 더미",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#9a9a9a"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_cache",
+    "name_ko": "돌무더기",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#a89a80"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_offering",
+    "name_ko": "공물 더미",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#e0c890"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_spring",
+    "name_ko": "맑은 샘",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#3a5a78",
+      "mark": "#a8d8ff"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_drip",
+    "name_ko": "물방울 떨어지는 종유석",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#b8c8ff"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_stalagmites",
+    "name_ko": "석순 숲",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#b0a8a0"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_mushroom",
+    "name_ko": "수정 버섯",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#7af0e0"
+    },
+    "source": "placeholder",
+    "light": {
+      "radius_m": 1.5,
+      "color": "#7af0e0",
+      "intensity": 0.6
+    }
+  },
+  {
+    "id": "feat_wolf_den",
+    "name_ko": "뼈와 털 무더기",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#d8d0c0"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_gnome_trinkets",
+    "name_ko": "노움의 잡동사니",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#c0a060"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_gnome_stash",
+    "name_ko": "노움의 은닉처",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#e8d070"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_goblin_camp",
+    "name_ko": "고블린 모닥불",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#ff9a40"
+    },
+    "source": "placeholder",
+    "light": {
+      "radius_m": 3.0,
+      "color": "#ffa050",
+      "intensity": 0.8
+    }
+  },
+  {
+    "id": "feat_torch_stubs",
+    "name_ko": "타다 남은 횃불들",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#a0703a"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_old_skeleton",
+    "name_ko": "오래된 해골",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#e0dcc8"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_cairn",
+    "name_ko": "돌탑",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#a0a0a8"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_mud",
+    "name_ko": "진흙 바닥",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4a3e34"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_goblin_snare",
+    "name_ko": "고블린 덫",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#57505f",
+      "mark": "#c06040"
+    },
+    "source": "placeholder"
+  },
+  {
+    "id": "feat_wet_slope",
+    "name_ko": "물기 젖은 비탈",
+    "kind": "floor",
+    "walkable": true,
+    "blocks_sight": false,
+    "colors": {
+      "floor": "#4a5a6a",
+      "mark": "#9ab8d0"
+    },
+    "source": "placeholder"
   }
 ]

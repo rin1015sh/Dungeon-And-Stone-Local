@@ -1,0 +1,11 @@
+{
+  "id": "rot_smell",
+  "name_ko": "썩은 냄새",
+  "type": "feature",
+  "near": {
+    "radius": 5,
+    "line": "field.rot_smell",
+    "kind": "warn"
+  },
+  "source": "placeholder"
+}

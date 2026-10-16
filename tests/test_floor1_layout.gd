@@ -217,6 +217,10 @@ func test_session_spawns_stay_in_their_zone() -> void:
 		zone_of_region[JsonUtil.get_str(r, "id")] = JsonUtil.get_str(r, "zone")
 	assert_true(s.monsters.groups.size() >= 10)
 	for g in s.monsters.groups:
+		if g.region.is_empty():  # 동굴 요소를 지키는 무리(늑대 잠자리·고블린 모닥불 — FieldFeatures.spawn_guards)
+			assert_true(map.features.any(func(f: Dictionary) -> bool: return Vector2(g.home - (f["pos"] as Vector2i)).length() <= 4.0),
+				"지역 없는 무리 %d(%s)는 동굴 요소를 지킨다" % [g.id, g.leader()])
+			continue
 		assert_eq(map.zone_at(g.home), zone_of_region[g.region], "무리 %d(%s)는 제 구역에서 생긴다" % [g.id, g.leader()])
 
 

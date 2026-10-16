@@ -1,0 +1,57 @@
+{
+  "id": "ghoul_feast",
+  "name_ko": "갉아먹힌 시체 더미",
+  "type": "feature",
+  "tile": "feat_ghoul_feast",
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "뒤진다",
+      "limit": "once",
+      "line": "field.ghoul_feast",
+      "give": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            2,
+            5
+          ],
+          "chance": 0.9
+        },
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.3
+        },
+        {
+          "item": "minor_potion",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.15
+        },
+        {
+          "item": "explorer_tag",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.5
+        }
+      ],
+      "effects": [
+        {
+          "type": "apply_status",
+          "status": "rot",
+          "chance": 0.35
+        }
+      ],
+      "done": "field.ghoul_feast_done"
+    }
+  ],
+  "source": "placeholder"
+}

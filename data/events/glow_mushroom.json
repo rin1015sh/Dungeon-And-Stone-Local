@@ -1,0 +1,25 @@
+{
+  "id": "glow_mushroom",
+  "name_ko": "수정 버섯",
+  "type": "feature",
+  "tile": "feat_mushroom",
+  "actions": [
+    {
+      "id": "pick",
+      "name_ko": "딴다",
+      "limit": "once",
+      "line": "field.mushroom",
+      "give": [
+        {
+          "item": "crystal_mushroom",
+          "count": [
+            1,
+            3
+          ]
+        }
+      ],
+      "clear": true
+    }
+  ],
+  "source": "placeholder"
+}

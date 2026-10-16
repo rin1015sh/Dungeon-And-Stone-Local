@@ -1,0 +1,30 @@
+{
+  "id": "dead_campfire",
+  "name_ko": "꺼진 모닥불 자리",
+  "type": "feature",
+  "tile": "feat_dead_campfire",
+  "rest": {
+    "radius": 3,
+    "fatigue_per_hour": -1.5
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "once",
+      "line": "field.campfire",
+      "give": [
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.6
+        }
+      ],
+      "done": "field.campfire_done"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,10 +1,11 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 이벤트 타입은 핸들러 레지스트리(src/explore/events/)에 등록된다.",
-  "id": "hidden_wall_basic",
-  "name_ko": "숨은 벽",
-  "type": "hidden_passage",
-  "detect": {"stat": "int", "difficulty": 10},
-  "effects": [],
-  "once": true,
+  "_comment": "스키마 템플릿(로드되지 않음). 동굴 요소(type feature — FieldFeatures·FieldFeatureAct). 자리는 층 JSON features[{event, count, spot, zones, gap}]가 정하고 굽는 때 고정 지도에 남는다(FieldFeaturePlacer). tile = 보이는 타일(걸을 수 있어야 한다). hidden = 옆에 오면 탐지 판정 {stat, dc, line}. near = 반경 안에 처음 들어서면 문구 {radius, line, kind}. hazard = RiftHazards 묶음(함정·비탈 — 밟으면 판정). guard = 입장 때 이 자리에 지키는 무리 {monster}. rest = 근처 휴식 보너스 {radius, fatigue_per_hour}. actions = 살피기 행동(하나면 바로, 여럿이면 선택창): id, name_ko, limit(once|day|always), needs_status, cost{item,count}, give[{item,count[최소,최대],chance}], effects[전투 효과], learn_stats(몬스터), alert{monster,radius,hours}, line(번호 변형 .1 .2 …, line_zone이면 line.<구역>.n), clear(하고 나면 사라짐), done·missing(못 하는 이유 문구).",
+  "id": "example_feature",
+  "name_ko": "예시 요소",
+  "type": "feature",
+  "tile": "feat_cairn",
+  "actions": [
+    {"id": "look", "name_ko": "살핀다", "limit": "always", "line": "field.cairn"}
+  ],
   "source": "placeholder"
 }

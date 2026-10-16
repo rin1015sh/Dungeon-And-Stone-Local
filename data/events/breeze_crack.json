@@ -1,0 +1,10 @@
+{
+  "id": "breeze_crack",
+  "name_ko": "바람이 새는 틈",
+  "type": "feature",
+  "near": {
+    "radius": 2,
+    "line": "field.breeze"
+  },
+  "source": "placeholder"
+}

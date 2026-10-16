@@ -1,0 +1,23 @@
+{
+  "id": "wet_slope",
+  "name_ko": "물기 젖은 비탈",
+  "type": "feature",
+  "hazard": {
+    "id": "wet_slope",
+    "tile": "feat_wet_slope",
+    "check": {
+      "stat": "agi",
+      "dc": 8
+    },
+    "fail": [
+      {
+        "type": "restore_resource",
+        "resource": "hp",
+        "amount": "-floor({max_hp} * 0.04)"
+      }
+    ],
+    "pass_message": "field.slope_pass",
+    "fail_message": "field.slope_fail"
+  },
+  "source": "placeholder"
+}

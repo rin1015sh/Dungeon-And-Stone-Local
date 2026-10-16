@@ -24,7 +24,7 @@ func _initialize() -> void:
 	var gen := CrystalCaveGenerator.new()
 	var t := Time.get_ticks_msec()
 	var map := gen.build(db, CrystalCaveGenerator.procedural(def), Rng.new(seed_value))
-	print("시드 %d — %d×%d, 생성 %dms" % [seed_value, map.width, map.height, Time.get_ticks_msec() - t])
+	print("시드 %d — %d×%d, 생성 %dms, 동굴 요소 %d곳" % [seed_value, map.width, map.height, Time.get_ticks_msec() - t, map.features.size()])
 	var problems := CrossLayoutCheck.problems(map, CrossLayout.new(JsonUtil.get_dict(def, "gen")))
 	for p in problems:
 		print("  문제: " + p)
@@ -32,7 +32,7 @@ func _initialize() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-	var err := FloorMapFile.save(map, path, seed_value)
+	var err := FloorMapFile.save(map, path, seed_value, JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(def, "gen"), "tiles"), "floor"))
 	print("고정 지도 저장: %s (%s)" % [ProjectSettings.globalize_path(path), "성공" if err == OK else "실패 %d" % err])
 	if seed_value != JsonUtil.get_int(fixed, "seed", 1):
 		print("  주의: 층 JSON fixed_map.seed를 %d로 고칠 것" % seed_value)

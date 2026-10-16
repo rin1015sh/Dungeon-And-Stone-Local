@@ -1,0 +1,25 @@
+{
+  "id": "torch_stubs",
+  "name_ko": "타다 남은 횃불들",
+  "type": "feature",
+  "tile": "feat_torch_stubs",
+  "actions": [
+    {
+      "id": "take",
+      "name_ko": "뽑는다",
+      "limit": "once",
+      "line": "field.torch_stubs",
+      "give": [
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            1
+          ]
+        }
+      ],
+      "clear": true
+    }
+  ],
+  "source": "placeholder"
+}

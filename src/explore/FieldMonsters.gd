@@ -26,6 +26,7 @@ class Group extends RefCounted:
 	var home: Vector2i
 	var state: String = "idle"
 	var grace_until: float = -1.0
+	var alert_until: float = -1.0          ## 이 시각까지는 보지 못해도 플레이어를 쫓는다(노움 은닉처를 건드렸다 — FieldFeatureAct)
 	var waypoint: Vector2 = Vector2(-1, -1)  ## 걸어가는 중인 칸 중심(없으면 x < 0)
 	var tag: String = ""                  ## 균열 조우 종류(battle/chain/waves/guardian), 필드 무리는 ""
 	var waves: Array = []                 ## 연전: 이기면 바로 이어지는 다음 구성들(몬스터 id 배열)

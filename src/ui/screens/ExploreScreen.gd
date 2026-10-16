@@ -83,6 +83,7 @@ func _ready() -> void:
 	session.player_died.connect(func(_cause: String) -> void: _end("died"))
 	session.encounter.connect(_on_encounter)
 	session.riddle_asked.connect(_on_riddle)
+	session.feature_choice.connect(_on_feature_choice)
 	session.transfer.connect(func(t: ExploreSession) -> void: session_switch.emit.call_deferred(t))
 	_build_pause_overlay()
 	session.start()
@@ -129,6 +130,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if riddle != null:  # 수수께끼 대화창이 떠 있으면 탐험 키는 먹지 않는다. 정지 키 = 물러나기
 		if event.is_action_pressed("pause"):
 			riddle.cancel()
+		if event is InputEventKey or event is InputEventAction:
+			get_viewport().set_input_as_handled()
+		return
+	var feature := get_node_or_null("FeatureDialog") as FeatureDialog
+	if feature != null:  # 동굴 요소 선택창도 같다
+		if event.is_action_pressed("pause"):
+			feature.cancel()
 		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
 		return
@@ -235,6 +243,20 @@ func _on_riddle(group: FieldMonsters.Group) -> void:
 	dlg.cancelled.connect(func() -> void:
 		session.realtime.set_paused("riddle", false)
 		session.monsters.set_grace(group, session.clock.total_hours))
+
+
+## 동굴 요소의 행동이 여럿이다: 고르는 동안 시간을 멈춘다.
+func _on_feature_choice(at: Vector2i) -> void:
+	if has_node("FeatureDialog"):
+		return
+	var dlg := FeatureDialog.new()
+	dlg.name = "FeatureDialog"
+	dlg.setup(session.features.name_at(at), session.features.actions_at(at))
+	add_child(dlg)
+	dlg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	session.realtime.set_paused("feature", true)
+	dlg.closed.connect(func() -> void: session.realtime.set_paused("feature", false))
+	dlg.picked.connect(func(aid: String) -> void: session.features.act(session, at, aid))
 
 
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.

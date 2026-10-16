@@ -1,0 +1,74 @@
+{
+  "id": "broken_gear",
+  "name_ko": "부서진 장비 더미",
+  "type": "feature",
+  "tile": "feat_broken_gear",
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "뒤진다",
+      "limit": "once",
+      "line": "field.gear",
+      "give": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.3
+        },
+        {
+          "item": "hunting_dagger",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.08
+        },
+        {
+          "item": "wooden_shield",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.06
+        },
+        {
+          "item": "leather_boots",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.06
+        },
+        {
+          "item": "leather_hood",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.06
+        },
+        {
+          "item": "leather_gloves",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.06
+        },
+        {
+          "item": "iron_helm",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.03
+        }
+      ],
+      "done": "field.gear_done"
+    }
+  ],
+  "source": "placeholder"
+}

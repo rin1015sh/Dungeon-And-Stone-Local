@@ -1,0 +1,11 @@
+{
+  "id": "mud_tracks",
+  "name_ko": "진흙 바닥",
+  "type": "feature",
+  "tile": "feat_mud",
+  "near": {
+    "radius": 2,
+    "line": "field.mud_tracks"
+  },
+  "source": "placeholder"
+}
