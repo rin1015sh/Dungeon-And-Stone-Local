@@ -81,7 +81,7 @@ func test_remove_detaches_and_delete_cost_doubles() -> void:
 	assert_eq(pc.essences.absorb(pc, _inst("ghoul", "red")), "", "지운 뒤에는 다시 받아들일 수 있다")
 
 
-func test_drop_chance_and_pending_expiry() -> void:
+func test_drop_chance_and_battle_drops() -> void:
 	var d := GameDatabase.new()
 	d.load_all("res://data")
 	assert_eq(EssenceDrop.drop_chance(d, {"grade": 9}), 0.02)
@@ -89,29 +89,24 @@ func test_drop_chance_and_pending_expiry() -> void:
 	assert_eq(EssenceDrop.drop_chance(d, {"grade": 6, "rank": "guardian"}), 0.33)
 	assert_eq(EssenceDrop.essence_of_monster(d, "goblin"), "goblin")
 	(d.singletons["balance"]["essence"]["drop_chance_by_grade"] as Dictionary)["9"] = 1.0
-	var pc := PlayerCharacter.create(d, "human", "warrior", "시험", {"str": 10})
 	var killed: Array[String] = ["gnome"]
-	var msgs := Rewards.grant(pc, killed, Rng.new(4), 10.0)
-	assert_true(msgs.any(func(m: Dictionary) -> bool: return m["key"] == "reward.essence"), "정수가 떨어진다")
-	assert_eq(pc.essences.pending.size(), 1)
-	assert_eq(pc.essences.expire_pending(10.1).size(), 0)
-	assert_eq(pc.essences.expire_pending(10.0 + float(d.bal("essence.expire_hours"))).size(), 1, "오래 두면 사라진다")
-	assert_eq(pc.essences.pending.size(), 0)
+	var drops := DropPickup.roll(d, killed, Rng.new(4))
+	assert_true(drops.any(func(x: Dictionary) -> bool: return str(x["kind"]) == "essence"), "정수가 떨어진다(전투 장면에서 묻는다)")
+	var pc := PlayerCharacter.create(d, "human", "warrior", "시험", {"str": 10})
+	Rewards.grant(pc, killed, Rng.new(4))
+	assert_true(pc.essences.absorbed.is_empty(), "보상만으로는 정수를 얻지 않는다")
 
 
-func test_absorb_pending_and_save_roundtrip() -> void:
+func test_absorb_and_save_roundtrip() -> void:
 	var pc := _pc()
-	pc.essences.add_pending(db, _inst("blade_wolf", "yellow", {"int": 9}))
-	assert_eq(pc.essences.absorb_pending(pc, 0), "")
-	assert_eq(pc.essences.pending.size(), 0)
-	pc.essences.add_pending(db, _inst("goblin", "green"))
+	assert_eq(pc.essences.absorb(pc, _inst("blade_wolf", "yellow", {"int": 9})), "")
 	var data := pc.progress_to_dict()
+	assert_false((data.get("essences", {}) as Dictionary).has("pending"), "흡수 대기는 없다")
 	var copy := _pc()
 	copy.progress_load_dict(data)
 	assert_true(copy.essences.has_essence("blade_wolf"))
 	assert_true(copy.skills.has("ess_wolf_blade_graze"), "불러오면 스킬도 다시 붙는다")
 	assert_eq(copy.stats.get_value("int"), pc.stats.get_value("int"))
-	assert_eq(copy.essences.pending.size(), 1)
 
 
 func test_essence_skill_usable_in_battle() -> void:

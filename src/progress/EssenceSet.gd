@@ -1,6 +1,7 @@
 class_name EssenceSet
 extends RefCounted
-## 탐험가가 흡수한 정수와, 아직 흡수하지 않은 정수(대기)를 관리한다(docs/PROMPT_FLOOR1_V2.md §3).
+## 탐험가가 흡수한 정수를 관리한다(docs/PROMPT_FLOOR1_V2.md §3). 떨어진 정수는 전투 장면에서 바로 흡수하거나 버린다
+## (DropPickup·CombatDrops — 예전의 "흡수 대기"는 2026-10-16 사용자 결정으로 없앴다).
 ##   흡수: 패시브 1개 + 색에 맞는 액티브 1개(수호자 정수 = 무지갯빛 → 액티브 전부) + 굴린 스탯.
 ##   슬롯 = Progression.essence_slots(레벨). 패시브·액티브가 하나라도 겹치면 흡수 불가
 ##     (같은 몬스터의 다른 색, 같은 스킬을 쓰는 변이종 정수 포함 — 비교 키는 패시브 id와 스킬의 essence_of).
@@ -14,7 +15,6 @@ extends RefCounted
 const SOURCE_PREFIX := "essence:"
 
 var absorbed: Array[Dictionary] = []  # 정수 사례 {"essence", "color", "stats"}
-var pending: Array[Dictionary] = []   # 떨어졌지만 아직 흡수하지 않은 정수(+ "expires_at" 게임 시각, 없으면 무기한)
 var deletions: int = 0
 
 
@@ -55,16 +55,6 @@ func absorb(a: Actor, inst: Dictionary) -> String:
 		absorbed.append(inst.duplicate(true))
 	_attach(a, inst)
 	return ""
-
-
-## 대기 중인 정수 i를 흡수한다. 성공하면 대기 목록에서 뺀다.
-func absorb_pending(a: Actor, i: int) -> String:
-	if i < 0 or i >= pending.size():
-		return "essence.reason_unknown"
-	var why := absorb(a, pending[i])
-	if why.is_empty():
-		pending.remove_at(i)
-	return why
 
 
 ## 흡수한 정수 i를 제거한다(삭제 비용 계산·지불은 부르는 쪽). 제거했으면 true.
@@ -125,24 +115,6 @@ func next_delete_cost(db: GameDatabase) -> int:
 	return int(float(db.bal("essence.delete_cost_base", 5000000)) * pow(float(db.bal("essence.delete_cost_mult", 2)), deletions))
 
 
-## 대기 정수를 더한다. now_hours ≥ 0이면 expire_hours 뒤에 사라진다.
-func add_pending(db: GameDatabase, inst: Dictionary, now_hours: float = -1.0) -> void:
-	var p := inst.duplicate(true)
-	if now_hours >= 0.0:
-		p["expires_at"] = now_hours + float(db.bal("essence.expire_hours", 0.5))
-	pending.append(p)
-
-
-## 시간이 지난 대기 정수를 지운다. 사라진 정수 id 목록.
-func expire_pending(now_hours: float) -> Array[String]:
-	var gone: Array[String] = []
-	for i in range(pending.size() - 1, -1, -1):
-		if pending[i].has("expires_at") and now_hours >= float(pending[i]["expires_at"]):
-			gone.append(JsonUtil.get_str(pending[i], "essence"))
-			pending.remove_at(i)
-	return gone
-
-
 ## 정수 사례가 주는 액티브 스킬 id(색 → 하나, 무지갯빛 → 전부, unique 제외).
 static func granted_skills(db: GameDatabase, inst: Dictionary) -> Array[String]:
 	var def := db.get_entry("essences", JsonUtil.get_str(inst, "essence"))
@@ -199,20 +171,17 @@ func reattach_all(a: Actor) -> void:
 
 
 func to_dict() -> Dictionary:
-	return {"absorbed": absorbed.duplicate(true), "pending": pending.duplicate(true), "deletions": deletions}
+	return {"absorbed": absorbed.duplicate(true), "deletions": deletions}
 
 
 func load_dict(a: Actor, d: Dictionary) -> void:
 	for e in absorbed:
 		_detach(a, e)
 	absorbed.clear()
-	pending.clear()
 	for v: Variant in JsonUtil.get_array(d, "absorbed"):
 		if v is Dictionary:
 			absorbed.append((v as Dictionary).duplicate(true))
-	for v: Variant in JsonUtil.get_array(d, "pending"):
-		if v is Dictionary:
-			pending.append((v as Dictionary).duplicate(true))
+	# 예전 저장의 "pending"(흡수 대기)은 읽지 않는다
 	deletions = JsonUtil.get_int(d, "deletions")
 	reattach_all(a)
 

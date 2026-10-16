@@ -12,7 +12,6 @@ var _light_label: Label
 var _zone_label: Label
 var _found_label: Label
 var _interact_label: Label
-var _essence_label: Label
 
 
 func bind(session: ExploreSession) -> void:
@@ -44,15 +43,6 @@ func refresh() -> void:
 	var target := ExploreInteract.target_name(s)
 	_interact_label.visible = not target.is_empty()
 	_interact_label.text = Strings.t("explore.hud_interact", {"key": InputSetup.key_label("interact"), "target": target})
-	var pend := pc.essences.pending
-	_essence_label.visible = not pend.is_empty()
-	if not pend.is_empty():
-		var left := INF
-		for p: Dictionary in pend:
-			if p.has("expires_at"):
-				left = minf(left, float(p["expires_at"]) - s.clock.total_hours)
-		_essence_label.text = Strings.t("essence.pending_alert", {"n": pend.size(),
-			"hours": UiTheme.num(snappedf(maxf(0.0, left), 0.1)) if left != INF else "-", "key": InputSetup.key_label("character")})
 	_found_label.text = Strings.t("explore.hud_found", {
 		"landmarks": s.found_count(s.map.landmarks), "landmarks_total": s.map.landmarks.size(),
 		"portals": s.found_count(s.map.portals), "portals_total": s.map.portals.size()})
@@ -75,7 +65,6 @@ func _build() -> void:
 	_zone_label = _add(top, UiTheme.label(Strings.t("explore.hud_safe"), "small", "good"))
 	_found_label = _add(top, UiTheme.label("", "small", "text_dim"))
 	_interact_label = _add(top, UiTheme.label("", "small", "text_title"))
-	_essence_label = _add(top, UiTheme.label("", "small", "gold"))
 
 
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "_comment": "액션 → 키 이름(OS.find_keycode_from_string 형식). 물리 키 위치 기준이라 한글 입력 상태에서도 같은 자리의 키로 동작한다. 키 재설정의 기반.",
+  "_comment": "액션 → 키 이름(OS.find_keycode_from_string 형식). 물리 키 위치 기준이라 한글 입력 상태에서도 같은 자리의 키로 동작한다. 키 재설정의 기반. 선택(확인) = Enter(menu_confirm·포커스 버튼 ui_accept — 엔진 기본의 Space는 뺐다), 취소 = Backspace(menu_back — Esc로 하던 창 닫기·시설 나가기·물러나기·일시정지 풀기도). 사용자 결정 2026-10-16.",
   "actions": {
     "move_up": [
       "W",
@@ -98,9 +98,13 @@
       "Right"
     ],
     "menu_confirm": [
-      "Space"
+      "Enter",
+      "Kp Enter"
     ],
     "menu_back": [
+      "Backspace"
+    ],
+    "ui_accept": [
       "Enter",
       "Kp Enter"
     ]

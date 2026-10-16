@@ -27,7 +27,7 @@ static func inn(p: Paint) -> Array:
 			Props.barrel(p, 400 + k * 46 + i * 23, 330 - i * 38, 40, 40)
 	Bits.shelf_row(p, 380, 150, 160, "bottles")
 	Bits.chandelier(p, Vector2(360, 128), 70)
-	Npc.figure(p, 252, 430, 150, {"body": "female", "top": Color("#7a4634"), "bottom": Color("#5e3a2c"), "lower": "dress", "apron": Color("#b4a688"), "arms": "down", "hair": "scarf", "hood_c": Color("#5f6a52"), "hair_c": Color("#4a3020"), "light": 1.0})
+	Npc.figure(p, 262, 434, 182, {"body": "female", "top": Color("#7a4634"), "bottom": Color("#5e3a2c"), "lower": "dress", "apron": Color("#b4a688"), "arms": "down", "hair": "scarf", "hood_c": Color("#5f6a52"), "hair_c": Color("#4a3020"), "light": 1.0})
 	I.box(p, 150, 410, 420, 64, 46, Mat.planks(p, Color("#4b3524"), 150, 410, false, 12), Mat.planks(p, Color("#5a4029"), 0, 0, false, 9))
 	for mx: float in [200.0, 300.0, 430.0, 520.0]:
 		Bits.mug(p, mx, 404)
@@ -55,7 +55,7 @@ static func library(p: Paint) -> Array:
 	for k in 9:
 		var t := (k + 1) / 10.0
 		Ink.line(p, Vector2(150, 520).lerp(Vector2(206, 140), t), Vector2(196, 530).lerp(Vector2(250, 150), t), 4.0, Color("#3a2a1e"), 1.0, 0.2)
-	Npc.figure(p, 404, 418, 152, {"body": "male", "top": Color("#3e4a3e"), "lower": "robe", "arms": "book", "hair": "bald", "hair_c": Color("#c8c2b0"), "beard": "full", "glasses": true, "skin": Color("#bc9a80"), "light": -1.0})
+	Npc.figure(p, 404, 442, 180, {"old": true, "body": "male", "top": Color("#3e4a3e"), "lower": "robe", "arms": "book", "hair": "bald", "hair_c": Color("#c8c2b0"), "beard": "full", "glasses": true, "skin": Color("#bc9a80"), "light": -1.0})
 	I.box(p, 250, 404, 230, 70, 44, Mat.planks(p, Color("#3c2a1c"), 250, 404, true, 14), Mat.planks(p, Color("#4b3524"), 0, 0, false, 9))
 	Bits.open_book(p, Vector2(330, 392), 40)
 	Bits.skull(p, Vector2(430, 388), 13)
@@ -75,7 +75,7 @@ static func temple(p: Paint) -> Array:
 	Deco.stained_glass(p, 314, 124, 92, 150)
 	Icons.draw(p, "sun", Vector2(360, 118), 12)
 	I.shaft(p, Vector2(318, 200), Vector2(402, 200), Vector2(270, 540), Vector2(520, 540), Color("#e0b070"), 0.15)
-	Npc.figure(p, 360, 300, 102, {"body": "female", "top": Color("#bcb49c"), "lower": "robe", "arms": "down", "hair": "hood", "hood_c": Color("#c8c0a6"), "stole": Color("#8a2a22"), "light": 1.0})
+	Npc.figure(p, 360, 312, 122, {"body": "female", "top": Color("#bcb49c"), "lower": "robe", "arms": "down", "hair": "hood", "hood_c": Color("#c8c0a6"), "stole": Color("#8a2a22"), "light": 1.0})
 	I.box(p, 296, 290, 128, 40, 18, Mat.ashlar(p, Color("#8a8170"), 296, 290, 30, 14), p.flat(Color("#9c9482"), 0.1))
 	Bits.altar_cloth(p, 300, 290, 120)
 	for cx: float in [306.0, 322.0, 398.0, 414.0]:
@@ -100,7 +100,7 @@ static func shop(p: Paint) -> Array:
 	for k in 9:
 		var hx := 140.0 + k * 52.0
 		Bits.hanging(p, Vector2(hx, 64), 40.0 + (k % 3) * 18.0, k % 3)
-	Npc.figure(p, 342, 428, 166, {"body": "stout", "top": Color("#9a8a68"), "bottom": Color("#4a3a2a"), "apron": Color("#6a4a32"), "arms": "counter", "hands_v": 0.5, "hair": "bald", "hair_c": Color("#3a2a1e"), "beard": "mustache", "light": 1.0})
+	Npc.figure(p, 342, 452, 192, {"body": "stout", "top": Color("#9a8a68"), "bottom": Color("#4a3a2a"), "apron": Color("#6a4a32"), "arms": "counter", "hands_v": 0.5, "hair": "bald", "hair_c": Color("#3a2a1e"), "beard": "mustache", "light": 1.0})
 	I.box(p, 110, 380, 470, 100, 42, Mat.planks(p, Color("#4a3524"), 110, 380, true, 16), Mat.planks(p, Color("#5d432b"), 0, 0, false, 10))
 	Bits.scale(p, Vector2(250, 372))
 	Bits.open_book(p, Vector2(420, 368), 34)
@@ -121,7 +121,7 @@ static func bank(p: Paint) -> Array:
 	for s: float in [1.45]:
 		for bx: float in [190.0, 530.0]:
 			Bits.column(p, I.pt(Vector2(bx, 110), s), I.pt(Vector2(bx, 330), s), 20.0 * s)
-	Npc.figure(p, 356, 422, 162, {"body": "female", "top": Color("#34343e"), "lower": "dress", "collar": Color("#d0c8b4"), "arms": "counter", "hands_v": 0.5, "hair": "bun", "hair_c": Color("#5a4636"), "glasses": true, "light": 1.0})
+	Npc.figure(p, 356, 446, 188, {"body": "female", "top": Color("#34343e"), "lower": "dress", "collar": Color("#d0c8b4"), "arms": "counter", "hands_v": 0.5, "hair": "bun", "hair_c": Color("#5a4636"), "glasses": true, "light": 1.0})
 	I.box(p, 40, 372, 660, 120, 30, Mat.planks(p, Color("#2e2219"), 40, 372, true, 22), p.flat(Color("#4a3a2c"), 0.15))
 	for k in 23:
 		Ink.line(p, Vector2(52 + k * 28.0, 250), Vector2(52 + k * 28.0, 362), 3.0, Color("#1b1a18"), 1.0, 0.2)
