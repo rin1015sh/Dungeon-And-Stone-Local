@@ -3,10 +3,10 @@ extends VBoxContainer
 ## 고정 칸 선택판(포켓몬 기술 창처럼): 정해진 테두리 칸 열×줄(render.json combat_menu_columns·rows, 기본 2×3 = 한 쪽 6칸)에
 ## 선택지를 하나씩 넣는다. 칸 수·크기는 늘 같고(빈 칸도 테두리가 남는다), 넘치면 쪽을 나눈다(◀ 1/3 ▶).
 ##   키: menu_up/down/left/right(WASD) 커서 이동 — 맨 왼쪽·오른쪽 칸에서 한 번 더 누르면 이전·다음 쪽,
-##       menu_confirm(Space) 확정, menu_back(Enter) 뒤로. 마우스: 칸에 올리면 커서가 옮겨 가고 누르면 확정.
+##       menu_confirm(Enter) 확정, menu_back(Backspace) 뒤로. 마우스: 칸에 올리면 커서가 옮겨 가고 누르면 확정.
 ##   커서가 놓인 선택지의 설명(못 쓰면 그 이유)은 칸 아래 설명줄에 나온다.
 ## 선택지: {"text", "sub"(칸 오른쪽 아래 작은 글씨 — 대가·남은 차례·확률), "enabled", "desc", "on_pick": Callable}
-## 칸은 Button이지만 포커스를 받지 않는다(Space·Enter가 엔진 기본 ui_accept로 엉뚱한 버튼을 누르지 않게 키는 직접 받는다).
+## 칸은 Button이지만 포커스를 받지 않는다(Enter가 엔진 기본 ui_accept로 엉뚱한 버튼을 누르지 않게 키는 직접 받는다).
 
 signal cursor_moved(index: int)
 

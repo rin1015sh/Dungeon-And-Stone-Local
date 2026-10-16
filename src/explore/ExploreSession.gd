@@ -31,6 +31,7 @@ var monsters: FieldMonsters
 var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
+var battle_drops: Array[Dictionary] = []  ## 전투 장면에서 줍기를 기다리는 드롭(grant_battle_rewards defer_drops — DropPickup)
 var pending_messages: Array[Dictionary] = []  ## 화면이 붙기 전에 남긴 메시지(화면이 붙을 때 다시 보여 준다)
 var realtime: RealtimeDriver
 var monsters_enabled: bool = true  ## false면 몬스터가 나타나지 않는다(규칙 테스트용). start() 전에 정한다.
@@ -334,19 +335,39 @@ func answer_riddle(group: FieldMonsters.Group, outcome: String) -> void:
 ## 전투 보상(처치 기록·공적·전리품·정수)을 주고 안내를 내보낸다. 낸 안내 목록(전투 결과 칸에도 보인다).
 ## 한 전투에 한 번 — 이미 줬으면 resolve_encounter는 다시 주지 않는다.
 ## colors: killed와 같은 순서의 정수 색(타입이 정한 것, 없으면 "" — Battle.killed_colors).
-func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], colors: Array[String] = []) -> Array[Dictionary]:
+## defer_drops: 전리품·정수는 주지 않고 battle_drops에 담는다(전투 장면이 하나씩 묻고 take_drop·leave_drop으로 준다).
+func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], colors: Array[String] = [], defer_drops: bool = false) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	_rewarded = true
+	battle_drops.clear()
 	if killed.is_empty() or player.dead:
 		return out
-	for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null,
-			JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0, colors):
+	var mult := JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0
+	if defer_drops:
+		battle_drops = DropPickup.roll(db, killed, rng, rift_run != null, mult, colors)
+	for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null, mult, colors, not defer_drops):
 		if str(m["key"]) == "reward.bag_full" and rift_run != null \
 				and rift_run.keep_overflow(self, str(m["args"].get("item_id", "")), int(m["args"].get("count", 1))):
 			continue  # 출구에 필요한 물건은 손에 쥐었다(RiftRun.held)
 		message.emit(str(m["key"]), m["args"], str(m["kind"]))
 		out.append(m)
 	return out
+
+
+## 전투 장면에서 드롭을 pc가 받는다(정수 흡수 · 가방 — 넘친 균열 출구 물건은 손에 쥔다). 안내를 내보내고 돌려준다.
+func take_drop(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
+	var m := DropPickup.take(drop, pc)
+	if int(m.get("left", 0)) > 0 and rift_run != null and rift_run.keep_overflow(self, str(drop.get("id")), int(m["left"])):
+		m = DropPickup._m("reward.loot_by", {"who": pc.display_name, "item": DataNames.entry(db, "items", str(drop.get("id"))), "count": int(drop.get("count", 1))}, "good")
+	message.emit(str(m["key"]), m["args"], str(m["kind"]))
+	return m
+
+
+## 두고 간다(정수는 흡수 대기로 떠 있다가 흩어진다). reason = 아무도 받을 수 없던 이유 키.
+func leave_drop(drop: Dictionary, reason: String = "") -> Dictionary:
+	var m := DropPickup.leave(drop, player, clock.total_hours, reason)
+	message.emit(str(m["key"]), m["args"], str(m["kind"]))
+	return m
 
 
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:

@@ -8,8 +8,9 @@ extends RefCounted
 ## in_rift: 균열 안이면 일반 몬스터 정수 확률 ×essence.rift_mult.
 ## essence_mult: 정수 드롭 확률 배율(수수께끼 정답 뒤 약화된 문지기 ×2).
 ## colors: killed와 같은 순서의 정해진 정수 색(본 나이트 타입 — 비면 무작위).
+## with_drops = false면 전리품·정수는 주지 않는다(전투 장면에서 하나씩 묻고 주울 때 — DropPickup).
 static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hours: float = -1.0, in_rift: bool = false,
-		essence_mult: float = 1.0, colors: Array[String] = []) -> Array[Dictionary]:
+		essence_mult: float = 1.0, colors: Array[String] = [], with_drops: bool = true) -> Array[Dictionary]:
 	var db := pc.db
 	var msgs: Array[Dictionary] = []
 	var before := pc.get_level()
@@ -27,6 +28,8 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, now_hour
 			msgs.append(_m("reward.lord_bonus", {"name": mname, "exp": int(parts["lord"])}, "good"))
 		if gained > 0:
 			pc.progression.gain(pc, gained, rng)
+		if not with_drops:
+			continue
 		for drop in Loot.roll(db, id, rng):
 			var want := int(drop["count"])
 			var got := pc.inventory.add(str(drop["id"]), want)

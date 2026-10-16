@@ -13,6 +13,11 @@ var battle: Battle
 ## 결과가 정해지면 부른다: (result, killed, colors) -> Array[{key, args, kind}] — 보상(공적·전리품·정수)을 주고 그 안내를 돌려준다.
 ## 결과 칸에 보이고, 탐험 기록에도 남는다(ExploreScreen이 세션에 맡긴다). 없으면 결과만 보인다.
 var reward_provider: Callable = Callable()
+## 전투 장면에서 줍는 드롭(DropPickup — reward_provider가 채운다). 비어 있으면 바로 결과 칸.
+## drop_taker(drop, pc) -> 안내 · drop_leaver(drop, 못 받은 이유 키) -> 안내 — 둘 다 있어야 묻는다(CombatDrops).
+var drops: Array[Dictionary] = []
+var drop_taker: Callable = Callable()
+var drop_leaver: Callable = Callable()
 
 var _stage: BattleStage
 var _roster: PartyRoster
@@ -29,6 +34,7 @@ var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 �
 var _planning: Array[Combatant] = []  # 지금 행동을 정하는 사람들(파티 창 순서)
 var _plan_i: int = 0
 var _just_planned: Combatant = null
+var _spots: Array[Vector2] = []  # 쓰러뜨린 순서(battle.killed)대로 그 몬스터가 섰던 무대 자리 — 드롭이 놓인다
 
 
 func setup(b: Battle) -> void:
@@ -255,16 +261,18 @@ func _on_event(e: Dictionary) -> void:
 	match str(e.get("type")):
 		"damage":
 			if v != null:
-				if not bool(e.get("hit")):
-					v.float_text(Strings.t("combat.float_miss"), UiTheme.color("text_dim"))
+				if not bool(e.get("hit")):  # 회피·면역·막힘도 피해 숫자처럼 크게(색만 다르게)
+					v.float_text(Strings.t("combat.float_miss"), UiTheme.color("dmg_none"), true)
 				elif bool(e.get("immune", false)):
-					v.float_text(Strings.t("combat.float_immune"), UiTheme.color("text_dim"))
+					v.float_text(Strings.t("combat.float_immune"), UiTheme.color("dmg_none"), true)
 				elif int(e.get("lost", e.get("amount", 0))) <= 0:
-					v.float_text(Strings.t("combat.float_blocked"), UiTheme.color("text_dim"))
+					v.float_text(Strings.t("combat.float_blocked"), UiTheme.color("dmg_none"), true)
 				else:
 					var foe := u.side != Combatant.SIDE_PARTY  # 적이 입은 피해 = 밝은 금빛, 아군이 입은 피해 = 붉게
 					v.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("dmg_foe" if foe else "dmg_party"), true)
 		"down", "fled":
+			if str(e.get("type")) == "down" and u != null and u.side == Combatant.SIDE_ENEMY and u.actor is Monster:
+				_spots.append(v.position + Vector2(v.size.x * 0.5, v.size.y) if v != null else _stage.size * Vector2(0.5, 0.6))
 			if v != null:
 				v.refresh()
 				if _drops_view(u):
@@ -313,6 +321,16 @@ func _show_result() -> void:
 	var key := "combat.result_" + (battle.result if not battle.result.is_empty() else Battle.RESULT_FLED)
 	_result_box.add_child(UiTheme.label(Strings.t(key), "header", "good" if battle.result == Battle.RESULT_VICTORY else "bad"))
 	var rewards: Array = reward_provider.call(battle.result, battle.killed, battle.killed_colors) if reward_provider.is_valid() else []
+	if not drops.is_empty() and drop_taker.is_valid() and drop_leaver.is_valid():  # 쓰러진 자리의 정수·전리품을 하나씩 묻는다(결과 칸은 제목만)
+		var takers: Array[PlayerCharacter] = []
+		for u in battle.side_units(Combatant.SIDE_PARTY):
+			if u.actor is PlayerCharacter and not u.summoned and not u.actor.dead:
+				takers.append(u.actor as PlayerCharacter)
+		if not takers.is_empty():
+			rewards.append_array(await CombatDrops.collect(self, _stage, battle.db, drops, _spots, takers, drop_taker, drop_leaver))
+		drops.clear()
+		if not is_inside_tree():
+			return
 	if not rewards.is_empty():  # 이번 전투로 얻은 것(공적·레벨·전리품·정수) — 웨이브가 이어져도 여기서 한 번 본다
 		var scroll := ScrollContainer.new()
 		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

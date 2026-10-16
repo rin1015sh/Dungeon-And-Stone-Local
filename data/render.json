@@ -160,6 +160,7 @@
     "gold": "#c9a24a",
     "dmg_foe": "#ffe3a0",
     "dmg_party": "#ff5b47",
+    "dmg_none": "#c8d4dc",
     "stat_pos": "#7fae6a",
     "stat_neg": "#c0473d",
     "bar_hp": "#9b2a2a",
