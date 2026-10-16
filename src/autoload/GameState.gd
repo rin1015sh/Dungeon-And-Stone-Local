@@ -10,7 +10,7 @@ var floor_entries: int = 0
 var debug_seed_override: int = 0
 var debug_invulnerable: bool = false
 var debug_fast_combat: bool = false  ## 적 차례 연출 지연 없음(테스트·스모크용)
-var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달). 탐험가마다 새로(도시 달력과의 관계는 미정 — ASSUMPTIONS CT)
+var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달 = 도시 한 달 — 포탈은 한 달에 한 번). 탐험가마다 새로(ASSUMPTIONS PA9)
 var city: CityState = null  ## 도시 진행 상태(탐험가마다 새로)
 var save_path: String = SaveGame.DEFAULT_PATH  ## 테스트는 다른 경로를 쓴다(실제 저장을 덮지 않게)
 

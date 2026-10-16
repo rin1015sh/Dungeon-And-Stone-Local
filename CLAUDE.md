@@ -5,7 +5,8 @@
 
 ## 세션 시작 시 (어느 환경이든)
 
-1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다.** 설계 요약은 `docs/DESIGN.md`, 원본 지시서는 `docs/PROMPT.md`, 가정 목록은 `docs/ASSUMPTIONS.md`. **그림 작업이면 `docs/ART.md`(그림체 규칙·도구·절차)를 먼저 읽는다.**
+0. **작업 전에 최신 main을 받아 합친다**(`git fetch origin main` → 브랜치가 뒤처졌으면 `git merge origin/main`). 다른 세션이 main에 병합한 작업(예: 2026-10-16 전투 그림)이 빠진 채 진행되는 일이 있었다.
+1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다.** 지금 확정된 기획·설정 한 장 요약은 `docs/CANON.md`, 다른 세션에 넘기거나 새 기획을 시작할 때는 `docs/HANDOFF.md`. 설계 요약은 `docs/DESIGN.md`, 원본 지시서는 `docs/PROMPT.md`, 가정 목록은 `docs/ASSUMPTIONS.md`. **문서끼리 어긋나면 날짜가 늦은 사용자 결정이 이긴다**(우선순위는 CANON.md 맨 위). **그림 작업이면 `docs/ART.md`(그림체 규칙·도구·절차)를 먼저 읽는다.**
 2. PROGRESS.md의 **"다음 할 일"**부터 진행한다. 질문하지 말고 진행하되, 모호한 부분은 합리적으로 가정하고 ASSUMPTIONS.md에 "가정 / 이유 / 바꾸는 방법"을 남긴다.
    - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 DESIGN.md 요약으로 진행).
 3. 작업이 끝날 때마다 PROGRESS.md를 갱신한다. 마일스톤 단위로 **항상 실행 가능한 상태**에서 커밋한다(커밋 메시지는 한국어로 짧게).
@@ -24,7 +25,7 @@
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로> [--procedural]` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과. 1층은 고정 지도라 시드는 시작 위치·무리만 바꾼다(`--procedural` = 고정 지도 무시하고 그 시드로 새로).
 - **1층 고정 지도 굽기**(생성기·`gen` 값을 바꿨으면 필수 — 테스트가 파일과 시드 결과를 비교한다): `godot --headless --path . --script res://tools/bake_floor.gd [-- --seed=<시드>]` → `data/maps/f1_crystal_cave.json`(한 글자 = 한 칸, rows[y][x]). 시드를 바꾸면 층 JSON `fixed_map.seed`도 고친다. **이벤트를 좌표로 놓은 뒤에는 다시 구우면 좌표가 어긋난다.**
-- 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|explore --out=<png 경로>`
+- 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
   - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
 - 도시 그림 다시 만들기(약 2분): `godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors|plaza]` → `assets/city/`(데이터가 가리키는 경로, WebP). 그림체 = 피어 앤 헝거 2풍 손그림 일러스트(ASSUMPTIONS CT21~CT25).
@@ -57,7 +58,7 @@
 - 원작 실명 인물 등장 금지(NPC는 "길드 접수원"처럼 직함만). 현실 쪽 설정(빙의·커뮤니티·GM 등) 금지.
 - 원작 문장·대사 복사 금지. 설정(규칙·수치·명칭)만 가져오고 문장은 새로 쓴다.
 - 원문에 수치가 없는 값은 임시값을 쓰고 데이터에 `"source": "placeholder"`로 표기한다.
-- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 1층 필드 10종(원종 4 + 변이종 6) + 핏빛성채 14종 + 빙하굴 11종 + 녹색 탄광 7종 + 강철의 묘 7종(수호자 정수 6). 공유 이능은 같은 정수판 스킬 파일(`essence_of`)을 쓴다. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
+- **정수(essence)는 `docs/PROMPT_FLOOR1_V2.md`(사용자 제공 1계층 v2 명세) 기준으로 채운다**(2026-10-12~). 지금은 50종 = 1층 필드 10종(원종 4 + 변이종 6 — 변이종은 1층 지역 표에서 빠져 지금 얻을 수 없다, CR7) + 핏빛성채 15종 + 빙하굴 11종 + 녹색 탄광 7종 + 강철의 묘 7종(수호자 정수 6). 공유 이능은 같은 정수판 스킬 파일(`essence_of`)을 쓴다. 규칙은 `EssenceSet`·`EssenceDrop`, 가정은 ASSUMPTIONS J1~J10.
 
 ## 함정 (실제로 겪은 것)
 
@@ -80,25 +81,25 @@
 
 ```
 project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSystem, AudioBus
-CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS,ART}.md
+CLAUDE.md  README.md  docs/{CANON(정본 요약),HANDOFF(인계 프롬프트),PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS,ART,DEPLOY}.md  docs/balance/(시뮬레이터·임시값 표)
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
-  city.json(도시 규칙 — 미정 null)
+  city.json(도시 규칙 — 2026-10-15 모두 임시값, CT26)
   monsters/ essences/ skills/ items/ floors/ rifts/ riddles/ events/(동굴 요소) facilities/ activities/ city_info/   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
   maps/                  고정 지도(tools/bake_floor.gd가 굽는다 — manifest가 아니라 층 JSON fixed_map.file이 가리킨다)
   strings/ko.json
 src/
   Main.gd/.tscn          진입점, 화면 전환
-  autoload/              EventBus, DataRegistry, GameState, AudioBus
+  autoload/              EventBus, DataRegistry, GameState, TimeSystem, AudioBus
   core/                  JsonUtil, Formula, StatDef, StatBlock, Modifier, ResourceDef, ResourcePool, Rng, Strings,
                          GameClock, DataNames, GameDatabase, ScriptRegistry, ContentRegistries,
                          ValidatorBase, DataValidator, validation/{Core,Content,World,Boss,Rift,Effect,Passive,BossParam,City,Feature}Rules   (오토로드 비의존)
-  entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, StatusSet,
+  entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, Monster, StatusSet,
                          LightSource, CharacterRoller, Fatigue(피로도 — 도시·미궁 공용)
-  combat/                Battle, BattleRules(은신·증원·도주·사건·정리), BattleTargets(대상·오인), Timeline, DamageCalc, Passives,
-                         MonsterAi + ai/<조건>.gd, Meters(전투 게이지), BossHooks + BossPattern + patterns/<id>.gd(보스 페이즈·라운드),
-                         BattleDelayed(예고 공격), BattleTargets, BattleObjective(생존 웨이브), BattlePassives(전투 단위 패시브),
+  combat/                Battle, Combatant, ActionCheck(잘못된 행동 막기), BattleKnowledge(조사·도감), BattleRules(은신·증원·도주·사건·정리), BattleTargets(대상·오인), Timeline, DamageCalc, Passives,
+                         MonsterAi + AiCondition + ai/<조건>.gd, Meters(전투 게이지), BossHooks + BossPattern + patterns/<id>.gd(보스 페이즈·라운드),
+                         BattleDelayed(예고 공격), BattleObjective(생존 웨이브), BattlePassives(전투 단위 패시브),
                          BattleSpawns(분열·흡수·소환 만료),
                          DamageApply(모든 피해 공통: 보호막→버티기→생명력→피해로 풀리는 상태),
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
@@ -107,7 +108,7 @@ src/
                          FloorMapFile(고정 지도 파일 읽기/쓰기), FieldFeaturePlacer·FieldFeatures·FieldFeatureAct(동굴 요소 배치·규칙·행동), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환),
-                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView}
+                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), ExploreDebug(디버그 순간이동·안개 걷기), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView,FigurePainter}
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭), DropPickup(전투 장면에서 줍는 드롭 — 굴림·받기·두기), SaveGame(한 칸 저장)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  CityState(순 달력·행동력·공적치·잔액·소문/정보·디버그 임시값), CityValues(null 경로·임시값), CityActions(활동 실행),
@@ -119,17 +120,17 @@ src/
                          GothicWindow, InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, ItemDragPreview, CommandMenu, EssencePanel, RiddleDialog, ChoicePopup(작은 선택 창 — W/S·Enter·Backspace) …
   ui/windows/            InventoryWindow, CharacterWindow, BestiaryWindow, WindowManager
   ui/city/               CityStreet(레이어 시차 스크롤 거리 + 강조 셰이더), CityHud(귀퉁이 카드 — 달력·탐험가·메뉴), CityUi(카드 스타일),
-                         FacilityView(시설 내부), CityPanel + ShopPanel·BankPanel·EssenceRemovePanel, CityDebugPanel
+                         FacilityView(시설 내부), CityLines(결과 문구 고르기), CityPanel + ShopPanel·BankPanel·EssenceRemovePanel, CityDebugPanel
   ui/combat/             BattleStage(전투 무대 — 어둠·빛 웅덩이, 적 정면·아군 뒷모습 배치), BattlerView, MonsterArt(몬스터 그림·몸 높이 색인), CombatFigure(그림 없을 때 몸 그리기), PartyRoster(파티 창), DropMark(쓰러진 자리의 드롭)·CombatDrops(전투 뒤 드롭 묻기)
-  ui/screens/            TitleScreen(이어하기), CharacterCreateScreen, CityScreen, PlazaScreen(차원광장·포탈·저장), ExploreScreen, EndScreen, FoundationScreen(기반 점검), DataErrorScreen
+  ui/screens/            TitleScreen(이어하기), CharacterCreateScreen, CityScreen, PlazaScreen(차원광장·포탈·저장), ExploreScreen, CombatScreen(전투 — ui/combat 위젯을 모음), EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd(test_save 저장 · test_web 웹 배포 점검), smoke_ui.gd/.tscn
-tools/                   check.sh, export_web.sh(웹 내보내기), validate_data.gd, screenshot.gd/.tscn, bake_floor.gd(1층 고정 지도 굽기), paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), paint_monsters.gd + monster_art/(몬스터 전투 그림 → assets/monsters/: Clay 3D 덩어리 조형·Render 붓 칠/잉크/빗금·Rig 뼈대·Anatomy 몸·Face 얼굴·Hair·Kit 옷·Arms 무기·Extras 날개/꼬리·Fur 털·Beast(Head) 네발짐승·Things(2) 기괴체·Lord 계층군주 드레드피어·Finish 피/마감·Specs(2) 52종 설계 · 아군 뒷모습: Back 3D 몸을 돌려 투영·BackKit 옷·BackHair 머리·BackGear 갑옷/무기·Party 탐험가(종족×뒷/옆모습)·소환수 설계), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
+tools/                   check.sh, export_web.sh(웹 내보내기), validate_data.gd, screenshot.gd/.tscn, bake_floor.gd(1층 고정 지도 굽기), paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Icons·Props 소품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors·InteriorRooms·InteriorBits 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), paint_monsters.gd + monster_art/(몬스터 전투 그림 → assets/monsters/: Clay·ClayBase 3D 덩어리 조형·Render·Pen 붓 칠/잉크/빗금·Kinds 재질·Figure 설계 읽기·Rig 뼈대·Anatomy 몸·Face·FaceInk 얼굴·Hair·Headgear·Kit 옷·Arms 무기·Extras 날개/꼬리·Fur 털·Beast(Head) 네발짐승·Things(2) 기괴체·Lord 계층군주 드레드피어·Finish 피/마감·Specs(2) 52종 설계 · 아군 뒷모습: Back 3D 몸을 돌려 투영·BackKit 옷·BackHair 머리·BackGear 갑옷/무기·Party 탐험가(종족×뒷/옆모습)·소환수 설계), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
 assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(layers/ 거리 레이어 · buildings/ · interiors/ · plaza.webp — WebP) monsters/(<id>.webp 전투 그림 · <id>_back.webp 아군 소환수 뒷모습 + index.json 몸 높이) party/(<종족>_back|_side.webp 탐험가 전투 그림 + index.json)
 ```
 
 ## 핵심 개념 빠른 참조
 
-- **수식**: `{키}` 자리표시자 + 사칙연산/`min`/`max`/`floor`(Godot Expression). 키 = `level`, `bal.<balance 경로>`, `<스탯 id>`. 예: `"{bal.hp.base} + {level} * {bal.hp.per_level} + {str} * {bal.hp.per_str}"`.
+- **수식**: `{키}` 자리표시자 + 사칙연산/`min`/`max`/`floor`(Godot Expression). 키 = `level`, `bal.<balance 경로>`, `<스탯 id>`. 예(생명력 — `resources.json`): `"floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res} + {str} * {bal.hp.per_str})"` = 50 + 레벨×10 + 물리내성×3 + 근력×1.5.
 - **스탯 계산**: `(기본 + Σflat + Σ자식×coef) × max(0, 1+Σpercent)` → 클램프. 수정자는 출처(`source_id`)별로 붙이고 뗀다.
 - **스탯 구성(2026-10-14)**: 주 스탯 5종(근력·민첩·물리내성·항마력·정신력) + 주 스탯으로 대체할 수 없는 세부 스탯 12종(시각·식욕·소화력·자연재생력·영혼 재생력·명중률·감응도 2(화염·냉기)·내성 4(화염·냉기·독·어둠))만 둔다. 새 세부 스탯은 고유 효과가 있을 때만 추가하고 규칙에 연결한다(`tests/test_sub_stats.gd`가 남은 목록·연결을 검사). 가정 ST1~ST5.
 - **수정자 대상**: 스탯 id / `max:<자원>` / `regen:<자원>` / `dmg_taken:<피해유형|physical|magical|all>` / `dmg_dealt:…`.
@@ -148,12 +149,12 @@ assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(la
 - **핏빛성채(G5)에서 생긴 키**: 패시브 `ally_aura`·`start_summons`·`foe_statuses_on_start`·`regen_per_round`·`status_duration_cap`·`dot_mult`·`mark_first_attacker`·`basic_attack_effects`, 몬스터 `types`(본 나이트)·`magic_stone_chance`·약점 `{multiplier, ignore_reduction, requires_status, on_hit_status}`, 범용 보스 패턴 `guardian`(`every`·`extra_status`·`mumbles`·`force_phase`·`per_foe_status`·`intro`), 예고 `guarded_mult`(추가 행동 차례엔 예고가 진행되지 않음), 균열 챕터 `exit_requires`·`hidden`, 아이템 `rift_bound`. **명세 수치가 시뮬레이터 목표를 벗어나면 몬스터 수치를 바꾸고 notes에 원래 값을 남긴다**(ASSUMPTIONS BF1). 대량 데이터는 스크래치 파이썬 생성기로 만들고 커밋하지 않는다.
 - **빙하굴(G6)에서 생긴 키**: 효과 `barrier`(보호막 상태 `barrier: true`, 양 = 시전자 스탯 수식)·`permanent_stat`(영구 스탯, `key`·`max_times` — `Actor.boons`), `remove_status` `{"kind": "debuff", "count"}`, 피해 `rider {damage_type, ratio|flat}`·`str_bonus`·`defense_ignore`, 패시브 `hit_rider`·`self_statuses_on_start`·`turn_end_foe_status {status, target: all|random}`, `ally_aura {"all": true}`, 상태 `grants_immunity`·`crit_bonus`, AI 조건 `ally_hp_below`·대상 `ally_lowest_hp`, 예고 `warn`/`fire` 문구 키(대상이 여럿이어도 안내 한 번), 챕터 `hazards`(RiftHazards)·히든 피스 `near_entry`, 시뮬레이터 시나리오 `party_statuses`. **속성 내성·감응도**(`resist_<유형>`·`affinity_<유형>`)가 피해에 들어간다(GC1). 저체온증 민첩은 −30%(CTB, GC2).
 - **녹색 탄광(G7)에서 생긴 키**: 효과 `split`(분열 — 같은 몬스터, 생명력 반씩)·`absorb_ally {monsters, heal_ratio}`, `summon` `rounds`(소환수 유지 차례), 패시브 `defense_ignore`·`on_damaged_by {damage_types, chance, self_damage_ratio}`·`death_effects`(쓰러지면 상대 전원)·`low_hp_summons {ratio, monsters}`, 상태 정의 `on_hit`(상태가 주는 적중 효과 — 독성부여), 챕터 `exit_requires.bypass {stat, at_least}`, 세부 스탯 `digestion`(소화력 → 허기). 수식 키 `{max_<자원>}`은 상태 periodic에서도 된다.
-- **강철의 묘(G8)에서 생긴 키**: 함정 `hazards[].hidden·detect·disarm·bypass`(육감 탐지·손재주 해제·물리내성으로 밟아 부숨), 패시브 `trap_watcher`·`revive_once {ratio|hp}`, 상태 flag `always_hit`, `push_back` `chance`, `summon` `pick`, 균열 `riddle {set, weakened_status, empowered_status, essence_mult}` + 조우 `"riddle": true` + 벽화 `hidden[].mural` + 컬렉션 `riddles`(data/riddles), `Knowledge` 사실(`learn_fact`), 전투 규칙 `enemy_statuses`·`essence_mult`(`BattleRules.set_objective`), 피해 유형 `arcane`(무속성).
+- **강철의 묘(G8)에서 생긴 키**: 함정 `hazards[].hidden·detect·disarm·bypass`(정신력 탐지·민첩 해제·물리내성으로 밟아 부숨 — ST3. 1층 동굴의 고블린 덫도 같은 규칙), 패시브 `trap_watcher`·`revive_once {ratio|hp}`, 상태 flag `always_hit`, `push_back` `chance`, `summon` `pick`, 균열 `riddle {set, weakened_status, empowered_status, essence_mult}` + 조우 `"riddle": true` + 벽화 `hidden[].mural` + 컬렉션 `riddles`(data/riddles), `Knowledge` 사실(`learn_fact`), 전투 규칙 `enemy_statuses`·`essence_mult`(`BattleRules.set_objective`), 피해 유형 `arcane`(무속성).
 - **감사 수정(2026-10-13)에서 생긴 규칙**: 상태 `lingers`(전투 뒤 남음 — 나머지 차례 단위 상태는 전투 끝에 풀림, 탐험 중 `status.linger_hours_per_turn`시간 = 1차례), 아군 소환수 `Combatant.summoned`(AI·처치 아님·승패 제외), 피해가 빗나가거나 면역이면 딸린 효과 생략(`EffectContext.landed`, 효과 `always`/`to: self` 예외), 상태 부여는 `Passives.try_status`(면역·저항·지속 상한), 피해는 `DamageApply.hurt`, 효과 `apply_status` `to: self`·`unless_target_status`, `restore_resource` `non_lethal`, 스킬 `min_hp_ratio`, 수정자 `regen:<자원>:<기준>`. 가정 AU1~AU26.
 - **상태이상 키(G4)**: `resist {stats}`(남이 건 것만 저항), `immune_if {stat, at_least}`, `on_max_stacks {status}`, `break_on_damage(_types)`, `heal_mult`, `misdirect {chance, pool, power_mult, ignore_defense}`, `battle_only`, 수정자 값에 수식 문자열(걸릴 때 계산).
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 화면은 피어 앤 헝거식 정면 구도(`ui/combat/`: `BattleStage` 무대 — 적 정면·아군 뒷모습, `CombatFigure` 몸, `PartyRoster` 파티 창) + 아래 창 `CommandMenu`(명령 공격·스킬·방어·아이템, 도주는 스킬 목록 맨 끝), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **전투 드롭(2026-10-16)**: 정수·전리품은 쓰러진 무대 자리에 남고 전투가 끝나면 하나씩 "획득할까?" → 받을 사람(`CombatDrops`·`DropPickup`, `ExploreSession.grant_battle_rewards(…, defer_drops=true)`·`take_drop`·`leave_drop`). **정수를 얻는 길은 이것뿐** — 두고 가거나 아무도 못 받으면 사라진다(흡수 대기·캐릭터 창 흡수 없음). 가정 UI13.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
-- **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리 좌표 = 화면 높이 720 기준 거리 단위(`render.json city`), 거리 = `city.json street.layers`(시차) 위에 시설 건물. 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1) — **행동력은 입장에만 쓰고 시설 안 활동은 쓰지 않는다**, 활동은 `activities/<id>`(`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, **하순이 끝나면 저절로 차원광장 → 미궁**(`expedition_due`), 귀환하면 다음 달 상순(`return_from_dungeon`) (`CityState`, `GameState.city`). **시설 안 활동 한 번 → 저절로 거리로**(나가기 버튼 없음 — 창구형은 Esc·빈 곳 오른쪽 클릭으로 마침, 할 게 없으면 바로 나옴). 규칙 값은 2026-10-15 모두 임시값(`docs/balance/city.md`, CT26) — null로 되돌리면 효과 없음(검증기 경고 `CityValues.nulls`), 디버그 F1은 `CityValues.tunables`를 `CityState.overrides`로 임시 변경(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 단계 효과 `effects()` → 수정자 출처 `fatigue`). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 한 칸 저장은 차원광장에서만(`SaveGame`, 사망 시 삭제), 하순이 끝나면 차원광장(`PlazaScreen`, 포탈은 한 달에 한 번 `expedition_month`). 가정 CT1~CT33.
+- **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리 좌표 = 화면 높이 720 기준 거리 단위(`render.json city`), 거리 = `city.json street.layers`(시차) 위에 시설 건물. 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1) — **행동력은 입장에만 쓰고 시설 안 활동은 쓰지 않는다**, 활동은 `activities/<id>`(`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, **하순이 끝나면 저절로 차원광장 → 미궁**(`expedition_due`), 귀환하면 다음 달 상순(`return_from_dungeon`) (`CityState`, `GameState.city`). **시설 안 활동 한 번 → 저절로 거리로**(나가기 버튼 없음 — 창구형은 Backspace·Esc·빈 곳 오른쪽 클릭으로 마침, 할 게 없으면 바로 나옴). 규칙 값은 2026-10-15 모두 임시값(`docs/balance/city.md`, CT26) — null로 되돌리면 효과 없음(검증기 경고 `CityValues.nulls`), 디버그 F1은 `CityValues.tunables`를 `CityState.overrides`로 임시 변경(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 단계 효과 `effects()` → 수정자 출처 `fatigue`). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 한 칸 저장은 차원광장에서만(`SaveGame`, 사망 시 삭제), 하순이 끝나면 차원광장(`PlazaScreen`, 포탈은 한 달에 한 번 `expedition_month`). 가정 CT1~CT33.
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.

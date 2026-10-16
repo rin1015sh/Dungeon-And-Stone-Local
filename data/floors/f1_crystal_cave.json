@@ -4,7 +4,7 @@
   "floor": 1,
   "generator": "crystal_cave",
   "close_hours": 168,
-  "resets_each_entry": false,
+  "resets_each_entry": true,
   "_comment": "벽·천장의 수정이 빛을 내서 횃불 없이도 보인다(ambient). 암흑지대는 네 팔 끝(포탈 주변)에만 있고 거기서만 횃불이 필요하다. 시야 상한은 광원이 있어도 넘지 못하는 값(10m 미만).",
   "visibility_cap_m": 9.0,
   "visibility_source": "placeholder",
@@ -12,7 +12,7 @@
   "ambient_source": "placeholder",
   "ambient_color": "#c4bcff",
   "gen": {
-    "_comment": "거대한 십자가(CrossLayout) + 스파게티 동굴(CaveCarver). 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. 매 입장 새로: 동굴 지형. 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
+    "_comment": "거대한 십자가(CrossLayout) + 미로 동굴(등뼈 길·공동·방·잇는 굴·곁가지 — CrossTerrain). 지금 1층은 고정 지도(fixed_map)라 이 값들은 굽는 때만 쓴다 — 바꾸면 tools/bake_floor.gd로 다시 굽기. 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. (고정 지도를 끄면 입장마다 새로: 동굴 지형.) 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
     "core_size": 153,
     "arm_length": 288,
     "arm_width": 135,
