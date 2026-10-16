@@ -14,13 +14,14 @@
 |---|---|---|---|
 | 도시 거리·건물·실내·사람·차원광장 | `tools/paint_city.gd [-- --only=street\|buildings\|interiors\|plaza]` | `tools/city_art/` — Paint(캔버스·붓결)·Ink(잉크·빛·색 보정)·Mat(재질)·Parts·Buildings(2)·Backdrop·Street·Interiors·Npcs·NpcParts·Plaza | `assets/city/` (data가 가리키는 경로) |
 | 몬스터 전투 그림(정면) | `tools/paint_monsters.gd [-- --only=<id,id>]` | `tools/monster_art/` — Clay(3D 덩어리)·Render·Pen(칠·잉크·빗금)·Rig·Anatomy·Face·Hair·Kit·Arms·Extras·Fur·Beast(Head)·Things(2)·Lord·Finish · 설계 Specs·Specs2 | `assets/monsters/<id>.webp` + `index.json`(몸 높이) |
+| 탐험 맵 재질(바닥·벽 아틀라스) | `tools/paint_floor.gd [-- --only=<장소\|style>]` | `tools/floor_art/` — Specs(설계)·Seam(주기 잡음·빛 받은 높이·가장자리 마스크)·Cave(1층 재질 칠) + city_art Paint·Ink | `assets/floor/<장소>/<재질>.webp` (data/tiles.json art) |
 | 아군 전투 그림(뒷모습) | `tools/paint_monsters.gd -- --only=party` | Back(몸 3D 좌표를 돌려 투영)·BackKit(옷)·BackHair·BackGear(갑옷·무기) · 설계 Party | `assets/party/<종족>_back\|_side.webp`, `assets/monsters/<id>_back.webp` |
 
 실행은 모두 `godot --headless --path . --script <도구>`. 다 그린 뒤엔 `godot --headless --path . --import`.
 
 ## 2. 그림체 규칙(바꾸지 않는 "공식")
 
-- (예외 — 2026-10-16 기준) **미궁 탐험 맵은 아직 손그림이 아니다**: 3/4 시점 바닥·벽은 색칠한 칸, 동굴 요소는 마름모 표식, `render.json view.texture_filter` nearest. 탐험 맵 그림 작업은 아래 §6과 `docs/plans/map_design.md`를 따른다.
+- (2026-10-16 기준) **미궁 탐험 맵은 1층 바닥·암벽·수정벽·물·진흙만 손그림 재질**(A2)이고, 랜드마크·동굴 요소(마름모 표식)·균열은 아직 색칠한 칸이다. `texture_filter` linear. 탐험 맵 그림 작업은 아래 §6과 `docs/plans/map_design.md`를 따른다.
 - **참고 그림체 = 피어 앤 헝거(1·2)**. 손으로 칠한 어두운 일러스트 — 탁하고 채도 낮은 색, 짙은 그늘, 거친 펜 선과 빗금, 때·피. 픽셀아트·평면 도형·매끈한 그러데이션은 쓰지 않는다.
 - **칠하는 순서는 늘 같다**: 형태를 3D 덩어리로 빚기 → 면 방향으로 3~4단 붓 칠(밝은 면 · 적갈색 그늘 `Render.SHADOW_TINT`) → 오목한 골은 어둡게 + 가는 잉크 → 가려진 경계·바깥 윤곽은 굵기가 바뀌는 잉크 선 → 그늘에 형태를 따라 도는 펜 빗금 → 털 붓결(`Fur`) → 피·때·색 보정·그레인(`Finish`). 이 순서는 `Render.render` + `Fur.comb` + `Finish.done`이 맡으니, 새 그림도 **이 셋을 그대로 부른다**(따로 칠하지 않는다).
 - **빛은 왼쪽 위 앞**(`Render.LIGHT`). 도시는 광원(등롱·창·촛불)만 밝히고 나머지는 어둠에 묻는다.
@@ -56,14 +57,16 @@
 
 ## 6. 탐험 맵 (작업 중 — `docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`)
 
-진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정) 끝. 아래는 A2~A5에서 지킬 규격이다. 아직 그림 파일은 없다.
+진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정)·A2(1층 재질 아틀라스 `assets/floor/f1/`) 끝. 아래는 A3~A5에서도 지킬 규격이다.
+
+- **재질 칸 칠하는 법(A2)**: `Cave.cell` = 가장자리 띠는 모든 변형이 같은 주기 바탕(`Seam.field` — `FastNoiseLite.get_seamless_image`) + 안쪽은 변형마다 다른 시드 바탕과 잔손질, `Seam.mask`로 녹인다. **바탕에 주기가 아닌 칠(붓 자국 `Ink.strokes`, `Paint.nz`, `Paint.vary`)을 넣지 않는다** — 칸 격자가 보인다(잔손질에서만). 덩어리 밝기는 높이장 기울기(`Seam.relief`, 왼쪽 위 빛). 색 보정 → 평균 색을 타일 data 색에 맞춤(`paint_floor._row`). 확인은 스크래치 파이썬으로 아틀라스 확대 + 무작위로 이어 붙인 판을 본 뒤 게임 캡처.
 
 - **렌더 기반(A1)**: 층 JSON `art`(균열 `look.art`) — `palette`(미탐험 순흑·근흑색·색조·기억 색), `post`(채도·비네트·그레인), `pulse`(빛나는 타일의 맥동 빛 번짐 — `GlowChunk` + `crystal_pulse` 셰이더), `particles`(`AmbientParticles`), `ambience`(`audio.json ambience`). 읽는 곳 `src/explore/view/FloorArt.gd`, 검사 `WorldRules.check_art`. 품질 low(`GraphicsSettings`)는 그레인·입자·맥동·횃불 흔들림을 끈다. 시야 경계는 `FloorView.vertex_color`(AM9).
 
 - **도구**: `tools/paint_floor.gd [-- --only=<재질|장소>]` + `tools/floor_art/`(새 폴더) → `assets/floor/`(WebP, 투명이 필요하면 RGBA). 칠은 이미 있는 부품을 **재사용**한다 — `tools/city_art/Paint`(캔버스·붓결)·`Ink`(잉크·빛·색 보정)·`Mat`(재질), `tools/monster_art/Pen`(빗금)·`Finish`(피·때·그레인). 새 칠 방식을 만들지 않는다. 설계(재질·노이즈·변형 수·시드)는 도구의 설계 파일(`Specs` 형식).
 - **게임이 읽는 값은 data에**: 어느 타일이 어느 아틀라스를 쓰는지 = `tiles.json`(`sprite`/새 `art` 키), 층 색조·근흑색·입자 = 층 JSON(새 그림 키), 칸·벽 크기 = `render.json view`. 코드에 색을 박지 않는다.
-- **크기**: 1칸 = 1m = 바닥 32×32px, 벽 앞면 24px(벽 타일 32×56), 카메라 1.5배(`render.json view`). 그림은 2배(64px 칸)로 칠해 줄여 쓸지 A2에서 캡처로 정한다. `texture_filter`(지금 nearest)는 손그림이면 linear가 맞을 수 있다 — 비교 캡처 후 ASSUMPTIONS에.
-- **아틀라스 형식**: 재질 하나 = 한 줄에 변형 6~8칸(칸 크기 = 바닥 칸 × 그림 배율, 여백 없음). 벽은 윗면 칸 줄 + 앞면 조각 줄(앞면 앵커 = 아래 끝 = 바닥 접점). 소품·데칼은 낱장 또는 시트(앵커 = 발/바닥 가운데). `FloorChunk`·`WallRow`가 아틀라스를 `draw_texture_rect_region` + 꼭짓점 색(빛)으로 그린다 — **TileMap/TileSet `.tres`로 바꾸지 않는다**.
+- **크기**: 1칸 = 1m = 바닥 32×32px, 벽 앞면 24px(벽 타일 32×56), 카메라 1.5배(`render.json view`). 그림은 2배(`view.art_scale` — 64px 칸, 앞면 48px)로 칠해 줄여 쓴다(AM14). `texture_filter` linear(AM15).
+- **아틀라스 형식**: 재질 하나 = 한 줄에 변형 6~8칸(칸 크기 = 바닥 칸 × 그림 배율, 여백 없음). 벽은 윗면 칸 줄 + 앞면 조각 줄(앞면 앵커 = 아래 끝 = 바닥 접점). 소품·데칼은 낱장 또는 시트(앵커 = 발/바닥 가운데). `FloorChunk`·`WallRow`가 아틀라스를 `draw_polygon`(UV + 꼭짓점 색 = `FloorView.vertex_mul`, 셰이더 `floor_tex`)으로 그린다 — **TileMap/TileSet `.tres`로 바꾸지 않는다**.
 - **색**: §2 규칙 그대로(채도 낮게, 그늘 `#1a1412` 쪽, 밝은 쪽 `#e0d2b0`). 예외 신호색 = 피·정수·마석/수정 발광·마법. 순흑은 미탐험 전용, 보이는 곳의 가장 어두운 색은 층 색조가 섞인 근흑색. 바깥 윤곽은 순흑이 아닌 굵기가 바뀌는 잉크 선.
 - **빛**: 타일 그림은 **중립 밝기**로 칠한다(빛은 실행 중 꼭짓점 색 `LightField` + 시야 빛이 곱한다). 그림에 굽는 빛은 재질 자체의 발광(수정·버섯·광물)만.
 - **반복 금지**: 같은 변형이 가로·세로 3칸 이상 이어지지 않게(좌표 해시), 벽 앞면 모양은 구간마다 다르게, 저주파 노이즈로 넓은 영역 변화. 검사 = `FloorArtCheck`(`tools/floor_map.gd` "그림 층 검사", `tests/test_floor_art.gd`).

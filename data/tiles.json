@@ -9,6 +9,7 @@
       "floor": "#57505f"
     },
     "sprite": "res://assets/sprites/tiles/cave_floor.png",
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -22,6 +23,7 @@
       "face": "#6a6074"
     },
     "sprite": "res://assets/sprites/tiles/rock_wall.png",
+    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6},
     "source": "placeholder"
   },
   {
@@ -40,6 +42,7 @@
       "intensity": 0.8
     },
     "sprite": "res://assets/sprites/tiles/crystal_wall.png",
+    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6},
     "source": "original"
   },
   {
@@ -52,6 +55,7 @@
       "floor": "#24384c"
     },
     "sprite": "res://assets/sprites/tiles/pond_water.png",
+    "art": {"atlas": "res://assets/floor/f1/water.webp", "variants": 6},
     "source": "original"
   },
   {
@@ -527,6 +531,7 @@
       "floor": "#57505f",
       "mark": "#c8b8a0"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -539,6 +544,7 @@
       "floor": "#57505f",
       "mark": "#8a9a6a"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -551,6 +557,7 @@
       "floor": "#57505f",
       "mark": "#8fa0c8"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -563,6 +570,7 @@
       "floor": "#57505f",
       "mark": "#7a6a5a"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -575,6 +583,7 @@
       "floor": "#57505f",
       "mark": "#9a9a9a"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -587,6 +596,7 @@
       "floor": "#57505f",
       "mark": "#a89a80"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -599,6 +609,7 @@
       "floor": "#57505f",
       "mark": "#e0c890"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -623,6 +634,7 @@
       "floor": "#57505f",
       "mark": "#b8c8ff"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -635,6 +647,7 @@
       "floor": "#57505f",
       "mark": "#b0a8a0"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -647,6 +660,7 @@
       "floor": "#57505f",
       "mark": "#7af0e0"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder",
     "light": {
       "radius_m": 1.5,
@@ -664,6 +678,7 @@
       "floor": "#57505f",
       "mark": "#d8d0c0"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -676,6 +691,7 @@
       "floor": "#57505f",
       "mark": "#c0a060"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -688,6 +704,7 @@
       "floor": "#57505f",
       "mark": "#e8d070"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -700,6 +717,7 @@
       "floor": "#57505f",
       "mark": "#ff9a40"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder",
     "light": {
       "radius_m": 3.0,
@@ -717,6 +735,7 @@
       "floor": "#57505f",
       "mark": "#a0703a"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -729,6 +748,7 @@
       "floor": "#57505f",
       "mark": "#e0dcc8"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -741,6 +761,7 @@
       "floor": "#57505f",
       "mark": "#a0a0a8"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -752,6 +773,7 @@
     "colors": {
       "floor": "#4a3e34"
     },
+    "art": {"atlas": "res://assets/floor/f1/mud.webp", "variants": 6},
     "source": "placeholder"
   },
   {
@@ -764,6 +786,7 @@
       "floor": "#57505f",
       "mark": "#c06040"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {

@@ -20,6 +20,9 @@ var light_color: Color = Color.WHITE
 var light_intensity: float = 1.0
 var interact: String = ""       ## portal / monument … (탐험 상호작용 종류)
 var sprite: String = ""
+var art_atlas: String = ""      ## 재질 아틀라스(tools/paint_floor.gd → assets/floor). 바닥 = 한 줄에 변형, 벽 = 윗면 줄 + 앞면 줄
+var art_variants: int = 0       ## 아틀라스 한 줄의 변형 수(짝수 — FloorArtLayer)
+var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
 static func from_dict(d: Dictionary, p_index: int) -> TileDef:
@@ -42,6 +45,10 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.light_intensity = JsonUtil.get_float(light, "intensity", 1.0)
 	t.interact = JsonUtil.get_str(d, "interact")
 	t.sprite = JsonUtil.get_str(d, "sprite")
+	var art := JsonUtil.get_dict(d, "art")
+	t.art_atlas = JsonUtil.get_str(art, "atlas")
+	t.art_variants = JsonUtil.get_int(art, "variants", 0)
+	t.art_salt = t.id.hash()
 	return t
 
 

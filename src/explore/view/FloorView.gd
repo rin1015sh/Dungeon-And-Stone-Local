@@ -33,6 +33,7 @@ var _light_center: Vector2 = Vector2.ZERO
 var _vision: float = 1.0
 var _cfg: Dictionary = {}
 const FOG_ALL_SEEN := 4 | (4 << 3)
+const TEX_SHADER := "res://assets/shaders/floor_tex.gdshader"
 var _vfog: PackedByteArray          # 꼭짓점 둘레 네 칸: 탐험한 수(아래 3비트) | 보이는 수 << 3
 var art: FloorArt
 var _nb: Color = Color.BLACK          # art 값 사본(vertex_color는 아주 자주 불린다)
@@ -43,6 +44,8 @@ var glow_texture: GradientTexture2D   # GlowChunk들이 같이 쓴다
 var glow_material: ShaderMaterial
 var _glow_chunks: Dictionary = {}   # Vector2i(청크) -> GlowChunk (맥동하는 타일이 있는 층만)
 var _particles: AmbientParticles
+var tile_tex: Array[Texture2D] = []  # map.defs 번호 -> 재질 아틀라스(없으면 null — 색칠한 칸으로 그린다)
+var tex_material: ShaderMaterial     # 아틀라스 그림의 기억 탈색(floor_tex) — 바닥 청크·벽 줄이 같이 쓴다
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -65,6 +68,7 @@ func _ready() -> void:
 	_vlight.resize((map.width + 1) * (map.height + 1))
 	_vfog = PackedByteArray()
 	_vfog.resize((map.width + 1) * (map.height + 1))
+	_load_tile_art()
 	_stream = maxi(1, JsonUtil.get_int(_cfg, "stream_chunks", 3))
 	y_sort_enabled = true
 	_floor_layer = Node2D.new()
@@ -99,6 +103,21 @@ func set_quality(quality: String) -> void:
 	_build_particles()
 	if _particles != null:
 		_particles.set_radius(_vision * tile)
+
+
+## 타일 재질 아틀라스(tiles.json art.atlas)를 읽는다. 파일이 없으면 그 타일은 색칠한 칸으로 남는다.
+func _load_tile_art() -> void:
+	tile_tex.resize(map.defs.size())
+	var any := false
+	for i in map.defs.size():
+		var path := map.defs[i].art_atlas
+		if not path.is_empty() and map.defs[i].art_variants > 0 and ResourceLoader.exists(path):
+			tile_tex[i] = load(path) as Texture2D
+			any = true
+	if any:
+		tex_material = ShaderMaterial.new()
+		tex_material.shader = load(TEX_SHADER) as Shader
+		tex_material.set_shader_parameter("memory_desat", JsonUtil.get_float(_cfg, "memory_desat", 0.65))
 
 
 func _set_art(a: FloorArt) -> void:
@@ -220,6 +239,27 @@ func vertex_color(vx: int, vy: int, base: Color) -> Color:
 	return c if e >= 4 else _unexplored.lerp(c, float(e) * 0.25)
 
 
+## 재질 그림용 꼭짓점 색: rgb = 그림에 곱할 빛 배율, a = 보이는 비율(셰이더가 1 - a만큼 탈색 — floor_tex).
+## mean = 그림의 평균 색(타일 colors) — 근흑색 바닥을 배율로 바꾸는 데 쓴다. 미탐험 쪽 감쇠는 순흑으로.
+func vertex_mul(vx: int, vy: int, mean: Color) -> Color:
+	var i := vy * (map.width + 1) + vx
+	var f := _vfog[i]
+	var lit := _vlight[i]
+	var fr := _nb.r / maxf(mean.r, 0.02)
+	var fg := _nb.g / maxf(mean.g, 0.02)
+	var fb := _nb.b / maxf(mean.b, 0.02)
+	if f == FOG_ALL_SEEN:
+		return Color(maxf(lit.r, fr), maxf(lit.g, fg), maxf(lit.b, fb), 1.0)
+	var e := f & 7
+	if e == 0:
+		return Color(0, 0, 0, 0)
+	var s := f >> 3
+	var k := float(s) / float(e)
+	var m := _mem.lerp(lit, k) if s > 0 else _mem
+	var fade := 1.0 if e >= 4 else float(e) * 0.25
+	return Color(maxf(m.r, fr) * fade, maxf(m.g, fg) * fade, maxf(m.b, fb) * fade, k)
+
+
 ## 꼭짓점 (vx, vy) 둘레 네 칸(지도 밖은 미탐험)의 탐험한 수 | 보이는 수 << 3.
 static func fog_counts(m: FloorMap, vx: int, vy: int) -> int:
 	var e := 0
@@ -320,6 +360,7 @@ func _build_chunk(cx: int, cy: int) -> void:
 	var cells := Rect2i(cx * chunk, cy * chunk, chunk, chunk).intersection(Rect2i(0, 0, map.width, map.height))
 	var fc := FloorChunk.new()
 	fc.setup(self, cells)
+	fc.material = tex_material
 	_floor_layer.add_child(fc)
 	_floor_chunks[Vector2i(cx, cy)] = fc
 	_update_fog(cells)
@@ -332,6 +373,7 @@ func _build_chunk(cx: int, cy: int) -> void:
 		if _row_has_wall(row, cells.position.x, cells.end.x):
 			var wr := WallRow.new()
 			wr.setup(self, row, cells.position.x, cells.end.x)
+			wr.material = tex_material
 			add_child(wr)
 			_wall_rows[Vector2i(cx, row)] = wr
 

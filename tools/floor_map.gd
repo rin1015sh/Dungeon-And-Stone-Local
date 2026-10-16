@@ -7,7 +7,7 @@ extends SceneTree
 ## 기념비(흰색), 2층 포탈(분홍), 시작 위치(하늘색), 무작위 랜드마크(노란 테두리), 몬스터 무리(몬스터별 점), 막다른 곳(주황),
 ## 동굴 요소(검은 테두리 + 그 타일의 표식 색).
 ## 검사(CrossLayoutCheck): 네 포탈 도달·나침반 경로·연결·암흑지대 위치·지역 스폰. 문제가 있으면 종료 코드 1.
-## 그림 층 검사(FloorArtCheck): 바닥 변형 연속·걷는 칸을 막는 장식·동굴 요소와 겹친 장식(docs/PROMPT_ART_MAP.md §5.4 — 그림 층은 A2부터).
+## 그림 층 검사(FloorArtCheck): 바닥 변형 연속·걷는 칸을 막는 장식·동굴 요소와 겹친 장식(docs/PROMPT_ART_MAP.md §5.4 — 그림 층 = FloorArtLayer.build).
 
 var _args: Dictionary = {"seed": "1", "out": "user://floor_map.png", "floor": "f1_crystal_cave", "scale": ""}
 var _db: GameDatabase
@@ -39,7 +39,7 @@ func _initialize() -> void:
 		problems = CrossLayoutCheck.problems(map, lay)
 		problems.append_array(CrossLayoutCheck.spawn_problems(FieldMonsters.new(db, map, def, Rng.new(seed_value + 2)), map, def, 60))
 		_print_stats(map, lay)
-	var art_problems := FloorArtCheck.problems(map, FloorArtCheck.empty_art())  # 그림 층(A2부터 실제 층을 넘긴다)
+	var art_problems := FloorArtCheck.problems(map, FloorArtLayer.build(map))  # 그림 층(바닥 변형 — A3부터 장식도)
 	print("  그림 층 검사: %s" % ("통과" if art_problems.is_empty() else "문제 %d개" % art_problems.size()))
 	problems.append_array(art_problems)
 	var cfg := JsonUtil.get_dict(db.render, "debug_map")

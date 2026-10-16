@@ -11,6 +11,7 @@ var x1: int = 0
 
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
+var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 
 
 func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
@@ -32,6 +33,10 @@ func _draw() -> void:
 		if not def.is_wall():
 			continue
 		var h := view.wall_face_of(def)
+		var tex := view.tile_tex[def.index]
+		if tex != null:
+			_draw_textured(x, t, h, def, tex)
+			continue
 		# 윗면 (로컬 y: -t-h ~ -h)
 		_quad(x * t, -t - h, t, t)
 		_cols[0] = view.vertex_color(x, row, def.color_top)
@@ -58,6 +63,34 @@ func _draw() -> void:
 		edge.a = 1.0
 		draw_line(Vector2(x * t, -h), Vector2((x + 1) * t, -h), edge, 1.0)
 		_draw_courses(x, t, h, edge.lerp(left.lerp(right, 0.5), 0.5))
+
+
+## 재질 아틀라스로 그린 벽: 윗면 = 아틀라스 윗줄의 변형, 앞면 = 아랫줄의 변형(FloorArtLayer — 줄을 따라 이웃이 늘 다름).
+## 빛은 꼭짓점 배율(윗면 네 모서리, 앞면은 바닥 접점 두 모서리 × face_shade).
+func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> void:
+	var n := def.art_variants
+	var cell := float(tex.get_width()) / n
+	var split := clampf(cell / tex.get_height(), 0.0, 1.0)
+	_quad(x * t, -t - h, t, t)
+	FloorChunk.set_uv_cell(_uvs, tex, FloorArtLayer.variant(x, row, n, def.art_salt), n, 0.0, split)
+	_cols[0] = view.vertex_mul(x, row, def.color_top)
+	_cols[1] = view.vertex_mul(x + 1, row, def.color_top)
+	_cols[2] = view.vertex_mul(x + 1, row + 1, def.color_top)
+	_cols[3] = view.vertex_mul(x, row + 1, def.color_top)
+	draw_polygon(_pts, _cols, _uvs, tex)
+	if h <= 0 or split >= 1.0:
+		return
+	_quad(x * t, -h, t, h)
+	FloorChunk.set_uv_cell(_uvs, tex, FloorArtLayer.variant(x, row, n, def.art_salt + 1), n, split, 1.0)
+	var left := view.vertex_mul(x, row + 1, def.color_face)
+	var right := view.vertex_mul(x + 1, row + 1, def.color_face)
+	left = Color(left.r * view.face_shade, left.g * view.face_shade, left.b * view.face_shade, left.a)
+	right = Color(right.r * view.face_shade, right.g * view.face_shade, right.b * view.face_shade, right.a)
+	_cols[0] = left
+	_cols[1] = right
+	_cols[2] = right
+	_cols[3] = left
+	draw_polygon(_pts, _cols, _uvs, tex)
 
 
 ## 앞면에 돌 쌓은 줄(가로 2줄)과 엇갈린 이음매(세로)를 그린다.

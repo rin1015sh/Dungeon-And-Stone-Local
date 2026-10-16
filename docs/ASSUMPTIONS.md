@@ -468,6 +468,10 @@
 | AM10 | 수정 맥동 = 맥동 타일(`art.pulse.tiles`, 빛이 있는 타일만)이 보일 때 둥근 빛 번짐을 가산 혼합으로 얹고(벽이면 앞면 가운데), 셰이더 `crystal_pulse`가 TIME으로 밝기만 흔든다(칸마다 위상이 다름). 청크는 시야가 바뀔 때만 다시 그린다. 꼭짓점 빛(`LightField`)은 맥동하지 않는다. 노멀맵 조명은 넣지 않았다(선택 항목 — A2 아틀라스 뒤 프레임을 보고 정한다) | 지시서 §3.3·§7 — 청크 다시 그리기 없이 | `GlowChunk`, `assets/shaders/crystal_pulse.gdshader` |
 | AM11 | 그래픽 품질은 high/low 둘, 기기마다 `user://dungeon_and_stone/settings.json`(저장 슬롯과 따로). low = 그레인 0·입자 없음·맥동 멈춤(빛 번짐은 남음)·횃불 흔들림 없음. 일시정지 메뉴 "그래픽 높음/낮음" 한 버튼(이름만 — 부연설명 금지) | 지시서 §3.3 "품질 설정으로 끌 수 있게" | `GraphicsSettings`, `PauseMenu` |
 | AM12 | 환경음은 층 `art.ambience.loop` → `data/audio.json ambience` 키 → `AudioBus.play_ambience`(BGM과 따로). 1층 `f1_cave` 경로만 있고 파일은 아직 없다(조용히 건너뜀) | 소리 파일이 없어도 개발이 멈추지 않게(AudioBus 규칙) | `data/audio.json`, `AudioBus` |
+| AM14 | 재질 아틀라스 칸 = 바닥 32px × `view.art_scale` 2 = 64px, 벽 앞면 24 × 2 = 48px. 바닥 아틀라스 = 한 줄 변형, 벽 = 윗면 줄 + 앞면 줄. 무손실 WebP(이음매가 압축으로 깨지지 않게, 한 장 수십 KB) | 지시서 §6·ART §6 "2배로 칠해 줄여 쓸지" — 캡처에서 64px가 충분히 고왔다 | `render.json view.art_scale`, `tools/floor_art/Specs.gd` |
+| AM15 | `texture_filter` = **linear**(물을 것 ③의 답 — 캡처 비교). nearest는 64px 그림이 화면 48px로 줄며 자글거렸다. 색칠한 도형(몸·표식)은 필터와 상관없다 | 지시서 §3.1 | `render.json view.texture_filter` |
+| AM16 | 변형 고르기 = 좌표 해시 + (x + y) 홀짝 무리(짝수 번호 / 홀수 번호) → 맞닿은 두 칸이 늘 다른 변형(같은 변형 연속 최대 1칸). 가중치는 두지 않고 대신 무리마다 밋밋한 변형을 둘씩 넣었다. 변형 수는 짝수만(검사). 해시 소금 = 타일 id | 지시서 §5.4 "3칸 이상 금지", 매 프레임 지도 전체를 훑지 않게(칸마다 O(1)) | `FloorArtLayer`, `Cave.KINDS` |
+| AM17 | 그림 평균 색 = 그 타일의 data 색(`colors.floor/top/face`)으로 맞춘다 — 빛·근흑색은 꼭짓점 배율(`vertex_mul` — 근흑색 ÷ 평균 색을 배율의 바닥으로)로 예전과 같은 밝기. 기억 칸 탈색은 셰이더(`floor_tex`, `view.memory_desat` 0.65). 미탐험 감쇠는 순흑으로만(그림 있는 타일은 `palette.unexplored`가 검지 않으면 맞지 않는다) | 그림이 생겨도 화면 밝기·안개 규칙이 A1과 같게 | `tools/paint_floor.gd _row`, `FloorView.vertex_mul` |
 | AM13 | 입자는 CPUParticles2D(웹 호환), 플레이어를 따라가며 시야 반경 안에서만 생기고 월드에 남는다(걸어도 끌려가지 않음). 그림은 둥근 점(그러데이션 16px) — 손그림 입자는 A2 이후 | 지시서 §3.3·§7 | `AmbientParticles` |
 
 ## 데이터·구조

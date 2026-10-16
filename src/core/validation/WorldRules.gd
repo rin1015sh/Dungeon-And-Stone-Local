@@ -24,6 +24,13 @@ static func _tiles(v: ValidatorBase) -> void:
 		var colors := JsonUtil.get_dict(t, "colors")
 		for key: String in colors:
 			v.check_color(w + ".colors." + key, JsonUtil.get_str(colors, key))
+		var art := JsonUtil.get_dict(t, "art")
+		if not art.is_empty():
+			var n := JsonUtil.get_int(art, "variants")
+			if n < 2 or n % 2 != 0:
+				v.err(w + ".art", "variants는 2 이상 짝수(FloorArtLayer — 이웃 칸이 늘 다른 변형)")
+			if not ResourceLoader.exists(JsonUtil.get_str(art, "atlas")):
+				v.err(w + ".art", "atlas 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % JsonUtil.get_str(art, "atlas"))
 		var light := JsonUtil.get_dict(t, "light")
 		if not light.is_empty():
 			if JsonUtil.get_float(light, "radius_m") <= 0.0:

@@ -7,6 +7,12 @@
 > **읽는 법**: 아래 항목은 날짜가 늦은 것이 위에 있다. 오래된 항목의 문장이 위 항목과 어긋나면 **위(나중) 항목이 맞다**.
 > 지금 확정된 기획·설정 전체를 한 번에 보려면 `docs/CANON.md`(정본 요약), 다른 세션에 넘길 때는 `docs/HANDOFF.md`(인계 프롬프트).
 
+- **탐험 맵 그래픽 개편 A2 — 1층 재질 그림 (2026-10-16, 사용자 지시 "a2 진행해")**
+  - 범위: 1층 바닥·암벽·수정벽·물·진흙을 손으로 칠한 듯한 재질 아틀라스로 그리는 도구, `FloorChunk`·`WallRow`가 아틀라스로 그림, 반복 금지(변형 연속 없음), texture_filter 비교. 지형·규칙 그대로. 구역 흔적·데칼·랜드마크·동굴 요소 소품·물가는 A3. / 완료 기준: check.sh 통과 + 그림 층 검사 통과(변형 연속 없음) + 캡처 확인 + 걸음당 프레임 A1 범위 안. / 테스트 방법: `godot --headless --path . --script res://tools/paint_floor.gd`, `tools/floor_map.gd`의 "그림 층 검사", `tests/test_floor_art.gd`, `--shots … --out=res://docs/screens/after`.
+  - 한 일: **도구** `tools/paint_floor.gd` + `tools/floor_art/`(Specs 설계 · Seam 주기 잡음·빛 받은 높이·가장자리 마스크 · Cave 재질 칠 — city_art의 Paint·Ink 재사용, 색 보정은 ART §2 기본값) → `assets/floor/f1/{limestone(8),rock(6+6),crystal(6+6),water(6),mud(6)}.webp`(칸 64px = 32 × `view.art_scale` 2, 벽 앞면 48px, 무손실 WebP, 그림 평균 색 = 타일 data 색). 칸 가장자리 띠는 모든 변형이 같은 주기 바탕이라 이어 붙여도 이음매가 없고, 안쪽은 변형마다 다른 시드 바탕 + 잔손질(금·돌·물기·움푹한 자국 / 암벽 층리·턱·틈·물 자국·혹 / 수정 무리·수정 줄 / 물결 반사·고리 / 진흙 번들거림). **데이터** `tiles.json art {atlas, variants}` — 1층 바닥·동굴 요소 바닥 19종(석회암), 암벽, 수정벽, 연못, 진흙(`feat_mud`). 검사 `WorldRules`(짝수 변형·파일 존재). **그리기** `FloorArtLayer.variant`(좌표 해시 + (x+y) 홀짝으로 무리 → 맞닿은 칸은 늘 다른 변형), `FloorChunk`·`WallRow`가 `draw_polygon(점, 꼭짓점 색, UV, 아틀라스)`, 꼭짓점 색 = `FloorView.vertex_mul`(빛 배율 + 보이는 비율), 셰이더 `floor_tex`가 기억 칸 그림을 탈색. 그림이 없는 타일(기념비·네모 수정·바위·포탈·샘 등)은 예전처럼 색칠한 칸. **texture_filter = linear**(물을 것 ③ — nearest는 64px 그림을 48px로 줄일 때 자글거림, 캡처 비교). 그림 층 검사가 실제 층(`FloorArtLayer.build`)을 받는다 — 1층 통과. 가정 AM14~AM17. 테스트 3개 추가.
+  - 겪은 것: Godot 4 canvas 셰이더의 fragment `COLOR`는 이미 그림 색이 곱해져 있다 → 꼭짓점 색은 `vertex()`에서 varying으로 받아야 한다(처음엔 그림이 제곱돼 어두웠다). 바탕에 붓 자국(주기 아님)을 넣거나 모든 변형이 같은 바탕을 쓰면 칸 격자가 보인다 → 가장자리 띠만 공통.
+  - 캡처 `docs/screens/after/` 12장 확인(A1 캡처를 덮음 — A1 것은 git 기록에). 바닥이 돌로 읽히고 밝기는 before와 비슷, 암벽 앞면 층리, 수정벽 보라 결정, 호수 물결. 남은 눈에 띄는 것: 물·벽 경계가 아직 칸 직선(A3 물가·벽 앞면 모양), 동굴 요소는 마름모(A3).
+  - 걸음당 프레임(클라우드, 같은 방식): 52.1·46.6·50.9ms — A1(46.3~51.0)과 같은 범위.
 - **탐험 맵 그래픽 개편 A1 — 렌더 기반 (2026-10-16, 사용자 지시 "디자인 관련 md 파일 확인하고 a1 진행해")**
   - 범위: 층별 색 보정·후처리·입자·환경음을 데이터로, 시야 3상태 경계를 칸 계단 없이 부드럽게, 수정 맥동광, 그래픽 품질 설정. 지형·시야 공식·규칙은 바꾸지 않는다. / 완료 기준: check.sh 통과 + `docs/screens/after/` 캡처를 `before/`와 비교 + 걸음당 프레임이 before 범위 안. / 테스트 방법: `--shots=res://tools/shots/floor1.json --out=res://docs/screens/after`, `tests/test_render_art.gd`.
   - 물을 것(`map_design.md` §6): 이번에도 답이 없어 CLAUDE.md 규칙대로 추천안으로 가정 — ① 규칙 그대로·그림만 어둡게(AM5, A3), ② 기존 물웅덩이 꾸미기(AM6, A3), ③ texture_filter는 A2 캡처 비교, ④ 데스핀드 크기는 A4 전까지 답을 기다림(AM7).
@@ -548,6 +554,7 @@
 
 | 날짜 | 범위 | 환경 | 결과 |
 |---|---|---|---|
+| 2026-10-16 | 탐험 맵 개편 A2(1층 재질 그림) | Godot 4.7.2 / Linux(클라우드, Xvfb) | check.sh 통과: 단위 테스트 310/310(test_floor_art 3 추가), UI 스모크, 메인 씬 스모크. 첫 실행(캡처 바로 뒤)에서 UI 스모크가 한 번 실패 — 로그를 걸러 원인 줄을 못 남겼고, 혼자 실행·check.sh 다시 실행 모두 통과(예전 메모의 겹침·시간 제한 실패와 같은 증상으로 보임, 확인 못 함). `floor_map.gd` 시드 1 검사·그림 층 검사 통과, 지도 파일 변경 없음. 1층 캡처 12장 확인. 실제 웹 빌드 표시는 미확인 |
 | 2026-10-16 | 탐험 맵 개편 A1(렌더 기반) | Godot 4.7.2 / Linux(클라우드, Xvfb) | check.sh 통과: 단위 테스트 307/307(test_render_art 5 추가), UI 스모크(끝의 누수 경고 2줄은 예전과 같음), 메인 씬 스모크. 1층 캡처 12장 직접 확인(`docs/screens/after/`). 균열 챕터 화면·실제 웹 빌드의 셰이더·입자는 미확인 |
 | 2026-10-16 | 탐험 맵 개편 A0(도구·문서·기준 캡처) | Godot 4.7.2 / Windows 11 | check.sh 통과: 단위 테스트 302/302(test_floor_art 5 추가), UI 스모크(끝의 누수 경고 2줄은 예전과 같음), 메인 씬 스모크. 기준 캡처 12장 직접 확인(기념비·호수·시체·포탈 맨몸/횃불·계층군주 붉은빛 2m), `floor_map.gd` 시드 1 검사 통과 + 그림 층 검사 통과. 렌더링 변경 없음 |
 | 2026-10-15 | 몬스터 전투 그림 52종 | Godot 4.7.2 / Linux(클라우드, Xvfb) | check.sh 통과: 단위 테스트 277/277(test_monster_art 2 추가·test_web 색인 확인), UI 스모크, 메인 씬 스모크. 52장 생성 약 4분, 2MB. 전투 캡처 7장 확인(크기·바닥선·이름표·잘림 없음). 실제 웹 빌드에서 그림 표시는 미확인(내보내기 필터에 색인 추가만) |
@@ -575,8 +582,8 @@
 
 > 2026-10-16 정리(문서 충돌 검사 뒤). 순서 = 사용자 결정이 필요 없는 것 → 결정이 필요한 것. 마일스톤은 M4(도시)까지 끝났고 **다음 큰 마일스톤은 사용자가 정한다**(후보: M6 2층, 동료·길드, 1층 이벤트 — `docs/HANDOFF.md` "새 기획을 시작하는 법").
 
-**탐험 맵 그래픽 개편(`docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`) — A0·A1 끝**
-- A2 1층 재질 그림: `tools/paint_floor.gd` + `tools/floor_art/` → `assets/floor/`(바닥 변형 6~8·벽 윗면/앞면·수정·물가·이끼·자갈·진흙·뼈, 칠은 city_art·monster_art 부품 재사용 — ART §6), `FloorChunk`·`WallRow`가 아틀라스를 `draw_texture_rect_region` + 꼭짓점 색으로, 그림 층 `{variants, decor}`을 `FloorArtCheck`에 넘김, texture_filter nearest·linear 캡처 비교(물을 것 ③). 끝나면 `--shots … --out=res://docs/screens/after`, bench 프레임.
+**탐험 맵 그래픽 개편(`docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`) — A0·A1·A2 끝**
+- A3 1층 그림 층 완성: 거시 변화(저주파 노이즈 젖음·이끼·자갈, 구역 색조), 데칼 시트(물가·이끼·자갈·진흙·뼈·발톱 자국 — `tools/floor_art`에 재질 추가, 놓이는 조건 = `map_design.md` §4.2, 포아송 디스크, 그림 층 `decor`로 `FloorArtCheck`), 물·벽 경계를 칸 직선이 아니게(물가 데칼·벽 앞면 윤곽), 랜드마크(기념비·네모 수정·바위 연못·포탈)·동굴 요소 소품 그림(마름모 대체), 이끼 물웅덩이(AM6), 중심 공동 한 단계 어둡게(AM5), 드레드피어 색 전환. 지도 파일 diff 없음.
 - 균열 챕터 그림 캡처(A1 `look.art` 확인 — screenshot 도구에 균열 챕터 장면이 없다면 목록에 추가).
 
 **바로 할 수 있는 것(결정 불필요)**

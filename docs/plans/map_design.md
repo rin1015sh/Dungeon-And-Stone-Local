@@ -1,6 +1,6 @@
 # 탐험 맵 디자인 — 원칙과 장소 카드
 
-> 기획서(HANDOFF.md "새 기획을 시작하는 법" 형식). 출발 문서 = `docs/PROMPT_ART_MAP.md`(사용자 제공, 2026-10-16). 진행 = A0(감사·문서·도구)·A1(렌더 기반) 완료. 물을 것 ①②는 답이 없어 추천안으로 가정(AM5·AM6), ③은 A2 캡처로, ④는 A4 전까지 답을 기다린다.
+> 기획서(HANDOFF.md "새 기획을 시작하는 법" 형식). 출발 문서 = `docs/PROMPT_ART_MAP.md`(사용자 제공, 2026-10-16). 진행 = A0(감사·문서·도구)·A1(렌더 기반)·A2(1층 재질 그림) 완료. 물을 것 ①②는 답이 없어 추천안으로 가정(AM5·AM6), ③은 A2 캡처 비교로 linear(AM15), ④는 A4 전까지 답을 기다린다.
 > 표기: **[원문]** = 사용자가 준 원문(`docs/PROMPT_FLOOR1_V2.md`, `docs/PROMPT.md` §4.3, `docs/PROMPT_ART_MAP.md` §4·§8의 [원문] 요약)에 있는 것만. **[창작]** = 그 원문에서 출발한 디자인 해석. 원작 문장·인물 이름은 쓰지 않는다.
 
 ## 1. 목표
@@ -145,7 +145,7 @@
 |---|---|---|
 | A0 ✅ | 감사·문서·도구: 이 문서, ART.md "탐험 맵" 절, COMFYUI 교체 규칙, `screenshot --shots`(장면 목록 일괄 캡처 + 걸음당 프레임), `FloorArtCheck` 골격 + 테스트, 기준 캡처 `docs/screens/before/` | check.sh 통과, 기준 캡처 12장 + 층 지도 |
 | A1 ✅ | 렌더 기반: 층별 팔레트·근흑색·후처리·입자를 데이터로(층 JSON `art`, 균열 `look.art`), 시야 경계 부드럽게, 수정 맥동광, 품질 설정 | 캡처 전후 비교(`docs/screens/after/`), 걸음당 프레임 기준 이내 |
-| A2 | `tools/paint_floor.gd` + `tools/floor_art/` → `assets/floor/` 1층 재질 아틀라스, `FloorChunk`·`WallRow`가 아틀라스로 그림 | 그림 층 검사 통과(변형 연속 없음) |
+| A2 ✅ | `tools/paint_floor.gd` + `tools/floor_art/` → `assets/floor/f1/` 1층 재질 아틀라스(석회암·암벽·수정벽·물·진흙), `FloorChunk`·`WallRow`가 아틀라스로 그림, texture_filter linear | 그림 층 검사 통과(변형 연속 없음) |
 | A3 | 거시 변화·구역 흔적·비네트·랜드마크·동굴 요소 소품·드레드피어 색 전환 | 지도 파일 diff 없음, 그림 층 검사 통과 |
 | A4 | 탐험 화면 몸 그림(데이터 size), 전투 무대 빛 먼지 사망 연출 | 캡처 확인 |
 | A5 | 균열 4종 장소별 재질·경계·광원(필요하면 건축물형 생성기) | 다섯 장소 1초 테스트 |
