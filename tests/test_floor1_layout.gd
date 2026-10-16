@@ -1,6 +1,6 @@
 extends TestCase
 ## 1층 십자가 구조(CrossLayout + crystal_cave): 네 포탈 도달·나침반 경로·고정 장소·암흑지대 위치·시야·구역별 스폰·포탈 목적지,
-## 고정 지도(data/maps — 굽기 시드로 새로 만든 지도와 같은지), 방·공동(큰 공동·지하 호수·수정 무리).
+## 고정 지도(data/maps — 굽기 시드로 새로 만든 지도와 같은지), 미로 동굴(중간 크기 공동·거대 공동 없음·지하 호수·수정 무리).
 
 const FLOOR := "f1_crystal_cave"
 
@@ -53,19 +53,23 @@ func test_procedural_other_seed_passes_checks() -> void:
 	assert_eq(problems.size(), 0, ", ".join(problems))
 
 
-func test_giant_cave_has_caverns_lakes_and_crystals() -> void:
+func test_maze_cave_has_medium_caverns_lakes_and_crystals() -> void:
 	var map := _gen(1)
 	var lay := _lay()
-	# 큰 공동: 9×9가 통째로 바닥인 자리(넓게 트인 곳)가 구역마다 있다
+	# 중간 크기 공동: 9×9가 통째로 바닥인 자리가 구역마다 있다 / 너무 큰 공동은 없다(사용자 결정 2026-10-16 — 17×17이 통째로 트인 곳 없음)
 	var open_by_zone := {}
+	var huge := 0
 	for y in range(4, map.height - 4, 3):
 		for x in range(4, map.width - 4, 3):
 			if _open_square(map, Vector2i(x, y), 4):
 				var z := map.zone_at(Vector2i(x, y))
 				open_by_zone[z] = int(open_by_zone.get(z, 0)) + 1
+				if _open_square(map, Vector2i(x, y), 8):
+					huge += 1
 	for z: String in [CrossLayout.ZONE_CENTER] + Array(CrossLayout.ARMS):
-		assert_true(int(open_by_zone.get(z, 0)) >= 10, "%s에 넓게 트인 공동 (%d곳)" % [z, int(open_by_zone.get(z, 0))])
-	assert_true(map.count_tile("pond_water") > 200, "지하 호수(연못 물 %d칸)" % map.count_tile("pond_water"))
+		assert_true(int(open_by_zone.get(z, 0)) >= 10, "%s에 공동 (%d곳)" % [z, int(open_by_zone.get(z, 0))])
+	assert_eq(huge, 0, "17×17이 통째로 트인 거대 공동은 없다")
+	assert_true(map.count_tile("pond_water") > 50, "지하 호수(연못 물 %d칸)" % map.count_tile("pond_water"))
 	assert_true(map.count_tile("crystal_wall") > 500, "수정벽·수정 무리")
 	var walk := 0
 	for i in map.tiles.size():

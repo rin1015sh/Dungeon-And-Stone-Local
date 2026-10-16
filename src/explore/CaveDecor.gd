@@ -62,11 +62,17 @@ static func _pond(carver: CaveCarver, ch: Dictionary, keep: PackedByteArray, cfg
 		"harm": [[2, rng.randf_range(0.0, 0.15), rng.randf_range(0.0, TAU)], [3, rng.randf_range(0.0, 0.1), rng.randf_range(0.0, TAU)]]}]}
 	var max_depth := JsonUtil.get_float(cfg, "pond_max_depth", 0.62)
 	var k := ceili(r) + 1
+	var start := into.size()
 	for y in range(int(c.y) - k, int(c.y) + k + 1):
 		for x in range(int(c.x) - k, int(c.x) + k + 1):
 			var p := Vector2(x, y)
 			if CaveChambers.inside(lake, p, 1.0) and CaveChambers.depth(ch, p) <= max_depth:
 				_block(carver, Vector2i(x, y), keep, into)
+	if into.size() - start < JsonUtil.get_int(cfg, "pond_min_cells", 12):
+		for n in range(start, into.size()):  # 물웅덩이 몇 칸은 통로만 좁힌다 → 되돌린다
+			carver.cells[into[n]] = 0
+			carver.allowed[into[n]] = 1
+		into.resize(start)
 
 
 ## 석순 기둥: 넓이 100칸당 pillars_per_100개, 서로 pillar_spacing칸 이상. crystal_ratio는 빛나는 수정 무리(생성기가 암흑지대면 바위로).
