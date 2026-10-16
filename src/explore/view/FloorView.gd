@@ -6,7 +6,9 @@ extends Node2D
 ##   청크·벽 줄 노드는 플레이어 둘레 stream_chunks 청크 안에만 둔다(큰 지도에서 노드 수·정렬 비용을 일정하게).
 ##   캐릭터: ActorView — 발 위치가 정렬 기준. 남쪽 벽에 가려지면 실루엣을 겹친다.
 ## 밝기: 칸 꼭짓점마다 (정적 광원 + 시야 빛)을 계산해 draw_polygon 꼭짓점 색으로 섞는다(셰이더 없이).
-## 안개: 탐험했지만 지금 안 보이는 칸은 어둡고 차갑게, 미탐험 칸은 그리지 않는다.
+## 안개(시야 3상태): 미탐험 = 그리지 않음(순흑 배경), 기억 = 탈색·저명도, 보임 = 빛. 경계는 꼭짓점마다
+##   둘레 네 칸 중 탐험한 수·보이는 수(_vfog)로 섞어 칸 계단 없이 부드럽게 감쇠한다. 보이는 곳의 최저 명도 = 층 근흑색.
+## 층 그림 설정(색조·근흑색·맥동·입자)은 FloorArt(층 JSON art).
 
 var session: ExploreSession
 var map: FloorMap
@@ -30,8 +32,17 @@ var _light_color: Color = Color.WHITE
 var _light_center: Vector2 = Vector2.ZERO
 var _vision: float = 1.0
 var _cfg: Dictionary = {}
-var _memory_tint: Color = Color.GRAY
-var _memory_brightness: float = 0.2
+const FOG_ALL_SEEN := 4 | (4 << 3)
+var _vfog: PackedByteArray          # 꼭짓점 둘레 네 칸: 탐험한 수(아래 3비트) | 보이는 수 << 3
+var art: FloorArt
+var _nb: Color = Color.BLACK          # art 값 사본(vertex_color는 아주 자주 불린다)
+var _unexplored: Color = Color.BLACK
+var _mem: Color = Color.GRAY         # 기억 색조 × 밝기
+var _glow_layer: Node2D
+var glow_texture: GradientTexture2D   # GlowChunk들이 같이 쓴다
+var glow_material: ShaderMaterial
+var _glow_chunks: Dictionary = {}   # Vector2i(청크) -> GlowChunk (맥동하는 타일이 있는 층만)
+var _particles: AmbientParticles
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -49,22 +60,62 @@ func _ready() -> void:
 	face_shade = JsonUtil.get_float(_cfg, "face_shade", 0.9)
 	edge_shade = JsonUtil.get_float(_cfg, "edge_shade", 0.45)
 	rim_shade = JsonUtil.get_float(_cfg, "rim_shade", 2.2)
-	_memory_tint = Color.from_string(JsonUtil.get_str(_cfg, "memory_tint"), Color.GRAY)
-	_memory_brightness = JsonUtil.get_float(_cfg, "memory_brightness", 0.2)
+	_set_art(FloorArt.resolve(session.db.render, session.floor_def, GraphicsSettings.quality()))
 	_vlight = PackedColorArray()
 	_vlight.resize((map.width + 1) * (map.height + 1))
+	_vfog = PackedByteArray()
+	_vfog.resize((map.width + 1) * (map.height + 1))
 	_stream = maxi(1, JsonUtil.get_int(_cfg, "stream_chunks", 3))
 	y_sort_enabled = true
 	_floor_layer = Node2D.new()
 	_floor_layer.z_index = -10
 	add_child(_floor_layer)
+	if art.has_pulse():
+		_glow_layer = Node2D.new()
+		_glow_layer.z_index = JsonUtil.get_int(_cfg, "glow_z", 5)
+		glow_texture = GlowChunk.make_texture()
+		glow_material = GlowChunk.make_material(art.pulse_period, art.pulse_depth)
+		add_child(_glow_layer)
 	player_view = ActorView.new()
 	player_view.setup_for(session.player, session.db.render)
+	player_view.calm = art.low_quality
 	add_child(player_view)
 	player_view.position = feet_of(session.fpos)
+	_build_particles()
 	session.body_moved.connect(_on_body_moved)
 	session.monsters.changed.connect(sync_monsters)
 	refresh(true)
+
+
+## 그래픽 품질이 바뀌었다: 그림 설정을 다시 읽어 맥동 깊이·입자·횃불 흔들림만 바꾼다(지형 그림은 그대로).
+func set_quality(quality: String) -> void:
+	_set_art(FloorArt.resolve(session.db.render, session.floor_def, quality))
+	player_view.calm = art.low_quality
+	if glow_material != null:
+		glow_material.set_shader_parameter("depth", art.pulse_depth)
+	if _particles != null:
+		_particles.queue_free()
+		_particles = null
+	_build_particles()
+	if _particles != null:
+		_particles.set_radius(_vision * tile)
+
+
+func _set_art(a: FloorArt) -> void:
+	art = a
+	_nb = a.near_black
+	_unexplored = a.unexplored
+	_mem = a.memory_tint * a.memory_brightness
+
+
+func _build_particles() -> void:
+	if art.particles.is_empty():
+		return
+	_particles = AmbientParticles.new()
+	_particles.z_index = JsonUtil.get_int(_cfg, "particles_z", 6)
+	add_child(_particles)
+	_particles.setup(art.particles)
+	_particles.position = player_view.position
 
 
 ## 칸 p 중심에 선 캐릭터의 발 위치(월드 좌표).
@@ -86,6 +137,8 @@ func move_player(_to: Vector2i) -> void:
 
 func _on_body_moved(at: Vector2) -> void:
 	player_view.position = feet_of(at)
+	if _particles != null:
+		_particles.position = player_view.position
 	player_view.face(session.facing)
 
 
@@ -106,16 +159,22 @@ func refresh(full: bool = false) -> void:
 	_last_rect = rect
 	_stream_around(session.pos)  # 새로 만든 노드는 처음 그려질 때 이미 최신이다
 	if whole:
+		_update_fog(Rect2i(_active.position * chunk, _active.size * chunk))
 		for fc: FloorChunk in _floor_chunks.values():
 			fc.queue_redraw()
 		for wr: WallRow in _wall_rows.values():
 			wr.queue_redraw()
+		for gc: GlowChunk in _glow_chunks.values():
+			gc.queue_redraw()
 	else:
+		_update_fog(dirty)
 		_redraw_rect(dirty)
 	player_view.face(session.facing)
 	player_view.set_occluded(_occludes(session.pos + Vector2i(0, 1)))
 	sync_monsters()
 	player_view.set_light(_light_color, kind == "torch", _vision * tile)
+	if _particles != null:
+		_particles.set_radius(_vision * tile)
 	var tint_k := JsonUtil.get_float(_cfg, "actor_light_tint", 0.5)
 	player_view.self_modulate = Color.WHITE.lerp(_light_color, tint_k)
 
@@ -140,15 +199,68 @@ func sync_monsters() -> void:
 			_monster_views.erase(id)
 
 
-## 꼭짓점 (vx, vy)의 최종 색: 보이면 빛을 곱하고, 기억만 있으면 어둡고 차갑게.
-func vertex_color(vx: int, vy: int, base: Color, seen_now: bool) -> Color:
-	if not seen_now:
-		var l := base.get_luminance()
-		var d := Color(l, l, l).lerp(base, 0.35)
-		return Color(d.r * _memory_tint.r * _memory_brightness, d.g * _memory_tint.g * _memory_brightness,
-			d.b * _memory_tint.b * _memory_brightness, 1.0)
-	var lit := _vlight[vy * (map.width + 1) + vx]
-	return Color(base.r * lit.r, base.g * lit.g, base.b * lit.b, 1.0)
+## 꼭짓점 (vx, vy)의 최종 색: 둘레 네 칸 중 보이는 비율만큼 빛(base × 빛)을, 나머지는 기억 색(탈색·저명도)을 섞고,
+## 층 근흑색 아래로 내려가지 않게 한 뒤, 둘레에 미탐험 칸이 있으면 그만큼 순흑으로 감쇠한다.
+func vertex_color(vx: int, vy: int, base: Color) -> Color:
+	var i := vy * (map.width + 1) + vx
+	var f := _vfog[i]
+	var lit := _vlight[i]
+	if f == FOG_ALL_SEEN:  # 가장 흔한 경우(시야 한가운데)
+		return Color(maxf(base.r * lit.r, _nb.r), maxf(base.g * lit.g, _nb.g), maxf(base.b * lit.b, _nb.b), 1.0)
+	var e := f & 7
+	if e == 0:
+		return _unexplored
+	var s := f >> 3
+	var l := base.get_luminance()
+	var d := Color(l, l, l).lerp(base, 0.35)
+	var c := Color(d.r * _mem.r, d.g * _mem.g, d.b * _mem.b, 1.0)
+	if s > 0:
+		c = c.lerp(Color(base.r * lit.r, base.g * lit.g, base.b * lit.b, 1.0), float(s) / float(e))
+	c = Color(maxf(c.r, _nb.r), maxf(c.g, _nb.g), maxf(c.b, _nb.b), 1.0)
+	return c if e >= 4 else _unexplored.lerp(c, float(e) * 0.25)
+
+
+## 꼭짓점 (vx, vy) 둘레 네 칸(지도 밖은 미탐험)의 탐험한 수 | 보이는 수 << 3.
+static func fog_counts(m: FloorMap, vx: int, vy: int) -> int:
+	var e := 0
+	var s := 0
+	for dy in 2:
+		var y := vy - 1 + dy
+		if y < 0 or y >= m.height:
+			continue
+		for dx in 2:
+			var x := vx - 1 + dx
+			if x < 0 or x >= m.width:
+				continue
+			var j := y * m.width + x
+			if m.explored[j] != 0:
+				e += 1
+				if m.visible_now[j] != 0:
+					s += 1
+	return e | (s << 3)
+
+
+## 칸 사각형 cells를 둘러싼 꼭짓점들의 안개 값을 다시 센다(칸 값 = 탐험 1 + 보임 8을 한 번 모아 네 칸씩 더한다).
+func _update_fog(cells: Rect2i) -> void:
+	var r := cells.intersection(Rect2i(0, 0, map.width, map.height))
+	if not r.has_area():
+		return
+	var ext := r.grow(1)  # 꼭짓점 둘레 칸까지
+	var cw := ext.size.x
+	var cv := PackedByteArray()
+	cv.resize(cw * ext.size.y)
+	for y in range(maxi(0, ext.position.y), mini(map.height, ext.end.y)):
+		var row := (y - ext.position.y) * cw - ext.position.x
+		for x in range(maxi(0, ext.position.x), mini(map.width, ext.end.x)):
+			var j := y * map.width + x
+			if map.explored[j] != 0:
+				cv[row + x] = 9 if map.visible_now[j] != 0 else 1
+	var w := map.width + 1
+	for vy in range(r.position.y, r.end.y + 1):
+		var up := (vy - 1 - ext.position.y) * cw - ext.position.x
+		var dn := up + cw
+		for vx in range(r.position.x, r.end.x + 1):
+			_vfog[vy * w + vx] = cv[up + vx - 1] + cv[up + vx] + cv[dn + vx - 1] + cv[dn + vx]
 
 
 ## 칸마다 약간 다른 밝기(동굴 바닥 질감). 같은 칸은 항상 같은 값.
@@ -190,6 +302,9 @@ func _stream_around(p: Vector2i) -> void:
 		if not want.has_point(key):
 			(_floor_chunks[key] as Node).queue_free()
 			_floor_chunks.erase(key)
+			if _glow_chunks.has(key):
+				(_glow_chunks[key] as Node).queue_free()
+				_glow_chunks.erase(key)
 	for key: Vector2i in _wall_rows.keys():
 		if not want.has_point(Vector2i(key.x, key.y / chunk)):
 			(_wall_rows[key] as Node).queue_free()
@@ -207,6 +322,12 @@ func _build_chunk(cx: int, cy: int) -> void:
 	fc.setup(self, cells)
 	_floor_layer.add_child(fc)
 	_floor_chunks[Vector2i(cx, cy)] = fc
+	_update_fog(cells)
+	if _glow_layer != null:
+		var gc := GlowChunk.new()
+		gc.setup(self, cells)
+		_glow_layer.add_child(gc)
+		_glow_chunks[Vector2i(cx, cy)] = gc
 	for row in range(cells.position.y, cells.end.y):
 		if _row_has_wall(row, cells.position.x, cells.end.x):
 			var wr := WallRow.new()
@@ -227,6 +348,9 @@ func _redraw_rect(dirty: Rect2i) -> void:
 			var fc: FloorChunk = _floor_chunks.get(Vector2i(cx, cy))
 			if fc != null:
 				fc.queue_redraw()
+			var gc: GlowChunk = _glow_chunks.get(Vector2i(cx, cy))
+			if gc != null:
+				gc.queue_redraw()
 	for row in range(r.position.y, r.end.y):
 		for cx in range(cx0, cx1 + 1):
 			var wr: WallRow = _wall_rows.get(Vector2i(cx, row))

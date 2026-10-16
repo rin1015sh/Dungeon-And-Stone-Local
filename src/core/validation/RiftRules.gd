@@ -22,6 +22,7 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 		v.ref(w + ".force_open", "items", fo.get("item"))
 	for k in ["floor", "wall", "exit"]:
 		v.ref(w + ".look.tiles", "tiles", JsonUtil.get_dict(JsonUtil.get_dict(r, "look"), "tiles").get(k))
+	WorldRules.check_art(v, w + ".look.art", JsonUtil.get_dict(JsonUtil.get_dict(r, "look"), "art"))
 	v.ref(w + ".guardian", "monsters", r.get("guardian"))
 	var va: Variant = r.get("variant")
 	if va is Dictionary:

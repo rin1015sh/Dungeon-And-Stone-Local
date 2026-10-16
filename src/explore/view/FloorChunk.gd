@@ -26,19 +26,18 @@ func _draw() -> void:
 			var def := map.defs[map.tiles[i]]
 			if def.is_wall():
 				continue
-			var vis := map.visible_now[i] != 0
 			var base := def.color_floor * view.cell_jitter(x, y)
 			_pts[0] = Vector2(x * t, y * t)
 			_pts[1] = Vector2((x + 1) * t, y * t)
 			_pts[2] = Vector2((x + 1) * t, (y + 1) * t)
 			_pts[3] = Vector2(x * t, (y + 1) * t)
-			_cols[0] = view.vertex_color(x, y, base, vis)
-			_cols[1] = view.vertex_color(x + 1, y, base, vis)
-			_cols[2] = view.vertex_color(x + 1, y + 1, base, vis)
-			_cols[3] = view.vertex_color(x, y + 1, base, vis)
+			_cols[0] = view.vertex_color(x, y, base)
+			_cols[1] = view.vertex_color(x + 1, y, base)
+			_cols[2] = view.vertex_color(x + 1, y + 1, base)
+			_cols[3] = view.vertex_color(x, y + 1, base)
 			draw_polygon(_pts, _cols)
 			if def.color_mark.a > 0.0:
-				_draw_mark(x, y, t, view.vertex_color(x, y, def.color_mark, vis))
+				_draw_mark(x, y, t, view.vertex_color(x, y, def.color_mark))
 
 
 func _draw_mark(x: int, y: int, t: int, color: Color) -> void:

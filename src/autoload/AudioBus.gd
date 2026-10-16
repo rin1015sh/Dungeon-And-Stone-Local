@@ -6,6 +6,8 @@ var _sfx_players: Array[AudioStreamPlayer] = []
 var _bgm_player: AudioStreamPlayer = null
 var _next_sfx: int = 0
 var _bgm_key: String = ""
+var _amb_player: AudioStreamPlayer = null
+var _amb_key: String = ""
 
 
 func play_sfx(key: String) -> void:
@@ -37,6 +39,28 @@ func stop_bgm() -> void:
 		_bgm_player.stop()
 
 
+## 환경음 고리(data/audio.json ambience — 층 JSON art.ambience.loop). BGM과 따로 겹쳐 튼다.
+func play_ambience(key: String) -> void:
+	if key == _amb_key:
+		return
+	_amb_key = key
+	_ensure_players()
+	_amb_player.stop()
+	var stream := _stream("ambience", key) if not key.is_empty() else null
+	if stream != null:
+		_amb_player.stream = stream
+		_amb_player.play()
+
+
+## 지금 환경음이 key일 때만 멈춘다(빈 key = 무엇이든).
+func stop_ambience(key: String = "") -> void:
+	if not key.is_empty() and key != _amb_key:
+		return
+	_amb_key = ""
+	if _amb_player != null:
+		_amb_player.stop()
+
+
 func _stream(kind: String, key: String) -> AudioStream:
 	var audio: Dictionary = DataRegistry.db.singletons.get("audio", {})
 	var path := JsonUtil.get_str(JsonUtil.get_dict(audio, kind), key)
@@ -55,3 +79,5 @@ func _ensure_players() -> void:
 		_sfx_players.append(p)
 	_bgm_player = AudioStreamPlayer.new()
 	add_child(_bgm_player)
+	_amb_player = AudioStreamPlayer.new()
+	add_child(_amb_player)

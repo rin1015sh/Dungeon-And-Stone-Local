@@ -7,6 +7,13 @@
 > **읽는 법**: 아래 항목은 날짜가 늦은 것이 위에 있다. 오래된 항목의 문장이 위 항목과 어긋나면 **위(나중) 항목이 맞다**.
 > 지금 확정된 기획·설정 전체를 한 번에 보려면 `docs/CANON.md`(정본 요약), 다른 세션에 넘길 때는 `docs/HANDOFF.md`(인계 프롬프트).
 
+- **탐험 맵 그래픽 개편 A1 — 렌더 기반 (2026-10-16, 사용자 지시 "디자인 관련 md 파일 확인하고 a1 진행해")**
+  - 범위: 층별 색 보정·후처리·입자·환경음을 데이터로, 시야 3상태 경계를 칸 계단 없이 부드럽게, 수정 맥동광, 그래픽 품질 설정. 지형·시야 공식·규칙은 바꾸지 않는다. / 완료 기준: check.sh 통과 + `docs/screens/after/` 캡처를 `before/`와 비교 + 걸음당 프레임이 before 범위 안. / 테스트 방법: `--shots=res://tools/shots/floor1.json --out=res://docs/screens/after`, `tests/test_render_art.gd`.
+  - 물을 것(`map_design.md` §6): 이번에도 답이 없어 CLAUDE.md 규칙대로 추천안으로 가정 — ① 규칙 그대로·그림만 어둡게(AM5, A3), ② 기존 물웅덩이 꾸미기(AM6, A3), ③ texture_filter는 A2 캡처 비교, ④ 데스핀드 크기는 A4 전까지 답을 기다림(AM7).
+  - 한 일: **층 그림 설정** 층 JSON `art`(균열은 `look.art` → `RiftRun.chapter_floor_def`) = `palette`(미탐험 순흑·근흑색·색조·기억 색)·`post`(채도·비네트·그레인)·`pulse`(맥동 타일)·`particles`·`ambience`, 빠진 키는 render.json 기본(`view.near_black`·`unexplored_color` 추가). 읽기 `FloorArt`, 검사 `WorldRules.check_art`(층·균열), 템플릿 2개. 1층 근흑색 `#141018`·수정벽/네모 수정 맥동·먼지·물방울·환경음 키 `f1_cave`(파일 없음 — 조용함), 균열 4종은 장소마다 근흑색·채도·입자(재·눈·탄가루·없음). **시야 경계** `FloorView`가 꼭짓점마다 둘레 네 칸의 탐험·보임 수(`_vfog`)로 기억 색↔빛을 섞고 근흑색 바닥을 깔고 미탐험 쪽은 순흑으로 감쇠(AM9) — 미탐험 배경은 탐험 화면 전용 순흑 층. **수정 맥동** `GlowChunk`(청크마다 보이는 맥동 타일에 둥근 빛 번짐, 가산 혼합) + `crystal_pulse.gdshader`(TIME으로만 흔들림 — 청크 다시 그리기 없음, 칸마다 위상). **입자** `AmbientParticles`(CPUParticles2D, 시야 반경 안에서 생기고 월드에 남음). **품질** `GraphicsSettings`(high/low, `user://…/settings.json`) + 일시정지 메뉴 "그래픽 높음/낮음" — low = 그레인·입자·맥동·횃불 흔들림 끔(바로 적용). **환경음** `AudioBus.play_ambience`·`stop_ambience`, `audio.json ambience`. 가정 AM8~AM13, 테스트 `tests/test_render_art.gd` 5개. 노멀맵 조명은 넣지 않았다(선택 — A2 뒤 프레임을 보고).
+  - 캡처: `docs/screens/after/` 12장(클라우드 리눅스 Xvfb·opengl3로 찍음 — before는 Windows PC에서 찍은 것이라 화면 크기·글자는 같고 밝기 비교만 의미). 확인한 것: 시야 끝이 부드럽게 감쇠, 기억 칸이 보랏빛 근흑, 수정 둘레 빛 번짐, 계층군주 붉은빛이 빛 번짐까지 물듦, 횃불 장면 정상. 균열 챕터 화면은 캡처하지 않음(**균열 그림 화면 미검증** — 데이터·테스트만).
+  - 걸음당 프레임(같은 클라우드 환경, 기념비 공동 60걸음): before 45.2·51.8·46.8·47.1·45.7·46.3ms, after(최종) 50.5·51.0·46.3ms — before 범위 안. 처음 구현은 약 +5ms라 꼭짓점 색 빠른 길(전부 보이는 꼭짓점)·안개 값 한 번에 세기로 줄였다.
+  - **이어 하는 법**: 다음은 A2(`tools/paint_floor.gd` + `tools/floor_art/` → `assets/floor/` 1층 재질 아틀라스, `FloorChunk`·`WallRow`가 아틀라스로). 그림은 중립 밝기로 칠한다 — 빛·근흑색·안개는 A1의 `vertex_color`가 곱한다.
 - **탐험 맵 그래픽 개편 A0 — 감사·문서·도구 (2026-10-16, 사용자 지시 `docs/PROMPT_ART_MAP.md` "§10의 A0부터" → 같은 날 "main에 병합, 다른 세션이 이어 작업할 수 있게")**
   - 범위: 탐험 화면 그리기 구조 감사, 맵 디자인 기획서, ART.md "탐험 맵" 절, ComfyUI 교체 규격, 장면 목록 일괄 캡처 + 걸음당 프레임 측정, 그림 층 검사 골격, 그림 작업 전 기준 캡처. 게임 규칙·지형·그리기는 바꾸지 않는다. / 완료 기준: check.sh 통과 + 기준 캡처 12장·층 지도 + 사용자에게 물을 것 정리. / 테스트 방법: `godot --path . res://tools/screenshot.tscn -- --screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/before`, `tools/floor_map.gd`의 "그림 층 검사: 통과".
   - 현재 상태 / 바꿀 것: `docs/plans/map_design.md` §3(바닥 = 칸마다 단색 사각형, 벽 = 벽돌 줄눈 상자, 수정 = 밝은 보라 사각형, 시야 경계 계단, 동굴 요소 마름모, 몸 = 임시 도형, 다섯 장소가 바닥 색만 다름).
@@ -541,6 +548,7 @@
 
 | 날짜 | 범위 | 환경 | 결과 |
 |---|---|---|---|
+| 2026-10-16 | 탐험 맵 개편 A1(렌더 기반) | Godot 4.7.2 / Linux(클라우드, Xvfb) | check.sh 통과: 단위 테스트 307/307(test_render_art 5 추가), UI 스모크(끝의 누수 경고 2줄은 예전과 같음), 메인 씬 스모크. 1층 캡처 12장 직접 확인(`docs/screens/after/`). 균열 챕터 화면·실제 웹 빌드의 셰이더·입자는 미확인 |
 | 2026-10-16 | 탐험 맵 개편 A0(도구·문서·기준 캡처) | Godot 4.7.2 / Windows 11 | check.sh 통과: 단위 테스트 302/302(test_floor_art 5 추가), UI 스모크(끝의 누수 경고 2줄은 예전과 같음), 메인 씬 스모크. 기준 캡처 12장 직접 확인(기념비·호수·시체·포탈 맨몸/횃불·계층군주 붉은빛 2m), `floor_map.gd` 시드 1 검사 통과 + 그림 층 검사 통과. 렌더링 변경 없음 |
 | 2026-10-15 | 몬스터 전투 그림 52종 | Godot 4.7.2 / Linux(클라우드, Xvfb) | check.sh 통과: 단위 테스트 277/277(test_monster_art 2 추가·test_web 색인 확인), UI 스모크, 메인 씬 스모크. 52장 생성 약 4분, 2MB. 전투 캡처 7장 확인(크기·바닥선·이름표·잘림 없음). 실제 웹 빌드에서 그림 표시는 미확인(내보내기 필터에 색인 추가만) |
 | 2026-10-14 | M4 도시 — 라비기온 | Godot 4.7.2 / Windows 11 | check.sh 통과: 데이터 검증 오류 0(경고 2: 도시 미정 값 47개 목록 · 스프라이트 없음 95), 단위 테스트 262/262(test_city 15 추가), UI 스모크(도시 흐름 추가, 기존 흐름은 귀환 → 도시 → 타이틀로), 메인 씬 스모크. 스크린샷(거리 처음·가운데, 도서관 독서 결과, 상점 패널 + 도시 디버그 패널, 신전 봉사활동) 확인. 실제 마우스 드래그·터치(모바일 웹) 체감은 미확인(드래그는 코드 경로만, 스모크는 클릭·키) |
@@ -567,8 +575,9 @@
 
 > 2026-10-16 정리(문서 충돌 검사 뒤). 순서 = 사용자 결정이 필요 없는 것 → 결정이 필요한 것. 마일스톤은 M4(도시)까지 끝났고 **다음 큰 마일스톤은 사용자가 정한다**(후보: M6 2층, 동료·길드, 1층 이벤트 — `docs/HANDOFF.md` "새 기획을 시작하는 법").
 
-**탐험 맵 그래픽 개편(`docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`) — A0 끝**
-- A1 렌더 기반: 층 JSON 그림 키(`palette` 근흑색·층 색조, `particles`, `ambience`) + 검증 규칙·`_template.json`, 시야 경계 부드럽게(칸 계단 없애기 — 꼭짓점 빛 + 미탐험 가장자리 감쇠), 수정벽 느린 맥동(셰이더 또는 꼭짓점 시간 변조 — 청크 다시 그리기 없이), 품질 설정(그레인·입자 끄기). 끝나면 `--shots ... --out=res://docs/screens/after`와 before 비교, `bench` 프레임 기록. 물을 것 ①~④의 답을 먼저 받으면 좋다(①은 A1의 바닥 명도에 걸림).
+**탐험 맵 그래픽 개편(`docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`) — A0·A1 끝**
+- A2 1층 재질 그림: `tools/paint_floor.gd` + `tools/floor_art/` → `assets/floor/`(바닥 변형 6~8·벽 윗면/앞면·수정·물가·이끼·자갈·진흙·뼈, 칠은 city_art·monster_art 부품 재사용 — ART §6), `FloorChunk`·`WallRow`가 아틀라스를 `draw_texture_rect_region` + 꼭짓점 색으로, 그림 층 `{variants, decor}`을 `FloorArtCheck`에 넘김, texture_filter nearest·linear 캡처 비교(물을 것 ③). 끝나면 `--shots … --out=res://docs/screens/after`, bench 프레임.
+- 균열 챕터 그림 캡처(A1 `look.art` 확인 — screenshot 도구에 균열 챕터 장면이 없다면 목록에 추가).
 
 **바로 할 수 있는 것(결정 불필요)**
 1. **1층 이벤트 틀**: 동굴 요소(`data/events` type feature)는 들어갔다. 이야기가 있는 이벤트를 받으면 같은 틀에 행동·문구를 얹거나 새 행동 키를 더한다. 자리는 고정 지도 파일 `features`에 좌표로(`tools/floor_map.gd` PNG + 캡처 `--at=x,y --interact`). 다시 구우면 손으로 놓은 좌표가 어긋난다.

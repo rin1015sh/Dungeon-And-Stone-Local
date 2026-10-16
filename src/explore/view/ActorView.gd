@@ -13,6 +13,7 @@ var facing: Vector2i = Vector2i(0, 1)
 var body_color: Color = Color(0.7, 0.6, 0.5)
 var size: Vector2 = Vector2(32, 48)
 var holding_torch: bool = false
+var calm: bool = false  ## 그래픽 품질 low — 횃불 빛이 흔들리지 않는다
 
 var _texture: Texture2D = null
 var _ghost: Node2D
@@ -61,7 +62,8 @@ func _process(delta: float) -> void:
 	if _glow == null or not _glow.enabled:
 		return
 	_time += delta
-	_glow.energy = _glow_energy * (1.0 + sin(_time * 11.0) * _flicker + sin(_time * 23.7) * _flicker * 0.5)
+	var f := 0.0 if calm else _flicker
+	_glow.energy = _glow_energy * (1.0 + sin(_time * 11.0) * f + sin(_time * 23.7) * f * 0.5)
 
 
 func face(dir: Vector2i) -> void:

@@ -94,7 +94,7 @@ src/
   Main.gd/.tscn          진입점, 화면 전환
   autoload/              EventBus, DataRegistry, GameState, TimeSystem, AudioBus
   core/                  JsonUtil, Formula, StatDef, StatBlock, Modifier, ResourceDef, ResourcePool, Rng, Strings,
-                         GameClock, DataNames, GameDatabase, ScriptRegistry, ContentRegistries,
+                         GameClock, DataNames, GameDatabase, GraphicsSettings(그래픽 품질 — user://), ScriptRegistry, ContentRegistries,
                          ValidatorBase, DataValidator, validation/{Core,Content,World,Boss,Rift,Effect,Passive,BossParam,City,Feature}Rules   (오토로드 비의존)
   entities/              Actor(StatBlock·ResourcePool·StatusSet·Inventory·LightSource), PlayerCharacter, Monster, StatusSet,
                          LightSource, CharacterRoller, Fatigue(피로도 — 도시·미궁 공용)
@@ -109,7 +109,7 @@ src/
                          FloorMapFile(고정 지도 파일 읽기/쓰기), FloorArtCheck(그림 층 검사 — 변형 연속·장식 막힘·요소 겹침), FieldFeaturePlacer·FieldFeatures·FieldFeatureAct(동굴 요소 배치·규칙·행동), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환),
-                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), ExploreDebug(디버그 순간이동·안개 걷기), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView,FigurePainter}
+                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), ExploreDebug(디버그 순간이동·안개 걷기), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView,FigurePainter,FloorArt(층 그림 설정 art),GlowChunk(수정 맥동 빛),AmbientParticles(분위기 입자)}
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭), DropPickup(전투 장면에서 줍는 드롭 — 굴림·받기·두기), SaveGame(한 칸 저장)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  CityState(순 달력·행동력·공적치·잔액·소문/정보·디버그 임시값), CityValues(null 경로·임시값), CityActions(활동 실행),
@@ -126,7 +126,7 @@ src/
   ui/screens/            TitleScreen(이어하기), CharacterCreateScreen, CityScreen, PlazaScreen(차원광장·포탈·저장), ExploreScreen, CombatScreen(전투 — ui/combat 위젯을 모음), EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd(test_save 저장 · test_web 웹 배포 점검), smoke_ui.gd/.tscn
 tools/                   check.sh, export_web.sh(웹 내보내기), ShotList.gd + shots/(장면 목록 일괄 캡처), validate_data.gd, screenshot.gd/.tscn, bake_floor.gd(1층 고정 지도 굽기), paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Icons·Props 소품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors·InteriorRooms·InteriorBits 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), paint_monsters.gd + monster_art/(몬스터 전투 그림 → assets/monsters/: Clay·ClayBase 3D 덩어리 조형·Render·Pen 붓 칠/잉크/빗금·Kinds 재질·Figure 설계 읽기·Rig 뼈대·Anatomy 몸·Face·FaceInk 얼굴·Hair·Headgear·Kit 옷·Arms 무기·Extras 날개/꼬리·Fur 털·Beast(Head) 네발짐승·Things(2) 기괴체·Lord 계층군주 드레드피어·Finish 피/마감·Specs(2) 52종 설계 · 아군 뒷모습: Back 3D 몸을 돌려 투영·BackKit 옷·BackHair 머리·BackGear 갑옷/무기·Party 탐험가(종족×뒷/옆모습)·소환수 설계), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
-assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(layers/ 거리 레이어 · buildings/ · interiors/ · plaza.webp — WebP) monsters/(<id>.webp 전투 그림 · <id>_back.webp 아군 소환수 뒷모습 + index.json 몸 높이) party/(<종족>_back|_side.webp 탐험가 전투 그림 + index.json)
+assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈 · post_grade 후처리 · crystal_pulse 수정 맥동) city/(layers/ 거리 레이어 · buildings/ · interiors/ · plaza.webp — WebP) monsters/(<id>.webp 전투 그림 · <id>_back.webp 아군 소환수 뒷모습 + index.json 몸 높이) party/(<종족>_back|_side.webp 탐험가 전투 그림 + index.json)
 ```
 
 ## 핵심 개념 빠른 참조
@@ -137,7 +137,7 @@ assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(la
 - **수정자 대상**: 스탯 id / `max:<자원>` / `regen:<자원>` / `dmg_taken:<피해유형|physical|magical|all>` / `dmg_dealt:…`.
 - **자원(ResourcePool)**: 최대치 = 수식 → `max:<id>` 수정자. 코스트는 `{"soul": 5}`처럼 아무 자원이나. 임계값·고갈·회복은 시그널만 낸다(상태이상 부여는 소유자 몫). scope `dungeon_only`(허기)는 미궁 밖에서 정지·숨김.
 - **시야**: 유효 시야 = min(층 상한 `visibility_cap_m`, max(주변광 `ambient_light_m`(암흑지대 0), 광원, 최소 시야) + 시야 스탯 보정). `Vision`.
-- **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛).
+- **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬), 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛, 시야 경계는 꼭짓점 둘레 칸 수로 감쇠 — 미탐험 순흑, 보이는 곳 최저 = 층 근흑색). 층 그림 설정은 층 JSON `art`(균열 `look.art` — palette·post·pulse·particles·ambience, `FloorArt`), 그래픽 품질 low는 그레인·입자·맥동·흔들림 끔(`GraphicsSettings`, 일시정지 메뉴).
 - **1층 지도(2026-10-16)**: 733×733 십자가 안의 미로 동굴(꼬인 곁가지 굴 + 중간 크기 공동·방 + 지하 호수·기둥·수정 무리, 거대 공동 없음 — 사용자 결정), **모든 게임에서 같은 고정 지도**(층 JSON `fixed_map` → `data/maps`), 시작 위치만 무작위. 화면은 플레이어 둘레 청크만 노드로(`view.stream_chunks`), 80칸 밖 무리는 쉰다(`monsters.active_radius_tiles`). 큰 지도에서 지도 전체를 매 프레임 훑는 코드를 넣지 않는다. 가정 CR14~CR24.
 - **동굴 요소(2026-10-16)**: `data/events/<id>.json`(type feature) = tile(걸을 수 있음) + actions[{id, name_ko, limit once|day|always, needs_status, cost, give, effects, learn_stats, alert, line(번호 변형·line_zone), clear, done/missing}] + hidden(탐지)·near(근처 문구)·hazard(RiftHazards 묶음)·guard(지키는 무리)·rest(휴식 보너스). 배치 = 층 JSON `features[]`(spot·zones·count·gap) → 굽는 때 고정 지도 `features` 좌표. 행동이 여럿이면 `feature_choice` → `ChoicePopup`(W/S·Enter, Backspace = 그만두기). 효과 `fatigue`(피로 증감). 스트레스 자원은 꺼져 있으니 쓰지 않는다. 가정 FE1~FE12.
 - **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / (기본/(1+민첩×계수)) 게임 시간(몬스터와 같은 공식), 충돌은 `Kinematics`. 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.

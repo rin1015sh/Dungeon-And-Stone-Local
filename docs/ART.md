@@ -56,7 +56,9 @@
 
 ## 6. 탐험 맵 (작업 중 — `docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`)
 
-진행: A0(감사·문서·도구) 끝. 아래는 A2~A5에서 지킬 규격이다. 아직 그림 파일은 없다.
+진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정) 끝. 아래는 A2~A5에서 지킬 규격이다. 아직 그림 파일은 없다.
+
+- **렌더 기반(A1)**: 층 JSON `art`(균열 `look.art`) — `palette`(미탐험 순흑·근흑색·색조·기억 색), `post`(채도·비네트·그레인), `pulse`(빛나는 타일의 맥동 빛 번짐 — `GlowChunk` + `crystal_pulse` 셰이더), `particles`(`AmbientParticles`), `ambience`(`audio.json ambience`). 읽는 곳 `src/explore/view/FloorArt.gd`, 검사 `WorldRules.check_art`. 품질 low(`GraphicsSettings`)는 그레인·입자·맥동·횃불 흔들림을 끈다. 시야 경계는 `FloorView.vertex_color`(AM9).
 
 - **도구**: `tools/paint_floor.gd [-- --only=<재질|장소>]` + `tools/floor_art/`(새 폴더) → `assets/floor/`(WebP, 투명이 필요하면 RGBA). 칠은 이미 있는 부품을 **재사용**한다 — `tools/city_art/Paint`(캔버스·붓결)·`Ink`(잉크·빛·색 보정)·`Mat`(재질), `tools/monster_art/Pen`(빗금)·`Finish`(피·때·그레인). 새 칠 방식을 만들지 않는다. 설계(재질·노이즈·변형 수·시드)는 도구의 설계 파일(`Specs` 형식).
 - **게임이 읽는 값은 data에**: 어느 타일이 어느 아틀라스를 쓰는지 = `tiles.json`(`sprite`/새 `art` 키), 층 색조·근흑색·입자 = 층 JSON(새 그림 키), 칸·벽 크기 = `render.json view`. 코드에 색을 박지 않는다.

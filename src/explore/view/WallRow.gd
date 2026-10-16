@@ -31,22 +31,21 @@ func _draw() -> void:
 		var def := map.defs[map.tiles[i]]
 		if not def.is_wall():
 			continue
-		var vis := map.visible_now[i] != 0
 		var h := view.wall_face_of(def)
 		# 윗면 (로컬 y: -t-h ~ -h)
 		_quad(x * t, -t - h, t, t)
-		_cols[0] = view.vertex_color(x, row, def.color_top, vis)
-		_cols[1] = view.vertex_color(x + 1, row, def.color_top, vis)
-		_cols[2] = view.vertex_color(x + 1, row + 1, def.color_top, vis)
-		_cols[3] = view.vertex_color(x, row + 1, def.color_top, vis)
+		_cols[0] = view.vertex_color(x, row, def.color_top)
+		_cols[1] = view.vertex_color(x + 1, row, def.color_top)
+		_cols[2] = view.vertex_color(x + 1, row + 1, def.color_top)
+		_cols[3] = view.vertex_color(x, row + 1, def.color_top)
 		draw_polygon(_pts, _cols)
 		_draw_rims(map, x, t, h, _cols[0].lerp(_cols[2], 0.5))
 		# 앞면 (로컬 y: -h ~ 0), 남쪽 가장자리 빛에 면 그늘을 곱한다
 		if h <= 0:
 			continue
 		_quad(x * t, -h, t, h)
-		var left := view.vertex_color(x, row + 1, def.color_face, vis) * view.face_shade
-		var right := view.vertex_color(x + 1, row + 1, def.color_face, vis) * view.face_shade
+		var left := view.vertex_color(x, row + 1, def.color_face) * view.face_shade
+		var right := view.vertex_color(x + 1, row + 1, def.color_face) * view.face_shade
 		left.a = 1.0
 		right.a = 1.0
 		_cols[0] = left

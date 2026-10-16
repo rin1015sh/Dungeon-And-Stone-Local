@@ -7,6 +7,9 @@
     "ui_back": "res://assets/audio/sfx/ui_back.ogg",
     "ui_denied": "res://assets/audio/sfx/ui_denied.ogg"
   },
+  "ambience": {
+    "f1_cave": "res://assets/audio/ambience/f1_cave.ogg"
+  },
   "bgm": {
     "title": "res://assets/audio/bgm/title.ogg"
   }

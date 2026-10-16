@@ -460,9 +460,15 @@
 | AM2 | 장면 일괄 캡처는 한 번 들어간 탐험 화면에서 순간이동으로 찍고, 찍는 동안 몬스터를 멈춘다(`monsters_enabled = false`). 횃불 끄기는 남은 시간을 0으로(캡처 전용 — 규칙에서는 끌 수 없음). 계층군주는 되돌릴 수 없어 목록 마지막에. `docs/screens/`에는 `.gdignore`를 두어 캡처 PNG가 Godot 가져오기·웹 내보내기에 들어가지 않게 한다 | 장면마다 게임을 새로 켜면 12장에 10분이 넘고, 순간이동한 자리에서 전투가 걸리면 캡처가 전투 화면이 된다 | `tools/ShotList.gd`, 목록 `tools/shots/*.json` |
 | AM3 | 걸음당 프레임 = 기념비 공동에서 동·남 번갈아 60걸음, 걸음마다 한 프레임(시간 흘림 + 이동 + 그리기)의 평균·최대. 이 PC(Intel UHD, 창 1280×720) 기준 평균 46.6~55.6ms — 같은 PC에서만 전후 비교한다. 예전 메모(클라우드 소프트웨어 렌더링 49~51ms)와는 측정 방식이 달라 직접 비교하지 않는다 | 예전 측정 방법이 문서에 남아 있지 않았다 | `tools/shots/floor1.json bench`(at·steps·torch) |
 | AM4 | 그림 층 검사의 "연속" = 걷는 칸의 바닥 변형 번호가 가로·세로로 3칸 이상 같은 것(-1 = 끊김), "막음" = `blocks: true` 장식이 걷는 칸 위에 있는 것, "겹침" = 장식이 동굴 요소와 같은 칸 | 지시서 §5.4 | `FloorArtCheck.MAX_RUN`, `problems()` |
-| AM5 | (미결 — 사용자에게 물음) 중심 기념비 공동은 원문상 암흑지대지만 지금은 수정 빛 6m. 그림 작업만으로는 바꾸지 않는다 | 시야 규칙 변경이라 지시서가 묻게 했다 | `map_design.md` §6 ① |
-| AM6 | (미결 — 사용자에게 물음) 원문 고정 장소 "이끼 물웅덩이"가 지도에 없다. 지형은 다시 굽지 않는다 | 다시 구우면 동굴 요소 좌표가 어긋난다 | `map_design.md` §6 ② |
-| AM7 | (미결 — 사용자에게 물음) 데스핀드 데이터 `size` 1.5(사람 키 기준 약 2.6m) < 원문 "3m 넘음". 데이터는 바꾸지 않았다. 고블린 0.7(1m 미만)·구울 1.0·타룬바스 1.8(약 3m)은 원문과 맞는다. 드레드피어는 원문 1m 60cm 왜소한 인간형이지만 전투 그림이 사용자 결정(UI10)으로 거대 상반신이라 탐험 화면도 그에 맞춘다(size 0.9 그대로) | 지시서 §3.1 | `data/monsters/deathfiend.json size` |
+| AM5 | (가정 — 답이 없어 추천안 c, 2026-10-16 A1) 중심 기념비 공동은 원문상 암흑지대지만 **시야 규칙은 그대로**(수정 빛 6m·안전지대) 두고, A3 그림 층에서 공동 바닥을 한 단계 어둡게·기념비 빛만 따뜻하게 한다 | 시야 규칙 변경이라 지시서가 묻게 했다 | `map_design.md` §6 ① |
+| AM6 | (가정 — 추천안 a, 2026-10-16 A1) 원문 고정 장소 "이끼 물웅덩이"가 지도에 없다. 지형은 다시 굽지 않고 A3에서 기존 물웅덩이 하나를 꾸민다(그림 + `landmarks.json` 항목) | 다시 구우면 동굴 요소 좌표가 어긋난다 | `map_design.md` §6 ② |
+| AM7 | (미결 — 사용자 답 기다림, A4 전까지) 데스핀드 데이터 `size` 1.5(사람 키 기준 약 2.6m) < 원문 "3m 넘음". 데이터는 바꾸지 않았다. 고블린 0.7(1m 미만)·구울 1.0·타룬바스 1.8(약 3m)은 원문과 맞는다. 드레드피어는 원문 1m 60cm 왜소한 인간형이지만 전투 그림이 사용자 결정(UI10)으로 거대 상반신이라 탐험 화면도 그에 맞춘다(size 0.9 그대로) | 지시서 §3.1 | `data/monsters/deathfiend.json size` |
+| AM8 | 층 그림 설정은 층 JSON `art`(균열은 `look.art` → 챕터 가짜 층 정의로 넘김) = `palette{unexplored, near_black, tone, memory_tint, memory_brightness}`·`post{saturation, vignette_*, grain_strength}`·`pulse{tiles, period_sec, depth, radius_m, strength}`·`particles[]`·`ambience{loop}`. 빠진 키는 render.json `view`·`lighting` 기본값. 1층 근흑색 `#141018`, 균열 4종은 장소마다 다른 근흑색·채도·입자(핏빛성채 재, 빙하굴 눈, 탄광 탄가루, 묘는 입자 없음) — 모두 [창작] 임시값. `texture_filter`(AM 질문 ③)는 A2 캡처 비교 뒤 정한다 | 지시서 §3.2·§3.3, 코드에 색을 박지 않는다 | `FloorArt.resolve`, `WorldRules.check_art` |
+| AM9 | 시야 3상태 경계: 꼭짓점마다 둘레 네 칸 중 탐험한 수 e·보이는 수 s를 세어(`FloorView._vfog`), 색 = 기억 색과 빛 색을 s/e로 섞고 → 근흑색 아래로 내려가지 않게 → e < 4면 순흑으로 e/4만큼 감쇠. 칸 계단 대신 한 칸 폭의 부드러운 경계. 디더는 쓰지 않았다(그레인이 이미 있다). 시야 공식·수치는 그대로 | 지시서 §3.3 "칼선이 아니라 부드러운 감쇠" | `FloorView.vertex_color`·`fog_counts` |
+| AM10 | 수정 맥동 = 맥동 타일(`art.pulse.tiles`, 빛이 있는 타일만)이 보일 때 둥근 빛 번짐을 가산 혼합으로 얹고(벽이면 앞면 가운데), 셰이더 `crystal_pulse`가 TIME으로 밝기만 흔든다(칸마다 위상이 다름). 청크는 시야가 바뀔 때만 다시 그린다. 꼭짓점 빛(`LightField`)은 맥동하지 않는다. 노멀맵 조명은 넣지 않았다(선택 항목 — A2 아틀라스 뒤 프레임을 보고 정한다) | 지시서 §3.3·§7 — 청크 다시 그리기 없이 | `GlowChunk`, `assets/shaders/crystal_pulse.gdshader` |
+| AM11 | 그래픽 품질은 high/low 둘, 기기마다 `user://dungeon_and_stone/settings.json`(저장 슬롯과 따로). low = 그레인 0·입자 없음·맥동 멈춤(빛 번짐은 남음)·횃불 흔들림 없음. 일시정지 메뉴 "그래픽 높음/낮음" 한 버튼(이름만 — 부연설명 금지) | 지시서 §3.3 "품질 설정으로 끌 수 있게" | `GraphicsSettings`, `PauseMenu` |
+| AM12 | 환경음은 층 `art.ambience.loop` → `data/audio.json ambience` 키 → `AudioBus.play_ambience`(BGM과 따로). 1층 `f1_cave` 경로만 있고 파일은 아직 없다(조용히 건너뜀) | 소리 파일이 없어도 개발이 멈추지 않게(AudioBus 규칙) | `data/audio.json`, `AudioBus` |
+| AM13 | 입자는 CPUParticles2D(웹 호환), 플레이어를 따라가며 시야 반경 안에서만 생기고 월드에 남는다(걸어도 끌려가지 않음). 그림은 둥근 점(그러데이션 16px) — 손그림 입자는 A2 이후 | 지시서 §3.3·§7 | `AmbientParticles` |
 
 ## 데이터·구조
 

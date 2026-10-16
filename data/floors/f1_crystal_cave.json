@@ -11,6 +11,17 @@
   "ambient_light_m": 6.0,
   "ambient_source": "placeholder",
   "ambient_color": "#c4bcff",
+  "art": {
+    "_comment": "탐험 맵 그림 설정(FloorArt, docs/plans/map_design.md §5.1). palette.near_black = 보이는 곳의 가장 어두운 색(보라 섞인 근흑), unexplored = 미탐험(순흑). pulse = 수정의 느린 맥동 빛, particles = 떠다니는 먼지·천장 물방울, ambience = data/audio.json ambience 키. 모두 [창작] 임시값",
+    "palette": {"unexplored": "#000000", "near_black": "#141018", "tone": "#f2eef4", "memory_tint": "#8a92b8", "memory_brightness": 0.3},
+    "post": {"saturation": 0.8, "vignette_strength": 0.55, "vignette_radius": 0.45, "grain_strength": 0.045},
+    "pulse": {"tiles": ["crystal_wall", "square_crystal"], "period_sec": 7.0, "depth": 0.5, "radius_m": 1.6, "strength": 0.45},
+    "particles": [
+      {"id": "dust", "amount": 36, "lifetime": 9.0, "color": "#d8d0ff", "alpha": 0.22, "scale": [1.5, 3.0], "velocity": [2.0, 7.0], "direction": [0.0, -1.0], "spread": 180.0, "gravity": [0.0, 0.0]},
+      {"id": "drip", "amount": 5, "lifetime": 1.1, "color": "#a8b8e8", "alpha": 0.45, "scale": [1.5, 2.5], "velocity": [0.0, 10.0], "direction": [0.0, 1.0], "spread": 4.0, "gravity": [0.0, 260.0]}
+    ],
+    "ambience": {"loop": "f1_cave"}
+  },
   "gen": {
     "_comment": "거대한 십자가(CrossLayout) + 미로 동굴(등뼈 길·공동·방·잇는 굴·곁가지 — CrossTerrain). 지금 1층은 고정 지도(fixed_map)라 이 값들은 굽는 때만 쓴다 — 바꾸면 tools/bake_floor.gd로 다시 굽기. 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. (고정 지도를 끄면 입장마다 새로: 동굴 지형.) 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
     "core_size": 153,
