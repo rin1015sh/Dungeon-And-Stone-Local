@@ -3,7 +3,7 @@ extends RefCounted
 ## 전투 장면에서 줍는 드롭(사용자 결정 2026-10-16 — ASSUMPTIONS UI13): 몬스터가 쓰러진 자리에 정수·마석(전리품)이 남고,
 ## 전투가 끝나면 하나씩 "획득할까?"를 묻고 받을 사람을 고른다(CombatScreen).
 ## 드롭: {"kind": "essence", "inst": 정수 사례, "slot": killed 순번} · {"kind": "item", "id": 아이템 id, "count": n, "slot": …}
-## 정수는 받는 사람이 그 자리에서 흡수하고, 두고 가면 그 자리에 떠 있다가 흩어진다(흡수 대기 — essence.expire_hours).
+## 정수는 받는 사람이 그 자리에서 흡수하고, 두고 가거나 아무도 받을 수 없으면 흩어져 사라진다(사용자 결정 — 남기지 않는다).
 ## 아이템은 받는 사람의 가방으로(넘치면 두고 간다), 두고 가면 사라진다. 메시지는 {key, args, kind}.
 
 
@@ -64,11 +64,9 @@ static func take(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
 	return _m("reward.loot_by", {"who": pc.display_name, "item": name, "count": got}, "good")
 
 
-## 두고 간다. 정수는 그 자리에 떠 있다가 흩어진다(owner의 흡수 대기 — now_hours 뒤 expire_hours). reason = 아무도 받을 수 없던 이유 키.
-static func leave(drop: Dictionary, owner: PlayerCharacter, now_hours: float = -1.0, reason: String = "") -> Dictionary:
-	var db := owner.db
+## 두고 간다 — 정수는 흩어지고 전리품은 사라진다. reason = 아무도 받을 수 없던 이유 키.
+static func leave(db: GameDatabase, drop: Dictionary, reason: String = "") -> Dictionary:
 	if str(drop.get("kind")) == "essence":
-		owner.essences.add_pending(db, drop["inst"], now_hours)
 		if not reason.is_empty():
 			return _m("reward.essence_nobody", {"what": label(db, drop), "reason": Strings.t(reason)}, "warn")
 		return _m("reward.essence_left", {"what": label(db, drop)}, "info")

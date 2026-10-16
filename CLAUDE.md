@@ -5,7 +5,7 @@
 
 ## 세션 시작 시 (어느 환경이든)
 
-1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다.** 설계 요약은 `docs/DESIGN.md`, 원본 지시서는 `docs/PROMPT.md`, 가정 목록은 `docs/ASSUMPTIONS.md`.
+1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다.** 설계 요약은 `docs/DESIGN.md`, 원본 지시서는 `docs/PROMPT.md`, 가정 목록은 `docs/ASSUMPTIONS.md`. **그림 작업이면 `docs/ART.md`(그림체 규칙·도구·절차)를 먼저 읽는다.**
 2. PROGRESS.md의 **"다음 할 일"**부터 진행한다. 질문하지 말고 진행하되, 모호한 부분은 합리적으로 가정하고 ASSUMPTIONS.md에 "가정 / 이유 / 바꾸는 방법"을 남긴다.
    - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 DESIGN.md 요약으로 진행).
 3. 작업이 끝날 때마다 PROGRESS.md를 갱신한다. 마일스톤 단위로 **항상 실행 가능한 상태**에서 커밋한다(커밋 메시지는 한국어로 짧게).
@@ -79,7 +79,7 @@
 
 ```
 project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSystem, AudioBus
-CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS}.md
+CLAUDE.md  README.md  docs/{PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS,ART}.md
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
@@ -148,7 +148,7 @@ assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(la
 - **상태이상 키(G4)**: `resist {stats}`(남이 건 것만 저항), `immune_if {stat, at_least}`, `on_max_stacks {status}`, `break_on_damage(_types)`, `heal_mult`, `misdirect {chance, pool, power_mult, ignore_defense}`, `battle_only`, 수정자 값에 수식 문자열(걸릴 때 계산).
 - **전투**: CTB 속도 = 민첩 + `combat.speed_base`(5). `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 화면은 피어 앤 헝거식 정면 구도(`ui/combat/`: `BattleStage` 무대 — 적 정면·아군 뒷모습, `CombatFigure` 몸, `PartyRoster` 파티 창) + 아래 창 `CommandMenu`(명령 공격·스킬·방어·아이템, 도주는 스킬 목록 맨 끝), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + `stat_ranges`. 사례 `{essence, color, stats}`, 무지갯빛 = 수호자(액티브 전부·스탯 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
-- **전투 드롭(2026-10-16)**: 정수·전리품은 쓰러진 무대 자리에 남고 전투가 끝나면 하나씩 "획득할까?" → 받을 사람(`CombatDrops`·`DropPickup`, `ExploreSession.grant_battle_rewards(…, defer_drops=true)`·`take_drop`·`leave_drop`). 두고 간 정수는 흡수 대기(흩어짐). 가정 UI13.
+- **전투 드롭(2026-10-16)**: 정수·전리품은 쓰러진 무대 자리에 남고 전투가 끝나면 하나씩 "획득할까?" → 받을 사람(`CombatDrops`·`DropPickup`, `ExploreSession.grant_battle_rewards(…, defer_drops=true)`·`take_drop`·`leave_drop`). **정수를 얻는 길은 이것뿐** — 두고 가거나 아무도 못 받으면 사라진다(흡수 대기·캐릭터 창 흡수 없음). 가정 UI13.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
 - **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리 좌표 = 화면 높이 720 기준 거리 단위(`render.json city`), 거리 = `city.json street.layers`(시차) 위에 시설 건물. 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1) — **행동력은 입장에만 쓰고 시설 안 활동은 쓰지 않는다**, 활동은 `activities/<id>`(`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, **하순이 끝나면 저절로 차원광장 → 미궁**(`expedition_due`), 귀환하면 다음 달 상순(`return_from_dungeon`) (`CityState`, `GameState.city`). **시설 안 활동 한 번 → 저절로 거리로**(나가기 버튼 없음 — 창구형은 Esc·빈 곳 오른쪽 클릭으로 마침, 할 게 없으면 바로 나옴). 규칙 값은 2026-10-15 모두 임시값(`docs/balance/city.md`, CT26) — null로 되돌리면 효과 없음(검증기 경고 `CityValues.nulls`), 디버그 F1은 `CityValues.tunables`를 `CityState.overrides`로 임시 변경(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 단계 효과 `effects()` → 수정자 출처 `fatigue`). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 한 칸 저장은 차원광장에서만(`SaveGame`, 사망 시 삭제), 하순이 끝나면 차원광장(`PlazaScreen`, 포탈은 한 달에 한 번 `expedition_month`). 가정 CT1~CT33.
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.

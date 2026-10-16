@@ -169,6 +169,13 @@ func _realtime_combat_flow() -> void:
 	for v: Node in combat.find_children("*", "BattlerView", true, false):
 		bars += v.find_children("*", "ProgressBar", true, false).size()
 	_expect(bars == 0, "무대에 생명력 막대 없음(적 생명력은 보이지 않는다) — %d" % bars)
+	var foe: Combatant = combat.battle.side_units(Combatant.SIDE_ENEMY)[0]
+	for ev: Dictionary in [{"hit": false}, {"hit": true, "immune": true}, {"hit": true, "lost": 0, "amount": 0}]:
+		ev["type"] = "damage"
+		ev["unit"] = foe
+		combat._on_event(ev)
+	_expect(_has_label(combat, Strings.t("combat.float_miss")) and _has_label(combat, Strings.t("combat.float_immune"))
+		and _has_label(combat, Strings.t("combat.float_blocked")), "빗나감 = 회피, 면역 = 면역, 보호막에 막힘 = 막힘 — 각자 그 글자로 뜬다")
 	await _keyboard_menu(combat, menu)
 	menu = await _open_menu(combat)
 	if not _expect(menu != null, "키보드 공격 뒤 다시 행동창"):

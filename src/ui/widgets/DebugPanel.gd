@@ -98,16 +98,14 @@ func _regenerate() -> void:
 	regenerate_requested.emit(text.to_int() if text.is_valid_int() else 0)
 
 
-## 무작위 정수 하나를 흡수 대기 목록에 넣는다(시간 제한 없음).
+## 무작위 정수 하나를 바로 흡수한다(못 하면 이유를 기록에).
 func _give_essence() -> void:
 	var ids: Array = _session.db.get_collection("essences").keys()
 	if ids.is_empty():
 		return
 	ids.sort()
 	var inst := EssenceDrop.make(_session.db, str(_session.rng.pick(ids)), "", _session.rng)
-	_session.player.essences.add_pending(_session.db, inst)
-	_session.message.emit("reward.essence", {"name": DataNames.entry(_session.db, "essences", str(inst["essence"])),
-		"color": DataNames.tag(_session.db, "essence_colors", str(inst["color"]))}, "good")
+	_session.take_drop({"kind": "essence", "inst": inst}, _session.player)
 
 
 ## 균열: 바깥 층이면 종류를 골라 강제 개방(옆에 포탈), 균열 안이면 이 챕터 조우 치우기.

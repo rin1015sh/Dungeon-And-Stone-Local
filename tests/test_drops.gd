@@ -1,5 +1,5 @@
 extends TestCase
-## 전투 장면에서 줍는 드롭(DropPickup — ASSUMPTIONS UI13): 쓰러진 순서대로 굴린 드롭, 받기(정수 흡수·가방), 두고 가기(정수는 흡수 대기).
+## 전투 장면에서 줍는 드롭(DropPickup — ASSUMPTIONS UI13): 쓰러진 순서대로 굴린 드롭, 받기(정수 흡수·가방), 두고 가기(사라진다).
 
 
 func _pc(d: GameDatabase) -> PlayerCharacter:
@@ -49,15 +49,15 @@ func test_take_item_and_essence() -> void:
 	assert_eq(DropPickup.check(ess, pc), "essence.reason_duplicate", "슬롯이 남아도 같은 정수는 또 받을 수 없다")
 
 
-func test_leave_essence_floats_then_fades() -> void:
+func test_leave_drops_vanish() -> void:
 	var d := _db_all_drops()
 	var pc := _pc(d)
 	var ess := {"kind": "essence", "inst": EssenceDrop.make(d, "goblin", "", Rng.new(1)), "slot": 0}
-	assert_eq(str(DropPickup.leave(ess, pc, 10.0)["key"]), "reward.essence_left")
-	assert_eq(pc.essences.pending.size(), 1, "흡수 대기로 떠 있다")
-	assert_eq(pc.essences.expire_pending(10.0 + float(d.bal("essence.expire_hours", 0.5)) + 0.01).size(), 1, "시간이 지나면 흩어진다")
+	assert_eq(str(DropPickup.leave(d, ess)["key"]), "reward.essence_left")
+	assert_eq(str(DropPickup.leave(d, ess, "essence.reason_no_slot")["key"]), "reward.essence_nobody", "아무도 못 받으면 이유와 함께 흩어진다")
+	assert_true(pc.essences.absorbed.is_empty(), "두고 간 정수는 남지 않는다")
 	var stone := {"kind": "item", "id": "magic_stone_9", "count": 1, "slot": 0}
-	assert_eq(str(DropPickup.leave(stone, pc)["key"]), "reward.loot_left")
+	assert_eq(str(DropPickup.leave(d, stone)["key"]), "reward.loot_left")
 	assert_eq(pc.inventory.count("magic_stone_9"), 0, "두고 간 전리품은 사라진다")
 
 

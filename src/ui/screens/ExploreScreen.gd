@@ -61,7 +61,6 @@ func _ready() -> void:
 	log_panel.offset_top = log_panel.offset_bottom - UiTheme.metric("explore_log_height", 200)
 	_windows = WindowManager.new()
 	_windows.setup(session.player)
-	_windows.now_hours = func() -> float: return session.clock.total_hours
 	add_child(_windows)
 	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_windows.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("window", on))

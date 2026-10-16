@@ -4,6 +4,8 @@
 
 ## 현재 상태 (2026-10-14)
 
+- **흡수 대기 없앰 · 회피/면역/막힘 확인 · 그림 지침서 (2026-10-16, 사용자 결정)**: ① 전투 장면에서 획득하지 않은 정수는 남기지 않고 사라진다(아무도 못 받아도) ② 캐릭터 창 정수 흡수(흡수 대기 목록·흡수 버튼) 삭제 — 이와 함께 `EssenceSet.pending`·`add_pending`·`absorb_pending`·`expire_pending`, 탐험 HUD 대기 정수 알림, 대기·휴식 전 경고(`_confirm_pending`), 시간 만료, 저장 항목, balance `essence.expire_hours`·`warn_confirm_hours`, 디버그 "정수 지급"은 바로 흡수로. `Rewards.grant`는 정수를 주지 않는다(정수는 `DropPickup.roll` → 전투 장면). ③ 회피·면역·막힘은 이미 각자 그 글자로 떴다 — UI 스모크에 셋을 확인하는 검사 추가 ④ `docs/ART.md`(그림체 규칙·도구 지도·크기 규칙·새 그림 절차·함정) + CLAUDE.md에서 그림 작업이면 먼저 읽게. 가정 UI13 고침, J5·PA3 폐기. check.sh 통과(테스트 284).
+
 - **전투 드롭 줍기 · 선택/취소 키 · 회피 표시 · 조사 체력 (2026-10-16, 사용자 결정)**: 범위 — ① 조사로 적 생명력을 다시 보게 ② 회피·면역·막힘도 피해 숫자처럼 크게("빗나감" → "회피") ③ 정수·마석(전리품)을 전투 장면에서: 쓰러진 자리에 드롭 표시(`DropMark`), 하나씩 작은 창 "획득할까?" → 받을 사람 고르기(`ChoicePopup` — W/S·Enter·Backspace), 받으면 흡수·가방, 두면 정수는 흡수 대기로 떠 있다가 흩어짐(`DropPickup`·`CombatDrops`, `ExploreSession.take_drop`·`leave_drop`, `Rewards.grant with_drops`) ④ 모든 선택 = Enter, 취소 = Backspace(`input.json` menu_confirm·menu_back·ui_accept, Esc로 하던 취소에 Backspace 추가, 일시정지 메뉴 포커스). 완료 기준 — check.sh 통과 + 단위 테스트 `test_drops.gd`(5) + UI 스모크(드롭 창 S·W·Enter, Backspace로 창 닫기·일시정지 풀기 — 일반 전투 드롭 2개·문지기 전투 1개를 실제로 넘김) + 캡처(획득할까?·누가 받을까?). 캡처 도구 `--drops[=who]`. 가정 UI13·UI14(UI12 고침). 충족.
 
 - **적 생명력 숨김 · 피해 숫자 · 차례 사이 쉼 · 인간 옆모습 팔 (2026-10-16, 사용자 요청)**: ① 적 생명력 막대 삭제, 대상 칸 생명력 %는 아군만, 조사 결과에서도 적 생명력 삭제 ② 피해 숫자를 크게(34px·테두리·튀어나옴·1.3초) — 적이 입은 피해 금빛, 아군이 입은 피해 붉게 ③ 행동마다 다음 차례 전 0.7초 쉼(`CombatScreen._turn_gap`) ④ 인간 옆모습 두 팔을 몸에 붙임(`Party.gd side_pose`). 캡처 도구 `--hit[=초]`(첫 적을 공격하고 바로 찍음). UI 스모크에 "무대에 생명력 막대 없음". 가정 UI12. check.sh 통과 + 캡처(적이 입은 피해·아군이 입은 피해) 확인.

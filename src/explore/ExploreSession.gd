@@ -50,7 +50,6 @@ var _was_safe: bool = false
 var _started: bool = false
 var _view_dirty: bool = false  # 시간 흐름으로 시야가 바뀌었다(광원 꺼짐·상태이상)
 var _rewarded: bool = false  # 이번 전투 보상을 이미 줬다(전투 결과 화면에서 — grant_battle_rewards)
-var _pending_warn: Dictionary = {}  # 흡수 대기 정수 경고: {"action", "at"} — 곧바로 같은 동작을 다시 하면 그대로 한다
 
 
 func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_player: PlayerCharacter,
@@ -176,7 +175,7 @@ func enter_cell(cell: Vector2i) -> void:
 
 
 func wait(hours: float = -1.0) -> void:
-	if ended or in_combat or not _confirm_pending("wait"):
+	if ended or in_combat:
 		return
 	var h := hours if hours > 0.0 else float(db.bal("explore.wait_hours", 1.0))
 	_say("explore.wait", {"hours": roundi(h)})
@@ -187,7 +186,7 @@ func wait(hours: float = -1.0) -> void:
 
 ## 휴식(수면). 안전지대에서만 휴식 회복이 붙는다. 바깥에서는 시간마다 습격 위험이 있다.
 func rest() -> void:
-	if ended or in_combat or not _confirm_pending("rest"):
+	if ended or in_combat:
 		return
 	var hours := int(db.bal("explore.rest_hours", 8.0))
 	if in_safe_zone():
@@ -214,19 +213,6 @@ func rest() -> void:
 					break
 	if not ended:
 		refresh_view()
-
-
-## 흡수하지 않은 정수가 있으면 시간을 몰아 쓰기 전에 한 번 경고하고 멈춘다(금방 같은 동작을 다시 하면 그대로 한다).
-func _confirm_pending(action: String) -> bool:
-	if player.essences.pending.is_empty():
-		return true
-	if str(_pending_warn.get("action", "")) == action \
-			and clock.total_hours - float(_pending_warn.get("at", -INF)) <= float(db.bal("essence.warn_confirm_hours", 0.5)):
-		_pending_warn = {}
-		return true
-	_pending_warn = {"action": action, "at": clock.total_hours}
-	_say("essence.pending_warn", {}, "warn")
-	return false
 
 
 func use_item(item_id: String) -> bool:
@@ -270,8 +256,6 @@ func pass_time(hours: float) -> void:
 		player.advance_hours(h)
 		player.fatigue.on_dungeon(Fatigue.DUNGEON_HOUR, h)
 		time_passed.emit(h)
-		for gone: String in player.essences.expire_pending(clock.total_hours):
-			message.emit("essence.expired", {"name": DataNames.entry(db, "essences", gone)}, "warn")
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
@@ -363,9 +347,9 @@ func take_drop(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
 	return m
 
 
-## 두고 간다(정수는 흡수 대기로 떠 있다가 흩어진다). reason = 아무도 받을 수 없던 이유 키.
+## 두고 간다(정수는 흩어지고 전리품은 사라진다). reason = 아무도 받을 수 없던 이유 키.
 func leave_drop(drop: Dictionary, reason: String = "") -> Dictionary:
-	var m := DropPickup.leave(drop, player, clock.total_hours, reason)
+	var m := DropPickup.leave(db, drop, reason)
 	message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	return m
 
