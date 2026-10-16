@@ -151,6 +151,8 @@ func _loop() -> void:
 			if not battle.act(c, action):
 				_fallback(c, action)
 			_refresh()
+			if not await _turn_gap():
+				return
 			continue
 		await get_tree().create_timer(_ai_delay()).timeout
 		if not is_inside_tree():
@@ -159,6 +161,8 @@ func _loop() -> void:
 			if not battle.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null}):
 				battle.act(c, {"kind": "guard"})
 		_refresh()
+		if not await _turn_gap():
+			return
 	_looping = false
 	_show_result()
 
@@ -258,7 +262,8 @@ func _on_event(e: Dictionary) -> void:
 				elif int(e.get("lost", e.get("amount", 0))) <= 0:
 					v.float_text(Strings.t("combat.float_blocked"), UiTheme.color("text_dim"))
 				else:
-					v.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("bad"))
+					var foe := u.side != Combatant.SIDE_PARTY  # 적이 입은 피해 = 밝은 금빛, 아군이 입은 피해 = 붉게
+					v.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("dmg_foe" if foe else "dmg_party"), true)
 		"down", "fled":
 			if v != null:
 				v.refresh()
@@ -334,3 +339,11 @@ func _finish() -> void:
 
 func _ai_delay() -> float:
 	return 0.0 if GameState.debug_fast_combat else UiTheme.ui_float("combat_ai_delay_sec", 0.45)
+
+
+## 차례가 넘어가기 전 쉼(피해 숫자·안내를 볼 틈). 화면이 사라졌으면 false.
+func _turn_gap() -> bool:
+	var sec := 0.0 if GameState.debug_fast_combat or not battle.result.is_empty() else UiTheme.ui_float("combat_turn_gap_sec", 0.7)
+	if sec > 0.0:
+		await get_tree().create_timer(sec).timeout
+	return is_inside_tree()

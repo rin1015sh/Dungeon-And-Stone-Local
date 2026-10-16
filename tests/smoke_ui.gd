@@ -159,6 +159,10 @@ func _realtime_combat_flow() -> void:
 	_expect(slots.size() == menu.root_grid().page_size(), "명령 칸 %d개 — %d" % [menu.root_grid().page_size(), slots.size()])
 	_expect(_has_node_named(combat, "PartyRoster") and _has_node_named(combat, "BattleStage"), "파티 창·무대")
 	_expect(not _has_node_named(combat, "TimelineBar"), "상단 순서 표시 없음")
+	var bars := 0
+	for v: Node in combat.find_children("*", "BattlerView", true, false):
+		bars += v.find_children("*", "ProgressBar", true, false).size()
+	_expect(bars == 0, "무대에 생명력 막대 없음(적 생명력은 보이지 않는다) — %d" % bars)
 	await _keyboard_menu(combat, menu)
 	menu = await _open_menu(combat)
 	if not _expect(menu != null, "키보드 공격 뒤 다시 행동창"):

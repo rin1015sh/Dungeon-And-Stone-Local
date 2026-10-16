@@ -371,7 +371,7 @@
     "talk_provoke": "{source}의 말이 {target}을(를) 자극했다. 서둘러 덤벼든다!",
     "talk_withdraw": "{target}이(가) {source}의 말에 무기를 내리고 뒷걸음질 친다.",
     "withdraw": "{name}이(가) 싸움에서 물러났다.",
-    "info_monster": "[조사] {name} — {grade}등급 {family}. 생명력 {hp_now}/{hp_max}. 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}. 상성: {aff}. {desc}",
+    "info_monster": "[조사] {name} — {grade}등급 {family}. 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}. 상성: {aff}. {desc}",
     "info_ally": "[조사] {name} — 생명력 {hp}%.",
     "float_immune": "면역",
     "float_blocked": "막힘",

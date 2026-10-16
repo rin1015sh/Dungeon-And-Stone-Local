@@ -13,11 +13,13 @@ extends Node
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 + 흡수 대기 둘(하나는 중복이라 흡수 불가) — --character와 함께
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
+## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
 ## --details: (--character와 함께) 캐릭터 창 세부 능력 탭
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 
 var _main: Control
+var _quick := false  ## --hit: 떠오른 숫자가 사라지기 전에 바로 찍는다
 var _args: Dictionary = {"screen": "title", "out": "user://screenshot.png", "seed": "0", "walk": "0"}
 
 
@@ -186,6 +188,18 @@ func _run() -> void:
 				for b: Node in m.find_children("*", "Button", true, false):
 					if (b as Button).text == Strings.t("combat.cmd_skill"):
 						(b as Button).pressed.emit()
+		if _args.has("hit"):
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var hs := n as CombatScreen
+					for k in 400:  # 내 차례(행동 정하기)가 열릴 때까지
+						if not hs._planning.is_empty():
+							break
+						await _frames(1)
+					hs._on_chosen({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": hs.battle.side_units(Combatant.SIDE_ENEMY)[0]})
+			var hv := str(_args["hit"])
+			await get_tree().create_timer(hv.to_float() if hv.is_valid_float() else 0.25).timeout
+			_quick = true
 		if _args.has("keys"):  # 행동창 키 입력 흉내: --keys=menu_right,menu_right,menu_confirm (쪽 넘김·커서 확인)
 			await _frames(10)
 			for a: String in str(_args["keys"]).split(","):
@@ -199,8 +213,9 @@ func _run() -> void:
 			ev.action = "debug_toggle"
 			ev.pressed = true
 			Input.parse_input_event(ev)
-		await _frames(30)
-	await _frames(6)
+		if not _quick:
+			await _frames(30)
+	await _frames(2 if _quick else 6)
 	var img := get_viewport().get_texture().get_image()
 	var out := str(_args["out"])
 	var err := img.save_png(out)

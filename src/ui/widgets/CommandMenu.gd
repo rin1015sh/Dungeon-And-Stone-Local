@@ -221,7 +221,7 @@ func _usable_items() -> Array[String]:
 	return out
 
 
-## 대상 칸: 이름 + 생명력 %, 설명줄에 걸린 상태. 적 쪽에서 고를 수 없는 대상(은신)은 꺼 둔다.
+## 대상 칸: 이름 + (아군만) 생명력 %, 설명줄에 걸린 상태. 적의 생명력은 보이지 않는다. 적 쪽에서 고를 수 없는 대상(은신)은 꺼 둔다.
 func _target_opt(t: Combatant, text: String, cb: Callable) -> Dictionary:
 	var names := PackedStringArray()
 	for sid in t.actor.statuses.ids():
@@ -229,7 +229,8 @@ func _target_opt(t: Combatant, text: String, cb: Callable) -> Dictionary:
 	var ok := t.side == _unit.side or BattleRules.is_targetable(_battle, _unit, t)
 	var desc := Strings.t("combat.reason_hidden") if not ok else \
 		(Strings.t("combat.target_statuses", {"list": ", ".join(names)}) if not names.is_empty() else "")
-	var o := _opt(text, Strings.t("combat.sub_hp", {"hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)}), desc, cb, ok)
+	var sub := Strings.t("combat.sub_hp", {"hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)}) if t.side == _unit.side else ""
+	var o := _opt(text, sub, desc, cb, ok)
 	o["target"] = t
 	return o
 

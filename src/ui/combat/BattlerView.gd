@@ -2,7 +2,7 @@ class_name BattlerView
 extends Control
 ## 전투 무대 위의 참가자 하나. 그림은 MonsterArt(없으면 CombatFigure 도형): 적은 정면 그림, 아군 소환수는 뒷모습(<id>_back),
 ## 탐험가는 종족 그림 — 뒷모습(back)과 비스듬히 돌아선 옆모습(side)을 무대가 자리에 따라 고른다(set_view, 오른쪽 자리는 좌우 반전).
-## 적은 정면 + 머리 위 이름·발밑 생명력 막대·상태,
+## 적은 정면 + 머리 위 이름·발밑 상태(생명력은 보이지 않는다 — 피어 앤 헝거처럼, 받은 피해만 숫자로 떠오른다),
 ## 아군은 뒷모습만(이름·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
 ## 쓰러지거나 도망치면 흐려진다. 누르면 clicked(대상 고르기 중이면 그 대상을 고른다).
 
@@ -21,7 +21,6 @@ var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이]
 var _current: bool = false
 var _target: bool = false
 var _name: Label
-var _bar: ProgressBar
 var _status: Label
 
 
@@ -53,13 +52,6 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_name)
-	_bar = ProgressBar.new()
-	_bar.show_percentage = false
-	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_bar.custom_minimum_size.y = UiTheme.metric("combat_enemy_bar_height", 6)
-	_bar.add_theme_stylebox_override("fill", UiTheme.box(db.resources["hp"].color, Color.TRANSPARENT, 1, 0))
-	_bar.add_theme_stylebox_override("background", UiTheme.box(Color(0, 0, 0, 0.6), Color.TRANSPARENT, 1, 0))
-	add_child(_bar)
 	_status = UiTheme.label("", "small", "warn")
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -92,7 +84,7 @@ func width_for(h: float) -> float:
 	return CombatFigure.width_of(shape, h)
 
 
-## 무대가 정한 자리: 발 위치 · 키. 이름은 머리 위, 막대·상태는 발밑.
+## 무대가 정한 자리: 발 위치 · 키. 이름은 머리 위, 상태는 발밑.
 func place(foot: Vector2, h: float) -> void:
 	var w := width_for(h)
 	size = Vector2(w, art.get_height() * h / _art_body if art != null else h * 1.12)
@@ -102,18 +94,13 @@ func place(foot: Vector2, h: float) -> void:
 		var top := h if art != null else h * CombatFigure.top_of(shape)
 		_name.size = Vector2(lw, 20)
 		_name.position = Vector2((w - lw) / 2.0, maxf(size.y - top - 26, 4.0 - position.y))  # 화면 위로 넘치는 큰 보스도 이름은 보이게
-		_bar.size = Vector2(minf(w * 0.7, 160.0), _bar.custom_minimum_size.y)
-		_bar.position = Vector2((w - _bar.size.x) / 2.0, size.y + 8)
 		_status.size = Vector2(lw, 20)
-		_status.position = Vector2((w - lw) / 2.0, size.y + 14)
+		_status.position = Vector2((w - lw) / 2.0, size.y + 8)
 	queue_redraw()
 
 
 func refresh() -> void:
 	if front:
-		var pool := unit.actor.pool
-		_bar.max_value = maxf(1.0, pool.get_max("hp"))
-		_bar.value = pool.get_current("hp")
 		var names := PackedStringArray()
 		for id in unit.actor.statuses.ids():
 			names.append(DataNames.entry(unit.actor.db, "statuses", id))
@@ -158,15 +145,25 @@ func _gui_input(event: InputEvent) -> void:
 		accept_event()
 
 
-## 몸 위로 떠오르는 숫자/글자.
-func float_text(text: String, col: Color) -> void:
+## 몸 위로 떠오르는 숫자/글자(피해 숫자): 크게 튀어나왔다가 잠깐 머문 뒤 위로 흐려진다. big = 피해 숫자(더 크게).
+func float_text(text: String, col: Color, big: bool = false) -> void:
 	var l := UiTheme.label(text, "header", "text")
 	l.add_theme_color_override("font_color", col)
+	l.add_theme_font_size_override("font_size", UiTheme.metric("float_text_size" if big else "header_font_size", 34 if big else 20))
+	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	l.add_theme_constant_override("outline_size", UiTheme.metric("float_text_outline", 6))
 	l.top_level = true
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(l)
-	l.position = global_position + Vector2(size.x * 0.5 - l.get_combined_minimum_size().x * 0.5, size.y * 0.25)
+	var ms := l.get_combined_minimum_size()
+	var top := global_position.y + size.y * (0.22 if front else 0.12)  # 아군은 아래가 창 뒤로 가라앉아 있어 위쪽에
+	l.position = Vector2(clampf(global_position.x + size.x * 0.5 - ms.x * 0.5, 4.0, get_viewport_rect().size.x - ms.x - 4.0), maxf(top, 8.0))
+	l.pivot_offset = ms * 0.5
+	l.scale = Vector2(1.5, 1.5)
+	var sec := UiTheme.ui_float("float_text_sec", 1.3)
 	var tw := l.create_tween()
-	tw.tween_property(l, "position:y", l.position.y - 40, UiTheme.ui_float("float_text_sec", 0.8))
-	tw.parallel().tween_property(l, "modulate:a", 0.0, UiTheme.ui_float("float_text_sec", 0.8))
+	tw.tween_property(l, "scale", Vector2.ONE, sec * 0.15)
+	tw.tween_interval(sec * 0.45)
+	tw.tween_property(l, "position:y", l.position.y - 36, sec * 0.4)
+	tw.parallel().tween_property(l, "modulate:a", 0.0, sec * 0.4)
 	tw.tween_callback(l.queue_free)
