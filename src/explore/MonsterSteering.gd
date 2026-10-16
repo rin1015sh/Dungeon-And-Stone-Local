@@ -31,7 +31,7 @@ func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
 		g.state = FieldMonsters.STATE_RETURN
 	elif leash > 0 and Vector2(g.pos - g.home).length() > leash:
 		g.state = FieldMonsters.STATE_RETURN
-	elif _notices(g, player):
+	elif g.alert_until > now or _notices(g, player):
 		g.state = FieldMonsters.STATE_CHASE
 	elif g.state == FieldMonsters.STATE_CHASE:
 		g.state = FieldMonsters.STATE_RETURN

@@ -26,6 +26,7 @@ class Group extends RefCounted:
 	var home: Vector2i
 	var state: String = "idle"
 	var grace_until: float = -1.0
+	var alert_until: float = -1.0          ## 이 시각까지는 보지 못해도 플레이어를 쫓는다(노움 은닉처를 건드렸다 — FieldFeatureAct)
 	var waypoint: Vector2 = Vector2(-1, -1)  ## 걸어가는 중인 칸 중심(없으면 x < 0)
 	var tag: String = ""                  ## 균열 조우 종류(battle/chain/waves/guardian), 필드 무리는 ""
 	var waves: Array = []                 ## 연전: 이기면 바로 이어지는 다음 구성들(몬스터 id 배열)
@@ -67,13 +68,22 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 	var keep_out := 3.0
 	for z: Dictionary in map.safe_zones:
 		keep_out = maxf(keep_out, float(z["radius"]) + 3.0)
+	# 지도를 한 번만 훑어 구역(area)별로 칸을 모은다(큰 지도에서 지역마다 다시 훑지 않게).
+	var by_area := {}
 	for region in _regions():
-		var cells: Array[Vector2i] = []
-		for i in map.tiles.size():
-			var p := map.pos_of(i)
-			if map.is_walkable(p) and map.portal_at(p).is_empty() and Vector2(p - map.center).length() > keep_out \
-					and _area_of(p) == _region_area(region):
-				cells.append(p)
+		var bucket: Array[Vector2i] = []
+		by_area[_region_area(region)] = bucket
+	for i in map.tiles.size():
+		if not map.defs[map.tiles[i]].walkable:
+			continue
+		var p := map.pos_of(i)
+		var area := _area_of(p)
+		if by_area.has(area) and Vector2(p - map.center).length() > keep_out and map.portal_at(p).is_empty():
+			var into: Array[Vector2i] = by_area[area]
+			into.append(p)
+	for region in _regions():
+		var found: Array[Vector2i] = by_area[_region_area(region)]
+		var cells: Array[Vector2i] = found.duplicate()
 		_region_cells[JsonUtil.get_str(region, "id")] = cells
 		var far := 0.0
 		for c in cells:
@@ -156,8 +166,11 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 	var pcell := Kinematics.cell_of(player)
 	_process_respawns(pcell, now)
 	var max_moves := float(_db.bal("monsters.update_max_moves", 12))
+	var active := float(_db.bal("monsters.active_radius_tiles", 0))
 	var moved := false
 	for g in groups:
+		if active > 0.0 and Vector2(g.pos - pcell).length() > active:
+			continue  # 멀리(시야·화면 밖) 있는 무리는 쉰다 — 큰 지도에서 계산량이 무리 수에 비례해 늘지 않게
 		var budget := minf(hours / _steer.move_hours(g.leader()), max_moves)
 		_steer.decide(g, pcell, now)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):

@@ -1,0 +1,15 @@
+{
+  "id": "cairn",
+  "name_ko": "돌탑",
+  "type": "feature",
+  "tile": "feat_cairn",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.cairn"
+    }
+  ],
+  "source": "placeholder"
+}

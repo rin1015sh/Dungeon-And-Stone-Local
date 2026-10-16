@@ -18,6 +18,7 @@ signal player_died(cause: String)
 signal encounter(group: FieldMonsters.Group, party_first: bool)
 signal transfer(target: ExploreSession)       ## 다른 세션(균열 챕터 ↔ 바깥 층)으로 넘어간다 — 화면이 바꿔 끼운다
 signal riddle_asked(group: FieldMonsters.Group)  ## 수수께끼 문지기(RiftRiddle) — 화면이 문항을 띄우고 answer_riddle을 부른다
+signal feature_choice(at: Vector2i)  ## 동굴 요소의 행동이 여럿이다(맑은 샘 등) — 화면이 고르게 하고 features.act를 부른다
 
 var db: GameDatabase
 var floor_def: Dictionary
@@ -31,6 +32,7 @@ var monsters: FieldMonsters
 var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
+var features: FieldFeatures = FieldFeatures.new()  ## 동굴 요소(시체·샘·모닥불·함정 … — data/events, 자리 = map.features)
 var battle_drops: Array[Dictionary] = []  ## 전투 장면에서 줍기를 기다리는 드롭(grant_battle_rewards defer_drops — DropPickup)
 var pending_messages: Array[Dictionary] = []  ## 화면이 붙기 전에 남긴 메시지(화면이 붙을 때 다시 보여 준다)
 var realtime: RealtimeDriver
@@ -67,6 +69,7 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	lights = LightField.build(map, _mpt)
 	monsters = FieldMonsters.new(db, map, floor_def, rng)
 	lord = LordWatch.new(JsonUtil.get_dict(floor_def, "lord"))
+	features.setup(self)
 	realtime = RealtimeDriver.new()
 	player.pool.set_context("dungeon", true)
 	player.died.connect(_on_player_died)
@@ -87,6 +90,7 @@ func start() -> void:
 	_was_safe = in_safe_zone()
 	if monsters_enabled:
 		monsters.spawn_initial(pos)
+		features.spawn_guards(self)
 	refresh_view()
 
 
@@ -189,6 +193,9 @@ func rest() -> void:
 	if ended or in_combat:
 		return
 	var hours := int(db.bal("explore.rest_hours", 8.0))
+	var bonus := features.rest_bonus(pos)  # 꺼진 모닥불 곁: 시간당 피로가 더 풀린다
+	if bonus < 0.0:
+		_say("field.rest_campfire", {}, "good")
 	if in_safe_zone():
 		_say("explore.rest_safe", {"hours": hours}, "good")
 		var left := minf(float(hours), hours_until_close())  # 폐쇄 시각에서 잘리면 그만큼만 회복한다
@@ -197,11 +204,13 @@ func rest() -> void:
 			left -= h
 			player.pool.tick("rest", h)
 			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, h)
+			player.fatigue.add(bonus * h, "rest_bonus")
 			pass_time(h)
 	else:
 		_say("explore.rest_unsafe", {"hours": hours}, "warn")
 		for i in hours:
 			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, 1.0)
+			player.fatigue.add(bonus, "rest_bonus")
 			pass_time(1.0)
 			if ended or in_combat:
 				break
@@ -273,8 +282,10 @@ func refresh_view() -> void:
 	vision_m = Vision.radius_m(db, floor_def, map, player, pos)
 	if lord.is_active():
 		vision_m = minf(vision_m, lord.vision_cap_m())
-	map.visible_now = Fov.compute(map, pos, vision_m / _mpt)
-	map.remember_visible()
+	var radius := vision_m / _mpt
+	map.visible_now = Fov.compute(map, pos, radius)
+	var r := ceili(radius) + 1
+	map.remember_visible(Rect2i(pos - Vector2i(r, r), Vector2i(r * 2 + 1, r * 2 + 1)))
 	_discover()
 	view_changed.emit()
 
@@ -442,6 +453,7 @@ func _on_enter_cell(from: Vector2i) -> void:
 		ExploreInteract.portal_here(self, map.portal_at(pos))
 	if rift_run != null:
 		rift_run.hazards.on_step(self, pos)
+	features.on_step(self, pos)
 
 
 func _on_status_changed(status_id: String, active: bool) -> void:

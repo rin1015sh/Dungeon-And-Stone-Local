@@ -48,6 +48,17 @@ func carve(p: Vector2i) -> void:
 			_log.append(p.y * w + p.x)
 
 
+## 새로 판 칸 기록 시작/끝(끝에서 기록한 칸 번호를 돌려준다). 곁가지(branch)도 같은 기록을 쓰므로 그 밖에서만 쓴다.
+func start_log() -> void:
+	_log.clear()
+	_logging = true
+
+
+func stop_log() -> Array[int]:
+	_logging = false
+	return _log.duplicate()
+
+
 ## 구간마다 붓 폭을 새로 고른다.
 func pick_brush() -> void:
 	brush = 3 if _rng.chance(wide3_chance) else 2
@@ -84,52 +95,6 @@ func blob(c: Vector2i, radius: float, jitter: float = 0.35) -> void:
 			var lim := radius + (_rng.randf_range(-jitter, jitter) if jitter > 0.0 else 0.0)
 			if Vector2(p - c).length() <= lim:
 				carve(p)
-
-
-## 등뼈 길: start에서 axis 쪽으로 length칸. **절대 뒤로 가지 않는다** → "나침반 방향만 지키면 끝에 닿는다".
-## 직진·옆걸음·계단(대각) 구간을 번갈아 급커브가 많고, 옆으로는 중심선에서 ±lat_limit 안.
-## 끝에서 중심선으로 돌아와 start + axis * length에 닿는다.
-## p: {"outward_run", "side_run", "stair_run", "long_run", "long_run_chance", "weights": {"out", "side", "stair"}}
-func spine(start: Vector2i, axis: Vector2i, length: int, lat_limit: int, p: Dictionary) -> void:
-	var lat := Vector2i(-axis.y, axis.x)
-	var wt := JsonUtil.get_dict(p, "weights")
-	var weights := [JsonUtil.get_float(wt, "out", 1.0), JsonUtil.get_float(wt, "side", 1.0), JsonUtil.get_float(wt, "stair", 1.0)]
-	var u := 0
-	var v := 0
-	var last := -1
-	pick_brush()
-	paint(start)
-	while u < length:
-		pick_brush()
-		var kind := _rng.weighted_index(weights)
-		if kind == 0 and last == 0:
-			kind = 1  # 직진 두 번 연속 금지 → 긴 직선이 드물다
-		last = kind
-		if kind == 0:
-			var n := _range(p, "long_run", 6, 9) if _rng.chance(JsonUtil.get_float(p, "long_run_chance")) else _range(p, "outward_run", 2, 4)
-			for i in mini(n, length - u):
-				u += 1
-				paint(start + axis * u + lat * v)
-		elif kind == 1:
-			var dir := _side_dir(v, lat_limit)
-			for i in _range(p, "side_run", 2, 7):
-				if absi(v + dir) > lat_limit:
-					break
-				v += dir
-				paint(start + axis * u + lat * v)
-		else:
-			var dir := _side_dir(v, lat_limit)
-			for i in _range(p, "stair_run", 2, 5):
-				if u >= length:
-					break
-				u += 1
-				paint(start + axis * u + lat * v)
-				if absi(v + dir) <= lat_limit:
-					v += dir
-					paint(start + axis * u + lat * v)
-	while v != 0:
-		v -= signi(v)
-		paint(start + axis * u + lat * v)
 
 
 ## 곁가지: from에서 heading 쪽으로 치우쳐 구간마다 방향을 꺾으며(급커브) steps걸음.
@@ -281,13 +246,6 @@ func _touches_other(p: Vector2i, trail: Dictionary) -> bool:
 			if is_floor(q + d) and not trail.has(q + d):
 				return true
 	return false
-
-
-func _side_dir(v: int, lat_limit: int) -> int:
-	if v == 0:
-		return 1 if _rng.chance(0.5) else -1
-	var toward := 0.5 + 0.4 * absf(float(v)) / maxf(1.0, float(lat_limit))
-	return -signi(v) if _rng.chance(toward) else signi(v)
 
 
 func _range(p: Dictionary, key: String, lo: int, hi: int) -> int:

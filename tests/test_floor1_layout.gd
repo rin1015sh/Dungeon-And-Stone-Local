@@ -1,5 +1,6 @@
 extends TestCase
-## 1층 십자가 구조(CrossLayout + crystal_cave): 네 포탈 도달·나침반 경로·고정 장소·암흑지대 위치·시야·구역별 스폰·포탈 목적지.
+## 1층 십자가 구조(CrossLayout + crystal_cave): 네 포탈 도달·나침반 경로·고정 장소·암흑지대 위치·시야·구역별 스폰·포탈 목적지,
+## 고정 지도(data/maps — 굽기 시드로 새로 만든 지도와 같은지), 미로 동굴(중간 크기 공동·거대 공동 없음·지하 호수·수정 무리).
 
 const FLOOR := "f1_crystal_cave"
 
@@ -31,6 +32,59 @@ func test_corridors_two_wide_and_no_dead_ends() -> void:
 		var map := _gen(seed_value)
 		assert_eq(GridWiden.count_narrow(GridWiden.walk_cells(map), map.width, map.height), 0, "한 칸 폭 목 없음 (시드 %d)" % seed_value)
 		assert_eq(CrossLayoutCheck.max_dead_end(map), 0, "막다른 길 없음 — 모든 길이 다른 길로 이어진다 (시드 %d)" % seed_value)
+
+
+func test_baked_map_matches_its_seed() -> void:
+	var def := _def()
+	var fixed := JsonUtil.get_dict(def, "fixed_map")
+	assert_true(FloorMapFile.exists(JsonUtil.get_str(fixed, "file")), "고정 지도 파일")
+	var fresh := CrystalCaveGenerator.new().build(db, CrystalCaveGenerator.procedural(def), Rng.new(JsonUtil.get_int(fixed, "seed")))
+	var baked := _gen(1)
+	assert_true(fresh.tiles == baked.tiles, "고정 지도 = fixed_map.seed로 새로 만든 지도 (생성기·gen 값을 바꿨으면 tools/bake_floor.gd로 다시 굽기)")
+	assert_eq(fresh.landmarks.size(), baked.landmarks.size())
+	for i in fresh.landmarks.size():
+		assert_eq(fresh.landmarks[i]["pos"], baked.landmarks[i]["pos"], "랜드마크 %s 자리" % fresh.landmarks[i]["id"])
+
+
+func test_procedural_other_seed_passes_checks() -> void:
+	# 다시 구울 때를 대비: 다른 시드로 만든 지도도 검사를 통과한다
+	var map := CrystalCaveGenerator.new().build(db, CrystalCaveGenerator.procedural(_def()), Rng.new(2))
+	var problems := CrossLayoutCheck.problems(map, _lay())
+	assert_eq(problems.size(), 0, ", ".join(problems))
+
+
+func test_maze_cave_has_medium_caverns_lakes_and_crystals() -> void:
+	var map := _gen(1)
+	var lay := _lay()
+	# 중간 크기 공동: 9×9가 통째로 바닥인 자리가 구역마다 있다 / 너무 큰 공동은 없다(사용자 결정 2026-10-16 — 17×17이 통째로 트인 곳 없음)
+	var open_by_zone := {}
+	var huge := 0
+	for y in range(4, map.height - 4, 3):
+		for x in range(4, map.width - 4, 3):
+			if _open_square(map, Vector2i(x, y), 4):
+				var z := map.zone_at(Vector2i(x, y))
+				open_by_zone[z] = int(open_by_zone.get(z, 0)) + 1
+				if _open_square(map, Vector2i(x, y), 8):
+					huge += 1
+	for z: String in [CrossLayout.ZONE_CENTER] + Array(CrossLayout.ARMS):
+		assert_true(int(open_by_zone.get(z, 0)) >= 10, "%s에 공동 (%d곳)" % [z, int(open_by_zone.get(z, 0))])
+	assert_eq(huge, 0, "17×17이 통째로 트인 거대 공동은 없다")
+	assert_true(map.count_tile("pond_water") > 50, "지하 호수(연못 물 %d칸)" % map.count_tile("pond_water"))
+	assert_true(map.count_tile("crystal_wall") > 500, "수정벽·수정 무리")
+	var walk := 0
+	for i in map.tiles.size():
+		if map.defs[map.tiles[i]].walkable:
+			walk += 1
+	var cross := lay.core_rect().get_area() + 4 * lay.arm_rect("east").get_area()
+	assert_true(walk > cross * 0.25 and walk < cross * 0.6, "십자가 안 바닥 비율 %.2f — 바위 덩어리와 굴이 섞인다" % (float(walk) / cross))
+
+
+func _open_square(map: FloorMap, c: Vector2i, r: int) -> bool:
+	for y in range(c.y - r, c.y + r + 1):
+		for x in range(c.x - r, c.x + r + 1):
+			if not map.is_walkable(Vector2i(x, y)):
+				return false
+	return true
 
 
 func test_spur_detector() -> void:
@@ -70,7 +124,8 @@ func test_cross_shape_and_compass_directions() -> void:
 func test_fixed_places_same_every_entry() -> void:
 	var a := _gen(1)
 	var b := _gen(2)
-	assert_false(a.tiles == b.tiles, "지형은 입장마다 다르다")
+	assert_true(a.tiles == b.tiles, "고정 지도 — 지형은 모든 게임·입장에서 같다")
+	assert_false(a.entry == b.entry, "시작 위치는 입장마다 다르다")
 	assert_eq(a.center, b.center, "기념비 자리")
 	assert_eq(a.tile_id_at(a.center), "monument")
 	assert_eq(b.tile_id_at(b.center), "monument")
@@ -162,6 +217,10 @@ func test_session_spawns_stay_in_their_zone() -> void:
 		zone_of_region[JsonUtil.get_str(r, "id")] = JsonUtil.get_str(r, "zone")
 	assert_true(s.monsters.groups.size() >= 10)
 	for g in s.monsters.groups:
+		if g.region.is_empty():  # 동굴 요소를 지키는 무리(늑대 잠자리·고블린 모닥불 — FieldFeatures.spawn_guards)
+			assert_true(map.features.any(func(f: Dictionary) -> bool: return Vector2(g.home - (f["pos"] as Vector2i)).length() <= 4.0),
+				"지역 없는 무리 %d(%s)는 동굴 요소를 지킨다" % [g.id, g.leader()])
+			continue
 		assert_eq(map.zone_at(g.home), zone_of_region[g.region], "무리 %d(%s)는 제 구역에서 생긴다" % [g.id, g.leader()])
 
 

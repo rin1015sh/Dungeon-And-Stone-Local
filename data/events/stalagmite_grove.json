@@ -1,0 +1,15 @@
+{
+  "id": "stalagmite_grove",
+  "name_ko": "석순 숲",
+  "type": "feature",
+  "tile": "feat_stalagmites",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.stalagmites"
+    }
+  ],
+  "source": "placeholder"
+}

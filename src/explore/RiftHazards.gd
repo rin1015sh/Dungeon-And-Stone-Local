@@ -26,16 +26,22 @@ func place(cs: ExploreSession, ch: Dictionary, floor_tile: String, rng: Rng) -> 
 			if cells.is_empty():
 				return
 			var c: Vector2i = rng.pick(cells)
-			var group := hd.duplicate()
-			group["cells"] = []
-			for dy in range(-1, 2):
-				for dx in range(-1, 2):
-					var p := c + Vector2i(dx, dy)
-					if cs.map.in_bounds(p) and cs.map.is_walkable(p) and cs.map.portal_at(p).is_empty() and not at.has(p):
-						cs.map.set_tile(p, _floor_tile if JsonUtil.get_bool(hd, "hidden") else JsonUtil.get_str(hd, "tile"))
-						at[p] = group
-						(group["cells"] as Array).append(p)
+			add_group(cs, hd, c, floor_tile)
 			used.append(c)
+
+
+## 칸 c 둘레 3×3(걸을 수 있는 칸)에 위험 묶음 하나를 깐다(1층 동굴 요소의 함정도 이것을 쓴다 — FieldFeatures).
+func add_group(cs: ExploreSession, hd: Dictionary, c: Vector2i, floor_tile: String) -> void:
+	_floor_tile = floor_tile
+	var group := hd.duplicate()
+	group["cells"] = []
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			var p := c + Vector2i(dx, dy)
+			if cs.map.in_bounds(p) and cs.map.is_walkable(p) and cs.map.portal_at(p).is_empty() and not at.has(p):
+				cs.map.set_tile(p, _floor_tile if JsonUtil.get_bool(hd, "hidden") else JsonUtil.get_str(hd, "tile"))
+				at[p] = group
+				(group["cells"] as Array).append(p)
 
 
 ## 칸에 들어섰다. 위험이 있었으면 판정 결과(true = 무사히 지남), 없으면 null.

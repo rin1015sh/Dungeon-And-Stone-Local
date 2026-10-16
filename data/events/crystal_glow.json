@@ -1,0 +1,10 @@
+{
+  "id": "crystal_glow",
+  "name_ko": "수정 빛",
+  "type": "feature",
+  "near": {
+    "radius": 5,
+    "line": "field.crystal_glow"
+  },
+  "source": "placeholder"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "gnome_stash",
+  "name_ko": "노움의 은닉처",
+  "type": "feature",
+  "tile": "feat_gnome_stash",
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "손을 넣는다",
+      "limit": "once",
+      "line": "field.gnome_stash",
+      "give": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            2
+          ]
+        },
+        {
+          "item": "gnome_trinket",
+          "count": [
+            1,
+            2
+          ]
+        }
+      ],
+      "alert": {
+        "monster": "gnome",
+        "radius": 22,
+        "hours": 0.5
+      },
+      "done": "field.gnome_stash_done"
+    }
+  ],
+  "source": "placeholder"
+}

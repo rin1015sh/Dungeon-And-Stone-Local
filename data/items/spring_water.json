@@ -1,0 +1,22 @@
+{
+  "id": "spring_water",
+  "name_ko": "샘물 병",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 3,
+  "price": 5,
+  "icon": "potion",
+  "color": "#8ab8e0",
+  "rarity": "common",
+  "source": "placeholder",
+  "use_effects": [
+    {
+      "type": "fatigue",
+      "amount": -6
+    }
+  ],
+  "consumable": true
+}

@@ -1,34 +1,51 @@
 class_name CrossTerrain
 extends RefCounted
 ## 1층 십자가의 동굴 지형(벽/바닥 격자)만 판다 — 고정 장소·타일 배치는 생성기(generators/crystal_cave.gd) 몫.
-## 순서: 윤곽(팔 수 있는 칸) → 중심부 동굴 → 기념비 공터 → 등뼈 길 4개(기념비 → 포탈, 뒤로 가지 않음)
-##       → 곁가지(갈림길·합류 — 막다른 길 없음) → 벽 깎기 → 포탈 공동 → 떨어진 굴 잇기/메우기 → 통로 폭 최소 2칸.
-## 굴 폭: 붓 2~3칸(CaveCarver), 마지막에 GridWiden이 한 칸 폭 목을 없앤다.
+## 순서: 윤곽(팔 수 있는 칸) → 기념비 공터 → 등뼈 길 4개(기념비 → 포탈, 뒤로 가지 않음)
+##       → 방·공동(CaveChambers: 기념비 대공동·포탈 공동·등뼈 위 쉼터·구역마다 큰 공동/공동/방)
+##       → 공동 잇기(CaveLinks: 최소 신장 트리 + 순환로, 구불구불한 굴) → 곁가지(갈림길·합류 — 막다른 길 없음)
+##       → 공동 안 꾸밈(CaveDecor: 기둥·수정·호수·바위 — 등뼈 길 둘레 제외) → 벽 깎기 → 포탈 공동
+##       → 떨어진 굴 잇기/메우기 → 통로 폭 최소 2칸.
+## 굴 폭: 붓 2~3칸(CaveCarver)·원판(CaveLinks), 마지막에 GridWiden이 한 칸 폭 목을 없앤다.
 ## 값은 floors/*.json의 gen(설명은 그 _comment).
 
 
-## cells(1 = 벽, 0 = 바닥, 크기 lay.side²)를 돌려준다.
-static func build(lay: CrossLayout, g: Dictionary, rng: Rng) -> PackedByteArray:
+## {"cells": 1 = 벽 / 0 = 바닥(크기 lay.side²), "decor": CaveDecor.build 결과}.
+static func build(lay: CrossLayout, g: Dictionary, rng: Rng) -> Dictionary:
 	var carver := CaveCarver.new(lay.side, lay.side, rng)
 	carver.wide3_chance = JsonUtil.get_float(g, "wide3_chance", 0.35)
 	_outline(carver, lay, JsonUtil.get_int(g, "outline_jitter", 2), rng)
-	_core_cave(carver, lay, g, rng)
 	var plaza := JsonUtil.get_float(g, "center_radius", 5.0)
 	carver.blob(lay.center, plaza, 0.0)
 	var start_off := maxi(1, int(plaza) - 1)
 	var lat_limit := maxi(1, lay.arm_half - JsonUtil.get_int(g, "outline_jitter", 2) - 3)
+	carver.start_log()
 	for dir in CrossLayout.ARMS:
 		var a := CrossLayout.axis(dir)
-		carver.spine(lay.center + a * start_off, a, lay.core_half + lay.arm_length - lay.portal_inset - start_off,
-			lat_limit, JsonUtil.get_dict(g, "spine"))
+		CaveLinks.spine(carver, lay.center + a * start_off, a, lay.core_half + lay.arm_length - lay.portal_inset - start_off,
+			lat_limit, JsonUtil.get_dict(g, "spine"), rng)
+	var spine := carver.stop_log()
+	var ch_cfg := JsonUtil.get_dict(g, "chambers")
+	var chambers: Array[Dictionary] = []
+	if not ch_cfg.is_empty():
+		chambers = CaveChambers.build(carver, lay, ch_cfg, spine, rng)
+		CaveLinks.build(carver, chambers, JsonUtil.get_dict(ch_cfg, "links"), rng)
+	var branches := JsonUtil.get_dict(g, "branches")
+	_fill_area(carver, lay.core_rect(), Vector2i(1, 0), branches, rng)
 	for dir in CrossLayout.ARMS:
-		_fill_arm(carver, lay, dir, JsonUtil.get_dict(g, "branches"), rng)
-	_roughen(carver, JsonUtil.get_float(g, "roughen_chance", 0.15), rng)
+		_fill_area(carver, lay.arm_rect(dir), CrossLayout.axis(dir), branches, rng)
+	var decor := {}
+	if not chambers.is_empty():
+		var dc := JsonUtil.get_dict(ch_cfg, "decor")
+		var keep := CaveDecor.keep_mask(spine, carver.w, carver.h, JsonUtil.get_int(dc, "keep_clear", 3))
+		decor = CaveDecor.build(carver, chambers, keep, dc, rng)
+	for i in JsonUtil.get_int(g, "roughen_passes", 1):
+		_roughen(carver, JsonUtil.get_float(g, "roughen_chance", 0.15), rng)
 	for dir in CrossLayout.ARMS:
 		carver.blob(lay.portal_pos(dir), JsonUtil.get_float(g, "portal_room_radius", 2.5), 0.0)
 	_connect_pockets(carver, lay.center, JsonUtil.get_int(g, "min_region", 20))
 	carver.widen(JsonUtil.get_int(g, "widen_passes", 6))
-	return carver.cells
+	return {"cells": carver.cells, "decor": decor}
 
 
 ## 팔 수 있는 칸: 중심부 정사각형 전체 + 팔(옆 폭은 칸마다 조금씩 흔들려 윤곽이 자연스럽다). 팔 끝 줄은 벽으로 남긴다.
@@ -50,34 +67,18 @@ static func _outline(carver: CaveCarver, lay: CrossLayout, jitter: int, rng: Rng
 				carver.allowed[p.y * lay.side + p.x] = 1
 
 
-## 중심부: 둥근 사각형 안에 셀룰러 오토마타 동굴(팔보다 트인 공동이 많다).
-static func _core_cave(carver: CaveCarver, lay: CrossLayout, g: Dictionary, rng: Rng) -> void:
-	var n := lay.core_half * 2 + 3
-	var cells := GridAlgo.random_fill(n, n, JsonUtil.get_float(g, "core_fill_ratio", 0.45), rng)
-	for i in JsonUtil.get_int(g, "core_smooth_steps", 4):
-		cells = GridAlgo.smooth(cells, n, n)
-	var r := float(lay.core_half) - 1.0
-	for y in n:
-		for x in n:
-			var d := Vector2i(x, y) - Vector2i(n / 2, n / 2)
-			var rounded := Vector2(d).length() * 0.45 + maxi(absi(d.x), absi(d.y)) * 0.55
-			if cells[y * n + x] == 0 and rounded <= r:
-				carver.carve(lay.center + d)
-
-
-## 팔 하나를 곁가지로 채운다: 밀도(density)에 닿을 때까지 빈 땅을 골라 가장 가까운 굴에서 그쪽으로 뻗는다.
+## 구역 하나(중심부·팔)를 곁가지로 채운다: 밀도(density)에 닿을 때까지 빈 땅을 골라 가장 가까운 굴에서 그쪽으로 뻗는다.
 ## 곁가지는 다른 굴에 닿으면 합류(순환)하고, 못 닿으면 가장 가까운 굴로 다시 이어진다(CaveCarver.branch — 막다른 길 없음).
 ## 합류한 자리에는 join_room_chance로 작은 공동.
-static func _fill_arm(carver: CaveCarver, lay: CrossLayout, dir: String, b: Dictionary, rng: Rng) -> void:
-	var rect := lay.arm_rect(dir)
+static func _fill_area(carver: CaveCarver, rect: Rect2i, axis: Vector2i, b: Dictionary, rng: Rng) -> void:
 	var target := int(rect.get_area() * JsonUtil.get_float(b, "density", 0.42))
 	var steps := JsonUtil.get_array(b, "steps")
 	var room := JsonUtil.get_array(b, "room_radius")
 	for n in JsonUtil.get_int(b, "max_per_arm", 70):
-		if n % 4 == 0 and carver.floor_count_in(rect) >= target:
+		if n % 8 == 0 and carver.floor_count_in(rect) >= target:
 			break
 		# 빈 땅을 하나 골라 가장 가까운 길에서 그쪽으로 뻗는다(이미 굴이 많은 곳만 더 파이지 않게).
-		var heading := CrossLayout.axis(dir)
+		var heading := axis
 		var from := CaveCarver.NONE
 		var empty := carver.random_empty_in(rect, JsonUtil.get_int(b, "empty_clearance", 3))
 		if empty != CaveCarver.NONE:

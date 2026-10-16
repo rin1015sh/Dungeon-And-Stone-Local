@@ -1,27 +1,63 @@
 class_name CrystalCaveGenerator
 extends FloorGenerator
-## 1층 수정동굴 생성기 — 거대한 두꺼운 십자가(CrossLayout: 중심부 + 동·서·남·북 팔).
-## 고정(시드 무관): 십자가 구역, 중앙 대현자 기념비, 팔 끝 2층 포탈 4개, 팔 끝 암흑지대 4곳.
-## 입장마다 새로(시드): 중심부 동굴(셀룰러 오토마타), 팔 안의 스파게티 동굴(CaveCarver), 무작위 랜드마크, 수정벽, 시작 위치.
-## 순서: 동굴 지형(CrossTerrain) → 타일·구역·암흑지대 → 기념비 → 포탈 → 무작위 랜드마크 → 통로 폭 다시 맞추기
-##       → 수정벽(암흑지대 제외) → 시작 위치.
+## 1층 수정동굴 생성기 — 거대한 두꺼운 십자가(CrossLayout: 중심부 + 동·서·남·북 팔) 안의 거대한 동굴(방·공동·굴).
+## 고정 지도(층 JSON fixed_map — 모든 게임에서 같은 지도): fixed_map.file이 있으면 그 파일의 지형을 읽고 시작 위치만 시드로 고른다.
+##   파일은 tools/bake_floor.gd가 fixed_map.seed로 아래 절차를 돌려 만든다(파일이 없으면 그 시드로 바로 만든다).
+## 절차(시드): 동굴 지형(CrossTerrain) → 타일·구역·암흑지대 → 공동 꾸밈(수정·호수·바위) → 기념비 → 포탈 → 무작위 랜드마크
+##       → 통로 폭 다시 맞추기 → 막다른 곳 메우기 → 수정벽(암흑지대 제외) → 동굴 요소(FieldFeaturePlacer) → 시작 위치.
 ## 불변식(테스트가 확인): 걷는 칸은 모두 이어져 있고, 기념비 옆에서 네 포탈 모두 그 팔 방향으로만(뒤로 가지 않고) 걸어 닿는다.
 
 const STAMP_TRIES := 60
+const ENTRY_TRIES := 20000
 
 
 func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
+	var fixed := JsonUtil.get_dict(floor_def, "fixed_map")
+	if fixed.is_empty():
+		return build(db, floor_def, rng)
 	var g := JsonUtil.get_dict(floor_def, "gen")
 	var lay := CrossLayout.new(g)
-	var cells := CrossTerrain.build(lay, g, rng)
+	var data := FloorMapFile.read(JsonUtil.get_str(fixed, "file"))
+	var map: FloorMap
+	if FloorMapFile.problems(data, db, lay.side).is_empty():
+		map = FloorMap.new(db, lay.side, lay.side, JsonUtil.get_str(JsonUtil.get_dict(g, "tiles"), "wall"))
+		map.floor_id = JsonUtil.get_str(floor_def, "id")
+		map.seed_value = JsonUtil.get_int(data, "seed")
+		FloorMapFile.apply(data, map)
+		FieldFeaturePlacer.apply_tiles(db, map)
+		lay.mark_zones(map)
+		_add_safe_zones(map, floor_def)
+		_add_portals(map, lay, floor_def)
+	else:
+		push_warning("crystal_cave: 고정 지도 파일을 쓸 수 없어 fixed_map.seed로 만든다 — tools/bake_floor.gd로 다시 굽기")
+		map = build(db, procedural(floor_def), Rng.new(JsonUtil.get_int(fixed, "seed", 1)))
+	_place_entry(map, lay, g, JsonUtil.get_str(JsonUtil.get_dict(g, "tiles"), "floor"), rng)
+	return map
+
+
+## 고정 지도를 무시하고 절차대로 만드는 층 정의(굽기·시드 비교용).
+static func procedural(floor_def: Dictionary) -> Dictionary:
+	var d := floor_def.duplicate(true)
+	d.erase("fixed_map")
+	return d
+
+
+## 절차 생성(시드). 같은 시드면 같은 지도.
+func build(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
+	var g := JsonUtil.get_dict(floor_def, "gen")
+	var lay := CrossLayout.new(g)
+	var terrain := CrossTerrain.build(lay, g, rng)
 	var tiles := JsonUtil.get_dict(g, "tiles")
-	var map := _to_map(db, floor_def, lay, cells, tiles, rng)
+	var map := _to_map(db, floor_def, lay, terrain["cells"], tiles, rng)
+	CaveDecor.apply(map, lay, g, terrain["decor"])
 	_place_monument(db, map, floor_def)
 	_place_portals(map, lay, floor_def, tiles)
 	_place_random_landmarks(db, map, lay, floor_def, rng)
 	_widen_map(map, g, tiles)
 	_trim_dead_ends(map, g, tiles)
 	_place_crystals(map, lay, g, tiles, rng)
+	FieldFeaturePlacer.place(db, map, lay, floor_def, g, rng)
+	FieldFeaturePlacer.apply_tiles(db, map)
 	_place_entry(map, lay, g, JsonUtil.get_str(tiles, "floor"), rng)
 	return map
 
@@ -60,6 +96,10 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 			out.append("crystal_cave: portals.dest(도착 지점 id)가 비었다")
 	if dirs.size() != 4 or not CrossLayout.ARMS.all(func(d: String) -> bool: return dirs.has(d)):
 		out.append("crystal_cave: portals는 east/west/south/north에 하나씩")
+	var fixed := JsonUtil.get_dict(floor_def, "fixed_map")
+	if not fixed.is_empty():
+		for p in FloorMapFile.problems(FloorMapFile.read(JsonUtil.get_str(fixed, "file")), db, lay.side):
+			out.append("crystal_cave: fixed_map %s — %s" % [JsonUtil.get_str(fixed, "file"), p])
 	return out
 
 
@@ -67,19 +107,11 @@ func _to_map(db: GameDatabase, floor_def: Dictionary, lay: CrossLayout, cells: P
 	var map := FloorMap.new(db, lay.side, lay.side, JsonUtil.get_str(tiles, "wall"))
 	map.floor_id = JsonUtil.get_str(floor_def, "id")
 	map.seed_value = rng.seed_value
-	map.center = lay.center
-	for z: String in [CrossLayout.ZONE_CENTER] + Array(CrossLayout.ARMS):
-		map.zone_ids.append(z)
 	var floor_index := map.index_of(JsonUtil.get_str(tiles, "floor"))
 	for i in map.tiles.size():
-		var p := map.pos_of(i)
 		if cells[i] == 0:
 			map.tiles[i] = floor_index
-		var zone := lay.zone_of(p)
-		if not zone.is_empty():
-			map.zones[i] = map.zone_ids.find(zone)
-		if lay.is_dark(p):
-			map.dark[i] = 1
+	lay.mark_zones(map)
 	return map
 
 
@@ -93,20 +125,33 @@ func _place_monument(db: GameDatabase, map: FloorMap, floor_def: Dictionary) -> 
 		var lm := db.get_entry("landmarks", JsonUtil.get_str(sd, "id"))
 		if not lm.is_empty():
 			_stamp_at(map, lm, map.center)
+	_add_safe_zones(map, floor_def)
+
+
+## 기념비 둘레 안전지대(층 JSON landmarks의 placement=center, safe_zone_radius).
+static func _add_safe_zones(map: FloorMap, floor_def: Dictionary) -> void:
+	for spec: Variant in JsonUtil.get_array(floor_def, "landmarks"):
+		var sd: Dictionary = spec if spec is Dictionary else {}
+		if JsonUtil.get_str(sd, "placement") == "center":
 			map.safe_zones.append({"center": map.center, "radius": JsonUtil.get_float(sd, "safe_zone_radius", 4.0)})
 
 
 ## 팔 끝(암흑지대 안) 고정 자리에 2층 포탈. dest = 2층 도착 지점 id(포탈마다 다르다).
 func _place_portals(map: FloorMap, lay: CrossLayout, floor_def: Dictionary, tiles: Dictionary) -> void:
+	_add_portals(map, lay, floor_def)
+	for portal: Dictionary in map.portals:
+		map.set_tile(portal["pos"], JsonUtil.get_str(tiles, "portal"))
+
+
+## 포탈 기록(자리는 고정 뼈대에서).
+static func _add_portals(map: FloorMap, lay: CrossLayout, floor_def: Dictionary) -> void:
 	for spec: Variant in JsonUtil.get_array(floor_def, "portals"):
 		var sd: Dictionary = spec if spec is Dictionary else {}
 		var dir := JsonUtil.get_str(sd, "dir")
 		if not CrossLayout.ARMS.has(dir):
 			continue
-		var at := lay.portal_pos(dir)
-		map.set_tile(at, JsonUtil.get_str(tiles, "portal"))
-		map.portals.append({"id": JsonUtil.get_str(sd, "id"), "pos": at, "dir": dir, "to_floor": JsonUtil.get_int(sd, "to_floor"),
-			"dest": JsonUtil.get_str(sd, "dest"), "found": false})
+		map.portals.append({"id": JsonUtil.get_str(sd, "id"), "pos": lay.portal_pos(dir), "dir": dir,
+			"to_floor": JsonUtil.get_int(sd, "to_floor"), "dest": JsonUtil.get_str(sd, "dest"), "found": false})
 
 
 ## 기준 칸(anchor)이 at에 오도록 도장을 찍고 랜드마크로 기록한다.
@@ -174,12 +219,14 @@ func _widen_map(map: FloorMap, g: Dictionary, tiles: Dictionary) -> void:
 	var can := PackedByteArray()
 	can.resize(cells.size())
 	var wall_index := map.index_of(JsonUtil.get_str(tiles, "wall"))
+	var carvable := {wall_index: true, map.index_of(JsonUtil.get_str(tiles, "crystal")): true,
+		map.index_of(JsonUtil.get_str(tiles, "boulder", "boulder")): true}  # 공동 꾸밈(수정 무리·바위)도 깎을 수 있다 — 호수는 아니다
 	for i in cells.size():
-		can[i] = 1 if map.tiles[i] == wall_index and map.zones[i] != 0 else 0
+		can[i] = 1 if carvable.has(map.tiles[i]) and map.zones[i] != 0 and not _inside_landmark(map, map.pos_of(i)) else 0
 	GridWiden.widen(cells, can, map.width, map.height, JsonUtil.get_int(g, "widen_passes", 6), false)
 	var floor_index := map.index_of(JsonUtil.get_str(tiles, "floor"))
 	for i in cells.size():
-		if cells[i] == 0 and map.tiles[i] == wall_index:
+		if cells[i] == 0 and carvable.has(map.tiles[i]):
 			map.tiles[i] = floor_index
 
 
@@ -206,13 +253,7 @@ func _trim_dead_ends(map: FloorMap, g: Dictionary, tiles: Dictionary) -> void:
 func _place_crystals(map: FloorMap, lay: CrossLayout, g: Dictionary, tiles: Dictionary, rng: Rng) -> void:
 	var chance := JsonUtil.get_float(g, "crystal_wall_chance", 0.07)
 	var margin := JsonUtil.get_int(g, "crystal_dark_margin", 3)
-	var no_light := PackedByteArray()
-	no_light.resize(map.tiles.size())
-	for dir in CrossLayout.ARMS:
-		var r := lay.dark_rect(dir).grow(margin).intersection(Rect2i(0, 0, map.width, map.height))
-		for y in range(r.position.y, r.end.y):
-			for x in range(r.position.x, r.end.x):
-				no_light[y * map.width + x] = 1
+	var no_light := lay.no_light_mask(map, margin)
 	var wall_index := map.index_of(JsonUtil.get_str(tiles, "wall"))
 	var crystal_index := map.index_of(JsonUtil.get_str(tiles, "crystal"))
 	var walk := GridWiden.walk_cells(map)
@@ -227,18 +268,20 @@ func _place_crystals(map: FloorMap, lay: CrossLayout, g: Dictionary, tiles: Dict
 
 
 ## 시작 위치: 팔 안(암흑지대에서 entry_dark_margin칸 이상 떨어진 곳), 기념비에서 entry_min_distance 이상.
+## 칸을 무작위로 뽑아 조건에 맞을 때까지(큰 지도를 통째로 훑지 않는다 — 고른 칸은 조건에 맞는 칸 중 고르게 나온다).
 func _place_entry(map: FloorMap, lay: CrossLayout, g: Dictionary, floor_tile: String, rng: Rng) -> void:
 	var min_dist := JsonUtil.get_float(g, "entry_min_distance", 18.0)
 	var max_depth := lay.dark_start() - JsonUtil.get_int(g, "entry_dark_margin", 4)
 	var floor_index := map.index_of(floor_tile)
-	var candidates: Array[Vector2i] = []
-	for i in map.tiles.size():
-		var p := map.pos_of(i)
+	map.entry = monument_side(map, "south")
+	for attempt in ENTRY_TRIES:
+		var p := Vector2i(rng.randi_range(0, map.width - 1), rng.randi_range(0, map.height - 1))
+		var i := map.idx(p)
 		if map.tiles[i] != floor_index or map.dark[i] != 0 or not CrossLayout.ARMS.has(map.zone_at(p)):
 			continue
 		if lay.arm_depth(p) <= max_depth and Vector2(p - map.center).length() >= min_dist and not _inside_landmark(map, p):
-			candidates.append(p)
-	map.entry = rng.pick(candidates) if not candidates.is_empty() else monument_side(map, "south")
+			map.entry = p
+			return
 
 
 func _inside_landmark(map: FloorMap, p: Vector2i) -> bool:

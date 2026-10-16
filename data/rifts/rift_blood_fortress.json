@@ -187,6 +187,13 @@
         {
           "kind": "battle",
           "monsters": [
+            "deathfiend",
+            "skull_rat"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
             "ghoul_lord"
           ]
         },

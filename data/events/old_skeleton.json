@@ -1,0 +1,15 @@
+{
+  "id": "old_skeleton",
+  "name_ko": "오래된 해골",
+  "type": "feature",
+  "tile": "feat_old_skeleton",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.old_skeleton"
+    }
+  ],
+  "source": "placeholder"
+}

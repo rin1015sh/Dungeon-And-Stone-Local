@@ -1,0 +1,20 @@
+{
+  "id": "wolf_den",
+  "name_ko": "뼈와 털 무더기",
+  "type": "feature",
+  "tile": "feat_wolf_den",
+  "guard": {
+    "monster": "blade_wolf"
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "once",
+      "line": "field.wolf_den",
+      "learn_stats": "blade_wolf",
+      "done": "field.wolf_den_done"
+    }
+  ],
+  "source": "placeholder"
+}

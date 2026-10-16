@@ -1,11 +1,15 @@
 extends SceneTree
 ## 층 전체 지도를 PNG로 그리고 검사 결과를 출력한다(디버그 미니맵).
-##   godot --headless --path . --script res://tools/floor_map.gd -- --seed=5 --out=C:/tmp/f1.png [--floor=f1_crystal_cave] [--scale=5] [--no-spawns]
+##   godot --headless --path . --script res://tools/floor_map.gd -- --seed=5 --out=C:/tmp/f1.png [--floor=f1_crystal_cave] [--scale=5] [--no-spawns] [--procedural]
+## 고정 지도(층 JSON fixed_map)가 있는 층은 그 지도를 그린다(시드는 시작 위치·무리만 바꾼다). --procedural이면 고정 지도를 무시하고
+## 그 시드로 새로 만든다(굽기 전에 시드 고르기).
 ## 색(data/render.json "debug_map"): 구역별 바닥색(중심부·동·서·남·북), 같은 색의 어두운 벽, 수정벽, 암흑지대(어둡게 + 빗금),
-## 기념비(흰색), 2층 포탈(분홍), 시작 위치(하늘색), 무작위 랜드마크(노란 테두리), 몬스터 무리(몬스터별 점), 막다른 곳(주황).
+## 기념비(흰색), 2층 포탈(분홍), 시작 위치(하늘색), 무작위 랜드마크(노란 테두리), 몬스터 무리(몬스터별 점), 막다른 곳(주황),
+## 동굴 요소(검은 테두리 + 그 타일의 표식 색).
 ## 검사(CrossLayoutCheck): 네 포탈 도달·나침반 경로·연결·암흑지대 위치·지역 스폰. 문제가 있으면 종료 코드 1.
 
 var _args: Dictionary = {"seed": "1", "out": "user://floor_map.png", "floor": "f1_crystal_cave", "scale": ""}
+var _db: GameDatabase
 
 
 func _initialize() -> void:
@@ -16,8 +20,11 @@ func _initialize() -> void:
 			_args[a.substr(2)] = "true"
 	var db := GameDatabase.new()
 	db.load_all("res://data")
+	_db = db
 	var reg := ContentRegistries.new()
 	var def := db.get_entry("floors", str(_args["floor"]))
+	if _args.has("procedural"):
+		def = CrystalCaveGenerator.procedural(def)
 	var seed_value := str(_args["seed"]).to_int()
 	var t := Time.get_ticks_usec()
 	var map := reg.generator(JsonUtil.get_str(def, "generator")).generate(db, def, Rng.new(seed_value))
@@ -112,6 +119,15 @@ func _draw(map: FloorMap, fm: FieldMonsters, cfg: Dictionary, s: int) -> Image:
 		var p: Vector2i = portal["pos"]
 		img.fill_rect(Rect2i((p - Vector2i.ONE) * s, Vector2i(3, 3) * s), _c(cfg, "portal"))
 	img.fill_rect(Rect2i(map.entry * s - Vector2i(s, s) / 2, Vector2i(2, 2) * s), _c(cfg, "entry"))
+	for f: Dictionary in map.features:  # 동굴 요소: 타일 표식 색(없으면 기본색), 테두리 = 검정
+		var tile := JsonUtil.get_str(_db.get_entry("events", str(f["id"])), "tile")
+		if tile.is_empty():
+			tile = JsonUtil.get_str(JsonUtil.get_dict(_db.get_entry("events", str(f["id"])), "hazard"), "tile")
+		var mark := JsonUtil.get_dict(_db.get_entry("tiles", tile), "colors")
+		var fc := Color.from_string(JsonUtil.get_str(mark, "mark", JsonUtil.get_str(cfg, "feature", "#ffffff")), Color.WHITE)
+		var fp: Vector2i = f["pos"]
+		img.fill_rect(Rect2i((fp - Vector2i.ONE) * s, Vector2i(3, 3) * s), Color.BLACK)
+		img.fill_rect(Rect2i(fp * s, Vector2i(s, s)), fc)
 	var mcol := JsonUtil.get_dict(cfg, "monsters")
 	for g in fm.groups:
 		var c := Color.from_string(JsonUtil.get_str(mcol, g.leader(), JsonUtil.get_str(cfg, "monster_default", "#ffffff")), Color.WHITE)

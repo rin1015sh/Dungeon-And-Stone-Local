@@ -1,0 +1,15 @@
+{
+  "id": "gnome_trinket",
+  "name_ko": "노움의 반짝이 돌",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 800,
+  "icon": "stone",
+  "color": "#e8d070",
+  "rarity": "common",
+  "source": "placeholder"
+}

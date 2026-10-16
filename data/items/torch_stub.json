@@ -1,0 +1,23 @@
+{
+  "id": "torch_stub",
+  "name_ko": "타다 남은 횃불",
+  "category": "light",
+  "size": [
+    1,
+    2
+  ],
+  "stack": 5,
+  "price": 500,
+  "icon": "torch",
+  "color": "#7a5a34",
+  "rarity": "common",
+  "source": "placeholder",
+  "use_effects": [
+    {
+      "type": "light_source",
+      "radius_m": 7.0,
+      "hours": 12
+    }
+  ],
+  "consumable": true
+}

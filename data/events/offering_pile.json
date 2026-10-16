@@ -1,0 +1,45 @@
+{
+  "id": "offering_pile",
+  "name_ko": "공물 더미",
+  "type": "feature",
+  "tile": "feat_offering",
+  "actions": [
+    {
+      "id": "offer",
+      "name_ko": "마석을 바친다",
+      "limit": "once",
+      "line": "field.offering_offer",
+      "cost": {
+        "item": "magic_stone_9",
+        "count": 1
+      },
+      "missing": "field.offering_no_stone",
+      "done": "field.offering_offered"
+    },
+    {
+      "id": "take",
+      "name_ko": "마석을 집어 든다",
+      "limit": "once",
+      "line": "field.offering_take",
+      "give": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            2,
+            4
+          ]
+        },
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.25
+        }
+      ],
+      "done": "field.offering_taken"
+    }
+  ],
+  "source": "placeholder"
+}
