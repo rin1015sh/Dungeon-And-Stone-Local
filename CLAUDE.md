@@ -27,6 +27,7 @@
 - **1층 고정 지도 굽기**(생성기·`gen` 값을 바꿨으면 필수 — 테스트가 파일과 시드 결과를 비교한다): `godot --headless --path . --script res://tools/bake_floor.gd [-- --seed=<시드>]` → `data/maps/f1_crystal_cave.json`(한 글자 = 한 칸, rows[y][x]). 시드를 바꾸면 층 JSON `fixed_map.seed`도 고친다. **이벤트를 좌표로 놓은 뒤에는 다시 구우면 좌표가 어긋난다.**
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
+  - **장면 목록 일괄 캡처**(탐험 맵 그림 전후 비교): `--screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>` → 장면마다 PNG + 걸음당 프레임(`bench`). 기준은 `docs/screens/before/`(`tools/ShotList.gd`).
   - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
 - 도시 그림 다시 만들기(약 2분): `godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors|plaza]` → `assets/city/`(데이터가 가리키는 경로, WebP). 그림체 = 피어 앤 헝거 2풍 손그림 일러스트(ASSUMPTIONS CT21~CT25).
   - 렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다).
@@ -81,7 +82,7 @@
 
 ```
 project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSystem, AudioBus
-CLAUDE.md  README.md  docs/{CANON(정본 요약),HANDOFF(인계 프롬프트),PROMPT,PROMPT_FLOOR1_V2,DESIGN,PROGRESS,ASSUMPTIONS,ART,DEPLOY}.md  docs/balance/(시뮬레이터·임시값 표)
+CLAUDE.md  README.md  docs/{CANON(정본 요약),HANDOFF(인계 프롬프트),PROMPT,PROMPT_FLOOR1_V2,PROMPT_ART_MAP(탐험 맵 그림 지시서),DESIGN,PROGRESS,ASSUMPTIONS,ART,DEPLOY}.md  docs/balance/(시뮬레이터·임시값 표)  docs/plans/(기획서)  docs/screens/(그림 전후 캡처)
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
@@ -105,7 +106,7 @@ src/
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종),
                          CrossLayout·CrossTerrain·CaveCarver·CrossLayoutCheck(1층 십자가 뼈대·굴 파기·검사), CaveChambers·CaveLinks·CaveDecor(방·공동·잇는 굴·등뼈 길·호수/기둥/수정),
-                         FloorMapFile(고정 지도 파일 읽기/쓰기), FieldFeaturePlacer·FieldFeatures·FieldFeatureAct(동굴 요소 배치·규칙·행동), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
+                         FloorMapFile(고정 지도 파일 읽기/쓰기), FloorArtCheck(그림 층 검사 — 변형 연속·장식 막힘·요소 겹침), FieldFeaturePlacer·FieldFeatures·FieldFeatureAct(동굴 요소 배치·규칙·행동), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환),
                          RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), ExploreDebug(디버그 순간이동·안개 걷기), view/{FloorView,FloorChunk,WallRow,ActorView,MonsterView,FigurePainter}
@@ -124,7 +125,7 @@ src/
   ui/combat/             BattleStage(전투 무대 — 어둠·빛 웅덩이, 적 정면·아군 뒷모습 배치), BattlerView, MonsterArt(몬스터 그림·몸 높이 색인), CombatFigure(그림 없을 때 몸 그리기), PartyRoster(파티 창), DropMark(쓰러진 자리의 드롭)·CombatDrops(전투 뒤 드롭 묻기)
   ui/screens/            TitleScreen(이어하기), CharacterCreateScreen, CityScreen, PlazaScreen(차원광장·포탈·저장), ExploreScreen, CombatScreen(전투 — ui/combat 위젯을 모음), EndScreen, FoundationScreen(기반 점검), DataErrorScreen
 tests/                   TestCase, run_tests.gd, test_*.gd(test_save 저장 · test_web 웹 배포 점검), smoke_ui.gd/.tscn
-tools/                   check.sh, export_web.sh(웹 내보내기), validate_data.gd, screenshot.gd/.tscn, bake_floor.gd(1층 고정 지도 굽기), paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Icons·Props 소품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors·InteriorRooms·InteriorBits 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), paint_monsters.gd + monster_art/(몬스터 전투 그림 → assets/monsters/: Clay·ClayBase 3D 덩어리 조형·Render·Pen 붓 칠/잉크/빗금·Kinds 재질·Figure 설계 읽기·Rig 뼈대·Anatomy 몸·Face·FaceInk 얼굴·Hair·Headgear·Kit 옷·Arms 무기·Extras 날개/꼬리·Fur 털·Beast(Head) 네발짐승·Things(2) 기괴체·Lord 계층군주 드레드피어·Finish 피/마감·Specs(2) 52종 설계 · 아군 뒷모습: Back 3D 몸을 돌려 투영·BackKit 옷·BackHair 머리·BackGear 갑옷/무기·Party 탐험가(종족×뒷/옆모습)·소환수 설계), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
+tools/                   check.sh, export_web.sh(웹 내보내기), ShotList.gd + shots/(장면 목록 일괄 캡처), validate_data.gd, screenshot.gd/.tscn, bake_floor.gd(1층 고정 지도 굽기), paint_city.gd + city_art/(도시 일러스트 생성 → assets/city/: Paint 캔버스·Ink 잉크/빛/색 보정·Mat 재질·Parts 건물 부품·Icons·Props 소품·Buildings(2)·Backdrop 뒷배경·Street 거리·Interiors·InteriorRooms·InteriorBits 실내·Npcs·NpcParts 사람(피어 앤 헝거 인물화풍 — 따로 그려 바깥선·테두리 빛을 입혀 얹는다)·Plaza 차원광장), paint_monsters.gd + monster_art/(몬스터 전투 그림 → assets/monsters/: Clay·ClayBase 3D 덩어리 조형·Render·Pen 붓 칠/잉크/빗금·Kinds 재질·Figure 설계 읽기·Rig 뼈대·Anatomy 몸·Face·FaceInk 얼굴·Hair·Headgear·Kit 옷·Arms 무기·Extras 날개/꼬리·Fur 털·Beast(Head) 네발짐승·Things(2) 기괴체·Lord 계층군주 드레드피어·Finish 피/마감·Specs(2) 52종 설계 · 아군 뒷모습: Back 3D 몸을 돌려 투영·BackKit 옷·BackHair 머리·BackGear 갑옷/무기·Party 탐험가(종족×뒷/옆모습)·소환수 설계), floor_map.gd(층 전체 지도 PNG + 검사), sim_battle.gd(전투 승률), sim_party.gd + sim_parties.json(균열 4인 파티 → docs/balance/rift.md), exp_budget.gd(경험치 예산 → docs/balance/), formula_check.gd(평균 피해·처치 타수 → docs/balance/formula.md)
 assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈) city/(layers/ 거리 레이어 · buildings/ · interiors/ · plaza.webp — WebP) monsters/(<id>.webp 전투 그림 · <id>_back.webp 아군 소환수 뒷모습 + index.json 몸 높이) party/(<종족>_back|_side.webp 탐험가 전투 그림 + index.json)
 ```
 
