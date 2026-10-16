@@ -20,7 +20,7 @@ static func spec_of(id: String) -> Dictionary:
 				"extras": {"wings": C("#3a2a30")}, "kit": {"loin": C("#2a1e1e")}}
 		"kirdui":
 			return {"height": 720, "width": 1.05, "skin": C("#3e3a44"), "shade": C("#140f18"), "mottle": C("#4a2040"), "mottle_amt": 0.5, "eyes": C("#ff3020"), "glow": 1.0, "horn": C("#1a1818"), "blood": 0.6,
-				"pose": {"hunch": 0.65, "knee": 0.4, "arm_l": "wide", "arm_r": "rest", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "weight": 0.4},
+				"pose": {"hunch": 0.65, "knee": 0.4, "arm_l": "rest", "arm_r": "rest", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "weight": 0.4},
 				"body": {"build": "brute", "bulk": 1.1, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "demon", "mouth": "fangs", "horns": true, "horn_len": 1.0, "size": 1.05},
 				"extras": {"spikes": C("#1e1a1c"), "lumps": 5}, "kit": {"loin": C("#1e1a1a")}}
 		"dreadfear":  # 계층군주 — 첨부 그림 참고(Lord.gd): 거대한 상반신·털 목도리·눈가린 얼굴·숫양 뿔·까마귀 머리·배의 얼굴·붉은 날개

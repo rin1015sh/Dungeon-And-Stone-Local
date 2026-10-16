@@ -143,7 +143,7 @@ static func spec_of(id: String) -> Dictionary:
 				"kit": {"robe": C("#3e4a5e"), "fur": C("#d4d4cc"), "weapon": "staff", "glow": C("#90e0ff"), "staff_c": C("#c8d0d8")}}
 		"yeti":
 			return {"height": 620, "width": 1.0, "skin": C("#e4e8ea"), "skin_kind": "fur", "shade": C("#7a8898"), "eyes": C("#a0c8f0"), "fur_len": 1.3,
-				"pose": {"hunch": 0.5, "knee": 0.35, "arm_l": "wide", "arm_r": "rest", "sh": 0.15, "hip": 0.08, "neck": 0.5, "arms": 1.12, "weight": 0.3},
+				"pose": {"hunch": 0.5, "knee": 0.35, "arm_l": "rest", "arm_r": "rest", "sh": 0.15, "hip": 0.08, "neck": 0.5, "arms": 1.12, "weight": 0.3},
 				"body": {"build": "brute", "hands": "claw", "claws": 0.5, "feet": "claw"}, "head": {"type": "ape", "mouth": "scream", "size": 0.95}}
 		"katumba":
 			return {"height": 700, "width": 1.0, "skin": C("#f2f4f6"), "skin_kind": "fur", "shade": C("#6a8098"), "eyes": C("#70c8ff"), "glow": 1.0, "fur_len": 1.4,
