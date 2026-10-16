@@ -7,13 +7,6 @@ extends RefCounted
 const Clay := preload("res://tools/monster_art/Clay.gd")
 
 
-## 팔 자세별 무기 기본 방향: [각도(0 = 아래 · 180 = 위, 바깥쪽 +), 보는 사람 쪽 기울기]
-const ARM_ANGLE := {
-	"hang": [28.0, 0.08], "raise": [160.0, -0.1], "guard": [148.0, 0.2], "cock": [212.0, -0.35],
-	"spear": [118.0, 0.3], "hold": [40.0, 0.15], "claw_up": [150.0, 0.1], "fists": [150.0, 0.2],
-}
-
-
 static func arm(cl: Clay, j: Dictionary, H: float, kit: Dictionary, pose: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
 	var out := {"glows": [], "lines": []}
 	var wpn := str(kit.get("weapon", ""))
@@ -21,20 +14,13 @@ static func arm(cl: Clay, j: Dictionary, H: float, kit: Dictionary, pose: Dictio
 		var tag := str(kit.get("weapon_hand", "l"))
 		var s := -1.0 if tag == "l" else 1.0
 		var grip: Vector3 = j["hand_" + tag]
-		var arm_pose := str(pose.get("arm_" + tag, "hang"))
-		var a_z: Array = ARM_ANGLE.get(arm_pose, [28.0, 0.08])
-		var def_ang: float = a_z[0]
-		if wpn in ["spear", "lance", "staff"] and arm_pose not in ["spear", "cock"]:
+		var raised := str(pose.get("arm_" + tag, "hang")) == "raise"
+		var def_ang := 160.0 if raised else 28.0
+		if wpn in ["spear", "lance", "staff"]:
 			def_ang = 172.0
 		var ang := deg_to_rad(float(kit.get("weapon_angle", def_ang)))
-		var u := Vector3(sin(ang) * s, cos(ang), float(a_z[1])).normalized()
+		var u := Vector3(sin(ang) * s, cos(ang), 0.08 if not raised else -0.1).normalized()
 		_weapon(cl, wpn, grip, u, s, H, kit, out, rng)
-		var other := "r" if tag == "l" else "l"
-		if wpn == "bow" and str(pose.get("arm_" + other, "")) == "draw" and out["lines"].size() > 0:  # 당긴 시위 + 화살
-			var ln: Array = out["lines"][0]
-			var hd: Vector3 = j["hand_" + other]
-			var nock := Vector2(hd.x, hd.y)
-			out["lines"] = [[ln[0], nock, ln[2], ln[3]], [nock, ln[1], ln[2], ln[3]], [nock, Vector2(grip.x, grip.y) + (Vector2(grip.x, grip.y) - nock).normalized() * 0.06 * H, ln[2] * 1.6, Color("#6a5236")]]
 	if kit.has("shield"):
 		_shield(cl, j, H, kit)
 	return out

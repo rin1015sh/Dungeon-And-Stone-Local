@@ -10,65 +10,65 @@ static func spec_of(id: String) -> Dictionary:
 	match id:
 		"iron_lizardman":
 			return {"skin": C("#6a7a64"), "shade": C("#2a3a2e"), "mottle": C("#3a4a36"), "eyes": C("#e0c040"), "nail": C("#2a2a24"),
-				"pose": {"knee": 0.45, "hunch": 0.35, "arm_l": "spear", "arm_r": "claw_up", "sh": 0.125, "stance": 0.14, "lunge": 0.5},
+				"pose": {"knee": 0.3, "hunch": 0.25, "arm_l": "hang", "arm_r": "claw", "sh": 0.125, "weight": 0.4},
 				"body": {"build": "muscular", "hands": "claw", "claws": 0.5, "feet": "claw"}, "head": {"type": "lizard", "mouth": "fangs", "ears": "none", "eye_style": "beast"},
 				"extras": {"tail": C("#5e6e5a")}, "kit": {"armor": C("#5e6266"), "plates": ["chest", "shoulders"], "weapon": "spear", "weapon_c": C("#7a7a78"), "loin": C("#3a3228")}}
 		"deathfiend":
 			return {"height": 620, "width": 1.15, "skin": C("#6a5462"), "shade": C("#2a1626"), "mottle": C("#3a2030"), "eyes": C("#ff4020"), "glow": 1.0, "horn": C("#2a2020"), "blood": 0.4,
-				"pose": {"twist": -0.5, "hunch": 0.45, "knee": 0.45, "arm_l": "claw_up", "arm_r": "cock", "sh": 0.14, "stance": 0.14, "lunge": -0.5},
+				"pose": {"hunch": 0.35, "knee": 0.3, "arm_l": "claw", "arm_r": "wide", "sh": 0.14, "weight": -0.3},
 				"body": {"build": "muscular", "hands": "claw", "claws": 0.8, "feet": "claw"}, "head": {"type": "demon", "mouth": "fangs", "horns": true, "horn_len": 0.8, "ears": "pointed"},
 				"extras": {"wings": C("#3a2a30")}, "kit": {"loin": C("#2a1e1e")}}
 		"kirdui":
 			return {"height": 720, "width": 1.05, "skin": C("#3e3a44"), "shade": C("#140f18"), "mottle": C("#4a2040"), "mottle_amt": 0.5, "eyes": C("#ff3020"), "glow": 1.0, "horn": C("#1a1818"), "blood": 0.6,
-				"pose": {"twist": 0.5, "hunch": 0.7, "knee": 0.5, "arm_l": "cock", "arm_r": "claw_up", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "stance": 0.15, "lunge": 0.4},
+				"pose": {"hunch": 0.65, "knee": 0.4, "arm_l": "wide", "arm_r": "claw", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "weight": 0.4},
 				"body": {"build": "brute", "bulk": 1.1, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "demon", "mouth": "fangs", "horns": true, "horn_len": 1.0, "size": 1.05},
 				"extras": {"spikes": C("#1e1a1c"), "lumps": 5}, "kit": {"loin": C("#1e1a1a")}}
 		"dreadfear":
 			return {"height": 640, "width": 1.35, "skin": C("#c8a070"), "shade": C("#5a2a1e"), "mottle": C("#7a3a2a"), "mottle_amt": 0.5, "eyes": C("#f0e0a0"), "glow": 0.8, "horn": C("#d8ccb0"), "blood": 0.7,
-				"pose": {"twist": 0.5, "hunch": 0.5, "knee": 0.4, "arm_l": "cock", "arm_r": "claw_up", "sh": 0.16, "hip": 0.085, "neck": 0.45, "stance": 0.14},
+				"pose": {"hunch": 0.45, "knee": 0.3, "arm_l": "wide", "arm_r": "wide", "sh": 0.16, "hip": 0.085, "neck": 0.45, "weight": 0.0},
 				"body": {"build": "brute", "hands": "claw", "claws": 0.6}, "head": {"type": "demon", "mouth": "grin", "horns": true, "horn_len": 0.9},
 				"extras": {"wings": C("#7a2a3a"), "wing_span": 1.15, "body_eyes": 6}, "kit": {"fur": C("#8a7a68"), "loin": C("#2e2226")}}
 		"kambormir":
 			return {"height": 600, "skin": C("#ddd0d4"), "shade": C("#6a4a5a"), "eyes": C("#ff2a2a"), "glow": 1.0, "hair": "slick", "hair_c": C("#141014"),
-				"pose": {"knee": 0.25, "hunch": 0.25, "arm_l": "claw_up", "arm_r": "cast", "sh": 0.115, "stance": 0.12, "lunge": 0.4, "tilt": -0.12},
+				"pose": {"arm_l": "claw", "arm_r": "hang", "sh": 0.115, "weight": 0.5, "tilt": -0.08},
 				"body": {"build": "thin", "hands": "claw", "claws": 0.7}, "head": {"type": "human", "mouth": "fangs", "ears": "pointed", "angry": 0.9},
 				"kit": {"shirt": C("#1e1a22"), "shirt_len": 1.0, "torn": 0.0, "cape": C("#3a0c16"), "boots": C("#141014"), "belt": C("#2a1a1e"), "collar": C("#8a7040")}}
 		"banshee":
 			return {"skin": C("#c4cedc"), "shade": C("#4a5a78"), "eyes": C("#e8f4ff"), "glow": 0.9, "hair": "long", "hair_c": C("#dde2ea"), "fade": 0.55, "desat": 0.35,
-				"pose": {"twist": -0.5, "hunch": 0.35, "knee": 0.2, "arm_l": "claw_up", "arm_r": "cock", "sh": 0.1, "tilt": 0.18},
+				"pose": {"hunch": 0.2, "arm_l": "wide", "arm_r": "claw", "sh": 0.1, "weight": 0.3, "tilt": 0.18},
 				"body": {"build": "thin", "hands": "claw", "claws": 0.5}, "head": {"type": "gaunt", "mouth": "scream", "eye_style": "glow"},
 				"kit": {"robe": C("#8a98b0"), "torn": 1.0}}
 		"copper_golem":
 			return {"height": 640, "width": 1.0, "skin": C("#b8783e"), "skin_kind": "metal", "shade": C("#4a2a14"), "mottle": C("#4a9a7a"), "mottle_amt": 0.6, "eyes": C("#60f0e0"), "glow": 1.0,
-				"pose": {"knee": 0.4, "hunch": 0.3, "arm_l": "fists", "arm_r": "cock", "sh": 0.16, "hip": 0.085, "neck": 0.25, "arms": 1.1, "stance": 0.14, "lunge": -0.4},
+				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "hang", "sh": 0.16, "hip": 0.085, "neck": 0.25, "arms": 1.1, "weight": 0.2},
 				"body": {"build": "brute", "hands": "fist", "feet": "bare"}, "head": {"type": "block", "size": 1.2}, "extras": {"lumps": 8}}
 		"ice_golem":
 			return {"height": 640, "width": 1.0, "skin": C("#a8d0e8"), "skin_kind": "slime", "shade": C("#2a5a7a"), "eyes": C("#e8fcff"), "glow": 1.0,
-				"pose": {"knee": 0.4, "hunch": 0.3, "arm_l": "cock", "arm_r": "fists", "sh": 0.16, "hip": 0.085, "neck": 0.25, "arms": 1.1, "stance": 0.14, "lunge": 0.4},
+				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "hang", "sh": 0.16, "hip": 0.085, "neck": 0.25, "arms": 1.1, "weight": -0.2},
 				"body": {"build": "brute", "hands": "fist"}, "head": {"type": "block", "size": 1.2}, "extras": {"lumps": 10, "crystals": C("#d8f4ff"), "frost": 0.8}}
 		"gargoyle_statue":
 			return {"skin": C("#8a8a90"), "skin_kind": "stone", "shade": C("#3a3a42"), "mottle": C("#5a6a4a"), "mottle_amt": 0.35, "eyes": C("#e0b040"), "glow": 0.8, "horn": C("#6a6a70"),
-				"pose": {"twist": 0.5, "hunch": 0.6, "knee": 0.7, "arm_l": "cock", "arm_r": "claw_up", "sh": 0.13, "stance": 0.15},
+				"pose": {"hunch": 0.6, "knee": 0.6, "arm_l": "claw", "arm_r": "claw", "sh": 0.13, "weight": 0.0, "stance": 0.13},
 				"body": {"build": "muscular", "hands": "claw", "claws": 0.6, "feet": "claw"}, "head": {"type": "demon", "mouth": "fangs", "horns": true, "horn_len": 0.6, "ears": "pointed"},
 				"extras": {"wings": C("#7a7a80"), "wing_span": 0.85}}
 		"riddle_gatekeeper":
 			return {"height": 620, "skin": C("#9aa0a8"), "skin_kind": "stone", "shade": C("#3e4450"), "eyes": C("#f8f0d0"), "glow": 1.0,
-				"pose": {"arm_l": "staff", "arm_r": "cast", "sh": 0.13, "knee": 0.15},
+				"pose": {"arm_l": "staff", "arm_r": "cross", "sh": 0.13, "weight": 0.0},
 				"body": {"build": "normal", "hands": "open"}, "head": {"type": "block", "size": 0.9},
 				"kit": {"robe": C("#7a8088"), "torn": 0.0, "weapon": "staff", "glow": C("#f8ecc0"), "staff_c": C("#7a7a80")}}
 		"ildium":
 			return {"height": 720, "width": 0.95, "skin": C("#7a8088"), "skin_kind": "metal", "eyes": C("#ffa040"), "glow": 1.0,
-				"pose": {"knee": 0.35, "hunch": 0.2, "arm_l": "guard", "arm_r": "fists", "sh": 0.16, "hip": 0.085, "neck": 0.6, "stance": 0.14, "lunge": 0.4},
+				"pose": {"knee": 0.15, "arm_l": "hang", "arm_r": "hang", "sh": 0.16, "hip": 0.085, "neck": 0.6, "weight": 0.3},
 				"body": {"build": "brute", "hands": "fist"}, "head": {"type": "human", "helm": C("#6e747c"), "size": 1.0},
 				"kit": {"armor": C("#6e747a"), "boots": C("#4a4e54"), "weapon": "greatsword", "weapon_c": C("#9aa0a8"), "belt": C("#3a3430")}}
 		"iron_cavalry":
 			return {"height": 600, "skin": C("#8a7a6a"), "eyes": C("#e0c080"), "glow": 0.6,
-				"pose": {"knee": 0.35, "hunch": 0.15, "arm_l": "spear", "arm_r": "shield", "sh": 0.13, "stance": 0.13, "lunge": 0.5},
+				"pose": {"arm_l": "hang", "arm_r": "hang", "sh": 0.13, "weight": 0.4},
 				"body": {"build": "normal", "hands": "fist"}, "head": {"type": "human", "helm": C("#6a7078"), "plume": C("#6a1a18")},
 				"kit": {"armor": C("#70787f"), "boots": C("#3a3430"), "cape": C("#3a2420"), "weapon": "lance", "weapon_c": C("#8a9098"), "shield": C("#5a6068"), "shield_kind": "kite", "shield_mat": "metal"}}
 		"blater":
 			return {"height": 660, "skin": C("#5a4448"), "eyes": C("#ff3020"), "glow": 1.0, "horn": C("#1e1a1c"), "blood": 0.4,
-				"pose": {"knee": 0.4, "hunch": 0.2, "arm_l": "cock", "arm_r": "claw_up", "sh": 0.14, "stance": 0.14, "lunge": -0.5, "twist": 0.5},
+				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "claw", "sh": 0.14, "weight": -0.4},
 				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "helm": C("#3a2c32"), "horns": true, "horn_len": 0.8},
 				"kit": {"armor": C("#3e2e34"), "boots": C("#241a1e"), "cape": C("#4a1418"), "weapon": "greatsword", "weapon_c": C("#5e4c50")}}
 		# ── 네발짐승 ──

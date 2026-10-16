@@ -2,11 +2,8 @@ extends RefCounted
 ## 사람형 뼈대: 키·자세 값으로 관절 위치(Vector3, 화면 x·y + 앞쪽 z)를 낸다. 정면에서 마주 선 모습이 기본.
 ## pose 키: stance(발 벌림, 키 비율) · knee(무릎 굽힘 0~1) · hunch(등 굽고 머리 앞으로 0~1) · lean(옆 기울기 -1~1)
 ##          weight(체중 실은 다리 -1~1) · knees_out(무릎 바깥으로) · splay(발끝 벌림 라디안)
-##          lunge(앞으로 내디딘 발 -1 왼쪽 · 1 오른쪽 — 그 발은 화면 아래·앞으로, 반대 발은 뒤로 버틴다)
 ##          twist(오른쪽 어깨가 앞으로 -1~1) · tilt(고개 기울기 라디안) · legs(다리 길이 배율) · neck(목 길이 배율)
-##          arm_l / arm_r(팔 자세: hang·wide·claw·raise·hold·reach·cross·back·bow·staff
-##                         · 싸울 자세 guard(무기를 앞에 세워 겨눔)·cock(무기를 어깨 뒤로 젖혀 내려칠 듯)·claw_up(갈고리 손을 머리 높이로 치켜듦)
-##                         · fists(주먹을 어깨 앞에)·shield(방패를 가슴 앞에)·spear(창을 비스듬히 겨눔)·draw(활시위를 뺨까지)·cast(손바닥을 앞으로)) · sh(어깨 반폭) · hip(엉덩이 반폭) · head(머리 크기)
+##          arm_l / arm_r(팔 자세: hang·wide·claw·raise·hold·reach·cross·back·bow·staff) · sh(어깨 반폭) · hip(엉덩이 반폭) · head(머리 크기)
 ## 왼쪽 = 화면 왼쪽(무기는 보통 화면 왼쪽 손).
 
 
@@ -24,8 +21,7 @@ static func build(foot: Vector2, height: float, pose: Dictionary) -> Dictionary:
 	var head := float(pose.get("head", 1.0))
 	var weight := float(pose.get("weight", 0.0))  # 체중을 실은 다리(-1 왼쪽 · 1 오른쪽) — 그쪽 엉덩이가 올라가고 반대 다리는 풀린다
 	var kout := float(pose.get("knees_out", 0.2))
-	var lunge := float(pose.get("lunge", 0.0))
-	var drop := knee * 0.09 * H + hunch * 0.06 * H  # 굽힌 만큼 키가 줄어든다
+	var drop := knee * 0.07 * H + hunch * 0.05 * H  # 굽힌 만큼 키가 줄어든다
 	var hip_y := foot.y - 0.49 * H * legs - (1.0 - legs) * 0.02 * H + drop * 0.6
 	j["pelvis"] = Vector3(foot.x + lean * 0.01 * H + weight * 0.012 * H, hip_y, 0.0)
 	for s: int in [-1, 1]:
@@ -33,16 +29,15 @@ static func build(foot: Vector2, height: float, pose: Dictionary) -> Dictionary:
 		var bears := weight * s > 0.0
 		var free := absf(weight) if weight * s < 0.0 else 0.0
 		var hp := Vector3(foot.x + s * hip + weight * 0.012 * H, hip_y + 0.02 * H - weight * s * 0.014 * H, 0.0)
-		var fwd := lunge * s  # > 0 = 내디딘 발, < 0 = 뒤로 버틴 발
-		var an := Vector3(foot.x + s * stance * (1.0 + free * 0.35 + maxf(0.0, fwd) * 0.15 - maxf(0.0, -fwd) * 0.25), foot.y - 0.045 * H + free * 0.012 * H + fwd * 0.035 * H, free * 0.05 * H + fwd * 0.12 * H)
-		var kb := knee + free * 0.4 - (0.1 if bears else 0.0) + maxf(0.0, fwd) * 0.5 - maxf(0.0, -fwd) * 0.2
+		var an := Vector3(foot.x + s * stance * (1.0 + free * 0.35), foot.y - 0.045 * H + free * 0.012 * H, free * 0.05 * H)
+		var kb := knee + free * 0.4 - (0.1 if bears else 0.0)
 		var kn := hp.lerp(an, 0.5) + Vector3(s * (kout * 0.03 + kb * 0.03) * H, -kb * 0.015 * H, (0.01 + kb * 0.07) * H)
 		j["hip_" + tag] = hp
 		j["knee_" + tag] = kn
 		j["ankle_" + tag] = an
 		j["toe_" + tag] = an + Vector3(s * 0.012 * H, 0.03 * H, 0.08 * H)
 		j["foot_rot_" + tag] = s * float(pose.get("splay", 0.45))
-	var torso_len := (0.33 - hunch * 0.09) * H  # 앞으로 숙이면 정면에서 몸통이 짧아 보인다
+	var torso_len := (0.33 - hunch * 0.06) * H
 	var lean_x := lean * 0.05 * H
 	j["waist"] = Vector3(foot.x + lean_x * 0.35, hip_y - torso_len * 0.32, hunch * 0.03 * H)
 	j["chest"] = Vector3(foot.x + lean_x * 0.7, hip_y - torso_len * 0.66, hunch * 0.08 * H)
@@ -54,7 +49,7 @@ static func build(foot: Vector2, height: float, pose: Dictionary) -> Dictionary:
 	var nk := float(pose.get("neck", 1.0))
 	var head_h := 0.14 * H * head
 	j["head_h"] = head_h
-	j["head"] = Vector3(foot.x + lean_x * 1.2, hip_y - torso_len - head_h * 0.62 * nk + hunch * 0.09 * H, hunch * 0.2 * H)  # 숙이면 머리가 어깨 사이로
+	j["head"] = Vector3(foot.x + lean_x * 1.2, hip_y - torso_len - head_h * 0.62 * nk + hunch * 0.05 * H, hunch * 0.17 * H)
 	j["tilt"] = float(pose.get("tilt", 0.0))
 	for s: int in [-1, 1]:
 		var tag := "l" if s < 0 else "r"
@@ -97,37 +92,11 @@ static func _arm(j: Dictionary, tag: String, s: int, kind: String, H: float, arm
 		"back":
 			el = sh + Vector3(s * 0.25, 0.9, -0.3).normalized() * ua
 			wr = el + Vector3(-s * 0.1, 0.8, -0.5).normalized() * fa
-		"guard":  # 무기를 가슴 앞에 세워 겨눔(팔꿈치를 굽혀 손이 몸 앞으로)
-			el = sh + Vector3(s * 0.5, 0.78, 0.35).normalized() * ua
-			wr = el + Vector3(-s * 0.3, -0.5, 0.8).normalized() * fa
-		"cock":  # 무기를 어깨 뒤로 젖힘 — 곧 내려칠 듯(팔꿈치가 옆으로 들림)
-			el = sh + Vector3(s * 0.9, -0.15, -0.25).normalized() * ua
-			wr = el + Vector3(-s * 0.2, -0.95, -0.15).normalized() * fa
-		"claw_up":  # 갈고리 손을 앞으로 내밀어 움켜쥘 듯(팔꿈치는 아래 옆, 손은 가슴 높이 앞 — 손가락은 위·바깥으로 벌림)
-			el = sh + Vector3(s * 0.55, 0.8, 0.25).normalized() * ua
-			wr = el + Vector3(s * 0.35, -0.2, 0.92).normalized() * fa
-		"fists":  # 주먹을 가슴 앞으로 내밈(맨손 싸움)
-			el = sh + Vector3(s * 0.45, 0.85, 0.3).normalized() * ua
-			wr = el + Vector3(-s * 0.1, -0.35, 0.93).normalized() * fa
-		"shield":  # 방패를 가슴 앞으로
-			el = sh + Vector3(s * 0.5, 0.82, 0.3).normalized() * ua
-			wr = el + Vector3(-s * 0.65, -0.25, 0.7).normalized() * fa
-		"spear":  # 창을 허리 앞에서 비스듬히 겨눔
-			el = sh + Vector3(s * 0.4, 0.88, 0.25).normalized() * ua
-			wr = el + Vector3(-s * 0.25, -0.1, 0.95).normalized() * fa
-		"draw":  # 활시위를 뺨까지 당김
-			el = sh + Vector3(s * 0.9, 0.05, 0.1).normalized() * ua
-			wr = el + Vector3(-s * 0.9, -0.3, 0.25).normalized() * fa
-		"cast":  # 손바닥을 앞으로 내밀어 주문
-			el = sh + Vector3(s * 0.55, 0.7, 0.4).normalized() * ua
-			wr = el + Vector3(s * 0.1, -0.45, 0.9).normalized() * fa
 		_:  # hang(몸에서 조금 떨어져 팔꿈치가 살짝 굽은 채 늘어뜨림)
 			el = sh + Vector3(s * 0.26, 0.96, -0.04).normalized() * ua
 			wr = el + Vector3(s * 0.12, 0.95, 0.2).normalized() * fa
 	j["elbow_" + tag] = el
 	j["wrist_" + tag] = wr
 	var dir := (wr - el).normalized()
-	if kind in ["claw_up", "cock"]:  # 할퀴는 손: 손가락이 위·바깥을 향해 벌어져 보이게(앞으로 향하면 정면에서 뭉개진다)
-		dir = Vector3(s * 0.45, -0.65, 0.6).normalized()
 	j["hand_dir_" + tag] = dir
 	j["hand_" + tag] = wr + dir * 0.045 * H

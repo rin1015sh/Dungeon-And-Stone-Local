@@ -222,7 +222,7 @@ static func _fur(cl: Clay, j: Dictionary, H: float, col: Color, rng: RandomNumbe
 	var g := cl.group()
 	var nk: Vector3 = j["neck"]
 	var ch: Vector3 = j["chest"]
-	cl.shell(["torso", "shoulder_l", "shoulder_r"], 0.02 * H, m, g, _band(nk.y - 0.03 * H, lerpf(nk.y, ch.y, 0.55), cl.w, 0, rng, 0.04 * H, 16), 10.0, 0.006 * H)
+	cl.shell(["torso", "shoulder_l", "shoulder_r", "arm_l", "arm_r"], 0.03 * H, m, g, _band(nk.y - 0.04 * H, lerpf(nk.y, ch.y, 0.75), cl.w, 0, rng, 0.05 * H, 16), 10.0, 0.01 * H)
 	j["fur_group"] = g
 
 

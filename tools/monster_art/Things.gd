@@ -74,31 +74,24 @@ static func _crawler(cl: Clay, foot: Vector2, H: float, sp: Dictionary, rng: Ran
 		var an := Vector3(c.x + s * 0.24 * H, foot.y - 0.04 * H, -0.18 * H)
 		cl.chain(g, [hip, kn, an], [0.05 * H * bulk, 0.03 * H * bulk, 0.02 * H * bulk], skin, 0.02 * H)
 		cl.ell(g, an + Vector3(-s * 0.02 * H, 0.025 * H, 0.02 * H), 0.04 * H, 0.02 * H, 0.03 * H, skin, 0.01 * H)
-	# 앞팔: 한 손은 땅을 짚고, 한 손(reach 쪽)은 갈고리 손을 치켜들어 덤벼든다
+	# 앞팔(땅을 짚음)
 	var hands: Array = []
-	var reach := float(sp.get("reach", -1.0))
 	for s: float in [-1.0, 1.0]:
 		var g := cl.group()
-		var up := s == reach
 		var sh := Vector3(c.x + s * r * 1.5, c.y - 0.01 * H, 0.0)
 		var el := Vector3(c.x + s * 0.22 * H, c.y + 0.12 * H, 0.04 * H)
 		var wr := Vector3(c.x + s * 0.13 * H, foot.y - 0.03 * H, 0.14 * H)
-		if up:
-			el = Vector3(c.x + s * 0.24 * H, c.y + 0.02 * H, 0.08 * H)
-			wr = Vector3(c.x + s * 0.2 * H, c.y - 0.12 * H, 0.2 * H)
 		cl.chain(g, [sh, el, wr], [0.035 * H * bulk, 0.026 * H * bulk, 0.018 * H * bulk], skin, 0.02 * H)
 		cl.ell(g, el, 0.03 * H, 0.03 * H, 0.03 * H, skin, 0.01 * H)
-		for f in 4:  # 긴 손가락 + 손톱(땅을 움켜쥐거나, 치켜든 손은 위로 벌림)
+		for f in 4:  # 땅을 움켜쥔 긴 손가락 + 손톱
 			var b := wr + Vector3(s * (f - 1.5) * 0.016 * H, 0.0, 0.01 * H)
 			var t := b + Vector3(s * (f - 1.5) * 0.022 * H, 0.03 * H, 0.04 * H)
-			if up:
-				t = b + Vector3(s * (f - 1.5) * 0.03 * H, -0.055 * H, 0.02 * H)
 			cl.chain(g, [b, b.lerp(t, 0.6) + Vector3(0, -0.012 * H, 0), t], [0.008 * H, 0.007 * H, 0.005 * H], skin, 0.003 * H)
-			cl.cap(g, t, t + (Vector3(s * (f - 1.5) * 0.004 * H, -0.02 * H, 0.012 * H) if up else Vector3(s * 0.006 * H, 0.016 * H, 0.012 * H)), 0.004 * H, 0.001 * H, nail, 0.002 * H)
+			cl.cap(g, t, t + Vector3(s * 0.006 * H, 0.016 * H, 0.012 * H), 0.004 * H, 0.001 * H, nail, 0.002 * H)
 		hands.append(wr)
 	# 머리(낮게, 앞으로)
-	var j := {"head": Vector3(c.x, c.y + 0.0 * H, 0.16 * H), "head_h": 0.15 * H * float(sp.get("head", 1.0)), "tilt": float(sp.get("tilt", 0.08))}
-	var hd := {"type": "gaunt", "mouth": str(sp.get("mouth", "scream")), "eye_style": "glow" if float(sp.get("glow", 0.0)) > 0.5 else "dead", "angry": 0.8}
+	var j := {"head": Vector3(c.x, c.y + 0.05 * H, 0.14 * H), "head_h": 0.15 * H * float(sp.get("head", 1.0)), "tilt": float(sp.get("tilt", 0.08))}
+	var hd := {"type": "gaunt", "mouth": str(sp.get("mouth", "grin")), "eye_style": "glow" if float(sp.get("glow", 0.0)) > 0.5 else "dead", "angry": 0.8}
 	if sp.has("horns"):
 		hd["horns"] = sp["horns"]
 		mats["horn"] = cl.mat(sp["horns"], "bone")
