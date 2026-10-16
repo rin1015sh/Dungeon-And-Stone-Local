@@ -3,7 +3,7 @@ extends RefCounted
 ## pose 키: stance(발 벌림, 키 비율) · knee(무릎 굽힘 0~1) · hunch(등 굽고 머리 앞으로 0~1) · lean(옆 기울기 -1~1)
 ##          weight(체중 실은 다리 -1~1) · knees_out(무릎 바깥으로) · splay(발끝 벌림 라디안)
 ##          twist(오른쪽 어깨가 앞으로 -1~1) · tilt(고개 기울기 라디안) · legs(다리 길이 배율) · neck(목 길이 배율)
-##          arm_l / arm_r(팔 자세: hang·wide·claw·raise·hold·reach·cross·back·bow·staff) · sh(어깨 반폭) · hip(엉덩이 반폭) · head(머리 크기)
+##          arm_l / arm_r(팔 자세: hang·rest(몸에 붙여 내림)·wide·claw·raise·hold·reach·cross·back·bow·staff) · sh(어깨 반폭) · hip(엉덩이 반폭) · head(머리 크기)
 ## 왼쪽 = 화면 왼쪽(무기는 보통 화면 왼쪽 손).
 
 
@@ -89,6 +89,9 @@ static func _arm(j: Dictionary, tag: String, s: int, kind: String, H: float, arm
 		"bow":  # 활을 앞으로 겨눔(정면이라 앞으로 뻗은 팔)
 			el = sh + Vector3(s * 0.6, 0.3, 0.6).normalized() * ua
 			wr = el + Vector3(s * 0.3, 0.0, 1.0).normalized() * fa
+		"rest":  # 몸 옆에 붙여 곧게 내림
+			el = sh + Vector3(s * 0.07, 1.0, -0.03).normalized() * ua
+			wr = el + Vector3(s * 0.02, 1.0, 0.1).normalized() * fa
 		"back":
 			el = sh + Vector3(s * 0.25, 0.9, -0.3).normalized() * ua
 			wr = el + Vector3(-s * 0.1, 0.8, -0.5).normalized() * fa

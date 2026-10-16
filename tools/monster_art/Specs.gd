@@ -1,11 +1,13 @@
 extends RefCounted
-## 몬스터 id → 그림 설계(52종). kind: figure(사람형 — Figure) · beast(네발짐승 — Beast) · crawler·worm·slime·mound·eye·maggot(Things).
+## 몬스터 id → 그림 설계(52종). kind: figure(사람형 — Figure) · beast(네발짐승 — Beast) · crawler·worm·slime·mound·eye·maggot(Things)
+## · lord(계층군주 드레드피어 전용 — Lord).
 ## 각 키의 뜻은 해당 파일 머리말(Figure·Rig·Anatomy·Face·Kit·Arms·Extras·Beast·Things). 원작 묘사가 없는 몬스터는
 ## 이름·데이터 색·크기에서 모습을 정했다(ASSUMPTIONS UI8). 바꾸려면 여기 한 항목을 고치고 --only=<id>로 다시 그린다.
 
 const Figure := preload("res://tools/monster_art/Figure.gd")
 const Beast := preload("res://tools/monster_art/Beast.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
+const Lord := preload("res://tools/monster_art/Lord.gd")
 const More := preload("res://tools/monster_art/Specs2.gd")
 
 
@@ -21,6 +23,8 @@ static func paint(id: String, _def: Dictionary, seed_value: int) -> Variant:
 			return Figure.paint(sp, seed_value)
 		"beast":
 			return Beast.paint(sp, seed_value)
+		"lord":
+			return Lord.paint(sp, seed_value)
 	return Things.paint(kind, sp, seed_value)
 
 
@@ -43,6 +47,8 @@ static func body_height(id: String, crop_h: float) -> float:
 			return crop_h / 0.7
 		"worm":
 			return crop_h
+		"lord":  # 머리 위로 솟은 뿔·날개 끝은 키에서 뺀다 — 전투 무대에서 위 안내 줄 뒤로 넘쳐 화면을 꽉 채운다
+			return crop_h * 0.8
 	return crop_h / 0.78
 
 
@@ -92,7 +98,7 @@ static func spec_of(id: String) -> Dictionary:
 				"kit": {"armor": C("#585652"), "plates": ["shoulders", "legs"], "belt": C("#3a3430"), "cape": C("#2a2226"), "weapon": "greatsword", "weapon_c": C("#8a8680"), "shield": C("#4a4440"), "shield_kind": "kite", "shield_mat": "metal"}}
 		"tarunbas":
 			return {"height": 680, "skin": C("#d8d4c8"), "eyes": C("#ff5030"), "glow": 1.0,
-				"pose": {"arm_l": "hang", "arm_r": "claw", "sh": 0.14, "weight": -0.4, "tilt": 0.08},
+				"pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.14, "weight": -0.4, "tilt": 0.08},
 				"body": {"build": "bones", "bulk": 1.2}, "head": {"type": "skull", "mouth": "grin", "size": 1.15, "crown": C("#9a7a32")},
 				"kit": {"armor": C("#5a5040"), "plates": ["shoulders"], "belt": C("#4a3a20"), "loin": C("#3a1a30"), "cape": C("#3a1a30"), "weapon": "greatsword", "weapon_c": C("#6e6a64")}}
 		"goblin":
@@ -112,12 +118,12 @@ static func spec_of(id: String) -> Dictionary:
 				"kit": {"shirt": C("#5a4630"), "torn": 0.1, "belt": C("#2a1e14"), "weapon": "sword", "weapon_c": C("#7e7a70"), "shield": C("#5a4a34"), "loin": C("#3a2e20")}}
 		"goblin_miner":
 			return {"height": 500, "skin": C("#8e9a58"), "mottle": C("#5a5a30"), "eyes": C("#e8d060"), "grime": 0.6,
-				"pose": {"hunch": 0.35, "knee": 0.3, "arm_l": "raise", "arm_r": "hang", "sh": 0.115, "head": 1.3, "legs": 0.92, "weight": -0.4},
+				"pose": {"hunch": 0.35, "knee": 0.3, "arm_l": "rest", "arm_r": "hang", "sh": 0.115, "head": 1.3, "legs": 0.92, "weight": -0.4},
 				"body": {"build": "normal", "hands": "claw"}, "head": {"type": "goblin", "mouth": "grin", "ears": "long", "cap": C("#6a5a3a")},
 				"kit": {"shirt": C("#5a4a36"), "torn": 0.15, "weapon": "pick", "weapon_c": C("#6a6660"), "loin": C("#3e3226")}}
 		"goblin_bomber":
 			return {"height": 600, "width": 1.0, "skin": C("#a87a52"), "mottle": C("#6a4028"), "eyes": C("#ffa040"), "glow": 0.5,
-				"pose": {"hunch": 0.3, "knee": 0.3, "arm_l": "raise", "arm_r": "hang", "sh": 0.15, "hip": 0.085, "head": 1.15, "legs": 0.85, "weight": 0.4},
+				"pose": {"hunch": 0.3, "knee": 0.3, "arm_l": "rest", "arm_r": "hang", "sh": 0.15, "hip": 0.085, "head": 1.15, "legs": 0.85, "weight": 0.4},
 				"body": {"build": "fat", "hands": "claw"}, "head": {"type": "goblin", "mouth": "grin", "ears": "long"},
 				"extras": {"bombs": 4}, "kit": {"weapon": "bomb", "belt": C("#2a1e14"), "loin": C("#4a3220"), "straps": C("#3a2a1a")}}
 		"hobgoblin_miner":
@@ -137,11 +143,11 @@ static func spec_of(id: String) -> Dictionary:
 				"kit": {"robe": C("#3e4a5e"), "fur": C("#d4d4cc"), "weapon": "staff", "glow": C("#90e0ff"), "staff_c": C("#c8d0d8")}}
 		"yeti":
 			return {"height": 620, "width": 1.0, "skin": C("#e4e8ea"), "skin_kind": "fur", "shade": C("#7a8898"), "eyes": C("#a0c8f0"), "fur_len": 1.3,
-				"pose": {"hunch": 0.5, "knee": 0.35, "arm_l": "wide", "arm_r": "claw", "sh": 0.15, "hip": 0.08, "neck": 0.5, "arms": 1.12, "weight": 0.3},
+				"pose": {"hunch": 0.5, "knee": 0.35, "arm_l": "wide", "arm_r": "rest", "sh": 0.15, "hip": 0.08, "neck": 0.5, "arms": 1.12, "weight": 0.3},
 				"body": {"build": "brute", "hands": "claw", "claws": 0.5, "feet": "claw"}, "head": {"type": "ape", "mouth": "scream", "size": 0.95}}
 		"katumba":
 			return {"height": 700, "width": 1.0, "skin": C("#f2f4f6"), "skin_kind": "fur", "shade": C("#6a8098"), "eyes": C("#70c8ff"), "glow": 1.0, "fur_len": 1.4,
-				"pose": {"hunch": 0.45, "knee": 0.35, "arm_l": "hang", "arm_r": "wide", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.12, "weight": -0.4},
+				"pose": {"hunch": 0.45, "knee": 0.35, "arm_l": "hang", "arm_r": "rest", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.12, "weight": -0.4},
 				"body": {"build": "brute", "bulk": 1.1, "hands": "claw", "claws": 0.6, "feet": "claw"}, "head": {"type": "ape", "mouth": "scream", "size": 0.95},
 				"extras": {"crystals": C("#b8e4f8"), "frost": 0.6}, "kit": {"weapon": "club", "wood": C("#6a7a88")}}
 	return {}

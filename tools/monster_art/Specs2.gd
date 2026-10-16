@@ -10,7 +10,7 @@ static func spec_of(id: String) -> Dictionary:
 	match id:
 		"iron_lizardman":
 			return {"skin": C("#6a7a64"), "shade": C("#2a3a2e"), "mottle": C("#3a4a36"), "eyes": C("#e0c040"), "nail": C("#2a2a24"),
-				"pose": {"knee": 0.3, "hunch": 0.25, "arm_l": "hang", "arm_r": "claw", "sh": 0.125, "weight": 0.4},
+				"pose": {"knee": 0.3, "hunch": 0.25, "arm_l": "hang", "arm_r": "rest", "sh": 0.125, "weight": 0.4},
 				"body": {"build": "muscular", "hands": "claw", "claws": 0.5, "feet": "claw"}, "head": {"type": "lizard", "mouth": "fangs", "ears": "none", "eye_style": "beast"},
 				"extras": {"tail": C("#5e6e5a")}, "kit": {"armor": C("#5e6266"), "plates": ["chest", "shoulders"], "weapon": "spear", "weapon_c": C("#7a7a78"), "loin": C("#3a3228")}}
 		"deathfiend":
@@ -20,17 +20,14 @@ static func spec_of(id: String) -> Dictionary:
 				"extras": {"wings": C("#3a2a30")}, "kit": {"loin": C("#2a1e1e")}}
 		"kirdui":
 			return {"height": 720, "width": 1.05, "skin": C("#3e3a44"), "shade": C("#140f18"), "mottle": C("#4a2040"), "mottle_amt": 0.5, "eyes": C("#ff3020"), "glow": 1.0, "horn": C("#1a1818"), "blood": 0.6,
-				"pose": {"hunch": 0.65, "knee": 0.4, "arm_l": "wide", "arm_r": "claw", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "weight": 0.4},
+				"pose": {"hunch": 0.65, "knee": 0.4, "arm_l": "wide", "arm_r": "rest", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "weight": 0.4},
 				"body": {"build": "brute", "bulk": 1.1, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "demon", "mouth": "fangs", "horns": true, "horn_len": 1.0, "size": 1.05},
 				"extras": {"spikes": C("#1e1a1c"), "lumps": 5}, "kit": {"loin": C("#1e1a1a")}}
-		"dreadfear":
-			return {"height": 640, "width": 1.35, "skin": C("#c8a070"), "shade": C("#5a2a1e"), "mottle": C("#7a3a2a"), "mottle_amt": 0.5, "eyes": C("#f0e0a0"), "glow": 0.8, "horn": C("#d8ccb0"), "blood": 0.7,
-				"pose": {"hunch": 0.45, "knee": 0.3, "arm_l": "wide", "arm_r": "wide", "sh": 0.16, "hip": 0.085, "neck": 0.45, "weight": 0.0},
-				"body": {"build": "brute", "hands": "claw", "claws": 0.6}, "head": {"type": "demon", "mouth": "grin", "horns": true, "horn_len": 0.9},
-				"extras": {"wings": C("#7a2a3a"), "wing_span": 1.15, "body_eyes": 6}, "kit": {"fur": C("#8a7a68"), "loin": C("#2e2226")}}
+		"dreadfear":  # 계층군주 — 첨부 그림 참고(Lord.gd): 거대한 상반신·털 목도리·눈가린 얼굴·숫양 뿔·까마귀 머리·배의 얼굴·붉은 날개
+			return {"kind": "lord", "height": 640, "color": C("#d6a45e"), "shade": C("#661646"), "wing": C("#7e2a3e"), "fur": C("#7a6a58"), "horn": C("#cdb892"), "eyes": C("#f4d27a"), "birds": 7}
 		"kambormir":
 			return {"height": 600, "skin": C("#ddd0d4"), "shade": C("#6a4a5a"), "eyes": C("#ff2a2a"), "glow": 1.0, "hair": "slick", "hair_c": C("#141014"),
-				"pose": {"arm_l": "claw", "arm_r": "hang", "sh": 0.115, "weight": 0.5, "tilt": -0.08},
+				"pose": {"arm_l": "rest", "arm_r": "hang", "sh": 0.115, "weight": 0.5, "tilt": -0.08},
 				"body": {"build": "thin", "hands": "claw", "claws": 0.7}, "head": {"type": "human", "mouth": "fangs", "ears": "pointed", "angry": 0.9},
 				"kit": {"shirt": C("#1e1a22"), "shirt_len": 1.0, "torn": 0.0, "cape": C("#3a0c16"), "boots": C("#141014"), "belt": C("#2a1a1e"), "collar": C("#8a7040")}}
 		"banshee":
@@ -68,7 +65,7 @@ static func spec_of(id: String) -> Dictionary:
 				"kit": {"armor": C("#70787f"), "boots": C("#3a3430"), "cape": C("#3a2420"), "weapon": "lance", "weapon_c": C("#8a9098"), "shield": C("#5a6068"), "shield_kind": "kite", "shield_mat": "metal"}}
 		"blater":
 			return {"height": 660, "skin": C("#5a4448"), "eyes": C("#ff3020"), "glow": 1.0, "horn": C("#1e1a1c"), "blood": 0.4,
-				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "claw", "sh": 0.14, "weight": -0.4},
+				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "rest", "sh": 0.14, "weight": -0.4},
 				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "helm": C("#3a2c32"), "horns": true, "horn_len": 0.8},
 				"kit": {"armor": C("#3e2e34"), "boots": C("#241a1e"), "cape": C("#4a1418"), "weapon": "greatsword", "weapon_c": C("#5e4c50")}}
 		# ── 네발짐승 ──
