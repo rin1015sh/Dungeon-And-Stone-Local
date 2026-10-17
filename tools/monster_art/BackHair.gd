@@ -55,7 +55,7 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 			pts.append(Back.on_head(hd, la, lo + sin(t * 1.3 + k) * 0.08, 0.016))
 		Back.groove(cl, pr, g, pts, Back.head_n(0.3, lo), 0.004, 0.006)
 	if sp.get("fringe", false):
-		_fringe(cl, pr, hd, m, g, rng)
+		_fringe(cl, pr, hd, m, g, rng, float(sp.get("hair_flare", 0.13)))
 	if kind == "long":
 		_long(cl, pr, j, bd, hd, sp, m, g, rng)
 	elif kind == "ragged":
@@ -69,14 +69,14 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 ## 머리선 위도(lon: 0 뒤통수 · π 얼굴): 목덜미는 낮게, 귀 위는 귀 높이, 이마는 높게.
 ## 덥수룩한 앞·옆머리(탐험 맵 그림 — 피어 앤 헝거 맵 그림의 더벅머리): 정수리에서 흘러내린 머리 타래가
 ## 앞은 눈썹 위까지, 옆은 귀를 덮고 뺨까지 내려온다. 끝이 가늘어 들쭉날쭉하다.
-static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rng: RandomNumberGenerator) -> void:
+static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rng: RandomNumberGenerator, sp_flare: float) -> void:
 	var hh: float = hd["hh"]
 	for k in 26:
 		var a := lerpf(-1.75, 1.75, (k + rng.randf_range(0.2, 0.8)) / 26.0)  # 얼굴 가운데에서 돈 각도
 		var lo := PI + a
 		var side := smoothstep(0.45, 1.5, absf(a))
 		var end_la := lerpf(0.26, 0.02, side) + rng.randf_range(-0.07, 0.07)  # 옆은 눈높이까지만(옆모습에서 얼굴이 보이게)
-		var gw := hh * lerpf(0.06, 0.13, side)  # 옆머리는 부풀어 머리 밖으로 삐친다
+		var gw := hh * lerpf(0.06, float(sp_flare), side)  # 옆머리는 부풀어 머리 밖으로 삐친다(sp hair_flare)
 		var pts: Array = []
 		for t in 4:
 			var f := t / 3.0

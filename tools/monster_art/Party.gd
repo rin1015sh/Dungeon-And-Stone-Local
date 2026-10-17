@@ -134,7 +134,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
-	if sp.get("map_face", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림): 짙은 고리 같은 눈구멍 안에 흐린 눈알 — 점이 아니다. 입은 그리지 않는다
+	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림): 짙은 고리 같은 눈구멍 안에 흐린 눈알 — 점이 아니다. 입은 그리지 않는다
 		var side: bool = (hd["eyes"] as Array).size() < 2  # 옆모습: 눈구멍 그늘만(고리·눈알은 작은 점 둘로 보인다)
 		var r := float(hd["hh"]) * H * (0.07 if side else 0.085)
 		for e: Vector2 in hd["eyes"]:
@@ -142,9 +142,9 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 				for xx in range(int(e.x - r * 1.3), int(e.x + r * 1.3) + 1):
 					var d := Vector2((xx - e.x) / (r * 1.15), (yy - e.y) / (r * 0.95)).length()
 					if d < 1.15:
-						p.blend(xx, yy, Color("#160c0a"), 0.92 * smoothstep(1.15, 0.8, d))  # 눈구멍
-					if d < 0.42 and not side:
-						p.blend(xx, yy, Color("#a89a86"), 0.7 * smoothstep(0.42, 0.15, d))  # 흐린 눈알
+						p.blend(xx, yy, Color("#160c0a"), 0.85 * smoothstep(1.15, 0.3, d))  # 눈구멍(가운데가 가장 짙고 가장자리로 풀린다)
+					if not side and Vector2(xx - e.x + r * 0.2, yy - e.y + r * 0.15).length() < r * 0.22:
+						p.blend(xx, yy, Color("#cbbfae"), 0.55)  # 흐린 눈빛 한 점
 		Finish.done(p, sp, Back.screen_joints(pr, j), H)
 		return p
 	for e: Vector2 in hd["eyes"]:  # 옆얼굴 눈: 짧은 눈꺼풀 선 + 어두운 눈동자

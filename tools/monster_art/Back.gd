@@ -151,7 +151,7 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
 	var lf := float(sp.get("legs", 1.0))
 	var wd := float(sp.get("wide", 1.0))
-	if lf == 1.0 and wd == 1.0 and float(sp.get("head", 1.0)) == 1.0 and not sp.get("map_face", false):
+	if lf == 1.0 and wd == 1.0 and float(sp.get("head", 1.0)) == 1.0 and not sp.get("map_face", false) and not sp.get("socket_eyes", false):
 		return j
 	for k: String in j:
 		if j[k] is Vector3:
@@ -161,6 +161,7 @@ static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
 			j[k] = v
 	j["head"] = j["head"] - Vector3(0, (float(j["head_h"]) - 0.13) * 0.4, 0)
 	j["map_face"] = bool(sp.get("map_face", false))
+	j["socket_eyes"] = bool(sp.get("socket_eyes", false))
 	if j["map_face"]:  # 굵어진 가슴·망토가 턱을 덮지 않게 머리를 조금 앞으로
 		j["head"] = j["head"] + Vector3(0, 0, -0.015)
 	return j
@@ -312,10 +313,11 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	else:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
 	if not plain:
+		var soft := 0.55 if j.get("socket_eyes", false) else 1.0  # 맵 그림: 광대·코를 낮게(작은 그림에서 둥근 광대가 안경테처럼 빛났다)
 		ell(cl, pr, g, hc + Vector3(0, -rv * 0.32, -rw * 0.82), ru * 0.8, rv * 0.18, rw * 0.25, skin, 0.008)  # 눈썹뼈
 		for s: int in [-1, 1]:
-			ell(cl, pr, g, hc + Vector3(s * ru * 0.68, rv * 0.08, -rw * 0.62), ru * 0.3, rv * 0.22, rw * 0.32, skin, 0.008)  # 광대
-		cap(cl, pr, g, hc + Vector3(0, -rv * 0.18, -rw * 1.02), hc + Vector3(0, rv * 0.28, -rw * 1.22), hh * 0.07, hh * 0.065, skin, 0.006)  # 코
+			ell(cl, pr, g, hc + Vector3(s * ru * 0.68, rv * 0.08, -rw * lerpf(0.5, 0.62, soft)), ru * 0.3, rv * 0.22, rw * 0.32 * soft, skin, 0.008)  # 광대
+		cap(cl, pr, g, hc + Vector3(0, -rv * 0.18, -rw * lerpf(0.95, 1.02, soft)), hc + Vector3(0, rv * 0.28, -rw * lerpf(1.05, 1.22, soft)), hh * 0.07 * lerpf(0.8, 1.0, soft), hh * 0.065 * lerpf(0.8, 1.0, soft), skin, 0.006)  # 코
 	else:
 		ell(cl, pr, g, hc + Vector3(0, -rv * 0.3, -rw * 0.8), ru * 0.78, rv * 0.15, rw * 0.22, skin, 0.01)  # 눈썹뼈(눈구멍 그늘)
 		for s: int in [-1, 1]:
@@ -334,7 +336,8 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 		var e := hc + Vector3(s * ru * 0.42, -rv * 0.1, -rw * 0.84)
 		if facing(pr, Vector3(s * 0.45, 0, -1)) > 0.12:
 			var q := P2(pr, e)
-			cl.carve(g, q, hh * 0.07 * float(pr["H"]), hh * 0.045 * float(pr["H"]), hh * 0.035 * float(pr["H"]))
+			if not j.get("socket_eyes", false):  # 칠한 눈구멍을 쓰면 파내지 않는다(파낸 테두리가 밝게 빛나 안경처럼 보였다)
+				cl.carve(g, q, hh * 0.07 * float(pr["H"]), hh * 0.045 * float(pr["H"]), hh * 0.035 * float(pr["H"]))
 			eyes.append(q)
 	if plain:
 		return {"g": g, "c": hc, "hh": hh, "ru": ru, "rv": rv, "rw": rw, "eyes": eyes}
