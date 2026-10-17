@@ -19,10 +19,11 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	var g := cl.group()
 	var turn: float = pr["turn"]
 	var nape := -0.55 if kind == "short" else -0.75
+	var high := float(sp.get("hair_high", 0.0))  # 탐험 맵: 옆·앞 머리선을 올려 얼굴이 보이게(큰 머리에서 머리카락이 얼굴을 덮지 않게)
 	var line := PackedVector2Array()
 	var lon := turn - PI * 0.5 - 0.3
 	while lon <= turn + PI * 0.5 + 0.3:
-		line.append(Back.P2(pr, Back.on_head(hd, _hairline(lon, nape), lon, 0.012)))
+		line.append(Back.P2(pr, Back.on_head(hd, _hairline(lon, nape, high), lon, 0.012)))
 		lon += 0.12
 	var top := line[0].y
 	var x0 := line[0].x
@@ -34,7 +35,7 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	var H: float = pr["H"]
 	line.append(Vector2(x1 + H * 0.1, top - H * 0.2))
 	line.append(Vector2(x0 - H * 0.1, top - H * 0.2))
-	BackKit.shell(cl, pr, ["skull"], 0.014 if kind != "ragged" else 0.006, m, g, line, 0.01)
+	BackKit.shell(cl, pr, ["skull"], (0.014 if kind != "ragged" else 0.006) * float(sp.get("hair_grow", 1.0)), m, g, line, 0.01)  # hair_grow = 숱(탐험 맵 그림은 덥수룩하게)
 	if kind == "ragged":
 		for k in 6:
 			cl.erase(g, Back.P2(pr, Back.on_head(hd, rng.randf_range(0.0, 1.0), rng.randf_range(-1.6, 1.6), 0.01)), rng.randf_range(0.01, 0.022) * H, rng.randf_range(0.01, 0.02) * H, 0.6)
@@ -42,12 +43,12 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		for k in 9:  # 덥수룩한 뭉치
 			var la := rng.randf_range(0.25, 1.2)
 			var lo := rng.randf_range(-2.1, 2.1)
-			if la < _hairline(lo, nape) + 0.2:
+			if la < _hairline(lo, nape, high) + 0.2:
 				continue
 			Back.ell(cl, pr, g, Back.on_head(hd, la, lo, -0.004), 0.03, 0.026, 0.03, m, 0.012)
 	for k in 22:  # 머리카락 결(정수리 → 아래)
 		var lo := lerpf(-2.3, 2.3, (k + rng.randf()) / 22.0)
-		var la0 := _hairline(lo, nape)
+		var la0 := _hairline(lo, nape, high)
 		var pts: Array = []
 		for t in 4:
 			var la := lerpf(1.35, la0 + 0.05, t / 3.0)
@@ -64,13 +65,14 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 
 
 ## 머리선 위도(lon: 0 뒤통수 · π 얼굴): 목덜미는 낮게, 귀 위는 귀 높이, 이마는 높게.
-static func _hairline(lon: float, nape: float) -> float:
+static func _hairline(lon: float, nape: float, high: float = 0.0) -> float:
 	var a := absf(wrapf(lon, -PI, PI))
+	var up := high * smoothstep(0.7, 1.7, a)
 	if a < PI * 0.5:
-		return lerpf(nape, 0.05, a / (PI * 0.5))
+		return lerpf(nape, 0.05, a / (PI * 0.5)) + up
 	if a < 2.25:
-		return lerpf(0.05, 0.28, (a - PI * 0.5) / (2.25 - PI * 0.5))
-	return lerpf(0.28, 0.62, (a - 2.25) / (PI - 2.25))
+		return lerpf(0.05, 0.28, (a - PI * 0.5) / (2.25 - PI * 0.5)) + up
+	return lerpf(0.28, 0.62, (a - 2.25) / (PI - 2.25)) + up
 
 
 ## 긴 머리: 뒤통수에서 등 위로 흘러내린 머리 타래 + 땋은 머리.
