@@ -143,6 +143,23 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 		j["elbow_" + t] = el
 		j["wrist_" + t] = wr
 		j["hand_" + t] = wr + (wr - el).normalized() * 0.035
+	return _chunky(j, sp, hip_y)
+
+
+## 탐험 맵 몸 비율(피어 앤 헝거 맵 그림 — 약간 큰 머리·짧고 굵은 몸, tools/paint_actors.gd): legs = 다리 길이 배율(발은 그대로,
+## 위 몸은 그만큼 내려온다), wide = 가로 배율, head(spec)로 커진 머리는 목 위로 올린다. 전투 그림은 모두 1이라 그대로.
+static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
+	var lf := float(sp.get("legs", 1.0))
+	var wd := float(sp.get("wide", 1.0))
+	if lf == 1.0 and wd == 1.0 and float(sp.get("head", 1.0)) == 1.0:
+		return j
+	for k: String in j:
+		if j[k] is Vector3:
+			var v: Vector3 = j[k]
+			v.x *= wd
+			v.y = v.y * lf if v.y > hip_y else v.y - hip_y * (1.0 - lf)
+			j[k] = v
+	j["head"] = j["head"] - Vector3(0, (float(j["head_h"]) - 0.13) * 0.55, 0)
 	return j
 
 

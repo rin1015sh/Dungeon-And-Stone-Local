@@ -3,7 +3,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://tools/paint_actors.gd [-- --only=<종족|monsters|몬스터 id,…>]
 ## 탐험가: 아군 전투 그림의 3D 몸(Party·Back)을 앞(아래)·옆(오른쪽)·뒤(위)로 돌리고 걷기 세 장(왼발 앞·섬·오른발 앞)을 그려
 ##   한 장의 시트로 → assets/actors/<종족>.webp. 줄 = [아래, 왼쪽, 오른쪽, 위](왼쪽 = 오른쪽 좌우 반전), 칸 = [걸음 A, 섬, 걸음 B].
-##   피어 앤 헝거 맵 그림처럼 사람 키 1.3칸 안팎·진한 바깥선·칠한 그늘(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
+##   피어 앤 헝거 맵 그림처럼 사람 키 1.3칸 안팎·약간 큰 머리와 짧고 굵은 몸(약 3.7등신 — HEAD·LEGS·WIDE·BULK)·진한 바깥선·칠한 그늘(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
 ## 몬스터: 전투 일러스트(assets/monsters/<id>.webp — 정면)를 몸 높이 색인으로 데이터 size에 맞춰 줄인다 → assets/actors/monsters/<id>.webp
 ##   (뒷모습 그림이 있으면 <id>_back.webp도). 걷기는 게임이 흔들어 보인다(MonsterView).
 ## 칸 크기·배율은 render.json view.actor_sheet. 줄인 뒤 1px 잉크 바깥선을 두른다(작은 그림에서 윤곽이 읽히게).
@@ -16,6 +16,11 @@ const SIDE_TURN := 1.4   ## 옆모습(오른쪽을 본다) 돌림 — 거의 옆
 const PITCH := 0.35      ## 3/4 시점 — 보는 사람 쪽으로 나온 발·팔이 화면 아래로(Back.proj)
 const PHASES := [1.0, 0.0, -1.0]  ## 칸 순서: 왼발 앞 · 섬 · 오른발 앞
 const OUTLINE := Color("#120c0a")
+## 몸 비율(사용자 2026-10-17 "피어 앤 헝거 화면의 캐릭터 비율 그대로 — 약간 대두의 두꺼운 캐릭터"): 약 3.7등신
+const HEAD := 2.0   ## 머리 크기 배율(전투 그림 = 1, 약 7.5등신)
+const LEGS := 0.72  ## 다리 길이 배율
+const WIDE := 1.2   ## 어깨·엉덩이 폭 배율
+const BULK := 1.2   ## 팔다리·몸통 굵기 배율
 const SEED := 4242
 
 var _cfg: Dictionary = {}
@@ -67,6 +72,10 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["turn"] = turn
 	sp["pitch"] = PITCH
 	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": "hang", "arm_r": "hang"}, true)
+	sp["head"] = float(sp.get("head", 1.0)) * HEAD  # 피어 앤 헝거 맵 비율: 약간 큰 머리·짧고 굵은 몸
+	sp["legs"] = LEGS
+	sp["wide"] = WIDE
+	sp["bulk"] = float(sp.get("bulk", 1.0)) * BULK
 	if phase != 0.0:
 		sp["walk"] = phase
 	var p: Paint = Party.figure(sp, SEED + race.hash() % 997)
