@@ -95,6 +95,10 @@ static func ui_float(key: String, fallback: float = 0.0) -> float:
 	return JsonUtil.get_float(JsonUtil.get_dict(_render, "ui"), key, fallback)
 
 
+static func ui_dict(key: String) -> Dictionary:
+	return JsonUtil.get_dict(JsonUtil.get_dict(_render, "ui"), key)
+
+
 ## render.json의 다른 구역 값("city.pixel_scale"처럼 점 경로).
 static func render_float(path: String, fallback: float = 0.0) -> float:
 	var v: Variant = GameDatabase.single(_render, path, fallback)

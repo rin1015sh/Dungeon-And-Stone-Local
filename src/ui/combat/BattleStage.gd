@@ -32,6 +32,13 @@ func remove_unit(u: Combatant) -> void:
 	var v: BattlerView = _views.get(u)
 	if v == null:
 		return
+	if v.art != null and v.front and u.actor is Monster and not u.is_active() and not u.fled:  # 쓰러진 몬스터 = 빛나는 먼지로
+		var dust := DeathDust.new()
+		var rng := RandomNumberGenerator.new()
+		rng.seed = u.order * 7919 + 13
+		dust.setup(v.art, Rect2(v.position, v.size), v.flip, UiTheme.ui_dict("combat_death_dust"), rng)
+		dust.z_index = 5  # 남은 몬스터가 그 자리로 다시 서도 위에 보이게
+		add_child(dust)
 	_views.erase(u)
 	v.queue_free()
 	layout()

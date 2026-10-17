@@ -35,7 +35,7 @@
       "kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"],
       "on_tiles": ["cave_floor"],
       "spots": [
-        {"at": [310, 387], "radius": 6, "kind": "moss", "chance": 0.45, "dense": true}
+        {"at": [310, 387], "radius": 6, "kind": "moss", "chance": 0.55, "size": 1.5}
       ],
       "rules": [
         {"kind": "shore", "near_tiles": {"tiles": ["pond_water"], "radius": 1}, "dense": true, "orient": "toward", "size": 1.35},

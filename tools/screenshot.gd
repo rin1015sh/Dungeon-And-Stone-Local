@@ -11,6 +11,7 @@ extends Node
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
+## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
@@ -195,6 +196,19 @@ func _run() -> void:
 						if not ess.is_empty():
 							ds.drops.append({"kind": "essence", "inst": ess, "slot": 0, "monster": k[0]})
 						return msgs
+		if _args.has("dust"):  # 쓰러지는 연출(DeathDust): 첫 적을 쓰러뜨리고 --dust초(기본 0.5) 뒤에 찍는다
+			await _frames(10)
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var dcs := n as CombatScreen
+					var du: Combatant = dcs.battle.side_units(Combatant.SIDE_ENEMY)[0]
+					du.actor.pool.set_current("hp", 0.0)
+					du.actor.dead = true
+					dcs._stage.remove_unit(du)
+			var dv := str(_args["dust"])
+			await get_tree().create_timer(dv.to_float() if dv.is_valid_float() else 0.5).timeout
+			for d: Node in _main.find_children("*", "DeathDust", true, false):
+				d.set_process(false)  # 찍기 전 남은 기다림 동안 흩어지지 않게 그 순간에 멈춘다
 		if _args.has("win"):  # 전투 승리 결과 칸(보상 안내) 확인: 적을 모두 쓰러뜨리고 방어로 차례를 넘긴다
 			await _frames(10)
 			for n: Node in _main.find_children("*", "", true, false):

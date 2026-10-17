@@ -34,6 +34,8 @@ var _vision: float = 1.0
 var _cfg: Dictionary = {}
 const FOG_ALL_SEEN := 4 | (4 << 3)
 var _vfog: PackedByteArray          # 꼭짓점 둘레 네 칸: 탐험한 수(아래 3비트) | 보이는 수 << 3
+var _vknown: PackedByteArray        # 꼭짓점 둘레 4×4칸 중 "아는" 칸 수(탐험했거나 벽 — 미탐험 바닥만 모른다), 0~16
+const KNOWN_ALL := 16
 var art: FloorArt
 var _nb: Color = Color.BLACK          # art 값 사본(vertex_color는 아주 자주 불린다)
 var _unexplored: Color = Color.BLACK
@@ -51,6 +53,8 @@ var prop_tex: Dictionary = {}         # 소품·턱 시트 경로 -> Texture2D(�
 var prop_by_def: Array[Texture2D] = [] # map.defs 번호 -> 소품 시트(없으면 null — 그리기에서 칸마다 사전을 찾지 않게)
 var smooth_by_def: PackedByteArray = PackedByteArray()  # map.defs 번호 -> 부드러운 암벽(WallShape)이면 1
 var smooth_any: bool = false
+var blend_by_def: PackedByteArray = PackedByteArray()   # map.defs 번호 -> 가장자리를 사선으로 다듬는 바닥(물 — FloorChunk)이면 1
+var blend_any: bool = false
 var base_floor: int = -1             # 층의 기본 바닥 타일 번호(깎은 벽 모서리 아래를 채운다 — gen.tiles.floor)
 var wall_round: float = 0.5          # 암벽 모서리를 깎는 폭(칸 비율 — view.wall_round)
 var wall_bulge: float = 0.06         # 깎은 사선 가운데가 모서리 쪽으로 휘는 정도(칸 비율 — view.wall_bulge)
@@ -78,6 +82,8 @@ func _ready() -> void:
 	_vlight.resize((map.width + 1) * (map.height + 1))
 	_vfog = PackedByteArray()
 	_vfog.resize((map.width + 1) * (map.height + 1))
+	_vknown = PackedByteArray()
+	_vknown.resize((map.width + 1) * (map.height + 1))
 	FloorTextures.load_into(self, _cfg)
 	stream = ChunkStream.new(self, maxi(1, JsonUtil.get_int(_cfg, "stream_chunks", 3)))
 	y_sort_enabled = true
@@ -223,7 +229,8 @@ func vertex_color(vx: int, vy: int, base: Color) -> Color:
 	if tint.enabled:
 		var tc := tint.colors[i]
 		lit = Color(lit.r * tc.r, lit.g * tc.g, lit.b * tc.b)
-	if f == FOG_ALL_SEEN:  # 가장 흔한 경우(시야 한가운데)
+	var kn := _vknown[i]
+	if f == FOG_ALL_SEEN and kn == KNOWN_ALL:  # 가장 흔한 경우(시야 한가운데)
 		return Color(maxf(base.r * lit.r, _nb.r), maxf(base.g * lit.g, _nb.g), maxf(base.b * lit.b, _nb.b), 1.0)
 	var e := f & 7
 	if e == 0:
@@ -235,7 +242,7 @@ func vertex_color(vx: int, vy: int, base: Color) -> Color:
 	if s > 0:
 		c = c.lerp(Color(base.r * lit.r, base.g * lit.g, base.b * lit.b, 1.0), float(s) / float(e))
 	c = Color(maxf(c.r, _nb.r), maxf(c.g, _nb.g), maxf(c.b, _nb.b), 1.0)
-	return c if e >= 4 else _unexplored.lerp(c, float(e) * 0.25)
+	return _unexplored.lerp(c, known_fade(kn))
 
 
 ## 재질 그림용 꼭짓점 색: rgb = 그림에 곱할 빛 배율, a = 보이는 비율(셰이더가 1 - a만큼 탈색 — floor_tex).
@@ -250,7 +257,8 @@ func vertex_mul(vx: int, vy: int, mean: Color) -> Color:
 	var fr := _nb.r / maxf(mean.r, 0.02)
 	var fg := _nb.g / maxf(mean.g, 0.02)
 	var fb := _nb.b / maxf(mean.b, 0.02)
-	if f == FOG_ALL_SEEN:
+	var kn := _vknown[i]
+	if f == FOG_ALL_SEEN and kn == KNOWN_ALL:
 		return Color(maxf(lit.r, fr), maxf(lit.g, fg), maxf(lit.b, fb), 1.0)
 	var e := f & 7
 	if e == 0:
@@ -258,7 +266,7 @@ func vertex_mul(vx: int, vy: int, mean: Color) -> Color:
 	var s := f >> 3
 	var k := float(s) / float(e)
 	var m := _mem.lerp(lit, k) if s > 0 else _mem
-	var fade := 1.0 if e >= 4 else float(e) * 0.25
+	var fade := known_fade(kn)
 	return Color(maxf(m.r, fr) * fade, maxf(m.g, fg) * fade, maxf(m.b, fb) * fade, k)
 
 
@@ -282,6 +290,13 @@ static func fog_counts(m: FloorMap, vx: int, vy: int) -> int:
 	return e | (s << 3)
 
 
+## 미탐험 바닥 경계 감쇠: 꼭짓점 둘레 4×4칸 중 아는 칸이 절반(경계 위)이면 0 → 두 칸 안쪽(모두 앎)이면 1.
+## 한 칸이 아니라 두 칸에 걸쳐 둥글게 어두워져 시야 끝이 칸 계단으로 보이지 않는다.
+static func known_fade(kn: int) -> float:
+	var k := clampf((kn - 8) / 8.0, 0.0, 1.0)
+	return k * k * (3.0 - 2.0 * k)
+
+
 ## 칸 사각형 cells를 둘러싼 꼭짓점들의 안개 값을 다시 센다(칸 값 = 탐험 1 + 보임 8을 한 번 모아 네 칸씩 더한다).
 func update_fog(cells: Rect2i) -> void:
 	var r := cells.intersection(Rect2i(0, 0, map.width, map.height))
@@ -303,6 +318,29 @@ func update_fog(cells: Rect2i) -> void:
 		var dn := up + cw
 		for vx in range(r.position.x, r.end.x + 1):
 			_vfog[vy * w + vx] = cv[up + vx - 1] + cv[up + vx] + cv[dn + vx - 1] + cv[dn + vx]
+	# 아는 칸(탐험했거나 벽, 지도 밖도 바위)의 4×4 합 — 누적합 표(꼭짓점마다 네 번 읽기)
+	var e2 := r.grow(2)
+	var sw := e2.size.x + 1
+	var sat := PackedInt32Array()
+	sat.resize(sw * (e2.size.y + 1))
+	for y in range(e2.size.y):
+		var gy := e2.position.y + y
+		var run := 0
+		for x in range(e2.size.x):
+			var gx := e2.position.x + x
+			var known := 1
+			if gx >= 0 and gy >= 0 and gx < map.width and gy < map.height:
+				var j := gy * map.width + gx
+				known = 1 if map.explored[j] != 0 or map.defs[map.tiles[j]].is_wall() else 0
+			run += known
+			sat[(y + 1) * sw + x + 1] = sat[y * sw + x + 1] + run
+	for vy in range(r.position.y, r.end.y + 1):
+		var y0 := (vy - 2 - e2.position.y) * sw
+		var y1 := (vy + 2 - e2.position.y) * sw
+		for vx in range(r.position.x, r.end.x + 1):
+			var x0 := vx - 2 - e2.position.x
+			var x1 := vx + 2 - e2.position.x
+			_vknown[vy * w + vx] = sat[y1 + x1] - sat[y0 + x1] - sat[y1 + x0] + sat[y0 + x0]
 
 
 ## 칸마다 약간 다른 밝기(동굴 바닥 질감). 같은 칸은 항상 같은 값.

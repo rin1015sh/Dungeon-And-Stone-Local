@@ -17,9 +17,10 @@ const BUILDS := {
 }
 
 
-## 투영 정보: 발 가운데(화면) · 키(px) · 돌림.
-static func proj(o: Vector2, H: float, turn: float) -> Dictionary:
-	return {"ox": o.x, "oy": o.y, "H": H, "c": cos(turn), "s": sin(turn), "turn": turn}
+## 투영 정보: 발 가운데(화면) · 키(px) · 돌림 · pitch(위에서 내려다보는 정도 — 보는 사람 쪽 깊이만큼 화면 아래로. 전투 그림은 0,
+## 탐험 맵 걷기 그림은 3/4 시점이라 앞으로 내민 발이 아래에 보이게 — tools/paint_actors.gd).
+static func proj(o: Vector2, H: float, turn: float, pitch: float = 0.0) -> Dictionary:
+	return {"ox": o.x, "oy": o.y, "H": H, "c": cos(turn), "s": sin(turn), "turn": turn, "pitch": pitch}
 
 
 ## 몸 좌표(키 비율) → 화면(px, z = 보는 사람 쪽).
@@ -27,7 +28,8 @@ static func P(pr: Dictionary, v: Vector3) -> Vector3:
 	var c: float = pr["c"]
 	var s: float = pr["s"]
 	var H: float = pr["H"]
-	return Vector3(float(pr["ox"]) + H * (v.x * c - v.z * s), float(pr["oy"]) + H * v.y, H * (v.x * s + v.z * c))
+	var toward := v.x * s + v.z * c
+	return Vector3(float(pr["ox"]) + H * (v.x * c - v.z * s), float(pr["oy"]) + H * (v.y + toward * float(pr.get("pitch", 0.0))), H * toward)
 
 
 static func P2(pr: Dictionary, v: Vector3) -> Vector2:
@@ -142,6 +144,24 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 		j["wrist_" + t] = wr
 		j["hand_" + t] = wr + (wr - el).normalized() * 0.035
 	return j
+
+
+## 걷기 한 걸음(탐험 맵 걷기 그림 — tools/paint_actors.gd): phase +1 = 왼발이 앞으로·오른발 뒤꿈치를 들고·오른팔이 앞으로,
+## -1 = 반대. 몸 좌표에서 앞 = -w(z 음수). stride·swing = 보폭·팔 흔들기(키 비율).
+static func stride(j: Dictionary, phase: float, step: float = 0.085, swing: float = 0.06) -> Dictionary:
+	var out := j.duplicate()
+	for s: int in [-1, 1]:
+		var t := "l" if s < 0 else "r"
+		var k := phase * (1.0 if s < 0 else -1.0)  # 이 다리가 앞(+) 뒤(-)
+		var lift := maxf(0.0, -k) * 0.022  # 뒤로 간 다리는 뒤꿈치를 든다
+		out["ankle_" + t] = (j["ankle_" + t] as Vector3) + Vector3(0, -lift, -k * step)
+		out["toe_" + t] = (j["toe_" + t] as Vector3) + Vector3(0, -lift * 0.3, -k * step)
+		out["knee_" + t] = (j["knee_" + t] as Vector3) + Vector3(0, -absf(k) * 0.008, -k * step * 0.55 - absf(k) * 0.02)
+		var a := -k  # 팔은 같은 쪽 다리와 반대로
+		out["elbow_" + t] = (j["elbow_" + t] as Vector3) + Vector3(0, 0, -a * swing * 0.5)
+		out["wrist_" + t] = (j["wrist_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing)
+		out["hand_" + t] = (j["hand_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing * 1.05)
+	return out
 
 
 ## 몸: 엉덩이·허리·등(견갑골·척추 골·광배근) · 목·승모근 · 어깨 · 다리(햄스트링·종아리·발뒤꿈치) · 팔(삼두·팔꿈치·주먹).

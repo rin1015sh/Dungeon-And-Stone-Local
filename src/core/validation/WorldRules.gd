@@ -34,8 +34,8 @@ static func _tiles(v: ValidatorBase) -> void:
 			if not prop.is_empty() and not ResourceLoader.exists(prop):
 				v.err(w + ".art", "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % prop)
 			var shape := JsonUtil.get_str(art, "shape")
-			if not shape.is_empty() and (shape != "smooth" or JsonUtil.get_str(t, "kind") != "wall"):
-				v.err(w + ".art", "shape는 벽 타일의 \"smooth\"만")
+			if not shape.is_empty() and shape != "smooth":
+				v.err(w + ".art", "shape는 \"smooth\"만(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선)")
 		var light := JsonUtil.get_dict(t, "light")
 		if not light.is_empty():
 			if JsonUtil.get_float(light, "radius_m") <= 0.0:

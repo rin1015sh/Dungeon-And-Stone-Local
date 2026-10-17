@@ -12,6 +12,7 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	v.tile_tex.resize(n)
 	v.prop_by_def.resize(n)
 	v.smooth_by_def.resize(n)
+	v.blend_by_def.resize(n)
 	var any := false
 	for i in n:
 		var def := map.defs[i]
@@ -22,6 +23,8 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 			v.prop_tex[def.prop_sheet] = load(def.prop_sheet) as Texture2D
 			any = true
 		v.smooth_by_def[i] = 1 if def.is_wall() and def.art_shape == "smooth" and v.tile_tex[i] != null else 0
+		v.blend_by_def[i] = 1 if not def.is_wall() and def.art_shape == "smooth" and v.tile_tex[i] != null else 0
+		v.blend_any = v.blend_any or v.blend_by_def[i] != 0
 		v.smooth_any = v.smooth_any or v.smooth_by_def[i] != 0
 	for i in n:
 		v.prop_by_def[i] = v.prop_tex.get(map.defs[i].prop_sheet)

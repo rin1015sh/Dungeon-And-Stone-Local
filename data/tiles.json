@@ -55,7 +55,7 @@
       "floor": "#24384c"
     },
     "sprite": "res://assets/sprites/tiles/pond_water.png",
-    "art": {"atlas": "res://assets/floor/f1/water.webp", "variants": 6},
+    "art": {"atlas": "res://assets/floor/f1/water.webp", "variants": 6, "shape": "smooth"},
     "source": "original"
   },
   {
