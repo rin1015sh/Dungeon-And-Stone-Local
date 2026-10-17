@@ -308,16 +308,20 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	var F := Vector3(0, 0, -1)
 	var plain := bool(j.get("map_face", false))  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림): 턱이 튀어나오지 않은 달걀형, 움푹한 눈구멍, 입 없음
 	cl.tag = "skull"
-	if plain:  # 맵 얼굴: 머리통은 위로 올려 작게 — 아래가 둥글게 부푼 항아리 얼굴이 되지 않게
-		ell(cl, pr, g, hc - Vector3(0, rv * 0.12, 0), ru * 0.95, rv * 0.82, rw, skin, 0.01)
-		ell(cl, pr, g, hc + Vector3(0, -rv * 0.05, rw * 0.25), ru * 0.88, rv * 0.72, rw * 0.8, skin, 0.01)  # 뒤통수
+	if plain:  # 맵 얼굴: 머리통은 뒤·위로 물려 작게 — 옆에서 둥근 공 윤곽이 드러나지 않게(얼굴은 아래에서 깎아 붙인다)
+		ell(cl, pr, g, hc + Vector3(0, -rv * 0.2, rw * 0.1), ru * 0.95, rv * 0.78, rw * 0.88, skin, 0.01)
+		ell(cl, pr, g, hc + Vector3(0, -rv * 0.1, rw * 0.3), ru * 0.88, rv * 0.7, rw * 0.75, skin, 0.01)  # 뒤통수
 	else:
 		ell(cl, pr, g, hc, ru, rv, rw, skin, 0.01)
 		ell(cl, pr, g, hc + Vector3(0, 0.012 * hh / 0.13, rw * 0.25), ru * 0.92, rv * 0.82, rw * 0.8, skin, 0.01)  # 뒤통수
 	cl.tag = "face"
-	if plain:  # 홀쭉한 볼 + 좁아지는 턱(참고 그림: 아래로 갈수록 좁은 얼굴)
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.16, -rw * 0.3), ru * 0.74, rv * 0.42, rw * 0.62, skin, 0.03)
-		cap(cl, pr, g, hc + Vector3(0, rv * 0.26, -rw * 0.28), hc + Vector3(0, rv * 0.64, -rw * 0.26), ru * 0.5, ru * 0.3, skin, 0.04)
+	if plain:  # 깎은 얼굴(참고 그림 옆얼굴): 납작한 앞면 + 턱끝으로 좁아지는 쐐기 + 귀 밑에서 턱끝으로 곧은 턱선
+		var chin := hc + Vector3(0, rv * 0.74, -rw * 0.52)
+		# 이마 → 얼굴 가운데 → 턱끝을 한 줄로(옆에서 매끈한 볼록선, 앞에서는 턱으로 좁아지는 얼굴)
+		chain(cl, pr, g, [hc + Vector3(0, -rv * 0.4, -rw * 0.38), hc + Vector3(0, rv * 0.12, -rw * 0.42), chin], [ru * 0.78, ru * 0.66, ru * 0.2], skin, 0.03)
+		for s: int in [-1, 1]:
+			var jaw := hc + Vector3(s * ru * 0.72, rv * 0.28, 0.0)
+			cap(cl, pr, g, jaw, chin, ru * 0.22, ru * 0.18, skin, 0.02)  # 턱선
 	else:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
 	if not plain:
@@ -330,7 +334,7 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	if not plain:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.98, -rw * 0.72), ru * 0.38, rv * 0.2, rw * 0.3, skin, 0.008)  # 턱끝
 	cl.tag = "ear"
-	for s: int in ([] if plain else [-1, 1]):
+	for s: int in ([] if plain else [-1, 1]):  # 맵 얼굴은 귀 없음(사용자 2026-10-17)
 		var ek := 0.6 if plain else 1.0  # 큰 머리의 맵 얼굴은 귀를 작게
 		ell(cl, pr, g, hc + Vector3(s * ru * 0.98, rv * 0.06, rw * 0.02), hh * 0.055 * ek, hh * 0.16 * ek, hh * 0.11 * ek, skin, 0.004)
 		groove(cl, pr, g, [hc + Vector3(s * ru * 1.04, -rv * 0.18, rw * 0.0), hc + Vector3(s * ru * 1.08, rv * 0.06, -rw * 0.05), hc + Vector3(s * ru * 1.02, rv * 0.3, rw * 0.0)], Vector3(s, 0, -0.3), hh * 0.018, hh * 0.03)
