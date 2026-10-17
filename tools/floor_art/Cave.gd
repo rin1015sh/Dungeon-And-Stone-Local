@@ -22,7 +22,7 @@ const KINDS := {
 	"rock_top": ["plain", "crack", "rubble", "pits", "crack", "rubble"],
 	"rock_face": ["plain", "fissure", "bulge", "drip", "fissure", "ledge"],
 	"crystal_top": ["one", "vein", "small", "one", "vein", "two"],
-	"crystal_face": ["one", "two", "one", "two", "one", "small"],
+	"crystal_face": ["gems", "gems2", "gems", "seam", "gems2", "seam"],
 	"water": ["plain", "ring", "specks", "plain", "ring", "scum"],
 	"mud": ["plain", "puddle", "prints", "puddle", "lumps", "prints"],
 }
@@ -209,6 +209,20 @@ static func _details(p: Paint, key: String, kind: String, col: Color) -> void:
 			Ink.glow(p, (a.x + b.x) * 0.5, (a.y + b.y) * 0.5, 12.0 * s, CRYSTAL_GLOW, 0.25)
 			Ink.line(p, a, b, 2.2 * s, CRYSTAL_DARK, 0.9, 1.2)
 			Ink.line(p, a, b, 1.0 * s, CRYSTAL_LIGHT, 0.85, 1.2)
+		"gems", "gems2", "seam":  # 암벽에 박힌 작은 결정 몇 개(블록이 아니라 보석처럼) + 가는 수정 줄
+			var main := float(p.h - skirt)
+			if kind == "seam":
+				var a := Vector2(p.w * 0.2, main * p.rng.randf_range(0.35, 0.6))
+				var b := a + Vector2(p.w * 0.6, p.rng.randf_range(-6, 6) * s)
+				Ink.glow(p, (a.x + b.x) * 0.5, (a.y + b.y) * 0.5, 10.0 * s, CRYSTAL_GLOW, 0.2)
+				Ink.line(p, a, b, 1.8 * s, CRYSTAL_DARK, 0.85, 1.4)
+				Ink.line(p, a, b, 0.8 * s, CRYSTAL_LIGHT, 0.8, 1.4)
+			var n := 2 if kind == "gems" else 3
+			if kind == "seam":
+				n = 1
+			for k in n:
+				var q := Vector2(p.rng.randf_range(0.22, 0.78) * p.w, main * p.rng.randf_range(0.4, 0.85))
+				_gem(p, q, p.rng.randf_range(0.4, 0.58) * s)
 		"ring":
 			var q := c + Vector2(p.rng.randf_range(-6, 6), p.rng.randf_range(-6, 6)) * s
 			for r: float in [5.0 * s, 9.0 * s]:
@@ -325,28 +339,23 @@ static func _ellipse(q: Vector2, rx: float, ry: float, n: int, rng: RandomNumber
 	return out
 
 
-## 벽 윗면 턱(띠 하나 = w × h, 그림 위쪽 = 바닥 쪽 바깥): 위쪽은 들쭉날쭉한 바위 윤곽(바깥은 투명) + 윤곽 잉크와 빛 받은 모서리,
-## 아래쪽(윗면 안쪽)으로 갈수록 투명해져 윗면 그림에 녹아든다. 중간 회색으로 칠한다(게임이 윗면 색 × 2를 곱한다).
-## 좌우 끝은 모든 변형이 같은 윤곽이라 이웃 띠와 이어진다.
-static func rim(v: int, w: int, h: int, seed_value: int) -> Paint:
-	var p := Paint.new(w, h, seed_value + v * 613)
-	var common := Seam.field(w, 8, seed_value, 0.09, 3)
-	var own := Seam.field(w, 8, seed_value + 100 * (v + 1), 0.09, 3)
-	var hf := Seam.field(w, h, seed_value + 7, 0.12, 3)
-	var out := h * 0.55  # 바깥 부분(윤곽이 놓이는 곳)
-	for x in w:
-		var m := Seam.mask(x, 0, w, 1, w * 0.18, true)
-		var sil := (0.12 + lerpf(common[x], own[x], m) * 0.8) * out  # 윤곽 y
-		for y in h:
-			if y < sil:
-				continue
-			var depth := y - sil
-			var c := Color(0.5, 0.5, 0.5).lerp(Color(0.62, 0.6, 0.64), clampf(1.0 - depth / 3.0, 0.0, 1.0) * 0.6)
-			c = c.darkened(clampf((hf[y * w + x] - 0.5) * 0.5 + Seam.relief(hf, w, h, x, y, 5.0) * -0.4, -0.2, 0.4))
-			if depth < 1.4:
-				c = c.lerp(Ink.INK, 0.75)
-			elif depth < 3.0:
-				c = c.lerp(Color(0.72, 0.7, 0.74), 0.35)
-			var a := 1.0 - smoothstep(out, float(h), float(y))
-			p.blend(x, y, c, a)
-	return p
+## 박힌 결정 하나: 바위에 파인 어두운 홈 + 짧은 결정 2~3개(빛 쪽 면 밝게) + 꼭대기 반짝임 + 둘레 은은한 빛.
+static func _gem(p: Paint, q: Vector2, scale: float) -> void:
+	var s := scale * 2.0
+	Ink.glow(p, q.x, q.y, 9.0 * s, CRYSTAL_GLOW, 0.3)
+	p.fill_poly(_ellipse(q + Vector2(0, 1.0 * s), 3.6 * s, 2.4 * s, 12), func(_x: int, _y: int) -> Color: return Color(0.06, 0.04, 0.1, 0.7))
+	for k in p.rng.randi_range(2, 3):
+		var ang := -PI * 0.5 + p.rng.randf_range(-0.7, 0.7)
+		var d := Vector2.from_angle(ang)
+		var nrm := Vector2(-d.y, d.x)
+		var ln := p.rng.randf_range(4.0, 7.0) * s
+		var wd := p.rng.randf_range(1.2, 1.9) * s
+		var root := q + Vector2(p.rng.randf_range(-1.5, 1.5) * s, 0.5 * s)
+		var tip := root + d * ln
+		var left := PackedVector2Array([root + nrm * wd, root + nrm * wd + d * ln * 0.75, tip, root])
+		var right := PackedVector2Array([root, tip, root - nrm * wd + d * ln * 0.75, root - nrm * wd])
+		p.fill_poly(left, func(x: int, y: int) -> Color: return p.vary(CRYSTAL_LIGHT, x, y, 0.04))
+		p.fill_poly(right, func(x: int, y: int) -> Color: return p.vary(CRYSTAL_DARK.lightened(0.2), x, y, 0.04))
+		Ink.path(p, PackedVector2Array([root + nrm * wd, root + nrm * wd + d * ln * 0.75, tip, root - nrm * wd + d * ln * 0.75, root - nrm * wd]),
+			0.6 * s, false, Color("#1a1030"), 0.7, 0.2)
+		_dot(p, tip - d * 0.6 * s, 0.7 * s, Color("#f4eeff"), 0.9)

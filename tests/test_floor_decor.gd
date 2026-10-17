@@ -80,3 +80,20 @@ func test_macro_tint() -> void:
 	var east := tint.at(600, 366)
 	var west := tint.at(130, 366)
 	assert_true(east.b > east.r and west.r > west.b, "동 = 차가운 색, 서 = 따뜻한 색")
+
+
+## 구운 데칼 파일(tools/bake_decor.gd) = 지금 규칙의 결과. 규칙·kinds·지도를 바꿨으면 다시 굽는다.
+func test_baked_decor_matches_rules() -> void:
+	var f := _f1()
+	var decor := FloorDecor.compile(f[0], f[1])
+	assert_true(decor.baked, "1층은 구운 데칼을 읽는다(art.decor.baked)")
+	var baked := {}
+	for e in decor.all():
+		baked[JSON.stringify(FloorDecor.pack(e))] = true
+	var rules := decor.all(true)
+	assert_eq(baked.size(), rules.size(), "개수 — 다르면 tools/bake_decor.gd로 다시 굽는다")
+	var diff := 0
+	for e in rules:
+		if not baked.has(JSON.stringify(FloorDecor.pack(e))):
+			diff += 1
+	assert_eq(diff, 0, "규칙과 다른 데칼 — tools/bake_decor.gd로 다시 굽는다")

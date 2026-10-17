@@ -94,3 +94,24 @@ func test_atlas_sizes() -> void:
 		var fh := JsonUtil.get_int(t, "face_px", -1) * k + skirt if JsonUtil.get_int(t, "face_px", -1) >= 0 else face + skirt
 		assert_eq(tex.get_height(), cell + fh if wall else cell, "아틀라스 세로: " + id)
 	assert_true(seen >= 4, "1층 바닥·암벽·수정벽·물")
+
+
+## 부드러운 암벽(WallShape): 북쪽이 열린 벽 칸만 윗면(검게), 남쪽이 열린 칸만 앞면, 볼록 모서리는 깎인다.
+func test_wall_shape_smooth() -> void:
+	var map := FloorMap.new(db, 4, 3, "cave_floor")
+	map.set_tile(Vector2i(1, 1), "rock_wall")  # 홀로 선 벽 한 칸 — 네 모서리 모두 볼록
+	var smooth := PackedByteArray()
+	smooth.resize(map.defs.size())
+	smooth[map.index_of("rock_wall")] = 1
+	var face_h := func(_d: TileDef) -> int: return 24
+	var variant := func(_x: int, _y: int, _d: TileDef) -> int: return 0
+	var s := WallShape.build(map, 1, 0, 4, 32.0, 16.0, smooth, face_h, variant)
+	assert_eq(s.tops.size(), 1, "북쪽이 열려 윗면 하나")
+	var poly: PackedVector2Array = s.tops[0]["poly"]
+	assert_false(poly.has(Vector2(32, 32)), "왼위 모서리는 깎였다")
+	assert_true(s.faces.size() > 2, "아래 변 + 아래 두 모서리 사선이 앞면")
+	for f in s.faces:
+		assert_true((f["b"] as Vector2).x > (f["a"] as Vector2).x, "앞면 선분은 왼→오")
+	assert_eq(s.floors.size(), 2, "깎은 아래쪽 두 모서리에 바닥을 채운다")
+	var inner := WallShape.build(map, 0, 0, 4, 32.0, 16.0, smooth, face_h, variant)
+	assert_eq(inner.tops.size() + inner.faces.size(), 0, "벽이 없는 줄(오목 모서리도 없음)")

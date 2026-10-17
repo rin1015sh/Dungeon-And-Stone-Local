@@ -55,16 +55,6 @@ func _init() -> void:
 		if not only.is_empty() and only != spec["place"] and only != spec["style"]:
 			continue
 		_decal_sheet(spec, cell)
-	var rim_h := int(round(cell * (JsonUtil.get_float(view, "wall_rim_out", 0.2) + JsonUtil.get_float(view, "wall_rim_in", 0.18))))
-	for spec: Dictionary in Specs.RIMS:
-		if not only.is_empty() and only != spec["place"] and only != spec["style"]:
-			continue
-		var n := int(spec["variants"])
-		var img := Image.create_empty(n * cell, rim_h, false, Image.FORMAT_RGBA8)
-		for v in n:
-			img.blit_rect(Cave.rim(v, cell, rim_h, int(spec["seed"])).to_image(), Rect2i(0, 0, cell, rim_h), Vector2i(v * cell, 0))
-		img.save_webp(str(spec["path"]), false)
-		print("그림: %s %dx%d (턱 %d)" % [spec["path"], img.get_width(), img.get_height(), n])
 	for spec: Dictionary in Specs.PROPS:
 		if not only.is_empty() and only != spec["place"] and only != spec["style"]:
 			continue

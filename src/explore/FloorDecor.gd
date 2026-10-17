@@ -6,7 +6,9 @@ extends RefCounted
 ##           noise {key, freq, above}, orient: "toward"(near_tiles 쪽으로 돌림)}
 ##   spot = {at: [x, y], radius, kind, chance, dense} — 손으로 정한 자리(이끼 물웅덩이 등). 규칙보다 먼저.
 ## 칸 좌표·지도에서만 결정된다(같은 칸 = 늘 같은 데칼). dense가 아니면 3×3 이웃 중 해시가 가장 큰 칸만 후보(포아송 원판 근사 —
-## 맞닿은 두 칸에 함께 놓이지 않는다). 청크를 만들 때 그 청크만 계산한다(지도 전체는 도구·테스트만 — all()).
+## 맞닿은 두 칸에 함께 놓이지 않는다).
+## 고정 지도 층은 결과를 미리 구워 둔다(art.decor.baked — tools/bake_decor.gd): 실행 중엔 청크별 색인에서 읽기만 한다(cells).
+## 구운 파일이 없으면(균열 챕터 등) 청크를 만들 때 규칙으로 계산한다(compute). 규칙을 바꾸면 다시 굽는다 — 테스트가 비교한다.
 ## 데칼은 그림만: 걷기·충돌·동굴 요소에 영향 없음(동굴 요소 칸·on_tiles가 아닌 칸에는 놓이지 않는다).
 
 const DIRS: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0)]  ## rot 0 북 · 1 동 · 2 남 · 3 서
@@ -23,6 +25,9 @@ var _sets: Array[PackedByteArray] = []  # 서로 다른 near_tiles 묶음(같은
 var _set_reach: PackedInt32Array = PackedInt32Array()
 var _reach: int = 1               # 가장 먼 near 반경
 var _feature_cells: Dictionary = {}  # 동굴 요소 칸(함정처럼 바닥 타일인 것도) — 데칼을 놓지 않는다
+var baked: bool = false             ## 구운 파일을 읽었다
+var _index: Dictionary = {}         # Vector2i(INDEX 칸 묶음) -> Array[Dictionary] (구운 데칼)
+const INDEX := 16
 
 
 ## 규칙 하나(사전보다 빠르게 읽으려고 타입 있는 필드로).
@@ -72,7 +77,34 @@ static func compile(map: FloorMap, floor_def: Dictionary) -> FloorDecor:
 			sd.at = Vector2i(int(at[0]), int(at[1]))
 			sd.radius = JsonUtil.get_float(s as Dictionary, "radius", 3.0)
 			d._spots.append(sd)
+	d._load_baked(JsonUtil.get_str(cfg, "baked"))
 	return d
+
+
+## 구운 파일 {floor, kinds[], cells: [[x, y, kind, v, rot, flip, size×100, off.x×100, off.y×100], …]} → 칸 묶음 색인.
+## kinds가 지금 규칙의 kinds와 다르면 읽지 않는다(시트 줄 순서가 어긋나므로 — 다시 굽는다).
+func _load_baked(path: String) -> void:
+	if path.is_empty() or not FileAccess.file_exists(path):
+		return
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not data is Dictionary or PackedStringArray(JsonUtil.get_array(data as Dictionary, "kinds")) != kinds:
+		return
+	for row: Variant in JsonUtil.get_array(data as Dictionary, "cells"):
+		var a: Array = row
+		var p := Vector2i(int(a[0]), int(a[1]))
+		var key := Vector2i(p.x / INDEX, p.y / INDEX)
+		if not _index.has(key):
+			_index[key] = []
+		(_index[key] as Array).append({"pos": p, "kind": int(a[2]), "v": int(a[3]), "rot": int(a[4]), "flip": int(a[5]) != 0,
+			"size": float(a[6]) / 100.0, "off": Vector2(float(a[7]), float(a[8])) / 100.0})
+	baked = true
+
+
+## 구운 파일에 쓸 한 줄.
+static func pack(e: Dictionary) -> Array:
+	var off: Vector2 = e["off"]
+	return [(e["pos"] as Vector2i).x, (e["pos"] as Vector2i).y, int(e["kind"]), int(e["v"]), int(e["rot"]), 1 if bool(e["flip"]) else 0,
+		roundi(float(e["size"]) * 100.0), roundi(off.x * 100.0), roundi(off.y * 100.0)]
 
 
 func is_empty() -> bool:
@@ -131,7 +163,21 @@ func _compile_rule(r: Dictionary, seed_value: int, order: int) -> Rule:
 
 
 ## 칸 사각형 rect 안의 데칼들: [{pos, kind(시트 줄), v(변형), rot(0~3 — 90° 단위, 그림 위쪽이 가리키는 방향), flip, size, off(칸 단위 흔들림)}].
+## 구운 파일이 있으면 색인에서 읽고, 없으면 규칙으로 계산한다.
 func cells(rect: Rect2i) -> Array[Dictionary]:
+	if not baked:
+		return compute(rect)
+	var out: Array[Dictionary] = []
+	for ky in range(rect.position.y / INDEX, (rect.end.y - 1) / INDEX + 1):
+		for kx in range(rect.position.x / INDEX, (rect.end.x - 1) / INDEX + 1):
+			for e: Dictionary in _index.get(Vector2i(kx, ky), []):
+				if rect.has_point(e["pos"]):
+					out.append(e)
+	return out
+
+
+## 규칙으로 계산(굽기·구운 파일이 없는 층).
+func compute(rect: Rect2i) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	var r := rect.intersection(Rect2i(0, 0, map.width, map.height))
 	if not r.has_area() or is_empty():
@@ -166,14 +212,17 @@ func cells(rect: Rect2i) -> Array[Dictionary]:
 	return out
 
 
-## 지도 전체(도구·테스트 — FloorArtCheck decor 모양).
-func all() -> Array[Dictionary]:
+## 지도 전체(도구·테스트 — FloorArtCheck decor 모양에 쓸 수 있다: pos·blocks). from_rules면 구운 파일 대신 규칙으로 계산.
+func all(from_rules: bool = false) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	var step := 64
 	for cy in range(0, map.height, step):
 		for cx in range(0, map.width, step):
-			for e in cells(Rect2i(cx, cy, step, step)):
-				out.append({"pos": e["pos"], "blocks": false, "kind": e["kind"]})
+			var r := Rect2i(cx, cy, step, step).intersection(Rect2i(0, 0, map.width, map.height))
+			for e in (compute(r) if from_rules else cells(r)):
+				var full := e.duplicate()
+				full["blocks"] = false
+				out.append(full)
 	return out
 
 

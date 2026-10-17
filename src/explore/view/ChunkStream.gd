@@ -2,7 +2,7 @@ class_name ChunkStream
 extends RefCounted
 ## 플레이어 둘레 stream_chunks 청크만 노드로 둔다(큰 지도에서 노드 수·정렬 비용을 일정하게 — FloorView가 쓴다).
 ## 청크 하나 = FloorChunk(바닥) + DecorChunk(데칼·소품) + GlowChunk(맥동 빛) + WallRow(벽 줄, y 정렬이라 FloorView 바로 아래).
-## 화면 밖으로 새로 들어온 청크의 거시 색조·데칼 자리는 한 프레임에 하나씩 미뤄 계산한다(process_one).
+## 화면 밖으로 새로 들어온 청크의 거시 색조·데칼 자리·벽 모양은 한 프레임에 하나씩 미뤄 계산한다(process_one).
 
 var view: FloorView
 var radius: int = 3
@@ -108,7 +108,8 @@ func _build(key: Vector2i, player_chunk: Vector2i) -> void:
 		dc.material = view.tex_material
 		view.decor_layer.add_child(dc)
 		decor_chunks[key] = dc
-	if absi(key.x - player_chunk.x) <= 1 and absi(key.y - player_chunk.y) <= 1:  # 화면에 보이는 청크는 바로
+	var near := absi(key.x - player_chunk.x) <= 1 and absi(key.y - player_chunk.y) <= 1  # 화면에 보이는 청크는 바로
+	if near:
 		_finish(key, false)
 	else:
 		_slow.append(key)
@@ -124,6 +125,8 @@ func _build(key: Vector2i, player_chunk: Vector2i) -> void:
 			wr.material = view.tex_material
 			view.add_child(wr)
 			wall_rows[Vector2i(key.x, row)] = wr
+			if near:
+				wr.build_shape()
 
 
 ## 청크의 거시 색조·데칼 자리를 계산한다. redraw면 그 청크 그림을 다시 그린다(미뤄 계산한 경우).
@@ -133,7 +136,11 @@ func _finish(key: Vector2i, redraw: bool) -> void:
 	var dc: DecorChunk = decor_chunks.get(key)
 	if dc != null:
 		dc.compute_decals()
-	if redraw:
+	if redraw:  # 미뤄 둔 청크: 벽 모양도 지금 계산한다
+		for row in range(cells.position.y, cells.end.y):
+			var wr: WallRow = wall_rows.get(Vector2i(key.x, row))
+			if wr != null:
+				wr.build_shape()
 		redraw_rect(cells)
 
 

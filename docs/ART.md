@@ -59,7 +59,8 @@
 
 진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정)·A2(1층 재질 아틀라스 `assets/floor/f1/`)·A3(데칼·벽 밑동/턱·거시 색조·랜드마크·소품) 끝. 아래는 A4~A5에서도 지킬 규격이다.
 
-- **그림 층(A3)**: 데칼 = 층 JSON `art.decor`(규칙 → `FloorDecor` → `DecorChunk`, 시트 줄 순서 = `Specs.DECALS.kinds`), 소품 = 타일 `art.prop {sheet, cell, cols, size}`(시트 칸 순서 = `Props.ORDER`), 벽 턱 = 타일 `art.rim`, 거시 색조 = 층 `art.macro`(`FloorTint`). 투명 그림은 가장자리를 투명하게 녹이고(`Decals._soft_edge`), 방향이 있는 데칼(물가)은 그림 위쪽 = 바라보는 쪽으로 칠한다. 새 데칼 종류는 Specs·데이터 kinds·Decals 세 곳을 같이 고친다(테스트가 순서를 본다).
+- **그림 층(A3)**: 데칼 = 층 JSON `art.decor`(규칙 → `FloorDecor` → `DecorChunk`, 시트 줄 순서 = `Specs.DECALS.kinds`), 소품 = 타일 `art.prop {sheet, cell, cols, size}`(시트 칸 순서 = `Props.ORDER`), 거시 색조 = 층 `art.macro`(`FloorTint`). 데칼 자리는 `tools/bake_decor.gd`로 구워 `data/maps/*_decor.json`에서 읽는다(규칙을 바꾸면 다시 굽기).
+- **암벽(2026-10-17 사용자 결정)**: 타일 `art.shape: "smooth"` — 모서리는 사선으로 깎고·메우며(`WallShape`), 바위 덩어리 윗면은 검게 숨기고 남쪽을 향한 앞면만 그린다. 그래서 암벽 아틀라스의 **윗면 줄은 화면에 나오지 않는다**(형식 때문에 남겨 둠). 수정은 암벽 앞면에 박힌 작은 결정(`Cave._gem`)이지 블록이 아니다. 투명 그림은 가장자리를 투명하게 녹이고(`Decals._soft_edge`), 방향이 있는 데칼(물가)은 그림 위쪽 = 바라보는 쪽으로 칠한다. 새 데칼 종류는 Specs·데이터 kinds·Decals 세 곳을 같이 고친다(테스트가 순서를 본다).
 
 - **재질 칸 칠하는 법(A2)**: `Cave.cell` = 가장자리 띠는 모든 변형이 같은 주기 바탕(`Seam.field` — `FastNoiseLite.get_seamless_image`) + 안쪽은 변형마다 다른 시드 바탕과 잔손질, `Seam.mask`로 녹인다. **바탕에 주기가 아닌 칠(붓 자국 `Ink.strokes`, `Paint.nz`, `Paint.vary`)을 넣지 않는다** — 칸 격자가 보인다(잔손질에서만). 덩어리 밝기는 높이장 기울기(`Seam.relief`, 왼쪽 위 빛). 색 보정 → 평균 색을 타일 data 색에 맞춤(`paint_floor._row`). 확인은 스크래치 파이썬으로 아틀라스 확대 + 무작위로 이어 붙인 판을 본 뒤 게임 캡처.
 

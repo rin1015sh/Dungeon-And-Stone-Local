@@ -30,9 +30,12 @@ static func _tiles(v: ValidatorBase) -> void:
 				v.err(w + ".art", "variants는 2 이상 짝수(FloorArtLayer — 이웃 칸이 늘 다른 변형)")
 			if not ResourceLoader.exists(JsonUtil.get_str(art, "atlas")):
 				v.err(w + ".art", "atlas 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % JsonUtil.get_str(art, "atlas"))
-			for path: String in [JsonUtil.get_str(art, "rim"), JsonUtil.get_str(JsonUtil.get_dict(art, "prop"), "sheet")]:
-				if not path.is_empty() and not ResourceLoader.exists(path):
-					v.err(w + ".art", "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % path)
+			var prop := JsonUtil.get_str(JsonUtil.get_dict(art, "prop"), "sheet")
+			if not prop.is_empty() and not ResourceLoader.exists(prop):
+				v.err(w + ".art", "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % prop)
+			var shape := JsonUtil.get_str(art, "shape")
+			if not shape.is_empty() and (shape != "smooth" or JsonUtil.get_str(t, "kind") != "wall"):
+				v.err(w + ".art", "shape는 벽 타일의 \"smooth\"만")
 		var light := JsonUtil.get_dict(t, "light")
 		if not light.is_empty():
 			if JsonUtil.get_float(light, "radius_m") <= 0.0:

@@ -40,7 +40,7 @@ func _initialize() -> void:
 		problems.append_array(CrossLayoutCheck.spawn_problems(FieldMonsters.new(db, map, def, Rng.new(seed_value + 2)), map, def, 60))
 		_print_stats(map, lay)
 	var layer := FloorArtLayer.build(map)  # 그림 층 = 바닥 변형 + 데칼(FloorDecor)
-	layer["decor"] = FloorDecor.compile(map, def).all()
+	layer["decor"] = FloorDecor.compile(map, def).all()  # 구운 파일이 있으면 그것(tools/bake_decor.gd)
 	print("  데칼 %d개" % (layer["decor"] as Array).size())
 	var art_problems := FloorArtCheck.problems(map, layer)
 	print("  그림 층 검사: %s" % ("통과" if art_problems.is_empty() else "문제 %d개" % art_problems.size()))

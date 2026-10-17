@@ -25,10 +25,6 @@ const DECALS := [
 		"kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"]},
 ]
 
-## 벽 윗면 턱 띠(Cave.rim — tiles.json art.rim): 한 줄 변형, 띠 높이 = 칸 × (wall_rim_out + wall_rim_in).
-const RIMS := [
-	{"place": "f1", "path": "res://assets/floor/f1/rim.webp", "style": "rim", "variants": 4, "seed": 801},
-]
 
 ## 소품 시트(Props.gd — tiles.json art.prop.cell = Props.ORDER 번호): 칸 = 바닥 칸 × art_scale × 1.5, 가로 cols칸.
 const PROPS := [

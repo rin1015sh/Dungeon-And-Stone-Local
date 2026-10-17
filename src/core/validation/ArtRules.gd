@@ -57,6 +57,9 @@ static func _decor(v: ValidatorBase, w: String, d: Dictionary) -> void:
 		return
 	if not ResourceLoader.exists(JsonUtil.get_str(d, "sheet")):
 		v.err(w, "sheet 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % JsonUtil.get_str(d, "sheet"))
+	var baked := JsonUtil.get_str(d, "baked")
+	if not baked.is_empty() and not FileAccess.file_exists(baked):
+		v.err(w, "baked 파일 없음 '%s' — tools/bake_decor.gd로 굽는다" % baked)
 	var kinds := JsonUtil.get_array(d, "kinds")
 	if kinds.is_empty():
 		v.err(w, "kinds가 비었다")

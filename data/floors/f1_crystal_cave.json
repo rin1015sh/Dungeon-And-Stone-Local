@@ -15,7 +15,7 @@
     "_comment": "탐험 맵 그림 설정(FloorArt, docs/plans/map_design.md §5.1). palette.near_black = 보이는 곳의 가장 어두운 색(보라 섞인 근흑), unexplored = 미탐험(순흑). pulse = 수정의 느린 맥동 빛, particles = 떠다니는 먼지·천장 물방울, ambience = data/audio.json ambience 키. 모두 [창작] 임시값",
     "palette": {"unexplored": "#000000", "near_black": "#141018", "tone": "#f2eef4", "memory_tint": "#8a92b8", "memory_brightness": 0.3},
     "post": {"saturation": 0.8, "vignette_strength": 0.55, "vignette_radius": 0.45, "grain_strength": 0.045},
-    "pulse": {"tiles": ["crystal_wall", "square_crystal"], "period_sec": 7.0, "depth": 0.5, "radius_m": 1.6, "strength": 0.45},
+    "pulse": {"tiles": ["crystal_wall", "square_crystal"], "period_sec": 7.0, "depth": 0.5, "radius_m": 1.1, "strength": 0.3},
     "particles": [
       {"id": "dust", "amount": 36, "lifetime": 9.0, "color": "#d8d0ff", "alpha": 0.22, "scale": [1.5, 3.0], "velocity": [2.0, 7.0], "direction": [0.0, -1.0], "spread": 180.0, "gravity": [0.0, 0.0]},
       {"id": "drip", "amount": 5, "lifetime": 1.1, "color": "#a8b8e8", "alpha": 0.45, "scale": [1.5, 2.5], "velocity": [0.0, 10.0], "direction": [0.0, 1.0], "spread": 4.0, "gravity": [0.0, 260.0]}
@@ -28,8 +28,9 @@
       "safe_dim": {"radius": 9, "mult": 0.72, "falloff": 5}
     },
     "decor": {
-      "_comment": "데칼 배치(FloorDecor, map_design.md §4.2). kinds = 시트 줄 순서(tools/floor_art/Specs.gd DECALS와 같게). 규칙은 위에서부터 처음 맞는 하나. dense가 아니면 맞닿은 칸에 함께 놓이지 않는다. spots = 손으로 정한 자리(이끼 물웅덩이 — AM6). 모두 [창작] 임시값",
+      "_comment": "데칼 배치(FloorDecor, map_design.md §4.2). kinds = 시트 줄 순서(tools/floor_art/Specs.gd DECALS와 같게). 규칙은 위에서부터 처음 맞는 하나. dense가 아니면 맞닿은 칸에 함께 놓이지 않는다. spots = 손으로 정한 자리(이끼 물웅덩이 — AM6). baked = 미리 구운 자리(tools/bake_decor.gd — 규칙을 바꾸면 다시 굽는다). 모두 [창작] 임시값",
       "sheet": "res://assets/floor/f1/decals.webp",
+      "baked": "res://data/maps/f1_crystal_cave_decor.json",
       "variants": 4,
       "kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"],
       "on_tiles": ["cave_floor"],

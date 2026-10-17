@@ -81,42 +81,44 @@ static func _stele(p: Paint, col: Color, s: float, v: int) -> void:
 	Cave._crack(p, Vector2(p.w * (0.65 if v == 0 else 0.25), 4 * s), 4, 8 * s, Vector2(0.2, 1))
 
 
-## 네모 수정 윗면: 안쪽으로 비스듬히 깎인 네 면 + 가운데 밝은 면, 잉크 모서리.
+## 네모 수정 윗면: 바위 받침 윗면 가운데에 네모반듯한 결정이 박혀 있다(비스듬히 깎인 네 면 + 밝은 가운데 면).
 static func _crystal_top(p: Paint, col: Color, s: float) -> void:
-	var m := 10.0 * s
-	var a := Vector2(m, m)
-	var b := Vector2(p.w - m, p.h - m)
+	var rock := Color("#4a4452")
+	var hf := Seam.field(p.w, p.h, 31, 0.08, 3)
 	for y in p.h:
 		for x in p.w:
-			var dx := minf(x, p.w - 1 - x)
-			var dy := minf(y, p.h - 1 - y)
-			var c := col
-			if dx < m or dy < m:  # 비스듬한 면 — 위·왼쪽은 밝고 아래·오른쪽은 어둡다
+			var t := 0.45 + Seam.relief(hf, p.w, p.h, x, y, 6.0) * 0.6 + (hf[y * p.w + x] - 0.5) * 0.3
+			p.blend(x, y, rock.darkened(0.4).lerp(rock.lightened(0.3), clampf(t, 0.0, 1.0)), 1.0)
+	var m := 17.0 * s  # 결정 테두리(받침 바위 폭)
+	var bev := 6.0 * s
+	for y in range(int(m), int(p.h - m)):
+		for x in range(int(m), int(p.w - m)):
+			var dx := minf(x - m, p.w - m - 1 - x)
+			var dy := minf(y - m, p.h - m - 1 - y)
+			var c := col.lightened(0.35)
+			if dx < bev or dy < bev:
 				var lit := (x < p.w / 2 and dx <= dy) or (y < p.h / 2 and dy < dx)
-				c = col.lightened(0.3) if lit else col.darkened(0.3)
-			else:
-				c = col.lightened(0.15 + 0.25 * (1.0 - Vector2(x, y).distance_to(Vector2(p.w, p.h) * 0.5) / (p.w * 0.4)))
+				c = col.lightened(0.15) if lit else col.darkened(0.3)
 			p.blend(x, y, p.vary(c, x, y, 0.04), 1.0)
-	Ink.path(p, Paint.rect_poly(a.x, a.y, b.x - a.x, b.y - a.y), 1.2 * s, true, Color("#1a1030"), 0.7, 0.3)
-	for q: Vector2 in [Vector2.ZERO, Vector2(p.w, 0), Vector2(p.w, p.h), Vector2(0, p.h)]:
-		Ink.line(p, q, q.lerp(Vector2(p.w, p.h) * 0.5, 0.31), 1.0 * s, Color("#1a1030"), 0.6, 0.2)
-	Ink.path(p, Paint.rect_poly(0.5, 0.5, p.w - 1, p.h - 1), 1.4 * s, true, Color("#1a1030"), 0.8, 0.3)
+	Ink.path(p, Paint.rect_poly(m, m, p.w - 2 * m, p.h - 2 * m), 1.3 * s, true, Color("#1a1030"), 0.8, 0.3)
+	Ink.path(p, Paint.rect_poly(m + bev, m + bev, p.w - 2 * (m + bev), p.h - 2 * (m + bev)), 0.9 * s, true, Color("#1a1030"), 0.5, 0.2)
+	Ink.glow(p, p.w * 0.5, p.h * 0.5, 18 * s, Color("#8f6cff"), 0.35)
 
 
-## 네모 수정 앞면: 세로 결 면 셋 + 가운데에 고인 빛 + 밝은 위 모서리.
+## 네모 수정 앞면: 바위 받침 앞면 가운데에 네모난 결정의 앞쪽 면이 드러나 있다(빛이 고인 결정 + 둘레 바위).
 static func _crystal_face(p: Paint, col: Color, s: float, v: int) -> void:
 	var main := float(p.h - Cave.skirt)
+	var rock := Color("#5a5262")
+	var hf := Seam.field(p.w, p.h, 41 + v, 0.08, 3)
+	var m := 17.0 * s
 	for y in p.h:
 		for x in p.w:
 			if y >= main + (0.3 + Paint.hash01(x / 3, v, 9) * 0.7) * Cave.skirt:
 				continue
-			var band := int(float(x) / p.w * 3.0)
-			var c := [col.lightened(0.2), col, col.darkened(0.25)][band] as Color
-			c = c.lerp(Color("#e8dcff"), clampf(1.0 - Vector2(x - p.w * 0.45, (y - main * 0.45) * 1.4).length() / (p.w * 0.35), 0.0, 1.0) * 0.6)
-			if y < 3 * s:
-				c = c.lightened(0.4)
-			c = c.darkened(smoothstep(main * 0.6, main + Cave.skirt, float(y)) * 0.3)
+			var c := rock.darkened(0.35).lerp(rock.lightened(0.2), clampf(0.5 + Seam.relief(hf, p.w, p.h, x, y, 5.0) * 0.6, 0.0, 1.0))
+			c = c.darkened(smoothstep(main * 0.5, main + Cave.skirt, float(y)) * 0.3)
+			if x >= m and x < p.w - m and y < main * 0.7:  # 결정 앞쪽 면
+				c = col.lerp(Color("#e8dcff"), clampf(1.0 - Vector2(x - p.w * 0.5, (y - main * 0.3) * 1.6).length() / (p.w * 0.25), 0.0, 1.0) * 0.6)
 			p.blend(x, y, p.vary(c, x, y, 0.04), 1.0)
-	for k in [1, 2]:
-		Ink.line(p, Vector2(p.w * k / 3.0, 2 * s), Vector2(p.w * k / 3.0, main), 1.0 * s, Color("#1a1030"), 0.55, 0.3)
-	Ink.line(p, Vector2(0, 2 * s), Vector2(p.w, 2 * s), 1.2 * s, Color("#f0e8ff"), 0.5, 0.3)
+	Ink.path(p, Paint.rect_poly(m, 0, p.w - 2 * m, main * 0.7), 1.2 * s, true, Color("#1a1030"), 0.75, 0.3)
+	Ink.line(p, Vector2(m, 1.5 * s), Vector2(p.w - m, 1.5 * s), 1.0 * s, Color("#f0e8ff"), 0.55, 0.2)

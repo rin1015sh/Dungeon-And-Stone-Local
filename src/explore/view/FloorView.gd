@@ -49,9 +49,11 @@ var decor_tex: Texture2D              # 데칼 시트(그래픽 품질 low면 nu
 var decor_sheet: Texture2D            # 읽어 둔 데칼 시트
 var prop_tex: Dictionary = {}         # 소품·턱 시트 경로 -> Texture2D(읽기용)
 var prop_by_def: Array[Texture2D] = [] # map.defs 번호 -> 소품 시트(없으면 null — 그리기에서 칸마다 사전을 찾지 않게)
-var rim_by_def: Array[Texture2D] = []  # map.defs 번호 -> 벽 턱 그림
-var rim_out: float = 0.2             # 벽 턱이 바닥 쪽으로 튀어나오는 정도(칸 비율 — view.wall_rim_out)
-var rim_in: float = 0.18             # 윗면 안쪽으로 녹아드는 정도(view.wall_rim_in)
+var smooth_by_def: PackedByteArray = PackedByteArray()  # map.defs 번호 -> 부드러운 암벽(WallShape)이면 1
+var smooth_any: bool = false
+var base_floor: int = -1             # 층의 기본 바닥 타일 번호(깎은 벽 모서리 아래를 채운다 — gen.tiles.floor)
+var wall_round: float = 0.5          # 암벽 모서리를 깎는 폭(칸 비율 — view.wall_round)
+var wall_bulge: float = 0.06         # 깎은 사선 가운데가 모서리 쪽으로 휘는 정도(칸 비율 — view.wall_bulge)
 var wall_skirt: int = 0              # 벽 앞면 밑동(px — render.json view.wall_skirt_px)
 var prop_highlight: float = 1.15      # 소품(상호작용 대상) 밝기 배율 — 주변보다 한 단계 밝게
 
