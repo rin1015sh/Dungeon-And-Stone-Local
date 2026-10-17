@@ -316,12 +316,16 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 		ell(cl, pr, g, hc + Vector3(0, 0.012 * hh / 0.13, rw * 0.25), ru * 0.92, rv * 0.82, rw * 0.8, skin, 0.01)  # 뒤통수
 	cl.tag = "face"
 	if plain:  # 깎은 얼굴(참고 그림 옆얼굴): 납작한 앞면 + 턱끝으로 좁아지는 쐐기 + 귀 밑에서 턱끝으로 곧은 턱선
+		var fm: Dictionary = (cl.mats[skin] as Dictionary).duplicate()
+		fm["line"] = 0.0  # 조각 이음매에 주름 선을 긋지 않는다(입·해골 턱처럼 보였다)
+		fm["cav"] = 0.25
+		cl.mats.append(fm)
+		skin = cl.mats.size() - 1
 		var chin := hc + Vector3(0, rv * 0.74, -rw * 0.52)
 		# 이마 → 얼굴 가운데 → 턱끝을 한 줄로(옆에서 매끈한 볼록선, 앞에서는 턱으로 좁아지는 얼굴)
-		chain(cl, pr, g, [hc + Vector3(0, -rv * 0.4, -rw * 0.38), hc + Vector3(0, rv * 0.12, -rw * 0.42), chin], [ru * 0.78, ru * 0.66, ru * 0.2], skin, 0.03)
-		for s: int in [-1, 1]:
-			var jaw := hc + Vector3(s * ru * 0.72, rv * 0.28, 0.0)
-			cap(cl, pr, g, jaw, chin, ru * 0.22, ru * 0.18, skin, 0.02)  # 턱선
+		chain(cl, pr, g, [hc + Vector3(0, -rv * 0.4, -rw * 0.38), hc + Vector3(0, rv * 0.12, -rw * 0.42), chin], [ru * 0.78, ru * 0.66, ru * 0.2], skin, 0.09)
+		# 턱선은 따로 붙이지 않는다 — 좁아지는 사슬의 아래 윤곽이 곧은 턱선이 된다(따로 붙인 조각은 이음매가 입·해골 턱처럼 보였다)
+		cap(cl, pr, g, hc + Vector3(0, rv * 0.5, -rw * 0.22), (j["neck"] as Vector3) + Vector3(0, -0.01, -0.012), ru * 0.5, ru * 0.42, skin, 0.09)  # 턱 밑~목(오목한 틈에 주름 선이 그어지지 않게)
 	else:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
 	if not plain:

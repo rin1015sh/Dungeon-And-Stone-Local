@@ -90,7 +90,7 @@ static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rn
 ## 매끈한 헬멧이 되지 않게 타래마다 결이 보이고 끝이 가늘다. 스타일 값(sp "locks" 사전):
 ## n 가닥 수 · w 굵기(머리 높이 비율) · flick 끝이 머리에서 뜨는 정도 · jitter 길이·방향 흩어짐 · front 앞머리 끝(위도) ·
 ## temple 관자놀이 끝 · side 옆머리 끝 · back 뒷머리를 머리선보다 더 내림 · sweep 한쪽으로 쓸어 넘김(+ = 몸 오른쪽) ·
-## part 가운데 가르마(앞머리를 양옆으로) · gap 앞머리 사이 띄움(몇 가닥마다 하나 비움, 0 = 안 비움) · light 밝은 결 간격.
+## part 가운데 가르마(앞머리를 양옆으로) · gap 앞머리 사이 띄움(몇 가닥마다 하나 비움, 0 = 안 비움) · light 밝은 결 간격 · wj 굵기 흩어짐.
 static func _spikes(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, ml: int, g: int, rng: RandomNumberGenerator, nape: float, high: float, st: Dictionary = {}) -> void:
 	var hh: float = hd["hh"]
 	var n := int(st.get("n", 40))
@@ -125,7 +125,8 @@ static func _spikes(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, ml: int, g
 			var f := t / 4.0
 			pts.append(Back.on_head(hd, lerpf(la0, end_la, f), lo + dlo * f + sin(f * 2.2 + k) * 0.1 * jit, hh * (0.035 + 0.04 * sin(f * PI)) * (1.0 - side * 0.5) + fl * f * f))
 		var mat := ml if light > 0 and k % light == 0 else m
-		Back.chain(cl, pr, g, pts, [hh * w, hh * w * 0.9, hh * w * 0.72, hh * w * 0.45, hh * 0.01], mat, hh * 0.015)
+		var ww := hh * w * (1.0 + rng.randf_range(-1.0, 1.0) * float(st.get("wj", 0.0)))  # wj = 타래마다 굵기 흩어짐(뭉치가 생긴다)
+		Back.chain(cl, pr, g, pts, [ww, ww * 0.9, ww * 0.72, ww * 0.45, hh * 0.01], mat, hh * 0.015)
 
 
 static func _hairline(lon: float, nape: float, high: float = 0.0) -> float:

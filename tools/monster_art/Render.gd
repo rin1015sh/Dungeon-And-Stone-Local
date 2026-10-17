@@ -44,7 +44,7 @@ static func render(cl: Clay, p: Paint, scale: float, light: Vector3 = LIGHT) -> 
 			var nv := Vector3(nx[i], ny[i], nzz[i])
 			var diff := nv.dot(L)
 			var t := clampf(diff * 1.1 - 0.12, 0.0, 1.0)
-			t -= cav[i] * 1.3 + cav2[i] * 0.75
+			t -= (cav[i] * 1.3 + cav2[i] * 0.75) * float(md.get("cav", 1.0))  # 재질 cav = 오목한 곳 어둡게 하는 정도
 			t -= pow(1.0 - nzz[i], 1.6) * 0.55  # 옆을 향한 면(덩어리 가장자리)은 어둡게 — 가운데 밝고 둘레 그늘
 			t -= smoothstep(0.55, 1.0, float(y) / cl.h) * 0.12  # 아래쪽(다리)은 조금 어둡게
 			t += (p.nz("mid", x, y) - 0.5) * 0.26 + (_tex(p, kind, x, y) - 0.5) * float(md.get("tex", kd["tex"]))
