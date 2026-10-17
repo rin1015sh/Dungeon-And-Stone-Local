@@ -3,7 +3,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://tools/paint_actors.gd [-- --only=<종족|monsters|몬스터 id,…>]
 ## 탐험가: 아군 전투 그림의 3D 몸(Party·Back)을 앞(아래)·옆(오른쪽)·뒤(위)로 돌리고 걷기 세 장(왼발 앞·섬·오른발 앞)을 그려
 ##   한 장의 시트로 → assets/actors/<종족>.webp. 줄 = [아래, 왼쪽, 오른쪽, 위](오른쪽 = 왼쪽 좌우 반전), 칸 = [걸음 A, 섬, 걸음 B].
-##   피어 앤 헝거 맵 그림처럼 사람 키 1.3칸 안팎·약간 큰 머리와 짧고 굵은 몸(약 3.7등신 — HEAD·LEGS·WIDE·BULK)·진한 바깥선·칠한 그늘(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
+##   피어 앤 헝거 맵 그림처럼 곧게 선 약 3.3등신(큰 머리·마른 몸·붙인 다리)·움푹한 눈구멍 얼굴(입 없음)·대비를 키운 칠·진한 바깥선(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
 ## 몬스터: 전투 일러스트(assets/monsters/<id>.webp — 정면)를 몸 높이 색인으로 데이터 size에 맞춰 줄인다 → assets/actors/monsters/<id>.webp
 ##   (뒷모습 그림이 있으면 <id>_back.webp도). 걷기는 게임이 흔들어 보인다(MonsterView).
 ## 칸 크기·배율은 render.json view.actor_sheet. 줄인 뒤 1px 잉크 바깥선을 두른다(작은 그림에서 윤곽이 읽히게).
