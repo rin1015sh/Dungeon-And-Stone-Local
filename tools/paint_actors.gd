@@ -107,6 +107,10 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["hair_high"] = _v("hair_high", HAIR_HIGH)
 	sp["hair_grow"] = _v("hair_grow", HAIR_GROW)
 	sp["fringe"] = _v("fringe", FRINGE) > 0.0  # 더벅머리 앞·옆머리
+	if str(sp.get("hair", "")) == "short" and _v("spiky", 1.0) > 0.0:  # 짧은 머리: 삐친 타래로(매끈한 헬멧·항아리 얼굴이 되지 않게 — 피어 앤 헝거 주인공 머리)
+		sp["spiky"] = true
+		sp["fringe"] = false
+		sp["hair_grow"] = _v("spiky_grow", 0.9)
 	sp["socket_eyes"] = _v("sockets", SOCKETS) > 0.0
 	sp["hair_flare"] = _v("hair_flare", HAIR_FLARE)
 	sp["eye_r"] = _v("eye_r", EYE_R)

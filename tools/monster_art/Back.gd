@@ -308,11 +308,16 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	var F := Vector3(0, 0, -1)
 	var plain := bool(j.get("map_face", false))  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림): 턱이 튀어나오지 않은 달걀형, 움푹한 눈구멍, 입 없음
 	cl.tag = "skull"
-	ell(cl, pr, g, hc, ru, rv, rw, skin, 0.01)
-	ell(cl, pr, g, hc + Vector3(0, 0.012 * hh / 0.13, rw * 0.25), ru * 0.92, rv * 0.82, rw * 0.8, skin, 0.01)  # 뒤통수
+	if plain:  # 맵 얼굴: 머리통은 위로 올려 작게 — 아래가 둥글게 부푼 항아리 얼굴이 되지 않게
+		ell(cl, pr, g, hc - Vector3(0, rv * 0.12, 0), ru * 0.95, rv * 0.82, rw, skin, 0.01)
+		ell(cl, pr, g, hc + Vector3(0, -rv * 0.05, rw * 0.25), ru * 0.88, rv * 0.72, rw * 0.8, skin, 0.01)  # 뒤통수
+	else:
+		ell(cl, pr, g, hc, ru, rv, rw, skin, 0.01)
+		ell(cl, pr, g, hc + Vector3(0, 0.012 * hh / 0.13, rw * 0.25), ru * 0.92, rv * 0.82, rw * 0.8, skin, 0.01)  # 뒤통수
 	cl.tag = "face"
-	if plain:  # 매끈한 달걀형 아래 얼굴(턱이 앞으로 튀어나오지 않게)
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.32, -rw * 0.12), ru * 0.8, rv * 0.62, rw * 0.78, skin, 0.04)
+	if plain:  # 홀쭉한 볼 + 좁아지는 턱(참고 그림: 아래로 갈수록 좁은 얼굴)
+		ell(cl, pr, g, hc + Vector3(0, rv * 0.16, -rw * 0.3), ru * 0.74, rv * 0.42, rw * 0.62, skin, 0.03)
+		cap(cl, pr, g, hc + Vector3(0, rv * 0.26, -rw * 0.28), hc + Vector3(0, rv * 0.64, -rw * 0.26), ru * 0.5, ru * 0.3, skin, 0.04)
 	else:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
 	if not plain:

@@ -54,6 +54,8 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 			var la := lerpf(1.35, la0 + 0.05, t / 3.0)
 			pts.append(Back.on_head(hd, la, lo + sin(t * 1.3 + k) * 0.08, 0.016))
 		Back.groove(cl, pr, g, pts, Back.head_n(0.3, lo), 0.004, 0.006)
+	if sp.get("spiky", false):
+		_spikes(cl, pr, hd, m, cl.mat(col.lightened(0.28), "hair", {"mottle": col.lightened(0.4), "mottle_amt": 0.3}), g, rng, nape, high)
 	if sp.get("fringe", false):
 		_fringe(cl, pr, hd, m, g, rng, float(sp.get("hair_flare", 0.13)))
 	if kind == "long":
@@ -82,6 +84,35 @@ static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rn
 			var f := t / 3.0
 			pts.append(Back.on_head(hd, lerpf(1.05, end_la, f), lo + sin(f * 2.0 + k) * 0.08 + a * f * 0.12, gw * (0.6 + f * 0.6)))
 		Back.chain(cl, pr, g, pts, [hh * 0.1, hh * 0.09, hh * 0.06, hh * 0.015], m, hh * 0.02)
+
+
+## 삐친 머리 타래(탐험 맵 그림 — 피어 앤 헝거 주인공의 덥수룩한 머리): 정수리에서 머리선까지 머리 둘레를 덮는 뾰족한 타래.
+## 끝으로 갈수록 가늘고 머리에서 떠올라 윤곽이 들쭉날쭉하다(매끈한 헬멧이 되지 않게). 몇 가닥은 밝은 결. 앞머리는 사이를 띄워 이마가 보인다.
+static func _spikes(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, ml: int, g: int, rng: RandomNumberGenerator, nape: float, high: float) -> void:
+	var hh: float = hd["hh"]
+	var n := 40
+	for k in n:
+		var lo := lerpf(-PI, PI, (k + rng.randf_range(0.15, 0.85)) / n)
+		var a := absf(wrapf(lo - PI, -PI, PI))  # 얼굴 가운데에서 돈 각도
+		var front := a < 0.75
+		if front and k % 3 == 0:
+			continue  # 앞머리는 듬성듬성(사이로 이마가 비친다)
+		var end_la := _hairline(lo, nape, high) + rng.randf_range(-0.1, 0.12)
+		if front:
+			end_la = 0.14 + rng.randf_range(-0.04, 0.08)  # 앞머리: 눈 바로 위까지
+		elif a < 1.25:
+			end_la = 0.05 + rng.randf_range(-0.05, 0.08)  # 관자놀이: 눈높이까지(옆모습에서 얼굴이 보이게)
+		elif a < 1.8:
+			end_la = -0.3 + rng.randf_range(-0.08, 0.1)  # 귀 쪽 옆머리: 뺨 옆까지
+		var la0 := 1.4 + rng.randf_range(-0.1, 0.1)
+		var side := smoothstep(0.9, 1.7, a) * (1.0 - smoothstep(2.2, 2.9, a))  # 옆(귀 쪽)은 덜 삐친다 — 머리 폭이 버섯처럼 넓어지지 않게
+		var flick := hh * rng.randf_range(0.06, 0.16) * (1.0 - side * 0.7)
+		var pts: Array = []
+		for t in 5:
+			var f := t / 4.0
+			pts.append(Back.on_head(hd, lerpf(la0, end_la, f), lo + sin(f * 2.2 + k) * 0.1, hh * (0.035 + 0.04 * sin(f * PI)) * (1.0 - side * 0.5) + flick * f * f))  # 가운데가 부풀고 끝이 삐친다
+		var mat := ml if k % 5 == 0 else m
+		Back.chain(cl, pr, g, pts, [hh * 0.1, hh * 0.09, hh * 0.07, hh * 0.04, hh * 0.008], mat, hh * 0.015)
 
 
 static func _hairline(lon: float, nape: float, high: float = 0.0) -> float:
