@@ -13,6 +13,12 @@
     {"name": "feature_corpse", "at": [510, 370]},
     {"name": "portal_dark", "at": [366, 26]},
     {"name": "portal_torch", "at": [366, 26], "torch": true},
+    {"name": "moss_pool", "at": [309, 389]},
+    {"name": "goblin_camp", "at": [425, 254]},
+    {"name": "wolf_den", "at": [578, 405]},
+    {"name": "ghoul_feast", "at": [324, 455]},
+    {"name": "gnome_stash", "at": [269, 338]},
+    {"name": "mushroom", "at": [125, 376]},
     {"name": "monument_lord", "at": [366, 371], "lord": true}
   ]
 }

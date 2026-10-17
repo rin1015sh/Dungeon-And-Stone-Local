@@ -5,7 +5,6 @@ extends RefCounted
 const TILE_KINDS := ["floor", "wall"]
 ## 원작: 대부분의 층은 광원이 있어도 가시거리가 10m에 못 미친다(하늘이 열린 층은 open_sky로 예외).
 const VISIBILITY_CAP_LIMIT_M := 10.0
-const ART_COLORS := ["unexplored", "near_black", "tone", "memory_tint"]
 
 
 static func run(v: ValidatorBase) -> void:
@@ -31,6 +30,9 @@ static func _tiles(v: ValidatorBase) -> void:
 				v.err(w + ".art", "variants는 2 이상 짝수(FloorArtLayer — 이웃 칸이 늘 다른 변형)")
 			if not ResourceLoader.exists(JsonUtil.get_str(art, "atlas")):
 				v.err(w + ".art", "atlas 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % JsonUtil.get_str(art, "atlas"))
+			for path: String in [JsonUtil.get_str(art, "rim"), JsonUtil.get_str(JsonUtil.get_dict(art, "prop"), "sheet")]:
+				if not path.is_empty() and not ResourceLoader.exists(path):
+					v.err(w + ".art", "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % path)
 		var light := JsonUtil.get_dict(t, "light")
 		if not light.is_empty():
 			if JsonUtil.get_float(light, "radius_m") <= 0.0:
@@ -86,7 +88,7 @@ static func _floors(v: ValidatorBase) -> void:
 		if JsonUtil.get_float(f, "ambient_light_m") < 0.0:
 			v.err(w, "ambient_light_m은 0 이상")
 		v.check_color(w + ".ambient_color", JsonUtil.get_str(f, "ambient_color"))
-		check_art(v, w + ".art", JsonUtil.get_dict(f, "art"))
+		ArtRules.check_art(v, w + ".art", JsonUtil.get_dict(f, "art"))
 		for lm: Variant in JsonUtil.get_array(f, "landmarks"):
 			v.ref(w + ".landmarks", "landmarks", (lm as Dictionary).get("id") if lm is Dictionary else lm)
 		for region: Variant in JsonUtil.get_array(f, "regions"):
@@ -112,49 +114,6 @@ static func _floors(v: ValidatorBase) -> void:
 			var pd: Dictionary = portal if portal is Dictionary else {}
 			if not dirs.has(JsonUtil.get_str(pd, "dir")):
 				v.err(w, "portals.dir '%s' 미등록(tags.directions)" % pd.get("dir"))
-
-
-## 탐험 맵 그림 설정(층 JSON art · 균열 look.art — FloorArt). 빈 사전이면 render.json 기본값.
-static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
-	var pal := JsonUtil.get_dict(art, "palette")
-	for key: String in pal:
-		if key == "memory_brightness":
-			if JsonUtil.get_float(pal, key) < 0.0:
-				v.err(w + ".palette", "memory_brightness는 0 이상")
-		elif key in ART_COLORS:
-			v.check_color(w + ".palette." + key, JsonUtil.get_str(pal, key))
-		else:
-			v.err(w + ".palette", "모르는 키 '%s'" % key)
-	var post := JsonUtil.get_dict(art, "post")
-	for key: String in post:
-		if not key in FloorArt.POST_KEYS:
-			v.err(w + ".post", "모르는 키 '%s'(%s)" % [key, FloorArt.POST_KEYS])
-	var pulse := JsonUtil.get_dict(art, "pulse")
-	for t: Variant in JsonUtil.get_array(pulse, "tiles"):
-		v.ref(w + ".pulse.tiles", "tiles", t)
-		var td := v.db.get_entry("tiles", str(t))
-		if not td.is_empty() and JsonUtil.get_dict(td, "light").is_empty():
-			v.warn(w + ".pulse.tiles", "'%s'는 light가 없어 맥동하지 않는다" % t)
-	if not pulse.is_empty():
-		if JsonUtil.get_float(pulse, "period_sec", 1.0) <= 0.0 or JsonUtil.get_float(pulse, "radius_m", 1.0) <= 0.0:
-			v.err(w + ".pulse", "period_sec·radius_m은 양수")
-		var depth := JsonUtil.get_float(pulse, "depth")
-		if depth < 0.0 or depth > 1.0:
-			v.err(w + ".pulse", "depth는 0~1")
-	for e: Variant in JsonUtil.get_array(art, "particles"):
-		var pd: Dictionary = e if e is Dictionary else {}
-		var pw := w + ".particles." + JsonUtil.get_str(pd, "id", "?")
-		if JsonUtil.get_str(pd, "id").is_empty():
-			v.err(pw, "id가 없다")
-		if JsonUtil.get_int(pd, "amount") <= 0 or JsonUtil.get_float(pd, "lifetime") <= 0.0:
-			v.err(pw, "amount·lifetime은 양수")
-		v.check_color(pw + ".color", JsonUtil.get_str(pd, "color", "#ffffff"))
-		for key in ["scale", "velocity", "direction", "gravity"]:
-			if pd.has(key) and JsonUtil.get_array(pd, key).size() != 2:
-				v.err(pw, "%s는 [두 수]" % key)
-	var loop := JsonUtil.get_str(JsonUtil.get_dict(art, "ambience"), "loop")
-	if not loop.is_empty() and not JsonUtil.get_dict(JsonUtil.get_dict(v.db.singletons, "audio"), "ambience").has(loop):
-		v.err(w + ".ambience", "'%s'가 data/audio.json ambience에 없다" % loop)
 
 
 static func _input(v: ValidatorBase) -> void:

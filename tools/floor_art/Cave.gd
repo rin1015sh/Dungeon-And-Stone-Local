@@ -12,6 +12,10 @@ const CRYSTAL_LIGHT := Color("#c9b8ff")
 const CRYSTAL_DARK := Color("#3e2a78")
 const CRYSTAL_GLOW := Color("#8f6cff")
 
+## 벽 앞면 아래 밑동(px, 그림 배율 적용 뒤): 앞면 그림이 바닥 쪽으로 이만큼 더 내려와 들쭉날쭉하게 끝난다(벽·바닥 경계가 칸 직선이 아니게).
+## paint_floor.gd가 render.json view.wall_skirt_px × art_scale로 정한다.
+static var skirt: int = 0
+
 ## 재질마다 변형 번호 → 잔손질 종류(짝수 번호 무리·홀수 번호 무리에 비슷한 종류가 고루 들어가게 — FloorArtLayer)
 const KINDS := {
 	"limestone": ["plain", "plain", "crack", "pebbles", "pebbles", "crack", "wet", "dimples"],
@@ -82,14 +86,19 @@ static func _base(p: Paint, key: String, col: Color, s: int) -> void:
 		"rock_face", "crystal_face":
 			var hf := Seam.field(w, h, s, 0.06, 4)
 			var lip := Seam.field(w, 8, s + 5, 0.12, 2)
+			var jag := Seam.field(w, 8, s + 9, 0.1, 3)
+			var main := float(h - skirt)
 			var tint := col if key == "rock_face" else col.lerp(Color("#4a3a6a"), 0.35)
 			for y in h:
 				for x in w:
 					var i := y * w + x
-					var ly := 3.0 + lip[x] * 4.0 * h / 48.0  # 윗면과 만나는 들쭉날쭉한 턱
+					var foot := main + (0.25 + jag[x] * 0.75) * skirt  # 바닥과 만나는 들쭉날쭉한 밑동
+					if y >= foot:
+						continue
+					var ly := 3.0 + lip[x] * 4.0 * main / 48.0  # 윗면과 만나는 들쭉날쭉한 턱
 					var band := sin((y + hf[i] * 10.0) * 0.5) * 0.5 + 0.5  # 층리
 					var t := 0.42 + (band - 0.5) * 0.28 + Seam.relief(hf, w, h, x, y, 6.0) * 0.7 + (hf[i] - 0.5) * 0.3
-					t -= smoothstep(h * 0.55, float(h), float(y)) * 0.35  # 바닥 쪽 그늘
+					t -= smoothstep(main * 0.55, foot, float(y)) * 0.35  # 바닥 쪽 그늘
 					if y < ly:
 						t += 0.3
 					var c := tint.darkened(0.5).lerp(tint.lightened(0.35), clampf(t, 0.0, 1.0))
@@ -100,6 +109,8 @@ static func _base(p: Paint, key: String, col: Color, s: int) -> void:
 						c = c.darkened(0.25 * (1.0 - (y - ly) / 5.0))
 					if absf(band - 0.5) < 0.05 and hf[i] > 0.45:  # 층리 사이 가는 골
 						c = c.lerp(Ink.INK, 0.35)
+					if foot - y < 1.6 and skirt > 0:  # 밑동 잉크
+						c = c.lerp(Ink.INK, 0.6)
 					p.blend(x, y, c, 1.0)
 		"water":
 			var hf := Seam.field(w, h, s, 0.04, 3)
@@ -312,3 +323,30 @@ static func _ellipse(q: Vector2, rx: float, ry: float, n: int, rng: RandomNumber
 		var k := 1.0 if rng == null else rng.randf_range(0.85, 1.12)
 		out.append(q + Vector2(cos(a) * rx * k, sin(a) * ry * k))
 	return out
+
+
+## 벽 윗면 턱(띠 하나 = w × h, 그림 위쪽 = 바닥 쪽 바깥): 위쪽은 들쭉날쭉한 바위 윤곽(바깥은 투명) + 윤곽 잉크와 빛 받은 모서리,
+## 아래쪽(윗면 안쪽)으로 갈수록 투명해져 윗면 그림에 녹아든다. 중간 회색으로 칠한다(게임이 윗면 색 × 2를 곱한다).
+## 좌우 끝은 모든 변형이 같은 윤곽이라 이웃 띠와 이어진다.
+static func rim(v: int, w: int, h: int, seed_value: int) -> Paint:
+	var p := Paint.new(w, h, seed_value + v * 613)
+	var common := Seam.field(w, 8, seed_value, 0.09, 3)
+	var own := Seam.field(w, 8, seed_value + 100 * (v + 1), 0.09, 3)
+	var hf := Seam.field(w, h, seed_value + 7, 0.12, 3)
+	var out := h * 0.55  # 바깥 부분(윤곽이 놓이는 곳)
+	for x in w:
+		var m := Seam.mask(x, 0, w, 1, w * 0.18, true)
+		var sil := (0.12 + lerpf(common[x], own[x], m) * 0.8) * out  # 윤곽 y
+		for y in h:
+			if y < sil:
+				continue
+			var depth := y - sil
+			var c := Color(0.5, 0.5, 0.5).lerp(Color(0.62, 0.6, 0.64), clampf(1.0 - depth / 3.0, 0.0, 1.0) * 0.6)
+			c = c.darkened(clampf((hf[y * w + x] - 0.5) * 0.5 + Seam.relief(hf, w, h, x, y, 5.0) * -0.4, -0.2, 0.4))
+			if depth < 1.4:
+				c = c.lerp(Ink.INK, 0.75)
+			elif depth < 3.0:
+				c = c.lerp(Color(0.72, 0.7, 0.74), 0.35)
+			var a := 1.0 - smoothstep(out, float(h), float(y))
+			p.blend(x, y, c, a)
+	return p

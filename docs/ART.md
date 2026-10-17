@@ -14,14 +14,14 @@
 |---|---|---|---|
 | 도시 거리·건물·실내·사람·차원광장 | `tools/paint_city.gd [-- --only=street\|buildings\|interiors\|plaza]` | `tools/city_art/` — Paint(캔버스·붓결)·Ink(잉크·빛·색 보정)·Mat(재질)·Parts·Buildings(2)·Backdrop·Street·Interiors·Npcs·NpcParts·Plaza | `assets/city/` (data가 가리키는 경로) |
 | 몬스터 전투 그림(정면) | `tools/paint_monsters.gd [-- --only=<id,id>]` | `tools/monster_art/` — Clay(3D 덩어리)·Render·Pen(칠·잉크·빗금)·Rig·Anatomy·Face·Hair·Kit·Arms·Extras·Fur·Beast(Head)·Things(2)·Lord·Finish · 설계 Specs·Specs2 | `assets/monsters/<id>.webp` + `index.json`(몸 높이) |
-| 탐험 맵 재질(바닥·벽 아틀라스) | `tools/paint_floor.gd [-- --only=<장소\|style>]` | `tools/floor_art/` — Specs(설계)·Seam(주기 잡음·빛 받은 높이·가장자리 마스크)·Cave(1층 재질 칠) + city_art Paint·Ink | `assets/floor/<장소>/<재질>.webp` (data/tiles.json art) |
+| 탐험 맵 재질·데칼·소품 | `tools/paint_floor.gd [-- --only=<장소\|style>]` | `tools/floor_art/` — Specs(설계)·Seam(주기 잡음·빛 받은 높이·가장자리 마스크)·Cave(1층 재질 칠·벽 턱)·Decals(데칼)·Props(동굴 요소·포탈 소품)·Marks(기념비·네모 수정) + city_art Paint·Ink | `assets/floor/<장소>/*.webp` (data/tiles.json art · 층 JSON art.decor) |
 | 아군 전투 그림(뒷모습) | `tools/paint_monsters.gd -- --only=party` | Back(몸 3D 좌표를 돌려 투영)·BackKit(옷)·BackHair·BackGear(갑옷·무기) · 설계 Party | `assets/party/<종족>_back\|_side.webp`, `assets/monsters/<id>_back.webp` |
 
 실행은 모두 `godot --headless --path . --script <도구>`. 다 그린 뒤엔 `godot --headless --path . --import`.
 
 ## 2. 그림체 규칙(바꾸지 않는 "공식")
 
-- (2026-10-16 기준) **미궁 탐험 맵은 1층 바닥·암벽·수정벽·물·진흙만 손그림 재질**(A2)이고, 랜드마크·동굴 요소(마름모 표식)·균열은 아직 색칠한 칸이다. `texture_filter` linear. 탐험 맵 그림 작업은 아래 §6과 `docs/plans/map_design.md`를 따른다.
+- (2026-10-17 기준) **미궁 탐험 1층은 손그림 재질·데칼·소품·랜드마크**(A2·A3). 균열 4종은 아직 색칠한 칸(A5), 탐험 화면의 몸은 아직 임시 도형(A4). `texture_filter` linear. 탐험 맵 그림 작업은 아래 §6과 `docs/plans/map_design.md`를 따른다.
 - **참고 그림체 = 피어 앤 헝거(1·2)**. 손으로 칠한 어두운 일러스트 — 탁하고 채도 낮은 색, 짙은 그늘, 거친 펜 선과 빗금, 때·피. 픽셀아트·평면 도형·매끈한 그러데이션은 쓰지 않는다.
 - **칠하는 순서는 늘 같다**: 형태를 3D 덩어리로 빚기 → 면 방향으로 3~4단 붓 칠(밝은 면 · 적갈색 그늘 `Render.SHADOW_TINT`) → 오목한 골은 어둡게 + 가는 잉크 → 가려진 경계·바깥 윤곽은 굵기가 바뀌는 잉크 선 → 그늘에 형태를 따라 도는 펜 빗금 → 털 붓결(`Fur`) → 피·때·색 보정·그레인(`Finish`). 이 순서는 `Render.render` + `Fur.comb` + `Finish.done`이 맡으니, 새 그림도 **이 셋을 그대로 부른다**(따로 칠하지 않는다).
 - **빛은 왼쪽 위 앞**(`Render.LIGHT`). 도시는 광원(등롱·창·촛불)만 밝히고 나머지는 어둠에 묻는다.
@@ -57,7 +57,9 @@
 
 ## 6. 탐험 맵 (작업 중 — `docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`)
 
-진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정)·A2(1층 재질 아틀라스 `assets/floor/f1/`) 끝. 아래는 A3~A5에서도 지킬 규격이다.
+진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정)·A2(1층 재질 아틀라스 `assets/floor/f1/`)·A3(데칼·벽 밑동/턱·거시 색조·랜드마크·소품) 끝. 아래는 A4~A5에서도 지킬 규격이다.
+
+- **그림 층(A3)**: 데칼 = 층 JSON `art.decor`(규칙 → `FloorDecor` → `DecorChunk`, 시트 줄 순서 = `Specs.DECALS.kinds`), 소품 = 타일 `art.prop {sheet, cell, cols, size}`(시트 칸 순서 = `Props.ORDER`), 벽 턱 = 타일 `art.rim`, 거시 색조 = 층 `art.macro`(`FloorTint`). 투명 그림은 가장자리를 투명하게 녹이고(`Decals._soft_edge`), 방향이 있는 데칼(물가)은 그림 위쪽 = 바라보는 쪽으로 칠한다. 새 데칼 종류는 Specs·데이터 kinds·Decals 세 곳을 같이 고친다(테스트가 순서를 본다).
 
 - **재질 칸 칠하는 법(A2)**: `Cave.cell` = 가장자리 띠는 모든 변형이 같은 주기 바탕(`Seam.field` — `FastNoiseLite.get_seamless_image`) + 안쪽은 변형마다 다른 시드 바탕과 잔손질, `Seam.mask`로 녹인다. **바탕에 주기가 아닌 칠(붓 자국 `Ink.strokes`, `Paint.nz`, `Paint.vary`)을 넣지 않는다** — 칸 격자가 보인다(잔손질에서만). 덩어리 밝기는 높이장 기울기(`Seam.relief`, 왼쪽 위 빛). 색 보정 → 평균 색을 타일 data 색에 맞춤(`paint_floor._row`). 확인은 스크래치 파이썬으로 아틀라스 확대 + 무작위로 이어 붙인 판을 본 뒤 게임 캡처.
 

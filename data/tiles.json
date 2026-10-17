@@ -23,7 +23,7 @@
       "face": "#6a6074"
     },
     "sprite": "res://assets/sprites/tiles/rock_wall.png",
-    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6},
+    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6, "rim": "res://assets/floor/f1/rim.webp", "rim_variants": 4},
     "source": "placeholder"
   },
   {
@@ -42,7 +42,7 @@
       "intensity": 0.8
     },
     "sprite": "res://assets/sprites/tiles/crystal_wall.png",
-    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6},
+    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6, "rim": "res://assets/floor/f1/rim.webp", "rim_variants": 4},
     "source": "original"
   },
   {
@@ -70,6 +70,7 @@
       "face": "#77707a"
     },
     "sprite": "res://assets/sprites/tiles/boulder.png",
+    "art": {"atlas": "res://assets/floor/f1/boulder.webp", "variants": 2},
     "source": "original"
   },
   {
@@ -89,6 +90,7 @@
       "intensity": 1.0
     },
     "sprite": "res://assets/sprites/tiles/square_crystal.png",
+    "art": {"atlas": "res://assets/floor/f1/square_crystal.webp", "variants": 2},
     "source": "original"
   },
   {
@@ -109,6 +111,7 @@
       "intensity": 0.7
     },
     "sprite": "res://assets/sprites/tiles/monument.png",
+    "art": {"atlas": "res://assets/floor/f1/monument.webp", "variants": 2},
     "source": "original"
   },
   {
@@ -128,6 +131,7 @@
       "intensity": 0.9
     },
     "sprite": "res://assets/sprites/tiles/portal.png",
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 20, "cols": 8, "size": 1.5}},
     "source": "original"
   },
   {
@@ -147,6 +151,7 @@
       "intensity": 1.0
     },
     "sprite": "res://assets/sprites/tiles/rift_portal.png",
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 21, "cols": 8, "size": 1.5}},
     "source": "original",
     "notes": "원작: 균열이 열리면 층 전역에 포탈이 생긴다(명세 §8.1)"
   },
@@ -531,7 +536,7 @@
       "floor": "#57505f",
       "mark": "#c8b8a0"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 0, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -544,7 +549,7 @@
       "floor": "#57505f",
       "mark": "#8a9a6a"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 1, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -557,7 +562,7 @@
       "floor": "#57505f",
       "mark": "#8fa0c8"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 2, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -570,7 +575,7 @@
       "floor": "#57505f",
       "mark": "#7a6a5a"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 3, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -583,7 +588,7 @@
       "floor": "#57505f",
       "mark": "#9a9a9a"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 4, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -596,7 +601,7 @@
       "floor": "#57505f",
       "mark": "#a89a80"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 17, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -609,7 +614,7 @@
       "floor": "#57505f",
       "mark": "#e0c890"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 5, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -622,6 +627,7 @@
       "floor": "#3a5a78",
       "mark": "#a8d8ff"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 6, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -634,7 +640,7 @@
       "floor": "#57505f",
       "mark": "#b8c8ff"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 7, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -647,7 +653,7 @@
       "floor": "#57505f",
       "mark": "#b0a8a0"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 8, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -660,7 +666,7 @@
       "floor": "#57505f",
       "mark": "#7af0e0"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 9, "cols": 8, "size": 1.5}},
     "source": "placeholder",
     "light": {
       "radius_m": 1.5,
@@ -678,7 +684,7 @@
       "floor": "#57505f",
       "mark": "#d8d0c0"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 10, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -691,7 +697,7 @@
       "floor": "#57505f",
       "mark": "#c0a060"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 11, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -704,7 +710,7 @@
       "floor": "#57505f",
       "mark": "#e8d070"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 12, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -717,7 +723,7 @@
       "floor": "#57505f",
       "mark": "#ff9a40"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 13, "cols": 8, "size": 1.5}},
     "source": "placeholder",
     "light": {
       "radius_m": 3.0,
@@ -735,7 +741,7 @@
       "floor": "#57505f",
       "mark": "#a0703a"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 14, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -748,7 +754,7 @@
       "floor": "#57505f",
       "mark": "#e0dcc8"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 15, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -761,7 +767,7 @@
       "floor": "#57505f",
       "mark": "#a0a0a8"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 16, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -786,7 +792,7 @@
       "floor": "#57505f",
       "mark": "#c06040"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 18, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -799,6 +805,7 @@
       "floor": "#4a5a6a",
       "mark": "#9ab8d0"
     },
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 19, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   }
 ]

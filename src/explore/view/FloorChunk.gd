@@ -49,7 +49,7 @@ func _draw() -> void:
 				_cols[2] = view.vertex_color(x + 1, y + 1, base)
 				_cols[3] = view.vertex_color(x, y + 1, base)
 				draw_polygon(_pts, _cols)
-			if def.color_mark.a > 0.0:
+			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null:
 				_draw_mark(x, y, t, view.vertex_color(x, y, def.color_mark))
 
 
@@ -64,6 +64,22 @@ static func set_uv_cell(uvs: PackedVector2Array, tex: Texture2D, v: int, n: int,
 	uvs[1] = Vector2(u1, v0 + hy)
 	uvs[2] = Vector2(u1, v1 - hy)
 	uvs[3] = Vector2(u0, v1 - hy)
+
+
+## 시트 칸 (col, row)의 UV(반 텍셀 안쪽, 왼위·오위·오아래·왼아래)를 그림 위쪽이 rot(0 북·1 동·2 남·3 서)을 보게 돌리고
+## flip이면 좌우를 뒤집어 uvs에 넣는다(데칼·소품·벽 턱).
+static func set_uv_turned(uvs: PackedVector2Array, tex: Texture2D, col: int, cols: int, row: int, rows: int, rot: int, flip: bool) -> void:
+	var hx := 0.5 / tex.get_width()
+	var hy := 0.5 / tex.get_height()
+	var u0 := float(col) / cols + hx
+	var u1 := float(col + 1) / cols - hx
+	var v0 := float(row) / rows + hy
+	var v1 := float(row + 1) / rows - hy
+	var base := [Vector2(u0, v0), Vector2(u1, v0), Vector2(u1, v1), Vector2(u0, v1)]
+	if flip:
+		base = [base[1], base[0], base[3], base[2]]
+	for j in 4:
+		uvs[j] = base[posmod(j - rot, 4)]
 
 
 func _draw_mark(x: int, y: int, t: int, color: Color) -> void:

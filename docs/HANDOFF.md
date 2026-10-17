@@ -66,7 +66,7 @@
 | **2층(M6)** | 1층 포탈 4개의 `dest`(floor2_east 등)가 이미 있다 — `ExploreInteract._use_floor_portal`에서 2층 세션을 만들면 된다. 명세 V2 §5 경험치 예산의 2층 목표 | 2층 원작 설정(4필드·몬스터·폐쇄 240h), 생성기(고정 지도로 할지) (1층 변이종 5종은 넣지 않기로 함 — CR7) |
 | **동료·길드** | 균열 4인·드레드피어 5인 소환, 드롭 받을 사람 고르기(`DropPickup`)는 이미 파티를 전제로 돼 있다 | 길드 시설(정보 구매 `Knowledge.learn_all`·고용), 동료 AI, 배신 훅 |
 | **1층 이벤트** | `data/events`(type feature)에 행동·문구·전리품·효과 틀이 있다. 자리는 고정 지도 `features` 좌표 | 이야기·원작 근거, 일회성인지 매달 되살아나는지 |
-| **탐험 맵 그림 (진행 중)** | 지시서 `docs/PROMPT_ART_MAP.md`(A0~A6), 기획 `docs/plans/map_design.md`, 규격 `docs/ART.md` §6. A0(감사·문서·도구·기준 캡처 `docs/screens/before/`)·A1(렌더 기반)·A2(1층 재질 그림 `tools/paint_floor.gd`, 캡처 `docs/screens/after/`) 끝 — 다음 A3 1층 그림 층 완성 | `map_design.md` §6 질문 ①②는 추천안 가정(AM5·AM6), ③ linear로 정함, ④ 데스핀드 크기 |
+| **탐험 맵 그림 (진행 중)** | 지시서 `docs/PROMPT_ART_MAP.md`(A0~A6), 기획 `docs/plans/map_design.md`, 규격 `docs/ART.md` §6. A0(감사·문서·도구·기준 캡처 `docs/screens/before/`)·A1(렌더 기반)·A2(1층 재질 그림 `tools/paint_floor.gd`)·A3(데칼·턱·색조·랜드마크·소품, 캡처 `docs/screens/after/` 18장) 끝 — 다음 A4 탐험 화면 몸·사망 연출(물을 것 ⑤ 먼저) | `map_design.md` §6 질문 ①②는 추천안 가정(AM5·AM6), ③ linear로 정함, ④ 데스핀드 1.8로 정함, ⑤ A4 몸 범위 |
 | **도시 확장** | 시설 = JSON 하나 + 효과 파일 하나(`data/facilities`·`data/activities`·`src/city/effects`) | 환전소·대장간·잡화점·대신전 치료 중 무엇, 원작 경제 가격 |
 
 ## 4. 새 기획 요청서 (사용자가 채워서 프롬프트 끝에 붙인다)

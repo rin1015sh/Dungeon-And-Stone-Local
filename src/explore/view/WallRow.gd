@@ -78,9 +78,10 @@ func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> voi
 	_cols[2] = view.vertex_mul(x + 1, row + 1, def.color_top)
 	_cols[3] = view.vertex_mul(x, row + 1, def.color_top)
 	draw_polygon(_pts, _cols, _uvs, tex)
+	_draw_rim_edges(x, t, h, def)
 	if h <= 0 or split >= 1.0:
 		return
-	_quad(x * t, -h, t, h)
+	_quad(x * t, -h, t, h + view.wall_skirt)  # 밑동만큼 바닥 쪽으로 내려온다(그림 아래 끝이 들쭉날쭉 — 투명)
 	FloorChunk.set_uv_cell(_uvs, tex, FloorArtLayer.variant(x, row, n, def.art_salt + 1), n, split, 1.0)
 	var left := view.vertex_mul(x, row + 1, def.color_face)
 	var right := view.vertex_mul(x + 1, row + 1, def.color_face)
@@ -91,6 +92,39 @@ func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> voi
 	_cols[2] = right
 	_cols[3] = left
 	draw_polygon(_pts, _cols, _uvs, tex)
+
+
+## 바닥 쪽으로 열린 윗면 가장자리(북·서·동)에 턱 그림(art.rim)을 그림 위쪽이 바깥을 보게 덧그린다.
+## 바깥으로 rim_out만큼 튀어나와 칸 직선 테두리를 울퉁불퉁하게 깬다. 그림은 중간 회색으로 칠해 윗면 색 × 2를 곱한다.
+func _draw_rim_edges(x: int, t: int, h: int, def: TileDef) -> void:
+	var rtex := view.rim_by_def[def.index]
+	if rtex == null:
+		return
+	var map := view.map
+	var y0 := float(-t - h)
+	var o := view.rim_out * t
+	var d := view.rim_in * t
+	var tint := def.color_top * 2.0
+	for side in [0, 3, 1]:  # 북 · 서 · 동
+		var nb := Vector2i(x, row) + FloorDecor.DIRS[side]
+		if map.is_wall(nb) or not map.in_bounds(nb):
+			continue
+		match side:
+			0:
+				_quad(x * t, y0 - o, t, o + d)
+			3:
+				_quad(x * t - o, y0, o + d, t)
+			1:
+				_quad((x + 1) * t - d, y0, o + d, t)
+		var v := absi(hash(Vector3i(x, row, side))) % maxi(1, def.rim_variants)
+		FloorChunk.set_uv_turned(_uvs, rtex, v, def.rim_variants, 0, 1, side, false)
+		var a := view.vertex_mul(x, row, def.color_top)
+		var b := view.vertex_mul(x + 1, row + 1, def.color_top)
+		var c := a.lerp(b, 0.5)
+		c = Color(c.r * tint.r, c.g * tint.g, c.b * tint.b, c.a)
+		for j in 4:
+			_cols[j] = c
+		draw_polygon(_pts, _cols, _uvs, rtex)
 
 
 ## 앞면에 돌 쌓은 줄(가로 2줄)과 엇갈린 이음매(세로)를 그린다.

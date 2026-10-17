@@ -1,7 +1,8 @@
 class_name FloorView
 extends Node2D
 ## 3/4 시점(오블리크 탑다운) 층 그리기. 논리는 바닥 평면 그리드(FloorMap), 높이는 여기서만 다룬다.
-##   바닥: FloorChunk(청크 단위, 항상 벽·캐릭터 아래)
+##   바닥: FloorChunk(청크 단위, 항상 벽·캐릭터 아래) · 데칼·소품: DecorChunk · 맥동 빛: GlowChunk · 노드 관리: ChunkStream
+##   그림 파일: FloorTextures(타일 아틀라스·소품·턱·데칼 시트), 거시 색조: FloorTint
 ##   벽:   WallRow(한 줄 × 청크 폭) — y_sort로 캐릭터와 앞뒤 가림. 윗면은 앞면 높이만큼 위로 올라간다.
 ##   청크·벽 줄 노드는 플레이어 둘레 stream_chunks 청크 안에만 둔다(큰 지도에서 노드 수·정렬 비용을 일정하게).
 ##   캐릭터: ActorView — 발 위치가 정렬 기준. 남쪽 벽에 가려지면 실루엣을 겹친다.
@@ -21,11 +22,10 @@ var rim_shade: float = 2.2
 var player_view: ActorView
 
 var _monster_views: Dictionary = {}  # 무리 id -> MonsterView
-var _floor_chunks: Dictionary = {}  # Vector2i(청크 x, 청크 y) -> FloorChunk (플레이어 둘레만 — _stream_around)
-var _wall_rows: Dictionary = {}     # Vector2i(청크 x, 줄) -> WallRow
-var _floor_layer: Node2D
-var _stream: int = 3                # 플레이어 청크에서 몇 청크까지 그릴 노드를 두는가(render.json view.stream_chunks)
-var _active: Rect2i = Rect2i()      # 지금 노드가 있는 청크 사각형(청크 좌표)
+var stream: ChunkStream              # 플레이어 둘레 청크 노드(render.json view.stream_chunks)
+var floor_layer: Node2D
+var decor_layer: Node2D
+var glow_layer: Node2D
 var _last_rect: Rect2i = Rect2i()
 var _vlight: PackedColorArray       # 꼭짓점 빛(시야 사각형 안만 갱신)
 var _light_color: Color = Color.WHITE
@@ -33,19 +33,27 @@ var _light_center: Vector2 = Vector2.ZERO
 var _vision: float = 1.0
 var _cfg: Dictionary = {}
 const FOG_ALL_SEEN := 4 | (4 << 3)
-const TEX_SHADER := "res://assets/shaders/floor_tex.gdshader"
 var _vfog: PackedByteArray          # 꼭짓점 둘레 네 칸: 탐험한 수(아래 3비트) | 보이는 수 << 3
 var art: FloorArt
 var _nb: Color = Color.BLACK          # art 값 사본(vertex_color는 아주 자주 불린다)
 var _unexplored: Color = Color.BLACK
 var _mem: Color = Color.GRAY         # 기억 색조 × 밝기
-var _glow_layer: Node2D
 var glow_texture: GradientTexture2D   # GlowChunk들이 같이 쓴다
 var glow_material: ShaderMaterial
-var _glow_chunks: Dictionary = {}   # Vector2i(청크) -> GlowChunk (맥동하는 타일이 있는 층만)
 var _particles: AmbientParticles
 var tile_tex: Array[Texture2D] = []  # map.defs 번호 -> 재질 아틀라스(없으면 null — 색칠한 칸으로 그린다)
 var tex_material: ShaderMaterial     # 아틀라스 그림의 기억 탈색(floor_tex) — 바닥 청크·벽 줄이 같이 쓴다
+var decor: FloorDecor                 # 데칼 배치(층 art.decor)
+var tint := FloorTint.new()           # 거시 색조(층 art.macro) — 청크를 만들 때 그 꼭짓점만 채운다
+var decor_tex: Texture2D              # 데칼 시트(그래픽 품질 low면 null — 데칼을 그리지 않는다)
+var decor_sheet: Texture2D            # 읽어 둔 데칼 시트
+var prop_tex: Dictionary = {}         # 소품·턱 시트 경로 -> Texture2D(읽기용)
+var prop_by_def: Array[Texture2D] = [] # map.defs 번호 -> 소품 시트(없으면 null — 그리기에서 칸마다 사전을 찾지 않게)
+var rim_by_def: Array[Texture2D] = []  # map.defs 번호 -> 벽 턱 그림
+var rim_out: float = 0.2             # 벽 턱이 바닥 쪽으로 튀어나오는 정도(칸 비율 — view.wall_rim_out)
+var rim_in: float = 0.18             # 윗면 안쪽으로 녹아드는 정도(view.wall_rim_in)
+var wall_skirt: int = 0              # 벽 앞면 밑동(px — render.json view.wall_skirt_px)
+var prop_highlight: float = 1.15      # 소품(상호작용 대상) 밝기 배율 — 주변보다 한 단계 밝게
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -68,18 +76,21 @@ func _ready() -> void:
 	_vlight.resize((map.width + 1) * (map.height + 1))
 	_vfog = PackedByteArray()
 	_vfog.resize((map.width + 1) * (map.height + 1))
-	_load_tile_art()
-	_stream = maxi(1, JsonUtil.get_int(_cfg, "stream_chunks", 3))
+	FloorTextures.load_into(self, _cfg)
+	stream = ChunkStream.new(self, maxi(1, JsonUtil.get_int(_cfg, "stream_chunks", 3)))
 	y_sort_enabled = true
-	_floor_layer = Node2D.new()
-	_floor_layer.z_index = -10
-	add_child(_floor_layer)
+	floor_layer = Node2D.new()
+	floor_layer.z_index = -10
+	add_child(floor_layer)
+	decor_layer = Node2D.new()
+	decor_layer.z_index = -9
+	add_child(decor_layer)
 	if art.has_pulse():
-		_glow_layer = Node2D.new()
-		_glow_layer.z_index = JsonUtil.get_int(_cfg, "glow_z", 5)
+		glow_layer = Node2D.new()
+		glow_layer.z_index = JsonUtil.get_int(_cfg, "glow_z", 5)
 		glow_texture = GlowChunk.make_texture()
 		glow_material = GlowChunk.make_material(art.pulse_period, art.pulse_depth)
-		add_child(_glow_layer)
+		add_child(glow_layer)
 	player_view = ActorView.new()
 	player_view.setup_for(session.player, session.db.render)
 	player_view.calm = art.low_quality
@@ -94,6 +105,9 @@ func _ready() -> void:
 ## 그래픽 품질이 바뀌었다: 그림 설정을 다시 읽어 맥동 깊이·입자·횃불 흔들림만 바꾼다(지형 그림은 그대로).
 func set_quality(quality: String) -> void:
 	_set_art(FloorArt.resolve(session.db.render, session.floor_def, quality))
+	FloorTextures.apply_detail(self)
+	stream.recompute_decals()
+	refresh(true)
 	player_view.calm = art.low_quality
 	if glow_material != null:
 		glow_material.set_shader_parameter("depth", art.pulse_depth)
@@ -103,21 +117,6 @@ func set_quality(quality: String) -> void:
 	_build_particles()
 	if _particles != null:
 		_particles.set_radius(_vision * tile)
-
-
-## 타일 재질 아틀라스(tiles.json art.atlas)를 읽는다. 파일이 없으면 그 타일은 색칠한 칸으로 남는다.
-func _load_tile_art() -> void:
-	tile_tex.resize(map.defs.size())
-	var any := false
-	for i in map.defs.size():
-		var path := map.defs[i].art_atlas
-		if not path.is_empty() and map.defs[i].art_variants > 0 and ResourceLoader.exists(path):
-			tile_tex[i] = load(path) as Texture2D
-			any = true
-	if any:
-		tex_material = ShaderMaterial.new()
-		tex_material.shader = load(TEX_SHADER) as Shader
-		tex_material.set_shader_parameter("memory_desat", JsonUtil.get_float(_cfg, "memory_desat", 0.65))
 
 
 func _set_art(a: FloorArt) -> void:
@@ -176,18 +175,13 @@ func refresh(full: bool = false) -> void:
 	var whole := full or not _last_rect.has_area()
 	var dirty := rect.merge(_last_rect) if not whole else Rect2i()
 	_last_rect = rect
-	_stream_around(session.pos)  # 새로 만든 노드는 처음 그려질 때 이미 최신이다
+	stream.around(session.pos)  # 새로 만든 노드는 처음 그려질 때 이미 최신이다
 	if whole:
-		_update_fog(Rect2i(_active.position * chunk, _active.size * chunk))
-		for fc: FloorChunk in _floor_chunks.values():
-			fc.queue_redraw()
-		for wr: WallRow in _wall_rows.values():
-			wr.queue_redraw()
-		for gc: GlowChunk in _glow_chunks.values():
-			gc.queue_redraw()
+		update_fog(stream.active_cells())
+		stream.redraw_all()
 	else:
-		_update_fog(dirty)
-		_redraw_rect(dirty)
+		update_fog(dirty)
+		stream.redraw_rect(dirty)
 	player_view.face(session.facing)
 	player_view.set_occluded(_occludes(session.pos + Vector2i(0, 1)))
 	sync_monsters()
@@ -224,6 +218,9 @@ func vertex_color(vx: int, vy: int, base: Color) -> Color:
 	var i := vy * (map.width + 1) + vx
 	var f := _vfog[i]
 	var lit := _vlight[i]
+	if tint.enabled:
+		var tc := tint.colors[i]
+		lit = Color(lit.r * tc.r, lit.g * tc.g, lit.b * tc.b)
 	if f == FOG_ALL_SEEN:  # 가장 흔한 경우(시야 한가운데)
 		return Color(maxf(base.r * lit.r, _nb.r), maxf(base.g * lit.g, _nb.g), maxf(base.b * lit.b, _nb.b), 1.0)
 	var e := f & 7
@@ -245,6 +242,9 @@ func vertex_mul(vx: int, vy: int, mean: Color) -> Color:
 	var i := vy * (map.width + 1) + vx
 	var f := _vfog[i]
 	var lit := _vlight[i]
+	if tint.enabled:
+		var tc := tint.colors[i]
+		lit = Color(lit.r * tc.r, lit.g * tc.g, lit.b * tc.b)
 	var fr := _nb.r / maxf(mean.r, 0.02)
 	var fg := _nb.g / maxf(mean.g, 0.02)
 	var fb := _nb.b / maxf(mean.b, 0.02)
@@ -281,7 +281,7 @@ static func fog_counts(m: FloorMap, vx: int, vy: int) -> int:
 
 
 ## 칸 사각형 cells를 둘러싼 꼭짓점들의 안개 값을 다시 센다(칸 값 = 탐험 1 + 보임 8을 한 번 모아 네 칸씩 더한다).
-func _update_fog(cells: Rect2i) -> void:
+func update_fog(cells: Rect2i) -> void:
 	var r := cells.intersection(Rect2i(0, 0, map.width, map.height))
 	if not r.has_area():
 		return
@@ -331,80 +331,8 @@ func _update_vertex_light(rect: Rect2i) -> void:
 				minf(_light_color.g * dyn + s.g * static_k, peak), minf(_light_color.b * dyn + s.b * static_k, peak), 1.0)
 
 
-## 플레이어 칸 p 둘레 청크만 노드로 둔다: 사각형을 벗어난 청크·벽 줄은 지우고, 새로 들어온 것은 만든다.
-func _stream_around(p: Vector2i) -> void:
-	var grid := Rect2i(0, 0, ceili(map.width / float(chunk)), ceili(map.height / float(chunk)))
-	var c := Vector2i(p.x / chunk, p.y / chunk)
-	var want := Rect2i(c - Vector2i(_stream, _stream), Vector2i(_stream * 2 + 1, _stream * 2 + 1)).intersection(grid)
-	if want == _active:
-		return
-	for key: Vector2i in _floor_chunks.keys():
-		if not want.has_point(key):
-			(_floor_chunks[key] as Node).queue_free()
-			_floor_chunks.erase(key)
-			if _glow_chunks.has(key):
-				(_glow_chunks[key] as Node).queue_free()
-				_glow_chunks.erase(key)
-	for key: Vector2i in _wall_rows.keys():
-		if not want.has_point(Vector2i(key.x, key.y / chunk)):
-			(_wall_rows[key] as Node).queue_free()
-			_wall_rows.erase(key)
-	for cy in range(want.position.y, want.end.y):
-		for cx in range(want.position.x, want.end.x):
-			if not _active.has_point(Vector2i(cx, cy)):
-				_build_chunk(cx, cy)
-	_active = want
-
-
-func _build_chunk(cx: int, cy: int) -> void:
-	var cells := Rect2i(cx * chunk, cy * chunk, chunk, chunk).intersection(Rect2i(0, 0, map.width, map.height))
-	var fc := FloorChunk.new()
-	fc.setup(self, cells)
-	fc.material = tex_material
-	_floor_layer.add_child(fc)
-	_floor_chunks[Vector2i(cx, cy)] = fc
-	_update_fog(cells)
-	if _glow_layer != null:
-		var gc := GlowChunk.new()
-		gc.setup(self, cells)
-		_glow_layer.add_child(gc)
-		_glow_chunks[Vector2i(cx, cy)] = gc
-	for row in range(cells.position.y, cells.end.y):
-		if _row_has_wall(row, cells.position.x, cells.end.x):
-			var wr := WallRow.new()
-			wr.setup(self, row, cells.position.x, cells.end.x)
-			wr.material = tex_material
-			add_child(wr)
-			_wall_rows[Vector2i(cx, row)] = wr
-
-
-## dirty(칸 사각형)에 걸친 청크·벽 줄만 다시 그린다(사전에서 바로 찾는다).
-func _redraw_rect(dirty: Rect2i) -> void:
-	var r := dirty.intersection(Rect2i(0, 0, map.width, map.height))
-	if not r.has_area():
-		return
-	var cx0 := r.position.x / chunk
-	var cx1 := (r.end.x - 1) / chunk
-	for cy in range(r.position.y / chunk, (r.end.y - 1) / chunk + 1):
-		for cx in range(cx0, cx1 + 1):
-			var fc: FloorChunk = _floor_chunks.get(Vector2i(cx, cy))
-			if fc != null:
-				fc.queue_redraw()
-			var gc: GlowChunk = _glow_chunks.get(Vector2i(cx, cy))
-			if gc != null:
-				gc.queue_redraw()
-	for row in range(r.position.y, r.end.y):
-		for cx in range(cx0, cx1 + 1):
-			var wr: WallRow = _wall_rows.get(Vector2i(cx, row))
-			if wr != null:
-				wr.queue_redraw()
-
-
-func _row_has_wall(row: int, x0: int, x1: int) -> bool:
-	for x in range(x0, x1):
-		if map.def_at(Vector2i(x, row)).is_wall():
-			return true
-	return false
+func _process(_delta: float) -> void:
+	stream.process_one()
 
 
 ## 칸 p의 벽이 바로 북쪽 칸에 선 캐릭터를 가리는가.

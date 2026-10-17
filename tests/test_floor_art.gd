@@ -76,6 +76,7 @@ func test_atlas_sizes() -> void:
 	var view := JsonUtil.get_dict(db.render, "view")
 	var k := JsonUtil.get_int(view, "art_scale", 2)
 	var cell := int(JsonUtil.get_array(view, "floor_tile_px")[0]) * k
+	var skirt := JsonUtil.get_int(view, "wall_skirt_px", 0) * k
 	var face := (int(JsonUtil.get_array(view, "wall_tile_px")[1]) - int(JsonUtil.get_array(view, "floor_tile_px")[1])) * k
 	var seen := 0
 	for id: String in db.get_collection("tiles"):
@@ -90,5 +91,6 @@ func test_atlas_sizes() -> void:
 		seen += 1
 		assert_eq(tex.get_width(), JsonUtil.get_int(art, "variants") * cell, "아틀라스 가로: " + id)
 		var wall := JsonUtil.get_str(t, "kind") == "wall"
-		assert_eq(tex.get_height(), cell + face if wall else cell, "아틀라스 세로: " + id)
+		var fh := JsonUtil.get_int(t, "face_px", -1) * k + skirt if JsonUtil.get_int(t, "face_px", -1) >= 0 else face + skirt
+		assert_eq(tex.get_height(), cell + fh if wall else cell, "아틀라스 세로: " + id)
 	assert_true(seen >= 4, "1층 바닥·암벽·수정벽·물")
