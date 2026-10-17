@@ -132,8 +132,18 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackKit.dress(cl, pr, j, bd, kit, rng)
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
-	Render.render(cl, p, H)
+	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
+	if sp.get("map_face", false):  # 탐험 맵 얼굴: 눈은 작은 어두운 점 하나씩(피어 앤 헝거 맵 그림 — 입은 그리지 않는다)
+		var r := float(hd["hh"]) * H * 0.065
+		for e: Vector2 in hd["eyes"]:
+			for yy in range(int(e.y - r * 0.8), int(e.y + r * 0.8) + 1):
+				for xx in range(int(e.x - r), int(e.x + r) + 1):
+					var d := Vector2((xx - e.x) / r, (yy - e.y) / (r * 0.8)).length()
+					if d < 1.0:
+						p.blend(xx, yy, Color("#0e0806"), clampf((1.0 - d) * 3.0, 0.0, 1.0))
+		Finish.done(p, sp, Back.screen_joints(pr, j), H)
+		return p
 	for e: Vector2 in hd["eyes"]:  # 옆얼굴 눈: 짧은 눈꺼풀 선 + 어두운 눈동자
 		Ink.line(p, e + Vector2(-0.008, -0.002) * H, e + Vector2(0.008, 0.001) * H, maxf(1.2, H / 380.0), Ink.INK, 0.85, 0.4)
 		for yy in range(int(e.y - 0.003 * H), int(e.y + 0.006 * H)):

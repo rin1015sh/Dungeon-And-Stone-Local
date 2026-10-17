@@ -2,7 +2,7 @@ extends SceneTree
 ## 탐험 맵 몸 그림(docs/PROMPT_ART_MAP.md A4): 전투 그림과 같은 도구로 그려 맵 크기로 줄인다.
 ##   godot --headless --path . --script res://tools/paint_actors.gd [-- --only=<종족|monsters|몬스터 id,…>]
 ## 탐험가: 아군 전투 그림의 3D 몸(Party·Back)을 앞(아래)·옆(오른쪽)·뒤(위)로 돌리고 걷기 세 장(왼발 앞·섬·오른발 앞)을 그려
-##   한 장의 시트로 → assets/actors/<종족>.webp. 줄 = [아래, 왼쪽, 오른쪽, 위](왼쪽 = 오른쪽 좌우 반전), 칸 = [걸음 A, 섬, 걸음 B].
+##   한 장의 시트로 → assets/actors/<종족>.webp. 줄 = [아래, 왼쪽, 오른쪽, 위](오른쪽 = 왼쪽 좌우 반전), 칸 = [걸음 A, 섬, 걸음 B].
 ##   피어 앤 헝거 맵 그림처럼 사람 키 1.3칸 안팎·약간 큰 머리와 짧고 굵은 몸(약 3.7등신 — HEAD·LEGS·WIDE·BULK)·진한 바깥선·칠한 그늘(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
 ## 몬스터: 전투 일러스트(assets/monsters/<id>.webp — 정면)를 몸 높이 색인으로 데이터 size에 맞춰 줄인다 → assets/actors/monsters/<id>.webp
 ##   (뒷모습 그림이 있으면 <id>_back.webp도). 걷기는 게임이 흔들어 보인다(MonsterView).
@@ -12,7 +12,7 @@ const Party := preload("res://tools/monster_art/Party.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
 const RENDER_H := 360.0  ## 사람 키를 이 높이로 그려 줄인다(작게 바로 그리면 붓결·눈이 뭉개진다)
-const SIDE_TURN := 1.4   ## 옆모습(오른쪽을 본다) 돌림 — 거의 옆얼굴
+const SIDE_TURN := 1.4   ## 옆모습 돌림 — 거의 옆얼굴(왼쪽을 보게 -SIDE_TURN으로 그린다)
 const PITCH := 0.35      ## 3/4 시점 — 보는 사람 쪽으로 나온 발·팔이 화면 아래로(Back.proj)
 const PHASES := [1.0, 0.0, -1.0]  ## 칸 순서: 왼발 앞 · 섬 · 오른발 앞
 const OUTLINE := Color("#120c0a")
@@ -21,6 +21,8 @@ const HEAD := 2.0   ## 머리 크기 배율(전투 그림 = 1, 약 7.5등신)
 const LEGS := 0.72  ## 다리 길이 배율
 const WIDE := 1.2   ## 어깨·엉덩이 폭 배율
 const BULK := 1.2   ## 팔다리·몸통 굵기 배율
+const LIGHT := Vector3(-0.2, -0.5, 0.85)  ## 빛 방향 — 전투 그림(-0.45, -0.55, 0.7)보다 앞에서 비춰 얼굴 양쪽 눈이 다 보이게
+const HAIR_HIGH := 0.3  ## 옆·앞 머리선을 올리는 정도(라디안) — 옆모습에서 머리카락이 얼굴을 덮지 않게
 const SEED := 4242
 
 var _cfg: Dictionary = {}
@@ -50,15 +52,15 @@ func _explorer(race: String) -> void:
 	var cell := _cell()
 	var cols := PHASES.size()
 	var sheet := Image.create_empty(cell.x * cols, cell.y * 4, false, Image.FORMAT_RGBA8)
-	var turns := {0: PI, 2: SIDE_TURN, 3: 0.0}  # 줄 → 돌림(1 = 왼쪽은 2를 뒤집는다)
-	for row: int in [0, 2, 3]:
+	var turns := {0: PI, 1: -SIDE_TURN, 3: 0.0}  # 줄 → 돌림(2 = 오른쪽은 1을 뒤집는다 — 빛이 왼쪽 위에서 와서 왼쪽을 보게 그려야 얼굴이 밝다)
+	for row: int in [0, 1, 3]:
 		for c in cols:
 			var img := _figure(race, float(turns[row]), float(PHASES[c]))
 			_put(sheet, img, Vector2i(c, row), cell)
-			if row == 2:
+			if row == 1:
 				var flipped := img.duplicate() as Image
 				flipped.flip_x()
-				_put(sheet, flipped, Vector2i(c, 1), cell)
+				_put(sheet, flipped, Vector2i(c, 2), cell)
 	var path := "res://assets/actors/%s.webp" % race
 	sheet.save_webp(path, false)
 	print("그림: %s %dx%d (%d ms)" % [path, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
@@ -76,6 +78,9 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["legs"] = LEGS
 	sp["wide"] = WIDE
 	sp["bulk"] = float(sp.get("bulk", 1.0)) * BULK
+	sp["map_face"] = true  # 얼굴은 눈만(입·눈두덩 없음)
+	sp["hair_high"] = HAIR_HIGH
+	sp["light"] = LIGHT
 	if phase != 0.0:
 		sp["walk"] = phase
 	var p: Paint = Party.figure(sp, SEED + race.hash() % 997)

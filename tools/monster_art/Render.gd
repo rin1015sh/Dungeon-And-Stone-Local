@@ -16,7 +16,8 @@ const WARM := Color(1.0, 0.9, 0.74)
 
 
 ## scale = 그림 크기 기준(몸 높이 px). 잉크 굵기·빗금 간격이 따라 커진다.
-static func render(cl: Clay, p: Paint, scale: float) -> void:
+## light = 빛 방향(탐험 맵 몸 그림은 더 앞에서 비춰 얼굴 양쪽이 고르게 밝다 — tools/paint_actors.gd).
+static func render(cl: Clay, p: Paint, scale: float, light: Vector3 = LIGHT) -> void:
 	cl.resolve()
 	var n := cl.w * cl.h
 	var nx := PackedFloat32Array()
@@ -30,7 +31,7 @@ static func render(cl: Clay, p: Paint, scale: float) -> void:
 	var cav2 := _cavity(cl, nzz, maxf(4.0, scale / 40.0))
 	var tone := PackedFloat32Array()
 	tone.resize(n)
-	var L := LIGHT.normalized()
+	var L := light.normalized()
 	for y in cl.h:
 		for x in cl.w:
 			var i := y * cl.w + x
