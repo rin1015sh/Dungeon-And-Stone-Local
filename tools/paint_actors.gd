@@ -12,7 +12,7 @@ const Party := preload("res://tools/monster_art/Party.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
 const RENDER_H := 360.0  ## 사람 키를 이 높이(맵 키의 2배)로 그려 반으로 줄인다 — 크게 그려 많이 줄이면 선·명암이 뭉개진다
-const SIDE_TURN := 1.4   ## 옆모습 돌림 — 거의 옆얼굴(왼쪽을 보게 -SIDE_TURN으로 그린다)
+const SIDE_TURN := 1.8   ## 옆모습 돌림 — 90°를 조금 넘겨 얼굴이 보는 사람 쪽으로 살짝(90° 안쪽은 뒤에서 본 옆모습이다)
 const PITCH := 0.1       ## 3/4 시점 — 앞으로 내민 발이 조금 아래로(크게 하면 몸이 비틀려 보인다)
 const PHASES := [1.0, 0.0, -1.0]  ## 칸 순서: 왼발 앞 · 섬 · 오른발 앞
 const OUTLINE := Color("#120c0a")
@@ -27,13 +27,14 @@ const GAMMA := 0.85     ## 줄인 뒤 밝기(1보다 작으면 중간 밝기를 
 const LINE_STEP := 9.0 ## 이웃보다 이만큼 어두운 칸에 진한 선(겨드랑이·다리 사이·옷 경계)
 const STANCE := 0.08  ## 발 벌림(키 비율) — 두 발을 거의 붙여 선다
 const STEP := 0.06     ## 걸음 보폭(키 비율 — 다리 길이 배율이 곱해진다)
-const FRONT_LIGHT := 0.0  ## 1 = 빛을 앞에서(얼굴이 평평하게 밝아진다 — 전투 그림 빛이 더 낫다)
+const FRONT_LIGHT := 1.0  ## 1 = 빛을 앞에서(얼굴이 평평하게 밝아진다 — 전투 그림 빛이 더 낫다)
 const LIGHT := Vector3(-0.2, -0.5, 0.85)  ## 빛 방향 — 전투 그림(-0.45, -0.55, 0.7)보다 앞에서 비춰 얼굴 양쪽 눈이 다 보이게
-const HAIR_HIGH := 0.2  ## 옆·앞 머리선을 올리는 정도(라디안) — 옆모습에서 머리카락이 얼굴을 덮지 않게
-const MAP_FACE := 0.0  ## 1 = 맵 얼굴(입 없음), 0 = 전투 그림 얼굴
+const HAIR_HIGH := 0.4  ## 옆·앞 머리선을 올리는 정도(라디안) — 옆모습에서 머리카락이 얼굴을 덮지 않게
+const MAP_FACE := 1.0  ## 1 = 맵 얼굴(입 없음), 0 = 전투 그림 얼굴
 const FRINGE := 1.0    ## 1 = 더벅머리 타래
 const HAIR_FLARE := 0.04  ## 옆머리가 머리 밖으로 부푸는 정도(머리 높이 비율)
-const SOCKETS := 1.0   ## 1 = 눈을 짙은 눈구멍으로(전투 그림 얼굴이어도)
+const SOCKETS := 1.0
+const EYE_R := 0.065    ## 눈구멍 반지름(머리 높이 비율) — 참고 그림: 맵 키 84px에서 폭 약 3.7·높이 3px, 두 눈 사이 9.6px   ## 1 = 눈을 짙은 눈구멍으로(전투 그림 얼굴이어도)
 const SEED := 4242
 
 var _cfg: Dictionary = {}
@@ -105,6 +106,7 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["fringe"] = _v("fringe", FRINGE) > 0.0  # 더벅머리 앞·옆머리
 	sp["socket_eyes"] = _v("sockets", SOCKETS) > 0.0
 	sp["hair_flare"] = _v("hair_flare", HAIR_FLARE)
+	sp["eye_r"] = _v("eye_r", EYE_R)
 	sp["mottle_amt"] = 0.08  # 살갗 얼룩·때는 줄이면 점박이로 보인다
 	sp["grime"] = 0.0
 	if _v("front_light", FRONT_LIGHT) > 0.0:

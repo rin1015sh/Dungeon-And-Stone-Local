@@ -309,7 +309,7 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	ell(cl, pr, g, hc + Vector3(0, 0.012 * hh / 0.13, rw * 0.25), ru * 0.92, rv * 0.82, rw * 0.8, skin, 0.01)  # 뒤통수
 	cl.tag = "face"
 	if plain:  # 매끈한 달걀형 아래 얼굴(턱이 앞으로 튀어나오지 않게)
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.3, -rw * 0.08), ru * 0.9, rv * 0.78, rw * 0.9, skin, 0.04)
+		ell(cl, pr, g, hc + Vector3(0, rv * 0.32, -rw * 0.12), ru * 0.8, rv * 0.62, rw * 0.78, skin, 0.04)
 	else:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
 	if not plain:
@@ -318,22 +318,18 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 		for s: int in [-1, 1]:
 			ell(cl, pr, g, hc + Vector3(s * ru * 0.68, rv * 0.08, -rw * lerpf(0.5, 0.62, soft)), ru * 0.3, rv * 0.22, rw * 0.32 * soft, skin, 0.008)  # 광대
 		cap(cl, pr, g, hc + Vector3(0, -rv * 0.18, -rw * lerpf(0.95, 1.02, soft)), hc + Vector3(0, rv * 0.28, -rw * lerpf(1.05, 1.22, soft)), hh * 0.07 * lerpf(0.8, 1.0, soft), hh * 0.065 * lerpf(0.8, 1.0, soft), skin, 0.006)  # 코
-	else:
-		ell(cl, pr, g, hc + Vector3(0, -rv * 0.3, -rw * 0.8), ru * 0.78, rv * 0.15, rw * 0.22, skin, 0.01)  # 눈썹뼈(눈구멍 그늘)
-		for s: int in [-1, 1]:
-			ell(cl, pr, g, hc + Vector3(s * ru * 0.62, rv * 0.12, -rw * 0.6), ru * 0.28, rv * 0.2, rw * 0.3, skin, 0.01)  # 광대
-		cap(cl, pr, g, hc + Vector3(0, -rv * 0.12, -rw * 0.92), hc + Vector3(0, rv * 0.24, -rw * 1.04), hh * 0.05, hh * 0.045, skin, 0.006)  # 코
+	# 맵 얼굴(plain): 코·입·귀 없는 매끈한 달걀형 — 눈은 칠한 눈구멍뿐(사용자 2026-10-17 "코랑 입 귀 지워")
 	if not plain:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.98, -rw * 0.72), ru * 0.38, rv * 0.2, rw * 0.3, skin, 0.008)  # 턱끝
 	cl.tag = "ear"
-	for s: int in [-1, 1]:
+	for s: int in ([] if plain else [-1, 1]):
 		var ek := 0.6 if plain else 1.0  # 큰 머리의 맵 얼굴은 귀를 작게
 		ell(cl, pr, g, hc + Vector3(s * ru * 0.98, rv * 0.06, rw * 0.02), hh * 0.055 * ek, hh * 0.16 * ek, hh * 0.11 * ek, skin, 0.004)
 		groove(cl, pr, g, [hc + Vector3(s * ru * 1.04, -rv * 0.18, rw * 0.0), hc + Vector3(s * ru * 1.08, rv * 0.06, -rw * 0.05), hc + Vector3(s * ru * 1.02, rv * 0.3, rw * 0.0)], Vector3(s, 0, -0.3), hh * 0.018, hh * 0.03)
 	cl.tag = ""
 	var eyes: Array = []
 	for s: int in [-1, 1]:  # 눈두덩(옆모습에서만 보인다) — 눈은 칠한 뒤 잉크로(Party.figure)
-		var e := hc + Vector3(s * ru * 0.42, -rv * 0.1, -rw * 0.84)
+		var e := hc + Vector3(s * ru * 0.42, rv * 0.06 if plain else -rv * 0.1, -rw * 0.84)  # 맵 얼굴은 눈이 낮다(참고 그림: 머리 위에서 72%)
 		if facing(pr, Vector3(s * 0.45, 0, -1)) > 0.12:
 			var q := P2(pr, e)
 			if not j.get("socket_eyes", false):  # 칠한 눈구멍을 쓰면 파내지 않는다(파낸 테두리가 밝게 빛나 안경처럼 보였다)

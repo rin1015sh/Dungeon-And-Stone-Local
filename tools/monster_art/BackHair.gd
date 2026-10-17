@@ -75,7 +75,7 @@ static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rn
 		var a := lerpf(-1.75, 1.75, (k + rng.randf_range(0.2, 0.8)) / 26.0)  # 얼굴 가운데에서 돈 각도
 		var lo := PI + a
 		var side := smoothstep(0.45, 1.5, absf(a))
-		var end_la := lerpf(0.26, 0.02, side) + rng.randf_range(-0.07, 0.07)  # 옆은 눈높이까지만(옆모습에서 얼굴이 보이게)
+		var end_la := lerpf(0.42, 0.28, side) + rng.randf_range(-0.05, 0.05)  # 옆은 눈높이까지만(옆모습에서 얼굴이 보이게)
 		var gw := hh * lerpf(0.06, float(sp_flare), side)  # 옆머리는 부풀어 머리 밖으로 삐친다(sp hair_flare)
 		var pts: Array = []
 		for t in 4:
@@ -86,7 +86,7 @@ static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rn
 
 static func _hairline(lon: float, nape: float, high: float = 0.0) -> float:
 	var a := absf(wrapf(lon, -PI, PI))
-	var up := high * smoothstep(0.7, 1.7, a)
+	var up := high * smoothstep(2.0, 2.8, a)  # 얼굴 쪽만 올린다(옆·뒤까지 올리면 머리 옆이 벗겨져 보였다)
 	if a < PI * 0.5:
 		return lerpf(nape, 0.05, a / (PI * 0.5)) + up
 	if a < 2.25:
