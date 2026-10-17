@@ -199,8 +199,7 @@ static func _mantle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col
 	for i in 40:
 		jag.append(rng.randf_range(-0.006, 0.006))
 	var hem := func(phi: float) -> float: return ch.y + 0.035 - 0.085 * pow(absf(cos(phi)), 1.4) + float(jag[int(absf(phi) * 7.0) % 40])
-	var tags := ["torso", "shoulder_l", "shoulder_r"] if j.get("map_face", false) else ["torso", "shoulder_l", "shoulder_r", "neck"]  # 맵 몸: 큰 머리 밑 목까지 덮으면 앞모습에서 턱수염처럼 보인다
-	shell(cl, pr, tags, 0.016, m, g, hem_poly(pr, nk.y - 0.012, shw * 1.3, bw + 0.03, hem), 0.04, 0.003)
+	shell(cl, pr, ["torso", "shoulder_l", "shoulder_r", "neck"], 0.016, m, g, hem_poly(pr, nk.y - 0.012, shw * 1.3, bw + 0.03, hem), 0.04, 0.003)
 	for s: int in [-1, 1]:  # 어깨에서 흘러내리는 주름
 		for k in 3:
 			var a := Vector3(s * (0.03 + k * 0.04), nk.y + 0.02, bw + 0.02)

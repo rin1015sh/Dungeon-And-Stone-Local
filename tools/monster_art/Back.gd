@@ -17,10 +17,9 @@ const BUILDS := {
 }
 
 
-## 투영 정보: 발 가운데(화면) · 키(px) · 돌림 · pitch(위에서 내려다보는 정도 — 보는 사람 쪽 깊이만큼 화면 아래로. 전투 그림은 0,
-## 탐험 맵 걷기 그림은 3/4 시점이라 앞으로 내민 발이 아래에 보이게 — tools/paint_actors.gd).
-static func proj(o: Vector2, H: float, turn: float, pitch: float = 0.0) -> Dictionary:
-	return {"ox": o.x, "oy": o.y, "H": H, "c": cos(turn), "s": sin(turn), "turn": turn, "pitch": pitch}
+## 투영 정보: 발 가운데(화면) · 키(px) · 돌림.
+static func proj(o: Vector2, H: float, turn: float) -> Dictionary:
+	return {"ox": o.x, "oy": o.y, "H": H, "c": cos(turn), "s": sin(turn), "turn": turn}
 
 
 ## 몸 좌표(키 비율) → 화면(px, z = 보는 사람 쪽).
@@ -28,8 +27,7 @@ static func P(pr: Dictionary, v: Vector3) -> Vector3:
 	var c: float = pr["c"]
 	var s: float = pr["s"]
 	var H: float = pr["H"]
-	var toward := v.x * s + v.z * c
-	return Vector3(float(pr["ox"]) + H * (v.x * c - v.z * s), float(pr["oy"]) + H * (v.y + toward * float(pr.get("pitch", 0.0))), H * toward)
+	return Vector3(float(pr["ox"]) + H * (v.x * c - v.z * s), float(pr["oy"]) + H * v.y, H * (v.x * s + v.z * c))
 
 
 static func P2(pr: Dictionary, v: Vector3) -> Vector2:
@@ -143,45 +141,7 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 		j["elbow_" + t] = el
 		j["wrist_" + t] = wr
 		j["hand_" + t] = wr + (wr - el).normalized() * 0.035
-	return _chunky(j, sp, hip_y)
-
-
-## 탐험 맵 몸 비율(피어 앤 헝거 맵 그림 — 약간 큰 머리·짧고 굵은 몸, tools/paint_actors.gd): legs = 다리 길이 배율(발은 그대로,
-## 위 몸은 그만큼 내려온다), wide = 가로 배율, head(spec)로 커진 머리는 목 위로 올린다. 전투 그림은 모두 1이라 그대로.
-static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
-	var lf := float(sp.get("legs", 1.0))
-	var wd := float(sp.get("wide", 1.0))
-	if lf == 1.0 and wd == 1.0 and float(sp.get("head", 1.0)) == 1.0 and not sp.get("map_face", false):
-		return j
-	for k: String in j:
-		if j[k] is Vector3:
-			var v: Vector3 = j[k]
-			v.x *= wd
-			v.y = v.y * lf if v.y > hip_y else v.y - hip_y * (1.0 - lf)
-			j[k] = v
-	j["head"] = j["head"] - Vector3(0, (float(j["head_h"]) - 0.13) * 0.4, 0)
-	j["map_face"] = bool(sp.get("map_face", false))
-	if j["map_face"]:  # 굵어진 가슴·망토가 턱을 덮지 않게 머리를 조금 앞으로
-		j["head"] = j["head"] + Vector3(0, 0, -0.035)
 	return j
-
-
-## 걷기 한 걸음(탐험 맵 걷기 그림 — tools/paint_actors.gd): phase +1 = 왼발이 앞으로·오른발 뒤꿈치를 들고·오른팔이 앞으로,
-## -1 = 반대. 몸 좌표에서 앞 = -w(z 음수). stride·swing = 보폭·팔 흔들기(키 비율).
-static func stride(j: Dictionary, phase: float, step: float = 0.085, swing: float = 0.06) -> Dictionary:
-	var out := j.duplicate()
-	for s: int in [-1, 1]:
-		var t := "l" if s < 0 else "r"
-		var k := phase * (1.0 if s < 0 else -1.0)  # 이 다리가 앞(+) 뒤(-)
-		var lift := maxf(0.0, -k) * 0.022  # 뒤로 간 다리는 뒤꿈치를 든다
-		out["ankle_" + t] = (j["ankle_" + t] as Vector3) + Vector3(0, -lift, -k * step)
-		out["toe_" + t] = (j["toe_" + t] as Vector3) + Vector3(0, -lift * 0.3, -k * step)
-		out["knee_" + t] = (j["knee_" + t] as Vector3) + Vector3(0, -absf(k) * 0.008, -k * step * 0.55 - absf(k) * 0.02)
-		var a := -k  # 팔은 같은 쪽 다리와 반대로
-		out["elbow_" + t] = (j["elbow_" + t] as Vector3) + Vector3(0, 0, -a * swing * 0.5)
-		out["wrist_" + t] = (j["wrist_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing)
-		out["hand_" + t] = (j["hand_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing * 1.05)
-	return out
 
 
 ## 몸: 엉덩이·허리·등(견갑골·척추 골·광배근) · 목·승모근 · 어깨 · 다리(햄스트링·종아리·발뒤꿈치) · 팔(삼두·팔꿈치·주먹).
@@ -302,28 +262,19 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	var rv := hh * 0.48
 	var rw := hh * 0.45
 	var F := Vector3(0, 0, -1)
-	var plain := bool(j.get("map_face", false))  # 탐험 맵 얼굴: 매끈한 얼굴에 눈만(눈두덩·눈썹뼈·광대·입 없음, 코는 작게)
 	cl.tag = "skull"
 	ell(cl, pr, g, hc, ru, rv, rw, skin, 0.01)
 	ell(cl, pr, g, hc + Vector3(0, 0.012 * hh / 0.13, rw * 0.25), ru * 0.92, rv * 0.82, rw * 0.8, skin, 0.01)  # 뒤통수
 	cl.tag = "face"
-	if plain:  # 매끈한 달걀형 아래 얼굴(턱이 앞으로 튀어나오지 않게)
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.3, -rw * 0.08), ru * 0.9, rv * 0.78, rw * 0.9, skin, 0.04)
-	else:
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
-	if not plain:
-		ell(cl, pr, g, hc + Vector3(0, -rv * 0.32, -rw * 0.82), ru * 0.8, rv * 0.18, rw * 0.25, skin, 0.008)  # 눈썹뼈
-		for s: int in [-1, 1]:
-			ell(cl, pr, g, hc + Vector3(s * ru * 0.68, rv * 0.08, -rw * 0.62), ru * 0.3, rv * 0.22, rw * 0.32, skin, 0.008)  # 광대
-		cap(cl, pr, g, hc + Vector3(0, -rv * 0.18, -rw * 1.02), hc + Vector3(0, rv * 0.28, -rw * 1.22), hh * 0.07, hh * 0.065, skin, 0.006)  # 코
-	else:
-		cap(cl, pr, g, hc + Vector3(0, rv * 0.05, -rw * 0.9), hc + Vector3(0, rv * 0.25, -rw * 0.98), hh * 0.035, hh * 0.03, skin, 0.006)  # 작은 코
-	if not plain:
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.98, -rw * 0.72), ru * 0.38, rv * 0.2, rw * 0.3, skin, 0.008)  # 턱끝
+	ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
+	ell(cl, pr, g, hc + Vector3(0, -rv * 0.32, -rw * 0.82), ru * 0.8, rv * 0.18, rw * 0.25, skin, 0.008)  # 눈썹뼈
+	for s: int in [-1, 1]:
+		ell(cl, pr, g, hc + Vector3(s * ru * 0.68, rv * 0.08, -rw * 0.62), ru * 0.3, rv * 0.22, rw * 0.32, skin, 0.008)  # 광대
+	cap(cl, pr, g, hc + Vector3(0, -rv * 0.18, -rw * 1.02), hc + Vector3(0, rv * 0.28, -rw * 1.22), hh * 0.07, hh * 0.065, skin, 0.006)  # 코
+	ell(cl, pr, g, hc + Vector3(0, rv * 0.98, -rw * 0.72), ru * 0.38, rv * 0.2, rw * 0.3, skin, 0.008)  # 턱끝
 	cl.tag = "ear"
 	for s: int in [-1, 1]:
-		var ek := 0.6 if plain else 1.0  # 큰 머리의 맵 얼굴은 귀를 작게
-		ell(cl, pr, g, hc + Vector3(s * ru * 0.98, rv * 0.06, rw * 0.02), hh * 0.055 * ek, hh * 0.16 * ek, hh * 0.11 * ek, skin, 0.004)
+		ell(cl, pr, g, hc + Vector3(s * ru * 0.98, rv * 0.06, rw * 0.02), hh * 0.055, hh * 0.16, hh * 0.11, skin, 0.004)
 		groove(cl, pr, g, [hc + Vector3(s * ru * 1.04, -rv * 0.18, rw * 0.0), hc + Vector3(s * ru * 1.08, rv * 0.06, -rw * 0.05), hc + Vector3(s * ru * 1.02, rv * 0.3, rw * 0.0)], Vector3(s, 0, -0.3), hh * 0.018, hh * 0.03)
 	cl.tag = ""
 	var eyes: Array = []
@@ -331,11 +282,8 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 		var e := hc + Vector3(s * ru * 0.42, -rv * 0.1, -rw * 0.84)
 		if facing(pr, Vector3(s * 0.45, 0, -1)) > 0.12:
 			var q := P2(pr, e)
-			if not plain:
-				cl.carve(g, q, hh * 0.07 * float(pr["H"]), hh * 0.045 * float(pr["H"]), hh * 0.035 * float(pr["H"]))
+			cl.carve(g, q, hh * 0.07 * float(pr["H"]), hh * 0.045 * float(pr["H"]), hh * 0.035 * float(pr["H"]))
 			eyes.append(q)
-	if plain:
-		return {"g": g, "c": hc, "hh": hh, "ru": ru, "rv": rv, "rw": rw, "eyes": eyes}
 	groove(cl, pr, g, [hc + Vector3(-ru * 0.3, rv * 0.62, -rw * 1.0), hc + Vector3(0, rv * 0.6, -rw * 1.06), hc + Vector3(ru * 0.3, rv * 0.62, -rw * 1.0)], F, hh * 0.02, hh * 0.03)  # 입
 	return {"g": g, "c": hc, "hh": hh, "ru": ru, "rv": rv, "rw": rw, "eyes": eyes}
 

@@ -116,10 +116,8 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var cl := Clay.new(w, h)
-	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
+	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)))
 	var j := Back.skeleton(sp)
-	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
-		j = Back.stride(j, float(sp["walk"]), 0.085 * float(sp.get("legs", 1.0)))
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))
 	var opts := {"mottle": sp.get("mottle", skin_c.darkened(0.35)), "mottle_amt": float(sp.get("mottle_amt", 0.35))}
 	if sp.has("shade"):
@@ -132,18 +130,8 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackKit.dress(cl, pr, j, bd, kit, rng)
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
-	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
+	Render.render(cl, p, H)
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
-	if sp.get("map_face", false):  # 탐험 맵 얼굴: 눈은 작은 어두운 점 하나씩(피어 앤 헝거 맵 그림 — 입은 그리지 않는다)
-		var r := float(hd["hh"]) * H * 0.065
-		for e: Vector2 in hd["eyes"]:
-			for yy in range(int(e.y - r * 0.8), int(e.y + r * 0.8) + 1):
-				for xx in range(int(e.x - r), int(e.x + r) + 1):
-					var d := Vector2((xx - e.x) / r, (yy - e.y) / (r * 0.8)).length()
-					if d < 1.0:
-						p.blend(xx, yy, Color("#0e0806"), clampf((1.0 - d) * 3.0, 0.0, 1.0))
-		Finish.done(p, sp, Back.screen_joints(pr, j), H)
-		return p
 	for e: Vector2 in hd["eyes"]:  # 옆얼굴 눈: 짧은 눈꺼풀 선 + 어두운 눈동자
 		Ink.line(p, e + Vector2(-0.008, -0.002) * H, e + Vector2(0.008, 0.001) * H, maxf(1.2, H / 380.0), Ink.INK, 0.85, 0.4)
 		for yy in range(int(e.y - 0.003 * H), int(e.y + 0.006 * H)):
