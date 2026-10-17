@@ -11,18 +11,20 @@ extends SceneTree
 const Party := preload("res://tools/monster_art/Party.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
-const RENDER_H := 360.0  ## 사람 키를 이 높이로 그려 줄인다(작게 바로 그리면 붓결·눈이 뭉개진다)
+const RENDER_H := 168.0  ## 사람 키를 이 높이(맵 키의 2배)로 그려 반으로 줄인다 — 크게 그려 많이 줄이면 선·명암이 뭉개진다
 const SIDE_TURN := 1.4   ## 옆모습 돌림 — 거의 옆얼굴(왼쪽을 보게 -SIDE_TURN으로 그린다)
 const PITCH := 0.1       ## 3/4 시점 — 앞으로 내민 발이 조금 아래로(크게 하면 몸이 비틀려 보인다)
 const PHASES := [1.0, 0.0, -1.0]  ## 칸 순서: 왼발 앞 · 섬 · 오른발 앞
 const OUTLINE := Color("#120c0a")
-## 몸 비율(사용자 2026-10-17 "피어 앤 헝거 화면의 캐릭터 비율 그대로 — 약간 대두의 두꺼운 캐릭터"): 약 3.7등신
-const HEAD := 2.3   ## 머리 크기 배율(전투 그림 = 1, 약 7.5등신)
+## 몸 비율(사용자 2026-10-17 첨부 피어 앤 헝거 맵 그림): 마른 몸에 큰 머리, 약 3등신
+const HEAD := 2.7   ## 머리 크기 배율(전투 그림 = 1, 약 7.5등신)
 const LEGS := 0.7   ## 다리 길이 배율
 const WIDE := 0.95  ## 어깨·엉덩이 폭 배율(피어 앤 헝거 몸은 마른 편 — 머리만 크다)
 const BULK := 1.0   ## 팔다리·몸통 굵기 배율
-const HAIR_GROW := 2.6  ## 머리숱(덥수룩한 머리 — 피어 앤 헝거 맵 그림)
-const CONTRAST := 1.3  ## 줄인 뒤 명암 대비(밝은 살갗·짙은 그늘)
+const HAIR_GROW := 3.4  ## 머리숱(덥수룩한 머리 — 피어 앤 헝거 맵 그림)
+const CONTRAST := 1.25  ## 줄인 뒤 명암 대비(밝은 살갗·짙은 그늘)
+const GAMMA := 0.78     ## 줄인 뒤 밝기(1보다 작으면 중간 밝기를 올린다 — 피어 앤 헝거 맵 그림은 밝은 편)
+const LINE_STEP := 0.19 ## 이웃보다 이만큼 어두운 칸에 진한 선(겨드랑이·다리 사이·옷 경계)
 const STANCE := 0.032  ## 발 벌림(키 비율) — 두 발을 거의 붙여 선다
 const STEP := 0.06     ## 걸음 보폭(키 비율 — 다리 길이 배율이 곱해진다)
 const LIGHT := Vector3(-0.2, -0.5, 0.85)  ## 빛 방향 — 전투 그림(-0.45, -0.55, 0.7)보다 앞에서 비춰 얼굴 양쪽 눈이 다 보이게
@@ -86,6 +88,9 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["map_face"] = true  # 얼굴은 눈만(입·눈두덩 없음)
 	sp["hair_high"] = HAIR_HIGH
 	sp["hair_grow"] = HAIR_GROW
+	sp["fringe"] = true  # 더벅머리 앞·옆머리
+	sp["mottle_amt"] = 0.08  # 살갗 얼룩·때는 줄이면 점박이로 보인다
+	sp["grime"] = 0.0
 	sp["light"] = LIGHT
 	if phase != 0.0:
 		sp["walk"] = phase
@@ -95,6 +100,7 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	var foot := Vector2(img.get_width() * 0.5, img.get_height() - H * 0.03)
 	var out := _shrink(img, foot, JsonUtil.get_float(_cfg, "body_px", 84.0) / RENDER_H)
 	_contrast(out)
+	_inner_lines(out)
 	return out
 
 
@@ -134,15 +140,38 @@ func _shrink(img: Image, foot: Vector2, f: float) -> Image:
 	return out
 
 
-## 명암 대비를 키운다(가운데 밝기 기준) — 줄이면 칠한 그늘이 뭉개져 흐릿해진다.
+## 밝기·명암 대비(가운데 밝기 기준) — 줄이면 칠한 그늘이 뭉개져 흐릿해진다.
 func _contrast(img: Image) -> void:
 	for y in img.get_height():
 		for x in img.get_width():
 			var c := img.get_pixel(x, y)
 			if c.a <= 0.0:
 				continue
-			var k := func(v: float) -> float: return clampf((v - 0.32) * CONTRAST + 0.34, 0.0, 1.0)
+			var k := func(v: float) -> float: return clampf((pow(v, GAMMA) - 0.42) * CONTRAST + 0.44, 0.0, 1.0)
 			img.set_pixel(x, y, Color(k.call(c.r), k.call(c.g), k.call(c.b), c.a))
+
+
+## 몸 안 선: 맞닿은 이웃보다 LINE_STEP 넘게 어두운 칸을 더 어둡게(피어 앤 헝거 맵 그림의 진한 안쪽 윤곽).
+func _inner_lines(img: Image) -> void:
+	var w := img.get_width()
+	var h := img.get_height()
+	var marks: Array[Vector2i] = []
+	for y in h:
+		for x in w:
+			var c := img.get_pixel(x, y)
+			if c.a < 0.6:
+				continue
+			for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				var q := Vector2i(x, y) + d
+				if q.x < 0 or q.y < 0 or q.x >= w or q.y >= h:
+					continue
+				var o := img.get_pixel(q.x, q.y)
+				if o.a > 0.6 and o.get_luminance() - c.get_luminance() > LINE_STEP:
+					marks.append(Vector2i(x, y))
+					break
+	for m in marks:
+		var c := img.get_pixel(m.x, m.y)
+		img.set_pixel(m.x, m.y, Color(c.r * 0.5, c.g * 0.45, c.b * 0.45, c.a))
 
 
 ## 1px 잉크 바깥선(불투명 칸 둘레의 투명 칸).
@@ -161,7 +190,7 @@ func _outline(img: Image) -> void:
 					break
 	for m in marks:
 		var c := img.get_pixel(m.x, m.y)
-		img.set_pixel(m.x, m.y, OUTLINE.lerp(c, c.a * 0.3) if c.a > 0.0 else Color(OUTLINE, 0.85))
+		img.set_pixel(m.x, m.y, OUTLINE.lerp(c, c.a * 0.2) if c.a > 0.0 else OUTLINE)
 
 
 func _cell() -> Vector2i:
