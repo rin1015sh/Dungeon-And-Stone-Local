@@ -20,6 +20,14 @@ var light_color: Color = Color.WHITE
 var light_intensity: float = 1.0
 var interact: String = ""       ## portal / monument … (탐험 상호작용 종류)
 var sprite: String = ""
+var art_atlas: String = ""      ## 재질 아틀라스(tools/paint_floor.gd → assets/floor). 바닥 = 한 줄에 변형, 벽 = 윗면 줄 + 앞면 줄
+var art_variants: int = 0       ## 아틀라스 한 줄의 변형 수(짝수 — FloorArtLayer)
+var art_shape: String = ""      ## "smooth" = 부드러운 암벽(WallShape — 둥근 윤곽, 윗면은 검게, 남쪽 앞면만)
+var prop_sheet: String = ""     ## 소품 그림 시트(art.prop — 동굴 요소·포탈: 바닥 위에 얹는 그림, 마름모 대신)
+var prop_cell: int = 0          ## 시트 칸 번호(왼쪽 위부터 가로로)
+var prop_cols: int = 0          ## 시트 가로 칸 수(0 = 정사각 칸으로 계산)
+var prop_size: float = 1.0      ## 그리는 크기(칸 단위 — 아래 끝이 칸 아래쪽)
+var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
 static func from_dict(d: Dictionary, p_index: int) -> TileDef:
@@ -42,6 +50,16 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.light_intensity = JsonUtil.get_float(light, "intensity", 1.0)
 	t.interact = JsonUtil.get_str(d, "interact")
 	t.sprite = JsonUtil.get_str(d, "sprite")
+	var art := JsonUtil.get_dict(d, "art")
+	t.art_atlas = JsonUtil.get_str(art, "atlas")
+	t.art_variants = JsonUtil.get_int(art, "variants", 0)
+	t.art_salt = t.id.hash()
+	t.art_shape = JsonUtil.get_str(art, "shape")
+	var prop := JsonUtil.get_dict(art, "prop")
+	t.prop_sheet = JsonUtil.get_str(prop, "sheet")
+	t.prop_cell = JsonUtil.get_int(prop, "cell", 0)
+	t.prop_cols = JsonUtil.get_int(prop, "cols", 0)
+	t.prop_size = JsonUtil.get_float(prop, "size", 1.0)
 	return t
 
 

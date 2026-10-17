@@ -11,6 +11,53 @@
   "ambient_light_m": 6.0,
   "ambient_source": "placeholder",
   "ambient_color": "#c4bcff",
+  "art": {
+    "_comment": "탐험 맵 그림 설정(FloorArt, docs/plans/map_design.md §5.1). palette.near_black = 보이는 곳의 가장 어두운 색(보라 섞인 근흑), unexplored = 미탐험(순흑). pulse = 수정의 느린 맥동 빛, particles = 떠다니는 먼지·천장 물방울, ambience = data/audio.json ambience 키. 모두 [창작] 임시값",
+    "palette": {"unexplored": "#000000", "near_black": "#141018", "tone": "#f2eef4", "memory_tint": "#8a92b8", "memory_brightness": 0.3},
+    "post": {"saturation": 0.8, "vignette_strength": 0.55, "vignette_radius": 0.45, "grain_strength": 0.045},
+    "pulse": {"tiles": ["crystal_wall", "square_crystal"], "period_sec": 7.0, "depth": 0.5, "radius_m": 1.1, "strength": 0.3},
+    "particles": [
+      {"id": "dust", "amount": 36, "lifetime": 9.0, "color": "#d8d0ff", "alpha": 0.22, "scale": [1.5, 3.0], "velocity": [2.0, 7.0], "direction": [0.0, -1.0], "spread": 180.0, "gravity": [0.0, 0.0]},
+      {"id": "drip", "amount": 5, "lifetime": 1.1, "color": "#a8b8e8", "alpha": 0.45, "scale": [1.5, 2.5], "velocity": [0.0, 10.0], "direction": [0.0, 1.0], "spread": 4.0, "gravity": [0.0, 260.0]}
+    ],
+    "ambience": {"loop": "f1_cave"},
+    "macro": {
+      "_comment": "거시 변화(FloorTint): 구역 색조(동 = 차갑고 마른 회색, 서 = 진흙 갈색, 남 = 병든 녹갈색, 북 = 그을음 섞인 회갈색) × 저주파 밝기 × 기념비 안전지대 둘레 한 단계 어둡게(AM5). [창작] 임시값",
+      "zones": {"center": "#ffffff", "east": "#e4e8f4", "west": "#f4e8d8", "south": "#e4e8d4", "north": "#ece2d8"},
+      "noise": {"freq": 0.025, "amount": 0.12},
+      "safe_dim": {"radius": 9, "mult": 0.72, "falloff": 5}
+    },
+    "decor": {
+      "_comment": "데칼 배치(FloorDecor, map_design.md §4.2). kinds = 시트 줄 순서(tools/floor_art/Specs.gd DECALS와 같게). 규칙은 위에서부터 처음 맞는 하나. dense가 아니면 맞닿은 칸에 함께 놓이지 않는다. spots = 손으로 정한 자리(이끼 물웅덩이 — AM6). baked = 미리 구운 자리(tools/bake_decor.gd — 규칙을 바꾸면 다시 굽는다). 모두 [창작] 임시값",
+      "sheet": "res://assets/floor/f1/decals.webp",
+      "baked": "res://data/maps/f1_crystal_cave_decor.json",
+      "variants": 4,
+      "kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"],
+      "on_tiles": ["cave_floor"],
+      "spots": [
+        {"at": [310, 387], "radius": 6, "kind": "moss", "chance": 0.55, "size": 1.5}
+      ],
+      "rules": [
+        {"kind": "shore", "near_tiles": {"tiles": ["pond_water"], "radius": 1}, "dense": true, "orient": "toward", "size": 1.35},
+        {"kind": "crystal_bits", "near_tiles": {"tiles": ["crystal_wall"], "radius": 1}, "chance": 0.6},
+        {"kind": "gravel", "wall_north": true, "dense": true, "chance": 0.22},
+        {"kind": "moss", "near_tiles": {"tiles": ["pond_water", "feat_spring", "feat_wet_slope"], "radius": 4}, "noise": {"key": "moss", "freq": 0.08, "above": 0.45}, "chance": 0.7},
+        {"kind": "wet", "near_tiles": {"tiles": ["pond_water", "feat_spring", "feat_wet_slope"], "radius": 3}, "chance": 0.6},
+        {"kind": "claws", "zones": ["east"], "near_features": {"ids": ["wolf_den"], "radius": 7}, "chance": 0.85},
+        {"kind": "mud", "zones": ["west"], "near_features": {"ids": ["mud_tracks", "gnome_stash", "gnome_trinkets"], "radius": 6}, "chance": 0.8},
+        {"kind": "rot", "zones": ["south"], "near_features": {"ids": ["ghoul_feast", "old_skeleton"], "radius": 7}, "chance": 0.8},
+        {"kind": "trash", "zones": ["north"], "near_features": {"ids": ["goblin_camp", "goblin_snare"], "radius": 7}, "chance": 0.7},
+        {"kind": "bones", "near_features": {"ids": ["ghoul_feast", "wolf_den", "old_skeleton", "explorer_corpse"], "radius": 5}, "chance": 0.35},
+        {"kind": "claws", "zones": ["east"], "chance": 0.06},
+        {"kind": "mud", "zones": ["west"], "chance": 0.07},
+        {"kind": "rot", "zones": ["south"], "chance": 0.06},
+        {"kind": "trash", "zones": ["north"], "chance": 0.05},
+        {"kind": "wet", "noise": {"key": "wet", "freq": 0.03, "above": 0.72}, "chance": 0.45},
+        {"kind": "gravel", "noise": {"key": "gravel", "freq": 0.05, "above": 0.7}, "chance": 0.4},
+        {"kind": "bones", "chance": 0.012}
+      ]
+    }
+  },
   "gen": {
     "_comment": "거대한 십자가(CrossLayout) + 미로 동굴(등뼈 길·공동·방·잇는 굴·곁가지 — CrossTerrain). 지금 1층은 고정 지도(fixed_map)라 이 값들은 굽는 때만 쓴다 — 바꾸면 tools/bake_floor.gd로 다시 굽기. 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. (고정 지도를 끄면 입장마다 새로: 동굴 지형.) 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
     "core_size": 153,

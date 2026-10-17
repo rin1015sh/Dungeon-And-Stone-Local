@@ -19,10 +19,11 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	var g := cl.group()
 	var turn: float = pr["turn"]
 	var nape := -0.55 if kind == "short" else -0.75
+	var high := float(sp.get("hair_high", 0.0))  # 탐험 맵: 옆·앞 머리선을 올려 얼굴이 보이게(큰 머리에서 머리카락이 얼굴을 덮지 않게)
 	var line := PackedVector2Array()
 	var lon := turn - PI * 0.5 - 0.3
 	while lon <= turn + PI * 0.5 + 0.3:
-		line.append(Back.P2(pr, Back.on_head(hd, _hairline(lon, nape), lon, 0.012)))
+		line.append(Back.P2(pr, Back.on_head(hd, _hairline(lon, nape, high), lon, 0.012)))
 		lon += 0.12
 	var top := line[0].y
 	var x0 := line[0].x
@@ -34,7 +35,7 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	var H: float = pr["H"]
 	line.append(Vector2(x1 + H * 0.1, top - H * 0.2))
 	line.append(Vector2(x0 - H * 0.1, top - H * 0.2))
-	BackKit.shell(cl, pr, ["skull"], 0.014 if kind != "ragged" else 0.006, m, g, line, 0.01)
+	BackKit.shell(cl, pr, ["skull"], (0.014 if kind != "ragged" else 0.006) * float(sp.get("hair_grow", 1.0)), m, g, line, 0.01)  # hair_grow = 숱(탐험 맵 그림은 덥수룩하게)
 	if kind == "ragged":
 		for k in 6:
 			cl.erase(g, Back.P2(pr, Back.on_head(hd, rng.randf_range(0.0, 1.0), rng.randf_range(-1.6, 1.6), 0.01)), rng.randf_range(0.01, 0.022) * H, rng.randf_range(0.01, 0.02) * H, 0.6)
@@ -42,17 +43,21 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		for k in 9:  # 덥수룩한 뭉치
 			var la := rng.randf_range(0.25, 1.2)
 			var lo := rng.randf_range(-2.1, 2.1)
-			if la < _hairline(lo, nape) + 0.2:
+			if la < _hairline(lo, nape, high) + 0.2:
 				continue
 			Back.ell(cl, pr, g, Back.on_head(hd, la, lo, -0.004), 0.03, 0.026, 0.03, m, 0.012)
 	for k in 22:  # 머리카락 결(정수리 → 아래)
 		var lo := lerpf(-2.3, 2.3, (k + rng.randf()) / 22.0)
-		var la0 := _hairline(lo, nape)
+		var la0 := _hairline(lo, nape, high)
 		var pts: Array = []
 		for t in 4:
 			var la := lerpf(1.35, la0 + 0.05, t / 3.0)
 			pts.append(Back.on_head(hd, la, lo + sin(t * 1.3 + k) * 0.08, 0.016))
 		Back.groove(cl, pr, g, pts, Back.head_n(0.3, lo), 0.004, 0.006)
+	if sp.get("spiky", false):
+		_spikes(cl, pr, hd, m, cl.mat(col.lightened(0.28), "hair", {"mottle": col.lightened(0.4), "mottle_amt": 0.3}), g, rng, nape, high, sp.get("locks", {}))
+	if sp.get("fringe", false):
+		_fringe(cl, pr, hd, m, g, rng, float(sp.get("hair_flare", 0.13)))
 	if kind == "long":
 		_long(cl, pr, j, bd, hd, sp, m, g, rng)
 	elif kind == "ragged":
@@ -64,13 +69,74 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 
 
 ## 머리선 위도(lon: 0 뒤통수 · π 얼굴): 목덜미는 낮게, 귀 위는 귀 높이, 이마는 높게.
-static func _hairline(lon: float, nape: float) -> float:
+## 덥수룩한 앞·옆머리(탐험 맵 그림 — 피어 앤 헝거 맵 그림의 더벅머리): 정수리에서 흘러내린 머리 타래가
+## 앞은 눈썹 위까지, 옆은 귀를 덮고 뺨까지 내려온다. 끝이 가늘어 들쭉날쭉하다.
+static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rng: RandomNumberGenerator, sp_flare: float) -> void:
+	var hh: float = hd["hh"]
+	for k in 26:
+		var a := lerpf(-1.75, 1.75, (k + rng.randf_range(0.2, 0.8)) / 26.0)  # 얼굴 가운데에서 돈 각도
+		var lo := PI + a
+		var side := smoothstep(0.45, 1.5, absf(a))
+		var end_la := lerpf(0.42, 0.28, side) + rng.randf_range(-0.05, 0.05)  # 옆은 눈높이까지만(옆모습에서 얼굴이 보이게)
+		var gw := hh * lerpf(0.06, float(sp_flare), side)  # 옆머리는 부풀어 머리 밖으로 삐친다(sp hair_flare)
+		var pts: Array = []
+		for t in 4:
+			var f := t / 3.0
+			pts.append(Back.on_head(hd, lerpf(1.05, end_la, f), lo + sin(f * 2.0 + k) * 0.08 + a * f * 0.12, gw * (0.6 + f * 0.6)))
+		Back.chain(cl, pr, g, pts, [hh * 0.1, hh * 0.09, hh * 0.06, hh * 0.015], m, hh * 0.02)
+
+
+## 머리 타래(탐험 맵 그림 — 피어 앤 헝거 주인공처럼 적당히 길고 정돈된 머리): 정수리에서 머리선 아래로 내려오는 타래 n가닥.
+## 매끈한 헬멧이 되지 않게 타래마다 결이 보이고 끝이 가늘다. 스타일 값(sp "locks" 사전):
+## n 가닥 수 · w 굵기(머리 높이 비율) · flick 끝이 머리에서 뜨는 정도 · jitter 길이·방향 흩어짐 · front 앞머리 끝(위도) ·
+## temple 관자놀이 끝 · side 옆머리 끝 · back 뒷머리를 머리선보다 더 내림 · sweep 한쪽으로 쓸어 넘김(+ = 몸 오른쪽) ·
+## part 가운데 가르마(앞머리를 양옆으로) · gap 앞머리 사이 띄움(몇 가닥마다 하나 비움, 0 = 안 비움) · light 밝은 결 간격 · wj 굵기 흩어짐.
+static func _spikes(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, ml: int, g: int, rng: RandomNumberGenerator, nape: float, high: float, st: Dictionary = {}) -> void:
+	var hh: float = hd["hh"]
+	var n := int(st.get("n", 40))
+	var w := float(st.get("w", 0.1))
+	var flick := float(st.get("flick", 0.12))
+	var jit := float(st.get("jitter", 1.0))
+	var sweep := float(st.get("sweep", 0.0))
+	var part := float(st.get("part", 0.0))
+	var gap := int(st.get("gap", 3))
+	var light := int(st.get("light", 5))
+	for k in n:
+		var lo := lerpf(-PI, PI, (k + 0.5 + rng.randf_range(-0.35, 0.35) * jit) / n)
+		var a := absf(wrapf(lo - PI, -PI, PI))  # 얼굴 가운데에서 돈 각도
+		var front := a < 0.75
+		if front and gap > 0 and k % gap == 0:
+			continue
+		var end_la := _hairline(lo, nape, high) - float(st.get("back", 0.0)) + rng.randf_range(-0.1, 0.12) * jit
+		if front:
+			end_la = float(st.get("front", 0.14)) + rng.randf_range(-0.04, 0.08) * jit
+		elif a < 1.25:
+			end_la = float(st.get("temple", 0.05)) + rng.randf_range(-0.05, 0.08) * jit
+		elif a < 1.8:
+			end_la = float(st.get("side", -0.3)) + rng.randf_range(-0.08, 0.1) * jit
+		var side := smoothstep(0.9, 1.7, a) * (1.0 - smoothstep(2.2, 2.9, a))
+		var fl := hh * flick * rng.randf_range(1.0 - 0.6 * jit, 1.0) * (1.0 - side * 0.7)
+		var dlo := sweep * (1.0 - a / PI)  # 앞쪽일수록 많이 쓸어 넘긴다
+		if front and part != 0.0:
+			dlo += signf(wrapf(lo - PI, -PI, PI)) * part  # 가르마에서 양옆으로
+		var la0 := 1.4 + rng.randf_range(-0.1, 0.1) * jit
+		var pts: Array = []
+		for t in 5:
+			var f := t / 4.0
+			pts.append(Back.on_head(hd, lerpf(la0, end_la, f), lo + dlo * f + sin(f * 2.2 + k) * 0.1 * jit, hh * (0.035 + 0.04 * sin(f * PI)) * (1.0 - side * 0.5) + fl * f * f))
+		var mat := ml if light > 0 and k % light == 0 else m
+		var ww := hh * w * (1.0 + rng.randf_range(-1.0, 1.0) * float(st.get("wj", 0.0)))  # wj = 타래마다 굵기 흩어짐(뭉치가 생긴다)
+		Back.chain(cl, pr, g, pts, [ww, ww * 0.9, ww * 0.72, ww * 0.45, hh * 0.01], mat, hh * 0.015)
+
+
+static func _hairline(lon: float, nape: float, high: float = 0.0) -> float:
 	var a := absf(wrapf(lon, -PI, PI))
+	var up := high * smoothstep(2.0, 2.8, a)  # 얼굴 쪽만 올린다(옆·뒤까지 올리면 머리 옆이 벗겨져 보였다)
 	if a < PI * 0.5:
-		return lerpf(nape, 0.05, a / (PI * 0.5))
+		return lerpf(nape, 0.05, a / (PI * 0.5)) + up
 	if a < 2.25:
-		return lerpf(0.05, 0.28, (a - PI * 0.5) / (2.25 - PI * 0.5))
-	return lerpf(0.28, 0.62, (a - 2.25) / (PI - 2.25))
+		return lerpf(0.05, 0.28, (a - PI * 0.5) / (2.25 - PI * 0.5)) + up
+	return lerpf(0.28, 0.62, (a - 2.25) / (PI - 2.25)) + up
 
 
 ## 긴 머리: 뒤통수에서 등 위로 흘러내린 머리 타래 + 땋은 머리.

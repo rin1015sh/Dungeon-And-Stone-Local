@@ -116,8 +116,10 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var cl := Clay.new(w, h)
-	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)))
+	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
 	var j := Back.skeleton(sp)
+	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
+		j = Back.stride(j, float(sp["walk"]), float(sp.get("step", 0.085)) * float(sp.get("legs", 1.0)), float(sp.get("swing", 0.06)), float(sp.get("heel", 0.022)))
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))
 	var opts := {"mottle": sp.get("mottle", skin_c.darkened(0.35)), "mottle_amt": float(sp.get("mottle_amt", 0.35))}
 	if sp.has("shade"):
@@ -130,8 +132,21 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackKit.dress(cl, pr, j, bd, kit, rng)
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
-	Render.render(cl, p, H)
+	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
+	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림) — 입은 그리지 않는다
+		var side: bool = (hd["eyes"] as Array).size() < 2
+		var r := float(hd["hh"]) * H * float(sp.get("eye_r", 0.055))
+		var cx := 0.0
+		for e: Vector2 in hd["eyes"]:
+			cx += e.x / (hd["eyes"] as Array).size()
+		for e: Vector2 in hd["eyes"]:
+			if int(sp.get("eye_style", 0)) == 1:  # 짙은 눈구멍 얼룩(앞머리 그늘 속 — 피어 앤 헝거 주인공 맵 그림)
+				_smudge_eye(p, e, r * 1.25, 0.7 if side else 1.0)
+			else:
+				_map_eye(p, e, r, -1.0 if e.x < cx else 1.0, 0.65 if side else 1.0)
+		Finish.done(p, sp, Back.screen_joints(pr, j), H)
+		return p
 	for e: Vector2 in hd["eyes"]:  # 옆얼굴 눈: 짧은 눈꺼풀 선 + 어두운 눈동자
 		Ink.line(p, e + Vector2(-0.008, -0.002) * H, e + Vector2(0.008, 0.001) * H, maxf(1.2, H / 380.0), Ink.INK, 0.85, 0.4)
 		for yy in range(int(e.y - 0.003 * H), int(e.y + 0.006 * H)):
@@ -139,6 +154,46 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 				p.blend(xx, yy, Color("#140c0a"), 0.7)
 	Finish.done(p, sp, Back.screen_joints(pr, j), H)
 	return p
+
+
+## 탐험 맵 눈 하나(참고: 피어 앤 헝거 맵 그림을 원본 픽셀로 본 것): 가로로 긴 아몬드꼴, 위 눈꺼풀은 굵고 짙은 선·아래는 가는 선,
+## 안은 흰자가 아닌 흐린 회색에 가운데 짙은 눈동자, 바깥 끝이 조금 처지고, 둘레(특히 위)에 옅은 눈구멍 그늘. side = 바깥쪽(-1 왼쪽, +1 오른쪽).
+static func _map_eye(p: Paint, e: Vector2, r: float, side: float, narrow: float) -> void:
+	var rx := r * 1.45 * narrow
+	var tilt := 0.14 * side  # 바깥 끝이 아래로
+	for yy in range(int(e.y - r * 2.2), int(e.y + r * 1.8) + 1):
+		for xx in range(int(e.x - rx * 1.5), int(e.x + rx * 1.5) + 1):
+			var u := (xx - e.x) / rx
+			var v := (yy - e.y) / r - u * tilt * 1.4
+			var w := 1.0 - u * u
+			if absf(u) < 1.35 and v > -1.9 and v < 1.2:  # 눈구멍 그늘(위로 더 넓게)
+				var sd := Vector2(u / 1.35, (v + 0.35) / 1.55).length()
+				if sd < 1.0:
+					p.blend(xx, yy, Color("#2a1a14"), 0.4 * smoothstep(1.0, 0.4, sd))
+			if absf(u) >= 1.0:
+				continue
+			var top := -0.85 * w
+			var bot := 0.6 * w
+			if v < top - 0.42 or v > bot + 0.22:
+				continue
+			if v < top + 0.3:
+				p.blend(xx, yy, Color("#120a08"), 0.95)  # 위 눈꺼풀
+			elif v > bot - 0.12:
+				p.blend(xx, yy, Color("#1e1310"), 0.8)  # 아래 눈꺼풀
+			elif Vector2(u * 1.45 * narrow, v).length() < 0.62:
+				p.blend(xx, yy, Color("#2e2620"), 0.92)  # 눈동자
+			else:
+				p.blend(xx, yy, Color("#8e8576"), 0.9)  # 흐린 흰자
+
+
+## 탐험 맵 눈구멍 얼룩: 가로로 조금 긴 짙은 그늘(가운데 가장 짙고 가장자리로 풀림), 위쪽으로 더 번진다.
+static func _smudge_eye(p: Paint, e: Vector2, r: float, narrow: float) -> void:
+	var rx := r * 1.3 * narrow
+	for yy in range(int(e.y - r * 1.6), int(e.y + r * 1.2) + 1):
+		for xx in range(int(e.x - rx * 1.3), int(e.x + rx * 1.3) + 1):
+			var d := Vector2((xx - e.x) / rx, (yy - e.y + r * 0.15) / (r * (1.15 if yy < e.y else 0.85))).length()
+			if d < 1.0:
+				p.blend(xx, yy, Color("#120908"), 0.92 * smoothstep(1.0, 0.35, d))
 
 
 ## 기는 구울 뒷모습: 가까이 솟은 엉덩이와 개구리처럼 벌린 뒷다리, 앞으로 멀어지는 굽은 등(척추 마디·갈비), 높이 솟은 팔꿈치와

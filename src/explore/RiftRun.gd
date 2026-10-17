@@ -120,6 +120,7 @@ func chapter_floor_def(i: int) -> Dictionary:
 		"name_ko": "%s · %s" % [JsonUtil.get_str(def, "name_ko"), JsonUtil.get_str(ch, "name_ko")],
 		"close_hours": outer.close_hours(), "visibility_cap_m": JsonUtil.get_float(look, "visibility_cap_m", 9.0),
 		"ambient_light_m": JsonUtil.get_float(look, "ambient_light_m", 6.0), "ambient_color": JsonUtil.get_str(look, "ambient_color", "#ffffff"),
+		"art": JsonUtil.get_dict(look, "art"),
 		"gen": gen, "regions": [], "spawn": {"groups_per_region": [0, 0], "max_extra_groups": 0}}
 
 

@@ -27,7 +27,7 @@
         10
       ]
     },
-    "sprite": "res://assets/sprites/races/human.png",
+    "sprite": "res://assets/actors/human.webp",
     "source": "placeholder"
   },
   {
@@ -62,7 +62,7 @@
         20
       ]
     },
-    "sprite": "res://assets/sprites/races/barbarian.png",
+    "sprite": "res://assets/actors/barbarian.webp",
     "source": "placeholder"
   },
   {

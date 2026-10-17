@@ -288,7 +288,10 @@
   "pause": {
     "resume": "계속",
     "abandon": "탐험 포기",
-    "abandon_confirm": "정말 포기한다 (한 번 더)"
+    "abandon_confirm": "정말 포기한다 (한 번 더)",
+    "graphics": "그래픽 {quality}",
+    "quality_high": "높음",
+    "quality_low": "낮음"
   },
   "cause": {
     "unknown": "알 수 없음",

@@ -11,11 +11,12 @@ signal regenerate_requested(seed_value: int)
 signal session_switch(target: ExploreSession)  ## 균열 챕터 ↔ 바깥 층(Main이 화면을 새로 만든다)
 
 const POST_SHADER := "res://assets/shaders/post_grade.gdshader"
-const POST_PARAMS := ["saturation", "vignette_strength", "vignette_radius", "grain_strength"]
 
 var session: ExploreSession
 var _tone: CanvasModulate
 var _tone_base: Color = Color.WHITE
+var _post: ShaderMaterial = null
+var _ambience: String = ""
 var _view: FloorView
 var _hud: ExploreHud
 var _debug: DebugPanel
@@ -308,6 +309,7 @@ func _build_pause_overlay() -> void:
 	_pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_pause_overlay.resume_requested.connect(func() -> void: set_paused(false))
 	_pause_overlay.abandon_requested.connect(func() -> void: _end("abandoned"))
+	_pause_overlay.quality_changed.connect(_on_quality_changed)
 
 
 func _build_world() -> void:
@@ -322,8 +324,17 @@ func _build_world() -> void:
 		else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	container.add_child(vp)
 	var lighting := JsonUtil.get_dict(session.db.render, "lighting")
+	var art := FloorArt.resolve(session.db.render, session.floor_def, GraphicsSettings.quality())
+	var back := CanvasLayer.new()  # 미탐험 = 순흑(층 art.palette.unexplored) — 화면 기본 배경색과 따로
+	back.layer = -1
+	var dark := ColorRect.new()
+	dark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dark.color = art.unexplored
+	back.add_child(dark)
+	dark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vp.add_child(back)
 	_tone = CanvasModulate.new()
-	_tone_base = Color.from_string(JsonUtil.get_str(lighting, "canvas_modulate"), Color.WHITE)
+	_tone_base = art.tone
 	_tone.color = _tone_base
 	vp.add_child(_tone)
 	_view = FloorView.new()
@@ -334,15 +345,32 @@ func _build_world() -> void:
 		layer.layer = 10
 		var rect := ColorRect.new()
 		rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var mat := ShaderMaterial.new()
-		mat.shader = load(POST_SHADER) as Shader
-		for key: String in POST_PARAMS:
-			if lighting.has(key):
-				mat.set_shader_parameter(key, JsonUtil.get_float(lighting, key))
-		rect.material = mat
+		_post = ShaderMaterial.new()
+		_post.shader = load(POST_SHADER) as Shader
+		_apply_post(art)
+		rect.material = _post
 		layer.add_child(rect)
 		rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		vp.add_child(layer)
+	_ambience = art.ambience
+	AudioBus.play_ambience(_ambience)
+
+
+func _apply_post(art: FloorArt) -> void:
+	if _post == null:
+		return
+	for key: String in art.post:
+		_post.set_shader_parameter(key, float(art.post[key]))
+
+
+## 일시정지 메뉴에서 그래픽 품질을 바꿨다.
+func _on_quality_changed(quality: String) -> void:
+	_apply_post(FloorArt.resolve(session.db.render, session.floor_def, quality))
+	_view.set_quality(quality)
+
+
+func _exit_tree() -> void:
+	AudioBus.stop_ambience(_ambience)  # 다음 화면(균열 챕터 등)이 먼저 틀었으면 그대로 둔다
 
 
 func _input_dir() -> Vector2:

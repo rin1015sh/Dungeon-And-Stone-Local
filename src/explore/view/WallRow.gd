@@ -3,6 +3,7 @@ extends Node2D
 ## 벽 한 줄(청크 폭) 그리기. 노드 위치 = 그 줄의 바닥 아래 가장자리((row+1) × tile) → y 정렬 기준.
 ## 벽 칸 하나 = 윗면(바닥 칸 자리에서 앞면 높이만큼 위로 올림) + 앞면(남쪽을 향한 면).
 ## 남쪽에 다른 벽이 있으면 그 벽의 윗면이 이 앞면을 덮는다(나중에 그려지므로 자연스럽게 가려짐).
+## 부드러운 암벽(타일 art.shape "smooth")은 WallShape로: 둥글게 다듬은 윤곽, 윗면은 검게, 남쪽을 향한 윤곽만 앞면.
 
 var view: FloorView
 var row: int = 0
@@ -11,6 +12,8 @@ var x1: int = 0
 
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
+var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
+var _shape: WallShape = null  # 부드러운 암벽 모양(setup에서 한 번 — 벽 칸은 바뀌지 않는다)
 
 
 func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
@@ -21,32 +24,46 @@ func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
 	position = Vector2(0, (row + 1) * view.tile)
 
 
+## 부드러운 암벽 모양을 계산한다(줄당 0.1~0.2ms — 화면 밖 청크는 ChunkStream이 미뤄 부른다).
+func build_shape() -> void:
+	if view.smooth_any:
+		_shape = WallShape.build(view.map, row, x0, x1, view.tile, view.tile * view.wall_round, view.smooth_by_def,
+			view.wall_face_of, func(x: int, y: int, def: TileDef) -> int: return FloorArtLayer.variant(x, y, def.art_variants, def.art_salt + 1),
+			view.tile * view.wall_bulge)
+		queue_redraw()
+
+
 func _draw() -> void:
 	var map := view.map
 	var t := view.tile
+	if _shape != null:
+		_draw_shape(t)
 	for x in range(x0, x1):
 		var i := row * map.width + x
 		if map.explored[i] == 0:
 			continue
 		var def := map.defs[map.tiles[i]]
-		if not def.is_wall():
+		if not def.is_wall() or view.smooth_by_def[def.index] != 0:
 			continue
-		var vis := map.visible_now[i] != 0
 		var h := view.wall_face_of(def)
+		var tex := view.tile_tex[def.index]
+		if tex != null:
+			_draw_textured(x, t, h, def, tex)
+			continue
 		# 윗면 (로컬 y: -t-h ~ -h)
 		_quad(x * t, -t - h, t, t)
-		_cols[0] = view.vertex_color(x, row, def.color_top, vis)
-		_cols[1] = view.vertex_color(x + 1, row, def.color_top, vis)
-		_cols[2] = view.vertex_color(x + 1, row + 1, def.color_top, vis)
-		_cols[3] = view.vertex_color(x, row + 1, def.color_top, vis)
+		_cols[0] = view.vertex_color(x, row, def.color_top)
+		_cols[1] = view.vertex_color(x + 1, row, def.color_top)
+		_cols[2] = view.vertex_color(x + 1, row + 1, def.color_top)
+		_cols[3] = view.vertex_color(x, row + 1, def.color_top)
 		draw_polygon(_pts, _cols)
 		_draw_rims(map, x, t, h, _cols[0].lerp(_cols[2], 0.5))
 		# 앞면 (로컬 y: -h ~ 0), 남쪽 가장자리 빛에 면 그늘을 곱한다
 		if h <= 0:
 			continue
 		_quad(x * t, -h, t, h)
-		var left := view.vertex_color(x, row + 1, def.color_face, vis) * view.face_shade
-		var right := view.vertex_color(x + 1, row + 1, def.color_face, vis) * view.face_shade
+		var left := view.vertex_color(x, row + 1, def.color_face) * view.face_shade
+		var right := view.vertex_color(x + 1, row + 1, def.color_face) * view.face_shade
 		left.a = 1.0
 		right.a = 1.0
 		_cols[0] = left
@@ -59,6 +76,112 @@ func _draw() -> void:
 		edge.a = 1.0
 		draw_line(Vector2(x * t, -h), Vector2((x + 1) * t, -h), edge, 1.0)
 		_draw_courses(x, t, h, edge.lerp(left.lerp(right, 0.5), 0.5))
+
+
+## 부드러운 암벽: 윗면(검게 — 바위 속은 보이지 않는다) → 남쪽을 향한 윤곽의 앞면 띠(아틀라스 아랫줄, 밑동까지).
+func _draw_shape(t: int) -> void:
+	var map := view.map
+	var lift := Vector2(0, (row + 1) * t)
+	var dark := view.art.unexplored
+	var ftex := view.tile_tex[view.base_floor] if view.base_floor >= 0 else null
+	if ftex != null:  # 깎은 모서리 아래 바닥(바닥 칸 그림을 이어서)
+		var fdef := map.defs[view.base_floor]
+		var n := fdef.art_variants
+		for fl in _shape.floors:
+			if map.explored[row * map.width + int(fl["x"])] == 0:
+				continue
+			var poly: PackedVector2Array = fl["poly"]
+			var x := int(fl["x"])
+			var col := float(FloorArtLayer.variant(x, row, n, fdef.art_salt))
+			var pts := PackedVector2Array()
+			var uvs := PackedVector2Array()
+			var cols := PackedColorArray()
+			for q in poly:
+				pts.append(q - lift)
+				uvs.append(Vector2((col + clampf(q.x / t - x, 0.0, 1.0)) / n, clampf(q.y / t - row, 0.0, 1.0)))
+				var v := Vector2i(clampi(roundi(q.x / t), 0, map.width), clampi(roundi(q.y / t), 0, map.height))
+				cols.append(view.vertex_mul(v.x, v.y, fdef.color_floor))
+			draw_polygon(pts, cols, uvs, ftex)
+	for top in _shape.tops:
+		if map.explored[row * map.width + int(top["x"])] == 0:
+			continue
+		var poly: PackedVector2Array = (top["poly"] as PackedVector2Array).duplicate()
+		var up := Vector2(0, float(top["h"])) + lift
+		for k in poly.size():
+			poly[k] -= up
+		draw_colored_polygon(poly, dark)
+	for f in _shape.faces:
+		if map.explored[row * map.width + int(f["x"])] == 0:
+			continue
+		var def := map.defs[int(f["def"])]
+		var tex := view.tile_tex[def.index]
+		if tex == null:
+			continue
+		var a: Vector2 = f["a"]
+		var b: Vector2 = f["b"]
+		var h := float(f["h"])
+		var sk := float(view.wall_skirt)
+		_pts[0] = a - lift - Vector2(0, h)
+		_pts[1] = b - lift - Vector2(0, h)
+		_pts[2] = b - lift + Vector2(0, sk)
+		_pts[3] = a - lift + Vector2(0, sk)
+		var n := def.art_variants
+		var split := clampf((float(tex.get_width()) / n) / tex.get_height(), 0.0, 1.0)
+		var hx := 0.5 / tex.get_width()
+		var col := float(int(f["v"]))
+		var ua := (col + float(f["u0"])) / n
+		var ub := (col + float(f["u1"])) / n
+		ua = clampf(ua, col / n + hx, (col + 1.0) / n - hx)
+		ub = clampf(ub, col / n + hx, (col + 1.0) / n - hx)
+		var hy := 0.5 / tex.get_height()
+		_uvs[0] = Vector2(ua, split + hy)
+		_uvs[1] = Vector2(ub, split + hy)
+		_uvs[2] = Vector2(ub, 1.0 - hy)
+		_uvs[3] = Vector2(ua, 1.0 - hy)
+		var la := _face_light(a, def)
+		var lb := _face_light(b, def)
+		_cols[0] = la
+		_cols[1] = lb
+		_cols[2] = lb
+		_cols[3] = la
+		draw_polygon(_pts, _cols, _uvs, tex)
+
+
+## 바닥 평면 점 p(월드 px)에 가장 가까운 꼭짓점의 빛 × 면 그늘.
+func _face_light(p: Vector2, def: TileDef) -> Color:
+	var t := float(view.tile)
+	var v := Vector2i(clampi(roundi(p.x / t), 0, view.map.width), clampi(roundi(p.y / t), 0, view.map.height))
+	var c := view.vertex_mul(v.x, v.y, def.color_face)
+	var k := view.face_shade
+	return Color(c.r * k, c.g * k, c.b * k, c.a)
+
+
+## 재질 아틀라스로 그린 벽: 윗면 = 아틀라스 윗줄의 변형, 앞면 = 아랫줄의 변형(FloorArtLayer — 줄을 따라 이웃이 늘 다름).
+## 빛은 꼭짓점 배율(윗면 네 모서리, 앞면은 바닥 접점 두 모서리 × face_shade).
+func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> void:
+	var n := def.art_variants
+	var cell := float(tex.get_width()) / n
+	var split := clampf(cell / tex.get_height(), 0.0, 1.0)
+	_quad(x * t, -t - h, t, t)
+	FloorChunk.set_uv_cell(_uvs, tex, FloorArtLayer.variant(x, row, n, def.art_salt), n, 0.0, split)
+	_cols[0] = view.vertex_mul(x, row, def.color_top)
+	_cols[1] = view.vertex_mul(x + 1, row, def.color_top)
+	_cols[2] = view.vertex_mul(x + 1, row + 1, def.color_top)
+	_cols[3] = view.vertex_mul(x, row + 1, def.color_top)
+	draw_polygon(_pts, _cols, _uvs, tex)
+	if h <= 0 or split >= 1.0:
+		return
+	_quad(x * t, -h, t, h + view.wall_skirt)  # 밑동만큼 바닥 쪽으로 내려온다(그림 아래 끝이 들쭉날쭉 — 투명)
+	FloorChunk.set_uv_cell(_uvs, tex, FloorArtLayer.variant(x, row, n, def.art_salt + 1), n, split, 1.0)
+	var left := view.vertex_mul(x, row + 1, def.color_face)
+	var right := view.vertex_mul(x + 1, row + 1, def.color_face)
+	left = Color(left.r * view.face_shade, left.g * view.face_shade, left.b * view.face_shade, left.a)
+	right = Color(right.r * view.face_shade, right.g * view.face_shade, right.b * view.face_shade, right.a)
+	_cols[0] = left
+	_cols[1] = right
+	_cols[2] = right
+	_cols[3] = left
+	draw_polygon(_pts, _cols, _uvs, tex)
 
 
 ## 앞면에 돌 쌓은 줄(가로 2줄)과 엇갈린 이음매(세로)를 그린다.
