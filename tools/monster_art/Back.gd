@@ -137,6 +137,9 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 			"shield":
 				el = shp + Vector3(s * 0.07, 0.125, -0.03)
 				wr = el + Vector3(-s * 0.03, 0.03, -0.14)
+			"slump":  # 탐험 맵: 어깨를 늘어뜨리고 팔꿈치를 살짝 굽혀 손이 허벅지 앞에
+				el = shp + Vector3(s * 0.02, 0.15, -0.03)
+				wr = el + Vector3(-s * 0.012, 0.135, -0.05)
 			_:
 				el = shp + Vector3(s * 0.035, 0.16, 0.012)
 				wr = el + Vector3(s * 0.016, 0.15, -0.035)
@@ -169,15 +172,15 @@ static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
 
 ## 걷기 한 걸음(탐험 맵 걷기 그림 — tools/paint_actors.gd): phase +1 = 왼발이 앞으로·오른발 뒤꿈치를 들고·오른팔이 앞으로,
 ## -1 = 반대. 몸 좌표에서 앞 = -w(z 음수). stride·swing = 보폭·팔 흔들기(키 비율).
-static func stride(j: Dictionary, phase: float, step: float = 0.085, swing: float = 0.06) -> Dictionary:
+static func stride(j: Dictionary, phase: float, step: float = 0.085, swing: float = 0.06, heel: float = 0.022) -> Dictionary:
 	var out := j.duplicate()
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
 		var k := phase * (1.0 if s < 0 else -1.0)  # 이 다리가 앞(+) 뒤(-)
-		var lift := maxf(0.0, -k) * 0.022  # 뒤로 간 다리는 뒤꿈치를 든다
+		var lift := maxf(0.0, -k) * heel  # 뒤로 간 다리는 뒤꿈치를 든다(heel이 크면 무릎을 굽혀 발이 높이 — 탐험 맵 걸음)
 		out["ankle_" + t] = (j["ankle_" + t] as Vector3) + Vector3(0, -lift, -k * step)
 		out["toe_" + t] = (j["toe_" + t] as Vector3) + Vector3(0, -lift * 0.3, -k * step)
-		out["knee_" + t] = (j["knee_" + t] as Vector3) + Vector3(0, -absf(k) * 0.008, -k * step * 0.55 - absf(k) * 0.02)
+		out["knee_" + t] = (j["knee_" + t] as Vector3) + Vector3(0, -absf(k) * 0.008 - maxf(0.0, -k) * heel * 0.3, -k * step * 0.55 - absf(k) * 0.02 - maxf(0.0, -k) * heel * 0.4)
 		var a := -k  # 팔은 같은 쪽 다리와 반대로
 		out["elbow_" + t] = (j["elbow_" + t] as Vector3) + Vector3(0, 0, -a * swing * 0.5)
 		out["wrist_" + t] = (j["wrist_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing)

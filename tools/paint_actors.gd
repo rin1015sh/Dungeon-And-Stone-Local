@@ -35,6 +35,7 @@ const FRINGE := 1.0    ## 1 = 더벅머리 타래
 const HAIR_FLARE := 0.04  ## 옆머리가 머리 밖으로 부푸는 정도(머리 높이 비율)
 const SOCKETS := 1.0
 const EYE_R := 0.065    ## 눈구멍 반지름(머리 높이 비율) — 참고 그림: 맵 키 84px에서 폭 약 3.7·높이 3px, 두 눈 사이 9.6px   ## 1 = 눈을 짙은 눈구멍으로(전투 그림 얼굴이어도)
+const ARM_POSES := ["hang", "slump"]  ## --set=arms=1 → 늘어뜨린 팔
 const SEED := 4242
 
 var _cfg: Dictionary = {}
@@ -94,8 +95,10 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["height"] = _v("render_h", RENDER_H) * k
 	sp["turn"] = turn
 	sp["pitch"] = _v("pitch", PITCH)
-	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": "hang", "arm_r": "hang", "stance": _v("stance", STANCE), "knee": 0.04, "hunch": 0.0}, true)
+	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": ARM_POSES[int(_v("arms", 0))], "arm_r": ARM_POSES[int(_v("arms", 0))], "stance": _v("stance", STANCE), "knee": _v("knee", 0.04), "hunch": _v("hunch", 0.0)}, true)
 	sp["step"] = _v("step", STEP)
+	sp["swing"] = _v("swing", 0.06)
+	sp["heel"] = _v("heel", 0.022)
 	sp["head"] = float(sp.get("head", 1.0)) * _v("head", HEAD)
 	sp["legs"] = _v("legs", LEGS)
 	sp["wide"] = _v("wide", WIDE)
@@ -107,6 +110,7 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["socket_eyes"] = _v("sockets", SOCKETS) > 0.0
 	sp["hair_flare"] = _v("hair_flare", HAIR_FLARE)
 	sp["eye_r"] = _v("eye_r", EYE_R)
+	sp["eye_style"] = int(_v("eye_style", 0))
 	sp["mottle_amt"] = 0.08  # 살갗 얼룩·때는 줄이면 점박이로 보인다
 	sp["grime"] = 0.0
 	if _v("front_light", FRONT_LIGHT) > 0.0:

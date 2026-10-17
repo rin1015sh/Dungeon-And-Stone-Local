@@ -119,7 +119,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
 	var j := Back.skeleton(sp)
 	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
-		j = Back.stride(j, float(sp["walk"]), float(sp.get("step", 0.085)) * float(sp.get("legs", 1.0)))
+		j = Back.stride(j, float(sp["walk"]), float(sp.get("step", 0.085)) * float(sp.get("legs", 1.0)), float(sp.get("swing", 0.06)), float(sp.get("heel", 0.022)))
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))
 	var opts := {"mottle": sp.get("mottle", skin_c.darkened(0.35)), "mottle_amt": float(sp.get("mottle_amt", 0.35))}
 	if sp.has("shade"):
@@ -141,7 +141,10 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 		for e: Vector2 in hd["eyes"]:
 			cx += e.x / (hd["eyes"] as Array).size()
 		for e: Vector2 in hd["eyes"]:
-			_map_eye(p, e, r, -1.0 if e.x < cx else 1.0, 0.65 if side else 1.0)
+			if int(sp.get("eye_style", 0)) == 1:  # 짙은 눈구멍 얼룩(앞머리 그늘 속 — 피어 앤 헝거 주인공 맵 그림)
+				_smudge_eye(p, e, r * 1.25, 0.7 if side else 1.0)
+			else:
+				_map_eye(p, e, r, -1.0 if e.x < cx else 1.0, 0.65 if side else 1.0)
 		Finish.done(p, sp, Back.screen_joints(pr, j), H)
 		return p
 	for e: Vector2 in hd["eyes"]:  # 옆얼굴 눈: 짧은 눈꺼풀 선 + 어두운 눈동자
@@ -181,6 +184,16 @@ static func _map_eye(p: Paint, e: Vector2, r: float, side: float, narrow: float)
 				p.blend(xx, yy, Color("#2e2620"), 0.92)  # 눈동자
 			else:
 				p.blend(xx, yy, Color("#8e8576"), 0.9)  # 흐린 흰자
+
+
+## 탐험 맵 눈구멍 얼룩: 가로로 조금 긴 짙은 그늘(가운데 가장 짙고 가장자리로 풀림), 위쪽으로 더 번진다.
+static func _smudge_eye(p: Paint, e: Vector2, r: float, narrow: float) -> void:
+	var rx := r * 1.3 * narrow
+	for yy in range(int(e.y - r * 1.6), int(e.y + r * 1.2) + 1):
+		for xx in range(int(e.x - rx * 1.3), int(e.x + rx * 1.3) + 1):
+			var d := Vector2((xx - e.x) / rx, (yy - e.y + r * 0.15) / (r * (1.15 if yy < e.y else 0.85))).length()
+			if d < 1.0:
+				p.blend(xx, yy, Color("#120908"), 0.92 * smoothstep(1.0, 0.35, d))
 
 
 ## 기는 구울 뒷모습: 가까이 솟은 엉덩이와 개구리처럼 벌린 뒷다리, 앞으로 멀어지는 굽은 등(척추 마디·갈비), 높이 솟은 팔꿈치와
