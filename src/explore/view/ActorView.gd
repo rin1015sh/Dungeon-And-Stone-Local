@@ -18,7 +18,7 @@ var _sheet: ActorSheet = null
 var _walk_t: float = 0.0
 var _still: float = 0.0       # 멈춘 지 몇 초(잠깐 멈춰도 걸음이 끊기지 않게)
 var _last_pos: Vector2 = Vector2.INF
-var _col: int = ActorSheet.STAND
+var _col: int = 0  # 시트를 읽으면 선 칸(stand_col)
 var _ghost: Node2D
 var _glow: PointLight2D
 var _camera: Camera2D
@@ -40,6 +40,7 @@ func setup_for(actor: Actor, render: Dictionary) -> void:
 	_sheet = ActorSheet.load_for(render, JsonUtil.get_str(race, "sprite"))
 	if _sheet != null:
 		size = _sheet.world_size()
+		_col = _sheet.stand
 	_glow_energy = JsonUtil.get_float(lighting, "torch_glow_energy", 0.35)
 	_flicker = JsonUtil.get_float(lighting, "torch_flicker", 0.06)
 	_ghost = _GhostNode.new()

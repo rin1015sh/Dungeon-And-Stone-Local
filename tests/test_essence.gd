@@ -122,6 +122,19 @@ func test_essence_skill_usable_in_battle() -> void:
 	assert_true(b.act(c, {"kind": "skill", "skill": "ess_ghoul_claw", "target": b.opponents(c)[0]}), "정수 스킬 사용")
 
 
+## 디버그로 올린 레벨에서 흡수한 정수 스킬이 다음 전투 보상(경험치) 뒤에도 남는다(레벨이 경험치 기준으로 되돌아가 잠기던 문제).
+func test_debug_level_keeps_essence_skills_after_exp() -> void:
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 8, "p_res": 5})
+	assert_eq(pc.progression.set_to_level(pc, 3), 3, "디버그 레벨 올리기")
+	assert_eq(pc.essences.absorb(pc, _inst("ghoul", "red")), "")
+	assert_eq(pc.essences.absorb(pc, _inst("goblin", "red")), "")
+	assert_true(pc.skills.has("ess_ghoul_claw"), "첫 전투 전: 정수 스킬이 있다")
+	Rewards.grant(pc, ["goblin"], Rng.new(3), 0.0, false, 1.0, [], false)
+	assert_eq(pc.get_level(), 3, "전투 경험치 뒤에도 레벨 유지")
+	assert_eq(pc.essences.locked_count(), 0, "정수가 잠기지 않는다")
+	assert_true(pc.skills.has("ess_ghoul_claw"), "다음 전투에도 정수 스킬이 있다")
+
+
 ## 모든 정수(수호자 = 액티브 전부)의 스킬이 전투에서 실제로 쓰인다(대상 종류별로 행동창이 고르는 대상을 넘긴다).
 func test_every_essence_skill_usable_in_battle() -> void:
 	for eid: String in db.get_collection("essences").keys():

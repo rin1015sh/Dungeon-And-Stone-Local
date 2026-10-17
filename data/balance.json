@@ -142,7 +142,6 @@
     "start_floor": "f1_crystal_cave",
     "meters_per_tile": 1.0,
     "move_hours_base": 0.02,
-    "move_agi_coef": 0.02,
     "realtime_hours_per_sec": 0.1,
     "realtime_max_step_sec": 0.05,
     "body_half_extent": 0.3,

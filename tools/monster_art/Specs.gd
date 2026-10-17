@@ -96,11 +96,11 @@ static func spec_of(id: String) -> Dictionary:
 				"pose": {"arm_l": "hang", "arm_r": "hang", "sh": 0.13, "weight": 0.4, "tilt": -0.06},
 				"body": {"build": "bones"}, "head": {"type": "skull", "mouth": "grin", "horns": true, "horn_len": 0.7},
 				"kit": {"armor": C("#585652"), "plates": ["shoulders", "legs"], "belt": C("#3a3430"), "cape": C("#2a2226"), "weapon": "greatsword", "weapon_c": C("#8a8680"), "shield": C("#4a4440"), "shield_kind": "kite", "shield_mat": "metal"}}
-		"tarunbas":
-			return {"height": 680, "skin": C("#d8d4c8"), "eyes": C("#ff5030"), "glow": 1.0,
-				"pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.14, "weight": -0.4, "tilt": 0.08},
-				"body": {"build": "bones", "bulk": 1.2}, "head": {"type": "skull", "mouth": "grin", "size": 1.15, "crown": C("#9a7a32")},
-				"kit": {"armor": C("#5a5040"), "plates": ["shoulders"], "belt": C("#4a3a20"), "loin": C("#3a1a30"), "cape": C("#3a1a30"), "weapon": "greatsword", "weapon_c": C("#6e6a64")}}
+		"tarunbas":  # 회백색 털의 거대한 라이칸스로프 + 얼음몽둥이(monsters/tarunbas.json desc)
+			return {"height": 760, "width": 1.05, "skin": C("#d0d0c8"), "skin_kind": "fur", "shade": C("#5a6472"), "eyes": C("#ff5030"), "glow": 1.0, "fur_len": 1.5,
+				"pose": {"hunch": 0.4, "knee": 0.4, "arm_l": "hang", "arm_r": "rest", "sh": 0.17, "hip": 0.085, "neck": 0.45, "arms": 1.15, "weight": -0.5, "tilt": 0.05},
+				"body": {"build": "brute", "bulk": 1.25, "hands": "claw", "claws": 0.8, "feet": "claw"}, "head": {"type": "ape", "mouth": "fangs", "ears": "long", "size": 1.0},
+				"extras": {"frost": 0.8}, "kit": {"weapon": "club", "wood": C("#8ab0c8"), "belt": C("#3a2e24"), "loin": C("#4a4038")}}
 		"goblin":
 			return {"height": 480, "skin": C("#7a9258"), "mottle": C("#4a5a30"), "eyes": C("#e8d060"),
 				"pose": {"hunch": 0.45, "knee": 0.4, "arm_l": "hang", "arm_r": "claw", "sh": 0.105, "stance": 0.11, "head": 1.35, "legs": 0.9, "weight": 0.4},

@@ -39,7 +39,7 @@ func _b(path: String) -> float:
 	return float(db.bal(path, 0.0))
 
 
-func test_move_speed_by_agility() -> void:
+func test_move_speed_ignores_agility() -> void:
 	var s := _session(5, 0.0)
 	assert_near(s.move_hours(), _b("explore.move_hours_base"), 0.000001, "민첩 0")
 	var d := Vector2(_open_dir(s))
@@ -54,11 +54,10 @@ func test_move_speed_by_agility() -> void:
 	s.move_dir(d, 0.05)
 	assert_eq(s.fpos, f1, "일시정지 중에는 걷지 않는다")
 	var fast := _session(5, 50.0)
-	assert_near(fast.move_hours(), _b("explore.move_hours_base") / (1.0 + 50.0 * _b("explore.move_agi_coef")), 0.000001)
-	assert_true(fast.move_hours() < s.move_hours(), "민첩이 높으면 빠르다")
+	assert_near(fast.move_hours(), s.move_hours(), 0.000001, "민첩이 높아도 이동 속도는 같다")
 	var g0 := fast.fpos
 	fast.move_dir(Vector2(_open_dir(fast)), 0.05)
-	assert_true(fast.fpos.distance_to(g0) > 0.05 * speed * 1.5, "같은 시간에 더 멀리 간다")
+	assert_near(fast.fpos.distance_to(g0), 0.05 * speed, 0.0001, "같은 시간에 같은 거리를 간다")
 
 
 func test_diagonal_is_not_faster() -> void:

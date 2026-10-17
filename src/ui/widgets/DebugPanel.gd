@@ -79,7 +79,7 @@ func _change_level(delta: int) -> void:
 	var pc := _session.player
 	var lo := int(_session.db.prog("level.min", 1))
 	var hi := Progression.max_level(_session.db)
-	pc.set_level(clampi(pc.get_level() + delta, lo, hi))
+	pc.progression.set_to_level(pc, clampi(pc.get_level() + delta, lo, hi), pc.essence_rng)  # 경험치도 맞춘다(다음 전투에서 레벨이 되돌아가지 않게)
 	_session.refresh_view()
 
 

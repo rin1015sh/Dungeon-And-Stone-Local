@@ -103,6 +103,14 @@ func gain(a: Actor, amount: int, rng: Rng = null) -> int:
 	return a.get_level()
 
 
+## 레벨을 정해 맞춘다(디버그). 누적 경험치도 그 레벨의 시작값으로 맞춘다 — 레벨만 바꾸면 다음 경험치(전투 보상)에서
+## 레벨이 경험치 기준으로 되돌아가 정수가 잠긴다(스킬이 사라진다). 새 레벨.
+func set_to_level(a: Actor, level: int, rng: Rng = null) -> int:
+	exp_total = exp_for_level(a.db, clampi(level, int(a.db.prog("level.min", 1)), max_level(a.db)))
+	_apply_level(a, rng)
+	return a.get_level()
+
+
 ## 경험치를 잃는다(영혼 베기 같은 함정·스킬). 레벨이 내려가면 정수 슬롯이 무작위로 잠긴다. 새 레벨.
 func lose(a: Actor, amount: int, rng: Rng = null) -> int:
 	exp_total = maxi(0, exp_total - maxi(0, amount))

@@ -119,11 +119,9 @@ func light_kind() -> String:
 	return Vision.light_kind(floor_def, map, player, pos)
 
 
-## 한 칸을 가는 데 드는 게임 시간 = 기본값 / (1 + 민첩 × 계수). 몬스터도 같은 공식으로 움직인다.
+## 한 칸을 가는 데 드는 게임 시간 = 기본값(민첩과 무관 — 사용자 결정 2026-10-17). 몬스터도 같은 값으로 움직인다.
 func move_hours() -> float:
-	var base := float(db.bal("explore.move_hours_base", 0.02))
-	var coef := float(db.bal("explore.move_agi_coef", 0.02))
-	return base / (1.0 + maxf(0.0, player.stats.get_value("agi")) * coef)
+	return float(db.bal("explore.move_hours_base", 0.02))
 
 
 ## 한곳에 함께 있는 탐험가 수(계층군주 소환 조건). 동료는 M4 — 지금은 혼자.

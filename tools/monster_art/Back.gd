@@ -171,22 +171,71 @@ static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
 	return j
 
 
-## 걷기 한 걸음(탐험 맵 걷기 그림 — tools/paint_actors.gd): phase +1 = 왼발이 앞으로·오른발 뒤꿈치를 들고·오른팔이 앞으로,
-## -1 = 반대. 몸 좌표에서 앞 = -w(z 음수). stride·swing = 보폭·팔 흔들기(키 비율).
-static func stride(j: Dictionary, phase: float, step: float = 0.085, swing: float = 0.06, heel: float = 0.022) -> Dictionary:
+## 걷기 한 칸(탐험 맵 걷기 그림 — tools/paint_actors.gd): phase −1~1. +1 = 왼발이 앞·오른발 뒤꿈치를 들고·오른팔이 앞, −1 = 반대, 0 = 섬(그대로).
+## 몸 좌표에서 앞 = −w(z 음수). 팔다리는 어깨·엉덩이를 축으로 마디마다 각도를 정해 돌린다(길이 그대로 — 무릎이 뒤로 꺾이거나 손만 뻗지 않게).
+## 각도는 옆에서 본 수직(아래)에서 앞(+)·뒤(−), 도 단위의 "걸음 칸 값"이고 phase 크기만큼 선 자세에서 옮겨 간다. 몸 높이는 맨 아래 발이 땅에 닿게 저절로 내려간다(걸음 칸이 낮다).
+##   g: thigh_f/shin_f 앞다리 · thigh_b/shin_b 뒷다리 · lift 반걸음 칸에서 지나가는 뒷다리 무릎 들기(도) · twist 앞으로 간 팔 쪽 어깨가 나오는 양(키 비율)
+##      arm_f/fore_f 앞으로 간 팔의 위팔/아래팔 각 · arm_b/fore_b 뒤로 간 팔
+static func stride(j: Dictionary, phase: float, g: Dictionary) -> Dictionary:
+	if is_zero_approx(phase):
+		return j
 	var out := j.duplicate()
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
-		var k := phase * (1.0 if s < 0 else -1.0)  # 이 다리가 앞(+) 뒤(-)
-		var lift := maxf(0.0, -k) * heel  # 뒤로 간 다리는 뒤꿈치를 든다(heel이 크면 무릎을 굽혀 발이 높이 — 탐험 맵 걸음)
-		out["ankle_" + t] = (j["ankle_" + t] as Vector3) + Vector3(0, -lift, -k * step)
-		out["toe_" + t] = (j["toe_" + t] as Vector3) + Vector3(0, -lift * 0.3, -k * step)
-		out["knee_" + t] = (j["knee_" + t] as Vector3) + Vector3(0, -absf(k) * 0.008 - maxf(0.0, -k) * heel * 0.3, -k * step * 0.55 - absf(k) * 0.02 - maxf(0.0, -k) * heel * 0.4)
-		var a := -k  # 팔은 같은 쪽 다리와 반대로
-		out["elbow_" + t] = (j["elbow_" + t] as Vector3) + Vector3(0, 0, -a * swing * 0.5)
-		out["wrist_" + t] = (j["wrist_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing)
-		out["hand_" + t] = (j["hand_" + t] as Vector3) + Vector3(0, -absf(a) * 0.01, -a * swing * 1.05)
+		var k := phase * (1.0 if s < 0 else -1.0)  # 이 다리가 앞(+) 뒤(−)
+		var h: Vector3 = j["hip_" + t]
+		var k0: Vector3 = j["knee_" + t]
+		var a0: Vector3 = j["ankle_" + t]
+		var th0 := _ang(k0 - h)
+		var sh0 := _ang(a0 - k0)
+		var key := "_f" if k > 0.0 else "_b"
+		var m := absf(k)
+		var psg := 4.0 * m * (1.0 - m) * (1.0 if k < 0.0 else 0.0)  # 지나가는 다리(뒤 → 앞): 반걸음에서 가장 크다
+		var th := lerpf(th0, float(g.get("thigh" + key, th0)), m) + float(g.get("lift", 0.0)) * 0.5 * psg
+		var sn := lerpf(sh0, float(g.get("shin" + key, sh0)), m) - float(g.get("lift", 0.0)) * psg
+		var kn := h + _swing(k0 - h, deg_to_rad(th - th0))
+		var an := kn + _swing(a0 - k0, deg_to_rad(sn - sh0))
+		out["knee_" + t] = kn
+		out["ankle_" + t] = an
+	var ground := maxf((j["ankle_l"] as Vector3).y, (j["ankle_r"] as Vector3).y)
+	var low := maxf((out["ankle_l"] as Vector3).y, (out["ankle_r"] as Vector3).y)
+	for s: int in [-1, 1]:  # 발끝: 뒤꿈치를 든 발은 끝을 땅에 대고, 앞발은 끝을 살짝 든다
+		var t := "l" if s < 0 else "r"
+		var an: Vector3 = out["ankle_" + t]
+		var f0: Vector3 = (j["toe_" + t] as Vector3) - (j["ankle_" + t] as Vector3)
+		var dy := clampf(f0.y + (ground - (an.y + ground - low)), -absf(f0.z) * 0.9, absf(f0.z) * 0.9)
+		var fz := -sqrt(maxf(0.0, f0.z * f0.z + f0.y * f0.y - dy * dy))
+		var heel_strike := 0.012 if (phase * (1.0 if s < 0 else -1.0)) > 0.0 else 0.0
+		out["toe_" + t] = an + Vector3(f0.x, dy - heel_strike, fz)
+	var drop := ground - low  # 몸 전체를 내려 맨 아래 발을 땅에
+	for key2: String in out:
+		if out[key2] is Vector3:
+			out[key2] = (out[key2] as Vector3) + Vector3(0, drop, 0)
+	for s: int in [-1, 1]:
+		var t := "l" if s < 0 else "r"
+		var a := -phase * (1.0 if s < 0 else -1.0)  # 팔은 같은 쪽 다리와 반대로
+		var fwd := a > 0.0
+		var au := deg_to_rad(float(g.get("arm_f" if fwd else "arm_b", 0.0))) * absf(a)
+		var af := deg_to_rad(float(g.get("fore_f" if fwd else "fore_b", 0.0))) * absf(a)
+		var sh: Vector3 = (out["shoulder_" + t] as Vector3) + Vector3(0, 0, -a * float(g.get("twist", 0.0)))
+		var el: Vector3 = sh + _swing((j["elbow_" + t] as Vector3) - (j["shoulder_" + t] as Vector3), au)
+		var wr: Vector3 = el + _swing((j["wrist_" + t] as Vector3) - (j["elbow_" + t] as Vector3), au + af)
+		out["shoulder_" + t] = sh
+		out["elbow_" + t] = el
+		out["wrist_" + t] = wr
+		out["hand_" + t] = wr + _swing((j["hand_" + t] as Vector3) - (j["wrist_" + t] as Vector3), au + af)
 	return out
+
+
+## 옆에서 본 각(도): 수직 아래 = 0, 앞(−z) = +.
+static func _ang(v: Vector3) -> float:
+	return rad_to_deg(atan2(-v.z, v.y))
+
+
+## 옆에서 본 면(y 아래·−z 앞)에서 벡터를 앞으로 a라디안 돌린다(x는 그대로).
+static func _swing(v: Vector3, a: float) -> Vector3:
+	var w := -v.z
+	return Vector3(v.x, -w * sin(a) + v.y * cos(a), -(w * cos(a) + v.y * sin(a)))
 
 
 ## 몸: 엉덩이·허리·등(견갑골·척추 골·광배근) · 목·승모근 · 어깨 · 다리(햄스트링·종아리·발뒤꿈치) · 팔(삼두·팔꿈치·주먹).

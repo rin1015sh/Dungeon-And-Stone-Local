@@ -1,6 +1,6 @@
 [
   {"id": "str", "name_ko": "근력", "group": "body", "tier": "core", "rarity": "core", "min": 0, "implemented": true, "desc_ko": "물리 공격력. (확장: 소지 중량)"},
-  {"id": "agi", "name_ko": "민첩", "group": "body", "tier": "core", "rarity": "core", "min": 0, "implemented": true, "desc_ko": "이동 속도, 치명타율, 턴 횟수·순서, 드러난 함정 해제"},
+  {"id": "agi", "name_ko": "민첩", "group": "body", "tier": "core", "rarity": "core", "min": 0, "implemented": true, "desc_ko": "치명타율, 턴 횟수·순서, 드러난 함정 해제"},
   {"id": "p_res", "name_ko": "물리내성", "group": "body", "tier": "core", "rarity": "core", "min": 0, "implemented": true, "desc_ko": "물리 방어력"},
   {"id": "m_res", "name_ko": "항마력", "group": "mind", "tier": "core", "rarity": "core", "min": 0, "implemented": true, "desc_ko": "마법 방어력, 상태이상 저항 (400 이상 '제압 면역' — 확장 훅)"},
   {"id": "int", "name_ko": "정신력", "group": "mind", "tier": "core", "rarity": "core", "min": 0, "implemented": true, "desc_ko": "마법 공격력, 숨은 함정 탐지"},
