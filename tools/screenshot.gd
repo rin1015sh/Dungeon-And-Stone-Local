@@ -12,6 +12,7 @@ extends Node
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
+## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
@@ -51,6 +52,10 @@ func _run() -> void:
 		await _frames(3)
 	if screen in ["explore", "city", "plaza"]:
 		var create := _main.current_screen() as CharacterCreateScreen
+		if _args.has("race"):  # --race=<종족 id>: 그 종족으로 시작(탐험 맵 몸 그림 확인)
+			create._race_opt.select(create._race_ids.find(str(_args["race"])))
+			create._race_opt.item_selected.emit(create._race_opt.selected)
+			await _frames(2)
 		for b: Node in create.find_children("*", "Button", true, false):
 			if (b as Button).text == Strings.t("create.enter"):
 				(b as Button).pressed.emit()

@@ -11,31 +11,46 @@ extends SceneTree
 const Party := preload("res://tools/monster_art/Party.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
-const RENDER_H := 360.0  ## 사람 키를 이 높이(맵 키의 2배)로 그려 반으로 줄인다 — 크게 그려 많이 줄이면 선·명암이 뭉개진다
+## 정한 값(사용자 2026-10-17 — 피어 앤 헝거 맵 그림 참고 시트를 보고 여러 방법·템플릿을 비교해 고름: 방법 ⑤ + 머리 템플릿 5).
+## 시험할 때는 --set=<상수 이름 소문자>=<값>으로 이번만 바꾸고 --out=<폴더>로 따로 그린다(게임 그림을 건드리지 않는다).
+const RENDER_H := 168.0  ## 사람 키를 이 높이(맵 키의 2배)로 그려 반으로 줄인다 — 크게 그려 많이 줄이면 선·명암이 뭉개진다
 const SIDE_TURN := 1.8   ## 옆모습 돌림 — 90°를 조금 넘겨 얼굴이 보는 사람 쪽으로 살짝(90° 안쪽은 뒤에서 본 옆모습이다)
 const PITCH := 0.1       ## 3/4 시점 — 앞으로 내민 발이 조금 아래로(크게 하면 몸이 비틀려 보인다)
 const PHASES := [1.0, 0.0, -1.0]  ## 칸 순서: 왼발 앞 · 섬 · 오른발 앞
 const OUTLINE := Color("#120c0a")
-## 몸 비율(사용자 2026-10-17 첨부 피어 앤 헝거 맵 그림): 마른 몸에 큰 머리, 약 3등신
-const HEAD := 2.5   ## 머리 크기 배율(전투 그림 = 1, 약 7.5등신)
-const LEGS := 0.72   ## 다리 길이 배율
-const WIDE := 1.2  ## 어깨·엉덩이 폭 배율(피어 앤 헝거 몸은 마른 편 — 머리만 크다)
-const BULK := 1.2   ## 팔다리·몸통 굵기 배율
-const HAIR_GROW := 1.0  ## 머리숱(덥수룩한 머리 — 피어 앤 헝거 맵 그림)
-const CONTRAST := 1.12  ## 줄인 뒤 명암 대비(밝은 살갗·짙은 그늘)
-const GAMMA := 0.85     ## 줄인 뒤 밝기(1보다 작으면 중간 밝기를 올린다 — 피어 앤 헝거 맵 그림은 밝은 편)
-const LINE_STEP := 9.0 ## 이웃보다 이만큼 어두운 칸에 진한 선(겨드랑이·다리 사이·옷 경계)
-const STANCE := 0.08  ## 발 벌림(키 비율) — 두 발을 거의 붙여 선다
-const STEP := 0.06     ## 걸음 보폭(키 비율 — 다리 길이 배율이 곱해진다)
-const FRONT_LIGHT := 1.0  ## 1 = 빛을 앞에서(얼굴이 평평하게 밝아진다 — 전투 그림 빛이 더 낫다)
-const LIGHT := Vector3(-0.2, -0.5, 0.85)  ## 빛 방향 — 전투 그림(-0.45, -0.55, 0.7)보다 앞에서 비춰 얼굴 양쪽 눈이 다 보이게
-const HAIR_HIGH := 0.4  ## 옆·앞 머리선을 올리는 정도(라디안) — 옆모습에서 머리카락이 얼굴을 덮지 않게
-const MAP_FACE := 1.0  ## 1 = 맵 얼굴(입 없음), 0 = 전투 그림 얼굴
-const FRINGE := 1.0    ## 1 = 더벅머리 타래
-const HAIR_FLARE := 0.04  ## 옆머리가 머리 밖으로 부푸는 정도(머리 높이 비율)
-const SOCKETS := 1.0
-const EYE_R := 0.065    ## 눈구멍 반지름(머리 높이 비율) — 참고 그림: 맵 키 84px에서 폭 약 3.7·높이 3px, 두 눈 사이 9.6px   ## 1 = 눈을 짙은 눈구멍으로(전투 그림 얼굴이어도)
-const ARM_POSES := ["hang", "slump"]  ## --set=arms=1 → 늘어뜨린 팔
+## 몸 비율·자세(참고 시트): 머리 약 1/3, 굵고 짧은 팔다리, 살짝 숙인 몸, 늘어뜨린 팔, 큰 보폭·높이 드는 뒤꿈치
+const HEAD := 2.5        ## 머리 크기 배율(전투 그림 = 1)
+const LEGS := 0.68       ## 다리 길이 배율
+const WIDE := 1.15       ## 어깨·엉덩이 폭 배율
+const BULK := 1.35       ## 팔다리·몸통 굵기 배율
+const HUNCH := 0.2       ## 숙임
+const ARMS := 1.0        ## 팔 자세(ARM_POSES 번호 — 1 = 늘어뜨린 팔)
+const STANCE := 0.065    ## 발 벌림(키 비율)
+const KNEE := 0.08       ## 무릎 굽힘
+const STEP := 0.17       ## 걸음 보폭(키 비율 — 다리 길이 배율이 곱해진다)
+const HEEL := 0.13       ## 뒷발 뒤꿈치 드는 높이
+const SWING := 0.15      ## 팔 흔들기
+## 얼굴·머리
+const MAP_FACE := 1.0    ## 1 = 맵 얼굴(깎은 얼굴형, 코·입·귀 없음), 0 = 전투 그림 얼굴
+const SOCKETS := 1.0     ## 1 = 눈을 칠한 눈구멍으로
+const EYE_STYLE := 1.0   ## 1 = 짙은 눈구멍 얼룩, 0 = 아몬드꼴 눈
+const EYE_R := 0.06      ## 눈구멍 반지름(머리 높이 비율)
+const SIDE_FACE_LIFT := 0.2  ## 옆모습 얼굴을 밝히는 정도(옆얼굴이 머리 그늘에 묻혀 어두웠다)
+const HAIR_HIGH := 0.4   ## 얼굴 쪽 머리선을 올리는 정도(라디안)
+const HAIR_GROW := 1.4   ## 머리숱 — 긴 머리(바바리안)
+const FRINGE := 1.0      ## 1 = 긴 머리의 앞·옆머리 타래
+const HAIR_FLARE := 0.04 ## 긴 머리 옆머리가 부푸는 정도
+const SPIKY_GROW := 0.7  ## 짧은 머리(인간): 껍데기 숱 — 머리 모양은 아래 LOCKS 타래가 만든다
+## 짧은 머리 타래(템플릿 5 — 턱선까지 내려오고 끝이 흩어진 머리, BackHair._spikes 스타일 값)
+const LOCKS := {"n": 24, "w": 0.12, "wj": 0.35, "flick": 0.1, "jitter": 0.6, "front": 0.1, "temple": -0.15, "side": -0.55, "back": 0.3, "gap": 0, "light": 4}
+const SIDE_LOCKS := {"temple": 0.12, "front": 0.16}  ## 옆모습에서만 덮어쓰는 타래 끝
+## 마감(방법 ⑤): 전투 그림 빛 그대로, 줄인 뒤 밝기·대비·안쪽 선
+const FRONT_LIGHT := 0.0
+const LIGHT := Vector3(-0.2, -0.5, 0.85)
+const CONTRAST := 1.12   ## 줄인 뒤 명암 대비
+const GAMMA := 0.85      ## 줄인 뒤 밝기(1보다 작으면 중간 밝기를 올린다)
+const LINE_STEP := 0.2   ## 이웃보다 이만큼 어두운 칸에 진한 선(겨드랑이·다리 사이·옷 경계)
+const ARM_POSES := ["hang", "slump"]
 const SEED := 4242
 
 var _cfg: Dictionary = {}
@@ -95,10 +110,10 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["height"] = _v("render_h", RENDER_H) * k
 	sp["turn"] = turn
 	sp["pitch"] = _v("pitch", PITCH)
-	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": ARM_POSES[int(_v("arms", 0))], "arm_r": ARM_POSES[int(_v("arms", 0))], "stance": _v("stance", STANCE), "knee": _v("knee", 0.04), "hunch": _v("hunch", 0.0)}, true)
+	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": ARM_POSES[int(_v("arms", ARMS))], "arm_r": ARM_POSES[int(_v("arms", ARMS))], "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH)}, true)
 	sp["step"] = _v("step", STEP)
-	sp["swing"] = _v("swing", 0.06)
-	sp["heel"] = _v("heel", 0.022)
+	sp["swing"] = _v("swing", SWING)
+	sp["heel"] = _v("heel", HEEL)
 	sp["head"] = float(sp.get("head", 1.0)) * _v("head", HEAD)
 	sp["legs"] = _v("legs", LEGS)
 	sp["wide"] = _v("wide", WIDE)
@@ -110,11 +125,16 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	if str(sp.get("hair", "")) == "short" and _v("spiky", 1.0) > 0.0:  # 짧은 머리: 삐친 타래로(매끈한 헬멧·항아리 얼굴이 되지 않게 — 피어 앤 헝거 주인공 머리)
 		sp["spiky"] = true
 		sp["fringe"] = false
-		sp["hair_grow"] = _v("spiky_grow", 0.9)
+		sp["hair_grow"] = _v("spiky_grow", SPIKY_GROW)
+		sp["locks"] = LOCKS
 	sp["socket_eyes"] = _v("sockets", SOCKETS) > 0.0
 	sp["hair_flare"] = _v("hair_flare", HAIR_FLARE)
 	sp["eye_r"] = _v("eye_r", EYE_R)
-	sp["eye_style"] = int(_v("eye_style", 0))
+	sp["eye_style"] = int(_v("eye_style", EYE_STYLE))
+	if absf(absf(turn) - PI * 0.5) < 0.6:  # 옆모습: 얼굴을 조금 밝게, 관자놀이 타래는 광대까지만(옆얼굴을 덮어 어두웠다)
+		sp["face_lift"] = _v("side_face_lift", SIDE_FACE_LIFT)
+		if sp.has("locks"):
+			sp["locks"] = (sp["locks"] as Dictionary).merged(SIDE_LOCKS, true)
 	sp["mottle_amt"] = 0.08  # 살갗 얼룩·때는 줄이면 점박이로 보인다
 	sp["grime"] = 0.0
 	if _v("front_light", FRONT_LIGHT) > 0.0:

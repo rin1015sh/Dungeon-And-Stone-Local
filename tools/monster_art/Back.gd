@@ -165,6 +165,7 @@ static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
 	j["head"] = j["head"] - Vector3(0, (float(j["head_h"]) - 0.13) * 0.4, 0)
 	j["map_face"] = bool(sp.get("map_face", false))
 	j["socket_eyes"] = bool(sp.get("socket_eyes", false))
+	j["face_lift"] = float(sp.get("face_lift", 0.0))
 	if j["map_face"]:  # 굵어진 가슴·망토가 턱을 덮지 않게 머리를 조금 앞으로
 		j["head"] = j["head"] + Vector3(0, 0, -0.015)
 	return j
@@ -319,6 +320,7 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 		var fm: Dictionary = (cl.mats[skin] as Dictionary).duplicate()
 		fm["line"] = 0.0  # 조각 이음매에 주름 선을 긋지 않는다(입·해골 턱처럼 보였다)
 		fm["cav"] = 0.25
+		fm["c"] = (fm["c"] as Color).lightened(float(j.get("face_lift", 0.0)))  # 옆모습 얼굴 밝게(탐험 맵 그림)
 		cl.mats.append(fm)
 		skin = cl.mats.size() - 1
 		var chin := hc + Vector3(0, rv * 0.74, -rw * 0.52)
