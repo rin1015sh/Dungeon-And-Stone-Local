@@ -1,0 +1,104 @@
+{
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "rift": "rift_glacier_cave",
+ "chapter": "ch1",
+ "width": 88,
+ "height": 44,
+ "floor": "gc_snow",
+ "legend": {
+  " ": "gc_void",
+  ".": "gc_snow",
+  ",": "ice_floor",
+  "=": "gc_lake",
+  "z": "gc_bones",
+  "#": "ice_wall",
+  "K": "gc_cliff",
+  "I": "gc_icicle",
+  "P": "gc_guide",
+  "Y": "gc_pine",
+  "R": "gc_rock",
+  "c": "gc_crystal",
+  "n": "gc_tent",
+  "s": "gc_sled",
+  "b": "gc_crate",
+  "d": "gc_drift",
+  "f": "gc_campfire"
+ },
+ "marks": {
+  "entry": [
+   8,
+   16
+  ],
+  "slots": [
+   [
+    39,
+    21
+   ],
+   [
+    65,
+    15
+   ],
+   [
+    78,
+    22
+   ]
+  ],
+  "exit": [
+   85,
+   21
+  ],
+  "hidden": [
+   [
+    11,
+    13
+   ]
+  ],
+  "hazards": []
+ },
+ "rows": [
+  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                            ....            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                          ........          KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                  Y.................        KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                ......................      KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "               ...Y.................d..     KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "            ....Y...........d..........     KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "           .........Y..........d.......d    KKKKKKKKKKKKKKKKKK###KKKKKKKKKKKKKKKKKKKKKKK",
+  "           .....Y.......................    KKKKKKKKKKKKKKKK##,,,####KKKKKKKKKKKKKKKKKKK",
+  "          ....Y.....Y...................    KKKKKKKKKKKKKKK#,,,,,,,,,#KKKKKKKKKKKKKKKKKK",
+  "         .........Y......................   KKKKKKKKKKKKKK#,,,,,,,,,,##KKKKKKKKKKKKKKKKK",
+  "      ........Y.......................d..K  KKKKKKKKKKKKK#,,,z.z,,,,,,,#KKKKKKKKKKKKKKKK",
+  "   ......................................KKKKKKKKKKKKKKKKK#,,.z.,,,,,,,,#KKKKKKKKKKKKKKK",
+  "  ..................................d....KKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,#KKKKKKKKKKKKKK",
+  " .......................n.n..............KKKKKKKKKKKK###K#,,,,,,,,,,,,,,,#KKKKKKKKKKKKKK",
+  " ........................................KKKKKKKKK###,,,##,,,,,,,,,,,,,##KKKKKKKKKKKKKKK",
+  " ........................f...............KKKKKKKK#,,,,,,,,,,,,,,,,,,,,###KKKKKKKKKKKKKKK",
+  " .......................s.b.z............KIIIIII#,,,,,,,P,#,,,,,,,I,,,,,P#KK#########KKK",
+  "........................................,I,,,,,,,,P,,,,,,,,##,,,,,,,,,,,,###,,P,,,,I,###",
+  "........................................,,,,,,,,,,,,,,,,,,,###,I,,,,,,,,,,,,,,,,,,,,,,,,",
+  "........................................,,,,,,,,,,,,,,,,,,,,P,,,,,,,,,,,I,,,,,,,,,,,,,,,",
+  "........................................,,,,,,,,,,,,,,,,,,,,,,,,,,P,,,,,,,,,,,,,,,,,,,,,",
+  ".......R.R..............................,,,,,,,,##########,,,,,,,,,,,,,,,,#,,,,,,,,,,,##",
+  "........................................,I,,,,,,#KKKKKKKKK#,,,,,,,,,,,##,,,#I,,,,,,,##KK",
+  "......R...........===....................KIIIIIIKKKKKKKKKK#,,,,,,,,,##K#,,,##,,,,,##KKKK",
+  " .............=========..................KKKKKKKKKKKKKKKKKK#,,,,,,##KKK#,,,#K#####KKKKKK",
+  " ....R......==============...............KKKKKKKKKKKKKKKKKKK#,,,##KKKKK##,,,###KKKKKKKKK",
+  "  ........================...............KKKKKKKKKKKKKKKKKKKK###KKKKK##,,,,,,,,#KKKKKKKK",
+  "   ......=================...............KKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,#KKKKKKK",
+  "    ....==================...............KKKKKKKKKKKKKKKKKKKKKKKKKKK#,c,,,,,,,,#KKKKKKKK",
+  "    ....===================...Y..........KKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,c,,,,,,#KKKKKKK",
+  "    .....==================..............KKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,c,,#KKKKKKK",
+  "    .......===============................KKKKKKKKKKKKKKKKKKKKKKKKK##,,,c,,,,,,,#KKKKKKK",
+  "    ........=====.========..........Y.....KKKKKKKKKKKKKKKKKKKKKKKKKKK###,,,,,,,#KKKKKKKK",
+  "     ..............===....................KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK###,,##KKKKKKKKK",
+  "       ...............................Y....KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##KKKKKKKKKKK",
+  "              ................Y.Y..Y....... KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                ........................    KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                     ................       KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                      .............         KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                       .....                KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+ ]
+}

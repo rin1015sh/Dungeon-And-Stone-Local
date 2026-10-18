@@ -1,0 +1,100 @@
+{
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "rift": "rift_glacier_cave",
+ "chapter": "ch2",
+ "width": 76,
+ "height": 52,
+ "floor": "gc_snow",
+ "legend": {
+  " ": "gc_void",
+  ".": "gc_snow",
+  ",": "ice_floor",
+  "^": "gc_stairs",
+  "z": "gc_bones",
+  ":": "gc_gravel",
+  "#": "ice_wall",
+  "K": "gc_cliff",
+  "I": "gc_icicle",
+  "P": "gc_guide",
+  "T": "gc_totem",
+  "c": "gc_crystal",
+  "d": "gc_drift"
+ },
+ "marks": {
+  "entry": [
+   38,
+   4
+  ],
+  "slots": [
+   [
+    38,
+    34
+   ]
+  ],
+  "exit": [
+   70,
+   26
+  ],
+  "hidden": [
+   [
+    33,
+    40
+   ]
+  ],
+  "hazards": []
+ },
+ "rows": [
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKK########################################################KKKKKKKKKK",
+  "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKK#,,d.d.d,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,d.d,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
+  "KKKKKKKKKK                      ^^^^^^^^^^^^                      KKKKKKKKKK",
+  "KKKKKKKKKK                      ^^^^^^^^^^^^                      KKKKKKKKKK",
+  "KKKKKKKKKK                      ^^^^^^^^^^^^                      KKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#^^^^^^^^^^^^#KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#^^^^^^^^^^^^#KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##^^^^^^^^^^^^##KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKK####,,^^^^^^^^^^^^,,##KKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,###KKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,c,,,,,,,,I##KKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,##KKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,z,,,,,,,,,,,,,,,,,,,##KKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKK##,,,,,,,,,,,P,,,,,,,,,P,,,,,,,,,,,,,#KKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKK#,,,,,,,,,,I,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,I,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,z,,,,,,,,,,,,,#KKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKK#,,,,,,cP,,,,,,,,,,,,,,,,,,,,,,,,,,,P,,,,,,,#KKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKK#,,,,,,,,,z,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,#KKKKKK,,,,KKKK",
+  "KKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,I,,,,I,,#K,,,,,,,,,KKKK",
+  "KKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,z,,,:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,KKKK",
+  "KKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,:::::,,,,,,,,,,,,,,,,,,,,,,,,,,,KKKKKKKK",
+  "KKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,:::::::,,,,,,,,,,,,,,,,,,,,,KKKKKKKKKKKKK",
+  "KKKKKKKKKKKKK#,,,,,,,P,,,,,,,,,,,,::::T::::,,,,,,,,,,,,P,,,,,,#KKKKKKKKKKKKK",
+  "KKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,:::::::,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKK",
+  "KKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,:::::,,,,,,,,,,,,,,c,,,,,,,#KKKKKKKKKKKK",
+  "KKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,:,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKK",
+  "KKKKKKKKKKKKK#,,,,,,,I,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKK",
+  "KKKKKKKKKKKKKK#,,,,,,,,,,,,,,z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKK#,,,,,,,,P,,,,,,,,,,,,,,,,,,,,,,,,,,,P,,,,,,,,,#KKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKK#,,z,,,,,,,,,,,c,,,,,,z,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,I,,,,,,,,,,,,#KKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,P,z,,,,,,,,,,,,,#KKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKK#,,,,,z,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKK##,,I,,,,,,,,,,,,,,z,,,,,,,,,,,,####KKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKK##,,,,,,,,,,,,,,,,,,,,,,,,####KKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKK###,,,,,,##,,,,,,,,,,,##KKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKK############################################KKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKK############################################KKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+ ]
+}

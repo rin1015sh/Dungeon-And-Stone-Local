@@ -1,0 +1,101 @@
+{
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "rift": "rift_blood_fortress",
+ "chapter": "ch3",
+ "width": 84,
+ "height": 46,
+ "floor": "fortress_floor",
+ "legend": {
+  ".": "fortress_floor",
+  ",": "bf_road",
+  ":": "bf_rubble",
+  "z": "bf_bones",
+  "#": "fortress_wall",
+  "H": "bf_house",
+  "D": "bf_gate",
+  "T": "bf_table",
+  "W": "bf_rack",
+  "b": "bf_barrel",
+  "c": "bf_crate",
+  "w": "bf_wagon",
+  "f": "bf_brazier",
+  "g": "bf_gallows",
+  "o": "bf_well",
+  "m": "bf_stall",
+  "S": "bf_statue",
+  "h": "bf_pew",
+  "u": "bf_cage",
+  "s": "bf_sack"
+ },
+ "marks": {
+  "entry": [
+   4,
+   27
+  ],
+  "slots": [
+   [
+    41,
+    26
+   ]
+  ],
+  "exit": [
+   82,
+   21
+  ],
+  "hidden": [
+   [
+    41,
+    22
+   ]
+  ],
+  "hazards": []
+ },
+ "rows": [
+  "####################################################################################",
+  "####################################################################################",
+  "####################################################################################",
+  "####################################################################################",
+  "##,,,b,,,,s,,,,,,,c,,,,,,,,,,,,,,s,,,,,,,,,,,,,,,,,,,,b,,,,,c,,,,,,,,,,,,,,,,,,b,,##",
+  "##,,HHHHHHHHHH,,HHHHHHHHc,HHHHHHHHH,,,,,,,,,,,,,HHHHHHHHH,,HHHHHHHHHc,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHHb,HHHHHHHH,,HHHHHHHHH,,,,,,,,,,,,,HHHHHHHHH,,HHHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,HHHHHHHH,,HHHHHHHHH,,,,,,,,,,,,cHHHHHHHHHs,HHHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,HHHHHHHH,,HHHHHHHHHs,,,,,,,,,,,,HHHHHHHHH,,HHHHHHHHH,,HHHHHHHHHHc,##",
+  "##,,HHHHHHHHHH,,HHHHHHHH,,HHHHHHHHH,,,,,,,,,,,,,HHHHHHHHH,,HHHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,bHHHHHHHH,,HHHHHHHHH,,,,,,,,,,,,,HHHHHHHHHu,HHHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,,,,,,,,,,bHHHHHHHHH,,,,,,,,,,,,,HHHHHHHHH,,,,,,,,s,,,,HHHHHHHHHH,,##",
+  "##,cHHHHHHHHHH,,,,,,,,,,,,WfW,,,,s,,,,,,,,,,,,,,,c,,,,b,,,,,,,,,,,,,,sHHHHHHHHHH,,##",
+  "##,,,,,,,,cb,,,,,,,,,,,,,,,,,,,,,,,,............,,,,,,,,,bb,,,,,,,bc,,,,,,,s,,,,,,##",
+  "##,,,,,,,,,,,,,,,,,,,,,,ww,,,,,,,.................,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,##",
+  "##,,,,,,,s,,,H,,,HHHH,,,,,,,,,,,....f.........f....,,,,,,,,,HHHHHHHH,,,s,,,,,,,,,,##",
+  "##,,HHHHHHH,,H,::,,b:H,,,,,,,,,.....................,,,,,,,,HHHHHHHH,,,HHHHHHHH,,,##",
+  "##,,HHHHHHH,,H,,,,,,,H,,,,,,,,...mm.............mm...,,,,,,,HHHHHHHHs,,HHHHHHHH,,,##",
+  "##,,HHHHHHHc,,,,,,,,:H,,,,,,,.........................,,,,,,HHHHHHHH,,,HHHHHHHH,,,##",
+  "##,,HHHHHHH,,,,,,,,:,Hb,,,,,,.........................,,,,,,HHHHHHHH,,,HHHHHHHH,,D##",
+  "##,,HHHHHHH,,HH,H,,HH,,,,,,,,............o............,,,,,bHHHHHHHH,,,HHHHHHHH,,,,,",
+  "##,,HHHHHHH,,b,,,,,c,,,,,,,,...........ooooo..........,,,,,,HHHHHHHH,,,HHHHHHHH,,,,,",
+  "##,,HHHHHHH,,,,,,,,,,,o,,,,,..........ooooooo.........,,,,,,HHHHHHHH,,,bS,,,,b,,,,,,",
+  "##,,HHHHHHH,,,,,,,,,,,,,,,,,,..........oo.oo..........,,,,,,T.Tb,,,,,,,,,,,,,,,,,,,,",
+  "##,cHHHHHHH,,,,,,,,,,,,,,,,,,.........................,,,,,,h.h,,,,z,,,,,,,,,,,,,D##",
+  "##,,,,,,,,,,,HHHHHHH,,,,,,z,,........................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,##",
+  ",,,,,,,,,,,,cHHHHHHH,,,,,,,,,,.......................,,,,,,,,,HHHHH,,,,,,,,,,,,,,,##",
+  ",,,,,,,,,,,,,HHHHHHHb,,,,,,,,,,...mm............mm..,,,,,,,,,,HHHHHs,,,,,,,,,,,,,,##",
+  ",,,,,,,,,,,,,HHHHHHH,,,,,,,,,,,.....................,,,cc,,,,,HHHHH,,,,,,,,,,,,,,,##",
+  "##,,s,,,,,,,,HHzHHHH,,,,,,,,,g,,....f.........f....,,,,bb,,,,,,,,,,,,,,,,,,,,,,,,,##",
+  "##,,HHHHHHHHHH,,,,,,,,,,,,,,,,,,,,...............,,,,,,,,,,,,,,,,,,,,cHHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,,,,,,,,,,,,s,,,,,,,,...........,,,,,,,,,,,,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,,,,,c,,,,,HHHHHHHHH,,,,.....,,,,,HHHHH,,H,,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,cH,HHHHH,,HHHHHHHHHb,,,,,,,,,,,,,,::,,,:s,,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,H,:,,:,H,,HHHHHHHHH,u,,,,,,,,,,,,,,:,,,:,,,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,,,::,:,H,,HHHHHHHHH,,,,,,,,,,,,,,,:,,,,,:H,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,,::,::,H,bHHHHHHHHH,,,,,,,,,,,,,,H,:::,,,Hc,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,HHHHHHHHHH,,,,:,:,:,,,HHHHHHHHH,,,,,,,,,,,,,,H:::,:::,,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,bHHHHHHHHHH,,,:::,:,H,,HHHHHHHHH,,,,,,,,,,,,,,H,,,::,,,,,HHHHHHHH,cHHHHHHHHHHs,##",
+  "##,,,,,s,,,,b,,,HbH,,,,,,,HHHHHHHHH,,,,,,,,,,,,,,,,HHs,,H,,,HHHHHHHH,,HHHHHHHHHH,,##",
+  "##,,,,,,,,,,,,,,,,,,,,,,,,,,b,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,b,,,,,,,,,,,,,,,,,##",
+  "##,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,##",
+  "####################################################################################",
+  "####################################################################################",
+  "####################################################################################",
+  "####################################################################################"
+ ]
+}
