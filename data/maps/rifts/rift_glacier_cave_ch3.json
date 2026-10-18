@@ -1,0 +1,111 @@
+{
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "rift": "rift_glacier_cave",
+ "chapter": "ch3",
+ "width": 92,
+ "height": 46,
+ "floor": "gc_snow",
+ "legend": {
+  " ": "gc_void",
+  ",": "ice_floor",
+  "=": "gc_lake",
+  "~": "gc_river",
+  "#": "ice_wall",
+  "K": "gc_cliff",
+  "I": "gc_icicle",
+  "o": "gc_frozen_orc",
+  "w": "gc_waterfall",
+  "c": "gc_crystal"
+ },
+ "marks": {
+  "entry": [
+   12,
+   27
+  ],
+  "slots": [
+   [
+    30,
+    18
+   ],
+   [
+    72,
+    8
+   ],
+   [
+    84,
+    34
+   ]
+  ],
+  "exit": [
+   86,
+   14
+  ],
+  "hidden": [],
+  "hazards": [
+   [
+    22,
+    16
+   ],
+   [
+    36,
+    29
+   ],
+   [
+    61,
+    11
+   ],
+   [
+    71,
+    32
+   ]
+  ]
+ },
+ "rows": [
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#KKK#KKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#####,###,#KKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,##KKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK###,,,,,,,,,,,,c,##KKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,##KKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,c,,,,,,,,,,,,,,,,,##KKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,#,,,,,,,,,,###,,,,,,##KKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,##K#,,,,,,,,#KKK##,,,,,,#KKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK###,,,,,#KKKK##,,,###KKKKKK#,,,,,#KKK",
+  "KKKKKKKKKKKKKK####KKKKKKKKKKKKKKKKKKKKKKKKKKK##########,,,,,,,#KKKKKKK###KKKKKKKKKK##,,,#KKK",
+  "KKKKKK###K####,,,,#############KKKKKKKKKK####,,,,,I,,,,,,,,,,,#KKKKKKKKKKKKKKKKKKKKK#,,,#KKK",
+  "KKKK##,,,#,,,,,,,,,,,,,,,,,,,,,##KKKKK###,,,,,,,,,,,,,,,,,,,,#KKKKKKKKKKKKKKKKKKKKKK#,,,#KKK",
+  "www#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKK#,,,,,,,,,,,,,,,,,,,,,,c#KKKKKKKKKKKKKKKKKKKKKK#,,,#KKK",
+  "www#,,~,,,,,,,,,,,,,,,,,,,,,,,,,,,###I,,,,,,I,,,,,#####,,,,,#KKKKKKKKKKKKKKKKKKKKKKK#,,,#KKK",
+  "www,,~~~,,,,,,,,,I,,#####,,,,,,,,,,,,,,,,,,,,,,,##KK~KK#####KKKKKKKKKKKKKKKKKKKKKKKK#,,,#KKK",
+  "www,~~~~~,,,,,,,,,##~KKKK#,,,,,,,,,,,,,,,,,,,,##~~~~~~~~~~~KKKKKKKKKKKKKKKKKKKKKKKKK#,,,#KKK",
+  "www,~~~~~~~~~~~~~~~~~~~~~~#########,,,,,,,,=~~~~~~~~~~~~~~~~~~~~~KKKKKKKKKKKKKKKKKKK#,,,#KK~",
+  "www~~~~~~~~~~~~~~~~~~~~~~~~~~~~KKKK#####====~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "ww~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~====~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "www~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~====~~~~~###KKKKKK~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "wwwK~~~~~,,,,,,,#######KKK~~~~~~~~~~~~~~====~##,,,,,#KKKKKKKKKKK~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  "www#~~~~~,,,,,,,,,,,,,,########~~~~~~~~~====,I,,,,,,,#KKKKKKKKKK      ~     KKKKKKKK#,,,#KKK",
+  "www,,~~~,,,,,,,,,,,,,,,,,,,,,,,,,,,#~KK#==,,,,,,,,,,,,#KKKKKKKKK               KKK#K#,,,#KKK",
+  "www#,,~,,,,,,,,,,,,,,,,,,,,,,,,,,,,,####,,,,,,,,,,,,,,,#KKKKKK                  ##,##,,,#KKK",
+  "wwwK#,,,,,,,,,,I,,,,,,,,,,,,,,,,,,,,,,I,,,,,,,,,,,,,,,,,##KKKK                  ,,,,,,,,#KKK",
+  "KKKKK#,,,,,,,,#,,,,,,,,#####,,,,,,,,,,,,,,,,,,,,,##,,,,,,,###                  ,,,,,,,,,,#KK",
+  "KKKKKK##,,,###K########KKKKK#,,,,,,,,,,,,,,,,####KK##,,,,,,,,                  ,,,o,,,,,,,#K",
+  "KKKKKKKK#,#KKKKKKKKKKKKKKKKKK################KKKKKKKK#,,,,,,,,,               ,,,,,,,,,o,,,#",
+  "KKKKKKKKK#KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##,,,,,,               ,,,,,,,,,,,,,,",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,###                ,,,,,,,,,,,,c,",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#KKKK               ,,,,,,,,,,,,,,",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##############        KKK#,,,,,,,,,,o,,#",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##############  KKKKKKKKK#,,o,,,,,,,,,#K",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,#K",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,o,,,,,#KK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,#KKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,##KKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK####KKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+ ]
+}
