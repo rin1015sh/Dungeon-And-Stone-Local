@@ -121,7 +121,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
 	var j := Back.skeleton(sp)
 	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
-		j = Back.stride(j, float(sp["walk"]), float(sp.get("step", 0.085)) * float(sp.get("legs", 1.0)), float(sp.get("swing", 0.06)), float(sp.get("heel", 0.022)))
+		j = Back.stride(j, float(sp["walk"]), sp.get("gait", {}))
 	if sp.has("rest"):  # 보스가 방에서 기다리는 자세(앉음·무릎 꿇음·웅크림)
 		j = BackPose.apply(j, sp)
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))

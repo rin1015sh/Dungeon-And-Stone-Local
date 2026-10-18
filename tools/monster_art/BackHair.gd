@@ -90,7 +90,8 @@ static func _fringe(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, g: int, rn
 ## 매끈한 헬멧이 되지 않게 타래마다 결이 보이고 끝이 가늘다. 스타일 값(sp "locks" 사전):
 ## n 가닥 수 · w 굵기(머리 높이 비율) · flick 끝이 머리에서 뜨는 정도 · jitter 길이·방향 흩어짐 · front 앞머리 끝(위도) ·
 ## temple 관자놀이 끝 · side 옆머리 끝 · back 뒷머리를 머리선보다 더 내림 · sweep 한쪽으로 쓸어 넘김(+ = 몸 오른쪽) ·
-## part 가운데 가르마(앞머리를 양옆으로) · gap 앞머리 사이 띄움(몇 가닥마다 하나 비움, 0 = 안 비움) · light 밝은 결 간격 · wj 굵기 흩어짐.
+## part 가운데 가르마(앞머리를 양옆으로) · gap 앞머리 사이 띄움(몇 가닥마다 하나 비움, 0 = 안 비움) · light 밝은 결 간격 · wj 굵기 흩어짐 ·
+## swirl 타래마다 옆으로 휘는 정도(결이 모두 수직이면 헬멧 줄무늬처럼 보인다) · tufts 정수리·뒤통수에서 밖으로 삐친 짧은 뭉치 수(둥근 윤곽을 깬다).
 static func _spikes(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, ml: int, g: int, rng: RandomNumberGenerator, nape: float, high: float, st: Dictionary = {}) -> void:
 	var hh: float = hd["hh"]
 	var n := int(st.get("n", 40))
@@ -120,13 +121,22 @@ static func _spikes(cl: Clay, pr: Dictionary, hd: Dictionary, m: int, ml: int, g
 		if front and part != 0.0:
 			dlo += signf(wrapf(lo - PI, -PI, PI)) * part  # 가르마에서 양옆으로
 		var la0 := 1.4 + rng.randf_range(-0.1, 0.1) * jit
+		var sw := float(st.get("swirl", 0.0)) * rng.randf_range(-1.0, 1.0)
 		var pts: Array = []
 		for t in 5:
 			var f := t / 4.0
-			pts.append(Back.on_head(hd, lerpf(la0, end_la, f), lo + dlo * f + sin(f * 2.2 + k) * 0.1 * jit, hh * (0.035 + 0.04 * sin(f * PI)) * (1.0 - side * 0.5) + fl * f * f))
+			pts.append(Back.on_head(hd, lerpf(la0, end_la, f), lo + dlo * f + sin(f * 2.2 + k) * 0.1 * jit + sw * f * f, hh * (0.035 + 0.04 * sin(f * PI)) * (1.0 - side * 0.5) + fl * f * f))
 		var mat := ml if light > 0 and k % light == 0 else m
 		var ww := hh * w * (1.0 + rng.randf_range(-1.0, 1.0) * float(st.get("wj", 0.0)))  # wj = 타래마다 굵기 흩어짐(뭉치가 생긴다)
 		Back.chain(cl, pr, g, pts, [ww, ww * 0.9, ww * 0.72, ww * 0.45, hh * 0.01], mat, hh * 0.015)
+	for k in int(st.get("tufts", 0)):  # 삐친 뭉치: 머리 위·뒤에서 밖으로 들려 끝이 뾰족하다
+		var lo := rng.randf_range(-2.4, 2.4)
+		var la := rng.randf_range(0.45, 1.2)
+		var out := hh * rng.randf_range(0.12, 0.22)
+		var a := Back.on_head(hd, la + 0.12, lo, hh * 0.02)
+		var b := Back.on_head(hd, la - 0.05, lo + rng.randf_range(-0.25, 0.25), out * 0.6)
+		var c := Back.on_head(hd, la - 0.2, lo + rng.randf_range(-0.35, 0.35), out)
+		Back.chain(cl, pr, g, [a, b, c], [hh * w * 0.9, hh * w * 0.55, hh * 0.008], m if k % 3 else ml, hh * 0.012)
 
 
 static func _hairline(lon: float, nape: float, high: float = 0.0) -> float:

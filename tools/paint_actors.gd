@@ -1,8 +1,8 @@
 extends SceneTree
 ## 탐험 맵 몸 그림(docs/PROMPT_ART_MAP.md A4): 전투 그림과 같은 도구로 그려 맵 크기로 줄인다.
 ##   godot --headless --path . --script res://tools/paint_actors.gd [-- --only=<종족|monsters|몬스터 id,…>]
-## 탐험가: 아군 전투 그림의 3D 몸(Party·Back)을 앞(아래)·옆(오른쪽)·뒤(위)로 돌리고 걷기 세 장(왼발 앞·섬·오른발 앞)을 그려
-##   한 장의 시트로 → assets/actors/<종족>.webp. 줄 = [아래, 왼쪽, 오른쪽, 위](오른쪽 = 왼쪽 좌우 반전), 칸 = [걸음 A, 섬, 걸음 B].
+## 탐험가: 아군 전투 그림의 3D 몸(Party·Back)을 앞(아래)·옆(오른쪽)·뒤(위)로 돌리고 걷기 다섯 장(왼발 앞·반걸음·섬·반걸음·오른발 앞)을 그려
+##   한 장의 시트로 → assets/actors/<종족>.webp. 줄 = [아래, 왼쪽, 오른쪽, 위](오른쪽 = 왼쪽 좌우 반전), 칸 = [걸음 A, 반걸음 A, 섬, 반걸음 B, 걸음 B].
 ##   피어 앤 헝거 맵 그림처럼 곧게 선 약 3.3등신(큰 머리·마른 몸·붙인 다리)·움푹한 눈구멍 얼굴(입 없음)·대비를 키운 칠·진한 바깥선(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
 ## 몬스터: 전투 일러스트(assets/monsters/<id>.webp — 정면)를 몸 높이 색인으로 데이터 size에 맞춰 줄인다 → assets/actors/monsters/<id>.webp
 ##   (뒷모습 그림이 있으면 <id>_back.webp도). 걷기는 게임이 흔들어 보인다(MonsterView).
@@ -17,20 +17,34 @@ const Paint := preload("res://tools/city_art/Paint.gd")
 const RENDER_H := 168.0  ## 사람 키를 이 높이(맵 키의 2배)로 그려 반으로 줄인다 — 크게 그려 많이 줄이면 선·명암이 뭉개진다
 const SIDE_TURN := 1.8   ## 옆모습 돌림 — 90°를 조금 넘겨 얼굴이 보는 사람 쪽으로 살짝(90° 안쪽은 뒤에서 본 옆모습이다)
 const PITCH := 0.1       ## 3/4 시점 — 앞으로 내민 발이 조금 아래로(크게 하면 몸이 비틀려 보인다)
-const PHASES := [1.0, 0.0, -1.0]  ## 칸 순서: 왼발 앞 · 섬 · 오른발 앞
+const PHASES := [1.0, 0.5, 0.0, -0.5, -1.0]  ## 칸 순서: 왼발 앞 · 반걸음 · 섬 · 반걸음 · 오른발 앞(재생 순서는 render.json actor_sheet.walk_cycle)
 const OUTLINE := Color("#120c0a")
 ## 몸 비율·자세(참고 시트): 머리 약 1/3, 굵고 짧은 팔다리, 살짝 숙인 몸, 늘어뜨린 팔, 큰 보폭·높이 드는 뒤꿈치
-const HEAD := 2.5        ## 머리 크기 배율(전투 그림 = 1)
-const LEGS := 0.68       ## 다리 길이 배율
+const HEAD := 2.2        ## 머리 크기 배율(전투 그림 = 1) — 2026-10-17 사용자 "머리 크기 줄이고"로 2.5 → 2.2
+const LEGS := 0.75       ## 다리 길이 배율 — 2026-10-17 사용자 "다리 조금만 늘려"로 0.68 → 0.75
+## 종족마다 HEAD·LEGS를 덮어쓴다(2026-10-17 사용자 "바바리안은 예전 머리 2.5·다리 0.68로" — 인간만 줄이고 늘림). --set=head/legs가 있으면 그것이 이긴다.
+const RACE_BODY := {"barbarian": {"head": 2.5, "legs": 0.68}}
 const WIDE := 1.15       ## 어깨·엉덩이 폭 배율
 const BULK := 1.35       ## 팔다리·몸통 굵기 배율
 const HUNCH := 0.2       ## 숙임
 const ARMS := 1.0        ## 팔 자세(ARM_POSES 번호 — 1 = 늘어뜨린 팔)
 const STANCE := 0.065    ## 발 벌림(키 비율)
 const KNEE := 0.08       ## 무릎 굽힘
-const STEP := 0.17       ## 걸음 보폭(키 비율 — 다리 길이 배율이 곱해진다)
-const HEEL := 0.13       ## 뒷발 뒤꿈치 드는 높이
-const SWING := 0.15      ## 팔 흔들기
+## 걸음(2026-10-17 사용자 첨부 피어 앤 헝거 걷기 프레임을 격자로 재서 맞춤 — ASSUMPTIONS AM29). 각도(도) = 옆에서 본 수직(아래)에서 앞(+)·뒤(−),
+## "걸음 칸" 값이고 반걸음 칸은 선 자세와의 중간. 몸 높이는 앞발이 땅에 닿게 저절로 내려간다(Back.stride).
+## 예전 값(보폭 0.17·뒤꿈치 0.13·팔 0.15 — 발 자리를 옮기는 방식)은 뒷다리 허벅지가 +18°로 앞을 향한 채 정강이만 −65°로 꺾였고, 팔은 아래팔만 뻗었다.
+const THIGH_F := 24.0    ## 앞다리 허벅지(참고 +21~25°)
+const SHIN_F := 18.0     ## 앞다리 정강이(무릎을 살짝 굽혀 디딤)
+const THIGH_B := -20.0   ## 뒷다리 허벅지(참고 약 −25°)
+const SHIN_B := -32.0    ## 뒷다리 정강이(뒤꿈치를 들고 발끝은 땅에)
+const LIFT := 25.0       ## 반걸음 칸에서 지나가는 뒷다리의 무릎 굽힘(정강이 −, 허벅지는 절반만큼 +)
+const TWIST := 0.012     ## 앞으로 간 팔 쪽 어깨가 나오는 양(키 비율 — 어깨·골반 반대 돌림)
+## 팔(2026-10-17 사용자 "팔을 앞으로만 흔들어 좀비 같다"): 참고 그림의 앞팔(아래팔 +43°)을 그대로 따르면 늘 손이 몸 앞에 있다 →
+## 앞은 줄이고 뒤를 크게 — 걸음 칸마다 한 손은 등 뒤로 확실히 빠진다. 예전 값 15 / 14 / −14 / −4.
+const ARM_F := 12.0      ## 앞으로 간 팔: 위팔을 더 돌리는 각(선 자세 −4° → +8°)
+const FORE_F := -12.0    ## 앞으로 간 팔: 아래팔(선 자세 +13° → +13° 그대로 — 뻗지 않는다)
+const ARM_B := -34.0     ## 뒤로 간 팔: 위팔(→ −38°)
+const FORE_B := -10.0    ## 뒤로 간 팔: 아래팔(→ −31°, 손이 엉덩이 뒤로)
 ## 얼굴·머리
 const MAP_FACE := 1.0    ## 1 = 맵 얼굴(깎은 얼굴형, 코·입·귀 없음), 0 = 전투 그림 얼굴
 const SOCKETS := 1.0     ## 1 = 눈을 칠한 눈구멍으로
@@ -43,8 +57,12 @@ const FRINGE := 1.0      ## 1 = 긴 머리의 앞·옆머리 타래
 const HAIR_FLARE := 0.04 ## 긴 머리 옆머리가 부푸는 정도
 const SPIKY_GROW := 0.7  ## 짧은 머리(인간): 껍데기 숱 — 머리 모양은 아래 LOCKS 타래가 만든다
 ## 짧은 머리 타래(템플릿 5 — 턱선까지 내려오고 끝이 흩어진 머리, BackHair._spikes 스타일 값)
-const LOCKS := {"n": 24, "w": 0.12, "wj": 0.35, "flick": 0.1, "jitter": 0.6, "front": 0.1, "temple": -0.15, "side": -0.55, "back": 0.3, "gap": 0, "light": 4}
+const LOCKS := {"n": 24, "w": 0.12, "wj": 0.35, "flick": 0.1, "jitter": 0.6, "front": 0.1, "temple": -0.15, "side": -0.55, "back": -0.15, "gap": 0, "light": 4}
 const SIDE_LOCKS := {"temple": 0.12, "front": 0.16}  ## 옆모습에서만 덮어쓰는 타래 끝
+## 옆모습 머리: 2026-10-17 "헬멧 같다"로 휨·삐친 뭉치를 넣어 봤다가 사용자가 되돌림("바로 전으로, 뒷머리만 깎아") — 템플릿 5 그대로, 뒷머리만 짧게(LOCKS back 0.3 → −0.15).
+## --set=sl_<키>=값으로 시험(아래 SIDE_HAIR 키 — BackHair._spikes swirl·tufts도 받는다).
+const SIDE_HAIR := {"side": -0.55, "back": -0.15, "flick": 0.1, "jitter": 0.6, "swirl": 0.0, "tufts": 0.0, "gap": 0.0}
+const SIDE_SHELL := 0.7  ## 옆모습 껍데기 숱(SPIKY_GROW와 같게)
 ## 마감(방법 ⑤): 전투 그림 빛 그대로, 줄인 뒤 밝기·대비·안쪽 선
 const FRONT_LIGHT := 0.0
 const LIGHT := Vector3(-0.2, -0.5, 0.85)
@@ -132,11 +150,11 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	sp["turn"] = turn
 	sp["pitch"] = _v("pitch", PITCH)
 	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": ARM_POSES[int(_v("arms", ARMS))], "arm_r": ARM_POSES[int(_v("arms", ARMS))], "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH)}, true)
-	sp["step"] = _v("step", STEP)
-	sp["swing"] = _v("swing", SWING)
-	sp["heel"] = _v("heel", HEEL)
-	sp["head"] = float(sp.get("head", 1.0)) * _v("head", HEAD)
-	sp["legs"] = _v("legs", LEGS)
+	sp["gait"] = {"thigh_f": _v("thigh_f", THIGH_F), "shin_f": _v("shin_f", SHIN_F), "thigh_b": _v("thigh_b", THIGH_B), "shin_b": _v("shin_b", SHIN_B),
+		"lift": _v("lift", LIFT), "twist": _v("twist", TWIST), "arm_f": _v("arm_f", ARM_F), "fore_f": _v("fore_f", FORE_F), "arm_b": _v("arm_b", ARM_B), "fore_b": _v("fore_b", FORE_B)}
+	var rb: Dictionary = RACE_BODY.get(race, {})
+	sp["head"] = float(sp.get("head", 1.0)) * _v("head", float(rb.get("head", HEAD)))
+	sp["legs"] = _v("legs", float(rb.get("legs", LEGS)))
 	sp["wide"] = _v("wide", WIDE)
 	sp["bulk"] = float(sp.get("bulk", 1.0)) * _v("bulk", BULK)
 	sp["map_face"] = _v("map_face", MAP_FACE) > 0.0  # 1 = 입·튀어나온 턱 없는 얼굴, 0 = 전투 그림 얼굴(코·입)
@@ -147,7 +165,7 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 		sp["spiky"] = true
 		sp["fringe"] = false
 		sp["hair_grow"] = _v("spiky_grow", SPIKY_GROW)
-		sp["locks"] = LOCKS
+		sp["locks"] = LOCKS.merged({"back": _v("lock_back", float(LOCKS["back"]))}, true)
 	sp["socket_eyes"] = _v("sockets", SOCKETS) > 0.0
 	sp["hair_flare"] = _v("hair_flare", HAIR_FLARE)
 	sp["eye_r"] = _v("eye_r", EYE_R)
@@ -155,7 +173,11 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	if absf(absf(turn) - PI * 0.5) < 0.6:  # 옆모습: 얼굴을 조금 밝게, 관자놀이 타래는 광대까지만(옆얼굴을 덮어 어두웠다)
 		sp["face_lift"] = _v("side_face_lift", SIDE_FACE_LIFT)
 		if sp.has("locks"):
-			sp["locks"] = (sp["locks"] as Dictionary).merged(SIDE_LOCKS, true)
+			var side_hair := {}
+			for key: String in SIDE_HAIR:
+				side_hair[key] = _v("sl_" + key, float(SIDE_HAIR[key]))
+			sp["locks"] = (sp["locks"] as Dictionary).merged(SIDE_LOCKS, true).merged(side_hair, true)
+			sp["hair_grow"] = _v("side_shell", SIDE_SHELL)
 	sp["mottle_amt"] = 0.08  # 살갗 얼룩·때는 줄이면 점박이로 보인다
 	sp["grime"] = 0.0
 	if _v("front_light", FRONT_LIGHT) > 0.0:

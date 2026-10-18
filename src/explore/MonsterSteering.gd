@@ -192,9 +192,9 @@ func _line_of_sight(a: Vector2i, b: Vector2i) -> bool:
 	return true
 
 
-func move_hours(monster_id: String) -> float:
-	var agi := JsonUtil.get_float(JsonUtil.get_dict(_db.get_entry("monsters", monster_id), "stats"), "agi")
-	return maxf(0.0001, float(_db.bal("explore.move_hours_base", 0.02)) / (1.0 + agi * float(_db.bal("explore.move_agi_coef", 0.02))))
+## 한 칸을 가는 데 드는 게임 시간 — 플레이어와 같다(민첩과 무관, 사용자 결정 2026-10-17).
+func move_hours(_monster_id: String) -> float:
+	return maxf(0.0001, float(_db.bal("explore.move_hours_base", 0.02)))
 
 
 func _behavior(monster_id: String) -> Dictionary:

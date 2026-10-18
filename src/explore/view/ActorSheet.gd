@@ -1,11 +1,12 @@
 class_name ActorSheet
 extends RefCounted
-## 탐험 맵 몸 그림 시트(tools/paint_actors.gd → assets/actors/<종족>.webp): 줄 = 아래·왼쪽·오른쪽·위, 칸 = 걸음 A·섬·걸음 B.
-## 칸 크기·그림 배율·발 위치·걷기 속도는 render.json view.actor_sheet. 원점 = 발.
-## 걷는 동안 칸 순서 [A, 섬, B, 섬]을 walk_fps로 돌고, 멈추면 섬.
+## 탐험 맵 몸 그림 시트(tools/paint_actors.gd → assets/actors/<종족>.webp): 줄 = 아래·왼쪽·오른쪽·위,
+## 칸 = 걸음 A·반걸음 A·섬·반걸음 B·걸음 B. 칸 수·재생 순서·크기·그림 배율·발 위치·걷기 속도는 render.json view.actor_sheet. 원점 = 발.
+## 걷는 동안 walk_cycle(섬 → 반걸음 → 걸음 → 반걸음 → 섬 → …, 섬이 한 바퀴에 두 번)을 walk_fps로 돌고, 멈추면 stand_col.
 
-const WALK_CYCLE := [0, 1, 2, 1]
-const STAND := 1
+var cols: int = 5
+var stand: int = 2
+var cycle: Array[int] = [2, 1, 0, 1, 2, 3, 4, 3]
 
 var texture: Texture2D
 var cell: Vector2 = Vector2(72, 108)  ## 그림 px
@@ -25,8 +26,15 @@ static func load_for(render: Dictionary, path: String) -> ActorSheet:
 		s.cell = Vector2(float(c[0]), float(c[1]))
 	s.scale = 1.0 / maxf(1.0, JsonUtil.get_float(cfg, "art_scale", 2.0))
 	s.foot = JsonUtil.get_float(cfg, "foot_px", 4.0)
-	s.fps = JsonUtil.get_float(cfg, "walk_fps", 7.0)
-	if s.texture == null or s.texture.get_width() < s.cell.x * 3 or s.texture.get_height() < s.cell.y * 4:
+	s.fps = JsonUtil.get_float(cfg, "walk_fps", 12.0)
+	s.cols = JsonUtil.get_int(cfg, "cols", 5)
+	s.stand = JsonUtil.get_int(cfg, "stand_col", 2)
+	var cyc := JsonUtil.get_array(cfg, "walk_cycle")
+	if not cyc.is_empty():
+		s.cycle.clear()
+		for v: Variant in cyc:
+			s.cycle.append(clampi(int(v), 0, s.cols - 1))
+	if s.texture == null or s.texture.get_width() < s.cell.x * s.cols or s.texture.get_height() < s.cell.y * 4:
 		return null
 	return s
 
@@ -47,7 +55,7 @@ static func row_for(facing: Vector2i) -> int:
 
 ## 걷기 시간 t(초)의 칸. walking이 아니면 섬.
 func col_at(t: float, walking: bool) -> int:
-	return int(WALK_CYCLE[int(t * fps) % WALK_CYCLE.size()]) if walking else STAND
+	return cycle[int(t * fps) % cycle.size()] if walking and not cycle.is_empty() else stand
 
 
 func draw(canvas: CanvasItem, facing: Vector2i, col: int, modulate: Color = Color.WHITE) -> void:

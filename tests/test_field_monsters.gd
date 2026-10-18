@@ -39,9 +39,8 @@ func _c(cell: Vector2i) -> Vector2:
 	return Kinematics.center_of(cell)
 
 
-func _move_hours(monster_id: String) -> float:
-	var agi := JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("monsters", monster_id), "stats"), "agi")
-	return float(db.bal("explore.move_hours_base")) / (1.0 + agi * float(db.bal("explore.move_agi_coef")))
+func _move_hours(_monster_id: String) -> float:
+	return float(db.bal("explore.move_hours_base"))
 
 
 func test_initial_spawns_by_region() -> void:

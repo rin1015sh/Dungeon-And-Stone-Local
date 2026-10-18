@@ -10,6 +10,11 @@ extends RefCounted
 ## 남쪽을 향한 윤곽만 앞면 띠(위 = 올린 윤곽, 아래 = 바닥 윤곽 + 밑동)로 그린다.
 ## 윗면은 보이는 것을 가릴 때만 필요하다: 북쪽이 열린 벽 칸 + 아래쪽 오목 메움. 나머지 바위 속 칸은 그리지 않는다.
 ## 줄마다 한 번(build) 계산해 두고, 그릴 때는 탐험 여부·빛만 본다(WallRow).
+## 캐릭터와의 앞뒤(y 정렬): 아래쪽 모서리를 깎은 벽 칸·위쪽 오목 메움은 앞면이 칸 아래 가장자리보다 위(북쪽)에 있으니
+## 따로 묶어(piece) 그 사선의 위쪽 끝 y로 정렬한다 — 줄 전체(칸 아래 가장자리)로 정렬하면 사선 앞에 선 캐릭터를 벽이 덮는다.
+const PIECE_ROW := 0     ## 줄 전체와 함께(칸 아래 가장자리로 정렬)
+const PIECE_CUT := 1     ## 아래 모서리를 깎은 벽 칸(사선 위 끝 = 칸 위 + t − r)
+const PIECE_FILLET := 2  ## 위쪽 오목 메움(사선 가운데 = 칸 위 + r/2)
 
 const STEPS := 4
 
@@ -46,14 +51,18 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, fa
 	var w := not _wall(map, p + Vector2i(-1, 0))
 	var h: int = face_h.call(def)
 	var o := Vector2(p) * t
+	var piece := PIECE_CUT if so and (e or w) else PIECE_ROW
+	var from_floor := floors.size()
 	var poly := PackedVector2Array()
 	# 시계 방향: 왼위 → 오위 → 오아래 → 왼아래. 볼록 모서리는 두 변 위 r 지점을 잇는 사선.
 	_corner(poly, o, p.x, n and w, Vector2(0, r), Vector2(r, 0), Vector2.ZERO)
 	_corner(poly, o, p.x, n and e, Vector2(t - r, 0), Vector2(t, r), Vector2(t, 0))
 	_corner(poly, o, p.x, so and e, Vector2(t, t - r), Vector2(t - r, t), Vector2(t, t))
 	_corner(poly, o, p.x, so and w, Vector2(r, t), Vector2(0, t - r), Vector2(0, t))
+	for i in range(from_floor, floors.size()):
+		floors[i]["piece"] = piece
 	if n:
-		tops.append({"x": p.x, "poly": poly, "h": h})
+		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece})
 	if not so:
 		return
 	# 남쪽을 향한 윤곽: 아래쪽 모서리 사선 + 아래 변(왼→오 순서로)
@@ -67,7 +76,7 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, fa
 		_cut(pts, o + Vector2(t - r, t), o + Vector2(t, t - r), o + Vector2(t, t), _bulge)  # 오아래 사선
 	else:
 		pts.append(o + Vector2(t, t))
-	_add_faces(pts, p.x, o.x, t, def.index, v, h)
+	_add_faces(pts, p.x, o.x, t, def.index, v, h, piece)
 
 
 ## 바닥 칸의 오목 모서리 메움. 위쪽 메움(벽이 북·서 또는 북·동)은 남쪽을 향해 앞면 띠가 생기고,
@@ -94,21 +103,35 @@ func _fillets(map: FloorMap, p: Vector2i, t: float, r: float, smooth: PackedByte
 		var pts := arc.duplicate()
 		if pts[0].x > pts[pts.size() - 1].x:
 			pts.reverse()
-		_add_faces(pts, p.x, o.x, t, wdef.index, variant.call(a.x, a.y, wdef), h)
+		_add_faces(pts, p.x, o.x, t, wdef.index, variant.call(a.x, a.y, wdef), h, PIECE_FILLET)
 
 
 static func _smooth_wall(map: FloorMap, p: Vector2i, smooth: PackedByteArray) -> bool:
 	return map.in_bounds(p) and map.is_wall(p) and smooth[map.def_at(p).index] != 0
 
 
-func _add_faces(pts: PackedVector2Array, x: int, ox: float, t: float, def_index: int, v: int, h: int) -> void:
+func _add_faces(pts: PackedVector2Array, x: int, ox: float, t: float, def_index: int, v: int, h: int, piece: int = PIECE_ROW) -> void:
 	for i in pts.size() - 1:
 		var a := pts[i]
 		var b := pts[i + 1]
 		if b.x - a.x < 0.01:  # 세로이거나 거꾸로 가는 선분은 앞면이 보이지 않는다
 			continue
 		faces.append({"x": x, "a": a, "b": b, "def": def_index, "v": v, "u0": clampf((a.x - ox) / t, 0.0, 1.0),
-			"u1": clampf((b.x - ox) / t, 0.0, 1.0), "h": h})
+			"u1": clampf((b.x - ox) / t, 0.0, 1.0), "h": h, "piece": piece})
+
+
+## 이 모양에 piece 묶음이 있는가.
+func has_piece(piece: int) -> bool:
+	for list: Array[Dictionary] in [tops, faces, floors]:
+		for it in list:
+			if int(it.get("piece", PIECE_ROW)) == piece:
+				return true
+	return false
+
+
+## piece 묶음의 정렬 y(줄 위 가장자리에서 아래로 px). t = 칸, r = 깎는 폭. 1px 북쪽으로 — 사선 끝에 발이 닿아도 캐릭터가 앞.
+static func piece_sort(piece: int, t: float, r: float) -> float:
+	return (t - r - 1.0) if piece == PIECE_CUT else (r * 0.5 - 1.0)
 
 
 ## 모서리 하나: 깎으면 a → b 사선(가운데가 모서리 쪽으로 bulge만큼 휨), 아니면 모서리 점.

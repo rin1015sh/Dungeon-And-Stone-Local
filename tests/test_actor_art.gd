@@ -1,6 +1,6 @@
 extends TestCase
 ## 탐험 맵 몸 그림(tools/paint_actors.gd → assets/actors, docs/PROMPT_ART_MAP.md A4):
-## 고를 수 있는 종족마다 4방향 × 걸음 3장 시트가 있고, 몬스터마다 맵 그림이 있는지. 시트 줄·칸 고르기 규칙.
+## 고를 수 있는 종족마다 4방향 × 걸음 cols장(render.json actor_sheet) 시트가 있고, 몬스터마다 맵 그림이 있는지. 시트 줄·칸 고르기 규칙.
 ## 그림이 없으면 탐험가는 예전 그림, 몬스터는 도형으로 보인다 — 새 종족·몬스터를 추가하면 paint_actors.gd --only=<id>로 그린다.
 
 
@@ -15,9 +15,9 @@ func test_enabled_races_have_walk_sheets() -> void:
 			continue
 		var path := JsonUtil.get_str(def, "sprite")
 		var sheet := ActorSheet.load_for(db.render, path)
-		assert_true(sheet != null, "걷기 시트(4줄 × 3칸): %s %s" % [race, path])
+		assert_true(sheet != null, "걷기 시트(4줄 × cols칸): %s %s" % [race, path])
 		if sheet != null:
-			assert_eq(sheet.texture.get_size(), Vector2(sheet.cell.x * 3, sheet.cell.y * 4), "시트 크기: " + race)
+			assert_eq(sheet.texture.get_size(), Vector2(sheet.cell.x * sheet.cols, sheet.cell.y * 4), "시트 크기: " + race)
 
 
 func test_every_monster_has_map_art() -> void:
@@ -34,9 +34,19 @@ func test_sheet_rows_and_walk_cycle() -> void:
 	assert_eq(ActorSheet.row_for(Vector2i(-1, 0)), 1, "왼쪽")
 	assert_eq(ActorSheet.row_for(Vector2i(1, -1)), 2, "대각선은 옆모습")
 	assert_eq(ActorSheet.row_for(Vector2i(0, -1)), 3, "위")
-	var s := ActorSheet.new()
-	assert_eq(s.col_at(3.3, false), ActorSheet.STAND, "멈추면 섬")
+	var s := ActorSheet.load_for(db.render, "res://assets/actors/human.webp")
+	assert_true(s != null, "인간 시트")
+	if s == null:
+		return
+	assert_eq(s.col_at(3.3, false), s.stand, "멈추면 섬")
 	var seen := {}
-	for i in 8:
-		seen[s.col_at(i / s.fps + 0.01, true)] = true
-	assert_eq(seen.size(), 3, "걷는 동안 세 칸을 돈다")
+	var stands := 0
+	for i in s.cycle.size():
+		var c := s.col_at(i / s.fps + 0.01, true)
+		seen[c] = true
+		if c == s.stand:
+			stands += 1
+	assert_eq(seen.size(), s.cols, "걷는 동안 모든 칸(걸음·반걸음·섬)을 돈다")
+	assert_eq(stands, 2, "한 바퀴에 선 칸이 두 번(걸음 사이마다)")
+	for i in s.cycle.size():  # 이웃한 칸끼리는 한 칸씩만 바뀐다(걸음 → 섬으로 건너뛰지 않는다)
+		assert_true(absi(s.cycle[i] - s.cycle[(i + 1) % s.cycle.size()]) == 1, "칸 순서가 이어진다: %s" % [s.cycle])
