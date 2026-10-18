@@ -84,7 +84,7 @@ static func _spire(prof: PackedFloat32Array, rim: PackedFloat32Array, jag: Packe
 		if tower:  # 무너진 탑: 곧은 몸 + 톱니 + 부서진 윗머리
 			if absf(dx) > hw:
 				continue
-			y = top + (8.0 * scale if posmod(dx + hw, 10.0 * scale) < 5.0 * scale else 0.0)
+			y = top + (8.0 * scale if fposmod(dx + hw, 10.0 * scale) < 5.0 * scale else 0.0)
 			y += maxf(0.0, dx) * 0.35 * (jag[x] + 0.3)
 		else:  # 뾰족한 바위탑(오목한 옆구리, 기울고 들쭉날쭉)
 			var t := absf(dx - lean * hw * 2.0 * (1.0 - absf(dx) / (hw * 3.0))) / (hw * 3.0)

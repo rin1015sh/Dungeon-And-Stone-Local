@@ -82,7 +82,7 @@ func test_atlas_sizes() -> void:
 	for id: String in db.get_collection("tiles"):
 		var t := db.get_entry("tiles", id)
 		var art := JsonUtil.get_dict(t, "art")
-		if art.is_empty():
+		if not art.has("atlas"):  # 서 있는 소품(art.stand)만 있는 타일
 			continue
 		var tex := load(JsonUtil.get_str(art, "atlas")) as Texture2D
 		assert_true(tex != null, "아틀라스: " + id)

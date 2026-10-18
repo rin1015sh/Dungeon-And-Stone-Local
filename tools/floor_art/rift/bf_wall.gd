@@ -50,8 +50,8 @@ static func _top(p: Paint, style: String, col: Color, s: int) -> void:
 			match style:
 				"house":  # 기와(가로 줄, 아래 끝이 둥근 비늘)
 					var row := int(y / 8.0)
-					var fx := posmod(x + (row % 2) * 6.0, 12.0)
-					var fy := posmod(float(y), 8.0)
+					var fx := fposmod(x + (row % 2) * 6.0, 12.0)
+					var fy := fposmod(float(y), 8.0)
 					var bulge := sqrt(maxf(0.0, 1.0 - pow((fx - 6.0) / 6.0, 2.0)))
 					var t := 0.35 + fy / 8.0 * 0.4 * bulge + (1.0 - fx / 12.0) * 0.15 + (hf[i] - 0.5) * 0.3 + (Paint.hash01(row, int((x + (row % 2) * 6) / 12), 2) - 0.5) * 0.3
 					c = col.darkened(0.5).lerp(col.lightened(0.45).lerp(Color("#6a2a20"), 0.3), clampf(t, 0.0, 1.0))
@@ -61,7 +61,7 @@ static func _top(p: Paint, style: String, col: Color, s: int) -> void:
 					var g := sin(y * 1.3 + hf[i] * 6.0) * 0.5 + 0.5
 					var t := 0.45 + (g - 0.5) * 0.25 + Seam.relief(hf, w, h, x, y, 3.0) * 0.3
 					c = col.darkened(0.4).lerp(col.lightened(0.35), clampf(t, 0.0, 1.0))
-					var fy := posmod(float(y), 21.333)
+					var fy := fposmod(float(y), 21.333)
 					if fy < 1.2:
 						c = c.lerp(K.INK, 0.75)
 				_:  # 성벽 길 판석(성벽·기둥·창 벽)
@@ -161,8 +161,8 @@ static func _house(x: int, y: int, main: float, col: Color, t: float, hf: float)
 		if dx < 0.8:
 			c = c.lerp(K.INK, 0.7)
 	if y >= plinth:  # 돌 기단
-		var fy := posmod(y - plinth, 6.0)
-		var fx := posmod(x + (int((y - plinth) / 6.0) % 2) * 10.0, 20.0)
+		var fy := fposmod(y - plinth, 6.0)
+		var fx := fposmod(x + (int((y - plinth) / 6.0) % 2) * 10.0, 20.0)
 		c = Color("#4a3c38").darkened(0.2).lerp(Color("#6a5a52"), clampf(t, 0.0, 1.0))
 		if fy < 1.0 or fx < 1.0:
 			c = c.lerp(K.INK, 0.7)
@@ -190,7 +190,7 @@ static func _pillar(x: int, y: int, main: float, col: Color, t: float, hf: float
 	var lit := clampf(0.55 - nx * 0.75, 0.0, 1.0)  # 왼쪽이 밝다
 	var shade := 0.18 + lit * 0.62 - pow(absf(u), 6.0) * 0.3
 	if band < 0:  # 오목한 홈: 홈 안쪽 왼벽은 그늘, 오른벽은 빛
-		var ph := posmod((u + 1.0) * 2.0, 1.0)
+		var ph := fposmod((u + 1.0) * 2.0, 1.0)
 		shade += (ph - 0.5) * 0.5 * (1.0 - absf(u) * 0.6)
 		if ph < 0.1 or ph > 0.9:
 			shade -= 0.4
@@ -237,7 +237,7 @@ static func _glass(x: int, y: int, main: float, stone: Color, hf: float) -> Colo
 		c = Color("#6a0812")  # 짙은 진홍
 	var glow := clampf(1.0 - absf(fx - 32.0) / 30.0, 0.0, 1.0) * clampf(1.0 - absf(fy - main * 0.55) / main, 0.0, 1.0)
 	c = c.lightened(glow * 0.18 + (hf - 0.5) * 0.1)
-	if d < 1.2 or posmod(fx - x0, pw) < 0.9 or posmod(fy - y0 + (colx % 2) * 3.5, 7.0) < 0.9:
+	if d < 1.2 or fposmod(fx - x0, pw) < 0.9 or fposmod(fy - y0 + (colx % 2) * 3.5, 7.0) < 0.9:
 		c = Color("#1a0606")  # 납 선
 	if absf(fx - 32.0) < 1.8 and fy > y0 + 6.0:
 		c = Color("#2a1416").lerp(Color("#4a2a2c"), clampf(32.0 - fx, 0.0, 1.0))  # 문설주
@@ -247,7 +247,7 @@ static func _glass(x: int, y: int, main: float, stone: Color, hf: float) -> Colo
 ## 쇠테를 두른 나무 문: 세로 판자(64/6) + 가로 쇠띠 둘 + 징.
 static func _gate(x: int, y: int, main: float, col: Color, t: float, hf: float) -> Color:
 	var pw := 64.0 / 6.0
-	var fx := posmod(float(x), pw)
+	var fx := fposmod(float(x), pw)
 	var k := int(x / pw)
 	var grain := sin(y * 0.35 + hf * 8.0 + k * 2.1) * 0.5 + 0.5
 	var shade := 0.45 + (grain - 0.5) * 0.25 + (Paint.hash01(k, 3, 4) - 0.5) * 0.3 + (t - 0.5) * 0.4
@@ -259,7 +259,7 @@ static func _gate(x: int, y: int, main: float, col: Color, t: float, hf: float) 
 		var dy := y - by
 		if dy >= 0.0 and dy < 7.0:
 			c = K.IRON.lerp(K.RUST, clampf(hf * 1.4 - 0.3, 0.0, 0.7)).lightened(0.25 if dy < 1.5 else (-0.3 if dy > 5.0 else 0.0))
-			var sx := posmod(float(x) + 4.0, 10.6667)
+			var sx := fposmod(float(x) + 4.0, 10.6667)
 			var stud := Vector2(sx - 5.33, dy - 3.5).length()
 			if stud < 2.2:
 				c = K.IRON.lightened(0.35 - stud * 0.2) if (sx < 5.33 and dy < 3.5) else K.IRON.darkened(0.3)

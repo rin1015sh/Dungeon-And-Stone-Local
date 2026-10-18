@@ -27,7 +27,7 @@ const LIT := Color("#f0dcc0")
 ## 판석 줄눈: 칸(size px)을 rows(줄이 시작하는 y, 0부터 오름차순)로 나누고, 줄마다 자른 자리 cuts[r].
 ## 돌아옴 = (가장 가까운 줄눈 거리, 돌 번호, 모서리 빛 -1~1 — 돌의 왼쪽·위 모서리는 밝고 오른쪽·아래는 어둡다, bev px 안쪽까지).
 static func slab(x: float, y: float, size: float, rows: Array, cuts: Array, bev: float = 4.0) -> Vector3:
-	var fy0 := posmod(y, size)
+	var fy0 := fposmod(y, size)
 	var r := 0
 	for k in rows.size():
 		if fy0 >= float(rows[k]):
@@ -37,17 +37,17 @@ static func slab(x: float, y: float, size: float, rows: Array, cuts: Array, bev:
 	var fy := fy0 - top
 	var rh := bot - top
 	var row_cuts: Array = cuts[r]
-	var fx := posmod(x, size)
+	var fx := fposmod(x, size)
 	var dl := 1e9
 	var dr := 1e9
 	var seg := 0
 	for k in row_cuts.size():
 		var c := float(row_cuts[k])
-		var a := posmod(fx - c, size)
+		var a := fposmod(fx - c, size)
 		if a < dl:
 			dl = a
 			seg = k
-		dr = minf(dr, posmod(c - fx, size))
+		dr = minf(dr, fposmod(c - fx, size))
 	var d := minf(minf(fy, rh - fy), minf(dl, dr))
 	var lit := clampf(1.0 - fy / bev, 0.0, 1.0) - clampf(1.0 - (rh - fy) / bev, 0.0, 1.0)
 	lit += (clampf(1.0 - dl / bev, 0.0, 1.0) - clampf(1.0 - dr / bev, 0.0, 1.0)) * 0.7
