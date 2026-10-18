@@ -72,10 +72,71 @@
         ],
         "cliff_color": "#3a4a5a",
         "cliff_depth": 1.2
+      },
+      "decor": {
+        "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
+        "sheet": "res://assets/floor/f1/decals.webp",
+        "variants": 4,
+        "kinds": [
+          "shore",
+          "gravel",
+          "moss",
+          "wet",
+          "crystal_bits",
+          "claws",
+          "mud",
+          "rot",
+          "trash",
+          "bones"
+        ],
+        "on_tiles": [
+          "gc_snow",
+          "ice_floor",
+          "gc_gravel"
+        ],
+        "rules": [
+          {
+            "kind": "gravel",
+            "chance": 0.3,
+            "wall_north": true,
+            "dense": true
+          },
+          {
+            "kind": "claws",
+            "chance": 0.7,
+            "noise": {
+              "key": "claws",
+              "freq": 0.06,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "bones",
+            "chance": 0.55,
+            "noise": {
+              "key": "bones",
+              "freq": 0.07,
+              "above": 0.52
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "gravel",
+            "chance": 0.22
+          }
+        ]
+      },
+      "macro": {
+        "_comment": "균열 거시 변화: 저주파 밝기 얼룩(넓은 바닥이 한 장 그림처럼 밋밋하지 않게). [창작] 임시값",
+        "noise": {
+          "freq": 0.07,
+          "amount": 0.24
+        }
       }
     },
-    "ambient_light_m": 10.0,
-    "visibility_cap_m": 11.0
+    "ambient_light_m": 100.0,
+    "visibility_cap_m": 100.0
   },
   "chapters": [
     {
@@ -116,11 +177,7 @@
           "near_entry": true,
           "message": "explore.glacier_crystal"
         }
-      ],
-      "look": {
-        "ambient_light_m": 13.0,
-        "visibility_cap_m": 14.0
-      }
+      ]
     },
     {
       "id": "ch2",

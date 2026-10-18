@@ -53,11 +53,12 @@ func test_chapters_are_walkable_and_anchored() -> void:
 			assert_eq(run.hidden.at.size(), JsonUtil.get_array(run.chapters()[i], "hidden").size(), "히든 피스가 다 놓인다: " + where)
 
 
-func test_outdoor_chapters_see_farther() -> void:
-	var cs := _enter("rift_blood_fortress")
-	var out := cs.rift_run.chapter_floor_def(0)
-	var inner := cs.rift_run.chapter_floor_def(3)
-	assert_true(float(out["visibility_cap_m"]) > float(inner["visibility_cap_m"]), "하늘이 열린 바깥 챕터는 더 멀리 보인다")
+## 균열은 시야 제한 없음(사용자 2026-10-18) — 챕터 지도 전체가 보일 만큼 넓다.
+func test_rift_vision_unlimited() -> void:
+	for rid: String in db.get_collection("rifts"):
+		var cs := _enter(rid)
+		var fd := cs.rift_run.chapter_floor_def(0)
+		assert_true(float(fd["visibility_cap_m"]) >= 100.0 and float(fd["ambient_light_m"]) >= 100.0, "시야 제한 없음: " + rid)
 
 
 func test_void_tiles_block_walk_not_sight() -> void:

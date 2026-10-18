@@ -72,10 +72,104 @@
         ],
         "cliff_color": "#2a1416",
         "cliff_depth": 1.2
+      },
+      "decor": {
+        "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
+        "sheet": "res://assets/floor/f1/decals.webp",
+        "variants": 4,
+        "kinds": [
+          "shore",
+          "gravel",
+          "moss",
+          "wet",
+          "crystal_bits",
+          "claws",
+          "mud",
+          "rot",
+          "trash",
+          "bones"
+        ],
+        "on_tiles": [
+          "fortress_floor",
+          "bf_road",
+          "bf_ash",
+          "bf_dirt",
+          "bf_rubble",
+          "bf_stairs"
+        ],
+        "rules": [
+          {
+            "kind": "gravel",
+            "chance": 0.3,
+            "wall_north": true,
+            "dense": true
+          },
+          {
+            "kind": "bones",
+            "chance": 0.75,
+            "noise": {
+              "key": "bones",
+              "freq": 0.07,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "rot",
+            "chance": 0.8,
+            "noise": {
+              "key": "rot",
+              "freq": 0.05,
+              "above": 0.42
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "mud",
+            "chance": 0.75,
+            "noise": {
+              "key": "mud",
+              "freq": 0.06,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "trash",
+            "chance": 0.55,
+            "noise": {
+              "key": "trash",
+              "freq": 0.09,
+              "above": 0.42
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "wet",
+            "chance": 0.65,
+            "noise": {
+              "key": "wet",
+              "freq": 0.05,
+              "above": 0.52
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "gravel",
+            "chance": 0.22
+          }
+        ]
+      },
+      "macro": {
+        "_comment": "균열 거시 변화: 저주파 밝기 얼룩(넓은 바닥이 한 장 그림처럼 밋밋하지 않게). [창작] 임시값",
+        "noise": {
+          "freq": 0.07,
+          "amount": 0.24
+        }
       }
     },
-    "ambient_light_m": 8.0,
-    "visibility_cap_m": 10.0
+    "ambient_light_m": 100.0,
+    "visibility_cap_m": 100.0
   },
   "chapters": [
     {
@@ -106,10 +200,6 @@
       "exit_requires": {
         "item": "rift_horn",
         "message": "explore.fortress_horn"
-      },
-      "look": {
-        "ambient_light_m": 13.0,
-        "visibility_cap_m": 14.0
       }
     },
     {
@@ -139,11 +229,7 @@
             ]
           }
         }
-      ],
-      "look": {
-        "ambient_light_m": 13.0,
-        "visibility_cap_m": 14.0
-      }
+      ]
     },
     {
       "id": "ch3",
@@ -180,11 +266,7 @@
           "tile": "fountain_statue",
           "message": "explore.fortress_tear"
         }
-      ],
-      "look": {
-        "ambient_light_m": 13.0,
-        "visibility_cap_m": 14.0
-      }
+      ]
     },
     {
       "id": "ch4",

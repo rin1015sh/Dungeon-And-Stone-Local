@@ -44,10 +44,81 @@
         ],
         "cliff_color": "#16161a",
         "cliff_depth": 1.2
+      },
+      "decor": {
+        "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
+        "sheet": "res://assets/floor/f1/decals.webp",
+        "variants": 4,
+        "kinds": [
+          "shore",
+          "gravel",
+          "moss",
+          "wet",
+          "crystal_bits",
+          "claws",
+          "mud",
+          "rot",
+          "trash",
+          "bones"
+        ],
+        "on_tiles": [
+          "metal_floor",
+          "it_flagstone",
+          "it_rubble"
+        ],
+        "rules": [
+          {
+            "kind": "gravel",
+            "chance": 0.35,
+            "wall_north": true,
+            "dense": true
+          },
+          {
+            "kind": "bones",
+            "chance": 0.7,
+            "noise": {
+              "key": "bones",
+              "freq": 0.07,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "rot",
+            "chance": 0.65,
+            "noise": {
+              "key": "rot",
+              "freq": 0.05,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "trash",
+            "chance": 0.5,
+            "noise": {
+              "key": "trash",
+              "freq": 0.09,
+              "above": 0.5
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "gravel",
+            "chance": 0.22
+          }
+        ]
+      },
+      "macro": {
+        "_comment": "균열 거시 변화: 저주파 밝기 얼룩(넓은 바닥이 한 장 그림처럼 밋밋하지 않게). [창작] 임시값",
+        "noise": {
+          "freq": 0.07,
+          "amount": 0.24
+        }
       }
     },
-    "ambient_light_m": 7.0,
-    "visibility_cap_m": 9.0
+    "ambient_light_m": 100.0,
+    "visibility_cap_m": 100.0
   },
   "chapters": [
     {
