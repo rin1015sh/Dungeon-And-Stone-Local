@@ -1,38 +1,33 @@
 extends RefCounted
-## 균열 그림(임시 틀 — 장소 그림은 아직): Common.gd 계약대로 바탕·잔손질·소품·뒷배경을 칠한다.
+## 강철의 묘(rift_iron_tomb) 그림 — Common.gd 계약: 강철과 돌의 왕릉(회청 강철·짙은 점판암·해진 진홍 카펫과 깃발·바랜 금·촛불).
+## 바닥 = it_floor(바탕)·it_fdetail(잔손질), 벽 = it_wall·it_wdetail, 소품 = it_stand·it_stand2, 뒷배경 = it_back. 부품은 it_lib.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
-const Ink := preload("res://tools/city_art/Ink.gd")
-const Seam := preload("res://tools/floor_art/Seam.gd")
-const Kit := preload("res://tools/floor_art/rift/Kit.gd")
-const Common := preload("res://tools/floor_art/rift/Common.gd")
+const Floor := preload("res://tools/floor_art/rift/it_floor.gd")
+const FloorDetail := preload("res://tools/floor_art/rift/it_fdetail.gd")
+const Wall := preload("res://tools/floor_art/rift/it_wall.gd")
+const WallDetail := preload("res://tools/floor_art/rift/it_wdetail.gd")
+const Stand := preload("res://tools/floor_art/rift/it_stand.gd")
+const Back := preload("res://tools/floor_art/rift/it_back.gd")
 
 
-static func base(p: Paint, _style: String, part: String, col: Color, s: int) -> void:
-	var f := Seam.field(p.w, p.h, s, 0.05, 3)
-	var main := p.h - (Common.skirt if part == "face" else 0)
-	for y in p.h:
-		for x in p.w:
-			if y >= main:
-				continue
-			p.blend(x, y, col.darkened(0.3).lerp(col.lightened(0.2), f[y * p.w + x]), 1.0)
+static func base(p: Paint, style: String, part: String, col: Color, s: int) -> void:
+	if part == "floor":
+		Floor.base(p, style, col, s)
+	else:
+		Wall.base(p, style, part, col, s)
 
 
-static func detail(_p: Paint, _style: String, _part: String, _v: int, _col: Color) -> void:
-	pass
+static func detail(p: Paint, style: String, part: String, v: int, col: Color) -> void:
+	if part == "floor":
+		FloorDetail.detail(p, style, v, col)
+	else:
+		WallDetail.detail(p, style, part, v, col)
 
 
-static func stand(_tile: String, w: int, h: int, seed_value: int) -> Paint:
-	var p := Paint.new(w, h, seed_value)
-	var foot := Vector2(w * 0.5, h - w * 0.14)
-	Kit.shadow(p, foot, w * 0.22, w * 0.07)
-	Kit.box(p, foot, w * 0.4, w * 0.3, w * 0.3, Color("#7a6a5a"))
-	return p
+static func stand(tile: String, w: int, h: int, seed_value: int) -> Paint:
+	return Stand.paint(tile, w, h, seed_value)
 
 
 static func backdrop(w: int, h: int, seed_value: int) -> Paint:
-	var p := Paint.new(w, h, seed_value)
-	for y in h:
-		for x in w:
-			p.blend(x, y, Color("#100c0c").lerp(Color("#3a2a2a"), float(y) / h), 1.0)
-	return p
+	return Back.paint(w, h, seed_value)

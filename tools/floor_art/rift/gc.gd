@@ -1,38 +1,33 @@
 extends RefCounted
-## 균열 그림(임시 틀 — 장소 그림은 아직): Common.gd 계약대로 바탕·잔손질·소품·뒷배경을 칠한다.
+## 빙하굴 균열 그림(A5 — Common.gd 계약): 눈 덮인 비탈·언 호수 → 고드름 아치 안 얼음 동굴 · 얼음 계단과 토템 · 지하수맥 · 얼음 가루 공동.
+## 눈은 푸른 그늘이 진 밝은 흰색, 얼음은 비치는 청록, 깊은 곳은 남빛 — 따뜻한 색은 토템·모닥불에만. 피어 앤 헝거풍 잉크·붓결·때.
+## 바닥 gc_floor(_detail) · 벽 gc_wall · 소품 gc_stand(2) · 뒷배경 gc_back · 공통 부품 gc_mat.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
-const Ink := preload("res://tools/city_art/Ink.gd")
-const Seam := preload("res://tools/floor_art/Seam.gd")
-const Kit := preload("res://tools/floor_art/rift/Kit.gd")
-const Common := preload("res://tools/floor_art/rift/Common.gd")
+const Floor := preload("res://tools/floor_art/rift/gc_floor.gd")
+const FloorDetail := preload("res://tools/floor_art/rift/gc_floor_detail.gd")
+const Wall := preload("res://tools/floor_art/rift/gc_wall.gd")
+const Stand := preload("res://tools/floor_art/rift/gc_stand.gd")
+const Back := preload("res://tools/floor_art/rift/gc_back.gd")
 
 
-static func base(p: Paint, _style: String, part: String, col: Color, s: int) -> void:
-	var f := Seam.field(p.w, p.h, s, 0.05, 3)
-	var main := p.h - (Common.skirt if part == "face" else 0)
-	for y in p.h:
-		for x in p.w:
-			if y >= main:
-				continue
-			p.blend(x, y, col.darkened(0.3).lerp(col.lightened(0.2), f[y * p.w + x]), 1.0)
+static func base(p: Paint, style: String, part: String, col: Color, s: int) -> void:
+	if part == "floor":
+		Floor.base(p, style, col, s)
+	else:
+		Wall.base(p, style, part, col, s)
 
 
-static func detail(_p: Paint, _style: String, _part: String, _v: int, _col: Color) -> void:
-	pass
+static func detail(p: Paint, style: String, part: String, v: int, col: Color) -> void:
+	if part == "floor":
+		FloorDetail.paint(p, style, v, col)
+	else:
+		Wall.detail(p, style, part, v, col)
 
 
-static func stand(_tile: String, w: int, h: int, seed_value: int) -> Paint:
-	var p := Paint.new(w, h, seed_value)
-	var foot := Vector2(w * 0.5, h - w * 0.14)
-	Kit.shadow(p, foot, w * 0.22, w * 0.07)
-	Kit.box(p, foot, w * 0.4, w * 0.3, w * 0.3, Color("#7a6a5a"))
-	return p
+static func stand(tile: String, w: int, h: int, seed_value: int) -> Paint:
+	return Stand.paint(tile, w, h, seed_value)
 
 
 static func backdrop(w: int, h: int, seed_value: int) -> Paint:
-	var p := Paint.new(w, h, seed_value)
-	for y in h:
-		for x in w:
-			p.blend(x, y, Color("#100c0c").lerp(Color("#3a2a2a"), float(y) / h), 1.0)
-	return p
+	return Back.paint(w, h, seed_value)
