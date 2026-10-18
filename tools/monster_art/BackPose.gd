@@ -26,6 +26,8 @@ static func apply(j: Dictionary, sp: Dictionary) -> Dictionary:
 				_leg(out, t, kn, kn + Vector3(s * 0.01, GROUND - kn.y, -0.02))
 				if rest == "throne":  # 팔걸이에 팔뚝을 올림
 					_arm(out, t, Vector3(s * 0.05, 0.14, 0.0), Vector3(s * 0.005, 0.0, -0.13))
+				elif sp.get("free_hang", false) and t != str((sp.get("kit", {}) as Dictionary).get("weapon_hand", "r")):  # 무기 없는 팔은 옆으로 늘어뜨림
+					_arm(out, t, Vector3(s * 0.04, 0.15, 0.01), Vector3(s * 0.015, 0.145, -0.02))
 				else:  # 무릎 위에 팔을 걸침
 					_arm(out, t, Vector3(s * 0.03, 0.12, -0.08), Vector3(-s * 0.01, 0.03, -0.13))
 		"floor":

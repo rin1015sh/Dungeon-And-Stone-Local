@@ -63,7 +63,7 @@ const FIGURES := {
 ## 보스·중간보스가 방 가운데서 기다리는 자세(BackPose rest — 플레이어가 방에 들어오면 바로 전투). 앞모습 한 장.
 ## 고른 까닭: 블라터(저주받은 기사) = 무릎 꿇고 칼을 짚은 채 · 캠보르미어(공작) = 왕좌 · 타룬바스(폭군) = 칼을 짚고 선 채
 ## 키르뒤(짐승) = 웅크림 · 킹 슬라임 = 퍼져 있음 · 일디움(철인) = 석상처럼 선 채 · 시체골렘 = 버려진 듯 주저앉음
-## 카툼바(설원의 군주) = 바위에 걸터앉음 · 고블린 폭탄병 = 책상다리로 폭탄 만지작.
+## 카툼바(설원의 군주) = 바위에 걸터앉음(몽둥이 안 든 팔은 늘어뜨림 — 사용자 2026-10-18) · 고블린 폭탄병 = 책상다리로 폭탄 만지작.
 const BOSSES := {
 	"blater": {"spec": {"rest": "kneel"}, "map": {"head": 1.8}},
 	"kambormir": {"size": 1.5, "spec": {"rest": "throne", "seat_c": Color("#3e3438")}, "map": {"head": 2.0}},
@@ -71,7 +71,7 @@ const BOSSES := {
 	"kirdui": {"spec": {"rest": "squat"}, "map": {"head": 1.6, "bulk": 1.2}},
 	"ildium": {"spec": {"rest": "stand"}, "map": {"head": 1.6, "bulk": 1.2}},
 	"corpse_golem": {"spec": {"rest": "floor", "legs_out": true}, "map": {"head": 1.6, "bulk": 1.2}},
-	"katumba": {"spec": {"rest": "seat", "seat_c": Color("#8a96a2"), "hair": "ragged", "hair_c": Color("#e0e6ea")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
+	"katumba": {"spec": {"rest": "seat", "free_hang": true, "seat_c": Color("#8a96a2"), "hair": "ragged", "hair_c": Color("#e0e6ea")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
 	"goblin_bomber": {"spec": {"rest": "floor"}, "map": {"head": 2.0}},
 }
 const BUILD := {"thin": "thin", "normal": "normal", "muscular": "muscular", "brute": "brute", "bones": "thin", "fat": "brute"}
