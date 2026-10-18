@@ -2,6 +2,7 @@ extends RefCounted
 ## 뒷모습 사람형(Back)의 장구: 투구(helm·plume) · 판금(armor — 등판·어깨받이·팔뚝·정강이) · 긴 망토(cape) · 붕대(wraps)
 ## · 허리천 뒷자락(loin) · 창(spear·lance — 쥔 손) · 방패(shield — 안쪽 면과 손잡이 끈이 보인다, shield_kind round|kite).
 
+const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
@@ -19,7 +20,7 @@ static func gear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		_cape(cl, pr, j, bd, kit["cape"], rng)
 	if kit.has("helm"):
 		_helm(cl, pr, hd, kit, rng)
-	if kit.has("weapon") and not ["sword", "greatsword", "axe", "pick", "staff", "bow"].has(str(kit["weapon"])):  # 손 무기는 BackExtras
+	if kit.has("weapon") and not BackExtras.HAND_WEAPONS.has(str(kit["weapon"])):  # 손 무기는 BackExtras
 		if str(kit["weapon"]) == "dagger":
 			_dagger(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
 		else:

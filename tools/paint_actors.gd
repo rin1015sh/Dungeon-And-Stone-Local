@@ -61,6 +61,8 @@ const MONSTER_RENDER := 2.0  ## 몬스터 그림을 맵 키의 이 배로 그려
 var _cfg: Dictionary = {}
 var _sheets: Dictionary = {}  ## 이번에 그린 몬스터 시트 {id: {cell, foot}}
 var _out := "res://assets/actors"  ## --out=<폴더>: 시트를 다른 곳에 쓴다(게임 그림을 바꾸지 않고 시험해 볼 때)
+const IDLE_TURN := 0.65  ## 보스 기다리는 자세는 3/4 앞모습(정면으로는 앉음·무릎 꿇음이 읽히지 않았다)
+var _idle_ids := PackedStringArray()  ## --idle=<id,...>: 보스가 방에서 기다리는 자세 한 장만 그린다(MapMonster.BOSSES)
 var _set: Dictionary = {}  ## --set=head=2,legs=0.8: 맨 위 상수를 이번만 바꾼다(키 = 상수 이름 소문자)
 
 
@@ -69,6 +71,8 @@ func _init() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
 			only = a.trim_prefix("--only=").split(",")
+		elif a.begins_with("--idle="):
+			_idle_ids = a.trim_prefix("--idle=").split(",")
 		elif a.begins_with("--out="):
 			_out = a.trim_prefix("--out=")
 		elif a.begins_with("--set="):
@@ -79,6 +83,11 @@ func _init() -> void:
 	db.load_all("res://data")
 	_cfg = JsonUtil.get_dict(JsonUtil.get_dict(db.render, "view"), "actor_sheet")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/actors/monsters"))
+	if not _idle_ids.is_empty():
+		for id: String in _idle_ids:
+			_idle(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
+		quit(0)
+		return
 	for race: String in Party.RACES:
 		if only.is_empty() or only.has(race):
 			_explorer(race)
@@ -217,6 +226,32 @@ func _monster_sheet(id: String, data_size: float) -> void:
 	sheet.save_webp(dir_out.path_join("%s.webp" % id), false)
 	_sheets[id] = {"cell": [cell.x, cell.y], "foot": 4}  # _shrink가 발 아래 2px + 칸 아래 2px
 	print("그림: 맵 몬스터 시트 %s %dx%d (%d ms)" % [id, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
+
+
+## 보스 기다리는 자세(앞모습 한 장) → <out>/monsters/<id>_idle.webp.
+func _idle(id: String, data_size: float) -> void:
+	var t0 := Time.get_ticks_msec()
+	var m := MapMonster.idle_of(id)
+	if m.is_empty():
+		return
+	var size := float(m.get("size", data_size))
+	var img: Image
+	if str(m["kind"]) == "figure":
+		img = _figure(m["spec"], id, PI + IDLE_TURN, 0.0, m.get("map", {}), size)
+	else:
+		var body := JsonUtil.get_float(_cfg, "body_px", 84.0)
+		var raw := MapMonster.paint(id, "down", 0.0, body * size * MONSTER_RENDER, SEED + id.hash() % 997)
+		var used := raw.get_used_rect()
+		img = _shrink(raw, Vector2(used.get_center().x, used.end.y), body * size * float(MONSTER_H.get("blob", 0.5)) / maxf(1.0, used.size.y))
+		_contrast(img)
+		_inner_lines(img)
+	var u := img.get_used_rect()
+	var out := Image.create_empty(u.size.x + 4, img.get_height() - u.position.y + 2, false, Image.FORMAT_RGBA8)
+	out.blit_rect(img, u, Vector2i(2, 0))
+	var dir_out := _out.path_join("monsters")
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir_out))
+	out.save_webp(dir_out.path_join("%s_idle.webp" % id), false)
+	print("그림: 보스 기다리는 자세 %s %dx%d (%d ms)" % [id, out.get_width(), out.get_height(), Time.get_ticks_msec() - t0])
 
 
 ## 몬스터 시트 색인(있던 것에 이번 것을 더한다).

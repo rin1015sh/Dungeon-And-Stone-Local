@@ -12,6 +12,7 @@ const Finish := preload("res://tools/monster_art/Finish.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
 const BackHair := preload("res://tools/monster_art/BackHair.gd")
+const BackPose := preload("res://tools/monster_art/BackPose.gd")
 const BackGear := preload("res://tools/monster_art/BackGear.gd")
 const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
@@ -121,6 +122,8 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var j := Back.skeleton(sp)
 	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
 		j = Back.stride(j, float(sp["walk"]), float(sp.get("step", 0.085)) * float(sp.get("legs", 1.0)), float(sp.get("swing", 0.06)), float(sp.get("heel", 0.022)))
+	if sp.has("rest"):  # 보스가 방에서 기다리는 자세(앉음·무릎 꿇음·웅크림)
+		j = BackPose.apply(j, sp)
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))
 	var opts := {"mottle": sp.get("mottle", skin_c.darkened(0.35)), "mottle_amt": float(sp.get("mottle_amt", 0.35))}
 	if sp.has("shade"):
@@ -134,6 +137,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
+	BackPose.props(cl, pr, j, sp)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
 	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림) — 입은 그리지 않는다

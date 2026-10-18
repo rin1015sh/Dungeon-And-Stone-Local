@@ -7,7 +7,7 @@ extends RefCounted
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 
-const HAND_WEAPONS := ["sword", "greatsword", "axe", "pick", "staff", "bow"]
+const HAND_WEAPONS := ["sword", "greatsword", "axe", "pick", "staff", "bow", "club", "cleaver", "bomb"]
 
 
 static func extras(cl: Clay, pr: Dictionary, j: Dictionary, hd: Dictionary, sp: Dictionary, skin: int) -> void:
@@ -23,7 +23,9 @@ static func extras(cl: Clay, pr: Dictionary, j: Dictionary, hd: Dictionary, sp: 
 		var c: Vector3 = hd["c"]
 		Back.ell(cl, pr, g, c + Vector3(0, hh * 0.08, 0), hh * 0.6, hh * 0.42, hh * 0.52, skin, 0.004)  # 네모진 돌·쇠 머리(골렘) — 납작하고 모가 선 덩어리
 		Back.cap(cl, pr, g, c + Vector3(-hh * 0.5, -hh * 0.12, -hh * 0.42), c + Vector3(hh * 0.5, -hh * 0.12, -hh * 0.42), hh * 0.1, hh * 0.1, skin, 0.003)  # 눈썹 턱
-	if sp.has("lumps"):
+	if sp.has("crown"):
+		_crown(cl, pr, hd, sp["crown"])
+	if sp.has("lumps") and ["metal", "stone", "slime"].has(str(sp.get("skin_kind", ""))):  # 골렘만(살갗 혹은 판이 아니다)
 		_lumps(cl, pr, j, sp, skin)
 	if sp.has("crystals"):
 		_crystals(cl, pr, j, sp["crystals"])
@@ -103,6 +105,8 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 	var wood := cl.mat(kit.get("staff_c", Color("#4a3628")), "wood")
 	var g := cl.group()
 	var down := Vector3(0.0, 1.0, -0.25).normalized()
+	if sp.get("plant", false) or str(sp.get("rest", "")) == "kneel":  # 두 손으로 칼끝을 땅에 짚음
+		down = Vector3(0.0, 1.0, 0.02).normalized()
 	match kind:
 		"sword", "greatsword":
 			var big := kind == "greatsword"
@@ -117,6 +121,18 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 				Back.ell(cl, pr, g, top + Vector3(0.05, 0.02, 0), 0.05, 0.06, 0.01, metal, 0.003)
 			else:
 				Back.cap(cl, pr, g, top + Vector3(-0.09, 0.03, 0), top + Vector3(0.09, 0.03, 0), 0.012, 0.004, metal, 0.002)
+		"club":  # 몽둥이: 손에서 아래로, 끝으로 갈수록 굵다
+			Back.cap(cl, pr, g, hd - down * 0.04, hd + down * 0.36, 0.014, 0.034, wood, 0.004)
+			Back.ell(cl, pr, g, hd + down * 0.34, 0.04, 0.05, 0.04, wood, 0.006)
+		"cleaver":  # 큰 식칼: 짧은 자루 + 넓은 네모 날
+			Back.cap(cl, pr, g, hd - down * 0.03, hd + down * 0.04, 0.01, 0.01, wood, 0.002)
+			var a := hd + down * 0.05
+			var poly := PackedVector2Array([Back.P2(pr, a + Vector3(-0.012, 0, 0)), Back.P2(pr, a + Vector3(0.06, 0, 0)), Back.P2(pr, a + down * 0.2 + Vector3(0.07, 0, 0)), Back.P2(pr, a + down * 0.22 + Vector3(-0.012, 0, 0))])
+			cl.slab(g, poly, Back.P(pr, a).z, 0.004 * float(pr["H"]), metal, 1.5, 0.004 * float(pr["H"]))
+		"bomb":  # 폭탄: 손에 든 검은 공 + 심지
+			var c := hd + Vector3(0, -0.02, -0.02)
+			Back.ell(cl, pr, g, c, 0.04, 0.04, 0.04, cl.mat(Color("#2a2622"), "metal"), 0.004)
+			Back.cap(cl, pr, g, c + Vector3(0, -0.035, 0), c + Vector3(0.015, -0.07, 0), 0.005, 0.003, cl.mat(Color("#8a6a3a"), "cloth"), 0.002)
 		"staff":
 			var up := Vector3(0.0, -1.0, -0.1).normalized()
 			Back.cap(cl, pr, g, hd - up * 0.4, hd + up * 0.38, 0.011, 0.009, wood, 0.002)
@@ -185,3 +201,19 @@ static func _shag(cl: Clay, pr: Dictionary, j: Dictionary, skin: int) -> void:
 			var a := c + off + Vector3(rng.randf_range(-r, r) * 0.6, rng.randf_range(-r, r) * 0.5, rng.randf_range(-r, r) * 0.5)
 			var tip := a + Vector3(off.normalized().x * 0.02 + rng.randf_range(-0.01, 0.01), 0.035 + rng.randf_range(0.0, 0.02), off.normalized().z * 0.015)
 			Back.cap(cl, pr, g, a, tip + (tip - a) * 0.6, r * 0.55, 0.003, skin, 0.004)
+
+
+## 왕관: 머리 위 둘레 띠 + 위로 솟은 뾰족한 날.
+static func _crown(cl: Clay, pr: Dictionary, hd: Dictionary, col: Color) -> void:
+	var m := cl.mat(col, "metal")
+	var g := cl.group()
+	var pts: Array = []
+	for k in 13:
+		pts.append(Back.on_head(hd, 0.75, k * TAU / 12.0, 0.006))
+	var radii: Array = []
+	for k in 13:
+		radii.append(0.012)
+	Back.chain(cl, pr, g, pts, radii, m, 0.003)
+	for k in 6:
+		var b := Back.on_head(hd, 0.78, k * TAU / 6.0 + 0.26, 0.008)
+		Back.cap(cl, pr, g, b, b + Vector3(0, -float(hd["hh"]) * 0.28, 0), 0.014, 0.002, m, 0.002)

@@ -60,6 +60,20 @@ const FIGURES := {
 	"goblin_miner": {}, "hobgoblin_miner": {}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
 	"mummy": {}, "buried_one": {}, "iron_lizardman": {}, "iron_cavalry": {}, "riddle_gatekeeper": {"map": {"head": 1.8}},
 }
+## 보스·중간보스가 방 가운데서 기다리는 자세(BackPose rest — 플레이어가 방에 들어오면 바로 전투). 앞모습 한 장.
+## 고른 까닭: 블라터(저주받은 기사) = 무릎 꿇고 칼을 짚은 채 · 캠보르미어(공작) = 왕좌 · 타룬바스(폭군) = 칼을 짚고 선 채
+## 키르뒤(짐승) = 웅크림 · 킹 슬라임 = 퍼져 있음 · 일디움(철인) = 석상처럼 선 채 · 시체골렘 = 버려진 듯 주저앉음
+## 카툼바(설원의 군주) = 바위에 걸터앉음 · 고블린 폭탄병 = 책상다리로 폭탄 만지작.
+const BOSSES := {
+	"blater": {"spec": {"rest": "kneel"}, "map": {"head": 1.8}},
+	"kambormir": {"size": 1.5, "spec": {"rest": "throne", "seat_c": Color("#3e3438")}, "map": {"head": 2.0}},
+	"tarunbas": {"spec": {"rest": "stand", "plant": true}, "map": {"head": 1.9, "hunch": 0.0}},
+	"kirdui": {"spec": {"rest": "squat"}, "map": {"head": 1.6, "bulk": 1.2}},
+	"ildium": {"spec": {"rest": "stand"}, "map": {"head": 1.6, "bulk": 1.2}},
+	"corpse_golem": {"spec": {"rest": "floor", "legs_out": true}, "map": {"head": 1.6, "bulk": 1.2}},
+	"katumba": {"spec": {"rest": "seat", "seat_c": Color("#8a96a2"), "hair": "ragged", "hair_c": Color("#e0e6ea")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
+	"goblin_bomber": {"spec": {"rest": "floor"}, "map": {"head": 2.0}},
+}
 const BUILD := {"thin": "thin", "normal": "normal", "muscular": "muscular", "brute": "brute", "bones": "thin", "fat": "brute"}
 const HAIR := {"ragged": "ragged", "long": "long", "short": "short", "topknot": "ragged"}
 
@@ -91,6 +105,8 @@ static func _from_figure(id: String) -> Dictionary:
 			sp["hair"] = "none"
 		"skull":
 			sp["hair"] = "none"
+	if head.has("crown"):
+		sp["crown"] = head["crown"]
 	if head.get("horns", false) and f.has("horn"):
 		sp["horns"] = f["horn"]
 		sp["horn_len"] = float(head.get("horn_len", 0.7))
@@ -119,10 +135,22 @@ static func _from_figure(id: String) -> Dictionary:
 	var big := ["brute", "muscular"].has(str(sp["build"]))
 	var mp := {"hunch": clampf(float(pose.get("hunch", 0.0)) * 0.8, 0.0, 0.45), "knee": float(pose.get("knee", 0.1)) * 0.5,
 		"head": 2.0 if big else 2.3, "legs": 0.74, "wide": 1.0, "bulk": 1.05, "stance": 0.07}
-	var tw: Dictionary = FIGURES[id]
+	var tw: Dictionary = FIGURES.get(id, BOSSES.get(id, {}))
 	sp.merge(tw.get("spec", {}), true)
 	mp.merge(tw.get("map", {}), true)
 	return {"kind": "figure", "spec": sp, "map": mp}
+
+
+## 보스가 기다리는 자세 설계(없으면 빈 것). king_slime은 덩어리(blob).
+static func idle_of(id: String) -> Dictionary:
+	if id == "king_slime":
+		return {"kind": "blob", "spec": Specs.More.spec_of(id)}
+	if not BOSSES.has(id):
+		return {}
+	var m := _from_figure(id)
+	if BOSSES[id].has("size"):
+		m["size"] = BOSSES[id]["size"]
+	return m
 
 
 static func has(id: String) -> bool:
@@ -132,6 +160,8 @@ static func has(id: String) -> bool:
 ## 짐승·기는 것·흙더미 한 장(크게 — 줄이는 것은 paint_actors). height = 그릴 크기(px). 돌려주는 그림의 아래 가운데 근처가 발.
 static func paint(id: String, dir: String, phase: float, height: float, seed_value: int) -> Image:
 	var m := spec_of(id)
+	if m.is_empty():
+		m = idle_of(id)
 	var sp: Dictionary = (m["spec"] as Dictionary).duplicate(true)
 	sp["height"] = height
 	sp["pitch"] = PITCH
