@@ -19,9 +19,15 @@ func place(cs: ExploreSession, ch: Dictionary, floor_tile: String, rng: Rng) -> 
 	at.clear()
 	_floor_tile = floor_tile
 	var used: Array[Vector2i] = []
+	var spots: Array = cs.map.anchors.get("hazards", [])  # 설계도 지도: 정해진 자리(묶음 순서 = hazards × count)
 	for h: Variant in JsonUtil.get_array(ch, "hazards"):
 		var hd: Dictionary = h if h is Dictionary else {}
 		for n in JsonUtil.get_int(hd, "count", 1):
+			if used.size() < spots.size():
+				var sp: Vector2i = spots[used.size()]
+				add_group(cs, hd, sp, floor_tile)
+				used.append(sp)
+				continue
 			var cells := _corridor_cells(cs, used)
 			if cells.is_empty():
 				return
@@ -35,11 +41,14 @@ func add_group(cs: ExploreSession, hd: Dictionary, c: Vector2i, floor_tile: Stri
 	_floor_tile = floor_tile
 	var group := hd.duplicate()
 	group["cells"] = []
+	group["under"] = {}  # 칸 -> 원래 타일(설계도 지도의 카펫·철로 같은 바닥으로 되돌린다)
 	for dy in range(-1, 2):
 		for dx in range(-1, 2):
 			var p := c + Vector2i(dx, dy)
 			if cs.map.in_bounds(p) and cs.map.is_walkable(p) and cs.map.portal_at(p).is_empty() and not at.has(p):
-				cs.map.set_tile(p, _floor_tile if JsonUtil.get_bool(hd, "hidden") else JsonUtil.get_str(hd, "tile"))
+				(group["under"] as Dictionary)[p] = cs.map.tile_id_at(p)
+				if not JsonUtil.get_bool(hd, "hidden"):  # 숨은 함정은 원래 바닥처럼 보인다
+					cs.map.set_tile(p, JsonUtil.get_str(hd, "tile"))
 				at[p] = group
 				(group["cells"] as Array).append(p)
 
@@ -52,7 +61,7 @@ func on_step(cs: ExploreSession, p: Vector2i) -> Variant:
 	var hd: Dictionary = at[p]
 	for q: Variant in hd["cells"]:
 		at.erase(q)
-		cs.map.set_tile(q, _floor_tile)
+		cs.map.set_tile(q, str((hd["under"] as Dictionary).get(q, _floor_tile)))
 	var ok := true
 	var key := JsonUtil.get_str(hd, "pass_message", "explore.hazard_pass")
 	var strong := JsonUtil.get_dict(hd, "bypass")

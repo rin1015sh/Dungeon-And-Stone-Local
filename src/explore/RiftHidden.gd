@@ -7,14 +7,25 @@ extends RefCounted
 
 var at: Dictionary = {}      ## 이 챕터의 물체 칸 -> 정의
 var taken: Dictionary = {}   ## 얻은 히든 피스 id -> true(균열 한 번 동안)
+var under: Dictionary = {}   ## 물체 칸 -> 원래 타일(설계도 지도 — 가져간 뒤 되돌린다)
 
 
-## 물체를 방 안쪽 칸(사방 8칸이 모두 바닥이고 조우·출구·시작 자리가 아닌 곳)에 둔다.
+## 물체를 방 안쪽 칸(사방 8칸이 모두 바닥이고 조우·출구·시작 자리가 아닌 곳)에 둔다. 설계도 지도(map.anchors.hidden)면 그 자리에.
 func place(cs: ExploreSession, ch: Dictionary, rng: Rng) -> void:
 	at.clear()
+	under.clear()
+	var spots: Array = cs.map.anchors.get("hidden", [])
+	var k := -1
 	for h: Variant in JsonUtil.get_array(ch, "hidden"):
 		var hd: Dictionary = h if h is Dictionary else {}
+		k += 1
 		if taken.has(JsonUtil.get_str(hd, "id")):
+			continue
+		if k < spots.size():  # 설계도 지도: 정해진 자리(분수대·책장·벽화 자리 — 벽 칸이어도 옆에서 살핀다)
+			var sp: Vector2i = spots[k]
+			under[sp] = cs.map.tile_id_at(sp)
+			cs.map.set_tile(sp, JsonUtil.get_str(hd, "tile"))
+			at[sp] = hd
 			continue
 		var cells: Array[Vector2i] = []
 		for i in cs.map.tiles.size():
@@ -49,7 +60,7 @@ func take(cs: ExploreSession, p: Vector2i, floor_tile: String, riddle: RiftRiddl
 		return true
 	at.erase(p)
 	taken[JsonUtil.get_str(hd, "id")] = true
-	cs.map.set_tile(p, floor_tile)
+	cs.map.set_tile(p, str(under.get(p, floor_tile)))
 	cs.player.inventory.add(item, 1)
 	cs.message.emit(JsonUtil.get_str(hd, "message", "explore.hidden_found"), {"item": DataNames.entry(cs.db, "items", item)}, "good")
 	cs.refresh_view()

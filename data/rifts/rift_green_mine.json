@@ -27,9 +27,39 @@
     },
     "ambient_color": "#c8ffb0",
     "art": {
-      "palette": {"near_black": "#0e130d", "tone": "#eef2ea"},
-      "post": {"saturation": 0.75},
-      "particles": [{"id": "coal_dust", "amount": 24, "lifetime": 8.0, "color": "#4a4a40", "alpha": 0.4, "scale": [1.0, 2.5], "velocity": [1.0, 4.0], "direction": [0.0, 1.0], "spread": 180.0, "gravity": [0.0, 2.0]}]
+      "palette": {
+        "near_black": "#0e130d",
+        "tone": "#eef2ea"
+      },
+      "post": {
+        "saturation": 0.75
+      },
+      "particles": [
+        {
+          "id": "coal_dust",
+          "amount": 24,
+          "lifetime": 8.0,
+          "color": "#4a4a40",
+          "alpha": 0.4,
+          "scale": [
+            1.0,
+            2.5
+          ],
+          "velocity": [
+            1.0,
+            4.0
+          ],
+          "direction": [
+            0.0,
+            1.0
+          ],
+          "spread": 180.0,
+          "gravity": [
+            0.0,
+            2.0
+          ]
+        }
+      ]
     },
     "ambient_light_m": 6.0,
     "visibility_cap_m": 8.0
@@ -40,15 +70,7 @@
       "name_ko": "일자 갱도",
       "desc_ko": "천장이 무너져 막힌 곳에서 시작한다. 철로를 따라 곡괭이 소리가 울린다. 어딘가 철로가 끊긴 벽이 있다.",
       "map": {
-        "size": [
-          48,
-          18
-        ],
-        "rooms": 4,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_green_mine_ch1.json"
       },
       "encounters": [
         {
@@ -81,15 +103,7 @@
       "name_ko": "무너진 다리",
       "desc_ko": "3분의 2가 무너진 다리. 옆 통로로 돌거나 건너뛸 수 있다. 다리 너머에서 폭약 냄새가 난다.",
       "map": {
-        "size": [
-          48,
-          18
-        ],
-        "rooms": 6,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_green_mine_ch2.json"
       },
       "encounters": [
         {
@@ -154,15 +168,7 @@
       "name_ko": "절벽의 원형 계단",
       "desc_ko": "절벽 가장자리를 따라 원형 계단을 내려간다. 아래 갱도는 무너져 막혀 있다 — 어딘가 폭약이 있을 것이다.",
       "map": {
-        "size": [
-          48,
-          18
-        ],
-        "rooms": 4,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_green_mine_ch3.json"
       },
       "encounters": [
         {
@@ -224,15 +230,7 @@
       "name_ko": "무너진 공동",
       "desc_ko": "폭약으로 뚫은 갱도 끝, 반경 50m의 공동. 끈적한 소리가 사방에서 들린다.",
       "map": {
-        "size": [
-          48,
-          18
-        ],
-        "rooms": 3,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_green_mine_ch4.json"
       },
       "encounters": [
         {

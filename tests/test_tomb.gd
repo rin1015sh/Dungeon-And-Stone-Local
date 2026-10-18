@@ -46,15 +46,19 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 	var cell: Vector2i = hz.at.keys()[0]
 	var group: Dictionary = hz.at[cell]
 	assert_true(JsonUtil.get_bool(group, "hidden"))
-	assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(JsonUtil.get_dict(run.def["look"], "tiles"), "floor"), "숨은 함정은 바닥처럼 보인다")
+	assert_eq(cs.map.tile_id_at(cell), str((group["under"] as Dictionary)[cell]), "숨은 함정은 원래 바닥처럼 보인다")
+	assert_true(cs.map.is_walkable(cell))
 	cs.player.stats.set_base("int", 60.0)
-	hz.on_step(cs, cell + Vector2i(1, 1) if not hz.at.has(cell + Vector2i(1, 1)) else cell + Vector2i(2, 2))
-	var near := false
+	var beside := Vector2i(-1, -1)  # 묶음 바로 옆(함정이 아닌 걸을 수 있는 칸)
 	for q: Variant in group["cells"]:
-		near = near or maxi(absi((q as Vector2i).x - (cell + Vector2i(1, 1)).x), absi((q as Vector2i).y - (cell + Vector2i(1, 1)).y)) <= 1
-	if near:
-		assert_true(bool(group.get("detected", false)), "정신력이 높으면 옆에서 알아챈다(옛 육감)")
-		assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(group, "tile"), "드러난다")
+		for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var b: Vector2i = (q as Vector2i) + d
+			if beside.x < 0 and cs.map.is_walkable(b) and not hz.at.has(b):
+				beside = b
+	assert_true(beside.x >= 0, "함정 옆 칸")
+	hz.on_step(cs, beside)
+	assert_true(bool(group.get("detected", false)), "정신력이 높으면 옆에서 알아챈다(옛 육감)")
+	assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(group, "tile"), "드러난다")
 	var nimble := Actor.new(db, {"agi": 40})
 	assert_near(RiftHazards.success_chance(db, nimble, JsonUtil.get_dict(group, "disarm")), float(db.bal("rift.hazard_max")), 0.001, "민첩으로 해제(옛 손재주)")
 	assert_true(hz.watcher_bonus(cs) == 0.0, "1챕터엔 수호자의 눈이 없다")

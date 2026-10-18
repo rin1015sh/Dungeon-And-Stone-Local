@@ -80,7 +80,7 @@ func build_chapter(i: int) -> ExploreSession:
 	chapter = i
 	var ch: Dictionary = chapters()[i]
 	var fdef := chapter_floor_def(i)
-	var gen := RiftChapterGenerator.new()
+	var gen: FloorGenerator = RiftBlueprintGenerator.new() if fdef["generator"] == "rift_blueprint" else RiftChapterGenerator.new()
 	var map := gen.generate(db, fdef, Rng.new(outer.rng.randi_range(1, 1 << 30)))
 	var cs := ExploreSession.new(db, fdef, map, outer.player, outer.clock, outer.rng, outer.effects)
 	_session_ref = weakref(cs)
@@ -113,10 +113,11 @@ func build_chapter(i: int) -> ExploreSession:
 ## 챕터의 가짜 층 정의(이름·밝기·타일·폐쇄 시각은 바깥 층과 균열 look에서).
 func chapter_floor_def(i: int) -> Dictionary:
 	var ch: Dictionary = chapters()[i]
-	var look := JsonUtil.get_dict(def, "look")
+	var look := JsonUtil.get_dict(def, "look").merged(JsonUtil.get_dict(ch, "look"), true)  # 챕터 look(바깥·안 밝기)이 균열 look을 덮는다
 	var gen := JsonUtil.get_dict(ch, "map").duplicate(true)
 	gen["tiles"] = JsonUtil.get_dict(look, "tiles")
-	return {"id": "%s_%s" % [rift_id, JsonUtil.get_str(ch, "id")], "floor": 0, "generator": "rift_chapter",
+	var generator := "rift_blueprint" if gen.has("blueprint") else "rift_chapter"
+	return {"id": "%s_%s" % [rift_id, JsonUtil.get_str(ch, "id")], "floor": 0, "generator": generator,
 		"name_ko": "%s · %s" % [JsonUtil.get_str(def, "name_ko"), JsonUtil.get_str(ch, "name_ko")],
 		"close_hours": outer.close_hours(), "visibility_cap_m": JsonUtil.get_float(look, "visibility_cap_m", 9.0),
 		"ambient_light_m": JsonUtil.get_float(look, "ambient_light_m", 6.0), "ambient_color": JsonUtil.get_str(look, "ambient_color", "#ffffff"),

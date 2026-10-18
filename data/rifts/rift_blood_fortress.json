@@ -30,9 +30,39 @@
     },
     "ambient_color": "#ff9a8a",
     "art": {
-      "palette": {"near_black": "#1a0e0d", "tone": "#f4e6e2"},
-      "post": {"saturation": 0.75},
-      "particles": [{"id": "ash", "amount": 30, "lifetime": 7.0, "color": "#6a5a58", "alpha": 0.35, "scale": [1.5, 3.0], "velocity": [6.0, 14.0], "direction": [1.0, 0.4], "spread": 25.0, "gravity": [0.0, 6.0]}]
+      "palette": {
+        "near_black": "#1a0e0d",
+        "tone": "#f4e6e2"
+      },
+      "post": {
+        "saturation": 0.75
+      },
+      "particles": [
+        {
+          "id": "ash",
+          "amount": 30,
+          "lifetime": 7.0,
+          "color": "#6a5a58",
+          "alpha": 0.35,
+          "scale": [
+            1.5,
+            3.0
+          ],
+          "velocity": [
+            6.0,
+            14.0
+          ],
+          "direction": [
+            1.0,
+            0.4
+          ],
+          "spread": 25.0,
+          "gravity": [
+            0.0,
+            6.0
+          ]
+        }
+      ]
     },
     "ambient_light_m": 7.0,
     "visibility_cap_m": 9.0
@@ -43,15 +73,7 @@
       "name_ko": "외곽 검문소",
       "desc_ko": "데드맨들이 지키는 검문소. 지휘관이 뿔피리를 지녔다.",
       "map": {
-        "size": [
-          48,
-          20
-        ],
-        "rooms": 4,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch1.json"
       },
       "encounters": [
         {
@@ -74,6 +96,10 @@
       "exit_requires": {
         "item": "rift_horn",
         "message": "explore.fortress_horn"
+      },
+      "look": {
+        "ambient_light_m": 13.0,
+        "visibility_cap_m": 14.0
       }
     },
     {
@@ -81,15 +107,7 @@
       "name_ko": "도개교",
       "desc_ko": "도개교가 내려올 때까지 해자에서 기어오르는 데드맨을 버텨라.",
       "map": {
-        "size": [
-          48,
-          20
-        ],
-        "rooms": 3,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch2.json"
       },
       "encounters": [
         {
@@ -111,22 +129,18 @@
             ]
           }
         }
-      ]
+      ],
+      "look": {
+        "ambient_light_m": 13.0,
+        "visibility_cap_m": 14.0
+      }
     },
     {
       "id": "ch3",
       "name_ko": "외성벽 시가지",
       "desc_ko": "한 무리에 수십 마리 — 쉴 틈 없는 연전. 광장 한가운데 마른 분수대가 있다.",
       "map": {
-        "size": [
-          48,
-          20
-        ],
-        "rooms": 3,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch3.json"
       },
       "encounters": [
         {
@@ -156,22 +170,18 @@
           "tile": "fountain_statue",
           "message": "explore.fortress_tear"
         }
-      ]
+      ],
+      "look": {
+        "ambient_light_m": 13.0,
+        "visibility_cap_m": 14.0
+      }
     },
     {
       "id": "ch4",
       "name_ko": "내성벽 지하 감옥",
       "desc_ko": "축축한 감옥. 쥐와 영체가 떠돌고, 깊은 곳에 시체골렘이 웅얼거린다.",
       "map": {
-        "size": [
-          48,
-          20
-        ],
-        "rooms": 6,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch4.json"
       },
       "encounters": [
         {
@@ -216,15 +226,7 @@
       "name_ko": "영주성 악마 숭배실",
       "desc_ko": "'ㅁ'자 회랑 끝 숭배실. 썩은 책장들 너머에서 수호자가 깨어난다.",
       "map": {
-        "size": [
-          48,
-          20
-        ],
-        "rooms": 5,
-        "room_size": [
-          5,
-          8
-        ]
+        "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch5.json"
       },
       "encounters": [
         {

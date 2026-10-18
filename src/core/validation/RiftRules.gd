@@ -74,11 +74,32 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 			v.ref(cw + ".exit_requires", "items", req.get("item"))
 			if req.has("bypass"):
 				_stat_at_least(v, cw + ".exit_requires.bypass", JsonUtil.get_dict(req, "bypass"))
-		var size := JsonUtil.get_array(JsonUtil.get_dict(ch, "map"), "size")
-		if size.size() != 2 or int(size[0]) < 20 or int(size[1]) < 12:
-			v.err(cw, "map.size는 [20 이상, 12 이상]")
-		if JsonUtil.get_int(JsonUtil.get_dict(ch, "map"), "rooms", 0) < encs.size() + 1:
-			v.err(cw, "map.rooms는 조우 수 + 1 이상(첫 방은 시작)")
+		var map := JsonUtil.get_dict(ch, "map")
+		if map.has("blueprint"):
+			_blueprint(v, cw + ".map", ch, encs.size())
+		else:
+			var size := JsonUtil.get_array(map, "size")
+			if size.size() != 2 or int(size[0]) < 20 or int(size[1]) < 12:
+				v.err(cw, "map.size는 [20 이상, 12 이상]")
+			if JsonUtil.get_int(map, "rooms", 0) < encs.size() + 1:
+				v.err(cw, "map.rooms는 조우 수 + 1 이상(첫 방은 시작)")
+
+
+## 설계도 지도(rift_blueprint): 파일 형식 + 표시 수 = 조우 수 · 히든 피스 수 · 위험 묶음 수(hazards × count) + 표시 칸이 걸을 수 있는가.
+static func _blueprint(v: ValidatorBase, w: String, ch: Dictionary, encounters: int) -> void:
+	var path := JsonUtil.get_str(JsonUtil.get_dict(ch, "map"), "blueprint")
+	var data := FloorMapFile.read(path)
+	for msg in RiftBlueprintGenerator.problems(data, v.db):
+		v.err(w, "%s: %s" % [path, msg])
+	if data.is_empty():
+		return
+	var marks := JsonUtil.get_dict(data, "marks")
+	var hz := 0
+	for h: Variant in JsonUtil.get_array(ch, "hazards"):
+		hz += JsonUtil.get_int(h if h is Dictionary else {}, "count", 1)
+	for pair: Array in [["slots", encounters], ["hidden", JsonUtil.get_array(ch, "hidden").size()], ["hazards", hz]]:
+		if JsonUtil.get_array(marks, pair[0]).size() != int(pair[1]):
+			v.err(w, "%s: marks.%s %d개 ≠ 데이터 %d개" % [path, pair[0], JsonUtil.get_array(marks, pair[0]).size(), pair[1]])
 
 
 ## 구성: 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}.

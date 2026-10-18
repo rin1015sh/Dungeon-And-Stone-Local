@@ -27,6 +27,7 @@ var prop_sheet: String = ""     ## 소품 그림 시트(art.prop — 동굴 요�
 var prop_cell: int = 0          ## 시트 칸 번호(왼쪽 위부터 가로로)
 var prop_cols: int = 0          ## 시트 가로 칸 수(0 = 정사각 칸으로 계산)
 var prop_size: float = 1.0      ## 그리는 크기(칸 단위 — 아래 끝이 칸 아래쪽)
+var is_void: bool = false       ## 낭떠러지·허공(균열 경계 — "void": true): 바닥을 그리지 않고 뒷배경이 비친다
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
@@ -49,6 +50,7 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.light_color = Color.from_string(JsonUtil.get_str(light, "color"), Color.WHITE)
 	t.light_intensity = JsonUtil.get_float(light, "intensity", 1.0)
 	t.interact = JsonUtil.get_str(d, "interact")
+	t.is_void = JsonUtil.get_bool(d, "void")
 	t.sprite = JsonUtil.get_str(d, "sprite")
 	var art := JsonUtil.get_dict(d, "art")
 	t.art_atlas = JsonUtil.get_str(art, "atlas")
