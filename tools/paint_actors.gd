@@ -9,6 +9,7 @@ extends SceneTree
 ## 칸 크기·배율은 render.json view.actor_sheet. 줄인 뒤 1px 잉크 바깥선을 두른다(작은 그림에서 윤곽이 읽히게).
 
 const Party := preload("res://tools/monster_art/Party.gd")
+const MapMonster := preload("res://tools/monster_art/MapMonster.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
 ## 정한 값(사용자 2026-10-17 — 피어 앤 헝거 맵 그림 참고 시트를 보고 여러 방법·템플릿을 비교해 고름: 방법 ⑤ + 머리 템플릿 5).
@@ -53,7 +54,12 @@ const LINE_STEP := 0.2   ## 이웃보다 이만큼 어두운 칸에 진한 선(�
 const ARM_POSES := ["hang", "slump"]
 const SEED := 4242
 
+## 몬스터 맵 키(사람 키 × size 대비): 사람형은 몸 그대로, 나머지는 서 있는 앞모습 높이를 이만큼으로
+const MONSTER_H := {"beast": 0.72, "crawler": 0.6, "mound": 0.7}
+const MONSTER_RENDER := 2.0  ## 몬스터 그림을 맵 키의 이 배로 그려 줄인다(사람형은 RENDER_H)
+
 var _cfg: Dictionary = {}
+var _sheets: Dictionary = {}  ## 이번에 그린 몬스터 시트 {id: {cell, foot}}
 var _out := "res://assets/actors"  ## --out=<폴더>: 시트를 다른 곳에 쓴다(게임 그림을 바꾸지 않고 시험해 볼 때)
 var _set: Dictionary = {}  ## --set=head=2,legs=0.8: 맨 위 상수를 이번만 바꾼다(키 = 상수 이름 소문자)
 
@@ -78,7 +84,12 @@ func _init() -> void:
 			_explorer(race)
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has("monsters") or only.has(id):
-			_monster(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
+			if MapMonster.has(id):
+				_monster_sheet(id)
+			else:
+				_monster(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
+	if not _sheets.is_empty():
+		_save_sheet_index()
 	quit(0)
 
 
@@ -91,7 +102,7 @@ func _explorer(race: String) -> void:
 	var turns := {0: PI, 1: -SIDE_TURN, 3: 0.0}  # 줄 → 돌림(2 = 오른쪽은 1을 뒤집는다 — 빛이 왼쪽 위에서 와서 왼쪽을 보게 그려야 얼굴이 밝다)
 	for row: int in [0, 1, 3]:
 		for c in cols:
-			var img := _figure(race, float(turns[row]), float(PHASES[c]))
+			var img := _figure(Party.spec_of(race + "_back"), race, float(turns[row]), float(PHASES[c]))
 			_put(sheet, img, Vector2i(c, row), cell)
 			if row == 1:
 				var flipped := img.duplicate() as Image
@@ -103,10 +114,11 @@ func _explorer(race: String) -> void:
 	print("그림: %s %dx%d (%d ms)" % [path, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
 
 
-## 한 장: 돌림·걸음으로 그려 사람 키 = actor_sheet.body_px(그림 배율 적용)로 줄이고 바깥선. 발 = 그림 아래 가운데.
-func _figure(race: String, turn: float, phase: float) -> Image:
-	var sp := Party.spec_of(race + "_back").duplicate(true)
-	var k := float(sp.get("height", Party.REF_H)) / Party.REF_H  # 바바리안은 더 크다
+## 한 장(사람형): 돌림·걸음으로 그려 사람 키 = actor_sheet.body_px × k(그림 배율 적용)로 줄이고 바깥선. 발 = 그림 아래 가운데.
+## base = 3D 몸 설계(Party 형식), extra = 맨 위 상수 대신 쓸 맵 값(몬스터 — MapMonster.spec_of map), size = 사람 키 대비.
+func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: Dictionary = {}, size: float = -1.0) -> Image:
+	var sp := base.duplicate(true)
+	var k := size if size > 0.0 else float(sp.get("height", Party.REF_H)) / Party.REF_H  # 바바리안은 더 크다
 	sp["height"] = _v("render_h", RENDER_H) * k
 	sp["turn"] = turn
 	sp["pitch"] = _v("pitch", PITCH)
@@ -139,9 +151,17 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	sp["grime"] = 0.0
 	if _v("front_light", FRONT_LIGHT) > 0.0:
 		sp["light"] = LIGHT
+	for key: String in extra:  # 몬스터 맵 값
+		match key:
+			"hunch", "knee", "stance":
+				(sp["pose"] as Dictionary)[key] = extra[key]
+			"head", "bulk":
+				sp[key] = float(base.get(key, 1.0)) * float(extra[key])
+			_:
+				sp[key] = extra[key]
 	if phase != 0.0:
 		sp["walk"] = phase
-	var p: Paint = Party.figure(sp, SEED + race.hash() % 997)
+	var p: Paint = Party.figure(sp, SEED + name.hash() % 997)
 	var img := p.to_image()
 	var H := float(sp["height"])
 	var foot := Vector2(img.get_width() * 0.5, img.get_height() - H * 0.03)
@@ -151,7 +171,65 @@ func _figure(race: String, turn: float, phase: float) -> Image:
 	return out
 
 
-## 몬스터: 전투 그림을 몸 높이 색인으로 맞춰 줄인다(사람 키 × size).
+## 몬스터 걷기 시트(MapMonster 설계가 있는 몬스터): 앞·왼쪽·오른쪽(뒤집기)·뒤 × 걸음 3장 → <out>/monsters/<id>.webp.
+## 칸 크기는 몬스터마다(가장 큰 장에 맞춤) — <out>/monsters/sheets.json {id: {cell: [w, h], foot: 아래에서 발까지 px}}.
+func _monster_sheet(id: String) -> void:
+	var t0 := Time.get_ticks_msec()
+	var m := MapMonster.spec_of(id)
+	var kind := str(m["kind"])
+	var size := float(m["size"])
+	var body := JsonUtil.get_float(_cfg, "body_px", 84.0)
+	var frames := {}  # [줄, 칸] → 그림(발 = 아래 가운데)
+	var f := 0.0
+	for row: int in [0, 1, 3]:
+		var dir: String = ["down", "left", "", "up"][row]
+		for c in PHASES.size():
+			var img: Image
+			if kind == "figure":
+				var turn: float = {0: PI, 1: -SIDE_TURN, 3: 0.0}[row]
+				img = _figure(m["spec"], id, turn, float(PHASES[c]), m.get("map", {}), size)
+			else:
+				var raw := MapMonster.paint(id, dir, float(PHASES[c]), body * size * MONSTER_RENDER, SEED + id.hash() % 997)
+				var used := raw.get_used_rect()
+				if f == 0.0:  # 서 있는 앞모습 높이로 배율을 정해 모든 장에 같이 쓴다
+					f = body * size * float(MONSTER_H.get(kind, 0.7)) / maxf(1.0, used.size.y)
+				img = _shrink(raw, Vector2(used.get_center().x, used.end.y), f)
+				_contrast(img)
+				_inner_lines(img)
+			frames[Vector2i(c, row)] = img
+			if row == 1:
+				var fl := img.duplicate() as Image
+				fl.flip_x()
+				frames[Vector2i(c, 2)] = fl
+	var cell := Vector2i(8, 8)
+	for img: Image in frames.values():
+		var u := img.get_used_rect()
+		cell.x = maxi(cell.x, u.size.x + 4 + (u.size.x % 2))
+		cell.y = maxi(cell.y, img.get_height() - u.position.y + 2)  # 위 빈칸은 버린다
+	var sheet := Image.create_empty(cell.x * PHASES.size(), cell.y * 4, false, Image.FORMAT_RGBA8)
+	for at: Vector2i in frames:
+		var img: Image = frames[at]
+		var u := img.get_used_rect()
+		var dst := Vector2i(at.x * cell.x + (cell.x - u.size.x) / 2, at.y * cell.y + cell.y - 2 - (img.get_height() - u.position.y))
+		sheet.blit_rect(img, u, dst)
+	var dir_out := _out.path_join("monsters")
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir_out))
+	sheet.save_webp(dir_out.path_join("%s.webp" % id), false)
+	_sheets[id] = {"cell": [cell.x, cell.y], "foot": 4}  # _shrink가 발 아래 2px + 칸 아래 2px
+	print("그림: 맵 몬스터 시트 %s %dx%d (%d ms)" % [id, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
+
+
+## 몬스터 시트 색인(있던 것에 이번 것을 더한다).
+func _save_sheet_index() -> void:
+	var path := _out.path_join("monsters/sheets.json")
+	var cur: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
+	var all: Dictionary = cur if cur is Dictionary else {}
+	all.merge(_sheets, true)
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	f.store_string(JSON.stringify(all, "\t", true))
+
+
+## 몬스터(시트 설계 없음): 전투 그림을 몸 높이 색인으로 맞춰 줄인다(사람 키 × size).
 func _monster(id: String, size: float) -> void:
 	var idx_path := "res://assets/monsters/index.json"
 	var index: Variant = JSON.parse_string(FileAccess.get_file_as_string(idx_path)) if FileAccess.file_exists(idx_path) else {}

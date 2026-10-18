@@ -143,6 +143,12 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 		for e: Vector2 in hd["eyes"]:
 			if int(sp.get("eye_style", 0)) == 1:  # 짙은 눈구멍 얼룩(앞머리 그늘 속 — 피어 앤 헝거 주인공 맵 그림)
 				_smudge_eye(p, e, r * 1.25, 0.7 if side else 1.0)
+				if sp.has("eye_glow"):  # 몬스터: 눈구멍 속 빛나는 눈동자
+					var ec: Color = sp["eye_glow"]
+					Ink.glow(p, e.x, e.y, r * 1.6, ec, 0.6, false)
+					for yy in range(int(e.y - r * 0.35), int(e.y + r * 0.35) + 1):
+						for xx in range(int(e.x - r * 0.45), int(e.x + r * 0.45) + 1):
+							p.blend(xx, yy, ec.lightened(0.3), 0.95)
 			else:
 				_map_eye(p, e, r, -1.0 if e.x < cx else 1.0, 0.65 if side else 1.0)
 		Finish.done(p, sp, Back.screen_joints(pr, j), H)
@@ -201,12 +207,14 @@ static func _smudge_eye(p: Paint, e: Vector2, r: float, narrow: float) -> void:
 static func _crawler(sp: Dictionary, seed_value: int) -> Paint:
 	var H := float(sp.get("height", 420))
 	var w := int(H * 1.25)
-	var h := int(H * 0.82)
+	var h := int(H * float(sp.get("canvas_h", 0.82)))
 	var p := Paint.new(w, h, seed_value)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var cl := Clay.new(w, h)
-	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.04), H, 0.0)
+	# turn·pitch·walk = 탐험 맵 걷기 그림(tools/monster_art/MapMonster.gd — 0 = 뒷모습, π = 앞모습, 걸음은 대각선 팔다리 짝)
+	var pr := Back.proj(Vector2(w * 0.5, h - H * (0.04 + float(sp.get("pitch", 0.0)) * 0.25)), H, float(sp.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
+	var walk := float(sp.get("walk", 0.0))
 	var col: Color = sp.get("color", Color("#8a947c"))
 	var skin := cl.mat(col, "skin", {"mottle": col.darkened(0.4), "mottle_amt": 0.5})
 	var nail := cl.mat(Color("#2a221c"), "bone")
@@ -243,15 +251,18 @@ static func _crawler(sp: Dictionary, seed_value: int) -> Paint:
 	for s: int in [-1, 1]:
 		var gl := cl.group()
 		var hip := rump + Vector3(s * 0.06, 0.01, -0.01)
-		var kn := Vector3(s * 0.22, -0.2, 0.06)
-		var an := Vector3(s * 0.13, -0.04, 0.07)
+		var kw := walk * s  # 이 뒷다리가 앞으로(+) 나가며 든다
+		var kn := Vector3(s * 0.22, -0.2 - maxf(0.0, kw) * 0.04, 0.06 - kw * 0.06)
+		var an := Vector3(s * 0.13, -0.04 - maxf(0.0, kw) * 0.05, 0.07 - kw * 0.09)
 		Back.chain(cl, pr, gl, [hip, kn, an], [0.055 * bk, 0.036 * bk, 0.024 * bk], skin, 0.012)
 		Back.ell(cl, pr, gl, kn, 0.032, 0.032, 0.03, skin, 0.008)
 		Back.ell(cl, pr, gl, an + Vector3(0, 0.02, 0.01), 0.03, 0.02, 0.03, skin, 0.006)  # 발뒤꿈치
 		var ga := cl.group()
 		var sp3 := sh + Vector3(s * 0.11 * bk, 0.0, 0.0)
-		var el := Vector3(s * 0.26, -0.56, -0.3)
-		var wr := Vector3(s * 0.17, -0.04, -0.42)
+		var aw := -walk * s  # 앞팔은 같은 쪽 뒷다리와 반대로
+		var eh := float(sp.get("elbow_h", 0.56))  # 팔꿈치 높이(아군 뒷모습은 높이 솟음 — 탐험 맵은 낮게, 거미처럼 보이지 않게)
+		var el := Vector3(s * float(sp.get("elbow_w", 0.26)), -eh - maxf(0.0, aw) * 0.04, -0.3 - aw * 0.05)
+		var wr := Vector3(s * 0.17, -0.04 - maxf(0.0, aw) * 0.06, -float(sp.get("reach", 0.42)) - aw * 0.09)  # reach = 손을 짚는 거리
 		Back.chain(cl, pr, ga, [sp3, el, wr], [0.04 * bk, 0.03 * bk, 0.02 * bk], skin, 0.01)
 		Back.ell(cl, pr, ga, el, 0.03, 0.03, 0.03, skin, 0.006)
 		for f in 4:  # 땅을 움켜쥔 손가락 + 손톱
@@ -261,6 +272,15 @@ static func _crawler(sp: Dictionary, seed_value: int) -> Paint:
 			Back.cap(cl, pr, ga, t, t + Vector3(s * 0.006, 0.014, -0.012), 0.004, 0.001, nail, 0.002)
 		Back.groove(cl, pr, gl, [hip.lerp(kn, 0.3) + Vector3(0, -0.03, 0.04), kn + Vector3(0, -0.02, 0.03)], B, 0.004, 0.005)
 	Render.render(cl, p, H)
+	if sp.has("eyes") and Back.facing(pr, Vector3(0, 0, -1)) > 0.15:  # 앞·옆에서 보이는 빛나는 눈
+		for s: int in [-1, 1]:
+			var e3 := hc + Vector3(s * 0.026, 0.012, -0.065)
+			if Back.facing(pr, Vector3(s * 0.6, 0, -1)) > 0.1:
+				var e := Back.P2(pr, e3)
+				Ink.glow(p, e.x, e.y, H * 0.03, sp["eyes"], 0.7, false)
+				for yy in range(int(e.y - H * 0.006), int(e.y + H * 0.006) + 1):
+					for xx in range(int(e.x - H * 0.008), int(e.x + H * 0.008) + 1):
+						p.blend(xx, yy, (sp["eyes"] as Color).lightened(0.3), 0.95)
 	var j := Back.screen_joints(pr, {"chest": sh, "waist": rump, "elbow_l": Vector3(-0.26, -0.56, -0.3), "elbow_r": Vector3(0.26, -0.56, -0.3), "wrist_l": Vector3(-0.17, -0.04, -0.42), "wrist_r": Vector3(0.17, -0.04, -0.42), "hand_l": Vector3(-0.17, -0.03, -0.44), "hand_r": Vector3(0.17, -0.03, -0.44)})
 	Finish.done(p, sp, j, H)
 	return p

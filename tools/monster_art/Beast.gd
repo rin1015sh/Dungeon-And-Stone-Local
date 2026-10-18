@@ -12,8 +12,11 @@ const Fur := preload("res://tools/monster_art/Fur.gd")
 const Finish := preload("res://tools/monster_art/Finish.gd")
 const BeastHead := preload("res://tools/monster_art/BeastHead.gd")
 
-const FWD := Vector3(-0.45, 0.0, 0.89)  ## 짐승 앞쪽(보는 사람 쪽 + 조금 화면 왼쪽 — 다가오는 3/4 정면)
-const SIDE := Vector3(0.89, 0.0, 0.45)  ## 짐승 오른쪽
+const FWD0 := Vector3(-0.45, 0.0, 0.89)  ## 전투 그림: 짐승 앞쪽(보는 사람 쪽 + 조금 화면 왼쪽 — 다가오는 3/4 정면)
+## 그릴 때 쓰는 방향(spec "face" = 화면에서 본 앞쪽 각도 — 0 = 보는 사람 쪽, -π/2 = 화면 왼쪽, π = 뒤. 없으면 전투 그림 방향).
+## spec "pitch" = 위에서 내려다보는 정도(보는 사람 쪽 깊이만큼 화면 아래로 — 탐험 맵), "walk" = 걸음(+1/-1, 대각선 다리 짝이 번갈아).
+static var FWD := FWD0
+static var SIDE := Vector3(0.89, 0.0, 0.45)  ## 짐승 오른쪽 = (FWD.z, 0, -FWD.x)
 
 
 static func paint(sp: Dictionary, seed_value: int) -> Paint:
@@ -24,6 +27,11 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var cl := Clay.new(w, h)
+	FWD = Vector3(sin(float(sp["face"])), 0.0, cos(float(sp["face"]))) if sp.has("face") else FWD0
+	SIDE = Vector3(FWD.z, 0.0, -FWD.x)
+	BeastHead.aim(FWD)
+	var pitch := float(sp.get("pitch", 0.0))
+	var walk := float(sp.get("walk", 0.0))
 	var col: Color = sp.get("color", Color("#7c7e82"))
 	var kind := "fur" if float(sp.get("fur", 0.7)) > 0.45 else "skin"
 	var skin := cl.mat(col, kind, {"mottle": col.darkened(0.3), "mottle_amt": 0.3})
@@ -32,9 +40,9 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 	var bulk := float(sp.get("bulk", 1.0))
 	var legs := float(sp.get("legs", 1.0))
 	var L := H * 0.72  # 몸 길이 기준
-	var ground := h - H * 0.05
+	var ground := h - H * (0.05 + float(sp.get("pitch", 0.0)) * 0.3)  # 내려다보면 가까운 발이 아래로 내려온다
 	var o := Vector3(w * 0.5, ground, 0.0)
-	var A := func(f: float, s: float, u: float) -> Vector3: return o + FWD * f * L + SIDE * s * L + Vector3(0, -u * L, 0)
+	var A := func(f: float, s: float, u: float) -> Vector3: return o + FWD * f * L + SIDE * s * L + Vector3(0, -u * L + (FWD.z * f + SIDE.z * s) * L * pitch, 0)
 	var g_far := cl.group()
 	var g_body := cl.group()
 	var g_near := cl.group()
@@ -49,8 +57,10 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 	# 다리: 먼 쪽(왼쪽, s<0)은 몸 뒤 그룹, 가까운 쪽은 앞 그룹
 	for s: float in [-1.0, 1.0]:
 		var g := g_far if s < 0.0 else g_near
-		_leg(cl, g, A, 0.24, s * 0.085 * bulk, sh_u - 0.05, L, r_chest * 0.42, skin, belly, true, sp)
-		_leg(cl, g, A, -0.27, s * 0.08 * bulk, sh_u - 0.04, L, r_hip * 0.6, skin, belly, false, sp)
+		var near := SIDE.z * s >= 0.0
+		g = g_near if near else g_far
+		_leg(cl, g, A, 0.24, s * 0.085 * bulk, sh_u - 0.05, L, r_chest * 0.42, skin, belly, true, sp, walk * s)  # 대각선 짝: 앞 왼쪽 + 뒤 오른쪽
+		_leg(cl, g, A, -0.27, s * 0.08 * bulk, sh_u - 0.04, L, r_hip * 0.6, skin, belly, false, sp, -walk * s)
 	# 몸통
 	cl.chain(g_body, [hip + Vector3(0, -0.01 * L, 0), mid, chest], [r_hip, r_hip * 0.95, r_chest], skin, 0.06 * L)
 	cl.ell(g_body, chest + Vector3(0, r_chest * 0.45, r_chest * 0.3) + FWD * r_chest * 0.3, r_chest * 0.8, r_chest * 0.75, r_chest * 0.8, belly, 0.05 * L)  # 가슴팍
@@ -62,9 +72,16 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 		for k in 7:
 			var t := k / 6.0
 			var b := hip.lerp(chest, t) + Vector3(0, -lerpf(r_hip, r_chest, t) * 0.85, 0)
-			var tip := b + Vector3(0.05 * L, -(0.13 + sin(t * PI) * 0.08) * L, -0.02 * L)
-			var side := Vector3(0.035 * L, 0, 0)
-			var poly := PackedVector2Array([Vector2(b.x - side.x, b.y), Vector2(tip.x, tip.y), Vector2(b.x + side.x * 1.4, b.y)])
+			var poly: PackedVector2Array
+			if sp.has("face"):  # 돌린 그림: 칼날 밑동을 등줄기를 따라(앞·뒤에서 보면 얇은 가시)
+				var tip := b + FWD * 0.05 * L + Vector3(0, -(0.13 + sin(t * PI) * 0.08) * L, 0)
+				var b0 := b - FWD * 0.035 * L
+				var b1 := b + FWD * 0.05 * L
+				poly = PackedVector2Array([Vector2(b0.x - 0.004 * L, b0.y), Vector2(tip.x, tip.y), Vector2(b1.x + 0.004 * L, b1.y)])
+			else:
+				var tip := b + Vector3(0.05 * L, -(0.13 + sin(t * PI) * 0.08) * L, -0.02 * L)
+				var side := Vector3(0.035 * L, 0, 0)
+				poly = PackedVector2Array([Vector2(b.x - side.x, b.y), Vector2(tip.x, tip.y), Vector2(b.x + side.x * 1.4, b.y)])
 			cl.slab(g_body, poly, b.z + 0.01 * L, 0.006 * L, bm, 1.0, 0.012 * L)
 	# 목 + 머리
 	var head_c: Vector3 = A.call(0.5, 0.0, sh_u - 0.1 + float(sp.get("head_up", 0.0)))
@@ -94,19 +111,23 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 
 
 ## 다리 하나: 위(어깨·허벅지) → 아래 → 발. front면 곧은 앞다리, 아니면 뒤로 꺾인 뒷다리(발목이 뒤로).
-static func _leg(cl: Clay, g: int, A: Callable, f: float, s: float, top_u: float, L: float, r: float, skin: int, belly: int, front: bool, sp: Dictionary) -> void:
+## step: 걸음(+ = 이 다리가 앞으로 나감·발을 듦, - = 뒤로 밀어 디딤).
+static func _leg(cl: Clay, g: int, A: Callable, f: float, s: float, top_u: float, L: float, r: float, skin: int, belly: int, front: bool, sp: Dictionary, step: float = 0.0) -> void:
 	var top: Vector3 = A.call(f, s, top_u)
+	var reach := step * 0.09
+	var lift := maxf(0.0, step) * 0.05
+	f += reach * 0.5
 	var knee: Vector3
 	var ankle: Vector3
 	var foot: Vector3
 	if front:
-		knee = A.call(f + 0.01, s, top_u * 0.48)
-		ankle = A.call(f + 0.015, s, 0.06)
-		foot = A.call(f + 0.05, s, 0.018)
+		knee = A.call(f + 0.01 + reach * 0.4, s, top_u * 0.48 + lift)
+		ankle = A.call(f + 0.015 + reach * 0.4, s, 0.06 + lift)
+		foot = A.call(f + 0.05 + reach * 0.4, s, 0.018 + lift)
 	else:
-		knee = A.call(f + 0.07, s, top_u * 0.55)
-		ankle = A.call(f - 0.05, s, 0.13)
-		foot = A.call(f - 0.02, s, 0.018)
+		knee = A.call(f + 0.07 + reach * 0.4, s, top_u * 0.55 + lift)
+		ankle = A.call(f - 0.05 + reach * 0.4, s, 0.13 + lift)
+		foot = A.call(f - 0.02 + reach * 0.4, s, 0.018 + lift)
 	cl.cap(g, top, knee, r * 1.3, r * 0.6, skin, 0.03 * L)
 	cl.cap(g, knee, ankle, r * 0.52, r * 0.34, skin, 0.02 * L)
 	cl.cap(g, ankle, foot, r * 0.34, r * 0.38, skin, 0.015 * L)

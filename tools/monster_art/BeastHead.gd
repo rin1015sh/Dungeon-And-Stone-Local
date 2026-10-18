@@ -6,8 +6,18 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 
-const FWD := Vector3(-0.3, 0.12, 0.95)  ## 머리는 몸보다 더 보는 사람 쪽(정면에 가깝게), 살짝 숙임
-const SIDE := Vector3(0.95, 0.0, 0.3)
+static var FWD := Vector3(-0.3, 0.12, 0.95)  ## 머리는 몸보다 더 보는 사람 쪽(정면에 가깝게), 살짝 숙임 — Beast가 aim()으로 몸 방향에 맞춘다
+static var SIDE := Vector3(0.95, 0.0, 0.3)
+
+
+## 몸 앞쪽(Beast.FWD)에 맞춰 머리 방향을 정한다. 전투 그림 방향이면 원래 값(보는 사람 쪽으로 더 돌림).
+static func aim(body_fwd: Vector3) -> void:
+	if body_fwd.is_equal_approx(Vector3(-0.45, 0.0, 0.89)):
+		FWD = Vector3(-0.3, 0.12, 0.95)
+		SIDE = Vector3(0.95, 0.0, 0.3)
+		return
+	FWD = (body_fwd + Vector3(0, 0.12, 0)).normalized()
+	SIDE = Vector3(body_fwd.z, 0.0, -body_fwd.x)
 const UP := Vector3(0, -1, 0)
 
 
@@ -81,7 +91,8 @@ static func head(cl: Clay, g: int, c: Vector3, L: float, type: String, sp: Dicti
 				var e: Vector3 = P.call(0.06, s * 0.032, 0.018)
 				cl.carve(g, Vector2(e.x, e.y), 0.016 * L, 0.01 * L, 0.02 * L, -0.35 * s)
 				cl.ell(g, e + FWD * -0.004 * L, 0.009 * L, 0.0065 * L, 0.01 * L, eye_m, 0.5, -0.35 * s)
-				out["eyes"].append(Vector2(e.x, e.y))
+				if (FWD + SIDE * s * 0.7).z > 0.05:  # 보는 사람 쪽 눈만(뒷모습·먼 쪽 눈은 머리에 가린다)
+					out["eyes"].append(Vector2(e.x, e.y))
 				var eb: Vector3 = P.call(0.035, s * 0.035, 0.035)
 				cl.cap(g, eb + SIDE * -s * 0.01 * L, eb + SIDE * s * 0.02 * L + UP * -0.008 * L, 0.012 * L, 0.009 * L, skin, 0.008 * L)  # 찌푸린 눈썹뼈
 				var ear: Vector3 = P.call(-0.025, s * 0.045, 0.06)

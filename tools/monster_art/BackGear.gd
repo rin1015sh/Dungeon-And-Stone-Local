@@ -20,7 +20,10 @@ static func gear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	if kit.has("helm"):
 		_helm(cl, pr, hd, kit, rng)
 	if kit.has("weapon"):
-		_pole(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
+		if str(kit["weapon"]) == "dagger":
+			_dagger(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
+		else:
+			_pole(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
 	if kit.has("shield"):
 		_shield(cl, pr, j, kit, str(kit.get("shield_hand", "l")))
 
@@ -186,6 +189,17 @@ static func _pole(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionary, t: S
 	if lance:
 		Back.cap(cl, pr, g, hd + up * 0.02, hd + up * 0.13, 0.045, 0.01, metal, 0.002)  # 손 가리개(원뿔)
 	Back.ell(cl, pr, g, hd + Vector3(0, 0, 0.01), 0.022, 0.03, 0.02, cl.mat(Color("#3a2a1e"), "leather"), 0.003)  # 쥔 손(장갑)
+
+
+## 단검: 쥔 손에서 아래·앞으로 짧은 날(고블린).
+static func _dagger(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionary, t: String) -> void:
+	var metal := cl.mat(kit.get("weapon_c", Color("#7a7468")), "metal")
+	var grip := cl.mat(Color("#3a2a1e"), "leather")
+	var g := cl.group()
+	var hd: Vector3 = j["hand_" + t]
+	var down := Vector3(0.0, 1.0, -0.35).normalized()
+	Back.cap(cl, pr, g, hd - down * 0.03, hd + down * 0.02, 0.008, 0.008, grip, 0.002)
+	Back.cap(cl, pr, g, hd + down * 0.02, hd + down * 0.14, 0.012, 0.001, metal, 0.002)
 
 
 ## 방패: 몸 앞에 든 방패를 뒤에서 — 안쪽 면(나무 판·가죽 손잡이)이 팔 너머로 보인다.

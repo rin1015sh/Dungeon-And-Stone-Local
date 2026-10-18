@@ -166,6 +166,7 @@ static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
 	j["map_face"] = bool(sp.get("map_face", false))
 	j["socket_eyes"] = bool(sp.get("socket_eyes", false))
 	j["face_lift"] = float(sp.get("face_lift", 0.0))
+	j["ears"] = str(sp.get("ears", ""))
 	if j["map_face"]:  # 굵어진 가슴·망토가 턱을 덮지 않게 머리를 조금 앞으로
 		j["head"] = j["head"] + Vector3(0, 0, -0.015)
 	return j
@@ -340,6 +341,10 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 	if not plain:
 		ell(cl, pr, g, hc + Vector3(0, rv * 0.98, -rw * 0.72), ru * 0.38, rv * 0.2, rw * 0.3, skin, 0.008)  # 턱끝
 	cl.tag = "ear"
+	if str(j.get("ears", "")) == "long":  # 고블린 귀: 머리 옆에서 바깥·조금 위로 뻗은 길고 뾰족한 귀
+		for s: int in [-1, 1]:
+			var e0 := hc + Vector3(s * ru * 0.92, rv * 0.05, rw * 0.05)
+			chain(cl, pr, g, [e0, e0 + Vector3(s * hh * 0.28, -hh * 0.1, rw * 0.15), e0 + Vector3(s * hh * 0.55, -hh * 0.24, rw * 0.3)], [hh * 0.1, hh * 0.06, hh * 0.008], skin, 0.01)
 	for s: int in ([] if plain else [-1, 1]):  # 맵 얼굴은 귀 없음(사용자 2026-10-17)
 		var ek := 0.6 if plain else 1.0  # 큰 머리의 맵 얼굴은 귀를 작게
 		ell(cl, pr, g, hc + Vector3(s * ru * 0.98, rv * 0.06, rw * 0.02), hh * 0.055 * ek, hh * 0.16 * ek, hh * 0.11 * ek, skin, 0.004)
