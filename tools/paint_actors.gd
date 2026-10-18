@@ -85,7 +85,7 @@ func _init() -> void:
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has("monsters") or only.has(id):
 			if MapMonster.has(id):
-				_monster_sheet(id)
+				_monster_sheet(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
 			else:
 				_monster(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
 	if not _sheets.is_empty():
@@ -173,11 +173,11 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 
 ## 몬스터 걷기 시트(MapMonster 설계가 있는 몬스터): 앞·왼쪽·오른쪽(뒤집기)·뒤 × 걸음 3장 → <out>/monsters/<id>.webp.
 ## 칸 크기는 몬스터마다(가장 큰 장에 맞춤) — <out>/monsters/sheets.json {id: {cell: [w, h], foot: 아래에서 발까지 px}}.
-func _monster_sheet(id: String) -> void:
+func _monster_sheet(id: String, data_size: float) -> void:
 	var t0 := Time.get_ticks_msec()
 	var m := MapMonster.spec_of(id)
 	var kind := str(m["kind"])
-	var size := float(m["size"])
+	var size := float(m.get("size", data_size))
 	var body := JsonUtil.get_float(_cfg, "body_px", 84.0)
 	var frames := {}  # [줄, 칸] → 그림(발 = 아래 가운데)
 	var f := 0.0

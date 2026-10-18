@@ -14,6 +14,7 @@ const Back := preload("res://tools/monster_art/Back.gd")
 const Beast := preload("res://tools/monster_art/Beast.gd")
 const Party := preload("res://tools/monster_art/Party.gd")
 const Specs := preload("res://tools/monster_art/Specs.gd")
+const Things := preload("res://tools/monster_art/Things.gd")
 
 const PITCH := 0.3  ## 짐승·기는 것·흙더미를 위에서 내려다보는 정도
 const SIDE_FACE := 0.25  ## 옆모습을 보는 사람 쪽으로 살짝 돌리는 정도(라디안 — 완전한 옆보다 3/4에 가깝게)
@@ -23,7 +24,9 @@ static func C(hex: String) -> Color:
 	return Color(hex)
 
 
-## 몬스터 맵 설계. kind · size(사람 키 대비 — 데이터 size와 같게) · spec(그리는 도구 설계) · map(figure: 탐험가 맵 값을 덮어쓴다).
+## 몬스터 맵 설계. kind · size(사람 키 대비 — 없으면 데이터 size) · spec(그리는 도구 설계) · map(figure: 탐험가 맵 값을 덮어쓴다).
+## 사람형은 전투 설계(Figure 형식)를 3D 몸(Back) 설계로 옮겨(_from_figure) 쓰고, tweak로 고친다.
+## 보스·중간보스(rank guardian·variant_guardian·midboss)와 계층군주는 아직 없다 — 전투 그림을 줄인 한 장(사용자 2026-10-18).
 static func spec_of(id: String) -> Dictionary:
 	match id:
 		"goblin":  # 전투 그림: 초록 살갗·굽은 등·긴 귀·노란 눈·허리 천·단검
@@ -31,13 +34,95 @@ static func spec_of(id: String) -> Dictionary:
 				"hair": "none", "ears": "long", "eye_glow": C("#e8d060"),
 				"kit": {"loin": C("#4a3a2a"), "belt": C("#3a2a1e"), "weapon": "dagger", "weapon_c": C("#7a7468")}},
 				"map": {"hunch": 0.38, "knee": 0.16, "head": 2.3, "legs": 0.72, "wide": 1.0, "bulk": 1.05, "stance": 0.07}}
-		"blade_wolf":
-			return {"kind": "beast", "size": 1.0, "spec": Specs.More.spec_of("blade_wolf")}
+		"skull_rat":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
+			return {"kind": "beast", "size": 0.9, "spec": Specs.More.spec_of(id)}
+		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear":
+			return {"kind": "beast", "spec": Specs.More.spec_of(id)}
 		"ghoul":
 			return {"kind": "crawler", "size": 1.0, "spec": {"height": 420, "color": C("#8a947c"), "blood": 0.5, "eyes": C("#e0d8a0"), "elbow_h": 0.32, "elbow_w": 0.2, "reach": 0.3}}
+		"ghoul_lord":
+			return {"kind": "crawler", "spec": {"height": 420, "color": C("#5a6a48"), "bulk": 1.25, "blood": 1.0, "crown": C("#9a7a32"), "horns": C("#2a2820"), "eyes": C("#ff6030"), "elbow_h": 0.34, "elbow_w": 0.22, "reach": 0.3}}
 		"gnome":
 			return {"kind": "mound", "size": 0.8, "spec": Specs.More.spec_of("gnome")}
+		"slime", "mineral_slime", "wormstone", "guardian_eye":
+			return {"kind": "blob", "spec": Specs.More.spec_of(id)}
+	if FIGURES.has(id):
+		return _from_figure(id)
 	return {}
+
+
+## 사람형 몬스터(전투 설계를 옮긴다)와 손볼 값(tweak — spec·map에 덮어쓴다).
+const FIGURES := {
+	"deadman": {}, "soldier_deadman": {}, "deadman_commander": {}, "skeleton_archer": {}, "skeleton_mage": {},
+	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {},
+	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
+	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
+	"goblin_miner": {}, "hobgoblin_miner": {}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
+	"mummy": {}, "buried_one": {}, "iron_lizardman": {}, "iron_cavalry": {}, "riddle_gatekeeper": {"map": {"head": 1.8}},
+}
+const BUILD := {"thin": "thin", "normal": "normal", "muscular": "muscular", "brute": "brute", "bones": "thin", "fat": "brute"}
+const HAIR := {"ragged": "ragged", "long": "long", "short": "short", "topknot": "ragged"}
+
+
+static func _combat(id: String) -> Dictionary:
+	var f := Specs.spec_of(id)
+	return f if not f.is_empty() else Specs.More.spec_of(id)
+
+
+## 전투 설계(Figure 형식: pose·body·head·kit·extras) → 3D 몸 설계(Back·Party 형식) + 맵 값.
+static func _from_figure(id: String) -> Dictionary:
+	var f := _combat(id)
+	var body: Dictionary = f.get("body", {})
+	var head: Dictionary = f.get("head", {})
+	var pose: Dictionary = f.get("pose", {})
+	var kit: Dictionary = (f.get("kit", {}) as Dictionary).duplicate()
+	var build := str(body.get("build", "normal"))
+	var sp := {"height": Party.REF_H, "build": BUILD.get(build, "normal"), "bulk": {"bones": 0.72, "fat": 1.15}.get(build, float(body.get("bulk", 1.0))),
+		"sh": float(pose.get("sh", 0.12)), "skin": f.get("skin", C("#a09080")), "hair": HAIR.get(str(f.get("hair", "none")), "none"),
+		"eye_glow": f.get("eyes", C("#d8d0b0"))}
+	for k: String in ["mottle", "mottle_amt", "shade", "skin_kind", "hair_c", "blood", "grime", "fade", "desat", "fur_len"]:
+		if f.has(k):
+			sp[k] = f[k]
+	match str(head.get("type", "human")):
+		"goblin", "orc":
+			sp["ears"] = "long"
+		"block":
+			sp["block_head"] = true
+			sp["hair"] = "none"
+		"skull":
+			sp["hair"] = "none"
+	if head.get("horns", false) and f.has("horn"):
+		sp["horns"] = f["horn"]
+		sp["horn_len"] = float(head.get("horn_len", 0.7))
+	for k: String in ["helm", "cap"]:
+		if head.has(k):
+			kit["helm"] = head[k]
+			sp["hair"] = "none"  # 머리카락이 투구를 덮었다
+			if head.has("plume"):
+				kit["plume"] = head["plume"]
+	var ex: Dictionary = f.get("extras", {})
+	for k: String in ["lumps", "crystals"]:
+		if ex.has(k):
+			sp[k] = ex[k]
+	if ex.has("wings"):
+		sp["wings"] = ex["wings"]
+		sp["wing_span"] = float(ex.get("wing_span", 1.0))
+	if ex.has("tail"):
+		sp["tail"] = ex["tail"]
+	if kit.has("robe"):
+		sp["robe"] = kit["robe"]
+		kit.erase("robe")
+	if kit.has("fur"):
+		kit["pelt"] = kit["fur"]
+		kit.erase("fur")
+	sp["kit"] = kit
+	var big := ["brute", "muscular"].has(str(sp["build"]))
+	var mp := {"hunch": clampf(float(pose.get("hunch", 0.0)) * 0.8, 0.0, 0.45), "knee": float(pose.get("knee", 0.1)) * 0.5,
+		"head": 2.0 if big else 2.3, "legs": 0.74, "wide": 1.0, "bulk": 1.05, "stance": 0.07}
+	var tw: Dictionary = FIGURES[id]
+	sp.merge(tw.get("spec", {}), true)
+	mp.merge(tw.get("map", {}), true)
+	return {"kind": "figure", "spec": sp, "map": mp}
 
 
 static func has(id: String) -> bool:
@@ -62,6 +147,18 @@ static func paint(id: String, dir: String, phase: float, height: float, seed_val
 			return Party._crawler(sp, seed_value).to_image()
 		"mound":
 			return _mound(sp, {"down": PI, "left": -PI * 0.5 - SIDE_FACE, "up": 0.0}[dir], phase, seed_value).to_image()
+		"blob":  # 방향이 없는 덩어리(슬라임·웜스톤·수호자의 눈): 같은 그림을 걸음마다 눌렀다 폈다
+			sp.erase("pitch")
+			sp.erase("walk")
+			var img := Things.paint(str(sp["kind"]), sp, seed_value).to_image()
+			if phase != 0.0:
+				var w := img.get_width()
+				var h := img.get_height()
+				var sq := img.duplicate() as Image
+				sq.resize(int(w * 1.06), int(h * 0.92), Image.INTERPOLATE_LANCZOS)
+				img = Image.create_empty(sq.get_width(), h, false, Image.FORMAT_RGBA8)
+				img.blit_rect(sq, Rect2i(Vector2i.ZERO, sq.get_size()), Vector2i(0, h - sq.get_height()))
+			return img
 	return Image.create_empty(1, 1, false, Image.FORMAT_RGBA8)
 
 

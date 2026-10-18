@@ -13,6 +13,7 @@ const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
 const BackHair := preload("res://tools/monster_art/BackHair.gd")
 const BackGear := preload("res://tools/monster_art/BackGear.gd")
+const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
 
@@ -124,7 +125,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var opts := {"mottle": sp.get("mottle", skin_c.darkened(0.35)), "mottle_amt": float(sp.get("mottle_amt", 0.35))}
 	if sp.has("shade"):
 		opts["shade"] = sp["shade"]
-	var skin := cl.mat(skin_c, "skin", opts)
+	var skin := cl.mat(skin_c, str(sp.get("skin_kind", "skin")), opts)  # skin_kind = 돌·쇠·털 몸(몬스터)
 	var mats := {"dark": cl.mat(Color("#1a0d0b"), "glow")}
 	var bd := Back.body(cl, pr, j, sp, skin, cl.mat(Color("#3a2e24"), "bone"))
 	var hd := Back.head(cl, pr, j, skin, mats)
@@ -132,6 +133,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackKit.dress(cl, pr, j, bd, kit, rng)
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
+	BackExtras.extras(cl, pr, j, hd, sp, skin)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
 	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림) — 입은 그리지 않는다
@@ -247,6 +249,17 @@ static func _crawler(sp: Dictionary, seed_value: int) -> Paint:
 		for k in 8:
 			var a := hc + Vector3(rng.randf_range(-0.05, 0.05), -0.05, rng.randf_range(-0.02, 0.04))
 			Back.chain(cl, pr, hg, [a, a + Vector3(rng.randf_range(-0.03, 0.03), 0.06, 0.03), a + Vector3(rng.randf_range(-0.05, 0.05), 0.11, 0.04)], [0.012, 0.008, 0.003], hm, 0.004)
+	if sp.has("crown"):  # 구울로드: 머리에 녹슨 관
+		var cm := cl.mat(sp["crown"], "metal")
+		Back.cap(cl, pr, hg, hc + Vector3(-0.055, -0.045, 0.0), hc + Vector3(0.055, -0.045, 0.0), 0.018, 0.018, cm, 0.004)
+		for k in 4:
+			var b := hc + Vector3(lerpf(-0.045, 0.045, k / 3.0), -0.06, -0.01)
+			Back.cap(cl, pr, hg, b, b + Vector3(0, -0.035, 0), 0.01, 0.002, cm, 0.003)
+	if sp.has("horns"):
+		var hm2 := cl.mat(sp["horns"], "bone")
+		for s: int in [-1, 1]:
+			var b := hc + Vector3(s * 0.05, -0.04, 0.01)
+			Back.chain(cl, pr, hg, [b, b + Vector3(s * 0.05, -0.04, 0.03), b + Vector3(s * 0.07, -0.1, 0.06)], [0.014, 0.009, 0.002], hm2, 0.004)
 	# 뒷다리(개구리처럼 무릎을 바깥 위로) · 팔(팔꿈치를 높이, 손은 멀리 땅에)
 	for s: int in [-1, 1]:
 		var gl := cl.group()

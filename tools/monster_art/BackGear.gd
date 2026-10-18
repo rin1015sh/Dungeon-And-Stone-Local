@@ -19,7 +19,7 @@ static func gear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		_cape(cl, pr, j, bd, kit["cape"], rng)
 	if kit.has("helm"):
 		_helm(cl, pr, hd, kit, rng)
-	if kit.has("weapon"):
+	if kit.has("weapon") and not ["sword", "greatsword", "axe", "pick", "staff", "bow"].has(str(kit["weapon"])):  # 손 무기는 BackExtras
 		if str(kit["weapon"]) == "dagger":
 			_dagger(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
 		else:
