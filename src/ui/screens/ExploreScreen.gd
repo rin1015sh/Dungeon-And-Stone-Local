@@ -6,6 +6,7 @@ extends Control
 ## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
 ## 입력칸 입력·창 포커스 잃음·전투 중·창(소지품 등)이 열려 있을 때·대화창에 넘길 알림이 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
 ## 알림(세션 안내·소지품 창 경고)은 피어 앤 헝거처럼 아래 대화창에 한 쪽씩 뜨고 Enter로 넘긴다(사용자 결정 2026-10-18) — 떠 있는 동안 하단 바는 숨는다.
+## 자잘한 알림은 위 가운데 띠(NoticeToast)에 잠깐, 횃불·포션·식사 결과 등은 보이지 않는다 — 문구 키로 나눈다(NoticeRoute, render.json ui.notice).
 
 signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망) / "abandoned"(일시정지 메뉴에서 포기)
 signal regenerate_requested(seed_value: int)
@@ -27,6 +28,10 @@ var _pause_overlay: PauseMenu
 var _bar: BottomBar
 var _windows: WindowManager
 var _dialog: DialogueBox
+var _toast: NoticeToast
+var _route: NoticeRoute
+var _routing: bool = false  # _notify가 기록(log_message)을 내는 중 — _on_log가 한 번 더 보이지 않게
+var _defeated: bool = false  # 전투에서 졌다 — 남은 안내 없이 바로 타이틀로
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -294,6 +299,7 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	_combat.finished.connect(func(result: String, turns: int, killed: Array[String]) -> void:
 		_combat.queue_free()
 		_combat = null
+		_defeated = result == Battle.RESULT_DEFEAT
 		for id in killed:
 			EventBus.monster_killed.emit(id, session.player.id)
 		session.resolve_encounter(group, result, turns, killed))
@@ -319,11 +325,40 @@ func _build_dialog(m: int) -> void:
 	resized.connect(fit)
 	_dialog.shown_changed.connect(func(on: bool) -> void: _bar.visible = not on)
 	EventBus.log_message.connect(_on_log)
+	EventBus.notice.connect(_notify)
+	_route = NoticeRoute.new(session.db)
+	_toast = NoticeToast.new()
+	add_child(_toast)
+	_toast.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_toast.offset_top = JsonUtil.get_float(UiTheme.ui_dict("notice"), "top", 16.0)
 
 
-## 탐험 중 알림 → 대화창. 전투 중(전투 화면이 자기 대화창에 보인다)·끝난 뒤는 받지 않는다.
+## 문구 키 알림 → 기록(log_message) + 나눈 자리(보이지 않음 / 잠깐 띠 / 대화창). 전투 중·끝난 뒤는 기록만.
+func _notify(key: String, args: Dictionary, kind: String) -> void:
+	var a := args
+	if not a.has("interact"):
+		a = args.duplicate()
+		a["interact"] = InputSetup.key_label("interact")
+	var text := Strings.t(key, a)
+	_routing = true
+	EventBus.log_message.emit(text, kind)
+	_routing = false
+	if _combat != null or _ended or is_queued_for_deletion():
+		return
+	match _route.of(key):
+		NoticeRoute.TOAST:
+			_toast.show_line(text, kind)
+		NoticeRoute.DIALOG:
+			_dialog.say(text, kind)
+
+
+func toast() -> NoticeToast:
+	return _toast
+
+
+## 키 없이 온 알림(log_message) → 대화창. 전투 중(전투 화면이 자기 대화창에 보인다)·끝난 뒤는 받지 않는다.
 func _on_log(text: String, kind: String) -> void:
-	if _combat == null and not _ended and not is_queued_for_deletion():
+	if not _routing and _combat == null and not _ended and not is_queued_for_deletion():
 		_dialog.say(text, kind)
 
 
@@ -419,13 +454,9 @@ func _typing() -> bool:
 	return get_viewport().gui_get_focus_owner() is LineEdit
 
 
-## 문구의 {interact}는 지금 묶인 살피기 키로 채운다(키를 바꿔도 안내가 맞게).
+## 세션 안내 → _notify(문구의 {interact}는 지금 묶인 살피기 키로 채운다 — 키를 바꿔도 안내가 맞게).
 func _on_message(key: String, args: Dictionary, kind: String) -> void:
-	var a := args
-	if not a.has("interact"):
-		a = args.duplicate()
-		a["interact"] = InputSetup.key_label("interact")
-	EventBus.log_message.emit(Strings.t(key, a), kind)
+	_notify(key, args, kind)
 
 
 func _end(kind: String) -> void:
@@ -442,5 +473,13 @@ func _end(kind: String) -> void:
 		"portals": base.found_count(base.map.portals), "portals_total": base.map.portals.size()}
 	if _combat != null:
 		await _combat.finished
+	if kind == "died":  # 사망 화면 없이 타이틀로(사용자 결정 2026-10-18): 전투 패배는 전투 대화창의 "당신은 패배했다..."로 끝,
+		if _defeated or _combat != null:  # 그 밖(굶주림·함정 등)은 남은 안내("숨이 멎었다.")를 넘긴 뒤
+			_dialog.clear()
+		elif _dialog.busy():
+			await _dialog.wait()
+		if is_inside_tree():
+			run_ended.emit(kind, info)
+		return
 	await get_tree().create_timer(UiTheme.ui_float("end_delay_sec", 1.2)).timeout
 	run_ended.emit(kind, info)

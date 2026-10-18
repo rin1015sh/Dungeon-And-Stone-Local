@@ -6,6 +6,8 @@ extends Node
 @warning_ignore("unused_signal")
 signal log_message(text: String, kind: String)            ## kind: info/system/good/warn/danger
 @warning_ignore("unused_signal")
+signal notice(key: String, args: Dictionary, kind: String)  ## 문구 키 알림(소지품 창 등) — 탐험 화면이 키로 대화창·띠를 나눈다(NoticeRoute)
+@warning_ignore("unused_signal")
 signal data_reloaded
 @warning_ignore("unused_signal")
 signal time_advanced(hours: float)                         ## M1 TimeSystem

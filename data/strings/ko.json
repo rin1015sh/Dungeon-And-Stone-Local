@@ -391,7 +391,7 @@
     "drop_cannot": "받을 수 없다.",
     "drop_no_room": "가방에 다 들어가지 않는다.",
     "result_victory": "승리",
-    "result_defeat": "패배",
+    "result_defeat": "당신은 패배했다...",
     "result_fled": "도주",
     "reflect": "{source}의 칼날털이 {target}에게 {amount}만큼 되돌려 베었다.",
     "counter": "{source}이(가) 막아 내고 {target}을(를) 찔렀다 — {amount}.",

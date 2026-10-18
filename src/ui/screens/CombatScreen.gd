@@ -292,7 +292,7 @@ func _show_result() -> void:
 	if not await _read():
 		return
 	var key := "combat.result_" + (battle.result if not battle.result.is_empty() else Battle.RESULT_FLED)
-	_dialog.say(Strings.t(key), "good" if battle.result == Battle.RESULT_VICTORY else "warn")
+	_dialog.say(Strings.t(key), {Battle.RESULT_VICTORY: "good", Battle.RESULT_DEFEAT: "danger"}.get(battle.result, "warn"))
 	if not await _read():
 		return
 	var rewards: Array = reward_provider.call(battle.result, battle.killed, battle.killed_colors) if reward_provider.is_valid() else []

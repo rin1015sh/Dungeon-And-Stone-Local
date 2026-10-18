@@ -72,7 +72,7 @@ func _activate(i: int) -> void:
 	var id := str(actor.inventory.stacks()[i]["id"])
 	if not ItemInfo.equip(actor.db, id).is_empty():
 		if not InventoryActions.equip_stack(actor, i):
-			EventBus.log_message.emit(Strings.t("inventory.no_room_swap", {"item": DataNames.entry(actor.db, "items", id)}), "warn")
+			EventBus.notice.emit("inventory.no_room_swap", {"item": DataNames.entry(actor.db, "items", id)}, "warn")
 	elif not JsonUtil.get_array(ItemInfo.def(actor.db, id), "use_effects").is_empty():
 		use_requested.emit(id)
 	refresh()
@@ -123,7 +123,7 @@ class DiscardZone:
 		if i < 0 or i >= actor.inventory.stacks().size():
 			return false
 		var st := actor.inventory.take_stack(i)
-		EventBus.log_message.emit(Strings.t("inventory.discarded", {"item": DataNames.entry(actor.db, "items", str(st.get("id", ""))),
-			"count": int(st.get("count", 1))}), "warn")
+		EventBus.notice.emit("inventory.discarded", {"item": DataNames.entry(actor.db, "items", str(st.get("id", ""))),
+			"count": int(st.get("count", 1))}, "warn")
 		discarded.emit()
 		return true
