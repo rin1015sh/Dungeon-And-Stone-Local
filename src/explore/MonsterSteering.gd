@@ -62,6 +62,8 @@ func _notices(g: FieldMonsters.Group, player: Vector2i) -> bool:
 
 ## 무리를 budget(칸)만큼 걷게 한다. 움직였으면 true.
 func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: float) -> bool:
+	if g.boss != "":  # 보스는 방 가운데서 움직이지 않는다
+		return false
 	var left := budget
 	var moved := false
 	var contact := float(_db.bal("monsters.contact_tiles", 1.05))
@@ -181,6 +183,11 @@ func distance_field(player: Vector2i) -> Dictionary:
 	_field_cell = player
 	_field = field
 	return field
+
+
+## 칸 a에서 b가 보이는가(벽이 막지 않음).
+func sees(a: Vector2i, b: Vector2i) -> bool:
+	return _line_of_sight(a, b)
 
 
 func _line_of_sight(a: Vector2i, b: Vector2i) -> bool:

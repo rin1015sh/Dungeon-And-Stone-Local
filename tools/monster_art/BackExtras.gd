@@ -102,7 +102,7 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 	var t := str(kit.get("weapon_hand", "r"))
 	var hd: Vector3 = j["hand_" + t]
 	var metal := cl.mat(kit.get("weapon_c", Color("#8a9098")), "metal")
-	var wood := cl.mat(kit.get("staff_c", Color("#4a3628")), "wood")
+	var wood := cl.mat(kit.get("staff_c", kit.get("wood", Color("#4a3628"))), "wood")
 	var g := cl.group()
 	var down := Vector3(0.0, 1.0, -0.25).normalized()
 	if sp.get("plant", false) or str(sp.get("rest", "")) == "kneel":  # 두 손으로 칼끝을 땅에 짚음

@@ -219,3 +219,23 @@ func _straight_corridor(s: ExploreSession, n: int) -> Array:
 			if ok:
 				return [p, d]
 	return []
+
+
+## 보스가 기다리는 방(사용자 2026-10-18): 보스 등급이 있는 무리는 움직이지 않고, 보이는 거리(boss_engage_tiles) 안에 들어오면 바로 전투.
+func test_boss_waits_then_engages() -> void:
+	var fm := _room_field("goblin")
+	fm.groups.clear()
+	var g := fm.add_fixed(["goblin", "blater"], Vector2i(7, 7))
+	assert_eq(g.boss, "blater", "구성에 보스가 있으면 보스 방")
+	var far := _c(Vector2i(2, 7))
+	assert_true(fm.update(far, 2.0, 1.0, false) == null, "멀면 기다린다")
+	assert_eq(g.pos, Vector2i(7, 7), "보스는 쫓아오지 않는다")
+	var reach := float(db.bal("monsters.boss_engage_tiles", 3.5))
+	var near := _c(Vector2i(7 - int(floor(reach)), 7))
+	assert_true(fm.update(near, 0.01, 2.0, false) == g, "방에 들어와 가까워지면 바로 전투")
+	var plain := fm.add_fixed(["goblin"], Vector2i(10, 10))
+	assert_eq(plain.boss, "", "보스 없는 무리는 보통")
+	var chain := fm.add_fixed(["goblin"], Vector2i(12, 3))
+	chain.waves = [["katumba"]]
+	fm.mark_boss(chain)
+	assert_eq(chain.boss, "katumba", "연전 끝의 보스도 기다리는 방")

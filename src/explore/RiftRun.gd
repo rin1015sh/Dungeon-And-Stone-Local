@@ -240,6 +240,7 @@ func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> FieldMonsters.Gr
 		return null
 	g.tag = "riddle" if JsonUtil.get_bool(e, "riddle") else kind
 	g.waves = waves
+	s.monsters.mark_boss(g)
 	if kind == "waves":
 		g.battle_rules = {"survive_rounds": JsonUtil.get_int(e, "survive_rounds", 6), "reinforce": JsonUtil.get_dict(e, "reinforce")}
 	return g

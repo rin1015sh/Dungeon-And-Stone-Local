@@ -4,6 +4,7 @@ extends Node2D
 ## 맵 그림(tools/paint_actors.gd → render.json view.actor_sheet.monster_dir/<id>.webp — 전투 일러스트를 데이터 size에 맞춰 줄인 정면)
 ## 이 있으면 그것을: 위로 걸어가면 뒷모습(<id>_back)이 있을 때 그것, 왼쪽으로 가면 좌우 반전, 걷는 동안 걸음마다 들썩이고
 ## 좌우로 기우뚱한다(걷기 그림 대신 — ASSUMPTIONS AM28). 없으면 monsters/<id>.json sprite, 그것도 없으면 FigurePainter 임시 도형.
+## 보스가 기다리는 방(group.boss)은 그 보스의 기다리는 자세 그림(크게 — paint_actors MapMonster.BOSSES)을 그린다.
 
 const BOB_PX := 1.5      ## 걸음마다 들썩이는 높이(월드 px)
 const SWAY_RAD := 0.05   ## 좌우로 기우뚱하는 각도
@@ -27,7 +28,7 @@ var _up: bool = false
 
 func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	group = p_group
-	var id := group.leader()
+	var id := group.boss if not group.boss.is_empty() else group.leader()
 	var def := db.get_entry("monsters", id)
 	_shape = JsonUtil.get_str(def, "shape", "humanoid")
 	_scale = JsonUtil.get_float(def, "size", 1.0)

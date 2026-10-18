@@ -26,7 +26,7 @@ static func C(hex: String) -> Color:
 
 ## 몬스터 맵 설계. kind · size(사람 키 대비 — 없으면 데이터 size) · spec(그리는 도구 설계) · map(figure: 탐험가 맵 값을 덮어쓴다).
 ## 사람형은 전투 설계(Figure 형식)를 3D 몸(Back) 설계로 옮겨(_from_figure) 쓰고, tweak로 고친다.
-## 보스·중간보스(rank guardian·variant_guardian·midboss)와 계층군주는 아직 없다 — 전투 그림을 줄인 한 장(사용자 2026-10-18).
+## 보스·중간보스(rank guardian·variant_guardian·midboss)는 걷지 않는다 — 기다리는 자세 한 장(BOSSES, idle_of). 계층군주는 전투 그림을 줄인 한 장.
 static func spec_of(id: String) -> Dictionary:
 	match id:
 		"goblin":  # 전투 그림: 초록 살갗·굽은 등·긴 귀·노란 눈·허리 천·단검
@@ -61,13 +61,13 @@ const FIGURES := {
 	"mummy": {}, "buried_one": {}, "iron_lizardman": {}, "iron_cavalry": {}, "riddle_gatekeeper": {"map": {"head": 1.8}},
 }
 ## 보스·중간보스가 방 가운데서 기다리는 자세(BackPose rest — 플레이어가 방에 들어오면 바로 전투). 앞모습 한 장.
-## 고른 까닭: 블라터(저주받은 기사) = 무릎 꿇고 칼을 짚은 채 · 캠보르미어(공작) = 왕좌 · 타룬바스(폭군) = 칼을 짚고 선 채
+## 고른 까닭: 블라터(저주받은 기사) = 무릎 꿇고 칼을 짚은 채 · 캠보르미어(공작) = 왕좌 · 타룬바스(폭군 — 털 라이칸스로프) = 얼음몽둥이를 짚고 선 채
 ## 키르뒤(짐승) = 웅크림 · 킹 슬라임 = 퍼져 있음 · 일디움(철인) = 석상처럼 선 채 · 시체골렘 = 버려진 듯 주저앉음
 ## 카툼바(설원의 군주) = 바위에 걸터앉음(몽둥이 안 든 팔은 늘어뜨림 — 사용자 2026-10-18) · 고블린 폭탄병 = 책상다리로 폭탄 만지작.
 const BOSSES := {
 	"blater": {"spec": {"rest": "kneel"}, "map": {"head": 1.8}},
 	"kambormir": {"size": 1.5, "spec": {"rest": "throne", "seat_c": Color("#3e3438")}, "map": {"head": 2.0}},
-	"tarunbas": {"spec": {"rest": "stand", "plant": true}, "map": {"head": 1.9, "hunch": 0.0}},
+	"tarunbas": {"spec": {"rest": "stand", "plant": true, "hair": "ragged", "hair_c": Color("#c8c8c0")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
 	"kirdui": {"spec": {"rest": "squat"}, "map": {"head": 1.6, "bulk": 1.2}},
 	"ildium": {"spec": {"rest": "stand"}, "map": {"head": 1.6, "bulk": 1.2}},
 	"corpse_golem": {"spec": {"rest": "floor", "legs_out": true}, "map": {"head": 1.6, "bulk": 1.2}},

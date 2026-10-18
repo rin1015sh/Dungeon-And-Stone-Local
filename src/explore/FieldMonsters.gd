@@ -31,6 +31,7 @@ class Group extends RefCounted:
 	var tag: String = ""                  ## 균열 조우 종류(battle/chain/waves/guardian), 필드 무리는 ""
 	var waves: Array = []                 ## 연전: 이기면 바로 이어지는 다음 구성들(몬스터 id 배열)
 	var battle_rules: Dictionary = {}     ## 전투 목표(BattleObjective — 생존 웨이브)
+	var boss: String = ""                 ## 방에서 기다리는 보스·중간보스(구성이나 연전에 있으면) — 움직이지 않고, 가까이 오면 바로 전투
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
@@ -135,9 +136,24 @@ func add_fixed(ids: Array, cell: Vector2i) -> Group:
 		g.monster_ids.append(str(id))
 	g.place(at)
 	g.home = at
+	mark_boss(g)
 	groups.append(g)
 	changed.emit()
 	return g
+
+
+## 구성·연전에 보스 등급(balance monsters.boss_ranks) 몬스터가 있으면 그 무리는 보스가 기다리는 방이다(맵 그림도 보스).
+func mark_boss(g: Group) -> void:
+	var ranks: Array = _db.bal("monsters.boss_ranks", [])
+	var all: Array = g.monster_ids.duplicate()
+	for w: Variant in g.waves:
+		if w is Array:
+			all.append_array(w)
+	g.boss = ""
+	for id: Variant in all:
+		if ranks.has(JsonUtil.get_str(_db.get_entry("monsters", str(id)), "rank")):
+			g.boss = str(id)
+			return
 
 
 func group_at(p: Vector2i) -> Group:
@@ -181,7 +197,12 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 	if player_safe:
 		return null
 	for g in groups:
-		if _steer.in_contact(g, player) and g.grace_until <= now and (g.state == STATE_CHASE or _aggressive(g.leader())):
+		if g.grace_until > now:
+			continue
+		if g.boss != "":  # 보스: 방에 들어와 보이는 거리면 바로
+			if g.fpos.distance_to(player) <= float(_db.bal("monsters.boss_engage_tiles", 3.5)) and _steer.sees(g.pos, pcell):
+				return g
+		elif _steer.in_contact(g, player) and (g.state == STATE_CHASE or _aggressive(g.leader())):
 			return g
 	return null
 

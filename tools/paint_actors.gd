@@ -80,6 +80,8 @@ var _cfg: Dictionary = {}
 var _sheets: Dictionary = {}  ## 이번에 그린 몬스터 시트 {id: {cell, foot}}
 var _out := "res://assets/actors"  ## --out=<폴더>: 시트를 다른 곳에 쓴다(게임 그림을 바꾸지 않고 시험해 볼 때)
 const IDLE_TURN := 0.65  ## 보스 기다리는 자세는 3/4 앞모습(정면으로는 앉음·무릎 꿇음이 읽히지 않았다)
+const BOSS_MIN := 1.8  ## 보스 맵 크기 = max(데이터 size, BOSS_MIN) × BOSS_SCALE(사람 키 대비 — "보스라는 느낌이 확 들게", 사용자 2026-10-18)
+const BOSS_SCALE := 1.4
 var _idle_ids := PackedStringArray()  ## --idle=<id,...>: 보스가 방에서 기다리는 자세 한 장만 그린다(MapMonster.BOSSES)
 var _set: Dictionary = {}  ## --set=head=2,legs=0.8: 맨 위 상수를 이번만 바꾼다(키 = 상수 이름 소문자)
 
@@ -111,7 +113,9 @@ func _init() -> void:
 			_explorer(race)
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has("monsters") or only.has(id):
-			if MapMonster.has(id):
+			if not MapMonster.idle_of(id).is_empty():
+				_idle(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
+			elif MapMonster.has(id):
 				_monster_sheet(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
 			else:
 				_monster(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
@@ -152,7 +156,7 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": ARM_POSES[int(_v("arms", ARMS))], "arm_r": ARM_POSES[int(_v("arms", ARMS))], "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH)}, true)
 	sp["gait"] = {"thigh_f": _v("thigh_f", THIGH_F), "shin_f": _v("shin_f", SHIN_F), "thigh_b": _v("thigh_b", THIGH_B), "shin_b": _v("shin_b", SHIN_B),
 		"lift": _v("lift", LIFT), "twist": _v("twist", TWIST), "arm_f": _v("arm_f", ARM_F), "fore_f": _v("fore_f", FORE_F), "arm_b": _v("arm_b", ARM_B), "fore_b": _v("fore_b", FORE_B)}
-	var rb: Dictionary = RACE_BODY.get(race, {})
+	var rb: Dictionary = RACE_BODY.get(name, {})
 	sp["head"] = float(sp.get("head", 1.0)) * _v("head", float(rb.get("head", HEAD)))
 	sp["legs"] = _v("legs", float(rb.get("legs", LEGS)))
 	sp["wide"] = _v("wide", WIDE)
@@ -250,13 +254,13 @@ func _monster_sheet(id: String, data_size: float) -> void:
 	print("그림: 맵 몬스터 시트 %s %dx%d (%d ms)" % [id, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
 
 
-## 보스 기다리는 자세(앞모습 한 장) → <out>/monsters/<id>_idle.webp.
+## 보스 기다리는 자세(3/4 앞모습 한 장, 크게) → <out>/monsters/<id>.webp(MonsterView가 보스 방에 그린다).
 func _idle(id: String, data_size: float) -> void:
 	var t0 := Time.get_ticks_msec()
 	var m := MapMonster.idle_of(id)
 	if m.is_empty():
 		return
-	var size := float(m.get("size", data_size))
+	var size := maxf(float(m.get("size", data_size)), _v("boss_min", BOSS_MIN)) * _v("boss_scale", BOSS_SCALE)
 	var img: Image
 	if str(m["kind"]) == "figure":
 		img = _figure(m["spec"], id, PI + IDLE_TURN, 0.0, m.get("map", {}), size)
@@ -272,7 +276,7 @@ func _idle(id: String, data_size: float) -> void:
 	out.blit_rect(img, u, Vector2i(2, 0))
 	var dir_out := _out.path_join("monsters")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir_out))
-	out.save_webp(dir_out.path_join("%s_idle.webp" % id), false)
+	out.save_webp(dir_out.path_join("%s.webp" % id), false)
 	print("그림: 보스 기다리는 자세 %s %dx%d (%d ms)" % [id, out.get_width(), out.get_height(), Time.get_ticks_msec() - t0])
 
 
