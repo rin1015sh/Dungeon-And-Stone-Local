@@ -3,7 +3,8 @@ extends Control
 ## 전투 화면(탐험 화면 위에 겹친다) — 피어 앤 헝거식으로 정면에서 맞닥뜨린다(2026-10-15 사용자 요청):
 ##   무대(BattleStage) = 어둠 속 빛 웅덩이 위 가운데에 적(정면), 아래 앞줄에 아군(뒷모습)
 ##   아래 창(CommandMenu) = 왼쪽 명령 칸(공격·스킬·방어·아이템) + 오른쪽 파티 창(PartyRoster: 이름·상태·생명력·영혼력)
-##   위 가운데 = 방금 일어난 일 한두 줄(전투 기록은 탐험 기록에도 남는다).
+##   안내(방금 일어난 일·결과·보상) = 아래 창 왼쪽의 대화창(DialogueBox) — 한 쪽씩 Enter로 넘긴다(사용자 결정 2026-10-18).
+##   대화창이 떠 있는 동안은 차례가 멈춘다(다 넘기면 다음 차례). 결과·보상도 대화창으로 보이고, 다 넘기면 탐험으로 돌아간다.
 ## 아군 행동은 피어 앤 헝거처럼 먼저 전원 정하고(행동 정하기) 차례가 오면 실행한다(_loop).
 ## 전투 규칙은 Battle, 이 화면은 차례 진행과 연출만. 행동 순서는 Battle/Timeline이 정하고, 지금 차례인 사람의 줄·발밑이 밝다.
 
@@ -23,12 +24,7 @@ var _stage: BattleStage
 var _roster: PartyRoster
 var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방지)
 var _menu: CommandMenu
-var _result_panel: PanelContainer
-var _result_box: VBoxContainer
-var _banner: Label
-var _banner_box: PanelContainer
-var _banner_timer: Timer
-var _banner_lines: PackedStringArray = []
+var _dialog: DialogueBox
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 한다)
 var _planning: Array[Combatant] = []  # 지금 행동을 정하는 사람들(파티 창 순서)
@@ -57,12 +53,9 @@ func _ready() -> void:
 	_menu.target_hovered.connect(_on_target_hovered)
 	_place_bottom(_menu)
 	_menu.close()
-	_result_panel = CommandMenu._window()
-	_result_panel.visible = false
-	_place_bottom(_result_panel, UiTheme.metric("combat_result_height", 280))
-	_result_box = VBoxContainer.new()
-	_result_panel.add_child(_result_box)
-	_build_banner()
+	_dialog = DialogueBox.new()
+	_dialog.instant = GameState.debug_fast_combat
+	_menu.set_dialog(_dialog)
 	for u in battle.units:
 		_add_unit(u)
 	for h: Dictionary in battle.history:  # 화면이 열리기 전에 나온 안내(전투 시작·수호자 대사·몬스터 타입)
@@ -92,35 +85,10 @@ func _place_bottom(c: Control, height: int = 0) -> void:
 		c.offset_right = half)
 
 
-func _build_banner() -> void:
-	_banner_box = CommandMenu._window()
-	_banner_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_banner_box.visible = false
-	add_child(_banner_box)
-	_banner_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, UiTheme.metric("margin", 16))
-	_banner_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_banner = UiTheme.label("", "body", "text_title")
-	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_banner.custom_minimum_size.x = UiTheme.metric("combat_banner_width", 560)
-	_banner.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_banner_box.add_child(_banner)
-	_banner_timer = Timer.new()
-	_banner_timer.one_shot = true
-	_banner_timer.timeout.connect(func() -> void:
-		_banner_lines.clear()
-		_banner_box.visible = false)
-	add_child(_banner_timer)
-
-
-## 전투 안내: 위 가운데에 최근 몇 줄(잠깐 뒤 사라짐) + 탐험 기록.
+## 전투 안내: 아래 대화창 + 탐험 기록.
 func _say(text: String, kind: String) -> void:
 	EventBus.log_message.emit(text, kind)
-	_banner_lines.append(text)
-	while _banner_lines.size() > UiTheme.metric("combat_banner_lines", 2):
-		_banner_lines.remove_at(0)
-	_banner.text = "\n".join(_banner_lines)
-	_banner_box.visible = true
-	_banner_timer.start(UiTheme.ui_float("combat_banner_sec", 2.6))
+	_dialog.say(text, kind)
 
 
 func _add_unit(u: Combatant) -> void:
@@ -141,6 +109,8 @@ func _loop() -> void:
 		_refresh()
 		if c == null:
 			break
+		if not await _read():  # 차례 시작에 나온 안내(상태 피해·풀림)를 다 넘긴 뒤
+			return
 		if battle.is_player_controlled(c):
 			if not _plan.has(c):
 				_begin_planning(c)
@@ -214,7 +184,10 @@ func _on_chosen(action: Dictionary) -> void:
 	var u: Combatant = _planning[_plan_i]
 	var why := ActionCheck.reason(battle, u, action)
 	if not why.is_empty():
+		_menu.close()
 		_say(Strings.t(why, {"name": u.label()}), "warn")
+		if not await _read():
+			return
 		_menu.open(battle, u)
 		return
 	_plan[u] = action
@@ -312,16 +285,18 @@ func _refresh() -> void:
 	_roster.refresh()
 
 
+## 결과 → (쓰러진 자리의 드롭 묻기) → 얻은 것(공적·레벨·전리품·정수)을 대화창으로 한 쪽씩 → 다 넘기면 탐험으로.
+## 보상 안내는 세션이 탐험 기록에도 남기므로 여기서는 대화창에만 보인다.
 func _show_result() -> void:
 	_menu.close()
-	_menu.visible = false
-	_result_panel.visible = true
-	for c in _result_box.get_children():
-		c.queue_free()
+	if not await _read():
+		return
 	var key := "combat.result_" + (battle.result if not battle.result.is_empty() else Battle.RESULT_FLED)
-	_result_box.add_child(UiTheme.label(Strings.t(key), "header", "good" if battle.result == Battle.RESULT_VICTORY else "bad"))
+	_dialog.say(Strings.t(key), "good" if battle.result == Battle.RESULT_VICTORY else "warn")
+	if not await _read():
+		return
 	var rewards: Array = reward_provider.call(battle.result, battle.killed, battle.killed_colors) if reward_provider.is_valid() else []
-	if not drops.is_empty() and drop_taker.is_valid() and drop_leaver.is_valid():  # 쓰러진 자리의 정수·전리품을 하나씩 묻는다(결과 칸은 제목만)
+	if not drops.is_empty() and drop_taker.is_valid() and drop_leaver.is_valid():  # 쓰러진 자리의 정수·전리품을 하나씩 묻는다
 		var takers: Array[PlayerCharacter] = []
 		for u in battle.side_units(Combatant.SIDE_PARTY):
 			if u.actor is PlayerCharacter and not u.summoned and not u.actor.dead:
@@ -331,21 +306,16 @@ func _show_result() -> void:
 		drops.clear()
 		if not is_inside_tree():
 			return
-	if not rewards.is_empty():  # 이번 전투로 얻은 것(공적·레벨·전리품·정수) — 웨이브가 이어져도 여기서 한 번 본다
-		var scroll := ScrollContainer.new()
-		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-		scroll.custom_minimum_size.y = UiTheme.metric("combat_reward_height", 150)
-		_result_box.add_child(scroll)
-		var list := VBoxContainer.new()
-		list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		scroll.add_child(list)
-		for m: Dictionary in rewards:
-			var l := UiTheme.label(Strings.t(str(m["key"]), m["args"]), "small", "log_" + str(m["kind"]))
-			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			list.add_child(l)
-	var go := UiTheme.button(Strings.t("combat.continue"), _finish)
-	_result_box.add_child(go)
-	go.grab_focus.call_deferred()
+	for m: Dictionary in rewards:
+		_dialog.say(Strings.t(str(m["key"]), m["args"]), str(m["kind"]))
+	if not await _read():
+		return
+	_finish()
+
+
+## 아래 대화창(테스트·캡처용).
+func dialog() -> DialogueBox:
+	return _dialog
 
 
 func _finish() -> void:
@@ -359,8 +329,17 @@ func _ai_delay() -> float:
 	return 0.0 if GameState.debug_fast_combat else UiTheme.ui_float("combat_ai_delay_sec", 0.45)
 
 
-## 차례가 넘어가기 전 쉼(피해 숫자·안내를 볼 틈). 화면이 사라졌으면 false.
+## 대화창에 남은 안내를 다 넘길 때까지 기다린다. 화면이 사라졌으면 false.
+func _read() -> bool:
+	if _dialog.busy():
+		await _dialog.wait()
+	return is_inside_tree()
+
+
+## 차례가 넘어가기 전 쉼: 안내가 떠 있으면 다 넘길 때까지, 없으면 잠깐(피해 숫자를 볼 틈). 화면이 사라졌으면 false.
 func _turn_gap() -> bool:
+	if _dialog.busy():
+		return await _read()
 	var sec := 0.0 if GameState.debug_fast_combat or not battle.result.is_empty() else UiTheme.ui_float("combat_turn_gap_sec", 0.7)
 	if sec > 0.0:
 		await get_tree().create_timer(sec).timeout
