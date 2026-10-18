@@ -108,9 +108,18 @@ static func blob(p: Paint, c: Vector2, rx: float, ry: float, col: Color) -> void
 	Cave._stone(p, c, rx, ry, col)
 
 
-## 빛 번짐(화로·촛불·랜턴·결정) — 그림 바깥까지 은은하게(only_painted = false).
+## 빛 번짐(화로·촛불·랜턴·결정): 칠한 곳은 더하기 빛, 투명한 둘레는 옅은 빛 무리(알파를 올려 — 게임 바닥 위에 번져 보이게).
 static func glow(p: Paint, c: Vector2, r: float, col: Color, strength: float = 0.6) -> void:
-	Ink.glow(p, c.x, c.y, r, col, strength, false)
+	for yy in range(int(c.y - r), int(c.y + r) + 1):
+		for xx in range(int(c.x - r), int(c.x + r) + 1):
+			var d := Vector2(xx - c.x, yy - c.y).length() / r
+			if d >= 1.0 or xx < 0 or yy < 0 or xx >= p.w or yy >= p.h:
+				continue
+			var f := (1.0 - d) * (1.0 - d) * strength
+			if p.alpha_at(xx, yy) > 0.5:
+				p.add_light(xx, yy, col, f, true)
+			else:
+				p.blend(xx, yy, col, f * 0.45)
 
 
 ## 불꽃(화로·모닥불·촛불): 바깥 주황 → 안쪽 노랑 → 흰 심.

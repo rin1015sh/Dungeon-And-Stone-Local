@@ -98,7 +98,7 @@ static func detail(p: Paint, style: String, v: int, col: Color) -> void:
 				Cave._stone(p, q, rx, rx * 0.75, L.STONE.lightened(p.rng.randf_range(-0.1, 0.15)))
 		"hole":  # 해져 바닥 돌이 드러난 구멍
 			var q := c + Vector2(p.rng.randf_range(-4, 4), p.rng.randf_range(-4, 4)) * u
-			var poly := Cave._ellipse(q, 10 * u, 7 * u, 16, p.rng)
+			var poly := Cave._ellipse(q, 6 * u, 4 * u, 14, p.rng)
 			p.fill_poly(poly, func(x: int, y: int) -> Color: return p.vary(Color("#3c3e44"), x, y, 0.12))
 			for i in poly.size():
 				var a := poly[i]

@@ -57,7 +57,7 @@ func _draw() -> void:
 				_cols[2] = view.vertex_color(x + 1, y + 1, base)
 				_cols[3] = view.vertex_color(x, y + 1, base)
 				draw_polygon(_pts, _cols)
-			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null:
+			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null and tex == null:  # 그림이 있으면 표식 마름모는 그리지 않는다
 				_draw_mark(x, y, t, view.vertex_color(x, y, def.color_mark))
 	var r := view.wall_round * t
 	for b in _blends:

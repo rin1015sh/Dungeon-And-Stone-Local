@@ -152,10 +152,11 @@ static func _cliff_face(p: Paint, col: Color, s: int) -> void:
 	var main := float(h - Common.skirt)
 	var e := _edges(w, s, main)
 	var hf := Seam.field(w, h, s, 0.06, 4)
-	var sn := Seam.field(w, 8, s + 4, 0.06, 2)
+	var sn := Seam.field(w, 8, s + 4, 0.035, 2)
+	var lw := Seam.field(w, 8, s + 7, 0.025, 2)
 	var fine := Seam.field(w, h, s + 6, 0.3, 2)
 	var snow := Color(0.7, 0.75, 0.82)
-	var period := 30.0 * w / 64.0
+	var period := 28.0 * w / 64.0
 	for y in h:
 		for x in w:
 			var i := y * w + x
@@ -163,27 +164,41 @@ static func _cliff_face(p: Paint, col: Color, s: int) -> void:
 			var ly := e[1][x]
 			if y >= foot:
 				continue
-			var yy := fposmod(y + (hf[i] - 0.5) * 16.0 - ly - 6.0, period)
+			var base := y - ly - 8.0 * w / 64.0
+			var j0 := floori(base / period)
+			var yy := period
+			var jj := j0
+			for j: int in [j0 - 1, j0, j0 + 1]:  # 바로 위의 층리 턱(턱마다 x를 따라 물결진다)
+				var d: float = base - j * period - (lw[posmod(j, 8) * w + x] - 0.5) * 18.0
+				if d >= 0.0 and d < yy:
+					yy = d
+					jj = j
 			var t := 0.45 + Seam.relief(hf, w, h, x, y, 6.0) * 0.8 + (hf[i] - 0.5) * 0.35 + (fine[i] - 0.5) * 0.1
 			t -= smoothstep(main * 0.55, foot, float(y)) * 0.3
-			t += 0.12 * (1.0 - yy / period)  # 층 윗부분이 빛을 받는다
+			t += 0.14 * (1.0 - yy / period)  # 층 윗부분이 빛을 받는다
 			var c := Mat.ramp(t, col.darkened(0.55), col, col.lightened(0.4))
-			var sv := sn[(floori((y + (hf[i] - 0.5) * 16.0 - ly - 6.0) / period) & 7) * w + x]
-			var sd := 1.0 + sv * 5.0  # 턱 위 눈 두께
-			if yy < sd and sv > 0.25:  # 턱 위 눈
-				c = snow.darkened((yy / sd) * 0.2)
-			elif yy < sd + 1.2:
-				c = c.lerp(Ink.INK, 0.65)
-			elif yy < sd + 8.0:
-				c = c.darkened(0.3 * (1.0 - (yy - sd - 1.2) / 6.8))
+			var sv := sn[posmod(jj, 7) * w + x]
+			var sd := 1.0 + sv * 5.0 * w / 64.0  # 턱 위 눈 두께
+			if base >= 0.0:
+				if yy < sd and sv > 0.3:  # 턱 위 눈
+					c = snow.darkened((yy / sd) * 0.25)
+				elif yy < 1.3:
+					c = c.lerp(Ink.INK, 0.6)
+				elif yy < sd + 1.3 and sv > 0.3:
+					c = c.lerp(Ink.INK, 0.6)
+				elif yy < sd + 8.0:
+					c = c.darkened(0.3 * (1.0 - (yy - sd - 1.3) / 6.7))
 			if y < ly:
 				c = snow.lightened(0.05)
 			var dl := absf(y - ly)
 			if dl < 1.4:
 				c = c.lerp(Ink.INK, 0.65 * (1.0 - dl / 1.4))
 			var df := foot - y
-			if df < 5.0 + fine[i] * 4.0:
-				c = snow.darkened(clampf(1.0 - df / 5.0, 0.0, 1.0) * 0.3)
+			var pile := 3.0 + sn[7 * w + x] * 7.0  # 발치 눈
+			if df < pile:
+				c = snow.darkened(clampf(1.0 - df / pile, 0.0, 1.0) * 0.3)
+			elif df < pile + 1.2:
+				c = c.lerp(Ink.INK, 0.5)
 			if df < 1.5:
 				c = c.lerp(Ink.INK, 0.5)
 			p.blend(x, y, c, 1.0)

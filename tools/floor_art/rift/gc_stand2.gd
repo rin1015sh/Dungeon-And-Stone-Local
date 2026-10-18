@@ -242,9 +242,16 @@ static func _drift(p: Paint, foot: Vector2, u: float) -> void:
 		if x > foot.x + 17 * u and y > foot.y - 24 * u:
 			c = c.lerp(Color("#5a6a88"), 0.35)  # 처마 밑 그늘
 		return p.vary(c, x, y, 0.04))
-	for k in 4:  # 바람 결
-		var y := foot.y - (4.0 + k * 5.0) * u
-		Ink.line(p, Vector2(foot.x - 26 * u + k * 5 * u, y), Vector2(foot.x + 4 * u + k * 3 * u, y - 6 * u), 1.0 * u, Color("#8a9cb8"), 0.4, 1.2)
+	Ink.hatch(p, PackedVector2Array([foot + Vector2(14, -22) * u, foot + Vector2(22, -24) * u, foot + Vector2(34, 3) * u, foot + Vector2(10, 3) * u]), 3.0 * u, 65.0, 0.22, 0.8 * u, Color("#2a3a58"))
+	for k in 6:  # 바람 결(비탈을 따라 휜 줄)
+		var y := foot.y - (2.0 + k * 4.5) * u
+		var x0 := foot.x - (30.0 - k * 4.0) * u
+		var line := PackedVector2Array()
+		for j in 5:
+			var t := float(j) / 4.0
+			line.append(Vector2(x0 + t * (28.0 - k * 2.0) * u, y - t * 7.0 * u - sin(t * PI) * 2.0 * u))
+		Ink.path(p, line, 1.0 * u, false, Color("#7a8eae"), 0.45, 0.6)
+		Ink.path(p, line, 0.7 * u, false, Mat.SPARK, 0.35, 0.6)
 	Ink.line(p, foot + Vector2(10, -31) * u, foot + Vector2(22, -25) * u, 1.6 * u, Color("#2a3448"), 0.8, 0.4)
 	Ink.line(p, foot + Vector2(20, -20) * u, foot + Vector2(34, 3) * u, 1.6 * u, Color("#2a3448"), 0.75, 0.4)
 	Ink.line(p, foot + Vector2(-34, 2) * u, foot + Vector2(34, 3) * u, 1.2 * u, Color("#2a3448"), 0.45, 0.6)

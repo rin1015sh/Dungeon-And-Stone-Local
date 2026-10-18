@@ -35,6 +35,7 @@ static func paint(tile: String, w: int, h: int, seed_value: int) -> Paint:
 			_pond(p, foot, u)
 		_:
 			Stand2.paint(p, tile, foot, u)
+	Ink.finish(p, 0.035)  # 그레인
 	return p
 
 
@@ -95,12 +96,17 @@ static func snow_foot(p: Paint, foot: Vector2, half: float, puff: float) -> void
 ## 고드름 기둥: 바닥에서 솟은 큰 얼음 기둥 + 뒤에 작은 기둥 둘, 반투명한 몸, 속빛, 발치 눈, 푸른 빛 번짐.
 static func _icicle(p: Paint, foot: Vector2, u: float) -> void:
 	Kit.shadow(p, foot, 30 * u, 9 * u)
-	var parts := [[Vector2(-15, -4), 10.0, 78.0, -0.12], [Vector2(16, -6), 9.0, 96.0, 0.1], [Vector2(0, 0), 17.0, 150.0, 0.04]]
+	var parts := [[Vector2(-6, -10), 8.0, 60.0, -0.05], [Vector2(-19, -3), 11.0, 82.0, -0.14], [Vector2(18, -5), 11.0, 104.0, 0.1],
+		[Vector2(1, 0), 20.0, 156.0, 0.03], [Vector2(-24, 3), 7.0, 40.0, -0.2], [Vector2(26, 2), 7.0, 46.0, 0.22]]
 	for sp: Array in parts:
 		var base := foot + (sp[0] as Vector2) * u
 		var poly := spire(p, base, float(sp[1]) * u, float(sp[2]) * u, float(sp[3]), 0.18)
 		ice_fill(p, poly, 1.0, 0.35)
 		ice_streaks(p, poly, 4, u)
+		var right := PackedVector2Array()
+		for q in poly:
+			right.append(Vector2(maxf(q.x, base.x + float(sp[3]) * (base.y - q.y) * (base.y - q.y) / maxf(1.0, float(sp[2]) * u)), q.y))
+		Ink.hatch(p, right, 3.0 * u, 70.0, 0.22, 0.8 * u, Color("#14283a"))
 		var tip := base + Vector2(float(sp[3]) * float(sp[2]) * u, -float(sp[2]) * u)
 		Ink.line(p, base + Vector2(-float(sp[1]) * 0.55 * u, -6 * u), tip.lerp(base, 0.12), 1.4 * u, Mat.SPARK, 0.6, 1.0)
 		Ink.path(p, poly, 1.7 * u, true, Color("#14202c"), 0.85, 0.4)
@@ -126,6 +132,7 @@ static func _guide(p: Paint, foot: Vector2, u: float, cracked: bool) -> void:
 	var cap_f := PackedVector2Array([tl, apex, tr])
 	var cap_s := PackedVector2Array([tr, apex, tr + Vector2(dx * 0.75, -dy * 0.75)])
 	p.fill_poly(side, func(x: int, y: int) -> Color: return p.vary(ICE_B.lerp(ICE_C, 0.55), x, y, 0.1))
+	Ink.hatch(p, side, 3.0 * u, 75.0, 0.3, 0.8 * u, Color("#0e1a26"))
 	ice_fill(p, front, 1.0, 0.5)
 	ice_fill(p, cap_f, 1.0, 0.3)
 	p.fill_poly(cap_s, func(x: int, y: int) -> Color: return p.vary(ICE_C, x, y, 0.1))
@@ -142,7 +149,7 @@ static func _guide(p: Paint, foot: Vector2, u: float, cracked: bool) -> void:
 		var y0 := foot.y - float(band[1]) * u
 		var y1 := foot.y - float(band[0]) * u
 		var cx := foot.x - 1 * u
-		Ink.glow(p, cx, (y0 + y1) * 0.5, 14 * u, Color("#8ff0ff"), 0.45)
+		Ink.glow(p, cx, (y0 + y1) * 0.5, 16 * u, Color("#8ff0ff"), 0.6)
 		Ink.line(p, Vector2(cx, y0 + 3 * u), Vector2(cx, y1 - 3 * u), 1.6 * u, RUNE, 0.95, 0.3)
 		Ink.line(p, Vector2(cx - 5 * u, y0 + 7 * u), Vector2(cx, y0 + 12 * u), 1.4 * u, RUNE, 0.9, 0.3)
 		Ink.line(p, Vector2(cx + 5 * u, y0 + 11 * u), Vector2(cx, y0 + 17 * u), 1.4 * u, RUNE, 0.9, 0.3)
@@ -150,10 +157,11 @@ static func _guide(p: Paint, foot: Vector2, u: float, cracked: bool) -> void:
 	Ink.line(p, fl + Vector2(2 * u, -4 * u), tl + Vector2(2 * u, 4 * u), 1.8 * u, Mat.SPARK, 0.7, 0.4)  # 빛 받은 모서리
 	Ink.line(p, tl, apex, 1.4 * u, Mat.SPARK, 0.6, 0.3)
 	if cracked:
-		var shard := PackedVector2Array([foot + Vector2(0, -104) * u, foot + Vector2(7, -88) * u, foot + Vector2(1, -66) * u, foot + Vector2(-6, -84) * u])
-		Ink.glow(p, foot.x, foot.y - 86 * u, 26 * u, Color("#cfeeff"), 0.6)
+		var shard := PackedVector2Array([foot + Vector2(1, -108) * u, foot + Vector2(9, -90) * u, foot + Vector2(2, -62) * u, foot + Vector2(-7, -86) * u])
+		Ink.glow(p, foot.x, foot.y - 86 * u, 30 * u, Color("#dff4ff"), 0.85)
 		p.fill_poly(shard, func(x: int, y: int) -> Color: return Color("#f4fbff").lerp(Color("#9fd8ff"), clampf((x - foot.x) / (8.0 * u) * 0.5 + 0.5, 0.0, 1.0)))
-		Ink.path(p, shard, 1.2 * u, true, Color("#2a5a7a"), 0.8, 0.2)
+		Ink.path(p, shard, 1.4 * u, true, Color("#1a3a56"), 0.9, 0.2)
+		Ink.line(p, shard[0], shard[2], 1.0 * u, Color("#7fb8dc"), 0.7, 0.2)
 		var pts := PackedVector2Array([foot + Vector2(-11, -132) * u, foot + Vector2(-4, -116) * u, foot + Vector2(-7, -104) * u, foot + Vector2(3, -90) * u, foot + Vector2(-1, -72) * u, foot + Vector2(8, -56) * u, foot + Vector2(5, -40) * u, foot + Vector2(13, -24) * u])
 		for k in pts.size() - 1:
 			Ink.line(p, pts[k], pts[k + 1], 3.6 * u, ICE_HI, 0.55, 0.4)
@@ -212,16 +220,17 @@ static func _frozen_orc(p: Paint, foot: Vector2, u: float) -> void:
 	p.fill_poly(side, func(x: int, y: int) -> Color: return p.vary(ICE_B.lerp(ICE_C, 0.5), x, y, 0.1))
 	ice_fill(p, front, 1.0, 0.15)
 	# 갇힌 오크(얼음 속이라 흐리고 푸르게)
-	var body := Color("#24302c")
+	var body := Color("#1a2420")
 	var o := foot + Vector2(-2, 0) * u
 	var silh := Paint.new(p.w, p.h, 3)
 	Ink.line(silh, o + Vector2(-7, -12) * u, o + Vector2(-9, -44) * u, 9 * u, body, 1.0, 0.4)  # 다리
 	Ink.line(silh, o + Vector2(8, -12) * u, o + Vector2(7, -44) * u, 9 * u, body, 1.0, 0.4)
-	silh.fill_poly(Cave._ellipse(o + Vector2(0, -66) * u, 15 * u, 24 * u, 18), func(_x: int, _y: int) -> Color: return body)  # 몸통
+	silh.fill_poly(Cave._ellipse(o + Vector2(0, -64) * u, 17 * u, 24 * u, 18), func(_x: int, _y: int) -> Color: return body)  # 몸통
+	silh.fill_poly(PackedVector2Array([o + Vector2(-14, -46) * u, o + Vector2(14, -46) * u, o + Vector2(12, -36) * u, o + Vector2(-12, -36) * u]), func(_x: int, _y: int) -> Color: return body)  # 허리
 	silh.fill_poly(PackedVector2Array([o + Vector2(-20, -80) * u, o + Vector2(19, -82) * u, o + Vector2(14, -70) * u, o + Vector2(-16, -68) * u]), func(_x: int, _y: int) -> Color: return body)  # 어깨
-	silh.fill_poly(Cave._ellipse(o + Vector2(1, -92) * u, 8 * u, 8 * u, 14), func(_x: int, _y: int) -> Color: return body)  # 머리
+	silh.fill_poly(Cave._ellipse(o + Vector2(1, -91) * u, 9 * u, 8 * u, 14), func(_x: int, _y: int) -> Color: return body)  # 머리(어깨에 파묻힌)
 	Ink.line(silh, o + Vector2(-17, -78) * u, o + Vector2(-19, -106) * u, 7 * u, body, 1.0, 0.4)  # 치켜든 팔
-	Ink.line(silh, o + Vector2(-19, -104) * u, o + Vector2(-4, -116) * u, 3.5 * u, body, 1.0, 0.3)  # 도끼 자루
+	Ink.line(silh, o + Vector2(-21, -98) * u, o + Vector2(-4, -116) * u, 3.5 * u, body, 1.0, 0.3)  # 도끼 자루
 	silh.fill_poly(PackedVector2Array([o + Vector2(-8, -122) * u, o + Vector2(2, -120) * u, o + Vector2(4, -108) * u, o + Vector2(-6, -110) * u]), func(_x: int, _y: int) -> Color: return body)  # 도끼날
 	Ink.line(silh, o + Vector2(16, -78) * u, o + Vector2(20, -52) * u, 7 * u, body, 1.0, 0.4)  # 내린 팔
 	for i in p.w * p.h:
@@ -229,7 +238,7 @@ static func _frozen_orc(p: Paint, foot: Vector2, u: float) -> void:
 		if a > 0.0 and p.buf[i * 4 + 3] > 0.0:
 			var x := i % p.w
 			var y := i / p.w
-			p.tint(x, y, Color("#1e3440"), a * 0.72)
+			p.tint(x, y, Color("#14262e"), a * 0.82)
 	for sx: float in [-3.0, 4.5]:  # 얼음 너머 흐린 엄니
 		Cave._dot(p, o + Vector2(sx, -88) * u, 1.2 * u, Color("#8aa8a8"), 0.7)
 	# 얼음 겉: 비친 빛 줄, 금, 서리

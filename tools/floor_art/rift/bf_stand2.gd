@@ -28,12 +28,15 @@ static func paint(p: Paint, tile: String) -> bool:
 			var back := PackedVector2Array([Vector2(l, f.y), Vector2(l + 64 * u, f.y), Vector2(l + 64 * u, ty), Vector2(l, ty)])
 			p.fill_poly(back, func(x: int, y: int) -> Color:
 				var g := sin(y * 0.9 + p.nz("mid", x, y) * 5.0) * 0.04
-				return p.vary(Color("#5a3e2a").darkened(clampf((y - ty) / (42.0 * u), 0.0, 1.0) * 0.35 - g), x, y, 0.08))
+				return p.vary(Color("#4a3222").darkened(clampf((y - ty) / (42.0 * u), 0.0, 1.0) * 0.35 - g), x, y, 0.08))
 			for k in 4:  # 판넬 테
 				var x0 := l + k * 16.0 * u + 2 * u
 				var pan := Paint.rect_poly(x0, ty + 10 * u, 12 * u, 26 * u)
 				Ink.path(p, pan, 0.9 * u, true, K.INK, 0.55, 0.3)
 				Ink.line(p, Vector2(x0 + 0.5, ty + 10 * u), Vector2(x0 + 0.5, ty + 36 * u), 0.6 * u, K.LIT, 0.25, 0.3)
+				var tc := Vector2(x0 + 6 * u, ty + 17 * u)  # 새긴 세잎 무늬
+				for a: float in [-PI * 0.5, PI * 0.17, PI * 0.83]:
+					Cave._dot(p, tc + Vector2.from_angle(a) * 2.2 * u, 1.5 * u, K.INK, 0.5)
 			var rail := Paint.rect_poly(l, ty - 5 * u, 64 * u, 6 * u)  # 둥근 등받이 위 테
 			p.fill_poly(rail, func(x: int, y: int) -> Color: return p.vary(Color("#6a4a32").lightened(0.15 if y < ty - 2 * u else 0.0), x, y, 0.08))
 			Ink.line(p, Vector2(l, ty - 5 * u), Vector2(l + 64 * u, ty - 5 * u), 1.2 * u, K.INK, 0.85, 0.3)
@@ -84,8 +87,8 @@ static func paint(p: Paint, tile: String) -> bool:
 			K.halo(p, Vector2(f.x, arm - 24 * u), 40 * u, Color("#ffa040"), 0.32)
 		"bf_rock":
 			Kit.shadow(p, f + Vector2(0, -6 * u), 32 * u, 10 * u)
-			Kit.blob(p, f + Vector2(-4, -20) * u, 26 * u, 21 * u, Color("#6a6262"))
-			Kit.blob(p, f + Vector2(16, -8) * u, 13 * u, 9 * u, Color("#5e5656"))
+			Kit.blob(p, f + Vector2(-4, -20) * u, 26 * u, 21 * u, Color("#4e4646"))
+			Kit.blob(p, f + Vector2(16, -8) * u, 13 * u, 9 * u, Color("#443e3e"))
 			Cave._crack(p, f + Vector2(-10, -34) * u, 3, 7.0 * u, Vector2(0.4, 1.0))
 			Decals._blob(p, f + Vector2(-16, -10) * u, 5 * u, Color("#3a3a2a"), 0.5, 0.4)
 		"bf_stake":
@@ -102,7 +105,7 @@ static func paint(p: Paint, tile: String) -> bool:
 				pts.append(b + Vector2(q.x + (-q.y) * lean, q.y) * u)
 			var side := PackedVector2Array([pts[6], pts[5], pts[5] + Vector2(4, -3) * u, pts[6] + Vector2(4, -3) * u])
 			p.fill_poly(side, func(x: int, y: int) -> Color: return p.vary(Color("#4a4644"), x, y, 0.08))
-			p.fill_poly(pts, func(x: int, y: int) -> Color: return p.vary(Color("#7a7470").lightened(0.1 - (x - b.x) / (12.0 * u) * 0.15), x, y, 0.1))
+			p.fill_poly(pts, func(x: int, y: int) -> Color: return p.vary(Color("#5a5654").lightened(0.1 - (x - b.x) / (12.0 * u) * 0.15), x, y, 0.1))
 			Ink.path(p, pts, 1.5 * u, true, K.INK, 0.9, 0.4)
 			var cx := b + Vector2(0 + 22 * lean, -22) * u  # 새긴 십자
 			Ink.line(p, cx + Vector2(1.4, -8) * u, cx + Vector2(-1.2, 8) * u, 1.6 * u, K.INK, 0.7, 0.2)
@@ -115,9 +118,9 @@ static func paint(p: Paint, tile: String) -> bool:
 			for q: Vector3 in [Vector3(-12, -12, 14), Vector3(13, -10, 13), Vector3(0, -2, 15)]:
 				var c := f + Vector2(q.x, q.y) * u
 				var r := q.z * u
-				Cave._stone(p, c, r, r * 0.85, Color("#8a7656"))
+				Cave._stone(p, c, r, r * 0.85, Color("#6a5a42"))
 				Ink.hatch(p, Cave._ellipse(c, r * 0.8, r * 0.65, 14), 2.4 * u, 70.0, 0.2, 0.6 * u)
-				Cave._stone(p, c + Vector2(r * 0.15, -r * 0.85), r * 0.3, r * 0.25, Color("#7a6648"))  # 묶은 목
+				Cave._stone(p, c + Vector2(r * 0.15, -r * 0.85), r * 0.3, r * 0.25, Color("#5a4a36"))  # 묶은 목
 				Ink.line(p, c + Vector2(-r * 0.15, -r * 0.65), c + Vector2(r * 0.45, -r * 0.62), 1.2 * u, Color("#4a3a24"), 0.9, 0.3)
 		"bf_post":
 			Kit.shadow(p, f, 12 * u, 4 * u)
@@ -297,38 +300,41 @@ static func _branch(p: Paint, a: Vector2, dir: Vector2, ln: float, wd: float, de
 		_branch(p, b if k < 2 else m, nd, ln * p.rng.randf_range(0.55, 0.75), wd * 0.6, depth + 1, u)
 
 
-## 꼬챙이에 꿰인 시체: 높은 말뚝 + 앞으로 꺾여 늘어진 몸·머리·팔다리, 말뚝을 타고 흐른 피, 쪼인 구멍.
+## 꼬챙이에 꿰인 시체: 높은 말뚝 + 꿰여 축 늘어진 몸(가슴 앞으로 꺾인 머리 · 늘어진 팔다리), 말뚝을 타고 흐른 피, 쪼인 구멍.
 static func _impaled(p: Paint, f: Vector2, u: float) -> void:
 	Kit.shadow(p, f, 22 * u, 6 * u)
 	K.pool(p, f + Vector2(2, -1) * u, 9 * u, 0.6, 0.0)
-	var top := f + Vector2(2, -156) * u
+	var top := f + Vector2(1, -160) * u
 	S1._sharp(p, f, top, 5.0 * u, Color("#4a3624"))
-	Ink.line(p, f + Vector2(-0.5, -96) * u, f + Vector2(0.5, -4) * u, 2.6 * u, Color("#4a0608"), 0.8, 0.5)  # 피 줄기
-	var skin := Color("#7a7468")
-	var hip := f + Vector2(1, -108) * u
-	var chest := hip + Vector2(10, -16) * u
+	Ink.line(p, f + Vector2(-0.5, -84) * u, f + Vector2(0.5, -4) * u, 2.8 * u, Color("#4a0608"), 0.85, 0.5)  # 피 줄기
+	var skin := Color("#6e6458")
+	var rag := Color("#3a3028")
+	var hip := f + Vector2(0, -92) * u
+	var sh := f + Vector2(1, -124) * u
 	for sx: float in [-1.0, 1.0]:  # 늘어진 다리
-		var knee := hip + Vector2(sx * 6 + 3, 18) * u
-		Kit.post(p, hip + Vector2(sx * 3, 0) * u, knee, 6.0 * u, Color("#4a4034"))
-		Kit.post(p, knee, knee + Vector2(sx * 2, 22) * u, 5.0 * u, skin.darkened(0.15))
-	var torso := PackedVector2Array([hip + Vector2(-7, 2) * u, hip + Vector2(8, 4) * u, chest + Vector2(10, 4) * u, chest + Vector2(6, -6) * u, chest + Vector2(-8, -4) * u])
-	p.fill_poly(torso, func(x: int, y: int) -> Color: return p.vary(skin.lightened(0.05 - (x - hip.x) / (16.0 * u) * 0.3), x, y, 0.1))
-	p.fill_poly(PackedVector2Array([hip + Vector2(-7, 2) * u, hip + Vector2(8, 4) * u, hip + Vector2(6, -6) * u, hip + Vector2(-6, -8) * u]), func(x: int, y: int) -> Color: return p.vary(Color("#4a4034"), x, y, 0.12))  # 누더기
-	Ink.path(p, torso, 1.4 * u, true, K.INK, 0.9, 0.4)
-	for k in 3:  # 갈비 그늘
-		Ink.line(p, chest + Vector2(-4, 2 + k * 3) * u, chest + Vector2(5, 3 + k * 3) * u, 0.8 * u, K.INK, 0.45, 0.3)
-	var head := chest + Vector2(12, 8) * u  # 앞으로 꺾인 머리
-	Cave._stone(p, head, 6 * u, 6.5 * u, skin)
-	Decals._blob(p, head + Vector2(-1, -3) * u, 5 * u, Color("#2a2420"), 0.85, 0.3)  # 머리카락
-	Cave._dot(p, head + Vector2(2, 2) * u, 1.6 * u, K.INK, 0.95)
+		var knee := hip + Vector2(sx * 7, 16) * u
+		Kit.post(p, hip + Vector2(sx * 4, 0) * u, knee, 7.0 * u, rag)
+		Kit.post(p, knee, knee + Vector2(sx * 1.5, 22) * u, 5.0 * u, skin.darkened(0.2))
+	var torso := PackedVector2Array([hip + Vector2(-9, 4) * u, hip + Vector2(9, 4) * u, sh + Vector2(11, 2) * u, sh + Vector2(6, -4) * u, sh + Vector2(-6, -4) * u, sh + Vector2(-11, 2) * u])
+	p.fill_poly(torso, func(x: int, y: int) -> Color: return p.vary(skin.lightened(0.08 - (x - hip.x) / (11.0 * u) * 0.25), x, y, 0.1))
+	p.fill_poly(PackedVector2Array([hip + Vector2(-9, 4) * u, hip + Vector2(9, 4) * u, hip + Vector2(8, -8) * u, hip + Vector2(-8, -8) * u]), func(x: int, y: int) -> Color: return p.vary(rag, x, y, 0.12))
+	for k in 4:  # 갈비 그늘
+		Ink.line(p, sh + Vector2(-7, 7 + k * 4) * u, sh + Vector2(-1, 9 + k * 4) * u, 0.8 * u, K.INK, 0.5, 0.3)
+		Ink.line(p, sh + Vector2(2, 9 + k * 4) * u, sh + Vector2(8, 7 + k * 4) * u, 0.8 * u, K.INK, 0.5, 0.3)
+	Ink.path(p, torso, 1.5 * u, true, K.INK, 0.9, 0.4)
 	for sx: float in [-1.0, 1.0]:  # 늘어진 팔
-		var sh := chest + Vector2(sx * 7 + 2, 0) * u
-		var el := sh + Vector2(sx * 3 + 2, 16) * u
-		Kit.post(p, sh, el, 4.0 * u, skin.darkened(0.1))
-		Kit.post(p, el, el + Vector2(1, 16) * u, 3.4 * u, skin.darkened(0.2))
-	Cave._dot(p, chest + Vector2(0, 4) * u, 2.0 * u, Color("#3a0606"), 0.9)  # 까마귀가 쪼은 구멍
-	Cave._dot(p, hip + Vector2(4, -4) * u, 1.6 * u, Color("#3a0606"), 0.9)
-	Kit.cone(p, top + Vector2(0, 10) * u, 2.6 * u, 10 * u, Color("#6a3a2a"))  # 몸을 뚫고 나온 끝(핏빛)
+		var s0 := sh + Vector2(sx * 10, 0) * u
+		var el := s0 + Vector2(sx * 3, 18) * u
+		Kit.post(p, s0, el, 4.4 * u, skin.darkened(0.1))
+		Kit.post(p, el, el + Vector2(sx * 1, 17) * u, 3.6 * u, skin.darkened(0.2))
+		Cave._stone(p, el + Vector2(sx * 1, 19) * u, 2.4 * u, 3 * u, skin.darkened(0.25))
+	var head := sh + Vector2(3, 3) * u  # 가슴 앞으로 떨군 머리
+	Cave._stone(p, head, 7 * u, 6.5 * u, skin)
+	Decals._blob(p, head + Vector2(0, -2) * u, 6.5 * u, Color("#1e1a16"), 0.9, 0.3)  # 머리카락
+	Cave._dot(p, sh + Vector2(-4, 14) * u, 2.2 * u, Color("#3a0606"), 0.95)  # 까마귀가 쪼은 구멍
+	Cave._dot(p, sh + Vector2(5, 20) * u, 1.6 * u, Color("#3a0606"), 0.95)
+	Kit.cone(p, sh + Vector2(1, -2) * u, 2.6 * u, 14 * u, Color("#6a2a20"))  # 몸을 뚫고 나온 끝(핏빛)
+	K.stain(p, sh + Vector2(1, 2) * u, 3 * u, 0.7)
 
 
 ## 찢긴 붉은 전쟁 깃발: 높은 장대 + 가로대, 아래가 갈기갈기 찢긴 긴 깃발(바랜 금빛 문장).
@@ -368,7 +374,7 @@ static func _banner(p: Paint, f: Vector2, u: float) -> void:
 ## 마른 분수대: 넓은 돌 수반(마른 바닥 · 낙엽) + 가운데 받침 위 우는 여신상(차가운 푸른 눈물 빛).
 static func _fountain(p: Paint, f: Vector2, u: float) -> void:
 	Kit.shadow(p, f, 44 * u, 12 * u)
-	var stone := Color("#7a7c80")
+	var stone := Color("#5c5c60")
 	Kit.cyl(p, f, 40 * u, 14 * u, stone.darkened(0.15), 0)
 	p.fill_poly(Cave._ellipse(f + Vector2(0, -14 * u), 34 * u, 10 * u, 28), func(x: int, y: int) -> Color: return p.vary(Color("#3a3634"), x, y, 0.12))
 	Cave._crack(p, f + Vector2(-20, -14) * u, 3, 7.0 * u, Vector2(1, 0.2))
@@ -376,8 +382,8 @@ static func _fountain(p: Paint, f: Vector2, u: float) -> void:
 		Cave._dot(p, f + Vector2(p.rng.randf_range(-28, 28), p.rng.randf_range(-20, -9)) * u, 1.8 * u, Color("#5a3a22"), 0.85)
 	Kit.cyl(p, f + Vector2(0, -12 * u), 8 * u, 16 * u, stone.darkened(0.05), 0)  # 받침
 	var base := f + Vector2(0, -28 * u)
-	S1._statue(p, base, u, Color("#8a9098"), true)
-	var eye := base + Vector2(1, -46) * u  # 푸른 눈물
+	S1._statue(p, base, u, Color("#545a64"), true)
+	var eye := base + Vector2(2, -43) * u  # 푸른 눈물
 	Cave._dot(p, eye, 1.6 * u, Color("#d8f0ff"), 1.0)
 	Ink.line(p, eye, eye + Vector2(0.4, 6) * u, 1.0 * u, Color("#a8d8ff"), 0.8, 0.2)
 	K.halo(p, eye, 16 * u, Color("#7ab8ff"), 0.35)
