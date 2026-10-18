@@ -39,6 +39,45 @@ static func load_for(render: Dictionary, path: String) -> ActorSheet:
 	return s
 
 
+## 몬스터 걷기 시트(tools/paint_actors.gd → <monster_dir>/<id>_walk.webp + sheets.json {id: {cell, foot}}) — 칸 크기는 몬스터마다.
+## 시트가 없으면 null(전투 그림을 줄인 한 장을 쓴다).
+static func load_monster(render: Dictionary, id: String) -> ActorSheet:
+	var cfg := JsonUtil.get_dict(JsonUtil.get_dict(render, "view"), "actor_sheet")
+	var dir := JsonUtil.get_str(cfg, "monster_dir", "res://assets/actors/monsters")
+	var meta := JsonUtil.get_dict(_monster_index(dir), id)
+	var c := JsonUtil.get_array(meta, "cell")
+	var path := dir.path_join(id + "_walk.webp")
+	if c.size() != 2 or not ResourceLoader.exists(path):
+		return null
+	var s := ActorSheet.new()
+	s.texture = load(path) as Texture2D
+	s.cell = Vector2(float(c[0]), float(c[1]))
+	s.foot = JsonUtil.get_float(meta, "foot", 4.0)
+	s.scale = 1.0 / maxf(1.0, JsonUtil.get_float(cfg, "art_scale", 2.0))
+	s.fps = JsonUtil.get_float(cfg, "walk_fps", 12.0)
+	s.cols = JsonUtil.get_int(cfg, "cols", 5)
+	s.stand = JsonUtil.get_int(cfg, "stand_col", 2)
+	var cyc := JsonUtil.get_array(cfg, "walk_cycle")
+	if not cyc.is_empty():
+		s.cycle.clear()
+		for v: Variant in cyc:
+			s.cycle.append(clampi(int(v), 0, s.cols - 1))
+	if s.texture == null or s.texture.get_width() < s.cell.x * s.cols or s.texture.get_height() < s.cell.y * 4:
+		return null
+	return s
+
+
+static var _index_cache: Dictionary = {}
+
+
+static func _monster_index(dir: String) -> Dictionary:
+	if not _index_cache.has(dir):
+		var path := dir.path_join("sheets.json")
+		var v: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
+		_index_cache[dir] = v if v is Dictionary else {}
+	return _index_cache[dir]
+
+
 ## 월드 크기(발~칸 위).
 func world_size() -> Vector2:
 	return cell * scale

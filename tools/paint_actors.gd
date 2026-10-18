@@ -115,10 +115,10 @@ func _init() -> void:
 		if only.is_empty() or only.has("monsters") or only.has(id):
 			if not MapMonster.idle_of(id).is_empty():
 				_idle(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
-			elif MapMonster.has(id):
-				_monster_sheet(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
-			else:
+			else:  # 전투 그림을 줄인 한 장(시트가 없거나 못 읽을 때 쓴다) + 설계가 있으면 걷기 시트
 				_monster(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
+				if MapMonster.has(id):
+					_monster_sheet(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
 	if not _sheets.is_empty():
 		_save_sheet_index()
 	quit(0)
@@ -206,7 +206,7 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	return out
 
 
-## 몬스터 걷기 시트(MapMonster 설계가 있는 몬스터): 앞·왼쪽·오른쪽(뒤집기)·뒤 × 걸음 3장 → <out>/monsters/<id>.webp.
+## 몬스터 걷기 시트(MapMonster 설계가 있는 몬스터): 앞·왼쪽·오른쪽(뒤집기)·뒤 × 걸음 cols장 → <out>/monsters/<id>_walk.webp.
 ## 칸 크기는 몬스터마다(가장 큰 장에 맞춤) — <out>/monsters/sheets.json {id: {cell: [w, h], foot: 아래에서 발까지 px}}.
 func _monster_sheet(id: String, data_size: float) -> void:
 	var t0 := Time.get_ticks_msec()
@@ -249,7 +249,7 @@ func _monster_sheet(id: String, data_size: float) -> void:
 		sheet.blit_rect(img, u, dst)
 	var dir_out := _out.path_join("monsters")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir_out))
-	sheet.save_webp(dir_out.path_join("%s.webp" % id), false)
+	sheet.save_webp(dir_out.path_join("%s_walk.webp" % id), false)
 	_sheets[id] = {"cell": [cell.x, cell.y], "foot": 4}  # _shrink가 발 아래 2px + 칸 아래 2px
 	print("그림: 맵 몬스터 시트 %s %dx%d (%d ms)" % [id, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
 

@@ -1,0 +1,247 @@
+{
+	"banshee": {
+		"cell": [
+			36,
+			75
+		],
+		"foot": 4
+	},
+	"blade_wolf": {
+		"cell": [
+			96,
+			69
+		],
+		"foot": 4
+	},
+	"bone_knight": {
+		"cell": [
+			56,
+			113
+		],
+		"foot": 4
+	},
+	"buried_one": {
+		"cell": [
+			46,
+			89
+		],
+		"foot": 4
+	},
+	"chimera_wolf": {
+		"cell": [
+			96,
+			79
+		],
+		"foot": 4
+	},
+	"copper_golem": {
+		"cell": [
+			74,
+			114
+		],
+		"foot": 4
+	},
+	"deadman": {
+		"cell": [
+			46,
+			90
+		],
+		"foot": 4
+	},
+	"deadman_commander": {
+		"cell": [
+			54,
+			104
+		],
+		"foot": 4
+	},
+	"deathfiend": {
+		"cell": [
+			148,
+			168
+		],
+		"foot": 4
+	},
+	"frost_wolf": {
+		"cell": [
+			100,
+			71
+		],
+		"foot": 4
+	},
+	"gargoyle_statue": {
+		"cell": [
+			74,
+			93
+		],
+		"foot": 4
+	},
+	"ghoul": {
+		"cell": [
+			64,
+			67
+		],
+		"foot": 4
+	},
+	"ghoul_lord": {
+		"cell": [
+			78,
+			87
+		],
+		"foot": 4
+	},
+	"gnome": {
+		"cell": [
+			68,
+			54
+		],
+		"foot": 4
+	},
+	"goblin": {
+		"cell": [
+			44,
+			68
+		],
+		"foot": 4
+	},
+	"goblin_miner": {
+		"cell": [
+			54,
+			82
+		],
+		"foot": 4
+	},
+	"guardian_eye": {
+		"cell": [
+			52,
+			44
+		],
+		"foot": 4
+	},
+	"hobgoblin_miner": {
+		"cell": [
+			62,
+			104
+		],
+		"foot": 4
+	},
+	"ice_golem": {
+		"cell": [
+			74,
+			114
+		],
+		"foot": 4
+	},
+	"ice_orc_shaman": {
+		"cell": [
+			58,
+			100
+		],
+		"foot": 4
+	},
+	"ice_orc_warrior": {
+		"cell": [
+			58,
+			104
+		],
+		"foot": 4
+	},
+	"iron_cavalry": {
+		"cell": [
+			66,
+			131
+		],
+		"foot": 4
+	},
+	"iron_lizardman": {
+		"cell": [
+			56,
+			89
+		],
+		"foot": 4
+	},
+	"mineral_slime": {
+		"cell": [
+			94,
+			55
+		],
+		"foot": 4
+	},
+	"mummy": {
+		"cell": [
+			48,
+			90
+		],
+		"foot": 4
+	},
+	"owlbear": {
+		"cell": [
+			130,
+			101
+		],
+		"foot": 4
+	},
+	"riddle_gatekeeper": {
+		"cell": [
+			58,
+			110
+		],
+		"foot": 4
+	},
+	"sabertooth": {
+		"cell": [
+			104,
+			73
+		],
+		"foot": 4
+	},
+	"skeleton_archer": {
+		"cell": [
+			46,
+			90
+		],
+		"foot": 4
+	},
+	"skeleton_mage": {
+		"cell": [
+			46,
+			90
+		],
+		"foot": 4
+	},
+	"skull_rat": {
+		"cell": [
+			120,
+			64
+		],
+		"foot": 4
+	},
+	"slime": {
+		"cell": [
+			74,
+			44
+		],
+		"foot": 4
+	},
+	"soldier_deadman": {
+		"cell": [
+			48,
+			91
+		],
+		"foot": 4
+	},
+	"wormstone": {
+		"cell": [
+			68,
+			81
+		],
+		"foot": 4
+	},
+	"yeti": {
+		"cell": [
+			90,
+			131
+		],
+		"foot": 4
+	}
+}

@@ -324,7 +324,7 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 		for g: FieldMonsters.Group in run0.remaining:
 			if g.tag == str(_args["near"]) or (str(_args["near"]) == "boss" and not g.boss.is_empty()):
 				var spot := Vector2i(-1, -1)
-				for r in [5, 6, 4, 7, 8]:
+				for r in ([5, 6, 4, 7, 8] if not g.boss.is_empty() else [7, 8, 9, 6]):  # 보통 무리는 알아채는 거리 밖에서
 					for dy in range(-r, r + 1):
 						for dx in range(-r, r + 1):
 							var c: Vector2i = g.pos + Vector2i(dx, dy)
@@ -332,6 +332,8 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 								spot = c
 				if spot.x >= 0:
 					explore.session.relocate(spot)
+				for o: FieldMonsters.Group in explore.session.monsters.groups:  # 캡처하는 동안 전투가 걸리지 않게(쫓지 않음)
+					o.grace_until = explore.session.clock.total_hours + 100.0
 				break
 	if _args.has("engage"):
 		var run := explore.session.rift_run

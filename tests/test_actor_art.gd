@@ -50,3 +50,25 @@ func test_sheet_rows_and_walk_cycle() -> void:
 	assert_eq(stands, 2, "한 바퀴에 선 칸이 두 번(걸음 사이마다)")
 	for i in s.cycle.size():  # 이웃한 칸끼리는 한 칸씩만 바뀐다(걸음 → 섬으로 건너뛰지 않는다)
 		assert_true(absi(s.cycle[i] - s.cycle[(i + 1) % s.cycle.size()]) == 1, "칸 순서가 이어진다: %s" % [s.cycle])
+
+
+## 걷기 시트가 색인(sheets.json)에 있는 몬스터는 시트를 읽을 수 있다(칸 크기 × cols·4줄). 보스는 시트 없이 기다리는 자세 한 장(AM34).
+func test_monster_walk_sheets_load() -> void:
+	var dir := JsonUtil.get_str(_cfg(), "monster_dir", "res://assets/actors/monsters")
+	var path := dir.path_join("sheets.json")
+	assert_true(FileAccess.file_exists(path), "몬스터 시트 색인")
+	var index: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	assert_true(index is Dictionary and not (index as Dictionary).is_empty(), "색인이 비어 있지 않다")
+	if not index is Dictionary:
+		return
+	for id: String in index:
+		var sheet := ActorSheet.load_monster(db.render, id)
+		assert_true(sheet != null, "걷기 시트를 읽는다: " + id)
+		if sheet != null:
+			assert_eq(sheet.texture.get_size(), Vector2(sheet.cell.x * sheet.cols, sheet.cell.y * 4), "시트 크기: " + id)
+	assert_true(ActorSheet.load_monster(db.render, "blater") == null, "보스는 걷기 시트가 없다")
+
+
+## 웹 내보내기에 몬스터 시트 색인이 들어간다(FileAccess로 읽는 json은 include_filter에 있어야 한다).
+func test_sheet_index_exported() -> void:
+	assert_true(FileAccess.get_file_as_string("res://export_presets.cfg").contains("assets/actors/monsters/sheets.json"), "export_presets include_filter")

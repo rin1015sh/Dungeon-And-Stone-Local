@@ -4,6 +4,8 @@ extends Node2D
 ## 맵 그림(tools/paint_actors.gd → render.json view.actor_sheet.monster_dir/<id>.webp — 전투 일러스트를 데이터 size에 맞춰 줄인 정면)
 ## 이 있으면 그것을: 위로 걸어가면 뒷모습(<id>_back)이 있을 때 그것, 왼쪽으로 가면 좌우 반전, 걷는 동안 걸음마다 들썩이고
 ## 좌우로 기우뚱한다(걷기 그림 대신 — ASSUMPTIONS AM28). 없으면 monsters/<id>.json sprite, 그것도 없으면 FigurePainter 임시 도형.
+## 걷기 시트(ActorSheet.load_monster — <id>_walk.webp, 4방향 × 걸음)가 있으면 그것을: 걸으면 가는 쪽, 멈추면 플레이어 쪽을 보고
+## 걸음 칸을 돈다(들썩임·기우뚱 없음).
 ## 보스가 기다리는 방(group.boss)은 그 보스의 기다리는 자세 그림(크게 — paint_actors MapMonster.BOSSES)을 그린다.
 
 const BOB_PX := 1.5      ## 걸음마다 들썩이는 높이(월드 px)
@@ -24,6 +26,9 @@ var _walk_t: float = 0.0
 var _still: float = 1.0
 var _last_pos: Vector2 = Vector2.INF
 var _up: bool = false
+var _sheet: ActorSheet = null
+var _target: Vector2 = Vector2.ZERO
+var _move_dir: Vector2 = Vector2.ZERO
 
 
 func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
@@ -37,6 +42,8 @@ func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	_art_scale = 1.0 / maxf(1.0, JsonUtil.get_float(cfg, "art_scale", 2.0))
 	_fps = JsonUtil.get_float(cfg, "walk_fps", 7.0)
 	var dir := JsonUtil.get_str(cfg, "monster_dir", "res://assets/actors/monsters")
+	if group.boss.is_empty():
+		_sheet = ActorSheet.load_monster(db.render, id)
 	for path: String in [dir.path_join(id + ".webp"), JsonUtil.get_str(def, "sprite")]:
 		if not path.is_empty() and ResourceLoader.exists(path):
 			_texture = load(path) as Texture2D
@@ -46,21 +53,38 @@ func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 		_back = load(back) as Texture2D
 	if group.monster_ids.size() > 1:
 		_count_label = UiTheme.label("×%d" % group.monster_ids.size(), "small", "warn")
-		var top := _texture.get_height() * _art_scale if _texture != null else 52.0 * _scale
+		var top := _sheet.world_size().y if _sheet != null else (_texture.get_height() * _art_scale if _texture != null else 52.0 * _scale)
 		_count_label.position = Vector2(8, -top - 4)
 		add_child(_count_label)
 
 
 func face_toward(target: Vector2) -> void:
+	_target = target
+	if _sheet != null:
+		if _still >= 0.12:  # 멈춰 있으면 플레이어 쪽(4방향)
+			_set_facing(target - position)
+		return
 	var dir := Vector2i(1, 0) if target.x >= position.x else Vector2i(-1, 0)
 	if dir != facing:
 		facing = dir
 		queue_redraw()
 
 
-func _process(delta: float) -> void:
-	if _texture == null:
+## 걷기 시트: 방향(월드) → 4방향 중 큰 쪽(옆모습을 조금 더 — ActorSheet.row_for).
+func _set_facing(d: Vector2) -> void:
+	if d.length() < 0.01:
 		return
+	var f := Vector2i(int(signf(d.x)), 0) if absf(d.x) >= absf(d.y) * 0.8 else Vector2i(0, int(signf(d.y)))
+	if f != facing:
+		facing = f
+		queue_redraw()
+
+
+func _process(delta: float) -> void:
+	if _texture == null and _sheet == null:
+		return
+	if _sheet != null and position != _last_pos and _last_pos != Vector2.INF:
+		_set_facing(position - _last_pos)
 	if position != _last_pos and _last_pos != Vector2.INF:
 		_up = position.y < _last_pos.y - 0.01 and absf(position.y - _last_pos.y) > absf(position.x - _last_pos.x)
 		_walk_t += delta
@@ -74,6 +98,13 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if _sheet != null:
+		var w := _sheet.world_size()
+		draw_set_transform_matrix(Transform2D(0.0, Vector2(1.0, 0.35), 0.0, Vector2(0, -1)))  # 발밑 그림자
+		draw_circle(Vector2.ZERO, w.x * 0.3, Color(0, 0, 0, 0.45))
+		draw_set_transform_matrix(Transform2D.IDENTITY)
+		_sheet.draw(self, facing, _sheet.col_at(_walk_t, _still < 0.12))
+		return
 	if _texture == null:
 		FigurePainter.paint(self, _shape, _scale, _color, facing)
 		return
