@@ -127,8 +127,10 @@ func _show_session(session: ExploreSession, floor_id: String) -> void:
 
 
 func _on_run_ended(kind: String, info: Dictionary) -> void:
-	if kind == "died":
+	if kind == "died":  # 사망 화면 없이 바로 타이틀(사용자 결정 2026-10-18)
 		GameState.on_death()
+		_show_title()
+		return
 	var end := EndScreen.new()
 	end.setup(kind, info)
 	end.done.connect(_show_title if kind == "died" else _return_to_city)

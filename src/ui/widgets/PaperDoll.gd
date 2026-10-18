@@ -96,8 +96,8 @@ class EquipSlot extends Control:
 				if InventoryActions.unequip_to_bag(actor, slot):
 					changed.emit()
 				elif not actor.equipment.item_in(slot).is_empty():
-					EventBus.log_message.emit(Strings.t("inventory.no_room_unequip",
-						{"item": DataNames.entry(actor.db, "items", actor.equipment.item_in(slot))}), "warn")
+					EventBus.notice.emit("inventory.no_room_unequip",
+						{"item": DataNames.entry(actor.db, "items", actor.equipment.item_in(slot))}, "warn")
 				accept_event()
 
 	func _get_tooltip(_at_position: Vector2) -> String:

@@ -104,7 +104,7 @@ func _closing_flow() -> void:
 		await _city_to_title(end)
 
 
-## 새 탐험가 → 허기 0 → 시간 스킵 → 아사 → 사망 화면 → 타이틀
+## 새 탐험가 → 허기 0 → 시간 스킵 → 아사 → (사망 화면 없이) 타이틀
 func _starvation_flow() -> void:
 	var explore := await _enter_dungeon("굶는 탐험가")
 	if explore == null:
@@ -116,11 +116,8 @@ func _starvation_flow() -> void:
 			break
 		_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_long")}))
 	_expect(explore.session.player.dead, "아사")
-	var end := (await _screen(EndScreen)) as EndScreen
-	if _expect(end != null, "사망 화면"):
-		_press(end, Strings.t("end.to_title"))
 	var back := await _screen(TitleScreen)
-	_expect(back != null, "타이틀로 복귀")
+	_expect(back != null and _main.find_children("*", "EndScreen", true, false).is_empty(), "사망 화면 없이 바로 타이틀로")
 
 
 ## 실시간 시간 흐름 · 일시정지 · 전투 진입/이탈 시 시간 · 기본 행동창 · 조사
@@ -427,6 +424,17 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 			await _action("menu_confirm")
 	await _frames(2)
 	_expect(not dlg.busy() and not dlg.visible and not s.realtime.is_paused() and explore.bottom_bar().visible, "Enter로 넘기면 닫히고 시간이 다시 흐른다")
+	s.message.emit("effect.light_on", {"hours": 4}, "good")
+	s.message.emit("explore.portal_here", {}, "system")
+	await _frames(1)
+	_expect(not dlg.busy() and explore.toast().line_count() == 0, "횃불 켜기·포탈 위에 섬 = 보이지 않는다")
+	s.message.emit("explore.wait", {"hours": 1}, "info")
+	await _frames(2)
+	_expect(not dlg.busy() and explore.toast().line_count() == 1 and not s.realtime.is_paused(), "대기 = 잠깐 띠(시간은 흐른다)")
+	s.message.emit("field.got", {"item": "x"}, "good")
+	await _frames(1)
+	_expect(dlg.busy(), "아이템 획득 = 대화창(Enter)")
+	dlg.clear()
 	DialogueBox.auto_skip = true
 
 
