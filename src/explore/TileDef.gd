@@ -27,6 +27,12 @@ var prop_sheet: String = ""     ## 소품 그림 시트(art.prop — 동굴 요�
 var prop_cell: int = 0          ## 시트 칸 번호(왼쪽 위부터 가로로)
 var prop_cols: int = 0          ## 시트 가로 칸 수(0 = 정사각 칸으로 계산)
 var prop_size: float = 1.0      ## 그리는 크기(칸 단위 — 아래 끝이 칸 아래쪽)
+var stand_sheet: String = ""    ## 서 있는 소품 그림 시트(art.stand — 균열 탁자·무기대·광차…): 벽 덩어리 대신 그림, 캐릭터와 y 정렬
+var stand_cell: int = 0         ## 시트 칸 번호(왼쪽 위부터 가로로)
+var stand_cols: int = 1         ## 시트 가로 칸 수
+var stand_rows: int = 1         ## 시트 세로 칸 수
+var stand_size: Vector2 = Vector2.ONE  ## 그리는 크기(칸 단위 — 아래 가운데 = 칸 아래쪽 가운데)
+var stand_under: String = ""    ## 소품 밑 바닥 타일(없으면 층 기본 바닥)
 var is_void: bool = false       ## 낭떠러지·허공(균열 경계 — "void": true): 바닥을 그리지 않고 뒷배경이 비친다
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
@@ -62,6 +68,14 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.prop_cell = JsonUtil.get_int(prop, "cell", 0)
 	t.prop_cols = JsonUtil.get_int(prop, "cols", 0)
 	t.prop_size = JsonUtil.get_float(prop, "size", 1.0)
+	var stand := JsonUtil.get_dict(art, "stand")
+	t.stand_sheet = JsonUtil.get_str(stand, "sheet")
+	t.stand_cell = JsonUtil.get_int(stand, "cell", 0)
+	t.stand_cols = maxi(1, JsonUtil.get_int(stand, "cols", 1))
+	t.stand_rows = maxi(1, JsonUtil.get_int(stand, "rows", 1))
+	var sz := JsonUtil.get_array(stand, "size")
+	t.stand_size = Vector2(float(sz[0]), float(sz[1])) if sz.size() == 2 else Vector2.ONE
+	t.stand_under = JsonUtil.get_str(stand, "under")
 	return t
 
 

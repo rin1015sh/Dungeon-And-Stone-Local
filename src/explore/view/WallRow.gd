@@ -64,6 +64,10 @@ func _draw() -> void:
 		var def := map.defs[map.tiles[i]]
 		if not def.is_wall() or view.smooth_by_def[def.index] != 0:
 			continue
+		var stand := view.stand_by_def[def.index]
+		if stand != null:
+			_draw_stand(x, t, def, stand)
+			continue
 		var h := view.wall_face_of(def)
 		var tex := view.tile_tex[def.index]
 		if tex != null:
@@ -200,6 +204,22 @@ func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> voi
 	_cols[1] = right
 	_cols[2] = right
 	_cols[3] = left
+	draw_polygon(_pts, _cols, _uvs, tex)
+
+
+## 서 있는 소품(art.stand): 시트 칸 그림을 칸 아래쪽 가운데에 세운다(크기 = stand_size칸, 같은 줄 캐릭터와 y 정렬).
+## 빛은 칸 아래 두 꼭짓점 배율의 평균(그림 전체에 같은 빛 — 작은 물건이라 꼭짓점마다 다르게 할 필요가 없다).
+func _draw_stand(x: int, t: int, def: TileDef, tex: Texture2D) -> void:
+	var cols := def.stand_cols
+	var rows := def.stand_rows
+	var w := def.stand_size.x * t
+	var h := def.stand_size.y * t
+	_quad(x * t + t * 0.5 - w * 0.5, -h, w, h)
+	FloorChunk.set_uv_turned(_uvs, tex, def.stand_cell % cols, cols, def.stand_cell / cols, rows, 0, false)
+	var c := view.vertex_mul(x, row + 1, def.color_face).lerp(view.vertex_mul(x + 1, row + 1, def.color_face), 0.5)
+	c = c.lerp(view.vertex_mul(x, row, def.color_face).lerp(view.vertex_mul(x + 1, row, def.color_face), 0.5), 0.5)
+	for k in 4:
+		_cols[k] = c
 	draw_polygon(_pts, _cols, _uvs, tex)
 
 

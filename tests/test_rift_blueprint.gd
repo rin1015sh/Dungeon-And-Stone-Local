@@ -64,3 +64,29 @@ func test_void_tiles_block_walk_not_sight() -> void:
 	for id: String in ["bf_void", "gc_void", "gm_void", "it_void"]:
 		var t := TileDef.from_dict(db.get_entry("tiles", id), 0)
 		assert_true(t.is_void and not t.walkable and not t.blocks_sight, "낭떠러지: " + id)
+
+
+## 그림 계약(tools/floor_art/rift/specs.json): 균열 장소의 바닥·벽은 재질 아틀라스, 소품은 서 있는 그림(art.stand — 벽 종류),
+## 설계도에 쓰인 걷지 못하는 물건(낭떠러지 제외)은 모두 그림이 있다. 균열마다 뒷배경 그림이 있다.
+func test_rift_tiles_have_art() -> void:
+	var spec: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tools/floor_art/rift/specs.json"))
+	for place: String in spec["places"]:
+		var pd: Dictionary = spec["places"][place]
+		for list: String in ["floors", "walls"]:
+			for f: Dictionary in pd[list]:
+				var def := TileDef.from_dict(db.get_entry("tiles", str(f["tile"])), 0)
+				assert_true(ResourceLoader.exists(def.art_atlas), "재질 그림: %s %s" % [place, f["tile"]])
+		for tid: Variant in pd["stands"]:
+			var def := TileDef.from_dict(db.get_entry("tiles", str(tid)), 0)
+			assert_true(def.is_wall() and ResourceLoader.exists(def.stand_sheet), "서 있는 소품 그림: " + str(tid))
+	for rid: String in db.get_collection("rifts"):
+		var bd := JsonUtil.get_dict(JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("rifts", rid), "look"), "art"), "backdrop")
+		assert_true(ResourceLoader.exists(JsonUtil.get_str(bd, "image")), "뒷배경: " + rid)
+	for rid: String in db.get_collection("rifts"):
+		for ch: Variant in JsonUtil.get_array(db.get_entry("rifts", rid), "chapters"):
+			var data := FloorMapFile.read(JsonUtil.get_str(JsonUtil.get_dict(ch, "map"), "blueprint"))
+			for c: String in JsonUtil.get_dict(data, "legend"):
+				var def := TileDef.from_dict(db.get_entry("tiles", str(data["legend"][c])), 0)
+				if def.is_void:
+					continue
+				assert_true(not def.art_atlas.is_empty() or not def.stand_sheet.is_empty(), "설계도 타일에 그림: %s %s" % [rid, def.id])

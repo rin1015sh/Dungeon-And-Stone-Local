@@ -13,6 +13,8 @@ const Paint := preload("res://tools/city_art/Paint.gd")
 const Decals := preload("res://tools/floor_art/Decals.gd")
 const Marks := preload("res://tools/floor_art/Marks.gd")
 const Props := preload("res://tools/floor_art/Props.gd")
+const RiftCommon := preload("res://tools/floor_art/rift/Common.gd")
+const RIFT_SPECS := "res://tools/floor_art/rift/specs.json"
 
 
 func _init() -> void:
@@ -68,7 +70,64 @@ func _init() -> void:
 			img.blit_rect(p.to_image(), Rect2i(0, 0, pc, pc), Vector2i((k % cols) * pc, (k / cols) * pc))
 		img.save_webp(str(spec["path"]), false)
 		print("그림: %s %dx%d (소품 %d)" % [spec["path"], img.get_width(), img.get_height(), Props.ORDER.size()])
+	_rift(db, only, cell, face, skirt, scale)
 	quit(0)
+
+
+## 균열 장소 그림(A5 — tools/floor_art/rift/specs.json · <place>.gd): 바닥·벽 아틀라스, 서 있는 소품 시트, 뒷배경.
+## --only=<place>(bf·gc·gm·it) 또는 --only=<place>:stand|backdrop|atlas 로 일부만.
+func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, scale: int) -> void:
+	var spec: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(RIFT_SPECS))
+	RiftCommon.skirt = skirt
+	var n := int(spec["variants"])
+	for place: String in spec["places"]:
+		var part_only := ""
+		if not only.is_empty():
+			if only.split(":")[0] != place:
+				continue
+			part_only = only.split(":")[1] if only.contains(":") else ""
+		var mod := load("res://tools/floor_art/rift/%s.gd" % place) as GDScript
+		var pd: Dictionary = spec["places"][place]
+		var dir := "res://assets/floor/%s" % place
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
+		if part_only.is_empty() or part_only == "atlas":
+			for f: Dictionary in pd["floors"]:
+				var colors := JsonUtil.get_dict(db.get_entry("tiles", str(f["tile"])), "colors")
+				var sd := 3000 + str(f["style"]).hash() % 1000
+				var row := _row({"seed": sd}, "floor", n, cell, cell, Color.from_string(JsonUtil.get_str(colors, "floor"), Color.GRAY),
+					func(part: String, v: int, w: int, h: int, col: Color, s: int) -> Paint: return RiftCommon.cell(mod, str(f["style"]), part, v, w, h, col, s))
+				row.save_webp("%s/%s.webp" % [dir, f["style"]], false)
+				print("그림: %s/%s.webp" % [dir, f["style"]])
+			for wd: Dictionary in pd["walls"]:
+				var colors := JsonUtil.get_dict(db.get_entry("tiles", str(wd["tile"])), "colors")
+				var sd := 5000 + str(wd["style"]).hash() % 1000
+				var fh := int(wd["face_px"]) * scale + skirt
+				var painter := func(part: String, v: int, w: int, h: int, col: Color, s: int) -> Paint: return RiftCommon.cell(mod, str(wd["style"]), part, v, w, h, col, s)
+				var top := _row({"seed": sd}, "top", n, cell, cell, Color.from_string(JsonUtil.get_str(colors, "top"), Color.GRAY), painter)
+				var fr := _row({"seed": sd}, "face", n, cell, fh, Color.from_string(JsonUtil.get_str(colors, "face"), Color.GRAY), painter)
+				var img := Image.create_empty(n * cell, cell + fh, false, Image.FORMAT_RGBA8)
+				img.blit_rect(top, Rect2i(0, 0, n * cell, cell), Vector2i.ZERO)
+				img.blit_rect(fr, Rect2i(0, 0, n * cell, fh), Vector2i(0, cell))
+				img.save_webp("%s/%s.webp" % [dir, wd["style"]], false)
+				print("그림: %s/%s.webp" % [dir, wd["style"]])
+		if part_only.is_empty() or part_only == "stand":
+			var sc: Array = spec["stand_cell"]
+			var cw := int(sc[0]) * cell
+			var ch := int(sc[1]) * cell
+			var cols := int(spec["stand_cols"])
+			var stands: Array = pd["stands"]
+			var img := Image.create_empty(cols * cw, ceili(stands.size() / float(cols)) * ch, false, Image.FORMAT_RGBA8)
+			for k in stands.size():
+				var p: Paint = mod.call("stand", str(stands[k]), cw, ch, 7000 + k * 31)
+				Ink.grade(p, 0.18, 1.08, Color("#1a1412"), Color("#e0d2b0"), 0.12)
+				img.blit_rect(p.to_image(), Rect2i(0, 0, cw, ch), Vector2i((k % cols) * cw, (k / cols) * ch))
+			img.save_webp(dir + "/stand.webp", false)
+			print("그림: %s/stand.webp %dx%d (소품 %d)" % [dir, img.get_width(), img.get_height(), stands.size()])
+		if part_only.is_empty() or part_only == "backdrop":
+			var bs: Array = spec["backdrop_size"]
+			var bp: Paint = mod.call("backdrop", int(bs[0]), int(bs[1]), 9000)
+			bp.save(dir + "/backdrop.webp")
+			print("그림: %s/backdrop.webp" % dir)
 
 
 ## 데칼 시트: 줄 = 종류, 칸 = 변형(투명 RGBA, 색 보정만 — 평균 맞추기 없음).
@@ -86,15 +145,20 @@ func _decal_sheet(spec: Dictionary, cell: int) -> void:
 	print("그림: %s %dx%d (데칼 %d종 × %d)" % [path, img.get_width(), img.get_height(), kinds.size(), n])
 
 
-## 한 줄(변형 n칸)을 칠해 색 보정하고 평균 색을 target에 맞춘 이미지.
-func _row(spec: Dictionary, part: String, n: int, w: int, h: int, target: Color) -> Image:
+## 한 줄(변형 n칸)을 칠해 색 보정하고 평균 색을 target에 맞춘 이미지. painter(part, v, w, h, col, seed)가 있으면 그것으로(균열 장소).
+func _row(spec: Dictionary, part: String, n: int, w: int, h: int, target: Color, painter: Callable = Callable()) -> Image:
 	var cells: Array = []
 	var sum := Vector3.ZERO
 	var count := 0
 	for v in n:
 		var sd := int(spec["seed"]) + (0 if part != "face" else 50)
-		var p: Paint = Marks.cell(str(spec["style"]), part, v, w, h, target, sd) if spec.get("painter", "") == "marks" \
-			else Cave.cell(str(spec["style"]), part, v, w, h, target, sd)
+		var p: Paint
+		if painter.is_valid():
+			p = painter.call(part, v, w, h, target, sd)
+		elif spec.get("painter", "") == "marks":
+			p = Marks.cell(str(spec["style"]), part, v, w, h, target, sd)
+		else:
+			p = Cave.cell(str(spec["style"]), part, v, w, h, target, sd)
 		Ink.grade(p, 0.18, 1.08, Color("#1a1412"), Color("#e0d2b0"), 0.12)
 		cells.append(p)
 		for i in w * h:

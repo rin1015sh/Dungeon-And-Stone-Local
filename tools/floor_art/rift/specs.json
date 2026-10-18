@@ -1,0 +1,392 @@
+{
+ "_comment": "균열 그림 계약(A5): tools/paint_floor.gd가 읽어 assets/floor/<place>/에 그린다. 바닥 = <style>.webp(한 줄 변형 6칸), 벽 = 윗면 줄 + 앞면 줄, 서 있는 소품 = stand.webp(칸 [2, 3] 바닥 칸 — 아래 가운데가 발, order 순서), 뒷배경 = backdrop.webp(1280×720). 그리는 코드는 tools/floor_art/rift/<place>.gd.",
+ "stand_cell": [
+  2,
+  3
+ ],
+ "stand_cols": 8,
+ "variants": 6,
+ "backdrop_size": [
+  1280,
+  720
+ ],
+ "places": {
+  "bf": {
+   "name_ko": "핏빛성채",
+   "floors": [
+    {
+     "tile": "fortress_floor",
+     "style": "cobble"
+    },
+    {
+     "tile": "bf_road",
+     "style": "mudroad"
+    },
+    {
+     "tile": "bf_ash",
+     "style": "ash"
+    },
+    {
+     "tile": "bf_carpet",
+     "style": "carpet"
+    },
+    {
+     "tile": "bf_rubble",
+     "style": "rubble"
+    },
+    {
+     "tile": "bf_bloodcrack",
+     "style": "bloodcrack"
+    },
+    {
+     "tile": "bf_stairs",
+     "style": "stairs"
+    },
+    {
+     "tile": "bf_moat",
+     "style": "bloodpool"
+    },
+    {
+     "tile": "bf_bones",
+     "style": "bones"
+    },
+    {
+     "tile": "bf_dirt",
+     "style": "dirt"
+    },
+    {
+     "tile": "bf_grate",
+     "style": "grate"
+    },
+    {
+     "tile": "bf_pit",
+     "style": "corpsepit"
+    }
+   ],
+   "walls": [
+    {
+     "tile": "fortress_wall",
+     "style": "masonry",
+     "face_px": 24
+    },
+    {
+     "tile": "bf_house",
+     "style": "house",
+     "face_px": 40
+    },
+    {
+     "tile": "bf_pillar",
+     "style": "pillar",
+     "face_px": 56
+    },
+    {
+     "tile": "bf_window",
+     "style": "stainedglass",
+     "face_px": 40
+    },
+    {
+     "tile": "bf_gate",
+     "style": "gate",
+     "face_px": 36
+    }
+   ],
+   "stands": [
+    "bf_palisade",
+    "bf_bars",
+    "bf_table",
+    "bf_rack",
+    "bf_armor",
+    "bf_barrel",
+    "bf_crate",
+    "bf_wagon",
+    "bf_tent",
+    "bf_barricade",
+    "bf_brazier",
+    "bf_gallows",
+    "bf_well",
+    "bf_stall",
+    "bf_torture",
+    "bf_statue",
+    "bf_altar",
+    "bf_bookcase",
+    "bf_pew",
+    "bf_cage",
+    "bf_deadtree",
+    "bf_bed",
+    "bf_candles",
+    "bf_rock",
+    "bf_stake",
+    "bf_grave",
+    "bf_flag",
+    "bf_sack",
+    "bf_post",
+    "fountain_statue",
+    "bookshelf"
+   ]
+  },
+  "gc": {
+   "name_ko": "빙하굴",
+   "floors": [
+    {
+     "tile": "gc_snow",
+     "style": "snow"
+    },
+    {
+     "tile": "ice_floor",
+     "style": "ice"
+    },
+    {
+     "tile": "gc_lake",
+     "style": "frozenlake"
+    },
+    {
+     "tile": "gc_stairs",
+     "style": "icestairs"
+    },
+    {
+     "tile": "gc_bones",
+     "style": "frozenbones"
+    },
+    {
+     "tile": "gc_gravel",
+     "style": "icegravel"
+    },
+    {
+     "tile": "gc_river",
+     "style": "river"
+    },
+    {
+     "tile": "ice_slick",
+     "style": "slick"
+    },
+    {
+     "tile": "ice_slope",
+     "style": "slope"
+    },
+    {
+     "tile": "rope_span",
+     "style": "ropespan"
+    }
+   ],
+   "walls": [
+    {
+     "tile": "ice_wall",
+     "style": "icewall",
+     "face_px": 24
+    },
+    {
+     "tile": "gc_cliff",
+     "style": "cliff",
+     "face_px": 40
+    },
+    {
+     "tile": "gc_waterfall",
+     "style": "waterfall",
+     "face_px": 48
+    }
+   ],
+   "stands": [
+    "gc_icicle",
+    "gc_guide",
+    "gc_pine",
+    "gc_rock",
+    "gc_frozen_orc",
+    "gc_totem",
+    "gc_crystal",
+    "gc_tent",
+    "gc_sled",
+    "gc_crate",
+    "gc_drift",
+    "gc_campfire",
+    "ice_pond",
+    "ice_pillar_cracked"
+   ]
+  },
+  "gm": {
+   "name_ko": "녹색 탄광",
+   "floors": [
+    {
+     "tile": "mine_floor",
+     "style": "minedirt"
+    },
+    {
+     "tile": "gm_stone",
+     "style": "bluestone"
+    },
+    {
+     "tile": "gm_rail",
+     "style": "rails"
+    },
+    {
+     "tile": "gm_rubble",
+     "style": "rubble"
+    },
+    {
+     "tile": "gm_stairs",
+     "style": "woodstairs"
+    },
+    {
+     "tile": "gm_planks",
+     "style": "planks"
+    },
+    {
+     "tile": "gm_ooze",
+     "style": "ooze"
+    },
+    {
+     "tile": "broken_bridge",
+     "style": "brokenplanks"
+    },
+    {
+     "tile": "cliff_stairs",
+     "style": "rockstairs"
+    }
+   ],
+   "walls": [
+    {
+     "tile": "mine_wall",
+     "style": "minewall",
+     "face_px": 24
+    },
+    {
+     "tile": "gm_cavein",
+     "style": "cavein",
+     "face_px": 30
+    },
+    {
+     "tile": "gm_shack",
+     "style": "shack",
+     "face_px": 40
+    },
+    {
+     "tile": "gm_lift",
+     "style": "lift",
+     "face_px": 44
+    },
+    {
+     "tile": "rail_wall_cracked",
+     "style": "crackedwall",
+     "face_px": 24
+    },
+    {
+     "tile": "ore_vein",
+     "style": "orevein",
+     "face_px": 24
+    }
+   ],
+   "stands": [
+    "gm_support",
+    "gm_crystal",
+    "gm_cart",
+    "gm_barrel",
+    "gm_crate",
+    "gm_lantern",
+    "gm_scaffold",
+    "gm_mushroom",
+    "gm_powder",
+    "gm_bench",
+    "gm_toolrack",
+    "gm_ore",
+    "gm_rock",
+    "gm_tent",
+    "gm_fire",
+    "gm_crane",
+    "explosive_crate"
+   ]
+  },
+  "it": {
+   "name_ko": "강철의 묘",
+   "floors": [
+    {
+     "tile": "metal_floor",
+     "style": "steelplates"
+    },
+    {
+     "tile": "it_flagstone",
+     "style": "flagstone"
+    },
+    {
+     "tile": "it_carpet",
+     "style": "carpet"
+    },
+    {
+     "tile": "it_rubble",
+     "style": "rubble"
+    },
+    {
+     "tile": "it_stairs",
+     "style": "stairs"
+    },
+    {
+     "tile": "it_sunbeam",
+     "style": "sunbeam"
+    },
+    {
+     "tile": "it_groove",
+     "style": "bladegroove"
+    },
+    {
+     "tile": "trap_pressure_plate",
+     "style": "pressureplate"
+    },
+    {
+     "tile": "trap_arrow",
+     "style": "arrowtrap"
+    },
+    {
+     "tile": "trap_blades",
+     "style": "bladetrap"
+    }
+   ],
+   "walls": [
+    {
+     "tile": "metal_wall",
+     "style": "muralwall",
+     "face_px": 24
+    },
+    {
+     "tile": "it_banner_wall",
+     "style": "bannerwall",
+     "face_px": 24
+    },
+    {
+     "tile": "it_niche",
+     "style": "niche",
+     "face_px": 24
+    },
+    {
+     "tile": "it_pillar",
+     "style": "pillar",
+     "face_px": 56
+    },
+    {
+     "tile": "it_door",
+     "style": "steeldoor",
+     "face_px": 48
+    },
+    {
+     "tile": "it_coffin",
+     "style": "coffin",
+     "face_px": 24
+    },
+    {
+     "tile": "tomb_mural",
+     "style": "mural",
+     "face_px": 24
+    }
+   ],
+   "stands": [
+    "it_railing",
+    "it_debris",
+    "it_candelabra",
+    "it_statue",
+    "it_sarcophagus",
+    "it_armor",
+    "it_chandelier",
+    "it_brazier",
+    "it_urn",
+    "it_treasure"
+   ]
+  }
+ }
+}

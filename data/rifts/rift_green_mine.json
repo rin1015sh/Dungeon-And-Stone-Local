@@ -59,10 +59,20 @@
             2.0
           ]
         }
-      ]
+      ],
+      "backdrop": {
+        "image": "res://assets/floor/gm/backdrop.webp",
+        "drift": 0.16,
+        "scale": [
+          1.0,
+          1.0
+        ],
+        "cliff_color": "#1e1a16",
+        "cliff_depth": 1.2
+      }
     },
-    "ambient_light_m": 6.0,
-    "visibility_cap_m": 8.0
+    "ambient_light_m": 8.0,
+    "visibility_cap_m": 10.0
   },
   "chapters": [
     {

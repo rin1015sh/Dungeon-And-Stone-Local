@@ -34,10 +34,20 @@
       "post": {
         "saturation": 0.7,
         "vignette_strength": 0.65
+      },
+      "backdrop": {
+        "image": "res://assets/floor/it/backdrop.webp",
+        "drift": 0.18,
+        "scale": [
+          1.0,
+          1.0
+        ],
+        "cliff_color": "#16161a",
+        "cliff_depth": 1.2
       }
     },
-    "ambient_light_m": 6.0,
-    "visibility_cap_m": 8.0
+    "ambient_light_m": 7.0,
+    "visibility_cap_m": 9.0
   },
   "chapters": [
     {

@@ -51,6 +51,10 @@ var decor_tex: Texture2D              # 데칼 시트(그래픽 품질 low면 nu
 var decor_sheet: Texture2D            # 읽어 둔 데칼 시트
 var prop_tex: Dictionary = {}         # 소품·턱 시트 경로 -> Texture2D(읽기용)
 var prop_by_def: Array[Texture2D] = [] # map.defs 번호 -> 소품 시트(없으면 null — 그리기에서 칸마다 사전을 찾지 않게)
+var stand_by_def: Array[Texture2D] = [] # map.defs 번호 -> 서 있는 소품 시트(art.stand — WallRow가 덩어리 대신 그림으로)
+var under_by_def: PackedInt32Array = PackedInt32Array()  # map.defs 번호 -> 소품 밑 바닥 타일 번호(FloorChunk)
+var void_layer: Node2D                # 낭떠러지 칸의 뒷배경(VoidChunk — 층 art.backdrop이 있을 때만)
+var backdrop_material: ShaderMaterial # 뒷배경 셰이더(화면 고정 + 시차 — backdrop.gdshader)
 var smooth_by_def: PackedByteArray = PackedByteArray()  # map.defs 번호 -> 부드러운 암벽(WallShape)이면 1
 var smooth_any: bool = false
 var blend_by_def: PackedByteArray = PackedByteArray()   # map.defs 번호 -> 가장자리를 사선으로 다듬는 바닥(물 — FloorChunk)이면 1
@@ -93,6 +97,10 @@ func _ready() -> void:
 	decor_layer = Node2D.new()
 	decor_layer.z_index = -9
 	add_child(decor_layer)
+	if backdrop_material != null:
+		void_layer = Node2D.new()
+		void_layer.z_index = -11
+		add_child(void_layer)
 	if art.has_pulse():
 		glow_layer = Node2D.new()
 		glow_layer.z_index = JsonUtil.get_int(_cfg, "glow_z", 5)
@@ -268,6 +276,17 @@ func vertex_mul(vx: int, vy: int, mean: Color) -> Color:
 	var m := _mem.lerp(lit, k) if s > 0 else _mem
 	var fade := known_fade(kn)
 	return Color(maxf(m.r, fr) * fade, maxf(m.g, fg) * fade, maxf(m.b, fb) * fade, k)
+
+
+## 뒷배경(낭떠러지 너머)의 꼭짓점 밝기: 보이면 1, 기억이면 기억 밝기, 미탐험 쪽은 순흑으로 감쇠(횃불 빛은 곱하지 않는다 — 먼 곳).
+func fog_mul(vx: int, vy: int) -> float:
+	var i := vy * (map.width + 1) + vx
+	var f := _vfog[i]
+	var e := f & 7
+	if e == 0:
+		return 0.0
+	var k := float(f >> 3) / float(e)
+	return lerpf(minf(1.0, art.memory_brightness + 0.2), 1.0, k) * known_fade(_vknown[i])
 
 
 ## 꼭짓점 (vx, vy) 둘레 네 칸(지도 밖은 미탐험)의 탐험한 수 | 보이는 수 << 3.

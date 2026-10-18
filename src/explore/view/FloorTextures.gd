@@ -12,6 +12,8 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	v.tile_tex.resize(n)
 	v.prop_by_def.resize(n)
 	v.smooth_by_def.resize(n)
+	v.stand_by_def.resize(n)
+	v.under_by_def.resize(n)
 	v.blend_by_def.resize(n)
 	var any := false
 	for i in n:
@@ -22,6 +24,12 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 		if not def.prop_sheet.is_empty() and not v.prop_tex.has(def.prop_sheet) and ResourceLoader.exists(def.prop_sheet):
 			v.prop_tex[def.prop_sheet] = load(def.prop_sheet) as Texture2D
 			any = true
+		if not def.stand_sheet.is_empty() and ResourceLoader.exists(def.stand_sheet):
+			if not v.prop_tex.has(def.stand_sheet):
+				v.prop_tex[def.stand_sheet] = load(def.stand_sheet) as Texture2D
+			v.stand_by_def[i] = v.prop_tex[def.stand_sheet]
+			any = true
+		v.under_by_def[i] = map.index_of(def.stand_under) if not def.stand_under.is_empty() else -1
 		v.smooth_by_def[i] = 1 if def.is_wall() and def.art_shape == "smooth" and v.tile_tex[i] != null else 0
 		v.blend_by_def[i] = 1 if not def.is_wall() and def.art_shape == "smooth" and v.tile_tex[i] != null else 0
 		v.blend_any = v.blend_any or v.blend_by_def[i] != 0
@@ -38,6 +46,10 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	v.wall_round = JsonUtil.get_float(cfg, "wall_round", 0.5)
 	v.base_floor = map.index_of(JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(v.session.floor_def, "gen"), "tiles"), "floor", "cave_floor"))
 	v.wall_bulge = JsonUtil.get_float(cfg, "wall_bulge", 0.06)
+	for i in n:
+		if v.under_by_def[i] < 0:
+			v.under_by_def[i] = v.base_floor
+	v.backdrop_material = Backdrop.material(v.art)
 	apply_detail(v)
 	if any:
 		v.tex_material = ShaderMaterial.new()

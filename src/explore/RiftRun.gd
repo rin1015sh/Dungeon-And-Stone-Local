@@ -115,8 +115,10 @@ func chapter_floor_def(i: int) -> Dictionary:
 	var ch: Dictionary = chapters()[i]
 	var look := JsonUtil.get_dict(def, "look").merged(JsonUtil.get_dict(ch, "look"), true)  # 챕터 look(바깥·안 밝기)이 균열 look을 덮는다
 	var gen := JsonUtil.get_dict(ch, "map").duplicate(true)
-	gen["tiles"] = JsonUtil.get_dict(look, "tiles")
+	gen["tiles"] = JsonUtil.get_dict(look, "tiles").duplicate()
 	var generator := "rift_blueprint" if gen.has("blueprint") else "rift_chapter"
+	if gen.has("blueprint"):  # 기본 바닥(깎은 모서리·소품 밑) = 설계도의 바닥(빙하굴 바깥은 눈밭)
+		gen["tiles"]["floor"] = JsonUtil.get_str(FloorMapFile.read(JsonUtil.get_str(gen, "blueprint")), "floor", JsonUtil.get_str(gen["tiles"], "floor"))
 	return {"id": "%s_%s" % [rift_id, JsonUtil.get_str(ch, "id")], "floor": 0, "generator": generator,
 		"name_ko": "%s · %s" % [JsonUtil.get_str(def, "name_ko"), JsonUtil.get_str(ch, "name_ko")],
 		"close_hours": outer.close_hours(), "visibility_cap_m": JsonUtil.get_float(look, "visibility_cap_m", 9.0),

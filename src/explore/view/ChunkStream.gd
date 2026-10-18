@@ -11,6 +11,7 @@ var floor_chunks: Dictionary = {}   ## Vector2i(청크) -> FloorChunk
 var wall_rows: Dictionary = {}      ## Vector2i(청크 x, 줄) -> WallRow
 var glow_chunks: Dictionary = {}    ## Vector2i(청크) -> GlowChunk
 var decor_chunks: Dictionary = {}   ## Vector2i(청크) -> DecorChunk
+var void_chunks: Dictionary = {}    ## Vector2i(청크) -> VoidChunk(낭떠러지 칸이 있는 청크만)
 var _slow: Array[Vector2i] = []
 
 
@@ -30,7 +31,7 @@ func around(p: Vector2i) -> void:
 		return
 	for key: Vector2i in floor_chunks.keys():
 		if not want.has_point(key):
-			for d: Dictionary in [floor_chunks, glow_chunks, decor_chunks]:
+			for d: Dictionary in [floor_chunks, glow_chunks, decor_chunks, void_chunks]:
 				if d.has(key):
 					(d[key] as Node).queue_free()
 					d.erase(key)
@@ -60,7 +61,7 @@ func active_cells() -> Rect2i:
 
 
 func redraw_all() -> void:
-	for d: Dictionary in [floor_chunks, wall_rows, glow_chunks, decor_chunks]:
+	for d: Dictionary in [floor_chunks, wall_rows, glow_chunks, decor_chunks, void_chunks]:
 		for n: CanvasItem in d.values():
 			n.queue_redraw()
 
@@ -76,7 +77,7 @@ func redraw_rect(dirty: Rect2i) -> void:
 	var cx1 := (r.end.x - 1) / chunk
 	for cy in range(r.position.y / chunk, (r.end.y - 1) / chunk + 1):
 		for cx in range(cx0, cx1 + 1):
-			for d: Dictionary in [floor_chunks, decor_chunks, glow_chunks]:
+			for d: Dictionary in [floor_chunks, decor_chunks, glow_chunks, void_chunks]:
 				var n: CanvasItem = d.get(Vector2i(cx, cy))
 				if n != null:
 					n.queue_redraw()
@@ -102,6 +103,15 @@ func _build(key: Vector2i, player_chunk: Vector2i) -> void:
 	view.floor_layer.add_child(fc)
 	floor_chunks[key] = fc
 	view.update_fog(cells)
+	if view.void_layer != null:
+		var vc := VoidChunk.new()
+		vc.setup(view, cells)
+		if vc.has_void():
+			vc.material = view.backdrop_material
+			view.void_layer.add_child(vc)
+			void_chunks[key] = vc
+		else:
+			vc.free()
 	if view.decor_tex != null or not view.prop_tex.is_empty():
 		var dc := DecorChunk.new()
 		dc.setup(view, cells)

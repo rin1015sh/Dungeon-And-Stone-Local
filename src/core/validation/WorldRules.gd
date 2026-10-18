@@ -24,7 +24,9 @@ static func _tiles(v: ValidatorBase) -> void:
 		for key: String in colors:
 			v.check_color(w + ".colors." + key, JsonUtil.get_str(colors, key))
 		var art := JsonUtil.get_dict(t, "art")
-		if not art.is_empty():
+		if art.has("stand"):
+			_stand(v, w + ".art.stand", JsonUtil.get_dict(art, "stand"), JsonUtil.get_str(t, "kind"))
+		if art.has("atlas"):
 			var n := JsonUtil.get_int(art, "variants")
 			if n < 2 or n % 2 != 0:
 				v.err(w + ".art", "variants는 2 이상 짝수(FloorArtLayer — 이웃 칸이 늘 다른 변형)")
@@ -43,6 +45,20 @@ static func _tiles(v: ValidatorBase) -> void:
 			v.check_color(w + ".light", JsonUtil.get_str(light, "color"))
 	if v.entries("tiles").is_empty():
 		v.err("tiles", "타일 정의가 하나도 없다")
+
+
+## 서 있는 소품 그림(art.stand — 균열): 벽 종류 타일, 시트 파일, 칸 번호 < cols × rows, size [w, h], under(밑 바닥 타일).
+static func _stand(v: ValidatorBase, w: String, st: Dictionary, kind: String) -> void:
+	if kind != "wall":
+		v.err(w, "서 있는 소품은 kind wall(걸을 수 없는 물건)")
+	if not ResourceLoader.exists(JsonUtil.get_str(st, "sheet")):
+		v.err(w, "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % JsonUtil.get_str(st, "sheet"))
+	if JsonUtil.get_int(st, "cell") >= JsonUtil.get_int(st, "cols", 1) * JsonUtil.get_int(st, "rows", 1):
+		v.err(w, "cell이 시트 칸 수(cols × rows)를 넘는다")
+	if JsonUtil.get_array(st, "size").size() != 2:
+		v.err(w, "size는 [w, h](바닥 칸)")
+	if st.has("under"):
+		v.ref(w + ".under", "tiles", st.get("under"))
 
 
 static func _landmarks(v: ValidatorBase) -> void:

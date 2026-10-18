@@ -4,6 +4,7 @@ extends Node2D
 ## 재질 아틀라스가 있는 타일(tiles.json art)은 그림 한 칸(FloorArtLayer 변형) × 꼭짓점 빛 배율(FloorView.vertex_mul)로,
 ## 없는 타일은 색칠한 칸(타일 색 × 꼭짓점 색)으로 그린다.
 ## 포탈처럼 표식 색(color_mark)이 있는 타일은 가운데에 마름모를 얹는다.
+## 서 있는 소품(art.stand) 칸엔 밑 바닥(stand.under — 없으면 층 기본 바닥)을, 낭떠러지(void) 칸은 뒷배경이 있으면 비워 둔다.
 
 var view: FloorView
 var cells: Rect2i
@@ -31,7 +32,11 @@ func _draw() -> void:
 				continue
 			var def := map.defs[map.tiles[i]]
 			if def.is_wall():
-				continue
+				if view.stand_by_def[def.index] == null:
+					continue
+				def = map.defs[view.under_by_def[def.index]]  # 서 있는 소품 밑 바닥(WallRow가 위에 그림을 세운다)
+			elif def.is_void and view.void_layer != null:
+				continue  # 낭떠러지: 아래 층(VoidChunk)의 뒷배경이 비친다
 			_pts[0] = Vector2(x * t, y * t)
 			_pts[1] = Vector2((x + 1) * t, y * t)
 			_pts[2] = Vector2((x + 1) * t, (y + 1) * t)
