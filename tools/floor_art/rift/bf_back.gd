@@ -40,7 +40,7 @@ static func paint(w: int, h: int, s: int) -> Paint:
 		var ly: Array = LAYERS[li]
 		if li > 5: _layer(buf, w, h, float(ly[0]) * h, float(ly[1]) * h, int(ly[2]), float(ly[3]), ly[4], float(ly[5]), s + 10 + li, mist, wisp)
 		if li < LAYERS.size() - 1:
-			_veil(buf, w, h, float(ly[0]) * h, wisp, mist, 0.42 - li * 0.1)
+			if li > 5: _veil(buf, w, h, float(ly[0]) * h, wisp, mist, 0.42 - li * 0.1)
 	for i in w * h:
 		var c := buf[i]
 		p.buf[i * 4] = c.r
