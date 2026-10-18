@@ -185,25 +185,25 @@ static func _pillar(x: int, y: int, main: float, col: Color, t: float, hf: float
 		r = 15.8 if band != 1 else 15.0
 	var u := (x + 0.5 - cx) / r
 	if absf(u) > 1.0:  # 줄기 사이 골
-		return Color("#0a0606").lerp(Color("#3a0a0a"), smoothstep(main * 0.5, main, float(y)) * 0.6)
+		return Color("#0a0606").lerp(Color("#2a0a0a"), smoothstep(main * 0.5, main, float(y)) * 0.5)
 	var nx := u  # 원통 표면 법선(가로)
 	var lit := clampf(0.55 - nx * 0.75, 0.0, 1.0)  # 왼쪽이 밝다
 	var shade := 0.18 + lit * 0.62 - pow(absf(u), 6.0) * 0.3
 	if band < 0:  # 오목한 홈: 홈 안쪽 왼벽은 그늘, 오른벽은 빛
 		var ph := posmod((u + 1.0) * 2.0, 1.0)
-		shade += (ph - 0.5) * 0.45 * (1.0 - absf(u) * 0.7)
-		if ph < 0.12 or ph > 0.9:
-			shade -= 0.25
+		shade += (ph - 0.5) * 0.5 * (1.0 - absf(u) * 0.6)
+		if ph < 0.1 or ph > 0.9:
+			shade -= 0.4
 	else:
 		var b: Vector2 = bands[band]
 		var fy := (y - b.x) / (b.y - b.x)
 		shade += 0.3 if fy < 0.25 else (-0.3 if fy > 0.7 else 0.05)
-	shade += (hf - 0.5) * 0.2 + (t - 0.5) * 0.5
-	var c := Color("#0e0809").lerp(Color("#6e5052"), clampf(shade, 0.0, 1.0))
-	var red := smoothstep(main * 0.45, main, float(y))
-	c = c.lerp(Color("#6a1012"), red * 0.6)
-	if u > 0.6:  # 오른쪽 가장자리에 붉은 창빛
-		c = c.lerp(Color("#9a2018"), (u - 0.6) * 1.3)
+	shade += (hf - 0.5) * 0.15 + (t - 0.5) * 0.25
+	var c := Color("#0e0809").lerp(Color("#705044"), clampf(shade, 0.0, 1.0))
+	var red := smoothstep(main * 0.6, main, float(y))
+	c = c.lerp(Color("#4a1012"), red * 0.4)
+	if u > 0.7:  # 오른쪽 가장자리에 붉은 창빛
+		c = c.lerp(Color("#7a1a16"), (u - 0.7) * 1.2)
 	if absf(u) > 0.9:
 		c = c.lerp(K.INK, (absf(u) - 0.9) * 8.0)
 	return c
@@ -340,7 +340,7 @@ static func detail(p: Paint, style: String, part: String, v: int, col: Color) ->
 		"pillar_face:carve":  # 줄기마다 새긴 해골 문양 띠
 			for cx: float in [16.0, 48.0]:
 				var q := Vector2(cx * s, main * 0.5)
-				K.skull(p, q, s * 0.9, col.lightened(0.25))
+				K.skull(p, q, s * 0.9, Color("#6a5448"))
 		"stainedglass_face:rose", "stainedglass_face:lancet", "stainedglass_face:broken":
 			_window(p, main, s, kind)
 		"gate_face:ring":

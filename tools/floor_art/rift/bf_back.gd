@@ -17,10 +17,10 @@ const LAYERS := [
 
 static func paint(w: int, h: int, s: int) -> Paint:
 	var p := Paint.new(w, h, s)
-	var mist := Seam.field(w, h, s, 0.0035, 4)
-	var wisp := Seam.field(w, h, s + 1, 0.009, 3)
-	var deep := Seam.field(w, h, s + 2, 0.002, 2)
-	var fine := Seam.field(w, h, s + 3, 0.05, 2)
+	var mist := Seam.field(w, w, s, 0.0035, 4)
+	var wisp := Seam.field(w, w, s + 1, 0.009, 3)
+	var deep := Seam.field(w, w, s + 2, 0.002, 2)
+	var fine := Seam.field(w, w, s + 3, 0.05, 2)
 	var buf := PackedColorArray()
 	buf.resize(w * h)
 	# 바탕: 위는 핏빛 안개, 아래로 갈수록 검게 — 깊은 곳에서 번지는 진홍빛 웅덩이
@@ -38,9 +38,9 @@ static func paint(w: int, h: int, s: int) -> Paint:
 	# 바위탑 겹(먼 것부터)
 	for li in LAYERS.size():
 		var ly: Array = LAYERS[li]
-		if li > 5: _layer(buf, w, h, float(ly[0]) * h, float(ly[1]) * h, int(ly[2]), float(ly[3]), ly[4], float(ly[5]), s + 10 + li, mist, wisp)
+		_layer(buf, w, h, float(ly[0]) * h, float(ly[1]) * h, int(ly[2]), float(ly[3]), ly[4], float(ly[5]), s + 10 + li, mist, wisp)
 		if li < LAYERS.size() - 1:
-			if li > 5: _veil(buf, w, h, float(ly[0]) * h, wisp, mist, 0.42 - li * 0.1)
+			_veil(buf, w, h, float(ly[0]) * h, wisp, mist, 0.42 - li * 0.1)
 	for i in w * h:
 		var c := buf[i]
 		p.buf[i * 4] = c.r

@@ -153,7 +153,7 @@ static func _cliff_face(p: Paint, col: Color, s: int) -> void:
 	var e := _edges(w, s, main)
 	var hf := Seam.field(w, h, s, 0.06, 4)
 	var sn := Seam.field(w, 8, Mat.shared(s) + 4, 0.035, 2)
-	var lw := Seam.field(w, 8, Mat.shared(s) + 7, 0.025, 2)  # 층리 턱은 모든 변형이 같게(칸끼리 이어진다)
+	var lw := Seam.field(w, 8, Mat.shared(s) + 7, 0.06, 2)  # 층리 턱은 모든 변형이 같게(칸끼리 이어진다)
 	var fine := Seam.field(w, h, s + 6, 0.3, 2)
 	var snow := Color(0.7, 0.75, 0.82)
 	var period := 28.0 * w / 64.0
@@ -169,7 +169,7 @@ static func _cliff_face(p: Paint, col: Color, s: int) -> void:
 			var yy := period
 			var jj := j0
 			for j: int in [j0 - 1, j0, j0 + 1]:  # 바로 위의 층리 턱(턱마다 x를 따라 물결진다)
-				var d: float = base - j * period - (lw[posmod(j, 8) * w + x] - 0.5) * 18.0
+				var d: float = base - j * period - (lw[posmod(j, 8) * w + x] - 0.5) * 7.0
 				if d >= 0.0 and d < yy:
 					yy = d
 					jj = j
