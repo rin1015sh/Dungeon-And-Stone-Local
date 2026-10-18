@@ -23,6 +23,7 @@ var _failed: bool = false
 
 func _ready() -> void:
 	GameState.save_path = TEST_SAVE  # 실제 저장(한 칸)을 덮지 않는다
+	DialogueBox.auto_skip = true  # 대화창(알림)은 기다리지 않는다 — 대화창 자체는 _dialog_checks에서 따로 본다
 	SaveGame.delete(TEST_SAVE)
 	EventBus.log_message.connect(func(text: String, _kind: String) -> void: _logs.append(text))
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
@@ -145,14 +146,18 @@ func _realtime_combat_flow() -> void:
 	await _action("inventory")
 	await _action("menu_back")
 	_expect(not explore.windows().any_open() and not explore.is_paused(), "취소(Backspace)로 창 닫기(일시정지 아님)")
-	GameState.debug_fast_combat = true
+	await _explore_dialog_checks(explore)
 	await _action("debug_toggle")
 	_toggle(explore, Strings.t("debug.invulnerable"))
+	DialogueBox.auto_skip = false
 	_press(explore, Strings.t("debug.spawn_monster"))
 	await _frames(3)
 	var combat := explore.combat_screen()
 	if not _expect(combat != null and s.in_combat, "몬스터 소환 → 전투 화면"):
+		DialogueBox.auto_skip = true
 		return
+	await _combat_dialog_checks(combat)
+	GameState.debug_fast_combat = true
 	var tc := s.clock.total_hours
 	var menu := await _open_menu(combat)
 	if not _expect(menu != null, "행동창이 열린다"):
@@ -210,9 +215,8 @@ func _realtime_combat_flow() -> void:
 	var picked := await _take_drops(combat, true)
 	if picked > 0:
 		_expect("\n".join(_logs).contains("주웠다") or "\n".join(_logs).contains("스며들었다"), "드롭을 주웠다(기록)")
-	_press(combat, Strings.t("combat.continue"))
 	await _frames(3)
-	_expect(explore.combat_screen() == null and not s.in_combat, "탐험으로 복귀")
+	_expect(explore.combat_screen() == null and not s.in_combat, "결과·보상 안내를 다 넘기면 탐험으로 복귀")
 	if won:
 		_expect(s.player.progression.exp_total > 0, "첫 처치 공적")
 	_expect(s.clock.total_hours >= tc + turns * float(DataRegistry.db.bal("combat.hours_per_turn")) - 0.0001, "전투 차례만큼 시간 반영")
@@ -276,7 +280,6 @@ func _riddle_flow() -> void:
 	await _frames(2)
 	_expect(combat.battle.result == Battle.RESULT_VICTORY, "강화된 문지기를 쓰러뜨린다")
 	await _take_drops(combat, false)
-	_press(combat, Strings.t("combat.continue"))
 	await _frames(3)
 	_expect(not run.remaining.has(gate) and not explore.session.realtime.is_paused(), "문이 열리고 시간이 다시 흐른다")
 	await _action("debug_toggle")
@@ -391,10 +394,10 @@ func _take_drops(combat: CombatScreen, keys: bool) -> int:
 	var deadline := Time.get_ticks_msec() + WAIT_LIMIT_MS
 	while Time.get_ticks_msec() < deadline:
 		await _frames(2)
+		if not is_instance_valid(combat) or not combat.is_inside_tree() or combat.is_queued_for_deletion():
+			break
 		var pops := combat.find_children("*", "ChoicePopup", true, false)
 		if pops.is_empty():
-			if _has_button(combat, Strings.t("combat.continue")):
-				break
 			continue
 		var pop := pops[0] as ChoicePopup
 		if keys and n == 0:
@@ -404,8 +407,48 @@ func _take_drops(combat: CombatScreen, keys: bool) -> int:
 			_expect(pop.grid.cursor() == 0, "드롭 창: W → 획득한다")
 		await _action("menu_confirm")
 		n += 1
-	_expect(_has_button(combat, Strings.t("combat.continue")), "드롭을 다 고르면 계속 버튼")
+	_expect(not is_instance_valid(combat) or not combat.is_inside_tree() or combat.is_queued_for_deletion(), "드롭을 다 고르면(안내를 넘기면) 전투가 끝난다")
 	return n
+
+
+## 탐험 알림 → 하단 대화창: 떠 있는 동안 시간이 멈추고, Enter로 넘기면 닫힌다.
+func _explore_dialog_checks(explore: ExploreScreen) -> void:
+	var s := explore.session
+	var dlg := explore.dialog()
+	DialogueBox.auto_skip = false
+	EventBus.log_message.emit(Strings.t("city.leave"), "info")
+	await _frames(2)
+	_expect(dlg.busy() and dlg.is_visible_in_tree() and s.realtime.is_paused("dialog") and not explore.bottom_bar().visible, "알림 → 하단 대화창(하단 바 숨김, 시간 정지)")
+	var tq := s.clock.total_hours
+	await _seconds(0.3)
+	_expect(is_equal_approx(s.clock.total_hours, tq), "대화창이 떠 있는 동안 시간이 멈춘다")
+	for i in 3:
+		if dlg.busy():
+			await _action("menu_confirm")
+	await _frames(2)
+	_expect(not dlg.busy() and not dlg.visible and not s.realtime.is_paused() and explore.bottom_bar().visible, "Enter로 넘기면 닫히고 시간이 다시 흐른다")
+	DialogueBox.auto_skip = true
+
+
+## 전투 안내 → 아래 창 왼쪽 대화창: 떠 있는 동안 행동창이 열리지 않고, Enter로 넘기면 행동창이 열린다.
+func _combat_dialog_checks(combat: CombatScreen) -> void:
+	var dlg := combat.dialog()
+	_expect(dlg.busy() and dlg.is_visible_in_tree() and not _menu_open(combat), "전투 시작 안내가 대화창에(행동창은 아직)")
+	var deadline := Time.get_ticks_msec() + WAIT_LIMIT_MS
+	while Time.get_ticks_msec() < deadline and not _menu_open(combat) and combat.battle.result.is_empty():
+		if dlg.busy():
+			await _action("menu_confirm")
+		await _frames(2)
+	_expect(_menu_open(combat) and not dlg.busy(), "안내를 다 넘기면 행동창")
+	DialogueBox.auto_skip = true
+	dlg.instant = true
+
+
+func _menu_open(combat: CombatScreen) -> bool:
+	for n: Node in combat.find_children("*", "CommandMenu", true, false):
+		if (n as CommandMenu).is_open():
+			return true
+	return false
 
 
 ## 아군 차례가 와서 행동창이 열릴 때까지 기다린다. 전투가 끝나면 null.
@@ -580,7 +623,7 @@ func _city_flow() -> void:
 	var fv := city.facility_view()
 	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 2, "건물 클릭 → 행동력 1을 쓰고 여관 안으로"):
 		return
-	_expect(not fv.can_leave(), "들어오면 무언가 하기 전엔 못 나간다")
+	_expect(_has_button(fv, Strings.t("city.leave")), "시설 안에 나가기 버튼")
 	await _action("inventory")
 	_expect(not city.windows_open() and not _has_button(city, Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")})), "시설 안에서는 소지품 창·버튼이 없다")
 	pc.pool.modify("hp", -30.0)
@@ -647,7 +690,7 @@ func _city_flow() -> void:
 			(bank[0] as BankPanel).set_amount(40)
 			_press(fv, Strings.t("city.bank_withdraw"))
 			_expect(st.bank_balance == 60 and pc.inventory.money + st.bank_balance == total, "찾기(합 그대로)")
-		fv.try_leave()
+		_press(fv, Strings.t("city.leave"))  # 창구 아래 나가기 버튼
 	await _frames(1)
 	var cash := pc.inventory.money
 	pc.inventory.money = 0

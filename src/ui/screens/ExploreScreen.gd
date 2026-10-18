@@ -1,10 +1,11 @@
 class_name ExploreScreen
 extends Control
-## 탐험 화면: 3/4 시점 월드(SubViewport) + 왼쪽 위 정보(HUD) + 왼쪽 아래 기록창 + 하단 바(BottomBar) +
+## 탐험 화면: 3/4 시점 월드(SubViewport) + 왼쪽 위 정보(HUD) + 하단 바(BottomBar) + 하단 대화창(DialogueBox — 알림을 Enter로 넘김) +
 ## 창(소지품 I · 캐릭터 C · 도감 B, WindowManager) + 디버그 패널(F1).
 ## 키 입력을 ExploreSession에 넘기고, 세션 시그널로 그림·기록을 갱신한다.
 ## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
-## 입력칸 입력·창 포커스 잃음·전투 중·창(소지품 등)이 열려 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
+## 입력칸 입력·창 포커스 잃음·전투 중·창(소지품 등)이 열려 있을 때·대화창에 넘길 알림이 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
+## 알림(세션 안내·소지품 창 경고)은 피어 앤 헝거처럼 아래 대화창에 한 쪽씩 뜨고 Enter로 넘긴다(사용자 결정 2026-10-18) — 떠 있는 동안 하단 바는 숨는다.
 
 signal run_ended(kind: String, info: Dictionary)  ## kind: "closed"(층 폐쇄로 강제 귀환) / "died"(사망) / "abandoned"(일시정지 메뉴에서 포기)
 signal regenerate_requested(seed_value: int)
@@ -25,6 +26,7 @@ var _combat: CombatScreen = null
 var _pause_overlay: PauseMenu
 var _bar: BottomBar
 var _windows: WindowManager
+var _dialog: DialogueBox
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -37,10 +39,6 @@ func _ready() -> void:
 	add_child(_hud)
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_hud.bind(session)
-	var log_panel := LogPanel.new()
-	log_panel.translucent = true
-	log_panel.keeps_history = true
-	add_child(log_panel)
 	var m := UiTheme.metric("margin", 16)
 	_bar = BottomBar.new()
 	_bar.setup(session.player)
@@ -55,17 +53,13 @@ func _ready() -> void:
 	_bar.window_requested.connect(func(kind: String) -> void: _windows.toggle(kind))
 	_bar.action_requested.connect(_on_bar_action)
 	_bar.use_requested.connect(_use_item)
-	log_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	log_panel.offset_left = m
-	log_panel.offset_right = m + UiTheme.metric("explore_log_width", 380)
-	log_panel.offset_bottom = _bar.offset_top - m * 0.5
-	log_panel.offset_top = log_panel.offset_bottom - UiTheme.metric("explore_log_height", 200)
 	_windows = WindowManager.new()
 	_windows.setup(session.player)
 	add_child(_windows)
 	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_windows.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("window", on))
 	_windows.use_requested.connect(_use_item)
+	_build_dialog(m)
 	_debug = DebugPanel.new()
 	_debug.bind(session)
 	_debug.visible = false
@@ -99,6 +93,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	session.realtime.set_paused("debug", _debug.visible)
 	session.realtime.set_paused("typing", _typing())
+	session.realtime.set_paused("dialog", _dialog.busy())
 	session.tick_realtime(delta)
 	# 계층군주 소환 중: 수정이 붉게 물든다(층 JSON lord.tint).
 	_tone.color = _tone_base * Color.from_string(JsonUtil.get_str(session.lord.def, "tint"), Color.WHITE) if session.lord.is_active() else _tone_base
@@ -281,6 +276,7 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_windows.close_all()
+	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
 	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.
@@ -301,6 +297,38 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 		for id in killed:
 			EventBus.monster_killed.emit(id, session.player.id)
 		session.resolve_encounter(group, result, turns, killed))
+
+
+## 하단 대화창: 하단 바 자리에 겹친다(폭 ui.dialog.width — 화면이 좁으면 여백만 남기고).
+func _build_dialog(m: int) -> void:
+	_dialog = DialogueBox.new()
+	add_child(_dialog)
+	var w := UiTheme.ui_dict("dialog").get("width", 960.0) as float
+	var h := UiTheme.ui_dict("dialog").get("height", 128.0) as float
+	_dialog.anchor_left = 0.5
+	_dialog.anchor_right = 0.5
+	_dialog.anchor_top = 1.0
+	_dialog.anchor_bottom = 1.0
+	_dialog.offset_top = -m * 0.5 - h
+	_dialog.offset_bottom = -m * 0.5
+	var fit := func() -> void:
+		var half := minf(w / 2.0, size.x / 2.0 - m)
+		_dialog.offset_left = -half
+		_dialog.offset_right = half
+	fit.call()
+	resized.connect(fit)
+	_dialog.shown_changed.connect(func(on: bool) -> void: _bar.visible = not on)
+	EventBus.log_message.connect(_on_log)
+
+
+## 탐험 중 알림 → 대화창. 전투 중(전투 화면이 자기 대화창에 보인다)·끝난 뒤는 받지 않는다.
+func _on_log(text: String, kind: String) -> void:
+	if _combat == null and not _ended and not is_queued_for_deletion():
+		_dialog.say(text, kind)
+
+
+func dialog() -> DialogueBox:
+	return _dialog
 
 
 func _build_pause_overlay() -> void:

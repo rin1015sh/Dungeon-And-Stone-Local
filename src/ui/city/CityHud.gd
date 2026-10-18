@@ -2,7 +2,7 @@ class_name CityHud
 extends Control
 ## 도시 화면 정보(위 띠 하나에 몰지 않고 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
 ##   왼쪽 위 = 달력 카드(장소 · 날짜·날씨 · 상순/중순/하순 진행 · 행동력 구슬). 설명 문장은 넣지 않는다(CLAUDE.md "부연설명 금지").
-##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 소지금 · 생명력 막대 · 피로도),
+##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 소지금 · 생명력 막대 · 피로도 — 시설 안에서는 달력 아래로),
 ##   오른쪽 위 = 메뉴(소지품 · 캐릭터 · 타이틀로). 미궁은 하순이 끝나면 저절로 들어간다(디버그 F1에 바로 가기).
 ## 은행 잔액·신전 공적치는 그 시설 안에서만 보인다(facilities shows). 아래 가운데·오른쪽은 건물 이름판 자리.
 
@@ -21,6 +21,8 @@ var _hp: Label
 var _fatigue: Label
 var _money: Label
 var _dock: PanelContainer
+var _calendar: PanelContainer
+var _vitals: PanelContainer
 ## 달력 카드의 장소 이름(city.json place의 키) — 차원광장은 plaza_ko.
 var place_key: String = "district_ko"
 
@@ -42,9 +44,18 @@ func _ready() -> void:
 	refresh()
 
 
-## 시설 안: 메뉴(소지품·캐릭터·타이틀로)를 숨긴다.
+## 시설 안: 메뉴(소지품·캐릭터·타이틀로)를 숨기고, 탐험가 카드를 달력 아래로 올린다(아래는 시설 대화창 자리).
 func set_facility_mode(on: bool) -> void:
 	_dock.visible = not on
+	var m := UiTheme.metric("margin", 16)
+	if on:
+		_vitals.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, m)
+		_vitals.grow_vertical = Control.GROW_DIRECTION_END
+		_vitals.offset_top = _calendar.offset_top + _calendar.get_combined_minimum_size().y + m * 0.5
+		_vitals.offset_bottom = _vitals.offset_top + _vitals.get_combined_minimum_size().y
+	else:
+		_vitals.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, m)
+		_vitals.grow_vertical = Control.GROW_DIRECTION_BEGIN
 
 
 ## 시설 패널이 비워 둘 위쪽 높이(메뉴 아래부터).
@@ -56,6 +67,7 @@ func _build_calendar(m: int) -> void:
 	var box := CityUi.card()
 	box.custom_minimum_size.x = UiTheme.render_float("city.calendar_width", 300.0)
 	add_child(box)
+	_calendar = box
 	box.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, m)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)
@@ -88,6 +100,7 @@ func _build_vitals(m: int) -> void:
 	var box := CityUi.card()
 	box.custom_minimum_size.x = UiTheme.render_float("city.vitals_width", 300.0)
 	add_child(box)
+	_vitals = box
 	box.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, m)
 	box.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	var v := VBoxContainer.new()

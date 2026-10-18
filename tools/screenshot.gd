@@ -9,6 +9,7 @@ extends Node
 ## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
+## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
@@ -35,6 +36,7 @@ func _ready() -> void:
 			var kv := arg.trim_prefix("--").split("=", true, 1)
 			_args[kv[0]] = kv[1] if kv.size() > 1 else "true"
 	GameState.debug_seed_override = str(_args["seed"]).to_int()
+	DialogueBox.auto_skip = not _args.has("dialog")  # --dialog: 하단 대화창(알림·전투 안내·시설 결과)을 넘기지 않고 띄운 채 찍는다
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
 	add_child(_main)
 	_run.call_deferred()
