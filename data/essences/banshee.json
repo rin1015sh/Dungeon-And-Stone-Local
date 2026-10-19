@@ -28,12 +28,12 @@
   ],
   "stat_ranges": {
     "m_res": [
-      2,
-      4
+      4,
+      8
     ],
     "int": [
-      2,
-      4
+      4,
+      8
     ]
   },
   "source": "placeholder",

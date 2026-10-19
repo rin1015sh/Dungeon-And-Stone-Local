@@ -40,12 +40,12 @@
   ],
   "stat_ranges": {
     "p_res": [
-      9,
-      15
+      18,
+      30
     ],
     "str": [
-      4,
-      6
+      8,
+      12
     ]
   },
   "source": "placeholder",

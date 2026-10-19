@@ -27,12 +27,12 @@
   ],
   "stat_ranges": {
     "int": [
-      3,
-      7
+      11,
+      25
     ],
     "sight": [
-      4,
-      8
+      6,
+      12
     ]
   },
   "source": "placeholder",

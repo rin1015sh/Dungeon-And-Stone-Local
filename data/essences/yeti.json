@@ -36,16 +36,16 @@
   ],
   "stat_ranges": {
     "str": [
-      3,
-      5
+      12,
+      20
     ],
     "resist_cold": [
-      5,
-      10
+      8,
+      15
     ],
     "p_res": [
-      2,
-      3
+      8,
+      12
     ]
   },
   "source": "placeholder",

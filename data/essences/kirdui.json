@@ -27,16 +27,16 @@
   ],
   "stat_ranges": {
     "str": [
-      10,
-      14
+      22,
+      32
     ],
     "natural_regen": [
-      15,
-      25
+      22,
+      38
     ],
     "m_res": [
-      6,
-      10
+      14,
+      22
     ]
   },
   "source": "placeholder",

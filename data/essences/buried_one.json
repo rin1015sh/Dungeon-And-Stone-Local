@@ -26,12 +26,12 @@
   ],
   "stat_ranges": {
     "str": [
-      2,
-      4
+      6,
+      12
     ],
     "p_res": [
-      2,
-      4
+      6,
+      12
     ]
   },
   "source": "placeholder",

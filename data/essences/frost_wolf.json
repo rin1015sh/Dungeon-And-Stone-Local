@@ -38,12 +38,12 @@
   ],
   "stat_ranges": {
     "agi": [
-      1,
-      3
+      4,
+      12
     ],
     "resist_cold": [
-      3,
-      6
+      4,
+      9
     ]
   },
   "source": "placeholder",

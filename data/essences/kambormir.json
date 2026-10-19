@@ -37,20 +37,20 @@
   ],
   "stat_ranges": {
     "str": [
-      10,
-      14
+      13,
+      19
     ],
     "agi": [
-      8,
-      12
+      11,
+      16
     ],
     "int": [
-      10,
-      14
+      13,
+      19
     ],
     "natural_regen": [
-      10,
-      20
+      13,
+      26
     ]
   },
   "source": "placeholder",

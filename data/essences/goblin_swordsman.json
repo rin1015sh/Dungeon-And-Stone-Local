@@ -40,12 +40,12 @@
   ],
   "stat_ranges": {
     "str": [
-      2,
-      6
+      4,
+      12
     ],
     "agi": [
-      1,
-      3
+      2,
+      6
     ]
   },
   "source": "placeholder",

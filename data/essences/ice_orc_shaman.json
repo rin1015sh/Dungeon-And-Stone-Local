@@ -35,16 +35,16 @@
   ],
   "stat_ranges": {
     "int": [
-      2,
-      4
+      8,
+      16
     ],
     "m_res": [
-      2,
-      4
+      8,
+      16
     ],
     "affinity_cold": [
-      2,
-      5
+      3,
+      8
     ]
   },
   "source": "placeholder",

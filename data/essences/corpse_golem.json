@@ -36,16 +36,16 @@
   ],
   "stat_ranges": {
     "str": [
-      3,
-      6
+      12,
+      24
     ],
     "p_res": [
-      2,
-      5
+      8,
+      20
     ],
     "resist_poison": [
-      5,
-      10
+      8,
+      15
     ]
   },
   "source": "placeholder",

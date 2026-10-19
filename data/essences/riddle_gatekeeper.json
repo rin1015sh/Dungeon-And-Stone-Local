@@ -29,16 +29,16 @@
   ],
   "stat_ranges": {
     "p_res": [
-      3,
-      5
+      7,
+      12
     ],
     "m_res": [
-      3,
-      5
+      7,
+      12
     ],
     "int": [
-      2,
-      3
+      5,
+      7
     ]
   },
   "source": "placeholder",

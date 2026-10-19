@@ -36,12 +36,12 @@
   ],
   "stat_ranges": {
     "agi": [
-      2,
-      4
+      8,
+      16
     ],
     "p_res": [
-      2,
-      4
+      8,
+      16
     ]
   },
   "source": "placeholder",

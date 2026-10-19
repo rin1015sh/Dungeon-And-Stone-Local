@@ -23,12 +23,12 @@
   ],
   "stat_ranges": {
     "agi": [
-      1,
-      2
+      2,
+      4
     ],
     "int": [
-      1,
-      2
+      2,
+      4
     ]
   },
   "source": "placeholder",

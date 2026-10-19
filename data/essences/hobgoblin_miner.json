@@ -27,12 +27,12 @@
   ],
   "stat_ranges": {
     "str": [
-      3,
-      5
+      12,
+      20
     ],
     "resist_poison": [
-      3,
-      6
+      4,
+      9
     ]
   },
   "source": "placeholder",

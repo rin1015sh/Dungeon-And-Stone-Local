@@ -43,16 +43,16 @@
   ],
   "stat_ranges": {
     "p_res": [
-      5,
-      8
+      20,
+      32
     ],
     "resist_poison": [
-      8,
-      12
+      12,
+      18
     ],
     "natural_regen": [
-      5,
-      10
+      8,
+      15
     ]
   },
   "source": "placeholder",

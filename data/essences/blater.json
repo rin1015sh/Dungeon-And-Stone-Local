@@ -30,16 +30,16 @@
   ],
   "stat_ranges": {
     "str": [
-      8,
-      12
+      15,
+      23
     ],
     "p_res": [
-      6,
-      10
+      11,
+      19
     ],
     "resist_dark": [
-      10,
-      20
+      15,
+      30
     ]
   },
   "source": "placeholder",

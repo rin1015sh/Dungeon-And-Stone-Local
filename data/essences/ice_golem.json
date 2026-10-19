@@ -26,12 +26,12 @@
   ],
   "stat_ranges": {
     "p_res": [
-      3,
-      5
+      12,
+      20
     ],
     "resist_cold": [
-      3,
-      6
+      4,
+      9
     ]
   },
   "source": "placeholder",

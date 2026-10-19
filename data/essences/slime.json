@@ -40,20 +40,20 @@
       -1
     ],
     "resist_poison": [
-      5,
-      10
+      8,
+      15
     ],
     "digestion": [
-      5,
-      10
+      8,
+      15
     ],
     "p_res": [
       -1,
       0
     ],
     "int": [
-      2,
-      3
+      3,
+      4
     ]
   },
   "source": "placeholder",

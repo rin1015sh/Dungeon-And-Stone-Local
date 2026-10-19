@@ -43,16 +43,16 @@
   ],
   "stat_ranges": {
     "str": [
-      6,
-      9
+      20,
+      30
     ],
     "resist_cold": [
-      8,
-      12
+      12,
+      18
     ],
     "affinity_cold": [
-      4,
-      8
+      6,
+      12
     ]
   },
   "source": "placeholder",

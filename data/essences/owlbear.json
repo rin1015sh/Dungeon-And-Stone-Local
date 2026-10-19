@@ -29,12 +29,12 @@
   ],
   "stat_ranges": {
     "str": [
-      2,
-      4
+      8,
+      16
     ],
     "sight": [
-      3,
-      6
+      4,
+      9
     ]
   },
   "source": "placeholder",

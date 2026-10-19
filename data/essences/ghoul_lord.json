@@ -33,12 +33,12 @@
   ],
   "stat_ranges": {
     "str": [
-      2,
-      4
+      7,
+      13
     ],
     "int": [
-      2,
-      3
+      7,
+      10
     ]
   },
   "source": "placeholder",

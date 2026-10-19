@@ -41,16 +41,16 @@
   ],
   "stat_ranges": {
     "p_res": [
-      2,
-      4
+      3,
+      6
     ],
     "m_res": [
-      1,
-      2
+      2,
+      3
     ],
     "agi": [
-      2,
-      4
+      3,
+      6
     ]
   },
   "source": "placeholder",

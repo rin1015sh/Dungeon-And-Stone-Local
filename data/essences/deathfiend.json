@@ -30,16 +30,16 @@
   ],
   "stat_ranges": {
     "str": [
-      3,
-      5
+      7,
+      11
     ],
     "p_res": [
-      3,
-      5
+      7,
+      11
     ],
     "natural_regen": [
-      5,
-      10
+      8,
+      15
     ]
   },
   "source": "placeholder",
