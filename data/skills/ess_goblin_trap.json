@@ -15,5 +15,5 @@
   ],
   "essence_of": "goblin_trap",
   "source": "placeholder",
-  "notes": "정수판 위력 45 → 덫 고정 피해, 속박 없음. 맵 설치(field_use)는 미구현"
+  "notes": "정수판 위력 45 → 덫 고정 피해, 속박 없음. 맵 설치(field_use)는 하지 않는다(정수 스킬은 전투 전용 — J14)"
 }
