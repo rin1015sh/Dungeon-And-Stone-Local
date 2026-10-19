@@ -104,6 +104,7 @@ func _closing_flow() -> void:
 	_press(explore, Strings.t("debug.to_portal"))
 	_expect(explore.session.pos != start, "디버그 이동")
 	_press(explore, Strings.t("debug.reveal"))
+	explore.session.monsters.groups.clear()  # 폐쇄 시험: 포탈 옆 무리와 마주쳐 전투가 열리면 디버그 패널이 닫혀 버린다(무리 자리는 판마다 무작위)
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
 	_expect_log(Strings.t("explore.closed"), "층 폐쇄 메시지")
