@@ -38,21 +38,12 @@
       "skill": "ess_goblin_crude_combo"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      4,
-      12
-    ],
-    "agi": [
-      2,
-      6
-    ]
+  "stats": {
+    "str": 8,
+    "agi": 4
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.2"

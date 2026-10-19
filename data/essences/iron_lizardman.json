@@ -34,21 +34,12 @@
       "skill": "ess_liz_metal_poison"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      8,
-      16
-    ],
-    "p_res": [
-      8,
-      16
-    ]
+  "stats": {
+    "agi": 12,
+    "p_res": 12
   },
-  "resource_ranges": {
-    "hp": [
-      17,
-      28
-    ]
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §12"

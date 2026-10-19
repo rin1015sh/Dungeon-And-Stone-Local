@@ -22,25 +22,13 @@
       "skill": "ess_ghoul_pounce"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      3,
-      6
-    ],
-    "str": [
-      2,
-      5
-    ],
-    "m_res": [
-      3,
-      5
-    ]
+  "stats": {
+    "agi": 5,
+    "str": 4,
+    "m_res": 4
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.4. 할퀴기는 엘더 구울과 공유"

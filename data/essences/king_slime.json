@@ -41,25 +41,13 @@
       "skill": "ess_king_jump_crush"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      20,
-      32
-    ],
-    "resist_poison": [
-      12,
-      18
-    ],
-    "natural_regen": [
-      8,
-      15
-    ]
+  "stats": {
+    "p_res": 26,
+    "resist_poison": 15,
+    "natural_regen": 12
   },
-  "resource_ranges": {
-    "hp": [
-      23,
-      38
-    ]
+  "resources": {
+    "hp": 31
   },
   "source": "placeholder",
   "notes": "명세 §11 수호자 정수(무지갯빛) — 액티브 전부. 흡수 정수판은 자기 소환수(슬라임)를 삼킨다"

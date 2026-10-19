@@ -21,21 +21,12 @@
       "skill": "ess_rat_hide"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      2,
-      4
-    ],
-    "int": [
-      2,
-      4
-    ]
+  "stats": {
+    "agi": 3,
+    "int": 3
   },
-  "resource_ranges": {
-    "hp": [
-      4,
-      6
-    ]
+  "resources": {
+    "hp": 5
   },
   "source": "placeholder",
   "notes": "명세 §9"

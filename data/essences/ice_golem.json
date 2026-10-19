@@ -24,21 +24,12 @@
       "skill": "ess_golem_ice_armor"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      12,
-      20
-    ],
-    "resist_cold": [
-      4,
-      9
-    ]
+  "stats": {
+    "p_res": 16,
+    "resist_cold": 7
   },
-  "resource_ranges": {
-    "hp": [
-      11,
-      19
-    ]
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §10 정수판: 적 1명에게만 [둔화] +1 [명세]"

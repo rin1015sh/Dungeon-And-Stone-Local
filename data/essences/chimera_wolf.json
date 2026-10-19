@@ -21,21 +21,12 @@
       "skill": "ess_chimera_frenzy_charge"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      6,
-      12
-    ],
-    "agi": [
-      6,
-      12
-    ]
+  "stats": {
+    "str": 9,
+    "agi": 9
   },
-  "resource_ranges": {
-    "hp": [
-      11,
-      19
-    ]
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §9"

@@ -27,21 +27,12 @@
       "skill": "ess_katumba_avalanche"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      16,
-      24
-    ],
-    "resist_cold": [
-      12,
-      18
-    ]
+  "stats": {
+    "str": 20,
+    "resist_cold": 15
   },
-  "resource_ranges": {
-    "hp": [
-      21,
-      36
-    ]
+  "resources": {
+    "hp": 29
   },
   "source": "placeholder",
   "notes": "명세 §10 드롭률 10%(중간 보스). 하양 = 오한(예티와 공유 → 중복 거부). 진압은 고유라 제외"

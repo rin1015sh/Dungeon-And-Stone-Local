@@ -34,21 +34,12 @@
       "skill": "ess_skeleton_volley"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      4,
-      12
-    ],
-    "sight": [
-      3,
-      8
-    ]
+  "stats": {
+    "agi": 8,
+    "sight": 6
   },
-  "resource_ranges": {
-    "hp": [
-      4,
-      6
-    ]
+  "resources": {
+    "hp": 5
   },
   "source": "placeholder",
   "notes": "명세 §9"

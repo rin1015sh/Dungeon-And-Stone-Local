@@ -32,25 +32,13 @@
       "skill": "ess_wolf_pack_hunt"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      1,
-      4
-    ],
-    "str": [
-      0,
-      3
-    ],
-    "int": [
-      5,
-      11
-    ]
+  "stats": {
+    "agi": 3,
+    "str": 2,
+    "int": 8
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.6. 물어뜯기·칼날 스치기는 거대·핏빛 칼날늑대와 공유"

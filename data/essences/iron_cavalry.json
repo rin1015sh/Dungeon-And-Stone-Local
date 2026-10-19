@@ -31,17 +31,11 @@
       "skill": "ess_cav_shield_wall"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      19,
-      31
-    ]
+  "stats": {
+    "p_res": 25
   },
-  "resource_ranges": {
-    "hp": [
-      17,
-      28
-    ]
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §12"

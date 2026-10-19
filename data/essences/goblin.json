@@ -35,33 +35,15 @@
       "skill": "ess_goblin_sand"
     }
   ],
-  "stat_ranges": {
-    "resist_poison": [
-      5,
-      13
-    ],
-    "sight": [
-      3,
-      8
-    ],
-    "agi": [
-      3,
-      8
-    ],
-    "m_res": [
-      3,
-      5
-    ],
-    "int": [
-      1,
-      4
-    ]
+  "stats": {
+    "resist_poison": 9,
+    "sight": 6,
+    "agi": 6,
+    "m_res": 4,
+    "int": 3
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.1. 그륵 하울링은 고유라 제외"

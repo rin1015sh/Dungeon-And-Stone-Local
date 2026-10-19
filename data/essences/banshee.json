@@ -26,21 +26,12 @@
       "skill": "ess_banshee_sob"
     }
   ],
-  "stat_ranges": {
-    "m_res": [
-      4,
-      8
-    ],
-    "int": [
-      4,
-      8
-    ]
+  "stats": {
+    "m_res": 6,
+    "int": 6
   },
-  "resource_ranges": {
-    "hp": [
-      4,
-      6
-    ]
+  "resources": {
+    "hp": 5
   },
   "source": "placeholder",
   "notes": "명세 §9"

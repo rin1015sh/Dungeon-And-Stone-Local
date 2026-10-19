@@ -29,21 +29,12 @@
       "skill": "ess_mummy_curse_touch"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      3,
-      8
-    ],
-    "m_res": [
-      5,
-      8
-    ]
+  "stats": {
+    "p_res": 6,
+    "m_res": 7
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "명세 §12"

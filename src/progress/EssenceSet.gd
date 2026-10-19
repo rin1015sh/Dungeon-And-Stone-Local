@@ -198,13 +198,9 @@ func _attach(a: Actor, inst: Dictionary) -> void:
 	var st := JsonUtil.get_dict(inst, "stats")
 	for k: String in st:
 		a.stats.add_modifier(Modifier.new(src, k, float(st[k])))
-	var res := JsonUtil.get_dict(def, "resource_mods")
+	var res := JsonUtil.get_dict(inst, "resources")  # 자원 최대치(생명력)
 	for r: String in res:
-		if not is_zero_approx(float(res[r])):
-			a.stats.add_modifier(Modifier.new(src, "max:" + r, float(res[r])))
-	var rolled := JsonUtil.get_dict(inst, "resources")  # 굴린 자원 최대치(생명력 — resource_ranges)
-	for r: String in rolled:
-		a.stats.add_modifier(Modifier.new(src, "max:" + r, float(rolled[r])))
+		a.stats.add_modifier(Modifier.new(src, "max:" + r, float(res[r])))
 	for sid: String in granted_skills(db, inst):
 		a.learn_skill(sid)
 

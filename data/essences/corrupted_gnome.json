@@ -46,25 +46,13 @@
       "skill": "ess_corrupt_rot_swamp"
     }
   ],
-  "stat_ranges": {
-    "m_res": [
-      3,
-      9
-    ],
-    "int": [
-      3,
-      9
-    ],
-    "resist_poison": [
-      4,
-      9
-    ]
+  "stats": {
+    "m_res": 6,
+    "int": 6,
+    "resist_poison": 7
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.10. 초록 = 일체화(노움과 공유)"

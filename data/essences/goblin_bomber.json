@@ -34,21 +34,12 @@
       "skill": "ess_bomber_smoke"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      20,
-      36
-    ],
-    "affinity_fire": [
-      6,
-      12
-    ]
+  "stats": {
+    "agi": 28,
+    "affinity_fire": 9
   },
-  "resource_ranges": {
-    "hp": [
-      15,
-      24
-    ]
+  "resources": {
+    "hp": 20
   },
   "source": "placeholder",
   "notes": "명세 §11 드롭률 10%(중간 보스). 지원 요청은 고유라 제외"

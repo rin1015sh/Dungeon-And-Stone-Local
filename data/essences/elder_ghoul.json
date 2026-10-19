@@ -34,25 +34,13 @@
       "skill": "ess_elder_rot_claw"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      3,
-      6
-    ],
-    "p_res": [
-      2,
-      4
-    ],
-    "m_res": [
-      3,
-      6
-    ]
+  "stats": {
+    "str": 5,
+    "p_res": 3,
+    "m_res": 5
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.5. 회색 = 할퀴기(구울과 공유) — 구울의 빨강과 함께 흡수 불가"

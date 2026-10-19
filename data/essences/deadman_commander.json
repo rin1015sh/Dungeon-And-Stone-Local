@@ -31,21 +31,12 @@
       "skill": "ess_deadman_chop"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      2,
-      3
-    ],
-    "m_res": [
-      2,
-      5
-    ]
+  "stats": {
+    "str": 3,
+    "m_res": 4
   },
-  "resource_ranges": {
-    "hp": [
-      4,
-      6
-    ]
+  "resources": {
+    "hp": 5
   },
   "source": "placeholder",
   "notes": "명세 §9"

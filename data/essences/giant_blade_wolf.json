@@ -26,25 +26,13 @@
       "skill": "ess_giant_menacing_roar"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      3,
-      5
-    ],
-    "p_res": [
-      2,
-      5
-    ],
-    "int": [
-      3,
-      6
-    ]
+  "stats": {
+    "str": 4,
+    "p_res": 4,
+    "int": 5
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.7. 빨강 = 물어뜯기(칼날늑대와 공유)"

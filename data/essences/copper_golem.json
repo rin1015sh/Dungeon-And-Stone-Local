@@ -38,17 +38,11 @@
       "skill": "ess_copper_vibration"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      18,
-      32
-    ]
+  "stats": {
+    "p_res": 25
   },
-  "resource_ranges": {
-    "hp": [
-      17,
-      28
-    ]
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §11"

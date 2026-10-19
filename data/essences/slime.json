@@ -30,37 +30,15 @@
       "skill": "ess_slime_split"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      -2,
-      -1
-    ],
-    "agi": [
-      -2,
-      -1
-    ],
-    "resist_poison": [
-      8,
-      15
-    ],
-    "digestion": [
-      8,
-      15
-    ],
-    "p_res": [
-      -1,
-      0
-    ],
-    "int": [
-      3,
-      4
-    ]
+  "stats": {
+    "str": -1,
+    "agi": -1,
+    "resist_poison": 12,
+    "digestion": 12,
+    "int": 4
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "명세 §11 원작: 9등급 중 최악의 정수 — 육체 수치가 떨어지고 쓸모없는 스탯만 붙는다"

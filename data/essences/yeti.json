@@ -34,25 +34,13 @@
       "skill": "ess_yeti_roar"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      12,
-      20
-    ],
-    "resist_cold": [
-      8,
-      15
-    ],
-    "p_res": [
-      8,
-      12
-    ]
+  "stats": {
+    "str": 16,
+    "resist_cold": 12,
+    "p_res": 10
   },
-  "resource_ranges": {
-    "hp": [
-      19,
-      32
-    ]
+  "resources": {
+    "hp": 26
   },
   "source": "placeholder",
   "notes": "명세 §10 원작: 정수는 있으나 내용 미상 → 창작"

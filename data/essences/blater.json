@@ -28,25 +28,13 @@
       "skill": "ess_blater_death_sentence"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      15,
-      23
-    ],
-    "p_res": [
-      11,
-      19
-    ],
-    "resist_dark": [
-      15,
-      30
-    ]
+  "stats": {
+    "str": 19,
+    "p_res": 15,
+    "resist_dark": 23
   },
-  "resource_ranges": {
-    "hp": [
-      23,
-      38
-    ]
+  "resources": {
+    "hp": 31
   },
   "source": "placeholder",
   "notes": "명세 §9 수호자 정수(무지갯빛) — 액티브 전부"

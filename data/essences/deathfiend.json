@@ -28,25 +28,13 @@
       "skill": "ess_deathfiend_shield_arm"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      7,
-      11
-    ],
-    "p_res": [
-      7,
-      11
-    ],
-    "natural_regen": [
-      8,
-      15
-    ]
+  "stats": {
+    "str": 9,
+    "p_res": 9,
+    "natural_regen": 12
   },
-  "resource_ranges": {
-    "hp": [
-      11,
-      19
-    ]
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §9 초반 정수 중 최상위권 [원]"

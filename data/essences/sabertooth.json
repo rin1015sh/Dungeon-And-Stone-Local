@@ -23,21 +23,12 @@
       "skill": "ess_sabre_leap_claw"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      7,
-      14
-    ],
-    "str": [
-      4,
-      11
-    ]
+  "stats": {
+    "agi": 11,
+    "str": 8
   },
-  "resource_ranges": {
-    "hp": [
-      11,
-      19
-    ]
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §10"

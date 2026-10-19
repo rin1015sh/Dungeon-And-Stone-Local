@@ -34,25 +34,13 @@
       "skill": "ess_golem_flesh_burst"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      12,
-      24
-    ],
-    "p_res": [
-      8,
-      20
-    ],
-    "resist_poison": [
-      8,
-      15
-    ]
+  "stats": {
+    "str": 18,
+    "p_res": 14,
+    "resist_poison": 12
   },
-  "resource_ranges": {
-    "hp": [
-      21,
-      36
-    ]
+  "resources": {
+    "hp": 29
   },
   "source": "placeholder",
   "notes": "명세 §9 정수 내용 [창]"

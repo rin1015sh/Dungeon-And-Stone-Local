@@ -36,21 +36,12 @@
       "skill": "ess_wolf_pack_howl"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      4,
-      12
-    ],
-    "resist_cold": [
-      4,
-      9
-    ]
+  "stats": {
+    "agi": 8,
+    "resist_cold": 7
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "명세 §10"

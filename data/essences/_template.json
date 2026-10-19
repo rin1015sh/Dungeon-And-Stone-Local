@@ -24,20 +24,11 @@
       "skill": "ess_wolf_bite"
     }
   ],
-  "stat_ranges": {
-    "int": [
-      4,
-      8
-    ]
+  "stats": {
+    "int": 6
   },
-  "resource_ranges": {
-    "hp": [
-      8,
-      13
-    ]
-  },
-  "resource_mods": {
-    "soul": 0
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": ""

@@ -38,17 +38,11 @@
       "skill": "ess_gargoyle_stone_claw"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      13,
-      23
-    ]
+  "stats": {
+    "p_res": 18
   },
-  "resource_ranges": {
-    "hp": [
-      11,
-      19
-    ]
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §9"
