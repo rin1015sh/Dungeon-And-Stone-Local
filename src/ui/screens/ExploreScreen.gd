@@ -1,10 +1,10 @@
 class_name ExploreScreen
 extends Control
 ## 탐험 화면: 3/4 시점 월드(SubViewport) + 왼쪽 위 정보(HUD) + 하단 바(BottomBar) + 하단 대화창(DialogueBox — 알림을 Enter로 넘김) +
-## 창(소지품 I · 캐릭터 C · 도감 B, WindowManager) + 디버그 패널(F1).
+## Tab 메뉴(소지품 · 캐릭터 · 도감을 한 화면에, GameMenu) + 디버그 패널(F1). 마우스는 쓰지 않는다(키보드만).
 ## 키 입력을 ExploreSession에 넘기고, 세션 시그널로 그림·기록을 갱신한다.
 ## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
-## 입력칸 입력·창 포커스 잃음·전투 중·창(소지품 등)이 열려 있을 때·대화창에 넘길 알림이 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
+## 입력칸 입력·창 포커스 잃음·전투 중·Tab 메뉴가 열려 있을 때·대화창에 넘길 알림이 있을 때 시간이 멈춘다(정지 사유는 RealtimeDriver가 모은다).
 ## 알림(세션 안내·소지품 창 경고)은 피어 앤 헝거처럼 아래 대화창에 한 쪽씩 뜨고 Enter로 넘긴다(사용자 결정 2026-10-18) — 떠 있는 동안 하단 바는 숨는다.
 ## 자잘한 알림은 위 가운데 띠(NoticeToast)에 잠깐, 횃불·포션·식사 결과 등은 보이지 않는다 — 문구 키로 나눈다(NoticeRoute, render.json ui.notice).
 
@@ -26,7 +26,7 @@ var _ended: bool = false
 var _combat: CombatScreen = null
 var _pause_overlay: PauseMenu
 var _bar: BottomBar
-var _windows: WindowManager
+var _menu: GameMenu
 var _dialog: DialogueBox
 var _toast: NoticeToast
 var _route: NoticeRoute
@@ -55,16 +55,14 @@ func _ready() -> void:
 	_bar.offset_right = _bar.get_combined_minimum_size().x * 0.5
 	_bar.offset_bottom = -m * 0.5
 	_bar.offset_top = _bar.offset_bottom - _bar.get_combined_minimum_size().y
-	_bar.window_requested.connect(func(kind: String) -> void: _windows.toggle(kind))
-	_bar.action_requested.connect(_on_bar_action)
-	_bar.use_requested.connect(_use_item)
-	_windows = WindowManager.new()
-	_windows.setup(session.player)
-	add_child(_windows)
-	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_windows.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("window", on))
-	_windows.use_requested.connect(_use_item)
+	_menu = GameMenu.new()
+	_menu.setup(session.player)
+	add_child(_menu)
+	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_menu.opened_changed.connect(_on_menu_opened)
+	_menu.use_requested.connect(_use_item)
 	_build_dialog(m)
+	_menu.hold = _dialog.busy  # 메뉴 위에 뜬 알림(버렸다 등)을 먼저 넘긴다
 	_debug = DebugPanel.new()
 	_debug.bind(session)
 	_debug.visible = false
@@ -141,26 +139,25 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("pause"):
-		if _windows.any_open():
-			_windows.close_all()
+		if _menu.is_open():
+			_menu.close()
 		else:
 			set_paused(not is_paused())
 		get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("menu_back") and (_windows.any_open() or is_paused()):  # 취소: 열린 창을 닫고, 없으면 일시정지를 푼다
-		if _windows.any_open():
-			_windows.close_all()
+	if event.is_action_pressed("menu_back") and (_menu.is_open() or is_paused()):  # 취소: 메뉴를 닫고, 없으면 일시정지를 푼다
+		if _menu.is_open():
+			_menu.close()
 		else:
 			set_paused(false)
 		get_viewport().set_input_as_handled()
 		return
 	if is_paused():
 		return
-	for kind: String in WindowManager.KINDS:
-		if event.is_action_pressed(kind):
-			_windows.toggle(kind)
-			get_viewport().set_input_as_handled()
-			return
+	if event.is_action_pressed("menu"):
+		_menu.toggle()
+		get_viewport().set_input_as_handled()
+		return
 	for i in PlayerCharacter.HOTBAR_SIZE:
 		if event.is_action_pressed("hotbar_%d" % ((i + 1) % 10)):
 			var id: String = session.player.hotbar[i]
@@ -168,7 +165,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_use_item(id)
 			get_viewport().set_input_as_handled()
 			return
-	if _windows.any_open():
+	if _menu.is_open():
 		return
 	var handled := true
 	if event.is_action_pressed("wait"):
@@ -191,33 +188,28 @@ func is_debug_open() -> bool:
 	return _debug.visible
 
 
-func windows() -> WindowManager:
-	return _windows
+func menu() -> GameMenu:
+	return _menu
 
 
 func bottom_bar() -> BottomBar:
 	return _bar
 
 
-## 소지품 사용(단축칸·소지품 창). 탐험 규칙(ExploreSession)이 판정한다.
+## 소지품 사용(단축 키·Tab 메뉴). 탐험 규칙(ExploreSession)이 판정한다.
 func _use_item(item_id: String) -> void:
 	if _ended or _combat != null or is_paused():
 		return
 	session.use_item(item_id)
-	_windows.refresh()
+	_menu.refresh()
 	_bar.refresh()
 
 
-func _on_bar_action(action: String) -> void:
-	if _ended or _combat != null or (is_paused() and action != "pause"):
-		return
-	match action:
-		"wait":
-			session.wait()
-		"rest":
-			session.rest()
-		"pause":
-			set_paused(not is_paused())
+## Tab 메뉴가 열리면 시간이 멈춘다. 닫히면 하단 바(단축칸)를 다시 그린다.
+func _on_menu_opened(on: bool) -> void:
+	session.realtime.set_paused("window", on)
+	if not on:
+		_bar.refresh()
 
 
 ## 일시정지 메뉴: 시간이 멈추고 이동·단축키를 막는다.
@@ -280,7 +272,7 @@ func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
 	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, party_first)
 	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
-	_windows.close_all()
+	_menu.close()
 	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
 	_combat = CombatScreen.new()
 	_combat.setup(battle)

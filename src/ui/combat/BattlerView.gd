@@ -4,9 +4,7 @@ extends Control
 ## 탐험가는 종족 그림 — 뒷모습(back)과 비스듬히 돌아선 옆모습(side)을 무대가 자리에 따라 고른다(set_view, 오른쪽 자리는 좌우 반전).
 ## 적은 정면 + 머리 위 이름·발밑 상태(생명력은 보이지 않는다 — 피어 앤 헝거처럼, 받은 피해만 숫자로 떠오른다),
 ## 아군은 뒷모습만(이름·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
-## 쓰러지거나 도망치면 흐려진다. 누르면 clicked(대상 고르기 중이면 그 대상을 고른다).
-
-signal clicked(unit: Combatant)
+## 쓰러지거나 도망치면 흐려진다.
 
 var unit: Combatant
 var shape: String = "humanoid"
@@ -45,7 +43,7 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 			if tex != null:
 				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex)]
 		set_view(false, false)
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not front:
 		return
 	_name = UiTheme.label(u.label(), "small", "text_title")
@@ -105,7 +103,6 @@ func refresh() -> void:
 		for id in unit.actor.statuses.ids():
 			names.append(DataNames.entry(unit.actor.db, "statuses", id))
 		_status.text = ", ".join(names)
-		_status.tooltip_text = StatusTips.lines(unit.actor.db, unit.actor.statuses.ids())
 	modulate.a = 1.0 if unit.is_active() else 0.3
 	queue_redraw()
 
@@ -136,13 +133,6 @@ func _draw() -> void:
 		return
 	var c := color.lightened(0.12) if _current and not front else color
 	CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)
-
-
-func _gui_input(event: InputEvent) -> void:
-	var mb := event as InputEventMouseButton
-	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
-		clicked.emit(unit)
-		accept_event()
 
 
 ## 몸 위로 떠오르는 숫자/글자(피해 숫자): 크게 튀어나왔다가 잠깐 머문 뒤 위로 흐려진다. big = 피해 숫자(더 크게).

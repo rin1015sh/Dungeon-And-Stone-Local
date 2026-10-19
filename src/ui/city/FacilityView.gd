@@ -6,7 +6,7 @@ extends Control
 ##   대화창 위 오른쪽 = 선택 창(활동 + 맨 끝 "나가기", W/S·Enter, Backspace = 나가기).
 ## 왼쪽 위 달력·탐험가 카드는 그대로, 오른쪽 위 메뉴(소지품·캐릭터)는 숨긴다(시설 안에서는 창을 쓰지 않는다).
 ## 들어올 때 쓴 행동력은 돌려주지 않는다 — 활동 전에 나가도 된다(나가기 버튼, 사용자 결정 2026-10-18: 예전엔 활동 전엔 못 나갔다).
-## 활동 한 번이면 결과를 다 넘긴 뒤 저절로 거리로 나간다. 패널형 활동(상점·은행·정수 제거)은 선택 창 자리에 그 패널(+ 나가기)을 열고,
+## 활동 한 번이면 결과를 다 넘긴 뒤 저절로 거리로 나간다. 패널형 활동(상점·은행·정수 제거)은 선택 창 자리에 그 패널(선택판 맨 끝 나가기)을 열고,
 ## 거래 결과는 대화창에 남긴다(거래마다 Enter를 누르지 않게 넘기지 않는 글로). 할 수 있는 활동이 하나도 없으면 들어오자마자 그 이유를 들고 나간다.
 
 signal leave_requested
@@ -115,7 +115,7 @@ func _choose(act_id: String) -> void:
 	if not why.is_empty():
 		_dialog.say(Strings.t(why), "warn")
 		return
-	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Backspace·Esc·오른쪽 클릭
+	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Backspace·Esc
 	match panel:
 		"shop":
 			p = ShopPanel.new()
@@ -126,9 +126,9 @@ func _choose(act_id: String) -> void:
 	if p == null:
 		return
 	p.setup(_state, _pc, act_id)
+	p.leave = try_leave
 	p.result.connect(_on_trade)
 	_panel_box.add_child(p)
-	_panel_box.add_child(CityUi.button(Strings.t("city.leave"), try_leave))
 	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
 	_sync_menu()
 
@@ -166,6 +166,8 @@ func _sync_menu() -> void:
 	_panel_box.visible = panel_open
 	_grid.visible = not panel_open
 	_grid.active = _menu.visible and not panel_open and not _dialog.busy()
+	for p in _panel_box.get_children():
+		(p as CityPanel).active = _menu.visible and not _dialog.busy()
 
 
 ## 선택 창 자리: 대화창 바로 위 오른쪽(패널이 크면 위로 자란다 — 메뉴 자리 top_reserve 아래까지).
@@ -209,19 +211,12 @@ func _nothing_to_do() -> bool:
 	return true
 
 
-## 나가기(버튼·Backspace·Esc·빈 곳 오른쪽 클릭). 들어올 때 쓴 행동력은 돌려주지 않는다.
+## 나가기(선택판의 나가기·Backspace·Esc). 들어올 때 쓴 행동력은 돌려주지 않는다.
 func try_leave() -> void:
 	if _leaving and _dialog.busy():
 		return  # 결과를 넘기는 중 — 다 넘기면 저절로 나간다
 	_leaving = true
 	leave_requested.emit.call_deferred()
-
-
-func _gui_input(event: InputEvent) -> void:
-	var mb := event as InputEventMouseButton
-	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT:
-		try_leave()
-		accept_event()
 
 
 ## 들어왔지만 할 수 있는 활동이 없다: 못 하는 이유(겹치면 한 번)를 알림으로 들고 거리로.

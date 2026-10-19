@@ -3,8 +3,8 @@ extends Control
 ## 라비기온 거리(옆에서 본 긴 풍경)를 좌우로 스크롤하며 시설 건물을 고른다.
 ##   레이어(data/city.json street.layers): 하늘·원경·중경·안개는 시차(parallax)로 천천히 움직이는 실제 도시 풍경(고를 수 없음),
 ##   날씨(CityState.weather — city.json weather)에 따라 하늘 그림을 바꾸고 나머지 레이어·건물에 색을 곱한다(맑음 = 밝게).
-##   거리 레이어 위에 시설 건물(고를 수 있음 — 마우스·가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
-##   스크롤: 마우스 드래그·휠, A/D·←/→. 고르기: 클릭·탭, 또는 화면 가운데 건물을 Space/F/Enter.
+##   거리 레이어 위에 시설 건물(고를 수 있음 — 화면 가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
+##   키보드만(사용자 결정 2026-10-19): A/D·←/→ 스크롤, 화면 가운데 건물을 Enter/F로 들어간다.
 ## 좌표는 거리 단위(화면 높이 render.json city.street_height 기준) — 화면 높이에 맞춰 확대·축소한다.
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
 
@@ -23,12 +23,8 @@ var _buildings: Array[Dictionary] = []  # {id, node: TextureRect, plate, label, 
 var _offset: float = 0.0
 var _scale: float = 1.0
 var _street_w: float = 3600.0
-var _hover: int = -1
 var _focus: int = -1
 var _outline_tex: float = 3.0  # 윤곽 두께(그림 픽셀)
-var _press_pos: Vector2 = Vector2.ZERO
-var _pressing: bool = false
-var _dragged: bool = false
 
 
 func setup(state: CityState) -> void:
@@ -37,7 +33,7 @@ func setup(state: CityState) -> void:
 
 func _ready() -> void:
 	clip_contents = true
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var street := CityValues.city_section(_state.db, {}, "street")
 	_street_w = JsonUtil.get_float(street, "width", _street_w)
 	_back = _plain()
@@ -164,7 +160,7 @@ func refresh() -> void:
 	var can := _state.can_spend(_state.entry_cost()) and _state.facility.is_empty()
 	for i in _buildings.size():
 		var b := _buildings[i]
-		var lit := i == _hover or (i == _focus and _hover < 0)
+		var lit := i == _focus
 		var mat := (b["node"] as TextureRect).material as ShaderMaterial
 		mat.set_shader_parameter("brighten", UiTheme.render_float("city.hover_brighten", 0.15) if lit and can else 0.0)
 		mat.set_shader_parameter("dim", UiTheme.render_float("city.dim_unaffordable", 0.35) if not can else 0.0)
@@ -232,18 +228,8 @@ func _update_focus() -> void:
 		refresh()
 
 
-func _hit(local: Vector2) -> int:
-	var p := local - _content.position
-	for i in range(_buildings.size() - 1, -1, -1):
-		var node: Control = _buildings[i]["node"]
-		var plate: PanelContainer = _buildings[i]["plate"]
-		if Rect2(node.position, node.size).has_point(p) or Rect2(plate.position, plate.size).has_point(local):
-			return i
-	return -1
-
-
 func _process(delta: float) -> void:
-	if not is_visible_in_tree() or get_viewport().gui_get_focus_owner() is LineEdit:
+	if not is_visible_in_tree() or get_viewport().gui_get_focus_owner() != null:  # 디버그 패널 등을 키로 다루는 중
 		return
 	var dir := Input.get_axis("move_left", "move_right")
 	if dir != 0.0:
@@ -258,46 +244,3 @@ func _unhandled_input(event: InputEvent) -> void:
 		if not id.is_empty():
 			get_viewport().set_input_as_handled()
 			facility_chosen.emit(id)
-
-
-func _gui_input(event: InputEvent) -> void:
-	var mb := event as InputEventMouseButton
-	if mb != null:
-		if mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_LEFT:
-			if mb.pressed:
-				scroll_by(-UiTheme.render_float("city.wheel_step_px", 140.0))
-			accept_event()
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN or mb.button_index == MOUSE_BUTTON_WHEEL_RIGHT:
-			if mb.pressed:
-				scroll_by(UiTheme.render_float("city.wheel_step_px", 140.0))
-			accept_event()
-		elif mb.button_index == MOUSE_BUTTON_LEFT:
-			if mb.pressed:
-				_pressing = true
-				_dragged = false
-				_press_pos = mb.position
-			elif _pressing:
-				_pressing = false
-				if not _dragged:
-					var i := _hit(mb.position)
-					if i >= 0:
-						facility_chosen.emit(str(_buildings[i]["id"]))
-			accept_event()
-		return
-	var mm := event as InputEventMouseMotion
-	if mm != null:
-		if _pressing:
-			if not _dragged and mm.position.distance_to(_press_pos) >= UiTheme.render_float("city.drag_threshold_px", 10.0):
-				_dragged = true
-			if _dragged:
-				scroll_by(-mm.relative.x)
-		var h := _hit(mm.position)
-		if h != _hover:
-			_hover = h
-			refresh()
-
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_MOUSE_EXIT and _hover >= 0:
-		_hover = -1
-		refresh()

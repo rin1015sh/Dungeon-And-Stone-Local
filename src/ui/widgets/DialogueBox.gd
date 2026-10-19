@@ -1,6 +1,6 @@
 class_name DialogueBox
 extends PanelContainer
-## 하단 대화창(피어 앤 헝거식, 사용자 결정 2026-10-18): 알림·전투 안내를 대사처럼 한 쪽씩 보여 주고 Enter(또는 클릭)로 넘긴다.
+## 하단 대화창(피어 앤 헝거식, 사용자 결정 2026-10-18): 알림·전투 안내를 대사처럼 한 쪽씩 보여 주고 Enter로 넘긴다.
 ## 한 쪽 = 쌓인 줄을 render.json ui.dialog.lines 줄까지. 글자는 한 자씩 나오고(chars_per_sec), 나오는 중에 Enter = 바로 다 보이기.
 ## 줄이 남아 있는 동안(busy) 보이고, 다 넘기면 숨고 drained를 낸다(idle_text가 있으면 그 글을 흐리게 남긴 채 보인다).
 ## 떠 있는 동안 키 입력은 이 창이 먼저 먹는다(정지 Esc·디버그 F1만 지나간다) — 아래 화면이 같은 Enter로 움직이지 않게.
@@ -34,7 +34,7 @@ var _blink: float = 0.0
 
 func _init(style: StyleBox = null) -> void:
 	add_theme_stylebox_override("panel", style if style != null else _default_style())
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
 
 
@@ -118,7 +118,7 @@ func clear() -> void:
 		drained.emit()
 
 
-## Enter·클릭: 글자가 나오는 중이면 다 보이고, 다 보였으면 다음 쪽(없으면 닫힘).
+## Enter: 글자가 나오는 중이면 다 보이고, 다 보였으면 다음 쪽(없으면 닫힘).
 func advance() -> void:
 	if not busy():
 		return
@@ -211,13 +211,6 @@ func _place_plate() -> void:
 		return
 	_plate.reset_size()
 	_plate.global_position = global_position + Vector2(_cfg("plate_x", 18.0), -_plate.size.y + 4.0)
-
-
-func _gui_input(event: InputEvent) -> void:
-	var mb := event as InputEventMouseButton
-	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and busy():
-		advance()
-		accept_event()
 
 
 ## 줄이 남아 있으면 키를 먼저 먹는다: Enter(선택)·살피기 키 = 넘기기, 정지·디버그 키만 아래로 지나간다.

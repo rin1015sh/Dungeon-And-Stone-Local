@@ -3,16 +3,18 @@ extends VBoxContainer
 ## 고정 칸 선택판(포켓몬 기술 창처럼): 정해진 테두리 칸 열×줄(render.json combat_menu_columns·rows, 기본 2×3 = 한 쪽 6칸)에
 ## 선택지를 하나씩 넣는다. 칸 수·크기는 늘 같고(빈 칸도 테두리가 남는다), 넘치면 쪽을 나눈다(◀ 1/3 ▶).
 ##   키: menu_up/down/left/right(WASD) 커서 이동 — 맨 왼쪽·오른쪽 칸에서 한 번 더 누르면 이전·다음 쪽,
-##       menu_confirm(Enter) 확정, menu_back(Backspace) 뒤로. 마우스: 칸에 올리면 커서가 옮겨 가고 누르면 확정.
+##       menu_confirm(Enter) 확정, menu_back(Backspace) 뒤로. 마우스는 쓰지 않는다(사용자 결정 2026-10-19).
 ##   커서가 놓인 선택지의 설명(못 쓰면 그 이유)은 칸 아래 설명줄에 나온다.
 ## 선택지: {"text", "sub"(칸 오른쪽 아래 작은 글씨 — 대가·남은 차례·확률), "enabled", "desc", "on_pick": Callable}
 ## 칸은 Button이지만 포커스를 받지 않는다(Enter가 엔진 기본 ui_accept로 엉뚱한 버튼을 누르지 않게 키는 직접 받는다).
+## 선택지에 "on_adjust": Callable(dir)이 있으면 그 칸에서 A/D는 쪽 넘기기 대신 값을 바꾼다(은행 금액 등).
 
 signal cursor_moved(index: int)
 
 ## 키 입력을 받는가(전투 행동창은 명령 칸과 목록 칸 두 판 중 하나만 받는다). 꺼져 있으면 커서는 그대로 보인다.
 var active: bool = true
 
+var _head: HBoxContainer
 var _title: Label
 var _prev: Label
 var _page: Label
@@ -30,7 +32,7 @@ var _slot_h: int = 50
 var _compact: bool = false
 
 
-## cols·rows 0이면 render.json combat_menu_columns·rows. slot_h 0이면 combat_slot_height. compact = 제목줄·설명줄 없이 칸만.
+## cols·rows 0이면 render.json combat_menu_columns·rows. slot_h 0이면 combat_slot_height. compact = 제목줄·설명줄 없이 칸만(쪽이 여럿이면 쪽 표시만).
 func _init(cols: int = 0, rows: int = 0, slot_h: int = 0, compact: bool = false) -> void:
 	_cols = maxi(1, cols if cols > 0 else UiTheme.metric("combat_menu_columns", 2))
 	_rows = maxi(1, rows if rows > 0 else UiTheme.metric("combat_menu_rows", 3))
@@ -38,16 +40,17 @@ func _init(cols: int = 0, rows: int = 0, slot_h: int = 0, compact: bool = false)
 	_compact = compact
 	var head := HBoxContainer.new()
 	head.visible = not compact
+	_head = head
 	add_child(head)
 	_title = UiTheme.label("", "body", "text_title")
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title.clip_text = true
 	head.add_child(_title)
-	_prev = _arrow(Strings.t("menu.page_prev"), -1)
+	_prev = _arrow(Strings.t("menu.page_prev"))
 	head.add_child(_prev)
 	_page = UiTheme.label("", "small", "text_dim")
 	head.add_child(_page)
-	_next = _arrow(Strings.t("menu.page_next"), 1)
+	_next = _arrow(Strings.t("menu.page_next"))
 	head.add_child(_next)
 	var grid := GridContainer.new()
 	grid.columns = _cols
@@ -104,11 +107,6 @@ func option(i: int) -> Dictionary:
 	return _options[i] if i >= 0 and i < _options.size() else {}
 
 
-## 커서를 i번 선택지로(마우스로 무대의 대상을 눌렀을 때).
-func select(i: int) -> void:
-	_set_cursor(i)
-
-
 func page_size() -> int:
 	return _cols * _rows
 
@@ -144,9 +142,11 @@ func _input(event: InputEvent) -> void:
 		"menu_down":
 			move(0, 1)
 		"menu_left":
-			move(-1, 0)
+			if not _adjust(-1):
+				move(-1, 0)
 		"menu_right":
-			move(1, 0)
+			if not _adjust(1):
+				move(1, 0)
 		"menu_confirm":
 			confirm()
 		"menu_back":
@@ -180,12 +180,6 @@ func move(dx: int, dy: int) -> void:
 	_set_cursor(np * per + mini(row * _cols + (0 if dx > 0 else _cols - 1), n_on - 1))
 
 
-func turn_page(d: int) -> void:
-	var np := _cursor / page_size() + d
-	if np >= 0 and np < page_count():
-		_set_cursor(np * page_size())
-
-
 ## 커서 자리의 선택지를 고른다(못 쓰는 선택지면 아무 일도 없다 — 이유는 설명줄에 이미 보인다).
 func confirm() -> void:
 	if _cursor < 0 or _cursor >= _options.size():
@@ -196,6 +190,15 @@ func confirm() -> void:
 	var cb: Callable = o.get("on_pick", Callable())
 	if cb.is_valid():
 		cb.call()
+
+
+## 커서 칸에 on_adjust가 있으면 값을 바꾸고 true.
+func _adjust(dir: int) -> bool:
+	var cb: Callable = current_option().get("on_adjust", Callable())
+	if not cb.is_valid():
+		return false
+	cb.call(dir)
+	return true
 
 
 func go_back() -> void:
@@ -218,6 +221,7 @@ func _render() -> void:
 	_page.text = Strings.t("menu.page", {"page": page + 1, "pages": pages})
 	for l: Label in [_prev, _page, _next]:
 		l.visible = pages > 1
+	_head.visible = not _compact or pages > 1  # 칸만 보이는 판도 쪽이 여럿이면 쪽 표시는 보인다
 	_prev.modulate.a = 1.0 if page > 0 else 0.3
 	_next.modulate.a = 1.0 if page < pages - 1 else 0.3
 	for i in _slots.size():
@@ -227,7 +231,6 @@ func _render() -> void:
 		var b := _slots[i]
 		b.text = str(o.get("text", "")) if has else Strings.t("menu.empty_slot")
 		b.disabled = not has or not bool(o.get("enabled", true))
-		b.tooltip_text = str(o.get("desc", ""))
 		_subs[i].text = str(o.get("sub", ""))
 		var sel := has and idx == _cursor
 		_marks[i].visible = sel
@@ -246,7 +249,6 @@ func _make_slot(i: int) -> Button:
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.custom_minimum_size = Vector2(UiTheme.metric("combat_slot_min_width", 160), _slot_h)
 	b.pressed.connect(_on_slot_pressed.bind(i))
-	b.mouse_entered.connect(_on_slot_hover.bind(i))
 	var mark := UiTheme.label(Strings.t("menu.cursor"), "small", "gold")
 	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mark.position = Vector2(UiTheme.metric("combat_slot_mark_x", 6), UiTheme.metric("combat_slot_mark_y", 6))
@@ -284,6 +286,7 @@ func _style(b: Button, state: String) -> void:
 	b.add_theme_color_override("font_disabled_color", UiTheme.color("text_disabled"))
 
 
+## 칸 버튼의 pressed(스모크 테스트가 누른다 — 화면에서는 키로만 고른다).
 func _on_slot_pressed(i: int) -> void:
 	if not active:
 		return
@@ -293,17 +296,5 @@ func _on_slot_pressed(i: int) -> void:
 		confirm()
 
 
-func _on_slot_hover(i: int) -> void:
-	if not active:
-		return
-	_set_cursor((_cursor / page_size()) * page_size() + i)
-
-
-func _arrow(text: String, d: int) -> Label:
-	var l := UiTheme.label(text, "small", "text_title")
-	l.mouse_filter = Control.MOUSE_FILTER_STOP
-	l.gui_input.connect(func(ev: InputEvent) -> void:
-		if ev is InputEventMouseButton and (ev as InputEventMouseButton).pressed \
-				and (ev as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
-			turn_page(d))
-	return l
+func _arrow(text: String) -> Label:
+	return UiTheme.label(text, "small", "text_title")

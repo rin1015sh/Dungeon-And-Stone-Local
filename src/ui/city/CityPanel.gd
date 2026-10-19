@@ -1,12 +1,22 @@
 class_name CityPanel
 extends VBoxContainer
-## 시설 안의 패널형 활동(상점·은행·정수 제거) 기반. 거래마다 결과(CityContext)를 result로 알리고 다시 그린다.
+## 시설 안의 패널형 활동(상점·은행·정수 제거) 기반: 위 머리줄(잔액 등) + 선택판(ChoiceGrid 1열 — W/S·Enter, A/D 쪽 넘기기, 맨 끝 나가기).
+## 거래마다 결과(CityContext)를 result로 알리고 다시 그린다(커서 자리는 그대로).
 
 signal result(ctx: CityContext)
 
 var state: CityState
 var pc: PlayerCharacter
 var activity_id: String = ""
+## 나가기(맨 끝 선택지·Backspace). FacilityView가 넣는다.
+var leave: Callable = Callable()
+var grid: ChoiceGrid
+## 키를 받는가(대화창이 결과를 넘기는 중엔 끈다).
+var active: bool = true:
+	set(v):
+		active = v
+		if grid != null:
+			grid.active = v
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter, p_activity: String) -> void:
@@ -22,14 +32,37 @@ func _ready() -> void:
 
 ## 내용을 지우고 다시 만든다(하위 클래스가 build를 채운다).
 func rebuild() -> void:
+	var keep := grid.cursor() if grid != null else 0
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()
+	grid = null
 	build()
+	if grid != null:
+		grid.show_choices("", grid_options(), leave, keep)
 
 
 func build() -> void:
 	pass
+
+
+## 선택판의 선택지(하위 클래스) — 맨 끝 나가기는 choices가 붙인다.
+func options() -> Array[Dictionary]:
+	return []
+
+
+## 선택판을 만든다(build 끝에서 부른다).
+func choices() -> void:
+	grid = ChoiceGrid.new(1, mini(grid_options().size(), int(UiTheme.render_float("city.panel_rows", 6.0))),
+		int(UiTheme.render_float("city.interior_slot_height", 40.0)), true)
+	grid.active = active
+	add_child(grid)
+
+
+func grid_options() -> Array[Dictionary]:
+	var opts := options()
+	opts.append({"text": Strings.t("city.leave"), "on_pick": leave})
+	return opts
 
 
 ## 거래 결과를 알리고 패널을 새로 그린다.
@@ -38,27 +71,6 @@ func done(ctx: CityContext) -> void:
 	rebuild()
 
 
-## 스크롤 목록 상자(높이 제한). 안쪽 VBox를 돌려준다.
-func scroll_list(max_h: float) -> VBoxContainer:
-	var sc := ScrollContainer.new()
-	sc.custom_minimum_size.y = max_h
-	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(sc)
-	var v := VBoxContainer.new()
-	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	sc.add_child(v)
-	return v
-
-
-## 한 줄: 왼쪽 글자 + 오른쪽 버튼.
-static func row(parent: Control, text: String, button_text: String, cb: Callable, enabled: bool = true) -> Button:
-	var h := HBoxContainer.new()
-	parent.add_child(h)
-	var l := UiTheme.label(text, "small", "text")
-	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	l.clip_text = true
-	h.add_child(l)
-	var b := UiTheme.button(button_text, cb)
-	b.disabled = not enabled
-	h.add_child(b)
-	return b
+## 머리줄 글자.
+func head(text: String) -> void:
+	add_child(UiTheme.label(text, "body", "text_title"))

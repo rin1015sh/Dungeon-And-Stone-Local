@@ -4,7 +4,8 @@ extends Control
 ## 시설을 고르면 행동력(facility_entry_cost)을 쓰고 들어간다. 나오면 행동력이 0일 때 다음 순으로 넘어간다.
 ## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
 ## 시설 안에서 활동을 한 번 하면 저절로 거리로 나오고, 결과는 화면 위 알림 카드에 남는다.
-## 창(소지품 I·캐릭터 C·도감 B)과 디버그 패널(F1)을 쓸 수 있다.
+## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다. 거리에서 Esc = 정지 창(계속 · 타이틀로).
+## 마우스는 쓰지 않는다(A/D 스크롤, Enter 들어가기 — 사용자 결정 2026-10-19).
 
 signal dungeon_requested
 signal title_requested
@@ -18,7 +19,7 @@ var _hud: CityHud
 var _toast: Label
 var _toast_box: PanelContainer
 var _toast_timer: Timer
-var _windows: WindowManager
+var _menu: GameMenu
 var _debug: CityDebugPanel
 
 
@@ -52,16 +53,16 @@ func _ready() -> void:
 	add_child(_toast_timer)
 	_hud = CityHud.new()
 	_hud.setup(state, pc)
-	_hud.title_requested.connect(func() -> void: title_requested.emit())
-	_hud.window_requested.connect(func(kind: String) -> void: _windows.toggle(kind))
 	add_child(_hud)
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_menu = GameMenu.new()
+	_menu.setup(pc)
+	_menu.use_requested.connect(use_item)
+	_menu.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
+	add_child(_menu)
+	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	move_child(_toast_box, -1)
-	_windows = WindowManager.new()
-	_windows.setup(pc)
-	_windows.use_requested.connect(use_item)
-	add_child(_windows)
-	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	EventBus.notice.connect(_on_notice)
 	_debug = CityDebugPanel.new()
 	_debug.setup(state, pc)
 	_debug.dungeon_requested.connect(func() -> void: dungeon_requested.emit())
@@ -103,7 +104,7 @@ func choose_facility(id: String) -> void:
 	_facility = FacilityView.new()
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
-	_windows.close_all()  # 시설 안에서는 소지품·캐릭터 창을 쓰지 않는다
+	_menu.close()  # 시설 안에서는 Tab 메뉴를 쓰지 않는다
 	_hud.set_facility_mode(true)
 	add_child(_facility)
 	move_child(_facility, _street.get_index() + 1)
@@ -153,7 +154,7 @@ func use_item(item_id: String) -> void:
 	if lines.is_empty():
 		lines.append(Strings.t("city.item_no_effect", {"item": DataNames.entry(db, "items", item_id)}))
 	toast("\n".join(lines))
-	_windows.refresh()
+	_menu.refresh()
 	_hud.refresh()
 
 
@@ -168,8 +169,14 @@ func toast(text: String) -> void:
 		_toast_timer.start(UiTheme.render_float("city.toast_seconds", 7.0))
 
 
-func windows_open() -> bool:
-	return _windows.any_open()
+func menu() -> GameMenu:
+	return _menu
+
+
+## Tab 메뉴의 알림(가방 자리 없음·버렸다 등) → 위 알림 카드.
+func _on_notice(key: String, args: Dictionary, _kind: String) -> void:
+	if is_inside_tree() and not is_queued_for_deletion():
+		toast(Strings.t(key, args))
 
 
 func toast_text() -> String:
@@ -183,15 +190,39 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if get_viewport().gui_get_focus_owner() is LineEdit:
 		return
-	for kind: String in WindowManager.KINDS:
-		if event.is_action_pressed(kind) and _facility == null:
-			_windows.toggle(kind)
+	var pause_pop := get_node_or_null("PauseChoice") as ChoicePopup
+	if pause_pop != null:  # 정지 창: W/S·Enter·Backspace는 창이 먼저 받는다, Esc = 계속
+		if event.is_action_pressed("pause"):
+			pause_pop.picked.emit(-1)
+		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
-			return
-	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):  # Esc·취소(Backspace): 시설에서 나가기 · 창 닫기
+		return
+	if event.is_action_pressed("menu") and _facility == null:
+		_menu.toggle()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):  # Esc·취소(Backspace): 시설에서 나가기 · 메뉴 닫기 · (거리에서 Esc) 정지 창
 		if _facility != null:
 			_facility.try_leave()
-		elif _windows.any_open():
-			for kind: String in WindowManager.KINDS:
-				_windows.close(kind)
+		elif _menu.is_open():
+			_menu.close()
+		elif event.is_action_pressed("pause"):
+			_pause_choice()
 		get_viewport().set_input_as_handled()
+
+
+## 거리의 정지 창: 계속 · 타이틀로(W/S·Enter, Backspace·Esc = 계속).
+func _pause_choice() -> void:
+	var pop := ChoicePopup.new()
+	pop.name = "PauseChoice"
+	add_child(pop)
+	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_street.set_process(false)
+	pop.open(Strings.t("explore.paused"), [{"text": Strings.t("pause.resume")}, {"text": Strings.t("city.btn_title")}], true, Vector2(-1, -1))
+	var i: int = await pop.picked
+	pop.queue_free()
+	if not is_inside_tree():
+		return
+	_street.set_process(true)
+	if i == 1:
+		title_requested.emit()

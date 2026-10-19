@@ -59,6 +59,7 @@ func _build() -> void:
 	_name_edit.max_length = 16
 	_row(who, Strings.t("create.name"), _name_edit)
 	_race_opt = _option(who, Strings.t("create.race"), _race_ids, "races")
+	_name_edit.text_submitted.connect(func(_t: String) -> void: _race_opt.grab_focus())  # 키보드만: 이름 칸에서 Enter = 다음 칸
 	_race_desc = _desc(who)
 	_class_opt = _option(who, Strings.t("create.template"), _class_ids, "classes")
 	_class_desc = _desc(who)

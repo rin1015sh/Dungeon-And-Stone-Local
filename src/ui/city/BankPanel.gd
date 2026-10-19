@@ -1,36 +1,33 @@
 class_name BankPanel
 extends CityPanel
-## 은행 패널: 잔액·소지금 표시, 금액 입력(플레이어가 정한다) → 맡기기/찾기. 수수료는 미정(null이면 0).
+## 은행 패널: 잔액·소지금 표시, 금액(그 칸에서 A/D로 city.bank_step씩 — 플레이어가 정한다) → 맡기기/찾기. 수수료는 미정(null이면 0).
 
-var _amount: SpinBox
+var _amount: int = 0
 
 
 func build() -> void:
-	add_child(UiTheme.label(Strings.t("city.bank_status", {"balance": state.bank_balance, "money": pc.inventory.money}), "body", "text_title"))
-	var h := HBoxContainer.new()
-	add_child(h)
-	h.add_child(UiTheme.label(Strings.t("city.bank_amount"), "small", "text"))
-	_amount = SpinBox.new()
-	_amount.min_value = 0
-	_amount.max_value = maxi(pc.inventory.money, state.bank_balance)
-	_amount.step = 1
-	_amount.rounded = true
-	_amount.allow_greater = true
-	_amount.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	h.add_child(_amount)
-	var quick := HBoxContainer.new()
-	add_child(quick)
-	quick.add_child(UiTheme.button(Strings.t("city.bank_all_money"), func() -> void: _amount.value = pc.inventory.money))
-	quick.add_child(UiTheme.button(Strings.t("city.bank_all_balance"), func() -> void: _amount.value = state.bank_balance))
-	var acts := HBoxContainer.new()
-	add_child(acts)
-	acts.add_child(UiTheme.button(Strings.t("city.bank_deposit"), func() -> void: done(CityBank.deposit(state, pc, activity_id, amount()))))
-	acts.add_child(UiTheme.button(Strings.t("city.bank_withdraw"), func() -> void: done(CityBank.withdraw(state, pc, activity_id, amount()))))
+	head(Strings.t("city.bank_status", {"balance": state.bank_balance, "money": pc.inventory.money}))
+	choices()
+
+
+func options() -> Array[Dictionary]:
+	return [
+		{"text": Strings.t("city.bank_amount"), "sub": Strings.t("city.cost_stones", {"n": _amount}), "on_adjust": _adjust},
+		{"text": Strings.t("city.bank_deposit"), "enabled": _amount > 0, "on_pick": func() -> void: done(CityBank.deposit(state, pc, activity_id, amount()))},
+		{"text": Strings.t("city.bank_withdraw"), "enabled": _amount > 0, "on_pick": func() -> void: done(CityBank.withdraw(state, pc, activity_id, amount()))},
+		{"text": Strings.t("city.bank_all_money"), "on_pick": func() -> void: set_amount(pc.inventory.money)},
+		{"text": Strings.t("city.bank_all_balance"), "on_pick": func() -> void: set_amount(state.bank_balance)},
+	]
 
 
 func amount() -> int:
-	return int(_amount.value) if _amount != null else 0
+	return _amount
 
 
 func set_amount(v: int) -> void:
-	_amount.value = v
+	_amount = clampi(v, 0, maxi(pc.inventory.money, state.bank_balance))
+	rebuild()
+
+
+func _adjust(dir: int) -> void:
+	set_amount(_amount + dir * int(UiTheme.render_float("city.bank_step", 10.0)))

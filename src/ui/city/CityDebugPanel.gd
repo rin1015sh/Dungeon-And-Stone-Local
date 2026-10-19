@@ -22,6 +22,7 @@ func setup(state: CityState, pc: PlayerCharacter) -> void:
 
 func _ready() -> void:
 	add_theme_stylebox_override("panel", UiTheme.translucent_panel())
+	UiTheme.keyboard_panel(self)
 	custom_minimum_size.x = UiTheme.render_float("city.debug_width", 420.0)
 	var v := VBoxContainer.new()
 	add_child(v)
@@ -140,5 +141,4 @@ func _spin(parent: Control, lo: float, hi: float, value: float) -> SpinBox:
 
 func _btn(parent: Control, text: String, cb: Callable) -> void:
 	var b := UiTheme.button(text, cb)
-	b.focus_mode = Control.FOCUS_NONE
 	parent.add_child(b)

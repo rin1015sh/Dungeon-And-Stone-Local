@@ -3,11 +3,8 @@ extends Control
 ## 도시 화면 정보(위 띠 하나에 몰지 않고 귀퉁이에 나눈다 — 거리 그림은 가운데에 둔다):
 ##   왼쪽 위 = 달력 카드(장소 · 날짜·날씨 · 상순/중순/하순 진행 · 행동력 구슬). 설명 문장은 넣지 않는다(CLAUDE.md "부연설명 금지").
 ##   왼쪽 아래 = 탐험가 카드(이름·레벨 · 소지금 · 생명력 막대 · 피로도 — 시설 안에서는 달력 아래로),
-##   오른쪽 위 = 메뉴(소지품 · 캐릭터 · 타이틀로). 미궁은 하순이 끝나면 저절로 들어간다(디버그 F1에 바로 가기).
+##   오른쪽 위 = 키 이름판(메뉴 Tab · 정지 Esc — 누르는 버튼이 아니다). 미궁은 하순이 끝나면 저절로 들어간다(디버그 F1에 바로 가기).
 ## 은행 잔액·신전 공적치는 그 시설 안에서만 보인다(facilities shows). 아래 가운데·오른쪽은 건물 이름판 자리.
-
-signal title_requested
-signal window_requested(kind: String)
 
 var _state: CityState
 var _pc: PlayerCharacter
@@ -44,7 +41,7 @@ func _ready() -> void:
 	refresh()
 
 
-## 시설 안: 메뉴(소지품·캐릭터·타이틀로)를 숨기고, 탐험가 카드를 달력 아래로 올린다(아래는 시설 대화창 자리).
+## 시설 안: 키 이름판을 숨기고, 탐험가 카드를 달력 아래로 올린다(아래는 시설 대화창 자리).
 func set_facility_mode(on: bool) -> void:
 	_dock.visible = not on
 	var m := UiTheme.metric("margin", 16)
@@ -131,14 +128,14 @@ func _build_dock(m: int) -> void:
 	add_child(_dock)
 	_dock.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, m)
 	_dock.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 6)
-	_dock.add_child(v)
 	var r1 := HBoxContainer.new()
-	v.add_child(r1)
-	r1.add_child(CityUi.button(Strings.t("city.btn_inventory", {"key": InputSetup.key_label("inventory")}), func() -> void: window_requested.emit("inventory")))
-	r1.add_child(CityUi.button(Strings.t("city.btn_character", {"key": InputSetup.key_label("character")}), func() -> void: window_requested.emit("character")))
-	r1.add_child(CityUi.button(Strings.t("city.btn_title"), func() -> void: title_requested.emit()))
+	r1.add_theme_constant_override("separation", 6)
+	_dock.add_child(r1)
+	for a: String in ["menu", "pause"]:
+		var l := CityUi.label(Strings.t("city.key_" + a, {"key": InputSetup.key_label(a)}), "small", "bone")
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		r1.add_child(l)
 
 
 func refresh() -> void:

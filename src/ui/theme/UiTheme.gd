@@ -153,6 +153,25 @@ static func button(text: String, on_press: Callable) -> Button:
 	return b
 
 
+## 키보드로 다루는 패널(디버그 등): 보이면 첫 버튼에 포커스(W/A/S/D·방향키로 옮기고 Enter), 숨으면 포커스를 놓는다.
+static func keyboard_panel(panel: Control) -> void:
+	panel.visibility_changed.connect(func() -> void:
+		if panel.is_visible_in_tree():
+			focus_first.call_deferred(panel)
+		else:
+			var owner := panel.get_viewport().gui_get_focus_owner() if panel.is_inside_tree() else null
+			if owner != null and panel.is_ancestor_of(owner):
+				owner.release_focus())
+
+
+static func focus_first(root: Node) -> void:
+	for c in root.find_children("*", "BaseButton", true, false):
+		var b := c as BaseButton
+		if b.is_visible_in_tree() and not b.disabled and b.focus_mode != Control.FOCUS_NONE:
+			b.grab_focus()
+			return
+
+
 ## 제목이 달린 패널 상자. 내용을 넣을 VBoxContainer를 돌려준다.
 static func section(parent: Node, title: String) -> VBoxContainer:
 	var panel := PanelContainer.new()

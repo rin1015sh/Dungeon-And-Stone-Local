@@ -18,6 +18,7 @@ func bind(session: ExploreSession) -> void:
 
 func _ready() -> void:
 	add_theme_stylebox_override("panel", UiTheme.translucent_panel())
+	UiTheme.keyboard_panel(self)
 	custom_minimum_size.x = UiTheme.metric("debug_panel_width", 300)
 	var v := VBoxContainer.new()
 	add_child(v)
@@ -43,7 +44,6 @@ func _ready() -> void:
 	_btn(grid, Strings.t("debug.restore"), func() -> void: _session.player.pool.fill_all())
 	var invuln := CheckButton.new()
 	invuln.text = Strings.t("debug.invulnerable")
-	invuln.focus_mode = Control.FOCUS_NONE
 	invuln.button_pressed = GameState.debug_invulnerable
 	invuln.toggled.connect(_set_invulnerable)
 	v.add_child(invuln)
@@ -69,7 +69,6 @@ func _ready() -> void:
 
 func _btn(parent: Control, text: String, cb: Callable) -> Button:
 	var b := UiTheme.button(text, cb)
-	b.focus_mode = Control.FOCUS_NONE
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	parent.add_child(b)
 	return b
