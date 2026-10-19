@@ -5,7 +5,7 @@ extends TestCase
 func _a(stats: Dictionary = {}) -> Actor:
 	var base := {"str": 10, "agi": 20, "p_res": 0, "m_res": 0, "int": 0}
 	base.merge(stats, true)
-	return Monster.new(db, base, 1, ["hp"], {"hp": 200})
+	return Monster.new(db, base, 1, ["hp", "soul"], {"hp": 200, "soul": 100})
 
 
 func test_control_gives_one_turn_immunity_after() -> void:
@@ -126,3 +126,48 @@ func test_on_kill_passive_and_gauge_event() -> void:
 	var g := EffectContext.new(db, killer, victim, Rng.new(1))
 	reg.effects.apply_all(g, [{"type": "gauge", "amount": 30, "to": "self"}])
 	assert_eq(g.events[0]["target"], killer, "gauge to self")
+
+
+func test_second_round_essence_hooks() -> void:
+	var wolf := _a()
+	wolf.add_passive({"id": "t_scent", "hit_vs_status": {"status": "bleeding", "bonus": 15}})
+	var prey := _a()
+	var before := DamageCalc.hit_chance(db, wolf, prey, false, 50.0)
+	prey.statuses.apply("bleeding")
+	assert_near(DamageCalc.hit_chance(db, wolf, prey, false, 50.0), before + 0.15, 0.001, "출혈 대상 명중 +15")
+	var reg := ContentRegistries.new()
+	var victim := _a()
+	var soul0 := victim.pool.get_current("soul")
+	var ctx := EffectContext.new(db, _a(), victim, Rng.new(1))
+	reg.effects.apply_all(ctx, [{"type": "soul_slash", "soul_ratio": 0.3, "mult_if_status": {"status": ["curse"], "mult": 2.0}}])
+	var plain_loss := soul0 - victim.pool.get_current("soul")
+	var cursed := _a()
+	cursed.statuses.apply("curse")
+	var soul1 := cursed.pool.get_current("soul")
+	reg.effects.apply_all(EffectContext.new(db, _a(), cursed, Rng.new(1)),
+		[{"type": "soul_slash", "soul_ratio": 0.3, "mult_if_status": {"status": ["curse"], "mult": 2.0}}])
+	assert_near(soul1 - cursed.pool.get_current("soul"), plain_loss * 2.0, 1.0, "저주 대상 영혼 베기 2배")
+	var clean := _a()
+	reg.effects.apply_all(EffectContext.new(db, _a(), clean, Rng.new(1)), [{"type": "apply_status", "status": "poison", "if_target_status": "poison"}])
+	assert_false(clean.statuses.has("poison"), "중독이 아니면 덧바르지 않는다")
+	clean.statuses.apply("poison")
+	reg.effects.apply_all(EffectContext.new(db, _a(), clean, Rng.new(1)), [{"type": "apply_status", "status": "poison", "if_target_status": "poison"}])
+	assert_eq(clean.statuses.stacks("poison"), 2, "중독 대상엔 한 겹 더")
+
+
+func test_counter_while_guarding() -> void:
+	var gar := _a({"str": 20})
+	gar.add_passive({"id": "t_stone", "counter_while": {"status": "guarding", "power": 0.6}})
+	var foe := _a()
+	var reg := ContentRegistries.new()
+	var hp0 := foe.pool.get_current("hp")
+	var ctx := EffectContext.new(db, foe, gar, Rng.new(3))
+	ctx.registry = reg.effects
+	reg.effects.apply_all(ctx, [{"type": "damage", "scaling": "phys", "power": 1.0, "accuracy": 1000}])
+	assert_near(foe.pool.get_current("hp"), hp0, 0.001, "방어 중이 아니면 반격 없음")
+	gar.statuses.apply("guarding")
+	var ctx2 := EffectContext.new(db, foe, gar, Rng.new(3))
+	ctx2.registry = reg.effects
+	for i in 5:
+		reg.effects.apply_all(ctx2, [{"type": "damage", "scaling": "phys", "power": 1.0, "accuracy": 1000}])
+	assert_true(foe.pool.get_current("hp") < hp0, "방어 중 근접으로 맞으면 반격")

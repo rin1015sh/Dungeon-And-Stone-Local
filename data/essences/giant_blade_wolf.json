@@ -7,10 +7,14 @@
   "passive": {
     "id": "wolf_thick_bladefur",
     "name_ko": "두꺼운 칼날털",
-    "desc_ko": "가까이서 때린 상대가 조금 베인다.",
+    "desc_ko": "가까이서 때린 상대가 칼날털에 베여 피를 흘린다.",
     "reflect_melee": 0.075,
     "implemented": true,
-    "notes": "×0.5"
+    "notes": "×0.5 · 정수 재기획 2단계 2026-10-19(J17)",
+    "reflect_status": {
+      "status": "bleeding",
+      "chance": 0.25
+    }
   },
   "actives": [
     {

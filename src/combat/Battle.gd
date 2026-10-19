@@ -273,7 +273,8 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
 	var said := history.size()
-	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
+	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
+		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size()}
 	for t in targets:
 		if c.actor.dead:
 			break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다

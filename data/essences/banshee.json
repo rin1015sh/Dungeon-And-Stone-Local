@@ -8,13 +8,18 @@
   "passive": {
     "id": "banshee_wraith",
     "name_ko": "원령",
-    "desc_ko": "받는 물리 피해가 조금 줄어든다.",
+    "desc_ko": "받는 물리 피해가 조금 줄고, 그 울음을 들은 상대는 공포에 더 깊이 얼어붙는다.",
     "modifiers": [
       {
         "target": "dmg_taken:physical",
         "percent": -0.1
       }
-    ]
+    ],
+    "skip_bonus_vs": {
+      "status": "fear",
+      "bonus": 0.15
+    },
+    "notes": "정수 재기획 2단계 2026-10-19(J17)"
   },
   "actives": [
     {

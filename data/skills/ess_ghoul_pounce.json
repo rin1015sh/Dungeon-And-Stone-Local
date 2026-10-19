@@ -14,8 +14,13 @@
       "power": 1.232,
       "damage_type": "slash",
       "accuracy": 80
+    },
+    {
+      "type": "push_back",
+      "amount": 30
     }
   ],
   "essence_of": "ghoul_pounce",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2단계 2026-10-19(J17)"
 }

@@ -10,10 +10,17 @@
   "effects": [
     {
       "type": "soul_slash",
-      "soul_ratio": 0.3
+      "soul_ratio": 0.3,
+      "mult_if_status": {
+        "status": [
+          "curse",
+          "fear"
+        ],
+        "mult": 2.0
+      }
     }
   ],
-  "notes": "정수판 [변]: 레벨 하락 대신 대상 영혼력 30% 소실",
+  "notes": "정수판 [변]: 레벨 하락 대신 대상 영혼력 30% 소실 · 정수 재기획 2단계 2026-10-19(J17)",
   "essence_of": "bk_soul_slash",
   "source": "placeholder"
 }

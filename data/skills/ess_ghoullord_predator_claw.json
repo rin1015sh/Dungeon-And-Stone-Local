@@ -12,7 +12,8 @@
       "type": "damage",
       "scaling": "phys",
       "power": 1.02,
-      "damage_type": "slash"
+      "damage_type": "slash",
+      "power_per_summon": 0.25
     },
     {
       "type": "apply_status",
@@ -21,5 +22,6 @@
     }
   ],
   "essence_of": "ghoullord_predator_claw",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2단계 2026-10-19(J17)"
 }

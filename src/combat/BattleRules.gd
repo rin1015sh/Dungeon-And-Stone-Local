@@ -112,7 +112,13 @@ static func fear_skip(b: Battle, c: Combatant) -> bool:
 		var def := b.db.get_entry("statuses", id)
 		if JsonUtil.get_array(def, "flags").has("may_skip_turn"):
 			best = maxf(best, JsonUtil.get_float(def, "skip_chance", float(b.db.bal("combat.may_skip_chance", 0.3))))
-	return best > 0.0 and b.rng.chance(best)
+	if best > 0.0:
+		for o in b.opponents(c):  # 상대 패시브 skip_bonus_vs(벤시 원령 — 공포를 더 깊게)
+			for p in o.actor.passives:
+				var sb := JsonUtil.get_dict(p, "skip_bonus_vs")
+				if not sb.is_empty() and c.actor.statuses.has(JsonUtil.get_str(sb, "status")):
+					best += JsonUtil.get_float(sb, "bonus")
+	return best > 0.0 and b.rng.chance(minf(best, 1.0))
 
 
 ## 전투가 끝났다: 게이지·전투 표식·오러를 비우고, 전투 한정 상태(statuses "battle_only": true)와

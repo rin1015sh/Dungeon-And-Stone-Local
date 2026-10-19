@@ -11,8 +11,12 @@
     {
       "type": "apply_status",
       "status": "blind"
+    },
+    {
+      "type": "shuffle_rows"
     }
   ],
   "essence_of": "miner_shaft_shake",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2단계 2026-10-19(J17)"
 }

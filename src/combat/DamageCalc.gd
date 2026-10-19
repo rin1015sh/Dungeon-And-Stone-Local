@@ -76,7 +76,7 @@ static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_w
 	if defender.statuses.has_flag("always_hit") and not aim_weak:
 		return 1.0  # 자석에 끌려온 대상(일디움 자석 끌어당기기)
 	var acc := (accuracy if accuracy >= 0.0 else _c(db, "default_accuracy", 95.0)) + attacker.stats.get_value("accuracy") \
-		+ defender.statuses.sum_key("hit_taken")  # 표식
+		+ defender.statuses.sum_key("hit_taken") + Passives.hit_bonus_vs(attacker, defender)  # 표식 · 패시브 hit_vs_status
 	var h := acc / 100.0 * (1.0 + (attacker.stats.get_value("agi") - defender.stats.get_value("agi")) * _c(db, "hit_agi_coef", 0.005))
 	if aim_weak:
 		h *= _c(db, "weak_point_hit_mult", 0.6)

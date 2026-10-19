@@ -2,6 +2,7 @@ extends EffectHandler
 ## 상태이상 부여: {"type": "apply_status", "status": "bleeding", "chance": 0.2, "duration": 3}
 ## chance가 없으면 확정. duration이 없으면 상태이상 정의의 지속시간. "to": "self"면 시전자에게.
 ## "unless_target_status": 대상이 이미 그 상태면 건너뛴다(정수판 피의 낙인 — 새 제물에게만 향연 중첩).
+## "if_target_status": 대상이 그 상태일 때만 건다(금속 독).
 ## 남(적)이 건 상태는 정의의 resist {stats}로 저항한다: 확률 = min(status.resist_max, Σ 스탯 × status.resist_per_point).
 
 
@@ -11,6 +12,9 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 		return false
 	var unless := JsonUtil.get_str(data, "unless_target_status")
 	if not unless.is_empty() and ctx.target != null and ctx.target.statuses.has(unless):
+		return false
+	var only_if := JsonUtil.get_str(data, "if_target_status")  # 대상이 이미 그 상태일 때만(금속 독 — 중독 대상에게 한 겹 더)
+	if not only_if.is_empty() and (ctx.target == null or not ctx.target.statuses.has(only_if)):
 		return false
 	if data.has("chance") and not ctx.rng.chance(JsonUtil.get_float(data, "chance", 1.0)):
 		return false

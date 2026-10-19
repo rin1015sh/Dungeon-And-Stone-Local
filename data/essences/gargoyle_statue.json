@@ -8,7 +8,7 @@
   "passive": {
     "id": "gargoyle_stone_skin",
     "name_ko": "돌 피부",
-    "desc_ko": "베고 찌르는 공격에 조금 강하고 둔기에 조금 약하다.",
+    "desc_ko": "베고 찌르는 공격에 강하고 둔기에 약하며, 웅크린 채 맞으면 돌 발톱으로 되받아친다.",
     "modifiers": [
       {
         "target": "dmg_taken:slash",
@@ -22,7 +22,12 @@
         "target": "dmg_taken:blunt",
         "percent": 0.15
       }
-    ]
+    ],
+    "counter_while": {
+      "status": "guarding",
+      "power": 0.6
+    },
+    "notes": "정수 재기획 2단계 2026-10-19(J17)"
   },
   "actives": [
     {

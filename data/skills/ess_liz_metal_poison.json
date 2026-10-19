@@ -11,9 +11,15 @@
     {
       "type": "apply_status",
       "status": "poison",
+      "if_target_status": "poison"
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
       "chance": 0.45
     }
   ],
   "essence_of": "liz_metal_poison",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2단계 2026-10-19(J17)"
 }
