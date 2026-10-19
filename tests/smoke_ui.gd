@@ -478,10 +478,15 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 	s.message.emit("effect.light_on", {"hours": 4}, "good")
 	s.message.emit("explore.portal_here", {}, "system")
 	await _frames(1)
-	_expect(not dlg.busy() and explore.toast().line_count() == 0, "횃불 켜기·포탈 위에 섬 = 보이지 않는다")
-	s.message.emit("explore.wait", {"hours": 1}, "info")
+	_expect(not dlg.busy(), "횃불 켜기·포탈 위에 섬 = 보이지 않는다")
+	for key: String in ["explore.status_on", "explore.safe_enter", "explore.dark_enter", "explore.light_out", "inventory.discarded"]:
+		s.message.emit(key, {"status": "x", "item": "x", "count": 1}, "info")
+	await _frames(1)
+	_expect(not dlg.busy() and not s.realtime.is_paused(), "상태·안전지대·어둠·횃불 꺼짐·버리기 = 화면으로 보이니 글이 없다")
+	_expect(explore.find_children("*", "NoticeToast", true, false).is_empty(), "위 알림 띠가 없다")
+	await _action("wait")
 	await _frames(2)
-	_expect(not dlg.busy() and explore.toast().line_count() == 1 and not s.realtime.is_paused(), "대기 = 잠깐 띠(시간은 흐른다)")
+	_expect(not dlg.busy() and explore.shade_alpha() > 0.0, "대기 = 글 대신 화면이 잠깐 어두워진다")
 	s.message.emit("field.got", {"item": "x"}, "good")
 	await _frames(1)
 	_expect(dlg.busy(), "아이템 획득 = 대화창(Enter)")
@@ -714,12 +719,15 @@ func _city_flow() -> void:
 	pc.inventory.add("minor_potion", 1)
 	var hp_before := pc.pool.get_current("hp")
 	var potions := pc.inventory.count("minor_potion")
+	DialogueBox.auto_skip = false
 	city.use_item("minor_potion")
 	_expect(pc.pool.get_current("hp") > hp_before and pc.inventory.count("minor_potion") == potions - 1, "거리에서 포션을 마셨다")
+	_expect(not city.dialog().busy(), "거리에서 포션을 마셔도 글이 뜨지 않는다(막대로 보인다)")
 	pc.inventory.add("ration", 1)
 	city.use_item("ration")
-	_expect(pc.inventory.has("ration"), "식량은 도시에서 쓰지 않는다")
-	_expect(not city.toast_text().is_empty(), "결과가 화면 위 알림으로")
+	_expect(pc.inventory.has("ration") and city.dialog().busy(), "식량은 도시에서 쓰지 않는다(이유는 아래 대화창)")
+	city.dialog().clear()
+	DialogueBox.auto_skip = true
 	await _action("debug_toggle")
 	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")
 	city.debug_panel().set_edit("activities/inn_rest/effects/1/amount", "3")
@@ -751,8 +759,7 @@ func _city_flow() -> void:
 	await _action("pause")
 	await _frames(1)
 	_expect(city.facility_view() == null, "창구에서 Esc → 거리로")
-	_expect(st.period == 1 and st.ap == 3, "행동력을 다 써서 중순(행동력 3)")
-	_expect(city.toast_text().contains(st.period_name()), "순 넘김 안내")
+	_expect(st.period == 1 and st.ap == 3, "행동력을 다 써서 중순(행동력 3 — 달력 카드로 보인다)")
 	city.choose_facility("bank")
 	fv = city.facility_view()
 	if _expect(fv != null, "은행"):
@@ -772,9 +779,12 @@ func _city_flow() -> void:
 	await _frames(1)
 	var cash := pc.inventory.money
 	pc.inventory.money = 0
+	DialogueBox.auto_skip = false
 	city.choose_facility("inn")
 	await _frames(2)
-	_expect(city.facility_view() == null and city.toast_text().contains(Strings.t("city.reason_no_money")), "할 게 없으면 이유를 들고 바로 나온다")
+	_expect(city.facility_view() == null and city.dialog().page_text().contains(Strings.t("city.reason_no_money")), "할 게 없으면 이유를 들고 바로 나온다(거리 대화창)")
+	city.dialog().clear()
+	DialogueBox.auto_skip = true
 	pc.inventory.money = cash
 	var fatigue := pc.fatigue.value
 	var month := st.month

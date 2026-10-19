@@ -608,7 +608,6 @@
     "hp_label": "생명력",
     "hp_value": "{hp} / {max}",
     "btn_title": "타이틀로",
-    "period_started": "{date}이 되었다.",
     "leave": "나가기",
     "choice": "{name}  ({cost})",
     "cost_stones": "{n} 스톤",
@@ -785,7 +784,6 @@
       }
     },
     "cannot_use_here": "여기서는 쓸 수 없다.",
-    "item_no_effect": "{item}을(를) 꺼냈다가 도로 넣었다.",
     "key_menu": "메뉴 {key}",
     "key_pause": "정지 {key}",
     "shop_money": "소지금 {money} 스톤",

@@ -24,6 +24,7 @@ var _stage: BattleStage
 var _roster: PartyRoster
 var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방지)
 var _menu: CommandMenu
+var _route: NoticeRoute
 var _dialog: DialogueBox
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 한다)
@@ -56,9 +57,10 @@ func _ready() -> void:
 	_menu.set_dialog(_dialog)
 	for u in battle.units:
 		_add_unit(u)
+	_route = NoticeRoute.new(battle.db)
 	for h: Dictionary in battle.history:  # 화면이 열리기 전에 나온 안내(전투 시작·수호자 대사·몬스터 타입)
-		_say(Strings.t(str(h["key"]), h["args"]), str(h["kind"]))
-	battle.message.connect(func(key: String, args: Dictionary, kind: String) -> void: _say(Strings.t(key, args), kind))
+		_notify(str(h["key"]), h["args"], str(h["kind"]))
+	battle.message.connect(_notify)
 	battle.event.connect(_on_event)
 	_refresh()
 	_loop.call_deferred()
@@ -81,6 +83,15 @@ func _place_bottom(c: Control, height: int = 0) -> void:
 		var half := minf(w / 2.0, size.x / 2.0 - m)
 		c.offset_left = -half
 		c.offset_right = half)
+
+
+## 전투 안내(문구 키): 기록에는 늘, 대화창에는 화면으로 알 수 없는 것만(피해·회피·쓰러짐·상태는 떠오르는 숫자·무대로 보인다 — NoticeRoute).
+func _notify(key: String, args: Dictionary, kind: String) -> void:
+	var text := Strings.t(key, args)
+	if _route.silent(key):
+		EventBus.log_message.emit(text, kind)
+	else:
+		_say(text, kind)
 
 
 ## 전투 안내: 아래 대화창 + 탐험 기록.
