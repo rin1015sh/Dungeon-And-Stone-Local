@@ -2,9 +2,9 @@ extends SceneTree
 ## 균열 파티 시뮬레이터(헤드리스, docs/PROMPT_FLOOR1_V2.md §15). check.sh에는 넣지 않는다.
 ##   godot --headless --path . --script res://tools/sim_party.gd -- [--n=300] [--only=<이름 일부>]
 ## --only를 주면 그 시나리오만 돌리고 리포트 파일은 쓰지 않는다(수치 맞추기용).
-## --essences=real: 정수의 실제 고정 스탯·생명력을 붙인다(기본은 정수 스탯 없이 sim_parties.json의 stats만).
-## --essence_mult=0.8: --essences=real의 스탯·생명력에 곱한다(정수 수치를 얼마나 깎을지 볼 때).
-## --base=race: 기본 스탯을 sim_parties.json stats 대신 종족 굴림 범위의 가운데로(정수 성장만 따로 보기). 둘 중 하나라도 주면 리포트 파일은 쓰지 않는다.
+## 기본(2026-10-19~): 탐험가 기본 스탯 = 종족 굴림 범위의 가운데, 정수 = 실제 고정 스탯·생명력(J11~J13).
+## --essences=none: 정수 스탯·생명력을 빼고 --base=config: sim_parties.json의 stats를 쓴다(2026-10-18까지의 방식 — 비교용).
+## --essence_mult=0.8: 정수 스탯·생명력에 곱한다(정수 수치를 얼마나 깎을지 볼 때). 기본이 아닌 옵션을 주면 리포트 파일은 쓰지 않는다.
 ## tools/sim_parties.json의 파티(Lv4 4인·포션·정수)로 시나리오마다 n번 싸워 승률을 보고 docs/balance/rift.md에 쓴다.
 ## 아군 AI: 생명력이 potion_hp_ratio 아래면 하급 포션, smart면 [예고]가 찍혔을 때 방어, 아니면 기본 공격
 ## (수호자·중간 보스가 있으면 그중 — 졸개가 셋 이상 쌓이면 졸개부터 —, 없으면 생명력이 가장 낮은 적).
@@ -25,9 +25,10 @@ func _initialize() -> void:
 	var db := GameDatabase.new()
 	db.load_all("res://data")
 	var cfg: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CFG))
-	cfg["real_essences"] = str(args.get("essences", "")) == "real"
-	cfg["race_base"] = str(args.get("base", "")) == "race"
+	cfg["real_essences"] = str(args.get("essences", "real")) == "real"
+	cfg["race_base"] = str(args.get("base", "race")) == "race"
 	cfg["essence_mult"] = str(args.get("essence_mult", "1")).to_float()
+	var custom := args.has("essences") or args.has("base") or args.has("essence_mult")
 	var n := str(args["n"]).to_int()
 	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json`, 시나리오당 %d회)." % n, "",
 		"| 시나리오 | 승률 | 목표 | 평균 차례 | 쓰러진 아군(평균) |", "|---|---|---|---|---|"])
@@ -51,7 +52,7 @@ func _initialize() -> void:
 	lines.append("")
 	lines.append("- 목표 벗어남 %d개" % misses)
 	lines.append("")
-	if args.has("only") or bool(cfg["real_essences"]) or bool(cfg["race_base"]):
+	if args.has("only") or custom:
 		print("\n".join(lines))
 		quit(0)
 		return

@@ -18,14 +18,14 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 20,
+    "str": 22,
     "agi": 18,
     "p_res": 16,
     "m_res": 10,
     "int": 15
   },
   "resources": {
-    "hp": 1000,
+    "hp": 1300,
     "soul": 150
   },
   "natural_weapon": {
@@ -118,5 +118,5 @@
   "desc_ko": "폭약 주머니를 주렁주렁 단 고블린. 불을 대면 제 폭약에 다친다.",
   "sprite": "res://assets/sprites/monsters/goblin_bomber.png",
   "source": "original",
-  "notes": "명세 §11 중간 보스. 이름 [원] / 나머지 [창] · 시뮬레이터 조정(GM5): 명세 생명력 900·정 10 → 1000·15"
+  "notes": "명세 §11 중간 보스. 이름 [원] / 나머지 [창] · 시뮬레이터 조정(GM5): 명세 생명력 900·정 10 → 1000·15 · 정수 스탯 상향에 맞춤(2026-10-19, J15): 생명력 1000→1300, 근력 20→22"
 }

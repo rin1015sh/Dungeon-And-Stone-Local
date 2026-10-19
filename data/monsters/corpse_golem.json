@@ -26,14 +26,14 @@
     "requires_status": "golem_skeleton"
   },
   "stats": {
-    "str": 34,
+    "str": 35,
     "agi": 17,
     "p_res": 18,
     "m_res": 8,
     "int": 24
   },
   "resources": {
-    "hp": 1200,
+    "hp": 1400,
     "soul": 60
   },
   "natural_weapon": {
@@ -128,5 +128,5 @@
   "desc_ko": "사람의 팔다리와 머리 수천 개를 뭉친 덩어리. 입마다 기괴한 말을 쏟아낸다.",
   "sprite": "res://assets/sprites/monsters/corpse_golem.png",
   "source": "original",
-  "notes": "명세 §9 중간 보스 · 시뮬레이터 조정: 생명력 600→1200, 근력 22→34, 민첩 8→17, 정신력 6→24"
+  "notes": "명세 §9 중간 보스 · 시뮬레이터 조정: 생명력 600→1200, 근력 22→34, 민첩 8→17, 정신력 6→24 · 정수 스탯 상향에 맞춤(2026-10-19, J15): 생명력 1200→1400, 근력 34→35"
 }
