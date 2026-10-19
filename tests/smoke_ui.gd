@@ -14,6 +14,7 @@ extends Node
 ## 오류 없이 끝나면 종료 코드 0.
 
 const WAIT_LIMIT_MS := 8000
+const SMOKE_FOE_HP := 80  ## 전투 흐름 시험 동안 적에게 더하는 생명력(첫 공격에 전투가 끝나지 않게)
 
 const TEST_SAVE := "user://dungeon_and_stone/smoke_save.json"
 var _main: Control
@@ -186,6 +187,9 @@ func _realtime_combat_flow() -> void:
 		combat._on_event(ev)
 	_expect(_has_label(combat, Strings.t("combat.float_miss")) and _has_label(combat, Strings.t("combat.float_immune"))
 		and _has_label(combat, Strings.t("combat.float_blocked")), "빗나감 = 회피, 면역 = 면역, 보호막에 막힘 = 막힘 — 각자 그 글자로 뜬다")
+	for u in battle.side_units(Combatant.SIDE_ENEMY):  # 첫 공격(치명타·치명상)에 전투가 끝나 버리면 아래 행동창 검사를 못 한다 — 시험 동안만 버티게
+		u.actor.stats.add_modifier(Modifier.new("smoke", "max:hp", float(SMOKE_FOE_HP)))
+		u.actor.pool.fill_all()
 	await _keyboard_menu(combat, menu)
 	menu = await _open_menu(combat)
 	if not _expect(menu != null, "키보드 공격 뒤 다시 행동창"):
@@ -426,11 +430,16 @@ func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
 	_expect(_has_label(combat, Strings.t("combat.cmd_guard")), "파티 창에 정해 둔 행동")
 	await _action("menu_back")
 	_expect(combat._plan_i == 0 and combat._plan.is_empty(), "뒤로 → 앞사람 다시 고르기")
+	b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.apply("stun", 2.0)  # 탐험가 다음 차례를 건너뛰어 동료 차례가 오게
 	_press(combat, Strings.t("combat.cmd_guard"))
 	_press(combat, Strings.t("combat.cmd_guard"))
 	await _frames(2)
 	_expect(b.turns > turns or not b.result.is_empty(), "모두 정하면 차례대로 움직인다")
-	mate.pool.set_current("hp", 0.0)
+	var dl := Time.get_ticks_msec() + WAIT_LIMIT_MS
+	while Time.get_ticks_msec() < dl and b.current != mu and b.result.is_empty():
+		await get_tree().process_frame
+	_expect(b.current == mu or not b.result.is_empty(), "탐험가가 기절해 동료 차례")
+	mate.pool.set_current("hp", 0.0)  # 동료가 자기 차례(행동 정하기 중)에 쓰러진다 — 전투가 멈추지 않고 다음 차례로 가야 한다
 	combat._refresh()
 	await _frames(2)
 
