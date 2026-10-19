@@ -90,6 +90,20 @@ static func _avg_agi(list: Array[Combatant]) -> float:
 	return s / float(list.size())
 
 
+## 대신 맞기(효과 cover → 상태 covered): 적의 단일 대상 공격이 보호받는 아군을 노리면 지키는 사람이 받는다.
+static func apply_cover(b: Battle, c: Combatant, kind: String, targets: Array[Combatant]) -> void:
+	if kind != "enemy_single" or targets.size() != 1:
+		return
+	var t := targets[0]
+	if t.side == c.side or not t.actor.statuses.has("covered"):
+		return
+	var guard := b.unit_of(t.actor.statuses.link("covered"))
+	if guard == null or guard == t or guard.side != t.side or not guard.is_active():
+		return
+	targets[0] = guard
+	b.message.emit("combat.covered_hit", {"protector": guard.label(), "name": t.label()}, "info")
+
+
 ## 공포·마비(flag may_skip_turn): 차례마다 그 상태의 skip_chance(없으면 combat.may_skip_chance) 확률로 움직이지 못한다.
 ## 여럿이면 가장 높은 확률 하나로 굴린다.
 static func fear_skip(b: Battle, c: Combatant) -> bool:

@@ -107,13 +107,19 @@ static func rider(db: GameDatabase, attacker: Actor, defender: Actor, dtype: Str
 
 
 ## 위력: 대상이 power_if_status의 상태 중 하나면 그 위력, 아니면 power. 오인·예고 배율(BattleTargets.boosted)은 둘 다에 곱해져 있다.
+## power_if_hp_below {"ratio": 0.3, "mult": 1.6}: 대상 생명력 비율이 ratio 이하면 위력 × mult(처형 — 정수 재기획).
 static func _power(effect: Dictionary, defender: Actor) -> float:
+	var p := JsonUtil.get_float(effect, "power", 1.0)
 	var cond := JsonUtil.get_dict(effect, "power_if_status")
 	if not cond.is_empty():
 		for st: Variant in JsonUtil.get_array(cond, "status"):
 			if defender.statuses.has(str(st)):
-				return JsonUtil.get_float(cond, "power", 1.0)
-	return JsonUtil.get_float(effect, "power", 1.0)
+				p = JsonUtil.get_float(cond, "power", 1.0)
+				break
+	var low := JsonUtil.get_dict(effect, "power_if_hp_below")
+	if not low.is_empty() and defender.pool.get_ratio("hp") <= JsonUtil.get_float(low, "ratio"):
+		p *= JsonUtil.get_float(low, "mult", 1.0)
+	return p
 
 
 ## 피해 유형의 분류(physical / magical). tags.json damage_types.

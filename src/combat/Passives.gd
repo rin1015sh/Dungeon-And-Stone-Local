@@ -4,6 +4,7 @@ extends RefCounted
 ## 정의 키(모두 선택):
 ##   modifiers        [수정자] — 붙이는 것은 소유자 몫(Monster.create / EssenceSet)
 ##   on_hit           [효과] — 피해를 맞혔을 때 대상에게(예: 마비독 30%). on_hit_filter {ranged: bool, damage_types: [..]}
+##   on_kill          [효과] — 공격으로 적을 쓰러뜨렸을 때 자신에게(회복·출혈 해제 …)
 ##   on_crit          [효과] — 치명타를 냈을 때 대상에게(예: 어설픈 검술의 출혈)
 ##   crit_bonus       {value, damage_types} — 치명타율 보정(피해 유형이 맞을 때)
 ##   power_vs_status  {status, mult} — 그 상태의 대상에게 피해 배율(피 냄새)
@@ -117,6 +118,9 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 		for st in src.statuses.ids():
 			_apply_list(ctx, registry, JsonUtil.get_array(ctx.db.get_entry("statuses", st), "on_hit"), tgt)
 	_meters_after_hit(ctx, dealt, dtype)
+	if tgt.dead and not src.dead:  # 쓰러뜨렸다 — on_kill(정수 재기획: 구울·데스핀드)은 공격자 자신에게
+		for p in src.passives:
+			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_kill"), src)
 	if ranged or tgt.dead:
 		return
 	var reflect := sum(tgt, "reflect_melee")

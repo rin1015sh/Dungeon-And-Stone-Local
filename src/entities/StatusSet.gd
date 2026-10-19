@@ -35,6 +35,7 @@ var dot_mult: float = 1.0
 var passive_immune: Array[String] = []
 var _refreshing: bool = false
 var _after: Dictionary = {}  # id -> 남은 차례(after_immune)
+var _links: Dictionary = {}  # id -> WeakRef(Actor) — 상태를 건 쪽(대신 맞기 covered의 지키는 사람)
 
 
 func _init(db: GameDatabase, stats: StatBlock, pool: ResourcePool) -> void:
@@ -81,12 +82,25 @@ func remove(id: String) -> bool:
 	if not _active.has(id):
 		return false
 	_active.erase(id)
+	_links.erase(id)
 	_stats.remove_source(SOURCE_PREFIX + id)
 	var after := JsonUtil.get_float(_db.get_entry("statuses", id), "after_immune")
 	if after > 0.0:
 		_after[id] = after
 	removed.emit(id)
 	return true
+
+
+## 상태에 다른 개체를 묶는다(약한 참조 — 대신 맞기). 상태가 풀리면 함께 사라진다.
+func set_link(id: String, actor: Actor) -> void:
+	if _active.has(id) and actor != null:
+		_links[id] = weakref(actor)
+
+
+func link(id: String) -> Actor:
+	if not _active.has(id) or not _links.has(id):
+		return null
+	return (_links[id] as WeakRef).get_ref() as Actor
 
 
 ## 소유자가 행동했다: on_act(출혈)를 중첩 수만큼 준다.

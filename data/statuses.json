@@ -1506,5 +1506,16 @@
       "draws_attacks"
     ],
     "source": "placeholder"
+  },
+  {
+    "id": "covered",
+    "name_ko": "보호받음",
+    "kind": "buff",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "source": "placeholder"
   }
 ]

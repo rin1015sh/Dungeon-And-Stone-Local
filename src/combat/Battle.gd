@@ -265,6 +265,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	var kind := JsonUtil.get_str(sk, "target")
 	var fx := BattlePassives.skill_effects(self, c, skill_id, sk)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
+	BattleRules.apply_cover(self, c, kind, targets)  # 대신 맞기
 	var mis := BattleTargets.misdirect(self, c, kind) if not targets.is_empty() else {}
 	if not mis.is_empty():
 		targets.clear()

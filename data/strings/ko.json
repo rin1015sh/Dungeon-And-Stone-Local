@@ -395,6 +395,8 @@
     "result_fled": "도주",
     "reflect": "{source}의 칼날털이 {target}에게 {amount}만큼 되돌려 베었다.",
     "counter": "{source}이(가) 막아 내고 {target}을(를) 찔렀다 — {amount}.",
+    "cover": "{protector}이(가) {name} 앞을 막아선다.",
+    "covered_hit": "{protector}이(가) {name} 대신 공격을 받아 낸다.",
     "drain": "{source}이(가) 피를 핥아 {amount} 회복했다.",
     "summon": "{name}의 울부짖음에 {monster}이(가) 달려왔다!",
     "summon_ally": "{name}이(가) {monster}을(를) 불러냈다.",

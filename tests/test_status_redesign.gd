@@ -62,3 +62,67 @@ func test_resist_stats_one_per_status() -> void:
 func test_merged_statuses_are_gone() -> void:
 	for id in ["slow", "goblin_paralysis", "owl_hoot", "smoke_screen", "wolf_pack", "orc_war_cry", "ice_armor", "mud_merged"]:
 		assert_false(db.has_entry("statuses", id), "%s는 공용 상태로 합쳤다" % id)
+
+
+func _battle(party: int = 2, foes: Array = ["goblin"]) -> Battle:
+	var reg := ContentRegistries.new()
+	var b := Battle.new(db, reg.effects, reg.ai_conditions, Rng.new(7))
+	for i in party:
+		var pc := PlayerCharacter.create(db, "human", "warrior", "시험%d" % i, {"str": 10, "agi": 10, "p_res": 5})
+		b.add(pc, Combatant.SIDE_PARTY, "front")
+	for id: Variant in foes:
+		b.add(Monster.create(db, str(id)), Combatant.SIDE_ENEMY, "front")
+	return b
+
+
+func test_consume_status_heals_by_stacks() -> void:
+	var reg := ContentRegistries.new()
+	var me := _a()
+	var foe := _a()
+	me.pool.modify("hp", -100.0, "test")
+	for i in 3:
+		foe.statuses.apply("bleeding")
+	var ctx := EffectContext.new(db, me, foe, Rng.new(1))
+	ctx.registry = reg.effects
+	reg.effects.apply_all(ctx, [{"type": "consume_status", "status": "bleeding", "heal_ratio_per_stack": 0.05}])
+	assert_false(foe.statuses.has("bleeding"), "출혈을 터뜨려 없앴다")
+	assert_near(me.pool.get_current("hp"), 100.0 + 200.0 * 0.05 * 3.0, 0.5, "중첩 3 × 5% 회복")
+
+
+func test_execute_power_below_hp_ratio() -> void:
+	var atk := _a()
+	var low := _a()
+	low.pool.modify("hp", -150.0, "test")
+	var fx := {"scaling": "phys", "power": 1.0, "power_if_hp_below": {"ratio": 0.3, "mult": 2.0}}
+	var rolls := {"hit": 0.0, "crit": 1.0, "var": 0.5, "lethal": 1.0}
+	var full := DamageCalc.resolve(db, atk, _a(), fx, rolls)
+	var hurt := DamageCalc.resolve(db, atk, low, fx, rolls)
+	assert_near(float(hurt["raw"]), float(full["raw"]) * 2.0, 0.01, "생명력 30% 이하면 위력 ×2")
+
+
+func test_cover_redirects_single_attack() -> void:
+	var b := _battle(2)
+	var p := b.side_units(Combatant.SIDE_PARTY)
+	var foe := b.side_units(Combatant.SIDE_ENEMY)[0]
+	var ctx := EffectContext.new(db, p[0].actor, p[1].actor, Rng.new(1))
+	ContentRegistries.new().effects.apply_all(ctx, [{"type": "cover", "duration": 2}])
+	var targets: Array[Combatant] = [p[1]]
+	BattleRules.apply_cover(b, foe, "enemy_single", targets)
+	assert_eq(targets[0], p[0], "지키는 사람이 대신 맞는다")
+
+
+func test_on_kill_passive_and_gauge_event() -> void:
+	var killer := _a()
+	killer.add_passive({"id": "t_kill", "on_kill": [{"type": "restore_resource", "resource": "hp", "amount": 30}]})
+	killer.pool.modify("hp", -50.0, "test")
+	var victim := _a()
+	victim.pool.modify("hp", -199.0, "test")
+	var reg := ContentRegistries.new()
+	var ctx := EffectContext.new(db, killer, victim, Rng.new(1))
+	ctx.registry = reg.effects
+	reg.effects.apply_all(ctx, [{"type": "damage", "scaling": "phys", "power": 1.0, "accuracy": 1000}])
+	assert_true(victim.dead)
+	assert_near(killer.pool.get_current("hp"), 180.0, 0.5, "쓰러뜨리면 on_kill 회복")
+	var g := EffectContext.new(db, killer, victim, Rng.new(1))
+	reg.effects.apply_all(g, [{"type": "gauge", "amount": 30, "to": "self"}])
+	assert_eq(g.events[0]["target"], killer, "gauge to self")

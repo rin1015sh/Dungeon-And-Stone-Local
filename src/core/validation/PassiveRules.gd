@@ -4,7 +4,7 @@ extends RefCounted
 ## 드레드피어 buffs[].passive가 같은 검사를 쓴다. 안쪽 참조(피해 유형·상태이상·게이지·몬스터·효과 목록)까지 본다.
 
 ## 효과 목록인 패시브 키.
-const EFFECT_KEYS := ["on_hit", "on_crit", "death_effects", "basic_attack_effects"]
+const EFFECT_KEYS := ["on_hit", "on_crit", "on_kill", "death_effects", "basic_attack_effects"]
 ## 상태이상 id 배열인 패시브 키.
 const STATUS_LIST_KEYS := ["status_immune", "foe_statuses_on_start", "self_statuses_on_start"]
 const AURA_TARGETS := ["all", "random"]
