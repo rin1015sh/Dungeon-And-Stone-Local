@@ -46,6 +46,12 @@
       11
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.6. 물어뜯기·칼날 스치기는 거대·핏빛 칼날늑대와 공유"
 }

@@ -41,6 +41,12 @@
       7
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      17,
+      28
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §12 정수 패시브는 명세에 없음 → 봉인 면역 [창]"
 }

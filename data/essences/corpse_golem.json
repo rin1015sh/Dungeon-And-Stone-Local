@@ -48,6 +48,12 @@
       15
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      21,
+      36
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §9 정수 내용 [창]"
 }

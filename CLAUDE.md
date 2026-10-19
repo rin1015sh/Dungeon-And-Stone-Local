@@ -134,7 +134,7 @@ assets/                  fonts/ sprites/ audio/ shaders/(portal 포탈 · post_g
 
 ## 핵심 개념 빠른 참조
 
-- **수식**: `{키}` 자리표시자 + 사칙연산/`min`/`max`/`floor`(Godot Expression). 키 = `level`, `bal.<balance 경로>`, `<스탯 id>`. 예(생명력 — `resources.json`): `"floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res} + {str} * {bal.hp.per_str})"` = 50 + 레벨×10 + 물리내성×3 + 근력×1.5.
+- **수식**: `{키}` 자리표시자 + 사칙연산/`min`/`max`/`floor`(Godot Expression). 키 = `level`, `bal.<balance 경로>`, `<스탯 id>`. 예(생명력 — `resources.json`): `"floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res})"` = 50 + 레벨×10 + 물리내성×3 (+ 정수 `resource_ranges.hp`가 `max:hp` 수정자로 — 근력은 생명력에 안 들어감, J12).
 - **스탯 계산**: `(기본 + Σflat + Σ자식×coef) × max(0, 1+Σpercent)` → 클램프. 수정자는 출처(`source_id`)별로 붙이고 뗀다.
 - **스탯 구성(2026-10-14)**: 주 스탯 5종(근력·민첩·물리내성·항마력·정신력) + 주 스탯으로 대체할 수 없는 세부 스탯 12종(시각·식욕·소화력·자연재생력·영혼 재생력·명중률·감응도 2(화염·냉기)·내성 4(화염·냉기·독·어둠))만 둔다. 새 세부 스탯은 고유 효과가 있을 때만 추가하고 규칙에 연결한다(`tests/test_sub_stats.gd`가 남은 목록·연결을 검사). 가정 ST1~ST5.
 - **수정자 대상**: 스탯 id / `max:<자원>` / `regen:<자원>` / `dmg_taken:<피해유형|physical|magical|all>` / `dmg_dealt:…`.

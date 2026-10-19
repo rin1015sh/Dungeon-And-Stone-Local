@@ -40,6 +40,12 @@
       38
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      17,
+      28
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §9 타입이 곧 색 [원]. 신장 −25는 스탯이 없어 뺐다"
 }

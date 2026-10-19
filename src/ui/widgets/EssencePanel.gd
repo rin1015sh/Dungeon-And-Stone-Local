@@ -65,6 +65,10 @@ static func describe(db: GameDatabase, inst: Dictionary) -> String:
 		var sd: StatDef = db.stats.get(k)
 		stats.append("%s +%d" % [DataNames.entry(db, "stats", k), int(st[k])] \
 			+ ("" if sd == null or sd.implemented else Strings.t("essence.stat_inert")))
+	var res := JsonUtil.get_dict(inst, "resources")
+	for r: String in res:
+		var rd: ResourceDef = db.resources.get(r)
+		stats.append("%s +%d" % [rd.name_ko if rd != null else r, int(res[r])])
 	lines.append(Strings.t("essence.tip_stats", {"list": ", ".join(stats)}))
 	return "\n".join(lines)
 

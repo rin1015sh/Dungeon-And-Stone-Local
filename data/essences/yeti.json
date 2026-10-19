@@ -48,6 +48,12 @@
       12
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      19,
+      32
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §10 원작: 정수는 있으나 내용 미상 → 창작"
 }

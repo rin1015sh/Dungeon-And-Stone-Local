@@ -39,6 +39,12 @@
       9
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.8. 노랑 = 칼날 스치기(칼날늑대와 공유)"
 }

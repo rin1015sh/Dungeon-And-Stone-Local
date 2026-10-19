@@ -14,7 +14,7 @@ extends RefCounted
 
 const SOURCE_PREFIX := "essence:"
 
-var absorbed: Array[Dictionary] = []  # 정수 사례 {"essence", "color", "stats"}
+var absorbed: Array[Dictionary] = []  # 정수 사례 {"essence", "color", "stats", "resources"}
 var deletions: int = 0
 
 
@@ -202,6 +202,9 @@ func _attach(a: Actor, inst: Dictionary) -> void:
 	for r: String in res:
 		if not is_zero_approx(float(res[r])):
 			a.stats.add_modifier(Modifier.new(src, "max:" + r, float(res[r])))
+	var rolled := JsonUtil.get_dict(inst, "resources")  # 굴린 자원 최대치(생명력 — resource_ranges)
+	for r: String in rolled:
+		a.stats.add_modifier(Modifier.new(src, "max:" + r, float(rolled[r])))
 	for sid: String in granted_skills(db, inst):
 		a.learn_skill(sid)
 

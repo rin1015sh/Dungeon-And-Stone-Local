@@ -55,6 +55,12 @@
       12
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      17,
+      28
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §10 수호자 정수(무지갯빛) — 액티브 전부"
 }

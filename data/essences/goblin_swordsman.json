@@ -48,6 +48,12 @@
       6
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.2"
 }

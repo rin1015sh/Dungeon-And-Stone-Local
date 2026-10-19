@@ -39,6 +39,12 @@
       22
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      30,
+      50
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §10 수호자 정수 — 광분·초재생 [원], 휘두르기는 고유라 제외"
 }

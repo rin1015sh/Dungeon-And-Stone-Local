@@ -169,6 +169,13 @@ static func _essences(v: ValidatorBase) -> void:
 		for r: String in JsonUtil.get_dict(e, "resource_mods"):
 			if not v.db.resources.has(r):
 				v.err(w, "resource_mods '%s' 없는 자원" % r)
+		var rr := JsonUtil.get_dict(e, "resource_ranges")
+		for r: String in rr:
+			var span: Variant = rr[r]
+			if not v.db.resources.has(r):
+				v.err(w, "resource_ranges '%s' 없는 자원" % r)
+			elif not (span is Array and (span as Array).size() == 2 and JsonUtil.is_number(span[0]) and JsonUtil.is_number(span[1])):
+				v.err(w, "resource_ranges '%s' 범위는 [최소, 최대]" % r)
 		PassiveRules.check(v, w + ".passive", JsonUtil.get_dict(e, "passive"))
 		var actives := JsonUtil.get_array(e, "actives")
 		if actives.is_empty():

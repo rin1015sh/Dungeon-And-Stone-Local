@@ -4,8 +4,8 @@ extends RefCounted
 ##   확률: 몬스터 essence_drops가 있으면 그 값, 없으면 rank(무등급·중간 보스·수호자) → 등급별 확률.
 ##         balance essence.drop_mode가 "original"이면 일반 몬스터는 drop_chance_original. 균열 안이면 × rift_mult.
 ##   정수 = data/essences에서 source_monster가 그 몬스터인 항목. 색은 actives 중 하나(수호자급이면 무지갯빛).
-##   스탯은 떨어질 때 stat_ranges 안에서 굴린다(수호자 정수 × guardian_stat_mult).
-## 정수 사례(instance): {"essence": id, "color": 색 id, "stats": {스탯 id: 값}}
+##   스탯은 떨어질 때 stat_ranges 안에서, 자원 최대치(생명력)는 resource_ranges 안에서 굴린다(수호자 정수 × guardian_stat_mult).
+## 정수 사례(instance): {"essence": id, "color": 색 id, "stats": {스탯 id: 값}, "resources": {자원 id: 최대치 증가}}
 
 const GUARDIAN_RANKS := ["guardian", "variant_guardian"]
 
@@ -65,14 +65,23 @@ static func make(db: GameDatabase, essence_id: String, color: String, rng: Rng, 
 		for a: Variant in JsonUtil.get_array(def, "actives"):
 			colors.append(JsonUtil.get_str(a if a is Dictionary else {}, "color"))
 		c = str(rng.pick(colors)) if not colors.is_empty() else ""
-	return {"essence": essence_id, "color": c, "stats": roll_stats(db, def, rng, guardian)}
+	return {"essence": essence_id, "color": c, "stats": roll_stats(db, def, rng, guardian),
+		"resources": roll_resources(db, def, rng, guardian)}
 
 
 ## stat_ranges 안에서 정수로 굴린다. 수호자면 × guardian_stat_mult(반올림).
 static func roll_stats(db: GameDatabase, def: Dictionary, rng: Rng, guardian: bool = false) -> Dictionary:
+	return _roll(db, JsonUtil.get_dict(def, "stat_ranges"), rng, guardian)
+
+
+## resource_ranges(자원 최대치 증가 — 생명력) 안에서 굴린다. 규칙은 스탯과 같다.
+static func roll_resources(db: GameDatabase, def: Dictionary, rng: Rng, guardian: bool = false) -> Dictionary:
+	return _roll(db, JsonUtil.get_dict(def, "resource_ranges"), rng, guardian)
+
+
+static func _roll(db: GameDatabase, ranges: Dictionary, rng: Rng, guardian: bool) -> Dictionary:
 	var mult := float(db.bal("essence.guardian_stat_mult", 1.5)) if guardian else 1.0
 	var out := {}
-	var ranges := JsonUtil.get_dict(def, "stat_ranges")
 	var keys: Array = ranges.keys()
 	keys.sort()
 	for k: Variant in keys:

@@ -42,6 +42,12 @@
       15
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      11,
+      19
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §9 초반 정수 중 최상위권 [원]"
 }

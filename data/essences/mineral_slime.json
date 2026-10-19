@@ -44,6 +44,12 @@
       23
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      11,
+      19
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §11 초록 = 분열(슬라임과 공유 → 중복 거부)"
 }

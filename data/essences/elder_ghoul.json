@@ -48,6 +48,12 @@
       6
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.5. 회색 = 할퀴기(구울과 공유) — 구울의 빨강과 함께 흡수 불가"
 }

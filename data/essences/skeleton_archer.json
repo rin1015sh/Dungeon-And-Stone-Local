@@ -44,6 +44,12 @@
       8
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      4,
+      6
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §9"
 }

@@ -30,6 +30,12 @@
       8
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "resource_mods": {
     "soul": 0
   },

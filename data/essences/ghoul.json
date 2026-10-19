@@ -36,6 +36,12 @@
       5
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.4. 할퀴기는 엘더 구울과 공유"
 }

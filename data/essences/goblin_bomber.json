@@ -44,6 +44,12 @@
       12
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      15,
+      24
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §11 드롭률 10%(중간 보스). 지원 요청은 고유라 제외"
 }

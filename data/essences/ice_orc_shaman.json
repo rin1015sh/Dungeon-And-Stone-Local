@@ -47,6 +47,12 @@
       8
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      14
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §10 원작 정수: (A) 강철빙벽"
 }

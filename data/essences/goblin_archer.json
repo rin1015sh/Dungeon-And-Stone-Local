@@ -61,6 +61,12 @@
       5
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      4,
+      6
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.3 [원] 원작 수치 ±2. 집착은 효과 없음"
 }

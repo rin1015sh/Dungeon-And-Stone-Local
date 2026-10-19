@@ -53,6 +53,12 @@
       26
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      30,
+      50
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §9 수호자 정수 — 태양 약점도 함께"
 }

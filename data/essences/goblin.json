@@ -57,6 +57,12 @@
       4
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      8,
+      13
+    ]
+  },
   "source": "placeholder",
   "notes": "§6.1. 그륵 하울링은 고유라 제외"
 }

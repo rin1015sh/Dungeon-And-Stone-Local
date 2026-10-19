@@ -66,6 +66,29 @@ func test_guardian_essence_has_all_actives_and_upgrades() -> void:
 	var boosted := EssenceDrop.roll_stats(db, {"stat_ranges": {"agi": [10, 10]}}, r, true)
 	assert_eq(int(normal["agi"]), 10)
 	assert_eq(int(boosted["agi"]), 15, "스탯 × 1.5")
+	assert_eq(int(EssenceDrop.roll_resources(db, {"resource_ranges": {"hp": [10, 10]}}, r, true)["hp"]), 15, "생명력도 × 1.5")
+
+
+func test_essence_raises_max_hp_and_removal_takes_it_back() -> void:
+	var pc := _pc()
+	var hp := pc.pool.get_max("hp")
+	var inst := EssenceDrop.make(db, "ghoul", "red", Rng.new(3))
+	var gain := int(JsonUtil.get_dict(inst, "resources").get("hp", 0))
+	var span := JsonUtil.get_array(JsonUtil.get_dict(db.get_entry("essences", "ghoul"), "resource_ranges"), "hp")
+	assert_true(gain >= int(span[0]) and gain <= int(span[1]), "생명력은 resource_ranges 안에서 굴린다")
+	assert_eq(pc.essences.absorb(pc, inst), "")
+	assert_near(pc.pool.get_max("hp"), hp + gain, 0.0001, "흡수하면 최대 생명력이 오른다")
+	pc.essences.remove(pc, 0)
+	assert_near(pc.pool.get_max("hp"), hp, 0.0001, "제거하면 돌아간다")
+
+
+func test_every_essence_gives_hp_and_ranged_less() -> void:
+	var melee := JsonUtil.get_array(JsonUtil.get_dict(db.get_entry("essences", "goblin_swordsman"), "resource_ranges"), "hp")
+	var ranged := JsonUtil.get_array(JsonUtil.get_dict(db.get_entry("essences", "goblin_archer"), "resource_ranges"), "hp")
+	assert_true(int(ranged[1]) < int(melee[0]), "같은 9등급이라도 원딜(궁수) 정수는 생명력이 적다")
+	for id: Variant in db.get_collection("essences").keys():
+		var hp := JsonUtil.get_array(JsonUtil.get_dict(db.get_entry("essences", str(id)), "resource_ranges"), "hp")
+		assert_true(hp.size() == 2 and int(hp[0]) > 0, "%s 정수는 생명력을 준다" % id)
 
 
 func test_remove_detaches_and_delete_cost_doubles() -> void:

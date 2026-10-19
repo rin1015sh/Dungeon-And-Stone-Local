@@ -35,6 +35,12 @@
       9
     ]
   },
+  "resource_ranges": {
+    "hp": [
+      17,
+      28
+    ]
+  },
   "source": "placeholder",
   "notes": "명세 §11 초록 = 독성부여(2층 홉고블린 정수와 중복 관계 [원])"
 }
