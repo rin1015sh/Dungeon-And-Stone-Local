@@ -72,7 +72,7 @@
       "also": [
         {
           "if": "self_status",
-          "status": "wolf_pack",
+          "status": "rally",
           "not": true
         }
       ]

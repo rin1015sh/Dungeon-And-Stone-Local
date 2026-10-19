@@ -15,6 +15,9 @@ extends RefCounted
 ## - 차례 단위 상태는 전투가 끝나면 풀린다(clear_temporary). "lingers": true(독·출혈 …)는 남아서 전투 밖에서는
 ##   게임 시간 status.linger_hours_per_turn시간을 한 차례로 쳐서 주기 효과·지속시간이 흐른다(tick_hours).
 ## - 수식 수정자는 소유자 스탯이 바뀌면 다시 계산한다(냉기 내성을 올리면 저체온증이 바로 약해진다).
+## - after_immune: n — 풀리면 n차례 동안 같은 상태에 걸리지 않는다(기절·빙결 사슬 막기, 상태이상 재기획 2026-10-19).
+## - on_act {resource, amount}: 소유자가 행동할 때마다 중첩 수만큼(출혈 — 움직일수록 흘린다). heal_cures_stack: 회복을 받으면 1중첩 줄어든다.
+## - hit_taken / crit_taken: 이 상태가 걸린 대상을 치는 쪽의 명중(퍼센트 포인트)·치명 확률 보너스(표식 — DamageCalc).
 
 signal applied(status_id: String)
 signal removed(status_id: String)
@@ -31,6 +34,7 @@ var dot_mult: float = 1.0
 ## 소유자 패시브 status_immune의 합(썩은 거구의 출혈 면역 …). Actor가 맞춘다 — 모든 부여 경로가 immune()에서 막힌다.
 var passive_immune: Array[String] = []
 var _refreshing: bool = false
+var _after: Dictionary = {}  # id -> 남은 차례(after_immune)
 
 
 func _init(db: GameDatabase, stats: StatBlock, pool: ResourcePool) -> void:
@@ -78,13 +82,44 @@ func remove(id: String) -> bool:
 		return false
 	_active.erase(id)
 	_stats.remove_source(SOURCE_PREFIX + id)
+	var after := JsonUtil.get_float(_db.get_entry("statuses", id), "after_immune")
+	if after > 0.0:
+		_after[id] = after
 	removed.emit(id)
 	return true
 
 
+## 소유자가 행동했다: on_act(출혈)를 중첩 수만큼 준다.
+func on_acted() -> void:
+	for id: String in _active.keys():
+		var od := JsonUtil.get_dict(_db.get_entry("statuses", id), "on_act")
+		var res := JsonUtil.get_str(od, "resource")
+		if not od.is_empty() and _pool.has_resource(res):
+			var per := JsonUtil.get_float(od, "amount")
+			if res == "hp" and per < 0.0:
+				per *= dot_mult
+			_pool.modify(res, per * stacks(id), SOURCE_PREFIX + id)
+
+
+## 생명력을 회복받았다: heal_cures_stack인 상태(출혈)를 1중첩 줄인다.
+func on_healed() -> void:
+	for id: String in _active.keys():
+		var def := _db.get_entry("statuses", id)
+		if not JsonUtil.get_bool(def, "heal_cures_stack"):
+			continue
+		var st: Dictionary = _active[id]
+		if int(st["stacks"]) <= 1:
+			remove(id)
+			continue
+		st["stacks"] = int(st["stacks"]) - 1
+		_stats.remove_source(SOURCE_PREFIX + id)
+		for i in int(st["stacks"]):
+			_stats.add_modifiers_from_data(SOURCE_PREFIX + id, _mods(def))
+
+
 ## 패시브 면역(status_immune), 스탯 문턱(immune_if), 걸린 상태의 grants_immunity 때문에 걸리지 않는가.
 func immune(id: String) -> bool:
-	if passive_immune.has(id):
+	if passive_immune.has(id) or float(_after.get(id, 0.0)) > 0.0:
 		return true
 	for a: String in _active:
 		if JsonUtil.get_array(_db.get_entry("statuses", a), "grants_immunity").has(id):
@@ -248,6 +283,7 @@ func clear_temporary() -> Array[String]:
 		if str(st["unit"]) == "turn" and float(st["remaining"]) >= 0.0 				and not JsonUtil.get_bool(_db.get_entry("statuses", id), "lingers"):
 			remove(id)
 			out.append(id)
+	_after.clear()
 	return out
 
 
@@ -339,6 +375,11 @@ func _element_resist(dtype: String) -> float:
 
 
 func _countdown(unit: String, amount: float) -> void:
+	if unit == "turn":
+		for id: String in _after.keys():  # 풀린 뒤 면역은 그다음 차례부터 줄어든다
+			_after[id] = float(_after[id]) - amount
+			if float(_after[id]) <= 0.000001:
+				_after.erase(id)
 	var expired: Array[String] = []
 	for id: String in _active:
 		var st: Dictionary = _active[id]

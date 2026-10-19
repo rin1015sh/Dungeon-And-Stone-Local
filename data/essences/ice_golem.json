@@ -10,7 +10,7 @@
     "name_ko": "냉기 오러",
     "desc_ko": "자기 차례가 끝날 때마다 적 하나를 굼뜨게 한다.",
     "turn_end_foe_status": {
-      "status": "slow",
+      "status": "frost",
       "target": "random"
     }
   },

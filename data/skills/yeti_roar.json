@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "yeti_roar"
+      "status": "rally"
     }
   ],
   "source": "placeholder"

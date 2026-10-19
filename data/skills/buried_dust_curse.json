@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "dust_curse"
+      "status": "blind"
     }
   ],
   "source": "placeholder"

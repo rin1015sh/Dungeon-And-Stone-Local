@@ -89,7 +89,7 @@
       "also": [
         {
           "if": "foe_status",
-          "status": "smoke_screen",
+          "status": "blind",
           "not": true
         }
       ]

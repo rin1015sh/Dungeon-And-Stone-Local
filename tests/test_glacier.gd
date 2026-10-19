@@ -42,7 +42,7 @@ func test_ice_golem_aura_and_sabertooth_ambush() -> void:
 	BattlePassives.turn_end(b, golem)
 	BattlePassives.turn_end(b, golem)
 	for u in b.side_units(Combatant.SIDE_PARTY):
-		assert_eq(u.actor.statuses.stacks("slow"), 2, "냉기 오러: 라운드마다 적 전체 [둔화] +1")
+		assert_eq(u.actor.statuses.stacks("frost"), 2, "냉기 오러: 라운드마다 적 전체 [서리] +1(둔화는 서리로 합침)")
 	var b2 := _battle(["sabertooth"])
 	var tiger := b2.side_units(Combatant.SIDE_ENEMY)[0].actor
 	var me := b2.side_units(Combatant.SIDE_PARTY)[0].actor
@@ -115,7 +115,7 @@ func test_tarunbas_pattern_and_collapse() -> void:
 	assert_false(pat.wants_extra_action(b, t))
 	t.actor.pool.set_current("hp", t.actor.pool.get_max("hp") * 0.45)
 	BossHooks.check_all(b)
-	assert_true(t.actor.statuses.has("tarun_roar"), "50%에서 포효")
+	assert_true(t.actor.statuses.has("rally"), "50%에서 포효")
 	assert_true(pat.wants_extra_action(b, t), "이후 라운드당 2회")
 	assert_true(t.actor.damage_affinity("lightning", "magical") > 1.0, "전기 약점")
 	assert_eq(t.actor.damage_affinity("cold", "magical"), 0.0, "냉기 면역")

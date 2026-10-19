@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "mud_hardened"
+      "status": "iron_wall"
     }
   ],
   "source": "placeholder"

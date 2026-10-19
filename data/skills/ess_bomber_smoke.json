@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "smoke_screen"
+      "status": "blind"
     }
   ],
   "essence_of": "bomber_smoke",

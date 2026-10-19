@@ -128,6 +128,8 @@
     "no_flee_ranks": ["guardian", "variant_guardian", "lord"],
     "ambush_gauge": 50,
     "may_skip_chance": 0.3,
+    "_taunt_comment": "끌어들이기(draws_attacks): 대상 규칙이 없는 몬스터 공격이 이 확률로 끌어들이는 아군을 먼저 노린다",
+    "taunt_chance": 0.75,
     "max_side_units": 6,
     "hours_per_turn": 0.01,
     "flee_grace_hours": 0.5,

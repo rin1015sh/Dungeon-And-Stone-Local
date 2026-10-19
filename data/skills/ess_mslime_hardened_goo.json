@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "hardened_goo"
+      "status": "snare"
     }
   ],
   "essence_of": "mslime_hardened_goo",

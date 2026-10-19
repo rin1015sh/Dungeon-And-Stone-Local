@@ -76,7 +76,7 @@
     {
       "if": "self_status",
       "use": "basic_attack",
-      "status": "mud_merged"
+      "status": "lurk"
     },
     {
       "if": "hp_below",
@@ -85,7 +85,7 @@
       "also": [
         {
           "if": "self_status",
-          "status": "mud_hardened",
+          "status": "iron_wall",
           "not": true
         }
       ]

@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "banshee_sob"
+      "status": "daze"
     }
   ],
   "source": "placeholder"

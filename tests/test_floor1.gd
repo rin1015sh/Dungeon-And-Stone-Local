@@ -43,7 +43,7 @@ func test_on_hit_passive_and_filter() -> void:
 	for s in 40:
 		var t := Actor.new(db, {"p_res": 0, "agi": 0})
 		_hit(gob, t, {"type": "damage", "power": 0.1, "damage_type": "weapon"}, s)
-		got = got or t.statuses.has("goblin_paralysis")
+		got = got or t.statuses.has("paralysis")
 	assert_true(got, "고블린 근접 적중 → 가끔 마비독")
 	var archer := Monster.create(db, "goblin_archer")
 	var melee_poison := false
@@ -123,7 +123,7 @@ func test_wolf_pack_ai() -> void:
 	var b := _battle(["blade_wolf", "blade_wolf"], null, 6, false)
 	var w := b.side_units(Combatant.SIDE_ENEMY)[0]
 	assert_eq(b.ai_action(w)["skill"], "wolf_pack_hunt", "늑대 둘 이상, 버프 없음 → 무리 사냥")
-	w.actor.statuses.apply("wolf_pack")
+	w.actor.statuses.apply("rally")
 	assert_eq(b.ai_action(w)["skill"], "wolf_blade_graze", "출혈 없는 대상 → 칼날 스치기")
 
 
@@ -189,7 +189,7 @@ func test_essence_passive_works_for_player() -> void:
 	for s in 60:
 		var t := Actor.new(db, {"agi": 0})
 		_hit(pc, t, {"type": "damage", "power": 0.1, "damage_type": "weapon", "accuracy": 200}, s)
-		got = got or t.statuses.has("goblin_paralysis")
+		got = got or t.statuses.has("paralysis")
 	assert_true(got, "정수판 마비독 20%")
 	pc.essences.remove(pc, 0)
 	assert_true(pc.passives.is_empty(), "제거하면 패시브도 사라진다")

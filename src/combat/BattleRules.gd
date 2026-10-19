@@ -90,9 +90,15 @@ static func _avg_agi(list: Array[Combatant]) -> float:
 	return s / float(list.size())
 
 
-## 공포(flag may_skip_turn): 차례마다 combat.may_skip_chance 확률로 움직이지 못한다.
+## 공포·마비(flag may_skip_turn): 차례마다 그 상태의 skip_chance(없으면 combat.may_skip_chance) 확률로 움직이지 못한다.
+## 여럿이면 가장 높은 확률 하나로 굴린다.
 static func fear_skip(b: Battle, c: Combatant) -> bool:
-	return c.actor.statuses.has_flag("may_skip_turn") and b.rng.chance(float(b.db.bal("combat.may_skip_chance", 0.3)))
+	var best := 0.0
+	for id in c.actor.statuses.ids():
+		var def := b.db.get_entry("statuses", id)
+		if JsonUtil.get_array(def, "flags").has("may_skip_turn"):
+			best = maxf(best, JsonUtil.get_float(def, "skip_chance", float(b.db.bal("combat.may_skip_chance", 0.3))))
+	return best > 0.0 and b.rng.chance(best)
 
 
 ## 전투가 끝났다: 게이지·전투 표식·오러를 비우고, 전투 한정 상태(statuses "battle_only": true)와

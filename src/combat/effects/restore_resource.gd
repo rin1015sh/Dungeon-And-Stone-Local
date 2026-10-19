@@ -21,6 +21,8 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if changed == 0.0:
 		ctx.say("effect.restore_none", {"resource": name_ko}, "info")
 		return amount < 0.0
+	if res == "hp" and changed > 0.0:
+		actor.statuses.on_healed()  # 출혈 1중첩 멎음
 	ctx.say("effect.restore", {"resource": name_ko, "amount": roundi(absf(changed))}, "good" if changed > 0.0 else "warn")
 	return true
 

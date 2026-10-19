@@ -75,7 +75,7 @@
       "also": [
         {
           "if": "foe_status",
-          "status": "owl_hoot",
+          "status": "blind",
           "not": true
         }
       ]

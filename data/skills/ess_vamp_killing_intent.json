@@ -15,7 +15,7 @@
     },
     {
       "type": "apply_status",
-      "status": "vamp_intent"
+      "status": "fear"
     }
   ],
   "essence_of": "vamp_killing_intent",

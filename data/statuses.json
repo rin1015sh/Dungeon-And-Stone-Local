@@ -88,7 +88,18 @@
       }
     ],
     "source": "placeholder",
-    "lingers": true
+    "lingers": true,
+    "max_stacks": 3,
+    "on_act": {
+      "resource": "hp",
+      "amount": -1
+    },
+    "heal_cures_stack": true,
+    "resist": {
+      "stats": [
+        "p_res"
+      ]
+    }
   },
   {
     "id": "poison",
@@ -114,7 +125,8 @@
     },
     "desc_ko": "독이 돈다. 차례마다 생명력이 깎인다. 독 저항이 높으면 덜 걸리고 덜 아프다.",
     "source": "placeholder",
-    "lingers": true
+    "lingers": true,
+    "max_stacks": 5
   },
   {
     "id": "stun",
@@ -132,11 +144,11 @@
     "mental": true,
     "resist": {
       "stats": [
-        "int",
-        "m_res"
+        "p_res"
       ]
     },
-    "notes": "명세 §4 정신계 — 정신력·항마력으로 저항"
+    "notes": "명세 §4 정신계 — 정신력·항마력으로 저항",
+    "after_immune": 1
   },
   {
     "id": "fear",
@@ -151,11 +163,17 @@
     ],
     "modifiers": [
       {
-        "target": "agi",
-        "percent": -0.1
+        "target": "dmg_dealt:all",
+        "percent": -0.15
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "skip_chance": 0.3,
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    }
   },
   {
     "id": "hyperalgesia",
@@ -210,7 +228,18 @@
       }
     ],
     "source": "placeholder",
-    "lingers": true
+    "lingers": true,
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": -0.15
+      }
+    ],
+    "resist": {
+      "stats": [
+        "resist_fire"
+      ]
+    }
   },
   {
     "id": "stamina_depleted",
@@ -264,7 +293,12 @@
         "flat": -30
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "resist": {
+      "stats": [
+        "sight"
+      ]
+    }
   },
   {
     "id": "trap_set",
@@ -285,12 +319,11 @@
     "source": "placeholder"
   },
   {
-    "id": "hardened",
-    "name_ko": "굳히기",
+    "id": "iron_wall",
+    "name_ko": "철벽",
     "kind": "buff",
-    "desc_ko": "몸을 진흙처럼 굳혔다. 물리 공격에 단단해진다.",
     "duration": {
-      "amount": 1,
+      "amount": 2,
       "unit": "turn"
     },
     "modifiers": [
@@ -302,52 +335,38 @@
     "source": "placeholder"
   },
   {
-    "id": "pack_hunt",
-    "name_ko": "무리 사냥",
+    "id": "rally",
+    "name_ko": "격앙",
     "kind": "buff",
-    "desc_ko": "함께 사냥하는 기세로 힘이 오른다.",
+    "duration": {
+      "amount": 4,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.2
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "lurk",
+    "name_ko": "잠복",
+    "kind": "buff",
     "duration": {
       "amount": 3,
       "unit": "turn"
     },
     "modifiers": [
       {
-        "target": "str",
-        "percent": 0.1
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "merged",
-    "name_ko": "일체화",
-    "kind": "buff",
-    "desc_ko": "주변과 하나가 되어 다음 일격을 노린다(은신 판정은 아직 없음).",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
         "target": "dmg_dealt:all",
-        "percent": 0.3
+        "percent": 0.5
       }
     ],
+    "consume_on_attack": true,
+    "battle_only": true,
     "source": "placeholder"
-  },
-  {
-    "id": "goblin_paralysis",
-    "name_ko": "고블린 마비독",
-    "kind": "debuff",
-    "desc_ko": "독이 퍼져 몸이 굳었다. 한 차례 움직일 수 없다.",
-    "duration": {
-      "amount": 1,
-      "unit": "turn"
-    },
-    "flags": [
-      "skip_turn"
-    ],
-    "source": "original"
   },
   {
     "id": "paralysis",
@@ -355,19 +374,21 @@
     "kind": "debuff",
     "desc_ko": "몸이 말을 듣지 않는다. 한 차례 움직일 수 없다.",
     "duration": {
-      "amount": 1,
+      "amount": 2,
       "unit": "turn"
     },
     "flags": [
-      "skip_turn"
+      "may_skip_turn"
     ],
     "source": "placeholder",
     "resist": {
       "stats": [
-        "p_res"
+        "m_res"
       ]
     },
-    "notes": "명세 §4 육체계 — 물리내성으로 저항"
+    "notes": "명세 §4 육체계 — 물리내성으로 저항",
+    "skip_chance": 0.5,
+    "after_immune": 1
   },
   {
     "id": "snare",
@@ -387,7 +408,12 @@
         "percent": -0.2
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "resist": {
+      "stats": [
+        "str"
+      ]
+    }
   },
   {
     "id": "hidden",
@@ -419,14 +445,14 @@
         "amount": "-{bal.status.rot_per_turn}"
       }
     ],
-    "modifiers": [
-      {
-        "target": "regen:hp",
-        "percent": -1.0
-      }
-    ],
     "source": "placeholder",
-    "lingers": true
+    "lingers": true,
+    "heal_mult": 0.5,
+    "resist": {
+      "stats": [
+        "m_res"
+      ]
+    }
   },
   {
     "id": "counter_stance",
@@ -449,23 +475,6 @@
     "source": "placeholder"
   },
   {
-    "id": "wolf_pack",
-    "name_ko": "무리 사냥",
-    "kind": "buff",
-    "desc_ko": "무리가 함께 몰아붙인다.",
-    "duration": {
-      "amount": 4,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": 0.2
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
     "id": "intimidated",
     "name_ko": "위축",
     "kind": "debuff",
@@ -477,50 +486,20 @@
     "modifiers": [
       {
         "target": "str",
-        "percent": -0.15
+        "percent": -0.2
       }
     ],
-    "source": "placeholder"
+    "source": "placeholder",
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    }
   },
   {
-    "id": "mud_hardened",
-    "name_ko": "굳은 진흙",
-    "kind": "buff",
-    "desc_ko": "진흙 몸이 돌처럼 굳었다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "p_res",
-        "percent": 0.5
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "mud_merged",
-    "name_ko": "일체화",
-    "kind": "buff",
-    "desc_ko": "주변과 하나가 되어 다음 일격을 노린다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "dmg_dealt:all",
-        "percent": 0.5
-      }
-    ],
-    "source": "original"
-  },
-  {
-    "id": "cursed_mud",
-    "name_ko": "저주 진흙",
+    "id": "curse",
+    "name_ko": "저주",
     "kind": "debuff",
-    "desc_ko": "끈적한 저주가 마력을 막는 힘을 갉아먹는다.",
     "duration": {
       "amount": 3,
       "unit": "turn"
@@ -528,9 +507,18 @@
     "modifiers": [
       {
         "target": "m_res",
-        "percent": -0.25
+        "percent": -0.2
+      },
+      {
+        "target": "dmg_taken:magical",
+        "percent": 0.15
       }
     ],
+    "resist": {
+      "stats": [
+        "m_res"
+      ]
+    },
     "source": "placeholder"
   },
   {
@@ -802,8 +790,9 @@
       ]
     },
     "purifiable": true,
-    "source": "original",
-    "notes": "명세 §4 [원] 가고일 석상. 정화·해주로 해제(remove_status)"
+    "source": "placeholder",
+    "notes": "명세 §4 [원] 가고일 석상. 정화·해주로 해제(remove_status)",
+    "after_immune": 1
   },
   {
     "id": "suppress",
@@ -879,24 +868,14 @@
       ]
     },
     "source": "placeholder",
-    "notes": "명세 §4 [창]"
-  },
-  {
-    "id": "slow",
-    "name_ko": "둔화",
-    "kind": "debuff",
-    "desc_ko": "냉기에 몸이 무거워진다. 쌓일수록 굼떠진다.",
-    "stackable": true,
-    "max_stacks": 5,
-    "battle_only": true,
+    "notes": "명세 §4 [창]",
     "modifiers": [
       {
-        "target": "agi",
-        "percent": -0.08
+        "target": "dmg_taken:blunt",
+        "percent": 0.5
       }
     ],
-    "source": "original",
-    "notes": "명세 §4 [원] 아이스 골렘 오러. 전투 끝에 해제"
+    "after_immune": 1
   },
   {
     "id": "confusion",
@@ -1006,44 +985,9 @@
     "source": "placeholder"
   },
   {
-    "id": "bone_barrier",
-    "name_ko": "뼈 방벽",
-    "kind": "buff",
-    "desc_ko": "뼈가 몸을 감싸 단단해진다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "p_res",
-        "percent": 0.4
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "curse_whisper",
-    "name_ko": "저주 속삭임",
+    "id": "daze",
+    "name_ko": "혼미",
     "kind": "debuff",
-    "desc_ko": "저주가 마법 저항을 갉아먹는다.",
-    "duration": {
-      "amount": 3,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "m_res",
-        "percent": -0.2
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "banshee_sob",
-    "name_ko": "흐느낌",
-    "kind": "debuff",
-    "desc_ko": "흐느낌이 정신을 흐린다.",
     "duration": {
       "amount": 2,
       "unit": "turn"
@@ -1051,9 +995,18 @@
     "modifiers": [
       {
         "target": "int",
-        "percent": -0.15
+        "percent": -0.2
+      },
+      {
+        "target": "regen:soul",
+        "percent": -1.0
       }
     ],
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    },
     "source": "placeholder"
   },
   {
@@ -1069,23 +1022,6 @@
       {
         "target": "dmg_taken:physical",
         "percent": -0.5
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "evil_sound",
-    "name_ko": "악의 소리",
-    "kind": "debuff",
-    "desc_ko": "귀를 긁는 소리에 정신이 흔들린다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "int",
-        "percent": -0.2
       }
     ],
     "source": "placeholder"
@@ -1178,23 +1114,6 @@
     "source": "original"
   },
   {
-    "id": "vamp_intent",
-    "name_ko": "살의",
-    "kind": "debuff",
-    "desc_ko": "살이 저릿하다. 몸이 굳는다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "agi",
-        "percent": -0.15
-      }
-    ],
-    "source": "original"
-  },
-  {
     "id": "vamp_blood_veil",
     "name_ko": "피의 장막",
     "kind": "buff",
@@ -1248,10 +1167,9 @@
     "source": "original"
   },
   {
-    "id": "pack_howl",
-    "name_ko": "무리 울음",
+    "id": "haste",
+    "name_ko": "신속",
     "kind": "buff",
-    "desc_ko": "무리의 울음에 발걸음이 빨라진다.",
     "duration": {
       "amount": 3,
       "unit": "turn"
@@ -1260,23 +1178,6 @@
       {
         "target": "agi",
         "percent": 0.15
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "yeti_roar",
-    "name_ko": "설인의 포효",
-    "kind": "buff",
-    "desc_ko": "포효로 근육이 부풀었다.",
-    "duration": {
-      "amount": 4,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": 0.2
       }
     ],
     "source": "placeholder"
@@ -1311,81 +1212,6 @@
     "source": "placeholder"
   },
   {
-    "id": "worm_lurk_strike",
-    "name_ko": "잠복",
-    "kind": "buff",
-    "desc_ko": "얼음 틈에서 튀어나올 때를 노린다. 다음 공격이 강하다.",
-    "duration": {
-      "amount": 3,
-      "unit": "turn"
-    },
-    "consume_on_attack": true,
-    "battle_only": true,
-    "modifiers": [
-      {
-        "target": "dmg_dealt:all",
-        "percent": 0.5
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "ice_armor",
-    "name_ko": "얼음 갑옷",
-    "kind": "buff",
-    "desc_ko": "몸에 두꺼운 얼음이 덮였다.",
-    "duration": {
-      "amount": 3,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "p_res",
-        "percent": 0.4
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "owl_hoot",
-    "name_ko": "부엉이 울음",
-    "kind": "debuff",
-    "desc_ko": "귀를 찢는 울음에 손이 떨린다. 명중이 떨어진다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "accuracy",
-        "flat": -15
-      }
-    ],
-    "resist": {
-      "stats": [
-        "int"
-      ]
-    },
-    "source": "placeholder"
-  },
-  {
-    "id": "orc_war_cry",
-    "name_ko": "전투 함성",
-    "kind": "buff",
-    "desc_ko": "함성에 피가 끓는다.",
-    "duration": {
-      "amount": 3,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": 0.15
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
     "id": "steel_ice_wall",
     "name_ko": "강철빙벽",
     "kind": "buff",
@@ -1398,23 +1224,6 @@
     "battle_only": true,
     "source": "original",
     "notes": "명세 §10.3 보호막 정신력×4, 3R"
-  },
-  {
-    "id": "tarun_roar",
-    "name_ko": "폭군의 포효",
-    "kind": "buff",
-    "desc_ko": "폭군이 울부짖으며 힘을 끌어올린다.",
-    "duration": {
-      "amount": 4,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": 0.25
-      }
-    ],
-    "source": "placeholder"
   },
   {
     "id": "troll_frenzy",
@@ -1478,40 +1287,6 @@
     "source": "placeholder"
   },
   {
-    "id": "shaft_shake",
-    "name_ko": "갱도 흔들기",
-    "kind": "debuff",
-    "desc_ko": "발밑이 흔들려 겨누기 어렵다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "accuracy",
-        "flat": -20
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "hardened_goo",
-    "name_ko": "굳은 점액",
-    "kind": "debuff",
-    "desc_ko": "굳은 점액이 몸을 붙잡는다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "agi",
-        "percent": -0.3
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
     "id": "venom_weapon",
     "name_ko": "독성부여",
     "kind": "buff",
@@ -1529,23 +1304,6 @@
     ],
     "source": "original",
     "notes": "명세 §11.3 [원] 3R 무기 적중 시 [중독] 60%"
-  },
-  {
-    "id": "mine_command",
-    "name_ko": "갱도 지휘",
-    "kind": "buff",
-    "desc_ko": "지휘에 맞춰 곡괭이를 힘껏 휘두른다.",
-    "duration": {
-      "amount": 4,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": 0.15
-      }
-    ],
-    "source": "placeholder"
   },
   {
     "id": "overheat",
@@ -1572,25 +1330,8 @@
     "source": "placeholder"
   },
   {
-    "id": "smoke_screen",
-    "name_ko": "연막",
-    "kind": "debuff",
-    "desc_ko": "자욱한 연기 때문에 앞이 보이지 않는다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "accuracy",
-        "flat": -30
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
     "id": "acid_corrosion",
-    "name_ko": "산성 부식",
+    "name_ko": "부식",
     "kind": "debuff",
     "desc_ko": "산성 점액이 갑옷과 살갗을 녹인다.",
     "duration": {
@@ -1604,63 +1345,12 @@
       }
     ],
     "source": "placeholder",
-    "lingers": true
-  },
-  {
-    "id": "curse_touch",
-    "name_ko": "저주의 손길",
-    "kind": "debuff",
-    "desc_ko": "차가운 손길에 팔이 저린다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": -0.15
-      }
-    ],
+    "lingers": true,
     "resist": {
       "stats": [
-        "m_res"
+        "p_res"
       ]
-    },
-    "source": "placeholder"
-  },
-  {
-    "id": "dust_curse",
-    "name_ko": "흙먼지 저주",
-    "kind": "debuff",
-    "desc_ko": "무덤 흙먼지가 눈을 가린다.",
-    "duration": {
-      "amount": 2,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "accuracy",
-        "flat": -15
-      }
-    ],
-    "source": "placeholder"
-  },
-  {
-    "id": "steel_stance",
-    "name_ko": "강철 자세",
-    "kind": "buff",
-    "desc_ko": "강철처럼 굳게 버틴다.",
-    "duration": {
-      "amount": 3,
-      "unit": "turn"
-    },
-    "modifiers": [
-      {
-        "target": "p_res",
-        "percent": 0.5
-      }
-    ],
-    "source": "placeholder"
+    }
   },
   {
     "id": "shield_wall",
@@ -1774,5 +1464,47 @@
     ],
     "source": "placeholder",
     "notes": "명세 §12.3 오답 → +20%"
+  },
+  {
+    "id": "vulnerable",
+    "name_ko": "취약",
+    "kind": "debuff",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.25
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "marked",
+    "name_ko": "표식",
+    "kind": "debuff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "hit_taken": 15,
+    "crit_taken": 0.1,
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
+    "id": "taunt",
+    "name_ko": "끌어들이기",
+    "kind": "buff",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "flags": [
+      "draws_attacks"
+    ],
+    "source": "placeholder"
   }
 ]

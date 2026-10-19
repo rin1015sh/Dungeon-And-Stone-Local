@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "hardened"
+      "status": "iron_wall"
     }
   ],
   "essence_of": "gnome_harden",

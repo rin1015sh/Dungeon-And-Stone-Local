@@ -14,7 +14,7 @@
     "on_hit": [
       {
         "type": "apply_status",
-        "status": "goblin_paralysis",
+        "status": "paralysis",
         "chance": 0.2
       }
     ],

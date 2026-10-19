@@ -195,6 +195,9 @@ func act(c: Combatant, action: Dictionary) -> bool:
 		"flee":
 			try_flee(c)
 	phase = PHASE_TURN_END
+	var hp_before := c.actor.pool.get_current("hp")
+	c.actor.statuses.on_acted()  # 출혈: 움직일수록 흘린다
+	BattleRules.report_dot(self, c, hp_before)
 	c.acted += 1
 	c.was_hit = false
 	timeline.consume(c, delay)

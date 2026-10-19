@@ -57,7 +57,7 @@
       "name_ko": "냉기 오러",
       "desc_ko": "주위에 냉기를 뿌린다. 시간이 지날수록 몸이 무거워진다.",
       "turn_end_foe_status": {
-        "status": "slow",
+        "status": "frost",
         "target": "all"
       },
       "modifiers": [
@@ -77,7 +77,7 @@
       "also": [
         {
           "if": "self_status",
-          "status": "ice_armor",
+          "status": "iron_wall",
           "not": true
         }
       ]

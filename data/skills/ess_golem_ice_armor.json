@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "ice_armor"
+      "status": "iron_wall"
     }
   ],
   "essence_of": "golem_ice_armor",

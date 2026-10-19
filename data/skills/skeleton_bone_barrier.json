@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "bone_barrier"
+      "status": "iron_wall"
     }
   ],
   "source": "placeholder"

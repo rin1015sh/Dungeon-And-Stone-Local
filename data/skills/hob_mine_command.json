@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "mine_command"
+      "status": "rally"
     }
   ],
   "source": "placeholder"

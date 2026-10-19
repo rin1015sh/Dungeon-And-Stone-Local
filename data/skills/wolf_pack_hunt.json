@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "wolf_pack"
+      "status": "rally"
     }
   ],
   "source": "placeholder",

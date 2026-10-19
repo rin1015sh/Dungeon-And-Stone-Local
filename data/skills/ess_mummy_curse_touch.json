@@ -17,7 +17,7 @@
     },
     {
       "type": "apply_status",
-      "status": "curse_touch"
+      "status": "intimidated"
     }
   ],
   "essence_of": "mummy_curse_touch",

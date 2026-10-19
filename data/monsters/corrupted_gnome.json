@@ -96,10 +96,10 @@
     {
       "if": "foe_status",
       "use": "corrupt_curse_mud",
-      "status": "cursed_mud",
+      "status": "curse",
       "not": true,
       "target": "without_status",
-      "target_status": "cursed_mud"
+      "target_status": "curse"
     },
     {
       "if": "always",

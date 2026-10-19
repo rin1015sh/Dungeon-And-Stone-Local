@@ -197,7 +197,7 @@
     "flags": {
       "phase": "p4",
       "old_memory_max_party": 5,
-      "twisted_status": "goblin_paralysis",
+      "twisted_status": "paralysis",
       "twisted_passive": "goblin_paralytic_blade"
     }
   },

@@ -15,7 +15,7 @@
     },
     {
       "type": "apply_status",
-      "status": "worm_lurk_strike"
+      "status": "lurk"
     }
   ],
   "essence_of": "worm_lurk",

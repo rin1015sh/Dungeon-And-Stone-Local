@@ -87,7 +87,7 @@
       "value": 0.3,
       "use": "mslime_hardened_goo",
       "target": "without_status",
-      "target_status": "hardened_goo"
+      "target_status": "snare"
     }
   ],
   "ai_cycle": [
