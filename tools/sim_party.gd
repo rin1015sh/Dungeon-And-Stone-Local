@@ -3,6 +3,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://tools/sim_party.gd -- [--n=300] [--only=<이름 일부>]
 ## --only를 주면 그 시나리오만 돌리고 리포트 파일은 쓰지 않는다(수치 맞추기용).
 ## --essences=real: 정수의 실제 고정 스탯·생명력을 붙인다(기본은 정수 스탯 없이 sim_parties.json의 stats만).
+## --essence_mult=0.8: --essences=real의 스탯·생명력에 곱한다(정수 수치를 얼마나 깎을지 볼 때).
 ## --base=race: 기본 스탯을 sim_parties.json stats 대신 종족 굴림 범위의 가운데로(정수 성장만 따로 보기). 둘 중 하나라도 주면 리포트 파일은 쓰지 않는다.
 ## tools/sim_parties.json의 파티(Lv4 4인·포션·정수)로 시나리오마다 n번 싸워 승률을 보고 docs/balance/rift.md에 쓴다.
 ## 아군 AI: 생명력이 potion_hp_ratio 아래면 하급 포션, smart면 [예고]가 찍혔을 때 방어, 아니면 기본 공격
@@ -26,6 +27,7 @@ func _initialize() -> void:
 	var cfg: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CFG))
 	cfg["real_essences"] = str(args.get("essences", "")) == "real"
 	cfg["race_base"] = str(args.get("base", "")) == "race"
+	cfg["essence_mult"] = str(args.get("essence_mult", "1")).to_float()
 	var n := str(args["n"]).to_int()
 	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json`, 시나리오당 %d회)." % n, "",
 		"| 시나리오 | 승률 | 목표 | 평균 차례 | 쓰러진 아군(평균) |", "|---|---|---|---|---|"])
@@ -71,6 +73,10 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 		for e: Dictionary in m["essences"]:
 			var inst := EssenceDrop.make(db, str(e["essence"]), str(e["color"]), Rng.new(1)) if bool(cfg["real_essences"]) \
 				else {"essence": e["essence"], "color": e["color"], "stats": {}}
+			for part: String in ["stats", "resources"]:
+				var vals := JsonUtil.get_dict(inst, part)
+				for k: String in vals:
+					vals[k] = roundi(float(vals[k]) * float(cfg["essence_mult"]))
 			pc.essences.absorb(pc, inst)
 		for item: String in cfg["items"]:
 			pc.inventory.add(item, int(cfg["items"][item]))
