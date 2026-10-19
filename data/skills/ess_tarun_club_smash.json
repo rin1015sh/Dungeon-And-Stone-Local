@@ -14,9 +14,20 @@
       "rider": {
         "damage_type": "cold",
         "ratio": 0.15
+      },
+      "power_if_status": {
+        "status": [
+          "frozen"
+        ],
+        "power": 1.53
       }
+    },
+    {
+      "type": "remove_status",
+      "status": "frozen"
     }
   ],
   "essence_of": "tarun_club_smash",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

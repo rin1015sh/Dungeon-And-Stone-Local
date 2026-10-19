@@ -11,9 +11,13 @@
     {
       "type": "apply_status",
       "status": "trap_set"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare"
     }
   ],
   "essence_of": "goblin_trap",
   "source": "placeholder",
-  "notes": "정수판 위력 45 → 덫 고정 피해, 속박 없음. 맵 설치(field_use)는 하지 않는다(정수 스킬은 전투 전용 — J14)"
+  "notes": "정수판 위력 45 → 덫 고정 피해, 속박 없음. 맵 설치(field_use)는 하지 않는다(정수 스킬은 전투 전용 — J14) · 정수 재기획 2026-10-19(J17)"
 }

@@ -7,7 +7,7 @@
   "passive": {
     "id": "goblin_poison_arrow",
     "name_ko": "독화살",
-    "desc_ko": "활로 맞히면 가끔 독이 퍼진다.",
+    "desc_ko": "활로 맞히면 가끔 독이 퍼지고, 독이 돈 상대를 더 아프게 맞힌다.",
     "on_hit_filter": {
       "ranged": true
     },
@@ -19,7 +19,11 @@
       }
     ],
     "implemented": true,
-    "notes": "[원] 정수판 20%"
+    "notes": "[원] 정수판 20% · 정수 재기획 2026-10-19(J17)",
+    "power_vs_status": {
+      "status": "poison",
+      "mult": 1.15
+    }
   },
   "actives": [
     {

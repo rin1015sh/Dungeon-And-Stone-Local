@@ -8,7 +8,7 @@
   "passive": {
     "id": "frost_fur",
     "name_ko": "서리 털가죽",
-    "desc_ko": "냉기에 조금 강하고, 가끔 물린 쪽에 서리가 내려앉는다.",
+    "desc_ko": "냉기에 조금 강하고, 물린 쪽에 서리가 내려앉는다.",
     "modifiers": [
       {
         "target": "dmg_taken:cold",
@@ -19,12 +19,13 @@
       {
         "type": "apply_status",
         "status": "frost",
-        "chance": 0.25
+        "chance": 1.0
       }
     ],
     "on_hit_filter": {
       "ranged": false
-    }
+    },
+    "notes": "정수 재기획 2026-10-19(J17)"
   },
   "actives": [
     {

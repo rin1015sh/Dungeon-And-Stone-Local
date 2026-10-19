@@ -16,11 +16,24 @@
       "base": 8
     },
     {
+      "type": "consume_status",
+      "status": "poison",
+      "damage": {
+        "scaling": "magic",
+        "power": 0.0,
+        "base": 0,
+        "damage_type": "poison",
+        "accuracy": 1000
+      },
+      "power_per_stack": 0.2
+    },
+    {
       "type": "apply_status",
       "status": "poison",
       "chance": 0.225
     }
   ],
   "essence_of": "golem_flesh_burst",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

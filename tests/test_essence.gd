@@ -188,8 +188,8 @@ func test_failed_status_skill_reports_no_effect() -> void:
 	var seen := false
 	for seed_value in 40:
 		var pc := _pc()
-		pc.essences.absorb(pc, _inst("guardian_eye", "blue"))
-		assert_true(pc.skills.has("ess_eye_paralysis_gaze"))
+		pc.essences.absorb(pc, _inst("iron_lizardman", "green"))
+		assert_true(pc.skills.has("ess_liz_metal_poison"))
 		var party: Array[Actor] = [pc]
 		var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"], true)
 		var c := b.next_turn()
@@ -198,9 +198,9 @@ func test_failed_status_skill_reports_no_effect() -> void:
 			c = b.next_turn()
 		if c == null:
 			continue
-		b.act(c, {"kind": "skill", "skill": "ess_eye_paralysis_gaze", "target": b.opponents(c)[0]})
+		b.act(c, {"kind": "skill", "skill": "ess_liz_metal_poison", "target": b.opponents(c)[0]})
 		var keys := b.history.map(func(h: Dictionary) -> String: return str(h["key"]))
 		if keys.has("combat.no_effect"):
 			seen = true
 			break
-	assert_true(seen, "마비 시선이 안 걸리면 '아무 효과도 내지 못했다'를 알린다")
+	assert_true(seen, "금속 독이 안 걸리면 '아무 효과도 내지 못했다'를 알린다")

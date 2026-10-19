@@ -7,7 +7,7 @@
   "passive": {
     "id": "gnome_corrupted_mud",
     "name_ko": "오염된 진흙",
-    "desc_ko": "맞힌 상대를 가끔 중독시키고, 진흙 몸의 성질이 조금 남는다.",
+    "desc_ko": "맞힌 상대를 가끔 중독시키고, 독이 돈 상대를 더 아프게 하며, 진흙 몸의 성질이 조금 남는다.",
     "on_hit": [
       {
         "type": "apply_status",
@@ -30,7 +30,11 @@
       }
     ],
     "implemented": true,
-    "notes": "×0.5"
+    "notes": "×0.5 · 정수 재기획 2026-10-19(J17)",
+    "power_vs_status": {
+      "status": "poison",
+      "mult": 1.1
+    }
   },
   "actives": [
     {

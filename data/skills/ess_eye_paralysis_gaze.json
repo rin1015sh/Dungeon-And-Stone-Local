@@ -1,6 +1,6 @@
 {
   "id": "ess_eye_paralysis_gaze",
-  "name_ko": "마비 시선(정수)",
+  "name_ko": "응시(정수)",
   "target": "enemy_single",
   "cost": {
     "soul": 10
@@ -10,10 +10,15 @@
   "effects": [
     {
       "type": "apply_status",
+      "status": "marked"
+    },
+    {
+      "type": "apply_status",
       "status": "paralysis",
       "chance": 0.195
     }
   ],
   "essence_of": "eye_paralysis_gaze",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

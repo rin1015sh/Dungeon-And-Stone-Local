@@ -7,7 +7,7 @@
   "passive": {
     "id": "goblin_paralytic_blade",
     "name_ko": "마비독 칼날",
-    "desc_ko": "근접 무기로 맞힐 때 가끔 상대를 마비독에 빠뜨린다.",
+    "desc_ko": "근접 무기로 맞힐 때 가끔 마비독을 남기고, 묶인 상대를 더 아프게 벤다.",
     "on_hit_filter": {
       "ranged": false
     },
@@ -19,7 +19,11 @@
       }
     ],
     "implemented": true,
-    "notes": "[원] 정수판 근접 적중 시 20%"
+    "notes": "[원] 정수판 근접 적중 시 20% · 정수 재기획 2026-10-19(J17)",
+    "power_vs_status": {
+      "status": "snare",
+      "mult": 1.15
+    }
   },
   "actives": [
     {

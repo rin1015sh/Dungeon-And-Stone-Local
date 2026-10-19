@@ -8,11 +8,23 @@
   "passive": {
     "id": "deathfiend_preservation",
     "name_ko": "육체보존",
-    "desc_ko": "상처가 빨리 아물고 출혈이 일찍 멎는다.",
+    "desc_ko": "상처가 빨리 아물고 출혈이 일찍 멎으며, 적을 쓰러뜨리면 몸을 추스른다.",
     "regen_per_round": 0.02,
     "status_duration_cap": {
       "bleeding": 2
-    }
+    },
+    "on_kill": [
+      {
+        "type": "remove_status",
+        "status": "bleeding"
+      },
+      {
+        "type": "restore_resource",
+        "resource": "hp",
+        "amount": "floor({max_hp} * 0.1)"
+      }
+    ],
+    "notes": "정수 재기획 2026-10-19(J17)"
   },
   "actives": [
     {

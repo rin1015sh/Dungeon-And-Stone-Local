@@ -1,18 +1,25 @@
 {
   "id": "ess_deathfiend_shield_arm",
   "name_ko": "방패팔 막기(정수)",
-  "target": "self",
+  "target": "ally_single",
   "cost": {
     "soul": 6
   },
   "delay_cost": 0,
-  "cooldown": 0,
+  "cooldown": 2,
   "effects": [
     {
+      "type": "cover",
+      "duration": 2
+    },
+    {
       "type": "apply_status",
-      "status": "shield_arm"
+      "status": "shield_arm",
+      "to": "self",
+      "duration": 2
     }
   ],
   "essence_of": "deathfiend_shield_arm",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

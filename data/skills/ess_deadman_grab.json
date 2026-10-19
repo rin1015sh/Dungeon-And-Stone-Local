@@ -10,8 +10,15 @@
       "type": "apply_status",
       "status": "snare",
       "chance": 0.375
+    },
+    {
+      "type": "apply_status",
+      "status": "shield_wall",
+      "to": "self",
+      "duration": 2
     }
   ],
   "essence_of": "deadman_grab",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

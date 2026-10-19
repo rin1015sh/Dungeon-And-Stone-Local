@@ -13,8 +13,14 @@
       "scaling": "phys",
       "power": 0.765,
       "damage_type": "slash"
+    },
+    {
+      "type": "gauge",
+      "amount": 20,
+      "to": "self"
     }
   ],
   "essence_of": "sabre_leap_claw",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

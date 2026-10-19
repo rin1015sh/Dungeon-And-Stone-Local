@@ -1,7 +1,7 @@
 {
   "id": "ess_giant_menacing_roar",
   "name_ko": "위협 포효(정수)",
-  "target": "enemy_single",
+  "target": "enemy_all",
   "cost": {
     "soul": 8
   },
@@ -10,10 +10,15 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "intimidated",
-      "duration": 2
+      "status": "intimidated"
+    },
+    {
+      "type": "apply_status",
+      "status": "taunt",
+      "to": "self"
     }
   ],
   "essence_of": "giant_menacing_roar",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

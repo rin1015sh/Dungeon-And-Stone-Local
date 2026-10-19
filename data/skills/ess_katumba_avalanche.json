@@ -14,8 +14,13 @@
       "power": 0.765,
       "damage_type": "cold",
       "base": 15
+    },
+    {
+      "type": "gauge",
+      "amount": -20
     }
   ],
   "essence_of": "katumba_avalanche",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

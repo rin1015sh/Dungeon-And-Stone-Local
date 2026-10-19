@@ -7,7 +7,7 @@
   "passive": {
     "id": "goblin_crude_swordplay",
     "name_ko": "어설픈 검술",
-    "desc_ko": "베기 공격의 치명타가 조금 잦아지고, 치명타는 가끔 출혈을 남긴다.",
+    "desc_ko": "베기 치명타가 잦고, 치명타는 출혈을 남기며, 피 흘리는 상대를 더 깊게 벤다.",
     "crit_bonus": {
       "value": 0.05,
       "damage_types": [
@@ -22,7 +22,11 @@
       }
     ],
     "implemented": true,
-    "notes": "×0.5: 치명 +5%p, 출혈 50%"
+    "notes": "×0.5: 치명 +5%p, 출혈 50% · 정수 재기획 2026-10-19(J17)",
+    "power_vs_status": {
+      "status": "bleeding",
+      "mult": 1.1
+    }
   },
   "actives": [
     {

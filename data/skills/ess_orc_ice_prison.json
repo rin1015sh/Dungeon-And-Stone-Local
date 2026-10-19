@@ -10,10 +10,14 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "frozen",
-      "chance": 0.637
+      "status": "frost"
+    },
+    {
+      "type": "apply_status",
+      "status": "frost"
     }
   ],
   "essence_of": "orc_ice_prison",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

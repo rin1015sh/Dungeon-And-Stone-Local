@@ -1,22 +1,25 @@
 {
   "id": "ess_deadman_shield_bash",
-  "name_ko": "방패 밀치기(정수)",
-  "target": "enemy_single",
-  "cost": {},
+  "name_ko": "방패 들기(정수)",
+  "target": "ally_single",
+  "cost": {
+    "soul": 6
+  },
   "delay_cost": 0,
-  "cooldown": 0,
+  "cooldown": 2,
   "effects": [
     {
-      "type": "damage",
-      "scaling": "phys",
-      "power": 0.51,
-      "damage_type": "blunt"
+      "type": "cover",
+      "duration": 2
     },
     {
-      "type": "push_back",
-      "amount": 60
+      "type": "apply_status",
+      "status": "shield_wall",
+      "to": "self",
+      "duration": 2
     }
   ],
   "essence_of": "deadman_shield_bash",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

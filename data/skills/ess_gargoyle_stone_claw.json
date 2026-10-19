@@ -1,18 +1,27 @@
 {
   "id": "ess_gargoyle_stone_claw",
-  "name_ko": "돌 발톱(정수)",
-  "target": "enemy_single",
-  "cost": {},
+  "name_ko": "석상 자세(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
   "delay_cost": 0,
-  "cooldown": 0,
+  "cooldown": 2,
   "effects": [
     {
-      "type": "damage",
-      "scaling": "phys",
-      "power": 0.935,
-      "damage_type": "blunt"
+      "type": "apply_status",
+      "status": "iron_wall"
+    },
+    {
+      "type": "apply_status",
+      "status": "taunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "guarding"
     }
   ],
   "essence_of": "gargoyle_stone_claw",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }
