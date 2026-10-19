@@ -15,8 +15,8 @@
       }
     ],
     "see_hidden": true,
-    "implemented": false,
-    "notes": "정수판: 탐험 맵 냄새 흔적 오버레이는 미구현"
+    "implemented": true,
+    "notes": "정수판: 탐험 맵 냄새 흔적 오버레이는 하지 않는다(사용자 결정 2026-10-19 — J14)"
   },
   "actives": [
     {

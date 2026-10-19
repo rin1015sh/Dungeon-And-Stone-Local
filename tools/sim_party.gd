@@ -2,6 +2,8 @@ extends SceneTree
 ## 균열 파티 시뮬레이터(헤드리스, docs/PROMPT_FLOOR1_V2.md §15). check.sh에는 넣지 않는다.
 ##   godot --headless --path . --script res://tools/sim_party.gd -- [--n=300] [--only=<이름 일부>]
 ## --only를 주면 그 시나리오만 돌리고 리포트 파일은 쓰지 않는다(수치 맞추기용).
+## --essences=real: 정수의 실제 고정 스탯·생명력을 붙인다(기본은 정수 스탯 없이 sim_parties.json의 stats만).
+## --base=race: 기본 스탯을 sim_parties.json stats 대신 종족 굴림 범위의 가운데로(정수 성장만 따로 보기). 둘 중 하나라도 주면 리포트 파일은 쓰지 않는다.
 ## tools/sim_parties.json의 파티(Lv4 4인·포션·정수)로 시나리오마다 n번 싸워 승률을 보고 docs/balance/rift.md에 쓴다.
 ## 아군 AI: 생명력이 potion_hp_ratio 아래면 하급 포션, smart면 [예고]가 찍혔을 때 방어, 아니면 기본 공격
 ## (수호자·중간 보스가 있으면 그중 — 졸개가 셋 이상 쌓이면 졸개부터 —, 없으면 생명력이 가장 낮은 적).
@@ -22,6 +24,8 @@ func _initialize() -> void:
 	var db := GameDatabase.new()
 	db.load_all("res://data")
 	var cfg: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CFG))
+	cfg["real_essences"] = str(args.get("essences", "")) == "real"
+	cfg["race_base"] = str(args.get("base", "")) == "race"
 	var n := str(args["n"]).to_int()
 	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json`, 시나리오당 %d회)." % n, "",
 		"| 시나리오 | 승률 | 목표 | 평균 차례 | 쓰러진 아군(평균) |", "|---|---|---|---|---|"])
@@ -45,7 +49,7 @@ func _initialize() -> void:
 	lines.append("")
 	lines.append("- 목표 벗어남 %d개" % misses)
 	lines.append("")
-	if args.has("only"):
+	if args.has("only") or bool(cfg["real_essences"]) or bool(cfg["race_base"]):
 		print("\n".join(lines))
 		quit(0)
 		return
@@ -61,10 +65,13 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 	var reg := ContentRegistries.new()
 	var b := Battle.new(db, reg.effects, reg.ai_conditions, Rng.new(9000 + i))
 	for m: Dictionary in cfg["party"]:
-		var pc := PlayerCharacter.create(db, str(m["race"]), str(m["class"]), str(m["name"]), m["stats"])
+		var stats: Dictionary = _race_mid(db, str(m["race"])) if bool(cfg["race_base"]) else m["stats"]
+		var pc := PlayerCharacter.create(db, str(m["race"]), str(m["class"]), str(m["name"]), stats)
 		pc.set_level(int(cfg["level"]))
 		for e: Dictionary in m["essences"]:
-			pc.essences.absorb(pc, {"essence": e["essence"], "color": e["color"], "stats": {}})
+			var inst := EssenceDrop.make(db, str(e["essence"]), str(e["color"]), Rng.new(1)) if bool(cfg["real_essences"]) \
+				else {"essence": e["essence"], "color": e["color"], "stats": {}}
+			pc.essences.absorb(pc, inst)
 		for item: String in cfg["items"]:
 			pc.inventory.add(item, int(cfg["items"][item]))
 		for st: Variant in sc.get("party_statuses", []):
@@ -108,6 +115,16 @@ func _party_action(b: Battle, c: Combatant, cfg: Dictionary, ai: String) -> Dict
 		if best == null or f.actor.pool.get_current("hp") < best.actor.pool.get_current("hp"):
 			best = f
 	return {"kind": "skill", "skill": _best_skill(b, c), "target": best}
+
+
+## 종족 stat_ranges의 가운데(반올림).
+func _race_mid(db: GameDatabase, race: String) -> Dictionary:
+	var out := {}
+	var ranges := JsonUtil.get_dict(db.get_entry("races", race), "stat_ranges")
+	for k: String in ranges:
+		var r: Array = ranges[k]
+		out[k] = roundf((float(r[0]) + float(r[1])) / 2.0)
+	return out
 
 
 ## 쓸 수 있는 공격 스킬 중 위력 합이 가장 큰 것(정수 액티브), 없으면 기본 공격.
