@@ -1,6 +1,6 @@
 class_name EssencePanel
 extends VBoxContainer
-## 캐릭터 창의 정수 칸: 슬롯(흡수한 정수는 색으로 칠함, 마우스를 올리면 내용)과 흡수한 정수 목록 — 보여 주기만.
+## 캐릭터 쪽의 정수 칸: 슬롯(흡수한 정수는 색으로 칠함)과 흡수한 정수 목록(이름 · 패시브 · 이능 · 능력치) — 보여 주기만.
 ## 흡수는 전투 장면에서 떨어졌을 때만(CombatDrops), 삭제는 도시 시설(대신전).
 
 var pc: PlayerCharacter
@@ -20,22 +20,21 @@ func _build() -> void:
 	add_child(row)
 	for i in maxi(slots, es.absorbed.size()):
 		var s := Panel.new()
-		s.custom_minimum_size = Vector2.ONE * UiTheme.metric("hotbar_slot", 46)
+		s.custom_minimum_size = Vector2.ONE * UiTheme.metric("essence_slot", 46)
 		if i < es.absorbed.size():
 			var b := GothicStyle.slot_box()
 			b.bg_color = color_of(db, JsonUtil.get_str(es.absorbed[i], "color"))
 			if EssenceSet.is_locked(es.absorbed[i]):
 				b.bg_color = b.bg_color.darkened(UiTheme.metric("essence_locked_darken", 70) / 100.0)
 			s.add_theme_stylebox_override("panel", b)
-			s.tooltip_text = describe(db, es.absorbed[i])
 		else:
 			s.add_theme_stylebox_override("panel", GothicStyle.slot_box())
-			s.tooltip_text = Strings.t("character.essence_empty")
 		row.add_child(s)
 	for e: Dictionary in es.absorbed:
-		var l := UiTheme.label(title_of(db, e), "small", "text")
-		l.tooltip_text = describe(db, e)
-		l.mouse_filter = Control.MOUSE_FILTER_PASS
+		var lines := describe(db, e).split("\n")
+		add_child(UiTheme.label(lines[0], "body", "text_title"))
+		var l := UiTheme.label("\n".join(lines.slice(1)), "small", "text")
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		add_child(l)
 
 
@@ -46,7 +45,7 @@ static func title_of(db: GameDatabase, inst: Dictionary) -> String:
 	return t + Strings.t("essence.locked_suffix") if EssenceSet.is_locked(inst) else t
 
 
-## 마우스 설명: 이름 · 패시브 · 액티브 · 스탯.
+## 설명: 이름 · 패시브 · 액티브 · 스탯(한 줄씩).
 static func describe(db: GameDatabase, inst: Dictionary) -> String:
 	var def := db.get_entry("essences", JsonUtil.get_str(inst, "essence"))
 	var lines := PackedStringArray([title_of(db, inst)])

@@ -1,7 +1,7 @@
 class_name PlazaScreen
 extends Control
 ## 차원광장(미궁 입구): 하순이 끝나면(한 달에 한 번 — CityState.expedition_month) 거리에서 이리로 온다. 이어하기도 여기서 시작한다.
-## 도착하면 돌 고리 안에 포탈이 열리고, 다 열린 뒤에만 "기록을 남긴다"(한 칸 저장 — 저장은 여기서만)와 "포탈로 들어간다"가 나온다.
+## 도착하면 돌 고리 안에 포탈이 열리고, 다 열린 뒤에만 선택판(W/S·Enter)에 "기록을 남긴다"(한 칸 저장 — 저장은 여기서만)와 "포탈로 들어간다"가 나온다.
 ## 그림(render.json city.plaza): 하늘(날씨) · 원경 far 레이어 일부 · 광장(tools/paint_city.gd --only=plaza) · 포탈 셰이더 2장(고리 안 소용돌이 + 빛 번짐).
 ## 화면 크기와 상관없이 1280×720 무대를 화면을 덮게 늘려 놓는다(포탈 자리가 그림과 어긋나지 않게).
 
@@ -16,8 +16,8 @@ var _stage: Control
 var _portal: ShaderMaterial
 var _glow: ShaderMaterial
 var _panel: PanelContainer
-var _save_btn: Button
-var _enter_btn: Button
+var _grid: ChoiceGrid
+var _saved: String = ""  # 저장 결과 문구 키(비면 아직 안 남김)
 var _flash: ColorRect
 var _opened: bool = false
 var _entering: bool = false
@@ -87,13 +87,10 @@ func _build_ui() -> void:
 	_panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, m)
 	_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
-	_panel.add_child(v)
-	_save_btn = CityUi.button(Strings.t("plaza.save"), func() -> void: save_requested.emit())
-	v.add_child(_save_btn)
-	_enter_btn = CityUi.button(Strings.t("plaza.enter"), enter, true)
-	v.add_child(_enter_btn)
+	_grid = ChoiceGrid.new(1, 2, int(UiTheme.render_float("city.interior_slot_height", 40.0)), true)
+	_grid.active = false
+	_panel.add_child(_grid)
+	_show_choices()
 	_flash = ColorRect.new()
 	_flash.color = Color(1, 1, 1, 0)
 	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -132,13 +129,14 @@ func _on_opened() -> void:
 		_open_tween.kill()
 	_set_open(1.0)
 	_panel.visible = true
+	_grid.active = true
 
 
-## Enter(menu_confirm) = 포탈로 들어간다(열린 뒤에만).
-func _unhandled_input(event: InputEvent) -> void:
-	if _opened and event.is_action_pressed("menu_confirm"):
-		get_viewport().set_input_as_handled()
-		enter()
+func _show_choices(start: int = 0) -> void:
+	_grid.show_choices("", [
+		{"text": Strings.t("plaza.save") if _saved.is_empty() else Strings.t(_saved), "enabled": _saved != "plaza.saved",
+			"on_pick": func() -> void: save_requested.emit()},
+		{"text": Strings.t("plaza.enter"), "on_pick": enter}], Callable(), start)
 
 
 ## 테스트·캡처용: 기다리지 않고 바로 연다.
@@ -152,8 +150,8 @@ func is_open() -> bool:
 
 ## 저장 결과(Main이 GameState.save_run() 뒤에 알려 준다).
 func save_done(ok: bool) -> void:
-	_save_btn.text = Strings.t("plaza.saved" if ok else "plaza.save_failed")
-	_save_btn.disabled = ok
+	_saved = "plaza.saved" if ok else "plaza.save_failed"
+	_show_choices(1 if ok else 0)  # 남겼으면 커서는 포탈로
 
 
 ## 포탈로 들어간다: 하얗게 타오르고 화면이 빛에 덮인 뒤 enter_requested.
@@ -162,6 +160,7 @@ func enter() -> void:
 		return
 	_entering = true
 	_panel.visible = false
+	_grid.active = false
 	var sec := float(_cfg.get("enter_seconds", 1.1))
 	var t := create_tween().set_parallel(true)
 	t.tween_method(func(v: float) -> void: _portal.set_shader_parameter("flare", v), 0.0, 1.0, sec * 0.6)

@@ -13,6 +13,7 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color(UiTheme.color("bg"))
 	for problem: String in InputSetup.apply(DataRegistry.db.singletons.get("input", {})):
 		push_warning("입력 설정: 알 수 없는 키 " + problem)
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN  # 키보드로만 다룬다(사용자 결정 2026-10-19)
 	var bg := ColorRect.new()
 	bg.color = UiTheme.color("bg")
 	add_child(bg)
@@ -23,6 +24,12 @@ func _ready() -> void:
 		_show(err)
 	else:
 		_show_title()
+
+
+## 마우스·터치는 어떤 화면에도 닿지 않는다(_input은 GUI보다 먼저 받는다) — 고르기는 W/A/S/D + Enter, 메뉴는 Tab.
+func _input(event: InputEvent) -> void:
+	if InputSetup.is_pointer(event):
+		get_viewport().set_input_as_handled()
 
 
 func current_screen() -> Control:
@@ -127,8 +134,10 @@ func _show_session(session: ExploreSession, floor_id: String) -> void:
 
 
 func _on_run_ended(kind: String, info: Dictionary) -> void:
-	if kind == "died":
+	if kind == "died":  # 사망 화면 없이 바로 타이틀(사용자 결정 2026-10-18)
 		GameState.on_death()
+		_show_title()
+		return
 	var end := EndScreen.new()
 	end.setup(kind, info)
 	end.done.connect(_show_title if kind == "died" else _return_to_city)

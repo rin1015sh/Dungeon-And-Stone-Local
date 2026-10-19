@@ -3,8 +3,9 @@ extends Control
 ## 도시 화면(라비기온 구역): 횡스크롤 거리(CityStreet) ↔ 시설 내부(FacilityView), 귀퉁이 정보 카드(CityHud — 달력·탐험가·메뉴).
 ## 시설을 고르면 행동력(facility_entry_cost)을 쓰고 들어간다. 나오면 행동력이 0일 때 다음 순으로 넘어간다.
 ## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
-## 시설 안에서 활동을 한 번 하면 저절로 거리로 나오고, 결과는 화면 위 알림 카드에 남는다.
-## 창(소지품 I·캐릭터 C·도감 B)과 디버그 패널(F1)을 쓸 수 있다.
+## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 거리 아래에도 대화창(못 들어가는 이유 등).
+## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다. 거리에서 Esc = 정지 창(계속 · 타이틀로).
+## 마우스는 쓰지 않는다(A/D 스크롤, Enter 들어가기 — 사용자 결정 2026-10-19).
 
 signal dungeon_requested
 signal title_requested
@@ -15,10 +16,9 @@ var _registry: ScriptRegistry
 var _street: CityStreet
 var _facility: FacilityView
 var _hud: CityHud
-var _toast: Label
-var _toast_box: PanelContainer
-var _toast_timer: Timer
-var _windows: WindowManager
+var _dialog: DialogueBox  # 거리 아래 대화창(못 들어가는 이유 등 — 화면으로 알 수 있는 순 넘김·포션 결과는 보이지 않는다)
+var _route: NoticeRoute
+var _menu: GameMenu
 var _debug: CityDebugPanel
 
 
@@ -35,33 +35,27 @@ func _ready() -> void:
 	add_child(_street)
 	_street.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
-	_toast_box = CityUi.card()
-	_toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_toast_box.visible = false
-	add_child(_toast_box)
-	_toast_box.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, m)
-	_toast_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_toast = CityUi.label("", "body", "bone")
-	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_toast.custom_minimum_size.x = UiTheme.render_float("city.toast_width", 420.0)
-	_toast_box.add_child(_toast)
-	_toast_timer = Timer.new()
-	_toast_timer.one_shot = true
-	_toast_timer.timeout.connect(func() -> void: _toast_box.visible = false)
-	add_child(_toast_timer)
 	_hud = CityHud.new()
 	_hud.setup(state, pc)
-	_hud.title_requested.connect(func() -> void: title_requested.emit())
-	_hud.window_requested.connect(func(kind: String) -> void: _windows.toggle(kind))
 	add_child(_hud)
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	move_child(_toast_box, -1)
-	_windows = WindowManager.new()
-	_windows.setup(pc)
-	_windows.use_requested.connect(use_item)
-	add_child(_windows)
-	_windows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_menu = GameMenu.new()
+	_menu.setup(pc)
+	_menu.use_requested.connect(use_item)
+	_menu.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
+	add_child(_menu)
+	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_dialog = DialogueBox.new(CityUi.card_box())
+	add_child(_dialog)
+	_dialog.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	_dialog.offset_left = m
+	_dialog.offset_right = -m
+	_dialog.offset_bottom = -m
+	_dialog.offset_top = -m - DialogueBox._cfg("height", 128.0)
+	_dialog.shown_changed.connect(func(on: bool) -> void: _street.set_process(not on and not _menu.is_open()))
+	_menu.hold = _dialog.busy
+	_route = NoticeRoute.new(state.db)
+	EventBus.notice.connect(_on_notice)
 	_debug = CityDebugPanel.new()
 	_debug.setup(state, pc)
 	_debug.dungeon_requested.connect(func() -> void: dungeon_requested.emit())
@@ -71,7 +65,6 @@ func _ready() -> void:
 	_debug.offset_left = m
 	_debug.offset_right = m + UiTheme.render_float("city.debug_width", 420.0)
 	_debug.offset_top = UiTheme.render_float("city.hud_height", 104.0) + m
-	state.period_started.connect(_on_period_started)
 	state.expedition_due.connect(_on_expedition_due)
 	state.advance_if_spent.call_deferred()  # 행동력이 0인 채로 왔으면 바로 다음 순(하순이면 미궁으로)
 
@@ -98,24 +91,24 @@ func choose_facility(id: String) -> void:
 		return
 	var why := state.enter_facility(id)
 	if not why.is_empty():
-		toast(Strings.t(why))
+		say(Strings.t(why))
 		return
 	_facility = FacilityView.new()
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
-	_windows.close_all()  # 시설 안에서는 소지품·캐릭터 창을 쓰지 않는다
+	_menu.close()  # 시설 안에서는 Tab 메뉴를 쓰지 않는다
 	_hud.set_facility_mode(true)
 	add_child(_facility)
 	move_child(_facility, _street.get_index() + 1)
 	_facility.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_street.visible = false
-	toast("")
 
 
 func leave_facility() -> void:
 	if _facility == null:
 		return
-	toast("\n".join(_facility.summary()))
+	for line in _facility.summary():
+		say(line)
 	_facility.queue_free()
 	_facility = null
 	_street.visible = true
@@ -124,56 +117,48 @@ func leave_facility() -> void:
 	_street.refresh()
 
 
-func _on_period_started(_month: int, _period: int) -> void:
-	var msg := Strings.t("city.period_started", {"date": CityHud.date_text(state), "ap": state.ap})
-	toast(msg if _toast.text.is_empty() else _toast.text + "\n" + msg)
-
-
 ## 하순이 끝났다: 미궁으로 떠난다(미궁 기록 첫 줄에 남긴다).
 func _on_expedition_due() -> void:
 	LogPanel.history.append({"text": Strings.t("city.expedition_auto", {"date": CityHud.date_text(state)}), "kind": "info"})
 	dungeon_requested.emit()
 
 
-## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 위 알림으로.
+## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
 func use_item(item_id: String) -> void:
 	if _facility != null:
 		return
 	var db := state.db
 	var cats := JsonUtil.get_array(CityValues.city_section(db, state.overrides, "item_use"), "categories")
 	if not JsonUtil.get_str(db.get_entry("items", item_id), "category") in cats:
-		toast(Strings.t("city.cannot_use_here"))
+		say(Strings.t("city.cannot_use_here"), "warn")
 		return
 	var ctx := ItemUser.use(DataRegistry.registries.effects, pc, item_id, state.rng)
 	if ctx == null:
 		return
-	var lines := PackedStringArray()
 	for m: Dictionary in ctx.messages:
-		lines.append(Strings.t(str(m["key"]), m["args"]))
-	if lines.is_empty():
-		lines.append(Strings.t("city.item_no_effect", {"item": DataNames.entry(db, "items", item_id)}))
-	toast("\n".join(lines))
-	_windows.refresh()
+		_on_notice(str(m["key"]), m["args"], str(m["kind"]))
+	_menu.refresh()
 	_hud.refresh()
 
 
-## 화면 위 알림 카드(활동 결과·순 넘김·못 들어가는 이유). 빈 글이면 숨긴다. 몇 초 뒤 저절로 사라진다.
-func toast(text: String) -> void:
-	_toast.text = text
-	_toast_box.visible = not text.is_empty()
-	_toast_box.reset_size()
-	_toast_box.offset_left = -_toast_box.size.x / 2.0
-	_toast_box.offset_right = _toast_box.size.x / 2.0
-	if _toast_box.visible:
-		_toast_timer.start(UiTheme.render_float("city.toast_seconds", 7.0))
+## 거리 아래 대화창에 한 줄(Enter로 넘김).
+func say(text: String, kind: String = "info") -> void:
+	if not text.is_empty():
+		_dialog.say(text, kind)
 
 
-func windows_open() -> bool:
-	return _windows.any_open()
+func dialog() -> DialogueBox:
+	return _dialog
 
 
-func toast_text() -> String:
-	return _toast.text
+func menu() -> GameMenu:
+	return _menu
+
+
+## 문구 키 알림(Tab 메뉴의 가방 자리 없음 등) → 화면으로 알 수 없는 것만 대화창(NoticeRoute).
+func _on_notice(key: String, args: Dictionary, kind: String) -> void:
+	if is_inside_tree() and not is_queued_for_deletion() and not _route.silent(key):
+		say(Strings.t(key, args), kind)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -183,15 +168,39 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if get_viewport().gui_get_focus_owner() is LineEdit:
 		return
-	for kind: String in WindowManager.KINDS:
-		if event.is_action_pressed(kind) and _facility == null:
-			_windows.toggle(kind)
+	var pause_pop := get_node_or_null("PauseChoice") as ChoicePopup
+	if pause_pop != null:  # 정지 창: W/S·Enter·Backspace는 창이 먼저 받는다, Esc = 계속
+		if event.is_action_pressed("pause"):
+			pause_pop.picked.emit(-1)
+		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
-			return
-	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):  # Esc·취소(Backspace): 시설에서 나가기 · 창 닫기
+		return
+	if event.is_action_pressed("menu") and _facility == null:
+		_menu.toggle()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):  # Esc·취소(Backspace): 시설에서 나가기 · 메뉴 닫기 · (거리에서 Esc) 정지 창
 		if _facility != null:
 			_facility.try_leave()
-		elif _windows.any_open():
-			for kind: String in WindowManager.KINDS:
-				_windows.close(kind)
+		elif _menu.is_open():
+			_menu.close()
+		elif event.is_action_pressed("pause"):
+			_pause_choice()
 		get_viewport().set_input_as_handled()
+
+
+## 거리의 정지 창: 계속 · 타이틀로(W/S·Enter, Backspace·Esc = 계속).
+func _pause_choice() -> void:
+	var pop := ChoicePopup.new()
+	pop.name = "PauseChoice"
+	add_child(pop)
+	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_street.set_process(false)
+	pop.open(Strings.t("explore.paused"), [{"text": Strings.t("pause.resume")}, {"text": Strings.t("city.btn_title")}], true, Vector2(-1, -1))
+	var i: int = await pop.picked
+	pop.queue_free()
+	if not is_inside_tree():
+		return
+	_street.set_process(true)
+	if i == 1:
+		title_requested.emit()

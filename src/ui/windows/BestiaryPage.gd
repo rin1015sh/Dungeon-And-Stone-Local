@@ -1,12 +1,17 @@
-class_name BestiaryWindow
-extends GothicWindow
-## 도감: 왼쪽 = 모든 몬스터(마주친 적이 없으면 ???), 오른쪽 = 고른 몬스터의 알아낸 정보.
+class_name BestiaryPage
+extends MenuPage
+## Tab 메뉴의 도감 쪽: 위 = 모든 몬스터(마주친 적이 없으면 ???), 아래 = 커서가 놓인 몬스터의 알아낸 정보.
+## W/S = 마주친 몬스터 사이를 옮긴다(목록은 커서를 따라 스크롤).
 ## 처치 수 · 첫 처치 공적 · 등급·계열·설명(봤으면) · 생명력·스탯(조사했으면) · 상성(직접 겪은 것만), 나머지는 ???.
 
 var pc: PlayerCharacter
 
 var _list: VBoxContainer
+var _list_scroll: ScrollContainer
 var _detail: Label
+var _ids: Array[String] = []  # 목록 순서
+var _rows: Array[Label] = []
+var _cursor: int = -1  # _ids 번호(마주친 몬스터만 고른다)
 
 
 func _init() -> void:
@@ -15,61 +20,102 @@ func _init() -> void:
 
 func setup(p_pc: PlayerCharacter) -> void:
 	pc = p_pc
-	custom_minimum_size.x = UiTheme.metric("bestiary_window_width", 640)
-	var row := HBoxContainer.new()
-	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	content.add_child(row)
-	# 몬스터가 많아 목록·설명 모두 높이를 고정하고 스크롤한다(창이 화면 밖으로 늘어나지 않게).
-	var h := UiTheme.metric("bestiary_list_height", 440)
-	var left := PanelContainer.new()
-	left.add_theme_stylebox_override("panel", GothicStyle.inset_box())
-	left.custom_minimum_size = Vector2(UiTheme.metric("bestiary_list_width", 200), h)
-	row.add_child(left)
-	var list_scroll := ScrollContainer.new()
-	list_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	left.add_child(list_scroll)
+	custom_minimum_size.x = MenuPage.cfg("bestiary_width", 380.0)
+	var top := PanelContainer.new()
+	top.add_theme_stylebox_override("panel", GothicStyle.inset_box())
+	top.custom_minimum_size.y = MenuPage.cfg("bestiary_list_height", 260.0)
+	content.add_child(top)
+	_list_scroll = ScrollContainer.new()
+	_list_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	top.add_child(_list_scroll)
 	_list = VBoxContainer.new()
+	_list.add_theme_constant_override("separation", 2)
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	list_scroll.add_child(_list)
-	var right := PanelContainer.new()
-	right.add_theme_stylebox_override("panel", GothicStyle.inset_box())
-	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	right.custom_minimum_size.y = h
-	row.add_child(right)
-	var detail_scroll := ScrollContainer.new()
-	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	right.add_child(detail_scroll)
-	_detail = UiTheme.label("", "body")
+	_list_scroll.add_child(_list)
+	var bottom := PanelContainer.new()
+	bottom.add_theme_stylebox_override("panel", GothicStyle.inset_box())
+	bottom.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.add_child(bottom)
+	_detail = UiTheme.label("", "small")
 	_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_detail.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	_detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	detail_scroll.add_child(_detail)
+	_detail.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	bottom.add_child(_detail)
 	refresh()
 
 
 func refresh() -> void:
 	for c in _list.get_children():
 		c.queue_free()
+	_rows.clear()
+	_ids.clear()
 	var ids: Array = pc.db.get_collection("monsters").keys()
 	ids.sort_custom(func(a: String, b: String) -> bool:
 		return JsonUtil.get_int(pc.db.get_entry("monsters", a), "grade") > JsonUtil.get_int(pc.db.get_entry("monsters", b), "grade") \
 			or (JsonUtil.get_int(pc.db.get_entry("monsters", a), "grade") == JsonUtil.get_int(pc.db.get_entry("monsters", b), "grade") and a < b))
-	var first := ""
 	for id: String in ids:
 		var seen := pc.knowledge.has_seen(id)
-		var text := Strings.t("bestiary.entry", {"name": DataNames.entry(pc.db, "monsters", id), "kills": pc.progression.kill_count(id)}) \
-			if seen else Strings.t("knowledge.unknown")
-		var b := UiTheme.button(text, func() -> void: show_monster(id))
-		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.focus_mode = Control.FOCUS_NONE  # 포커스를 잡으면 Tab(소지품)이 포커스 이동에 먹힌다
-		b.disabled = not seen
-		_list.add_child(b)
-		if seen and first.is_empty():
-			first = id
-	if first.is_empty():
+		var l := UiTheme.label(Strings.t("bestiary.entry", {"name": DataNames.entry(pc.db, "monsters", id), "kills": pc.progression.kill_count(id)}) \
+			if seen else Strings.t("knowledge.unknown"), "small", "text" if seen else "text_disabled")
+		l.clip_text = true
+		_list.add_child(l)
+		_rows.append(l)
+		_ids.append(id)
+	_cursor = _step(-1, 1) if _cursor < 0 or not _seen(_cursor) else _cursor
+	_show_cursor()
+
+
+func enter(_from_left: bool) -> void:
+	_show_cursor()
+
+
+func on_active(_on: bool) -> void:
+	if _detail != null:
+		_show_cursor()
+
+
+func nav(d: Vector2i) -> bool:
+	if d.x != 0:
+		return false
+	var n := _step(_cursor, d.y)
+	if n >= 0:
+		_cursor = n
+		_show_cursor()
+	return true
+
+
+func current_id() -> String:
+	return _ids[_cursor] if _cursor >= 0 and _cursor < _ids.size() else ""
+
+
+## from에서 dir 쪽으로 마주친 몬스터의 다음 번호(없으면 -1).
+func _step(from: int, dir: int) -> int:
+	var i := from + dir
+	while i >= 0 and i < _ids.size():
+		if _seen(i):
+			return i
+		i += dir
+	return -1
+
+
+func _seen(i: int) -> bool:
+	return i >= 0 and i < _ids.size() and pc.knowledge.has_seen(_ids[i])
+
+
+func _show_cursor() -> void:
+	for i in _rows.size():
+		var sel := i == _cursor
+		var box := UiTheme.box(UiTheme.color("slot_hover") if sel and active else Color.TRANSPARENT,
+			UiTheme.color("gold") if sel else Color.TRANSPARENT, 0, 2)
+		box.set_border_width_all(1 if sel else 0)
+		_rows[i].add_theme_stylebox_override("normal", box)
+	if _cursor < 0:
 		_detail.text = Strings.t("bestiary.empty")
-	else:
-		show_monster(first)
+		return
+	show_monster(_ids[_cursor])
+	if _cursor < _rows.size():
+		_list_scroll.ensure_control_visible.call_deferred(_rows[_cursor])
 
 
 func show_monster(id: String) -> void:

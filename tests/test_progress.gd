@@ -97,4 +97,3 @@ func test_progress_save_roundtrip() -> void:
 	assert_true(copy.knowledge.knows_stats("ghoul"))
 	assert_eq(copy.equipment.item_in("main_hand"), "iron_mace", "장비도 그대로")
 	assert_eq(copy.inventory.count("copper_ring"), 1)
-	assert_eq(copy.hotbar, pc.hotbar)

@@ -33,7 +33,6 @@ static func plate_box(lit: bool) -> StyleBoxFlat:
 static func card() -> PanelContainer:
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", card_box())
-	p.mouse_filter = Control.MOUSE_FILTER_STOP
 	return p
 
 
@@ -41,27 +40,6 @@ static func label(text: String, style: String = "body", color_key: String = "bon
 	var l := UiTheme.label(text, style)
 	l.add_theme_color_override("font_color", c(color_key))
 	return l
-
-
-## 카드 안 버튼: 어두운 판 + 뼈빛 테두리, 올리면 호박색 테두리. accent = 핏빛 바탕(미궁 입장).
-static func button(text: String, cb: Callable, accent: bool = false) -> Button:
-	var b := UiTheme.button(text, cb)
-	b.focus_mode = Control.FOCUS_NONE
-	b.add_theme_font_size_override("font_size", UiTheme.metric("small_font_size", 14))
-	var base := c("blood").darkened(0.2) if accent else Color(0.09, 0.085, 0.08, 0.95)
-	for state: String in ["normal", "hover", "pressed", "disabled"]:
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = base.lightened(0.12) if state == "hover" else (base.darkened(0.3) if state == "pressed" else base)
-		sb.set_border_width_all(1)
-		sb.border_color = c("border_lit") if state == "hover" else c("border")
-		sb.set_content_margin_all(6)
-		sb.content_margin_left = 10
-		sb.content_margin_right = 10
-		b.add_theme_stylebox_override(state, sb)
-	b.add_theme_color_override("font_color", c("bone"))
-	b.add_theme_color_override("font_hover_color", c("accent"))
-	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	return b
 
 
 ## 가는 막대(생명력 등).

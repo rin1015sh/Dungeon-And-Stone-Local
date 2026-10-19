@@ -391,9 +391,8 @@
     "drop_cannot": "받을 수 없다.",
     "drop_no_room": "가방에 다 들어가지 않는다.",
     "result_victory": "승리",
-    "result_defeat": "패배",
+    "result_defeat": "당신은 패배했다...",
     "result_fled": "도주",
-    "continue": "계속",
     "reflect": "{source}의 칼날털이 {target}에게 {amount}만큼 되돌려 베었다.",
     "counter": "{source}이(가) 막아 내고 {target}을(를) 찔렀다 — {amount}.",
     "drain": "{source}이(가) 피를 핥아 {amount} 회복했다.",
@@ -507,12 +506,7 @@
     "lord_bonus": "계층군주 {name}을(를) 처음으로 쓰러뜨렸다 — 공적 {exp}.",
     "level_down": "영혼이 깎여 나갔다. 레벨 {level} — 정수 {locked}개가 잠들었다."
   },
-  "window": {
-    "close": "닫기"
-  },
   "inventory": {
-    "discard": "버리기",
-    "discard_tip": "가방의 아이템을 여기로 끌어 놓으면 그 묶음을 버린다.",
     "discarded": "{item} ×{count}을(를) 버렸다.",
     "no_room_swap": "가방에 자리가 없어 {item}을(를) 바꿔 낄 수 없다.",
     "no_room_unequip": "가방에 자리가 없어 {item}을(를) 벗을 수 없다.",
@@ -529,7 +523,12 @@
     "eff_status": "{status} ({chance}%)",
     "sort": "정렬",
     "money": "◆ {amount}",
-    "summary": "공격 {attack} ({type}) · 물리내성 {p_res}"
+    "summary": "공격 {attack} ({type}) · 물리내성 {p_res}",
+    "act_equip": "장착한다",
+    "act_use": "사용한다",
+    "act_move": "옮긴다",
+    "act_discard": "버린다",
+    "act_unequip": "벗는다"
   },
   "character": {
     "title": "캐릭터",
@@ -540,10 +539,7 @@
     "crit": "치명타율",
     "attack_type": "기본 공격: {type}",
     "essence_slots": "정수 슬롯 {n}칸",
-    "essence_empty": "비어 있는 정수 슬롯",
     "essence_note": "레벨만큼 정수 슬롯이 열린다. 패시브나 이능이 하나라도 겹치는 정수는 받아들일 수 없다. 흡수한 정수를 지우는 일은 도시의 대신전에서만 할 수 있다.",
-    "tab_essence": "정수",
-    "tab_details": "세부 능력",
     "sub_stats": "세부 능력치",
     "boons": "영구 강화",
     "boon_line": "{item} → {stat} ({n}회)",
@@ -567,9 +563,7 @@
     "shared": "[{skill}] 이능을 함께 지닌 종: {list} — 이 이능이 든 정수는 둘 중 하나만 받아들일 수 있다."
   },
   "bottom": {
-    "inventory": "소지품 {key}",
-    "character": "캐릭터 {key}",
-    "bestiary": "도감 {key}",
+    "menu": "메뉴 {key}",
     "wait": "대기 {key}",
     "rest": "휴식 {key}",
     "pause": "정지 {key}"
@@ -613,11 +607,8 @@
     "vitals_name": "{name} · 레벨 {level}",
     "hp_label": "생명력",
     "hp_value": "{hp} / {max}",
-    "btn_inventory": "소지품({key})",
-    "btn_character": "캐릭터({key})",
     "btn_title": "타이틀로",
-    "period_started": "{date}이 되었다.",
-    "leave_locked": "아직 볼일이 남았다.",
+    "leave": "나가기",
     "choice": "{name}  ({cost})",
     "cost_stones": "{n} 스톤",
     "did": "— {name} —",
@@ -664,13 +655,6 @@
       "item_no_room": "{name}을(를) 넣을 자리가 없다.",
       "item_undecided": "받을 것이 정해지지 않았다. (미정)"
     },
-    "shop_buy_title": "사기",
-    "shop_sell_title": "팔기",
-    "shop_line": "{item} — {price} 스톤",
-    "shop_sell_line": "{item} ×{n} — {price} 스톤",
-    "shop_buy": "사기",
-    "shop_sell": "팔기",
-    "shop_nothing_to_sell": "팔 수 있는 물건이 없다.",
     "shop_bought": "{item} {n}개를 {price} 스톤에 샀다.",
     "shop_sold": "{item} {n}개를 {price} 스톤에 넘겼다.",
     "bank_status": "잔액 {balance} 스톤 · 소지금 {money} 스톤",
@@ -800,7 +784,12 @@
       }
     },
     "cannot_use_here": "여기서는 쓸 수 없다.",
-    "item_no_effect": "{item}을(를) 꺼냈다가 도로 넣었다."
+    "key_menu": "메뉴 {key}",
+    "key_pause": "정지 {key}",
+    "shop_money": "소지금 {money} 스톤",
+    "shop_sub_buy": "사기 {price} 스톤",
+    "shop_sub_sell": "팔기 {price} 스톤",
+    "shop_sell_name": "{item} ×{n}"
   },
   "field": {
     "_comment": "1층 동굴 요소(data/events) 문구 — 번호(.1 .2 …)가 여럿이면 하나를 고른다. corpse는 구역별(center/east/west/south/north).",

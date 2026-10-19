@@ -4,8 +4,6 @@ extends Control
 ## 그 위 가운데에 적이 이쪽을 보고 서고(덩치에 따라 크게), 화면 아래쪽 앞줄에 아군이 등을 보이고 선다(다리는 아래 창에 가린다).
 ## 배치 수치는 render.json ui.combat_* (bottom_reserve = 아래 창 높이).
 
-signal unit_clicked(unit: Combatant)
-
 var _views: Dictionary = {}  # Combatant -> BattlerView
 var _db: GameDatabase
 
@@ -21,7 +19,6 @@ func add_unit(u: Combatant) -> void:
 		return
 	var v := BattlerView.new()
 	v.setup(u, _db)
-	v.clicked.connect(func(x: Combatant) -> void: unit_clicked.emit(x))
 	add_child(v)
 	_views[u] = v
 	_order()

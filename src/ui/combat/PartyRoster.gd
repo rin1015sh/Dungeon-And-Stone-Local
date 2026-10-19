@@ -1,9 +1,7 @@
 class_name PartyRoster
 extends VBoxContainer
 ## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 상태 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
-## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 금빛 테두리. 줄을 누르면 clicked.
-
-signal clicked(unit: Combatant)
+## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 금빛 테두리.
 
 const RES := ["hp", "soul"]
 
@@ -22,11 +20,6 @@ func add_unit(u: Combatant) -> void:
 	if _rows.has(u) or u.side != Combatant.SIDE_PARTY:
 		return
 	var panel := PanelContainer.new()
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	panel.gui_input.connect(func(ev: InputEvent) -> void:
-		var mb := ev as InputEventMouseButton
-		if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
-			clicked.emit(u))
 	add_child(panel)
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) + 4)
@@ -45,7 +38,6 @@ func add_unit(u: Combatant) -> void:
 	status.custom_minimum_size.x = UiTheme.metric("combat_roster_status_width", 130)
 	status.clip_text = true
 	status.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	status.mouse_filter = Control.MOUSE_FILTER_PASS
 	h.add_child(status)
 	var bars := {}
 	for r: String in RES:
@@ -109,7 +101,6 @@ func refresh() -> void:
 		for m: Dictionary in Meters.list(_db, u.actor):
 			names.append("%s %d" % [str(m["name"]), roundi(float(m["value"]))])
 		(row["status"] as Label).text = ", ".join(names)
-		(row["status"] as Label).tooltip_text = StatusTips.lines(_db, u.actor.statuses.ids())
 		(row["panel"] as Control).modulate.a = 1.0 if u.is_active() else 0.45
 	_style()
 

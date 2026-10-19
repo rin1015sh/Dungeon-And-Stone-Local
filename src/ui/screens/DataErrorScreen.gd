@@ -37,3 +37,5 @@ func _ready() -> void:
 	var quit := UiTheme.button(Strings.t("menu.quit"), func() -> void: quit_requested.emit())
 	quit.size_flags_horizontal = Control.SIZE_SHRINK_END
 	col.add_child(quit)
+	list.focus_mode = Control.FOCUS_NONE
+	quit.grab_focus.call_deferred()

@@ -2,7 +2,7 @@ class_name ExploreHud
 extends MarginContainer
 ## 탐험 HUD(읽기 전용 표시, 스톤샤드의 퀘스트 표시처럼 왼쪽 위에 작게).
 ##   층 이름 · 미궁 n일차 시각 · 폐쇄까지 남은 시간 · 피로도(도시와 공용) · 빛/시야 · 안전지대 · 발견 현황 · 조작 안내(키는 data/input.json)
-## 자원·상태이상·단축칸은 하단 바(BottomBar), 소지품은 소지품 창(InventoryWindow).
+## 자원·상태이상·단축칸은 하단 바(BottomBar), 소지품은 Tab 메뉴(GameMenu).
 
 var _session: ExploreSession
 var _floor_label: Label

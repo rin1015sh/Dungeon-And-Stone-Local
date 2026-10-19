@@ -3,8 +3,8 @@ extends HBoxContainer
 ## 전투 아래 창(피어 앤 헝거식): 왼쪽 = 명령 칸(공격 · 스킬 · 방어 · 아이템, 세로 한 줄),
 ## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 밝다). 스킬·아이템·대상을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
 ##   공격 → 대상(약점이 있는 적은 "약점 노리기"도) · 스킬 → 보유 스킬 + 맨 끝 "도주"(성공 확률) → 필요하면 대상 · 아이템 → 전투용 소지품
-##   대상을 고를 때 커서가 놓인 적은 무대에서 발밑 고리가 빛나고(target_hovered), 무대의 적을 직접 눌러도 된다(pick_target).
-## 키: 위·아래(W·S) 이동, Space 확정, Enter 뒤로. 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
+##   대상을 고를 때 커서가 놓인 적은 무대에서 발밑 고리가 빛난다(target_hovered).
+## 키: 위·아래(W·S) 이동, Enter 확정, Backspace 뒤로. 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
 ## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 닫아 중복 선택을 막는다). 적 차례에는 명령 칸이 흐리게 남는다.
 
 signal chosen(action: Dictionary)
@@ -22,6 +22,7 @@ var _unit: Combatant
 var _cmds: ChoiceGrid
 var _list: ChoiceGrid
 var _roster: Control
+var _left: PanelContainer
 var _open: bool = false
 var _skill_cursor: Dictionary = {}  # 유닛 instance id -> 스킬 칸 커서
 var _last_target: Dictionary = {}   # 유닛 instance id -> 마지막으로 고른 대상(Combatant)
@@ -32,6 +33,7 @@ func _init() -> void:
 	var left := _window()
 	left.custom_minimum_size.x = UiTheme.metric("combat_cmd_width", 200)
 	add_child(left)
+	_left = left
 	_cmds = ChoiceGrid.new(1, 4, UiTheme.metric("combat_cmd_slot_height", 36), true)
 	_cmds.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(null))
 	left.add_child(_cmds)
@@ -60,6 +62,15 @@ func set_roster(r: Control) -> void:
 	_roster = r
 	_list.get_parent().add_child(r)
 	_list.get_parent().move_child(r, 0)
+
+
+## 하단 대화창(전투 안내)을 왼쪽에 넣는다: 대화창이 떠 있는 동안은 명령 칸 대신 대화창 + 오른쪽 파티 창.
+func set_dialog(d: DialogueBox) -> void:
+	d.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	d.custom_minimum_size.x = UiTheme.metric("combat_dialog_width", 360)
+	add_child(d)
+	move_child(d, 0)
+	d.shown_changed.connect(func(on: bool) -> void: _left.visible = not on)
 
 
 func open(battle: Battle, unit: Combatant) -> void:
@@ -91,19 +102,6 @@ func grid() -> ChoiceGrid:
 
 func root_grid() -> ChoiceGrid:
 	return _cmds
-
-
-## 무대에서 누른 참가자를 대상으로 고른다(대상 목록이 열려 있고 그 참가자가 있을 때만).
-func pick_target(u: Combatant) -> void:
-	if not _open or not _list.visible:
-		return
-	var opts := _list.option_count()
-	for i in opts:
-		var o := _list.option(i)
-		if o.get("target") == u and bool(o.get("enabled", true)) and not str(o.get("text", "")).is_empty():
-			_list.select(i)
-			_list.confirm()
-			return
 
 
 func _show_list(on: bool) -> void:

@@ -9,7 +9,9 @@ extends Node
 ## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
-## --tooltip: 아이템 툴팁(비교) 띄우기, --inventory / --character / --bestiary: 창 열기(--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
+## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다)
+## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=character|inventory|bestiary = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
+##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
@@ -17,7 +19,6 @@ extends Node
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
-## --details: (--character와 함께) 캐릭터 창 세부 능력 탭
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 ## --shots=<목록 json> --out=<폴더>: (explore) 장면 목록을 한 번에 찍어 <폴더>/<name>.png로(tools/ShotList.gd, 목록 예 tools/shots/floor1.json)
@@ -35,6 +36,7 @@ func _ready() -> void:
 			var kv := arg.trim_prefix("--").split("=", true, 1)
 			_args[kv[0]] = kv[1] if kv.size() > 1 else "true"
 	GameState.debug_seed_override = str(_args["seed"]).to_int()
+	DialogueBox.auto_skip = not _args.has("dialog")  # --dialog: 하단 대화창(알림·전투 안내·시설 결과)을 넘기지 않고 띄운 채 찍는다
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
 	add_child(_main)
 	_run.call_deferred()
@@ -129,12 +131,15 @@ func _run() -> void:
 			if _args.has("lock"):
 				epc.essences.absorb(epc, {"essence": "ghoul", "color": "red", "stats": {"agi": 3}})
 				epc.set_level(1)
-		for w: String in ["inventory", "character", "bestiary"]:
-			if _args.has(w):
-				explore.windows().open(w)
-		if _args.has("details"):  # 캐릭터 창 "세부 능력" 탭
-			for t: Node in _main.find_children("*", "TabContainer", true, false):
-				(t as TabContainer).current_tab = 1
+		if _args.has("menu"):
+			var page := str(_args["menu"]) if str(_args["menu"]) in GameMenu.PAGES else "inventory"
+			explore.menu().open(page)
+			if _args.has("cell"):
+				var xy := str(_args["cell"]).split(",")
+				await get_tree().process_frame
+				explore.menu().inventory().cursor_to_cell(Vector2i(int(xy[0]), int(xy[1])))
+				if _args.has("ask"):  # 그 칸 아이템의 할 일 고르기 창
+					explore.menu().inventory().confirm()
 		if _args.has("tooltip"):  # 툴팁 모양 확인: 가방의 창(장착 중인 무기와 비교)
 			var tip := ItemTooltip.build(explore.session.db, "steel_spear", explore.session.player)
 			explore.add_child(tip)
