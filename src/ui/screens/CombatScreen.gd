@@ -285,6 +285,8 @@ func _on_target_hovered(t: Combatant) -> void:
 
 
 func _refresh() -> void:
+	if _planning.any(func(u: Combatant) -> bool: return not u.is_active()):
+		_drop_fallen()
 	var now: Combatant = _planning[_plan_i] if not _planning.is_empty() else battle.current
 	for u: Combatant in _stage.views():
 		var v: BattlerView = _stage.views()[u]
@@ -292,6 +294,24 @@ func _refresh() -> void:
 		v.set_current(u == now)
 	_roster.set_current(now)
 	_roster.refresh()
+
+
+## 행동을 정하던 중에 누가 쓰러졌다(밖에서 생명력이 0이 됨): 그 사람을 목록에서 빼고,
+## 지금 차례인 사람이 쓰러졌거나 정할 사람이 없으면 행동창을 닫고 차례를 다시 돌린다(Battle.next_turn이 넘긴다).
+func _drop_fallen() -> void:
+	var was: Combatant = _planning[_plan_i] if _plan_i < _planning.size() else null
+	for u: Combatant in _planning.duplicate():
+		if not u.is_active():
+			_planning.erase(u)
+			_plan.erase(u)
+			_roster.set_plan(u, "")
+	if _planning.is_empty() or battle.current == null or not battle.current.is_active():
+		_planning.clear()
+		_menu.close()
+		_loop.call_deferred()
+		return
+	_plan_i = clampi(_planning.find(was) if _planning.has(was) else _plan_i, 0, _planning.size() - 1)
+	_open_plan()
 
 
 ## 결과 → (쓰러진 자리의 드롭 묻기) → 얻은 것(공적·레벨·전리품·정수)을 대화창으로 한 쪽씩 → 다 넘기면 탐험으로.

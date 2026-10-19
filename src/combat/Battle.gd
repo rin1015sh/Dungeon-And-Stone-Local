@@ -128,7 +128,10 @@ func preview(n: int) -> Array[Combatant]:
 ## 이미 행동을 기다리는 차례가 있으면 그 차례를 그대로 돌려준다(게이지를 두 번 진행하지 않는다).
 func next_turn() -> Combatant:
 	if phase == PHASE_AWAIT and current != null:
-		return current
+		if current.is_active():
+			return current
+		current = null  # 입력을 기다리던 사람이 그사이 쓰러지거나 빠졌다 — 영영 기다리지 않고 다음 차례로
+		phase = PHASE_IDLE
 	for i in MAX_SKIPS:
 		if not result.is_empty():
 			return null

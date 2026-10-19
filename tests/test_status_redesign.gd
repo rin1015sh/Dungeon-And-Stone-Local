@@ -171,3 +171,17 @@ func test_counter_while_guarding() -> void:
 	for i in 5:
 		reg.effects.apply_all(ctx2, [{"type": "damage", "scaling": "phys", "power": 1.0, "accuracy": 1000}])
 	assert_true(foe.pool.get_current("hp") < hp0, "방어 중 근접으로 맞으면 반격")
+
+
+func test_battle_skips_unit_that_fell_while_awaiting_input() -> void:
+	var b := _battle(2)
+	b.start(true)
+	var c := b.next_turn()
+	while c != null and c.side != Combatant.SIDE_PARTY:
+		b.act(c, b.ai_action(c))
+		c = b.next_turn()
+	assert_true(c != null and c.side == Combatant.SIDE_PARTY)
+	c.actor.pool.modify("hp", -9999.0, "test")  # 입력을 기다리는 사이 쓰러졌다(UI 스모크가 동료를 빼던 방식)
+	assert_true(c.actor.dead)
+	var nxt := b.next_turn()
+	assert_true(nxt != c, "쓰러진 사람의 입력을 영영 기다리지 않는다")
