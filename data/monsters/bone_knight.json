@@ -21,14 +21,14 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 30,
+    "str": 31,
     "agi": 14,
     "p_res": 18,
     "m_res": 10,
     "int": 8
   },
   "resources": {
-    "hp": 380,
+    "hp": 720,
     "soul": 60
   },
   "natural_weapon": {
@@ -111,5 +111,5 @@
   "desc_ko": "뼈 장검을 든 기사. 갈망·슬픔·증오 중 하나의 기운을 띤다. 증오의 기사는 영혼을 벤다.",
   "sprite": "res://assets/sprites/monsters/bone_knight.png",
   "source": "original",
-  "notes": "명세 §9 · 시뮬레이터 조정: 생명력 240→380, 근력 22→30"
+  "notes": "명세 §9 · 시뮬레이터 조정: 생명력 240→380, 근력 22→30 · 5인 정규 파티에 맞춤(2026-10-19, J16): 생명력 380→720, 근력 30→31"
 }

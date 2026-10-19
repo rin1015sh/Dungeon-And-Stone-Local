@@ -20,14 +20,14 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 24,
+    "str": 30,
     "agi": 12,
     "p_res": 24,
     "m_res": 10,
     "int": 6
   },
   "resources": {
-    "hp": 400,
+    "hp": 640,
     "soul": 40
   },
   "natural_weapon": {
@@ -96,5 +96,5 @@
   "desc_ko": "강철 갑주를 두른 기병. 랜스를 낮추고 돌격한다.",
   "sprite": "res://assets/sprites/monsters/iron_cavalry.png",
   "source": "original",
-  "notes": "명세 §12 · 시뮬레이터 조정(GI5): 명세 생명력 260 → 400"
+  "notes": "명세 §12 · 시뮬레이터 조정(GI5): 명세 생명력 260 → 400 · 5인 정규 파티에 맞춤(2026-10-19, J16): 생명력 400→640, 근력 24→30"
 }
