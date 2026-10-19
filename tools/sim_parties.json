@@ -1,5 +1,5 @@
 {
-  "_comment": "균열 파티 시뮬레이터(tools/sim_party.gd, 명세 §15). 균열 기준 탐험가 Lv4 4인(전열 2·후열 2), 하급 포션 3개씩, 1층 정수 2~3개씩. 기본 스탯은 종족 굴림 가운데 + 정수 실제 값(2026-10-19~ — stats는 --base=config 비교용). ai: naive = 예고를 무시하고 때림(첫 시도), smart = [예고]가 찍히면 방어.",
+  "_comment": "균열 파티 시뮬레이터(tools/sim_party.gd, 명세 §15). 균열 기준 탐험가 Lv4 5인 — 정규 파티(전열 3·후열 2, 2026-10-19 사용자 결정: 혼자 + 랜덤 모험가 4명), 하급 포션 3개씩, 1층 정수 2~3개씩. 기본 스탯은 종족 굴림 가운데 + 정수 실제 값(2026-10-19~ — stats는 --base=config 비교용). ai: naive = 예고를 무시하고 때림(첫 시도), smart = [예고]가 찍히면 방어.",
   "party": [
     {
       "name": "전열 A",
@@ -100,6 +100,33 @@
           "color": "red"
         }
       ]
+    },
+    {
+      "name": "전열 E",
+      "race": "barbarian",
+      "class": "warrior",
+      "stats": {
+        "str": 18,
+        "agi": 16,
+        "p_res": 14,
+        "m_res": 8,
+        "int": 10
+      },
+      "essences": [
+        {
+          "essence": "ghoul",
+          "color": "red"
+        },
+        {
+          "essence": "gnome",
+          "color": "blue"
+        },
+        {
+          "essence": "blade_wolf",
+          "color": "yellow"
+        }
+      ],
+      "row": "front"
     }
   ],
   "level": 4,
