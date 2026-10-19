@@ -59,7 +59,7 @@
 
 - **Progression**(캐릭터 영구): 공적(위 획득원), 처치 수(도감), 레벨 = `progression.json level.exp_table`. **Knowledge**: seen/stats/affinity → 도감·조사에서 `???` 공개. **Loot/Rewards**: 승리 시 마석·drops를 가방에, 공적·레벨업 메시지.
 - **Inventory**: 격자 가방(크기 w×h, 쌓기, 자리 찾기, 옮기기, 돈). **Equipment**: 11칸, 양손, 반지 2, `equip:<칸>` 수정자. **InventoryActions**: 가방↔장비(자리 없으면 실패, 아이템을 잃지 않음).
-- **UI(스톤샤드풍, 키보드만 — 2026-10-19 UI17)**: `GameMenu`(Tab — 캐릭터 · 소지품 · 도감 세 쪽 `MenuPage`를 한 화면에, 열려 있으면 시간 정지), `InventoryPage`(장비 인형 + 격자 + 커서 · Enter 할 일 고르기 · 옮기기 · 커서 아이템 설명과 장착품 비교), `CharacterPage`, `BestiaryPage`, `BottomBar`(큰 막대 + 단축칸 1~0 + 키 이름판), `GothicWindow`(수수께끼 창 틀).
+- **UI(스톤샤드풍, 키보드만 — 2026-10-19 UI17)**: `GameMenu`(Tab — 캐릭터 · 소지품 · 도감 세 쪽 `MenuPage`를 한 화면에, 열려 있으면 시간 정지), `InventoryPage`(장비 인형 + 격자 + 커서 · Enter 할 일 고르기 · 옮기기 · 커서 아이템 설명과 장착품 비교), `CharacterPage`, `BestiaryPage`, `BottomBar`(큰 막대 + 허기 + 키 이름판 — 단축칸 없음, 아이템은 Tab 메뉴에서만), `GothicWindow`(수수께끼 창 틀).
 
 ## 5. 전투 (§8) — M2
 

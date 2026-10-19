@@ -527,8 +527,6 @@
     "act_equip": "장착한다",
     "act_use": "사용한다",
     "act_move": "옮긴다",
-    "act_hotbar": "단축칸에 둔다",
-    "act_hotbar_remove": "단축칸에서 뺀다",
     "act_discard": "버린다",
     "act_unequip": "벗는다"
   },

@@ -64,7 +64,6 @@ func test_start_equipment_and_modifiers() -> void:
 		bare.equipment.unequip(bare.stats, s)
 	assert_near(pc.stats.get_value("p_res") - bare.stats.get_value("p_res"), 3.0 + 3.0 + 1.0, 0.001, "방패 3 + 누빔 3 + 허리띠 1")
 	assert_true(pc.inventory.money > 0, "시작 스톤")
-	assert_true(pc.hotbar.has("minor_potion") and pc.hotbar.has("torch"), "쓸 수 있는 소지품이 단축칸에")
 
 
 func test_two_handed_and_rings() -> void:

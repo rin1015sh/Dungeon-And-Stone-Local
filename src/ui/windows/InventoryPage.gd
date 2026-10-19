@@ -2,7 +2,7 @@ class_name InventoryPage
 extends MenuPage
 ## Tab 메뉴의 소지품 쪽(스톤샤드식): 장비 인형 · [정렬] · 공격·스톤 · 격자 가방. 키로만 다룬다(사용자 결정 2026-10-19).
 ##   W/A/S/D = 커서(장비 칸 · 정렬 · 가방 칸 — 아이템은 크기만큼 한 칸), 커서가 놓인 아이템의 설명은 쪽 옆에 뜬다(장착품과 비교).
-##   Enter: 가방 아이템 → 장착/사용 · 옮기기 · 단축칸에 두기/빼기 · 버리기 / 장비 칸 → 벗기(비었으면 가방에서 낄 것 고르기) / 정렬.
+##   Enter: 가방 아이템 → 장착/사용 · 옮기기 · 버리기(아이템은 여기서만 쓴다 — 단축칸 없음) / 장비 칸 → 벗기(비었으면 가방에서 낄 것 고르기) / 정렬.
 ##   옮기기: 커서가 놓을 자리(초록 = 놓을 수 있음) — Enter = 놓기(같은 아이템 위면 쌓기), Backspace = 그만두기.
 ## 장착·벗기가 가방 자리 때문에 안 되면 알림(EventBus.notice).
 
@@ -210,10 +210,6 @@ func _item_menu(i: int) -> void:
 	elif _usable(id):
 		acts.append("use")
 	acts.append("move")
-	if _usable(id):
-		acts.append("hotbar")
-	if (actor as PlayerCharacter) != null and id in (actor as PlayerCharacter).hotbar:
-		acts.append("hotbar_remove")
 	acts.append("discard")
 	var opts: Array[Dictionary] = []
 	for a in acts:
@@ -226,30 +222,8 @@ func _item_menu(i: int) -> void:
 			activate(i)
 		"move":
 			carry(i)
-		"hotbar":
-			_hotbar_menu(id)
-		"hotbar_remove":
-			var pc := actor as PlayerCharacter
-			for h in pc.hotbar.size():
-				if pc.hotbar[h] == id:
-					pc.set_hotbar(h, "")
 		"discard":
 			discard(i)
-
-
-## 단축칸 고르기(1~0 — 칸마다 지금 든 것).
-func _hotbar_menu(id: String) -> void:
-	var pc := actor as PlayerCharacter
-	if pc == null:
-		return
-	var opts: Array[Dictionary] = []
-	for h in PlayerCharacter.HOTBAR_SIZE:
-		var cur: String = pc.hotbar[h] if h < pc.hotbar.size() else ""
-		opts.append({"text": InputSetup.key_label("hotbar_%d" % ((h + 1) % 10)),
-			"sub": DataNames.entry(actor.db, "items", cur) if not cur.is_empty() else ""})
-	var k := await _ask(Strings.t("inventory.act_hotbar"), opts, true)
-	if k >= 0:
-		pc.set_hotbar(k, id)
 
 
 ## 장비 칸: 끼고 있으면 벗기, 비었으면 가방에서 이 칸에 낄 것 고르기.

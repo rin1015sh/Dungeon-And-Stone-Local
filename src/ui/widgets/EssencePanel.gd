@@ -20,7 +20,7 @@ func _build() -> void:
 	add_child(row)
 	for i in maxi(slots, es.absorbed.size()):
 		var s := Panel.new()
-		s.custom_minimum_size = Vector2.ONE * UiTheme.metric("hotbar_slot", 46)
+		s.custom_minimum_size = Vector2.ONE * UiTheme.metric("essence_slot", 46)
 		if i < es.absorbed.size():
 			var b := GothicStyle.slot_box()
 			b.bg_color = color_of(db, JsonUtil.get_str(es.absorbed[i], "color"))

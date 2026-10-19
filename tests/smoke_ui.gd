@@ -89,8 +89,15 @@ func _closing_flow() -> void:
 		Input.action_release(action)
 		await _frames(1)
 	await _action("wait")
-	await _action("torch")
-	_expect(explore.session.player.light.is_lit(), "T로 횃불을 켠다")
+	await _action("menu")  # 아이템은 Tab 메뉴에서만: 횃불 칸 → Enter → 사용한다
+	var tpc := explore.session.player
+	for i in tpc.inventory.stacks().size():
+		if tpc.inventory.stacks()[i]["id"] == "torch":
+			explore.menu().inventory().cursor_to_cell(Vector2i(tpc.inventory.stacks()[i]["pos"]))
+	await _action("menu_confirm")
+	await _action("menu_confirm")
+	await _action("menu")
+	_expect(tpc.light.is_lit() and not explore.menu().is_open(), "Tab 메뉴에서 횃불을 켠다")
 	await _action("debug_toggle")
 	_expect(explore.is_debug_open(), "F1로 디버그 패널")
 	_press(explore, Strings.t("debug.to_portal"))
@@ -336,21 +343,15 @@ func _inventory_flow() -> void:
 	_expect(not inv.carrying() and Vector2i(pc.inventory.stacks()[pc.inventory.stack_at(spot)]["pos"]) == spot \
 		and pc.inventory.stacks()[pc.inventory.stack_at(spot)]["id"] == "leather_boots", "Enter로 그 자리에 놓았다")
 	pc.inventory.add("medium_potion")
+	pc.pool.modify("hp", -30.0)
 	inv.refresh()
-	var potion := -1
+	var potions := pc.inventory.count("medium_potion")
 	for i in pc.inventory.stacks().size():
 		if pc.inventory.stacks()[i]["id"] == "medium_potion":
-			potion = i
-	inv.cursor_to_cell(Vector2i(pc.inventory.stacks()[potion]["pos"]))
+			inv.cursor_to_cell(Vector2i(pc.inventory.stacks()[i]["pos"]))
 	await _action("menu_confirm")
-	await _action("menu_down")
-	await _action("menu_down")  # 사용한다 · 옮긴다 · 단축칸에 둔다
-	await _action("menu_confirm")
-	for i in 4:
-		await _action("menu_down")
-	await _action("menu_confirm")
-	_expect(pc.hotbar[4] == "medium_potion", "단축칸 5번에 등록")
-	_expect(pc.hotbar[0] == "torch", "횃불은 1번 칸")
+	await _action("menu_confirm")  # 사용한다
+	_expect(pc.inventory.count("medium_potion") == potions - 1, "메뉴에서 포션을 마셨다")
 	pc.inventory.add("ration")
 	var rations := pc.inventory.count("ration")
 	for i in pc.inventory.stacks().size():
@@ -378,8 +379,7 @@ func _inventory_flow() -> void:
 	await _action("menu")
 	await _action("pause")
 	_expect(not menu.is_open() and not explore.is_paused(), "Esc로도 메뉴 닫기(일시정지 아님)")
-	await _action("hotbar_1")
-	_expect(pc.light.is_lit(), "1번 키로 횃불")
+	_expect(not InputMap.has_action("hotbar_1") and not InputMap.has_action("torch") and not InputMap.has_action("eat"), "단축칸·횃불·식사 키가 없다")
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))

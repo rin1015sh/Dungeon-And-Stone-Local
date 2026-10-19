@@ -158,13 +158,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_menu.toggle()
 		get_viewport().set_input_as_handled()
 		return
-	for i in PlayerCharacter.HOTBAR_SIZE:
-		if event.is_action_pressed("hotbar_%d" % ((i + 1) % 10)):
-			var id: String = session.player.hotbar[i]
-			if not id.is_empty():
-				_use_item(id)
-			get_viewport().set_input_as_handled()
-			return
 	if _menu.is_open():
 		return
 	var handled := true
@@ -172,10 +165,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		session.wait()
 	elif event.is_action_pressed("rest"):
 		session.rest()
-	elif event.is_action_pressed("torch"):
-		session.use_category("light")
-	elif event.is_action_pressed("eat"):
-		session.use_category("food")
 	elif event.is_action_pressed("interact"):
 		session.interact()
 	else:
@@ -196,7 +185,7 @@ func bottom_bar() -> BottomBar:
 	return _bar
 
 
-## 소지품 사용(단축 키·Tab 메뉴). 탐험 규칙(ExploreSession)이 판정한다.
+## 소지품 사용(Tab 메뉴에서만 — 단축칸·단축 키 없음). 탐험 규칙(ExploreSession)이 판정한다.
 func _use_item(item_id: String) -> void:
 	if _ended or _combat != null or is_paused():
 		return
