@@ -179,7 +179,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if get_viewport().gui_get_focus_owner() is LineEdit:
 		return
 	var pause_pop := get_node_or_null("PauseChoice") as ChoicePopup
-	if pause_pop != null:  # 정지 창: W/S·Enter·Backspace는 창이 먼저 받는다, Esc = 계속
+	if pause_pop != null:  # 정지 창: W/S·Enter는 창이 먼저 받는다, Esc = 계속
 		if event.is_action_pressed("pause"):
 			pause_pop.picked.emit(-1)
 		if event is InputEventKey or event is InputEventAction:
@@ -189,7 +189,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_menu.toggle()
 		get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):  # Esc·취소(Backspace): 시설에서 나가기 · 메뉴 닫기 · (거리에서 Esc) 정지 창
+	if event.is_action_pressed("menu_back"):  # 도시에서는 Backspace를 쓰지 않는다(사용자 결정 2026-10-20)
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("pause"):  # Esc: 시설에서 나가기 · 메뉴 닫기 · (거리에서) 정지 창
 		if _facility != null:
 			_facility.try_leave()
 		elif _menu.is_open():
@@ -199,14 +202,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-## 거리의 정지 창: 계속 · 타이틀로(W/S·Enter, Backspace·Esc = 계속).
+## 거리의 정지 창: 계속 · 타이틀로(W/S·Enter, Esc = 계속 — Backspace는 쓰지 않는다).
 func _pause_choice() -> void:
 	var pop := ChoicePopup.new()
 	pop.name = "PauseChoice"
 	add_child(pop)
 	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_street.set_process(false)
-	pop.open(Strings.t("explore.paused"), [{"text": Strings.t("pause.resume")}, {"text": Strings.t("city.btn_title")}], true, Vector2(-1, -1))
+	pop.open(Strings.t("explore.paused"), [{"text": Strings.t("pause.resume")}, {"text": Strings.t("city.btn_title")}], false, Vector2(-1, -1))
 	var i: int = await pop.picked
 	pop.queue_free()
 	if not is_inside_tree():

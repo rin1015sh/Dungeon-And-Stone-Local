@@ -8,7 +8,7 @@ signal result(ctx: CityContext)
 var state: CityState
 var pc: PlayerCharacter
 var activity_id: String = ""
-## 나가기(맨 끝 선택지·Backspace). FacilityView가 넣는다.
+## 나가기(맨 끝 선택지). FacilityView가 넣는다. 도시에서는 Backspace를 쓰지 않는다(사용자 결정 2026-10-20).
 var leave: Callable = Callable()
 var grid: ChoiceGrid
 ## 키를 받는가(대화창이 결과를 넘기는 중엔 끈다).
@@ -39,7 +39,7 @@ func rebuild(cursor: int = -1) -> void:
 	grid = null
 	build()
 	if grid != null:
-		grid.show_choices("", grid_options(), back_action(), keep)
+		grid.show_choices("", grid_options(), Callable(), keep)  # 뒤로 키 없음 — 나가기·돌아가기는 선택지로만
 
 
 func build() -> void:
@@ -57,11 +57,6 @@ func choices() -> void:
 		int(UiTheme.render_float("city.interior_slot_height", 40.0)), true)
 	grid.active = active
 	add_child(grid)
-
-
-## 뒤로 키(Backspace)가 하는 일 — 기본은 나가기(하위 클래스가 바꿀 수 있다).
-func back_action() -> Callable:
-	return leave
 
 
 func grid_options() -> Array[Dictionary]:

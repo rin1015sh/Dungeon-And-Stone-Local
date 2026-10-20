@@ -2,7 +2,7 @@ class_name ShopPanel
 extends CityPanel
 ## 상점·대장간 창구: 먼저 탭(구매 / 판매 — W/S·Enter)을 고르고, 그 탭의 목록에서 고른다(사용자 결정 2026-10-20).
 ##   구매 = 판매 목록(CityShop.stock — 활동의 stock·deals), 판매 = 가방에서 이 창구에 팔 수 있는 것(CityShop.sellable).
-##   목록에서 Backspace·맨 끝 돌아가기 = 탭으로, 탭에서 Backspace·나가기 = 거리로. 가격은 아이템 데이터 price.
+##   목록 맨 끝 돌아가기 = 탭으로, 탭의 나가기 = 거리로(Backspace는 쓰지 않는다 — 사용자 결정 2026-10-20). 가격은 아이템 데이터 price.
 
 const TABS := ["buy", "sell"]
 
@@ -41,10 +41,6 @@ func grid_options() -> Array[Dictionary]:
 	var opts := options()
 	opts.append({"text": Strings.t("menu.back"), "on_pick": back_to_tabs})
 	return opts
-
-
-func back_action() -> Callable:
-	return leave if mode.is_empty() else back_to_tabs
 
 
 ## 탭을 연다(buy·sell) — 커서는 맨 위.

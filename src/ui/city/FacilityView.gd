@@ -3,7 +3,7 @@ extends Control
 ## 시설 내부(피어 앤 헝거식 배치, 사용자 요청 2026-10-18 "건물 안 UI 재배치 · 나가기 버튼"):
 ##   뒷배경 일러스트(data facilities.interior)를 화면 가득 가리지 않고,
 ##   아래 = 대화창(DialogueBox — 이름판에 시설 이름, 평소엔 시설 정보 줄, 활동 결과는 한 쪽씩 Enter로 넘김),
-##   대화창 위 오른쪽 = 선택 창(활동 + 맨 끝 "나가기", W/S·Enter, Backspace = 나가기).
+##   대화창 위 오른쪽 = 선택 창(활동 + 맨 끝 "나가기", W/S·Enter — 도시에서는 Backspace를 쓰지 않는다, 사용자 결정 2026-10-20).
 ## 왼쪽 위 달력·탐험가 카드는 그대로, 오른쪽 위 메뉴(소지품·캐릭터)는 숨긴다(시설 안에서는 창을 쓰지 않는다).
 ## 들어올 때 쓴 행동력은 돌려주지 않는다 — 활동 전에 나가도 된다(나가기 버튼, 사용자 결정 2026-10-18: 예전엔 활동 전엔 못 나갔다).
 ## 활동 한 번이면 결과를 다 넘긴 뒤 저절로 거리로 나간다. 패널형 활동(상점·은행·정수 제거)은 선택 창 자리에 그 패널(선택판 맨 끝 나가기)을 열고,
@@ -91,7 +91,7 @@ func _show_choices() -> void:
 			"sub": Strings.t(why) if not why.is_empty() else CityActions.price_text(_state, _pc, act_id),
 			"on_pick": func() -> void: _choose(act_id)})
 	opts.append({"text": Strings.t("city.leave"), "on_pick": try_leave})
-	_grid.show_choices("", opts, try_leave, _grid.cursor())
+	_grid.show_choices("", opts, Callable(), _grid.cursor())
 	_sync_menu()
 
 
@@ -114,7 +114,7 @@ func _choose(act_id: String) -> void:
 	if not why.is_empty():
 		_dialog.say(Strings.t(why), "warn")
 		return
-	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Backspace·Esc
+	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
 	match panel:
 		"shop":
 			p = ShopPanel.new()
@@ -212,7 +212,7 @@ func _nothing_to_do() -> bool:
 	return true
 
 
-## 나가기(선택판의 나가기·Backspace·Esc). 들어올 때 쓴 행동력은 돌려주지 않는다.
+## 나가기(선택판의 나가기·Esc). 들어올 때 쓴 행동력은 돌려주지 않는다.
 func try_leave() -> void:
 	if _leaving and _dialog.busy():
 		return  # 결과를 넘기는 중 — 다 넘기면 저절로 나간다

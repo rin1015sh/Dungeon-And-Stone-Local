@@ -778,12 +778,15 @@ func _city_flow() -> void:
 	_expect(pc.inventory.money < money, "상점에서 구매 탭 → Enter로 샀다")
 	var shop_items := CityShop.stock(st, "shop_trade")
 	_expect(not shop_items.any(func(i: String) -> bool: return CityShop.is_equipment(st, i)), "상점은 장비를 팔지 않는다(대장간)")
-	await _action("menu_back")  # 목록 → 탭
+	var shop_panel := fv.find_children("*", "ShopPanel", true, false)
+	await _action("menu_back")
+	_expect(city.facility_view() == fv and (shop_panel[0] as ShopPanel).mode == "buy", "도시에서는 Backspace가 아무 일도 하지 않는다")
+	_press(fv, Strings.t("menu.back"))  # 목록 맨 끝 돌아가기 → 탭
+	await _frames(1)
 	await _action("menu_down")
 	await _action("menu_confirm")  # 판매 탭
-	var sell_panel := fv.find_children("*", "ShopPanel", true, false)
-	_expect(sell_panel.size() == 1 and (sell_panel[0] as ShopPanel).mode == "sell", "W/S로 판매 탭을 고른다")
-	await _action("menu_back")
+	shop_panel = fv.find_children("*", "ShopPanel", true, false)
+	_expect(shop_panel.size() == 1 and (shop_panel[0] as ShopPanel).mode == "sell", "W/S로 판매 탭을 고른다")
 	await _action("pause")
 	await _frames(1)
 	_expect(city.facility_view() == null, "창구에서 Esc → 거리로")

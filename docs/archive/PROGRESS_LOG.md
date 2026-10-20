@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도시에서 Backspace 안 씀 (2026-10-20, 사용자 "도시에서 백스페이스 안쓰게 해줘")**: `CityScreen._unhandled_input`이 menu_back을 먹고 아무것도 안 함(Esc는 그대로 시설 나가기·정지 창), 시설 선택 창·창구 `show_choices` 뒤로 = 없음(`CityPanel.back_action` 지움), 거리 정지 창 can_back false. Tab 메뉴는 미궁과 같은 창이라 그대로(아이템 선택 창 취소가 Backspace뿐) — CT41. 스모크: 창구에서 Backspace가 아무 일도 안 하는지 + 돌아가기 버튼으로 탭. check.sh 통과.
+
 - **거리 배치·A/D 넘기기·장비는 대장간·창구 탭 (2026-10-20, 사용자 "모험가 길드는 왼쪽 맨 앞. 대장간은 상점 옆 … ad 누르면 휙휙 다음 건물이 화면 중심에 오게 … 장비는 대장간에서 구매 판매 … 상점, 대장간의 구매 판매 탭을 나눠줘. ws로 구매 판매 선택")**:
   - 배치: `facility_order` 길드 · 여관 · 도서관 · 신전 · 상점 · 대장간 · 은행 · 훈련장, `x` 다시 계산(건물 사이 100 — 길이 4380 그대로), 거리 바닥(street.webp)만 다시 그림(`--only=street` — 건물 그림은 그대로).
   - `CityStreet.step(dir)`: A/D(`move_left/right`, 누르고 있으면 반복) = 옆 건물로 커서를 옮기고 Tween으로 그 건물 가운데까지(`city.step_sec` 0.25, 끝은 거리 끝까지만). 연속 스크롤(`_process`)과 `scroll_px_per_sec`는 지움. CityScreen이 거리를 멈추면(`set_process(false)` — 메뉴·대화창·정지 창) A/D도 무시.
