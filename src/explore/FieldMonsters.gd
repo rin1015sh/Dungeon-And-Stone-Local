@@ -57,6 +57,7 @@ var _mpt: float = 1.0
 var _steer: MonsterSteering
 var _now: float = 0.0
 var _region_far: Dictionary = {}  # 지역 id -> 중심에서 가장 먼 칸까지의 거리
+var _active: float = 0.0  # monsters.active_radius_tiles(0 = 모두 움직임)
 
 
 func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> void:
@@ -65,6 +66,7 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 	_floor_def = floor_def
 	_rng = rng
 	_mpt = maxf(0.01, float(db.bal("explore.meters_per_tile", 1.0)))
+	_active = float(db.bal("monsters.active_radius_tiles", 0))
 	_steer = MonsterSteering.new(db, map, rng, groups)
 	var keep_out := 3.0
 	for z: Dictionary in map.safe_zones:
@@ -182,11 +184,12 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 	var pcell := Kinematics.cell_of(player)
 	_process_respawns(pcell, now)
 	var max_moves := float(_db.bal("monsters.update_max_moves", 12))
-	var active := float(_db.bal("monsters.active_radius_tiles", 0))
 	var moved := false
+	var near: Array[Group] = []
 	for g in groups:
-		if active > 0.0 and Vector2(g.pos - pcell).length() > active:
+		if not is_awake(g, pcell):
 			continue  # 멀리(시야·화면 밖) 있는 무리는 쉰다 — 큰 지도에서 계산량이 무리 수에 비례해 늘지 않게
+		near.append(g)
 		var budget := minf(hours / _steer.move_hours(g.leader()), max_moves)
 		_steer.decide(g, pcell, now)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
@@ -196,15 +199,21 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		changed.emit()
 	if player_safe:
 		return null
-	for g in groups:
+	var boss_engage := float(_db.bal("monsters.boss_engage_tiles", 3.5))
+	for g in near:  # 쉬는 무리는 멀어서 닿을 수 없다
 		if g.grace_until > now:
 			continue
 		if g.boss != "":  # 보스: 방에 들어와 보이는 거리면 바로
-			if g.fpos.distance_to(player) <= float(_db.bal("monsters.boss_engage_tiles", 3.5)) and _steer.sees(g.pos, pcell):
+			if g.fpos.distance_to(player) <= boss_engage and _steer.sees(g.pos, pcell):
 				return g
 		elif _steer.in_contact(g, player) and (g.state == STATE_CHASE or _aggressive(g.leader())):
 			return g
 	return null
+
+
+## 플레이어 칸 pcell 둘레 monsters.active_radius_tiles 안이라 움직이는 무리인가(0 = 모두).
+func is_awake(g: Group, pcell: Vector2i) -> bool:
+	return _active <= 0.0 or (g.pos - pcell).length_squared() <= _active * _active
 
 
 ## 플레이어가 delta 쪽으로 움직이려 할 때 닿아 있고 그쪽으로 다가가는 무리(플레이어가 먼저 건 전투).

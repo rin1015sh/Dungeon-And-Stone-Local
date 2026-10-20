@@ -10,6 +10,7 @@ var _void: Array[Vector2i] = []
 var _cliffs: Node2D  # 절벽 면을 그리는 자식(뒷배경 셰이더를 쓰지 않는다)
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
+var _batch := QuadBatch.new()  # 칸들을 한 번에(draw_polygon 칸마다 부르면 느리다)
 
 
 func setup(p_view: FloorView, p_cells: Rect2i) -> void:
@@ -40,7 +41,8 @@ func _draw() -> void:
 		for k in 4:
 			var f := view.fog_mul(p.x + (1 if k == 1 or k == 2 else 0), p.y + (1 if k >= 2 else 0))
 			_cols[k] = Color(f, f, f, 1.0)
-		draw_polygon(_pts, _cols)
+		_batch.add(_pts, _cols)
+	_batch.flush(self)
 	if _cliffs != null:
 		_cliffs.queue_redraw()
 
@@ -58,6 +60,8 @@ func draw_cliffs(cv: CanvasItem) -> void:
 	var t := float(view.tile)
 	var col := Backdrop.cliff_color(view.art)
 	var depth := Backdrop.cliff_depth(view.art) * t
+	var lines := PackedVector2Array()  # 절벽 윗선은 면을 다 그린 뒤 한 번에
+	var line_cols := PackedColorArray()
 	for p in _void:
 		if map.explored[p.y * map.width + p.x] == 0:
 			continue
@@ -71,8 +75,10 @@ func draw_cliffs(cv: CanvasItem) -> void:
 			_cols[1] = top_r
 			_cols[2] = Color(top_r.r, top_r.g, top_r.b, 0.0)
 			_cols[3] = Color(top.r, top.g, top.b, 0.0)
-			cv.draw_polygon(_pts, _cols)
-			cv.draw_line(Vector2(p.x * t, p.y * t), Vector2((p.x + 1) * t, p.y * t), top.darkened(0.6), 1.5)
+			_batch.add(_pts, _cols)
+			lines.append(Vector2(p.x * t, p.y * t))
+			lines.append(Vector2((p.x + 1) * t, p.y * t))
+			line_cols.append(top.darkened(0.6))
 		for side: int in [-1, 1]:
 			if _ground(map, p + Vector2i(side, 0)):
 				var x0 := (p.x + (0 if side < 0 else 1)) * t
@@ -87,7 +93,10 @@ func draw_cliffs(cv: CanvasItem) -> void:
 				_cols[1] = b
 				_cols[2] = b
 				_cols[3] = a
-				cv.draw_polygon(_pts, _cols)
+				_batch.add(_pts, _cols)
+	_batch.flush(cv)
+	if not lines.is_empty():
+		cv.draw_multiline_colors(lines, line_cols, 1.5)
 
 
 static func _ground(map: FloorMap, q: Vector2i) -> bool:

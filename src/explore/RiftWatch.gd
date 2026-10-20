@@ -97,7 +97,7 @@ func _place(s: ExploreSession, rift_id: String, cell: Vector2i) -> bool:
 	s.map.set_tile(cell, "rift_portal")
 	s.map.portals.append({"id": "rift_%d" % _next_id, "pos": cell, "dir": "", "to_floor": 0, "kind": "rift", "rift": rift_id, "found": false})
 	_next_id += 1
-	s.lights = LightField.build(s.map, maxf(0.01, float(s.db.bal("explore.meters_per_tile", 1.0))))
+	s.lights.add_cell(s.map, cell, maxf(0.01, float(s.db.bal("explore.meters_per_tile", 1.0))))
 	s.refresh_view()
 	return true
 

@@ -27,6 +27,8 @@ var floor_layer: Node2D
 var decor_layer: Node2D
 var glow_layer: Node2D
 var _last_rect: Rect2i = Rect2i()
+var _diff := VertexDiff.new()        # 다시 그리기 전후 꼭짓점 값 비교
+var _last_cap: int = -1              # 지난 갱신의 화면 반경(칸) — 바뀌면 전체 갱신
 var _vlight: PackedColorArray       # 꼭짓점 빛(시야 사각형 안만 갱신)
 var _light_color: Color = Color.WHITE
 var _light_center: Vector2 = Vector2.ZERO
@@ -185,11 +187,17 @@ func refresh(full: bool = false) -> void:
 		_light_color = Color.from_string(JsonUtil.get_str(JsonUtil.get_dict(session.db.render, "lighting"), "torch_color"), Color.WHITE)
 	else:
 		_light_color = Color.from_string(JsonUtil.get_str(session.floor_def, "ambient_color"), Color.WHITE)
-	var r := ceili(_vision) + 2
+	# 걸을 때는 화면 안만 갱신한다(밝은 균열은 시야 = 지도 전체) — 화면 밖은 들어오기 전에 갱신된다.
+	# 처음·화면 크기가 바뀌었을 때는 시야 전체(처음엔 화면이 아직 2×2라 범위를 믿을 수 없다).
+	var cap := _screen_radius()
+	var whole := full or not _last_rect.has_area() or cap != _last_cap
+	_last_cap = cap
+	var r := ceili(_vision) + 2 if whole else mini(ceili(_vision) + 2, cap)
 	var rect := Rect2i(session.pos - Vector2i(r, r), Vector2i(r * 2 + 1, r * 2 + 1)).intersection(Rect2i(0, 0, map.width, map.height))
-	_update_vertex_light(rect)
-	var whole := full or not _last_rect.has_area()
 	var dirty := rect.merge(_last_rect) if not whole else Rect2i()
+	if not whole:
+		_diff.take(dirty, map.width + 1, map.height + 1, _vlight, _vfog, _vknown)
+	_update_vertex_light(rect)
 	_last_rect = rect
 	stream.around(session.pos)  # 새로 만든 노드는 처음 그려질 때 이미 최신이다
 	if whole:
@@ -197,7 +205,7 @@ func refresh(full: bool = false) -> void:
 		stream.redraw_all()
 	else:
 		update_fog(dirty)
-		stream.redraw_rect(dirty)
+		stream.redraw_rect(_diff.changed_cells(_vlight, _vfog, _vknown))  # 값이 바뀐 곳만(밝은 균열은 걸어도 거의 안 바뀐다)
 	player_view.face(session.facing)
 	player_view.set_occluded(_occludes(session.pos + Vector2i(0, 1)))
 	sync_monsters()
@@ -214,6 +222,10 @@ func sync_monsters() -> void:
 	for g in session.monsters.groups:
 		alive[g.id] = true
 		var mv: MonsterView = _monster_views.get(g.id)
+		if not session.monsters.is_awake(g, session.pos):  # 쉬는 무리는 멀어서 보이지 않는다(그림 노드도 다가올 때 만든다)
+			if mv != null:
+				mv.visible = false
+			continue
 		if mv == null:
 			mv = MonsterView.new()
 			mv.setup(g, session.db)
@@ -360,6 +372,12 @@ func update_fog(cells: Rect2i) -> void:
 			var x0 := vx - 2 - e2.position.x
 			var x1 := vx + 2 - e2.position.x
 			_vknown[vy * w + vx] = sat[y1 + x1] - sat[y0 + x1] - sat[y1 + x0] + sat[y0 + x0]
+
+
+## 플레이어에서 화면 끝까지의 칸 수 + 여유(벽 앞면·안개 번짐). 이보다 먼 꼭짓점은 화면에 들어오기 전에 다시 계산된다.
+func _screen_radius() -> int:
+	var half := get_viewport_rect().size * 0.5 / (tile * maxf(0.1, JsonUtil.get_float(_cfg, "camera_zoom", 2.0)))
+	return ceili(maxf(half.x, half.y)) + 4
 
 
 ## 칸마다 약간 다른 밝기(동굴 바닥 질감). 같은 칸은 항상 같은 값.

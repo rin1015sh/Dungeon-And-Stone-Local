@@ -12,6 +12,7 @@ var cells: Rect2i
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
 var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
+var _batch := QuadBatch.new()  # 칸들을 그림마다 한 번에(draw_polygon 칸마다 부르면 느리다)
 var _blends: Array[Array] = []  # [x, y, 모서리 방향, 칠할 타일] — 물 가장자리 사선(setup에서 한 번, 물·바닥 타일은 바뀌지 않는다)
 
 
@@ -25,6 +26,7 @@ func setup(p_view: FloorView, p_cells: Rect2i) -> void:
 func _draw() -> void:
 	var map := view.map
 	var t := view.tile
+	var marks: Array[Array] = []  # [x, y, 표식 색] — 표식 마름모는 바닥을 다 그린 뒤 위에
 	for y in range(cells.position.y, cells.end.y):
 		for x in range(cells.position.x, cells.end.x):
 			var i := y * map.width + x
@@ -49,16 +51,19 @@ func _draw() -> void:
 				_cols[1] = view.vertex_mul(x + 1, y, def.color_floor)
 				_cols[2] = view.vertex_mul(x + 1, y + 1, def.color_floor)
 				_cols[3] = view.vertex_mul(x, y + 1, def.color_floor)
-				draw_polygon(_pts, _cols, _uvs, tex)
+				_batch.add(_pts, _cols, _uvs, tex)
 			else:
 				var base := def.color_floor * view.cell_jitter(x, y)
 				_cols[0] = view.vertex_color(x, y, base)
 				_cols[1] = view.vertex_color(x + 1, y, base)
 				_cols[2] = view.vertex_color(x + 1, y + 1, base)
 				_cols[3] = view.vertex_color(x, y + 1, base)
-				draw_polygon(_pts, _cols)
+				_batch.add(_pts, _cols)
 			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null and tex == null:  # 그림이 있으면 표식 마름모는 그리지 않는다
-				_draw_mark(x, y, t, view.vertex_color(x, y, def.color_mark))
+				marks.append([x, y, def.color_mark])
+	_batch.flush(self)
+	for m in marks:
+		_draw_mark(m[0], m[1], t, view.vertex_color(m[0], m[1], m[2]))
 	var r := view.wall_round * t
 	for b in _blends:
 		if map.explored[int(b[1]) * map.width + int(b[0])] != 0:

@@ -13,6 +13,7 @@ var _prop_cells: Array[Vector2i] = []  # 소품이 있을 수 있는 칸(동굴 
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
 var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
+var _batch := QuadBatch.new()  # 데칼은 한 장의 그림이라 한 번에(draw_polygon 데칼마다 부르면 느리다)
 
 
 func setup(p_view: FloorView, p_cells: Rect2i) -> void:
@@ -57,7 +58,8 @@ func _draw() -> void:
 			_quad(c, size, size)
 			FloorChunk.set_uv_turned(_uvs, tex, int(e["v"]), n, int(e["kind"]), rows, int(e["rot"]), bool(e["flip"]))
 			_corner_light(p, mean, 1.0)
-			draw_polygon(_pts, _cols, _uvs, tex)
+			_batch.add(_pts, _cols, _uvs, tex)
+		_batch.flush(self)
 	for q in _prop_cells:
 		var x := q.x
 		var y := q.y

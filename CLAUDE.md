@@ -81,6 +81,7 @@
 - 테스트에서 일부러 오류를 내는 호출(push_error)을 하지 않는다 — check.sh가 출력의 `ERROR:`를 실패로 본다.
 - **멈춘 Godot을 `pkill -f <패턴>`으로 죽이지 않는다** — 같은 셸 명령줄에 그 문자열(예: Godot 경로)이 있으면 셸 자신이 죽는다(exit 144). `for p in $(pgrep -f "[G]odot_v4"); do kill $p; done`을 **경로가 없는 별도 명령**으로 실행한다.
 - UI 스크립트에 파싱 오류가 있으면 UI 스모크가 끝나지 않고 멈춘다(check.sh가 타임아웃까지 대기). 멈추면 `godot --headless --path . --check-only --script res://<파일>`로 파싱 오류를 찾는다(오토로드 이름 오류는 무시).
+- **탐험 맵 그리기에서 칸·데칼마다 `draw_polygon`을 부르지 않는다** — 부를 때마다 삼각분할 + 그리기 명령이라 칸 수백 개인 청크가 수십 ms였다(균열에서 걸음마다 0.5초 멈춤). `QuadBatch`로 그림마다 모아 한 번에. 시야가 바뀔 때 다시 그리는 범위는 `VertexDiff`(값이 바뀐 곳만)·화면 반경으로 줄여 둔 것을 넓히지 않는다. 큰 지도 전체를 스크립트로 훑는 계산(예: `LightField.build`)을 실행 중에 다시 부르지 않는다.
 - `--import` 중 `[Godot MCP] Failed to start server on port 6505` 오류가 나올 수 있다(편집기가 이미 포트를 쓰는 중). 게임과 무관하며 check.sh는 이 출력을 무시한다.
 
 ## 구조
@@ -114,7 +115,7 @@ src/
                          FloorMapFile(고정 지도 파일 읽기/쓰기), FloorArtCheck(그림 층 검사 — 변형 연속·장식 막힘·요소 겹침)·FloorArtLayer(칸마다 재질 변형)·FloorDecor(데칼 배치 규칙), FieldFeaturePlacer·FieldFeatures·FieldFeatureAct(동굴 요소 배치·규칙·행동), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 이동·변이종·은신), FieldStealth, LordWatch(계층군주 소환),
-                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), ExploreDebug(디버그 순간이동·안개 걷기), view/{FloorView,ChunkStream(청크 노드 스트리밍),FloorTextures(그림 파일 읽기),FloorChunk,WallRow(벽 줄),WallShape(부드러운 암벽 — 사선 모서리·윗면 숨김·남쪽 앞면),DecorChunk(데칼·소품),FloorTint(거시 색조),ActorView,ActorSheet(몸 그림 시트),MonsterView,FigurePainter,FloorArt(층 그림 설정 art),GlowChunk(수정 맥동 빛),AmbientParticles(분위기 입자)}
+                         RiftCalendar·RiftWatch·RiftRun(균열 개방·챕터), RiftHazards(챕터 탐험 위험·함정), RiftHidden(히든 피스·벽화), RiftRiddle(수수께끼 문지기), ExploreInteract(살피기·포탈), ExploreDebug(디버그 순간이동·안개 걷기), view/{FloorView,ChunkStream(청크 노드 스트리밍),FloorTextures(그림 파일 읽기),FloorChunk,QuadBatch(칸 묶어 그리기),VertexDiff(바뀐 꼭짓점만 다시 그리기),WallRow(벽 줄),WallShape(부드러운 암벽 — 사선 모서리·윗면 숨김·남쪽 앞면),DecorChunk(데칼·소품),FloorTint(거시 색조),ActorView,ActorSheet(몸 그림 시트),MonsterView,FigurePainter,FloorArt(층 그림 설정 art),GlowChunk(수정 맥동 빛),AmbientParticles(분위기 입자)}
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭), DropPickup(전투 장면에서 줍는 드롭 — 굴림·받기·두기), SaveGame(한 칸 저장)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  CityState(순 달력·행동력·공적치·잔액·소문/정보·디버그 임시값), CityValues(null 경로·임시값), CityActions(활동 실행),

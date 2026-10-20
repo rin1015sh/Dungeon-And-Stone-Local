@@ -12,6 +12,13 @@ var _db: GameDatabase
 var _map: FloorMap
 var _rng: Rng
 var _mpt: float = 1.0
+# balance 값(매 프레임 무리마다 경로 문자열로 찾지 않게 한 번 읽어 둔다)
+var _contact: float = 1.05
+var _half: float = 0.3
+var _direct: float = 2.0
+var _wander_chance: float = 0.3
+var _wander_radius: float = 4.0
+var _move_hours: float = 0.02
 var _field_cell: Vector2i = Vector2i(-1, -1)
 var _field: Dictionary = {}
 
@@ -22,6 +29,12 @@ func _init(db: GameDatabase, map: FloorMap, rng: Rng, p_groups: Array) -> void:
 	_rng = rng
 	groups = p_groups
 	_mpt = maxf(0.01, float(db.bal("explore.meters_per_tile", 1.0)))
+	_contact = float(db.bal("monsters.contact_tiles", 1.05))
+	_half = float(db.bal("monsters.body_half_extent", 0.3))
+	_direct = float(db.bal("monsters.direct_chase_tiles", 2.0))
+	_wander_chance = float(db.bal("monsters.wander_chance", 0.3))
+	_wander_radius = float(db.bal("monsters.wander_radius", 4))
+	_move_hours = maxf(0.0001, float(db.bal("explore.move_hours_base", 0.02)))
 
 
 func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
@@ -66,8 +79,8 @@ func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: floa
 		return false
 	var left := budget
 	var moved := false
-	var contact := float(_db.bal("monsters.contact_tiles", 1.05))
-	var half := float(_db.bal("monsters.body_half_extent", 0.3))
+	var contact := _contact
+	var half := _half
 	var direct_ok := true  # 곧장 다가가다 모서리에 막히면 이번엔 칸 길로 돌아간다
 	for guard in 64:
 		if left <= 0.00001:
@@ -76,7 +89,7 @@ func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: floa
 			break
 		var target := Vector2(-1, -1)
 		var stop_short := 0.0
-		if direct_ok and g.state == FieldMonsters.STATE_CHASE and g.fpos.distance_to(player) <= float(_db.bal("monsters.direct_chase_tiles", 2.0)) 				and _line_of_sight(g.pos, pcell):
+		if direct_ok and g.state == FieldMonsters.STATE_CHASE and g.fpos.distance_to(player) <= _direct 				and _line_of_sight(g.pos, pcell):
 			target = player
 			stop_short = contact - 0.05
 			g.waypoint = Vector2(-1, -1)
@@ -135,9 +148,9 @@ func _next_waypoint(g: FieldMonsters.Group, pcell: Vector2i) -> Vector2:
 				if can_enter(q, g) and (q - g.home).length_squared() < (best - g.home).length_squared():
 					best = q
 		_:
-			if _rng.chance(float(_db.bal("monsters.wander_chance", 0.3))):
+			if _rng.chance(_wander_chance):
 				var q := g.pos + FloorMap.DIRS4[_rng.randi_range(0, 3)]
-				if can_enter(q, g) and Vector2(q - g.home).length() <= float(_db.bal("monsters.wander_radius", 4)):
+				if can_enter(q, g) and Vector2(q - g.home).length() <= _wander_radius:
 					best = q
 	if best == g.pos:
 		# 칸 한가운데가 아니면(직접 추적 뒤 등) 지금 칸 중심으로 돌아가 격자에 맞춘다.
@@ -147,7 +160,7 @@ func _next_waypoint(g: FieldMonsters.Group, pcell: Vector2i) -> Vector2:
 
 
 func in_contact(g: FieldMonsters.Group, player: Vector2) -> bool:
-	return g.fpos.distance_to(player) <= float(_db.bal("monsters.contact_tiles", 1.05)) + 0.0001
+	return g.fpos.distance_to(player) <= _contact + 0.0001
 
 
 ## 칸 p에 들어갈 수 있는가: 걸을 수 있고 안전지대가 아니며, 다른 무리가 서 있거나 가는 중이 아니다.
@@ -201,7 +214,7 @@ func _line_of_sight(a: Vector2i, b: Vector2i) -> bool:
 
 ## 한 칸을 가는 데 드는 게임 시간 — 플레이어와 같다(민첩과 무관, 사용자 결정 2026-10-17).
 func move_hours(_monster_id: String) -> float:
-	return maxf(0.0001, float(_db.bal("explore.move_hours_base", 0.02)))
+	return _move_hours
 
 
 func _behavior(monster_id: String) -> Dictionary:
