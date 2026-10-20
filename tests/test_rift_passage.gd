@@ -136,3 +136,30 @@ func test_every_passage_is_on_map_edge() -> void:
 				var x := int(p[0])
 				var y := int(p[1])
 				assert_true(x == 0 or y == 0 or x == w - 1 or y == h - 1, "%s %d챕터 %s %s가 가장자리" % [id, i + 1, key, p])
+
+
+## 앞 챕터 출구와 다음 챕터 입구는 반대쪽 가장자리다(동쪽으로 나가면 다음 챕터 서쪽으로 들어온다 — 사용자 요청 2026-10-20).
+func test_passage_directions_match() -> void:
+	for id: Variant in db.get_collection("rifts").keys():
+		var chs := JsonUtil.get_array(db.get_entry("rifts", str(id)), "chapters")
+		for i in chs.size() - 1:
+			var a := FloorMapFile.read(JsonUtil.get_str(JsonUtil.get_dict(chs[i], "map"), "blueprint"))
+			var b := FloorMapFile.read(JsonUtil.get_str(JsonUtil.get_dict(chs[i + 1], "map"), "blueprint"))
+			if a.is_empty() or b.is_empty():
+				continue
+			var out := _side(a, JsonUtil.get_array(JsonUtil.get_dict(a, "marks"), "exit"))
+			var into := _side(b, JsonUtil.get_array(JsonUtil.get_dict(b, "marks"), "entry"))
+			assert_eq(out, -into, "%s %d→%d챕터: 나간 쪽의 반대쪽으로 들어온다" % [id, i + 1, i + 2])
+
+
+## 가장자리 방향(동 (1,0)·서 (-1,0)·북 (0,-1)·남 (0,1)).
+func _side(data: Dictionary, p: Array) -> Vector2i:
+	var w := JsonUtil.get_int(data, "width")
+	var h := JsonUtil.get_int(data, "height")
+	if int(p[0]) == w - 1:
+		return Vector2i(1, 0)
+	if int(p[0]) == 0:
+		return Vector2i(-1, 0)
+	if int(p[1]) == 0:
+		return Vector2i(0, -1)
+	return Vector2i(0, 1) if int(p[1]) == h - 1 else Vector2i.ZERO

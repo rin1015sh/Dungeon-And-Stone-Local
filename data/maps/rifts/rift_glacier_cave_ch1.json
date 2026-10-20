@@ -44,8 +44,8 @@
    ]
   ],
   "exit": [
-   87,
-   21
+   85,
+   43
   ],
   "hidden": [
    [
@@ -80,25 +80,25 @@
   "..Y.................R....Y..............,,,,,,,,,,,,,,,,,,,,P,,,,,,,,,,,I,,,,,,,,,,,,,,,",
   "........................................,,,,,,,,,,,,,,,,,,,,,,,,,,P,,,,,,,,,,,,,,,,,,,,,",
   ".......R.R..............................,,,,,,,,##########,,,,,,,,,,,,,,,,#,,,,,,,,,,,##",
-  ".................................Y......,I,,,,,,#KKKKKKKKK#,,,,,,,,,,,##,,,#I,,,,,,,##KK",
-  "......R........d..===....................KIIIIIIKKKKKKKKKK#,,,,,,,,,##K#,,,##,,,,,##KKKK",
-  " .............=========...I..............KKKKKKKKKKKKKKKKKK#,,,,,,##KKK#,,,#K#####KKKKKK",
-  " ....R......==============...............KKKKKKKKKKKKKKKKKKK#,,,##KKKKK##,,,###KKKKKKKKK",
-  "  ........================...............KKKKKKKKKKKKKKKKKKKK###KKKKK##,,,,,,,,#KKKKKKKK",
-  "   ......=================........Y......KKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,#KKKKKKK",
-  "    ...R==================...............KKKKKKKKKKKKKKKKKKKKKKKKKKK#,c,,,,,,,,#KKKKKKKK",
-  "    ....===================...Y..........KKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,c,,,,,,#KKKKKKK",
-  "    .....==================I.............KKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,c,,#KKKKKKK",
-  "    .......===============................KKKKKKKKKKKKKKKKKKKKKKKKK##,,,c,,,,,,,#KKKKKKK",
-  "    ........=====.========......d...Y.....KKKKKKKKKKKKKKKKKKKKKKKKKKK###,,,,,,,#KKKKKKKK",
-  "     .............d===....................KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK###,,##KKKKKKKKK",
-  "       ...............................Y....KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##KKKKKKKKKKK",
-  "              ................Y.Y..Y....... KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "                ..........R.............    KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "                     ................       KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "                      .............         KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "                       .....                KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+  ".................................Y......,I,,,,,,#KKKKKKKKK#,,,,,,,,,,,##,,,#I,,,,,,,,,,K",
+  "......R........d..===....................KIIIIIIKKKKKKKKKK#,,,,,,,,,##K#,,,##,,,,,##,,,K",
+  " .............=========...I..............KKKKKKKKKKKKKKKKKK#,,,,,,##KKK#,,,#K#####KK,,,K",
+  " ....R......==============...............KKKKKKKKKKKKKKKKKKK#,,,##KKKKK##,,,###KKKKK,,,K",
+  "  ........================...............KKKKKKKKKKKKKKKKKKKK###KKKKK##,,,,,,,,#KKKK,,,K",
+  "   ......=================........Y......KKKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,,#KKK,,,K",
+  "    ...R==================...............KKKKKKKKKKKKKKKKKKKKKKKKKKK#,c,,,,,,,,#KKKK,,,K",
+  "    ....===================...Y..........KKKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,c,,,,,,#KKK,,,K",
+  "    .....==================I.............KKKKKKKKKKKKKKKKKKKKKKKKK#,,,,,,,,,,c,,#KKK,,,K",
+  "    .......===============................KKKKKKKKKKKKKKKKKKKKKKKKK##,,,c,,,,,,,#KKK,,,K",
+  "    ........=====.========......d...Y.....KKKKKKKKKKKKKKKKKKKKKKKKKKK###,,,,,,,#KKKK,,,K",
+  "     .............d===....................KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK###,,##KKKKK,,,K",
+  "       ...............................Y....KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK##KKKKKKK,,,K",
+  "              ................Y.Y..Y....... KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K",
+  "                ..........R.............    KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K",
+  "                     ................       KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K",
+  "                      .............         KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K",
+  "                       .....                KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K",
+  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K",
+  "                                            KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,K"
  ]
 }
