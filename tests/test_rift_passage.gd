@@ -112,3 +112,27 @@ func test_finish_drops_kept_chapters() -> void:
 	run.debug_clear()
 	assert_eq(run.use_exit(cs), run.outer, "마지막 챕터 출구(E)는 탈출")
 	assert_true(run._kept.is_empty(), "나가면 보관한 챕터를 놓는다")
+
+
+## 모든 균열의 챕터 사이 길목은 지도 가장자리에 있다(그 너머로 길이 이어지는 것처럼 — 사용자 요청 2026-10-20).
+func test_every_passage_is_on_map_edge() -> void:
+	for id: Variant in db.get_collection("rifts").keys():
+		var chs := JsonUtil.get_array(db.get_entry("rifts", str(id)), "chapters")
+		for i in chs.size():
+			var bp := JsonUtil.get_str(JsonUtil.get_dict(chs[i], "map"), "blueprint")
+			if bp.is_empty():
+				continue
+			var data := FloorMapFile.read(bp)
+			var w := JsonUtil.get_int(data, "width")
+			var h := JsonUtil.get_int(data, "height")
+			var marks := JsonUtil.get_dict(data, "marks")
+			var keys: Array[String] = []
+			if i < chs.size() - 1:
+				keys.append("exit")
+			if i > 0:
+				keys.append("entry")
+			for key in keys:
+				var p := JsonUtil.get_array(marks, key)
+				var x := int(p[0])
+				var y := int(p[1])
+				assert_true(x == 0 or y == 0 or x == w - 1 or y == h - 1, "%s %d챕터 %s %s가 가장자리" % [id, i + 1, key, p])

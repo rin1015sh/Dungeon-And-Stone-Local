@@ -24,7 +24,7 @@
  "marks": {
   "entry": [
    38,
-   4
+   0
   ],
   "slots": [
    [
@@ -33,7 +33,7 @@
    ]
   ],
   "exit": [
-   70,
+   75,
    26
   ],
   "hidden": [
@@ -45,8 +45,8 @@
   "hazards": []
  },
  "rows": [
-  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
-  "KKKKKKKKKK########################################################KKKKKKKKKK",
+  "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
+  "KKKKKKKKKK###########################,,,##########################KKKKKKKKKK",
   "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
   "KKKKKKKKK#,,d.d.d,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,d.d,,,,,,,#KKKKKKKKK",
   "KKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,R,,,,,,,,,,,,,,,,,,,#KKKKKKKKK",
@@ -70,9 +70,9 @@
   "KKKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,I,,,,,,,c,,,,,,,,,,#KKKKKKKKKKKKKKKK",
   "KKKKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,,,,,,,,z,,,,,,,,,,,,,#KKKKKKKKKKKKKKK",
   "KKKKKKKKKKKKKKKK#,,,,,,cP,,,,,R,,,,,,,,,,,,,,,,,,,,,P,,,,,,,#KKKKKKKKKKKKKKK",
-  "KKKKKKKKKKKKKKKK#,,,,,,,,,z,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,#KKKKKK,,,,KKKK",
-  "KKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,I,,,,I,,#K,,,,,,,,,KKKK",
-  "KKKKKKKKKKKKKKK#,,,R,,,,R,,,,,,,,,z,,,:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,KKKK",
+  "KKKKKKKKKKKKKKKK#,,,,,,,,,z,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,,,,,#KKKKKK,,,,,,,,",
+  "KKKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,c,,,,,,,,,,,,,,,,,I,,,,I,,#K,,,,,,,,,,,,,",
+  "KKKKKKKKKKKKKKK#,,,R,,,,R,,,,,,,,,z,,,:,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
   "KKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,,:::::,,,,,,,,,c,,,,,,,,,,,,,,,,,KKKKKKKK",
   "KKKKKKKKKKKKKK#,,,,,,,,,,,,,,,,,,,,:::::::,c,,,,,,,,,,,,,,,,,,,KKKKKKKKKKKKK",
   "KKKKKKKKKKKKK#,,,,,,,P,,,,,,,,,,,,::::T::::,,,,,,,,,,,,P,,,,,,#KKKKKKKKKKKKK",
