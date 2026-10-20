@@ -9,7 +9,7 @@
 - **문서 정리 · 경고 0 (2026-10-20, 사용자 "너가 작업하고 이어받기 좋게 md 파일 정리해. 경고도 수정하고")**:
   - 경고: ① UI 스모크 종료 시 "ObjectDB 20·CanvasItem RID 10 누수" — 캐릭터 창 세부 스탯이 하나도 없을 때 만든 `GridContainer`를 트리에 붙이지 않고 버리던 것(`CharacterPage._build_details`, 창을 열 때마다 하나씩). `--verbose`의 Leaked instance 목록 + 만든 자리마다 객체 번호를 찍어 대조해 찾았다(선택판 `ChoiceGrid`는 아니었다). ② 데이터 검증 "스프라이트 파일 없음 93" — 실제 그림(타일 재질 33·몬스터 손그림 52)이 있는데 남아 있던 죽은 `sprite` 경로 89개를 지우고, 꺼진 종족 4개(`enabled: false`)는 검사에서 뺐다. → check.sh 경고 0, 누수 경고 0.
   - 문서: 옛 PROGRESS.md(699줄·182KB)를 이 파일로 옮기고(git mv — 이력 유지) PROGRESS.md를 짧게 새로(한눈에·다음 할 일·최근 작업 한 줄·유효한 이슈·고치는 법). README 체크리스트 → `docs/PLAYTEST.md`. CLAUDE.md 43KB → 약 24KB: 데이터 키 목록 13항목·파일 구조(자세히) → `docs/REFERENCE.md`, 그림 도구 명령 → `docs/ART.md` §0, 세션 규칙을 새 구조에 맞춤. 문서 지도 `docs/README.md` 새로. CANON.md 10-20 기준(생명력 공식·5인 파티·정수 전투 전용·상태이상 재기획·균열 길목·전투 대화창·사망 바로 타이틀·탐험 맵 그림·미결정 표 추가), HANDOFF 낡은 키(E 식사)·기록 위치, plans 머리말(재기획 "적용함", 균열 공간 "구현됨 + 길목 바뀜"), ASSUMPTIONS 머리말에 앞글자 찾아보기.
-  - 남은 것: push 안 된 커밋, 300줄 넘는 스크립트(ExploreScreen·RiftRun 등) — PROGRESS 다음 할 일 1·2.
+  - 남은 것: (push는 같은 날 함) 300줄 넘는 스크립트(ExploreScreen·RiftRun 등) — PROGRESS 다음 할 일 1·2.
 
 ---
 
