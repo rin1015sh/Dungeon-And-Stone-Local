@@ -64,15 +64,6 @@ func set_roster(r: Control) -> void:
 	_list.get_parent().move_child(r, 0)
 
 
-## 하단 대화창(전투 안내)을 왼쪽에 넣는다: 대화창이 떠 있는 동안은 명령 칸 대신 대화창 + 오른쪽 파티 창.
-func set_dialog(d: DialogueBox) -> void:
-	d.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	d.custom_minimum_size.x = UiTheme.metric("combat_dialog_width", 360)
-	add_child(d)
-	move_child(d, 0)
-	d.shown_changed.connect(func(on: bool) -> void: _left.visible = not on)
-
-
 func open(battle: Battle, unit: Combatant) -> void:
 	_battle = battle
 	_unit = unit

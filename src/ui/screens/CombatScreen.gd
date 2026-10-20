@@ -3,8 +3,8 @@ extends Control
 ## 전투 화면(탐험 화면 위에 겹친다) — 피어 앤 헝거식으로 정면에서 맞닥뜨린다(2026-10-15 사용자 요청):
 ##   무대(BattleStage) = 어둠 속 빛 웅덩이 위 가운데에 적(정면), 아래 앞줄에 아군(뒷모습)
 ##   아래 창(CommandMenu) = 왼쪽 명령 칸(공격·스킬·방어·아이템) + 오른쪽 파티 창(PartyRoster: 이름·상태·생명력·영혼력)
-##   안내(방금 일어난 일·결과·보상) = 아래 창 왼쪽의 대화창(DialogueBox) — 한 쪽씩 Enter로 넘긴다(사용자 결정 2026-10-18).
-##   대화창이 떠 있는 동안은 차례가 멈춘다(다 넘기면 다음 차례). 결과·보상도 대화창으로 보이고, 다 넘기면 탐험으로 돌아간다.
+##   안내(방금 일어난 일·결과·보상) = 대화창(DialogueBox) — 아래 창 전체를 덮고(2026-10-20) 한 쪽씩 Enter로 넘긴다(사용자 결정 2026-10-18).
+##   대화창이 떠 있는 동안은 차례가 멈추고 아래 창은 숨어 조작되지 않는다(다 넘기면 다음 차례). 결과·보상도 대화창으로 보이고, 다 넘기면 탐험으로 돌아간다.
 ## 아군 행동은 피어 앤 헝거처럼 먼저 전원 정하고(행동 정하기) 차례가 오면 실행한다(_loop).
 ## 전투 규칙은 Battle, 이 화면은 차례 진행과 연출만. 행동 순서는 Battle/Timeline이 정하고, 지금 차례인 사람의 줄·발밑이 밝다.
 
@@ -54,7 +54,8 @@ func _ready() -> void:
 	_menu.close()
 	_dialog = DialogueBox.new()
 	_dialog.instant = GameState.debug_fast_combat
-	_menu.set_dialog(_dialog)
+	_place_bottom(_dialog)  # 아래 창과 같은 자리에 겹쳐 전부 덮는다
+	_dialog.shown_changed.connect(_on_dialog_shown)
 	for u in battle.units:
 		_add_unit(u)
 	_route = NoticeRoute.new(battle.db)
@@ -83,6 +84,11 @@ func _place_bottom(c: Control, height: int = 0) -> void:
 		var half := minf(w / 2.0, size.x / 2.0 - m)
 		c.offset_left = -half
 		c.offset_right = half)
+
+
+## 대화창이 뜨면 아래 창(명령·목록·파티 창)을 숨긴다 — 덮인 창이 키를 받지 않게.
+func _on_dialog_shown(on: bool) -> void:
+	_menu.visible = not on
 
 
 ## 전투 안내(문구 키): 기록에는 늘, 대화창에는 화면으로 알 수 없는 것만(피해·회피·쓰러짐·상태는 떠오르는 숫자·무대로 보인다 — NoticeRoute).
