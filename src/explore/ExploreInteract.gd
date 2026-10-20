@@ -19,6 +19,9 @@ static func run(s: ExploreSession) -> void:
 					var next := s.rift_run.use_exit(s)
 					if next != null:
 						s.transfer.emit(next)
+			"rift_back":  # 지나온 챕터로 가는 길목(보통은 걸어 들어가면 넘어간다)
+				if s.rift_run != null:
+					s.rift_run.passage_step(s, s.pos + Vector2i(99, 99))
 			_:
 				_use_floor_portal(s, portal)
 		return
@@ -38,6 +41,8 @@ static func run(s: ExploreSession) -> void:
 ## 지금 살피기를 누르면 다룰 대상의 이름(HUD 안내). 없으면 "". run과 같은 순서로 본다.
 static func target_name(s: ExploreSession) -> String:
 	if not s.map.portal_at(s.pos).is_empty():
+		if bool(s.map.portal_at(s.pos).get("passage", false)):
+			return ""  # 길목은 걸어 들어가면 넘어간다
 		var here := s.map.def_at(s.pos)
 		return here.name_ko if here != null else ""
 	var feature := s.features.target_name(s)
@@ -60,7 +65,7 @@ static func portal_found(s: ExploreSession, portal: Dictionary) -> void:
 	match str(portal.get("kind", "floor")):
 		"rift":
 			s.message.emit("explore.rift_portal_found", {}, "danger")
-		"rift_exit":
+		"rift_exit", "rift_back":
 			s.message.emit("explore.rift_exit_found", {}, "good")
 		_:
 			s.message.emit("explore.portal_found", {"dir": DataNames.tag(s.db, "directions", str(portal["dir"]))}, "good")
@@ -70,7 +75,7 @@ static func portal_here(s: ExploreSession, portal: Dictionary) -> void:
 	match str(portal.get("kind", "floor")):
 		"rift":
 			s.message.emit("explore.rift_portal_here", {}, "system")
-		"rift_exit":
+		"rift_exit", "rift_back":
 			s.message.emit("explore.rift_exit_here", {}, "system")
 		_:
 			s.message.emit("explore.portal_here", {}, "system")

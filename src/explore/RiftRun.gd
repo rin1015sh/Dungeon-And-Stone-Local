@@ -9,6 +9,8 @@ extends RefCounted
 ##   {"kind": "guardian", "with": [..]}                          수호자(5% 미만 확률로 변종 수호자 — variant.chance)
 ##   구성 = 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}(무작위)
 ## 챕터의 조우를 다 치우면 출구(rift_exit)가 열리고, 마지막 챕터에서 수호자를 쓰러뜨리면 출구가 탈출 포탈이 된다.
+## 챕터 사이는 이어진 길목(RiftPassage — 걸어 들어가면 넘어간다)이고 지나온 챕터로 돌아갈 수 있다(사용자 요청 2026-10-20).
+##   떠난 챕터 세션은 상태(치운 무리·탐험·히든 피스·함정)째 보관했다가(_kept) 돌아오면 다시 붙인다.
 ## 탈출하면 1층(outer)의 포탈 자리로 돌아간다. 다른 탈출 방법은 없다.
 ## 챕터 "exit_requires": {"item", "message", "bypass": {stat, at_least, message}} — 출구를 지나려면 그 아이템이 있어야 하고 쓰인다
 ##   (핏빛성채 뿔피리, 녹색 탄광 폭약). bypass 스탯이 넘으면 아이템 없이 지난다.
@@ -37,6 +39,10 @@ var hidden_at: Dictionary:  ## 이 챕터의 살필 수 있는 물체 칸 -> 정
 		return hidden.at
 var hazards: RiftHazards = RiftHazards.new()
 var riddle: RiftRiddle = null
+## 떠난 챕터: 번호 -> {"session", "remaining", "hidden_at", "hidden_under", "hazards_at"}.
+## 보관한 세션의 rift_run은 비운다(이 객체 → 세션만 남아 순환 참조가 생기지 않게). 돌아오면 다시 단다.
+var _kept: Dictionary = {}
+var _opened: Dictionary = {}  ## exit_requires(뿔피리·폭약)를 이미 치른 챕터 번호 -> true(되돌아왔다 다시 지날 때 또 쓰지 않는다)
 
 
 func _init(p_outer: ExploreSession, p_rift_id: String) -> void:
@@ -73,10 +79,8 @@ func guardian_id() -> String:
 
 ## i번째 챕터 세션을 만든다(이전 챕터 세션은 떼어 낸다).
 func build_chapter(i: int) -> ExploreSession:
-	var old := session
-	if old != null:
-		_leave_field_effects()
-		old.detach()
+	_stash()
+	_kept.erase(i)
 	chapter = i
 	var ch: Dictionary = chapters()[i]
 	var fdef := chapter_floor_def(i)
@@ -85,6 +89,7 @@ func build_chapter(i: int) -> ExploreSession:
 	var cs := ExploreSession.new(db, fdef, map, outer.player, outer.clock, outer.rng, outer.effects)
 	_session_ref = weakref(cs)
 	cs.rift_run = self
+	RiftPassage.setup(cs, is_last_chapter(), i > 0, _floor_tile())
 	cs.start()
 	remaining.clear()
 	var encs := JsonUtil.get_array(ch, "encounters")
@@ -92,8 +97,7 @@ func build_chapter(i: int) -> ExploreSession:
 		var g := _place(cs, encs[k], map.slots[mini(k, map.slots.size() - 1)] if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") != "guardian" else map.slots[-1])
 		if g != null:
 			remaining.append(g)
-	for st: Variant in JsonUtil.get_array(ch, "field_effects"):
-		outer.player.statuses.apply(str(st))
+	_apply_field_effects()
 	hidden.place(cs, ch, outer.rng)
 	hazards.place(cs, ch, _floor_tile(), outer.rng)
 	var fx := JsonUtil.get_array(ch, "on_enter")
@@ -159,9 +163,44 @@ func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String, ki
 
 ## 출구에서 E. 다음 챕터 세션 / 탈출이면 바깥 세션 / 아직 잠겼으면 null.
 func use_exit(s: ExploreSession) -> ExploreSession:
-	if not remaining.is_empty() or (is_last_chapter() and not guardian_down):
-		s.message.emit("explore.rift_exit_locked", {"left": remaining.size()}, "warn")
+	if s != session or finished:
+		return null  # 이미 지나온 챕터 세션(길목을 밟아 넘어간 뒤 같은 자리에서 E 등)
+	if not _can_leave(s, false):
 		return null
+	if not is_last_chapter():
+		return _go(s, chapter + 1)
+	finish()
+	return outer
+
+
+## 길목 둘레 칸에 들어섰다(ExploreSession._on_enter_cell). 넘어가면 transfer를 내고 true.
+## 잠긴 출구는 바깥에서 길목 둘레로 들어설 때만 이유를 알린다(둘레 안에서 걸을 때마다 알리지 않게).
+func passage_step(s: ExploreSession, from: Vector2i) -> bool:
+	if s != session or finished:
+		return false
+	var zone := int(db.bal("rift.passage_zone", 1))
+	var d := RiftPassage.dir_at(s.map, s.pos, zone)
+	if d == 0:
+		return false
+	var next: ExploreSession = null
+	if d < 0:
+		next = _go(s, chapter - 1) if chapter > 0 else null
+	elif not is_last_chapter() and _can_leave(s, RiftPassage.dir_at(s.map, from, zone) == d):
+		next = _go(s, chapter + 1)
+	if next == null:
+		return false
+	s.transfer.emit(next)
+	return true
+
+
+## 앞으로 지날 수 있는가(조우를 다 치웠고, 필요한 물건이 있으면 쓴다 — 한 챕터에 한 번). quiet면 못 지나는 이유를 알리지 않는다.
+func _can_leave(s: ExploreSession, quiet: bool) -> bool:
+	if not remaining.is_empty() or (is_last_chapter() and not guardian_down):
+		if not quiet:
+			s.message.emit("explore.rift_exit_locked", {"left": remaining.size()}, "warn")
+		return false
+	if _opened.has(chapter):
+		return true
 	var req := JsonUtil.get_dict(chapters()[chapter], "exit_requires")
 	var strong := JsonUtil.get_dict(req, "bypass")  # {stat, at_least}: 그만큼 강하면 아이템 없이 지난다(녹색 탄광 — 고렙은 그냥 부순다)
 	if not strong.is_empty() and outer.player.stats.get_value(JsonUtil.get_str(strong, "stat")) >= JsonUtil.get_float(strong, "at_least"):
@@ -169,19 +208,59 @@ func use_exit(s: ExploreSession) -> ExploreSession:
 	elif not req.is_empty():
 		var item := JsonUtil.get_str(req, "item")
 		if outer.player.inventory.count(item) + int(held.get(item, 0)) <= 0:
-			s.message.emit("explore.rift_exit_needs", {"item": DataNames.entry(db, "items", item)}, "warn")
-			return null
+			if not quiet:
+				s.message.emit("explore.rift_exit_needs", {"item": DataNames.entry(db, "items", item)}, "warn")
+			return false
 		if int(held.get(item, 0)) > 0:
 			held[item] = int(held[item]) - 1
 		else:
 			outer.player.inventory.remove(item, 1)
 		s.say_later(JsonUtil.get_str(req, "message", "explore.rift_exit_used"), {"item": DataNames.entry(db, "items", item)}, "system")
-	if not is_last_chapter():
-		var next := build_chapter(chapter + 1)
-		next.pending_messages.append_array(s.take_pending())
-		return next
-	finish()
-	return outer
+	_opened[chapter] = true
+	return true
+
+
+## i번째 챕터로 넘어간다: 처음이면 만들고, 지나온 챕터면 보관한 세션을 다시 붙인다.
+## 앞으로 가면 그 챕터의 뒤 길목(시작 자리)에서, 돌아가면 앞 길목(출구)에서 몇 걸음 안쪽에 선다. 화면은 어두워졌다 밝아진다(fade_in).
+func _go(s: ExploreSession, i: int) -> ExploreSession:
+	var forward := i > chapter
+	var cs := build_chapter(i) if not _kept.has(i) else _restore(i)
+	var gate := cs.map.entry if forward else RiftPassage.exit_portal(cs.map).get("pos", cs.map.entry) as Vector2i
+	var at := RiftPassage.arrival(cs, gate, int(db.bal("rift.passage_zone", 1)), int(db.bal("rift.passage_arrive_steps", 2)))
+	cs.place_at(at, RiftPassage.facing(gate, at))
+	cs.fade_in = true
+	cs.pending_messages.append_array(s.take_pending())
+	return cs
+
+
+## 지금 챕터 세션을 보관하고 떼어 낸다(필드 효과를 걷는다).
+func _stash() -> void:
+	var old := session
+	if old == null:
+		return
+	_leave_field_effects()
+	old.detach()
+	old.rift_run = null
+	_kept[chapter] = {"session": old, "remaining": remaining.duplicate(), "hidden_at": hidden.at.duplicate(),
+		"hidden_under": hidden.under.duplicate(), "hazards_at": hazards.at.duplicate()}
+
+
+## 보관한 i번째 챕터 세션을 다시 붙인다.
+func _restore(i: int) -> ExploreSession:
+	_stash()
+	var k: Dictionary = _kept[i]
+	_kept.erase(i)
+	chapter = i
+	var cs: ExploreSession = k["session"]
+	cs.rift_run = self
+	cs.reattach()
+	_session_ref = weakref(cs)
+	remaining = k["remaining"]
+	hidden.at = k["hidden_at"]
+	hidden.under = k["hidden_under"]
+	hazards.at = k["hazards_at"]
+	_apply_field_effects()
+	return cs
 
 
 ## 가방에 들어가지 못한 전리품: 이 균열의 출구에 필요한 물건이면 손에 쥔다(잃어서 균열에 갇히지 않게). 쥐었으면 true.
@@ -198,6 +277,7 @@ func keep_overflow(s: ExploreSession, item: String, count: int) -> bool:
 func finish() -> void:
 	finished = true
 	held.clear()
+	_kept.clear()
 	_leave_field_effects()
 	var cs := session
 	if cs != null:
@@ -276,6 +356,11 @@ func _guardian_drops(s: ExploreSession) -> void:
 			var got := outer.player.inventory.add(item, 1)
 			s.message.emit("reward.loot" if got > 0 else "reward.bag_full", {"item": DataNames.entry(db, "items", item), "count": 1},
 				"good" if got > 0 else "warn")
+
+
+func _apply_field_effects() -> void:
+	for st: Variant in JsonUtil.get_array(chapters()[chapter], "field_effects"):
+		outer.player.statuses.apply(str(st))
 
 
 func _leave_field_effects() -> void:

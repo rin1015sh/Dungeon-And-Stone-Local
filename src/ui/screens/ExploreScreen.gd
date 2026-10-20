@@ -30,6 +30,7 @@ var _bar: BottomBar
 var _menu: GameMenu
 var _dialog: DialogueBox
 var _shade: ColorRect  # 대기·휴식 때 잠깐 어두워지는 막
+var _veil: ColorRect   # 균열 길목을 지날 때 화면 전체를 덮는 검은 막(어두워졌다 → 다음 챕터에서 밝아진다)
 var _route: NoticeRoute
 var _routing: bool = false  # _notify가 기록(log_message)을 내는 중 — _on_log가 한 번 더 보이지 않게
 var _defeated: bool = false  # 전투에서 졌다 — 남은 안내 없이 바로 타이틀로
@@ -87,9 +88,18 @@ func _ready() -> void:
 	session.encounter.connect(_on_encounter)
 	session.riddle_asked.connect(_on_riddle)
 	session.feature_choice.connect(_on_feature_choice)
-	session.transfer.connect(func(t: ExploreSession) -> void: session_switch.emit.call_deferred(t))
+	session.transfer.connect(_on_transfer)
 	_build_pause_overlay()
 	session.start()
+	_veil = ColorRect.new()
+	_veil.color = Color(0, 0, 0, 0)
+	_veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_veil)
+	_veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	if session.fade_in:  # 길목을 지나왔다: 검은 화면에서 밝아진다
+		session.fade_in = false
+		_veil.color.a = 1.0
+		_fade_veil(0.0)
 	for pm: Dictionary in session.take_pending():
 		_on_message(str(pm["key"]), pm["args"], str(pm["kind"]))
 	# 화면이 생기기 전에 끝났을 수 있다(빙하굴 3챕터 입장 피해로 사망 등) — 결과 화면으로 넘긴다.
@@ -97,6 +107,25 @@ func _ready() -> void:
 		_end("died")
 	elif session.ended:
 		_end("closed")
+
+
+## 다른 세션으로 넘어간다. 균열 길목이면 화면이 어두워진 뒤 바꾼다(다음 화면이 밝아진다).
+func _on_transfer(t: ExploreSession) -> void:
+	if not t.fade_in or _fade_sec() <= 0.0:
+		session_switch.emit.call_deferred(t)
+		return
+	_fade_veil(1.0).finished.connect(func() -> void: session_switch.emit(t))
+
+
+func _fade_veil(alpha: float) -> Tween:
+	var tw := create_tween()
+	tw.tween_property(_veil, "color:a", alpha, _fade_sec())
+	return tw
+
+
+## 길목 연출 시간(테스트·캡처처럼 대화창을 기다리지 않을 때는 0).
+func _fade_sec() -> float:
+	return 0.0 if DialogueBox.auto_skip else JsonUtil.get_float(UiTheme.ui_dict("rift_passage"), "fade_sec", 0.35)
 
 
 func _process(delta: float) -> void:

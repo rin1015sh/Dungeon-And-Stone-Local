@@ -45,6 +45,7 @@ var last_move_hours: float = -1.0  ## 마지막으로 움직인 게임 시각(�
 var vision_m: float = 0.0
 var ended: bool = false
 var steps: int = 0
+var fade_in: bool = false  ## 화면이 붙을 때 검은 화면에서 밝아진다(균열 길목을 지나왔다 — RiftRun._go)
 
 var _mpt: float = 1.0
 var _warned: Dictionary = {}
@@ -400,6 +401,24 @@ func take_pending() -> Array[Dictionary]:
 	return out
 
 
+## 시간 없이 그 칸에 세운다(화면이 붙기 전 — 균열 길목을 지나 도착할 때). 칸에 들어선 일로 치지 않는다.
+func place_at(cell: Vector2i, face: Vector2i) -> void:
+	pos = cell
+	fpos = Kinematics.center_of(cell)
+	facing = face
+	_was_safe = in_safe_zone()
+
+
+## 보관했던 균열 챕터 세션을 다시 쓴다(detach를 되돌린다 — RiftRun._restore).
+func reattach() -> void:
+	ended = false
+	player.pool.set_context("dungeon", true)
+	if not player.died.is_connected(_on_player_died):
+		player.died.connect(_on_player_died)
+		player.status_changed.connect(_on_status_changed)
+		player.light.went_out.connect(_on_light_out)
+
+
 ## 플레이어 시그널 연결을 끊는다(균열 챕터 세션을 버릴 때 — 같은 플레이어에 세션이 쌓이지 않게).
 func detach() -> void:
 	ended = true
@@ -441,6 +460,8 @@ func _discover() -> void:
 
 
 func _on_enter_cell(from: Vector2i) -> void:
+	if rift_run != null and rift_run.passage_step(self, from):
+		return  # 길목을 지나 다른 챕터로 넘어갔다
 	var safe := in_safe_zone()
 	if safe != _was_safe:
 		_was_safe = safe

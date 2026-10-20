@@ -41,6 +41,11 @@ func add_cell(map: FloorMap, cell: Vector2i, meters_per_tile: float) -> void:
 		_add_light(cell, def.light_radius_m / maxf(meters_per_tile, 0.01), def.light_color, def.light_intensity)
 
 
+## 타일이 아닌 빛 하나(균열 길목 — RiftPassage). radius는 칸 단위.
+func add_point(cell: Vector2i, radius: float, color: Color, intensity: float) -> void:
+	_add_light(cell, radius, color, intensity)
+
+
 ## 꼭짓점 (vx, vy)의 정적 빛.
 func at(vx: int, vy: int) -> Color:
 	if vx < 0 or vy < 0 or vx >= width or vy >= height:
