@@ -37,13 +37,6 @@ static func price(db: GameDatabase, item_id: String) -> int:
 	return maxi(0, JsonUtil.get_int(db.get_entry("items", item_id), "price"))
 
 
-## 살 때 값: 인연 할인(perks.shop_discount 합, 최대 90%)을 뺀 값(내림).
-static func buy_price(state: CityState, item_id: String) -> int:
-	var off := 0.0
-	for p in CityBonds.perks(state):
-		off += JsonUtil.get_float(p, "shop_discount")
-	return floori(price(state.db, item_id) * (1.0 - clampf(off, 0.0, 0.9)))
-
 
 static func sell_ratio(state: CityState) -> float:
 	var c := config(state)
@@ -81,7 +74,7 @@ static func buy(state: CityState, pc: PlayerCharacter, act_id: String, item_id: 
 	var ctx := CityContext.new(state, pc, act_id)
 	if n <= 0 or not stock(state, act_id).has(item_id):
 		return ctx.fail("city.reason_not_sold")
-	var total := buy_price(state, item_id) * n
+	var total := price(state.db, item_id) * n
 	var why := CityActions.check(state, pc, act_id, total)
 	if not why.is_empty():
 		return ctx.fail(why)

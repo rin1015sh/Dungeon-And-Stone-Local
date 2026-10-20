@@ -790,12 +790,10 @@ func _city_flow() -> void:
 	await _frames(1)
 	var cash := pc.inventory.money
 	pc.inventory.money = 0
-	st.happenings.clear()  # 오늘의 거리 사건·말 걸기(공짜)가 있으면 할 게 남는다 — 말 걸기에 값을 매겨 막는다
-	st.set_override("activities/inn_talk/cost_stones", 1)
+	st.happenings.clear()  # 오늘의 거리 사건이 있으면 할 게 남는다
 	DialogueBox.auto_skip = false
 	city.choose_facility("inn")
 	await _frames(2)
-	st.clear_override("activities/inn_talk/cost_stones")
 	_expect(city.facility_view() == null and city.dialog().page_text().contains(Strings.t("city.reason_no_money")), "할 게 없으면 이유를 들고 바로 나온다(거리 대화창)")
 	city.dialog().clear()
 	DialogueBox.auto_skip = true
@@ -856,19 +854,13 @@ func _city_flow() -> void:
 	_expect(not GameState.has_save(), "죽으면 기록이 지워진다")
 
 
-## 세금(CityTax): 기한 달 하순에 안 내고 마지막 행동력을 쓰면 처형 장면 → 타이틀(저장 삭제). 귀환 장면(명성)이 거리 대화창에.
+## 세금(CityTax): 기한 달 하순에 안 내고 마지막 행동력을 쓰면 처형 장면 → 타이틀(저장 삭제).
 func _tax_flow() -> void:
 	_main.call("_show_title")
 	var city := await _new_city("세금")
 	if city == null:
 		return
 	var st := city.state
-	st.return_from_dungeon({"explore.lord_defeated": 1})
-	DialogueBox.auto_skip = false
-	city.show_pending()
-	_expect(city.dialog().busy() and st.renown > 0, "귀환 장면이 거리 대화창에(명성)")
-	city.dialog().clear()
-	DialogueBox.auto_skip = true
 	st.month = CityTax.due_month(st)
 	st.period = st.periods().size() - 1
 	st.ap = 1

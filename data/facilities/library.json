@@ -6,8 +6,7 @@
   "building": "res://assets/city/buildings/library.webp",
   "interior": "res://assets/city/interiors/library.webp",
   "activities": [
-    "library_read",
-    "library_talk"
+    "library_read"
   ],
   "shows": [
     "lore"

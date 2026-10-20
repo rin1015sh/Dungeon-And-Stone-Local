@@ -152,8 +152,8 @@
 - 디버그 패널(F1, 도시): 날짜·순 바꾸기, 다음 순, 행동력·피로도 설정, **규칙 값을 실행 중에만 임시로 바꾸기**(`CityValues.tunables` → `CityState.overrides`, 저장 안 됨·파일 안 바뀜).
 - 저장: 한 칸 저장(차원광장에서만, CT32)에 `CityState.to_dict`(날짜·행동력·공적치·잔액·소문/정보·난수 상태)와 `progress_to_dict`(피로도·능력치 기록)가 들어간다.
 
-### 도시 생활 (2026-10-20 — 재기획안 2·4·5단계 + 세금)
-- 오늘의 거리(`CityHappenings`, `data/city_events`) · 귀환 결산·명성(`CityRenown`, `city.json renown`) · 인연(`CityBonds`, `data/city_people`) · 세금(`CityTax`, `city.json tax`). 활협전은 여전히 화면 느낌만 참고한다. 규칙·수치는 ASSUMPTIONS CT34~CT38, 표는 `docs/balance/city.md`, 기획 근거는 `docs/plans/city_redesign.md`.
+### 도시 생활 (2026-10-20)
+- 오늘의 거리(`CityHappenings`, `data/city_events`) · 세금(`CityTax`, `city.json tax`) · 기능 없는 대장간·모험가 길드(시설 `placeholder`). 명성·인연은 넣었다가 지웠다(사용자가 다시 기획). 활협전은 여전히 화면 느낌만 참고한다. 규칙·수치는 ASSUMPTIONS CT34~CT39, 표는 `docs/balance/city.md`.
 
 ### 확인 필요 (예전 문서에 있었지만 이번 명세에 없는 것 — 지우지 않음)
 - 시설: **길드**(정보 구매·동료 고용), **환전소**(마석 → 스톤), **잡화점**(포션·횃불·식량·소모품, 전리품 판매 — 이번 '상점'과의 관계 확인 필요), **대장간**(장비 구매·수리), **중앙 거래소**(후반), 마도구점(PROMPT_ITEMS). 이번에 만들지 않았다(이미 만들어진 것도 없음).

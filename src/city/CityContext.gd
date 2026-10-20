@@ -8,10 +8,6 @@ var state: CityState
 var pc: PlayerCharacter
 var activity_id: String = ""
 var ok: bool = true
-## 도시 효과 레지스트리(인연 장면의 효과를 돌릴 때 — CityActions.perform이 넣는다).
-var registry: ScriptRegistry = null
-## 이번 활동에서 인연 장면이 이미 열렸다(한 번에 한 장면 — CityBonds.add).
-var scene_played: bool = false
 ## [{key, args, kind}] — kind: info/good/warn
 var messages: Array[Dictionary] = []
 

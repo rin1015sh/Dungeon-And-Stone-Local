@@ -5,6 +5,7 @@ extends RefCounted
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Rooms := preload("res://tools/city_art/InteriorRooms.gd")
+const Rooms2 := preload("res://tools/city_art/InteriorRooms2.gd")
 
 const W := 960
 const H := 540
@@ -28,6 +29,10 @@ static func paint(id: String, seed_value: int) -> Paint:
 			lights = Rooms.bank(p)
 		"training":
 			lights = Rooms.training(p)
+		"smithy":
+			lights = Rooms2.smithy(p)
+		"guild":
+			lights = Rooms2.guild(p)
 	light(p, lights)
 	Ink.grade(p, 0.25, 1.12)
 	Ink.finish(p, 0.04, 0.5)

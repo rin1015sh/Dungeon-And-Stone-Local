@@ -1,0 +1,11 @@
+{
+  "id": "smithy",
+  "name_ko": "대장간",
+  "order": 7,
+  "x": 3206,
+  "building": "res://assets/city/buildings/smithy.webp",
+  "interior": "res://assets/city/interiors/smithy.webp",
+  "activities": [],
+  "placeholder": true,
+  "source": "original"
+}

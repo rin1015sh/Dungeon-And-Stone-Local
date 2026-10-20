@@ -114,7 +114,7 @@ static func _facilities(v: ValidatorBase, city: Dictionary) -> void:
 			if not str(s) in SHOWS:
 				v.err(w, "shows는 %s 중에서" % [SHOWS])
 		var acts := JsonUtil.get_array(f, "activities")
-		if acts.is_empty():
+		if acts.is_empty() and not JsonUtil.get_bool(f, "placeholder"):
 			v.warn(w, "활동이 없다")
 		for a: Variant in acts:
 			v.ref(w + ".activities", "activities", a)

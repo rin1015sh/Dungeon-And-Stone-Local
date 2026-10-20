@@ -34,7 +34,7 @@
   },
   "street": {
     "_comment": "거리 = 옆에서 본 긴 그림. 좌표는 '거리 단위'(화면 높이 720 기준 px). width = 거리 길이, 건물 위치는 각 시설의 x. layers = 뒤에서 앞 순서(시설 건물은 parallax 1 레이어 바로 위에 그린다). parallax 0~1 = 스크롤을 따라가는 비율(작을수록 멀다), y·height = 레이어가 차지하는 세로 구간, scale = 그림 1px이 몇 거리 단위인가, screen = 화면에 고정(스크롤 안 함), front = 건물보다 앞.",
-    "width": 3246,
+    "width": 4380,
     "layers": [
       {
         "id": "sky",
@@ -139,7 +139,9 @@
     "temple",
     "shop",
     "bank",
-    "training"
+    "training",
+    "smithy",
+    "guild"
   ],
   "item_use": {
     "_comment": "도시(거리)에서 소지품 창으로 쓸 수 있는 아이템 분류. 시설 안에서는 소지품·캐릭터 창을 열 수 없다.",
@@ -236,39 +238,6 @@
     "count": [
       1,
       2
-    ]
-  },
-  "renown": {
-    "_comment": "명성(사용자 결정 2026-10-20, CT36): 귀환하면 원정에서 한 일(deeds)로 점수를 더한다. notice = 탐험 화면 알림 키(그 알림이 뜬 횟수), kill = 쓰러뜨린 몬스터 수. min_count 미만이면 점수·귀환 장면 없음. stages = 단계가 시작되는 점수(0단계부터). 귀환 장면은 deeds 순서상 첫 번째로 해당하는 것 하나(city.return.<id>.<번호>) + 단계가 오르면 city.return.stage_up.<단계>. 값은 임시값.",
-    "deeds": [
-      {
-        "id": "lord",
-        "notice": "explore.lord_defeated",
-        "points": 25
-      },
-      {
-        "id": "rift",
-        "notice": "explore.rift_exit_escape",
-        "points": 20
-      },
-      {
-        "id": "essence",
-        "notice": "reward.essence_absorbed",
-        "points": 3
-      },
-      {
-        "id": "hunt",
-        "kill": true,
-        "points": 1,
-        "min_count": 10
-      }
-    ],
-    "stages": [
-      0,
-      20,
-      60,
-      140,
-      280
     ]
   },
   "tax": {

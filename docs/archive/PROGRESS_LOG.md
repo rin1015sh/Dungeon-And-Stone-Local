@@ -6,6 +6,11 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **대장간·모험가 길드 자리 + 명성·인연 삭제 (2026-10-20, 사용자 "인연 관련이랑 명성 시스템 나중에 내가 제대로 기획해서 추가하게 — 전부 제거" / "대장간이랑 모험가 길드를 도시에 구현해줘. 그림이랑 내부 ui는 기존 건물과 비슷하게, 기능은 아직")**:
+  - 삭제: `CityBonds`·`CityRenown`·효과 bond·renown·`data/city_people`·말 걸기 5·인연 해금 활동 5·모험가 무리 사건과 한잔 활동·`city.json renown`·`GameState.deeds`(탐험 알림 세기)·귀환 장면·문장(city.people·city.return·말 걸기 한마디)·디버그 명성/인연 버튼·캡처 --return/--renown/--bond·시험 3개. 모험가 대련 사건은 명성 조건만 빼고 남김. 오늘의 거리·세금은 그대로.
+  - 추가: 시설 `smithy`(대장간, x 3206)·`guild`(모험가 길드, x 3748), 거리 길이 4380, `"placeholder": true`(활동 없음 → 입장 행동력 0·나가기만·검증 경고 없음). 그림 `tools/city_art/Buildings3.gd`(건물 둘)·`InteriorRooms2.gd`(실내 둘 — 대장장이·접수원)·Icons anvil·crest. `paint_city.gd` 그림 시드를 시설 id 고정 순서로(새 시설 때문에 기존 그림이 바뀌던 것) + `--facility=<id>`. 거리 레이어 4장(street·far·mid·haze)은 길이가 늘어 다시 그렸다. 캡처로 거리·실내 확인.
+  - 남은 것: 두 시설의 기능(명세 대기), 명성·인연(사용자 기획 대기).
+
 - **도시 생활 — 재기획 2·4·5단계 + 세금 (2026-10-20, 사용자 "2,4,5 단계만 진행하고 싶은데. 활협전은 느낌만 참고하라는게 맞아. 설정은 나무위키 … 참고하고 인간 세금은 타 종족보다 낮게 책정해줘")**:
   - 범위: 오늘의 거리 · 귀환 결산·명성 · 인연 5명 · 세금. 완료 기준: check.sh 통과 + 캡처로 등롱·인연 장면·귀환 장면 확인. 테스트: `tests/test_city_life.gd`(6) + 스모크 `_tax_flow`(귀환 장면 → 기한 넘김 → 처형 → 타이틀).
   - 한 일: `CityHappenings`(순마다 `data/city_events` 8개 중 1~2개, 시설당 하나, 조건 when) — 사건 활동은 `"extra": true`로 시설 목록 밖에 두고 `CityActions.activities_of`가 붙인다. 거리 등롱 = `CityStreet` 가산 혼합 둥근 그러데이션 + 일렁임(render.json `city.happening_glow*`). `CityRenown`(city.json renown — 원정 기록은 `GameState.deeds`: `ExploreScreen._notify`가 알림 키마다, `monster_killed`가 처치마다 센다. 포탈에 들어갈 때 비우고 `return_from_dungeon(deeds)`로 결산, 장면은 `pending_lines` → `CityScreen.show_pending`). `CityBonds`(data/city_people 5명, 효과 `bond`, 단계 장면·effects·check·perks — `CityActions.cost`가 할인, `CityShop.buy_price`가 상점 할인, 활동 `stock`으로 떠돌이 상인·뒷방 판매 목록). `CityTax`(city.json tax, 효과 `pay_tax`, 은행 '세금 납부', 달력 카드 한 줄, 기한에 못 냈으면 `CityScreen.executed` → `GameState.on_death` → 타이틀). 검사 `CityLifeRules`. 디버그(F1) 명성·인연·사건·세금 기한. 캡처 옵션 `--happen --return --renown --bond --month --period`. 문장(인연 장면·귀환·처형·말 걸기)은 새로 씀.

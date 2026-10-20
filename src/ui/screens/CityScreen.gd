@@ -67,15 +67,7 @@ func _ready() -> void:
 	_debug.offset_right = m + UiTheme.render_float("city.debug_width", 420.0)
 	_debug.offset_top = UiTheme.render_float("city.hud_height", 104.0) + m
 	state.expedition_due.connect(_on_expedition_due)
-	show_pending()
 	state.advance_if_spent.call_deferred()  # 행동력이 0인 채로 왔으면 바로 다음 순(하순이면 미궁으로)
-
-
-## 귀환 장면(명성 — CityRenown이 남긴 문구)을 대화창에 띄우고 비운다.
-func show_pending() -> void:
-	for key in state.pending_lines:
-		say(Strings.t(key))
-	state.pending_lines.clear()
 
 
 func street() -> CityStreet:

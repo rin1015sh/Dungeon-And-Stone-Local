@@ -1,7 +1,7 @@
 class_name CityHappenings
 extends RefCounted
 ## 오늘의 거리(사용자 결정 2026-10-20, CT35): 순마다 data/city_events에서 몇 개를 골라 그 시설에 건다.
-##   사건 = {id, facility, weight, when{from_month, periods[], weather[], min_renown, bonds{사람 id: 단계}}, activities[], once}.
+##   사건 = {id, facility, weight, when{from_month, periods[], weather[]}, activities[], once}.
 ##   걸린 사건의 activities는 그 순 동안 그 시설의 선택지에 붙는다(활동 JSON의 "extra": true). once면 한 판에 한 번만.
 ## 거리에서는 그 건물 등롱이 켜진다(CityStreet — 글로 알리지 않는다). 판정은 CityState.rng. 오토로드를 참조하지 않는다.
 
@@ -48,12 +48,6 @@ static func _ok(state: CityState, e: Dictionary, id: String) -> bool:
 	var weather := JsonUtil.get_array(w, "weather")
 	if not weather.is_empty() and not state.weather in weather:
 		return false
-	if CityRenown.stage(state) < JsonUtil.get_int(w, "min_renown"):
-		return false
-	var bonds := JsonUtil.get_dict(w, "bonds")
-	for who: Variant in bonds:
-		if CityBonds.stage(state, str(who)) < int(bonds[who]):
-			return false
 	return true
 
 

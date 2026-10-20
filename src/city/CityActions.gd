@@ -13,9 +13,9 @@ static func stone_cost(act: Dictionary) -> int:
 	return maxi(0, int(CityValues.num(act, "cost_stones")))
 
 
-## 지금 낼 이용료(인연 할인 반영 — CityBonds.cost_rate, 내림).
+## 지금 낼 이용료.
 static func cost(state: CityState, act_id: String) -> int:
-	return floori(stone_cost(state.activity(act_id)) * CityBonds.cost_rate(state, act_id))
+	return stone_cost(state.activity(act_id))
 
 
 ## 지금 이 활동을 할 수 있는가. 할 수 있으면 "", 아니면 이유(문자열 키). extra_stones = 거래 금액 등 추가로 필요한 돈.
@@ -61,7 +61,6 @@ static func charge(ctx: CityContext, act_id: String) -> void:
 ## 효과 목록형 활동을 한다. 결과는 ctx.messages.
 static func perform(state: CityState, pc: PlayerCharacter, act_id: String, registry: ScriptRegistry) -> CityContext:
 	var ctx := CityContext.new(state, pc, act_id)
-	ctx.registry = registry
 	var why := check(state, pc, act_id)
 	if not why.is_empty():
 		return ctx.fail(why)
@@ -75,18 +74,14 @@ static func perform(state: CityState, pc: PlayerCharacter, act_id: String, regis
 		var h := registry.instance(JsonUtil.get_str(e, "type")) as CityEffect
 		if h != null:
 			h.apply(ctx, e)
-	CityBonds.after_activity(ctx)
 	state.changed.emit()
 	return ctx
 
 
-## 이 시설의 활동 id: 데이터 순서 + 인연으로 열린 것(CityBonds) + 이번 순 사건(CityHappenings — 맨 앞).
+## 이 시설의 활동 id: 이번 순 사건(CityHappenings — 맨 앞) + 데이터 순서.
 static func activities_of(state: CityState, facility_id: String) -> Array[String]:
 	var out: Array[String] = CityHappenings.activities_at(state, facility_id)
 	for v: Variant in JsonUtil.get_array(state.db.get_entry("facilities", facility_id), "activities"):
 		if state.db.has_entry("activities", str(v)) and not out.has(str(v)):
 			out.append(str(v))
-	for id in CityBonds.unlocked_at(state, facility_id):
-		if not out.has(id):
-			out.append(id)
 	return out

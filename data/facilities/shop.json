@@ -6,8 +6,7 @@
   "building": "res://assets/city/buildings/shop.webp",
   "interior": "res://assets/city/interiors/shop.webp",
   "activities": [
-    "shop_trade",
-    "shop_talk"
+    "shop_trade"
   ],
   "shows": [],
   "source": "original"

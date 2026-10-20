@@ -3,9 +3,7 @@
   "name_ko": "모험가 대련",
   "facility": "training",
   "weight": 1,
-  "when": {
-    "min_renown": 1
-  },
+  "when": {},
   "activities": [
     "training_spar"
   ],

@@ -65,7 +65,8 @@ func test_only_entry_costs_ap() -> void:
 	for f: String in s.facility_ids():
 		var t := _state()
 		assert_eq(t.enter_facility(f), "", "들어가기 " + f)
-		assert_eq(t.ap, 2, f + " 입장 = 행동력 1")
+		var stub := JsonUtil.get_bool(db.get_entry("facilities", f), "placeholder")
+		assert_eq(t.ap, 3 if stub else 2, f + (" 입장 = 행동력 그대로(기능 없는 자리)" if stub else " 입장 = 행동력 1"))
 	assert_eq(s.enter_facility("inn"), "")
 	for i in 5:
 		assert_true(CityActions.perform(s, pc, "inn_rest", _reg()).ok, "안에서는 몇 번이든")

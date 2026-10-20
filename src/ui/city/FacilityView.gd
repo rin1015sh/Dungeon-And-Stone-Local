@@ -204,6 +204,8 @@ func _info_text() -> String:
 
 
 func _nothing_to_do() -> bool:
+	if JsonUtil.get_bool(_state.db.get_entry("facilities", _facility_id), "placeholder"):
+		return false  # 기능이 아직 없는 시설: 둘러보고 나가기만
 	for act_id in CityActions.activities_of(_state, _facility_id):
 		if CityActions.check(_state, _pc, act_id).is_empty():
 			return false

@@ -1,6 +1,6 @@
 class_name CityDebugPanel
 extends PanelContainer
-## 도시 디버그 패널(F1): 날짜·순 바꾸기, 바로 미궁으로, 행동력·피로도 설정, 명성·인연·오늘의 거리·세금 기한, 도시 규칙 값을 실행 중에만 임시로 바꿔 보기.
+## 도시 디버그 패널(F1): 날짜·순 바꾸기, 바로 미궁으로, 행동력·피로도 설정, 오늘의 거리·세금 기한, 도시 규칙 값을 실행 중에만 임시로 바꿔 보기.
 ## 임시값은 CityState.overrides에만 들어간다 — 저장되지 않고 데이터 파일도 바뀌지 않는다. 값은 JSON으로 읽는다(숫자, ["str","agi"], true …).
 
 signal dungeon_requested
@@ -49,15 +49,8 @@ func _ready() -> void:
 	ap.add_child(UiTheme.label(Strings.t("city.debug_fatigue"), "small", "text"))
 	_fatigue = _spin(ap, -9999, 9999, _pc.fatigue.value)
 	_btn(ap, Strings.t("city.debug_apply"), func() -> void: _pc.fatigue.set_value(_fatigue.value))
-	var life := HBoxContainer.new()  # 도시 생활(명성·인연·세금·오늘의 거리)
+	var life := HBoxContainer.new()  # 도시 생활(오늘의 거리·세금)
 	v.add_child(life)
-	_btn(life, Strings.t("city.debug_renown"), func() -> void:
-		_state.renown += 20
-		_state.changed.emit())
-	_btn(life, Strings.t("city.debug_bond"), func() -> void:
-		for id: String in _state.db.get_collection("city_people"):
-			_state.bonds[id] = CityBonds.points(_state, id) + 5.0
-		_state.changed.emit())
 	_btn(life, Strings.t("city.debug_reroll"), func() -> void:
 		CityHappenings.roll(_state)
 		_state.changed.emit())
@@ -107,11 +100,8 @@ func _sync() -> void:
 	_month.set_value_no_signal(_state.month)
 	_period.selected = _state.period
 	_fatigue.set_value_no_signal(_pc.fatigue.value)
-	var bonds := PackedStringArray()
-	for id: String in _state.db.get_collection("city_people"):
-		bonds.append("%s %d/%s" % [id, CityBonds.stage(_state, id), CityContext.fmt(CityBonds.points(_state, id))])
-	_life.text = Strings.t("city.debug_life", {"renown": _state.renown, "stage": CityRenown.stage(_state),
-		"events": ", ".join(_state.happenings), "bonds": ", ".join(bonds), "tax": CityTax.amount(_state, _pc.race_id), "paid": CityTax.paid(_state)})
+	_life.text = Strings.t("city.debug_life", {"events": ", ".join(_state.happenings),
+		"tax": CityTax.amount(_state, _pc.race_id), "paid": CityTax.paid(_state)})
 
 
 func _set_date() -> void:

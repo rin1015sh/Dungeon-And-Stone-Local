@@ -7,8 +7,7 @@
   "interior": "res://assets/city/interiors/inn.webp",
   "activities": [
     "inn_rest",
-    "inn_meal",
-    "inn_talk"
+    "inn_meal"
   ],
   "source": "original"
 }

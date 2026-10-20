@@ -192,9 +192,9 @@ func refresh() -> void:
 	if _state == null:
 		return
 	_apply_weather()
-	var can := _state.can_spend(_state.entry_cost()) and _state.facility.is_empty()
 	for i in _buildings.size():
 		var b := _buildings[i]
+		var can := _state.can_spend(_state.entry_cost_of(str(b["id"]))) and _state.facility.is_empty()
 		var lit := i == _focus
 		var mat := (b["node"] as TextureRect).material as ShaderMaterial
 		mat.set_shader_parameter("brighten", UiTheme.render_float("city.hover_brighten", 0.15) if lit and can else 0.0)

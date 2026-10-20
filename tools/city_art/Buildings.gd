@@ -2,7 +2,8 @@ extends RefCounted
 ## 시설 건물 그림(정면, 투명 배경, 아래 가장자리 = 땅). tools/paint_city.gd 전용.
 ## 통일 문법(Parts): 짙은 마름돌 기단 · 같은 창틀/창살 · 같은 잉크 윤곽 · 탁한 회벽과 점판암 · 같은 쇠 걸이 간판.
 ## 시설마다 특징: 여관 = 목조 2층 돌출과 불 켜진 창 · 도서관 = 높은 고딕 창과 장미창 · 신전 = 첨탑과 색유리 ·
-## 상점 = 계단식 박공과 진열창·차양 · 은행 = 거친 돌·기둥·쇠창살 · 훈련장 = 성문 아치·목책 마당.
+## 상점 = 계단식 박공과 진열창·차양 · 은행 = 거친 돌·기둥·쇠창살 · 훈련장 = 성문 아치·목책 마당 ·
+## 대장간 = 큰 굴뚝과 열린 화덕·모루 · 모험가 길드 = 큰 목조 회관·게시판·깃발(Buildings3).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -11,6 +12,7 @@ const Parts := preload("res://tools/city_art/Parts.gd")
 const Props := preload("res://tools/city_art/Props.gd")
 const More := preload("res://tools/city_art/Buildings2.gd")
 const Icons := preload("res://tools/city_art/Icons.gd")
+const More3 := preload("res://tools/city_art/Buildings3.gd")
 
 const PLASTER := Color("#8b8068")
 const SLATE := Color("#3a4044")
@@ -18,7 +20,8 @@ const CLAY := Color("#6b3b2d")
 
 ## id → 크기(px, 화면 720 높이 기준 1:1)
 const SIZES := {"inn": Vector2i(560, 470), "library": Vector2i(440, 520), "temple": Vector2i(430, 600),
-	"shop": Vector2i(400, 500), "bank": Vector2i(470, 450), "training": Vector2i(600, 400)}
+	"shop": Vector2i(400, 500), "bank": Vector2i(470, 450), "training": Vector2i(600, 400),
+	"smithy": Vector2i(520, 440), "guild": Vector2i(580, 560)}
 
 
 static func paint(id: String, seed_value: int) -> Paint:
@@ -37,6 +40,10 @@ static func paint(id: String, seed_value: int) -> Paint:
 			More.bank(p)
 		"training":
 			More.training(p)
+		"smithy":
+			More3.smithy(p)
+		"guild":
+			More3.guild(p)
 	finish(p)
 	return p
 
