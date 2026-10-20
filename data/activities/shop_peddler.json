@@ -9,9 +9,9 @@
     "torch_stub",
     "crystal_mushroom",
     "spring_water",
-    "bone_amulet",
-    "copper_ring"
+    "gnome_trinket"
   ],
   "effects": [],
-  "source": "placeholder"
+  "source": "placeholder",
+  "deals": "goods"
 }

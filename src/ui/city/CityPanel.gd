@@ -30,16 +30,16 @@ func _ready() -> void:
 	rebuild()
 
 
-## 내용을 지우고 다시 만든다(하위 클래스가 build를 채운다).
-func rebuild() -> void:
-	var keep := grid.cursor() if grid != null else 0
+## 내용을 지우고 다시 만든다(하위 클래스가 build를 채운다). cursor ≥ 0이면 커서를 그 칸에(아니면 그대로).
+func rebuild(cursor: int = -1) -> void:
+	var keep := cursor if cursor >= 0 else (grid.cursor() if grid != null else 0)
 	for c in get_children():
 		remove_child(c)
 		c.queue_free()
 	grid = null
 	build()
 	if grid != null:
-		grid.show_choices("", grid_options(), leave, keep)
+		grid.show_choices("", grid_options(), back_action(), keep)
 
 
 func build() -> void:
@@ -57,6 +57,11 @@ func choices() -> void:
 		int(UiTheme.render_float("city.interior_slot_height", 40.0)), true)
 	grid.active = active
 	add_child(grid)
+
+
+## 뒤로 키(Backspace)가 하는 일 — 기본은 나가기(하위 클래스가 바꿀 수 있다).
+func back_action() -> Callable:
+	return leave
 
 
 func grid_options() -> Array[Dictionary]:

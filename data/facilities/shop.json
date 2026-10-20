@@ -1,8 +1,8 @@
 {
   "id": "shop",
   "name_ko": "상점",
-  "order": 4,
-  "x": 1656,
+  "order": 5,
+  "x": 2248,
   "building": "res://assets/city/buildings/shop.webp",
   "interior": "res://assets/city/interiors/shop.webp",
   "activities": [

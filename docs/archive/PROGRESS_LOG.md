@@ -6,6 +6,13 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **거리 배치·A/D 넘기기·장비는 대장간·창구 탭 (2026-10-20, 사용자 "모험가 길드는 왼쪽 맨 앞. 대장간은 상점 옆 … ad 누르면 휙휙 다음 건물이 화면 중심에 오게 … 장비는 대장간에서 구매 판매 … 상점, 대장간의 구매 판매 탭을 나눠줘. ws로 구매 판매 선택")**:
+  - 배치: `facility_order` 길드 · 여관 · 도서관 · 신전 · 상점 · 대장간 · 은행 · 훈련장, `x` 다시 계산(건물 사이 100 — 길이 4380 그대로), 거리 바닥(street.webp)만 다시 그림(`--only=street` — 건물 그림은 그대로).
+  - `CityStreet.step(dir)`: A/D(`move_left/right`, 누르고 있으면 반복) = 옆 건물로 커서를 옮기고 Tween으로 그 건물 가운데까지(`city.step_sec` 0.25, 끝은 거리 끝까지만). 연속 스크롤(`_process`)과 `scroll_px_per_sec`는 지움. CityScreen이 거리를 멈추면(`set_process(false)` — 메뉴·대화창·정지 창) A/D도 무시.
+  - 장비: `city.json shop.equipment_categories` [weapon, armor], 활동 `deals`(equipment·goods) — `CityShop.deals/is_equipment`가 판매 목록·`can_sell`·`sellable`을 거른다. 대장간 `smithy_trade`(장비 14종), 상점 판매 목록 = 돌빵·마른 식량·횃불·포션 둘, 떠돌이 상인의 반지·목걸이 → 노움의 반짝이 돌. 대장간 `placeholder` 뗌(입장 행동력 1). 검증: 창구의 판매 목록이 deals와 맞는지(`CityRules._trade`).
+  - 창구 화면: `ShopPanel.mode` "" → 구매/판매/나가기, 목록 끝 돌아가기, Backspace = 탭으로(`CityPanel.back_action`·`rebuild(cursor)`).
+  - 시험: `test_equipment_only_at_smithy`, 스모크(D·A 한 번 = 옆 건물·가운데 · 상점 구매 탭 → 구매 · 판매 탭 W/S · 장비 없음). check.sh 통과(353). 캡처로 거리·대장간 창구 확인.
+
 - **대장간·모험가 길드 자리 + 명성·인연 삭제 (2026-10-20, 사용자 "인연 관련이랑 명성 시스템 나중에 내가 제대로 기획해서 추가하게 — 전부 제거" / "대장간이랑 모험가 길드를 도시에 구현해줘. 그림이랑 내부 ui는 기존 건물과 비슷하게, 기능은 아직")**:
   - 삭제: `CityBonds`·`CityRenown`·효과 bond·renown·`data/city_people`·말 걸기 5·인연 해금 활동 5·모험가 무리 사건과 한잔 활동·`city.json renown`·`GameState.deeds`(탐험 알림 세기)·귀환 장면·문장(city.people·city.return·말 걸기 한마디)·디버그 명성/인연 버튼·캡처 --return/--renown/--bond·시험 3개. 모험가 대련 사건은 명성 조건만 빼고 남김. 오늘의 거리·세금은 그대로.
   - 추가: 시설 `smithy`(대장간, x 3206)·`guild`(모험가 길드, x 3748), 거리 길이 4380, `"placeholder": true`(활동 없음 → 입장 행동력 0·나가기만·검증 경고 없음). 그림 `tools/city_art/Buildings3.gd`(건물 둘)·`InteriorRooms2.gd`(실내 둘 — 대장장이·접수원)·Icons anvil·crest. `paint_city.gd` 그림 시드를 시설 id 고정 순서로(새 시설 때문에 기존 그림이 바뀌던 것) + `--facility=<id>`. 거리 레이어 4장(street·far·mid·haze)은 길이가 늘어 다시 그렸다. 캡처로 거리·실내 확인.

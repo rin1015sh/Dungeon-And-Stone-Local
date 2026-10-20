@@ -1,0 +1,26 @@
+{
+  "id": "smithy_trade",
+  "name_ko": "구매·판매",
+  "facility": "smithy",
+  "cost_stones": 0,
+  "panel": "shop",
+  "deals": "equipment",
+  "stock": [
+    "hunting_dagger",
+    "iron_mace",
+    "steel_sword",
+    "steel_spear",
+    "hunting_bow",
+    "wooden_shield",
+    "leather_hood",
+    "iron_helm",
+    "leather_armor",
+    "padded_armor",
+    "travel_cloak",
+    "leather_gloves",
+    "leather_belt",
+    "leather_boots"
+  ],
+  "effects": [],
+  "source": "placeholder"
+}

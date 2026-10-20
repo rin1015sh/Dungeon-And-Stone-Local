@@ -3,6 +3,8 @@ extends RefCounted
 ## 상점(구매·판매): 기존 아이템 데이터의 price를 그대로 쓴다. 규칙 값은 city.json shop.
 ##   stock null → 임시로 price > 0인 아이템 전부(마석·균열 귀속 제외), sell_ratio null → 임시로 1,
 ##   accepts_magic_stones null → 마석을 받지 않는다, magic_stone_ratio = 마석 매입가 비율. 거래마다 활동(shop_trade)의 이용료를 낸다.
+## 창구마다 다루는 물건(활동 deals — 사용자 결정 2026-10-20): equipment = 장비(category가 shop.equipment_categories)만 — 대장간,
+##   goods = 장비가 아닌 것만 — 상점·떠돌이 상인, 없으면 모두. 사기(stock 걸러냄)·팔기(sellable·can_sell) 모두에 걸린다.
 
 const MAGIC_STONE := "magic_stone"
 
@@ -11,7 +13,7 @@ static func config(state: CityState) -> Dictionary:
 	return CityValues.city_section(state.db, state.overrides, "shop")
 
 
-## 판매 목록. act_id의 활동에 stock이 있으면 그것(떠돌이 상인·뒷방 — 오늘의 거리·인연), 없으면 city.json shop.stock.
+## 판매 목록. act_id의 활동에 stock이 있으면 그것(대장간·떠돌이 상인), 없으면 city.json shop.stock — 그 창구가 다루는 물건만(deals).
 static func stock(state: CityState, act_id: String = "") -> Array[String]:
 	var db := state.db
 	var out: Array[String] = []
@@ -21,16 +23,31 @@ static func stock(state: CityState, act_id: String = "") -> Array[String]:
 		list = own
 	if list is Array:
 		for v: Variant in list:
-			if db.has_entry("items", str(v)):
+			if db.has_entry("items", str(v)) and deals(state, act_id, str(v)):
 				out.append(str(v))
 		return out
 	for id: String in db.get_collection("items"):
 		var e := db.get_entry("items", id)
-		if price(db, id) > 0 and JsonUtil.get_str(e, "category") != MAGIC_STONE and JsonUtil.get_str(e, "rift_bound").is_empty():
+		if price(db, id) > 0 and JsonUtil.get_str(e, "category") != MAGIC_STONE and JsonUtil.get_str(e, "rift_bound").is_empty() and deals(state, act_id, id):
 			out.append(id)
 	out.sort_custom(func(a: String, b: String) -> bool:
 		return price(db, a) < price(db, b) or (price(db, a) == price(db, b) and a < b))
 	return out
+
+
+## 장비인가(category가 city.json shop.equipment_categories — 무기·방어구).
+static func is_equipment(state: CityState, item_id: String) -> bool:
+	return JsonUtil.get_str(state.db.get_entry("items", item_id), "category") in JsonUtil.get_array(config(state), "equipment_categories")
+
+
+## 이 창구(act_id)가 이 물건을 다루는가(활동 deals: equipment·goods·없음 = 모두).
+static func deals(state: CityState, act_id: String, item_id: String) -> bool:
+	match JsonUtil.get_str(state.activity(act_id), "deals") if not act_id.is_empty() else "":
+		"equipment":
+			return is_equipment(state, item_id)
+		"goods":
+			return not is_equipment(state, item_id)
+	return true
 
 
 static func price(db: GameDatabase, item_id: String) -> int:
@@ -43,9 +60,9 @@ static func sell_ratio(state: CityState) -> float:
 	return maxf(0.0, CityValues.num(c, "sell_ratio")) if CityValues.is_set(c, "sell_ratio") else 1.0
 
 
-static func can_sell(state: CityState, item_id: String) -> bool:
+static func can_sell(state: CityState, item_id: String, act_id: String = "") -> bool:
 	var e := state.db.get_entry("items", item_id)
-	if e.is_empty() or price(state.db, item_id) <= 0 or not JsonUtil.get_str(e, "rift_bound").is_empty():
+	if e.is_empty() or price(state.db, item_id) <= 0 or not JsonUtil.get_str(e, "rift_bound").is_empty() or not deals(state, act_id, item_id):
 		return false
 	if JsonUtil.get_str(e, "category") == MAGIC_STONE:
 		return JsonUtil.get_bool(config(state), "accepts_magic_stones")
@@ -61,11 +78,11 @@ static func sell_price(state: CityState, item_id: String) -> int:
 	return floori(price(state.db, item_id) * ratio)
 
 
-## 가방에서 팔 수 있는 아이템 id.
-static func sellable(state: CityState, pc: PlayerCharacter) -> Array[String]:
+## 가방에서 이 창구에 팔 수 있는 아이템 id.
+static func sellable(state: CityState, pc: PlayerCharacter, act_id: String = "") -> Array[String]:
 	var out: Array[String] = []
 	for id in pc.inventory.ids():
-		if can_sell(state, id):
+		if can_sell(state, id, act_id):
 			out.append(id)
 	return out
 
@@ -90,7 +107,7 @@ static func buy(state: CityState, pc: PlayerCharacter, act_id: String, item_id: 
 
 static func sell(state: CityState, pc: PlayerCharacter, act_id: String, item_id: String, n: int = 1) -> CityContext:
 	var ctx := CityContext.new(state, pc, act_id)
-	if n <= 0 or not can_sell(state, item_id) or not pc.inventory.has(item_id, n):
+	if n <= 0 or not can_sell(state, item_id, act_id) or not pc.inventory.has(item_id, n):
 		return ctx.fail("city.reason_cannot_sell")
 	var why := CityActions.check(state, pc, act_id)
 	if not why.is_empty():

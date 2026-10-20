@@ -134,14 +134,14 @@
   },
   "facility_entry_cost": 1,
   "facility_order": [
+    "guild",
     "inn",
     "library",
     "temple",
     "shop",
-    "bank",
-    "training",
     "smithy",
-    "guild"
+    "bank",
+    "training"
   ],
   "item_use": {
     "_comment": "도시(거리)에서 소지품 창으로 쓸 수 있는 아이템 분류. 시설 안에서는 소지품·캐릭터 창을 열 수 없다.",
@@ -196,31 +196,21 @@
     ]
   },
   "shop": {
-    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율, accepts_magic_stones = 마석 매입 여부, magic_stone_ratio = 마석 매입가 비율(마석은 화폐처럼 제값).",
+    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율, accepts_magic_stones = 마석 매입 여부, magic_stone_ratio = 마석 매입가 비율(마석은 화폐처럼 제값). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만.",
     "stock": [
       "stone_bread",
       "ration",
       "torch",
       "minor_potion",
-      "medium_potion",
-      "hunting_dagger",
-      "iron_mace",
-      "steel_sword",
-      "steel_spear",
-      "hunting_bow",
-      "wooden_shield",
-      "leather_hood",
-      "iron_helm",
-      "leather_armor",
-      "padded_armor",
-      "travel_cloak",
-      "leather_gloves",
-      "leather_belt",
-      "leather_boots"
+      "medium_potion"
     ],
     "sell_ratio": 0.5,
     "accepts_magic_stones": true,
-    "magic_stone_ratio": 1.0
+    "magic_stone_ratio": 1.0,
+    "equipment_categories": [
+      "weapon",
+      "armor"
+    ]
   },
   "bank": {
     "_comment": "은행: deposit_fee·withdraw_fee = 금액에 대한 수수료 비율, interest_per_period = 순이 바뀔 때마다 잔액에 붙는 이자 비율(내림), on_dungeon_enter = 미궁에 들어갈 때 소지금 처리(keep = 그대로 들고 간다).",

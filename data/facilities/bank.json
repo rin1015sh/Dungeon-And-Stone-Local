@@ -1,8 +1,8 @@
 {
   "id": "bank",
   "name_ko": "은행",
-  "order": 5,
-  "x": 2096,
+  "order": 7,
+  "x": 3230,
   "building": "res://assets/city/buildings/bank.webp",
   "interior": "res://assets/city/interiors/bank.webp",
   "activities": [

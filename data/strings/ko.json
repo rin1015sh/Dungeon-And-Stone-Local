@@ -819,7 +819,9 @@
     },
     "debug_reroll": "사건 다시",
     "debug_tax_due": "세금 기한으로",
-    "debug_life": "사건 {events} · 세금 {tax}(냄 {paid})"
+    "debug_life": "사건 {events} · 세금 {tax}(냄 {paid})",
+    "shop_tab_buy": "구매",
+    "shop_tab_sell": "판매"
   },
   "field": {
     "_comment": "1층 동굴 요소(data/events) 문구 — 번호(.1 .2 …)가 여럿이면 하나를 고른다. corpse는 구역별(center/east/west/south/north).",

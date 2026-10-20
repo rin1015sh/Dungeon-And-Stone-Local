@@ -1,8 +1,8 @@
 {
   "id": "library",
   "name_ko": "도서관",
-  "order": 2,
-  "x": 716,
+  "order": 3,
+  "x": 1309,
   "building": "res://assets/city/buildings/library.webp",
   "interior": "res://assets/city/interiors/library.webp",
   "activities": [

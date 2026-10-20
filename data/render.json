@@ -198,11 +198,11 @@
     "monster_default": "#ffffff"
   },
   "city": {
-    "_comment": "도시 거리 화면(M4). 좌표는 거리 단위(화면 높이 street_height = 720 기준, 화면 크기에 맞춰 확대·축소, 부드러운 필터). baseline = 건물이 서는 y, building_scale = 건물 그림 배율. 스크롤 속도는 화면 픽셀/초.",
+    "_comment": "도시 거리 화면(M4). 좌표는 거리 단위(화면 높이 street_height = 720 기준, 화면 크기에 맞춰 확대·축소, 부드러운 필터). baseline = 건물이 서는 y, building_scale = 건물 그림 배율. step_sec = A/D로 옆 건물까지 넘어가는 시간(초).",
     "street_height": 720,
     "baseline": 600,
     "building_scale": 0.85,
-    "scroll_px_per_sec": 900,
+    "step_sec": 0.25,
     "plate_offset_px": 8,
     "hover_brighten": 0.15,
     "selected_outline": "#e0c070",

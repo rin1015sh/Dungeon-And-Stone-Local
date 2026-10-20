@@ -135,6 +135,7 @@ static func _activities(v: ValidatorBase) -> void:
 		var panel := JsonUtil.get_str(a, "panel")
 		if not panel.is_empty() and not panel in CityActions.PANELS:
 			v.err(w, "panel은 %s 중 하나" % [CityActions.PANELS])
+		_trade(v, w, a)
 		for e: Variant in JsonUtil.get_array(a, "effects"):
 			if not e is Dictionary:
 				v.err(w, "effects 항목은 객체")
@@ -154,3 +155,22 @@ static func _info(v: ValidatorBase) -> void:
 			v.err("city_info/" + id, "kind는 %s 중 하나" % [CityInfo.KINDS])
 		if JsonUtil.get_str(e, "text_ko").is_empty():
 			v.err("city_info/" + id, "text_ko가 비었다")
+
+
+## 상점 창구: deals는 equipment·goods 중 하나(또는 없음), 판매 목록(활동 stock, 없으면 shop.stock)은 그 창구가 다루는 물건만.
+static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
+	var deals := JsonUtil.get_str(a, "deals")
+	if not deals.is_empty() and not deals in ["equipment", "goods"]:
+		v.err(w, "deals는 equipment·goods 중 하나")
+	if JsonUtil.get_str(a, "panel") != "shop" or deals.is_empty():
+		return
+	var shop := JsonUtil.get_dict(v.db.singletons.get("city", {}), "shop")
+	var cats := JsonUtil.get_array(shop, "equipment_categories")
+	var list: Variant = a.get("stock") if a.get("stock") is Array else shop.get("stock")
+	if not list is Array:
+		return
+	for id: Variant in list:
+		v.ref(w + ".stock", "items", id)
+		var equip := JsonUtil.get_str(v.db.get_entry("items", str(id)), "category") in cats
+		if equip != (deals == "equipment"):
+			v.err(w, "판매 목록의 '%s'는 이 창구(deals %s)가 다루지 않는 물건이다" % [id, deals])

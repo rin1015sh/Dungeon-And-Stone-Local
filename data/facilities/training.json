@@ -1,8 +1,8 @@
 {
   "id": "training",
   "name_ko": "훈련장",
-  "order": 6,
-  "x": 2596,
+  "order": 8,
+  "x": 3730,
   "building": "res://assets/city/buildings/training.webp",
   "interior": "res://assets/city/interiors/training.webp",
   "activities": [

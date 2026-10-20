@@ -1,8 +1,8 @@
 {
   "id": "inn",
   "name_ko": "여관",
-  "order": 1,
-  "x": 140,
+  "order": 2,
+  "x": 733,
   "building": "res://assets/city/buildings/inn.webp",
   "interior": "res://assets/city/interiors/inn.webp",
   "activities": [

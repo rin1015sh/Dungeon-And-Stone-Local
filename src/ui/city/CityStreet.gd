@@ -5,7 +5,9 @@ extends Control
 ##   날씨(CityState.weather — city.json weather)에 따라 하늘 그림을 바꾸고 나머지 레이어·건물에 색을 곱한다(맑음 = 밝게).
 ##   거리 레이어 위에 시설 건물(고를 수 있음 — 화면 가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
 ##   이번 순 오늘의 거리 사건이 걸린 건물(CityHappenings.lit)은 등롱 불빛이 켜져 일렁인다(글로 알리지 않는다 — UI19).
-##   키보드만(사용자 결정 2026-10-19): A/D·←/→ 스크롤, 화면 가운데 건물을 Enter/F로 들어간다.
+##   키보드만(사용자 결정 2026-10-19): A/D·←/→ 한 번 = 옆 건물로 넘어가 그 건물이 화면 가운데에 온다(부드럽게 미끄러짐 —
+##   사용자 결정 2026-10-20, 누르고 있으면 계속 넘어간다), 가운데 건물을 Enter/F로 들어간다.
+##   CityScreen이 set_process(false)로 멈추면(메뉴·대화창·정지 창) A/D도 받지 않는다.
 ## 좌표는 거리 단위(화면 높이 render.json city.street_height 기준) — 화면 높이에 맞춰 확대·축소한다.
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
 
@@ -28,6 +30,8 @@ var _focus: int = -1
 var _outline_tex: float = 3.0  # 윤곽 두께(그림 픽셀)
 var _glow_tex: GradientTexture2D
 var _time: float = 0.0
+var _tween: Tween
+var _snapping: bool = false  # 넘어가는 중 — 가운데 건물을 다시 고르지 않는다(고른 건물을 그대로)
 
 
 func setup(state: CityState) -> void:
@@ -167,11 +171,36 @@ func scroll_to(x: float) -> void:
 		elif not bool(L["screen"]):
 			(L["node"] as TextureRect).position = Vector2(0, float(L["y"]) * _scale)
 	_place_plates()
-	_update_focus()
+	if not _snapping:
+		_update_focus()
 
 
 func scroll_by(dx: float) -> void:
 	scroll_to(_offset + dx)
+
+
+## 옆 건물로 넘어간다(dir −1 왼쪽 · +1 오른쪽): 그 건물이 화면 가운데에 오게 미끄러진다(끝 건물은 거리 끝까지만).
+func step(dir: int) -> void:
+	if _buildings.is_empty():
+		return
+	var i := clampi((_focus if _focus >= 0 else 0) + dir, 0, _buildings.size() - 1)
+	if i == _focus and _tween != null and _tween.is_running():
+		return
+	_focus = i
+	refresh()
+	var b := _buildings[i]
+	var target := clampf((float(b["x"]) + float(b["w"]) / 2.0) * _scale - size.x / 2.0, 0.0, max_offset())
+	if _tween != null:
+		_tween.kill()
+	_snapping = true
+	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_tween.tween_method(scroll_to, _offset, target, UiTheme.render_float("city.step_sec", 0.25))
+	_tween.tween_callback(func() -> void: _snapping = false)
+
+
+## 넘어가는 중인가(테스트용).
+func is_stepping() -> bool:
+	return _tween != null and _tween.is_running()
 
 
 func offset() -> float:
@@ -271,16 +300,17 @@ func _process(delta: float) -> void:
 		var glow: TextureRect = b["glow"]
 		if glow.visible:
 			glow.modulate.a = 1.0 - fl * (0.5 + 0.5 * sin(_time * 7.0 + float(b["x"])) * sin(_time * 2.3))
-	if not is_visible_in_tree() or get_viewport().gui_get_focus_owner() != null:  # 디버그 패널 등을 키로 다루는 중
-		return
-	var dir := Input.get_axis("move_left", "move_right")
-	if dir != 0.0:
-		scroll_by(dir * UiTheme.render_float("city.scroll_px_per_sec", 900.0) * delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_visible_in_tree():
 		return
+	if is_processing() and get_viewport().gui_get_focus_owner() == null:  # 디버그 패널 등을 키로 다루는 중이면 넘기지 않는다
+		for pair: Array in [["move_left", -1], ["move_right", 1]]:
+			if event.is_action_pressed(str(pair[0]), true):
+				get_viewport().set_input_as_handled()
+				step(int(pair[1]))
+				return
 	if event.is_action_pressed("menu_confirm") or event.is_action_pressed("interact"):
 		var id := focused_id()
 		if not id.is_empty():

@@ -178,7 +178,7 @@ func test_every_activity_runs_with_all_values_null() -> void:
 					var ctx := CityActions.perform(s, pc, act_id, _reg())
 					assert_true(ctx.ok and not ctx.messages.is_empty(), "미정 값으로도 실행되고 결과 문구가 있다: " + act_id)
 				"shop":
-					var item: String = CityShop.stock(s)[0]
+					var item: String = CityShop.stock(s, act_id)[0]
 					assert_true(CityShop.buy(s, pc, act_id, item).ok, "사기")
 					assert_true(CityShop.sell(s, pc, act_id, item).ok, "팔기")
 				"bank":

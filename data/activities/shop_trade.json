@@ -5,5 +5,6 @@
   "cost_stones": 0,
   "panel": "shop",
   "effects": [],
-  "source": "placeholder"
+  "source": "placeholder",
+  "deals": "goods"
 }

@@ -1,8 +1,8 @@
 {
   "id": "temple",
   "name_ko": "신전",
-  "order": 3,
-  "x": 1190,
+  "order": 4,
+  "x": 1783,
   "building": "res://assets/city/buildings/temple.webp",
   "interior": "res://assets/city/interiors/temple.webp",
   "activities": [

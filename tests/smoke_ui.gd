@@ -693,10 +693,16 @@ func _city_flow() -> void:
 	_expect(st.ap == 3 and st.month == 1 and st.period == 0, "첫 달 상순, 행동력 3")
 	var street := city.street()
 	street.scroll_to(0.0)
-	Input.action_press("move_right")
-	await _frames(8)
-	Input.action_release("move_right")
-	_expect(street.offset() > 0.0, "D로 거리를 스크롤한다")
+	await _frames(1)
+	var first := street.focused_id()
+	await _action("move_right")
+	_expect(street.focused_id() != first and street.focused_id() == st.facility_ids()[1], "D 한 번 = 옆 건물")
+	await _seconds(UiTheme.render_float("city.step_sec", 0.25) + 0.15)
+	var rr := street.building_rect(street.focused_id())
+	_expect(not street.is_stepping() and absf(rr.get_center().x - street.size.x / 2.0) < 2.0, "넘어간 건물이 화면 가운데에 온다")
+	await _action("move_left")
+	await _seconds(UiTheme.render_float("city.step_sec", 0.25) + 0.15)
+	_expect(street.focused_id() == first, "A 한 번 = 다시 왼쪽 건물")
 	street.scroll_to(0.0)
 	await _frames(1)
 	var r := street.building_rect("inn")
@@ -747,6 +753,8 @@ func _city_flow() -> void:
 	await _action("debug_toggle")
 	street.scroll_to(0.0)
 	await _frames(1)
+	street.scroll_to(street.building_rect("inn").get_center().x - street.size.x / 2.0)  # 맨 왼쪽은 기능 없는 길드 — 여관으로
+	await _frames(1)
 	await _action("menu_confirm")
 	fv = city.facility_view()
 	if not _expect(fv != null and fv.facility_id() == street.focused_id() and st.ap == 1, "Space로 가운데 건물에 들어간다"):
@@ -765,8 +773,17 @@ func _city_flow() -> void:
 	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "shop_trade"))
 	var money := pc.inventory.money
 	await _frames(1)
-	await _action("menu_confirm")  # 선택판 첫 칸 = 첫 판매 물건
-	_expect(pc.inventory.money < money, "상점에서 Enter로 샀다")
+	await _action("menu_confirm")  # 탭 첫 칸 = 구매
+	await _action("menu_confirm")  # 구매 목록 첫 칸 = 첫 판매 물건
+	_expect(pc.inventory.money < money, "상점에서 구매 탭 → Enter로 샀다")
+	var shop_items := CityShop.stock(st, "shop_trade")
+	_expect(not shop_items.any(func(i: String) -> bool: return CityShop.is_equipment(st, i)), "상점은 장비를 팔지 않는다(대장간)")
+	await _action("menu_back")  # 목록 → 탭
+	await _action("menu_down")
+	await _action("menu_confirm")  # 판매 탭
+	var sell_panel := fv.find_children("*", "ShopPanel", true, false)
+	_expect(sell_panel.size() == 1 and (sell_panel[0] as ShopPanel).mode == "sell", "W/S로 판매 탭을 고른다")
+	await _action("menu_back")
 	await _action("pause")
 	await _frames(1)
 	_expect(city.facility_view() == null, "창구에서 Esc → 거리로")
