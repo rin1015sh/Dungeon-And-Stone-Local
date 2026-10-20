@@ -13,13 +13,14 @@
 1. `git fetch origin main` 후 작업 브랜치가 main보다 뒤처졌으면 먼저 `git merge origin/main`.
    (다른 세션이 main에 병합한 작업이 빠진 채 진행된 일이 있었다 — 반드시 먼저 합친다.)
 2. 읽기: `CLAUDE.md`(작업 규칙·함정·구조) → `docs/CANON.md`(지금 확정된 기획·설정 정본 요약, 문서 우선순위)
-   → `docs/PROGRESS.md`의 "현재 상태" 맨 위 몇 항목과 "다음 할 일" → 맡은 주제의 `docs/ASSUMPTIONS.md` 절.
+   → `docs/PROGRESS.md`(지금 상태·다음 할 일 — 짧다) → 맡은 주제의 `docs/ASSUMPTIONS.md` 행(번호로 검색).
+   문서 지도는 `docs/README.md`, 데이터 키 사전·파일 구조는 `docs/REFERENCE.md`, 옛 작업 기록은 `docs/archive/PROGRESS_LOG.md`(검색).
    그림 작업이면 `docs/ART.md`, 1층 몬스터·정수·균열이면 `docs/PROMPT_FLOOR1_V2.md`의 해당 절.
 3. Godot이 없으면 내려받는다(CLAUDE.md "클라우드(리눅스) 세션"). 손대기 전에 `GODOT=<경로> bash tools/check.sh`가
    "모든 검증 통과"인지 한 번 확인한다.
 
 ## 문서끼리 어긋날 때
-날짜가 있는 사용자 결정(ASSUMPTIONS 행·PROGRESS 항목, 같은 주제면 늦은 것) > CLAUDE.md·CANON.md > 실제 데이터 > DESIGN.md
+날짜가 있는 사용자 결정(ASSUMPTIONS 행·PROGRESS_LOG 작업 기록, 같은 주제면 늦은 것) > CLAUDE.md·CANON.md > 실제 데이터 > DESIGN.md
 > PROMPT_FLOOR1_V2.md > PROMPT.md. ASSUMPTIONS 행 앞의 "(바뀜 → X)"는 X가 대신한다는 뜻이다.
 어긋남을 찾으면 고치기 전에 어느 쪽이 맞는지 위 순서로 판단하고, 판단이 안 서면 사용자에게 묻는다.
 
@@ -27,17 +28,18 @@
 - 콘텐츠는 data/*.json으로, 수치는 balance.json·render.json으로(코드에 매직 넘버 금지). UI 문자열은 Strings.t + data/strings/ko.json.
 - 화면에 부연설명 금지(무엇인지·어떻게 하는지 설명하는 문장·조작 안내·desc_ko 새로 만들기 금지). 결과 문구는 서술형 장면.
 - 원작 실명 인물·현실 쪽 설정·원작 문장 복사 금지. 세계관·원작 설정은 문서를 뒤지지 말고 사용자에게 원문을 요청한다.
-- 키: 고르기 Enter, 취소 Backspace, 살피기 F(E는 식사). 작은 선택 창은 ChoicePopup.
+- 키보드만(마우스·터치 금지): 이동 WASD, 고르기 Enter, 취소 Backspace, 살피기 F/Enter, 메뉴 Tab(아이템은 Tab 메뉴에서만 — 단축 키 없음). 작은 선택 창은 ChoicePopup.
+- 화면으로 보이는 것(횃불·포션·상태·피해 …)은 글로 알리지 않는다(UI19) — 대화창에는 화면으로 알 수 없는 것만.
 - 스트레스·기력·마력·신성력 자원은 꺼져 있다 — 쓰지 않는다. 피로도는 Fatigue.
 - 1층은 고정 지도(data/maps). 생성기·gen 값을 바꾸면 tools/bake_floor.gd로 다시 굽고, 손으로 놓은 좌표가 어긋나는지 확인한다.
 - 모르는 부분은 합리적으로 가정하고 ASSUMPTIONS에 "가정 / 이유 / 바꾸는 방법"으로 남기고 진행한다(세계관 질문만 예외).
 - GDScript 정적 타이핑, 스크립트 300줄 이내 지향, 모든 무작위는 Rng.
 
 ## 작업 단위
-- 시작할 때 PROGRESS "현재 상태" 맨 위에 "범위 / 완료 기준 / 테스트 방법"을 먼저 쓴다.
+- 큰 작업은 시작할 때 `docs/archive/PROGRESS_LOG.md` "작업 기록" 맨 위에 "범위 / 완료 기준 / 테스트 방법"을 먼저 쓴다.
 - 완료 판정 = `bash tools/check.sh` "모든 검증 통과" + 그림·화면을 바꿨으면 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다).
-- 끝나면 PROGRESS(한 일·남은 것), ASSUMPTIONS(새 가정·바뀐 행에 "(바뀜 → X)"), CANON.md(정해진 것이 바뀌었으면),
-  README(사용자 테스트 체크리스트), CLAUDE.md(새 키·구조가 생겼으면)를 갱신하고, 항상 실행 가능한 상태에서 한국어 짧은 메시지로 커밋·푸시한다.
+- 끝나면 PROGRESS_LOG(자세한 기록) + PROGRESS.md(최근 작업 한 줄·다음 할 일), ASSUMPTIONS(새 가정·바뀐 행에 "(바뀜 → X)"), CANON.md(정해진 것이 바뀌었으면),
+  `docs/PLAYTEST.md`(사용자 테스트 체크리스트, 맨 위), REFERENCE.md(새 데이터 키), CLAUDE.md(새 규칙·함정)를 갱신하고, 항상 실행 가능한 상태에서 한국어 짧은 메시지로 커밋·푸시한다.
 - PR은 사용자가 요청할 때만 만든다.
 
 ## 이번에 할 일
@@ -64,7 +66,7 @@
 | 후보 | 출발점 | 먼저 정할 것 |
 |---|---|---|
 | **2층(M6)** | 1층 포탈 4개의 `dest`(floor2_east 등)가 이미 있다 — `ExploreInteract._use_floor_portal`에서 2층 세션을 만들면 된다. 명세 V2 §5 경험치 예산의 2층 목표 | 2층 원작 설정(4필드·몬스터·폐쇄 240h), 생성기(고정 지도로 할지) (1층 변이종 5종은 넣지 않기로 함 — CR7) |
-| **동료·길드** | 균열 4인·드레드피어 5인 소환, 드롭 받을 사람 고르기(`DropPickup`)는 이미 파티를 전제로 돼 있다 | 길드 시설(정보 구매 `Knowledge.learn_all`·고용), 동료 AI, 배신 훅 |
+| **동료·길드** | 정규 파티 5인(지금은 랜덤 모험가)·드레드피어 5인 소환, 드롭 받을 사람 고르기(`DropPickup`)는 이미 파티를 전제로 돼 있다 | 길드 시설(정보 구매 `Knowledge.learn_all`·고용), 동료 AI, 배신 훅 |
 | **1층 이벤트** | `data/events`(type feature)에 행동·문구·전리품·효과 틀이 있다. 자리는 고정 지도 `features` 좌표 | 이야기·원작 근거, 일회성인지 매달 되살아나는지 |
 | **탐험 맵 그림 (진행 중)** | 지시서 `docs/PROMPT_ART_MAP.md`(A0~A6), 기획 `docs/plans/map_design.md`, 규격 `docs/ART.md` §6. A0(감사·문서·도구·기준 캡처 `docs/screens/before/`)·A1(렌더 기반)·A2(1층 재질 그림 `tools/paint_floor.gd`)·A3(데칼·턱·색조·랜드마크·소품, 캡처 `docs/screens/after/` 18장) 끝 — 다음 A4 탐험 화면 몸·사망 연출(물을 것 ⑤ 먼저) | `map_design.md` §6 질문 ①②는 추천안 가정(AM5·AM6), ③ linear로 정함, ④ 데스핀드 1.8로 정함, ⑤ A4 몸 범위 |
 | **도시 확장** | 시설 = JSON 하나 + 효과 파일 하나(`data/facilities`·`data/activities`·`src/city/effects`) | 환전소·대장간·잡화점·대신전 치료 중 무엇, 원작 경제 가격 |
