@@ -1,0 +1,59 @@
+{
+  "id": "merchant",
+  "name_ko": "상점 주인",
+  "facility": "shop",
+  "gain": {},
+  "stages": [
+    {
+      "at": 2,
+      "scene": "city.people.merchant.s1"
+    },
+    {
+      "at": 6,
+      "scene": "city.people.merchant.s2",
+      "perks": {
+        "shop_discount": 0.1
+      }
+    },
+    {
+      "at": 10,
+      "min_renown": 1,
+      "scene": "city.people.merchant.s3",
+      "effects": [
+        {
+          "type": "give_item",
+          "item": "torch_stub",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "at": 16,
+      "scene": "city.people.merchant.s4",
+      "check": {
+        "stat": "agi",
+        "min": 12,
+        "pass": {
+          "scene": "city.people.merchant.s4_pass",
+          "perks": {
+            "shop_discount": 0.1
+          }
+        },
+        "fail": {
+          "scene": "city.people.merchant.s4_fail"
+        }
+      }
+    },
+    {
+      "at": 24,
+      "min_renown": 2,
+      "scene": "city.people.merchant.s5",
+      "perks": {
+        "unlock": [
+          "shop_backroom"
+        ]
+      }
+    }
+  ],
+  "source": "original"
+}

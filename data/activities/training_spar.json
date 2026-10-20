@@ -1,0 +1,24 @@
+{
+  "id": "training_spar",
+  "name_ko": "모험가와 대련",
+  "facility": "training",
+  "cost_stones": 0,
+  "extra": true,
+  "effects": [
+    {
+      "type": "stat_chance",
+      "stats": [
+        "agi"
+      ],
+      "pick": "random",
+      "chance": 0.5,
+      "amount": 1
+    },
+    {
+      "type": "fatigue",
+      "direction": "up",
+      "amount": 15
+    }
+  ],
+  "source": "placeholder"
+}

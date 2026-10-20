@@ -172,6 +172,8 @@ func test_every_activity_runs_with_all_values_null() -> void:
 			var act := s.activity(act_id)
 			match JsonUtil.get_str(act, "panel"):
 				"":
+					if CityActions.check(s, pc, act_id) == "city.reason_tax_none":
+						continue  # 세금이 미정(없음)이면 납부를 고를 수 없다
 					var ctx := CityActions.perform(s, pc, act_id, _reg())
 					assert_true(ctx.ok and not ctx.messages.is_empty(), "미정 값으로도 실행되고 결과 문구가 있다: " + act_id)
 				"shop":

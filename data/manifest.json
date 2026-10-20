@@ -30,6 +30,8 @@
     "events": {"dir": "events"},
     "facilities": {"dir": "facilities"},
     "activities": {"dir": "activities"},
-    "city_info": {"dir": "city_info"}
+    "city_info": {"dir": "city_info"},
+    "city_events": {"dir": "city_events"},
+    "city_people": {"dir": "city_people"}
   }
 }

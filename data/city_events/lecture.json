@@ -1,0 +1,11 @@
+{
+  "id": "lecture",
+  "name_ko": "교관 특강",
+  "facility": "training",
+  "weight": 2,
+  "when": {},
+  "activities": [
+    "training_lecture"
+  ],
+  "source": "placeholder"
+}

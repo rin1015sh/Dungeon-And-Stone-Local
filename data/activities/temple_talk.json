@@ -1,0 +1,13 @@
+{
+  "id": "temple_talk",
+  "name_ko": "말을 건다",
+  "facility": "temple",
+  "cost_stones": 0,
+  "effects": [
+    {
+      "type": "bond",
+      "amount": 2
+    }
+  ],
+  "source": "placeholder"
+}

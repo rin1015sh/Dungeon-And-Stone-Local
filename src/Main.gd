@@ -82,6 +82,9 @@ func _show_city() -> void:
 	c.setup(GameState.city, GameState.player, DataRegistry.registries.city_effects)
 	c.dungeon_requested.connect(_show_plaza)
 	c.title_requested.connect(_show_title)
+	c.executed.connect(func() -> void:
+		GameState.on_death()
+		_show_title())
 	_show(c)
 
 
@@ -93,7 +96,9 @@ func _show_plaza() -> void:
 	var p := PlazaScreen.new()
 	p.setup(GameState.city, GameState.player)
 	p.save_requested.connect(func() -> void: p.save_done(GameState.save_run()))
-	p.enter_requested.connect(func() -> void: _enter_floor(str(DataRegistry.db.bal("explore.start_floor", ""))))
+	p.enter_requested.connect(func() -> void:
+		GameState.deeds.clear()
+		_enter_floor(str(DataRegistry.db.bal("explore.start_floor", ""))))
 	_show(p)
 
 
@@ -147,7 +152,8 @@ func _on_run_ended(kind: String, info: Dictionary) -> void:
 ## 미궁에서 살아 돌아왔다: 다음 달 상순(행동력 새로)으로 도시.
 func _return_to_city() -> void:
 	if GameState.city != null:
-		GameState.city.return_from_dungeon()
+		GameState.city.return_from_dungeon(GameState.deeds)
+	GameState.deeds.clear()
 	_show_city()
 
 

@@ -6,7 +6,8 @@
   "building": "res://assets/city/buildings/training.webp",
   "interior": "res://assets/city/interiors/training.webp",
   "activities": [
-    "training_train"
+    "training_train",
+    "training_talk"
   ],
   "shows": [],
   "source": "original"

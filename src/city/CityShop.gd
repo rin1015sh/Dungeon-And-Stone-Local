@@ -11,10 +11,14 @@ static func config(state: CityState) -> Dictionary:
 	return CityValues.city_section(state.db, state.overrides, "shop")
 
 
-static func stock(state: CityState) -> Array[String]:
+## 판매 목록. act_id의 활동에 stock이 있으면 그것(떠돌이 상인·뒷방 — 오늘의 거리·인연), 없으면 city.json shop.stock.
+static func stock(state: CityState, act_id: String = "") -> Array[String]:
 	var db := state.db
 	var out: Array[String] = []
 	var list: Variant = config(state).get("stock")
+	var own: Variant = state.activity(act_id).get("stock") if not act_id.is_empty() else null
+	if own is Array:
+		list = own
 	if list is Array:
 		for v: Variant in list:
 			if db.has_entry("items", str(v)):
@@ -31,6 +35,14 @@ static func stock(state: CityState) -> Array[String]:
 
 static func price(db: GameDatabase, item_id: String) -> int:
 	return maxi(0, JsonUtil.get_int(db.get_entry("items", item_id), "price"))
+
+
+## 살 때 값: 인연 할인(perks.shop_discount 합, 최대 90%)을 뺀 값(내림).
+static func buy_price(state: CityState, item_id: String) -> int:
+	var off := 0.0
+	for p in CityBonds.perks(state):
+		off += JsonUtil.get_float(p, "shop_discount")
+	return floori(price(state.db, item_id) * (1.0 - clampf(off, 0.0, 0.9)))
 
 
 static func sell_ratio(state: CityState) -> float:
@@ -67,9 +79,9 @@ static func sellable(state: CityState, pc: PlayerCharacter) -> Array[String]:
 
 static func buy(state: CityState, pc: PlayerCharacter, act_id: String, item_id: String, n: int = 1) -> CityContext:
 	var ctx := CityContext.new(state, pc, act_id)
-	if n <= 0 or not stock(state).has(item_id):
+	if n <= 0 or not stock(state, act_id).has(item_id):
 		return ctx.fail("city.reason_not_sold")
-	var total := price(state.db, item_id) * n
+	var total := buy_price(state, item_id) * n
 	var why := CityActions.check(state, pc, act_id, total)
 	if not why.is_empty():
 		return ctx.fail(why)

@@ -1,6 +1,6 @@
 class_name ShopPanel
 extends CityPanel
-## 상점 패널: 사기(판매 목록 — CityShop.stock) / 팔기(가방에서 팔 수 있는 것). 가격은 아이템 데이터 price.
+## 상점 패널: 사기(판매 목록 — CityShop.stock) / 팔기(가방에서 팔 수 있는 것). 가격은 아이템 데이터 price(인연 할인 — CityShop.buy_price). 떠돌이 상인·뒷방은 그 활동의 stock.
 
 
 func build() -> void:
@@ -10,8 +10,8 @@ func build() -> void:
 
 func options() -> Array[Dictionary]:
 	var opts: Array[Dictionary] = []
-	for id in CityShop.stock(state):
-		var price := CityShop.price(state.db, id)
+	for id in CityShop.stock(state, activity_id):
+		var price := CityShop.buy_price(state, id)
 		opts.append({"text": _name(id), "sub": Strings.t("city.shop_sub_buy", {"price": price}), "enabled": pc.inventory.money >= price,
 			"on_pick": func() -> void: done(CityShop.buy(state, pc, activity_id, id, 1))})
 	for id in CityShop.sellable(state, pc):

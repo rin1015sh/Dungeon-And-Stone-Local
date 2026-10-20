@@ -87,9 +87,8 @@ func _show_choices() -> void:
 	for act_id in CityActions.activities_of(_state, _facility_id):
 		var act := _state.activity(act_id)
 		var why := CityActions.check(_state, _pc, act_id)
-		var stones := CityActions.stone_cost(act)
 		opts.append({"text": JsonUtil.get_str(act, "name_ko"), "enabled": why.is_empty(),
-			"sub": Strings.t(why) if not why.is_empty() else (Strings.t("city.cost_stones", {"n": stones}) if stones > 0 else ""),
+			"sub": Strings.t(why) if not why.is_empty() else CityActions.price_text(_state, _pc, act_id),
 			"on_pick": func() -> void: _choose(act_id)})
 	opts.append({"text": Strings.t("city.leave"), "on_pick": try_leave})
 	_grid.show_choices("", opts, try_leave, _grid.cursor())

@@ -1,0 +1,13 @@
+{
+  "id": "peddler",
+  "name_ko": "떠돌이 상인",
+  "facility": "shop",
+  "weight": 2,
+  "when": {
+    "from_month": 2
+  },
+  "activities": [
+    "shop_peddler"
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "library_rare",
+  "name_ko": "희귀서 열람",
+  "facility": "library",
+  "cost_stones": 80,
+  "extra": true,
+  "effects": [
+    {
+      "type": "stat_chance",
+      "stats": [
+        "int"
+      ],
+      "pick": "random",
+      "chance": 0.6,
+      "amount": 1
+    },
+    {
+      "type": "fatigue",
+      "direction": "up",
+      "amount": 10
+    }
+  ],
+  "source": "placeholder"
+}

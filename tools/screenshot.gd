@@ -3,6 +3,8 @@ extends Node
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
 ## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨
+##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --return 계층군주를 잡고 돌아온 것으로(귀환 장면), --renown=<점수>,
+##   --bond=<사람 id>:<점수>:<열린 단계> 인연(그 뒤 --activity=<말 걸기>로 다음 장면), --month=<달> --period=<0~2> 날짜(세금 기한 등)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --at=x,y: 그 칸으로 순간이동(고정 지도 좌표 — 공동·이벤트 자리 확인), --interact: 그 자리에서 살피기(E), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터, --mate: 동료를 붙여 행동 정하기 화면, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
@@ -284,6 +286,22 @@ func _run() -> void:
 
 func _city(city: CityScreen) -> void:
 	await _frames(2)
+	var st := city.state
+	if _args.has("month"):
+		st.month = str(_args["month"]).to_int()
+		st.period = str(_args.get("period", "0")).to_int()
+	if _args.has("renown"):
+		st.renown = str(_args["renown"]).to_int()
+	if _args.has("bond"):
+		var b := str(_args["bond"]).split(":")
+		st.bonds[b[0]] = b[1].to_float() if b.size() > 1 else 0.0
+		st.bond_stage[b[0]] = b[2].to_int() if b.size() > 2 else 0
+	if _args.has("happen"):
+		st.happenings.assign(str(_args["happen"]).split(","))
+	if _args.has("return"):
+		st.return_from_dungeon({"explore.lord_defeated": 1, "kill": 12})
+		city.show_pending()
+	st.changed.emit()
 	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
 	if _args.has("weather"):
 		city.state.weather = str(_args["weather"])
@@ -293,10 +311,9 @@ func _city(city: CityScreen) -> void:
 		await _frames(2)
 		if _args.has("activity"):
 			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
-			for b: Node in city.facility_view().find_children("*", "Button", true, false):
-				if (b as Button).text.begins_with(name):
-					(b as Button).pressed.emit()
-					break
+			city.facility_view()._choose(str(_args["activity"]))
+			if name.is_empty():
+				push_warning("활동 없음: " + str(_args["activity"]))
 	if _args.has("debug"):
 		city.debug_panel().visible = true
 	await _frames(4)

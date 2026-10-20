@@ -13,9 +13,12 @@ var debug_fast_combat: bool = false  ## 적 차례 연출 지연 없음(테스�
 var rift_calendar: RiftCalendar = null  ## 균열 자연 개방 달력(원정 = 1달 = 도시 한 달 — 포탈은 한 달에 한 번). 탐험가마다 새로(ASSUMPTIONS PA9)
 var city: CityState = null  ## 도시 진행 상태(탐험가마다 새로)
 var save_path: String = SaveGame.DEFAULT_PATH  ## 테스트는 다른 경로를 쓴다(실제 저장을 덮지 않게)
+## 이번 원정에서 한 일(귀환하면 도시 명성 결산 — CityRenown): {"kill": 쓰러뜨린 수, "<탐험 알림 키>": 뜬 횟수}. 포탈에 들어갈 때 비운다.
+var deeds: Dictionary = {}
 
 
 func _ready() -> void:
+	EventBus.monster_killed.connect(func(_id: String, _killer: String) -> void: note_deed("kill"))
 	new_session()
 
 
@@ -43,6 +46,11 @@ func next_floor_seed(floor_number: int) -> int:
 	if debug_seed_override != 0:
 		return debug_seed_override
 	return absi(hash([master_seed, floor_number, floor_entries])) + 1
+
+
+## 원정에서 한 일 하나를 센다(탐험 화면의 알림 키, 몬스터 처치 "kill").
+func note_deed(key: String) -> void:
+	deeds[key] = int(deeds.get(key, 0)) + 1
 
 
 func end_run() -> void:

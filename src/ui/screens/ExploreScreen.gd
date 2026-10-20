@@ -363,6 +363,7 @@ func _build_dialog(m: int) -> void:
 
 ## 문구 키 알림 → 기록(log_message) + 나눈 자리(보이지 않음 / 대화창). 전투 중·끝난 뒤는 기록만.
 func _notify(key: String, args: Dictionary, kind: String) -> void:
+	GameState.note_deed(key)  # 귀환 뒤 도시 명성(CityRenown — 알림 키로 센다)
 	var a := args
 	if not a.has("interact"):
 		a = args.duplicate()

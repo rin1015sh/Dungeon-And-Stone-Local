@@ -18,6 +18,7 @@ static func run(v: ValidatorBase) -> void:
 	_facilities(v, city)
 	_activities(v)
 	_info(v)
+	CityLifeRules.run(v)
 	var undecided := CityValues.nulls(v.db)
 	if not undecided.is_empty():
 		v.warnings.append("도시 미정 값(null) %d개: %s" % [undecided.size(), ", ".join(undecided)])

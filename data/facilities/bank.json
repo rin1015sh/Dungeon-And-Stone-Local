@@ -6,7 +6,8 @@
   "building": "res://assets/city/buildings/bank.webp",
   "interior": "res://assets/city/interiors/bank.webp",
   "activities": [
-    "bank_account"
+    "bank_account",
+    "bank_tax"
   ],
   "shows": [
     "bank_balance"

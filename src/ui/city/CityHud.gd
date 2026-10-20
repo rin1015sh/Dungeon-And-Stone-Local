@@ -12,6 +12,7 @@ var _date: Label
 var _periods: Array[Label] = []
 var _pips: Label
 var _ap: Label
+var _tax: Label
 var _name: Label
 var _hp_bar: ProgressBar
 var _hp: Label
@@ -91,6 +92,8 @@ func _build_calendar(m: int) -> void:
 	ap.add_child(_pips)
 	_ap = CityUi.label("", "body", "bone")
 	ap.add_child(_ap)
+	_tax = CityUi.label("", "small", "accent")
+	v.add_child(_tax)
 
 
 func _build_vitals(m: int) -> void:
@@ -150,6 +153,8 @@ func refresh() -> void:
 		pips.append("●" if i < _state.ap else "○")
 	_pips.text = " ".join(pips)
 	_ap.text = Strings.t("city.ap_value", {"ap": _state.ap, "max": _state.ap_per_period()})
+	_tax.visible = CityTax.owed(_state, _pc.race_id)
+	_tax.text = Strings.t("city.hud_tax", {"n": CityTax.amount(_state, _pc.race_id), "month": CityTax.due_month(_state)})
 	_name.text = Strings.t("city.vitals_name", {"name": _pc.display_name, "level": _pc.get_level()})
 	var hp := _pc.pool.get_current("hp")
 	var hp_max := _pc.pool.get_max("hp")

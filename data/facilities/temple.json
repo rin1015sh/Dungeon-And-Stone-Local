@@ -7,7 +7,8 @@
   "interior": "res://assets/city/interiors/temple.webp",
   "activities": [
     "temple_remove_essence",
-    "temple_service"
+    "temple_service",
+    "temple_talk"
   ],
   "shows": [
     "temple_merit"

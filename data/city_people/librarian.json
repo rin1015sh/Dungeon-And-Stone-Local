@@ -1,0 +1,71 @@
+{
+  "id": "librarian",
+  "name_ko": "사서",
+  "facility": "library",
+  "gain": {
+    "library_read": 1,
+    "library_rare": 1,
+    "library_archive": 1
+  },
+  "stages": [
+    {
+      "at": 2,
+      "scene": "city.people.librarian.s1"
+    },
+    {
+      "at": 6,
+      "scene": "city.people.librarian.s2",
+      "perks": {
+        "discount": {
+          "library_read": 0.5
+        }
+      }
+    },
+    {
+      "at": 12,
+      "scene": "city.people.librarian.s3",
+      "check": {
+        "stat": "int",
+        "min": 10,
+        "pass": {
+          "scene": "city.people.librarian.s3_pass",
+          "effects": [
+            {
+              "type": "stat_chance",
+              "stats": [
+                "int"
+              ],
+              "pick": "all",
+              "chance": 1.0,
+              "amount": 1
+            }
+          ]
+        },
+        "fail": {
+          "scene": "city.people.librarian.s3_fail"
+        }
+      }
+    },
+    {
+      "at": 20,
+      "min_renown": 1,
+      "scene": "city.people.librarian.s4",
+      "perks": {
+        "unlock": [
+          "library_archive"
+        ]
+      }
+    },
+    {
+      "at": 30,
+      "min_renown": 2,
+      "scene": "city.people.librarian.s5",
+      "perks": {
+        "discount": {
+          "library_archive": 0.5
+        }
+      }
+    }
+  ],
+  "source": "original"
+}

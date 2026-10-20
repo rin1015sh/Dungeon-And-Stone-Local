@@ -27,6 +27,17 @@ var weather: String = ""
 var expedition_month: int = 0
 ## 지금 들어가 있는 시설 id(거리면 "").
 var facility: String = ""
+## 이번 순의 오늘의 거리 사건 id(CityHappenings) · 한 판에 한 번인 사건 중 이미 나온 것.
+var happenings: Array[String] = []
+var seen_once: Array[String] = []
+## 명성 점수(CityRenown) · 인연 점수·열린 단계·판정 결과("사람:단계" → 통과)(CityBonds) · 세금을 낸 마지막 연차(CityTax).
+var renown: int = 0
+var bonds: Dictionary = {}
+var bond_stage: Dictionary = {}
+var bond_checks: Dictionary = {}
+var tax_paid_year: int = 0
+## 도시 화면이 열릴 때 보여 줄 장면 문자열 키(귀환 장면 — 저장하지 않는다).
+var pending_lines: Array[String] = []
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
 var overrides: Dictionary = {}
 
@@ -44,6 +55,7 @@ func start() -> void:
 	ap = ap_per_period()
 	facility = ""
 	roll_weather()
+	CityHappenings.roll(self)
 	changed.emit()
 
 
@@ -133,6 +145,7 @@ func next_period() -> void:
 func _begin_period() -> void:
 	ap = ap_per_period()
 	roll_weather()
+	CityHappenings.roll(self)
 	var rate := CityValues.num(CityValues.city_section(db, overrides, "bank"), "interest_per_period")
 	if rate > 0.0 and bank_balance > 0:
 		bank_balance += floori(bank_balance * rate)
@@ -189,9 +202,11 @@ func is_last_period() -> bool:
 	return period >= periods().size() - 1
 
 
-## 미궁에서 돌아왔다: return_date_rule next_month_early면 다음 달 상순(그 밖이면 날짜 그대로), 행동력을 새로 채운다.
-func return_from_dungeon() -> void:
+## 미궁에서 돌아왔다: 원정에서 한 일(deeds — CityRenown)로 명성을 결산하고,
+## return_date_rule next_month_early면 다음 달 상순(그 밖이면 날짜 그대로), 행동력을 새로 채운다.
+func return_from_dungeon(deeds: Dictionary = {}) -> void:
 	facility = ""
+	CityRenown.settle(self, deeds)
 	if _calendar_rule("return_date_rule") == "next_month_early":
 		period = 0
 		month += 1
@@ -240,10 +255,12 @@ func learn_info(id: String) -> bool:
 	return true
 
 
-## 저장 대상(저장 기능이 생기면 쓴다): 날짜·행동력·공적치·잔액·얻은 소문/정보. 디버그 임시값은 넣지 않는다.
+## 저장 대상: 날짜·행동력·공적치·잔액·얻은 소문/정보·오늘의 거리·명성·인연·세금. 디버그 임시값은 넣지 않는다.
 func to_dict() -> Dictionary:
 	return {"month": month, "period": period, "ap": ap, "temple_merit": temple_merit,
-		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "expedition_month": expedition_month, "rng": rng.get_state_string()}
+		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "expedition_month": expedition_month, "rng": rng.get_state_string(),
+		"happenings": happenings.duplicate(), "seen_once": seen_once.duplicate(), "renown": renown,
+		"bonds": bonds.duplicate(), "bond_stage": bond_stage.duplicate(), "bond_checks": bond_checks.duplicate(), "tax_paid_year": tax_paid_year}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -259,5 +276,15 @@ func load_dict(d: Dictionary) -> void:
 	expedition_month = JsonUtil.get_int(d, "expedition_month")
 	if d.has("rng"):
 		rng.set_state_string(JsonUtil.get_str(d, "rng"))
+	if d.has("happenings"):
+		happenings.assign(JsonUtil.get_array(d, "happenings").map(func(v: Variant) -> String: return str(v)))
+	seen_once.assign(JsonUtil.get_array(d, "seen_once").map(func(v: Variant) -> String: return str(v)))
+	renown = JsonUtil.get_int(d, "renown")
+	tax_paid_year = JsonUtil.get_int(d, "tax_paid_year")
+	bonds = JsonUtil.get_dict(d, "bonds").duplicate()
+	bond_checks = JsonUtil.get_dict(d, "bond_checks").duplicate()
+	bond_stage.clear()
+	for k: Variant in JsonUtil.get_dict(d, "bond_stage"):
+		bond_stage[str(k)] = int(JsonUtil.get_dict(d, "bond_stage")[k])
 	facility = ""
 	changed.emit()

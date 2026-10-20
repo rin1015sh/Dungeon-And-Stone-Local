@@ -4,6 +4,7 @@ extends Control
 ##   레이어(data/city.json street.layers): 하늘·원경·중경·안개는 시차(parallax)로 천천히 움직이는 실제 도시 풍경(고를 수 없음),
 ##   날씨(CityState.weather — city.json weather)에 따라 하늘 그림을 바꾸고 나머지 레이어·건물에 색을 곱한다(맑음 = 밝게).
 ##   거리 레이어 위에 시설 건물(고를 수 있음 — 화면 가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
+##   이번 순 오늘의 거리 사건이 걸린 건물(CityHappenings.lit)은 등롱 불빛이 켜져 일렁인다(글로 알리지 않는다 — UI19).
 ##   키보드만(사용자 결정 2026-10-19): A/D·←/→ 스크롤, 화면 가운데 건물을 Enter/F로 들어간다.
 ## 좌표는 거리 단위(화면 높이 render.json city.street_height 기준) — 화면 높이에 맞춰 확대·축소한다.
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
@@ -25,6 +26,8 @@ var _scale: float = 1.0
 var _street_w: float = 3600.0
 var _focus: int = -1
 var _outline_tex: float = 3.0  # 윤곽 두께(그림 픽셀)
+var _glow_tex: GradientTexture2D
+var _time: float = 0.0
 
 
 func setup(state: CityState) -> void:
@@ -82,6 +85,16 @@ func _add_building(id: String) -> void:
 	mat.set_shader_parameter("outline_color", UiTheme.render_color("city.selected_outline", UiTheme.color("gold")))
 	art.material = mat
 	_content.add_child(art)
+	var glow := TextureRect.new()
+	glow.texture = _glow()
+	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	glow.stretch_mode = TextureRect.STRETCH_SCALE
+	var add := CanvasItemMaterial.new()
+	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.material = add
+	glow.visible = false
+	_content.add_child(glow)
 	var k := UiTheme.render_float("city.building_scale", 0.85)
 	var size_u := Vector2(art.texture.get_size()) * k if art.texture != null else FALLBACK_SIZE
 	var plate := PanelContainer.new()
@@ -90,8 +103,25 @@ func _add_building(id: String) -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	plate.add_child(label)
 	add_child(plate)  # 이름판은 비네트보다 앞
-	_buildings.append({"id": id, "node": art, "plate": plate, "label": label,
+	_buildings.append({"id": id, "node": art, "glow": glow, "plate": plate, "label": label,
 		"x": float(JsonUtil.get_int(f, "x")), "w": size_u.x, "h": size_u.y})
+
+
+## 등롱 불빛(둥근 그러데이션 — 가운데 render.json city.happening_glow, 가장자리 투명).
+func _glow() -> GradientTexture2D:
+	if _glow_tex == null:
+		var g := Gradient.new()
+		var c := UiTheme.render_color("city.happening_glow", Color(1.0, 0.72, 0.35, 0.8))
+		g.set_color(0, c)
+		g.set_color(1, Color(c.r, c.g * 0.6, c.b * 0.4, 0.0))
+		_glow_tex = GradientTexture2D.new()
+		_glow_tex.gradient = g
+		_glow_tex.fill = GradientTexture2D.FILL_RADIAL
+		_glow_tex.fill_from = Vector2(0.5, 0.5)
+		_glow_tex.fill_to = Vector2(1.0, 0.5)
+		_glow_tex.width = 128
+		_glow_tex.height = 128
+	return _glow_tex
 
 
 func _tex(path: String) -> Texture2D:
@@ -114,6 +144,11 @@ func _layout() -> void:
 		var node: TextureRect = b["node"]
 		node.position = Vector2(float(b["x"]), baseline - float(b["h"])) * _scale
 		node.size = Vector2(float(b["w"]), float(b["h"])) * _scale
+		var gs := UiTheme.render_float("city.happening_glow_px", 170.0)
+		var gy := UiTheme.render_float("city.happening_glow_y", 0.42)
+		var glow: TextureRect = b["glow"]
+		glow.size = Vector2(gs, gs) * _scale
+		glow.position = Vector2(float(b["x"]) + float(b["w"]) / 2.0 - gs / 2.0, baseline - float(b["h"]) * gy - gs / 2.0) * _scale
 	_outline_tex = UiTheme.render_float("city.outline_px", 3.0) / maxf(0.01, _scale * UiTheme.render_float("city.building_scale", 0.85))
 	scroll_to(_offset)
 	refresh()
@@ -165,6 +200,7 @@ func refresh() -> void:
 		mat.set_shader_parameter("brighten", UiTheme.render_float("city.hover_brighten", 0.15) if lit and can else 0.0)
 		mat.set_shader_parameter("dim", UiTheme.render_float("city.dim_unaffordable", 0.35) if not can else 0.0)
 		mat.set_shader_parameter("outline", _outline_tex if lit and can else 0.0)
+		(b["glow"] as TextureRect).visible = CityHappenings.lit(_state, str(b["id"]))
 		var plate: PanelContainer = b["plate"]
 		plate.add_theme_stylebox_override("panel", CityUi.plate_box(lit and can))
 		(b["label"] as Label).add_theme_color_override("font_color", UiTheme.color("text_title" if can else "text_disabled"))
@@ -229,6 +265,12 @@ func _update_focus() -> void:
 
 
 func _process(delta: float) -> void:
+	_time += delta
+	var fl := UiTheme.render_float("city.happening_flicker", 0.15)
+	for b in _buildings:
+		var glow: TextureRect = b["glow"]
+		if glow.visible:
+			glow.modulate.a = 1.0 - fl * (0.5 + 0.5 * sin(_time * 7.0 + float(b["x"])) * sin(_time * 2.3))
 	if not is_visible_in_tree() or get_viewport().gui_get_focus_owner() != null:  # 디버그 패널 등을 키로 다루는 중
 		return
 	var dir := Input.get_axis("move_left", "move_right")

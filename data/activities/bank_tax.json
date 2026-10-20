@@ -1,0 +1,12 @@
+{
+  "id": "bank_tax",
+  "name_ko": "세금 납부",
+  "facility": "bank",
+  "cost_stones": 0,
+  "effects": [
+    {
+      "type": "pay_tax"
+    }
+  ],
+  "source": "placeholder"
+}

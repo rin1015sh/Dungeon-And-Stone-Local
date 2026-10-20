@@ -1,0 +1,16 @@
+{
+  "id": "shop_backroom",
+  "name_ko": "뒷방 물건",
+  "facility": "shop",
+  "cost_stones": 0,
+  "extra": true,
+  "panel": "shop",
+  "stock": [
+    "torch_stub",
+    "bone_amulet",
+    "copper_ring",
+    "gnome_trinket"
+  ],
+  "effects": [],
+  "source": "placeholder"
+}

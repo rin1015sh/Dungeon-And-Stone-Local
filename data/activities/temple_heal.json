@@ -1,0 +1,22 @@
+{
+  "id": "temple_heal",
+  "name_ko": "치유 기도",
+  "facility": "temple",
+  "cost_stones": 0,
+  "extra": true,
+  "effects": [
+    {
+      "type": "restore",
+      "resources": {
+        "hp": 1.0,
+        "soul": 1.0
+      }
+    },
+    {
+      "type": "fatigue",
+      "direction": "down",
+      "amount": 10
+    }
+  ],
+  "source": "placeholder"
+}

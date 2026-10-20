@@ -1,0 +1,20 @@
+{
+  "id": "inn_feast",
+  "name_ko": "특식",
+  "facility": "inn",
+  "cost_stones": 60,
+  "extra": true,
+  "effects": [
+    {
+      "type": "fatigue",
+      "direction": "down",
+      "amount": 30
+    },
+    {
+      "type": "give_item",
+      "item": "leftovers",
+      "count": 2
+    }
+  ],
+  "source": "placeholder"
+}

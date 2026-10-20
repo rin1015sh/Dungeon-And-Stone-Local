@@ -9,6 +9,7 @@ extends Control
 
 signal dungeon_requested
 signal title_requested
+signal executed  ## 세금을 못 내고 기한을 넘겼다 — 처형(사망과 같다, CityTax)
 
 var state: CityState
 var pc: PlayerCharacter
@@ -66,7 +67,15 @@ func _ready() -> void:
 	_debug.offset_right = m + UiTheme.render_float("city.debug_width", 420.0)
 	_debug.offset_top = UiTheme.render_float("city.hud_height", 104.0) + m
 	state.expedition_due.connect(_on_expedition_due)
+	show_pending()
 	state.advance_if_spent.call_deferred()  # 행동력이 0인 채로 왔으면 바로 다음 순(하순이면 미궁으로)
+
+
+## 귀환 장면(명성 — CityRenown이 남긴 문구)을 대화창에 띄우고 비운다.
+func show_pending() -> void:
+	for key in state.pending_lines:
+		say(Strings.t(key))
+	state.pending_lines.clear()
 
 
 func street() -> CityStreet:
@@ -117,8 +126,17 @@ func leave_facility() -> void:
 	_street.refresh()
 
 
-## 하순이 끝났다: 미궁으로 떠난다(미궁 기록 첫 줄에 남긴다).
+## 하순이 끝났다: 미궁으로 떠난다(미궁 기록 첫 줄에 남긴다). 세금 기한을 넘겼으면 처형 장면을 넘긴 뒤 끝(CityTax).
 func _on_expedition_due() -> void:
+	if CityTax.overdue(state, pc.race_id):
+		var n := 0
+		while Strings.has("city.tax_execution.%d" % (n + 1)):
+			n += 1
+			say(Strings.t("city.tax_execution.%d" % n), "warn")
+		await _dialog.wait()
+		if is_inside_tree():
+			executed.emit()
+		return
 	LogPanel.history.append({"text": Strings.t("city.expedition_auto", {"date": CityHud.date_text(state)}), "kind": "info"})
 	dungeon_requested.emit()
 

@@ -1,0 +1,19 @@
+{
+  "id": "temple_feast",
+  "name_ko": "축일 미사",
+  "facility": "temple",
+  "cost_stones": 0,
+  "extra": true,
+  "effects": [
+    {
+      "type": "temple_merit",
+      "amount": 25
+    },
+    {
+      "type": "fatigue",
+      "direction": "down",
+      "amount": 10
+    }
+  ],
+  "source": "placeholder"
+}

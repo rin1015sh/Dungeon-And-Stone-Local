@@ -1,0 +1,16 @@
+{
+  "id": "adventurers",
+  "name_ko": "모험가 무리",
+  "facility": "inn",
+  "weight": 1,
+  "when": {
+    "min_renown": 1,
+    "periods": [
+      "late"
+    ]
+  },
+  "activities": [
+    "inn_drinks"
+  ],
+  "source": "placeholder"
+}
