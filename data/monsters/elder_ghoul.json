@@ -77,7 +77,6 @@
     "elder_rot_claw"
   ],
   "desc_ko": "보통 구울의 두 배쯤 되는 몸집.",
-  "sprite": "res://assets/sprites/monsters/elder_ghoul.png",
   "source": "original",
   "drops": []
 }

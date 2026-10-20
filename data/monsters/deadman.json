@@ -84,7 +84,6 @@
   ],
   "lineage": "deadman",
   "desc_ko": "걸어 다니는 시체. 물어뜯고 붙잡는다.",
-  "sprite": "res://assets/sprites/monsters/deadman.png",
   "source": "original",
   "notes": "명세 §9"
 }

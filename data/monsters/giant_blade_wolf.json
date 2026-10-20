@@ -79,7 +79,6 @@
     }
   ],
   "desc_ko": "보통 칼날늑대보다 훨씬 큰 놈. 털이 갑옷처럼 두껍다.",
-  "sprite": "res://assets/sprites/monsters/giant_blade_wolf.png",
   "source": "placeholder",
   "drops": []
 }

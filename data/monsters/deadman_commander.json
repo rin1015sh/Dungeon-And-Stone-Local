@@ -88,7 +88,6 @@
   ],
   "lineage": "deadman",
   "desc_ko": "조금 큰 체구의 데드맨. 뿔피리를 지녔다.",
-  "sprite": "res://assets/sprites/monsters/deadman_commander.png",
   "source": "original",
   "notes": "명세 §9"
 }

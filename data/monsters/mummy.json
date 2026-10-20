@@ -80,7 +80,6 @@
   ],
   "lineage": "mummy",
   "desc_ko": "누런 붕대로 감긴 시체.",
-  "sprite": "res://assets/sprites/monsters/mummy.png",
   "source": "original",
   "notes": "명세 §12"
 }

@@ -100,7 +100,11 @@ func _build_details() -> Control:
 		var inert := def != null and not def.implemented
 		_stat(grid, DataNames.entry(db, "stats", id) + (Strings.t("character.inert_mark") if inert else ""), v, bonus)
 		shown += 1
-	box.add_child(grid if shown > 0 else UiTheme.label(Strings.t("character.none"), "small", "text_dim"))
+	if shown > 0:
+		box.add_child(grid)
+	else:
+		grid.free()  # 트리에 붙지 않은 노드는 저절로 지워지지 않는다(종료 시 누수 경고였다)
+		box.add_child(UiTheme.label(Strings.t("character.none"), "small", "text_dim"))
 	if not pc.boons.is_empty():
 		box.add_child(UiTheme.label(Strings.t("character.boons"), "body", "text_title"))
 		for k: String in pc.boons:  # 키 = "<아이템 key>@<스탯>"

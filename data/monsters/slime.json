@@ -81,7 +81,6 @@
   ],
   "lineage": "slime",
   "desc_ko": "초록 점액 덩어리. 반쯤 다치면 둘로 갈라진다.",
-  "sprite": "res://assets/sprites/monsters/slime.png",
   "source": "original",
   "notes": "명세 §11 · 조정(GM5): 명세 근력 4 → 7(formula_check 9등급 평타 목표 ~15 ±40%)"
 }

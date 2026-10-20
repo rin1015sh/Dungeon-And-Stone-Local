@@ -83,7 +83,6 @@
     "eye_ray"
   ],
   "desc_ko": "묘를 감시하며 떠다니는 커다란 눈.",
-  "sprite": "res://assets/sprites/monsters/guardian_eye.png",
   "source": "original",
   "notes": "명세 §12 이름 [원] / 나머지 [창]"
 }

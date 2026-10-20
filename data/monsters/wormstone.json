@@ -87,7 +87,6 @@
     }
   ],
   "desc_ko": "바위 껍질을 두른 커다란 벌레. 얼음 틈에 숨어 있다 튀어나온다.",
-  "sprite": "res://assets/sprites/monsters/wormstone.png",
   "source": "original",
   "notes": "명세 §10"
 }

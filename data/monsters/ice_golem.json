@@ -87,7 +87,6 @@
     "golem_ice_fist"
   ],
   "desc_ko": "얼음으로 빚은 거인. 곁에 있으면 몸이 점점 굳는다.",
-  "sprite": "res://assets/sprites/monsters/ice_golem.png",
   "source": "original",
   "notes": "명세 §10"
 }

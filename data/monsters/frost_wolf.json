@@ -98,7 +98,6 @@
   ],
   "lineage": "wolf",
   "desc_ko": "흰 털에 서리가 낀 늑대. 균열을 빼면 6층에서야 만난다.",
-  "sprite": "res://assets/sprites/monsters/frost_wolf.png",
   "source": "original",
   "notes": "명세 §10"
 }

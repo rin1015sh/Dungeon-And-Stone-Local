@@ -96,7 +96,6 @@
   ],
   "lineage": "slime",
   "desc_ko": "광석 조각이 잔뜩 박힌 슬라임.",
-  "sprite": "res://assets/sprites/monsters/mineral_slime.png",
   "source": "original",
   "notes": "명세 §11"
 }

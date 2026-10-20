@@ -87,7 +87,6 @@
     }
   ],
   "desc_ko": "부엉이 머리에 곰의 몸. 빙하굴 개체는 털빛이 옅다.",
-  "sprite": "res://assets/sprites/monsters/owlbear.png",
   "source": "original",
   "notes": "명세 §10"
 }

@@ -93,7 +93,6 @@
     "copper_fist"
   ],
   "desc_ko": "구리로 만든 골렘. 달아오르면 더 세게 친다.",
-  "sprite": "res://assets/sprites/monsters/copper_golem.png",
   "source": "original",
   "notes": "명세 §11 · 시뮬레이터 조정(GM5): 명세 생명력 280·근 20 → 360·26 · 5인 정규 파티에 맞춤(2026-10-19, J16): 생명력 360→540, 근력 26→31"
 }

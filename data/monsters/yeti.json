@@ -86,7 +86,6 @@
   ],
   "lineage": "yeti",
   "desc_ko": "흰 털로 뒤덮인 거인. 빙하굴 입구를 지키는 문지기.",
-  "sprite": "res://assets/sprites/monsters/yeti.png",
   "source": "original",
   "notes": "명세 §10"
 }

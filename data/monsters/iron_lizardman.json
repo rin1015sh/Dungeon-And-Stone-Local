@@ -86,7 +86,6 @@
   ],
   "lineage": "lizardman",
   "desc_ko": "강철 비늘의 리자드맨. 삼지창과 꼬리를 쓴다.",
-  "sprite": "res://assets/sprites/monsters/iron_lizardman.png",
   "source": "original",
   "notes": "명세 §12 · 시뮬레이터 조정(GI5): 명세 생명력 240 → 410 · 5인 정규 파티에 맞춤(2026-10-19, J16): 생명력 410→660, 근력 22→28"
 }

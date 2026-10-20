@@ -92,7 +92,6 @@
   ],
   "lineage": "ghoul",
   "desc_ko": "엘더 구울을 서른 마리씩 데리고 다닌다.",
-  "sprite": "res://assets/sprites/monsters/ghoul_lord.png",
   "source": "original",
   "notes": "명세 §9"
 }

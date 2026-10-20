@@ -22,7 +22,6 @@
   "tags": [
     "potion"
   ],
-  "sprite": "res://assets/sprites/items/minor_potion.png",
   "source": "placeholder",
   "size": [
     1,

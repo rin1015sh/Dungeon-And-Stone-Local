@@ -90,7 +90,6 @@
   ],
   "lineage": "ice_orc",
   "desc_ko": "얼음 지팡이를 든 오크. 동료 앞에 강철 같은 얼음벽을 세운다.",
-  "sprite": "res://assets/sprites/monsters/ice_orc_shaman.png",
   "source": "original",
   "notes": "명세 §10 · 5인 정규 파티에 맞춤(2026-10-19, J16): 생명력 200→350, 근력 12→16"
 }

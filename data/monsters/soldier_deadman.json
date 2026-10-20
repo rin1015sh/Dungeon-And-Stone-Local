@@ -75,7 +75,6 @@
   ],
   "lineage": "deadman",
   "desc_ko": "녹슨 갑옷을 걸친 데드맨.",
-  "sprite": "res://assets/sprites/monsters/soldier_deadman.png",
   "source": "original",
   "notes": "명세 §9"
 }

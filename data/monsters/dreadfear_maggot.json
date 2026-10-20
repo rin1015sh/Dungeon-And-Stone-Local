@@ -66,7 +66,6 @@
     "maggot_crawl_bite"
   ],
   "desc_ko": "드레드피어의 몸에서 떨어져 나온 엄지손가락만 한 구더기. 들러붙어 공포를 옮긴다.",
-  "sprite": "res://assets/sprites/monsters/dreadfear_maggot.png",
   "source": "original",
   "notes": "명세 §7.5 토큰 — 경험치·드롭 없음"
 }

@@ -67,7 +67,6 @@
     "ghoul_pounce"
   ],
   "desc_ko": "썩은 살갗에 긴 손톱, 네 발로 긴다. 가까이 가기 전에는 먼저 덤비지 않고, 늘 같은 순서로 할퀸다.",
-  "sprite": "res://assets/sprites/monsters/ghoul.png",
   "source": "original",
   "drops": [
     {

@@ -103,7 +103,6 @@
     }
   ],
   "desc_ko": "검은 피부의 거대한 트롤. 오우거의 휘두르기를 쓴다.",
-  "sprite": "res://assets/sprites/monsters/kirdui.png",
   "source": "original",
   "notes": "명세 §10 변종 수호자 3%. 권장 파티로는 사실상 이길 수 없다"
 }

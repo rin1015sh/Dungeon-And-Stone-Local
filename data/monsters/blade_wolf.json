@@ -92,7 +92,6 @@
     }
   ],
   "desc_ko": "칼날 같은 털을 세운 늑대. 무리 지어 약한 쪽부터 문다.",
-  "sprite": "res://assets/sprites/monsters/blade_wolf.png",
   "source": "original",
   "drops": []
 }

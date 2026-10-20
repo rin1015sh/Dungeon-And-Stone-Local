@@ -77,7 +77,6 @@
     "banshee_wail"
   ],
   "desc_ko": "흐느끼는 영체. 거의 먼저 덤비지 않는다.",
-  "sprite": "res://assets/sprites/monsters/banshee.png",
   "source": "original",
   "notes": "명세 §9"
 }

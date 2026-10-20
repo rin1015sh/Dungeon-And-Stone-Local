@@ -115,7 +115,6 @@
     }
   ],
   "desc_ko": "창백한 피부의 흡혈귀 공작. 피로 문신을 새겨 제물로 삼는다. 태양에 약하다.",
-  "sprite": "res://assets/sprites/monsters/kambormir.png",
   "source": "original",
   "notes": "명세 §9 변종 수호자 3%. 권장 파티로는 사실상 이길 수 없다"
 }

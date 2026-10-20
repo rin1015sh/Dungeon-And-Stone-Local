@@ -84,7 +84,6 @@
     "basic_attack"
   ],
   "desc_ko": "3챕터 끝 문 앞의 강철 문지기. 창을 세우고 수수께끼를 낸다.",
-  "sprite": "res://assets/sprites/monsters/riddle_gatekeeper.png",
   "source": "original",
   "notes": "명세 §12 등급은 사용자 지정(7). 이름 [원] / 수수께끼 장치 [창]"
 }

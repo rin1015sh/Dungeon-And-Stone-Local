@@ -94,7 +94,6 @@
     }
   ],
   "desc_ko": "조악한 검을 든 고블린. 그 검은 사람이 쓰기엔 형편없다.",
-  "sprite": "res://assets/sprites/monsters/goblin_swordsman.png",
   "source": "original",
   "drops": []
 }

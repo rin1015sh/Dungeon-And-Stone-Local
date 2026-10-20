@@ -107,7 +107,6 @@
     }
   ],
   "desc_ko": "검게 썩은 진흙으로 빚어진 노움. 저주를 던진다.",
-  "sprite": "res://assets/sprites/monsters/corrupted_gnome.png",
   "source": "placeholder",
   "drops": []
 }

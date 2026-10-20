@@ -90,7 +90,6 @@
     }
   ],
   "desc_ko": "키키키 웃으며 작은 단궁을 쏜다. 화살촉엔 독, 몸에는 은신의 이능.",
-  "sprite": "res://assets/sprites/monsters/goblin_archer.png",
   "source": "original",
   "drops": []
 }

@@ -95,7 +95,6 @@
   "lineage": "skeleton",
   "magic_stone_chance": 0.35,
   "desc_ko": "뼈로 된 활을 쏜다.",
-  "sprite": "res://assets/sprites/monsters/skeleton_archer.png",
   "source": "original",
   "notes": "명세 §9"
 }

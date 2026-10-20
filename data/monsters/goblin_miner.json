@@ -85,7 +85,6 @@
   ],
   "lineage": "goblin",
   "desc_ko": "광부모를 쓰고 곡괭이를 멘 다부진 고블린. 1층 균열에서만 나온다.",
-  "sprite": "res://assets/sprites/monsters/goblin_miner.png",
   "source": "original",
   "notes": "명세 §11"
 }

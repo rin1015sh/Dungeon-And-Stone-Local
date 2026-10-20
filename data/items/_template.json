@@ -14,6 +14,5 @@
   "equip": null,
   "numbers": null,
   "bound": false,
-  "sprite": "res://assets/sprites/items/torch.png",
   "source": "original"
 }

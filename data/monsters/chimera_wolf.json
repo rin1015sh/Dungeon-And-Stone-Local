@@ -86,7 +86,6 @@
     }
   ],
   "desc_ko": "근육이 울퉁불퉁한 돌연변이 늑대. 머리가 서너 개.",
-  "sprite": "res://assets/sprites/monsters/chimera_wolf.png",
   "source": "original",
   "notes": "명세 §9"
 }

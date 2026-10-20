@@ -80,7 +80,6 @@
     }
   ],
   "desc_ko": "긴 송곳니의 큰 고양이. 빙하굴 개체는 털빛이 희다.",
-  "sprite": "res://assets/sprites/monsters/sabertooth.png",
   "source": "original",
   "notes": "명세 §10"
 }

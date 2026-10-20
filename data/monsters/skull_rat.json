@@ -79,7 +79,6 @@
     "rat_gnaw"
   ],
   "desc_ko": "뼈만 남은 쥐.",
-  "sprite": "res://assets/sprites/monsters/skull_rat.png",
   "source": "original",
   "notes": "명세 §9"
 }

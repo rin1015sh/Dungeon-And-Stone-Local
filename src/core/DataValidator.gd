@@ -30,7 +30,8 @@ func validate(p_db: GameDatabase) -> bool:
 	return errors.is_empty()
 
 
-## 모든 컬렉션 공통: name_ko 권장, sprite 경로 형식. 스프라이트 파일이 없으면 경고 한 줄로 모은다.
+## 모든 컬렉션 공통: name_ko 권장, sprite 경로 형식. 스프라이트 파일이 없으면 경고 한 줄로 모은다(sprite는 그 파일을 실제로 쓰는 항목에만 둔다 —
+## 타일 재질 그림(art)·몬스터 손그림(assets/monsters)처럼 다른 그림을 쓰는 항목에 죽은 경로를 남기지 않는다, 2026-10-20 정리).
 func _check_common_fields() -> void:
 	var missing_sprites := 0
 	for col: String in db.collections:
@@ -43,7 +44,7 @@ func _check_common_fields() -> void:
 				var sp := JsonUtil.get_str(e, "sprite")
 				if not sp.begins_with("res://"):
 					err(col + "/" + id, "sprite는 res:// 경로여야 한다")
-				elif not ResourceLoader.exists(sp):
+				elif not ResourceLoader.exists(sp) and JsonUtil.get_bool(e, "enabled", true):  # 꺼진 항목(종족 등)은 켤 때 그림을 넣는다
 					missing_sprites += 1
 	if missing_sprites > 0:
 		warnings.append("스프라이트 파일 없음 %d개 — 임시 그래픽으로 표시된다" % missing_sprites)
