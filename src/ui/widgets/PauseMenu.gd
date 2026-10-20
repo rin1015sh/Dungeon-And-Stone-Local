@@ -1,8 +1,8 @@
 class_name PauseMenu
 extends CenterContainer
-## 일시정지 메뉴(탐험 화면 위): [계속] · [그래픽 높음/낮음] · [탐험 포기]. 떠 있는 동안 아래 화면의 마우스 입력을 막는다.
+## 일시정지 메뉴(탐험 화면 위): [계속] · [그래픽 높음/낮음] · [탐험 포기].
 ## 탐험 포기는 실수로 누르지 않게 한 번 더 눌러야 확정한다(abandon_requested).
-## 키: 열리면 [계속]에 포커스 — 방향키로 옮기고 Enter로 고른다(취소 Backspace = 계속은 ExploreScreen이 받는다).
+## 키: 열리면 [계속]에 포커스 — W/S(방향키)로 옮기고 Enter로 고른다(취소 Backspace = 계속은 ExploreScreen이 받는다).
 
 signal resume_requested
 signal abandon_requested
@@ -16,7 +16,6 @@ var _armed: bool = false
 
 func _init() -> void:
 	visible = false
-	mouse_filter = Control.MOUSE_FILTER_STOP  # 정지 중 하단 바·단축칸 클릭이 새어 나가지 않게
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", UiTheme.translucent_panel())
 	add_child(panel)

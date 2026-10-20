@@ -7,10 +7,14 @@
   "passive": {
     "id": "wolf_thick_bladefur",
     "name_ko": "두꺼운 칼날털",
-    "desc_ko": "가까이서 때린 상대가 조금 베인다.",
+    "desc_ko": "가까이서 때린 상대가 칼날털에 베여 피를 흘린다.",
     "reflect_melee": 0.075,
     "implemented": true,
-    "notes": "×0.5"
+    "notes": "×0.5 · 정수 재기획 2단계 2026-10-19(J17)",
+    "reflect_status": {
+      "status": "bleeding",
+      "chance": 0.25
+    }
   },
   "actives": [
     {
@@ -26,19 +30,13 @@
       "skill": "ess_giant_menacing_roar"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      2,
-      3
-    ],
-    "p_res": [
-      1,
-      3
-    ],
-    "int": [
-      2,
-      4
-    ]
+  "stats": {
+    "str": 4,
+    "p_res": 4,
+    "int": 5
+  },
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.7. 빨강 = 물어뜯기(칼날늑대와 공유)"

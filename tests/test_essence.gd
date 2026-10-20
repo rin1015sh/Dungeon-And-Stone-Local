@@ -43,7 +43,7 @@ func test_shared_skill_conflicts_across_essences() -> void:
 	d.load_all("res://data")
 	d.put_entry("essences", {"id": "fake_elder", "name_ko": "가짜", "grade": 9,
 		"passive": {"id": "fake_passive", "name_ko": "가짜", "modifiers": []},
-		"actives": [{"color": "gray", "skill": "ess_ghoul_claw"}], "stat_ranges": {}})
+		"actives": [{"color": "gray", "skill": "ess_ghoul_claw"}], "stats": {}})
 	var pc := PlayerCharacter.create(d, "human", "warrior", "시험", {"str": 10})
 	pc.set_level(3)
 	assert_eq(pc.essences.absorb(pc, _inst("ghoul", "red")), "")
@@ -61,11 +61,34 @@ func test_guardian_essence_has_all_actives_and_upgrades() -> void:
 	assert_eq(pc.essences.absorb(pc, g), "", "같은 정수 일반 → 수호자 업그레이드")
 	assert_eq(pc.essences.absorbed.size(), 1, "자리를 바꾼다")
 	assert_true(pc.skills.has("ess_goblin_trap") and pc.skills.has("ess_goblin_sand"))
-	var r := Rng.new(5)
-	var normal := EssenceDrop.roll_stats(db, {"stat_ranges": {"agi": [10, 10]}}, r)
-	var boosted := EssenceDrop.roll_stats(db, {"stat_ranges": {"agi": [10, 10]}}, r, true)
-	assert_eq(int(normal["agi"]), 10)
-	assert_eq(int(boosted["agi"]), 15, "스탯 × 1.5")
+	assert_eq(int(EssenceDrop.values(db, {"agi": 10})["agi"]), 10)
+	assert_eq(int(EssenceDrop.values(db, {"agi": 10}, true)["agi"]), 15, "스탯 × 1.5")
+	assert_eq(int(EssenceDrop.values(db, {"hp": 10}, true)["hp"]), 15, "생명력도 × 1.5")
+	var a := EssenceDrop.make(db, "goblin", "red", Rng.new(1))
+	var b := EssenceDrop.make(db, "goblin", "red", Rng.new(99))
+	assert_eq(a["stats"], b["stats"], "같은 정수는 언제나 같은 스탯(고정값 — J13)")
+	assert_eq(a["stats"], EssenceDrop.values(db, JsonUtil.get_dict(db.get_entry("essences", "goblin"), "stats")), "데이터의 stats 그대로")
+
+
+func test_essence_raises_max_hp_and_removal_takes_it_back() -> void:
+	var pc := _pc()
+	var hp := pc.pool.get_max("hp")
+	var inst := EssenceDrop.make(db, "ghoul", "red", Rng.new(3))
+	var gain := int(JsonUtil.get_dict(inst, "resources").get("hp", 0))
+	assert_eq(gain, int(JsonUtil.get_dict(db.get_entry("essences", "ghoul"), "resources").get("hp", 0)), "생명력은 정수의 고정값")
+	assert_eq(pc.essences.absorb(pc, inst), "")
+	assert_near(pc.pool.get_max("hp"), hp + gain, 0.0001, "흡수하면 최대 생명력이 오른다")
+	pc.essences.remove(pc, 0)
+	assert_near(pc.pool.get_max("hp"), hp, 0.0001, "제거하면 돌아간다")
+
+
+func test_every_essence_gives_hp_and_ranged_less() -> void:
+	var melee := int(JsonUtil.get_dict(db.get_entry("essences", "goblin_swordsman"), "resources").get("hp", 0))
+	var ranged := int(JsonUtil.get_dict(db.get_entry("essences", "goblin_archer"), "resources").get("hp", 0))
+	assert_true(ranged < melee, "같은 9등급이라도 원딜(궁수) 정수는 생명력이 적다")
+	for id: Variant in db.get_collection("essences").keys():
+		var hp := int(JsonUtil.get_dict(db.get_entry("essences", str(id)), "resources").get("hp", 0))
+		assert_true(hp > 0, "%s 정수는 생명력을 준다" % id)
 
 
 func test_remove_detaches_and_delete_cost_doubles() -> void:
@@ -165,8 +188,8 @@ func test_failed_status_skill_reports_no_effect() -> void:
 	var seen := false
 	for seed_value in 40:
 		var pc := _pc()
-		pc.essences.absorb(pc, _inst("guardian_eye", "blue"))
-		assert_true(pc.skills.has("ess_eye_paralysis_gaze"))
+		pc.essences.absorb(pc, _inst("iron_lizardman", "green"))
+		assert_true(pc.skills.has("ess_liz_metal_poison"))
 		var party: Array[Actor] = [pc]
 		var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"], true)
 		var c := b.next_turn()
@@ -175,9 +198,9 @@ func test_failed_status_skill_reports_no_effect() -> void:
 			c = b.next_turn()
 		if c == null:
 			continue
-		b.act(c, {"kind": "skill", "skill": "ess_eye_paralysis_gaze", "target": b.opponents(c)[0]})
+		b.act(c, {"kind": "skill", "skill": "ess_liz_metal_poison", "target": b.opponents(c)[0]})
 		var keys := b.history.map(func(h: Dictionary) -> String: return str(h["key"]))
 		if keys.has("combat.no_effect"):
 			seen = true
 			break
-	assert_true(seen, "마비 시선이 안 걸리면 '아무 효과도 내지 못했다'를 알린다")
+	assert_true(seen, "금속 독이 안 걸리면 '아무 효과도 내지 못했다'를 알린다")

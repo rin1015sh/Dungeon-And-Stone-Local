@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "dust_curse"
+      "status": "blind"
     }
   ],
   "essence_of": "buried_dust_curse",

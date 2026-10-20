@@ -27,19 +27,13 @@
       "skill": "ess_gate_steel_stance"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      3,
-      5
-    ],
-    "m_res": [
-      3,
-      5
-    ],
-    "int": [
-      2,
-      3
-    ]
+  "stats": {
+    "p_res": 10,
+    "m_res": 10,
+    "int": 6
+  },
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §12 정수 패시브는 명세에 없음 → 봉인 면역 [창]"

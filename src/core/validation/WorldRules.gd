@@ -145,3 +145,6 @@ static func _input(v: ValidatorBase) -> void:
 		for key_name: Variant in keys:
 			if OS.find_keycode_from_string(str(key_name)) == KEY_NONE:
 				v.err("input/" + action, "알 수 없는 키 이름 '%s'" % key_name)
+	for action: Variant in JsonUtil.get_array(JsonUtil.get_dict(v.db.singletons, "input"), "unbind"):
+		if actions.has(str(action)):
+			v.err("input/unbind", "'%s'는 actions에도 있다" % action)

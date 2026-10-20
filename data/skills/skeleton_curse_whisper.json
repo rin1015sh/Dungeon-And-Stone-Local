@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "curse_whisper"
+      "status": "curse"
     }
   ],
   "source": "placeholder"

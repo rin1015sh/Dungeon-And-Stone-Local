@@ -38,15 +38,12 @@
       "skill": "ess_ild_reassemble"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      9,
-      15
-    ],
-    "str": [
-      4,
-      6
-    ]
+  "stats": {
+    "p_res": 24,
+    "str": 10
+  },
+  "resources": {
+    "hp": 31
   },
   "source": "placeholder",
   "notes": "명세 §12 수호자 정수(무지갯빛) — 액티브 전부"

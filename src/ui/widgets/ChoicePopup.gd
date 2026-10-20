@@ -1,8 +1,8 @@
 class_name ChoicePopup
 extends Control
 ## 작은 선택 창(사용자 결정 2026-10-16 — 획득할까? · 누가 받을까?): 질문 한 줄 + 세로 선택지(ChoiceGrid 1열).
-## 키: W/S(menu_up/down) 커서, Enter(menu_confirm) 고르기, Backspace(menu_back)는 can_back일 때만 뒤로(-1). 마우스도 된다.
-## 떠 있는 동안 아래 화면의 마우스 입력을 막는다. 선택지: {"text", "sub", "enabled", "desc"(못 고르는 이유)}.
+## 키: W/S(menu_up/down) 커서, Enter(menu_confirm) 고르기, Backspace(menu_back)는 can_back일 때만 뒤로(-1).
+## 선택지: {"text", "sub", "enabled", "desc"(못 고르는 이유)}.
 ##   var i: int = await ChoicePopup.ask(parent, "질문", options, can_back, 가리킬 자리)
 
 signal picked(index: int)
@@ -24,7 +24,7 @@ static func ask(parent: Control, title: String, options: Array[Dictionary], can_
 
 
 func open(title: String, options: Array[Dictionary], can_back: bool, near: Vector2) -> void:
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_panel = PanelContainer.new()
 	_panel.add_theme_stylebox_override("panel", UiTheme.translucent_panel())
 	add_child(_panel)

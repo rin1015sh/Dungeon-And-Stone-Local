@@ -10,8 +10,14 @@
       "type": "apply_status",
       "status": "hidden",
       "duration": 1
+    },
+    {
+      "type": "gauge",
+      "amount": 30,
+      "to": "self"
     }
   ],
   "essence_of": "rat_hide",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "owl_hoot"
+      "status": "blind"
     }
   ],
   "source": "placeholder"

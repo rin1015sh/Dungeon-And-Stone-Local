@@ -10,9 +10,14 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "hardened"
+      "status": "iron_wall"
+    },
+    {
+      "type": "apply_status",
+      "status": "taunt"
     }
   ],
   "essence_of": "gnome_harden",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

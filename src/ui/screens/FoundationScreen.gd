@@ -33,6 +33,7 @@ func _ready() -> void:
 	_build_ui()
 	_log("log.welcome", {}, "system")
 	_new_character()
+	UiTheme.focus_first.call_deferred(self)  # 키보드만: 첫 버튼부터 W/A/S/D·Enter
 
 
 # ── 화면 구성 ──────────────────────────────────────────────

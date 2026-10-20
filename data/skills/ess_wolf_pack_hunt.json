@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "pack_hunt"
+      "status": "rally"
     }
   ],
   "essence_of": "wolf_pack_hunt",

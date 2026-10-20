@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "steel_stance"
+      "status": "iron_wall"
     }
   ],
   "source": "placeholder"

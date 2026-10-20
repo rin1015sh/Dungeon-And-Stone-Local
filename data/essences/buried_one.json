@@ -24,15 +24,12 @@
       "skill": "ess_buried_dust_curse"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      2,
-      4
-    ],
-    "p_res": [
-      2,
-      4
-    ]
+  "stats": {
+    "str": 9,
+    "p_res": 9
+  },
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §12"

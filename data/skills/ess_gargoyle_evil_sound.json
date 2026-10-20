@@ -17,7 +17,7 @@
     },
     {
       "type": "apply_status",
-      "status": "evil_sound"
+      "status": "daze"
     }
   ],
   "essence_of": "gargoyle_evil_sound",

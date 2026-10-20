@@ -96,8 +96,8 @@ func test_resistances_resist_statuses() -> void:
 func test_removed_stats_moved_to_core() -> void:
 	# 정수 굴림: 옛 세부 스탯은 주 스탯 ×0.5로 들어갔다(본 나이트 골강도 53~57 → 물리내성 27~29 + 지구력 → 물리내성).
 	for id: Variant in db.get_collection("essences").keys():
-		for k: Variant in JsonUtil.get_dict(db.get_entry("essences", str(id)), "stat_ranges"):
-			assert_true(db.stats.has(str(k)), "%s 정수 굴림의 스탯 %s가 있다" % [id, k])
+		for k: Variant in JsonUtil.get_dict(db.get_entry("essences", str(id)), "stats"):
+			assert_true(db.stats.has(str(k)), "%s 정수 스탯 %s가 있다" % [id, k])
 	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 10, "p_res": 5, "m_res": 5, "int": 5})
 	pc.set_level(3)
 	var p0 := pc.stats.get_value("p_res")

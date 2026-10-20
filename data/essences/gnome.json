@@ -39,19 +39,13 @@
       "skill": "ess_gnome_harden"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      2,
-      4
-    ],
-    "m_res": [
-      1,
-      2
-    ],
-    "agi": [
-      2,
-      4
-    ]
+  "stats": {
+    "p_res": 5,
+    "m_res": 3,
+    "agi": 5
+  },
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.9. 일체화는 타락한 노움과 공유"

@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "shaft_shake"
+      "status": "blind"
     }
   ],
   "source": "placeholder"

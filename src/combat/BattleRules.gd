@@ -90,9 +90,35 @@ static func _avg_agi(list: Array[Combatant]) -> float:
 	return s / float(list.size())
 
 
-## 공포(flag may_skip_turn): 차례마다 combat.may_skip_chance 확률로 움직이지 못한다.
+## 대신 맞기(효과 cover → 상태 covered): 적의 단일 대상 공격이 보호받는 아군을 노리면 지키는 사람이 받는다.
+static func apply_cover(b: Battle, c: Combatant, kind: String, targets: Array[Combatant]) -> void:
+	if kind != "enemy_single" or targets.size() != 1:
+		return
+	var t := targets[0]
+	if t.side == c.side or not t.actor.statuses.has("covered"):
+		return
+	var guard := b.unit_of(t.actor.statuses.link("covered"))
+	if guard == null or guard == t or guard.side != t.side or not guard.is_active():
+		return
+	targets[0] = guard
+	b.message.emit("combat.covered_hit", {"protector": guard.label(), "name": t.label()}, "info")
+
+
+## 공포·마비(flag may_skip_turn): 차례마다 그 상태의 skip_chance(없으면 combat.may_skip_chance) 확률로 움직이지 못한다.
+## 여럿이면 가장 높은 확률 하나로 굴린다.
 static func fear_skip(b: Battle, c: Combatant) -> bool:
-	return c.actor.statuses.has_flag("may_skip_turn") and b.rng.chance(float(b.db.bal("combat.may_skip_chance", 0.3)))
+	var best := 0.0
+	for id in c.actor.statuses.ids():
+		var def := b.db.get_entry("statuses", id)
+		if JsonUtil.get_array(def, "flags").has("may_skip_turn"):
+			best = maxf(best, JsonUtil.get_float(def, "skip_chance", float(b.db.bal("combat.may_skip_chance", 0.3))))
+	if best > 0.0:
+		for o in b.opponents(c):  # 상대 패시브 skip_bonus_vs(벤시 원령 — 공포를 더 깊게)
+			for p in o.actor.passives:
+				var sb := JsonUtil.get_dict(p, "skip_bonus_vs")
+				if not sb.is_empty() and c.actor.statuses.has(JsonUtil.get_str(sb, "status")):
+					best += JsonUtil.get_float(sb, "bonus")
+	return best > 0.0 and b.rng.chance(minf(best, 1.0))
 
 
 ## 전투가 끝났다: 게이지·전투 표식·오러를 비우고, 전투 한정 상태(statuses "battle_only": true)와

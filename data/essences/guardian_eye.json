@@ -25,15 +25,12 @@
       "skill": "ess_eye_alarm"
     }
   ],
-  "stat_ranges": {
-    "int": [
-      3,
-      7
-    ],
-    "sight": [
-      4,
-      8
-    ]
+  "stats": {
+    "int": 18,
+    "sight": 9
+  },
+  "resources": {
+    "hp": 8
   },
   "source": "placeholder",
   "notes": "명세 §12"

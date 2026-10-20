@@ -25,15 +25,12 @@
       "skill": "ess_hob_mine_command"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      3,
-      5
-    ],
-    "resist_poison": [
-      3,
-      6
-    ]
+  "stats": {
+    "str": 16,
+    "resist_poison": 7
+  },
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §11 초록 = 독성부여(2층 홉고블린 정수와 중복 관계 [원])"

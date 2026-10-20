@@ -38,11 +38,11 @@
       "skill": "ess_slime_split"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      4,
-      7
-    ]
+  "stats": {
+    "p_res": 18
+  },
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §11 초록 = 분열(슬라임과 공유 → 중복 거부)"

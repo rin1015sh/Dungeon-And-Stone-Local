@@ -30,15 +30,12 @@
       "skill": "ess_orc_war_cry"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      3,
-      5
-    ],
-    "resist_cold": [
-      3,
-      6
-    ]
+  "stats": {
+    "str": 16,
+    "resist_cold": 7
+  },
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §10"

@@ -163,12 +163,22 @@ static func _essences(v: ValidatorBase) -> void:
 		var e := v.db.get_entry("essences", id)
 		var w := "essences/" + id
 		v.check_grade(w, e.get("grade"))
-		v.check_ranges(w, JsonUtil.get_dict(e, "stat_ranges"))
+		var fixed := JsonUtil.get_dict(e, "stats")
+		for k: String in fixed:
+			if not v.db.stats.has(k):
+				v.err(w, "stats '%s' 없는 스탯" % k)
+			elif not JsonUtil.is_number(fixed[k]):
+				v.err(w, "stats '%s' 값은 숫자" % k)
+		if e.has("stat_ranges"):
+			v.err(w, "stat_ranges는 없어졌다 — 고정값 stats를 쓴다(J13)")
 		if e.has("source_monster"):
 			v.ref(w, "monsters", e["source_monster"])
-		for r: String in JsonUtil.get_dict(e, "resource_mods"):
+		var res := JsonUtil.get_dict(e, "resources")
+		for r: String in res:
 			if not v.db.resources.has(r):
-				v.err(w, "resource_mods '%s' 없는 자원" % r)
+				v.err(w, "resources '%s' 없는 자원" % r)
+			elif not JsonUtil.is_number(res[r]):
+				v.err(w, "resources '%s' 값은 숫자" % r)
 		PassiveRules.check(v, w + ".passive", JsonUtil.get_dict(e, "passive"))
 		var actives := JsonUtil.get_array(e, "actives")
 		if actives.is_empty():

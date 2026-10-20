@@ -128,7 +128,10 @@ func preview(n: int) -> Array[Combatant]:
 ## 이미 행동을 기다리는 차례가 있으면 그 차례를 그대로 돌려준다(게이지를 두 번 진행하지 않는다).
 func next_turn() -> Combatant:
 	if phase == PHASE_AWAIT and current != null:
-		return current
+		if current.is_active():
+			return current
+		current = null  # 입력을 기다리던 사람이 그사이 쓰러지거나 빠졌다 — 영영 기다리지 않고 다음 차례로
+		phase = PHASE_IDLE
 	for i in MAX_SKIPS:
 		if not result.is_empty():
 			return null
@@ -195,6 +198,9 @@ func act(c: Combatant, action: Dictionary) -> bool:
 		"flee":
 			try_flee(c)
 	phase = PHASE_TURN_END
+	var hp_before := c.actor.pool.get_current("hp")
+	c.actor.statuses.on_acted()  # 출혈: 움직일수록 흘린다
+	BattleRules.report_dot(self, c, hp_before)
 	c.acted += 1
 	c.was_hit = false
 	timeline.consume(c, delay)
@@ -262,6 +268,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	var kind := JsonUtil.get_str(sk, "target")
 	var fx := BattlePassives.skill_effects(self, c, skill_id, sk)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
+	BattleRules.apply_cover(self, c, kind, targets)  # 대신 맞기
 	var mis := BattleTargets.misdirect(self, c, kind) if not targets.is_empty() else {}
 	if not mis.is_empty():
 		targets.clear()
@@ -269,7 +276,8 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
 	var said := history.size()
-	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id)}  # 대상들이 함께 쓴다(예고 안내 한 번)
+	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
+		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size()}
 	for t in targets:
 		if c.actor.dead:
 			break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다

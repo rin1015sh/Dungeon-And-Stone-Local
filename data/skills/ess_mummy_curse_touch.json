@@ -17,9 +17,14 @@
     },
     {
       "type": "apply_status",
-      "status": "curse_touch"
+      "status": "intimidated"
+    },
+    {
+      "type": "apply_status",
+      "status": "heal_block"
     }
   ],
   "essence_of": "mummy_curse_touch",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2단계 2026-10-19(J17)"
 }

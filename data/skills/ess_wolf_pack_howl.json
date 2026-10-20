@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "pack_howl"
+      "status": "haste"
     }
   ],
   "essence_of": "wolf_pack_howl",

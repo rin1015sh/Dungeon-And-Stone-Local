@@ -26,19 +26,13 @@
       "skill": "ess_bk_soul_slash"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      9,
-      15
-    ],
-    "str": [
-      5,
-      7
-    ],
-    "p_res": [
-      34,
-      38
-    ]
+  "stats": {
+    "agi": 12,
+    "str": 6,
+    "p_res": 36
+  },
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §9 타입이 곧 색 [원]. 신장 −25는 스탯이 없어 뺐다"

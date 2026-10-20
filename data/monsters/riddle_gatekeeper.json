@@ -66,7 +66,7 @@
       "also": [
         {
           "if": "self_status",
-          "status": "steel_stance",
+          "status": "iron_wall",
           "not": true
         }
       ]

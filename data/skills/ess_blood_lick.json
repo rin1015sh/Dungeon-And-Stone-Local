@@ -12,13 +12,22 @@
       "type": "damage",
       "scaling": "phys",
       "power": 0.595,
-      "damage_type": "pierce",
-      "drain_if_status": {
-        "status": "bleeding",
-        "ratio": 0.4
-      }
+      "damage_type": "pierce"
+    },
+    {
+      "type": "consume_status",
+      "status": "bleeding",
+      "damage": {
+        "scaling": "phys",
+        "power": 0.0,
+        "damage_type": "pierce",
+        "accuracy": 1000
+      },
+      "power_per_stack": 0.25,
+      "heal_ratio_per_stack": 0.04
     }
   ],
   "essence_of": "blood_lick",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

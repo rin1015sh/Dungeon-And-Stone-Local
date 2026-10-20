@@ -38,15 +38,12 @@
       "skill": "ess_skeleton_curse_whisper"
     }
   ],
-  "stat_ranges": {
-    "int": [
-      1,
-      3
-    ],
-    "m_res": [
-      1,
-      2
-    ]
+  "stats": {
+    "int": 7,
+    "m_res": 5
+  },
+  "resources": {
+    "hp": 5
   },
   "source": "placeholder",
   "notes": "명세 §9"

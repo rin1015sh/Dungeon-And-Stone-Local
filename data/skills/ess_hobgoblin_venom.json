@@ -1,7 +1,7 @@
 {
   "id": "ess_hobgoblin_venom",
   "name_ko": "독성부여(정수)",
-  "target": "self",
+  "target": "ally_single",
   "cost": {
     "soul": 10
   },
@@ -14,5 +14,6 @@
     }
   ],
   "essence_of": "hobgoblin_venom",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

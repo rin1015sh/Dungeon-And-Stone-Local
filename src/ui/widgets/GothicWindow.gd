@@ -1,9 +1,7 @@
 class_name GothicWindow
 extends PanelContainer
-## 스톤샤드풍 창 틀: 돌판 테두리 + 머리 장식(고딕 아치 띠) + 가운데 이름판 + 오른쪽 위 닫기(✕).
-## 내용은 content(VBox)에 넣는다. 닫기를 누르면 close_requested.
-
-signal close_requested
+## 스톤샤드풍 창 틀: 돌판 테두리 + 머리 장식(고딕 아치 띠) + 가운데 이름판. 내용은 content(VBox)에 넣는다.
+## 닫기는 키(Backspace·Esc)로 — 창을 띄운 쪽이 받는다.
 
 var content: VBoxContainer
 var _title: String = ""
@@ -12,7 +10,6 @@ var _title: String = ""
 func _init(title: String = "") -> void:
 	_title = title
 	add_theme_stylebox_override("panel", GothicStyle.frame_box())
-	mouse_filter = Control.MOUSE_FILTER_STOP
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	add_child(v)
@@ -25,11 +22,6 @@ func _init(title: String = "") -> void:
 	header.add_child(plaque)
 	plaque.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
 	plaque.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	var close := UiTheme.button("×", func() -> void: close_requested.emit())
-	close.focus_mode = Control.FOCUS_NONE
-	close.tooltip_text = Strings.t("window.close")
-	header.add_child(close)
-	close.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE)
 	content = VBoxContainer.new()
 	content.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	v.add_child(content)

@@ -21,14 +21,14 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 20,
+    "str": 26,
     "agi": 12,
     "p_res": 18,
     "m_res": 8,
     "int": 6
   },
   "resources": {
-    "hp": 220,
+    "hp": 380,
     "soul": 50
   },
   "natural_weapon": {
@@ -87,5 +87,5 @@
   "desc_ko": "얼음 기둥에 갇혀 있다 깨어난 오크. 얼음 도끼를 휘두른다.",
   "sprite": "res://assets/sprites/monsters/ice_orc_warrior.png",
   "source": "original",
-  "notes": "명세 §10 미궁 문서의 '아이스 오크'와 같은 종 · 시뮬레이터 조정(GC5): 명세 생명력 260·근 23 → 220·20"
+  "notes": "명세 §10 미궁 문서의 '아이스 오크'와 같은 종 · 시뮬레이터 조정(GC5): 명세 생명력 260·근 23 → 220·20 · 5인 정규 파티에 맞춤(2026-10-19, J16): 생명력 220→380, 근력 20→26"
 }

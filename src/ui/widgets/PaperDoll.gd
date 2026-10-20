@@ -2,7 +2,7 @@ class_name PaperDoll
 extends Control
 ## 장비 인형(스톤샤드식 배치): 왼쪽 긴 칸 = 주무기, 오른쪽 긴 칸 = 보조.
 ## 가운데 위 줄: 몸 · 망토 · 머리(+ 아래 허리), 아래 줄: 장갑 · 반지 2 · 목걸이 · 신발.
-## 칸마다 EquipSlot(끌어오기·끌어놓기·툴팁·오른쪽 클릭 벗기).
+## 칸마다 EquipSlot(그리기 + 커서 표시). 장착·벗기는 Tab 메뉴의 소지품 쪽(InventoryPage)이 키로 한다.
 
 signal changed
 
@@ -15,6 +15,7 @@ var slots: Dictionary = {}  # 칸 -> EquipSlot
 
 func setup(p_actor: Actor) -> void:
 	actor = p_actor
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var s := float(UiTheme.metric("doll_slot", 58))
 	var g := 6.0
 	var ring := (s - g) * 0.5
@@ -39,11 +40,16 @@ func setup(p_actor: Actor) -> void:
 		es.position = r.position
 		es.size = r.size
 		es.custom_minimum_size = r.size
-		es.changed.connect(func() -> void: changed.emit())
 		add_child(es)
 		slots[id] = es
 	custom_minimum_size = Vector2(col.call(5) - g, s * 2 + g)
 	actor.equipment.changed.connect(func(_slot: String) -> void: _redraw())
+
+
+## 커서가 놓인 칸(빈 글 = 없음).
+func set_cursor(slot: String) -> void:
+	for id: String in slots:
+		(slots[id] as EquipSlot).set_cursor(id == slot)
 
 
 func _redraw() -> void:
@@ -58,18 +64,23 @@ class EquipSlot extends Control:
 	var actor: Actor
 	var slot: String = ""
 	var ghost: String = ""
-	var _state: String = ""
+	var _cursor: bool = false
 
 	func setup(p_actor: Actor, p_slot: String, p_ghost: String) -> void:
 		actor = p_actor
 		slot = p_slot
 		ghost = p_ghost
-		mouse_filter = Control.MOUSE_FILTER_STOP
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func set_cursor(on: bool) -> void:
+		if on != _cursor:
+			_cursor = on
+			queue_redraw()
 
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
 		var blocked := slot == "off_hand" and actor.equipment.off_hand_blocked()
-		GothicStyle.draw_slot(self, r, _state)
+		GothicStyle.draw_slot(self, r, "hover" if _cursor else "")
 		var id := actor.equipment.item_in(slot)
 		if not id.is_empty():
 			ItemIconPainter.draw(self, actor.db, id, r.grow(-4))
@@ -77,58 +88,11 @@ class EquipSlot extends Control:
 			ItemIconPainter.draw(self, actor.db, actor.equipment.item_in("main_hand"), r.grow(-4), 0.25)
 		else:
 			ItemIconPainter.paint_ghost(self, ghost, r)
+		if _cursor:
+			draw_rect(r.grow(-1), UiTheme.color("gold"), false, 2.0)
 
-	func _notification(what: int) -> void:
-		if what == NOTIFICATION_MOUSE_ENTER:
-			_set_state("hover")
-		elif what == NOTIFICATION_MOUSE_EXIT or what == NOTIFICATION_DRAG_END:
-			_set_state("")
-
-	func _set_state(s: String) -> void:
-		if s != _state:
-			_state = s
-			queue_redraw()
-
-	func _gui_input(event: InputEvent) -> void:
-		if event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
-			var mb := event as InputEventMouseButton
-			if mb.button_index == MOUSE_BUTTON_RIGHT or mb.double_click:
-				if InventoryActions.unequip_to_bag(actor, slot):
-					changed.emit()
-				elif not actor.equipment.item_in(slot).is_empty():
-					EventBus.log_message.emit(Strings.t("inventory.no_room_unequip",
-						{"item": DataNames.entry(actor.db, "items", actor.equipment.item_in(slot))}), "warn")
-				accept_event()
-
-	func _get_tooltip(_at_position: Vector2) -> String:
-		var id := actor.equipment.item_in(slot)
-		return DataNames.tag(actor.db, "equip_slots", slot) if id.is_empty() else "item"
-
-	func _make_custom_tooltip(for_text: String) -> Object:
-		var id := actor.equipment.item_in(slot)
-		if for_text != "item" or id.is_empty():
-			return null
-		return ItemTooltip.panel(actor.db, id, true)
-
-	func _get_drag_data(_at_position: Vector2) -> Variant:
-		var id := actor.equipment.item_in(slot)
-		if id.is_empty():
-			return null
-		set_drag_preview(ItemDragPreview.make(actor.db, id, UiTheme.metric("inv_cell", 38)))
-		return {"type": "item", "from": "slot", "slot": slot, "id": id}
-
-	func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-		var ok := data is Dictionary and str((data as Dictionary).get("from")) == "grid" \
-			and actor.equipment.can_equip(str((data as Dictionary)["id"]), slot)
-		_set_state("ok" if ok else "bad")
-		return ok
-
-	func _drop_data(_at_position: Vector2, data: Variant) -> void:
-		drop(data as Dictionary)
-
-	## 가방에서 끌어온 아이템을 이 칸에 장착한다(스모크 테스트도 쓴다). 성공하면 true.
+	## 가방에서 고른 아이템을 이 칸에 장착한다(스모크 테스트도 쓴다). 성공하면 true.
 	func drop(d: Dictionary) -> bool:
-		_set_state("")
 		if str(d.get("from")) != "grid" or not actor.equipment.can_equip(str(d["id"]), slot):
 			return false
 		var ok := InventoryActions.equip_stack(actor, int(d["index"]), slot)

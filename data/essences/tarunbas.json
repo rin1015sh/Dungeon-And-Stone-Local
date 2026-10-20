@@ -41,19 +41,13 @@
       "skill": "ess_tarun_roar"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      6,
-      9
-    ],
-    "resist_cold": [
-      8,
-      12
-    ],
-    "affinity_cold": [
-      4,
-      8
-    ]
+  "stats": {
+    "str": 25,
+    "resist_cold": 15,
+    "affinity_cold": 9
+  },
+  "resources": {
+    "hp": 23
   },
   "source": "placeholder",
   "notes": "명세 §10 수호자 정수(무지갯빛) — 액티브 전부"

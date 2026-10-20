@@ -27,11 +27,10 @@
     "weaken": {"_comment": "정수판 기본 약화(스킬 데이터를 만들 때의 기준 — 실행 중 자동 적용하지 않는다)", "power": 0.85, "status_chance": 0.75, "duration_minus": 1, "cost": 1.2, "passive": 0.5}
   },
   "hp": {
-    "_comment": "최대 생명력 = 50 + 레벨×10 + 근력×1.5 + 물리내성×3 (PROMPT_FLOOR1_V2 §1)",
+    "_comment": "최대 생명력 = 50 + 레벨×10 + 물리내성×3 + 정수(essences resources.hp). 근력은 생명력에 들어가지 않는다(2026-10-19 사용자 결정 — ASSUMPTIONS J12)",
     "base": 50,
     "per_level": 10,
     "per_p_res": 3.0,
-    "per_str": 1.5,
     "regen_per_natural_regen_per_hour": 0.1
   },
   "soul": {
@@ -129,6 +128,8 @@
     "no_flee_ranks": ["guardian", "variant_guardian", "lord"],
     "ambush_gauge": 50,
     "may_skip_chance": 0.3,
+    "_taunt_comment": "끌어들이기(draws_attacks): 대상 규칙이 없는 몬스터 공격이 이 확률로 끌어들이는 아군을 먼저 노린다",
+    "taunt_chance": 0.75,
     "max_side_units": 6,
     "hours_per_turn": 0.01,
     "flee_grace_hours": 0.5,

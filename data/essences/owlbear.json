@@ -27,15 +27,12 @@
       "skill": "ess_owlbear_hoot"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      2,
-      4
-    ],
-    "sight": [
-      3,
-      6
-    ]
+  "stats": {
+    "str": 12,
+    "sight": 7
+  },
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §10"

@@ -12,7 +12,13 @@
       "type": "damage",
       "scaling": "phys",
       "power": 1.02,
-      "damage_type": "blunt"
+      "damage_type": "blunt",
+      "power_if_status": {
+        "status": [
+          "snare"
+        ],
+        "power": 1.53
+      }
     },
     {
       "type": "apply_status",
@@ -21,5 +27,6 @@
     }
   ],
   "essence_of": "elder_crush",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

@@ -1,7 +1,7 @@
 class_name Formula
 extends RefCounted
 ## 데이터 수식 평가기. "{키}" 자리표시자 + 사칙연산/min/max/floor 등(Godot Expression).
-##   예) "{bal.hp.base} + {level} * {bal.hp.per_level} + {str} * {bal.hp.per_str}"
+##   예) "{bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res}"
 ## 키의 의미는 호출자가 resolver(Callable: key -> float)로 정한다.
 ## 표준 키: level, bal.<balance.json 경로>, <스탯 id>.
 

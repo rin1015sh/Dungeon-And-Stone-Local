@@ -10,9 +10,14 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "ice_armor"
+      "status": "iron_wall"
+    },
+    {
+      "type": "apply_status",
+      "status": "taunt"
     }
   ],
   "essence_of": "golem_ice_armor",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

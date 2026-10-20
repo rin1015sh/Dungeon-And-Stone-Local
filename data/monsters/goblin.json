@@ -64,7 +64,7 @@
       "on_hit": [
         {
           "type": "apply_status",
-          "status": "goblin_paralysis",
+          "status": "paralysis",
           "chance": 0.3
         }
       ]
@@ -85,9 +85,9 @@
     {
       "if": "foe_status",
       "use": "goblin_vile_stab",
-      "status": "goblin_paralysis",
+      "status": "paralysis",
       "target": "with_status",
-      "target_status": "goblin_paralysis"
+      "target_status": "paralysis"
     },
     {
       "if": "alone",

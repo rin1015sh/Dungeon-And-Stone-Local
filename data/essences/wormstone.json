@@ -30,11 +30,11 @@
       "skill": "ess_worm_lurk"
     }
   ],
-  "stat_ranges": {
-    "p_res": [
-      3,
-      7
-    ]
+  "stats": {
+    "p_res": 18
+  },
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §10"

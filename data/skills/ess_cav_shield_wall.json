@@ -1,7 +1,7 @@
 {
   "id": "ess_cav_shield_wall",
   "name_ko": "방패 벽(정수)",
-  "target": "ally_all",
+  "target": "ally_single",
   "cost": {
     "soul": 10
   },
@@ -9,10 +9,15 @@
   "cooldown": 0,
   "effects": [
     {
+      "type": "cover",
+      "duration": 3
+    },
+    {
       "type": "apply_status",
       "status": "shield_wall"
     }
   ],
   "essence_of": "cav_shield_wall",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

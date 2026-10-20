@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "ice_armor"
+      "status": "iron_wall"
     }
   ],
   "source": "placeholder"

@@ -17,7 +17,7 @@
       "power_if_status": {
         "status": [
           "snare",
-          "goblin_paralysis"
+          "paralysis"
         ],
         "power": 1.275
       }

@@ -31,15 +31,12 @@
       "skill": "ess_ghoullord_predator_claw"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      2,
-      4
-    ],
-    "int": [
-      2,
-      3
-    ]
+  "stats": {
+    "str": 10,
+    "int": 9
+  },
+  "resources": {
+    "hp": 15
   },
   "source": "placeholder",
   "notes": "명세 §9"

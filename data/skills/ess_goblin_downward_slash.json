@@ -13,9 +13,14 @@
       "scaling": "phys",
       "power": 1.02,
       "damage_type": "slash",
-      "accuracy": 85
+      "accuracy": 85,
+      "power_if_hp_below": {
+        "ratio": 0.3,
+        "mult": 1.6
+      }
     }
   ],
   "essence_of": "goblin_downward_slash",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "정수 재기획 2026-10-19(J17)"
 }

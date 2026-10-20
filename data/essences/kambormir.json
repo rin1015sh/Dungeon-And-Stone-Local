@@ -35,23 +35,14 @@
       "skill": "ess_vamp_blood_veil"
     }
   ],
-  "stat_ranges": {
-    "str": [
-      10,
-      14
-    ],
-    "agi": [
-      8,
-      12
-    ],
-    "int": [
-      10,
-      14
-    ],
-    "natural_regen": [
-      10,
-      20
-    ]
+  "stats": {
+    "str": 16,
+    "agi": 14,
+    "int": 16,
+    "natural_regen": 20
+  },
+  "resources": {
+    "hp": 40
   },
   "source": "placeholder",
   "notes": "명세 §9 수호자 정수 — 태양 약점도 함께"

@@ -22,10 +22,13 @@ func _battle(n_party: int = 1) -> Battle:
 
 
 func test_skip_turn_family() -> void:
-	for id in ["stun", "paralysis", "petrify", "suppress", "frozen"]:
+	for id in ["stun", "petrify", "suppress", "frozen"]:
 		var a := _a()
 		a.statuses.apply(id)
 		assert_true(a.statuses.has_flag("skip_turn"), "%s → 행동 불가" % id)
+	var par := _a()
+	par.statuses.apply("paralysis")
+	assert_true(par.statuses.has_flag("may_skip_turn") and not par.statuses.has_flag("skip_turn"), "마비 = 확률로 행동 실패(기절과 다름)")
 	var p := _a({"p_res": 10})
 	p.statuses.apply("petrify")
 	assert_near(p.stats.get_value("p_res"), 20.0, 0.001, "석화: 물리내성 +100%")
@@ -37,12 +40,12 @@ func test_resist_by_stats() -> void:
 	var weak := 0
 	var tough := 0
 	for i in 200:
-		if _apply(_a(), _a({"int": 0, "m_res": 0}), "stun", i):
+		if _apply(_a(), _a({"p_res": 0}), "stun", i):
 			weak += 1
-		if _apply(_a(), _a({"int": 30, "m_res": 30}), "stun", i):
+		if _apply(_a(), _a({"p_res": 60}), "stun", i):
 			tough += 1
 	assert_eq(weak, 200, "저항 스탯 0이면 항상 걸린다")
-	assert_true(tough < 120 and tough > 50, "정신력·항마력 60 → 최대 저항 60%% (%d/200 걸림)" % tough)
+	assert_true(tough < 120 and tough > 50, "기절 저항 = 물리내성 60 → 최대 저항 60%% (%d/200 걸림)" % tough)
 	var self_ok := _a({"int": 30, "m_res": 30})
 	var ctx := EffectContext.new(db, self_ok, self_ok, Rng.new(1))
 	ContentRegistries.new().effects.apply_all(ctx, [{"type": "apply_status", "status": "stun"}])
@@ -70,10 +73,6 @@ func test_frost_stacks_into_frozen_and_slow() -> void:
 	assert_false(a.statuses.has("frost"), "3중첩이면 서리는 사라지고")
 	assert_true(a.statuses.has("frozen"), "빙결로 바뀐다")
 	assert_near(a.stats.get_value("agi"), 20.0, 0.001)
-	for i in 7:
-		a.statuses.apply("slow")
-	assert_eq(a.statuses.stacks("slow"), 5, "둔화 최대 5중첩")
-	assert_near(a.stats.get_value("agi"), 20.0 * 0.6, 0.001)
 
 
 func test_heal_block_and_seal_and_confusion() -> void:

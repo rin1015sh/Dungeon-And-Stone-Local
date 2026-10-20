@@ -1,13 +1,12 @@
-class_name CharacterWindow
-extends GothicWindow
-## 캐릭터 창(2단): 왼쪽 = 이름·종족·템플릿 · 레벨과 공적 · 자원 · 핵심 스탯과 장비 보정,
-## 오른쪽 탭 = 정수(EssencePanel — 보여 주기만) · 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태).
-## 탭 내용은 높이를 고정하고 스크롤한다(창이 화면 밖으로 늘어나지 않게).
+class_name CharacterPage
+extends MenuPage
+## Tab 메뉴의 캐릭터 쪽: 이름·종족·템플릿 · 레벨과 공적 · 자원 · 핵심 스탯과 장비 보정 · 정수(슬롯 + 목록) ·
+## 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태). 내용은 높이를 고정하고 W/S로 스크롤한다.
 
 var pc: PlayerCharacter
 
-var _left: VBoxContainer
-var _tabs: TabContainer
+var _scroll: ScrollContainer
+var _box: VBoxContainer
 
 
 func _init() -> void:
@@ -16,44 +15,51 @@ func _init() -> void:
 
 func setup(p_pc: PlayerCharacter) -> void:
 	pc = p_pc
-	custom_minimum_size.x = UiTheme.metric("char_window_width", 780)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) * 2)
-	content.add_child(row)
-	_left = VBoxContainer.new()
-	_left.custom_minimum_size.x = UiTheme.metric("char_left_width", 360)
-	row.add_child(_left)
-	_tabs = TabContainer.new()
-	_tabs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_tabs.custom_minimum_size.y = UiTheme.metric("char_tab_height", 440)
-	row.add_child(_tabs)
+	custom_minimum_size.x = MenuPage.cfg("character_width", 400.0)
+	_scroll = ScrollContainer.new()
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.add_child(_scroll)
+	_box = VBoxContainer.new()
+	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_scroll.add_child(_box)
 	pc.equipment.changed.connect(func(_s: String) -> void: refresh())
 	refresh()
 
 
 func refresh() -> void:
-	for c in _left.get_children():
-		c.queue_free()
-	var keep := _tabs.current_tab
-	for c in _tabs.get_children():
-		_tabs.remove_child(c)
+	for c in _box.get_children():
+		_box.remove_child(c)
 		c.queue_free()
 	_build_summary()
+	_box.add_child(HSeparator.new())
 	var essences := EssencePanel.new()
 	essences.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	essences.setup(pc)
-	_add_tab(Strings.t("character.tab_essence"), essences)
-	_add_tab(Strings.t("character.tab_details"), _details())
-	_tabs.current_tab = clampi(keep, 0, _tabs.get_tab_count() - 1)
+	_box.add_child(essences)
+	_box.add_child(HSeparator.new())
+	_box.add_child(_build_details())
+
+
+func enter(_from_left: bool) -> void:
+	_scroll.scroll_vertical = 0
+
+
+## W/S = 한 걸음씩 스크롤(고를 것은 없다).
+func nav(d: Vector2i) -> bool:
+	if d.x != 0:
+		return false
+	_scroll.scroll_vertical += d.y * int(MenuPage.cfg("scroll_step", 60.0))
+	return true
 
 
 func _build_summary() -> void:
 	var db := pc.db
-	_left.add_child(UiTheme.label(Strings.t("character.name_line", {"name": pc.display_name, "race": pc.race_name(),
+	_box.add_child(UiTheme.label(Strings.t("character.name_line", {"name": pc.display_name, "race": pc.race_name(),
 		"template": pc.template_name()}), "header", "text_title"))
 	var lv := pc.get_level()
 	var next := Progression.exp_for_next(db, lv)
-	_left.add_child(UiTheme.label(Strings.t("character.level_line", {"level": lv, "exp": pc.progression.exp_total,
+	_box.add_child(UiTheme.label(Strings.t("character.level_line", {"level": lv, "exp": pc.progression.exp_total,
 		"next": next if next >= 0 else Strings.t("character.max")}), "body", "gold"))
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
@@ -62,30 +68,29 @@ func _build_summary() -> void:
 	bar.max_value = maxf(1.0, float(next - prev)) if next >= 0 else 1.0
 	bar.value = float(pc.progression.exp_total - prev) if next >= 0 else 1.0
 	bar.add_theme_stylebox_override("fill", UiTheme.box(UiTheme.color("gold"), Color.TRANSPARENT, 2, 0))
-	_left.add_child(bar)
+	_box.add_child(bar)
 	var res := ResourcePanel.new()
-	_left.add_child(res)
+	_box.add_child(res)
 	res.bind(pc.pool)
-	_left.add_child(HSeparator.new())
 	var grid := GridContainer.new()
 	grid.columns = 4
-	_left.add_child(grid)
+	_box.add_child(grid)
 	for id in pc.stats.ids("core"):
 		_stat(grid, DataNames.entry(db, "stats", id), pc.stats.get_value(id), pc.stats.get_value(id) - pc.stats.get_base(id))
 	_stat(grid, Strings.t("character.attack"), DamageCalc.attack_power(db, pc, {"scaling": "phys"}), 0.0)
 	_stat(grid, Strings.t("character.crit"), DamageCalc.crit_chance(db, pc) * 100.0, 0.0, "%")
-	_left.add_child(UiTheme.label(Strings.t("character.attack_type", {"type": DataNames.tag(db, "damage_types", pc.attack_damage_type())}), "small", "text_dim"))
+	_box.add_child(UiTheme.label(Strings.t("character.attack_type", {"type": DataNames.tag(db, "damage_types", pc.attack_damage_type())}), "small", "text_dim"))
 
 
-## 세부 능력 탭: 0이 아니거나 보정이 붙은 세부 스탯 · 영구 강화(boons) · 패시브 · 걸린 상태.
-func _details() -> Control:
+## 세부 능력: 0이 아니거나 보정이 붙은 세부 스탯 · 영구 강화(boons) · 패시브 · 걸린 상태.
+func _build_details() -> Control:
 	var db := pc.db
 	var box := VBoxContainer.new()
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(UiTheme.label(Strings.t("character.sub_stats"), "body", "text_title"))
 	var grid := GridContainer.new()
 	grid.columns = 4
 	var shown := 0
-	var any_inert := false
 	for id in pc.stats.ids("sub"):
 		var def := pc.stats.get_def(id)
 		var v := pc.stats.get_value(id)
@@ -93,11 +98,8 @@ func _details() -> Control:
 		if (def != null and not def.visible) or (is_zero_approx(v) and is_zero_approx(bonus)):
 			continue
 		var inert := def != null and not def.implemented
-		any_inert = any_inert or inert
-		var name := DataNames.entry(db, "stats", id) + (Strings.t("character.inert_mark") if inert else "")
-		_stat(grid, name, v, bonus)
+		_stat(grid, DataNames.entry(db, "stats", id) + (Strings.t("character.inert_mark") if inert else ""), v, bonus)
 		shown += 1
-	box.add_child(UiTheme.label(Strings.t("character.sub_stats"), "body", "text_title"))
 	box.add_child(grid if shown > 0 else UiTheme.label(Strings.t("character.none"), "small", "text_dim"))
 	if not pc.boons.is_empty():
 		box.add_child(UiTheme.label(Strings.t("character.boons"), "body", "text_title"))
@@ -121,14 +123,6 @@ func _details() -> Control:
 	sl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(sl)
 	return box
-
-
-func _add_tab(title: String, body: Control) -> void:
-	var scroll := ScrollContainer.new()
-	scroll.name = title
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.add_child(body)
-	_tabs.add_child(scroll)
 
 
 func _stat(grid: GridContainer, label: String, value: float, bonus: float, suffix: String = "") -> void:

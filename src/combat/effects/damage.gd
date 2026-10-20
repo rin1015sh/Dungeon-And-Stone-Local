@@ -1,7 +1,7 @@
 extends EffectHandler
 ## 피해: {"type": "damage", "scaling": "phys"|"magic", "power": 1.0, "damage_type": "slash"|"weapon"|…, "base": 0,
 ##        "accuracy": 95, "crit_bonus": 0.15, "ranged": false, "power_if_status": {status, power},
-##        "drain_if_status": {"status": "bleeding", "ratio": 0.4}, "drain": 0.5}
+##        "drain_if_status": {"status": "bleeding", "ratio": 0.4}, "drain": 0.5, "power_per_summon": 0.25(내 소환수 하나마다 위력 ×(1+k))}
 ## 공격자의 상태 lifesteal(생기 흡수)도 흡혈. 공격자의 "consume_on_attack" 상태(진군 명령)는 이 공격으로 사라진다
 ## (스킬 사용이면 Battle이 스킬 한 번이 끝난 뒤에 — 광역·연타 전체에 적용).
 ## 맞든 안 맞든 대상의 패시브 mark_first_attacker(벤시 원령)를 먼저 처리한다.
@@ -19,6 +19,10 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if target == null or source == null or target.dead:
 		return false  # 시전자가 쓰러져도 남은 효과(자폭 death_effects)는 들어간다 — 스킬 도중 쓰러지면 Battle이 멈춘다
 	var rolls := {"hit": ctx.rng.randf(), "crit": ctx.rng.randf(), "var": ctx.rng.randf(), "lethal": ctx.rng.randf()}
+	var per_summon := JsonUtil.get_float(data, "power_per_summon")  # 구울로드 포식자의 손톱: 내 소환수 하나마다 위력 +
+	if per_summon > 0.0 and int(ctx.info.get("summons", 0)) > 0:
+		data = data.duplicate()
+		data["power"] = JsonUtil.get_float(data, "power", 1.0) * (1.0 + per_summon * int(ctx.info["summons"]))
 	var r := DamageCalc.resolve(ctx.db, source, target, data, rolls, bool(ctx.info.get("aim_weak", false)))
 	Passives.on_attacked(ctx)
 	if not ctx.info.has("skill_id"):

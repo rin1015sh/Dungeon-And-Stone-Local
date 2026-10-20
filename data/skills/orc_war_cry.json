@@ -10,7 +10,7 @@
   "effects": [
     {
       "type": "apply_status",
-      "status": "orc_war_cry"
+      "status": "rally"
     }
   ],
   "source": "placeholder"

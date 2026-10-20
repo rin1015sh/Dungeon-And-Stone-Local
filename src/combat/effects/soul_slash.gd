@@ -10,7 +10,13 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if t == null or t.dead:
 		return false
 	if data.has("soul_ratio"):
-		var lost := roundi(t.pool.get_current("soul") * JsonUtil.get_float(data, "soul_ratio"))
+		var ratio := JsonUtil.get_float(data, "soul_ratio")
+		var mi := JsonUtil.get_dict(data, "mult_if_status")  # 정수판: 저주·공포 대상이면 더 깎는다
+		for st: Variant in JsonUtil.get_array(mi, "status"):
+			if t.statuses.has(str(st)):
+				ratio = minf(1.0, ratio * JsonUtil.get_float(mi, "mult", 1.0))
+				break
+		var lost := roundi(t.pool.get_current("soul") * ratio)
 		t.pool.modify("soul", -float(lost), "soul_slash")
 		ctx.say("combat.soul_slash_soul", {"name": t.display_name, "amount": lost}, "warn")
 		return true

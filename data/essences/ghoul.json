@@ -7,10 +7,17 @@
   "passive": {
     "id": "ghoul_four_legs",
     "name_ko": "네 발 짐승",
-    "desc_ko": "전투가 시작되면 남보다 먼저 몸을 날린다.",
+    "desc_ko": "전투가 시작되면 먼저 몸을 날리고, 쓰러뜨린 상대를 뜯어 상처를 메운다.",
     "start_gauge": 30,
     "implemented": true,
-    "notes": "정수판: 첫 차례 선공만"
+    "notes": "정수판: 첫 차례 선공만 · 정수 재기획 2026-10-19(J17)",
+    "on_kill": [
+      {
+        "type": "restore_resource",
+        "resource": "hp",
+        "amount": "floor({max_hp} * 0.08)"
+      }
+    ]
   },
   "actives": [
     {
@@ -22,19 +29,13 @@
       "skill": "ess_ghoul_pounce"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      2,
-      4
-    ],
-    "str": [
-      1,
-      3
-    ],
-    "m_res": [
-      2,
-      3
-    ]
+  "stats": {
+    "agi": 5,
+    "str": 4,
+    "m_res": 4
+  },
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.4. 할퀴기는 엘더 구울과 공유"

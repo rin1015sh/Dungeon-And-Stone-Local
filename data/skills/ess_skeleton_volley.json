@@ -1,6 +1,6 @@
 {
   "id": "ess_skeleton_volley",
-  "name_ko": "일제 사격(정수)",
+  "name_ko": "표식 화살(정수)",
   "target": "enemy_single",
   "cost": {
     "soul": 6
@@ -11,26 +11,16 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.383,
+      "power": 0.6,
       "damage_type": "pierce",
       "ranged": true
     },
     {
-      "type": "damage",
-      "scaling": "phys",
-      "power": 0.383,
-      "damage_type": "pierce",
-      "ranged": true
-    },
-    {
-      "type": "damage",
-      "scaling": "phys",
-      "power": 0.383,
-      "damage_type": "pierce",
-      "ranged": true
+      "type": "apply_status",
+      "status": "marked"
     }
   ],
   "essence_of": "skeleton_volley",
   "source": "placeholder",
-  "notes": "정수판: 탐험가에게는 아처 동료가 없으므로 3연사 고정(원래는 같은 편 아처 수만큼)"
+  "notes": "정수판: 탐험가에게는 아처 동료가 없으므로 3연사 고정(원래는 같은 편 아처 수만큼) · 정수 재기획 2026-10-19(J17)"
 }

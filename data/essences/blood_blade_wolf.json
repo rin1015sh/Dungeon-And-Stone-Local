@@ -29,15 +29,12 @@
       "skill": "ess_wolf_blade_graze"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      2,
-      4
-    ],
-    "int": [
-      3,
-      5
-    ]
+  "stats": {
+    "agi": 5,
+    "int": 7
+  },
+  "resources": {
+    "hp": 11
   },
   "source": "placeholder",
   "notes": "§6.8. 노랑 = 칼날 스치기(칼날늑대와 공유)"

@@ -4,6 +4,9 @@ extends RefCounted
 ## 정의 키(모두 선택):
 ##   modifiers        [수정자] — 붙이는 것은 소유자 몫(Monster.create / EssenceSet)
 ##   on_hit           [효과] — 피해를 맞혔을 때 대상에게(예: 마비독 30%). on_hit_filter {ranged: bool, damage_types: [..]}
+##   on_kill          [효과] — 공격으로 적을 쓰러뜨렸을 때 자신에게(회복·출혈 해제 …)
+##   hit_vs_status {status, bonus} · reflect_status {status, chance} · counter_while {status, power}
+##   skip_bonus_vs {status, bonus} — 상대가 그 상태(공포)면 행동을 건너뛸 확률 + bonus(BattleRules.fear_skip, 벤시)
 ##   on_crit          [효과] — 치명타를 냈을 때 대상에게(예: 어설픈 검술의 출혈)
 ##   crit_bonus       {value, damage_types} — 치명타율 보정(피해 유형이 맞을 때)
 ##   power_vs_status  {status, mult} — 그 상태의 대상에게 피해 배율(피 냄새)
@@ -62,6 +65,16 @@ static func damage_mult_vs(attacker: Actor, defender: Actor) -> float:
 	return m
 
 
+## 공격자 패시브 hit_vs_status {status, bonus}: 대상이 그 상태면 명중(퍼센트 포인트) + bonus(칼날늑대 추적 후각 — 출혈 대상).
+static func hit_bonus_vs(attacker: Actor, defender: Actor) -> float:
+	var v := 0.0
+	for p in attacker.passives:
+		var hv := JsonUtil.get_dict(p, "hit_vs_status")
+		if not hv.is_empty() and defender.statuses.has(JsonUtil.get_str(hv, "status")):
+			v += JsonUtil.get_float(hv, "bonus")
+	return v
+
+
 ## source가 target에게 상태를 건다: 면역(패시브·grants_immunity·immune_if) → 저항(남이 건 것만) → 지속 상한(status_duration_cap).
 ## "" = 걸렸다, "immune" | "resisted" | "failed". 모든 전투 부여 경로가 이것을 쓴다(메시지는 부르는 쪽).
 static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor, status_id: String, duration: float = -1.0) -> String:
@@ -117,6 +130,9 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 		for st in src.statuses.ids():
 			_apply_list(ctx, registry, JsonUtil.get_array(ctx.db.get_entry("statuses", st), "on_hit"), tgt)
 	_meters_after_hit(ctx, dealt, dtype)
+	if tgt.dead and not src.dead:  # 쓰러뜨렸다 — on_kill(정수 재기획: 구울·데스핀드)은 공격자 자신에게
+		for p in src.passives:
+			_apply_list(ctx, registry, JsonUtil.get_array(p, "on_kill"), src)
 	if ranged or tgt.dead:
 		return
 	var reflect := sum(tgt, "reflect_melee")
@@ -124,7 +140,15 @@ static func after_hit(ctx: EffectContext, registry: EffectRegistry, dealt: int, 
 		var back := maxi(1, roundi(dealt * reflect))
 		ctx.say("combat.reflect", {"source": tgt.display_name, "target": src.display_name, "amount": back}, "warn")
 		DamageApply.hurt(ctx, src, back, "reflect:" + tgt.id)
+		for p in tgt.passives:  # reflect_status {status, chance}: 반사에 상태가 묻어난다(거대 칼날늑대 — 출혈)
+			var rs := JsonUtil.get_dict(p, "reflect_status")
+			if not rs.is_empty() and not src.dead and ctx.rng.chance(JsonUtil.get_float(rs, "chance", 1.0)):
+				try_status(ctx.db, ctx.rng, tgt, src, JsonUtil.get_str(rs, "status"))
 	var counter := tgt.statuses.counter_power()
+	for p in tgt.passives:  # counter_while {status, power}: 그 상태(방어 태세)인 동안 근접으로 맞으면 반격(가고일 돌 피부)
+		var cw := JsonUtil.get_dict(p, "counter_while")
+		if not cw.is_empty() and tgt.statuses.has(JsonUtil.get_str(cw, "status")):
+			counter = maxf(counter, JsonUtil.get_float(cw, "power"))
 	if counter > 0.0 and not src.dead:
 		var rolls := {"hit": ctx.rng.randf(), "crit": ctx.rng.randf(), "var": ctx.rng.randf(), "lethal": 1.0}
 		var r := DamageCalc.resolve(ctx.db, tgt, src, {"scaling": "phys", "power": counter, "damage_type": "weapon"}, rolls)

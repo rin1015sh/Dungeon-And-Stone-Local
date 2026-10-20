@@ -7,7 +7,7 @@
   "passive": {
     "id": "goblin_poison_arrow",
     "name_ko": "독화살",
-    "desc_ko": "활로 맞히면 가끔 독이 퍼진다.",
+    "desc_ko": "활로 맞히면 가끔 독이 퍼지고, 독이 돈 상대를 더 아프게 맞힌다.",
     "on_hit_filter": {
       "ranged": true
     },
@@ -19,7 +19,11 @@
       }
     ],
     "implemented": true,
-    "notes": "[원] 정수판 20%"
+    "notes": "[원] 정수판 20% · 정수 재기획 2026-10-19(J17)",
+    "power_vs_status": {
+      "status": "poison",
+      "mult": 1.15
+    }
   },
   "actives": [
     {
@@ -35,31 +39,16 @@
       "skill": "ess_goblin_aimed_shot"
     }
   ],
-  "stat_ranges": {
-    "agi": [
-      3,
-      11
-    ],
-    "sight": [
-      4,
-      8
-    ],
-    "accuracy": [
-      6,
-      10
-    ],
-    "resist_poison": [
-      2,
-      6
-    ],
-    "int": [
-      0,
-      4
-    ],
-    "m_res": [
-      3,
-      5
-    ]
+  "stats": {
+    "agi": 7,
+    "sight": 6,
+    "accuracy": 8,
+    "resist_poison": 4,
+    "int": 2,
+    "m_res": 4
+  },
+  "resources": {
+    "hp": 5
   },
   "source": "placeholder",
   "notes": "§6.3 [원] 원작 수치 ±2. 집착은 효과 없음"

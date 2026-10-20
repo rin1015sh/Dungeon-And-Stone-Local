@@ -87,7 +87,7 @@
       "value": 0.3,
       "use": "skeleton_curse_whisper",
       "target": "without_status",
-      "target_status": "curse_whisper"
+      "target_status": "curse"
     }
   ],
   "ai_cycle": [
