@@ -72,6 +72,11 @@ func test_force_open_with_stone_at_monument() -> void:
 	assert_eq(s.player.inventory.count("magic_stone_beast_den"), 0, "마석을 쓴다")
 	var p: Dictionary = s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0]
 	assert_eq(str(p["rift"]), "rift_glacier_cave", "짐승의 소굴 마석 → 빙하굴")
+	var before := s.map.portals.size()
+	s.player.inventory.add("floor_stone_1", 1)
+	assert_true(s.rifts.try_offer(s, mon), "계층석을 바친다")
+	assert_eq(s.player.inventory.count("floor_stone_1"), 0, "계층석은 한 번 쓰면 사라진다")
+	assert_eq(s.map.portals.size(), before + 1, "그 층 균열 하나가 열린다")
 
 
 ## 균열에 들어가 첫 챕터 세션을 돌려준다(세션이 RiftRun을 붙잡고, 균열은 세션을 약하게 가리킨다).

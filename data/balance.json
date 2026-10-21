@@ -19,7 +19,7 @@
     "drop_mode": "game",
     "drop_chance_by_grade": {"9": 0.02, "8": 0.025, "7": 0.03, "6": 0.035, "5": 0.04, "4": 0.045, "3": 0.05, "2": 0.055, "1": 0.06},
     "drop_chance_original": 0.0001,
-    "drop_chance_by_rank": {"ungraded": 0.005, "midboss": 0.1, "guardian": 0.33, "variant_guardian": 0.33, "lord": 0.0, "token": 0.0},
+    "drop_chance_by_rank": {"ungraded": 0.005, "midboss": 0.1, "guardian": 0.33, "variant_guardian": 0.33, "lord": 0.2, "token": 0.0},
     "rift_mult": 4,
     "guardian_stat_mult": 1.5,
     "guardian_color": "rainbow",

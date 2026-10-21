@@ -184,8 +184,21 @@ func test_lord_rewards() -> void:
 	assert_eq(p.record_kill(db, "dreadfear"), int(db.prog("exp.lord_bonus")), "군주 +15(첫 처치 경험치 없음)")
 	assert_eq(p.record_kill(db, "dreadfear"), 0, "군주 보너스는 1회")
 	assert_eq(p.record_kill(db, "dreadfear_maggot"), 0, "토큰 0")
-	assert_eq(EssenceDrop.drop_chance(db, db.get_entry("monsters", "dreadfear")), 0.0, "정수 없음")
-	assert_true(Loot.roll(db, "dreadfear", Rng.new(1)).is_empty(), "전리품 없음")
+	assert_eq(int(db.prog("exp.lord_bonus")), 15, "계층군주 처치 보너스 15(사용자 확인 2026-10-21)")
+	# 보상 셋(사용자 결정 2026-10-21): 계층보구(뼈 대검) · 계층석 · 계층정수 — 모두 확률
+	assert_true(EssenceDrop.drop_chance(db, db.get_entry("monsters", "dreadfear")) > 0.0, "계층정수가 나온다")
+	var got := {}
+	var rng := Rng.new(1)
+	for i in 400:
+		for d: Dictionary in Loot.roll(db, "dreadfear", rng):
+			got[str(d["id"])] = int(got.get(str(d["id"]), 0)) + 1
+	assert_eq(got.keys().size(), 2, "계층보구·계층석 말고는 나오지 않는다: %s" % [got])
+	assert_true(int(got.get("dread_bone_greatsword", 0)) > 10 and int(got.get("dread_bone_greatsword", 0)) < 70, "뼈 대검은 드물게(8%%): %s" % [got])
+	assert_true(int(got.get("floor_stone_1", 0)) > 100, "계층석은 자주(35%%)")
+	assert_eq(JsonUtil.get_str(db.get_entry("items", "dread_bone_greatsword"), "rarity"), "floor_relic", "계층보구 등급")
+	var inst := EssenceDrop.make(db, "dreadfear", "", Rng.new(2), true)
+	assert_eq(str(inst["color"]), str(db.bal("essence.guardian_color", "rainbow")), "계층정수는 무지갯빛")
+	assert_true(EssenceDrop.GUARDIAN_RANKS.has("lord"))
 
 
 func _session(min_party: int) -> ExploreSession:

@@ -47,6 +47,16 @@
   },
   "essence_drops": [],
   "drops": [],
+  "lord_drops": [
+    {
+      "item": "dread_bone_greatsword",
+      "chance": 0.08
+    },
+    {
+      "item": "floor_stone_1",
+      "chance": 0.35
+    }
+  ],
   "skills": [
     "dread_bone_cleave",
     "dread_indulgence",

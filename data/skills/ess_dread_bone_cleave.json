@@ -1,0 +1,26 @@
+{
+  "id": "ess_dread_bone_cleave",
+  "name_ko": "뼈 대검 내려치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.1,
+      "damage_type": "slash",
+      "accuracy": 90
+    },
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.15
+    }
+  ],
+  "essence_of": "dread_bone_cleave",
+  "source": "placeholder"
+}

@@ -2,6 +2,7 @@ extends RefCounted
 ## 계층군주 드레드피어(사용자 첨부 참고 2026-10-16 — "소환되면 끝장이다" 싶은 위압감): 화면을 꽉 채우는 거대한 상반신,
 ## 목을 두른 굵은 털 고리, 그 위 창백한 눈가린 얼굴과 솟아오른 뿔, 털 고리에서 돋아난 까마귀 머리들,
 ## 가슴·배에 박힌 이빨 드러낸 얼굴, 등 뒤로 펼친 붉은 박쥐 날개, 바닥까지 늘어진 굵은 팔 — 아래는 검은 연기로 사라진다.
+## 오른손에 구더기가 들끓는 뼈 대검(사용자 결정 2026-10-21 "전투 화면에서도 드레드피어는 검 쓰는 걸로") — 연기 속 손에서 날개 앞으로 비스듬히 솟는다.
 ## spec 키: height · color(살) · shade(그늘) · wing(날개 막) · fur(털) · horn · eyes(빛나는 눈) · birds(까마귀 머리 수)
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -35,6 +36,7 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 	var Y := func(t: float) -> float: return top + hb * t
 	var X := func(t: float) -> float: return cx + W * t
 	_wings(cl, X, Y, U, sp, rng)
+	_greatsword(cl, X, Y, U, sp, rng)
 	# 팔(어깨에서 바닥까지 늘어진 굵은 팔)
 	for s: float in [-1.0, 1.0]:
 		var g := cl.group()
@@ -78,6 +80,42 @@ static func paint(sp: Dictionary, seed_value: int) -> Paint:
 	_smoke(p, Y.call(0.66), U, rng)
 	Finish.done(p, {"blood": 0.5, "grime": 0.25, "desat": 0.0}, {"chest": Vector3(cx, Y.call(0.5), 0), "waist": Vector3(cx, Y.call(0.72), 0), "shoulder_l": Vector3(X.call(-0.27), Y.call(0.4), 0), "shoulder_r": Vector3(X.call(0.27), Y.call(0.4), 0)}, U)
 	return p
+
+
+## 뼈 대검: 오른손(연기 속)에서 위·바깥으로 비스듬히 솟는 넓고 긴 뼈 날 — 등뼈 같은 마디 골, 이 빠진 날, 날에 붙은 구더기, 뼈 코등이·자루.
+static func _greatsword(cl: Clay, X: Callable, Y: Callable, U: float, sp: Dictionary, rng: RandomNumberGenerator) -> void:
+	var g := cl.group()
+	var bone := cl.mat(sp.get("blade", Color("#c9bc9c")), "bone")
+	var rot := cl.mat(Color("#6a5a48"), "bone")
+	var grub := cl.mat(Color("#e6dcc0"), "skin", {"shade": Color("#8a7a5a")})
+	var z := 0.13 * U
+	var grip := Vector2(X.call(0.35), Y.call(0.86))
+	var u := Vector2(0.3, -1.0).normalized()  # 날 방향(위·바깥)
+	var n := Vector2(-u.y, u.x)  # 날 폭 방향
+	var L := 1.02 * U
+	var w0 := 0.085 * U
+	var P := func(along: float, side: float) -> Vector2: return grip + u * along * L + n * side * w0
+	# 자루·코등이(뼈 마디)
+	cl.cap(g, Vector3(grip.x, grip.y, z) - Vector3(u.x, u.y, 0) * 0.12 * U, Vector3(grip.x, grip.y, z) + Vector3(u.x, u.y, 0) * 0.05 * U, 0.024 * U, 0.02 * U, rot, 0.01 * U)
+	var gp: Vector2 = P.call(0.07, 0.0)
+	cl.cap(g, Vector3(gp.x, gp.y, z) - Vector3(n.x, n.y, 0) * 0.12 * U, Vector3(gp.x, gp.y, z) + Vector3(n.x, n.y, 0) * 0.12 * U, 0.03 * U, 0.022 * U, bone, 0.01 * U)
+	# 날: 밑동이 넓고 끝으로 갈수록 좁아지다 비스듬히 꺾인 끝
+	var blade := PackedVector2Array([P.call(0.09, -1.0), P.call(0.09, 1.0), P.call(0.5, 1.05), P.call(0.86, 0.7), P.call(1.0, -0.15), P.call(0.9, -0.85), P.call(0.5, -1.0)])
+	cl.slab(g, blade, z, 0.02 * U, bone, 1.6, 0.03 * U)
+	for k in 9:  # 등뼈 같은 마디 골
+		var t := 0.14 + k * 0.085
+		cl.groove(g, P.call(t, -0.55), P.call(t + 0.02, 0.55), 0.006 * U, 0.006 * U)
+	cl.ridge(g, [P.call(0.1, 0.0), P.call(0.5, 0.05), P.call(0.88, -0.05)], 0.008 * U, 0.008 * U, bone)
+	for k in 6:  # 이 빠진 날
+		var t := 0.2 + k * 0.12 + rng.randf() * 0.04
+		var side := 1.0 if k % 2 == 0 else -1.0
+		cl.erase(g, P.call(t, side * 1.02), rng.randf_range(0.012, 0.022) * U, rng.randf_range(0.018, 0.03) * U, 0.5)
+	for k in 12:  # 날에 붙은 구더기
+		var q: Vector2 = P.call(rng.randf_range(0.15, 0.8), rng.randf_range(-0.6, 0.6))
+		cl.bump(g, q, 0.018 * U, 0.01 * U, 0.01 * U, grub, 0.005 * U, rng.randf_range(-1.0, 1.0))
+	for k in 4:  # 썩은 얼룩
+		var q: Vector2 = P.call(rng.randf_range(0.1, 0.7), rng.randf_range(-0.7, 0.7))
+		cl.bump(g, q, rng.randf_range(0.02, 0.035) * U, rng.randf_range(0.012, 0.02) * U, 0.002 * U, rot, 0.01 * U)
 
 
 ## 등 뒤 박쥐 날개: 어깨 뒤에서 머리 위로 솟은 팔뼈 → 바깥 손목(엄지 갈고리) → 아래로 부채처럼 펼친 손가락뼈 넷.

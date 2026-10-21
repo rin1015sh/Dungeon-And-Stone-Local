@@ -57,7 +57,17 @@ func force_open(s: ExploreSession, rift_id: String, near: Vector2i) -> bool:
 
 
 ## 기념비에서 마석 바치기: 가방에 균열 force_open.item이 있으면 하나 쓰고 그 균열을 연다. 바쳤으면 true.
+## 그 층의 계층석(아이템 opens_floor_rift = 층 번호 — 계층군주 보상)이 있으면 그것을 먼저: 그 층 균열 하나(가중 무작위)를 연다.
 func try_offer(s: ExploreSession, monument: Vector2i) -> bool:
+	var fl := JsonUtil.get_int(s.floor_def, "floor", 0)
+	for item in s.player.inventory.ids():
+		if fl > 0 and JsonUtil.get_int(s.db.get_entry("items", item), "opens_floor_rift") == fl and not rifts_for(s).is_empty():
+			s.message.emit("explore.rift_offer", {"item": DataNames.entry(s.db, "items", item)}, "system")
+			if force_open(s, pick_rift(s), monument):
+				s.player.inventory.remove(item, 1)
+			else:
+				s.message.emit("explore.rift_offer_failed", {}, "warn")
+			return true
 	for id in rifts_for(s):
 		var item := JsonUtil.get_str(JsonUtil.get_dict(s.db.get_entry("rifts", id), "force_open"), "item")
 		if not item.is_empty() and s.player.inventory.count(item) > 0:

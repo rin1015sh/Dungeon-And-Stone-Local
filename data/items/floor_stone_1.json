@@ -1,0 +1,17 @@
+{
+  "id": "floor_stone_1",
+  "name_ko": "수정동굴의 계층석",
+  "category": "material",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 0,
+  "icon": "stone",
+  "color": "#e07a5a",
+  "rarity": "floor_relic",
+  "opens_floor_rift": 1,
+  "source": "placeholder",
+  "notes": "계층석(사용자 결정 2026-10-21): 그 층(opens_floor_rift) 기념비에 바치면 그 층 균열 하나가 열린다(종류는 가중 무작위, 한 번 쓰면 사라진다 — RiftWatch.try_offer)"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "dreadfear",
+  "name_ko": "공포의 군주 드레드피어의 정수",
+  "grade": 6,
+  "source_monster": "dreadfear",
+  "family": "dreadfear",
+  "rank": "lord",
+  "passive": {
+    "id": "dread_lord_presence",
+    "name_ko": "공포의 군주",
+    "desc_ko": "전투가 시작되면 적 전원이 위축된다.",
+    "foe_statuses_on_start": [
+      "intimidated"
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_dread_bone_cleave"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_dread_indulgence"
+    },
+    {
+      "color": "green",
+      "skill": "ess_dread_dead_memory"
+    }
+  ],
+  "stats": {
+    "str": 22,
+    "m_res": 14,
+    "int": 16
+  },
+  "resources": {
+    "hp": 40
+  },
+  "source": "placeholder",
+  "notes": "계층정수(사용자 결정 2026-10-21 — 명세 V2 §7의 '정수 없음'을 바꿈). 수호자 정수처럼 무지갯빛(액티브 전부·스탯·생명력 ×1.5 — EssenceDrop.GUARDIAN_RANKS에 lord). 수치는 임시값"
+}

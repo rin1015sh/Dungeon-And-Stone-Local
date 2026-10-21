@@ -1,0 +1,34 @@
+{
+  "id": "dread_bone_greatsword",
+  "name_ko": "뼈 대검",
+  "category": "weapon",
+  "size": [
+    1,
+    4
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "sword",
+  "color": "#d8ccaa",
+  "rarity": "floor_relic",
+  "equip": {
+    "slot": "main_hand",
+    "two_handed": true,
+    "weapon": {
+      "damage_type": "slash",
+      "attack": 30
+    },
+    "modifiers": [
+      {
+        "target": "str",
+        "flat": 5
+      },
+      {
+        "target": "max:hp",
+        "flat": 20
+      }
+    ]
+  },
+  "source": "placeholder",
+  "notes": "계층보구(넘버스의 상위격, 사용자 결정 2026-10-21) — 1층 계층군주 드레드피어의 무기. 공격력 30(강철 검 10)·근력 +5·생명력 +20, 팔지 못한다(price 0). 임시값"
+}

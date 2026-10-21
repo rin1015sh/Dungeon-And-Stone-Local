@@ -7,7 +7,8 @@ extends RefCounted
 ##   스탯(stats)·자원 최대치(resources — 생명력)는 정수마다 고정값이다(수호자 정수 × guardian_stat_mult, 반올림 — J13).
 ## 정수 사례(instance): {"essence": id, "color": 색 id, "stats": {스탯 id: 값}, "resources": {자원 id: 최대치 증가}}
 
-const GUARDIAN_RANKS := ["guardian", "variant_guardian"]
+## 무지갯빛(액티브 전부·스탯 ×guardian_stat_mult) 정수를 주는 등급 — 수호자와 계층군주(계층정수, 사용자 결정 2026-10-21).
+const GUARDIAN_RANKS := ["guardian", "variant_guardian", "lord"]
 
 
 ## 몬스터 하나의 정수 드롭. 없으면 {}. mult: 확률 배율(수수께끼 문지기 약화 ×2).

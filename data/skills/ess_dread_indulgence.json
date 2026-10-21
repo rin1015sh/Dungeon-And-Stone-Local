@@ -1,0 +1,19 @@
+{
+  "id": "ess_dread_indulgence",
+  "name_ko": "면죄부(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "isolated",
+      "chance": 0.75
+    }
+  ],
+  "essence_of": "dread_indulgence",
+  "source": "placeholder"
+}

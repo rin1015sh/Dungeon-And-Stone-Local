@@ -73,10 +73,12 @@ func test_bag_full_reports_left_count() -> void:
 	assert_eq(int(m["left"]), 1, "넘친 수")
 
 
-## 처치 드롭(사용자 결정 2026-10-21): 일반 몬스터는 마석(등급) 하나뿐 — 잡템 없음. 정수는 따로 확률. 예외는 균열 열쇠(지휘관 데드맨의 뿔피리).
+## 처치 드롭(사용자 결정 2026-10-21): 일반 몬스터는 마석(등급) 하나뿐 — 잡템 없음. 정수는 따로 확률. 예외는 균열 열쇠(지휘관 데드맨의 뿔피리)·계층군주 보상.
 func test_kill_drops_are_magic_stone_only() -> void:
 	for id: String in db.get_collection("monsters"):
 		var def := db.get_entry("monsters", id)
+		if JsonUtil.get_str(def, "rank") == "lord":
+			continue  # 계층군주 보상(lord_drops)은 따로 — test_lord.test_lord_rewards
 		var drops := Loot.roll(db, id, Rng.new(7))
 		var stones := drops.filter(func(d: Dictionary) -> bool: return str(d["id"]).begins_with("magic_stone_"))
 		if def.has("magic_stone_grade"):

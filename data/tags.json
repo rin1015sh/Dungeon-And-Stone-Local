@@ -90,7 +90,8 @@
   "rarities": [
     {"id": "common", "name_ko": "평범한", "color": "#c9c0b6"},
     {"id": "fine", "name_ko": "좋은", "color": "#7fae6a"},
-    {"id": "numbers", "name_ko": "넘버스", "color": "#c9a24a"}
+    {"id": "numbers", "name_ko": "넘버스", "color": "#c9a24a"},
+    {"id": "floor_relic", "name_ko": "계층보구", "color": "#d0603a"}
   ],
   "monster_ranks": [
     {"id": "ungraded", "name_ko": "무등급"},

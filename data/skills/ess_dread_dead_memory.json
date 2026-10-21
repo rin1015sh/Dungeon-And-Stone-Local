@@ -1,0 +1,29 @@
+{
+  "id": "ess_dread_dead_memory",
+  "name_ko": "죽은 자의 기억(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 30
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 2,
+      "hits": 3,
+      "target": "cast",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "magic",
+          "base": 0,
+          "power": 0.9,
+          "damage_type": "dark"
+        }
+      ]
+    }
+  ],
+  "essence_of": "dread_dead_memory",
+  "source": "placeholder"
+}
