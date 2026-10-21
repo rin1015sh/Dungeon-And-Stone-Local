@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **정수 표에 우리 몬스터 52종 반영 (2026-10-21, 사용자 "스탯이 비어 있는데 우리 게임 몬스터 스탯을 전부 표에 반영해 줄래")**: `tools/essence_table_convert.py`에 칸 추가 — 출처 · 우리 등급 · 몬스터 근력·민첩·물리내성·항마력·정신력·생명력·영혼력·무기 · 지금 정수 · 지금 드랍율. 표에 없던 우리 몬스터 13종을 "우리 게임" 행으로(정수 칸 = 지금 정수, 드랍율 = 표 등급별 또는 계급별). 237행. 표만 있는 185종의 몬스터 칸은 빈칸(우리 데이터 없음).
+
 - **사용자 정수 표 변환 (2026-10-21, 사용자 "표를 우리 게임에 넣을 수 있도록 수정만 하자. 스탯 체계와 규모를 우리 게임에 맞게. 스킬은 나중에")**: 원본 `docs/balance/source/essence_table_original.csv`(224행), 도구 `tools/essence_table_convert.py`(파이썬 — 스탯 대응표·등급별 목표 합·생명력 규칙), 결과 `docs/balance/essence_table_converted.csv` + 설명·겹치는 39종 비교 `docs/balance/essence_table.md`. 등급별 배율 9 ×1.37 … 4 ×0.58(1~3등급은 행이 적어 임시). 처음엔 계급 배율(수호자 ×1.9)을 곱했다가 표의 수호자가 이미 커서 지금보다 1.5~1.8배가 돼 뺐다. 게임 데이터는 그대로(J18).
 
 - **계층군주 보상 셋 · 드레드피어 뼈 대검 (2026-10-21, 사용자 "계층군주 처치 보너스 경험치는 15 … 보상은 셋 — 계층보구·계층석·계층정수. 드레드피어는 대검, 확률은 적정치. 전투 화면에서도 검")**: 경험치 15는 이미 `progression.json exp.lord_bonus`(1회)였다 — 시험으로 고정. 새 아이템 `dread_bone_greatsword`(등급 floor_relic 계층보구, 두 손 참격 30·근력 +5·생명력 +20, price 0)·`floor_stone_1`(수정동굴의 계층석, `opens_floor_rift: 1`), 드레드피어 `lord_drops` 8%·35%(`Loot` — rank lord만, 검증 `ContentRules`), 계층정수 `essences/dreadfear` + 정수판 스킬 3(`ess_dread_*`), `drop_chance_by_rank.lord` 0 → 0.2, `EssenceDrop.GUARDIAN_RANKS`에 lord(무지갯빛). `RiftWatch.try_offer`: 그 층 계층석이 있으면 먼저 써서 그 층 균열 하나(가중 무작위). 그림: `Lord._greatsword`(오른손 뼈 대검 — 마디 골·이 빠진 날·구더기), 전투 그림·맵 그림(`paint_actors --only=dreadfear`) 다시. 캡처 `--god`(무적 — 계층군주 전투 찍기). 시험: test_lord 보상(400번 굴려 확률·종류), test_rift 계층석. check.sh 통과.
