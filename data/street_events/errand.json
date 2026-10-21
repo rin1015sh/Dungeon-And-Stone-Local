@@ -1,0 +1,26 @@
+{
+  "id": "errand",
+  "name_ko": "심부름",
+  "weight": 2,
+  "cooldown_months": 2,
+  "choices": [
+    {
+      "id": "accept",
+      "effects": [
+        {
+          "type": "money",
+          "amount": 40
+        },
+        {
+          "type": "fatigue",
+          "direction": "up",
+          "amount": 10
+        }
+      ]
+    },
+    {
+      "id": "decline"
+    }
+  ],
+  "source": "placeholder"
+}

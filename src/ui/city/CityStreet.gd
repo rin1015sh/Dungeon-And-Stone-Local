@@ -216,14 +216,14 @@ func _place_plates() -> void:
 			baseline * _scale + UiTheme.render_float("city.plate_offset_px", 8.0))
 
 
-## 강조: 행동력이 되면 가리킨 건물은 밝고 윤곽, 안 되면 모두 흐리게(이름판도 흐림).
+## 강조: 행동력이 되면 가리킨 건물은 밝고 윤곽, 안 되면 모두 흐리게(이름판도 흐림). 이번 순 닫힌 시설(거리 사건)도 흐리게.
 func refresh() -> void:
 	if _state == null:
 		return
 	_apply_weather()
 	for i in _buildings.size():
 		var b := _buildings[i]
-		var can := _state.can_spend(_state.entry_cost_of(str(b["id"]))) and _state.facility.is_empty()
+		var can := _state.can_spend(_state.entry_cost_of(str(b["id"]))) and _state.facility.is_empty() and not _state.closed.has(str(b["id"]))
 		var lit := i == _focus
 		var mat := (b["node"] as TextureRect).material as ShaderMaterial
 		mat.set_shader_parameter("brighten", UiTheme.render_float("city.hover_brighten", 0.15) if lit and can else 0.0)

@@ -32,6 +32,13 @@ var happenings: Array[String] = []
 var seen_once: Array[String] = []
 ## 세금을 낸 마지막 연차(CityTax).
 var tax_paid_year: int = 0
+## 거리 사건(CityAmbient): 이번 순 사건 id("" = 없음) · 아직 굴리지 않았는가 · 사건마다 마지막으로 나온 달.
+var ambient: String = ""
+var ambient_pending: bool = false
+var ambient_seen: Dictionary = {}
+## 이번 순에 닫힌 시설 · 값 배율("buy:<분류>"·"sell:<분류>"·"fee:<시설>" → 배율) — 순이 바뀌면 사라진다.
+var closed: Array[String] = []
+var price_mods: Dictionary = {}
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
 var overrides: Dictionary = {}
 
@@ -145,11 +152,20 @@ func _begin_period() -> void:
 	ap = ap_per_period()
 	roll_weather()
 	CityHappenings.roll(self)
+	closed.clear()
+	price_mods.clear()
+	ambient = ""
+	ambient_pending = true
 	var rate := CityValues.num(CityValues.city_section(db, overrides, "bank"), "interest_per_period")
 	if rate > 0.0 and bank_balance > 0:
 		bank_balance += floori(bank_balance * rate)
 	period_started.emit(month, period)
 	changed.emit()
+
+
+## 이번 순 값 배율(거리 사건, 없으면 1).
+func price_mult(key: String) -> float:
+	return float(price_mods.get(key, 1.0))
 
 
 func can_spend(n: int) -> bool:
@@ -171,6 +187,8 @@ func enter_facility(id: String) -> String:
 		return "city.reason_inside"
 	if not db.has_entry("facilities", id):
 		return "city.reason_unknown"
+	if closed.has(id):
+		return "city.reason_closed"
 	if not spend_ap(entry_cost_of(id)):
 		return "city.reason_no_ap"
 	facility = id
@@ -252,11 +270,12 @@ func learn_info(id: String) -> bool:
 	return true
 
 
-## 저장 대상: 날짜·행동력·공적치·잔액·얻은 소문/정보·오늘의 거리·세금. 디버그 임시값은 넣지 않는다.
+## 저장 대상: 날짜·행동력·공적치·잔액·얻은 소문/정보·오늘의 거리·세금·거리 사건. 디버그 임시값은 넣지 않는다.
 func to_dict() -> Dictionary:
 	return {"month": month, "period": period, "ap": ap, "temple_merit": temple_merit,
 		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "expedition_month": expedition_month, "rng": rng.get_state_string(),
-		"happenings": happenings.duplicate(), "seen_once": seen_once.duplicate(), "tax_paid_year": tax_paid_year}
+		"happenings": happenings.duplicate(), "seen_once": seen_once.duplicate(), "tax_paid_year": tax_paid_year,
+		"ambient": ambient, "ambient_pending": ambient_pending, "ambient_seen": ambient_seen.duplicate(), "closed": closed.duplicate(), "price_mods": price_mods.duplicate()}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -276,5 +295,10 @@ func load_dict(d: Dictionary) -> void:
 		happenings.assign(JsonUtil.get_array(d, "happenings").map(func(v: Variant) -> String: return str(v)))
 	seen_once.assign(JsonUtil.get_array(d, "seen_once").map(func(v: Variant) -> String: return str(v)))
 	tax_paid_year = JsonUtil.get_int(d, "tax_paid_year")
+	ambient = JsonUtil.get_str(d, "ambient")
+	ambient_pending = JsonUtil.get_bool(d, "ambient_pending")
+	ambient_seen = JsonUtil.get_dict(d, "ambient_seen").duplicate()
+	closed.assign(JsonUtil.get_array(d, "closed").map(func(v: Variant) -> String: return str(v)))
+	price_mods = JsonUtil.get_dict(d, "price_mods").duplicate()
 	facility = ""
 	changed.emit()

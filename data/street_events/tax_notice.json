@@ -1,0 +1,13 @@
+{
+  "id": "tax_notice",
+  "name_ko": "납세 포고",
+  "forced": true,
+  "when": {
+    "tax_month": 0,
+    "periods": [
+      "early"
+    ],
+    "tax_owed": true
+  },
+  "source": "placeholder"
+}

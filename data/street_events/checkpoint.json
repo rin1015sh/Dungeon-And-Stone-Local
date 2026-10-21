@@ -1,0 +1,20 @@
+{
+  "id": "checkpoint",
+  "name_ko": "경비대 검문",
+  "weight": 2,
+  "cooldown_months": 2,
+  "effects": [
+    {
+      "type": "close_facility",
+      "from": [
+        "inn",
+        "library",
+        "training",
+        "temple",
+        "shop",
+        "smithy"
+      ]
+    }
+  ],
+  "source": "placeholder"
+}

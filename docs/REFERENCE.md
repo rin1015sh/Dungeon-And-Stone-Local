@@ -19,6 +19,7 @@
 - **도시(M4, 2026-10-14)**: 흐름 = 새 게임·귀환 → `CityScreen`(사망만 타이틀). 거리 좌표 = 화면 높이 720 기준 거리 단위(`render.json city`), 거리 = `city.json street.layers`(시차) 위에 시설 건물. 거리에서 시설을 고르면 행동력 `facility_entry_cost`(1) — **행동력은 입장에만 쓰고 시설 안 활동은 쓰지 않는다**, 활동은 `activities/<id>`(`cost_stones`·`effects[]`·`panel`). 순(상·중·하) × 12달, 순당 행동력 3, 다 쓰고 거리로 나오면 다음 순, **하순이 끝나면 저절로 차원광장 → 미궁**(`expedition_due`), 귀환하면 다음 달 상순(`return_from_dungeon`) (`CityState`, `GameState.city`). **시설 안 활동 한 번 → 결과를 대화창에서 넘기면 저절로 거리로**(나가기 버튼은 언제나 — 창구형은 선택판 맨 끝 나가기·Backspace·Esc로 마침, 할 게 없으면 바로 나옴, UI15). 규칙 값은 2026-10-15 모두 임시값(`docs/balance/city.md`, CT26) — null로 되돌리면 효과 없음(검증기 경고 `CityValues.nulls`), 디버그 F1은 `CityValues.tunables`를 `CityState.overrides`로 임시 변경(저장 안 됨). 피로도 = `PlayerCharacter.fatigue`(`Fatigue`, 미궁 연결 지점 `on_dungeon` 4곳, 단계 효과 `effects()` → 수정자 출처 `fatigue`). 상점은 아이템 price, 정수 제거는 `EssenceSet.remove`. 한 칸 저장은 차원광장에서만(`SaveGame`, 사망 시 삭제), 하순이 끝나면 차원광장(`PlazaScreen`, 포탈은 한 달에 한 번 `expedition_month`). 가정 CT1~CT33.
 - **계층군주 보상(2026-10-21, DF16)**: 몬스터 `lord_drops`[{item, chance}](rank lord만 — Loot가 drops 뒤에 굴린다), 아이템 등급 `floor_relic`(계층보구, tags.rarities), 아이템 `opens_floor_rift: <층>`(계층석 — 그 층 기념비 `RiftWatch.try_offer`), 계층정수 = 보통 정수 파일(`rank: lord` — 무지갯빛, `EssenceDrop.GUARDIAN_RANKS`), 확률 `balance essence.drop_chance_by_rank.lord`. 몬스터 `drops`는 균열 열쇠(rift_bound)만(검증기).
 - **도시 생활(2026-10-20, CT35·CT37·CT39)**: 오늘의 거리 `city_events/<id>` {facility, weight, when{from_month, periods[], weather[]}, activities[], once} · 활동 `"extra": true`(사건으로만 열린다 — 시설 activities 목록에 넣지 않는다), `stock`(상점 패널 활동의 자기 판매 목록) · 도시 효과 `pay_tax` · `city.json happenings{count[최소,최대]}` · `tax{by_year[], scale, race_rate{종족}, relief{종족:{years, ratio}}, exempt[], due_month}` · 문자열 `city.tax_execution.<n>`. 상태 `CityState` happenings·seen_once·tax_paid_year(저장). 시설 `"placeholder": true` = 기능 없는 자리(활동 없음, 입장 행동력 0 — 모험가 길드). 상점 창구 활동 `deals`: equipment(장비 — 아이템 category가 `city.json shop.equipment_categories`)·goods(장비 아닌 것) — 판매 목록·사들이는 것 모두 거른다(대장간 `smithy_trade` · 상점 `shop_trade`). 거리 넘기기 시간 `render.json city.step_sec`. 검사 `CityLifeRules`.
+- **거리 사건(2026-10-21, CT42)**: `street_events/<id>` {name_ko, weight, forced, cooldown_months, weather_weight{날씨: 배율}, when{from_month, months_of_year[], periods[], weather[], tax_month(세금 기한 달에서 몇 달 뒤), tax_owed}, 갈래(cost_stones · effects[] · check{stats[], target, base, per_point, min, max} · success[] · fail[]) 또는 choices[{id, 갈래}]} · `city.json ambient{chance}` · 도시 효과 `money`{amount | lose_ratio, min, max} · `close_facility`{from[]}(은행 금지) · `price_mod`{key `buy:<분류>`·`sell:<분류>`·`fee:<시설>`, mult} · 문자열 `city.street.<id>.intro.<n>`·`.<결과>.<n>`(result·선택지 id, 판정 있으면 `_ok`·`_fail`, 결과 장면에 효과 인자 {n}·{name})·`.choice.<id>` · 상태 `CityState` ambient·ambient_pending·ambient_seen·closed·price_mods(저장, closed·price_mods는 순마다 비움) · 거절 이유 `city.reason_closed` · 검사 `CityStreetRules` · 테스트·캡처 `CityAmbient.enabled`(끔), 캡처 `--street=<id>`, 디버그 F1 '거리 사건'.
 
 ## 파일 구조(자세히)
 
@@ -29,7 +30,7 @@ data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json
   city.json(도시 규칙 — 2026-10-15 모두 임시값, CT26)
-  monsters/ essences/ skills/ items/ floors/ rifts/ riddles/ events/(동굴 요소) facilities/ activities/ city_info/ city_events/(오늘의 거리)   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
+  monsters/ essences/ skills/ items/ floors/ rifts/ riddles/ events/(동굴 요소) facilities/ activities/ city_info/ city_events/(오늘의 거리) street_events/(거리 사건)   ('_'로 시작하는 파일 = 스키마 템플릿, 로드 안 함)
   maps/                  고정 지도(tools/bake_floor.gd가 굽는다 — manifest가 아니라 층 JSON fixed_map.file이 가리킨다)
   strings/ko.json
 src/
@@ -55,7 +56,7 @@ src/
   progress/              Progression(공적·레벨·획득원), ExpBudget, Lineage(계열·공유 이능), Knowledge(???), Loot, Rewards, EssenceSet(흡수·중복·삭제·슬롯 잠금), EssenceDrop(드롭), DropPickup(전투 장면에서 줍는 드롭 — 굴림·받기·두기), SaveGame(한 칸 저장)
   items/                 Inventory(격자 가방), Equipment(11칸), InventoryActions, ItemInfo, ItemUser
   city/                  CityState(순 달력·행동력·공적치·잔액·소문/정보·오늘의 거리·세금·디버그 임시값), CityValues(null 경로·임시값), CityActions(활동 실행),
-                         CityHappenings(오늘의 거리), CityTax(세금),
+                         CityHappenings(오늘의 거리), CityAmbient(거리 사건), CityTax(세금),
                          CityEffect + effects/<type>.gd(fatigue·stat_chance·learn_info·temple_merit·restore·give_item), CityShop·CityBank·CityTemple(패널형), CityContext, CityInfo
   ui/InputSetup.gd       data/input.json → InputMap
   ui/theme/UiTheme.gd    render.json → Theme, 위젯 생성 도우미

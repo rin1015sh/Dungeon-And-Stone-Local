@@ -4,6 +4,7 @@ extends PanelContainer
 ## 임시값은 CityState.overrides에만 들어간다 — 저장되지 않고 데이터 파일도 바뀌지 않는다. 값은 JSON으로 읽는다(숫자, ["str","agi"], true …).
 
 signal dungeon_requested
+signal street_event_requested  ## 거리 사건을 지금 다시 굴린다(CityAmbient — 쿨다운 무시)
 
 var _state: CityState
 var _pc: PlayerCharacter
@@ -54,6 +55,10 @@ func _ready() -> void:
 	_btn(life, Strings.t("city.debug_reroll"), func() -> void:
 		CityHappenings.roll(_state)
 		_state.changed.emit())
+	_btn(life, Strings.t("city.debug_street"), func() -> void:
+		_state.ambient_seen.clear()
+		_state.ambient_pending = true
+		street_event_requested.emit())
 	_btn(life, Strings.t("city.debug_tax_due"), func() -> void:
 		_state.month = (_state.year() - 1) * _state.months_per_year() + CityTax.due_month(_state)
 		_state.period = _state.periods().size() - 1
@@ -100,7 +105,7 @@ func _sync() -> void:
 	_month.set_value_no_signal(_state.month)
 	_period.selected = _state.period
 	_fatigue.set_value_no_signal(_pc.fatigue.value)
-	_life.text = Strings.t("city.debug_life", {"events": ", ".join(_state.happenings),
+	_life.text = Strings.t("city.debug_life", {"events": ", ".join(_state.happenings), "street": _state.ambient,
 		"tax": CityTax.amount(_state, _pc.race_id), "paid": CityTax.paid(_state)})
 
 

@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **거리 사건 (2026-10-21, 사용자 "행동력 소모 없이 순이 바뀔 때마다 도시에서 일어나는 이벤트 — 세금 미납자 처형·좀도둑질 등" → "미궁 소식 넣지 말고, 원작에서는 아무 종족 세금 못 내면 교수형")**:
+  - 범위: 순이 바뀔 때 행동력 없이 거리 사건 하나(데이터 `data/street_events` 14종), 장면·선택지·판정·효과, 닫힘·값 배율, 저장, 검증, 테스트·캡처. 완료 기준: check.sh 통과 + 장면·선택 창 캡처 확인. 테스트: `test_city_ambient.gd`(7개) · UI 스모크 `_street_flow`(교수형 장면·선택 Enter·닫힌 시설·행동력 그대로).
+  - 한 일: `CityAmbient`(굴림 — forced 우선, 아니면 `ambient.chance` 0.5 × weight×날씨 배율, 쿨다운 · resolve — 갈래/선택지, 판정 `check_chance`) · 도시 효과 `money`·`close_facility`(은행 금지)·`price_mod`(buy/sell/fee) · `CityState` ambient·closed·price_mods(순마다 비움, 저장) · `CityShop.buy_price`·`sell_price`·`CityActions.cost`가 배율을 따른다 · 닫힌 시설은 `city.reason_closed` + 거리에서 흐림 · `CityScreen.street_event`(시작·귀환·순 넘김 — 장면 대화창 → 선택 창 `StreetChoice` → 결과 장면, 효과 문구는 가방 자리 없음만) · 디버그 F1 '거리 사건' · 캡처 `--street=<id>` · 검증 `CityStreetRules`.
+  - 세금 미납 처형 장면을 교수형으로(`city.tax_execution.3`, city.json 주석, CT37 → CT42). 미궁 소식(생환자 정보·균열 소문·돌아오지 않은 원정대)은 사용자 결정으로 뺐다.
+  - 수치(소매치기 3%·약장수 5000 등)는 임시. 남은 것: 교수대·경비병·그을린 건물 같은 거리 그림(지금은 글 + 건물 흐림뿐).
+
 - **정수 표는 게임에 적용하지 않기로 (2026-10-21, 사용자 "그럼 표는 게임에 적용할 필요가 없겠네")**: 1층 52종의 정수·스킬·`essence_of` 연결은 지금 것 그대로. 표 스킬로 바꾸면 균형 맞춘 정수 스킬 약 100개를 버리고 새 전투 기능 15종쯤(회피 확률·둔화·생명력 조건·퍼센트 반사 등)·색 배정·빈칸 메우기가 필요해 이득이 적다. 표(`docs/balance/essence_table_converted.csv`, 185종 변환 + 차례제 스킬)는 2층 이후 몬스터 초안과 스킬 아이디어 참고로만 남김. 코드·데이터 변경 없음(J18·essence_table.md 머리말·PROGRESS 갱신).
 
 - **정수 표 스킬 문장 차례제로 (2026-10-21, 사용자 "표 스킬에서 턴제 전투로 구현하기 힘들거나 불가능한 것들은 수정해 줄래")**: 표의 스킬 문장 416개(중복 빼고)를 다 읽고 301개를 고침 — 대응표 `docs/balance/source/essence_skill_ctb.csv`(원문·수정·이유), `essence_table_convert.py`가 적용. 기준표 `essence_table.md` 5절. 문장만(효과 데이터 없음).

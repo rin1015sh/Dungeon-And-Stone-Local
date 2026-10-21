@@ -13,9 +13,10 @@ static func stone_cost(act: Dictionary) -> int:
 	return maxi(0, int(CityValues.num(act, "cost_stones")))
 
 
-## 지금 낼 이용료.
+## 지금 낼 이용료(× 이번 순 배율 "fee:<시설>" — 거리 사건).
 static func cost(state: CityState, act_id: String) -> int:
-	return stone_cost(state.activity(act_id))
+	var act := state.activity(act_id)
+	return floori(stone_cost(act) * state.price_mult("fee:" + JsonUtil.get_str(act, "facility")))
 
 
 ## 지금 이 활동을 할 수 있는가. 할 수 있으면 "", 아니면 이유(문자열 키). extra_stones = 거래 금액 등 추가로 필요한 돈.

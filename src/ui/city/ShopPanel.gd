@@ -23,7 +23,7 @@ func options() -> Array[Dictionary]:
 				opts.append({"text": Strings.t("city.shop_tab_" + t), "on_pick": func() -> void: open_tab(t)})
 		"buy":
 			for id in CityShop.stock(state, activity_id):
-				var price := CityShop.price(state.db, id)
+				var price := CityShop.buy_price(state, id)
 				opts.append({"text": _name(id), "sub": Strings.t("city.shop_sub_buy", {"price": price}), "enabled": pc.inventory.money >= price,
 					"on_pick": func() -> void: done(CityShop.buy(state, pc, activity_id, id, 1))})
 		"sell":

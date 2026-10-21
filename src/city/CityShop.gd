@@ -54,6 +54,15 @@ static func price(db: GameDatabase, item_id: String) -> int:
 	return maxi(0, JsonUtil.get_int(db.get_entry("items", item_id), "price"))
 
 
+## 사는 값: 제값 × 이번 순 배율(거리 사건 — CityState.price_mods "buy:<분류>").
+static func buy_price(state: CityState, item_id: String) -> int:
+	return floori(price(state.db, item_id) * state.price_mult("buy:" + _category(state, item_id)))
+
+
+static func _category(state: CityState, item_id: String) -> String:
+	return JsonUtil.get_str(state.db.get_entry("items", item_id), "category")
+
+
 
 static func sell_ratio(state: CityState) -> float:
 	var c := config(state)
@@ -69,13 +78,13 @@ static func can_sell(state: CityState, item_id: String, act_id: String = "") -> 
 	return true
 
 
-## 판매가: 마석은 magic_stone_ratio(없으면 sell_ratio), 그 밖은 sell_ratio.
+## 판매가: 마석은 magic_stone_ratio(없으면 sell_ratio), 그 밖은 sell_ratio. × 이번 순 배율("sell:<분류>").
 static func sell_price(state: CityState, item_id: String) -> int:
 	var c := config(state)
 	var ratio := sell_ratio(state)
 	if JsonUtil.get_str(state.db.get_entry("items", item_id), "category") == MAGIC_STONE and CityValues.is_set(c, "magic_stone_ratio"):
 		ratio = maxf(0.0, CityValues.num(c, "magic_stone_ratio"))
-	return floori(price(state.db, item_id) * ratio)
+	return floori(price(state.db, item_id) * ratio * state.price_mult("sell:" + _category(state, item_id)))
 
 
 ## 가방에서 이 창구에 팔 수 있는 아이템 id.
@@ -91,7 +100,7 @@ static func buy(state: CityState, pc: PlayerCharacter, act_id: String, item_id: 
 	var ctx := CityContext.new(state, pc, act_id)
 	if n <= 0 or not stock(state, act_id).has(item_id):
 		return ctx.fail("city.reason_not_sold")
-	var total := price(state.db, item_id) * n
+	var total := buy_price(state, item_id) * n
 	var why := CityActions.check(state, pc, act_id, total)
 	if not why.is_empty():
 		return ctx.fail(why)

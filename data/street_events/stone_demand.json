@@ -1,0 +1,17 @@
+{
+  "id": "stone_demand",
+  "name_ko": "마석 매집",
+  "weight": 2,
+  "cooldown_months": 2,
+  "when": {
+    "from_month": 2
+  },
+  "effects": [
+    {
+      "type": "price_mod",
+      "key": "sell:magic_stone",
+      "mult": 1.2
+    }
+  ],
+  "source": "placeholder"
+}

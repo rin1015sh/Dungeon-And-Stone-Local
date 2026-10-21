@@ -1,0 +1,19 @@
+{
+  "id": "plague",
+  "name_ko": "역병 소문",
+  "weight": 1,
+  "cooldown_months": 4,
+  "effects": [
+    {
+      "type": "price_mod",
+      "key": "fee:temple",
+      "mult": 1.5
+    },
+    {
+      "type": "price_mod",
+      "key": "fee:inn",
+      "mult": 1.3
+    }
+  ],
+  "source": "placeholder"
+}

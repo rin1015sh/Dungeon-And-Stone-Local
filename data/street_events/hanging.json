@@ -1,0 +1,13 @@
+{
+  "id": "hanging",
+  "name_ko": "교수형",
+  "_comment": "세금 기한 다음 달 상순마다 반드시 — 원작: 종족과 상관없이 세금을 못 내면 교수형(사용자 2026-10-21)",
+  "forced": true,
+  "when": {
+    "tax_month": 1,
+    "periods": [
+      "early"
+    ]
+  },
+  "source": "placeholder"
+}

@@ -21,6 +21,7 @@ var _dialog: DialogueBox  # 거리 아래 대화창(못 들어가는 이유 등 
 var _route: NoticeRoute
 var _menu: GameMenu
 var _debug: CityDebugPanel
+var _event_running := false  # 거리 사건 장면·선택 중
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) -> void:
@@ -60,6 +61,7 @@ func _ready() -> void:
 	_debug = CityDebugPanel.new()
 	_debug.setup(state, pc)
 	_debug.dungeon_requested.connect(func() -> void: dungeon_requested.emit())
+	_debug.street_event_requested.connect(street_event.bind(""))
 	_debug.visible = false
 	add_child(_debug)
 	_debug.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -67,7 +69,9 @@ func _ready() -> void:
 	_debug.offset_right = m + UiTheme.render_float("city.debug_width", 420.0)
 	_debug.offset_top = UiTheme.render_float("city.hud_height", 104.0) + m
 	state.expedition_due.connect(_on_expedition_due)
+	state.period_started.connect(func(_m: int, _p: int) -> void: street_event.call_deferred(""))
 	state.advance_if_spent.call_deferred()  # 행동력이 0인 채로 왔으면 바로 다음 순(하순이면 미궁으로)
+	street_event.call_deferred("")  # 시작·귀환한 순의 거리 사건
 
 
 func street() -> CityStreet:
@@ -133,6 +137,62 @@ func _on_expedition_due() -> void:
 	dungeon_requested.emit()
 
 
+## 거리 사건(CityAmbient — 행동력 없이 순마다): 장면 → (선택지가 있으면 고르기) → 결과 장면. 결과는 장면 글과 화면(소지금·
+## 닫힌 건물 흐림)으로 보이고, 효과 문구는 못 받은 것(가방 자리)만 띄운다.
+## force_id = 굴리지 않고 그 사건(디버그·테스트·캡처).
+func street_event(force_id: String = "") -> void:
+	if _event_running or not is_inside_tree():
+		return
+	var id := CityAmbient.force(state, force_id) if not force_id.is_empty() else CityAmbient.roll(state, pc.race_id)
+	if id.is_empty():
+		return
+	_event_running = true
+	for k in CityAmbient.line_keys(id, "intro"):
+		say(Strings.t(k))
+	var pick := -1
+	var choices := CityAmbient.choices(state)
+	if not choices.is_empty():
+		await _dialog.wait()
+		if not is_inside_tree():
+			return
+		pick = await _street_choice(id, choices)
+	var r := CityAmbient.resolve(state, pc, pick, _registry)
+	var ctx: CityContext = r["ctx"]
+	var args := {}
+	for m: Dictionary in ctx.messages:
+		args.merge(m["args"] as Dictionary, true)
+	for k in CityAmbient.line_keys(id, str(r["outcome"])):
+		say(Strings.t(k, args))
+	for m: Dictionary in ctx.messages:
+		if str(m["key"]) in CityAmbient.SHOWN_FX:
+			say(Strings.t(str(m["key"]), m["args"]), str(m["kind"]))
+	_hud.refresh()
+	_street.refresh()
+	_event_running = false
+
+
+func _street_choice(id: String, choices: Array) -> int:
+	var opts: Array[Dictionary] = []
+	for c: Variant in choices:
+		var d: Dictionary = c
+		var cost := int(CityValues.num(d, "cost_stones"))
+		var can := CityAmbient.can_choose(pc, d)
+		opts.append({"text": Strings.t("city.street.%s.choice.%s" % [id, JsonUtil.get_str(d, "id")]),
+			"sub": Strings.t("city.cost_stones", {"n": cost}) if cost > 0 else "", "enabled": can,
+			"desc": "" if can else Strings.t("city.reason_no_money")})
+	_street.set_process(false)
+	var pop := ChoicePopup.new()
+	pop.name = "StreetChoice"
+	add_child(pop)
+	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pop.open(JsonUtil.get_str(CityAmbient.entry(state, id), "name_ko"), opts, false, Vector2(-1, -1))
+	var i: int = await pop.picked
+	pop.queue_free()
+	if is_inside_tree():
+		_street.set_process(not _menu.is_open())
+	return i
+
+
 ## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
 func use_item(item_id: String) -> void:
 	if _facility != null:
@@ -176,7 +236,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_debug.visible = not _debug.visible
 		get_viewport().set_input_as_handled()
 		return
-	if get_viewport().gui_get_focus_owner() is LineEdit:
+	if get_viewport().gui_get_focus_owner() is LineEdit or has_node("StreetChoice"):
 		return
 	var pause_pop := get_node_or_null("PauseChoice") as ChoicePopup
 	if pause_pop != null:  # 정지 창: W/S·Enter는 창이 먼저 받는다, Esc = 계속

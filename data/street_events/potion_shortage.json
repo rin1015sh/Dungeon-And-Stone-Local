@@ -1,0 +1,14 @@
+{
+  "id": "potion_shortage",
+  "name_ko": "포션 품귀",
+  "weight": 1.5,
+  "cooldown_months": 3,
+  "effects": [
+    {
+      "type": "price_mod",
+      "key": "buy:potion",
+      "mult": 1.5
+    }
+  ],
+  "source": "placeholder"
+}

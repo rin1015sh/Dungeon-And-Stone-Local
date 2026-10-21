@@ -1,0 +1,22 @@
+{
+  "id": "beggar",
+  "name_ko": "외팔이 탐험가",
+  "weight": 2,
+  "cooldown_months": 2,
+  "choices": [
+    {
+      "id": "give",
+      "cost_stones": 10,
+      "effects": [
+        {
+          "type": "temple_merit",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "pass"
+    }
+  ],
+  "source": "placeholder"
+}
