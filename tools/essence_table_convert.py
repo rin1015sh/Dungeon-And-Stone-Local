@@ -12,11 +12,10 @@
   3) 생명력 — 표의 내구력으로: 등급 기본값(HP_BASE) × (0.75 + 0.25 × 내구력 / 그 등급 내구력 가운데값), 0.75~1.5.
      내구력이 없으면 기본값 × 0.5(지금 우리 정수의 '몸이 약한 종' 규칙과 같다).
   반올림 후 0은 뺀다. 음수(표의 −10 등)는 그대로 줄여서 남긴다.
-  4) 우리 게임 몬스터(사용자 요청 2026-10-21 "우리 게임 몬스터 스탯을 전부 표에 반영"): 행마다 '출처'(표 · 우리 게임)와
-     우리 몬스터의 전투 스탯(근력·민첩·물리내성·항마력·정신력·생명력·영혼력·무기)·우리 등급·지금 정수를 붙인다.
-     표에 없는 우리 몬스터는 행을 더한다 — 정수 칸은 지금 정수 값, 스킬은 지금 정수의 이름,
-     드랍율은 표의 등급별 값(계급별 확률이 있는 무등급·중간 보스·수호자·계층군주·토큰은 지금 게임의 계급별 값).
-     '지금 드랍율' 칸 = 지금 게임의 실제 확률(균열 안에서는 ×4).
+  4) 우리 게임 몬스터 52종은 전부 지금 게임 값(사용자 결정 2026-10-21 "원래 표 내용 반영하지 말고 우리 게임 기준으로 전부"):
+     등급·계급·정수 스탯·생명력·드랍율(지금 규칙)·패시브·스킬 이름·몬스터 전투 스탯. 원래 표 수치는 쓰지 않는다.
+     위 1)~3) 변환은 우리 게임에 없는 표 몬스터 185종에만 쓴다(우리 데이터가 없다) — 드랍율도 지금 규칙(등급별)으로.
+  "생명력" 칸 = 정수를 흡수하면 늘어나는 최대 생명력(정수 resources.hp — J13). 몬스터 자신의 생명력은 "몬스터 생명력" 칸.
 """
 import csv
 import json
@@ -90,6 +89,14 @@ def current_rate(m: dict) -> str:
     return ("%g%%" % (p * 100))
 
 
+def grade_rate(rank: str, grade: int) -> str:
+    """지금 게임 규칙의 정수 드랍율(계급별 값이 있으면 그것, 없으면 등급별)."""
+    ess = load("data/balance.json").get("essence", {})
+    by_rank = ess.get("drop_chance_by_rank", {})
+    p = by_rank[rank] if rank in by_rank else ess.get("drop_chance_by_grade", {}).get(str(grade), 0.0)
+    return "%g%%" % (p * 100)
+
+
 def essence_text(mid: str) -> str:
     """지금 정수의 스탯·생명력(글)."""
     e = load("data/essences/%s.json" % mid)
@@ -134,50 +141,45 @@ def main() -> None:
         scale[g] = TARGET_SUM[g] / statistics.median(sums) if sums else 1.0
         durs = [c["dur"] for c in conv if c["grade"] == g and c["dur"] > 0]
         dur_mid[g] = statistics.median(durs) if durs else 1.0
-    head = (["출처", "등급", "이름", "우리 id", "계급", "정수드랍율"] + [OUR_NAMES[s] for s in OUR_STATS] + ["생명력", "스탯 합", "버린 스탯",
-            "passive", "active1", "active2", "active3", "active4"]
-            + ["우리 등급", "몬스터 근력", "몬스터 민첩", "몬스터 물리내성", "몬스터 항마력", "몬스터 정신력", "몬스터 생명력", "몬스터 영혼력", "몬스터 무기", "지금 정수", "지금 드랍율(균열 밖)"])
-    rate_by_grade = {}
-    for c in conv:
-        rate_by_grade.setdefault(c["grade"], c["row"]["정수드랍율"])
-    out = []
-    for c in conv:
-        g = c["grade"]
-        k = scale[g]
-        vals = {s: int(round(v * k)) if v >= 0 else -int(round(-v * k)) for s, v in c["stats"].items()}
-        base = HP_BASE[g]
-        hp = base * (min(1.5, max(0.75, 0.75 + 0.25 * c["dur"] / dur_mid[g])) if c["dur"] > 0 else 0.5)
-        r = c["row"]
-        m = c["mon"] or {}
-        out.append(["표", g, r["이름"], m.get("id", ""), c["rank"], r["정수드랍율"]]
-                   + [vals[s] if vals[s] != 0 else "" for s in OUR_STATS]
-                   + [int(round(hp)), sum(vals.values()), " · ".join(c["dropped"]),
-                      r.get("passive", ""), r.get("active1", ""), r.get("active2", ""), r.get("active3", ""), r.get("active4", "")]
-                   + mon_cols(m) + [essence_text(m["id"]) if m else "", current_rate(m)])
-    # 표에 없는 우리 몬스터: 정수 칸 = 지금 정수, 드랍율 = 표의 등급별 값
-    seen = {c["mon"]["id"] for c in conv if c["mon"]}
-    for key, m in sorted(mons.items(), key=lambda kv: (-int(kv[1].get("grade") or 0), kv[1]["id"])):
-        if m["id"] in seen:
-            continue
+    head = (["출처", "등급", "이름", "우리 id", "계급", "정수드랍율(지금 규칙)"] + [OUR_NAMES[s] for s in OUR_STATS]
+            + ["생명력(흡수 시 최대 생명력 +)", "스탯 합", "그 밖의 스탯", "passive", "active1", "active2", "active3", "active4"]
+            + ["몬스터 근력", "몬스터 민첩", "몬스터 물리내성", "몬스터 항마력", "몬스터 정신력", "몬스터 생명력", "몬스터 영혼력", "몬스터 무기"])
+    rows_out = []  # (등급, 순서, 행)
+    # 우리 게임 몬스터 52종 = 전부 지금 게임 값(정수·드랍율·스킬 이름·전투 스탯) — 원래 표 수치는 쓰지 않는다(사용자 결정 2026-10-21)
+    for m in mons.values():
         e = load("data/essences/%s.json" % m["id"])
         st = e.get("stats", {})
         g = m.get("grade")
         skills = [load("data/skills/%s.json" % a.get("skill", "")).get("name_ko", a.get("skill", "")) for a in e.get("actives", [])]
-        rank = m.get("rank", "normal")
-        ranked = rank in load("data/balance.json").get("essence", {}).get("drop_chance_by_rank", {})
-        out.append(["우리 게임", g if g is not None else "", m["name_ko"], m["id"], rank,
-                    (current_rate(m) if ranked else rate_by_grade.get(g, "")) if e else "0%"]
-                   + [st.get(s, "") for s in OUR_STATS]
-                   + [e.get("resources", {}).get("hp", "") if e else "", sum(v for k, v in st.items() if k in OUR_STATS) if e else "",
-                      " · ".join("%s %s" % (STAT_KO[k], v) for k, v in st.items() if k in STAT_KO),
-                      e.get("passive", {}).get("name_ko", ""), *(skills + ["", "", "", ""])[:4]]
-                   + mon_cols(m) + [essence_text(m["id"]), current_rate(m)])
+        rows_out.append((int(g or 0), 0, m["name_ko"], ["우리 게임", g if g is not None else "", m["name_ko"], m["id"], m.get("rank", "normal"),
+                current_rate(m) or "0%"]
+               + [st.get(k, "") for k in OUR_STATS]
+               + [e.get("resources", {}).get("hp", "") if e else "", sum(v for k, v in st.items() if k in OUR_STATS) if e else "",
+                  " · ".join("%s %s" % (STAT_KO[k], v) for k, v in st.items() if k in STAT_KO) if e else "정수 없음",
+                  e.get("passive", {}).get("name_ko", ""), *(skills + ["", "", "", ""])[:4]]
+               + mon_cols(m)[1:]))
+    # 우리 게임에 없는 표 몬스터 = 우리 데이터가 없어 표 수치를 우리 스탯·규모로 바꾼 값(스킬은 원본 문장 — 번역은 나중)
+    for c in conv:
+        if c["mon"]:
+            continue
+        g = c["grade"]
+        k = scale[g]
+        vals = {s: int(round(v * k)) if v >= 0 else -int(round(-v * k)) for s, v in c["stats"].items()}
+        hp = HP_BASE[g] * (min(1.5, max(0.75, 0.75 + 0.25 * c["dur"] / dur_mid[g])) if c["dur"] > 0 else 0.5)
+        r = c["row"]
+        rows_out.append((g, 1, r["이름"], ["표 변환", g, r["이름"], "", c["rank"], grade_rate(c["rank"], g)]
+               + [vals[s] if vals[s] != 0 else "" for s in OUR_STATS]
+               + [int(round(hp)), sum(vals.values()), ("버림: " + " · ".join(c["dropped"])) if c["dropped"] else "",
+                  r.get("passive", ""), r.get("active1", ""), r.get("active2", ""), r.get("active3", ""), r.get("active4", "")]
+               + [""] * 8))
+    rows_out.sort(key=lambda t: (-t[0], t[1], t[2]))
+    out = [t[3] for t in rows_out]
     with open(OUT, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(head)
         w.writerows(out)
     print("등급별 배율:", {g: round(v, 2) for g, v in scale.items()})
-    print("행 %d개(표 %d + 우리 게임 %d) → %s" % (len(out), len(conv), len(out) - len(conv), os.path.relpath(OUT, ROOT)))
+    print("행 %d개(우리 게임 %d + 표 변환 %d) → %s" % (len(out), len(mons), len(out) - len(mons), os.path.relpath(OUT, ROOT)))
 
 
 if __name__ == "__main__":
