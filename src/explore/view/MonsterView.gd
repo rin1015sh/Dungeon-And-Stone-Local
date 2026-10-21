@@ -42,7 +42,11 @@ func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	_art_scale = 1.0 / maxf(1.0, JsonUtil.get_float(cfg, "art_scale", 2.0))
 	_fps = JsonUtil.get_float(cfg, "walk_fps", 7.0)
 	var dir := JsonUtil.get_str(cfg, "monster_dir", "res://assets/actors/monsters")
-	if group.boss.is_empty():
+	if not group.party.is_empty():  # 탐험가 무리·약탈자 = 탐험가 몸 그림(종족 시트)
+		_sheet = ActorSheet.load_for(db.render, JsonUtil.get_str(db.get_entry("races", str(group.party.get("look", "human"))), "sprite"))
+		if str(group.party.get("kind")) == "raider":
+			modulate = Color.from_string(JsonUtil.get_str(JsonUtil.get_dict(db.render, "view"), "raider_tint", "#b0a090"), Color.WHITE)
+	elif group.boss.is_empty():
 		_sheet = ActorSheet.load_monster(db.render, id)
 	for path: String in [dir.path_join(id + ".webp"), JsonUtil.get_str(def, "sprite")]:
 		if not path.is_empty() and ResourceLoader.exists(path):
@@ -51,8 +55,9 @@ func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	var back := dir.path_join(id + "_back.webp")
 	if ResourceLoader.exists(back):
 		_back = load(back) as Texture2D
-	if group.monster_ids.size() > 1:
-		_count_label = UiTheme.label("×%d" % group.monster_ids.size(), "small", "warn")
+	var count := int(group.party.get("members", group.monster_ids.size()))
+	if count > 1:
+		_count_label = UiTheme.label("×%d" % count, "small", "warn" if group.hostile() else "text")
 		var top := _sheet.world_size().y if _sheet != null else (_texture.get_height() * _art_scale if _texture != null else 52.0 * _scale)
 		_count_label.position = Vector2(8, -top - 4)
 		add_child(_count_label)

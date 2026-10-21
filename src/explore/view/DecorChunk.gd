@@ -35,6 +35,13 @@ func setup(p_view: FloorView, p_cells: Rect2i) -> void:
 	_prop_cells.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return a.y < b.y or (a.y == b.y and a.x < b.x))
 
 
+## 원정 중에 소품 타일이 된 칸(새 시체 — ExploreSession.tiles_changed)을 소품 칸 목록에 넣는다.
+func note_prop(cell: Vector2i) -> void:
+	if cells.has_point(cell) and not _prop_cells.has(cell):
+		_prop_cells.append(cell)
+		_prop_cells.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return a.y < b.y or (a.y == b.y and a.x < b.x))
+
+
 ## 데칼 자리를 계산한다(FloorDecor.cells — 청크 하나에 수 ms라 화면 밖 청크는 미뤄 부른다).
 func compute_decals() -> void:
 	_decals = view.decor.cells(cells) if view.decor != null and view.decor_tex != null else ([] as Array[Dictionary])

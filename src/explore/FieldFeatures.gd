@@ -32,6 +32,31 @@ func setup(s: ExploreSession) -> void:
 			_near.append(e)
 
 
+## 원정 중에 새로 생긴 요소(갓 죽은 탐험가·쓰러진 약탈자 — FieldParties). at이 맨바닥이 아니거나 이미 요소가 있으면
+## 둘레에서 맨바닥 칸을 찾는다. 놓았으면 그 요소, 자리가 없으면 {}.
+func add_runtime(s: ExploreSession, id: String, at: Vector2i) -> Dictionary:
+	var def := s.db.get_entry("events", id)
+	var floor_tile := JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor")
+	var cell := Vector2i(-1, -1)
+	for r in 4:
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				var q := at + Vector2i(dx, dy)
+				if cell.x < 0 and s.map.tile_id_at(q) == floor_tile and not _by_cell.has(q) and s.map.portal_at(q).is_empty():
+					cell = q
+	if def.is_empty() or cell.x < 0:
+		return {}
+	var e := {"id": id, "pos": cell, "def": def, "found": true, "used": {}, "cleared": false, "noticed": false}
+	list.append(e)
+	_by_cell[cell] = e
+	s.map.features.append({"id": id, "pos": cell})
+	var tile := JsonUtil.get_str(def, "tile")
+	if not tile.is_empty():
+		s.map.set_tile(cell, tile)
+		s.tiles_changed.emit(Rect2i(cell, Vector2i.ONE))
+	return e
+
+
 ## 입장 직후(몬스터가 나타난 뒤): 지키는 무리를 세운다.
 func spawn_guards(s: ExploreSession) -> void:
 	for e in list:

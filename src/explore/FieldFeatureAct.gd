@@ -4,7 +4,7 @@ extends RefCounted
 ##   {"id", "name_ko", "limit": "once"(입장마다 한 번 — 기본) | "day"(미궁 하루에 한 번) | "always",
 ##    "needs_status": 상태 id(없으면 missing 문구), "cost": {"item", "count"}(없으면 no_cost 문구 — 있으면 가져간다),
 ##    "line": 문구 키(번호 변형 line.1, line.2 … 중 하나를 고른다. "line_zone": true면 line.<구역>.n),
-##    "give": [{"item", "count": [최소, 최대], "chance"}](항목마다 따로 굴린다),
+##    "give": [{"item" 또는 "one_of": [아이템 id …](그중 하나), "count": [최소, 최대], "chance"}](항목마다 따로 굴린다),
 ##    "effects": [전투 효과 — 대상 = 탐험가](restore_resource·apply_status·remove_status·fatigue …),
 ##    "learn_stats": 몬스터 id(도감에 생명력·스탯이 드러난다), "alert": {"monster", "radius", "hours"}(근처 그 몬스터 무리가 쫓아온다),
 ##    "clear": true(하고 나면 요소가 사라진다 — 줍는 것), "done"·"missing" 문구 키(못 하는 이유)}.
@@ -54,12 +54,27 @@ static func say_line(s: ExploreSession, key: String, e: Dictionary, kind: String
 	s.message.emit(base if n == 0 else "%s.%d" % [base, s.rng.randi_range(1, n)], {}, kind)
 
 
+## say_line과 같되 문구 인자를 넘긴다(탐험가 무리·비명 — FieldParties).
+static func say_line_args(s: ExploreSession, key: String, args: Dictionary, kind: String = "info") -> void:
+	var n := 0
+	while Strings.has("%s.%d" % [key, n + 1]):
+		n += 1
+	s.message.emit(key if n == 0 else "%s.%d" % [key, s.rng.randi_range(1, n)], args, kind)
+
+
+## give 목록을 준다(FieldPartyMeet 보답 — 형식은 actions[].give).
+static func give_items(s: ExploreSession, list: Array) -> void:
+	_give(s, list)
+
+
 static func _give(s: ExploreSession, list: Array) -> void:
 	for g: Variant in list:
 		var gd: Dictionary = g if g is Dictionary else {}
 		if gd.has("chance") and not s.rng.chance(JsonUtil.get_float(gd, "chance")):
 			continue
 		var item := JsonUtil.get_str(gd, "item")
+		if gd.has("one_of"):
+			item = str(s.rng.pick(JsonUtil.get_array(gd, "one_of")))
 		var cr := JsonUtil.get_array(gd, "count")
 		var n := s.rng.randi_range(int(cr[0]), int(cr[1])) if cr.size() == 2 else 1
 		var name := DataNames.entry(s.db, "items", item)

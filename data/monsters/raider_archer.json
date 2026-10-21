@@ -1,0 +1,76 @@
+{
+  "id": "raider_archer",
+  "name_ko": "약탈자 궁수",
+  "grade": 9,
+  "rank": "human",
+  "floor": 1,
+  "floor_tags": [
+    "f1_raiders"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#5a5a48",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 6,
+    "agi": 11,
+    "p_res": 3,
+    "m_res": 3,
+    "int": 4
+  },
+  "resources": {
+    "hp": 45,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 7.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "basic_attack",
+    "raider_pinning_shot",
+    "flee"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "hp_below",
+      "use": "flee",
+      "value": 0.25,
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "use": "raider_pinning_shot",
+      "value": 0.4,
+      "target": "without_status",
+      "target_status": "snare"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "약탈자(사람) — 몬스터가 아니라 마석·정수·공적이 없다. 쓰러뜨리면 그 자리에 유품(raider_remains)이 남는다(FieldParties). 1층 몬스터 9등급 수준으로 잡은 임시값"
+}

@@ -23,6 +23,7 @@
   4. `godot --headless --path . res://tests/smoke_ui.tscn` — UI를 실제로 눌러 보는 스모크
   5. `godot --headless --path . --quit-after 120` — 메인 씬 스모크
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
+- 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로> [--procedural]` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과. 1층은 고정 지도라 시드는 시작 위치·무리만 바꾼다(`--procedural` = 고정 지도 무시하고 그 시드로 새로).
 - **1층 고정 지도 굽기**(생성기·`gen` 값을 바꿨으면 필수 — 테스트가 파일과 시드 결과를 비교한다): `godot --headless --path . --script res://tools/bake_floor.gd [-- --seed=<시드>]` → `data/maps/f1_crystal_cave.json`(한 글자 = 한 칸, rows[y][x]). 시드를 바꾸면 층 JSON `fixed_map.seed`도 고친다. **이벤트를 좌표로 놓은 뒤에는 다시 구우면 좌표가 어긋난다.**
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
@@ -115,6 +116,7 @@ assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ (그림은
 - **하단 대화창(2026-10-18, UI15)**: 탐험 알림(`EventBus.log_message`)·전투 안내·시설 결과는 `DialogueBox`에 한 쪽씩 뜨고 Enter로 넘긴다. 떠 있는 동안 탐험 시간 정지(`realtime` 사유 "dialog")·전투 차례 정지(`CombatScreen._read`). 테스트·캡처는 `DialogueBox.auto_skip`(캡처 `--dialog`면 띄운 채), 전투 빨리 감기 디버그면 전투 대화창만 `instant`. 알림은 문구 키로 두 갈래(`NoticeRoute` — render.json `ui.notice` silent 안 보임 · 나머지 대화창, UI19 — 탐험·전투·도시 거리 모두, 위 알림 띠·도시 위 알림 카드 없음). 키가 있는 알림은 `session.message`·`EventBus.notice`로 보낸다(`log_message`는 키가 없어 대화창으로). **사망하면 결과 화면 없이 바로 타이틀**(UI16).
 - **전투 드롭(2026-10-16)**: 정수·전리품은 쓰러진 무대 자리에 남고 전투가 끝나면 하나씩 "획득할까?" → 받을 사람(`CombatDrops`·`DropPickup`, `ExploreSession.grant_battle_rewards(…, defer_drops=true)`·`take_drop`·`leave_drop`). **정수를 얻는 길은 이것뿐** — 두고 가거나 아무도 못 받으면 사라진다(흡수 대기·캐릭터 창 흡수 없음). 가정 UI13.
 - **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`.
+- **다른 탐험가(2026-10-21, EX1~EX12)**: 1층 층 JSON `explorers` → `FieldParties`(무리 = `FieldMonsters.Group.party`, 신참·다친 탐험가·싸우는 탐험가·약탈자, 날마다 수가 바뀐다) · 만나면 `FieldPartyMeet` 선택지(`party_met` → `ChoicePopup`). 누가 죽으면 갓 죽은 탐험가(`fresh_corpse` — `FieldFeatures.add_runtime`) + 비명. **몬스터 잡템은 없다 — 물건은 사람(유품·거래)에게서.** 약탈자 = rank `human`(공적·마석·정수 없음).
 - **균열·도시·동굴 요소 요약**: 균열 = `rifts/<id>.json` 챕터마다 새 `ExploreSession`(손 설계 지도 `data/maps/rifts/`), 챕터 사이는 길목(`RiftPassage` — 걸어 들어가면 넘어가고 되돌아간다, 길목은 지도 가장자리·출구와 다음 입구는 반대쪽). 도시 = 순 × 행동력(시설 입장에만 1), 시설 활동 → `activities/<id>`, 하순이 끝나면 차원광장 → 미궁. 동굴 요소 = `data/events/<id>.json`(type feature), 자리는 고정 지도 `features`.
 - **데이터 키 사전(자세히)**: 패시브·몬스터 AI·보스 패턴·균열·핏빛성채~강철의 묘에서 생긴 키·감사 규칙·상태이상 키·재기획 키·동굴 요소·도시 규칙은 **`docs/REFERENCE.md`**. 새 키를 만들면 거기에 적는다.
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.

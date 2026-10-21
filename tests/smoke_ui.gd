@@ -154,6 +154,7 @@ func _realtime_combat_flow() -> void:
 	await _action("menu_back")
 	_expect(not explore.menu().is_open() and not explore.is_paused(), "취소(Backspace)로 메뉴 닫기(일시정지 아님)")
 	await _explore_dialog_checks(explore)
+	await _party_checks(explore)
 	await _action("debug_toggle")
 	_toggle(explore, Strings.t("debug.invulnerable"))
 	DialogueBox.auto_skip = false
@@ -505,6 +506,23 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 	DialogueBox.auto_skip = true
 
 
+## 다른 탐험가 무리(FieldParties): 닿으면 선택 창 — 고르는 동안 시간이 멈추고, Backspace = 지나가기.
+func _party_checks(explore: ExploreScreen) -> void:
+	var s := explore.session
+	var rookies := s.parties.of_kind(s, FieldParties.ROOKIE)
+	_expect(not rookies.is_empty(), "1층에 다른 탐험가 무리가 있다")
+	if rookies.is_empty():
+		return
+	var g: FieldMonsters.Group = rookies[0]
+	s.party_met.emit(g)
+	await _frames(2)
+	_expect(explore.has_node("PartyChoice") and s.realtime.is_paused("party"), "탐험가 무리 선택 창(시간 정지)")
+	await _action("menu_back")
+	await _frames(2)
+	_expect(not explore.has_node("PartyChoice") and not s.realtime.is_paused("party") and g.grace_until > s.clock.total_hours,
+		"Backspace = 지나간다(잠시 다시 말을 걸지 않는다)")
+
+
 ## 전투 안내 → 아래 창 왼쪽 대화창: 떠 있는 동안 행동창이 열리지 않고, Enter로 넘기면 행동창이 열린다.
 func _combat_dialog_checks(combat: CombatScreen) -> void:
 	var dlg := combat.dialog()
@@ -753,7 +771,7 @@ func _city_flow() -> void:
 	await _action("debug_toggle")
 	street.scroll_to(0.0)
 	await _frames(1)
-	street.scroll_to(street.building_rect("inn").get_center().x - street.size.x / 2.0)  # 맨 왼쪽은 기능 없는 길드 — 여관으로
+	street.scroll_to(street.building_rect("inn").get_center().x - street.size.x / 2.0)  # 맨 왼쪽은 길드 — 여관으로
 	await _frames(1)
 	await _action("menu_confirm")
 	fv = city.facility_view()

@@ -88,6 +88,8 @@ func _ready() -> void:
 	session.encounter.connect(_on_encounter)
 	session.riddle_asked.connect(_on_riddle)
 	session.feature_choice.connect(_on_feature_choice)
+	session.party_met.connect(_on_party_met)
+	session.tiles_changed.connect(_view.cells_changed)
 	session.transfer.connect(_on_transfer)
 	_build_pause_overlay()
 	session.start()
@@ -303,6 +305,25 @@ func _on_feature_choice(at: Vector2i) -> void:
 	session.realtime.set_paused("feature", false)
 	if i >= 0 and i < acts.size():
 		session.features.act(session, at, str(acts[i]["id"]))
+
+
+## 탐험가 무리에 닿았다(FieldParties): 선택 창(FieldPartyMeet — 거래·소문·함께 다니기·통행세 …). 고르는 동안 시간을 멈춘다.
+func _on_party_met(group: FieldMonsters.Group) -> void:
+	if has_node("PartyChoice") or bool(group.party.get("meeting", false)):
+		return
+	group.party["meeting"] = true
+	var opts := FieldPartyMeet.options(session, group)
+	session.realtime.set_paused("party", true)
+	var pop := ChoicePopup.new()
+	pop.name = "PartyChoice"
+	add_child(pop)
+	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pop.open(FieldPartyMeet.title(group), opts, FieldPartyMeet.can_cancel(group), Vector2(-1, -1))
+	var i: int = await pop.picked
+	pop.queue_free()
+	session.realtime.set_paused("party", false)
+	group.party.erase("meeting")
+	FieldPartyMeet.act(session, group, str(opts[i]["id"]) if i >= 0 and i < opts.size() else "")
 
 
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.

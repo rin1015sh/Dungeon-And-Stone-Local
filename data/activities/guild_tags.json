@@ -1,0 +1,14 @@
+{
+  "id": "guild_tags",
+  "name_ko": "신원패 반납",
+  "facility": "guild",
+  "cost_stones": 0,
+  "effects": [
+    {
+      "type": "return_tags",
+      "item": "explorer_tag",
+      "stones_each": 600
+    }
+  ],
+  "source": "placeholder"
+}

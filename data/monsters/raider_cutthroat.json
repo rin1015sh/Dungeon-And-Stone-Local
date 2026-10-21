@@ -1,0 +1,89 @@
+{
+  "id": "raider_cutthroat",
+  "name_ko": "약탈자 칼잡이",
+  "grade": 9,
+  "rank": "human",
+  "floor": 1,
+  "floor_tags": [
+    "f1_raiders"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#6a5a4a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 7,
+    "agi": 12,
+    "p_res": 4,
+    "m_res": 3,
+    "int": 3
+  },
+  "resources": {
+    "hp": 55,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 7.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "basic_attack",
+    "raider_cheap_shot",
+    "goblin_sand",
+    "flee"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "foe_status",
+      "use": "raider_cheap_shot",
+      "status": "blind",
+      "target": "with_status",
+      "target_status": "blind"
+    },
+    {
+      "if": "hp_below",
+      "use": "flee",
+      "value": 0.25,
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "use": "goblin_sand",
+      "value": 0.25,
+      "target": "without_status",
+      "target_status": "blind"
+    },
+    {
+      "if": "chance",
+      "use": "raider_cheap_shot",
+      "value": 0.35
+    }
+  ],
+  "source": "placeholder",
+  "notes": "약탈자(사람) — 몬스터가 아니라 마석·정수·공적이 없다. 쓰러뜨리면 그 자리에 유품(raider_remains)이 남는다(FieldParties). 1층 몬스터 9등급 수준으로 잡은 임시값"
+}

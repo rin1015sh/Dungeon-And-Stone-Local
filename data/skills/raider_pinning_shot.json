@@ -1,0 +1,25 @@
+{
+  "id": "raider_pinning_shot",
+  "name_ko": "발목 쏘기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "pierce",
+      "ranged": true
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

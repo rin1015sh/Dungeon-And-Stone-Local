@@ -3,6 +3,9 @@ extends RefCounted
 ## 필드 몬스터 무리의 판단·이동(순수 로직). FieldMonsters가 가진다(이쪽은 FieldMonsters를 참조하지 않는다 → 순환 없음).
 ##   decide: 대기(idle) / 추적(chase: 플레이어를 알아챔) / 귀환(return: 영역 이탈·도망친 플레이어 유예)
 ##   walk:   칸 길찾기로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다(Kinematics 충돌).
+##           먼 곳으로 보낸 무리(route)는 대기 중에 그 길을 따라 걷는다.
+## 몬스터별 지도 행동(behavior): wander_radius·wander_chance(배회 범위·빈도 — 고블린은 넓게 순찰),
+##   tracks_scent {radius_tiles, hours}: 플레이어가 지나간 지 hours 안 된 칸이 radius 안이면 알아채고 그 냄새를 따라온다(칼날늑대).
 ##           플레이어가 direct_chase_tiles 안에서 보이면 곧장 다가가 닿는 거리에서 멈춘다.
 ## 거리 장(플레이어에서 시작하는 BFS)은 플레이어 칸이 바뀔 때만 다시 만든다(매 프레임 호출 대비).
 
@@ -44,7 +47,7 @@ func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
 		g.state = FieldMonsters.STATE_RETURN
 	elif leash > 0 and Vector2(g.pos - g.home).length() > leash:
 		g.state = FieldMonsters.STATE_RETURN
-	elif g.alert_until > now or _notices(g, player):
+	elif g.hostile() and (g.alert_until > now or _notices(g, player, now)):
 		g.state = FieldMonsters.STATE_CHASE
 	elif g.state == FieldMonsters.STATE_CHASE:
 		g.state = FieldMonsters.STATE_RETURN
@@ -56,12 +59,16 @@ func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
 
 ## 플레이어 은신(FieldStealth, 0~1). FieldMonsters가 넣는다.
 var player_stealth: float = 0.0
+## 플레이어가 지나온 칸 [[칸, 시각], …](오래된 것이 앞). FieldMonsters가 넣는다(ExploreSession이 기록).
+var player_trail: Array = []
 ## 플레이어에게 걸린 상태 id들(벤시: behavior "passive_unless_status"가 없으면 알아채지 않고, 있으면 반경 × aggro_mult_if_status).
 var player_marks: Array = []
 
 
-func _notices(g: FieldMonsters.Group, player: Vector2i) -> bool:
+func _notices(g: FieldMonsters.Group, player: Vector2i, now: float = 0.0) -> bool:
 	var beh := _behavior(g.leader())
+	if _smells(g, beh, now):
+		return true
 	var radius := JsonUtil.get_float(beh, "aggro_radius_m", 4.0) / _mpt
 	var need := JsonUtil.get_str(beh, "passive_unless_status")
 	if not need.is_empty():
@@ -71,6 +78,23 @@ func _notices(g: FieldMonsters.Group, player: Vector2i) -> bool:
 	if not JsonUtil.get_bool(beh, "ignores_stealth"):
 		radius *= 1.0 - player_stealth
 	return Vector2(g.pos - player).length() <= radius and _line_of_sight(g.pos, player)
+
+
+## 냄새: 지나간 지 얼마 안 된 플레이어 발자국이 반경 안에 있으면 가장 새 것을 쫓는다(g.scent).
+func _smells(g: FieldMonsters.Group, beh: Dictionary, now: float) -> bool:
+	var sc := JsonUtil.get_dict(beh, "tracks_scent")
+	if sc.is_empty() or player_trail.is_empty():
+		return false
+	var r2 := pow(JsonUtil.get_float(sc, "radius_tiles", 5.0), 2.0)
+	var hours := JsonUtil.get_float(sc, "hours", 1.0)
+	for i in range(player_trail.size() - 1, -1, -1):
+		var e: Array = player_trail[i]
+		if now - float(e[1]) > hours:
+			break
+		if Vector2(e[0] - g.pos).length_squared() <= r2:
+			g.scent = e[0]
+			return true
+	return false
 
 
 ## 무리를 budget(칸)만큼 걷게 한다. 움직였으면 true.
@@ -133,9 +157,16 @@ func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: floa
 ## 갈 곳이 없으면 (-1, -1).
 func _next_waypoint(g: FieldMonsters.Group, pcell: Vector2i) -> Vector2:
 	var best := g.pos
+	if g.state != FieldMonsters.STATE_CHASE and not g.route.is_empty():
+		var nxt: Vector2i = g.route.pop_front()
+		if (nxt - g.pos).length_squared() == 1 and can_enter(nxt, g):
+			return Kinematics.center_of(nxt)
+		g.route.clear()  # 막혔다(다른 무리) — 남은 길은 버리고 집 쪽으로 다가간다
 	match g.state:
 		FieldMonsters.STATE_CHASE:
 			var field := distance_field(pcell)
+			if not field.has(g.pos) and g.scent.x >= 0:  # 플레이어는 멀다 — 냄새 칸 쪽으로
+				best = _toward(g, g.scent)
 			var here: int = field.get(g.pos, 1 << 20)
 			for d in FloorMap.DIRS4:
 				var q := g.pos + d
@@ -148,15 +179,26 @@ func _next_waypoint(g: FieldMonsters.Group, pcell: Vector2i) -> Vector2:
 				if can_enter(q, g) and (q - g.home).length_squared() < (best - g.home).length_squared():
 					best = q
 		_:
-			if _rng.chance(_wander_chance):
+			var beh := _behavior(g.leader())
+			if _rng.chance(JsonUtil.get_float(beh, "wander_chance", _wander_chance)):
 				var q := g.pos + FloorMap.DIRS4[_rng.randi_range(0, 3)]
-				if can_enter(q, g) and Vector2(q - g.home).length() <= _wander_radius:
+				if can_enter(q, g) and Vector2(q - g.home).length() <= JsonUtil.get_float(beh, "wander_radius", _wander_radius):
 					best = q
 	if best == g.pos:
 		# 칸 한가운데가 아니면(직접 추적 뒤 등) 지금 칸 중심으로 돌아가 격자에 맞춘다.
 		var c := Kinematics.center_of(g.pos)
 		return c if g.fpos.distance_to(c) > 0.01 and g.state != FieldMonsters.STATE_IDLE else Vector2(-1, -1)
 	return Kinematics.center_of(best)
+
+
+## target 쪽으로 한 칸(4방향 중 가장 가까워지는 칸). 없으면 지금 칸.
+func _toward(g: FieldMonsters.Group, target: Vector2i) -> Vector2i:
+	var best := g.pos
+	for d in FloorMap.DIRS4:
+		var q := g.pos + d
+		if can_enter(q, g) and (q - target).length_squared() < (best - target).length_squared():
+			best = q
+	return best
 
 
 func in_contact(g: FieldMonsters.Group, player: Vector2) -> bool:
