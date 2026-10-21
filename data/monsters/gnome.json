@@ -109,14 +109,5 @@
   ],
   "desc_ko": "진흙 인형. [일체화]로 주변과 하나가 되어, 3m 안에 들어와야 모습이 보인다.",
   "source": "original",
-  "drops": [
-    {
-      "item": "magic_stone_8",
-      "chance": 0.1,
-      "count": [
-        1,
-        1
-      ]
-    }
-  ]
+  "drops": []
 }

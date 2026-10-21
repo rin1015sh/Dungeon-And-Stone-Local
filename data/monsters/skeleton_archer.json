@@ -93,7 +93,6 @@
     "skeleton_bone_arrow"
   ],
   "lineage": "skeleton",
-  "magic_stone_chance": 0.35,
   "desc_ko": "뼈로 된 활을 쏜다.",
   "source": "original",
   "notes": "명세 §9"

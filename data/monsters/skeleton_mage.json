@@ -94,7 +94,6 @@
     "skeleton_shadow_arrow"
   ],
   "lineage": "skeleton",
-  "magic_stone_chance": 0.35,
   "desc_ko": "그림자 화살을 날리는 해골 마법사.",
   "source": "original",
   "notes": "명세 §9"

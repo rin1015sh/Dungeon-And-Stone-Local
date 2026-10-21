@@ -120,10 +120,5 @@
   ],
   "desc_ko": "가장 약한 마물. 짧은 단검에 마비독을 바르고 덫을 놓는다. 서너 마리씩 몰려다닌다.",
   "source": "original",
-  "drops": [
-    {
-      "item": "copper_ring",
-      "chance": 0.06
-    }
-  ]
+  "drops": []
 }

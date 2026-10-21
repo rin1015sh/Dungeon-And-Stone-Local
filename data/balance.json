@@ -11,7 +11,8 @@
     "height": 6
   },
   "loot": {
-    "magic_stone_chance": 0.85
+    "_comment": "처치 드롭(사용자 결정 2026-10-21): 일반 몬스터 = 마석 100%(magic_stone_grade 등급) + 정수(확률 — essence). 잡템(몬스터 drops)은 없다 — 예외는 균열 보스·챕터 열쇠(균열 guardian_drops, 해골 지휘관의 뿔피리).",
+    "magic_stone_chance": 1.0
   },
   "essence": {
     "_comment": "정수 규칙(docs/PROMPT_FLOOR1_V2.md §2·§3). drop_mode game = 게임용 확률, original = 원작(일반 몬스터 0.01%). 모두 임시값",

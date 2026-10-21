@@ -71,3 +71,17 @@ func test_bag_full_reports_left_count() -> void:
 	var m := DropPickup.take(stone, pc)
 	assert_eq(str(m["key"]), "reward.bag_full")
 	assert_eq(int(m["left"]), 1, "넘친 수")
+
+
+## 처치 드롭(사용자 결정 2026-10-21): 일반 몬스터는 마석(등급) 하나뿐 — 잡템 없음. 정수는 따로 확률. 예외는 균열 열쇠(지휘관 데드맨의 뿔피리).
+func test_kill_drops_are_magic_stone_only() -> void:
+	for id: String in db.get_collection("monsters"):
+		var def := db.get_entry("monsters", id)
+		var drops := Loot.roll(db, id, Rng.new(7))
+		var stones := drops.filter(func(d: Dictionary) -> bool: return str(d["id"]).begins_with("magic_stone_"))
+		if def.has("magic_stone_grade"):
+			assert_eq(stones.size(), 1, id + ": 마석은 늘 하나")
+			assert_eq(str(stones[0]["id"]), "magic_stone_%d" % JsonUtil.get_int(def, "magic_stone_grade"), id + ": 그 등급 마석")
+		for d: Dictionary in drops:
+			if not str(d["id"]).begins_with("magic_stone_"):
+				assert_false(JsonUtil.get_str(db.get_entry("items", str(d["id"])), "rift_bound").is_empty(), id + ": 잡템 없음 — " + str(d["id"]))

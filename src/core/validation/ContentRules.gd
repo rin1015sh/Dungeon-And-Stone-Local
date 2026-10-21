@@ -81,6 +81,8 @@ static func _monsters(v: ValidatorBase) -> void:
 		for drop: Variant in JsonUtil.get_array(m, "drops"):
 			var dr: Dictionary = drop if drop is Dictionary else {}
 			v.ref(w + ".drops", "items", dr.get("item"))
+			if JsonUtil.get_str(v.db.get_entry("items", str(dr.get("item"))), "rift_bound").is_empty():  # 잡템 금지(2026-10-21) — 균열 열쇠만
+				v.err(w + ".drops", "처치 드롭은 마석·정수뿐이다 — drops에는 균열 열쇠(rift_bound 아이템)만: '%s'" % dr.get("item"))
 			if dr.has("chance"):
 				v.check_chance(w + ".drops", dr.get("chance"))
 		for drop: Variant in JsonUtil.get_array(m, "essence_drops"):

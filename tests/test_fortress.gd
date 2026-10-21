@@ -38,7 +38,7 @@ func test_skeleton_core_weak_point() -> void:
 	var blunt := fx.duplicate()
 	blunt["damage_type"] = "blunt"
 	assert_near(float(DamageCalc.resolve(db, atk, sk, blunt, HIT)["amount"]), base, 1.0, "둔기는 정상")
-	assert_eq(JsonUtil.get_float(sk.def, "magic_stone_chance"), 0.35, "마석 35%")
+	assert_false(sk.def.has("magic_stone_chance"), "마석은 다른 몬스터처럼 늘 떨어진다(2026-10-21 — 처치 드롭 = 마석 100% + 정수)")
 
 
 func test_banshee_immune_and_grudge_mark() -> void:
