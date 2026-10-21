@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **사용자 정수 표 변환 (2026-10-21, 사용자 "표를 우리 게임에 넣을 수 있도록 수정만 하자. 스탯 체계와 규모를 우리 게임에 맞게. 스킬은 나중에")**: 원본 `docs/balance/source/essence_table_original.csv`(224행), 도구 `tools/essence_table_convert.py`(파이썬 — 스탯 대응표·등급별 목표 합·생명력 규칙), 결과 `docs/balance/essence_table_converted.csv` + 설명·겹치는 39종 비교 `docs/balance/essence_table.md`. 등급별 배율 9 ×1.37 … 4 ×0.58(1~3등급은 행이 적어 임시). 처음엔 계급 배율(수호자 ×1.9)을 곱했다가 표의 수호자가 이미 커서 지금보다 1.5~1.8배가 돼 뺐다. 게임 데이터는 그대로(J18).
+
 - **계층군주 보상 셋 · 드레드피어 뼈 대검 (2026-10-21, 사용자 "계층군주 처치 보너스 경험치는 15 … 보상은 셋 — 계층보구·계층석·계층정수. 드레드피어는 대검, 확률은 적정치. 전투 화면에서도 검")**: 경험치 15는 이미 `progression.json exp.lord_bonus`(1회)였다 — 시험으로 고정. 새 아이템 `dread_bone_greatsword`(등급 floor_relic 계층보구, 두 손 참격 30·근력 +5·생명력 +20, price 0)·`floor_stone_1`(수정동굴의 계층석, `opens_floor_rift: 1`), 드레드피어 `lord_drops` 8%·35%(`Loot` — rank lord만, 검증 `ContentRules`), 계층정수 `essences/dreadfear` + 정수판 스킬 3(`ess_dread_*`), `drop_chance_by_rank.lord` 0 → 0.2, `EssenceDrop.GUARDIAN_RANKS`에 lord(무지갯빛). `RiftWatch.try_offer`: 그 층 계층석이 있으면 먼저 써서 그 층 균열 하나(가중 무작위). 그림: `Lord._greatsword`(오른손 뼈 대검 — 마디 골·이 빠진 날·구더기), 전투 그림·맵 그림(`paint_actors --only=dreadfear`) 다시. 캡처 `--god`(무적 — 계층군주 전투 찍기). 시험: test_lord 보상(400번 굴려 확률·종류), test_rift 계층석. check.sh 통과.
 
 - **처치 드롭 = 마석 100% + 정수 (2026-10-21, 사용자 "적 처치 시 얻는 잡템 전부 제거 … 일반적인 적은 마석(100%) 정수(확률)만 … 균열 보스는 예외")**: `balance.loot.magic_stone_chance` 0.85 → 1.0(+주석), 해골 궁수·마법사 `magic_stone_chance` 0.35 지움, 구울·고블린·노움 `drops` 비움. 지휘관 데드맨의 뿔피리(핏빛성채 챕터 출구 열쇠)와 균열 `guardian_drops`는 남김. `ContentRules`: drops 아이템이 rift_bound가 아니면 오류. 시험 `test_kill_drops_are_magic_stone_only`(52종 — 등급 있으면 마석 하나, 그 밖은 열쇠만), 해골 35% 시험 고침. check.sh 통과(354). 남은 것: 뼈 목걸이·구리 반지를 얻을 곳이 없다.
