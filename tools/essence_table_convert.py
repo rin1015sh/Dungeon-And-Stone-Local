@@ -13,7 +13,8 @@
      내구력이 없으면 기본값 × 0.5(지금 우리 정수의 '몸이 약한 종' 규칙과 같다).
   반올림 후 0은 뺀다. 음수(표의 −10 등)는 그대로 줄여서 남긴다.
   4) 우리 게임 몬스터 52종은 전부 지금 게임 값(사용자 결정 2026-10-21 "원래 표 내용 반영하지 말고 우리 게임 기준으로 전부"):
-     등급·계급·정수 스탯·생명력·드랍율(지금 규칙)·패시브·스킬 이름·몬스터 전투 스탯. 원래 표 수치는 쓰지 않는다.
+     등급·계급·정수 스탯·생명력·드랍율(지금 규칙)·몬스터 전투 스탯. 원래 표 수치는 쓰지 않는다.
+     스킬 칸(passive·active1~4)은 표의 문장(사용자 결정 2026-10-21 "표 스킬로 일단 전부") — 표에 없는 13종만 지금 정수의 이름.
      위 1)~3) 변환은 우리 게임에 없는 표 몬스터 185종에만 쓴다(우리 데이터가 없다) — 드랍율도 지금 규칙(등급별)으로.
   "생명력" 칸 = 정수를 흡수하면 늘어나는 최대 생명력(정수 resources.hp — J13). 몬스터 자신의 생명력은 "몬스터 생명력" 칸.
 """
@@ -146,17 +147,22 @@ def main() -> None:
             + ["몬스터 근력", "몬스터 민첩", "몬스터 물리내성", "몬스터 항마력", "몬스터 정신력", "몬스터 생명력", "몬스터 영혼력", "몬스터 무기"])
     rows_out = []  # (등급, 순서, 행)
     # 우리 게임 몬스터 52종 = 전부 지금 게임 값(정수·드랍율·스킬 이름·전투 스탯) — 원래 표 수치는 쓰지 않는다(사용자 결정 2026-10-21)
+    table_row = {c["mon"]["id"]: c["row"] for c in conv if c["mon"]}
     for m in mons.values():
         e = load("data/essences/%s.json" % m["id"])
+        tr = table_row.get(m["id"])
         st = e.get("stats", {})
         g = m.get("grade")
         skills = [load("data/skills/%s.json" % a.get("skill", "")).get("name_ko", a.get("skill", "")) for a in e.get("actives", [])]
+        # 스킬 칸 = 표의 스킬 문장(사용자 결정 2026-10-21 "표 스킬로 일단 전부"). 표에 없는 우리 몬스터 13종만 지금 정수의 이름.
+        sk = [tr.get(k, "") for k in ["passive", "active1", "active2", "active3", "active4"]] if tr else \
+            [e.get("passive", {}).get("name_ko", "")] + (skills + ["", "", "", ""])[:4]
         rows_out.append((int(g or 0), 0, m["name_ko"], ["우리 게임", g if g is not None else "", m["name_ko"], m["id"], m.get("rank", "normal"),
                 current_rate(m) or "0%"]
                + [st.get(k, "") for k in OUR_STATS]
                + [e.get("resources", {}).get("hp", "") if e else "", sum(v for k, v in st.items() if k in OUR_STATS) if e else "",
                   " · ".join("%s %s" % (STAT_KO[k], v) for k, v in st.items() if k in STAT_KO) if e else "정수 없음",
-                  e.get("passive", {}).get("name_ko", ""), *(skills + ["", "", "", ""])[:4]]
+                  *sk]
                + mon_cols(m)[1:]))
     # 우리 게임에 없는 표 몬스터 = 우리 데이터가 없어 표 수치를 우리 스탯·규모로 바꾼 값(스킬은 원본 문장 — 번역은 나중)
     for c in conv:
