@@ -15,6 +15,7 @@
   4) 우리 게임 몬스터 52종은 전부 지금 게임 값(사용자 결정 2026-10-21 "원래 표 내용 반영하지 말고 우리 게임 기준으로 전부"):
      등급·계급·정수 스탯·생명력·드랍율(지금 규칙)·몬스터 전투 스탯. 원래 표 수치는 쓰지 않는다.
      스킬 칸(passive·active1~4)은 표의 문장(사용자 결정 2026-10-21 "표 스킬로 일단 전부") — 표에 없는 13종만 지금 정수의 이름.
+  5) 표의 스킬 문장 중 차례제로 만들기 힘든 것은 docs/balance/source/essence_skill_ctb.csv(원문 → 수정)대로 바꿔 넣는다.
      위 1)~3) 변환은 우리 게임에 없는 표 몬스터 185종에만 쓴다(우리 데이터가 없다) — 드랍율도 지금 규칙(등급별)으로.
   "생명력" 칸 = 정수를 흡수하면 늘어나는 최대 생명력(정수 resources.hp — J13). 몬스터 자신의 생명력은 "몬스터 생명력" 칸.
 """
@@ -26,6 +27,8 @@ import statistics
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "docs/balance/source/essence_table_original.csv")
 OUT = os.path.join(ROOT, "docs/balance/essence_table_converted.csv")
+# 스킬 문장 차례제 수정 대응표(원문 → 수정, 사용자 결정 2026-10-21 "턴제 전투로 구현하기 힘들거나 불가능한 것들은 수정") — 없는 문장은 원문 그대로
+CTB = os.path.join(ROOT, "docs/balance/source/essence_skill_ctb.csv")
 
 # 표 스탯 → [(우리 스탯 id, 계수)]. 생명력(내구력)은 따로.
 MAP = {
@@ -56,6 +59,12 @@ HP_BASE = {9: 11, 8: 15, 7: 23, 6: 31, 5: 40, 4: 52, 3: 68, 2: 88, 1: 114}
 LORD_NAMES = {"공포의 군주", "천공의 군주", "혼돈의 군주"}
 MON_STATS = ["str", "agi", "p_res", "m_res", "int"]
 STAT_KO = {"sight": "시각", "appetite": "식욕", "digestion": "소화력", "soul_regen": "영혼 재생력"}
+
+
+def ctb_map() -> dict:
+    if not os.path.exists(CTB):
+        return {}
+    return {r["원문"].strip(): r["수정"].strip() for r in csv.DictReader(open(CTB, encoding="utf-8-sig"))}
 
 
 def num(s: str) -> float:
@@ -120,6 +129,11 @@ def our_monsters() -> dict:
 
 def main() -> None:
     rows = list(csv.DictReader(open(SRC, encoding="utf-8-sig")))
+    fix = ctb_map()
+    for r in rows:  # 표의 스킬 문장은 차례제로 고친 것으로
+        for k in ["passive", "active1", "active2", "active3", "active4"]:
+            t = (r.get(k) or "").strip()
+            r[k] = fix.get(t, t)
     mons = our_monsters()
     conv = []
     for r in rows:
