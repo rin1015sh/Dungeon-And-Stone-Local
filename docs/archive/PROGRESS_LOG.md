@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **게임 글 md (2026-10-21, 사용자 "게임에서 나오는 로그 텍스트 종류 전부 md 파일로 — md를 수정하면 게임에 적용할 수 있는 양식으로")**: `tools/strings_md.gd` — 기본은 `data/strings/ko.json` → `docs/STRINGS.md`(묶음 27개에 이름·나오는 곳, JSON `_comment`는 인용으로, 하위 묶음은 제목), `--apply`는 md의 ``- `키` 글`` 줄을 읽어 ko.json에 이미 있는 키의 글만 바꾼다(없는 키는 알리고 무시, 키 순서·형식 그대로 — 한 줄 고쳐 적용해 보니 diff 한 줄). 데이터 이름(`name_ko`)·수수께끼(`data/riddles`)·소문(`data/city_info`)은 이 파일 밖. CLAUDE.md에 "ko.json을 바꾸면 다시 만든다".
+
 - **거리 사건 (2026-10-21, 사용자 "행동력 소모 없이 순이 바뀔 때마다 도시에서 일어나는 이벤트 — 세금 미납자 처형·좀도둑질 등" → "미궁 소식 넣지 말고, 원작에서는 아무 종족 세금 못 내면 교수형")**:
   - 범위: 순이 바뀔 때 행동력 없이 거리 사건 하나(데이터 `data/street_events` 14종), 장면·선택지·판정·효과, 닫힘·값 배율, 저장, 검증, 테스트·캡처. 완료 기준: check.sh 통과 + 장면·선택 창 캡처 확인. 테스트: `test_city_ambient.gd`(7개) · UI 스모크 `_street_flow`(교수형 장면·선택 Enter·닫힌 시설·행동력 그대로).
   - 한 일: `CityAmbient`(굴림 — forced 우선, 아니면 `ambient.chance` 0.5 × weight×날씨 배율, 쿨다운 · resolve — 갈래/선택지, 판정 `check_chance`) · 도시 효과 `money`·`close_facility`(은행 금지)·`price_mod`(buy/sell/fee) · `CityState` ambient·closed·price_mods(순마다 비움, 저장) · `CityShop.buy_price`·`sell_price`·`CityActions.cost`가 배율을 따른다 · 닫힌 시설은 `city.reason_closed` + 거리에서 흐림 · `CityScreen.street_event`(시작·귀환·순 넘김 — 장면 대화창 → 선택 창 `StreetChoice` → 결과 장면, 효과 문구는 가방 자리 없음만) · 디버그 F1 '거리 사건' · 캡처 `--street=<id>` · 검증 `CityStreetRules`.
