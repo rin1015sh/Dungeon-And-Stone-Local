@@ -105,7 +105,7 @@ def main() -> None:
                    + [int(round(hp)), sum(vals.values()), " · ".join(c["dropped"]),
                       r.get("passive", ""), r.get("active1", ""), r.get("active2", ""), r.get("active3", ""), r.get("active4", "")])
     with open(OUT, "w", encoding="utf-8-sig", newline="") as f:
-        w = csv.writer(f)
+        w = csv.writer(f, lineterminator="\n")
         w.writerow(head)
         w.writerows(out)
     print("등급별 배율:", {g: round(v, 2) for g, v in scale.items()})
