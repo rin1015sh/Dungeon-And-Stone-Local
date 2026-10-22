@@ -211,8 +211,20 @@ func _realtime_combat_flow() -> void:
 		"스킬 메뉴에 대화·조사")
 	_expect(skill_labels.has(Strings.t("combat.cmd_flee")), "도주는 스킬 목록에")
 	_press(combat, DataNames.entry(DataRegistry.db, "skills", "investigate"))
-	_press_first(menu.grid())
+	var foe_u: Combatant = null  # 고를 수 있는 적을 조사한다(대상 목록 첫 칸은 아군 — 숨은 노움처럼 못 고르는 적도 있다)
+	for i in menu.grid().option_count():
+		for u: Combatant in battle.side_units(Combatant.SIDE_ENEMY):
+			if foe_u == null and u.label() == str(menu.grid().option(i).get("text")) and bool(menu.grid().option(i).get("enabled", true)):
+				foe_u = u
+				menu.grid()._set_cursor(i)
+	if foe_u != null:
+		menu.grid().confirm()
+	else:
+		_press_first(menu.grid())
 	_expect_log("[조사]", "조사 결과")
+	await _frames(1)
+	if foe_u != null and battle.result.is_empty() and combat.stage().view(foe_u) != null:
+		_expect(combat.stage().view(foe_u)._show_bar, "조사한 종은 무대에 생명력 막대가 보인다(UI22)")
 	_expect(battle.turns > turns_before or not battle.result.is_empty(), "조사가 행동 기회를 쓴다(차례가 넘어감)")
 	for i in 60:
 		if not battle.result.is_empty():

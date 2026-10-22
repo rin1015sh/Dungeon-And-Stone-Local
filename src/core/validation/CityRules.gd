@@ -4,7 +4,7 @@ extends RefCounted
 ## null(미정) 값은 오류가 아니라 경고 목록 한 줄로 모은다(CityValues.nulls).
 
 const IMAGE_PREFIX := "res://"
-const SHOWS := ["temple_merit", "bank_balance", "rumors", "lore"]
+const SHOWS := ["temple_merit", "bank_balance", "rumors", "lore", "survey"]
 
 
 static func run(v: ValidatorBase) -> void:

@@ -7,7 +7,8 @@
     1
   ],
   "stack": 50,
-  "price": 20,
+  "price": 80,
+  "_price_comment": "2026-10-22 경제 맞추기(CT43): 20 → 80 — 필드 전투가 소모품 값의 일부를 벌게",
   "icon": "stone",
   "color": "#6d7fa0",
   "rarity": "common",

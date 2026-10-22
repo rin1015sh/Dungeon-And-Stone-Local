@@ -18,6 +18,7 @@ extends Node
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
+## --known: --combat --monster=<id>에서 그 몬스터를 조사해 둔 상태(생명력 막대·알아낸 상성)
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
@@ -169,6 +170,8 @@ func _run() -> void:
 			explore.session.lord.summon(explore.session)
 		if _args.has("combat"):
 			GameState.debug_invulnerable = _args.has("god") or GameState.debug_invulnerable  # --god: 무적(계층군주처럼 첫 차례에 쓰러뜨리는 적을 찍을 때)
+			if _args.has("known") and _args.has("monster"):  # --known: 그 몬스터를 조사·상성까지 알고 있다(무대 생명력 막대·상성 줄, UI22)
+				explore.session.player.knowledge.learn_all(explore.session.db, str(_args["monster"]))
 			ExploreDebug.spawn_and_engage(explore.session, str(_args.get("monster", "")))
 			if _args.has("meters"):
 				await _frames(3)

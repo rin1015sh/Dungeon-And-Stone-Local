@@ -1,6 +1,6 @@
 class_name CityStreetRules
 extends RefCounted
-## 검사 규칙: 거리 사건(data/street_events — CityAmbient, CT42) · city.json ambient.
+## 검사 규칙: 거리 사건(data/street_events — CityAmbient, CT42) · city.json ambient · city.json guild(조사 의뢰 — CityGuild, CT44).
 
 const WHEN_KEYS := ["from_month", "months_of_year", "periods", "weather", "tax_month", "tax_owed"]
 const BRANCH_KEYS := ["cost_stones", "effects", "check", "success", "fail"]
@@ -8,6 +8,8 @@ const BRANCH_KEYS := ["cost_stones", "effects", "check", "success", "fail"]
 
 static func run(v: ValidatorBase) -> void:
 	var city: Dictionary = v.db.singletons.get("city", {})
+	for id: Variant in JsonUtil.get_array(JsonUtil.get_dict(city, "guild"), "survey_pool"):
+		v.ref("city.guild.survey_pool", "monsters", id)
 	var chance: Variant = JsonUtil.get_dict(city, "ambient").get("chance")
 	if chance != null and (float(chance) < 0.0 or float(chance) > 1.0):
 		v.err("city.ambient", "chance는 0~1")

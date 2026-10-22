@@ -41,7 +41,7 @@ func setup(b: Battle) -> void:
 
 func _ready() -> void:
 	_stage = BattleStage.new()
-	_stage.setup(battle.db)
+	_stage.setup(battle.db, BattleKnowledge.knowers(battle))
 	add_child(_stage)
 	_stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_roster = PartyRoster.new()

@@ -7,7 +7,8 @@
     1
   ],
   "stack": 50,
-  "price": 100,
+  "price": 250,
+  "_price_comment": "2026-10-22 CT43: 100 → 250",
   "icon": "stone",
   "color": "#7fb0c8",
   "rarity": "common",

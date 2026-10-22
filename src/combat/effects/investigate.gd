@@ -26,6 +26,9 @@ func apply(ctx: EffectContext, _data: Dictionary) -> bool:
 		if ctx.source is PlayerCharacter:
 			var k := (ctx.source as PlayerCharacter).knowledge
 			k.learn_stats(m.monster_id)
+			if not m.has_meta("surveyed"):  # 길드 조사 의뢰 — 한 마리에 한 번(CityGuild)
+				m.set_meta("surveyed", true)
+				k.note_survey(m.monster_id)
 			aff = BattleKnowledge.describe_affinities(ctx.db, k, m.monster_id)
 		args["aff"] = aff
 		ctx.say("combat.info_monster", args, "system")

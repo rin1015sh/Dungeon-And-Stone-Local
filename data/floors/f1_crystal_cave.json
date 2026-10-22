@@ -403,7 +403,7 @@
     }
   },
   "explorers": {
-    "_comment": "다른 탐험가(FieldParties·FieldPartyMeet). *_by_day = 그날(1일 차부터) 채울 수, portal_from_day일 차부터 신참은 포탈 쪽으로, chief_from_day일 차부터 약탈자에 두목. death_per_hour × (암흑지대 dark_mult) × (1 + 날 × day_add). near_tiles = 플레이어 둘레 사건(다친 탐험가·싸움)이 생기는 거리. trades price = 9등급 마석 개수. 모두 임시값",
+    "_comment": "다른 탐험가(FieldParties·FieldPartyMeet). *_by_day = 그날(1일 차부터) 채울 수, portal_from_day일 차부터 신참은 포탈 쪽으로, chief_from_day일 차부터 약탈자에 두목. death_per_hour × (암흑지대 dark_mult) × (1 + 날 × day_add). near_tiles = 플레이어 둘레 사건(다친 탐험가·싸움)이 생기는 거리. trades price = 9등급 마석 개수(2026-10-22 마석 20 → 80이 되며 도시 값에 맞춰 줄임 — CT43). 모두 임시값",
     "rookies_by_day": [
       14,
       12,
@@ -467,22 +467,22 @@
       {
         "give": "ration",
         "n": 1,
-        "price": 15
+        "price": 4
       },
       {
         "give": "torch_stub",
         "n": 1,
-        "price": 20
+        "price": 6
       },
       {
         "give": "minor_potion",
         "n": 1,
-        "price": 120
+        "price": 40
       },
       {
         "give": "stone_bread",
         "n": 2,
-        "price": 2
+        "price": 1
       }
     ],
     "rewards": {
@@ -490,8 +490,8 @@
         {
           "item": "magic_stone_8",
           "count": [
-            2,
-            3
+            4,
+            6
           ]
         }
       ],
@@ -499,8 +499,8 @@
         {
           "item": "magic_stone_9",
           "count": [
-            5,
-            8
+            4,
+            6
           ]
         }
       ],
@@ -509,7 +509,7 @@
           "item": "magic_stone_9",
           "count": [
             5,
-            10
+            8
           ]
         },
         {

@@ -7,11 +7,12 @@
     1
   ],
   "stack": 1,
-  "price": 3000000,
+  "price": 120000,
+  "_price_comment": "2026-10-22 CT43: 원작 3,000,000 → 120,000 — 한 번 팔면 경제가 끝나지 않게(되팔면 원정 두어 번 치)",
   "icon": "gem",
   "color": "#3ad07a",
   "rarity": "numbers",
   "desc_ko": "끊긴 철로 너머 샛길에서 찾은 커다란 초록 보석. 비싸게 팔린다.",
-  "source": "original",
+  "source": "placeholder",
   "notes": "명세 §11.1 히든 피스 [원] — 300만 스톤"
 }

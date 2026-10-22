@@ -10,10 +10,12 @@ var _db: GameDatabase
 var _slots: Dictionary = {}  # 적 Combatant -> {"x": 화면 폭 비율(발 가운데), "h": 키 / 무대 높이} — 고정 자리
 var _floor_y: float = 0.0    # 적 발 높이(px) — 빛 웅덩이도 여기
 var _layout_queued: bool = false
+var _knowers: Array[Knowledge] = []  # 아군의 기록 — 조사한 몬스터는 생명력·알아낸 상성이 보인다(BattlerView)
 
 
-func setup(db: GameDatabase) -> void:
+func setup(db: GameDatabase, knowers: Array[Knowledge] = []) -> void:
 	_db = db
+	_knowers = knowers
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(func() -> void:
 		_slots.clear()  # 화면 크기가 바뀌면 자리를 새로 정한다(처음 크기가 정해질 때 포함)
@@ -24,7 +26,7 @@ func add_unit(u: Combatant) -> void:
 	if _views.has(u):
 		return
 	var v := BattlerView.new()
-	v.setup(u, _db)
+	v.setup(u, _db, _knowers)
 	add_child(v)
 	_views[u] = v
 	_order()

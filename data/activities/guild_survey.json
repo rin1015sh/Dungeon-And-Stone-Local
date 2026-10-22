@@ -1,0 +1,10 @@
+{
+  "id": "guild_survey",
+  "name_ko": "조사 의뢰 보고",
+  "facility": "guild",
+  "cost_stones": 0,
+  "effects": [
+    {"type": "survey_report"}
+  ],
+  "source": "placeholder"
+}

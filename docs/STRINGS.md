@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(848줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(853줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -617,6 +617,8 @@
 - `knowledge.aff_weak` {type} 약점 ×{mult}
 - `knowledge.aff_resist` {type} 저항 ×{mult}
 - `knowledge.aff_immune` {type} 면역
+- `knowledge.stage_mult` {type} ×{mult}
+- `knowledge.stage_immune` {type} 면역
 - `knowledge.learned_weak` {name}은(는) {type}에 약하다. (도감에 기록)
 - `knowledge.learned_resist` {name}은(는) {type}을(를) 견딘다. (도감에 기록)
 - `knowledge.learned_immune` {name}에게 {type}은(는) 통하지 않는다. (도감에 기록)
@@ -781,6 +783,7 @@
 - `city.info_balance` 은행 잔액 {balance} 스톤
 - `city.info_rumors` 들은 소문 {n}개
 - `city.info_lore` 모은 정보 {n}개
+- `city.info_survey` 의뢰 {name} 조사 {n}/{cap} · 한 마리 {stones} 스톤
 - `city.reason_unknown` 알 수 없는 시설·활동이다.
 - `city.reason_inside` 이미 시설 안에 있다.
 - `city.reason_no_ap` 행동력이 모자란다.
@@ -877,6 +880,8 @@
 - `city.fx.tags_returned` 신원패 {n}장을 넘기고 {stones} 스톤을 받았다.
 - `city.fx.no_records` 넘길 기록이 없다.
 - `city.fx.records_sold` 기록 {n}건을 넘기고 {stones} 스톤을 받았다.
+- `city.fx.no_survey` 의뢰받은 조사가 없다.
+- `city.fx.survey_paid` {name} 조사 {n}건을 넘기고 {stones} 스톤을 받았다.
 
 ### `city.lines`
 

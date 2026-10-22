@@ -39,6 +39,8 @@ var ambient_seen: Dictionary = {}
 ## 이번 순에 닫힌 시설 · 값 배율("buy:<분류>"·"sell:<분류>"·"fee:<시설>" → 배율) — 순이 바뀌면 사라진다.
 var closed: Array[String] = []
 var price_mods: Dictionary = {}
+## 모험가 길드 조사 의뢰 {monster, until, done}(CityGuild).
+var guild_request: Dictionary = {}
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
 var overrides: Dictionary = {}
 
@@ -57,6 +59,7 @@ func start() -> void:
 	facility = ""
 	roll_weather()
 	CityHappenings.roll(self)
+	CityGuild.refresh(self)
 	changed.emit()
 
 
@@ -156,6 +159,7 @@ func _begin_period() -> void:
 	price_mods.clear()
 	ambient = ""
 	ambient_pending = true
+	CityGuild.refresh(self)
 	var rate := CityValues.num(CityValues.city_section(db, overrides, "bank"), "interest_per_period")
 	if rate > 0.0 and bank_balance > 0:
 		bank_balance += floori(bank_balance * rate)
@@ -275,7 +279,8 @@ func to_dict() -> Dictionary:
 	return {"month": month, "period": period, "ap": ap, "temple_merit": temple_merit,
 		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "expedition_month": expedition_month, "rng": rng.get_state_string(),
 		"happenings": happenings.duplicate(), "seen_once": seen_once.duplicate(), "tax_paid_year": tax_paid_year,
-		"ambient": ambient, "ambient_pending": ambient_pending, "ambient_seen": ambient_seen.duplicate(), "closed": closed.duplicate(), "price_mods": price_mods.duplicate()}
+		"ambient": ambient, "ambient_pending": ambient_pending, "ambient_seen": ambient_seen.duplicate(), "closed": closed.duplicate(), "price_mods": price_mods.duplicate(),
+		"guild_request": guild_request.duplicate()}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -300,5 +305,8 @@ func load_dict(d: Dictionary) -> void:
 	ambient_seen = JsonUtil.get_dict(d, "ambient_seen").duplicate()
 	closed.assign(JsonUtil.get_array(d, "closed").map(func(v: Variant) -> String: return str(v)))
 	price_mods = JsonUtil.get_dict(d, "price_mods").duplicate()
+	guild_request = JsonUtil.get_dict(d, "guild_request").duplicate()
+	if guild_request.has("until"):
+		guild_request["until"] = int(guild_request["until"])
 	facility = ""
 	changed.emit()

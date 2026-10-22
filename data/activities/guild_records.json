@@ -6,8 +6,8 @@
   "effects": [
     {
       "type": "sell_records",
-      "stats_stones": 150,
-      "affinity_stones": 80
+      "stats_stones": 400,
+      "affinity_stones": 200
     }
   ],
   "source": "placeholder"

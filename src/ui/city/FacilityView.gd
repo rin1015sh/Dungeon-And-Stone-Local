@@ -200,6 +200,11 @@ func _info_text() -> String:
 				lines.append(Strings.t("city.info_rumors", {"n": CityInfo.known_of(_state, "rumor").size()}))
 			"lore":
 				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state, "lore").size()}))
+			"survey":
+				if not CityGuild.target(_state).is_empty():
+					lines.append(Strings.t("city.info_survey", {"name": DataNames.entry(_state.db, "monsters", CityGuild.target(_state)),
+						"n": mini(_pc.knowledge.surveys(CityGuild.target(_state)), CityGuild.cap(_state)), "cap": CityGuild.cap(_state),
+						"stones": CityGuild.payout_each(_state)}))
 	return "  ·  ".join(lines) if not lines.is_empty() else " "  # 비워 두면 대화창(이름판)이 사라진다
 
 

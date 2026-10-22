@@ -7,11 +7,12 @@
     1
   ],
   "stack": 1,
-  "price": 4000000,
+  "price": 160000,
+  "_price_comment": "2026-10-22 CT43: 원작 4,000,000 → 160,000",
   "icon": "book",
   "color": "#5a2a3a",
   "rarity": "numbers",
   "desc_ko": "피로 쓴 흑마법서. 성채 밖으로 가져가면 상점에서 비싸게 팔린다.",
-  "source": "original",
+  "source": "placeholder",
   "notes": "명세 §9.1 히든 피스 — 반출 가능"
 }

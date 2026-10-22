@@ -6,11 +6,14 @@ extends RefCounted
 ##   affinity  그 피해 유형으로 직접 쳐 봤다 → 약점(배율 > 1)·면역(0)·저항(< 1)
 ## (길드 정보 구매 = M4에서 learn_all을 부른다.)
 ## 사실(fact): 몬스터 밖의 알게 된 것(강철의 묘 벽화 힌트 "riddle:<문항>:<번호>"). 저장 dict의 "_facts".
+## 조사 수(survey): 전투에서 '조사'를 쓴 몬스터 수(종별 — 한 마리에 한 번). 길드 조사 의뢰에 넘기면 지워진다(CityGuild). "_surveys".
 
 const FACTS_KEY := "_facts"
+const SURVEYS_KEY := "_surveys"
 
 var _m: Dictionary = {}  # 몬스터 id -> {"seen": bool, "stats": bool, "aff": {피해 유형: 배율}}
 var _facts: Dictionary = {}
+var _surveys: Dictionary = {}  # 몬스터 id -> 조사한 마리 수
 
 
 ## 사실을 알게 됐다. 새로 알았으면 true.
@@ -23,6 +26,18 @@ func learn_fact(key: String) -> bool:
 
 func knows_fact(key: String) -> bool:
 	return _facts.has(key)
+
+
+func note_survey(id: String) -> void:
+	_surveys[id] = int(_surveys.get(id, 0)) + 1
+
+
+func surveys(id: String) -> int:
+	return int(_surveys.get(id, 0))
+
+
+func clear_surveys() -> void:
+	_surveys.clear()
 
 
 func see(id: String) -> bool:
@@ -82,14 +97,16 @@ func seen_ids() -> Array[String]:
 func to_dict() -> Dictionary:
 	var out := _m.duplicate(true)
 	out[FACTS_KEY] = _facts.duplicate()
+	out[SURVEYS_KEY] = _surveys.duplicate()
 	return out
 
 
 func load_dict(d: Dictionary) -> void:
 	_m.clear()
 	_facts = JsonUtil.get_dict(d, FACTS_KEY).duplicate()
+	_surveys = JsonUtil.get_dict(d, SURVEYS_KEY).duplicate()
 	for id: String in d:
-		if id == FACTS_KEY:
+		if id == FACTS_KEY or id == SURVEYS_KEY:
 			continue
 		var e: Dictionary = d[id] if d[id] is Dictionary else {}
 		_m[id] = {"seen": JsonUtil.get_bool(e, "seen"), "stats": JsonUtil.get_bool(e, "stats"),
