@@ -48,7 +48,7 @@ func test_guild_tags_and_records() -> void:
 	assert_eq(pc.inventory.money, before, "같은 기록은 두 번 팔리지 않는다")
 
 
-func test_arms_mix_and_cluster_near_dens() -> void:
+func test_arms_one_kind_and_cluster_near_dens() -> void:
 	var s := _session()
 	var leaders := {}
 	var near_den := 0
@@ -63,8 +63,21 @@ func test_arms_mix_and_cluster_near_dens() -> void:
 			if dens.has(f["id"]) and Vector2(g.home - (f["pos"] as Vector2i)).length() <= JsonUtil.get_float(cluster, "radius_tiles") + 3.0:
 				near_den += 1
 				break
-	assert_true(leaders.size() >= 2, "동쪽 팔에 칼날늑대 말고 다른 종도 섞인다 (%s)" % [leaders.keys()])
+	assert_eq(leaders.keys(), ["blade_wolf"], "동쪽 팔 끝은 칼날늑대만(사용자 결정 2026-10-22)")
 	assert_true(near_den >= 20, "소굴 둘레에 뭉친 무리 (%d)" % near_den)
+
+
+func test_growth_ghouls_only_south_and_center() -> void:
+	var sp := JsonUtil.get_dict(db.get_entry("floors", FLOOR), "spawn")
+	var rng := Rng.new(3)
+	var day3 := 24.0 * 3
+	var south := 0
+	for i in 200:
+		assert_eq(FieldSpawnBias.growth_monster(db, rng, sp, day3, "f1_east"), "", "동쪽 팔엔 늘어나는 구울이 없다")
+		if FieldSpawnBias.growth_monster(db, rng, sp, day3, "f1_south") == "ghoul":
+			south += 1
+	assert_true(south > 50, "남쪽은 3일 차부터 구울이 는다 (%d/200)" % south)
+	assert_eq(FieldSpawnBias.growth_monster(db, rng, sp, 1.0, "f1_south"), "", "1일 차엔 아직")
 
 
 func test_wolf_follows_scent() -> void:

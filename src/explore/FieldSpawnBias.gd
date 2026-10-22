@@ -4,7 +4,8 @@ extends RefCounted
 ##   cluster {"share": 비율, "radius_tiles": n, "features": {동굴 요소 id: [몬스터 id …]}}
 ##     입장 때 무리의 share만큼은 그 지역 안의 소굴(동굴 요소 자리) 둘레 radius칸에 세운다 — 위험한 곳과 고요한 굴이 번갈아 온다.
 ##     목록이 비었으면(물가 등) 지역 몬스터 표에서 고른다. 그 지역 표에 없는 몬스터는 세우지 않는다.
-##   growth_bias {"min_day": n, "monster": id, "chance": p}: min_day일 차부터 시간이 지나 늘어나는 무리가 p 확률로 그 몬스터.
+##   growth_bias {"min_day": n, "monster": id, "chance": p, "regions": [지역 id …]}: min_day일 차부터 시간이 지나 늘어나는 무리가
+##     그 지역(regions — 없으면 모든 지역)이면 p 확률로 그 몬스터.
 
 
 ## 소굴 둘레 자리 {"cell", "monster"}. 고르지 않았으면(share 굴림 실패·소굴 없음) {}. in_area = 칸이 그 지역인가.
@@ -35,9 +36,12 @@ static func cluster_spot(map: FloorMap, rng: Rng, cluster: Dictionary, region: D
 
 
 ## 시간이 지나 늘어나는 무리의 몬스터("" = 지역 표대로).
-static func growth_monster(db: GameDatabase, rng: Rng, spawn: Dictionary, now: float) -> String:
+static func growth_monster(db: GameDatabase, rng: Rng, spawn: Dictionary, now: float, region_id: String) -> String:
 	var gb := JsonUtil.get_dict(spawn, "growth_bias")
 	var mid := JsonUtil.get_str(gb, "monster")
+	var only := JsonUtil.get_array(gb, "regions")
+	if not only.is_empty() and not only.has(region_id):
+		return ""
 	if mid.is_empty() or not db.has_entry("monsters", mid) or floori(now / 24.0) + 1 < JsonUtil.get_int(gb, "min_day", 3):
 		return ""
 	return mid if rng.chance(JsonUtil.get_float(gb, "chance")) else ""

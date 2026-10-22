@@ -362,7 +362,8 @@ func _process_respawns(player: Vector2i, now: float) -> void:
 		_extra_added += 1
 		var regions := _regions().filter(func(r: Dictionary) -> bool: return not JsonUtil.get_array(r, "monsters").is_empty())
 		if not regions.is_empty():
-			spawn_group(_rng.pick(regions), player, Vector2i(-1, -1), FieldSpawnBias.growth_monster(_db, _rng, _spawn(), now))
+			var region: Dictionary = _rng.pick(regions)
+			spawn_group(region, player, Vector2i(-1, -1), FieldSpawnBias.growth_monster(_db, _rng, _spawn(), now, JsonUtil.get_str(region, "id")))
 	if not due.is_empty():
 		changed.emit()
 

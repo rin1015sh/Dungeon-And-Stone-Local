@@ -301,16 +301,10 @@
       "dir": "east",
       "name_ko": "동쪽",
       "monsters": [
-        "blade_wolf",
-        "gnome",
-        "ghoul",
-        "goblin"
+        "blade_wolf"
       ],
       "weights": {
-        "blade_wolf": 7,
-        "gnome": 1,
-        "ghoul": 1,
-        "goblin": 1
+        "blade_wolf": 1
       }
     },
     {
@@ -319,16 +313,10 @@
       "dir": "west",
       "name_ko": "서쪽",
       "monsters": [
-        "gnome",
-        "blade_wolf",
-        "ghoul",
-        "goblin"
+        "gnome"
       ],
       "weights": {
-        "gnome": 7,
-        "blade_wolf": 1,
-        "ghoul": 1,
-        "goblin": 1
+        "gnome": 1
       }
     },
     {
@@ -337,16 +325,10 @@
       "dir": "south",
       "name_ko": "남쪽",
       "monsters": [
-        "ghoul",
-        "blade_wolf",
-        "gnome",
-        "goblin"
+        "ghoul"
       ],
       "weights": {
-        "ghoul": 7,
-        "blade_wolf": 1,
-        "gnome": 1,
-        "goblin": 1
+        "ghoul": 1
       }
     },
     {
@@ -355,16 +337,10 @@
       "dir": "north",
       "name_ko": "북쪽",
       "monsters": [
-        "goblin",
-        "blade_wolf",
-        "gnome",
-        "ghoul"
+        "goblin"
       ],
       "weights": {
-        "goblin": 7,
-        "blade_wolf": 1,
-        "gnome": 1,
-        "ghoul": 1
+        "goblin": 1
       }
     }
   ],
@@ -396,7 +372,7 @@
   ],
   "source": "original",
   "spawn": {
-    "_comment": "groups_per_region = 입장 때 지역마다 무리 수, 팔 지역은 주종 7 : 다른 종 1씩(weights). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 늘어나는 무리가 chance로 그 몬스터(3일 차부터 구울이 모인다). 모두 임시값",
+    "_comment": "groups_per_region = 입장 때 지역마다 무리 수, 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
     "groups_per_region": [
       30,
       38
@@ -421,7 +397,8 @@
     "growth_bias": {
       "min_day": 3,
       "monster": "ghoul",
-      "chance": 0.5
+      "chance": 0.5,
+      "regions": ["f1_south", "f1_center"]
     }
   },
   "explorers": {
