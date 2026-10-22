@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **탐험가 시체 그림 (2026-10-22, 사용자 "탐험가 시체가 너무 인형처럼 생겼고 작음")** — AM38. `tools/floor_art/Props.gd` corpse를 도형 대신 `assets/actors/human.webp` 옆모습 걸음 칸을 눕혀(핏기 없이 어둡게) + 피 웅덩이 3·칼·등짐. 소품 시트 해상도 1.5 → 2.0칸(`Specs.PROPS size`), `feat_corpse` 그리는 크기 1.5 → 1.9칸(서 있는 탐험가 키와 같은 길이). 캡처(`screenshot --parties`)로 서 있는 탐험가 곁에서 크기 확인. check.sh 통과.
+
 - **전투 스킬 알림창 · 적 자리 고정 (2026-10-22, 사용자 "무슨 스킬을 썼는지 텍스트로 보여주지 말고 위에 작은 알림창으로 — 피어 앤 헝거 참고. 아군이 적을 가리는 경우가 있으니 몬스터를 위로, 처치되면 가운데 정렬되는데 위치 고정")** — 가정 UI21.
   - `SkillBanner`(무대 위 가운데, 이름만 1.2초) ← `NoticeRoute.BANNER`(render `ui.notice.banner`: use_skill → `combat.banner_skill`, use_item → `combat.banner_item`). 대화창에 뜨지 않고 차례를 멈추지 않는다.
   - `BattleStage`: 아군 먼저(가라앉힘 180) → 적 발 = min(0.92, 아군 머리 − 8) · 최저 0.4. 적 자리 `_slots`(처음 무리 가운데 정렬 — 추가 배치는 다음 프레임에 한꺼번에, 쓰러지면 그 자리만 빔, 새 적은 빈자리 중 가운데 쪽 `_fit_new`, 화면 크기가 바뀌면 다시 정렬).

@@ -31,10 +31,15 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 	var c := Vector2(w * 0.5, w * 0.72)  # 바닥에 누운 것의 가운데(칸 가운데)
 	var foot := Vector2(w * 0.5, w * 0.84)  # 서 있는 것의 밑동
 	match kind:
-		"corpse":
-			_shadow(p, c, 26 * u, 12 * u)
-			Decals._blob(p, c + Vector2(8, 4) * u, 18 * u, BLOOD, 0.75, 0.3)
-			_body(p, c, u)
+		"corpse":  # 탐험가 맵 몸 그림(걷는 탐험가와 같은 그림)을 눕힌 시체 — 사람 크기(tiles.json feat_corpse art.prop.size)
+			Decals._blob(p, c + Vector2(4, 10) * u, 36 * u, BLOOD, 0.8, 0.35)  # 몸 밑에서 번진 피
+			Decals._blob(p, c + Vector2(-26, 6) * u, 18 * u, BLOOD.darkened(0.2), 0.7, 0.4)
+			Decals._blob(p, c + Vector2(22, 18) * u, 12 * u, BLOOD.darkened(0.1), 0.6, 0.45)
+			_shadow(p, c, 40 * u, 14 * u)
+			Decals._stick(p, c + Vector2(-34, 16) * u, c + Vector2(-8, 22) * u, 2.6 * u, METAL.darkened(0.2))  # 떨어뜨린 칼
+			_lying_body(p, c, w * 0.86, -1.42, "res://assets/actors/human.webp", 0)
+			Cave._stone(p, c + Vector2(30, 14) * u, 8 * u, 6 * u, LEATHER)  # 굴러 나온 등짐
+			Ink.line(p, c + Vector2(24, 11) * u, c + Vector2(36, 11) * u, 1.0 * u, Ink.INK, 0.6, 0.4)
 		"ghoul_feast":
 			Decals._blob(p, c, 26 * u, Color("#3a3422"), 0.7, 0.25)
 			Decals._blob(p, c + Vector2(-4, 2) * u, 14 * u, BLOOD, 0.8, 0.35)
@@ -188,16 +193,37 @@ static func _shadow(p: Paint, c: Vector2, rx: float, ry: float) -> void:
 	p.fill_poly(Cave._ellipse(c + Vector2(2, 3), rx, ry, 24), func(_x: int, _y: int) -> Color: return Color(0.04, 0.03, 0.04, 0.4))
 
 
-## 엎어진 탐험가: 몸통(천) · 머리 · 팔다리 · 등짐.
-static func _body(p: Paint, c: Vector2, u: float) -> void:
-	Decals._stick(p, c + Vector2(-4, 2) * u, c + Vector2(-26, 8) * u, 6.0 * u, CLOTH.darkened(0.1))  # 다리
-	Decals._stick(p, c + Vector2(-4, 6) * u, c + Vector2(-24, 14) * u, 6.0 * u, CLOTH.darkened(0.15))
-	Cave._stone(p, c + Vector2(4, 0) * u, 14 * u, 9 * u, CLOTH)  # 몸통
-	Decals._stick(p, c + Vector2(10, -6) * u, c + Vector2(22, -14) * u, 4.0 * u, CLOTH)  # 팔
-	Decals._stick(p, c + Vector2(12, 6) * u, c + Vector2(24, 10) * u, 4.0 * u, CLOTH)
-	Cave._stone(p, c + Vector2(22, -2) * u, 6 * u, 5.5 * u, SKIN)  # 머리
-	Cave._stone(p, c + Vector2(0, -8) * u, 8 * u, 6 * u, LEATHER)  # 등짐
-	Ink.line(p, c + Vector2(-6, -8) * u, c + Vector2(8, -8) * u, 1.2 * u, Ink.INK, 0.7, 0.4)
+## 쓰러진 탐험가: 탐험 맵 몸 그림 시트(paint_actors.gd — 옆모습 줄의 걸음 칸 col, 다리를 벌린 자세)를 각도 angle(라디안)로 눕혀
+## 길이 length(px)로 c에 놓는다. 핏기 없게 어둡고 탁하게. 시트가 없으면 아무것도 그리지 않는다(맵 몸 그림을 먼저 그린다).
+static func _lying_body(p: Paint, c: Vector2, length: float, angle: float, sheet_path: String, col: int) -> void:
+	var img := Image.load_from_file(ProjectSettings.globalize_path(sheet_path))
+	if img == null or img.is_empty():
+		return
+	img.convert(Image.FORMAT_RGBA8)
+	var cw := img.get_width() / 5
+	var ch := img.get_height() / 4
+	var src := img.get_region(Rect2i(col * cw, 2 * ch, cw, ch))  # 줄 2 = 오른쪽을 본 옆모습
+	var used := src.get_used_rect()
+	if used.size.y <= 0:
+		return
+	var k := length / float(used.size.y)  # 키 → 누운 길이
+	var mid := Vector2(used.position) + Vector2(used.size) * 0.5
+	var rot := Transform2D(angle, Vector2.ZERO)
+	var inv := rot.affine_inverse()
+	var reach := length * 0.6
+	for y in range(int(c.y - reach), int(c.y + reach) + 1):
+		for x in range(int(c.x - reach), int(c.x + reach) + 1):
+			var s: Vector2 = inv * (Vector2(x, y) - c) / k + mid
+			var sx := int(s.x)
+			var sy := int(s.y)
+			if sx < 0 or sy < 0 or sx >= cw or sy >= ch:
+				continue
+			var px := src.get_pixel(sx, sy)
+			if px.a < 0.05:
+				continue
+			var g := px.r * 0.3 + px.g * 0.59 + px.b * 0.11
+			var dead := Color(lerpf(px.r, g, 0.45), lerpf(px.g, g, 0.5), lerpf(px.b, g, 0.4)) * 0.62  # 핏기 없이 탁하게
+			p.blend(x, y, Color(dead.r, dead.g, dead.b), px.a)
 
 
 static func _skeleton(p: Paint, c: Vector2, u: float) -> void:

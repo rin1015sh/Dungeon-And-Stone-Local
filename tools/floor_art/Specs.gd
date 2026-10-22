@@ -28,5 +28,5 @@ const DECALS := [
 
 ## 소품 시트(Props.gd — tiles.json art.prop.cell = Props.ORDER 번호): 칸 = 바닥 칸 × art_scale × 1.5, 가로 cols칸.
 const PROPS := [
-	{"place": "f1", "path": "res://assets/floor/f1/props.webp", "style": "props", "cols": 8, "seed": 1001, "size": 1.5},
+	{"place": "f1", "path": "res://assets/floor/f1/props.webp", "style": "props", "cols": 8, "seed": 1001, "size": 2.0},
 ]
