@@ -16,6 +16,7 @@ extends Node
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
+## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
@@ -287,6 +288,9 @@ func _run() -> void:
 			Input.parse_input_event(ev)
 		if not _quick:
 			await _frames(30)
+	if _args.has("banner"):  # --banner=<스킬 이름>: 위쪽 스킬 알림창(SkillBanner)을 띄운 채(찍기 바로 전에 — 금방 사라진다)
+		for n: Node in _main.find_children("*", "CombatScreen", true, false):
+			(n as CombatScreen).battle.message.emit("combat.use_skill", {"name": "", "skill": str(_args["banner"])}, "system")
 	await _frames(2 if _quick else 6)
 	var img := get_viewport().get_texture().get_image()
 	var out := str(_args["out"])

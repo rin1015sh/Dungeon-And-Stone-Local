@@ -496,7 +496,9 @@
     "ildium_intro": "분묘 한가운데에서 {name}이(가) 삐걱거리며 몸을 일으킨다.",
     "ildium_overheat": "{name}의 강철 몸이 벌겋게 달아오른다 — 힘이 세지고 몸이 물러진다!",
     "ildium_trap_warn": "{name}이(가) 바닥을 내리친다!",
-    "ildium_trap_fire": "분묘의 함정이 일제히 튀어 오른다!"
+    "ildium_trap_fire": "분묘의 함정이 일제히 튀어 오른다!",
+    "banner_skill": "{skill}",
+    "banner_item": "{item}"
   },
   "knowledge": {
     "unknown": "???",

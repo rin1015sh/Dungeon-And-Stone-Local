@@ -166,6 +166,7 @@ func _realtime_combat_flow() -> void:
 		return
 	var battle := combat.battle  # 전투 화면은 끝나면 스스로 사라진다(드롭이 없으면 바로) — 결과는 battle로 본다
 	await _combat_dialog_checks(combat)
+	await _stage_checks(combat)
 	GameState.debug_fast_combat = true
 	var tc := s.clock.total_hours
 	var menu := await _open_menu(combat)
@@ -535,6 +536,34 @@ func _combat_dialog_checks(combat: CombatScreen) -> void:
 	_expect(_menu_open(combat) and not dlg.busy(), "안내를 다 넘기면 행동창")
 	DialogueBox.auto_skip = true
 	dlg.instant = true
+
+
+## 스킬 이름 = 위쪽 작은 알림창(대화창이 아니다), 적 자리 = 고정(쓰러져도 남은 적이 가운데로 모이지 않는다), 적은 아군 머리 위(UI21).
+func _stage_checks(combat: CombatScreen) -> void:
+	var b := combat.battle
+	b.message.emit("combat.use_skill", {"name": "x", "skill": "시험 스킬"}, "system")
+	await _frames(1)
+	_expect(combat.banner().text() == "시험 스킬" and not combat.dialog().busy(), "스킬 이름은 위 알림창에(대화창 아님)")
+	var foe0: Combatant = b.side_units(Combatant.SIDE_ENEMY)[0]
+	BattleRules.summon(b, foe0, {"monster": "goblin"})
+	BattleRules.summon(b, foe0, {"monster": "goblin"})
+	await _frames(3)
+	var st := combat.stage()
+	var foes := b.side_units(Combatant.SIDE_ENEMY)
+	var before := {}
+	for u in foes:
+		before[u] = st.view(u).position
+	var ally_top := INF
+	for u: Combatant in b.side_units(Combatant.SIDE_PARTY):
+		ally_top = minf(ally_top, st.view(u).position.y)
+	var feet: Array = foes.map(func(u: Combatant) -> float: return st.view(u).position.y + st.view(u).size.y)
+	_expect(feet.all(func(y: float) -> bool: return y <= ally_top + 0.5), "적 발은 아군 머리 위 (발 %s · 머리 %.0f · 무대 %s)" % [feet, ally_top, st.size])
+	var gone: Combatant = foes[0]
+	st.remove_unit(gone)
+	await _frames(2)
+	_expect(foes.slice(1).all(func(u: Combatant) -> bool: return st.view(u).position.is_equal_approx(before[u])), "적이 빠져도 남은 적 자리는 그대로")
+	st.add_unit(gone)  # 무대만 되돌린다(전투 규칙은 그대로)
+	await _frames(2)
 
 
 func _menu_open(combat: CombatScreen) -> bool:
