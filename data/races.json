@@ -28,7 +28,6 @@
       ]
     },
     "sprite": "res://assets/actors/human.webp",
-    "player_sprite": "res://assets/actors/human_hood.webp",
     "source": "placeholder"
   },
   {
@@ -64,7 +63,6 @@
       ]
     },
     "sprite": "res://assets/actors/barbarian.webp",
-    "player_sprite": "res://assets/actors/barbarian_hood.webp",
     "source": "placeholder"
   },
   {
