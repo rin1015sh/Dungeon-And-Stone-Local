@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **한 번의 전투 = 처음엔 한 마리 (2026-10-22, 사용자 "몬스터 숫자를 늘리되 한 번의 전투에서 만나는 몬스터는 줄여 — 후반 일차에 2~3마리")** — EX13. 층 JSON `spawn.pack_by_day` [[1,1]×3, [1,2]×2, [2,3]×2] + `FieldMonsters.pack_count`(몬스터 pack_size 최대로 막음 — 지키는 무리도), `groups_per_region` 48~56. 측정 `sim_walk`(시드 1~3 × 포탈 4): 1일 차 전투 97번(전 84)·만남 간격 평균 5.1초, 6일 차 전투 111번·4.1초. 약탈자(사람)·계층군주·균열은 그대로. check.sh 통과(단위 365).
+
 - **1층 팔 끝 한 종씩으로 되돌림 (2026-10-22, 사용자 "되돌려" — 팔 끝은 한 종, 가운데는 전부)**: 층 JSON regions 팔 4곳을 주종 하나로(weights 1), `spawn.growth_bias.regions` = [f1_south, f1_center](3일 차 구울 증가가 다른 팔에 섞이지 않게 — `FieldSpawnBias.growth_monster`에 지역 인자). 무리 수 30~38·소굴 뭉치기는 그대로. 테스트: 동쪽 팔 = 칼날늑대만, 늘어나는 구울은 남쪽·중심부만. check.sh 통과(단위 364).
 
 - **탐험가 시체 그림 (2026-10-22, 사용자 "탐험가 시체가 너무 인형처럼 생겼고 작음")** — AM38. `tools/floor_art/Props.gd` corpse를 도형 대신 `assets/actors/human.webp` 옆모습 걸음 칸을 눕혀(핏기 없이 어둡게) + 피 웅덩이 3·칼·등짐. 소품 시트 해상도 1.5 → 2.0칸(`Specs.PROPS size`), `feat_corpse` 그리는 크기 1.5 → 1.9칸(서 있는 탐험가 키와 같은 길이). 캡처(`screenshot --parties`)로 서 있는 탐험가 곁에서 크기 확인. check.sh 통과.

@@ -372,11 +372,12 @@
   ],
   "source": "original",
   "spawn": {
-    "_comment": "groups_per_region = 입장 때 지역마다 무리 수, 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
+    "_comment": "groups_per_region = 입장 때 지역마다 무리 수, pack_by_day = 그날 새로 생기는 무리(= 한 번의 전투)의 [최소, 최대] 마릿수(몬스터 pack_size 최대를 넘지 않음 — 3일 차까지 한 마리, 사용자 결정 2026-10-22), 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
     "groups_per_region": [
-      30,
-      38
+      48,
+      56
     ],
+    "pack_by_day": [[1, 1], [1, 1], [1, 1], [1, 2], [1, 2], [2, 3], [2, 3]],
     "respawn_hours": 24,
     "growth_every_hours": 24,
     "max_extra_groups": 18,

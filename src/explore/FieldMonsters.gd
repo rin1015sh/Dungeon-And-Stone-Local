@@ -125,8 +125,7 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	var g := Group.new()
 	g.id = _next_id
 	_next_id += 1
-	var pack := JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("monsters", mid), "behavior"), "pack_size")
-	for i in (_rng.randi_range(int(pack[0]), int(pack[1])) if pack.size() == 2 else 1):
+	for i in pack_count(mid, not JsonUtil.get_str(region, "id").is_empty()):
 		g.monster_ids.append(mid)
 	if monster_id.is_empty():
 		_mix_variants(g, region, cell)
@@ -135,6 +134,20 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	g.home = cell
 	groups.append(g)
 	return g
+
+
+## 한 무리(= 한 번의 전투)에 몇 마리인가. 층 필드 무리(field)는 층 JSON spawn.pack_by_day[날짜] [최소, 최대]를 따르되
+## 몬스터 pack_size 최대를 넘지 않는다(1일 차는 한 마리씩, 뒤로 갈수록 2~3마리 — 사용자 결정 2026-10-22). 그 밖(계층군주 등)은 pack_size.
+func pack_count(monster_id: String, field: bool) -> int:
+	var pack := JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("monsters", monster_id), "behavior"), "pack_size")
+	var lo := int(pack[0]) if pack.size() == 2 else 1
+	var hi := int(pack[1]) if pack.size() == 2 else 1
+	var by_day := JsonUtil.get_array(_spawn(), "pack_by_day")
+	if field and not by_day.is_empty():
+		var d: Array = by_day[clampi(floori(_now / 24.0), 0, by_day.size() - 1)]
+		hi = mini(hi, int(d[1]))
+		lo = mini(int(d[0]), hi)
+	return _rng.randi_range(maxi(1, lo), maxi(1, hi))
 
 
 ## 정해진 구성의 무리를 칸 cell 근처에 세운다(균열 고정 조우). 지역이 없어 리스폰하지 않는다.

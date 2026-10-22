@@ -67,6 +67,20 @@ func test_arms_one_kind_and_cluster_near_dens() -> void:
 	assert_true(near_den >= 20, "소굴 둘레에 뭉친 무리 (%d)" % near_den)
 
 
+func test_one_monster_per_battle_early() -> void:
+	var s := _session()
+	var multi := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.party.is_empty() and g.boss.is_empty() and g.monster_ids.size() > 1)
+	assert_eq(multi.size(), 0, "1일 차 필드 무리(지키는 무리 포함)는 한 마리씩")
+	s.monsters._now = 24.0 * 5  # 6일 차
+	var gob: Array[int] = []
+	var wolf: Array[int] = []
+	for i in 60:
+		gob.append(s.monsters.pack_count("goblin", true))
+		wolf.append(s.monsters.pack_count("blade_wolf", true))
+	assert_true(gob.min() >= 2 and gob.max() == 3, "6일 차 고블린 2~3마리 (%d~%d)" % [gob.min(), gob.max()])
+	assert_true(wolf.max() <= 2, "칼날늑대는 원래 최대(2)를 넘지 않는다")
+
+
 func test_growth_ghouls_only_south_and_center() -> void:
 	var sp := JsonUtil.get_dict(db.get_entry("floors", FLOOR), "spawn")
 	var rng := Rng.new(3)

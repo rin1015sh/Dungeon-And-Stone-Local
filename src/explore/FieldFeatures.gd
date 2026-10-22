@@ -4,7 +4,7 @@ extends RefCounted
 ##   살피기(E): 서 있는 칸·옆 칸(4방향)의 요소. 할 수 있는 행동이 하나면 바로 하고, 여럿이면 choice(화면이 고르게 한 뒤 act).
 ##   near {radius, line}: 반경 안에 처음 들어서면 문구 한 번.   hidden {stat, dc}: 옆(8방향)에 처음 오면 탐지 판정 한 번 —
 ##   성공해야 tile이 드러나고 살필 수 있다.   hazard: RiftHazards 묶음(함정·미끄러운 비탈)으로 깔고 밟으면 판정.
-##   guard {monster}: 입장 때 그 자리에 지키는 무리(무리 수는 몬스터 pack_size).   rest {radius, fatigue_per_hour}: 근처 휴식 보너스.
+##   guard {monster}: 입장 때 그 자리에 지키는 무리(마릿수는 FieldMonsters.pack_count — 날짜별).   rest {radius, fatigue_per_hour}: 근처 휴식 보너스.
 ## 행동 하나의 실행은 FieldFeatureAct. 입장마다 새로(층이 입장마다 리셋되므로 다시 채워진다).
 
 var list: Array[Dictionary] = []   ## {"id", "pos", "def", "found", "used": {행동 id: 날짜 | true}, "cleared", "noticed"}
@@ -64,9 +64,8 @@ func spawn_guards(s: ExploreSession) -> void:
 		var mid := JsonUtil.get_str(guard, "monster")
 		if mid.is_empty() or not s.db.has_entry("monsters", mid):
 			continue
-		var pack := JsonUtil.get_array(JsonUtil.get_dict(s.db.get_entry("monsters", mid), "behavior"), "pack_size")
 		var ids: Array = []
-		for i in (s.rng.randi_range(int(pack[0]), int(pack[1])) if pack.size() == 2 else 1):
+		for i in s.monsters.pack_count(mid, true):  # 날짜별 마릿수(spawn.pack_by_day)
 			ids.append(mid)
 		s.monsters.add_fixed(ids, e["pos"])
 
