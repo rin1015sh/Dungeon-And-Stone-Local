@@ -37,7 +37,7 @@ func setup_for(actor: Actor, render: Dictionary) -> void:
 	if actor is PlayerCharacter:
 		race = actor.db.get_entry("races", (actor as PlayerCharacter).race_id)
 	body_color = Color.from_string(JsonUtil.get_str(race, "color"), body_color)
-	_sheet = ActorSheet.load_for(render, JsonUtil.get_str(race, "sprite"))
+	_sheet = ActorSheet.load_for(render, JsonUtil.get_str(race, "player_sprite", JsonUtil.get_str(race, "sprite")))  # 플레이어 = 두건 시트(다른 탐험가·약탈자는 sprite — MonsterView)
 	if _sheet != null:
 		size = _sheet.world_size()
 		_col = _sheet.stand

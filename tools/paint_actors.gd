@@ -19,6 +19,8 @@ const SIDE_TURN := 1.8   ## 옆모습 돌림 — 90°를 조금 넘겨 얼굴이
 const PITCH := 0.1       ## 3/4 시점 — 앞으로 내민 발이 조금 아래로(크게 하면 몸이 비틀려 보인다)
 const PHASES := [1.0, 0.5, 0.0, -0.5, -1.0]  ## 칸 순서: 왼발 앞 · 반걸음 · 섬 · 반걸음 · 오른발 앞(재생 순서는 render.json actor_sheet.walk_cycle)
 const OUTLINE := Color("#120c0a")
+const HOOD_C := Color("#3a3026")  ## 두건 색(짙은 천 — 밝은 색은 빛을 받아 살갗·대머리처럼 보였다)
+const HOOD_GROW := 0.022  ## 두건 두께(키 비율 — 머리통에서 띄움)
 ## 몸 비율·자세(참고 시트): 머리 약 1/3, 굵고 짧은 팔다리, 살짝 숙인 몸, 늘어뜨린 팔, 큰 보폭·높이 드는 뒤꿈치
 const HEAD := 2.2        ## 머리 크기 배율(전투 그림 = 1) — 2026-10-17 사용자 "머리 크기 줄이고"로 2.5 → 2.2
 const LEGS := 0.75       ## 다리 길이 배율 — 2026-10-17 사용자 "다리 조금만 늘려"로 0.68 → 0.75
@@ -111,6 +113,7 @@ func _init() -> void:
 	for race: String in Party.RACES:
 		if only.is_empty() or only.has(race):
 			_explorer(race)
+			_explorer(race, true)
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has("monsters") or only.has(id):
 			if not MapMonster.idle_of(id).is_empty():
@@ -124,8 +127,9 @@ func _init() -> void:
 	quit(0)
 
 
-## 탐험가 걷기 시트.
-func _explorer(race: String) -> void:
+## 탐험가 걷기 시트. hood = 플레이어용 두건 시트(<종족>_hood.webp — 머리카락 없음, races.json player_sprite).
+## 다른 탐험가 무리·약탈자는 두건 없는 <종족>.webp를 쓴다.
+func _explorer(race: String, hood: bool = false) -> void:
 	var t0 := Time.get_ticks_msec()
 	var cell := _cell()
 	var cols := PHASES.size()
@@ -133,16 +137,26 @@ func _explorer(race: String) -> void:
 	var turns := {0: PI, 1: -SIDE_TURN, 3: 0.0}  # 줄 → 돌림(2 = 오른쪽은 1을 뒤집는다 — 빛이 왼쪽 위에서 와서 왼쪽을 보게 그려야 얼굴이 밝다)
 	for row: int in [0, 1, 3]:
 		for c in cols:
-			var img := _figure(Party.spec_of(race + "_back"), race, float(turns[row]), float(PHASES[c]))
+			var img := _figure(_explorer_spec(race, hood), race, float(turns[row]), float(PHASES[c]))
 			_put(sheet, img, Vector2i(c, row), cell)
 			if row == 1:
 				var flipped := img.duplicate() as Image
 				flipped.flip_x()
 				_put(sheet, flipped, Vector2i(c, 2), cell)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out))
-	var path := _out.path_join("%s.webp" % race)
+	var path := _out.path_join(("%s_hood.webp" if hood else "%s.webp") % race)
 	sheet.save_webp(path, false)
 	print("그림: %s %dx%d (%d ms)" % [path, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
+
+
+func _explorer_spec(race: String, hood: bool) -> Dictionary:
+	var sp := Party.spec_of(race + "_back")
+	if hood:
+		var kit: Dictionary = (sp.get("kit", {}) as Dictionary).duplicate()
+		kit["hood"] = HOOD_C
+		kit["hood_grow"] = _v("hood_grow", HOOD_GROW)
+		sp["kit"] = kit
+	return sp
 
 
 ## 한 장(사람형): 돌림·걸음으로 그려 사람 키 = actor_sheet.body_px × k(그림 배율 적용)로 줄이고 바깥선. 발 = 그림 아래 가운데.

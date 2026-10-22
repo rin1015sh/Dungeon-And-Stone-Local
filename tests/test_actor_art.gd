@@ -72,3 +72,16 @@ func test_monster_walk_sheets_load() -> void:
 ## 웹 내보내기에 몬스터 시트 색인이 들어간다(FileAccess로 읽는 json은 include_filter에 있어야 한다).
 func test_sheet_index_exported() -> void:
 	assert_true(FileAccess.get_file_as_string("res://export_presets.cfg").contains("assets/actors/monsters/sheets.json"), "export_presets include_filter")
+
+
+## 플레이어 = 두건 시트(머리카락이 보이지 않게 — 2026-10-22, AM39), 다른 탐험가·약탈자 = 두건 없는 sprite.
+func test_player_hood_sheet() -> void:
+	for race in ["human", "barbarian"]:
+		var e := db.get_entry("races", race)
+		var hood := JsonUtil.get_str(e, "player_sprite")
+		assert_true(hood.ends_with("_hood.webp") and hood != JsonUtil.get_str(e, "sprite"), race + ": 플레이어는 두건 시트")
+		var s := ActorSheet.load_for(db.render, hood)
+		var plain := ActorSheet.load_for(db.render, JsonUtil.get_str(e, "sprite"))
+		assert_true(s != null and plain != null, race + ": 두 시트를 읽는다")
+		if s != null and plain != null:
+			assert_eq(s.texture.get_size(), plain.texture.get_size(), race + ": 칸 배치가 같다")

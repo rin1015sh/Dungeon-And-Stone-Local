@@ -14,7 +14,7 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	var m := cl.mat(col, "hair", {"mottle": col.lightened(0.15), "mottle_amt": 0.3})
 	if sp.has("beard"):
 		_beard(cl, pr, hd, cl.mat(sp["beard"], "hair"))
-	if kind == "none":
+	if kind == "none" or (sp.get("kit", {}) as Dictionary).has("hood"):  # 두건을 쓰면 머리카락은 그리지 않는다(BackGear._hood)
 		return
 	var g := cl.group()
 	var turn: float = pr["turn"]

@@ -1,5 +1,5 @@
 extends RefCounted
-## 뒷모습 사람형(Back)의 장구: 투구(helm·plume) · 판금(armor — 등판·어깨받이·팔뚝·정강이) · 긴 망토(cape) · 붕대(wraps)
+## 뒷모습 사람형(Back)의 장구: 두건(hood — 머리카락을 덮는다, hood_grow) · 투구(helm·plume) · 판금(armor — 등판·어깨받이·팔뚝·정강이) · 긴 망토(cape) · 붕대(wraps)
 ## · 허리천 뒷자락(loin) · 창(spear·lance — 쥔 손) · 방패(shield — 안쪽 면과 손잡이 끈이 보인다, shield_kind round|kite).
 
 const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
@@ -18,6 +18,8 @@ static func gear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		j["armored"] = true
 	if kit.has("cape"):
 		_cape(cl, pr, j, bd, kit["cape"], rng)
+	if kit.has("hood"):
+		_hood(cl, pr, j, hd, kit)
 	if kit.has("helm"):
 		_helm(cl, pr, hd, kit, rng)
 	if kit.has("weapon") and not BackExtras.HAND_WEAPONS.has(str(kit["weapon"])):  # 손 무기는 BackExtras
@@ -148,6 +150,27 @@ static func _cape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: 
 		Back.groove(cl, pr, g, [Vector3(u * 0.6, top + 0.05, wz), Vector3(u * 1.2, (top + bot) * 0.5, wz), Vector3(u * 1.5, bot - 0.01, wz)], B, 0.008, 0.016)
 	for k in 4:
 		cl.erase(g, Back.P2(pr, Vector3(rng.randf_range(-shw, shw), rng.randf_range(bot - 0.08, bot - 0.02), wz)), rng.randf_range(0.01, 0.025) * H, rng.randf_range(0.015, 0.04) * H, 0.5)
+
+
+## 두건(탐험 맵 플레이어 — 2026-10-22 사용자 "머리카락이 아예 안 보이게"): 머리통·귀를 천으로 덮고(얼굴만 열림),
+## 뒤통수 아래로 처진 자락, 목·어깨를 덮는 짧은 어깨 천. 머리카락은 BackHair가 그리지 않는다.
+static func _hood(cl: Clay, pr: Dictionary, j: Dictionary, hd: Dictionary, kit: Dictionary) -> void:
+	var m := cl.mat(kit["hood"], "cloth")
+	var g := cl.group()
+	var c: Vector3 = hd["c"]
+	var rv: float = hd["rv"]
+	var grow := float(kit.get("hood_grow", 0.022))
+	var ru: float = hd["ru"]
+	var rw: float = hd["rw"]
+	BackKit.shell(cl, pr, ["skull", "ear"], grow, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y + rv * 1.3), 0.01)
+	BackKit.shell(cl, pr, ["face"], grow * 0.8, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y - rv * float(kit.get("hood_brow", 0.12))), 0.01)  # 이마를 덮는 챙
+	for s: int in [-1, 1]:  # 얼굴 둘레를 감싸는 옆 천(볼 옆으로 내려와 턱 밑에서 모인다)
+		Back.chain(cl, pr, g, [c + Vector3(s * ru * 0.85, -rv * 0.45, -rw * 0.3), c + Vector3(s * ru * 0.86, rv * 0.4, -rw * 0.5), c + Vector3(s * ru * 0.5, rv * 0.95, -rw * 0.32)],
+			[ru * 0.38, ru * 0.32, ru * 0.26], m, 0.012)
+	Back.ell(cl, pr, g, Back.on_head(hd, -0.45, 0.0, grow * 0.6), float(hd["ru"]) * 0.85, rv * 0.55, float(hd["rw"]) * 0.45, m, 0.008)  # 뒤로 처진 자락
+	var neck: Vector3 = j["neck"]
+	var chest: Vector3 = j["chest"]
+	BackKit.shell(cl, pr, ["neck", "shoulder_l", "shoulder_r", "torso"], grow * 0.7, m, g, BackKit.band(cl, pr, neck.y - 0.03, lerpf(neck.y, chest.y, 0.55)), 0.01)  # 어깨 천
 
 
 ## 투구: 머리를 덮은 둥근 쇠 + 목 가리개 + (plume) 붉은 깃 장식.
