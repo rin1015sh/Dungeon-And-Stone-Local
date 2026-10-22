@@ -1,6 +1,7 @@
 {
   "id": "pickpocket",
   "name_ko": "소매치기",
+  "art": "res://assets/city/events/pickpocket.webp",
   "weight": 3,
   "cooldown_months": 2,
   "weather_weight": {

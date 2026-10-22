@@ -1,6 +1,7 @@
 {
   "id": "drunk",
   "name_ko": "술주정꾼",
+  "art": "res://assets/city/events/drunk.webp",
   "weight": 2,
   "cooldown_months": 2,
   "choices": [

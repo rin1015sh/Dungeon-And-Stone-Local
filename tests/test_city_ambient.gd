@@ -144,6 +144,13 @@ func test_closed_facility_and_prices() -> void:
 	assert_eq(CityShop.buy_price(s, "minor_potion"), CityShop.price(db, "minor_potion"))
 
 
+## 사건마다 일러스트 한 장(CT45 — 일어나면 도시를 덮는다).
+func test_every_event_has_art() -> void:
+	for id: String in db.get_collection(CityAmbient.COL):
+		var art := JsonUtil.get_str(db.get_entry(CityAmbient.COL, id), "art")
+		assert_true(not art.is_empty() and ResourceLoader.exists(art), "일러스트: " + id)
+
+
 func test_round_trip() -> void:
 	var s := _state()
 	CityAmbient.force(s, "fire")

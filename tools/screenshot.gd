@@ -329,6 +329,7 @@ func _city(city: CityScreen) -> void:
 		city.debug_panel().visible = true
 	if _args.has("street"):
 		city.street_event(str(_args["street"]))
+		await get_tree().create_timer(0.5).timeout  # 일러스트가 다 나타날 때까지(StreetEventView fade)
 	await _frames(4)
 
 

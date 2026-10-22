@@ -1,6 +1,7 @@
 {
   "id": "tax_notice",
   "name_ko": "납세 포고",
+  "art": "res://assets/city/events/tax_notice.webp",
   "forced": true,
   "when": {
     "tax_month": 0,

@@ -1,6 +1,7 @@
 {
   "id": "beggar",
   "name_ko": "외팔이 탐험가",
+  "art": "res://assets/city/events/beggar.webp",
   "weight": 2,
   "cooldown_months": 2,
   "choices": [

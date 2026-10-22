@@ -1,6 +1,7 @@
 {
   "id": "errand",
   "name_ko": "심부름",
+  "art": "res://assets/city/events/errand.webp",
   "weight": 2,
   "cooldown_months": 2,
   "choices": [

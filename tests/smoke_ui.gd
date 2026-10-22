@@ -969,7 +969,14 @@ func _street_flow() -> void:
 	city.street_event()
 	await _frames(1)
 	_expect(city.dialog().page_text().contains(Strings.t("city.street.hanging.intro.1").left(8)), "세금 기한 다음 달 상순 = 교수형 장면")
+	_expect(city.event_view() != null and city.event_view().has_picture(), "거리 사건 = 일러스트가 도시를 덮는다(CT45)")
+	city.choose_facility(st.facility_ids()[0])
+	await _action("menu")
+	await _frames(1)
+	_expect(city.facility_view() == null and not city.menu().is_open(), "사건 중엔 시설·Tab 메뉴를 쓸 수 없다")
 	city.dialog().clear()
+	await _frames(1)
+	_expect(city.event_view() == null, "다 넘기면 일러스트가 사라진다")
 	DialogueBox.auto_skip = true
 	var money := pc.inventory.money
 	city.street_event("beggar")

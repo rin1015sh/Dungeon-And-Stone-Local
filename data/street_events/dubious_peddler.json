@@ -1,6 +1,7 @@
 {
   "id": "dubious_peddler",
   "name_ko": "수상한 약장수",
+  "art": "res://assets/city/events/dubious_peddler.webp",
   "weight": 1.5,
   "cooldown_months": 3,
   "choices": [

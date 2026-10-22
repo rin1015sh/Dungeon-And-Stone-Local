@@ -1,6 +1,7 @@
 {
   "id": "checkpoint",
   "name_ko": "경비대 검문",
+  "art": "res://assets/city/events/checkpoint.webp",
   "weight": 2,
   "cooldown_months": 2,
   "effects": [

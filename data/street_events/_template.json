@@ -1,7 +1,8 @@
 {
-  "_comment": "거리 사건(CityAmbient, CT42): 순이 바뀔 때 행동력 없이 저절로. forced = 조건이 맞으면 반드시. when{from_month, months_of_year[], periods[], weather[], tax_month(세금 기한 달에서 몇 달 뒤), tax_owed}. weather_weight{날씨: 배율}. 갈래 = cost_stones·effects[]·check{stats[], target, base, per_point, min, max}·success[]·fail[] — 선택지가 있으면 choices[{id, 갈래}]. 문구 = strings city.street.<id>.intro.<n>·<결과>.<n>(결과 = result 또는 선택지 id, 판정이 있으면 _ok·_fail)·choice.<선택지 id>. 효과 = src/city/effects(money·close_facility·price_mod …).",
+  "_comment": "거리 사건(CityAmbient, CT42): art = 일러스트(960×540 — 일어나면 도시를 덮고 뜬다, tools/paint_city.gd -- --only=events, CT45). 순이 바뀔 때 행동력 없이 저절로. forced = 조건이 맞으면 반드시. when{from_month, months_of_year[], periods[], weather[], tax_month(세금 기한 달에서 몇 달 뒤), tax_owed}. weather_weight{날씨: 배율}. 갈래 = cost_stones·effects[]·check{stats[], target, base, per_point, min, max}·success[]·fail[] — 선택지가 있으면 choices[{id, 갈래}]. 문구 = strings city.street.<id>.intro.<n>·<결과>.<n>(결과 = result 또는 선택지 id, 판정이 있으면 _ok·_fail)·choice.<선택지 id>. 효과 = src/city/effects(money·close_facility·price_mod …).",
   "id": "example",
   "name_ko": "예시",
+  "art": "res://assets/city/events/example.webp",
   "weight": 1,
   "cooldown_months": 2,
   "when": {},

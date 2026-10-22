@@ -22,6 +22,7 @@
 | 무엇 | 도구(실행) | 부품 | 결과 |
 |---|---|---|---|
 | 도시 거리·건물·실내·사람·차원광장 | `tools/paint_city.gd [-- --only=street\|buildings\|interiors\|plaza]` | `tools/city_art/` — Paint(캔버스·붓결)·Ink(잉크·빛·색 보정)·Mat(재질)·Parts·Buildings(2)·Backdrop·Street·Interiors·Npcs·NpcParts·Plaza | `assets/city/` (data가 가리키는 경로) |
+| 거리 사건 일러스트(960×540, 사건마다 한 장 — CT45) | `tools/paint_city.gd -- --only=events [--event=<id>]`(장당 약 20초) | `tools/city_art/` Events(교수형·포고·소매치기·검문·현상수배)·Events2(마석 넘침·매집·품귀·약장수·외팔이)·Events3(술주정·심부름·화재·역병)·EventKit(하늘·뒤 집·포석·사람·벽보·화로) + 위 부품 | `assets/city/events/<id>.webp` (`street_events` art) |
 | 몬스터 전투 그림(정면) | `tools/paint_monsters.gd [-- --only=<id,id>]` | `tools/monster_art/` — Clay(3D 덩어리)·Render·Pen(칠·잉크·빗금)·Rig·Anatomy·Face·Hair·Kit·Arms·Extras·Fur·Beast(Head)·Things(2)·Lord·Finish · 설계 Specs·Specs2 | `assets/monsters/<id>.webp` + `index.json`(몸 높이) |
 | 탐험 맵 재질·데칼·소품 | `tools/paint_floor.gd [-- --only=<장소\|style>]` | `tools/floor_art/` — Specs(설계)·Seam(주기 잡음·빛 받은 높이·가장자리 마스크)·Cave(1층 재질 칠·벽 턱)·Decals(데칼)·Props(동굴 요소·포탈 소품)·Marks(기념비·네모 수정) + city_art Paint·Ink | `assets/floor/<장소>/*.webp` (data/tiles.json art · 층 JSON art.decor) |
 | 아군 전투 그림(뒷모습) | `tools/paint_monsters.gd -- --only=party` | Back(몸 3D 좌표를 돌려 투영)·BackKit(옷)·BackHair·BackGear(갑옷·무기) · 설계 Party | `assets/party/<종족>_back\|_side.webp`, `assets/monsters/<id>_back.webp` |

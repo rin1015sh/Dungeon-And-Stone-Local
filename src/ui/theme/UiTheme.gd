@@ -105,6 +105,11 @@ static func render_float(path: String, fallback: float = 0.0) -> float:
 	return float(v) if (v is float or v is int) else fallback
 
 
+static func render_dict(path: String) -> Dictionary:
+	var v: Variant = GameDatabase.single(_render, path, {})
+	return v if v is Dictionary else {}
+
+
 static func render_array(path: String) -> Array:
 	var v: Variant = GameDatabase.single(_render, path, [])
 	return v if v is Array else []

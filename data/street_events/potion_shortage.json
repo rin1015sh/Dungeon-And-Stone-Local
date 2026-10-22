@@ -1,6 +1,7 @@
 {
   "id": "potion_shortage",
   "name_ko": "포션 품귀",
+  "art": "res://assets/city/events/potion_shortage.webp",
   "weight": 1.5,
   "cooldown_months": 3,
   "effects": [

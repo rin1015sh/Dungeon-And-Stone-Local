@@ -18,6 +18,9 @@ static func run(v: ValidatorBase) -> void:
 	for id: String in v.entries(CityAmbient.COL):
 		var e := v.db.get_entry(CityAmbient.COL, id)
 		var w := CityAmbient.COL + "/" + id
+		var art := JsonUtil.get_str(e, "art")
+		if not art.is_empty() and not FileAccess.file_exists(art):
+			v.err(w, "일러스트 '%s'이(가) 없다(tools/paint_city.gd -- --only=events)" % art)
 		var when := JsonUtil.get_dict(e, "when")
 		for k: Variant in when:
 			if not str(k) in WHEN_KEYS:

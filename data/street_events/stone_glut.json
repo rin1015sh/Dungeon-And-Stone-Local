@@ -1,6 +1,7 @@
 {
   "id": "stone_glut",
   "name_ko": "원정대 귀환",
+  "art": "res://assets/city/events/stone_glut.webp",
   "weight": 2,
   "cooldown_months": 2,
   "when": {

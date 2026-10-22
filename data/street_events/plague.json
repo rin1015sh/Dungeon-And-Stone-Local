@@ -1,6 +1,7 @@
 {
   "id": "plague",
   "name_ko": "역병 소문",
+  "art": "res://assets/city/events/plague.webp",
   "weight": 1,
   "cooldown_months": 4,
   "effects": [

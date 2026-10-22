@@ -21,7 +21,8 @@ var _dialog: DialogueBox  # 거리 아래 대화창(못 들어가는 이유 등 
 var _route: NoticeRoute
 var _menu: GameMenu
 var _debug: CityDebugPanel
-var _event_running := false  # 거리 사건 장면·선택 중
+var _event_running := false  # 거리 사건 장면·선택 중 — 일러스트가 덮고 도시 조작을 막는다
+var _event_view: StreetEventView
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) -> void:
@@ -54,7 +55,7 @@ func _ready() -> void:
 	_dialog.offset_right = -m
 	_dialog.offset_bottom = -m
 	_dialog.offset_top = -m - DialogueBox._cfg("height", 128.0)
-	_dialog.shown_changed.connect(func(on: bool) -> void: _street.set_process(not on and not _menu.is_open()))
+	_dialog.shown_changed.connect(func(on: bool) -> void: _street.set_process(not on and not _menu.is_open() and not _event_running))
 	_menu.hold = _dialog.busy
 	_route = NoticeRoute.new(state.db)
 	EventBus.notice.connect(_on_notice)
@@ -92,7 +93,7 @@ func is_debug_open() -> bool:
 
 ## 거리에서 시설을 고른다: 행동력을 쓰고 내부로. 못 들어가면 안내.
 func choose_facility(id: String) -> void:
-	if _facility != null:
+	if _facility != null or _event_running:
 		return
 	var why := state.enter_facility(id)
 	if not why.is_empty():
@@ -137,8 +138,9 @@ func _on_expedition_due() -> void:
 	dungeon_requested.emit()
 
 
-## 거리 사건(CityAmbient — 행동력 없이 순마다): 장면 → (선택지가 있으면 고르기) → 결과 장면. 결과는 장면 글과 화면(소지금·
-## 닫힌 건물 흐림)으로 보이고, 효과 문구는 못 받은 것(가방 자리)만 띄운다.
+## 거리 사건(CityAmbient — 행동력 없이 순마다): 일러스트(StreetEventView — 도시를 덮는다) + 장면 → (선택지가 있으면 고르기) → 결과 장면.
+## 다 넘기면 일러스트가 사라지고 도시 조작이 돌아온다(그동안 거리 넘기기·들어가기·Tab·Esc 막음, CT45).
+## 결과는 장면 글과 화면(소지금·닫힌 건물 흐림)으로 보이고, 효과 문구는 못 받은 것(가방 자리)만 띄운다.
 ## force_id = 굴리지 않고 그 사건(디버그·테스트·캡처).
 func street_event(force_id: String = "") -> void:
 	if _event_running or not is_inside_tree():
@@ -147,6 +149,13 @@ func street_event(force_id: String = "") -> void:
 	if id.is_empty():
 		return
 	_event_running = true
+	_menu.close()
+	_street.set_process(false)
+	_event_view = StreetEventView.new()
+	add_child(_event_view)
+	move_child(_event_view, _dialog.get_index())  # 대화창·선택 창은 그림 위
+	_event_view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_event_view.setup(JsonUtil.get_str(CityAmbient.entry(state, id), "art"))
 	for k in CityAmbient.line_keys(id, "intro"):
 		say(Strings.t(k))
 	var pick := -1
@@ -168,7 +177,17 @@ func street_event(force_id: String = "") -> void:
 			say(Strings.t(str(m["key"]), m["args"]), str(m["kind"]))
 	_hud.refresh()
 	_street.refresh()
+	await _dialog.wait()
+	if not is_inside_tree():
+		return
+	_event_view.close()
+	_event_view = null
 	_event_running = false
+	_street.set_process(not _menu.is_open() and not _dialog.busy())
+
+
+func event_view() -> StreetEventView:
+	return _event_view
 
 
 func _street_choice(id: String, choices: Array) -> int:
@@ -180,7 +199,6 @@ func _street_choice(id: String, choices: Array) -> int:
 		opts.append({"text": Strings.t("city.street.%s.choice.%s" % [id, JsonUtil.get_str(d, "id")]),
 			"sub": Strings.t("city.cost_stones", {"n": cost}) if cost > 0 else "", "enabled": can,
 			"desc": "" if can else Strings.t("city.reason_no_money")})
-	_street.set_process(false)
 	var pop := ChoicePopup.new()
 	pop.name = "StreetChoice"
 	add_child(pop)
@@ -188,8 +206,6 @@ func _street_choice(id: String, choices: Array) -> int:
 	pop.open(JsonUtil.get_str(CityAmbient.entry(state, id), "name_ko"), opts, false, Vector2(-1, -1))
 	var i: int = await pop.picked
 	pop.queue_free()
-	if is_inside_tree():
-		_street.set_process(not _menu.is_open())
 	return i
 
 
@@ -236,7 +252,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_debug.visible = not _debug.visible
 		get_viewport().set_input_as_handled()
 		return
-	if get_viewport().gui_get_focus_owner() is LineEdit or has_node("StreetChoice"):
+	if get_viewport().gui_get_focus_owner() is LineEdit or has_node("StreetChoice") or _event_running:  # 거리 사건 중엔 도시 조작 없음
 		return
 	var pause_pop := get_node_or_null("PauseChoice") as ChoicePopup
 	if pause_pop != null:  # 정지 창: W/S·Enter는 창이 먼저 받는다, Esc = 계속

@@ -6,6 +6,7 @@ extends RefCounted
 ## look: body(male|female|stout) · skin · top · bottom · lower(trousers|dress|robe) · apron · belt · stole · collar
 ##   · arms(down|counter|crossed|book) · hands_v · bare_arms · hair(short|long|bun|bald|scarf|hood) · hair_c · hood_c
 ##   · beard(full|mustache|stubble) · glasses · scar · old · light(-1 왼쪽에서 빛, 1 오른쪽) · back(뒷모습) · pack · spear · keep
+##   · one_arm(앞모습 — 화면 오른쪽 팔이 어깨 아래에서 없고 묶은 빈 소매만, 거리 사건 외팔이 탐험가)
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -148,6 +149,11 @@ static func _arms(p: Paint, o: Vector3, look: Dictionary, sw: float, sleeve: Col
 				wr = [-sw - 0.026, 0.48]
 		if pose == "crossed" or (pose == "book" and s < 0.0):
 			P.paint(p, o, P.limb(o, [sh, el], [0.037, 0.031], s), sleeve, lit)
+			continue
+		if look.get("one_arm", false) and s > 0.0:  # 없는 팔: 짧게 묶은 빈 소매
+			var stub := [-sw - 0.012, 0.72]
+			P.paint(p, o, P.limb(o, [sh, stub], [0.037, 0.026], s), sleeve.darkened(0.1), lit)
+			Ink.line(p, P.q(o, s * (sw + 0.03), 0.735), P.q(o, s * (sw - 0.005), 0.728), P.lw(o) * 1.6, Color("#2a1e14"), 0.9, 0.3)
 			continue
 		if bare:
 			P.paint(p, o, P.limb(o, [sh, el], [0.037, 0.031], s), sleeve, lit)

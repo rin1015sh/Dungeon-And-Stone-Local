@@ -1,6 +1,7 @@
 {
   "id": "fire",
   "name_ko": "화재",
+  "art": "res://assets/city/events/fire.webp",
   "weight": 1,
   "cooldown_months": 4,
   "weather_weight": {
