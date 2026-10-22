@@ -23,9 +23,9 @@ func _player() -> PlayerCharacter:
 	return PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
 
 
-func _battle(seed_value: int, monsters: Array, party_first: bool = true, pc: PlayerCharacter = null) -> Battle:
+func _battle(seed_value: int, monsters: Array, first_side: int = Combatant.SIDE_PARTY, pc: PlayerCharacter = null) -> Battle:  # 시험은 아군이 먼저(차례를 정해 두려고 — 게임 조우는 FIRST_NONE)
 	var party: Array[Actor] = [pc if pc != null else _player()]
-	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters, party_first)
+	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters, first_side)
 
 
 ## 양쪽 모두 AI로 끝까지 돌린다(아군은 기본 공격).
@@ -163,7 +163,7 @@ func test_weak_point_and_lethal() -> void:
 
 func test_battle_always_ends() -> void:
 	for seed_value in range(1, 13):
-		var r := _auto(_battle(seed_value, ["blade_wolf"], seed_value % 2 == 0))
+		var r := _auto(_battle(seed_value, ["blade_wolf"], Combatant.SIDE_PARTY if seed_value % 2 == 0 else Combatant.SIDE_ENEMY))
 		assert_true(r in [Battle.RESULT_VICTORY, Battle.RESULT_DEFEAT], "끝까지 진행 (시드 %d: %s)" % [seed_value, r])
 
 
@@ -183,7 +183,7 @@ func test_win_rates_print() -> void:
 func test_skill_cost_cooldown_and_seal() -> void:
 	var pc := _player()
 	pc.skills.append("power_strike")
-	var b := _battle(3, ["gnome"], true, pc)
+	var b := _battle(3, ["gnome"], Combatant.SIDE_PARTY, pc)
 	var c := b.next_turn()
 	assert_true(c.actor == pc, "먼저 발견한 쪽이 먼저")
 	var soul := pc.pool.get_current("soul")
@@ -200,7 +200,7 @@ func test_skill_cost_cooldown_and_seal() -> void:
 
 func test_guard_and_flee() -> void:
 	var pc := _player()
-	var b := _battle(5, ["goblin"], true, pc)
+	var b := _battle(5, ["goblin"], Combatant.SIDE_PARTY, pc)
 	var c := b.next_turn()
 	b.act(c, {"kind": "guard"})
 	assert_true(pc.statuses.has("guarding"))
@@ -215,8 +215,17 @@ func test_guard_and_flee() -> void:
 	assert_eq(b.result, Battle.RESULT_FLED)
 
 
+## 맵에서 마주친 전투는 정정당당하게(C11): 기습 게이지 없이 모두 0에서 시작한다(몬스터 자체 패시브 start_gauge는 별개).
+func test_encounter_starts_even() -> void:
+	var b := _battle(3, ["goblin"], Battle.FIRST_NONE)
+	assert_true(b.units.all(func(u: Combatant) -> bool: return is_zero_approx(u.gauge)), "누구도 앞서 시작하지 않는다")
+	assert_eq(str(b.history[0]["key"]), "combat.start", "맞닥뜨렸다")
+	var f := _battle(3, ["goblin"], Combatant.SIDE_PARTY)
+	assert_true(f.side_units(Combatant.SIDE_PARTY)[0].gauge > f.side_units(Combatant.SIDE_ENEMY)[0].gauge, "특수 기습 자리(first_side)는 남아 있다")
+
+
 func test_monster_ai_flees_when_hurt() -> void:
-	var b := _battle(7, ["goblin"], false)
+	var b := _battle(7, ["goblin"], Battle.FIRST_NONE)
 	var gob: Combatant = b.side_units(Combatant.SIDE_ENEMY)[0]
 	gob.acted = 1
 	gob.actor.pool.set_current("hp", gob.actor.pool.get_max("hp") * 0.2)
@@ -226,7 +235,7 @@ func test_monster_ai_flees_when_hurt() -> void:
 	for i in 60:
 		picks[b.ai_action(gob)["skill"]] = true
 	assert_true(picks.has("flee"), "생명력 25% 이하면 가끔 도주(30%), 하울링은 전투당 1회")
-	var b2 := _battle(7, ["goblin"], false)
+	var b2 := _battle(7, ["goblin"], Battle.FIRST_NONE)
 	var g2: Combatant = b2.side_units(Combatant.SIDE_ENEMY)[0]
 	assert_eq(b2.ai_action(g2)["skill"], "goblin_trap", "첫 차례는 덫")
 
@@ -263,7 +272,7 @@ func test_party_has_innate_talk_and_investigate() -> void:
 
 func test_investigate_uses_a_turn() -> void:
 	var pc := _player()
-	var b := _battle(11, ["goblin"], true, pc)
+	var b := _battle(11, ["goblin"], Combatant.SIDE_PARTY, pc)
 	var keys := _keys(b)
 	var c := b.next_turn()
 	assert_true(c.actor == pc)
@@ -279,7 +288,7 @@ func test_investigate_uses_a_turn() -> void:
 
 func test_talk_to_a_monster_does_nothing_but_costs_the_turn() -> void:
 	var pc := _player()
-	var b := _battle(12, ["blade_wolf"], true, pc)
+	var b := _battle(12, ["blade_wolf"], Combatant.SIDE_PARTY, pc)
 	var keys := _keys(b)
 	var c := b.next_turn()
 	var wolf: Combatant = b.opponents(c)[0]
@@ -301,7 +310,7 @@ func test_talk_with_a_listener_has_outcomes() -> void:
 	for seed_value in range(1, 30):
 		var pc := PlayerCharacter.create(d, "human", "warrior", "시험", {"str": 10, "agi": 30})
 		var party: Array[Actor] = [pc]
-		var b := Battle.from_encounter(d, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"], true)
+		var b := Battle.from_encounter(d, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"], Combatant.SIDE_PARTY)
 		var keys := _keys(b)
 		var c := b.next_turn()
 		var gob: Combatant = b.opponents(c)[0]
@@ -316,7 +325,7 @@ func test_talk_with_a_listener_has_outcomes() -> void:
 
 func test_invalid_actions_do_not_use_the_turn() -> void:
 	var pc := _player()
-	var b := _battle(13, ["goblin", "goblin"], true, pc)
+	var b := _battle(13, ["goblin", "goblin"], Combatant.SIDE_PARTY, pc)
 	var c := b.next_turn()
 	var g0 := c.gauge
 	assert_false(b.act(c, {"kind": "skill", "skill": "power_strike"}), "모르는 스킬")
@@ -336,7 +345,7 @@ func test_party_and_monsters_act_in_agility_order() -> void:
 	var pc := PlayerCharacter.create(db, "human", "warrior", "빠름", {"str": 10, "agi": 12})
 	var ally := PlayerCharacter.create(db, "human", "archer", "느림", {"str": 10, "agi": 2})
 	var party: Array[Actor] = [pc, ally]
-	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(4), party, ["goblin", "blade_wolf"], true)
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(4), party, ["goblin", "blade_wolf"], Combatant.SIDE_PARTY)
 	for u in b.units:
 		u.gauge = 0.0
 	var expected := b.units.duplicate()

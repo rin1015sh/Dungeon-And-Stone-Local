@@ -16,7 +16,7 @@ func _battle(monsters: Array, n_party: int = 1, seed_value: int = 3) -> Battle:
 	var party: Array[Actor] = []
 	for i in n_party:
 		party.append(_pc())
-	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters, true)
+	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters)
 
 
 func _apply(src: Actor, tgt: Actor, fx: Array, seed_value: int = 1) -> EffectContext:

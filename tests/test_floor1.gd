@@ -10,9 +10,9 @@ func _pc() -> PlayerCharacter:
 	return pc
 
 
-func _battle(monsters: Array, pc: PlayerCharacter = null, seed_value: int = 3, party_first: bool = true) -> Battle:
+func _battle(monsters: Array, pc: PlayerCharacter = null, seed_value: int = 3) -> Battle:
 	var party: Array[Actor] = [pc if pc != null else _pc()]
-	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters, party_first)
+	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters)
 
 
 ## 공격자 src가 tgt를 effect로 한 번 친다(명중 보장 굴림이 아니라 실제 rng). 효과 문맥을 돌려준다.
@@ -96,7 +96,7 @@ func test_hidden_target_rules() -> void:
 
 
 func test_howl_summons_and_snare_blocks_flee() -> void:
-	var b := _battle(["goblin"], null, 4, false)
+	var b := _battle(["goblin"], null, 4)
 	var gob := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var before := b.units.size()
 	for s in 20:
@@ -109,7 +109,7 @@ func test_howl_summons_and_snare_blocks_flee() -> void:
 
 
 func test_ghoul_cycle_and_first_strike() -> void:
-	var b := _battle(["ghoul"], null, 5, false)
+	var b := _battle(["ghoul"], null, 5)
 	var g := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var seq: Array = []
 	for i in 3:
@@ -120,7 +120,7 @@ func test_ghoul_cycle_and_first_strike() -> void:
 
 
 func test_wolf_pack_ai() -> void:
-	var b := _battle(["blade_wolf", "blade_wolf"], null, 6, false)
+	var b := _battle(["blade_wolf", "blade_wolf"], null, 6)
 	var w := b.side_units(Combatant.SIDE_ENEMY)[0]
 	assert_eq(b.ai_action(w)["skill"], "wolf_pack_hunt", "늑대 둘 이상, 버프 없음 → 무리 사냥")
 	w.actor.statuses.apply("rally")

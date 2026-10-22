@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **맵 조우 기습·선공 제거 (2026-10-22, 사용자 "전투시 선공이나 기습을 제거 — 플레이어가 기습하는 다른 특수 경우를 추가할 예정, 일단 정정당당하게")** — C11. `Battle.start(first_side: int = FIRST_NONE)`·`from_encounter(…, first_side)`(옛 bool party_first), 맵 조우(`ExploreScreen._on_encounter`)는 first_side 없이. balance `ambush_gauge` → `first_strike_gauge`(특수 기습에서만). 시작 문구 `combat.start` = "맞닥뜨렸다", 옛 "먼저 발견했다"는 `combat.start_first`. 몬스터 패시브 start_gauge(구울 선공)는 그대로. 단위 테스트는 차례를 정해 두려고 아군 먼저(SIDE_PARTY)를 명시, 새 테스트 `test_encounter_starts_even`. check.sh 통과(단위 366).
+
 - **한 번의 전투 = 처음엔 한 마리 (2026-10-22, 사용자 "몬스터 숫자를 늘리되 한 번의 전투에서 만나는 몬스터는 줄여 — 후반 일차에 2~3마리")** — EX13. 층 JSON `spawn.pack_by_day` [[1,1]×3, [1,2]×2, [2,3]×2] + `FieldMonsters.pack_count`(몬스터 pack_size 최대로 막음 — 지키는 무리도), `groups_per_region` 48~56. 측정 `sim_walk`(시드 1~3 × 포탈 4): 1일 차 전투 97번(전 84)·만남 간격 평균 5.1초, 6일 차 전투 111번·4.1초. 약탈자(사람)·계층군주·균열은 그대로. check.sh 통과(단위 365).
 
 - **1층 팔 끝 한 종씩으로 되돌림 (2026-10-22, 사용자 "되돌려" — 팔 끝은 한 종, 가운데는 전부)**: 층 JSON regions 팔 4곳을 주종 하나로(weights 1), `spawn.growth_bias.regions` = [f1_south, f1_center](3일 차 구울 증가가 다른 팔에 섞이지 않게 — `FieldSpawnBias.growth_monster`에 지역 인자). 무리 수 30~38·소굴 뭉치기는 그대로. 테스트: 동쪽 팔 = 칼날늑대만, 늘어나는 구울은 남쪽·중심부만. check.sh 통과(단위 364).

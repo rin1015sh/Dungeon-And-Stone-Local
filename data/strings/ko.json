@@ -322,7 +322,7 @@
     "hazard": "미궁의 위험"
   },
   "combat": {
-    "start": "{enemies}을(를) 먼저 발견했다. 싸운다.",
+    "start": "{enemies}와(과) 맞닥뜨렸다.",
     "start_ambushed": "{enemies}이(가) 덮쳐 왔다!",
     "party": "탐험가",
     "menu_root": "{name}의 차례",
@@ -498,7 +498,8 @@
     "ildium_trap_warn": "{name}이(가) 바닥을 내리친다!",
     "ildium_trap_fire": "분묘의 함정이 일제히 튀어 오른다!",
     "banner_skill": "{skill}",
-    "banner_item": "{item}"
+    "banner_item": "{item}",
+    "start_first": "{enemies}을(를) 먼저 발견했다. 싸운다."
   },
   "knowledge": {
     "unknown": "???",

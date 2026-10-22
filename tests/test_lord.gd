@@ -17,7 +17,7 @@ func _fight(n: int = 1) -> Array:
 	for i in n:
 		party.append(b.add(_pc(), Combatant.SIDE_PARTY))
 	var boss := b.add(Monster.create(db, "dreadfear"), Combatant.SIDE_ENEMY)
-	b.start(true)
+	b.start()
 	return [b, boss, party]
 
 

@@ -328,10 +328,10 @@ func _on_party_met(group: FieldMonsters.Group) -> void:
 
 
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.
-func _on_encounter(group: FieldMonsters.Group, party_first: bool) -> void:
+func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var party: Array[Actor] = [session.player]
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
-	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, party_first)
+	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids)  # 정정당당하게(C11)
 	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_menu.close()

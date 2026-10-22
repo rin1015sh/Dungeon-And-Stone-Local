@@ -139,7 +139,7 @@ func test_chapters_chain_guardian_and_escape() -> void:
 func test_survival_objective_and_reinforce() -> void:
 	var reg := ContentRegistries.new()
 	var party: Array[Actor] = [_pc()]
-	var b := Battle.from_encounter(db, reg, Rng.new(2), party, ["ghoul"], true)
+	var b := Battle.from_encounter(db, reg, Rng.new(2), party, ["ghoul"])
 	b.objective = {"survive_rounds": 3, "reinforce": {"monsters": ["ghoul"], "count": [1, 1]}}
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
 	(me.actor as Actor).stats.add_modifiers_from_data("test", [{"target": "dmg_taken:all", "percent": -1.0}])

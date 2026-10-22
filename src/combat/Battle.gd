@@ -60,9 +60,11 @@ func _record(key: String, args: Dictionary, kind: String) -> void:
 	history.append({"key": key, "args": args, "kind": kind})
 
 
+const FIRST_NONE := -1  ## 아무도 먼저 움직이지 않는다(맵 조우 기본)
+
 ## 탐험 조우로 전투를 꾸린다. 같은 몬스터가 여럿이면 이름 뒤에 A, B, C를 붙인다.
 static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: Rng, party: Array[Actor],
-		monster_ids: Array, party_first: bool) -> Battle:
+		monster_ids: Array, first_side: int = FIRST_NONE) -> Battle:
 	var b := Battle.new(p_db, regs.effects, regs.ai_conditions, p_rng)
 	for a in party:
 		b.add(a, Combatant.SIDE_PARTY)
@@ -75,7 +77,7 @@ static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: R
 		var label := " " + LETTERS[mini(int(seen[id]) - 1, LETTERS.length() - 1)] if int(total[id]) > 1 else ""
 		var m := Monster.create(p_db, str(id), label)
 		b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))
-	b.start(party_first)
+	b.start(first_side)
 	return b
 
 
@@ -86,19 +88,22 @@ func add(actor: Actor, side: int, row: String = "front") -> Combatant:
 	return c
 
 
-## 먼저 발견한 쪽이 행동 게이지를 앞서 시작한다.
-func start(party_first: bool) -> void:
+## 전투 시작. 맵에서 마주친 전투는 늘 정정당당하게(FIRST_NONE — 사용자 결정 2026-10-22, C11): 누구도 게이지를 앞서 받지 않는다.
+## first_side(Combatant.SIDE_PARTY|SIDE_ENEMY)를 주면 그쪽이 combat.first_strike_gauge만큼 앞서 시작한다(특수한 기습 — 앞으로 넣을 자리).
+func start(first_side: int = FIRST_NONE) -> void:
 	var names := PackedStringArray()
 	for u in units:
 		u.gauge = 0.0
 		if u.side == Combatant.SIDE_ENEMY:
 			names.append(u.label())
-	message.emit("combat.start" if party_first else "combat.start_ambushed", {"enemies": ", ".join(names)}, "danger")
-	BattleRules.on_start(self)  # 동반 소환(start_summons)도 여기서 생긴다 — 선공 게이지는 그 뒤에 준다
-	var bonus := float(db.bal("combat.ambush_gauge", 50))
-	for u in units:
-		if (u.side == Combatant.SIDE_PARTY) == party_first:
-			u.gauge += bonus
+	var key := "combat.start" if first_side == FIRST_NONE else ("combat.start_first" if first_side == Combatant.SIDE_PARTY else "combat.start_ambushed")
+	message.emit(key, {"enemies": ", ".join(names)}, "danger")
+	BattleRules.on_start(self)  # 동반 소환(start_summons)도 여기서 생긴다 — 기습 게이지는 그 뒤에 준다
+	if first_side != FIRST_NONE:
+		var bonus := float(db.bal("combat.first_strike_gauge", 50))
+		for u in units:
+			if u.side == first_side:
+				u.gauge += bonus
 	BossHooks.on_start(self)
 	BattleKnowledge.on_start(self)
 
