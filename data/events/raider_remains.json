@@ -9,7 +9,6 @@
       "id": "search",
       "name_ko": "뒤진다",
       "limit": "once",
-      "line": "field.raider_remains",
       "give": [
         {
           "item": "magic_stone_9",

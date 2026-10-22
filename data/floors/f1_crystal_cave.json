@@ -480,7 +480,6 @@
     "fight_death": 0.6,
     "unseen_corpse_per_hour": 0.08,
     "scream_tiles": 140,
-    "near_tiles_sound": 30,
     "corpse_seekers": 2,
     "follow_hours": 12,
     "follow_path_tiles": 30,

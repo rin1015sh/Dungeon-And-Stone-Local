@@ -43,6 +43,7 @@ func open_natural(s: ExploreSession) -> int:
 		if _place(s, "", _far_cell(s)):
 			made += 1
 	s.message.emit("explore.rift_opened", {"count": made}, "danger")
+	s.sound.emit("rift_open", s.pos)
 	return made
 
 

@@ -5,7 +5,11 @@
   "sfx": {
     "ui_click": "res://assets/audio/sfx/ui_click.ogg",
     "ui_back": "res://assets/audio/sfx/ui_back.ogg",
-    "ui_denied": "res://assets/audio/sfx/ui_denied.ogg"
+    "ui_denied": "res://assets/audio/sfx/ui_denied.ogg",
+    "scream": "res://assets/audio/sfx/scream.ogg",
+    "fight_far": "res://assets/audio/sfx/fight_far.ogg",
+    "rift_open": "res://assets/audio/sfx/rift_open.ogg",
+    "gnome_alarm": "res://assets/audio/sfx/gnome_alarm.ogg"
   },
   "ambience": {
     "f1_cave": "res://assets/audio/ambience/f1_cave.ogg"

@@ -27,7 +27,7 @@ static func options(s: ExploreSession, g: FieldMonsters.Group) -> Array[Dictiona
 				var price := JsonUtil.get_int(t, "price")
 				out.append(_opt("trade", Strings.t("explore.party.opt.trade", {"item": DataNames.entry(s.db, "items", JsonUtil.get_str(t, "give")),
 					"n": JsonUtil.get_int(t, "n", 1), "price": price}), inv.count(STONE) >= price, "explore.party.no_stones"))
-			if not bool(g.party.get("rumor_told", false)):
+			if not bool(g.party.get("rumor_told", false)) and not _rumor_target(s).is_empty():
 				out.append(_opt("rumor", Strings.t("explore.party.opt.rumor")))
 			if not bool(g.party.get("followed", false)):
 				out.append(_opt("follow", Strings.t("explore.party.opt.follow")))
@@ -57,7 +57,6 @@ static func act(s: ExploreSession, g: FieldMonsters.Group, id: String) -> void:
 			if s.player.inventory.count(STONE) >= JsonUtil.get_int(t, "price"):
 				s.player.inventory.remove(STONE, JsonUtil.get_int(t, "price"))
 				g.party["traded"] = true
-				FieldFeatureAct.say_line_args(s, "explore.party.traded", {}, "info")
 				FieldFeatureAct.give_items(s, [{"item": JsonUtil.get_str(t, "give"), "count": [JsonUtil.get_int(t, "n", 1), JsonUtil.get_int(t, "n", 1)]}])
 		"rumor":
 			g.party["rumor_told"] = true
@@ -66,11 +65,9 @@ static func act(s: ExploreSession, g: FieldMonsters.Group, id: String) -> void:
 			g.party["followed"] = true
 			g.party["follow_until"] = s.clock.total_hours + JsonUtil.get_float(s.parties.def, "follow_hours", 12.0)
 			g.route.clear()
-			FieldFeatureAct.say_line_args(s, "explore.party.follow_start", {}, "info")
 		"give_potion", "give_food":
 			var item := "minor_potion" if id == "give_potion" else "ration"
 			if s.player.inventory.remove(item, 1):
-				FieldFeatureAct.say_line_args(s, "explore.party.healed" if id == "give_potion" else "explore.party.fed", {}, "good")
 				FieldFeatureAct.give_items(s, JsonUtil.get_array(rw, id))
 				if id == "give_potion":
 					rumor(s, g)
@@ -86,7 +83,6 @@ static func act(s: ExploreSession, g: FieldMonsters.Group, id: String) -> void:
 			_take_half_stones(s)
 			g.party["paid"] = true
 			g.monster_ids.clear()
-			FieldFeatureAct.say_line_args(s, "explore.party.paid", {}, "warn")
 			s.monsters.send_to(g, FieldRoutes.random_cell_near(s.map, s.rng, g.pos, 40), s.pos)
 		"fight", "":
 			if str(g.party.get("kind")) == FieldParties.RAIDER:
@@ -100,18 +96,13 @@ static func act(s: ExploreSession, g: FieldMonsters.Group, id: String) -> void:
 static func thank(s: ExploreSession, g: FieldMonsters.Group) -> void:
 	g.party["kind"] = FieldParties.ROOKIE
 	g.party.erase("foe")
-	FieldFeatureAct.say_line_args(s, "explore.party.thanks", {}, "good")
 	FieldFeatureAct.give_items(s, JsonUtil.get_array(JsonUtil.get_dict(s.parties.def, "rewards"), "help"))
 
 
-## 소문: 가장 가까운 못 찾은 포탈(균열 포함)이 있는 방향.
+## 소문: 가장 가까운 못 찾은 포탈(균열 포함)이 있는 방향 — 화면으로 알 수 없는 정보라 대화창. 들을 것이 없으면 선택지에 없다.
 static func rumor(s: ExploreSession, _g: FieldMonsters.Group) -> void:
-	var best: Dictionary = {}
-	for p: Dictionary in s.map.portals:
-		if not bool(p.get("found", false)) and (best.is_empty() or (p["pos"] - s.pos).length_squared() < (best["pos"] - s.pos).length_squared()):
-			best = p
+	var best := _rumor_target(s)
 	if best.is_empty():
-		FieldFeatureAct.say_line_args(s, "explore.party.rumor_none", {}, "info")
 		return
 	var key := "explore.party.rumor_rift" if str(best.get("kind", "")) == "rift" else "explore.party.rumor_portal"
 	FieldFeatureAct.say_line_args(s, key, {"dir": FieldParties.dir_word(s.pos, best["pos"])}, "info")
@@ -125,7 +116,6 @@ static func follow(s: ExploreSession, parties: FieldParties) -> void:
 			continue
 		if until <= s.clock.total_hours:
 			g.party.erase("follow_until")
-			FieldFeatureAct.say_line_args(s, "explore.party.follow_end", {}, "info")
 			s.monsters.send_to(g, FieldRoutes.random_cell_near(s.map, s.rng, g.pos, 40), s.pos)
 		elif g.route.is_empty() and g.fpos.distance_to(s.fpos) > 3.0:
 			g.home = s.pos
@@ -137,6 +127,14 @@ static func follow(s: ExploreSession, parties: FieldParties) -> void:
 
 
 # ── 내부 ─────────────────────────────────────────────────
+
+static func _rumor_target(s: ExploreSession) -> Dictionary:
+	var best: Dictionary = {}
+	for p: Dictionary in s.map.portals:
+		if not bool(p.get("found", false)) and (best.is_empty() or (p["pos"] - s.pos).length_squared() < (best["pos"] - s.pos).length_squared()):
+			best = p
+	return best
+
 
 static func _opt(id: String, text: String, enabled: bool = true, why: String = "") -> Dictionary:
 	return {"id": id, "text": text, "enabled": enabled, "desc": Strings.t(why) if not enabled and not why.is_empty() else ""}

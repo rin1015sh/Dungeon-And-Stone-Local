@@ -3,11 +3,12 @@ extends RefCounted
 ## 동굴 요소의 행동 하나(FieldFeatures가 부른다). data/events/<id>.json의 actions[]:
 ##   {"id", "name_ko", "limit": "once"(입장마다 한 번 — 기본) | "day"(미궁 하루에 한 번) | "always",
 ##    "needs_status": 상태 id(없으면 missing 문구), "cost": {"item", "count"}(없으면 no_cost 문구 — 있으면 가져간다),
-##    "line": 문구 키(번호 변형 line.1, line.2 … 중 하나를 고른다. "line_zone": true면 line.<구역>.n),
+##    "line": 문구 키(없어도 된다 — 번호 변형 line.1, line.2 … 중 하나를 고른다. "line_zone": true면 line.<구역>.n),
 ##    "give": [{"item" 또는 "one_of": [아이템 id …](그중 하나), "count": [최소, 최대], "chance"}](항목마다 따로 굴린다),
 ##    "effects": [전투 효과 — 대상 = 탐험가](restore_resource·apply_status·remove_status·fatigue …),
 ##    "learn_stats": 몬스터 id(도감에 생명력·스탯이 드러난다), "alert": {"monster", "radius", "hours"}(근처 그 몬스터 무리가 쫓아온다),
-##    "clear": true(하고 나면 요소가 사라진다 — 줍는 것), "done"·"missing" 문구 키(못 하는 이유)}.
+##    "clear": true(하고 나면 요소가 사라진다 — 줍는 것), "done"·"missing" 문구 키(못 하는 이유),
+##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound)}.
 
 
 static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
@@ -31,6 +32,8 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		s.player.inventory.remove(cost_item, JsonUtil.get_int(cost, "count", 1))
 	used[aid] = today if limit == "day" else true
 	say_line(s, JsonUtil.get_str(a, "line"), e, "info", JsonUtil.get_bool(a, "line_zone"))
+	if a.has("sound"):
+		s.sound.emit(JsonUtil.get_str(a, "sound"), e["pos"])
 	_give(s, JsonUtil.get_array(a, "give"))
 	_effects(s, JsonUtil.get_array(a, "effects"))
 	var learn := JsonUtil.get_str(a, "learn_stats")

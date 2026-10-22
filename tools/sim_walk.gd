@@ -1,7 +1,7 @@
 extends SceneTree
 ## 1층 걷기 리듬 측정(docs/plans/floor1_fill.md D): 시작 자리에서 네 포탈까지 최단 길을 걸으며
 ## "무언가를 만나기까지 걸린 실제 초"를 잰다. 무언가 = 전투(닿은 무리 — 바로 이긴 것으로 친다) · 탐험가 무리(지나간다) ·
-## 처음 보이는 동굴 요소 · 들리는 소리(비명·싸움 — explore.party.*). 실제 초 = 게임 시간 / realtime_hours_per_sec.
+## 처음 보이는 동굴 요소 · 들리는 소리(비명·싸움 — ExploreSession.sound). 실제 초 = 게임 시간 / realtime_hours_per_sec.
 ##   godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=1] [--no-parties]
 ## --day=n: n일 차 아침에 출발한다(그 전까지 시작 자리에서 시간만 흘린다 — 시체·약탈자·구울이 늘어난 뒤).
 ## --no-parties: 층 JSON explorers를 빼고(다른 탐험가 없음) 잰다 — 비교용.
@@ -53,9 +53,7 @@ func _walk(db: GameDatabase, def: Dictionary, seed_value: int, portal_index: int
 	_events.clear()
 	s.encounter.connect(func(g: FieldMonsters.Group, _f: bool) -> void: _pending = g)
 	s.party_met.connect(func(g: FieldMonsters.Group) -> void: _met = g)
-	s.message.connect(func(key: String, _a: Dictionary, _k: String) -> void:
-		if key.begins_with("explore.party.scream") or key.begins_with("explore.party.fight_heard"):
-			_add(s, "소리"))
+	s.sound.connect(func(_key: String, _at: Vector2i) -> void: _add(s, "소리"))
 	s.start()
 	for h in (day - 1) * 24:
 		s.pass_time(1.0)

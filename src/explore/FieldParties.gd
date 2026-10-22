@@ -8,7 +8,8 @@ extends RefCounted
 ##   wounded  다친 탐험가: 플레이어 둘레(near_tiles)에 wounded_per_hour로 생긴다. wounded_hours가 지나면 숨진다.
 ##   fighting 싸우는 탐험가: fight_per_hour로 생기고 곁에 그 지역 몬스터 무리. fight_hours 뒤 fight_death로 진다(이기면 신참).
 ##   raider   약탈자: 날마다 raiders_by_day 무리, 가까운 신참을 쫓는다(raider_hunt_tiles). 플레이어에게는 통행세 → 싸움.
-## 누가 죽으면 그 자리에 갓 죽은 탐험가(events fresh_corpse)가 남고, 들리는 거리(scream_tiles)면 방향과 함께 비명이 들린다.
+## 누가 죽으면 그 자리에 갓 죽은 탐험가(events fresh_corpse)가 남고, 들리는 거리(scream_tiles)면 비명 소리(ExploreSession.sound "scream" —
+## 글로 알리지 않는다, 싸움은 "fight_far"). 소리 파일은 data/audio.json sfx(없으면 조용하다).
 ## 시체 냄새를 맡는 몬스터(behavior seeks_corpses_tiles — 구울)가 그쪽으로 모인다. 보이지 않는 곳에서도 unseen_corpse_per_hour로 시체가 생긴다.
 ## 날짜(1일 차 = 0번)마다 rookies_by_day 만큼 신참이 채워지고 raiders_by_day 만큼 약탈자가 채워진다(F — 날마다 바뀌는 1층).
 
@@ -111,9 +112,7 @@ func drop_corpse(s: ExploreSession, at: Vector2i, scream: bool) -> void:
 	var cell: Vector2i = e["pos"]
 	var d := Vector2(cell - s.pos).length()
 	if scream and d <= JsonUtil.get_float(def, "scream_tiles", 140.0):
-		var near := d <= JsonUtil.get_float(def, "near_tiles_sound", 30.0)
-		FieldFeatureAct.say_line_args(s, "explore.party.scream_near" if near else "explore.party.scream",
-			{"dir": dir_word(s.pos, cell)}, "warn")
+		s.sound.emit("scream", cell)
 	_attract(s, cell)
 	if s.map.visible_now[s.map.idx(cell)] != 0:
 		s.refresh_view()
@@ -235,7 +234,8 @@ func _spawn_fight(s: ExploreSession, at: Vector2i) -> void:
 	g.party["foe"] = foe.id
 	g.party["fight_until"] = until
 	foe.grace_until = until  # 탐험가와 싸우느라 플레이어를 쫓지 않는다
-	FieldFeatureAct.say_line_args(s, "explore.party.fight_heard", {"dir": dir_word(s.pos, g.pos)}, "warn")
+	if Vector2(g.pos - s.pos).length() <= JsonUtil.get_float(def, "scream_tiles", 140.0):
+		s.sound.emit("fight_far", g.pos)
 
 
 func _spawn(s: ExploreSession, kind: String, at: Vector2i) -> FieldMonsters.Group:

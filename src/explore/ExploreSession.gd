@@ -18,6 +18,7 @@ signal player_died(cause: String)
 signal encounter(group: FieldMonsters.Group, party_first: bool)
 signal transfer(target: ExploreSession)       ## 다른 세션(균열 챕터 ↔ 바깥 층)으로 넘어간다 — 화면이 바꿔 끼운다
 signal riddle_asked(group: FieldMonsters.Group)  ## 수수께끼 문지기(RiftRiddle) — 화면이 문항을 띄우고 answer_riddle을 부른다
+signal sound(key: String, at: Vector2i)  ## 들리는 소리(비명·싸움 — FieldParties). 글이 아니라 소리로만(data/audio.json sfx)
 signal tiles_changed(cells: Rect2i)  ## 원정 중에 타일이 바뀌었다(새 시체 등) — 화면이 그 칸을 다시 그린다
 signal party_met(group: FieldMonsters.Group)  ## 탐험가 무리에 닿았다(FieldParties) — 화면이 FieldPartyMeet 선택지를 띄우고 act를 부른다
 signal feature_choice(at: Vector2i)  ## 동굴 요소의 행동이 여럿이다(맑은 샘 등) — 화면이 고르게 하고 features.act를 부른다

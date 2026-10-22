@@ -98,6 +98,8 @@ func test_parties_spawn_by_day_and_size() -> void:
 func test_death_leaves_fresh_corpse_and_scream() -> void:
 	var s := _session()
 	var keys := _keys(s)
+	var sounds: Array[String] = []
+	s.sound.connect(func(key: String, _at: Vector2i) -> void: sounds.append(key))
 	var rookie: FieldMonsters.Group = s.parties.of_kind(s, FieldParties.ROOKIE)[0]
 	rookie.place(s.pos + Vector2i(0, 0))
 	var at := _free_near(s, s.pos, 6)
@@ -108,7 +110,8 @@ func test_death_leaves_fresh_corpse_and_scream() -> void:
 	var e: Dictionary = s.features.list.back()
 	assert_eq(str(e["id"]), "fresh_corpse")
 	assert_false(s.monsters.groups.has(rookie), "무리는 사라진다")
-	assert_true(keys.any(func(k: String) -> bool: return k.begins_with("explore.party.scream")), "비명이 들린다")
+	assert_eq(sounds, ["scream"] as Array[String], "비명은 소리로")
+	assert_true(keys.is_empty(), "비명을 글로 알리지 않는다(UI19)")
 	var before := s.player.inventory.count("magic_stone_9") + s.player.inventory.count("explorer_tag")
 	FieldFeatureAct.run(s, e, JsonUtil.get_array(e["def"], "actions")[0])
 	assert_true(s.player.inventory.count("magic_stone_9") + s.player.inventory.count("explorer_tag") >= before, "유품을 챙긴다")

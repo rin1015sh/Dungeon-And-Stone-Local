@@ -90,6 +90,7 @@ func _ready() -> void:
 	session.feature_choice.connect(_on_feature_choice)
 	session.party_met.connect(_on_party_met)
 	session.tiles_changed.connect(_view.cells_changed)
+	session.sound.connect(func(key: String, _at: Vector2i) -> void: AudioBus.play_sfx(key))
 	session.transfer.connect(_on_transfer)
 	_build_pause_overlay()
 	session.start()
