@@ -1,0 +1,14 @@
+{
+  "id": "guild_records",
+  "name_ko": "조사 기록 넘기기",
+  "facility": "guild",
+  "cost_stones": 0,
+  "effects": [
+    {
+      "type": "sell_records",
+      "stats_stones": 150,
+      "affinity_stones": 80
+    }
+  ],
+  "source": "placeholder"
+}

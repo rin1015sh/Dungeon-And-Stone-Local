@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(829줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(848줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -36,6 +36,7 @@
 - [차원광장 `plaza`](#plaza) — 도시 → 미궁 포탈 화면 버튼
 - [도시 `city`](#city) — 도시 — 거리·시설·활동 결과(lines)·거리 사건(street)·세금
 - [동굴 요소 `field`](#field) — 1층 동굴 요소를 살필 때(번호가 여럿이면 하나를 고른다)
+- [dir8 `dir8`](#dir8) — —
 
 <a id="app"></a>
 ## 앱 `app`
@@ -74,7 +75,6 @@
 - `menu.page_next` ▶
 - `menu.cursor` ▶
 - `menu.empty_slot` —
-- `menu.grid_hint` {move} 고르기 · {ok} 확정 · {back} 뒤로
 
 <a id="error"></a>
 ## 오류 `error`
@@ -200,7 +200,6 @@
 - `create.items_header` 가진 것
 - `create.items_none` 빈손이다.
 - `create.enter_header` 라비기온 구역
-- `create.floor_hint` 포탈이 열렸다. 들어가면 {floor}의 어딘가에 떨어진다. 돌아오는 길은 층이 닫힐 때뿐이다.
 - `create.enter` 도시로 간다
 - `create.equipped_item` {item} (착용)
 
@@ -211,25 +210,25 @@
 
 - `explore.rift_exit_needs` 길이 막혀 있다. [{item}]이(가) 있어야 할 것 같다.
 - `explore.rift_exit_used` [{item}]을(를) 썼다.
-- `explore.rift_key_held` 가방에 자리가 없어 [{item}]을(를) 손에 쥐었다 — 출구에서 쓸 수 있다.
-- `explore.fortress_horn` 뿔피리를 길게 불자 성벽 너머에서 쇠사슬이 풀리는 소리가 울린다. 해자에 핏물이 차오른다…
+- `explore.rift_key_held` 가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.
+- `explore.fortress_horn` 해자에 핏물이 차오른다…
 - `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.
 - `explore.fortress_necronomicon` 썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].
-- `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다. 소지품을 비우고 다시 살펴라.
+- `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
 - `explore.hidden_found` 숨겨진 것을 찾았다 — [{item}].
 - `explore.rift_item_lost` [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
-- `explore.rift_opened` 공기가 찢어지는 소리가 울린다. 동굴 곳곳에 균열 포탈 {count}개가 열렸다!
+- `explore.rift_opened` 동굴 곳곳에 균열 포탈 {count}개가 열렸다!
 - `explore.rift_forced` 기념비가 마석을 삼키고, 옆에 {name}(으)로 통하는 균열 포탈이 열렸다.
 - `explore.rift_offer` 대현자 기념비에 {item}을(를) 바쳤다.
 - `explore.rift_offer_failed` 마석이 잠시 빛나다 꺼졌다. 균열이 열릴 자리를 찾지 못했다 — 마석은 그대로다.
 - `explore.rift_portal_found` 붉게 일렁이는 균열 포탈이 보인다.
-- `explore.rift_portal_here` 균열 포탈 앞이다. 살피기({interact})로 들어간다 — 수호자를 쓰러뜨리기 전엔 나올 수 없다.
+- `explore.rift_portal_here` 균열 포탈 앞이다.
 - `explore.rift_enter` 균열 속으로 발을 들였다 — {name}.
 - `explore.rift_chapter` [{rift} {n}/{total}] {chapter} — {desc}
 - `explore.rift_variant` 공기가 무겁다. 이곳의 수호자는 평소와 다르다…
 - `explore.rift_next_wave` 숨 돌릴 틈도 없이 다음 무리가 덮친다! (남은 무리 {left})
 - `explore.rift_exit_found` 앞쪽에 출구가 보인다.
-- `explore.rift_exit_here` 출구 앞이다. 살피기({interact})로 나아간다.
+- `explore.rift_exit_here` 출구 앞이다.
 - `explore.rift_exit_open` 이 구역을 정리했다. 출구가 열렸다.
 - `explore.rift_exit_escape` 수호자가 쓰러졌다. 출구가 바깥으로 이어진다!
 - `explore.rift_exit_locked` 아직 길이 막혀 있다. (남은 무리 {left})
@@ -252,7 +251,7 @@
 - `explore.closed` 층이 닫힌다. 보이지 않는 힘이 몸을 끌어당긴다.
 - `explore.landmark_found` {name}을(를) 발견했다. {desc}
 - `explore.portal_found` {dir}에서 포탈의 빛을 보았다.
-- `explore.portal_here` 포탈 위에 섰다. 살피기({interact})로 살펴본다.
+- `explore.portal_here` 포탈 위에 섰다.
 - `explore.safe_enter` 고요함이 감싼다. 안전지대다 — 여기서는 쉴 수 있다.
 - `explore.safe_leave` 안전지대를 벗어났다.
 - `explore.dark_enter` 수정 빛이 닿지 않는 곳이다. 한 치 앞도 보이지 않는다.
@@ -273,9 +272,7 @@
 - `explore.hud_items_none` 소지품: 없음
 - `explore.cannot_use` {item}은(는) 여기서 쓸 수 있는 물건이 아니다.
 - `explore.hud_interact` {key} 살피기 — {target}
-- `explore.keys` 이동 {up}{left}{down}{right}/방향키(대각선 가능) · 단축칸 1~0 · 소지품 {inventory} · 캐릭터 {character} · 도감 {bestiary} · 1시간 대기 {wait} · 휴식 {rest} · 횃불 {torch} · 식사 {eat} · 살피기 {interact} · 일시정지 {pause} · 디버그 {debug}
 - `explore.paused` 일시정지
-- `explore.paused_hint` 시간이 멈췄다. {key}로 계속한다.
 - `explore.ambush` 잠결에 무언가가 다가왔다!
 - `explore.glacier_crystal` 연못 바닥에서 붉게 빛나는 얼음 구슬을 건졌다 — [{item}].
 - `explore.glacier_shard` 금 간 기둥을 부수자 마력이 서린 얼음 조각이 굴러 나왔다 — [{item}].
@@ -290,7 +287,7 @@
 - `explore.mine_gem` 철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 [{item}]이(가) 초록빛으로 반짝인다.
 - `explore.mine_quartz` 광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다 — [{item}].
 - `explore.mine_explosive` 낡은 상자 속에 광부들이 숨겨 둔 [{item}]이(가) 있다.
-- `explore.mine_blast` 폭약을 설치하고 물러섰다 — 굉음과 함께 무너진 갱도가 뚫렸다.
+- `explore.mine_blast` 무너진 갱도가 뚫렸다.
 - `explore.mine_smash` 무너진 바위를 맨손으로 밀어 치웠다.
 - `explore.rift_exit_forced` 힘으로 길을 열었다.
 - `explore.hazard_bridge_pass` 무너진 다리의 남은 들보를 딛고 건넜다.
@@ -300,7 +297,7 @@
 - `explore.trap_detected` 바닥 문양이 미묘하게 어긋나 있다 — 함정이다!
 - `explore.trap_disarmed` 함정의 장치를 조심스럽게 풀었다.
 - `explore.trap_crushed` 함정을 밟아 그대로 짓뭉갰다. 이 정도로는 흠집도 안 난다.
-- `explore.trap_plate_fail` 딸깍 — 압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!
+- `explore.trap_plate_fail` 압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!
 - `explore.trap_arrow_fail` 벽 틈에서 화살이 쏟아졌다!
 - `explore.trap_blades_fail` 회전 칼날에 베였다!
 - `explore.mural_read` 벽화를 들여다본다. {hint}
@@ -308,6 +305,32 @@
 - `explore.riddle_weaken` 문지기를 묶던 봉인이 풀린다 — 약해진 문지기가 창을 겨눈다.
 - `explore.riddle_wrong` 틀렸다. 문지기의 문양이 붉게 타오른다!
 - `explore.hud_fatigue` 피로도 {value}
+
+### `explore.party`
+
+- `explore.party.no_stones` 마석이 모자라다
+- `explore.party.no_item` 가진 것이 없다
+- `explore.party.rumor_portal` {dir} 끝에 아래층 포탈이 있다고 한다.
+- `explore.party.rumor_rift` {dir}에서 균열을 봤다고 한다.
+
+#### `explore.party.title`
+
+- `explore.party.title.rookie` 탐험가 {n}명
+- `explore.party.title.wounded` 다친 탐험가
+- `explore.party.title.fighting` 싸우는 탐험가 {n}명
+- `explore.party.title.raider` 약탈자 {n}명
+
+#### `explore.party.opt`
+
+- `explore.party.opt.trade` {item} {n}개 ↔ 9등급 마석 {price}개
+- `explore.party.opt.rumor` 소문을 묻는다
+- `explore.party.opt.follow` 함께 다닌다
+- `explore.party.opt.leave` 지나간다
+- `explore.party.opt.give_potion` 포션을 건넨다
+- `explore.party.opt.give_food` 식량을 건넨다
+- `explore.party.opt.help` 돕는다
+- `explore.party.opt.pay` 마석 절반을 내놓는다
+- `explore.party.opt.fight` 싸운다
 
 <a id="effect"></a>
 ## 효과 `effect`
@@ -406,7 +429,7 @@
 
 > 전투 화면 — 명령 · 대화창 안내 · 보스 대사 · 전투 기록
 
-- `combat.start` {enemies}을(를) 먼저 발견했다. 싸운다.
+- `combat.start` {enemies}와(과) 맞닥뜨렸다.
 - `combat.start_ambushed` {enemies}이(가) 덮쳐 왔다!
 - `combat.party` 탐험가
 - `combat.menu_root` {name}의 차례
@@ -423,12 +446,6 @@
 - `combat.sub_chance` 성공 {chance}%
 - `combat.sub_hp` 생명력 {hp}%
 - `combat.sub_stack` ×{n}
-- `combat.desc_attack` 손에 든 무기로 적 하나를 친다.
-- `combat.desc_skill` 익힌 기술과 정수의 이능을 쓴다.
-- `combat.desc_guard` 몸을 웅크려 다음 차례까지 받는 피해를 줄인다.
-- `combat.desc_item` 전투 중에 쓸 수 있는 소지품을 꺼낸다.
-- `combat.desc_flee` 전투에서 벗어나려 한다. 실패하면 차례만 잃는다.
-- `combat.desc_weak` 약점을 노린다. 맞히기 어렵지만 크게 들어간다.
 - `combat.no_usable_item` 전투 중에 쓸 수 있는 소지품이 없다.
 - `combat.target_statuses` 상태: {list}
 - `combat.brief_damage` {type} 피해
@@ -573,20 +590,23 @@
 - `combat.death_blast` {name}이(가) 쓰러지며 폭발한다!
 - `combat.self_blast` {name}이(가) 제 몸의 폭발에 휘말렸다({amount}).
 - `combat.bomber_cookoff` 불길이 폭약 주머니에 옮겨붙었다 — {name}의 허리춤이 터진다({amount})!
-- `combat.bomber_fuse_warn` {name}이(가) 심지에 불을 붙인 폭탄을 굴린다 — 한 사람의 발밑에서 치익거린다!
+- `combat.bomber_fuse_warn` {name}이(가) 심지에 불을 붙인 폭탄을 굴린다!
 - `combat.bomber_fuse_fire` {name}의 지연 폭탄이 터진다!
 - `combat.king_jump_warn` {name}이(가) 몸을 잔뜩 웅크린다 — 천장까지 뛰어오를 기세다!
 - `combat.king_jump_fire` {name}이(가) 떨어져 내리며 모두를 짓누른다!
 - `combat.bomber_intro` {name}이(가) 폭약 주머니를 흔들며 낄낄댄다.
-- `combat.king_slime_intro` '뀨이이잇!' — 공동 한가운데에서 {name}이(가) 출렁인다.
+- `combat.king_slime_intro` 공동 한가운데에서 {name}이(가) 출렁인다.
 - `combat.king_slime_split` {name}의 몸이 찢어지며 슬라임들이 떨어져 나온다!
 - `combat.revive` {name}이(가) 다시 일어난다!
 - `combat.buried_rise` 관 뚜껑이 열리듯 {name}이(가) 흙을 털며 다시 일어난다!
 - `combat.endure` {name}이(가) 쓰러질 일격을 버텨 냈다!
 - `combat.ildium_intro` 분묘 한가운데에서 {name}이(가) 삐걱거리며 몸을 일으킨다.
 - `combat.ildium_overheat` {name}의 강철 몸이 벌겋게 달아오른다 — 힘이 세지고 몸이 물러진다!
-- `combat.ildium_trap_warn` {name}이(가) 바닥을 내리친다 — 분묘 곳곳에서 장치가 맞물리는 소리가 난다!
+- `combat.ildium_trap_warn` {name}이(가) 바닥을 내리친다!
 - `combat.ildium_trap_fire` 분묘의 함정이 일제히 튀어 오른다!
+- `combat.banner_skill` {skill}
+- `combat.banner_item` {item}
+- `combat.start_first` {enemies}을(를) 먼저 발견했다. 싸운다.
 
 <a id="knowledge"></a>
 ## 지식 `knowledge`
@@ -661,7 +681,6 @@
 - `character.crit` 치명타율
 - `character.attack_type` 기본 공격: {type}
 - `character.essence_slots` 정수 슬롯 {n}칸
-- `character.essence_note` 레벨만큼 정수 슬롯이 열린다. 패시브나 이능이 하나라도 겹치는 정수는 받아들일 수 없다. 흡수한 정수를 지우는 일은 도시의 대신전에서만 할 수 있다.
 - `character.sub_stats` 세부 능력치
 - `character.boons` 영구 강화
 - `character.boon_line` {item} → {stat} ({n}회)
@@ -670,7 +689,6 @@
 - `character.statuses` 걸린 상태
 - `character.none` 없음
 - `character.inert_mark` *
-- `character.inert_note` * 표시는 아직 게임 규칙에 연결되지 않아 효과가 없는 능력치다.
 
 <a id="bestiary"></a>
 ## 도감 `bestiary`
@@ -683,10 +701,10 @@
 - `bestiary.head` {name} — {grade}등급 · {family}
 - `bestiary.kills` 처치 {kills} · 첫 처치 공적 {exp}
 - `bestiary.stats` 생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}
-- `bestiary.stats_unknown` 생명력·스탯: ??? (전투 중 '조사'로 알아낸다)
+- `bestiary.stats_unknown` 생명력·스탯: ???
 - `bestiary.affinity` 상성: {aff}
 - `bestiary.variant_of` {name}의 변이종.
-- `bestiary.shared` [{skill}] 이능을 함께 지닌 종: {list} — 이 이능이 든 정수는 둘 중 하나만 받아들일 수 있다.
+- `bestiary.shared` [{skill}] 이능을 함께 지닌 종: {list}
 
 <a id="bottom"></a>
 ## 아래 막대 `bottom`
@@ -713,7 +731,7 @@
 - `essence.reason_unknown` 알 수 없는 정수다.
 - `essence.reason_no_slot` 빈 정수 슬롯이 없다.
 - `essence.reason_duplicate` 이미 같은 이능이 영혼에 새겨져 있어 받아들일 수 없다.
-- `essence.locked_suffix`  (잠김 — 레벨이 오르면 깨어난다)
+- `essence.locked_suffix`  (잠김)
 
 <a id="riddle"></a>
 ## 수수께끼 `riddle`
@@ -724,7 +742,7 @@
 - `riddle.hints_known` 벽화에서 본 것 덕분에 답이 아닌 것 {n}개를 지웠다.
 - `riddle.correct` "맞았다." 문지기가 묻는다 — 그냥 지나가겠는가, 봉인이 풀린 나와 겨루겠는가?
 - `riddle.choose_pass` 그냥 지나간다
-- `riddle.choose_weaken` 약해진 문지기와 싸운다(정수를 얻기 쉽다)
+- `riddle.choose_weaken` 약해진 문지기와 싸운다
 
 <a id="plaza"></a>
 ## 차원광장 `plaza`
@@ -855,6 +873,10 @@
 - `city.fx.money_lost` {n} 스톤을 잃었다.
 - `city.fx.money_got` {n} 스톤을 받았다.
 - `city.fx.closed` {name}이(가) 문을 닫았다.
+- `city.fx.no_tags` 신원패가 없다.
+- `city.fx.tags_returned` 신원패 {n}장을 넘기고 {stones} 스톤을 받았다.
+- `city.fx.no_records` 넘길 기록이 없다.
+- `city.fx.records_sold` 기록 {n}건을 넘기고 {stones} 스톤을 받았다.
 
 ### `city.lines`
 
@@ -1097,7 +1119,6 @@
 - `field.mushroom` 벽 틈에 핀 버섯이 희미하게 빛난다. 몇 송이를 딴다.
 - `field.wolf_den` 뼈와 털이 수북하다. 칼날늑대의 잠자리다. 물어다 나른 먹이의 흔적으로 무리의 크기와 습성을 가늠한다.
 - `field.wolf_den_done` 늑대 냄새가 진하게 배어 있다.
-- `field.gnome_stash` 돌 틈 안쪽에 반짝이는 것들이 가득하다. 손을 넣는 순간 어딘가에서 날카로운 외침이 들린다.
 - `field.gnome_stash_done` 털린 은닉처는 텅 비었다.
 - `field.ghoul_feast` 뜯어 먹힌 시체가 겹겹이 쌓여 있다. 썩은 살 사이로 손을 밀어 넣는다.
 - `field.ghoul_feast_done` 더 뒤질 엄두가 나지 않는다.
@@ -1173,7 +1194,6 @@
 
 - `field.stalagmites.1` 석순이 숲처럼 솟아 있다. 사이로 몸을 숨길 만하다.
 - `field.stalagmites.2` 천장의 종유석과 바닥의 석순이 거의 맞닿아 있다. 오랜 세월이다.
-- `field.stalagmites.3` 손가락으로 두드리자 맑은 소리가 동굴 안으로 번진다.
 
 ### `field.gnome_trinkets`
 
@@ -1184,3 +1204,18 @@
 
 - `field.old_skeleton.1` 아주 오래된 해골이 반쯤 바닥에 묻혀 있다. 곁의 장비는 처음 보는 모양이다.
 - `field.old_skeleton.2` 흙빛으로 바랜 뼈 사이로 수정이 자라 들어가 있다.
+
+<a id="dir8"></a>
+## dir8 `dir8`
+
+> —
+
+- `dir8.0` 북쪽
+- `dir8.1` 북동쪽
+- `dir8.2` 동쪽
+- `dir8.3` 남동쪽
+- `dir8.4` 남쪽
+- `dir8.5` 남서쪽
+- `dir8.6` 서쪽
+- `dir8.7` 북서쪽
+- `dir8.here` 바로 곁

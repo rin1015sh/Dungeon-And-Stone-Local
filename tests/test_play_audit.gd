@@ -9,7 +9,7 @@ func _pc() -> PlayerCharacter:
 
 func _battle(seed_value: int, monsters: Array, pc: PlayerCharacter = null) -> Battle:
 	var party: Array[Actor] = [pc if pc != null else _pc()]
-	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters, true)
+	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters, Combatant.SIDE_PARTY)
 
 
 ## 플레이어 차례까지 돌린다(적 차례는 AI).

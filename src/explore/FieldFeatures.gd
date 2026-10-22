@@ -4,7 +4,7 @@ extends RefCounted
 ##   살피기(E): 서 있는 칸·옆 칸(4방향)의 요소. 할 수 있는 행동이 하나면 바로 하고, 여럿이면 choice(화면이 고르게 한 뒤 act).
 ##   near {radius, line}: 반경 안에 처음 들어서면 문구 한 번.   hidden {stat, dc}: 옆(8방향)에 처음 오면 탐지 판정 한 번 —
 ##   성공해야 tile이 드러나고 살필 수 있다.   hazard: RiftHazards 묶음(함정·미끄러운 비탈)으로 깔고 밟으면 판정.
-##   guard {monster}: 입장 때 그 자리에 지키는 무리(무리 수는 몬스터 pack_size).   rest {radius, fatigue_per_hour}: 근처 휴식 보너스.
+##   guard {monster}: 입장 때 그 자리에 지키는 무리(마릿수는 FieldMonsters.pack_count — 날짜별).   rest {radius, fatigue_per_hour}: 근처 휴식 보너스.
 ## 행동 하나의 실행은 FieldFeatureAct. 입장마다 새로(층이 입장마다 리셋되므로 다시 채워진다).
 
 var list: Array[Dictionary] = []   ## {"id", "pos", "def", "found", "used": {행동 id: 날짜 | true}, "cleared", "noticed"}
@@ -32,6 +32,31 @@ func setup(s: ExploreSession) -> void:
 			_near.append(e)
 
 
+## 원정 중에 새로 생긴 요소(갓 죽은 탐험가·쓰러진 약탈자 — FieldParties). at이 맨바닥이 아니거나 이미 요소가 있으면
+## 둘레에서 맨바닥 칸을 찾는다. 놓았으면 그 요소, 자리가 없으면 {}.
+func add_runtime(s: ExploreSession, id: String, at: Vector2i) -> Dictionary:
+	var def := s.db.get_entry("events", id)
+	var floor_tile := JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor")
+	var cell := Vector2i(-1, -1)
+	for r in 4:
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				var q := at + Vector2i(dx, dy)
+				if cell.x < 0 and s.map.tile_id_at(q) == floor_tile and not _by_cell.has(q) and s.map.portal_at(q).is_empty():
+					cell = q
+	if def.is_empty() or cell.x < 0:
+		return {}
+	var e := {"id": id, "pos": cell, "def": def, "found": true, "used": {}, "cleared": false, "noticed": false}
+	list.append(e)
+	_by_cell[cell] = e
+	s.map.features.append({"id": id, "pos": cell})
+	var tile := JsonUtil.get_str(def, "tile")
+	if not tile.is_empty():
+		s.map.set_tile(cell, tile)
+		s.tiles_changed.emit(Rect2i(cell, Vector2i.ONE))
+	return e
+
+
 ## 입장 직후(몬스터가 나타난 뒤): 지키는 무리를 세운다.
 func spawn_guards(s: ExploreSession) -> void:
 	for e in list:
@@ -39,9 +64,8 @@ func spawn_guards(s: ExploreSession) -> void:
 		var mid := JsonUtil.get_str(guard, "monster")
 		if mid.is_empty() or not s.db.has_entry("monsters", mid):
 			continue
-		var pack := JsonUtil.get_array(JsonUtil.get_dict(s.db.get_entry("monsters", mid), "behavior"), "pack_size")
 		var ids: Array = []
-		for i in (s.rng.randi_range(int(pack[0]), int(pack[1])) if pack.size() == 2 else 1):
+		for i in s.monsters.pack_count(mid, true):  # 날짜별 마릿수(spawn.pack_by_day)
 			ids.append(mid)
 		s.monsters.add_fixed(ids, e["pos"])
 

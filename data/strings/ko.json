@@ -23,8 +23,7 @@
     "page_prev": "◀",
     "page_next": "▶",
     "cursor": "▶",
-    "empty_slot": "—",
-    "grid_hint": "{move} 고르기 · {ok} 확정 · {back} 뒤로"
+    "empty_slot": "—"
   },
   "error": {
     "data_title": "데이터 검증 실패",
@@ -126,32 +125,31 @@
     "items_header": "가진 것",
     "items_none": "빈손이다.",
     "enter_header": "라비기온 구역",
-    "floor_hint": "포탈이 열렸다. 들어가면 {floor}의 어딘가에 떨어진다. 돌아오는 길은 층이 닫힐 때뿐이다.",
     "enter": "도시로 간다",
     "equipped_item": "{item} (착용)"
   },
   "explore": {
     "rift_exit_needs": "길이 막혀 있다. [{item}]이(가) 있어야 할 것 같다.",
     "rift_exit_used": "[{item}]을(를) 썼다.",
-    "rift_key_held": "가방에 자리가 없어 [{item}]을(를) 손에 쥐었다 — 출구에서 쓸 수 있다.",
-    "fortress_horn": "뿔피리를 길게 불자 성벽 너머에서 쇠사슬이 풀리는 소리가 울린다. 해자에 핏물이 차오른다…",
+    "rift_key_held": "가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.",
+    "fortress_horn": "해자에 핏물이 차오른다…",
     "fortress_tear": "조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.",
     "fortress_necronomicon": "썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].",
-    "hidden_no_room": "{item}을(를) 찾았지만 가방에 자리가 없다. 소지품을 비우고 다시 살펴라.",
+    "hidden_no_room": "{item}을(를) 찾았지만 가방에 자리가 없다.",
     "hidden_found": "숨겨진 것을 찾았다 — [{item}].",
     "rift_item_lost": "[{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.",
-    "rift_opened": "공기가 찢어지는 소리가 울린다. 동굴 곳곳에 균열 포탈 {count}개가 열렸다!",
+    "rift_opened": "동굴 곳곳에 균열 포탈 {count}개가 열렸다!",
     "rift_forced": "기념비가 마석을 삼키고, 옆에 {name}(으)로 통하는 균열 포탈이 열렸다.",
     "rift_offer": "대현자 기념비에 {item}을(를) 바쳤다.",
     "rift_offer_failed": "마석이 잠시 빛나다 꺼졌다. 균열이 열릴 자리를 찾지 못했다 — 마석은 그대로다.",
     "rift_portal_found": "붉게 일렁이는 균열 포탈이 보인다.",
-    "rift_portal_here": "균열 포탈 앞이다. 살피기({interact})로 들어간다 — 수호자를 쓰러뜨리기 전엔 나올 수 없다.",
+    "rift_portal_here": "균열 포탈 앞이다.",
     "rift_enter": "균열 속으로 발을 들였다 — {name}.",
     "rift_chapter": "[{rift} {n}/{total}] {chapter} — {desc}",
     "rift_variant": "공기가 무겁다. 이곳의 수호자는 평소와 다르다…",
     "rift_next_wave": "숨 돌릴 틈도 없이 다음 무리가 덮친다! (남은 무리 {left})",
     "rift_exit_found": "앞쪽에 출구가 보인다.",
-    "rift_exit_here": "출구 앞이다. 살피기({interact})로 나아간다.",
+    "rift_exit_here": "출구 앞이다.",
     "rift_exit_open": "이 구역을 정리했다. 출구가 열렸다.",
     "rift_exit_escape": "수호자가 쓰러졌다. 출구가 바깥으로 이어진다!",
     "rift_exit_locked": "아직 길이 막혀 있다. (남은 무리 {left})",
@@ -174,7 +172,7 @@
     "closed": "층이 닫힌다. 보이지 않는 힘이 몸을 끌어당긴다.",
     "landmark_found": "{name}을(를) 발견했다. {desc}",
     "portal_found": "{dir}에서 포탈의 빛을 보았다.",
-    "portal_here": "포탈 위에 섰다. 살피기({interact})로 살펴본다.",
+    "portal_here": "포탈 위에 섰다.",
     "safe_enter": "고요함이 감싼다. 안전지대다 — 여기서는 쉴 수 있다.",
     "safe_leave": "안전지대를 벗어났다.",
     "dark_enter": "수정 빛이 닿지 않는 곳이다. 한 치 앞도 보이지 않는다.",
@@ -195,9 +193,7 @@
     "hud_items_none": "소지품: 없음",
     "cannot_use": "{item}은(는) 여기서 쓸 수 있는 물건이 아니다.",
     "hud_interact": "{key} 살피기 — {target}",
-    "keys": "이동 {up}{left}{down}{right}/방향키(대각선 가능) · 단축칸 1~0 · 소지품 {inventory} · 캐릭터 {character} · 도감 {bestiary} · 1시간 대기 {wait} · 휴식 {rest} · 횃불 {torch} · 식사 {eat} · 살피기 {interact} · 일시정지 {pause} · 디버그 {debug}",
     "paused": "일시정지",
-    "paused_hint": "시간이 멈췄다. {key}로 계속한다.",
     "ambush": "잠결에 무언가가 다가왔다!",
     "glacier_crystal": "연못 바닥에서 붉게 빛나는 얼음 구슬을 건졌다 — [{item}].",
     "glacier_shard": "금 간 기둥을 부수자 마력이 서린 얼음 조각이 굴러 나왔다 — [{item}].",
@@ -212,7 +208,7 @@
     "mine_gem": "철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 [{item}]이(가) 초록빛으로 반짝인다.",
     "mine_quartz": "광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다 — [{item}].",
     "mine_explosive": "낡은 상자 속에 광부들이 숨겨 둔 [{item}]이(가) 있다.",
-    "mine_blast": "폭약을 설치하고 물러섰다 — 굉음과 함께 무너진 갱도가 뚫렸다.",
+    "mine_blast": "무너진 갱도가 뚫렸다.",
     "mine_smash": "무너진 바위를 맨손으로 밀어 치웠다.",
     "rift_exit_forced": "힘으로 길을 열었다.",
     "hazard_bridge_pass": "무너진 다리의 남은 들보를 딛고 건넜다.",
@@ -222,14 +218,37 @@
     "trap_detected": "바닥 문양이 미묘하게 어긋나 있다 — 함정이다!",
     "trap_disarmed": "함정의 장치를 조심스럽게 풀었다.",
     "trap_crushed": "함정을 밟아 그대로 짓뭉갰다. 이 정도로는 흠집도 안 난다.",
-    "trap_plate_fail": "딸깍 — 압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!",
+    "trap_plate_fail": "압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!",
     "trap_arrow_fail": "벽 틈에서 화살이 쏟아졌다!",
     "trap_blades_fail": "회전 칼날에 베였다!",
     "mural_read": "벽화를 들여다본다. {hint}",
     "riddle_pass": "문지기가 창을 거두고 옆으로 비켜선다.",
     "riddle_weaken": "문지기를 묶던 봉인이 풀린다 — 약해진 문지기가 창을 겨눈다.",
     "riddle_wrong": "틀렸다. 문지기의 문양이 붉게 타오른다!",
-    "hud_fatigue": "피로도 {value}"
+    "hud_fatigue": "피로도 {value}",
+    "party": {
+      "title": {
+        "rookie": "탐험가 {n}명",
+        "wounded": "다친 탐험가",
+        "fighting": "싸우는 탐험가 {n}명",
+        "raider": "약탈자 {n}명"
+      },
+      "opt": {
+        "trade": "{item} {n}개 ↔ 9등급 마석 {price}개",
+        "rumor": "소문을 묻는다",
+        "follow": "함께 다닌다",
+        "leave": "지나간다",
+        "give_potion": "포션을 건넨다",
+        "give_food": "식량을 건넨다",
+        "help": "돕는다",
+        "pay": "마석 절반을 내놓는다",
+        "fight": "싸운다"
+      },
+      "no_stones": "마석이 모자라다",
+      "no_item": "가진 것이 없다",
+      "rumor_portal": "{dir} 끝에 아래층 포탈이 있다고 한다.",
+      "rumor_rift": "{dir}에서 균열을 봤다고 한다."
+    }
   },
   "effect": {
     "smite_heal": "여신의 눈물이 {name}의 상처를 감싼다.",
@@ -304,7 +323,7 @@
     "hazard": "미궁의 위험"
   },
   "combat": {
-    "start": "{enemies}을(를) 먼저 발견했다. 싸운다.",
+    "start": "{enemies}와(과) 맞닥뜨렸다.",
     "start_ambushed": "{enemies}이(가) 덮쳐 왔다!",
     "party": "탐험가",
     "menu_root": "{name}의 차례",
@@ -321,12 +340,6 @@
     "sub_chance": "성공 {chance}%",
     "sub_hp": "생명력 {hp}%",
     "sub_stack": "×{n}",
-    "desc_attack": "손에 든 무기로 적 하나를 친다.",
-    "desc_skill": "익힌 기술과 정수의 이능을 쓴다.",
-    "desc_guard": "몸을 웅크려 다음 차례까지 받는 피해를 줄인다.",
-    "desc_item": "전투 중에 쓸 수 있는 소지품을 꺼낸다.",
-    "desc_flee": "전투에서 벗어나려 한다. 실패하면 차례만 잃는다.",
-    "desc_weak": "약점을 노린다. 맞히기 어렵지만 크게 들어간다.",
     "no_usable_item": "전투 중에 쓸 수 있는 소지품이 없다.",
     "target_statuses": "상태: {list}",
     "brief_damage": "{type} 피해",
@@ -471,20 +484,23 @@
     "death_blast": "{name}이(가) 쓰러지며 폭발한다!",
     "self_blast": "{name}이(가) 제 몸의 폭발에 휘말렸다({amount}).",
     "bomber_cookoff": "불길이 폭약 주머니에 옮겨붙었다 — {name}의 허리춤이 터진다({amount})!",
-    "bomber_fuse_warn": "{name}이(가) 심지에 불을 붙인 폭탄을 굴린다 — 한 사람의 발밑에서 치익거린다!",
+    "bomber_fuse_warn": "{name}이(가) 심지에 불을 붙인 폭탄을 굴린다!",
     "bomber_fuse_fire": "{name}의 지연 폭탄이 터진다!",
     "king_jump_warn": "{name}이(가) 몸을 잔뜩 웅크린다 — 천장까지 뛰어오를 기세다!",
     "king_jump_fire": "{name}이(가) 떨어져 내리며 모두를 짓누른다!",
     "bomber_intro": "{name}이(가) 폭약 주머니를 흔들며 낄낄댄다.",
-    "king_slime_intro": "'뀨이이잇!' — 공동 한가운데에서 {name}이(가) 출렁인다.",
+    "king_slime_intro": "공동 한가운데에서 {name}이(가) 출렁인다.",
     "king_slime_split": "{name}의 몸이 찢어지며 슬라임들이 떨어져 나온다!",
     "revive": "{name}이(가) 다시 일어난다!",
     "buried_rise": "관 뚜껑이 열리듯 {name}이(가) 흙을 털며 다시 일어난다!",
     "endure": "{name}이(가) 쓰러질 일격을 버텨 냈다!",
     "ildium_intro": "분묘 한가운데에서 {name}이(가) 삐걱거리며 몸을 일으킨다.",
     "ildium_overheat": "{name}의 강철 몸이 벌겋게 달아오른다 — 힘이 세지고 몸이 물러진다!",
-    "ildium_trap_warn": "{name}이(가) 바닥을 내리친다 — 분묘 곳곳에서 장치가 맞물리는 소리가 난다!",
-    "ildium_trap_fire": "분묘의 함정이 일제히 튀어 오른다!"
+    "ildium_trap_warn": "{name}이(가) 바닥을 내리친다!",
+    "ildium_trap_fire": "분묘의 함정이 일제히 튀어 오른다!",
+    "banner_skill": "{skill}",
+    "banner_item": "{item}",
+    "start_first": "{enemies}을(를) 먼저 발견했다. 싸운다."
   },
   "knowledge": {
     "unknown": "???",
@@ -543,7 +559,6 @@
     "crit": "치명타율",
     "attack_type": "기본 공격: {type}",
     "essence_slots": "정수 슬롯 {n}칸",
-    "essence_note": "레벨만큼 정수 슬롯이 열린다. 패시브나 이능이 하나라도 겹치는 정수는 받아들일 수 없다. 흡수한 정수를 지우는 일은 도시의 대신전에서만 할 수 있다.",
     "sub_stats": "세부 능력치",
     "boons": "영구 강화",
     "boon_line": "{item} → {stat} ({n}회)",
@@ -551,8 +566,7 @@
     "passive_line": "· {name} — {desc}",
     "statuses": "걸린 상태",
     "none": "없음",
-    "inert_mark": "*",
-    "inert_note": "* 표시는 아직 게임 규칙에 연결되지 않아 효과가 없는 능력치다."
+    "inert_mark": "*"
   },
   "bestiary": {
     "title": "도감",
@@ -561,10 +575,10 @@
     "head": "{name} — {grade}등급 · {family}",
     "kills": "처치 {kills} · 첫 처치 공적 {exp}",
     "stats": "생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}",
-    "stats_unknown": "생명력·스탯: ??? (전투 중 '조사'로 알아낸다)",
+    "stats_unknown": "생명력·스탯: ???",
     "affinity": "상성: {aff}",
     "variant_of": "{name}의 변이종.",
-    "shared": "[{skill}] 이능을 함께 지닌 종: {list} — 이 이능이 든 정수는 둘 중 하나만 받아들일 수 있다."
+    "shared": "[{skill}] 이능을 함께 지닌 종: {list}"
   },
   "bottom": {
     "menu": "메뉴 {key}",
@@ -583,14 +597,14 @@
     "reason_unknown": "알 수 없는 정수다.",
     "reason_no_slot": "빈 정수 슬롯이 없다.",
     "reason_duplicate": "이미 같은 이능이 영혼에 새겨져 있어 받아들일 수 없다.",
-    "locked_suffix": " (잠김 — 레벨이 오르면 깨어난다)"
+    "locked_suffix": " (잠김)"
   },
   "riddle": {
     "title": "수수께끼 문지기",
     "hints_known": "벽화에서 본 것 덕분에 답이 아닌 것 {n}개를 지웠다.",
     "correct": "\"맞았다.\" 문지기가 묻는다 — 그냥 지나가겠는가, 봉인이 풀린 나와 겨루겠는가?",
     "choose_pass": "그냥 지나간다",
-    "choose_weaken": "약해진 문지기와 싸운다(정수를 얻기 쉽다)"
+    "choose_weaken": "약해진 문지기와 싸운다"
   },
   "plaza": {
     "save": "기록을 남긴다",
@@ -661,7 +675,11 @@
       "tax_paid": "세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.",
       "money_lost": "{n} 스톤을 잃었다.",
       "money_got": "{n} 스톤을 받았다.",
-      "closed": "{name}이(가) 문을 닫았다."
+      "closed": "{name}이(가) 문을 닫았다.",
+      "no_tags": "신원패가 없다.",
+      "tags_returned": "신원패 {n}장을 넘기고 {stones} 스톤을 받았다.",
+      "no_records": "넘길 기록이 없다.",
+      "records_sold": "기록 {n}건을 넘기고 {stones} 스톤을 받았다."
     },
     "shop_bought": "{item} {n}개를 {price} 스톤에 샀다.",
     "shop_sold": "{item} {n}개를 {price} 스톤에 넘겼다.",
@@ -1044,8 +1062,7 @@
     "drip_done": "물방울은 너무 느리게 떨어진다.",
     "stalagmites": {
       "1": "석순이 숲처럼 솟아 있다. 사이로 몸을 숨길 만하다.",
-      "2": "천장의 종유석과 바닥의 석순이 거의 맞닿아 있다. 오랜 세월이다.",
-      "3": "손가락으로 두드리자 맑은 소리가 동굴 안으로 번진다."
+      "2": "천장의 종유석과 바닥의 석순이 거의 맞닿아 있다. 오랜 세월이다."
     },
     "mushroom": "벽 틈에 핀 버섯이 희미하게 빛난다. 몇 송이를 딴다.",
     "wolf_den": "뼈와 털이 수북하다. 칼날늑대의 잠자리다. 물어다 나른 먹이의 흔적으로 무리의 크기와 습성을 가늠한다.",
@@ -1054,7 +1071,6 @@
       "1": "작은 망치와 깎다 만 돌 인형이 놓여 있다. 노움의 솜씨다.",
       "2": "손바닥만 한 돌 조각상들이 줄지어 서 있다. 하나같이 이쪽을 보고 있다."
     },
-    "gnome_stash": "돌 틈 안쪽에 반짝이는 것들이 가득하다. 손을 넣는 순간 어딘가에서 날카로운 외침이 들린다.",
     "gnome_stash_done": "털린 은닉처는 텅 비었다.",
     "ghoul_feast": "뜯어 먹힌 시체가 겹겹이 쌓여 있다. 썩은 살 사이로 손을 밀어 넣는다.",
     "ghoul_feast_done": "더 뒤질 엄두가 나지 않는다.",
@@ -1077,5 +1093,16 @@
     "mud_tracks": "진흙 바닥에 무리가 지나간 발자국이 깊게 패어 있다. 아직 축축하다.",
     "breeze": "바위 틈에서 서늘한 바람이 새어 나온다. 어딘가 큰 공간이 있다.",
     "cairn": "누군가 납작한 돌을 쌓아 탑을 세웠다. 맨 위의 돌에는 아직 먼지가 앉지 않았다."
+  },
+  "dir8": {
+    "0": "북쪽",
+    "1": "북동쪽",
+    "2": "동쪽",
+    "3": "남동쪽",
+    "4": "남쪽",
+    "5": "남서쪽",
+    "6": "서쪽",
+    "7": "북서쪽",
+    "here": "바로 곁"
   }
 }

@@ -216,6 +216,16 @@ func refresh(full: bool = false) -> void:
 	player_view.self_modulate = Color.WHITE.lerp(_light_color, tint_k)
 
 
+## 원정 중에 타일이 바뀐 칸(새 시체 등 — ExploreSession.tiles_changed): 소품 칸에 넣고 그 둘레를 다시 그린다.
+func cells_changed(r: Rect2i) -> void:
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			var dc: DecorChunk = stream.decor_chunks.get(Vector2i(x, y) / chunk)
+			if dc != null:
+				dc.note_prop(Vector2i(x, y))
+	stream.redraw_rect(r.grow(1))
+
+
 ## 몬스터 무리 그림을 세션 상태에 맞춘다: 새 무리는 만들고, 사라진 무리는 지우고, 보이는 것만 표시.
 func sync_monsters() -> void:
 	var alive := {}

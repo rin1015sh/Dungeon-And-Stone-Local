@@ -45,7 +45,11 @@
     ],
     "reveal_radius_m": 0,
     "row": "front",
-    "ignores_stealth": true
+    "ignores_stealth": true,
+    "tracks_scent": {
+      "radius_tiles": 5,
+      "hours": 1.5
+    }
   },
   "magic_stone_grade": 9,
   "essence_drops": [],

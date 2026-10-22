@@ -199,7 +199,7 @@
       "floor": "#57505f",
       "mark": "#c8b8a0"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 0, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 0, "cols": 8, "size": 1.9}},
     "source": "placeholder"
   },
   {

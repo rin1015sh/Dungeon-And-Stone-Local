@@ -5,7 +5,9 @@
   "x": 140,
   "building": "res://assets/city/buildings/guild.webp",
   "interior": "res://assets/city/interiors/guild.webp",
-  "activities": [],
-  "placeholder": true,
+  "activities": [
+    "guild_tags",
+    "guild_records"
+  ],
   "source": "original"
 }

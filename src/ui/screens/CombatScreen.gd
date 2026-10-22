@@ -26,6 +26,7 @@ var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방�
 var _menu: CommandMenu
 var _route: NoticeRoute
 var _dialog: DialogueBox
+var _banner: SkillBanner
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 한다)
 var _planning: Array[Combatant] = []  # 지금 행동을 정하는 사람들(파티 창 순서)
@@ -56,6 +57,9 @@ func _ready() -> void:
 	_dialog.instant = GameState.debug_fast_combat
 	_place_bottom(_dialog)  # 아래 창과 같은 자리에 겹쳐 전부 덮는다
 	_dialog.shown_changed.connect(_on_dialog_shown)
+	_banner = SkillBanner.new()
+	add_child(_banner)
+	_banner.place_top()
 	for u in battle.units:
 		_add_unit(u)
 	_route = NoticeRoute.new(battle.db)
@@ -94,10 +98,14 @@ func _on_dialog_shown(on: bool) -> void:
 ## 전투 안내(문구 키): 기록에는 늘, 대화창에는 화면으로 알 수 없는 것만(피해·회피·쓰러짐·상태는 떠오르는 숫자·무대로 보인다 — NoticeRoute).
 func _notify(key: String, args: Dictionary, kind: String) -> void:
 	var text := Strings.t(key, args)
-	if _route.silent(key):
-		EventBus.log_message.emit(text, kind)
-	else:
-		_say(text, kind)
+	match _route.of(key):
+		NoticeRoute.SILENT:
+			EventBus.log_message.emit(text, kind)
+		NoticeRoute.BANNER:  # 스킬·아이템 이름 = 위쪽 작은 알림창(넘기지 않는다)
+			EventBus.log_message.emit(text, kind)
+			_banner.show_text(Strings.t(_route.banner_key(key), args))
+		_:
+			_say(text, kind)
 
 
 ## 전투 안내: 아래 대화창 + 탐험 기록.
@@ -351,6 +359,14 @@ func _show_result() -> void:
 ## 아래 대화창(테스트·캡처용).
 func dialog() -> DialogueBox:
 	return _dialog
+
+
+func banner() -> SkillBanner:
+	return _banner
+
+
+func stage() -> BattleStage:
+	return _stage
 
 
 func _finish() -> void:

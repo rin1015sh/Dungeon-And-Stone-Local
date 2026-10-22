@@ -32,9 +32,16 @@ class Group extends RefCounted:
 	var waves: Array = []                 ## 연전: 이기면 바로 이어지는 다음 구성들(몬스터 id 배열)
 	var battle_rules: Dictionary = {}     ## 전투 목표(BattleObjective — 생존 웨이브)
 	var boss: String = ""                 ## 방에서 기다리는 보스·중간보스(구성이나 연전에 있으면) — 움직이지 않고, 가까이 오면 바로 전투
+	var route: Array[Vector2i] = []       ## 멀리 걸어갈 길(send_to — 대기 중에 따라 걷는다)
+	var scent: Vector2i = Vector2i(-1, -1)  ## 쫓는 냄새 칸(behavior tracks_scent — 플레이어가 멀면 이쪽으로)
+	var party: Dictionary = {}            ## 탐험가 무리(FieldParties): {"kind", …} — 비어 있으면 몬스터 무리
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
+
+	## 몬스터 무리이거나 통행세를 받지 않은 약탈자(닿으면 싸움이 된다). 다른 탐험가 무리는 false.
+	func hostile() -> bool:
+		return party.is_empty() or (str(party.get("kind", "")) == "raider" and not bool(party.get("paid", false)))
 
 	## 칸 cell의 중심에 세운다(스폰·테스트).
 	func place(cell: Vector2i) -> void:
@@ -96,12 +103,16 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 
 func spawn_initial(avoid: Vector2i) -> void:
 	var range_ := JsonUtil.get_array(_spawn(), "groups_per_region")
+	var cluster := JsonUtil.get_dict(_spawn(), "cluster")
 	for region in _regions():
 		if JsonUtil.get_array(region, "monsters").is_empty():
 			continue
 		var n := _rng.randi_range(int(range_[0]), int(range_[1])) if range_.size() == 2 else 1
 		for i in n:
-			spawn_group(region, avoid)
+			var spot := FieldSpawnBias.cluster_spot(_map, _rng, cluster, region, avoid,
+				func(p: Vector2i) -> bool: return _area_of(p) == _region_area(region))
+			if spot.is_empty() or spawn_group(region, avoid, spot["cell"], str(spot["monster"])) == null:
+				spawn_group(region, avoid)
 	changed.emit()
 
 
@@ -114,8 +125,7 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	var g := Group.new()
 	g.id = _next_id
 	_next_id += 1
-	var pack := JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("monsters", mid), "behavior"), "pack_size")
-	for i in (_rng.randi_range(int(pack[0]), int(pack[1])) if pack.size() == 2 else 1):
+	for i in pack_count(mid, not JsonUtil.get_str(region, "id").is_empty()):
 		g.monster_ids.append(mid)
 	if monster_id.is_empty():
 		_mix_variants(g, region, cell)
@@ -124,6 +134,20 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	g.home = cell
 	groups.append(g)
 	return g
+
+
+## 한 무리(= 한 번의 전투)에 몇 마리인가. 층 필드 무리(field)는 층 JSON spawn.pack_by_day[날짜] [최소, 최대]를 따르되
+## 몬스터 pack_size 최대를 넘지 않는다(1일 차는 한 마리씩, 뒤로 갈수록 2~3마리 — 사용자 결정 2026-10-22). 그 밖(계층군주 등)은 pack_size.
+func pack_count(monster_id: String, field: bool) -> int:
+	var pack := JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("monsters", monster_id), "behavior"), "pack_size")
+	var lo := int(pack[0]) if pack.size() == 2 else 1
+	var hi := int(pack[1]) if pack.size() == 2 else 1
+	var by_day := JsonUtil.get_array(_spawn(), "pack_by_day")
+	if field and not by_day.is_empty():
+		var d: Array = by_day[clampi(floori(_now / 24.0), 0, by_day.size() - 1)]
+		hi = mini(hi, int(d[1]))
+		lo = mini(int(d[0]), hi)
+	return _rng.randi_range(maxi(1, lo), maxi(1, hi))
 
 
 ## 정해진 구성의 무리를 칸 cell 근처에 세운다(균열 고정 조우). 지역이 없어 리스폰하지 않는다.
@@ -139,6 +163,24 @@ func add_fixed(ids: Array, cell: Vector2i) -> Group:
 	g.place(at)
 	g.home = at
 	mark_boss(g)
+	groups.append(g)
+	changed.emit()
+	return g
+
+
+## 탐험가 무리(FieldParties)를 cell 근처에 세운다. ids = 전투 구성(약탈자) — 싸우지 않는 무리는 빈 배열.
+func add_party(ids: Array, cell: Vector2i, party: Dictionary) -> Group:
+	var at := cell if _steer.can_enter(cell) else _free_cell_near(cell)
+	if at.x < 0:
+		return null
+	var g := Group.new()
+	g.id = _next_id
+	_next_id += 1
+	for id: Variant in ids:
+		g.monster_ids.append(str(id))
+	g.party = party
+	g.place(at)
+	g.home = at
 	groups.append(g)
 	changed.emit()
 	return g
@@ -168,7 +210,8 @@ func group_at(p: Vector2i) -> Group:
 ## 쓰러뜨린 무리: 지도에서 지우고, 정해진 시간 뒤 같은 지역에 다시 나타난다.
 func remove(g: Group, now: float) -> void:
 	groups.erase(g)
-	_respawns.append({"region": g.region, "at": now + JsonUtil.get_float(_spawn(), "respawn_hours", 24.0)})
+	if not g.region.is_empty():  # 지역 무리만 다시 나타난다(균열 고정 조우·탐험가 무리는 아니다)
+		_respawns.append({"region": g.region, "at": now + JsonUtil.get_float(_spawn(), "respawn_hours", 24.0)})
 	changed.emit()
 
 
@@ -201,7 +244,7 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		return null
 	var boss_engage := float(_db.bal("monsters.boss_engage_tiles", 3.5))
 	for g in near:  # 쉬는 무리는 멀어서 닿을 수 없다
-		if g.grace_until > now:
+		if g.grace_until > now or not g.hostile():
 			continue
 		if g.boss != "":  # 보스: 방에 들어와 보이는 거리면 바로
 			if g.fpos.distance_to(player) <= boss_engage and _steer.sees(g.pos, pcell):
@@ -219,6 +262,8 @@ func is_awake(g: Group, pcell: Vector2i) -> bool:
 ## 플레이어가 delta 쪽으로 움직이려 할 때 닿아 있고 그쪽으로 다가가는 무리(플레이어가 먼저 건 전투).
 func touching(player: Vector2, delta: Vector2) -> Group:
 	for g in groups:
+		if not g.party.is_empty() and g.grace_until > _now:
+			continue  # 방금 이야기를 나눈 탐험가 무리 — 바로 다시 말을 걸지 않는다
 		if _steer.in_contact(g, player) and (g.fpos - player).dot(delta) > 0.0:
 			return g
 	return null
@@ -262,6 +307,26 @@ func is_visible(g: Group, player: Vector2i) -> bool:
 		return false
 	var reveal := JsonUtil.get_float(_behavior(g.leader()), "reveal_radius_m")
 	return reveal <= 0.0 or Vector2(g.pos - player).length() * _mpt <= reveal
+
+
+## 무리를 cell로 보낸다(그곳이 새 집). 플레이어 곁(깨어 있음)이면 길을 따라 걸어가고, 멀리 쉬는 무리는 바로 옮긴다.
+func send_to(g: Group, cell: Vector2i, pcell: Vector2i) -> void:
+	g.home = cell
+	g.waypoint = Vector2(-1, -1)
+	if not is_awake(g, pcell):
+		var at := cell if _steer.can_enter(cell, g) else _free_cell_near(cell)
+		if at.x >= 0:
+			g.place(at)
+			g.home = at
+		g.route.clear()
+		return
+	g.route = FieldRoutes.path(_map, g.pos, cell, int(_db.bal("monsters.route_radius", 90)))
+	g.state = STATE_IDLE
+
+
+## 플레이어가 지나온 칸 [[칸, 시각], …](오래된 것이 앞). 냄새를 쫓는 몬스터(behavior tracks_scent)가 쓴다.
+func set_player_trail(trail: Array) -> void:
+	_steer.player_trail = trail
 
 
 func region_cells(region_id: String) -> Array[Vector2i]:
@@ -310,7 +375,8 @@ func _process_respawns(player: Vector2i, now: float) -> void:
 		_extra_added += 1
 		var regions := _regions().filter(func(r: Dictionary) -> bool: return not JsonUtil.get_array(r, "monsters").is_empty())
 		if not regions.is_empty():
-			spawn_group(_rng.pick(regions), player)
+			var region: Dictionary = _rng.pick(regions)
+			spawn_group(region, player, Vector2i(-1, -1), FieldSpawnBias.growth_monster(_db, _rng, _spawn(), now, JsonUtil.get_str(region, "id")))
 	if not due.is_empty():
 		changed.emit()
 

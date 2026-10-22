@@ -56,7 +56,7 @@ func test_initial_spawns_by_region() -> void:
 			bad += 1
 	assert_eq(bad, 0, "지역 몬스터·걸을 수 있는 칸·안전지대 밖")
 	var east := fm.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region == "f1_east")
-	assert_true(not east.is_empty() and east.all(func(g: FieldMonsters.Group) -> bool: return g.pos.x > s.map.center.x and g.leader() == "blade_wolf"), "동쪽 팔은 칼날늑대")
+	assert_true(not east.is_empty() and east.all(func(g: FieldMonsters.Group) -> bool: return g.pos.x > s.map.center.x and g.leader() == "blade_wolf"), "동쪽 팔은 칼날늑대만")
 
 
 func test_bumping_a_group_starts_combat() -> void:

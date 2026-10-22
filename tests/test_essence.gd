@@ -107,8 +107,8 @@ func test_remove_detaches_and_delete_cost_doubles() -> void:
 func test_drop_chance_and_battle_drops() -> void:
 	var d := GameDatabase.new()
 	d.load_all("res://data")
-	assert_eq(EssenceDrop.drop_chance(d, {"grade": 9}), 0.02)
-	assert_eq(EssenceDrop.drop_chance(d, {"grade": 9}, true), 0.08, "균열 안 ×4")
+	assert_eq(EssenceDrop.drop_chance(d, {"grade": 9}), 0.045)
+	assert_near(EssenceDrop.drop_chance(d, {"grade": 9}, true), 0.045 * float(d.bal("essence.rift_mult")), 0.0001, "균열 안 × rift_mult")
 	assert_eq(EssenceDrop.drop_chance(d, {"grade": 6, "rank": "guardian"}), 0.33)
 	assert_eq(EssenceDrop.essence_of_monster(d, "goblin"), "goblin")
 	(d.singletons["balance"]["essence"]["drop_chance_by_grade"] as Dictionary)["9"] = 1.0
@@ -136,7 +136,7 @@ func test_essence_skill_usable_in_battle() -> void:
 	var pc := _pc()
 	pc.essences.absorb(pc, _inst("ghoul", "red"))
 	var party: Array[Actor] = [pc]
-	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(7), party, ["goblin"], true)
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(7), party, ["goblin"])
 	var c := b.next_turn()
 	while c != null and c.actor != pc:
 		b.act(c, b.ai_action(c))
@@ -167,7 +167,7 @@ func test_every_essence_skill_usable_in_battle() -> void:
 			assert_eq(pc.essences.absorb(pc, inst), "", "%s 흡수" % eid)
 			pc.pool.set_current("soul", pc.pool.get_max("soul"))
 			var party: Array[Actor] = [pc]
-			var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["goblin"], true)
+			var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["goblin"])
 			var c := b.next_turn()
 			while c != null and c.actor != pc:
 				b.act(c, b.ai_action(c))
@@ -191,7 +191,7 @@ func test_failed_status_skill_reports_no_effect() -> void:
 		pc.essences.absorb(pc, _inst("iron_lizardman", "green"))
 		assert_true(pc.skills.has("ess_liz_metal_poison"))
 		var party: Array[Actor] = [pc]
-		var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"], true)
+		var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, ["goblin"])
 		var c := b.next_turn()
 		while c != null and c.actor != pc:
 			b.act(c, b.ai_action(c))

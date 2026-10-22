@@ -45,7 +45,8 @@
       2
     ],
     "reveal_radius_m": 0,
-    "row": "front"
+    "row": "front",
+    "seeks_corpses_tiles": 45
   },
   "magic_stone_grade": 9,
   "essence_drops": [],

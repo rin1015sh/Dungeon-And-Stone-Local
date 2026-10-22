@@ -2,7 +2,7 @@
   "id": "minor_potion",
   "name_ko": "하급 포션",
   "category": "potion",
-  "price": 20000,
+  "price": 3000,
   "stack": 10,
   "consumable": true,
   "combat_usable": true,

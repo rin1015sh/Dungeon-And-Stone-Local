@@ -156,6 +156,7 @@ func _realtime_combat_flow() -> void:
 	await _action("menu_back")
 	_expect(not explore.menu().is_open() and not explore.is_paused(), "취소(Backspace)로 메뉴 닫기(일시정지 아님)")
 	await _explore_dialog_checks(explore)
+	await _party_checks(explore)
 	await _action("debug_toggle")
 	_toggle(explore, Strings.t("debug.invulnerable"))
 	DialogueBox.auto_skip = false
@@ -167,6 +168,7 @@ func _realtime_combat_flow() -> void:
 		return
 	var battle := combat.battle  # 전투 화면은 끝나면 스스로 사라진다(드롭이 없으면 바로) — 결과는 battle로 본다
 	await _combat_dialog_checks(combat)
+	await _stage_checks(combat)
 	GameState.debug_fast_combat = true
 	var tc := s.clock.total_hours
 	var menu := await _open_menu(combat)
@@ -507,6 +509,23 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 	DialogueBox.auto_skip = true
 
 
+## 다른 탐험가 무리(FieldParties): 닿으면 선택 창 — 고르는 동안 시간이 멈추고, Backspace = 지나가기.
+func _party_checks(explore: ExploreScreen) -> void:
+	var s := explore.session
+	var rookies := s.parties.of_kind(s, FieldParties.ROOKIE)
+	_expect(not rookies.is_empty(), "1층에 다른 탐험가 무리가 있다")
+	if rookies.is_empty():
+		return
+	var g: FieldMonsters.Group = rookies[0]
+	s.party_met.emit(g)
+	await _frames(2)
+	_expect(explore.has_node("PartyChoice") and s.realtime.is_paused("party"), "탐험가 무리 선택 창(시간 정지)")
+	await _action("menu_back")
+	await _frames(2)
+	_expect(not explore.has_node("PartyChoice") and not s.realtime.is_paused("party") and g.grace_until > s.clock.total_hours,
+		"Backspace = 지나간다(잠시 다시 말을 걸지 않는다)")
+
+
 ## 전투 안내 → 아래 창 왼쪽 대화창: 떠 있는 동안 행동창이 열리지 않고, Enter로 넘기면 행동창이 열린다.
 func _combat_dialog_checks(combat: CombatScreen) -> void:
 	var dlg := combat.dialog()
@@ -519,6 +538,34 @@ func _combat_dialog_checks(combat: CombatScreen) -> void:
 	_expect(_menu_open(combat) and not dlg.busy(), "안내를 다 넘기면 행동창")
 	DialogueBox.auto_skip = true
 	dlg.instant = true
+
+
+## 스킬 이름 = 위쪽 작은 알림창(대화창이 아니다), 적 자리 = 고정(쓰러져도 남은 적이 가운데로 모이지 않는다), 적은 아군 머리 위(UI21).
+func _stage_checks(combat: CombatScreen) -> void:
+	var b := combat.battle
+	b.message.emit("combat.use_skill", {"name": "x", "skill": "시험 스킬"}, "system")
+	await _frames(1)
+	_expect(combat.banner().text() == "시험 스킬" and not combat.dialog().busy(), "스킬 이름은 위 알림창에(대화창 아님)")
+	var foe0: Combatant = b.side_units(Combatant.SIDE_ENEMY)[0]
+	BattleRules.summon(b, foe0, {"monster": "goblin"})
+	BattleRules.summon(b, foe0, {"monster": "goblin"})
+	await _frames(3)
+	var st := combat.stage()
+	var foes := b.side_units(Combatant.SIDE_ENEMY)
+	var before := {}
+	for u in foes:
+		before[u] = st.view(u).position
+	var ally_top := INF
+	for u: Combatant in b.side_units(Combatant.SIDE_PARTY):
+		ally_top = minf(ally_top, st.view(u).position.y)
+	var feet: Array = foes.map(func(u: Combatant) -> float: return st.view(u).position.y + st.view(u).size.y)
+	_expect(feet.all(func(y: float) -> bool: return y <= ally_top + 0.5), "적 발은 아군 머리 위 (발 %s · 머리 %.0f · 무대 %s)" % [feet, ally_top, st.size])
+	var gone: Combatant = foes[0]
+	st.remove_unit(gone)
+	await _frames(2)
+	_expect(foes.slice(1).all(func(u: Combatant) -> bool: return st.view(u).position.is_equal_approx(before[u])), "적이 빠져도 남은 적 자리는 그대로")
+	st.add_unit(gone)  # 무대만 되돌린다(전투 규칙은 그대로)
+	await _frames(2)
 
 
 func _menu_open(combat: CombatScreen) -> bool:
@@ -755,7 +802,7 @@ func _city_flow() -> void:
 	await _action("debug_toggle")
 	street.scroll_to(0.0)
 	await _frames(1)
-	street.scroll_to(street.building_rect("inn").get_center().x - street.size.x / 2.0)  # 맨 왼쪽은 기능 없는 길드 — 여관으로
+	street.scroll_to(street.building_rect("inn").get_center().x - street.size.x / 2.0)  # 맨 왼쪽은 길드 — 여관으로
 	await _frames(1)
 	await _action("menu_confirm")
 	fv = city.facility_view()

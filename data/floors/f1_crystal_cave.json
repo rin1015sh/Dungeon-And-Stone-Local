@@ -372,13 +372,156 @@
   ],
   "source": "original",
   "spawn": {
+    "_comment": "groups_per_region = 입장 때 지역마다 무리 수, pack_by_day = 그날 새로 생기는 무리(= 한 번의 전투)의 [최소, 최대] 마릿수(몬스터 pack_size 최대를 넘지 않음 — 3일 차까지 한 마리, 사용자 결정 2026-10-22), 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
     "groups_per_region": [
-      20,
-      26
+      48,
+      56
     ],
+    "pack_by_day": [[1, 1], [1, 1], [1, 1], [1, 2], [1, 2], [2, 3], [2, 3]],
     "respawn_hours": 24,
     "growth_every_hours": 24,
-    "max_extra_groups": 18
+    "max_extra_groups": 18,
+    "cluster": {
+      "share": 0.4,
+      "radius_tiles": 12,
+      "features": {
+        "wolf_den": ["blade_wolf"],
+        "goblin_camp": ["goblin"],
+        "gnome_stash": ["gnome"],
+        "gnome_trinkets": ["gnome"],
+        "ghoul_feast": ["ghoul"],
+        "rot_smell": ["ghoul"],
+        "clear_spring": [],
+        "dead_campfire": []
+      }
+    },
+    "growth_bias": {
+      "min_day": 3,
+      "monster": "ghoul",
+      "chance": 0.5,
+      "regions": ["f1_south", "f1_center"]
+    }
+  },
+  "explorers": {
+    "_comment": "다른 탐험가(FieldParties·FieldPartyMeet). *_by_day = 그날(1일 차부터) 채울 수, portal_from_day일 차부터 신참은 포탈 쪽으로, chief_from_day일 차부터 약탈자에 두목. death_per_hour × (암흑지대 dark_mult) × (1 + 날 × day_add). near_tiles = 플레이어 둘레 사건(다친 탐험가·싸움)이 생기는 거리. trades price = 9등급 마석 개수. 모두 임시값",
+    "rookies_by_day": [
+      14,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7
+    ],
+    "raiders_by_day": [
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4
+    ],
+    "portal_from_day": 6,
+    "chief_from_day": 4,
+    "members": [
+      3,
+      5
+    ],
+    "looks": [
+      "human",
+      "human",
+      "barbarian"
+    ],
+    "raider_pack": [
+      "raider_cutthroat",
+      "raider_cutthroat",
+      "raider_archer"
+    ],
+    "raider_member_chance": 0.7,
+    "raider_chief": "raider_chief",
+    "death_per_hour": 0.01,
+    "dark_mult": 2.5,
+    "day_add": 0.15,
+    "raider_kill_tiles": 3,
+    "raider_kill_chance": 0.5,
+    "raider_hunt_tiles": 60,
+    "travel_chance": 0.5,
+    "near_tiles": [
+      25,
+      50
+    ],
+    "wounded_per_hour": 0.08,
+    "wounded_hours": 10,
+    "fight_per_hour": 0.1,
+    "fight_hours": 1.5,
+    "fight_death": 0.6,
+    "unseen_corpse_per_hour": 0.08,
+    "scream_tiles": 140,
+    "corpse_seekers": 2,
+    "follow_hours": 12,
+    "follow_path_tiles": 30,
+    "watch_ambush_mult": 0.3,
+    "talk_grace_hours": 0.3,
+    "trades": [
+      {
+        "give": "ration",
+        "n": 1,
+        "price": 15
+      },
+      {
+        "give": "torch_stub",
+        "n": 1,
+        "price": 20
+      },
+      {
+        "give": "minor_potion",
+        "n": 1,
+        "price": 120
+      },
+      {
+        "give": "stone_bread",
+        "n": 2,
+        "price": 2
+      }
+    ],
+    "rewards": {
+      "give_potion": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            2,
+            3
+          ]
+        }
+      ],
+      "give_food": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            5,
+            8
+          ]
+        }
+      ],
+      "help": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            5,
+            10
+          ]
+        },
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.5
+        }
+      ]
+    }
   },
   "lord": {
     "_comment": "계층군주 소환(LordWatch, 명세 §7.1). 원작: 3일 차 이후 5인 이상이 한곳에 머물면 확률 소환, 하루 안에 사실상 확정, 6시간마다 재소환, 시야 2m",

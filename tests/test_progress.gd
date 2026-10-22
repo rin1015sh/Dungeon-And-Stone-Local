@@ -36,7 +36,7 @@ func test_floor1_alone_does_not_reach_level5() -> void:
 func test_knowledge_and_investigate() -> void:
 	var pc := _pc()
 	var party: Array[Actor] = [pc]
-	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["blade_wolf"], true)
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["blade_wolf"], Combatant.SIDE_PARTY)
 	assert_true(pc.knowledge.has_seen("blade_wolf"), "마주치면 봤다")
 	assert_false(pc.knowledge.knows_stats("blade_wolf"))
 	var keys: Array = []
@@ -56,7 +56,7 @@ func test_knowledge_and_investigate() -> void:
 func test_hitting_reveals_affinity() -> void:
 	var pc := _pc()
 	var party: Array[Actor] = [pc]
-	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5), party, ["goblin"], true)
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5), party, ["goblin"], Combatant.SIDE_PARTY)
 	var c := b.unit_of(pc)
 	BattleKnowledge.on_damage(b, c, {"type": "damage", "hit": true, "damage_type": "blunt", "affinity": 1.0,
 		"target": b.opponents(c)[0].actor})

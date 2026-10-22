@@ -18,7 +18,7 @@ func _battle(n_party: int = 1) -> Battle:
 	var party: Array[Actor] = []
 	for i in n_party:
 		party.append(PlayerCharacter.create(db, "human", "warrior", "시험%d" % i, {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10}))
-	return Battle.from_encounter(db, reg, Rng.new(4), party, ["blater"], true)
+	return Battle.from_encounter(db, reg, Rng.new(4), party, ["blater"])
 
 
 func test_skip_turn_family() -> void:

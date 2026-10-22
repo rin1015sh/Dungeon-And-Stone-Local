@@ -18,6 +18,9 @@ signal player_died(cause: String)
 signal encounter(group: FieldMonsters.Group, party_first: bool)
 signal transfer(target: ExploreSession)       ## 다른 세션(균열 챕터 ↔ 바깥 층)으로 넘어간다 — 화면이 바꿔 끼운다
 signal riddle_asked(group: FieldMonsters.Group)  ## 수수께끼 문지기(RiftRiddle) — 화면이 문항을 띄우고 answer_riddle을 부른다
+signal sound(key: String, at: Vector2i)  ## 들리는 소리(비명·싸움 — FieldParties). 글이 아니라 소리로만(data/audio.json sfx)
+signal tiles_changed(cells: Rect2i)  ## 원정 중에 타일이 바뀌었다(새 시체 등) — 화면이 그 칸을 다시 그린다
+signal party_met(group: FieldMonsters.Group)  ## 탐험가 무리에 닿았다(FieldParties) — 화면이 FieldPartyMeet 선택지를 띄우고 act를 부른다
 signal feature_choice(at: Vector2i)  ## 동굴 요소의 행동이 여럿이다(맑은 샘 등) — 화면이 고르게 하고 features.act를 부른다
 
 var db: GameDatabase
@@ -32,6 +35,7 @@ var monsters: FieldMonsters
 var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
+var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
 var features: FieldFeatures = FieldFeatures.new()  ## 동굴 요소(시체·샘·모닥불·함정 … — data/events, 자리 = map.features)
 var battle_drops: Array[Dictionary] = []  ## 전투 장면에서 줍기를 기다리는 드롭(grant_battle_rewards defer_drops — DropPickup)
 var pending_messages: Array[Dictionary] = []  ## 화면이 붙기 전에 남긴 메시지(화면이 붙을 때 다시 보여 준다)
@@ -46,6 +50,7 @@ var vision_m: float = 0.0
 var ended: bool = false
 var steps: int = 0
 var fade_in: bool = false  ## 화면이 붙을 때 검은 화면에서 밝아진다(균열 길목을 지나왔다 — RiftRun._go)
+var trail: Array = []  ## 지나온 칸 [[칸, 시각], …](오래된 것이 앞, explore.trail_max개) — 냄새를 쫓는 몬스터(MonsterSteering)
 
 var _mpt: float = 1.0
 var _warned: Dictionary = {}
@@ -69,8 +74,10 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	fpos = Kinematics.center_of(pos)
 	lights = LightField.build(map, _mpt)
 	monsters = FieldMonsters.new(db, map, floor_def, rng)
+	monsters.set_player_trail(trail)
 	lord = LordWatch.new(JsonUtil.get_dict(floor_def, "lord"))
 	features.setup(self)
+	parties.setup(self)
 	realtime = RealtimeDriver.new()
 	player.pool.set_context("dungeon", true)
 	player.died.connect(_on_player_died)
@@ -92,6 +99,7 @@ func start() -> void:
 	if monsters_enabled:
 		monsters.spawn_initial(pos)
 		features.spawn_guards(self)
+		parties.start(self)
 	refresh_view()
 
 
@@ -125,9 +133,9 @@ func move_hours() -> float:
 	return float(db.bal("explore.move_hours_base", 0.02))
 
 
-## 한곳에 함께 있는 탐험가 수(계층군주 소환 조건). 동료는 M4 — 지금은 혼자.
+## 한곳에 함께 있는 탐험가 수(계층군주 소환 조건) = 플레이어 + 곁에서 함께 다니는 탐험가 무리(FieldParties).
 func party_size() -> int:
-	return 1
+	return parties.party_size(self)
 
 
 func found_count(list: Array[Dictionary]) -> int:
@@ -171,6 +179,9 @@ func enter_cell(cell: Vector2i) -> void:
 	var from := pos
 	pos = cell
 	steps += 1
+	trail.append([cell, clock.total_hours])
+	if trail.size() > int(db.bal("explore.trail_max", 120)):
+		trail.pop_front()
 	player.fatigue.on_dungeon(Fatigue.DUNGEON_STEP, 1.0)  # 피로도 연결 지점(규칙 미정 — null이면 변화 없음)
 	moved.emit(from, cell)
 	refresh_view()
@@ -213,7 +224,7 @@ func rest() -> void:
 			pass_time(1.0)
 			if ended or in_combat:
 				break
-			if monsters_enabled and rng.chance(float(db.bal("monsters.rest_ambush_chance_per_hour", 0.04))):
+			if monsters_enabled and rng.chance(float(db.bal("monsters.rest_ambush_chance_per_hour", 0.04)) * parties.watch_mult(self)):
 				var g := monsters.ambush_near(pos)
 				if g != null:
 					_say("explore.ambush", {}, "danger")
@@ -269,6 +280,7 @@ func pass_time(hours: float) -> void:
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
 		lord.update(self, h)
 		rifts.update(self, h)
+		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
 		monsters.set_player_marks(player.statuses.ids())
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
@@ -311,6 +323,8 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 		return
 	if rift_run != null and rift_run.riddle != null and rift_run.riddle.blocks(group):
 		riddle_asked.emit(group)
+		return
+	if parties.meets(self, group):
 		return
 	in_combat = true
 	_rewarded = false
@@ -376,6 +390,7 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 	if not _rewarded:
 		grant_battle_rewards(group, killed)
 	_rewarded = false
+	parties.on_battle_end(self, group, result)
 	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result, killed)):
 		pass
 	elif result == Battle.RESULT_VICTORY:

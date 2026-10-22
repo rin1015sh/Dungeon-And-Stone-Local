@@ -139,7 +139,7 @@ func test_chapters_chain_guardian_and_escape() -> void:
 func test_survival_objective_and_reinforce() -> void:
 	var reg := ContentRegistries.new()
 	var party: Array[Actor] = [_pc()]
-	var b := Battle.from_encounter(db, reg, Rng.new(2), party, ["ghoul"], true)
+	var b := Battle.from_encounter(db, reg, Rng.new(2), party, ["ghoul"])
 	b.objective = {"survive_rounds": 3, "reinforce": {"monsters": ["ghoul"], "count": [1, 1]}}
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
 	(me.actor as Actor).stats.add_modifiers_from_data("test", [{"target": "dmg_taken:all", "percent": -1.0}])
@@ -176,7 +176,7 @@ func test_guardian_drops_variant_and_rift_essence() -> void:
 	assert_true(v > 25 and v < 100, "변종 수호자 3%% 근처 (%d/2000)" % v)
 	assert_false(RiftRun.new(s, "rift_green_mine").variant, "녹색 탄광은 변종 없음")
 	var g := db.get_entry("monsters", "goblin")
-	assert_near(EssenceDrop.drop_chance(db, g, true), EssenceDrop.drop_chance(db, g) * float(db.bal("essence.rift_mult")), 0.0001, "균열 안 정수 ×4")
+	assert_near(EssenceDrop.drop_chance(db, g, true), EssenceDrop.drop_chance(db, g) * float(db.bal("essence.rift_mult")), 0.0001, "균열 안 정수 × rift_mult")
 	var w := db.get_entry("monsters", "blater")
 	assert_near(EssenceDrop.drop_chance(db, w, true), 0.33, 0.0001, "수호자 정수 33%")
 	var p := Progression.new()

@@ -175,7 +175,7 @@ func test_counter_while_guarding() -> void:
 
 func test_battle_skips_unit_that_fell_while_awaiting_input() -> void:
 	var b := _battle(2)
-	b.start(true)
+	b.start()
 	var c := b.next_turn()
 	while c != null and c.side != Combatant.SIDE_PARTY:
 		b.act(c, b.ai_action(c))

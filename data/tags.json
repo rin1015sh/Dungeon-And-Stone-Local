@@ -95,6 +95,7 @@
   ],
   "monster_ranks": [
     {"id": "ungraded", "name_ko": "무등급"},
+    {"id": "human", "name_ko": "사람"},
     {"id": "normal", "name_ko": "일반"},
     {"id": "elite", "name_ko": "정예"},
     {"id": "midboss", "name_ko": "중간 보스"},

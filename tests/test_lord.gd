@@ -17,7 +17,7 @@ func _fight(n: int = 1) -> Array:
 	for i in n:
 		party.append(b.add(_pc(), Combatant.SIDE_PARTY))
 	var boss := b.add(Monster.create(db, "dreadfear"), Combatant.SIDE_ENEMY)
-	b.start(true)
+	b.start()
 	return [b, boss, party]
 
 
@@ -244,6 +244,8 @@ func test_moving_resets_stay() -> void:
 	var s := _session(1)
 	s.clock.advance(48.0)
 	var w := s.lord
+	w.def = w.def.duplicate()
+	w.def["hazard_base_per_hour"] = 0.0  # 머문 시간만 본다(소환 굴림이 끼면 stay가 0으로 돌아간다)
 	w.update(s, 2.0)
 	assert_near(w.stay_hours, 2.0, 0.001)
 	var far := s.pos

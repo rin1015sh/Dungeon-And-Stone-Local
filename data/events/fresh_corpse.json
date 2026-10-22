@@ -1,0 +1,87 @@
+{
+  "id": "fresh_corpse",
+  "name_ko": "갓 죽은 탐험가",
+  "type": "feature",
+  "tile": "feat_corpse",
+  "runtime": true,
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "뒤진다",
+      "limit": "once",
+      "give": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            3,
+            9
+          ],
+          "chance": 0.9
+        },
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.3
+        },
+        {
+          "item": "ration",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.45
+        },
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.35
+        },
+        {
+          "item": "minor_potion",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.2
+        },
+        {
+          "one_of": [
+            "hunting_dagger",
+            "leather_gloves",
+            "leather_hood",
+            "leather_boots",
+            "leather_belt",
+            "padded_armor",
+            "wooden_shield",
+            "travel_cloak",
+            "hunting_bow",
+            "steel_spear",
+            "iron_mace"
+          ],
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.3
+        },
+        {
+          "item": "explorer_tag",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.85
+        }
+      ],
+      "done": "field.corpse_done"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "원정 중에 죽은 탐험가(FieldParties가 그 자리에 놓는다 — 고정 지도에는 없다)"
+}

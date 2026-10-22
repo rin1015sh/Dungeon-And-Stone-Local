@@ -1,0 +1,27 @@
+{
+  "id": "raider_cheap_shot",
+  "name_ko": "뒤통수 찌르기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "pierce",
+      "crit_bonus": 0.2,
+      "power_if_status": {
+        "status": [
+          "blind",
+          "snare"
+        ],
+        "power": 1.6
+      }
+    }
+  ],
+  "source": "placeholder"
+}

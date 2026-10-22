@@ -1,0 +1,62 @@
+{
+  "id": "raider_chief",
+  "name_ko": "약탈자 두목",
+  "grade": 9,
+  "rank": "human",
+  "floor": 1,
+  "floor_tags": [
+    "f1_raiders"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.1,
+  "color": "#7a4a3a",
+  "immunities": [],
+  "weaknesses": {},
+  "weak_point": null,
+  "stats": {
+    "str": 11,
+    "agi": 8,
+    "p_res": 7,
+    "m_res": 4,
+    "int": 3
+  },
+  "resources": {
+    "hp": 95,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 7.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "basic_attack",
+    "raider_cleave"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "chance",
+      "use": "raider_cleave",
+      "value": 0.45
+    }
+  ],
+  "source": "placeholder",
+  "notes": "약탈자(사람) — 몬스터가 아니라 마석·정수·공적이 없다. 쓰러뜨리면 그 자리에 유품(raider_remains)이 남는다(FieldParties). 1층 몬스터 9등급 수준으로 잡은 임시값"
+}

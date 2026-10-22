@@ -1,0 +1,24 @@
+{
+  "id": "raider_cleave",
+  "name_ko": "도끼 휘두르기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 20,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.5,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.35
+    }
+  ],
+  "source": "placeholder"
+}

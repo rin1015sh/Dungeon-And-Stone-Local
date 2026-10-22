@@ -42,7 +42,9 @@
       3
     ],
     "reveal_radius_m": 0,
-    "row": "front"
+    "row": "front",
+    "wander_radius": 14,
+    "wander_chance": 0.8
   },
   "magic_stone_grade": 9,
   "essence_drops": [],

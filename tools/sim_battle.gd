@@ -52,7 +52,7 @@ func _initialize() -> void:
 			pc.set_level(level)
 			pc.pool.fill_all()
 			var party: Array[Actor] = [pc]
-			var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5000 + i), party, sc, i % 2 == 0)
+			var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5000 + i), party, sc)
 			for t in 400:
 				var c := b.next_turn()
 				if c == null:
