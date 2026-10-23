@@ -1,19 +1,38 @@
 class_name ItemIconPainter
 extends RefCounted
-## 아이템 그림(스프라이트가 없을 때의 임시 도형). 아이템 icon 종류 + color로 rect 안에 그린다.
-## 스프라이트(items/<id>.json sprite)가 있으면 그것을 쓴다.
-## 종류: sword mace spear dagger bow axe hammer staff crossbow shield armor cloak hood helmet gloves belt boots ring amulet
+## 아이템 그림: assets/items/<id>.webp(그림 도구 tools/paint_items.gd — 몬스터·도시와 같은 손그림, 사용자 요청 2026-10-23)가 있으면 그것을,
+## 아이템 JSON sprite가 있으면 그것을, 둘 다 없으면 임시 도형(icon 종류 + color — 아래 paint)을 그린다.
+## 그림은 칸 사각형 안에 비율을 지켜 가운데로 맞춘다(장비 인형 칸처럼 비율이 다른 칸).
+## 도형 종류: sword mace spear dagger bow axe hammer staff crossbow shield armor cloak hood helmet gloves belt boots ring amulet
 ##       potion food bread torch lantern stone scroll pouch
+
+const ART_DIR := "res://assets/items/"
+
+static var _tex: Dictionary = {}  ## 아이템 id -> Texture2D(없으면 null) — 매번 파일을 찾지 않게
 
 
 static func draw(c: CanvasItem, db: GameDatabase, item_id: String, r: Rect2, alpha: float = 1.0) -> void:
-	var sprite := JsonUtil.get_str(ItemInfo.def(db, item_id), "sprite")
-	if not sprite.is_empty() and ResourceLoader.exists(sprite):
-		c.draw_texture_rect(load(sprite) as Texture2D, r, false, Color(1, 1, 1, alpha))
+	var tex := texture(db, item_id)
+	if tex != null:
+		var s := minf(r.size.x / tex.get_width(), r.size.y / tex.get_height())
+		var sz := Vector2(tex.get_width(), tex.get_height()) * s
+		c.draw_texture_rect(tex, Rect2(r.get_center() - sz * 0.5, sz), false, Color(1, 1, 1, alpha))
 		return
 	var col := ItemInfo.color(db, item_id)
 	col.a = alpha
 	paint(c, ItemInfo.icon(db, item_id), r.grow(-maxf(2.0, minf(r.size.x, r.size.y) * 0.08)), col)
+
+
+## 아이템 그림(없으면 null).
+static func texture(db: GameDatabase, item_id: String) -> Texture2D:
+	if _tex.has(item_id):
+		return _tex[item_id]
+	var path := JsonUtil.get_str(ItemInfo.def(db, item_id), "sprite")
+	if path.is_empty() or not ResourceLoader.exists(path):
+		path = ART_DIR + item_id + ".webp"
+	var tex: Texture2D = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	_tex[item_id] = tex
+	return tex
 
 
 ## 칸 종류의 빈 실루엣(장비 인형의 빈 칸).

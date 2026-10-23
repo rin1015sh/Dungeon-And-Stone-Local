@@ -34,7 +34,7 @@
   - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
 - **게임 글 md**(사용자가 글을 고치는 곳): `godot --headless --path . --script res://tools/strings_md.gd` → `docs/STRINGS.md`(ko.json 전부, 한 줄 = ``- `키` 글``) · 사용자가 고친 md를 넣기 `… -- --apply`(있는 키의 글만 바꾼다). **ko.json 문구를 추가·수정했으면 다시 만든다**(md가 낡으면 사용자가 옛 글을 고치게 된다).
 - **데칼 좌표 굽기**(층 JSON `art.decor` 규칙·kinds를 바꿨으면 필수 — 테스트가 파일과 규칙 결과를 비교한다): `godot --headless --path . --script res://tools/bake_decor.gd` → `data/maps/f1_crystal_cave_decor.json`(한 줄 = [x, y, 종류, 변형, 방향, 뒤집기, 크기×100, 흔들림×100 ×2] — 손으로 고쳐도 된다).
-- **그림 다시 만들기**(도시·몬스터 전투·아군 뒷모습·탐험 맵 재질·몸 그림): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
+- **그림 다시 만들기**(도시·몬스터 전투·아군 뒷모습·탐험 맵 재질·몸 그림·아이템): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다.
   - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(Noto Sans KR)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
@@ -96,8 +96,8 @@ src/explore/    지도·생성기(generators/)·ExploreSession·이동·시야·
 src/progress/   성장·정수·전리품·드롭·저장      src/items/  가방·장비      src/city/  도시 규칙(+effects/)
 src/ui/         InputSetup·theme/·widgets/·windows/(Tab 메뉴)·city/·combat/·screens/
 tests/          test_*.gd(단위) · smoke_ui(UI 스모크)
-tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구) · sim_*(밸런스 시뮬레이터)
-assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ (그림은 코드가 그린 WebP)
+tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/) · sim_*(밸런스 시뮬레이터)
+assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ (그림은 코드가 그린 WebP)
 ```
 파일 하나하나의 역할은 **`docs/REFERENCE.md` "파일 구조(자세히)"**.
 
@@ -118,7 +118,7 @@ assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ (그림은
 - **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + 고정값 `stats`·`resources`(생명력 — J13, 굴림 없음). 사례 `{essence, color, stats, resources}`, 무지갯빛 = 수호자(액티브 전부·스탯·생명력 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`.
 - **하단 대화창(2026-10-18, UI15)**: 탐험 알림(`EventBus.log_message`)·전투 안내·시설 결과는 `DialogueBox`에 한 쪽씩 뜨고 Enter로 넘긴다. 떠 있는 동안 탐험 시간 정지(`realtime` 사유 "dialog")·전투 차례 정지(`CombatScreen._read`). 테스트·캡처는 `DialogueBox.auto_skip`(캡처 `--dialog`면 띄운 채), 전투 빨리 감기 디버그면 전투 대화창만 `instant`. 알림은 문구 키로 두 갈래(`NoticeRoute` — render.json `ui.notice` silent 안 보임 · 나머지 대화창, UI19 — 탐험·전투·도시 거리 모두, 위 알림 띠·도시 위 알림 카드 없음). 키가 있는 알림은 `session.message`·`EventBus.notice`로 보낸다(`log_message`는 키가 없어 대화창으로). **사망하면 결과 화면 없이 바로 타이틀**(UI16).
 - **전투 드롭(2026-10-16)**: 정수·전리품은 쓰러진 무대 자리에 남고 전투가 끝나면 하나씩 "획득할까?" → 받을 사람(`CombatDrops`·`DropPickup`, `ExploreSession.grant_battle_rewards(…, defer_drops=true)`·`take_drop`·`leave_drop`). **정수를 얻는 길은 이것뿐** — 두고 가거나 아무도 못 받으면 사라진다(흡수 대기·캐릭터 창 흡수 없음). 가정 UI13.
-- **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`. **장비는 공식으로 만든다(2026-10-23, IT1)**: 종류(`data/item_types.json`) × 소재(`data/materials.json`, 6단계) → `ItemForge`가 로드 때 모든 조합을 아이템 `<소재>_<종류>`로 만든다(증가 스탯·공격력 = 종류 값 × `balance.items.grow_by_tier`, 감소는 고정, 가격도 공식). 장비 수치를 아이템 JSON에 손으로 쓰지 않는다 — 옛 장비 14개는 `forge` {type, material}. 표·가격 문서 `python3 tools/item_pool.py` → `docs/balance/item_pool.md`(소재·종류·배율을 바꿨으면 다시 만든다).
+- **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`. **장비는 공식으로 만든다(2026-10-23, IT1)**: 종류(`data/item_types.json`) × 소재(`data/materials.json`, 6단계) → `ItemForge`가 로드 때 모든 조합을 아이템 `<소재>_<종류>`로 만든다(증가 스탯·공격력 = 종류 값 × `balance.items.grow_by_tier`, 감소는 고정, 가격도 공식). 장비 수치를 아이템 JSON에 손으로 쓰지 않는다 — 옛 장비 14개는 `forge` {type, material}. 표·가격 문서 `python3 tools/item_pool.py` → `docs/balance/item_pool.md`(소재·종류·배율을 바꿨으면 다시 만든다). **아이템 그림은 `assets/items/<id>.webp`**(그림 도구 `tools/paint_items.gd` — 새 아이템을 넣었으면 그려야 테스트가 통과한다, ART.md §0).
 - **다른 탐험가(2026-10-21, EX1~EX12)**: 1층 층 JSON `explorers` → `FieldParties`(무리 = `FieldMonsters.Group.party`, 신참·다친 탐험가·싸우는 탐험가·약탈자, 날마다 수가 바뀐다) · 만나면 `FieldPartyMeet` 선택지(`party_met` → `ChoicePopup`). 누가 죽으면 갓 죽은 탐험가(`fresh_corpse` — `FieldFeatures.add_runtime`) + 비명. **몬스터 잡템은 없다 — 물건은 사람(유품·거래)에게서.** 약탈자 = rank `human`(공적·마석·정수 없음).
 - **균열·도시·동굴 요소 요약**: 균열 = `rifts/<id>.json` 챕터마다 새 `ExploreSession`(손 설계 지도 `data/maps/rifts/`), 챕터 사이는 길목(`RiftPassage` — 걸어 들어가면 넘어가고 되돌아간다, 길목은 지도 가장자리·출구와 다음 입구는 반대쪽). 도시 = 순 × 행동력(시설 입장에만 1), 시설 활동 → `activities/<id>`, 하순이 끝나면 차원광장 → 미궁. 동굴 요소 = `data/events/<id>.json`(type feature), 자리는 고정 지도 `features`.
 - **데이터 키 사전(자세히)**: 패시브·몬스터 AI·보스 패턴·균열·핏빛성채~강철의 묘에서 생긴 키·감사 규칙·상태이상 키·재기획 키·동굴 요소·도시 규칙은 **`docs/REFERENCE.md`**. 새 키를 만들면 거기에 적는다.
