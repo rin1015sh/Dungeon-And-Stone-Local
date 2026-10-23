@@ -8,9 +8,14 @@ extends RefCounted
 
 const PREFIX := MealForge.PREFIX
 
+## 디버그·캡처: 비어 있지 않으면 차림표와 상관없이 이 요리를 낸다(screenshot --meal_pick).
+static var force_pick: String = ""
+
 
 ## 차림표(menu)에서 무게대로 하나 고른다. 없으면 "".
 static func pick(db: GameDatabase, menu: String, rng: Rng) -> String:
+	if not force_pick.is_empty() and db.has_entry("meals", force_pick):
+		return force_pick
 	var ids: Array[String] = []
 	for id: String in db.get_collection("meals"):
 		if JsonUtil.get_str(db.get_entry("meals", id), "menu") == menu:

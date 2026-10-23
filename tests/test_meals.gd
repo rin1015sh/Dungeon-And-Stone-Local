@@ -19,6 +19,8 @@ func test_every_meal_is_a_buff_with_a_scene() -> void:
 		assert_eq(JsonUtil.get_str(st, "kind"), "buff", id)
 		assert_eq(JsonUtil.get_str(st, "name_ko"), JsonUtil.get_str(meals[id], "name_ko"), "상태 이름 = 요리 이름")
 		assert_true(Strings.has("city.meal." + id), "장면 문구 city.meal." + id)
+		var art := JsonUtil.get_str(meals[id], "art")
+		assert_true(not art.is_empty() and FileAccess.file_exists(art), "요리 그림 " + art)
 	for menu: String in ["daily", "special"]:
 		assert_false(Meals.pick(db, menu, Rng.new(1)).is_empty(), menu)
 

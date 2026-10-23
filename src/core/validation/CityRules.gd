@@ -179,7 +179,7 @@ static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
 			v.err(w, "판매 목록의 '%s'는 이 창구(deals %s)가 다루지 않는 물건이다" % [id, deals])
 
 
-## 여관 요리(data/meals.json — Meals): 차림표·무게·지속(전투 수·미궁 시간). 효과 키는 상태(meal_<id>) 검사가 본다.
+## 여관 요리(data/meals.json — Meals): 차림표·무게·지속(전투 수·미궁 시간)·그림(art — 있으면 파일이 있어야). 효과 키는 상태(meal_<id>) 검사가 본다.
 static func _meals(v: ValidatorBase) -> void:
 	for id: String in v.entries("meals"):
 		var m := v.db.get_entry("meals", id)
@@ -191,3 +191,6 @@ static func _meals(v: ValidatorBase) -> void:
 		var dur := JsonUtil.get_dict(m, "duration")
 		if not JsonUtil.get_str(dur, "unit") in MEAL_UNITS or JsonUtil.get_float(dur, "amount") <= 0.0:
 			v.err(w, "duration {amount > 0, unit: %s}" % [MEAL_UNITS])
+		var art := JsonUtil.get_str(m, "art")
+		if not art.is_empty() and not FileAccess.file_exists(art):
+			v.err(w, "요리 그림 '%s'이(가) 없다(tools/paint_meals.gd)" % art)

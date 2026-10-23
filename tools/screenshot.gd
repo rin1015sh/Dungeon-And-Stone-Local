@@ -20,7 +20,7 @@ extends Node
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
 ## --known: --combat --monster=<id>에서 그 몬스터를 조사해 둔 상태(생명력 막대·알아낸 상성)
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
-## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께)
+## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께), --meal_pick=<요리 id>: 도시 여관 식사에서 그 요리(그림 확인)
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
@@ -325,6 +325,8 @@ func _city(city: CityScreen) -> void:
 	if _args.has("weather"):
 		city.state.weather = str(_args["weather"])
 		city.state.changed.emit()
+	if _args.has("meal_pick"):  # --meal_pick=<요리 id>: 여관 식사에서 그 요리가 나온다(요리 그림 확인)
+		Meals.force_pick = str(_args["meal_pick"])
 	if _args.has("facility"):
 		city.choose_facility(str(_args["facility"]))
 		await _frames(2)
