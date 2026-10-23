@@ -2,7 +2,7 @@ class_name RiftHazards
 extends RefCounted
 ## 균열 챕터의 탐험 위험(빙하굴 3챕터 미끄러운 얼음·급경사·로프 구간 — 명세 §10.1 "탐험 이벤트로 처리").
 ## 챕터 "hazards": [{"id", "tile", "count", "check": {"stat": "agi", "dc": 14}, "fail": [효과], "pass_message", "fail_message"}]
-## 통로 칸(방 안쪽이 아닌 칸)에 3×3 묶음으로 tile을 깔고, 처음 밟으면 한 번 판정한다:
+## 통로 칸(방 안쪽이 아닌 칸)에 3×3 안 같은 바닥 칸 묶음으로 tile을 깔고, 처음 밟으면 한 번 판정한다:
 ##   성공 확률 = clamp(rift.hazard_base + (스탯 − dc) × rift.hazard_per_point, hazard_min, hazard_max). 실패면 fail 효과.
 ## 판정이 끝난 묶음은 더 판정하지 않지만 그림(tile)은 그 자리에 남는다 — 해제·부숨·발동 모두(사용자 요청 2026-10-23).
 ##   못 알아챈 숨은 함정도 발동하면 드러나 남는다. 타일이 바뀌면 tiles_changed로 화면이 그 칸을 다시 그린다.
@@ -36,18 +36,36 @@ func place(cs: ExploreSession, ch: Dictionary, rng: Rng) -> void:
 			used.append(c)
 
 
-## 칸 c 둘레 3×3(걸을 수 있는 칸)에 위험 묶음 하나를 깐다(1층 동굴 요소의 함정도 이것을 쓴다 — FieldFeatures).
+## 칸 c 둘레 3×3에 위험 묶음 하나를 깐다(1층 동굴 요소의 함정도 이것을 쓴다 — FieldFeatures).
+## 묶음 칸 = 3×3 안에서 c와 같은 바닥 타일로 이어진 칸만(사용자 요청 2026-10-23 "함정 너비를 줄이는 한이 있어도 맞물리게") —
+## 카펫 줄·칼날 홈 사이·계단처럼 바닥 무늬 안에 들어맞고, 경계를 넘어 다른 바닥을 덮지 않는다.
 func add_group(cs: ExploreSession, hd: Dictionary, c: Vector2i) -> void:
 	var group := hd.duplicate()
-	group["cells"] = []
-	for dy in range(-1, 2):
-		for dx in range(-1, 2):
-			var p := c + Vector2i(dx, dy)
-			if cs.map.in_bounds(p) and cs.map.is_walkable(p) and cs.map.portal_at(p).is_empty() and not at.has(p):
-				if not JsonUtil.get_bool(hd, "hidden"):  # 숨은 함정은 원래 바닥처럼 보인다
-					cs.map.set_tile(p, JsonUtil.get_str(hd, "tile"))
-				at[p] = group
-				(group["cells"] as Array).append(p)
+	group["cells"] = fit_cells(cs, c)
+	for p: Vector2i in group["cells"]:
+		if not JsonUtil.get_bool(hd, "hidden"):  # 숨은 함정은 원래 바닥처럼 보인다
+			cs.map.set_tile(p, JsonUtil.get_str(hd, "tile"))
+		at[p] = group
+
+
+## c 둘레 3×3에서 c와 같은 타일로 4방향 이어진, 걸을 수 있는 칸(포탈·다른 묶음 제외). c가 맞지 않으면 빈 배열.
+func fit_cells(cs: ExploreSession, c: Vector2i) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var base := cs.map.tile_id_at(c)
+	var ok := func(p: Vector2i) -> bool:
+		return maxi(absi(p.x - c.x), absi(p.y - c.y)) <= 1 and cs.map.in_bounds(p) and cs.map.is_walkable(p) \
+			and cs.map.tile_id_at(p) == base and cs.map.portal_at(p).is_empty() and not at.has(p)
+	if not ok.call(c):
+		return out
+	out.append(c)
+	var head := 0
+	while head < out.size():
+		var p := out[head]
+		head += 1
+		for d in FloorMap.DIRS4:
+			if not out.has(p + d) and ok.call(p + d):
+				out.append(p + d)
+	return out
 
 
 ## 칸에 들어섰다. 위험이 있었으면 판정 결과(true = 무사히 지남), 없으면 null.

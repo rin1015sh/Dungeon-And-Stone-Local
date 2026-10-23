@@ -53,6 +53,28 @@ func test_chapters_are_walkable_and_anchored() -> void:
 			assert_eq(run.hidden.at.size(), JsonUtil.get_array(run.chapters()[i], "hidden").size(), "히든 피스가 다 놓인다: " + where)
 
 
+## 함정·위험 묶음은 설계도 바닥 무늬에 맞물린다(사용자 2026-10-23): 묶음 칸은 모두 가운데 칸과 같은 설계도 바닥(카펫·홈·계단을 넘지 않는다),
+## 한 칸짜리 묶음은 없다.
+func test_hazards_fit_floor_pattern() -> void:
+	for rid: String in db.get_collection("rifts"):
+		var cs := _enter(rid)
+		var run := cs.rift_run
+		for i in run.chapters().size():
+			if i > 0:
+				cs = run.build_chapter(i)
+			var bp := FloorMapFile.read(JsonUtil.get_str(JsonUtil.get_dict(run.chapters()[i], "map"), "blueprint"))
+			var legend := JsonUtil.get_dict(bp, "legend")
+			var rows := JsonUtil.get_array(bp, "rows")
+			var tile_of := func(q: Vector2i) -> String:
+				return str(legend.get(str(rows[q.y])[q.x], JsonUtil.get_str(bp, "floor")))
+			for p: Vector2i in cs.map.anchors.get("hazards", []):
+				var cells: Array = run.hazards.at[p]["cells"]
+				var where := "%s %d챕터 %s" % [rid, i + 1, p]
+				assert_true(cells.size() >= 2, "한 칸짜리 함정이 아니다 " + where)
+				for q: Vector2i in cells:
+					assert_eq(tile_of.call(q), tile_of.call(p), "묶음 칸 %s은 가운데와 같은 바닥 %s" % [q, where])
+
+
 ## 균열은 시야 제한 없음(사용자 2026-10-18) — 챕터 지도 전체가 보일 만큼 넓다.
 func test_rift_vision_unlimited() -> void:
 	for rid: String in db.get_collection("rifts"):
