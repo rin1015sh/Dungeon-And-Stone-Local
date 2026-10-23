@@ -24,6 +24,8 @@
     "essences": {"dir": "essences"},
     "skills": {"dir": "skills"},
     "items": {"dir": "items"},
+    "materials": {"file": "materials.json"},
+    "item_types": {"file": "item_types.json"},
     "floors": {"dir": "floors"},
     "rifts": {"dir": "rifts"},
     "riddles": {"dir": "riddles"},

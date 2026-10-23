@@ -336,13 +336,13 @@ func _inventory_flow() -> void:
 	await _seconds(0.3)
 	_expect(is_equal_approx(s.clock.total_hours, t0), "메뉴가 열린 동안 시계가 그대로")
 	var inv := menu.inventory()
-	pc.inventory.add("steel_spear")
+	pc.inventory.add("steel_greatsword")
 	inv.refresh()
 	inv.cursor_to_cell(Vector2i(pc.inventory.stacks()[pc.inventory.stacks().size() - 1]["pos"]))
 	await _action("menu_confirm")
 	_expect(_has_node_named(menu, "ChoicePopup") and inv.busy(), "Enter → 할 일 고르기 창")
 	await _action("menu_confirm")  # 첫 칸 = 장착한다
-	_expect(pc.equipment.item_in("main_hand") == "steel_spear" and pc.inventory.count("iron_mace") == 1, "Enter·Enter로 창 장착, 철퇴는 가방으로")
+	_expect(pc.equipment.item_in("main_hand") == "steel_greatsword" and pc.inventory.count("iron_mace") == 1, "Enter·Enter로 대검 장착, 철퇴는 가방으로")
 	_expect(pc.equipment.is_empty("off_hand"), "양손 무기면 방패가 빠진다")
 	await _frames(1)
 	inv.cursor_to_slot("feet")
@@ -842,7 +842,7 @@ func _city_flow() -> void:
 	var shop_panel := fv.find_children("*", "ShopPanel", true, false)
 	await _action("menu_back")
 	_expect(city.facility_view() == fv and (shop_panel[0] as ShopPanel).mode == "buy", "도시에서는 Backspace가 아무 일도 하지 않는다")
-	_press(fv, Strings.t("menu.back"))  # 목록 맨 끝 돌아가기 → 탭
+	(shop_panel[0] as ShopPanel).back_to_tabs()  # 목록 맨 끝 돌아가기 → 탭(목록이 한 쪽보다 길어 돌아가기는 다음 쪽에 있다)
 	await _frames(1)
 	await _action("menu_down")
 	await _action("menu_confirm")  # 판매 탭

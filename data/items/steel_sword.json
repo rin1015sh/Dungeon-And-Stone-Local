@@ -1,23 +1,19 @@
 {
   "id": "steel_sword",
   "name_ko": "강철 검",
+  "forge": {
+    "type": "sword",
+    "material": "steel"
+  },
   "category": "weapon",
   "size": [
     1,
     3
   ],
   "stack": 1,
-  "price": 2000,
   "icon": "sword",
   "color": "#b8bcc4",
-  "rarity": "common",
   "desc_ko": "평범한 강철 검. 날이 서 있는 동안은 믿을 만하다.",
-  "equip": {
-    "slot": "main_hand",
-    "weapon": {
-      "damage_type": "slash",
-      "attack": 10
-    }
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 sword × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

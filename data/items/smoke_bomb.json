@@ -1,0 +1,23 @@
+{
+  "id": "smoke_bomb",
+  "name_ko": "연막탄",
+  "category": "tool",
+  "price": 4000,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "apply_status",
+      "status": "smoke_cover"
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "bomb",
+  "color": "#707070",
+  "rarity": "common",
+  "source": "placeholder"
+}

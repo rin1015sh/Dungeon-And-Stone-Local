@@ -62,16 +62,16 @@ func test_start_equipment_and_modifiers() -> void:
 	var bare := _pc("warrior")
 	for s in Equipment.SLOTS:
 		bare.equipment.unequip(bare.stats, s)
-	assert_near(pc.stats.get_value("p_res") - bare.stats.get_value("p_res"), 3.0 + 3.0 + 1.0, 0.001, "방패 3 + 누빔 3 + 허리띠 1")
+	assert_near(pc.stats.get_value("p_res") - bare.stats.get_value("p_res"), 4.0 + 2.0 + 1.0 + 1.0, 0.001, "참나무 방패 4 + 누비 2 + 허리띠 1 + 철퇴 1(아이템 공식)")
 	assert_true(pc.inventory.money > 0, "시작 스톤")
 
 
 func test_two_handed_and_rings() -> void:
 	var pc := _pc("warrior")
-	pc.inventory.add("steel_spear")
+	pc.inventory.add("steel_greatsword")
 	var i := pc.inventory.stacks().size() - 1
-	assert_true(InventoryActions.equip_stack(pc, i), "양손 창 장착")
-	assert_eq(pc.equipment.item_in("main_hand"), "steel_spear")
+	assert_true(InventoryActions.equip_stack(pc, i), "양손 대검 장착")
+	assert_eq(pc.equipment.item_in("main_hand"), "steel_greatsword")
 	assert_true(pc.equipment.is_empty("off_hand"), "양손이면 보조 칸이 빈다")
 	assert_eq(pc.inventory.count("iron_mace"), 1, "철퇴는 가방으로")
 	assert_eq(pc.inventory.count("wooden_shield"), 1, "방패도 가방으로")

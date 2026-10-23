@@ -1517,5 +1517,7 @@
     },
     "battle_only": true,
     "source": "placeholder"
-  }
+  },
+  {"id": "smoke_cover", "name_ko": "연막", "kind": "buff", "duration": {"amount": 2, "unit": "turn"}, "flee_bonus": 0.3, "source": "placeholder", "notes": "연막탄(2026-10-23): 도주 확률 +30%p(BattleRules.flee_chance — 상태 키 flee_bonus)"},
+  {"id": "whetted", "name_ko": "벼린 날", "kind": "buff", "duration": {"amount": 3, "unit": "hour"}, "modifiers": [{"target": "dmg_dealt:physical", "percent": 0.1}], "source": "placeholder", "notes": "숫돌(2026-10-23): 3시간 동안 주는 물리 피해 +10%"}
 ]

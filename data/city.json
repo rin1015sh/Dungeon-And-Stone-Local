@@ -202,7 +202,14 @@
       "ration",
       "torch",
       "minor_potion",
-      "medium_potion"
+      "medium_potion",
+      "greater_potion",
+      "soul_potion",
+      "antidote",
+      "bandage",
+      "smoke_bomb",
+      "whetstone",
+      "lantern"
     ],
     "sell_ratio": 0.5,
     "accepts_magic_stones": true,

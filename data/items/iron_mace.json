@@ -1,23 +1,19 @@
 {
   "id": "iron_mace",
   "name_ko": "철퇴",
+  "forge": {
+    "type": "mace",
+    "material": "steel"
+  },
   "category": "weapon",
   "size": [
     1,
     3
   ],
   "stack": 1,
-  "price": 1500,
   "icon": "mace",
   "color": "#8d8d92",
-  "rarity": "common",
   "desc_ko": "쇠뭉치를 박은 곤봉. 단단한 것을 깨는 데 좋다.",
-  "equip": {
-    "slot": "main_hand",
-    "weapon": {
-      "damage_type": "blunt",
-      "attack": 10
-    }
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 mace × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

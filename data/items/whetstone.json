@@ -1,0 +1,22 @@
+{
+  "id": "whetstone",
+  "name_ko": "숫돌",
+  "category": "tool",
+  "price": 800,
+  "stack": 5,
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "apply_status",
+      "status": "whetted"
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "stone",
+  "color": "#8a8a80",
+  "rarity": "common",
+  "source": "placeholder"
+}

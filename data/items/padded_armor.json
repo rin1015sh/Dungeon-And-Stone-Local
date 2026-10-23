@@ -1,29 +1,19 @@
 {
   "id": "padded_armor",
   "name_ko": "누빔 갑옷",
+  "forge": {
+    "type": "padded",
+    "material": "linen"
+  },
   "category": "armor",
   "size": [
     2,
     3
   ],
   "stack": 1,
-  "price": 1200,
   "icon": "armor",
   "color": "#6b6152",
-  "rarity": "common",
   "desc_ko": "천을 여러 겹 누빈 갑옷. 무겁고 덥다.",
-  "equip": {
-    "slot": "body",
-    "modifiers": [
-      {
-        "target": "p_res",
-        "flat": 3
-      },
-      {
-        "target": "agi",
-        "flat": -1
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 padded × 소재 linen로 계산한다(이 파일의 값 없음)."
 }

@@ -15,6 +15,7 @@ static func run(v: ValidatorBase) -> void:
 	_skills(v)
 	_essences(v)
 	_items(v)
+	ItemPoolRules.run(v)
 
 
 static func _monsters(v: ValidatorBase) -> void:

@@ -78,6 +78,7 @@ static func flee_chance(b: Battle, c: Combatant) -> float:
 		pen += Passives.sum(o.actor, "flee_penalty")
 	var k := float(b.db.bal("combat.flee_base", 0.5)) \
 		+ (_avg_agi(b.side_units(c.side)) - _avg_agi(b.opponents(c))) * float(b.db.bal("combat.flee_agi_coef", 0.02))
+	k += c.actor.statuses.sum_key("flee_bonus")  # 연막(연막탄)
 	return clampf(k - pen, float(b.db.bal("combat.flee_min", 0.1)), float(b.db.bal("combat.flee_max", 0.9)))
 
 

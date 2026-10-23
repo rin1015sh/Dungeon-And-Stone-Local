@@ -1,0 +1,27 @@
+{
+  "id": "soul_potion",
+  "name_ko": "영혼 포션",
+  "category": "potion",
+  "price": 6000,
+  "stack": 10,
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "soul",
+      "amount": 15
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#4060c0",
+  "rarity": "common",
+  "source": "placeholder"
+}

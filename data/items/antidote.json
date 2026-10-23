@@ -1,0 +1,26 @@
+{
+  "id": "antidote",
+  "name_ko": "해독제",
+  "category": "potion",
+  "price": 1500,
+  "stack": 10,
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "poison"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#60a050",
+  "rarity": "common",
+  "source": "placeholder"
+}

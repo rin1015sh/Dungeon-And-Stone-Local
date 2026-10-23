@@ -1,25 +1,19 @@
 {
   "id": "leather_armor",
   "name_ko": "가죽 갑옷",
+  "forge": {
+    "type": "leather_armor",
+    "material": "tanned"
+  },
   "category": "armor",
   "size": [
     2,
     3
   ],
   "stack": 1,
-  "price": 1400,
   "icon": "armor",
   "color": "#7a5a3a",
-  "rarity": "common",
   "desc_ko": "무두질한 가죽 조끼. 움직이기 편하다.",
-  "equip": {
-    "slot": "body",
-    "modifiers": [
-      {
-        "target": "p_res",
-        "flat": 2
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 leather_armor × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

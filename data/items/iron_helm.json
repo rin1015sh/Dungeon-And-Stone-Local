@@ -1,25 +1,19 @@
 {
   "id": "iron_helm",
   "name_ko": "철 투구",
+  "forge": {
+    "type": "helm",
+    "material": "steel"
+  },
   "category": "armor",
   "size": [
     2,
     2
   ],
   "stack": 1,
-  "price": 1100,
   "icon": "helmet",
   "color": "#8d9097",
-  "rarity": "common",
   "desc_ko": "이마와 정수리를 지키는 투구. 횃불을 꽂을 홈이 있다.",
-  "equip": {
-    "slot": "head",
-    "modifiers": [
-      {
-        "target": "p_res",
-        "flat": 2
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 helm × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

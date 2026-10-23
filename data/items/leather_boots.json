@@ -1,25 +1,19 @@
 {
   "id": "leather_boots",
   "name_ko": "가죽 장화",
+  "forge": {
+    "type": "boots",
+    "material": "tanned"
+  },
   "category": "armor",
   "size": [
     2,
     2
   ],
   "stack": 1,
-  "price": 450,
   "icon": "boots",
   "color": "#5d4330",
-  "rarity": "common",
   "desc_ko": "발목까지 오는 장화. 소리가 덜 난다.",
-  "equip": {
-    "slot": "feet",
-    "modifiers": [
-      {
-        "target": "agi",
-        "flat": 1
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 boots × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

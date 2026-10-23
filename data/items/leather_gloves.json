@@ -1,25 +1,19 @@
 {
   "id": "leather_gloves",
   "name_ko": "가죽 장갑",
+  "forge": {
+    "type": "gloves",
+    "material": "tanned"
+  },
   "category": "armor",
   "size": [
     2,
     2
   ],
   "stack": 1,
-  "price": 350,
   "icon": "gloves",
   "color": "#6e5038",
-  "rarity": "common",
   "desc_ko": "손이 미끄러지지 않는다.",
-  "equip": {
-    "slot": "hands",
-    "modifiers": [
-      {
-        "target": "str",
-        "flat": 1
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 gloves × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

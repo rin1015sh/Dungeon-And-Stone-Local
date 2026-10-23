@@ -1,31 +1,19 @@
 {
   "id": "hunting_bow",
   "name_ko": "사냥 활",
+  "forge": {
+    "type": "bow",
+    "material": "oak"
+  },
   "category": "weapon",
   "size": [
     2,
     3
   ],
   "stack": 1,
-  "price": 1800,
   "icon": "bow",
   "color": "#8a6a44",
-  "rarity": "common",
   "desc_ko": "짐승을 잡던 활. 어둠 속에서는 겨눌 곳이 마땅치 않다.",
-  "equip": {
-    "slot": "main_hand",
-    "weapon": {
-      "damage_type": "pierce",
-      "attack": 9,
-      "ranged": true
-    },
-    "two_handed": true,
-    "modifiers": [
-      {
-        "target": "agi",
-        "flat": 1
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 bow × 소재 oak로 계산한다(이 파일의 값 없음)."
 }

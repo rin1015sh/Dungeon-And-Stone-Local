@@ -1,0 +1,27 @@
+{
+  "id": "lantern",
+  "name_ko": "랜턴",
+  "category": "light",
+  "price": 25000,
+  "stack": 1,
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "light_source",
+      "radius_m": 9.0,
+      "hours": 120
+    }
+  ],
+  "tags": [
+    "light"
+  ],
+  "size": [
+    1,
+    2
+  ],
+  "icon": "lantern",
+  "color": "#c09040",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "아이템 풀(2026-10-23): 횃불보다 밝고 오래 탄다(횃불 7m·72시간). 램프 기름(다시 채우기)은 광원 규칙에 끄기·채우기가 없어 뺐다"
+}

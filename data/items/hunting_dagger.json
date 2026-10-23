@@ -1,29 +1,19 @@
 {
   "id": "hunting_dagger",
   "name_ko": "사냥용 단검",
+  "forge": {
+    "type": "dagger",
+    "material": "steel"
+  },
   "category": "weapon",
   "size": [
     1,
     2
   ],
   "stack": 1,
-  "price": 600,
   "icon": "dagger",
   "color": "#9da1a8",
-  "rarity": "common",
   "desc_ko": "가죽을 벗길 때 쓰던 칼. 급할 때는 찌를 수도 있다.",
-  "equip": {
-    "slot": "main_hand",
-    "weapon": {
-      "damage_type": "pierce",
-      "attack": 7
-    },
-    "modifiers": [
-      {
-        "target": "agi",
-        "flat": 1
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 dagger × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

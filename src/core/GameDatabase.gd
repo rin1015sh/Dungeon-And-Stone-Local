@@ -54,6 +54,7 @@ func load_all(root: String = "res://data") -> bool:
 		if spec.has("dir"):
 			for path: String in JsonUtil.list_json(root.path_join(str(spec["dir"]))):
 				_load_entries(name, path)
+	ItemForge.forge_all(collections, singletons.get("balance", {}))  # 종류 × 소재 장비(아이템 공식)
 	rebuild_index()
 	return load_errors.is_empty()
 

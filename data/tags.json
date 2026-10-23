@@ -90,6 +90,8 @@
   "rarities": [
     {"id": "common", "name_ko": "평범한", "color": "#c9c0b6"},
     {"id": "fine", "name_ko": "좋은", "color": "#7fae6a"},
+    {"id": "rare", "name_ko": "귀한", "color": "#5a8fd0"},
+    {"id": "precious", "name_ko": "전설적인", "color": "#b070d0"},
     {"id": "numbers", "name_ko": "넘버스", "color": "#c9a24a"},
     {"id": "floor_relic", "name_ko": "계층보구", "color": "#d0603a"}
   ],

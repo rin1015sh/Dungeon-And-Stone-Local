@@ -2,7 +2,7 @@ extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
-## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨
+## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨
 ##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
 ##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
@@ -13,7 +13,7 @@ extends Node
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=character|inventory|bestiary = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
-##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다)
+##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
@@ -124,6 +124,10 @@ func _run() -> void:
 			ps.parties.drop_corpse(ps, FieldRoutes.random_cell_near(ps.map, ps.rng, ps.pos, 4, seen), false)
 			ps.refresh_view()
 			await _frames(4)
+		if _args.has("give"):  # --give=id,id: 가방에 그 아이템들(아이템 그림 확인)
+			explore.session.player.inventory = Inventory.new(explore.session.db, 12, 8)
+			for gid in str(_args["give"]).split(","):
+				explore.session.player.inventory.add(gid)
 		if _args.has("loot"):
 			var pc := explore.session.player
 			pc.inventory.add("magic_stone_9", 7)
@@ -325,6 +329,10 @@ func _city(city: CityScreen) -> void:
 			city.facility_view()._choose(str(_args["activity"]))
 			if name.is_empty():
 				push_warning("활동 없음: " + str(_args["activity"]))
+			if _args.has("tab"):  # --tab=buy|sell: 상점·대장간 창구의 그 탭을 연다
+				await _frames(2)
+				for sp: Node in city.find_children("*", "ShopPanel", true, false):
+					(sp as ShopPanel).open_tab(str(_args["tab"]))
 	if _args.has("debug"):
 		city.debug_panel().visible = true
 	if _args.has("street"):

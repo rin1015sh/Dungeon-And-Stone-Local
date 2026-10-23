@@ -1,0 +1,28 @@
+{
+  "id": "bandage",
+  "name_ko": "붕대",
+  "category": "tool",
+  "price": 400,
+  "stack": 10,
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "bleeding"
+    },
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 10
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "pouch",
+  "color": "#e0d8c8",
+  "rarity": "common",
+  "source": "placeholder"
+}

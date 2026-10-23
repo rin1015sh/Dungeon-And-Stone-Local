@@ -1,25 +1,19 @@
 {
   "id": "leather_hood",
   "name_ko": "가죽 두건",
+  "forge": {
+    "type": "hood",
+    "material": "tanned"
+  },
   "category": "armor",
   "size": [
     2,
     2
   ],
   "stack": 1,
-  "price": 400,
   "icon": "hood",
   "color": "#5f5446",
-  "rarity": "common",
   "desc_ko": "머리와 목을 덮는 두건.",
-  "equip": {
-    "slot": "head",
-    "modifiers": [
-      {
-        "target": "p_res",
-        "flat": 1
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 hood × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

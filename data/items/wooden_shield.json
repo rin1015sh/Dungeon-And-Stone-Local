@@ -1,25 +1,19 @@
 {
   "id": "wooden_shield",
   "name_ko": "나무 방패",
+  "forge": {
+    "type": "shield",
+    "material": "oak"
+  },
   "category": "armor",
   "size": [
     2,
     2
   ],
   "stack": 1,
-  "price": 900,
   "icon": "shield",
   "color": "#7a5a3a",
-  "rarity": "common",
   "desc_ko": "판자에 쇠테를 두른 방패.",
-  "equip": {
-    "slot": "off_hand",
-    "modifiers": [
-      {
-        "target": "p_res",
-        "flat": 3
-      }
-    ]
-  },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 shield × 소재 oak로 계산한다(이 파일의 값 없음)."
 }

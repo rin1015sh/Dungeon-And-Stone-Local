@@ -2,8 +2,8 @@ class_name ItemIconPainter
 extends RefCounted
 ## 아이템 그림(스프라이트가 없을 때의 임시 도형). 아이템 icon 종류 + color로 rect 안에 그린다.
 ## 스프라이트(items/<id>.json sprite)가 있으면 그것을 쓴다.
-## 종류: sword mace spear dagger bow shield armor cloak hood helmet gloves belt boots ring amulet
-##       potion food bread torch stone scroll pouch
+## 종류: sword mace spear dagger bow axe hammer staff crossbow shield armor cloak hood helmet gloves belt boots ring amulet
+##       potion food bread torch lantern stone scroll pouch
 
 
 static func draw(c: CanvasItem, db: GameDatabase, item_id: String, r: Rect2, alpha: float = 1.0) -> void:
@@ -55,6 +55,26 @@ static func paint(c: CanvasItem, kind: String, r: Rect2, col: Color) -> void:
 				pts.append(Vector2(x + w * (0.3 + 0.45 * sin(t * PI)), y + h * t))
 			c.draw_polyline(pts, col, maxf(2.0, w * 0.08))
 			c.draw_line(Vector2(x + w * 0.3, y), Vector2(x + w * 0.3, y + h), Color(0.85, 0.82, 0.75, col.a), 1.0)
+		"axe", "hammer":
+			c.draw_rect(Rect2(cx - w * 0.06, y + h * 0.12, w * 0.12, h * 0.88), Color(0.45, 0.32, 0.2, col.a))
+			if kind == "axe":
+				c.draw_colored_polygon(PackedVector2Array([Vector2(cx + w * 0.04, y + h * 0.1), Vector2(cx + w * 0.42, y + h * 0.02),
+					Vector2(cx + w * 0.42, y + h * 0.4), Vector2(cx + w * 0.04, y + h * 0.3)]), light)
+				c.draw_line(Vector2(cx + w * 0.42, y + h * 0.02), Vector2(cx + w * 0.42, y + h * 0.4), dark, 1.0)
+			else:
+				c.draw_rect(Rect2(cx - w * 0.36, y + h * 0.06, w * 0.72, h * 0.24), col)
+				c.draw_rect(Rect2(cx - w * 0.36, y + h * 0.06, w * 0.72, h * 0.06), light)
+		"staff":
+			c.draw_line(Vector2(cx + w * 0.1, y + h * 0.15), Vector2(cx - w * 0.1, y + h), col, maxf(2.0, w * 0.1))
+			c.draw_circle(Vector2(cx + w * 0.12, y + h * 0.12), w * 0.16, light)
+		"crossbow":
+			c.draw_rect(Rect2(cx - w * 0.06, y + h * 0.2, w * 0.12, h * 0.75), Color(0.45, 0.32, 0.2, col.a))
+			c.draw_arc(Vector2(cx, y + h * 0.42), w * 0.42, PI * 1.1, PI * 1.9, 12, col, maxf(2.0, w * 0.08))
+			c.draw_line(Vector2(cx - w * 0.4, y + h * 0.3), Vector2(cx + w * 0.4, y + h * 0.3), Color(0.85, 0.82, 0.75, col.a), 1.0)
+		"lantern":
+			c.draw_rect(Rect2(cx - w * 0.26, y + h * 0.3, w * 0.52, h * 0.6), dark)
+			c.draw_rect(Rect2(cx - w * 0.18, y + h * 0.36, w * 0.36, h * 0.46), Color(1.0, 0.75, 0.35, col.a))
+			c.draw_arc(Vector2(cx, y + h * 0.28), w * 0.16, PI, TAU, 10, col, 2.0)
 		"shield":
 			var pts := PackedVector2Array([Vector2(x + w * 0.1, y + h * 0.08), Vector2(x + w * 0.9, y + h * 0.08),
 				Vector2(x + w * 0.9, y + h * 0.5), Vector2(cx, y + h * 0.95), Vector2(x + w * 0.1, y + h * 0.5)])

@@ -1,0 +1,31 @@
+{
+  "id": "greater_potion",
+  "name_ko": "상급 포션",
+  "category": "potion",
+  "price": 20000,
+  "stack": 10,
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 150
+    },
+    {
+      "type": "remove_status",
+      "status": "bleeding"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#d04060",
+  "rarity": "fine",
+  "source": "placeholder"
+}

@@ -1,0 +1,649 @@
+[
+  {
+    "id": "steel",
+    "name_ko": "강철",
+    "tier": 1,
+    "kind": "metal",
+    "color": "#b8bcc4",
+    "trait": {},
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 1단계 금속. 기준"
+  },
+  {
+    "id": "lightium",
+    "name_ko": "라이티늄",
+    "tier": 2,
+    "kind": "metal",
+    "color": "#eef0f2",
+    "trait": {
+      "agi_pen": 0.5
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 강철보다 2배 가볍고 단단한 흰 금속 — 민첩 감소 절반"
+  },
+  {
+    "id": "airilje",
+    "name_ko": "아이릴제",
+    "tier": 3,
+    "kind": "metal",
+    "color": "#c8d4dc",
+    "trait": {
+      "weapon_mods": [
+        {
+          "target": "dmg_dealt:weapon",
+          "percent": 0.1
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 미스릴+강철 합금, 트롤 가죽도 벤다 — 무기면 그 무기 피해 유형으로 주는 피해 +10%"
+  },
+  {
+    "id": "idium",
+    "name_ko": "아이디움",
+    "tier": 3,
+    "kind": "metal",
+    "color": "#7a7e86",
+    "trait": {
+      "armor_mods": [
+        {
+          "target": "dmg_taken:physical",
+          "percent": -0.05
+        }
+      ]
+    },
+    "price_mult": 0.9,
+    "source": "original",
+    "notes": "원작 — 3단계 금속 — 방어구·방패면 받는 물리 피해 −5%"
+  },
+  {
+    "id": "moonstone",
+    "name_ko": "월광석",
+    "tier": 4,
+    "kind": "metal",
+    "color": "#d8dcf0",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_dark",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 아크와 부딪혀도 몇 번은 버티는 내구 — 어둠 내성 +3(내구도 규칙이 생기면 내구 ×2)"
+  },
+  {
+    "id": "orichalcum",
+    "name_ko": "오리하르콘",
+    "tier": 4,
+    "kind": "metal",
+    "color": "#d0a050",
+    "trait": {
+      "mods": [
+        {
+          "target": "int",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "원작(등급 미상 → 4단계 가정) — 마력이 잘 통한다 — 정신력 +2"
+  },
+  {
+    "id": "mithril",
+    "name_ko": "미스릴",
+    "tier": 5,
+    "kind": "metal",
+    "color": "#c0e0f0",
+    "trait": {
+      "mods": [
+        {
+          "target": "m_res",
+          "flat": 2
+        }
+      ],
+      "agi_pen": 0.5
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 5단계 금속, 가볍다 — 민첩 감소 절반·항마력 +2"
+  },
+  {
+    "id": "adamantium",
+    "name_ko": "아다만티움",
+    "tier": 5,
+    "kind": "metal",
+    "color": "#4a4e58",
+    "trait": {
+      "armor_mods": [
+        {
+          "target": "dmg_taken:magical",
+          "percent": -0.5
+        }
+      ],
+      "agi_pen": 1.5,
+      "atk": 1.1
+    },
+    "price_mult": 1.1,
+    "source": "original",
+    "notes": "원작 — 무겁다(민첩 감소 ×1.5) — 방어구면 받는 마법(속성) 피해 −50%, 무기면 공격력 ×1.1"
+  },
+  {
+    "id": "mystium",
+    "name_ko": "미스티움",
+    "tier": 6,
+    "kind": "metal",
+    "color": "#e0d0ff",
+    "trait": {
+      "mods": [
+        {
+          "target": "str",
+          "flat": 1
+        },
+        {
+          "target": "agi",
+          "flat": 1
+        },
+        {
+          "target": "p_res",
+          "flat": 1
+        },
+        {
+          "target": "m_res",
+          "flat": 1
+        },
+        {
+          "target": "int",
+          "flat": 1
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 왕가에 납품되는 6단계 금속 — 주 스탯 모두 +1"
+  },
+  {
+    "id": "ark",
+    "name_ko": "아크",
+    "tier": 6,
+    "kind": "metal",
+    "color": "#8ab0d0",
+    "trait": {
+      "mods": [
+        {
+          "target": "dmg_taken:magical",
+          "percent": -0.3
+        }
+      ]
+    },
+    "price_mult": 2.0,
+    "source": "original",
+    "notes": "원작 — 청은색, 마법의 카운터 — 받는 마법 피해 −30%. 용인만 다룬다(살 수 없다)",
+    "buyable": false
+  },
+  {
+    "id": "tanned",
+    "name_ko": "무두질 가죽",
+    "tier": 1,
+    "kind": "leather",
+    "color": "#7a5a3a",
+    "trait": {},
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 1단계 가죽. 기준"
+  },
+  {
+    "id": "wyvern",
+    "name_ko": "와이번 가죽",
+    "tier": 2,
+    "kind": "leather",
+    "color": "#5a6a4a",
+    "trait": {
+      "mods": [
+        {
+          "target": "agi",
+          "flat": 1
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 2단계 가죽 — 민첩 +1"
+  },
+  {
+    "id": "troll_hide",
+    "name_ko": "트롤 가죽",
+    "tier": 3,
+    "kind": "leather",
+    "color": "#5e6a54",
+    "trait": {
+      "mods": [
+        {
+          "target": "natural_regen",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작(원작에 질긴 가죽으로 나옴) — 자연재생력 +2"
+  },
+  {
+    "id": "drake",
+    "name_ko": "드레이크 가죽",
+    "tier": 4,
+    "kind": "leather",
+    "color": "#6a3a3a",
+    "trait": {
+      "mods": [
+        {
+          "target": "m_res",
+          "flat": 2
+        }
+      ],
+      "stat_mult": {
+        "p_res": 0.5,
+        "m_res": 2.0
+      }
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "원작(등급 미상 → 4단계 가정) — 항마력 보정이 크고 물리에 약하다 — 물리내성 증가 ×0.5, 항마력 증가 ×2 +2"
+  },
+  {
+    "id": "ogre",
+    "name_ko": "오우거 가죽",
+    "tier": 5,
+    "kind": "leather",
+    "color": "#7a6a50",
+    "trait": {
+      "mods": [
+        {
+          "target": "max:hp",
+          "flat": 15
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 5단계 가죽 — 생명력 +15"
+  },
+  {
+    "id": "elder_dragon",
+    "name_ko": "고룡 가죽",
+    "tier": 6,
+    "kind": "leather",
+    "color": "#4a2a2a",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_fire",
+          "flat": 5
+        },
+        {
+          "target": "resist_cold",
+          "flat": 5
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 화염·냉기 내성 +5"
+  },
+  {
+    "id": "oak",
+    "name_ko": "참나무",
+    "tier": 1,
+    "kind": "wood",
+    "color": "#8a6a44",
+    "trait": {},
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 1단계 목재. 기준"
+  },
+  {
+    "id": "redwood",
+    "name_ko": "레드우드",
+    "tier": 2,
+    "kind": "wood",
+    "color": "#9a4a32",
+    "trait": {
+      "mods": [
+        {
+          "target": "accuracy",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 2단계 목재 — 명중률 +3"
+  },
+  {
+    "id": "ironwood",
+    "name_ko": "흑철목",
+    "tier": 3,
+    "kind": "wood",
+    "color": "#2e2a28",
+    "trait": {
+      "atk": 1.1
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 쇠처럼 무거운 검은 나무 — 공격력 ×1.1"
+  },
+  {
+    "id": "bortal",
+    "name_ko": "보르탈 나무",
+    "tier": 4,
+    "kind": "wood",
+    "color": "#6a5a7a",
+    "trait": {
+      "mods": [
+        {
+          "target": "soul_regen",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 4단계 목재 — 영혼 재생력 +2"
+  },
+  {
+    "id": "artene",
+    "name_ko": "아르테네목",
+    "tier": 5,
+    "kind": "wood",
+    "color": "#c0a070",
+    "trait": {
+      "stat_mult": {
+        "p_res": 1.2
+      }
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "원작(최상급 선박재 → 5단계 가정) — 엄청 단단하다 — 물리내성 증가 ×1.2"
+  },
+  {
+    "id": "world_tree",
+    "name_ko": "세계수",
+    "tier": 6,
+    "kind": "wood",
+    "color": "#7ab070",
+    "trait": {
+      "mods": [
+        {
+          "target": "natural_regen",
+          "flat": 3
+        },
+        {
+          "target": "soul_regen",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 6단계 목재 — 자연·영혼 재생력 +3"
+  },
+  {
+    "id": "linen",
+    "name_ko": "리넨",
+    "tier": 1,
+    "kind": "cloth",
+    "color": "#b8ae98",
+    "trait": {},
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 1단계 천. 기준"
+  },
+  {
+    "id": "spider_silk",
+    "name_ko": "거미 비단",
+    "tier": 2,
+    "kind": "cloth",
+    "color": "#d8d8e0",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_poison",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 독 내성 +2"
+  },
+  {
+    "id": "frost_wool",
+    "name_ko": "서리 양모",
+    "tier": 3,
+    "kind": "cloth",
+    "color": "#c8dce8",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_cold",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 냉기 내성 +3"
+  },
+  {
+    "id": "moon_silk",
+    "name_ko": "월광 비단",
+    "tier": 4,
+    "kind": "cloth",
+    "color": "#c8c8e8",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_dark",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 월광석 가루를 먹인 비단 — 어둠 내성 +3"
+  },
+  {
+    "id": "spirit_silk",
+    "name_ko": "정령 비단",
+    "tier": 5,
+    "kind": "cloth",
+    "color": "#d0f0e0",
+    "trait": {
+      "mods": [
+        {
+          "target": "soul_regen",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 영혼 재생력 +2"
+  },
+  {
+    "id": "world_fiber",
+    "name_ko": "세계수 섬유",
+    "tier": 6,
+    "kind": "cloth",
+    "color": "#a0d090",
+    "trait": {
+      "mods": [
+        {
+          "target": "natural_regen",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 자연재생력 +3"
+  },
+  {
+    "id": "beast_bone",
+    "name_ko": "짐승 뼈",
+    "tier": 1,
+    "kind": "bone",
+    "color": "#d8cfb8",
+    "trait": {},
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 1단계 뼈. 기준"
+  },
+  {
+    "id": "troll_bone",
+    "name_ko": "트롤 뼈",
+    "tier": 3,
+    "kind": "bone",
+    "color": "#c0b8a0",
+    "trait": {
+      "mods": [
+        {
+          "target": "natural_regen",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 3단계 소재 — 자연재생력 +2"
+  },
+  {
+    "id": "drake_bone",
+    "name_ko": "드레이크 뼈",
+    "tier": 5,
+    "kind": "bone",
+    "color": "#b8a0a0",
+    "trait": {
+      "mods": [
+        {
+          "target": "m_res",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 항마력 +2"
+  },
+  {
+    "id": "quartz",
+    "name_ko": "수정",
+    "tier": 1,
+    "kind": "gem",
+    "color": "#e0e8f0",
+    "trait": {},
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 1단계 보석. 기준"
+  },
+  {
+    "id": "amber",
+    "name_ko": "호박",
+    "tier": 2,
+    "kind": "gem",
+    "color": "#d09030",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_fire",
+          "flat": 2
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 화염 내성 +2"
+  },
+  {
+    "id": "jade",
+    "name_ko": "비취",
+    "tier": 3,
+    "kind": "gem",
+    "color": "#50a070",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_poison",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 독 내성 +3"
+  },
+  {
+    "id": "obsidian",
+    "name_ko": "흑요석",
+    "tier": 4,
+    "kind": "gem",
+    "color": "#302838",
+    "trait": {
+      "mods": [
+        {
+          "target": "resist_dark",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 어둠 내성 +3"
+  },
+  {
+    "id": "bloodstone",
+    "name_ko": "용혈석",
+    "tier": 5,
+    "kind": "gem",
+    "color": "#a02830",
+    "trait": {
+      "mods": [
+        {
+          "target": "affinity_fire",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "placeholder",
+    "notes": "창작 — 화염 감응도 +3"
+  },
+  {
+    "id": "bluestone",
+    "name_ko": "블루스톤",
+    "tier": 6,
+    "kind": "gem",
+    "color": "#3a70c0",
+    "trait": {
+      "mods": [
+        {
+          "target": "soul_regen",
+          "flat": 3
+        },
+        {
+          "target": "affinity_cold",
+          "flat": 3
+        }
+      ]
+    },
+    "price_mult": 1.0,
+    "source": "original",
+    "notes": "원작 — 6층 대해의 최상급 소재 — 영혼 재생력·냉기 감응도 +3"
+  }
+]
