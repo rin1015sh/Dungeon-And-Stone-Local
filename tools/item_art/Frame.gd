@@ -35,3 +35,21 @@ static func poly(ctx: Dictionary, uv: Array) -> PackedVector2Array:
 static func aura(ctx: Dictionary, at: Vector2, r: float) -> void:
 	if ctx.has("aura"):
 		ctx["glows"].append([at, r, ctx["aura"], 0.35])
+
+
+## 굽은 관(점 Vector3 + 반지름)의 윤곽 다각형 — 자루·활대에 무늬를 넣을 때.
+static func tube(pts: Array, rs: Array) -> PackedVector2Array:
+	var left := PackedVector2Array()
+	var right := PackedVector2Array()
+	for k in pts.size():
+		var p: Vector3 = pts[k]
+		var a: Vector3 = pts[maxi(0, k - 1)]
+		var b: Vector3 = pts[mini(pts.size() - 1, k + 1)]
+		var d := Vector2(b.x - a.x, b.y - a.y).normalized()
+		var n := Vector2(-d.y, d.x) * float(rs[k]) * 0.9
+		left.append(Vector2(p.x, p.y) + n)
+		right.append(Vector2(p.x, p.y) - n)
+	var out := PackedVector2Array(left)
+	for k in range(right.size() - 1, -1, -1):
+		out.append(right[k])
+	return out

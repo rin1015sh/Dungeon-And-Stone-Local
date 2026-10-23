@@ -17,6 +17,7 @@ const Hafts := preload("res://tools/item_art/Hafts.gd")
 const Wear := preload("res://tools/item_art/Wear.gd")
 const Wear2 := preload("res://tools/item_art/Wear2.gd")
 const Goods := preload("res://tools/item_art/Goods.gd")
+const Style := preload("res://tools/item_art/Style.gd")
 
 const CELL := 80  ## 칸 하나의 그림 px(가방 칸 38px의 약 2배 — 줄여 쓴다)
 const KIND_OF := {"metal": "metal", "leather": "leather", "wood": "wood", "cloth": "cloth", "bone": "bone", "gem": "metal"}
@@ -77,7 +78,7 @@ static func _ctx(cl: Clay, W: int, H: int, rng: RandomNumberGenerator, it: Dicti
 	var tier := JsonUtil.get_int(mat, "tier", 1)
 	var steel_c := c if kind == "metal" else Color("#7a7c80")
 	var ctx := {"cl": cl, "W": float(W), "H": float(H), "rng": rng, "tier": tier, "kind": kind, "c": c, "glows": [], "lines": [],
-		"mat_id": JsonUtil.get_str(mat, "id")}
+		"mat_id": JsonUtil.get_str(mat, "id"), "style": Style.of(JsonUtil.get_str(mat, "id"))}
 	ctx["m"] = cl.mat(_tone(c, kind), str(KIND_OF.get(kind, "metal")), _shine(c, kind))
 	ctx["steel"] = cl.mat(_tone(steel_c, "metal"), "metal", _shine(steel_c, "metal"))
 	ctx["wood"] = cl.mat(_tone(c, "wood") if kind == "wood" else Color("#4e3626"), "wood")

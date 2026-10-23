@@ -1,6 +1,8 @@
 extends RefCounted
 const F := preload("res://tools/item_art/Frame.gd")
 const Clay := preload("res://tools/monster_art/Clay.gd")
+const Surface := preload("res://tools/item_art/Surface.gd")
+## 소재 무늬·둘레 장식(ctx.style)은 몸판·방패 판에 Surface로 — 가죽 비늘·혹, 천 거미줄·털, 쇠 망치 자국·금테 …
 ## 방패·갑옷(칸을 채우는 물건 — 두 축 좌표 F.Q(u, v)): 소형 방패·방패·대형 방패, 누비 갑옷·로브·가죽 갑옷·사슬 갑옷·판금 갑옷.
 ## 방패 = 주 재질 판 + 쇠 테·징, 갑옷 = 주 재질(천·가죽·쇠) 몸판 + 끈·이음매.
 
@@ -11,6 +13,7 @@ static func buckler(ctx: Dictionary) -> void:
 	var c := F.Q3(ctx, 0.5, 0.5, 0.05)
 	var g := cl.group()
 	cl.ell(g, c, 0.42 * W, 0.42 * W, 0.14 * W, ctx["m"], 2.0)
+	Surface.apply(ctx, g, Surface.circle(Vector2(c.x, c.y), 0.34 * W, 0.34 * W), ctx["style"])
 	cl.ridge(g, _ring(Vector2(c.x, c.y), 0.38 * W, 28), 0.035 * W, 0.02 * W, ctx["steel"] if str(ctx["kind"]) != "metal" else ctx["accent"])
 	cl.bump(g, Vector2(c.x, c.y), 0.13 * W, 0.13 * W, 0.08 * W, ctx["accent"], 1.0)
 	F.aura(ctx, Vector2(c.x, c.y), W * 0.5)
@@ -27,6 +30,7 @@ static func shield(ctx: Dictionary) -> void:
 		var y := 0.4 + sin(a) * (0.32 if sin(a) < 0.0 else 0.55)
 		poly.append(F.Q(ctx, x, clampf(y, 0.08, 0.96)))
 	cl.slab(g, poly, 0.03 * W, 0.12 * W, ctx["m"], 2.0, 0.3 * W)
+	Surface.apply(ctx, g, poly, ctx["style"])
 	var rim: int = ctx["steel"] if str(ctx["kind"]) != "metal" else ctx["accent"]
 	var ring: Array = []
 	for q: Vector2 in poly:
@@ -47,6 +51,7 @@ static func tower(ctx: Dictionary) -> void:
 	var g := cl.group()
 	var poly := F.poly(ctx, [Vector2(0.12, 0.08), Vector2(0.5, 0.04), Vector2(0.88, 0.08), Vector2(0.9, 0.86), Vector2(0.5, 0.97), Vector2(0.1, 0.86)])
 	cl.slab(g, poly, 0.03 * W, 0.14 * W, ctx["m"], 2.0, 0.25 * W)
+	Surface.apply(ctx, g, poly, ctx["style"])
 	var rim: int = ctx["steel"] if str(ctx["kind"]) != "metal" else ctx["accent"]
 	cl.ridge(g, [F.Q(ctx, 0.5, 0.08), F.Q(ctx, 0.5, 0.93)], 0.03 * W, 0.02 * W, rim)
 	cl.ridge(g, [F.Q(ctx, 0.14, 0.45), F.Q(ctx, 0.86, 0.45)], 0.03 * W, 0.02 * W, rim)
@@ -67,7 +72,9 @@ static func padded(ctx: Dictionary) -> void:
 	var cl: Clay = ctx["cl"]
 	var W: float = ctx["W"]
 	var g := cl.group()
-	cl.slab(g, _torso(ctx, 0.22, 0.9), 0.03 * W, 0.16 * W, ctx["m"], 2.0, 0.3 * W)
+	var body := _torso(ctx, 0.22, 0.9)
+	cl.slab(g, body, 0.03 * W, 0.16 * W, ctx["m"], 2.0, 0.3 * W)
+	Surface.apply(ctx, g, body, ctx["style"])
 	for k in 6:  # 누빔 골(가로)
 		var v := 0.22 + k * 0.11
 		cl.groove(g, F.Q(ctx, 0.27, v), F.Q(ctx, 0.73, v), 0.012 * W, 0.022 * W)
@@ -82,6 +89,7 @@ static func robe(ctx: Dictionary) -> void:
 	var poly := F.poly(ctx, [Vector2(0.34, 0.04), Vector2(0.66, 0.04), Vector2(0.9, 0.16), Vector2(0.95, 0.42), Vector2(0.8, 0.44),
 		Vector2(0.78, 0.3), Vector2(0.82, 0.96), Vector2(0.18, 0.96), Vector2(0.22, 0.3), Vector2(0.2, 0.44), Vector2(0.05, 0.42), Vector2(0.1, 0.16)])
 	cl.slab(g, poly, 0.03 * W, 0.14 * W, ctx["m"], 2.0, 0.28 * W)
+	Surface.apply(ctx, g, poly, ctx["style"])
 	cl.carve(g, F.Q(ctx, 0.5, 0.08), 0.12 * W, 0.06 * W, 0.08 * W)  # 목둘레(두건 자리)
 	for k in 4:  # 늘어진 주름
 		var u := 0.3 + k * 0.13
@@ -94,7 +102,9 @@ static func leather_armor(ctx: Dictionary) -> void:
 	var cl: Clay = ctx["cl"]
 	var W: float = ctx["W"]
 	var g := cl.group()
-	cl.slab(g, _torso(ctx, 0.0, 0.86), 0.03 * W, 0.16 * W, ctx["m"], 2.0, 0.3 * W)
+	var body := _torso(ctx, 0.0, 0.86)
+	cl.slab(g, body, 0.03 * W, 0.16 * W, ctx["m"], 2.0, 0.3 * W)
+	Surface.apply(ctx, g, body, ctx["style"])
 	for v: float in [0.32, 0.48, 0.64]:  # 가슴판 이음·끈
 		cl.groove(g, F.Q(ctx, 0.28, v), F.Q(ctx, 0.72, v), 0.01 * W, 0.02 * W)
 	cl.ridge(g, [F.Q(ctx, 0.3, 0.12), F.Q(ctx, 0.7, 0.62)], 0.022 * W, 0.016 * W, ctx["leather"] if str(ctx["kind"]) != "leather" else ctx["dark"])
@@ -108,7 +118,9 @@ static func chainmail(ctx: Dictionary) -> void:
 	var cl: Clay = ctx["cl"]
 	var W: float = ctx["W"]
 	var g := cl.group()
-	cl.slab(g, _torso(ctx, 0.2, 0.9), 0.03 * W, 0.14 * W, ctx["m"], 2.0, 0.3 * W)
+	var body := _torso(ctx, 0.2, 0.9)
+	cl.slab(g, body, 0.03 * W, 0.14 * W, ctx["m"], 2.0, 0.3 * W)
+	Surface.apply(ctx, g, body, {"surface": "none", "trim": ctx["style"]["trim"], "glow": ctx["style"]["glow"]})  # 고리 무늬 위에는 무늬 대신 장식만
 	var H: float = ctx["H"]
 	var step := 0.035 * W
 	var y := H * 0.08
@@ -130,6 +142,7 @@ static func plate(ctx: Dictionary) -> void:
 	var g := cl.group()
 	var breast := F.poly(ctx, [Vector2(0.3, 0.1), Vector2(0.5, 0.15), Vector2(0.7, 0.1), Vector2(0.74, 0.3), Vector2(0.7, 0.58), Vector2(0.3, 0.58), Vector2(0.26, 0.3)])
 	cl.slab(g, breast, 0.05 * W, 0.2 * W, ctx["m"], 2.0, 0.3 * W)
+	Surface.apply(ctx, g, breast, ctx["style"])
 	cl.ridge(g, [F.Q(ctx, 0.5, 0.16), F.Q(ctx, 0.5, 0.56)], 0.02 * W, 0.02 * W, ctx["m"])
 	var gp := cl.group()
 	for s: float in [-1.0, 1.0]:  # 어깨받이
