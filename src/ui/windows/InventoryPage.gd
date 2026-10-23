@@ -339,7 +339,7 @@ func _tip_for() -> Control:
 	return null
 
 
-## 설명은 쪽 왼쪽 바깥(캐릭터 쪽 위)에 커서 높이로 띄운다. 자리가 없으면 오른쪽.
+## 설명은 커서 높이로 띄운다(자리는 _place_tip).
 func _set_tip(tip: Control) -> void:
 	if _tip != null:
 		_tip.queue_free()
@@ -353,15 +353,31 @@ func _set_tip(tip: Control) -> void:
 	_place_tip.call_deferred()
 
 
+## 놓을 자리: 쪽 왼쪽 바깥 → 오른쪽 바깥 → 커서 아이템 왼쪽 → 오른쪽 중 화면 안에 들어가는 첫 곳.
+## 어디에도 안 들어가면 비교 두 장을 세로로 쌓아 다시 찾고, 그래도 없으면 화면 안으로 민다.
 func _place_tip() -> void:
 	if _tip == null or not is_inside_tree():
 		return
-	var sz := _tip.get_combined_minimum_size()
-	_tip.size = sz
 	var gap := float(UiTheme.metric("spacing", 8))
 	var view := get_viewport_rect().size
-	var x := global_position.x - sz.x - gap
-	if x < gap:
-		x = global_position.x + size.x + gap
+	var r := _rect_of(_cursor)
+	r.position += global_position
+	var x := NAN
+	for stack: bool in [false, true]:
+		if stack:
+			if not (_tip is BoxContainer and _tip.get_child_count() > 1):
+				break
+			(_tip as BoxContainer).vertical = true
+		var w := _tip.get_combined_minimum_size().x
+		for c: float in [global_position.x - gap - w, global_position.x + size.x + gap, r.position.x - gap - w, r.end.x + gap]:
+			if c >= gap and c + w <= view.x - gap:
+				x = c
+				break
+		if not is_nan(x):
+			break
+	var sz := _tip.get_combined_minimum_size()
+	_tip.size = sz
+	if is_nan(x):
+		x = clampf(r.end.x + gap, gap, maxf(gap, view.x - sz.x - gap))
 	var y := clampf(_cursor_global().y, gap, maxf(gap, view.y - sz.y - gap))
 	_tip.global_position = Vector2(x, y)

@@ -64,6 +64,7 @@ func setup(u: Combatant, db: GameDatabase, knowers: Array[Knowledge] = []) -> vo
 	_aff = UiTheme.label("", "small", "text_dim")
 	_aff.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_aff.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_aff.clip_text = true
 	add_child(_aff)
 	_read_knowledge()
 
@@ -112,7 +113,19 @@ func place(foot: Vector2, h: float) -> void:
 		var aw := maxf(lw, JsonUtil.get_float(bar, "text_width", 240.0))
 		_aff.size = Vector2(aw, 20)
 		_aff.position = Vector2((w - aw) / 2.0, _bar.end.y + 2.0 if _show_bar else _name.position.y + 20.0)
+		for l: Label in [_name, _status, _aff]:
+			_keep_in(l)
 	queue_redraw()
+
+
+## 이름·상태·상성 줄이 무대(화면) 양옆으로 넘치지 않게 안쪽으로 민다 — 가장자리에 선 좁은 적의 넓은 이름표.
+func _keep_in(l: Label) -> void:
+	var stage := get_parent_control()
+	if stage == null:
+		return
+	var pad := float(UiTheme.metric("spacing", 8))
+	var gx := clampf(position.x + l.position.x, pad, maxf(pad, stage.size.x - l.size.x - pad))
+	l.position.x = gx - position.x
 
 
 func refresh() -> void:

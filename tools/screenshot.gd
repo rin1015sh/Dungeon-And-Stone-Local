@@ -124,8 +124,9 @@ func _run() -> void:
 			ps.parties.drop_corpse(ps, FieldRoutes.random_cell_near(ps.map, ps.rng, ps.pos, 4, seen), false)
 			ps.refresh_view()
 			await _frames(4)
-		if _args.has("give"):  # --give=id,id: 가방에 그 아이템들(아이템 그림 확인)
-			explore.session.player.inventory = Inventory.new(explore.session.db, 12, 8)
+		if _args.has("give"):  # --give=id,id: 가방에 그 아이템들(아이템 그림 확인) — 가방 크기는 기본(--bag=WxH면 그 크기)
+			var bag := str(_args.get("bag", "%dx%d" % [int(explore.session.db.bal("inventory.width", 10)), int(explore.session.db.bal("inventory.height", 6))])).split("x")
+			explore.session.player.inventory = Inventory.new(explore.session.db, int(bag[0]), int(bag[1]))
 			for gid in str(_args["give"]).split(","):
 				explore.session.player.inventory.add(gid)
 		if _args.has("loot"):
