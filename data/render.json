@@ -70,7 +70,7 @@
     "menu_button_width": 260,
     "log_max_lines": 200,
     "hud_panel_width": 360,
-    "debug_panel_width": 300, "riddle_width": 520,
+    "debug_panel_width": 300, "riddle_width": 600,
     "panel_alpha": 0.82,
     "end_delay_sec": 1.2,
     "combat_banner_sec": 1.2, "combat_banner_fade_sec": 0.3, "combat_banner_y": 20, "combat_ai_delay_sec": 0.45,

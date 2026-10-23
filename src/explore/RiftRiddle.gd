@@ -5,8 +5,9 @@ extends RefCounted
 ## 조우 {"riddle": true}(문지기)와 마주치면 전투 대신 수수께끼(ExploreSession.riddle_asked → 화면 RiddleDialog).
 ##   정답 → "pass"(전투 없이 통과) 또는 "weaken"(문지기 약화 상태로 전투, 처치 시 정수 드롭률 ×essence_mult)
 ##   오답 → "wrong"(문지기 강화 상태로 전투)
-## 벽화(RiftHidden mural)를 읽으면 힌트를 하나씩 알게 되고(캐릭터 Knowledge 사실 "riddle:<문항>:<번호>" — 다음 균열에도 남는다),
-## 아는 힌트 수만큼 오답 선택지를 하나씩 지운다(정답은 늘 남는다).
+## 벽화(RiftHidden mural)를 읽으면 힌트를 하나씩 알게 된다(캐릭터 Knowledge 사실 "riddle:<문항>:<번호>" — 다음 균열에도 남는다).
+## 힌트는 선택지를 지우지 않는다 — 대화창에 아는 벽화 장면이 보이고, 문제와 맞춰 보며 플레이어가 직접 고른다
+## (사용자 결정 2026-10-23: 벽화만 보면 저절로 정답만 남아 너무 쉬웠다). 선택지 5개는 입장 때 섞인 순서로 보인다.
 
 const PASS := "pass"
 const WEAKEN := "weaken"
@@ -15,6 +16,7 @@ const WRONG := "wrong"
 var spec: Dictionary = {}
 var data: Dictionary = {}     ## 고른 문항
 var resolved: bool = false
+var _order: Array[int] = []   ## 보여 줄 선택지 순서(입장 때 섞는다 — 자리로 답을 외우지 못하게)
 var _mural_hint: Dictionary = {}  ## 벽화 칸 -> 그 벽화가 보여 준 힌트 번호
 
 
@@ -28,6 +30,9 @@ func _init(db: GameDatabase, p_spec: Dictionary, rng: Rng) -> void:
 	pool.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["id"]) < str(b["id"]))
 	if not pool.is_empty():
 		data = rng.pick(pool)
+	for i in JsonUtil.get_array(data, "choices_ko").size():
+		_order.append(i)
+	rng.shuffle(_order)
 
 
 func is_ready() -> bool:
@@ -65,16 +70,17 @@ func read_mural(pc: PlayerCharacter, at: Vector2i) -> String:
 	return str(hints()[int(_mural_hint[at])])
 
 
-## 보여 줄 선택지 번호들(아는 힌트 수만큼 오답을 앞에서부터 지운다).
-func choices(pc: PlayerCharacter) -> Array[int]:
-	var answer := JsonUtil.get_int(data, "answer")
-	var out: Array[int] = []
-	var drop := known(pc)
-	for i in JsonUtil.get_array(data, "choices_ko").size():
-		if i != answer and drop > 0:
-			drop -= 1
-			continue
-		out.append(i)
+## 보여 줄 선택지 번호들(전부, 섞인 순서).
+func choices() -> Array[int]:
+	return _order.duplicate()
+
+
+## 캐릭터가 벽화에서 본 힌트 글(번호 순서).
+func known_hints(pc: PlayerCharacter) -> Array[String]:
+	var out: Array[String] = []
+	for i in hints().size():
+		if pc.knowledge.knows_fact(_fact(i)):
+			out.append(str(hints()[i]))
 	return out
 
 

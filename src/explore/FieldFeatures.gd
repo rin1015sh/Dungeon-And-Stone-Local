@@ -15,14 +15,13 @@ var _near: Array[Dictionary] = []   ## near가 있는 요소
 
 ## 세션이 만들어질 때(지도·플레이어가 정해진 뒤) 한 번.
 func setup(s: ExploreSession) -> void:
-	var floor_tile := JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor")
 	for f: Dictionary in s.map.features:
 		var def := s.db.get_entry("events", str(f["id"]))
 		if def.is_empty():
 			continue
 		if def.has("hazard"):
 			var hd := JsonUtil.get_dict(def, "hazard").duplicate(true)
-			hazards.add_group(s, hd, f["pos"], floor_tile)
+			hazards.add_group(s, hd, f["pos"])
 			continue
 		var e := {"id": str(f["id"]), "pos": f["pos"], "def": def, "found": not def.has("hidden"), "used": {}, "cleared": false,
 			"noticed": false}

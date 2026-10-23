@@ -99,7 +99,7 @@ func build_chapter(i: int) -> ExploreSession:
 			remaining.append(g)
 	_apply_field_effects()
 	hidden.place(cs, ch, outer.rng)
-	hazards.place(cs, ch, _floor_tile(), outer.rng)
+	hazards.place(cs, ch, outer.rng)
 	var fx := JsonUtil.get_array(ch, "on_enter")
 	if not fx.is_empty():
 		var ctx := EffectContext.new(db, null, outer.player, outer.rng)

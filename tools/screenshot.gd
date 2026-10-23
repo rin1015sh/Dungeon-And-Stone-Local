@@ -9,7 +9,7 @@ extends Node
 ## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --at=x,y: 그 칸으로 순간이동(고정 지도 좌표 — 공동·이벤트 자리 확인), --interact: 그 자리에서 살피기(E), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터(--god = 무적), --mate: 동료를 붙여 행동 정하기 화면, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
 ## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss|<x>,<y>]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
-## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투
+## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다, --murals = 벽화 힌트를 다 본 상태
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다)
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=character|inventory|bestiary = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
@@ -376,6 +376,14 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 				for o: FieldMonsters.Group in explore.session.monsters.groups:  # 캡처하는 동안 전투가 걸리지 않게(쫓지 않음)
 					o.grace_until = explore.session.clock.total_hours + 100.0
 				break
+	if _args.has("trap"):  # --trap: 이 챕터의 첫 함정·위험을 밟아 판정한다(판정 뒤에도 그 자리에 남는지 확인)
+		var hz := explore.session.rift_run.hazards
+		if not hz.at.is_empty():
+			explore.session.relocate(hz.at.keys()[0])
+	if _args.has("murals") and explore.session.rift_run.riddle != null:  # --murals: 수수께끼 벽화 힌트를 모두 본 상태(대화창에 장면이 보인다)
+		var rd := explore.session.rift_run.riddle
+		for i in rd.hints().size():
+			explore.session.player.knowledge.learn_fact(rd._fact(i))
 	if _args.has("engage"):
 		var run := explore.session.rift_run
 		var pick: FieldMonsters.Group = run.remaining[0]

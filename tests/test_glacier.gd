@@ -192,7 +192,7 @@ func test_hazards_in_chapter3() -> void:
 	assert_true(run.hazards.on_step(cs, cell) is bool, "처음 밟으면 판정")
 	assert_false(run.hazards.at.has(cell), "한 번만")
 	assert_eq(run.hazards.on_step(cs, cell), null)
-	assert_true(cs.map.is_walkable(cell) and cs.map.tile_id_at(cell) != tile, "바닥으로 돌아간다")
+	assert_true(cs.map.is_walkable(cell) and cs.map.tile_id_at(cell) == tile, "판정 뒤에도 그 자리에 남는다(걸을 수 있다)")
 	var nimble := Actor.new(db, {"agi": 30})
 	var clumsy := Actor.new(db, {"agi": 2})
 	var chk := {"stat": "agi", "dc": 12}

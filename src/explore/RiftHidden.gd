@@ -61,6 +61,7 @@ func take(cs: ExploreSession, p: Vector2i, floor_tile: String, riddle: RiftRiddl
 	at.erase(p)
 	taken[JsonUtil.get_str(hd, "id")] = true
 	cs.map.set_tile(p, str(under.get(p, floor_tile)))
+	cs.tiles_changed.emit(Rect2i(p, Vector2i.ONE))
 	cs.player.inventory.add(item, 1)
 	cs.message.emit(JsonUtil.get_str(hd, "message", "explore.hidden_found"), {"item": DataNames.entry(cs.db, "items", item)}, "good")
 	cs.refresh_view()

@@ -24,6 +24,7 @@
   5. `godot --headless --path . --quit-after 120` — 메인 씬 스모크
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
 - 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
+- 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
 - 1층 원정 한 번 벌이(헤드리스, 몇 분): `godot --headless --path . --script res://tools/sim_income.gd -- [--seeds=1,2,3] [--hours=60] [--bag=10x6]` → 출처별(몬스터·약탈자·탐험가·동굴 요소) 스톤·정수·요소별 벌이. 값·드롭을 바꿨으면 돌려 보고 `docs/balance/city.md`에 적는다(CT43).
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로> [--procedural]` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과. 1층은 고정 지도라 시드는 시작 위치·무리만 바꾼다(`--procedural` = 고정 지도 무시하고 그 시드로 새로).
 - **1층 고정 지도 굽기**(생성기·`gen` 값을 바꿨으면 필수 — 테스트가 파일과 시드 결과를 비교한다): `godot --headless --path . --script res://tools/bake_floor.gd [-- --seed=<시드>]` → `data/maps/f1_crystal_cave.json`(한 글자 = 한 칸, rows[y][x]). 시드를 바꾸면 층 JSON `fixed_map.seed`도 고친다. **이벤트를 좌표로 놓은 뒤에는 다시 구우면 좌표가 어긋난다.**

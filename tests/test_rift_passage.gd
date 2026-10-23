@@ -114,6 +114,40 @@ func test_finish_drops_kept_chapters() -> void:
 	assert_true(run._kept.is_empty(), "나가면 보관한 챕터를 놓는다")
 
 
+## 지도 가장자리의 트인 칸은 모두 길목 입구다 — 나가는 길처럼 보이는 막다른 가장자리가 없다
+## (녹색 탄광 2챕터 철로가 동쪽 끝으로 열려 있어 그쪽으로 가면 아무 일도 없었다 — 2026-10-23).
+## 넓은 통로는 표시 칸 둘레만이 아니라 입구 어느 칸으로 나가도 넘어간다.
+func test_edge_openings_are_passages() -> void:
+	var ids: Array = db.get_collection("rifts").keys()
+	ids.sort()
+	for id: Variant in ids:
+		var cs := _enter(str(id))
+		var run := cs.rift_run
+		while true:
+			var m := cs.map
+			for y in m.height:
+				for x in m.width:
+					var p := Vector2i(x, y)
+					if (x == 0 or y == 0 or x == m.width - 1 or y == m.height - 1) and m.is_walkable(p):
+						assert_true(RiftPassage.dir_at(m, p, 0) != 0, "%s %d챕터 가장자리 %s가 트였는데 길목이 아니다" % [id, run.chapter + 1, p])
+			if run.is_last_chapter():
+				break
+			run.debug_clear()
+			var req := JsonUtil.get_str(JsonUtil.get_dict(run.chapters()[run.chapter], "exit_requires"), "item")
+			if not req.is_empty():
+				cs.player.inventory.add(req, 1)  # 뿔피리·폭약
+			var mouth: Array = RiftPassage.exit_portal(m)["mouth"]
+			var far: Vector2i = mouth[-1]  # 표시 칸에서 가장 먼 입구 칸
+			var before := run.chapter
+			var next := _step_on(cs, far)
+			assert_true(next != null and run.chapter == before + 1, "%s %d챕터: 입구 끝 칸 %s로 나가도 넘어간다" % [id, before + 1, far])
+			if next == null:
+				break
+			var zone := int(db.bal("rift.passage_zone"))
+			assert_eq(RiftPassage.dir_at(next.map, next.pos, zone), 0, "%s %d챕터 도착 자리는 어느 길목 둘레에도 들지 않는다" % [id, run.chapter + 1])
+			cs = next
+
+
 ## 모든 균열의 챕터 사이 길목은 지도 가장자리에 있다(그 너머로 길이 이어지는 것처럼 — 사용자 요청 2026-10-20).
 func test_every_passage_is_on_map_edge() -> void:
 	for id: Variant in db.get_collection("rifts").keys():

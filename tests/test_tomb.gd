@@ -46,7 +46,7 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 	var cell: Vector2i = hz.at.keys()[0]
 	var group: Dictionary = hz.at[cell]
 	assert_true(JsonUtil.get_bool(group, "hidden"))
-	assert_eq(cs.map.tile_id_at(cell), str((group["under"] as Dictionary)[cell]), "숨은 함정은 원래 바닥처럼 보인다")
+	assert_true(cs.map.tile_id_at(cell) != JsonUtil.get_str(group, "tile"), "숨은 함정은 원래 바닥처럼 보인다")
 	assert_true(cs.map.is_walkable(cell))
 	cs.player.stats.set_base("int", 60.0)
 	var beside := Vector2i(-1, -1)  # 묶음 바로 옆(함정이 아닌 걸을 수 있는 칸)
@@ -74,28 +74,59 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 	assert_near(tank.pool.get_current("hp"), hp, 0.001)
 
 
+## 함정은 판정이 끝나도(해제·발동 모두) 그 자리에 보이는 채로 남고, 칸이 바뀌면 화면에 다시 그리라고 알린다(사용자 요청 2026-10-23).
+func test_traps_stay_visible_after_use() -> void:
+	var cs := _enter(_pc())
+	var hz := cs.rift_run.hazards
+	var changed: Array[Rect2i] = []
+	cs.tiles_changed.connect(func(r: Rect2i) -> void: changed.append(r))
+	var cell: Vector2i = hz.at.keys()[0]
+	var group: Dictionary = hz.at[cell]
+	var tile := JsonUtil.get_str(group, "tile")
+	cs.player.stats.set_base("int", 0.0)  # 알아채지 못한 채 밟는다
+	cs.player.stats.set_base("agi", 0.0)
+	hz.on_step(cs, cell)
+	assert_false(hz.at.has(cell), "한 번 판정한 함정은 다시 발동하지 않는다")
+	for c: Vector2i in group["cells"]:
+		assert_eq(cs.map.tile_id_at(c), tile, "발동한 숨은 함정은 드러나 그 자리에 남는다 %s" % c)
+		assert_true(cs.map.is_walkable(c))
+	assert_false(changed.is_empty(), "드러난 칸을 다시 그린다")
+	for c: Vector2i in group["cells"]:
+		assert_true(changed.any(func(r: Rect2i) -> bool: return r.has_point(c)), "바뀐 칸이 다시 그릴 범위에 든다 %s" % c)
+	var next: Vector2i = hz.at.keys()[0]  # 알아채고 해제한 함정도 남는다
+	var g2: Dictionary = hz.at[next]
+	g2["detected"] = true
+	hz._show(cs, g2)
+	cs.player.stats.set_base("agi", 80.0)
+	assert_eq(hz.on_step(cs, next), true, "해제")
+	for c: Vector2i in g2["cells"]:
+		assert_eq(cs.map.tile_id_at(c), JsonUtil.get_str(g2, "tile"), "해제한 함정도 그 자리에 남는다")
+
+
 func test_murals_and_riddle() -> void:
 	var pc := _pc()
 	var cs := _enter(pc)
 	var run := cs.rift_run
 	var rd := run.riddle
 	assert_true(rd != null and rd.is_ready(), "입장 때 수수께끼 하나")
-	assert_eq(rd.choices(pc).size(), 3)
+	assert_eq(rd.choices().size(), 5, "선택지 5개")
 	var mural: Vector2i = run.hidden_at.keys()[0]
 	assert_eq(cs.map.tile_id_at(mural), "tomb_mural")
 	assert_true(run.take_hidden(cs, mural))
 	assert_eq(rd.known(pc), 1, "벽화 하나 = 힌트 하나")
 	assert_true(run.take_hidden(cs, mural), "다시 읽을 수 있다")
 	assert_eq(rd.known(pc), 1, "같은 벽화는 같은 힌트")
-	var left := rd.choices(pc)
-	assert_eq(left.size(), 2, "오답 하나가 지워진다")
-	assert_true(left.has(JsonUtil.get_int(rd.data, "answer")), "정답은 남는다")
+	assert_eq(rd.known_hints(pc), [str(rd.hints()[0])], "대화창에 보일 벽화 장면")
 	run.debug_clear()
 	cs = run.use_exit(cs)
 	assert_true(run.take_hidden(cs, run.hidden_at.keys()[0]))
-	assert_eq(rd.choices(pc).size(), 1, "힌트 둘이면 정답만")
 	run.debug_clear()
 	cs = run.use_exit(cs)
+	assert_true(run.take_hidden(cs, run.hidden_at.keys()[0]))
+	assert_eq(rd.known(pc), 3, "벽화 셋 = 힌트 셋")
+	var left := rd.choices()
+	assert_eq(left.size(), 5, "힌트를 다 알아도 선택지는 지워지지 않는다(벽화만 보고 저절로 풀리지 않게)")
+	assert_true(left.has(JsonUtil.get_int(rd.data, "answer")))
 	var gate: FieldMonsters.Group = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "riddle")[0]
 	assert_true(rd.blocks(gate))
 	var asked: Array = []
@@ -106,7 +137,7 @@ func test_murals_and_riddle() -> void:
 	var saved := pc.knowledge.to_dict()
 	var pc2 := _pc()
 	pc2.knowledge.load_dict(saved)
-	assert_eq(rd.known(pc2), 2, "벽화 힌트는 캐릭터 지식으로 남는다")
+	assert_eq(rd.known(pc2), 3, "벽화 힌트는 캐릭터 지식으로 남는다")
 	cs.answer_riddle(gate, RiftRiddle.PASS)
 	assert_false(run.remaining.has(gate), "정답 → 전투 없이 통과")
 	assert_false(cs.in_combat)
@@ -197,7 +228,30 @@ func test_tomb_data_and_exp() -> void:
 	for id: String in ex:
 		assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", id)), int(ex[id]), id)
 	assert_true(db.get_collection("riddles").size() >= 5, "수수께끼 5~10개")
+	var murals := 0
+	for ch: Variant in JsonUtil.get_array(db.get_entry("rifts", "rift_iron_tomb"), "chapters"):
+		for h: Variant in JsonUtil.get_array(ch as Dictionary, "hidden"):
+			murals += 1 if JsonUtil.get_bool(h as Dictionary, "mural") else 0
 	for id: Variant in db.get_collection("riddles").keys():
 		var r := db.get_entry("riddles", str(id))
-		assert_eq(JsonUtil.get_array(r, "choices_ko").size(), 3, "선택지 3개")
-		assert_true(JsonUtil.get_array(r, "hints_ko").size() >= 2)
+		var choices := JsonUtil.get_array(r, "choices_ko")
+		assert_eq(choices.size(), 5, "%s 선택지 5개" % id)
+		assert_true(JsonUtil.get_int(r, "answer") >= 0 and JsonUtil.get_int(r, "answer") < choices.size())
+		assert_eq(JsonUtil.get_array(r, "hints_ko").size(), murals, "%s 벽화마다 힌트 하나" % id)
+		for hint: Variant in JsonUtil.get_array(r, "hints_ko"):
+			assert_false(str(hint).contains(str(choices[JsonUtil.get_int(r, "answer")])), "%s 힌트가 정답을 그대로 말하지 않는다" % id)
+
+
+## 선택지 순서는 입장마다 섞인다(자리로 답을 외우지 못하게) — 같은 시드면 같은 순서.
+func test_riddle_choices_shuffled() -> void:
+	var spec := JsonUtil.get_dict(db.get_entry("rifts", "rift_iron_tomb"), "riddle")
+	var orders := {}
+	for i in 12:
+		var rd := RiftRiddle.new(db, spec, Rng.new(i + 1))
+		var o := rd.choices()
+		var sorted := o.duplicate()
+		sorted.sort()
+		assert_eq(sorted, [0, 1, 2, 3, 4], "선택지는 모두 보인다")
+		orders[str(o)] = true
+	assert_true(orders.size() > 1, "순서가 섞인다")
+	assert_eq(RiftRiddle.new(db, spec, Rng.new(5)).choices(), RiftRiddle.new(db, spec, Rng.new(5)).choices(), "같은 시드면 같은 순서")

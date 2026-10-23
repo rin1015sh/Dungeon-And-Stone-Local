@@ -287,7 +287,7 @@ func _riddle_flow() -> void:
 		return
 	var rd := run.riddle
 	var wrong := ""
-	for i in rd.choices(explore.session.player):
+	for i in rd.choices():
 		if not rd.is_correct(i):
 			wrong = str(JsonUtil.get_array(rd.data, "choices_ko")[i])
 	_press(dlg, wrong)

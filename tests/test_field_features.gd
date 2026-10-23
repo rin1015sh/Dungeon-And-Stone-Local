@@ -153,9 +153,11 @@ func test_snares_are_hazards_in_the_north() -> void:
 			assert_eq(s.map.tile_id_at(p), "cave_floor", "숨은 덫은 바닥처럼 보인다")
 	assert_true(snare_cells > 0)
 	var any: Vector2i = s.features.hazards.at.keys()[0]
+	var hd_of_any: Dictionary = s.features.hazards.at[any]
 	var hp := s.player.pool.get_current("hp")
 	assert_true(s.relocate(any))
-	assert_false(s.features.hazards.at.has(any), "밟은 묶음은 판정 뒤 사라진다")
+	assert_false(s.features.hazards.at.has(any), "밟은 묶음은 판정 뒤 다시 발동하지 않는다")
+	assert_eq(s.map.tile_id_at(any), JsonUtil.get_str(hd_of_any, "tile"), "밟은 덫·비탈은 드러난 채 남는다")
 	assert_true(s.player.pool.get_current("hp") <= hp)
 
 
