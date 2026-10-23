@@ -5,6 +5,8 @@ extends RefCounted
 
 const IMAGE_PREFIX := "res://"
 const SHOWS := ["temple_merit", "bank_balance", "rumors", "lore", "survey"]
+const MEAL_MENUS := ["daily", "special"]
+const MEAL_UNITS := ["battle", "hour"]
 
 
 static func run(v: ValidatorBase) -> void:
@@ -18,6 +20,7 @@ static func run(v: ValidatorBase) -> void:
 	_facilities(v, city)
 	_activities(v)
 	_info(v)
+	_meals(v)
 	CityLifeRules.run(v)
 	var undecided := CityValues.nulls(v.db)
 	if not undecided.is_empty():
@@ -174,3 +177,17 @@ static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
 		var equip := JsonUtil.get_str(v.db.get_entry("items", str(id)), "category") in cats
 		if equip != (deals == "equipment"):
 			v.err(w, "판매 목록의 '%s'는 이 창구(deals %s)가 다루지 않는 물건이다" % [id, deals])
+
+
+## 여관 요리(data/meals.json — Meals): 차림표·무게·지속(전투 수·미궁 시간). 효과 키는 상태(meal_<id>) 검사가 본다.
+static func _meals(v: ValidatorBase) -> void:
+	for id: String in v.entries("meals"):
+		var m := v.db.get_entry("meals", id)
+		var w := "meals/" + id
+		if not JsonUtil.get_str(m, "menu") in MEAL_MENUS:
+			v.err(w, "menu는 %s 중 하나" % [MEAL_MENUS])
+		if JsonUtil.get_float(m, "weight", 1.0) < 0.0:
+			v.err(w, "weight는 0 이상")
+		var dur := JsonUtil.get_dict(m, "duration")
+		if not JsonUtil.get_str(dur, "unit") in MEAL_UNITS or JsonUtil.get_float(dur, "amount") <= 0.0:
+			v.err(w, "duration {amount > 0, unit: %s}" % [MEAL_UNITS])

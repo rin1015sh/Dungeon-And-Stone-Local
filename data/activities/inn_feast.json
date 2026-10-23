@@ -6,14 +6,13 @@
   "extra": true,
   "effects": [
     {
+      "type": "meal",
+      "menu": "special"
+    },
+    {
       "type": "fatigue",
       "direction": "down",
       "amount": 30
-    },
-    {
-      "type": "give_item",
-      "item": "leftovers",
-      "count": 2
     }
   ],
   "source": "placeholder"

@@ -124,6 +124,7 @@ static func fear_skip(b: Battle, c: Combatant) -> bool:
 
 ## 전투가 끝났다: 게이지·전투 표식·오러를 비우고, 전투 한정 상태(statuses "battle_only": true)와
 ## 차례 단위 일시 상태(속박·방어 태세·기절 …)를 지운다. "lingers": true인 상태(독·출혈 …)는 남는다(StatusSet.clear_temporary).
+## 전투 수 단위 상태(여관 식사)는 하나씩 준다(StatusSet.end_battle).
 static func cleanup(b: Battle) -> void:
 	for u in b.units:
 		u.actor.meters.clear()
@@ -135,6 +136,7 @@ static func cleanup(b: Battle) -> void:
 			if JsonUtil.get_bool(b.db.get_entry("statuses", id), "battle_only"):
 				u.actor.statuses.remove(id)
 		u.actor.statuses.clear_temporary()
+		u.actor.statuses.end_battle()
 
 
 ## 개체가 전장을 떠났다(도주·물러남·흡수·만료): 그 개체의 예고를 거두고 오러를 다시 계산한다.

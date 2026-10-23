@@ -20,9 +20,13 @@ func setup(p_pc: PlayerCharacter) -> void:
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(_scroll)
+	var pad := MarginContainer.new()  # 세로 스크롤 막대가 줄 끝(접힌 글)을 덮지 않게
+	pad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pad.add_theme_constant_override("margin_right", int(MenuPage.cfg("scroll_gap", 14.0)))
+	_scroll.add_child(pad)
 	_box = VBoxContainer.new()
 	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_scroll.add_child(_box)
+	pad.add_child(_box)
 	pc.equipment.changed.connect(func(_s: String) -> void: refresh())
 	refresh()
 
@@ -121,11 +125,18 @@ func _build_details() -> Control:
 		box.add_child(l)
 	box.add_child(UiTheme.label(Strings.t("character.statuses"), "body", "text_title"))
 	var st := PackedStringArray()
+	var meal := Meals.current(pc)
 	for sid in pc.statuses.ids():
-		st.append(DataNames.entry(db, "statuses", sid))
-	var sl := UiTheme.label(", ".join(st) if not st.is_empty() else Strings.t("character.none"), "small", "text" if not st.is_empty() else "text_dim")
-	sl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(sl)
+		if sid != meal:
+			st.append(DataNames.entry(db, "statuses", sid))
+	if not meal.is_empty():  # 여관 식사는 따로 한 줄 — 효과 수치·남은 지속까지(BuffText)
+		var ml := UiTheme.label(BuffText.line(pc, meal), "small", "text")
+		ml.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(ml)
+	if not st.is_empty() or meal.is_empty():
+		var sl := UiTheme.label(", ".join(st) if not st.is_empty() else Strings.t("character.none"), "small", "text" if not st.is_empty() else "text_dim")
+		sl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(sl)
 	return box
 
 

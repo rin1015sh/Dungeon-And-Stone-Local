@@ -9,7 +9,7 @@ const CORE_RESOURCES := ["hp", "soul", "hunger"]
 const SCOPES := ["always", "dungeon_only", "combat_only"]
 const REGEN_BASES := ["max_ratio", "flat"]
 const TRIGGERS := ["turn", "time", "rest"]
-const DURATION_UNITS := ["turn", "hour"]
+const DURATION_UNITS := ["turn", "hour", "battle"]
 const DIRECTIONS := ["down", "up"]
 const STATUS_KINDS := ["buff", "debuff", "neutral"]
 const ON_ZERO_WORDS := ["kill", "none"]
@@ -103,7 +103,7 @@ static func _statuses(v: ValidatorBase) -> void:
 			v.check_formula(w + ".periodic", pd.get("amount", 0))
 		var dur := JsonUtil.get_dict(s, "duration")
 		if not dur.is_empty() and not JsonUtil.get_str(dur, "unit") in DURATION_UNITS:
-			v.err(w, "duration.unit은 turn/hour")
+			v.err(w, "duration.unit은 %s 중 하나" % [DURATION_UNITS])
 
 
 static func _injuries(v: ValidatorBase) -> void:

@@ -55,6 +55,7 @@ func load_all(root: String = "res://data") -> bool:
 			for path: String in JsonUtil.list_json(root.path_join(str(spec["dir"]))):
 				_load_entries(name, path)
 	ItemForge.forge_all(collections, singletons.get("balance", {}))  # 종류 × 소재 장비(아이템 공식)
+	MealForge.forge_all(collections)  # 여관 요리 → 버프 상태 meal_<id>
 	rebuild_index()
 	return load_errors.is_empty()
 

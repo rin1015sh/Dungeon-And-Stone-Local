@@ -151,6 +151,8 @@ func _on_run_ended(kind: String, info: Dictionary) -> void:
 func _return_to_city() -> void:
 	if GameState.city != null:
 		GameState.city.return_from_dungeon()
+	if GameState.player != null:
+		Meals.clear(GameState.player)  # 여관 식사 효과는 한 원정까지
 	_show_city()
 
 

@@ -11,7 +11,7 @@ extends Node
 ## --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss|<x>,<y>]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다(--trap=all = 모두 드러내기만), --murals = 벽화 힌트를 다 본 상태
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
-## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다)
+## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=character|inventory|bestiary = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
@@ -20,6 +20,7 @@ extends Node
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
 ## --known: --combat --monster=<id>에서 그 몬스터를 조사해 둔 상태(생명력 막대·알아낸 상성)
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
+## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께)
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
@@ -124,6 +125,8 @@ func _run() -> void:
 			ps.parties.drop_corpse(ps, FieldRoutes.random_cell_near(ps.map, ps.rng, ps.pos, 4, seen), false)
 			ps.refresh_view()
 			await _frames(4)
+		if _args.has("meal"):  # --meal=<요리 id>: 여관 요리 효과를 건 채(캐릭터 쪽 "걸린 상태")
+			Meals.eat(explore.session.player, str(_args["meal"]))
 		if _args.has("give"):  # --give=id,id: 가방에 그 아이템들(아이템 그림 확인) — 가방 크기는 기본(--bag=WxH면 그 크기)
 			var bag := str(_args.get("bag", "%dx%d" % [int(explore.session.db.bal("inventory.width", 10)), int(explore.session.db.bal("inventory.height", 6))])).split("x")
 			explore.session.player.inventory = Inventory.new(explore.session.db, int(bag[0]), int(bag[1]))
@@ -330,6 +333,12 @@ func _city(city: CityScreen) -> void:
 			city.facility_view()._choose(str(_args["activity"]))
 			if name.is_empty():
 				push_warning("활동 없음: " + str(_args["activity"]))
+			if _args.has("advance"):  # --advance=N: 결과 대화창을 N쪽 넘긴다(--dialog와 함께 — 뒤 쪽 문구 확인)
+				for k in str(_args["advance"]).to_int() * 2:  # 한 번은 글자 다 보이기, 한 번은 다음 쪽
+					await _frames(2)
+					for db: Node in city.find_children("*", "DialogueBox", true, false):
+						(db as DialogueBox).advance()
+				await get_tree().create_timer(1.5).timeout
 			if _args.has("tab"):  # --tab=buy|sell: 상점·대장간 창구의 그 탭을 연다
 				await _frames(2)
 				for sp: Node in city.find_children("*", "ShopPanel", true, false):

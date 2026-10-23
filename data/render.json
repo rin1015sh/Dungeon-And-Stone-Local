@@ -130,7 +130,7 @@
     "side_button": 40,
     "essence_locked_darken": 70,
     "window_height": 660,
-    "menu": {"_comment": "Tab 메뉴(GameMenu — 캐릭터 · 소지품 · 도감 세 쪽을 한 화면에)", "page_gap": 12, "character_width": 400, "inventory_width": 420, "bestiary_width": 380, "bestiary_list_height": 260, "scroll_step": 60, "dim": 0.6}
+    "menu": {"_comment": "Tab 메뉴(GameMenu — 캐릭터 · 소지품 · 도감 세 쪽을 한 화면에)", "page_gap": 12, "character_width": 400, "inventory_width": 420, "bestiary_width": 380, "bestiary_list_height": 260, "scroll_step": 60, "scroll_gap": 14, "dim": 0.6}
   },
   "font": {
     "path": "res://assets/fonts/NotoSansKR-Regular.otf",

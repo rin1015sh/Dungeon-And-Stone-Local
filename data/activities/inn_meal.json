@@ -5,14 +5,13 @@
   "cost_stones": 20,
   "effects": [
     {
+      "type": "meal",
+      "menu": "daily"
+    },
+    {
       "type": "fatigue",
       "direction": "down",
       "amount": 15
-    },
-    {
-      "type": "give_item",
-      "item": "leftovers",
-      "count": 1
     }
   ],
   "source": "placeholder"

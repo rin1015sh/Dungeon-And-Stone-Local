@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(854줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(895줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -37,6 +37,7 @@
 - [도시 `city`](#city) — 도시 — 거리·시설·활동 결과(lines)·거리 사건(street)·세금
 - [동굴 요소 `field`](#field) — 1층 동굴 요소를 살필 때(번호가 여럿이면 하나를 고른다)
 - [dir8 `dir8`](#dir8) — —
+- [buff `buff`](#buff) — —
 
 <a id="app"></a>
 ## 앱 `app`
@@ -148,6 +149,7 @@
 - `collection.city_info` 소문·정보
 - `collection.city_events` 오늘의 거리
 - `collection.street_events` 거리 사건
+- `collection.meals` 여관 요리
 
 <a id="stat_group"></a>
 ## 스탯 묶음 `stat_group`
@@ -883,6 +885,7 @@
 - `city.fx.records_sold` 기록 {n}건을 넘기고 {stones} 스톤을 받았다.
 - `city.fx.no_survey` 의뢰받은 조사가 없다.
 - `city.fx.survey_paid` {name} 조사 {n}건을 넘기고 {stones} 스톤을 받았다.
+- `city.fx.meal_none` 오늘은 내올 요리가 없다고 한다.
 
 ### `city.lines`
 
@@ -907,16 +910,11 @@
 
 - `city.lines.inn_meal.spent_stones.1` 밥값으로 {n} 스톤을 냈다.
 
-- `city.lines.inn_meal.fatigue_down.1` 기름진 스튜 한 그릇에 굳은 어깨가 풀렸다.
-- `city.lines.inn_meal.fatigue_down.2` 뜨끈한 국물을 들이켜니 그제야 살 것 같다.
+- `city.lines.inn_meal.fatigue_down.1` 배가 든든해지니 굳은 어깨가 풀렸다.
+- `city.lines.inn_meal.fatigue_down.2` 뜨끈한 것이 들어가니 그제야 살 것 같다.
 - `city.lines.inn_meal.fatigue_down.3` 시끄러운 홀 구석에서 배불리 먹었다.
 
-- `city.lines.inn_meal.fatigue_same.1` 배는 불렀지만 딱히 달라진 건 없다.
-
-- `city.lines.inn_meal.item_got.1` 주인장이 먹다 남은 빵과 고기를 기름종이에 싸 주었다.
-- `city.lines.inn_meal.item_got.2` 남은 음식을 챙겨 품에 넣었다.
-
-- `city.lines.inn_meal.item_no_room.1` 싸 준 음식을 넣을 데가 없어 도로 내려놓았다.
+- `city.lines.inn_meal.fatigue_same.1` 느긋하게 그릇을 비웠다.
 
 #### `city.lines.library_read`
 
@@ -969,6 +967,15 @@
 #### `city.lines.library_rare`
 
 - `city.lines.library_rare.stat_fail.1` 귀한 책이었지만 글자가 너무 낡아 반도 읽지 못했다.
+
+#### `city.lines.inn_feast`
+
+- `city.lines.inn_feast.spent_stones.1` 특식 값으로 {n} 스톤을 냈다.
+
+- `city.lines.inn_feast.fatigue_down.1` 접시를 다 비우고 나니 온몸에 기운이 돈다.
+- `city.lines.inn_feast.fatigue_down.2` 오랜만에 사람 사는 맛을 봤다.
+
+- `city.lines.inn_feast.fatigue_same.1` 접시를 깨끗이 비웠다.
 
 ### `city.tax_execution`
 
@@ -1086,6 +1093,35 @@
 
 - `city.street.plague.intro.1` 기침하는 사람이 부쩍 늘었다. 역병이 돈다는 소문에 신전 앞에 줄이 길다.
 - `city.street.plague.intro.2` 여관들도 식사와 잠자리 값을 슬그머니 올렸다.
+
+### `city.meal`
+
+> 여관 요리 한 장면(요리 id = data/meals.json, 효과는 상태 meal_<id>)
+
+- `city.meal.squid_ink_fry` 새까만 튀김옷 속에서 오징어 다리가 꿈틀대듯 말려 있다. 짭조름한 먹물 맛에 발끝까지 가벼워진다.
+- `city.meal.boar_rib_grill` 숯불 연기가 밴 멧돼지 갈비를 뼈째 뜯었다. 팔뚝에 힘이 들어간다.
+- `city.meal.honey_quail` 꿀을 발라 구운 메추리 두 마리가 나왔다. 손가락까지 핥고 나니 몸이 날렵해진 기분이다.
+- `city.meal.goat_cheese_soup` 산양젖 치즈가 실처럼 늘어나는 수프. 뱃속부터 단단히 데워진다.
+- `city.meal.black_mushroom_risotto` 검은 버섯 향이 코끝을 찌르는 리소토. 머리가 맑게 개었다.
+- `city.meal.mugwort_dumpling` 쌉쌀한 쑥 경단을 콩고물에 굴려 먹었다. 마음이 차분히 가라앉는다.
+- `city.meal.smoked_eel_rice` 윤기 흐르는 훈제 장어를 밥 위에 얹어 먹었다. 몸 깊은 곳에서 기운이 차오른다.
+- `city.meal.ginger_rye` 생강꿀차 한 잔에 호밀빵을 적셔 먹었다. 눈이 또렷해진다.
+- `city.meal.grilled_sweetfish` 소금을 뿌려 숯불에 구운 은어. 몸놀림이 물고기처럼 미끄러워진 것 같다.
+- `city.meal.salted_herring` 레몬 즙을 짜 넣은 소금 청어구이. 시큼한 맛에 정신이 번쩍 든다.
+- `city.meal.blood_sausage` 김이 오르는 선지 소시지를 썰어 먹었다. 피가 피를 부르는 맛이다.
+- `city.meal.bitter_herb_gukbap` 쓴나물을 듬뿍 넣은 국밥. 혀가 얼얼하지만 속이 깨끗해진다.
+- `city.meal.garlic_lamb_skewer` 통마늘을 끼워 구운 양꼬치. 입에서 나는 마늘 냄새에 어둠도 물러설 것 같다.
+- `city.meal.chili_oil_noodle` 붉은 고추기름이 둥둥 뜬 국수. 이마에 땀이 맺히고 손발까지 후끈하다.
+- `city.meal.mint_sherbet` 박하 향이 도는 얼음과자를 사각사각 깨물었다. 몸속이 서늘하게 식는다.
+- `city.meal.roast_carrot_stew` 달큰하게 구운 당근을 듬뿍 넣은 스튜. 어둑한 홀 구석까지 잘 보인다.
+- `city.meal.barley_porridge` 보리와 귀리를 푹 끓인 죽. 한 그릇이면 한참은 배가 꺼지지 않을 것 같다.
+- `city.meal.bean_porridge` 따끈한 콩죽을 천천히 떠먹었다. 쓰린 상처까지 누그러지는 느낌이다.
+- `city.meal.drake_tail_steak` 주인장이 아껴 둔 드레이크 꼬리를 두툼하게 잘라 구웠다. 씹을 때마다 피가 끓는다.
+- `city.meal.butter_salmon` 버터에 졸인 감자를 곁들인 연어 통구이. 온몸이 가뿐하다.
+- `city.meal.moonberry_tart` 달빛 아래서만 익는다는 산딸기를 얹은 타르트. 머릿속이 은은하게 빛난다.
+- `city.meal.whole_pig_roast` 홀 한가운데서 통째로 돌려 구운 돼지를 나눠 받았다. 몸이 한층 두꺼워진 것 같다.
+- `city.meal.royal_herb_hotpot` 이름 모를 약초가 가득한 전골. 냄비 바닥까지 긁어 먹고 나니 몸이 독기를 밀어낸다.
+- `city.meal.cave_truffle_soup` 미궁 동굴에서 캐 왔다는 송로를 갈아 넣은 수프. 눈이 밝아지고 속이 든든하다.
 
 <a id="field"></a>
 ## 동굴 요소 `field`
@@ -1225,3 +1261,25 @@
 - `dir8.6` 서쪽
 - `dir8.7` 북서쪽
 - `dir8.here` 바로 곁
+
+<a id="buff"></a>
+## buff `buff`
+
+> —
+
+> 상태 효과 수치 줄(BuffText — 여관 식사)
+
+- `buff.line` {name} ({parts})
+- `buff.flee_bonus` 도주 확률 {v}
+- `buff.crit_bonus` 치명타율 {v}
+- `buff.hit_taken` 적 명중률 {v}
+- `buff.lifesteal` 흡혈 {v}
+- `buff.heal_mult` 받는 치유 {v}
+- `buff.dmg_taken` 받는 {type} 피해
+- `buff.dmg_taken_all` 받는 피해
+- `buff.dmg_dealt` 주는 {type} 피해
+- `buff.dmg_dealt_all` 주는 피해
+- `buff.cat_physical` 물리
+- `buff.cat_magical` 마법
+- `buff.left_battle` 전투 {n}번
+- `buff.left_hour` {n}시간

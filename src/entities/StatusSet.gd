@@ -3,7 +3,7 @@ extends RefCounted
 ## 상태이상 묶음(data/statuses.json). 컴포넌트로 Actor에 붙는다.
 ## - 부여하면 정의의 modifiers를 출처 "status:<id>"로 StatBlock에 붙이고, 해제하면 뗀다.
 ## - periodic: 턴/시간마다 자원을 바꾼다(출혈·아사 …). 수식은 ResourcePool.resolve로 푼다.
-## - duration {amount, unit: turn|hour}: 다 되면 해제. 없으면 영구(조건이 풀릴 때 소유자가 해제).
+## - duration {amount, unit: turn|hour|battle(전투 수 — end_battle)}: 다 되면 해제. 없으면 영구(조건이 풀릴 때 소유자가 해제).
 ## - stackable: 다시 걸리면 중첩(수정자·주기 효과가 중첩 수만큼).
 ## - flags: no_skills, skip_turn, untargetable(은신), no_flee(속박) … (전투가 읽는다)
 ## - modifiers의 flat/percent가 문자열이면 걸릴 때 소유자 스탯으로 푼 수식(저체온증 "-max(0, 30 - {resist_cold})").
@@ -287,6 +287,19 @@ func tick_hours(hours: float) -> void:
 	if per_turn > 0.0:
 		_periodic("turn", hours / per_turn, "turn")
 		_countdown("turn", hours / per_turn)
+
+
+## 전투가 하나 끝났다: 전투 수 단위(unit "battle" — 여관 식사)의 지속시간이 하나 준다.
+func end_battle() -> void:
+	_countdown("battle", 1.0)
+
+
+## 남은 지속시간 [양, 단위]. 영구면 [-1, 단위], 없으면 [].
+func remaining(id: String) -> Array:
+	if not _active.has(id):
+		return []
+	var st: Dictionary = _active[id]
+	return [float(st["remaining"]), str(st["unit"])]
 
 
 ## 전투가 끝났다: 차례 단위 상태 중 남지 않는 것(lingers가 아닌 것 — 속박·방어 태세·기절 …)을 푼다. 푼 id 목록.
