@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(951줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(955줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -150,6 +150,7 @@
 - `collection.city_events` 오늘의 거리
 - `collection.street_events` 거리 사건
 - `collection.meals` 여관 요리
+- `collection.scavenge` 균열 잡템 표
 
 <a id="stat_group"></a>
 ## 스탯 묶음 `stat_group`
@@ -218,6 +219,9 @@
 - `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.
 - `explore.fortress_necronomicon` 썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].
 - `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
+- `explore.scavenge_found` {tile}을(를) 뒤져 {item}을(를) 찾았다.
+- `explore.scavenge_empty` {tile}에는 건질 것이 없다.
+- `explore.scavenge_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
 - `explore.hidden_found` 숨겨진 것을 찾았다 — [{item}].
 - `explore.rift_item_lost` [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
 - `explore.rift_opened` 동굴 곳곳에 균열 포탈 {count}개가 열렸다!

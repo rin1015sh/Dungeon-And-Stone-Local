@@ -1,0 +1,14 @@
+{
+  "id": "ice_chips",
+  "name_ko": "얼음 수정 부스러기",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 200,
+  "color": "#a8d8f0",
+  "rarity": "common",
+  "source": "placeholder"
+}

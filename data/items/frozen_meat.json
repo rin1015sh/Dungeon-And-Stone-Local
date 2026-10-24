@@ -1,0 +1,14 @@
+{
+  "id": "frozen_meat",
+  "name_ko": "꽁꽁 언 고기",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 80,
+  "color": "#a8b8c8",
+  "rarity": "common",
+  "source": "placeholder"
+}

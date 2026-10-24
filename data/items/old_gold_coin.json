@@ -1,0 +1,14 @@
+{
+  "id": "old_gold_coin",
+  "name_ko": "오래된 금화",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 20,
+  "price": 600,
+  "color": "#e8c050",
+  "rarity": "common",
+  "source": "placeholder"
+}

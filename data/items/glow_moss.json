@@ -1,0 +1,14 @@
+{
+  "id": "glow_moss",
+  "name_ko": "형광 이끼 덩이",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 100,
+  "color": "#80e070",
+  "rarity": "common",
+  "source": "placeholder"
+}

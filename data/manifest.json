@@ -15,6 +15,7 @@
     "resources": {"file": "resources.json"},
     "statuses": {"file": "statuses.json"},
     "meals": {"file": "meals.json"},
+    "scavenge": {"file": "scavenge.json"},
     "meters": {"file": "meters.json"},
     "injuries": {"file": "injuries.json"},
     "races": {"file": "races.json"},

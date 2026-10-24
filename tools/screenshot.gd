@@ -405,6 +405,21 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 		explore.session.relocate(Vector2i(int(xy[0]), int(xy[1])))
 		for o: FieldMonsters.Group in explore.session.monsters.groups:
 			o.grace_until = explore.session.clock.total_hours + 100.0
+	elif str(_args.get("near", "")) == "scavenge":  # --near=scavenge: 뒤질 수 있는 장식 옆에 서서 살핀다(RF19 — 잡템 대화창은 --dialog)
+		var es := explore.session
+		var done := false
+		for y in es.map.height:
+			for x in es.map.width:
+				var d := es.map.def_at(Vector2i(x, y))
+				if done or d == null or d.scavenge.is_empty():
+					continue
+				for k in FloorMap.DIRS4:
+					if not done and es.relocate(Vector2i(x, y) + k):
+						done = true
+		for o: FieldMonsters.Group in es.monsters.groups:
+			o.grace_until = es.clock.total_hours + 100.0
+		await _frames(3)
+		es.interact()
 	elif _args.has("near"):  # --near=guardian|<tag>: 그 무리에서 몇 칸 떨어진 곳에 선다(보스가 기다리는 방을 보려고 — 전투는 걸지 않는다)
 		var run0 := explore.session.rift_run
 		for g: FieldMonsters.Group in run0.remaining:

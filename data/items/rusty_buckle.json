@@ -1,0 +1,14 @@
+{
+  "id": "rusty_buckle",
+  "name_ko": "녹슨 군장 버클",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 120,
+  "color": "#8a5a3a",
+  "rarity": "common",
+  "source": "placeholder"
+}

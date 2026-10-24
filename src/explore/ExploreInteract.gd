@@ -3,7 +3,7 @@ extends RefCounted
 ## 살피기(interact 키)와 포탈 안내(ExploreSession이 부른다 — 세션 파일을 짧게 유지).
 ##   층 포탈: 아래층은 아직 잠김(M6) · 균열 포탈: 들어간다(RiftWatch.enter → 세션 transfer)
 ##   균열 출구: 다음 챕터 / 탈출(RiftRun.use_exit) · 동굴 요소(FieldFeatures — 시체·샘·모닥불 …)
-##   대현자 기념비: 마석이 있으면 바쳐 균열을 연다(RiftWatch.try_offer)
+##   대현자 기념비: 마석이 있으면 바쳐 균열을 연다(RiftWatch.try_offer) · 균열 장식: 잡템 뒤지기(RiftScavenge)
 
 
 static func run(s: ExploreSession) -> void:
@@ -35,6 +35,8 @@ static func run(s: ExploreSession) -> void:
 			if not s.rifts.try_offer(s, s.pos + d):
 				s.message.emit("explore.monument", {}, "system")
 			return
+	if RiftScavenge.run(s):
+		return
 	s.message.emit("explore.nothing_here", {}, "info")
 
 
@@ -52,6 +54,9 @@ static func target_name(s: ExploreSession) -> String:
 		var def := s.map.def_at(s.pos + d)
 		if def != null and (def.interact == "monument" or (def.interact == "hidden_piece" and s.rift_run != null)):
 			return def.name_ko
+	var sp := RiftScavenge.target(s)
+	if sp.x >= 0:
+		return s.map.def_at(sp).name_ko
 	return ""
 
 

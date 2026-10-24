@@ -85,7 +85,8 @@
     "city_info": "소문·정보",
     "city_events": "오늘의 거리",
     "street_events": "거리 사건",
-    "meals": "여관 요리"
+    "meals": "여관 요리",
+    "scavenge": "균열 잡템 표"
   },
   "stat_group": {
     "body": "육체",
@@ -138,6 +139,9 @@
     "fortress_tear": "조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.",
     "fortress_necronomicon": "썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].",
     "hidden_no_room": "{item}을(를) 찾았지만 가방에 자리가 없다.",
+    "scavenge_found": "{tile}을(를) 뒤져 {item}을(를) 찾았다.",
+    "scavenge_empty": "{tile}에는 건질 것이 없다.",
+    "scavenge_no_room": "{item}을(를) 찾았지만 가방에 자리가 없다.",
     "hidden_found": "숨겨진 것을 찾았다 — [{item}].",
     "rift_item_lost": "[{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.",
     "rift_opened": "동굴 곳곳에 균열 포탈 {count}개가 열렸다!",

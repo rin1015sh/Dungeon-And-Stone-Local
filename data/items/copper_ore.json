@@ -1,0 +1,14 @@
+{
+  "id": "copper_ore",
+  "name_ko": "구리 광석 조각",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 120,
+  "color": "#b87040",
+  "rarity": "common",
+  "source": "placeholder"
+}

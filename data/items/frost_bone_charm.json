@@ -1,0 +1,14 @@
+{
+  "id": "frost_bone_charm",
+  "name_ko": "서리 낀 뼈 장신구",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 300,
+  "color": "#d8e0e8",
+  "rarity": "common",
+  "source": "placeholder"
+}

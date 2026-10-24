@@ -1,0 +1,14 @@
+{
+  "id": "rotten_meat",
+  "name_ko": "썩은 고기",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 40,
+  "color": "#6a7a3a",
+  "rarity": "common",
+  "source": "placeholder"
+}

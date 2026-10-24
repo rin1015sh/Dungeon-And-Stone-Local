@@ -1,0 +1,14 @@
+{
+  "id": "urn_shard",
+  "name_ko": "깨진 항아리 조각",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 200,
+  "color": "#a08070",
+  "rarity": "common",
+  "source": "placeholder"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rusty_pick_head",
+  "name_ko": "녹슨 곡괭이 날",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 150,
+  "color": "#7a6050",
+  "rarity": "common",
+  "source": "placeholder"
+}
