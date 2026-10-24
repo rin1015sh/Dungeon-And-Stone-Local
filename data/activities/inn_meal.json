@@ -2,11 +2,11 @@
   "id": "inn_meal",
   "name_ko": "식사",
   "facility": "inn",
-  "cost_stones": 20,
+  "cost_stones": 25,
   "effects": [
     {
       "type": "meal",
-      "menu": "daily"
+      "menu": "light"
     },
     {
       "type": "fatigue",

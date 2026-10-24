@@ -5,7 +5,7 @@ extends RefCounted
 
 const IMAGE_PREFIX := "res://"
 const SHOWS := ["temple_merit", "bank_balance", "rumors", "lore", "survey"]
-const MEAL_MENUS := ["daily", "special"]
+const MEAL_MENUS := ["plain", "light", "hearty", "special"]
 const MEAL_UNITS := ["battle", "hour"]
 
 
@@ -179,7 +179,7 @@ static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
 			v.err(w, "판매 목록의 '%s'는 이 창구(deals %s)가 다루지 않는 물건이다" % [id, deals])
 
 
-## 여관 요리(data/meals.json — Meals): 차림표·무게·지속(전투 수·미궁 시간)·그림(art — 있으면 파일이 있어야). 효과 키는 상태(meal_<id>) 검사가 본다.
+## 여관 요리(data/meals.json — Meals): 차림표(plain은 버프 없음)·무게·지속(전투 수·미궁 시간)·그림(art — 있으면 파일이 있어야). 효과 키는 상태(meal_<id>) 검사가 본다.
 static func _meals(v: ValidatorBase) -> void:
 	for id: String in v.entries("meals"):
 		var m := v.db.get_entry("meals", id)
@@ -189,7 +189,10 @@ static func _meals(v: ValidatorBase) -> void:
 		if JsonUtil.get_float(m, "weight", 1.0) < 0.0:
 			v.err(w, "weight는 0 이상")
 		var dur := JsonUtil.get_dict(m, "duration")
-		if not JsonUtil.get_str(dur, "unit") in MEAL_UNITS or JsonUtil.get_float(dur, "amount") <= 0.0:
+		if JsonUtil.get_str(m, "menu") == "plain":
+			if m.has("duration"):
+				v.err(w, "요기(menu plain)는 버프가 없다 — duration·효과 키를 두지 않는다")
+		elif not JsonUtil.get_str(dur, "unit") in MEAL_UNITS or JsonUtil.get_float(dur, "amount") <= 0.0:
 			v.err(w, "duration {amount > 0, unit: %s}" % [MEAL_UNITS])
 		var art := JsonUtil.get_str(m, "art")
 		if not art.is_empty() and not FileAccess.file_exists(art):

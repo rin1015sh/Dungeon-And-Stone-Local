@@ -13,6 +13,8 @@ static func forge_all(cols: Dictionary) -> void:
 	var meals: Dictionary = cols.get("meals", {})
 	var statuses: Dictionary = cols.get("statuses", {})
 	for id: String in meals:
+		if not (meals[id] as Dictionary).has("duration"):
+			continue  # 요기(menu plain) — 배만 채운다, 버프 없음
 		var st: Dictionary = (meals[id] as Dictionary).duplicate(true)
 		for k: String in _MENU_KEYS:
 			st.erase(k)

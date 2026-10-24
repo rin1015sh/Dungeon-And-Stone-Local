@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(939줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(947줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -939,6 +939,24 @@
 
 - `city.lines.inn_rest.restore_full.1` 멀쩡한 몸으로 하룻밤을 늘어지게 잤다.
 
+#### `city.lines.inn_snack`
+
+- `city.lines.inn_snack.spent_stones.1` {n} 스톤을 내고 구석 자리에 앉았다.
+
+- `city.lines.inn_snack.fatigue_down.1` 허기를 달래고 나니 다리에 힘이 조금 돌아왔다.
+- `city.lines.inn_snack.fatigue_down.2` 멀건 죽이라도 속이 데워지니 살 만하다.
+
+- `city.lines.inn_snack.fatigue_same.1` 그릇을 비웠지만 피곤은 그대로다.
+
+#### `city.lines.inn_hearty`
+
+- `city.lines.inn_hearty.spent_stones.1` 넉넉히 {n} 스톤을 치렀다.
+
+- `city.lines.inn_hearty.fatigue_down.1` 배가 터지도록 먹고 나니 몸이 다시 내 것 같다.
+- `city.lines.inn_hearty.fatigue_down.2` 기름진 한 상을 비우자 눈이 맑아졌다.
+
+- `city.lines.inn_hearty.fatigue_same.1` 든든하게 먹었다.
+
 #### `city.lines.inn_meal`
 
 - `city.lines.inn_meal.spent_stones.1` 밥값으로 {n} 스톤을 냈다.
@@ -1153,7 +1171,7 @@
 - `city.meal.mint_sherbet` 박하 향이 도는 얼음과자를 사각사각 깨물었다. 몸속이 서늘하게 식는다.
 - `city.meal.roast_carrot_stew` 달큰하게 구운 당근을 듬뿍 넣은 스튜. 어둑한 홀 구석까지 잘 보인다.
 - `city.meal.barley_porridge` 보리와 귀리를 푹 끓인 죽. 한 그릇이면 한참은 배가 꺼지지 않을 것 같다.
-- `city.meal.bean_porridge` 따끈한 콩죽을 천천히 떠먹었다. 쓰린 상처까지 누그러지는 느낌이다.
+- `city.meal.bean_porridge` 따끈한 콩죽을 천천히 떠먹었다. 빈속이 겨우 달래진다.
 - `city.meal.drake_tail_steak` 주인장이 아껴 둔 드레이크 꼬리를 두툼하게 잘라 구웠다. 씹을 때마다 피가 끓는다.
 - `city.meal.butter_salmon` 버터에 졸인 감자를 곁들인 연어 통구이. 온몸이 가뿐하다.
 - `city.meal.moonberry_tart` 달빛 아래서만 익는다는 산딸기를 얹은 타르트. 머릿속이 은은하게 빛난다.

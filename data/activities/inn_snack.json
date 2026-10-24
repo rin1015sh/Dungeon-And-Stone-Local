@@ -1,0 +1,18 @@
+{
+  "id": "inn_snack",
+  "name_ko": "요기",
+  "facility": "inn",
+  "cost_stones": 10,
+  "effects": [
+    {
+      "type": "meal",
+      "menu": "plain"
+    },
+    {
+      "type": "fatigue",
+      "direction": "down",
+      "amount": 10
+    }
+  ],
+  "source": "placeholder"
+}

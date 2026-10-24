@@ -2,7 +2,7 @@
   "id": "inn_feast",
   "name_ko": "특식",
   "facility": "inn",
-  "cost_stones": 60,
+  "cost_stones": 90,
   "extra": true,
   "effects": [
     {
