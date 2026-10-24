@@ -32,6 +32,9 @@ static func check(state: CityState, pc: PlayerCharacter, act_id: String, extra_s
 		extra_stones += CityTax.amount(state, pc.race_id)
 	if pc.inventory.money < cost(state, act_id) + extra_stones:
 		return "city.reason_no_money"
+	var need := JsonUtil.get_str(act, "requires_item")  # 그 물건이 있어야(도서관 고서 해독 — 네크로노미콘)
+	if not need.is_empty() and pc.inventory.count(need) <= 0:
+		return "city.reason_no_item"
 	return ""
 
 

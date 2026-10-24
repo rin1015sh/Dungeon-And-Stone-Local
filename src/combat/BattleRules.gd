@@ -155,7 +155,7 @@ static func shuffle_rows(b: Battle, side: int) -> void:
 	b.message.emit("combat.rows_shuffled", {}, "warn")
 
 
-## 여신의 눈물: 상대 진영의 해당 계열에게 고정 신성 피해 + 상태. 해당하는 적이 없으면 사용자 회복.
+## 여신의 눈물·갱도 폭약: 상대 진영의 해당 계열에게 고정 피해(damage_type — 기본 신성) + 상태. 해당하는 적이 없으면 사용자 회복.
 ## 피해는 보호막·버티기(revive_once)·피해로 풀리는 상태를 거친다(DamageApply).
 static func smite(b: Battle, c: Combatant, e: Dictionary) -> void:
 	var hit := false
@@ -165,12 +165,13 @@ static func smite(b: Battle, c: Combatant, e: Dictionary) -> void:
 			hit = true
 			var ctx := EffectContext.new(b.db, c.actor, f.actor, b.rng)
 			# 신성 피해도 약점·면역을 따른다(성수에 약한 언데드 ×배율). 알아낸 상성은 도감에 남는다.
-			var aff := (f.actor as Monster).damage_affinity("holy", "magical")
+			var dtype := str(e.get("damage_type", "holy"))  # 폭약은 화염
+			var aff := (f.actor as Monster).damage_affinity(dtype, "magical")
 			var amount := roundi(float(e.get("amount", 0.0)) * aff)
 			b.message.emit("combat.smite", {"target": f.label(), "amount": amount}, "good")
-			DamageApply.hurt(ctx, f.actor, amount, "smite", "holy")
+			DamageApply.hurt(ctx, f.actor, amount, "smite", dtype)
 			b.event.emit({"type": "damage", "unit": f, "hit": true, "amount": amount, "crit": false})
-			BattleKnowledge.on_damage(b, c, {"target": f.actor, "hit": true, "damage_type": "holy", "affinity": aff})
+			BattleKnowledge.on_damage(b, c, {"target": f.actor, "hit": true, "damage_type": dtype, "affinity": aff})
 			if not str(e.get("status", "")).is_empty():
 				Passives.try_status(b.db, null, c.actor, f.actor, str(e["status"]))
 			for m: Dictionary in ctx.messages:

@@ -1,0 +1,36 @@
+{
+  "id": "blood_well",
+  "name_ko": "핏빛 우물",
+  "type": "feature",
+  "object": "bf_well",
+  "actions": [
+    {
+      "id": "pour",
+      "name_ko": "피를 붓는다",
+      "limit": "once",
+      "line": "field.blood_well_pour",
+      "effects": [
+        {
+          "type": "restore_resource",
+          "resource": "hp",
+          "amount": "-floor({max_hp} * 0.3)",
+          "non_lethal": true
+        }
+      ],
+      "give": [
+        {
+          "item": "blood_chalice"
+        }
+      ],
+      "done": "field.blood_well_done"
+    },
+    {
+      "id": "look",
+      "name_ko": "들여다본다",
+      "limit": "always",
+      "line": "field.blood_well_look"
+    }
+  ],
+  "source": "original",
+  "notes": "핏빛성채 3챕터 히든 피스 D(2026-10-24, rift_hidden_pieces §6) — 생명력 최대치 30%를 붓고 피의 성배"
+}

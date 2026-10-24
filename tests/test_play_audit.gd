@@ -128,27 +128,27 @@ func _session(seed_value: int = 3) -> ExploreSession:
 	return s
 
 
-## 가방이 차 있어도 출구 열쇠(뿔피리)는 손에 쥐어 출구에서 쓴다 — 균열에 갇히지 않는다.
+## 가방이 차 있어도 출구 열쇠(녹색 탄광 폭약)는 손에 쥐어 출구에서 쓴다 — 균열에 갇히지 않는다.
 func test_rift_exit_key_kept_when_bag_full() -> void:
 	var s := _session()
-	assert_true(s.rifts.force_open(s, "rift_blood_fortress", s.pos))
+	assert_true(s.rifts.force_open(s, "rift_green_mine", s.pos))
 	var p: Dictionary = s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0]
 	var cs := s.rifts.enter(s, p)
 	var run := cs.rift_run
+	s.player.stats.set_base("str", 5.0)
+	for i in 2:
+		run.debug_clear()
+		cs = run.use_exit(cs)
+	s.player.inventory.remove("mine_explosive", s.player.inventory.count("mine_explosive"))
 	while s.player.inventory.add("magic_stone_9", 99) > 0:
 		pass  # 가방을 가득 채운다
-	assert_false(s.player.inventory.fits("rift_horn"))
-	var killed: Array[String] = ["deadman_commander"]
-	cs.grant_battle_rewards(null, killed)
-	assert_eq(int(run.held.get("rift_horn", 0)), 1, "뿔피리를 손에 쥐었다")
-	for g: FieldMonsters.Group in run.remaining.duplicate():
-		var guard := 0
-		while run.remaining.has(g) and guard < 20:
-			guard += 1
-			run.on_battle_end(cs, g, Battle.RESULT_VICTORY)
+	assert_false(s.player.inventory.fits("mine_explosive"))
+	assert_true(run.keep_overflow(cs, "mine_explosive", 1))
+	assert_eq(int(run.held.get("mine_explosive", 0)), 1, "폭약을 손에 쥐었다")
+	run.debug_clear()
 	var next := run.use_exit(cs)
-	assert_true(next != null, "쥔 뿔피리로 1챕터 출구를 지난다")
-	assert_eq(int(run.held.get("rift_horn", 0)), 0, "썼다")
+	assert_true(next != null, "쥔 폭약으로 3챕터 출구를 지난다")
+	assert_eq(int(run.held.get("mine_explosive", 0)), 0, "썼다")
 
 
 ## 가방이 차면 히든 피스는 그 자리에 남는다(탈출 폭약을 잃지 않게).

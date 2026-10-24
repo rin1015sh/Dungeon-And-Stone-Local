@@ -18,24 +18,7 @@
   "c": "gc_crystal",
   "d": "gc_drift"
  },
- "marks": {
-  "entry": [
-   35,
-   55
-  ],
-  "slots": [
-   [
-    35,
-    26
-   ]
-  ],
-  "exit": [
-   48,
-   10
-  ],
-  "hidden": [],
-  "hazards": []
- },
+ "marks": {"entry": [35, 55], "slots": [[35, 26]], "exit": [48, 10], "hidden": [[43, 31]], "hazards": []},
  "rows": [
   "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",
   "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK",

@@ -1,0 +1,27 @@
+{
+  "id": "blood_chalice",
+  "name_ko": "피의 성배",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#8a1a1a",
+  "rarity": "numbers",
+  "rift_bound": "rift_blood_fortress",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "permanent_stat",
+      "stat": "max:hp",
+      "amount": 5,
+      "key": "blood_chalice",
+      "max_times": 1
+    }
+  ],
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

@@ -73,7 +73,7 @@
       ]
     }
   ],
-  "features": [
+  "features": [{"id": "dark_crystal", "pos": [31, 360]}, 
     {
       "id": "explorer_corpse",
       "pos": [

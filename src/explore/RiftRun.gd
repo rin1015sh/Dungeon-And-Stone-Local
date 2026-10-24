@@ -13,7 +13,8 @@ extends RefCounted
 ##   떠난 챕터 세션은 상태(치운 무리·탐험·히든 피스·함정)째 보관했다가(_kept) 돌아오면 다시 붙인다.
 ## 탈출하면 1층(outer)의 포탈 자리로 돌아간다. 다른 탈출 방법은 없다.
 ## 챕터 "exit_requires": {"item", "message", "bypass": {stat, at_least, message}} — 출구를 지나려면 그 아이템이 있어야 하고 쓰인다
-##   (핏빛성채 뿔피리, 녹색 탄광 폭약). bypass 스탯이 넘으면 아이템 없이 지난다.
+##   (녹색 탄광 폭약). bypass 스탯이 넘으면 아이템 없이 지난다.
+## 챕터 "features": [{"id": 동굴 요소 id, "at": [x, y]}] — 그 칸에 동굴 요소(FieldFeatures — 선택지가 있는 히든 피스: 핏빛 우물).
 ## 챕터 "hidden"(히든 피스·벽화)은 RiftHidden, "hazards"(탐험 위험·함정)는 RiftHazards, 균열 "riddle"(수수께끼 문지기)은 RiftRiddle.
 ## 조우 {"riddle": true}는 태그 "riddle" — 마주치면 전투 대신 수수께끼.
 ## 아이템 "rift_bound": "<균열 id>" — 그 균열 밖으로 가져갈 수 없다(나갈 때 사라진다: 여신의 눈물).
@@ -42,7 +43,7 @@ var riddle: RiftRiddle = null
 ## 떠난 챕터: 번호 -> {"session", "remaining", "hidden_at", "hidden_under", "hazards_at"}.
 ## 보관한 세션의 rift_run은 비운다(이 객체 → 세션만 남아 순환 참조가 생기지 않게). 돌아오면 다시 단다.
 var _kept: Dictionary = {}
-var _opened: Dictionary = {}  ## exit_requires(뿔피리·폭약)를 이미 치른 챕터 번호 -> true(되돌아왔다 다시 지날 때 또 쓰지 않는다)
+var _opened: Dictionary = {}  ## exit_requires(폭약)를 이미 치른 챕터 번호 -> true(되돌아왔다 다시 지날 때 또 쓰지 않는다)
 
 
 func _init(p_outer: ExploreSession, p_rift_id: String) -> void:
@@ -98,8 +99,13 @@ func build_chapter(i: int) -> ExploreSession:
 		if g != null:
 			remaining.append(g)
 	_apply_field_effects()
-	hidden.place(cs, ch, outer.rng)
+	hidden.place(cs, ch, outer.rng, i)
 	hazards.place(cs, ch, outer.rng)
+	hidden.count_hazards(i, hazards)
+	for f: Variant in JsonUtil.get_array(ch, "features"):  # 챕터에 놓는 동굴 요소(핏빛 우물 — 고르는 선택지가 있는 것)
+		var fd: Dictionary = f if f is Dictionary else {}
+		var fa := JsonUtil.get_array(fd, "at")
+		cs.features.add_at(cs, JsonUtil.get_str(fd, "id"), Vector2i(int(fa[0]), int(fa[1])))
 	var fx := JsonUtil.get_array(ch, "on_enter")
 	if not fx.is_empty():
 		var ctx := EffectContext.new(db, null, outer.player, outer.rng)

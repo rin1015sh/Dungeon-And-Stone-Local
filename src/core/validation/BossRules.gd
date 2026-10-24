@@ -6,7 +6,7 @@ extends RefCounted
 
 ## 상태이상 flags 어휘(StatusSet.has_flag("…")로 코드가 읽는 것 전부).
 const STATUS_FLAGS := ["skip_turn", "no_skills", "may_skip_turn", "no_flee", "untargetable", "no_ally_single",
-	"no_regen", "always_hit", "draws_attacks"]
+	"no_regen", "always_hit", "draws_attacks", "no_split"]
 
 
 static func run(v: ValidatorBase) -> void:

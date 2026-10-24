@@ -108,10 +108,7 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	assert_eq(run.remaining.size(), 2, "1챕터 조우 2개")
 	assert_eq(run.use_exit(cs), null, "조우를 남기면 출구가 잠겨 있다")
 	_win_all(run)
-	assert_eq(run.use_exit(cs), null, "뿔피리가 없으면 1챕터 출구가 막혀 있다")
-	s.player.inventory.add("rift_horn", 1)
 	cs = run.use_exit(cs)
-	assert_eq(s.player.inventory.count("rift_horn"), 0, "뿔피리를 쓴다")
 	assert_true(cs != null and run.chapter == 1)
 	var waves: FieldMonsters.Group = run.remaining[0]
 	assert_eq(int(waves.battle_rules["survive_rounds"]), 6, "도개교 6라운드 생존")

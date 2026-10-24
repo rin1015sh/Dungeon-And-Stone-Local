@@ -1,0 +1,27 @@
+{
+  "id": "snow_lotus",
+  "name_ko": "설련화",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#e8f0f8",
+  "rarity": "numbers",
+  "rift_bound": "rift_glacier_cave",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "permanent_stat",
+      "stat": "natural_regen",
+      "amount": 2,
+      "key": "snow_lotus",
+      "max_times": 1
+    }
+  ],
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

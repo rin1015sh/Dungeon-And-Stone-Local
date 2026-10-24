@@ -8,6 +8,7 @@ extends RefCounted
 ##    "effects": [전투 효과 — 대상 = 탐험가](restore_resource·apply_status·remove_status·fatigue …),
 ##    "learn_stats": 몬스터 id(도감에 생명력·스탯이 드러난다), "alert": {"monster", "radius", "hours"}(근처 그 몬스터 무리가 쫓아온다),
 ##    "clear": true(하고 나면 요소가 사라진다 — 줍는 것), "done"·"missing" 문구 키(못 하는 이유),
+##    "after": {"action", "hours"}(그 행동을 하고 그만큼 지나야 — 아직이면 "wait" 문구, 안 했으면 missing),
 ##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound)}.
 
 
@@ -23,6 +24,15 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	if not need.is_empty() and not s.player.statuses.has(need):
 		s.message.emit(JsonUtil.get_str(a, "missing", "field.missing"), {"status": DataNames.entry(s.db, "statuses", need)}, "info")
 		return
+	var after := JsonUtil.get_dict(a, "after")  # {"action", "hours"}: 그 행동을 하고 hours시간이 지나야(공물의 답례)
+	if not after.is_empty():
+		var t: Variant = used.get("@" + JsonUtil.get_str(after, "action"))
+		if t == null:
+			s.message.emit(JsonUtil.get_str(a, "missing", "field.missing"), {}, "info")
+			return
+		if s.clock.total_hours - float(t) < JsonUtil.get_float(after, "hours"):
+			s.message.emit(JsonUtil.get_str(a, "wait", "field.done"), {}, "info")
+			return
 	var cost := JsonUtil.get_dict(a, "cost")
 	var cost_item := JsonUtil.get_str(cost, "item")
 	if not cost_item.is_empty():
@@ -31,6 +41,7 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 			return
 		s.player.inventory.remove(cost_item, JsonUtil.get_int(cost, "count", 1))
 	used[aid] = today if limit == "day" else true
+	used["@" + aid] = s.clock.total_hours  # 한 시각(after가 본다)
 	say_line(s, JsonUtil.get_str(a, "line"), e, "info", JsonUtil.get_bool(a, "line_zone"))
 	if a.has("sound"):
 		s.sound.emit(JsonUtil.get_str(a, "sound"), e["pos"])

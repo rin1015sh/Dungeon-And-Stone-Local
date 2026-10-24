@@ -18,49 +18,7 @@
   "w": "gc_waterfall",
   "c": "gc_crystal"
  },
- "marks": {
-  "entry": [
-   0,
-   28
-  ],
-  "slots": [
-   [
-    30,
-    18
-   ],
-   [
-    72,
-    8
-   ],
-   [
-    84,
-    34
-   ]
-  ],
-  "exit": [
-   86,
-   0
-  ],
-  "hidden": [],
-  "hazards": [
-   [
-    22,
-    16
-   ],
-   [
-    36,
-    29
-   ],
-   [
-    61,
-    11
-   ],
-   [
-    71,
-    32
-   ]
-  ]
- },
+ "marks": {"entry": [0, 28], "slots": [[30, 18], [72, 8], [84, 34]], "exit": [86, 0], "hidden": [[2, 26]], "hazards": [[22, 16], [36, 29], [61, 11], [71, 32]]},
  "rows": [
   "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,KKKK",
   "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,KKKK",

@@ -1,0 +1,27 @@
+{
+  "id": "mine_heart",
+  "name_ko": "녹색 결정",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#5ab84a",
+  "rarity": "numbers",
+  "rift_bound": "rift_green_mine",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "permanent_stat",
+      "stat": "str",
+      "amount": 1,
+      "key": "mine_heart",
+      "max_times": 1
+    }
+  ],
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

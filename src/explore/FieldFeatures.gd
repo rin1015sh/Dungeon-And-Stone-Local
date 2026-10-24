@@ -2,7 +2,9 @@ class_name FieldFeatures
 extends RefCounted
 ## 동굴 요소(data/events — 자리는 FloorMap.features, 1층은 고정 지도에 구워 둔다)의 입장 한 번 동안의 상태와 규칙.
 ##   살피기(E): 서 있는 칸·옆 칸(4방향)의 요소. 할 수 있는 행동이 하나면 바로 하고, 여럿이면 choice(화면이 고르게 한 뒤 act).
-##   near {radius, line}: 반경 안에 처음 들어서면 문구 한 번.   hidden {stat, dc}: 옆(8방향)에 처음 오면 탐지 판정 한 번 —
+##   near {radius, line}: 반경 안에 처음 들어서면 문구 한 번.   hidden {"dark": true}: 횃불을 끈 채 옆에 오면 보인다(판정 없음).
+##   object: 지도에 이미 있는 물체 칸에 놓는 요소(균열 핏빛 우물 — RiftRun 챕터 "features", 타일을 바꾸지 않는다).
+##   hidden {stat, dc}: 옆(8방향)에 처음 오면 탐지 판정 한 번 —
 ##   성공해야 tile이 드러나고 살필 수 있다.   hazard: RiftHazards 묶음(함정·미끄러운 비탈)으로 깔고 밟으면 판정.
 ##   guard {monster}: 입장 때 그 자리에 지키는 무리(마릿수는 FieldMonsters.pack_count — 날짜별).   rest {radius, fatigue_per_hour}: 근처 휴식 보너스.
 ## 행동 하나의 실행은 FieldFeatureAct. 입장마다 새로(층이 입장마다 리셋되므로 다시 채워진다).
@@ -54,6 +56,16 @@ func add_runtime(s: ExploreSession, id: String, at: Vector2i) -> Dictionary:
 		s.map.set_tile(cell, tile)
 		s.tiles_changed.emit(Rect2i(cell, Vector2i.ONE))
 	return e
+
+
+## 정해진 칸에 요소를 놓는다(균열 챕터 "features" — 타일은 그대로, 그 칸·옆 칸에서 살핀다).
+func add_at(s: ExploreSession, id: String, cell: Vector2i) -> void:
+	var def := s.db.get_entry("events", id)
+	if def.is_empty() or _by_cell.has(cell):
+		return
+	var e := {"id": id, "pos": cell, "def": def, "found": true, "used": {}, "cleared": false, "noticed": false}
+	list.append(e)
+	_by_cell[cell] = e
 
 
 ## 입장 직후(몬스터가 나타난 뒤): 지키는 무리를 세운다.
@@ -150,10 +162,14 @@ func rest_bonus(p: Vector2i) -> float:
 
 
 func _detect(s: ExploreSession, e: Dictionary) -> void:
-	e["rolled"] = true
 	var check := JsonUtil.get_dict(e["def"], "hidden")
-	if not s.rng.chance(RiftHazards.success_chance(s.db, s.player, check)):
-		return
+	if JsonUtil.get_bool(check, "dark"):  # 어둠 속에서만 보인다(1층 어둠 속 수정): 불을 켜고 있으면 그냥 돌 — 다음에 꺼진 채 오면 보인다
+		if s.player.light.is_lit():
+			return
+	else:
+		e["rolled"] = true
+		if not s.rng.chance(RiftHazards.success_chance(s.db, s.player, check)):
+			return
 	e["found"] = true
 	var tile := JsonUtil.get_str(e["def"], "tile")
 	if not tile.is_empty():

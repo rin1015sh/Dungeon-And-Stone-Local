@@ -16,6 +16,7 @@ const WRONG := "wrong"
 var spec: Dictionary = {}
 var data: Dictionary = {}     ## 고른 문항
 var resolved: bool = false
+var outcome: String = ""      ## 답한 결과(PASS/WEAKEN/WRONG) — 히든 피스 조건(맞혔는가 — 강철의 묘 봉인된 관)
 var _order: Array[int] = []   ## 보여 줄 선택지 순서(입장 때 섞는다 — 자리로 답을 외우지 못하게)
 var _mural_hint: Dictionary = {}  ## 벽화 칸 -> 그 벽화가 보여 준 힌트 번호
 
@@ -90,8 +91,9 @@ func is_correct(choice: int) -> bool:
 
 ## 결과를 조우에 반영한다. pass면 조우를 치운 것으로(RiftRun.on_battle_end 승리), 아니면 전투 규칙에 문지기 상태를 넣는다.
 ## 전투를 시작해야 하면 true.
-func apply(cs: ExploreSession, g: FieldMonsters.Group, outcome: String) -> bool:
+func apply(cs: ExploreSession, g: FieldMonsters.Group, p_outcome: String) -> bool:
 	resolved = true
+	outcome = p_outcome
 	match outcome:
 		PASS:
 			cs.message.emit("explore.riddle_pass", {}, "good")
@@ -105,6 +107,11 @@ func apply(cs: ExploreSession, g: FieldMonsters.Group, outcome: String) -> bool:
 			g.battle_rules["enemy_statuses"] = [JsonUtil.get_str(spec, "empowered_status")]
 			cs.message.emit("explore.riddle_wrong", {}, "danger")
 	return true
+
+
+## 수수께끼를 맞혔는가(그냥 지나갔든 약하게 하고 싸웠든).
+func answered_right() -> bool:
+	return outcome == PASS or outcome == WEAKEN
 
 
 func _fact(i: int) -> String:

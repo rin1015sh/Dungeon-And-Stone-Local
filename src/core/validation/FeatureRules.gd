@@ -57,7 +57,10 @@ static func _feature(v: ValidatorBase, w: String, ev: Dictionary) -> void:
 	var actions := JsonUtil.get_array(ev, "actions")
 	if actions.is_empty() and not ev.has("near") and not ev.has("hazard"):
 		v.err(w, "actions·near·hazard 중 하나는 있어야 한다")
-	if not actions.is_empty() and tile.is_empty():
+	var obj := JsonUtil.get_str(ev, "object")  # 지도에 이미 있는 물체 칸에 놓는 요소(균열 핏빛 우물) — 그 물체가 보인다
+	if not obj.is_empty():
+		v.ref(w + ".object", "tiles", obj)
+	if not actions.is_empty() and tile.is_empty() and obj.is_empty():
 		v.err(w, "살필 행동이 있으면 tile이 있어야 한다(보이지 않으면 살필 수 없다)")
 	for a: Variant in actions:
 		_action(v, w + ".actions", a if a is Dictionary else {})
@@ -65,7 +68,7 @@ static func _feature(v: ValidatorBase, w: String, ev: Dictionary) -> void:
 		_line(v, w + ".near", JsonUtil.get_str(JsonUtil.get_dict(ev, "near"), "line"), false)
 	if ev.has("hidden"):
 		var h := JsonUtil.get_dict(ev, "hidden")
-		if not v.db.stats.has(JsonUtil.get_str(h, "stat")):
+		if not JsonUtil.get_bool(h, "dark") and not v.db.stats.has(JsonUtil.get_str(h, "stat")):  # dark: 불을 끈 채 와야 보인다(판정 없음)
 			v.err(w + ".hidden", "stat '%s' 없음" % h.get("stat"))
 		if h.has("line"):
 			_line(v, w + ".hidden", JsonUtil.get_str(h, "line"), false)

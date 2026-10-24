@@ -173,7 +173,7 @@ func test_mine_chapters_hidden_and_explosive() -> void:
 	assert_true(run.take_hidden(cs, at))
 	cs = run.use_exit(cs)
 	assert_true(cs != null and run.is_last_chapter(), "폭약으로 뚫는다")
-	assert_eq(s.player.inventory.count("mine_explosive"), 0)
+	assert_eq(s.player.inventory.count("mine_explosive"), 1, "상자에 두 개 — 하나가 남는다(히든 피스 H)")
 	assert_eq(s.player.inventory.count("green_gem"), 1)
 
 

@@ -1,0 +1,17 @@
+{
+  "id": "fortress_key",
+  "name_ko": "무기고 열쇠",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "pouch",
+  "color": "#6a5a48",
+  "rarity": "numbers",
+  "rift_bound": "rift_blood_fortress",
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

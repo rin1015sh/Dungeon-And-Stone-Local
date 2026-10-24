@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://clxgew53f7kps"
-path="res://.godot/imported/rift_horn.webp-757185e44e845209abeb897799dd7bad.ctex"
+uid="uid://bjp5hme5daaxj"
+path="res://.godot/imported/eternal_ice.webp-5f670333291f5109f60441d1d2625925.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/items/rift_horn.webp"
-dest_files=["res://.godot/imported/rift_horn.webp-757185e44e845209abeb897799dd7bad.ctex"]
+source_file="res://assets/items/eternal_ice.webp"
+dest_files=["res://.godot/imported/eternal_ice.webp-5f670333291f5109f60441d1d2625925.ctex"]
 
 [params]
 

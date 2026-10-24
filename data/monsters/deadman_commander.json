@@ -47,12 +47,7 @@
     "row": "front"
   },
   "essence_drops": [],
-  "drops": [
-    {
-      "item": "rift_horn",
-      "chance": 1.0
-    }
-  ],
+  "drops": [],
   "skills": [
     "deadman_march_order",
     "deadman_chop"

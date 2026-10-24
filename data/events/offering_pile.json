@@ -39,7 +39,42 @@
         }
       ],
       "done": "field.offering_taken"
+    },
+    {
+      "id": "offer_mushroom",
+      "name_ko": "수정 버섯을 바친다",
+      "limit": "once",
+      "line": "field.offering_mushroom",
+      "cost": {
+        "item": "crystal_mushroom",
+        "count": 3
+      },
+      "missing": "field.offering_no_mushroom",
+      "done": "field.offering_mushroom_done"
+    },
+    {
+      "id": "answer",
+      "name_ko": "공물 더미를 들여다본다",
+      "limit": "once",
+      "after": {
+        "action": "offer_mushroom",
+        "hours": 24
+      },
+      "line": "field.offering_answer",
+      "effects": [
+        {
+          "type": "permanent_stat",
+          "stat": "soul_regen",
+          "amount": 2,
+          "key": "offering_answer",
+          "max_times": 1
+        }
+      ],
+      "missing": "field.offering_nothing",
+      "wait": "field.offering_wait",
+      "done": "field.offering_answered"
     }
   ],
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "2026-10-24 히든 피스 Q: 수정 버섯 3개를 바치고 24시간 뒤 들여다보면 영혼 재생력 +2 영구(1번)"
 }

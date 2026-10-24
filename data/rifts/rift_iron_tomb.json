@@ -151,6 +151,16 @@
           "tile": "tomb_mural",
           "mural": true,
           "message": "explore.mural_read"
+        },
+        {
+          "id": "tomb_oil",
+          "item": "tomb_oil",
+          "tile": "tomb_oil_niche",
+          "needs": {
+            "hazards": "no_fail"
+          },
+          "locked": "explore.hidden.tomb_oil_locked",
+          "message": "explore.hidden.tomb_oil"
         }
       ],
       "hazards": [
@@ -256,6 +266,19 @@
           "tile": "tomb_mural",
           "mural": true,
           "message": "explore.mural_read"
+        },
+        {
+          "id": "steel_relic",
+          "item": "steel_relic",
+          "tile": "tomb_relic_box",
+          "reveal": {
+            "hazard": "blades",
+            "how": [
+              "bypass"
+            ]
+          },
+          "reveal_message": "explore.hidden.steel_relic_reveal",
+          "message": "explore.hidden.steel_relic"
         }
       ],
       "hazards": [
@@ -278,7 +301,7 @@
           },
           "bypass": {
             "stat": "p_res",
-            "at_least": 30,
+            "at_least": 22,
             "message": "explore.trap_crushed"
           },
           "fail": [
@@ -409,10 +432,85 @@
         {
           "kind": "guardian"
         }
+      ],
+      "hidden": [
+        {
+          "id": "death_mask",
+          "item": "death_mask",
+          "tile": "tomb_sealed_coffin",
+          "needs": {
+            "riddle": "correct"
+          },
+          "locked": "explore.hidden.coffin_locked",
+          "message": "explore.hidden.death_mask"
+        },
+        {
+          "id": "tomb_gold_1",
+          "item": "tomb_gold",
+          "tile": "tomb_treasure_pile",
+          "one_of": "tomb_treasure",
+          "look_if": "murals",
+          "look_message": "explore.hidden.treasure_mark",
+          "plain_message": "explore.hidden.treasure_plain",
+          "decoy": {
+            "status": "tomb_curse",
+            "message": "explore.hidden.treasure_cursed"
+          },
+          "message": "explore.hidden.tomb_gold"
+        },
+        {
+          "id": "tomb_gold_2",
+          "item": "tomb_gold",
+          "tile": "tomb_treasure_pile",
+          "one_of": "tomb_treasure",
+          "look_if": "murals",
+          "look_message": "explore.hidden.treasure_mark",
+          "plain_message": "explore.hidden.treasure_plain",
+          "decoy": {
+            "status": "tomb_curse",
+            "message": "explore.hidden.treasure_cursed"
+          },
+          "message": "explore.hidden.tomb_gold"
+        },
+        {
+          "id": "tomb_gold_3",
+          "item": "tomb_gold",
+          "tile": "tomb_treasure_pile",
+          "one_of": "tomb_treasure",
+          "look_if": "murals",
+          "look_message": "explore.hidden.treasure_mark",
+          "plain_message": "explore.hidden.treasure_plain",
+          "decoy": {
+            "status": "tomb_curse",
+            "message": "explore.hidden.treasure_cursed"
+          },
+          "message": "explore.hidden.tomb_gold"
+        }
       ]
     }
   ],
-  "hidden_pieces": [],
+  "hidden_pieces": [
+    {
+      "id": "tomb_oil",
+      "name_ko": "묘지기의 성유",
+      "chapter": "ch1"
+    },
+    {
+      "id": "steel_relic",
+      "name_ko": "강철 사리",
+      "chapter": "ch2"
+    },
+    {
+      "id": "death_mask",
+      "name_ko": "데스마스크",
+      "chapter": "ch4"
+    },
+    {
+      "id": "tomb_gold",
+      "name_ko": "황금 부장품",
+      "chapter": "ch4"
+    }
+  ],
   "notes": "명세 §12. 변종 수호자 없음(명세). 넘버스는 다음 배치 — numbers 비움. 함정은 RiftHazards(숨음·탐지·해제), 수수께끼는 RiftRiddle + data/riddles",
   "riddle": {
     "set": "iron_tomb",

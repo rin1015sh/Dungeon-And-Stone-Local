@@ -400,6 +400,18 @@
           "pass_message": "explore.hazard_rope_pass",
           "fail_message": "explore.hazard_rope_fail"
         }
+      ],
+      "hidden": [
+        {
+          "id": "snow_lotus",
+          "item": "snow_lotus",
+          "tile": "glacier_falls",
+          "needs": {
+            "hazards": "all_pass"
+          },
+          "locked": "explore.hidden.falls_locked",
+          "message": "explore.hidden.snow_lotus"
+        }
       ]
     },
     {
@@ -416,6 +428,18 @@
       ],
       "field_effects": [
         "hypothermia"
+      ],
+      "hidden": [
+        {
+          "id": "eternal_ice",
+          "item": "eternal_ice",
+          "tile": "glacier_ice_core",
+          "needs": {
+            "guardian": true
+          },
+          "locked": "explore.hidden.ice_core_locked",
+          "message": "explore.hidden.eternal_ice"
+        }
       ]
     }
   ],
@@ -429,6 +453,16 @@
       "id": "mana_ice_shard",
       "name_ko": "마력이 깃든 얼음 조각",
       "chapter": "ch2"
+    },
+    {
+      "id": "snow_lotus",
+      "name_ko": "설련화",
+      "chapter": "ch3"
+    },
+    {
+      "id": "eternal_ice",
+      "name_ko": "만년빙 결정",
+      "chapter": "ch4"
     }
   ],
   "notes": "명세 §10. 넘버스 후보(설원의 몽둥이 No.9712)는 다음 배치(명세) — numbers 비움. 3챕터 탐험 위험은 RiftHazards"

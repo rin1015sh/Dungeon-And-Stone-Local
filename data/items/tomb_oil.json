@@ -1,0 +1,27 @@
+{
+  "id": "tomb_oil",
+  "name_ko": "묘지기의 성유",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#c89a3a",
+  "rarity": "numbers",
+  "rift_bound": "rift_iron_tomb",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "permanent_stat",
+      "stat": "agi",
+      "amount": 1,
+      "key": "tomb_oil",
+      "max_times": 1
+    }
+  ],
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

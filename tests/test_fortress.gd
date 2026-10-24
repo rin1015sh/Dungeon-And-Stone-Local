@@ -220,7 +220,7 @@ func test_goddess_tear_and_horn_and_hidden() -> void:
 	assert_true(dm.actor.dead or dm.actor.statuses.has("tear_sealed"), "언데드에게 봉인 + 큰 피해")
 	assert_near(cw.actor.pool.get_current("hp"), hp_cw, 0.001, "짐승은 그대로")
 	var drops := Loot.roll(db, "deadman_commander", Rng.new(1))
-	assert_true(drops.any(func(d: Dictionary) -> bool: return d["id"] == "rift_horn"), "지휘관 데드맨: 뿔피리 확정")
+	assert_false(drops.any(func(d: Dictionary) -> bool: return not d["id"].begins_with("magic_stone")), "지휘관 데드맨: 마석 말고는 떨어뜨리지 않는다(RF17)")
 	var reg := ContentRegistries.new()
 	var def := db.get_entry("floors", "f1_crystal_cave")
 	var s := ExploreSession.new(db, def, reg.generator("crystal_cave").generate(db, def, Rng.new(3)), _pc(), GameClock.new(), Rng.new(4), reg.effects)
@@ -230,7 +230,6 @@ func test_goddess_tear_and_horn_and_hidden() -> void:
 	var cs := s.rifts.enter(s, s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0])
 	var run := cs.rift_run
 	run.debug_clear()
-	s.player.inventory.add("rift_horn", 1)
 	cs = run.use_exit(cs)
 	run.debug_clear()
 	cs = run.use_exit(cs)

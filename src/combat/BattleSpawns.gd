@@ -9,6 +9,9 @@ const EXPIRE := "expire_in"
 
 
 static func split(b: Battle, c: Combatant, e: Dictionary) -> void:
+	if c.actor.statuses.has_flag("no_split"):  # 폭약에 그을려 갈라지지 못한다(녹색 탄광)
+		b.message.emit("combat.split_blocked", {"name": c.label()}, "good")
+		return
 	if not c.actor is Monster or b.side_units(c.side).size() >= int(b.db.bal("combat.max_side_units", 6)):
 		b.message.emit("combat.summon_fail", {"name": c.label()}, "info")
 		return

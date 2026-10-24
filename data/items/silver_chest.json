@@ -1,0 +1,16 @@
+{
+  "id": "silver_chest",
+  "name_ko": "성채 은화 상자",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 50000,
+  "icon": "gem",
+  "color": "#b8bcc0",
+  "rarity": "numbers",
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

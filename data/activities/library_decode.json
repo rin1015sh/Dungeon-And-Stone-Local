@@ -1,0 +1,18 @@
+{
+  "id": "library_decode",
+  "name_ko": "고서 해독",
+  "facility": "library",
+  "cost_stones": 0,
+  "requires_item": "necronomicon",
+  "effects": [
+    {
+      "type": "item_boon",
+      "item": "necronomicon",
+      "stat": "resist_dark",
+      "amount": 3,
+      "key": "necronomicon",
+      "learn_family": "undead"
+    }
+  ],
+  "source": "placeholder"
+}

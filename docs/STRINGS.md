@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(895줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(939줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -215,7 +215,6 @@
 - `explore.rift_exit_needs` 길이 막혀 있다. [{item}]이(가) 있어야 할 것 같다.
 - `explore.rift_exit_used` [{item}]을(를) 썼다.
 - `explore.rift_key_held` 가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.
-- `explore.fortress_horn` 해자에 핏물이 차오른다…
 - `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.
 - `explore.fortress_necronomicon` 썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].
 - `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
@@ -309,6 +308,10 @@
 - `explore.riddle_weaken` 문지기를 묶던 봉인이 풀린다 — 약해진 문지기가 창을 겨눈다.
 - `explore.riddle_wrong` 틀렸다. 문지기의 문양이 붉게 타오른다!
 - `explore.hud_fatigue` 피로도 {value}
+- `explore.hidden_revealed` 무언가 드러났다.
+- `explore.hidden_locked` 지금은 아무것도 할 수 없다.
+- `explore.hidden_failed` 손에 넣지 못했다.
+- `explore.hidden_decoy` 손대자마자 무너져 내렸다.
 
 ### `explore.party`
 
@@ -336,6 +339,30 @@
 - `explore.party.opt.pay` 마석 절반을 내놓는다
 - `explore.party.opt.fight` 싸운다
 
+### `explore.hidden`
+
+- `explore.hidden.tomb_oil` 벽감 깊숙이 봉해진 기름 단지가 그대로 있다. 묘지기들이 관절에 바르던 [{item}]이다.
+- `explore.hidden.tomb_oil_locked` 벽감 안의 기름 단지가 깨져 있다. 함정이 울린 진동에 쓰러진 모양이다.
+- `explore.hidden.steel_relic_reveal` 칼날이 부서지며 홈 바닥이 갈라졌다. 틈에서 작은 함 하나가 굴러 나왔다.
+- `explore.hidden.steel_relic` 작은 함 속에 쇳빛 구슬이 들어 있다 — [{item}].
+- `explore.hidden.coffin_locked` 관 뚜껑에 봉인이 걸려 있다. 문지기의 물음에 답한 자만 열 수 있을 것 같다.
+- `explore.hidden.death_mask` 봉인이 풀린 관 안, 이름 모를 왕의 얼굴에 [{item}]가 씌워져 있다.
+- `explore.hidden.treasure_mark` 금화 사이에 벽화와 같은 문양이 새겨진 상자가 묻혀 있다.
+- `explore.hidden.treasure_plain` 금화가 수북하다. 아무 문양도 없다.
+- `explore.hidden.treasure_cursed` 금화가 손안에서 잿가루로 부서졌다. 차가운 기운이 등줄기를 타고 오른다.
+- `explore.hidden.tomb_gold` 금화 더미 속에서 [{item}]을 끌어냈다.
+- `explore.hidden.fortress_key` 고문대 손잡이에 녹슨 열쇠꾸러미가 걸려 있다 — [{item}].
+- `explore.hidden.wagon_locked` 수레 짐칸에 자물쇠가 채워져 있다.
+- `explore.hidden.silver_chest` 열쇠가 맞았다. 짐칸 깊숙한 곳에 [{item}]가 실려 있다.
+- `explore.hidden.falls_locked` 물보라가 거세다. 젖은 몸으로는 폭포 뒤로 들어갈 엄두가 나지 않는다.
+- `explore.hidden.snow_lotus` 폭포 뒤 바위틈에 얼음꽃 한 송이가 피어 있다 — [{item}].
+- `explore.hidden.ice_core_locked` 얼음 가루가 쉴 새 없이 쏟아져 고드름 속이 보이지 않는다.
+- `explore.hidden.eternal_ice` 가루가 그친 공동, 고드름 속에 푸른 결정이 갇혀 있다. 조심스레 깨어 [{item}]을 꺼냈다.
+- `explore.hidden.cart_fail` 광차를 힘껏 밀었지만 바퀴가 철로에서 빠지며 옆으로 넘어졌다.
+- `explore.hidden.mine_heart` 광차가 무너진 벽을 들이받자 숨은 갱도가 열렸다. 안쪽에서 [{item}]이 빛난다.
+- `explore.hidden.vein_reveal` 다리를 건너뛰는 순간, 아래 벼랑에 녹색 광맥이 드러난 것이 보였다.
+- `explore.hidden.green_vein` 벼랑에 붙은 광맥에서 [{item}]를 떼어 냈다.
+
 <a id="effect"></a>
 ## 효과 `effect`
 
@@ -358,6 +385,7 @@
 - `effect.fatigue_down` 피로가 {amount}만큼 풀렸다.
 - `effect.fatigue_up` 피로가 {amount}만큼 쌓였다.
 - `effect.fatigue_none` 지친 데가 없다.
+- `effect.battle_only` 싸울 때 쓰는 물건이다.
 
 <a id="debug"></a>
 ## 디버그 `debug`
@@ -611,6 +639,7 @@
 - `combat.banner_skill` {skill}
 - `combat.banner_item` {item}
 - `combat.start_first` {enemies}을(를) 먼저 발견했다. 싸운다.
+- `combat.split_blocked` {name}이(가) 그을린 몸을 비틀지만 갈라지지 못한다.
 
 <a id="knowledge"></a>
 ## 지식 `knowledge`
@@ -848,6 +877,7 @@
 - `city.shop_tab_sell` 판매
 - `city.reason_closed` 문이 닫혀 있다
 - `city.debug_street` 거리 사건
+- `city.reason_no_item` 필요한 물건이 없다.
 
 ### `city.fx`
 
@@ -886,6 +916,9 @@
 - `city.fx.no_survey` 의뢰받은 조사가 없다.
 - `city.fx.survey_paid` {name} 조사 {n}건을 넘기고 {stones} 스톤을 받았다.
 - `city.fx.meal_none` 오늘은 내올 요리가 없다고 한다.
+- `city.fx.item_boon` {stat}이(가) 단단해졌다.
+- `city.fx.item_boon_none` 해독할 책이 없다.
+- `city.fx.item_boon_known` 이미 읽어 낸 책이다.
 
 ### `city.lines`
 
@@ -976,6 +1009,11 @@
 - `city.lines.inn_feast.fatigue_down.2` 오랜만에 사람 사는 맛을 봤다.
 
 - `city.lines.inn_feast.fatigue_same.1` 접시를 깨끗이 비웠다.
+
+#### `city.lines.library_decode`
+
+- `city.lines.library_decode.item_boon.1` 밤새 검은 책장을 넘겼다. 마지막 장을 덮자 책은 재가 되어 흩어졌고, 어둠을 견디는 법만 머리에 남았다.
+- `city.lines.library_decode.item_boon.2` 사서가 등불을 몇 번이나 갈아 주었다. 해독을 마친 책은 손안에서 바스러졌다.
 
 ### `city.tax_execution`
 
@@ -1179,6 +1217,18 @@
 - `field.mud_tracks` 진흙 바닥에 무리가 지나간 발자국이 깊게 패어 있다. 아직 축축하다.
 - `field.breeze` 바위 틈에서 서늘한 바람이 새어 나온다. 어딘가 큰 공간이 있다.
 - `field.cairn` 누군가 납작한 돌을 쌓아 탑을 세웠다. 맨 위의 돌에는 아직 먼지가 앉지 않았다.
+- `field.blood_well_pour` 손바닥을 그어 우물에 피를 흘려 넣었다. 바닥에서 검붉은 잔이 떠오른다.
+- `field.blood_well_done` 우물은 더 이상 피를 받지 않는다.
+- `field.blood_well_look` 우물 바닥에서 비릿한 냄새가 올라온다. 무언가가 목마른 것 같다.
+- `field.dark_crystal_found` 어둠 속에서 무언가 희미하게 빛난다. 불빛 아래서는 그냥 돌이었을 것이다.
+- `field.dark_crystal_touch` 손끝이 닿자 수정의 빛이 눈 속으로 스며들었다. 어둠의 결이 조금 더 또렷하다.
+- `field.offering_mushroom` 수정 버섯 세 송이를 공물 더미 위에 가지런히 올려 두었다.
+- `field.offering_no_mushroom` 바칠 것이 모자라다.
+- `field.offering_mushroom_done` 버섯은 이미 올려 두었다.
+- `field.offering_nothing` 돌과 마석 부스러기뿐이다.
+- `field.offering_wait` 올려 둔 버섯이 그대로다.
+- `field.offering_answer` 버섯은 사라지고, 그 자리에 서늘한 기운이 고여 있다. 들이마시자 넋이 맑아진다.
+- `field.offering_answered` 공물 더미는 조용하다.
 
 ### `field.corpse`
 

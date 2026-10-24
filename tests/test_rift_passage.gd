@@ -87,20 +87,26 @@ func test_walk_forward_and_back_keeps_state() -> void:
 
 
 func test_exit_item_used_once() -> void:
-	var cs := _enter("rift_blood_fortress")
+	var cs := _enter("rift_green_mine")
 	var run := cs.rift_run
 	var pc := cs.player
+	pc.stats.set_base("str", 5.0)  # 폭약 없이 부수지 못하게
+	for i in 2:  # 3챕터(절벽의 원형 계단 — 출구에 폭약)까지
+		run.debug_clear()
+		cs = _step_on(cs, _exit_pos(cs))
+	assert_eq(run.chapter, 2)
+	pc.inventory.remove("mine_explosive", pc.inventory.count("mine_explosive"))
 	run.debug_clear()
 	var exit := _exit_pos(cs)
-	assert_eq(_step_on(cs, exit), null, "뿔피리가 없으면 넘어가지 않는다")
-	pc.inventory.add("rift_horn", 1)
-	cs.relocate(cs.map.entry)
-	var second := _step_on(cs, exit)
-	assert_true(second != null and pc.inventory.count("rift_horn") == 0, "뿔피리를 쓰고 넘어간다")
-	var first := _step_on(second, second.map.entry)
-	assert_true(first != null and run.chapter == 0)
-	first.relocate(first.map.entry)
-	assert_true(_step_on(first, exit) != null, "한 번 지난 길목은 뿔피리 없이 다시 지난다")
+	assert_eq(_step_on(cs, exit), null, "폭약이 없으면 넘어가지 않는다")
+	pc.inventory.add("mine_explosive", 1)
+	cs.relocate(cs.map.slots[0])  # 시작 자리는 뒤 길목이라(2챕터로 되돌아간다) 조우 자리로
+	var fourth := _step_on(cs, exit)
+	assert_true(fourth != null and pc.inventory.count("mine_explosive") == 0, "폭약을 쓰고 넘어간다")
+	var third := _step_on(fourth, fourth.map.entry)
+	assert_true(third != null and run.chapter == 2)
+	third.relocate(third.map.slots[0])
+	assert_true(_step_on(third, exit) != null, "한 번 지난 길목은 폭약 없이 다시 지난다")
 
 
 func test_finish_drops_kept_chapters() -> void:

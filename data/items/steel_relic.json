@@ -1,0 +1,27 @@
+{
+  "id": "steel_relic",
+  "name_ko": "강철 사리",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "potion",
+  "color": "#8a9098",
+  "rarity": "numbers",
+  "rift_bound": "rift_iron_tomb",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "permanent_stat",
+      "stat": "p_res",
+      "amount": 1,
+      "key": "steel_relic",
+      "max_times": 1
+    }
+  ],
+  "source": "placeholder",
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+}

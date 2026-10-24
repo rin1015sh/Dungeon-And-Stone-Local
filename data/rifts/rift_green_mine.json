@@ -196,6 +196,17 @@
           "item": "green_gem",
           "tile": "rail_wall_cracked",
           "message": "explore.mine_gem"
+        },
+        {
+          "id": "mine_heart",
+          "item": "mine_heart",
+          "tile": "mine_cart_push",
+          "check": {
+            "stat": "str",
+            "dc": 14
+          },
+          "fail_message": "explore.hidden.cart_fail",
+          "message": "explore.hidden.mine_heart"
         }
       ]
     },
@@ -241,6 +252,19 @@
           "item": "gobl_quartz",
           "tile": "ore_vein",
           "message": "explore.mine_quartz"
+        },
+        {
+          "id": "green_vein",
+          "item": "green_vein",
+          "tile": "mine_bridge_vein",
+          "reveal": {
+            "hazard": "bridge",
+            "how": [
+              "pass"
+            ]
+          },
+          "reveal_message": "explore.hidden.vein_reveal",
+          "message": "explore.hidden.green_vein"
         }
       ],
       "hazards": [
@@ -293,7 +317,8 @@
           "id": "mine_explosive",
           "item": "mine_explosive",
           "tile": "explosive_crate",
-          "message": "explore.mine_explosive"
+          "message": "explore.mine_explosive",
+          "count": 2
         }
       ],
       "hazards": [
@@ -357,6 +382,16 @@
     {
       "id": "gobl_quartz",
       "name_ko": "고블 쿼츠",
+      "chapter": "ch2"
+    },
+    {
+      "id": "mine_heart",
+      "name_ko": "녹색 결정",
+      "chapter": "ch1"
+    },
+    {
+      "id": "green_vein",
+      "name_ko": "녹색 광맥 덩이",
       "chapter": "ch2"
     }
   ],

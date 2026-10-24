@@ -50,7 +50,14 @@ func test_chapters_are_walkable_and_anchored() -> void:
 				for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
 					ok = ok or (m.in_bounds(p + d) and seen[m.idx(p + d)] == 1)
 				assert_true(ok, "히든 피스 옆 칸에 닿는다 %s %s" % [where, p])
-			assert_eq(run.hidden.at.size(), JsonUtil.get_array(run.chapters()[i], "hidden").size(), "히든 피스가 다 놓인다: " + where)
+			var listed := JsonUtil.get_array(run.chapters()[i], "hidden")
+			assert_eq(run.hidden.at.size(), listed.filter(func(h: Variant) -> bool: return not (h as Dictionary).has("reveal")).size(),
+				"히든 피스가 다 놓인다(나중에 드러나는 것 빼고): " + where)
+			for p: Vector2i in m.anchors.get("hidden", []):  # 나중에 드러나는 자리도 옆 칸에 닿는다
+				var near := false
+				for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+					near = near or (m.in_bounds(p + d) and seen[m.idx(p + d)] == 1)
+				assert_true(near, "히든 피스 자리 옆 칸에 닿는다 %s %s" % [where, p])
 
 
 ## 함정·위험 묶음은 설계도 바닥 무늬에 맞물린다(사용자 2026-10-23): 묶음 칸은 모두 가운데 칸과 같은 설계도 바닥(카펫·홈·계단을 넘지 않는다),

@@ -14,8 +14,10 @@ const BY_ID := {
 	"green_gem": "gem", "gnome_trinket": "pebble", "whetstone": "whetstone", "explorer_tag": "tag", "rift_stone": "tablet",
 	"floor_stone_1": "tablet", "mine_explosive": "dynamite", "smoke_bomb": "pot_bomb", "ration": "bundle", "stone_bread": "bread",
 	"leftovers": "meat", "crystal_mushroom": "mushroom", "bandage": "bandage", "torch": "torch", "torch_stub": "stub",
-	"lantern": "lantern", "necronomicon": "book", "rift_horn": "horn", "copper_ring": "ring", "bone_amulet": "amulet",
+	"lantern": "lantern", "necronomicon": "book", "copper_ring": "ring", "bone_amulet": "amulet",
 	"dread_bone_greatsword": "bone_greatsword",
+	"tomb_oil": "vial", "steel_relic": "orb", "death_mask": "tablet", "tomb_gold": "gem", "fortress_key": "tag", "silver_chest": "tablet",
+	"blood_chalice": "flask", "snow_lotus": "mushroom", "eternal_ice": "shard", "mine_heart": "cluster", "green_vein": "crystal",
 }
 const BY_ICON := {"potion": "flask", "stone": "crystal", "gem": "gem", "bomb": "pot_bomb", "food": "bundle", "bread": "bread",
 	"torch": "torch", "lantern": "lantern", "book": "book", "horn": "horn", "ring": "ring", "amulet": "amulet", "pouch": "bundle"}

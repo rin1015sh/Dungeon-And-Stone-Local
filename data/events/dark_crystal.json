@@ -1,0 +1,30 @@
+{
+  "id": "dark_crystal",
+  "name_ko": "희미하게 빛나는 수정",
+  "type": "feature",
+  "tile": "feat_dark_crystal",
+  "hidden": {
+    "dark": true,
+    "line": "field.dark_crystal_found"
+  },
+  "actions": [
+    {
+      "id": "touch",
+      "name_ko": "수정에 손을 댄다",
+      "limit": "once",
+      "line": "field.dark_crystal_touch",
+      "effects": [
+        {
+          "type": "permanent_stat",
+          "stat": "sight",
+          "amount": 5,
+          "key": "dark_crystal",
+          "max_times": 1
+        }
+      ],
+      "clear": true
+    }
+  ],
+  "source": "original",
+  "notes": "1층 히든 피스 O(2026-10-24, rift_hidden_pieces §6) — 암흑지대 서쪽 팔 끝, 횃불을 끈 채 옆을 지나야 보인다. 시각 +5 영구(1번)"
+}

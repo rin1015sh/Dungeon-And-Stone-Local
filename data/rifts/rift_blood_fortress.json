@@ -175,7 +175,7 @@
     {
       "id": "ch1",
       "name_ko": "외곽 검문소",
-      "desc_ko": "데드맨들이 지키는 검문소. 지휘관이 뿔피리를 지녔다.",
+      "desc_ko": "데드맨들이 지키는 검문소.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch1.json"
       },
@@ -196,11 +196,7 @@
             "deadman"
           ]
         }
-      ],
-      "exit_requires": {
-        "item": "rift_horn",
-        "message": "explore.fortress_horn"
-      }
+      ]
     },
     {
       "id": "ch2",
@@ -228,6 +224,19 @@
               2
             ]
           }
+        }
+      ],
+      "hidden": [
+        {
+          "id": "silver_chest",
+          "item": "silver_chest",
+          "tile": "fortress_locked_wagon",
+          "needs": {
+            "item": "fortress_key",
+            "consume": true
+          },
+          "locked": "explore.hidden.wagon_locked",
+          "message": "explore.hidden.silver_chest"
         }
       ]
     },
@@ -265,6 +274,15 @@
           "item": "goddess_tear",
           "tile": "fountain_statue",
           "message": "explore.fortress_tear"
+        }
+      ],
+      "features": [
+        {
+          "id": "blood_well",
+          "at": [
+            22,
+            22
+          ]
         }
       ]
     },
@@ -310,6 +328,14 @@
             "corpse_golem"
           ],
           "midboss": true
+        }
+      ],
+      "hidden": [
+        {
+          "id": "fortress_key",
+          "item": "fortress_key",
+          "tile": "fortress_rack_key",
+          "message": "explore.hidden.fortress_key"
         }
       ]
     },
@@ -359,6 +385,21 @@
       "id": "necronomicon",
       "name_ko": "네크로노미콘",
       "chapter": "ch5"
+    },
+    {
+      "id": "silver_chest",
+      "name_ko": "성채 은화 상자",
+      "chapter": "ch2"
+    },
+    {
+      "id": "fortress_key",
+      "name_ko": "무기고 열쇠",
+      "chapter": "ch4"
+    },
+    {
+      "id": "blood_chalice",
+      "name_ko": "피의 성배",
+      "chapter": "ch3"
     }
   ],
   "notes": "명세 §9. 넘버스 후보는 다음 배치(명세) — numbers 비움"
