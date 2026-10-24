@@ -11,14 +11,14 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.765,
+      "power": 1.35,
       "damage_type": "dark",
       "base": 8
     },
     {
       "type": "apply_status",
       "status": "fear",
-      "chance": 0.15
+      "chance": 0.25
     }
   ],
   "essence_of": "banshee_wail",

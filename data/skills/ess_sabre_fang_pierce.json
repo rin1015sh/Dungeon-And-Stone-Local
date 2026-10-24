@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.105,
+      "power": 1.35,
       "damage_type": "pierce",
       "defense_ignore": 0.2,
       "power_if_hp_below": {

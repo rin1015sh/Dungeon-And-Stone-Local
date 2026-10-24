@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(948줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(951줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -480,8 +480,11 @@
 - `combat.sub_stack` ×{n}
 - `combat.no_usable_item` 전투 중에 쓸 수 있는 소지품이 없다.
 - `combat.target_statuses` 상태: {list}
-- `combat.brief_damage` {type} 피해
+- `combat.brief_damage` {type} 피해 {power}%
+- `combat.brief_hits` {text} ×{n}
+- `combat.extra_turn` 추가 턴
 - `combat.brief_status` [{status}]
+- `combat.brief_status_chance` [{status}] {chance}%
 - `combat.brief_barrier` 보호막
 - `combat.brief_restore` {res} 회복
 - `combat.brief_summon` 소환

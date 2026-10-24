@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.765,
+      "power": 1.35,
       "damage_type": "pierce",
       "crit_bonus": 0.15,
       "power_if_status": {

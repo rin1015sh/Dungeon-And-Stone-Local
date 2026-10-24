@@ -11,14 +11,19 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.51,
+      "power": 0.675,
       "damage_type": "pierce"
     },
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.51,
+      "power": 0.675,
       "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "vulnerable",
+      "chance": 0.5
     }
   ],
   "essence_of": "liz_trident_combo",

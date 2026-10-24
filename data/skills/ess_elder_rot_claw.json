@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.68,
+      "power": 1.35,
       "damage_type": "slash"
     },
     {

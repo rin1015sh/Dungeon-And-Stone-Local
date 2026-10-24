@@ -11,25 +11,25 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.3,
+      "power": 0.45,
       "damage_type": "slash"
     },
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.3,
+      "power": 0.45,
       "damage_type": "slash"
     },
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.3,
+      "power": 0.45,
       "damage_type": "slash"
     },
     {
       "type": "apply_status",
       "status": "bleeding",
-      "chance": 0.15
+      "chance": 0.5
     }
   ],
   "essence_of": "tarun_frenzied_claws",

@@ -11,9 +11,14 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.85,
+      "power": 1.35,
       "damage_type": "dark",
       "base": 6
+    },
+    {
+      "type": "apply_status",
+      "status": "intimidated",
+      "chance": 0.5
     }
   ],
   "essence_of": "skeleton_shadow_arrow",

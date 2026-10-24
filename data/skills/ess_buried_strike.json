@@ -11,8 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.02,
+      "power": 1.35,
       "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.5
     }
   ],
   "essence_of": "buried_strike",

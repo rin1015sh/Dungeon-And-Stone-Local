@@ -83,6 +83,7 @@ static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: R
 
 func add(actor: Actor, side: int, row: String = "front") -> Combatant:
 	var c := Combatant.new(actor, side, row, units.size())
+	c.joined_at = turns
 	units.append(c)
 	timeline.add(c)
 	return c
@@ -142,6 +143,17 @@ func preview(n: int) -> Array[Combatant]:
 	return timeline.preview(n)
 
 
+## 추가 차례(C14): 지난 자기 차례 뒤로 아직 차례가 오지 않은 다른 참가자(전장에 남은 — 양쪽 모두)가 있다.
+## 전투 중에 들어온 개체(소환·증원)는 들어온 뒤의 차례만 센다.
+func _is_extra(c: Combatant) -> bool:
+	if c.last_turn < 0:
+		return false
+	for u in units:
+		if u != c and u.is_active() and u.last_turn < c.last_turn and u.joined_at < c.last_turn:
+			return true
+	return false
+
+
 ## 다음 차례로 넘긴다. 차례 시작 처리(주기 효과·지속시간·재생·쿨타임) 뒤 기절이면 건너뛴다.
 ## 이미 행동을 기다리는 차례가 있으면 그 차례를 그대로 돌려준다(게이지를 두 번 진행하지 않는다).
 func next_turn() -> Combatant:
@@ -158,6 +170,8 @@ func next_turn() -> Combatant:
 			_check_end()
 			return null
 		turns += 1
+		c.extra_turn = _is_extra(c)
+		c.last_turn = turns
 		_busy += 1
 		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
 		if not bool(c.memo.get("in_extra", false)):  # 추가 행동(같은 라운드의 두 번째 차례)은 지속시간·쿨타임을 다시 세지 않는다

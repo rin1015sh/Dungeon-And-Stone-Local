@@ -17,6 +17,9 @@ var acted: int = 0              ## 이번 전투에서 행동한 횟수(AI 첫 �
 var was_hit: bool = false       ## 마지막 자기 행동 뒤에 피해를 받았는가(AI)
 var memo: Dictionary = {}       ## 보스 패턴·예고 공격의 전투 중 기록(BossHooks, BattleDelayed)
 var summoned: bool = false      ## 전투 중 생겨난 개체(소환·분열·동반·증원). 아군 소환수는 AI가 움직이고 승패에 들지 않는다
+var last_turn: int = -1         ## 마지막으로 차례가 온 순번(Battle.turns)
+var joined_at: int = 0          ## 들어온 때의 Battle.turns(소환·증원은 그 뒤 차례만 추가 차례 판정에 센다)
+var extra_turn: bool = false    ## 지금 차례가 추가 차례인가 — 지난 자기 차례 뒤로 아직 차례가 오지 않은 다른 참가자가 있다(민첩, C14)
 
 
 func _init(p_actor: Actor, p_side: int, p_row: String = "front", p_order: int = 0) -> void:

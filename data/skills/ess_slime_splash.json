@@ -11,14 +11,14 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.425,
+      "power": 0.5,
       "damage_type": "poison",
       "base": 4
     },
     {
       "type": "apply_status",
       "status": "blind",
-      "chance": 0.225
+      "chance": 0.6
     }
   ],
   "essence_of": "slime_splash",

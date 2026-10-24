@@ -22,6 +22,7 @@ extends Node
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
 ## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께), --meal_pick=<요리 id>: 도시 여관 식사에서 그 요리(그림 확인)
 ## --statuses=<id,id>: --combat에서 적 모두에게 그 상태(머리 위 아이콘 확인), --party_statuses=<id,id>: 아군 모두에게
+## --extra_turn: 지금 차례를 추가 차례로 표시해 파티 창 이름 옆 표시를 본다
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
@@ -281,7 +282,7 @@ func _run() -> void:
 				await _frames(4)
 		if _args.has("drain"):  # 영혼력을 바닥내 "대가 부족" 칸을 보인다
 			explore.session.player.pool.set_current("soul", 0.0)
-		if _args.has("skills"):  # 전투 행동창에서 스킬 목록을 띄운다(정수 스킬 표시 확인 — --mate=<종족>이면 동료의 목록: 대화·조사·도주 없음)
+		if _args.has("skills") or _args.has("extra_turn"):  # 전투 행동창에서 스킬 목록을 띄운다(정수 스킬 표시 확인 — --mate=<종족>이면 동료의 목록: 대화·조사·도주 없음)
 			for n: Node in _main.find_children("*", "", true, false):
 				if n is CombatScreen:
 					var ks := n as CombatScreen
@@ -291,8 +292,13 @@ func _run() -> void:
 						await _frames(1)
 					if _args.has("mate") and ks._plan_i == 0 and ks._planning.size() > 1:
 						ks._on_chosen({"kind": "guard"})
+					if _args.has("extra_turn"):  # 파티 창 이름 옆 "추가 턴" 표시(C14) — 지금 차례를 추가 차례로 보고 찍는다
+						(ks._planning[ks._plan_i] as Combatant).extra_turn = true
+						ks._roster.set_current(ks._planning[ks._plan_i])
 					await _frames(2)
-					ks._menu._skills()
+					if _args.has("skills"):
+						var sv := str(_args["skills"])
+						ks._menu._skills(sv.to_int() if sv.is_valid_int() else 0)  # --skills=N: N번째 칸에 커서(설명줄 확인)
 		if _args.has("hit"):
 			for n: Node in _main.find_children("*", "", true, false):
 				if n is CombatScreen:

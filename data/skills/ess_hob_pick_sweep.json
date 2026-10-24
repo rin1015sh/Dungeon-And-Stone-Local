@@ -11,8 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.595,
+      "power": 0.8,
       "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "vulnerable",
+      "chance": 0.5
     }
   ],
   "essence_of": "hob_pick_sweep",

@@ -34,7 +34,7 @@ func _run(b: Battle, turns: int) -> Array:
 		if b.is_player_controlled(c):
 			if not plan.has(c):
 				var who := PlanOrder.who(b, c, plan)
-				asked.append([c, who])
+				asked.append([c, who, c.extra_turn])
 				for u: Combatant in who:
 					plan[u] = {"kind": "guard"}
 			b.act(c, plan[c])
@@ -58,6 +58,9 @@ func test_extra_turn_plans_only_that_ally() -> void:
 			if who.size() == 1:
 				alone += 1
 				assert_eq(a[0], fast, "혼자 정하는 건 추가 차례가 온 빠른 사람")
+				assert_true(bool(a[2]), "그 차례는 추가 차례로 표시된다(파티 창 이름 옆, C14)")
+			if a[0] == slow:
+				assert_false(bool(a[2]), "느린 사람은 추가 차례가 없다")
 		assert_true(alone >= 1, "빠른 사람이 느린 사람보다 먼저 한 번 더 온다(%s)" % fast_first)
 		assert_true(asked.any(func(a: Array) -> bool: return (a[1] as Array).has(slow)), "느린 사람도 정한다")
 

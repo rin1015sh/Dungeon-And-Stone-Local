@@ -11,14 +11,14 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.1,
+      "power": 1.35,
       "damage_type": "slash",
       "accuracy": 90
     },
     {
       "type": "apply_status",
       "status": "fear",
-      "chance": 0.15
+      "chance": 0.25
     }
   ],
   "essence_of": "dread_bone_cleave",

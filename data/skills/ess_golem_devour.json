@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.02,
+      "power": 1.35,
       "damage_type": "blunt",
       "drain": 0.5
     }

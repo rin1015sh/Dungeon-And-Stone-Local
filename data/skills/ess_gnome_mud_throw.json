@@ -11,14 +11,14 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.425,
+      "power": 0.5,
       "damage_type": "earth",
       "base": 10
     },
     {
       "type": "apply_status",
       "status": "blind",
-      "chance": 0.45,
+      "chance": 0.6,
       "duration": 2
     }
   ],

@@ -11,14 +11,14 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.68,
+      "power": 1.35,
       "damage_type": "pierce",
       "ranged": true
     },
     {
       "type": "apply_status",
       "status": "poison",
-      "chance": 0.375
+      "chance": 0.5
     }
   ],
   "essence_of": "goblin_poison_shot",

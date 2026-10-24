@@ -9,13 +9,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.85,
+      "power": 1.1,
       "damage_type": "slash"
     },
     {
       "type": "apply_status",
       "status": "bleeding",
-      "chance": 0.112
+      "chance": 0.5
     }
   ],
   "essence_of": "deadman_rusty_slash",

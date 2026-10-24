@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.02,
+      "power": 1.35,
       "damage_type": "slash"
     },
     {
       "type": "apply_status",
       "status": "stun",
-      "chance": 0.075
+      "chance": 0.25
     }
   ],
   "essence_of": "owlbear_paw",

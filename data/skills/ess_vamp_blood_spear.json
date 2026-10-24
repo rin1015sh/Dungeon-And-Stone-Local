@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 1.105,
+      "power": 1.35,
       "damage_type": "dark",
       "base": 20,
       "drain": 0.3

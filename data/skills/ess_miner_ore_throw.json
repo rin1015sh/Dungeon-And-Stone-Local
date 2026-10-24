@@ -11,9 +11,14 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.68,
+      "power": 1.35,
       "damage_type": "blunt",
       "ranged": true
+    },
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.5
     }
   ],
   "essence_of": "miner_ore_throw",

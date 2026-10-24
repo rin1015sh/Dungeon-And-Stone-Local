@@ -9,13 +9,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.85,
+      "power": 1.1,
       "damage_type": "pierce"
     },
     {
       "type": "apply_status",
       "status": "bleeding",
-      "chance": 0.188
+      "chance": 0.5
     }
   ],
   "essence_of": "wolf_bite",

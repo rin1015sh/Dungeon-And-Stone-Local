@@ -11,9 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.275,
+      "power": 1.35,
       "damage_type": "pierce",
       "accuracy": 80
+    },
+    {
+      "type": "push_back",
+      "amount": 30
     }
   ],
   "essence_of": "cav_charge",

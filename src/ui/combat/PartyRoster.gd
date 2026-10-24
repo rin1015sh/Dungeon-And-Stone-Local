@@ -5,7 +5,7 @@ extends VBoxContainer
 
 const RES := ["hp", "soul"]
 
-var _rows: Dictionary = {}  # Combatant -> {panel, name, icons, plan, status, bars: {res: [bar, label]}}
+var _rows: Dictionary = {}  # Combatant -> {panel, name, extra, icons, plan, status, bars: {res: [bar, label]}}
 var _db: GameDatabase
 var _current: Combatant = null
 var _target: Combatant = null
@@ -24,11 +24,19 @@ func add_unit(u: Combatant) -> void:
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) + 4)
 	panel.add_child(h)
+	var name_box := HBoxContainer.new()  # 이름 + 추가 차례 표시(C14) — 칸 폭은 그대로, 표시가 뜨면 이름이 줄어든다
+	name_box.custom_minimum_size.x = UiTheme.metric("combat_roster_name_width", 170)
+	name_box.add_theme_constant_override("separation", 4)
+	h.add_child(name_box)
 	var nm := UiTheme.label(u.label(), "body", "text")
-	nm.custom_minimum_size.x = UiTheme.metric("combat_roster_name_width", 170)
+	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	nm.custom_minimum_size.x = 1
 	nm.clip_text = true
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	h.add_child(nm)
+	name_box.add_child(nm)
+	var extra := UiTheme.label(Strings.t("combat.extra_turn"), "small", "gold")
+	extra.visible = false
+	name_box.add_child(extra)
 	var icons := StatusIcons.new(true)
 	h.add_child(icons)
 	var plan := UiTheme.label("", "small", "gold")
@@ -63,7 +71,7 @@ func add_unit(u: Combatant) -> void:
 		bar.add_theme_stylebox_override("background", UiTheme.box(Color(0, 0, 0, 0.5), Color.TRANSPARENT, 1, 0))
 		box.add_child(bar)
 		bars[r] = [bar, val]
-	_rows[u] = {"panel": panel, "name": nm, "icons": icons, "plan": plan, "status": status, "bars": bars}
+	_rows[u] = {"panel": panel, "name": nm, "extra": extra, "icons": icons, "plan": plan, "status": status, "bars": bars}
 	refresh()
 
 
@@ -119,3 +127,4 @@ func _style() -> void:
 			box.set_border_width_all(2)
 		(row["panel"] as PanelContainer).add_theme_stylebox_override("panel", box)
 		(row["name"] as Label).add_theme_color_override("font_color", UiTheme.color("gold" if cur else "text"))
+		(row["extra"] as Label).visible = cur and u.extra_turn and u.is_active()  # 지금 차례가 추가 차례일 때만

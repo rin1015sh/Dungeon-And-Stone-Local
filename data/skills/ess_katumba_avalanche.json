@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.765,
+      "power": 0.8,
       "damage_type": "cold",
       "base": 15
     },

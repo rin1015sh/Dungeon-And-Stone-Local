@@ -11,14 +11,14 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.255,
+      "power": 0.8,
       "damage_type": "poison",
       "base": 8
     },
     {
       "type": "apply_status",
       "status": "poison",
-      "chance": 0.225
+      "chance": 0.5
     }
   ],
   "essence_of": "corrupt_rot_swamp",

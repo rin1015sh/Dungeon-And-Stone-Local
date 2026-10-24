@@ -11,9 +11,14 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.19,
+      "power": 1.35,
       "damage_type": "blunt",
       "accuracy": 80
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.25
     }
   ],
   "essence_of": "chimera_frenzy_charge",

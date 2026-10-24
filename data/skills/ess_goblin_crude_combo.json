@@ -11,14 +11,19 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.425,
+      "power": 0.675,
       "damage_type": "slash"
     },
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.425,
+      "power": 0.675,
       "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.5
     }
   ],
   "essence_of": "goblin_crude_combo",

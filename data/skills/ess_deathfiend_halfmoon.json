@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.105,
+      "power": 1.35,
       "damage_type": "slash"
     },
     {
       "type": "apply_status",
       "status": "bleeding",
-      "chance": 0.188
+      "chance": 0.5
     }
   ],
   "essence_of": "deathfiend_halfmoon",

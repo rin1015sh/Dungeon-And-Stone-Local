@@ -11,9 +11,14 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.595,
+      "power": 0.8,
       "damage_type": "fire",
       "base": 15
+    },
+    {
+      "type": "apply_status",
+      "status": "burn",
+      "chance": 0.5
     }
   ],
   "essence_of": "bomber_throw",

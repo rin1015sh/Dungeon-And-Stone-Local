@@ -15,7 +15,7 @@
     {
       "type": "apply_status",
       "status": "bleeding",
-      "chance": 0.075
+      "chance": 0.6
     }
   ],
   "essence_of": "rat_gnaw",

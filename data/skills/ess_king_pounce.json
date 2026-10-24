@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.105,
+      "power": 1.35,
       "damage_type": "blunt"
     },
     {
       "type": "apply_status",
       "status": "snare",
-      "chance": 0.3
+      "chance": 0.5
     }
   ],
   "essence_of": "king_pounce",

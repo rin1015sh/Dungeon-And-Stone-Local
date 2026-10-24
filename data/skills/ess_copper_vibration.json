@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.51,
+      "power": 0.8,
       "damage_type": "blunt"
     },
     {
       "type": "apply_status",
       "status": "stun",
-      "chance": 0.075
+      "chance": 0.25
     }
   ],
   "essence_of": "copper_vibration",

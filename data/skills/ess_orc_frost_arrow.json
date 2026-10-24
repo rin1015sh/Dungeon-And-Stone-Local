@@ -11,10 +11,15 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 0.935,
+      "power": 1.35,
       "damage_type": "cold",
       "base": 12,
       "ranged": true
+    },
+    {
+      "type": "apply_status",
+      "status": "frost",
+      "chance": 0.5
     }
   ],
   "essence_of": "orc_frost_arrow",

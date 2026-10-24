@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.02,
+      "power": 1.35,
       "damage_type": "blunt",
       "power_if_status": {
         "status": [
@@ -23,7 +23,7 @@
     {
       "type": "apply_status",
       "status": "snare",
-      "chance": 0.225
+      "chance": 0.5
     }
   ],
   "essence_of": "elder_crush",

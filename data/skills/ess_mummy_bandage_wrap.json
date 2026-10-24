@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.425,
+      "power": 0.5,
       "damage_type": "blunt"
     },
     {
       "type": "apply_status",
       "status": "snare",
-      "chance": 0.3
+      "chance": 0.6
     }
   ],
   "essence_of": "mummy_bandage_wrap",
