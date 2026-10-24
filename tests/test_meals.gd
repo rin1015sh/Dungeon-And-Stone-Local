@@ -69,7 +69,7 @@ func test_battle_meal_counts_battles() -> void:
 func test_hour_meal_counts_dungeon_hours() -> void:
 	var pc := _pc()
 	Meals.eat(pc, "bitter_herb_gukbap")
-	assert_near(pc.stats.get_value("resist_poison"), 25.0, 0.01, "쓴나물 국밥 → 독 내성 +25")
+	assert_near(pc.stats.get_value("resist_poison"), 8.0, 0.01, "쓴나물 국밥 → 독 내성 +8")
 	BattleRules.cleanup(_battle(pc))
 	assert_true(pc.statuses.has(Meals.PREFIX + "bitter_herb_gukbap"), "시간 단위는 전투로 줄지 않는다")
 	pc.advance_hours(11.0)

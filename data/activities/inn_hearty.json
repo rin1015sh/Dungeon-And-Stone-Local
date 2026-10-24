@@ -2,7 +2,7 @@
   "id": "inn_hearty",
   "name_ko": "든든한 식사",
   "facility": "inn",
-  "cost_stones": 45,
+  "cost_stones": 1500,
   "effects": [
     {
       "type": "meal",

@@ -2,7 +2,7 @@
   "id": "inn_snack",
   "name_ko": "요기",
   "facility": "inn",
-  "cost_stones": 10,
+  "cost_stones": 60,
   "effects": [
     {
       "type": "meal",
