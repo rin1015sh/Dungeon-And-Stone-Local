@@ -140,25 +140,30 @@ func _attack() -> void:
 func _skills(start: int = 0) -> void:
 	var db := _battle.db
 	var opts: Array[Dictionary] = []
+	var lead := _battle.is_leader(_unit)  # 대화·조사·도주는 플레이어만(C13) — 동료 목록엔 아예 없다
 	for i in _unit.actor.skills.size():
 		var id := _unit.actor.skills[i]
 		var sk := db.get_entry("skills", id)
+		if not lead and JsonUtil.get_bool(sk, "innate"):
+			continue
+		var at := opts.size()  # 목록 칸 번호(건너뛴 스킬이 있으면 스킬 번호와 다르다)
 		var why := _battle.can_use(_unit, id)
 		var sub := _short_reason(id, why) if not why.is_empty() else _cost_text(sk)
 		var desc := SkillBrief.describe(db, sk)
 		if not why.is_empty():
 			desc = Strings.t(why) + "  " + desc
 		var pick := func() -> void:
-			_skill_cursor[_unit.get_instance_id()] = i
-			_skill_target(id, i)
+			_skill_cursor[_unit.get_instance_id()] = at
+			_skill_target(id, at)
 		opts.append(_opt(JsonUtil.get_str(sk, "name_ko", id), sub, desc, pick, why.is_empty()))
 	var flee := roundi(_battle.flee_chance(_unit) * 100.0)
 	var flee_i := opts.size()
 	var run := func() -> void:
 		_skill_cursor[_unit.get_instance_id()] = flee_i
 		_choose({"kind": "flee"})
-	opts.append(_opt(Strings.t("combat.cmd_flee"), Strings.t("combat.sub_chance", {"chance": flee}),
-		"" if flee > 0 else Strings.t("combat.reason_no_flee"), run, flee > 0))
+	if lead:
+		opts.append(_opt(Strings.t("combat.cmd_flee"), Strings.t("combat.sub_chance", {"chance": flee}),
+			"" if flee > 0 else Strings.t("combat.reason_no_flee"), run, flee > 0))
 	var back := func() -> void:
 		_skill_cursor[_unit.get_instance_id()] = _list.cursor()
 		_root(ROOT_SKILL)

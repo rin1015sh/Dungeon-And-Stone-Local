@@ -15,6 +15,8 @@ static func reason(b: Battle, c: Combatant, action: Dictionary) -> String:
 		"guard":
 			return ""
 		"flee":
+			if c.side == Combatant.SIDE_PARTY and not b.is_leader(c):
+				return "combat.reason_leader_only"
 			return "combat.reason_no_flee" if is_zero_approx(b.flee_chance(c)) else ""
 		"item":
 			var id := str(action.get("item", ""))

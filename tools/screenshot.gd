@@ -281,12 +281,18 @@ func _run() -> void:
 				await _frames(4)
 		if _args.has("drain"):  # 영혼력을 바닥내 "대가 부족" 칸을 보인다
 			explore.session.player.pool.set_current("soul", 0.0)
-		if _args.has("skills"):  # 전투 행동창에서 "스킬"을 눌러 스킬 목록을 띄운다(정수 스킬 표시 확인)
-			await _frames(10)
-			for m: Node in _main.find_children("*", "CommandMenu", true, false):
-				for b: Node in m.find_children("*", "Button", true, false):
-					if (b as Button).text == Strings.t("combat.cmd_skill"):
-						(b as Button).pressed.emit()
+		if _args.has("skills"):  # 전투 행동창에서 스킬 목록을 띄운다(정수 스킬 표시 확인 — --mate=<종족>이면 동료의 목록: 대화·조사·도주 없음)
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var ks := n as CombatScreen
+					for k in 400:  # 행동 정하기가 열릴 때까지
+						if not ks._planning.is_empty():
+							break
+						await _frames(1)
+					if _args.has("mate") and ks._plan_i == 0 and ks._planning.size() > 1:
+						ks._on_chosen({"kind": "guard"})
+					await _frames(2)
+					ks._menu._skills()
 		if _args.has("hit"):
 			for n: Node in _main.find_children("*", "", true, false):
 				if n is CombatScreen:

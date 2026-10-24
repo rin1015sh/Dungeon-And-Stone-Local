@@ -125,6 +125,19 @@ func is_player_controlled(c: Combatant) -> bool:
 	return c.side == Combatant.SIDE_PARTY and not c.summoned
 
 
+## 일행을 이끄는 사람(플레이어) — 소환수가 아닌 아군 중 가장 먼저 들어온 사람. 대화·조사(innate 스킬)·도주는 이 사람만(C13).
+func leader() -> Combatant:
+	var best: Combatant = null
+	for u in side_units(Combatant.SIDE_PARTY):
+		if not u.summoned and (best == null or u.order < best.order):
+			best = u
+	return best
+
+
+func is_leader(c: Combatant) -> bool:
+	return c != null and c == leader()
+
+
 func preview(n: int) -> Array[Combatant]:
 	return timeline.preview(n)
 
@@ -223,6 +236,8 @@ func act(c: Combatant, action: Dictionary) -> bool:
 
 ## 스킬을 쓸 수 있으면 "", 아니면 이유(문자열 키).
 func can_use(c: Combatant, skill_id: String) -> String:
+	if c.side == Combatant.SIDE_PARTY and JsonUtil.get_bool(db.get_entry("skills", skill_id), "innate") and not is_leader(c):
+		return "combat.reason_leader_only"
 	if skill_id != BASIC_ATTACK and c.actor.statuses.has_flag("no_skills") \
 			and not JsonUtil.get_bool(db.get_entry("skills", skill_id), "innate"):  # 대화·조사는 이능이 아니다(seal_skill과 같게)
 		return "combat.reason_sealed"

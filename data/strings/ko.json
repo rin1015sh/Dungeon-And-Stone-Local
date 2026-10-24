@@ -453,6 +453,7 @@
     "summon_fail": "{name}이(가) 울부짖었지만 아무도 오지 않았다.",
     "reason_hidden": "그 상대는 모습을 감추고 있다.",
     "reason_no_flee": "도망칠 길이 없다.",
+    "reason_leader_only": "일행을 이끄는 사람만 할 수 있다.",
     "reason_veiled": "장막 너머의 동료를 알아볼 수 없다.",
     "sealed": "{name}의 [{skill}]이(가) 봉인되었다.",
     "survive_round": "버텨라! ({round}/{total})",

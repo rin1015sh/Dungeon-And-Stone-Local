@@ -180,14 +180,9 @@ func _fallback(c: Combatant, action: Dictionary) -> void:
 		battle.act(c, {"kind": "guard"})
 
 
-## 행동 정하기: 아직 정하지 않은 아군(직접 조종하는 사람만) 모두 — first(지금 차례인 사람)는 꼭 들어간다.
+## 행동 정하기: 지금 차례인 사람부터, 아직 정하지 않은 아군(직접 조종하는 사람만) 모두 — 추가 차례면 그 사람 혼자(PlanOrder).
 func _begin_planning(first: Combatant) -> void:
-	_planning.clear()
-	for u in battle.side_units(Combatant.SIDE_PARTY):
-		if battle.is_player_controlled(u) and u.is_active() and not _plan.has(u):
-			_planning.append(u)
-	if not _planning.has(first):
-		_planning.push_front(first)
+	_planning = PlanOrder.who(battle, first, _plan)
 	_plan_i = 0
 	_open_plan()
 
