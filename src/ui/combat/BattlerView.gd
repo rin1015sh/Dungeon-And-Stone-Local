@@ -2,9 +2,9 @@ class_name BattlerView
 extends Control
 ## 전투 무대 위의 참가자 하나. 그림은 MonsterArt(없으면 CombatFigure 도형): 적은 정면 그림, 아군 소환수는 뒷모습(<id>_back),
 ## 탐험가는 종족 그림 — 뒷모습(back)과 비스듬히 돌아선 옆모습(side)을 무대가 자리에 따라 고른다(set_view, 오른쪽 자리는 좌우 반전).
-## 적은 정면 + 머리 위 상태 아이콘·이름(생명력은 보이지 않는다 — 피어 앤 헝거처럼, 받은 피해만 숫자로 떠오른다.
+## 적은 정면 + 머리 위 상태 아이콘(3개씩, 넘으면 깜빡이며 넘김 — StatusIcons)·이름(생명력은 보이지 않는다 — 피어 앤 헝거처럼, 받은 피해만 숫자로 떠오른다.
 ## 단 아군이 그 종을 조사해 두었으면 이름 아래 생명력 막대, 쳐 봐서 알아낸 상성은 그 아래 한 줄 — 지식이 남는 전투, UI22),
-## 아군은 뒷모습 + 머리 위 상태 아이콘(이름·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
+## 아군은 뒷모습만(이름·상태 아이콘·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
 ## 쓰러지거나 도망치면 흐려진다.
 
 var unit: Combatant
@@ -51,10 +51,11 @@ func setup(u: Combatant, db: GameDatabase, knowers: Array[Knowledge] = []) -> vo
 				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex)]
 		set_view(false, false)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_icons = StatusIcons.new()
-	add_child(_icons)
 	if not front:
 		return
+	_icons = StatusIcons.new()
+	_icons.resized.connect(_place_icons)  # 쪽이 넘어가 개수가 바뀌면 다시 가운데로
+	add_child(_icons)
 	_name = UiTheme.label(u.label(), "small", "text_title")
 	_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -97,16 +98,11 @@ func place(foot: Vector2, h: float) -> void:
 	var w := width_for(h)
 	size = Vector2(w, art.get_height() * h / _art_body if art != null else h * 1.12)
 	position = foot - Vector2(w / 2.0, size.y)
-	var top := h if art != null else h * CombatFigure.top_of(shape)
-	var isz := StatusIcons.icon_size()
-	var head := size.y - top - 4.0  # 머리 위 첫 줄의 아래 끝
 	if front:
-		head -= 22.0  # 이름 줄
-	_icon_bottom = maxf(head, 4.0 - position.y + isz)  # 화면 위로 넘치는 큰 보스도 아이콘·이름은 보이게
-	_icons.fit_width(w + JsonUtil.get_float(UiTheme.ui_dict("combat_status_icon"), "slack", 12.0))
-	_icons.show_for(unit.actor)
-	_place_icons()
-	if front:
+		var top := h if art != null else h * CombatFigure.top_of(shape)
+		_icon_bottom = maxf(size.y - top - 26.0, 4.0 - position.y + StatusIcons.icon_size())  # 이름 줄 위 — 화면 위로 넘치는 큰 보스도 보이게
+		_icons.show_for(unit.actor)
+		_place_icons()
 		var lw := maxf(w, UiTheme.metric("combat_enemy_label_width", 150))
 		_name.size = Vector2(lw, 20)
 		_name.position = Vector2((w - lw) / 2.0, _icon_bottom + 2.0)
@@ -139,9 +135,8 @@ func _keep_in(l: Control) -> void:
 
 
 func refresh() -> void:
-	if _icons.show_for(unit.actor):
-		_place_icons()
 	if front:
+		_icons.show_for(unit.actor)
 		_read_knowledge()
 	modulate.a = 1.0 if unit.is_active() else 0.3
 	queue_redraw()

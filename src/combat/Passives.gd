@@ -80,7 +80,7 @@ static func hit_bonus_vs(attacker: Actor, defender: Actor) -> float:
 static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor, status_id: String, duration: float = -1.0) -> String:
 	if target == null or target.dead:
 		return "failed"
-	if is_immune(target, status_id) or target.statuses.immune(status_id):
+	if is_immune(target, status_id) or target.statuses.immune(status_id) or rank_immune(db, source, target, status_id):
 		return "immune"
 	if source != null and source != target and rng != null and rng.chance(target.statuses.resist_chance(status_id)):
 		return "resisted"
@@ -90,6 +90,21 @@ static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor,
 		var base := dur if dur >= 0.0 else JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("statuses", status_id), "duration"), "amount", cap)
 		dur = minf(base, cap)
 	return "" if target.statuses.apply(status_id, dur) else "failed"
+
+
+## 보스 상태이상 면역(UI25): 등급(combat.status_immune_ranks) 또는 몬스터 status_immune_all이면 상대가 거는 해로운 상태는 안 듣는다.
+## 출처 없는 것(보스 패턴·계측·균열 목표)·자기 자신에게 거는 것·이로운 상태·boss_mechanic 상태(약점 재생 정지·히든 피스)는 그대로 걸린다.
+static func rank_immune(db: GameDatabase, source: Actor, target: Actor, status_id: String) -> bool:
+	if source == null or source == target or not target is Monster:
+		return false
+	var st := db.get_entry("statuses", status_id)
+	if JsonUtil.get_str(st, "kind") != "debuff" or JsonUtil.get_bool(st, "boss_mechanic"):
+		return false
+	var def := (target as Monster).def
+	if def.has("status_immune_all"):
+		return JsonUtil.get_bool(def, "status_immune_all")
+	var ranks: Array = db.bal("combat.status_immune_ranks", [])
+	return ranks.has(JsonUtil.get_str(def, "rank"))
 
 
 static func is_immune(a: Actor, status_id: String) -> bool:

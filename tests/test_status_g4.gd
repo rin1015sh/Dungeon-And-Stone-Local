@@ -85,6 +85,9 @@ func test_heal_block_and_seal_and_confusion() -> void:
 	var b := _battle(2)
 	var boss := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
+	var bm := boss.actor as Monster
+	bm.def = bm.def.duplicate()
+	bm.def["status_immune_all"] = false  # 봉인 규칙만 본다(보스 등급 면역 UI25는 test_status_immunity)
 	BossHooks.apply_effects(b, me, boss, [{"type": "seal_skill", "rounds": 2}])
 	assert_true(boss.actor.statuses.has("seal"))
 	var sealed := boss.cooldowns.keys().filter(func(k: String) -> bool: return k in ["blater_cursed_slash", "blater_oath", "blater_death_sentence"])

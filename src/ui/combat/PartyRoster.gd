@@ -1,11 +1,11 @@
 class_name PartyRoster
 extends VBoxContainer
-## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 계측값(상태는 무대 위 아이콘, UI24) · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
+## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 상태 아이콘(3개씩 깜빡이며 넘김 — StatusIcons, UI25) · 정해 둔 행동 · 계측값 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
 ## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 금빛 테두리.
 
 const RES := ["hp", "soul"]
 
-var _rows: Dictionary = {}  # Combatant -> {panel, name, status, bars: {res: [bar, label]}}
+var _rows: Dictionary = {}  # Combatant -> {panel, name, icons, plan, status, bars: {res: [bar, label]}}
 var _db: GameDatabase
 var _current: Combatant = null
 var _target: Combatant = null
@@ -29,6 +29,8 @@ func add_unit(u: Combatant) -> void:
 	nm.clip_text = true
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	h.add_child(nm)
+	var icons := StatusIcons.new(true)
+	h.add_child(icons)
 	var plan := UiTheme.label("", "small", "gold")
 	plan.custom_minimum_size.x = UiTheme.metric("combat_roster_plan_width", 150)
 	plan.clip_text = true
@@ -61,7 +63,7 @@ func add_unit(u: Combatant) -> void:
 		bar.add_theme_stylebox_override("background", UiTheme.box(Color(0, 0, 0, 0.5), Color.TRANSPARENT, 1, 0))
 		box.add_child(bar)
 		bars[r] = [bar, val]
-	_rows[u] = {"panel": panel, "name": nm, "plan": plan, "status": status, "bars": bars}
+	_rows[u] = {"panel": panel, "name": nm, "icons": icons, "plan": plan, "status": status, "bars": bars}
 	refresh()
 
 
@@ -95,7 +97,8 @@ func refresh() -> void:
 			(pair[0] as ProgressBar).max_value = maxf(1.0, u.actor.pool.get_max(r))
 			(pair[0] as ProgressBar).value = u.actor.pool.get_current(r)
 			(pair[1] as Label).text = "%d/%d" % [ceili(u.actor.pool.get_current(r)), roundi(u.actor.pool.get_max(r))]
-		var names := PackedStringArray()  # 상태는 무대 위 머리 위 아이콘으로(UI24) — 여기는 계측값만
+		(row["icons"] as StatusIcons).show_for(u.actor)
+		var names := PackedStringArray()  # 상태는 아이콘으로(UI24) — 글은 계측값만
 		for m: Dictionary in Meters.list(_db, u.actor):
 			names.append("%s %d" % [str(m["name"]), roundi(float(m["value"]))])
 		(row["status"] as Label).text = ", ".join(names)

@@ -86,7 +86,7 @@ static func _status(v: ValidatorBase, id: String, s: Dictionary) -> void:
 	EffectRules.check(v, w + ".on_hit", JsonUtil.get_array(s, "on_hit"), true)
 	EffectRules.ref_array_key(v, w, "statuses", s, "grants_immunity")
 	EffectRules.damage_type_list(v, w, s, "break_on_damage_types")
-	for key in ["lingers", "break_on_damage", "battle_only"]:
+	for key in ["lingers", "break_on_damage", "battle_only", "boss_mechanic"]:
 		if s.has(key) and not s[key] is bool:
 			v.err(w, "%s는 true/false" % key)
 	for m: Variant in JsonUtil.get_array(s, "modifiers"):
