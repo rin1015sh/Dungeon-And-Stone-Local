@@ -152,7 +152,7 @@ func _return_to_city() -> void:
 	if GameState.city != null:
 		GameState.city.return_from_dungeon()
 	if GameState.player != null:
-		Meals.clear(GameState.player)  # 여관 식사 효과는 한 원정까지
+		GameState.player.statuses.leave_dungeon()  # 남은 상태(독·저주·여관 식사 …)는 미궁 안에서만
 	_show_city()
 
 

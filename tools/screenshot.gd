@@ -21,6 +21,7 @@ extends Node
 ## --known: --combat --monster=<id>에서 그 몬스터를 조사해 둔 상태(생명력 막대·알아낸 상성)
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
 ## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께), --meal_pick=<요리 id>: 도시 여관 식사에서 그 요리(그림 확인)
+## --statuses=<id,id>: --combat에서 적 모두에게 그 상태(머리 위 아이콘 확인), --party_statuses=<id,id>: 아군 모두에게
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
@@ -222,6 +223,18 @@ func _run() -> void:
 						ms._menu.close()
 						ms._begin_planning(ms.battle.current)
 						ms._on_chosen({"kind": "guard"})
+		if _args.has("statuses") or _args.has("party_statuses"):  # 머리 위 상태 아이콘(UI24)
+			await _frames(3)
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					var ss := n as CombatScreen
+					for pair: Array in [["statuses", Combatant.SIDE_ENEMY], ["party_statuses", Combatant.SIDE_PARTY]]:
+						if not _args.has(pair[0]):
+							continue
+						for u: Combatant in ss.battle.side_units(int(pair[1])):
+							for sid in str(_args[pair[0]]).split(","):
+								u.actor.statuses.apply(sid)
+					ss._refresh()
 		if _args.has("drops"):
 			for n: Node in _main.find_children("*", "", true, false):
 				if n is CombatScreen:

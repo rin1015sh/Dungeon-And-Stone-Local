@@ -1,6 +1,6 @@
 extends SceneTree
 ## 헤드리스 테스트 러너.
-##   godot --headless --path . --script res://tests/run_tests.gd
+##   godot --headless --path . --script res://tests/run_tests.gd [-- --only=<파일 이름 일부>]
 ## tests/test_*.gd의 test_* 메서드를 모두 실행한다. 실패가 있으면 종료 코드 1.
 ## 주의: 런타임 스크립트 오류는 GDScript가 잡아 주지 않으므로, 단언이 0개인 테스트도 실패로 본다.
 ##       tools/check.sh는 출력의 "SCRIPT ERROR"도 실패로 판정한다.
@@ -11,9 +11,13 @@ const TEST_DIR := "res://tests"
 func _initialize() -> void:
 	var db := GameDatabase.new()
 	db.load_all("res://data")
+	var only := ""
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--only="):
+			only = a.trim_prefix("--only=")
 	var files := PackedStringArray()
 	for f: String in DirAccess.get_files_at(TEST_DIR):
-		if f.begins_with("test_") and f.ends_with(".gd"):
+		if f.begins_with("test_") and f.ends_with(".gd") and (only.is_empty() or f.contains(only)):
 			files.append(TEST_DIR.path_join(f))
 	files.sort()
 	var total := 0

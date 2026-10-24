@@ -1,6 +1,6 @@
 class_name PartyRoster
 extends VBoxContainer
-## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 상태 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
+## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 계측값(상태는 무대 위 아이콘, UI24) · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
 ## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 금빛 테두리.
 
 const RES := ["hp", "soul"]
@@ -95,9 +95,7 @@ func refresh() -> void:
 			(pair[0] as ProgressBar).max_value = maxf(1.0, u.actor.pool.get_max(r))
 			(pair[0] as ProgressBar).value = u.actor.pool.get_current(r)
 			(pair[1] as Label).text = "%d/%d" % [ceili(u.actor.pool.get_current(r)), roundi(u.actor.pool.get_max(r))]
-		var names := PackedStringArray()
-		for id in u.actor.statuses.ids():
-			names.append(DataNames.entry(_db, "statuses", id))
+		var names := PackedStringArray()  # 상태는 무대 위 머리 위 아이콘으로(UI24) — 여기는 계측값만
 		for m: Dictionary in Meters.list(_db, u.actor):
 			names.append("%s %d" % [str(m["name"]), roundi(float(m["value"]))])
 		(row["status"] as Label).text = ", ".join(names)

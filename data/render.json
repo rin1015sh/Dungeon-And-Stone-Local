@@ -80,6 +80,7 @@
     "combat_enemy_floor": 0.92, "combat_enemy_floor_min": 0.4, "combat_enemy_clear": 8, "combat_enemy_span": 0.92,
     "combat_enemy_height": 0.4,
     "combat_enemy_bar": {"width": 96, "height": 5, "text_width": 240},
+    "combat_status_icon": {"size": 28, "gap": 2, "max": 8, "slack": 12},
     "combat_enemy_size_exp": 1.0,
     "combat_boss_height": 0.92,
     "combat_boss_top_room": 72,

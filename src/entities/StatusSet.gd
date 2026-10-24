@@ -314,6 +314,15 @@ func clear_temporary() -> Array[String]:
 	return out
 
 
+## 미궁을 나왔다: 남은 상태를 모두 푼다(자원 문턱에 묶인 것 — 허기·영혼탈진 — 은 자원이 정한다).
+## 미궁 시간이 흐르지 않는 도시에서 독·출혈·저주가 그대로 남아 다음 원정까지 따라오지 않게(2026-10-24 상태이상 점검).
+func leave_dungeon() -> void:
+	for id in ids():
+		if not _resource_bound(id):
+			remove(id)
+	_after.clear()
+
+
 func to_dict() -> Dictionary:
 	return _active.duplicate(true)
 
