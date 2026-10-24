@@ -14,11 +14,13 @@ signal regenerate_requested(seed_value: int)
 signal session_switch(target: ExploreSession)  ## 균열 챕터 ↔ 바깥 층(Main이 화면을 새로 만든다)
 
 const POST_SHADER := "res://assets/shaders/post_grade.gdshader"
+const MOVE_DIRS := {"move_up": Vector2.UP, "move_down": Vector2.DOWN, "move_left": Vector2.LEFT, "move_right": Vector2.RIGHT}
 
 var session: ExploreSession
 var _tone: CanvasModulate
 var _tone_base: Color = Color.WHITE
 var _post: ShaderMaterial = null
+var _held: Array[String] = []  # 누르고 있는 이동 키(누른 차례 — 마지막 것이 방향)
 var _ambience: String = ""
 var _view: FloorView
 var _hud: ExploreHud
@@ -140,7 +142,7 @@ func _process(delta: float) -> void:
 	_tone.color = _tone_base * Color.from_string(JsonUtil.get_str(session.lord.def, "tint"), Color.WHITE) if session.lord.is_active() else _tone_base
 	if _ended or _combat != null or session.realtime.is_paused():
 		return
-	# 누르고 있는 동안 매 프레임 그만큼 걷는다(8방향, 속도는 세션이 민첩으로 정한다).
+	# 누르고 있는 동안 매 프레임 그만큼 걷는다(4방향 — 대각선 없음, 사용자 결정 2026-10-24).
 	var dir := _input_dir()
 	if dir != Vector2.ZERO:
 		session.move_dir(dir, delta)
@@ -479,17 +481,14 @@ func _exit_tree() -> void:
 	AudioBus.stop_ambience(_ambience)  # 다음 화면(균열 챕터 등)이 먼저 틀었으면 그대로 둔다
 
 
+## 이동 방향: 4방향만(대각선 없음 — 사용자 결정 2026-10-24). 여러 키를 누르고 있으면 가장 나중에 누른 키.
 func _input_dir() -> Vector2:
-	var d := Vector2.ZERO
-	if Input.is_action_pressed("move_up"):
-		d.y -= 1.0
-	if Input.is_action_pressed("move_down"):
-		d.y += 1.0
-	if Input.is_action_pressed("move_left"):
-		d.x -= 1.0
-	if Input.is_action_pressed("move_right"):
-		d.x += 1.0
-	return d
+	for a: String in MOVE_DIRS:
+		if not Input.is_action_pressed(a):
+			_held.erase(a)
+		elif not _held.has(a):
+			_held.append(a)
+	return MOVE_DIRS[_held.back()] if not _held.is_empty() else Vector2.ZERO
 
 
 ## 입력칸에 글을 쓰는 중이면 이동·단축키를 막는다.

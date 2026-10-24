@@ -6,6 +6,15 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **전투·탐험 손보기 (2026-10-24, 사용자 "적을 처치해도 피해량이 뜨게 · 마석/정수 획득 창을 조금 내려 · 대각선 이동 없애 · 균열 넘어갈 때 부연설명 없애 · 추가턴은 이름 왼쪽 작은 추가창 · 분열 슬라임은 아무것도 못 하나?")** — UI26.
+  - 처치 피해 숫자: `BattlerView.float_text`가 글자를 무대(부모)에 달고 z 10 — 쓰러진 몸이 다음 프레임에 치워져도 숫자가 남는다.
+  - 드롭 창: `ChoicePopup.below` — 쓰러진 자리 표시 바로 아래(전엔 위라 화면 맨 위 근처). 캡처 `--combat --win --drops[=who]`.
+  - 4방향 이동: `ExploreScreen._input_dir` — 누른 순서를 기억해 가장 나중 키 하나만.
+  - 균열 챕터 문구 `explore.rift_chapter` → render.json `ui.notice.silent`(들어갈 때 "균열 속으로 발을 들였다"는 그대로).
+  - 추가 턴: 파티 창 이름 왼쪽 작은 금테 창(`PartyRoster` extra = PanelContainer). 캡처 `--extra_turn`.
+  - 분열 슬라임(정수 `ess_slime_split`): 조사 — 아군 소환수는 AI(MonsterAi)로 자기 차례마다 움직인다(헤드리스로 기본 공격 14 확인). 다만 민첩 5(느림)·자기 차례 2번만·생명력 45라 한 번 치고 사라지기 쉽다. 강화는 사용자 결정 대기.
+  - 검증: check.sh 모두 통과. 캡처로 드롭 창·추가 턴 창 확인.
+
 - **상점·대장간 [구매][판매][나가기] · 전투 아래 창 줄 맞춤 (2026-10-24, 사용자 "[구매/판매] [나가기]에서 구매판매를 누르고 또 구매 판매를 눌러야 하는데 [구매] [판매] [나가기] 3개로 · 전투 [공격][스킬][방어][아이템] ui랑 옆 ui가 안 맞는 것 같다")** — CT49.
   - 상점: `FacilityView._entries` — `panel: shop` 활동은 선택 창에 [구매]·[판매] 두 칸(`city.shop_tab_*`), `_choose(act, tab)`가 `ShopPanel.mode`를 정해 바로 연다. `ShopPanel`의 탭 단계 삭제, 목록 끝 돌아가기 = `back`(→ `FacilityView._close_panel`, 커서는 연 칸). 캡처 `--activity=smithy_trade --tab=sell`은 그대로.
   - 전투: 명령 칸 36 → 40px(`render.json combat_cmd_slot_height`) — 4칸 + 간격이 창(196)을 채운다(전엔 아래 20px 빔). `PartyRoster` 줄 = 높이 40·간격 `combat_slot_gap`(4)·위아래 여백 0(내용 가운데) → 파티 줄이 명령 칸과 나란하다(전엔 44px 줄·간격 2라 어긋남). 캡처로 확인.

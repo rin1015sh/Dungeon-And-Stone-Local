@@ -10,11 +10,14 @@ signal picked(index: int)
 var grid: ChoiceGrid
 var _panel: PanelContainer
 var _desc: Label
+## near 아래에 띄운다(전투 드롭 — 쓰러진 자리 표시 바로 아래, 사용자 요청 2026-10-24 "획득 창을 조금 내려").
+var below: bool = false
 
 
-## 띄우고 고를 때까지 기다린다. near(부모 좌표)가 있으면 그 위에, 없으면 가운데. 돌려주는 값 = 고른 칸 번호(뒤로 = -1).
-static func ask(parent: Control, title: String, options: Array[Dictionary], can_back: bool = false, near: Vector2 = Vector2(-1, -1)) -> int:
+## 띄우고 고를 때까지 기다린다. near(부모 좌표)가 있으면 그 위에(below면 그 아래에), 없으면 가운데. 돌려주는 값 = 고른 칸 번호(뒤로 = -1).
+static func ask(parent: Control, title: String, options: Array[Dictionary], can_back: bool = false, near: Vector2 = Vector2(-1, -1), below: bool = false) -> int:
 	var pop := ChoicePopup.new()
+	pop.below = below
 	parent.add_child(pop)
 	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	pop.open(title, options, can_back, near)
@@ -64,6 +67,7 @@ func first_enabled() -> int:
 func _place(near: Vector2) -> void:
 	var sz := _panel.get_combined_minimum_size()
 	_panel.size = sz
-	var p := (size - sz) * 0.5 if near.x < 0.0 else near - Vector2(sz.x * 0.5, sz.y + UiTheme.metric("popup_gap", 24))
+	var gap := float(UiTheme.metric("popup_gap", 24))
+	var p := (size - sz) * 0.5 if near.x < 0.0 else (near + Vector2(-sz.x * 0.5, gap) if below else near - Vector2(sz.x * 0.5, sz.y + gap))
 	var m := float(UiTheme.metric("margin", 16))
 	_panel.position = Vector2(clampf(p.x, m, maxf(m, size.x - sz.x - m)), clampf(p.y, m, maxf(m, size.y - sz.y - m)))

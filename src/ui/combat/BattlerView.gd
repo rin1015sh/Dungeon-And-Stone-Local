@@ -194,7 +194,9 @@ func float_text(text: String, col: Color, big: bool = false) -> void:
 	l.add_theme_constant_override("outline_size", UiTheme.metric("float_text_outline", 6))
 	l.top_level = true
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(l)
+	var host: Node = get_parent() if get_parent() != null else self  # 무대에 단다 — 쓰러져 몸이 치워져도 숫자는 끝까지 보인다
+	host.add_child(l)
+	l.z_index = 10  # 쓰러진 몬스터의 먼지(DeathDust z 5) 위에
 	var ms := l.get_combined_minimum_size()
 	var top := global_position.y + size.y * (0.22 if front else 0.12)  # 아군은 아래가 창 뒤로 가라앉아 있어 위쪽에
 	l.position = Vector2(clampf(global_position.x + size.x * 0.5 - ms.x * 0.5, 4.0, get_viewport_rect().size.x - ms.x - 4.0), maxf(top, 8.0))

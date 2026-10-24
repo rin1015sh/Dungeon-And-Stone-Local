@@ -26,20 +26,26 @@ func add_unit(u: Combatant) -> void:
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) + 4)
 	panel.add_child(h)
-	var name_box := HBoxContainer.new()  # 이름 + 추가 차례 표시(C14) — 칸 폭은 그대로, 표시가 뜨면 이름이 줄어든다
+	var name_box := HBoxContainer.new()  # 추가 차례 작은 창(C14 — 이름 왼쪽, 사용자 요청 2026-10-24) + 이름 — 칸 폭은 그대로, 창이 뜨면 이름이 줄어든다
 	name_box.custom_minimum_size.x = UiTheme.metric("combat_roster_name_width", 170)
 	name_box.add_theme_constant_override("separation", 4)
 	name_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	h.add_child(name_box)
+	var extra := PanelContainer.new()
+	var ebox := UiTheme.box(Color(0.12, 0.09, 0.03, 0.95), UiTheme.color("gold"), 2, 0)
+	ebox.content_margin_left = 5
+	ebox.content_margin_right = 5
+	extra.add_theme_stylebox_override("panel", ebox)
+	extra.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	extra.visible = false
+	extra.add_child(UiTheme.label(Strings.t("combat.extra_turn"), "small", "gold"))
+	name_box.add_child(extra)
 	var nm := UiTheme.label(u.label(), "body", "text")
 	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	nm.custom_minimum_size.x = 1
 	nm.clip_text = true
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	name_box.add_child(nm)
-	var extra := UiTheme.label(Strings.t("combat.extra_turn"), "small", "gold")
-	extra.visible = false
-	name_box.add_child(extra)
 	var icons := StatusIcons.new(true)
 	h.add_child(icons)
 	var plan := UiTheme.label("", "small", "gold")
@@ -135,4 +141,4 @@ func _style() -> void:
 			box.set_border_width_all(2)
 		(row["panel"] as PanelContainer).add_theme_stylebox_override("panel", box)
 		(row["name"] as Label).add_theme_color_override("font_color", UiTheme.color("gold" if cur else "text"))
-		(row["extra"] as Label).visible = cur and u.extra_turn and u.is_active()  # 지금 차례가 추가 차례일 때만
+		(row["extra"] as Control).visible = cur and u.extra_turn and u.is_active()  # 지금 차례가 추가 차례일 때만
