@@ -1,26 +1,24 @@
 class_name ShopPanel
 extends CityPanel
-## 상점·대장간 창구: 먼저 탭(구매 / 판매 — W/S·Enter)을 고르고, 그 탭의 목록에서 고른다(사용자 결정 2026-10-20).
+## 상점·대장간 창구: 시설 선택 창의 [구매]·[판매]가 이 창을 그 쪽으로 바로 연다(사용자 결정 2026-10-24 — 예전엔 [구매·판매] 안에 탭이 한 번 더 있었다).
 ##   구매 = 판매 목록(CityShop.stock — 활동의 stock·deals), 판매 = 가방에서 이 창구에 팔 수 있는 것(CityShop.sellable).
-##   목록 맨 끝 돌아가기 = 탭으로, 탭의 나가기 = 거리로(Backspace는 쓰지 않는다 — 사용자 결정 2026-10-20). 가격은 아이템 데이터 price.
+##   목록 맨 끝 돌아가기 = 시설 선택 창으로(back — FacilityView가 넣는다. Backspace는 쓰지 않는다 — 사용자 결정 2026-10-20). 가격은 아이템 데이터 price.
 
 const TABS := ["buy", "sell"]
 
-var mode: String = ""  ## "" = 탭 고르기, buy, sell
+var mode: String = "buy"  ## buy, sell
+## 돌아가기(목록 맨 끝). FacilityView가 넣는다.
+var back: Callable = Callable()
 
 
 func build() -> void:
-	var tab := Strings.t("city.shop_tab_" + mode) if not mode.is_empty() else ""
-	head(Strings.t("city.shop_money", {"money": pc.inventory.money}) + ("" if tab.is_empty() else "  ·  " + tab))
+	head(Strings.t("city.shop_money", {"money": pc.inventory.money}) + "  ·  " + Strings.t("city.shop_tab_" + mode))
 	choices()
 
 
 func options() -> Array[Dictionary]:
 	var opts: Array[Dictionary] = []
 	match mode:
-		"":
-			for t: String in TABS:
-				opts.append({"text": Strings.t("city.shop_tab_" + t), "on_pick": func() -> void: open_tab(t)})
 		"buy":
 			for id in CityShop.stock(state, activity_id):
 				var price := CityShop.buy_price(state, id)
@@ -34,26 +32,17 @@ func options() -> Array[Dictionary]:
 	return opts
 
 
-## 목록 맨 끝은 돌아가기(탭으로), 탭 화면은 나가기.
+## 목록 맨 끝은 돌아가기(시설 선택 창으로).
 func grid_options() -> Array[Dictionary]:
-	if mode.is_empty():
-		return super.grid_options()
 	var opts := options()
-	opts.append({"text": Strings.t("menu.back"), "on_pick": back_to_tabs})
+	opts.append({"text": Strings.t("menu.back"), "on_pick": back if back.is_valid() else leave})
 	return opts
 
 
-## 탭을 연다(buy·sell) — 커서는 맨 위.
+## 쪽을 바꾼다(buy·sell) — 커서는 맨 위.
 func open_tab(t: String) -> void:
 	mode = t
 	rebuild(0)
-
-
-## 탭 고르기로 돌아간다(커서는 방금 탭에).
-func back_to_tabs() -> void:
-	var was := TABS.find(mode)
-	mode = ""
-	rebuild(maxi(0, was))
 
 
 func _name(id: String) -> String:

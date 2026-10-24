@@ -108,6 +108,7 @@
     "combat_menu_columns": 2,
     "combat_menu_rows": 3,
     "combat_slot_height": 50,
+    "combat_cmd_slot_height": 40,
     "combat_slot_min_width": 160,
     "combat_slot_gap": 4,
     "combat_slot_text_x": 22,

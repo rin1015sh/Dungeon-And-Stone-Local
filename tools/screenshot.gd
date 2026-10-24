@@ -357,7 +357,7 @@ func _city(city: CityScreen) -> void:
 		await _frames(2)
 		if _args.has("activity"):
 			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
-			city.facility_view()._choose(str(_args["activity"]))
+			city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
 			if name.is_empty():
 				push_warning("활동 없음: " + str(_args["activity"]))
 			if _args.has("advance"):  # --advance=N: 결과 대화창을 N쪽 넘긴다(--dialog와 함께 — 뒤 쪽 문구 확인)
@@ -366,10 +366,6 @@ func _city(city: CityScreen) -> void:
 					for db: Node in city.find_children("*", "DialogueBox", true, false):
 						(db as DialogueBox).advance()
 				await get_tree().create_timer(1.5).timeout
-			if _args.has("tab"):  # --tab=buy|sell: 상점·대장간 창구의 그 탭을 연다
-				await _frames(2)
-				for sp: Node in city.find_children("*", "ShopPanel", true, false):
-					(sp as ShopPanel).open_tab(str(_args["tab"]))
 	if _args.has("debug"):
 		city.debug_panel().visible = true
 	if _args.has("street"):

@@ -831,23 +831,23 @@ func _city_flow() -> void:
 	fv = city.facility_view()
 	if not _expect(fv != null and st.ap == 0, "상점(행동력 0)"):
 		return
-	_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "shop_trade"))
+	_press_prefix(fv, Strings.t("city.shop_tab_buy"))  # 선택 창 [구매] → 구매 목록이 바로 열린다
 	var money := pc.inventory.money
 	await _frames(1)
-	await _action("menu_confirm")  # 탭 첫 칸 = 구매
 	await _action("menu_confirm")  # 구매 목록 첫 칸 = 첫 판매 물건
-	_expect(pc.inventory.money < money, "상점에서 구매 탭 → Enter로 샀다")
+	_expect(pc.inventory.money < money, "상점에서 [구매] → Enter로 샀다")
 	var shop_items := CityShop.stock(st, "shop_trade")
 	_expect(not shop_items.any(func(i: String) -> bool: return CityShop.is_equipment(st, i)), "상점은 장비를 팔지 않는다(대장간)")
 	var shop_panel := fv.find_children("*", "ShopPanel", true, false)
 	await _action("menu_back")
 	_expect(city.facility_view() == fv and (shop_panel[0] as ShopPanel).mode == "buy", "도시에서는 Backspace가 아무 일도 하지 않는다")
-	(shop_panel[0] as ShopPanel).back_to_tabs()  # 목록 맨 끝 돌아가기 → 탭(목록이 한 쪽보다 길어 돌아가기는 다음 쪽에 있다)
+	(shop_panel[0] as ShopPanel).back.call()  # 목록 맨 끝 돌아가기 → 선택 창(목록이 한 쪽보다 길어 돌아가기는 다음 쪽에 있다)
 	await _frames(1)
+	_expect(fv.find_children("*", "ShopPanel", true, false).is_empty(), "돌아가기 → 선택 창")
 	await _action("menu_down")
-	await _action("menu_confirm")  # 판매 탭
+	await _action("menu_confirm")  # [판매]
 	shop_panel = fv.find_children("*", "ShopPanel", true, false)
-	_expect(shop_panel.size() == 1 and (shop_panel[0] as ShopPanel).mode == "sell", "W/S로 판매 탭을 고른다")
+	_expect(shop_panel.size() == 1 and (shop_panel[0] as ShopPanel).mode == "sell", "W/S로 [판매]를 고른다")
 	await _action("pause")
 	await _frames(1)
 	_expect(city.facility_view() == null, "창구에서 Esc → 거리로")

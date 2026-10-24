@@ -65,7 +65,7 @@ func _ready() -> void:
 	var stack := VBoxContainer.new()
 	stack.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	_menu.add_child(stack)
-	_grid = ChoiceGrid.new(1, maxi(1, CityActions.activities_of(_state, _facility_id).size() + 1), int(UiTheme.render_float("city.interior_slot_height", 40.0)), true)
+	_grid = ChoiceGrid.new(1, maxi(1, _entries().size() + 1), int(UiTheme.render_float("city.interior_slot_height", 40.0)), true)
 	stack.add_child(_grid)
 	_panel_box = VBoxContainer.new()
 	_panel_box.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
@@ -82,20 +82,35 @@ func _ready() -> void:
 
 
 ## 선택 창: 활동(데이터 순서 — 이용료는 칸 오른쪽 아래, 못 하면 그 자리에 이유) + 맨 끝 나가기.
-func _show_choices() -> void:
+## 상점·대장간 창구(panel "shop")는 [구매]·[판매] 두 칸으로 나눠 바로 그 쪽을 연다(사용자 결정 2026-10-24).
+func _show_choices(cursor: int = -1) -> void:
 	var opts: Array[Dictionary] = []
-	for act_id in CityActions.activities_of(_state, _facility_id):
+	for e: Array in _entries():
+		var act_id := str(e[0])
+		var tab := str(e[1])
 		var act := _state.activity(act_id)
 		var why := CityActions.check(_state, _pc, act_id)
-		opts.append({"text": JsonUtil.get_str(act, "name_ko"), "enabled": why.is_empty(),
+		opts.append({"text": Strings.t("city.shop_tab_" + tab) if not tab.is_empty() else JsonUtil.get_str(act, "name_ko"), "enabled": why.is_empty(),
 			"sub": Strings.t(why) if not why.is_empty() else CityActions.price_text(_state, _pc, act_id),
-			"on_pick": func() -> void: _choose(act_id)})
+			"on_pick": func() -> void: _choose(act_id, tab)})
 	opts.append({"text": Strings.t("city.leave"), "on_pick": try_leave})
-	_grid.show_choices("", opts, Callable(), _grid.cursor())
+	_grid.show_choices("", opts, Callable(), cursor if cursor >= 0 else _grid.cursor())
 	_sync_menu()
 
 
-func _choose(act_id: String) -> void:
+## 선택 창의 칸들: [활동 id, 창구 쪽("" 또는 buy·sell)].
+func _entries() -> Array[Array]:
+	var out: Array[Array] = []
+	for act_id in CityActions.activities_of(_state, _facility_id):
+		if JsonUtil.get_str(_state.activity(act_id), "panel") == "shop":
+			for tab: String in ShopPanel.TABS:
+				out.append([act_id, tab])
+		else:
+			out.append([act_id, ""])
+	return out
+
+
+func _choose(act_id: String, tab: String = "") -> void:
 	var act := _state.activity(act_id)
 	var panel := JsonUtil.get_str(act, "panel")
 	if panel.is_empty():
@@ -117,7 +132,10 @@ func _choose(act_id: String) -> void:
 	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
 	match panel:
 		"shop":
-			p = ShopPanel.new()
+			var sp := ShopPanel.new()
+			sp.mode = tab if tab in ShopPanel.TABS else "buy"
+			sp.back = _close_panel.bind(_entries().find([act_id, sp.mode]))
+			p = sp
 		"bank":
 			p = BankPanel.new()
 		"essence_remove":
@@ -130,6 +148,18 @@ func _choose(act_id: String) -> void:
 	_panel_box.add_child(p)
 	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
 	_sync_menu()
+
+
+## 창구를 닫고 선택 창으로(커서는 연 칸에).
+func _close_panel(cursor: int) -> void:
+	for c in _panel_box.get_children():
+		_panel_box.remove_child(c)
+		c.queue_free()
+	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_menu_width", 300.0)
+	_show_choices(maxi(0, cursor))
+	_refresh_info()
+	_menu.reset_size()
+	_place_menu.call_deferred()
 
 
 ## 활동 결과(무엇이 얼마나 바뀌었는지)를 대화창에 쌓는다(한 쪽씩 Enter).

@@ -1,7 +1,7 @@
 class_name CommandMenu
 extends HBoxContainer
 ## 전투 아래 창(피어 앤 헝거식): 왼쪽 = 명령 칸(공격 · 스킬 · 방어 · 아이템, 세로 한 줄),
-## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 밝다). 스킬·아이템·대상을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
+## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 밝다, 줄 높이·간격이 명령 칸과 같아 줄이 나란하다). 스킬·아이템·대상을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
 ##   공격 → 대상(약점이 있는 적은 "약점 노리기"도) · 스킬 → 보유 스킬 + 맨 끝 "도주"(성공 확률) → 필요하면 대상 · 아이템 → 전투용 소지품
 ##   대상을 고를 때 커서가 놓인 적은 무대에서 발밑 고리가 빛난다(target_hovered).
 ## 키: 위·아래(W·S) 이동, Enter 확정, Backspace 뒤로. 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
@@ -34,7 +34,7 @@ func _init() -> void:
 	left.custom_minimum_size.x = UiTheme.metric("combat_cmd_width", 200)
 	add_child(left)
 	_left = left
-	_cmds = ChoiceGrid.new(1, 4, UiTheme.metric("combat_cmd_slot_height", 36), true)
+	_cmds = ChoiceGrid.new(1, 4, UiTheme.metric("combat_cmd_slot_height", 40), true)
 	_cmds.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(null))
 	left.add_child(_cmds)
 	var right := _window()

@@ -2,6 +2,7 @@ class_name PartyRoster
 extends VBoxContainer
 ## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 상태 아이콘(3개씩 깜빡이며 넘김 — StatusIcons, UI25) · 정해 둔 행동 · 계측값 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
 ## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 금빛 테두리.
+## 줄 높이·간격 = 왼쪽 명령 칸과 같다(combat_cmd_slot_height·combat_slot_gap — 두 창의 줄이 나란하다, 사용자 요청 2026-10-24).
 
 const RES := ["hp", "soul"]
 
@@ -13,13 +14,14 @@ var _target: Combatant = null
 
 func setup(db: GameDatabase) -> void:
 	_db = db
-	add_theme_constant_override("separation", 2)
+	add_theme_constant_override("separation", UiTheme.metric("combat_slot_gap", 4))
 
 
 func add_unit(u: Combatant) -> void:
 	if _rows.has(u) or u.side != Combatant.SIDE_PARTY:
 		return
 	var panel := PanelContainer.new()
+	panel.custom_minimum_size.y = UiTheme.metric("combat_cmd_slot_height", 40)
 	add_child(panel)
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", UiTheme.metric("spacing", 8) + 4)
@@ -27,6 +29,7 @@ func add_unit(u: Combatant) -> void:
 	var name_box := HBoxContainer.new()  # 이름 + 추가 차례 표시(C14) — 칸 폭은 그대로, 표시가 뜨면 이름이 줄어든다
 	name_box.custom_minimum_size.x = UiTheme.metric("combat_roster_name_width", 170)
 	name_box.add_theme_constant_override("separation", 4)
+	name_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	h.add_child(name_box)
 	var nm := UiTheme.label(u.label(), "body", "text")
 	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -42,11 +45,13 @@ func add_unit(u: Combatant) -> void:
 	var plan := UiTheme.label("", "small", "gold")
 	plan.custom_minimum_size.x = UiTheme.metric("combat_roster_plan_width", 150)
 	plan.clip_text = true
+	plan.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	plan.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	h.add_child(plan)
 	var status := UiTheme.label("", "small", "warn")
 	status.custom_minimum_size.x = UiTheme.metric("combat_roster_status_width", 130)
 	status.clip_text = true
+	status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	status.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	h.add_child(status)
 	var bars := {}
@@ -56,6 +61,7 @@ func add_unit(u: Combatant) -> void:
 		var box := VBoxContainer.new()
 		box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		box.add_theme_constant_override("separation", 0)
+		box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		h.add_child(box)
 		var top := HBoxContainer.new()
 		box.add_child(top)
@@ -123,6 +129,8 @@ func _style() -> void:
 		var bg := UiTheme.color("slot_hover") if cur else Color(0, 0, 0, 0)
 		var border := UiTheme.color("gold") if tgt else (UiTheme.color("slot_border") if cur else Color(0, 0, 0, 0))
 		var box := UiTheme.box(bg, border, 2, UiTheme.metric("combat_roster_pad", 6))
+		box.content_margin_top = 0  # 높이는 명령 칸에 맞춘다(내용은 가운데)
+		box.content_margin_bottom = 0
 		if tgt:
 			box.set_border_width_all(2)
 		(row["panel"] as PanelContainer).add_theme_stylebox_override("panel", box)
