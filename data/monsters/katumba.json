@@ -3,6 +3,7 @@
   "name_ko": "설원의 군주 카툼바",
   "grade": 7,
   "rank": "midboss",
+  "status_immune": ["frost"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_glacier_cave"

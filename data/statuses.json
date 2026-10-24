@@ -1132,7 +1132,6 @@
   },
   {
     "id": "regen_stopped",
-    "boss_mechanic": true,
     "name_ko": "재생 정지",
     "kind": "debuff",
     "desc_ko": "심장이 꿰뚫려 재생이 멎었다.",
@@ -1148,7 +1147,6 @@
   },
   {
     "id": "tear_sealed",
-    "boss_mechanic": true,
     "name_ko": "봉인된 저항",
     "kind": "debuff",
     "desc_ko": "여신의 눈물이 악의 저항을 봉인했다.",
@@ -1523,5 +1521,5 @@
   {"id": "smoke_cover", "name_ko": "연막", "kind": "buff", "duration": {"amount": 2, "unit": "turn"}, "flee_bonus": 0.3, "source": "placeholder", "notes": "연막탄(2026-10-23): 도주 확률 +30%p(BattleRules.flee_chance — 상태 키 flee_bonus)"},
   {"id": "whetted", "name_ko": "벼린 날", "kind": "buff", "duration": {"amount": 3, "unit": "hour"}, "modifiers": [{"target": "dmg_dealt:physical", "percent": 0.1}], "source": "placeholder", "notes": "숫돌(2026-10-23): 3시간 동안 주는 물리 피해 +10%"},
   {"id": "tomb_curse", "name_ko": "묘의 저주", "kind": "debuff", "duration": {"amount": 6, "unit": "hour"}, "modifiers": [{"target": "dmg_taken:all", "percent": 0.1}], "source": "placeholder", "notes": "강철의 묘 가짜 보물 더미(히든 피스 J) — 6시간 받는 피해 +10%"},
-  {"id": "blast_scorched", "name_ko": "그을림", "kind": "debuff", "boss_mechanic": true, "duration": {"amount": 3, "unit": "turn"}, "flags": ["no_split"], "battle_only": true, "source": "placeholder", "notes": "갱도 폭약(히든 피스 H) — 분열하지 못한다(BattleSpawns.split)"}
+  {"id": "blast_scorched", "name_ko": "그을림", "kind": "debuff", "duration": {"amount": 3, "unit": "turn"}, "flags": ["no_split"], "battle_only": true, "source": "placeholder", "notes": "갱도 폭약(히든 피스 H) — 분열하지 못한다(BattleSpawns.split)"}
 ]

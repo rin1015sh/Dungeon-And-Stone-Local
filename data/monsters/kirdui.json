@@ -3,6 +3,7 @@
   "name_ko": "타락한 짐승 키르뒤",
   "grade": 5,
   "rank": "variant_guardian",
+  "status_immune": ["poison", "fear"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_glacier_cave"

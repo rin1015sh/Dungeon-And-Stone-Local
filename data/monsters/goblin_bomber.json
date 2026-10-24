@@ -3,6 +3,7 @@
   "name_ko": "고블린 폭탄병",
   "grade": 6,
   "rank": "midboss",
+  "status_immune": ["intimidated"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_green_mine"

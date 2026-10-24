@@ -102,6 +102,7 @@ func refresh() -> void:
 		for m: Dictionary in Meters.list(_db, u.actor):
 			names.append("%s %d" % [str(m["name"]), roundi(float(m["value"]))])
 		(row["status"] as Label).text = ", ".join(names)
+		(row["status"] as Label).visible = not names.is_empty()  # 계측값이 있을 때만 자리를 차지한다(파티 창을 좁게)
 		(row["panel"] as Control).modulate.a = 1.0 if u.is_active() else 0.45
 	_style()
 

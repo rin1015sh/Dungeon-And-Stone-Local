@@ -3,6 +3,7 @@
   "name_ko": "폭군 타룬바스",
   "grade": 7,
   "rank": "guardian",
+  "status_immune": ["frost", "fear"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_glacier_cave"

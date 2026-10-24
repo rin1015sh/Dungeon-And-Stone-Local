@@ -3,6 +3,7 @@
   "name_ko": "시체골렘",
   "grade": 7,
   "rank": "midboss",
+  "status_immune": ["bleeding", "poison"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_blood_fortress"

@@ -3,6 +3,7 @@
   "name_ko": "킹 슬라임",
   "grade": 6,
   "rank": "guardian",
+  "status_immune": ["bleeding", "blind"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_green_mine"

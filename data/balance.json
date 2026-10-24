@@ -132,8 +132,6 @@
     "flee_min": 0.1,
     "flee_max": 0.9,
     "no_flee_ranks": ["guardian", "variant_guardian", "lord"],
-    "_status_immune_comment": "보스 상태이상 면역(사용자 결정 2026-10-24, UI25): 이 등급 몬스터는 상대가 거는 해로운 상태(kind debuff)가 듣지 않는다. 몬스터 status_immune_all(true/false)이 등급보다 앞서고, 상태 boss_mechanic이면 뚫는다(약점·히든 피스용)",
-    "status_immune_ranks": ["guardian", "variant_guardian", "midboss", "lord"],
     "first_strike_gauge": 50,
     "may_skip_chance": 0.3,
     "_taunt_comment": "끌어들이기(draws_attacks): 대상 규칙이 없는 몬스터 공격이 이 확률로 끌어들이는 아군을 먼저 노린다",

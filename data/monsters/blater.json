@@ -3,6 +3,7 @@
   "name_ko": "저주받은 기사 블라터",
   "grade": 6,
   "rank": "guardian",
+  "status_immune": ["bleeding", "poison", "fear"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_blood_fortress"

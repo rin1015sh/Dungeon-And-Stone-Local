@@ -3,6 +3,7 @@
   "name_ko": "뱀파이어 공작 캠보르미어",
   "grade": 5,
   "rank": "variant_guardian",
+  "status_immune": ["poison", "fear", "curse"],
   "floor": 1,
   "floor_tags": [
     "f1_rift_blood_fortress"

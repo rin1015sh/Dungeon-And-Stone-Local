@@ -3,6 +3,7 @@
   "name_ko": "드레드피어",
   "grade": 6,
   "rank": "lord",
+  "status_immune": ["poison", "rot", "fear", "confusion", "seal"],
   "floor": 1,
   "floor_tags": [
     "f1_lord"
