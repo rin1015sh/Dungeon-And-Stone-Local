@@ -43,29 +43,50 @@ static func delete(path: String = DEFAULT_PATH) -> void:
 
 
 ## 지금 상태를 저장용 사전으로.
-static func capture(pc: PlayerCharacter, city: CityState, rifts: RiftCalendar, master_seed: int, floor_entries: int) -> Dictionary:
+## companions = 동료(플레이어 말고 파티원 — 사용자 2026-10-25), 같은 꼴로 "companions"에.
+static func capture(pc: PlayerCharacter, city: CityState, rifts: RiftCalendar, master_seed: int, floor_entries: int,
+		companions: Array[PlayerCharacter] = []) -> Dictionary:
 	return {
 		"version": VERSION,
 		"saved_unix": int(Time.get_unix_time_from_system()),
 		"where": "plaza",
-		"player": {
-			"name": pc.display_name, "race": pc.race_id, "class": pc.class_id,
-			"pool": pc.pool.to_dict(), "statuses": pc.statuses.to_dict(), "light": pc.light.to_dict(),
-			"skills": pc.skills.duplicate(), "progress": pc.progress_to_dict(),
-		},
+		"player": _pc_dict(pc),
+		"companions": companions.map(func(c: PlayerCharacter) -> Dictionary: return _pc_dict(c)),
 		"city": city.to_dict() if city != null else {},
 		"rift_calendar": rifts.to_dict() if rifts != null else {},
 		"game": {"master_seed": master_seed, "floor_entries": floor_entries},
 	}
 
 
+static func _pc_dict(pc: PlayerCharacter) -> Dictionary:
+	return {
+		"id": pc.id, "name": pc.display_name, "race": pc.race_id, "class": pc.class_id, "row": pc.row,
+		"pool": pc.pool.to_dict(), "statuses": pc.statuses.to_dict(), "light": pc.light.to_dict(),
+		"skills": pc.skills.duplicate(), "progress": pc.progress_to_dict(),
+	}
+
+
 ## 저장 사전 → 탐험가. 시작 소지품·장비는 주지 않고 저장된 것만 되살린다.
 static func restore_player(db: GameDatabase, data: Dictionary) -> PlayerCharacter:
-	var p := JsonUtil.get_dict(data, "player")
+	return _restore_pc(db, JsonUtil.get_dict(data, "player"), "player")
+
+
+## 저장 사전 → 동료들(없으면 빈 배열 — 옛 저장).
+static func restore_companions(db: GameDatabase, data: Dictionary) -> Array[PlayerCharacter]:
+	var out: Array[PlayerCharacter] = []
+	for i in JsonUtil.get_array(data, "companions").size():
+		var c: Variant = JsonUtil.get_array(data, "companions")[i]
+		if c is Dictionary:
+			out.append(_restore_pc(db, c, JsonUtil.get_str(c, "id", "mate_%d" % i)))
+	return out
+
+
+static func _restore_pc(db: GameDatabase, p: Dictionary, id: String) -> PlayerCharacter:
 	var progress := JsonUtil.get_dict(p, "progress")
 	var level := Progression.level_for(db, JsonUtil.get_int(JsonUtil.get_dict(progress, "progression"), "exp_total"))
 	var pc := PlayerCharacter.new(db, JsonUtil.get_dict(progress, "base_stats"), maxi(1, level))
-	pc.id = "player"
+	pc.id = id
+	pc.row = JsonUtil.get_str(p, "row")
 	pc.display_name = JsonUtil.get_str(p, "name")
 	pc.race_id = JsonUtil.get_str(p, "race")
 	pc.class_id = JsonUtil.get_str(p, "class")

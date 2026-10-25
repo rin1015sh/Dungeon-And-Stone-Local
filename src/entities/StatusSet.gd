@@ -209,12 +209,20 @@ func purge_immune() -> Array[String]:
 	return out
 
 
-## 남이 건 그 상태를 버틸 확률: 정의 resist {stats}의 합 × status.resist_per_point, 최대 status.resist_max.
-func resist_chance(id: String) -> float:
+## 남이 건 그 상태를 버틸 확률(10층 비율 공식): resist_max × 저항 / (저항 + 거는 쪽 힘).
+## 저항 = 정의 resist {stats}의 평균, 거는 쪽 힘 = 그 사람의 근력·정신력 중 큰 값(power를 안 주면 저항과 같다고 본다 — 30%).
+func resist_chance(id: String, power: float = -1.0) -> float:
+	var stats := JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("statuses", id), "resist"), "stats")
+	if stats.is_empty():
+		return 0.0
 	var total := 0.0
-	for st: Variant in JsonUtil.get_array(JsonUtil.get_dict(_db.get_entry("statuses", id), "resist"), "stats"):
-		total += _stats.get_value(str(st))
-	return clampf(total * float(_db.bal("status.resist_per_point", 0.01)), 0.0, float(_db.bal("status.resist_max", 0.6)))
+	for st: Variant in stats:
+		total += maxf(0.0, _stats.get_value(str(st)))
+	var res := total / stats.size()
+	var pw := power if power >= 0.0 else res
+	if res + pw <= 0.0:
+		return 0.0
+	return clampf(float(_db.bal("status.resist_max", 0.6)) * res / (res + pw), 0.0, 1.0)
 
 
 ## 피해를 받았다: break_on_damage(유형 무관)·break_on_damage_types(그 유형)인 상태를 푼다. 푼 id 목록.

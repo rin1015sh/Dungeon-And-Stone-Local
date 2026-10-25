@@ -1027,8 +1027,9 @@ func _has_label(root: Node, text: String) -> bool:
 ## Tab 메뉴(UI26): 왼쪽 아군 목록 — W/S·Enter로 아군을 고르면 가운데·오른쪽이 그 아군, 맨 끝 도감을 고르면 도감 쪽.
 func _tab_party_checks(explore: ExploreScreen) -> void:
 	var gm := explore.menu()
-	var mate := PlayerCharacter.create(DataRegistry.db, "human", "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+	var mate := PlayerCharacter.create(DataRegistry.db, "human", "archer", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
 	gm.party.append(mate)
+	_expect(mate.get_row() == "back" and explore.session.player.get_row() == "front", "궁수 = 후위, 전사 = 전위(템플릿 역할)")
 	await _action("menu")
 	_expect(gm.is_open() and gm.order() == (["party", "character", "inventory"] as Array[String]), "Tab = 아군 · 캐릭터 · 소지품")
 	gm.focus("party")
@@ -1044,5 +1045,27 @@ func _tab_party_checks(explore: ExploreScreen) -> void:
 	await _action("menu_up")
 	await _action("menu_confirm")
 	_expect(gm.shown() == explore.session.player and gm.character().visible, "플레이어로 돌아온다")
+	# 전위·후위·내보내기(사용자 2026-10-25): 고른 아군에서 Enter 한 번 더 → 창
+	await _action("menu_down")
+	await _action("menu_confirm")
+	await _action("menu_confirm")
+	_expect(gm.find_children("*", "ChoicePopup", true, false).size() == 1 and gm.party_page().busy(), "고른 아군에서 Enter 한 번 더 = 전위/후위/내보내기 창")
+	await _action("menu_confirm")  # 첫 칸 = 전위(후위인 궁수라 고를 수 있다)
+	await _frames(2)
+	_expect(mate.get_row() == "front" and not gm.party_page().busy(), "전위로 바꾼다")
+	mate.row = "back"
+	gm._reorder(mate)
+	_expect(gm.party.find(mate) == gm.party.size() - 1, "후위는 아래로")
+	await _action("menu_confirm")
+	await _action("menu_down")
+	await _action("menu_down")  # 전위(커서) → 후위(지금 줄이라 못 고름) → 파티에서 내보낸다
+	await _action("menu_confirm")  # 한 번 더 묻는다
+	await _frames(2)
+	_expect(gm.party.has(mate) and gm.find_children("*", "ChoicePopup", true, false).size() == 1
+		and str(gm.find_children("*", "ChoicePopup", true, false)[0].grid.current_option().get("text")) == Strings.t("party.release_yes"),
+		"내보내기는 한 번 더 묻는다")
+	await _action("menu_confirm")
+	await _frames(2)
+	_expect(not gm.party.has(mate) and gm.shown() == explore.session.player, "내보내면 목록에서 빠지고 플레이어를 본다")
 	await _action("menu")
 	gm.party.erase(mate)

@@ -59,6 +59,7 @@ func _ready() -> void:
 	_btn(v, Strings.t("debug.spawn_monster"), func() -> void: ExploreDebug.spawn_and_engage(_session))
 	_btn(v, Strings.t("debug.give_essence"), _give_essence)
 	_btn(v, Strings.t("debug.summon_lord"), func() -> void: _session.lord.summon(_session))
+	_btn(v, Strings.t("debug.add_companion"), _add_companion)
 	_add_rift_row(v)
 	for key: String in ["debug.portal_open_locked"]:
 		later.append(Strings.t(key))
@@ -105,6 +106,19 @@ func _give_essence() -> void:
 	ids.sort()
 	var inst := EssenceDrop.make(_session.db, str(_session.rng.pick(ids)), "", _session.rng)
 	_session.take_drop({"kind": "essence", "inst": inst}, _session.player)
+
+
+## 무작위 동료 하나를 파티에 들인다(가득 차면 이유를 기록에). 실제 게임에 동료를 얻는 길이 생기기 전까지의 시험용.
+func _add_companion() -> void:
+	if _session.companions.size() + 1 >= int(_session.db.bal("party.max_size", 5)):
+		EventBus.notice.emit("party.full", {}, "warn")
+		return
+	var mate := CharacterRoller.random_companion(_session.db, _session.rng, _session.player.get_level(), int(Time.get_ticks_usec() % 1000000))
+	mate.display_name = Strings.t("party.mate_name", {"race": mate.race_name(), "class": mate.template_name()})
+	if GameState.player == _session.player:
+		GameState.add_companion(mate)  # 보통은 GameState.companions = 세션의 동료 배열(Main)
+	if not _session.companions.has(mate):
+		_session.companions.append(mate)
 
 
 ## 균열: 바깥 층이면 종류를 골라 강제 개방(옆에 포탈), 균열 안이면 이 챕터 조우 치우기.

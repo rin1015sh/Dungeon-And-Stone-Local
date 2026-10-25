@@ -15,6 +15,19 @@ var fatigue: Fatigue = Fatigue.new()
 const FATIGUE_SOURCE := "fatigue"
 ## 활동으로 오른 능력치 기록 [{stat, amount, activity, month, period}] — 도시 독서·훈련(CityEffect stat_chance).
 var stat_history: Array[Dictionary] = []
+## 전투 줄(사용자 2026-10-25): "front"(전위 — 적 어그로를 더 받는다) · "back"(후위). 비면 템플릿 역할로(default_row).
+var row: String = ""
+const BACK_ROLES := ["ranged", "caster", "healer"]  ## 궁수·마법사·신관 = 후위, 탱커·근접 딜러 = 전위
+
+
+## 지금 전투 줄.
+func get_row() -> String:
+	return row if row in ["front", "back"] else default_row(db, class_id)
+
+
+## 템플릿 역할(classes role)로 정한 기본 줄.
+static func default_row(p_db: GameDatabase, p_class: String) -> String:
+	return "back" if JsonUtil.get_str(p_db.get_entry("classes", p_class), "role") in BACK_ROLES else "front"
 
 
 ## 종족·템플릿 범위에서 굴린 기본 스탯(bases)으로 캐릭터를 만든다.

@@ -25,18 +25,18 @@
     "requires": "aim"
   },
   "stats": {
-    "str": 16,
-    "agi": 7,
-    "p_res": 14,
-    "m_res": 6,
-    "int": 4
+    "str": 19,
+    "agi": 15,
+    "p_res": 25,
+    "m_res": 12,
+    "int": 8
   },
   "resources": {
-    "hp": 160,
+    "hp": 98,
     "soul": 40
   },
   "natural_weapon": {
-    "attack": 12,
+    "attack": 17,
     "damage_type": "slash"
   },
   "behavior": {

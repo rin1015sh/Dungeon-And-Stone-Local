@@ -26,18 +26,18 @@
     "requires": "aim"
   },
   "stats": {
-    "str": 4,
-    "agi": 9,
-    "p_res": 4,
-    "m_res": 8,
-    "int": 8
+    "str": 6,
+    "agi": 10,
+    "p_res": 12,
+    "m_res": 16,
+    "int": 10
   },
   "resources": {
-    "hp": 40,
+    "hp": 27,
     "soul": 40
   },
   "natural_weapon": {
-    "attack": 3,
+    "attack": 4,
     "damage_type": "blunt"
   },
   "behavior": {

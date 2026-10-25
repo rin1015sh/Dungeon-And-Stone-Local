@@ -3,14 +3,18 @@ extends MenuPage
 ## Tab 메뉴 맨 왼쪽 쪽(사용자 요청 2026-10-25, UI26): 아군 목록 — 줄마다 이름 + 생명력·영혼력·허기·피로 짧은 막대
 ## (탐험 화면 하단 바를 없앤 대신 여기서 본다), 맨 끝에 도감. W/S = 커서, Enter = 그 아군을 고른다(가운데·오른쪽 쪽이
 ## 그 아군으로 바뀐다) / 도감을 연다. 고른 아군은 금빛 테두리, 커서는 밝은 바탕.
+## 전위·후위(사용자 2026-10-25): 전위가 위, 후위가 아래(GameMenu가 줄 순서로 넘긴다), 이름 옆에 줄. 이미 고른 아군에서 Enter를
+## 한 번 더 누르면 ally_menu_requested — GameMenu가 전위/후위/파티에서 내보내기 창을 띄운다(그동안 asking).
 
 signal ally_selected(a: PlayerCharacter)
+signal ally_menu_requested(a: PlayerCharacter)
 signal bestiary_requested
 
 const BARS := ["hp", "soul", "hunger"]
 
 var party: Array[PlayerCharacter] = []
 var selected: int = 0  ## 고른 아군 번호(도감이면 party.size())
+var asking: bool = false  ## GameMenu가 아군 창(전위/후위/내보내기)을 띄운 동안 참 — 키를 받지 않는다
 
 var _cursor: int = 0
 var _rows: Array[PanelContainer] = []
@@ -24,6 +28,28 @@ func _init() -> void:
 func setup(p_party: Array[PlayerCharacter]) -> void:
 	party = p_party
 	custom_minimum_size.x = MenuPage.cfg("party_width", 230.0)
+	_build()
+
+
+## 줄이 바뀌거나 누가 빠졌다: 목록을 다시 만든다(sel = 고른 줄).
+func rebuild(p_party: Array[PlayerCharacter], sel: int) -> void:
+	for c in content.get_children():
+		content.remove_child(c)
+		c.queue_free()
+	_rows.clear()
+	_fills.clear()
+	party = p_party
+	_build()
+	selected = sel
+	_cursor = sel
+	_paint_rows()
+
+
+func busy() -> bool:
+	return asking
+
+
+func _build() -> void:
 	for i in party.size():
 		_add_row(i)
 	var be := PanelContainer.new()
@@ -74,6 +100,9 @@ func nav(d: Vector2i) -> bool:
 
 
 func confirm() -> void:
+	if _cursor < party.size() and _cursor == selected:
+		ally_menu_requested.emit(party[_cursor])  # 고른 아군에서 한 번 더 — 전위/후위/내보내기
+		return
 	selected = _cursor
 	_paint_rows()
 	if _cursor < party.size():
@@ -100,10 +129,15 @@ func _add_row(i: int) -> void:
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 2)
 	panel.add_child(v)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 6)
+	v.add_child(head)
 	var nm := UiTheme.label(pc.display_name if not pc.display_name.is_empty() else Strings.t("party.nameless"), "body", "text_title")
 	nm.clip_text = true
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	v.add_child(nm)
+	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(nm)
+	head.add_child(UiTheme.label(Strings.t("party." + pc.get_row()), "small", "gold" if pc.get_row() == "front" else "text_dim"))
 	var fills: Array = []
 	for r: String in BARS:
 		if not pc.pool.has_resource(r):

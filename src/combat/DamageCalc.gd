@@ -1,10 +1,11 @@
 class_name DamageCalc
 extends RefCounted
-## 피해 공식(docs/PROMPT_FLOOR1_V2.md §1). 계수는 balance.json combat.
-##   공격력: 물리 = (무기 공격력 — 몬스터는 natural_weapon, 없으면 맨손 값) + 근력×2, 마법 = 스킬 기본값(base) + 정신력×2
-##   피해 = 공격력 × 위력 × 100/(100 + 방어×4) × 상성(약점·면역) × 받는/주는 피해 수정자 × 조건부 위력 × 편차 (치명타면 ×1.5)
-##   명중 = (스킬 명중 accuracy, 기본 95 + 명중률 스탯) × (1 + (공격 민첩 − 대상 민첩)×0.005), 30~100%로 제한(약점 노리기 ×배율)
-##   치명타 = 5% + 민첩×0.3% + 스킬 crit_bonus + 패시브 crit_bonus (+ 대상 상태 crit_taken, 명중엔 hit_taken — 표식)
+## 피해 공식(10층 비율 공식 — docs/plans/balance_10floors.md §2). 계수는 balance.json combat.
+##   공격력: 물리 = (무기 공격력 — 몬스터는 natural_weapon, 없으면 맨손 값) + 근력×2, 마법 = 스킬 기본값(base) + 마력(지팡이 weapon.magic) + 정신력×2
+##   피해 = 공격력 × 위력 × 공격력/(공격력 + 방어×defense_ratio) × 상성 × 받는/주는 피해 수정자 × 조건부 위력 × 편차 (치명타면 ×1.5)
+##     — 방어가 공격력의 절반이면 절반, 1/3이면 60%: 스탯이 수백이 되어도 "상대보다 얼마나 단단한가"로 같은 뜻이다.
+##   명중 = (스킬 명중 accuracy, 기본 95 + 명중률 스탯)% × (공격 민첩 / 대상 민첩)^hit_agi_exp, 30~100%로 제한(약점 노리기 ×배율)
+##   치명타 = 5% + crit_agi_share × 공격 민첩/(공격 민첩 + 대상 민첩) + 스킬·패시브 crit_bonus (+ 대상 상태 crit_taken, 명중엔 hit_taken — 표식)
 ##   조건부 위력: 효과 "power_if_status": {"status": [..], "power": 1.5} — 대상이 그 상태면 위력을 바꾼다.
 ##   패시브 power_vs_status {"status", "mult"}: 그 상태의 대상에게 피해 배율.
 ##   "ignore_defense": true면 방어 계수를 1로 본다(배신의 장막 오인 공격). "defense_ignore": 0.2면 방어의 20%를 무시.
@@ -33,9 +34,8 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	var magic := JsonUtil.get_str(effect, "scaling", "phys") == "magic"
 	var defense := 0.0 if JsonUtil.get_bool(effect, "ignore_defense") else defender.stats.get_value("m_res" if magic else "p_res")
 	defense *= 1.0 - clampf(JsonUtil.get_float(effect, "defense_ignore") + Passives.sum(attacker, "defense_ignore"), 0.0, 1.0)  # 방어 일부 무시(송곳니 관통 0.2)
-	var k := _c(db, "defense_k", 100.0)
-	var raw := attack_power(db, attacker, effect) * _power(effect, defender) * k \
-		/ (k + maxf(0.0, defense) * _c(db, "defense_per_point", 4.0))
+	var atk := attack_power(db, attacker, effect)
+	var raw := atk * _power(effect, defender) * defense_mult(db, atk, defense)
 	raw *= Passives.damage_mult_vs(attacker, defender)
 	var variance := _c(db, "damage_variance", 0.1)
 	raw *= 1.0 + (JsonUtil.get_float(rolls, "var", 0.5) * 2.0 - 1.0) * variance
@@ -43,7 +43,7 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	var wp := defender.weak_point()
 	if weak:
 		raw *= JsonUtil.get_float(wp, "multiplier", _c(db, "weak_point_damage_mult", 2.0))
-	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker, Passives.crit_bonus(attacker, dtype) + JsonUtil.get_float(effect, "crit_bonus")
+	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker, defender, Passives.crit_bonus(attacker, dtype) + JsonUtil.get_float(effect, "crit_bonus")
 			+ attacker.statuses.sum_key("crit_bonus") + defender.statuses.sum_key("crit_taken")):
 		out["crit"] = true
 		raw *= _c(db, "crit_mult", 1.5)
@@ -63,9 +63,16 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	return out
 
 
+## 방어 배율 = 공격력 / (공격력 + 방어 × defense_ratio). 공격력이 0이면 0.
+static func defense_mult(db: GameDatabase, atk: float, defense: float) -> float:
+	if atk <= 0.0:
+		return 0.0
+	return atk / (atk + maxf(0.0, defense) * _c(db, "defense_ratio", 2.0))
+
+
 static func attack_power(db: GameDatabase, attacker: Actor, effect: Dictionary) -> float:
 	if JsonUtil.get_str(effect, "scaling", "phys") == "magic":
-		return JsonUtil.get_float(effect, "base", 0.0) + attacker.stats.get_value("int") * _c(db, "mag_atk_per_int", 1.0)
+		return JsonUtil.get_float(effect, "base", 0.0) + attacker.magic_power() + attacker.stats.get_value("int") * _c(db, "mag_atk_per_int", 1.0)
 	var weapon := attacker.weapon_attack()
 	var base := weapon if weapon >= 0.0 else _c(db, "unarmed_atk", 2.0)
 	return base + attacker.stats.get_value("str") * (_c(db, "phys_atk_per_str", 1.0) + JsonUtil.get_float(effect, "str_bonus"))
@@ -77,14 +84,23 @@ static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_w
 		return 1.0  # 자석에 끌려온 대상(일디움 자석 끌어당기기)
 	var acc := (accuracy if accuracy >= 0.0 else _c(db, "default_accuracy", 95.0)) + attacker.stats.get_value("accuracy") \
 		+ defender.statuses.sum_key("hit_taken") + Passives.hit_bonus_vs(attacker, defender)  # 표식 · 패시브 hit_vs_status
-	var h := acc / 100.0 * (1.0 + (attacker.stats.get_value("agi") - defender.stats.get_value("agi")) * _c(db, "hit_agi_coef", 0.005))
+	var h := acc / 100.0 * pow(agi_ratio(db, attacker, defender), _c(db, "hit_agi_exp", 0.3))
 	if aim_weak:
 		h *= _c(db, "weak_point_hit_mult", 0.6)
 	return clampf(h, _c(db, "hit_min", 0.3), _c(db, "hit_max", 1.0))
 
 
-static func crit_chance(db: GameDatabase, attacker: Actor, bonus: float = 0.0) -> float:
-	var c := _c(db, "crit_base", 0.05) + attacker.stats.get_value("agi") * _c(db, "crit_per_agi", 0.003) + bonus
+## (공격 민첩 + agi_offset) / (대상 민첩 + agi_offset) — offset은 1층의 작은 스탯(8 대 20)에서 비율이 너무 벌어지지 않게.
+static func agi_ratio(db: GameDatabase, attacker: Actor, defender: Actor) -> float:
+	var k := _c(db, "agi_offset", 10.0)
+	return maxf(1.0, attacker.stats.get_value("agi") + k) / maxf(1.0, defender.stats.get_value("agi") + k)
+
+
+## defender가 없으면(캐릭터 창 표시) 민첩이 같은 상대로 본다.
+static func crit_chance(db: GameDatabase, attacker: Actor, defender: Actor = null, bonus: float = 0.0) -> float:
+	var a := maxf(1.0, attacker.stats.get_value("agi") + _c(db, "agi_offset", 10.0))
+	var d := maxf(1.0, defender.stats.get_value("agi") + _c(db, "agi_offset", 10.0)) if defender != null else a
+	var c := _c(db, "crit_base", 0.05) + _c(db, "crit_agi_share", 0.2) * a / (a + d) + bonus
 	return clampf(c, 0.0, _c(db, "crit_max", 1.0))  # 상한 없음(사용자 2026-10-25) — 확률이라 100%까지만
 
 

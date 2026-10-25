@@ -24,14 +24,14 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 2,
-    "agi": 12,
+    "str": 4,
+    "agi": 13,
     "p_res": 0,
-    "m_res": 10,
-    "int": 9
+    "m_res": 18,
+    "int": 11
   },
   "resources": {
-    "hp": 35,
+    "hp": 24,
     "soul": 40
   },
   "natural_weapon": {

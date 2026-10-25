@@ -27,18 +27,18 @@
     "requires_status": "golem_skeleton"
   },
   "stats": {
-    "str": 43,
-    "agi": 17,
-    "p_res": 18,
-    "m_res": 8,
-    "int": 24
+    "str": 42,
+    "agi": 38,
+    "p_res": 57,
+    "m_res": 29,
+    "int": 28
   },
   "resources": {
-    "hp": 2050,
+    "hp": 3600,
     "soul": 60
   },
   "natural_weapon": {
-    "attack": 14,
+    "attack": 32,
     "damage_type": "blunt"
   },
   "behavior": {

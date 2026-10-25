@@ -26,18 +26,18 @@
     "requires": "aim"
   },
   "stats": {
-    "str": 7,
-    "agi": 12,
-    "p_res": 5,
-    "m_res": 3,
-    "int": 4
+    "str": 9,
+    "agi": 13,
+    "p_res": 14,
+    "m_res": 8,
+    "int": 6
   },
   "resources": {
-    "hp": 45,
+    "hp": 31,
     "soul": 15
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 11,
     "damage_type": "pierce",
     "ranged": true
   },

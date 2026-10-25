@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(958줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(971줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -400,6 +400,7 @@
 - `debug.rift_clear_chapter` 이 챕터 조우 치우기
 - `debug.give_rift_stones` 균열 개방 마석 4종 받기
 - `debug.summon_lord` 계층군주 소환(드레드피어)
+- `debug.add_companion` 동료 들이기(무작위 탐험가)
 - `debug.title` 디버그 (F1)
 - `debug.skip` +{hours}시간
 - `debug.close_soon` 폐쇄 1시간 전
@@ -606,6 +607,7 @@
 - `combat.misdirect` {name}의 공격이 빗나가 {target}에게 향한다!
 - `combat.rows_shuffled` 대열이 뒤엉켰다!
 - `combat.extra_action` {name}이(가) 한 번 더 움직인다!
+- `combat.enrage` {name}의 숨이 거칠어진다. 휘두르는 손길에 망설임이 사라졌다.
 - `combat.dread_p1` 수정의 빛이 핏빛으로 물든다. {name}이(가) 구더기를 흩뿌리며 다가온다.
 - `combat.dread_p2` {name}의 공포가 스며든다. 손끝이 떨리고, 원망이 쌓이기 시작한다.
 - `combat.dread_p3` {name}을(를) 둘러싼 증오가 짙어진다. 동료의 얼굴이 낯설게 보인다.
@@ -694,6 +696,7 @@
 - `inventory.title` 소지품
 - `inventory.equipped` 장착 중
 - `inventory.weapon_line` 공격력 {attack} · {type}
+- `inventory.magic_power` 마력
 - `inventory.two_handed` 양손
 - `inventory.size` 크기
 - `inventory.price` ◆ {price} 스톤
@@ -720,6 +723,16 @@
 - `party.bestiary` 도감
 - `party.fatigue` 피로
 - `party.nameless` 이름 없는 탐험가
+- `party.front` 전위
+- `party.back` 후위
+- `party.release` 파티에서 내보낸다
+- `party.release_ask` {name}을(를) 파티에서 내보낼까?
+- `party.release_yes` 내보낸다
+- `party.release_no` 그만둔다
+- `party.no_release_self` 자신은 내보낼 수 없다
+- `party.mate_name` {race} {class}
+- `party.mate_died` {name}이(가) 숨을 거두었다.
+- `party.full` 파티가 가득 찼다
 
 <a id="character"></a>
 ## 캐릭터 `character`

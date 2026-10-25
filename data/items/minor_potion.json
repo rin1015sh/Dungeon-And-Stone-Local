@@ -11,7 +11,7 @@
     {
       "type": "restore_resource",
       "resource": "hp",
-      "amount": 25
+      "amount": "max(25, floor({max_hp} * 0.15))"
     },
     {
       "type": "apply_status",

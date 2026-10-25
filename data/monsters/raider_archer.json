@@ -18,18 +18,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 6,
-    "agi": 11,
-    "p_res": 3,
-    "m_res": 3,
-    "int": 4
+    "str": 8,
+    "agi": 12,
+    "p_res": 10,
+    "m_res": 8,
+    "int": 6
   },
   "resources": {
-    "hp": 45,
+    "hp": 31,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 9,
     "damage_type": "pierce"
   },
   "behavior": {

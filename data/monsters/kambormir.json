@@ -27,18 +27,18 @@
     "on_hit_status": "regen_stopped"
   },
   "stats": {
-    "str": 48,
-    "agi": 30,
-    "p_res": 32,
-    "m_res": 40,
-    "int": 52
+    "str": 36,
+    "agi": 45,
+    "p_res": 57,
+    "m_res": 36,
+    "int": 30
   },
   "resources": {
-    "hp": 3200,
+    "hp": 6345,
     "soul": 300
   },
   "natural_weapon": {
-    "attack": 26,
+    "attack": 31,
     "damage_type": "slash"
   },
   "behavior": {

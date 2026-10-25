@@ -50,6 +50,10 @@ func weapon_attack() -> float:
 	return JsonUtil.get_float(w, "attack", -1.0) if not w.is_empty() else -1.0
 
 
+func magic_power() -> float:
+	return JsonUtil.get_float(JsonUtil.get_dict(def, "natural_weapon"), "magic", 0.0)
+
+
 func weapon_is_ranged() -> bool:
 	return JsonUtil.get_bool(JsonUtil.get_dict(def, "natural_weapon"), "ranged")
 

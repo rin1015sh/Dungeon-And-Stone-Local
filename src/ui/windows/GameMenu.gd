@@ -4,12 +4,14 @@ extends Control
 ## 2026-10-25 UI26 "왼쪽 = 어느 아군을 볼지(W/S·Enter), 가운데 = 그 아군 정보·정수, 오른쪽 = 그 아군 장비 + 공용 가방"):
 ## 화면을 어둡게 덮고 아군(PartyPage — 짧은 생명력·영혼력·허기·피로, 맨 끝에 도감) · 캐릭터 · 소지품 세 쪽을 나란히 보인다.
 ## 왼쪽에서 도감을 고르면 가운데·오른쪽 대신 도감 쪽. 열면 소지품 쪽에 커서.
+## 아군 목록은 전위가 위·후위가 아래(사용자 2026-10-25). 고른 아군에서 Enter 한 번 더 = 전위/후위/파티에서 내보내기(한 번 더 묻는다).
 ##   W/A/S/D = 지금 쪽 안의 커서(쪽 끝에서 A/D = 옆 쪽으로), Enter = 고르기, Backspace = 쪽 안에서 물리기(없으면 닫기), Tab·Esc = 닫기.
 ## 열려 있으면 opened_changed(true) — 탐험 화면이 시간을 멈춘다(메뉴 규칙). 키는 모두 이 메뉴가 먹는다.
 ## hold가 참이면(위에 떠 있는 대화창 등) 키를 받지 않고 지나보낸다.
 
 signal opened_changed(open: bool)
 signal use_requested(item_id: String)
+signal party_changed  ## 줄이 바뀌거나 동료를 내보냈다
 
 const PAGES := ["party", "character", "inventory", "bestiary"]
 
@@ -26,8 +28,18 @@ var _active: String = ""
 
 func setup(p_pc: PlayerCharacter, p_party: Array[PlayerCharacter] = []) -> void:
 	pc = p_pc
-	party = p_party if not p_party.is_empty() else ([p_pc] as Array[PlayerCharacter])
+	party = by_row(p_party if not p_party.is_empty() else ([p_pc] as Array[PlayerCharacter]))
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+## 전위 먼저, 같은 줄 안에서는 들어온 순서.
+static func by_row(list: Array[PlayerCharacter]) -> Array[PlayerCharacter]:
+	var out: Array[PlayerCharacter] = []
+	for want: String in ["front", "back"]:
+		for a in list:
+			if a.get_row() == want:
+				out.append(a)
+	return out
 
 
 func is_open() -> bool:
@@ -131,6 +143,42 @@ func show_ally(a: PlayerCharacter) -> void:
 	_apply_mode()
 
 
+## 고른 아군 창: 전위 · 후위 · 파티에서 내보내기(플레이어는 못 내보낸다 — 내보내기는 한 번 더 묻는다).
+func _ally_menu(a: PlayerCharacter) -> void:
+	var pp := party_page()
+	pp.asking = true
+	var opts: Array[Dictionary] = [
+		{"text": Strings.t("party.front"), "enabled": a.get_row() != "front"},
+		{"text": Strings.t("party.back"), "enabled": a.get_row() != "back"},
+		{"text": Strings.t("party.release"), "enabled": a != pc, "desc": Strings.t("party.no_release_self") if a == pc else ""},
+	]
+	var i: int = await ChoicePopup.ask(self, a.display_name, opts, true)
+	if not is_open():
+		return
+	match i:
+		0, 1:
+			a.row = "front" if i == 0 else "back"
+			_reorder(a)
+		2:
+			var yes: Array[Dictionary] = [{"text": Strings.t("party.release_yes")}, {"text": Strings.t("party.release_no")}]
+			var j: int = await ChoicePopup.ask(self, Strings.t("party.release_ask", {"name": a.display_name}), yes, true)
+			if not is_open():
+				return
+			if j == 0:
+				GameState.release(a)
+				party.erase(a)
+				_reorder(pc)
+				show_ally(pc)
+	pp.asking = false
+
+
+## 줄 순서로 다시 세우고 a를 고른 채로 목록을 다시 만든다.
+func _reorder(a: PlayerCharacter) -> void:
+	party = by_row(party)
+	party_page().rebuild(party, party.find(a))
+	party_changed.emit()
+
+
 func show_bestiary() -> void:
 	party_page().mark(party.size())
 	_bestiary_mode = true
@@ -174,6 +222,7 @@ func _make(name: String) -> MenuPage:
 			var pp := PartyPage.new()
 			pp.setup(party)
 			pp.ally_selected.connect(show_ally)
+			pp.ally_menu_requested.connect(_ally_menu)
 			pp.bestiary_requested.connect(show_bestiary)
 			return pp
 		"inventory":

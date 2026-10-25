@@ -34,13 +34,14 @@ func test_every_type_and_material_is_forged() -> void:
 func test_spear_grows_attack_but_penalty_stays() -> void:
 	assert_eq(_atk("steel_spear"), 13, "강철 창 공격력 13")
 	assert_eq(_mods("steel_spear").get("agi"), -2.0, "창 = 민첩 −2(사용자 예)")
-	assert_eq(_atk("mithril_spear"), 52, "미스릴(5단계) 창 = 13 × 4.0")
-	assert_eq(_atk("mystium_spear"), 65, "미스티움(6단계) 창 = 13 × 5.0")
+	assert_eq(_atk("mithril_spear"), 260, "미스릴(5단계) 창 = 13 × 20(attack_by_tier — 10층 기획)")
+	assert_eq(_atk("mystium_spear"), 390, "미스티움(6단계) 창 = 13 × 30")
 	assert_eq(_mods("airilje_spear").get("agi"), -2.0, "감소는 등급과 무관")
 	assert_eq(_mods("lightium_spear").get("agi"), -1.0, "라이티늄은 가벼워 민첩 감소 절반")
 	assert_eq(_mods("adamantium_plate").get("agi"), -6.0, "아다만티움은 무거워 판금 −4 × 1.5")
 	assert_eq(_mods("steel_sword").get("accuracy"), 3.0)
-	assert_eq(_mods("airilje_sword").get("accuracy"), 7.0, "증가는 3 × 2.3 → 7")
+	assert_eq(_mods("airilje_sword").get("accuracy"), 3.0, "명중률은 % 값이라 단계 배율이 없다(unscaled)")
+	assert_eq(_mods("airilje_sword").get("str"), 4.0, "증가는 1 × 4.0(3단계 grow_by_tier)")
 
 
 func test_material_traits() -> void:
@@ -49,11 +50,13 @@ func test_material_traits() -> void:
 	assert_near(float(_mods("adamantium_plate").get("dmg_taken:magical", 0.0)), -0.5, 0.001, "아다만티움 방어구 = 속성 피해 −50%")
 	assert_false(_mods("adamantium_sword").has("dmg_taken:magical"), "무기에는 방어구 특성이 없다")
 	var drake := _mods("drake_leather_armor")
-	assert_eq(drake.get("p_res"), roundf(3.0 * 3.1 * 0.5), "드레이크 가죽 = 물리내성 증가 절반")
-	assert_eq(drake.get("m_res"), roundf(1.0 * 3.1 * 2.0) + 2.0, "항마력 증가 ×2 +2")
+	var g4 := float(JsonUtil.get_array(JsonUtil.get_dict(db.balance, "items"), "grow_by_tier")[3])
+	assert_eq(drake.get("p_res"), roundf(3.0 * g4 * 0.5), "드레이크 가죽 = 물리내성 증가 절반")
+	assert_eq(drake.get("m_res"), roundf(1.0 * g4 * 2.0) + 2.0, "항마력 증가 ×2 +2")
 	var myst := _mods("mystium_spear")
+	var g6 := float(JsonUtil.get_array(JsonUtil.get_dict(db.balance, "items"), "grow_by_tier")[5])
 	assert_eq(myst.get("agi"), -1.0, "미스티움 주 스탯 +1이 창의 민첩 −2와 합쳐진다")
-	assert_eq(myst.get("str"), 1.0)
+	assert_eq(myst.get("str"), roundf(1.0 * g6) + 1.0, "창 근력 증가 × 6단계 + 미스티움 +1")
 
 
 func test_prices_and_rarity() -> void:

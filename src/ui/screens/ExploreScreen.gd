@@ -53,7 +53,7 @@ func _ready() -> void:
 	var m := UiTheme.metric("margin", 16)
 	# 하단 바(생명력·영혼력·허기·상태)는 없다 — Tab 메뉴 왼쪽 쪽에서 본다(UI26)
 	_menu = GameMenu.new()
-	_menu.setup(session.player)
+	_menu.setup(session.player, _party())
 	add_child(_menu)
 	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_menu.opened_changed.connect(_on_menu_opened)
@@ -312,7 +312,8 @@ func _on_party_met(group: FieldMonsters.Group) -> void:
 
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.
 func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
-	var party: Array[Actor] = [session.player]
+	var party: Array[Actor] = []
+	party.append_array(_party())
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
 	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids)  # 정정당당하게(C11)
 	BattleRules.set_objective(battle, group.battle_rules)
@@ -339,7 +340,23 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 		_defeated = result == Battle.RESULT_DEFEAT
 		for id in killed:
 			EventBus.monster_killed.emit(id, session.player.id)
+		_bury_mates()
 		session.resolve_encounter(group, result, turns, killed))
+
+
+## 파티 = 플레이어 + 동료(세션의 동료 배열 — Main이 GameState.companions를 넘긴다).
+func _party() -> Array[PlayerCharacter]:
+	var out: Array[PlayerCharacter] = [session.player]
+	out.append_array(session.companions)
+	return out
+
+
+## 전투에서 쓰러진 동료는 파티에서 빠진다(죽음은 영구 — 화면으로는 알 수 없으니 대화창에 알린다).
+func _bury_mates() -> void:
+	for mate: PlayerCharacter in session.companions.duplicate():
+		if mate.dead or mate.pool.get_current("hp") <= 0.0:
+			session.companions.erase(mate)
+			EventBus.notice.emit("party.mate_died", {"name": mate.display_name}, "danger")
 
 
 ## 하단 대화창: 하단 바 자리에 겹친다(폭 ui.dialog.width — 화면이 좁으면 여백만 남기고).

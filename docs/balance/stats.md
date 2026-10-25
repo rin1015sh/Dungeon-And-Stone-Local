@@ -1,5 +1,7 @@
 # 스탯이 바꾸는 것 · 전투 공식 정리 (2026-10-18 기준)
 
+> **2026-10-25 공식이 바뀌었다**(10층 비율 공식 — 방어·명중·치명·도주·상태 저항·탐험 판정·CTB): 정본은 `docs/plans/balance_10floors.md` "적용 결과"와 `data/balance.json combat`. 아래 "1점당" 표는 옛 공식이다.
+
 코드(`DamageCalc`·`Combatant`·`BattleRules`·`StatusSet`·`RiftHazards`·`Vision`)와 데이터(`balance.json`·`resources.json`·`statuses.json`)에서 그대로 옮겼다.
 수치는 모두 `data/balance.json`에서 바꾼다(괄호 안 = 키). 대부분 임시값이다.
 

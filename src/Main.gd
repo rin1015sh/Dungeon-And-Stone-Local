@@ -123,6 +123,7 @@ func _enter_floor(floor_id: String, seed_override: int = 0) -> void:
 	var session := ExploreSession.new(db, def, map, GameState.player, TimeSystem.new_expedition(),
 		Rng.new(seed_value + 1), DataRegistry.registries.effects)
 	session.rifts.calendar = GameState.rift_calendar
+	session.companions = GameState.companions  # 같은 배열 — Tab 메뉴에서 내보내면 탐험에서도 빠진다
 	_show_session(session, floor_id)
 
 

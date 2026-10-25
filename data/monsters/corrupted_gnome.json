@@ -20,18 +20,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 7,
-    "agi": 7,
-    "p_res": 9,
-    "m_res": 8,
-    "int": 10
+    "str": 9,
+    "agi": 9,
+    "p_res": 22,
+    "m_res": 16,
+    "int": 12
   },
   "resources": {
-    "hp": 55,
+    "hp": 38,
     "soul": 50
   },
   "natural_weapon": {
-    "attack": 5,
+    "attack": 7,
     "damage_type": "blunt"
   },
   "behavior": {

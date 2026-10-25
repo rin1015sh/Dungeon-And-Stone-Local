@@ -27,6 +27,7 @@ var db: GameDatabase
 var floor_def: Dictionary
 var map: FloorMap
 var player: PlayerCharacter
+var companions: Array[PlayerCharacter] = []  ## 함께 싸우는 동료(사용자 2026-10-25) — 안전지대 휴식 회복만 같이 받는다(허기·광원은 플레이어만)
 var clock: GameClock
 var rng: Rng
 var effects: EffectRegistry
@@ -214,6 +215,8 @@ func rest() -> void:
 			var h := minf(1.0, left)
 			left -= h
 			player.pool.tick("rest", h)
+			for mate in companions:
+				mate.pool.tick("rest", h)
 			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, h)
 			player.fatigue.add(bonus * h, "rest_bonus")
 			pass_time(h)

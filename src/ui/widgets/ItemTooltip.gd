@@ -44,6 +44,8 @@ static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int 
 			"type": DataNames.tag(db, "damage_types", JsonUtil.get_str(weapon, "damage_type"))}), "body", "text_title")
 		wl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(wl)
+		if JsonUtil.get_float(weapon, "magic") > 0.0:  # 지팡이 마력(마법 공격력에 더한다 — 10층 기획)
+			v.add_child(_stat_row(Strings.t("inventory.magic_power"), "%+d" % roundi(JsonUtil.get_float(weapon, "magic")), 1.0))
 		if ItemInfo.two_handed(db, item_id):
 			v.add_child(_stat_row(Strings.t("inventory.two_handed"), "", 0.0))
 	for m: Variant in JsonUtil.get_array(ItemInfo.equip(db, item_id), "modifiers"):

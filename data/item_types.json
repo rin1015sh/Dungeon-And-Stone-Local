@@ -19,7 +19,7 @@
       "attack": 6
     },
     "grow": {
-      "agi": 1,
+      "agi": 3,
       "accuracy": 5
     },
     "penalty": {},
@@ -46,6 +46,7 @@
       "attack": 10
     },
     "grow": {
+      "str": 1,
       "accuracy": 3
     },
     "penalty": {},
@@ -73,7 +74,7 @@
     },
     "two_handed": true,
     "grow": {
-      "str": 1
+      "str": 3
     },
     "penalty": {
       "agi": -2
@@ -101,7 +102,7 @@
       "attack": 12
     },
     "grow": {
-      "str": 1
+      "str": 2
     },
     "penalty": {
       "accuracy": -5
@@ -130,7 +131,7 @@
       "attack": 11
     },
     "grow": {
-      "p_res": 1
+      "p_res": 2
     },
     "penalty": {
       "agi": -1
@@ -159,7 +160,7 @@
     },
     "two_handed": true,
     "grow": {
-      "str": 2
+      "str": 5
     },
     "penalty": {
       "agi": -3,
@@ -187,7 +188,9 @@
       "damage_type": "pierce",
       "attack": 13
     },
-    "grow": {},
+    "grow": {
+      "str": 1
+    },
     "penalty": {
       "agi": -2
     },
@@ -215,7 +218,8 @@
     },
     "two_handed": true,
     "grow": {
-      "p_res": 1
+      "p_res": 2,
+      "str": 1
     },
     "penalty": {
       "agi": -3
@@ -244,7 +248,7 @@
       "attack": 8
     },
     "grow": {
-      "str": 1
+      "str": 2
     },
     "penalty": {
       "accuracy": -3
@@ -274,6 +278,7 @@
     },
     "two_handed": true,
     "grow": {
+      "agi": 1,
       "accuracy": 5
     },
     "penalty": {},
@@ -303,6 +308,7 @@
     },
     "two_handed": true,
     "grow": {
+      "str": 1,
       "accuracy": 3
     },
     "penalty": {
@@ -328,11 +334,12 @@
     ],
     "weapon": {
       "damage_type": "blunt",
-      "attack": 4
+      "attack": 4,
+      "magic": 10
     },
     "two_handed": true,
     "grow": {
-      "int": 2,
+      "int": 4,
       "m_res": 1
     },
     "penalty": {

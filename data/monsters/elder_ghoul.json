@@ -23,18 +23,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 13,
-    "agi": 12,
-    "p_res": 8,
-    "m_res": 3,
-    "int": 2
+    "str": 14,
+    "agi": 13,
+    "p_res": 20,
+    "m_res": 8,
+    "int": 4
   },
   "resources": {
-    "hp": 95,
+    "hp": 65,
     "soul": 15
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 11,
     "damage_type": "slash"
   },
   "behavior": {

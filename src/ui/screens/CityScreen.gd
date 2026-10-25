@@ -43,7 +43,7 @@ func _ready() -> void:
 	add_child(_hud)
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_menu = GameMenu.new()
-	_menu.setup(pc)
+	_menu.setup(pc, GameState.party() if GameState.player == pc else ([pc] as Array[PlayerCharacter]))
 	_menu.use_requested.connect(use_item)
 	_menu.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
 	add_child(_menu)

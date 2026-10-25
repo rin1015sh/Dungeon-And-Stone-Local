@@ -11,7 +11,7 @@
     {
       "type": "restore_resource",
       "resource": "hp",
-      "amount": 150
+      "amount": "max(150, floor({max_hp} * 0.5))"
     },
     {
       "type": "remove_status",
