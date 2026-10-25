@@ -1,6 +1,7 @@
 {
   "id": "tomb_gold",
   "name_ko": "황금 부장품",
+  "desc_ko": "관 곁에 놓여 있던 황금 장신구. 진짜만 이렇게 무겁다.",
   "category": "misc",
   "size": [
     1,

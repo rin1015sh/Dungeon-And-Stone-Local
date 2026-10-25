@@ -33,9 +33,10 @@ static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int 
 	title.add_theme_color_override("font_color", _rarity_color(db, rarity))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
-	var sub := UiTheme.label(_subtitle(db, item_id, rarity), "small", "text_dim")
-	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(sub)
+	if ItemInfo.slot(db, item_id).is_empty():  # 장비는 이름 아래 부제(희귀도·칸)를 두지 않는다(사용자 2026-10-25, IT7) — 희귀도는 이름 색으로
+		var sub := UiTheme.label(_subtitle(db, item_id, rarity), "small", "text_dim")
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		v.add_child(sub)
 	v.add_child(HSeparator.new())
 	var weapon := ItemInfo.weapon(db, item_id)
 	if not weapon.is_empty():
@@ -43,6 +44,8 @@ static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int 
 			"type": DataNames.tag(db, "damage_types", JsonUtil.get_str(weapon, "damage_type"))}), "body", "text_title")
 		wl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		v.add_child(wl)
+		if JsonUtil.get_float(weapon, "magic") > 0.0:  # 지팡이 마력(마법 공격력에 더한다 — 10층 기획)
+			v.add_child(_stat_row(Strings.t("inventory.magic_power"), "%+d" % roundi(JsonUtil.get_float(weapon, "magic")), 1.0))
 		if ItemInfo.two_handed(db, item_id):
 			v.add_child(_stat_row(Strings.t("inventory.two_handed"), "", 0.0))
 	for m: Variant in JsonUtil.get_array(ItemInfo.equip(db, item_id), "modifiers"):

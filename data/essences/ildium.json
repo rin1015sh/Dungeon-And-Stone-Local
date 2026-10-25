@@ -39,11 +39,11 @@
     }
   ],
   "stats": {
-    "p_res": 24,
-    "str": 10
+    "p_res": 27,
+    "str": 11
   },
   "resources": {
-    "hp": 31
+    "hp": 34
   },
   "source": "placeholder",
   "notes": "명세 §12 수호자 정수(무지갯빛) — 액티브 전부"

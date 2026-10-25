@@ -36,13 +36,13 @@
     }
   ],
   "stats": {
-    "str": 16,
-    "agi": 14,
-    "int": 16,
+    "str": 18,
+    "agi": 16,
+    "int": 18,
     "natural_regen": 20
   },
   "resources": {
-    "hp": 40
+    "hp": 48
   },
   "source": "placeholder",
   "notes": "명세 §9 수호자 정수 — 태양 약점도 함께"

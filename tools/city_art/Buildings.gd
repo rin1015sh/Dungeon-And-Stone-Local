@@ -3,7 +3,7 @@ extends RefCounted
 ## 통일 문법(Parts): 짙은 마름돌 기단 · 같은 창틀/창살 · 같은 잉크 윤곽 · 탁한 회벽과 점판암 · 같은 쇠 걸이 간판.
 ## 시설마다 특징: 여관 = 목조 2층 돌출과 불 켜진 창 · 도서관 = 높은 고딕 창과 장미창 · 신전 = 첨탑과 색유리 ·
 ## 상점 = 계단식 박공과 진열창·차양 · 은행 = 거친 돌·기둥·쇠창살 · 훈련장 = 성문 아치·목책 마당 ·
-## 대장간 = 큰 굴뚝과 열린 화덕·모루 · 모험가 길드 = 큰 목조 회관·게시판·깃발(Buildings3).
+## 대장간 = 큰 굴뚝과 열린 화덕·모루 · 탐험가 길드 = 큰 목조 회관·게시판·깃발(Buildings3).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")

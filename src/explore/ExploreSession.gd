@@ -27,6 +27,7 @@ var db: GameDatabase
 var floor_def: Dictionary
 var map: FloorMap
 var player: PlayerCharacter
+var companions: Array[PlayerCharacter] = []  ## 함께 싸우는 동료(사용자 2026-10-25) — 안전지대 휴식 회복만 같이 받는다(허기·광원은 플레이어만)
 var clock: GameClock
 var rng: Rng
 var effects: EffectRegistry
@@ -35,6 +36,7 @@ var monsters: FieldMonsters
 var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
+var scavenged: Dictionary = {}          ## 뒤진 균열 장식 칸 Vector2i → true(RiftScavenge)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
 var features: FieldFeatures = FieldFeatures.new()  ## 동굴 요소(시체·샘·모닥불·함정 … — data/events, 자리 = map.features)
 var battle_drops: Array[Dictionary] = []  ## 전투 장면에서 줍기를 기다리는 드롭(grant_battle_rewards defer_drops — DropPickup)
@@ -213,6 +215,8 @@ func rest() -> void:
 			var h := minf(1.0, left)
 			left -= h
 			player.pool.tick("rest", h)
+			for mate in companions:
+				mate.pool.tick("rest", h)
 			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, h)
 			player.fatigue.add(bonus * h, "rest_bonus")
 			pass_time(h)

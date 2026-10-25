@@ -159,7 +159,18 @@ func _run() -> void:
 				epc.set_level(1)
 		if _args.has("menu"):
 			var page := str(_args["menu"]) if str(_args["menu"]) in GameMenu.PAGES else "inventory"
+			if _args.has("party"):  # --party=<종족[:템플릿],…>: Tab 메뉴 왼쪽 아군 목록에 동료를 붙여 본다(UI26 — 줄 순서 C16: 궁수는 후위)
+				for spec in str(_args["party"]).split(","):
+					var bits := spec.split(":")
+					var cls := bits[1] if bits.size() > 1 else "warrior"
+					var mate := PlayerCharacter.create(DataRegistry.db, bits[0], cls, "동료 " + spec, {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+					mate.pool.set_current("hp", mate.pool.get_max("hp") * 0.6)
+					explore.menu().party.append(mate)
+				explore.menu().party = GameMenu.by_row(explore.menu().party)
 			explore.menu().open(page)
+			if _args.has("ally"):  # --ally=<번호>: 그 아군을 고른 상태
+				await get_tree().process_frame
+				explore.menu().show_ally(explore.menu().party[int(str(_args["ally"]))])
 			if _args.has("cell"):
 				var xy := str(_args["cell"]).split(",")
 				await get_tree().process_frame
@@ -401,6 +412,21 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 		explore.session.relocate(Vector2i(int(xy[0]), int(xy[1])))
 		for o: FieldMonsters.Group in explore.session.monsters.groups:
 			o.grace_until = explore.session.clock.total_hours + 100.0
+	elif str(_args.get("near", "")) == "scavenge":  # --near=scavenge: 뒤질 수 있는 장식 옆에 서서 살핀다(RF19 — 잡템 대화창은 --dialog)
+		var es := explore.session
+		var done := false
+		for y in es.map.height:
+			for x in es.map.width:
+				var d := es.map.def_at(Vector2i(x, y))
+				if done or d == null or d.scavenge.is_empty():
+					continue
+				for k in FloorMap.DIRS4:
+					if not done and es.relocate(Vector2i(x, y) + k):
+						done = true
+		for o: FieldMonsters.Group in es.monsters.groups:
+			o.grace_until = es.clock.total_hours + 100.0
+		await _frames(3)
+		es.interact()
 	elif _args.has("near"):  # --near=guardian|<tag>: 그 무리에서 몇 칸 떨어진 곳에 선다(보스가 기다리는 방을 보려고 — 전투는 걸지 않는다)
 		var run0 := explore.session.rift_run
 		for g: FieldMonsters.Group in run0.remaining:

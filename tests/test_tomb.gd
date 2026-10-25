@@ -59,7 +59,7 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 	hz.on_step(cs, beside)
 	assert_true(bool(group.get("detected", false)), "정신력이 높으면 옆에서 알아챈다(옛 육감)")
 	assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(group, "tile"), "드러난다")
-	var nimble := Actor.new(db, {"agi": 40})
+	var nimble := Actor.new(db, {"agi": 500})  # 비율 공식: 난이도의 수십 배여야 상한
 	assert_near(RiftHazards.success_chance(db, nimble, JsonUtil.get_dict(group, "disarm")), float(db.bal("rift.hazard_max")), 0.001, "민첩으로 해제(옛 손재주)")
 	assert_true(hz.watcher_bonus(cs) == 0.0, "1챕터엔 수호자의 눈이 없다")
 	run.debug_clear()
@@ -159,10 +159,11 @@ func test_riddle_weaken_and_wrong_rules() -> void:
 	var b := _battle(["riddle_gatekeeper"])
 	BattleRules.set_objective(b, gate.battle_rules)
 	var gk := b.side_units(Combatant.SIDE_ENEMY)[0].actor
-	assert_near(gk.stats.get_value("str"), 24.0 * 0.7, 0.01, "모든 스탯 −30%")
+	var gk_def := JsonUtil.get_dict(db.get_entry("monsters", "riddle_gatekeeper"), "stats")
+	assert_near(gk.stats.get_value("str"), JsonUtil.get_float(gk_def, "str") * 0.7, 0.01, "모든 스탯 −30%")
 	var b2 := _battle(["riddle_gatekeeper"])
 	BattleRules.set_objective(b2, {"enemy_statuses": ["riddle_empowered"]})
-	assert_near(b2.side_units(Combatant.SIDE_ENEMY)[0].actor.stats.get_value("p_res"), 28.0 * 1.2, 0.01, "오답 → +20%")
+	assert_near(b2.side_units(Combatant.SIDE_ENEMY)[0].actor.stats.get_value("p_res"), JsonUtil.get_float(gk_def, "p_res") * 1.2, 0.01, "오답 → +20%")
 	var hits := 0
 	for i in 400:
 		if not EssenceDrop.roll(db, "riddle_gatekeeper", Rng.new(i), true, 2.0).is_empty():
@@ -178,7 +179,7 @@ func test_buried_revive_and_endure() -> void:
 	var kill := [{"type": "damage", "power": 50.0, "damage_type": "holy", "scaling": "magic", "base": 100, "accuracy": 1000}]
 	_apply(me.actor, bo.actor, kill)
 	assert_false(bo.actor.dead, "관 속의 망자: 한 번 일어난다")
-	assert_near(bo.actor.pool.get_current("hp"), roundf(150.0 * 0.3), 0.001, "생명력 30%")
+	assert_near(bo.actor.pool.get_current("hp"), roundf(bo.actor.pool.get_max("hp") * 0.3), 0.001, "생명력 30%")
 	_apply(me.actor, bo.actor, kill)
 	assert_true(bo.actor.dead, "두 번째는 쓰러진다")
 	var pc := _pc(6)

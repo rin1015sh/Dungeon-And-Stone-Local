@@ -18,18 +18,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 6,
-    "agi": 11,
-    "p_res": 3,
-    "m_res": 3,
-    "int": 4
+    "str": 8,
+    "agi": 12,
+    "p_res": 10,
+    "m_res": 8,
+    "int": 6
   },
   "resources": {
-    "hp": 45,
+    "hp": 31,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 9,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -72,5 +72,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "약탈자(사람) — 몬스터가 아니라 마석·정수·공적이 없다. 쓰러뜨리면 그 자리에 유품(raider_remains)이 남는다(FieldParties). 1층 몬스터 9등급 수준으로 잡은 임시값"
+  "notes": "약탈자(사람) — 몬스터가 아니라 마석·정수·공적이 없다. 쓰러뜨리면 그 자리에 유품(raider_remains)이 남는다(FieldParties). 1층 몬스터 9등급 수준으로 잡은 임시값 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 45→31, 근력 6→8, 민첩 11→12, 물리내성 3→10, 항마력 3→8, 정신력 4→6, 무기 6→9"
 }

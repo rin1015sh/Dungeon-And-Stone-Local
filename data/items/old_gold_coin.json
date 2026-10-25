@@ -1,0 +1,15 @@
+{
+  "id": "old_gold_coin",
+  "name_ko": "오래된 금화",
+  "desc_ko": "묘에 함께 묻힌 금화. 새겨진 얼굴의 주인은 이제 아무도 모른다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 20,
+  "price": 600,
+  "color": "#e8c050",
+  "rarity": "common",
+  "source": "placeholder"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "urn_shard",
+  "name_ko": "깨진 항아리 조각",
+  "desc_ko": "부장품 항아리의 조각. 유약이 아직 곱다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 200,
+  "color": "#a08070",
+  "rarity": "common",
+  "source": "placeholder"
+}

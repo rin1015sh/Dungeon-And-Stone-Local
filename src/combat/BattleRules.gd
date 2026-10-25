@@ -65,7 +65,7 @@ static func uses_left(b: Battle, c: Combatant, skill_id: String) -> bool:
 	return limit <= 0 or int(c.uses.get(skill_id, 0)) < limit
 
 
-## 도주 확률(명세 §1): flee_base + (아군 평균 민첩 − 적 평균 민첩)×flee_agi_coef, flee_min~flee_max.
+## 도주 확률(10층 비율 공식): flee_base + flee_agi_share × (아군 평균 민첩 − 적 평균)/(아군 + 적 — 둘 다 + agi_offset), flee_min~flee_max.
 ## 수호자·계층군주(combat.no_flee_ranks)가 상대에 있거나 속박(no_flee)이면 0. 상대 패시브 flee_penalty만큼 깎는다.
 static func flee_chance(b: Battle, c: Combatant) -> float:
 	if c.actor.statuses.has_flag("no_flee"):
@@ -76,8 +76,10 @@ static func flee_chance(b: Battle, c: Combatant) -> float:
 		if o.actor is Monster and JsonUtil.get_str((o.actor as Monster).def, "rank") in no_flee:
 			return 0.0
 		pen += Passives.sum(o.actor, "flee_penalty")
-	var k := float(b.db.bal("combat.flee_base", 0.5)) \
-		+ (_avg_agi(b.side_units(c.side)) - _avg_agi(b.opponents(c))) * float(b.db.bal("combat.flee_agi_coef", 0.02))
+	var off := float(b.db.bal("combat.agi_offset", 10.0))
+	var mine := maxf(1.0, _avg_agi(b.side_units(c.side)) + off)
+	var theirs := maxf(1.0, _avg_agi(b.opponents(c)) + off)
+	var k := float(b.db.bal("combat.flee_base", 0.5)) + (mine - theirs) / (mine + theirs) * float(b.db.bal("combat.flee_agi_share", 0.8))
 	k += c.actor.statuses.sum_key("flee_bonus")  # 연막(연막탄)
 	return clampf(k - pen, float(b.db.bal("combat.flee_min", 0.1)), float(b.db.bal("combat.flee_max", 0.9)))
 

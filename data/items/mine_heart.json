@@ -1,6 +1,7 @@
 {
   "id": "mine_heart",
   "name_ko": "녹색 결정",
+  "desc_ko": "광차 밑에 깔려 있던 녹색 결정. 쥐면 맥박이 빨라진다. 탄광을 벗어나면 빛이 꺼진다.",
   "category": "potion",
   "size": [
     1,

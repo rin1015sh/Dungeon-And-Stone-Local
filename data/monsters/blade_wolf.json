@@ -21,18 +21,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 8,
-    "agi": 18,
-    "p_res": 4,
-    "m_res": 2,
-    "int": 2
+    "str": 10,
+    "agi": 17,
+    "p_res": 12,
+    "m_res": 6,
+    "int": 4
   },
   "resources": {
-    "hp": 50,
+    "hp": 34,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 9,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -97,5 +97,6 @@
   ],
   "desc_ko": "칼날 같은 털을 세운 늑대. 무리 지어 약한 쪽부터 문다.",
   "source": "original",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 50→34, 근력 8→10, 민첩 18→17, 물리내성 4→12, 항마력 2→6, 정신력 2→4, 무기 6→9"
 }

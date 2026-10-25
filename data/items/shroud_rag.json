@@ -1,0 +1,15 @@
+{
+  "id": "shroud_rag",
+  "name_ko": "낡은 수의 조각",
+  "desc_ko": "시신을 감쌌던 천 조각. 오래되어 바스러진다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 80,
+  "color": "#c8c0a8",
+  "rarity": "common",
+  "source": "placeholder"
+}

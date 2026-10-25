@@ -35,11 +35,11 @@
     }
   ],
   "stats": {
-    "agi": 28,
+    "agi": 38,
     "affinity_fire": 9
   },
   "resources": {
-    "hp": 20
+    "hp": 17
   },
   "source": "placeholder",
   "notes": "명세 §11 드롭률 10%(중간 보스). 지원 요청은 고유라 제외"

@@ -1,5 +1,7 @@
 # DESIGN — 던전 앤 스톤 설계 요약
 
+> **보관(2026-10-25)**: 옛 기록이다 — 지금 상태는 `docs/CANON.md`·`docs/balance/curve.md`·`docs/balance/stats.md`.
+
 > 원본 지시서: `docs/PROMPT.md`(§ 번호는 그 문서 기준). 이 문서는 요약 + **구현하면서 확정한 결정**을 담는다.
 > 가정은 `docs/ASSUMPTIONS.md`, 진행 상황은 `docs/PROGRESS.md`, 현재 기획·설정 정본 한 장 요약은 `docs/CANON.md`.
 > **우선순위**: 날짜가 있는 사용자 결정(ASSUMPTIONS·PROGRESS) > CLAUDE.md > 이 문서 > `PROMPT_FLOOR1_V2.md`(1층) > `PROMPT.md`. PROMPT.md와 다른 점은 아래 각 절에 "바꾼 결정"으로 적는다(2026-10-16 문서 정리).
@@ -153,7 +155,7 @@
 - 저장: 한 칸 저장(차원광장에서만, CT32)에 `CityState.to_dict`(날짜·행동력·공적치·잔액·소문/정보·난수 상태)와 `progress_to_dict`(피로도·능력치 기록)가 들어간다.
 
 ### 도시 생활 (2026-10-20)
-- 오늘의 거리(`CityHappenings`, `data/city_events`) · 세금(`CityTax`, `city.json tax`) · 장비 창구 대장간(활동 `deals`) · 기능 없는 모험가 길드(시설 `placeholder`). 명성·인연은 넣었다가 지웠다(사용자가 다시 기획). 활협전은 여전히 화면 느낌만 참고한다. 규칙·수치는 ASSUMPTIONS CT34~CT39, 표는 `docs/balance/city.md`.
+- 오늘의 거리(`CityHappenings`, `data/city_events`) · 세금(`CityTax`, `city.json tax`) · 장비 창구 대장간(활동 `deals`) · 기능 없는 탐험가 길드(시설 `placeholder`). 명성·인연은 넣었다가 지웠다(사용자가 다시 기획). 활협전은 여전히 화면 느낌만 참고한다. 규칙·수치는 ASSUMPTIONS CT34~CT39, 표는 `docs/balance/city.md`.
 
 ### 확인 필요 (예전 문서에 있었지만 이번 명세에 없는 것 — 지우지 않음)
 - 시설: **길드**(정보 구매·동료 고용), **환전소**(마석 → 스톤), **잡화점**(포션·횃불·식량·소모품, 전리품 판매 — 이번 '상점'과의 관계 확인 필요), **대장간**(장비 구매·수리), **중앙 거래소**(후반), 마도구점(PROMPT_ITEMS). 이번에 만들지 않았다(이미 만들어진 것도 없음).

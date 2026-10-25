@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(951줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(971줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -28,9 +28,9 @@
 - [지식 `knowledge`](#knowledge) — 몬스터 약점·저항(전투에서 알게 될 때 · 도감)
 - [보상 `reward`](#reward) — 전투 드롭 · 획득할까? · 경험치
 - [소지품 `inventory`](#inventory) — Tab 메뉴 소지품 쪽
+- [party `party`](#party) — —
 - [캐릭터 `character`](#character) — Tab 메뉴 캐릭터 쪽
 - [도감 `bestiary`](#bestiary) — Tab 메뉴 도감 쪽
-- [아래 막대 `bottom`](#bottom) — 탐험 화면 아래 막대
 - [정수 `essence`](#essence) — 정수 칸·설명
 - [수수께끼 `riddle`](#riddle) — 강철의 묘 수수께끼 창
 - [차원광장 `plaza`](#plaza) — 도시 → 미궁 포탈 화면 버튼
@@ -150,6 +150,7 @@
 - `collection.city_events` 오늘의 거리
 - `collection.street_events` 거리 사건
 - `collection.meals` 여관 요리
+- `collection.scavenge` 균열 잡템 표
 
 <a id="stat_group"></a>
 ## 스탯 묶음 `stat_group`
@@ -218,6 +219,9 @@
 - `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.
 - `explore.fortress_necronomicon` 썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].
 - `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
+- `explore.scavenge_found` {tile}을(를) 뒤져 {item}을(를) 찾았다.
+- `explore.scavenge_empty` {tile}에는 건질 것이 없다.
+- `explore.scavenge_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
 - `explore.hidden_found` 숨겨진 것을 찾았다 — [{item}].
 - `explore.rift_item_lost` [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
 - `explore.rift_opened` 동굴 곳곳에 균열 포탈 {count}개가 열렸다!
@@ -396,6 +400,7 @@
 - `debug.rift_clear_chapter` 이 챕터 조우 치우기
 - `debug.give_rift_stones` 균열 개방 마석 4종 받기
 - `debug.summon_lord` 계층군주 소환(드레드피어)
+- `debug.add_companion` 동료 들이기(무작위 탐험가)
 - `debug.title` 디버그 (F1)
 - `debug.skip` +{hours}시간
 - `debug.close_soon` 폐쇄 1시간 전
@@ -602,6 +607,7 @@
 - `combat.misdirect` {name}의 공격이 빗나가 {target}에게 향한다!
 - `combat.rows_shuffled` 대열이 뒤엉켰다!
 - `combat.extra_action` {name}이(가) 한 번 더 움직인다!
+- `combat.enrage` {name}의 숨이 거칠어진다. 휘두르는 손길에 망설임이 사라졌다.
 - `combat.dread_p1` 수정의 빛이 핏빛으로 물든다. {name}이(가) 구더기를 흩뿌리며 다가온다.
 - `combat.dread_p2` {name}의 공포가 스며든다. 손끝이 떨리고, 원망이 쌓이기 시작한다.
 - `combat.dread_p3` {name}을(를) 둘러싼 증오가 짙어진다. 동료의 얼굴이 낯설게 보인다.
@@ -690,6 +696,7 @@
 - `inventory.title` 소지품
 - `inventory.equipped` 장착 중
 - `inventory.weapon_line` 공격력 {attack} · {type}
+- `inventory.magic_power` 마력
 - `inventory.two_handed` 양손
 - `inventory.size` 크기
 - `inventory.price` ◆ {price} 스톤
@@ -706,6 +713,26 @@
 - `inventory.act_move` 옮긴다
 - `inventory.act_discard` 버린다
 - `inventory.act_unequip` 벗는다
+
+<a id="party"></a>
+## party `party`
+
+> —
+
+- `party.title` 아군
+- `party.bestiary` 도감
+- `party.fatigue` 피로
+- `party.nameless` 이름 없는 탐험가
+- `party.front` 전위
+- `party.back` 후위
+- `party.release` 파티에서 내보낸다
+- `party.release_ask` {name}을(를) 파티에서 내보낼까?
+- `party.release_yes` 내보낸다
+- `party.release_no` 그만둔다
+- `party.no_release_self` 자신은 내보낼 수 없다
+- `party.mate_name` {race} {class}
+- `party.mate_died` {name}이(가) 숨을 거두었다.
+- `party.full` 파티가 가득 찼다
 
 <a id="character"></a>
 ## 캐릭터 `character`
@@ -745,16 +772,6 @@
 - `bestiary.variant_of` {name}의 변이종.
 - `bestiary.shared` [{skill}] 이능을 함께 지닌 종: {list}
 
-<a id="bottom"></a>
-## 아래 막대 `bottom`
-
-> 탐험 화면 아래 막대
-
-- `bottom.menu` 메뉴 {key}
-- `bottom.wait` 대기 {key}
-- `bottom.rest` 휴식 {key}
-- `bottom.pause` 정지 {key}
-
 <a id="essence"></a>
 ## 정수 `essence`
 
@@ -764,6 +781,9 @@
 - `essence.title` {color} {name}
 - `essence.stat_inert` (아직 효과 없음)
 - `essence.tip_passive` 패시브 · {name}: {desc}
+- `essence.row_passive` 패시브
+- `essence.row_skill` 이능
+- `essence.row_stats` 능력치
 - `essence.tip_skills` 이능 · {list}
 - `essence.tip_stats` 능력치 · {list}
 - `essence.not_implemented` (이 패시브의 효과는 아직 일부만 들어가 있다)

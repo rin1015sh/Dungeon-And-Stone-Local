@@ -1,0 +1,6 @@
+[
+  {"id": "fortress_stores", "name_ko": "성채의 살림", "empty_chance": 0.4, "items": [{"item": "rotten_meat", "weight": 4}, {"item": "old_silver_coin", "weight": 3}, {"item": "rusty_buckle", "weight": 3}], "source": "placeholder"},
+  {"id": "glacier_camp", "name_ko": "언 야영지", "empty_chance": 0.45, "items": [{"item": "frozen_meat", "weight": 4}, {"item": "ice_chips", "weight": 3}, {"item": "frost_bone_charm", "weight": 2}], "source": "placeholder"},
+  {"id": "mine_stores", "name_ko": "갱도 물자", "empty_chance": 0.4, "items": [{"item": "copper_ore", "weight": 4}, {"item": "rusty_pick_head", "weight": 3}, {"item": "glow_moss", "weight": 3}], "source": "placeholder"},
+  {"id": "tomb_relics", "name_ko": "묘의 부장품", "empty_chance": 0.5, "items": [{"item": "shroud_rag", "weight": 4}, {"item": "urn_shard", "weight": 3}, {"item": "old_gold_coin", "weight": 2}], "source": "placeholder"}
+]

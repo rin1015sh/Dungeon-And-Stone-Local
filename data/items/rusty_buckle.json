@@ -1,0 +1,15 @@
+{
+  "id": "rusty_buckle",
+  "name_ko": "녹슨 군장 버클",
+  "desc_ko": "성채 병사들의 군장에 달려 있던 버클. 녹 사이로 문장이 보인다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 120,
+  "color": "#8a5a3a",
+  "rarity": "common",
+  "source": "placeholder"
+}

@@ -121,7 +121,9 @@ func test_removed_stats_moved_to_core() -> void:
 		for hz: Variant in JsonUtil.get_array(ch as Dictionary, "hazards"):
 			var h := hz as Dictionary
 			if h.has("detect") and h.has("disarm"):
-				assert_near(RiftHazards.success_chance(db, avg, JsonUtil.get_dict(h, "detect")), 0.42, 0.001, "평균 캐릭터 탐지 확률 = 예전(육감 0)")
-				assert_near(RiftHazards.success_chance(db, avg, JsonUtil.get_dict(h, "disarm")), 0.74, 0.001, "평균 캐릭터 해제 확률 = 예전(손재주 0)")
+				for kv: Array in [["detect", 7.0], ["disarm", 10.0]]:  # 탐지 = 정신력, 해제 = 민첩(옛 육감·손재주 자리)
+					var dc := JsonUtil.get_float(JsonUtil.get_dict(h, str(kv[0])), "dc")
+					var want := clampf(0.5 + 0.5 * (float(kv[1]) - dc) / (float(kv[1]) + dc), float(db.bal("rift.hazard_min")), float(db.bal("rift.hazard_max")))
+					assert_near(RiftHazards.success_chance(db, avg, JsonUtil.get_dict(h, str(kv[0]))), want, 0.001, "평균 캐릭터 %s 확률(비율 공식)" % kv[0])
 				checked += 1
 	assert_true(checked > 0, "강철의 묘 함정을 확인했다")

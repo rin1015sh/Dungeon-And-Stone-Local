@@ -20,18 +20,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 15,
-    "agi": 6,
-    "p_res": 20,
-    "m_res": 12,
-    "int": 4
+    "str": 18,
+    "agi": 13,
+    "p_res": 32,
+    "m_res": 20,
+    "int": 8
   },
   "resources": {
-    "hp": 180,
+    "hp": 111,
     "soul": 40
   },
   "natural_weapon": {
-    "attack": 11,
+    "attack": 16,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -88,5 +88,5 @@
   ],
   "desc_ko": "얼음으로 빚은 거인. 곁에 있으면 몸이 점점 굳는다.",
   "source": "original",
-  "notes": "명세 §10"
+  "notes": "명세 §10 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 180→111, 근력 15→18, 민첩 6→13, 물리내성 20→32, 항마력 12→20, 정신력 4→8, 무기 11→16"
 }

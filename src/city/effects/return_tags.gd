@@ -1,5 +1,5 @@
 extends CityEffect
-## 탐험가 신원패 반납(모험가 길드): {"type": "return_tags", "item": "explorer_tag", "stones_each": n}.
+## 탐험가 신원패 반납(탐험가 길드): {"type": "return_tags", "item": "explorer_tag", "stones_each": n}.
 ## 가방의 신원패를 모두 내고 한 장마다 stones_each 스톤을 받는다. 없으면 못 한다(city.fx.no_tags).
 
 

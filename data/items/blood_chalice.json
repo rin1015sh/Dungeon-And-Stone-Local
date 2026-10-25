@@ -1,6 +1,7 @@
 {
   "id": "blood_chalice",
   "name_ko": "피의 성배",
+  "desc_ko": "우물에 부은 피가 굳어 생긴 잔. 아직 따뜻하다. 성채를 벗어나면 그저 붉은 흙이 된다.",
   "category": "potion",
   "size": [
     1,

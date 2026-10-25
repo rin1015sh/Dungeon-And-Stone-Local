@@ -29,10 +29,13 @@ func test_formula_matches_spec() -> void:
 	var t := Actor.new(db, {"agi": 10})
 	assert_near(DamageCalc.hit_chance(db, a, t, false), 0.95, 0.0001, "같은 민첩 → 기본 명중 95")
 	var slow := Actor.new(db, {"agi": 0})
-	assert_near(DamageCalc.hit_chance(db, slow, t, false), 0.95 * 0.95, 0.0001, "민첩 차 −10 → ×0.95")
+	var off := float(db.bal("combat.agi_offset"))
+	assert_near(DamageCalc.hit_chance(db, slow, t, false), 0.95 * pow(off / (10.0 + off), float(db.bal("combat.hit_agi_exp"))), 0.0001,
+		"민첩 비율((0+offset)/(10+offset))^hit_agi_exp")
 	assert_near(DamageCalc.attack_power(db, a, {"scaling": "phys"}), 2.0 + 20.0, 0.0001, "근력×2 + 맨손")
 	var gob := Monster.create(db, "goblin")
-	assert_near(DamageCalc.attack_power(db, gob, {"scaling": "phys"}), 6.0 * 2.0 + 5.0, 0.0001, "몬스터 natural_weapon 5")
+	var gw := JsonUtil.get_float(JsonUtil.get_dict(gob.def, "natural_weapon"), "attack")
+	assert_near(DamageCalc.attack_power(db, gob, {"scaling": "phys"}), gob.stats.get_value("str") * 2.0 + gw, 0.0001, "근력×2 + 몬스터 natural_weapon")
 	t.statuses.apply("blind")
 	assert_true(DamageCalc.hit_chance(db, t, a, false) < 0.7, "실명 → 명중률 −30")
 
@@ -199,8 +202,10 @@ func test_flee_matches_spec() -> void:
 	var b := _battle(["goblin"])
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
 	var gob := b.side_units(Combatant.SIDE_ENEMY)[0]
-	var diff := me.actor.stats.get_value("agi") - gob.actor.stats.get_value("agi")
-	assert_near(b.flee_chance(me), 0.5 + diff * 0.02, 0.0001, "50% + 평균 민첩 차×2%p")
+	var off := float(db.bal("combat.agi_offset"))
+	var mine := me.actor.stats.get_value("agi") + off
+	var theirs := gob.actor.stats.get_value("agi") + off
+	assert_near(b.flee_chance(me), 0.5 + 0.8 * (mine - theirs) / (mine + theirs), 0.0001, "50% + 80% × 민첩 차/합(10층 비율 공식)")
 	me.actor.stats.set_base("agi", 200.0)
 	assert_near(b.flee_chance(me), 0.9, 0.0001, "최대 90%")
 	var guardian := Monster.create(db, "goblin")

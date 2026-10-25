@@ -51,8 +51,10 @@ func _init(p_db: GameDatabase, p_effects: EffectRegistry, p_ai: ScriptRegistry, 
 	effects = p_effects
 	ai = p_ai
 	rng = p_rng
+	var rs: Variant = db.bal("combat.rank_speed", {})
 	timeline = Timeline.new(float(db.bal("combat.gauge_threshold", 100)), float(db.bal("combat.min_speed", 1)),
-		float(db.bal("combat.speed_base", 0)))
+		float(db.bal("combat.speed_base", 0)), float(db.bal("combat.speed_exp", 1.0)), rs if rs is Dictionary else {},
+		int(db.bal("combat.max_streak", 0)))
 	message.connect(_record)
 
 
@@ -67,7 +69,7 @@ static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: R
 		monster_ids: Array, first_side: int = FIRST_NONE) -> Battle:
 	var b := Battle.new(p_db, regs.effects, regs.ai_conditions, p_rng)
 	for a in party:
-		b.add(a, Combatant.SIDE_PARTY)
+		b.add(a, Combatant.SIDE_PARTY, (a as PlayerCharacter).get_row() if a is PlayerCharacter else "front")  # 전위·후위(사용자 2026-10-25)
 	var total := {}
 	for id: Variant in monster_ids:
 		total[id] = int(total.get(id, 0)) + 1

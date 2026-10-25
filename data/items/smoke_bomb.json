@@ -1,6 +1,7 @@
 {
   "id": "smoke_bomb",
   "name_ko": "연막탄",
+  "desc_ko": "던지면 깨지며 매운 연기를 쏟아 낸다. 도망칠 틈을 번다.",
   "category": "tool",
   "price": 4000,
   "stack": 5,

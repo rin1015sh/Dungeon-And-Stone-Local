@@ -1,6 +1,7 @@
 {
   "id": "spring_water",
   "name_ko": "샘물 병",
+  "desc_ko": "맑은 샘에서 떠 온 물. 한 모금이면 다리가 가벼워진다.",
   "category": "misc",
   "size": [
     1,

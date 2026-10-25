@@ -6,11 +6,13 @@ extends RefCounted
 ##      비어 있을 때만 채운다(지금 장비 — id·이름·크기 유지, 저장 호환).
 ##   2) 종류 × 그 종류가 쓰는 소재(kinds)의 모든 조합 중 1)이 차지하지 않은 것을 "<소재>_<종류>" id, "<소재> <종류>" 이름으로 만든다.
 ## 수치(balance.items):
-##   공격력·증가(grow) = 종류 값 × grow_by_tier[등급−1] × (소재 stat_mult·atk) — 반올림, 증가는 최소 1
+##   공격력·마력(weapon.attack·magic) = 종류 값 × attack_by_tier[등급−1] × 소재 atk — 반올림
+##   증가(grow) = 종류 값 × grow_by_tier[등급−1] × 소재 stat_mult — 반올림, 최소 1. 단 unscaled(명중률·시각·속성 내성/감응도 — % 단위)는 단계 배율 없이
+##   (소재 장비 = 범용 — 10층에서도 힘의 약 4분의 1, 그 위는 넘버스 몫: docs/plans/balance_10floors.md §6)
 ##   감소(penalty) = 종류 값 그대로. 소재 agi_pen만 민첩 감소에 곱한다(가벼움 0.5 = 내림 · 무거움 1.5 = 반올림)
 ##   소재 trait: mods(모든 장비) · weapon_mods(무기 — 대상 "dmg_dealt:weapon"은 그 무기 피해 유형) · armor_mods(무기가 아닌 것)
 ##   구입가 = base_price × 종류 price_mult × kind_price[소재 종류] × price_by_tier[등급−1] × 소재 price_mult → 유효숫자 두 자리
-##   희귀도 = rarity_by_tier[등급−1]. 판매가는 상점 sell_ratio(city.json).
+##   희귀도 = rarity_by_tier[등급−1]. 판매가는 상점 sell_ratio(city.json). 설명(desc_ko) = 소재 flavor_ko + 종류 flavor_ko(IT7 — 아이템 JSON에 desc_ko가 있으면 그것).
 
 
 static func forge_all(cols: Dictionary, bal: Dictionary) -> void:
@@ -51,12 +53,14 @@ static func forge_all(cols: Dictionary, bal: Dictionary) -> void:
 static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 	var tier := clampi(JsonUtil.get_int(m, "tier", 1), 1, 6)
 	var grow := _at(cfg, "grow_by_tier", tier, 1.0)
+	var atk_mult := _at(cfg, "attack_by_tier", tier, grow)
 	var feat := JsonUtil.get_dict(m, "trait")
 	var smult := JsonUtil.get_dict(feat, "stat_mult")
 	var flat := {}  # 대상 -> 값(넣은 순서 유지)
 	var g := JsonUtil.get_dict(t, "grow")
 	for k: String in g:
-		flat[k] = float(flat.get(k, 0.0)) + maxf(1.0, roundf(float(g[k]) * grow * JsonUtil.get_float(smult, k, 1.0)))
+		var gm := 1.0 if unscaled(cfg, k) else grow
+		flat[k] = float(flat.get(k, 0.0)) + maxf(1.0, roundf(float(g[k]) * gm * JsonUtil.get_float(smult, k, 1.0)))
 	var pen := JsonUtil.get_dict(t, "penalty")
 	for k: String in pen:
 		var v := float(pen[k])
@@ -85,13 +89,16 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 		equip["two_handed"] = true
 	if not weapon.is_empty():
 		var w := weapon.duplicate()
-		w["attack"] = int(roundf(JsonUtil.get_float(weapon, "attack") * grow * JsonUtil.get_float(feat, "atk", 1.0)))
+		w["attack"] = int(roundf(JsonUtil.get_float(weapon, "attack") * atk_mult * JsonUtil.get_float(feat, "atk", 1.0)))
+		if weapon.has("magic"):  # 지팡이 마력(마법 공격력에 더한다)
+			w["magic"] = int(roundf(JsonUtil.get_float(weapon, "magic") * atk_mult * JsonUtil.get_float(feat, "atk", 1.0)))
 		equip["weapon"] = w
 	var price := JsonUtil.get_float(cfg, "base_price", 2000.0) * JsonUtil.get_float(t, "price_mult", 1.0) \
 		* JsonUtil.get_float(JsonUtil.get_dict(cfg, "kind_price"), JsonUtil.get_str(m, "kind"), 1.0) \
 		* _at(cfg, "price_by_tier", tier, 1.0) * JsonUtil.get_float(m, "price_mult", 1.0)
 	var rarities := JsonUtil.get_array(cfg, "rarity_by_tier")
-	return {"name_ko": "%s %s" % [JsonUtil.get_str(m, "name_ko"), JsonUtil.get_str(t, "name_ko")],
+	var flavor := ("%s %s" % [JsonUtil.get_str(m, "flavor_ko"), JsonUtil.get_str(t, "flavor_ko")]).strip_edges()  # 소재 한 줄 + 생김새 한 줄(IT7)
+	return {"name_ko": "%s %s" % [JsonUtil.get_str(m, "name_ko"), JsonUtil.get_str(t, "name_ko")], "desc_ko": flavor,
 		"category": JsonUtil.get_str(t, "category", "armor"), "size": JsonUtil.get_array(t, "size").duplicate(), "stack": 1,
 		"price": nice(price), "icon": JsonUtil.get_str(t, "icon"), "color": JsonUtil.get_str(m, "color"),
 		"rarity": str(rarities[tier - 1]) if rarities.size() >= tier else "common", "tier": tier,
@@ -99,6 +106,15 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 
 
 ## 가격표처럼 유효숫자 두 자리(100 미만은 5 단위).
+## 단계 배율을 받지 않는 스탯(balance.items.unscaled — 이름 또는 접두사 "resist_" 꼴).
+static func unscaled(cfg: Dictionary, stat: String) -> bool:
+	for u: Variant in JsonUtil.get_array(cfg, "unscaled"):
+		var key := str(u)
+		if stat == key or (key.ends_with("_") and stat.begins_with(key)):
+			return true
+	return false
+
+
 static func nice(v: float) -> int:
 	if v < 100.0:
 		return maxi(5, int(floorf(v / 5.0 + 0.5)) * 5)

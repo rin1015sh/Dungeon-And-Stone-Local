@@ -1,0 +1,15 @@
+{
+  "id": "rotten_meat",
+  "name_ko": "썩은 고기",
+  "desc_ko": "코를 찌르는 냄새. 먹을 것은 못 되지만 미끼로 사 가는 사람이 있다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 40,
+  "color": "#6a7a3a",
+  "rarity": "common",
+  "source": "placeholder"
+}

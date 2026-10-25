@@ -1,0 +1,15 @@
+{
+  "id": "old_silver_coin",
+  "name_ko": "오래된 은화",
+  "desc_ko": "성채에서 쓰던 은화. 닳아서 무늬가 흐릿하다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 20,
+  "price": 150,
+  "color": "#c8c8c0",
+  "rarity": "common",
+  "source": "placeholder"
+}

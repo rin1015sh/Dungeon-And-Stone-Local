@@ -1,5 +1,5 @@
 extends CityEffect
-## 조사 기록 넘기기(모험가 길드): {"type": "sell_records", "stats_stones": n, "affinity_stones": n}.
+## 조사 기록 넘기기(탐험가 길드): {"type": "sell_records", "stats_stones": n, "affinity_stones": n}.
 ## 아직 넘기지 않은 도감 기록(조사로 알아낸 생명력·스탯, 쳐 봐서 알아낸 상성 하나하나)마다 값 × (10 − 등급)을 받는다.
 ## 넘긴 기록은 Knowledge 사실(sold_stats:<몬스터>, sold_aff:<몬스터>:<피해 유형>)로 남아 다시 팔리지 않는다.
 

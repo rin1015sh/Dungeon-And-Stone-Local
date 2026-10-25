@@ -42,12 +42,12 @@
     }
   ],
   "stats": {
-    "p_res": 26,
+    "p_res": 38,
     "resist_poison": 15,
     "natural_regen": 12
   },
   "resources": {
-    "hp": 31
+    "hp": 34
   },
   "source": "placeholder",
   "notes": "명세 §11 수호자 정수(무지갯빛) — 액티브 전부. 흡수 정수판은 자기 소환수(슬라임)를 삼킨다"

@@ -19,18 +19,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 6,
-    "agi": 11,
-    "p_res": 4,
-    "m_res": 3,
-    "int": 3
+    "str": 8,
+    "agi": 12,
+    "p_res": 12,
+    "m_res": 8,
+    "int": 5
   },
   "resources": {
-    "hp": 45,
+    "hp": 31,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 5,
+    "attack": 7,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -122,5 +122,6 @@
   ],
   "desc_ko": "가장 약한 마물. 짧은 단검에 마비독을 바르고 덫을 놓는다. 서너 마리씩 몰려다닌다.",
   "source": "original",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 45→31, 근력 6→8, 민첩 11→12, 물리내성 4→12, 항마력 3→8, 정신력 3→5, 무기 5→7"
 }

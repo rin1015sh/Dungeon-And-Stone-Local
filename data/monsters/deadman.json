@@ -21,18 +21,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 8,
-    "agi": 6,
-    "p_res": 4,
-    "m_res": 1,
-    "int": 1
+    "str": 10,
+    "agi": 8,
+    "p_res": 12,
+    "m_res": 4,
+    "int": 2
   },
   "resources": {
-    "hp": 45,
+    "hp": 31,
     "soul": 0
   },
   "natural_weapon": {
-    "attack": 4,
+    "attack": 6,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -85,5 +85,5 @@
   "lineage": "deadman",
   "desc_ko": "걸어 다니는 시체. 물어뜯고 붙잡는다.",
   "source": "original",
-  "notes": "명세 §9"
+  "notes": "명세 §9 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 45→31, 근력 8→10, 민첩 6→8, 물리내성 4→12, 항마력 1→4, 정신력 1→2, 무기 4→6"
 }

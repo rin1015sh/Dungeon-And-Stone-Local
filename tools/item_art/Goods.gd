@@ -7,6 +7,7 @@ const F := preload("res://tools/item_art/Frame.gd")
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Blades := preload("res://tools/item_art/Blades.gd")
 const Wear2 := preload("res://tools/item_art/Wear2.gd")
+const Junk := preload("res://tools/item_art/Junk.gd")
 
 const BY_ID := {
 	"minor_potion": "vial", "medium_potion": "flask", "greater_potion": "big_flask", "soul_potion": "flask", "antidote": "vial",
@@ -18,12 +19,15 @@ const BY_ID := {
 	"dread_bone_greatsword": "bone_greatsword",
 	"tomb_oil": "vial", "steel_relic": "orb", "death_mask": "tablet", "tomb_gold": "gem", "fortress_key": "tag", "silver_chest": "tablet",
 	"blood_chalice": "flask", "snow_lotus": "mushroom", "eternal_ice": "shard", "mine_heart": "cluster", "green_vein": "crystal",
+	"ice_chips": "shard", "copper_ore": "pebble", "shroud_rag": "bandage",
 }
 const BY_ICON := {"potion": "flask", "stone": "crystal", "gem": "gem", "bomb": "pot_bomb", "food": "bundle", "bread": "bread",
 	"torch": "torch", "lantern": "lantern", "book": "book", "horn": "horn", "ring": "ring", "amulet": "amulet", "pouch": "bundle"}
 
 
 static func paint(id: String, it: Dictionary, ctx: Dictionary) -> bool:
+	if Junk.paint(id, ctx):  # 균열 잡템(RF19)
+		return true
 	var how := str(BY_ID.get(id, BY_ICON.get(JsonUtil.get_str(it, "icon"), "")))
 	if how.is_empty() and JsonUtil.get_str(it, "category") == "magic_stone":
 		how = "crystal"

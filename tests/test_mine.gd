@@ -36,13 +36,14 @@ func _act(b: Battle, c: Combatant, action: Dictionary) -> bool:
 func test_slime_split_and_shared_essence() -> void:
 	var b := _battle(["slime"])
 	var s := b.side_units(Combatant.SIDE_ENEMY)[0]
-	s.actor.pool.set_current("hp", 20.0)
+	var h := 2.0 * floorf(s.actor.pool.get_max("hp") * 0.2)  # 최대의 40% 안팎(짝수 — 반씩 나눈다)
+	s.actor.pool.set_current("hp", h)
 	assert_eq(b.ai_action(s)["skill"], "slime_split", "생명력 50% 이하면 분열")
 	assert_true(_act(b, s, {"kind": "skill", "skill": "slime_split", "target": null}))
 	var slimes := b.side_units(Combatant.SIDE_ENEMY)
 	assert_eq(slimes.size(), 2, "둘로 갈라진다")
-	assert_near(slimes[0].actor.pool.get_current("hp"), 10.0, 0.001)
-	assert_near(slimes[1].actor.pool.get_current("hp"), 10.0, 0.001, "남은 생명력을 반씩")
+	assert_near(slimes[0].actor.pool.get_current("hp"), h * 0.5, 0.001)
+	assert_near(slimes[1].actor.pool.get_current("hp"), h * 0.5, 0.001, "남은 생명력을 반씩")
 	assert_false(b.can_use(slimes[1], "slime_split").is_empty(), "새 슬라임은 다시 갈라지지 않는다")
 	assert_false(b.can_use(slimes[0], "slime_split").is_empty(), "전투당 1회")
 	var pc := _pc(6)
@@ -109,13 +110,14 @@ func test_venom_helmet_and_defense_ignore() -> void:
 	assert_true(poisoned, "독성부여: 무기 적중 시 [중독] 60%")
 	var fx := {"scaling": "phys", "power": 1.0, "damage_type": "pierce", "accuracy": 1000}
 	var tough := Actor.new(db, {"p_res": 20})
-	var expect := DamageCalc.attack_power(db, hob, fx) * 100.0 / (100.0 + 20.0 * 0.75 * 4.0)
+	var hatk := DamageCalc.attack_power(db, hob, fx)
+	var expect := hatk * DamageCalc.defense_mult(db, hatk, 20.0 * 0.75)
 	assert_near(float(DamageCalc.resolve(db, hob, tough, fx, HIT)["amount"]), expect, 1.0, "광부의 근력: 방어 25% 무시")
 	var b := _battle(["goblin_miner"])
 	var miner := b.side_units(Combatant.SIDE_ENEMY)[0].actor
 	assert_true(miner.statuses.has("miner_helmet"), "광부모")
 	var me := b.side_units(Combatant.SIDE_PARTY)[0].actor
-	var plain := Actor.new(db, {"p_res": 12})
+	var plain := Actor.new(db, {"p_res": miner.stats.get_value("p_res")})
 	var normal := float(DamageCalc.resolve(db, me, plain, fx, HIT)["amount"])
 	var c1 := _apply(me, miner, [fx.merged({"type": "damage"})])
 	assert_near(float(c1.events[0]["amount"]), normal * 0.5, 1.0, "첫 피격 −50%")

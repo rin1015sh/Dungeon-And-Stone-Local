@@ -13,10 +13,11 @@ var actor: Actor
 var slots: Dictionary = {}  # 칸 -> EquipSlot
 
 
-func setup(p_actor: Actor) -> void:
+## slot_px = 칸 한 변(없으면 render.json doll_slot — Tab 메뉴는 쪽 크기에 맞춰 키운다).
+func setup(p_actor: Actor, slot_px: float = -1.0) -> void:
 	actor = p_actor
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var s := float(UiTheme.metric("doll_slot", 58))
+	var s := slot_px if slot_px > 0.0 else float(UiTheme.metric("doll_slot", 58))
 	var g := 6.0
 	var ring := (s - g) * 0.5
 	var col := func(i: int) -> float: return i * (s + g)

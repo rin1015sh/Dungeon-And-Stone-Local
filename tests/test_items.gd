@@ -62,7 +62,7 @@ func test_start_equipment_and_modifiers() -> void:
 	var bare := _pc("warrior")
 	for s in Equipment.SLOTS:
 		bare.equipment.unequip(bare.stats, s)
-	assert_near(pc.stats.get_value("p_res") - bare.stats.get_value("p_res"), 4.0 + 2.0 + 1.0 + 1.0, 0.001, "참나무 방패 4 + 누비 2 + 허리띠 1 + 철퇴 1(아이템 공식)")
+	assert_near(pc.stats.get_value("p_res") - bare.stats.get_value("p_res"), 4.0 + 2.0 + 1.0 + 2.0, 0.001, "참나무 방패 4 + 누비 2 + 허리띠 1 + 철퇴 2(아이템 공식 — 10층 기획으로 철퇴 물리내성 +2)")
 	assert_true(pc.inventory.money > 0, "시작 스톤")
 
 

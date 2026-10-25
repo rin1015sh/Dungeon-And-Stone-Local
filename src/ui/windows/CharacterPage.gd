@@ -27,7 +27,23 @@ func setup(p_pc: PlayerCharacter) -> void:
 	_box = VBoxContainer.new()
 	_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	pad.add_child(_box)
-	pc.equipment.changed.connect(func(_s: String) -> void: refresh())
+	pc.equipment.changed.connect(_on_worn_changed)
+	refresh()
+
+
+## 보일 아군을 바꾼다(Tab 메뉴 왼쪽 쪽에서 고름).
+func set_actor(a: PlayerCharacter) -> void:
+	if a == pc:
+		return
+	if pc.equipment.changed.is_connected(_on_worn_changed):
+		pc.equipment.changed.disconnect(_on_worn_changed)
+	pc = a
+	pc.equipment.changed.connect(_on_worn_changed)
+	refresh()
+	_scroll.scroll_vertical = 0
+
+
+func _on_worn_changed(_slot: String) -> void:
 	refresh()
 
 
@@ -115,10 +131,13 @@ func _build_details() -> Control:
 			var parts := k.split("@")
 			box.add_child(UiTheme.label(Strings.t("character.boon_line", {"item": DataNames.entry(db, "items", parts[0]),
 				"stat": DataNames.entry(db, "stats", parts[1] if parts.size() > 1 else ""), "n": int(pc.boons[k])}), "small", "text"))
-	box.add_child(UiTheme.label(Strings.t("character.passives"), "body", "text_title"))
-	if pc.passives.is_empty():
-		box.add_child(UiTheme.label(Strings.t("character.none"), "small", "text_dim"))
-	for p: Dictionary in pc.passives:
+	var from_essence := {}  # 정수 패시브는 위 정수 카드에 있다 — 여기선 그 밖의 것만(두 번 보이지 않게, UI26)
+	for e: Dictionary in pc.essences.absorbed:
+		from_essence[JsonUtil.get_str(JsonUtil.get_dict(db.get_entry("essences", JsonUtil.get_str(e, "essence")), "passive"), "id")] = true
+	var others := pc.passives.filter(func(p: Dictionary) -> bool: return not from_essence.has(JsonUtil.get_str(p, "id")))
+	if not others.is_empty():
+		box.add_child(UiTheme.label(Strings.t("character.passives"), "body", "text_title"))
+	for p: Dictionary in others:
 		var l := UiTheme.label(Strings.t("character.passive_line", {"name": JsonUtil.get_str(p, "name_ko", JsonUtil.get_str(p, "id")),
 			"desc": JsonUtil.get_str(p, "desc_ko")}), "small", "text")
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

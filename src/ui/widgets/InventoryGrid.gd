@@ -6,7 +6,8 @@ extends Control
 
 signal changed
 
-var actor: Actor
+var actor: Actor  ## 가방 주인(파티 공용 가방 — UI26)
+var wearer: Actor  ## 장비 칸에서 끌어온 것을 벗길 사람(Tab 메뉴에서 고른 아군)
 var cell: int = 38
 
 var _cursor: Rect2i = Rect2i()  # 커서가 덮은 칸(빈 칸 = 1×1, 아이템 = 그 크기)
@@ -16,10 +17,18 @@ var _drop_ok: bool = false
 
 func setup(p_actor: Actor) -> void:
 	actor = p_actor
+	wearer = p_actor
 	cell = UiTheme.metric("inv_cell", 38)
 	custom_minimum_size = Vector2(actor.inventory.width * cell, actor.inventory.height * cell)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	actor.inventory.changed.connect(func(_id: String, _n: int) -> void: queue_redraw())
+
+
+## 칸 크기를 바꾼다(칸 수는 그대로 — Tab 메뉴가 쪽을 꽉 채우게 키운다).
+func set_cell(px: int) -> void:
+	cell = maxi(8, px)
+	custom_minimum_size = Vector2(actor.inventory.width * cell, actor.inventory.height * cell)
+	queue_redraw()
 
 
 ## 칸 c를 덮은 사각형(그 칸에 아이템이 있으면 아이템 전체).
@@ -79,7 +88,7 @@ func drop(d: Dictionary, pos: Vector2i) -> bool:
 		"grid":
 			ok = actor.inventory.move_stack(int(d["index"]), pos)
 		"slot":
-			ok = InventoryActions.unequip_to_bag(actor, str(d["slot"]), pos)
+			ok = InventoryActions.unequip_to_bag(wearer, str(d["slot"]), pos, actor.inventory)
 	_drop_rect = Rect2i()
 	queue_redraw()
 	if ok:

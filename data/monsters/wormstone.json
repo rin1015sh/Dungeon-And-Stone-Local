@@ -18,18 +18,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 14,
-    "agi": 8,
-    "p_res": 18,
-    "m_res": 8,
-    "int": 4
+    "str": 17,
+    "agi": 16,
+    "p_res": 30,
+    "m_res": 15,
+    "int": 8
   },
   "resources": {
-    "hp": 160,
+    "hp": 98,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 10,
+    "attack": 14,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -88,5 +88,5 @@
   ],
   "desc_ko": "바위 껍질을 두른 커다란 벌레. 얼음 틈에 숨어 있다 튀어나온다.",
   "source": "original",
-  "notes": "명세 §10"
+  "notes": "명세 §10 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 160→98, 근력 14→17, 민첩 8→16, 물리내성 18→30, 항마력 8→15, 정신력 4→8, 무기 10→14"
 }

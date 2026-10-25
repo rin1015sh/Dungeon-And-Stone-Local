@@ -22,18 +22,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 3,
+    "str": 5,
     "agi": 14,
-    "p_res": 1,
-    "m_res": 1,
-    "int": 1
+    "p_res": 5,
+    "m_res": 4,
+    "int": 2
   },
   "resources": {
-    "hp": 15,
+    "hp": 10,
     "soul": 0
   },
   "natural_weapon": {
-    "attack": 3,
+    "attack": 4,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -80,5 +80,5 @@
   ],
   "desc_ko": "뼈만 남은 쥐.",
   "source": "original",
-  "notes": "명세 §9"
+  "notes": "명세 §9 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 15→10, 근력 3→5, 물리내성 1→5, 항마력 1→4, 정신력 1→2, 무기 3→4"
 }

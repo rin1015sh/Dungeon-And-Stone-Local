@@ -21,13 +21,20 @@ def _load(name: str):
 
 CFG = _load("balance.json")["items"]
 GROW = {i + 1: v for i, v in enumerate(CFG["grow_by_tier"])}
+ATK = {i + 1: v for i, v in enumerate(CFG.get("attack_by_tier", CFG["grow_by_tier"]))}
+UNSCALED = CFG.get("unscaled", [])
+
+
+def unscaled(stat: str) -> bool:
+    """ItemForge.unscaled와 같다: 이름 또는 "resist_" 꼴 접두사."""
+    return any(stat == u or (u.endswith("_") and stat.startswith(u)) for u in UNSCALED)
 PRICE = {i + 1: v for i, v in enumerate(CFG["price_by_tier"])}
 BASE_PRICE = CFG["base_price"]
 SELL_RATIO = _load("city.json")["shop"]["sell_ratio"]
 KIND_PRICE = CFG["kind_price"]
 KIND_KO = {"metal": "금속", "leather": "가죽", "wood": "목재", "cloth": "천", "bone": "뼈", "gem": "보석"}
 WHERE = {1: "대장간", 2: "대장간 주문(4층 탐험가급)", 3: "시중 거래", 4: "시중 거래", 5: "주문 제작(억 단위 — 원작)", 6: "시중에 거의 없음"}
-STAT_KO = {s["id"]: s["name_ko"] for s in _load("stats.json")}
+STAT_KO = {**{s["id"]: s["name_ko"] for s in _load("stats.json")}, "magic": "마력"}
 STAT_KO.update({"max:hp": "생명력", "max:soul": "영혼력", "dmg_dealt:slash": "주는 참격 피해", "dmg_dealt:pierce": "주는 관통 피해",
                 "dmg_dealt:blunt": "주는 타격 피해", "dmg_taken:physical": "받는 물리 피해", "dmg_taken:magical": "받는 마법 피해"})
 MATERIALS = []
@@ -38,7 +45,7 @@ TYPES = []
 for t in _load("item_types.json"):
     w = t.get("weapon")
     TYPES.append({"id": t["id"], "name": t["name_ko"], "slot": t["slot"], "category": t["category"], "kinds": t["kinds"],
-                  "weapon": ({"type": w["damage_type"], "atk": w["attack"], "two_handed": t.get("two_handed", False), "ranged": w.get("ranged", False)} if w else None),
+                  "weapon": ({"type": w["damage_type"], "atk": w["attack"], "magic": w.get("magic"), "two_handed": t.get("two_handed", False), "ranged": w.get("ranged", False)} if w else None),
                   "grow": t["grow"], "penalty": t["penalty"], "price_mult": t["price_mult"], "size": t["size"], "note": t.get("notes", "")})
 RES_KO = {r["id"]: r["name_ko"] for r in _load("resources.json")}
 STATUS_KO = {x["id"]: x["name_ko"] for x in _load("statuses.json")}
@@ -94,7 +101,7 @@ def build(t: dict, m: dict) -> dict:
     smult = tr.get("stat_mult", {})
     flat: dict = {}
     for k, v in t["grow"].items():
-        flat[k] = flat.get(k, 0) + max(1, rnd(v * g * smult.get(k, 1.0)))
+        flat[k] = flat.get(k, 0) + max(1, rnd(v * (1.0 if unscaled(k) else g) * smult.get(k, 1.0)))
     for k, v in t["penalty"].items():
         if k == "agi" and "agi_pen" in tr:
             ap = tr["agi_pen"]
@@ -111,7 +118,9 @@ def build(t: dict, m: dict) -> dict:
     stats = {k: v for k, v in flat.items() if v != 0}
     out = {"type": t, "mat": m, "stats": stats, "pct": pct}
     if t["weapon"]:
-        out["atk"] = rnd(t["weapon"]["atk"] * g * tr.get("atk", 1.0))
+        out["atk"] = rnd(t["weapon"]["atk"] * ATK[tier] * tr.get("atk", 1.0))
+        if t["weapon"].get("magic"):
+            out["stats"] = {"magic": rnd(t["weapon"]["magic"] * ATK[tier] * tr.get("atk", 1.0)), **out["stats"]}
     price = BASE_PRICE * t["price_mult"] * KIND_PRICE[m["kind"]] * PRICE[tier] * m["price_mult"]
     out["buy"] = nice(price)
     out["sell"] = rnd(out["buy"] * SELL_RATIO)
@@ -143,13 +152,15 @@ def main() -> None:
     md.append("> 사용자 요청: \"아이템 종류(검·철퇴·창)와 소재 등급(강철·미스티움 …)으로 스탯이 오르게, 종류마다 특색(창 = 공격력↑ 민첩↓), 높은 소재일수록 증가율만 커지게, 감소는 알아서\".\n")
     md.append("## 1. 공식\n")
     md.append("| 값 | 공식 |\n|---|---|")
-    md.append("| 공격력·**증가** 스탯 | 종류 기본값 × 등급 배율(아래) — 반올림, 최소 1 |")
+    md.append("| 공격력·마력 | 종류 기본값 × 공격력 배율(아래) — 반올림 |")
+    md.append("| **증가** 스탯 | 종류 기본값 × 증가 배율(아래) — 반올림, 최소 1. 명중률·시각·속성 내성/감응도(%% 값)는 배율 없이 |")
     md.append("| **감소** 스탯 | 종류 값 그대로(등급과 무관) — 소재 특성 '가벼움'(라이티늄·미스릴 ×0.5)·'무거움'(아다만티움 ×1.5)만 바꾼다 |")
     md.append("| 소재 특성 | 소재마다 고정 효과(등급 배율을 받지 않는다) |")
     md.append("| 구입가 | %s × 종류 가격 계수 × 소재 종류 계수 × 등급 가격 배율 × 소재 개별 계수 → 유효숫자 두 자리 |" % won(BASE_PRICE))
     md.append("| 판매가 | 구입가 × %.1f(상점 `sell_ratio`) |\n" % SELL_RATIO)
     md.append("| 등급 | 1 | 2 | 3 | 4 | 5 | 6 |\n|---|---|---|---|---|---|---|")
-    md.append("| 증가 배율 | " + " | ".join("×%.1f" % GROW[i] for i in range(1, 7)) + " |")
+    md.append("| 공격력 배율 | " + " | ".join("×%g" % ATK[i] for i in range(1, 7)) + " |")
+    md.append("| 증가 배율 | " + " | ".join("×%g" % GROW[i] for i in range(1, 7)) + " |")
     md.append("| 가격 배율 | " + " | ".join("×%s" % won(PRICE[i]) for i in range(1, 7)) + " |")
     md.append("| 희귀도 | " + " | ".join(CFG["rarity_by_tier"]) + " |")
     md.append("| 구하는 곳 | " + " | ".join(WHERE[i] for i in range(1, 7)) + " |\n")

@@ -22,18 +22,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 11,
+    "str": 12,
     "agi": 15,
-    "p_res": 7,
-    "m_res": 3,
-    "int": 2
+    "p_res": 18,
+    "m_res": 8,
+    "int": 4
   },
   "resources": {
-    "hp": 80,
+    "hp": 55,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 11,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -80,5 +80,6 @@
   ],
   "desc_ko": "보통 칼날늑대보다 훨씬 큰 놈. 털이 갑옷처럼 두껍다.",
   "source": "placeholder",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 80→55, 근력 11→12, 물리내성 7→18, 항마력 3→8, 정신력 2→4, 무기 8→11"
 }

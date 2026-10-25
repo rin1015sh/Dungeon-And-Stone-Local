@@ -1,5 +1,7 @@
 # 정수 스탯 상향 검토 — 균열 4인 파티 (2026-10-19)
 
+> **보관(2026-10-25)**: 옛 기록이다 — 지금 상태는 `docs/CANON.md`·`docs/balance/curve.md`·`docs/balance/stats.md`.
+
 `tools/sim_party.gd`(시나리오당 300회, 파티 = `tools/sim_parties.json`의 Lv4 4인 · 정수 2~3개씩 · 하급 포션 3개씩)를 다섯 가지로 돌린 비교.
 
 | 열 | 파티 스탯 | 정수 |

@@ -103,6 +103,7 @@ static func check_all(b: Battle) -> bool:
 
 ## 보스 차례가 끝났다(skipped = 기절 등으로 건너뜀). 추가 행동이면 라운드를 끝내지 않고 바로 다시 행동하게 한다.
 static func turn_end(b: Battle, c: Combatant, skipped: bool) -> void:
+	_enrage(b, c, skipped)
 	var p := pattern(b, c)
 	if p == null or not c.is_active():
 		return
@@ -118,6 +119,27 @@ static func turn_end(b: Battle, c: Combatant, skipped: bool) -> void:
 		for f in b.opponents(c):
 			apply_effects(b, c, f, fx)
 	p.on_round_end(b, c, skipped)
+
+
+## 광폭화(10층 기획 — 긴 보스전이 끝없이 늘어지지 않게): combat.enrage.after_turns[rank]번째 자기 차례 뒤로 차례마다
+## 주는 피해 +per_turn(출처 "enrage", 곱하지 않고 쌓는다). 처음 넘을 때 한 번 알린다(화면으로는 알 수 없다).
+static func _enrage(b: Battle, c: Combatant, skipped: bool) -> void:
+	if skipped or not (c.actor is Monster) or bool(c.memo.get("in_extra", false)) or not c.is_active():
+		return
+	var cfg: Variant = b.db.bal("combat.enrage", {})
+	var after: Dictionary = JsonUtil.get_dict(cfg if cfg is Dictionary else {}, "after_turns")
+	var rank := JsonUtil.get_str((c.actor as Monster).def, "rank")
+	if not after.has(rank):
+		return
+	var n := int(c.memo.get("enrage_turns", 0)) + 1
+	c.memo["enrage_turns"] = n
+	var over := n - int(after[rank])
+	if over <= 0:
+		return
+	c.actor.stats.remove_source("enrage")
+	c.actor.stats.add_modifier(Modifier.new("enrage", "dmg_dealt:all", 0.0, over * JsonUtil.get_float(cfg, "per_turn", 0.1)))
+	if over == 1:
+		b.message.emit("combat.enrage", {"name": c.label()}, "danger")
 
 
 ## 효과 목록을 c가 target에게 적용하고 결과를 전투에 반영한다.

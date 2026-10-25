@@ -45,7 +45,9 @@ func test_resist_by_stats() -> void:
 		if _apply(_a(), _a({"p_res": 60}), "stun", i):
 			tough += 1
 	assert_eq(weak, 200, "저항 스탯 0이면 항상 걸린다")
-	assert_true(tough < 120 and tough > 50, "기절 저항 = 물리내성 60 → 최대 저항 60%% (%d/200 걸림)" % tough)
+	var pw := maxf(_a().stats.get_value("str"), _a().stats.get_value("int"))
+	var want := 200.0 * (1.0 - 0.6 * 60.0 / (60.0 + pw))
+	assert_true(absf(tough - want) < 25.0, "기절 저항 = 0.6 × 물리내성 60 / (60 + 거는 쪽 힘) (%d/200 걸림, 기대 %d)" % [tough, roundi(want)])
 	var self_ok := _a({"int": 30, "m_res": 30})
 	var ctx := EffectContext.new(db, self_ok, self_ok, Rng.new(1))
 	ContentRegistries.new().effects.apply_all(ctx, [{"type": "apply_status", "status": "stun"}])

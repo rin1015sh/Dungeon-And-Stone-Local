@@ -63,14 +63,15 @@ func test_steel_ice_wall_barrier_and_shaman_ai() -> void:
 	assert_eq(act["skill"], "orc_steel_ice_wall", "아군 생명력 60% 이하면 강철빙벽 우선")
 	assert_eq(act["target"], warrior, "가장 다친 아군에게")
 	_apply(shaman.actor, warrior.actor, JsonUtil.get_array(db.get_entry("skills", "orc_steel_ice_wall"), "effects"))
-	assert_near(warrior.actor.statuses.barrier_total(), 18.0 * 4.0, 0.01, "보호막 = 정신력 × 4")
+	var wall := shaman.actor.stats.get_value("int") * 4.0
+	assert_near(warrior.actor.statuses.barrier_total(), wall, 0.01, "보호막 = 정신력 × 4")
 	var hp := warrior.actor.pool.get_current("hp")
 	var me := b.side_units(Combatant.SIDE_PARTY)[0].actor
 	var ctx := _apply(me, warrior.actor, [{"type": "damage", "power": 1.0, "damage_type": "fire", "scaling": "magic", "base": 30, "accuracy": 1000}])
 	var dealt := int(ctx.events[0]["amount"])
 	assert_true(dealt > 0)
-	assert_near(warrior.actor.pool.get_current("hp"), hp - maxf(0.0, dealt - 72.0), 0.01, "보호막이 먼저 받는다")
-	assert_eq(warrior.actor.statuses.has("steel_ice_wall"), dealt < 72, "다 닳으면 풀린다")
+	assert_near(warrior.actor.pool.get_current("hp"), hp - maxf(0.0, dealt - wall), 0.01, "보호막이 먼저 받는다")
+	assert_eq(warrior.actor.statuses.has("steel_ice_wall"), dealt < wall, "다 닳으면 풀린다")
 	assert_true(warrior.actor.stats.apply_modifiers("dmg_dealt:cold", 1.0) > 1.0, "한기의 매개: 아군 냉기 피해 +15%")
 
 
@@ -193,7 +194,7 @@ func test_hazards_in_chapter3() -> void:
 	assert_false(run.hazards.at.has(cell), "한 번만")
 	assert_eq(run.hazards.on_step(cs, cell), null)
 	assert_true(cs.map.is_walkable(cell) and cs.map.tile_id_at(cell) == tile, "판정 뒤에도 그 자리에 남는다(걸을 수 있다)")
-	var nimble := Actor.new(db, {"agi": 30})
+	var nimble := Actor.new(db, {"agi": 500})  # 비율 공식: 난이도의 수십 배여야 상한에 닿는다
 	var clumsy := Actor.new(db, {"agi": 2})
 	var chk := {"stat": "agi", "dc": 12}
 	assert_true(RiftHazards.success_chance(db, nimble, chk) > RiftHazards.success_chance(db, clumsy, chk))

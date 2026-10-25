@@ -21,18 +21,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 16,
-    "agi": 18,
-    "p_res": 9,
-    "m_res": 5,
-    "int": 3
+    "str": 19,
+    "agi": 29,
+    "p_res": 18,
+    "m_res": 11,
+    "int": 6
   },
   "resources": {
-    "hp": 140,
+    "hp": 86,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 12,
+    "attack": 17,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -81,5 +81,5 @@
   ],
   "desc_ko": "긴 송곳니의 큰 고양이. 빙하굴 개체는 털빛이 희다.",
   "source": "original",
-  "notes": "명세 §10"
+  "notes": "명세 §10 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 140→86, 근력 16→19, 민첩 18→29, 물리내성 9→18, 항마력 5→11, 정신력 3→6, 무기 12→17"
 }

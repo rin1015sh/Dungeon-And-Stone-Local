@@ -1,0 +1,15 @@
+{
+  "id": "glow_moss",
+  "name_ko": "형광 이끼 덩이",
+  "desc_ko": "어둠 속에서 푸르게 빛나는 이끼. 약재상이 좋아한다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 100,
+  "color": "#80e070",
+  "rarity": "common",
+  "source": "placeholder"
+}

@@ -20,18 +20,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 5,
+    "str": 7,
     "agi": 13,
-    "p_res": 3,
-    "m_res": 4,
-    "int": 4
+    "p_res": 10,
+    "m_res": 10,
+    "int": 6
   },
   "resources": {
-    "hp": 40,
+    "hp": 27,
     "soul": 25
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 9,
     "damage_type": "pierce",
     "ranged": true
   },
@@ -91,5 +91,6 @@
   ],
   "desc_ko": "키키키 웃으며 작은 단궁을 쏜다. 화살촉엔 독, 몸에는 은신의 이능.",
   "source": "original",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 40→27, 근력 5→7, 물리내성 3→10, 항마력 4→10, 정신력 4→6, 무기 6→9"
 }

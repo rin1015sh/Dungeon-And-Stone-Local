@@ -18,18 +18,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 14,
-    "agi": 9,
-    "p_res": 22,
-    "m_res": 10,
-    "int": 6
+    "str": 17,
+    "agi": 18,
+    "p_res": 34,
+    "m_res": 18,
+    "int": 10
   },
   "resources": {
-    "hp": 150,
+    "hp": 92,
     "soul": 50
   },
   "natural_weapon": {
-    "attack": 10,
+    "attack": 14,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -96,5 +96,5 @@
   ],
   "desc_ko": "가만히 있다가 다가오면 석화를 쏘며 움직인다.",
   "source": "original",
-  "notes": "명세 §9"
+  "notes": "명세 §9 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 150→92, 근력 14→17, 민첩 9→18, 물리내성 22→34, 항마력 10→18, 정신력 6→10, 무기 10→14"
 }

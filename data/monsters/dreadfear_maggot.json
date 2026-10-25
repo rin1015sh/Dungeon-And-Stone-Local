@@ -18,18 +18,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 6,
-    "agi": 4,
-    "p_res": 2,
-    "m_res": 2,
-    "int": 2
+    "str": 8,
+    "agi": 6,
+    "p_res": 8,
+    "m_res": 6,
+    "int": 4
   },
   "resources": {
-    "hp": 30,
+    "hp": 21,
     "soul": 0
   },
   "natural_weapon": {
-    "attack": 4,
+    "attack": 6,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -67,5 +67,5 @@
   ],
   "desc_ko": "드레드피어의 몸에서 떨어져 나온 엄지손가락만 한 구더기. 들러붙어 공포를 옮긴다.",
   "source": "original",
-  "notes": "명세 §7.5 토큰 — 경험치·드롭 없음"
+  "notes": "명세 §7.5 토큰 — 경험치·드롭 없음 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 30→21, 근력 6→8, 민첩 4→6, 물리내성 2→8, 항마력 2→6, 정신력 2→4, 무기 4→6"
 }

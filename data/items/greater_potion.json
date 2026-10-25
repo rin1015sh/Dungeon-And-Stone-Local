@@ -1,6 +1,7 @@
 {
   "id": "greater_potion",
   "name_ko": "상급 포션",
+  "desc_ko": "짙은 붉은 물약. 마시면 살이 차오르는 것이 느껴진다.",
   "category": "potion",
   "price": 20000,
   "stack": 10,
@@ -10,7 +11,7 @@
     {
       "type": "restore_resource",
       "resource": "hp",
-      "amount": 150
+      "amount": "max(150, floor({max_hp} * 0.5))"
     },
     {
       "type": "remove_status",

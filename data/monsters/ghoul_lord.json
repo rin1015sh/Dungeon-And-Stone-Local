@@ -21,18 +21,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 15,
-    "agi": 12,
-    "p_res": 12,
-    "m_res": 6,
-    "int": 6
+    "str": 18,
+    "agi": 22,
+    "p_res": 22,
+    "m_res": 12,
+    "int": 10
   },
   "resources": {
-    "hp": 170,
+    "hp": 104,
     "soul": 50
   },
   "natural_weapon": {
-    "attack": 12,
+    "attack": 17,
     "damage_type": "slash"
   },
   "behavior": {
@@ -93,5 +93,5 @@
   "lineage": "ghoul",
   "desc_ko": "엘더 구울을 서른 마리씩 데리고 다닌다.",
   "source": "original",
-  "notes": "명세 §9"
+  "notes": "명세 §9 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 170→104, 근력 15→18, 민첩 12→22, 물리내성 12→22, 항마력 6→12, 정신력 6→10, 무기 12→17"
 }

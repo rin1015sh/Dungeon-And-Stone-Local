@@ -22,18 +22,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 9,
-    "agi": 19,
-    "p_res": 4,
-    "m_res": 2,
-    "int": 2
+    "str": 11,
+    "agi": 18,
+    "p_res": 12,
+    "m_res": 6,
+    "int": 4
   },
   "resources": {
-    "hp": 50,
+    "hp": 34,
     "soul": 25
   },
   "natural_weapon": {
-    "attack": 7,
+    "attack": 10,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -85,5 +85,6 @@
   ],
   "desc_ko": "털끝이 피에 젖은 듯 붉다. 상처 난 먹잇감을 놓지 않는다.",
   "source": "placeholder",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 50→34, 근력 9→11, 민첩 19→18, 물리내성 4→12, 항마력 2→6, 정신력 2→4, 무기 7→10"
 }

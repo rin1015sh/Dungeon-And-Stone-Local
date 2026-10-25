@@ -16,6 +16,7 @@ static func run(v: ValidatorBase) -> void:
 	_essences(v)
 	_items(v)
 	ItemPoolRules.run(v)
+	ScavengeRules.run(v)
 
 
 static func _monsters(v: ValidatorBase) -> void:

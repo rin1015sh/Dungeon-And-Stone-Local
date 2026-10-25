@@ -1,6 +1,7 @@
 {
   "id": "steel_relic",
   "name_ko": "강철 사리",
+  "desc_ko": "회전 칼날 속에서 굳은 강철 구슬. 묘를 지키던 이의 마지막 조각이다. 묘를 벗어나면 녹이 슬어 부서진다.",
   "category": "potion",
   "size": [
     1,

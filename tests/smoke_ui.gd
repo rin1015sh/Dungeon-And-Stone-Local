@@ -155,6 +155,7 @@ func _realtime_combat_flow() -> void:
 	await _action("menu")
 	await _action("menu_back")
 	_expect(not explore.menu().is_open() and not explore.is_paused(), "취소(Backspace)로 메뉴 닫기(일시정지 아님)")
+	await _tab_party_checks(explore)
 	await _explore_dialog_checks(explore)
 	await _party_checks(explore)
 	await _action("debug_toggle")
@@ -297,6 +298,7 @@ func _riddle_flow() -> void:
 		return
 	var battle := combat.battle
 	battle.side_units(Combatant.SIDE_ENEMY)[0].actor.pool.set_current("hp", 1.0)
+	explore.session.player.pool.set_min_value("hp", 1.0)  # 강화된 문지기(3층 파티용 균열 — C18)는 1층 시험 캐릭터를 두 대에 쓰러뜨린다 — 이 시험은 수수께끼 흐름만 본다
 	for i in 40:
 		if not battle.result.is_empty():
 			break
@@ -307,6 +309,7 @@ func _riddle_flow() -> void:
 		_press_first(menu.grid())
 	await _frames(2)
 	_expect(battle.result == Battle.RESULT_VICTORY, "강화된 문지기를 쓰러뜨린다")
+	explore.session.player.pool.set_min_value("hp", 0.0)
 	await _take_drops(combat, false)
 	await _frames(3)
 	_expect(not run.remaining.has(gate) and not explore.session.realtime.is_paused(), "문이 열리고 시간이 다시 흐른다")
@@ -493,7 +496,7 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 	DialogueBox.auto_skip = false
 	EventBus.log_message.emit(Strings.t("city.leave"), "info")
 	await _frames(2)
-	_expect(dlg.busy() and dlg.is_visible_in_tree() and s.realtime.is_paused("dialog") and not explore.bottom_bar().visible, "알림 → 하단 대화창(하단 바 숨김, 시간 정지)")
+	_expect(dlg.busy() and dlg.is_visible_in_tree() and s.realtime.is_paused("dialog"), "알림 → 하단 대화창(시간 정지)")
 	var tq := s.clock.total_hours
 	await _seconds(0.3)
 	_expect(is_equal_approx(s.clock.total_hours, tq), "대화창이 떠 있는 동안 시간이 멈춘다")
@@ -501,7 +504,7 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 		if dlg.busy():
 			await _action("menu_confirm")
 	await _frames(2)
-	_expect(not dlg.busy() and not dlg.visible and not s.realtime.is_paused() and explore.bottom_bar().visible, "Enter로 넘기면 닫히고 시간이 다시 흐른다")
+	_expect(not dlg.busy() and not dlg.visible and not s.realtime.is_paused(), "Enter로 넘기면 닫히고 시간이 다시 흐른다")
 	s.message.emit("effect.light_on", {"hours": 4}, "good")
 	s.message.emit("explore.portal_here", {}, "system")
 	await _frames(1)
@@ -1021,3 +1024,50 @@ func _has_label(root: Node, text: String) -> bool:
 		if (l as Label).text.contains(text):
 			return true
 	return false
+
+
+## Tab 메뉴(UI26): 왼쪽 아군 목록 — W/S·Enter로 아군을 고르면 가운데·오른쪽이 그 아군, 맨 끝 도감을 고르면 도감 쪽.
+func _tab_party_checks(explore: ExploreScreen) -> void:
+	var gm := explore.menu()
+	var mate := PlayerCharacter.create(DataRegistry.db, "human", "archer", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+	gm.party.append(mate)
+	_expect(mate.get_row() == "back" and explore.session.player.get_row() == "front", "궁수 = 후위, 전사 = 전위(템플릿 역할)")
+	await _action("menu")
+	_expect(gm.is_open() and gm.order() == (["party", "character", "inventory"] as Array[String]), "Tab = 아군 · 캐릭터 · 소지품")
+	gm.focus("party")
+	await _action("menu_down")
+	await _action("menu_confirm")
+	_expect(gm.shown() == mate and gm.character().pc == mate and gm.inventory().wearer == mate and gm.inventory().actor == explore.session.player,
+		"동료를 고르면 가운데·장비는 동료, 가방은 공용")
+	await _action("menu_down")
+	await _action("menu_confirm")
+	_expect(gm.order() == (["party", "bestiary"] as Array[String]) and gm.bestiary().visible, "맨 끝 = 도감")
+	await _action("menu_left")  # 도감에서 A = 왼쪽 아군 목록으로
+	await _action("menu_up")
+	await _action("menu_up")
+	await _action("menu_confirm")
+	_expect(gm.shown() == explore.session.player and gm.character().visible, "플레이어로 돌아온다")
+	# 전위·후위·내보내기(사용자 2026-10-25): 고른 아군에서 Enter 한 번 더 → 창
+	await _action("menu_down")
+	await _action("menu_confirm")
+	await _action("menu_confirm")
+	_expect(gm.find_children("*", "ChoicePopup", true, false).size() == 1 and gm.party_page().busy(), "고른 아군에서 Enter 한 번 더 = 전위/후위/내보내기 창")
+	await _action("menu_confirm")  # 첫 칸 = 전위(후위인 궁수라 고를 수 있다)
+	await _frames(2)
+	_expect(mate.get_row() == "front" and not gm.party_page().busy(), "전위로 바꾼다")
+	mate.row = "back"
+	gm._reorder(mate)
+	_expect(gm.party.find(mate) == gm.party.size() - 1, "후위는 아래로")
+	await _action("menu_confirm")
+	await _action("menu_down")
+	await _action("menu_down")  # 전위(커서) → 후위(지금 줄이라 못 고름) → 파티에서 내보낸다
+	await _action("menu_confirm")  # 한 번 더 묻는다
+	await _frames(2)
+	_expect(gm.party.has(mate) and gm.find_children("*", "ChoicePopup", true, false).size() == 1
+		and str(gm.find_children("*", "ChoicePopup", true, false)[0].grid.current_option().get("text")) == Strings.t("party.release_yes"),
+		"내보내기는 한 번 더 묻는다")
+	await _action("menu_confirm")
+	await _frames(2)
+	_expect(not gm.party.has(mate) and gm.shown() == explore.session.player, "내보내면 목록에서 빠지고 플레이어를 본다")
+	await _action("menu")
+	gm.party.erase(mate)

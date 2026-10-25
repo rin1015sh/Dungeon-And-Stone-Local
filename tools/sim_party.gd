@@ -10,6 +10,8 @@ extends SceneTree
 ## (수호자·중간 보스가 있으면 그중 — 졸개가 셋 이상 쌓이면 졸개부터 —, 없으면 생명력이 가장 낮은 적).
 ## 시나리오 "party_statuses": [..] — 전투 전에 아군 전원에게 건다(빙하굴 3·4챕터 저체온증).
 ## 공격은 쓸 수 있는 정수 액티브 중 위력 합이 가장 큰 것, 없으면 기본 공격.
+## --curve=<층>: 파티를 10층 곡선의 그 층 기준 탐험가로(docs/balance/curve.json — 첫 전사 = 탱커, 나머지 = 딜러: 정수를 흡수한 뒤
+##   주 스탯·생명력·공격력을 곡선 값에 맞춘다 — 이능은 1층 정수 그대로). 보스가 "몇 층 위 파티용"인지 확인할 때(docs/plans/balance_10floors.md §4).
 
 const CFG := "res://tools/sim_parties.json"
 const OUT := "res://docs/balance/rift.md"
@@ -28,9 +30,15 @@ func _initialize() -> void:
 	cfg["real_essences"] = str(args.get("essences", "real")) == "real"
 	cfg["race_base"] = str(args.get("base", "race")) == "race"
 	cfg["essence_mult"] = str(args.get("essence_mult", "1")).to_float()
-	var custom := args.has("essences") or args.has("base") or args.has("essence_mult")
+	var curve_floor := str(args.get("curve", cfg.get("curve_floor", "")))
+	if not curve_floor.is_empty() and curve_floor != "none":  # 기본 = sim_parties.json curve_floor(균열 = 3층 파티용), --curve=none이면 예전처럼 1층 정수 파티
+		var refs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/balance/curve.json"))
+		cfg["curve"] = refs.get(str(int(float(curve_floor))), {})
+		cfg["level"] = int(JsonUtil.get_float(cfg["curve"], "level", 4))
+	var custom := args.has("essences") or args.has("base") or args.has("essence_mult") or args.has("curve")
 	var n := str(args["n"]).to_int()
-	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json`, 시나리오당 %d회)." % n, "",
+	var who := "곡선 %s층 기준 탐험가 5인(docs/balance/curve.json)" % curve_floor if cfg.has("curve") else "1층 정수 파티"
+	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json` — %s, 시나리오당 %d회)." % [who, n], "",
 		"| 시나리오 | 승률 | 목표 | 평균 차례 | 쓰러진 아군(평균) |", "|---|---|---|---|---|"])
 	var misses := 0
 	for sc: Dictionary in cfg["scenarios"]:
@@ -67,6 +75,7 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 	var party: Array[Actor] = []
 	var reg := ContentRegistries.new()
 	var b := Battle.new(db, reg.effects, reg.ai_conditions, Rng.new(9000 + i))
+	var tank_taken := false
 	for m: Dictionary in cfg["party"]:
 		var stats: Dictionary = _race_mid(db, str(m["race"])) if bool(cfg["race_base"]) else m["stats"]
 		var pc := PlayerCharacter.create(db, str(m["race"]), str(m["class"]), str(m["name"]), stats)
@@ -79,6 +88,10 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 				for k: String in vals:
 					vals[k] = roundi(float(vals[k]) * float(cfg["essence_mult"]))
 			pc.essences.absorb(pc, inst)
+		if cfg.has("curve"):  # 정수(이능)는 그대로 두고 스탯·생명력만 곡선 값에 맞춘다
+			var role := "tank" if str(m["class"]) == "warrior" and not tank_taken else "dps"
+			tank_taken = tank_taken or role == "tank"
+			_to_curve(pc, JsonUtil.get_dict(cfg["curve"], role))
 		for item: String in cfg["items"]:
 			pc.inventory.add(item, int(cfg["items"][item]))
 		for st: Variant in sc.get("party_statuses", []):
@@ -101,6 +114,15 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 			b.act(c, {"kind": "guard"})  # 거부된 행동이 같은 차례를 되풀이하지 않게(화면과 같은 대체 순서)
 	var downs := party.filter(func(a: Actor) -> bool: return a.dead).size()
 	return {"win": b.result == Battle.RESULT_VICTORY, "turns": t, "downs": downs}
+
+
+## 곡선 기준 탐험가로 맞춘다: 주 스탯(근력은 무기 공격력을 빼고 공격력이 곡선 값이 되게)·최대 생명력.
+func _to_curve(pc: PlayerCharacter, ref: Dictionary) -> void:
+	var want := ref.duplicate()
+	want["str"] = (JsonUtil.get_float(ref, "atk") - maxf(0.0, pc.weapon_attack())) / 2.0
+	for k: String in ["str", "agi", "p_res", "m_res", "int"]:
+		pc.stats.add_modifier(Modifier.new("curve", k, JsonUtil.get_float(want, k) - pc.stats.get_value(k)))
+	pc.stats.add_modifier(Modifier.new("curve", "max:hp", JsonUtil.get_float(ref, "hp") - pc.pool.get_max("hp")))
 
 
 func _party_action(b: Battle, c: Combatant, cfg: Dictionary, ai: String) -> Dictionary:

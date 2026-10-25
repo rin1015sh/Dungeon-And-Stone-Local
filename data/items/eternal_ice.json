@@ -1,6 +1,7 @@
 {
   "id": "eternal_ice",
   "name_ko": "만년빙 결정",
+  "desc_ko": "녹지 않는 얼음. 손바닥에 올려도 차갑기만 하다.",
   "category": "misc",
   "size": [
     1,

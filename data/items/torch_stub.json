@@ -1,6 +1,7 @@
 {
   "id": "torch_stub",
   "name_ko": "타다 남은 횃불",
+  "desc_ko": "누군가 쓰다 버린 횃불 토막. 아직 반나절은 탄다.",
   "category": "light",
   "size": [
     1,

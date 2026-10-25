@@ -82,7 +82,8 @@ static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor,
 		return "failed"
 	if is_immune(target, status_id) or target.statuses.immune(status_id):
 		return "immune"
-	if source != null and source != target and rng != null and rng.chance(target.statuses.resist_chance(status_id)):
+	if source != null and source != target and rng != null \
+			and rng.chance(target.statuses.resist_chance(status_id, maxf(source.stats.get_value("str"), source.stats.get_value("int")))):
 		return "resisted"
 	var dur := duration
 	var cap := duration_cap(target, status_id)

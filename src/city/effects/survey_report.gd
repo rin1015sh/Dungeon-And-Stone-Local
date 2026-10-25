@@ -1,5 +1,5 @@
 extends CityEffect
-## 조사 의뢰 보고(모험가 길드): {"type": "survey_report"} — 의뢰받은 종을 조사한 수만큼 받는다(값·상한은 city.json guild, CityGuild).
+## 조사 의뢰 보고(탐험가 길드): {"type": "survey_report"} — 의뢰받은 종을 조사한 수만큼 받는다(값·상한은 city.json guild, CityGuild).
 
 
 func apply(ctx: CityContext, _data: Dictionary) -> void:

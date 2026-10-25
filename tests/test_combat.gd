@@ -108,10 +108,12 @@ func test_preview_matches_actual() -> void:
 func test_damage_formula() -> void:
 	var atk := Actor.new(db, {"str": 10})
 	var soft := Actor.new(db, {"p_res": 0})
-	var tough := Actor.new(db, {"p_res": 25})
 	var base := (_b("unarmed_atk") + 10.0 * _b("phys_atk_per_str"))
+	var tough := Actor.new(db, {"p_res": base / _b("defense_ratio")})
 	assert_eq(DamageCalc.resolve(db, atk, soft, SLASH, NO_ROLL)["amount"], roundi(base))
-	assert_eq(DamageCalc.resolve(db, atk, tough, SLASH, NO_ROLL)["amount"], roundi(base * 0.5), "방어 25 × 4 = 100 → 절반 (명세 §1)")
+	assert_eq(DamageCalc.resolve(db, atk, tough, SLASH, NO_ROLL)["amount"], roundi(base * 0.5), "방어 × 2 = 공격력 → 절반 (10층 비율 공식)")
+	var tougher := Actor.new(db, {"p_res": base})
+	assert_eq(DamageCalc.resolve(db, atk, tougher, SLASH, NO_ROLL)["amount"], roundi(base / 3.0), "방어 = 공격력 → 3분의 1")
 	var weak := DamageCalc.resolve(db, atk, soft, {"type": "damage", "power": 2.0, "damage_type": "slash"}, NO_ROLL)
 	assert_eq(weak["amount"], roundi(base * 2.0), "위력 배율")
 	var miss := DamageCalc.resolve(db, atk, soft, SLASH, {"hit": 0.999, "crit": 1.0, "var": 0.5, "lethal": 1.0})
@@ -211,6 +213,7 @@ func test_guard_and_flee() -> void:
 		var u := b.next_turn()
 		if u == null:
 			break
+		pc.statuses.remove("snare")  # 고블린 덫(속박 — 도주 불가)은 이 시험의 관심이 아니다
 		b.act(u, {"kind": "flee"} if u.actor == pc else b.ai_action(u))
 	assert_eq(b.result, Battle.RESULT_FLED)
 

@@ -1,6 +1,7 @@
 {
   "id": "floor_stone_1",
   "name_ko": "수정동굴의 계층석",
+  "desc_ko": "수정동굴의 숨이 굳은 돌. 쥐고 있으면 동굴 바닥의 울림이 느껴진다.",
   "category": "material",
   "size": [
     1,

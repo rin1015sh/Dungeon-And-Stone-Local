@@ -21,18 +21,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 18,
-    "agi": 10,
-    "p_res": 12,
-    "m_res": 6,
-    "int": 4
+    "str": 21,
+    "agi": 19,
+    "p_res": 22,
+    "m_res": 12,
+    "int": 8
   },
   "resources": {
-    "hp": 170,
+    "hp": 104,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 12,
+    "attack": 17,
     "damage_type": "slash"
   },
   "behavior": {
@@ -88,5 +88,5 @@
   ],
   "desc_ko": "부엉이 머리에 곰의 몸. 빙하굴 개체는 털빛이 옅다.",
   "source": "original",
-  "notes": "명세 §10"
+  "notes": "명세 §10 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 170→104, 근력 18→21, 민첩 10→19, 물리내성 12→22, 항마력 6→12, 정신력 4→8, 무기 12→17"
 }

@@ -30,7 +30,7 @@ func _ctx_hit(src: Actor, tgt: Actor, fx: Array, seed_value: int = 1, aim_weak: 
 func test_skeleton_core_weak_point() -> void:
 	var atk := Actor.new(db, {"str": 10})
 	var sk := Monster.create(db, "skeleton_archer")
-	var plain := Actor.new(db, {"p_res": 5})
+	var plain := Actor.new(db, {"p_res": sk.stats.get_value("p_res")})  # 같은 방어의 보통 대상
 	var fx := {"scaling": "phys", "power": 1.0, "damage_type": "slash", "accuracy": 1000}
 	var base := float(DamageCalc.resolve(db, atk, plain, fx, HIT)["amount"])
 	assert_near(float(DamageCalc.resolve(db, atk, sk, fx, HIT)["amount"]), base * 0.6, 1.0, "갈비뼈 속 핵: 베기 −40%")
@@ -72,12 +72,13 @@ func test_deathfiend_preservation_regen() -> void:
 	var b := _battle(["deathfiend"])
 	var df := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
-	_ctx_hit(me.actor, df.actor, [{"type": "apply_status", "status": "bleeding", "duration": 5}])
+	Passives.try_status(db, null, null, df.actor, "bleeding", 5.0)  # 저항 굴림 없이(육체보존의 지속 상한만 본다)
 	assert_true(df.actor.statuses.has("bleeding"))
 	assert_true(float((df.actor.statuses.to_dict()["bleeding"] as Dictionary)["remaining"]) <= 1.0, "육체보존: 출혈 1라운드")
-	df.actor.pool.set_current("hp", 100.0)
+	var half := roundf(df.actor.pool.get_max("hp") * 0.5)
+	df.actor.pool.set_current("hp", half)
 	BattlePassives.turn_end(b, df)
-	assert_near(df.actor.pool.get_current("hp"), 100.0 + 160.0 * 0.04, 0.6, "라운드 끝 4% 재생")
+	assert_near(df.actor.pool.get_current("hp"), half + df.actor.pool.get_max("hp") * 0.04, 0.6, "라운드 끝 4% 재생")
 	df.actor.statuses.apply("regen_stopped")
 	var hp := df.actor.pool.get_current("hp")
 	BattlePassives.turn_end(b, df)
@@ -87,15 +88,17 @@ func test_deathfiend_preservation_regen() -> void:
 func test_auras_and_start_summons() -> void:
 	var b := _battle(["deadman_commander", "soldier_deadman"])
 	var soldier := b.side_units(Combatant.SIDE_ENEMY)[1]
-	assert_near(soldier.actor.stats.get_value("str"), 11.0 * 1.15, 0.01, "썩은 지휘: 데드맨 계열 근력 +15%")
+	var sol_str := JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("monsters", "soldier_deadman"), "stats"), "str")
+	assert_near(soldier.actor.stats.get_value("str"), sol_str * 1.15, 0.01, "썩은 지휘: 데드맨 계열 근력 +15%")
 	var b2 := _battle(["ghoul_lord"])
 	var foes := b2.side_units(Combatant.SIDE_ENEMY)
 	assert_eq(foes.size(), 3, "구울로드: 엘더 구울 2체 동반")
-	assert_near(foes[1].actor.stats.get_value("str"), 13.0 * 1.15, 0.01, "아군 구울 계열 근력 +15%")
+	var eg_str := JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("monsters", "elder_ghoul"), "stats"), "str")
+	assert_near(foes[1].actor.stats.get_value("str"), eg_str * 1.15, 0.01, "아군 구울 계열 근력 +15%")
 	foes[0].actor.pool.set_current("hp", 0.0)
 	foes[0].actor.dead = true
 	BattlePassives.refresh_auras(b2)
-	assert_near(foes[1].actor.stats.get_value("str"), 13.0, 0.01, "주인이 쓰러지면 오라가 사라진다")
+	assert_near(foes[1].actor.stats.get_value("str"), eg_str, 0.01, "주인이 쓰러지면 오라가 사라진다")
 
 
 func test_chimera_volley_pushback_march() -> void:
@@ -195,7 +198,7 @@ func test_kambormir_feast_and_heart() -> void:
 	party[1].actor.statuses.apply("sacrifice_mark")
 	BossHooks.turn_end(b, k, false)
 	assert_eq(k.actor.statuses.stacks("vamp_blood_feast"), 2, "제물 1명당 근력·민첩 +10%")
-	assert_near(k.actor.stats.get_value("str"), 48.0 * 1.2, 0.01)
+	assert_near(k.actor.stats.get_value("str"), JsonUtil.get_float(JsonUtil.get_dict((k.actor as Monster).def, "stats"), "str") * 1.2, 0.01)
 	_ctx_hit(party[2].actor, k.actor, [{"type": "damage", "power": 1.0, "damage_type": "weapon", "accuracy": 1000}], 2, true)
 	var ok := k.actor.statuses.has("regen_stopped")
 	for s in 20:

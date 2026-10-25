@@ -1,5 +1,7 @@
 # 1층 필드 밸런스 (G2, 2026-10-12)
 
+> **보관(2026-10-25)**: 옛 기록이다 — 지금 상태는 `docs/CANON.md`·`docs/balance/curve.md`·`docs/balance/stats.md`.
+
 기준: `docs/PROMPT_FLOOR1_V2.md` §1(공식)·§6(몬스터 수치)·§15(시뮬레이터 목표). 도구: `tools/sim_battle.gd`.
 시뮬레이터 탐험가는 **기본 공격만** 쓴다(포션·정수·도주·스킬 없음) — 실제 플레이보다 약하다.
 

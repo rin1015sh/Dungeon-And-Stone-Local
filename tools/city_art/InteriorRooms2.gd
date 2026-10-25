@@ -1,5 +1,5 @@
 extends RefCounted
-## 시설 내부 둘째 묶음(대장간·모험가 길드, 2026-10-20) — InteriorRooms와 같은 문법: 방을 칠하고 광원 목록을 돌려준다(Interiors.light).
+## 시설 내부 둘째 묶음(대장간·탐험가 길드, 2026-10-20) — InteriorRooms와 같은 문법: 방을 칠하고 광원 목록을 돌려준다(Interiors.light).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -48,7 +48,7 @@ static func smithy(p: Paint) -> Array:
 	return [[Vector2(360, 290), 380.0, FIRE, 1.0], [Vector2(346, 420), 240.0, FIRE, 0.45], [Vector2(70, 190), 220.0, WARM, 0.5]]
 
 
-## 모험가 길드: 목조 회관 · 뒷벽 가득 의뢰 쪽지 게시판 · 양쪽 깃발 · 들보의 샹들리에 · 접수대(장부·종) · 접수원 · 앞쪽 긴 의자와 술잔.
+## 탐험가 길드: 목조 회관 · 뒷벽 가득 의뢰 쪽지 게시판 · 양쪽 깃발 · 들보의 샹들리에 · 접수대(장부·종) · 접수원 · 앞쪽 긴 의자와 술잔.
 static func guild(p: Paint) -> Array:
 	var I := _I()
 	I.room(p, Mat.planks(p, Color("#3e2d20"), 0, 0, true, 16), Mat.plaster(p, Color("#6e624a"), 0.15), Mat.planks(p, Color("#45311f"), 0, 0, false, 14), Mat.planks(p, Color("#261c14"), 0, 0, false, 18))

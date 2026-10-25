@@ -20,18 +20,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 15,
-    "agi": 16,
-    "p_res": 10,
-    "m_res": 4,
-    "int": 3
+    "str": 18,
+    "agi": 27,
+    "p_res": 20,
+    "m_res": 9,
+    "int": 6
   },
   "resources": {
-    "hp": 140,
+    "hp": 86,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 10,
+    "attack": 14,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -87,5 +87,5 @@
   ],
   "desc_ko": "근육이 울퉁불퉁한 돌연변이 늑대. 머리가 서너 개.",
   "source": "original",
-  "notes": "명세 §9"
+  "notes": "명세 §9 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 140→86, 근력 15→18, 민첩 16→27, 물리내성 10→20, 항마력 4→9, 정신력 3→6, 무기 10→14"
 }

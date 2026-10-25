@@ -23,18 +23,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 13,
-    "agi": 12,
-    "p_res": 8,
-    "m_res": 3,
-    "int": 2
+    "str": 14,
+    "agi": 13,
+    "p_res": 20,
+    "m_res": 8,
+    "int": 4
   },
   "resources": {
-    "hp": 95,
+    "hp": 65,
     "soul": 15
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 11,
     "damage_type": "slash"
   },
   "behavior": {
@@ -78,5 +78,6 @@
   ],
   "desc_ko": "보통 구울의 두 배쯤 되는 몸집.",
   "source": "original",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 95→65, 근력 13→14, 민첩 12→13, 물리내성 8→20, 항마력 3→8, 정신력 2→4, 무기 8→11"
 }

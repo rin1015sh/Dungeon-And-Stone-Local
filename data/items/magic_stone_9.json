@@ -12,6 +12,6 @@
   "icon": "stone",
   "color": "#6d7fa0",
   "rarity": "common",
-  "desc_ko": "가장 흔한 마석. 환전소에서 스톤으로 바꾼다.",
+  "desc_ko": "가장 흔한 마석. 환전소에서 스톤으로 바꿔 준다.",
   "source": "placeholder"
 }

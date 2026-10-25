@@ -11,7 +11,7 @@
   "icon": "potion",
   "color": "#8fd0ff",
   "rarity": "fine",
-  "desc_ko": "세 번째 기둥 속에 박혀 있던 얼음 조각. 녹여 마시면 추위를 덜 탄다. 한 사람이 한 번만 효과를 본다.",
+  "desc_ko": "세 번째 기둥 속에 박혀 있던 얼음 조각. 녹여 마시면 추위가 덜 스민다.",
   "consumable": true,
   "use_effects": [
     {

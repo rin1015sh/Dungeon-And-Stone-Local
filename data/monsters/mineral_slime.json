@@ -18,18 +18,18 @@
   "weaknesses": {},
   "weak_point": null,
   "stats": {
-    "str": 12,
-    "agi": 6,
-    "p_res": 22,
-    "m_res": 10,
-    "int": 6
+    "str": 15,
+    "agi": 13,
+    "p_res": 34,
+    "m_res": 18,
+    "int": 10
   },
   "resources": {
-    "hp": 150,
+    "hp": 92,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 9,
+    "attack": 13,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -97,5 +97,5 @@
   "lineage": "slime",
   "desc_ko": "광석 조각이 잔뜩 박힌 슬라임.",
   "source": "original",
-  "notes": "명세 §11"
+  "notes": "명세 §11 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 8등급 일반 기준): 생명력 150→92, 근력 12→15, 민첩 6→13, 물리내성 22→34, 항마력 10→18, 정신력 6→10, 무기 9→13"
 }

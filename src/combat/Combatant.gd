@@ -33,9 +33,9 @@ func is_active() -> bool:
 	return not fled and not actor.dead
 
 
-## 행동 게이지 속도 = 민첩 + speed_base(balance combat.speed_base). speed_base가 크면 민첩 차이가 행동 횟수에 덜 반영된다.
-func speed(min_speed: float, speed_base: float = 0.0) -> float:
-	return maxf(min_speed, actor.stats.get_value("agi") + speed_base)
+## 행동 게이지 속도 = (민첩 + speed_base)^speed_exp(balance combat.speed_base·speed_exp). 등급 배율은 Timeline이 곱한다.
+func speed(min_speed: float, speed_base: float = 0.0, speed_exp: float = 1.0) -> float:
+	return maxf(min_speed, pow(maxf(0.0, actor.stats.get_value("agi") + speed_base), speed_exp))
 
 
 func label() -> String:

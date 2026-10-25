@@ -22,18 +22,18 @@
   },
   "weak_point": null,
   "stats": {
-    "str": 9,
+    "str": 11,
     "agi": 15,
-    "p_res": 6,
-    "m_res": 2,
-    "int": 1
+    "p_res": 16,
+    "m_res": 6,
+    "int": 2
   },
   "resources": {
-    "hp": 60,
+    "hp": 41,
     "soul": 10
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 9,
     "damage_type": "slash"
   },
   "behavior": {
@@ -69,5 +69,6 @@
   ],
   "desc_ko": "썩은 살갗에 긴 손톱, 네 발로 긴다. 가까이 가기 전에는 먼저 덤비지 않고, 늘 같은 순서로 할퀸다.",
   "source": "original",
-  "drops": []
+  "drops": [],
+  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 60→41, 근력 9→11, 물리내성 6→16, 항마력 2→6, 정신력 1→2, 무기 6→9"
 }
