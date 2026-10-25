@@ -1,6 +1,6 @@
 {
   "id": "guild",
-  "name_ko": "모험가 길드",
+  "name_ko": "탐험가 길드",
   "order": 1,
   "x": 140,
   "building": "res://assets/city/buildings/guild.webp",

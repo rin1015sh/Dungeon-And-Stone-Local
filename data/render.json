@@ -131,7 +131,7 @@
     "side_button": 40,
     "essence_locked_darken": 70,
     "window_height": 660,
-    "menu": {"_comment": "Tab 메뉴(GameMenu — 아군 · 캐릭터 · 소지품 세 쪽을 한 화면에, 도감은 아군 목록 맨 끝 — UI26)", "page_gap": 12, "party_width": 230, "party_label_width": 48, "party_value_width": 58, "party_bar_height": 6, "party_fatigue_max": 100, "character_width": 400, "inventory_width": 420, "bestiary_width": 380, "bestiary_list_height": 260, "scroll_step": 60, "scroll_gap": 14, "dim": 0.6}
+    "menu": {"_comment": "Tab 메뉴(GameMenu — 아군 · 캐릭터 · 소지품 세 쪽을 한 화면에, 도감은 아군 목록 맨 끝 — UI26)", "page_gap": 12, "stretch": {"party": 1.0, "character": 1.7, "inventory": 1.8, "bestiary": 3.5}, "party_width": 230, "party_label_width": 48, "party_value_width": 58, "party_bar_height": 6, "party_fatigue_max": 100, "character_width": 400, "inventory_width": 420, "bestiary_width": 380, "bestiary_list_height": 260, "scroll_step": 60, "scroll_gap": 14, "dim": 0.6}
   },
   "font": {
     "path": "res://assets/fonts/NotoSansKR-Regular.otf",
@@ -226,7 +226,7 @@
     "dock_width": 240,
     "pip_font_size": 24,
     "meal_art": {"_comment": "여관 요리 그림(FacilityView — 식사하면 탁자 그림이 시설 안을 가득 덮는다, CT47): fade_sec = 나타나는 시간", "fade_sec": 0.35},
-    "event_art": {"_comment": "거리 사건 일러스트(StreetEventView, CT45): dim = 도시를 덮는 어둠, top = 위 여백, bottom_reserve = 아래 대화창 자리, side = 좌우 최소 여백, border = 테두리 px, fade_sec = 나타나고 사라지는 시간", "dim": 0.82, "top": 24, "bottom_reserve": 168, "side": 32, "border": 2, "fade_sec": 0.3},
+    "event_art": {"_comment": "거리 사건 일러스트(StreetEventView, CT45 — 2026-10-25 사용자 \"화면을 꽉 차게\" → 여백·테두리 0, 대화창은 그림 위에 겹친다): dim = 도시를 덮는 어둠, top = 위 여백, bottom_reserve = 아래 대화창 자리, side = 좌우 최소 여백, border = 테두리 px, fade_sec = 나타나고 사라지는 시간", "dim": 0.82, "top": 0, "bottom_reserve": 0, "side": 0, "border": 0, "fade_sec": 0.3},
     "hud_height": 230,
     "debug_width": 420,
     "debug_list_height": 300,

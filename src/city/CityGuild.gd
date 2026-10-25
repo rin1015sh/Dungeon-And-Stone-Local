@@ -1,6 +1,6 @@
 class_name CityGuild
 extends RefCounted
-## 모험가 길드 조사 의뢰(2026-10-22, CT44 — docs/plans/dungeon_loop_review.md B1): 길드는 늘 몬스터 한 종의 조사를 의뢰한다.
+## 탐험가 길드 조사 의뢰(2026-10-22, CT44 — docs/plans/dungeon_loop_review.md B1): 길드는 늘 몬스터 한 종의 조사를 의뢰한다.
 ##   의뢰 = CityState.guild_request {monster, until}(until = 이 달까지 유효 — 받은 달 + months − 1, 그 사이 원정 한 번).
 ##   전투에서 그 종에게 '조사'를 쓰면 한 마리에 한 번 센다(Knowledge.note_survey). 길드 '조사 보고'로 넘기면
 ##   min(센 수, cap) × stones_per × (10 − 등급)을 받고 모든 조사 수가 지워진다. 넘겼거나 기한이 지나면 다음 순에 새 의뢰.

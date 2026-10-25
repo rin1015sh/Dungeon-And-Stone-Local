@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **화면 꽉 채우기 · 탐험가 길드 (2026-10-25, 사용자 "Tab 메뉴랑 이벤트 일러스트가 화면을 꽉 차게 · 모험가 길드를 탐험가 길드로")** — UI26.
+  - Tab 메뉴: 쪽마다 가로 EXPAND_FILL + 비율(`render.json ui.menu.stretch`). 거리 사건 그림: `city.event_art` top·side·bottom_reserve·border 0(16:9 그림이 1280×720을 그대로 덮고, 대화창은 그 위). 시설 이름 `guild` = "탐험가 길드", 코드 주석·현행 문서도(작업 기록·옛 기획안은 그대로).
+  - 검증: check.sh(426), 캡처(현상수배 사건 · Tab 소지품).
+
 - **Tab 메뉴 개편 · 하단 바 삭제 (2026-10-25, 사용자 "제일 왼쪽은 어떤 아군 메뉴를 볼지 W/S·Enter, 가운데는 선택한 아군 정보·정수, 오른쪽 위는 장착 아이템, 밑은 인벤토리(공용). 정수 정보 가시성이 떨어지고 패시브가 두 번 보인다. 탐험 화면 밑 상태 표시창은 없애고 Tab 왼쪽에서 체력·영혼력·허기·피로 간략히")** — UI26.
   - 범위·완료 기준: Tab 세 쪽(아군 · 캐릭터 · 소지품), 아군 고르기, 공용 가방, 정수 카드, 패시브 한 번, 하단 바 없음. check.sh + UI 스모크 단계 + 캡처(아군 셋·동료 고름·탐험 화면).
   - 한 일: `PartyPage`(새 파일), `GameMenu`(party 인자 · 쪽 순서 order · show_ally/show_bestiary · 도감은 아군 목록 맨 끝), `CharacterPage.set_actor`, `InventoryPage`(wearer/actor 분리 — 인형·장착·비교는 wearer, 가방은 공용), `InventoryGrid.wearer`, `InventoryActions` bag 인자, `EssencePanel` 카드(정수 색 테두리 · 패시브 · 이능 한 줄씩 + 위력 · 능력치), 세부 능력 패시브에서 정수 패시브 빼기, `BottomBar` 삭제(+ 문구 `bottom.*`), 캡처 `--party`·`--ally`.

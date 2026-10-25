@@ -39,7 +39,7 @@ var ambient_seen: Dictionary = {}
 ## 이번 순에 닫힌 시설 · 값 배율("buy:<분류>"·"sell:<분류>"·"fee:<시설>" → 배율) — 순이 바뀌면 사라진다.
 var closed: Array[String] = []
 var price_mods: Dictionary = {}
-## 모험가 길드 조사 의뢰 {monster, until, done}(CityGuild).
+## 탐험가 길드 조사 의뢰 {monster, until, done}(CityGuild).
 var guild_request: Dictionary = {}
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
 var overrides: Dictionary = {}

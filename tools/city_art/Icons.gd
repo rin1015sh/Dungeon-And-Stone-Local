@@ -1,6 +1,6 @@
 extends RefCounted
 ## 걸이 간판·문장에 그리는 시설 그림(놋쇠·뼈빛 물감 + 잉크): mug(여관) · book(도서관) · sun(신전) · bag(상점) · key(은행) · swords(훈련장) ·
-## anvil(대장간) · crest(모험가 길드 — 방패 문장에 횃불).
+## anvil(대장간) · crest(탐험가 길드 — 방패 문장에 횃불).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")

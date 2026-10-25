@@ -51,7 +51,7 @@ func open(start: String = "inventory") -> void:
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", int(MenuPage.cfg("page_gap", 12.0)))
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.alignment = BoxContainer.ALIGNMENT_CENTER  # 쪽들이 가로로 늘어나 화면을 채운다(render.json ui.menu.stretch — 사용자 2026-10-25)
 	add_child(row)
 	var m := float(UiTheme.metric("margin", 16))
 	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -65,6 +65,8 @@ func open(start: String = "inventory") -> void:
 		var p := _make(name)
 		p.popup_host = self
 		p.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		p.size_flags_stretch_ratio = JsonUtil.get_float(JsonUtil.get_dict(UiTheme.ui_dict("menu"), "stretch"), name, 1.0)
 		row.add_child(p)
 		_pages[name] = p
 	party_page().selected = party.find(_shown) if not _bestiary_mode else party.size()

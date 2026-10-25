@@ -1,5 +1,5 @@
 extends RefCounted
-## 시설 건물 그림 셋째 묶음(대장간·모험가 길드, 2026-10-20). tools/paint_city.gd 전용 — 통일 문법(Parts)은 다른 건물과 같다.
+## 시설 건물 그림 셋째 묶음(대장간·탐험가 길드, 2026-10-20). tools/paint_city.gd 전용 — 통일 문법(Parts)은 다른 건물과 같다.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -67,7 +67,7 @@ static func smithy(p: Paint) -> void:
 	Ink.grime(p, 70, 30, 64, 120, 0.5)
 
 
-## 모험가 길드: 넓은 2층 회관(돌 1층 + 목조 2층) · 가운데 큰 박공과 둥근 창 · 넓은 쌍여닫이 문과 돌계단 ·
+## 탐험가 길드: 넓은 2층 회관(돌 1층 + 목조 2층) · 가운데 큰 박공과 둥근 창 · 넓은 쌍여닫이 문과 돌계단 ·
 ## 양쪽 깃발 · 문 옆 의뢰 게시판(종이 쪽지) · 방패 문장 간판.
 static func guild(p: Paint) -> void:
 	var g := float(p.h)
