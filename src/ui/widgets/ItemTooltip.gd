@@ -33,9 +33,10 @@ static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int 
 	title.add_theme_color_override("font_color", _rarity_color(db, rarity))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(title)
-	var sub := UiTheme.label(_subtitle(db, item_id, rarity), "small", "text_dim")
-	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(sub)
+	if ItemInfo.slot(db, item_id).is_empty():  # 장비는 이름 아래 부제(희귀도·칸)를 두지 않는다(사용자 2026-10-25, IT7) — 희귀도는 이름 색으로
+		var sub := UiTheme.label(_subtitle(db, item_id, rarity), "small", "text_dim")
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		v.add_child(sub)
 	v.add_child(HSeparator.new())
 	var weapon := ItemInfo.weapon(db, item_id)
 	if not weapon.is_empty():
