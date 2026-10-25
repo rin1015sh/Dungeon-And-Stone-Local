@@ -298,6 +298,7 @@ func _riddle_flow() -> void:
 		return
 	var battle := combat.battle
 	battle.side_units(Combatant.SIDE_ENEMY)[0].actor.pool.set_current("hp", 1.0)
+	explore.session.player.pool.set_min_value("hp", 1.0)  # 강화된 문지기(3층 파티용 균열 — C18)는 1층 시험 캐릭터를 두 대에 쓰러뜨린다 — 이 시험은 수수께끼 흐름만 본다
 	for i in 40:
 		if not battle.result.is_empty():
 			break
@@ -308,6 +309,7 @@ func _riddle_flow() -> void:
 		_press_first(menu.grid())
 	await _frames(2)
 	_expect(battle.result == Battle.RESULT_VICTORY, "강화된 문지기를 쓰러뜨린다")
+	explore.session.player.pool.set_min_value("hp", 0.0)
 	await _take_drops(combat, false)
 	await _frames(3)
 	_expect(not run.remaining.has(gate) and not explore.session.realtime.is_paused(), "문이 열리고 시간이 다시 흐른다")
