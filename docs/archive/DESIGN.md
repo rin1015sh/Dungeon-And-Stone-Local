@@ -1,5 +1,7 @@
 # DESIGN — 던전 앤 스톤 설계 요약
 
+> **보관(2026-10-25)**: 옛 기록이다 — 지금 상태는 `docs/CANON.md`·`docs/balance/curve.md`·`docs/balance/stats.md`.
+
 > 원본 지시서: `docs/PROMPT.md`(§ 번호는 그 문서 기준). 이 문서는 요약 + **구현하면서 확정한 결정**을 담는다.
 > 가정은 `docs/ASSUMPTIONS.md`, 진행 상황은 `docs/PROGRESS.md`, 현재 기획·설정 정본 한 장 요약은 `docs/CANON.md`.
 > **우선순위**: 날짜가 있는 사용자 결정(ASSUMPTIONS·PROGRESS) > CLAUDE.md > 이 문서 > `PROMPT_FLOOR1_V2.md`(1층) > `PROMPT.md`. PROMPT.md와 다른 점은 아래 각 절에 "바꾼 결정"으로 적는다(2026-10-16 문서 정리).

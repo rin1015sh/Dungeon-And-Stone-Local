@@ -71,7 +71,7 @@
 - GDScript: 반복 변수는 타입을 적고(`for s: float in [-1.0, 1.0]`), 도구가 출력 없이 멈추면 `--check-only --script`로 파싱 오류를 찾는다.
 - 사용자가 "되돌려"라고 하면 그림 파일과 그 도구 파일을 같은 커밋으로 함께 되돌린다(`git show <커밋>:<경로>`).
 
-## 6. 탐험 맵 (작업 중 — `docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`)
+## 6. 탐험 맵 (1층 A0~A4 · 균열 A5 완료, 다듬기 남음 — `docs/PROMPT_ART_MAP.md`, 기획 `docs/plans/map_design.md`)
 
 진행: A0(감사·문서·도구)·A1(렌더 기반 — 층 `art` 설정·시야 경계 감쇠·수정 맥동·입자·품질 설정)·A2(1층 재질 아틀라스 `assets/floor/f1/`)·A3(데칼·벽 밑동/턱·거시 색조·랜드마크·소품)·A4(몸 그림·빛 먼지) 끝. 아래는 A4~A5에서도 지킬 규격이다.
 

@@ -35,7 +35,7 @@
 
 ```
 project.godot            오토로드: EventBus, DataRegistry, GameState, TimeSystem, AudioBus
-CLAUDE.md  README.md  docs/{CANON(정본 요약),HANDOFF(인계 프롬프트),PROMPT,PROMPT_FLOOR1_V2,PROMPT_ART_MAP(탐험 맵 그림 지시서),DESIGN,PROGRESS,ASSUMPTIONS,ART,DEPLOY}.md  docs/balance/(시뮬레이터·임시값 표)  docs/plans/(기획서)  docs/screens/(그림 전후 캡처)
+CLAUDE.md  README.md  docs/{README(문서 지도),CANON(정본 요약),HANDOFF(인계 프롬프트),PROMPT,PROMPT_FLOOR1_V2,PROMPT_ART_MAP(탐험 맵 그림 지시서),PROGRESS,PLAYTEST,ASSUMPTIONS,REFERENCE,ART,DEPLOY,STRINGS}.md  docs/archive/(작업 기록·옛 문서)  docs/balance/(시뮬레이터·임시값 표)  docs/plans/(기획서)  docs/screens/(그림 전후 캡처)
 data/                    ← 콘텐츠는 여기에만 (manifest.json이 읽을 파일 목록을 정함)
   manifest.json balance.json progression.json(레벨·경험치) render.json tags.json audio.json input.json
   stats.json resources.json statuses.json meals.json(여관 요리 — 버프) meters.json(전투 게이지) injuries.json races.json classes.json tiles.json landmarks.json

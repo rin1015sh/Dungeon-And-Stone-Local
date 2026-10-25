@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **문서 정리 (2026-10-25, 사용자 "md 파일에서 옛날 정보나 최신 내용이 반영 안 된 것 전부 고치고, 너무 긴 것은 짧게")**
+  - 줄임: `PLAYTEST.md` 92KB → 14KB(2026-10-22까지의 절은 `archive/PLAYTEST_OLD.md`로, 바뀐 기능 절 삭제) · `PROGRESS.md` 다시 씀(지금 상태·다음 할 일만) · `CANON.md` 다시 씀(10층 비율 공식·CTB·전위/후위·동료·시설 8곳·콘텐츠 현황 — 옛 "명세 V2 §1 공식" 줄 삭제, 미결정 표에 넘버스·동료 얻기) · 루트 `README.md` 그림 절을 ART.md로.
+  - 옮김: `DESIGN.md`·`balance/floor1.md`·`balance/rift_essences.md` → `docs/archive/`(맨 위 "보관" 표시, 참조 고침 — CLAUDE.md·CANON·REFERENCE·README 지도·ASSUMPTIONS·city_redesign).
+  - 고침: `balance/stats.md` 비율 공식으로 다시 씀 · `balance/essences.md`는 새 도구 `tools/essences_md.py`가 데이터에서 만든다(옛 표는 정수 스킬 위력이 C15 이전 값이었다) · `HANDOFF.md` 큰 기획 후보·실수 목록 · CLAUDE.md 아이템 배율 줄 · ART §6 상태 · ASSUMPTIONS C9·F1·J16·IT1에 "(바뀜 → …)" · `exp_budget.md` 다시 만듦.
+  - 검증: check.sh.
+
 - **Tab 소지품 쪽 꽉 채우기 (2026-10-25, 사용자 "오른쪽 아이템 창이 꽉 차게 — 칸 수를 늘리라는 게 아니라 크게")** — UI26.
   - 한 일: `InventoryPage._fit`(쪽 크기가 바뀌면 가방 칸·장비 칸을 같은 배율로 — 너비·높이 중 먼저 닿는 쪽까지, 기본 크기 아래로는 줄이지 않음), `InventoryGrid.set_cell`, `PaperDoll.setup(actor, slot_px)`. render.json `ui.menu.stretch` 아군 1 · 캐릭터 1.4 · 소지품 2.6(예전 1 · 1.7 · 1.8), `character_width` 400 → 360. 1280×720에서 칸 38 → 약 59px.
   - 검증: check.sh, 캡처(소지품 쪽 — 커서·툴팁 자리 맞음).
