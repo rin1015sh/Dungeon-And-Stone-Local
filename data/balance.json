@@ -108,7 +108,7 @@
     "speed_base": 5,
     "crit_base": 0.05,
     "crit_per_agi": 0.003,
-    "crit_max": 0.6,
+    "crit_max": 1.0,
     "crit_mult": 1.5,
     "_formula_comment": "명세 §1: 물리 공격력 = 근력×2 + 무기, 마법 = 정신력×2 + 기본값, 방어 계수 = 100/(100 + 방어×4), 명중 = 스킬 명중 × (1 + 민첩 차×0.005)",
     "defense_k": 100,

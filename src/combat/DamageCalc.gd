@@ -85,7 +85,7 @@ static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_w
 
 static func crit_chance(db: GameDatabase, attacker: Actor, bonus: float = 0.0) -> float:
 	var c := _c(db, "crit_base", 0.05) + attacker.stats.get_value("agi") * _c(db, "crit_per_agi", 0.003) + bonus
-	return clampf(c, 0.0, _c(db, "crit_max", 0.6))
+	return clampf(c, 0.0, _c(db, "crit_max", 1.0))  # 상한 없음(사용자 2026-10-25) — 확률이라 100%까지만
 
 
 ## 속성 내성(대상 resist_<유형>)·감응도(공격자 affinity_<유형>) 배율. 그 스탯이 없는 유형(베기 등)은 1.
