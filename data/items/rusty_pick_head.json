@@ -1,6 +1,7 @@
 {
   "id": "rusty_pick_head",
   "name_ko": "녹슨 곡괭이 날",
+  "desc_ko": "자루가 빠진 곡괭이 날. 녹을 벗기면 쓸 만하다.",
   "category": "misc",
   "size": [
     1,

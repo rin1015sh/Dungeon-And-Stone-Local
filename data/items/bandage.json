@@ -1,6 +1,7 @@
 {
   "id": "bandage",
   "name_ko": "붕대",
+  "desc_ko": "삶아 말린 천. 피를 멎게 하는 데는 이만한 것이 없다.",
   "category": "tool",
   "price": 400,
   "stack": 10,

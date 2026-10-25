@@ -1,6 +1,7 @@
 {
   "id": "fortress_key",
   "name_ko": "무기고 열쇠",
+  "desc_ko": "녹슨 큰 열쇠. 성채 어딘가의 자물쇠를 기억하고 있다. 성채 밖에서는 녹아내린다.",
   "category": "tool",
   "size": [
     1,

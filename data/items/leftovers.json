@@ -1,6 +1,7 @@
 {
   "id": "leftovers",
   "name_ko": "남은 음식",
+  "desc_ko": "여관에서 싸 준 식은 음식. 배는 채워 준다.",
   "category": "food",
   "size": [
     1,

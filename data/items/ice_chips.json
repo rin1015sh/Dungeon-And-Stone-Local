@@ -1,6 +1,7 @@
 {
   "id": "ice_chips",
   "name_ko": "얼음 수정 부스러기",
+  "desc_ko": "얼음 결정에서 떨어진 부스러기. 녹지 않고 반짝인다.",
   "category": "misc",
   "size": [
     1,

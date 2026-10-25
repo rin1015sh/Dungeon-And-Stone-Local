@@ -1,6 +1,7 @@
 {
   "id": "death_mask",
   "name_ko": "데스마스크",
+  "desc_ko": "이름 모를 기사의 얼굴을 본뜬 쇠 가면. 눈구멍이 아직도 이쪽을 본다.",
   "category": "misc",
   "size": [
     1,

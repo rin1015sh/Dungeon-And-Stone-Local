@@ -1,6 +1,7 @@
 {
   "id": "silver_chest",
   "name_ko": "성채 은화 상자",
+  "desc_ko": "성채 무기고에 숨겨 두었던 은화 상자. 흔들면 묵직한 소리가 난다.",
   "category": "misc",
   "size": [
     1,

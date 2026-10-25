@@ -2,6 +2,7 @@
   {
     "id": "steel",
     "name_ko": "강철",
+    "flavor_ko": "어느 대장간에서나 두드리는 흔한 쇠.",
     "tier": 1,
     "kind": "metal",
     "color": "#b8bcc4",
@@ -13,6 +14,7 @@
   {
     "id": "lightium",
     "name_ko": "라이티늄",
+    "flavor_ko": "깃털처럼 가벼운 은빛 금속.",
     "tier": 2,
     "kind": "metal",
     "color": "#eef0f2",
@@ -26,6 +28,7 @@
   {
     "id": "airilje",
     "name_ko": "아이릴제",
+    "flavor_ko": "담금질하면 푸른 결이 도는 금속.",
     "tier": 3,
     "kind": "metal",
     "color": "#c8d4dc",
@@ -44,6 +47,7 @@
   {
     "id": "idium",
     "name_ko": "아이디움",
+    "flavor_ko": "무겁고 둔하지만 좀처럼 이가 나가지 않는 금속.",
     "tier": 3,
     "kind": "metal",
     "color": "#7a7e86",
@@ -62,6 +66,7 @@
   {
     "id": "moonstone",
     "name_ko": "월광석",
+    "flavor_ko": "어둠 속에서 달빛처럼 희미하게 빛나는 광석.",
     "tier": 4,
     "kind": "metal",
     "color": "#d8dcf0",
@@ -80,6 +85,7 @@
   {
     "id": "orichalcum",
     "name_ko": "오리하르콘",
+    "flavor_ko": "붉은 금빛이 도는 옛 금속. 쥐면 미지근하다.",
     "tier": 4,
     "kind": "metal",
     "color": "#d0a050",
@@ -98,6 +104,7 @@
   {
     "id": "mithril",
     "name_ko": "미스릴",
+    "flavor_ko": "은보다 가볍고 강철보다 질기다.",
     "tier": 5,
     "kind": "metal",
     "color": "#c0e0f0",
@@ -117,6 +124,7 @@
   {
     "id": "adamantium",
     "name_ko": "아다만티움",
+    "flavor_ko": "웬만한 불로는 녹지도 않는 금속.",
     "tier": 5,
     "kind": "metal",
     "color": "#4a4e58",
@@ -137,6 +145,7 @@
   {
     "id": "mystium",
     "name_ko": "미스티움",
+    "flavor_ko": "마력이 스미는 금속. 쥐고 있으면 손끝이 저릿하다.",
     "tier": 6,
     "kind": "metal",
     "color": "#e0d0ff",
@@ -171,6 +180,7 @@
   {
     "id": "ark",
     "name_ko": "아크",
+    "flavor_ko": "미궁 깊은 곳에서만 나온다는 검은 금속.",
     "tier": 6,
     "kind": "metal",
     "color": "#8ab0d0",
@@ -190,6 +200,7 @@
   {
     "id": "tanned",
     "name_ko": "무두질 가죽",
+    "flavor_ko": "잘 무두질한 소가죽.",
     "tier": 1,
     "kind": "leather",
     "color": "#7a5a3a",
@@ -201,6 +212,7 @@
   {
     "id": "wyvern",
     "name_ko": "와이번 가죽",
+    "flavor_ko": "비늘 자국이 남은 와이번의 질긴 가죽.",
     "tier": 2,
     "kind": "leather",
     "color": "#5a6a4a",
@@ -219,6 +231,7 @@
   {
     "id": "troll_hide",
     "name_ko": "트롤 가죽",
+    "flavor_ko": "두껍고 냄새가 빠지지 않는 트롤 가죽.",
     "tier": 3,
     "kind": "leather",
     "color": "#5e6a54",
@@ -237,6 +250,7 @@
   {
     "id": "drake",
     "name_ko": "드레이크 가죽",
+    "flavor_ko": "불에 그을려도 타지 않는 드레이크 가죽.",
     "tier": 4,
     "kind": "leather",
     "color": "#6a3a3a",
@@ -259,6 +273,7 @@
   {
     "id": "ogre",
     "name_ko": "오우거 가죽",
+    "flavor_ko": "칼날을 튕겨 내는 오우거의 두꺼운 가죽.",
     "tier": 5,
     "kind": "leather",
     "color": "#7a6a50",
@@ -277,6 +292,7 @@
   {
     "id": "elder_dragon",
     "name_ko": "고룡 가죽",
+    "flavor_ko": "오래 산 용의 가죽. 비늘 한 장이 손바닥보다 크다.",
     "tier": 6,
     "kind": "leather",
     "color": "#4a2a2a",
@@ -299,6 +315,7 @@
   {
     "id": "oak",
     "name_ko": "참나무",
+    "flavor_ko": "곧게 자란 참나무.",
     "tier": 1,
     "kind": "wood",
     "color": "#8a6a44",
@@ -310,6 +327,7 @@
   {
     "id": "redwood",
     "name_ko": "레드우드",
+    "flavor_ko": "붉은 결이 고운 레드우드.",
     "tier": 2,
     "kind": "wood",
     "color": "#9a4a32",
@@ -328,6 +346,7 @@
   {
     "id": "ironwood",
     "name_ko": "흑철목",
+    "flavor_ko": "쇠처럼 무겁고 단단한 검은 나무.",
     "tier": 3,
     "kind": "wood",
     "color": "#2e2a28",
@@ -341,6 +360,7 @@
   {
     "id": "bortal",
     "name_ko": "보르탈 나무",
+    "flavor_ko": "휘어도 부러지지 않는 보르탈 나무.",
     "tier": 4,
     "kind": "wood",
     "color": "#6a5a7a",
@@ -359,6 +379,7 @@
   {
     "id": "artene",
     "name_ko": "아르테네목",
+    "flavor_ko": "은은한 향이 나고 벌레가 슬지 않는 아르테네목.",
     "tier": 5,
     "kind": "wood",
     "color": "#c0a070",
@@ -374,6 +395,7 @@
   {
     "id": "world_tree",
     "name_ko": "세계수",
+    "flavor_ko": "세계수에서 떨어진 가지. 아직 살아 있는 듯 따뜻하다.",
     "tier": 6,
     "kind": "wood",
     "color": "#7ab070",
@@ -396,6 +418,7 @@
   {
     "id": "linen",
     "name_ko": "리넨",
+    "flavor_ko": "거칠게 짠 리넨.",
     "tier": 1,
     "kind": "cloth",
     "color": "#b8ae98",
@@ -407,6 +430,7 @@
   {
     "id": "spider_silk",
     "name_ko": "거미 비단",
+    "flavor_ko": "거대 거미의 실로 짠 비단. 가볍고 잘 찢어지지 않는다.",
     "tier": 2,
     "kind": "cloth",
     "color": "#d8d8e0",
@@ -425,6 +449,7 @@
   {
     "id": "frost_wool",
     "name_ko": "서리 양모",
+    "flavor_ko": "설원 양의 털. 젖어도 온기가 남는다.",
     "tier": 3,
     "kind": "cloth",
     "color": "#c8dce8",
@@ -443,6 +468,7 @@
   {
     "id": "moon_silk",
     "name_ko": "월광 비단",
+    "flavor_ko": "달빛 아래서만 뽑는다는 비단.",
     "tier": 4,
     "kind": "cloth",
     "color": "#c8c8e8",
@@ -461,6 +487,7 @@
   {
     "id": "spirit_silk",
     "name_ko": "정령 비단",
+    "flavor_ko": "정령이 머물던 고치에서 풀어낸 실.",
     "tier": 5,
     "kind": "cloth",
     "color": "#d0f0e0",
@@ -479,6 +506,7 @@
   {
     "id": "world_fiber",
     "name_ko": "세계수 섬유",
+    "flavor_ko": "세계수 껍질에서 뽑아낸 섬유.",
     "tier": 6,
     "kind": "cloth",
     "color": "#a0d090",
@@ -497,6 +525,7 @@
   {
     "id": "beast_bone",
     "name_ko": "짐승 뼈",
+    "flavor_ko": "짐승 뼈를 깎아 다듬었다.",
     "tier": 1,
     "kind": "bone",
     "color": "#d8cfb8",
@@ -508,6 +537,7 @@
   {
     "id": "troll_bone",
     "name_ko": "트롤 뼈",
+    "flavor_ko": "부러져도 다시 붙는다는 트롤의 뼈.",
     "tier": 3,
     "kind": "bone",
     "color": "#c0b8a0",
@@ -526,6 +556,7 @@
   {
     "id": "drake_bone",
     "name_ko": "드레이크 뼈",
+    "flavor_ko": "불 냄새가 밴 드레이크의 뼈.",
     "tier": 5,
     "kind": "bone",
     "color": "#b8a0a0",
@@ -544,6 +575,7 @@
   {
     "id": "quartz",
     "name_ko": "수정",
+    "flavor_ko": "맑은 수정.",
     "tier": 1,
     "kind": "gem",
     "color": "#e0e8f0",
@@ -555,6 +587,7 @@
   {
     "id": "amber",
     "name_ko": "호박",
+    "flavor_ko": "작은 벌레 하나가 갇힌 호박.",
     "tier": 2,
     "kind": "gem",
     "color": "#d09030",
@@ -573,6 +606,7 @@
   {
     "id": "jade",
     "name_ko": "비취",
+    "flavor_ko": "서늘한 초록빛 비취.",
     "tier": 3,
     "kind": "gem",
     "color": "#50a070",
@@ -591,6 +625,7 @@
   {
     "id": "obsidian",
     "name_ko": "흑요석",
+    "flavor_ko": "가장자리가 칼날처럼 날카로운 흑요석.",
     "tier": 4,
     "kind": "gem",
     "color": "#302838",
@@ -609,6 +644,7 @@
   {
     "id": "bloodstone",
     "name_ko": "용혈석",
+    "flavor_ko": "붉은 줄이 맥박처럼 흐르는 용혈석.",
     "tier": 5,
     "kind": "gem",
     "color": "#a02830",
@@ -627,6 +663,7 @@
   {
     "id": "bluestone",
     "name_ko": "블루스톤",
+    "flavor_ko": "깊은 물빛의 블루스톤. 오래 들여다보면 어지럽다.",
     "tier": 6,
     "kind": "gem",
     "color": "#3a70c0",

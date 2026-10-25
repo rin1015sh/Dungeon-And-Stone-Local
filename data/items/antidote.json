@@ -1,6 +1,7 @@
 {
   "id": "antidote",
   "name_ko": "해독제",
+  "desc_ko": "쓴 풀을 달여 졸인 검은 물. 혀가 아릴 만큼 쓰다.",
   "category": "potion",
   "price": 1500,
   "stack": 10,

@@ -1,6 +1,7 @@
 {
   "id": "crystal_mushroom",
   "name_ko": "수정 버섯",
+  "desc_ko": "수정처럼 비치는 갓. 씹으면 시원하지만 가끔 탈이 난다.",
   "category": "food",
   "size": [
     1,

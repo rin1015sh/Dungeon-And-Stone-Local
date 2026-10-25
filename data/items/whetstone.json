@@ -1,6 +1,7 @@
 {
   "id": "whetstone",
   "name_ko": "숫돌",
+  "desc_ko": "고운 숫돌. 몇 번 문지르면 날에 다시 빛이 돈다.",
   "category": "tool",
   "price": 800,
   "stack": 5,

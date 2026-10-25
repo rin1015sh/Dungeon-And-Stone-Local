@@ -1,6 +1,7 @@
 {
   "id": "copper_ore",
   "name_ko": "구리 광석 조각",
+  "desc_ko": "푸른 녹이 슨 광석 조각. 대장간에서 몇 푼 쳐준다.",
   "category": "misc",
   "size": [
     1,

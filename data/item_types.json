@@ -2,6 +2,7 @@
   {
     "id": "dagger",
     "name_ko": "단검",
+    "flavor_ko": "짧고 가벼워 소매 속에 숨기기 좋다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -29,6 +30,7 @@
   {
     "id": "sword",
     "name_ko": "장검",
+    "flavor_ko": "베고 찌르기에 두루 쓰는 곧은 날.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -54,6 +56,7 @@
   {
     "id": "greatsword",
     "name_ko": "대검",
+    "flavor_ko": "두 손으로 휘둘러야 하는 길고 무거운 날.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -82,6 +85,7 @@
   {
     "id": "axe",
     "name_ko": "도끼",
+    "flavor_ko": "날 끝에 무게가 몰려 내리찍을 때 힘이 실린다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -109,6 +113,7 @@
   {
     "id": "mace",
     "name_ko": "철퇴",
+    "flavor_ko": "갑옷째 뼈를 부수는 머리.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -137,6 +142,7 @@
   {
     "id": "warhammer",
     "name_ko": "전투 망치",
+    "flavor_ko": "한 번 휘두르면 투구가 우그러진다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -166,6 +172,7 @@
   {
     "id": "spear",
     "name_ko": "창",
+    "flavor_ko": "상대가 다가오기 전에 먼저 찌른다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -191,6 +198,7 @@
   {
     "id": "halberd",
     "name_ko": "미늘창",
+    "flavor_ko": "창날과 도끼날을 한 자루에 달았다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -219,6 +227,7 @@
   {
     "id": "club",
     "name_ko": "곤봉",
+    "flavor_ko": "투박하지만 맞으면 아프다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -247,6 +256,7 @@
   {
     "id": "bow",
     "name_ko": "활",
+    "flavor_ko": "시위를 당기면 팔이 떨릴 만큼 팽팽하다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -274,6 +284,7 @@
   {
     "id": "crossbow",
     "name_ko": "석궁",
+    "flavor_ko": "장전은 느려도 한 발이 무겁다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -304,6 +315,7 @@
   {
     "id": "staff",
     "name_ko": "지팡이",
+    "flavor_ko": "걸을 때 짚고 싸울 때 휘두른다.",
     "slot": "main_hand",
     "category": "weapon",
     "kinds": [
@@ -333,6 +345,7 @@
   {
     "id": "buckler",
     "name_ko": "소형 방패",
+    "flavor_ko": "주먹만 한 방패. 막기보다 쳐내는 데 쓴다.",
     "slot": "off_hand",
     "category": "armor",
     "kinds": [
@@ -355,6 +368,7 @@
   {
     "id": "shield",
     "name_ko": "방패",
+    "flavor_ko": "몸통을 가릴 만한 방패.",
     "slot": "off_hand",
     "category": "armor",
     "kinds": [
@@ -380,6 +394,7 @@
   {
     "id": "tower_shield",
     "name_ko": "대형 방패",
+    "flavor_ko": "뒤에 숨으면 사람 하나가 다 가려진다.",
     "slot": "off_hand",
     "category": "armor",
     "kinds": [
@@ -405,6 +420,7 @@
   {
     "id": "padded",
     "name_ko": "누비 갑옷",
+    "flavor_ko": "여러 겹 누볐다. 덥지만 몸을 감싼다.",
     "slot": "body",
     "category": "armor",
     "kinds": [
@@ -427,6 +443,7 @@
   {
     "id": "robe",
     "name_ko": "로브",
+    "flavor_ko": "발목까지 내려오는 헐렁한 옷.",
     "slot": "body",
     "category": "armor",
     "kinds": [
@@ -451,6 +468,7 @@
   {
     "id": "leather_armor",
     "name_ko": "가죽 갑옷",
+    "flavor_ko": "몸에 맞게 재단한 조끼. 움직이기 편하다.",
     "slot": "body",
     "category": "armor",
     "kinds": [
@@ -473,6 +491,7 @@
   {
     "id": "chainmail",
     "name_ko": "사슬 갑옷",
+    "flavor_ko": "고리 수천 개를 엮었다. 무게가 어깨에 걸린다.",
     "slot": "body",
     "category": "armor",
     "kinds": [
@@ -496,6 +515,7 @@
   {
     "id": "plate",
     "name_ko": "판금 갑옷",
+    "flavor_ko": "온몸을 판으로 감쌌다. 무겁다.",
     "slot": "body",
     "category": "armor",
     "kinds": [
@@ -520,6 +540,7 @@
   {
     "id": "hood",
     "name_ko": "두건",
+    "flavor_ko": "머리와 목을 덮는다.",
     "slot": "head",
     "category": "armor",
     "kinds": [
@@ -542,6 +563,7 @@
   {
     "id": "helm",
     "name_ko": "투구",
+    "flavor_ko": "이마와 정수리를 지킨다.",
     "slot": "head",
     "category": "armor",
     "kinds": [
@@ -565,6 +587,7 @@
   {
     "id": "greathelm",
     "name_ko": "통투구",
+    "flavor_ko": "얼굴까지 덮어 제 숨소리가 크게 들린다.",
     "slot": "head",
     "category": "armor",
     "kinds": [
@@ -590,6 +613,7 @@
   {
     "id": "gloves",
     "name_ko": "장갑",
+    "flavor_ko": "손에 꼭 맞아 손잡이가 미끄러지지 않는다.",
     "slot": "hands",
     "category": "armor",
     "kinds": [
@@ -612,6 +636,7 @@
   {
     "id": "gauntlets",
     "name_ko": "건틀릿",
+    "flavor_ko": "마디마디 손가락을 감싼다.",
     "slot": "hands",
     "category": "armor",
     "kinds": [
@@ -636,6 +661,7 @@
   {
     "id": "boots",
     "name_ko": "장화",
+    "flavor_ko": "발목까지 올라온다. 발소리가 작다.",
     "slot": "feet",
     "category": "armor",
     "kinds": [
@@ -657,6 +683,7 @@
   {
     "id": "sabatons",
     "name_ko": "쇠 장화",
+    "flavor_ko": "무겁지만 발등을 밟혀도 끄떡없다.",
     "slot": "feet",
     "category": "armor",
     "kinds": [
@@ -680,6 +707,7 @@
   {
     "id": "belt",
     "name_ko": "허리띠",
+    "flavor_ko": "주머니와 칼집을 달 수 있다.",
     "slot": "waist",
     "category": "armor",
     "kinds": [
@@ -702,6 +730,7 @@
   {
     "id": "cloak",
     "name_ko": "망토",
+    "flavor_ko": "바람을 막고, 찬 바닥에서는 덮고 잔다.",
     "slot": "cloak",
     "category": "armor",
     "kinds": [
@@ -725,6 +754,7 @@
   {
     "id": "ring",
     "name_ko": "반지",
+    "flavor_ko": "손가락에 꼭 맞는 작은 고리.",
     "slot": "ring",
     "category": "armor",
     "kinds": [
@@ -747,6 +777,7 @@
   {
     "id": "amulet",
     "name_ko": "목걸이",
+    "flavor_ko": "목에 걸어 가슴께에 늘어뜨린다.",
     "slot": "neck",
     "category": "armor",
     "kinds": [

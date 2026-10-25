@@ -11,7 +11,7 @@
   "icon": "potion",
   "color": "#e04a5a",
   "rarity": "numbers",
-  "desc_ko": "작은 연못 속에서 건진 붉은 얼음 구슬. 삼키면 냉기를 다루는 감각이 깨어난다. 한 사람이 세 번까지만 효과를 본다.",
+  "desc_ko": "작은 연못 속에서 건진 붉은 얼음 구슬. 삼키면 냉기를 다루는 감각이 깨어난다.",
   "consumable": true,
   "use_effects": [
     {

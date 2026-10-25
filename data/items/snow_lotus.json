@@ -1,6 +1,7 @@
 {
   "id": "snow_lotus",
   "name_ko": "설련화",
+  "desc_ko": "얼음 위에서만 피는 흰 꽃. 꽃잎을 씹으면 몸속까지 맑아진다. 굴을 벗어나면 시든다.",
   "category": "potion",
   "size": [
     1,
