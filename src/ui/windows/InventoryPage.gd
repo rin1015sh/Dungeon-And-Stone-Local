@@ -15,6 +15,9 @@ var doll: PaperDoll
 
 var _money: Label
 var _doll_center: CenterContainer
+var _doll_box: PanelContainer
+var _bar: HBoxContainer
+var _slot_px: float = -1.0  # 장비 칸 한 변(쪽 크기에 맞춰 _fit이 정한다)
 var _stats: Label
 var _sort: PanelContainer
 var _cursor: Dictionary = {"kind": "cell", "cell": Vector2i.ZERO}  # kind: slot(slot) / sort / cell(cell)
@@ -31,13 +34,14 @@ func setup(p_actor: Actor) -> void:
 	actor = p_actor
 	wearer = p_actor
 	custom_minimum_size.x = MenuPage.cfg("inventory_width", 420.0)
-	var doll_box := PanelContainer.new()
-	doll_box.add_theme_stylebox_override("panel", GothicStyle.inset_box())
-	content.add_child(doll_box)
+	_doll_box = PanelContainer.new()
+	_doll_box.add_theme_stylebox_override("panel", GothicStyle.inset_box())
+	content.add_child(_doll_box)
 	_doll_center = CenterContainer.new()
-	doll_box.add_child(_doll_center)
+	_doll_box.add_child(_doll_center)
 	_make_doll()
 	var bar := HBoxContainer.new()
+	_bar = bar
 	content.add_child(bar)
 	_sort = PanelContainer.new()
 	_sort.add_child(UiTheme.label(Strings.t("inventory.sort"), "small", "text"))
@@ -58,6 +62,27 @@ func setup(p_actor: Actor) -> void:
 	gc.add_child(grid)
 	actor.inventory.money_changed.connect(func(_m: int) -> void: refresh())
 	wearer.equipment.changed.connect(_on_worn_changed)
+	content.resized.connect(_fit)
+	refresh()
+
+
+## 쪽을 꽉 채우게 가방 칸·장비 칸을 함께 키운다(칸 수는 그대로 — 사용자 2026-10-25). 기본 크기(render.json inv_cell·doll_slot)보다 작게는 줄이지 않는다.
+func _fit() -> void:
+	var base_cell := float(UiTheme.metric("inv_cell", 38))
+	var base_slot := float(UiTheme.metric("doll_slot", 58))
+	var inset := _doll_box.get_theme_stylebox("panel").get_minimum_size()
+	var gap := float(content.get_theme_constant("separation"))
+	var w := content.size.x - inset.x
+	var h := content.size.y - _bar.get_combined_minimum_size().y - gap * 2.0 - inset.y * 2.0
+	var inv := actor.inventory
+	var k := minf(w / (inv.width * base_cell), (w - 24.0) / (5.0 * base_slot))  # 인형 = 칸 5개 + 사이 6px × 4
+	k = minf(k, (h - 6.0) / (2.0 * base_slot + inv.height * base_cell))
+	var cell := int(floorf(base_cell * maxf(1.0, k)))
+	if cell == grid.cell:
+		return
+	grid.set_cell(cell)
+	_slot_px = floorf(base_slot * cell / base_cell)
+	_make_doll()
 	refresh()
 
 
@@ -78,7 +103,7 @@ func _make_doll() -> void:
 	if doll != null:
 		doll.queue_free()
 	doll = PaperDoll.new()
-	doll.setup(wearer)
+	doll.setup(wearer, _slot_px)
 	_doll_center.add_child(doll)
 
 

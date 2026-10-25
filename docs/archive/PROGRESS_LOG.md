@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **Tab 소지품 쪽 꽉 채우기 (2026-10-25, 사용자 "오른쪽 아이템 창이 꽉 차게 — 칸 수를 늘리라는 게 아니라 크게")** — UI26.
+  - 한 일: `InventoryPage._fit`(쪽 크기가 바뀌면 가방 칸·장비 칸을 같은 배율로 — 너비·높이 중 먼저 닿는 쪽까지, 기본 크기 아래로는 줄이지 않음), `InventoryGrid.set_cell`, `PaperDoll.setup(actor, slot_px)`. render.json `ui.menu.stretch` 아군 1 · 캐릭터 1.4 · 소지품 2.6(예전 1 · 1.7 · 1.8), `character_width` 400 → 360. 1280×720에서 칸 38 → 약 59px.
+  - 검증: check.sh, 캡처(소지품 쪽 — 커서·툴팁 자리 맞음).
+
 - **10층 밸런스 적용 · 전위/후위 · 동료 (2026-10-25, 사용자 "파티를 전위 후위로 나누고 어그로를 전위가 더 받게 … 1층 상향 지금 진행하고 게임을 지금 기획한 수치대로 전면 조정 · Tab 왼쪽에서 고른 아군을 Enter 한 번 더 → 전위/후위, 파티 방출(한 번 더 묻기), 전위 위·후위 아래")** — C16~C18.
   - 범위·완료 기준: 공식(§2)·CTB·광폭화, 몬스터 52종·정수 5~6등급·장비 배율, 전위·후위와 어그로, 동료 저장·Tab 메뉴. check.sh 통과 + formula_check 모든 목표 통과 + 균열 파티 시뮬(3층 파티) + 1층 승률이 예전과 비슷.
   - 한 일: `DamageCalc`(방어 비율·마력·민첩 비율 명중/치명)·`Timeline`(속도 지수·등급 배율·연달아 2번)·`BattleRules.flee_chance`·`StatusSet.resist_chance(id, power)`·`RiftHazards.success_chance`·`BossHooks._enrage`, `ItemForge`(attack_by_tier·unscaled·weapon.magic)·`item_types`(무기 주 스탯 증가·지팡이 마력)·`ItemTooltip`(마력 줄), 포션 % 회복, `MonsterAi.front_weighted`, `PlayerCharacter.row`, `GameState.companions`·`SaveGame` 동료, `Main`·`RiftRun`·`ExploreSession.companions`, `ExploreScreen._party/_bury_mates`, `GameMenu`(줄 순서·아군 창)·`PartyPage`(줄 표시·두 번 Enter·rebuild), `DebugPanel` 동료 들이기, `CharacterRoller.random_companion`. 도구 `restat_monsters.py`(조정 전 성격 × 곡선), `balance_curve.py`(curve.json), `sim_party --curve`, `formula_check`(층별 기준 딜러), `item_pool.py`.

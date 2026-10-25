@@ -24,6 +24,13 @@ func setup(p_actor: Actor) -> void:
 	actor.inventory.changed.connect(func(_id: String, _n: int) -> void: queue_redraw())
 
 
+## 칸 크기를 바꾼다(칸 수는 그대로 — Tab 메뉴가 쪽을 꽉 채우게 키운다).
+func set_cell(px: int) -> void:
+	cell = maxi(8, px)
+	custom_minimum_size = Vector2(actor.inventory.width * cell, actor.inventory.height * cell)
+	queue_redraw()
+
+
 ## 칸 c를 덮은 사각형(그 칸에 아이템이 있으면 아이템 전체).
 func target_at(c: Vector2i) -> Rect2i:
 	var i := actor.inventory.stack_at(c)
