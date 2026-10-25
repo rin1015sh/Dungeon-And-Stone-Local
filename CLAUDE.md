@@ -46,7 +46,7 @@
 - 한 스크립트 = 한 책임, **300줄 이내** 지향.
 - `.tscn` 최소화. UI·노드 트리는 코드로 만든다. 현재 `.tscn`은 `src/Main.tscn`, `tests/smoke_ui.tscn`, `tools/screenshot.tscn`뿐.
 - 키 입력은 `data/input.json`(액션 → 키 이름)에서 `InputSetup`이 등록한다. project.godot의 [input]은 쓰지 않는다. **선택(확인) = Enter**(`menu_confirm`, 포커스 버튼 `ui_accept`), **취소 = Backspace**(`menu_back` — Esc로 하던 창 닫기·시설 나가기도), 커서 = W/S/A/D(사용자 결정 2026-10-16, ASSUMPTIONS UI14). 고르는 작은 창은 `ChoicePopup`.
-- **마우스·터치 금지(사용자 결정 2026-10-19, UI17)**: 게임은 키보드로만 다룬다 — `Main._input`이 마우스·터치 입력을 모두 막고 커서를 숨긴다. 새 UI에 클릭·끌어놓기·마우스 올림(툴팁) 조작을 넣지 않는다. 고르기는 `ChoiceGrid`(W/A/S/D·Enter·Backspace) 또는 포커스 버튼(`ui_up/down/left/right`도 W/A/S/D — 디버그 패널은 `UiTheme.keyboard_panel`). 설명은 커서가 놓인 것을 화면에 바로 보인다(소지품 아이템 설명 등). **소지품·캐릭터·도감은 Tab 하나**(`GameMenu` — 세 쪽을 한 화면에, I·C·B 없음). **아이템은 Tab 메뉴에서만 쓴다** — 단축칸(hotbar)·횃불 T·식사 E 키 없음(UI18).
+- **마우스·터치 금지(사용자 결정 2026-10-19, UI17)**: 게임은 키보드로만 다룬다 — `Main._input`이 마우스·터치 입력을 모두 막고 커서를 숨긴다. 새 UI에 클릭·끌어놓기·마우스 올림(툴팁) 조작을 넣지 않는다. 고르기는 `ChoiceGrid`(W/A/S/D·Enter·Backspace) 또는 포커스 버튼(`ui_up/down/left/right`도 W/A/S/D — 디버그 패널은 `UiTheme.keyboard_panel`). 설명은 커서가 놓인 것을 화면에 바로 보인다(소지품 아이템 설명 등). **Tab 하나**(`GameMenu` — 왼쪽 아군 목록(W/S·Enter로 볼 아군, 짧은 생명력·영혼력·허기·피로, 맨 끝 도감) · 가운데 고른 아군 정보·정수 · 오른쪽 그 아군 장비 + 공용 가방, I·C·B 없음, 탐험 하단 바 없음 — UI26). **아이템은 Tab 메뉴에서만 쓴다** — 단축칸(hotbar)·횃불 T·식사 E 키 없음(UI18).
 - **콘텐츠는 `data/*.json`만 편집해서 추가**하는 것이 정상 경로다. 코드에 매직 넘버 금지:
   규칙 수치 → `data/balance.json`, 시점·UI 수치·팔레트·폰트 → `data/render.json`.
 - **UI 문자열은 `Strings.t("키", {인자})` + `data/strings/ko.json`**. 하드코딩 금지(테스트가 코드 속 키의 존재를 검사한다). 데이터 항목의 이름은 각 JSON의 `name_ko`.

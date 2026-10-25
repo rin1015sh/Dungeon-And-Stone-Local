@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(955줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(958줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -28,9 +28,9 @@
 - [지식 `knowledge`](#knowledge) — 몬스터 약점·저항(전투에서 알게 될 때 · 도감)
 - [보상 `reward`](#reward) — 전투 드롭 · 획득할까? · 경험치
 - [소지품 `inventory`](#inventory) — Tab 메뉴 소지품 쪽
+- [party `party`](#party) — —
 - [캐릭터 `character`](#character) — Tab 메뉴 캐릭터 쪽
 - [도감 `bestiary`](#bestiary) — Tab 메뉴 도감 쪽
-- [아래 막대 `bottom`](#bottom) — 탐험 화면 아래 막대
 - [정수 `essence`](#essence) — 정수 칸·설명
 - [수수께끼 `riddle`](#riddle) — 강철의 묘 수수께끼 창
 - [차원광장 `plaza`](#plaza) — 도시 → 미궁 포탈 화면 버튼
@@ -711,6 +711,16 @@
 - `inventory.act_discard` 버린다
 - `inventory.act_unequip` 벗는다
 
+<a id="party"></a>
+## party `party`
+
+> —
+
+- `party.title` 아군
+- `party.bestiary` 도감
+- `party.fatigue` 피로
+- `party.nameless` 이름 없는 탐험가
+
 <a id="character"></a>
 ## 캐릭터 `character`
 
@@ -749,16 +759,6 @@
 - `bestiary.variant_of` {name}의 변이종.
 - `bestiary.shared` [{skill}] 이능을 함께 지닌 종: {list}
 
-<a id="bottom"></a>
-## 아래 막대 `bottom`
-
-> 탐험 화면 아래 막대
-
-- `bottom.menu` 메뉴 {key}
-- `bottom.wait` 대기 {key}
-- `bottom.rest` 휴식 {key}
-- `bottom.pause` 정지 {key}
-
 <a id="essence"></a>
 ## 정수 `essence`
 
@@ -768,6 +768,9 @@
 - `essence.title` {color} {name}
 - `essence.stat_inert` (아직 효과 없음)
 - `essence.tip_passive` 패시브 · {name}: {desc}
+- `essence.row_passive` 패시브
+- `essence.row_skill` 이능
+- `essence.row_stats` 능력치
 - `essence.tip_skills` 이능 · {list}
 - `essence.tip_stats` 능력치 · {list}
 - `essence.not_implemented` (이 패시브의 효과는 아직 일부만 들어가 있다)

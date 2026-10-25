@@ -119,7 +119,7 @@
     "float_text_sec": 1.3,
     "float_text_size": 34,
     "float_text_outline": 6,
-    "inv_cell": 38,
+    "essence_card_pad": 8, "essence_row_head": 44, "inv_cell": 38,
     "doll_slot": 58,
     "doll_ring": 30,
     "window_header_height": 92,
@@ -131,7 +131,7 @@
     "side_button": 40,
     "essence_locked_darken": 70,
     "window_height": 660,
-    "menu": {"_comment": "Tab 메뉴(GameMenu — 캐릭터 · 소지품 · 도감 세 쪽을 한 화면에)", "page_gap": 12, "character_width": 400, "inventory_width": 420, "bestiary_width": 380, "bestiary_list_height": 260, "scroll_step": 60, "scroll_gap": 14, "dim": 0.6}
+    "menu": {"_comment": "Tab 메뉴(GameMenu — 아군 · 캐릭터 · 소지품 세 쪽을 한 화면에, 도감은 아군 목록 맨 끝 — UI26)", "page_gap": 12, "party_width": 230, "party_label_width": 48, "party_value_width": 58, "party_bar_height": 6, "party_fatigue_max": 100, "character_width": 400, "inventory_width": 420, "bestiary_width": 380, "bestiary_list_height": 260, "scroll_step": 60, "scroll_gap": 14, "dim": 0.6}
   },
   "font": {
     "path": "res://assets/fonts/NotoSansKR-Regular.otf",

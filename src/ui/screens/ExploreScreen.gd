@@ -1,6 +1,6 @@
 class_name ExploreScreen
 extends Control
-## 탐험 화면: 3/4 시점 월드(SubViewport) + 왼쪽 위 정보(HUD) + 하단 바(BottomBar) + 하단 대화창(DialogueBox — 알림을 Enter로 넘김) +
+## 탐험 화면: 3/4 시점 월드(SubViewport) + 왼쪽 위 정보(HUD) + 하단 대화창(DialogueBox — 알림을 Enter로 넘김) +
 ## Tab 메뉴(소지품 · 캐릭터 · 도감을 한 화면에, GameMenu) + 디버그 패널(F1). 마우스는 쓰지 않는다(키보드만).
 ## 키 입력을 ExploreSession에 넘기고, 세션 시그널로 그림·기록을 갱신한다.
 ## 매 프레임 실제 경과 시간을 세션에 넘겨 시간이 실시간으로 흐른다. 일시정지(Esc/P)·디버그 패널·
@@ -26,7 +26,6 @@ var _debug: DebugPanel
 var _ended: bool = false
 var _combat: CombatScreen = null
 var _pause_overlay: PauseMenu
-var _bar: BottomBar
 var _menu: GameMenu
 var _dialog: DialogueBox
 var _shade: ColorRect  # 대기·휴식 때 잠깐 어두워지는 막
@@ -52,16 +51,7 @@ func _ready() -> void:
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_hud.bind(session)
 	var m := UiTheme.metric("margin", 16)
-	_bar = BottomBar.new()
-	_bar.setup(session.player)
-	add_child(_bar)
-	_bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	_bar.offset_left = -_bar.get_combined_minimum_size().x * 0.5
-	_bar.offset_right = _bar.get_combined_minimum_size().x * 0.5
-	_bar.offset_bottom = -m * 0.5
-	_bar.offset_top = _bar.offset_bottom - _bar.get_combined_minimum_size().y
+	# 하단 바(생명력·영혼력·허기·상태)는 없다 — Tab 메뉴 왼쪽 쪽에서 본다(UI26)
 	_menu = GameMenu.new()
 	_menu.setup(session.player)
 	add_child(_menu)
@@ -235,24 +225,17 @@ func menu() -> GameMenu:
 	return _menu
 
 
-func bottom_bar() -> BottomBar:
-	return _bar
-
-
 ## 소지품 사용(Tab 메뉴에서만 — 단축칸·단축 키 없음). 탐험 규칙(ExploreSession)이 판정한다.
 func _use_item(item_id: String) -> void:
 	if _ended or _combat != null or is_paused():
 		return
 	session.use_item(item_id)
 	_menu.refresh()
-	_bar.refresh()
 
 
-## Tab 메뉴가 열리면 시간이 멈춘다. 닫히면 하단 바(단축칸)를 다시 그린다.
+## Tab 메뉴가 열리면 시간이 멈춘다.
 func _on_menu_opened(on: bool) -> void:
 	session.realtime.set_paused("window", on)
-	if not on:
-		_bar.refresh()
 
 
 ## 일시정지 메뉴: 시간이 멈추고 이동·단축키를 막는다.
@@ -377,7 +360,6 @@ func _build_dialog(m: int) -> void:
 		_dialog.offset_right = half
 	fit.call()
 	resized.connect(fit)
-	_dialog.shown_changed.connect(func(on: bool) -> void: _bar.visible = not on)
 	EventBus.log_message.connect(_on_log)
 	EventBus.notice.connect(_notify)
 	_route = NoticeRoute.new(session.db)

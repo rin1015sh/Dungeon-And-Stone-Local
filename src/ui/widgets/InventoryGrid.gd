@@ -6,7 +6,8 @@ extends Control
 
 signal changed
 
-var actor: Actor
+var actor: Actor  ## 가방 주인(파티 공용 가방 — UI26)
+var wearer: Actor  ## 장비 칸에서 끌어온 것을 벗길 사람(Tab 메뉴에서 고른 아군)
 var cell: int = 38
 
 var _cursor: Rect2i = Rect2i()  # 커서가 덮은 칸(빈 칸 = 1×1, 아이템 = 그 크기)
@@ -16,6 +17,7 @@ var _drop_ok: bool = false
 
 func setup(p_actor: Actor) -> void:
 	actor = p_actor
+	wearer = p_actor
 	cell = UiTheme.metric("inv_cell", 38)
 	custom_minimum_size = Vector2(actor.inventory.width * cell, actor.inventory.height * cell)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -79,7 +81,7 @@ func drop(d: Dictionary, pos: Vector2i) -> bool:
 		"grid":
 			ok = actor.inventory.move_stack(int(d["index"]), pos)
 		"slot":
-			ok = InventoryActions.unequip_to_bag(actor, str(d["slot"]), pos)
+			ok = InventoryActions.unequip_to_bag(wearer, str(d["slot"]), pos, actor.inventory)
 	_drop_rect = Rect2i()
 	queue_redraw()
 	if ok:

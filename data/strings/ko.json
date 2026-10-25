@@ -591,6 +591,12 @@
     "act_discard": "버린다",
     "act_unequip": "벗는다"
   },
+  "party": {
+    "title": "아군",
+    "bestiary": "도감",
+    "fatigue": "피로",
+    "nameless": "이름 없는 탐험가"
+  },
   "character": {
     "title": "캐릭터",
     "name_line": "{name} · {race} {template}",
@@ -621,17 +627,14 @@
     "variant_of": "{name}의 변이종.",
     "shared": "[{skill}] 이능을 함께 지닌 종: {list}"
   },
-  "bottom": {
-    "menu": "메뉴 {key}",
-    "wait": "대기 {key}",
-    "rest": "휴식 {key}",
-    "pause": "정지 {key}"
-  },
   "essence": {
     "slots": "정수 {used} / {n}칸",
     "title": "{color} {name}",
     "stat_inert": "(아직 효과 없음)",
     "tip_passive": "패시브 · {name}: {desc}",
+    "row_passive": "패시브",
+    "row_skill": "이능",
+    "row_stats": "능력치",
     "tip_skills": "이능 · {list}",
     "tip_stats": "능력치 · {list}",
     "not_implemented": "(이 패시브의 효과는 아직 일부만 들어가 있다)",

@@ -1,6 +1,6 @@
 class_name InventoryPage
 extends MenuPage
-## Tab 메뉴의 소지품 쪽(스톤샤드식): 장비 인형 · [정렬] · 공격·스톤 · 격자 가방. 키로만 다룬다(사용자 결정 2026-10-19).
+## Tab 메뉴의 소지품 쪽(스톤샤드식): 장비 인형(왼쪽 쪽에서 고른 아군 — wearer) · [정렬] · 공격·스톤 · 격자 가방(파티 공용 — actor의 가방, UI26). 키로만 다룬다(사용자 결정 2026-10-19).
 ##   W/A/S/D = 커서(장비 칸 · 정렬 · 가방 칸 — 아이템은 크기만큼 한 칸), 커서가 놓인 아이템의 설명은 쪽 옆에 뜬다(장착품과 비교).
 ##   Enter: 가방 아이템 → 장착/사용 · 옮기기 · 버리기(아이템은 여기서만 쓴다 — 단축칸 없음) / 장비 칸 → 벗기(비었으면 가방에서 낄 것 고르기) / 정렬.
 ##   옮기기: 커서가 놓을 자리(초록 = 놓을 수 있음) — Enter = 놓기(같은 아이템 위면 쌓기), Backspace = 그만두기.
@@ -8,11 +8,13 @@ extends MenuPage
 
 signal use_requested(item_id: String)
 
-var actor: Actor
+var actor: Actor  ## 공용 가방 주인(플레이어)
+var wearer: Actor  ## 장비 인형에 보이는 아군(set_wearer)
 var grid: InventoryGrid
 var doll: PaperDoll
 
 var _money: Label
+var _doll_center: CenterContainer
 var _stats: Label
 var _sort: PanelContainer
 var _cursor: Dictionary = {"kind": "cell", "cell": Vector2i.ZERO}  # kind: slot(slot) / sort / cell(cell)
@@ -27,15 +29,14 @@ func _init() -> void:
 
 func setup(p_actor: Actor) -> void:
 	actor = p_actor
+	wearer = p_actor
 	custom_minimum_size.x = MenuPage.cfg("inventory_width", 420.0)
 	var doll_box := PanelContainer.new()
 	doll_box.add_theme_stylebox_override("panel", GothicStyle.inset_box())
 	content.add_child(doll_box)
-	var center := CenterContainer.new()
-	doll_box.add_child(center)
-	doll = PaperDoll.new()
-	doll.setup(actor)
-	center.add_child(doll)
+	_doll_center = CenterContainer.new()
+	doll_box.add_child(_doll_center)
+	_make_doll()
 	var bar := HBoxContainer.new()
 	content.add_child(bar)
 	_sort = PanelContainer.new()
@@ -56,16 +57,41 @@ func setup(p_actor: Actor) -> void:
 	grid.setup(actor)
 	gc.add_child(grid)
 	actor.inventory.money_changed.connect(func(_m: int) -> void: refresh())
-	actor.equipment.changed.connect(func(_s: String) -> void: refresh())
+	wearer.equipment.changed.connect(_on_worn_changed)
+	refresh()
+
+
+## 장비 인형에 보일 아군을 바꾼다(Tab 메뉴 왼쪽 쪽에서 고름). 가방은 그대로(공용).
+func set_wearer(a: Actor) -> void:
+	if a == wearer:
+		return
+	if wearer.equipment.changed.is_connected(_on_worn_changed):
+		wearer.equipment.changed.disconnect(_on_worn_changed)
+	wearer = a
+	grid.wearer = a
+	wearer.equipment.changed.connect(_on_worn_changed)
+	_make_doll()
+	refresh()
+
+
+func _make_doll() -> void:
+	if doll != null:
+		doll.queue_free()
+	doll = PaperDoll.new()
+	doll.setup(wearer)
+	_doll_center.add_child(doll)
+
+
+func _on_worn_changed(_slot: String) -> void:
 	refresh()
 
 
 func refresh() -> void:
 	_money.text = Strings.t("inventory.money", {"amount": actor.inventory.money})
 	_stats.text = Strings.t("inventory.summary", {
-		"attack": roundi(DamageCalc.attack_power(actor.db, actor, {"scaling": "phys"})),
-		"type": DataNames.tag(actor.db, "damage_types", actor.attack_damage_type()),
-		"p_res": roundi(actor.stats.get_value("p_res"))})
+		"attack": roundi(DamageCalc.attack_power(actor.db, wearer, {"scaling": "phys"})),
+		"type": DataNames.tag(actor.db, "damage_types", wearer.attack_damage_type()),
+		"p_res": roundi(wearer.stats.get_value("p_res"))})
 	_fix_cursor()
 	_show_cursor()
 
@@ -165,7 +191,7 @@ func sort() -> void:
 func activate(i: int) -> void:
 	var id := str(actor.inventory.stacks()[i]["id"])
 	if not ItemInfo.equip(actor.db, id).is_empty():
-		if not InventoryActions.equip_stack(actor, i):
+		if not InventoryActions.equip_stack(wearer, i, "", actor.inventory):
 			EventBus.notice.emit("inventory.no_room_swap", {"item": DataNames.entry(actor.db, "items", id)}, "warn")
 	elif _usable(id):
 		use_requested.emit(id)
@@ -228,11 +254,11 @@ func _item_menu(i: int) -> void:
 
 ## 장비 칸: 끼고 있으면 벗기, 비었으면 가방에서 이 칸에 낄 것 고르기.
 func _slot_menu(slot: String) -> void:
-	var worn := actor.equipment.item_in(slot)
+	var worn := wearer.equipment.item_in(slot)
 	if not worn.is_empty():
 		var k := await _ask(DataNames.entry(actor.db, "items", worn), [{"text": Strings.t("inventory.act_unequip")}])
 		if k == 0:
-			if not InventoryActions.unequip_to_bag(actor, slot):
+			if not InventoryActions.unequip_to_bag(wearer, slot, Vector2i(-1, -1), actor.inventory):
 				EventBus.notice.emit("inventory.no_room_unequip", {"item": DataNames.entry(actor.db, "items", worn)}, "warn")
 			refresh()
 		return
@@ -240,14 +266,14 @@ func _slot_menu(slot: String) -> void:
 	var opts: Array[Dictionary] = []
 	for i in actor.inventory.stacks().size():
 		var id := str(actor.inventory.stacks()[i]["id"])
-		if actor.equipment.can_equip(id, slot):
+		if wearer.equipment.can_equip(id, slot):
 			fits.append(i)
 			opts.append({"text": DataNames.entry(actor.db, "items", id)})
 	if fits.is_empty():
 		return
 	var k := await _ask(DataNames.tag(actor.db, "equip_slots", slot), opts)
 	if k >= 0:
-		if not InventoryActions.equip_stack(actor, fits[k], slot):
+		if not InventoryActions.equip_stack(wearer, fits[k], slot, actor.inventory):
 			EventBus.notice.emit("inventory.no_room_swap", {"item": opts[k]["text"]}, "warn")
 		refresh()
 
@@ -327,7 +353,7 @@ func _show_cursor() -> void:
 func _tip_for() -> Control:
 	match str(_cursor["kind"]):
 		"slot":
-			var worn := actor.equipment.item_in(str(_cursor["slot"]))
+			var worn := wearer.equipment.item_in(str(_cursor["slot"]))
 			return ItemTooltip.panel(actor.db, worn, true) if not worn.is_empty() else null
 		"cell":
 			var i := actor.inventory.stack_at(_cursor["cell"])
@@ -335,7 +361,7 @@ func _tip_for() -> Control:
 				return ItemTooltip.panel(actor.db, str(_carry["id"]), false)
 			if i >= 0:
 				var s: Dictionary = actor.inventory.stacks()[i]
-				return ItemTooltip.build(actor.db, str(s["id"]), actor, int(s["count"]))
+				return ItemTooltip.build(actor.db, str(s["id"]), wearer, int(s["count"]))
 	return null
 
 

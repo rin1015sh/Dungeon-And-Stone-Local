@@ -159,7 +159,15 @@ func _run() -> void:
 				epc.set_level(1)
 		if _args.has("menu"):
 			var page := str(_args["menu"]) if str(_args["menu"]) in GameMenu.PAGES else "inventory"
+			if _args.has("party"):  # --party=<종족,종족>: Tab 메뉴 왼쪽 아군 목록에 동료를 붙여 본다(UI26 — 실제 게임엔 아직 동료가 없다)
+				for race in str(_args["party"]).split(","):
+					var mate := PlayerCharacter.create(DataRegistry.db, race, "warrior", "동료 " + race, {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+					mate.pool.set_current("hp", mate.pool.get_max("hp") * 0.6)
+					explore.menu().party.append(mate)
 			explore.menu().open(page)
+			if _args.has("ally"):  # --ally=<번호>: 그 아군을 고른 상태
+				await get_tree().process_frame
+				explore.menu().show_ally(explore.menu().party[int(str(_args["ally"]))])
 			if _args.has("cell"):
 				var xy := str(_args["cell"]).split(",")
 				await get_tree().process_frame
