@@ -47,6 +47,7 @@ func test_baked_map_places_every_feature_on_walkable_cells() -> void:
 	for f: Dictionary in s.map.features:
 		counts[f["id"]] = int(counts.get(f["id"], 0)) + 1
 		assert_true(s.map.is_walkable(f["pos"]), "%s %s는 걸을 수 있는 칸" % [f["id"], f["pos"]])
+		assert_false(FieldFeaturePlacer.hidden_by_wall(s.map, f["pos"]), "%s %s는 벽 바로 뒤(남쪽이 벽 — 윗면에 가림)가 아니다" % [f["id"], f["pos"]])
 		assert_false(s.map.is_dark(f["pos"]) and not JsonUtil.get_dict(db.get_entry("tiles", s.map.tile_id_at(f["pos"])), "light").is_empty(),
 			"암흑지대에 빛나는 요소 없음")
 	for spec: Variant in JsonUtil.get_array(_def(), "features"):

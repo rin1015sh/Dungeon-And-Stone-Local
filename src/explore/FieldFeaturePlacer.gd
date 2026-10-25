@@ -9,6 +9,8 @@ extends RefCounted
 ##   near_portal   포탈에서 5~10칸(암흑지대)                    near_monument  기념비에서 5~8칸
 ## 모든 요소는 걸을 수 있는 칸이라(장애물이 아니다) 연결·나침반 경로·통로 폭을 깨지 않는다.
 ## 빛나는 타일(이끼·모닥불)은 암흑지대와 그 둘레에 두지 않는다. 기념비 안전지대(근처 기념비 자리 제외)·포탈·랜드마크 칸은 피한다.
+## 벽 바로 뒤(남쪽 칸이 벽 — 3/4 시점에서 벽 윗면에 가려 안 보인다)에 떨어진 요소는 다 놓은 뒤 같은 자리 종류의 가장 가까운 보이는 칸으로 옮긴다
+## (난수를 쓰지 않아 다른 요소 자리는 그대로 — 사용자 요청 2026-10-25 "벽에 가려지는 수정버섯 등").
 
 const SPOTS := ["room", "wall", "corridor", "crystal", "crystal_room", "dark_edge", "near_portal", "near_monument"]
 
@@ -22,6 +24,8 @@ static func place(db: GameDatabase, map: FloorMap, lay: CrossLayout, floor_def: 
 	var spots := _spots(map, lay, floor_index)
 	var gap_any := JsonUtil.get_float(floor_def, "features_gap", 6.0)
 	var placed: Array[Vector2i] = []
+	var first := map.features.size()
+	var rules: Array[Dictionary] = []  # 놓은 요소마다 {cand, gap} — 가려진 것을 옮길 때 쓴다
 	for s: Variant in specs:
 		var sd: Dictionary = s if s is Dictionary else {}
 		var ev := db.get_entry("events", JsonUtil.get_str(sd, "event"))
@@ -45,6 +49,42 @@ static func place(db: GameDatabase, map: FloorMap, lay: CrossLayout, floor_def: 
 			mine.append(at)
 			placed.append(at)
 			map.features.append({"id": JsonUtil.get_str(ev, "id"), "pos": at})
+			rules.append({"cand": cand, "gap": gap})
+	_lift_hidden(map, first, rules, gap_any)
+
+
+## 벽 윗면에 가리는 칸인가(바로 남쪽 칸이 벽 — 벽은 앞면 높이만큼 위로 그려 윗줄 칸을 덮는다).
+static func hidden_by_wall(map: FloorMap, p: Vector2i) -> bool:
+	var s := p + Vector2i(0, 1)
+	return not map.in_bounds(s) or map.is_wall(s)
+
+
+## 가려진 요소를 같은 후보 중 가장 가까운 보이는 칸으로(다른 요소와의 거리 규칙은 그대로 지킨다). 갈 곳이 없으면 그대로 둔다.
+static func _lift_hidden(map: FloorMap, first: int, rules: Array[Dictionary], gap_any: float) -> void:
+	for k in range(first, map.features.size()):
+		var f: Dictionary = map.features[k]
+		var p: Vector2i = f["pos"]
+		if not hidden_by_wall(map, p):
+			continue
+		var others: Array[Vector2i] = []
+		var kin: Array[Vector2i] = []
+		for j in map.features.size():
+			if j != k:
+				others.append(map.features[j]["pos"])
+				if map.features[j]["id"] == f["id"]:
+					kin.append(map.features[j]["pos"])
+		var rule: Dictionary = rules[k - first]
+		var best := Vector2i(-1, -1)
+		var best_d := INF
+		for q: Vector2i in rule["cand"]:
+			var d := float((q - p).length_squared())
+			if d >= best_d or hidden_by_wall(map, q):
+				continue
+			if _far(q, others, gap_any) and _far(q, kin, float(rule["gap"])):
+				best = q
+				best_d = d
+		if best.x >= 0:
+			f["pos"] = best
 
 
 ## 요소의 보이는 타일을 지도에 깐다(숨은 것·함정은 세션이 다룬다). 생성기·고정 지도 읽기가 같이 쓴다.
