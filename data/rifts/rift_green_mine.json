@@ -27,6 +27,7 @@
     },
     "ambient_color": "#c8ffb0",
     "art": {
+      "battleback": "res://assets/battle/green_mine.webp",
       "palette": {
         "near_black": "#0e130d",
         "tone": "#eef2ea"

@@ -121,6 +121,16 @@ func build_chapter(i: int) -> ExploreSession:
 	return cs
 
 
+## 챕터 그림 설정 = 균열 look.art(+ 챕터 battleback이 있으면 전투 뒷그림만 덮는다).
+static func _chapter_art(look: Dictionary, ch: Dictionary) -> Dictionary:
+	var art := JsonUtil.get_dict(look, "art")
+	if JsonUtil.get_str(ch, "battleback").is_empty():
+		return art
+	art = art.duplicate()
+	art["battleback"] = JsonUtil.get_str(ch, "battleback")
+	return art
+
+
 ## 챕터의 가짜 층 정의(이름·밝기·타일·폐쇄 시각은 바깥 층과 균열 look에서).
 func chapter_floor_def(i: int) -> Dictionary:
 	var ch: Dictionary = chapters()[i]
@@ -134,7 +144,7 @@ func chapter_floor_def(i: int) -> Dictionary:
 		"name_ko": "%s · %s" % [JsonUtil.get_str(def, "name_ko"), JsonUtil.get_str(ch, "name_ko")],
 		"close_hours": outer.close_hours(), "visibility_cap_m": JsonUtil.get_float(look, "visibility_cap_m", 9.0),
 		"ambient_light_m": JsonUtil.get_float(look, "ambient_light_m", 6.0), "ambient_color": JsonUtil.get_str(look, "ambient_color", "#ffffff"),
-		"art": JsonUtil.get_dict(look, "art"),
+		"art": _chapter_art(look, ch),
 		"gen": gen, "regions": [], "spawn": {"groups_per_region": [0, 0], "max_extra_groups": 0}}
 
 

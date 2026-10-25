@@ -17,6 +17,7 @@
 - 아이템 그림 다시 만들기(약 2분): `godot --headless --path . --script res://tools/paint_items.gd [-- --only=<id,id> | --kind=<종류 id>]` → `assets/items/<id>.webp`(가방 칸 × 80px, 투명). 새 아이템·소재·종류를 넣었으면 그 아이템을 그린다(`tests/test_item_art.gd`가 모든 아이템의 그림·크기를 본다). 확인: 캡처 `--screen=explore --menu=inventory --give=<id,id>`.
 - 상태이상 아이콘 다시 만들기(약 10초): `godot --headless --path . --script res://tools/paint_status_icons.gd [-- --only=<id,id>] [--out=<폴더>]` → `assets/statuses/<id>.webp`(96×96, 투명 — 전투 머리 위 28px). 새 상태 = `tools/status_art/Icons.gd` MAP 한 줄(기호·색, 없으면 buff·debuff 화살표 — `tests/test_status_audit.gd`가 그림 파일을 본다). 확인: 캡처 `--screen=explore --combat --monster=<id> --statuses=<id,id> --party_statuses=<id,id>`.
 - 여관 요리 그림 다시 만들기(약 5분): `godot --headless --path . --script res://tools/paint_meals.gd [-- --only=<id,id>]` → `assets/city/meals/<id>.webp`(`data/meals.json` art, 960×540 — 식사하면 여관 실내를 가득 덮는다). 새 요리 = meals.json 한 항목 + `tools/meal_art/Dishes*.gd` 함수 하나 + `MealArt.DISHES` 한 줄. 확인: 캡처 `--screen=city --facility=inn --activity=inn_meal --meal_pick=<id> --dialog`. 부품 함정: `ridge`·`bump`는 이미 빚은 그룹 표면 위에만 붙는다(빈 그룹엔 `Bits.rope`), 받침 위 그릇은 `Kit.bowl(… lift)`로 올린다.
+- 전투 뒷그림 다시 만들기(장당 약 30~40초, 5장 약 3분): `godot --headless --path . --script res://tools/paint_battlebacks.gd [-- --only=<id,id>] [--out=<폴더>]` → `assets/battle/<id>.webp`(1280×720 — 층 JSON `art.battleback`·균열 `look.art.battleback`·챕터 `battleback`이 가리킨다, UI28). 장소 = `tools/battle_art/Scene*.gd` 한 파일(`paint_battlebacks.gd` `SCENES`에 한 줄). 확인: `--import` 후 캡처 `--screen=explore --combat --monster=goblin`(1층) · `--rift=<균열 id> --engage`(균열).
 - 몬스터 전투 그림 다시 만들기(약 4분): `godot --headless --path . --script res://tools/paint_monsters.gd [-- --only=<id,id>]` → `assets/monsters/<id>.webp` + `index.json`(몸 높이). 그림체 = 피어 앤 헝거 몬스터 그림풍(ASSUMPTIONS UI8), 설계는 `tools/monster_art/Specs.gd`·`Specs2.gd`. 새로 그렸으면 `--import` 후 `screenshot.tscn -- --screen=explore --combat --monster=<id>`로 본다. 아군 그림(탐험가 뒷/옆모습·소환수 뒷모습, `tools/monster_art/Party.gd`)은 `-- --only=party`, 캡처는 `--mate=barbarian,human --ally_summon=ghoul,slime`(ASSUMPTIONS UI11).
   - `--script` 도구가 파싱 오류로 멈추면(출력 없이 시간 초과) `--check-only --script res://tools/monster_art/<파일>.gd`로 찾는다.
 
@@ -31,6 +32,7 @@
 | 아이템(가방·장비 인형·전투 드롭 — AM40) | `tools/paint_items.gd [-- --only=<id,id> \| --kind=<종류>]`(359장 약 2분) | `tools/item_art/` — ItemArt(캔버스·소재 색·마감)·Frame(좌표)·Style(소재마다 생김새 — AM41)·Hilt(손잡이·날밑·자루 끝)·Surface(표면 무늬·둘레 장식·빛)·Blades(날붙이)·Hafts(둔기·활·지팡이)·Wear(방패·갑옷)·Wear2(머리·손·발·허리·망토·장신구)·Goods(포션·마석·음식·도구)·Junk(균열 잡템 — 동전·썩은/언 고기·이끼·곡괭이 날·항아리 조각·버클, RF19) + monster_art Clay·Render·Finish | `assets/items/<id>.webp`(칸 × 80px) |
 | 여관 요리 그림(960×540, 요리마다 한 장 — CT47) | `tools/paint_meals.gd [-- --only=<id,id>] [--out=<폴더>]`(장당 약 12초, 24장 약 5분) | `tools/meal_art/` — MealArt(탁자·그림자·김·가루·색 보정 — 음식은 채도를 덜 빼고 따뜻하게)·Kit(그릇·접시·도마·잔·초·빵·도구·냅킨 — 3/4 시점 눌린 타원 SQ, 앞일수록 z)·Bits(고기·잎·허브·레몬·낟알·면·알·마늘·고추·꼬치·줄)·Dishes1~3(요리 장면) + monster_art Clay·Render | `assets/city/meals/<id>.webp` (`data/meals.json` art) |
 | 상태이상 아이콘(96×96, 상태마다 한 장 — UI24) | `tools/paint_status_icons.gd [-- --only=<id,id>]`(90장 약 10초) | `tools/status_art/` — Shapes(받침 판·칠한 도형·막대)·Glyphs(몸·자연 기호: 핏방울·거품·별·눈꽃·유령·송곳니 …)·Glyphs2(물건·표식: 사슬·자물쇠·방패·칼·조준 …)·Icons(상태 → 기호·색 표 MAP) + city_art Paint·Ink | `assets/statuses/<id>.webp` (+ meal·buff·debuff) |
+| 전투 뒷그림(1280×720, 층·균열마다 한 장 — UI28) | `tools/paint_battlebacks.gd [-- --only=<id>]`(장당 약 30~40초) | `tools/battle_art/` — Room(원근 공간: 픽셀마다 시선을 쏘아 굴·복도 단면 표에 닿는 곳을 찾아 재질·점광원·거리 안개로 칠한다 — 단면 box·vault·cave, 결 높이의 화면 기울기로 법선을 흔든다)·Mats(세계 좌표 재질: 줄 쌓기·막돌 판석·바위·판자·쇠판·피)·Kit(투영한 면·상자·기둥·결정·결정 무리·해골·불꽃·빛·사슬·바닥 그림자·그늘 빗금·붓결·때·마감)·Scene(Cave·Fortress·Glacier·Mine·Tomb) + city_art Paint·Ink | `assets/battle/<id>.webp` (층 `art.battleback`) |
 | 아군 전투 그림(뒷모습) | `tools/paint_monsters.gd -- --only=party` | Back(몸 3D 좌표를 돌려 투영)·BackKit(옷)·BackHair·BackGear(갑옷·무기) · 설계 Party | `assets/party/<종족>_back\|_side.webp`, `assets/monsters/<id>_back.webp` |
 
 실행은 모두 `godot --headless --path . --script <도구>`. 다 그린 뒤엔 `godot --headless --path . --import`.
@@ -62,6 +64,9 @@
 6. `bash tools/check.sh` 통과(몬스터마다 그림·몸 높이가 있는지, 종족마다 아군 그림이 있는지 테스트가 본다) → ASSUMPTIONS에 모습을 정한 이유 → 커밋.
 
 ## 5. 겪은 함정
+
+- **전투 뒷그림의 빛나는 것(불꽃·수정·등)은 색 보정(`Kit.finish`) 뒤에 얹는다** — 앞에 칠하면 때·채도 빼기·비네트에 눌려 누런 회색이 된다(처음엔 횃불 속이 푸르스름하게 보였다).
+- 뒷그림 빗금은 긴 평행선으로 긋지 않는다 — 어두운 화면에서 비처럼 보인다(`Kit.hatch_dark` = 짧은 빗금 묶음). 붓결(`Kit.brush`)도 짧고 굵게.
 
 - 옷·갑옷은 몸 부위 기록(`cl.tag`)을 부풀려 씌운다(`shell`). **근육 혹·뼈 같은 잔손질도 부위 이름을 붙여야** 옷이 덮는다(이름 없이 빚으면 옷을 뚫고 살이 보인다).
 - 옷 겹의 녹임 폭(k)이 몸보다 작으면 덩어리 이음매(엉덩이 아래·오금)에서 살이 비친다 → 몸과 같은 값(`BackKit.shell`은 그래서 k를 무시한다).

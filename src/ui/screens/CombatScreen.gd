@@ -19,6 +19,8 @@ var reward_provider: Callable = Callable()
 var drops: Array[Dictionary] = []
 var drop_taker: Callable = Callable()
 var drop_leaver: Callable = Callable()
+## 전투 뒷그림 경로(층·균열 그림 설정 battleback — ExploreScreen이 채운다). 비면 어둠.
+var backdrop: String = ""
 
 var _stage: BattleStage
 var _roster: PartyRoster
@@ -42,6 +44,7 @@ func setup(b: Battle) -> void:
 func _ready() -> void:
 	_stage = BattleStage.new()
 	_stage.setup(battle.db, BattleKnowledge.knowers(battle))
+	_stage.set_backdrop(backdrop)
 	add_child(_stage)
 	_stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_roster = PartyRoster.new()

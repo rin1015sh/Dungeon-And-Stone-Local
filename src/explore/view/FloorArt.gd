@@ -8,6 +8,7 @@ extends RefCounted
 ##   particles [{id, amount, lifetime, color, alpha, scale[min,max], velocity[min,max], direction[x,y], spread, gravity[x,y]}]
 ##   ambience {loop} — data/audio.json ambience 키(파일이 없으면 조용함)
 ##   backdrop {image, drift, scale, cliff_color, cliff_depth} — 낭떠러지(void 타일) 너머로 비치는 뒷배경(Backdrop·VoidChunk)
+##   battleback "res://…webp" — 전투 화면 뒤 그림(BattleStage, 그림 도구 tools/paint_battlebacks.gd — 균열 챕터는 챕터 battleback이 덮는다)
 ## 품질 "low"면 그레인·입자·맥동·횃불 흔들림을 끈다(GraphicsSettings).
 
 const POST_KEYS := ["saturation", "vignette_strength", "vignette_radius", "grain_strength"]
@@ -26,6 +27,7 @@ var pulse_strength: float = 0.0
 var particles: Array[Dictionary] = []
 var ambience: String = ""
 var backdrop: Dictionary = {}
+var battleback: String = ""
 var low_quality: bool = false
 
 
@@ -60,6 +62,7 @@ static func resolve(render: Dictionary, floor_def: Dictionary, quality: String =
 				a.particles.append(e)
 	a.ambience = JsonUtil.get_str(JsonUtil.get_dict(art, "ambience"), "loop")
 	a.backdrop = JsonUtil.get_dict(art, "backdrop")
+	a.battleback = JsonUtil.get_str(art, "battleback")
 	return a
 
 

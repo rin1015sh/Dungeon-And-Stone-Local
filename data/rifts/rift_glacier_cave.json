@@ -30,6 +30,7 @@
     },
     "ambient_color": "#d8eeff",
     "art": {
+      "battleback": "res://assets/battle/glacier_cave.webp",
       "palette": {
         "near_black": "#0e1418",
         "tone": "#eef4f8"

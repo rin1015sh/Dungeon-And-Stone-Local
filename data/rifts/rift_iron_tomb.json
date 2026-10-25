@@ -27,6 +27,7 @@
     },
     "ambient_color": "#d0d8e0",
     "art": {
+      "battleback": "res://assets/battle/iron_tomb.webp",
       "palette": {
         "near_black": "#111112",
         "tone": "#eceae6"

@@ -324,6 +324,7 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
+	_combat.backdrop = FloorArt.resolve(session.db.render, session.floor_def).battleback
 	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.
 	# 정수·전리품은 쓰러진 자리에 남기고 전투 장면에서 하나씩 묻는다(CombatDrops — 받을 사람 고르기).
 	var cs := _combat

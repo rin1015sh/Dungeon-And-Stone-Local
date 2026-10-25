@@ -16,7 +16,7 @@
       "exit": "rift_exit"
     },
     "ambient_color": "#d8eeff",
-    "art": {"palette": {"near_black": "#0e1418", "tone": "#eef4f8"}, "post": {"saturation": 0.7}, "particles": []},
+    "art": {"battleback": "res://assets/battle/<균열 id>.webp", "palette": {"near_black": "#0e1418", "tone": "#eef4f8"}, "post": {"saturation": 0.7}, "particles": []},
     "ambient_light_m": 8.0,
     "visibility_cap_m": 9.0
   },

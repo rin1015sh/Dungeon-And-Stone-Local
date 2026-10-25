@@ -2,7 +2,7 @@ class_name BattleStage
 extends Control
 ## 전투 무대(피어 앤 헝거식 — 정면에서 맞닥뜨린다): 어둠 속 바닥에 떨어진 빛 웅덩이,
 ## 그 위 가운데에 적이 이쪽을 보고 서고(덩치에 따라 크게, 아군 머리보다 위 — 가리지 않게, 자리 고정),
-## 화면 아래쪽 앞줄에 아군이 등을 보이고 선다(다리는 아래 창에 가린다).
+## 화면 아래쪽 앞줄에 아군이 등을 보이고 선다(다리는 아래 창에 가린다). 뒤에는 그 층·균열의 전투 뒷그림(소실점 통로 — set_backdrop).
 ## 배치 수치는 render.json ui.combat_* (bottom_reserve = 아래 창 높이).
 
 var _views: Dictionary = {}  # Combatant -> BattlerView
@@ -11,6 +11,7 @@ var _slots: Dictionary = {}  # 적 Combatant -> {"x": 화면 폭 비율(발 가�
 var _floor_y: float = 0.0    # 적 발 높이(px) — 빛 웅덩이도 여기
 var _layout_queued: bool = false
 var _knowers: Array[Knowledge] = []  # 아군의 기록 — 조사한 몬스터는 생명력·알아낸 상성이 보인다(BattlerView)
+var _back: Texture2D = null  # 전투 뒷그림(층 art.battleback · 균열 look.art.battleback) — 없으면 어둠뿐
 
 
 func setup(db: GameDatabase, knowers: Array[Knowledge] = []) -> void:
@@ -20,6 +21,12 @@ func setup(db: GameDatabase, knowers: Array[Knowledge] = []) -> void:
 	resized.connect(func() -> void:
 		_slots.clear()  # 화면 크기가 바뀌면 자리를 새로 정한다(처음 크기가 정해질 때 포함)
 		layout())
+
+
+## 전투 뒷그림(경로가 비었거나 파일이 없으면 어둠만).
+func set_backdrop(path: String) -> void:
+	_back = load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
+	queue_redraw()
 
 
 func add_unit(u: Combatant) -> void:
@@ -200,9 +207,15 @@ static func _party_x(i: int, n: int) -> float:
 	return 0.08 + 0.84 * i / maxf(1.0, n - 1)
 
 
-## 어둠 + 적 발밑 빛 웅덩이(겹친 타원) + 위에서 떨어지는 희미한 빛기둥.
+## 뒷그림(화면을 덮게 — 비율 유지, 넘치는 쪽은 가운데 기준으로 자른다) 또는 어둠 + 적 발밑 빛 웅덩이(겹친 타원) + 위에서 떨어지는 희미한 빛기둥.
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.02, 0.018, 0.016, UiTheme.ui_float("combat_dim_alpha", 0.96)))
+	if _back != null:
+		var ts := _back.get_size()
+		var k := maxf(size.x / ts.x, size.y / ts.y)
+		draw_texture_rect(_back, Rect2((size - ts * k) / 2.0, ts * k), false)
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.02, 0.018, 0.016, UiTheme.ui_float("combat_backdrop_dim", 0.15)))
+	else:
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.02, 0.018, 0.016, UiTheme.ui_float("combat_dim_alpha", 0.96)))
 	var stage_h := size.y - _bottom()
 	var c := Vector2(size.x / 2.0, _floor_y if _floor_y > 0.0 else stage_h * UiTheme.ui_float("combat_enemy_floor", 0.92))
 	var light := UiTheme.color("combat_floor", Color(0.42, 0.36, 0.3))

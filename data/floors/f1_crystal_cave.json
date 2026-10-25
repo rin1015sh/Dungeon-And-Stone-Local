@@ -12,6 +12,7 @@
   "ambient_source": "placeholder",
   "ambient_color": "#c4bcff",
   "art": {
+    "battleback": "res://assets/battle/f1_crystal_cave.webp",
     "_comment": "탐험 맵 그림 설정(FloorArt, docs/plans/map_design.md §5.1). palette.near_black = 보이는 곳의 가장 어두운 색(보라 섞인 근흑), unexplored = 미탐험(순흑). pulse = 수정의 느린 맥동 빛, particles = 떠다니는 먼지·천장 물방울, ambience = data/audio.json ambience 키. 모두 [창작] 임시값",
     "palette": {"unexplored": "#000000", "near_black": "#141018", "tone": "#f2eef4", "memory_tint": "#8a92b8", "memory_brightness": 0.3},
     "post": {"saturation": 0.8, "vignette_strength": 0.55, "vignette_radius": 0.45, "grain_strength": 0.045},

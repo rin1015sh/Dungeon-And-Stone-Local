@@ -30,6 +30,7 @@
     },
     "ambient_color": "#ff9a8a",
     "art": {
+      "battleback": "res://assets/battle/blood_fortress.webp",
       "palette": {
         "near_black": "#1a0e0d",
         "tone": "#f4e6e2"

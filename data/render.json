@@ -92,6 +92,7 @@
     "combat_boss_head_room": 1.15,
     "combat_boss_ranks": ["guardian", "midboss", "lord", "variant_guardian"],
     "combat_dim_alpha": 1.0,
+    "combat_backdrop_dim": 0.12,
     "combat_card_width": 150,
     "combat_figure_height": 110,
     "combat_stage_gap": 160,

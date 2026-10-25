@@ -42,6 +42,7 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 	for i in chapters.size():
 		var ch: Dictionary = chapters[i] if chapters[i] is Dictionary else {}
 		var cw := "%s.chapters[%d]" % [w, i]
+		ArtRules.check_battleback(v, cw + ".battleback", JsonUtil.get_str(ch, "battleback"))
 		var encs := JsonUtil.get_array(ch, "encounters")
 		if encs.is_empty():
 			v.err(cw, "encounters가 비었다")
