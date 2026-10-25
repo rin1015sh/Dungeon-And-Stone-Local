@@ -7,7 +7,7 @@ extends RefCounted
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 
-const HAND_WEAPONS := ["sword", "greatsword", "axe", "pick", "staff", "bow", "club", "cleaver", "bomb"]
+const HAND_WEAPONS := ["sword", "greatsword", "axe", "pick", "staff", "bow", "club", "cleaver", "bomb", "sword_up", "axe_up"]
 
 
 static func extras(cl: Clay, pr: Dictionary, j: Dictionary, hd: Dictionary, sp: Dictionary, skin: int) -> void:
@@ -113,6 +113,41 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 			Back.cap(cl, pr, g, hd - down * 0.04, hd + down * 0.02, 0.01, 0.01, wood, 0.002)
 			Back.cap(cl, pr, g, hd + down * 0.02 + Vector3(-0.04 if big else -0.03, 0, 0), hd + down * 0.02 + Vector3(0.04 if big else 0.03, 0, 0), 0.008, 0.008, metal, 0.002)  # 날밑
 			Back.cap(cl, pr, g, hd + down * 0.03, hd + down * (0.42 if big else 0.28), 0.022 if big else 0.014, 0.004, metal, 0.002)
+		"sword_up":  # 전투 자세 장검(아군): 두 손으로 가슴 앞에 쥐고 위·바깥으로 세운 칼 — 등 뒤에서 보면 어깨 위로 날이 비스듬히 솟는다
+			var s := 1.0 if t == "r" else -1.0
+			var up := Vector3(s * 0.62, -1.0, -0.08).normalized()
+			Back.cap(cl, pr, g, hd + up * -0.07, hd + up * 0.03, 0.011, 0.011, cl.mat(Color("#3a2618"), "leather"), 0.002)  # 감은 손잡이
+			Back.ell(cl, pr, g, hd - up * 0.08, 0.015, 0.015, 0.015, metal, 0.002)  # 끝 구슬
+			var nrm := up.cross(Vector3(0, 0, 1)).normalized()
+			Back.cap(cl, pr, g, hd + up * 0.035 - nrm * 0.055, hd + up * 0.035 + nrm * 0.055, 0.01, 0.01, metal, 0.002)  # 날밑
+			var base := hd + up * 0.045
+			var tip := hd + up * 0.5
+			var w := 0.02
+			var poly := PackedVector2Array([Back.P2(pr, base - nrm * w), Back.P2(pr, tip - nrm * w * 0.7 - up * 0.05), Back.P2(pr, tip), Back.P2(pr, tip + nrm * w * 0.7 - up * 0.05), Back.P2(pr, base + nrm * w)])
+			cl.slab(g, poly, Back.P(pr, base.lerp(tip, 0.5)).z, 0.004 * float(pr["H"]), metal, 1.5, 0.004 * float(pr["H"]))
+			Back.groove(cl, pr, g, [base, tip - up * 0.08], Vector3(0, 0, 1), 0.003, 0.003)  # 피홈
+		"axe_up":  # 큰 도끼를 두 손으로 비스듬히 치켜듦(바바리안): 자루가 손에서 어깨 위로, 수염 달린 날은 바깥을 향해 등 뒤에서 넓게 보인다
+			var s := 1.0 if t == "r" else -1.0
+			var up := Vector3(s * 0.5, -1.0, -0.06).normalized()
+			var nrm := up.cross(Vector3(0, 0, -1)).normalized() * s  # 자루에 직각, 몸 바깥쪽
+			if nrm.x * s < 0.0:
+				nrm = -nrm
+			var top := hd + up * 0.42
+			Back.cap(cl, pr, g, hd - up * 0.16, top + up * 0.03, 0.014, 0.012, wood, 0.002)
+			for k in 3:  # 감은 가죽
+				var q := hd - up * (0.13 - k * 0.025)
+				Back.cap(cl, pr, g, q, q + up * 0.018, 0.016, 0.016, cl.mat(Color("#3a2618"), "leather"), 0.002)
+			var c := top - up * 0.03
+			var poly := PackedVector2Array()
+			# 수염 도끼날: 자루에 붙은 목(좁음) → 바깥으로 넓어지며 아래로 처진 수염, 위는 짧은 뿔
+			var shape: Array = [[0.0, 0.035], [0.05, 0.04], [0.1, 0.075], [0.125, 0.04], [0.13, -0.01], [0.12, -0.06], [0.1, -0.11], [0.07, -0.125], [0.05, -0.08], [0.03, -0.035], [0.0, -0.03]]
+			for v: Array in shape:
+				poly.append(Back.P2(pr, c + nrm * float(v[0]) + up * float(v[1])))
+			var H: float = pr["H"]
+			var iron := cl.mat(kit.get("weapon_c", Color("#45474a")), "metal", {"spec": 0.3})  # 넓은 날이 정면 빛을 다 받아 하얗게 날리지 않게
+			cl.slab(g, poly, Back.P(pr, c).z, 0.007 * H, iron, 1.6, 0.008 * H)
+			Back.groove(cl, pr, g, [c + nrm * 0.105 + up * 0.06, c + nrm * 0.115 + up * -0.01, c + nrm * 0.1 + up * -0.075, c + nrm * 0.07 + up * -0.105], Vector3(0, 0, 1), 0.003, 0.005)  # 벼린 날 경계
+			Back.ell(cl, pr, g, c + up * 0.0, 0.017, 0.022, 0.016, cl.mat(Color("#2e2a26"), "metal"), 0.003)  # 자루 고정쇠
 		"axe", "pick":
 			var up := Vector3(0.0, -1.0, -0.2).normalized()
 			var top := hd + up * 0.2

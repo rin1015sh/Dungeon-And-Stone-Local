@@ -51,15 +51,17 @@ static func spec_of(id: String) -> Dictionary:
 	match base:
 		"human":  # 여행자: 걷어 올린 아마 셔츠 · 가죽 조끼 · 두건 달린 어깨 망토 · 허리 주머니와 단검 · 가죽 장화
 			sp = {"height": REF_H, "build": "normal", "sh": 0.108, "skin": C("#c49a78"), "mottle": C("#9a6a52"), "mottle_amt": 0.3,
-				"hair": "short", "hair_c": C("#3a2a1e"), "pose": {"stance": 0.08, "knee": 0.15, "arm_l": "hang", "arm_r": "ready"}, "side_pose": {"arm_l": "rest", "arm_r": "rest"},
-				"kit": {"pants": C("#4a4236"), "shirt": C("#b8a888"), "sleeves": "rolled", "vest": C("#5a3e28"), "mantle": C("#5a3028"),
-					"belt": C("#2e2018"), "pouch": true, "knife": true, "boots": C("#3a2a1e"), "bracers": C("#4a3424")}, "blood": 0.0, "grime": 0.3}
+				"hair": "none", "hair_c": C("#3a2a1e"), "pose": {"stance": 0.115, "knee": 0.3, "hunch": 0.1, "arm_l": "grip_low", "arm_r": "grip"},
+				"kit": {"pants": C("#3e382e"), "shirt": C("#8a7e66"), "sleeves": "rolled", "vest": C("#4a3220"), "hood": C("#4a2622"),
+					"mantle": C("#4a2622"), "belt": C("#2e2018"), "pouch": true, "knife": true, "boots": C("#2e2218"), "bracers": C("#3e2a1c"),
+					"weapon": "sword_up", "weapon_c": C("#8a8e92")}, "blood": 0.12, "grime": 0.45}
 		"barbarian":  # 거구: 땋은 긴 머리와 수염 · 털 어깨 망토 · 맨팔(위팔 쇠띠·팔목 가죽) · 가죽 조끼 · 감은 종아리 · 털 단 장화
 			sp = {"height": REF_H * 1.14, "build": "brute", "bulk": 1.08, "sh": 0.132, "skin": C("#b88866"), "mottle": C("#8a5a42"), "mottle_amt": 0.35,
-				"hair": "long", "hair_c": C("#4a2e1c"), "braids": 2, "hair_len": 0.14, "hair_over": 0.06, "beard": C("#4a2e1c"),
-				"pose": {"stance": 0.1, "knee": 0.18, "arm_l": "hang", "arm_r": "hang"},
-				"kit": {"pants": C("#5a4430"), "leg_wraps": C("#8a7a60"), "vest": C("#6a4a30"), "pelt": C("#6e5e4a"), "belt": C("#3a2818"), "pouch": true,
-					"boots": C("#4a3424"), "boots_fur": C("#7a6a54"), "bracers": C("#3e2c1c"), "armband": C("#6a5a3a")}, "blood": 0.0, "grime": 0.3, "fur_len": 1.7}
+				"hair": "long", "hair_c": C("#3a2216"), "braids": 2, "hair_len": 0.14, "hair_over": 0.06, "beard": C("#3a2216"),
+				"pose": {"stance": 0.13, "knee": 0.28, "hunch": 0.08, "arm_l": "grip_low", "arm_r": "grip"},
+				"kit": {"pants": C("#3e3226"), "leg_wraps": C("#8a7a60"), "vest": C("#5a3822"), "pelt": C("#7e6e58"), "belt": C("#3a2818"), "pouch": true,
+					"boots": C("#4a3424"), "boots_fur": C("#7a6a54"), "bracers": C("#3e2c1c"), "armband": C("#6a5a3a"),
+					"weapon": "axe_up", "weapon_c": C("#36383c"), "wood": C("#4a3424")}, "blood": 0.2, "grime": 0.45, "fur_len": 1.7}
 		"soldier_deadman":
 			sp = {"height": 560, "build": "thin", "sh": 0.115, "skin": C("#a8a88c"), "mottle": C("#4e5040"), "mottle_amt": 0.5, "blood": 0.5,
 				"hair": "ragged", "hair_c": C("#2a241c"), "pose": {"hunch": 0.25, "knee": 0.2, "arm_l": "shield", "arm_r": "spear"},

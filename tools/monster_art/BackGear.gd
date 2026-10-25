@@ -17,9 +17,11 @@ static func gear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		_armor(cl, pr, j, bd, kit["armor"], rng)
 		j["armored"] = true
 	if kit.has("cape"):
-		_cape(cl, pr, j, bd, kit["cape"], rng)
+		_cape(cl, pr, j, bd, kit["cape"], rng, float(kit.get("cape_bot", 0.0)))
 	if kit.has("helm"):
 		_helm(cl, pr, hd, kit, rng)
+	if kit.has("hood"):
+		_hood(cl, pr, hd, kit["hood"], rng)
 	if kit.has("weapon") and not BackExtras.HAND_WEAPONS.has(str(kit["weapon"])):  # 손 무기는 BackExtras
 		if str(kit["weapon"]) == "dagger":
 			_dagger(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
@@ -116,14 +118,14 @@ static func _armor(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col:
 
 
 ## 긴 망토: 어깨에서 종아리까지 등 뒤를 덮고, 단은 찢겨 있다. 세로 주름.
-static func _cape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: Color, rng: RandomNumberGenerator) -> void:
+static func _cape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: Color, rng: RandomNumberGenerator, kit_bot: float = 0.0) -> void:
 	var m := cl.mat(col, "cloth", {"mottle": col.darkened(0.3), "mottle_amt": 0.4})
 	var g := cl.group()
 	var H: float = pr["H"]
 	var bw: float = bd["back_w"]
 	var shw := absf(j["shoulder_r"].x)
 	var top: float = j["neck"].y + 0.012
-	var bot := -0.11
+	var bot: float = kit_bot if kit_bot != 0.0 else -0.11
 	var wz := bw + 0.04
 	var pts := PackedVector2Array()
 	for i in 9:  # 위 단: 어깨선을 따라 휜다(어깨받이 안쪽에 걸림)
@@ -172,6 +174,31 @@ static func _helm(cl: Clay, pr: Dictionary, hd: Dictionary, kit: Dictionary, rng
 		for k in 7:
 			var q: Vector3 = pts[rng.randi_range(0, 5)]
 			Back.groove(cl, pr, pg, [q + Vector3(-0.01, -0.01, 0.02), q + Vector3(0.01, 0.02, 0.02)], Vector3(0, -0.3, 1), 0.003, 0.006)
+
+
+## 쓴 두건(아군 탐험가 — 2026-10-25): 머리 전체를 덮는 천 · 정수리에서 목덜미로 내려오는 솔기 · 옆으로 처진 주름.
+static func _hood(cl: Clay, pr: Dictionary, hd: Dictionary, col: Color, rng: RandomNumberGenerator) -> void:
+	var m := cl.mat(col, "cloth", {"mottle": col.darkened(0.35), "mottle_amt": 0.45})
+	var g := cl.group()
+	var c: Vector3 = hd["c"]
+	var rv: float = hd["rv"]
+	if hd.get("plain", false):  # 탐험 맵 얼굴(Back.head plain): 얼굴은 머리통 앞에 따로 붙은 덩어리라 머리통만 덮으면 두건이 얼굴 둘레를 감싼다
+		BackKit.shell(cl, pr, ["skull"], 0.028, m, g, BackKit.band(cl, pr, c.y - rv * 2.2, c.y + rv * 1.25), 0.012)
+		var ru: float = hd["ru"]
+		for s: int in [-1, 1]:  # 귀 옆에서 어깨로 흘러내리는 자락(공처럼 둥근 윤곽이 되지 않게)
+			Back.cap(cl, pr, g, Back.on_head(hd, -0.1, s * 1.5, 0.02), c + Vector3(s * ru * 1.0, rv * 1.45, rv * 0.15), ru * 0.32, ru * 0.42, m, 0.02)
+		Back.cap(cl, pr, g, Back.on_head(hd, 1.05, 0.0, 0.02), Back.on_head(hd, 0.8, 0.0, 0.085), ru * 0.45, ru * 0.13, m, 0.02)  # 정수리 뒤로 솟은 두건 끝
+		var rw: float = hd["rw"]
+		Back.cap(cl, pr, g, c + Vector3(-ru * 0.8, -rv * 0.78, -rw * 0.72), c + Vector3(ru * 0.8, -rv * 0.78, -rw * 0.72), ru * 0.26, ru * 0.26, m, 0.02)  # 이마를 덮는 두건 앞단(얼굴에 그늘)
+	else:
+		BackKit.shell(cl, pr, ["skull", "ear", "neck"], 0.022, m, g, BackKit.band(cl, pr, c.y - rv * 2.2, c.y + rv * 1.25), 0.012)
+	var B := Vector3(0, 0, 1)
+	Back.cap(cl, pr, g, Back.on_head(hd, 1.0, 0.0, 0.012), Back.on_head(hd, 0.45, 0.0, 0.05), 0.032, 0.01, m, 0.01)  # 뒤통수로 처진 두건 끝
+	Back.groove(cl, pr, g, [Back.on_head(hd, 1.3, PI * 0.5, 0.024), Back.on_head(hd, 0.7, 0.0, 0.026), Back.on_head(hd, 0.0, 0.0, 0.026), Back.on_head(hd, -0.6, 0.0, 0.03)], B, 0.003, 0.006)  # 솔기
+	for s: int in [-1, 1]:
+		for k in 2:  # 귀 뒤에서 목덜미로 처진 주름
+			var lon := s * (0.55 + k * 0.35 + rng.randf_range(-0.08, 0.08))
+			Back.groove(cl, pr, g, [Back.on_head(hd, 0.5, lon, 0.024), Back.on_head(hd, -0.1, lon * 0.9, 0.026), Back.on_head(hd, -0.6, lon * 0.75, 0.03)], B, 0.003, 0.007)
 
 
 ## 장대 무기(창 spear · 기병창 lance): 쥔 손에서 위아래로 곧게, 끝은 쇠 날.
