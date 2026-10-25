@@ -4,7 +4,7 @@ extends RefCounted
 ## turn 0 = 등을 정면으로, 1.1 안팎 = 오른쪽(적)을 보며 비스듬히 돌아선 옆모습(오른 옆구리·옆얼굴이 보인다).
 ## 캡슐은 돌려도 정확하고, 타원체는 돌린 폭으로 근사한다. 옷·장구는 BackKit·BackGear, 설계는 Party.
 ## spec 키: height · turn · build(thin|normal|muscular|brute) · bulk · sh(어깨 반폭) · head(머리 크기) · skin · shade · mottle · nail
-##          pose{stance(발 벌림) · knee · hunch(앞으로 숙임) · arm_l/arm_r(hang|rest|ready|forward|spear|shield|guard|brace|shoulder|grip|grip_low|slump)}
+##          pose{stance(발 벌림) · knee · hunch(앞으로 숙임) · arm_l/arm_r(hang|rest|ready|forward|spear|shield)}
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
 
@@ -137,21 +137,6 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 			"shield":
 				el = shp + Vector3(s * 0.07, 0.125, -0.03)
 				wr = el + Vector3(-s * 0.03, 0.03, -0.14)
-			"guard":  # 전투 자세(아군 — 2026-10-25): 무기를 쥔 손을 가슴 앞으로 끌어올리고 팔꿈치는 옆으로 — 칼날이 어깨 위로 솟는다
-				el = shp + Vector3(s * 0.07, 0.12, -0.03)
-				wr = el + Vector3(-s * 0.05, -0.02, -0.12)
-			"brace":  # 전투 자세 반대 팔: 앞으로 내밀어 균형을 잡는다
-				el = shp + Vector3(s * 0.06, 0.13, -0.06)
-				wr = el + Vector3(-s * 0.02, 0.04, -0.13)
-			"shoulder":  # 큰 무기를 어깨에 걸침: 손이 어깨 앞 위로
-				el = shp + Vector3(s * 0.08, 0.1, -0.05)
-				wr = el + Vector3(-s * 0.04, -0.09, -0.06)
-			"grip":  # 두 손 무기 위 손(아군 전투 자세): 손은 가슴 앞 가운데로 모이고 팔꿈치는 옆으로 벌어진다 — 등 뒤에서는 손이 몸에 가려진다
-				el = shp + Vector3(s * 0.065, 0.13, -0.05)
-				wr = el + Vector3(-s * 0.12, 0.03, -0.09)
-			"grip_low":  # 두 손 무기 아래 손: 위 손보다 조금 낮게 자루를 받친다
-				el = shp + Vector3(s * 0.055, 0.145, -0.03)
-				wr = el + Vector3(-s * 0.115, 0.06, -0.1)
 			"slump":  # 탐험 맵: 어깨를 늘어뜨리고 팔꿈치를 살짝 굽혀 손이 허벅지 앞에
 				el = shp + Vector3(s * 0.02, 0.15, -0.03)
 				wr = el + Vector3(-s * 0.012, 0.135, -0.05)
@@ -297,7 +282,7 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	cl.tag = "pelvis"
 	ell(cl, pr, g, pv, 0.1 * bulk, 0.062, 0.06 * dep, skin, 0.03)
 	for s: int in [-1, 1]:
-		ell(cl, pr, g, pv + Vector3(s * 0.042 * bulk, 0.03, 0.016), 0.046 * bulk, 0.05, 0.04 * dep, skin, 0.02)  # 엉덩이(작게 — 바지가 풍선처럼 부풀지 않게)
+		ell(cl, pr, g, pv + Vector3(s * 0.046 * bulk, 0.035, 0.022), 0.056 * bulk, 0.06, 0.048 * dep, skin, 0.02)  # 엉덩이
 	cl.tag = "torso"
 	ell(cl, pr, g, wa, float(t[7]) * bulk, 0.09, 0.056 * dep, skin, 0.035)
 	ell(cl, pr, g, ch, shw * 0.84, 0.112, 0.066 * dep, skin, 0.035)
@@ -423,7 +408,7 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 				cl.carve(g, q, hh * 0.07 * float(pr["H"]), hh * 0.045 * float(pr["H"]), hh * 0.035 * float(pr["H"]))
 			eyes.append(q)
 	if plain:
-		return {"g": g, "c": hc, "hh": hh, "ru": ru, "rv": rv, "rw": rw, "eyes": eyes, "plain": true}
+		return {"g": g, "c": hc, "hh": hh, "ru": ru, "rv": rv, "rw": rw, "eyes": eyes}
 	groove(cl, pr, g, [hc + Vector3(-ru * 0.3, rv * 0.62, -rw * 1.0), hc + Vector3(0, rv * 0.6, -rw * 1.06), hc + Vector3(ru * 0.3, rv * 0.62, -rw * 1.0)], F, hh * 0.02, hh * 0.03)  # 입
 	return {"g": g, "c": hc, "hh": hh, "ru": ru, "rv": rv, "rw": rw, "eyes": eyes}
 

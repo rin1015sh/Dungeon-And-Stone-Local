@@ -131,11 +131,9 @@ func _explorer(race: String) -> void:
 	var cols := PHASES.size()
 	var sheet := Image.create_empty(cell.x * cols, cell.y * 4, false, Image.FORMAT_RGBA8)
 	var turns := {0: PI, 1: -SIDE_TURN, 3: 0.0}  # 줄 → 돌림(2 = 오른쪽은 1을 뒤집는다 — 빛이 왼쪽 위에서 와서 왼쪽을 보게 그려야 얼굴이 밝다)
-	var base := Party.spec_of(race + "_back")
-	(base.get("kit", {}) as Dictionary).erase("weapon")  # 장비는 맵 몸에 그리지 않는다(AM27) — 전투 뒷모습이 든 무기도 뺀다
 	for row: int in [0, 1, 3]:
 		for c in cols:
-			var img := _figure(base, race, float(turns[row]), float(PHASES[c]))
+			var img := _figure(Party.spec_of(race + "_back"), race, float(turns[row]), float(PHASES[c]))
 			_put(sheet, img, Vector2i(c, row), cell)
 			if row == 1:
 				var flipped := img.duplicate() as Image

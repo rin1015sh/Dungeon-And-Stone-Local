@@ -1,6 +1,6 @@
 extends RefCounted
 ## 뒷모습 사람형(Back)의 머리카락·옷: 몸 부위 기록(tag)을 부풀려 한 겹 씌우는 shell(화면 띠로 자름) + 주름 골 + 장식.
-## kit 키(색): shirt(sleeves: long|rolled|short) · vest(가죽 조끼) · mantle(두건 달린 짧은 어깨 망토 — hood를 쓰면 젖힌 두건 없음) · pelt(털 어깨 망토)
+## kit 키(색): shirt(sleeves: long|rolled|short) · vest(가죽 조끼) · mantle(두건 달린 짧은 어깨 망토) · pelt(털 어깨 망토)
 ##            pants · belt(pouch·knife: 허리 주머니·칼집) · boots(boots_fur: 털 단) · bracers(팔목 가죽) · armband(위팔 띠)
 ##            leg_wraps(종아리 감은 천) · torn(옷 구멍 0~1)
 ## 머리카락·수염은 BackHair.
@@ -90,12 +90,12 @@ static func dress(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: 
 			var kn: Vector3 = j["knee_" + t]
 			var an: Vector3 = j["ankle_" + t]
 			var top := kn.lerp(an, 0.4).y
-			shell(cl, pr, ["shin_" + t, "foot_" + t], 0.009, m, g, band(cl, pr, top, 0.05), 0.008)
+			shell(cl, pr, ["shin_" + t, "foot_" + t], 0.014, m, g, band(cl, pr, top, 0.05), 0.008)
 			if kit.has("boots_fur"):
 				var fm := cl.mat(kit["boots_fur"], "fur")
 				shell(cl, pr, ["shin_" + t], 0.026, fm, cl.group(), band(cl, pr, top - 0.012, top + 0.035, rng, 0.012, 8), 0.01)
 			else:
-				shell(cl, pr, ["shin_" + t], 0.014, m, g, band(cl, pr, top, top + 0.024), 0.006)  # 접은 목
+				shell(cl, pr, ["shin_" + t], 0.02, m, g, band(cl, pr, top, top + 0.028), 0.006)  # 접은 목
 			Back.groove(cl, pr, g, [an + Vector3(-0.02, -0.04, 0.03), an + Vector3(0.0, -0.035, 0.034), an + Vector3(0.02, -0.04, 0.03)], B, 0.004, 0.006)
 	if kit.has("vest"):
 		var m := cl.mat(kit["vest"], "leather")
@@ -148,7 +148,7 @@ static func dress(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: 
 	if kit.has("pelt"):
 		_pelt(cl, pr, j, bd, kit["pelt"], rng)
 	if kit.has("mantle"):
-		_mantle(cl, pr, j, bd, kit["mantle"], rng, kit.has("hood"))
+		_mantle(cl, pr, j, bd, kit["mantle"], rng)
 
 
 static func _shirt(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: Dictionary, rng: RandomNumberGenerator) -> void:
@@ -187,7 +187,7 @@ static func _shirt(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit:
 
 
 ## 두건 달린 짧은 어깨 망토(여행자): 어깨를 덮고 등 위쪽까지, 목 뒤에 접힌 두건.
-static func _mantle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: Color, rng: RandomNumberGenerator, hooded: bool = false) -> void:
+static func _mantle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: Color, rng: RandomNumberGenerator) -> void:
 	var m := cl.mat(col, "cloth")
 	var g := cl.group()
 	var B := Vector3(0, 0, 1)
@@ -205,8 +205,6 @@ static func _mantle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col
 		for k in 3:
 			var a := Vector3(s * (0.03 + k * 0.04), nk.y + 0.02, bw + 0.02)
 			Back.groove(cl, pr, g, [a, a + Vector3(s * 0.02, 0.05, 0.0), a + Vector3(s * 0.03, 0.1, -0.01)], Vector3(s * 0.4, 0, 1), 0.006, 0.01)
-	if hooded:  # 두건을 썼으면(BackGear._hood) 젖힌 두건은 없다
-		return
 	# 목 뒤로 젖혀 늘어진 두건(끝이 뾰족한 천 자루)
 	var hg := cl.group()
 	var top := nk.y - 0.005
