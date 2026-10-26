@@ -137,6 +137,9 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 			"shield":
 				el = shp + Vector3(s * 0.07, 0.125, -0.03)
 				wr = el + Vector3(-s * 0.03, 0.03, -0.14)
+			"down":  # 탐험 맵 탐험가(사용자 2026-10-26 "가만히 있을 때 팔을 완전히 아래로 — 살짝 앞에 있어 좀비 같다"): 몸 옆으로 곧게
+				el = shp + Vector3(s * 0.03, 0.155, 0.0)
+				wr = el + Vector3(s * 0.006, 0.145, -0.006)
 			"slump":  # 탐험 맵: 어깨를 늘어뜨리고 팔꿈치를 살짝 굽혀 손이 허벅지 앞에
 				el = shp + Vector3(s * 0.02, 0.15, -0.03)
 				wr = el + Vector3(-s * 0.012, 0.135, -0.05)

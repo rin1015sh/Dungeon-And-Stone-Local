@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **탐험가 선 자세 팔 곧게 · 갑옷 겹 되돌림 (2026-10-26, 사용자 "가만히 있을 때 팔을 완전히 아래로 내리면 안 됨? 좀비마냥 살짝 앞에 있잖어" → "그냥 갑옷 전부 제거해 없던 걸로")** — AM42.
+  - 팔: 맵 탐험가의 기본 팔 자세가 `slump`(팔꿈치를 굽혀 손이 허벅지 앞)였다 → 새 자세 `down`(`Back.skeleton` — 위팔·아래팔 거의 수직, 몸 옆), `paint_actors.gd EXPLORER_ARMS` = 2(탐험가만 — 몬스터 사람형은 `ARMS` 그대로 slump). 걷기 흔들림 값(ARM_F·ARM_B …)은 그대로라 앞 팔은 덜 앞으로, 뒤 팔은 더 뒤로 간다. 인간·바바리안·h3 시트 다시 그림.
+  - 갑옷 겹 그림(장비에 따라 부위별 겹을 얹던 것 — 커밋 39fc97d·51fa0cc)은 사용자 요청으로 전부 revert(코드·데이터·그림·테스트·문서). 다시 하려면 그 커밋을 참고.
+
 - **탐험가 옷차림 h4 · b2로 교체, 전투 뒷모습도 (2026-10-26, 사용자 "h4 b2로 교체하되 h3도 저장해 줘 나중에 NPC로 쓰게. 전투 화면의 아군 뒷모습도 이에 맞게 그려 주고")** — AM42.
   - `MapLooks.CHOSEN` = {human: h4_gambeson, barbarian: b2_leather} — `paint_actors`(맵 걷기 시트)와 `Party.spec_of`(전투 뒷모습·옆모습, `paint_monsters --only=human_back,…`)가 같이 읽는다. 옛 `paint_actors.gd LOOK`는 없앴다.
   - `MapLooks.KEEP` = [h3_coat] → `assets/actors/looks/h3_coat.webp`(paint_actors가 종족 그림과 같이 그린다, 게임은 아직 안 씀).

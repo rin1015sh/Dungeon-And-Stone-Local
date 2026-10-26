@@ -72,7 +72,8 @@ const LIGHT := Vector3(-0.2, -0.5, 0.85)
 const CONTRAST := 1.12   ## 줄인 뒤 명암 대비
 const GAMMA := 0.85      ## 줄인 뒤 밝기(1보다 작으면 중간 밝기를 올린다)
 const LINE_STEP := 0.2   ## 이웃보다 이만큼 어두운 칸에 진한 선(겨드랑이·다리 사이·옷 경계)
-const ARM_POSES := ["hang", "slump"]
+const ARM_POSES := ["hang", "slump", "down"]
+const EXPLORER_ARMS := 2.0  ## 탐험가만 팔 자세(2 = 몸 옆으로 곧게 내림 — 사용자 2026-10-26 "선 자세에서 팔이 살짝 앞에 있어 좀비 같다", AM42). 몬스터 사람형은 ARMS
 const SEED := 4242
 
 ## 몬스터 맵 키(사람 키 × size 대비): 사람형은 몸 그대로, 나머지는 서 있는 앞모습 높이를 이만큼으로
@@ -176,7 +177,8 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	sp["height"] = _v("render_h", RENDER_H) * k
 	sp["turn"] = turn
 	sp["pitch"] = _v("pitch", PITCH)
-	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": ARM_POSES[int(_v("arms", ARMS))], "arm_r": ARM_POSES[int(_v("arms", ARMS))], "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH)}, true)
+	var arms: String = ARM_POSES[int(_v("arms", EXPLORER_ARMS if size < 0.0 else ARMS))]
+	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": arms, "arm_r": arms, "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH)}, true)
 	sp["gait"] = {"thigh_f": _v("thigh_f", THIGH_F), "shin_f": _v("shin_f", SHIN_F), "thigh_b": _v("thigh_b", THIGH_B), "shin_b": _v("shin_b", SHIN_B),
 		"lift": _v("lift", LIFT), "twist": _v("twist", TWIST), "arm_f": _v("arm_f", ARM_F), "fore_f": _v("fore_f", FORE_F), "arm_b": _v("arm_b", ARM_B), "fore_b": _v("fore_b", FORE_B)}
 	var rb: Dictionary = RACE_BODY.get(name, {})
