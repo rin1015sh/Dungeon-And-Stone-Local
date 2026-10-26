@@ -4,7 +4,9 @@ extends RefCounted
 ## 균열 데이터 chapters[]: {id, name_ko, desc_ko, map {size, rooms, room_size}, encounters[], field_effects[], on_enter[효과]}
 ## 조우(encounters[]):
 ##   {"kind": "battle", "monsters": [..]}                       한 번 싸움
-##   {"kind": "chain", "battles": [구성, 구성, …]}               연전 — 이기면 쉬지 않고 다음 구성과 바로 싸운다
+##   {"kind": "chain", "battles": [구성, 구성, …]}               여러 무리 — 구성마다 따로 돌아다니는 무리(보스가 낀 구성은 조우 자리 방에,
+##                                                                  나머지는 그 둘레 balance rift.chain_spread_tiles 안에 서로 chain_gap_tiles 넘게 떨어져).
+##                                                                  예전엔 한 무리가 이기면 바로 다음 구성과 싸우는 연전이라 맵에 한 마리인데 줄줄이 나왔다(사용자 2026-10-26)
 ##   {"kind": "waves", "survive_rounds": 6, "start": [..], "reinforce": {"monsters": [..], "count": [1, 2]}}  생존
 ##   {"kind": "guardian", "with": [..]}                          수호자(5% 미만 확률로 변종 수호자 — variant.chance)
 ##   구성 = 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}(무작위)
@@ -96,9 +98,7 @@ func build_chapter(i: int) -> ExploreSession:
 	remaining.clear()
 	var encs := JsonUtil.get_array(ch, "encounters")
 	for k in encs.size():
-		var g := _place(cs, encs[k], map.slots[mini(k, map.slots.size() - 1)] if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") != "guardian" else map.slots[-1])
-		if g != null:
-			remaining.append(g)
+		remaining.append_array(_place(cs, encs[k], map.slots[mini(k, map.slots.size() - 1)] if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") != "guardian" else map.slots[-1]))
 	_apply_field_effects()
 	hidden.place(cs, ch, outer.rng, i)
 	hazards.place(cs, ch, outer.rng)
@@ -318,16 +318,14 @@ func debug_clear() -> void:
 	cs.monsters.changed.emit()
 
 
-func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> FieldMonsters.Group:
+func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> Array[FieldMonsters.Group]:
 	var e: Dictionary = enc if enc is Dictionary else {}
 	var kind := JsonUtil.get_str(e, "kind", "battle")
 	var ids: Array = []
-	var waves: Array = []
+	var out: Array[FieldMonsters.Group] = []
+	if kind == "chain":
+		return _place_packs(s, e, cell)
 	match kind:
-		"chain":
-			for b: Variant in JsonUtil.get_array(e, "battles"):
-				waves.append(compose(b))
-			ids = waves.pop_front() if not waves.is_empty() else []
 		"waves":
 			ids = compose(e.get("start", []))
 		"guardian":
@@ -337,13 +335,45 @@ func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> FieldMonsters.Gr
 			ids = compose(e.get("monsters", []))
 	var g := s.monsters.add_fixed(ids, cell)
 	if g == null:
-		return null
+		return out
 	g.tag = "riddle" if JsonUtil.get_bool(e, "riddle") else kind
-	g.waves = waves
-	s.monsters.mark_boss(g)
 	if kind == "waves":
 		g.battle_rules = {"survive_rounds": JsonUtil.get_int(e, "survive_rounds", 6), "reinforce": JsonUtil.get_dict(e, "reinforce")}
-	return g
+	out.append(g)
+	return out
+
+
+## 여러 무리(chain): 구성마다 따로 세운다 — 보스가 낀 구성(없으면 첫 구성)은 조우 자리, 나머지는 그 둘레에 흩어서.
+func _place_packs(s: ExploreSession, e: Dictionary, cell: Vector2i) -> Array[FieldMonsters.Group]:
+	var packs: Array = []
+	for b: Variant in JsonUtil.get_array(e, "battles"):
+		var ids := compose(b)
+		if not ids.is_empty():
+			packs.append(ids)
+	var ranks: Array = db.bal("monsters.boss_ranks", [])
+	var first := 0
+	for k in packs.size():
+		if (packs[k] as Array).any(func(id: Variant) -> bool: return ranks.has(JsonUtil.get_str(db.get_entry("monsters", str(id)), "rank"))):
+			first = k
+			break
+	var spread := int(db.bal("rift.chain_spread_tiles", 12))
+	var gap := float(db.bal("rift.chain_gap_tiles", 4))
+	var used: Array[Vector2i] = [cell, s.map.entry]
+	var out: Array[FieldMonsters.Group] = []
+	for k in [first] + range(packs.size()).filter(func(i: int) -> bool: return i != first):
+		var at := cell
+		if k != first:
+			at = FieldRoutes.random_cell_near(s.map, outer.rng, cell, spread,
+				func(q: Vector2i) -> bool: return used.all(func(u: Vector2i) -> bool: return Vector2(q - u).length() >= gap))
+			if at.x < 0:
+				at = cell
+		var g := s.monsters.add_fixed(packs[k], at)
+		if g == null:
+			continue
+		g.tag = "battle"
+		used.append(g.pos)
+		out.append(g)
+	return out
 
 
 ## 구성 → 몬스터 id 배열.

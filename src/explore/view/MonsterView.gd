@@ -1,86 +1,107 @@
 class_name MonsterView
 extends Node2D
-## 탐험 맵의 몬스터 무리 그림(대표 한 마리 + 무리 수 표시). 노드 원점 = 발 위치(y 정렬 기준).
-## 맵 그림(tools/paint_actors.gd → render.json view.actor_sheet.monster_dir/<id>.webp — 전투 일러스트를 데이터 size에 맞춰 줄인 정면)
-## 이 있으면 그것을: 위로 걸어가면 뒷모습(<id>_back)이 있을 때 그것, 왼쪽으로 가면 좌우 반전, 걷는 동안 걸음마다 들썩이고
-## 좌우로 기우뚱한다(걷기 그림 대신 — ASSUMPTIONS AM28). 없으면 monsters/<id>.json sprite, 그것도 없으면 FigurePainter 임시 도형.
-## 걷기 시트(ActorSheet.load_monster — <id>_walk.webp, 4방향 × 걸음)가 있으면 그것을: 걸으면 가는 쪽, 멈추면 플레이어 쪽을 보고
-## 걸음 칸을 돈다(들썩임·기우뚱 없음).
-## 보스가 기다리는 방(group.boss)은 그 보스의 기다리는 자세 그림(크게 — paint_actors MapMonster.BOSSES)을 그린다.
-
-const BOB_PX := 1.5      ## 걸음마다 들썩이는 높이(월드 px)
-const SWAY_RAD := 0.05   ## 좌우로 기우뚱하는 각도
+## 탐험 맵의 무리 그림. 노드 원점 = 앞장선 한 마리의 발(무리 자리 — y 정렬 기준).
+## 무리의 모든 마리를 따로 그린다(PackMember — 걷기 시트·한 장 그림·보스 기다리는 자세): 앞장선 한 마리 뒤로 나머지가 두 줄로 따라 걷고,
+## 방향을 틀면 천천히 따라 돈다(render.json view.pack). 몇 마리인지·무슨 몬스터인지 그림으로 보인다 — ×N 표시는 없다(사용자 2026-10-26).
+## 몬스터 무리 = monster_ids 마리마다 그 몬스터 그림, 보스 방(group.boss)은 보스를 기다리는 자세로 앞에.
+## 탐험가 무리 = 사람 몸 시트를 members 마리(약탈자 = render.json view.raider_sprite 두건·망토, 없으면 종족 시트에 raider_tint 색).
 
 var group: FieldMonsters.Group
 var facing: Vector2i = Vector2i(-1, 0)
 
-var _shape: String = "humanoid"
-var _scale: float = 1.0
-var _color: Color = Color.GRAY
-var _texture: Texture2D = null
-var _back: Texture2D = null
-var _art_scale: float = 0.5
-var _fps: float = 7.0
-var _count_label: Label
+var _db: GameDatabase
+var _members: Array[PackMember] = []
+var _ids: Array[String] = []          ## 그림을 만든 구성(바뀌면 다시 만든다 — 전투 뒤 남은 마리)
+var _offsets: Array[Vector2] = []     ## 마리마다 지금 자리(노드 좌표 — 목표 자리로 천천히 따라간다)
+var _heading: Vector2 = Vector2(0, 1) ## 걸어가는 쪽(월드)
+var _spacing: float = 20.0
+var _side: float = 16.0
+var _follow: float = 6.0
+var _step: float = 0.13
 var _walk_t: float = 0.0
 var _still: float = 1.0
 var _last_pos: Vector2 = Vector2.INF
 var _up: bool = false
-var _sheet: ActorSheet = null
-var _target: Vector2 = Vector2.ZERO
-var _move_dir: Vector2 = Vector2.ZERO
+var _settled: bool = false
 
 
 func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	group = p_group
-	var id := group.boss if not group.boss.is_empty() else group.leader()
-	var def := db.get_entry("monsters", id)
-	_shape = JsonUtil.get_str(def, "shape", "humanoid")
-	_scale = JsonUtil.get_float(def, "size", 1.0)
-	_color = Color.from_string(JsonUtil.get_str(def, "color"), Color.GRAY)
-	var cfg := JsonUtil.get_dict(JsonUtil.get_dict(db.render, "view"), "actor_sheet")
-	_art_scale = 1.0 / maxf(1.0, JsonUtil.get_float(cfg, "art_scale", 2.0))
-	_fps = JsonUtil.get_float(cfg, "walk_fps", 7.0)
-	var dir := JsonUtil.get_str(cfg, "monster_dir", "res://assets/actors/monsters")
-	if not group.party.is_empty():  # 탐험가 무리·약탈자 = 탐험가 몸 그림(종족 시트)
-		var view := JsonUtil.get_dict(db.render, "view")
-		var raider := str(group.party.get("kind")) == "raider"
-		if raider:  # 약탈자 = 두건·망토 시트(render.json view.raider_sprite — 전투 그림과 같은 옷차림), 없으면 종족 시트에 색만
-			_sheet = ActorSheet.load_for(db.render, JsonUtil.get_str(view, "raider_sprite"))
-		if _sheet == null:
-			_sheet = ActorSheet.load_for(db.render, JsonUtil.get_str(db.get_entry("races", str(group.party.get("look", "human"))), "sprite"))
-			if raider:
-				modulate = Color.from_string(JsonUtil.get_str(view, "raider_tint", "#b0a090"), Color.WHITE)
-	elif group.boss.is_empty():
-		_sheet = ActorSheet.load_monster(db.render, id)
-	for path: String in [dir.path_join(id + ".webp"), JsonUtil.get_str(def, "sprite")]:
-		if not path.is_empty() and ResourceLoader.exists(path):
-			_texture = load(path) as Texture2D
-			break
-	var back := dir.path_join(id + "_back.webp")
-	if ResourceLoader.exists(back):
-		_back = load(back) as Texture2D
-	var count := int(group.party.get("members", group.monster_ids.size()))
-	if count > 1:
-		_count_label = UiTheme.label("×%d" % count, "small", "warn" if group.hostile() else "text")
-		var top := _sheet.world_size().y if _sheet != null else (_texture.get_height() * _art_scale if _texture != null else 52.0 * _scale)
-		_count_label.position = Vector2(8, -top - 4)
-		add_child(_count_label)
+	_db = db
+	var pack := JsonUtil.get_dict(JsonUtil.get_dict(db.render, "view"), "pack")
+	_spacing = JsonUtil.get_float(pack, "spacing_px", 20.0)
+	_side = JsonUtil.get_float(pack, "side_px", 16.0)
+	_follow = JsonUtil.get_float(pack, "follow_rate", 6.0)
+	_step = JsonUtil.get_float(pack, "step_offset_sec", 0.13)
+	_build()
+
+
+## 구성이 바뀌었으면(전투 뒤 남은 마리) 그림을 다시 만든다.
+func refresh() -> void:
+	if group.monster_ids != _ids or (not group.party.is_empty() and _members.size() != _party_count()):
+		_build()
+
+
+func _party_count() -> int:
+	return maxi(1, int(group.party.get("members", group.monster_ids.size())))
+
+
+func _build() -> void:
+	_ids = group.monster_ids.duplicate()
+	_members.clear()
+	if not group.party.is_empty():
+		var view := JsonUtil.get_dict(_db.render, "view")
+		var tint := Color.WHITE
+		var sheet: ActorSheet = null
+		if str(group.party.get("kind")) == "raider":  # 약탈자 = 두건·망토 시트, 없으면 종족 시트에 색만
+			sheet = ActorSheet.load_for(_db.render, JsonUtil.get_str(view, "raider_sprite"))
+			if sheet == null:
+				tint = Color.from_string(JsonUtil.get_str(view, "raider_tint", "#b0a090"), Color.WHITE)
+		if sheet == null:
+			sheet = ActorSheet.load_for(_db.render, JsonUtil.get_str(_db.get_entry("races", str(group.party.get("look", "human"))), "sprite"))
+		for i in _party_count():
+			_members.append(PackMember.for_sheet(_db, sheet, tint))
+	else:
+		var order: Array[String] = group.monster_ids.duplicate()
+		if not group.boss.is_empty():  # 보스가 앞에(기다리는 자세)
+			order.erase(group.boss)
+			order.push_front(group.boss)
+		for i in order.size():
+			_members.append(PackMember.for_monster(_db, order[i], i == 0 and not group.boss.is_empty()))
+	_offsets.resize(_members.size())
+	for i in _members.size():
+		_offsets[i] = _target(i)
+	queue_redraw()
+
+
+## i번째 마리의 대형 자리(노드 좌표): 0 = 앞장, 나머지는 걷는 쪽 뒤로 두 마리씩 줄을 짓는다(가운데를 비워 엇갈리게).
+func _target(i: int) -> Vector2:
+	if i == 0:
+		return Vector2.ZERO
+	var back := -_heading.normalized()
+	var perp := Vector2(-back.y, back.x)
+	var row := (i + 1) / 2
+	var side := -1.0 if i % 2 == 1 else 1.0
+	if _members.size() == 2:
+		side = 0.35
+	var k := _unit()
+	return back * row * _spacing * k + perp * side * _side * k
+
+
+## 큰 몬스터가 섞이면 간격을 넓힌다(사람 몸 시트 폭 36px = 1).
+func _unit() -> float:
+	var w := 0.0
+	for m in _members:
+		w = maxf(w, m.size().x)
+	return clampf(w / 36.0, 1.0, 2.5)
 
 
 func face_toward(target: Vector2) -> void:
-	_target = target
-	if _sheet != null:
-		if _still >= 0.12:  # 멈춰 있으면 플레이어 쪽(4방향)
-			_set_facing(target - position)
-		return
-	var dir := Vector2i(1, 0) if target.x >= position.x else Vector2i(-1, 0)
-	if dir != facing:
-		facing = dir
-		queue_redraw()
+	if _still >= 0.12:  # 멈춰 있으면 플레이어 쪽
+		_set_facing(target - position)
 
 
-## 걷기 시트: 방향(월드) → 4방향 중 큰 쪽(옆모습을 조금 더 — ActorSheet.row_for).
+## 방향(월드) → 4방향 중 큰 쪽(옆모습을 조금 더 — ActorSheet.row_for). 한 장 그림은 좌우만 쓴다.
 func _set_facing(d: Vector2) -> void:
 	if d.length() < 0.01:
 		return
@@ -91,42 +112,33 @@ func _set_facing(d: Vector2) -> void:
 
 
 func _process(delta: float) -> void:
-	if _texture == null and _sheet == null:
-		return
-	if _sheet != null and position != _last_pos and _last_pos != Vector2.INF:
-		_set_facing(position - _last_pos)
 	if position != _last_pos and _last_pos != Vector2.INF:
-		_up = position.y < _last_pos.y - 0.01 and absf(position.y - _last_pos.y) > absf(position.x - _last_pos.x)
+		var d := position - _last_pos
+		_set_facing(d)
+		_heading = _heading.lerp(d.normalized(), clampf(delta * _follow, 0.0, 1.0)).normalized() if d.length() > 0.01 else _heading
+		_up = d.y < -0.01 and absf(d.y) > absf(d.x)
 		_walk_t += delta
 		_still = 0.0
-		queue_redraw()
+		_settled = false
 	elif _still < 0.2:
 		_still += delta
-		if _still >= 0.12:
-			queue_redraw()  # 멈추면 바로 선다
+	var moved := false
+	if not _settled:
+		var done := true
+		for i in _offsets.size():
+			var t := _target(i)
+			_offsets[i] = _offsets[i].lerp(t, clampf(delta * _follow, 0.0, 1.0))
+			done = done and _offsets[i].distance_to(t) < 0.5
+		_settled = done and _still >= 0.12
+		moved = true
+	if moved or _still < 0.2:
+		queue_redraw()
 	_last_pos = position
 
 
 func _draw() -> void:
-	if _sheet != null:
-		var w := _sheet.world_size()
-		draw_set_transform_matrix(Transform2D(0.0, Vector2(1.0, 0.35), 0.0, Vector2(0, -1)))  # 발밑 그림자
-		draw_circle(Vector2.ZERO, w.x * 0.3, Color(0, 0, 0, 0.45))
-		draw_set_transform_matrix(Transform2D.IDENTITY)
-		_sheet.draw(self, facing, _sheet.col_at(_walk_t, _still < 0.12))
-		return
-	if _texture == null:
-		FigurePainter.paint(self, _shape, _scale, _color, facing)
-		return
-	var tex := _back if _up and _back != null else _texture
-	var sz := tex.get_size() * _art_scale
+	var order := range(_members.size())
+	order.sort_custom(func(a: int, b: int) -> bool: return _offsets[a].y < _offsets[b].y)  # 뒤(위)에 선 마리부터
 	var walking := _still < 0.12
-	var ph := _walk_t * _fps * PI
-	var bob := absf(sin(ph)) * BOB_PX if walking else 0.0
-	var sway := sin(ph) * SWAY_RAD if walking else 0.0
-	draw_set_transform_matrix(Transform2D(0.0, Vector2(1.0, 0.35), 0.0, Vector2(0, -1)))  # 발밑 그림자
-	draw_circle(Vector2.ZERO, sz.x * 0.32, Color(0, 0, 0, 0.45))
-	var flip := -1.0 if facing.x < 0 else 1.0
-	draw_set_transform_matrix(Transform2D(sway, Vector2(flip, 1.0), 0.0, Vector2(0, -bob)))
-	draw_texture_rect(tex, Rect2(-sz.x * 0.5, -sz.y, sz.x, sz.y), false)
-	draw_set_transform_matrix(Transform2D.IDENTITY)
+	for i: int in order:
+		_members[i].draw(self, _offsets[i], facing, _walk_t + i * _step, walking, _up)

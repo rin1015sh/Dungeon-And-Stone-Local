@@ -98,7 +98,7 @@
     "_passage_comment": "챕터 사이 길목(RiftPassage, 사용자 요청 2026-10-20): 출구·(2챕터부터)시작 자리 둘레 passage_zone칸에 걸어 들어가면 다음·이전 챕터로. 넘어간 쪽에서는 길목에서 passage_arrive_steps걸음 안쪽에 선다. entry_safe_radius = 시작 자리 안전지대(도착 자리가 들어가게 2.9)",
     "passage_zone": 1,
     "passage_arrive_steps": 2,
-    "entry_safe_radius": 2.9
+    "entry_safe_radius": 2.9, "_chain_comment": "여러 무리 조우(chain — RiftRun._place_packs, 사용자 2026-10-26 \"무리별로 따로 돌아다니게\"): 보스가 낀 구성은 조우 자리, 나머지는 그 둘레 chain_spread_tiles칸 안에 서로 chain_gap_tiles칸 넘게", "chain_spread_tiles": 22, "chain_gap_tiles": 7
   },
   "combat": {
     "gauge_threshold": 100,

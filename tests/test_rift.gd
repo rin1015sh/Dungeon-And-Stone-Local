@@ -114,10 +114,13 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	assert_eq(int(waves.battle_rules["survive_rounds"]), 6, "도개교 6라운드 생존")
 	_win_all(run)
 	cs = run.use_exit(cs)
-	var chain: FieldMonsters.Group = run.remaining[0]
-	assert_eq(chain.waves.size(), 2, "외성벽 시가지 3연전(남은 2)")
-	run.on_battle_end(cs, chain, Battle.RESULT_VICTORY)
-	assert_true(run.remaining.has(chain) and chain.waves.size() == 1, "이기면 바로 다음 무리")
+	assert_eq(run.remaining.size(), 3, "외성벽 시가지 세 무리 — 연전이 아니라 따로 돌아다닌다")
+	assert_true(run.remaining.all(func(g: FieldMonsters.Group) -> bool: return g.waves.is_empty() and g.tag == "battle"), "무리마다 한 번 싸움")
+	var first: FieldMonsters.Group = run.remaining[0]
+	run.on_battle_end(cs, first, Battle.RESULT_VICTORY)
+	assert_eq(run.remaining.size(), 2, "이기면 그 무리만 사라진다")
+	var cells := run.remaining.map(func(g: FieldMonsters.Group) -> Vector2i: return g.pos)
+	assert_true(cells[0] != cells[1], "무리마다 다른 자리")
 	_win_all(run)
 	cs = run.use_exit(cs)
 	_win_all(run)

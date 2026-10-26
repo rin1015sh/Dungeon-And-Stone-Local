@@ -241,6 +241,7 @@ func sync_monsters() -> void:
 			mv.setup(g, session.db)
 			add_child(mv)
 			_monster_views[g.id] = mv
+		mv.refresh()
 		mv.position = feet_of(g.fpos)
 		mv.face_toward(feet_of(session.fpos))
 		mv.visible = session.monsters.is_visible(g, session.pos)
