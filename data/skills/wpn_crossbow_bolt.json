@@ -1,0 +1,23 @@
+{
+  "id": "wpn_crossbow_bolt",
+  "name_ko": "관통 사격",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.4,
+      "damage_type": "pierce",
+      "defense_ignore": 0.4,
+      "ranged": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types crossbow(사용자 요청 2026-10-26, IT8)"
+}

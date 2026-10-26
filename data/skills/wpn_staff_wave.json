@@ -1,0 +1,21 @@
+{
+  "id": "wpn_staff_wave",
+  "name_ko": "마력 파동",
+  "target": "enemy_all",
+  "gear": true,
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.8,
+      "damage_type": "arcane"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types staff(사용자 요청 2026-10-26, IT8)"
+}

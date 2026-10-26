@@ -1,0 +1,26 @@
+{
+  "id": "wpn_mace_knee",
+  "name_ko": "무릎 치기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.8
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types mace(사용자 요청 2026-10-26, IT8)"
+}

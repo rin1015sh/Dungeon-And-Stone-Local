@@ -1,0 +1,26 @@
+{
+  "id": "wpn_dagger_slit",
+  "name_ko": "그어 내기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.8
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types dagger(사용자 요청 2026-10-26, IT8)"
+}

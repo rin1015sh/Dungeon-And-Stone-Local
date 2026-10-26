@@ -1,0 +1,24 @@
+{
+  "id": "wpn_bow_aim",
+  "name_ko": "겨눠 쏘기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 20,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.5,
+      "damage_type": "pierce",
+      "accuracy": 105,
+      "crit_bonus": 0.1,
+      "ranged": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types bow(사용자 요청 2026-10-26, IT8)"
+}

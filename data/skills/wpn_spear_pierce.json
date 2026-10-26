@@ -1,0 +1,22 @@
+{
+  "id": "wpn_spear_pierce",
+  "name_ko": "꿰뚫기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "pierce",
+      "defense_ignore": 0.3
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types spear(사용자 요청 2026-10-26, IT8)"
+}

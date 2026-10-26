@@ -1,0 +1,19 @@
+{
+  "id": "wpn_sword_guard",
+  "name_ko": "막고 찌르기",
+  "target": "self",
+  "gear": true,
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "counter_stance"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types sword(사용자 요청 2026-10-26, IT8)"
+}

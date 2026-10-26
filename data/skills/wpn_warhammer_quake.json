@@ -1,0 +1,26 @@
+{
+  "id": "wpn_warhammer_quake",
+  "name_ko": "땅 울리기",
+  "target": "enemy_all",
+  "gear": true,
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 30,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.25
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types warhammer(사용자 요청 2026-10-26, IT8)"
+}

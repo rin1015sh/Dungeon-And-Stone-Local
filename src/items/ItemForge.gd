@@ -12,6 +12,7 @@ extends RefCounted
 ##   감소(penalty) = 종류 값 그대로. 소재 agi_pen만 민첩 감소에 곱한다(가벼움 0.5 = 내림 · 무거움 1.5 = 반올림)
 ##   소재 trait: mods(모든 장비) · weapon_mods(무기 — 대상 "dmg_dealt:weapon"은 그 무기 피해 유형) · armor_mods(무기가 아닌 것)
 ##   구입가 = base_price × 종류 price_mult × kind_price[소재 종류] × price_by_tier[등급−1] × 소재 price_mult → 유효숫자 두 자리
+##   장비 스킬(IT8) = 종류 skills → equip.skills(무기·방패를 든 사람이 전투에서 쓴다 — Actor.sync_gear_skills).
 ##   희귀도 = rarity_by_tier[등급−1]. 판매가는 상점 sell_ratio(city.json). 설명(desc_ko) = 소재 flavor_ko + 종류 flavor_ko(IT7 — 아이템 JSON에 desc_ko가 있으면 그것).
 
 
@@ -87,6 +88,8 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 	var equip := {"slot": JsonUtil.get_str(t, "slot"), "modifiers": mods}
 	if JsonUtil.get_bool(t, "two_handed"):
 		equip["two_handed"] = true
+	if not JsonUtil.get_array(t, "skills").is_empty():
+		equip["skills"] = JsonUtil.get_array(t, "skills").duplicate()
 	if not weapon.is_empty():
 		var w := weapon.duplicate()
 		w["attack"] = int(roundf(JsonUtil.get_float(weapon, "attack") * atk_mult * JsonUtil.get_float(feat, "atk", 1.0)))

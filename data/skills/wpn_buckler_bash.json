@@ -1,0 +1,26 @@
+{
+  "id": "wpn_buckler_bash",
+  "name_ko": "쳐내기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.3
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types buckler(사용자 요청 2026-10-26, IT8)"
+}

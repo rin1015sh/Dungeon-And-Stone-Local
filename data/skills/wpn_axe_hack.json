@@ -1,0 +1,26 @@
+{
+  "id": "wpn_axe_hack",
+  "name_ko": "찍어 베기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types axe(사용자 요청 2026-10-26, IT8)"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "wpn_spear_keep",
+  "name_ko": "밀어 찌르기",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "push_back",
+      "amount": 40
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types spear(사용자 요청 2026-10-26, IT8)"
+}

@@ -19,6 +19,10 @@
       "damage_type": "slash",
       "attack": 30
     },
+    "skills": [
+      "wpn_greatsword_cleave",
+      "wpn_greatsword_crush"
+    ],
     "modifiers": [
       {
         "target": "str",

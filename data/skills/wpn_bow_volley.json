@@ -1,0 +1,29 @@
+{
+  "id": "wpn_bow_volley",
+  "name_ko": "연사",
+  "target": "enemy_single",
+  "gear": true,
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.75,
+      "damage_type": "pierce",
+      "ranged": true
+    },
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.75,
+      "damage_type": "pierce",
+      "ranged": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장비 스킬 — item_types bow(사용자 요청 2026-10-26, IT8)"
+}

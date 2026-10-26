@@ -47,6 +47,7 @@ func _init(p_db: GameDatabase, bases: Dictionary = {}, level: int = 1, resource_
 	# 람다로 self를 잡으면 RefCounted 순환 참조(누수)가 생기므로 메서드로 잇는다.
 	statuses.applied.connect(_on_status_applied)
 	statuses.removed.connect(_on_status_removed)
+	equipment.changed.connect(_on_gear_changed)
 	pool.sync_initial()
 
 
@@ -110,6 +111,24 @@ func learn_skill(skill_id: String) -> bool:
 		return false
 	skills.append(skill_id)
 	return true
+
+
+## 장비 스킬(스킬 데이터 "gear": true — 든 무기·방패의 equip.skills, IT8)을 지금 장비에 맞춘다.
+## 장비 스킬은 목록 맨 앞(무기 → 방패 순), 벗으면 잊는다. 장비가 바뀔 때마다(불러오기 포함) 부른다.
+func sync_gear_skills() -> void:
+	var now: Array[String] = []
+	for item_id in equipment.equipped_ids():
+		for s in ItemInfo.skills(db, item_id):
+			if not now.has(s) and db.has_entry("skills", s):
+				now.append(s)
+	for s in skills:
+		if not JsonUtil.get_bool(db.get_entry("skills", s), "gear") and not now.has(s):
+			now.append(s)
+	skills.assign(now)
+
+
+func _on_gear_changed(_slot: String) -> void:
+	sync_gear_skills()
 
 
 ## 스킬을 잊는다. 기본 스킬(innate)은 잊을 수 없다. 잊었으면 true.

@@ -10,6 +10,10 @@
       "bone"
     ],
     "icon": "dagger",
+    "skills": [
+      "wpn_dagger_vital",
+      "wpn_dagger_slit"
+    ],
     "size": [
       1,
       2
@@ -37,6 +41,10 @@
       "metal"
     ],
     "icon": "sword",
+    "skills": [
+      "wpn_sword_sweep",
+      "wpn_sword_guard"
+    ],
     "size": [
       1,
       3
@@ -64,6 +72,10 @@
       "metal"
     ],
     "icon": "sword",
+    "skills": [
+      "wpn_greatsword_cleave",
+      "wpn_greatsword_crush"
+    ],
     "size": [
       1,
       4
@@ -93,6 +105,10 @@
       "metal"
     ],
     "icon": "axe",
+    "skills": [
+      "wpn_axe_hack",
+      "wpn_axe_split"
+    ],
     "size": [
       1,
       3
@@ -122,6 +138,10 @@
       "bone"
     ],
     "icon": "mace",
+    "skills": [
+      "wpn_mace_skull",
+      "wpn_mace_knee"
+    ],
     "size": [
       1,
       3
@@ -150,6 +170,10 @@
       "metal"
     ],
     "icon": "hammer",
+    "skills": [
+      "wpn_warhammer_smash",
+      "wpn_warhammer_quake"
+    ],
     "size": [
       1,
       4
@@ -180,6 +204,10 @@
       "metal"
     ],
     "icon": "spear",
+    "skills": [
+      "wpn_spear_pierce",
+      "wpn_spear_keep"
+    ],
     "size": [
       1,
       4
@@ -208,6 +236,10 @@
       "metal"
     ],
     "icon": "spear",
+    "skills": [
+      "wpn_halberd_reap",
+      "wpn_halberd_hook"
+    ],
     "size": [
       1,
       4
@@ -239,6 +271,10 @@
       "bone"
     ],
     "icon": "mace",
+    "skills": [
+      "wpn_club_flurry",
+      "wpn_club_threat"
+    ],
     "size": [
       1,
       3
@@ -267,6 +303,10 @@
       "wood"
     ],
     "icon": "bow",
+    "skills": [
+      "wpn_bow_aim",
+      "wpn_bow_volley"
+    ],
     "size": [
       2,
       3
@@ -297,6 +337,10 @@
       "metal"
     ],
     "icon": "crossbow",
+    "skills": [
+      "wpn_crossbow_bolt",
+      "wpn_crossbow_leg"
+    ],
     "size": [
       2,
       3
@@ -328,6 +372,10 @@
       "wood"
     ],
     "icon": "staff",
+    "skills": [
+      "wpn_staff_bolt",
+      "wpn_staff_wave"
+    ],
     "size": [
       1,
       4
@@ -360,6 +408,9 @@
       "wood"
     ],
     "icon": "shield",
+    "skills": [
+      "wpn_buckler_bash"
+    ],
     "size": [
       2,
       2
@@ -384,6 +435,9 @@
       "bone"
     ],
     "icon": "shield",
+    "skills": [
+      "wpn_shield_cover"
+    ],
     "size": [
       2,
       2
@@ -409,6 +463,9 @@
       "wood"
     ],
     "icon": "shield",
+    "skills": [
+      "wpn_tower_shield_wall"
+    ],
     "size": [
       2,
       3
