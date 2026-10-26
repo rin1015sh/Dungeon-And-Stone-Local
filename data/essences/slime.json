@@ -34,7 +34,6 @@
     "str": -1,
     "agi": -1,
     "resist_poison": 12,
-    "digestion": 12,
     "int": 4
   },
   "resources": {

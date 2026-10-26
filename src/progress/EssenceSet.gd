@@ -197,7 +197,8 @@ func _attach(a: Actor, inst: Dictionary) -> void:
 		a.add_passive(passive)
 	var st := JsonUtil.get_dict(inst, "stats")
 	for k: String in st:
-		a.stats.add_modifier(Modifier.new(src, k, float(st[k])))
+		if a.stats.has_stat(k):  # 지운 스탯(소화력 — 2026-10-26)이 든 옛 저장의 사례는 그 값만 버린다
+			a.stats.add_modifier(Modifier.new(src, k, float(st[k])))
 	var res := JsonUtil.get_dict(inst, "resources")  # 자원 최대치(생명력)
 	for r: String in res:
 		a.stats.add_modifier(Modifier.new(src, "max:" + r, float(res[r])))

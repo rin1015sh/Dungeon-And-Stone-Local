@@ -155,9 +155,9 @@
     "min": 0,
     "max": 100,
     "dungeon": {
-      "per_hour": 0.3,
+      "per_hour": 0.5,
       "per_rest_hour": -2.5,
-      "per_combat_turn": 0.5,
+      "per_combat_turn": 0.75,
       "per_step": 0
     },
     "effects": [

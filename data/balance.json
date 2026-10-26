@@ -46,10 +46,8 @@
     "regen_stat_coef": 0.01
   },
   "hunger": {
-    "decay_per_hour": 1.0,
+    "decay_per_hour": 1.5,
     "appetite_coef": 0.01,
-    "digestion_coef": 0.01,
-    "digestion_min": 0.2,
     "starvation_hp_per_hour": 2.0
   },
   "rest": {

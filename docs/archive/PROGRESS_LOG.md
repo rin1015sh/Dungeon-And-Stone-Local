@@ -6,6 +6,9 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **소화력 지움 · 미궁 허기·피로 빠르게 (2026-10-26, 사용자 "소화력 수치 따로 더 쓰이는데 없으면 게임에서 지워 · 미궁에서 허기 더 빨리 닳고 피로 더 빨리 오르게")** — ST6.
+  - 소화력은 허기 수식에만 쓰였다 → `stats.json`·허기 수식·`balance.hunger.digestion_coef/min`·슬라임 정수 stats(+12)·동굴 송로 수프(+40 — 시각 +8만 남음) 삭제, 옛 저장 정수 사례의 지운 스탯은 `EssenceSet._attach`가 버린다. 시험 test_sub_stats(남은 11종·지운 목록에 digestion)·test_mine(소화력 검사 삭제). essences.md 다시 만듦.
+  - 허기 1 → 1.5/시간(가득 → 바닥 실제 약 11분), 피로 0.3 → 0.5/시간 · 전투 차례 0.5 → 0.75(`docs/balance/city.md`·`stats.md`).
 - **장비 스킬 대가 = 허기 ↓ + 피로 ↑ (2026-10-26, 사용자 "피로 올라가고 허기 떨어지는 걸로해줘. 그리고 지금 허기 내려가고 피로 올라가는 조건이 뭔지도")** — IT10.
   - 스킬 cost 키 `fatigue`(자원이 아니라 피로가 오름) — `Actor.can_pay`·`pay`(Battle이 pool.can_afford·spend 대신), `PlayerCharacter.fatigue_room`·`add_fatigue`, `Fatigue.room`. 표시 `CommandMenu._cost_text`("피로 n"). 검증 cost 키에 fatigue 허용.
   - 27개 cost: 옛 영혼력 4~5 → 허기 1·피로 1, 6~8 → 2·2, 9~12 → 3·3.

@@ -7,7 +7,6 @@
 
   {"id": "sight", "name_ko": "시각", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "가시 범위 — 1당 시야 +0.1m (층 시야 상한 안에서만)"},
   {"id": "appetite", "name_ko": "식욕", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "허기 감소율 보정"},
-  {"id": "digestion", "name_ko": "소화력", "group": "body", "rarity": "common", "implemented": true, "desc_ko": "1당 허기 감소율 −1% (슬라임 정수, 명세 §11.3)"},
   {"id": "natural_regen", "name_ko": "자연재생력", "group": "body", "rarity": "uncommon", "implemented": true, "desc_ko": "생명력 시간당 재생"},
   {"id": "soul_regen", "name_ko": "영혼 재생력", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "영혼력 재생 보정"},
   {"id": "affinity_fire", "name_ko": "화염 감응도", "group": "ability", "rarity": "uncommon", "implemented": true, "desc_ko": "화염 속성 피해 보정"},

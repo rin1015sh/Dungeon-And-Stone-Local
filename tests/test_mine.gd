@@ -179,7 +179,7 @@ func test_mine_chapters_hidden_and_explosive() -> void:
 	assert_eq(s.player.inventory.count("green_gem"), 1)
 
 
-func test_strong_bypass_digestion_and_exp() -> void:
+func test_strong_bypass_and_exp() -> void:
 	var reg := ContentRegistries.new()
 	var def := db.get_entry("floors", "f1_crystal_cave")
 	var strong := _pc()
@@ -194,10 +194,6 @@ func test_strong_bypass_digestion_and_exp() -> void:
 		run.debug_clear()
 		cs = run.use_exit(cs)
 	assert_true(cs != null and run.is_last_chapter(), "근력 40 이상이면 폭약 없이 부순다")
-	var plain := _pc()
-	var eater := _pc()
-	eater.stats.set_base("digestion", 50.0)
-	assert_near(eater.pool.regen_per_unit("hunger", "time"), plain.pool.regen_per_unit("hunger", "time") * 0.5, 0.0001, "소화력 50 → 허기 감소 절반")
 	var ex := {"slime": 1, "goblin_miner": 2, "mineral_slime": 2, "hobgoblin_miner": 3, "copper_golem": 3, "goblin_bomber": 4, "king_slime": 4}
 	for id: String in ex:
 		assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", id)), int(ex[id]), id)

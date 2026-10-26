@@ -42,7 +42,7 @@
     "visible": true,
     "display_inverted": false,
     "regen": [
-      {"trigger": "time", "basis": "flat", "rate": "-{bal.hunger.decay_per_hour} * (1 + {appetite} * {bal.hunger.appetite_coef}) * max({bal.hunger.digestion_min}, 1 - {digestion} * {bal.hunger.digestion_coef})"}
+      {"trigger": "time", "basis": "flat", "rate": "-{bal.hunger.decay_per_hour} * (1 + {appetite} * {bal.hunger.appetite_coef})"}
     ],
     "thresholds": [
       {"at_ratio": 0.3, "direction": "down", "apply_status": "hungry"},

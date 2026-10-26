@@ -1,15 +1,16 @@
 extends TestCase
-## 세부 스탯 정리(ASSUMPTIONS ST1~ST5): 주 스탯 5종으로 대체할 수 없는 세부 스탯 12종이 실제 규칙에 들어가는지 하나씩 본다.
-## 시각(시야) · 식욕·소화력(허기) · 자연재생력·영혼 재생력(재생) · 명중률(명중·실명) · 감응도 2(화염·냉기) · 내성 4(화염·냉기·독·어둠)(속성 피해·상태 저항·지속 피해).
+## 세부 스탯 정리(ASSUMPTIONS ST1~ST5): 주 스탯 5종으로 대체할 수 없는 세부 스탯 11종이 실제 규칙에 들어가는지 하나씩 본다.
+## 시각(시야) · 식욕(허기) · 자연재생력·영혼 재생력(재생) · 명중률(명중·실명) · 감응도 2(화염·냉기) · 내성 4(화염·냉기·독·어둠)(속성 피해·상태 저항·지속 피해).
 ## 그리고 지운 세부 스탯이 주 스탯으로 옮겨졌는지(정수 굴림·종족·함정 판정).
 
-const KEPT := ["sight", "appetite", "digestion", "natural_regen", "soul_regen", "accuracy",
+const KEPT := ["sight", "appetite", "natural_regen", "soul_regen", "accuracy",
 	"affinity_fire", "affinity_cold",
 	"resist_fire", "resist_cold", "resist_poison", "resist_dark"]
 const REMOVED := ["muscle_mass", "cutting_power", "bone_strength", "body_weight", "endurance", "flexibility", "leap", "stealth",
 	"dexterity", "pain_tolerance", "fighting_spirit", "adaptability", "patience", "obsession", "smell", "hearing", "cognition",
 	"control", "sixth_sense", "restoration", "luck", "fame", "support", "field_of_view",
-	"affinity_lightning", "affinity_earth", "resist_lightning", "resist_earth", "resist_holy"]
+	"affinity_lightning", "affinity_earth", "resist_lightning", "resist_earth", "resist_holy",
+	"digestion"]  # 소화력: 허기 말고 쓰이는 데가 없어 지움(사용자 2026-10-26)
 
 
 func _actor(stats: Dictionary = {}) -> Actor:
@@ -45,15 +46,11 @@ func test_sight_widens_vision() -> void:
 	assert_near(Vision.radius_m(db, def, map, a, p), 6.0, 0.0001, "층 시야 상한은 넘지 않는다")
 
 
-func test_appetite_and_digestion_change_hunger() -> void:
+func test_appetite_changes_hunger() -> void:
 	var base := _actor().pool.regen_per_unit("hunger", "time")
-	assert_true(base < 0.0, "허기는 시간마다 준다")
+	assert_near(base, -float(db.bal("hunger.decay_per_hour")), 0.0001, "허기는 시간마다 준다")
 	var hungry := _actor({"appetite": 20}).pool.regen_per_unit("hunger", "time")
-	var slow := _actor({"digestion": 20}).pool.regen_per_unit("hunger", "time")
 	assert_true(hungry < base, "식욕이 높으면 더 빨리 배고프다 (%f < %f)" % [hungry, base])
-	assert_true(slow > base, "소화력이 높으면 더 천천히 배고프다 (%f > %f)" % [slow, base])
-	var floor_ := _actor({"digestion": 1000}).pool.regen_per_unit("hunger", "time")
-	assert_near(floor_, base * float(db.bal("hunger.digestion_min")), 0.0001, "소화력 하한")
 
 
 func test_regen_stats() -> void:
