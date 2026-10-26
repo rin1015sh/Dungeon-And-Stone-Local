@@ -16,6 +16,7 @@ const BackPose := preload("res://tools/monster_art/BackPose.gd")
 const BackGear := preload("res://tools/monster_art/BackGear.gd")
 const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
 const BackCloak := preload("res://tools/monster_art/BackCloak.gd")
+const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
 
@@ -81,6 +82,8 @@ static func spec_of(id: String) -> Dictionary:
 		"slime":
 			sp = Monsters.More.spec_of("slime").duplicate()
 			sp["back"] = true
+	if MapLooks.CHOSEN.has(base):  # 탐험가 옷차림 = 맵 그림과 같이(AM42)
+		sp = MapLooks.apply(sp, str(MapLooks.CHOSEN[base]))
 	if not sp.is_empty():
 		sp["turn"] = turn
 		if turn > 0.0 and sp.has("side_pose"):  # 옆모습만 다른 자세(인간: 앞으로 든 팔을 몸에 붙여 내림)

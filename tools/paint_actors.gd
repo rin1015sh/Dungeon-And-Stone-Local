@@ -25,8 +25,8 @@ const HEAD := 2.2        ## 머리 크기 배율(전투 그림 = 1) — 2026-10-
 const LEGS := 0.75       ## 다리 길이 배율 — 2026-10-17 사용자 "다리 조금만 늘려"로 0.68 → 0.75
 ## 종족마다 HEAD·LEGS를 덮어쓴다(2026-10-17 사용자 "바바리안은 예전 머리 2.5·다리 0.68로" — 인간만 줄이고 늘림). --set=head/legs가 있으면 그것이 이긴다.
 const RACE_BODY := {"barbarian": {"head": 2.5, "legs": 0.68}}
-## 게임 그림의 옷차림(종족 → MapLooks id, 빈 값 = 전투 그림 옷 그대로). 후보 비교: --look=<id,id> --out=<폴더>.
-const LOOK := {"human": "h1_cloak", "barbarian": "b1_fur_cloak"}  ## 2026-10-26 후보 9종 중 기본 — 바꾸려면 id만(AM42)
+## 게임 그림의 옷차림 = MapLooks.CHOSEN(종족 → id — 전투 뒷모습도 같이), 남겨 두는 옷차림 MapLooks.KEEP → <out>/looks/<id>.webp.
+## 후보 비교: --look=<id,id> --out=<폴더>.
 const WIDE := 1.15       ## 어깨·엉덩이 폭 배율
 const BULK := 1.35       ## 팔다리·몸통 굵기 배율
 const HUNCH := 0.2       ## 숙임
@@ -124,8 +124,12 @@ func _init() -> void:
 		return
 	for race: String in Party.RACES:
 		if only.is_empty() or only.has(race):
-			_look = str(LOOK.get(race, ""))
+			_look = str(MapLooks.CHOSEN.get(race, ""))
 			_explorer(race)
+			for id: String in MapLooks.KEEP:  # 남겨 두는 옷차림(NPC용)
+				if MapLooks.race_of(id) == race:
+					_look = id
+					_explorer(race, "looks/" + id)
 			_look = ""
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has("monsters") or only.has(id):
@@ -158,8 +162,8 @@ func _explorer(race: String, file: String = "") -> void:
 				var flipped := img.duplicate() as Image
 				flipped.flip_x()
 				_put(sheet, flipped, Vector2i(c, 2), cell)
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out))
 	var path := _out.path_join("%s.webp" % (file if not file.is_empty() else race))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	sheet.save_webp(path, false)
 	print("그림: %s %dx%d (%d ms)" % [path, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
 

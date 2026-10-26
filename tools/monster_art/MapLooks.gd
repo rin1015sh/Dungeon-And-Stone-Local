@@ -2,7 +2,12 @@ extends RefCounted
 ## 탐험 맵 탐험가 몸 그림의 옷차림 후보(2026-10-26 사용자 "거지 복장 같고 촌스럽다 · 머리가 크다 · 망토도 괜찮다 — 여러 개 그려 봐"):
 ## 걸음(Back.stride)은 그대로, 머리·다리 비율과 옷(Party kit + BackCloak 겉옷)만 바꾼다.
 ##   godot --headless --path . --script res://tools/paint_actors.gd -- --look=<id,id> --out=<폴더>  → <폴더>/<id>.webp(시트 하나씩)
-## 게임 그림은 paint_actors.gd LOOK(종족 → 고른 id)으로 그린다. 항목: race · name · head · legs · spec(Party 설계에 덮어쓸 값 — kit은 통째로 바꾼다).
+## 항목: race · name · head · legs · spec(Party 설계에 덮어쓸 값 — kit은 통째로 바꾼다).
+
+## 게임 그림의 옷차림(사용자 2026-10-26 "h4 b2로") — 탐험 맵 걷기 그림(paint_actors)과 전투 뒷모습(Party.spec_of → paint_monsters --only=party)이 같이 쓴다.
+const CHOSEN := {"human": "h4_gambeson", "barbarian": "b2_leather"}
+## 게임 그림 말고도 남겨 두는 옷차림(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다)
+const KEEP := ["h3_coat"]
 
 
 const LOOKS := {
@@ -30,8 +35,8 @@ const LOOKS := {
 		"boots": Color("#3e2e20"), "boots_fur": Color("#7a6a54"), "bracers": Color("#3e2c1c"), "armband": Color("#6a5a3a"),
 		"cloak": {"c": Color("#5e5040"), "len": 0.4, "flare": 1.25, "open": 1.3, "fur": true}}}},
 	"b2_leather": {"race": "barbarian", "name": "가죽 갑옷", "head": 2.1, "legs": 0.72, "spec": {"kit": {
-		"pants": Color("#4a3a2a"), "leg_wraps": Color("#6a5e4a"), "boots": Color("#3e2e20"), "boots_fur": Color("#7a6a54"), "bracers": Color("#3e2c1c"),
-		"coat": {"c": Color("#4a3020"), "len": 0.3}, "outer_belt": Color("#2a1c12"), "pelt": Color("#6e5e4a")}}},
+		"pants": Color("#34302a"), "leg_wraps": Color("#6a5e4a"), "boots": Color("#3e2e20"), "boots_fur": Color("#7a6a54"), "bracers": Color("#3e2c1c"),
+		"coat": {"c": Color("#4a3020"), "len": 0.08}, "outer_belt": Color("#2a1c12"), "pelt": Color("#6e5e4a")}}},
 }
 
 

@@ -111,7 +111,8 @@ static func _coat(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 	var pv: Vector3 = j["pelvis"]
 	var hem := lerpf(pv.y, -0.04, float(d.get("len", 0.55)))
 	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r", "thigh_l", "thigh_r"], 0.02, m, g, BackKit.band(cl, pr, nk.y + 0.01, hem), 0.05, 0.0)
-	Back.cap(cl, pr, g, Vector3(0, pv.y - 0.02, 0.01), Vector3(0, hem - 0.005, 0.015), 0.12, 0.155, m, 0.04)  # 다리 사이 자락
+	if float(d.get("len", 0.55)) >= 0.45:  # 다리 사이 자락 — 짧은 외투(엉덩이까지)는 없다(둥근 자락이 다리 사이에 부풀어 보였다)
+		Back.cap(cl, pr, g, Vector3(0, pv.y - 0.02, 0.01), Vector3(0, hem - 0.005, 0.015), 0.12, 0.155, m, 0.04)
 	for s: int in [-1, 1]:  # 긴 소매
 		var t := "l" if s < 0 else "r"
 		var wr: Vector3 = j["wrist_" + t]
