@@ -10,6 +10,7 @@ extends SceneTree
 
 const Party := preload("res://tools/monster_art/Party.gd")
 const MapMonster := preload("res://tools/monster_art/MapMonster.gd")
+const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
 ## 정한 값(사용자 2026-10-17 — 피어 앤 헝거 맵 그림 참고 시트를 보고 여러 방법·템플릿을 비교해 고름: 방법 ⑤ + 머리 템플릿 5).
@@ -24,6 +25,8 @@ const HEAD := 2.2        ## 머리 크기 배율(전투 그림 = 1) — 2026-10-
 const LEGS := 0.75       ## 다리 길이 배율 — 2026-10-17 사용자 "다리 조금만 늘려"로 0.68 → 0.75
 ## 종족마다 HEAD·LEGS를 덮어쓴다(2026-10-17 사용자 "바바리안은 예전 머리 2.5·다리 0.68로" — 인간만 줄이고 늘림). --set=head/legs가 있으면 그것이 이긴다.
 const RACE_BODY := {"barbarian": {"head": 2.5, "legs": 0.68}}
+## 게임 그림의 옷차림(종족 → MapLooks id, 빈 값 = 전투 그림 옷 그대로). 후보 비교: --look=<id,id> --out=<폴더>.
+const LOOK := {"human": "h1_cloak", "barbarian": "b1_fur_cloak"}  ## 2026-10-26 후보 9종 중 기본 — 바꾸려면 id만(AM42)
 const WIDE := 1.15       ## 어깨·엉덩이 폭 배율
 const BULK := 1.35       ## 팔다리·몸통 굵기 배율
 const HUNCH := 0.2       ## 숙임
@@ -41,8 +44,8 @@ const LIFT := 25.0       ## 반걸음 칸에서 지나가는 뒷다리의 무릎
 const TWIST := 0.012     ## 앞으로 간 팔 쪽 어깨가 나오는 양(키 비율 — 어깨·골반 반대 돌림)
 ## 팔(2026-10-17 사용자 "팔을 앞으로만 흔들어 좀비 같다"): 참고 그림의 앞팔(아래팔 +43°)을 그대로 따르면 늘 손이 몸 앞에 있다 →
 ## 앞은 줄이고 뒤를 크게 — 걸음 칸마다 한 손은 등 뒤로 확실히 빠진다. 예전 값 15 / 14 / −14 / −4.
-const ARM_F := 12.0      ## 앞으로 간 팔: 위팔을 더 돌리는 각(선 자세 −4° → +8°)
-const FORE_F := -12.0    ## 앞으로 간 팔: 아래팔(선 자세 +13° → +13° 그대로 — 뻗지 않는다)
+const ARM_F := 24.0      ## 앞으로 간 팔: 위팔을 더 돌리는 각(선 자세 −4° → +8°)
+const FORE_F := -6.0    ## 앞으로 간 팔: 아래팔(선 자세 +13° → +13° 그대로 — 뻗지 않는다)
 const ARM_B := -34.0     ## 뒤로 간 팔: 위팔(→ −38°)
 const FORE_B := -10.0    ## 뒤로 간 팔: 아래팔(→ −31°, 손이 엉덩이 뒤로)
 ## 얼굴·머리
@@ -84,15 +87,19 @@ const BOSS_MIN := 1.8  ## 보스 맵 크기 = max(데이터 size, BOSS_MIN) × B
 const BOSS_SCALE := 1.4
 var _idle_ids := PackedStringArray()  ## --idle=<id,...>: 보스가 방에서 기다리는 자세 한 장만 그린다(MapMonster.BOSSES)
 var _set: Dictionary = {}  ## --set=head=2,legs=0.8: 맨 위 상수를 이번만 바꾼다(키 = 상수 이름 소문자)
+var _look := ""  ## 지금 그리는 옷차림(MapLooks id — 빈 값 = 전투 그림 옷)
 
 
 func _init() -> void:
 	var only := PackedStringArray()
+	var looks := PackedStringArray()
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
 			only = a.trim_prefix("--only=").split(",")
 		elif a.begins_with("--idle="):
 			_idle_ids = a.trim_prefix("--idle=").split(",")
+		elif a.begins_with("--look="):
+			looks = a.trim_prefix("--look=").split(",")
 		elif a.begins_with("--out="):
 			_out = a.trim_prefix("--out=")
 		elif a.begins_with("--set="):
@@ -103,6 +110,13 @@ func _init() -> void:
 	db.load_all("res://data")
 	_cfg = JsonUtil.get_dict(JsonUtil.get_dict(db.render, "view"), "actor_sheet")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/actors/monsters"))
+	if not looks.is_empty():  # 옷차림 후보만: <out>/<id>.webp
+		for id: String in looks:
+			if MapLooks.has(id):
+				_look = id
+				_explorer(MapLooks.race_of(id), id)
+		quit(0)
+		return
 	if not _idle_ids.is_empty():
 		for id: String in _idle_ids:
 			_idle(id, JsonUtil.get_float(db.get_entry("monsters", id), "size", 1.0))
@@ -110,7 +124,9 @@ func _init() -> void:
 		return
 	for race: String in Party.RACES:
 		if only.is_empty() or only.has(race):
+			_look = str(LOOK.get(race, ""))
 			_explorer(race)
+			_look = ""
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has("monsters") or only.has(id):
 			if not MapMonster.idle_of(id).is_empty():
@@ -124,8 +140,8 @@ func _init() -> void:
 	quit(0)
 
 
-## 탐험가 걷기 시트.
-func _explorer(race: String) -> void:
+## 탐험가 걷기 시트(file = 저장 이름 — 옷차림 후보는 그 id).
+func _explorer(race: String, file: String = "") -> void:
 	var t0 := Time.get_ticks_msec()
 	var cell := _cell()
 	var cols := PHASES.size()
@@ -133,14 +149,17 @@ func _explorer(race: String) -> void:
 	var turns := {0: PI, 1: -SIDE_TURN, 3: 0.0}  # 줄 → 돌림(2 = 오른쪽은 1을 뒤집는다 — 빛이 왼쪽 위에서 와서 왼쪽을 보게 그려야 얼굴이 밝다)
 	for row: int in [0, 1, 3]:
 		for c in cols:
-			var img := _figure(Party.spec_of(race + "_back"), race, float(turns[row]), float(PHASES[c]))
+			var base := Party.spec_of(race + "_back")
+			if not _look.is_empty():
+				base = MapLooks.apply(base, _look)
+			var img := _figure(base, race, float(turns[row]), float(PHASES[c]))
 			_put(sheet, img, Vector2i(c, row), cell)
 			if row == 1:
 				var flipped := img.duplicate() as Image
 				flipped.flip_x()
 				_put(sheet, flipped, Vector2i(c, 2), cell)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out))
-	var path := _out.path_join("%s.webp" % race)
+	var path := _out.path_join("%s.webp" % (file if not file.is_empty() else race))
 	sheet.save_webp(path, false)
 	print("그림: %s %dx%d (%d ms)" % [path, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
 
@@ -157,6 +176,9 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	sp["gait"] = {"thigh_f": _v("thigh_f", THIGH_F), "shin_f": _v("shin_f", SHIN_F), "thigh_b": _v("thigh_b", THIGH_B), "shin_b": _v("shin_b", SHIN_B),
 		"lift": _v("lift", LIFT), "twist": _v("twist", TWIST), "arm_f": _v("arm_f", ARM_F), "fore_f": _v("fore_f", FORE_F), "arm_b": _v("arm_b", ARM_B), "fore_b": _v("fore_b", FORE_B)}
 	var rb: Dictionary = RACE_BODY.get(name, {})
+	if not _look.is_empty() and MapLooks.race_of(_look) == name:  # 옷차림이 정한 머리·다리 비율
+		var lb := MapLooks.body(_look)
+		rb = {"head": lb["head"] if float(lb["head"]) > 0.0 else rb.get("head", HEAD), "legs": lb["legs"] if float(lb["legs"]) > 0.0 else rb.get("legs", LEGS)}
 	sp["head"] = float(sp.get("head", 1.0)) * _v("head", float(rb.get("head", HEAD)))
 	sp["legs"] = _v("legs", float(rb.get("legs", LEGS)))
 	sp["wide"] = _v("wide", WIDE)
