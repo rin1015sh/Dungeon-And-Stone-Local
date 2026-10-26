@@ -2,7 +2,7 @@
   "id": "wpn_spear_pierce",
   "name_ko": "꿰뚫기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "spear",
   "cost": {
     "soul": 6
   },

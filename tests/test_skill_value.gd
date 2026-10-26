@@ -13,7 +13,7 @@ func test_essence_skills_beat_basic_attack() -> void:
 	var n := 0
 	for id: String in db.get_collection("skills"):
 		var sk := db.get_entry("skills", id)
-		if not id.begins_with("ess_") and not JsonUtil.get_bool(sk, "gear"):
+		if not id.begins_with("ess_") and not sk.has("mastery"):
 			continue  # 정수 스킬 + 장비 스킬(IT8 — 같은 하한)
 		var effs := JsonUtil.get_array(sk, "effects")
 		var total := 0.0

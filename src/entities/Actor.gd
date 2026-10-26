@@ -26,6 +26,8 @@ var skills: Array[String] = []
 var passives: Array[Dictionary] = []
 ## 전투 게이지(data/meters.json id -> 값). 전투가 끝나면 비운다(Meters).
 var meters: Dictionary = {}
+## 무기 숙련(item_types id — 장비 스킬은 그 종류의 숙련이 있어야 쓴다, IT9). 저장은 PlayerCharacter.progress_to_dict.
+var masteries: Array[String] = []
 ## 영구 강화를 받은 횟수(효과 permanent_stat의 key → 횟수 — 빙정 최대 3회). 저장은 PlayerCharacter.progress_to_dict.
 var boons: Dictionary = {}
 
@@ -113,7 +115,7 @@ func learn_skill(skill_id: String) -> bool:
 	return true
 
 
-## 장비 스킬(스킬 데이터 "gear": true — 든 무기·방패의 equip.skills, IT8)을 지금 장비에 맞춘다.
+## 장비 스킬(스킬 데이터 "mastery": 종류 id — 든 무기·방패의 equip.skills, IT8)을 지금 장비에 맞춘다.
 ## 장비 스킬은 목록 맨 앞(무기 → 방패 순), 벗으면 잊는다. 장비가 바뀔 때마다(불러오기 포함) 부른다.
 func sync_gear_skills() -> void:
 	var now: Array[String] = []
@@ -122,13 +124,32 @@ func sync_gear_skills() -> void:
 			if not now.has(s) and db.has_entry("skills", s):
 				now.append(s)
 	for s in skills:
-		if not JsonUtil.get_bool(db.get_entry("skills", s), "gear") and not now.has(s):
+		if mastery_of(s).is_empty() and not now.has(s):
 			now.append(s)
 	skills.assign(now)
 
 
 func _on_gear_changed(_slot: String) -> void:
 	sync_gear_skills()
+
+
+## 장비 스킬이 요구하는 숙련(무기·방패 종류 id). 장비 스킬이 아니면 "".
+func mastery_of(skill_id: String) -> String:
+	return JsonUtil.get_str(db.get_entry("skills", skill_id), "mastery")
+
+
+## 이 스킬에 필요한 숙련이 없는가(장비 스킬만 — IT9).
+func lacks_mastery(skill_id: String) -> bool:
+	var m := mastery_of(skill_id)
+	return not m.is_empty() and not masteries.has(m)
+
+
+## 숙련을 얻는다(이미 있으면 그대로). 새로 얻었으면 true.
+func learn_mastery(type_id: String) -> bool:
+	if type_id.is_empty() or masteries.has(type_id):
+		return false
+	masteries.append(type_id)
+	return true
 
 
 ## 스킬을 잊는다. 기본 스킬(innate)은 잊을 수 없다. 잊었으면 true.

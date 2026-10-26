@@ -2,7 +2,7 @@
   "id": "wpn_crossbow_leg",
   "name_ko": "다리 쏘기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "crossbow",
   "cost": {
     "soul": 4
   },

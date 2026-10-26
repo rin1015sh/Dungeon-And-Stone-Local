@@ -2,7 +2,7 @@
   "id": "wpn_sword_sweep",
   "name_ko": "가로 베기",
   "target": "enemy_all",
-  "gear": true,
+  "mastery": "sword",
   "cost": {
     "soul": 9
   },

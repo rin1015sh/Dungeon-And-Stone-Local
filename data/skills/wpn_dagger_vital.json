@@ -2,7 +2,7 @@
   "id": "wpn_dagger_vital",
   "name_ko": "급소 찌르기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "dagger",
   "cost": {
     "soul": 5
   },

@@ -100,6 +100,11 @@ func _build_summary() -> void:
 	_stat(grid, Strings.t("character.attack"), DamageCalc.attack_power(db, pc, {"scaling": "phys"}), 0.0)
 	_stat(grid, Strings.t("character.crit"), DamageCalc.crit_chance(db, pc) * 100.0, 0.0, "%")
 	_box.add_child(UiTheme.label(Strings.t("character.attack_type", {"type": DataNames.tag(db, "damage_types", pc.attack_damage_type())}), "small", "text_dim"))
+	var known := PackedStringArray()
+	for t in pc.masteries:  # 무기 숙련(IT9)
+		known.append(Strings.t("character.mastery", {"name": DataNames.entry(db, "item_types", t)}))
+	if not known.is_empty():
+		_box.add_child(UiTheme.label(" · ".join(known), "small", "gold"))
 
 
 ## 세부 능력: 0이 아니거나 보정이 붙은 세부 스탯 · 영구 강화(boons) · 패시브 · 걸린 상태.

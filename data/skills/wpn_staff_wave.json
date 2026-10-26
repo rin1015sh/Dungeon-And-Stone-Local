@@ -2,7 +2,7 @@
   "id": "wpn_staff_wave",
   "name_ko": "마력 파동",
   "target": "enemy_all",
-  "gear": true,
+  "mastery": "staff",
   "cost": {
     "soul": 10
   },

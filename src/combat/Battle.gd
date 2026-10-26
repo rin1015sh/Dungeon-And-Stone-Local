@@ -257,6 +257,8 @@ func can_use(c: Combatant, skill_id: String) -> String:
 	if skill_id != BASIC_ATTACK and c.actor.statuses.has_flag("no_skills") \
 			and not JsonUtil.get_bool(db.get_entry("skills", skill_id), "innate"):  # 대화·조사는 이능이 아니다(seal_skill과 같게)
 		return "combat.reason_sealed"
+	if c.actor.lacks_mastery(skill_id):
+		return "combat.reason_no_mastery"  # 장비 스킬은 그 무기 종류의 숙련이 있어야(IT9)
 	if c.cooldowns.has(skill_id) or not BattleRules.uses_left(self, c, skill_id):
 		return "combat.reason_cooldown"
 	var sk := db.get_entry("skills", skill_id)

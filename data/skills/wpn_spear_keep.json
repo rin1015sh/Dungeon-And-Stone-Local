@@ -2,7 +2,7 @@
   "id": "wpn_spear_keep",
   "name_ko": "밀어 찌르기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "spear",
   "cost": {
     "soul": 7
   },

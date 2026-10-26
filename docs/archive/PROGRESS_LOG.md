@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **무기 숙련 (2026-10-26, 사용자 "장비 스킬을 해당 장비의 숙련이 있는 경우에만 쓸 수 있게 … 시작할 때는 고른 장비의 숙련 … 티어가 올라가도 같은 종류면 … tab창에 ~무기 숙련")** — IT9.
+  - 스킬 키 `"gear": true` → `"mastery": <종류 id>`(27개). `Actor.masteries`·`lacks_mastery`, `Battle.can_use` → `combat.reason_no_mastery`(목록에는 보이고 "숙련 없음"). 시작 = 시작 장비 중 스킬 있는 종류(`learn_worn_masteries`), 저장 `progress.masteries`(없으면 든 무기). Tab 캐릭터 "철퇴 숙련 · 방패 숙련".
+  - 시험 test_gear_skills +3(시작 숙련·단계 달라도 같은 종류·저장/옛 저장). 캡처 `--menu=character`. check.sh 통과.
+  - 남은 것: 새 숙련을 얻는 길(사용자 결정), 영혼력 말고 다른 대가(사용자와 논의 — 무기 내구도 등).
 - **장비 스킬 — 무기 종류가 기술을 준다 (2026-10-26, 사용자 "직업 기본 기술부터 해줘. 근데 나중에 직업을 게임 시작 배경으로 하고 약간 시작 무기만 주는 걸로 바꿀 생각이거던? 시작 무기에 따라 스킬을 만들면 될듯? 시작 무기는 너가 대충 여럿 정해보셈. 전부 다 해도 되고")** — IT8.
   - 범위: 무기 12종 × 2 + 방패 3종 × 1 = 스킬 27개(`data/skills/wpn_<종류>_<이름>.json`, `"gear": true`), `item_types.json skills`. 완료 기준: 어느 무기를 들든 그 종류 스킬이 전투 목록 맨 앞에, 바꾸면 바뀌고, 저장 왕복. 테스트 `test_gear_skills`(5) + `test_skill_value` 하한을 장비 스킬에도.
   - 코드: `ItemForge.build`가 종류 skills → `equip.skills`, `ItemInfo.skills`, `Actor.sync_gear_skills`(Equipment.changed — 무기 → 방패 순으로 맨 앞, 벗으면 잊음), 검사 `ItemPoolRules._gear_refs`·`ContentRules`(gear bool). 뼈 대검(고유)은 대검 스킬.

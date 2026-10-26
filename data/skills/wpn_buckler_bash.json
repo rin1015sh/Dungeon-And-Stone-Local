@@ -2,7 +2,7 @@
   "id": "wpn_buckler_bash",
   "name_ko": "쳐내기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "buckler",
   "cost": {
     "soul": 5
   },

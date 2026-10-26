@@ -2,7 +2,7 @@
   "id": "wpn_axe_split",
   "name_ko": "갑옷 쪼개기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "axe",
   "cost": {
     "soul": 5
   },

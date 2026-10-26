@@ -2,7 +2,7 @@
   "id": "wpn_halberd_hook",
   "name_ko": "걸어 넘기기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "halberd",
   "cost": {
     "soul": 5
   },

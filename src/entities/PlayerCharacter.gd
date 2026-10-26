@@ -46,6 +46,7 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 		var slot := pc.equipment.pick_slot(id)
 		if not slot.is_empty():
 			pc.equipment.equip(pc.stats, id, slot)
+	pc.learn_worn_masteries()  # 시작 장비(무기·방패)의 숙련(IT9)
 	for item: Variant in JsonUtil.get_array(cls, "start_items"):
 		if item is Dictionary:
 			pc.inventory.add(JsonUtil.get_str(item, "id"), JsonUtil.get_int(item, "count", 1))
@@ -76,6 +77,14 @@ func change_level(level: int, rng: Rng = null) -> void:
 		essences.sync_slots(self, rng if rng != null else essence_rng)
 
 
+## 지금 든 무기·방패 종류 중 장비 스킬이 있는 것의 숙련을 얻는다 — 시작 장비(캐릭터 만들기), 숙련이 없던 옛 저장.
+func learn_worn_masteries() -> void:
+	for item_id in equipment.equipped_ids():
+		var t := ItemInfo.type_id(db, item_id)
+		if not JsonUtil.get_array(db.get_entry("item_types", t), "skills").is_empty():
+			learn_mastery(t)
+
+
 ## 모든 아군(플레이어·동료)이 시작부터 가진 기본 스킬(balance party.innate_skills: 대화·조사)을 준다.
 ## 이미 있으면 건너뛰므로 불러오기(M4 저장) 뒤에 다시 불러도 안전하다. 동료 생성(M4)도 이 함수를 부른다.
 static func grant_innate_skills(a: Actor) -> void:
@@ -101,7 +110,7 @@ func progress_to_dict() -> Dictionary:
 	return {"progression": progression.to_dict(), "knowledge": knowledge.to_dict(),
 		"equipment": equipment.to_dict(), "inventory": inventory.to_dict(),
 		"essences": essences.to_dict(), "boons": boons.duplicate(), "base_stats": _boosted_bases(),
-		"fatigue": fatigue.to_dict(), "stat_history": stat_history.duplicate(true)}
+		"fatigue": fatigue.to_dict(), "stat_history": stat_history.duplicate(true), "masteries": masteries.duplicate()}
 
 
 func progress_load_dict(d: Dictionary) -> void:
@@ -111,6 +120,12 @@ func progress_load_dict(d: Dictionary) -> void:
 	inventory.load_dict(JsonUtil.get_dict(d, "inventory"))
 	essences.load_dict(self, JsonUtil.get_dict(d, "essences"))
 	boons = JsonUtil.get_dict(d, "boons").duplicate()
+	masteries.clear()
+	if d.has("masteries"):
+		for m: Variant in JsonUtil.get_array(d, "masteries"):
+			learn_mastery(str(m))
+	else:
+		learn_worn_masteries()  # 숙련이 생기기 전 저장(IT9) — 든 무기의 숙련은 있던 것으로
 	fatigue.load_dict(JsonUtil.get_dict(d, "fatigue"))
 	_on_fatigue_changed(fatigue.value, 0.0, "load")
 	stat_history.clear()

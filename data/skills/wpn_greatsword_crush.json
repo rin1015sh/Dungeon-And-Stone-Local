@@ -2,7 +2,7 @@
   "id": "wpn_greatsword_crush",
   "name_ko": "내려 가르기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "greatsword",
   "cost": {
     "soul": 7
   },

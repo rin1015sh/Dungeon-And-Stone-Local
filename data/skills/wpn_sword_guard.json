@@ -2,7 +2,7 @@
   "id": "wpn_sword_guard",
   "name_ko": "막고 찌르기",
   "target": "self",
-  "gear": true,
+  "mastery": "sword",
   "cost": {
     "soul": 5
   },

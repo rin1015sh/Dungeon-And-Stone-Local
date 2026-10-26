@@ -2,7 +2,7 @@
   "id": "wpn_bow_volley",
   "name_ko": "연사",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "bow",
   "cost": {
     "soul": 6
   },

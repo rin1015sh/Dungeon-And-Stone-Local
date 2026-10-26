@@ -2,7 +2,7 @@
   "id": "wpn_halberd_reap",
   "name_ko": "휘감아 베기",
   "target": "enemy_all",
-  "gear": true,
+  "mastery": "halberd",
   "cost": {
     "soul": 9
   },

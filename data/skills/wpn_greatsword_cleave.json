@@ -2,7 +2,7 @@
   "id": "wpn_greatsword_cleave",
   "name_ko": "휩쓸어 베기",
   "target": "enemy_all",
-  "gear": true,
+  "mastery": "greatsword",
   "cost": {
     "soul": 10
   },

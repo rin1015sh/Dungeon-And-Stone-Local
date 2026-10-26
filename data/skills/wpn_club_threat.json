@@ -2,7 +2,7 @@
   "id": "wpn_club_threat",
   "name_ko": "을러대기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "club",
   "cost": {
     "soul": 4
   },

@@ -1,7 +1,7 @@
 class_name ItemPoolRules
 extends RefCounted
 ## 검사 규칙: 아이템 공식(ItemForge — 사용자 결정 2026-10-23) — 소재(materials)·종류(item_types)·아이템 forge 참조.
-## 장비 스킬(IT8): 종류·아이템 equip.skills는 "gear": true 스킬만, gear 스킬은 어느 장비든 하나가 준다.
+## 장비 스킬(IT8·IT9): 종류 skills는 mastery가 그 종류인 스킬만, 아이템 equip.skills는 mastery가 있는 스킬만, mastery 스킬은 어느 장비든 하나가 준다.
 
 const KINDS := ["metal", "leather", "wood", "cloth", "bone", "gem"]
 
@@ -58,12 +58,12 @@ static func run(v: ValidatorBase) -> void:
 			found = found or JsonUtil.get_array(t, "kinds").has(JsonUtil.get_str(v.db.get_entry("materials", mid), "kind"))
 		if not found:
 			v.err(w, "쓸 수 있는 소재가 없다")
-		_gear_refs(v, w + ".skills", JsonUtil.get_array(t, "skills"), given)
+		_gear_refs(v, w + ".skills", JsonUtil.get_array(t, "skills"), given, id)
 	for id: String in v.entries("items"):
-		_gear_refs(v, "items/%s.equip.skills" % id, JsonUtil.get_array(JsonUtil.get_dict(v.db.get_entry("items", id), "equip"), "skills"), given)
+		_gear_refs(v, "items/%s.equip.skills" % id, JsonUtil.get_array(JsonUtil.get_dict(v.db.get_entry("items", id), "equip"), "skills"), given, "")
 	for id: String in v.entries("skills"):
-		if JsonUtil.get_bool(v.db.get_entry("skills", id), "gear") and not given.has(id):
-			v.err("skills/" + id, "gear 스킬인데 주는 장비(item_types·items equip.skills)가 없다")
+		if v.db.get_entry("skills", id).has("mastery") and not given.has(id):
+			v.err("skills/" + id, "장비 스킬(mastery)인데 주는 장비(item_types·items equip.skills)가 없다")
 	for id: String in v.entries("items"):
 		var f := JsonUtil.get_dict(v.db.get_entry("items", id), "forge")
 		if f.is_empty():
@@ -76,9 +76,13 @@ static func run(v: ValidatorBase) -> void:
 			v.err("items/" + id + ".forge", "%s은(는) %s 소재를 쓰지 않는다" % [f.get("type"), m.get("kind")])
 
 
-static func _gear_refs(v: ValidatorBase, where: String, list: Array, given: Dictionary) -> void:
+## type_id가 있으면(종류 skills) 스킬 mastery가 그 종류여야 한다. 고유 장비(type_id "")는 mastery만 있으면 된다.
+static func _gear_refs(v: ValidatorBase, where: String, list: Array, given: Dictionary, type_id: String) -> void:
 	for sid: Variant in list:
 		v.ref(where, "skills", sid)
 		given[str(sid)] = true
-		if v.db.has_entry("skills", str(sid)) and not JsonUtil.get_bool(v.db.get_entry("skills", str(sid)), "gear"):
-			v.err(where, "'%s'는 \"gear\": true가 아니다(장비 스킬만)" % sid)
+		if not v.db.has_entry("skills", str(sid)):
+			continue
+		var m := JsonUtil.get_str(v.db.get_entry("skills", str(sid)), "mastery")
+		if m.is_empty() or (not type_id.is_empty() and m != type_id):
+			v.err(where, "'%s'의 mastery '%s' — 장비 스킬은 mastery = 그 무기 종류" % [sid, m])

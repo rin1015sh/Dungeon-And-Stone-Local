@@ -2,7 +2,7 @@
   "id": "wpn_dagger_slit",
   "name_ko": "그어 내기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "dagger",
   "cost": {
     "soul": 4
   },

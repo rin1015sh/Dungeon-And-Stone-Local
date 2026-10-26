@@ -2,7 +2,7 @@
   "id": "wpn_axe_hack",
   "name_ko": "찍어 베기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "axe",
   "cost": {
     "soul": 6
   },

@@ -2,7 +2,7 @@
   "id": "wpn_bow_aim",
   "name_ko": "겨눠 쏘기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "bow",
   "cost": {
     "soul": 6
   },

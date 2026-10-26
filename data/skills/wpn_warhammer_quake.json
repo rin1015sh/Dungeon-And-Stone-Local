@@ -2,7 +2,7 @@
   "id": "wpn_warhammer_quake",
   "name_ko": "땅 울리기",
   "target": "enemy_all",
-  "gear": true,
+  "mastery": "warhammer",
   "cost": {
     "soul": 12
   },

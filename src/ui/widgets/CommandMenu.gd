@@ -252,6 +252,8 @@ func _short_reason(skill_id: String, why: String) -> String:
 			return Strings.t("combat.skill_no_cost")
 		"combat.reason_sealed":
 			return Strings.t("combat.skill_sealed")
+		"combat.reason_no_mastery":
+			return Strings.t("combat.skill_no_mastery")
 	return Strings.t("combat.skill_unusable")
 
 

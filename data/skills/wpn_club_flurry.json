@@ -2,7 +2,7 @@
   "id": "wpn_club_flurry",
   "name_ko": "마구 때리기",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "club",
   "cost": {
     "soul": 5
   },

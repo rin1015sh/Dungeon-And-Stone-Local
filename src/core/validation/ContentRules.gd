@@ -157,8 +157,8 @@ static func _skills(v: ValidatorBase) -> void:
 		EffectRules.check(v, w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
 		if s.has("innate") and not s["innate"] is bool:
 			v.err(w, "innate는 true/false")
-		if s.has("gear") and not s["gear"] is bool:
-			v.err(w, "gear는 true/false(장비 스킬 — IT8)")
+		if s.has("mastery"):
+			v.ref(w + ".mastery", "item_types", s["mastery"])  # 장비 스킬 — 그 무기 종류의 숙련이 있어야 쓴다(IT8·IT9)
 		if s.has("essence_of") and JsonUtil.get_str(s, "essence_of").is_empty():
 			v.err(w, "essence_of는 원래 스킬 id 문자열")
 		elif s.has("essence_of"):

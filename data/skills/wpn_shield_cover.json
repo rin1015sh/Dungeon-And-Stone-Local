@@ -2,7 +2,7 @@
   "id": "wpn_shield_cover",
   "name_ko": "막아서기",
   "target": "self",
-  "gear": true,
+  "mastery": "shield",
   "cost": {
     "soul": 5
   },

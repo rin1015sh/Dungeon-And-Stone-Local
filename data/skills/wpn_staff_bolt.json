@@ -2,7 +2,7 @@
   "id": "wpn_staff_bolt",
   "name_ko": "마력 탄",
   "target": "enemy_single",
-  "gear": true,
+  "mastery": "staff",
   "cost": {
     "soul": 5
   },

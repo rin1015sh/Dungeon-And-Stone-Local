@@ -2,7 +2,7 @@
   "id": "wpn_tower_shield_wall",
   "name_ko": "방패 벽",
   "target": "ally_all",
-  "gear": true,
+  "mastery": "tower_shield",
   "cost": {
     "soul": 8
   },
