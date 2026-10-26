@@ -1,6 +1,7 @@
 extends RefCounted
 ## 사람형(Back) 겉옷 — 탐험 맵 몸 그림 고르기(tools/monster_art/MapLooks.gd)에서 쓴다:
-##   cloak {c, len, flare, open, fur} 어깨에서 늘어진 망토(3D 원뿔 — 어느 쪽에서 봐도 덮이고, 팔은 그 안에서 흔들려 손만 나온다. 앞모습은 가운데가 트였다)
+##   cloak {c, len, flare, open, fur, fit} 어깨에서 늘어진 망토(fit = 몸에 붙는 망토 — 단면이 몸처럼 납작한 타원이라 옆에서 봐도 볼록하지 않고
+##     어깨선을 따라 곧게 떨어진다, 사용자 2026-10-26 약탈자 "망토가 너무 볼록하게 두껍게 튀어나와 있다")(3D 원뿔 — 어느 쪽에서 봐도 덮이고, 팔은 그 안에서 흔들려 손만 나온다. 앞모습은 가운데가 트였다)
 ##   hood_up 쓴 두건(얼굴만 드러나고 뒤로 어깨까지 흘러내림 — 머리카락은 그리지 않는다)
 ##   coat {c, len} 무릎까지 오는 긴 외투(긴 소매 · 깃 · 다리 사이 자락)
 ##   quilt {c} 누빔 갑옷(겜베슨 — 가로 누빔 골 · 긴 소매) · chain {c} 사슬 셔츠(쇠 · 고리 결)
@@ -53,6 +54,13 @@ static func _cloak(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: D
 	var sy: float = j["shoulder_r"].y
 	var spine: Array = [Vector3(0, nk.y - 0.005, 0.01), Vector3(0, sy + 0.01, 0.015), Vector3(0, sy + 0.07, 0.02), bot]  # 목 → 어깨를 둥글게 덮고 → 단으로 퍼짐
 	var radii: Array = [0.065, ra - 0.01, ra + 0.005, rb]
+	var depth: Array = radii  # 앞뒤 반지름(둥근 망토는 폭과 같다)
+	if d.get("fit", false):  # 몸에 붙는 망토: 폭은 어깨 바로 바깥, 깊이는 등 두께만큼, 단까지 거의 곧게
+		var bw: float = bd["back_w"]
+		ra = shw + 0.06  # 위팔 바깥까지(뒤에서 팔을 덮는다)
+		rb = shw * float(d.get("flare", 1.05)) + 0.06
+		radii = [0.06, ra - 0.005, ra, rb]
+		depth = [0.055, bw + 0.03, bw + 0.032, bw + 0.035]
 	if _front(pr) and float(d.get("open", 1.0)) > 0.0:  # 앞이 트인 망토: 왼쪽·오른쪽 반을 따로(가운데 V)
 		var o := float(d.get("open", 1.0))
 		for s: int in [-1, 1]:
@@ -62,25 +70,42 @@ static func _cloak(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: D
 			var half := PackedVector2Array([Vector2(a.x, -10), Vector2(edge, -10), Vector2(edge, cl.h + 10), Vector2(b.x, cl.h + 10), b, a])
 			for part: PackedVector2Array in Geometry2D.intersect_polygons(band, half):
 				cl.set_clip(part)
-				Back.chain(cl, pr, g, spine, radii, m, 0.03)
+				_echain(cl, pr, g, spine, radii, depth, m, 0.03)
 		cl.set_clip(PackedVector2Array())
 	else:
 		cl.set_clip(band)
-		Back.chain(cl, pr, g, spine, radii, m, 0.03)
+		_echain(cl, pr, g, spine, radii, depth, m, 0.03)
 		cl.set_clip(PackedVector2Array())
 	for k in 11:  # 세로 주름(어깨에서 아래로 퍼진다)
 		var a := TAU * (k + rng.randf_range(0.2, 0.8)) / 11.0
 		var n := Vector3(sin(a), 0, cos(a))
-		var p0 := Vector3(sin(a) * ra * 0.9, sy + 0.05, cos(a) * ra * 0.9 + 0.012)
-		var p1 := Vector3(sin(a) * rb, hem - 0.01, cos(a) * rb + 0.03)
+		var p0 := Vector3(sin(a) * float(radii[2]) * 0.9, sy + 0.05, cos(a) * float(depth[2]) * 0.9 + 0.012)
+		var p1 := Vector3(sin(a) * rb, hem - 0.01, cos(a) * float(depth[3]) + 0.03)
 		Back.groove(cl, pr, g, [p0, p0.lerp(p1, 0.5), p1], n, 0.007, 0.012)
 	for k in 5:  # 해진 단
 		var a := rng.randf_range(0.0, TAU)
-		cl.erase(g, Back.P2(pr, Vector3(sin(a) * rb, hem - rng.randf_range(0.0, 0.02), cos(a) * rb)), rng.randf_range(0.006, 0.014) * H, rng.randf_range(0.01, 0.025) * H, 0.5)
+		cl.erase(g, Back.P2(pr, Vector3(sin(a) * rb, hem - rng.randf_range(0.0, 0.02), cos(a) * float(depth[3]))), rng.randf_range(0.006, 0.014) * H, rng.randf_range(0.01, 0.025) * H, 0.5)
 	if d.has("clasp"):  # 목 여밈 쇠
 		Back.ell(cl, pr, g, Vector3(0, nk.y + 0.03, -ra * 0.85), 0.016, 0.016, 0.01, cl.mat(d["clasp"], "metal"), 0.003)
 	if d.get("collar", false):  # 젖힌 두건(목 뒤 두툼한 천)
 		Back.ell(cl, pr, g, Vector3(0, nk.y + 0.005, 0.07), shw * 0.75, 0.05, 0.06, m, 0.02)
+
+
+## 단면이 타원인 캡슐 줄(몸 좌표 폭 us · 깊이 ws — 돌린 각도에 따라 화면 폭과 앞뒤 솟음을 섞는다, Back.ell과 같은 근사).
+static func _echain(cl: Clay, pr: Dictionary, g: int, pts: Array, us: Array, ws: Array, m: int, k: float) -> void:
+	var c: float = pr["c"]
+	var s: float = pr["s"]
+	var H: float = pr["H"]
+	for i in pts.size() - 1:
+		var rx := PackedFloat32Array()
+		var flat := 0.0
+		for j in [i, i + 1]:
+			var u := float(us[j])
+			var w := float(ws[j])
+			var x := sqrt(pow(u * c, 2.0) + pow(w * s, 2.0))
+			rx.append(x)
+			flat += sqrt(pow(u * s, 2.0) + pow(w * c, 2.0)) / x * 0.5
+		cl.cap(g, Back.P(pr, pts[i]), Back.P(pr, pts[i + 1]), rx[0] * H, rx[1] * H, m, k * H, flat)
 
 
 ## 쓴 두건: 머리를 감싼 천(얼굴은 드러남) + 뒤로 어깨까지 흘러내리는 자락 + 얼굴 둘레 테.

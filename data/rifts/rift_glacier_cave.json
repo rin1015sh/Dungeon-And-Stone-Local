@@ -26,7 +26,7 @@
     "tiles": {
       "floor": "ice_floor",
       "wall": "ice_wall",
-      "exit": "rift_exit"
+      "exit": "rift_gate_ice_floor"
     },
     "ambient_color": "#d8eeff",
     "art": {

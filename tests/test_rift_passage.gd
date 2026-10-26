@@ -43,7 +43,7 @@ func test_passages_are_floor_not_square_portal() -> void:
 	var cs := _enter("rift_iron_tomb")
 	var run := cs.rift_run
 	var exit := _exit_pos(cs)
-	assert_true(cs.map.tile_id_at(exit) != "rift_exit", "앞 길목은 사각형 출구 타일이 아니라 원래 바닥")
+	assert_false(cs.map.tile_id_at(exit).begins_with("rift_gate"), "앞 길목은 차원문 타일이 아니라 원래 바닥")
 	assert_true(cs.lights.at(exit.x, exit.y).r > 0.0, "길목에 빛이 있다")
 	assert_true(cs.map.portal_at(cs.map.entry).is_empty(), "첫 챕터 시작 자리는 길목이 아니다(균열 밖으로 나가는 길은 탈출 포탈뿐)")
 	run.debug_clear()
@@ -55,9 +55,10 @@ func test_passages_are_floor_not_square_portal() -> void:
 	assert_true(RiftPassage.exit_portal(cs.map).is_empty(), "마지막 챕터엔 처음에 출구가 없다")
 	var guardian: FieldMonsters.Group = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "guardian")[0]
 	var at := guardian.pos
+	var under := cs.map.tile_id_at(at)
 	run.on_battle_end(cs, guardian, Battle.RESULT_VICTORY, [run.guardian_id()])
 	assert_eq(_exit_pos(cs), at, "수호자가 쓰러진 자리에 탈출 포탈")
-	assert_eq(cs.map.tile_id_at(at), "rift_exit")
+	assert_eq(cs.map.tile_id_at(at), "rift_gate_" + under, "그 바닥 위에 선 차원문(tiles.json rift_gate_<바닥 id>)")
 
 
 func test_walk_forward_and_back_keeps_state() -> void:
@@ -154,6 +155,10 @@ func test_edge_openings_are_passages() -> void:
 			var zone := int(db.bal("rift.passage_zone"))
 			assert_eq(RiftPassage.dir_at(next.map, next.pos, zone), 0, "%s %d챕터 도착 자리는 어느 길목 둘레에도 들지 않는다" % [id, run.chapter + 1])
 			cs = next
+		if run.is_last_chapter():  # 수호자 자리 바닥에 맞는 차원문 타일이 있다(없으면 챕터 출구 타일 — 바닥이 네모로 어긋나 보인다)
+			for g: FieldMonsters.Group in run.remaining:
+				if g.tag == "guardian":
+					assert_true(db.has_entry("tiles", "rift_gate_" + cs.map.tile_id_at(g.pos)), "%s 수호자 자리 바닥 %s의 rift_gate 타일" % [id, cs.map.tile_id_at(g.pos)])
 
 
 ## 모든 균열의 챕터 사이 길목은 지도 가장자리에 있다(그 너머로 길이 이어지는 것처럼 — 사용자 요청 2026-10-20).

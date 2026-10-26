@@ -391,7 +391,8 @@ func compose(spec: Variant) -> Array:
 	return out
 
 
-## 수호자가 쓰러진 자리(cell)에 바깥으로 돌아가는 탈출 포탈을 세운다(이미 있으면 그대로). 화면은 tiles_changed로 그 칸을 다시 그린다.
+## 수호자가 쓰러진 자리(cell)에 바깥으로 돌아가는 탈출 포탈(세로 차원문 — 그 칸 바닥과 같은 바닥의 rift_gate_<바닥 id>)을 세운다
+## (이미 있으면 그대로). 화면은 tiles_changed로 그 칸을 다시 그린다.
 func _open_escape(s: ExploreSession, cell: Vector2i) -> void:
 	if not RiftPassage.exit_portal(s.map).is_empty():
 		return
@@ -400,7 +401,8 @@ func _open_escape(s: ExploreSession, cell: Vector2i) -> void:
 		at = cell
 	var tiles := JsonUtil.get_dict(JsonUtil.get_dict(chapter_floor_def(chapter), "gen"), "tiles")
 	var under := s.map.tile_id_at(at)
-	s.map.set_tile(at, JsonUtil.get_str(tiles, "exit", "rift_exit"))
+	var gate := "rift_gate_" + under  # 그 바닥 위에 선 차원문(tiles.json rift_gate_<바닥 id>) — 없으면 챕터 출구 타일
+	s.map.set_tile(at, gate if db.has_entry("tiles", gate) else JsonUtil.get_str(tiles, "exit", "rift_exit"))
 	s.map.portals.append({"id": "rift_exit", "pos": at, "dir": "", "to_floor": 0, "kind": "rift_exit", "found": true, "under": under})
 	RiftPassage._glow(s, at)  # 길목처럼 은은한 빛
 	s.tiles_changed.emit(Rect2i(at, Vector2i.ONE))

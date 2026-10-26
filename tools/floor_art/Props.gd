@@ -13,7 +13,7 @@ const Decals := preload("res://tools/floor_art/Decals.gd")
 ## 시트 칸 순서(tiles.json art.prop.cell이 이 번호를 가리킨다).
 const ORDER := ["corpse", "ghoul_feast", "stone_heap", "dead_campfire", "broken_gear", "offering", "spring", "drip",
 	"stalagmites", "mushroom", "wolf_den", "gnome_trinkets", "gnome_stash", "goblin_camp", "torch_stubs", "old_skeleton",
-	"cairn", "cache", "goblin_snare", "wet_slope", "portal", "rift_portal"]
+	"cairn", "cache", "goblin_snare", "wet_slope", "portal", "rift_portal", "rift_gate"]
 
 const SKIN := Color("#8a7a6a")
 const CLOTH := Color("#4a4236")
@@ -186,7 +186,38 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 				Ink.line(p, q - Vector2(1.5, 2) * u, q + Vector2(1.5, 2) * u, 1.2 * u, col.lightened(0.3), 0.9, 0.3)
 				Ink.line(p, q + Vector2(-2, 0.5) * u, q + Vector2(1, 0.5) * u, 1.0 * u, col.lightened(0.3), 0.8, 0.3)
 			Decals._blob(p, c, 12 * u, col.darkened(0.6), 0.5, 0.15)
+		"rift_gate":  # 균열 탈출 포탈: 세로로 선 차원문 — 차원광장 포탈처럼 돌 고리 안에 보랏빛 소용돌이(사용자 2026-10-26)
+			_gate(p, foot, u)
 	return p
+
+
+## 세로로 선 돌 고리(받침 돌 둘) + 안쪽 보랏빛 소용돌이(가운데 밝고 가장자리 진한 띠) + 테두리 빛·바닥 빛.
+static func _gate(p: Paint, foot: Vector2, u: float) -> void:
+	var violet := Color("#a070ff")
+	var rx := 17.0 * u
+	var ry := 27.0 * u
+	var gc := foot - Vector2(0, ry + 7.0 * u)
+	Ink.glow(p, foot.x, foot.y - 2 * u, 34 * u, violet, 0.45, false, 0.35)  # 바닥에 번진 빛
+	_shadow(p, foot, 26 * u, 6 * u)
+	var deep := Color("#170828")
+	var mid := Color("#8a58e8")
+	var core := Color("#efe2ff")
+	p.fill_poly(Cave._ellipse(gc, rx, ry, 56), func(x: int, y: int) -> Color:
+		var n := Vector2((x - gc.x) / rx, (y - gc.y) / ry)
+		var d := minf(1.0, n.length())
+		var band := pow(0.5 + 0.5 * sin(atan2(n.y, n.x) * 2.0 - d * 9.0 + p.nz("mid", x, y) * 1.2), 1.6)
+		var c := deep.lerp(mid, band * (1.0 - d * 0.3))
+		c = c.lerp(core, smoothstep(0.5, 0.0, d) * 0.9)
+		c = c.lerp(Color("#c8a8ff"), smoothstep(0.82, 1.0, d) * 0.7)  # 안쪽 테가 밝다
+		return c)
+	for k in 18:  # 돌 고리(머릿돌이 위)
+		var a := TAU * k / 18.0 - PI * 0.5
+		var q := gc + Vector2(cos(a) * (rx + 4.5 * u), sin(a) * (ry + 4.5 * u))
+		Cave._stone(p, q, 5.2 * u, 4.6 * u, STONE.darkened(0.25 if k != 0 else 0.1).lightened(p.rng.randf_range(-0.05, 0.05)))
+	for s: float in [-1.0, 1.0]:  # 받침 돌
+		Cave._stone(p, foot + Vector2(s * 13.0, -4.0) * u, 9.0 * u, 6.0 * u, STONE.darkened(0.35))
+	Ink.path(p, Cave._ellipse(gc, rx, ry, 56), 1.6 * u, true, Color("#e0ccff"), 0.85, 0.3)
+	Ink.glow(p, gc.x, gc.y, rx * 1.9, violet, 0.3, false, ry / rx)  # 고리 둘레로 번지는 빛
 
 
 static func _shadow(p: Paint, c: Vector2, rx: float, ry: float) -> void:

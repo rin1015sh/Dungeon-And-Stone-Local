@@ -23,7 +23,7 @@
     "tiles": {
       "floor": "mine_floor",
       "wall": "mine_wall",
-      "exit": "rift_exit"
+      "exit": "rift_gate_mine_floor"
     },
     "ambient_color": "#c8ffb0",
     "art": {

@@ -26,7 +26,7 @@
     "tiles": {
       "floor": "fortress_floor",
       "wall": "fortress_wall",
-      "exit": "rift_exit"
+      "exit": "rift_gate_fortress_floor"
     },
     "ambient_color": "#ff9a8a",
     "art": {
