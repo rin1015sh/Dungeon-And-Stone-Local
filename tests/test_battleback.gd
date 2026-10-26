@@ -70,3 +70,18 @@ func test_new_foe_takes_front_gap_first() -> void:
 	assert_eq(FoeRows.fit_new(taken, 0.8, 2.0, 0.2, 3), Vector2(0.0, 0.0), "앞줄 가운데 빈자리")
 	taken.append(Vector3(0.0, 0, 0.8))
 	assert_eq(int(FoeRows.fit_new(taken, 0.8, 2.0, 0.2, 3).y), 1, "앞줄이 차면 뒷줄")
+
+
+## 보스(pinned)는 늘 앞줄 한가운데, 나머지는 양옆 → 넘치면 뒷줄(보스 몸 바로 옆 틈).
+func test_boss_pinned_center() -> void:
+	var widths := PackedFloat32Array([0.8, 0.8, 3.0, 0.8, 0.8])
+	var out := FoeRows.arrange(widths, 2.5, 0.2, 2)
+	var pos: Array = out["pos"]
+	assert_eq(pos[2], Vector2(0.0, 0.0), "보스 = 앞줄 가운데")
+	for i in [0, 1, 3, 4]:
+		var p: Vector2 = pos[i]
+		assert_true(absf(p.x) + 0.4 <= 2.5 + 0.01, "벽 안")
+		if int(p.y) == 1:
+			assert_true(absf(p.x) > 1.5, "뒷줄 가운데는 보스 몸 밖 틈(몸 뒤에 숨지 않게)")
+	var wide := FoeRows.arrange(PackedFloat32Array([0.8, 6.0]), 2.0, 0.2, 1)
+	assert_eq((wide["pos"] as Array)[1], Vector2(0.0, 0.0), "벽보다 넓은 보스도 가운데")

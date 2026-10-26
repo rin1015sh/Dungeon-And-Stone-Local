@@ -119,7 +119,8 @@ func layout() -> void:
 			_slots.erase(u)
 	var fresh: Array[Combatant] = foes.filter(func(u: Combatant) -> bool: return not _slots.has(u))
 	if not fresh.is_empty():
-		if _slots.is_empty() or not _fit_new(fresh, stage_h):
+		var boss_new := fresh.any(func(u: Combatant) -> bool: return (_views[u] as BattlerView).boss)  # 보스는 늘 가운데 — 다시 정렬
+		if _slots.is_empty() or boss_new or not _fit_new(fresh, stage_h):
 			_pack(foes, stage_h)
 		_order()
 	var ppm := _ppm(stage_h)
@@ -202,7 +203,12 @@ func _pack(foes: Array[Combatant], stage_h: float) -> void:
 	var fit := minf(1.0, size.x * UiTheme.ui_float("combat_enemy_span", 0.92) / maxf(1.0, widest))
 	for i in widths.size():
 		widths[i] *= fit
-	var out := FoeRows.arrange_fit(widths, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
+	var pinned := -1  # 첫 보스(계층군주·수호자·중간 보스)는 늘 앞줄 한가운데
+	for i in foes.size():
+		if (_views[foes[i]] as BattlerView).boss:
+			pinned = i
+			break
+	var out := FoeRows.arrange_fit(widths, _half_width, gap, UiTheme.metric("combat_rows_max", 3), pinned)
 	var pos: Array = out["pos"]
 	_slots.clear()
 	for i in foes.size():

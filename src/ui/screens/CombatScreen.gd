@@ -278,12 +278,9 @@ func _on_event(e: Dictionary) -> void:
 	_refresh()
 
 
-## 쓰러지거나 물러난 참가자를 무대에서 치울지: 적·소환수는 치운다(웨이브·증원으로 무대가 넘치지 않게).
-## 탐험가 본인과 수호자·계층군주급은 흐린 채 남긴다.
+## 쓰러지거나 물러난 참가자를 무대에서 치울지: 적(수호자·계층군주 포함 — 빛 먼지로 흩어진다)·소환수는 치운다. 탐험가 본인만 흐린 채 남긴다.
 func _drops_view(u: Combatant) -> bool:
-	if u.side == Combatant.SIDE_PARTY and not u.summoned:
-		return false
-	return not (u.actor is Monster and JsonUtil.get_str((u.actor as Monster).def, "rank", "normal") != "normal")
+	return not (u.side == Combatant.SIDE_PARTY and not u.summoned)
 
 
 func _remove_unit(u: Combatant) -> void:
