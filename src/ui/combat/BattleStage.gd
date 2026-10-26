@@ -127,12 +127,18 @@ func layout() -> void:
 	var drop := maxf(_floor_y - hy, float(UiTheme.metric("combat_rows_min_drop", 40)))
 	var step := UiTheme.ui_float("combat_rows_depth_step", 0.45)
 	var rise := stage_h * UiTheme.ui_float("combat_rows_rise", 0.1)  # 뒷줄이 적어도 이만큼 위에(지평선이 낮아도 앞줄 뒤에 묻히지 않게)
+	var deep := foes.any(func(u: Combatant) -> bool: return _row(u) > 0)
+	# 뒷줄이 있으면 앞줄을 이쪽으로 당긴다(아래로·조금 크게) — 뒷줄이 앞줄 머리 위로 보이게
+	var front_y := minf(_floor_y + stage_h * UiTheme.ui_float("combat_rows_front_pull", 0.14), stage_h * 0.97) if deep else _floor_y
+	var front_k := UiTheme.ui_float("combat_rows_front_scale", 1.08) if deep else 1.0
 	for u in foes:
 		var v: BattlerView = _views[u]
 		var sl: Dictionary = _slots[u]
 		var row := int(sl["row"])
-		var k := FoeRows.scale_of(row, step)
-		v.place(Vector2(size.x / 2.0 + float(sl["x"]) * ppm * k, _floor_y - maxf(drop * (1.0 - k), rise * row)), stage_h * float(sl["h"]) * k)
+		var k := FoeRows.scale_of(row, step) if row > 0 else front_k
+		var foot_y := front_y if row == 0 else _floor_y - maxf(drop * (1.0 - k), rise * row)
+		# 옆 자리는 모든 줄이 앞줄 배율로 — 뒷줄이 화면에서도 앞줄 사이 틈에 온다(원근대로 가운데로 모으면 앞줄 뒤에 숨는다)
+		v.place(Vector2(size.x / 2.0 + float(sl["x"]) * ppm * front_k, foot_y), stage_h * float(sl["h"]) * k)
 	queue_redraw()
 
 
