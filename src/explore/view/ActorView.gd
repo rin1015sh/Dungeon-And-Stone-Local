@@ -15,9 +15,6 @@ var holding_torch: bool = false
 var calm: bool = false  ## 그래픽 품질 low — 횃불 빛이 흔들리지 않는다
 
 var _sheet: ActorSheet = null
-var _armor: Array[ActorSheet] = []  ## 갑옷 겹(ArmorLook — 몸 그림 위에 순서대로)
-var _pc: PlayerCharacter = null
-var _render: Dictionary = {}
 var _walk_t: float = 0.0
 var _still: float = 0.0       # 멈춘 지 몇 초(잠깐 멈춰도 걸음이 끊기지 않게)
 var _last_pos: Vector2 = Vector2.INF
@@ -44,13 +41,6 @@ func setup_for(actor: Actor, render: Dictionary) -> void:
 	if _sheet != null:
 		size = _sheet.world_size()
 		_col = _sheet.stand
-		if actor is PlayerCharacter:
-			if _pc != null and _pc.equipment.changed.is_connected(_on_equipment_changed):
-				_pc.equipment.changed.disconnect(_on_equipment_changed)
-			_pc = actor
-			_render = render
-			_pc.equipment.changed.connect(_on_equipment_changed)
-			_load_armor()
 	_glow_energy = JsonUtil.get_float(lighting, "torch_glow_energy", 0.35)
 	_flicker = JsonUtil.get_float(lighting, "torch_flicker", 0.06)
 	_ghost = _GhostNode.new()
@@ -97,20 +87,6 @@ func _animate(delta: float) -> void:
 		_redraw_all()
 
 
-## 장착한 갑옷의 겹 시트를 다시 읽는다.
-func _load_armor() -> void:
-	_armor.clear()
-	for path in ArmorLook.map_paths(_pc.db, _pc.equipment, _render, _pc.race_id):
-		var layer := ActorSheet.load_for(_render, path)
-		if layer != null:
-			_armor.append(layer)
-
-
-func _on_equipment_changed(_slot: String) -> void:
-	_load_armor()
-	_redraw_all()
-
-
 func face(dir: Vector2i) -> void:
 	if dir != Vector2i.ZERO and dir != facing:
 		facing = dir
@@ -144,8 +120,6 @@ func paint(canvas: CanvasItem, silhouette: bool) -> void:
 			canvas.draw_circle(Vector2.ZERO, size.x * 0.3, Color(0, 0, 0, 0.45))
 			canvas.draw_set_transform_matrix(Transform2D.IDENTITY)
 		_sheet.draw(canvas, facing, _col)
-		for layer in _armor:
-			layer.draw(canvas, facing, _col)
 		if holding_torch and not silhouette:
 			_draw_torch(canvas)
 		return

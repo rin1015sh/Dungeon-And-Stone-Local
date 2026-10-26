@@ -3,8 +3,6 @@ extends SceneTree
 ## 아군 그림(tools/monster_art/Party.gd)도 함께: 탐험가 <종족>_back·_side → assets/party/, 아군 소환수 <id>_back → assets/monsters/.
 ##   godot --headless --path . --script res://tools/paint_monsters.gd [-- --only=<id,id…>] [--index](그리지 않고 색인만 다시)
 ##   --only=party(아군 그림만) · --only=human_side,slime_back(그 그림만)
-##   --armor: 탐험가 갑옷 겹(BackArmor.RACES × back·side × 벌 × 부위) → assets/party/armor/<종족>_<back|side>/<벌>_<부위>.webp
-##     (몸 그림과 같은 크기·자리 — 몸 그림도 같이 다시 그린다. 탐험가 그림은 갑옷이 들어갈 자리만큼 둘레를 더 남긴다: ARMOR_PAD)
 ## 그림체 = 피어 앤 헝거 몬스터 그림(사용자 첨부 참고, ASSUMPTIONS UI8): 3D 덩어리로 빚은 몸(Clay) → 3~4단 붓 칠·적갈색 그늘 ·
 ## 잉크 윤곽·골 · 펜 빗금(Render) → 털 붓결·피·때(Fur·Finish). 한 장에 2~10초, 전부 약 5분.
 ## 그림은 둘레만 남겨 자르고(발 = 아래 끝), index.json에 그림마다 몸 높이 px를 적는다(들어 올린 무기·뿔은 키에서 빼고,
@@ -13,8 +11,6 @@ extends SceneTree
 
 const Specs := preload("res://tools/monster_art/Specs.gd")
 const Party := preload("res://tools/monster_art/Party.gd")
-const BackArmor := preload("res://tools/monster_art/BackArmor.gd")
-const ARMOR_PAD := [16, 24, 16, 0]  ## 탐험가 그림 둘레에 더 남기는 px(왼·위·오른·아래) — 어깨받이·투구가 몸 그림 밖으로 나온다
 const SEED := 2026
 const OUT_DIR := "res://assets/monsters"
 
@@ -28,18 +24,12 @@ func _init() -> void:
 		if a.begins_with("--only="):
 			only = a.trim_prefix("--only=").split(",")
 		index_only = index_only or a == "--index"
-		if a == "--armor":
-			only = PackedStringArray(["armor"])
 	var db := GameDatabase.new()
 	db.load_all("res://data")
 	var n := 0
 	for id: String in db.get_collection("monsters"):
 		if only.is_empty() or only.has(id):
 			n += _one(OUT_DIR, id, index_only, func(s: int) -> Variant: return Specs.paint(id, db.get_entry("monsters", id), s), func(c: float) -> float: return Specs.body_height(id, c))
-	if only.has("armor"):
-		for race: String in BackArmor.RACES:
-			for view: String in Party.VIEWS:
-				n += _armor(race + "_" + view)
 	for id: String in Party.ids():
 		if only.is_empty() or only.has(id) or only.has("party"):
 			n += _one(Party.out_dir(id), id, index_only, func(s: int) -> Variant: return Party.paint(id, s), func(c: float) -> float: return Party.body_height(id, c))
@@ -73,38 +63,8 @@ func _one(dir: String, id: String, index_only: bool, painter: Callable, body: Ca
 		print("그림 없음(설계 없음): " + id)
 		return 0
 	var img: Image = p.to_image()
-	var used := _crop(id, img)
+	var used := img.get_used_rect().grow(6).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
 	img.get_region(used).save_webp(dir.path_join(id + ".webp"), true, 0.9)
-	idx[id] = int(body.call(float(img.get_used_rect().size.y)))
+	idx[id] = int(body.call(float(used.size.y - 12)))
 	print("그림: %s (%d ms)" % [id, Time.get_ticks_msec() - t])
 	return 1
-
-
-## 남길 둘레: 그린 곳 + 6px(탐험가는 갑옷 자리 ARMOR_PAD만큼 더).
-func _crop(id: String, img: Image) -> Rect2i:
-	var used := img.get_used_rect().grow(6)
-	if Party.RACES.has(id.trim_suffix("_back").trim_suffix("_side")):
-		used = used.grow_individual(ARMOR_PAD[0], ARMOR_PAD[1], ARMOR_PAD[2], ARMOR_PAD[3])
-	return used.intersection(Rect2i(Vector2i.ZERO, img.get_size()))
-
-
-## 탐험가 한 그림(id = <종족>_<back|side>)의 갑옷 겹: 벌 × 부위마다 그 부위만 입혀 그려 갑옷 픽셀만 남기고, 몸 그림과 같은 자리로 자른다.
-func _armor(id: String) -> int:
-	var t := Time.get_ticks_msec()
-	var seed_value := SEED + id.hash() % 9973
-	var base: Image = (Party.paint(id, seed_value) as Variant).to_image()
-	var used := _crop(id, base)
-	var dir := Party.out_dir(id).path_join("armor").path_join(id)
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
-	var n := 0
-	for set_id: String in BackArmor.SETS:
-		for part: String in BackArmor.PARTS:
-			var sp := Party.spec_of(id)
-			sp["armor"] = {part: set_id}
-			var out := {}
-			var img := Party.figure(sp, seed_value, out).to_image()
-			BackArmor.cut(img, out["mask"], 2)
-			img.get_region(used).save_webp(dir.path_join("%s_%s.webp" % [set_id, part]), true, 0.9)
-			n += 1
-	print("갑옷 겹: %s %d장 (%d ms)" % [id, n, Time.get_ticks_msec() - t])
-	return n

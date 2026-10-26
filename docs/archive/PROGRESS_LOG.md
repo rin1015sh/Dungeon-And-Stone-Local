@@ -6,14 +6,6 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
-- **갑옷 겹 그림 — 인간 가죽·쇠 한 벌씩, 부위별 (2026-10-26, 사용자 "가죽 한 벌 쇠 한 벌 파츠별로 쓸 수 있게. 바바리안이랑 인간이랑 체형 다른데 일단 인간 것만")** — AM43.
-  - 범위: 인간 탐험가에 가죽·쇠 × 머리·몸·장갑·신발 = 8겹, 맵 걷기 시트(4방향 × 5걸음)와 전투 뒷모습·옆모습 모두. 장착한 장비에 따라 게임이 얹는다. 완료 기준: 겹을 몸 위에 얹으면 칸마다 꼭 맞고, 장비를 바꾸면 그림이 바뀐다. 테스트: `tests/test_armor_look.gd`(벌·순서·그림 크기) + 캡처(`--equip`·`--mate_equip`).
-  - 그림: `tools/monster_art/BackArmor.gd`(부위 × 벌 설계 — 밑옷 누빔 갑옷보다 두껍게 shell + 어깨받이·띠 자락·이음매·리벳). `Party.figure(sp, seed, out)` — `sp.armor`가 있으면 갑옷 재질이 맨 앞에 보이는 픽셀 마스크(`out.mask`) → `BackArmor.cut`(1~2px 넓혀 경계 잉크까지) → 나머지 투명. 그림 차이(diff)로 오리는 방법은 잉크 선이 `p.rng` 순서에 따라 흔들려 몸 전체가 달라져 못 썼다.
-  - 맵: `paint_actors.gd -- --armor` → `assets/actors/armor/human/<벌>_<칸>.webp`(걷기 시트와 같은 360×432). 전투: `paint_monsters.gd -- --armor` → `assets/party/armor/human_<back|side>/<벌>_<칸>.webp`(몸 그림과 같은 크기 — 탐험가 몸 그림은 어깨받이·투구 자리만큼 둘레를 더 남기게 다시 자름 `ARMOR_PAD`).
-  - 겪은 것: 쇠가 맵 크기에서 하얗게 날아감(재질 spec 0.55 — 갑옷은 0.22·사슬 0.12, 색도 어둡게), 투구 사슬 목가리개를 어깨까지 넓히면 선반처럼 튀어나옴(목 둘레로), 가죽 띠 자락이 허벅지를 따라 엉덩이 모양(허리만 따르게), 장갑이 밑옷 팔목 가죽과 같은 색(밝게).
-  - 게임: `ArmorLook`(장비 칸 order → 아이템 `forged.material` → 소재 kind → `sets`) · `ActorView`(겹 시트를 몸 시트 위에, `equipment.changed`면 다시 읽음) · `BattlerView`(뒷모습·옆모습마다 겹). 그림이 없는 종족(바바리안)은 아무것도 안 얹는다. 데이터 `render.json view.armor_art`.
-  - 캡처: 전투 — 주인공 쇠 한 벌(옆모습), 동료 둘 가죽 한 벌(뒷모습·옆모습). 탐험 — 쇠 한 벌. check.sh 통과(테스트 440).
-
 - **탐험가 옷차림 h4 · b2로 교체, 전투 뒷모습도 (2026-10-26, 사용자 "h4 b2로 교체하되 h3도 저장해 줘 나중에 NPC로 쓰게. 전투 화면의 아군 뒷모습도 이에 맞게 그려 주고")** — AM42.
   - `MapLooks.CHOSEN` = {human: h4_gambeson, barbarian: b2_leather} — `paint_actors`(맵 걷기 시트)와 `Party.spec_of`(전투 뒷모습·옆모습, `paint_monsters --only=human_back,…`)가 같이 읽는다. 옛 `paint_actors.gd LOOK`는 없앴다.
   - `MapLooks.KEEP` = [h3_coat] → `assets/actors/looks/h3_coat.webp`(paint_actors가 종족 그림과 같이 그린다, 게임은 아직 안 씀).

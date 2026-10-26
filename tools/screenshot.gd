@@ -29,7 +29,6 @@ extends Node
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
-## --equip=<아이템 id,…>: 탐험에 들어가자마자 주인공에게 입힌다(갑옷 겹 그림 확인 — AM43), --mate_equip=<id,…>: --mate 동료들에게
 ## --shots=<목록 json> --out=<폴더>: (explore) 장면 목록을 한 번에 찍어 <폴더>/<name>.png로(tools/ShotList.gd, 목록 예 tools/shots/floor1.json)
 
 const ShotList := preload("res://tools/ShotList.gd")
@@ -97,8 +96,6 @@ func _run() -> void:
 		if _args.has("shots"):  # 장면 목록 일괄 캡처 → --out 폴더
 			get_tree().quit(await ShotList.run(self, explore, str(_args["shots"]), str(_args["out"])))
 			return
-		if _args.has("equip"):
-			_equip(explore.session.player, str(_args["equip"]))
 		if _args.has("torch"):
 			explore.session.use_category("light")
 		var steps := str(_args["walk"]).to_int()
@@ -221,8 +218,6 @@ func _run() -> void:
 					var mv := str(_args["mate"])
 					for race in ("human" if mv == "true" else mv).split(","):
 						var mate := PlayerCharacter.create(DataRegistry.db, race, "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
-						if _args.has("mate_equip"):
-							_equip(mate, str(_args["mate_equip"]))
 						ms._add_unit(ms.battle.add(mate, Combatant.SIDE_PARTY))
 					if mv == "true":
 						ms._menu.close()
@@ -478,14 +473,3 @@ func _summon() -> void:
 				var av := str(_args["ally_summon"])
 				for aid in ("soldier_deadman" if av == "true" else av).split(","):
 					BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": aid})
-
-
-## 아이템들을 입힌다(그 칸에 있던 것은 벗긴다).
-func _equip(pc: PlayerCharacter, ids: String) -> void:
-	for id in ids.split(","):
-		var slot := pc.equipment.pick_slot(id)
-		if slot.is_empty():
-			continue
-		if not pc.equipment.is_empty(slot):
-			pc.equipment.unequip(pc.stats, slot)
-		pc.equipment.equip(pc.stats, id, slot)

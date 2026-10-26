@@ -11,7 +11,6 @@ extends SceneTree
 const Party := preload("res://tools/monster_art/Party.gd")
 const MapMonster := preload("res://tools/monster_art/MapMonster.gd")
 const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
-const BackArmor := preload("res://tools/monster_art/BackArmor.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 
 ## 정한 값(사용자 2026-10-17 — 피어 앤 헝거 맵 그림 참고 시트를 보고 여러 방법·템플릿을 비교해 고름: 방법 ⑤ + 머리 템플릿 5).
@@ -89,7 +88,6 @@ const BOSS_SCALE := 1.4
 var _idle_ids := PackedStringArray()  ## --idle=<id,...>: 보스가 방에서 기다리는 자세 한 장만 그린다(MapMonster.BOSSES)
 var _set: Dictionary = {}  ## --set=head=2,legs=0.8: 맨 위 상수를 이번만 바꾼다(키 = 상수 이름 소문자)
 var _look := ""  ## 지금 그리는 옷차림(MapLooks id — 빈 값 = 전투 그림 옷)
-var _armor := {}  ## 지금 그리는 갑옷 겹(BackArmor {부위: 벌}) — 비어 있지 않으면 그 갑옷만 남긴 투명 시트
 
 
 func _init() -> void:
@@ -102,8 +100,6 @@ func _init() -> void:
 			_idle_ids = a.trim_prefix("--idle=").split(",")
 		elif a.begins_with("--look="):
 			looks = a.trim_prefix("--look=").split(",")
-		elif a == "--armor":  # 갑옷 겹 시트만: <out>/armor/<종족>/<벌>_<부위>.webp(BackArmor.RACES)
-			only = PackedStringArray(["armor"])
 		elif a.begins_with("--out="):
 			_out = a.trim_prefix("--out=")
 		elif a.begins_with("--set="):
@@ -119,15 +115,6 @@ func _init() -> void:
 			if MapLooks.has(id):
 				_look = id
 				_explorer(MapLooks.race_of(id), id)
-		quit(0)
-		return
-	if only.has("armor"):
-		for race: String in BackArmor.RACES:
-			_look = str(MapLooks.CHOSEN.get(race, ""))
-			for set_id: String in BackArmor.SETS:
-				for part: String in BackArmor.PARTS:
-					_armor = {part: set_id}
-					_explorer(race, "armor/%s/%s_%s" % [race, set_id, part])
 		quit(0)
 		return
 	if not _idle_ids.is_empty():
@@ -235,13 +222,8 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 				sp[key] = extra[key]
 	if phase != 0.0:
 		sp["walk"] = phase
-	var cut := {}
-	if not _armor.is_empty():
-		sp["armor"] = _armor
-	var p: Paint = Party.figure(sp, SEED + name.hash() % 997, cut)
+	var p: Paint = Party.figure(sp, SEED + name.hash() % 997)
 	var img := p.to_image()
-	if not _armor.is_empty():  # 갑옷이 보이는 픽셀만(경계 잉크 1px까지)
-		BackArmor.cut(img, cut["mask"], 1)
 	var H := float(sp["height"])
 	var foot := Vector2(img.get_width() * 0.5, img.get_height() - H * 0.03)
 	var out := _shrink(img, foot, JsonUtil.get_float(_cfg, "body_px", 84.0) / _v("render_h", RENDER_H))
