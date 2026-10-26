@@ -30,7 +30,7 @@
     },
     "ambient_color": "#ff9a8a",
     "art": {
-      "battleback": "res://assets/battle/blood_fortress.webp",
+      "battleback": {"image": "res://assets/battle/blood_fortress.webp", "half_width": 3.2},
       "palette": {
         "near_black": "#1a0e0d",
         "tone": "#f4e6e2"
@@ -175,6 +175,7 @@
   "chapters": [
     {
       "id": "ch1",
+      "battleback": {"image": "res://assets/battle/blood_fortress_ch1.webp", "half_width": 3.6},
       "name_ko": "외곽 검문소",
       "desc_ko": "데드맨들이 지키는 검문소.",
       "map": {
@@ -201,6 +202,7 @@
     },
     {
       "id": "ch2",
+      "battleback": {"image": "res://assets/battle/blood_fortress_ch2.webp", "half_width": 4.0},
       "name_ko": "도개교",
       "desc_ko": "도개교가 내려올 때까지 해자에서 기어오르는 데드맨을 버텨라.",
       "map": {
@@ -243,6 +245,7 @@
     },
     {
       "id": "ch3",
+      "battleback": {"image": "res://assets/battle/blood_fortress_ch3.webp", "half_width": 3.0},
       "name_ko": "외성벽 시가지",
       "desc_ko": "한 무리에 수십 마리 — 쉴 틈 없는 연전. 광장 한가운데 마른 분수대가 있다.",
       "map": {
@@ -289,6 +292,7 @@
     },
     {
       "id": "ch4",
+      "battleback": {"image": "res://assets/battle/blood_fortress_ch4.webp", "half_width": 2.6},
       "name_ko": "내성벽 지하 감옥",
       "desc_ko": "축축한 감옥. 쥐와 영체가 떠돌고, 깊은 곳에 시체골렘이 웅얼거린다.",
       "map": {

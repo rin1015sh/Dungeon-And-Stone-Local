@@ -93,6 +93,8 @@
     "combat_boss_ranks": ["guardian", "midboss", "lord", "variant_guardian"],
     "combat_dim_alpha": 1.0,
     "combat_backdrop_dim": 0.12,
+    "combat_backdrop_camera": {"_comment": "전투 뒷그림의 그림 크기와 지평선(소실점) y px — tools/battle_art/Room.gd hy와 같게", "width": 1280, "height": 720, "horizon": 250},
+    "combat_human_m": 1.7, "combat_rows_half_width": 3.0, "combat_rows_max": 3, "combat_rows_depth_step": 0.45, "combat_rows_min_drop": 40, "combat_rows_rise": 0.13,
     "combat_card_width": 150,
     "combat_figure_height": 110,
     "combat_stage_gap": 160,

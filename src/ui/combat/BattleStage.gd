@@ -3,15 +3,17 @@ extends Control
 ## 전투 무대(피어 앤 헝거식 — 정면에서 맞닥뜨린다): 어둠 속 바닥에 떨어진 빛 웅덩이,
 ## 그 위 가운데에 적이 이쪽을 보고 서고(덩치에 따라 크게, 아군 머리보다 위 — 가리지 않게, 자리 고정),
 ## 화면 아래쪽 앞줄에 아군이 등을 보이고 선다(다리는 아래 창에 가린다). 뒤에는 그 층·균열의 전투 뒷그림(소실점 통로 — set_backdrop).
+## 적이 많아 통로 벽(뒷그림 half_width m) 안에 한 줄로 못 서면 뒷줄로 — 깊이만큼 작아지고 소실점 쪽으로 다가간다(FoeRows, UI29).
 ## 배치 수치는 render.json ui.combat_* (bottom_reserve = 아래 창 높이).
 
 var _views: Dictionary = {}  # Combatant -> BattlerView
 var _db: GameDatabase
-var _slots: Dictionary = {}  # 적 Combatant -> {"x": 화면 폭 비율(발 가운데), "h": 키 / 무대 높이} — 고정 자리
+var _slots: Dictionary = {}  # 적 Combatant -> {"x": 가운데에서 m(앞줄 기준), "row": 줄(0 = 앞), "h": 앞줄 키 / 무대 높이} — 고정 자리
 var _floor_y: float = 0.0    # 적 발 높이(px) — 빛 웅덩이도 여기
 var _layout_queued: bool = false
 var _knowers: Array[Knowledge] = []  # 아군의 기록 — 조사한 몬스터는 생명력·알아낸 상성이 보인다(BattlerView)
 var _back: Texture2D = null  # 전투 뒷그림(층 art.battleback · 균열 look.art.battleback) — 없으면 어둠뿐
+var _half_width: float = 3.0  # 통로 반 폭(m, 앞줄 적 크기 기준) — 적이 이 안에 선다
 
 
 func setup(db: GameDatabase, knowers: Array[Knowledge] = []) -> void:
@@ -23,9 +25,11 @@ func setup(db: GameDatabase, knowers: Array[Knowledge] = []) -> void:
 		layout())
 
 
-## 전투 뒷그림(경로가 비었거나 파일이 없으면 어둠만).
-func set_backdrop(path: String) -> void:
+## 전투 뒷그림(경로가 비었거나 파일이 없으면 어둠만) + 통로 반 폭(m — 0이면 render.json 기본값).
+func set_backdrop(path: String, half_width: float = 0.0) -> void:
 	_back = load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
+	_half_width = half_width if half_width > 0.0 else UiTheme.ui_float("combat_rows_half_width", 3.0)
+	_slots.clear()
 	queue_redraw()
 
 
@@ -72,11 +76,22 @@ func views() -> Dictionary:
 	return _views
 
 
-## 아군을 적보다 앞(나중)에 그린다.
+## 뒷줄 적 → 앞줄 적 → 아군 순서로 그린다(앞에 선 것이 위에).
 func _order() -> void:
+	var foes: Array[Combatant] = []
+	for u: Combatant in _views:
+		if u.side != Combatant.SIDE_PARTY:
+			foes.append(u)
+	foes.sort_custom(func(a: Combatant, b: Combatant) -> bool: return _row(a) > _row(b))
+	for u in foes:
+		move_child(_views[u], -1)
 	for u: Combatant in _views:
 		if u.side == Combatant.SIDE_PARTY:
 			move_child(_views[u], -1)
+
+
+func _row(u: Combatant) -> int:
+	return int((_slots.get(u, {}) as Dictionary).get("row", 0))
 
 
 func _bottom() -> float:
@@ -84,9 +99,9 @@ func _bottom() -> float:
 
 
 ## 배치: 아군을 먼저 세우고(아래 앞줄), 적의 발 높이는 아군 머리 위로 올린다(combat_enemy_clear — 아군이 적을 가리지 않게,
-## combat_enemy_floor_min 아래로는 내리지 않는다). 적은 처음 나온 무리 그대로 가운데 정렬한 **고정 자리**에 선다 —
-## 쓰러져도 남은 적이 가운데로 모이지 않고, 새로 나온 적(소환·증원·분열)은 빈자리 중 가운데에 가까운 곳에(자리가 없으면 다시 정렬).
-## 키 = 사람 키 × 크기(작은 건 작게·큰 건 크게), 보스 등급은 크기와 상관없이 무대를 거의 채운다. 자리 = 화면 폭 비율·무대 높이 비율.
+## combat_enemy_floor_min 아래로는 내리지 않는다). 적은 처음 나온 무리 그대로 통로 안에 앞줄부터 선 **고정 자리**에 선다(FoeRows) —
+## 쓰러져도 남은 적이 모이지 않고, 새로 나온 적(소환·증원·분열)은 빈자리 중 앞줄·가운데에 가까운 곳에(자리가 없으면 다시 정렬).
+## 키 = 사람 키 × 크기(작은 건 작게·큰 건 크게), 보스 등급은 크기와 상관없이 무대를 거의 채운다. 뒷줄은 깊이 배율만큼 작고 소실점 쪽으로.
 func layout() -> void:
 	var stage_h := size.y - _bottom()
 	if size.x <= 0.0 or stage_h <= 0.0:
@@ -106,11 +121,34 @@ func layout() -> void:
 	if not fresh.is_empty():
 		if _slots.is_empty() or not _fit_new(fresh, stage_h):
 			_pack(foes, stage_h)
+		_order()
+	var ppm := _ppm(stage_h)
+	var hy := _horizon_y()
+	var drop := maxf(_floor_y - hy, float(UiTheme.metric("combat_rows_min_drop", 40)))
+	var step := UiTheme.ui_float("combat_rows_depth_step", 0.45)
+	var rise := stage_h * UiTheme.ui_float("combat_rows_rise", 0.1)  # 뒷줄이 적어도 이만큼 위에(지평선이 낮아도 앞줄 뒤에 묻히지 않게)
 	for u in foes:
 		var v: BattlerView = _views[u]
 		var sl: Dictionary = _slots[u]
-		v.place(Vector2(size.x * float(sl["x"]), _floor_y), stage_h * float(sl["h"]))
+		var row := int(sl["row"])
+		var k := FoeRows.scale_of(row, step)
+		v.place(Vector2(size.x / 2.0 + float(sl["x"]) * ppm * k, _floor_y - maxf(drop * (1.0 - k), rise * row)), stage_h * float(sl["h"]) * k)
 	queue_redraw()
+
+
+## 앞줄에서 1m의 화면 px(사람 키 = 무대 높이 × combat_enemy_height가 combat_human_m).
+func _ppm(stage_h: float) -> float:
+	return stage_h * UiTheme.ui_float("combat_enemy_height", 0.4) / UiTheme.ui_float("combat_human_m", 1.7)
+
+
+## 뒷그림의 지평선(소실점) 화면 y — 그림을 화면을 덮게 깐 배율로(그림이 없어도 같은 자리).
+func _horizon_y() -> float:
+	var cam := UiTheme.ui_dict("combat_backdrop_camera")
+	var ts := Vector2(JsonUtil.get_float(cam, "width", 1280.0), JsonUtil.get_float(cam, "height", 720.0))
+	if _back != null:
+		ts = _back.get_size()
+	var k := maxf(size.x / ts.x, size.y / ts.y)
+	return (size.y - ts.y * k) / 2.0 + JsonUtil.get_float(cam, "horizon", 250.0) * k
 
 
 ## 아군: 아래 앞줄에 고르게. 가장 높은 머리(그림 위끝)의 y를 돌려준다(아군이 없으면 무대 바닥).
@@ -141,55 +179,45 @@ func _foe_height(v: BattlerView, stage_h: float) -> float:
 	return minf(base_h * pow(clampf(v.size_k, 0.3, 2.4), UiTheme.ui_float("combat_enemy_size_exp", 1.0)), room / maxf(1.0, v.height_ratio()))
 
 
-## 적 전원을 한 줄로 가운데 정렬해 자리를 새로 정한다(처음 나왔을 때, 또는 새 적이 들어갈 빈자리가 없을 때). 화면 폭을 넘으면 다 같이 줄인다.
+## 적 전원의 자리를 새로 정한다(처음 나왔을 때, 또는 새 적이 들어갈 빈자리가 없을 때): 통로 안에 앞줄부터(FoeRows),
+## 줄이 combat_rows_max를 넘거나 한 마리가 화면 폭을 넘으면 다 같이 줄인다.
 func _pack(foes: Array[Combatant], stage_h: float) -> void:
-	var gap := float(UiTheme.metric("combat_enemy_gap", 24))
+	var ppm := _ppm(stage_h)
+	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
 	var heights: Array[float] = []
-	var total := 0.0
+	var widths := PackedFloat32Array()
+	var widest := 0.0
 	for u in foes:
 		var h := _foe_height(_views[u], stage_h)
 		heights.append(h)
-		total += (_views[u] as BattlerView).width_for(h) + gap
-	var fit := minf(1.0, size.x * UiTheme.ui_float("combat_enemy_span", 0.92) / maxf(1.0, total))
-	var x := (size.x - total * fit) / 2.0 + gap * fit / 2.0
+		var wpx := (_views[u] as BattlerView).width_for(h)
+		widest = maxf(widest, wpx)
+		widths.append(wpx / ppm)
+	var fit := minf(1.0, size.x * UiTheme.ui_float("combat_enemy_span", 0.92) / maxf(1.0, widest))
+	for i in widths.size():
+		widths[i] *= fit
+	var out := FoeRows.arrange_fit(widths, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
+	var pos: Array = out["pos"]
 	_slots.clear()
 	for i in foes.size():
-		var h := heights[i] * fit
-		var w := (_views[foes[i]] as BattlerView).width_for(h)
-		_slots[foes[i]] = {"x": (x + w / 2.0) / size.x, "h": h / stage_h}
-		x += w + gap * fit
+		var p: Vector2 = pos[i]
+		_slots[foes[i]] = {"x": p.x, "row": int(p.y), "h": heights[i] * fit * float(out["k"]) / stage_h}
 
 
-## 새 적을 지금 자리를 건드리지 않고 빈자리(가운데에 가까운 곳부터)에 넣는다. 하나라도 못 넣으면 false(다시 정렬).
+## 새 적을 지금 자리를 건드리지 않고 빈자리(앞줄·가운데에 가까운 곳부터)에 넣는다. 하나라도 못 넣으면 false(다시 정렬).
 func _fit_new(fresh: Array[Combatant], stage_h: float) -> bool:
-	var gap := float(UiTheme.metric("combat_enemy_gap", 24))
-	var lo := size.x * (1.0 - UiTheme.ui_float("combat_enemy_span", 0.92)) / 2.0
-	var hi := size.x - lo
+	var ppm := _ppm(stage_h)
+	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
 	for u in fresh:
-		var v: BattlerView = _views[u]
-		var h := _foe_height(v, stage_h)
-		var w := v.width_for(h) + gap
-		var taken: Array[Vector2] = []  # 차지한 [왼쪽, 오른쪽] px
+		var taken: Array[Vector3] = []
 		for o: Combatant in _slots:
-			var ov: BattlerView = _views[o]
-			var ow := ov.width_for(stage_h * float(_slots[o]["h"])) + gap
-			var ox := size.x * float(_slots[o]["x"])
-			taken.append(Vector2(ox - ow / 2.0, ox + ow / 2.0))
-		var best := -1.0
-		var cands: Array[float] = [size.x / 2.0]
-		for t in taken:
-			cands.append(t.x - w / 2.0)
-			cands.append(t.y + w / 2.0)
-		for c in cands:
-			if c - w / 2.0 < lo - 0.5 or c + w / 2.0 > hi + 0.5:
-				continue
-			if taken.any(func(t: Vector2) -> bool: return c + w / 2.0 > t.x + 0.5 and c - w / 2.0 < t.y - 0.5):
-				continue
-			if best < 0.0 or absf(c - size.x / 2.0) < absf(best - size.x / 2.0):
-				best = c
-		if best < 0.0:
+			var sl: Dictionary = _slots[o]
+			taken.append(Vector3(float(sl["x"]), float(sl["row"]), (_views[o] as BattlerView).width_for(stage_h * float(sl["h"])) / ppm))
+		var h := _foe_height(_views[u], stage_h)
+		var at := FoeRows.fit_new(taken, (_views[u] as BattlerView).width_for(h) / ppm, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
+		if at.y < 0.0:
 			return false
-		_slots[u] = {"x": best / size.x, "h": h / stage_h}
+		_slots[u] = {"x": at.x, "row": int(at.y), "h": h / stage_h}
 	return true
 
 

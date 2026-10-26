@@ -27,7 +27,7 @@
     },
     "ambient_color": "#c8ffb0",
     "art": {
-      "battleback": "res://assets/battle/green_mine.webp",
+      "battleback": {"image": "res://assets/battle/green_mine.webp", "half_width": 2.5},
       "palette": {
         "near_black": "#0e130d",
         "tone": "#eef2ea"
@@ -213,6 +213,7 @@
     },
     {
       "id": "ch2",
+      "battleback": {"image": "res://assets/battle/green_mine_ch2.webp", "half_width": 1.8},
       "name_ko": "무너진 다리",
       "desc_ko": "3분의 2가 무너진 다리. 옆 통로로 돌거나 건너뛸 수 있다. 다리 너머에서 폭약 냄새가 난다.",
       "map": {
@@ -291,6 +292,7 @@
     },
     {
       "id": "ch3",
+      "battleback": {"image": "res://assets/battle/green_mine_ch3.webp", "half_width": 1.6},
       "name_ko": "절벽의 원형 계단",
       "desc_ko": "절벽 가장자리를 따라 원형 계단을 내려간다. 아래 갱도는 무너져 막혀 있다 — 어딘가 폭약이 있을 것이다.",
       "map": {
@@ -354,6 +356,7 @@
     },
     {
       "id": "ch4",
+      "battleback": {"image": "res://assets/battle/green_mine_ch4.webp", "half_width": 5.0},
       "name_ko": "무너진 공동",
       "desc_ko": "폭약으로 뚫은 갱도 끝, 반경 50m의 공동. 끈적한 소리가 사방에서 들린다.",
       "map": {

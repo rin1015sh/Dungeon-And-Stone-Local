@@ -27,7 +27,7 @@
     },
     "ambient_color": "#d0d8e0",
     "art": {
-      "battleback": "res://assets/battle/iron_tomb.webp",
+      "battleback": {"image": "res://assets/battle/iron_tomb.webp", "half_width": 2.8},
       "palette": {
         "near_black": "#111112",
         "tone": "#eceae6"
@@ -233,6 +233,7 @@
     },
     {
       "id": "ch2",
+      "battleback": {"image": "res://assets/battle/iron_tomb_ch2.webp", "half_width": 4.0},
       "name_ko": "회전 칼날의 방",
       "desc_ko": "칼날이 도는 방을 지난다. 떠다니는 눈이 복도를 지켜본다.",
       "map": {
@@ -319,6 +320,7 @@
     },
     {
       "id": "ch3",
+      "battleback": {"image": "res://assets/battle/iron_tomb_ch3.webp", "half_width": 2.8},
       "name_ko": "수수께끼 문 앞",
       "desc_ko": "묘실로 가는 마지막 복도. 문 앞에 강철 문지기가 창을 세우고 서 있다.",
       "map": {
@@ -424,6 +426,7 @@
     },
     {
       "id": "ch4",
+      "battleback": {"image": "res://assets/battle/iron_tomb_ch4.webp", "half_width": 5.0},
       "name_ko": "강철의 분묘",
       "desc_ko": "강철로 된 분묘. 거대한 강철 거인이 몸을 일으킨다.",
       "map": {

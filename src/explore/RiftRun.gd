@@ -124,10 +124,10 @@ func build_chapter(i: int) -> ExploreSession:
 ## 챕터 그림 설정 = 균열 look.art(+ 챕터 battleback이 있으면 전투 뒷그림만 덮는다).
 static func _chapter_art(look: Dictionary, ch: Dictionary) -> Dictionary:
 	var art := JsonUtil.get_dict(look, "art")
-	if JsonUtil.get_str(ch, "battleback").is_empty():
+	if JsonUtil.get_dict(ch, "battleback").is_empty():
 		return art
 	art = art.duplicate()
-	art["battleback"] = JsonUtil.get_str(ch, "battleback")
+	art["battleback"] = JsonUtil.get_dict(ch, "battleback")
 	return art
 
 

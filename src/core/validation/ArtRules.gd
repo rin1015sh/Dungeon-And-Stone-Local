@@ -44,7 +44,7 @@ static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
 		for key in ["scale", "velocity", "direction", "gravity"]:
 			if pd.has(key) and JsonUtil.get_array(pd, key).size() != 2:
 				v.err(pw, "%s는 [두 수]" % key)
-	check_battleback(v, w + ".battleback", JsonUtil.get_str(art, "battleback"))
+	check_battleback(v, w + ".battleback", art.get("battleback"))
 	_decor(v, w + ".decor", JsonUtil.get_dict(art, "decor"))
 	_macro(v, w + ".macro", JsonUtil.get_dict(art, "macro"))
 	var loop := JsonUtil.get_str(JsonUtil.get_dict(art, "ambience"), "loop")
@@ -52,10 +52,21 @@ static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
 		v.err(w + ".ambience", "'%s'가 data/audio.json ambience에 없다" % loop)
 
 
-## 전투 뒷그림(BattleStage): 비었으면 어둠, 있으면 그림 파일이 있어야 한다.
-static func check_battleback(v: ValidatorBase, w: String, path: String) -> void:
-	if not path.is_empty() and not ResourceLoader.exists(path):
+## 전투 뒷그림(BattleStage): 없으면 어둠, 있으면 {image(파일이 있어야), half_width(양수 m)}.
+static func check_battleback(v: ValidatorBase, w: String, bb: Variant) -> void:
+	if bb == null:
+		return
+	if not bb is Dictionary:
+		v.err(w, "{image, half_width} 사전이어야 한다")
+		return
+	var path := JsonUtil.get_str(bb, "image")
+	if not ResourceLoader.exists(path):
 		v.err(w, "그림 파일 없음 '%s' — tools/paint_battlebacks.gd로 그린다" % path)
+	if JsonUtil.get_float(bb, "half_width") <= 0.0:
+		v.err(w, "half_width(통로 반 폭 m)는 양수")
+	for key: String in (bb as Dictionary):
+		if not key in ["image", "half_width"]:
+			v.err(w, "모르는 키 '%s'" % key)
 
 
 ## 데칼 배치(FloorDecor): 시트·종류·규칙 키·참조.
