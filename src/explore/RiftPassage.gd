@@ -1,7 +1,8 @@
 class_name RiftPassage
 extends RefCounted
 ## 균열 챕터 사이 길목(사용자 요청 2026-10-20 — 사각형 포탈 대신 이어진 길처럼):
-##   앞 길목 = 출구(마지막 챕터는 탈출 포탈 그대로 — E로 나간다), 뒤 길목 = 2챕터부터 시작 자리(지나온 챕터로 돌아간다).
+##   앞 길목 = 출구, 뒤 길목 = 2챕터부터 시작 자리(지나온 챕터로 돌아간다). 마지막 챕터는 설계도의 출구를 치우고
+##   수호자가 쓰러진 자리에 탈출 포탈을 세운다(RiftRun._open_escape — E로 나간다, 사용자 2026-10-26).
 ##   길목 칸은 원래 바닥 그대로 두고 은은한 빛만 단다(render.json rift_passage). 길목 둘레 rift.passage_zone칸에 걸어 들어가면 넘어간다(RiftRun.passage_step).
 ##   길목 = 표시 칸 하나가 아니라 그 칸과 이어진 지도 가장자리의 트인 칸 전부(입구, "mouth") — 넓은 통로의 어느 쪽으로 나가도 넘어간다.
 ##   길목이 아닌 가장자리는 트여 있으면 안 된다(나가는 길처럼 보이는 막다른 곳 — tests/test_rift_passage.gd가 막는다).
@@ -13,7 +14,10 @@ const BACK := "rift_back"
 ## 챕터 지도에 길목을 단다. last = 마지막 챕터(출구 = 탈출 포탈), has_back = 지나온 챕터가 있다.
 static func setup(cs: ExploreSession, last: bool, has_back: bool, floor_tile: String) -> void:
 	var exit := exit_portal(cs.map)
-	if not exit.is_empty() and not last:
+	if not exit.is_empty() and last:  # 마지막 챕터: 출구는 수호자가 쓰러진 자리에 생긴다
+		cs.map.set_tile(exit["pos"], str(exit.get("under", floor_tile)))
+		cs.map.portals.erase(exit)
+	elif not exit.is_empty():
 		cs.map.set_tile(exit["pos"], str(exit.get("under", floor_tile)))
 		exit["passage"] = true
 		exit["found"] = true  # 보이는 길 — 따로 알리지 않는다

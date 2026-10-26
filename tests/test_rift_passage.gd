@@ -51,9 +51,13 @@ func test_passages_are_floor_not_square_portal() -> void:
 	assert_eq(run.chapter, 1)
 	assert_eq(str(cs.map.portal_at(cs.map.entry).get("kind", "")), RiftPassage.BACK, "2챕터 시작 자리 = 뒤 길목")
 	while not run.is_last_chapter():
-		run.debug_clear()
 		cs = _step_on(cs, _exit_pos(cs))
-	assert_eq(cs.map.tile_id_at(_exit_pos(cs)), "rift_exit", "마지막 챕터 출구는 탈출 포탈 그대로")
+	assert_true(RiftPassage.exit_portal(cs.map).is_empty(), "마지막 챕터엔 처음에 출구가 없다")
+	var guardian: FieldMonsters.Group = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "guardian")[0]
+	var at := guardian.pos
+	run.on_battle_end(cs, guardian, Battle.RESULT_VICTORY, [run.guardian_id()])
+	assert_eq(_exit_pos(cs), at, "수호자가 쓰러진 자리에 탈출 포탈")
+	assert_eq(cs.map.tile_id_at(at), "rift_exit")
 
 
 func test_walk_forward_and_back_keeps_state() -> void:
@@ -61,12 +65,10 @@ func test_walk_forward_and_back_keeps_state() -> void:
 	var run := cs.rift_run
 	var first := cs
 	var exit := _exit_pos(cs)
-	assert_eq(_step_on(cs, exit), null, "조우가 남으면 넘어가지 않는다")
-	assert_true(run.session == first and run.chapter == 0)
-	run.debug_clear()
-	cs.relocate(cs.map.entry)
+	var left := run.remaining.size()
+	assert_true(left > 0)
 	var second := _step_on(cs, exit)
-	assert_true(second != null and run.chapter == 1, "조우를 치우고 길목에 들어서면 다음 챕터")
+	assert_true(second != null and run.chapter == 1, "조우가 남아도 길목에 들어서면 다음 챕터(사용자 2026-10-26)")
 	assert_true(first.ended, "지나온 챕터 세션은 쉰다")
 	assert_true(second.fade_in, "화면이 어두워졌다 밝아진다")
 	var zone := int(db.bal("rift.passage_zone"))
@@ -77,7 +79,7 @@ func test_walk_forward_and_back_keeps_state() -> void:
 	assert_eq(back, first, "뒤 길목으로 들어서면 지나온 챕터 — 같은 세션(치운 상태 그대로)")
 	assert_eq(run.chapter, 0)
 	assert_false(first.ended)
-	assert_true(run.remaining.is_empty(), "치운 조우가 되살아나지 않는다")
+	assert_eq(run.remaining.size(), left, "남겨 둔 조우는 그대로 남아 있다")
 	assert_true(second.ended)
 	var e := first.pos - exit
 	assert_true(maxi(absi(e.x), absi(e.y)) > zone, "앞 길목 둘레 밖에 선다")

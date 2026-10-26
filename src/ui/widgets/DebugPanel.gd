@@ -124,9 +124,7 @@ func _add_companion() -> void:
 ## 균열: 바깥 층이면 종류를 골라 강제 개방(옆에 포탈), 균열 안이면 이 챕터 조우 치우기.
 func _add_rift_row(v: VBoxContainer) -> void:
 	if _session.rift_run != null:
-		_btn(v, Strings.t("debug.rift_clear_chapter"), func() -> void:
-			_session.rift_run.debug_clear()
-			_session.message.emit("explore.rift_exit_escape" if _session.rift_run.is_last_chapter() else "explore.rift_exit_open", {}, "good"))
+		_btn(v, Strings.t("debug.rift_clear_chapter"), func() -> void: _session.rift_run.debug_clear())
 		return
 	var row := HBoxContainer.new()
 	v.add_child(row)

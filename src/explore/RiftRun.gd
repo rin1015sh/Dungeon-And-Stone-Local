@@ -10,7 +10,8 @@ extends RefCounted
 ##   {"kind": "waves", "survive_rounds": 6, "start": [..], "reinforce": {"monsters": [..], "count": [1, 2]}}  생존
 ##   {"kind": "guardian", "with": [..]}                          수호자(5% 미만 확률로 변종 수호자 — variant.chance)
 ##   구성 = 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}(무작위)
-## 챕터의 조우를 다 치우면 출구(rift_exit)가 열리고, 마지막 챕터에서 수호자를 쓰러뜨리면 출구가 탈출 포탈이 된다.
+## 조우를 다 치우지 않아도 길목으로 다음 챕터에 갈 수 있다(사용자 2026-10-26). 마지막 챕터에는 처음엔 출구가 없고,
+## 수호자를 쓰러뜨리면 그 자리에 바깥으로 돌아가는 탈출 포탈(rift_exit)이 생긴다(_open_escape).
 ## 챕터 사이는 이어진 길목(RiftPassage — 걸어 들어가면 넘어간다)이고 지나온 챕터로 돌아갈 수 있다(사용자 요청 2026-10-20).
 ##   떠난 챕터 세션은 상태(치운 무리·탐험·히든 피스·함정)째 보관했다가(_kept) 돌아오면 다시 붙인다.
 ## 탈출하면 1층(outer)의 포탈 자리로 돌아간다. 다른 탈출 방법은 없다.
@@ -156,6 +157,7 @@ func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String, ki
 	if g.tag == "guardian" and not guardian_down and killed.has(guardian_id()):
 		guardian_down = true
 		_guardian_drops(s)
+		_open_escape(s, g.pos)
 		g.tag = "battle"  # 남은 동반은 보통 무리
 	if result == Battle.RESULT_FLED:
 		s.monsters.set_grace(g, s.clock.total_hours)
@@ -173,8 +175,7 @@ func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String, ki
 	if g.tag == "guardian":
 		guardian_down = true
 		_guardian_drops(s)
-	if remaining.is_empty():
-		s.message.emit("explore.rift_exit_escape" if is_last_chapter() else "explore.rift_exit_open", {}, "good")
+		_open_escape(s, g.pos)
 	return true
 
 
@@ -212,10 +213,8 @@ func passage_step(s: ExploreSession, from: Vector2i) -> bool:
 
 ## 앞으로 지날 수 있는가(조우를 다 치웠고, 필요한 물건이 있으면 쓴다 — 한 챕터에 한 번). quiet면 못 지나는 이유를 알리지 않는다.
 func _can_leave(s: ExploreSession, quiet: bool) -> bool:
-	if not remaining.is_empty() or (is_last_chapter() and not guardian_down):
-		if not quiet:
-			s.message.emit("explore.rift_exit_locked", {"left": remaining.size()}, "warn")
-		return false
+	if is_last_chapter() and not guardian_down:
+		return false  # 탈출 포탈은 수호자가 쓰러진 뒤에야 생긴다
 	if _opened.has(chapter):
 		return true
 	var req := JsonUtil.get_dict(chapters()[chapter], "exit_requires")
@@ -314,6 +313,7 @@ func debug_clear() -> void:
 		cs.monsters.groups.erase(g)
 		if g.tag == "guardian":
 			guardian_down = true
+			_open_escape(cs, g.pos)
 	remaining.clear()
 	cs.monsters.changed.emit()
 
@@ -389,6 +389,21 @@ func compose(spec: Variant) -> Array:
 	for i in outer.rng.randi_range(int(cnt[0]), int(cnt[1])) if cnt.size() == 2 else 1:
 		out.append(outer.rng.pick(pool))
 	return out
+
+
+## 수호자가 쓰러진 자리(cell)에 바깥으로 돌아가는 탈출 포탈을 세운다(이미 있으면 그대로). 화면은 tiles_changed로 그 칸을 다시 그린다.
+func _open_escape(s: ExploreSession, cell: Vector2i) -> void:
+	if not RiftPassage.exit_portal(s.map).is_empty():
+		return
+	var at := cell if s.map.is_walkable(cell) and s.map.portal_at(cell).is_empty() else FieldRoutes.random_cell_near(s.map, outer.rng, cell, 2)
+	if at.x < 0:
+		at = cell
+	var tiles := JsonUtil.get_dict(JsonUtil.get_dict(chapter_floor_def(chapter), "gen"), "tiles")
+	var under := s.map.tile_id_at(at)
+	s.map.set_tile(at, JsonUtil.get_str(tiles, "exit", "rift_exit"))
+	s.map.portals.append({"id": "rift_exit", "pos": at, "dir": "", "to_floor": 0, "kind": "rift_exit", "found": true, "under": under})
+	RiftPassage._glow(s, at)  # 길목처럼 은은한 빛
+	s.tiles_changed.emit(Rect2i(at, Vector2i.ONE))
 
 
 func _guardian_drops(s: ExploreSession) -> void:

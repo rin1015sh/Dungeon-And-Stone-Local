@@ -106,9 +106,9 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	assert_eq(run.chapter, 0)
 	assert_eq(run.session, cs)
 	assert_eq(run.remaining.size(), 2, "1챕터 조우 2개")
-	assert_eq(run.use_exit(cs), null, "조우를 남기면 출구가 잠겨 있다")
-	_win_all(run)
-	cs = run.use_exit(cs)
+	var skipped := run.use_exit(cs)
+	assert_true(skipped != null and run.chapter == 1, "조우를 남겨도 다음 챕터로 간다(사용자 2026-10-26)")
+	cs = skipped
 	assert_true(cs != null and run.chapter == 1)
 	var waves: FieldMonsters.Group = run.remaining[0]
 	assert_eq(int(waves.battle_rules["survive_rounds"]), 6, "도개교 6라운드 생존")
@@ -128,8 +128,11 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	assert_true(run.is_last_chapter())
 	var guardian: FieldMonsters.Group = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "guardian")[0]
 	assert_true(guardian.monster_ids.has(run.guardian_id()))
+	assert_eq(run.use_exit(cs), null, "수호자 전엔 나갈 수 없다")
+	var gpos := guardian.pos
 	_win_all(run)
 	assert_true(run.guardian_down)
+	assert_eq(RiftPassage.exit_portal(cs.map).get("pos"), gpos, "수호자 자리에 탈출 포탈")
 	var back := run.use_exit(cs)
 	assert_eq(back, s, "탈출하면 바깥 층 세션")
 	assert_eq(s.pos, outer_pos, "원래 자리")

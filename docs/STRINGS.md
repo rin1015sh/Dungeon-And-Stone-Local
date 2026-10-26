@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(971줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -236,9 +236,6 @@
 - `explore.rift_next_wave` 숨 돌릴 틈도 없이 다음 무리가 덮친다! (남은 무리 {left})
 - `explore.rift_exit_found` 앞쪽에 출구가 보인다.
 - `explore.rift_exit_here` 출구 앞이다.
-- `explore.rift_exit_open` 이 구역을 정리했다. 출구가 열렸다.
-- `explore.rift_exit_escape` 수호자가 쓰러졌다. 출구가 바깥으로 이어진다!
-- `explore.rift_exit_locked` 아직 길이 막혀 있다. (남은 무리 {left})
 - `explore.rift_left` {name}에서 빠져나왔다. 수정동굴의 공기가 반갑다.
 - `explore.lord_omen` 동굴 벽의 수정이 보랏빛으로 불안하게 일렁인다. 너무 오래 한곳에 머문 것 같다.
 - `explore.lord_summoned` 수정의 광채가 핏빛으로 바뀐다. 무언가가 깨어났다 — {name}!
