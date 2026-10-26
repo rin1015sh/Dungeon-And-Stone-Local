@@ -241,7 +241,7 @@ func _spawn_fight(s: ExploreSession, at: Vector2i) -> void:
 func _spawn(s: ExploreSession, kind: String, at: Vector2i) -> FieldMonsters.Group:
 	if at.x < 0:
 		return null
-	var looks := JsonUtil.get_array(def, "looks")
+	var looks := JsonUtil.get_array(def, "raider_looks" if kind == RAIDER and def.has("raider_looks") else "looks")  # 약탈자는 raider_looks(1층 = 인간만 — 바바리안 약탈자 없음, 사용자 2026-10-26)
 	var party := {"kind": kind, "look": str(s.rng.pick(looks)) if not looks.is_empty() else "human"}
 	var ids: Array = []
 	if kind == RAIDER:

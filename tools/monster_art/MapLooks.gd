@@ -6,8 +6,9 @@ extends RefCounted
 
 ## 게임 그림의 옷차림(사용자 2026-10-26 "h4 b2로") — 탐험 맵 걷기 그림(paint_actors)과 전투 뒷모습(Party.spec_of → paint_monsters --only=party)이 같이 쓴다.
 const CHOSEN := {"human": "h4_gambeson", "barbarian": "b2_leather"}
-## 게임 그림 말고도 남겨 두는 옷차림(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다)
-const KEEP := ["h3_coat"]
+## 게임 그림 말고도 남겨 두는 옷차림 → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다):
+##   h3_coat(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") · r0_raider(맵 약탈자 무리 — render.json view.raider_sprite, 사용자 2026-10-26 "전투 화면처럼 두건·망토로")
+const KEEP := ["h3_coat", "r0_raider"]
 
 
 const LOOKS := {
@@ -29,6 +30,9 @@ const LOOKS := {
 	"h5_chain": {"race": "human", "name": "사슬 갑옷", "head": 1.75, "legs": 0.82, "spec": {"kit": {
 		"pants": Color("#34322e"), "shirt": Color("#4a4236"), "sleeves": "long", "boots": Color("#2a221c"),
 		"chain": Color("#6a6e72"), "outer_belt": Color("#2a1c14"), "cloak": {"c": Color("#4a2220"), "len": 0.38, "flare": 1.25, "open": 1.1, "clasp": Color("#8a7a58")}}}},
+	"r0_raider": {"race": "human", "name": "약탈자(두건·망토)", "head": 1.75, "legs": 0.82, "spec": {"hair": "none", "skin": Color("#8a6a56"), "mottle": Color("#4a3026"), "kit": {
+		"pants": Color("#2e2a26"), "shirt": Color("#4a4034"), "sleeves": "long", "belt": Color("#2a1e16"), "boots": Color("#2a221c"), "bracers": Color("#3a2a1e"),
+		"hood_up": Color("#3a342c"), "cloak": {"c": Color("#2c2a22"), "len": 0.3, "flare": 1.2, "open": 1.4}}}},
 	"b0_barbarian": {"race": "barbarian", "name": "바바리안(머리만 작게)", "head": 2.1, "legs": 0.72, "spec": {}},
 	"b1_fur_cloak": {"race": "barbarian", "name": "털 망토", "head": 2.1, "legs": 0.72, "spec": {"kit": {
 		"pants": Color("#4a3a2a"), "leg_wraps": Color("#6a5e4a"), "vest": Color("#5a4030"), "belt": Color("#3a2818"), "pouch": true,

@@ -43,9 +43,14 @@ func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	_fps = JsonUtil.get_float(cfg, "walk_fps", 7.0)
 	var dir := JsonUtil.get_str(cfg, "monster_dir", "res://assets/actors/monsters")
 	if not group.party.is_empty():  # 탐험가 무리·약탈자 = 탐험가 몸 그림(종족 시트)
-		_sheet = ActorSheet.load_for(db.render, JsonUtil.get_str(db.get_entry("races", str(group.party.get("look", "human"))), "sprite"))
-		if str(group.party.get("kind")) == "raider":
-			modulate = Color.from_string(JsonUtil.get_str(JsonUtil.get_dict(db.render, "view"), "raider_tint", "#b0a090"), Color.WHITE)
+		var view := JsonUtil.get_dict(db.render, "view")
+		var raider := str(group.party.get("kind")) == "raider"
+		if raider:  # 약탈자 = 두건·망토 시트(render.json view.raider_sprite — 전투 그림과 같은 옷차림), 없으면 종족 시트에 색만
+			_sheet = ActorSheet.load_for(db.render, JsonUtil.get_str(view, "raider_sprite"))
+		if _sheet == null:
+			_sheet = ActorSheet.load_for(db.render, JsonUtil.get_str(db.get_entry("races", str(group.party.get("look", "human"))), "sprite"))
+			if raider:
+				modulate = Color.from_string(JsonUtil.get_str(view, "raider_tint", "#b0a090"), Color.WHITE)
 	elif group.boss.is_empty():
 		_sheet = ActorSheet.load_monster(db.render, id)
 	for path: String in [dir.path_join(id + ".webp"), JsonUtil.get_str(def, "sprite")]:

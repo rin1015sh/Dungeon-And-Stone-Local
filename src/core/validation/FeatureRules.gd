@@ -33,8 +33,9 @@ static func _explorers(v: ValidatorBase, w: String, ex: Dictionary) -> void:
 		return
 	for id: Variant in JsonUtil.get_array(ex, "raider_pack") + [JsonUtil.get_str(ex, "raider_chief", "raider_chief")]:
 		v.ref(w + ".raider_pack", "monsters", id)
-	for r: Variant in JsonUtil.get_array(ex, "looks"):
-		v.ref(w + ".looks", "races", r)
+	for key: String in ["looks", "raider_looks"]:
+		for r: Variant in JsonUtil.get_array(ex, key):
+			v.ref(w + "." + key, "races", r)
 	for t: Variant in JsonUtil.get_array(ex, "trades"):
 		v.ref(w + ".trades", "items", JsonUtil.get_str(t if t is Dictionary else {}, "give"))
 	var rw := JsonUtil.get_dict(ex, "rewards")

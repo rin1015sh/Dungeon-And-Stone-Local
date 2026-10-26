@@ -69,20 +69,20 @@ static func spec_of(id: String) -> Dictionary:
 				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "helm": C("#3a2c32"), "horns": true, "horn_len": 0.8},
 				"kit": {"armor": C("#3e2e34"), "boots": C("#241a1e"), "cape": C("#4a1418"), "weapon": "greatsword", "weapon_c": C("#5e4c50")}}
 		# ── 약탈자(사람 — 1층 탐험가를 노리는 무리, 이 프로젝트에서 새로 그린 모습) ──
-		"raider_cutthroat":  # 두건을 깊이 눌러쓴 마른 칼잡이 + 짧은 칼
+		"raider_cutthroat":  # 두건을 깊이 눌러쓴 칼잡이 + 짧은 칼(2026-10-26 사용자 "뼈다귀 같다" → 마른 몸 thin을 보통 몸·굵기 1.35·넓은 어깨·긴 윗옷)
 			return {"height": 560, "skin": C("#b8967a"), "shade": C("#4a3026"), "eyes": C("#d8c8a0"),
-				"pose": {"hunch": 0.2, "knee": 0.25, "arm_l": "hang", "arm_r": "rest", "sh": 0.115, "weight": 0.5, "tilt": 0.04},
-				"body": {"build": "thin", "hands": "fist"}, "head": {"type": "human", "mouth": "shut", "hood": C("#3a342c")},
-				"kit": {"shirt": C("#4a4034"), "torn": 0.3, "belt": C("#2a1e16"), "straps": C("#3a2a1e"), "boots": C("#2e2620"), "weapon": "dagger", "weapon_c": C("#8a8478")}}
-		"raider_archer":  # 누더기 망토의 궁수
+				"pose": {"hunch": 0.2, "knee": 0.25, "arm_l": "hang", "arm_r": "rest", "sh": 0.13, "weight": 0.5, "tilt": 0.04},
+				"body": {"build": "normal", "bulk": 1.35, "hands": "fist"}, "head": {"type": "human", "mouth": "shut", "hood": C("#3a342c")},
+				"kit": {"shirt": C("#4a4034"), "shirt_len": 1.0, "torn": 0.2, "belt": C("#2a1e16"), "straps": C("#3a2a1e"), "boots": C("#2e2620"), "weapon": "dagger", "weapon_c": C("#8a8478")}}
+		"raider_archer":  # 누더기 망토의 궁수(칼잡이처럼 살을 붙임)
 			return {"height": 560, "skin": C("#a88a70"), "shade": C("#40302a"), "eyes": C("#d0c0a0"),
-				"pose": {"hunch": 0.15, "knee": 0.2, "arm_l": "bow", "arm_r": "hang", "sh": 0.11, "weight": -0.3},
-				"body": {"build": "thin", "hands": "fist"}, "head": {"type": "human", "mouth": "shut", "hood": C("#2e3028")},
-				"kit": {"shirt": C("#3e3a30"), "torn": 0.4, "cape": C("#2a2820"), "belt": C("#2a1e16"), "boots": C("#2a221c"), "weapon": "bow"}}
+				"pose": {"hunch": 0.15, "knee": 0.2, "arm_l": "bow", "arm_r": "hang", "sh": 0.125, "weight": -0.3},
+				"body": {"build": "normal", "bulk": 1.3, "hands": "fist"}, "head": {"type": "human", "mouth": "shut", "hood": C("#2e3028")},
+				"kit": {"shirt": C("#3e3a30"), "shirt_len": 1.0, "torn": 0.3, "cape": C("#2a2820"), "belt": C("#2a1e16"), "boots": C("#2a221c"), "weapon": "bow"}}
 		"raider_chief":  # 덩치 큰 두목 — 기운 가죽 갑옷·털 목도리·도끼
 			return {"height": 640, "width": 1.1, "skin": C("#b08870"), "shade": C("#4a2a22"), "eyes": C("#e0c890"), "hair": "slick", "hair_c": C("#2a2018"),
 				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "rest", "sh": 0.15, "hip": 0.085, "weight": 0.4},
-				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "mouth": "grin", "angry": 0.6},
+				"body": {"build": "muscular", "bulk": 1.3, "hands": "fist"}, "head": {"type": "human", "mouth": "grin", "angry": 0.6},
 				"kit": {"armor": C("#5a4a3a"), "plates": ["chest"], "fur": C("#5a4c3e"), "belt": C("#2a1e16"), "boots": C("#2a221c"), "weapon": "axe", "weapon_c": C("#7a7470")}}
 		# ── 네발짐승 ──
 		"blade_wolf":
