@@ -479,7 +479,7 @@
 | ST3 | 강철의 묘 함정: 탐지 = 정신력(난이도 2 → 9), 해제 = 민첩(−6 → 4). 평균 캐릭터(정신력 7·민첩 10)의 성공률이 예전(육감·손재주 0)과 같게 난이도를 올렸다(탐지 42%, 해제 74%) | 명세 §12.1은 손재주·육감이지만 두 스탯을 지웠다 | `rifts/rift_iron_tomb.json` hazards |
 | ST4 | 시야 보정 = 시각 × 0.1m(예전 시야×0.1 + 시각×0.05). 치명타는 민첩만(행운 항 삭제). 예약 자원 기력 최대치는 물리내성 기준(비활성) | 시야·행운 스탯을 지웠다 | balance `explore.vision_bonus_formula`, `DamageCalc.crit_chance`, resources `stamina` |
 | ST5 | 번개·대지 감응도와 번개·대지·신성 내성은 지웠다(올려 주는 데이터가 없었다 — 사용자 결정). 그 속성 피해는 몬스터 약점·면역만 따르고 플레이어 쪽 배율은 늘 1이다(`resist_<유형>` 스탯이 없으면 DamageCalc가 건너뛴다). 영혼 재생력은 남긴다 — 지금은 올려 주는 곳이 없다 | 사용자 결정 | 다시 필요하면 stats.json에 `resist_lightning` 같은 id로 한 줄 더하면 규칙은 그대로 붙는다 |
-| ST6 | **소화력 지움 · 미궁 허기·피로 빠르게**(사용자 2026-10-26 "소화력 수치 따로 더 쓰이는 데 없으면 게임에서 지워 · 미궁에서 허기 더 빨리 닳고 피로 더 빨리 오르게"): 소화력은 허기 감소 배율에만 쓰여 지웠다(stats·허기 수식·balance `hunger.digestion_*`·슬라임 정수 +12·동굴 송로 수프 +40 — 수프는 시각 +8만 남음, 옛 저장의 정수 사례 값은 붙을 때 버린다 `EssenceSet._attach`). 세부 스탯 11종. 허기 `hunger.decay_per_hour` 1 → 1.5(가득 → 바닥 게임 약 67시간 = 실제 약 11분), 피로 `fatigue.dungeon.per_hour` 0.3 → 0.5 · `per_combat_turn` 0.5 → 0.75(임시값) | 사용자 결정 | `data/balance.json hunger`, `data/city.json fatigue.dungeon` |
+| ST6 | **소화력 지움 · 미궁 허기·피로 빠르게**(사용자 2026-10-26 "소화력 수치 따로 더 쓰이는 데 없으면 게임에서 지워 · 미궁에서 허기 더 빨리 닳고 피로 더 빨리 오르게"): 소화력은 허기 감소 배율에만 쓰여 지웠다(stats·허기 수식·balance `hunger.digestion_*`·슬라임 정수 +12·동굴 송로 수프 +40 — 수프는 시각 +8 · **식욕 −30**(허기 30% 느리게, 사용자 요청으로 대신 넣음), 옛 저장의 정수 사례 값은 붙을 때 버린다 `EssenceSet._attach`). 세부 스탯 11종. 허기 `hunger.decay_per_hour` 1 → 1.5(가득 → 바닥 게임 약 67시간 = 실제 약 11분), 피로 `fatigue.dungeon.per_hour` 0.3 → 0.5 · `per_combat_turn` 0.5 → 0.75(임시값) | 사용자 결정 | `data/balance.json hunger`, `data/city.json fatigue.dungeon` |
 
 ## 도시 M4 — 라비기온 구역 (2026-10-14, 사용자 명세 "작업 M4 도시")
 
