@@ -248,8 +248,8 @@ func _spawn(s: ExploreSession, kind: String, at: Vector2i) -> FieldMonsters.Grou
 		for id: Variant in JsonUtil.get_array(def, "raider_pack"):
 			if s.rng.chance(JsonUtil.get_float(def, "raider_member_chance", 0.7)) or ids.is_empty():
 				ids.append(str(id))
-		if _day + 1 >= JsonUtil.get_int(def, "chief_from_day", 4):
-			ids.append(JsonUtil.get_str(def, "raider_chief", "raider_chief"))
+		if def.has("raider_chief") and _day + 1 >= JsonUtil.get_int(def, "chief_from_day", 4):  # 두목은 있을 때만(1층은 없음 — 사용자 2026-10-26)
+			ids.append(JsonUtil.get_str(def, "raider_chief"))
 		party["members"] = ids.size()
 	else:
 		var m := JsonUtil.get_array(def, "members")

@@ -79,11 +79,6 @@ static func spec_of(id: String) -> Dictionary:
 				"pose": {"hunch": 0.15, "knee": 0.2, "arm_l": "bow", "arm_r": "hang", "sh": 0.125, "weight": -0.3},
 				"body": {"build": "normal", "bulk": 1.3, "hands": "fist"}, "head": {"type": "human", "mouth": "shut", "hood": C("#2e3028")},
 				"kit": {"shirt": C("#3e3a30"), "shirt_len": 1.0, "torn": 0.3, "cape": C("#2a2820"), "belt": C("#2a1e16"), "boots": C("#2a221c"), "weapon": "bow"}}
-		"raider_chief":  # 덩치 큰 두목 — 기운 가죽 갑옷·털 목도리·도끼
-			return {"height": 640, "width": 1.1, "skin": C("#b08870"), "shade": C("#4a2a22"), "eyes": C("#e0c890"), "hair": "slick", "hair_c": C("#2a2018"),
-				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "rest", "sh": 0.15, "hip": 0.085, "weight": 0.4},
-				"body": {"build": "muscular", "bulk": 1.3, "hands": "fist"}, "head": {"type": "human", "mouth": "grin", "angry": 0.6},
-				"kit": {"armor": C("#5a4a3a"), "plates": ["chest"], "fur": C("#5a4c3e"), "belt": C("#2a1e16"), "boots": C("#2a221c"), "weapon": "axe", "weapon_c": C("#7a7470")}}
 		# ── 네발짐승 ──
 		"blade_wolf":
 			return {"kind": "beast", "height": 560, "color": C("#a0a0a4"), "belly": C("#c8c4bc"), "fur": 0.85, "blades": C("#9aa4ae"), "eyes": C("#e0b040")}

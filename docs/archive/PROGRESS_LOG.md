@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **1층 다른 탐험가 줄이기 (2026-10-26, 사용자 "약탈자 두목은 게임에서 제거해 줘. 그리고 일반 탐험가가 돌아다니는 것도 제거하고. 탐험가 시체도 지금에서 1/3로 줄여")** — EX15.
+  - 두목: `data/monsters/raider_chief.json`·전투 그림·맵 한 장·`Specs2` 설계·색인 삭제. `FieldParties._spawn`은 `explorers.raider_chief`가 있을 때만 두목을 붙이고(1층 JSON에서 `raider_chief`·`chief_from_day` 뺌), 검증 `FeatureRules`도 있을 때만 참조 검사.
+  - 신참: `rookies_by_day` [0]. 다친·싸우는 탐험가 사건·약탈자는 그대로. 시험(`test_floor_fill` 죽음·거래, UI 스모크 무리 선택 창)은 신참 무리를 직접 세운다(`FieldParties._spawn`).
+  - 시체: 층 JSON features explorer_corpse 28 → 9 → `bake_floor.gd`로 다시 구움(지형은 그대로, 다른 동굴 요소 자리는 바뀜 — 맨 앞 dark_crystal [31,360] 손으로 되돌림) → `bake_decor.gd`. 새 시체 `unseen_corpse_per_hour` 0.08 → 0.027(신참 죽음 시체는 신참이 없어 저절로 없음).
+  - sim_walk(시드 1~3 × 포탈 4, 1383초): 만남 263번(전투 123·요소 107·소리 20·탐험가 1), 간격 평균 5.3초·가운데 3.0초·90% 13.6초·가장 긴 84.3초(시드 3 포탈 1 한 번). 전(EX 무렵)엔 만남 254·탐험가 5·소리 31·가운데 3.8. check.sh 통과(테스트 438).
+
 - **약탈자 생김새 (2026-10-26, 사용자 "약탈자 관련 스프라이트 전부 들고 와 봐" → "바바리안 약탈자는 게임에서 없애 주고. 전투 시에는 너무 뼈다귀 같아서 살 좀 붙이고. 탐험 화면에서는 전투 화면과 같이 두건이랑 망토 옷차림으로")** — EX14.
   - 종족: `FieldParties._spawn`이 약탈자는 `explorers.raider_looks`(1층 ["human"])에서 고른다(없으면 `looks`). 검증 `FeatureRules._explorers`가 raider_looks도 종족 참조 검사.
   - 맵: 약탈자 무리가 플레이어와 같은 인간·바바리안 시트에 색만 입혀 구분이 안 됐다 → `MapLooks.r0_raider`(쓴 두건·짧은 망토 len 0.3·앞 트임 1.4·긴 소매 윗옷·어두운 바지·그늘진 피부색) → `MapLooks.KEEP`으로 `assets/actors/looks/r0_raider.webp`, `render.json view.raider_sprite` → `MonsterView`(시트가 없으면 예전처럼 종족 시트 + `raider_tint`). 망토를 처음 len 0.45로 하니 몸이 망토에 묻혀 덩어리로 보여 줄였다.

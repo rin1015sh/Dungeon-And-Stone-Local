@@ -127,10 +127,7 @@ func test_death_leaves_fresh_corpse_and_scream() -> void:
 	var keys := _keys(s)
 	var sounds: Array[String] = []
 	s.sound.connect(func(key: String, _at: Vector2i) -> void: sounds.append(key))
-	var rookie: FieldMonsters.Group = s.parties.of_kind(s, FieldParties.ROOKIE)[0]
-	rookie.place(s.pos + Vector2i(0, 0))
-	var at := _free_near(s, s.pos, 6)
-	rookie.place(at)
+	var rookie := _rookie(s, 6)
 	var n := s.features.list.size()
 	s.parties.kill(s, rookie, true)
 	assert_eq(s.features.list.size(), n + 1, "시체가 남는다")
@@ -146,7 +143,7 @@ func test_death_leaves_fresh_corpse_and_scream() -> void:
 
 func test_rookie_trade_rumor_follow() -> void:
 	var s := _session()
-	var g: FieldMonsters.Group = s.parties.of_kind(s, FieldParties.ROOKIE)[0]
+	var g := _rookie(s, 6)
 	g.party["trade"] = {"give": "ration", "n": 1, "price": 3}
 	var ids: Array = FieldPartyMeet.options(s, g).map(func(o: Dictionary) -> String: return str(o["id"]))
 	assert_eq(ids, ["trade", "rumor", "follow", "leave"])
@@ -208,6 +205,11 @@ func test_fill_day_grows_raiders() -> void:
 	s.parties.update(s, 1.0)
 	var hostile := s.parties.of_kind(s, FieldParties.RAIDER).filter(func(g: FieldMonsters.Group) -> bool: return g.hostile()).size()
 	assert_true(hostile >= int(JsonUtil.get_array(ex, "raiders_by_day")[4]), "5일 차 약탈자 (%d)" % hostile)
+
+
+## 신참 무리 하나를 플레이어 r칸 옆에 세운다(1층은 돌아다니는 신참 무리가 없다 — rookies_by_day 0, 사용자 2026-10-26. 만남 규칙은 다친·싸우는 탐험가가 같이 쓴다).
+func _rookie(s: ExploreSession, r: int) -> FieldMonsters.Group:
+	return s.parties._spawn(s, FieldParties.ROOKIE, _free_near(s, s.pos, r))
 
 
 func _free_near(s: ExploreSession, p: Vector2i, r: int) -> Vector2i:

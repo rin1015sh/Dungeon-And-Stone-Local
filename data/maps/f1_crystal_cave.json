@@ -145,899 +145,780 @@
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        89,
-        381
+        333,
+        25
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        513,
-        317
+        336,
+        487
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        93,
-        312
+        232,
+        417
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        579,
-        374
+        284,
+        337
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        382,
-        308
+        360,
+        716
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        365,
-        596
+        551,
+        398
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        313,
-        626
+        699,
+        319
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        456,
-        376
+        372,
+        406
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        719,
-        322
+        410,
+        62
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "abandoned_stones",
       "pos": [
-        423,
-        524
+        345,
+        172
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
+      "pos": [
+        585,
+        373
+      ]
+    },
+    {
+      "id": "dead_campfire",
       "pos": [
         313,
         65
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
       "pos": [
         342,
         343
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
+      "pos": [
+        261,
+        401
+      ]
+    },
+    {
+      "id": "dead_campfire",
+      "pos": [
+        395,
+        517
+      ]
+    },
+    {
+      "id": "dead_campfire",
       "pos": [
         146,
         324
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
+      "pos": [
+        475,
+        392
+      ]
+    },
+    {
+      "id": "dead_campfire",
+      "pos": [
+        378,
+        623
+      ]
+    },
+    {
+      "id": "dead_campfire",
       "pos": [
         426,
         450
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
       "pos": [
-        302,
-        310
+        314,
+        603
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
       "pos": [
-        716,
-        385
+        354,
+        122
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "dead_campfire",
       "pos": [
-        340,
-        176
+        78,
+        363
       ]
     },
     {
-      "id": "explorer_corpse",
+      "id": "broken_gear",
       "pos": [
-        427,
-        68
-      ]
-    },
-    {
-      "id": "explorer_corpse",
-      "pos": [
-        182,
+        218,
         381
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        563,
-        404
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        651,
-        392
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        350,
-        253
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        215,
-        305
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        100,
-        369
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        414,
-        722
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        371,
-        142
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        349,
-        510
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        205,
-        404
-      ]
-    },
-    {
-      "id": "abandoned_stones",
-      "pos": [
-        428,
-        38
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        392,
-        55
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        154,
-        335
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        342,
-        640
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        502,
-        407
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        657,
-        414
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        421,
-        667
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        374,
-        480
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        647,
-        343
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        588,
-        331
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        376,
-        207
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        96,
-        339
-      ]
-    },
-    {
-      "id": "dead_campfire",
-      "pos": [
-        396,
-        264
-      ]
-    },
-    {
-      "id": "broken_gear",
-      "pos": [
-        611,
-        374
-      ]
-    },
-    {
-      "id": "broken_gear",
-      "pos": [
-        550,
-        312
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
         366,
-        116
+        252
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        281,
-        428
+        673,
+        365
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        344,
-        336
+        383,
+        483
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        368,
-        552
+        333,
+        46
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        405,
-        619
+        308,
+        437
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        240,
-        312
+        563,
+        404
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        411,
-        316
+        215,
+        305
       ]
     },
     {
       "id": "broken_gear",
       "pos": [
-        335,
-        193
+        100,
+        369
+      ]
+    },
+    {
+      "id": "broken_gear",
+      "pos": [
+        414,
+        722
       ]
     },
     {
       "id": "hidden_cache",
       "pos": [
-        364,
-        536
+        371,
+        142
       ]
     },
     {
       "id": "hidden_cache",
       "pos": [
-        113,
-        319
+        349,
+        510
       ]
     },
     {
       "id": "hidden_cache",
       "pos": [
-        320,
+        205,
+        404
+      ]
+    },
+    {
+      "id": "hidden_cache",
+      "pos": [
+        425,
+        65
+      ]
+    },
+    {
+      "id": "hidden_cache",
+      "pos": [
+        110,
+        325
+      ]
+    },
+    {
+      "id": "hidden_cache",
+      "pos": [
+        460,
+        346
+      ]
+    },
+    {
+      "id": "hidden_cache",
+      "pos": [
+        374,
         719
       ]
     },
     {
       "id": "hidden_cache",
       "pos": [
-        638,
-        378
-      ]
-    },
-    {
-      "id": "hidden_cache",
-      "pos": [
-        30,
-        406
-      ]
-    },
-    {
-      "id": "hidden_cache",
-      "pos": [
-        353,
-        233
-      ]
-    },
-    {
-      "id": "hidden_cache",
-      "pos": [
-        412,
-        335
-      ]
-    },
-    {
-      "id": "hidden_cache",
-      "pos": [
-        427,
-        221
+        123,
+        410
       ]
     },
     {
       "id": "offering_pile",
       "pos": [
-        372,
-        364
+        365,
+        360
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        479,
-        387
+        371,
+        100
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        353,
-        714
+        317,
+        353
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        567,
-        322
+        390,
+        270
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        170,
-        373
+        611,
+        374
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        311,
-        413
+        550,
+        312
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        327,
-        27
+        339,
+        645
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        38,
-        323
+        281,
+        428
       ]
     },
     {
       "id": "clear_spring",
       "pos": [
-        612,
-        401
+        368,
+        552
       ]
     },
     {
       "id": "crystal_drip",
       "pos": [
-        306,
-        183
+        513,
+        392
       ]
     },
     {
       "id": "crystal_drip",
       "pos": [
-        233,
-        402
+        404,
+        72
       ]
     },
     {
       "id": "crystal_drip",
       "pos": [
-        538,
-        344
+        408,
+        493
       ]
     },
     {
       "id": "crystal_drip",
       "pos": [
-        385,
-        228
+        193,
+        331
       ]
     },
     {
       "id": "crystal_drip",
       "pos": [
-        523,
-        408
-      ]
-    },
-    {
-      "id": "crystal_drip",
-      "pos": [
-        189,
-        328
-      ]
-    },
-    {
-      "id": "crystal_drip",
-      "pos": [
-        332,
-        497
-      ]
-    },
-    {
-      "id": "crystal_drip",
-      "pos": [
-        479,
-        321
-      ]
-    },
-    {
-      "id": "crystal_drip",
-      "pos": [
-        87,
-        415
+        230,
+        372
       ]
     },
     {
       "id": "crystal_drip",
       "pos": [
         395,
-        546
+        586
+      ]
+    },
+    {
+      "id": "crystal_drip",
+      "pos": [
+        339,
+        122
+      ]
+    },
+    {
+      "id": "crystal_drip",
+      "pos": [
+        438,
+        434
+      ]
+    },
+    {
+      "id": "crystal_drip",
+      "pos": [
+        327,
+        280
+      ]
+    },
+    {
+      "id": "crystal_drip",
+      "pos": [
+        386,
+        199
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        688,
-        364
+        550,
+        352
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        269,
-        406
+        308,
+        541
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        630,
-        403
+        370,
+        220
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        314,
-        223
+        396,
+        31
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        346,
-        588
+        158,
+        401
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        502,
-        309
+        608,
+        312
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        78,
-        360
+        325,
+        127
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        426,
-        421
+        329,
+        430
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        421,
-        85
+        409,
+        383
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        404,
-        649
+        701,
+        334
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        349,
-        309
+        364,
+        705
       ]
     },
     {
       "id": "stalagmite_grove",
       "pos": [
-        515,
+        344,
+        638
+      ]
+    },
+    {
+      "id": "glow_mushroom",
+      "pos": [
+        217,
+        361
+      ]
+    },
+    {
+      "id": "glow_mushroom",
+      "pos": [
+        157,
+        342
+      ]
+    },
+    {
+      "id": "glow_mushroom",
+      "pos": [
+        67,
         399
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        125,
-        374
+        312,
+        174
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        320,
-        117
+        615,
+        315
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        419,
-        492
+        331,
+        493
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        341,
-        279
+        315,
+        78
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        392,
-        140
+        404,
+        66
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        303,
-        499
+        127,
+        398
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        549,
-        410
+        394,
+        548
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        295,
-        367
-      ]
-    },
-    {
-      "id": "glow_mushroom",
-      "pos": [
-        107,
-        313
-      ]
-    },
-    {
-      "id": "glow_mushroom",
-      "pos": [
-        353,
-        464
-      ]
-    },
-    {
-      "id": "glow_mushroom",
-      "pos": [
-        510,
-        387
-      ]
-    },
-    {
-      "id": "glow_mushroom",
-      "pos": [
-        387,
-        606
+        347,
+        621
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
         333,
-        529
+        270
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        65,
-        309
+        322,
+        357
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        646,
-        317
+        391,
+        208
       ]
     },
     {
       "id": "glow_mushroom",
       "pos": [
-        152,
-        324
+        71,
+        331
+      ]
+    },
+    {
+      "id": "glow_mushroom",
+      "pos": [
+        538,
+        419
       ]
     },
     {
       "id": "wolf_den",
       "pos": [
-        578,
-        403
+        716,
+        370
       ]
     },
     {
       "id": "wolf_den",
       "pos": [
-        481,
+        532,
+        338
+      ]
+    },
+    {
+      "id": "wolf_den",
+      "pos": [
+        613,
         335
       ]
     },
     {
-      "id": "wolf_den",
+      "id": "gnome_trinkets",
       "pos": [
-        621,
-        313
+        14,
+        334
       ]
     },
     {
       "id": "gnome_trinkets",
       "pos": [
-        45,
-        352
+        210,
+        326
       ]
     },
     {
       "id": "gnome_trinkets",
-      "pos": [
-        213,
-        352
-      ]
-    },
-    {
-      "id": "gnome_trinkets",
-      "pos": [
-        208,
-        419
-      ]
-    },
-    {
-      "id": "gnome_trinkets",
-      "pos": [
-        102,
-        419
-      ]
-    },
-    {
-      "id": "gnome_stash",
-      "pos": [
-        267,
-        336
-      ]
-    },
-    {
-      "id": "gnome_stash",
-      "pos": [
-        239,
-        401
-      ]
-    },
-    {
-      "id": "gnome_stash",
-      "pos": [
-        198,
-        344
-      ]
-    },
-    {
-      "id": "gnome_stash",
       "pos": [
         116,
-        420
+        361
+      ]
+    },
+    {
+      "id": "gnome_trinkets",
+      "pos": [
+        143,
+        315
+      ]
+    },
+    {
+      "id": "gnome_stash",
+      "pos": [
+        24,
+        311
+      ]
+    },
+    {
+      "id": "gnome_stash",
+      "pos": [
+        90,
+        421
+      ]
+    },
+    {
+      "id": "gnome_stash",
+      "pos": [
+        136,
+        375
+      ]
+    },
+    {
+      "id": "gnome_stash",
+      "pos": [
+        231,
+        391
       ]
     },
     {
       "id": "ghoul_feast",
       "pos": [
-        324,
-        453
+        385,
+        606
       ]
     },
     {
       "id": "ghoul_feast",
       "pos": [
-        418,
-        636
+        334,
+        511
       ]
     },
     {
       "id": "ghoul_feast",
       "pos": [
-        393,
-        558
+        329,
+        647
       ]
     },
     {
       "id": "ghoul_feast",
       "pos": [
-        339,
-        660
+        417,
+        652
       ]
     },
     {
       "id": "ghoul_feast",
       "pos": [
-        340,
-        583
+        413,
+        524
       ]
     },
     {
       "id": "rot_smell",
       "pos": [
-        415,
-        476
+        314,
+        625
       ]
     },
     {
       "id": "rot_smell",
       "pos": [
-        370,
-        574
+        327,
+        699
       ]
     },
     {
       "id": "rot_smell",
       "pos": [
-        312,
-        496
+        326,
+        526
       ]
     },
     {
       "id": "rot_smell",
       "pos": [
-        313,
-        712
+        388,
+        543
       ]
     },
     {
       "id": "rot_smell",
       "pos": [
-        322,
-        661
+        335,
+        448
       ]
     },
     {
       "id": "rot_smell",
+      "pos": [
+        382,
+        705
+      ]
+    },
+    {
+      "id": "goblin_camp",
+      "pos": [
+        332,
+        221
+      ]
+    },
+    {
+      "id": "goblin_camp",
       "pos": [
         397,
-        633
+        122
       ]
     },
     {
@@ -1048,17 +929,24 @@
       ]
     },
     {
-      "id": "goblin_camp",
+      "id": "goblin_snare",
       "pos": [
-        418,
-        162
+        342,
+        128
       ]
     },
     {
-      "id": "goblin_camp",
+      "id": "goblin_snare",
       "pos": [
-        324,
-        127
+        405,
+        113
+      ]
+    },
+    {
+      "id": "goblin_snare",
+      "pos": [
+        312,
+        180
       ]
     },
     {
@@ -1071,13 +959,6 @@
     {
       "id": "goblin_snare",
       "pos": [
-        394,
-        96
-      ]
-    },
-    {
-      "id": "goblin_snare",
-      "pos": [
         380,
         258
       ]
@@ -1085,8 +966,8 @@
     {
       "id": "goblin_snare",
       "pos": [
-        326,
-        149
+        424,
+        83
       ]
     },
     {
@@ -1099,8 +980,8 @@
     {
       "id": "goblin_snare",
       "pos": [
-        362,
-        133
+        388,
+        64
       ]
     },
     {
@@ -1113,22 +994,29 @@
     {
       "id": "goblin_snare",
       "pos": [
-        333,
-        269
+        389,
+        145
       ]
     },
     {
-      "id": "goblin_snare",
+      "id": "wet_slope",
       "pos": [
-        313,
-        33
+        701,
+        367
       ]
     },
     {
-      "id": "goblin_snare",
+      "id": "wet_slope",
       "pos": [
-        368,
-        212
+        334,
+        278
+      ]
+    },
+    {
+      "id": "wet_slope",
+      "pos": [
+        352,
+        17
       ]
     },
     {
@@ -1136,6 +1024,20 @@
       "pos": [
         206,
         350
+      ]
+    },
+    {
+      "id": "wet_slope",
+      "pos": [
+        644,
+        315
+      ]
+    },
+    {
+      "id": "wet_slope",
+      "pos": [
+        326,
+        149
       ]
     },
     {
@@ -1153,101 +1055,80 @@
       ]
     },
     {
-      "id": "wet_slope",
-      "pos": [
-        150,
-        414
-      ]
-    },
-    {
-      "id": "wet_slope",
-      "pos": [
-        340,
-        531
-      ]
-    },
-    {
-      "id": "wet_slope",
-      "pos": [
-        45,
-        409
-      ]
-    },
-    {
-      "id": "wet_slope",
-      "pos": [
-        428,
-        399
-      ]
-    },
-    {
-      "id": "wet_slope",
-      "pos": [
-        309,
-        439
-      ]
-    },
-    {
       "id": "portal_footprints",
       "pos": [
-        25,
-        362
+        15,
+        361
       ]
     },
     {
       "id": "portal_footprints",
       "pos": [
         365,
-        13
+        25
       ]
     },
     {
       "id": "portal_footprints",
       "pos": [
-        368,
-        706
+        366,
+        718
       ]
     },
     {
       "id": "portal_footprints",
       "pos": [
-        705,
-        362
+        712,
+        360
       ]
     },
     {
       "id": "torch_stubs",
       "pos": [
-        336,
-        55
+        677,
+        392
+      ]
+    },
+    {
+      "id": "torch_stubs",
+      "pos": [
+        366,
+        51
+      ]
+    },
+    {
+      "id": "torch_stubs",
+      "pos": [
+        329,
+        54
       ]
     },
     {
       "id": "torch_stubs",
       "pos": [
         53,
-        393
+        305
       ]
     },
     {
       "id": "torch_stubs",
       "pos": [
-        52,
-        312
+        343,
+        677
       ]
     },
     {
       "id": "torch_stubs",
       "pos": [
-        681,
-        396
+        55,
+        416
       ]
     },
     {
       "id": "torch_stubs",
       "pos": [
-        356,
-        681
+        390,
+        677
       ]
     },
     {
@@ -1258,24 +1139,17 @@
       ]
     },
     {
-      "id": "torch_stubs",
+      "id": "old_skeleton",
       "pos": [
-        52,
-        354
-      ]
-    },
-    {
-      "id": "torch_stubs",
-      "pos": [
-        391,
-        678
+        395,
+        63
       ]
     },
     {
       "id": "old_skeleton",
       "pos": [
-        369,
-        35
+        181,
+        411
       ]
     },
     {
@@ -1295,22 +1169,8 @@
     {
       "id": "old_skeleton",
       "pos": [
-        259,
-        401
-      ]
-    },
-    {
-      "id": "old_skeleton",
-      "pos": [
-        712,
-        369
-      ]
-    },
-    {
-      "id": "crystal_glow",
-      "pos": [
-        488,
-        358
+        425,
+        415
       ]
     },
     {
@@ -1318,6 +1178,13 @@
       "pos": [
         367,
         495
+      ]
+    },
+    {
+      "id": "crystal_glow",
+      "pos": [
+        488,
+        416
       ]
     },
     {
@@ -1365,13 +1232,6 @@
     {
       "id": "mud_tracks",
       "pos": [
-        163,
-        401
-      ]
-    },
-    {
-      "id": "mud_tracks",
-      "pos": [
         321,
         145
       ]
@@ -1405,17 +1265,10 @@
       ]
     },
     {
-      "id": "breeze_crack",
+      "id": "mud_tracks",
       "pos": [
-        316,
-        437
-      ]
-    },
-    {
-      "id": "breeze_crack",
-      "pos": [
-        717,
-        373
+        607,
+        304
       ]
     },
     {
@@ -1430,6 +1283,13 @@
       "pos": [
         493,
         308
+      ]
+    },
+    {
+      "id": "breeze_crack",
+      "pos": [
+        207,
+        422
       ]
     },
     {
@@ -1456,22 +1316,15 @@
     {
       "id": "breeze_crack",
       "pos": [
-        327,
-        524
+        397,
+        619
       ]
     },
     {
-      "id": "cairn",
+      "id": "breeze_crack",
       "pos": [
-        319,
-        216
-      ]
-    },
-    {
-      "id": "cairn",
-      "pos": [
-        704,
-        337
+        359,
+        50
       ]
     },
     {
@@ -1479,6 +1332,13 @@
       "pos": [
         325,
         97
+      ]
+    },
+    {
+      "id": "cairn",
+      "pos": [
+        388,
+        177
       ]
     },
     {
@@ -1500,6 +1360,13 @@
       "pos": [
         557,
         377
+      ]
+    },
+    {
+      "id": "cairn",
+      "pos": [
+        418,
+        81
       ]
     }
   ],

@@ -527,11 +527,10 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 ## 다른 탐험가 무리(FieldParties): 닿으면 선택 창 — 고르는 동안 시간이 멈추고, Backspace = 지나가기.
 func _party_checks(explore: ExploreScreen) -> void:
 	var s := explore.session
-	var rookies := s.parties.of_kind(s, FieldParties.ROOKIE)
-	_expect(not rookies.is_empty(), "1층에 다른 탐험가 무리가 있다")
-	if rookies.is_empty():
+	var g := s.parties._spawn(s, FieldParties.ROOKIE, FieldRoutes.random_cell_near(s.map, s.rng, s.pos, 6))  # 1층엔 돌아다니는 신참 무리가 없어 하나 세운다(사용자 2026-10-26)
+	_expect(g != null, "탐험가 무리를 세울 수 있다")
+	if g == null:
 		return
-	var g: FieldMonsters.Group = rookies[0]
 	s.party_met.emit(g)
 	await _frames(2)
 	_expect(explore.has_node("PartyChoice") and s.realtime.is_paused("party"), "탐험가 무리 선택 창(시간 정지)")
