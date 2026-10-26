@@ -70,8 +70,7 @@ static func _leather_feet(cl: Clay, pr: Dictionary, j: Dictionary) -> void:
 		Back.groove(cl, pr, g, [an + Vector3(-0.025, -0.02, -0.035), an + Vector3(0.025, -0.02, -0.035)], F, 0.004, 0.006)
 
 
-## 가죽 흉갑: 몸통에 붙는 가죽(가장자리 단·앞뒤 솔기 땀) + 팔을 따라 감싼 어깨 판 + 허리 아래 가죽 띠 자락.
-## 처음에 두껍게(0.038)·둥근 어깨받이 공으로 했더니 상자 같은 몸에 공 어깨(로봇 같다 — 사용자 2026-10-26) → 몸에 붙게, 어깨는 팔 모양 그대로.
+## 가죽 흉갑: 몸통을 두른 두꺼운 가죽(가장자리 말린 단·앞뒤 솔기 땀) + 둥근 어깨받이 두 겹 + 허리 아래 가죽 띠 자락.
 static func _leather_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary) -> void:
 	var m := _leather(cl)
 	var dark := _leather(cl, LEATHER_DARK)
@@ -80,9 +79,9 @@ static func _leather_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionar
 	var pv: Vector3 = j["pelvis"]
 	var bw: float = bd["back_w"]
 	var bot := pv.y - 0.03
-	BackKit.shell(cl, pr, ["torso", "pelvis"], 0.029, m, g, BackKit.band(cl, pr, nk.y + 0.05, bot), 0.03, 0.0)
-	BackKit.shell(cl, pr, ["torso", "pelvis"], 0.032, dark, g, BackKit.band(cl, pr, bot - 0.012, bot), 0.01)  # 아래 단
-	BackKit.shell(cl, pr, ["torso"], 0.032, dark, g, BackKit.band(cl, pr, nk.y + 0.05, nk.y + 0.062), 0.01)  # 위 단
+	BackKit.shell(cl, pr, ["torso", "pelvis"], 0.038, m, g, BackKit.band(cl, pr, nk.y + 0.035, bot), 0.03, 0.0)
+	BackKit.shell(cl, pr, ["torso", "pelvis"], 0.042, dark, g, BackKit.band(cl, pr, bot - 0.014, bot), 0.01)  # 아래 단
+	BackKit.shell(cl, pr, ["torso"], 0.042, dark, g, BackKit.band(cl, pr, nk.y + 0.035, nk.y + 0.05), 0.01)  # 위 단
 	for n: Vector3 in [F, B]:  # 가운데 솔기 + 양옆 땀
 		var z := -0.15 if n == F else bw + 0.05
 		Back.groove(cl, pr, g, [Vector3(0, nk.y + 0.06, z), Vector3(0, bot - 0.02, z * 0.9)], n, 0.004, 0.008)
@@ -91,12 +90,13 @@ static func _leather_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionar
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
 		var shp: Vector3 = j["shoulder_" + t]
-		var ga := cl.group()  # 어깨 판: 어깨·위팔을 따라 두 겹(아래 겹이 조금 안쪽)
-		BackKit.shell(cl, pr, ["shoulder_" + t, "upper_" + t], 0.03, m, ga, BackKit.band(cl, pr, shp.y - 0.045, shp.y + 0.035), 0.01)
-		BackKit.shell(cl, pr, ["upper_" + t], 0.03, m, ga, BackKit.band(cl, pr, shp.y + 0.035, shp.y + 0.07), 0.008)
-		BackKit.shell(cl, pr, ["upper_" + t], 0.036, dark, ga, BackKit.band(cl, pr, shp.y + 0.028, shp.y + 0.036), 0.004)
+		for k in 2:  # 어깨받이(위 겹이 크다)
+			var c := shp + Vector3(s * (0.022 + k * 0.01), 0.008 + k * 0.034, 0.0)
+			var ga := cl.group()
+			Back.ell(cl, pr, ga, c, 0.06 - k * 0.006, 0.04, 0.06 - k * 0.005, m, 0.005)
+			Back.groove(cl, pr, ga, [c + Vector3(-0.05, 0.03, 0.0), c + Vector3(0.05, 0.03, 0.0)], Vector3(s, 0.4, 0), 0.003, 0.005)
 	var gs := cl.group()
-	BackKit.shell(cl, pr, ["pelvis"], 0.038, m, gs, BackKit.band(cl, pr, bot - 0.004, pv.y + 0.07), 0.02, 0.0)  # 허리 아래 띠 자락(허벅지는 따르지 않는다 — 엉덩이 모양이 드러났다)
+	BackKit.shell(cl, pr, ["pelvis"], 0.05, m, gs, BackKit.band(cl, pr, bot - 0.004, pv.y + 0.07), 0.02, 0.0)  # 허리 아래 띠 자락(허벅지는 따르지 않는다 — 엉덩이 모양이 드러났다)
 	for n: Vector3 in [F, B]:
 		var z := -0.14 if n == F else bw + 0.04
 		for x: float in [-0.105, -0.035, 0.035, 0.105]:
@@ -129,17 +129,17 @@ static func _leather_head(cl: Clay, pr: Dictionary, hd: Dictionary) -> void:
 	var g := cl.group()
 	var c: Vector3 = hd["c"]
 	var rv: float = hd["rv"]
-	BackKit.shell(cl, pr, ["skull", "ear"], 0.014, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y + rv * 0.05), 0.01)  # 머리에 붙게(두껍게 하면 둥근 통이 얹힌 것 같았다)
+	BackKit.shell(cl, pr, ["skull", "ear"], 0.026, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y - rv * 0.05), 0.01)
 	for k in 4:
 		var lon := k * PI * 0.5
 		var pts: Array = []
 		for i in 5:
-			pts.append(Back.on_head(hd, 0.25 + i * 0.3, lon, 0.014))
-		Back.ridge(cl, pr, g, pts, Vector3(sin(lon), -0.5, cos(lon)), 0.003, 0.003, dark)
+			pts.append(Back.on_head(hd, 0.25 + i * 0.3, lon, 0.026))
+		Back.ridge(cl, pr, g, pts, Vector3(sin(lon), -0.5, cos(lon)), 0.004, 0.004, dark)
 	var rim: Array = []
 	for i in 25:
-		rim.append(Back.on_head(hd, 0.0, TAU * i / 24.0, 0.016))
-	Back.chain(cl, pr, g, rim, rim.map(func(_v: Vector3) -> float: return 0.006), dark, 0.003)
+		rim.append(Back.on_head(hd, 0.1, TAU * i / 24.0, 0.028))
+	Back.chain(cl, pr, g, rim, rim.map(func(_v: Vector3) -> float: return 0.012), dark, 0.004)
 
 
 ## 쇠 정강이받이 + 쇠 신발: 무릎 덮개 · 정강이 판(이음매) · 발등 겹판.
@@ -164,8 +164,7 @@ static func _iron_feet(cl: Clay, pr: Dictionary, j: Dictionary) -> void:
 		Back.bump(cl, pr, g, kn + Vector3(s * 0.03, 0.06, -0.04), F, 0.005, 0.005, 0.003, dark)
 
 
-## 쇠 몸: 허벅지까지 오는 사슬 셔츠(위팔 소매) 위에 몸에 붙는 판 흉갑(가운데 능선 · 가로 겹 · 리벳) + 팔을 따라 감싼 겹판 어깨받이.
-## 처음 흉갑 0.05·어깨받이 타원 공은 상자 몸에 공 어깨(로봇 같다 — 사용자 2026-10-26) → 흉갑은 사슬 바로 위, 어깨는 어깨·위팔 모양 띠 겹.
+## 쇠 몸: 허벅지까지 오는 사슬 셔츠(위팔 소매) 위에 앞뒤 판 흉갑(가운데 능선 · 리벳) + 겹판 어깨받이.
 static func _iron_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary) -> void:
 	var mail := cl.mat(MAIL, "metal", {"mottle": MAIL.darkened(0.45), "mottle_amt": 0.45, "spec": 0.12})
 	var m := _iron(cl)
@@ -175,10 +174,10 @@ static func _iron_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary) 
 	var bw: float = bd["back_w"]
 	var gm := cl.group()
 	var hem := pv.y + 0.12
-	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r", "thigh_l", "thigh_r"], 0.026, mail, gm, BackKit.band(cl, pr, nk.y + 0.02, hem), 0.03, 0.0)
+	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r", "thigh_l", "thigh_r"], 0.03, mail, gm, BackKit.band(cl, pr, nk.y + 0.02, hem), 0.03, 0.0)
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
-		BackKit.shell(cl, pr, ["upper_" + t], 0.022, mail, gm, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, j["elbow_" + t].y - 0.01), 0.01)
+		BackKit.shell(cl, pr, ["upper_" + t], 0.026, mail, gm, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, j["elbow_" + t].y - 0.01), 0.01)
 	var y := nk.y + 0.05
 	while y < hem:  # 고리 결
 		for n: Vector3 in [F, B, Vector3(-1, 0, 0), Vector3(1, 0, 0)]:
@@ -188,8 +187,8 @@ static func _iron_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary) 
 		y += 0.016
 	var g := cl.group()
 	var bot := pv.y - 0.05
-	BackKit.shell(cl, pr, ["torso"], 0.034, m, g, BackKit.band(cl, pr, nk.y + 0.055, bot), 0.03, 0.0)
-	BackKit.shell(cl, pr, ["torso", "pelvis"], 0.036, m, g, BackKit.band(cl, pr, bot - 0.004, bot + 0.024), 0.01)  # 허리판
+	BackKit.shell(cl, pr, ["torso"], 0.05, m, g, BackKit.band(cl, pr, nk.y + 0.04, bot), 0.03, 0.0)
+	BackKit.shell(cl, pr, ["torso", "pelvis"], 0.054, m, g, BackKit.band(cl, pr, bot - 0.004, bot + 0.026), 0.01)  # 허리판
 	Back.ridge(cl, pr, g, [Vector3(0, nk.y + 0.05, -0.16), Vector3(0, bot - 0.01, -0.15)], F, 0.006, 0.005, m)  # 가슴 능선
 	Back.ridge(cl, pr, g, [Vector3(0, nk.y + 0.05, bw + 0.06), Vector3(0, bot - 0.01, 0.1)], B, 0.006, 0.004, m)
 	for k in 3:  # 가슴·등판 가로 겹(아래로 갈수록 바깥)
@@ -203,9 +202,9 @@ static func _iron_body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary) 
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
 		var shp: Vector3 = j["shoulder_" + t]
-		for k in 3:  # 어깨받이(어깨·위팔을 따라 위에서 아래로 겹친 띠 — 아래 겹이 안쪽)
-			var y0 := shp.y - 0.04 + k * 0.03
-			BackKit.shell(cl, pr, ["shoulder_" + t, "upper_" + t], 0.032 - k * 0.003, m, cl.group(), BackKit.band(cl, pr, y0, y0 + 0.036), 0.006)
+		for k in 3:  # 어깨받이(위에서 아래로 겹친 판)
+			var c := shp + Vector3(s * (0.02 + k * 0.007), 0.006 + k * 0.026, 0.0)
+			Back.ell(cl, pr, cl.group(), c, 0.058 - k * 0.004, 0.036, 0.056 - k * 0.003, m, 0.004)
 
 
 ## 쇠 팔: 아래팔 판(팔꿈치 덮개) + 손등 겹판 장갑.
@@ -229,37 +228,34 @@ static func _iron_hands(cl: Clay, pr: Dictionary, j: Dictionary) -> void:
 			Back.groove(cl, pr, g, [q + Vector3(-0.03, 0, 0.03), q + Vector3(0.03, 0, 0.03)], B, 0.003, 0.004)
 
 
-## 쇠 투구: 머리에 붙는 쇠 모자 위로 솟은 뾰족한 꼭대기(노르만식 원뿔 투구 — 가운데 능선 · 이마 테 · 코 가리개) + 목을 감싼 사슬.
-## 처음 둥근 쇠(0.03)·넓은 테·어깨까지 사슬은 목이 묻힌 둥근 통 머리(로봇 같다 — 사용자 2026-10-26) → 머리에 붙이고 꼭대기를 뾰족하게, 사슬은 목만.
+## 쇠 투구: 둥근 머리 쇠(가운데 능선 · 이마 테 · 코 가리개) + 목과 어깨를 덮는 사슬 목가리개.
 static func _iron_head(cl: Clay, pr: Dictionary, j: Dictionary, hd: Dictionary) -> void:
 	var m := _iron(cl)
 	var mail := cl.mat(MAIL, "metal", {"mottle": MAIL.darkened(0.45), "mottle_amt": 0.45, "spec": 0.12})
 	var c: Vector3 = hd["c"]
 	var rv: float = hd["rv"]
-	var ru: float = hd["ru"]
 	var nk: Vector3 = j["neck"]
 	var gm := cl.group()
-	BackKit.shell(cl, pr, ["neck"], 0.022, mail, gm, BackKit.band(cl, pr, c.y + rv * 0.15, nk.y + 0.025), 0.01)
+	BackKit.shell(cl, pr, ["neck"], 0.04, mail, gm, BackKit.band(cl, pr, c.y + rv * 0.1, nk.y + 0.03), 0.01)
+	BackKit.shell(cl, pr, ["torso"], 0.044, mail, gm, BackKit.band(cl, pr, nk.y - 0.02, nk.y + 0.04), 0.02)  # 목 둘레 사슬(어깨 끝까지 넓히면 선반처럼 튀어나왔다)
+	Back.ell(cl, pr, gm, Back.on_head(hd, -0.35, 0.0, 0.0), float(hd["ru"]) * 1.05, rv * 0.55, float(hd["rw"]) * 0.6, mail, 0.01)  # 뒷머리 아래
 	var y := c.y + rv * 0.3
-	while y < nk.y + 0.025:  # 고리 결
+	while y < nk.y + 0.045:  # 고리 결
 		for n: Vector3 in [F, B, Vector3(-1, 0, 0), Vector3(1, 0, 0)]:
-			var side := Vector3(n.z, 0, -n.x) * 0.1
-			Back.groove(cl, pr, gm, [n * 0.07 - side + Vector3(0, y, 0), n * 0.07 + side + Vector3(0, y, 0)], n, 0.0022, 0.0035)
-		y += 0.013
+			var side := Vector3(n.z, 0, -n.x) * 0.12
+			Back.groove(cl, pr, gm, [n * 0.09 - side + Vector3(0, y, 0), n * 0.09 + side + Vector3(0, y, 0)], n, 0.0025, 0.004)
+		y += 0.014
 	var g := cl.group()
-	BackKit.shell(cl, pr, ["skull", "ear"], 0.016, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y + rv * 0.1), 0.01)
-	var up := Vector3(0, -1, 0)
-	Back.cap(cl, pr, g, c + up * rv * 0.35, c + up * (rv + 0.06), ru * 0.82 + 0.012, 0.004, m, 0.01)  # 뾰족한 꼭대기
+	BackKit.shell(cl, pr, ["skull", "ear"], 0.03, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y + rv * 0.12), 0.01)
 	var crest: Array = []
 	for i in 9:
-		crest.append(Back.on_head(hd, lerpf(0.3, PI - 0.3, i / 8.0), PI, 0.018))  # 이마 → 꼭대기 → 뒤통수
-	crest[4] = c + up * (rv + 0.055)
-	Back.ridge(cl, pr, g, crest, Vector3(0, -1, 0), 0.004, 0.004, m)
+		crest.append(Back.on_head(hd, lerpf(0.2, PI - 0.2, i / 8.0), PI, 0.03))  # 이마 → 정수리 → 뒤통수
+	Back.ridge(cl, pr, g, crest, Vector3(0, -1, 0), 0.006, 0.006, m)  # 앞에서 뒤로 넘는 능선
 	var rim: Array = []
 	for i in 25:
-		rim.append(Back.on_head(hd, 0.03, TAU * i / 24.0, 0.018))
-	Back.chain(cl, pr, g, rim, rim.map(func(_v: Vector3) -> float: return 0.006), m, 0.003)
-	Back.cap(cl, pr, g, Back.on_head(hd, 0.1, PI, 0.02), Back.on_head(hd, -0.4, PI, 0.024), 0.009, 0.007, m, 0.003)  # 코 가리개
+		rim.append(Back.on_head(hd, 0.05, TAU * i / 24.0, 0.032))
+	Back.chain(cl, pr, g, rim, rim.map(func(_v: Vector3) -> float: return 0.01), m, 0.003)
+	Back.cap(cl, pr, g, Back.on_head(hd, 0.1, PI, 0.036), Back.on_head(hd, -0.45, PI, 0.04), 0.011, 0.008, m, 0.003)  # 코 가리개
 
 
 ## 갑옷 겹 오려 내기: mask(Party.figure out.mask)를 grow px 넓혀(경계 잉크 선까지) 그 밖은 투명으로.
