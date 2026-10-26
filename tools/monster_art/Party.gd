@@ -1,7 +1,7 @@
 extends RefCounted
 ## 아군 전투 그림(전투 무대 아래 앞줄, 적을 향해 등을 보인다): 탐험가(종족 × back 뒷모습 · side 오른쪽을 보며 비스듬히 돌아선 옆모습)
 ## 와 아군으로 소환되는 몬스터의 뒷모습. id: <종족>_back|_side → assets/party/, <몬스터>_back → assets/monsters/.
-## 탐험가 복장은 종족 특징만 드러내고 장비와 상관없이 늘 같은 모습(장비를 바꾸거나 레벨이 올라도 그대로 — ASSUMPTIONS UI11).
+## 탐험가 복장은 종족 특징만 드러내고 장비와 상관없이 늘 같은 모습(UI11) — 머리·몸·장갑·신발 갑옷만 따로 그린 겹을 게임이 위에 얹는다(BackArmor · AM43).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -16,6 +16,7 @@ const BackPose := preload("res://tools/monster_art/BackPose.gd")
 const BackGear := preload("res://tools/monster_art/BackGear.gd")
 const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
 const BackCloak := preload("res://tools/monster_art/BackCloak.gd")
+const BackArmor := preload("res://tools/monster_art/BackArmor.gd")
 const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
@@ -114,7 +115,8 @@ static func body_height(id: String, crop_h: float) -> float:
 	return crop_h / 0.78
 
 
-static func figure(sp: Dictionary, seed_value: int) -> Paint:
+## sp.armor = {부위: 벌}(BackArmor — 갑옷 겹 그림)이면 out.mask = 그 갑옷 재질이 보이는 픽셀(Image L8, 그림과 같은 크기).
+static func figure(sp: Dictionary, seed_value: int, out: Dictionary = {}) -> Paint:
 	var H := float(sp.get("height", 560))
 	var w := int(H * float(sp.get("width", 1.2)))
 	var h := int(H * float(sp.get("canvas_h", 1.12)))
@@ -141,9 +143,14 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
 	BackCloak.wear(cl, pr, j, bd, hd, kit, rng)  # 탐험 맵 겉옷(망토·두건·외투 — MapLooks)
+	var m0 := cl.mats.size()
+	BackArmor.wear(cl, pr, j, bd, hd, sp.get("armor", {}))
+	var m1 := cl.mats.size()
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
 	BackPose.props(cl, pr, j, sp)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
+	if m1 > m0:
+		out["mask"] = _mask(cl, m0, m1)
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
 	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림) — 입은 그리지 않는다
 		var side: bool = (hd["eyes"] as Array).size() < 2
@@ -171,6 +178,17 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 				p.blend(xx, yy, Color("#140c0a"), 0.7)
 	Finish.done(p, sp, Back.screen_joints(pr, j), H)
 	return p
+
+
+## 재질 m0 ≤ m < m1이 맨 앞에 보이는 픽셀(255) — 갑옷 겹 그림을 오려 낼 때.
+static func _mask(cl: Clay, m0: int, m1: int) -> Image:
+	var data := PackedByteArray()
+	data.resize(cl.w * cl.h)
+	for i in cl.w * cl.h:
+		var m := cl.top_m[i]
+		if m >= m0 and m < m1:
+			data[i] = 255
+	return Image.create_from_data(cl.w, cl.h, false, Image.FORMAT_L8, data)
 
 
 ## 탐험 맵 눈 하나(참고: 피어 앤 헝거 맵 그림을 원본 픽셀로 본 것): 가로로 긴 아몬드꼴, 위 눈꺼풀은 굵고 짙은 선·아래는 가는 선,

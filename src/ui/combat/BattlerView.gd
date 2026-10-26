@@ -16,7 +16,8 @@ var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
 var flip: bool = false  ## 좌우 반전(오른쪽 자리의 옆모습이 무대 가운데를 보게)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
-var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이]
+var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이, 갑옷 겹 그림들]
+var _armor: Array[Texture2D] = []  ## 탐험가: 지금 그림 위에 얹는 갑옷 겹(ArmorLook — 몸 그림과 같은 크기)
 var _current: bool = false
 var _target: bool = false
 var _name: Label
@@ -45,10 +46,14 @@ func setup(u: Combatant, db: GameDatabase, knowers: Array[Knowledge] = []) -> vo
 	elif u.actor is PlayerCharacter:
 		var race := (u.actor as PlayerCharacter).race_id
 		color = Color.from_string(JsonUtil.get_str(db.get_entry("races", race), "color"), Color.GRAY)
+		var pc := u.actor as PlayerCharacter
 		for view: String in ["back", "side"]:
 			var tex := MonsterArt.texture_in(MonsterArt.party_dir(), race + "_" + view)
 			if tex != null:
-				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex)]
+				var layers: Array[Texture2D] = []
+				for path in ArmorLook.party_paths(db, pc.equipment, db.render, race, view):
+					layers.append(load(path) as Texture2D)
+				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex), layers]
 		set_view(false, false)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not front:
@@ -75,6 +80,7 @@ func set_view(side: bool, mirror: bool) -> void:
 		return
 	art = _views[key][0]
 	_art_body = _views[key][1]
+	_armor = _views[key][2]
 	flip = mirror and key == "side"
 	queue_redraw()
 
@@ -175,7 +181,10 @@ func _draw() -> void:
 			CombatFigure.ground(self, Vector2(size.x / 2.0, size.y), minf(size.x * 0.42, size.y * 0.5), size.y, glow)
 		if flip:
 			draw_set_transform(Vector2(size.x, 0.0), 0.0, Vector2(-1.0, 1.0))
-		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
+		var tint := Color(1.12, 1.1, 1.05) if _current else Color.WHITE
+		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, tint)
+		for layer in _armor:
+			draw_texture_rect(layer, Rect2(Vector2.ZERO, size), false, tint)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	else:
 		var c := color.lightened(0.12) if _current and not front else color
