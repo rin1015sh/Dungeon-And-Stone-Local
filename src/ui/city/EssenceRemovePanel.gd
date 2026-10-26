@@ -7,7 +7,7 @@ var _confirm: int = -1
 
 
 func build() -> void:
-	head(Strings.t("city.essence_cost", {"cost": pc.essences.next_delete_cost(state.db), "money": pc.inventory.money}))
+	head(Strings.t("city.essence_cost", {"cost": pc.essences.next_delete_cost(state.db), "money": Strings.stones(pc.inventory.money)}))
 	if pc.essences.absorbed.is_empty():
 		add_child(UiTheme.label(Strings.t("city.essence_none"), "small", "text_dim"))
 	choices()
@@ -24,7 +24,7 @@ func options() -> Array[Dictionary]:
 			text += Strings.t("city.essence_locked")
 		var idx := i
 		if _confirm == i:
-			opts.append({"text": text, "sub": Strings.t("city.essence_confirm", {"cost": cost}), "enabled": pc.inventory.money >= cost,
+			opts.append({"text": text, "sub": Strings.t("city.essence_confirm", {"cost": Strings.stones(cost)}), "enabled": pc.inventory.money >= cost,
 				"on_pick": func() -> void:
 					_confirm = -1
 					done(CityTemple.remove_essence(state, pc, activity_id, idx))})

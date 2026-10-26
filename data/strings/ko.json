@@ -4,6 +4,11 @@
     "subtitle": "라프도니아 차원광장 — 탐험가 기록",
     "build": "비상업 팬 프로젝트"
   },
+  "num": {
+    "_comment": "스톤 금액 표시(Strings.stones): 만의 자리부터 넷째 자리마다 units 순서로 단위를 붙인다. 문구에서 stone_unit 바로 앞의 수 인자는 자동으로 이렇게 쓴다.",
+    "stone_unit": "스톤",
+    "units": "만,억,조,경"
+  },
   "target_kind": {
     "enemy_single": "적 하나",
     "enemy_row": "적 한 줄",

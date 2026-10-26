@@ -112,7 +112,7 @@ func _on_worn_changed(_slot: String) -> void:
 
 
 func refresh() -> void:
-	_money.text = Strings.t("inventory.money", {"amount": actor.inventory.money})
+	_money.text = Strings.t("inventory.money", {"amount": Strings.stones(actor.inventory.money)})
 	_stats.text = Strings.t("inventory.summary", {
 		"attack": roundi(DamageCalc.attack_power(actor.db, wearer, {"scaling": "phys"})),
 		"type": DataNames.tag(actor.db, "damage_types", wearer.attack_damage_type()),

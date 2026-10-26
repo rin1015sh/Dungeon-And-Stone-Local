@@ -13,6 +13,21 @@ func test_strings_lookup_and_format() -> void:
 	assert_false(Strings.has("_comment"), "'_' 키는 건너뛴다")
 
 
+## 스톤 금액은 만의 자리부터 만·억 단위로 끊는다(사용자 요청 2026-10-26).
+func test_stone_amounts_use_korean_units() -> void:
+	assert_eq(Strings.stones(300), "300")
+	assert_eq(Strings.stones(3500), "3500")
+	assert_eq(Strings.stones(10000), "1만")
+	assert_eq(Strings.stones(15000), "1만 5000")
+	assert_eq(Strings.stones(55002000), "5500만 2000")
+	assert_eq(Strings.stones(150000000), "1억 5000만")
+	assert_eq(Strings.stones(100000005), "1억 5")
+	assert_eq(Strings.stones(-15000), "-1만 5000")
+	# 문구에서 "스톤" 바로 앞의 수만 바뀐다(개수 {n}개는 그대로).
+	assert_eq(Strings.t("city.hud_money", {"money": 150000000}), "소지금 1억 5000만 스톤")
+	assert_eq(Strings.t("city.shop_bought", {"item": "횃불", "n": 12000, "price": 15000.0}), "횃불 12000개를 1만 5000 스톤에 샀다.")
+
+
 func test_every_code_string_key_exists() -> void:
 	var re := RegEx.create_from_string(KEY_PATTERN)
 	var missing := PackedStringArray()
