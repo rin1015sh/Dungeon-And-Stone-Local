@@ -129,7 +129,7 @@ func layout() -> void:
 	var rise := stage_h * UiTheme.ui_float("combat_rows_rise", 0.1)  # 뒷줄이 적어도 이만큼 위에(지평선이 낮아도 앞줄 뒤에 묻히지 않게)
 	var deep := foes.any(func(u: Combatant) -> bool: return _row(u) > 0)
 	# 뒷줄이 있으면 앞줄을 이쪽으로 당긴다(아래로·조금 크게) — 뒷줄이 앞줄 머리 위로 보이게
-	var front_y := minf(_floor_y + stage_h * UiTheme.ui_float("combat_rows_front_pull", 0.14), stage_h * 0.97) if deep else _floor_y
+	var front_y := minf(_floor_y + stage_h * UiTheme.ui_float("combat_rows_front_pull", 0.22), stage_h * 0.97) if deep else _floor_y
 	var front_k := UiTheme.ui_float("combat_rows_front_scale", 1.08) if deep else 1.0
 	for u in foes:
 		var v: BattlerView = _views[u]

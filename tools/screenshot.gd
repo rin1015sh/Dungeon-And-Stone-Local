@@ -23,7 +23,7 @@ extends Node
 ## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께), --meal_pick=<요리 id>: 도시 여관 식사에서 그 요리(그림 확인)
 ## --statuses=<id,id>: --combat에서 적 모두에게 그 상태(머리 위 아이콘 확인), --party_statuses=<id,id>: 아군 모두에게
 ## --extra_turn: 지금 차례를 추가 차례로 표시해 파티 창 이름 옆 표시를 본다
-## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
+## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들 — --rift … --engage 균열 조우에서도), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
@@ -207,21 +207,9 @@ func _run() -> void:
 						BossHooks.check_all(cb)
 						BossHooks.turn_end(cb, boss, false)
 			if _args.has("summon"):
-				await _frames(3)
-				for n: Node in _main.find_children("*", "", true, false):
-					if n is CombatScreen:
-						var cs := n as CombatScreen
-						var sv := str(_args["summon"])
-						if sv.is_valid_int() or sv == "true":  # --summon=N: 고블린 N마리
-							for k in (sv.to_int() if sv.is_valid_int() else 1):
-								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
-						else:  # --summon=id,id: 그 몬스터들(그림 확인)
-							for mid in sv.split(","):
-								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": mid})
-						if _args.has("ally_summon"):  # 아군 소환수(뒷모습 그림 확인)
-							var av := str(_args["ally_summon"])
-							for aid in ("soldier_deadman" if av == "true" else av).split(","):
-								BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": aid})
+				await _summon()
+		if _args.has("summon") and _args.has("engage") and not _args.has("combat"):  # 균열 조우 전투에도 증원(줄 배치 확인)
+			await _summon()
 		if _args.has("mate"):  # 동료를 하나 붙여 "행동 정하기"(첫 사람 방어 → 동료 차례)를 본다
 			await _frames(5)
 			for n: Node in _main.find_children("*", "", true, false):
@@ -466,3 +454,22 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 				pick = g
 		explore.session.engage(pick, true)
 	return explore
+
+
+## --summon: 지금 전투 화면의 적 진영에 증원(=N 고블린 N마리, =id,id 그 몬스터들), --ally_summon이면 아군 소환수도.
+func _summon() -> void:
+	await _frames(3)
+	for n: Node in _main.find_children("*", "", true, false):
+		if n is CombatScreen:
+			var cs := n as CombatScreen
+			var sv := str(_args["summon"])
+			if sv.is_valid_int() or sv == "true":  # --summon=N: 고블린 N마리
+				for k in (sv.to_int() if sv.is_valid_int() else 1):
+					BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
+			else:  # --summon=id,id: 그 몬스터들(그림 확인)
+				for mid in sv.split(","):
+					BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": mid})
+			if _args.has("ally_summon"):  # 아군 소환수(뒷모습 그림 확인)
+				var av := str(_args["ally_summon"])
+				for aid in ("soldier_deadman" if av == "true" else av).split(","):
+					BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_PARTY)[0], {"monster": aid})
