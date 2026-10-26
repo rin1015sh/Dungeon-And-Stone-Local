@@ -38,6 +38,12 @@ func clamp_value(v: float) -> float:
 	return v
 
 
+## 최대치까지 남은 양(max가 없으면 INF).
+func room() -> float:
+	var hi: Variant = rules.get("max")
+	return float(hi) - value if hi is float or hi is int else INF
+
+
 ## 피로도를 바꾼다. 실제로 바뀐 양을 돌려준다.
 func add(delta: float, source: String = "") -> float:
 	var before := value

@@ -66,6 +66,14 @@ func _on_fatigue_changed(_value: float, _delta: float, _source: String) -> void:
 		stats.add_modifiers_from_data(FATIGUE_SOURCE, mods)
 
 
+func fatigue_room() -> float:
+	return fatigue.room()
+
+
+func add_fatigue(amount: float, source: String) -> void:
+	fatigue.add(amount, source)
+
+
 ## 레벨을 바꾸면 정수 슬롯 잠금도 맞춘다(레벨 하락 = 무작위 잠금, 상승 = 해제).
 func set_level(level: int) -> void:
 	change_level(level, essence_rng)

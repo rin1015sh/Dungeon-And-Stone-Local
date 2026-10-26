@@ -4,7 +4,8 @@
   "target": "enemy_single",
   "mastery": "spear",
   "cost": {
-    "soul": 6
+    "hunger": 2,
+    "fatigue": 2
   },
   "delay_cost": 0,
   "cooldown": 0,

@@ -237,7 +237,8 @@ func _cost_text(sk: Dictionary) -> String:
 	var cost := PackedStringArray()
 	var costs := JsonUtil.get_dict(sk, "cost")
 	for r: String in costs:
-		cost.append("%s %d" % [_battle.db.resources[r].name_ko, int(costs[r])])
+		var name: String = Strings.t("party.fatigue") if r == Actor.COST_FATIGUE else _battle.db.resources[r].name_ko
+		cost.append("%s %d" % [name, int(costs[r])])
 	return ", ".join(cost)
 
 

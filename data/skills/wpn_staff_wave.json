@@ -4,7 +4,8 @@
   "target": "enemy_all",
   "mastery": "staff",
   "cost": {
-    "soul": 10
+    "hunger": 3,
+    "fatigue": 3
   },
   "delay_cost": 0,
   "cooldown": 0,

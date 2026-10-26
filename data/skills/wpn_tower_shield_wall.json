@@ -4,7 +4,8 @@
   "target": "ally_all",
   "mastery": "tower_shield",
   "cost": {
-    "soul": 8
+    "hunger": 2,
+    "fatigue": 2
   },
   "delay_cost": 0,
   "cooldown": 0,

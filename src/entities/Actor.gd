@@ -115,6 +115,46 @@ func learn_skill(skill_id: String) -> bool:
 	return true
 
 
+## 스킬 대가 키 "fatigue": 자원이 아니라 피로가 그만큼 오른다(장비 스킬 — 사용자 2026-10-26, IT10). 나머지 키는 자원.
+const COST_FATIGUE := "fatigue"
+
+
+## 스킬 대가(cost)를 치를 수 있는가: 자원은 남은 양, 피로는 최대치까지 남은 자리.
+func can_pay(cost: Dictionary) -> bool:
+	var f := JsonUtil.get_float(cost, COST_FATIGUE)
+	if f > 0.0 and fatigue_room() + 0.0001 < f:
+		return false
+	return pool.can_afford(_pool_cost(cost))
+
+
+## 대가를 치른다(못 치르면 아무것도 바꾸지 않고 false).
+func pay(cost: Dictionary, source: String) -> bool:
+	if not can_pay(cost):
+		return false
+	pool.spend(_pool_cost(cost), source)
+	var f := JsonUtil.get_float(cost, COST_FATIGUE)
+	if f > 0.0:
+		add_fatigue(f, source)
+	return true
+
+
+## 피로가 오를 수 있는 남은 자리. 피로가 없는 개체(몬스터)는 0 — 피로 대가 스킬을 못 쓴다.
+func fatigue_room() -> float:
+	return 0.0
+
+
+func add_fatigue(_amount: float, _source: String) -> void:
+	pass
+
+
+func _pool_cost(cost: Dictionary) -> Dictionary:
+	if not cost.has(COST_FATIGUE):
+		return cost
+	var out := cost.duplicate()
+	out.erase(COST_FATIGUE)
+	return out
+
+
 ## 장비 스킬(스킬 데이터 "mastery": 종류 id — 든 무기·방패의 equip.skills, IT8)을 지금 장비에 맞춘다.
 ## 장비 스킬은 목록 맨 앞(무기 → 방패 순), 벗으면 잊는다. 장비가 바뀔 때마다(불러오기 포함) 부른다.
 func sync_gear_skills() -> void:

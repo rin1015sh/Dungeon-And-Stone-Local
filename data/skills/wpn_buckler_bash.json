@@ -4,7 +4,8 @@
   "target": "enemy_single",
   "mastery": "buckler",
   "cost": {
-    "soul": 5
+    "hunger": 1,
+    "fatigue": 1
   },
   "delay_cost": 0,
   "cooldown": 0,

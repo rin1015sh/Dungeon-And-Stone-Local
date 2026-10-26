@@ -4,7 +4,8 @@
   "target": "enemy_all",
   "mastery": "warhammer",
   "cost": {
-    "soul": 12
+    "hunger": 3,
+    "fatigue": 3
   },
   "delay_cost": 30,
   "cooldown": 0,

@@ -262,7 +262,7 @@ func can_use(c: Combatant, skill_id: String) -> String:
 	if c.cooldowns.has(skill_id) or not BattleRules.uses_left(self, c, skill_id):
 		return "combat.reason_cooldown"
 	var sk := db.get_entry("skills", skill_id)
-	if not c.actor.pool.can_afford(JsonUtil.get_dict(sk, "cost")):
+	if not c.actor.can_pay(JsonUtil.get_dict(sk, "cost")):
 		return "combat.reason_cost"
 	if c.actor.pool.get_ratio("hp") <= JsonUtil.get_float(sk, "min_hp_ratio", 0.0):
 		return "combat.reason_cost"  # 생명력을 대가로 치르는 스킬(정수판 분열): 그만큼 남아 있어야 쓴다
@@ -296,7 +296,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	if sk.is_empty() or not why.is_empty():
 		message.emit(why if not why.is_empty() else "combat.reason_unknown", {"name": c.label()}, "warn")
 		return 0.0
-	c.actor.pool.spend(JsonUtil.get_dict(sk, "cost"), "skill:" + skill_id)
+	c.actor.pay(JsonUtil.get_dict(sk, "cost"), "skill:" + skill_id)
 	c.uses[skill_id] = int(c.uses.get(skill_id, 0)) + 1
 	var cooldown := JsonUtil.get_int(sk, "cooldown")
 	if cooldown > 0:

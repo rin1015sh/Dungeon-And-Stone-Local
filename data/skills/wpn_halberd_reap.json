@@ -4,7 +4,8 @@
   "target": "enemy_all",
   "mastery": "halberd",
   "cost": {
-    "soul": 9
+    "hunger": 3,
+    "fatigue": 3
   },
   "delay_cost": 0,
   "cooldown": 0,

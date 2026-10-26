@@ -62,8 +62,28 @@ func test_gear_skill_usable_in_battle() -> void:
 	assert_eq(me.actor, pc, "아군 차례")
 	assert_eq(b.can_use(me, "wpn_spear_pierce"), "", "창 스킬을 쓸 수 있다")
 	var soul := pc.pool.get_current("soul")
+	var hunger := pc.pool.get_current("hunger")
+	var tired := pc.fatigue.value
 	b.act(me, {"kind": "skill", "skill": "wpn_spear_pierce", "target": b.side_units(Combatant.SIDE_ENEMY)[0]})
-	assert_true(pc.pool.get_current("soul") < soul, "영혼력을 쓴다")
+	assert_eq(pc.pool.get_current("soul"), soul, "영혼력은 그대로(IT10)")
+	assert_eq(pc.pool.get_current("hunger"), hunger - 2.0, "허기가 떨어진다")
+	assert_eq(pc.fatigue.value, tired + 2.0, "피로가 오른다")
+
+
+## 대가(IT10): 허기가 모자라거나 피로가 최대치에 닿으면 못 쓴다.
+func test_hunger_and_fatigue_cost_block() -> void:
+	var pc := _pc("spearman")
+	var bt: Array = _first_turn(pc)
+	var b: Battle = bt[0]
+	var me: Combatant = bt[1]
+	pc.pool.set_current("hunger", 1.0)
+	assert_eq(b.can_use(me, "wpn_spear_pierce"), "combat.reason_cost", "허기 2가 없다")
+	pc.pool.set_current("hunger", 50.0)
+	pc.fatigue.set_value(99.0)
+	assert_eq(b.can_use(me, "wpn_spear_pierce"), "combat.reason_cost", "피로가 넘친다")
+	pc.fatigue.set_value(98.0)
+	assert_eq(b.can_use(me, "wpn_spear_pierce"), "", "딱 최대치까지는 된다")
+	assert_false(Monster.create(db, "goblin").can_pay({"fatigue": 1}), "피로가 없는 몬스터는 피로 대가를 못 낸다")
 
 
 func _first_turn(pc: PlayerCharacter) -> Array:

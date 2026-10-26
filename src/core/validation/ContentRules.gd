@@ -150,8 +150,8 @@ static func _skills(v: ValidatorBase) -> void:
 			v.err(w, "target '%s' 미등록(tags.skill_targets)" % s.get("target"))
 		var cost := JsonUtil.get_dict(s, "cost")
 		for r: String in cost:
-			if not v.db.resources.has(r):
-				v.err(w, "cost '%s' 없는 자원" % r)
+			if not v.db.resources.has(r) and r != "fatigue":  # 피로 대가(Actor.COST_FATIGUE — 검증기는 엔티티를 참조하지 않는다)
+				v.err(w, "cost '%s' 없는 자원(또는 fatigue)" % r)
 			elif not JsonUtil.is_number(cost[r]) or float(cost[r]) < 0.0:
 				v.err(w, "cost 값은 0 이상의 숫자")
 		EffectRules.check(v, w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
