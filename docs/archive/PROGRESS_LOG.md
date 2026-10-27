@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **Tab 정수 카드: 등급 · 차분한 색 · 순서 바꾸기 (2026-10-27, 사용자)** — UI34.
+  - `EssencePanel`: 제목 줄 정수 색 구슬 · 이름 · `n등급`, 카드·슬롯 색을 돌판 쪽으로(`muted`·`calm`), 커서·집음 테두리(`cursor`·`grabbed`·`paint`·`rebuild`).
+  - `CharacterPage`: W/S 카드 커서(끝에서는 스크롤) · Enter 집기/확정 · Backspace 되돌리기, 쪽을 열 때는 맨 위부터(옮길 때만 카드를 따라 스크롤).
+  - `EssenceSet.move`·`order_skills`(정수 이능 자리만 다시 줄 세움 — 전투 스킬 목록 순서), `sync_slots`가 다시 붙인 뒤에도.
+  - 시험 test_essence `test_move_reorders_essence_skills`(순서·다른 스킬 자리·범위 밖·저장 왕복), smoke_ui(Enter·S·Enter로 옮김, Backspace 되돌림, 스킬 순서). 캡처 `--essence --many --menu=character`·`--lock --grab`으로 색·집음 확인. check.sh 통과.
+
 - **이사 뒤 낮은 등급 책 확인 · 초록 글은 공적·레벨업만 (2026-10-27, 사용자)** — CT52·UI33.
   - 책: `CityInfo.readable`이 등급 ≤ 지금 거주 등급을 모두 고르므로 이사해도 못 읽은 낮은 등급 책이 남는다 — 시험 `test_lower_tier_books_stay_readable_after_moving_up`(1등급 하나만 읽고 이사 → 나머지 1등급 + 2등급, 끝까지 읽으면 1등급 전부).
   - 색: kind `gain`(초록) = `Rewards` 공적 3종·레벨업, `palette.log_good`을 흰 글로(물건 획득 등). 시험 `test_only_exp_and_level_up_are_green`. check.sh 통과. 화면 캡처로 색은 못 봤다(캡처 도구가 전투 결과 대화창까지 넘기지 않는다).

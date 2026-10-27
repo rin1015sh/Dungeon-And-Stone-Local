@@ -654,6 +654,7 @@
   "essence": {
     "slots": "정수 {used} / {n}칸",
     "title": "{color} {name}",
+    "grade": "{n}등급",
     "stat_inert": "(아직 효과 없음)",
     "tip_passive": "패시브 · {name}: {desc}",
     "row_passive": "패시브",

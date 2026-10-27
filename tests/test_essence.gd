@@ -204,3 +204,27 @@ func test_failed_status_skill_reports_no_effect() -> void:
 			seen = true
 			break
 	assert_true(seen, "금속 독이 안 걸리면 '아무 효과도 내지 못했다'를 알린다")
+
+
+## 정수 순서 바꾸기(사용자 2026-10-27, UI34): 정수 순서 = 전투 스킬 목록의 정수 이능 순서 · 다른 스킬 자리는 그대로 · 저장 왕복.
+func test_move_reorders_essence_skills() -> void:
+	var pc := _pc(3)
+	for e: Array in [["goblin", "red"], ["gnome", "blue"], ["ghoul", "red"]]:
+		assert_eq(pc.essences.absorb(pc, _inst(e[0], e[1])), "")
+	var ess_skills := func() -> Array[String]:
+		var out: Array[String] = []
+		for inst in pc.essences.absorbed:
+			out.append_array(EssenceSet.granted_skills(db, inst))
+		return out
+	var before: Array[String] = ess_skills.call()
+	var others := pc.skills.filter(func(s: String) -> bool: return not before.has(s))
+	assert_true(pc.essences.move(pc, 2, 0), "구울 정수를 맨 위로")
+	assert_eq(pc.essences.absorbed.map(func(e: Dictionary) -> String: return str(e["essence"])), ["ghoul", "goblin", "gnome"])
+	var now: Array[String] = ess_skills.call()
+	assert_eq(pc.skills.filter(func(s: String) -> bool: return now.has(s)), now, "스킬 목록의 정수 이능이 정수 순서대로")
+	assert_eq(pc.skills.filter(func(s: String) -> bool: return not now.has(s)), others, "기본·장비 스킬 자리는 그대로")
+	assert_false(pc.essences.move(pc, 0, 5), "범위 밖")
+	var copy := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 8, "p_res": 5})
+	copy.set_level(3)
+	copy.essences.load_dict(copy, JSON.parse_string(JSON.stringify(pc.essences.to_dict())))
+	assert_eq(copy.skills.filter(func(s: String) -> bool: return now.has(s)), now, "불러와도 같은 순서")

@@ -1,15 +1,42 @@
 class_name EssencePanel
 extends VBoxContainer
-## 캐릭터 쪽의 정수 칸: 슬롯(흡수한 정수는 색으로 칠함)과 흡수한 정수마다 카드(정수 색 테두리 — 이름 · 패시브 · 이능(한 줄씩, 위력) · 능력치,
-## UI26 "정수 정보 가시성이 떨어진다") — 보여 주기만.
+## 캐릭터 쪽의 정수 칸: 슬롯(흡수한 정수는 차분한 정수 색)과 흡수한 정수마다 카드(이름 · 등급 · 패시브 · 이능(한 줄씩, 위력) · 능력치,
+## UI26). 색은 창 돌판 색에 정수 색을 조금만 섞는다(사용자 2026-10-27 "너무 쨍하다", UI34).
+## 순서 바꾸기(UI34): cursor = 커서가 놓인 카드(-1 = 없음), grabbed = 집어 든 카드(옮기는 중) — CharacterPage가 키로 움직인다.
 ## 흡수는 전투 장면에서 떨어졌을 때만(CombatDrops), 삭제는 도시 시설(대신전).
 
 var pc: PlayerCharacter
+var cursor: int = -1
+var grabbed: bool = false
+var _cards: Array[PanelContainer] = []
 
 
 func setup(p_pc: PlayerCharacter) -> void:
 	pc = p_pc
 	_build()
+
+
+func card(i: int) -> Control:
+	return _cards[i] if i >= 0 and i < _cards.size() else null
+
+
+func count() -> int:
+	return _cards.size()
+
+
+## 정수를 옮겼다 — 다시 만든다(커서·집음은 그대로).
+func rebuild() -> void:
+	for c in get_children():
+		remove_child(c)
+		c.queue_free()
+	_cards.clear()
+	_build()
+
+
+## 커서·집음 표시만 다시 칠한다.
+func paint() -> void:
+	for i in _cards.size():
+		_cards[i].add_theme_stylebox_override("panel", _card_box(pc.db, pc.essences.absorbed[i], i))
 
 
 func _build() -> void:
@@ -24,31 +51,44 @@ func _build() -> void:
 		s.custom_minimum_size = Vector2.ONE * UiTheme.metric("essence_slot", 46)
 		if i < es.absorbed.size():
 			var b := GothicStyle.slot_box()
-			b.bg_color = color_of(db, JsonUtil.get_str(es.absorbed[i], "color"))
+			b.bg_color = calm(color_of(db, JsonUtil.get_str(es.absorbed[i], "color")), 0.34)
 			if EssenceSet.is_locked(es.absorbed[i]):
 				b.bg_color = b.bg_color.darkened(UiTheme.metric("essence_locked_darken", 70) / 100.0)
 			s.add_theme_stylebox_override("panel", b)
 		else:
 			s.add_theme_stylebox_override("panel", GothicStyle.slot_box())
 		row.add_child(s)
-	for e: Dictionary in es.absorbed:
-		add_child(_card(db, e))
+	for i in es.absorbed.size():
+		var c := _card(db, es.absorbed[i], i)
+		_cards.append(c)
+		add_child(c)
 
 
-## 정수 하나의 카드: 정수 색 테두리·옅은 바탕 + 이름 + 칸 이름(어두운 글)과 내용.
-func _card(db: GameDatabase, inst: Dictionary) -> Control:
+## 정수 하나의 카드: 돌판 바탕에 정수 색을 조금 · 차분한 정수 색 테두리 + 정수 색 구슬 · 이름 · 등급 + 칸 이름(어두운 글)과 내용.
+func _card(db: GameDatabase, inst: Dictionary, i: int) -> PanelContainer:
 	var col := color_of(db, JsonUtil.get_str(inst, "color"))
 	var locked := EssenceSet.is_locked(inst)
 	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", UiTheme.box(Color(col.darkened(0.7), 0.55), col.darkened(0.6 if locked else 0.1), 2,
-		UiTheme.metric("essence_card_pad", 8)))
+	card.add_theme_stylebox_override("panel", _card_box(db, inst, i))
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 3)
 	card.add_child(v)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 6)
+	v.add_child(head)
+	var gem := Panel.new()  # 정수 색 구슬
+	var gs := UiTheme.metric("essence_gem", 10)
+	gem.custom_minimum_size = Vector2.ONE * gs
+	gem.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var gb := UiTheme.box(calm(col, 0.55).darkened(0.4 if locked else 0.0), calm(col, 0.3), gs / 2, 0)
+	gem.add_theme_stylebox_override("panel", gb)
+	head.add_child(gem)
 	var title := UiTheme.label(title_of(db, inst), "body", "text_title")
-	title.add_theme_color_override("font_color", col.lightened(0.35) if not locked else UiTheme.color("text_dim"))
-	v.add_child(title)
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.add_theme_color_override("font_color", UiTheme.color("text_title").lerp(col, 0.22) if not locked else UiTheme.color("text_dim"))
+	head.add_child(title)
 	var def := db.get_entry("essences", JsonUtil.get_str(inst, "essence"))
+	head.add_child(UiTheme.label(Strings.t("essence.grade", {"n": JsonUtil.get_int(def, "grade")}), "small", "text_dim"))
 	var p := JsonUtil.get_dict(def, "passive")
 	if not p.is_empty():
 		_row(v, Strings.t("essence.row_passive"), JsonUtil.get_str(p, "name_ko"), JsonUtil.get_str(p, "desc_ko")
@@ -121,6 +161,37 @@ static func describe(db: GameDatabase, inst: Dictionary) -> String:
 	var stats := _stat_list(db, inst)
 	lines.append(Strings.t("essence.tip_stats", {"list": ", ".join(stats)}))
 	return "\n".join(lines)
+
+
+## 카드 판: 커서 = 금빛 테두리, 집어 들었으면 더 굵은 금빛 + 조금 밝은 바탕, 그 밖은 차분한 정수 색 테두리.
+func _card_box(db: GameDatabase, inst: Dictionary, i: int) -> StyleBoxFlat:
+	var col := color_of(db, JsonUtil.get_str(inst, "color"))
+	var locked := EssenceSet.is_locked(inst)
+	var bg := UiTheme.color("frame").lerp(col, 0.08 if not locked else 0.03)
+	var edge := calm(col, 0.3).darkened(0.0 if not locked else 0.45)
+	var w := 1
+	if i == cursor:
+		edge = UiTheme.color("gold")
+		w = 2
+		if grabbed:
+			bg = bg.lightened(0.08)
+			w = 3
+	var b := UiTheme.box(bg, edge, 2, UiTheme.metric("essence_card_pad", 8))
+	b.set_border_width_all(w)
+	return b
+
+
+## 정수 색을 창 테두리 색 쪽으로 눌러 채도를 뺀다(k = 섞는 양 0~1).
+static func muted(col: Color, k: float) -> Color:
+	var g := col.get_luminance()
+	return col.lerp(Color(g, g, g), k * 0.6).lerp(UiTheme.color("frame_edge"), k * 0.5)
+
+
+## 차분한 칸 색: 채도를 빼고 밝기를 lum_max 아래로(하얀·무지갯빛 정수가 흰 칸으로 튀지 않게).
+static func calm(col: Color, lum_max: float) -> Color:
+	var c := muted(col, 0.6)
+	var l := c.get_luminance()
+	return c.darkened(1.0 - lum_max / l) if l > lum_max else c
 
 
 static func color_of(db: GameDatabase, color_id: String) -> Color:

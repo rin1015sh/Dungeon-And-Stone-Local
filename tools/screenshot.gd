@@ -200,6 +200,10 @@ func _run() -> void:
 					explore.menu().party.append(mate)
 				explore.menu().party = GameMenu.by_row(explore.menu().party)
 			explore.menu().open(page)
+			if _args.has("grab") and page == "character":  # --grab: 캐릭터 쪽 첫 정수 카드를 집은 상태(순서 바꾸기 — UI34)
+				await get_tree().process_frame
+				explore.menu().focus("character")
+				explore.menu().character().confirm()
 			if _args.has("ally"):  # --ally=<번호>: 그 아군을 고른 상태
 				await get_tree().process_frame
 				explore.menu().show_ally(explore.menu().party[int(str(_args["ally"]))])

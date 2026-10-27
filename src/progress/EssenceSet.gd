@@ -107,7 +107,38 @@ func sync_slots(a: Actor, rng: Rng = null) -> int:
 		_attach(a, absorbed[idx])
 		active.append(idx)
 		changed += 1
+	if changed > 0:
+		order_skills(a)  # 다시 깨어난 정수의 이능이 맨 끝에 붙었다 — 정수 순서 자리로
 	return changed
+
+
+## 정수 i를 j 자리로 옮긴다(Tab 메뉴에서 고른 순서 — 사용자 2026-10-27, UI34). 저장되는 순서이고,
+## 정수 이능은 스킬 목록에서 정수끼리 차지하던 자리 안에서 이 순서로 다시 선다(전투 스킬 목록 순서). 옮겼으면 true.
+func move(a: Actor, i: int, j: int) -> bool:
+	if i == j or i < 0 or j < 0 or i >= absorbed.size() or j >= absorbed.size():
+		return false
+	var e := absorbed[i]
+	absorbed.remove_at(i)
+	absorbed.insert(j, e)
+	order_skills(a)
+	return true
+
+
+## 정수 이능을 정수 순서대로(다른 스킬 — 기본·장비 — 자리는 그대로 두고 정수 이능이 있던 자리만 채워 바꾼다).
+func order_skills(a: Actor) -> void:
+	var ess: Array[String] = []
+	for e in absorbed:
+		if is_locked(e):
+			continue
+		for sid in granted_skills(a.db, e):
+			if a.skills.has(sid) and not ess.has(sid):
+				ess.append(sid)
+	var at: Array[int] = []
+	for k in a.skills.size():
+		if ess.has(a.skills[k]):
+			at.append(k)
+	for n in at.size():
+		a.skills[at[n]] = ess[n]
 
 
 ## 다음 삭제 비용(스톤).

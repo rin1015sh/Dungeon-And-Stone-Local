@@ -2,11 +2,16 @@ class_name CharacterPage
 extends MenuPage
 ## Tab 메뉴의 캐릭터 쪽: 이름·종족·템플릿 · 레벨과 공적 · 자원 · 핵심 스탯과 장비 보정 · 정수(슬롯 + 목록) ·
 ## 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태). 내용은 높이를 고정하고 W/S로 스크롤한다.
+## 정수가 있으면 W/S는 정수 카드 사이를 옮기고(첫 카드 위·끝 카드 아래로는 스크롤), Enter = 커서 카드를 집기 → W/S로 위아래로 옮기기
+## → Enter = 확정 · Backspace = 집기 전 자리로(사용자 2026-10-27, UI34). 바꾼 순서가 전투 스킬 목록의 정수 이능 순서(EssenceSet.move).
 
 var pc: PlayerCharacter
 
 var _scroll: ScrollContainer
 var _box: VBoxContainer
+var _ess: EssencePanel
+var _cur: int = 0
+var _grab: int = -1  ## 집어 든 카드가 원래 있던 자리(-1 = 집지 않음)
 
 
 func _init() -> void:
@@ -39,6 +44,8 @@ func set_actor(a: PlayerCharacter) -> void:
 		pc.equipment.changed.disconnect(_on_worn_changed)
 	pc = a
 	pc.equipment.changed.connect(_on_worn_changed)
+	_cur = 0
+	_grab = -1
 	refresh()
 	_scroll.scroll_vertical = 0
 
@@ -53,10 +60,12 @@ func refresh() -> void:
 		c.queue_free()
 	_build_summary()
 	_box.add_child(HSeparator.new())
-	var essences := EssencePanel.new()
-	essences.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	essences.setup(pc)
-	_box.add_child(essences)
+	_ess = EssencePanel.new()
+	_ess.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_ess.setup(pc)
+	_box.add_child(_ess)
+	_cur = clampi(_cur, 0, maxi(0, _ess.count() - 1))
+	_paint_cursor()
 	_box.add_child(HSeparator.new())
 	_box.add_child(_build_details())
 
@@ -65,12 +74,64 @@ func enter(_from_left: bool) -> void:
 	_scroll.scroll_vertical = 0
 
 
-## W/S = 한 걸음씩 스크롤(고를 것은 없다).
+func on_active(_v: bool) -> void:
+	_paint_cursor()
+
+
+## W/S: 정수 카드 사이(집었으면 그 카드를 옮긴다), 카드가 없거나 끝을 넘으면 스크롤. A/D는 옆 쪽으로(집은 동안은 막는다).
 func nav(d: Vector2i) -> bool:
 	if d.x != 0:
-		return false
-	_scroll.scroll_vertical += d.y * int(MenuPage.cfg("scroll_step", 60.0))
+		return _grab >= 0
+	var n := _ess.count() if _ess != null else 0
+	var step := d.y * int(MenuPage.cfg("scroll_step", 60.0))
+	if n == 0:
+		_scroll.scroll_vertical += step
+		return true
+	var j := _cur + d.y
+	if _grab >= 0:
+		if j >= 0 and j < n and pc.essences.move(pc, _cur, j):
+			_cur = j
+			_ess.rebuild()
+			_paint_cursor(true)
+		return true
+	if j < 0 or j >= n:
+		_scroll.scroll_vertical += step  # 첫 카드 위(요약) · 끝 카드 아래(세부 능력)
+		return true
+	_cur = j
+	_paint_cursor(true)
 	return true
+
+
+## Enter: 커서 카드를 집는다 / 집은 카드를 그 자리에 놓는다(확정).
+func confirm() -> void:
+	if _ess == null or _ess.count() == 0:
+		return
+	_grab = _cur if _grab < 0 else -1
+	_paint_cursor()
+
+
+## Backspace: 집은 카드를 원래 자리로 되돌린다.
+func back() -> bool:
+	if _grab < 0:
+		return false
+	pc.essences.move(pc, _cur, _grab)
+	_cur = _grab
+	_grab = -1
+	_ess.rebuild()
+	_paint_cursor(true)
+	return true
+
+
+## follow = 커서 카드가 보이게 스크롤(W/S로 옮길 때만 — 쪽을 열 때는 맨 위 요약부터).
+func _paint_cursor(follow: bool = false) -> void:
+	if _ess == null:
+		return
+	_ess.cursor = _cur if active and _ess.count() > 0 else -1
+	_ess.grabbed = _grab >= 0
+	_ess.paint()
+	var c := _ess.card(_ess.cursor)
+	if follow and c != null:
+		_scroll.ensure_control_visible.call_deferred(c)
 
 
 func _build_summary() -> void:
