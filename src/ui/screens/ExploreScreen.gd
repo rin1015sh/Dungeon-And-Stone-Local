@@ -231,7 +231,7 @@ func menu() -> GameMenu:
 func _use_item(item_id: String) -> void:
 	if _ended or _combat != null or is_paused():
 		return
-	session.use_item(item_id)
+	session.use_item(item_id, _menu.shown())  # Tab에서 고른 아군에게(동료도 먹는다)
 	_menu.refresh()
 
 

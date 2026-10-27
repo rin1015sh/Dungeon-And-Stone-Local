@@ -41,6 +41,8 @@ var closed: Array[String] = []
 var price_mods: Dictionary = {}
 ## 탐험가 길드 조사 의뢰 {monster, until, done}(CityGuild).
 var guild_request: Dictionary = {}
+## 도시에 함께 있는 동료(저장하지 않는다 — GameState가 companions 배열을 그대로 넘긴다). 쉬고 먹는 피로 회복을 같이 받는다(C19).
+var mates: Array[PlayerCharacter] = []
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
 var overrides: Dictionary = {}
 

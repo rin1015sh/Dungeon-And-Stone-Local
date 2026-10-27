@@ -27,7 +27,7 @@ var db: GameDatabase
 var floor_def: Dictionary
 var map: FloorMap
 var player: PlayerCharacter
-var companions: Array[PlayerCharacter] = []  ## 함께 싸우는 동료(사용자 2026-10-25) — 안전지대 휴식 회복만 같이 받는다(허기·광원은 플레이어만)
+var companions: Array[PlayerCharacter] = []  ## 함께 싸우는 동료(사용자 2026-10-25) — 시간·걸음·휴식·전투로 허기·피로가 플레이어와 같이 변한다(2026-10-27, C19)
 var clock: GameClock
 var rng: Rng
 var effects: EffectRegistry
@@ -184,7 +184,7 @@ func enter_cell(cell: Vector2i) -> void:
 	trail.append([cell, clock.total_hours])
 	if trail.size() > int(db.bal("explore.trail_max", 120)):
 		trail.pop_front()
-	player.fatigue.on_dungeon(Fatigue.DUNGEON_STEP, 1.0)  # 피로도 연결 지점(규칙 미정 — null이면 변화 없음)
+	_party_fatigue(Fatigue.DUNGEON_STEP, 1.0)  # 피로도 연결 지점(규칙 미정 — null이면 변화 없음)
 	moved.emit(from, cell)
 	refresh_view()
 	_on_enter_cell(from)
@@ -217,14 +217,12 @@ func rest() -> void:
 			player.pool.tick("rest", h)
 			for mate in companions:
 				mate.pool.tick("rest", h)
-			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, h)
-			player.fatigue.add(bonus * h, "rest_bonus")
+			_party_fatigue(Fatigue.DUNGEON_REST_HOUR, h, bonus * h)
 			pass_time(h)
 	else:
 		_say("explore.rest_unsafe", {"hours": hours}, "warn")
 		for i in hours:
-			player.fatigue.on_dungeon(Fatigue.DUNGEON_REST_HOUR, 1.0)
-			player.fatigue.add(bonus, "rest_bonus")
+			_party_fatigue(Fatigue.DUNGEON_REST_HOUR, 1.0, bonus)
 			pass_time(1.0)
 			if ended or in_combat:
 				break
@@ -238,10 +236,12 @@ func rest() -> void:
 		refresh_view()
 
 
-func use_item(item_id: String) -> bool:
+## on = 먹이거나 쓸 아군(Tab 메뉴에서 고른 아군 — 동료도 먹어야 한다, C19). 빛을 내는 물건은 늘 플레이어(시야는 플레이어 빛).
+func use_item(item_id: String, on: Actor = null) -> bool:
 	if ended or in_combat:
 		return false
-	var ctx := ItemUser.use(effects, player, item_id, rng)
+	var who: Actor = player if on == null or _gives_light(item_id) else on
+	var ctx := ItemUser.use(effects, player, item_id, rng, who)
 	if ctx == null:
 		_say("explore.no_item", {"item": DataNames.entry(db, "items", item_id)}, "warn")
 		return false
@@ -252,6 +252,13 @@ func use_item(item_id: String) -> bool:
 	if ctx.success:
 		refresh_view()
 	return ctx.success
+
+
+func _gives_light(item_id: String) -> bool:
+	for e: Variant in JsonUtil.get_array(db.get_entry("items", item_id), "use_effects"):
+		if e is Dictionary and JsonUtil.get_str(e, "type") == "light_source":
+			return true
+	return false
 
 
 ## 분류(food, light …)가 맞는 첫 소지품을 쓴다.
@@ -277,7 +284,11 @@ func pass_time(hours: float) -> void:
 	if h > 0.0:
 		clock.advance(h)
 		player.advance_hours(h)
-		player.fatigue.on_dungeon(Fatigue.DUNGEON_HOUR, h)
+		for mate in companions:
+			mate.pool.set_context("dungeon", true)  # 동료는 세션이 생긴 뒤에 붙는다(Main·균열·디버그) — 허기가 미궁에서 돌게
+			mate.advance_hours(h)  # 동료도 허기가 줄고 상태·재생이 흐른다
+		_party_fatigue(Fatigue.DUNGEON_HOUR, h)
+		_bury_starved()
 		time_passed.emit(h)
 	if not ended:
 		_check_closing()
@@ -384,7 +395,7 @@ func leave_drop(drop: Dictionary, reason: String = "") -> Dictionary:
 
 func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, killed: Array[String] = []) -> void:
 	in_combat = false
-	player.fatigue.on_dungeon(Fatigue.DUNGEON_COMBAT_TURN, float(turns))
+	_party_fatigue(Fatigue.DUNGEON_COMBAT_TURN, float(turns))
 	if result == Battle.RESULT_FLED and group != null and not killed.is_empty():
 		for id in killed:
 			group.monster_ids.erase(id)
@@ -511,6 +522,24 @@ func _on_player_died(cause: String) -> void:
 	ended = true
 	_say("explore.died", {}, "danger")
 	player_died.emit(cause)
+
+
+## 플레이어와 동료 모두의 피로(미궁 규칙 key × amount, 모닥불 같은 덤 extra).
+func _party_fatigue(key: String, amount: float, extra: float = 0.0) -> void:
+	for pc: PlayerCharacter in [player] + companions:
+		if pc.dead:
+			continue
+		pc.fatigue.on_dungeon(key, amount)
+		if not is_zero_approx(extra):
+			pc.fatigue.add(extra, "rest_bonus")
+
+
+## 전투 밖에서 굶어 쓰러진 동료는 파티에서 빠진다(전투 중 죽음은 ExploreScreen._bury_mates).
+func _bury_starved() -> void:
+	for mate: PlayerCharacter in companions.duplicate():
+		if mate.dead:
+			companions.erase(mate)
+			_say("party.mate_died", {"name": mate.display_name}, "danger")
 
 
 func _say(key: String, args: Dictionary = {}, kind: String = "info") -> void:

@@ -218,7 +218,7 @@ func use_item(item_id: String) -> void:
 	if not JsonUtil.get_str(db.get_entry("items", item_id), "category") in cats:
 		say(Strings.t("city.cannot_use_here"), "warn")
 		return
-	var ctx := ItemUser.use(DataRegistry.registries.effects, pc, item_id, state.rng)
+	var ctx := ItemUser.use(DataRegistry.registries.effects, pc, item_id, state.rng, _menu.shown())  # Tab에서 고른 아군에게
 	if ctx == null:
 		return
 	for m: Dictionary in ctx.messages:

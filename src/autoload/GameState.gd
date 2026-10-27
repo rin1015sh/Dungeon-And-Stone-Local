@@ -37,6 +37,7 @@ func start_run(pc: PlayerCharacter) -> void:
 	floor_entries = 0
 	rift_calendar = RiftCalendar.new(DataRegistry.db)
 	city = CityState.new(DataRegistry.db, absi(hash([master_seed, "city"])) + 1)
+	city.mates = companions  # 같은 배열(C19 — 여관·신전 피로 회복을 동료도)
 	city.start()
 
 
@@ -105,6 +106,7 @@ func load_run() -> bool:
 	rift_calendar = RiftCalendar.new(db)
 	rift_calendar.load_dict(JsonUtil.get_dict(data, "rift_calendar"))
 	city = CityState.new(db, absi(hash([master_seed, "city"])) + 1)
+	city.mates = companions  # 같은 배열(C19 — 여관·신전 피로 회복을 동료도)
 	city.start()
 	city.load_dict(JsonUtil.get_dict(data, "city"))
 	return true
