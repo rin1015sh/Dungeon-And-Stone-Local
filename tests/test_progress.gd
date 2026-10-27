@@ -97,3 +97,19 @@ func test_progress_save_roundtrip() -> void:
 	assert_true(copy.knowledge.knows_stats("ghoul"))
 	assert_eq(copy.equipment.item_in("main_hand"), "iron_mace", "장비도 그대로")
 	assert_eq(copy.inventory.count("copper_ring"), 1)
+
+
+## 초록 글은 공적·레벨업뿐(사용자 2026-10-27, UI33): 그 메시지는 kind "gain", 주운 물건은 "good"(흰 글).
+func test_only_exp_and_level_up_are_green() -> void:
+	var pc := _pc()
+	var msgs := Rewards.grant(pc, ["goblin", "goblin", "goblin", "goblin"] as Array[String], Rng.new(1))
+	for m: Dictionary in msgs:
+		var key := str(m["key"])
+		if key in ["reward.first_kill", "reward.guardian_bonus", "reward.lord_bonus", "reward.level_up"]:
+			assert_eq(str(m["kind"]), "gain", key)
+		else:
+			assert_true(str(m["kind"]) != "gain", key + "는 초록 글이 아니다")
+	assert_true(msgs.any(func(m: Dictionary) -> bool: return str(m["key"]) == "reward.first_kill"))
+	var pal := JsonUtil.get_dict(db.render, "palette")
+	assert_eq(JsonUtil.get_str(pal, "log_good"), JsonUtil.get_str(pal, "text"), "얻은 물건(good)은 흰 글")
+	assert_true(JsonUtil.get_str(pal, "log_gain") != JsonUtil.get_str(pal, "text"), "공적·레벨업은 초록")

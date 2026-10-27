@@ -90,3 +90,24 @@ func test_every_field_has_book_art_and_read_names_field() -> void:
 		if str(m["key"]) == "city.fx.book_new":
 			fields.append(JsonUtil.get_str(m["args"], "field"))
 	assert_true(not fields.is_empty() and fields.all(func(f: Variant) -> bool: return str(f) == "arms"), "읽은 책의 분야 (%s)" % [fields])
+
+
+## 이사해도 예전 거리에서 다 못 읽은 낮은 등급 책은 계속 읽는다(사용자 2026-10-27 확인 요청).
+func test_lower_tier_books_stay_readable_after_moving_up() -> void:
+	var s := _state(1)
+	var low: Array[String] = CityInfo.readable(s, "dungeon")
+	assert_true(low.size() >= 2)
+	s.learn_info(low[0])  # 13구역에서 하나만 읽고 이사
+	s.residence = 2
+	var now := CityInfo.readable(s, "dungeon")
+	for id in low.slice(1):
+		assert_true(now.has(id), "못 읽은 1등급 책이 남는다: " + id)
+	assert_false(now.has(low[0]), "읽은 책은 다시 나오지 않는다")
+	var tier2 := now.filter(func(id: String) -> bool: return JsonUtil.get_int(db.get_entry("city_info", id), "tier") == 2)
+	assert_false(tier2.is_empty(), "2등급 책도 같이")
+	var pc := _pc()
+	pc.inventory.add_money(100000)
+	while CityActions.check(s, pc, "library_dungeon").is_empty():
+		CityActions.perform(s, pc, "library_dungeon", _reg())
+	for id in low:
+		assert_true(s.known_info.has(id), "읽다 보면 낮은 등급 책도 다 읽는다: " + id)

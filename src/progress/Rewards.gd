@@ -19,11 +19,11 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, _now_hou
 		var parts := pc.progression.last_kill
 		var mname := DataNames.entry(db, "monsters", id)
 		if int(parts.get("first", 0)) > 0:
-			msgs.append(_m("reward.first_kill", {"name": mname, "exp": int(parts["first"])}, "good"))
+			msgs.append(_m("reward.first_kill", {"name": mname, "exp": int(parts["first"])}, "gain"))
 		if int(parts.get("guardian", 0)) > 0:
-			msgs.append(_m("reward.guardian_bonus", {"name": mname, "exp": int(parts["guardian"])}, "good"))
+			msgs.append(_m("reward.guardian_bonus", {"name": mname, "exp": int(parts["guardian"])}, "gain"))
 		if int(parts.get("lord", 0)) > 0:
-			msgs.append(_m("reward.lord_bonus", {"name": mname, "exp": int(parts["lord"])}, "good"))
+			msgs.append(_m("reward.lord_bonus", {"name": mname, "exp": int(parts["lord"])}, "gain"))
 		if gained > 0:
 			pc.progression.gain(pc, gained, rng)
 		if not with_drops:
@@ -38,9 +38,10 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, _now_hou
 				msgs.append(_m("reward.bag_full", {"item": item_name, "count": want - got, "item_id": str(drop["id"])}, "warn"))
 	if pc.get_level() > before:
 		msgs.append(_m("reward.level_up", {"level": pc.get_level(),
-			"slots": Progression.essence_slots(db, pc.get_level())}, "good"))
+			"slots": Progression.essence_slots(db, pc.get_level())}, "gain"))
 	return msgs
 
 
+## kind "gain" = 공적·레벨업(초록 글 — 대화창에서 초록은 이것뿐, 사용자 2026-10-27 UI33). 얻은 물건 등 나머지 "good"은 흰 글.
 static func _m(key: String, args: Dictionary, kind: String) -> Dictionary:
 	return {"key": key, "args": args, "kind": kind}
