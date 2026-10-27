@@ -54,7 +54,7 @@ func test_shop_stock_and_sell_ratio_by_tier() -> void:
 	var t3 := CityShop.stock(_state(3), "shop_trade")
 	assert_true(t1.has("ration") and not t1.has("medium_potion") and not t1.has("lantern"), "뒷골목: 기본 물건만")
 	assert_true(t3.has("ration") and t3.has("medium_potion") and t3.has("lantern"), "상인 거리: 아래 등급 물건도 그대로 + 새 물건")
-	assert_true(CityShop.sell_price(_state(4), "torch") > CityShop.sell_price(_state(1), "torch"), "컴멜비 2구역은 비싸게 사 준다")
+	assert_true(CityShop.sell_price(_state(4), "torch") > CityShop.sell_price(_state(1), "torch"), "컴멜비 3구역은 비싸게 사 준다")
 	assert_true(CityShop.buy_price(_state(4), "torch") > CityShop.buy_price(_state(1), "torch"), "컴멜비는 물가도 비싸다")
 	assert_eq(CityResidence.name_of(_state(1)), "라비기온 13구역", "시작 = 라비기온 13구역")
 

@@ -62,7 +62,7 @@ func of_kind(s: ExploreSession, kind: String) -> Array[FieldMonsters.Group]:
 	return all(s).filter(func(g: FieldMonsters.Group) -> bool: return str(g.party.get("kind")) == kind)
 
 
-## 한곳에 함께 있는 탐험가 수(계층군주 소환 조건) = 플레이어 + 곁에서 함께 다니는 무리.
+## 한곳에 함께 있는 탐험가 수 = 플레이어 + 곁에서 함께 다니는 무리.
 func party_size(s: ExploreSession) -> int:
 	var n := 1
 	for g in all(s):

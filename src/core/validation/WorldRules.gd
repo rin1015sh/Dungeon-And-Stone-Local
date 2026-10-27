@@ -125,7 +125,7 @@ static func _floors(v: ValidatorBase) -> void:
 		var lord := JsonUtil.get_dict(f, "lord")
 		if not lord.is_empty():
 			v.ref(w + ".lord", "monsters", lord.get("monster"))
-			for k in ["min_day", "min_party", "stay_radius_m", "hazard_base_per_hour", "hazard_doubling_hours", "respawn_hours", "vision_m"]:
+			for k in ["respawn_hours", "vision_m"]:
 				if JsonUtil.get_float(lord, k, -1.0) <= 0.0:
 					v.err(w + ".lord", "%s는 양수" % k)
 			v.check_color(w + ".lord.tint", JsonUtil.get_str(lord, "tint", "#ffffff"))

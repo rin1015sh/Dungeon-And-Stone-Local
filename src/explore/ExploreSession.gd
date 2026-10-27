@@ -137,7 +137,7 @@ func move_hours() -> float:
 	return float(db.bal("explore.move_hours_base", 0.02))
 
 
-## 한곳에 함께 있는 탐험가 수(계층군주 소환 조건) = 플레이어 + 곁에서 함께 다니는 탐험가 무리(FieldParties).
+## 한곳에 함께 있는 탐험가 수 = 플레이어 + 곁에서 함께 다니는 탐험가 무리(FieldParties).
 func party_size() -> int:
 	return parties.party_size(self)
 

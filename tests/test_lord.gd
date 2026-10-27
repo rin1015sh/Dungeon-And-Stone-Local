@@ -201,59 +201,28 @@ func test_lord_rewards() -> void:
 	assert_true(EssenceDrop.GUARDIAN_RANKS.has("lord"))
 
 
-func _session(min_party: int) -> ExploreSession:
+func _session() -> ExploreSession:
 	var reg := ContentRegistries.new()
-	var def := db.get_entry("floors", "f1_crystal_cave").duplicate(true)
-	(def["lord"] as Dictionary)["min_party"] = min_party
+	var def := db.get_entry("floors", "f1_crystal_cave")
 	var map := reg.generator("crystal_cave").generate(db, def, Rng.new(3))
 	var s := ExploreSession.new(db, def, map, _pc(), GameClock.new(), Rng.new(4), reg.effects)
 	s.start()
 	return s
 
 
-func test_summon_conditions() -> void:
-	var s := _session(1)
+## 머묾 소환 없음(사용자 2026-10-27): 오래 머물러도 저절로 나오지 않고, 기념비(Monument)·디버그로만 부른다.
+func test_no_stay_summon_and_cooldown() -> void:
+	var s := _session()
 	var w := s.lord
-	for i in 40:
-		w.update(s, 1.0)  # 1~2일 차: 아무리 머물러도 안 나온다
-	assert_eq(w.state, LordWatch.IDLE, "3일 차 전")
-	s.clock.advance(48.0)
-	var crowd := _session(5)
-	crowd.clock.advance(48.0)
-	for i in 48:
-		crowd.lord.update(crowd, 1.0)
-	assert_eq(crowd.lord.state, LordWatch.IDLE, "인원 부족(혼자, 최소 5)")
-	assert_true(w.chance_for(24.0, 1.0) > w.chance_for(2.0, 1.0) * 10.0, "머문 시간에 따라 지수적으로")
-	var survive := 1.0
-	for h in 24:
-		survive *= 1.0 - w.chance_for(float(h), 1.0)
-	assert_true(survive < 0.05, "하루면 사실상 확정 (남을 확률 %.3f)" % survive)
-	var summoned := false
-	for i in 30:
-		summoned = summoned or w.update(s, 1.0)
-	assert_true(summoned and w.is_active(), "3일 차 이후 머물면 소환")
+	for i in 24 * 7:
+		assert_false(w.update(s, 1.0))
+	assert_eq(w.state, LordWatch.IDLE, "이레를 한자리에 머물러도 안 나온다")
+	assert_true(w.summon(s) and w.is_active(), "부르면 온다")
 	s.refresh_view()
 	assert_near(s.vision_m, w.vision_cap_m(), 0.001, "소환 중 시야 2m")
 	assert_true(s.monsters.groups.has(w.group))
 	assert_true(w.on_battle_end(s, w.group, Battle.RESULT_VICTORY))
-	assert_eq(w.state, LordWatch.COOLDOWN, "6시간 재소환 대기")
-	assert_false(w.update(s, 1.0), "대기 중엔 소환되지 않는다")
-
-
-func test_moving_resets_stay() -> void:
-	var s := _session(1)
-	s.clock.advance(48.0)
-	var w := s.lord
-	w.def = w.def.duplicate()
-	w.def["hazard_base_per_hour"] = 0.0  # 머문 시간만 본다(소환 굴림이 끼면 stay가 0으로 돌아간다)
-	w.update(s, 2.0)
-	assert_near(w.stay_hours, 2.0, 0.001)
-	var far := s.pos
-	for c in s.map.tiles.size():
-		var p := s.map.pos_of(c)
-		if s.map.is_walkable(p) and Vector2(p - s.pos).length() > 10.0 and s.monsters.group_at(p) == null:
-			far = p
-			break
-	s.relocate(far)
-	w.update(s, 0.5)
-	assert_near(w.stay_hours, 0.5, 0.001, "자리를 옮기면 처음부터")
+	assert_eq(w.state, LordWatch.COOLDOWN, "다시 깨어나기를 기다린다")
+	s.clock.advance(7.0)
+	w.update(s, 1.0)
+	assert_eq(w.state, LordWatch.IDLE, "다시 부를 수 있다")

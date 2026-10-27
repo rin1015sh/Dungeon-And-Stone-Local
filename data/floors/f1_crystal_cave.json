@@ -523,15 +523,9 @@
     "source": "user"
   },
   "lord": {
-    "_comment": "계층군주 소환(LordWatch, 명세 §7.1). 원작: 3일 차 이후 5인 이상이 한곳에 머물면 확률 소환, 하루 안에 사실상 확정, 6시간마다 재소환, 시야 2m. monument = 그 층 균열 수호자(또는 변종)를 모두 쓰러뜨린 적이 있으면 기념비에서 부를 수 있다(사용자 2026-10-27, DF17 — Monument)",
+    "_comment": "계층군주(LordWatch). monument = 그 층 균열 수호자(또는 변종)를 모두 쓰러뜨린 적이 있으면 기념비에서 부른다(사용자 2026-10-27, DF17 — Monument, 부르는 길은 이것뿐 — 원작의 머묾 소환은 사용자 결정으로 없앴다). 쓰러뜨리면 respawn_hours 뒤 다시 부를 수 있다, 소환 중 시야 vision_m.",
     "monster": "dreadfear",
     "monument": true,
-    "min_day": 3,
-    "min_party": 5,
-    "stay_radius_m": 5.0,
-    "hazard_base_per_hour": 0.01,
-    "hazard_doubling_hours": 4.0,
-    "omen_stay_hours": 3.0,
     "respawn_hours": 6.0,
     "vision_m": 2.0,
     "spawn_distance_tiles": 4,

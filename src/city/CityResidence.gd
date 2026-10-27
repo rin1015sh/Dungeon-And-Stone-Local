@@ -1,6 +1,6 @@
 class_name CityResidence
 extends RefCounted
-## 거주 구역(사용자 2026-10-27, CT50): 라프도니아 14구역 중 사는 곳 — city.json residence.tiers(1부터: 라비기온 13구역 → 7구역 → 컴멜비 5구역 → 2구역).
+## 거주 구역(사용자 2026-10-27, CT50): 라프도니아 14구역 중 사는 곳 — city.json residence.tiers(1부터: 라비기온 13구역 → 7구역 → 컴멜비 5구역 → 3구역).
 ## 은행 '이사'(효과 residence_up)로 다음 등급의 upgrade_cost를 내고 한 단계 올린다. 등급이 바꾸는 것:
 ##   건물 외관(building_path) · 활동 min_residence(여관 식사 — 오늘의 거리로 붙는 활동은 event_min_residence) ·
 ##   상점 판매 목록(CityShop) · 대장간 소재 단계 상한(smithy_material_tier) · 도서관 서적 tier(CityInfo) · 거리 사건(CityAmbient).

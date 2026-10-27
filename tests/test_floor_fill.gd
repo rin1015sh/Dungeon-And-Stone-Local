@@ -158,7 +158,7 @@ func test_rookie_trade_rumor_follow() -> void:
 	assert_true(keys.any(func(k: String) -> bool: return k.begins_with("explore.party.rumor")), "소문")
 	g.place(_free_near(s, s.pos, 2))
 	FieldPartyMeet.act(s, g, "follow")
-	assert_eq(s.party_size(), 1 + int(g.party["members"]), "함께 다니면 머릿수에 든다(계층군주 조건)")
+	assert_eq(s.party_size(), 1 + int(g.party["members"]), "함께 다니면 머릿수에 든다")
 	assert_true(s.parties.watch_mult(s) < 1.0, "망을 봐 준다")
 	assert_eq(FieldPartyMeet.options(s, g).map(func(o: Dictionary) -> String: return str(o["id"])), ["leave"], "한 번씩만")
 
