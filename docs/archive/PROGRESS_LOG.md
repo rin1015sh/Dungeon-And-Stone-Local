@@ -46,6 +46,7 @@
   - 시험 `test_monster_patrol`(시야각 안만·등 뒤 가만히는 모름·옆 120° 밖·바로 뒤 기척, 소리에 돌아본 뒤 봄, 순찰 A→B→A 드묾·반경 안·서서 여러 쪽 봄, 놓치면 수색 → 집). 기존 시험 둘은 무리가 플레이어 쪽을 보게 세움. check.sh 통과(테스트 470).
   - sim_walk(시드 1·2·3, 포탈 4곳): 전투 103 → 120번, 간격 가운데 4.6 → 3.9초(순찰이 넓어지고 놓친 자리를 찾아와서). 요소 116 그대로.
   - 남은 것: 실제 화면에서 순찰·돌아보기 느낌 확인(사용자), 만남이 늘어난 게 많으면 `monsters.wander_radius`·`hear_ratio`·`search_hours`부터 낮춘다. 시야각 표시(디버그) 없음.
+- **무기 스킬·숙련 없앰 (2026-10-27, 사용자 "무기 관련 스킬 있지? 숙련이랑 전부 제거해줘")** — IT11. IT8~IT10 세 커밋(5c6241c·7508000·a771f6c)의 코드·데이터를 되돌림: `skills/wpn_*` 27개, `item_types.json skills`·고유 장비 `equip.skills`, `Actor.sync_gear_skills`·숙련(`lacks_mastery`·`learn_worn_masteries`·저장)·대가(`can_pay`·`pay`·`Fatigue.room`), `ItemInfo.skills`·`ItemForge` 옮김, 검증(ItemPoolRules·ContentRules), Tab "… 숙련"·전투 "숙련 없음" 문구, test_gear_skills. 뒤 작업(소화력 삭제·동료 허기·피로 C19)과 겹치는 곳은 없었다. 서적 `a_mastery` 지움·`a_shield` 고쳐 씀. 문서(CANON·REFERENCE·ASSUMPTIONS IT11·balance/city·PLAYTEST). check.sh 통과.
 
 - **거래소를 상점 옆으로 (2026-10-27, 사용자 "거래소는 상점 옆에 배치되게")** — CT54. 거래소 x 2678(상점 바로 뒤), 대장간·은행·훈련장 +650, 거리 폭 5030, 시설 `slot` 650 — 거래소가 서지 않는 13·7구역에선 뒤 건물을 그만큼 당기고 거리를 줄여 예전 13구역 거리 그림과 바이트까지 같다(`CityResidence.facility_x`·`street_width`, CityStreet·paint_city·검증). 시험 test_exchange `test_next_to_shop_and_gap_closed_below`. 거리 레이어 다시 그림, 캡처로 13·3구역 확인. check.sh 통과.
 

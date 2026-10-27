@@ -38,19 +38,6 @@ static func weapon(db: GameDatabase, id: String) -> Dictionary:
 	return JsonUtil.get_dict(equip(db, id), "weapon")
 
 
-## 공식 장비의 종류 id(item_types — 숙련 단위, IT9). 공식 장비가 아니면 "".
-static func type_id(db: GameDatabase, id: String) -> String:
-	return JsonUtil.get_str(JsonUtil.get_dict(def(db, id), "forged"), "type")
-
-
-## 든 사람이 전투에서 쓰는 장비 스킬(IT8 — 종류 skills를 ItemForge가 옮긴다, 고유 장비는 equip.skills).
-static func skills(db: GameDatabase, id: String) -> Array[String]:
-	var out: Array[String] = []
-	for s: Variant in JsonUtil.get_array(equip(db, id), "skills"):
-		out.append(str(s))
-	return out
-
-
 static func icon(db: GameDatabase, id: String) -> String:
 	var d := def(db, id)
 	var i := JsonUtil.get_str(d, "icon")
