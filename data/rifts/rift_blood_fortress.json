@@ -193,37 +193,25 @@
             "soldier_deadman",
             "deadman"
           ]
-        }
+        },
+        {"kind": "posts", "count": 3, "packs": [["deadman", "deadman"], ["deadman", "soldier_deadman"], ["soldier_deadman", "soldier_deadman", "deadman"]]}
       ]
     },
     {
       "id": "ch2",
       "battleback": {"image": "res://assets/battle/blood_fortress_ch2.webp", "half_width": 4.0},
       "name_ko": "도개교",
-      "desc_ko": "도개교가 내려올 때까지 해자에서 기어오르는 데드맨을 버텨라.",
+      "desc_ko": "내려진 도개교 위를 데드맨 무리가 막아섰다.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch2.json"
       },
       "encounters": [
         {
-          "kind": "waves",
-          "survive_rounds": 6,
-          "start": [
-            "deadman",
-            "deadman"
-          ],
-          "reinforce": {
-            "monsters": [
-              "deadman",
-              "deadman",
-              "soldier_deadman"
-            ],
-            "count": [
-              1,
-              2
-            ]
-          }
-        }
+          "kind": "battle",
+          "guard": true,
+          "monsters": ["deadman", "deadman", "deadman", "deadman", "deadman", "deadman", "soldier_deadman", "soldier_deadman"]
+        },
+        {"kind": "posts", "count": 2, "packs": [["deadman", "deadman", "deadman"], ["soldier_deadman", "deadman"]]}
       ],
       "hidden": [
         {
@@ -266,7 +254,8 @@
               "skeleton_mage"
             ]
           ]
-        }
+        },
+        {"kind": "posts", "count": 5, "packs": [["skeleton_archer", "skeleton_archer"], ["ghoul", "ghoul"], ["skeleton_mage", "skeleton_archer"], ["ghoul", "skeleton_archer"]]}
       ],
       "hidden": [
         {
@@ -329,7 +318,8 @@
             "corpse_golem"
           ],
           "midboss": true
-        }
+        },
+        {"kind": "posts", "count": 1, "packs": [["skull_rat", "skull_rat", "skull_rat"], ["skull_rat", "ghoul"]]}
       ],
       "hidden": [
         {
@@ -364,7 +354,8 @@
         },
         {
           "kind": "guardian"
-        }
+        },
+        {"kind": "posts", "count": 4, "packs": [["gargoyle_statue"], ["bone_knight"], ["deathfiend"], ["chimera_wolf"]]}
       ],
       "hidden": [
         {

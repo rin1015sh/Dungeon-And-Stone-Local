@@ -514,9 +514,11 @@ func _summon() -> void:
 			if sv.is_valid_int() or sv == "true":  # --summon=N: 고블린 N마리
 				for k in (sv.to_int() if sv.is_valid_int() else 1):
 					BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": "goblin"})
-			else:  # --summon=id,id: 그 몬스터들(그림 확인)
+			else:  # --summon=id,id: 그 몬스터들(그림 확인) — --summon_each면 하나씩 몇 프레임 뒤에(전투 중 소환처럼 — 배치가 뒤틀리는지)
 				for mid in sv.split(","):
 					BattleRules.summon(cs.battle, cs.battle.side_units(Combatant.SIDE_ENEMY)[0], {"monster": mid})
+					if _args.has("summon_each"):
+						await _frames(3)
 			if _args.has("ally_summon"):  # 아군 소환수(뒷모습 그림 확인)
 				var av := str(_args["ally_summon"])
 				for aid in ("soldier_deadman" if av == "true" else av).split(","):

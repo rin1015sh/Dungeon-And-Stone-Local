@@ -134,20 +134,23 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	var run := cs.rift_run
 	assert_eq(run.chapter, 0)
 	assert_eq(run.session, cs)
-	assert_eq(run.remaining.size(), 2, "1챕터 조우 2개")
+	assert_eq(_roaming(run).size(), 2, "1챕터 조우 2개")
+	assert_eq(run.remaining.size() - 2, 3, "+ 빈 곳에 대기 무리 3개(posts)")
 	var skipped := run.use_exit(cs)
 	assert_true(skipped != null and run.chapter == 1, "조우를 남겨도 다음 챕터로 간다(사용자 2026-10-26)")
 	cs = skipped
 	assert_true(cs != null and run.chapter == 1)
-	var waves: FieldMonsters.Group = run.remaining[0]
-	assert_eq(int(waves.battle_rules["survive_rounds"]), 6, "도개교 6라운드 생존")
+	var bridge: FieldMonsters.Group = run.remaining[0]
+	assert_true(bridge.monster_ids.size() == 8 and bridge.guard and bridge.battle_rules.is_empty(), "도개교 = 다리 위에서 기다리는 데드맨 8(버티기 이벤트 없음)")
+	assert_eq(cs.map.tile_id_at(bridge.pos), "gm_planks", "다리 위")
 	_win_all(run)
 	cs = run.use_exit(cs)
-	assert_eq(run.remaining.size(), 3, "외성벽 시가지 세 무리 — 연전이 아니라 따로 돌아다닌다")
+	assert_eq(_roaming(run).size(), 3, "외성벽 시가지 세 무리 — 연전이 아니라 따로 돌아다닌다")
 	assert_true(run.remaining.all(func(g: FieldMonsters.Group) -> bool: return g.waves.is_empty() and g.tag == "battle"), "무리마다 한 번 싸움")
 	var first: FieldMonsters.Group = run.remaining[0]
+	var before := run.remaining.size()
 	run.on_battle_end(cs, first, Battle.RESULT_VICTORY)
-	assert_eq(run.remaining.size(), 2, "이기면 그 무리만 사라진다")
+	assert_eq(run.remaining.size(), before - 1, "이기면 그 무리만 사라진다")
 	var cells := run.remaining.map(func(g: FieldMonsters.Group) -> Vector2i: return g.pos)
 	assert_true(cells[0] != cells[1], "무리마다 다른 자리")
 	_win_all(run)
@@ -234,3 +237,37 @@ func test_field_effect_and_on_enter() -> void:
 	cs = run.use_exit(cs)
 	assert_eq(cs, s)
 	assert_false(s.player.statuses.has("hypothermia"), "나오면 풀린다")
+
+
+## 대기 무리(posts)가 아닌 조우 무리.
+func _roaming(run: RiftRun) -> Array:
+	return run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return not g.guard or g.monster_ids.size() == 8)
+
+
+## 대기 무리(RF22): 모든 챕터에서 시작·출구·조우 자리와 떨어져 서로 흩어져 서고, 순찰하지 않는다.
+func test_posts_spread_into_empty_places() -> void:
+	for rift_id: String in ["rift_blood_fortress", "rift_glacier_cave", "rift_green_mine", "rift_iron_tomb"]:
+		var s := _session()
+		var cs := _enter(s, rift_id)
+		var run := cs.rift_run
+		for i in run.chapters().size():
+			if i > 0:
+				cs = run.build_chapter(i)
+			var want := 0
+			for e: Variant in JsonUtil.get_array(run.chapters()[i], "encounters"):
+				if JsonUtil.get_str(e, "kind") == "posts":
+					want += JsonUtil.get_int(e, "count")
+			var posts: Array = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.guard and g.monster_ids.size() < 8)
+			assert_eq(posts.size(), want, "%s %d챕터 대기 무리 수" % [rift_id, i + 1])
+			var near := float(db.bal("rift.post_min_tiles"))
+			for g: FieldMonsters.Group in posts:
+				assert_true(Vector2(g.pos - cs.map.entry).length() >= near, "%s %d챕터: 시작 칸 곁에 서지 않는다" % [rift_id, i + 1])
+				for o: FieldMonsters.Group in posts:
+					if o != g:
+						assert_true(Vector2(g.pos - o.pos).length() >= near, "%s %d챕터: 대기 무리끼리 흩어진다" % [rift_id, i + 1])
+			var g0: FieldMonsters.Group = posts[0] if not posts.is_empty() else null
+			if g0 != null:
+				var home := g0.pos
+				for k in 100:
+					cs.monsters.update(Kinematics.center_of(cs.map.entry), 0.01, 0.01 * k, true)
+				assert_true(Vector2(g0.pos - home).length() <= 1.5, "%s %d챕터: 대기 무리는 제자리를 지킨다" % [rift_id, i + 1])

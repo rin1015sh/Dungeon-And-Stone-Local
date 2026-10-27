@@ -3,12 +3,14 @@ extends RefCounted
 ## 균열 한 번(인스턴스, 명세 §8.2·§8.3). 챕터마다 작은 맵(생성기 rift_chapter) + 고정 조우를 가진 ExploreSession을 만든다.
 ## 균열 데이터 chapters[]: {id, name_ko, desc_ko, map {size, rooms, room_size}, encounters[], field_effects[], on_enter[효과]}
 ## 조우(encounters[]):
-##   {"kind": "battle", "monsters": [..]}                       한 번 싸움
+##   {"kind": "battle", "monsters": [..], "guard": true}         한 번 싸움(guard = 순찰하지 않고 그 자리를 지킨다)
 ##   {"kind": "chain", "battles": [구성, 구성, …]}               여러 무리 — 구성마다 따로 돌아다니는 무리(보스가 낀 구성은 조우 자리 방에,
 ##                                                                  나머지는 그 둘레 balance rift.chain_spread_tiles 안에 서로 chain_gap_tiles 넘게 떨어져).
 ##                                                                  예전엔 한 무리가 이기면 바로 다음 구성과 싸우는 연전이라 맵에 한 마리인데 줄줄이 나왔다(사용자 2026-10-26)
 ##   {"kind": "waves", "survive_rounds": 6, "start": [..], "reinforce": {"monsters": [..], "count": [1, 2]}}  생존
 ##   {"kind": "guardian", "with": [..]}                          수호자(5% 미만 확률로 변종 수호자 — variant.chance)
+##   {"kind": "posts", "count": n, "packs": [구성, …]}            대기 무리 n개 — 지도의 빈 곳(시작·출구·다른 조우에서 가장 먼 칸)에
+##                                                                  구성 하나씩 골라 세운다. 순찰하지 않고 서서 둘러본다(RiftPosts — 조우 자리를 쓰지 않는다)
 ##   구성 = 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}(무작위)
 ## 조우를 다 치우지 않아도 길목으로 다음 챕터에 갈 수 있다(사용자 2026-10-26). 마지막 챕터에는 처음엔 출구가 없고,
 ## 수호자를 쓰러뜨리면 그 자리에 바깥으로 돌아가는 탈출 포탈(rift_exit)이 생긴다(_open_escape).
@@ -98,8 +100,14 @@ func build_chapter(i: int) -> ExploreSession:
 	cs.start()
 	remaining.clear()
 	var encs := JsonUtil.get_array(ch, "encounters")
+	var posts: Array = []
 	for k in encs.size():
+		if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") == "posts":
+			posts.append(encs[k])  # 다른 조우를 다 세운 뒤 빈 곳에
+			continue
 		remaining.append_array(_place(cs, encs[k], map.slots[mini(k, map.slots.size() - 1)] if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") != "guardian" else map.slots[-1]))
+	for e: Dictionary in posts:
+		remaining.append_array(RiftPosts.place(cs, e, compose, outer.rng))
 	_apply_field_effects()
 	hidden.place(cs, ch, outer.rng, i)
 	hazards.place(cs, ch, outer.rng)
@@ -337,6 +345,7 @@ func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> Array[FieldMonst
 	if g == null:
 		return out
 	g.tag = "riddle" if JsonUtil.get_bool(e, "riddle") else kind
+	g.guard = JsonUtil.get_bool(e, "guard")  # 그 자리를 지킨다(도개교 위 데드맨 무리)
 	if kind == "waves":
 		g.battle_rules = {"survive_rounds": JsonUtil.get_int(e, "survive_rounds", 6), "reinforce": JsonUtil.get_dict(e, "reinforce")}
 	out.append(g)

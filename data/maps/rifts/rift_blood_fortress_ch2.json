@@ -29,7 +29,7 @@
   "P": "bf_post",
   "B": "gm_planks"
  },
- "marks": {"entry": [0, 21], "slots": [[32, 21]], "exit": [71, 20], "hidden": [[14, 17]], "hazards": []},
+ "marks": {"entry": [0, 21], "slots": [[51, 20]], "exit": [71, 20], "hidden": [[14, 17]], "hazards": []},
  "rows": [
   "                                                          ##############",
   "                     \"\"\"                                  ##############",

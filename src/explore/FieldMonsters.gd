@@ -44,6 +44,7 @@ class Group extends RefCounted:
 	var next_look: float = 0.0            ## 서 있을 때 다음에 고개를 돌릴 시각
 	var hold_until: float = -1.0          ## 소리를 듣고 이 시각까지 멈춰 돌아본다
 	var last_seen: Vector2i = Vector2i(-1, -1)  ## 마지막으로 알아챈 플레이어 칸(놓치면 거기까지 가서 찾는다)
+	var guard: bool = false               ## 대기 무리(균열 posts — RiftPosts): 순찰하지 않고 제자리에서 둘러본다
 	var leashed: bool = false             ## 영역(leash_tiles)을 벗어나 돌아가는 중 — 반쯤 돌아갈 때까지 다시 쫓지 않는다
 
 	func leader() -> String:

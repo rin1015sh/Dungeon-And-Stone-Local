@@ -13,6 +13,7 @@ var _floor_y: float = 0.0    # 적 발 높이(px) — 빛 웅덩이도 여기
 var _layout_queued: bool = false
 var _back: Texture2D = null  # 전투 뒷그림(층 art.battleback · 균열 look.art.battleback) — 없으면 어둠뿐
 var _half_width: float = 3.0  # 통로 반 폭(m, 앞줄 적 크기 기준) — 적이 이 안에 선다
+var _deep: bool = false  # 처음 정렬(_pack)에 뒷줄이 있었다 — 앞줄을 당겨 세운다. 소환으로 바꾸지 않는다(앞줄이 들썩이지 않게)
 
 
 func setup(db: GameDatabase) -> void:
@@ -126,7 +127,7 @@ func layout() -> void:
 	var drop := maxf(_floor_y - hy, float(UiTheme.metric("combat_rows_min_drop", 40)))
 	var step := UiTheme.ui_float("combat_rows_depth_step", 0.45)
 	var rise := stage_h * UiTheme.ui_float("combat_rows_rise", 0.1)  # 뒷줄이 적어도 이만큼 위에(지평선이 낮아도 앞줄 뒤에 묻히지 않게)
-	var deep := foes.any(func(u: Combatant) -> bool: return _row(u) > 0)
+	var deep := _deep
 	# 뒷줄이 있으면 앞줄을 이쪽으로 당긴다(아래로·조금 크게) — 뒷줄이 앞줄 머리 위로 보이게
 	var front_y := minf(_floor_y + stage_h * UiTheme.ui_float("combat_rows_front_pull", 0.22), stage_h * 0.97) if deep else _floor_y
 	var front_k := UiTheme.ui_float("combat_rows_front_scale", 1.08) if deep else 1.0
@@ -209,25 +210,34 @@ func _pack(foes: Array[Combatant], stage_h: float) -> void:
 	var out := FoeRows.arrange_fit(widths, _half_width, gap, UiTheme.metric("combat_rows_max", 3), pinned)
 	var pos: Array = out["pos"]
 	_slots.clear()
+	_deep = false
 	for i in foes.size():
 		var p: Vector2 = pos[i]
 		_slots[foes[i]] = {"x": p.x, "row": int(p.y), "h": heights[i] * fit * float(out["k"]) / stage_h}
+		_deep = _deep or int(p.y) > 0
 
 
-## 새 적을 지금 자리를 건드리지 않고 빈자리(앞줄·가운데에 가까운 곳부터)에 넣는다. 하나라도 못 넣으면 false(다시 정렬).
+## 새 적을 지금 자리를 건드리지 않고 빈자리(앞줄·가운데에 가까운 곳부터)에 넣는다. 자리가 없으면 새 적만 조금씩 작게 해 본다
+## (combat_fit_shrink — 이미 선 적이 움직이지 않게: 구더기가 늘 때마다 드레드피어·다른 적이 들썩이던 것). 그래도 못 넣으면 false(다시 정렬).
 func _fit_new(fresh: Array[Combatant], stage_h: float) -> bool:
 	var ppm := _ppm(stage_h)
 	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
+	var shrink: Array = UiTheme.ui_dict("combat_fit").get("shrink", [1.0, 0.85, 0.7, 0.55])
 	for u in fresh:
 		var taken: Array[Vector3] = []
 		for o: Combatant in _slots:
 			var sl: Dictionary = _slots[o]
 			taken.append(Vector3(float(sl["x"]), float(sl["row"]), (_views[o] as BattlerView).width_for(stage_h * float(sl["h"])) / ppm))
-		var h := _foe_height(_views[u], stage_h)
-		var at := FoeRows.fit_new(taken, (_views[u] as BattlerView).width_for(h) / ppm, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
-		if at.y < 0.0:
+		var placed := false
+		for s: Variant in shrink:
+			var h := _foe_height(_views[u], stage_h) * float(s)
+			var at := FoeRows.fit_new(taken, (_views[u] as BattlerView).width_for(h) / ppm, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
+			if at.y >= 0.0:
+				_slots[u] = {"x": at.x, "row": int(at.y), "h": h / stage_h}
+				placed = true
+				break
+		if not placed:
 			return false
-		_slots[u] = {"x": at.x, "row": int(at.y), "h": h / stage_h}
 	return true
 
 

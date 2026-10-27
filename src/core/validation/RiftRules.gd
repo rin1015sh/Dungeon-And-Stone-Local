@@ -3,7 +3,7 @@ extends RefCounted
 ## 검사 규칙: 균열(rifts/*.json, RiftRun 형식) — 개방 마석·모양(타일)·챕터·조우·수호자·드롭,
 ## 수수께끼(RiftRiddle)·탐험 위험과 함정(RiftHazards)·히든 피스와 벽화(RiftHidden)·출구 조건(exit_requires).
 
-const KINDS := ["battle", "chain", "waves", "guardian"]
+const KINDS := ["battle", "chain", "waves", "guardian", "posts"]
 
 
 static func run(v: ValidatorBase) -> void:
@@ -51,7 +51,9 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 				v.err(cw, "조우 kind '%s'는 %s 중 하나" % [kind, KINDS])
 			if kind == "guardian":
 				guardians += 1
-			for spec: Variant in [ed.get("monsters", []), ed.get("start", []), ed.get("with", [])] + JsonUtil.get_array(ed, "battles"):
+			if kind == "posts" and (JsonUtil.get_int(ed, "count") < 1 or JsonUtil.get_array(ed, "packs").is_empty()):
+				v.err(cw, "posts: count는 1 이상, packs는 구성 하나 이상")
+			for spec: Variant in [ed.get("monsters", []), ed.get("start", []), ed.get("with", [])] + JsonUtil.get_array(ed, "battles") + JsonUtil.get_array(ed, "packs"):
 				_composition(v, cw, spec)
 			_composition(v, cw, JsonUtil.get_dict(ed, "reinforce").get("monsters", []))
 			if kind == "waves" and JsonUtil.get_int(ed, "survive_rounds") < 1:
@@ -74,7 +76,7 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 				_stat_at_least(v, cw + ".exit_requires.bypass", JsonUtil.get_dict(req, "bypass"))
 		var map := JsonUtil.get_dict(ch, "map")
 		if map.has("blueprint"):
-			_blueprint(v, cw + ".map", ch, encs.size())
+			_blueprint(v, cw + ".map", ch, encs.filter(func(e: Variant) -> bool: return not (e is Dictionary and JsonUtil.get_str(e, "kind") == "posts")).size())  # 대기 무리는 조우 자리를 쓰지 않는다
 		else:
 			var size := JsonUtil.get_array(map, "size")
 			if size.size() != 2 or int(size[0]) < 20 or int(size[1]) < 12:

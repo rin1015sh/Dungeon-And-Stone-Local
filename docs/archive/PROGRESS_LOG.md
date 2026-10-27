@@ -6,6 +6,13 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **균열 대기 무리 · 도개교 데드맨 8 · 전투 중 적이 늘 때 자리 (2026-10-27, 사용자)** — RF23·RF24·UI37.
+  - `RiftPosts`(새 파일): 조우 kind `posts` — 시작·출구·조우에서 가장 먼 칸에 대기 무리, `Group.guard`(MonsterPatrol이 순찰하지 않음). 처음엔 시작 둘레 안전지대에서 걸음 장이 막혀 시작 칸 곁에 섰다 → 안전지대도 지나가게(서지는 않게). RiftRun: posts는 다른 조우 뒤에, battle `guard`. 검증 RiftRules: kind posts·packs 구성 검사, 설계도 slot 수에서 posts 뺌.
+  - 데이터: 균열 4개 17챕터에 posts(1~5), 핏빛성채 2챕터 waves → 다리 위 데드맨 6 + 병사 데드맨 2(guard, slot [51, 20]), 설명 문구.
+  - 전투 자리: `BattleStage._deep`(뒷줄 당김을 처음 정렬 때만)·`_fit_new` 새 적만 줄여 보기(`combat_fit.shrink`), `FoeRows.fit_new` hide(앞줄 몸 바로 뒤 피함), render `combat_rows_front_pull` 0.08·`combat_rows_rise` 0.2. 캡처 `--summon_each`.
+  - 확인: 캡처(드레드피어 + 구더기 1~5 하나씩 — 드레드피어가 움직이지 않음, 데드맨 + 5, 도개교 8), 챕터 아스키 지도로 대기 무리 자리, 시험 test_rift `test_posts_spread_into_empty_places`·도개교, sim_rift 모두 통과, check.sh 통과.
+  - 남은 것: 캡처에서 구더기 4마리 이상을 하나씩 부르면 타이틀로 돌아간다(캡처가 기다리는 동안 전투가 진행돼 공포로 죽는 듯 — 게임 문제인지 확인 안 함).
+
 - **필드 몬스터: 화면 안이면 알아채고 · 계속 움직이고 곧게 · 사냥꾼은 밖에서부터 (2026-10-27, 사용자 "빙빙 돌고 앞에 와도 모른다, 기차 같다")** — V13~V15.
   - `MonsterSteering`: 보는 거리 = aggro × `sight_mult`(최대 `sight_max_tiles`), 쫓는 중 × `chase_keep_mult`, `_hunts`(behavior `hunts_tiles` — 거리 장 걸음 수), `clear_walk`(몸 폭 곧은 길) — 직접 추적 16칸·추적 길 곧게(`_straight_descent`). `MonsterPatrol`: 칸 길 건너뛰기(`straight_lookahead_tiles`), 집 옮기기(`home_drift_chance`). `MonsterSenses`: 배율 값, 180° 끝(내적 0)도 안.
   - balance: 시야각 180, 기척 2.5, 순찰 0.9 / 14칸 / 쉬기 0.02~0.12h. 늑대 넷 `hunts_tiles` 20, 고블린 14.

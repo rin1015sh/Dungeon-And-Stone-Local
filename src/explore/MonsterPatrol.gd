@@ -6,6 +6,7 @@ extends RefCounted
 ##     칸 길로 걸어간다. 아니면 그 자리에서 더 선다. (예전엔 칸마다 무작위 한 걸음이라 제자리에서 맴돌았다.)
 ##     쉬는 시간은 짧고, 지점을 고를 때 home_drift_chance로 그 지점이 새 집이 된다 — 같은 둘레를 맴돌지 않고 굴을 따라 옮겨 다닌다(V14).
 ##     칸 길은 곧게 걸을 수 있는 데까지(straight_lookahead_tiles) 건너뛰어 칸칸이 꺾어 걷지 않는다(V14).
+##   대기 무리(Group.guard — 균열 posts)는 지점을 고르지 않고 제자리에서 둘러보기만 한다.
 ##   수색(search): 쫓던 플레이어를 놓치면 마지막으로 본 칸(Group.last_seen)까지 가서 search_hours 동안 둘러본다.
 ##   귀환(return): 칸 길(FieldRoutes)로 집까지(예전엔 집 쪽으로 욕심껏 한 칸이라 굽은 굴에서 왔다 갔다 했다).
 ##   고개 돌리기: Group.look 쪽으로 한 칸 걷는 시간마다 turn_deg_per_tile씩 돈다.
@@ -78,7 +79,7 @@ func next_cell(g: FieldMonsters.Group, now: float, beh: Dictionary) -> Vector2i:
 		return step
 	if g.state != FieldMonsters.STATE_IDLE or now < g.rest_until:
 		return step
-	if _rng.chance(JsonUtil.get_float(beh, "wander_chance", _wander_chance)):
+	if not g.guard and _rng.chance(JsonUtil.get_float(beh, "wander_chance", _wander_chance)):
 		g.patrol = _plan(g, JsonUtil.get_float(beh, "wander_radius", _wander_radius))
 		if not g.patrol.is_empty() and JsonUtil.get_int(beh, "leash_tiles") <= 0 and _rng.chance(_drift):
 			g.home = g.patrol.back()  # 집이 옮겨 간다(영역이 있는 몬스터는 그대로)

@@ -164,7 +164,8 @@
             "frost_wolf",
             "frost_wolf"
           ]
-        }
+        },
+        {"kind": "posts", "count": 4, "packs": [["frost_wolf", "frost_wolf"], ["yeti"], ["frost_wolf", "frost_wolf", "frost_wolf"]]}
       ],
       "hidden": [
         {
@@ -286,7 +287,8 @@
               "katumba"
             ]
           ]
-        }
+        },
+        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "sabertooth"], ["wormstone"]]}
       ],
       "hidden": [
         {
@@ -327,7 +329,8 @@
             "ice_orc_warrior",
             "ice_orc_warrior"
           ]
-        }
+        },
+        {"kind": "posts", "count": 4, "packs": [["ice_orc_warrior", "ice_orc_warrior"], ["ice_orc_shaman", "ice_orc_warrior"], ["sabertooth"], ["owlbear"]]}
       ],
       "field_effects": [
         "hypothermia"
@@ -424,7 +427,8 @@
       "encounters": [
         {
           "kind": "guardian"
-        }
+        },
+        {"kind": "posts", "count": 5, "packs": [["frost_wolf", "frost_wolf"], ["ice_golem"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
       ],
       "field_effects": [
         "hypothermia"

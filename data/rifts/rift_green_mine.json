@@ -185,7 +185,8 @@
             "slime",
             "goblin_miner"
           ]
-        }
+        },
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"]]}
       ],
       "hidden": [
         {
@@ -242,7 +243,8 @@
             "goblin_bomber"
           ],
           "midboss": true
-        }
+        },
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "mineral_slime"], ["hobgoblin_miner"]]}
       ],
       "hidden": [
         {
@@ -309,7 +311,8 @@
             "hobgoblin_miner",
             "copper_golem"
           ]
-        }
+        },
+        {"kind": "posts", "count": 2, "packs": [["mineral_slime", "slime"], ["goblin_miner", "goblin_miner"]]}
       ],
       "hidden": [
         {
@@ -369,7 +372,8 @@
         },
         {
           "kind": "guardian"
-        }
+        },
+        {"kind": "posts", "count": 4, "packs": [["slime", "slime"], ["mineral_slime", "mineral_slime"], ["copper_golem"], ["goblin_miner", "hobgoblin_miner"]]}
       ]
     }
   ],

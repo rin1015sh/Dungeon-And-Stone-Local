@@ -116,7 +116,8 @@ static func arrange_fit(widths: PackedFloat32Array, half_width: float, gap: floa
 
 ## 나중에 나온 적(소환·증원·분열)의 빈자리: 앞줄부터, 가운데에 가까운 곳 — 뒷줄은 앞줄 사이 틈을 먼저(가려지지 않게).
 ## taken = [Vector3(x m, 줄, 폭 m)]. 못 찾으면 Vector2(INF, -1)(다시 정렬).
-static func fit_new(taken: Array[Vector3], w: float, half_width: float, gap: float, max_rows: int) -> Vector2:
+## hide: 뒷줄 자리가 앞줄 몸과 이 비율 넘게 겹치면 쓰지 않는다(1 = 조금도 겹치지 않게).
+static func fit_new(taken: Array[Vector3], w: float, half_width: float, gap: float, max_rows: int, hide: float = 0.45) -> Vector2:
 	for r in max_rows:
 		var spans: Array[Vector2] = []
 		var front: Array[Vector2] = []
@@ -140,6 +141,8 @@ static func fit_new(taken: Array[Vector3], w: float, half_width: float, gap: flo
 						continue
 				if spans.any(func(s: Vector2) -> bool: return c + w / 2.0 > s.x + 0.01 and c - w / 2.0 < s.y - 0.01):
 					continue
+				if front.any(func(f: Vector2) -> bool: return absf(c - f.x) < (f.y + w) * 0.5 * hide):
+					continue  # 앞줄 몸 바로 뒤 — 가려진다(드레드피어 뒤에 구더기가 숨던 것)
 				if absf(c) < absf(best):
 					best = c
 			if best != INF:

@@ -140,7 +140,8 @@
             "buried_one",
             "mummy"
           ]
-        }
+        },
+        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["buried_one"]]}
       ],
       "hidden": [
         {
@@ -256,7 +257,8 @@
           "monsters": [
             "iron_cavalry"
           ]
-        }
+        },
+        {"kind": "posts", "count": 4, "packs": [["mummy", "mummy", "mummy"], ["guardian_eye"], ["iron_lizardman", "mummy"]]}
       ],
       "hidden": [
         {
@@ -343,7 +345,8 @@
             "riddle_gatekeeper"
           ],
           "riddle": true
-        }
+        },
+        {"kind": "posts", "count": 2, "packs": [["iron_lizardman"], ["mummy", "mummy"]]}
       ],
       "hidden": [
         {
@@ -431,7 +434,8 @@
       "encounters": [
         {
           "kind": "guardian"
-        }
+        },
+        {"kind": "posts", "count": 4, "packs": [["mummy", "mummy"], ["iron_cavalry"], ["guardian_eye", "mummy"], ["buried_one", "mummy"]]}
       ],
       "hidden": [
         {
