@@ -56,10 +56,14 @@ func test_city_rest_heals_mates_but_training_is_players_own() -> void:
 	s.set_override("activities/training_train/effects/1/amount", 4)
 	pc.fatigue.set_value(10.0)
 	mate.fatigue.set_value(10.0)
+	mate.pool.set_current("hp", 5.0)
+	mate.pool.set_current("soul", 1.0)
 	var reg := ContentRegistries.new().city_effects
 	s.facility = "inn"
 	CityActions.perform(s, pc, "inn_rest", reg)
 	assert_near(mate.fatigue.value, 5.0, 0.001, "여관 휴식은 동료도")
+	assert_eq(mate.pool.get_current("hp"), mate.pool.get_max("hp"), "생명력도 같이 회복")
+	assert_eq(mate.pool.get_current("soul"), mate.pool.get_max("soul"), "영혼력도")
 	s.facility = "training"
 	CityActions.perform(s, pc, "training_train", reg)
 	assert_near(pc.fatigue.value, 9.0, 0.001, "훈련 피로는 플레이어")

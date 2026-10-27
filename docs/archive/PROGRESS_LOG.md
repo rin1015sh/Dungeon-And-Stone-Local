@@ -9,7 +9,7 @@
 - **동료 허기·피로 = 플레이어와 같이 (2026-10-27, 사용자 "동료 허기 피로도 플레이어와 같이 변하게 해줘")** — C19.
   - 미궁: `pass_time`에서 동료도 `advance_hours`(허기·상태·재생 — "dungeon" 맥락을 그때 켠다, 동료는 세션 생성 뒤에 붙으므로), 걸음·휴식(모닥불 덤)·시간·전투 차례 피로 `_party_fatigue`. 전투 밖 아사 → `_bury_starved`(파티에서 빠짐, `party.mate_died`).
   - 먹이기: 탐험 `use_item(id, on)` — Tab에서 고른 아군(`GameMenu.shown()`), 빛 물건은 플레이어. 도시 거리 사용도 고른 아군에게.
-  - 도시: `CityState.mates`(= GameState.companions) — 피로 줄이는 효과(여관·신전)만 동료도, 늘리는 효과(훈련·독서·거리 사건)는 플레이어만(가정). 여관 휴식의 생명력·영혼력 회복은 아직 플레이어만.
+  - 도시: `CityState.mates`(= GameState.companions) — 피로 줄이는 효과(여관·신전)만 동료도, 늘리는 효과(훈련·독서·거리 사건)는 플레이어만(가정). 여관 휴식의 생명력·영혼력 회복도 같은 날 동료까지(`effects/restore.gd` — state.mates, 사용자 "응 여관 회복도"). 요리 버프는 플레이어만.
   - 시험 `test_party_upkeep`(4). check.sh 통과.
 - **소화력 지움 · 미궁 허기·피로 빠르게 (2026-10-26, 사용자 "소화력 수치 따로 더 쓰이는데 없으면 게임에서 지워 · 미궁에서 허기 더 빨리 닳고 피로 더 빨리 오르게")** — ST6.
   - 소화력은 허기 수식에만 쓰였다 → `stats.json`·허기 수식·`balance.hunger.digestion_coef/min`·슬라임 정수 stats(+12)·동굴 송로 수프(+40 → 같은 날 식욕 −30으로 바꿈 — 허기 30% 느리게, 시각 +8은 그대로) 삭제, 옛 저장 정수 사례의 지운 스탯은 `EssenceSet._attach`가 버린다. 시험 test_sub_stats(남은 11종·지운 목록에 digestion)·test_mine(소화력 검사 삭제). essences.md 다시 만듦.

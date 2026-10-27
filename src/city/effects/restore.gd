@@ -1,6 +1,7 @@
 extends CityEffect
 ## 자원 회복(여관 휴식): {"type": "restore", "resources": {"hp": 1.0, "soul": 1.0}} — 값 = 최대치에 대한 비율.
-## 하나라도 늘었으면 restore, 이미 가득이면 restore_full. resources가 null(미정)이면 회복하지 않는다.
+## 동료(state.mates)도 같이 회복한다(같은 여관에서 쉰다 — 사용자 2026-10-27, C19).
+## 누구든 하나라도 늘었으면 restore, 모두 이미 가득이면 restore_full. resources가 null(미정)이면 회복하지 않는다.
 
 
 func apply(ctx: CityContext, data: Dictionary) -> void:
@@ -9,15 +10,22 @@ func apply(ctx: CityContext, data: Dictionary) -> void:
 		ctx.say("city.fx.restore_undecided")
 		return
 	var gained := false
+	for who: PlayerCharacter in [ctx.pc] + ctx.state.mates:
+		gained = _restore(ctx, who, res) or gained
+	ctx.say("city.fx.restore" if gained else "city.fx.restore_full", {}, "good" if gained else "info")
+
+
+func _restore(ctx: CityContext, who: PlayerCharacter, res: Dictionary) -> bool:
+	var gained := false
 	for id: Variant in res:
 		var key := str(id)
 		var ratio: Variant = res[id]
-		if not ctx.pc.pool.has_resource(key) or not (ratio is float or ratio is int):
+		if not who.pool.has_resource(key) or not (ratio is float or ratio is int):
 			continue
-		var before := ctx.pc.pool.get_current(key)
-		ctx.pc.pool.modify(key, ctx.pc.pool.get_max(key) * clampf(float(ratio), 0.0, 1.0), "city:" + ctx.activity_id)
-		gained = gained or ctx.pc.pool.get_current(key) > before
-	ctx.say("city.fx.restore" if gained else "city.fx.restore_full", {}, "good" if gained else "info")
+		var before := who.pool.get_current(key)
+		who.pool.modify(key, who.pool.get_max(key) * clampf(float(ratio), 0.0, 1.0), "city:" + ctx.activity_id)
+		gained = gained or who.pool.get_current(key) > before
+	return gained
 
 
 func validate(data: Dictionary, db: GameDatabase) -> PackedStringArray:
