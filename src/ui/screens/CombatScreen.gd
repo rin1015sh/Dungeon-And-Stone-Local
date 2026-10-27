@@ -44,7 +44,7 @@ func setup(b: Battle) -> void:
 
 func _ready() -> void:
 	_stage = BattleStage.new()
-	_stage.setup(battle.db, BattleKnowledge.knowers(battle))
+	_stage.setup(battle.db)
 	_stage.set_backdrop(backdrop, backdrop_width)
 	add_child(_stage)
 	_stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

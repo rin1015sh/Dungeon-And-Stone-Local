@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **파티 드롭 "누가 받을까?"는 정수만 · 조사·무대에서 적 생명력·상성 숨김 (2026-10-27, 사용자 "파티일때 마석 획득 누가? 삭제하고 조사하면 적 체력 보이는거랑 면역여부 보이는거 삭제해. b에서만 보이게")** — UI13·UI12·UI22.
+  - 드롭: 마석·전리품은 "획득할까?"만 묻고 공용 가방(플레이어)으로 — `CombatDrops._offer`(정수가 아니면 받을 사람 묻지 않음), `ExploreSession.take_drop`(물건은 늘 `player`에게 — 예전엔 동료를 고르면 동료의 숨은 가방으로 들어갔다). 문구 `combat.drop_no_room` 삭제.
+  - 조사: 결과 문구 `combat.info_monster`에서 생명력·상성 뺌(등급·계열·주 스탯·설명). 스탯 기록(`learn_stats`)·길드 조사 의뢰는 그대로.
+  - 무대: 조사한 종의 생명력 막대·알아낸 상성 줄 삭제(`BattlerView`·`BattleStage` 지식 배선, `BattleKnowledge.knowers/party_knows_stats/party_affinities`, `describe(short)`, render `combat_enemy_bar`, 문구 `knowledge.stage_*`). 도감 B(`BestiaryPage`)는 예전대로 생명력·스탯·상성을 보인다. 처음 쳐서 알아낸 상성 대화창 문구(`knowledge.learned_*`)는 그대로 둠.
+  - 시험: test_progress(조사 문구에 생명력·상성 없음), test_dungeon_loop(무대 지식 시험 → 도감 상성 문장 시험), smoke_ui(조사해도 무대엔 이름뿐). check.sh 통과. 캡처 `--combat --known --monster=goblin`으로 무대에 이름만 보이는 것 확인.
+
 - **몬스터 순찰·시야각 감지 (2026-10-27, 사용자 "적이 너무 빙빙 돌거나 그런 움직임이 자주 보여서 — 주변을 순찰·경계하는 느낌으로 · 벡터 내적으로 적 시야 기반 감지, 괜찮으면 바로 넣고")** — V9~V12.
   - 원인: 대기 중 배회가 "칸에 닿을 때마다 30%로 무작위 한 걸음"이라 반경 4칸 안에서 왔다 갔다·맴돌았다. 귀환은 집 쪽으로 욕심껏 한 칸(굽은 굴에서 막혀 진동), 시선을 잃으면 바로 귀환 → 모퉁이에서 다시 보면 추격(쫓기 ↔ 돌아가기 반복). 감지는 사실 내적이 아니라 원형 반경 + 시선뿐이었다.
   - 감지(`MonsterSenses`): 감지 반경·시선 + 시야각 120°(`Group.facing`·내적 ≥ cos 60°), 1.5칸 안 기척은 등 뒤도, 쫓는 중엔 각도 무시. 움직이는 플레이어가 반경 × 0.6 안이면 0.05시간 멈춰 그쪽으로 돌아본다(30°/한 칸 시간). `FieldStealth.moving` → `FieldMonsters.set_player_moving`.

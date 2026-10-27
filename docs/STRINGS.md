@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(979줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(976줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -555,7 +555,7 @@
 - `combat.talk_provoke` {source}의 말이 {target}을(를) 자극했다. 서둘러 덤벼든다!
 - `combat.talk_withdraw` {target}이(가) {source}의 말에 무기를 내리고 뒷걸음질 친다.
 - `combat.withdraw` {name}이(가) 싸움에서 물러났다.
-- `combat.info_monster` [조사] {name} — {grade}등급 {family}. 생명력 {hp_now}/{hp_max}. 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}. 상성: {aff}. {desc}
+- `combat.info_monster` [조사] {name} — {grade}등급 {family}. 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}. {desc}
 - `combat.info_ally` [조사] {name} — 생명력 {hp}%.
 - `combat.float_immune` 면역
 - `combat.float_blocked` 막힘
@@ -563,11 +563,10 @@
 - `combat.drop_ask` {what} — 획득할까?
 - `combat.drop_take` 획득한다
 - `combat.drop_leave` 두고 간다
-- `combat.drop_who` 누가 받을까?
 - `combat.drop_essence` {color} {name}
 - `combat.drop_item` {item} ×{count}
 - `combat.drop_cannot` 받을 수 없다.
-- `combat.drop_no_room` 가방에 다 들어가지 않는다.
+- `combat.drop_who` 누가 받을까?
 - `combat.result_victory` 승리
 - `combat.result_defeat` 당신은 패배했다...
 - `combat.result_fled` 도주
@@ -677,8 +676,6 @@
 - `knowledge.aff_weak` {type} 약점 ×{mult}
 - `knowledge.aff_resist` {type} 저항 ×{mult}
 - `knowledge.aff_immune` {type} 면역
-- `knowledge.stage_mult` {type} ×{mult}
-- `knowledge.stage_immune` {type} 면역
 - `knowledge.learned_weak` {name}은(는) {type}에 약하다. (도감에 기록)
 - `knowledge.learned_resist` {name}은(는) {type}을(를) 견딘다. (도감에 기록)
 - `knowledge.learned_immune` {name}에게 {type}은(는) 통하지 않는다. (도감에 기록)

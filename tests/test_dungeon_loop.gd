@@ -17,22 +17,15 @@ func _investigate(pc: PlayerCharacter, m: Monster) -> void:
 	h.apply(EffectContext.new(db, pc, m, Rng.new(1)), {"type": "investigate"})
 
 
-func test_party_knowledge_for_the_stage() -> void:
+func test_affinity_text_for_the_bestiary() -> void:
 	var a := _pc()
-	var b := _pc()
-	var ks: Array[Knowledge] = [a.knowledge, b.knowledge]
-	assert_false(BattleKnowledge.party_knows_stats(ks, "ghoul"), "처음엔 생명력을 모른다")
-	b.knowledge.learn_stats("ghoul")
-	assert_true(BattleKnowledge.party_knows_stats(ks, "ghoul"), "파티 누군가 조사했으면 보인다")
 	a.knowledge.learn_affinity("ghoul", "fire", 1.25)
-	b.knowledge.learn_affinity("ghoul", "slash", 1.0)
-	var aff := BattleKnowledge.party_affinities(ks, "ghoul")
-	assert_eq(aff.size(), 2, "둘의 기록을 합친다")
-	var text := BattleKnowledge.describe(db, aff)
+	a.knowledge.learn_affinity("ghoul", "slash", 1.0)
+	var text := BattleKnowledge.describe(db, a.knowledge.affinities("ghoul"))
 	assert_true(text.contains(DataNames.tag(db, "damage_types", "fire")), "약점은 글로")
 	assert_false(text.contains(DataNames.tag(db, "damage_types", "slash")), "보통(×1)은 적지 않는다")
-	assert_eq(BattleKnowledge.describe(db, {}), "", "모르면 빈칸(무대에 ??? 를 띄우지 않는다)")
-	assert_eq(BattleKnowledge.describe_affinities(db, a.knowledge, "goblin"), Strings.t("knowledge.unknown"), "조사 창은 그대로 ???")
+	assert_eq(BattleKnowledge.describe(db, {}), "")
+	assert_eq(BattleKnowledge.describe_affinities(db, a.knowledge, "goblin"), Strings.t("knowledge.unknown"), "모르면 ???")
 
 
 func test_investigate_counts_each_monster_once() -> void:

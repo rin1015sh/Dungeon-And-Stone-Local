@@ -225,7 +225,8 @@ func _realtime_combat_flow() -> void:
 	_expect_log("[조사]", "조사 결과")
 	await _frames(1)
 	if foe_u != null and battle.result.is_empty() and combat.stage().view(foe_u) != null:
-		_expect(combat.stage().view(foe_u)._show_bar, "조사한 종은 무대에 생명력 막대가 보인다(UI22)")
+		_expect(combat.stage().view(foe_u).find_children("*", "Label", false, false).size() == 1,
+			"조사해도 무대엔 이름뿐 — 생명력·상성은 도감 B에서만")
 	_expect(battle.turns > turns_before or not battle.result.is_empty(), "조사가 행동 기회를 쓴다(차례가 넘어감)")
 	for i in 60:
 		if not battle.result.is_empty():

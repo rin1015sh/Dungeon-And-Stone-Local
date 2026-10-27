@@ -48,7 +48,7 @@ func test_knowledge_and_investigate() -> void:
 	b.act(c, {"kind": "skill", "skill": "investigate", "target": b.opponents(c)[0]})
 	assert_true(pc.knowledge.knows_stats("blade_wolf"), "조사 → 스탯 공개")
 	var info: Dictionary = args[keys.find("combat.info_monster")]
-	assert_eq(str(info["aff"]), Strings.t("knowledge.unknown"), "상성은 아직 ???")
+	assert_false(info.has("hp_now") or info.has("aff"), "전투 중 조사로는 생명력·상성을 알리지 않는다(도감 B에서만)")
 	pc.knowledge.learn_affinity("blade_wolf", "lightning", 1.5)
 	assert_true(BattleKnowledge.describe_affinities(db, pc.knowledge, "blade_wolf").contains("1.5"))
 

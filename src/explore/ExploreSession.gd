@@ -384,9 +384,10 @@ func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], col
 
 ## 전투 장면에서 드롭을 pc가 받는다(정수 흡수 · 가방 — 넘친 균열 출구 물건은 손에 쥔다). 안내를 내보내고 돌려준다.
 func take_drop(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
-	var m := DropPickup.take(drop, pc)
+	var to := pc if str(drop.get("kind")) == "essence" else player  # 물건은 공용 가방(플레이어 것)으로
+	var m := DropPickup.take(drop, to)
 	if int(m.get("left", 0)) > 0 and rift_run != null and rift_run.keep_overflow(self, str(drop.get("id")), int(m["left"])):
-		m = DropPickup._m("reward.loot_by", {"who": pc.display_name, "item": DataNames.entry(db, "items", str(drop.get("id"))), "count": int(drop.get("count", 1))}, "good")
+		m = DropPickup._m("reward.loot_by", {"who": to.display_name, "item": DataNames.entry(db, "items", str(drop.get("id"))), "count": int(drop.get("count", 1))}, "good")
 	message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	return m
 

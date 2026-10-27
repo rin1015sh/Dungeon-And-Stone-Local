@@ -21,7 +21,7 @@ extends Node
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
-## --known: --combat --monster=<id>에서 그 몬스터를 조사해 둔 상태(생명력 막대·알아낸 상성)
+## --known: --combat --monster=<id>에서 그 몬스터를 조사·상성까지 알고 있는 상태(무대엔 이름뿐 — 도감 B에서만 보인다)
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
 ## --meal=<요리 id>: 여관 요리 효과(Meals)를 건 채로 탐험 화면(--menu=character와 함께), --meal_pick=<요리 id>: 도시 여관 식사에서 그 요리(그림 확인)
 ## --statuses=<id,id>: --combat에서 적 모두에게 그 상태(머리 위 아이콘 확인), --party_statuses=<id,id>: 아군 모두에게
@@ -220,7 +220,7 @@ func _run() -> void:
 			explore.session.lord.summon(explore.session)
 		if _args.has("combat"):
 			GameState.debug_invulnerable = _args.has("god") or GameState.debug_invulnerable  # --god: 무적(계층군주처럼 첫 차례에 쓰러뜨리는 적을 찍을 때)
-			if _args.has("known") and _args.has("monster"):  # --known: 그 몬스터를 조사·상성까지 알고 있다(무대 생명력 막대·상성 줄, UI22)
+			if _args.has("known") and _args.has("monster"):  # --known: 그 몬스터를 조사·상성까지 알고 있다(도감 B에만 보인다 — 무대엔 이름뿐, UI22)
 				explore.session.player.knowledge.learn_all(explore.session.db, str(_args["monster"]))
 			ExploreDebug.spawn_and_engage(explore.session, str(_args.get("monster", "")))
 			if _args.has("meters"):
