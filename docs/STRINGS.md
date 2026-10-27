@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(973줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(972줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -31,6 +31,7 @@
 - [소지품 `inventory`](#inventory) — Tab 메뉴 소지품 쪽
 - [party `party`](#party) — —
 - [캐릭터 `character`](#character) — Tab 메뉴 캐릭터 쪽
+- [codex `codex`](#codex) — —
 - [도감 `bestiary`](#bestiary) — Tab 메뉴 도감 쪽
 - [정수 `essence`](#essence) — 정수 칸·설명
 - [수수께끼 `riddle`](#riddle) — 강철의 묘 수수께끼 창
@@ -730,7 +731,6 @@
 > —
 
 - `party.title` 아군
-- `party.bestiary` 도감
 - `party.fatigue` 피로
 - `party.nameless` 이름 없는 탐험가
 - `party.front` 전위
@@ -766,6 +766,19 @@
 - `character.statuses` 걸린 상태
 - `character.none` 없음
 - `character.inert_mark` *
+
+<a id="codex"></a>
+## codex `codex`
+
+> —
+
+- `codex.monsters` 몬스터
+- `codex.section` {name}  {n}
+- `codex.entry` 『{name}』
+- `codex.lore_empty` 아직 읽은 대목이 없다.
+- `codex.lore_text` 『{name}』
+
+{text}
 
 <a id="bestiary"></a>
 ## 도감 `bestiary`
@@ -829,6 +842,7 @@
 > 도시 — 거리·시설·활동 결과(lines)·거리 사건(street)·세금
 
 - `city.place` {city} · {district}
+- `city.place_street` {city} · {district} · {street}
 - `city.date` {month}번째 달 {period}
 - `city.date_year` {year}년째 {month}번째 달 {period}
 - `city.hud_fatigue` 피로도 {value}
@@ -848,8 +862,8 @@
 - `city.spent_stones` {n} 스톤을 치렀다.
 - `city.info_merit` 신전 공적치 {merit}
 - `city.info_balance` 은행 잔액 {balance} 스톤
-- `city.info_rumors` 들은 소문 {n}개
-- `city.info_lore` 모은 정보 {n}개
+- `city.info_residence` 거주 {name}
+- `city.info_lore` 읽은 대목 {n}
 - `city.info_survey` 의뢰 {name} 조사 {n}/{cap} · 한 마리 {stones} 스톤
 - `city.reason_unknown` 알 수 없는 시설·활동이다.
 - `city.reason_inside` 이미 시설 안에 있다.
@@ -905,6 +919,9 @@
 - `city.shop_sell_name` {item} ×{n}
 - `city.hud_tax` 세금 {n} 스톤 · {month}번째 달까지
 - `city.reason_tax_none` 낼 세금이 없다
+- `city.reason_residence_max` 더 좋은 거리는 없다
+- `city.reason_no_books` 이 분야는 다 읽었다
+- `city.reason_books_locked` 이 거리 도서관엔 더 깊은 책이 없다
 - `city.debug_reroll` 사건 다시
 - `city.debug_tax_due` 세금 기한으로
 - `city.debug_life` 사건 {events} · 거리 {street} · 세금 {tax}(냄 {paid})
@@ -922,14 +939,10 @@
 - `city.fx.stat_fail` 별다른 소득은 없었다.
 - `city.fx.stat_no_amount` 능력치 상승량이 정해지지 않았다(미정) — 오르지 않음
 - `city.fx.stat_undecided` 능력치 상승 대상·확률이 정해지지 않았다(미정) — 오르지 않음
-- `city.fx.info_new_rumor` 귀에 걸리는 이야기가 있었다. {name}: {text}
-- `city.fx.info_new_lore` 눈에 띄는 기록을 찾았다. {name}: {text}
-- `city.fx.info_fail_rumor` 시끄럽기만 할 뿐, 들을 만한 이야기는 없었다.
-- `city.fx.info_fail_lore` 한참을 뒤졌지만 건진 것이 없다.
-- `city.fx.info_none_rumor` 오가는 이야기는 죄다 이미 아는 것들이다.
-- `city.fx.info_none_lore` 더 읽을 만한 책이 남아 있지 않다.
-- `city.fx.info_undecided_rumor` 소문을 얻는 규칙이 정해지지 않았다(미정) — 얻은 것 없음
-- `city.fx.info_undecided_lore` 정보를 얻는 규칙이 정해지지 않았다(미정) — 얻은 것 없음
+- `city.fx.book_new` 『{name}』
+{text}
+- `city.fx.book_none` 서가를 다 뒤졌지만 처음 보는 대목은 없었다.
+- `city.fx.book_undecided` 책을 읽는 규칙이 정해지지 않았다(미정) — 얻은 것 없음
 - `city.fx.merit` 신전 일을 거들었다. 신관이 고개를 끄덕인다.
 - `city.fx.merit_undecided` 봉사활동 공적치가 정해지지 않았다(미정) — 공적치 그대로
 - `city.fx.fatigue_up` 몸이 무겁다.
@@ -941,6 +954,7 @@
 - `city.fx.item_no_room` {name}을(를) 넣을 자리가 없다.
 - `city.fx.item_undecided` 받을 것이 정해지지 않았다. (미정)
 - `city.fx.tax_paid` 세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.
+- `city.fx.residence_up` 계약서에 서명하고 짐수레를 불렀다. 오늘부터 {name}에 산다.
 - `city.fx.money_lost` {n} 스톤을 잃었다.
 - `city.fx.money_got` {n} 스톤을 받았다.
 - `city.fx.closed` {name}이(가) 문을 닫았다.
@@ -1005,14 +1019,6 @@
 #### `city.lines.library_read`
 
 - `city.lines.library_read.spent_stones.1` 사서에게 열람료 {n} 스톤을 건넸다.
-
-- `city.lines.library_read.info_new_lore.1` 먼지 쌓인 기록 사이에서 쓸 만한 대목을 찾았다. {name}: {text}
-- `city.lines.library_read.info_new_lore.2` 누군가 여백에 남긴 메모가 눈에 걸렸다. {name}: {text}
-
-- `city.lines.library_read.info_fail_lore.1` 한참을 뒤졌지만 건진 것이 없다.
-- `city.lines.library_read.info_fail_lore.2` 책장을 넘기다 깜빡 졸았다.
-
-- `city.lines.library_read.info_none_lore.1` 이 서가의 책은 이미 다 훑어보았다.
 
 - `city.lines.library_read.stat_up.1` 읽은 내용이 머릿속에 차곡차곡 쌓인다. {stat}이 늘었다.
 

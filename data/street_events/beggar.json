@@ -3,6 +3,11 @@
   "name_ko": "외팔이 탐험가",
   "art": "res://assets/city/events/beggar.webp",
   "weight": 2,
+  "residence_weight": {
+    "1": 1.5,
+    "3": 0.5,
+    "4": 0.3
+  },
   "cooldown_months": 2,
   "choices": [
     {

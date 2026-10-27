@@ -20,6 +20,7 @@ var _hud: CityHud
 var _dialog: DialogueBox  # 거리 아래 대화창(못 들어가는 이유 등 — 화면으로 알 수 있는 순 넘김·포션 결과는 보이지 않는다)
 var _route: NoticeRoute
 var _menu: GameMenu
+var _codex: CodexMenu  ## 도감(B — UI32)
 var _debug: CityDebugPanel
 var _event_running := false  # 거리 사건 장면·선택 중 — 일러스트가 덮고 도시 조작을 막는다
 var _event_view: StreetEventView
@@ -48,6 +49,11 @@ func _ready() -> void:
 	_menu.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
 	add_child(_menu)
 	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_codex = CodexMenu.new()
+	_codex.setup(pc, state.known_info)
+	_codex.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
+	add_child(_codex)
+	_codex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_dialog = DialogueBox.new(CityUi.card_box())
 	add_child(_dialog)
 	_dialog.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
@@ -263,6 +269,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("menu") and _facility == null:
 		_menu.toggle()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("codex") and _facility == null and not _menu.is_open():
+		_codex.open()
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("menu_back"):  # 도시에서는 Backspace를 쓰지 않는다(사용자 결정 2026-10-20)

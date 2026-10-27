@@ -1,0 +1,13 @@
+{
+  "id": "bank_move",
+  "name_ko": "이사",
+  "facility": "bank",
+  "cost_stones": 0,
+  "effects": [
+    {
+      "type": "residence_up"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "거주 등급 올리기(CT50) — 값은 city.json residence.tiers의 다음 등급 upgrade_cost"
+}

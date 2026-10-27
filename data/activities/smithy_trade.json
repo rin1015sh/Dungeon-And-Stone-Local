@@ -38,13 +38,10 @@
     "leather_belt",
     "travel_cloak",
     "quartz_ring",
-    "quartz_amulet",
-    "lightium_sword",
-    "lightium_spear",
-    "wyvern_leather_armor",
-    "redwood_bow"
+    "quartz_amulet"
   ],
+  "material_tiers": true,
   "effects": [],
   "source": "placeholder",
-  "notes": "아이템 공식(2026-10-23): 종류마다 1단계 기본 소재 하나(ItemForge — id <소재>_<종류>, 지금 장비는 원래 id) + 2단계 주문 4개. 3단계 이상은 진열하지 않는다(1층만 있다)"
+  "notes": "아이템 공식(2026-10-23): 종류마다 1단계 기본 소재 하나(지금 장비는 원래 id). 2단계 이상은 거주 등급의 smithy_material_tier까지 종류마다 한 소재씩 CityShop이 덧붙인다(material_tiers — CT51)"
 }

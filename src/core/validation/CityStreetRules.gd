@@ -2,7 +2,7 @@ class_name CityStreetRules
 extends RefCounted
 ## 검사 규칙: 거리 사건(data/street_events — CityAmbient, CT42) · city.json ambient · city.json guild(조사 의뢰 — CityGuild, CT44).
 
-const WHEN_KEYS := ["from_month", "months_of_year", "periods", "weather", "tax_month", "tax_owed"]
+const WHEN_KEYS := ["from_month", "months_of_year", "periods", "weather", "tax_month", "tax_owed", "residence_min", "residence_max"]
 const BRANCH_KEYS := ["cost_stones", "effects", "check", "success", "fail"]
 
 

@@ -4,7 +4,7 @@ extends RefCounted
 ## null(미정) 값은 오류가 아니라 경고 목록 한 줄로 모은다(CityValues.nulls).
 
 const IMAGE_PREFIX := "res://"
-const SHOWS := ["temple_merit", "bank_balance", "rumors", "lore", "survey"]
+const SHOWS := ["temple_merit", "bank_balance", "lore", "survey", "residence"]
 const MEAL_MENUS := ["plain", "light", "hearty", "special"]
 const MEAL_UNITS := ["battle", "hour"]
 
@@ -72,7 +72,7 @@ static func _city_numbers(v: ValidatorBase, city: Dictionary) -> void:
 	var enter: Variant = JsonUtil.get_dict(city, "bank").get("on_dungeon_enter")
 	if enter != null and str(enter) != "keep":
 		v.err("city.bank", "on_dungeon_enter는 keep 또는 null")
-	var stock: Variant = JsonUtil.get_dict(city, "shop").get("stock")
+	var stock: Variant = _shop_list(JsonUtil.get_dict(city, "shop"))
 	if stock is Array:
 		for id: Variant in stock:
 			v.ref("city.shop.stock", "items", id)
@@ -152,12 +152,25 @@ static func _activities(v: ValidatorBase) -> void:
 
 
 static func _info(v: ValidatorBase) -> void:
+	var fields := CityInfo.field_ids(v.db)
+	var top := maxi(1, JsonUtil.get_array(JsonUtil.get_dict(v.db.singletons.get("city", {}), "residence"), "tiers").size())
 	for id: String in v.entries("city_info"):
 		var e := v.db.get_entry("city_info", id)
-		if not JsonUtil.get_str(e, "kind") in CityInfo.KINDS:
-			v.err("city_info/" + id, "kind는 %s 중 하나" % [CityInfo.KINDS])
-		if JsonUtil.get_str(e, "text_ko").is_empty():
-			v.err("city_info/" + id, "text_ko가 비었다")
+		var w := "city_info/" + id
+		if not JsonUtil.get_str(e, "field") in fields:
+			v.err(w, "field는 city.json library.fields 중 하나: %s" % [fields])
+		if JsonUtil.get_int(e, "tier", 0) < 1 or JsonUtil.get_int(e, "tier") > top:
+			v.err(w, "tier는 1~%d(거주 등급)" % top)
+		if JsonUtil.get_int(e, "floor", 0) < 1:
+			v.err(w, "floor는 1 이상(층과 무관하면 1)")
+		if JsonUtil.get_str(e, "name_ko").is_empty() or JsonUtil.get_str(e, "text_ko").is_empty():
+			v.err(w, "name_ko·text_ko가 비었다")
+		var txt := JsonUtil.get_str(e, "text_ko") + JsonUtil.get_str(e, "name_ko")
+		if txt.contains("%") or txt.contains("(") or RegEx.create_from_string("[0-9]").search(txt) != null:
+			v.err(w, "서적 글에 수치·괄호를 쓰지 않는다(상·중·하로 — CT52)")
+	for t: Variant in JsonUtil.get_array(JsonUtil.get_dict(v.db.singletons.get("city", {}), "residence"), "tiers"):
+		if not t is Dictionary or JsonUtil.get_str(t, "name_ko").is_empty() or JsonUtil.get_int(t, "smithy_material_tier", 0) < 1:
+			v.err("city.residence.tiers", "등급마다 name_ko · upgrade_cost · smithy_material_tier(1 이상)")
 
 
 ## 상점 창구: deals는 equipment·goods 중 하나(또는 없음), 판매 목록(활동 stock, 없으면 shop.stock)은 그 창구가 다루는 물건만.
@@ -169,7 +182,7 @@ static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
 		return
 	var shop := JsonUtil.get_dict(v.db.singletons.get("city", {}), "shop")
 	var cats := JsonUtil.get_array(shop, "equipment_categories")
-	var list: Variant = a.get("stock") if a.get("stock") is Array else shop.get("stock")
+	var list: Variant = a.get("stock") if a.get("stock") is Array else _shop_list(shop)
 	if not list is Array:
 		return
 	for id: Variant in list:
@@ -177,6 +190,18 @@ static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
 		var equip := JsonUtil.get_str(v.db.get_entry("items", str(id)), "category") in cats
 		if equip != (deals == "equipment"):
 			v.err(w, "판매 목록의 '%s'는 이 창구(deals %s)가 다루지 않는 물건이다" % [id, deals])
+
+
+## 상점 판매 목록: stock_by_residence(등급별 — 모두 합쳐) 또는 stock.
+static func _shop_list(shop: Dictionary) -> Variant:
+	var by_tier: Variant = shop.get("stock_by_residence")
+	if not by_tier is Array:
+		return shop.get("stock")
+	var out: Array = []
+	for t: Variant in by_tier:
+		if t is Array:
+			out.append_array(t)
+	return out
 
 
 ## 여관 요리(data/meals.json — Meals): 차림표(plain은 버프 없음)·무게·지속(전투 수·미궁 시간)·그림(art — 있으면 파일이 있어야). 효과 키는 상태(meal_<id>) 검사가 본다.

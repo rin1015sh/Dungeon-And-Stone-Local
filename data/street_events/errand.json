@@ -3,6 +3,10 @@
   "name_ko": "심부름",
   "art": "res://assets/city/events/errand.webp",
   "weight": 2,
+  "residence_weight": {
+    "1": 1.2,
+    "4": 0.6
+  },
   "cooldown_months": 2,
   "choices": [
     {

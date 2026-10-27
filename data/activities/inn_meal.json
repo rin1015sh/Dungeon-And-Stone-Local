@@ -2,6 +2,7 @@
   "id": "inn_meal",
   "name_ko": "식사",
   "facility": "inn",
+  "min_residence": 2,
   "cost_stones": 300,
   "effects": [
     {

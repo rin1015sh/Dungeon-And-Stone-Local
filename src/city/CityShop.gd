@@ -13,17 +13,28 @@ static func config(state: CityState) -> Dictionary:
 	return CityValues.city_section(state.db, state.overrides, "shop")
 
 
-## 판매 목록. act_id의 활동에 stock이 있으면 그것(대장간·떠돌이 상인), 없으면 city.json shop.stock — 그 창구가 다루는 물건만(deals).
+## 판매 목록. act_id의 활동에 stock이 있으면 그것(대장간·떠돌이 상인), 없으면 city.json shop.stock_by_residence(거주 등급까지 쌓아서 — CT51)
+## 또는 shop.stock — 그 창구가 다루는 물건만(deals). 활동 material_tiers면 2단계 ~ 거주 등급 소재 상한의 장비를 종류마다 하나씩 덧붙인다(대장간).
 static func stock(state: CityState, act_id: String = "") -> Array[String]:
 	var db := state.db
 	var out: Array[String] = []
 	var list: Variant = config(state).get("stock")
-	var own: Variant = state.activity(act_id).get("stock") if not act_id.is_empty() else null
+	var by_tier: Variant = config(state).get("stock_by_residence")
+	if by_tier is Array:
+		list = []
+		for i in mini(CityResidence.tier(state), (by_tier as Array).size()):
+			if by_tier[i] is Array:
+				(list as Array).append_array(by_tier[i])
+	var act := state.activity(act_id) if not act_id.is_empty() else {}
+	var own: Variant = act.get("stock")
 	if own is Array:
-		list = own
+		list = (own as Array).duplicate()
+		if JsonUtil.get_bool(act, "material_tiers"):
+			for t in range(2, CityResidence.smithy_material_tier(state) + 1):
+				(list as Array).append_array(tier_gear(db, t))
 	if list is Array:
 		for v: Variant in list:
-			if db.has_entry("items", str(v)) and deals(state, act_id, str(v)):
+			if db.has_entry("items", str(v)) and deals(state, act_id, str(v)) and not out.has(str(v)):
 				out.append(str(v))
 		return out
 	for id: String in db.get_collection("items"):
@@ -64,8 +75,29 @@ static func _category(state: CityState, item_id: String) -> String:
 
 
 
+## 소재 단계 t의 장비: 종류(item_types 순서)마다 그 종류가 쓰는 소재 중 단계 t의 첫 소재(materials 순서, buyable이 false면 뺀다) 하나.
+static func tier_gear(db: GameDatabase, t: int) -> Array[String]:
+	var out: Array[String] = []
+	var mats := db.get_collection("materials")
+	for tid: String in db.get_collection("item_types"):
+		var kinds := JsonUtil.get_array(db.get_entry("item_types", tid), "kinds")
+		for mid: String in mats:
+			var m: Dictionary = mats[mid]
+			if JsonUtil.get_int(m, "tier") == t and kinds.has(JsonUtil.get_str(m, "kind")) and m.get("buyable") != false:
+				if db.has_entry("items", "%s_%s" % [mid, tid]):
+					out.append("%s_%s" % [mid, tid])
+				break
+	return out
+
+
+## 매입 비율: sell_ratio_by_residence[거주 등급 − 1](CT51), 없으면 sell_ratio.
 static func sell_ratio(state: CityState) -> float:
 	var c := config(state)
+	var by_tier: Variant = c.get("sell_ratio_by_residence")
+	if by_tier is Array and (by_tier as Array).size() >= CityResidence.tier(state):
+		var v: Variant = by_tier[CityResidence.tier(state) - 1]
+		if v is float or v is int:
+			return maxf(0.0, float(v))
 	return maxf(0.0, CityValues.num(c, "sell_ratio")) if CityValues.is_set(c, "sell_ratio") else 1.0
 
 

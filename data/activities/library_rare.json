@@ -6,6 +6,11 @@
   "extra": true,
   "effects": [
     {
+      "type": "learn_info",
+      "field": "any",
+      "tier_bonus": 1
+    },
+    {
       "type": "stat_chance",
       "stats": [
         "int"
@@ -20,5 +25,7 @@
       "amount": 10
     }
   ],
-  "source": "placeholder"
+  "source": "placeholder",
+  "lines": "library_read",
+  "notes": "희귀서 입고(오늘의 거리) — 아무 분야에서 거주 등급보다 한 등급 위 책까지(CT52)"
 }

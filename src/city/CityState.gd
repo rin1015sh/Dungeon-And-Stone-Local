@@ -41,6 +41,10 @@ var closed: Array[String] = []
 var price_mods: Dictionary = {}
 ## 탐험가 길드 조사 의뢰 {monster, until, done}(CityGuild).
 var guild_request: Dictionary = {}
+## 거주 등급(CityResidence — 1부터, 은행 '이사'로 올린다. CT50).
+var residence: int = 1
+## 가 본 가장 깊은 층(도서관 서적 floor — 그 층 + 1까지 읽을 수 있다. CT52). Main이 층에 들어갈 때 reach_floor.
+var reached_floor: int = 1
 ## 도시에 함께 있는 동료(저장하지 않는다 — GameState가 companions 배열을 그대로 넘긴다). 쉬고 먹는 피로 회복을 같이 받는다(C19).
 var mates: Array[PlayerCharacter] = []
 ## 디버그 임시값(CityValues 경로 → 값). 저장하지 않고 데이터 파일도 바꾸지 않는다.
@@ -269,6 +273,10 @@ func clear_override(path: String) -> void:
 	changed.emit()
 
 
+func reach_floor(n: int) -> void:
+	reached_floor = maxi(reached_floor, n)
+
+
 func learn_info(id: String) -> bool:
 	if known_info.has(id) or not db.has_entry("city_info", id):
 		return false
@@ -282,7 +290,7 @@ func to_dict() -> Dictionary:
 		"bank_balance": bank_balance, "known_info": known_info.duplicate(), "weather": weather, "expedition_month": expedition_month, "rng": rng.get_state_string(),
 		"happenings": happenings.duplicate(), "seen_once": seen_once.duplicate(), "tax_paid_year": tax_paid_year,
 		"ambient": ambient, "ambient_pending": ambient_pending, "ambient_seen": ambient_seen.duplicate(), "closed": closed.duplicate(), "price_mods": price_mods.duplicate(),
-		"guild_request": guild_request.duplicate()}
+		"guild_request": guild_request.duplicate(), "residence": residence, "reached_floor": reached_floor}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -310,5 +318,7 @@ func load_dict(d: Dictionary) -> void:
 	guild_request = JsonUtil.get_dict(d, "guild_request").duplicate()
 	if guild_request.has("until"):
 		guild_request["until"] = int(guild_request["until"])
+	residence = maxi(1, JsonUtil.get_int(d, "residence", 1))
+	reached_floor = maxi(1, JsonUtil.get_int(d, "reached_floor", 1))
 	facility = ""
 	changed.emit()

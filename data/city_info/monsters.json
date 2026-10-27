@@ -1,0 +1,110 @@
+[
+  {
+    "id": "m_goblin",
+    "field": "monsters",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "고블린",
+    "text_ko": "가장 약한 마물이지만 얕볼 것이 못 된다. 짧은 칼에 마비독을 바르고 길목에 덫을 놓는다. 서너 마리씩 몰려다니며, 북쪽 굴에 많다. 겁을 먹으면 달아나기도 한다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_wolf",
+    "field": "monsters",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "칼날늑대",
+    "text_ko": "칼날 같은 털을 세운 늑대다. 냄새를 쫓아오므로 숨어 있어도 소용이 없고, 무리 가운데 약한 자부터 문다. 동쪽 굴에 살며 번개에 약하다고 한다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_gnome",
+    "field": "monsters",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "노움",
+    "text_ko": "진흙으로 빚은 인형이다. 둘레와 하나가 되어 있어 코앞에 이르기 전에는 보이지 않는다. 서쪽 굴에 살며, 몸을 돌처럼 굳히기도 하고 진흙을 던져 눈을 가리기도 한다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_ghoul",
+    "field": "monsters",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "구울",
+    "text_ko": "네 발로 기는 시체 먹는 자다. 가까이 가지 않으면 먼저 덤비지 않으며, 할퀴는 순서가 늘 같다. 시체 냄새를 맡고 모여드니 죽은 자 곁을 조심하라. 불과 신성한 힘에 약하며, 남쪽 굴에 많다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_essence",
+    "field": "monsters",
+    "tier": 2,
+    "floor": 1,
+    "name_ko": "정수란 무엇인가",
+    "text_ko": "마물을 쓰러뜨리면 드물게 그 자리에 빛나는 정수가 남는다. 정수를 몸에 받아들이면 그 마물의 힘과 재주 일부가 깃든다. 몸에 담을 수 있는 정수의 수는 쌓은 공적에 따른다. 남은 정수는 오래 머물지 않으니, 받을 자를 곧 정해야 한다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_essence_chance",
+    "field": "monsters",
+    "tier": 2,
+    "floor": 1,
+    "name_ko": "정수가 남는 이치",
+    "text_ko": "등급이 낮은 마물일수록 정수가 잘 남지 않는다. 첫째 층 마물이 정수를 남기는 일은 하에 속한다. 등급이 오를수록 조금씩 잦아지고, 균열의 수호자에 이르면 상이라 할 만하다. 사람은 정수를 남기지 않는다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_investigate",
+    "field": "monsters",
+    "tier": 2,
+    "floor": 1,
+    "name_ko": "마물을 살피는 법",
+    "text_ko": "싸움 중에 마물을 찬찬히 살피면 그 체력과 힘을 가늠할 수 있다. 한 번 알아 둔 것은 다음 싸움에서도 잊히지 않는다. 어떤 공격이 잘 듣고 어떤 공격이 듣지 않는지는 직접 겪어 보아야 안다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_essence_color",
+    "field": "monsters",
+    "tier": 3,
+    "floor": 1,
+    "name_ko": "정수의 빛깔",
+    "text_ko": "같은 마물의 정수라도 빛깔에 따라 깃드는 재주가 다르다. 수호자의 정수는 무지갯빛을 띠는데, 그 마물의 모든 재주를 담고 힘도 한층 크다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_essence_clash",
+    "field": "monsters",
+    "tier": 3,
+    "floor": 1,
+    "name_ko": "정수끼리 부딪칠 때",
+    "text_ko": "같은 성질의 재주를 지닌 정수 둘은 한 몸에 담기지 않는다. 이미 받아들인 정수를 빼내려면 신전을 찾아야 하는데, 뺄 때마다 값이 오른다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_lineage",
+    "field": "monsters",
+    "tier": 3,
+    "floor": 1,
+    "name_ko": "핏줄을 나눈 마물",
+    "text_ko": "생김새는 달라도 같은 재주를 나눠 가진 마물이 있다. 한 마물의 재주를 알아 두면, 같은 핏줄의 다른 마물을 처음 만나도 그 수를 짐작할 수 있다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_guardians",
+    "field": "monsters",
+    "tier": 4,
+    "floor": 1,
+    "name_ko": "균열의 수호자들",
+    "text_ko": "핏빛성채에는 원한에 사로잡힌 기사 블라터가, 빙하굴에는 얼음 몽둥이를 휘두르는 폭군 타룬바스가 있다. 녹색 탄광의 깊은 공동에는 킹 슬라임이, 강철의 묘에는 철인 일디움이 잠들어 있다. 어느 것이든 첫째 층을 다니는 무리가 상대하기에는 버겁다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "m_dreadfear",
+    "field": "monsters",
+    "tier": 4,
+    "floor": 1,
+    "name_ko": "드레드피어",
+    "text_ko": "첫째 층의 계층군주다. 왜소한 사람의 형체에 구더기가 들끓고, 뼈로 된 대검을 휘두른다. 군주 앞에서는 달아날 수 없으니, 맞설 각오가 없다면 한자리에 오래 머물지 마라.",
+    "source": "placeholder"
+  }
+]

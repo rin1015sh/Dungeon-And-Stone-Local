@@ -2,8 +2,8 @@ class_name GameMenu
 extends Control
 ## Tab 메뉴(사용자 결정 2026-10-19 "I·C·B 창을 Tab 하나로 전부 보이게, 안에서 W/A/S/D로 고르고 Enter" →
 ## 2026-10-25 UI26 "왼쪽 = 어느 아군을 볼지(W/S·Enter), 가운데 = 그 아군 정보·정수, 오른쪽 = 그 아군 장비 + 공용 가방"):
-## 화면을 어둡게 덮고 아군(PartyPage — 짧은 생명력·영혼력·허기·피로, 맨 끝에 도감) · 캐릭터 · 소지품 세 쪽을 나란히 보인다.
-## 왼쪽에서 도감을 고르면 가운데·오른쪽 대신 도감 쪽. 열면 소지품 쪽에 커서.
+## 화면을 어둡게 덮고 아군(PartyPage — 짧은 생명력·영혼력·허기·피로) · 캐릭터 · 소지품 세 쪽을 나란히 보인다. 열면 소지품 쪽에 커서.
+## 도감은 따로 B(CodexMenu — 사용자 2026-10-27, UI32).
 ## 아군 목록은 전위가 위·후위가 아래(사용자 2026-10-25). 고른 아군에서 Enter 한 번 더 = 전위/후위/파티에서 내보내기(한 번 더 묻는다).
 ##   W/A/S/D = 지금 쪽 안의 커서(쪽 끝에서 A/D = 옆 쪽으로), Enter = 고르기, Backspace = 쪽 안에서 물리기(없으면 닫기), Tab·Esc = 닫기.
 ## 열려 있으면 opened_changed(true) — 탐험 화면이 시간을 멈춘다(메뉴 규칙). 키는 모두 이 메뉴가 먹는다.
@@ -13,12 +13,11 @@ signal opened_changed(open: bool)
 signal use_requested(item_id: String)
 signal party_changed  ## 줄이 바뀌거나 동료를 내보냈다
 
-const PAGES := ["party", "character", "inventory", "bestiary"]
+const PAGES := ["party", "character", "inventory"]
 
 var pc: PlayerCharacter  ## 플레이어(공용 가방의 주인)
 var party: Array[PlayerCharacter] = []
 var _shown: PlayerCharacter = null  ## 가운데·오른쪽에 보이는 아군
-var _bestiary_mode: bool = false
 ## 참이면 메뉴가 키를 받지 않는다(대화창이 알림을 넘기는 중 등).
 var hold: Callable = Callable()
 
@@ -72,7 +71,6 @@ func open(start: String = "inventory") -> void:
 	row.offset_top = m
 	row.offset_bottom = -m
 	_shown = pc if _shown == null or not party.has(_shown) else _shown
-	_bestiary_mode = start == "bestiary"
 	for name: String in PAGES:
 		var p := _make(name)
 		p.popup_host = self
@@ -81,8 +79,7 @@ func open(start: String = "inventory") -> void:
 		p.size_flags_stretch_ratio = JsonUtil.get_float(JsonUtil.get_dict(UiTheme.ui_dict("menu"), "stretch"), name, 1.0)
 		row.add_child(p)
 		_pages[name] = p
-	party_page().selected = party.find(_shown) if not _bestiary_mode else party.size()
-	_apply_mode()
+	party_page().selected = party.find(_shown)
 	_active = ""
 	focus.call_deferred(start)  # 자리가 잡힌 뒤 커서를 그린다(설명 창 위치)
 	opened_changed.emit(true)
@@ -100,12 +97,6 @@ func close() -> void:
 
 ## 쪽을 고른다(커서를 그 쪽으로).
 func focus(name: String, from_left: bool = true) -> void:
-	if name == "bestiary" and not _bestiary_mode and _pages.has(name):
-		_bestiary_mode = true
-		_apply_mode()
-	elif (name == "character" or name == "inventory") and _bestiary_mode:
-		_bestiary_mode = false
-		_apply_mode()
 	if not _pages.has(name) or name == _active:
 		return
 	if _pages.has(_active):
@@ -139,8 +130,6 @@ func show_ally(a: PlayerCharacter) -> void:
 	party_page().mark(party.find(a))
 	character().set_actor(a)
 	inventory().set_wearer(a)
-	_bestiary_mode = false
-	_apply_mode()
 
 
 ## 고른 아군 창: 전위 · 후위 · 파티에서 내보내기(플레이어는 못 내보낸다 — 내보내기는 한 번 더 묻는다).
@@ -179,23 +168,11 @@ func _reorder(a: PlayerCharacter) -> void:
 	party_changed.emit()
 
 
-func show_bestiary() -> void:
-	party_page().mark(party.size())
-	_bestiary_mode = true
-	_apply_mode()
-	focus("bestiary")
-
-
-## 지금 보이는 쪽 순서(A/D로 옮겨 다니는 차례).
+## 쪽 순서(A/D로 옮겨 다니는 차례).
 func order() -> Array[String]:
-	var out: Array[String] = ["party"]
-	out.append_array(["bestiary"] if _bestiary_mode else ["character", "inventory"])
+	var out: Array[String] = []
+	out.assign(PAGES)
 	return out
-
-
-func _apply_mode() -> void:
-	for name: String in PAGES:
-		(_pages[name] as Control).visible = order().has(name)
 
 
 func inventory() -> InventoryPage:
@@ -204,10 +181,6 @@ func inventory() -> InventoryPage:
 
 func character() -> CharacterPage:
 	return _pages.get("character") as CharacterPage
-
-
-func bestiary() -> BestiaryPage:
-	return _pages.get("bestiary") as BestiaryPage
 
 
 ## 내용 갱신(아이템 사용 뒤 등).
@@ -223,7 +196,6 @@ func _make(name: String) -> MenuPage:
 			pp.setup(party)
 			pp.ally_selected.connect(show_ally)
 			pp.ally_menu_requested.connect(_ally_menu)
-			pp.bestiary_requested.connect(show_bestiary)
 			return pp
 		"inventory":
 			var inv := InventoryPage.new()
@@ -231,13 +203,9 @@ func _make(name: String) -> MenuPage:
 			inv.set_wearer(_shown)
 			inv.use_requested.connect(func(id: String) -> void: use_requested.emit(id))
 			return inv
-		"character":
-			var ch := CharacterPage.new()
-			ch.setup(_shown)
-			return ch
-	var be := BestiaryPage.new()
-	be.setup(pc)
-	return be
+	var ch := CharacterPage.new()
+	ch.setup(_shown)
+	return ch
 
 
 func _input(event: InputEvent) -> void:

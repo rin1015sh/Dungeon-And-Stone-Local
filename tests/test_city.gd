@@ -100,8 +100,8 @@ func test_late_period_ends_in_dungeon_and_return_starts_next_month() -> void:
 func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	var s := _state()
 	var pc := _pc()
-	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_read/effects/2/amount", 3],
-			["activities/library_read/effects/1/chance", 1.0], ["activities/library_read/effects/1/amount", 2],
+	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_dungeon/effects/2/amount", 3],
+			["activities/library_dungeon/effects/1/chance", 1.0], ["activities/library_dungeon/effects/1/amount", 2],
 			["activities/training_train/effects/0/stats", ["str"]], ["activities/training_train/effects/0/chance", 1.0],
 			["activities/training_train/effects/0/amount", 1], ["activities/training_train/effects/1/amount", 4]]:
 		s.set_override(str(kv[0]), kv[1])
@@ -111,7 +111,7 @@ func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	assert_near(pc.fatigue.value, 5.0, 0.001, "휴식은 피로도를 줄인다")
 	var int_before := pc.stats.get_base("int")
 	_inside(s, "library")
-	CityActions.perform(s, pc, "library_read", _reg())
+	CityActions.perform(s, pc, "library_dungeon", _reg())
 	assert_near(pc.fatigue.value, 8.0, 0.001, "독서는 피로도를 늘린다")
 	assert_near(pc.stats.get_base("int"), int_before + 2.0, 0.001, "판정 성공 → 정신력 상승(영구)")
 	var str_before := pc.stats.get_base("str")
@@ -120,7 +120,7 @@ func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	assert_near(pc.fatigue.value, 12.0, 0.001, "훈련은 피로도를 늘린다")
 	assert_near(pc.stats.get_base("str"), str_before + 1.0, 0.001, "판정 성공 → 근력 상승")
 	assert_eq(pc.stat_history.size(), 2, "어떤 활동으로 올랐는지 기록")
-	assert_eq(str(pc.stat_history[0]["activity"]), "library_read")
+	assert_eq(str(pc.stat_history[0]["activity"]), "library_dungeon")
 	assert_eq(str(pc.stat_history[1]["stat"]), "str")
 
 
@@ -215,7 +215,7 @@ func test_shop_uses_item_prices() -> void:
 	_all_undecided(s)
 	_inside(s, "shop")
 	var stock := CityShop.stock(s)
-	assert_false(stock.is_empty(), "stock null → 가격 있는 아이템")
+	assert_false(stock.is_empty(), "판매 목록(거주 등급별 — 미정 값으로 덮지 않는다)")
 	for id in stock:
 		assert_true(CityShop.price(db, id) > 0)
 		assert_true(JsonUtil.get_str(db.get_entry("items", id), "category") != "magic_stone", "마석은 안 판다")
@@ -228,7 +228,7 @@ func test_shop_uses_item_prices() -> void:
 	assert_false(CityShop.buy(s, pc, "shop_trade", "magic_stone_9").ok, "판매 목록에 없는 것은 못 산다")
 	var t := _state()  # 정한 값: 판매 목록 · 판매가 50% · 마석은 제값
 	_inside(t, "shop")
-	assert_eq(CityShop.stock(t), JsonUtil.get_array(JsonUtil.get_dict(db.singletons["city"], "shop"), "stock").map(func(v: Variant) -> String: return str(v)))
+	assert_eq(CityShop.stock(t), (JsonUtil.get_array(JsonUtil.get_dict(db.singletons["city"], "shop"), "stock_by_residence")[0] as Array).map(func(v: Variant) -> String: return str(v)), "뒷골목 판매 목록(CT51)")
 	assert_eq(CityShop.sell_price(t, "torch"), CityShop.price(db, "torch") / 2, "판매가 = 가격 50%")
 	assert_eq(CityShop.sell_price(t, "magic_stone_9"), CityShop.price(db, "magic_stone_9"), "마석 = 제값")
 	assert_true(CityShop.sell(t, pc, "shop_trade", "magic_stone_9").ok, "마석을 받는다")
@@ -285,10 +285,10 @@ func test_state_and_player_round_trip() -> void:
 	s.spend_ap(2)
 	s.temple_merit = 4.0
 	s.bank_balance = 321
-	s.known_info.append("test_rumor_1")
+	s.known_info.append("d_cave_shape")
 	s.set_override("city/fatigue/max", 50)
 	pc.fatigue.set_value(13.0)
-	pc.stat_history.append({"stat": "int", "amount": 1.0, "activity": "library_read", "month": 1, "period": 1})
+	pc.stat_history.append({"stat": "int", "amount": 1.0, "activity": "library_dungeon", "month": 1, "period": 1})
 	var copy := CityState.new(db, 1)
 	copy.load_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
 	assert_eq([copy.month, copy.period, copy.ap, copy.temple_merit, copy.bank_balance, copy.known_info],

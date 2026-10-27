@@ -1,0 +1,29 @@
+{
+  "id": "library_society",
+  "name_ko": "도시와 탐험가에 관하여",
+  "facility": "library",
+  "cost_stones": 30,
+  "lines": "library_read",
+  "effects": [
+    {
+      "type": "learn_info",
+      "field": "society"
+    },
+    {
+      "type": "stat_chance",
+      "stats": [
+        "int"
+      ],
+      "pick": "all",
+      "chance": 0.25,
+      "amount": 1
+    },
+    {
+      "type": "fatigue",
+      "direction": "up",
+      "amount": 10
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도서관 분야 읽기(CT52) — 한 번에 library.per_read개, 거주 등급·층으로 거른다"
+}

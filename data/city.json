@@ -196,21 +196,14 @@
     ]
   },
   "shop": {
-    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율, accepts_magic_stones = 마석 매입 여부, magic_stone_ratio = 마석 매입가 비율(마석은 화폐처럼 제값). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만.",
-    "stock": [
-      "stone_bread",
-      "ration",
-      "torch",
-      "minor_potion",
-      "medium_potion",
-      "greater_potion",
-      "soul_potion",
-      "antidote",
-      "bandage",
-      "smoke_bomb",
-      "whetstone",
-      "lantern"
+    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율, accepts_magic_stones = 마석 매입 여부, magic_stone_ratio = 마석 매입가 비율(마석은 화폐처럼 제값). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 거주 등급(CT51): stock_by_residence[등급−1] = 그 등급에서 새로 들여오는 물건(아래 등급 것은 그대로 판다), sell_ratio_by_residence[등급−1] = 매입 비율(없으면 sell_ratio).",
+    "stock_by_residence": [
+      ["stone_bread", "ration", "torch", "minor_potion", "antidote", "bandage"],
+      ["medium_potion", "soul_potion", "whetstone", "smoke_bomb"],
+      ["greater_potion", "lantern"],
+      []
     ],
+    "sell_ratio_by_residence": [0.5, 0.5, 0.55, 0.6],
     "sell_ratio": 0.5,
     "accepts_magic_stones": true,
     "magic_stone_ratio": 1.0,
@@ -268,6 +261,29 @@
       "dragonkin"
     ],
     "due_month": 12
+  },
+  "residence": {
+    "_comment": "거주 등급(사용자 2026-10-27, CT50): 라비기온 구역 안에서 사는 거리의 격. 은행 '이사'(효과 residence_up)로 다음 등급 upgrade_cost를 내고 올린다(되돌리지 않는다). 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max. 이름·비용은 임시값(원작 설정을 받으면 바꾼다).",
+    "tiers": [
+      {"name_ko": "뒷골목", "upgrade_cost": 0, "smithy_material_tier": 1},
+      {"name_ko": "장인 거리", "upgrade_cost": 200000, "smithy_material_tier": 2},
+      {"name_ko": "상인 거리", "upgrade_cost": 1000000, "smithy_material_tier": 3},
+      {"name_ko": "고지대", "upgrade_cost": 4000000, "smithy_material_tier": 4}
+    ],
+    "source": "placeholder"
+  },
+  "library": {
+    "_comment": "도서관 서적(CT52): 분야마다 읽기 활동(효과 learn_info field). 한 번 읽으면 per_read[최소, 최대]개 — 아직 모르는 항목 중 거주 등급 이하(tier)·갔던 층 + 1 이하(floor)만(data/city_info). 얻은 것은 도감(B)의 서적에서 다시 읽는다.",
+    "fields": [
+      {"id": "dungeon", "name_ko": "미궁에 관하여"},
+      {"id": "arms", "name_ko": "소재와 무기에 관하여"},
+      {"id": "ailments", "name_ko": "상태이상에 관하여"},
+      {"id": "monsters", "name_ko": "몬스터와 정수에 관하여"},
+      {"id": "survival", "name_ko": "생존과 야영에 관하여"},
+      {"id": "society", "name_ko": "도시와 탐험가에 관하여"}
+    ],
+    "per_read": [1, 2],
+    "source": "placeholder"
   },
   "source": "placeholder"
 }

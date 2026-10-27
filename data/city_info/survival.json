@@ -1,0 +1,83 @@
+[
+  {
+    "id": "v_hunger",
+    "field": "survival",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "허기",
+    "text_ko": "미궁 안에서는 시간이 흐를수록 배가 고파진다. 배가 비면 힘이 빠지고, 오래 굶으면 상처가 아물지 않다가 끝내 굶어 죽는다. 무기의 재주를 부리면 배가 더 빨리 꺼진다. 마른 식량은 돌빵보다 든든하다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_light",
+    "field": "survival",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "불빛",
+    "text_ko": "횃불은 오래 타지 않는다. 어둠 속에서 불이 꺼지면 길을 잃기 쉬우니, 꺼지기 전에 다음 불을 챙겨라. 랜턴은 횃불보다 오래 간다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_rest",
+    "field": "survival",
+    "tier": 1,
+    "floor": 1,
+    "name_ko": "쉼과 잠",
+    "text_ko": "트인 굴에서 잠들면 마물이 덮친다. 고요한 자리에서만 깊이 쉴 수 있다. 꺼진 모닥불 자리 곁이라면 피로가 더 잘 풀린다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_fatigue",
+    "field": "survival",
+    "tier": 2,
+    "floor": 1,
+    "name_ko": "피로",
+    "text_ko": "오래 걷고 싸우고 재주를 부리면 피로가 쌓인다. 피로가 중에 이르면 몸이 무뎌지고, 상에 이르면 힘마저 빠진다. 여관에서 자고 먹으면 풀린다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_spring",
+    "field": "survival",
+    "tier": 2,
+    "floor": 1,
+    "name_ko": "맑은 샘",
+    "text_ko": "동굴 어딘가에 고인 맑은 샘물은 피로를 씻어 준다. 병에 담아 가는 이도 있다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_mushroom",
+    "field": "survival",
+    "tier": 2,
+    "floor": 1,
+    "name_ko": "동굴의 먹을거리",
+    "text_ko": "수정 버섯은 허기를 달래 주지만 가끔 탈이 난다. 썩은 고기는 먹을 것이 못 된다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_mates",
+    "field": "survival",
+    "tier": 3,
+    "floor": 1,
+    "name_ko": "동료의 끼니",
+    "text_ko": "동료도 배가 고프고 지친다. 함께 다니는 이의 허기를 살피지 않으면 어느새 굶어 쓰러진다. 먹을 것은 한 자루에 넣어 다녀도, 먹이는 일은 하나하나 챙겨야 한다.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_corpses",
+    "field": "survival",
+    "tier": 3,
+    "floor": 1,
+    "name_ko": "죽은 자의 짐",
+    "text_ko": "동굴에서 쓰러진 탐험가의 짐에는 쓸 만한 것이 남아 있곤 하다. 다만 갓 죽은 자 곁에는 구울이 모여드니 오래 머물지 마라.",
+    "source": "placeholder"
+  },
+  {
+    "id": "v_meals",
+    "field": "survival",
+    "tier": 4,
+    "floor": 1,
+    "name_ko": "여관의 차림",
+    "text_ko": "좋은 거리의 여관일수록 차림이 낫다. 든든한 식사는 몇 차례의 싸움 동안 몸을 북돋우고, 특식은 그보다 크다. 동굴 송로 수프를 먹으면 한동안 배가 잘 꺼지지 않는다.",
+    "source": "placeholder"
+  }
+]

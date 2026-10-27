@@ -48,7 +48,7 @@ static func _ok(state: CityState, e: Dictionary, id: String) -> bool:
 	var weather := JsonUtil.get_array(w, "weather")
 	if not weather.is_empty() and not state.weather in weather:
 		return false
-	return true
+	return CityResidence.when_ok(state, w)  # 거주 등급(여관 특식은 3부터 — CT51)
 
 
 static func _pick(state: CityState, pool: Array[String]) -> String:

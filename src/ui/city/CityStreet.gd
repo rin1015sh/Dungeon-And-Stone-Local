@@ -23,6 +23,7 @@ var _front: Control  # 화면 고정 레이어(앞)
 var _layers: Array[Dictionary] = []  # {id, node: TextureRect, parallax, y, height, scale, screen}
 var _weather: String = "?"
 var _buildings: Array[Dictionary] = []  # {id, node: TextureRect, plate, label, x, w, h}
+var _tier: int = 1  # 지금 그린 건물 그림의 거주 등급(CityResidence — 이사하면 그림을 바꾼다, CT50)
 var _offset: float = 0.0
 var _scale: float = 1.0
 var _street_w: float = 3600.0
@@ -83,7 +84,8 @@ func _add_building(id: String) -> void:
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_SCALE
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art.texture = _tex(JsonUtil.get_str(f, "building"))
+	_tier = CityResidence.tier(_state)
+	art.texture = _tex(CityResidence.building_path(JsonUtil.get_str(f, "building"), _tier))
 	var mat := ShaderMaterial.new()
 	mat.shader = HIGHLIGHT
 	mat.set_shader_parameter("outline_color", UiTheme.render_color("city.selected_outline", UiTheme.color("gold")))
@@ -221,6 +223,11 @@ func refresh() -> void:
 	if _state == null:
 		return
 	_apply_weather()
+	if CityResidence.tier(_state) != _tier:  # 이사했다: 건물 외관을 그 거리 것으로
+		_tier = CityResidence.tier(_state)
+		for b in _buildings:
+			var base := JsonUtil.get_str(_state.db.get_entry("facilities", str(b["id"])), "building")
+			(b["node"] as TextureRect).texture = _tex(CityResidence.building_path(base, _tier))
 	for i in _buildings.size():
 		var b := _buildings[i]
 		var can := _state.can_spend(_state.entry_cost_of(str(b["id"]))) and _state.facility.is_empty() and not _state.closed.has(str(b["id"]))

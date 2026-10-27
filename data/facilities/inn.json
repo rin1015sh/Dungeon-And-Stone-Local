@@ -9,7 +9,8 @@
     "inn_rest",
     "inn_snack",
     "inn_meal",
-    "inn_hearty"
+    "inn_hearty",
+    "inn_feast"
   ],
   "source": "original"
 }

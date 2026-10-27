@@ -37,6 +37,7 @@ func _init() -> void:
 	var scale := float(GameDatabase.single(db.render, "city.building_scale", 0.85))
 	var width := JsonUtil.get_int(street, "width", 3600)
 	var spans: Array = []
+	var tiers := maxi(1, JsonUtil.get_array(JsonUtil.get_dict(db.singletons.get("city", {}), "residence"), "tiers").size())
 	for id: String in db.get_collection("facilities"):
 		var f := db.get_entry("facilities", id)
 		var i := SEED_ORDER.find(id) + 1 if SEED_ORDER.has(id) else 100 + absi(id.hash()) % 900
@@ -45,8 +46,11 @@ func _init() -> void:
 		spans.append([x, x + size.x * scale])
 		var mine := only == "facility" and id == one
 		if only.is_empty() or only == "buildings" or mine:
-			Buildings.paint(id, SEED + i * 101).save(JsonUtil.get_str(f, "building"))
-			print("그림: 건물 %s %dx%d" % [id, size.x, size.y])
+			var base := JsonUtil.get_str(f, "building")
+			for t in range(1, tiers + 1):  # 거주 등급마다(1 = 기본, 2~ = <이름>_t<등급> — CityResidence.building_path, CT50)
+				var path := base if t == 1 else base.get_basename() + "_t%d." % t + base.get_extension()
+				Buildings.paint(id, SEED + i * 101, t).save(path)
+				print("그림: 건물 %s 등급 %d %dx%d" % [id, t, size.x, size.y])
 		if only.is_empty() or only == "interiors" or mine:
 			Interiors.paint(id, SEED + i * 211).save(JsonUtil.get_str(f, "interior"))
 			print("그림: 내부 %s" % id)

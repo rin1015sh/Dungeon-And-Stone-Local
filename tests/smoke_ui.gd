@@ -330,7 +330,7 @@ func _inventory_flow() -> void:
 	var pc := s.player
 	await _action("menu")
 	var menu := explore.menu()
-	if not _expect(menu.is_open() and menu.inventory() != null and menu.character() != null and menu.bestiary() != null, "Tab으로 소지품·캐릭터·도감이 한 화면에"):
+	if not _expect(menu.is_open() and menu.inventory() != null and menu.character() != null, "Tab으로 아군·캐릭터·소지품이 한 화면에"):
 		return
 	await _frames(2)
 	_expect(menu.active_page() == "inventory", "처음 커서는 소지품 쪽")
@@ -388,8 +388,6 @@ func _inventory_flow() -> void:
 	_expect(menu.active_page() == "character", "가방 왼쪽 끝에서 A → 캐릭터 쪽")
 	await _action("menu_right")
 	_expect(menu.active_page() == "inventory", "D → 다시 소지품 쪽")
-	menu.focus("bestiary")
-	_expect(menu.active_page() == "bestiary", "도감 쪽")
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_LEFT
 	click.pressed = true
@@ -397,9 +395,10 @@ func _inventory_flow() -> void:
 	click.global_position = click.position
 	get_viewport().push_input(click, true)
 	await _frames(1)
-	_expect(menu.is_open() and menu.active_page() == "bestiary", "마우스 클릭은 아무 일도 하지 않는다")
+	_expect(menu.is_open() and menu.active_page() == "inventory", "마우스 클릭은 아무 일도 하지 않는다")
 	await _action("menu")
 	_expect(not menu.is_open() and not s.realtime.is_paused("window"), "Tab으로 닫기 → 시간 다시 흐름")
+	await _codex_checks(explore)
 	_expect(not explore.is_paused(), "메뉴를 닫은 키는 일시정지가 아니다")
 	await _action("menu")
 	await _action("pause")
@@ -1025,7 +1024,26 @@ func _has_label(root: Node, text: String) -> bool:
 	return false
 
 
-## Tab 메뉴(UI26): 왼쪽 아군 목록 — W/S·Enter로 아군을 고르면 가운데·오른쪽이 그 아군, 맨 끝 도감을 고르면 도감 쪽.
+## 도감(B — UI32): 몬스터 · 서적 분야. W/S로 분야를 옮기면 오른쪽이 바뀌고, 읽은 대목이 보인다. B로 닫으면 시간이 다시 흐른다.
+func _codex_checks(explore: ExploreScreen) -> void:
+	var s := explore.session
+	var known := explore.codex().known
+	known.append("d_cave_shape")
+	await _action("codex")
+	var cx := explore.codex()
+	_expect(cx.is_open() and cx.page() is BestiaryPage and s.realtime.is_paused("codex"), "B = 도감(몬스터부터), 시간 멈춤")
+	await _action("menu_down")
+	_expect(cx.index().current() == "dungeon" and cx.page() is LorePage, "W/S로 분야 → 오른쪽이 서적")
+	await _action("menu_confirm")
+	_expect(cx.active_page() == cx.page() and (cx.page() as LorePage).current_id() == "d_cave_shape", "Enter → 읽은 대목")
+	await _action("menu_back")
+	_expect(cx.active_page() == cx.index(), "Backspace → 왼쪽 목록")
+	await _action("codex")
+	_expect(not cx.is_open() and not s.realtime.is_paused("codex"), "B로 닫기 → 시간 다시 흐름")
+	known.erase("d_cave_shape")
+
+
+## Tab 메뉴(UI26): 왼쪽 아군 목록 — W/S·Enter로 아군을 고르면 가운데·오른쪽이 그 아군.
 func _tab_party_checks(explore: ExploreScreen) -> void:
 	var gm := explore.menu()
 	var mate := PlayerCharacter.create(DataRegistry.db, "human", "archer", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
@@ -1038,11 +1056,6 @@ func _tab_party_checks(explore: ExploreScreen) -> void:
 	await _action("menu_confirm")
 	_expect(gm.shown() == mate and gm.character().pc == mate and gm.inventory().wearer == mate and gm.inventory().actor == explore.session.player,
 		"동료를 고르면 가운데·장비는 동료, 가방은 공용")
-	await _action("menu_down")
-	await _action("menu_confirm")
-	_expect(gm.order() == (["party", "bestiary"] as Array[String]) and gm.bestiary().visible, "맨 끝 = 도감")
-	await _action("menu_left")  # 도감에서 A = 왼쪽 아군 목록으로
-	await _action("menu_up")
 	await _action("menu_up")
 	await _action("menu_confirm")
 	_expect(gm.shown() == explore.session.player and gm.character().visible, "플레이어로 돌아온다")

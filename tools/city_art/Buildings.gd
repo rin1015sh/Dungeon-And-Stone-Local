@@ -13,6 +13,7 @@ const Props := preload("res://tools/city_art/Props.gd")
 const More := preload("res://tools/city_art/Buildings2.gd")
 const Icons := preload("res://tools/city_art/Icons.gd")
 const More3 := preload("res://tools/city_art/Buildings3.gd")
+const Dress := preload("res://tools/city_art/Dress.gd")
 
 const PLASTER := Color("#8b8068")
 const SLATE := Color("#3a4044")
@@ -24,7 +25,8 @@ const SIZES := {"inn": Vector2i(560, 470), "library": Vector2i(440, 520), "templ
 	"smithy": Vector2i(520, 440), "guild": Vector2i(580, 560)}
 
 
-static func paint(id: String, seed_value: int) -> Paint:
+## tier = 거주 등급(1 = 기본 그림, 2~ = 같은 시드 그림 위에 꾸밈 — Dress, CT50).
+static func paint(id: String, seed_value: int, tier: int = 1) -> Paint:
 	var s: Vector2i = SIZES.get(id, Vector2i(400, 400))
 	var p := Paint.new(s.x, s.y, seed_value)
 	match id:
@@ -44,15 +46,21 @@ static func paint(id: String, seed_value: int) -> Paint:
 			More3.smithy(p)
 		"guild":
 			More3.guild(p)
-	finish(p)
+	Dress.dress(p, id, tier)
+	finish(p, tier)
 	return p
 
 
-## 마감(모든 건물 공통): 바깥 잉크 윤곽 · 색 보정 · 그레인.
-static func finish(p: Paint) -> void:
+## 마감(모든 건물 공통): 바깥 잉크 윤곽 · 색 보정 · 그레인. 상인 거리(3)부터 채도를 덜 빼고, 고지대(4)는 밝은 곳을 따뜻하게.
+static func finish(p: Paint, tier: int = 1) -> void:
 	Ink.light_dir(p, 0.4)
 	Ink.silhouette(p, 2)
-	Ink.grade(p, 0.3, 1.12)
+	if tier >= 4:
+		Ink.grade(p, 0.18, 1.12, Color("#1d2120"), Color("#ecd49a"), 0.16)
+	elif tier == 3:
+		Ink.grade(p, 0.24, 1.12)
+	else:
+		Ink.grade(p, 0.3, 1.12)
 	Ink.finish(p, 0.03)
 
 

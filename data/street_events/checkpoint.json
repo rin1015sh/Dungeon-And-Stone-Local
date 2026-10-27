@@ -3,6 +3,11 @@
   "name_ko": "경비대 검문",
   "art": "res://assets/city/events/checkpoint.webp",
   "weight": 2,
+  "residence_weight": {
+    "1": 0.6,
+    "3": 1.5,
+    "4": 2.0
+  },
   "cooldown_months": 2,
   "effects": [
     {

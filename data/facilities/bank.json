@@ -7,10 +7,12 @@
   "interior": "res://assets/city/interiors/bank.webp",
   "activities": [
     "bank_account",
-    "bank_tax"
+    "bank_tax",
+    "bank_move"
   ],
   "shows": [
-    "bank_balance"
+    "bank_balance",
+    "residence"
   ],
   "source": "original"
 }

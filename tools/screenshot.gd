@@ -2,7 +2,7 @@ extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
-## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨
+## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --residence=<1~4> 거주 등급
 ##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
 ##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
@@ -13,7 +13,8 @@ extends Node
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
-## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=character|inventory|bestiary = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
+## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
+## --codex[=<분야 id>]: 도감(B) 열기 — 분야면 서적 쪽(--books = 서적 전부 읽은 것으로, --pick=<번호> = 그 대목에 커서, UI32)
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
@@ -158,6 +159,16 @@ func _run() -> void:
 			if _args.has("lock"):
 				epc.essences.absorb(epc, {"essence": "ghoul", "color": "red", "stats": {"agi": 3}})
 				epc.set_level(1)
+		if _args.has("codex"):
+			if _args.has("books"):
+				for id: String in DataRegistry.db.get_collection("city_info"):
+					explore.codex().known.append(id)
+			var sec := str(_args["codex"])
+			explore.codex().open(sec if CityInfo.field_ids(DataRegistry.db).has(sec) else CodexIndexPage.MONSTERS)
+			await get_tree().process_frame
+			if explore.codex().page() is LorePage:
+				for i in int(str(_args.get("pick", "0"))):
+					explore.codex().page().nav(Vector2i.DOWN)
 		if _args.has("menu"):
 			var page := str(_args["menu"]) if str(_args["menu"]) in GameMenu.PAGES else "inventory"
 			if _args.has("party"):  # --party=<종족[:템플릿],…>: Tab 메뉴 왼쪽 아군 목록에 동료를 붙여 본다(UI26 — 줄 순서 C16: 궁수는 후위)
@@ -345,6 +356,8 @@ func _city(city: CityScreen) -> void:
 		st.period = str(_args.get("period", "0")).to_int()
 	if _args.has("happen"):
 		st.happenings.assign(str(_args["happen"]).split(","))
+	if _args.has("residence"):  # --residence=<1~4>: 거주 등급(건물 외관·시설 — CT50)
+		st.residence = str(_args["residence"]).to_int()
 	st.changed.emit()
 	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
 	if _args.has("weather"):

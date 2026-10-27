@@ -250,10 +250,10 @@ func _info_text() -> String:
 				lines.append(Strings.t("city.info_merit", {"merit": CityContext.fmt(_state.temple_merit)}))
 			"bank_balance":
 				lines.append(Strings.t("city.info_balance", {"balance": _state.bank_balance}))
-			"rumors":
-				lines.append(Strings.t("city.info_rumors", {"n": CityInfo.known_of(_state, "rumor").size()}))
+			"residence":
+				lines.append(Strings.t("city.info_residence", {"name": CityResidence.name_of(_state)}))
 			"lore":
-				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state, "lore").size()}))
+				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state).size()}))
 			"survey":
 				if not CityGuild.target(_state).is_empty():
 					lines.append(Strings.t("city.info_survey", {"name": DataNames.entry(_state.db, "monsters", CityGuild.target(_state)),

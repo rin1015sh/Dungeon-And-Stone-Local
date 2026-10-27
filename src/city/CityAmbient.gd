@@ -2,7 +2,7 @@ class_name CityAmbient
 extends RefCounted
 ## 거리 사건(사용자 결정 2026-10-21, CT42): 순이 바뀔 때(시작·귀환 포함) 행동력을 쓰지 않고 저절로 일어나는 일 — data/street_events.
 ##   사건 = {id, name_ko, weight, forced, cooldown_months, weather_weight{날씨: 배율},
-##           when{from_month, months_of_year[], periods[], weather[], tax_month, tax_owed},
+##           when{from_month, months_of_year[], periods[], weather[], tax_month, tax_owed, residence_min, residence_max}, residence_weight{등급: 배율},
 ##           갈래(cost_stones · effects[] · check{stats[], target, base, per_point, min, max} · success[] · fail[]) 또는 choices[{id, 갈래}]}.
 ##   forced = 조건이 맞으면 굴림 없이 반드시(교수형). 그 밖은 city.json ambient.chance 확률로 하나를 weight(× 날씨 배율)로 고른다.
 ##   when.tax_month = 세금 기한 달에서 몇 달 뒤(0 = 기한 달), tax_owed = 올해 세금이 남았는가.
@@ -93,11 +93,12 @@ static func _ok(state: CityState, e: Dictionary, id: String, race_id: String) ->
 			return false
 	if w.get("tax_owed") != null and bool(w["tax_owed"]) != CityTax.owed(state, race_id):
 		return false
-	return true
+	return CityResidence.when_ok(state, w)  # 거주 등급 residence_min·max(CT53)
 
 
 static func _weight(state: CityState, e: Dictionary) -> float:
-	return JsonUtil.get_float(e, "weight", 1.0) * JsonUtil.get_float(JsonUtil.get_dict(e, "weather_weight"), state.weather, 1.0)
+	return JsonUtil.get_float(e, "weight", 1.0) * JsonUtil.get_float(JsonUtil.get_dict(e, "weather_weight"), state.weather, 1.0) \
+		* CityResidence.weight_mult(state, e)  # 거주 등급마다(residence_weight — 뒷골목엔 소매치기, 고지대엔 검문, CT53)
 
 
 static func _pick(state: CityState, pool: Array) -> String:

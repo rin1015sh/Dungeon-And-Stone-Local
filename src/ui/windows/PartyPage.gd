@@ -1,19 +1,18 @@
 class_name PartyPage
 extends MenuPage
 ## Tab 메뉴 맨 왼쪽 쪽(사용자 요청 2026-10-25, UI26): 아군 목록 — 줄마다 이름 + 생명력·영혼력·허기·피로 짧은 막대
-## (탐험 화면 하단 바를 없앤 대신 여기서 본다), 맨 끝에 도감. W/S = 커서, Enter = 그 아군을 고른다(가운데·오른쪽 쪽이
-## 그 아군으로 바뀐다) / 도감을 연다. 고른 아군은 금빛 테두리, 커서는 밝은 바탕.
+## (탐험 화면 하단 바를 없앤 대신 여기서 본다). W/S = 커서, Enter = 그 아군을 고른다(가운데·오른쪽 쪽이
+## 그 아군으로 바뀐다). 고른 아군은 금빛 테두리, 커서는 밝은 바탕. 도감은 따로 B(CodexMenu — UI32).
 ## 전위·후위(사용자 2026-10-25): 전위가 위, 후위가 아래(GameMenu가 줄 순서로 넘긴다), 이름 옆에 줄. 이미 고른 아군에서 Enter를
 ## 한 번 더 누르면 ally_menu_requested — GameMenu가 전위/후위/파티에서 내보내기 창을 띄운다(그동안 asking).
 
 signal ally_selected(a: PlayerCharacter)
 signal ally_menu_requested(a: PlayerCharacter)
-signal bestiary_requested
 
 const BARS := ["hp", "soul", "hunger"]
 
 var party: Array[PlayerCharacter] = []
-var selected: int = 0  ## 고른 아군 번호(도감이면 party.size())
+var selected: int = 0  ## 고른 아군 번호
 var asking: bool = false  ## GameMenu가 아군 창(전위/후위/내보내기)을 띄운 동안 참 — 키를 받지 않는다
 
 var _cursor: int = 0
@@ -52,11 +51,6 @@ func busy() -> bool:
 func _build() -> void:
 	for i in party.size():
 		_add_row(i)
-	var be := PanelContainer.new()
-	be.add_child(UiTheme.label(Strings.t("party.bestiary"), "body", "text_title"))
-	content.add_child(be)
-	_rows.append(be)
-	_fills.append([])
 	refresh()
 
 
@@ -107,15 +101,13 @@ func confirm() -> void:
 	_paint_rows()
 	if _cursor < party.size():
 		ally_selected.emit(party[_cursor])
-	else:
-		bestiary_requested.emit()
 
 
 func cursor() -> int:
 	return _cursor
 
 
-## 고른 줄 표시(GameMenu가 아군·도감을 바꿀 때).
+## 고른 줄 표시(GameMenu가 아군을 바꿀 때).
 func mark(i: int) -> void:
 	selected = i
 	_paint_rows()

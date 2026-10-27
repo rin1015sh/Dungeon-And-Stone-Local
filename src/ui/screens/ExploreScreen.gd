@@ -29,6 +29,7 @@ var _ended: bool = false
 var _combat: CombatScreen = null
 var _pause_overlay: PauseMenu
 var _menu: GameMenu
+var _codex: CodexMenu  ## 도감(B — UI32)
 var _dialog: DialogueBox
 var _shade: ColorRect  # 대기·휴식 때 잠깐 어두워지는 막
 var _veil: ColorRect   # 균열 길목을 지날 때 화면 전체를 덮는 검은 막(어두워졌다 → 다음 챕터에서 밝아진다)
@@ -60,8 +61,14 @@ func _ready() -> void:
 	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_menu.opened_changed.connect(_on_menu_opened)
 	_menu.use_requested.connect(_use_item)
+	_codex = CodexMenu.new()
+	_codex.setup(session.player, GameState.city.known_info if GameState.city != null else ([] as Array[String]))
+	add_child(_codex)
+	_codex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_codex.opened_changed.connect(func(on: bool) -> void: session.realtime.set_paused("codex", on))
 	_build_dialog(m)
 	_menu.hold = _dialog.busy  # 메뉴 위에 뜬 알림(버렸다 등)을 먼저 넘긴다
+	_codex.hold = _dialog.busy
 	_debug = DebugPanel.new()
 	_debug.bind(session)
 	_debug.visible = false
@@ -188,7 +195,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		_menu.toggle()
 		get_viewport().set_input_as_handled()
 		return
-	if _menu.is_open():
+	if event.is_action_pressed("codex"):
+		_codex.open()
+		get_viewport().set_input_as_handled()
+		return
+	if _menu.is_open() or _codex.is_open():
 		return
 	var handled := true
 	if event.is_action_pressed("wait"):
@@ -225,6 +236,10 @@ func is_debug_open() -> bool:
 
 func menu() -> GameMenu:
 	return _menu
+
+
+func codex() -> CodexMenu:
+	return _codex
 
 
 ## 소지품 사용(Tab 메뉴에서만 — 단축칸·단축 키 없음). 탐험 규칙(ExploreSession)이 판정한다.
@@ -321,6 +336,7 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_menu.close()
+	_codex.close()
 	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
 	_combat = CombatScreen.new()
 	_combat.setup(battle)

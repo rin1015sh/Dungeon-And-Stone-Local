@@ -6,7 +6,12 @@
   "building": "res://assets/city/buildings/library.webp",
   "interior": "res://assets/city/interiors/library.webp",
   "activities": [
-    "library_read",
+    "library_dungeon",
+    "library_arms",
+    "library_ailments",
+    "library_monsters",
+    "library_survival",
+    "library_society",
     "library_decode"
   ],
   "shows": [
