@@ -28,15 +28,7 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	unit = u
 	front = u.side != Combatant.SIDE_PARTY
 	if u.actor is Monster:
-		var def := (u.actor as Monster).def
-		shape = JsonUtil.get_str(def, "shape", "humanoid")
-		size_k = JsonUtil.get_float(def, "size", 1.0)
-		boss = UiTheme.render_array("ui.combat_boss_ranks").has(JsonUtil.get_str(def, "rank"))
-		color = Color.from_string(JsonUtil.get_str(def, "color"), Color.GRAY)
-		var art_id := (u.actor as Monster).monster_id + ("" if front else "_back")  # 아군 소환수는 뒷모습
-		art = MonsterArt.texture(art_id)
-		if art != null:
-			_art_body = MonsterArt.body_height(art_id, art)
+		_look((u.actor as Monster).def, (u.actor as Monster).monster_id + ("" if front else "_back"))  # 아군 소환수는 뒷모습
 	elif u.actor is PlayerCharacter:
 		var race := (u.actor as PlayerCharacter).race_id
 		color = Color.from_string(JsonUtil.get_str(db.get_entry("races", race), "color"), Color.GRAY)
@@ -55,6 +47,23 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_name)
+
+
+## 아직 나오지 않은 몬스터의 크기 견본(무대에 붙이지 않는다 — BattleStage가 소환될 자리를 미리 잴 때). 쓰고 나면 free().
+static func probe(db: GameDatabase, monster_id: String) -> BattlerView:
+	var v := BattlerView.new()
+	v._look(db.get_entry("monsters", monster_id), monster_id)
+	return v
+
+
+func _look(def: Dictionary, art_id: String) -> void:
+	shape = JsonUtil.get_str(def, "shape", "humanoid")
+	size_k = JsonUtil.get_float(def, "size", 1.0)
+	boss = UiTheme.render_array("ui.combat_boss_ranks").has(JsonUtil.get_str(def, "rank"))
+	color = Color.from_string(JsonUtil.get_str(def, "color"), Color.GRAY)
+	art = MonsterArt.texture(art_id)
+	if art != null:
+		_art_body = MonsterArt.body_height(art_id, art)
 
 
 ## 탐험가 그림 고르기: side면 옆모습(없으면 뒷모습), mirror면 좌우 반전(옆모습일 때만).

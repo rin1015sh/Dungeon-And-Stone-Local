@@ -94,7 +94,7 @@
     "combat_dim_alpha": 1.0,
     "combat_backdrop_dim": 0.12,
     "combat_backdrop_camera": {"_comment": "전투 뒷그림의 그림 크기와 지평선(소실점) y px — tools/battle_art/Room.gd hy와 같게", "width": 1280, "height": 720, "horizon": 250},
-    "combat_human_m": 1.7, "combat_rows_half_width": 3.0, "combat_rows_max": 3, "combat_rows_depth_step": 0.45, "combat_rows_min_drop": 40, "combat_rows_rise": 0.2, "combat_rows_front_pull": 0.08, "combat_rows_front_scale": 1.08, "combat_fit": {"_comment": "소환·증원이 빈자리에 안 들어가면 새 적만 이 배율로 차례로 작게 해 본다(이미 선 적은 움직이지 않는다 — 그래도 안 되면 모두 다시 정렬)", "shrink": [1.0, 0.85, 0.7, 0.55]},
+    "combat_human_m": 1.7, "combat_rows_half_width": 3.0, "combat_rows_max": 3, "combat_rows_depth_step": 0.45, "combat_rows_min_drop": 40, "combat_rows_rise": 0.2, "combat_rows_front_pull": 0.08, "combat_rows_front_scale": 1.08,
     "combat_card_width": 150,
     "combat_figure_height": 110,
     "combat_stage_gap": 160,

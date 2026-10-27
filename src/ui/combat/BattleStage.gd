@@ -4,6 +4,8 @@ extends Control
 ## 그 위 가운데에 적이 이쪽을 보고 서고(덩치에 따라 크게, 아군 머리보다 위 — 가리지 않게, 자리 고정),
 ## 화면 아래쪽 앞줄에 아군이 등을 보이고 선다(다리는 아래 창에 가린다). 뒤에는 그 층·균열의 전투 뒷그림(소실점 통로 — set_backdrop).
 ## 적이 많아 통로 벽(뒷그림 half_width m) 안에 한 줄로 못 서면 뒷줄로 — 깊이만큼 작아지고 소실점 쪽으로 다가간다(FoeRows, UI29).
+## 전투 중에 나올 수 있는 적(소환·분열·증원 — BattleReserve)의 자리는 처음 정렬 때 함께 정해 비워 둔다(_spares). 새 적은 그 자리에 서고,
+## 쓰러진 적의 자리도 다시 빈자리가 된다 — 전투 중에 다른 적을 옮기거나 줄이지 않는다(사용자 2026-10-27, UI37).
 ## 배치 수치는 render.json ui.combat_* (bottom_reserve = 아래 창 높이).
 
 var _views: Dictionary = {}  # Combatant -> BattlerView
@@ -14,6 +16,8 @@ var _layout_queued: bool = false
 var _back: Texture2D = null  # 전투 뒷그림(층 art.battleback · 균열 look.art.battleback) — 없으면 어둠뿐
 var _half_width: float = 3.0  # 통로 반 폭(m, 앞줄 적 크기 기준) — 적이 이 안에 선다
 var _deep: bool = false  # 처음 정렬(_pack)에 뒷줄이 있었다 — 앞줄을 당겨 세운다. 소환으로 바꾸지 않는다(앞줄이 들썩이지 않게)
+var _reserve_from: Callable  # (지금 선 적 몬스터 id 배열) -> 비워 둘 자리의 몬스터 id 배열(BattleReserve.plan — CombatScreen이 넣는다)
+var _spares: Array[Dictionary] = []  # 비워 둔 자리 {"id": 몬스터 id, "x", "row", "h"} — 앞줄·가운데에 가까운 것부터
 
 
 func setup(db: GameDatabase) -> void:
@@ -22,6 +26,12 @@ func setup(db: GameDatabase) -> void:
 	resized.connect(func() -> void:
 		_slots.clear()  # 화면 크기가 바뀌면 자리를 새로 정한다(처음 크기가 정해질 때 포함)
 		layout())
+
+
+## 전투 중에 나올 수 있는 적의 자리를 미리 잡는 규칙(없으면 비워 두지 않는다).
+func set_reserve(from: Callable) -> void:
+	_reserve_from = from
+	_slots.clear()
 
 
 ## 전투 뒷그림(경로가 비었거나 파일이 없으면 어둠만) + 통로 반 폭(m — 0이면 render.json 기본값).
@@ -115,11 +125,14 @@ func layout() -> void:
 		_floor_y = maxf(stage_h * UiTheme.ui_float("combat_enemy_floor_min", 0.4), minf(_floor_y, ally_top - UiTheme.metric("combat_enemy_clear", 8)))
 	for u: Combatant in _slots.keys():
 		if not _views.has(u):
+			if u.actor is Monster:  # 쓰러진 자리는 다시 빈자리(같은 몬스터가 또 나오면 그 자리에)
+				var sl: Dictionary = _slots[u]
+				_spares.push_front({"id": (u.actor as Monster).monster_id, "x": sl["x"], "row": sl["row"], "h": sl["h"]})
 			_slots.erase(u)
 	var fresh: Array[Combatant] = foes.filter(func(u: Combatant) -> bool: return not _slots.has(u))
 	if not fresh.is_empty():
 		var boss_new := fresh.any(func(u: Combatant) -> bool: return (_views[u] as BattlerView).boss)  # 보스는 늘 가운데 — 다시 정렬
-		if _slots.is_empty() or boss_new or not _fit_new(fresh, stage_h):
+		if _slots.is_empty() or boss_new or not _place_fresh(fresh, stage_h):
 			_pack(foes, stage_h)
 		_order()
 	var ppm := _ppm(stage_h)
@@ -190,15 +203,28 @@ func _foe_height(v: BattlerView, stage_h: float) -> float:
 func _pack(foes: Array[Combatant], stage_h: float) -> void:
 	var ppm := _ppm(stage_h)
 	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
+	var looks: Array[BattlerView] = []
+	for u in foes:
+		looks.append(_views[u])
+	var spare_ids: Array[String] = []
+	if _reserve_from.is_valid():  # 전투 중에 나올 적의 자리도 함께(크기 견본 — 무대에 붙이지 않는다)
+		var present: Array = foes.map(func(u: Combatant) -> String: return (u.actor as Monster).monster_id if u.actor is Monster else "")
+		spare_ids.assign(_reserve_from.call(present))
+	var probes: Array[BattlerView] = []
+	for id in spare_ids:
+		probes.append(BattlerView.probe(_db, id))
+	looks.append_array(probes)
 	var heights: Array[float] = []
 	var widths := PackedFloat32Array()
 	var widest := 0.0
-	for u in foes:
-		var h := _foe_height(_views[u], stage_h)
+	for v in looks:
+		var h := _foe_height(v, stage_h)
 		heights.append(h)
-		var wpx := (_views[u] as BattlerView).width_for(h)
+		var wpx := v.width_for(h)
 		widest = maxf(widest, wpx)
 		widths.append(wpx / ppm)
+	for p in probes:
+		p.free()
 	var fit := minf(1.0, size.x * UiTheme.ui_float("combat_enemy_span", 0.92) / maxf(1.0, widest))
 	for i in widths.size():
 		widths[i] *= fit
@@ -210,34 +236,50 @@ func _pack(foes: Array[Combatant], stage_h: float) -> void:
 	var out := FoeRows.arrange_fit(widths, _half_width, gap, UiTheme.metric("combat_rows_max", 3), pinned)
 	var pos: Array = out["pos"]
 	_slots.clear()
+	_spares.clear()
 	_deep = false
-	for i in foes.size():
+	for i in widths.size():
 		var p: Vector2 = pos[i]
-		_slots[foes[i]] = {"x": p.x, "row": int(p.y), "h": heights[i] * fit * float(out["k"]) / stage_h}
+		var sl := {"x": p.x, "row": int(p.y), "h": heights[i] * fit * float(out["k"]) / stage_h}
+		if i < foes.size():
+			_slots[foes[i]] = sl
+		else:
+			sl["id"] = spare_ids[i - foes.size()]
+			_spares.append(sl)
 		_deep = _deep or int(p.y) > 0
+	_spares.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return int(a["row"]) < int(b["row"]) or (int(a["row"]) == int(b["row"]) and absf(float(a["x"])) < absf(float(b["x"]))))
 
 
-## 새 적을 지금 자리를 건드리지 않고 빈자리(앞줄·가운데에 가까운 곳부터)에 넣는다. 자리가 없으면 새 적만 조금씩 작게 해 본다
-## (combat_fit_shrink — 이미 선 적이 움직이지 않게: 구더기가 늘 때마다 드레드피어·다른 적이 들썩이던 것). 그래도 못 넣으면 false(다시 정렬).
-func _fit_new(fresh: Array[Combatant], stage_h: float) -> bool:
+## 새 적을 미리 비워 둔 자리에(같은 몬스터 자리 먼저, 없으면 다른 빈자리 — 그 자리 폭에 맞춘 키로). 빈자리가 없으면 지금 자리를 건드리지 않고
+## 남은 틈에(FoeRows.fit_new). 하나라도 못 넣으면 false(다시 정렬 — 진영 상한까지 자리를 잡아 두므로 보통 일어나지 않는다).
+func _place_fresh(fresh: Array[Combatant], stage_h: float) -> bool:
 	var ppm := _ppm(stage_h)
 	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
-	var shrink: Array = UiTheme.ui_dict("combat_fit").get("shrink", [1.0, 0.85, 0.7, 0.55])
 	for u in fresh:
+		var v: BattlerView = _views[u]
+		var id := (u.actor as Monster).monster_id if u.actor is Monster else ""
+		var k := _spares.find_custom(func(sp: Dictionary) -> bool: return str(sp["id"]) == id)
+		if k < 0 and not _spares.is_empty():
+			k = 0
+		if k >= 0:
+			var sp: Dictionary = _spares.pop_at(k)
+			var h := stage_h * float(sp["h"])
+			if str(sp["id"]) != id:  # 다른 몬스터 자리: 그 자리 폭을 넘지 않는 키
+				var room := BattlerView.probe(_db, str(sp["id"]))
+				h = minf(_foe_height(v, stage_h), h * room.width_for(h) / maxf(1.0, v.width_for(h)))
+				room.free()
+			_slots[u] = {"x": sp["x"], "row": sp["row"], "h": h / stage_h}
+			continue
 		var taken: Array[Vector3] = []
 		for o: Combatant in _slots:
 			var sl: Dictionary = _slots[o]
 			taken.append(Vector3(float(sl["x"]), float(sl["row"]), (_views[o] as BattlerView).width_for(stage_h * float(sl["h"])) / ppm))
-		var placed := false
-		for s: Variant in shrink:
-			var h := _foe_height(_views[u], stage_h) * float(s)
-			var at := FoeRows.fit_new(taken, (_views[u] as BattlerView).width_for(h) / ppm, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
-			if at.y >= 0.0:
-				_slots[u] = {"x": at.x, "row": int(at.y), "h": h / stage_h}
-				placed = true
-				break
-		if not placed:
+		var hn := _foe_height(v, stage_h)
+		var at := FoeRows.fit_new(taken, v.width_for(hn) / ppm, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
+		if at.y < 0.0:
 			return false
+		_slots[u] = {"x": at.x, "row": int(at.y), "h": hn / stage_h}
 	return true
 
 

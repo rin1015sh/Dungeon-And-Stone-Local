@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **전투 자리를 미리 만든다 (2026-10-27, 사용자 "즉석에서 줄이지 말고 미리 배치를 만들라")** — UI37 고침. 바로 전 작업의 "새 적만 줄여 넣기"(`combat_fit.shrink`)를 없앴다.
+  - `BattleReserve`(새 파일, 순수): 적 몬스터·스킬·패턴·상태 효과에서 summon·split, 전투 목표 reinforce → 진영 상한까지 비워 둘 몬스터. `BattleStage._pack`이 그 견본(`BattlerView.probe`)까지 함께 정렬해 `_spares`에, `_place_fresh`가 새 적을 그 자리에(같은 몬스터 먼저), 쓰러진 자리는 다시 빈자리. `FoeRows`: 뒷줄은 앞에 선 모든 몸 바로 뒤를 피하고(`HIDE`·`_covered`), 틈이 모자라면 나머지는 한 줄 뒤로, 숨는 자리가 남으면 arrange_fit이 처음에 함께 줄인다.
+  - 시험 test_battle_reserve(후보·상한·숨지 않음). 캡처 드레드피어 구더기 0·2·3·5(보스 그대로), 도개교 8, 고블린 + 5. check.sh 통과.
+
 - **균열 대기 무리 · 도개교 데드맨 8 · 전투 중 적이 늘 때 자리 (2026-10-27, 사용자)** — RF23·RF24·UI37.
   - `RiftPosts`(새 파일): 조우 kind `posts` — 시작·출구·조우에서 가장 먼 칸에 대기 무리, `Group.guard`(MonsterPatrol이 순찰하지 않음). 처음엔 시작 둘레 안전지대에서 걸음 장이 막혀 시작 칸 곁에 섰다 → 안전지대도 지나가게(서지는 않게). RiftRun: posts는 다른 조우 뒤에, battle `guard`. 검증 RiftRules: kind posts·packs 구성 검사, 설계도 slot 수에서 posts 뺌.
   - 데이터: 균열 4개 17챕터에 posts(1~5), 핏빛성채 2챕터 waves → 다리 위 데드맨 6 + 병사 데드맨 2(guard, slot [51, 20]), 설명 문구.
