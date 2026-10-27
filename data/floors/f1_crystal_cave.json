@@ -515,9 +515,17 @@
       ]
     }
   },
+  "rift_offering": {
+    "_comment": "기념비 마석 바치기(Monument — 사용자 2026-10-27, RF22): 이번 원정에서 kills의 몬스터를 모두 한 번 이상 잡고 item을 count개 바치면 이 층 균열 하나(가중 무작위)가 기념비 곁에 열린다. 바치면 처치 표시는 지워진다.",
+    "item": "magic_stone_9",
+    "count": 4,
+    "kills": ["goblin", "blade_wolf", "gnome", "ghoul"],
+    "source": "user"
+  },
   "lord": {
-    "_comment": "계층군주 소환(LordWatch, 명세 §7.1). 원작: 3일 차 이후 5인 이상이 한곳에 머물면 확률 소환, 하루 안에 사실상 확정, 6시간마다 재소환, 시야 2m",
+    "_comment": "계층군주 소환(LordWatch, 명세 §7.1). 원작: 3일 차 이후 5인 이상이 한곳에 머물면 확률 소환, 하루 안에 사실상 확정, 6시간마다 재소환, 시야 2m. monument = 그 층 균열 수호자(또는 변종)를 모두 쓰러뜨린 적이 있으면 기념비에서 부를 수 있다(사용자 2026-10-27, DF17 — Monument)",
     "monster": "dreadfear",
+    "monument": true,
     "min_day": 3,
     "min_party": 5,
     "stay_radius_m": 5.0,

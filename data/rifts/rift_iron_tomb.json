@@ -15,10 +15,6 @@
   "name_ko": "강철의 묘",
   "weight": 1,
   "desc_ko": "사방이 어둡고 좁은 금속 복도. 벽화 같은 문양이 새겨져 있다.",
-  "force_open": {
-    "item": "magic_stone_rock_desert",
-    "at": "monument"
-  },
   "look": {
     "tiles": {
       "floor": "metal_floor",

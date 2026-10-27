@@ -32,8 +32,10 @@ static func run(s: ExploreSession) -> void:
 		if def != null and def.interact == "hidden_piece" and s.rift_run != null and s.rift_run.take_hidden(s, s.pos + d):
 			return
 		if def != null and def.interact == "monument":
-			if not s.rifts.try_offer(s, s.pos + d):
+			if Monument.options(s).is_empty():
 				s.message.emit("explore.monument", {}, "system")
+			else:
+				s.monument_choice.emit(s.pos + d)  # 마석·계층석 바치기·계층군주 부르기 — 화면이 고르게 한다
 			return
 	if RiftScavenge.run(s):
 		return

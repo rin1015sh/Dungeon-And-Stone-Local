@@ -87,6 +87,7 @@ func _ready() -> void:
 	session.encounter.connect(_on_encounter)
 	session.riddle_asked.connect(_on_riddle)
 	session.feature_choice.connect(_on_feature_choice)
+	session.monument_choice.connect(_on_monument_choice)
 	session.party_met.connect(_on_party_met)
 	session.tiles_changed.connect(_view.cells_changed)
 	session.sound.connect(func(key: String, _at: Vector2i) -> void: AudioBus.play_sfx(key))
@@ -306,6 +307,28 @@ func _on_feature_choice(at: Vector2i) -> void:
 	session.realtime.set_paused("feature", false)
 	if i >= 0 and i < acts.size():
 		session.features.act(session, at, str(acts[i]["id"]))
+
+
+## 기념비(Monument): 마석·계층석 바치기·계층군주 부르기 중 고른다(못 하는 것은 흐리게 + 짧은 이유). 고르는 동안 시간을 멈춘다.
+func _on_monument_choice(at: Vector2i) -> void:
+	if has_node("FeatureChoice"):
+		return
+	var acts := Monument.options(session)
+	var opts: Array[Dictionary] = []
+	for a in acts:
+		opts.append({"text": Strings.t(str(a["key"]), a["args"]), "enabled": bool(a["enabled"]),
+			"sub": Strings.t(str(a["why"])) if not str(a["why"]).is_empty() else ""})
+	session.realtime.set_paused("feature", true)
+	var pop := ChoicePopup.new()
+	pop.name = "FeatureChoice"  # 동굴 요소 선택 창과 같은 키 처리(탐험 키를 먹는다)
+	add_child(pop)
+	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pop.open(session.map.def_at(at).name_ko, opts, true, Vector2(-1, -1))
+	var i: int = await pop.picked
+	pop.queue_free()
+	session.realtime.set_paused("feature", false)
+	if i >= 0 and i < acts.size():
+		Monument.act(session, at, str(acts[i]["id"]))
 
 
 ## 탐험가 무리에 닿았다(FieldParties): 선택 창(FieldPartyMeet — 거래·소문·함께 다니기·통행세 …). 고르는 동안 시간을 멈춘다.

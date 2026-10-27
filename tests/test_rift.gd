@@ -60,23 +60,52 @@ func test_natural_open_after_day3() -> void:
 	assert_eq(picks.size(), 4, "입장 때 4종 중 가중 무작위")
 
 
-func test_force_open_with_stone_at_monument() -> void:
+func _rift_portals(s: ExploreSession) -> Array:
+	return s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")
+
+
+func _ids(s: ExploreSession) -> Array:
+	return Monument.options(s).map(func(o: Dictionary) -> String: return str(o["id"]))
+
+
+## 기념비(사용자 2026-10-27, RF22·DF17): 네 종을 잡고 9등급 마석 넷을 바치면 균열 · 계층석 · 수호자 넷을 쓰러뜨리면 군주.
+func test_monument_offering_floor_stone_and_lord() -> void:
 	var s := _session()
 	var mon := s.map.landmarks[0]["pos"] as Vector2i
 	for lm: Dictionary in s.map.landmarks:
 		if str(lm["id"]) == "sage_monument":
 			mon = lm["pos"]
-	assert_false(s.rifts.try_offer(s, mon), "마석이 없으면 아무 일도 없다")
-	s.player.inventory.add("magic_stone_beast_den", 1)
-	assert_true(s.rifts.try_offer(s, mon))
-	assert_eq(s.player.inventory.count("magic_stone_beast_den"), 0, "마석을 쓴다")
-	var p: Dictionary = s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0]
-	assert_eq(str(p["rift"]), "rift_glacier_cave", "짐승의 소굴 마석 → 빙하굴")
-	var before := s.map.portals.size()
+	assert_true(Monument.options(s).is_empty(), "아무것도 없으면 할 일이 없다(평소 문구)")
+	s.player.inventory.add("magic_stone_9", 4)
+	var off: Dictionary = Monument.options(s)[0]
+	assert_eq([off["id"], off["enabled"]], [Monument.OFFER, false], "마석 넷만으로는 받지 않는다")
+	for m in ["goblin", "blade_wolf", "gnome"]:
+		s.grant_battle_rewards(null, [m] as Array[String])
+	assert_false(bool(Monument.options(s)[0]["enabled"]), "세 종만 잡았다")
+	s.grant_battle_rewards(null, ["ghoul"] as Array[String])
+	var stones := s.player.inventory.count("magic_stone_9")
+	assert_true(bool(Monument.options(s)[0]["enabled"]), "네 종 모두 잡았다")
+	assert_true(Monument.act(s, mon, Monument.OFFER))
+	assert_eq(s.player.inventory.count("magic_stone_9"), stones - 4, "마석 넷을 쓴다")
+	assert_eq(_rift_portals(s).size(), 1, "기념비 곁에 균열 하나")
+	assert_false(Monument.kills_ready(s), "바치면 처치 표시가 지워진다")
 	s.player.inventory.add("floor_stone_1", 1)
-	assert_true(s.rifts.try_offer(s, mon), "계층석을 바친다")
+	assert_true(_ids(s).has(Monument.STONE))
+	assert_true(Monument.act(s, mon, Monument.STONE), "계층석을 바친다")
 	assert_eq(s.player.inventory.count("floor_stone_1"), 0, "계층석은 한 번 쓰면 사라진다")
-	assert_eq(s.map.portals.size(), before + 1, "그 층 균열 하나가 열린다")
+	assert_eq(_rift_portals(s).size(), 2, "그 층 균열 하나가 더 열린다")
+	assert_false(_ids(s).has(Monument.LORD), "수호자를 다 쓰러뜨리기 전에는 군주를 부를 수 없다")
+	for rid in RiftWatch.rifts_for(s):
+		if rid != "rift_glacier_cave":
+			s.player.progression.record_kill(db, JsonUtil.get_str(db.get_entry("rifts", rid), "guardian"))
+	assert_false(_ids(s).has(Monument.LORD), "셋만")
+	s.player.progression.record_kill(db, "kirdui")
+	assert_true(_ids(s).has(Monument.LORD), "변종 수호자를 쓰러뜨려도 그 균열은 끝낸 것")
+	assert_true(Monument.act(s, mon, Monument.LORD), "기념비에서 군주를 부른다")
+	assert_true(s.lord.is_active())
+	var lord_opt: Dictionary = Monument.options(s).filter(func(o: Dictionary) -> bool: return o["id"] == Monument.LORD)[0]
+	assert_false(bool(lord_opt["enabled"]), "군주가 있는 동안은 또 못 부른다")
+	assert_false(db.has_entry("items", "magic_stone_beast_den"), "균열 개방 마석은 없다")
 
 
 ## 균열에 들어가 첫 챕터 세션을 돌려준다(세션이 RiftRun을 붙잡고, 균열은 세션을 약하게 가리킨다).

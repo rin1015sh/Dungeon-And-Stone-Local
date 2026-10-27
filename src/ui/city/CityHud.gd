@@ -13,7 +13,7 @@ var _periods: Array[Label] = []
 var _pips: Label
 var _ap: Label
 var _tax: Label
-var _place: Label  ## 도시 · 구역(· 거주 거리 — 차원광장이 아니면, CT50)
+var _place: Label  ## 도시 · 사는 구역(차원광장이면 광장 — CT50)
 var _name: Label
 var _hp_bar: ProgressBar
 var _hp: Label
@@ -144,8 +144,10 @@ func _build_dock(m: int) -> void:
 
 func refresh() -> void:
 	var place: Dictionary = CityValues.city_section(_state.db, {}, "place")
-	var args := {"city": JsonUtil.get_str(place, "city_ko"), "district": JsonUtil.get_str(place, place_key), "street": CityResidence.name_of(_state)}
-	_place.text = Strings.t("city.place_street" if place_key == "district_ko" and not str(args["street"]).is_empty() else "city.place", args)
+	var district := JsonUtil.get_str(place, place_key)
+	if place_key == "district_ko" and not CityResidence.name_of(_state).is_empty():
+		district = CityResidence.name_of(_state)  # 사는 구역(CT50 — 이사하면 바뀐다)
+	_place.text = Strings.t("city.place", {"city": JsonUtil.get_str(place, "city_ko"), "district": district})
 	var w := JsonUtil.get_str(_state.weather_def(), "name_ko")
 	_date.text = date_text(_state) if w.is_empty() else Strings.t("city.date_weather", {"date": date_text(_state), "weather": w})
 	for i in _periods.size():

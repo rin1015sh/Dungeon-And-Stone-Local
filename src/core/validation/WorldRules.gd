@@ -129,6 +129,15 @@ static func _floors(v: ValidatorBase) -> void:
 				if JsonUtil.get_float(lord, k, -1.0) <= 0.0:
 					v.err(w + ".lord", "%s는 양수" % k)
 			v.check_color(w + ".lord.tint", JsonUtil.get_str(lord, "tint", "#ffffff"))
+			if lord.has("monument") and not lord["monument"] is bool:
+				v.err(w + ".lord", "monument는 true/false(기념비에서 부르기 — DF17)")
+		var off := JsonUtil.get_dict(f, "rift_offering")
+		if not off.is_empty():  # 기념비 마석 바치기(Monument — RF22)
+			v.ref(w + ".rift_offering", "items", off.get("item"))
+			if JsonUtil.get_int(off, "count", 0) < 1:
+				v.err(w + ".rift_offering", "count는 1 이상")
+			for m: Variant in JsonUtil.get_array(off, "kills"):
+				v.ref(w + ".rift_offering.kills", "monsters", m)
 		for portal: Variant in JsonUtil.get_array(f, "portals"):
 			var pd: Dictionary = portal if portal is Dictionary else {}
 			if not dirs.has(JsonUtil.get_str(pd, "dir")):

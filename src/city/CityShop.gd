@@ -67,7 +67,7 @@ static func price(db: GameDatabase, item_id: String) -> int:
 
 ## 사는 값: 제값 × 이번 순 배율(거리 사건 — CityState.price_mods "buy:<분류>").
 static func buy_price(state: CityState, item_id: String) -> int:
-	return floori(price(state.db, item_id) * state.price_mult("buy:" + _category(state, item_id)))
+	return floori(price(state.db, item_id) * state.price_mult("buy:" + _category(state, item_id)) * CityResidence.price_mult(state))  # × 거주 구역 물가(CT50)
 
 
 static func _category(state: CityState, item_id: String) -> String:

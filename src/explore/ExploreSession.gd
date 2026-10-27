@@ -21,6 +21,7 @@ signal riddle_asked(group: FieldMonsters.Group)  ## 수수께끼 문지기(RiftR
 signal sound(key: String, at: Vector2i)  ## 들리는 소리(비명·싸움 — FieldParties). 글이 아니라 소리로만(data/audio.json sfx)
 signal tiles_changed(cells: Rect2i)  ## 원정 중에 타일이 바뀌었다(새 시체 등) — 화면이 그 칸을 다시 그린다
 signal party_met(group: FieldMonsters.Group)  ## 탐험가 무리에 닿았다(FieldParties) — 화면이 FieldPartyMeet 선택지를 띄우고 act를 부른다
+signal monument_choice(at: Vector2i)  ## 기념비에서 할 일이 있다(Monument — 마석·계층석 바치기·계층군주 부르기) — 화면이 고르게 하고 Monument.act를 부른다
 signal feature_choice(at: Vector2i)  ## 동굴 요소의 행동이 여럿이다(맑은 샘 등) — 화면이 고르게 하고 features.act를 부른다
 
 var db: GameDatabase
@@ -37,6 +38,7 @@ var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
 var scavenged: Dictionary = {}          ## 뒤진 균열 장식 칸 Vector2i → true(RiftScavenge)
+var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
 var features: FieldFeatures = FieldFeatures.new()  ## 동굴 요소(시체·샘·모닥불·함정 … — data/events, 자리 = map.features)
 var battle_drops: Array[Dictionary] = []  ## 전투 장면에서 줍기를 기다리는 드롭(grant_battle_rewards defer_drops — DropPickup)
@@ -365,6 +367,8 @@ func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], col
 	battle_drops.clear()
 	if killed.is_empty() or player.dead:
 		return out
+	for id in killed:
+		kills[id] = int(kills.get(id, 0)) + 1
 	var mult := JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0
 	if defer_drops:
 		battle_drops = DropPickup.roll(db, killed, rng, rift_run != null, mult, colors)

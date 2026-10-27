@@ -14,6 +14,7 @@ extends Node
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
+## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
 ## --codex[=<분야 id>]: 도감(B) 열기 — 분야면 서적 쪽(--books = 서적 전부 읽은 것으로, --pick=<번호> = 그 대목에 커서, UI32)
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
@@ -114,6 +115,22 @@ func _run() -> void:
 			var xy := str(_args["at"]).split(",")
 			ExploreDebug.teleport(explore.session, Vector2i(xy[0].to_int(), xy[1].to_int()))
 			await _frames(2)
+		if _args.has("monument"):  # --monument[=ready|lord]: 기념비 아래 칸에서 살피기 — 마석 넷(ready면 네 종 처치, lord면 수호자 넷도) — 고르기 창(RF22·DF17)
+			var ms := explore.session
+			for lm: Dictionary in ms.map.landmarks:
+				if str(lm["id"]) == "sage_monument":
+					ExploreDebug.teleport(ms, (lm["pos"] as Vector2i) + Vector2i(0, 1))
+			var off := Monument.offering(ms)
+			ms.player.inventory.add(JsonUtil.get_str(off, "item"), JsonUtil.get_int(off, "count", 1))
+			if str(_args["monument"]) in ["ready", "lord"]:
+				for m: Variant in JsonUtil.get_array(off, "kills"):
+					ms.kills[str(m)] = 1
+			if str(_args["monument"]) == "lord":
+				for rid in RiftWatch.rifts_for(ms):
+					ms.player.progression.record_kill(ms.db, JsonUtil.get_str(ms.db.get_entry("rifts", rid), "guardian"))
+			await _frames(2)
+			ms.interact()
+			await _frames(4)
 		if _args.has("interact"):
 			explore.session.interact()
 			await _frames(4)

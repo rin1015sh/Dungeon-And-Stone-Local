@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(972줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(978줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -216,7 +216,7 @@
 - `create.resources_header` 자원
 - `create.items_header` 가진 것
 - `create.items_none` 빈손이다.
-- `create.enter_header` 라비기온 구역
+- `create.enter_header` 라비기온 13구역
 - `create.enter` 도시로 간다
 - `create.equipped_item` {item} (착용)
 
@@ -262,6 +262,12 @@
 - `explore.no_category` 가진 {category}이(가) 없다.
 - `explore.portal_locked` {floor}층으로 가는 포탈이다. 소용돌이가 아직 닫혀 있어 그 너머로 갈 수 없다.
 - `explore.monument` 대현자 기념비. 이 근처에는 아무것도 다가오지 않는다.
+- `explore.monument_opt_offer` {item} {n}개를 바친다
+- `explore.monument_opt_stone` {item}을(를) 바친다
+- `explore.monument_opt_lord` {name}을(를) 부른다
+- `explore.monument_why_kills` 받지 않는다
+- `explore.monument_why_lord` 기척이 남아 있다
+- `explore.monument_lord_call` 비석에 손을 얹자 발밑 깊은 곳에서 무언가가 대답한다.
 - `explore.nothing_here` 살펴볼 만한 것이 없다.
 - `explore.closing_soon` 공기가 무거워진다. 층이 닫히기까지 {hours}시간.
 - `explore.closed` 층이 닫힌다. 보이지 않는 힘이 몸을 끌어당긴다.
@@ -330,7 +336,7 @@
 
 - `explore.party.no_stones` 마석이 모자라다
 - `explore.party.no_item` 가진 것이 없다
-- `explore.party.rumor_portal` {dir} 끝에 아래층 포탈이 있다고 한다.
+- `explore.party.rumor_portal` {dir} 끝에 위층으로 오르는 포탈이 있다고 한다.
 - `explore.party.rumor_rift` {dir}에서 균열을 봤다고 한다.
 
 #### `explore.party.title`
@@ -407,7 +413,8 @@
 
 - `debug.rift_force_open` 균열 강제 개방
 - `debug.rift_clear_chapter` 이 챕터 조우 치우기
-- `debug.give_rift_stones` 균열 개방 마석 4종 받기
+- `debug.give_rift_stones` 기념비 준비(마석 넷·네 종 처치)
+- `debug.lord_ready` 수호자 넷 처치로 표시
 - `debug.summon_lord` 계층군주 소환(드레드피어)
 - `debug.add_companion` 동료 들이기(무작위 탐험가)
 - `debug.title` 디버그 (F1)
@@ -842,7 +849,6 @@
 > 도시 — 거리·시설·활동 결과(lines)·거리 사건(street)·세금
 
 - `city.place` {city} · {district}
-- `city.place_street` {city} · {district} · {street}
 - `city.date` {month}번째 달 {period}
 - `city.date_year` {year}년째 {month}번째 달 {period}
 - `city.hud_fatigue` 피로도 {value}
@@ -919,9 +925,9 @@
 - `city.shop_sell_name` {item} ×{n}
 - `city.hud_tax` 세금 {n} 스톤 · {month}번째 달까지
 - `city.reason_tax_none` 낼 세금이 없다
-- `city.reason_residence_max` 더 좋은 거리는 없다
+- `city.reason_residence_max` 더 옮겨 갈 구역이 없다
 - `city.reason_no_books` 이 분야는 다 읽었다
-- `city.reason_books_locked` 이 거리 도서관엔 더 깊은 책이 없다
+- `city.reason_books_locked` 이 구역 도서관엔 더 귀한 책이 없다
 - `city.debug_reroll` 사건 다시
 - `city.debug_tax_due` 세금 기한으로
 - `city.debug_life` 사건 {events} · 거리 {street} · 세금 {tax}(냄 {paid})
@@ -954,7 +960,7 @@
 - `city.fx.item_no_room` {name}을(를) 넣을 자리가 없다.
 - `city.fx.item_undecided` 받을 것이 정해지지 않았다. (미정)
 - `city.fx.tax_paid` 세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.
-- `city.fx.residence_up` 계약서에 서명하고 짐수레를 불렀다. 오늘부터 {name}에 산다.
+- `city.fx.residence_up` 계약서에 서명하고 짐수레를 불렀다. 오늘부터 {name}에서 산다.
 - `city.fx.money_lost` {n} 스톤을 잃었다.
 - `city.fx.money_got` {n} 스톤을 받았다.
 - `city.fx.closed` {name}이(가) 문을 닫았다.

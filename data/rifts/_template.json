@@ -5,10 +5,6 @@
   "host_floor": 1,
   "weight": 1,
   "desc_ko": "…",
-  "force_open": {
-    "item": "magic_stone_beast_den",
-    "at": "monument"
-  },
   "look": {
     "tiles": {
       "floor": "ice_floor",

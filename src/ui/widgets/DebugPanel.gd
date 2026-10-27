@@ -136,8 +136,11 @@ func _add_rift_row(v: VBoxContainer) -> void:
 	_btn(row, Strings.t("debug.rift_force_open"), func() -> void:
 		if _rift_pick.item_count > 0:
 			_session.rifts.force_open(_session, str(_rift_pick.get_item_metadata(_rift_pick.selected)), _session.pos))
-	_btn(v, Strings.t("debug.give_rift_stones"), func() -> void:
+	_btn(v, Strings.t("debug.give_rift_stones"), func() -> void:  # 기념비 마석 바치기 조건(Monument)
+		var off := Monument.offering(_session)
+		_session.player.inventory.add(JsonUtil.get_str(off, "item"), JsonUtil.get_int(off, "count", 1))
+		for m: Variant in JsonUtil.get_array(off, "kills"):
+			_session.kills[str(m)] = 1)
+	_btn(v, Strings.t("debug.lord_ready"), func() -> void:  # 기념비 계층군주 부르기 조건(그 층 균열 수호자 모두)
 		for id in RiftWatch.rifts_for(_session):
-			var item := JsonUtil.get_str(JsonUtil.get_dict(_session.db.get_entry("rifts", id), "force_open"), "item")
-			if not item.is_empty():
-				_session.player.inventory.add(item, 1))
+			_session.player.progression.record_kill(_session.db, JsonUtil.get_str(_session.db.get_entry("rifts", id), "guardian")))

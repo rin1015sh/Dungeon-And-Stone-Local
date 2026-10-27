@@ -18,10 +18,6 @@
   "name_ko": "핏빛성채",
   "weight": 1,
   "desc_ko": "검은 포탈 너머 붉은 하늘과 까마귀 떼, 멀리 흑빛 성채가 보인다.",
-  "force_open": {
-    "item": "magic_stone_deathfiend",
-    "at": "monument"
-  },
   "look": {
     "tiles": {
       "floor": "fortress_floor",

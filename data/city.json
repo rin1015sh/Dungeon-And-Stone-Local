@@ -3,7 +3,7 @@
   "_comment": "도시(M4 라비기온) 규칙 값. 2026-10-15 미정 값을 모두 임시값으로 채웠다(source placeholder — 원문 수치 없음, ASSUMPTIONS CT26). null을 다시 넣으면 '효과 없음'으로 처리되고 검증기가 경고한다. 디버그 패널(F1)에서 실행 중에만 값을 바꿔 볼 수 있다(저장·파일 변경 없음).",
   "place": {
     "city_ko": "라프도니아",
-    "district_ko": "라비기온 구역",
+    "district_ko": "라비기온 13구역",
     "plaza_ko": "차원광장",
     "source": "original"
   },
@@ -263,12 +263,12 @@
     "due_month": 12
   },
   "residence": {
-    "_comment": "거주 등급(사용자 2026-10-27, CT50): 라비기온 구역 안에서 사는 거리의 격. 은행 '이사'(효과 residence_up)로 다음 등급 upgrade_cost를 내고 올린다(되돌리지 않는다). 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max. 이름·비용은 임시값(원작 설정을 받으면 바꾼다).",
+    "_comment": "거주 구역(사용자 2026-10-27, CT50 — 라프도니아 14구역 설정을 받아 구역으로): 은행 '이사'(효과 residence_up)로 다음 등급 upgrade_cost를 내고 더 나은 구역으로 옮긴다(되돌리지 않는다). 13구역 라비기온(뒷골목 셋방) → 7구역 라비기온(광장 가까운 대로변) → 5구역 컴멜비(상업지구) → 2구역 컴멜비(북반구 — 중산층·장인). 1구역 카르논(명성 필요)·6구역 노움트리(귀족만)는 명성이 생기면. 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max · price_mult(시설 이용료·상점/대장간 사는 값 배율 — 컴멜비는 물가가 비싸다). 구역 번호·값은 임시값.",
     "tiers": [
-      {"name_ko": "뒷골목", "upgrade_cost": 0, "smithy_material_tier": 1},
-      {"name_ko": "장인 거리", "upgrade_cost": 200000, "smithy_material_tier": 2},
-      {"name_ko": "상인 거리", "upgrade_cost": 1000000, "smithy_material_tier": 3},
-      {"name_ko": "고지대", "upgrade_cost": 4000000, "smithy_material_tier": 4}
+      {"name_ko": "라비기온 13구역", "upgrade_cost": 0, "smithy_material_tier": 1, "price_mult": 1.0},
+      {"name_ko": "라비기온 7구역", "upgrade_cost": 200000, "smithy_material_tier": 2, "price_mult": 1.0},
+      {"name_ko": "컴멜비 5구역", "upgrade_cost": 1000000, "smithy_material_tier": 3, "price_mult": 1.3},
+      {"name_ko": "컴멜비 2구역", "upgrade_cost": 4000000, "smithy_material_tier": 4, "price_mult": 1.6}
     ],
     "source": "placeholder"
   },

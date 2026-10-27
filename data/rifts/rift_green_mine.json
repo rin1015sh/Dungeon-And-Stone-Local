@@ -15,10 +15,6 @@
   "name_ko": "녹색 탄광",
   "weight": 1,
   "desc_ko": "철로가 깔린 음산한 갱도. 나무 폐자재가 널려 있다.",
-  "force_open": {
-    "item": "magic_stone_goblin_forest",
-    "at": "monument"
-  },
   "look": {
     "tiles": {
       "floor": "mine_floor",

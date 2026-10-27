@@ -17,9 +17,6 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 		v.err(w, "host_floor는 1 이상")
 	if JsonUtil.get_float(r, "weight", 1.0) <= 0.0:
 		v.err(w, "weight는 양수")
-	var fo := JsonUtil.get_dict(r, "force_open")
-	if not fo.is_empty():
-		v.ref(w + ".force_open", "items", fo.get("item"))
 	for k in ["floor", "wall", "exit"]:
 		v.ref(w + ".look.tiles", "tiles", JsonUtil.get_dict(JsonUtil.get_dict(r, "look"), "tiles").get(k))
 	ArtRules.check_art(v, w + ".look.art", JsonUtil.get_dict(JsonUtil.get_dict(r, "look"), "art"))
