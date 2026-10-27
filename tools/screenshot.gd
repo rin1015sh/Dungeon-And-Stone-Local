@@ -15,7 +15,7 @@ extends Node
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
-## --codex[=<분야 id>]: 도감(B) 열기 — 분야면 서적 쪽(--books = 서적 전부 읽은 것으로, --pick=<번호> = 그 대목에 커서, UI32)
+## --codex[=<분야 id>]: 도감(B) 열기 — 분야면 서적 쪽(--books = 서적 전부 읽은 것으로, --pick=<번호> = 그 대목에 커서, UI32 · --known --monster=<id> = 그 몬스터를 다 안다)
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
@@ -177,6 +177,10 @@ func _run() -> void:
 				epc.essences.absorb(epc, {"essence": "ghoul", "color": "red", "stats": {"agi": 3}})
 				epc.set_level(1)
 		if _args.has("codex"):
+			if _args.has("known") and _args.has("monster"):  # --known --monster=<id>: 그 몬스터를 다 아는 도감(상성·상태이상 줄 확인)
+				var kn := explore.session.player.knowledge
+				kn.learn_all(DataRegistry.db, str(_args["monster"]))
+				kn.learn_status(str(_args["monster"]), "st_inflicts", "bleeding")
 			if _args.has("books"):
 				for id: String in DataRegistry.db.get_collection("city_info"):
 					explore.codex().known.append(id)

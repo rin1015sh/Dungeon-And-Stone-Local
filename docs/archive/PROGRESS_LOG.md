@@ -6,6 +6,13 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **상성 알게 됨 문구 삭제 · 도감에 상태이상 (2026-10-27, 사용자 "그 문구도 지워주고. 상태이상 관련 정보도 도감에서 볼 수 있게 해줘")** — UI22.
+  - `BattleKnowledge.on_damage`는 상성만 기록(대화창 `knowledge.learned_weak/resist/immune` 문구·키 삭제).
+  - `Passives.try_status`: 듣지 않으면 건 쪽(탐험가)에 `st_immune`, 걸리면 맞은 쪽(탐험가)에 그 몬스터의 `st_inflicts` — 모든 상태 부여 경로(스킬·패시브·보스 패턴)가 지난다. `Knowledge` 저장에 두 키(옛 저장은 빈 칸으로 읽힌다), `learn_all`에 데이터 `status_immune`.
+  - 도감: "듣지 않는 상태이상: …" · "거는 상태이상: …"(모르면 ???). 캡처 `--codex --known --monster=king_slime`(screenshot 옵션 추가)으로 확인.
+  - 시험 test_dungeon_loop `test_status_knowledge_for_the_bestiary`(면역·거는 상태·??? ·저장 왕복·learn_all). check.sh 통과.
+  - 남은 것: 동료가 맞아 알게 된 것은 동료 기록이라 플레이어 도감엔 안 보인다(상성도 같음) — 파티 기록을 합칠지 사용자 판단.
+
 - **파티 드롭 "누가 받을까?"는 정수만 · 조사·무대에서 적 생명력·상성 숨김 (2026-10-27, 사용자 "파티일때 마석 획득 누가? 삭제하고 조사하면 적 체력 보이는거랑 면역여부 보이는거 삭제해. b에서만 보이게")** — UI13·UI12·UI22.
   - 드롭: 마석·전리품은 "획득할까?"만 묻고 공용 가방(플레이어)으로 — `CombatDrops._offer`(정수가 아니면 받을 사람 묻지 않음), `ExploreSession.take_drop`(물건은 늘 `player`에게 — 예전엔 동료를 고르면 동료의 숨은 가방으로 들어갔다). 문구 `combat.drop_no_room` 삭제.
   - 조사: 결과 문구 `combat.info_monster`에서 생명력·상성 뺌(등급·계열·주 스탯·설명). 스탯 기록(`learn_stats`)·길드 조사 의뢰는 그대로.

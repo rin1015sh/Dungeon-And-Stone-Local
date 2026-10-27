@@ -556,10 +556,7 @@
     "unknown": "???",
     "aff_weak": "{type} 약점 ×{mult}",
     "aff_resist": "{type} 저항 ×{mult}",
-    "aff_immune": "{type} 면역",
-    "learned_weak": "{name}은(는) {type}에 약하다. (도감에 기록)",
-    "learned_resist": "{name}은(는) {type}을(를) 견딘다. (도감에 기록)",
-    "learned_immune": "{name}에게 {type}은(는) 통하지 않는다. (도감에 기록)"
+    "aff_immune": "{type} 면역"
   },
   "reward": {
     "first_kill": "처음 쓰러뜨린 {name} — 공적 {exp}.",
@@ -651,6 +648,8 @@
     "stats": "생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}",
     "stats_unknown": "생명력·스탯: ???",
     "affinity": "상성: {aff}",
+    "status_immune": "듣지 않는 상태이상: {list}",
+    "status_inflicts": "거는 상태이상: {list}",
     "variant_of": "{name}의 변이종.",
     "shared": "[{skill}] 이능을 함께 지닌 종: {list}"
   },
