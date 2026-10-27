@@ -85,6 +85,7 @@ func test_bumping_a_group_starts_combat() -> void:
 func test_chase_until_contact() -> void:
 	var fm := _room_field("blade_wolf")
 	var g := _place(fm, "blade_wolf", Vector2i(12, 7))
+	g.facing = Vector2(-1, 0)  # 플레이어 쪽을 보고 있다(시야각 — test_monster_patrol)
 	var player := Vector2i(8, 7)
 	var hit := fm.update(_c(player), _move_hours("blade_wolf") * 3.0 + 0.00001, 0.0, false)
 	assert_eq(g.pos, Vector2i(9, 7), "세 걸음 다가온다")
@@ -181,6 +182,7 @@ func test_monsters_move_in_realtime_while_player_stands_still() -> void:
 	assert_true(g != null)
 	g.place(at + dir * 4)
 	g.home = g.pos
+	g.facing = Vector2(-dir)  # 플레이어 쪽을 보고 있다
 	var seen := [null]
 	s.encounter.connect(func(group: FieldMonsters.Group, _pf: bool) -> void: seen[0] = group)
 	var p0 := s.pos

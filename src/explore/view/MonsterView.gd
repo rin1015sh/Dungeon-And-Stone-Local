@@ -96,9 +96,10 @@ func _unit() -> float:
 	return clampf(w / 36.0, 1.0, 2.5)
 
 
+## 멈춰 있을 때 바라보는 쪽: 적은 실제로 보는 쪽(group.facing — 시야각 판정과 같다), 다른 탐험가는 플레이어 쪽.
 func face_toward(target: Vector2) -> void:
-	if _still >= 0.12:  # 멈춰 있으면 플레이어 쪽
-		_set_facing(target - position)
+	if _still >= 0.12:
+		_set_facing(group.facing if group.hostile() else target - position)
 
 
 ## 방향(월드) → 4방향 중 큰 쪽(옆모습을 조금 더 — ActorSheet.row_for). 한 장 그림은 좌우만 쓴다.

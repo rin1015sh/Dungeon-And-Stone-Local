@@ -2,6 +2,7 @@ class_name FieldMonsters
 extends RefCounted
 ## 탐험 맵 위의 몬스터 무리(순수 로직): 지역별 스폰, 리스폰, 머문 시간에 따른 증가, 배회·추적·영역 이탈, 접촉.
 ## 무리 하나 = 대표 하나(연속 좌표 fpos, 칸 단위) + 구성(몬스터 id 목록). 닿으면(contact_tiles) 무리 전체와 전투한다.
+## 쫓지 않을 때는 순찰 지점 사이를 걷고 서서 둘러본다(MonsterPatrol), 알아채는 것은 바라보는 쪽의 시야각 안(MonsterSenses).
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
 ## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}} — 몬스터 표는 층 JSON에만 둔다.
@@ -15,6 +16,7 @@ signal changed
 const STATE_IDLE := "idle"
 const STATE_CHASE := "chase"
 const STATE_RETURN := "return"
+const STATE_SEARCH := "search"
 
 
 class Group extends RefCounted:
@@ -35,6 +37,14 @@ class Group extends RefCounted:
 	var route: Array[Vector2i] = []       ## 멀리 걸어갈 길(send_to — 대기 중에 따라 걷는다)
 	var scent: Vector2i = Vector2i(-1, -1)  ## 쫓는 냄새 칸(behavior tracks_scent — 플레이어가 멀면 이쪽으로)
 	var party: Dictionary = {}            ## 탐험가 무리(FieldParties): {"kind", …} — 비어 있으면 몬스터 무리
+	var facing: Vector2 = Vector2(0, 1)   ## 바라보는 쪽(단위 벡터) — 시야각 판정·맵 그림
+	var look: Vector2 = Vector2.ZERO      ## 돌아보려는 쪽(없으면 ZERO — MonsterPatrol.turn)
+	var patrol: Array[Vector2i] = []      ## 순찰·수색·귀환으로 걷는 칸 길(MonsterPatrol)
+	var rest_until: float = -1.0          ## 순찰 지점·수색 자리에서 이 시각까지 서서 둘러본다(< 0 = 걷는 중)
+	var next_look: float = 0.0            ## 서 있을 때 다음에 고개를 돌릴 시각
+	var hold_until: float = -1.0          ## 소리를 듣고 이 시각까지 멈춰 돌아본다
+	var last_seen: Vector2i = Vector2i(-1, -1)  ## 마지막으로 알아챈 플레이어 칸(놓치면 거기까지 가서 찾는다)
+	var leashed: bool = false             ## 영역(leash_tiles)을 벗어나 돌아가는 중 — 반쯤 돌아갈 때까지 다시 쫓지 않는다
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
@@ -132,6 +142,7 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	g.region = JsonUtil.get_str(region, "id")
 	g.place(cell)
 	g.home = cell
+	_steer.face_open(g)
 	groups.append(g)
 	return g
 
@@ -162,6 +173,7 @@ func add_fixed(ids: Array, cell: Vector2i) -> Group:
 		g.monster_ids.append(str(id))
 	g.place(at)
 	g.home = at
+	_steer.face_open(g)
 	mark_boss(g)
 	groups.append(g)
 	changed.emit()
@@ -181,6 +193,7 @@ func add_party(ids: Array, cell: Vector2i, party: Dictionary) -> Group:
 	g.party = party
 	g.place(at)
 	g.home = at
+	_steer.face_open(g)
 	groups.append(g)
 	changed.emit()
 	return g
@@ -219,6 +232,8 @@ func remove(g: Group, now: float) -> void:
 func set_grace(g: Group, now: float) -> void:
 	g.grace_until = now + float(_db.bal("combat.flee_grace_hours", 0.5))
 	g.state = STATE_RETURN
+	g.patrol.clear()
+	g.rest_until = -1.0
 
 
 ## 시간이 hours만큼 흘렀다. 몬스터를 움직이고, 플레이어(연속 좌표 player)에 닿은 무리가 있으면 돌려준다(전투 시작).
@@ -235,6 +250,7 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		near.append(g)
 		var budget := minf(hours / _steer.move_hours(g.leader()), max_moves)
 		_steer.decide(g, pcell, now)
+		_steer.turn(g, hours, now)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
 			moved = true
 		_steer.decide(g, pcell, now)
@@ -313,6 +329,7 @@ func is_visible(g: Group, player: Vector2i) -> bool:
 func send_to(g: Group, cell: Vector2i, pcell: Vector2i) -> void:
 	g.home = cell
 	g.waypoint = Vector2(-1, -1)
+	g.patrol.clear()
 	if not is_awake(g, pcell):
 		var at := cell if _steer.can_enter(cell, g) else _free_cell_near(cell)
 		if at.x >= 0:
@@ -338,6 +355,11 @@ func region_cells(region_id: String) -> Array[Vector2i]:
 
 func set_player_stealth(v: float) -> void:
 	_steer.player_stealth = v
+
+
+## 플레이어가 방금 움직였는가(소리 — 등 뒤의 몬스터가 돌아본다).
+func set_player_moving(v: bool) -> void:
+	_steer.player_moving = v
 
 
 ## 플레이어에게 걸린 상태(원한의 징표 등). ExploreSession이 시간 흐름마다 넣는다.

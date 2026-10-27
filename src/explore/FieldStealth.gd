@@ -6,9 +6,14 @@ extends RefCounted
 ##   칼날늑대처럼 behavior.ignores_stealth인 몬스터에게는 듣지 않는다(MonsterSteering).
 
 
+## 방금 움직였는가(마지막 이동 뒤 explore.stealth_still_hours 안 — 몬스터가 소리를 듣는다).
+static func moving(s: ExploreSession) -> bool:
+	return s.last_move_hours >= 0.0 and s.clock.total_hours - s.last_move_hours < float(s.db.bal("explore.stealth_still_hours", 0.02))
+
+
 ## 0(감소 없음) ~ 1(완전히 숨음).
 static func of(s: ExploreSession) -> float:
-	var still := s.last_move_hours < 0.0 or s.clock.total_hours - s.last_move_hours >= float(s.db.bal("explore.stealth_still_hours", 0.02))
+	var still := not moving(s)
 	var best := 0.0
 	for sid in s.player.skills:
 		var fs := JsonUtil.get_dict(s.db.get_entry("skills", sid), "field_stealth")
