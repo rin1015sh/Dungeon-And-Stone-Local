@@ -119,6 +119,8 @@ static func _facilities(v: ValidatorBase, city: Dictionary) -> void:
 		var top := maxi(1, JsonUtil.get_array(JsonUtil.get_dict(city, "residence"), "tiers").size())
 		if f.has("min_residence") and (JsonUtil.get_int(f, "min_residence", 0) < 1 or JsonUtil.get_int(f, "min_residence") > top):
 			v.err(w, "min_residence는 1~%d(거주 등급 — 그 등급부터 거리에 선다)" % top)
+		if JsonUtil.get_int(f, "min_residence", 1) > 1 and JsonUtil.get_float(f, "slot", 0.0) <= 0.0:
+			v.err(w, "min_residence가 있으면 slot(거리에서 차지하는 폭)도 — 서지 않는 구역에서 뒤 건물을 당긴다")
 		var acts := JsonUtil.get_array(f, "activities")
 		if acts.is_empty() and not JsonUtil.get_bool(f, "placeholder"):
 			v.warn(w, "활동이 없다")

@@ -2,7 +2,7 @@
   "id": "bank",
   "name_ko": "은행",
   "order": 7,
-  "x": 3230,
+  "x": 3880,
   "building": "res://assets/city/buildings/bank.webp",
   "interior": "res://assets/city/interiors/bank.webp",
   "activities": [

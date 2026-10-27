@@ -38,15 +38,13 @@ func _init() -> void:
 	var baseline := int(GameDatabase.single(db.render, "city.baseline", 600))
 	var scale := float(GameDatabase.single(db.render, "city.building_scale", 0.85))
 	var width := JsonUtil.get_int(street, "width", 3600)
-	var spans: Array = []  # [x0, x1, 그 시설이 서는 최소 거주 등급]
+	var spans: Array = []  # 등급 → [[x0, x1] …](그 구역에 서는 건물만, 서지 않는 시설 자리는 당긴다 — CityResidence.facility_x, CT54)
 	var tiers := maxi(1, JsonUtil.get_array(JsonUtil.get_dict(db.singletons.get("city", {}), "residence"), "tiers").size())
 	for id: String in db.get_collection("facilities"):
 		var f := db.get_entry("facilities", id)
 		var i := SEED_ORDER.find(id) + 1 if SEED_ORDER.has(id) else 100 + absi(id.hash()) % 900
 		var size: Vector2i = Buildings.SIZES.get(id, Vector2i(400, 400))
-		var x := float(JsonUtil.get_int(f, "x"))
 		var t0 := clampi(JsonUtil.get_int(f, "min_residence", 1), 1, tiers)
-		spans.append([x, x + size.x * scale, t0])
 		var mine := only == "facility" and id == one
 		if only.is_empty() or only == "buildings" or mine:
 			var base := JsonUtil.get_str(f, "building")
@@ -58,12 +56,20 @@ func _init() -> void:
 			for t in range(t0, tiers + 1):
 				Interiors.paint(id, SEED + i * 211, t).save(_tier_path(inner, t, t0))
 				print("그림: 내부 %s 등급 %d" % [id, t])
-	spans.sort_custom(func(a: Array, c: Array) -> bool: return float(a[0]) < float(c[0]))
+	for t in range(1, tiers + 1):
+		var here: Array = []
+		for id: String in db.get_collection("facilities"):
+			if JsonUtil.get_int(db.get_entry("facilities", id), "min_residence", 1) <= t:
+				var x := CityResidence.facility_x(db, id, t)
+				here.append([x, x + Buildings.SIZES.get(id, Vector2i(400, 400)).x * scale])
+		here.sort_custom(func(a: Array, c: Array) -> bool: return float(a[0]) < float(c[0]))
+		spans.append(here)
 	if only.is_empty() or only == "street":
 		for layer: Variant in JsonUtil.get_array(street, "layers"):
-			for t in range(1, tiers + 1 if JsonUtil.get_str(layer as Dictionary, "id") in TIER_LAYERS else 2):
-				var here := spans.filter(func(sp: Array) -> bool: return int(sp[2]) <= t)  # 그 구역에 서는 건물만(거래소 — CT54)
-				_paint_layer(layer as Dictionary, width, baseline, here, t)
+			var tiered := JsonUtil.get_str(layer as Dictionary, "id") in TIER_LAYERS
+			for t in range(1, tiers + 1 if tiered else 2):  # 구역마다 그리는 레이어는 그 구역 거리 길이로, 나머지는 가장 긴 거리로
+				var w := int(CityResidence.street_width(db, width, t)) if tiered else width
+				_paint_layer(layer as Dictionary, w, baseline, spans[t - 1], t)
 		for kind: Variant in JsonUtil.get_array(JsonUtil.get_dict(db.singletons.get("city", {}), "weather"), "kinds"):
 			var sky_path := JsonUtil.get_str(kind as Dictionary, "sky")
 			if JsonUtil.get_str(kind as Dictionary, "sky_style") == "clear" and not sky_path.is_empty():

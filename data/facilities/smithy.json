@@ -2,7 +2,7 @@
   "id": "smithy",
   "name_ko": "대장간",
   "order": 6,
-  "x": 2688,
+  "x": 3338,
   "building": "res://assets/city/buildings/smithy.webp",
   "interior": "res://assets/city/interiors/smithy.webp",
   "activities": [

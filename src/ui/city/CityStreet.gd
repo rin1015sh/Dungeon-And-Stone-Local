@@ -56,6 +56,7 @@ func _ready() -> void:
 		var parent := _front if front else (_content if JsonUtil.get_float(d, "parallax", 1.0) >= 1.0 and not JsonUtil.get_bool(d, "screen") else _back)
 		_add_layer(d, parent)
 	_tier = CityResidence.tier(_state)
+	_street_w = CityResidence.street_width(_state.db, JsonUtil.get_float(street, "width", _street_w), _tier)
 	for id in _state.facility_ids():
 		_add_building(id)
 	resized.connect(_layout)
@@ -113,7 +114,7 @@ func _add_building(id: String) -> void:
 	plate.add_child(label)
 	add_child(plate)  # 이름판은 비네트보다 앞
 	_buildings.append({"id": id, "node": art, "glow": glow, "plate": plate, "label": label,
-		"x": float(JsonUtil.get_int(f, "x")), "w": size_u.x, "h": size_u.y})
+		"x": CityResidence.facility_x(_state.db, id, _tier), "w": size_u.x, "h": size_u.y})  # 구역에 서지 않는 시설 자리는 당긴다(CT54)
 
 
 ## 건물을 지금 구역 것으로 다시 세운다(거래소처럼 구역마다 서는 시설이 다르다). 가리키던 건물은 그대로 가리킨다.
@@ -126,6 +127,7 @@ func _rebuild_buildings() -> void:
 			n.queue_free()
 	_buildings.clear()
 	_tier = CityResidence.tier(_state)
+	_street_w = CityResidence.street_width(_state.db, JsonUtil.get_float(CityValues.city_section(_state.db, {}, "street"), "width", _street_w), _tier)
 	for id in _state.facility_ids():
 		_add_building(id)
 	_focus = -1

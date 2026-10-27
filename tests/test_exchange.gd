@@ -69,3 +69,20 @@ func test_sell_pays_and_rate_saves() -> void:
 	var copy := CityState.new(db, 1)
 	copy.load_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
 	assert_eq(CityExchange.rate(copy), CityExchange.rate(s), "시세 저장 왕복")
+
+
+## 거래소는 상점 바로 옆(사용자 2026-10-27). 서지 않는 구역에선 그 자리를 당겨 예전 거리 그대로.
+func test_next_to_shop_and_gap_closed_below() -> void:
+	var ids := _state(3).facility_ids()
+	assert_eq(ids.find("exchange"), ids.find("shop") + 1, "상점 다음 건물")
+	var shop_end := CityResidence.facility_x(db, "shop", 3) + 400.0 * 0.85
+	var ex := CityResidence.facility_x(db, "exchange", 3)
+	assert_true(ex > shop_end and ex - shop_end < 150.0, "상점 바로 옆")
+	assert_true(CityResidence.facility_x(db, "smithy", 3) > ex + 560.0, "대장간은 거래소 뒤로")
+	var slot := JsonUtil.get_float(db.get_entry("facilities", "exchange"), "slot")
+	for id: String in ["smithy", "bank", "training"]:
+		assert_eq(CityResidence.facility_x(db, id, 1), CityResidence.facility_x(db, id, 3) - slot, id + " 13구역에선 당긴다")
+	assert_eq(CityResidence.facility_x(db, "shop", 1), CityResidence.facility_x(db, "shop", 4), "앞쪽 건물은 그대로")
+	var w := JsonUtil.get_float(JsonUtil.get_dict(db.singletons.get("city", {}), "street"), "width")
+	assert_eq(CityResidence.street_width(db, w, 1), w - slot, "13구역 거리는 짧다")
+	assert_eq(CityResidence.street_width(db, w, 3), w, "5구역부터 전체")

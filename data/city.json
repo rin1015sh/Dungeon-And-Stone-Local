@@ -34,7 +34,7 @@
   },
   "street": {
     "_comment": "거리 = 옆에서 본 긴 그림. 좌표는 '거리 단위'(화면 높이 720 기준 px). width = 거리 길이, 건물 위치는 각 시설의 x. layers = 뒤에서 앞 순서(시설 건물은 parallax 1 레이어 바로 위에 그린다). parallax 0~1 = 스크롤을 따라가는 비율(작을수록 멀다), y·height = 레이어가 차지하는 세로 구간, scale = 그림 1px이 몇 거리 단위인가, screen = 화면에 고정(스크롤 안 함), front = 건물보다 앞.",
-    "width": 5000,
+    "width": 5030,
     "layers": [
       {
         "id": "sky",
@@ -139,10 +139,10 @@
     "library",
     "temple",
     "shop",
+    "exchange",
     "smithy",
     "bank",
-    "training",
-    "exchange"
+    "training"
   ],
   "item_use": {
     "_comment": "도시(거리)에서 소지품 창으로 쓸 수 있는 아이템 분류. 시설 안에서는 소지품·캐릭터 창을 열 수 없다.",

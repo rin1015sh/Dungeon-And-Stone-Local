@@ -50,6 +50,28 @@ static func allows_facility(state: CityState, facility_id: String) -> bool:
 	return tier(state) >= JsonUtil.get_int(state.db.get_entry("facilities", facility_id), "min_residence", 1)
 
 
+## 그 구역 거리에서 시설의 x(거리 단위): 데이터 x에서, 그 구역에 서지 않는 시설(min_residence)이 앞쪽에 있으면 그 slot만큼 당긴다
+## (거래소는 상점 옆 — 13·7구역에선 그 자리가 없어 예전 거리 그대로, CT54). 그림 도구(tools/paint_city.gd)도 같은 값을 쓴다.
+static func facility_x(db: GameDatabase, facility_id: String, t: int) -> float:
+	var x := float(JsonUtil.get_int(db.get_entry("facilities", facility_id), "x"))
+	var out := x
+	for other: String in db.get_collection("facilities"):
+		var o := db.get_entry("facilities", other)
+		if JsonUtil.get_int(o, "min_residence", 1) > t and float(JsonUtil.get_int(o, "x")) < x:
+			out -= JsonUtil.get_float(o, "slot")
+	return out
+
+
+## 그 구역 거리 길이: city.json street.width에서 서지 않는 시설의 slot을 뺀다.
+static func street_width(db: GameDatabase, width: float, t: int) -> float:
+	var out := width
+	for other: String in db.get_collection("facilities"):
+		var o := db.get_entry("facilities", other)
+		if JsonUtil.get_int(o, "min_residence", 1) > t:
+			out -= JsonUtil.get_float(o, "slot")
+	return out
+
+
 ## 물가 배율(시설 이용료·상점/대장간 사는 값 — 컴멜비는 비싸다).
 static func price_mult(state: CityState) -> float:
 	return maxf(0.0, JsonUtil.get_float(def(state), "price_mult", 1.0))
