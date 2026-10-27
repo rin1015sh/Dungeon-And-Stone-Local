@@ -36,6 +36,7 @@
   "behavior": {
     "aggressive": true,
     "aggro_radius_m": 5.0,
+    "hunts_tiles": 14,
     "leash_tiles": 0,
     "pack_size": [
       2,

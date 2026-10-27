@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **필드 몬스터: 화면 안이면 알아채고 · 계속 움직이고 곧게 · 사냥꾼은 밖에서부터 (2026-10-27, 사용자 "빙빙 돌고 앞에 와도 모른다, 기차 같다")** — V13~V15.
+  - `MonsterSteering`: 보는 거리 = aggro × `sight_mult`(최대 `sight_max_tiles`), 쫓는 중 × `chase_keep_mult`, `_hunts`(behavior `hunts_tiles` — 거리 장 걸음 수), `clear_walk`(몸 폭 곧은 길) — 직접 추적 16칸·추적 길 곧게(`_straight_descent`). `MonsterPatrol`: 칸 길 건너뛰기(`straight_lookahead_tiles`), 집 옮기기(`home_drift_chance`). `MonsterSenses`: 배율 값, 180° 끝(내적 0)도 안.
+  - balance: 시야각 180, 기척 2.5, 순찰 0.9 / 14칸 / 쉬기 0.02~0.12h. 늑대 넷 `hunts_tiles` 20, 고블린 14.
+  - 시험 test_monster_patrol: 보는 거리·쫓는 중 놓치지 않음·사냥(ㄷ자 굴)·곧은 걸음 추가, 옆은 보임으로, 소리 시험은 슬라임(고블린은 사냥꾼).
+  - sim_walk 시드 1~3: 전투 120 → 214번(1400초 걸음 — 걷기만 하는 시뮬이라 피하지 않는다), 만남 간격 평균 5.6 → 4.1초. 대부분 보는 거리(사냥 빼도 206). 너무 잦으면 `sight_mult`부터 낮춘다. sim_rift 모두 통과, check.sh 통과.
+
 - **창 통일 · 대화창 쪽 미리 정하기 · 도시 카드 하나 · 도서관 무료 (2026-10-27, 사용자)** — UI36.
   - `DialogueBox`: 줄을 넣을 때 `TextParagraph`로 창 폭에 맞춰 접고(창 안 자동 줄바꿈 끔), 한 쪽 = 창 높이에 들어가는 줄(글꼴 높이·줄 간격으로 계산, 최대 `ui.dialog.lines` 5). 남은 자리에 안 들어가는 글은 통째로 다음 쪽, 한 쪽보다 긴 글만 나눔. `place_bottom`(아래 가운데 800×196)을 탐험·전투(명령 창 포함)·도시 거리·시설이 같이 쓴다 — render.json `combat_bottom_*` 삭제.
   - 창 판 `UiTheme.panel_box`(팔레트 `panel_bg`) — `CityUi.card_box`·`CommandMenu`·`translucent_panel`이 이것. `city.ui.bg`·`panel_alpha`·`vitals_width` 삭제.

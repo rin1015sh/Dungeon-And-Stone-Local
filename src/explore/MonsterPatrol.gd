@@ -4,6 +4,8 @@ extends RefCounted
 ##   대기(idle): 순찰 지점에 서서 monsters.patrol_pause_hours 동안 둘러보고(patrol_look_hours마다 트인 쪽으로 고개를 돌린다),
 ##     behavior wander_chance 확률로 집 둘레 wander_radius 안의 다른 지점(patrol_min_tiles 이상 떨어지고 되도록 앞쪽)까지
 ##     칸 길로 걸어간다. 아니면 그 자리에서 더 선다. (예전엔 칸마다 무작위 한 걸음이라 제자리에서 맴돌았다.)
+##     쉬는 시간은 짧고, 지점을 고를 때 home_drift_chance로 그 지점이 새 집이 된다 — 같은 둘레를 맴돌지 않고 굴을 따라 옮겨 다닌다(V14).
+##     칸 길은 곧게 걸을 수 있는 데까지(straight_lookahead_tiles) 건너뛰어 칸칸이 꺾어 걷지 않는다(V14).
 ##   수색(search): 쫓던 플레이어를 놓치면 마지막으로 본 칸(Group.last_seen)까지 가서 search_hours 동안 둘러본다.
 ##   귀환(return): 칸 길(FieldRoutes)로 집까지(예전엔 집 쪽으로 욕심껏 한 칸이라 굽은 굴에서 왔다 갔다 했다).
 ##   고개 돌리기: Group.look 쪽으로 한 칸 걷는 시간마다 turn_deg_per_tile씩 돈다.
@@ -23,12 +25,18 @@ var _wander_radius: float = 6.0
 var _turn_per_hour: float = 0.0
 var _route_radius: int = 90
 var _search_radius: int = 48
+var _clear: Callable  ## (점 a, 점 b) -> bool — MonsterSteering.clear_walk
+var _lookahead: int = 8
+var _drift: float = 0.25
 
 
-func _init(db: GameDatabase, map: FloorMap, rng: Rng, can_enter: Callable) -> void:
+func _init(db: GameDatabase, map: FloorMap, rng: Rng, can_enter: Callable, clear: Callable) -> void:
 	_map = map
 	_rng = rng
 	_can_enter = can_enter
+	_clear = clear
+	_lookahead = int(db.bal("monsters.straight_lookahead_tiles", 8))
+	_drift = float(db.bal("monsters.home_drift_chance", 0.25))
 	_pause = db.bal("monsters.patrol_pause_hours", [0.1, 0.3])
 	_look = db.bal("monsters.patrol_look_hours", [0.04, 0.1])
 	_search_hours = float(db.bal("monsters.search_hours", 0.3))
@@ -72,6 +80,8 @@ func next_cell(g: FieldMonsters.Group, now: float, beh: Dictionary) -> Vector2i:
 		return step
 	if _rng.chance(JsonUtil.get_float(beh, "wander_chance", _wander_chance)):
 		g.patrol = _plan(g, JsonUtil.get_float(beh, "wander_radius", _wander_radius))
+		if not g.patrol.is_empty() and JsonUtil.get_int(beh, "leash_tiles") <= 0 and _rng.chance(_drift):
+			g.home = g.patrol.back()  # 집이 옮겨 간다(영역이 있는 몬스터는 그대로)
 	if g.patrol.is_empty():
 		g.rest_until = now + _span(_pause)  # 그 자리에 더 선다
 		return step
@@ -112,6 +122,14 @@ func _follow(g: FieldMonsters.Group, now: float) -> Vector2i:
 	var nxt: Vector2i = g.patrol[0]
 	if (nxt - g.pos).length_squared() == 1 and bool(_can_enter.call(nxt, g)):
 		g.patrol.pop_front()
+		var from := Kinematics.center_of(g.pos)
+		for k in _lookahead - 1:  # 곧게 걸을 수 있는 데까지 건너뛴다
+			if g.patrol.is_empty():
+				break
+			var far: Vector2i = g.patrol[0]
+			if not bool(_can_enter.call(far, g)) or not bool(_clear.call(from, Kinematics.center_of(far))):
+				break
+			nxt = g.patrol.pop_front()
 		return nxt
 	g.patrol.clear()  # 다른 무리가 막았다 — 여기서 멈춘다(귀환은 잠시 뒤 길을 다시 찾는다)
 	if g.state == FieldMonsters.STATE_RETURN:
