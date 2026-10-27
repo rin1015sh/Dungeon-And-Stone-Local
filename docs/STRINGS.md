@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(979줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(976줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -534,12 +534,10 @@
 - `combat.end_fled` 가까스로 빠져나왔다.
 - `combat.reason_sealed` 지금은 이능을 쓸 수 없는 상태다.
 - `combat.reason_cooldown` 아직 다시 쓸 수 없다.
-- `combat.reason_no_mastery` 이 무기를 다룰 줄 모른다.
 - `combat.skill_wait` {n}차례 대기
 - `combat.skill_used_up` 다 씀
 - `combat.skill_no_cost` 대가 부족
 - `combat.skill_sealed` 봉인
-- `combat.skill_no_mastery` 숙련 없음
 - `combat.skill_unusable` 사용 불가
 - `combat.no_effect` {name}의 [{skill}]은(는) 아무 효과도 내지 못했다.
 - `combat.reason_cost` 대가를 치를 수 없다.
@@ -762,7 +760,6 @@
 - `character.attack` 공격력
 - `character.crit` 치명타율
 - `character.attack_type` 기본 공격: {type}
-- `character.mastery` {name} 숙련
 - `character.essence_slots` 정수 슬롯 {n}칸
 - `character.sub_stats` 세부 능력치
 - `character.boons` 영구 강화

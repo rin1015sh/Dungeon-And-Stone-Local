@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **무기 스킬·숙련 없앰 (2026-10-27, 사용자 "무기 관련 스킬 있지? 숙련이랑 전부 제거해줘")** — IT11. IT8~IT10 세 커밋(5c6241c·7508000·a771f6c)의 코드·데이터를 되돌림: `skills/wpn_*` 27개, `item_types.json skills`·고유 장비 `equip.skills`, `Actor.sync_gear_skills`·숙련(`lacks_mastery`·`learn_worn_masteries`·저장)·대가(`can_pay`·`pay`·`Fatigue.room`), `ItemInfo.skills`·`ItemForge` 옮김, 검증(ItemPoolRules·ContentRules), Tab "… 숙련"·전투 "숙련 없음" 문구, test_gear_skills. 뒤 작업(소화력 삭제·동료 허기·피로 C19)과 겹치는 곳은 없었다. 서적 `a_mastery` 지움·`a_shield` 고쳐 씀. 문서(CANON·REFERENCE·ASSUMPTIONS IT11·balance/city·PLAYTEST). check.sh 통과.
+
 - **거래소를 상점 옆으로 (2026-10-27, 사용자 "거래소는 상점 옆에 배치되게")** — CT54. 거래소 x 2678(상점 바로 뒤), 대장간·은행·훈련장 +650, 거리 폭 5030, 시설 `slot` 650 — 거래소가 서지 않는 13·7구역에선 뒤 건물을 그만큼 당기고 거리를 줄여 예전 13구역 거리 그림과 바이트까지 같다(`CityResidence.facility_x`·`street_width`, CityStreet·paint_city·검증). 시험 test_exchange `test_next_to_shop_and_gap_closed_below`. 거리 레이어 다시 그림, 캡처로 13·3구역 확인. check.sh 통과.
 
 - **거리 사건은 13구역만 · 알미너스 중앙 거래소 · 구역마다 밝고 고급스러운 도시 그림 (2026-10-27, 사용자 "지금 존재하는 이벤트는 13구역 이벤트 전용으로, 5구역부터 알미너스 중앙 거래소라는 거래소 건물 추가, 도시 일러스트가 다 거기서 거기 같아서 조금 더 밝고 고급지게 건물이랑 일러스트를 수정")** — CT54~CT56.

@@ -26,8 +26,6 @@ var skills: Array[String] = []
 var passives: Array[Dictionary] = []
 ## 전투 게이지(data/meters.json id -> 값). 전투가 끝나면 비운다(Meters).
 var meters: Dictionary = {}
-## 무기 숙련(item_types id — 장비 스킬은 그 종류의 숙련이 있어야 쓴다, IT9). 저장은 PlayerCharacter.progress_to_dict.
-var masteries: Array[String] = []
 ## 영구 강화를 받은 횟수(효과 permanent_stat의 key → 횟수 — 빙정 최대 3회). 저장은 PlayerCharacter.progress_to_dict.
 var boons: Dictionary = {}
 
@@ -49,7 +47,6 @@ func _init(p_db: GameDatabase, bases: Dictionary = {}, level: int = 1, resource_
 	# 람다로 self를 잡으면 RefCounted 순환 참조(누수)가 생기므로 메서드로 잇는다.
 	statuses.applied.connect(_on_status_applied)
 	statuses.removed.connect(_on_status_removed)
-	equipment.changed.connect(_on_gear_changed)
 	pool.sync_initial()
 
 
@@ -112,83 +109,6 @@ func learn_skill(skill_id: String) -> bool:
 	if skill_id.is_empty() or skills.has(skill_id):
 		return false
 	skills.append(skill_id)
-	return true
-
-
-## 스킬 대가 키 "fatigue": 자원이 아니라 피로가 그만큼 오른다(장비 스킬 — 사용자 2026-10-26, IT10). 나머지 키는 자원.
-const COST_FATIGUE := "fatigue"
-
-
-## 스킬 대가(cost)를 치를 수 있는가: 자원은 남은 양, 피로는 최대치까지 남은 자리.
-func can_pay(cost: Dictionary) -> bool:
-	var f := JsonUtil.get_float(cost, COST_FATIGUE)
-	if f > 0.0 and fatigue_room() + 0.0001 < f:
-		return false
-	return pool.can_afford(_pool_cost(cost))
-
-
-## 대가를 치른다(못 치르면 아무것도 바꾸지 않고 false).
-func pay(cost: Dictionary, source: String) -> bool:
-	if not can_pay(cost):
-		return false
-	pool.spend(_pool_cost(cost), source)
-	var f := JsonUtil.get_float(cost, COST_FATIGUE)
-	if f > 0.0:
-		add_fatigue(f, source)
-	return true
-
-
-## 피로가 오를 수 있는 남은 자리. 피로가 없는 개체(몬스터)는 0 — 피로 대가 스킬을 못 쓴다.
-func fatigue_room() -> float:
-	return 0.0
-
-
-func add_fatigue(_amount: float, _source: String) -> void:
-	pass
-
-
-func _pool_cost(cost: Dictionary) -> Dictionary:
-	if not cost.has(COST_FATIGUE):
-		return cost
-	var out := cost.duplicate()
-	out.erase(COST_FATIGUE)
-	return out
-
-
-## 장비 스킬(스킬 데이터 "mastery": 종류 id — 든 무기·방패의 equip.skills, IT8)을 지금 장비에 맞춘다.
-## 장비 스킬은 목록 맨 앞(무기 → 방패 순), 벗으면 잊는다. 장비가 바뀔 때마다(불러오기 포함) 부른다.
-func sync_gear_skills() -> void:
-	var now: Array[String] = []
-	for item_id in equipment.equipped_ids():
-		for s in ItemInfo.skills(db, item_id):
-			if not now.has(s) and db.has_entry("skills", s):
-				now.append(s)
-	for s in skills:
-		if mastery_of(s).is_empty() and not now.has(s):
-			now.append(s)
-	skills.assign(now)
-
-
-func _on_gear_changed(_slot: String) -> void:
-	sync_gear_skills()
-
-
-## 장비 스킬이 요구하는 숙련(무기·방패 종류 id). 장비 스킬이 아니면 "".
-func mastery_of(skill_id: String) -> String:
-	return JsonUtil.get_str(db.get_entry("skills", skill_id), "mastery")
-
-
-## 이 스킬에 필요한 숙련이 없는가(장비 스킬만 — IT9).
-func lacks_mastery(skill_id: String) -> bool:
-	var m := mastery_of(skill_id)
-	return not m.is_empty() and not masteries.has(m)
-
-
-## 숙련을 얻는다(이미 있으면 그대로). 새로 얻었으면 true.
-func learn_mastery(type_id: String) -> bool:
-	if type_id.is_empty() or masteries.has(type_id):
-		return false
-	masteries.append(type_id)
 	return true
 
 
