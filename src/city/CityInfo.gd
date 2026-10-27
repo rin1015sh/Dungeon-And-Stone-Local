@@ -20,6 +20,14 @@ static func field_ids(db: GameDatabase) -> Array[String]:
 	return out
 
 
+## 분야의 펼친 책 그림(city.json library.fields art — 읽을 때 시설 안을 덮는다, CT57). 없으면 "".
+static func field_art(db: GameDatabase, id: String) -> String:
+	for f: Variant in fields(db):
+		if f is Dictionary and JsonUtil.get_str(f, "id") == id:
+			return JsonUtil.get_str(f, "art")
+	return ""
+
+
 static func field_name(db: GameDatabase, id: String) -> String:
 	for f: Variant in fields(db):
 		if f is Dictionary and JsonUtil.get_str(f, "id") == id:

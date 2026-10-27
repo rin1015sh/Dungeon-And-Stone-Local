@@ -35,7 +35,7 @@
 - **게임 글 md**(사용자가 글을 고치는 곳): `godot --headless --path . --script res://tools/strings_md.gd` → `docs/STRINGS.md`(ko.json 전부, 한 줄 = ``- `키` 글``) · 사용자가 고친 md를 넣기 `… -- --apply`(있는 키의 글만 바꾼다). **ko.json 문구를 추가·수정했으면 다시 만든다**(md가 낡으면 사용자가 옛 글을 고치게 된다).
 - **정수 표**: `python3 tools/essences_md.py` → `docs/balance/essences.md`(정수·정수 스킬을 바꿨으면 다시 만든다 — 손으로 고치지 않는다).
 - **데칼 좌표 굽기**(층 JSON `art.decor` 규칙·kinds를 바꿨으면 필수 — 테스트가 파일과 규칙 결과를 비교한다): `godot --headless --path . --script res://tools/bake_decor.gd` → `data/maps/f1_crystal_cave_decor.json`(한 줄 = [x, y, 종류, 변형, 방향, 뒤집기, 크기×100, 흔들림×100 ×2] — 손으로 고쳐도 된다).
-- **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
+- **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다.
   - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(Noto Sans KR)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
@@ -97,7 +97,7 @@ src/explore/    지도·생성기(generators/)·ExploreSession·이동·시야·
 src/progress/   성장·정수·전리품·드롭·저장      src/items/  가방·장비      src/city/  도시 규칙(+effects/)
 src/ui/         InputSetup·theme/·widgets/·windows/(Tab 메뉴)·city/·combat/·screens/
 tests/          test_*.gd(단위) · smoke_ui(UI 스모크)
-tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/) · sim_*(밸런스 시뮬레이터)
+tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/, paint_books + book_art/) · sim_*(밸런스 시뮬레이터)
 assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ battle/(전투 뒷그림) (그림은 코드가 그린 WebP)
 ```
 파일 하나하나의 역할은 **`docs/REFERENCE.md` "파일 구조(자세히)"**.

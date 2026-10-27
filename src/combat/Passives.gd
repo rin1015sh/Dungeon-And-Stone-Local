@@ -81,7 +81,6 @@ static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor,
 	if target == null or target.dead:
 		return "failed"
 	if is_immune(target, status_id) or target.statuses.immune(status_id):
-		_note(source, target, status_id, "st_immune")
 		return "immune"
 	if source != null and source != target and rng != null \
 			and rng.chance(target.statuses.resist_chance(status_id, maxf(source.stats.get_value("str"), source.stats.get_value("int")))):
@@ -91,19 +90,7 @@ static func try_status(db: GameDatabase, rng: Rng, source: Actor, target: Actor,
 	if cap >= 0.0:
 		var base := dur if dur >= 0.0 else JsonUtil.get_float(JsonUtil.get_dict(db.get_entry("statuses", status_id), "duration"), "amount", cap)
 		dur = minf(base, cap)
-	if not target.statuses.apply(status_id, dur):
-		return "failed"
-	_note(target, source, status_id, "st_inflicts")
-	return ""
-
-
-## 도감 기록: 탐험가(knower)가 몬스터(about)의 상태이상을 알게 됐다 — 걸어 봤는데 듣지 않았다 · 그 몬스터가 걸었다.
-## knowledge가 있는 쪽만(PlayerCharacter — 클래스로 참조하지 않는다, 순환 방지).
-static func _note(knower: Actor, about: Actor, status_id: String, kind: String) -> void:
-	if knower == null or not about is Monster or not "knowledge" in knower:
-		return
-	var k: Knowledge = knower.get("knowledge")
-	k.learn_status((about as Monster).monster_id, kind, status_id)
+	return "" if target.statuses.apply(status_id, dur) else "failed"
 
 
 ## 면역: 패시브 status_immune 또는 몬스터 status_immune(보스마다 개연성 있는 몇 가지 — UI25).

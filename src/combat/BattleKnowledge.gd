@@ -1,7 +1,7 @@
 class_name BattleKnowledge
 extends RefCounted
 ## 전투가 플레이어의 정보(Knowledge)를 채운다: 마주친 몬스터는 "봤다",
-## 어떤 피해 유형으로 쳐 본 결과(약점·면역·저항)는 그 유형의 상성을 안다. 상태이상(듣지 않음·거는 것)은 Passives.try_status가 적는다.
+## 어떤 피해 유형으로 쳐 본 결과(약점·면역·저항)는 그 유형의 상성을 안다.
 ## 알게 된 것은 전투 중에 알리지 않는다 — 도감 B에서만 보인다(사용자 2026-10-27, UI22).
 
 
@@ -32,14 +32,6 @@ static func on_damage(b: Battle, c: Combatant, e: Dictionary) -> void:
 	var dtype := str(e.get("damage_type", ""))
 	var aff := float(e.get("affinity", 1.0))
 	(c.actor as PlayerCharacter).knowledge.learn_affinity(m.monster_id, dtype, aff)
-
-
-## 알아낸 상태이상 목록을 이름으로("중독, 공포"). 모르면 "???".
-static func describe_statuses(db: GameDatabase, ids: Array[String]) -> String:
-	var names := PackedStringArray()
-	for id in ids:
-		names.append(DataNames.entry(db, "statuses", id))
-	return ", ".join(names) if not names.is_empty() else Strings.t("knowledge.unknown")
 
 
 ## 알아낸 상성을 문장으로("화염 약점 ×1.5, 독 면역"). 모르면 "???".

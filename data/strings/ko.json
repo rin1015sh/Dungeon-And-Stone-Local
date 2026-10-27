@@ -648,8 +648,6 @@
     "stats": "생명력 {hp} · 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}",
     "stats_unknown": "생명력·스탯: ???",
     "affinity": "상성: {aff}",
-    "status_immune": "듣지 않는 상태이상: {list}",
-    "status_inflicts": "거는 상태이상: {list}",
     "variant_of": "{name}의 변이종.",
     "shared": "[{skill}] 이능을 함께 지닌 종: {list}"
   },

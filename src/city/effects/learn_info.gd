@@ -21,7 +21,8 @@ func apply(ctx: CityContext, data: Dictionary) -> void:
 		var id := str(pool.pop_at(ctx.rng().randi_range(0, pool.size() - 1)))
 		ctx.state.learn_info(id)
 		var e := ctx.db.get_entry("city_info", id)
-		ctx.say("city.fx.book_new", {"name": JsonUtil.get_str(e, "name_ko", id), "text": JsonUtil.get_str(e, "text_ko")}, "good")
+		ctx.say("city.fx.book_new", {"name": JsonUtil.get_str(e, "name_ko", id), "text": JsonUtil.get_str(e, "text_ko"),
+			"field": JsonUtil.get_str(e, "field")}, "good")  # field = 그 분야 책 그림(FacilityView)
 
 
 func validate(data: Dictionary, db: GameDatabase) -> PackedStringArray:

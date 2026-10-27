@@ -99,22 +99,3 @@ func test_money_units() -> void:
 	assert_true(stone * 20 <= potion and stone * 60 >= potion, "9등급 마석 수십 개 = 포션 하나")
 	for id in ["green_gem", "necronomicon"]:
 		assert_true(CityShop.price(db, id) <= potion * 100, "%s 값이 원정 수십 번 치를 넘지 않는다" % id)
-
-
-## 상태이상 지식(사용자 2026-10-27 "상태이상 관련 정보도 도감에서"): 걸어 봤는데 듣지 않은 상태 · 그 몬스터가 건 상태를 기록한다.
-func test_status_knowledge_for_the_bestiary() -> void:
-	var pc := _pc()
-	var king := Monster.create(db, "king_slime")
-	assert_eq(Passives.try_status(db, null, pc, king, "bleeding"), "immune")
-	assert_eq(pc.knowledge.statuses("king_slime", "st_immune"), ["bleeding"] as Array[String], "듣지 않은 상태를 안다")
-	var wolf := Monster.create(db, "blade_wolf")
-	assert_eq(Passives.try_status(db, null, wolf, pc, "bleeding"), "")
-	assert_eq(pc.knowledge.statuses("blade_wolf", "st_inflicts"), ["bleeding"] as Array[String], "몬스터가 건 상태를 안다")
-	assert_true(pc.knowledge.statuses("goblin", "st_immune").is_empty())
-	assert_eq(BattleKnowledge.describe_statuses(db, pc.knowledge.statuses("goblin", "st_immune")), Strings.t("knowledge.unknown"), "모르면 ???")
-	var k := Knowledge.new()
-	k.load_dict(JSON.parse_string(JSON.stringify(pc.knowledge.to_dict())))
-	assert_eq(k.statuses("king_slime", "st_immune"), ["bleeding"] as Array[String], "저장 왕복")
-	var all := Knowledge.new()
-	all.learn_all(db, "dreadfear")
-	assert_eq(all.statuses("dreadfear", "st_immune").size(), 5, "정보를 다 알면 데이터의 면역 전부")

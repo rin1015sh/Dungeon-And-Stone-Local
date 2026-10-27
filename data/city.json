@@ -278,14 +278,14 @@
     "source": "placeholder"
   },
   "library": {
-    "_comment": "도서관 서적(CT52): 분야마다 읽기 활동(효과 learn_info field). 한 번 읽으면 per_read[최소, 최대]개 — 아직 모르는 항목 중 거주 등급 이하(tier)·갔던 층 + 1 이하(floor)만(data/city_info). 얻은 것은 도감(B)의 서적에서 다시 읽는다.",
+    "_comment": "도서관 서적(CT52): 분야마다 읽기 활동(효과 learn_info field). 한 번 읽으면 per_read[최소, 최대]개 — 아직 모르는 항목 중 거주 등급 이하(tier)·갔던 층 + 1 이하(floor)만(data/city_info). 얻은 것은 도감(B)의 서적에서 다시 읽는다. art = 읽을 때 시설 안을 덮는 펼친 책 그림(tools/paint_books.gd, CT57).",
     "fields": [
-      {"id": "dungeon", "name_ko": "미궁에 관하여"},
-      {"id": "arms", "name_ko": "소재와 무기에 관하여"},
-      {"id": "ailments", "name_ko": "상태이상에 관하여"},
-      {"id": "monsters", "name_ko": "몬스터와 정수에 관하여"},
-      {"id": "survival", "name_ko": "생존과 야영에 관하여"},
-      {"id": "society", "name_ko": "도시와 탐험가에 관하여"}
+      {"id": "dungeon", "name_ko": "미궁에 관하여", "art": "res://assets/city/books/dungeon.webp"},
+      {"id": "arms", "name_ko": "소재와 무기에 관하여", "art": "res://assets/city/books/arms.webp"},
+      {"id": "ailments", "name_ko": "상태이상에 관하여", "art": "res://assets/city/books/ailments.webp"},
+      {"id": "monsters", "name_ko": "몬스터와 정수에 관하여", "art": "res://assets/city/books/monsters.webp"},
+      {"id": "survival", "name_ko": "생존과 야영에 관하여", "art": "res://assets/city/books/survival.webp"},
+      {"id": "society", "name_ko": "도시와 탐험가에 관하여", "art": "res://assets/city/books/society.webp"}
     ],
     "per_read": [1, 2],
     "source": "placeholder"

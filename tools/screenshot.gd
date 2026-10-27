@@ -177,10 +177,9 @@ func _run() -> void:
 				epc.essences.absorb(epc, {"essence": "ghoul", "color": "red", "stats": {"agi": 3}})
 				epc.set_level(1)
 		if _args.has("codex"):
-			if _args.has("known") and _args.has("monster"):  # --known --monster=<id>: 그 몬스터를 다 아는 도감(상성·상태이상 줄 확인)
+			if _args.has("known") and _args.has("monster"):  # --known --monster=<id>: 그 몬스터를 다 아는 도감(상성 줄 확인)
 				var kn := explore.session.player.knowledge
 				kn.learn_all(DataRegistry.db, str(_args["monster"]))
-				kn.learn_status(str(_args["monster"]), "st_inflicts", "bleeding")
 			if _args.has("books"):
 				for id: String in DataRegistry.db.get_collection("city_info"):
 					explore.codex().known.append(id)

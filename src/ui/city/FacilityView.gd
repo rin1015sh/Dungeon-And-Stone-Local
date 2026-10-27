@@ -10,6 +10,7 @@ extends Control
 ## 거래 결과는 대화창에 남긴다(거래마다 Enter를 누르지 않게 넘기지 않는 글로). 할 수 있는 활동이 하나도 없으면 들어오자마자 그 이유를 들고 나간다.
 
 signal leave_requested
+signal art_shown  ## 결과 그림(요리·펼친 책)이 시설 안을 덮었다 — 도시 화면이 귀퉁이 카드를 숨긴다
 
 var _state: CityState
 var _pc: PlayerCharacter
@@ -164,21 +165,26 @@ func _close_panel(cursor: int) -> void:
 
 ## 활동 결과(무엇이 얼마나 바뀌었는지)를 대화창에 쌓는다(한 쪽씩 Enter).
 func show_result(ctx: CityContext) -> void:
-	_show_meal(ctx)
+	_show_art(ctx)
 	if ctx.ok:
 		_dialog.say(Strings.t("city.did", {"name": JsonUtil.get_str(_state.activity(ctx.activity_id), "name_ko")}), "info")
 	for msg: Dictionary in ctx.messages:
 		_dialog.say(CityLines.text(_state, ctx.activity_id, msg), str(msg["kind"]))
 
 
-## 여관 식사(city.meal.<요리 id> 문구가 있으면): 그 요리 그림(data/meals art — 여관 탁자 위 요리)이 실내 그림 위를 가득 덮는다(CT47).
+## 결과 그림이 실내 그림 위를 가득 덮는다 — 여관 식사(city.meal.<요리 id> → data/meals art, CT47) ·
+## 도서관 서적(city.fx.book_new → 그 분야의 펼친 책 그림 city.json library.fields art, CT57 — 글은 아래 대화창에).
 ## 대화창은 그 위. 결과를 다 넘기면 방문이 끝나 거리로 나가며 함께 사라진다.
-func _show_meal(ctx: CityContext) -> void:
+func _show_art(ctx: CityContext) -> void:
 	for msg: Dictionary in ctx.messages:
 		var key := str(msg["key"])
-		if not key.begins_with("city.meal."):
+		var art := ""
+		if key.begins_with("city.meal."):
+			art = JsonUtil.get_str(_state.db.get_entry("meals", key.trim_prefix("city.meal.")), "art")
+		elif key == "city.fx.book_new":
+			art = CityInfo.field_art(_state.db, JsonUtil.get_str(msg.get("args", {}), "field"))
+		else:
 			continue
-		var art := JsonUtil.get_str(_state.db.get_entry("meals", key.trim_prefix("city.meal.")), "art")
 		if art.is_empty() or not ResourceLoader.exists(art):
 			return
 		var pic := TextureRect.new()
@@ -191,6 +197,7 @@ func _show_meal(ctx: CityContext) -> void:
 		pic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		pic.modulate.a = 0.0
 		create_tween().tween_property(pic, "modulate:a", 1.0, UiTheme.render_float("city.meal_art.fade_sec", 0.35))
+		art_shown.emit()
 		return
 
 

@@ -108,6 +108,7 @@ func choose_facility(id: String) -> void:
 	_facility = FacilityView.new()
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
+	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
 	_menu.close()  # 시설 안에서는 Tab 메뉴를 쓰지 않는다
 	_hud.set_facility_mode(true)
 	add_child(_facility)
@@ -124,6 +125,7 @@ func leave_facility() -> void:
 	_facility.queue_free()
 	_facility = null
 	_street.visible = true
+	_hud.visible = true
 	_hud.set_facility_mode(false)
 	state.leave_facility()
 	_street.refresh()

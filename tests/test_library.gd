@@ -74,3 +74,19 @@ func test_books_have_no_numbers() -> void:
 		var e := db.get_entry("city_info", id)
 		assert_true(digit.search(JsonUtil.get_str(e, "text_ko")) == null, "수치 없이(상중하로): " + id)
 		assert_true(RegEx.create_from_string("습니다|세요|십시오|해요").search(JsonUtil.get_str(e, "text_ko")) == null, "존댓말 없이: " + id)
+
+
+## 서적 그림(사용자 2026-10-27, CT57): 분야마다 펼친 책 그림이 있고, 읽은 결과 문구가 그 분야를 알려 준다(FacilityView가 그림을 고른다).
+func test_every_field_has_book_art_and_read_names_field() -> void:
+	for f in CityInfo.field_ids(db):
+		var art := CityInfo.field_art(db, f)
+		assert_true(not art.is_empty() and FileAccess.file_exists(art), "책 그림 " + f)
+	var s := _state(1)
+	var pc := _pc()
+	pc.inventory.add_money(1000)
+	var ctx := CityActions.perform(s, pc, "library_arms", _reg())
+	var fields: Array = []
+	for m: Dictionary in ctx.messages:
+		if str(m["key"]) == "city.fx.book_new":
+			fields.append(JsonUtil.get_str(m["args"], "field"))
+	assert_true(not fields.is_empty() and fields.all(func(f: Variant) -> bool: return str(f) == "arms"), "읽은 책의 분야 (%s)" % [fields])
