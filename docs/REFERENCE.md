@@ -5,6 +5,7 @@
 > 근거 번호(J17·RF16·AU4 …)는 `docs/ASSUMPTIONS.md`.
 
 - **동굴 요소(2026-10-16)**: `data/events/<id>.json`(type feature) = tile(걸을 수 있음) + actions[{id, name_ko, limit once|day|always, needs_status, cost, give, effects, learn_stats, alert, line(번호 변형·line_zone), clear, done/missing}] + hidden(탐지)·near(근처 문구)·hazard(RiftHazards 묶음)·guard(지키는 무리)·rest(휴식 보너스). 배치 = 층 JSON `features[]`(spot·zones·count·gap) → 굽는 때 고정 지도 `features` 좌표. 행동이 여럿이면 `feature_choice` → `ChoicePopup`(W/S·Enter, Backspace = 그만두기). 효과 `fatigue`(피로 증감). 스트레스 자원은 꺼져 있으니 쓰지 않는다. 가정 FE1~FE12.
+- **허기 표시(2026-10-27, UI35)**: 자원 `display_inverted`(true = 화면에 최대 − 값, 막대도) — `ResourceDef.shown(current, max)`, 회복 효과 설명은 뒤집힌 자원이면 `inventory.eff_lower`("{res} -{amount}"). 캡처 `--menu=… --hunger=<허기 0~100>`.
 - **정수 순서(2026-10-27, UI34)**: `EssenceSet.move(a, i, j)`(absorbed 순서 = 저장 순서) · `order_skills(a)`(정수 이능을 정수 순서로 — 전투 스킬 목록 `Actor.skills` 순서), 문구 `essence.grade` {n}, render `ui.essence_gem`(카드 정수 색 구슬 px). 캡처 `--essence [--many|--lock] --menu=character [--grab]`.
 - **대화창 글 색(2026-10-27, UI33)**: 메시지 kind `gain`(초록 — 공적·레벨업만, `Rewards`) · `good`은 흰 글(`palette.log_good` = text) · `info`·`system`·`warn`·`danger`는 예전대로(`palette.log_<kind>`).
 - **도서관 서적 그림(2026-10-27, CT57)**: `city.json library.fields[] {id, name_ko, art}`(art = 읽을 때 시설 안을 덮는 펼친 책 그림 — `CityInfo.field_art`), 결과 문구 `city.fx.book_new` 인자 `field`(그 책의 분야 — `FacilityView._show_art`), `FacilityView.art_shown`(그림이 덮으면 CityScreen이 `CityHud`를 숨기고 시설을 나가면 다시).

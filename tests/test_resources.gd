@@ -147,3 +147,17 @@ func test_save_roundtrip() -> void:
 	assert_near(copy.get_current("hunger"), 60.0)
 	assert_true(copy.is_active("hunger"))
 	assert_eq(copy.active_thresholds("hunger").size(), 0)
+
+
+## 허기 표시(사용자 2026-10-27, UI35): 속값은 포만도, 화면은 허기 = 최대 − 포만도(0 = 배부름, 100 = 굶주림). 음식은 "허기 -n".
+func test_hunger_shown_inverted() -> void:
+	var rd: ResourceDef = db.resources["hunger"]
+	assert_true(rd.display_inverted)
+	assert_near(rd.shown(100.0, 100.0), 0.0, 0.001, "배부르면 허기 0")
+	assert_near(rd.shown(25.0, 100.0), 75.0, 0.001, "포만도 25 = 허기 75")
+	var hp: ResourceDef = db.resources["hp"]
+	assert_near(hp.shown(40.0, 100.0), 40.0, 0.001, "다른 자원은 그대로")
+	var food := {"type": "restore_resource", "resource": "hunger", "amount": 40}
+	assert_eq(ItemTooltip._effect_line(db, food), Strings.t("inventory.eff_lower", {"res": rd.name_ko, "amount": 40}), "먹으면 허기 -40")
+	assert_eq(ItemTooltip._effect_line(db, {"type": "restore_resource", "resource": "hp", "amount": 30}),
+		Strings.t("inventory.eff_restore", {"res": hp.name_ko, "amount": 30}), "생명력은 +30")

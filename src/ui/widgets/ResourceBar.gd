@@ -27,7 +27,8 @@ func setup(def: ResourceDef) -> void:
 
 func set_values(current: float, maximum: float) -> void:
 	_bar.max_value = maxf(maximum, 0.001)
-	_bar.value = (maximum - current) if _def.display_inverted else current
-	# 0과 1 사이 값은 1로 보여 준다(살아 있는데 0으로 보이지 않게).
-	var shown := ceilf(current) if current > 0.0 else 0.0
+	var v := _def.shown(current, maximum)
+	_bar.value = v
+	# 0과 1 사이 값은 1로 보여 준다(살아 있는데 0으로 보이지 않게). 뒤집힌 자원(허기)은 반올림.
+	var shown := roundf(v) if _def.display_inverted else (ceilf(v) if v > 0.0 else 0.0)
 	_value_label.text = "%s / %s" % [UiTheme.num(shown), UiTheme.num(maximum)]

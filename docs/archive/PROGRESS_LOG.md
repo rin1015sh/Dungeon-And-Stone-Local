@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **허기 0 = 배부름 ~ 100 = 굶주림 (2026-10-27, 사용자)** — UI35. 속값(포만도)·규칙은 그대로, hunger `display_inverted` true + `ResourceDef.shown`을 ResourceBar·PartyPage·PartyRoster가 쓴다, 음식 설명 "허기 -n"(`eff_lower`), 디버그·도시 문구·식욕 설명. 시험 test_resources `test_hunger_shown_inverted`, 캡처 `--hunger=65`(65/100, 막대 65%). check.sh 통과.
+
 - **Tab 정수 카드: 등급 · 차분한 색 · 순서 바꾸기 (2026-10-27, 사용자)** — UI34.
   - `EssencePanel`: 제목 줄 정수 색 구슬 · 이름 · `n등급`, 카드·슬롯 색을 돌판 쪽으로(`muted`·`calm`), 커서·집음 테두리(`cursor`·`grabbed`·`paint`·`rebuild`).
   - `CharacterPage`: W/S 카드 커서(끝에서는 스크롤) · Enter 집기/확정 · Backspace 되돌리기, 쪽을 열 때는 맨 위부터(옮길 때만 카드를 따라 스크롤).

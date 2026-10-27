@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(974줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(975줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -187,7 +187,7 @@
 - `log.spend_fail` 영혼력이 모자란다. 아무 일도 일어나지 않았다.
 - `log.turn` 한 턴이 지났다.
 - `log.hour` 한 시간이 지났다.
-- `log.hour_city` 한 시간이 지났다. 도시에서는 허기가 줄지 않는다.
+- `log.hour_city` 한 시간이 지났다. 도시에서는 배가 고파지지 않는다.
 - `log.eat` 마른 식량을 씹어 삼켰다.
 - `log.buff_on` 근력의 비약을 들이켰다. 근력 +{amount}.
 - `log.buff_off` 비약 기운을 털어냈다.
@@ -425,7 +425,7 @@
 - `debug.level_up` 레벨 +1
 - `debug.level_down` 레벨 -1
 - `debug.stat_up` {stat} +{amount}
-- `debug.hunger_zero` 허기 0
+- `debug.hunger_zero` 허기 100
 - `debug.restore` 모두 회복
 - `debug.invulnerable` 무적 (생명력 1 아래로 안 떨어짐)
 - `debug.seed_placeholder` 시드 (현재 {seed})
@@ -714,6 +714,7 @@
 - `inventory.max_of` {res} 최대치
 - `inventory.regen_of` {res} 재생
 - `inventory.eff_restore` {res} +{amount}
+- `inventory.eff_lower` {res} -{amount}
 - `inventory.eff_light` 빛 {m}m · {hours}시간
 - `inventory.eff_status` {status} ({chance}%)
 - `inventory.sort` 정렬

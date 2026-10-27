@@ -199,6 +199,9 @@ func _run() -> void:
 					mate.pool.set_current("hp", mate.pool.get_max("hp") * 0.6)
 					explore.menu().party.append(mate)
 				explore.menu().party = GameMenu.by_row(explore.menu().party)
+			if _args.has("hunger"):  # --hunger=<허기 0~100>: 아군 모두 그만큼 배고픈 상태(화면 허기 = 최대 − 포만도, UI35)
+				for a: PlayerCharacter in [explore.session.player] + explore.menu().party:
+					a.pool.set_current("hunger", a.pool.get_max("hunger") - float(str(_args["hunger"])))
 			explore.menu().open(page)
 			if _args.has("grab") and page == "character":  # --grab: 캐릭터 쪽 첫 정수 카드를 집은 상태(순서 바꾸기 — UI34)
 				await get_tree().process_frame

@@ -93,8 +93,10 @@ static func _effect_line(db: GameDatabase, e: Dictionary) -> String:
 	match JsonUtil.get_str(e, "type"):
 		"restore_resource":
 			var r := JsonUtil.get_str(e, "resource")
-			return Strings.t("inventory.eff_restore", {"res": db.resources[r].name_ko if db.resources.has(r) else r,
-				"amount": roundi(JsonUtil.get_float(e, "amount"))})
+			var amount := roundi(JsonUtil.get_float(e, "amount"))
+			var inv := db.resources.has(r) and (db.resources[r] as ResourceDef).display_inverted  # 허기: 먹으면 허기가 준다(UI35)
+			return Strings.t("inventory.eff_lower" if inv == (amount > 0) else "inventory.eff_restore",
+				{"res": db.resources[r].name_ko if db.resources.has(r) else r, "amount": absi(amount)})
 		"light_source":
 			return Strings.t("inventory.eff_light", {"m": UiTheme.num(JsonUtil.get_float(e, "radius_m")),
 				"hours": roundi(JsonUtil.get_float(e, "hours"))})

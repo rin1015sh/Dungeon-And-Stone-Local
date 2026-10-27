@@ -114,9 +114,12 @@ func refresh() -> void:
 		var row: Dictionary = _rows[u]
 		for r: String in row["bars"]:
 			var pair: Array = row["bars"][r]
-			(pair[0] as ProgressBar).max_value = maxf(1.0, u.actor.pool.get_max(r))
-			(pair[0] as ProgressBar).value = u.actor.pool.get_current(r)
-			(pair[1] as Label).text = "%d/%d" % [ceili(u.actor.pool.get_current(r)), roundi(u.actor.pool.get_max(r))]
+			var mx := u.actor.pool.get_max(r)
+			var rd := u.actor.pool.get_def(r)
+			var v := rd.shown(u.actor.pool.get_current(r), mx)  # 허기는 차오를수록 배고픔(UI35)
+			(pair[0] as ProgressBar).max_value = maxf(1.0, mx)
+			(pair[0] as ProgressBar).value = v
+			(pair[1] as Label).text = "%d/%d" % [roundi(v) if rd.display_inverted else ceili(v), roundi(mx)]
 		(row["icons"] as StatusIcons).show_for(u.actor)
 		var names := PackedStringArray()  # 상태는 아이콘으로(UI24) — 글은 계측값만
 		for m: Dictionary in Meters.list(_db, u.actor):

@@ -34,13 +34,13 @@
   {
     "id": "hunger",
     "name_ko": "허기",
-    "_comment": "값은 포만도(100=배부름, 0=아사 직전). display_inverted=true로 바꾸면 게이지가 '허기도'(차오를수록 배고픔)로 보인다.",
+    "_comment": "속값은 포만도(100=배부름, 0=아사 직전 — 규칙·문턱·음식 amount는 이 값). display_inverted=true: 화면에는 허기 = 100 − 포만도(0 = 배부름, 100 = 굶주림, 막대는 차오를수록 배고픔 — 사용자 2026-10-27, UI35).",
     "color": "#8a6d3b",
     "max": 100,
     "start": "full",
     "scope": "dungeon_only",
     "visible": true,
-    "display_inverted": false,
+    "display_inverted": true,
     "regen": [
       {"trigger": "time", "basis": "flat", "rate": "-{bal.hunger.decay_per_hour} * (1 + {appetite} * {bal.hunger.appetite_coef})"}
     ],

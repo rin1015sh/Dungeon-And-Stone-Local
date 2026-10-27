@@ -21,7 +21,7 @@ var on_zero_id: String = ""       ## 상태 id 또는 이벤트 id
 var recover_at_ratio: float = 0.0 ## 고갈 후 이 비율 이상이면 '회복'으로 본다(0 = 0보다 크면)
 var visible: bool = true
 var enabled: bool = true          ## false = 예약 자원(정의만)
-var display_inverted: bool = false
+var display_inverted: bool = false  ## 화면에는 최대치 − 값(허기: 속값은 포만도, 보이는 건 허기 — 0 = 배부름 · 100 = 굶주림, UI35)
 var cost_strict: bool = false     ## true면 코스트로 0까지 깎을 수 없다(생명력)
 
 
@@ -60,3 +60,8 @@ static func from_dict(d: Dictionary) -> ResourceDef:
 	r.display_inverted = JsonUtil.get_bool(d, "display_inverted")
 	r.cost_strict = JsonUtil.get_bool(d, "cost_strict")
 	return r
+
+
+## 화면에 보일 값: display_inverted면 최대치 − 지금 값(막대도 이 값만큼 찬다).
+func shown(current: float, maximum: float) -> float:
+	return maxf(0.0, maximum - current) if display_inverted else current

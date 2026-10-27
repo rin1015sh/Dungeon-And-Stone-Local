@@ -69,9 +69,11 @@ func refresh() -> void:
 			row.visible = pc.pool.has_resource(key) and pc.pool.get_def(key).visible and pc.pool.is_active(key)
 			if not row.visible:
 				continue
-			bar.max_value = maxf(1.0, pc.pool.get_max(key))
-			bar.value = pc.pool.get_current(key)
-			(f[1] as Label).text = "%d/%d" % [ceili(pc.pool.get_current(key)), roundi(pc.pool.get_max(key))]
+			var mx := pc.pool.get_max(key)
+			var rd := pc.pool.get_def(key)
+			bar.max_value = maxf(1.0, mx)
+			bar.value = rd.shown(pc.pool.get_current(key), mx)  # 허기는 차오를수록 배고픔(UI35)
+			(f[1] as Label).text = "%d/%d" % [roundi(bar.value) if rd.display_inverted else ceili(bar.value), roundi(mx)]
 	_paint_rows()
 
 
