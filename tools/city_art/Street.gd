@@ -2,32 +2,39 @@ extends RefCounted
 ## 거리 레이어(시설 건물과 같은 깊이, 시차 1): 건물 밑 인도 판석 · 연석 · 젖은 포석길(앞으로 올수록 큰 돌) · 웅덩이 ·
 ## 건물 사이 골목(낮은 돌담 + 쇠 난간, 가로등, 마른 나무·우물·수레·게시판) · 건물 발치 그늘 · 문 앞 불빛 웅덩이.
 ## 투명 배경(인도 위쪽은 건물 사이 소품만) — 뒤의 중경 레이어가 보인다. tools/paint_city.gd 전용.
+## tier = 거주 구역(1 = 이 그림, 2~ = StreetTier의 길바닥·담·소품 + Refine 구역 색 — CT54).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
 const Props := preload("res://tools/city_art/Props.gd")
+const StreetTier := preload("res://tools/city_art/StreetTier.gd")
+const Refine := preload("res://tools/city_art/Refine.gd")
 
 const HEIGHT := 720
 const CURB := 26  ## 인도 폭(건물 바닥 아래)
 
 
 ## spans = [[x0, x1] …] 건물이 차지하는 가로 구간, baseline = 건물이 서는 y.
-static func paint(width: int, baseline: int, spans: Array, seed_value: int) -> Paint:
+static func paint(width: int, baseline: int, spans: Array, seed_value: int, tier: int = 1) -> Paint:
 	var p := Paint.new(width, HEIGHT, seed_value)
-	_gaps(p, baseline, spans)
-	_ground(p, baseline)
+	_gaps(p, baseline, spans, tier)
+	if tier >= 3:
+		StreetTier.ground(p, baseline, tier, HEIGHT)
+	else:
+		_ground(p, baseline, tier)
 	for s: Array in spans:
 		var x0: float = s[0]
 		var x1: float = s[1]
 		Ink.shade(p, Paint.rect_poly(x0 - 10, baseline, x1 - x0 + 20, CURB), Vector2(0, baseline), Vector2(0, baseline + CURB), 0.6, 0.0)
 		Ink.glow(p, (x0 + x1) / 2.0, baseline + 40, (x1 - x0) * 0.45, Color("#ffb45c"), 0.12, true, 0.35)
-	Ink.grade(p, 0.3, 1.08)
+	Refine.look(p, tier)
+	Ink.grade(p, 0.3 if tier < 3 else 0.1, 1.08)
 	Ink.finish(p, 0.03)
 	return p
 
 
-static func _ground(p: Paint, baseline: int) -> void:
+static func _ground(p: Paint, baseline: int, tier: int = 1) -> void:
 	var walk := Paint.rect_poly(0, baseline, p.w, CURB)
 	p.fill_poly(walk, Mat.ashlar(p, Color("#4b4943"), 0, baseline, 58, CURB))
 	var curb := Paint.rect_poly(0, baseline + CURB, p.w, 8)
@@ -47,7 +54,7 @@ static func _ground(p: Paint, baseline: int) -> void:
 		rh *= 1.12
 		row += 1
 	Ink.shade(p, Paint.rect_poly(0, baseline + CURB + 8, p.w, HEIGHT - baseline - CURB - 8), Vector2(0, baseline + CURB + 8), Vector2(0, HEIGHT), 0.25, 0.0)
-	for i in int(p.w / 260.0):  # 웅덩이: 하늘·불빛 반사
+	for i in int(p.w / (260.0 if tier < 2 else 900.0)):  # 웅덩이: 하늘·불빛 반사(7구역은 드물게)
 		var cx := p.rng.randf() * p.w
 		var cy := p.rng.randf_range(baseline + 60, HEIGHT - 20)
 		var rw := p.rng.randf_range(40, 90)
@@ -80,7 +87,7 @@ static func _cobble(p: Paint, x: float, y: float, sw: float, sh: float) -> void:
 
 
 ## 건물 사이: 돌담 + 난간, 그리고 소품 하나씩(가로등은 늘).
-static func _gaps(p: Paint, baseline: int, spans: Array) -> void:
+static func _gaps(p: Paint, baseline: int, spans: Array, tier: int = 1) -> void:
 	var gaps: Array = []
 	var prev := 0.0
 	for s: Array in spans:
@@ -92,6 +99,9 @@ static func _gaps(p: Paint, baseline: int, spans: Array) -> void:
 		var a: float = gaps[i][0]
 		var b: float = gaps[i][1]
 		if b - a < 60.0:
+			continue
+		if tier >= 2:
+			StreetTier.gap(p, a, b, g, i, tier)
 			continue
 		var wall := Paint.rect_poly(a - 4, g - 58, b - a + 8, 58)
 		p.fill_poly(wall, Mat.rubble(p, Color("#4a473f")))

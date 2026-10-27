@@ -1,5 +1,5 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설(M4). 거리의 배치 순서는 city.json facility_order(없으면 order), 그림은 building(거리)·interior(내부 배경) 경로 — 파일이 없으면 이름판만 있는 빈 자리로 그린다. activities = data/activities의 id. x = 거리 위 왼쪽 끝 위치(거리 단위 — 화면 높이 720 기준 px, 건물 폭 = 그림 폭 × render.json city.building_scale). shows = 시설 패널 정보 줄(temple_merit·bank_balance·rumors·lore). placeholder = 기능을 아직 만들지 않은 시설(활동 없음 — 들어가도 행동력을 쓰지 않고 나가기만 있다, 검증기가 '활동 없음'을 경고하지 않는다).",
+  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설(M4). 거리의 배치 순서는 city.json facility_order(없으면 order), 그림은 building(거리)·interior(내부 배경) 경로 — 파일이 없으면 이름판만 있는 빈 자리로 그린다. activities = data/activities의 id. x = 거리 위 왼쪽 끝 위치(거리 단위 — 화면 높이 720 기준 px, 건물 폭 = 그림 폭 × render.json city.building_scale). shows = 시설 패널 정보 줄(temple_merit·bank_balance·lore·survey·residence·exchange_rate). min_residence = 그 거주 등급부터 거리에 선다(없으면 1 — 거래소 3, CT54: 그림은 그 등급부터, building = 그 등급 그림). placeholder = 기능을 아직 만들지 않은 시설(활동 없음 — 들어가도 행동력을 쓰지 않고 나가기만 있다, 검증기가 '활동 없음'을 경고하지 않는다).",
   "id": "inn",
   "name_ko": "여관",
   "order": 1,

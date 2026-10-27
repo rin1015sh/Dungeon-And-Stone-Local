@@ -3,10 +3,8 @@
   "name_ko": "화재",
   "art": "res://assets/city/events/fire.webp",
   "weight": 1,
-  "residence_weight": {
-    "1": 1.5,
-    "3": 0.6,
-    "4": 0.4
+  "when": {
+    "residence_max": 1
   },
   "cooldown_months": 4,
   "weather_weight": {

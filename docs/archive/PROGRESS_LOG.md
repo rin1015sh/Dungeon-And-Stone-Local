@@ -6,6 +6,14 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **거리 사건은 13구역만 · 알미너스 중앙 거래소 · 구역마다 밝고 고급스러운 도시 그림 (2026-10-27, 사용자 "지금 존재하는 이벤트는 13구역 이벤트 전용으로, 5구역부터 알미너스 중앙 거래소라는 거래소 건물 추가, 도시 일러스트가 다 거기서 거기 같아서 조금 더 밝고 고급지게 건물이랑 일러스트를 수정")** — CT54~CT56.
+  - 범위: 거리 사건 14개 `when.residence_max` 1(`residence_weight` 지움). 거래소 = 시설 `exchange`(min_residence 3, 거리 끝 x 4330, 거리 폭 4380 → 5000) + 활동 `exchange_trade`(판매만 · 매입 0.75 · 마석 시세 0.9~1.3 — `CityExchange`). 그림 = 건물·내부·원경·중경·거리를 구역마다(`Refine`·`Dress`·`StreetTier`, 거래소 `Buildings4`·`InteriorRooms3`).
+  - 완료 기준: 13구역 그림은 그대로, 7·5·3구역은 한눈에 다르게(밝기·벽 색·지붕 색·꽃상자·현관·판석·가로수·분수). 거래소는 5구역부터만 거리·시설 목록에 있고 그 아래에선 들어갈 수 없다. check.sh 통과.
+  - 테스트: test_exchange(서는 구역·판매만·후한 매입·시세 범위와 판마다 다름·팔기·저장), test_residence(사건은 13구역만, 내부·거리 레이어 구역 그림), 스모크(구역을 옮기면 거래소가 선다·되돌리면 없다). 캡처 `--screen=city --residence=1~4`.
+  - 코드: `CityResidence.allows_facility`, `CityState.facility_ids` 거름·`enter_facility` 거절, `CityShop.TABS/tabs`·창구 `sell_ratio`·`sell_price(…, act_id)`·사기/팔기 쪽 검사, `FacilityView`(창구 쪽·시세 줄·구역 내부 그림), `CityStreet`(구역이 바뀌면 건물 다시 세움·레이어 `_t<등급>`·먼 도시 `street_tint`), 검증(시설 min_residence·shows·tabs·sell_ratio·stone_market↔exchange.stone_rate). 그림 도구: `Paint.marks`(Parts 창·문·돌림띠 자리), `Refine.look`, `Dress`(꽃상자·금테·흰 기둥 현관·정원수), `StreetTier`(판석·산울타리·흰 난간·분수·석상·가로수·금장 가로등), `Backdrop.far/mid(tier)`, `Interiors.paint(…, tier)`(AMBIENT 밝기).
+  - check.sh 통과(테스트 465). 캡처로 13·7·5·3구역 거리와 거래소·여관 내부를 확인.
+  - 남은 것: 거래소 기능은 가정(사는 창구·경매·환전은 원작 설정을 받으면), 7구역 위 거리 사건이 없다(사용자 기획·그림 대기), 13구역 거리 끝(거래소 자리)은 담과 소품만.
+
 - **머묾 소환 없앰 · 4등급 = 컴멜비 3구역 (2026-10-27, 사용자 "머묾소환 제거하고 구역2는 너무 높은데 3으로 해줘 일단")** — DF17·CT50.
   - LordWatch: 머문 시간·전조·인원 조건 삭제(update는 다시 깨어나기 대기만 — 부르는 길은 기념비 `Monument`·디버그), 층 JSON lord 키 6개·검증·문구 `lord_omen` 삭제, 서적 「계층군주를 부르는 법」「군주가 깨어난 뒤」「드레드피어」·몬스터 설명 고침. 시험 test_lord `test_no_stay_summon_and_cooldown`(이레 머물러도 안 나옴·부르면 옴·대기 뒤 다시).
   - 거주 4등급 이름 컴멜비 2구역 → 3구역(값·물가는 그대로). check.sh 통과.

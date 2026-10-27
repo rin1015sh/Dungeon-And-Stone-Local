@@ -4,7 +4,7 @@ extends CityPanel
 ##   구매 = 판매 목록(CityShop.stock — 활동의 stock·deals), 판매 = 가방에서 이 창구에 팔 수 있는 것(CityShop.sellable).
 ##   목록 맨 끝 돌아가기 = 시설 선택 창으로(back — FacilityView가 넣는다. Backspace는 쓰지 않는다 — 사용자 결정 2026-10-20). 가격은 아이템 데이터 price.
 
-const TABS := ["buy", "sell"]
+const TABS := CityShop.TABS
 
 var mode: String = "buy"  ## buy, sell
 ## 돌아가기(목록 맨 끝). FacilityView가 넣는다.
@@ -27,7 +27,7 @@ func options() -> Array[Dictionary]:
 		"sell":
 			for id in CityShop.sellable(state, pc, activity_id):
 				opts.append({"text": Strings.t("city.shop_sell_name", {"item": _name(id), "n": pc.inventory.count(id)}),
-					"sub": Strings.t("city.shop_sub_sell", {"price": CityShop.sell_price(state, id)}),
+					"sub": Strings.t("city.shop_sub_sell", {"price": CityShop.sell_price(state, id, activity_id)}),
 					"on_pick": func() -> void: done(CityShop.sell(state, pc, activity_id, id, 1))})
 	return opts
 

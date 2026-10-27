@@ -40,6 +40,7 @@ static func plinth(p: Paint, x: float, y: float, pw: float, ph: float) -> void:
 
 ## 돌출 띠(층 사이 돌림띠·처마 돌림).
 static func ledge(p: Paint, x: float, y: float, lw: float, lh: float = 7.0, c: Color = Color("#8c8473")) -> void:
+	p.mark("ledge", Rect2(x, y, lw, lh))
 	var poly := Paint.rect_poly(x, y, lw, lh)
 	p.fill_poly(poly, p.flat(c, 0.15))
 	Ink.shade(p, poly, Vector2(0, y), Vector2(0, y + lh), -0.0, 0.35)
@@ -49,6 +50,7 @@ static func ledge(p: Paint, x: float, y: float, lw: float, lh: float = 7.0, c: C
 
 ## 창: style = "square" · "arch" · "gothic". lit = 따뜻한 불빛(번짐 포함). shutters = 덧문.
 static func window(p: Paint, x: float, y: float, ww: float, wh: float, style: String = "square", lit: bool = false, shutters: bool = false) -> void:
+	p.mark("window", Rect2(x, y, ww, wh), style)
 	var f := 5.0
 	var outer := _shape(x - f, y - f, ww + f * 2.0, wh + f * 2.0, style)
 	p.fill_poly(outer, p.flat(FRAME, 0.2))
@@ -80,6 +82,7 @@ static func window(p: Paint, x: float, y: float, ww: float, wh: float, style: St
 
 ## 문: 아치 돌 테두리 + 판자 문 + 쇠띠 + 고리. lit_gap = 문틈 불빛.
 static func door(p: Paint, x: float, y: float, dw: float, dh: float, arch: bool = true, wood: Color = Color("#3b2a1e"), lit_gap: bool = false) -> void:
+	p.mark("door", Rect2(x, y, dw, dh), "arch" if arch else "square")
 	var f := 7.0
 	var outer := _shape(x - f, y - f, dw + f * 2.0, dh + f, "arch" if arch else "square")
 	p.fill_poly(outer, p.flat(FRAME.darkened(0.08), 0.2))

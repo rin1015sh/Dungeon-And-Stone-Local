@@ -163,6 +163,7 @@ func _begin_period() -> void:
 	CityHappenings.roll(self)
 	closed.clear()
 	price_mods.clear()
+	CityExchange.roll(self)  # 거래소 마석 시세(컴멜비 5구역부터 — CT54)
 	ambient = ""
 	ambient_pending = true
 	CityGuild.refresh(self)
@@ -199,6 +200,8 @@ func enter_facility(id: String) -> String:
 		return "city.reason_unknown"
 	if closed.has(id):
 		return "city.reason_closed"
+	if not CityResidence.allows_facility(self, id):
+		return "city.reason_residence"
 	if not spend_ap(entry_cost_of(id)):
 		return "city.reason_no_ap"
 	facility = id
@@ -254,7 +257,7 @@ func facility_ids() -> Array[String]:
 			out.append(id)
 		out.sort_custom(func(a: String, b: String) -> bool:
 			return JsonUtil.get_int(db.get_entry("facilities", a), "order") < JsonUtil.get_int(db.get_entry("facilities", b), "order"))
-	return out
+	return out.filter(func(id: String) -> bool: return CityResidence.allows_facility(self, id))  # 그 구역에 없는 시설(거래소 — min_residence, CT54)
 
 
 ## 활동 정의(디버그 임시값 반영 사본).

@@ -5,6 +5,7 @@ extends RefCounted
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
+const Refine := preload("res://tools/city_art/Refine.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
 
 const FOG := Color("#5d6352")
@@ -82,7 +83,8 @@ static func sky_clear(w: int, h: int, seed_value: int) -> Paint:
 
 
 ## 원경: 오른쪽 언덕 위 성채와 대성당, 가운데 쌍첨탑 교회, 빽빽한 지붕 물결, 성벽 탑, 연기 기둥. 아래로 갈수록 안개.
-static func far(w: int, h: int, seed_value: int) -> Paint:
+## tier = 거주 구역(2~ = Refine 구역 색 + 불 켜진 창이 더 많고 안개가 옅다 — CT54).
+static func far(w: int, h: int, seed_value: int, tier: int = 1) -> Paint:
 	var p := Paint.new(w, h, seed_value)
 	var base := Color("#232927")
 	var hill := Paint.poly([Vector2(w * 0.55, h), Vector2(w * 0.62, h * 0.55), Vector2(w * 0.75, h * 0.42), Vector2(w * 0.92, h * 0.46), Vector2(w, h * 0.5), Vector2(w, h)])
@@ -104,20 +106,21 @@ static func far(w: int, h: int, seed_value: int) -> Paint:
 	for i in int(w / 120.0):  # 성벽 둥근 탑
 		var tx := p.rng.randf() * w
 		_block(p, tx, h * 0.48, 20, h * 0.52, base.lightened(0.08), true)
-	for i in int(w / 25.0):  # 불 켜진 창
+	for i in int(w / (25.0 if tier < 3 else 12.0)):  # 불 켜진 창
 		var q := Vector2(p.rng.randf() * w, h * p.rng.randf_range(0.5, 0.85))
 		if p.alpha_at(int(q.x), int(q.y)) > 0.5:
 			p.fill_rect(q.x, q.y, 2, 3, p.flat(Color("#c98b45"), 0.1))
 	for i in 5:
 		_smoke(p, Vector2(p.rng.randf() * w, h * 0.55), h * 0.5)
-	Ink.shade(p, Paint.rect_poly(0, 0, w, h), Vector2(0, h * 0.4), Vector2(0, h), 0.0, 0.6, FOG)
-	Ink.grade(p, 0.35, 0.95)
+	Ink.shade(p, Paint.rect_poly(0, 0, w, h), Vector2(0, h * 0.4), Vector2(0, h), 0.0, 0.6 - 0.1 * (tier - 1), FOG)
+	Refine.look(p, tier, "backdrop")
+	Ink.grade(p, 0.35 if tier < 3 else 0.2, 0.95)
 	Ink.finish(p, 0.03)
 	return p
 
 
 ## 중경: 뒷골목 집들이 끊김 없이 이어진다(박공 모양·벽색·창 배치가 집마다 다르다). 아래는 안개에 잠긴다.
-static func mid(w: int, h: int, seed_value: int) -> Paint:
+static func mid(w: int, h: int, seed_value: int, tier: int = 1) -> Paint:
 	var p := Paint.new(w, h, seed_value)
 	var x := -8.0
 	var walls := [Color("#575142"), Color("#4b473b"), Color("#5e5341"), Color("#4f362c"), Color("#514e44"), Color("#5f584a")]
@@ -126,9 +129,10 @@ static func mid(w: int, h: int, seed_value: int) -> Paint:
 		var top := h * p.rng.randf_range(0.36, 0.6)
 		_townhouse(p, x, top, bw, h - top, walls[p.rng.randi() % walls.size()])
 		x += bw - 1.0
-	Ink.shade(p, Paint.rect_poly(0, 0, w, h), Vector2(0, h * 0.2), Vector2(0, h), 0.1, 0.5, FOG)
+	Ink.shade(p, Paint.rect_poly(0, 0, w, h), Vector2(0, h * 0.2), Vector2(0, h), 0.1, 0.5 - 0.08 * (tier - 1), FOG)
 	Ink.shade(p, Paint.rect_poly(0, h * 0.72, w, h * 0.28), Vector2(0, h * 0.72), Vector2(0, h), 0.0, 0.85, FOG.darkened(0.15))
-	Ink.grade(p, 0.35, 1.0)
+	Refine.look(p, tier, "backdrop")
+	Ink.grade(p, 0.35 if tier < 3 else 0.2, 1.0)
 	Ink.finish(p, 0.03)
 	return p
 

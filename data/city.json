@@ -34,7 +34,7 @@
   },
   "street": {
     "_comment": "거리 = 옆에서 본 긴 그림. 좌표는 '거리 단위'(화면 높이 720 기준 px). width = 거리 길이, 건물 위치는 각 시설의 x. layers = 뒤에서 앞 순서(시설 건물은 parallax 1 레이어 바로 위에 그린다). parallax 0~1 = 스크롤을 따라가는 비율(작을수록 멀다), y·height = 레이어가 차지하는 세로 구간, scale = 그림 1px이 몇 거리 단위인가, screen = 화면에 고정(스크롤 안 함), front = 건물보다 앞.",
-    "width": 4380,
+    "width": 5000,
     "layers": [
       {
         "id": "sky",
@@ -141,7 +141,8 @@
     "shop",
     "smithy",
     "bank",
-    "training"
+    "training",
+    "exchange"
   ],
   "item_use": {
     "_comment": "도시(거리)에서 소지품 창으로 쓸 수 있는 아이템 분류. 시설 안에서는 소지품·캐릭터 창을 열 수 없다.",
@@ -212,6 +213,10 @@
       "armor"
     ]
   },
+  "exchange": {
+    "_comment": "알미너스 중앙 거래소(사용자 2026-10-27, CT54 — 시설 exchange, 컴멜비 5구역부터 거리에 선다): stone_rate = 순마다 굴리는 마석 시세 배율 [최소, 최대](CityExchange — 활동 stone_market). 장비·잡화 매입 비율은 활동 exchange_trade의 sell_ratio. 값은 임시값.",
+    "stone_rate": [0.9, 1.3]
+  },
   "guild": {
     "_comment": "탐험가 길드 조사 의뢰(CityGuild, CT44): survey_pool에서 한 종을 골라 months달 동안(받은 달 포함) 의뢰한다. 전투에서 그 종에 '조사'를 쓴 마리 수(cap까지) × stones_per × (10 − 등급)을 '조사 의뢰 보고'로 받는다. 넘기거나 기한이 지나면 다음 순에 새 의뢰. 임시값",
     "survey_pool": ["goblin", "blade_wolf", "gnome", "ghoul"],
@@ -263,12 +268,12 @@
     "due_month": 12
   },
   "residence": {
-    "_comment": "거주 구역(사용자 2026-10-27, CT50 — 라프도니아 14구역 설정을 받아 구역으로): 은행 '이사'(효과 residence_up)로 다음 등급 upgrade_cost를 내고 더 나은 구역으로 옮긴다(되돌리지 않는다). 13구역 라비기온(뒷골목 셋방) → 7구역 라비기온(광장 가까운 대로변) → 5구역 컴멜비(상업지구) → 3구역 컴멜비(사용자 2026-10-27 「2구역은 너무 높다, 일단 3」 — 2구역 북반구 중산층은 그 위). 1구역 카르논(명성 필요)·6구역 노움트리(귀족만)는 명성이 생기면. 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max · price_mult(시설 이용료·상점/대장간 사는 값 배율 — 컴멜비는 물가가 비싸다). 구역 번호·값은 임시값.",
+    "_comment": "거주 구역(사용자 2026-10-27, CT50 — 라프도니아 14구역 설정을 받아 구역으로): 은행 '이사'(효과 residence_up)로 다음 등급 upgrade_cost를 내고 더 나은 구역으로 옮긴다(되돌리지 않는다). 13구역 라비기온(뒷골목 셋방) → 7구역 라비기온(광장 가까운 대로변) → 5구역 컴멜비(상업지구) → 3구역 컴멜비(사용자 2026-10-27 「2구역은 너무 높다, 일단 3」 — 2구역 북반구 중산층은 그 위). 1구역 카르논(명성 필요)·6구역 노움트리(귀족만)는 명성이 생기면. 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max · price_mult(시설 이용료·상점/대장간 사는 값 배율 — 컴멜비는 물가가 비싸다). street_tint = 거리의 먼 도시 레이어(원경·중경·안개)에 날씨 색과 함께 곱하는 색(CT54 — 높은 구역일수록 밝다; 거리·건물·내부 그림은 구역마다 따로 그린 <경로>_t<등급>). 구역 번호·값은 임시값.",
     "tiers": [
-      {"name_ko": "라비기온 13구역", "upgrade_cost": 0, "smithy_material_tier": 1, "price_mult": 1.0},
-      {"name_ko": "라비기온 7구역", "upgrade_cost": 200000, "smithy_material_tier": 2, "price_mult": 1.0},
-      {"name_ko": "컴멜비 5구역", "upgrade_cost": 1000000, "smithy_material_tier": 3, "price_mult": 1.3},
-      {"name_ko": "컴멜비 3구역", "upgrade_cost": 4000000, "smithy_material_tier": 4, "price_mult": 1.6}
+      {"name_ko": "라비기온 13구역", "upgrade_cost": 0, "smithy_material_tier": 1, "price_mult": 1.0, "street_tint": [1.0, 1.0, 1.0]},
+      {"name_ko": "라비기온 7구역", "upgrade_cost": 200000, "smithy_material_tier": 2, "price_mult": 1.0, "street_tint": [1.06, 1.05, 1.02]},
+      {"name_ko": "컴멜비 5구역", "upgrade_cost": 1000000, "smithy_material_tier": 3, "price_mult": 1.3, "street_tint": [1.14, 1.12, 1.05]},
+      {"name_ko": "컴멜비 3구역", "upgrade_cost": 4000000, "smithy_material_tier": 4, "price_mult": 1.6, "street_tint": [1.22, 1.2, 1.12]}
     ],
     "source": "placeholder"
   },

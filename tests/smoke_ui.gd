@@ -765,6 +765,15 @@ func _city_flow() -> void:
 	await _action("move_left")
 	await _seconds(UiTheme.render_float("city.step_sec", 0.25) + 0.15)
 	_expect(street.focused_id() == first, "A 한 번 = 다시 왼쪽 건물")
+	_expect(street.building_rect("exchange") == Rect2(), "13구역 거리엔 거래소가 없다(CT54)")
+	st.residence = 3
+	st.changed.emit()
+	await _frames(1)
+	_expect(street.building_rect("exchange") != Rect2() and street.focused_id() == first, "컴멜비 5구역으로 옮기면 거래소가 선다(가리키던 건물은 그대로)")
+	st.residence = 1
+	st.changed.emit()
+	await _frames(1)
+	_expect(street.building_rect("exchange") == Rect2(), "13구역으로 되돌리면 다시 없다")
 	street.scroll_to(0.0)
 	await _frames(1)
 	var r := street.building_rect("inn")

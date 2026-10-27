@@ -8,7 +8,8 @@
     "periods": [
       "early"
     ],
-    "tax_owed": true
+    "tax_owed": true,
+    "residence_max": 1
   },
   "source": "placeholder"
 }

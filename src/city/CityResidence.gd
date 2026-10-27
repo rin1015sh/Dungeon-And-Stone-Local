@@ -2,7 +2,7 @@ class_name CityResidence
 extends RefCounted
 ## 거주 구역(사용자 2026-10-27, CT50): 라프도니아 14구역 중 사는 곳 — city.json residence.tiers(1부터: 라비기온 13구역 → 7구역 → 컴멜비 5구역 → 3구역).
 ## 은행 '이사'(효과 residence_up)로 다음 등급의 upgrade_cost를 내고 한 단계 올린다. 등급이 바꾸는 것:
-##   건물 외관(building_path) · 활동 min_residence(여관 식사 — 오늘의 거리로 붙는 활동은 event_min_residence) ·
+##   건물 외관(building_path)·거리 그림(같은 규칙) · 시설(allows_facility — 거래소) · 활동 min_residence(여관 식사 — 오늘의 거리로 붙는 활동은 event_min_residence) ·
 ##   상점 판매 목록(CityShop) · 대장간 소재 단계 상한(smithy_material_tier) · 도서관 서적 tier(CityInfo) · 거리 사건(CityAmbient).
 ## 오토로드를 참조하지 않는다.
 
@@ -45,6 +45,11 @@ static func allows_activity(state: CityState, act: Dictionary, from_event: bool 
 	return tier(state) >= need
 
 
+## 이 시설이 지금 구역 거리에 서 있는가(시설 min_residence — 알미너스 중앙 거래소는 컴멜비 5구역부터, CT54).
+static func allows_facility(state: CityState, facility_id: String) -> bool:
+	return tier(state) >= JsonUtil.get_int(state.db.get_entry("facilities", facility_id), "min_residence", 1)
+
+
 ## 물가 배율(시설 이용료·상점/대장간 사는 값 — 컴멜비는 비싸다).
 static func price_mult(state: CityState) -> float:
 	return maxf(0.0, JsonUtil.get_float(def(state), "price_mult", 1.0))
@@ -84,4 +89,6 @@ static func upgrade(state: CityState, pc: PlayerCharacter) -> String:
 		return "city.reason_no_money"
 	pc.inventory.add_money(-cost)
 	state.residence = tier(state) + 1
+	if not state.price_mods.has(CityExchange.KEY):
+		CityExchange.roll(state)  # 거래소가 서는 구역으로 옮겼다: 이번 순 시세(CT54)
 	return ""

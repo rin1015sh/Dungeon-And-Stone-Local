@@ -1,5 +1,5 @@
 extends TestCase
-## 거주 등급(사용자 2026-10-27, CT50·CT51·CT53): 은행 이사 · 여관 식사 등급 · 상점 판매 목록·매입가 · 대장간 소재 단계 · 거리 사건 · 건물 외관 · 저장.
+## 거주 등급(사용자 2026-10-27, CT50·CT51·CT53·CT54): 은행 이사 · 여관 식사 등급 · 상점 판매 목록·매입가 · 대장간 소재 단계 · 거리 사건(13구역만) · 건물·내부·거리 그림 · 저장.
 
 
 func _pc() -> PlayerCharacter:
@@ -72,13 +72,13 @@ func test_smithy_material_cap_follows_tier() -> void:
 	assert_false(CityShop.stock(_state(1), "smithy_trade").has("lightium_sword"), "뒷골목엔 없다")
 
 
-func test_street_events_lean_on_tier() -> void:
-	var low := CityAmbient._weight(_state(1), CityAmbient.entry(_state(1), "pickpocket"))
-	var high := CityAmbient._weight(_state(4), CityAmbient.entry(_state(4), "pickpocket"))
-	assert_true(low > high * 3.0, "소매치기는 뒷골목에 잦다")
-	var c_low := CityAmbient._weight(_state(1), CityAmbient.entry(_state(1), "checkpoint"))
-	var c_high := CityAmbient._weight(_state(4), CityAmbient.entry(_state(4), "checkpoint"))
-	assert_true(c_high > c_low, "검문은 고지대에 잦다")
+## 지금 거리 사건은 모두 라비기온 13구역 것(사용자 2026-10-27, CT54) — 7구역부터는 하나도 일어나지 않는다.
+func test_street_events_only_in_13th_district() -> void:
+	assert_true(CityAmbient._ok(_state(1), CityAmbient.entry(_state(1), "pickpocket"), "pickpocket", "human"), "13구역엔 소매치기")
+	for t in range(2, 5):
+		for id: String in db.get_collection("street_events"):
+			var w := JsonUtil.get_dict(db.get_entry("street_events", id), "when")
+			assert_false(CityResidence.when_ok(_state(t), w), "%d등급에선 %s 없음" % [t, id])
 
 
 func test_building_art_per_tier_and_save() -> void:
@@ -86,8 +86,14 @@ func test_building_art_per_tier_and_save() -> void:
 	assert_eq(CityResidence.building_path(base, 1), base, "1등급 = 기본 그림")
 	for t in range(2, 5):
 		for id: String in db.get_collection("facilities"):
-			var b := JsonUtil.get_str(db.get_entry("facilities", id), "building")
-			assert_true(CityResidence.building_path(b, t) != b, "%s %d등급 그림" % [id, t])
+			var f := db.get_entry("facilities", id)
+			if t <= JsonUtil.get_int(f, "min_residence", 1):
+				continue  # 서는 첫 등급 = 기본 그림(거래소)
+			for key: String in ["building", "interior"]:
+				var b := JsonUtil.get_str(f, key)
+				assert_true(CityResidence.building_path(b, t) != b, "%s %s %d등급 그림" % [id, key, t])
+	for layer: String in ["far", "mid", "street"]:
+		assert_true(ResourceLoader.exists("res://assets/city/layers/%s_t4.webp" % layer), "거리 레이어 %s 구역 그림" % layer)
 	var s := _state(3)
 	s.reach_floor(2)
 	var copy := CityState.new(db, 1)

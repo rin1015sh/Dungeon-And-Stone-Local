@@ -7,6 +7,8 @@ extends RefCounted
 ##   goods = 장비가 아닌 것만 — 상점·떠돌이 상인, 없으면 모두. 사기(stock 걸러냄)·팔기(sellable·can_sell) 모두에 걸린다.
 
 const MAGIC_STONE := "magic_stone"
+## 창구 쪽(활동 tabs — 없으면 둘 다. 거래소는 ["sell"]만, CT54).
+const TABS := ["buy", "sell"]
 
 
 static func config(state: CityState) -> Dictionary:
@@ -90,8 +92,22 @@ static func tier_gear(db: GameDatabase, t: int) -> Array[String]:
 	return out
 
 
-## 매입 비율: sell_ratio_by_residence[거주 등급 − 1](CT51), 없으면 sell_ratio.
-static func sell_ratio(state: CityState) -> float:
+## 창구 쪽: 활동 tabs(buy·sell 중), 없으면 TABS.
+static func tabs(state: CityState, act_id: String) -> Array[String]:
+	var out: Array[String] = []
+	for t: Variant in JsonUtil.get_array(state.activity(act_id), "tabs"):
+		if str(t) in TABS:
+			out.append(str(t))
+	if out.is_empty():
+		out.assign(TABS)
+	return out
+
+
+## 매입 비율: 창구(활동) sell_ratio(거래소 — CT54), 없으면 sell_ratio_by_residence[거주 등급 − 1](CT51), 없으면 sell_ratio.
+static func sell_ratio(state: CityState, act_id: String = "") -> float:
+	var own: Variant = state.activity(act_id).get("sell_ratio") if not act_id.is_empty() else null
+	if own is float or own is int:
+		return maxf(0.0, float(own))
 	var c := config(state)
 	var by_tier: Variant = c.get("sell_ratio_by_residence")
 	if by_tier is Array and (by_tier as Array).size() >= CityResidence.tier(state):
@@ -110,12 +126,16 @@ static func can_sell(state: CityState, item_id: String, act_id: String = "") -> 
 	return true
 
 
-## 판매가: 마석은 magic_stone_ratio(없으면 sell_ratio), 그 밖은 sell_ratio. × 이번 순 배율("sell:<분류>").
-static func sell_price(state: CityState, item_id: String) -> int:
+## 판매가: 마석은 창구가 stone_market면 이번 순 시세(CityExchange — CT54), 아니면 magic_stone_ratio(없으면 sell_ratio),
+## 그 밖은 sell_ratio(창구 것이 먼저). × 이번 순 배율("sell:<분류>").
+static func sell_price(state: CityState, item_id: String, act_id: String = "") -> int:
 	var c := config(state)
-	var ratio := sell_ratio(state)
-	if JsonUtil.get_str(state.db.get_entry("items", item_id), "category") == MAGIC_STONE and CityValues.is_set(c, "magic_stone_ratio"):
-		ratio = maxf(0.0, CityValues.num(c, "magic_stone_ratio"))
+	var ratio := sell_ratio(state, act_id)
+	if JsonUtil.get_str(state.db.get_entry("items", item_id), "category") == MAGIC_STONE:
+		if not act_id.is_empty() and JsonUtil.get_bool(state.activity(act_id), "stone_market"):
+			ratio = (maxf(0.0, CityValues.num(c, "magic_stone_ratio")) if CityValues.is_set(c, "magic_stone_ratio") else 1.0) * CityExchange.rate(state)
+		elif CityValues.is_set(c, "magic_stone_ratio"):
+			ratio = maxf(0.0, CityValues.num(c, "magic_stone_ratio"))
 	return floori(price(state.db, item_id) * ratio * state.price_mult("sell:" + _category(state, item_id)))
 
 
@@ -130,7 +150,7 @@ static func sellable(state: CityState, pc: PlayerCharacter, act_id: String = "")
 
 static func buy(state: CityState, pc: PlayerCharacter, act_id: String, item_id: String, n: int = 1) -> CityContext:
 	var ctx := CityContext.new(state, pc, act_id)
-	if n <= 0 or not stock(state, act_id).has(item_id):
+	if n <= 0 or not "buy" in tabs(state, act_id) or not stock(state, act_id).has(item_id):  # 파는 창구가 없는 곳(거래소)
 		return ctx.fail("city.reason_not_sold")
 	var total := buy_price(state, item_id) * n
 	var why := CityActions.check(state, pc, act_id, total)
@@ -148,13 +168,13 @@ static func buy(state: CityState, pc: PlayerCharacter, act_id: String, item_id: 
 
 static func sell(state: CityState, pc: PlayerCharacter, act_id: String, item_id: String, n: int = 1) -> CityContext:
 	var ctx := CityContext.new(state, pc, act_id)
-	if n <= 0 or not can_sell(state, item_id, act_id) or not pc.inventory.has(item_id, n):
+	if n <= 0 or not "sell" in tabs(state, act_id) or not can_sell(state, item_id, act_id) or not pc.inventory.has(item_id, n):
 		return ctx.fail("city.reason_cannot_sell")
 	var why := CityActions.check(state, pc, act_id)
 	if not why.is_empty():
 		return ctx.fail(why)
 	CityActions.charge(ctx, act_id)
-	var total := sell_price(state, item_id) * n
+	var total := sell_price(state, item_id, act_id) * n
 	pc.inventory.remove(item_id, n)
 	pc.inventory.add_money(total)
 	ctx.say("city.shop_sold", {"item": _name(state, item_id), "n": n, "price": total, "money": pc.inventory.money}, "good")

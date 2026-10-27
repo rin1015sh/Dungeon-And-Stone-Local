@@ -1,5 +1,5 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 도시 활동(M4). cost_stones null = 미정(0으로 처리). 활동은 행동력을 쓰지 않는다(시설 입장만 facility_entry_cost). effects = 효과 목록(타입 = src/city/effects/<type>.gd). panel = 패널형 활동(shop|bank|essence_remove) — 거래마다 cost_stones를 쓴다. 값 null은 '효과 없음'. stock = 패널형 상점 활동의 자기 판매 목록(없으면 city.json shop.stock), deals = 이 창구가 다루는 물건(equipment = 장비(아이템 category가 city.json shop.equipment_categories)만 · goods = 장비가 아닌 것만 · 없으면 모두) — 사기·팔기 모두에 걸린다.",
+  "_comment": "스키마 템플릿(로드되지 않음). 도시 활동(M4). cost_stones null = 미정(0으로 처리). 활동은 행동력을 쓰지 않는다(시설 입장만 facility_entry_cost). effects = 효과 목록(타입 = src/city/effects/<type>.gd). panel = 패널형 활동(shop|bank|essence_remove) — 거래마다 cost_stones를 쓴다. 값 null은 '효과 없음'. stock = 패널형 상점 활동의 자기 판매 목록(없으면 city.json shop.stock), deals = 이 창구가 다루는 물건(equipment = 장비(아이템 category가 city.json shop.equipment_categories)만 · goods = 장비가 아닌 것만 · 없으면 모두) — 사기·팔기 모두에 걸린다. tabs = 창구 쪽(buy·sell 중 — 없으면 둘 다, 거래소는 [\"sell\"]), sell_ratio = 이 창구의 매입 비율(없으면 city.json shop), stone_market = 마석을 이번 순 시세(city.json exchange.stone_rate — CityExchange)로 산다(CT54).",
   "id": "inn_rest",
   "name_ko": "휴식",
   "facility": "inn",

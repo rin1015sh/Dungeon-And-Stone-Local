@@ -12,6 +12,8 @@ var _stroke: PackedFloat32Array  # 잉크 한 획의 덮임(최댓값) — 겹�
 var _seed: int
 ## 사람 등 '어둠을 덜 받는' 자리(0~1) — NpcParts.stamp가 채우고 Interiors.light가 읽는다. 비어 있으면 없음.
 var keep: PackedFloat32Array
+## 부품 자리(Parts가 남긴다 — 거주 구역 꾸밈 Dress가 창 밑 꽃상자·금테·문 현관을 단다): 종류(window·door·ledge) → [[Rect2, 모양] …].
+var marks: Dictionary = {}
 
 
 func _init(p_w: int, p_h: int, seed_value: int) -> void:
@@ -38,6 +40,12 @@ func to_image() -> Image:
 	for i in w * h * 4:
 		bytes[i] = clampi(int(buf[i] * 255.0 + 0.5), 0, 255)
 	return Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, bytes)
+
+
+func mark(kind: String, r: Rect2, style: String = "") -> void:
+	if not marks.has(kind):
+		marks[kind] = []
+	(marks[kind] as Array).append([r, style])
 
 
 # ── 잡음 ────────────────────────────────────────────────

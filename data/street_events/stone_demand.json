@@ -5,7 +5,8 @@
   "weight": 2,
   "cooldown_months": 2,
   "when": {
-    "from_month": 2
+    "from_month": 2,
+    "residence_max": 1
   },
   "effects": [
     {

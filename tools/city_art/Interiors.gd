@@ -6,6 +6,10 @@ const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Rooms := preload("res://tools/city_art/InteriorRooms.gd")
 const Rooms2 := preload("res://tools/city_art/InteriorRooms2.gd")
+const Rooms3 := preload("res://tools/city_art/InteriorRooms3.gd")
+const Refine := preload("res://tools/city_art/Refine.gd")
+## 거주 구역마다 방의 밝기(빛이 닿지 않는 곳의 배율 — 1 = 13구역, CT54).
+const AMBIENT := [0.58, 0.66, 0.78, 0.88]
 
 const W := 960
 const H := 540
@@ -13,7 +17,8 @@ const VP := Vector2(360, 230)  ## 소실점
 const BACK := Rect2(170, 110, 380, 220)  ## 뒷벽
 
 
-static func paint(id: String, seed_value: int) -> Paint:
+## tier = 거주 구역(2~ = 더 밝은 방 + Refine 구역 색 — 같은 시드라 가구는 같다, CT54).
+static func paint(id: String, seed_value: int, tier: int = 1) -> Paint:
 	var p := Paint.new(W, H, seed_value)
 	var lights: Array = []  # [Vector2 위치, 반지름, 색, 세기]
 	match id:
@@ -33,8 +38,11 @@ static func paint(id: String, seed_value: int) -> Paint:
 			lights = Rooms2.smithy(p)
 		"guild":
 			lights = Rooms2.guild(p)
-	light(p, lights)
-	Ink.grade(p, 0.25, 1.12)
+		"exchange":
+			lights = Rooms3.exchange(p)
+	light(p, lights, AMBIENT[clampi(tier, 1, AMBIENT.size()) - 1])
+	Refine.look(p, tier, "interior")
+	Ink.grade(p, 0.25 if tier < 3 else 0.12, 1.12)
 	Ink.finish(p, 0.04, 0.5)
 	return p
 
@@ -100,11 +108,11 @@ static func shaft(p: Paint, a0: Vector2, a1: Vector2, b0: Vector2, b1: Vector2, 
 
 
 ## 어둡게 내린 뒤 광원 주변만 밝힌다. lights = [[Vector2, 반지름, 색, 세기] …]
-static func light(p: Paint, lights: Array) -> void:
+static func light(p: Paint, lights: Array, ambient: float = 0.58) -> void:
 	for y in H:
 		for x in W:
 			var k := (y * W + x) * 4
-			var f := 0.58
+			var f := ambient
 			for L: Array in lights:
 				var d := Vector2(x, y).distance_to(L[0]) / float(L[1])
 				if d < 1.0:

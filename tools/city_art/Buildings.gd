@@ -3,7 +3,7 @@ extends RefCounted
 ## 통일 문법(Parts): 짙은 마름돌 기단 · 같은 창틀/창살 · 같은 잉크 윤곽 · 탁한 회벽과 점판암 · 같은 쇠 걸이 간판.
 ## 시설마다 특징: 여관 = 목조 2층 돌출과 불 켜진 창 · 도서관 = 높은 고딕 창과 장미창 · 신전 = 첨탑과 색유리 ·
 ## 상점 = 계단식 박공과 진열창·차양 · 은행 = 거친 돌·기둥·쇠창살 · 훈련장 = 성문 아치·목책 마당 ·
-## 대장간 = 큰 굴뚝과 열린 화덕·모루 · 탐험가 길드 = 큰 목조 회관·게시판·깃발(Buildings3).
+## 대장간 = 큰 굴뚝과 열린 화덕·모루 · 탐험가 길드 = 큰 목조 회관·게시판·깃발(Buildings3) · 거래소 = 돔과 여섯 기둥 현관(Buildings4).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -13,7 +13,9 @@ const Props := preload("res://tools/city_art/Props.gd")
 const More := preload("res://tools/city_art/Buildings2.gd")
 const Icons := preload("res://tools/city_art/Icons.gd")
 const More3 := preload("res://tools/city_art/Buildings3.gd")
+const More4 := preload("res://tools/city_art/Buildings4.gd")
 const Dress := preload("res://tools/city_art/Dress.gd")
+const Refine := preload("res://tools/city_art/Refine.gd")
 
 const PLASTER := Color("#8b8068")
 const SLATE := Color("#3a4044")
@@ -22,7 +24,7 @@ const CLAY := Color("#6b3b2d")
 ## id → 크기(px, 화면 720 높이 기준 1:1)
 const SIZES := {"inn": Vector2i(560, 470), "library": Vector2i(440, 520), "temple": Vector2i(430, 600),
 	"shop": Vector2i(400, 500), "bank": Vector2i(470, 450), "training": Vector2i(600, 400),
-	"smithy": Vector2i(520, 440), "guild": Vector2i(580, 560)}
+	"smithy": Vector2i(520, 440), "guild": Vector2i(580, 560), "exchange": Vector2i(660, 600)}
 
 
 ## tier = 거주 등급(1 = 기본 그림, 2~ = 같은 시드 그림 위에 꾸밈 — Dress, CT50).
@@ -46,7 +48,10 @@ static func paint(id: String, seed_value: int, tier: int = 1) -> Paint:
 			More3.smithy(p)
 		"guild":
 			More3.guild(p)
+		"exchange":
+			More4.exchange(p)
 	Dress.dress(p, id, tier)
+	Refine.look(p, tier)
 	finish(p, tier)
 	return p
 
@@ -56,9 +61,11 @@ static func finish(p: Paint, tier: int = 1) -> void:
 	Ink.light_dir(p, 0.4)
 	Ink.silhouette(p, 2)
 	if tier >= 4:
-		Ink.grade(p, 0.18, 1.12, Color("#1d2120"), Color("#ecd49a"), 0.16)
+		Ink.grade(p, 0.06, 1.1, Color("#22242a"), Color("#fff1cf"), 0.12)
 	elif tier == 3:
-		Ink.grade(p, 0.24, 1.12)
+		Ink.grade(p, 0.1, 1.1, Color("#202430"), Color("#f4dfae"), 0.12)
+	elif tier == 2:
+		Ink.grade(p, 0.22, 1.12)
 	else:
 		Ink.grade(p, 0.3, 1.12)
 	Ink.finish(p, 0.03)
