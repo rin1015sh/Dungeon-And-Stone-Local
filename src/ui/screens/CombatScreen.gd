@@ -75,23 +75,9 @@ func _ready() -> void:
 	_loop.call_deferred()
 
 
-## 아래 창 자리: 가운데, 폭 combat_bottom_width(화면이 좁으면 여백만 남기고), 높이 combat_bottom_height.
-func _place_bottom(c: Control, height: int = 0) -> void:
-	add_child(c)
-	var m := UiTheme.metric("margin", 16)
-	var w := UiTheme.metric("combat_bottom_width", 1040)
-	c.anchor_left = 0.5
-	c.anchor_right = 0.5
-	c.anchor_top = 1.0
-	c.anchor_bottom = 1.0
-	c.offset_left = -w / 2.0
-	c.offset_right = w / 2.0
-	c.offset_top = -m - (height if height > 0 else UiTheme.metric("combat_bottom_height", 200))
-	c.offset_bottom = -m
-	resized.connect(func() -> void:
-		var half := minf(w / 2.0, size.x / 2.0 - m)
-		c.offset_left = -half
-		c.offset_right = half)
+## 아래 창 자리: 대화창과 같은 자리·크기(DialogueBox.place_bottom — 게임 전체가 같은 창).
+func _place_bottom(c: Control) -> void:
+	DialogueBox.place_bottom(c, self)
 
 
 ## 대화창이 뜨면 아래 창(명령·목록·파티 창)을 숨긴다 — 덮인 창이 키를 받지 않게.

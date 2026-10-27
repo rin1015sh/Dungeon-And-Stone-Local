@@ -46,14 +46,8 @@ func _ready() -> void:
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var m := float(UiTheme.metric("margin", 16))
-	_dialog = DialogueBox.new(CityUi.card_box())
-	add_child(_dialog)
-	_dialog.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	_dialog.offset_left = m
-	_dialog.offset_right = -m
-	_dialog.offset_bottom = -m
-	_dialog.offset_top = -m - DialogueBox._cfg("height", 128.0)
+	_dialog = DialogueBox.new()  # 전투와 같은 대화창(UI36)
+	DialogueBox.place_bottom(_dialog, self)
 	_dialog.set_speaker(JsonUtil.get_str(f, "name_ko", _facility_id))
 	_dialog.shown_changed.connect(func(_on: bool) -> void: _sync_menu())
 	_dialog.drained.connect(_sync_menu)

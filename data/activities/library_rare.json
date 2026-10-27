@@ -2,7 +2,7 @@
   "id": "library_rare",
   "name_ko": "희귀서 열람",
   "facility": "library",
-  "cost_stones": 80,
+  "cost_stones": 0,
   "extra": true,
   "effects": [
     {

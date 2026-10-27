@@ -124,10 +124,9 @@ static func render_color(path: String, fallback: Color = Color.MAGENTA) -> Color
 
 
 ## 반투명 패널(탐험 화면 위에 겹치는 HUD·기록창·디버그 패널용).
+## 탐험 정보·선택 창·스킬 알림창 판 — 게임 전체 창 판과 같다(UI36).
 static func translucent_panel() -> StyleBoxFlat:
-	var bg := color("panel")
-	bg.a = ui_float("panel_alpha", 0.82)
-	return box(bg, color("panel_border"), metric("corner_radius", 2), metric("padding", 8))
+	return panel_box(metric("padding", 8))
 
 
 static func box(bg: Color, border: Color, radius: int, padding: int) -> StyleBoxFlat:
@@ -137,6 +136,14 @@ static func box(bg: Color, border: Color, radius: int, padding: int) -> StyleBox
 	if border.a > 0.0:
 		sb.set_border_width_all(1)
 		sb.border_color = border
+	sb.set_content_margin_all(padding)
+	return sb
+
+
+## 게임 전체가 쓰는 창 판(전투 아래 창·대화창·도시 카드 — 사용자 결정 2026-10-27, UI36): 거의 검은 판 + 2px 테두리.
+static func panel_box(padding: float) -> StyleBoxFlat:
+	var sb := box(color("panel_bg"), color("slot_border"), 3, 0)
+	sb.set_border_width_all(2)
 	sb.set_content_margin_all(padding)
 	return sb
 

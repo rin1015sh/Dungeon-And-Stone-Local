@@ -832,6 +832,20 @@ func _city_flow() -> void:
 	city.use_item("ration")
 	_expect(pc.inventory.has("ration") and city.dialog().busy(), "식량은 도시에서 쓰지 않는다(이유는 아래 대화창)")
 	city.dialog().clear()
+	var box := city.dialog()  # 긴 글: 창 폭으로 미리 접어 쪽마다 들어가는 줄까지만, 넘겨 보면 글이 빠짐없이 나온다(UI36)
+	var long_text := "가나다라마바사 아자차카타파하 ".repeat(40).strip_edges()
+	box.say("짧은 머리말")
+	box.say(long_text)
+	var seen := ""
+	var pages_ok := true
+	for _i in 30:
+		if not box.busy():
+			break
+		pages_ok = pages_ok and box.page_text().split("\n").size() <= box._per_page()
+		seen += box.page_text()
+		box.advance()
+		box.advance()
+	_expect(pages_ok and seen.replace("\n", "").replace(" ", "") == ("짧은 머리말" + long_text).replace(" ", ""), "긴 글은 쪽마다 들어가는 줄까지만, 넘기면 빠짐없이")
 	DialogueBox.auto_skip = true
 	await _action("debug_toggle")
 	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")

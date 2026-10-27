@@ -682,15 +682,12 @@
     "place": "{city} · {district}",
     "date": "{month}번째 달 {period}",
     "date_year": "{year}년째 {month}번째 달 {period}",
-    "hud_fatigue": "피로도 {value}",
-    "hud_fatigue_max": "피로도 {value} / {max}",
+    "fatigue_label": "피로도",
+    "fatigue_value_max": "{value} / {max}",
     "hud_fatigue_tier": " · {tier}",
-    "hud_money": "소지금 {money} 스톤",
+    "money_label": "소지금",
     "ap_label": "행동력",
     "ap_value": "{ap} / {max}",
-    "vitals_name": "{name} · 레벨 {level}",
-    "hp_label": "생명력",
-    "hp_value": "{hp} / {max}",
     "btn_title": "타이틀로",
     "leave": "나가기",
     "choice": "{name}  ({cost})",
@@ -843,9 +840,6 @@
         }
       },
       "library_read": {
-        "spent_stones": {
-          "1": "사서에게 열람료 {n} 스톤을 건넸다."
-        },
         "stat_up": {
           "1": "읽은 내용이 머릿속에 차곡차곡 쌓인다. {stat}이 늘었다."
         },

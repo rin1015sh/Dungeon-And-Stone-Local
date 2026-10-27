@@ -93,7 +93,7 @@ func _row(u: Combatant) -> int:
 
 
 func _bottom() -> float:
-	return float(UiTheme.metric("combat_bottom_height", 200)) + UiTheme.metric("margin", 16)
+	return DialogueBox.box_size().y + UiTheme.metric("margin", 16)
 
 
 ## 배치: 아군을 먼저 세우고(아래 앞줄), 적의 발 높이는 아군 머리 위로 올린다(combat_enemy_clear — 아군이 적을 가리지 않게,

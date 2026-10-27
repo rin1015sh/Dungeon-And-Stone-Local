@@ -24,7 +24,7 @@ func test_stone_amounts_use_korean_units() -> void:
 	assert_eq(Strings.stones(100000005), "1억 5")
 	assert_eq(Strings.stones(-15000), "-1만 5000")
 	# 문구에서 "스톤" 바로 앞의 수만 바뀐다(개수 {n}개는 그대로).
-	assert_eq(Strings.t("city.hud_money", {"money": 150000000}), "소지금 1억 5000만 스톤")
+	assert_eq(Strings.t("city.cost_stones", {"n": 150000000}), "1억 5000만 스톤")
 	assert_eq(Strings.t("city.shop_bought", {"item": "횃불", "n": 12000, "price": 15000.0}), "횃불 12000개를 1만 5000 스톤에 샀다.")
 
 

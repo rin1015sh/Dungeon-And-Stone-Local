@@ -2,7 +2,7 @@
   "id": "library_society",
   "name_ko": "도시와 탐험가에 관하여",
   "facility": "library",
-  "cost_stones": 30,
+  "cost_stones": 0,
   "lines": "library_read",
   "effects": [
     {

@@ -7,20 +7,13 @@ static func c(key: String, fallback: Color = Color.MAGENTA) -> Color:
 	return UiTheme.render_color("city.ui." + key, fallback)
 
 
+## 카드 판 = 게임 전체 창 판(UiTheme.panel_box — 전투·대화창과 같은 모양, UI36).
 static func card_box() -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = c("bg")
-	sb.set_border_width_all(1)
-	sb.border_color = c("border")
-	sb.set_content_margin_all(UiTheme.render_float("city.ui.card_padding", 12.0))
-	sb.shadow_color = Color(0, 0, 0, 0.45)
-	sb.shadow_size = 6
-	return sb
+	return UiTheme.panel_box(UiTheme.render_float("city.ui.card_padding", 12.0))
 
 
 static func plate_box(lit: bool) -> StyleBoxFlat:
 	var sb := card_box()
-	sb.shadow_size = 3
 	sb.border_color = c("border_lit") if lit else c("border")
 	sb.set_border_width_all(2 if lit else 1)
 	sb.content_margin_left = 14

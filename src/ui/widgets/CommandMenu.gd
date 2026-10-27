@@ -51,9 +51,7 @@ func _init() -> void:
 
 static func _window() -> PanelContainer:
 	var p := PanelContainer.new()
-	var box := UiTheme.box(Color(0.06, 0.055, 0.05, 0.99), UiTheme.color("slot_border"), 3, UiTheme.metric("padding", 8))
-	box.set_border_width_all(2)
-	p.add_theme_stylebox_override("panel", box)
+	p.add_theme_stylebox_override("panel", UiTheme.panel_box(UiTheme.metric("padding", 8)))
 	return p
 
 

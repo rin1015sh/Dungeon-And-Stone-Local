@@ -6,6 +6,13 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **창 통일 · 대화창 쪽 미리 정하기 · 도시 카드 하나 · 도서관 무료 (2026-10-27, 사용자)** — UI36.
+  - `DialogueBox`: 줄을 넣을 때 `TextParagraph`로 창 폭에 맞춰 접고(창 안 자동 줄바꿈 끔), 한 쪽 = 창 높이에 들어가는 줄(글꼴 높이·줄 간격으로 계산, 최대 `ui.dialog.lines` 5). 남은 자리에 안 들어가는 글은 통째로 다음 쪽, 한 쪽보다 긴 글만 나눔. `place_bottom`(아래 가운데 800×196)을 탐험·전투(명령 창 포함)·도시 거리·시설이 같이 쓴다 — render.json `combat_bottom_*` 삭제.
+  - 창 판 `UiTheme.panel_box`(팔레트 `panel_bg`) — `CityUi.card_box`·`CommandMenu`·`translucent_panel`이 이것. `city.ui.bg`·`panel_alpha`·`vitals_width` 삭제.
+  - `CityHud`: 왼쪽 아래 탐험가 카드 삭제, 달력 카드 행동력 아래 피로도·소지금 줄(문구 `city.fatigue_label`·`money_label`·`fatigue_value_max`, 옛 `hud_fatigue*`·`hud_money`·`vitals_name`·`hp_*` 삭제).
+  - 도서관 활동 8개 `cost_stones` 0, `library_read.spent_stones` 문구 삭제. 캡처 `--activity`+`--dialog`는 글자가 다 나올 때까지 기다린다.
+  - 확인: 캡처(거리·도서관 결과 쪽 0~2·전투 명령 창·탐험), check.sh.
+
 - **허기 0 = 배부름 ~ 100 = 굶주림 (2026-10-27, 사용자)** — UI35. 속값(포만도)·규칙은 그대로, hunger `display_inverted` true + `ResourceDef.shown`을 ResourceBar·PartyPage·PartyRoster가 쓴다, 음식 설명 "허기 -n"(`eff_lower`), 디버그·도시 문구·식욕 설명. 시험 test_resources `test_hunger_shown_inverted`, 캡처 `--hunger=65`(65/100, 막대 65%). check.sh 통과.
 
 - **Tab 정수 카드: 등급 · 차분한 색 · 순서 바꾸기 (2026-10-27, 사용자)** — UI34.

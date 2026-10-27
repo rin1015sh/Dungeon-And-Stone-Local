@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(972줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -843,15 +843,12 @@
 - `city.place` {city} · {district}
 - `city.date` {month}번째 달 {period}
 - `city.date_year` {year}년째 {month}번째 달 {period}
-- `city.hud_fatigue` 피로도 {value}
-- `city.hud_fatigue_max` 피로도 {value} / {max}
+- `city.fatigue_label` 피로도
+- `city.fatigue_value_max` {value} / {max}
 - `city.hud_fatigue_tier`  · {tier}
-- `city.hud_money` 소지금 {money} 스톤
+- `city.money_label` 소지금
 - `city.ap_label` 행동력
 - `city.ap_value` {ap} / {max}
-- `city.vitals_name` {name} · 레벨 {level}
-- `city.hp_label` 생명력
-- `city.hp_value` {hp} / {max}
 - `city.btn_title` 타이틀로
 - `city.leave` 나가기
 - `city.choice` {name}  ({cost})
@@ -1017,8 +1014,6 @@
 - `city.lines.inn_meal.fatigue_same.1` 느긋하게 그릇을 비웠다.
 
 #### `city.lines.library_read`
-
-- `city.lines.library_read.spent_stones.1` 사서에게 열람료 {n} 스톤을 건넸다.
 
 - `city.lines.library_read.stat_up.1` 읽은 내용이 머릿속에 차곡차곡 쌓인다. {stat}이 늘었다.
 

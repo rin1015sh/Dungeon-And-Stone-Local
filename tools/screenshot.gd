@@ -405,7 +405,8 @@ func _city(city: CityScreen) -> void:
 					await _frames(2)
 					for db: Node in city.find_children("*", "DialogueBox", true, false):
 						(db as DialogueBox).advance()
-				await get_tree().create_timer(1.5).timeout
+			if _args.has("dialog"):
+				await get_tree().create_timer(1.5).timeout  # 글자가 다 나올 때까지
 	if _args.has("debug"):
 		city.debug_panel().visible = true
 	if _args.has("street"):

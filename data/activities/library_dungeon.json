@@ -2,7 +2,7 @@
   "id": "library_dungeon",
   "name_ko": "미궁에 관하여",
   "facility": "library",
-  "cost_stones": 30,
+  "cost_stones": 0,
   "lines": "library_read",
   "effects": [
     {

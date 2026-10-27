@@ -403,24 +403,10 @@ func _bury_mates() -> void:
 			EventBus.notice.emit("party.mate_died", {"name": mate.display_name}, "danger")
 
 
-## 하단 대화창: 하단 바 자리에 겹친다(폭 ui.dialog.width — 화면이 좁으면 여백만 남기고).
-func _build_dialog(m: int) -> void:
+## 하단 대화창: 전투·도시와 같은 자리·크기(DialogueBox.place_bottom).
+func _build_dialog(_m: int) -> void:
 	_dialog = DialogueBox.new()
-	add_child(_dialog)
-	var w := UiTheme.ui_dict("dialog").get("width", 960.0) as float
-	var h := UiTheme.ui_dict("dialog").get("height", 128.0) as float
-	_dialog.anchor_left = 0.5
-	_dialog.anchor_right = 0.5
-	_dialog.anchor_top = 1.0
-	_dialog.anchor_bottom = 1.0
-	_dialog.offset_top = -m * 0.5 - h
-	_dialog.offset_bottom = -m * 0.5
-	var fit := func() -> void:
-		var half := minf(w / 2.0, size.x / 2.0 - m)
-		_dialog.offset_left = -half
-		_dialog.offset_right = half
-	fit.call()
-	resized.connect(fit)
+	DialogueBox.place_bottom(_dialog, self)
 	EventBus.log_message.connect(_on_log)
 	EventBus.notice.connect(_notify)
 	_route = NoticeRoute.new(session.db)

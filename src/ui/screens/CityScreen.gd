@@ -54,13 +54,8 @@ func _ready() -> void:
 	_codex.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
 	add_child(_codex)
 	_codex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_dialog = DialogueBox.new(CityUi.card_box())
-	add_child(_dialog)
-	_dialog.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	_dialog.offset_left = m
-	_dialog.offset_right = -m
-	_dialog.offset_bottom = -m
-	_dialog.offset_top = -m - DialogueBox._cfg("height", 128.0)
+	_dialog = DialogueBox.new()  # 전투와 같은 대화창(UI36)
+	DialogueBox.place_bottom(_dialog, self)
 	_dialog.shown_changed.connect(func(on: bool) -> void: _street.set_process(not on and not _menu.is_open() and not _event_running))
 	_menu.hold = _dialog.busy
 	_route = NoticeRoute.new(state.db)

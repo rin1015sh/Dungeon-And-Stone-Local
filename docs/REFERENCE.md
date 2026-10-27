@@ -84,7 +84,7 @@ src/
   ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel(기반 점검 기록창), DialogueBox(하단 대화창 — 알림·전투 안내를 Enter로 넘김), NoticeRoute(알림을 보일지 — 탐험·전투·도시), DataSummary, ExploreHud, DebugPanel, ChoiceGrid(고정 칸 선택판 — 전투·시설·창구·광장·수수께끼), SkillBrief, PauseMenu,
                          GothicWindow(수수께끼 창 틀), InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, CommandMenu, EssencePanel, RiddleDialog, ChoicePopup(작은 선택 창 — W/S·Enter·Backspace) …
   ui/windows/            GameMenu(Tab 메뉴 — 아군·캐릭터·소지품 세 쪽, 쪽 끝에서 A/D로 옆 쪽), CodexMenu(도감 B — CodexIndexPage·LorePage·BestiaryPage), MenuPage(쪽 기반 — nav·confirm·back), InventoryPage(장비 칸·정렬·가방 커서, Enter = 할 일 고르기·옮기기), CharacterPage, BestiaryPage
-  ui/city/               CityStreet(레이어 시차 스크롤 거리 + 강조 셰이더), CityHud(귀퉁이 카드 — 달력·탐험가·메뉴), CityUi(카드 스타일),
+  ui/city/               CityStreet(레이어 시차 스크롤 거리 + 강조 셰이더), CityHud(귀퉁이 카드 — 달력(행동력·피로도·소지금)·메뉴), CityUi(카드 스타일),
                          FacilityView(시설 내부), CityLines(결과 문구 고르기), CityPanel + ShopPanel·BankPanel·EssenceRemovePanel, CityDebugPanel
   ui/combat/             BattleStage(전투 무대 — 뒷그림·빛 웅덩이, 적 정면·아군 뒷모습 배치), FoeRows(적 원근 줄 — 통로 벽 안에 앞뒤로, UI29), BattlerView, MonsterArt(몬스터 그림·몸 높이 색인), CombatFigure(그림 없을 때 몸 그리기), PartyRoster(파티 창 — 이름 옆 상태 아이콘·계측값), StatusIcons(상태이상 아이콘 3개씩 깜빡이며 넘김 — UI24·UI25), DropMark(쓰러진 자리의 드롭)·CombatDrops(전투 뒤 드롭 묻기)·DeathDust(쓰러질 때 빛 먼지)
   ui/screens/            TitleScreen(이어하기), CharacterCreateScreen, CityScreen, PlazaScreen(차원광장·포탈·저장), ExploreScreen, CombatScreen(전투 — ui/combat 위젯을 모음), EndScreen, FoundationScreen(기반 점검), DataErrorScreen
