@@ -217,6 +217,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 		return false
 	phase = PHASE_EXECUTING
 	_busy += 1
+	event.emit({"type": "act", "unit": c, "action": action})  # 화면: 행동하는 몸짓(탐험가 동작 — PartySprite)
 	var delay := 0.0
 	match str(action.get("kind", "")):
 		"skill":

@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **전투 탐험가 동작 (2026-10-28, 사용자)** — UI41. 사용자가 준 피어 앤 헝거 아군 시트(9×6칸)를 베끼지 않고 칸마다 관절 2D 점을 재서(`tools/monster_art/party_motions.json`) 3D 뼈대로 옮김(`PartyMotion` — 뼈 길이는 우리 몸, 방향·몸 돌림은 원본, 짧아 보인 뼈는 깊이로). 동작 10: 대기(들썩임)·전투 자세·주먹·방어·칼·주문·피격·돌아선 대기(회피)·도망·쓰러짐(선 몸을 화면에서 통째로 눕힘 — `Back.P` roll, 옷 띠도 함께). 옆모습 그림·자리별 옆모습 전환 삭제(사용자). 고친 것: 가드 왼팔이 몸 뒤로 숨음 → 머리 왼쪽, 몸을 돌리면 뜨던 점 = 허리띠 앞 버클(배 표면보다 앞) → 골반 따라 배에, 팔 밑 혹 = 든 팔의 팔꿈치가 소매 아래 맨살 → 소매를 팔꿈치 아래까지. 게임: `PartySprite` + `Battle` `act` 사건 + 피해·쓰러짐 사건 → BattlerView 칸 넘김, 누운 몸은 창 위로 올림. 대기 시트(UI40)·`paint_idle`·`idle_breathe_preview.py`는 동작 시트로 합쳐 지움. 캡처 `--motions=…`로 확인. 남은 것: 사람이 보고 빠르기·동작 고르기.
+
 - **전투 탐험가 대기 3칸 (2026-10-28, 사용자)** — UI40. 휘는 미리보기(`idle_breathe_preview.py`)가 "이상하다" → 사용자가 준 피어 앤 헝거 아군 시트(9×6칸, 동작마다 3칸)를 보고 3D 뼈대로 칸마다 다시 그림(`BackPose.idle` — 발 고정, 위 몸이 무릎 굽혀 DIP 0.016 가라앉음 · `tools/paint_idle.gd`). 맨손 겨눔 자세도 그려 봤으나 사용자 "하지마, 몸만 들썩이는 것만" → 지금 자세 그대로. 게임: `assets/party/<종족>_<back|side>_idle.webp`(칸 크기 = 원래 그림과 같음), BattlerView가 0-1-2-1로 넘김(`render.json ui.combat_party_idle` cells 3 · frame_s 0.35, 시작 시각 무작위). 캡처로 확인(실행마다 칸이 다름). 남은 것: 사람이 보고 빠르기·크기 조절.
 
 - **대상 흰빛 · 아군 숨쉬기 미리보기 (2026-10-28, 사용자)** — UI40. 대상으로 고른 적: 노란 고리·금색 이름 없앰 → 흰 실루엣이 오르내림(`target_flash.gdshader`, `BattlerView._flash`·`_process`, render `ui.combat_target_flash`), 캡처 `--combat --target`(고블린·드레드피어 확인 — 밝은 그림은 덜 티 난다). 숨쉬기는 게임에 넣지 않고 `tools/idle_breathe_preview.py`로 GIF만(인간·바바리안 뒷모습). check.sh 통과.

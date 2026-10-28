@@ -127,8 +127,10 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 		pr["roll"] = roll
 		pr["shift"] = Vector2(0.0, -H * float(mf.get("lift", 0.13)))
 	var j := Back.skeleton(sp)
-	if not mf.is_empty():
+	if mf.has("p"):
 		j = PartyMotion.pose(j, mf, float(mf.get("turn", 0.0)))
+	if mf.has("dip"):  # 대기: 지금 자세 그대로 무릎을 굽혀 몸만 들썩임(BackPose.idle)
+		j = BackPose.idle(j, float(mf["dip"]))
 	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
 		j = Back.stride(j, float(sp["walk"]), sp.get("gait", {}))
 	if sp.has("idle"):  # 전투 대기 숨쉬기 한 칸(tools/paint_idle.gd 미리보기)

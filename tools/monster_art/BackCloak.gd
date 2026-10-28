@@ -160,7 +160,7 @@ static func _quilt(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col:
 	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r"], 0.022, m, g, BackKit.band(cl, pr, nk.y + 0.008, hem), 0.03, 0.0)
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
-		BackKit.shell(cl, pr, ["upper_" + t, "fore_" + t], 0.016, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, maxf(j["wrist_" + t].y, j["elbow_" + t].y) - 0.01), 0.012)
+		BackKit.shell(cl, pr, ["upper_" + t, "fore_" + t], 0.016, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, _sleeve_end(j, t, -0.01)), 0.012)
 	var bw: float = bd["back_w"]
 	var y := nk.y + 0.05
 	while y < hem - 0.01:  # 가로 누빔(앞·뒤·옆)
@@ -182,7 +182,7 @@ static func _chain(cl: Clay, pr: Dictionary, j: Dictionary, col: Color, rng: Ran
 	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r"], 0.016, m, g, BackKit.band(cl, pr, nk.y + 0.01, hem, rng, 0.006, 14), 0.03, 0.0)
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
-		BackKit.shell(cl, pr, ["upper_" + t], 0.012, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, j["elbow_" + t].y), 0.01)
+		BackKit.shell(cl, pr, ["upper_" + t], 0.012, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, j["elbow_" + t].y + (0.04 if _raised(j, t) else 0.0)), 0.01)
 	var y := nk.y + 0.04
 	while y < hem:
 		for n: Vector3 in [Vector3(0, 0, -1), Vector3(0, 0, 1), Vector3(-1, 0, 0), Vector3(1, 0, 0)]:
@@ -200,3 +200,16 @@ static func _belt(cl: Clay, pr: Dictionary, j: Dictionary, col: Color) -> void:
 	BackKit.shell(cl, pr, ["pelvis", "torso"], 0.04, m, g, BackKit.band(cl, pr, y0, y0 + 0.03), 0.02, 0.002)
 	var pv: Vector3 = j["pelvis"]  # 배 앞 버클(골반을 따라 · 배 표면에 붙여 — 몸을 돌려도 몸 밖에 뜨지 않게)
 	Back.ell(cl, pr, g, Vector3(pv.x, y0 + 0.015, pv.z - 0.085), 0.02, 0.018, 0.01, cl.mat(Color("#8a7a58"), "metal"), 0.003)
+
+
+## 아래팔을 든 팔(손목이 팔꿈치보다 위 — 전투 동작 칸): 팔꿈치 혹이 소매 아래로 맨살로 삐져나오지 않게 소매를 팔꿈치 아래까지.
+static func _raised(j: Dictionary, t: String) -> bool:
+	return (j["wrist_" + t] as Vector3).y < (j["elbow_" + t] as Vector3).y - 0.02
+
+
+## 긴 소매 끝(화면 아래 = 큰 y): 늘어뜨린 팔은 손목·팔꿈치 중 아래 + off, 든 팔은 팔꿈치 혹까지 덮는다.
+static func _sleeve_end(j: Dictionary, t: String, off: float) -> float:
+	var el: Vector3 = j["elbow_" + t]
+	if _raised(j, t):
+		return el.y + 0.05
+	return maxf((j["wrist_" + t] as Vector3).y, el.y) + off

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmlxwcxu416ow"
-path="res://.godot/imported/human_back_idle.webp-a0808552a8cc1728333d273b7a23ca1f.ctex"
+uid="uid://c3njl1bv4sov"
+path="res://.godot/imported/human_back_motions.webp-b93495605d614cbf41e83a4af9eac994.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/party/human_back_idle.webp"
-dest_files=["res://.godot/imported/human_back_idle.webp-a0808552a8cc1728333d273b7a23ca1f.ctex"]
+source_file="res://assets/party/human_back_motions.webp"
+dest_files=["res://.godot/imported/human_back_motions.webp-b93495605d614cbf41e83a4af9eac994.ctex"]
 
 [params]
 

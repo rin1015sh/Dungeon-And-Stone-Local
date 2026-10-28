@@ -19,6 +19,7 @@ extends Node
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
+## --motions=<동작,…> [--motion_t=초]: 아군 탐험가마다 전투 동작(PartySprite — idle·stance·thrust·guard·swing·spell·damage·wait·escape·fall)
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
 ## --known: --combat --monster=<id>에서 그 몬스터를 조사·상성까지 알고 있는 상태(무대엔 이름뿐 — 도감 B에서만 보인다)
@@ -385,6 +386,24 @@ func _run() -> void:
 			var foe: Combatant = tcs.battle.side_units(Combatant.SIDE_ENEMY)[0]
 			tcs._stage.view(foe).set_targeted(true)
 		await get_tree().create_timer(float(str(_args["target"])) if str(_args["target"]).is_valid_float() else 0.55).timeout
+	if _args.has("motions"):  # --motions=<동작,동작,…>: (--combat과 함께) 아군 탐험가 차례대로 그 동작(PartySprite — fall = 쓰러짐), --motion_t초 뒤 찍는다(UI41)
+		await _frames(3)
+		for n: Node in _main.find_children("*", "CombatScreen", true, false):
+			var mcs := n as CombatScreen
+			var names := str(_args["motions"]).split(",")
+			var k := 0
+			for u: Combatant in mcs.battle.side_units(Combatant.SIDE_PARTY):
+				var mv := mcs._stage.view(u)
+				if mv == null or k >= names.size():
+					continue
+				if names[k] == "fall":
+					u.actor.pool.set_current("hp", 0.0)
+					u.actor.dead = true
+					mv.fall()
+				else:
+					mv.motion(names[k])
+				k += 1
+		await get_tree().create_timer(float(str(_args.get("motion_t", "0.2")))).timeout
 	if _args.has("banner"):  # --banner=<스킬 이름>: 위쪽 스킬 알림창(SkillBanner)을 띄운 채(찍기 바로 전에 — 금방 사라진다)
 		for n: Node in _main.find_children("*", "CombatScreen", true, false):
 			(n as CombatScreen).battle.message.emit("combat.use_skill", {"name": "", "skill": str(_args["banner"])}, "system")

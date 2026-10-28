@@ -5,7 +5,7 @@ extends Control
 ## 적은 정면 + 머리 위 상태 아이콘(3개씩, 넘으면 깜빡이며 넘김 — StatusIcons)·이름(생명력·상성은 보이지 않는다 — 피어 앤 헝거처럼,
 ## 받은 피해만 숫자로 떠오른다. 조사·쳐 봐서 알아낸 것은 도감 B에서만 — 사용자 2026-10-27, UI22),
 ## 아군은 뒷모습만(이름·상태 아이콘·생명력·영혼력은 아래 파티 창에). 지금 차례면 발밑 고리가 빛난다.
-## 탐험가는 대기 시트(<종족>_<view>_idle.webp, 가로 3칸)가 있으면 몸이 들썩이는 칸을 0-1-2-1로 넘긴다(render.json ui.combat_party_idle, UI40).
+## 탐험가는 동작 시트가 있으면 칸을 넘긴다(PartySprite — 대기 들썩임·내 차례 전투 자세·공격·피격·쓰러짐, UI41). 무대 배치 폭은 한 장 그림(<종족>_back) 기준.
 ## 대상으로 고르는 중인 적은 고리·금색 이름 대신 그림 모양대로 흰빛이 숨 쉬듯 떠오른다(피어 앤 헝거식 — target_flash 셰이더, UI40).
 ## 쓰러지거나 도망치면 흐려진다.
 
@@ -17,8 +17,8 @@ var boss: bool = false  ## 보스 등급(render.json ui.combat_boss_ranks) — �
 var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
-var _idle: Array = []  ## 지금 보기의 대기 칸(AtlasTexture)
-var _idle_t: float = 0.0
+var _motion: PartySprite = null  ## 탐험가 동작(없으면 한 장 그림)
+var _lay: Texture2D = null  ## 탐험가: 배치 폭·높이를 재는 한 장 그림(동작 칸은 무기·누운 몸만큼 넓다)
 var _current: bool = false
 var _target: bool = false
 var _name: Label
@@ -39,11 +39,12 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 		var tex := MonsterArt.texture_in(MonsterArt.party_dir(), race + "_back")
 		if tex != null:
 			art = tex
+			_lay = tex
 			_art_body = MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_back", tex)
-			_idle = _idle_cells(race + "_back_idle")
-			_tick_idle()
-		_idle_t = randf() * 10.0  # 아군끼리 숨이 맞지 않게
-		set_process(not _idle.is_empty())
+			_motion = PartySprite.load_for(race)
+			if _motion != null:
+				art = _motion.tick(0.0)
+		set_process(_motion != null)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not front:
 		return
@@ -73,38 +74,46 @@ func _look(def: Dictionary, art_id: String) -> void:
 		_art_body = MonsterArt.body_height(art_id, art)
 
 
-## 대기 시트 → 칸 3개(같은 크기 AtlasTexture). 시트가 없으면 빈 배열.
-static func _idle_cells(id: String) -> Array:
-	var sheet := MonsterArt.texture_in(MonsterArt.party_dir(), id)
-	if sheet == null:
-		return []
-	var n := int(UiTheme.ui_dict("combat_party_idle").get("cells", 3))
-	var w := sheet.get_width() / float(n)
-	var out: Array = []
-	for i in n:
-		var a := AtlasTexture.new()
-		a.atlas = sheet
-		a.region = Rect2(w * i, 0.0, w, sheet.get_height())
-		out.append(a)
-	return out
+## 탐험가 동작 한 번(PartySprite 동작 이름 — 공격·스킬·피격·회피·방어·도망). 동작 시트가 없으면 아무것도 하지 않는다.
+func motion(name: String) -> void:
+	if _motion != null:
+		_motion.play(name)
 
 
-## 대기 칸 고르기: 0-1-2-1 왕복, 칸마다 frame_s초.
-func _tick_idle() -> void:
-	if _idle.is_empty():
-		return
-	var cfg := UiTheme.ui_dict("combat_party_idle")
-	var n := _idle.size()
-	var loop := maxi(1, n * 2 - 2)
-	var i := int(_idle_t / maxf(0.01, JsonUtil.get_float(cfg, "frame_s", 0.35))) % loop
-	var cell: Texture2D = _idle[i if i < n else loop - i]
+## 쓰러짐: 피격을 보인 뒤 누운 몸(흐려지지 않는다).
+func fall() -> void:
+	if _motion != null:
+		_motion.fall()
+		refresh()
+
+
+func _tick_motion(delta: float) -> void:
+	var cell := _motion.tick(delta)
 	if cell != art:
 		art = cell
 		queue_redraw()
 
 
+## 지금 칸을 그릴 자리: 발 가운데(아래 가운데)에 맞춰 칸 크기대로(배치 폭과 다를 수 있다).
+## 누운 몸은 아래 창 뒤로 가라앉은 발 높이(combat_party_sink)만큼 올려 창 위에 눕히고, 무대 밖으로 나가지 않게 민다.
+func _art_rect() -> Rect2:
+	if _lay == null:
+		return Rect2(Vector2.ZERO, size)
+	var k := size.y / _lay.get_height()
+	var s := art.get_size() * k
+	var r := Rect2(Vector2((size.x - s.x) / 2.0, size.y - s.y), s)
+	if _motion != null and _motion.lying(art):
+		r.position.y -= float(UiTheme.metric("combat_party_sink", 100))
+		var stage := get_parent_control()
+		if stage != null:
+			r.position.x = clampf(position.x + r.position.x, 0.0, maxf(0.0, stage.size.x - s.x)) - position.x
+	return r
+
+
 ## 키 h일 때 그림 전체 높이 / h(들어 올린 무기·뿔·이름표 자리 포함 — 무대가 화면 위로 넘치지 않게 줄일 때).
 func height_ratio() -> float:
+	if _lay != null:
+		return _lay.get_height() / _art_body
 	if art != null:
 		return art.get_height() / _art_body
 	return CombatFigure.top_of(shape)
@@ -112,6 +121,8 @@ func height_ratio() -> float:
 
 ## 키 h일 때 차지하는 폭(무대 배치용).
 func width_for(h: float) -> float:
+	if _lay != null:
+		return _lay.get_width() * h / _art_body
 	if art != null:
 		return art.get_width() * h / _art_body
 	return CombatFigure.width_of(shape, h)
@@ -120,7 +131,7 @@ func width_for(h: float) -> float:
 ## 무대가 정한 자리: 발 위치 · 키. 상태 아이콘 줄 아래 이름(적) — 둘 다 머리 위.
 func place(foot: Vector2, h: float) -> void:
 	var w := width_for(h)
-	size = Vector2(w, art.get_height() * h / _art_body if art != null else h * 1.12)
+	size = Vector2(w, (_lay if _lay != null else art).get_height() * h / _art_body if art != null else h * 1.12)
 	position = foot - Vector2(w / 2.0, size.y)
 	if front:
 		var top := h if art != null else h * CombatFigure.top_of(shape)
@@ -153,13 +164,19 @@ func _keep_in(l: Control) -> void:
 func refresh() -> void:
 	if front:
 		_icons.show_for(unit.actor)
-	modulate.a = 1.0 if unit.is_active() else 0.3
+	if _motion != null:
+		if unit.is_active() and _motion.fallen():
+			_motion.revive()
+		_motion.set_hold("guard" if unit.actor.statuses.has("guarding") else "")
+	modulate.a = 1.0 if unit.is_active() or (_motion != null and _motion.fallen()) else 0.3  # 누운 탐험가는 흐리지 않는다
 	queue_redraw()
 
 
 func set_current(on: bool) -> void:
 	if _current != on:
 		_current = on
+		if _motion != null:
+			_motion.set_loop("stance" if on else "idle")  # 내 차례(행동을 고르는 동안) = 전투 자세
 		queue_redraw()
 
 
@@ -170,7 +187,7 @@ func set_targeted(on: bool) -> void:
 			_ensure_flash()
 			_flash.visible = on
 			_flash_t = 0.0
-			set_process(on or not _idle.is_empty())
+			set_process(on or _motion != null)
 		queue_redraw()
 
 
@@ -190,11 +207,10 @@ func _ensure_flash() -> void:
 
 
 func _process(delta: float) -> void:
-	if not _idle.is_empty():
-		_idle_t += delta
-		_tick_idle()
+	if _motion != null:
+		_tick_motion(delta)
 	if _flash == null or not _flash.visible:
-		set_process(not _idle.is_empty())
+		set_process(_motion != null)
 		return
 	_flash_t += delta
 	var cfg := UiTheme.ui_dict("combat_target_flash")
@@ -203,8 +219,9 @@ func _process(delta: float) -> void:
 	var k := 0.5 - 0.5 * cos(TAU * JsonUtil.get_float(cfg, "hz", 0.9) * _flash_t)
 	(_flash.material as ShaderMaterial).set_shader_parameter("amount", lerpf(lo, hi, k))
 	_flash.texture = art
-	_flash.position = Vector2.ZERO
-	_flash.size = size
+	var r := _art_rect()
+	_flash.position = r.position
+	_flash.size = r.size
 
 
 func _draw() -> void:
@@ -212,7 +229,7 @@ func _draw() -> void:
 	if art != null:
 		if front:  # 아군 발은 아래 창 뒤로 가라앉아 있다(차례는 밝기로)
 			CombatFigure.ground(self, Vector2(size.x / 2.0, size.y), minf(size.x * 0.42, size.y * 0.5), size.y, glow)
-		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
+		draw_texture_rect(art, _art_rect(), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
 	else:
 		var c := color.lightened(0.35 if _target else (0.12 if _current and not front else 0.0))  # 그림 없는 임시 도형: 대상이면 희게
 		CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)

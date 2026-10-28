@@ -241,8 +241,12 @@ func _on_event(e: Dictionary) -> void:
 	var u: Combatant = e.get("unit")
 	var v: BattlerView = _stage.view(u) if u != null else null
 	match str(e.get("type")):
+		"act":
+			if v != null:
+				v.motion(PartySprite.motion_for(battle.db, e.get("action", {})))
 		"damage":
 			if v != null:
+				v.motion("damage" if bool(e.get("hit")) and int(e.get("lost", e.get("amount", 0))) > 0 else ("wait" if not bool(e.get("hit")) else ""))  # 탐험가: 맞으면 피격, 피하면 몸을 틀어 피함
 				if not bool(e.get("hit")):  # 회피·면역·막힘도 피해 숫자처럼 크게(색만 다르게)
 					v.float_text(Strings.t("combat.float_miss"), UiTheme.color("dmg_none"), true)
 				elif bool(e.get("immune", false)):
@@ -256,6 +260,8 @@ func _on_event(e: Dictionary) -> void:
 			if str(e.get("type")) == "down" and u != null and u.side == Combatant.SIDE_ENEMY and u.actor is Monster:
 				_spots.append(v.position + Vector2(v.size.x * 0.5, v.size.y) if v != null else _stage.size * Vector2(0.5, 0.6))
 			if v != null:
+				if str(e.get("type")) == "down" and not _drops_view(u):
+					v.fall()  # 탐험가: 피격을 보인 뒤 누운 몸
 				v.refresh()
 				if _drops_view(u):
 					_remove_unit.call_deferred(u)  # 떠오른 숫자를 잠깐 보인 뒤(다음 프레임) 치운다
