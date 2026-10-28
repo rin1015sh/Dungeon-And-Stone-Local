@@ -1,7 +1,7 @@
 extends SceneTree
 ## 전투 아군 대기(숨쉬기) 스프라이트 시트 미리보기 — 게임에는 아직 넣지 않는다(UI40).
 ## 피어 앤 헝거 아군 전투 시트의 대기 동작을 본떠: 손그림 3칸(선 자세 → 반쯤 → 무릎 굽혀 가라앉음), 재생은 0-1-2-1.
-## 자세는 맨손 겨눔(주먹을 가슴 높이로 — Back.skeleton "guard")에 발을 넓게, 무릎을 굽힌다.
+## 자세는 맨손 겨눔(팔꿈치를 몸 옆에 붙이고 주먹을 허리 위로 — Back.skeleton "guard")에 발을 넓게, 무릎을 굽힌다.
 ##   godot --headless --path . --script res://tools/paint_idle.gd -- --out=<폴더> [--only=human_back,…] [--keep](지금 자세 그대로 숨만)
 ## → <폴더>/<id>_idle.png(투명 가로 3칸, 칸 크기 같음 · 발 = 아래 끝)
 
