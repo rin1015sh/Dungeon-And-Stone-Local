@@ -268,12 +268,12 @@
     "due_month": 12
   },
   "residence": {
-    "_comment": "거주 구역(사용자 2026-10-27, CT50 — 라프도니아 14구역 설정을 받아 구역으로): 은행 '이사'(효과 residence_up)로 다음 등급 upgrade_cost를 내고 더 나은 구역으로 옮긴다(되돌리지 않는다). 13구역 라비기온(뒷골목 셋방) → 7구역 라비기온(광장 가까운 대로변) → 5구역 컴멜비(상업지구) → 3구역 컴멜비(사용자 2026-10-27 「2구역은 너무 높다, 일단 3」 — 2구역 북반구 중산층은 그 위). 1구역 카르논(명성 필요)·6구역 노움트리(귀족만)는 명성이 생기면. 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max · price_mult(시설 이용료·상점/대장간 사는 값 배율 — 컴멜비는 물가가 비싸다). street_tint = 거리의 먼 도시 레이어(원경·중경·안개)에 날씨 색과 함께 곱하는 색(CT54 — 높은 구역일수록 밝다; 거리·건물·내부 그림은 구역마다 따로 그린 <경로>_t<등급>). 구역 번호·값은 임시값.",
+    "_comment": "거주 구역(사용자 2026-10-27, CT50 — 라프도니아 14구역 설정을 받아 구역으로): 거리 오른쪽 끝에서 D를 한 번 더 누르면 '이사' — 다음 등급 upgrade_cost를 내고 더 나은 구역으로 옮긴다(되돌리지 않는다, 행동력은 쓰지 않는다 — 사용자 2026-10-28 CT60: 은행 이사·구역 물가 price_mult는 없앴다, 값 3만·8만·20만 = 1층 원정 순수익 약 1만 8000의 2·5·11번쯤). 13구역 라비기온(뒷골목 셋방) → 7구역 라비기온(광장 가까운 대로변) → 5구역 컴멜비(상업지구) → 3구역 컴멜비(사용자 2026-10-27 「2구역은 너무 높다, 일단 3」 — 2구역 북반구 중산층은 그 위). 1구역 카르논(명성 필요)·6구역 노움트리(귀족만)는 명성이 생기면. 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max. street_tint = 거리의 먼 도시 레이어(원경·중경·안개)에 날씨 색과 함께 곱하는 색(CT54 — 높은 구역일수록 밝다; 거리·건물·내부 그림은 구역마다 따로 그린 <경로>_t<등급>). 구역 번호·값은 임시값.",
     "tiers": [
-      {"name_ko": "라비기온 13구역", "upgrade_cost": 0, "smithy_material_tier": 1, "price_mult": 1.0, "street_tint": [1.0, 1.0, 1.0]},
-      {"name_ko": "라비기온 7구역", "upgrade_cost": 200000, "smithy_material_tier": 2, "price_mult": 1.0, "street_tint": [1.06, 1.05, 1.02]},
-      {"name_ko": "컴멜비 5구역", "upgrade_cost": 1000000, "smithy_material_tier": 3, "price_mult": 1.3, "street_tint": [1.14, 1.12, 1.05]},
-      {"name_ko": "컴멜비 3구역", "upgrade_cost": 4000000, "smithy_material_tier": 4, "price_mult": 1.6, "street_tint": [1.22, 1.2, 1.12]}
+      {"name_ko": "라비기온 13구역", "upgrade_cost": 0, "smithy_material_tier": 1, "street_tint": [1.0, 1.0, 1.0]},
+      {"name_ko": "라비기온 7구역", "upgrade_cost": 30000, "smithy_material_tier": 2, "street_tint": [1.06, 1.05, 1.02]},
+      {"name_ko": "컴멜비 5구역", "upgrade_cost": 80000, "smithy_material_tier": 3, "street_tint": [1.14, 1.12, 1.05]},
+      {"name_ko": "컴멜비 3구역", "upgrade_cost": 200000, "smithy_material_tier": 4, "street_tint": [1.22, 1.2, 1.12]}
     ],
     "source": "placeholder"
   },

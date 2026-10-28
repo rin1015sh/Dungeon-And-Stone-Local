@@ -24,6 +24,7 @@ var _codex: CodexMenu  ## 도감(B — UI32)
 var _debug: CityDebugPanel
 var _event_running := false  # 거리 사건 장면·선택 중 — 일러스트가 덮고 도시 조작을 막는다
 var _event_view: StreetEventView
+var _moving := false  # 이사 선택 창이 떠 있다
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) -> void:
@@ -36,6 +37,7 @@ func _ready() -> void:
 	_street = CityStreet.new()
 	_street.setup(state)
 	_street.facility_chosen.connect(choose_facility)
+	_street.end_reached.connect(offer_move)
 	add_child(_street)
 	_street.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
@@ -210,6 +212,28 @@ func _street_choice(id: String, choices: Array) -> int:
 	var i: int = await pop.picked
 	pop.queue_free()
 	return i
+
+
+## 거리 오른쪽 끝에서 D: 다음 구역으로 이사(값을 내고 — 행동력은 쓰지 않는다, CT60). 가장 높으면 이유 한 줄.
+func offer_move() -> void:
+	if _facility != null or _event_running or _moving or _menu.is_open() or _dialog.busy():
+		return
+	var cost := CityResidence.next_cost(state)
+	if cost < 0:
+		say(Strings.t("city.reason_residence_max"))
+		return
+	_moving = true
+	var can := pc.inventory.money >= cost
+	var opts: Array[Dictionary] = [
+		{"text": CityResidence.name_of(state, CityResidence.tier(state) + 1), "sub": Strings.t("city.cost_stones", {"n": cost}),
+			"enabled": can, "desc": "" if can else Strings.t("city.reason_no_money")},
+		{"text": Strings.t("city.move_cancel")}]
+	var i: int = await ChoicePopup.ask(self, Strings.t("city.move_title"), opts, true)
+	_moving = false
+	if i == 0 and CityResidence.upgrade(state, pc).is_empty():
+		state.changed.emit()
+		_street.refresh()
+		_hud.refresh()
 
 
 ## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.

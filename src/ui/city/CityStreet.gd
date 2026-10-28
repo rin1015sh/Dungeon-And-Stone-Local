@@ -14,6 +14,7 @@ extends Control
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
 
 signal facility_chosen(facility_id: String)
+signal end_reached  ## 오른쪽 끝 건물에서 D를 한 번 더 — 이사(CityScreen, CT60)
 
 const FALLBACK_SIZE := Vector2(400, 400)
 const HIGHLIGHT := preload("res://assets/shaders/city_highlight.gdshader")
@@ -211,6 +212,9 @@ func step(dir: int) -> void:
 		return
 	var i := clampi((_focus if _focus >= 0 else 0) + dir, 0, _buildings.size() - 1)
 	if i == _focus and _tween != null and _tween.is_running():
+		return
+	if dir > 0 and i == _focus and _focus == _buildings.size() - 1:
+		end_reached.emit()
 		return
 	_focus = i
 	refresh()

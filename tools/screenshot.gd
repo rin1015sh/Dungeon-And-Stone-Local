@@ -401,6 +401,12 @@ func _city(city: CityScreen) -> void:
 		st.residence = str(_args["residence"]).to_int()
 	st.changed.emit()
 	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
+	if _args.has("move"):  # --move: 거리 오른쪽 끝에서 D 한 번 더 — 이사 선택 창(CT60)
+		city.pc.inventory.add_money(CityResidence.next_cost(st))
+		city.street().scroll_to(city.street().max_offset())
+		await _frames(2)
+		city.offer_move()
+		await _frames(4)
 	if _args.has("weather"):
 		city.state.weather = str(_args["weather"])
 		city.state.changed.emit()

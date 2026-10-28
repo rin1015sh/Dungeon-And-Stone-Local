@@ -919,6 +919,8 @@
     "hud_tax": "세금 {n} 스톤 · {month}번째 달까지",
     "reason_tax_none": "낼 세금이 없다",
     "reason_residence_max": "더 옮겨 갈 구역이 없다",
+    "move_title": "이사",
+    "move_cancel": "그만둔다",
     "reason_no_books": "이 분야는 다 읽었다",
     "reason_books_locked": "이 구역 도서관엔 더 귀한 책이 없다",
     "tax_execution": {

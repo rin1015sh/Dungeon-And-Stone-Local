@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **이사는 거리 오른쪽 끝에서 · 구역 물가 없음 (2026-10-28, 사용자)** — CT60. `CityStreet.end_reached`(끝 건물에서 D 한 번 더), `CityScreen.offer_move`(ChoicePopup — 다음 구역 이름·값 / 그만둔다, `CityResidence.upgrade`), `bank_move` 활동 삭제, `CityResidence.price_mult`·tiers `price_mult` 삭제, 값 3만·8만·20만, 문구 `city.move_title`·`move_cancel`. 캡처 `--screen=city --move`. 시험 test_residence(값·갈수록 비쌈·행동력 그대로·은행 이사 없음·물가 같음), UI 스모크(D로 끝까지 → 한 번 더 → Enter → 7구역).
+
 - **걸음 조금 느리게 · 걷기 시트 느리게 · 전투 덜 잦게 (2026-10-28, 사용자)** — V18. `move_hours_base` 0.02 → 0.0225, `walk_fps` 12 → 10.5, `sight_mult` 2.4 → 1.9. sim_walk 시드 1~3 전투 214 → 166번(6.6 → 9.4초마다). 겸사 고침: 균열 대기 무리가 벽 너머 시작 칸 곁(곧은 거리 8칸 안)에 서던 것 — `RiftPosts` 후보에 곧은 거리 조건(시험이 다른 난수에서 잡았다). sim_rift 통과, check.sh 통과. 걸음 그림은 캡처로 확인하지 않음(정지 화면으로는 안 보인다 — 직접 걸어 볼 것).
 
 - **문서 정리 (2026-10-28, 사용자 "md 파일 정리")** — 매 세션 읽는 양 줄이기. 바로 전 커밋(탐험가 등급 CT59)은 사용자 요청으로 되돌림(revert).

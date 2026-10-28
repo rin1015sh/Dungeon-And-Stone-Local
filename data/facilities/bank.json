@@ -7,8 +7,7 @@
   "interior": "res://assets/city/interiors/bank.webp",
   "activities": [
     "bank_account",
-    "bank_tax",
-    "bank_move"
+    "bank_tax"
   ],
   "shows": [
     "bank_balance",

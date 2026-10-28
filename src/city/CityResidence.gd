@@ -72,11 +72,6 @@ static func street_width(db: GameDatabase, width: float, t: int) -> float:
 	return out
 
 
-## 물가 배율(시설 이용료·상점/대장간 사는 값 — 컴멜비는 비싸다).
-static func price_mult(state: CityState) -> float:
-	return maxf(0.0, JsonUtil.get_float(def(state), "price_mult", 1.0))
-
-
 ## 대장간에서 살 수 있는 소재 단계 상한.
 static func smithy_material_tier(state: CityState) -> int:
 	return maxi(1, JsonUtil.get_int(def(state), "smithy_material_tier", 1))

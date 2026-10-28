@@ -20,18 +20,25 @@ func _reg() -> ScriptRegistry:
 func test_move_up_pays_next_tier_and_stops_at_top() -> void:
 	var s := _state()
 	var pc := _pc()
-	s.facility = "bank"
 	var cost := CityResidence.next_cost(s)
 	assert_true(cost > 0, "다음 등급 값")
-	assert_eq(CityActions.check(s, pc, "bank_move"), "city.reason_no_money", "돈이 모자라면 못 옮긴다")
+	assert_eq(CityResidence.upgrade(s, pc), "city.reason_no_money", "돈이 모자라면 못 옮긴다")
 	pc.inventory.add_money(cost)
 	var money := pc.inventory.money
-	assert_true(CityActions.perform(s, pc, "bank_move", _reg()).ok)
-	assert_eq([CityResidence.tier(s), pc.inventory.money], [2, money - cost], "한 등급 오르고 값을 낸다")
+	var ap := s.ap
+	assert_eq(CityResidence.upgrade(s, pc), "")
+	assert_eq([CityResidence.tier(s), pc.inventory.money, s.ap], [2, money - cost, ap], "한 등급 오르고 값을 낸다(행동력은 그대로)")
+	var prev := cost
+	for t in range(2, CityResidence.max_tier(s)):
+		s.residence = t
+		assert_true(CityResidence.next_cost(s) > prev, "갈수록 비싸다")
+		prev = CityResidence.next_cost(s)
+	assert_true(prev <= 300000, "가장 비싼 이사도 원정 열 번 남짓이면 모은다(CT60)")
 	s.residence = CityResidence.max_tier(s)
 	assert_eq(CityResidence.next_cost(s), -1)
-	assert_eq(CityActions.check(s, pc, "bank_move"), "city.reason_residence_max", "가장 높으면 더 못 옮긴다")
+	assert_eq(CityResidence.upgrade(s, pc), "city.reason_residence_max", "가장 높으면 더 못 옮긴다")
 	assert_eq(CityResidence.max_tier(s), 4, "4단계")
+	assert_false(CityActions.activities_of(_state(), "bank").has("bank_move"), "은행 이사는 없다 — 거리 끝에서")
 
 
 func test_inn_meals_split_by_tier() -> void:
@@ -55,7 +62,7 @@ func test_shop_stock_and_sell_ratio_by_tier() -> void:
 	assert_true(t1.has("ration") and not t1.has("medium_potion") and not t1.has("lantern"), "뒷골목: 기본 물건만")
 	assert_true(t3.has("ration") and t3.has("medium_potion") and t3.has("lantern"), "상인 거리: 아래 등급 물건도 그대로 + 새 물건")
 	assert_true(CityShop.sell_price(_state(4), "torch") > CityShop.sell_price(_state(1), "torch"), "컴멜비 3구역은 비싸게 사 준다")
-	assert_true(CityShop.buy_price(_state(4), "torch") > CityShop.buy_price(_state(1), "torch"), "컴멜비는 물가도 비싸다")
+	assert_eq(CityShop.buy_price(_state(4), "torch"), CityShop.buy_price(_state(1), "torch"), "구역마다 물가는 같다(CT60)")
 	assert_eq(CityResidence.name_of(_state(1)), "라비기온 13구역", "시작 = 라비기온 13구역")
 
 
