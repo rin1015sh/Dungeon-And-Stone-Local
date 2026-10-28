@@ -30,6 +30,7 @@
 - **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 
 - **전투 탐험가 대기 3칸 시트**(UI40, 피어 앤 헝거 대기 동작 본뜸): `godot --headless --path . --script res://tools/paint_idle.gd [-- --only=human_back,…]` → `assets/party/<id>_idle.webp`(지금 자세 그대로 무릎을 굽혀 몸만 들썩이는 3칸, 재생 0-1-2-1 — 빠르기 `render.json ui.combat_party_idle`). 미리보기 png는 `--out=<폴더> --png`. **아군 그림(`paint_monsters --only=party`)을 다시 그렸으면 이것도 다시.**
+- **전투 탐험가 동작 시트**(게임 밖 — UI41): `godot --headless --path . --script res://tools/paint_motions.gd -- [--only=human_back,…] [--motions=idle,swing] [--out=<폴더>]` → `<폴더>/<id>_motions.png`(줄 = 동작, 칸 3). 동작 관절 = `tools/monster_art/party_motions.json`(참고 시트 120px 칸에서 잰 2D 점 → `PartyMotion`이 3D 뼈대로).
 - **전투 아군 숨쉬기 미리보기**(게임 밖 — UI40, 그림을 휘는 방식 — 위 3칸 시트로 대신함): `python3 tools/idle_breathe_preview.py assets/party/human_back.webp <out.gif> <배경 png>` → 숨 한 번(2.8초) GIF.
 
 ## 웹 내보내기

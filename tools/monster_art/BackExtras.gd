@@ -107,6 +107,8 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 	var down := Vector3(0.0, 1.0, -0.25).normalized()
 	if sp.get("plant", false) or str(sp.get("rest", "")) == "kneel":  # 두 손으로 칼끝을 땅에 짚음
 		down = Vector3(0.0, 1.0, 0.02).normalized()
+	if j.has("weapon_dir"):  # 전투 동작 칸이 정한 칼끝 방향(PartyMotion)
+		down = j["weapon_dir"]
 	match kind:
 		"sword", "greatsword":
 			var big := kind == "greatsword"
