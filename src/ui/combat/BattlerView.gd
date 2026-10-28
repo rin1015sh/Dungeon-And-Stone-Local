@@ -4,7 +4,8 @@ extends Control
 ## 탐험가는 종족 그림 — 뒷모습(back)과 비스듬히 돌아선 옆모습(side)을 무대가 자리에 따라 고른다(set_view, 오른쪽 자리는 좌우 반전).
 ## 적은 정면 + 머리 위 상태 아이콘(3개씩, 넘으면 깜빡이며 넘김 — StatusIcons)·이름(생명력·상성은 보이지 않는다 — 피어 앤 헝거처럼,
 ## 받은 피해만 숫자로 떠오른다. 조사·쳐 봐서 알아낸 것은 도감 B에서만 — 사용자 2026-10-27, UI22),
-## 아군은 뒷모습만(이름·상태 아이콘·생명력·영혼력은 아래 파티 창에). 지금 차례·대상으로 고르는 중이면 발밑 고리가 빛난다.
+## 아군은 뒷모습만(이름·상태 아이콘·생명력·영혼력은 아래 파티 창에). 지금 차례면 발밑 고리가 빛난다.
+## 대상으로 고르는 중인 적은 고리·금색 이름 대신 그림 모양대로 흰빛이 숨 쉬듯 떠오른다(피어 앤 헝거식 — target_flash 셰이더, UI40).
 ## 쓰러지거나 도망치면 흐려진다.
 
 var unit: Combatant
@@ -22,6 +23,8 @@ var _target: bool = false
 var _name: Label
 var _icons: StatusIcons
 var _icon_bottom: float = 0.0  ## 아이콘 줄의 아래 끝(이름 줄 바로 위)
+var _flash: TextureRect = null  ## 대상 흰빛(그림 위에 같은 그림을 흰 실루엣으로 — 고를 때만)
+var _flash_t: float = 0.0
 
 
 func setup(u: Combatant, db: GameDatabase) -> void:
@@ -140,13 +143,47 @@ func set_current(on: bool) -> void:
 func set_targeted(on: bool) -> void:
 	if _target != on:
 		_target = on
-		if _name != null:
-			_name.add_theme_color_override("font_color", UiTheme.color("gold" if on else "text_title"))
+		if art != null:
+			_ensure_flash()
+			_flash.visible = on
+			_flash_t = 0.0
+			set_process(on)
 		queue_redraw()
 
 
+## 흰빛 겹: 그림과 같은 자리·뒤집기로 흰 실루엣(target_flash). 세기는 render.json ui.combat_target_flash {min, max, hz}.
+func _ensure_flash() -> void:
+	if _flash != null:
+		return
+	_flash = TextureRect.new()
+	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_flash.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_flash.stretch_mode = TextureRect.STRETCH_SCALE
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://assets/shaders/target_flash.gdshader") as Shader
+	_flash.material = mat
+	add_child(_flash)
+	move_child(_flash, 0)  # 이름·상태 아이콘보다 아래
+
+
+func _process(delta: float) -> void:
+	if _flash == null or not _flash.visible:
+		set_process(false)
+		return
+	_flash_t += delta
+	var cfg := UiTheme.ui_dict("combat_target_flash")
+	var lo := JsonUtil.get_float(cfg, "min", 0.18)
+	var hi := JsonUtil.get_float(cfg, "max", 0.42)
+	var k := 0.5 - 0.5 * cos(TAU * JsonUtil.get_float(cfg, "hz", 0.9) * _flash_t)
+	(_flash.material as ShaderMaterial).set_shader_parameter("amount", lerpf(lo, hi, k))
+	_flash.texture = art
+	_flash.flip_h = flip
+	_flash.position = Vector2.ZERO
+	_flash.size = size
+
+
 func _draw() -> void:
-	var glow := 1.0 if _target else (0.55 if _current else 0.0)
+	var glow := 0.55 if _current else 0.0  # 대상은 고리 대신 흰빛(_flash)
 	if art != null:
 		if front:  # 아군 발은 아래 창 뒤로 가라앉아 있다(차례는 밝기로)
 			CombatFigure.ground(self, Vector2(size.x / 2.0, size.y), minf(size.x * 0.42, size.y * 0.5), size.y, glow)
@@ -155,7 +192,7 @@ func _draw() -> void:
 		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	else:
-		var c := color.lightened(0.12) if _current and not front else color
+		var c := color.lightened(0.35 if _target else (0.12 if _current and not front else 0.0))  # 그림 없는 임시 도형: 대상이면 희게
 		CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)
 
 

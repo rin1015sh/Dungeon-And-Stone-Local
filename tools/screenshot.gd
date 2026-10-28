@@ -378,6 +378,13 @@ func _run() -> void:
 			Input.parse_input_event(ev)
 		if not _quick:
 			await _frames(30)
+	if _args.has("target"):  # --target: (--combat과 함께) 첫 적을 대상으로 고른 상태 — 흰빛(UI40)
+		await _frames(3)
+		for n: Node in _main.find_children("*", "CombatScreen", true, false):
+			var tcs := n as CombatScreen
+			var foe: Combatant = tcs.battle.side_units(Combatant.SIDE_ENEMY)[0]
+			tcs._stage.view(foe).set_targeted(true)
+		await get_tree().create_timer(float(str(_args["target"])) if str(_args["target"]).is_valid_float() else 0.55).timeout
 	if _args.has("banner"):  # --banner=<스킬 이름>: 위쪽 스킬 알림창(SkillBanner)을 띄운 채(찍기 바로 전에 — 금방 사라진다)
 		for n: Node in _main.find_children("*", "CombatScreen", true, false):
 			(n as CombatScreen).battle.message.emit("combat.use_skill", {"name": "", "skill": str(_args["banner"])}, "system")

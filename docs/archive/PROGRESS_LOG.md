@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **대상 흰빛 · 아군 숨쉬기 미리보기 (2026-10-28, 사용자)** — UI40. 대상으로 고른 적: 노란 고리·금색 이름 없앰 → 흰 실루엣이 오르내림(`target_flash.gdshader`, `BattlerView._flash`·`_process`, render `ui.combat_target_flash`), 캡처 `--combat --target`(고블린·드레드피어 확인 — 밝은 그림은 덜 티 난다). 숨쉬기는 게임에 넣지 않고 `tools/idle_breathe_preview.py`로 GIF만(인간·바바리안 뒷모습). check.sh 통과.
+
 - **구역별 매입 비율 없앰 (2026-10-28, 사용자)** — CT60. city.json `shop.sell_ratio_by_residence` 삭제 → 상점은 어느 구역이든 `sell_ratio` 0.5(거래소는 활동 값 0.75 그대로), `CityShop.sell_ratio` 단순화, 시험 test_residence. check.sh 통과.
 
 - **이사는 거리 오른쪽 끝에서 · 구역 물가 없음 (2026-10-28, 사용자)** — CT60. `CityStreet.end_reached`(끝 건물에서 D 한 번 더), `CityScreen.offer_move`(ChoicePopup — 다음 구역 이름·값 / 그만둔다, `CityResidence.upgrade`), `bank_move` 활동 삭제, `CityResidence.price_mult`·tiers `price_mult` 삭제, 값 3만·8만·20만, 문구 `city.move_title`·`move_cancel`. 캡처 `--screen=city --move`. 시험 test_residence(값·갈수록 비쌈·행동력 그대로·은행 이사 없음·물가 같음), UI 스모크(D로 끝까지 → 한 번 더 → Enter → 7구역).
