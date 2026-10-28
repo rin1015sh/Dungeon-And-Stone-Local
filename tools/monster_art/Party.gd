@@ -52,7 +52,7 @@ static func spec_of(id: String) -> Dictionary:
 	match base:
 		"human":  # 여행자: 걷어 올린 아마 셔츠 · 가죽 조끼 · 두건 달린 어깨 망토 · 허리 주머니와 단검 · 가죽 장화
 			sp = {"height": REF_H, "build": "normal", "sh": 0.108, "skin": C("#c49a78"), "mottle": C("#9a6a52"), "mottle_amt": 0.3,
-				"hair": "short", "hair_c": C("#3a2a1e"), "pose": {"stance": 0.08, "knee": 0.15, "arm_l": "hang", "arm_r": "ready"},
+				"hair": "short", "hair_c": C("#3a2a1e"), "pose": {"stance": 0.08, "knee": 0.15, "arm_l": "ready", "arm_r": "ready"},
 				"kit": {"pants": C("#4a4236"), "shirt": C("#b8a888"), "sleeves": "rolled", "vest": C("#5a3e28"), "mantle": C("#5a3028"),
 					"belt": C("#2e2018"), "pouch": true, "knife": true, "boots": C("#3a2a1e"), "bracers": C("#4a3424")}, "blood": 0.0, "grime": 0.3}
 		"barbarian":  # 거구: 땋은 긴 머리와 수염 · 털 어깨 망토 · 맨팔(위팔 쇠띠·팔목 가죽) · 가죽 조끼 · 감은 종아리 · 털 단 장화
