@@ -179,7 +179,30 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 			for xx in range(int(e.x - 0.002 * H), int(e.x + 0.007 * H)):
 				p.blend(xx, yy, Color("#140c0a"), 0.7)
 	Finish.done(p, sp, Back.screen_joints(pr, j), H)
+	if str(sp.get("layer", "")) == "weapon":  # 무기 덮개: 손 무기 그룹이 맨 위인 칸(+ 윤곽 몇 px)만 남긴다 — 같은 자세의 맨몸 그림 위에 덮는다
+		_keep_marked(p, cl, maxi(2, int(H / 160.0)))
 	return p
+
+
+## 덮개 그림: cl.marked 그룹이 맨 위(보이는)인 픽셀을 grow px 넓힌 곳만 남기고 나머지는 투명하게.
+static func _keep_marked(p: Paint, cl: Clay, grow: int) -> void:
+	var n := cl.w * cl.h
+	var keep := PackedByteArray()
+	keep.resize(n)
+	for i in n:
+		if cl.marked.has(cl.top_g[i]):
+			keep[i] = 1
+	for _r in grow:  # 한 칸씩 넓히기
+		var nxt := keep.duplicate()
+		for y in range(1, cl.h - 1):
+			for x in range(1, cl.w - 1):
+				var i := y * cl.w + x
+				if keep[i] == 0 and (keep[i - 1] == 1 or keep[i + 1] == 1 or keep[i - cl.w] == 1 or keep[i + cl.w] == 1):
+					nxt[i] = 1
+		keep = nxt
+	for i in n:
+		if keep[i] == 0:
+			p.buf[i * 4 + 3] = 0.0
 
 
 ## 탐험 맵 눈 하나(참고: 피어 앤 헝거 맵 그림을 원본 픽셀로 본 것): 가로로 긴 아몬드꼴, 위 눈꺼풀은 굵고 짙은 선·아래는 가는 선,

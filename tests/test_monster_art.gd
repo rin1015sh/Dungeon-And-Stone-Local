@@ -42,13 +42,18 @@ func test_party_art_for_races() -> void:
 			assert_true(ResourceLoader.exists(dir.path_join(race + "_" + view + ".webp")), "탐험가 그림: " + race + "_" + view)
 			if index is Dictionary:
 				assert_true(JsonUtil.get_float(index, race + "_" + view, 0.0) > 0.0, "탐험가 몸 높이: " + race + "_" + view)
-		for sheet: String in ["_back_motions", "_back_dead"]:  # 전투 동작(PartySprite — tools/paint_motions.gd, UI41)
+		for sheet: String in ["_back_motions", "_back_dead", "_back_w_one_hand", "_back_w_two_hand", "_back_w_bow"]:  # 전투 동작(PartySprite — tools/paint_motions.gd, UI41)
 			assert_true(ResourceLoader.exists(dir.path_join(race + sheet + ".webp")), "탐험가 동작 그림: " + race + sheet)
 
 
 ## 행동 → 탐험가 동작(PartySprite.motion_for): 기본 공격 = 칼, 물리 피해 스킬 = 주먹, 마법·그 밖 = 주문.
 func test_party_motion_for_actions() -> void:
-	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}), "swing", "기본 공격")
+	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}), "swing", "기본 공격(한손)")
+	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}, "two_hand"), "heavy", "기본 공격(양손)")
+	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}, "bow"), "shoot", "기본 공격(활)")
+	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}, ""), "thrust", "기본 공격(맨손)")
+	assert_eq(PartySprite.weapon_kind(db, "hunting_bow"), "bow", "사냥활 = 활")
+	assert_eq(PartySprite.weapon_kind(db, "dread_bone_greatsword"), "two_hand", "대검 = 양손")
 	assert_eq(PartySprite.motion_for(db, {"kind": "guard"}), "stance", "방어 = 전투 자세")
 	assert_eq(PartySprite.motion_for(db, {"kind": "item", "item": "x"}), "spell", "아이템")
 	assert_eq(PartySprite.motion_for(db, {"kind": "flee"}), "spell", "도망 = 주문")

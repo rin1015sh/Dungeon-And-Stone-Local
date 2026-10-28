@@ -18,6 +18,8 @@ var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
 var _motion: PartySprite = null  ## 탐험가 동작(없으면 한 장 그림)
+var _kind := ""  ## 탐험가 주무기 덮개 종류(PartySprite.weapon_kind — ""면 맨손)
+var _over: Texture2D = null  ## 지금 칸 위에 겹칠 무기
 var _lay: Texture2D = null  ## 탐험가: 배치 폭·높이를 재는 한 장 그림(동작 칸은 무기·누운 몸만큼 넓다)
 var _current: bool = false
 var _target: bool = false
@@ -41,9 +43,11 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 			art = tex
 			_lay = tex
 			_art_body = MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_back", tex)
-			_motion = PartySprite.load_for(race)
+			_kind = PartySprite.weapon_kind(db, (u.actor as PlayerCharacter).equipment.item_in("main_hand"))
+			_motion = PartySprite.load_for(race, _kind)
 			if _motion != null:
 				art = _motion.tick(0.0)
+				_over = _motion.overlay()
 		set_process(_motion != null)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not front:
@@ -80,6 +84,23 @@ func motion(name: String) -> void:
 		_motion.play(name)
 
 
+## 탐험가 무기 덮개 종류를 바꾼다(전투 중 장비가 바뀌었을 때 · 캡처 도구).
+func set_weapon_kind(kind: String) -> void:
+	if not unit.actor is PlayerCharacter:
+		return
+	_kind = kind
+	_motion = PartySprite.load_for((unit.actor as PlayerCharacter).race_id, kind)
+	if _motion != null:
+		art = _motion.tick(0.0)
+		_over = _motion.overlay()
+	queue_redraw()
+
+
+## 행동의 몸짓(무기 종류에 맞춰 — PartySprite.motion_for).
+func act(db: GameDatabase, action: Dictionary) -> void:
+	motion(PartySprite.motion_for(db, action, _kind))
+
+
 ## 쓰러짐: 피격을 보인 뒤 누운 몸(흐려지지 않는다).
 func fall() -> void:
 	if _motion != null:
@@ -89,6 +110,10 @@ func fall() -> void:
 
 func _tick_motion(delta: float) -> void:
 	var cell := _motion.tick(delta)
+	var over := _motion.overlay()
+	if over != _over:
+		_over = over
+		queue_redraw()
 	if cell != art:
 		art = cell
 		queue_redraw()
@@ -228,7 +253,10 @@ func _draw() -> void:
 	if art != null:
 		if front:  # 아군 발은 아래 창 뒤로 가라앉아 있다(차례는 밝기로)
 			CombatFigure.ground(self, Vector2(size.x / 2.0, size.y), minf(size.x * 0.42, size.y * 0.5), size.y, glow)
-		draw_texture_rect(art, _art_rect(), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
+		var r := _art_rect()
+		draw_texture_rect(art, r, false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
+		if _over != null:  # 무기 덮개(같은 칸 크기)
+			draw_texture_rect(_over, r, false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
 	else:
 		var c := color.lightened(0.35 if _target else (0.12 if _current and not front else 0.0))  # 그림 없는 임시 도형: 대상이면 희게
 		CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)
