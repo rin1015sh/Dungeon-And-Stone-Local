@@ -107,8 +107,8 @@ func _bottom() -> float:
 	return DialogueBox.box_size().y + UiTheme.metric("margin", 16)
 
 
-## 배치: 아군을 먼저 세우고(아래 앞줄), 적의 발 높이는 아군 머리 위로 올린다(combat_enemy_clear — 아군이 적을 가리지 않게,
-## combat_enemy_floor_min 아래로는 내리지 않는다). 적은 처음 나온 무리 그대로 통로 안에 앞줄부터 선 **고정 자리**에 선다(FoeRows) —
+## 배치: 아군을 먼저 세우고(아래 앞줄), 적의 발은 아군 머리보다 조금 아래(combat_enemy_overlap — 피어 앤 헝거처럼 적이 바로 앞에 선 듯,
+## 아군이 적의 발치를 가린다 · 사용자 2026-10-28, combat_enemy_floor_min 위로는 올리지 않는다). 적은 처음 나온 무리 그대로 통로 안에 앞줄부터 선 **고정 자리**에 선다(FoeRows) —
 ## 쓰러져도 남은 적이 모이지 않고, 새로 나온 적(소환·증원·분열)은 빈자리 중 앞줄·가운데에 가까운 곳에(자리가 없으면 다시 정렬).
 ## 키 = 사람 키 × 크기(작은 건 작게·큰 건 크게), 보스 등급은 크기와 상관없이 무대를 거의 채운다. 뒷줄은 깊이 배율만큼 작고 소실점 쪽으로.
 func layout() -> void:
@@ -122,7 +122,7 @@ func layout() -> void:
 	var ally_top := _layout_party(party, stage_h)
 	_floor_y = stage_h * UiTheme.ui_float("combat_enemy_floor", 0.92)
 	if not party.is_empty():
-		_floor_y = maxf(stage_h * UiTheme.ui_float("combat_enemy_floor_min", 0.4), minf(_floor_y, ally_top - UiTheme.metric("combat_enemy_clear", 8)))
+		_floor_y = maxf(stage_h * UiTheme.ui_float("combat_enemy_floor_min", 0.4), minf(_floor_y, ally_top + stage_h * UiTheme.ui_float("combat_enemy_overlap", 0.14)))
 	for u: Combatant in _slots.keys():
 		if not _views.has(u):
 			if u.actor is Monster:  # 쓰러진 자리는 다시 빈자리(같은 몬스터가 또 나오면 그 자리에)

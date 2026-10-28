@@ -36,12 +36,12 @@ var _blink: float = 0.0
 
 
 func _init(style: StyleBox = null) -> void:
-	add_theme_stylebox_override("panel", style if style != null else _default_style())
+	add_theme_stylebox_override("panel", style if style != null else default_style())
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
 
 
-static func _default_style() -> StyleBoxFlat:
+static func default_style() -> StyleBoxFlat:
 	var box := UiTheme.panel_box(UiTheme.metric("padding", 8))
 	box.content_margin_left = _cfg("pad_x", 22.0)
 	box.content_margin_right = _cfg("pad_x", 22.0)

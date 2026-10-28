@@ -58,7 +58,7 @@ func _ready() -> void:
 	_menu.target_hovered.connect(_on_target_hovered)
 	_place_bottom(_menu)
 	_menu.close()
-	_dialog = DialogueBox.new()
+	_dialog = DialogueBox.new(UiTheme.see_through(DialogueBox.default_style(), UiTheme.ui_float("combat_window_alpha", 0.72)))  # 전투 아래 창과 같이 반투명
 	_dialog.instant = GameState.debug_fast_combat
 	_place_bottom(_dialog)  # 아래 창과 같은 자리에 겹쳐 전부 덮는다
 	_dialog.shown_changed.connect(_on_dialog_shown)

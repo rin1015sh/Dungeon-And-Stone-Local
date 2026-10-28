@@ -2,7 +2,7 @@ class_name PartySprite
 extends RefCounted
 ## 탐험가 전투 동작(UI41): <종족>_back_motions.webp(줄 = 동작, 칸 3 — tools/paint_motions.gd)와 <종족>_back_dead.webp(누운 몸 1칸).
 ## 늘 도는 동작(loop — 대기 · 내 차례면 전투 자세)은 0-1-2-1로 칸마다 loop_s초, 한 번 하는 동작(play — 공격·스킬·피격·회피·방어·도망)은
-## 칸마다 act_s초로 0-1-2 뒤 마지막 칸에 act_hold_s초 머물고 loop로 돌아간다. hold(방어)면 끝 칸에 머문다. fall = 피격을 보인 뒤 누운 몸.
+## 칸마다 act_s초로 0-1-2 뒤 마지막 칸에 act_hold_s초 머물고 loop로 돌아간다. hold(방어 중 = 전투 자세)면 그 동작을 돈다. fall = 피격을 보인 뒤 누운 몸.
 ## 줄 순서·빠르기는 render.json ui.combat_party_motion.
 
 var _cells := {}  ## 동작 → [AtlasTexture ×3]
@@ -40,15 +40,14 @@ static func load_for(race: String) -> PartySprite:
 	return ps
 
 
-## 행동 → 동작 이름(전투 행동 dict — Battle.act): 기본 공격 = 칼 휘두르기, 물리 피해 스킬 = 주먹 지르기, 그 밖의 스킬·아이템 = 주문.
+## 행동 → 동작 이름(전투 행동 dict — Battle.act): 기본 공격 = 칼 휘두르기, 물리 피해 스킬 = 주먹 지르기, 그 밖의 스킬·아이템·도망 = 주문,
+## 방어 = 전투 자세(따로 방어 동작은 두지 않는다 — 사용자 2026-10-28).
 static func motion_for(db: GameDatabase, action: Dictionary) -> String:
 	match str(action.get("kind", "")):
 		"guard":
-			return "guard"
-		"item":
+			return "stance"
+		"item", "flee":
 			return "spell"
-		"flee":
-			return "escape"
 		"skill":
 			var id := str(action.get("skill", Battle.BASIC_ATTACK))
 			if id == Battle.BASIC_ATTACK:
@@ -107,12 +106,10 @@ func tick(delta: float) -> Texture2D:
 		var i := int(_one_t / act_s)
 		if i < 3:
 			return _cells[_one][i]
-		if _one_t < act_s * 3.0 + JsonUtil.get_float(cfg, "act_hold_s", 0.25) or _one == _hold:
+		if _one_t < act_s * 3.0 + JsonUtil.get_float(cfg, "act_hold_s", 0.25):
 			return _cells[_one][2]
 		_one = ""
 	if _fallen:
 		return _dead if _dead != null else _cells["damage"][2]
-	if not _hold.is_empty():
-		return _cells[_hold][2]
 	var loop_i := int(_loop_t / maxf(0.01, JsonUtil.get_float(cfg, "loop_s", 0.35))) % 4
-	return _cells[_loop][loop_i if loop_i < 3 else 1]
+	return _cells[_hold if not _hold.is_empty() else _loop][loop_i if loop_i < 3 else 1]

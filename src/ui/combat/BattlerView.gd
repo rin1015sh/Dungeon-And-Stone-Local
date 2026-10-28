@@ -95,7 +95,7 @@ func _tick_motion(delta: float) -> void:
 
 
 ## 지금 칸을 그릴 자리: 발 가운데(아래 가운데)에 맞춰 칸 크기대로(배치 폭과 다를 수 있다).
-## 누운 몸은 아래 창 뒤로 가라앉은 발 높이(combat_party_sink)만큼 올려 창 위에 눕히고, 무대 밖으로 나가지 않게 민다.
+## 누운 몸은 발 자리 그대로(아래 창 뒤로 가라앉은 채 — 올리지 않는다, 사용자 2026-10-28) 무대 밖으로 나가지 않게만 민다.
 func _art_rect() -> Rect2:
 	if _lay == null:
 		return Rect2(Vector2.ZERO, size)
@@ -103,7 +103,6 @@ func _art_rect() -> Rect2:
 	var s := art.get_size() * k
 	var r := Rect2(Vector2((size.x - s.x) / 2.0, size.y - s.y), s)
 	if _motion != null and _motion.lying(art):
-		r.position.y -= float(UiTheme.metric("combat_party_sink", 100))
 		var stage := get_parent_control()
 		if stage != null:
 			r.position.x = clampf(position.x + r.position.x, 0.0, maxf(0.0, stage.size.x - s.x)) - position.x
@@ -167,7 +166,7 @@ func refresh() -> void:
 	if _motion != null:
 		if unit.is_active() and _motion.fallen():
 			_motion.revive()
-		_motion.set_hold("guard" if unit.actor.statuses.has("guarding") else "")
+		_motion.set_hold("stance" if unit.actor.statuses.has("guarding") else "")  # 방어 중 = 전투 자세
 	modulate.a = 1.0 if unit.is_active() or (_motion != null and _motion.fallen()) else 0.3  # 누운 탐험가는 흐리지 않는다
 	queue_redraw()
 

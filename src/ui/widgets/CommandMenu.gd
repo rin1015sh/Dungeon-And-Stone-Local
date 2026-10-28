@@ -51,7 +51,7 @@ func _init() -> void:
 
 static func _window() -> PanelContainer:
 	var p := PanelContainer.new()
-	p.add_theme_stylebox_override("panel", UiTheme.panel_box(UiTheme.metric("padding", 8)))
+	p.add_theme_stylebox_override("panel", UiTheme.see_through(UiTheme.panel_box(UiTheme.metric("padding", 8)), UiTheme.ui_float("combat_window_alpha", 0.72)))  # 전투 아래 창은 반투명(사용자 2026-10-28)
 	return p
 
 

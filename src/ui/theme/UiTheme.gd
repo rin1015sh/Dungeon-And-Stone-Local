@@ -148,6 +148,12 @@ static func panel_box(padding: float) -> StyleBoxFlat:
 	return sb
 
 
+## 창 판의 바탕만 alpha로(테두리는 그대로) — 전투 아래 창(render.json ui.combat_window_alpha).
+static func see_through(sb: StyleBoxFlat, alpha: float) -> StyleBoxFlat:
+	sb.bg_color.a = alpha
+	return sb
+
+
 ## style: body / small / header / subtitle / title (render.ui.<style>_font_size)
 static func label(text: String, style: String = "body", color_key: String = "text") -> Label:
 	var l := Label.new()
