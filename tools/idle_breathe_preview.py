@@ -10,8 +10,11 @@ src, out = sys.argv[1], sys.argv[2]
 SHEET = out.endswith(".png")
 bg = None if SHEET else sys.argv[3]
 CELLS = int(sys.argv[3]) if SHEET and len(sys.argv) > 3 else 8
-RISE = 0.007      # 어깨·머리가 오르는 양(키 비율) — 540px 키에 약 3.8px
-WIDEN = 0.012     # 가슴 폭이 넓어지는 양
+RISE = 0.022      # 어깨·머리가 오르는 양(키 비율) — 555px 키에 약 12px
+WIDEN = 0.035     # 가슴 폭이 넓어지는 양
+ARM_DEG = 4.5     # 들이쉴 때 팔이 어깨를 축으로 바깥으로 벌어지는 각도
+ARM_IN = 0.17     # 몸통 반폭(그림 폭 비율) — 이보다 바깥이 팔
+ARM_OUT = 0.25
 PERIOD = 2.8      # 한 숨(초)
 FPS = 20
 HIP = 0.50        # 이 아래(엉덩이·다리)는 움직이지 않는다(그림 높이 비율, 위 = 0)
@@ -28,6 +31,14 @@ wt = t * t * (3 - 2 * t)
 chest = np.exp(-((v - 0.30) / 0.09) ** 2)
 cols = np.where(img[..., 3].max(axis=0) > 8)[0]
 cx = (cols.min() + cols.max()) / 2.0
+# 팔: 몸통 바깥 열 · 어깨 아래 ~ 손끝(엉덩이 조금 아래)까지
+side = np.clip((np.abs(xs - cx) / w - ARM_IN) / (ARM_OUT - ARM_IN), 0.0, 1.0)
+side = side * side * (3 - 2 * side)
+below = np.clip((v - (SHOULDER - 0.03)) / 0.06, 0.0, 1.0) * np.clip((0.62 - v) / 0.06, 0.0, 1.0)
+arm = side * below
+sgn = np.sign(xs - cx)
+pivot_x = cx + sgn * ARM_IN * w
+pivot_y = (SHOULDER + 0.02) * h
 
 def sample(sx, sy):
     x0 = np.clip(np.floor(sx).astype(int), 0, w - 2); y0 = np.clip(np.floor(sy).astype(int), 0, h - 2)
@@ -47,6 +58,12 @@ for i in range(n):
     s = s ** 1.15                                 # 들이쉼은 조금 느리게 차오르고 내쉼은 툭
     sy = ys + RISE * h * s * wt                   # 뒤쪽 매핑: 위로 올라간 그림 = 아래 픽셀을 가져온다
     sx = cx + (xs - cx) / (1.0 + WIDEN * s * chest)
+    # 팔을 어깨 축으로 바깥으로 돌린다(뒤쪽 매핑이라 반대로 돌려 가져온다)
+    a = -math.radians(ARM_DEG) * s * arm * sgn
+    dx = sx - pivot_x; dy = sy - pivot_y
+    rx = pivot_x + dx * np.cos(a) + dy * np.sin(a)
+    ry = pivot_y - dx * np.sin(a) + dy * np.cos(a)
+    sx = sx + (rx - sx) * (arm > 0); sy = sy + (ry - sy) * (arm > 0)
     frames.append(sample(sx, sy))
 
 if SHEET:
