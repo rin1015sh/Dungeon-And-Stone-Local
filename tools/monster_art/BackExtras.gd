@@ -104,7 +104,6 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 	var metal := cl.mat(kit.get("weapon_c", Color("#8a9098")), "metal")
 	var wood := cl.mat(kit.get("staff_c", kit.get("wood", Color("#4a3628"))), "wood")
 	var g := cl.group()
-	cl.marked.append(g)
 	var down := Vector3(0.0, 1.0, -0.25).normalized()
 	if sp.get("plant", false) or str(sp.get("rest", "")) == "kneel":  # 두 손으로 칼끝을 땅에 짚음
 		down = Vector3(0.0, 1.0, 0.02).normalized()
@@ -141,23 +140,13 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 			Back.cap(cl, pr, g, hd - up * 0.4, hd + up * 0.38, 0.011, 0.009, wood, 0.002)
 			if kit.has("glow"):
 				Back.ell(cl, pr, g, hd + up * 0.42, 0.03, 0.03, 0.03, cl.mat(kit["glow"], "glow"), 0.005)
-		"bow":  # 활대(손에서 위·아래로, 배가 앞으로) + 시위(bow_draw면 다른 손까지 당김) — 위 방향 = weapon_dir(동작 칸 W)
-			var up: Vector3 = j["weapon_dir"] if j.has("weapon_dir") else Vector3(0, -1, 0)
-			var fwd := (Vector3(0, 0, -1) - up * up.dot(Vector3(0, 0, -1))).normalized()
+		"bow":
+			var c0 := hd + Vector3(0, 0, -0.03)
 			var pts: Array = []
-			for k in 7:
-				var a := lerpf(-1.1, 1.1, k / 6.0)
-				pts.append(hd + fwd * (0.03 + cos(a) * 0.07) + up * (sin(a) * 0.26))
-			Back.chain(cl, pr, g, pts, [0.006, 0.009, 0.011, 0.012, 0.011, 0.009, 0.006], wood, 0.002)
-			var cord := cl.mat(Color("#d8d0b8"), "cloth")
-			var tip_a: Vector3 = pts[0]
-			var tip_b: Vector3 = pts[pts.size() - 1]
-			if j.get("bow_draw", false):
-				var pull: Vector3 = j["hand_" + ("r" if t == "l" else "l")]
-				Back.cap(cl, pr, g, tip_a, pull, 0.0028, 0.0028, cord, 0.0)
-				Back.cap(cl, pr, g, pull, tip_b, 0.0028, 0.0028, cord, 0.0)
-			else:
-				Back.cap(cl, pr, g, tip_a, tip_b, 0.0028, 0.0028, cord, 0.0)
+			for k in 5:
+				var a := lerpf(-1.1, 1.1, k / 4.0)
+				pts.append(c0 + Vector3(0, sin(a) * 0.24, -cos(a) * 0.07))
+			Back.chain(cl, pr, g, pts, [0.006, 0.01, 0.012, 0.01, 0.006], wood, 0.002)
 	Back.ell(cl, pr, g, hd + Vector3(0, 0, 0.005), 0.022, 0.028, 0.02, cl.mat(sp.get("skin", Color("#8a7a6a")), str(sp.get("skin_kind", "skin"))), 0.003)  # 쥔 손
 
 

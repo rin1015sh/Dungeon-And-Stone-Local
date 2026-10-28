@@ -13,7 +13,6 @@ var mats: Array = []  ## 재질 {"c": Color, "kind": String, …}
 var tag := ""  ## 지금 빚는 부위 이름(몸통·팔…) — 기록해 두었다가 옷·갑옷을 같은 모양으로 한 겹 더 씌운다(shell)
 var detail := false  ## 잔근육·핏줄 같은 잔손질 중이면 true(옷 겹에는 넣지 않는다)
 var log: Array = []  ## 빚은 덩어리 기록 [{t, tag, detail, …}]
-var marked: Array[int] = []  ## 따로 뽑을 그룹(손 무기 — 전투 아군 무기 덮개 그림, Party.figure layer)
 var _clip := PackedByteArray()  ## 비어 있지 않으면 이 안에서만 빚는다
 var _H: Array = []  ## 그룹마다 PackedFloat32Array(앞 표면 높이, 비면 EMPTY)
 var _M: Array = []  ## 그룹마다 PackedInt32Array(재질)

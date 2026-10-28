@@ -3,8 +3,7 @@ extends RefCounted
 ## 칸마다 잰 2D 관절 위치(tools/monster_art/party_motions.json, 120px 칸 좌표)를 3D 뼈대(Back)로 옮긴다.
 ## 뼈 길이는 우리 몸 그대로 두고, 화면에 보이는 뼈 방향만 원본을 따른다 — 원본에서 그 뼈가 펴진 길이(REF_LEN, 원본 쉬는 칸에서 잼)보다
 ## 짧아 보이면 그 비율만큼 보는 사람 쪽/먼 쪽으로 기운다(어느 쪽인지는 쉰 자세에서 그 뼈가 향하던 쪽, 칸에 "d"{끝 관절: "a" 먼 쪽 | "t" 보는 사람 쪽}이 있으면 그것).
-## 칸 키: turn(몸 돌림, 라디안 — 그림 돌림에 더한다) · p{H 머리 N 목 P 골반 SL/SR 어깨 EL/ER 팔꿈치 HL/HR 주먹 KL/KR 무릎 AL/AR 발목 TL/TR 발끝 W 칼끝(활 = 활대 위 끝)}
-##   · weapon_hand(W를 잴 손, 기본 r) · wlen(원본에서 손 → W가 펴졌을 때 길이 px — 기본 칼 46) · draw(활시위를 당긴 칸)
+## 칸 키: turn(몸 돌림, 라디안 — 그림 돌림에 더한다) · p{H 머리 N 목 P 골반 SL/SR 어깨 EL/ER 팔꿈치 HL/HR 주먹 KL/KR 무릎 AL/AR 발목 TL/TR 발끝 W 칼끝}
 ##   · lie(누움 — 땅 맞추기를 하지 않는다)
 
 const REF_H := 116.0  ## 원본 칸의 사람 키(px)
@@ -48,12 +47,10 @@ static func pose(j0: Dictionary, fr: Dictionary, turn: float) -> Dictionary:
 			j["toe_" + t] = _bone(j, j0, "ankle_" + t, "toe_" + t, p["A" + T], p["T" + T], ((j0["toe_" + t] as Vector3) - (j0["ankle_" + t] as Vector3)).length(), REF_LEN["T"], hint.get("T" + T, ""), c, s)
 		else:
 			j["toe_" + t] = (j["ankle_" + t] as Vector3) + ((j0["toe_" + t] as Vector3) - (j0["ankle_" + t] as Vector3))
-	if p.has("W"):  # 칼끝 방향(BackExtras 손 무기 — 활은 활대 위 끝 방향)
-		var wh := str(fr.get("weapon_hand", "r"))
-		var tip := _bone(j, j0, "hand_" + wh, "hand_" + wh, p["H" + wh.to_upper()], p["W"], 0.3, float(fr.get("wlen", REF_LEN["W"])), hint.get("W", "a"), c, s)
-		j["weapon_dir"] = (tip - (j["hand_" + wh] as Vector3)).normalized()
-	if fr.get("draw", false):  # 활시위를 당긴 칸
-		j["bow_draw"] = true
+	if p.has("W"):  # 칼끝 방향(BackExtras 손 무기)
+		var hr := "HR" if str(fr.get("weapon_hand", "r")) == "r" else "HL"
+		var tip := _bone(j, j0, "hand_r", "hand_r", p[hr], p["W"], 0.3, REF_LEN["W"], hint.get("W", "a"), c, s)
+		j["weapon_dir"] = (tip - (j["hand_r"] as Vector3)).normalized()
 	if not fr.get("lie", false):  # 맨 아래 발목을 땅에
 		var low := maxf((j["ankle_l"] as Vector3).y, (j["ankle_r"] as Vector3).y)
 		var d := (j0["ankle_l"] as Vector3).y - low

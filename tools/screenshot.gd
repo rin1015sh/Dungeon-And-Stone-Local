@@ -19,7 +19,7 @@ extends Node
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
 ## --essence: 레벨 3으로 올리고 정수 하나 흡수 — --character와 함께
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
-## --motions=<동작,…> [--motion_t=초] [--wkinds=<one_hand|two_hand|bow|none,…>]: 아군 탐험가마다 전투 동작(PartySprite — idle·stance·thrust·swing·heavy·shoot·spell·damage·wait·fall)과 무기 덮개
+## --motions=<동작,…> [--motion_t=초]: 아군 탐험가마다 전투 동작(PartySprite — idle·stance·thrust·guard·swing·spell·damage·wait·escape·fall)
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
 ## --known: --combat --monster=<id>에서 그 몬스터를 조사·상성까지 알고 있는 상태(무대엔 이름뿐 — 도감 B에서만 보인다)
@@ -391,14 +391,11 @@ func _run() -> void:
 		for n: Node in _main.find_children("*", "CombatScreen", true, false):
 			var mcs := n as CombatScreen
 			var names := str(_args["motions"]).split(",")
-			var kinds := str(_args.get("wkinds", "")).split(",")  # --wkinds=<one_hand|two_hand|bow|none,…>: 탐험가마다 무기 덮개
 			var k := 0
 			for u: Combatant in mcs.battle.side_units(Combatant.SIDE_PARTY):
 				var mv := mcs._stage.view(u)
 				if mv == null or k >= names.size():
 					continue
-				if k < kinds.size() and not kinds[k].is_empty():
-					mv.set_weapon_kind("" if kinds[k] == "none" else kinds[k])
 				if names[k] == "fall":
 					u.actor.pool.set_current("hp", 0.0)
 					u.actor.dead = true
