@@ -87,9 +87,9 @@ static func _reach(j: Dictionary, j0: Dictionary, t: String, target: Vector3, po
 	var l1 := ((j0["elbow_" + t] as Vector3) - (j0["shoulder_" + t] as Vector3)).length()
 	var l2 := ((j0["hand_" + t] as Vector3) - (j0["elbow_" + t] as Vector3)).length()
 	var v := target - sh
-	var d := clampf(v.length(), 0.01, (l1 + l2) * 0.999)
+	var d := clampf(v.length(), absf(l1 - l2) + 0.02, (l1 + l2) * 0.999)  # 어깨에 너무 붙은 손은 팔이 다 접힌 데까지
 	var dir := v.normalized()
-	var a := (l1 * l1 + d * d - l2 * l2) / (2.0 * d)
+	var a := clampf((l1 * l1 + d * d - l2 * l2) / (2.0 * d), -l1, l1)
 	var h := sqrt(maxf(0.0, l1 * l1 - a * a))
 	var pp := pole - dir * pole.dot(dir)
 	pp = pp.normalized() if pp.length() > 0.0001 else Vector3(0, 1, 0)
