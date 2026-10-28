@@ -13,7 +13,7 @@ const FRAMES := [0.0, 0.5, 1.0]
 func _init() -> void:
 	var out := "res://assets/party"
 	var png := false
-	var only := PackedStringArray(["human_back", "barbarian_back", "human_side", "barbarian_side"])
+	var only := PackedStringArray(["human_back", "barbarian_back"])
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--out="):
 			out = a.trim_prefix("--out=")

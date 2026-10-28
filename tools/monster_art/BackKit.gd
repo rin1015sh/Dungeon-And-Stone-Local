@@ -15,14 +15,14 @@ static func band(cl: Clay, pr: Dictionary, v0: float, v1: float, rng: RandomNumb
 	var oy: float = pr["oy"]
 	var y0 := oy + v0 * H
 	var y1 := oy + v1 * H
-	var pts := PackedVector2Array([Vector2(-10, y0), Vector2(cl.w + 10, y0)])
+	var pts := PackedVector2Array([Vector2(-cl.w, y0), Vector2(cl.w * 2, y0)])  # 넉넉히(누운 몸은 띠를 돌린다)
 	for i in n + 1:
-		var x := cl.w + 10 - (cl.w + 20) * i / float(n)
+		var x := cl.w * 2 - cl.w * 3 * i / float(n)
 		var dy := 0.0
 		if rng != null and jag > 0.0:
 			dy = (rng.randf() - 0.3) * jag * H * (2.0 if i % 2 == 0 else 0.6)
 		pts.append(Vector2(x, y1 + dy))
-	return pts
+	return Back.roll_poly(pr, pts)
 
 
 ## k는 받지만 쓰지 않는다 — 몸과 같은 녹임 폭이어야 덩어리 이음매(엉덩이 아래·오금)에서 살이 옷을 뚫고 나오지 않는다.
@@ -38,16 +38,18 @@ static func hem_poly(pr: Dictionary, top_v: float, ru: float, rw: float, hem: Ca
 	var pts := PackedVector2Array()
 	var a0 := -turn - 0.35
 	var a1 := PI - turn + 0.35
+	var flat := pr.duplicate()  # 단 모양은 눕히기 전 화면에서 만들고 마지막에 돌린다
+	flat.erase("roll")
 	for i in 25:
 		var phi := lerpf(a0, a1, i / 24.0)
 		var v: float = hem.call(phi)
-		pts.append(Back.P2(pr, Vector3(cos(phi) * ru, v, sin(phi) * rw)))
+		pts.append(Back.P2(flat, Vector3(cos(phi) * ru, v, sin(phi) * rw)))
 	var H: float = pr["H"]
 	var oy: float = pr["oy"]
 	var dir := signf(pts[0].x - pts[pts.size() - 1].x)
 	pts.append(Vector2(pts[pts.size() - 1].x - H * 0.3 * dir, oy + top_v * H))
 	pts.append(Vector2(pts[0].x + H * 0.3 * dir, oy + top_v * H))
-	return pts
+	return Back.roll_poly(pr, pts)
 
 
 static func dress(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: Dictionary, rng: RandomNumberGenerator) -> void:
@@ -132,13 +134,13 @@ static func dress(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: 
 		shell(cl, pr, ["pelvis", "torso"], 0.02, m, g, band(cl, pr, y0, y0 + 0.032), 0.01, 0.002)
 		var metal := cl.mat(Color("#8a7a58"), "metal")
 		if kit.get("pouch", false):  # 오른쪽 뒤 허리 주머니
-			var pc := Vector3(0.098, y0 + 0.05, 0.05)
+			var pc := Vector3(pv.x + 0.098, y0 + 0.05, pv.z + 0.05)  # 골반을 따라(동작 칸에서 골반이 옮겨 간다)
 			Back.ell(cl, pr, g, pc, 0.026, 0.036, 0.03, m, 0.003)
 			Back.ell(cl, pr, g, pc + Vector3(0, -0.02, 0.008), 0.028, 0.014, 0.028, m, 0.002)  # 덮개
 			Back.ell(cl, pr, g, pc + Vector3(0.004, -0.008, 0.032), 0.005, 0.005, 0.004, metal, 0.0)
 		if kit.get("knife", false):  # 왼쪽 허리 칼집 + 손잡이
-			var top := Vector3(-0.1, y0 + 0.01, 0.03)
-			var bot := Vector3(-0.122, y0 + 0.17, 0.01)
+			var top := Vector3(pv.x - 0.1, y0 + 0.01, pv.z + 0.03)
+			var bot := Vector3(pv.x - 0.122, y0 + 0.17, pv.z + 0.01)
 			Back.cap(cl, pr, g, top, bot, 0.013, 0.008, m, 0.002)
 			Back.ell(cl, pr, g, bot, 0.009, 0.01, 0.008, metal, 0.002)
 			var wood := cl.mat(Color("#4a3424"), "wood")

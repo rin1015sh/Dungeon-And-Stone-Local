@@ -1,5 +1,5 @@
 extends SceneTree
-## 전투 아군 동작 시트(탐험가 — 종족 × 뒷모습·옆모습): tools/monster_art/party_motions.json의 동작마다 3칸(PartyMotion이 잰 관절을 3D 뼈대로).
+## 전투 아군 동작 시트(탐험가 — 종족 뒷모습): tools/monster_art/party_motions.json의 동작마다 3칸(PartyMotion이 잰 관절을 3D 뼈대로).
 ## 칸 크기·발 자리는 한 시트 안의 모든 동작이 같다(무대가 칸을 바꿔 끼워도 몸이 튀지 않게). 줄 = 동작(json 순서), 칸 = 3.
 ##   godot --headless --path . --script res://tools/paint_motions.gd -- [--only=human_back,…] [--motions=idle,thrust] [--out=<폴더>]
 ## → <폴더>/<id>_motions.png (기본 user://motions — 게임에는 아직 안 쓴다)
@@ -10,7 +10,7 @@ const SEED := 2026
 
 func _init() -> void:
 	var out := "user://motions"
-	var only := PackedStringArray(["human_back", "barbarian_back", "human_side", "barbarian_side"])
+	var only := PackedStringArray(["human_back", "barbarian_back"])
 	var pick := PackedStringArray()
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--out="):

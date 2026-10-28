@@ -1,7 +1,7 @@
 class_name MonsterArt
 extends RefCounted
 ## 전투 일러스트: <render.json ui.combat_art_dir>/<몬스터 id>.webp(tools/paint_monsters.gd가 그림, 발 = 그림 아래 끝).
-## 아군 쪽: 소환수 뒷모습 <몬스터 id>_back.webp(같은 폴더), 탐험가 <ui.combat_party_art_dir>/<종족>_back|_side.webp.
+## 아군 쪽: 소환수 뒷모습 <몬스터 id>_back.webp(같은 폴더), 탐험가 <ui.combat_party_art_dir>/<종족>_back.webp.
 ## index.json(폴더마다) = 그림마다 몸 높이 px(들어 올린 무기·뿔은 뺀 발~정수리) — 무대가 정한 키를 이 높이에 맞춰 그림을 줄인다.
 ## 그림이 없으면 null → BattlerView는 CombatFigure 도형으로 그린다.
 

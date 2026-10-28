@@ -38,7 +38,7 @@ func test_party_art_for_races() -> void:
 	for race: String in db.get_collection("races"):
 		if not JsonUtil.get_bool(db.get_entry("races", race), "enabled", false):
 			continue
-		for view: String in ["back", "side"]:
+		for view: String in ["back"]:
 			assert_true(ResourceLoader.exists(dir.path_join(race + "_" + view + ".webp")), "탐험가 그림: " + race + "_" + view)
 			if index is Dictionary:
 				assert_true(JsonUtil.get_float(index, race + "_" + view, 0.0) > 0.0, "탐험가 몸 높이: " + race + "_" + view)

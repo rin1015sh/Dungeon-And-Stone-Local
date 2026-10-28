@@ -1,6 +1,6 @@
 extends RefCounted
 ## 아군 전투 그림(전투 무대 아래 앞줄, 적을 향해 등을 보인다): 탐험가(종족 × back 뒷모습 · side 오른쪽을 보며 비스듬히 돌아선 옆모습)
-## 와 아군으로 소환되는 몬스터의 뒷모습. id: <종족>_back|_side → assets/party/, <몬스터>_back → assets/monsters/.
+## 와 아군으로 소환되는 몬스터의 뒷모습. id: <종족>_back → assets/party/, <몬스터>_back → assets/monsters/(옆모습은 없앴다 — 사용자 2026-10-28, UI41).
 ## 탐험가 복장은 종족 특징만 드러내고 장비와 상관없이 늘 같은 모습(장비를 바꾸거나 레벨이 올라도 그대로 — ASSUMPTIONS UI11).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -22,8 +22,7 @@ const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
 
 const RACES := ["human", "barbarian"]
-const VIEWS := ["back", "side"]
-const SIDE_TURN := 1.1  ## 옆모습 돌림(라디안)
+const VIEWS := ["back"]
 const REF_H := 540.0  ## 사람 키(px) — 바바리안은 더 크게 그려 무대에서도 더 크게 보인다
 ## 아군으로 소환될 수 있는 몬스터(정수 스킬 summon · 정수 패시브 low_hp_summons — tests/test_monster_art.gd가 데이터와 맞춰 본다)
 const SUMMONS := ["soldier_deadman", "mummy", "iron_cavalry", "ghoul", "elder_ghoul", "slime"]
@@ -44,17 +43,16 @@ static func ids() -> Array:
 
 
 static func out_dir(id: String) -> String:
-	return "res://assets/party" if RACES.has(id.trim_suffix("_back").trim_suffix("_side")) else "res://assets/monsters"
+	return "res://assets/party" if RACES.has(id.trim_suffix("_back")) else "res://assets/monsters"
 
 
 static func spec_of(id: String) -> Dictionary:
-	var base := id.trim_suffix("_back").trim_suffix("_side")
-	var turn := SIDE_TURN if id.ends_with("_side") else 0.0
+	var base := id.trim_suffix("_back")
 	var sp := {}
 	match base:
 		"human":  # 여행자: 걷어 올린 아마 셔츠 · 가죽 조끼 · 두건 달린 어깨 망토 · 허리 주머니와 단검 · 가죽 장화
 			sp = {"height": REF_H, "build": "normal", "sh": 0.108, "skin": C("#c49a78"), "mottle": C("#9a6a52"), "mottle_amt": 0.3,
-				"hair": "short", "hair_c": C("#3a2a1e"), "pose": {"stance": 0.08, "knee": 0.15, "arm_l": "hang", "arm_r": "ready"}, "side_pose": {"arm_l": "rest", "arm_r": "rest"},
+				"hair": "short", "hair_c": C("#3a2a1e"), "pose": {"stance": 0.08, "knee": 0.15, "arm_l": "hang", "arm_r": "ready"},
 				"kit": {"pants": C("#4a4236"), "shirt": C("#b8a888"), "sleeves": "rolled", "vest": C("#5a3e28"), "mantle": C("#5a3028"),
 					"belt": C("#2e2018"), "pouch": true, "knife": true, "boots": C("#3a2a1e"), "bracers": C("#4a3424")}, "blood": 0.0, "grime": 0.3}
 		"barbarian":  # 거구: 땋은 긴 머리와 수염 · 털 어깨 망토 · 맨팔(위팔 쇠띠·팔목 가죽) · 가죽 조끼 · 감은 종아리 · 털 단 장화
@@ -86,9 +84,7 @@ static func spec_of(id: String) -> Dictionary:
 	if MapLooks.CHOSEN.has(base):  # 탐험가 옷차림 = 맵 그림과 같이(AM42)
 		sp = MapLooks.apply(sp, str(MapLooks.CHOSEN[base]))
 	if not sp.is_empty():
-		sp["turn"] = turn
-		if turn > 0.0 and sp.has("side_pose"):  # 옆모습만 다른 자세(인간: 앞으로 든 팔을 몸에 붙여 내림)
-			sp["pose"] = (sp["pose"] as Dictionary).merged(sp["side_pose"], true)
+		sp["turn"] = 0.0
 	return sp
 
 
@@ -109,7 +105,7 @@ static func body_height(id: String, crop_h: float) -> float:
 	var sp := spec_of(id)
 	match str(sp.get("kind", "figure")):
 		"figure":
-			return REF_H if RACES.has(id.trim_suffix("_back").trim_suffix("_side")) else float(sp.get("height", 560))
+			return REF_H if RACES.has(id.trim_suffix("_back")) else float(sp.get("height", 560))
 		"crawler_back":
 			return crop_h / 0.7
 	return crop_h / 0.78
@@ -117,14 +113,19 @@ static func body_height(id: String, crop_h: float) -> float:
 
 static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var H := float(sp.get("height", 560))
-	var w := int(H * float(sp.get("width", 1.2)))
+	var mf: Dictionary = sp.get("motion_frame", {})  # 전투 동작 한 칸(tools/paint_motions.gd)
+	var roll := float(mf.get("roll", 0.0))  # 쓰러짐: 선 몸을 화면에서 눕힌다(머리 왼쪽)
+	var w := int(H * float(sp.get("width", 1.2)) * (1.25 if roll != 0.0 else 1.0))
 	var h := int(H * float(sp.get("canvas_h", 1.12)))
 	var p := Paint.new(w, h, seed_value)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var cl := Clay.new(w, h)
-	var mf: Dictionary = sp.get("motion_frame", {})  # 전투 동작 한 칸(tools/paint_motions.gd)
-	var pr := Back.proj(Vector2(w * 0.5, h - H * 0.03), H, float(sp.get("turn", 0.0)) + float(mf.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
+	var foot := Vector2(w * 0.5 + (H * 0.5 if roll != 0.0 else 0.0), h - H * 0.03)
+	var pr := Back.proj(foot, H, float(sp.get("turn", 0.0)) + float(mf.get("turn", 0.0)), float(sp.get("pitch", 0.0)))
+	if roll != 0.0:
+		pr["roll"] = roll
+		pr["shift"] = Vector2(0.0, -H * float(mf.get("lift", 0.13)))
 	var j := Back.skeleton(sp)
 	if not mf.is_empty():
 		j = PartyMotion.pose(j, mf, float(mf.get("turn", 0.0)))
@@ -150,7 +151,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
 	BackPose.props(cl, pr, j, sp)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
-	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)))
+	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)), Vector2(0, 1).rotated(roll))
 	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림) — 입은 그리지 않는다
 		var side: bool = (hd["eyes"] as Array).size() < 2
 		var r := float(hd["hh"]) * H * float(sp.get("eye_r", 0.055))

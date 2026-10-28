@@ -61,7 +61,7 @@ func remove_unit(u: Combatant) -> void:
 		var dust := DeathDust.new()
 		var rng := RandomNumberGenerator.new()
 		rng.seed = u.order * 7919 + 13
-		dust.setup(v.art, Rect2(v.position, v.size), v.flip, UiTheme.ui_dict("combat_death_dust"), rng)
+		dust.setup(v.art, Rect2(v.position, v.size), false, UiTheme.ui_dict("combat_death_dust"), rng)
 		dust.z_index = 5  # 남은 몬스터가 그 자리로 다시 서도 위에 보이게
 		add_child(dust)
 	_views.erase(u)
@@ -174,13 +174,11 @@ func _horizon_y() -> float:
 func _layout_party(party: Array[Combatant], stage_h: float) -> float:
 	var ph := stage_h * UiTheme.ui_float("combat_party_height", 0.38)
 	var sink := float(UiTheme.metric("combat_party_sink", 100))
-	var side_from := UiTheme.ui_float("combat_party_side_from", 0.2)
 	var n := party.size()
 	var top := stage_h
-	for i in n:  # 가장자리 탐험가는 무대 가운데(적)를 보며 비스듬히 돌아선 옆모습, 소환수는 크기만큼(작은 것은 덜 가라앉혀 보이게)
+	for i in n:  # 소환수는 크기만큼(작은 것은 덜 가라앉혀 보이게)
 		var v: BattlerView = _views[party[i]]
 		var px := _party_x(i, n)
-		v.set_view(absf(px - 0.5) >= side_from, px > 0.5)
 		var k := clampf(v.size_k, 0.5, UiTheme.ui_float("combat_party_size_max", 1.2)) if v.unit.actor is Monster else 1.0
 		var half := v.width_for(ph * k) * 0.5  # 화면 밖으로 넘치지 않게
 		v.place(Vector2(clampf(size.x * px, half, maxf(half, size.x - half)), stage_h + sink * minf(1.0, k) * minf(1.0, k)), ph * k)

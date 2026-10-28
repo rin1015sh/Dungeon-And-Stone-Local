@@ -2,7 +2,7 @@ extends SceneTree
 ## 몬스터 전투 일러스트 생성기: data/monsters의 몬스터마다 tools/monster_art/Specs.gd 설계대로 그려 assets/monsters/<id>.webp(투명 배경).
 ## 아군 그림(tools/monster_art/Party.gd)도 함께: 탐험가 <종족>_back·_side → assets/party/, 아군 소환수 <id>_back → assets/monsters/.
 ##   godot --headless --path . --script res://tools/paint_monsters.gd [-- --only=<id,id…>] [--index](그리지 않고 색인만 다시)
-##   --only=party(아군 그림만) · --only=human_side,slime_back(그 그림만)
+##   --only=party(아군 그림만) · --only=human_back,slime_back(그 그림만)
 ## 그림체 = 피어 앤 헝거 몬스터 그림(사용자 첨부 참고, ASSUMPTIONS UI8): 3D 덩어리로 빚은 몸(Clay) → 3~4단 붓 칠·적갈색 그늘 ·
 ## 잉크 윤곽·골 · 펜 빗금(Render) → 털 붓결·피·때(Fur·Finish). 한 장에 2~10초, 전부 약 5분.
 ## 그림은 둘레만 남겨 자르고(발 = 아래 끝), index.json에 그림마다 몸 높이 px를 적는다(들어 올린 무기·뿔은 키에서 빼고,

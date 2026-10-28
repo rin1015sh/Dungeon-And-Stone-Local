@@ -1,7 +1,7 @@
 class_name BattlerView
 extends Control
 ## 전투 무대 위의 참가자 하나. 그림은 MonsterArt(없으면 CombatFigure 도형): 적은 정면 그림, 아군 소환수는 뒷모습(<id>_back),
-## 탐험가는 종족 그림 — 뒷모습(back)과 비스듬히 돌아선 옆모습(side)을 무대가 자리에 따라 고른다(set_view, 오른쪽 자리는 좌우 반전).
+## 탐험가는 종족 뒷모습(<종족>_back — 옆모습은 없앴다, UI41).
 ## 적은 정면 + 머리 위 상태 아이콘(3개씩, 넘으면 깜빡이며 넘김 — StatusIcons)·이름(생명력·상성은 보이지 않는다 — 피어 앤 헝거처럼,
 ## 받은 피해만 숫자로 떠오른다. 조사·쳐 봐서 알아낸 것은 도감 B에서만 — 사용자 2026-10-27, UI22),
 ## 아군은 뒷모습만(이름·상태 아이콘·생명력·영혼력은 아래 파티 창에). 지금 차례면 발밑 고리가 빛난다.
@@ -16,9 +16,7 @@ var size_k: float = 1.0
 var boss: bool = false  ## 보스 등급(render.json ui.combat_boss_ranks) — 크기와 상관없이 무대를 거의 채운다
 var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
-var flip: bool = false  ## 좌우 반전(오른쪽 자리의 옆모습이 무대 가운데를 보게)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
-var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이, 대기 칸들(Array — 없으면 빈 배열)]
 var _idle: Array = []  ## 지금 보기의 대기 칸(AtlasTexture)
 var _idle_t: float = 0.0
 var _current: bool = false
@@ -38,11 +36,12 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 	elif u.actor is PlayerCharacter:
 		var race := (u.actor as PlayerCharacter).race_id
 		color = Color.from_string(JsonUtil.get_str(db.get_entry("races", race), "color"), Color.GRAY)
-		for view: String in ["back", "side"]:
-			var tex := MonsterArt.texture_in(MonsterArt.party_dir(), race + "_" + view)
-			if tex != null:
-				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex), _idle_cells(race + "_" + view + "_idle")]
-		set_view(false, false)
+		var tex := MonsterArt.texture_in(MonsterArt.party_dir(), race + "_back")
+		if tex != null:
+			art = tex
+			_art_body = MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_back", tex)
+			_idle = _idle_cells(race + "_back_idle")
+			_tick_idle()
 		_idle_t = randf() * 10.0  # 아군끼리 숨이 맞지 않게
 		set_process(not _idle.is_empty())
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -72,19 +71,6 @@ func _look(def: Dictionary, art_id: String) -> void:
 	art = MonsterArt.texture(art_id)
 	if art != null:
 		_art_body = MonsterArt.body_height(art_id, art)
-
-
-## 탐험가 그림 고르기: side면 옆모습(없으면 뒷모습), mirror면 좌우 반전(옆모습일 때만).
-func set_view(side: bool, mirror: bool) -> void:
-	var key := "side" if side and _views.has("side") else "back"
-	if not _views.has(key):
-		return
-	art = _views[key][0]
-	_art_body = _views[key][1]
-	_idle = _views[key][2]
-	flip = mirror and key == "side"
-	_tick_idle()
-	queue_redraw()
 
 
 ## 대기 시트 → 칸 3개(같은 크기 AtlasTexture). 시트가 없으면 빈 배열.
@@ -217,7 +203,6 @@ func _process(delta: float) -> void:
 	var k := 0.5 - 0.5 * cos(TAU * JsonUtil.get_float(cfg, "hz", 0.9) * _flash_t)
 	(_flash.material as ShaderMaterial).set_shader_parameter("amount", lerpf(lo, hi, k))
 	_flash.texture = art
-	_flash.flip_h = flip
 	_flash.position = Vector2.ZERO
 	_flash.size = size
 
@@ -227,10 +212,7 @@ func _draw() -> void:
 	if art != null:
 		if front:  # 아군 발은 아래 창 뒤로 가라앉아 있다(차례는 밝기로)
 			CombatFigure.ground(self, Vector2(size.x / 2.0, size.y), minf(size.x * 0.42, size.y * 0.5), size.y, glow)
-		if flip:
-			draw_set_transform(Vector2(size.x, 0.0), 0.0, Vector2(-1.0, 1.0))
 		draw_texture_rect(art, Rect2(Vector2.ZERO, size), false, Color(1.12, 1.1, 1.05) if _current else Color.WHITE)
-		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	else:
 		var c := color.lightened(0.35 if _target else (0.12 if _current and not front else 0.0))  # 그림 없는 임시 도형: 대상이면 희게
 		CombatFigure.paint(self, shape, c, front, Vector2(size.x / 2.0, size.y), size.y / 1.12, glow)

@@ -23,13 +23,32 @@ static func proj(o: Vector2, H: float, turn: float, pitch: float = 0.0) -> Dicti
 	return {"ox": o.x, "oy": o.y, "H": H, "c": cos(turn), "s": sin(turn), "turn": turn, "pitch": pitch}
 
 
-## 몸 좌표(키 비율) → 화면(px, z = 보는 사람 쪽).
+## 몸 좌표(키 비율) → 화면(px, z = 보는 사람 쪽). roll이 있으면(누운 몸 — tools/paint_motions.gd 쓰러짐) 화면에서 발 자리를 축으로 통째로 돌린다.
 static func P(pr: Dictionary, v: Vector3) -> Vector3:
 	var c: float = pr["c"]
 	var s: float = pr["s"]
 	var H: float = pr["H"]
 	var toward := v.x * s + v.z * c
-	return Vector3(float(pr["ox"]) + H * (v.x * c - v.z * s), float(pr["oy"]) + H * (v.y + toward * float(pr.get("pitch", 0.0))), H * toward)
+	var q := roll2(pr, Vector2(float(pr["ox"]) + H * (v.x * c - v.z * s), float(pr["oy"]) + H * (v.y + toward * float(pr.get("pitch", 0.0)))))
+	return Vector3(q.x, q.y, H * toward)
+
+
+## 화면 점 하나를 roll만큼(발 자리 축 + shift). roll이 없으면 그대로.
+static func roll2(pr: Dictionary, q: Vector2) -> Vector2:
+	var r := float(pr.get("roll", 0.0))
+	if r == 0.0:
+		return q
+	var o := Vector2(float(pr["ox"]), float(pr["oy"]))
+	return o + (q - o).rotated(r) + (pr.get("shift", Vector2.ZERO) as Vector2)
+
+
+static func roll_poly(pr: Dictionary, pts: PackedVector2Array) -> PackedVector2Array:
+	if float(pr.get("roll", 0.0)) == 0.0:
+		return pts
+	var out := PackedVector2Array()
+	for q in pts:
+		out.append(roll2(pr, q))
+	return out
 
 
 static func P2(pr: Dictionary, v: Vector3) -> Vector2:
@@ -60,7 +79,7 @@ static func ell(cl: Clay, pr: Dictionary, g: int, c: Vector3, ru: float, rv: flo
 	var ss: float = pr["s"]
 	var rx := sqrt(pow(ru * cc, 2.0) + pow(rw * ss, 2.0))
 	var rz := sqrt(pow(ru * ss, 2.0) + pow(rw * cc, 2.0))
-	cl.ell(g, P(pr, c), rx * H, rv * H, rz * H, m, k * H, rot)
+	cl.ell(g, P(pr, c), rx * H, rv * H, rz * H, m, k * H, rot + float(pr.get("roll", 0.0)))
 
 
 ## 보이는 쪽(n)에서만: 골 · 줄 · 혹.
@@ -91,7 +110,7 @@ static func bump(cl: Clay, pr: Dictionary, g: int, c: Vector3, n: Vector3, rx: f
 		return
 	var H: float = pr["H"]
 	var q := P2(pr, c)
-	cl.bump(g, q, rx * H * lerpf(0.5, 1.0, f), ry * H, rise * H * f, m, 3.0, rot)
+	cl.bump(g, q, rx * H * lerpf(0.5, 1.0, f), ry * H, rise * H * f, m, 3.0, rot + float(pr.get("roll", 0.0)))
 
 
 ## 뼈대(몸 좌표). 팔 자세: hang(조금 벌려 늘어뜨림) · rest(붙여 내림) · ready(팔꿈치 굽혀 주먹을 앞으로) · forward(두 팔을 앞으로 뻗음)

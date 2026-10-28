@@ -198,4 +198,5 @@ static func _belt(cl: Clay, pr: Dictionary, j: Dictionary, col: Color) -> void:
 	var g := cl.group()
 	var y0: float = j["pelvis"].y - 0.07
 	BackKit.shell(cl, pr, ["pelvis", "torso"], 0.04, m, g, BackKit.band(cl, pr, y0, y0 + 0.03), 0.02, 0.002)
-	Back.ell(cl, pr, g, Vector3(0, y0 + 0.015, -0.15), 0.02, 0.018, 0.01, cl.mat(Color("#8a7a58"), "metal"), 0.003)
+	var pv: Vector3 = j["pelvis"]  # 배 앞 버클(골반을 따라 · 배 표면에 붙여 — 몸을 돌려도 몸 밖에 뜨지 않게)
+	Back.ell(cl, pr, g, Vector3(pv.x, y0 + 0.015, pv.z - 0.085), 0.02, 0.018, 0.01, cl.mat(Color("#8a7a58"), "metal"), 0.003)
