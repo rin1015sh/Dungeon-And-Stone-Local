@@ -73,6 +73,26 @@ static func apply(j: Dictionary, sp: Dictionary) -> Dictionary:
 	return out
 
 
+## 전투 대기 숨쉬기 한 칸(b 0 = 들이쉬어 선 자세 → 1 = 내쉬며 무릎을 굽혀 가라앉음 — 피어 앤 헝거 대기 3칸을 0-1-2-1로).
+## 발은 그대로, 위 몸은 DIP만큼 내려가고 머리·주먹은 조금 늦게 더 내려온다(주먹은 바깥으로 살짝 벌어짐).
+const DIP := 0.016
+static func idle(j: Dictionary, b: float) -> Dictionary:
+	var out := j.duplicate()
+	var d := DIP * b
+	for k: String in UPPER:
+		out[k] = (out[k] as Vector3) + Vector3(0, d, -d * 0.3)
+	for s: int in [-1, 1]:
+		var t := _t(s)
+		out["knee_" + t] = (out["knee_" + t] as Vector3) + Vector3(s * d * 0.25, d * 0.5, -d * 0.8)
+		out["shoulder_" + t] = (out["shoulder_" + t] as Vector3) + Vector3(s * d * 0.15, d * 0.2, -d * 0.4)
+		out["elbow_" + t] = (out["elbow_" + t] as Vector3) + Vector3(s * d * 0.6, d * 0.4, 0.0)
+		for k: String in ["wrist_", "hand_"]:
+			out[k + t] = (out[k + t] as Vector3) + Vector3(s * d * 0.5, d * 0.7, d * 0.3)
+	out["head"] = (out["head"] as Vector3) + Vector3(0, d * 0.35, -d * 0.4)
+	out["neck"] = (out["neck"] as Vector3) + Vector3(0, d * 0.2, -d * 0.3)
+	return out
+
+
 static func _t(s: int) -> String:
 	return "l" if s < 0 else "r"
 

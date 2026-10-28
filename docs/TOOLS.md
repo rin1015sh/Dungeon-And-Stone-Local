@@ -29,7 +29,8 @@
   - 그 밖의 옵션(전투 `--combat --monster=<id> --summon=… --summon_each --god`, 균열 `--rift=<id> --chapter=n --engage --near=boss|guardian --spotted`, 메뉴 `--menu=… --keys=…`, 대화창 `--dialog`, 귀환 정산 `--screen=plaza --returning=<쪽>` …)은 `tools/screenshot.gd` 맨 위 주석.
 - **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 
-- **전투 아군 숨쉬기 미리보기**(게임 밖 — UI40): `python3 tools/idle_breathe_preview.py assets/party/human_back.webp <out.gif> <배경 png>` → 숨 한 번(2.8초) GIF.
+- **전투 아군 대기 3칸 시트**(게임 밖 — UI40, 피어 앤 헝거 대기 동작 본뜸): `godot --headless --path . --script res://tools/paint_idle.gd -- --out=<폴더> [--only=human_back,…] [--keep]` → `<폴더>/<id>_idle.png`(맨손 겨눔 자세로 다시 그린 3칸, 재생 0-1-2-1 · `--keep` = 지금 자세 그대로).
+- **전투 아군 숨쉬기 미리보기**(게임 밖 — UI40, 그림을 휘는 방식 — 위 3칸 시트로 대신함): `python3 tools/idle_breathe_preview.py assets/party/human_back.webp <out.gif> <배경 png>` → 숨 한 번(2.8초) GIF.
 
 ## 웹 내보내기
 

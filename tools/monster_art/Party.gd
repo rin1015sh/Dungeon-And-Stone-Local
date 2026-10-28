@@ -126,6 +126,8 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var j := Back.skeleton(sp)
 	if sp.has("walk"):  # 탐험 맵 걷기 그림(tools/paint_actors.gd)
 		j = Back.stride(j, float(sp["walk"]), sp.get("gait", {}))
+	if sp.has("idle"):  # 전투 대기 숨쉬기 한 칸(tools/paint_idle.gd 미리보기)
+		j = BackPose.idle(j, float(sp["idle"]))
 	if sp.has("rest"):  # 보스가 방에서 기다리는 자세(앉음·무릎 꿇음·웅크림)
 		j = BackPose.apply(j, sp)
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))
