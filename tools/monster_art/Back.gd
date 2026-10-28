@@ -4,7 +4,7 @@ extends RefCounted
 ## turn 0 = 등을 정면으로, 1.1 안팎 = 오른쪽(적)을 보며 비스듬히 돌아선 옆모습(오른 옆구리·옆얼굴이 보인다).
 ## 캡슐은 돌려도 정확하고, 타원체는 돌린 폭으로 근사한다. 옷·장구는 BackKit·BackGear, 설계는 Party.
 ## spec 키: height · turn · build(thin|normal|muscular|brute) · bulk · sh(어깨 반폭) · head(머리 크기) · skin · shade · mottle · nail
-##          pose{stance(발 벌림) · knee · hunch(앞으로 숙임) · arm_l/arm_r(hang|rest|ready|forward|spear|shield|down|slump|guard)}
+##          pose{stance(발 벌림) · knee · hunch(앞으로 숙임) · arm_l/arm_r(hang|rest|ready|forward|spear|shield|down|slump)}
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
 
@@ -140,9 +140,6 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 			"down":  # 탐험 맵 탐험가(사용자 2026-10-26 "가만히 있을 때 팔을 완전히 아래로 — 살짝 앞에 있어 좀비 같다"): 몸 옆으로 곧게
 				el = shp + Vector3(s * 0.03, 0.155, 0.0)
 				wr = el + Vector3(s * 0.006, 0.145, -0.006)
-			"guard":  # 팔꿈치를 몸 옆에 붙이고 주먹을 허리 위로 든 맨손 겨눔(피어 앤 헝거 전투 대기 자세 — 숨쉬기 미리보기 tools/paint_idle.gd)
-				el = shp + Vector3(s * 0.06, 0.17, 0.01)
-				wr = el + Vector3(s * 0.03, -0.05, -0.1)
 			"slump":  # 탐험 맵: 어깨를 늘어뜨리고 팔꿈치를 살짝 굽혀 손이 허벅지 앞에
 				el = shp + Vector3(s * 0.02, 0.15, -0.03)
 				wr = el + Vector3(-s * 0.012, 0.135, -0.05)
