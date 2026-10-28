@@ -54,6 +54,7 @@ func _frames(id: String, mo: Dictionary) -> Array[Image]:
 		if mo.has("weapon"):
 			var kit: Dictionary = (sp.get("kit", {}) as Dictionary).duplicate()
 			kit["weapon"] = mo["weapon"]
+			kit.merge(mo.get("kit", {}) as Dictionary, true)  # weapon_hand 등
 			sp["kit"] = kit
 		row.append(Party.figure(sp, SEED + id.hash() % 9973).to_image())
 	return row

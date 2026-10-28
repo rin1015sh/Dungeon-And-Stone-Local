@@ -3,7 +3,10 @@ extends RefCounted
 ## 칸마다 잰 2D 관절 위치(tools/monster_art/party_motions.json, 120px 칸 좌표)를 3D 뼈대(Back)로 옮긴다.
 ## 뼈 길이는 우리 몸 그대로 두고, 화면에 보이는 뼈 방향만 원본을 따른다 — 원본에서 그 뼈가 펴진 길이(REF_LEN, 원본 쉬는 칸에서 잼)보다
 ## 짧아 보이면 그 비율만큼 보는 사람 쪽/먼 쪽으로 기운다(어느 쪽인지는 쉰 자세에서 그 뼈가 향하던 쪽, 칸에 "d"{끝 관절: "a" 먼 쪽 | "t" 보는 사람 쪽}이 있으면 그것).
-## 칸 키: turn(몸 돌림, 라디안 — 그림 돌림에 더한다) · p{H 머리 N 목 P 골반 SL/SR 어깨 EL/ER 팔꿈치 HL/HR 주먹 KL/KR 무릎 AL/AR 발목 TL/TR 발끝 W 칼끝}
+## 칸 키: turn(몸 돌림, 라디안 — 그림 돌림에 더한다) · p{H 머리 N 목 P 골반 SL/SR 어깨 EL/ER 팔꿈치 HL/HR 주먹 KL/KR 무릎 AL/AR 발목 TL/TR 발끝 W 칼끝(활 = 활대 위 끝)}
+##   · ik{l|r: {hand: [x,y,z], pole: [x,y,z]}}(손을 보는 쪽 3D 자리에 — x·y는 원본 칸 px, z = 보는 사람 쪽 px · 팔꿈치는 pole 쪽으로)
+##   · weapon_hand(W를 잴 손, 기본 r) · wlen(원본에서 손 → W가 펴졌을 때 길이 px — 기본 칼 46) · up·aim(무기 위·활 겨눔 방향, 보는 쪽 좌표)
+##   · draw(활시위를 당긴 칸)
 ##   · lie(누움 — 땅 맞추기를 하지 않는다)
 
 const REF_H := 116.0  ## 원본 칸의 사람 키(px)
@@ -47,17 +50,55 @@ static func pose(j0: Dictionary, fr: Dictionary, turn: float) -> Dictionary:
 			j["toe_" + t] = _bone(j, j0, "ankle_" + t, "toe_" + t, p["A" + T], p["T" + T], ((j0["toe_" + t] as Vector3) - (j0["ankle_" + t] as Vector3)).length(), REF_LEN["T"], hint.get("T" + T, ""), c, s)
 		else:
 			j["toe_" + t] = (j["ankle_" + t] as Vector3) + ((j0["toe_" + t] as Vector3) - (j0["ankle_" + t] as Vector3))
-	if p.has("W"):  # 칼끝 방향(BackExtras 손 무기)
-		var hr := "HR" if str(fr.get("weapon_hand", "r")) == "r" else "HL"
-		var tip := _bone(j, j0, "hand_r", "hand_r", p[hr], p["W"], 0.3, REF_LEN["W"], hint.get("W", "a"), c, s)
-		j["weapon_dir"] = (tip - (j["hand_r"] as Vector3)).normalized()
+	var ik: Dictionary = fr.get("ik", {})
+	for t: String in ik:  # 손을 3D 자리(보는 쪽 좌표)에 두고 팔꿈치는 pole 쪽으로 굽힌다
+		var q: Dictionary = ik[t]
+		_reach(j, j0, t, _cam(q["hand"], c, s, true), _cam(q.get("pole", [0, 0, 1]), c, s, false))
+	var wh := str(fr.get("weapon_hand", "r"))
+	if p.has("W"):  # 칼끝 방향(BackExtras 손 무기 — 활은 활대 위 끝)
+		var tip := _bone(j, j0, "hand_" + wh, "hand_" + wh, p["H" + wh.to_upper()], p["W"], 0.3, float(fr.get("wlen", REF_LEN["W"])), hint.get("W", "a"), c, s)
+		j["weapon_dir"] = (tip - (j["hand_" + wh] as Vector3)).normalized()
+	if fr.has("up"):  # 무기 위 방향을 보는 쪽 좌표로 바로
+		j["weapon_dir"] = _cam(fr["up"], c, s, false).normalized()
+	if fr.has("aim"):  # 활: 화살이 날아갈 쪽(보는 쪽 좌표)
+		j["aim"] = _cam(fr["aim"], c, s, false).normalized()
+	if fr.get("draw", false):  # 활시위를 당긴 칸
+		j["bow_draw"] = true
 	if not fr.get("lie", false):  # 맨 아래 발목을 땅에
 		var low := maxf((j["ankle_l"] as Vector3).y, (j["ankle_r"] as Vector3).y)
 		var d := (j0["ankle_l"] as Vector3).y - low
 		for k: String in j:
-			if j[k] is Vector3 and k != "weapon_dir":
+			if j[k] is Vector3 and k != "weapon_dir" and k != "aim":
 				j[k] = (j[k] as Vector3) + Vector3(0, d, 0)
 	return j
+
+
+## 보는 쪽 좌표(원본 칸 px: x 0~120 · 가운데 60, y 땅 117, z = 보는 사람 쪽 px) → 몸 좌표. point면 자리, 아니면 방향.
+static func _cam(v: Array, c: float, s: float, point: bool) -> Vector3:
+	var X := (float(v[0]) - (60.0 if point else 0.0)) / REF_H
+	var Y := (float(v[1]) - (REF_GROUND if point else 0.0)) / REF_H
+	var T := float(v[2]) / REF_H
+	return Vector3(X * c + T * s, Y, -X * s + T * c)
+
+
+## 두 마디 팔(IK): 어깨에서 손(target — 닿지 않으면 뻗은 끝)까지, 팔꿈치는 pole 쪽으로.
+static func _reach(j: Dictionary, j0: Dictionary, t: String, target: Vector3, pole: Vector3) -> void:
+	var sh: Vector3 = j["shoulder_" + t]
+	var l1 := ((j0["elbow_" + t] as Vector3) - (j0["shoulder_" + t] as Vector3)).length()
+	var l2 := ((j0["hand_" + t] as Vector3) - (j0["elbow_" + t] as Vector3)).length()
+	var v := target - sh
+	var d := clampf(v.length(), 0.01, (l1 + l2) * 0.999)
+	var dir := v.normalized()
+	var a := (l1 * l1 + d * d - l2 * l2) / (2.0 * d)
+	var h := sqrt(maxf(0.0, l1 * l1 - a * a))
+	var pp := pole - dir * pole.dot(dir)
+	pp = pp.normalized() if pp.length() > 0.0001 else Vector3(0, 1, 0)
+	var el := sh + dir * a + pp * h
+	var hd := sh + dir * d
+	j["elbow_" + t] = el
+	j["hand_" + t] = hd
+	var wr_len := ((j0["wrist_" + t] as Vector3) - (j0["elbow_" + t] as Vector3)).length()
+	j["wrist_" + t] = el + (hd - el).normalized() * wr_len
 
 
 ## 원본 칸 px → 키 비율(가로는 칸 가운데 기준, 세로는 땅 기준).

@@ -140,13 +140,32 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 			Back.cap(cl, pr, g, hd - up * 0.4, hd + up * 0.38, 0.011, 0.009, wood, 0.002)
 			if kit.has("glow"):
 				Back.ell(cl, pr, g, hd + up * 0.42, 0.03, 0.03, 0.03, cl.mat(kit["glow"], "glow"), 0.005)
-		"bow":
-			var c0 := hd + Vector3(0, 0, -0.03)
+		"bow":  # 리커브 활: 손잡이에서 위·아래 팔(끝은 쏘는 사람 쪽으로 휘고 맨 끝은 다시 앞으로 젖힘) + 시위(당긴 칸이면 다른 손까지, 화살)
+			var up: Vector3 = j["weapon_dir"] if j.has("weapon_dir") else Vector3(0, -1, 0)
+			var aim: Vector3 = j["aim"] if j.has("aim") else Vector3(0, 0, -1)
+			aim = (aim - up * up.dot(aim)).normalized()
+			var drawn: bool = j.get("bow_draw", false)
+			var back := 0.15 if drawn else 0.09
 			var pts: Array = []
-			for k in 5:
-				var a := lerpf(-1.1, 1.1, k / 4.0)
-				pts.append(c0 + Vector3(0, sin(a) * 0.24, -cos(a) * 0.07))
-			Back.chain(cl, pr, g, pts, [0.006, 0.01, 0.012, 0.01, 0.006], wood, 0.002)
+			var radii: Array = []
+			for k in 11:
+				var u := lerpf(-1.0, 1.0, k / 10.0)
+				var curl := smoothstep(0.72, 1.0, absf(u)) * 0.05  # 리커브 끝
+				pts.append(hd + up * (u * 0.33) - aim * (back * u * u) + aim * curl)
+				radii.append(lerpf(0.013, 0.006, absf(u)))
+			Back.chain(cl, pr, g, pts, radii, wood, 0.002)
+			var cord := cl.mat(Color("#d8d0b8"), "cloth")
+			var tip_a: Vector3 = pts[0]
+			var tip_b: Vector3 = pts[pts.size() - 1]
+			if drawn:
+				var pull: Vector3 = j["hand_" + ("r" if t == "l" else "l")]
+				Back.cap(cl, pr, g, tip_a, pull, 0.003, 0.003, cord, 0.0)
+				Back.cap(cl, pr, g, pull, tip_b, 0.003, 0.003, cord, 0.0)
+				var head := hd + aim * 0.06
+				Back.cap(cl, pr, g, pull, head, 0.004, 0.004, wood, 0.0)  # 화살대
+				Back.cap(cl, pr, g, head, head + aim * 0.04, 0.008, 0.001, metal, 0.0)  # 촉
+			else:
+				Back.cap(cl, pr, g, tip_a, tip_b, 0.003, 0.003, cord, 0.0)
 	Back.ell(cl, pr, g, hd + Vector3(0, 0, 0.005), 0.022, 0.028, 0.02, cl.mat(sp.get("skin", Color("#8a7a6a")), str(sp.get("skin_kind", "skin"))), 0.003)  # 쥔 손
 
 
