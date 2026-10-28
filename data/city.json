@@ -203,14 +203,13 @@
     ]
   },
   "shop": {
-    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율. 마석은 사지 않는다(귀환 정산 — city.json settle, CT58). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 거주 등급(CT51): stock_by_residence[등급−1] = 그 등급에서 새로 들여오는 물건(아래 등급 것은 그대로 판다), sell_ratio_by_residence[등급−1] = 매입 비율(없으면 sell_ratio).",
+    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율. 마석은 사지 않는다(귀환 정산 — city.json settle, CT58). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 거주 등급(CT51): stock_by_residence[등급−1] = 그 등급에서 새로 들여오는 물건(아래 등급 것은 그대로 판다). 매입 비율은 구역마다 같다(sell_ratio — CT60).",
     "stock_by_residence": [
       ["stone_bread", "ration", "torch", "minor_potion", "antidote", "bandage"],
       ["medium_potion", "soul_potion", "whetstone", "smoke_bomb"],
       ["greater_potion", "lantern"],
       []
     ],
-    "sell_ratio_by_residence": [0.5, 0.5, 0.55, 0.6],
     "sell_ratio": 0.5,
     "equipment_categories": [
       "weapon",

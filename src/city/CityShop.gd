@@ -104,17 +104,12 @@ static func tabs(state: CityState, act_id: String) -> Array[String]:
 	return out
 
 
-## 매입 비율: 창구(활동) sell_ratio(거래소 — CT54), 없으면 sell_ratio_by_residence[거주 등급 − 1](CT51), 없으면 sell_ratio.
+## 매입 비율: 창구(활동) sell_ratio(거래소 — CT54), 없으면 shop.sell_ratio. 거주 구역마다 다르지 않다(CT60).
 static func sell_ratio(state: CityState, act_id: String = "") -> float:
 	var own: Variant = state.activity(act_id).get("sell_ratio") if not act_id.is_empty() else null
 	if own is float or own is int:
 		return maxf(0.0, float(own))
 	var c := config(state)
-	var by_tier: Variant = c.get("sell_ratio_by_residence")
-	if by_tier is Array and (by_tier as Array).size() >= CityResidence.tier(state):
-		var v: Variant = by_tier[CityResidence.tier(state) - 1]
-		if v is float or v is int:
-			return maxf(0.0, float(v))
 	return maxf(0.0, CityValues.num(c, "sell_ratio")) if CityValues.is_set(c, "sell_ratio") else 1.0
 
 
