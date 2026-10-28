@@ -166,7 +166,42 @@ static func _hand_weapon(cl: Clay, pr: Dictionary, j: Dictionary, kit: Dictionar
 				Back.cap(cl, pr, g, head, head + aim * 0.04, 0.008, 0.001, metal, 0.0)  # 촉
 			else:
 				Back.cap(cl, pr, g, tip_a, tip_b, 0.003, 0.003, cord, 0.0)
+			_bow_hands(cl, pr, j, t, aim, up, drawn, cl.mat(sp.get("skin", Color("#c49a78")), str(sp.get("skin_kind", "skin"))))
+			return
 	Back.ell(cl, pr, g, hd + Vector3(0, 0, 0.005), 0.022, 0.028, 0.02, cl.mat(sp.get("skin", Color("#8a7a6a")), str(sp.get("skin_kind", "skin"))), 0.003)  # 쥔 손
+
+
+## 활 쥔 손·시위 잡은 손(맨 위 그룹 — 소매·활에 묻히지 않게): 활 손은 활대를 감싼 주먹(마디 + 활대 앞으로 감은 엄지),
+## 시위 손은 손등 + 시위에 건 세 손가락(당긴 칸) / 펴진 손가락(놓은 칸). 손목엔 짙은 소매 끝 띠로 팔과 손을 가른다.
+static func _bow_hands(cl: Clay, pr: Dictionary, j: Dictionary, t: String, aim: Vector3, up: Vector3, drawn: bool, skin: int) -> void:
+	var g := cl.group()
+	var view := Vector3(float(pr["s"]), 0.0, float(pr["c"]))  # 보는 사람 쪽(몸 좌표)
+	var cuff := cl.mat(Color("#2e2218"), "leather")
+	var side := aim.cross(up).normalized()
+	if side.dot(view) < 0.0:
+		side = -side
+	# 활 쥔 손
+	var hd: Vector3 = j["hand_" + t]
+	var wr: Vector3 = j["wrist_" + t]
+	Back.cap(cl, pr, g, wr.lerp(hd, -0.2), wr.lerp(hd, 0.25), 0.02, 0.02, cuff, 0.003)
+	Back.ell(cl, pr, g, hd + side * 0.012, 0.026, 0.032, 0.026, skin, 0.004)
+	for k in 4:  # 활대를 감은 손가락 마디(보는 쪽)
+		var q := hd + side * 0.03 + up * lerpf(0.018, -0.018, k / 3.0)
+		Back.ell(cl, pr, g, q, 0.009, 0.008, 0.009, skin, 0.002)
+	Back.cap(cl, pr, g, hd - aim * 0.01 + up * 0.02, hd + aim * 0.022 + up * 0.026, 0.008, 0.007, skin, 0.003)  # 엄지
+	# 시위 손
+	var o := "r" if t == "l" else "l"
+	var dh: Vector3 = j["hand_" + o]
+	var dw: Vector3 = j["wrist_" + o]
+	Back.cap(cl, pr, g, dw.lerp(dh, -0.2), dw.lerp(dh, 0.25), 0.019, 0.019, cuff, 0.003)
+	Back.ell(cl, pr, g, dh + side * 0.012, 0.026, 0.028, 0.024, skin, 0.004)
+	for k in 3:  # 손가락
+		var base := dh + side * 0.022 + up * lerpf(0.012, -0.012, k / 2.0)
+		if drawn:  # 시위에 걸어 갈고리처럼 굽힘
+			Back.chain(cl, pr, g, [base, base + aim * 0.022, base + aim * 0.02 - side * 0.012], [0.0075, 0.007, 0.006], skin, 0.002)
+		else:  # 놓아서 펴짐(뒤로 튐)
+			Back.cap(cl, pr, g, base, base - aim * 0.03 + up * (0.006 - k * 0.004), 0.007, 0.006, skin, 0.002)
+	Back.cap(cl, pr, g, dh + up * 0.02, dh + up * 0.03 - aim * 0.012, 0.008, 0.007, skin, 0.003)  # 엄지
 
 
 ## 골렘 판: 어깨·가슴·팔뚝·허벅지·정강이에 붙은 납작한 덩어리(같은 재질, 조금 어둡게 — 이음매가 보이게).

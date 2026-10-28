@@ -141,7 +141,7 @@ static func _coat(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 	for s: int in [-1, 1]:  # 긴 소매
 		var t := "l" if s < 0 else "r"
 		var wr: Vector3 = j["wrist_" + t]
-		BackKit.shell(cl, pr, ["upper_" + t, "fore_" + t], 0.014, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, maxf(wr.y, j["elbow_" + t].y) + 0.004), 0.012)
+		BackKit.shell(cl, pr, ["upper_" + t, "fore_" + t], 0.014, m, g, BackKit.band(cl, pr, _sleeve_top(j, t), maxf(wr.y, j["elbow_" + t].y) + 0.004), 0.012)
 	Back.ell(cl, pr, g, nk + Vector3(0, 0.015, 0.0), absf(j["shoulder_r"].x) * 0.6, 0.03, 0.08, m, 0.02)  # 세운 깃
 	Back.groove(cl, pr, g, [Vector3(0, nk.y + 0.04, -0.11), Vector3(0, hem, -0.15)], Vector3(0, 0, -1), 0.005, 0.01)  # 앞 여밈
 	Back.groove(cl, pr, g, [Vector3(0, pv.y - 0.03, 0.1), Vector3(0, hem, 0.15)], Vector3(0, 0, 1), 0.005, 0.01)  # 뒤 트임
@@ -160,7 +160,7 @@ static func _quilt(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col:
 	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r"], 0.022, m, g, BackKit.band(cl, pr, nk.y + 0.008, hem), 0.03, 0.0)
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
-		BackKit.shell(cl, pr, ["upper_" + t, "fore_" + t], 0.016, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, _sleeve_end(j, t, -0.01)), 0.012)
+		BackKit.shell(cl, pr, ["upper_" + t, "fore_" + t], 0.016, m, g, BackKit.band(cl, pr, _sleeve_top(j, t), _sleeve_end(j, t, -0.01)), 0.012)
 	var bw: float = bd["back_w"]
 	var y := nk.y + 0.05
 	while y < hem - 0.01:  # 가로 누빔(앞·뒤·옆)
@@ -182,7 +182,7 @@ static func _chain(cl: Clay, pr: Dictionary, j: Dictionary, col: Color, rng: Ran
 	BackKit.shell(cl, pr, ["torso", "pelvis", "shoulder_l", "shoulder_r"], 0.016, m, g, BackKit.band(cl, pr, nk.y + 0.01, hem, rng, 0.006, 14), 0.03, 0.0)
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
-		BackKit.shell(cl, pr, ["upper_" + t], 0.012, m, g, BackKit.band(cl, pr, j["shoulder_" + t].y - 0.06, j["elbow_" + t].y + (0.04 if _raised(j, t) else 0.0)), 0.01)
+		BackKit.shell(cl, pr, ["upper_" + t], 0.012, m, g, BackKit.band(cl, pr, _sleeve_top(j, t), j["elbow_" + t].y + (0.04 if _raised(j, t) else 0.0)), 0.01)
 	var y := nk.y + 0.04
 	while y < hem:
 		for n: Vector3 in [Vector3(0, 0, -1), Vector3(0, 0, 1), Vector3(-1, 0, 0), Vector3(1, 0, 0)]:
@@ -213,3 +213,8 @@ static func _sleeve_end(j: Dictionary, t: String, off: float) -> float:
 	if _raised(j, t):
 		return el.y + 0.05
 	return maxf((j["wrist_" + t] as Vector3).y, el.y) + off
+
+
+## 소매 위 끝: 어깨 조금 위 — 팔꿈치·손목을 어깨보다 높이 든 칸(활 시위 당김)은 그 위까지 덮는다(팔꿈치 맨살이 드러나지 않게).
+static func _sleeve_top(j: Dictionary, t: String) -> float:
+	return minf((j["shoulder_" + t] as Vector3).y - 0.06, minf((j["elbow_" + t] as Vector3).y, (j["wrist_" + t] as Vector3).y) - 0.04)
