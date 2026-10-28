@@ -8,6 +8,8 @@ var content: VBoxContainer
 ## 쪽 안의 작은 선택 창을 띄울 곳(GameMenu — 화면 전체를 덮는다). 클래스 이름으로 서로 부르면 종료 때 누수라 Control로 받는다.
 var popup_host: Control = null
 var _plaque: PanelContainer
+## 지금 쪽이면 테두리를 금색으로(캐릭터 쪽은 끈다 — 정수 카드 커서가 금색이라 겹친다, 사용자 2026-10-28).
+var lit_frame: bool = true
 var active: bool = false:
 	set(v):
 		active = v
@@ -67,7 +69,7 @@ func on_active(_on: bool) -> void:
 
 func _paint() -> void:
 	var b := GothicStyle.frame_box()
-	if active:
+	if active and lit_frame:
 		b.border_color = UiTheme.color("gold")
 	add_theme_stylebox_override("panel", b)
 

@@ -2,20 +2,24 @@ class_name CharacterPage
 extends MenuPage
 ## Tab 메뉴의 캐릭터 쪽: 이름·종족·템플릿 · 레벨과 공적 · 자원 · 핵심 스탯과 장비 보정 · 정수(슬롯 + 목록) ·
 ## 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태). 내용은 높이를 고정하고 W/S로 스크롤한다.
-## 정수가 있으면 W/S는 정수 카드 사이를 옮기고(첫 카드 위·끝 카드 아래로는 스크롤), Enter = 커서 카드를 집기 → W/S로 위아래로 옮기기
-## → Enter = 확정 · Backspace = 집기 전 자리로(사용자 2026-10-27, UI34). 바꾼 순서가 전투 스킬 목록의 정수 이능 순서(EssenceSet.move).
+## W/S = 한 줄로 이어진 자리 사이: 맨 위 요약 → 정수 카드 하나하나 → 세부 능력(그 안에서는 W/S가 스크롤 — 맨 위면 W로 마지막 카드로).
+## 자리를 옮기면 그 자리가 보이게 스크롤한다(사용자 2026-10-28 "W/S가 제대로 안 먹는다" — 예전엔 끝 카드 아래로 스크롤한 뒤 W가 카드로 튀었다, UI39).
+## 커서 카드에서 Enter = 집기 → W/S로 위아래로 옮기기 → Enter = 확정 · Backspace = 집기 전 자리로(UI34). 바꾼 순서가 전투 스킬 목록의 정수 이능 순서(EssenceSet.move).
+## 쪽 테두리는 금색으로 밝히지 않는다(정수 카드 커서가 금색 — lit_frame).
 
 var pc: PlayerCharacter
 
 var _scroll: ScrollContainer
 var _box: VBoxContainer
 var _ess: EssencePanel
-var _cur: int = 0
+var _details: Control
+var _cur: int = -1  ## -1 = 맨 위 요약, 0..n-1 = 정수 카드, n = 세부 능력
 var _grab: int = -1  ## 집어 든 카드가 원래 있던 자리(-1 = 집지 않음)
 
 
 func _init() -> void:
 	super(Strings.t("character.title"))
+	lit_frame = false
 
 
 func setup(p_pc: PlayerCharacter) -> void:
@@ -44,7 +48,7 @@ func set_actor(a: PlayerCharacter) -> void:
 		pc.equipment.changed.disconnect(_on_worn_changed)
 	pc = a
 	pc.equipment.changed.connect(_on_worn_changed)
-	_cur = 0
+	_cur = -1
 	_grab = -1
 	refresh()
 	_scroll.scroll_vertical = 0
@@ -64,48 +68,58 @@ func refresh() -> void:
 	_ess.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_ess.setup(pc)
 	_box.add_child(_ess)
-	_cur = clampi(_cur, 0, maxi(0, _ess.count() - 1))
+	_cur = clampi(_cur, -1, _ess.count())
 	_paint_cursor()
 	_box.add_child(HSeparator.new())
-	_box.add_child(_build_details())
+	_details = _build_details()
+	_box.add_child(_details)
 
 
 func enter(_from_left: bool) -> void:
+	_cur = -1
 	_scroll.scroll_vertical = 0
+	_paint_cursor()
 
 
 func on_active(_v: bool) -> void:
 	_paint_cursor()
 
 
-## W/S: 정수 카드 사이(집었으면 그 카드를 옮긴다), 카드가 없거나 끝을 넘으면 스크롤. A/D는 옆 쪽으로(집은 동안은 막는다).
+## W/S: 요약 → 정수 카드 → 세부 능력 차례로(집었으면 그 카드를 옮긴다). 세부 능력 안에서는 스크롤. A/D는 옆 쪽으로(집은 동안은 막는다).
 func nav(d: Vector2i) -> bool:
 	if d.x != 0:
 		return _grab >= 0
 	var n := _ess.count() if _ess != null else 0
-	var step := d.y * int(MenuPage.cfg("scroll_step", 60.0))
-	if n == 0:
-		_scroll.scroll_vertical += step
-		return true
-	var j := _cur + d.y
 	if _grab >= 0:
+		var j := _cur + d.y
 		if j >= 0 and j < n and pc.essences.move(pc, _cur, j):
 			_cur = j
 			_ess.rebuild()
 			_paint_cursor(true)
 		return true
-	if j < 0 or j >= n:
-		_scroll.scroll_vertical += step  # 첫 카드 위(요약) · 끝 카드 아래(세부 능력)
-		return true
-	_cur = j
+	var step := int(MenuPage.cfg("scroll_step", 60.0))
+	if _cur == n:  # 세부 능력 안: 스크롤(맨 위에서 W면 위 자리로)
+		var top := _details_top()
+		if d.y > 0:
+			_scroll.scroll_vertical += step
+			return true
+		if _scroll.scroll_vertical > top:
+			_scroll.scroll_vertical = maxi(top, _scroll.scroll_vertical - step)
+			return true
+	_cur = clampi(_cur + d.y, -1, n)
 	_paint_cursor(true)
 	return true
 
 
+## 세부 능력이 맨 위에 오는 스크롤 값.
+func _details_top() -> int:
+	return maxi(0, int(_details.position.y) - UiTheme.metric("spacing", 8)) if _details != null else 0
+
+
 ## Enter: 커서 카드를 집는다 / 집은 카드를 그 자리에 놓는다(확정).
 func confirm() -> void:
-	if _ess == null or _ess.count() == 0:
-		return
+	if _ess == null or _cur < 0 or _cur >= _ess.count():
+		return  # 요약·세부 능력에서는 집을 것이 없다
 	_grab = _cur if _grab < 0 else -1
 	_paint_cursor()
 
@@ -126,12 +140,18 @@ func back() -> bool:
 func _paint_cursor(follow: bool = false) -> void:
 	if _ess == null:
 		return
-	_ess.cursor = _cur if active and _ess.count() > 0 else -1
+	var on_card := _cur >= 0 and _cur < _ess.count()
+	_ess.cursor = _cur if active and on_card else -1
 	_ess.grabbed = _grab >= 0
 	_ess.paint()
-	var c := _ess.card(_ess.cursor)
-	if follow and c != null:
-		_scroll.ensure_control_visible.call_deferred(c)
+	if not follow:
+		return
+	if _cur < 0:
+		_scroll.scroll_vertical = 0
+	elif on_card:
+		_scroll.ensure_control_visible.call_deferred(_ess.card(_cur))
+	else:
+		_scroll.scroll_vertical = _details_top()
 
 
 func _build_summary() -> void:

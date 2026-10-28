@@ -349,19 +349,6 @@
     "spawn_monster": "몬스터 소환(바로 전투)",
     "give_essence": "정수 흡수(무작위)"
   },
-  "end": {
-    "closed_title": "강제 귀환",
-    "closed_body": "{floor}이(가) 닫혔다. {name}은(는) 차원광장의 돌바닥 위로 내던져졌다.",
-    "died_title": "죽었다.",
-    "died_body": "{name}. {floor}에서. 사인: {cause}.",
-    "summary_time": "미궁 {day}일차 · 머문 시간 {hours}시간",
-    "summary_steps": "걸음 {steps}",
-    "summary_found": "발견한 랜드마크 {landmarks}/{landmarks_total} · 포탈 {portals}/{portals_total}",
-    "abandoned_title": "탐험 포기",
-    "abandoned_body": "{name}은(는) {floor}에서 발길을 돌렸다. 이번 탐험의 기록은 여기서 끝난다.",
-    "to_title": "타이틀로",
-    "to_city": "도시로 돌아간다"
-  },
   "pause": {
     "resume": "계속",
     "abandon": "탐험 포기",
@@ -369,14 +356,6 @@
     "graphics": "그래픽 {quality}",
     "quality_high": "높음",
     "quality_low": "낮음"
-  },
-  "cause": {
-    "unknown": "알 수 없음",
-    "debug": "알 수 없는 힘",
-    "reflect": "{name}에게 되돌려 받은 상처",
-    "counter": "{name}의 반격",
-    "self": "스스로 치른 대가",
-    "hazard": "미궁의 위험"
   },
   "combat": {
     "start": "{enemies}와(과) 맞닥뜨렸다.",
@@ -689,7 +668,13 @@
     "save": "기록을 남긴다",
     "saved": "기록을 남겼다",
     "save_failed": "기록을 남기지 못했다",
-    "enter": "포탈로 들어간다"
+    "enter": "포탈로 들어간다",
+    "clerk": "탐험가 길드 직원",
+    "settle_tag": "길드 직원이 신원패를 받아 든다. \"{name} 님, {grade}등급 탐험가. 무사히 돌아오셨군요.\"",
+    "settle_lot": "{grade}등급 마석 {n}개",
+    "settle_count": "\"{list}. 확인했습니다.\"",
+    "settle_total": "\"정산하면 {n} 스톤입니다.\" 직원이 스톤 꾸러미를 내민다.",
+    "settle_none": "\"가져오신 마석은 없군요. 다음엔 빈손으로 오지 마세요.\""
   },
   "city": {
     "place": "{city} · {district}",

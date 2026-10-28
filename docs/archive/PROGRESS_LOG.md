@@ -6,6 +6,11 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **귀환 정산 · 결과 창 삭제 · Tab 캐릭터 W/S (2026-10-28, 사용자)** — CT58·UI39.
+  - `GuildSettle`(새 파일, 순수 — 마석 묶음·정산·탐험가 등급), `PlazaScreen.returning`(포탈 닫힘 + 길드 직원 대화창, settled), `Main._return_to_city`(결과 창 대신 차원광장 → 도시). `EndScreen` 삭제, 문구 `end.*`·`cause.*` 삭제, 새 문구 `plaza.clerk`·`plaza.settle_*`, city.json `settle {grade, ratio}`. 캡처 `--screen=plaza --returning=<쪽> --dialog`.
+  - `CharacterPage.nav`: 요약(-1) → 카드 → 세부 능력(n, 안에서 스크롤), `MenuPage.lit_frame`(캐릭터 쪽 금색 테두리 끔). 캡처 `--grab`은 첫 카드로 내려간 뒤 집는다.
+  - 시험: test_guild_settle, UI 스모크(귀환하면 마석 9등급 3·8등급 1이 정산된다 · 정수 옮기기 키 순서). check.sh 통과.
+
 - **보스가 알아채면 전투 전에 한 줄 (2026-10-28, 사용자)** — V17. `ExploreScreen.boss_notice`·`_on_encounter`(보스 무리면 대화창 한 줄 → Enter 뒤 전투), 문구 `explore.boss_notice.<id>`(9종 + any). 시험 test_field_monsters `test_every_waiting_boss_has_a_notice_line`. 캡처 `--near=boss|guardian --spotted --dialog`(새 옵션) — 고블린 폭탄병·타룬바스 확인. 캡처 도구가 `--dialog`로 균열 챕터를 여러 개 건널 때 멈추던 것 고침(도착 문구가 Enter를 기다림 + 세션만 바뀌는데 화면 바뀜을 기다림). check.sh 통과.
 
 - **기다리는 보스·중간 보스 인식 거리 3.5 → 10칸 (2026-10-28, 사용자)** — V16. balance `monsters.boss_engage_tiles`. 시험 test_field_monsters `test_boss_waits_then_engages`를 긴 복도로(먼 곳은 기다림·벽 너머는 모름·10칸 안이면 전투). sim_rift 모두 통과, check.sh 통과.

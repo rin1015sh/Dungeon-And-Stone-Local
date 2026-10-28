@@ -139,24 +139,27 @@ func _show_session(session: ExploreSession, floor_id: String) -> void:
 	_show(screen)
 
 
-func _on_run_ended(kind: String, info: Dictionary) -> void:
+func _on_run_ended(kind: String, _info: Dictionary) -> void:
 	if kind == "died":  # 사망 화면 없이 바로 타이틀(사용자 결정 2026-10-18)
 		GameState.on_death()
 		_show_title()
 		return
-	var end := EndScreen.new()
-	end.setup(kind, info)
-	end.done.connect(_show_title if kind == "died" else _return_to_city)
-	_show(end)
+	_return_to_city()
 
 
-## 미궁에서 살아 돌아왔다: 다음 달 상순(행동력 새로)으로 도시.
+## 미궁에서 살아 돌아왔다(층 폐쇄·포기): 다음 달 상순(행동력 새로) — 차원광장에서 길드 정산(PlazaScreen.returning, CT58)을 넘기고 도시로.
+## 예전의 결과 창("강제 귀환 … 돌바닥 위로 내던져졌다")은 없앴다(사용자 2026-10-28).
 func _return_to_city() -> void:
-	if GameState.city != null:
-		GameState.city.return_from_dungeon()
-	if GameState.player != null:
-		GameState.player.statuses.leave_dungeon()  # 남은 상태(독·저주·여관 식사 …)는 미궁 안에서만
-	_show_city()
+	if GameState.city == null or GameState.player == null:
+		_show_title()
+		return
+	GameState.city.return_from_dungeon()
+	GameState.player.statuses.leave_dungeon()  # 남은 상태(독·저주·여관 식사 …)는 미궁 안에서만
+	var p := PlazaScreen.new()
+	p.returning = true
+	p.setup(GameState.city, GameState.player)
+	p.settled.connect(_show_city)
+	_show(p)
 
 
 func _quit() -> void:

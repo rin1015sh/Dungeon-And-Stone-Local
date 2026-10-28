@@ -80,14 +80,25 @@ func _run() -> void:
 		var c := _main.current_screen() as CityScreen
 		if _args.has("weather"):
 			c.state.weather = str(_args["weather"])
-		c.dungeon_requested.emit()
-		await _frames(3)
-		var plaza := _main.current_screen() as PlazaScreen
-		if _args.has("opening"):
-			await get_tree().create_timer(2.0).timeout
+		if _args.has("returning"):  # --returning[=N]: 미궁에서 돌아온 차원광장 — 길드 정산 대화창 N쪽째(--dialog와 함께, CT58)
+			c.pc.inventory.add("magic_stone_9", 7)
+			c.pc.inventory.add("magic_stone_8", 2)
+			_main._return_to_city()
+			await get_tree().create_timer(1.5).timeout
+			for k in str(_args["returning"]).to_int() * 2 if str(_args["returning"]).is_valid_int() else 0:
+				for db: Node in _main.find_children("*", "DialogueBox", true, false):
+					(db as DialogueBox).advance()
+				await _frames(2)
+			await get_tree().create_timer(1.0).timeout
 		else:
-			plaza.open_now()
-			await _frames(30)
+			c.dungeon_requested.emit()
+			await _frames(3)
+			var plaza := _main.current_screen() as PlazaScreen
+			if _args.has("opening"):
+				await get_tree().create_timer(2.0).timeout
+			else:
+				plaza.open_now()
+				await _frames(30)
 	if screen == "explore":
 		(_main.current_screen() as CityScreen).dungeon_requested.emit()
 		await _frames(3)
@@ -206,6 +217,7 @@ func _run() -> void:
 			if _args.has("grab") and page == "character":  # --grab: 캐릭터 쪽 첫 정수 카드를 집은 상태(순서 바꾸기 — UI34)
 				await get_tree().process_frame
 				explore.menu().focus("character")
+				explore.menu().character().nav(Vector2i.DOWN)  # 요약 → 첫 카드(UI39)
 				explore.menu().character().confirm()
 			if _args.has("ally"):  # --ally=<번호>: 그 아군을 고른 상태
 				await get_tree().process_frame

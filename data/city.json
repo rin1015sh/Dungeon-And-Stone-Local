@@ -7,6 +7,12 @@
     "plaza_ko": "차원광장",
     "source": "original"
   },
+  "settle": {
+    "_comment": "귀환 정산(GuildSettle, CT58 — 사용자 2026-10-28): 살아 돌아오면 차원광장에서 탐험가 길드 직원이 신원패와 마석을 확인하고 스톤으로 바꿔 준다. grade = 탐험가 등급(지금은 모두 9등급 — 등급 올리기는 기획 대기), ratio = 마석 price에 곱하는 값",
+    "grade": 9,
+    "ratio": 1.0,
+    "source": "placeholder"
+  },
   "calendar": {
     "_comment": "미궁 밖의 시간 = 순(旬). 한 달 = periods 순서대로. 연·월 이름 정의가 없으므로 시작부터 센 달 수로 표시한다. portal_rule: after_late_period = 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로(그 밖의 값/null = 다음 달 상순으로 넘어가기만 함). return_date_rule: next_month_early = 귀환하면 다음 달 상순(null = 날짜 그대로, 행동력만 채움).",
     "periods": [

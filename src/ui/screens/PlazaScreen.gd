@@ -4,9 +4,12 @@ extends Control
 ## 도착하면 돌 고리 안에 포탈이 열리고, 다 열린 뒤에만 선택판(W/S·Enter)에 "기록을 남긴다"(한 칸 저장 — 저장은 여기서만)와 "포탈로 들어간다"가 나온다.
 ## 그림(render.json city.plaza): 하늘(날씨) · 원경 far 레이어 일부 · 광장(tools/paint_city.gd --only=plaza) · 포탈 셰이더 2장(고리 안 소용돌이 + 빛 번짐).
 ## 화면 크기와 상관없이 1280×720 무대를 화면을 덮게 늘려 놓는다(포탈 자리가 그림과 어긋나지 않게).
+## 돌아올 때(returning — 미궁에서 살아 나왔다): 열린 포탈이 닫히고, 아래 대화창에서 탐험가 길드 직원이 신원패(이름·등급)를 확인하고
+## 가방의 마석을 등급별로 읊은 뒤 스톤으로 정산한다(GuildSettle, CT58). 다 넘기면 settled → 도시로(예전의 "강제 귀환" 결과 창 대신).
 
 signal enter_requested
 signal save_requested
+signal settled  ## 돌아오는 정산을 다 넘겼다
 
 const STAGE := Vector2(1280, 720)
 
@@ -23,6 +26,9 @@ var _opened: bool = false
 var _entering: bool = false
 var _cfg: Dictionary = {}
 var _open_tween: Tween
+## 미궁에서 돌아오는 길(포탈이 닫히고 길드 정산 — 선택판 없음).
+var returning: bool = false
+var _dialog: DialogueBox
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter) -> void:
@@ -50,7 +56,10 @@ func _ready() -> void:
 	_build_ui()
 	resized.connect(_fit)
 	_fit()
-	_open_portal()
+	if returning:
+		_settle.call_deferred()
+	else:
+		_open_portal()
 
 
 func _build_stage(tint: Color) -> void:
@@ -96,6 +105,32 @@ func _build_ui() -> void:
 	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_flash)
 	_flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
+## 돌아왔다: 포탈이 닫히는 동안 길드 직원이 신원패·마석을 확인하고 정산한다. 대화를 다 넘기면 settled.
+func _settle() -> void:
+	_dialog = DialogueBox.new()
+	DialogueBox.place_bottom(_dialog, self)
+	_dialog.set_speaker(Strings.t("plaza.clerk"))
+	var t := create_tween()
+	t.tween_method(_set_open, 1.0, 0.0, float(_cfg.get("close_seconds", 1.6))).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	var db := state.db
+	var lots := GuildSettle.lots(db, pc.inventory)
+	_dialog.say(Strings.t("plaza.settle_tag", {"name": pc.display_name, "grade": GuildSettle.explorer_grade(db)}))
+	if lots.is_empty():
+		_dialog.say(Strings.t("plaza.settle_none"))
+	else:
+		var parts := PackedStringArray()
+		for lot in lots:
+			parts.append(Strings.t("plaza.settle_lot", {"grade": int(lot["grade"]), "n": int(lot["count"])}))
+		_dialog.say(Strings.t("plaza.settle_count", {"list": ", ".join(parts)}))
+		await _dialog.wait()  # 다 읊은 뒤 다음 쪽에서 스톤을 건넨다(소지금이 그때 오른다)
+		if not is_inside_tree():
+			return
+		_dialog.say(Strings.t("plaza.settle_total", {"n": GuildSettle.settle(db, pc.inventory)}))
+	await _dialog.wait()
+	if is_inside_tree():
+		settled.emit()
 
 
 ## 무대(1280×720)를 화면을 덮게 키우고 가운데에 둔다.

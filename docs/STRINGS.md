@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(978줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(967줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -22,9 +22,7 @@
 - [탐험 `explore`](#explore) — 미궁 화면 — HUD · 대화창 알림(경고·발견·못 하는 이유)
 - [효과 `effect`](#effect) — 아이템·스킬 효과 결과 알림
 - [디버그 `debug`](#debug) — F1 디버그 패널
-- [귀환·결과 화면 `end`](#end) — 미궁에서 돌아올 때
 - [일시정지 `pause`](#pause) — Esc 정지 창
-- [사인 `cause`](#cause) — 결과 화면의 사망 원인
 - [전투 `combat`](#combat) — 전투 화면 — 명령 · 대화창 안내 · 보스 대사 · 전투 기록
 - [지식 `knowledge`](#knowledge) — 몬스터 약점·저항(전투에서 알게 될 때 · 도감)
 - [보상 `reward`](#reward) — 전투 드롭 · 획득할까? · 경험치
@@ -450,23 +448,6 @@
 - `debug.spawn_monster` 몬스터 소환(바로 전투)
 - `debug.give_essence` 정수 흡수(무작위)
 
-<a id="end"></a>
-## 귀환·결과 화면 `end`
-
-> 미궁에서 돌아올 때
-
-- `end.closed_title` 강제 귀환
-- `end.closed_body` {floor}이(가) 닫혔다. {name}은(는) 차원광장의 돌바닥 위로 내던져졌다.
-- `end.died_title` 죽었다.
-- `end.died_body` {name}. {floor}에서. 사인: {cause}.
-- `end.summary_time` 미궁 {day}일차 · 머문 시간 {hours}시간
-- `end.summary_steps` 걸음 {steps}
-- `end.summary_found` 발견한 랜드마크 {landmarks}/{landmarks_total} · 포탈 {portals}/{portals_total}
-- `end.abandoned_title` 탐험 포기
-- `end.abandoned_body` {name}은(는) {floor}에서 발길을 돌렸다. 이번 탐험의 기록은 여기서 끝난다.
-- `end.to_title` 타이틀로
-- `end.to_city` 도시로 돌아간다
-
 <a id="pause"></a>
 ## 일시정지 `pause`
 
@@ -478,18 +459,6 @@
 - `pause.graphics` 그래픽 {quality}
 - `pause.quality_high` 높음
 - `pause.quality_low` 낮음
-
-<a id="cause"></a>
-## 사인 `cause`
-
-> 결과 화면의 사망 원인
-
-- `cause.unknown` 알 수 없음
-- `cause.debug` 알 수 없는 힘
-- `cause.reflect` {name}에게 되돌려 받은 상처
-- `cause.counter` {name}의 반격
-- `cause.self` 스스로 치른 대가
-- `cause.hazard` 미궁의 위험
 
 <a id="combat"></a>
 ## 전투 `combat`
@@ -849,6 +818,12 @@
 - `plaza.saved` 기록을 남겼다
 - `plaza.save_failed` 기록을 남기지 못했다
 - `plaza.enter` 포탈로 들어간다
+- `plaza.clerk` 탐험가 길드 직원
+- `plaza.settle_tag` 길드 직원이 신원패를 받아 든다. "{name} 님, {grade}등급 탐험가. 무사히 돌아오셨군요."
+- `plaza.settle_lot` {grade}등급 마석 {n}개
+- `plaza.settle_count` "{list}. 확인했습니다."
+- `plaza.settle_total` "정산하면 {n} 스톤입니다." 직원이 스톤 꾸러미를 내민다.
+- `plaza.settle_none` "가져오신 마석은 없군요. 다음엔 빈손으로 오지 마세요."
 
 <a id="city"></a>
 ## 도시 `city`

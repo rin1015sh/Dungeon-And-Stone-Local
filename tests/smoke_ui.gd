@@ -111,9 +111,7 @@ func _closing_flow() -> void:
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
 	_expect_log(Strings.t("explore.closed"), "층 폐쇄 메시지")
-	var end := (await _screen(EndScreen)) as EndScreen
-	if _expect(end != null, "강제 귀환 화면"):
-		await _city_to_title(end)
+	await _city_to_title()
 
 
 ## 새 탐험가 → 허기 0 → 시간 스킵 → 아사 → (사망 화면 없이) 타이틀
@@ -256,9 +254,7 @@ func _realtime_combat_flow() -> void:
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
-	var end := (await _screen(EndScreen)) as EndScreen
-	if _expect(end != null, "결과 화면"):
-		await _city_to_title(end)
+	await _city_to_title()
 
 
 ## 강철의 묘 수수께끼 문지기: 대화창 → 오답 → 강화 전투 → 승리
@@ -317,9 +313,7 @@ func _riddle_flow() -> void:
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
-	var end := (await _screen(EndScreen)) as EndScreen
-	if _expect(end != null, "결과 화면"):
-		await _city_to_title(end)
+	await _city_to_title()
 
 
 ## Tab 메뉴(소지품·캐릭터·도감 한 화면) · 키로 장착·벗기·옮기기·단축칸·버리기 · 쪽 넘기기
@@ -393,9 +387,12 @@ func _inventory_flow() -> void:
 	menu.character().refresh()
 	await _frames(1)
 	await _action("menu_confirm")
+	_expect(str(pc.essences.absorbed[0]["essence"]) == "goblin", "맨 위 요약에서 Enter는 아무것도 집지 않는다(UI39)")
+	await _action("menu_down")  # 요약 → 첫 카드
+	await _action("menu_confirm")
 	await _action("menu_down")
 	await _action("menu_confirm")
-	_expect(str(pc.essences.absorbed[0]["essence"]) == "gnome" and str(pc.essences.absorbed[1]["essence"]) == "goblin", "Enter·S·Enter → 첫 정수를 아래로")
+	_expect(str(pc.essences.absorbed[0]["essence"]) == "gnome" and str(pc.essences.absorbed[1]["essence"]) == "goblin", "S·Enter·S·Enter → 첫 정수를 아래로")
 	await _action("menu_confirm")
 	await _action("menu_up")
 	await _action("menu_back")
@@ -424,9 +421,7 @@ func _inventory_flow() -> void:
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
-	var end := (await _screen(EndScreen)) as EndScreen
-	if _expect(end != null, "결과 화면"):
-		await _city_to_title(end)
+	await _city_to_title()
 
 
 ## 행동창 키 조작: S → 스킬 칸, Enter → 스킬 목록, Backspace → 맨 위(커서는 스킬 칸), W → 공격, Enter·Enter → 첫 적을 친다.
@@ -665,9 +660,8 @@ func _new_city(explorer_name: String) -> CityScreen:
 	return city
 
 
-## 결과 화면(살아서 귀환) → 도시 → 타이틀.
-func _city_to_title(end: EndScreen) -> void:
-	_press(end, Strings.t("end.to_city"))
+## 살아서 귀환 → 차원광장 정산(대화창은 auto_skip이라 바로 넘어간다 — 결과 창 없음) → 도시 → 타이틀.
+func _city_to_title() -> void:
 	var city := (await _screen(CityScreen)) as CityScreen
 	if _expect(city != null, "귀환 후 도시"):
 		await _city_title(city)
@@ -951,14 +945,19 @@ func _city_flow() -> void:
 	var in_dungeon := explore.session.player.fatigue.value
 	_expect(in_dungeon >= fatigue and in_dungeon < fatigue + 1.0, "미궁으로 피로도가 이어진다(시간이 흐르면 조금씩 오른다)")
 	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(in_dungeon)}).left(4)), "미궁 HUD에 피로도")
+	var bag := explore.session.player.inventory
+	bag.add("magic_stone_9", 3)
+	bag.add("magic_stone_8", 1)
+	var stone_value := 0
+	for lot: Dictionary in GuildSettle.lots(DataRegistry.db, bag):
+		stone_value += int(lot["count"]) * int(lot["each"])
+	var money_before := bag.money
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
-	var end := (await _screen(EndScreen)) as EndScreen
-	if not _expect(end != null, "강제 귀환 화면"):
-		return
-	_press(end, Strings.t("end.to_city"))
 	var back := (await _screen(CityScreen)) as CityScreen
+	_expect(stone_value > 0 and GuildSettle.lots(DataRegistry.db, bag).is_empty() and bag.money == money_before + stone_value,
+		"강제 귀환 → 차원광장에서 길드 직원이 마석을 스톤으로 정산한다(결과 창 없음, CT58)")
 	if _expect(back != null, "귀환 → 도시"):
 		_expect([back.state.month, back.state.period, back.state.ap] == [month + 1, 0, 3], "귀환하면 다음 달 상순(행동력 3)")
 		_expect(back.pc.fatigue.value > fatigue, "미궁에서 쌓인 피로도가 도시로 이어진다")
