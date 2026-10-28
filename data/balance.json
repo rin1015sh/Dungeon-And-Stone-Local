@@ -194,6 +194,7 @@
   },
   "monsters": {
     "_comment": "필드 몬스터(사용자 2026-10-27 \"빙빙 돌고 앞에 와도 모른다 — 계속 움직이고 화면 안에 보이면 알아채게, 몇몇은 밖에서부터 따라와도\" — V13~V15): 보는 거리 = aggro_radius_m × sight_mult(최대 sight_max_tiles ≈ 화면 반 폭), 시야각 view_cone_deg, sense_near_tiles 안은 등 뒤도, 쫓는 중엔 × chase_keep_mult까지 놓치지 않는다. 순찰 = 집 둘레 wander_radius 안 지점 사이를 짧게 쉬며 계속(home_drift_chance로 집이 옮겨 가 같은 자리를 맴돌지 않는다), 칸 길은 straight_lookahead_tiles까지 곧게 편다. 직접 추적 direct_chase_tiles(곧게 걸을 수 있을 때). 몬스터 behavior hunts_tiles = 움직이는 플레이어를 그 걸음 수 안이면 보이지 않아도 쫓는다(늑대·고블린)",
+    "_boss_engage_comment": "방에서 기다리는 보스·중간 보스(boss_ranks): 벽에 가리지 않고 boss_engage_tiles 안이면 바로 전투(사용자 2026-10-28 \"멀리서 마주쳐도 전투에\" — 3.5 → 10칸 ≈ 화면 반 폭, V16)",
     "wander_chance": 0.9,
     "wander_radius": 14,
     "home_drift_chance": 0.25,
@@ -219,7 +220,7 @@
     "direct_chase_tiles": 16.0,
     "body_half_extent": 0.3,
     "boss_ranks": ["guardian", "variant_guardian", "midboss"],
-    "boss_engage_tiles": 3.5,
+    "boss_engage_tiles": 10,
     "route_radius": 90
   }
 }
