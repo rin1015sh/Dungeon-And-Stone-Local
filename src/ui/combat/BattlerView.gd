@@ -18,6 +18,7 @@ var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
 var _motion: PartySprite = null  ## 탐험가 동작(없으면 한 장 그림)
+var _kind := "one_hand"  ## 탐험가 주무기 종류(PartySprite.weapon_kind — 기본 공격 동작)
 var _lay: Texture2D = null  ## 탐험가: 배치 폭·높이를 재는 한 장 그림(동작 칸은 무기·누운 몸만큼 넓다)
 var _current: bool = false
 var _target: bool = false
@@ -41,6 +42,7 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 			art = tex
 			_lay = tex
 			_art_body = MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_back", tex)
+			_kind = PartySprite.weapon_kind(db, (u.actor as PlayerCharacter).equipment.item_in("main_hand"))
 			_motion = PartySprite.load_for(race)
 			if _motion != null:
 				art = _motion.tick(0.0)
@@ -78,6 +80,11 @@ func _look(def: Dictionary, art_id: String) -> void:
 func motion(name: String) -> void:
 	if _motion != null:
 		_motion.play(name)
+
+
+## 행동의 몸짓(주무기 종류에 맞춰 — PartySprite.motion_for).
+func act(db: GameDatabase, action: Dictionary) -> void:
+	motion(PartySprite.motion_for(db, action, _kind))
 
 
 ## 쓰러짐: 피격을 보인 뒤 누운 몸(흐려지지 않는다).

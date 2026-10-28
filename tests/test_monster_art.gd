@@ -48,7 +48,10 @@ func test_party_art_for_races() -> void:
 
 ## 행동 → 탐험가 동작(PartySprite.motion_for): 기본 공격 = 칼, 물리 피해 스킬 = 주먹, 마법·그 밖 = 주문.
 func test_party_motion_for_actions() -> void:
-	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}), "swing", "기본 공격")
+	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}), "swing", "기본 공격(한손)")
+	assert_eq(PartySprite.motion_for(db, {"kind": "skill", "skill": Battle.BASIC_ATTACK}, "two_hand"), "heavy", "기본 공격(양손)")
+	assert_eq(PartySprite.weapon_kind(db, "hunting_bow"), "bow", "사냥 활 = 활")
+	assert_eq(PartySprite.weapon_kind(db, "dread_bone_greatsword"), "two_hand", "대검 = 양손")
 	assert_eq(PartySprite.motion_for(db, {"kind": "guard"}), "stance", "방어 = 전투 자세")
 	assert_eq(PartySprite.motion_for(db, {"kind": "item", "item": "x"}), "spell", "아이템")
 	assert_eq(PartySprite.motion_for(db, {"kind": "flee"}), "spell", "도망 = 주문")

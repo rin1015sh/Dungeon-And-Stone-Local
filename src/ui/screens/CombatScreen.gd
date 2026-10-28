@@ -243,7 +243,7 @@ func _on_event(e: Dictionary) -> void:
 	match str(e.get("type")):
 		"act":
 			if v != null:
-				v.motion(PartySprite.motion_for(battle.db, e.get("action", {})))
+				v.act(battle.db, e.get("action", {}))
 		"damage":
 			if v != null:
 				v.motion("damage" if bool(e.get("hit")) and int(e.get("lost", e.get("amount", 0))) > 0 else ("wait" if not bool(e.get("hit")) else ""))  # 탐험가: 맞으면 피격, 피하면 몸을 틀어 피함
