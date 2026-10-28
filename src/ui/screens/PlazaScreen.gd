@@ -5,7 +5,7 @@ extends Control
 ## 그림(render.json city.plaza): 하늘(날씨) · 원경 far 레이어 일부 · 광장(tools/paint_city.gd --only=plaza) · 포탈 셰이더 2장(고리 안 소용돌이 + 빛 번짐).
 ## 화면 크기와 상관없이 1280×720 무대를 화면을 덮게 늘려 놓는다(포탈 자리가 그림과 어긋나지 않게).
 ## 돌아올 때(returning — 미궁에서 살아 나왔다): 광장 공터의 길드 정산 천막 그림(render.json city.plaza.settle_art — 천막·저울·직원)이 화면을 덮고, 아래 대화창에서 탐험가 길드 직원이 신원패(이름·등급)를 확인하고
-## 가방의 마석을 등급별로 읊은 뒤 스톤으로 정산한다(GuildSettle, CT58). 다 넘기면 settled → 도시로(예전의 "강제 귀환" 결과 창 대신).
+## 가방의 마석을 등급별로 읊은 뒤 스톤으로 정산한다(GuildSettle, CT58). 정산 누계·레벨이 차면 탐험가 등급이 오른다(CT59). 다 넘기면 settled → 도시로(예전의 "강제 귀환" 결과 창 대신).
 
 signal enter_requested
 signal save_requested
@@ -121,8 +121,8 @@ func _settle() -> void:
 	DialogueBox.place_bottom(_dialog, self)
 	_dialog.set_speaker(Strings.t("plaza.clerk"))
 	var db := state.db
-	var lots := GuildSettle.lots(db, pc.inventory)
-	_dialog.say(Strings.t("plaza.settle_tag", {"name": pc.display_name, "grade": GuildSettle.explorer_grade(db)}))
+	var lots := GuildSettle.lots(db, pc)
+	_dialog.say(Strings.t("plaza.settle_tag", {"name": pc.display_name, "grade": GuildSettle.explorer_grade(db, pc)}))
 	if lots.is_empty():
 		_dialog.say(Strings.t("plaza.settle_none"))
 	else:
@@ -133,7 +133,10 @@ func _settle() -> void:
 		await _dialog.wait()  # 다 읊은 뒤 다음 쪽에서 스톤을 건넨다(소지금이 그때 오른다)
 		if not is_inside_tree():
 			return
-		_dialog.say(Strings.t("plaza.settle_total", {"n": GuildSettle.settle(db, pc.inventory)}))
+		_dialog.say(Strings.t("plaza.settle_total", {"n": GuildSettle.settle(db, pc)}))
+		var up := GuildSettle.promote(db, pc)  # 정산 누계·레벨이 차면 그 자리에서 한 등급(CT59)
+		if up > 0:
+			_dialog.say(Strings.t("plaza.settle_promote", {"grade": up}))
 	await _dialog.wait()
 	if is_inside_tree():
 		settled.emit()

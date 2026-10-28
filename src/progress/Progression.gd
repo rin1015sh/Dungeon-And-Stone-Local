@@ -12,6 +12,8 @@ var kills: Dictionary = {}           # 몬스터 id -> 처치 수
 var portals_opened: Dictionary = {}  # 포탈 기록 키 -> true (기록 키 = 포탈 id 또는 "포탈 id@달")
 var lords_defeated: Dictionary = {}  # 계층군주 id -> true
 var dreaming_soul: String = ""       # "" / "waiting"(먹었지만 10레벨 전) / "done"
+var explorer_grade: int = 0          # 탐험가 등급(신원패 — 9 → 1, 0 = 아직 정하지 않음 → city.json settle.grade) — GuildSettle(CT59)
+var settled_total: int = 0           # 길드 귀환 정산으로 받은 스톤 누계(등급 오르기 조건)
 ## 마지막 record_kill의 내역 {first, guardian, lord}(보상 메시지용).
 var last_kill: Dictionary = {}
 
@@ -167,7 +169,7 @@ static func essence_slots(db: GameDatabase, level: int) -> int:
 
 func to_dict() -> Dictionary:
 	return {"exp": exp_total, "kills": kills.duplicate(), "portals": portals_opened.duplicate(),
-		"lords": lords_defeated.duplicate(), "dreaming_soul": dreaming_soul}
+		"lords": lords_defeated.duplicate(), "dreaming_soul": dreaming_soul, "explorer_grade": explorer_grade, "settled_total": settled_total}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -176,3 +178,5 @@ func load_dict(d: Dictionary) -> void:
 	portals_opened = JsonUtil.get_dict(d, "portals").duplicate()
 	lords_defeated = JsonUtil.get_dict(d, "lords").duplicate()
 	dreaming_soul = JsonUtil.get_str(d, "dreaming_soul")
+	explorer_grade = JsonUtil.get_int(d, "explorer_grade")
+	settled_total = JsonUtil.get_int(d, "settled_total")

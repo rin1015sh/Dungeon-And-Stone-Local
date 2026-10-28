@@ -162,6 +162,8 @@ func _build_summary() -> void:
 	var next := Progression.exp_for_next(db, lv)
 	_box.add_child(UiTheme.label(Strings.t("character.level_line", {"level": lv, "exp": pc.progression.exp_total,
 		"next": next if next >= 0 else Strings.t("character.max")}), "body", "gold"))
+	_box.add_child(UiTheme.label(Strings.t("character.explorer_line", {"grade": GuildSettle.explorer_grade(db, pc),
+		"n": pc.progression.settled_total}), "small", "text_dim"))  # 탐험가 등급(길드 신원패 — CT59)
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
 	bar.custom_minimum_size.y = UiTheme.metric("bar_height", 14)

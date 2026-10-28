@@ -80,9 +80,12 @@ func _run() -> void:
 		var c := _main.current_screen() as CityScreen
 		if _args.has("weather"):
 			c.state.weather = str(_args["weather"])
-		if _args.has("returning"):  # --returning[=N]: 미궁에서 돌아온 차원광장 — 길드 정산 대화창 N쪽째(--dialog와 함께, CT58)
+		if _args.has("returning"):  # --returning[=N]: 미궁에서 돌아온 차원광장 — 길드 정산 대화창 N쪽째(--dialog와 함께, CT58), --promote면 승급 줄까지
 			c.pc.inventory.add("magic_stone_9", 7)
 			c.pc.inventory.add("magic_stone_8", 2)
+			if _args.has("promote"):  # --promote: 이번 정산으로 8등급에 오르는 탐험가(CT59)
+				c.pc.set_level(2)
+				c.pc.progression.settled_total = 4500
 			_main._return_to_city()
 			await get_tree().create_timer(1.5).timeout
 			for k in str(_args["returning"]).to_int() * 2 if str(_args["returning"]).is_valid_int() else 0:

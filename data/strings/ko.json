@@ -608,6 +608,7 @@
     "title": "캐릭터",
     "name_line": "{name} · {race} {template}",
     "level_line": "레벨 {level} · 공적 {exp} / {next}",
+    "explorer_line": "{grade}등급 탐험가 · 정산 누계 {n} 스톤",
     "max": "최대",
     "attack": "공격력",
     "crit": "치명타율",
@@ -674,7 +675,8 @@
     "settle_lot": "{grade}등급 마석 {n}개",
     "settle_count": "\"{list}. 확인했습니다.\"",
     "settle_total": "\"정산하면 {n} 스톤입니다.\" 직원이 스톤 꾸러미를 내민다.",
-    "settle_none": "\"가져오신 마석은 없군요. 다음엔 빈손으로 오지 마세요.\""
+    "settle_none": "\"가져오신 마석은 없군요. 다음엔 빈손으로 오지 마세요.\"",
+    "settle_promote": "직원이 장부를 넘기다 손을 멈춘다. \"정산 실적이 찼군요. 오늘부로 {grade}등급입니다.\" 새 신원패가 계산대 위로 밀려온다."
   },
   "city": {
     "place": "{city} · {district}",
