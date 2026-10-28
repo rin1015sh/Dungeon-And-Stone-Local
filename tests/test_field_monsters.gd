@@ -248,3 +248,11 @@ func test_boss_waits_then_engages() -> void:
 	chain.waves = [["katumba"]]
 	fm.mark_boss(chain)
 	assert_eq(chain.boss, "katumba", "연전 끝의 보스도 기다리는 방")
+
+
+## 기다리던 보스가 알아채면 전투 직전에 한 줄(V17): 보스 등급 몬스터마다 제 문구가 있다.
+func test_every_waiting_boss_has_a_notice_line() -> void:
+	var ranks: Array = db.bal("monsters.boss_ranks", [])
+	for id: String in db.get_collection("monsters"):
+		if ranks.has(JsonUtil.get_str(db.get_entry("monsters", id), "rank")):
+			assert_true(Strings.has("explore.boss_notice." + id), "%s 전투 직전 문구" % id)

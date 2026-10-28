@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **보스가 알아채면 전투 전에 한 줄 (2026-10-28, 사용자)** — V17. `ExploreScreen.boss_notice`·`_on_encounter`(보스 무리면 대화창 한 줄 → Enter 뒤 전투), 문구 `explore.boss_notice.<id>`(9종 + any). 시험 test_field_monsters `test_every_waiting_boss_has_a_notice_line`. 캡처 `--near=boss|guardian --spotted --dialog`(새 옵션) — 고블린 폭탄병·타룬바스 확인. 캡처 도구가 `--dialog`로 균열 챕터를 여러 개 건널 때 멈추던 것 고침(도착 문구가 Enter를 기다림 + 세션만 바뀌는데 화면 바뀜을 기다림). check.sh 통과.
+
 - **기다리는 보스·중간 보스 인식 거리 3.5 → 10칸 (2026-10-28, 사용자)** — V16. balance `monsters.boss_engage_tiles`. 시험 test_field_monsters `test_boss_waits_then_engages`를 긴 복도로(먼 곳은 기다림·벽 너머는 모름·10칸 안이면 전투). sim_rift 모두 통과, check.sh 통과.
 
 - **전투 뒷줄 적을 앞으로 (2026-10-28, 사용자)** — UI38. render `combat_rows_depth_step` 0.45 → 0.15, `combat_rows_rise` 0.2 → 0.1. 캡처 드레드피어 + 구더기 5·도개교 8·데드맨 + 5. 캡처 `--god`이 플래그만 켜고 생명력 하한을 걸지 않아 드레드피어전 캡처가 사망 → 타이틀로 찍히던 것 고침(디버그 패널 무적은 원래 됐다 — 게임 문제 아님). check.sh 통과.

@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(978줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -330,6 +330,21 @@
 - `explore.hidden_locked` 지금은 아무것도 할 수 없다.
 - `explore.hidden_failed` 손에 넣지 못했다.
 - `explore.hidden_decoy` 손대자마자 무너져 내렸다.
+
+### `explore.boss_notice`
+
+> 방에서 기다리는 보스·중간 보스가 플레이어를 보고 전투에 들어가기 직전 대화창 한 줄(사용자 2026-10-28, V17 — 몬스터 id별, 없으면 any). 전투 안 첫 대사(combat.<보스>_intro)와 이어지게 쓴다
+
+- `explore.boss_notice.any` {name}이(가) 당신을 응시한다.
+- `explore.boss_notice.blater` 녹슨 갑옷의 기사가 천천히 고개를 든다. 투구 틈의 붉은 눈이 당신을 응시한다.
+- `explore.boss_notice.kambormir` 창백한 사내가 천천히 고개를 돌린다. 핏기 없는 입가에 웃음이 번진다.
+- `explore.boss_notice.corpse_golem` 엉겨 붙은 시체 더미가 몸을 돌린다. 수십 개의 흐린 눈이 한꺼번에 당신을 향한다.
+- `explore.boss_notice.katumba` 눈보라 속 흰 거체가 움직임을 멈춘다. 무언가 당신을 내려다보고 있다.
+- `explore.boss_notice.tarunbas` 얼음 가루 너머에서 회백색 짐승이 몸을 일으킨다. 핏발 선 두 눈이 당신을 노려본다.
+- `explore.boss_notice.kirdui` 웅크린 검은 거체는 꼼짝하지 않는다. 눈만이 당신을 따라 움직인다.
+- `explore.boss_notice.goblin_bomber` 폭약 주머니를 주렁주렁 단 고블린이 당신을 발견하고 누런 이를 드러낸다.
+- `explore.boss_notice.king_slime` 공동 한가운데의 거대한 점액 덩어리가 출렁임을 멈춘다. 당신 쪽으로 몸을 기울인다.
+- `explore.boss_notice.ildium` 강철 거인이 투구를 들어 올린다. 텅 빈 눈구멍이 당신을 응시한다.
 
 ### `explore.party`
 

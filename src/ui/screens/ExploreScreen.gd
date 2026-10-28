@@ -351,6 +351,12 @@ func _on_party_met(group: FieldMonsters.Group) -> void:
 
 
 ## 몬스터 무리와 마주쳤다: 전투 화면을 겹쳐 열고, 끝나면 결과를 탐험 규칙에 돌려준다.
+## 보스가 전투 직전에 보이는 한 줄(explore.boss_notice.<몬스터 id>, 없으면 any).
+static func boss_notice(db: GameDatabase, monster_id: String) -> String:
+	var key := "explore.boss_notice." + monster_id
+	return Strings.t(key if Strings.has(key) else "explore.boss_notice.any", {"name": DataNames.entry(db, "monsters", monster_id)})
+
+
 func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var party: Array[Actor] = []
 	party.append_array(_party())
@@ -361,6 +367,11 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	_menu.close()
 	_codex.close()
 	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
+	if not group.boss.is_empty():  # 기다리던 보스가 알아챘다: 한 줄 보이고 Enter 뒤에 전투(갑자기 끌려가지 않게 — V17)
+		_dialog.say(boss_notice(session.db, group.boss), "danger")
+		await _dialog.wait()
+		if not is_inside_tree() or session.ended:
+			return
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
 	var art := FloorArt.resolve(session.db.render, session.floor_def)
