@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **문서 정리 (2026-10-28, 사용자 "md 파일 정리")** — 매 세션 읽는 양 줄이기. 바로 전 커밋(탐험가 등급 CT59)은 사용자 요청으로 되돌림(revert).
+  - `docs/PROGRESS.md` 18KB → 약 7KB: §1 오늘 기준, §2 할 일 합치고 중복 지움(A 7 · B 6 · C 1), §3 최근 10줄, §5에 "8KB 안·10줄" 규칙.
+  - `CLAUDE.md` 30KB → 약 17KB: 도구 명령(시뮬레이터·층 지도·굽기·글 md·정수 표·캡처·웹)을 새 `docs/TOOLS.md`로(그대로 옮김), "핵심 개념 빠른 참조"를 `docs/REFERENCE.md` §0으로(그대로 옮김). CLAUDE.md에는 "바꾸면 반드시 돌릴 것" 목록과 꼭 지킬 것 6줄(1점당 % 공식 금지·정수 스킬 위력·큰 지도 매 프레임 금지·아이템·정수/마석 얻는 길·새 콘텐츠)만.
+  - `docs/PLAYTEST.md` 36KB → 약 4KB: 최근 여섯 절만, 나머지 41절은 `docs/archive/PLAYTEST_OLD.md` 맨 위로.
+  - `docs/README.md`(문서 지도)에 TOOLS.md·크기 규칙. ASSUMPTIONS(295KB)는 번호로 찾는 사전이라 그대로 — 바뀐 행은 11개뿐이라 보관해도 줄지 않는다.
+
 - **귀환 정산 천막 그림 · 마석 시세·매입 폐기 (2026-10-28, 사용자)** — CT58.
   - 그림 `tools/city_art/Settle.gd` → `assets/city/settle.webp`(`paint_city.gd --only=settle`, 약 15초): 저녁 광장 공터·먼 회랑·닫힌 돌 고리, 천막(박공·붉은 처마 술·걷어 묶은 앞자락·길드 방패 간판·매단 등), 계산대 위 놋쇠 저울(마석 쪽 접시가 내려감)·장부와 깃펜·마석 쟁반(청록 빛)·스톤 꾸러미, 안경 쓴 나이 든 길드 직원, 뒤 선반(장부·마석 상자), 앞에 짐 진 탐험가 뒷모습, 화로·상자·통, 먼 사람들. 4번 고쳐 그림(먼 배경이 벽처럼 보임 → 안개·하늘빛·먼 사람, 대화창이 계산대를 가림 → 천막을 위로). `PlazaScreen.returning`이 이 그림으로 화면을 덮는다.
   - 폐기: `CityExchange` 삭제(순마다 시세 굴림·저장 키 market:magic_stone), `CityShop` 마석 매입 없음(can_sell false), 데이터 키·문구 `city.info_exchange_rate` 삭제, 9등급 마석 설명. 시험 test_exchange·test_city 고침. check.sh 통과.

@@ -6,11 +6,11 @@
 ## 세션 시작 시 (어느 환경이든)
 
 0. **작업 전에 최신 main을 받아 합친다**(`git fetch origin main` → 브랜치가 뒤처졌으면 `git merge origin/main`). 다른 세션이 main에 병합한 작업(예: 2026-10-16 전투 그림)이 빠진 채 진행되는 일이 있었다.
-1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다**(PROGRESS = 지금 상태 · 다음 할 일 · 최근 작업 한 줄씩, 짧게 유지). 어떤 문서를 언제 읽는지는 **`docs/README.md`(문서 지도)**. 자주 쓰는 것: 확정된 기획·설정 요약 `docs/CANON.md`, 데이터 키 사전·파일 구조 `docs/REFERENCE.md`, 가정·결정 근거 `docs/ASSUMPTIONS.md`(번호로 검색), 옛 작업 기록 `docs/archive/PROGRESS_LOG.md`(날짜·키워드로 검색). **문서끼리 어긋나면 날짜가 늦은 사용자 결정이 이긴다**(우선순위는 CANON.md 맨 위). **그림 작업이면 `docs/ART.md`(그림체 규칙·도구 명령·절차)를 먼저 읽는다.**
+1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다**(PROGRESS = 지금 상태 · 다음 할 일 · 최근 작업 10줄, 8KB 안). 어떤 문서를 언제 읽는지는 **`docs/README.md`(문서 지도)**. 자주 쓰는 것: 확정된 기획·설정 요약 `docs/CANON.md`, 핵심 개념·데이터 키 사전·파일 구조 `docs/REFERENCE.md`, 도구 명령 `docs/TOOLS.md`, 가정·결정 근거 `docs/ASSUMPTIONS.md`(번호로 검색), 옛 작업 기록 `docs/archive/PROGRESS_LOG.md`(날짜·키워드로 검색). **문서끼리 어긋나면 날짜가 늦은 사용자 결정이 이긴다**(우선순위는 CANON.md 맨 위). **그림 작업이면 `docs/ART.md`(그림체 규칙·도구 명령·절차)를 먼저 읽는다.**
 2. PROGRESS.md의 **"다음 할 일"**부터 진행한다. 질문하지 말고 진행하되, 모호한 부분은 합리적으로 가정하고 ASSUMPTIONS.md에 "가정 / 이유 / 바꾸는 방법"을 남긴다.
    - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 CANON.md 요약으로 진행).
 3. 작업이 끝날 때마다 기록한다: 자세한 기록(한 일·수치·남은 것)은 `docs/archive/PROGRESS_LOG.md` "작업 기록" 맨 위, PROGRESS.md에는 "최근 작업" 한 줄 + "다음 할 일" 갱신(PROGRESS.md §5). 정해진 기획이 바뀌었으면 CANON.md, 새 데이터 키는 REFERENCE.md. 마일스톤 단위로 **항상 실행 가능한 상태**에서 커밋한다(커밋 메시지는 한국어로 짧게).
-4. 큰 작업 시작 시 PROGRESS_LOG 맨 위에 "범위 / 완료 기준 / 테스트 방법"을 먼저 쓰고, 끝나면 `docs/PLAYTEST.md` 맨 위에 사용자용 테스트 플레이 체크리스트를 추가한다.
+4. 큰 작업 시작 시 PROGRESS_LOG 맨 위에 "범위 / 완료 기준 / 테스트 방법"을 먼저 쓰고, 끝나면 `docs/PLAYTEST.md` 맨 위에 사용자용 테스트 플레이 체크리스트를 추가한다(최근 여섯 절만 — 밀려난 절은 `docs/archive/PLAYTEST_OLD.md`로).
 
 ## 실행·검증
 
@@ -23,21 +23,12 @@
   4. `godot --headless --path . res://tests/smoke_ui.tscn` — UI를 실제로 눌러 보는 스모크
   5. `godot --headless --path . --quit-after 120` — 메인 씬 스모크
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
-- 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
-- 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
-- 1층 원정 한 번 벌이(헤드리스, 몇 분): `godot --headless --path . --script res://tools/sim_income.gd -- [--seeds=1,2,3] [--hours=60] [--bag=10x6]` → 출처별(몬스터·약탈자·탐험가·동굴 요소) 스톤·정수·요소별 벌이. 값·드롭을 바꿨으면 돌려 보고 `docs/balance/city.md`에 적는다(CT43).
-- 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로> [--procedural]` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과. 1층은 고정 지도라 시드는 시작 위치·무리만 바꾼다(`--procedural` = 고정 지도 무시하고 그 시드로 새로).
-- **1층 고정 지도 굽기**(생성기·`gen` 값을 바꿨으면 필수 — 테스트가 파일과 시드 결과를 비교한다): `godot --headless --path . --script res://tools/bake_floor.gd [-- --seed=<시드>]` → `data/maps/f1_crystal_cave.json`(한 글자 = 한 칸, rows[y][x]). 시드를 바꾸면 층 JSON `fixed_map.seed`도 고친다. **이벤트를 좌표로 놓은 뒤에는 다시 구우면 좌표가 어긋난다**(손으로 넣은 `dark_crystal` [31,360]은 다시 구우면 빠진다 — features 맨 앞에 되돌려 넣는다, CR25).
-- 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
-  - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
-  - **장면 목록 일괄 캡처**(탐험 맵 그림 전후 비교): `--screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>` → 장면마다 PNG + 걸음당 프레임(`bench`). 기준은 `docs/screens/before/`(`tools/ShotList.gd`).
-  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
-- **게임 글 md**(사용자가 글을 고치는 곳): `godot --headless --path . --script res://tools/strings_md.gd` → `docs/STRINGS.md`(ko.json 전부, 한 줄 = ``- `키` 글``) · 사용자가 고친 md를 넣기 `… -- --apply`(있는 키의 글만 바꾼다). **ko.json 문구를 추가·수정했으면 다시 만든다**(md가 낡으면 사용자가 옛 글을 고치게 된다).
-- **정수 표**: `python3 tools/essences_md.py` → `docs/balance/essences.md`(정수·정수 스킬을 바꿨으면 다시 만든다 — 손으로 고치지 않는다).
-- **데칼 좌표 굽기**(층 JSON `art.decor` 규칙·kinds를 바꿨으면 필수 — 테스트가 파일과 규칙 결과를 비교한다): `godot --headless --path . --script res://tools/bake_decor.gd` → `data/maps/f1_crystal_cave_decor.json`(한 줄 = [x, y, 종류, 변형, 방향, 뒤집기, 크기×100, 흔들림×100 ×2] — 손으로 고쳐도 된다).
-- **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
+- **도구 명령**(시뮬레이터 `sim_walk`·`sim_rift`·`sim_income`, 층 지도, 굽기, 글 md, 정수 표, 화면 캡처, 그림, 웹 내보내기)은 **`docs/TOOLS.md`**. 바꾼 것에 따라 반드시:
+  - 1층 생성기·`gen` → `bake_floor.gd` · 층 `art.decor` → `bake_decor.gd` · `ko.json` → `strings_md.gd` · 정수 → `essences_md.py` · 아이템 소재·종류·배율 → `item_pool.py`
+  - 밀도·탐험가 → `sim_walk` · 균열 지도·조우·길목 → `sim_rift`("모두 통과") · 값·드롭 → `sim_income`(→ `docs/balance/city.md`)
+  - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
-- **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다.
+- **웹(itch.io)**: 내보내기 명령은 `docs/TOOLS.md`, 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`.
   - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(Noto Sans KR)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
 - **Godot이 없는 환경**(모바일 웹 등): 정적 검토만 하고 PROGRESS.md에 **"미검증(Godot 실행 필요)"**을 명시한다. 검증하지 않은 것을 검증했다고 쓰지 않는다.
 
@@ -102,25 +93,13 @@ assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ bat
 ```
 파일 하나하나의 역할은 **`docs/REFERENCE.md` "파일 구조(자세히)"**.
 
-## 핵심 개념 빠른 참조
+## 핵심 개념
 
-- **수식**: `{키}` 자리표시자 + 사칙연산/`min`/`max`/`floor`(Godot Expression). 키 = `level`, `bal.<balance 경로>`, `<스탯 id>`. 예(생명력 — `resources.json`): `"floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res})"` = 50 + 레벨×10 + 물리내성×3 (+ 정수 `resources.hp`가 `max:hp` 수정자로 — 근력은 생명력에 안 들어감, J12).
-- **스탯 계산**: `(기본 + Σflat + Σ자식×coef) × max(0, 1+Σpercent)` → 클램프. 수정자는 출처(`source_id`)별로 붙이고 뗀다.
-- **스탯 구성(2026-10-14)**: 주 스탯 5종(근력·민첩·물리내성·항마력·정신력) + 주 스탯으로 대체할 수 없는 세부 스탯 11종(시각·식욕·자연재생력·영혼 재생력·명중률·감응도 2(화염·냉기)·내성 4(화염·냉기·독·어둠))만 둔다. 새 세부 스탯은 고유 효과가 있을 때만 추가하고 규칙에 연결한다(`tests/test_sub_stats.gd`가 남은 목록·연결을 검사). 가정 ST1~ST5.
-- **수정자 대상**: 스탯 id / `max:<자원>` / `regen:<자원>` / `dmg_taken:<피해유형|physical|magical|all>` / `dmg_dealt:…`.
-- **자원(ResourcePool)**: 최대치 = 수식 → `max:<id>` 수정자. 코스트는 `{"soul": 5}`처럼 아무 자원이나. 임계값·고갈·회복은 시그널만 낸다(상태이상 부여는 소유자 몫). scope `dungeon_only`(허기)는 미궁 밖에서 정지·숨김.
-- **시야**: 유효 시야 = min(층 상한 `visibility_cap_m`, max(주변광 `ambient_light_m`(암흑지대 0), 광원, 최소 시야) + 시야 스탯 보정). `Vision`.
-- **3/4 시점 그리기**: 로직은 바닥 그리드, 벽은 윗면(앞면 높이만큼 위로) + 앞면. 바닥=FloorChunk(z 아래), 벽=WallRow(줄 단위 y-정렬) — 타일에 `art`(재질 아틀라스)가 있으면 그림 칸(`FloorArtLayer` 변형 × `vertex_mul` 빛 배율), 없으면 색칠한 칸, 캐릭터 발=정렬 기준, 남쪽 벽에 가려지면 실루엣. 밝기는 꼭짓점 색(정적 광원 LightField + 시야 빛, 시야 경계는 꼭짓점 둘레 칸 수로 감쇠 — 미탐험 순흑, 보이는 곳 최저 = 층 근흑색). 층 그림 설정은 층 JSON `art`(균열 `look.art` — palette·post·pulse·particles·ambience·decor(데칼 규칙 `FloorDecor`)·macro(구역 색조 `FloorTint`), `FloorArt`), 타일 `art`는 atlas·variants·shape("smooth" = 부드러운 암벽: 모서리 사선·윗면 검게·남쪽 앞면만 — `WallShape`)·prop(소품 — 동굴 요소·포탈, 마름모 대신). 데칼 자리는 구운 파일(`art.decor.baked`)에서 읽는다. 그래픽 품질 low는 그레인·입자·맥동·흔들림·데칼 끔(`GraphicsSettings`, 일시정지 메뉴). 탐험 맵 그림이 무거우면 데칼 확률부터 낮춘다.
-- **1층 지도(2026-10-16)**: 733×733 십자가 안의 미로 동굴(꼬인 곁가지 굴 + 중간 크기 공동·방 + 지하 호수·기둥·수정 무리, 거대 공동 없음 — 사용자 결정), **모든 게임에서 같은 고정 지도**(층 JSON `fixed_map` → `data/maps`), 시작 위치만 무작위. 화면은 플레이어 둘레 청크만 노드로(`view.stream_chunks`), 80칸 밖 무리는 쉰다(`monsters.active_radius_tiles`). 큰 지도에서 지도 전체를 매 프레임 훑는 코드를 넣지 않는다. 가정 CR14~CR24.
-- **탐험 규칙**: `ExploreSession`(순수 로직) — 시간은 실시간(`RealtimeDriver`: 실제 1초 = `realtime_hours_per_sec`시간, 전투·일시정지·디버그 패널·포커스 잃음이면 정지). 이동은 부드러운 연속 좌표(8방향, `fpos`)이고 시간을 쓰지 않는다. 속도 = 1칸 / `move_hours_base` 게임 시간(민첩과 무관 — 2026-10-17, 몬스터도 같은 값), 충돌은 `Kinematics`. 몬스터는 순찰 지점 사이를 걷다 서서 둘러보고, 바라보는 쪽 시야각(내적) 안만 보며 등 뒤 소리엔 돌아본다(`MonsterPatrol`·`MonsterSenses`, V9~V12). 폐쇄 시각에서 자르고 경고(24/6/1h), 안전지대 휴식만 회복.
-- **성장**: `data/progression.json`(레벨 표 0/8/50/250/660/…/18000, 만렙 11, 획득원) → `db.prog("경로")`. 레벨 변경은 `PlayerCharacter.set_level/change_level`(정수 슬롯 잠금 동기화). 레벨업 생명력·영혼력은 `balance.hp/soul` 수식.
-- **피해 공식(10층 비율 공식 — 2026-10-25, `docs/plans/balance_10floors.md`)**: 물리 = 무기(몬스터 `natural_weapon`) + 근력×2, 마법 = base + 마력(지팡이 `weapon.magic`) + 정신력×2, 방어 배율 = 공격력/(공격력 + 방어×2), 명중 = (95 + 명중률)% × 민첩 비율^0.3, 치명 = 4% + 12% × 민첩 비율, 도주·상태 저항·탐험 판정도 비율(민첩 비율은 +`agi_offset` 10). "1점당 몇 %" 공식을 새로 만들지 않는다 — 스탯이 10층에서 수백~천이 된다. 효과 키: `accuracy`·`crit_bonus`·`ranged`·`power_if_status`·`drain_if_status`. 수호자·군주전 도주 불가. 층별 기준 수치 `docs/balance/curve.md`(`tools/balance_curve.py`), 몬스터 다시 매기기 `tools/restat_monsters.py`.
-- **전투**: CTB 속도 = (민첩 + 5)^0.75 × 등급 배율(`combat.rank_speed`), 연달아 최대 2번. 전위·후위(`PlayerCharacter.row` — 적 무작위 공격은 전위 `combat.front_aggro`배), 동료 `GameState.companions`. `Battle`(phase: await_input → executing → turn_end → ended, 잘못된 행동은 `ActionCheck`가 막고 차례 미소모), 화면은 피어 앤 헝거식 정면 구도(`ui/combat/`: `BattleStage` 무대 — 층·균열 챕터 뒷그림(`battleback`) 앞에 적 정면(아군 머리 위, 통로 벽 안 앞뒤 원근 줄 `FoeRows`, 자리 고정 `_slots`)·아군 뒷모습, `CombatFigure` 몸, `PartyRoster` 파티 창) + 아래 창 `CommandMenu`(명령 공격·스킬·방어·아이템, 도주는 스킬 목록 맨 끝), 모든 아군 기본 스킬 대화·조사(`balance.party.innate_skills`, `"innate": true`).
-- **정수**: `essences/<몬스터 id>.json` = 패시브 1 + `actives[{color, skill}]`(정수판 스킬 `skills/ess_*.json`, `essence_of` = 원래 스킬 id) + 고정값 `stats`·`resources`(생명력 — J13, 굴림 없음). 사례 `{essence, color, stats, resources}`, 무지갯빛 = 수호자(액티브 전부·스탯·생명력 ×1.5). 슬롯 = 레벨, 패시브·`essence_of`가 겹치면 거부. 수정자 출처 `essence:<id>`. **정수 스킬의 위력을 줄이지 않는다**(사용자 결정 2026-10-24, C15 — 몬스터판보다 약하게 만들지 않고, 하한은 `tests/test_skill_value.gd`).
-- **하단 대화창(2026-10-18, UI15)**: 탐험 알림(`EventBus.log_message`)·전투 안내·시설 결과는 `DialogueBox`에 한 쪽씩 뜨고 Enter로 넘긴다. 떠 있는 동안 탐험 시간 정지(`realtime` 사유 "dialog")·전투 차례 정지(`CombatScreen._read`). 테스트·캡처는 `DialogueBox.auto_skip`(캡처 `--dialog`면 띄운 채), 전투 빨리 감기 디버그면 전투 대화창만 `instant`. 알림은 문구 키로 두 갈래(`NoticeRoute` — render.json `ui.notice` silent 안 보임 · 나머지 대화창, UI19 — 탐험·전투·도시 거리 모두, 위 알림 띠·도시 위 알림 카드 없음). 키가 있는 알림은 `session.message`·`EventBus.notice`로 보낸다(`log_message`는 키가 없어 대화창으로). **사망하면 결과 화면 없이 바로 타이틀**(UI16).
-- **전투 드롭(2026-10-16)**: 정수·전리품은 쓰러진 무대 자리에 남고 전투가 끝나면 하나씩 "획득할까?" → 받을 사람(`CombatDrops`·`DropPickup`, `ExploreSession.grant_battle_rewards(…, defer_drops=true)`·`take_drop`·`leave_drop`). **정수를 얻는 길은 이것뿐** — 두고 가거나 아무도 못 받으면 사라진다(흡수 대기·캐릭터 창 흡수 없음). 가정 UI13.
-- **아이템**: `size` [w,h] · `stack` · `equip` {slot, two_handed, modifiers, weapon{damage_type, attack}} · `icon`/`color`/`rarity`. 장비 칸 이름은 `tags.equip_slots`. **장비는 공식으로 만든다(2026-10-23, IT1)**: 종류(`data/item_types.json`) × 소재(`data/materials.json`, 6단계) → `ItemForge`가 로드 때 모든 조합을 아이템 `<소재>_<종류>`로 만든다(공격력·마력 = 종류 값 × `balance.items.attack_by_tier`, 증가 스탯 × `grow_by_tier` — `unscaled`(명중률·시각·속성 내성/감응도)는 배율 없음, 감소는 고정, 가격도 공식, 설명 = 소재 `flavor_ko` + 종류 `flavor_ko` — IT7). 장비 수치를 아이템 JSON에 손으로 쓰지 않는다 — 옛 장비 14개는 `forge` {type, material}. 표·가격 문서 `python3 tools/item_pool.py` → `docs/balance/item_pool.md`(소재·종류·배율을 바꿨으면 다시 만든다). **아이템 그림은 `assets/items/<id>.webp`**(그림 도구 `tools/paint_items.gd` — 새 아이템을 넣었으면 그려야 테스트가 통과한다, ART.md §0).
-- **다른 탐험가(2026-10-21, EX1~EX12)**: 1층 층 JSON `explorers` → `FieldParties`(무리 = `FieldMonsters.Group.party`, 신참·다친 탐험가·싸우는 탐험가(1층은 모두 0)·약탈자(칼잡이·궁수 — 두목 없음, EX15), 날마다 수가 바뀐다) · 만나면 `FieldPartyMeet` 선택지(`party_met` → `ChoicePopup`). 누가 죽으면 갓 죽은 탐험가(`fresh_corpse` — `FieldFeatures.add_runtime`) + 비명. **몬스터 잡템은 없다 — 물건은 사람(유품·거래)에게서.** 약탈자 = rank `human`(공적·마석·정수 없음).
-- **균열·도시·동굴 요소 요약**: 균열 = `rifts/<id>.json` 챕터마다 새 `ExploreSession`(손 설계 지도 `data/maps/rifts/`), 챕터 사이는 길목(`RiftPassage` — 걸어 들어가면 넘어가고 되돌아간다, 길목은 지도 가장자리·출구와 다음 입구는 반대쪽). 도시 = 순 × 행동력(시설 입장에만 1), 시설 활동 → `activities/<id>`, 하순이 끝나면 차원광장 → 미궁. **거주 등급**(`CityResidence`, city.json `residence` — 활동 `min_residence`, 상점 `stock_by_residence`, 대장간 소재 상한, 사건 `residence_weight`, 건물 `<시설>_t<등급>.webp` — CT50~CT53). **도서관 서적** = `data/city_info/<분야>.json` {field, tier, floor, name_ko, text_ko} — 고서 문체·숫자 없이(상·중·하), 새 층이면 `floor` n 항목을 더한다(CT52). 동굴 요소 = `data/events/<id>.json`(type feature), 자리는 고정 지도 `features`.
-- **데이터 키 사전(자세히)**: 패시브·몬스터 AI·보스 패턴·균열·핏빛성채~강철의 묘에서 생긴 키·감사 규칙·상태이상 키·재기획 키·동굴 요소·도시 규칙은 **`docs/REFERENCE.md`**. 새 키를 만들면 거기에 적는다.
+수식·스탯·자원·시야·3/4 시점·1층 지도·탐험·성장·피해 공식·전투·정수·대화창·드롭·아이템·다른 탐험가·균열·도시의 요약은 **`docs/REFERENCE.md` §0**(기획 정본은 `docs/CANON.md`, 데이터 키는 REFERENCE 아래). 꼭 지킬 것만 여기에:
+
+- **"1점당 몇 %" 공식을 새로 만들지 않는다** — 스탯이 10층에서 수백~천이 된다(10층 비율 공식, `docs/plans/balance_10floors.md`).
+- **정수 스킬의 위력을 줄이지 않는다**(사용자 결정 2026-10-24, C15 — 몬스터판보다 약하게 만들지 않고, 하한은 `tests/test_skill_value.gd`).
+- **큰 지도(1층 733×733)에서 지도 전체를 매 프레임 훑는 코드를 넣지 않는다** — 화면은 플레이어 둘레 청크만, 80칸 밖 무리는 쉰다.
+- **아이템은 Tab 메뉴에서만**, 장비 수치는 JSON에 손으로 쓰지 않는다(종류 × 소재 → `ItemForge`, IT1). 새 아이템은 그림(`assets/items/<id>.webp`)까지.
+- **정수를 얻는 길은 전투 드롭 "획득할까?"뿐**(UI13). 마석은 어느 상점도 사지 않는다 — 귀환 정산(CT58).
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.
