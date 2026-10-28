@@ -253,8 +253,6 @@ func _info_text() -> String:
 				lines.append(Strings.t("city.info_balance", {"balance": _state.bank_balance}))
 			"residence":
 				lines.append(Strings.t("city.info_residence", {"name": CityResidence.name_of(_state)}))
-			"exchange_rate":
-				lines.append(Strings.t("city.info_exchange_rate", {"n": roundi(CityExchange.rate(_state) * 100.0)}))
 			"lore":
 				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state).size()}))
 			"survey":

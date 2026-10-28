@@ -12,6 +12,7 @@ const Street := preload("res://tools/city_art/Street.gd")
 const Backdrop := preload("res://tools/city_art/Backdrop.gd")
 const Plaza := preload("res://tools/city_art/Plaza.gd")
 const Events := preload("res://tools/city_art/Events.gd")
+const Settle := preload("res://tools/city_art/Settle.gd")
 const SEED := 1015
 ## 그림 시드 순서(시설 id → 번호). 시설이 늘어도 기존 그림이 바뀌지 않게 고정 — 새 시설은 끝에 붙인다.
 const SEED_ORDER := ["bank", "inn", "library", "shop", "temple", "training", "smithy", "guild", "exchange"]
@@ -80,6 +81,11 @@ func _init() -> void:
 		if not plaza_path.is_empty():
 			Plaza.paint(SEED + 31).save(plaza_path)
 			print("그림: 차원광장 → " + plaza_path)
+	if only.is_empty() or only == "settle":  # 귀환 정산 일러스트(CT58 — 천막·저울·길드 직원)
+		var settle_path := str(GameDatabase.single(db.render, "city.plaza.settle_art", ""))
+		if not settle_path.is_empty():
+			Settle.paint(SEED + 47).save(settle_path)
+			print("그림: 귀환 정산 → " + settle_path)
 	if only.is_empty() or only == "events":
 		for id: String in db.get_collection("street_events"):
 			var path := JsonUtil.get_str(db.get_entry("street_events", id), "art")

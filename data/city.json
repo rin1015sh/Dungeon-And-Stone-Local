@@ -203,7 +203,7 @@
     ]
   },
   "shop": {
-    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율, accepts_magic_stones = 마석 매입 여부, magic_stone_ratio = 마석 매입가 비율(마석은 화폐처럼 제값). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 거주 등급(CT51): stock_by_residence[등급−1] = 그 등급에서 새로 들여오는 물건(아래 등급 것은 그대로 판다), sell_ratio_by_residence[등급−1] = 매입 비율(없으면 sell_ratio).",
+    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율. 마석은 사지 않는다(귀환 정산 — city.json settle, CT58). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 거주 등급(CT51): stock_by_residence[등급−1] = 그 등급에서 새로 들여오는 물건(아래 등급 것은 그대로 판다), sell_ratio_by_residence[등급−1] = 매입 비율(없으면 sell_ratio).",
     "stock_by_residence": [
       ["stone_bread", "ration", "torch", "minor_potion", "antidote", "bandage"],
       ["medium_potion", "soul_potion", "whetstone", "smoke_bomb"],
@@ -212,16 +212,10 @@
     ],
     "sell_ratio_by_residence": [0.5, 0.5, 0.55, 0.6],
     "sell_ratio": 0.5,
-    "accepts_magic_stones": true,
-    "magic_stone_ratio": 1.0,
     "equipment_categories": [
       "weapon",
       "armor"
     ]
-  },
-  "exchange": {
-    "_comment": "알미너스 중앙 거래소(사용자 2026-10-27, CT54 — 시설 exchange, 컴멜비 5구역부터 거리에 선다): stone_rate = 순마다 굴리는 마석 시세 배율 [최소, 최대](CityExchange — 활동 stone_market). 장비·잡화 매입 비율은 활동 exchange_trade의 sell_ratio. 값은 임시값.",
-    "stone_rate": [0.9, 1.3]
   },
   "guild": {
     "_comment": "탐험가 길드 조사 의뢰(CityGuild, CT44): survey_pool에서 한 종을 골라 months달 동안(받은 달 포함) 의뢰한다. 전투에서 그 종에 '조사'를 쓴 마리 수(cap까지) × stones_per × (10 − 등급)을 '조사 의뢰 보고'로 받는다. 넘기거나 기한이 지나면 다음 순에 새 의뢰. 임시값",

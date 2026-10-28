@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **귀환 정산 천막 그림 · 마석 시세·매입 폐기 (2026-10-28, 사용자)** — CT58.
+  - 그림 `tools/city_art/Settle.gd` → `assets/city/settle.webp`(`paint_city.gd --only=settle`, 약 15초): 저녁 광장 공터·먼 회랑·닫힌 돌 고리, 천막(박공·붉은 처마 술·걷어 묶은 앞자락·길드 방패 간판·매단 등), 계산대 위 놋쇠 저울(마석 쪽 접시가 내려감)·장부와 깃펜·마석 쟁반(청록 빛)·스톤 꾸러미, 안경 쓴 나이 든 길드 직원, 뒤 선반(장부·마석 상자), 앞에 짐 진 탐험가 뒷모습, 화로·상자·통, 먼 사람들. 4번 고쳐 그림(먼 배경이 벽처럼 보임 → 안개·하늘빛·먼 사람, 대화창이 계산대를 가림 → 천막을 위로). `PlazaScreen.returning`이 이 그림으로 화면을 덮는다.
+  - 폐기: `CityExchange` 삭제(순마다 시세 굴림·저장 키 market:magic_stone), `CityShop` 마석 매입 없음(can_sell false), 데이터 키·문구 `city.info_exchange_rate` 삭제, 9등급 마석 설명. 시험 test_exchange·test_city 고침. check.sh 통과.
+
 - **귀환 정산 · 결과 창 삭제 · Tab 캐릭터 W/S (2026-10-28, 사용자)** — CT58·UI39.
   - `GuildSettle`(새 파일, 순수 — 마석 묶음·정산·탐험가 등급), `PlazaScreen.returning`(포탈 닫힘 + 길드 직원 대화창, settled), `Main._return_to_city`(결과 창 대신 차원광장 → 도시). `EndScreen` 삭제, 문구 `end.*`·`cause.*` 삭제, 새 문구 `plaza.clerk`·`plaza.settle_*`, city.json `settle {grade, ratio}`. 캡처 `--screen=plaza --returning=<쪽> --dialog`.
   - `CharacterPage.nav`: 요약(-1) → 카드 → 세부 능력(n, 안에서 스크롤), `MenuPage.lit_frame`(캐릭터 쪽 금색 테두리 끔). 캡처 `--grab`은 첫 카드로 내려간 뒤 집는다.

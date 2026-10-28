@@ -4,7 +4,7 @@ extends RefCounted
 ## null(미정) 값은 오류가 아니라 경고 목록 한 줄로 모은다(CityValues.nulls).
 
 const IMAGE_PREFIX := "res://"
-const SHOWS := ["temple_merit", "bank_balance", "lore", "survey", "residence", "exchange_rate"]
+const SHOWS := ["temple_merit", "bank_balance", "lore", "survey", "residence"]
 const MEAL_MENUS := ["plain", "light", "hearty", "special"]
 const MEAL_UNITS := ["battle", "hour"]
 
@@ -188,10 +188,6 @@ static func _trade(v: ValidatorBase, w: String, a: Dictionary) -> void:
 			v.err(w, "tabs는 %s 중에서" % [CityShop.TABS])
 	if a.has("sell_ratio") and JsonUtil.get_float(a, "sell_ratio", -1.0) < 0.0:
 		v.err(w, "sell_ratio는 0 이상")
-	if JsonUtil.get_bool(a, "stone_market"):
-		var r := JsonUtil.get_array(JsonUtil.get_dict(v.db.singletons.get("city", {}), "exchange"), "stone_rate")
-		if r.size() != 2 or not (r[0] is float or r[0] is int) or not (r[1] is float or r[1] is int) or float(r[0]) < 0.0 or float(r[0]) > float(r[1]):
-			v.err(w, "stone_market면 city.json exchange.stone_rate = [최소, 최대](0 이상, 최소 ≤ 최대)")
 	if JsonUtil.get_str(a, "panel") != "shop" or deals.is_empty():
 		return
 	var shop := JsonUtil.get_dict(v.db.singletons.get("city", {}), "shop")

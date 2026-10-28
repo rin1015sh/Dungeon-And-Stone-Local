@@ -8,8 +8,7 @@
     "sell"
   ],
   "sell_ratio": 0.75,
-  "stone_market": true,
   "effects": [],
   "source": "placeholder",
-  "notes": "CT54: 팔기만. 장비·잡화 모두 sell_ratio(상점 0.5~0.6보다 후하게), 마석은 순마다 바뀌는 시세(city.json exchange.stone_rate — CityExchange)."
+  "notes": "CT54: 팔기만. 장비·잡화 모두 sell_ratio(상점 0.5~0.6보다 후하게). 마석은 사지 않는다(귀환 정산 — CT58, 시세 폐기)."
 }

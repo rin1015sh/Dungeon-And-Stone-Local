@@ -4,7 +4,7 @@ extends Control
 ## 도착하면 돌 고리 안에 포탈이 열리고, 다 열린 뒤에만 선택판(W/S·Enter)에 "기록을 남긴다"(한 칸 저장 — 저장은 여기서만)와 "포탈로 들어간다"가 나온다.
 ## 그림(render.json city.plaza): 하늘(날씨) · 원경 far 레이어 일부 · 광장(tools/paint_city.gd --only=plaza) · 포탈 셰이더 2장(고리 안 소용돌이 + 빛 번짐).
 ## 화면 크기와 상관없이 1280×720 무대를 화면을 덮게 늘려 놓는다(포탈 자리가 그림과 어긋나지 않게).
-## 돌아올 때(returning — 미궁에서 살아 나왔다): 열린 포탈이 닫히고, 아래 대화창에서 탐험가 길드 직원이 신원패(이름·등급)를 확인하고
+## 돌아올 때(returning — 미궁에서 살아 나왔다): 광장 공터의 길드 정산 천막 그림(render.json city.plaza.settle_art — 천막·저울·직원)이 화면을 덮고, 아래 대화창에서 탐험가 길드 직원이 신원패(이름·등급)를 확인하고
 ## 가방의 마석을 등급별로 읊은 뒤 스톤으로 정산한다(GuildSettle, CT58). 다 넘기면 settled → 도시로(예전의 "강제 귀환" 결과 창 대신).
 
 signal enter_requested
@@ -109,11 +109,17 @@ func _build_ui() -> void:
 
 ## 돌아왔다: 포탈이 닫히는 동안 길드 직원이 신원패·마석을 확인하고 정산한다. 대화를 다 넘기면 settled.
 func _settle() -> void:
+	var art := TextureRect.new()  # 정산 천막 그림이 광장 무대를 덮는다(위 달력 카드·아래 대화창은 그 위)
+	art.texture = _tex(JsonUtil.get_str(_cfg, "settle_art"))
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(art)
+	move_child(art, _stage.get_index() + 1)
+	art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_dialog = DialogueBox.new()
 	DialogueBox.place_bottom(_dialog, self)
 	_dialog.set_speaker(Strings.t("plaza.clerk"))
-	var t := create_tween()
-	t.tween_method(_set_open, 1.0, 0.0, float(_cfg.get("close_seconds", 1.6))).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	var db := state.db
 	var lots := GuildSettle.lots(db, pc.inventory)
 	_dialog.say(Strings.t("plaza.settle_tag", {"name": pc.display_name, "grade": GuildSettle.explorer_grade(db)}))

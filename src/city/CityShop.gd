@@ -2,7 +2,8 @@ class_name CityShop
 extends RefCounted
 ## 상점(구매·판매): 기존 아이템 데이터의 price를 그대로 쓴다. 규칙 값은 city.json shop.
 ##   stock null → 임시로 price > 0인 아이템 전부(마석·균열 귀속 제외), sell_ratio null → 임시로 1,
-##   accepts_magic_stones null → 마석을 받지 않는다, magic_stone_ratio = 마석 매입가 비율. 거래마다 활동(shop_trade)의 이용료를 낸다.
+##   마석은 어느 창구도 사지 않는다 — 귀환하면 차원광장에서 탐험가 길드가 모두 정산한다(GuildSettle, 사용자 2026-10-28 CT58 — 예전 상점 매입·거래소 시세는 폐기).
+##   거래마다 활동(shop_trade)의 이용료를 낸다.
 ## 창구마다 다루는 물건(활동 deals — 사용자 결정 2026-10-20): equipment = 장비(category가 shop.equipment_categories)만 — 대장간,
 ##   goods = 장비가 아닌 것만 — 상점·떠돌이 상인, 없으면 모두. 사기(stock 걸러냄)·팔기(sellable·can_sell) 모두에 걸린다.
 
@@ -121,21 +122,12 @@ static func can_sell(state: CityState, item_id: String, act_id: String = "") -> 
 	var e := state.db.get_entry("items", item_id)
 	if e.is_empty() or price(state.db, item_id) <= 0 or not JsonUtil.get_str(e, "rift_bound").is_empty() or not deals(state, act_id, item_id):
 		return false
-	if JsonUtil.get_str(e, "category") == MAGIC_STONE:
-		return JsonUtil.get_bool(config(state), "accepts_magic_stones")
-	return true
+	return JsonUtil.get_str(e, "category") != MAGIC_STONE  # 마석은 길드 정산으로만(CT58)
 
 
-## 판매가: 마석은 창구가 stone_market면 이번 순 시세(CityExchange — CT54), 아니면 magic_stone_ratio(없으면 sell_ratio),
-## 그 밖은 sell_ratio(창구 것이 먼저). × 이번 순 배율("sell:<분류>").
+## 판매가: sell_ratio(창구 것이 먼저) × 이번 순 배율("sell:<분류>").
 static func sell_price(state: CityState, item_id: String, act_id: String = "") -> int:
-	var c := config(state)
 	var ratio := sell_ratio(state, act_id)
-	if JsonUtil.get_str(state.db.get_entry("items", item_id), "category") == MAGIC_STONE:
-		if not act_id.is_empty() and JsonUtil.get_bool(state.activity(act_id), "stone_market"):
-			ratio = (maxf(0.0, CityValues.num(c, "magic_stone_ratio")) if CityValues.is_set(c, "magic_stone_ratio") else 1.0) * CityExchange.rate(state)
-		elif CityValues.is_set(c, "magic_stone_ratio"):
-			ratio = maxf(0.0, CityValues.num(c, "magic_stone_ratio"))
 	return floori(price(state.db, item_id) * ratio * state.price_mult("sell:" + _category(state, item_id)))
 
 

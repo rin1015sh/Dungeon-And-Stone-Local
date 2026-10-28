@@ -163,7 +163,6 @@ func _begin_period() -> void:
 	CityHappenings.roll(self)
 	closed.clear()
 	price_mods.clear()
-	CityExchange.roll(self)  # 거래소 마석 시세(컴멜비 5구역부터 — CT54)
 	ambient = ""
 	ambient_pending = true
 	CityGuild.refresh(self)

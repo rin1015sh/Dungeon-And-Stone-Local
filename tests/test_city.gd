@@ -230,8 +230,7 @@ func test_shop_uses_item_prices() -> void:
 	_inside(t, "shop")
 	assert_eq(CityShop.stock(t), (JsonUtil.get_array(JsonUtil.get_dict(db.singletons["city"], "shop"), "stock_by_residence")[0] as Array).map(func(v: Variant) -> String: return str(v)), "뒷골목 판매 목록(CT51)")
 	assert_eq(CityShop.sell_price(t, "torch"), CityShop.price(db, "torch") / 2, "판매가 = 가격 50%")
-	assert_eq(CityShop.sell_price(t, "magic_stone_9"), CityShop.price(db, "magic_stone_9"), "마석 = 제값")
-	assert_true(CityShop.sell(t, pc, "shop_trade", "magic_stone_9").ok, "마석을 받는다")
+	assert_false(CityShop.sell(t, pc, "shop_trade", "magic_stone_9").ok, "마석은 받지 않는다(귀환 정산 — CT58)")
 
 
 func test_fatigue_carries_over_city_dungeon_city() -> void:

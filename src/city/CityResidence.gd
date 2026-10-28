@@ -111,6 +111,4 @@ static func upgrade(state: CityState, pc: PlayerCharacter) -> String:
 		return "city.reason_no_money"
 	pc.inventory.add_money(-cost)
 	state.residence = tier(state) + 1
-	if not state.price_mods.has(CityExchange.KEY):
-		CityExchange.roll(state)  # 거래소가 서는 구역으로 옮겼다: 이번 순 시세(CT54)
 	return ""
