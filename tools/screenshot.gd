@@ -230,6 +230,8 @@ func _run() -> void:
 			explore.session.lord.summon(explore.session)
 		if _args.has("combat"):
 			GameState.debug_invulnerable = _args.has("god") or GameState.debug_invulnerable  # --god: 무적(계층군주처럼 첫 차례에 쓰러뜨리는 적을 찍을 때)
+			if GameState.debug_invulnerable:  # 디버그 패널 무적과 같게 — 생명력이 1 밑으로 내려가지 않는다(플래그만으로는 막지 못했다)
+				explore.session.player.pool.set_min_value("hp", 1.0)
 			if _args.has("known") and _args.has("monster"):  # --known: 그 몬스터를 조사·상성까지 알고 있다(도감 B에만 보인다 — 무대엔 이름뿐, UI22)
 				explore.session.player.knowledge.learn_all(explore.session.db, str(_args["monster"]))
 			ExploreDebug.spawn_and_engage(explore.session, str(_args.get("monster", "")))

@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **전투 뒷줄 적을 앞으로 (2026-10-28, 사용자)** — UI38. render `combat_rows_depth_step` 0.45 → 0.15, `combat_rows_rise` 0.2 → 0.1. 캡처 드레드피어 + 구더기 5·도개교 8·데드맨 + 5. 캡처 `--god`이 플래그만 켜고 생명력 하한을 걸지 않아 드레드피어전 캡처가 사망 → 타이틀로 찍히던 것 고침(디버그 패널 무적은 원래 됐다 — 게임 문제 아님). check.sh 통과.
+
 - **전투 자리를 미리 만든다 (2026-10-27, 사용자 "즉석에서 줄이지 말고 미리 배치를 만들라")** — UI37 고침. 바로 전 작업의 "새 적만 줄여 넣기"(`combat_fit.shrink`)를 없앴다.
   - `BattleReserve`(새 파일, 순수): 적 몬스터·스킬·패턴·상태 효과에서 summon·split, 전투 목표 reinforce → 진영 상한까지 비워 둘 몬스터. `BattleStage._pack`이 그 견본(`BattlerView.probe`)까지 함께 정렬해 `_spares`에, `_place_fresh`가 새 적을 그 자리에(같은 몬스터 먼저), 쓰러진 자리는 다시 빈자리. `FoeRows`: 뒷줄은 앞에 선 모든 몸 바로 뒤를 피하고(`HIDE`·`_covered`), 틈이 모자라면 나머지는 한 줄 뒤로, 숨는 자리가 남으면 arrange_fit이 처음에 함께 줄인다.
   - 시험 test_battle_reserve(후보·상한·숨지 않음). 캡처 드레드피어 구더기 0·2·3·5(보스 그대로), 도개교 8, 고블린 + 5. check.sh 통과.
@@ -15,7 +17,7 @@
   - 데이터: 균열 4개 17챕터에 posts(1~5), 핏빛성채 2챕터 waves → 다리 위 데드맨 6 + 병사 데드맨 2(guard, slot [51, 20]), 설명 문구.
   - 전투 자리: `BattleStage._deep`(뒷줄 당김을 처음 정렬 때만)·`_fit_new` 새 적만 줄여 보기(`combat_fit.shrink`), `FoeRows.fit_new` hide(앞줄 몸 바로 뒤 피함), render `combat_rows_front_pull` 0.08·`combat_rows_rise` 0.2. 캡처 `--summon_each`.
   - 확인: 캡처(드레드피어 + 구더기 1~5 하나씩 — 드레드피어가 움직이지 않음, 데드맨 + 5, 도개교 8), 챕터 아스키 지도로 대기 무리 자리, 시험 test_rift `test_posts_spread_into_empty_places`·도개교, sim_rift 모두 통과, check.sh 통과.
-  - 남은 것: 캡처에서 구더기 4마리 이상을 하나씩 부르면 타이틀로 돌아간다(캡처가 기다리는 동안 전투가 진행돼 공포로 죽는 듯 — 게임 문제인지 확인 안 함).
+  - 남은 것: 캡처에서 구더기 4마리 이상을 하나씩 부르면 타이틀로 돌아간다 → 2026-10-28 원인 확인: 캡처 `--god`이 무적을 실제로 걸지 않았다(고침).
 
 - **필드 몬스터: 화면 안이면 알아채고 · 계속 움직이고 곧게 · 사냥꾼은 밖에서부터 (2026-10-27, 사용자 "빙빙 돌고 앞에 와도 모른다, 기차 같다")** — V13~V15.
   - `MonsterSteering`: 보는 거리 = aggro × `sight_mult`(최대 `sight_max_tiles`), 쫓는 중 × `chase_keep_mult`, `_hunts`(behavior `hunts_tiles` — 거리 장 걸음 수), `clear_walk`(몸 폭 곧은 길) — 직접 추적 16칸·추적 길 곧게(`_straight_descent`). `MonsterPatrol`: 칸 길 건너뛰기(`straight_lookahead_tiles`), 집 옮기기(`home_drift_chance`). `MonsterSenses`: 배율 값, 180° 끝(내적 0)도 안.
