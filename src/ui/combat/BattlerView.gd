@@ -5,6 +5,7 @@ extends Control
 ## 적은 정면 + 머리 위 상태 아이콘(3개씩, 넘으면 깜빡이며 넘김 — StatusIcons)·이름(생명력·상성은 보이지 않는다 — 피어 앤 헝거처럼,
 ## 받은 피해만 숫자로 떠오른다. 조사·쳐 봐서 알아낸 것은 도감 B에서만 — 사용자 2026-10-27, UI22),
 ## 아군은 뒷모습만(이름·상태 아이콘·생명력·영혼력은 아래 파티 창에). 지금 차례면 발밑 고리가 빛난다.
+## 탐험가는 대기 시트(<종족>_<view>_idle.webp, 가로 3칸)가 있으면 몸이 들썩이는 칸을 0-1-2-1로 넘긴다(render.json ui.combat_party_idle, UI40).
 ## 대상으로 고르는 중인 적은 고리·금색 이름 대신 그림 모양대로 흰빛이 숨 쉬듯 떠오른다(피어 앤 헝거식 — target_flash 셰이더, UI40).
 ## 쓰러지거나 도망치면 흐려진다.
 
@@ -17,7 +18,9 @@ var front: bool = true
 var art: Texture2D = null  ## 몬스터 일러스트(없으면 null)
 var flip: bool = false  ## 좌우 반전(오른쪽 자리의 옆모습이 무대 가운데를 보게)
 var _art_body: float = 1.0  ## 그림 속 몸 높이 px
-var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이]
+var _views := {}  ## 탐험가: "back"/"side" → [그림, 몸 높이, 대기 칸들(Array — 없으면 빈 배열)]
+var _idle: Array = []  ## 지금 보기의 대기 칸(AtlasTexture)
+var _idle_t: float = 0.0
 var _current: bool = false
 var _target: bool = false
 var _name: Label
@@ -38,8 +41,10 @@ func setup(u: Combatant, db: GameDatabase) -> void:
 		for view: String in ["back", "side"]:
 			var tex := MonsterArt.texture_in(MonsterArt.party_dir(), race + "_" + view)
 			if tex != null:
-				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex)]
+				_views[view] = [tex, MonsterArt.body_height_in(MonsterArt.party_dir(), race + "_" + view, tex), _idle_cells(race + "_" + view + "_idle")]
 		set_view(false, false)
+		_idle_t = randf() * 10.0  # 아군끼리 숨이 맞지 않게
+		set_process(not _idle.is_empty())
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not front:
 		return
@@ -76,8 +81,40 @@ func set_view(side: bool, mirror: bool) -> void:
 		return
 	art = _views[key][0]
 	_art_body = _views[key][1]
+	_idle = _views[key][2]
 	flip = mirror and key == "side"
+	_tick_idle()
 	queue_redraw()
+
+
+## 대기 시트 → 칸 3개(같은 크기 AtlasTexture). 시트가 없으면 빈 배열.
+static func _idle_cells(id: String) -> Array:
+	var sheet := MonsterArt.texture_in(MonsterArt.party_dir(), id)
+	if sheet == null:
+		return []
+	var n := int(UiTheme.ui_dict("combat_party_idle").get("cells", 3))
+	var w := sheet.get_width() / float(n)
+	var out: Array = []
+	for i in n:
+		var a := AtlasTexture.new()
+		a.atlas = sheet
+		a.region = Rect2(w * i, 0.0, w, sheet.get_height())
+		out.append(a)
+	return out
+
+
+## 대기 칸 고르기: 0-1-2-1 왕복, 칸마다 frame_s초.
+func _tick_idle() -> void:
+	if _idle.is_empty():
+		return
+	var cfg := UiTheme.ui_dict("combat_party_idle")
+	var n := _idle.size()
+	var loop := maxi(1, n * 2 - 2)
+	var i := int(_idle_t / maxf(0.01, JsonUtil.get_float(cfg, "frame_s", 0.35))) % loop
+	var cell: Texture2D = _idle[i if i < n else loop - i]
+	if cell != art:
+		art = cell
+		queue_redraw()
 
 
 ## 키 h일 때 그림 전체 높이 / h(들어 올린 무기·뿔·이름표 자리 포함 — 무대가 화면 위로 넘치지 않게 줄일 때).
@@ -147,7 +184,7 @@ func set_targeted(on: bool) -> void:
 			_ensure_flash()
 			_flash.visible = on
 			_flash_t = 0.0
-			set_process(on)
+			set_process(on or not _idle.is_empty())
 		queue_redraw()
 
 
@@ -167,8 +204,11 @@ func _ensure_flash() -> void:
 
 
 func _process(delta: float) -> void:
+	if not _idle.is_empty():
+		_idle_t += delta
+		_tick_idle()
 	if _flash == null or not _flash.visible:
-		set_process(false)
+		set_process(not _idle.is_empty())
 		return
 	_flash_t += delta
 	var cfg := UiTheme.ui_dict("combat_target_flash")

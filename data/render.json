@@ -77,6 +77,7 @@
     "combat_banner_sec": 1.2, "combat_banner_fade_sec": 0.3, "combat_banner_y": 20, "combat_ai_delay_sec": 0.45,
     "combat_turn_gap_sec": 0.7,
     "combat_target_flash": {"_comment": "대상으로 고른 적의 흰빛(BattlerView — 노란 고리·금색 이름 대신, 피어 앤 헝거식 UI40): 그림 모양 흰 실루엣 세기 min~max를 hz로 오르내린다", "min": 0.18, "max": 0.42, "hz": 0.9},
+    "combat_party_idle": {"_comment": "탐험가 대기(BattlerView — <종족>_<view>_idle.webp 가로 cells칸을 0-1-2-1로, 칸마다 frame_s초 · 그림은 tools/paint_idle.gd, UI40)", "cells": 3, "frame_s": 0.35},
     "combat_art_dir": "res://assets/monsters",
     "combat_enemy_top_room": 96,
     "combat_enemy_floor": 0.92, "combat_enemy_floor_min": 0.4, "combat_enemy_clear": 8, "combat_enemy_span": 0.92,

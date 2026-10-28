@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **전투 탐험가 대기 3칸 (2026-10-28, 사용자)** — UI40. 휘는 미리보기(`idle_breathe_preview.py`)가 "이상하다" → 사용자가 준 피어 앤 헝거 아군 시트(9×6칸, 동작마다 3칸)를 보고 3D 뼈대로 칸마다 다시 그림(`BackPose.idle` — 발 고정, 위 몸이 무릎 굽혀 DIP 0.016 가라앉음 · `tools/paint_idle.gd`). 맨손 겨눔 자세도 그려 봤으나 사용자 "하지마, 몸만 들썩이는 것만" → 지금 자세 그대로. 게임: `assets/party/<종족>_<back|side>_idle.webp`(칸 크기 = 원래 그림과 같음), BattlerView가 0-1-2-1로 넘김(`render.json ui.combat_party_idle` cells 3 · frame_s 0.35, 시작 시각 무작위). 캡처로 확인(실행마다 칸이 다름). 남은 것: 사람이 보고 빠르기·크기 조절.
+
 - **대상 흰빛 · 아군 숨쉬기 미리보기 (2026-10-28, 사용자)** — UI40. 대상으로 고른 적: 노란 고리·금색 이름 없앰 → 흰 실루엣이 오르내림(`target_flash.gdshader`, `BattlerView._flash`·`_process`, render `ui.combat_target_flash`), 캡처 `--combat --target`(고블린·드레드피어 확인 — 밝은 그림은 덜 티 난다). 숨쉬기는 게임에 넣지 않고 `tools/idle_breathe_preview.py`로 GIF만(인간·바바리안 뒷모습). check.sh 통과.
 
 - **구역별 매입 비율 없앰 (2026-10-28, 사용자)** — CT60. city.json `shop.sell_ratio_by_residence` 삭제 → 상점은 어느 구역이든 `sell_ratio` 0.5(거래소는 활동 값 0.75 그대로), `CityShop.sell_ratio` 단순화, 시험 test_residence. check.sh 통과.
