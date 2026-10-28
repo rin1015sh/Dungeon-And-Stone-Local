@@ -1,7 +1,7 @@
 extends SceneTree
 ## 전투 탐험가 동작 시트(종족 뒷모습): tools/monster_art/party_motions.json의 동작마다 3칸(PartyMotion이 참고 시트에서 잰 관절을 3D 뼈대로,
 ## 대기 = BackPose.idle 들썩임). 게임이 쓴다 — BattlerView가 칸을 넘긴다(render.json ui.combat_party_motion, UI41).
-##   godot --headless --path . --script res://tools/paint_motions.gd -- [--only=human_back,…] [--motions=idle,swing] [--out=<폴더> --png](미리보기)
+##   godot --headless --path . --script res://tools/paint_motions.gd -- [--only=human_back,…] [--motions=idle,swing] [--out=<폴더> --png](미리보기) [--json=<후보 json>]
 ## → <폴더>/<id>_motions.webp: 줄 = 선 동작(json 순서, 쓰러짐 빼고) · 칸 3. 칸 크기는 모두 같고 발 가운데 = 칸 아래 가운데(좌우 대칭으로 자른다 — 모든 칸의 발이 같은 땅에 닿아 아래 끝이 같다).
 ##   <폴더>/<id>_dead.webp: 쓰러짐 1칸(누운 몸 가운데 = 칸 아래 가운데).
 
@@ -24,7 +24,11 @@ func _init() -> void:
 			pick = a.trim_prefix("--motions=").split(",")
 		png = png or a == "--png"
 	DirAccess.make_dir_recursive_absolute(out)
-	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tools/monster_art/party_motions.json"))
+	var src := "res://tools/monster_art/party_motions.json"
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--json="):  # 후보 자세를 따로 그려 볼 때(같은 꼴의 json)
+			src = a.trim_prefix("--json=")
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(src))
 	var names: Array = []
 	for m: String in data:
 		if not m.begins_with("_") and m != LYING and (pick.is_empty() or pick.has(m)):
