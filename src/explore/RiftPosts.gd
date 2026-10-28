@@ -29,7 +29,8 @@ static func place(s: ExploreSession, e: Dictionary, compose: Callable, rng: Rng)
 			break  # 빈 곳이 없다
 		var cands: Array[Vector2i] = []
 		for c: Vector2i in dist:
-			if int(dist[c]) >= maxi(min_tiles, int(far * ratio)) and not s.map.in_safe_zone(c) and s.monsters.group_at(c) == null:
+			if int(dist[c]) >= maxi(min_tiles, int(far * ratio)) and not s.map.in_safe_zone(c) and s.monsters.group_at(c) == null \
+					and taken.all(func(t: Vector2i) -> bool: return Vector2(c - t).length() >= min_tiles):  # 벽 너머 곧은 거리로도 떨어지게
 				cands.append(c)
 		if cands.is_empty():
 			break
