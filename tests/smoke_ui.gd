@@ -945,19 +945,18 @@ func _city_flow() -> void:
 	var in_dungeon := explore.session.player.fatigue.value
 	_expect(in_dungeon >= fatigue and in_dungeon < fatigue + 1.0, "미궁으로 피로도가 이어진다(시간이 흐르면 조금씩 오른다)")
 	_expect(_has_label(explore, Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(in_dungeon)}).left(4)), "미궁 HUD에 피로도")
-	var settler := explore.session.player
-	var bag := settler.inventory
+	var bag := explore.session.player.inventory
 	bag.add("magic_stone_9", 3)
 	bag.add("magic_stone_8", 1)
 	var stone_value := 0
-	for lot: Dictionary in GuildSettle.lots(DataRegistry.db, settler):
+	for lot: Dictionary in GuildSettle.lots(DataRegistry.db, bag):
 		stone_value += int(lot["count"]) * int(lot["each"])
 	var money_before := bag.money
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.close_soon"))
 	_press(explore, Strings.t("debug.skip", {"hours": _bal("debug.skip_hours_short")}))
 	var back := (await _screen(CityScreen)) as CityScreen
-	_expect(stone_value > 0 and GuildSettle.lots(DataRegistry.db, settler).is_empty() and bag.money == money_before + stone_value,
+	_expect(stone_value > 0 and GuildSettle.lots(DataRegistry.db, bag).is_empty() and bag.money == money_before + stone_value,
 		"강제 귀환 → 차원광장에서 길드 직원이 마석을 스톤으로 정산한다(결과 창 없음, CT58)")
 	if _expect(back != null, "귀환 → 도시"):
 		_expect([back.state.month, back.state.period, back.state.ap] == [month + 1, 0, 3], "귀환하면 다음 달 상순(행동력 3)")
