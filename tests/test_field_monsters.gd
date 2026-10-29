@@ -223,7 +223,7 @@ func _straight_corridor(s: ExploreSession, n: int) -> Array:
 	return []
 
 
-## 보스가 기다리는 방(사용자 2026-10-18): 보스 등급이 있는 무리는 움직이지 않고, 보이는 거리(boss_engage_tiles — 멀리서도, V16) 안에 들어오면 바로 전투.
+## 보스가 기다리는 방(사용자 2026-10-18): 보스 등급이 있는 무리는 움직이지 않고, 화면에 들어오고 벽에 가리지 않으면 바로 전투(V16 → V19).
 func test_boss_waits_then_engages() -> void:
 	var map := FloorMap.new(db, 40, 12, "rock_wall")
 	for x in range(1, 39):  # 긴 복도(y 3) + 벽 너머 나란한 복도(y 8)
@@ -234,14 +234,14 @@ func test_boss_waits_then_engages() -> void:
 	var fm := FieldMonsters.new(db, map, {"regions": [], "spawn": {}}, Rng.new(1))
 	var g := fm.add_fixed(["goblin", "blater"], Vector2i(30, 3))
 	assert_eq(g.boss, "blater", "구성에 보스가 있으면 보스 방")
-	var reach := float(db.bal("monsters.boss_engage_tiles"))
+	var reach := MonsterSenses.new(db).half.x  # 화면 반 폭(V19)
 	assert_true(reach >= 8.0, "멀리서 마주쳐도 전투(%.1f칸)" % reach)
 	var far := _c(Vector2i(30 - int(reach) - 3, 3))
-	assert_true(fm.update(far, 2.0, 1.0, false) == null, "보이는 거리보다 멀면 기다린다")
+	assert_true(fm.update(far, 2.0, 1.0, false) == null, "화면 밖이면 기다린다")
 	assert_eq(g.pos, Vector2i(30, 3), "보스는 쫓아오지 않는다")
 	assert_true(fm.update(_c(Vector2i(30, 8)), 0.01, 1.5, false) == null, "벽 너머면 가까워도 모른다")
 	var near := _c(Vector2i(30 - int(floor(reach)), 3))
-	assert_true(fm.update(near, 0.01, 2.0, false) == g, "보이는 거리에 들어오면 바로 전투")
+	assert_true(fm.update(near, 0.01, 2.0, false) == g, "화면에 들어오면 바로 전투")
 	var plain := fm.add_fixed(["goblin"], Vector2i(10, 10))
 	assert_eq(plain.boss, "", "보스 없는 무리는 보통")
 	var chain := fm.add_fixed(["goblin"], Vector2i(12, 3))

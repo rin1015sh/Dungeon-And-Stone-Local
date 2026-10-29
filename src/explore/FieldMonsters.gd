@@ -35,14 +35,12 @@ class Group extends RefCounted:
 	var battle_rules: Dictionary = {}     ## 전투 목표(BattleObjective — 생존 웨이브)
 	var boss: String = ""                 ## 방에서 기다리는 보스·중간보스(구성이나 연전에 있으면) — 움직이지 않고, 가까이 오면 바로 전투
 	var route: Array[Vector2i] = []       ## 멀리 걸어갈 길(send_to — 대기 중에 따라 걷는다)
-	var scent: Vector2i = Vector2i(-1, -1)  ## 쫓는 냄새 칸(behavior tracks_scent — 플레이어가 멀면 이쪽으로)
 	var party: Dictionary = {}            ## 탐험가 무리(FieldParties): {"kind", …} — 비어 있으면 몬스터 무리
 	var facing: Vector2 = Vector2(0, 1)   ## 바라보는 쪽(단위 벡터) — 시야각 판정·맵 그림
 	var look: Vector2 = Vector2.ZERO      ## 돌아보려는 쪽(없으면 ZERO — MonsterPatrol.turn)
 	var patrol: Array[Vector2i] = []      ## 순찰·수색·귀환으로 걷는 칸 길(MonsterPatrol)
 	var rest_until: float = -1.0          ## 순찰 지점·수색 자리에서 이 시각까지 서서 둘러본다(< 0 = 걷는 중)
 	var next_look: float = 0.0            ## 서 있을 때 다음에 고개를 돌릴 시각
-	var hold_until: float = -1.0          ## 소리를 듣고 이 시각까지 멈춰 돌아본다
 	var last_seen: Vector2i = Vector2i(-1, -1)  ## 마지막으로 알아챈 플레이어 칸(놓치면 거기까지 가서 찾는다)
 	var guard: bool = false               ## 대기 무리(균열 posts — RiftPosts): 순찰하지 않고 제자리에서 둘러본다
 	var leashed: bool = false             ## 영역(leash_tiles)을 벗어나 돌아가는 중 — 반쯤 돌아갈 때까지 다시 쫓지 않는다
@@ -259,12 +257,11 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		changed.emit()
 	if player_safe:
 		return null
-	var boss_engage := float(_db.bal("monsters.boss_engage_tiles", 3.5))
 	for g in near:  # 쉬는 무리는 멀어서 닿을 수 없다
 		if g.grace_until > now or not g.hostile():
 			continue
-		if g.boss != "":  # 보스: 방에 들어와 보이는 거리면 바로
-			if g.fpos.distance_to(player) <= boss_engage and _steer.sees(g.pos, pcell):
+		if g.boss != "":  # 보스: 화면에 들어오고 벽에 가리지 않으면 바로(움직이지 않으니 벽 너머에서 끌어오지 않는다, V19)
+			if _steer.on_screen(g, pcell) and _steer.sees(g.pos, pcell):
 				return g
 		elif _steer.in_contact(g, player) and (g.state == STATE_CHASE or _aggressive(g.leader())):
 			return g
@@ -342,10 +339,6 @@ func send_to(g: Group, cell: Vector2i, pcell: Vector2i) -> void:
 	g.state = STATE_IDLE
 
 
-## 플레이어가 지나온 칸 [[칸, 시각], …](오래된 것이 앞). 냄새를 쫓는 몬스터(behavior tracks_scent)가 쓴다.
-func set_player_trail(trail: Array) -> void:
-	_steer.player_trail = trail
-
 
 func region_cells(region_id: String) -> Array[Vector2i]:
 	if _region_cells.has(region_id):
@@ -356,11 +349,6 @@ func region_cells(region_id: String) -> Array[Vector2i]:
 
 func set_player_stealth(v: float) -> void:
 	_steer.player_stealth = v
-
-
-## 플레이어가 방금 움직였는가(소리 — 등 뒤의 몬스터가 돌아본다).
-func set_player_moving(v: bool) -> void:
-	_steer.player_moving = v
 
 
 ## 플레이어에게 걸린 상태(원한의 징표 등). ExploreSession이 시간 흐름마다 넣는다.

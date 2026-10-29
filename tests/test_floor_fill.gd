@@ -94,23 +94,6 @@ func test_growth_ghouls_only_south_and_center() -> void:
 	assert_eq(FieldSpawnBias.growth_monster(db, rng, sp, 1.0, "f1_south"), "", "1일 차엔 아직")
 
 
-func test_wolf_follows_scent() -> void:
-	var s := _session()
-	var steer := MonsterSteering.new(db, s.map, Rng.new(1), [])
-	var g := FieldMonsters.Group.new()
-	g.monster_ids.append("blade_wolf")
-	g.place(s.pos + Vector2i(3, 0))
-	var far := s.pos + Vector2i(60, 0)
-	steer.player_trail = [[s.pos, 10.0]]
-	assert_true(steer._notices(g, far, 10.5), "방금 지나간 냄새를 맡는다")
-	assert_eq(g.scent, s.pos)
-	assert_false(steer._notices(g, far, 20.0), "오래된 냄새는 못 맡는다")
-	var gob := FieldMonsters.Group.new()
-	gob.monster_ids.append("goblin")
-	gob.place(s.pos + Vector2i(3, 0))
-	assert_false(steer._notices(gob, far, 10.5), "냄새를 쫓는 건 칼날늑대만")
-
-
 func test_parties_spawn_by_day_and_size() -> void:
 	var s := _session()
 	var ex := JsonUtil.get_dict(s.floor_def, "explorers")

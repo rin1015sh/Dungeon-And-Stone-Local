@@ -38,7 +38,6 @@
   "behavior": {
     "aggressive": true,
     "aggro_radius_m": 5.0,
-    "hunts_tiles": 20,
     "leash_tiles": 0,
     "pack_size": [
       1,
@@ -46,11 +45,7 @@
     ],
     "reveal_radius_m": 0,
     "row": "front",
-    "ignores_stealth": true,
-    "tracks_scent": {
-      "radius_tiles": 5,
-      "hours": 1.5
-    }
+    "ignores_stealth": true
   },
   "magic_stone_grade": 9,
   "essence_drops": [],

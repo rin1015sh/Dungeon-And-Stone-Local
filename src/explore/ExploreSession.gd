@@ -54,7 +54,6 @@ var vision_m: float = 0.0
 var ended: bool = false
 var steps: int = 0
 var fade_in: bool = false  ## 화면이 붙을 때 검은 화면에서 밝아진다(균열 길목을 지나왔다 — RiftRun._go)
-var trail: Array = []  ## 지나온 칸 [[칸, 시각], …](오래된 것이 앞, explore.trail_max개) — 냄새를 쫓는 몬스터(MonsterSteering)
 
 var _mpt: float = 1.0
 var _warned: Dictionary = {}
@@ -78,7 +77,6 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	fpos = Kinematics.center_of(pos)
 	lights = LightField.build(map, _mpt)
 	monsters = FieldMonsters.new(db, map, floor_def, rng)
-	monsters.set_player_trail(trail)
 	lord = LordWatch.new(JsonUtil.get_dict(floor_def, "lord"))
 	features.setup(self)
 	parties.setup(self)
@@ -183,9 +181,6 @@ func enter_cell(cell: Vector2i) -> void:
 	var from := pos
 	pos = cell
 	steps += 1
-	trail.append([cell, clock.total_hours])
-	if trail.size() > int(db.bal("explore.trail_max", 120)):
-		trail.pop_front()
 	_party_fatigue(Fatigue.DUNGEON_STEP, 1.0)  # 피로도 연결 지점(규칙 미정 — null이면 변화 없음)
 	moved.emit(from, cell)
 	refresh_view()
@@ -299,7 +294,6 @@ func pass_time(hours: float) -> void:
 		rifts.update(self, h)
 		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
-		monsters.set_player_moving(FieldStealth.moving(self))
 		monsters.set_player_marks(player.statuses.ids())
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
