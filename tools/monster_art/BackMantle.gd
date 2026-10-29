@@ -4,6 +4,7 @@ extends RefCounted
 ##   ruff {c} 목둘레를 감은 두툼한 털 목도리(어깨 위로 넘친다)
 ##   pads {c, kind: leather|iron, size, sides: "both"|"l"|"r"} 겹 판 어깨받이(BackSavage 어깨받이를 망토 위로 — 크게)
 ## 등 자락(BackDrape)보다 조금 더 바깥에 빚는다 — 몸 겹 위에 씌우면 망토 등판 안에 묻혀 보이지 않았다.
+##   pack · sheath · quiver = 등짐(BackPack — AM51)
 ## kit 키가 없으면 아무것도 하지 않는다.
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
@@ -11,6 +12,7 @@ const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
 const BackDrape := preload("res://tools/monster_art/BackDrape.gd")
 const BackSavage := preload("res://tools/monster_art/BackSavage.gd")
+const BackPack := preload("res://tools/monster_art/BackPack.gd")
 
 
 static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: Dictionary, rng: RandomNumberGenerator) -> void:
@@ -26,6 +28,8 @@ static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: D
 				BackSavage._pauldron(cl, pr, j, bd, d, rng)
 	if kit.has("ruff"):
 		_ruff(cl, pr, j, bd, kit["ruff"], under, rng)
+	if kit.has("pack") or kit.has("sheath") or kit.has("quiver"):  # 등짐(배낭·칼집·화살통 — AM51)
+		BackPack.wear(cl, pr, j, bd, kit, under, rng)
 
 
 ## 짧은 겉 망토: 몸틀(BackDrape._frame)을 따라 어깨 → 단까지 망토 등판보다 조금 바깥에 한 겹, 단은 몸 둘레로 휘고(가운데가 조금 길게)
