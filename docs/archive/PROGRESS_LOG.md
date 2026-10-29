@@ -6,9 +6,7 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
-- **인간 등짐 후보 6종 (2026-10-29, 사용자 "어깨 장식 별로 — 배낭+담요에 칼집·화살통 합쳐서")** — AM51. 새 부품 `BackPack.gd`(pack·sheath·quiver, `BackMantle.wear`에서), 후보 도구 `paint_shoulder_cands.gd --set=pack`, 비교 그림 `docs/screens/human_back_gear.png`(뒷모습 · 비스듬히 0.8 · 전투 크기 250px). 세 번 그려 고침(달걀 배낭·울퉁불퉁·뜸·담요 숨음·화살통 가로지름). 게임 그림 그대로(다시 그려 바이트 같음).
-
-- **인간 어깨 장식 후보 6종 (2026-10-29, 사용자 "추천 4번 여러 개로")** — AM50. 새 부품 `BackMantle.gd`(겉 망토 capelet · 털 목도리 ruff · 겹 판 어깨받이 pads — BackSavage 어깨받이를 양쪽으로), `Party.figure`에 한 줄(키 없으면 무), 후보 도구 `tools/paint_shoulder_cands.gd`, 비교 그림 `docs/screens/human_shoulder_wear.png`(뒷모습 + 비스듬히 0.8). 세 번 그려 고침(목도리 묻힘·네모 판·공 어깨·풍선 어깨받이). 게임 그림은 그대로(human_back·barbarian_back 다시 그려 바이트 같음).
+- **인간 등 장식 후보 제거 (2026-10-29, 사용자 "인간 망토 등 관련해서 추가한 건 전부 제거")** — 어깨 장식 후보 6종(부품 BackMantle·비교 그림 human_shoulder_wear)·등짐 후보 6종(부품 BackPack·도구 paint_shoulder_cands·비교 그림 human_back_gear)과 그 기록(AM50·AM51)을 되돌림(git revert 419277c·b6a8f70). 망토 등판 평평하게(AM49)는 남김(사용자 선택).
 
 - **인간 망토 등판 평평하게 (2026-10-29, 사용자)** — AM49. `BackDrape` 등 자락 깊이 ws[0] `bw×0.75` → `bw×0.68+0.03`, ws[1] `bw×0.62+0.02` → `bw×0.68+0.035`, ws[2] +0.008 · 주름 시작 = 어깨 아래 `sy+0.05`(전엔 등 쪽은 가슴 `ch.y+0.02`). 시험 두 가지(위만 얕게 → 혹 그대로, 주름만 위로 → 혹 경계 남음) 뒤 둘 다. 다시 그림 human_back·맵 human·동작 시트(고정 줄 human_back_wait 그대로). 등 장식 장비는 추천만 — 사용자 고르기 전.
 
