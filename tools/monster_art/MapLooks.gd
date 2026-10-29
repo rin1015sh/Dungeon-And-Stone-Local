@@ -71,7 +71,7 @@ const LOOKS := {
 	"h6_ranger": {"race": "human", "name": "순찰자", "head": 1.75, "legs": 0.82, "spec": {"kit": {
 		"pants": Color("#2e2c28"), "shirt": Color("#3e3a32"), "sleeves": "long", "vest": Color("#3a2a1e"), "belt": Color("#24180f"), "pouch": true, "knife": true,
 		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"), "elbow_guard": Color("#1c1714"),
-		"cloak": {"c": Color("#33382e"), "len": 0.72, "flare": 1.2, "open": 1.0, "clasp": Color("#8a8070"), "collar": true}}}},
+		"cloak": {"c": Color("#33382e"), "len": 0.55, "flare": 1.2, "open": 1.0, "clasp": Color("#8a8070"), "collar": true}}}},
 	"h7_hooded": {"race": "human", "name": "두건 쓴 순찰자", "head": 1.75, "legs": 0.82, "spec": {"hair": "none", "kit": {
 		"pants": Color("#2a2824"), "shirt": Color("#38342c"), "sleeves": "long", "vest": Color("#33261a"), "belt": Color("#24180f"), "knife": true,
 		"boots": Color("#26201a"), "boots_tall": true, "bracers": Color("#33261a"), "hood_up": Color("#2e3029"),
