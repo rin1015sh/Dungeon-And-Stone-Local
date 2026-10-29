@@ -107,7 +107,7 @@ func _show_cursor() -> void:
 	for i in _rows.size():
 		var sel := i == _cursor
 		var box := UiTheme.box(UiTheme.color("slot_hover") if sel and active else Color.TRANSPARENT,
-			UiTheme.color("gold") if sel else Color.TRANSPARENT, 0, 2)
+			UiTheme.color("select") if sel else Color.TRANSPARENT, 0, 2)
 		box.set_border_width_all(1 if sel else 0)
 		_rows[i].add_theme_stylebox_override("normal", box)
 	if _cursor < 0:

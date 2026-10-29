@@ -5,7 +5,6 @@ extends MenuPage
 ## W/S = 한 줄로 이어진 자리 사이: 맨 위 요약 → 정수 카드 하나하나 → 세부 능력(그 안에서는 W/S가 스크롤 — 맨 위면 W로 마지막 카드로).
 ## 자리를 옮기면 그 자리가 보이게 스크롤한다(사용자 2026-10-28 "W/S가 제대로 안 먹는다" — 예전엔 끝 카드 아래로 스크롤한 뒤 W가 카드로 튀었다, UI39).
 ## 커서 카드에서 Enter = 집기 → W/S로 위아래로 옮기기 → Enter = 확정 · Backspace = 집기 전 자리로(UI34). 바꾼 순서가 전투 스킬 목록의 정수 이능 순서(EssenceSet.move).
-## 쪽 테두리는 금색으로 밝히지 않는다(정수 카드 커서가 금색 — lit_frame).
 
 var pc: PlayerCharacter
 
@@ -19,7 +18,6 @@ var _grab: int = -1  ## 집어 든 카드가 원래 있던 자리(-1 = 집지 �
 
 func _init() -> void:
 	super(Strings.t("character.title"))
-	lit_frame = false
 
 
 func setup(p_pc: PlayerCharacter) -> void:
@@ -161,14 +159,14 @@ func _build_summary() -> void:
 	var lv := pc.get_level()
 	var next := Progression.exp_for_next(db, lv)
 	_box.add_child(UiTheme.label(Strings.t("character.level_line", {"level": lv, "exp": pc.progression.exp_total,
-		"next": next if next >= 0 else Strings.t("character.max")}), "body", "gold"))
+		"next": next if next >= 0 else Strings.t("character.max")}), "body", "text_dim"))
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
 	bar.custom_minimum_size.y = UiTheme.metric("bar_height", 14)
 	var prev := Progression.exp_for_level(db, lv)
 	bar.max_value = maxf(1.0, float(next - prev)) if next >= 0 else 1.0
 	bar.value = float(pc.progression.exp_total - prev) if next >= 0 else 1.0
-	bar.add_theme_stylebox_override("fill", UiTheme.box(UiTheme.color("gold"), Color.TRANSPARENT, 2, 0))
+	bar.add_theme_stylebox_override("fill", UiTheme.box(UiTheme.color("bar_exp"), Color.TRANSPARENT, 2, 0))
 	_box.add_child(bar)
 	var res := ResourcePanel.new()
 	_box.add_child(res)

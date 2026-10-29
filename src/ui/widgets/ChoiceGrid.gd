@@ -249,7 +249,7 @@ func _make_slot(i: int) -> Button:
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.custom_minimum_size = Vector2(UiTheme.metric("combat_slot_min_width", 160), _slot_h)
 	b.pressed.connect(_on_slot_pressed.bind(i))
-	var mark := UiTheme.label(Strings.t("menu.cursor"), "small", "gold")
+	var mark := UiTheme.label(Strings.t("menu.cursor"), "small", "select")
 	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mark.position = Vector2(UiTheme.metric("combat_slot_mark_x", 6), UiTheme.metric("combat_slot_mark_y", 6))
 	b.add_child(mark)
@@ -271,7 +271,7 @@ func _make_slot(i: int) -> Button:
 ## 칸 꾸밈. state: "" / "selected"(커서, 금색 테두리) / "empty"(빈 칸 — 테두리만)
 func _style(b: Button, state: String) -> void:
 	var bg := UiTheme.color("slot_hover" if state == "selected" else ("frame_dark" if state == "empty" else "slot"))
-	var border := UiTheme.color("gold" if state == "selected" else "slot_border")
+	var border := UiTheme.color("select" if state == "selected" else "slot_border")
 	var box := UiTheme.box(bg, border, 2, 0)
 	box.set_border_width_all(2 if state == "selected" else 1)
 	box.content_margin_left = UiTheme.metric("combat_slot_text_x", 22)

@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **UI 색 A안 (2026-10-29, 사용자 "노란 강조·Tab 메뉴가 분위기와 안 맞는다" → 제안 A안 전부)** — UI43. 범위: 팔레트·선택 색·Tab 메뉴 판 / 완료 기준: 선택은 뼈빛, 노란색은 돈만, Tab 쪽이 전투·대화창과 같은 판, check.sh 통과 / 테스트: 캡처(Tab 세 쪽·캐릭터·도감·전투·스킬·드롭·도시·여관·타이틀·만들기·기반 점검). 한 일: `palette.select` 새 키 + 선택에 쓰던 `gold` 18곳 → `select`(ChoiceGrid·InventoryGrid·PaperDoll·EssencePanel·DialogueBox·DropMark·PartyRoster·PartyPage·Bestiary·Lore·CodexIndex·CityStreet·CombatFigure 고리), `gold`는 소지금·값·세금만(#c9a24a → #a88a4e). 판·칸·테두리 따뜻한 먹색, 자원 막대(`resources.json` hp·soul·hunger)·능력치 ± 채도 낮춤, `bar_exp`·`bar_fatigue` 새 키. `MenuPage` = panel_box(page_alpha 0.97) + 글자 제목·선, 지금 아닌 쪽 modulate 0.75, `lit_frame` 삭제. 버튼 포커스 테두리 accent_dim(어두운 빨강 — 거의 안 보였다) → select. 막대 굵기 14 → 8(아군 6 → 4, 도시 막대도 4). 아이템 설명 창 frame_box → panel_box. 비교 그림 `docs/screens/ui_colors_a.png`. 남은 것: GothicStyle 돌판은 수수께끼 창(GothicWindow)만 씀 · 탐험 HUD·전투 숫자 색(`dmg_*`)은 그대로.
+
 - **팔 든 칸 어깨 밑 혹 · 돌아선 자세 3칸 (2026-10-29, 사용자)** — AM48. 광배근을 팔 든 정도(`Back._arm_lift`, 위팔 방향)만큼 몸 윤곽 안으로 좁히고 납작하게, 어깨세모근은 위팔을 따라 · 돌아선 자세 3칸 고친 것은 사용자가 되돌림 → 인간 돌아선 자세 줄 = 커밋 d9fa108 그림 고정(`tools/monster_art/pinned/human_back_wait.png`, `paint_motions._pin`), 잰 칸 데이터 원래대로. 맵·전투 뒷모습·동작 다시 그림.
 
 - **전투 동작 다듬기 2 · 플레이어 맨 왼쪽 (2026-10-29, 사용자)** — AM47·UI42. 바바리안 어깨받이를 위팔에 묶음(주먹 지르기·한손 휘두르기에서 보임) · 팔꿈치 끝 혹을 덮는 컵(분홍 살 겹침) · 바바리안 대기2 = 인간과 같은 칸(`stance@barbarian` 삭제) · 망토 앞 트임 넓힘 + 반쪽씩 재기(활 쏠 때 몸 앞쪽이 드러남) + 몸틀 따르기 · 전투 아군 정렬 `BattleStage._party_before`(플레이어 맨 왼쪽, 소환수 오른쪽 끝). 맵·전투 뒷모습·동작 다시 그림, 정리 그림 `docs/screens/party_motions_sheet.png`.

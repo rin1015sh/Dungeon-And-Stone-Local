@@ -283,7 +283,7 @@ func _draw_mark() -> void:
 	_mark.position = Vector2.ZERO
 	var s := _cfg("mark_size", 7.0)
 	var c := Vector2(r.size.x * 0.5, r.size.y - s - 4.0 + sin(_blink * 5.0) * 2.0)
-	var col := UiTheme.color("gold")
+	var col := UiTheme.color("select")
 	col.a = 0.6 + 0.4 * absf(sin(_blink * 3.0))
 	_mark.draw_colored_polygon(PackedVector2Array([c + Vector2(-s, -s * 0.6), c + Vector2(s, -s * 0.6), c + Vector2(0, s * 0.6)]), col)
 

@@ -1,15 +1,14 @@
 class_name MenuPage
 extends PanelContainer
-## Tab 메뉴(GameMenu)의 한 쪽(소지품 · 캐릭터 · 도감): 돌판 테두리 + 위 이름판 + 내용(content).
+## Tab 메뉴(GameMenu)의 한 쪽(소지품 · 캐릭터 · 도감): 게임 전체 창 판(UiTheme.panel_box) + 위 글자 제목·가는 선 + 내용(content).
+## 지금 쪽은 제목이 밝고, 다른 쪽은 통째로 한 단계 어둡다(금색 테두리 없음 — 사용자 결정 2026-10-29, UI43).
 ## 키는 GameMenu가 받아 지금 쪽(active)에 넘긴다 — nav(방향)·confirm(Enter)·back(Backspace).
 ## nav가 false를 돌려주면(그 방향에 고를 것이 없다) GameMenu가 옆 쪽으로 옮긴다.
 
 var content: VBoxContainer
 ## 쪽 안의 작은 선택 창을 띄울 곳(GameMenu — 화면 전체를 덮는다). 클래스 이름으로 서로 부르면 종료 때 누수라 Control로 받는다.
 var popup_host: Control = null
-var _plaque: PanelContainer
-## 지금 쪽이면 테두리를 금색으로(캐릭터 쪽은 끈다 — 정수 카드 커서가 금색이라 겹친다, 사용자 2026-10-28).
-var lit_frame: bool = true
+var _title: Label
 var active: bool = false:
 	set(v):
 		active = v
@@ -22,11 +21,13 @@ func _init(title: String) -> void:
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	add_child(v)
-	_plaque = PanelContainer.new()
-	_plaque.add_theme_stylebox_override("panel", GothicStyle.plaque_box())
-	_plaque.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_plaque.add_child(UiTheme.label(title, "body", "text_title"))
-	v.add_child(_plaque)
+	_title = UiTheme.label(title, "body", "text_dim")
+	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(_title)
+	var line := ColorRect.new()
+	line.color = UiTheme.color("frame_edge")
+	line.custom_minimum_size.y = cfg("title_line", 1.0)
+	v.add_child(line)
 	content = VBoxContainer.new()
 	content.add_theme_constant_override("separation", UiTheme.metric("spacing", 8))
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -68,10 +69,14 @@ func on_active(_on: bool) -> void:
 
 
 func _paint() -> void:
-	var b := GothicStyle.frame_box()
-	if active and lit_frame:
-		b.border_color = UiTheme.color("gold")
+	var b := UiTheme.see_through(UiTheme.panel_box(UiTheme.metric("padding", 8)), cfg("page_alpha", 0.97))
+	if active:
+		b.border_color = UiTheme.color("frame_edge")
 	add_theme_stylebox_override("panel", b)
+	var shade := 1.0 if active else cfg("inactive_shade", 0.75)
+	modulate = Color(shade, shade, shade)
+	if _title != null:
+		_title.add_theme_color_override("font_color", UiTheme.color("text_title" if active else "text_dim"))
 
 
 ## render.json ui.menu 값.

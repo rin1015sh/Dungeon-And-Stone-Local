@@ -163,7 +163,7 @@ static func describe(db: GameDatabase, inst: Dictionary) -> String:
 	return "\n".join(lines)
 
 
-## 카드 판: 커서 = 금빛 테두리, 집어 들었으면 더 굵은 금빛 + 조금 밝은 바탕, 그 밖은 차분한 정수 색 테두리.
+## 카드 판: 커서 = 뼈빛 테두리, 집어 들었으면 더 굵은 뼈빛 + 조금 밝은 바탕, 그 밖은 차분한 정수 색 테두리.
 func _card_box(db: GameDatabase, inst: Dictionary, i: int) -> StyleBoxFlat:
 	var col := color_of(db, JsonUtil.get_str(inst, "color"))
 	var locked := EssenceSet.is_locked(inst)
@@ -171,7 +171,7 @@ func _card_box(db: GameDatabase, inst: Dictionary, i: int) -> StyleBoxFlat:
 	var edge := calm(col, 0.3).darkened(0.0 if not locked else 0.45)
 	var w := 1
 	if i == cursor:
-		edge = UiTheme.color("gold")
+		edge = UiTheme.color("select")
 		w = 2
 		if grabbed:
 			bg = bg.lightened(0.08)

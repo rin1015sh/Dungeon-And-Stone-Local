@@ -90,7 +90,7 @@ class EquipSlot extends Control:
 		else:
 			ItemIconPainter.paint_ghost(self, ghost, r)
 		if _cursor:
-			draw_rect(r.grow(-1), UiTheme.color("gold"), false, 2.0)
+			draw_rect(r.grow(-1), UiTheme.color("select"), false, 2.0)
 
 	## 가방에서 고른 아이템을 이 칸에 장착한다(스모크 테스트도 쓴다). 성공하면 true.
 	func drop(d: Dictionary) -> bool:
