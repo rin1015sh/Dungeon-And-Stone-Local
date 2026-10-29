@@ -83,7 +83,8 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 	var knee := lerpf(pv.y, hem, 0.55)
 	var spine: Array = [_w(f, j, 0, sy + 0.01, z0), _w(f, j, 0, ch.y, z0), _w(f, j, 0, pv.y, z0 + 0.014), _w(f, j, 0, knee, z0 + 0.04), _w(f, j, 0, hem, z0 + 0.07)]
 	var us: Array = [shw + 0.015, shw + 0.03, shw * flare + 0.035, shw * flare + 0.05, shw * flare + 0.075]
-	var ws: Array = [bw * 0.75 + under, bw * 0.62 + 0.02 + under, bw * 0.62 + 0.042 + under + belt, bw * 0.5 + 0.03 + under + belt * 0.5, bw * 0.4 + 0.022 + under]
+	# 어깨 ~ 가슴 깊이를 같게(등판이 평평한 한 면 — 위가 얕으면 둥근 등을 따라 덮은 몸 겹이 견갑골 위로 둥근 혹처럼 드러났다, 사용자 2026-10-29 AM49)
+	var ws: Array = [bw * 0.68 + 0.03 + under, bw * 0.68 + 0.035 + under, bw * 0.64 + 0.05 + under + belt, bw * 0.5 + 0.03 + under + belt * 0.5, bw * 0.4 + 0.022 + under]
 	for piece: PackedVector2Array in pieces:
 		BackKit.shell(cl, pr, tags, GROW + under, m, g, piece, 0.05, 0.0)
 		BackKit.shell(cl, pr, ["shoulder_l", "shoulder_r"], GROW * 0.45 + under, m, g, piece, 0.05, 0.0)  # 어깨는 얇게(두꺼우면 어깨가 공처럼 부풀었다)
@@ -91,12 +92,12 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 		echain(cl, pr, g, spine, us, ws, m, 0.05, f["pr2"])
 		cl.set_clip(PackedVector2Array())
 	var open_bot := OPEN_BOT * open
-	for k in 16:  # 세로 주름: 몸 둘레 어느 쪽에서 봐도 어깨·견갑골 아래에서 단으로 퍼지며 처진다(앞 트임 자리는 빼고)
+	for k in 16:  # 세로 주름: 몸 둘레 어느 쪽에서 봐도 어깨 바로 아래에서 단으로 퍼지며 처진다(앞 트임 자리는 빼고 — 가슴에서 시작하면 그 위가 매끈한 둥근 덩어리로 보였다, AM49)
 		var phi := TAU * (k + rng.randf_range(0.2, 0.8)) / 16.0 - PI
 		if absf(wrapf(phi + PI * 0.5, -PI, PI)) < open_bot * 0.9:
 			continue
 		var n := rv * cos(phi) + bv * sin(phi)
-		var p0 := _w(f, j, cos(phi) * (shw + 0.02), lerpf(sy + 0.06, ch.y + 0.02, absf(sin(phi))) + rng.randf_range(0.0, 0.04), sin(phi) * (bw + GROW + under))
+		var p0 := _w(f, j, cos(phi) * (shw + 0.02), sy + 0.05 + rng.randf_range(0.0, 0.04), sin(phi) * (bw + GROW + under))
 		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.07 + sin(phi) * float(ws[4]))
 		var mid := p0.lerp(p1, 0.5) + n * 0.006 + rv * rng.randf_range(-0.01, 0.01)
 		Back.groove(cl, pr, g, [p0, mid, p1], n, 0.005, 0.009)
