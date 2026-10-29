@@ -29,6 +29,7 @@ extends Node
 ## --extra_turn: 지금 차례를 추가 차례로 표시해 파티 창 이름 옆 표시를 본다
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들 — --rift … --engage 균열 조우에서도), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
+## --heal: --combat에서 참가자 모두 생명력을 깎았다가 25 채운다(초록 회복 숫자 확인, UI44)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
@@ -363,6 +364,15 @@ func _run() -> void:
 					hs._on_chosen({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": hs.battle.side_units(Combatant.SIDE_ENEMY)[0]})
 			var hv := str(_args["hit"])
 			await get_tree().create_timer(hv.to_float() if hv.is_valid_float() else 0.25).timeout
+			_quick = true
+		if _args.has("heal"):  # --heal: 전투 참가자 모두 생명력을 깎았다가 일부 채워 초록 회복 숫자(UI44)를 본다
+			await _frames(10)
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					for hu: Combatant in (n as CombatScreen).battle.units:
+						hu.actor.pool.modify("hp", -40.0, "debug")
+						hu.actor.pool.modify("hp", 25.0, "debug")
+			await get_tree().create_timer(0.25).timeout
 			_quick = true
 		if _args.has("keys"):  # 행동창 키 입력 흉내: --keys=menu_right,menu_right,menu_confirm (쪽 넘김·커서 확인)
 			await _frames(10)

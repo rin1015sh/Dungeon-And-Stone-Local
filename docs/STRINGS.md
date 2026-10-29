@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(969줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -542,6 +542,7 @@
 - `combat.float_immune` 면역
 - `combat.float_blocked` 막힘
 - `combat.float_miss` 회피
+- `combat.float_heal` +{n}
 - `combat.drop_ask` {what} — 획득할까?
 - `combat.drop_take` 획득한다
 - `combat.drop_leave` 두고 간다
@@ -624,7 +625,7 @@
 - `combat.tarunbas_roar` {name}이(가) 울부짖는다 — 몸이 부풀어 오르고 연달아 움직인다!
 - `combat.kirdui_intro` 검은 거체가 몸을 일으킨다. {name}의 송곳니 사이로 김이 새어 나온다.
 - `combat.split` {name}이(가) 둘로 갈라진다 — {monster}!
-- `combat.absorb` {name}이(가) {target}을(를) 집어삼켰다. 생명력 {amount} 회복.
+- `combat.absorb` {name}이(가) {target}을(를) 집어삼켰다.
 - `combat.absorb_none` {name}이(가) 삼킬 것을 찾지 못했다.
 - `combat.summon_expired` {name}이(가) 사라졌다.
 - `combat.death_blast` {name}이(가) 쓰러지며 폭발한다!

@@ -25,6 +25,7 @@ var backdrop_width: float = 0.0
 
 var _stage: BattleStage
 var _roster: PartyRoster
+var _heals: HealFloats  # 회복 = 초록 숫자(UI44)
 var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방지)
 var _menu: CommandMenu
 var _route: NoticeRoute
@@ -49,6 +50,9 @@ func _ready() -> void:
 	_stage.set_backdrop(backdrop, backdrop_width)
 	add_child(_stage)
 	_stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_heals = HealFloats.new()
+	_heals.setup(_stage)
+	add_child(_heals)
 	_roster = PartyRoster.new()
 	_roster.setup(battle.db)
 	_menu = CommandMenu.new()
@@ -108,6 +112,7 @@ func _say(text: String, kind: String) -> void:
 func _add_unit(u: Combatant) -> void:
 	_stage.add_unit(u)
 	_roster.add_unit(u)
+	_heals.watch(u)
 
 
 ## 차례를 돌린다(행동 순서는 CTB 그대로). 아군 차례인데 그 사람의 정해 둔 행동이 없으면 멈추고 "행동 정하기"를 연다 —
