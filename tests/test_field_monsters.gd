@@ -99,6 +99,7 @@ func test_non_aggressive_waits_and_grace() -> void:
 	assert_true(fm.update(_c(player), _move_hours("ghoul") * 5.0, 0.0, false) == null, "구울은 멀리서는 덤비지 않는다")
 	assert_true(g.state != FieldMonsters.STATE_CHASE)
 	g.place(Vector2i(4, 7))
+	g.facing = Vector2(-1, 0)  # 플레이어 쪽을 본다(등 돌리고 있으면 모른다 — V20)
 	assert_true(fm.update(_c(player), 0.0, 0.0, false) == g, "바로 옆이면 싸운다")
 	fm.set_grace(g, 0.0)
 	assert_true(fm.update(_c(player), 0.0, 0.0, false) == null, "도망친 직후에는 쫓지 않는다")

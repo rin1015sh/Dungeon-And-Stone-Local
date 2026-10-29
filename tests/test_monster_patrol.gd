@@ -1,6 +1,7 @@
 extends TestCase
 ## 필드 몬스터의 경계 순찰과 화면 감지(사용자 2026-10-27 "빙빙 돌지 말고 주변을 순찰·경계하는 느낌" + 2026-10-29 "화면 밖에서 감지하는 일은
-## 없게, 화면 안에 들어오면 어그로" — V19): 화면 사각형 안이면 벽·바라보는 쪽과 상관없이 알아채고 밖이면 모른다, 순찰 지점 사이를 걷다 서서 둘러보고,
+## 없게, 화면 안에 들어오면 어그로 · 벽이랑 등 돌리고 있으면 못 알아채게" — V19·V20): 화면 사각형 안이고 벽에 가리지 않고 바라보는 쪽이면
+## 알아채고 밖이면 모른다, 순찰 지점 사이를 걷다 서서 둘러보고,
 ## 놓치면 마지막으로 본 자리를 찾아본 뒤 집으로.
 
 
@@ -34,7 +35,7 @@ func _half() -> Vector2:
 	return MonsterSenses.new(db).half
 
 
-## 화면 안이면 등 뒤·벽 너머라도 알아채고, 화면 밖이면 가로·세로 어느 쪽이든 모른다.
+## 화면 안이고 플레이어 쪽을 보고 있으면 알아채고, 화면 밖이면 가로·세로 어느 쪽이든 모른다.
 func test_notices_exactly_inside_screen() -> void:
 	var h := _half()
 	var fm := _room(60)
@@ -44,15 +45,30 @@ func test_notices_exactly_inside_screen() -> void:
 		[Vector2i(int(h.x), int(h.y)), true, "모서리 안"], [Vector2i(int(h.x) + 1, int(h.y) + 1), false, "모서리 밖"]]
 	for c: Array in cases:
 		var off: Vector2i = c[0]
-		var g := _place(fm, "goblin", p + off, Vector2(off).normalized())  # 플레이어를 등지고 서 있다
+		var g := _place(fm, "goblin", p + off, -Vector2(off).normalized())  # 플레이어 쪽을 본다
 		fm.update(_c(p), 0.0, 0.0, false)
-		assert_eq(g.state == FieldMonsters.STATE_CHASE, bool(c[1]), "%s (%s) — 등져도 화면 안이면 안다" % [c[2], str(off)])
+		assert_eq(g.state == FieldMonsters.STATE_CHASE, bool(c[1]), "%s (%s)" % [c[2], str(off)])
 		fm.groups.erase(g)
-	for x in range(26, 35):  # 벽 너머(화면 안)
+
+
+## 등 돌리고 있거나 벽에 가리면 화면 안이어도 모른다(V20). 바로 옆(시야각 180도 끝)은 본다.
+func test_back_turned_or_walled_does_not_notice() -> void:
+	var fm := _room(60)
+	var p := Vector2i(30, 30)
+	var away := _place(fm, "goblin", Vector2i(34, 30), Vector2(1, 0))
+	var close := _place(fm, "goblin", Vector2i(31, 34), Vector2(0, 1))
+	var side := _place(fm, "goblin", Vector2i(25, 33), Vector2(0, -1))
+	for x in range(26, 35):  # 위쪽 벽
 		fm._map.set_tile(Vector2i(x, 27), "rock_wall")
-	var behind := _place(fm, "slime", Vector2i(30, 24), Vector2(0, -1))
+	var walled := _place(fm, "slime", Vector2i(30, 24), Vector2(0, 1))
 	fm.update(_c(p), 0.0, 0.0, false)
-	assert_eq(behind.state, FieldMonsters.STATE_CHASE, "화면 안이면 벽 너머라도 알아챈다")
+	assert_true(away.state != FieldMonsters.STATE_CHASE, "등 돌리고 있으면 모른다")
+	assert_true(close.state != FieldMonsters.STATE_CHASE, "바로 뒤라도 등 돌리고 있으면 모른다")
+	assert_true(walled.state != FieldMonsters.STATE_CHASE, "벽에 가리면 플레이어 쪽을 봐도 모른다")
+	assert_eq(side.state, FieldMonsters.STATE_CHASE, "옆으로 보이는 곳(시야각 180도 끝)은 본다")
+	away.facing = Vector2(-1, 0)
+	fm.update(_c(p), 0.0, 0.0, false)
+	assert_eq(away.state, FieldMonsters.STATE_CHASE, "돌아보면 안다")
 
 
 ## 순찰: 무작위 한 걸음씩 왔다 갔다 하지 않고(A→B→A가 드물다), 집 둘레를 벗어나지 않고, 서서 둘러보는 때가 있다.
@@ -108,18 +124,19 @@ func test_lost_player_is_searched_then_home() -> void:
 	assert_true(home_again, "둘러보고 집으로 돌아간다")
 
 
-## 쫓는 중엔 화면 끝을 조금(chase_keep_tiles) 넘어도 놓치지 않고, 그보다 멀어지면 놓쳐 찾아본다.
+## 쫓는 중엔 화면 끝을 조금(chase_keep_tiles) 넘어도 놓치지 않고(등을 보여도), 그보다 멀어지면 놓쳐 찾아본다.
 func test_keeps_chasing_just_past_screen_edge() -> void:
 	var h := _half()
 	var keep := float(db.bal("monsters.chase_keep_tiles"))
 	var fm := FieldMonsters.new(db, _hall(), {"regions": [], "spawn": {}}, Rng.new(3))
-	var g := _place(fm, "slime", Vector2i(5, 3), Vector2(-1, 0))
+	var g := _place(fm, "slime", Vector2i(5, 3), Vector2(1, 0))
 	fm.update(_c(Vector2i(5 + int(h.x) + 1, 3)), 0.0, 0.0, false)
 	assert_true(g.state != FieldMonsters.STATE_CHASE, "화면 밖은 모른다")
 	fm.update(_c(Vector2i(5 + int(h.x), 3)), 0.0, 0.0, false)
 	assert_eq(g.state, FieldMonsters.STATE_CHASE, "화면에 들어오면 안다")
+	g.facing = Vector2(-1, 0)
 	fm.update(_c(Vector2i(5 + int(h.x + keep), 3)), 0.0, 0.0, false)
-	assert_eq(g.state, FieldMonsters.STATE_CHASE, "쫓는 중엔 화면 끝을 조금 넘어도 놓치지 않는다")
+	assert_eq(g.state, FieldMonsters.STATE_CHASE, "쫓는 중엔 화면 끝을 조금 넘어도·등을 보여도 놓치지 않는다")
 	fm.update(_c(Vector2i(5 + int(h.x + keep) + 2, 3)), 0.0, 0.0, false)
 	assert_eq(g.state, FieldMonsters.STATE_SEARCH, "더 멀어지면 놓치고 찾아본다")
 

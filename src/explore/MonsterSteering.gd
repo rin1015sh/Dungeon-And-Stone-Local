@@ -3,7 +3,7 @@ extends RefCounted
 ## 필드 몬스터 무리의 판단·이동(순수 로직). FieldMonsters가 가진다(이쪽은 FieldMonsters를 참조하지 않는다 → 순환 없음).
 ##   decide: 대기(idle: 순찰) / 추적(chase: 플레이어를 알아챔) / 수색(search: 놓친 자리 둘러보기) /
 ##           귀환(return: 영역 이탈·도망친 플레이어 유예·수색 끝)
-##   감지:   화면 안이면 알아채고 화면 밖이면 모른다(V19) — MonsterSenses
+##   감지:   화면 안 + 벽에 안 가림 + 바라보는 쪽이면 알아채고 화면 밖이면 모른다(V19·V20) — MonsterSenses
 ##   walk:   칸 길찾기로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다(Kinematics 충돌).
 ##           먼 곳으로 보낸 무리(route)는 대기 중에 그 길을 따라 걷는다. 쫓지 않을 때 갈 곳은 MonsterPatrol.
 ## 몬스터별 지도 행동(behavior): wander_radius·wander_chance(순찰 범위·빈도 — 고블린은 넓게 순찰)·leash_tiles(영역)·
@@ -90,13 +90,16 @@ var player_stealth: float = 0.0
 var player_marks: Array = []
 
 
-## 알아챘는가(V19): 화면 안이면 벽·바라보는 쪽과 상관없이 안다, 밖이면 모른다(쫓는 중이면 chase_keep_tiles만큼 더 넓게).
-## 예외 — 숨어 기다리는 몬스터(reveal_radius_m: 노움)와 먼저 덤비지 않는 몬스터(aggressive false: 구울·문지기)는 화면 안이어도
+## 알아챘는가(V19·V20): 화면 안 + 벽에 가리지 않음 + 바라보는 쪽(시야각)이면 안다, 화면 밖이면 모른다.
+## 쫓는 중이면 시야각은 보지 않고(모퉁이를 돌 때마다 놓치지 않게) 화면을 chase_keep_tiles만큼 넓게 본다 — 벽에 가리면 놓친다.
+## 예외 — 숨어 기다리는 몬스터(reveal_radius_m: 노움)와 먼저 덤비지 않는 몬스터(aggressive false: 구울·문지기)는
 ## aggro_radius_m 안으로 다가와야 안다(한 번 알아채면 화면 규칙으로 쫓는다).
 func _notices(g: FieldMonsters.Group, player: Vector2i, _now_h: float = 0.0) -> bool:
 	var chasing := g.state == FieldMonsters.STATE_CHASE
-	if not on_screen(g, player, chasing):
+	if not on_screen(g, player, chasing) or not _line_of_sight(g.pos, player):
 		return false
+	if not chasing and not _senses.in_cone(g.facing, Vector2(player - g.pos)):
+		return false  # 등 돌리고 있다
 	var beh := _behavior(g.leader())
 	if chasing or not _lurks(beh):
 		return true

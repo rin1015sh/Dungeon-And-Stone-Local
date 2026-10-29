@@ -192,7 +192,7 @@
     "max_size": 5
   },
   "monsters": {
-    "_comment": "필드 몬스터 — 감지 = 화면(사용자 2026-10-29 \"화면 밖에서 감지하는 일은 없게, 화면 안에 들어오면 어그로\" — V19): 플레이어 카메라 사각형(뷰포트 ÷ 칸 크기 × 줌, render.json view)에서 screen_margin_tiles 안쪽이면 벽·바라보는 쪽과 상관없이 알아채고, 밖이면 모른다(숨는 몬스터 reveal_radius_m·먼저 덤비지 않는 몬스터 aggressive false는 화면 안이어도 behavior aggro_radius_m 안이어야). 쫓는 중엔 chase_keep_tiles만큼 더 넓게 놓치지 않는다. 은신만큼 사각형이 준다. 순찰 = 집 둘레 wander_radius 안 지점 사이를 짧게 쉬며 계속(home_drift_chance로 집이 옮겨 가 같은 자리를 맴돌지 않는다), 칸 길은 straight_lookahead_tiles까지 곧게 편다. 직접 추적 direct_chase_tiles(곧게 걸을 수 있을 때)",
+    "_comment": "필드 몬스터 — 감지 = 화면(사용자 2026-10-29 \"화면 밖에서 감지하는 일은 없게, 화면 안에 들어오면 어그로\" — V19): 플레이어 카메라 사각형(뷰포트 ÷ 칸 크기 × 줌, render.json view)에서 screen_margin_tiles 안쪽이고 벽에 가리지 않고 바라보는 쪽(view_cone_deg — 등 돌리고 있으면 모른다, V20)이면 알아채고, 밖이면 모른다(숨는 몬스터 reveal_radius_m·먼저 덤비지 않는 몬스터 aggressive false는 화면 안이어도 behavior aggro_radius_m 안이어야). 쫓는 중엔 시야각을 보지 않고 chase_keep_tiles만큼 더 넓게 놓치지 않는다(벽에 가리면 놓친다). 은신만큼 사각형이 준다. 순찰 = 집 둘레 wander_radius 안 지점 사이를 짧게 쉬며 계속(home_drift_chance로 집이 옮겨 가 같은 자리를 맴돌지 않는다), 칸 길은 straight_lookahead_tiles까지 곧게 편다. 직접 추적 direct_chase_tiles(곧게 걸을 수 있을 때)",
     "_boss_engage_comment": "방에서 기다리는 보스·중간 보스(boss_ranks): 화면 안이고 벽에 가리지 않으면 바로 전투(V16 → V19)",
     "wander_chance": 0.9,
     "wander_radius": 14,
@@ -203,6 +203,7 @@
     "straight_lookahead_tiles": 8,
     "search_hours": 0.3,
     "turn_deg_per_tile": 30,
+    "view_cone_deg": 180,
     "screen_margin_tiles": 0.5,
     "chase_keep_tiles": 2,
     "update_max_moves": 12,
