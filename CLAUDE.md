@@ -29,7 +29,7 @@
   - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **웹(itch.io)**: 내보내기 명령은 `docs/TOOLS.md`, 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`.
-  - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(Noto Sans KR)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
+  - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(본 폰트 송명 + 대신 채우는 Noto Sans KR — render.json `font`, UI45)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
 - **Godot이 없는 환경**(모바일 웹 등): 정적 검토만 하고 PROGRESS.md에 **"미검증(Godot 실행 필요)"**을 명시한다. 검증하지 않은 것을 검증했다고 쓰지 않는다.
 
 ## 코드 규칙

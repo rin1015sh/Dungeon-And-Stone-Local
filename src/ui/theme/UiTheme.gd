@@ -59,12 +59,13 @@ static func apply_global_font() -> void:
 
 ## 폰트 결정: render.font.path → assets/fonts의 첫 폰트 파일 → 시스템 한글 폰트(SystemFont).
 ## 웹 내보내기에는 시스템 폰트가 없으므로 OFL 한글 폰트를 assets/fonts에 넣어야 한다.
+## font.fallbacks = 본 폰트에 없는 글자(기호·드문 한글)를 채울 폰트, spacing_top/bottom = 줄 위아래 여백(px) — 송명 본문 + Noto 대신(UI45).
 static func resolve_font(cfg: Dictionary) -> Font:
 	var path := JsonUtil.get_str(cfg, "path")
 	if not path.is_empty() and ResourceLoader.exists(path):
 		var f := load(path) as Font
 		if f != null:
-			return f
+			return _dressed(f, cfg)
 	var dir := JsonUtil.get_str(cfg, "dir", "res://assets/fonts")
 	if DirAccess.dir_exists_absolute(dir):
 		for file: String in DirAccess.get_files_at(dir):
@@ -81,6 +82,21 @@ static func resolve_font(cfg: Dictionary) -> Font:
 		names.append(str(n))
 	sys.font_names = names
 	return sys
+
+
+static func _dressed(base: Font, cfg: Dictionary) -> Font:
+	var fv := FontVariation.new()
+	fv.base_font = base
+	var fb: Array[Font] = []
+	for p: Variant in JsonUtil.get_array(cfg, "fallbacks"):
+		if ResourceLoader.exists(str(p)):
+			var f := load(str(p)) as Font
+			if f != null:
+				fb.append(f)
+	fv.fallbacks = fb
+	fv.spacing_top = JsonUtil.get_int(cfg, "spacing_top")
+	fv.spacing_bottom = JsonUtil.get_int(cfg, "spacing_bottom")
+	return fv
 
 
 static func color(key: String, fallback: Color = Color.MAGENTA) -> Color:
