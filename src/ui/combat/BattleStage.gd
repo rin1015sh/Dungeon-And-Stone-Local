@@ -189,7 +189,11 @@ func _layout_party(party: Array[Combatant], stage_h: float) -> float:
 		var px := _party_x(i, n)
 		var k := clampf(v.size_k, 0.5, UiTheme.ui_float("combat_party_size_max", 1.2)) if v.unit.actor is Monster else 1.0
 		var half := v.width_for(ph * k) * 0.5  # 화면 밖으로 넘치지 않게
-		v.place(Vector2(clampf(size.x * px, half, maxf(half, size.x - half)), stage_h + sink * minf(1.0, k) * minf(1.0, k)), ph * k)
+		var dip := sink * minf(1.0, k) * minf(1.0, k)
+		var by_race := UiTheme.ui_dict("combat_party_sink_by_race")  # 종족마다 묻는 깊이(키 비율) — 인간은 종아리까지 망토가 보이게
+		if v.unit.actor is PlayerCharacter and by_race.has((v.unit.actor as PlayerCharacter).race_id):
+			dip = ph * JsonUtil.get_float(by_race, (v.unit.actor as PlayerCharacter).race_id)
+		v.place(Vector2(clampf(size.x * px, half, maxf(half, size.x - half)), stage_h + dip), ph * k)
 		top = minf(top, v.position.y)
 	return top
 
