@@ -49,7 +49,7 @@ static func weapon_kind(db: GameDatabase, item_id: String) -> String:
 	return "two_hand" if ItemInfo.two_handed(db, item_id) else "one_hand"
 
 
-## 행동 → 동작 이름(전투 행동 dict — Battle.act): 기본 공격 = 무기 종류대로(한손·맨손 swing 칼 휘두르기 · 양손 heavy 대검 내려치기 ·
+## 행동 → 동작 이름(전투 행동 dict — Battle.act): 기본 공격 = 무기 종류대로(한손 swing 칼 휘두르기 · 맨손 thrust 주먹 지르기 · 양손 heavy 대검 내려치기 ·
 ## 활 shoot — 줄이 없으면 swing), 물리 피해 스킬 = 주먹 지르기, 그 밖의 스킬·아이템·도망 = 주문,
 ## 방어 = 전투 자세(따로 방어 동작은 두지 않는다 — 사용자 2026-10-28).
 static func motion_for(db: GameDatabase, action: Dictionary, kind: String = "one_hand") -> String:
@@ -61,7 +61,7 @@ static func motion_for(db: GameDatabase, action: Dictionary, kind: String = "one
 		"skill":
 			var id := str(action.get("skill", Battle.BASIC_ATTACK))
 			if id == Battle.BASIC_ATTACK:
-				return str({"two_hand": "heavy", "bow": "shoot"}.get(kind, "swing"))
+				return str({"two_hand": "heavy", "bow": "shoot", "": "thrust"}.get(kind, "swing"))
 			for e: Variant in JsonUtil.get_array(db.get_entry("skills", id), "effects"):
 				if e is Dictionary and JsonUtil.get_str(e, "type") == "damage" and JsonUtil.get_str(e, "scaling", "phys") != "magic":
 					return "thrust"
