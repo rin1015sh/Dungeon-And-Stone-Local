@@ -119,6 +119,7 @@ func layout() -> void:
 	var party: Array[Combatant] = []
 	for u: Combatant in _views:
 		(party if u.side == Combatant.SIDE_PARTY else foes).append(u)
+	party.sort_custom(_party_before)
 	var ally_top := _layout_party(party, stage_h)
 	_floor_y = stage_h * UiTheme.ui_float("combat_enemy_floor", 0.92)
 	if not party.is_empty():
@@ -168,6 +169,13 @@ func _horizon_y() -> float:
 		ts = _back.get_size()
 	var k := maxf(size.x / ts.x, size.y / ts.y)
 	return (size.y - ts.y * k) / 2.0 + JsonUtil.get_float(cam, "horizon", 250.0) * k
+
+
+## 아군 자리 순서: 플레이어(소환수가 아닌 아군 중 가장 먼저 들어온 사람 — Battle.leader)가 늘 맨 왼쪽, 다음 동료, 소환수는 오른쪽 끝(사용자 2026-10-29).
+static func _party_before(a: Combatant, b: Combatant) -> bool:
+	if a.summoned != b.summoned:
+		return not a.summoned
+	return a.order < b.order
 
 
 ## 아군: 아래 앞줄에 고르게. 가장 높은 머리(그림 위끝)의 y를 돌려준다(아군이 없으면 무대 바닥).

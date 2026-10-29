@@ -90,44 +90,56 @@ static func _pauldron(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d
 	var kind := str(d.get("kind", "leather"))
 	var col: Color = d["c"]
 	var shp: Vector3 = j["shoulder_" + t]
+	var el: Vector3 = j["elbow_" + t]
+	# 위팔에 끈으로 묶어 팔을 따라 움직인다(사용자 2026-10-29 "주먹 지르기·한손 무기에서 왼쪽 어깨 갑옷이 안 보임" — 어깨 관절에 박아 두면
+	# 팔을 들 때 팔 밑에 깔려 그늘에 묻혔다). 선 자세 기준 좌표(x 바깥 · y 팔 아래쪽 · z 앞뒤)를 위팔 방향(dv)과 그 바깥·위쪽(nv)으로 옮긴다.
+	var dv := (el - shp).normalized()
+	var nv := Vector3(s, -0.6, 0.0)
+	nv = (nv - dv * nv.dot(dv)).normalized()
+	var dp := Back.P2(pr, shp + dv * 0.1) - Back.P2(pr, shp)
+	var rot := atan2(-dp.x, dp.y)  # 화면에서 판의 긴 쪽이 팔을 가로지르게
+	var arm := func(v: Vector3) -> Vector3: return nv * (v.x * s) + dv * v.y + Vector3(0, 0, v.z)
 	var strap := cl.mat(Color("#2e2016"), "leather")
-	BackKit.shell(cl, pr, ["upper_" + t], 0.01, strap, cl.group(), BackKit.band(cl, pr, shp.y + 0.075, shp.y + 0.09), 0.004)
+	var t0: Array = Back.BUILDS.get(str(bd["build"]), Back.BUILDS["normal"])
+	var ra := float(t0[0]) * float(bd["bulk"]) + 0.006
+	var q := shp.lerp(el, 0.6)
+	Back.cap(cl, pr, cl.group(), q - dv * 0.006, q + dv * 0.006, ra, ra, strap, 0.002)  # 위팔을 감은 끈
 	if kind == "skull":
 		var bone := cl.mat(col, "bone")
 		var dark := cl.mat(Color("#1a0d0b"), "glow")
 		var g := cl.group()
-		var c := shp + Vector3(s * 0.025, 0.004, 0.0)
-		Back.ell(cl, pr, g, c, 0.058, 0.04, 0.062, bone, 0.01)  # 머리뼈 둥근 정수리
-		Back.ell(cl, pr, g, c + Vector3(s * 0.05, 0.028, 0.0), 0.04, 0.026, 0.036, bone, 0.008)  # 바깥으로 내민 주둥이
+		var c: Vector3 = shp + arm.call(Vector3(s * 0.025, 0.004, 0.0))
+		Back.ell(cl, pr, g, c, 0.058, 0.04, 0.062, bone, 0.01, rot)  # 머리뼈 둥근 정수리
+		Back.ell(cl, pr, g, c + arm.call(Vector3(s * 0.05, 0.028, 0.0)), 0.04, 0.026, 0.036, bone, 0.008, rot)  # 바깥으로 내민 주둥이
 		for f: float in [1.0, -1.0]:  # 등 쪽·가슴 쪽으로 난 눈구멍
 			var n := Vector3(s * 0.55, 0.0, f)
-			var e := c + Vector3(s * 0.03, 0.006, f * 0.05)
-			Back.bump(cl, pr, g, e + Vector3(0, -0.01, 0), n, 0.02, 0.009, 0.006, bone)  # 눈두덩
-			Back.bump(cl, pr, g, e + Vector3(0, 0.006, f * 0.006), n, 0.013, 0.012, 0.006, dark)
+			var e: Vector3 = c + arm.call(Vector3(s * 0.03, 0.006, f * 0.05))
+			Back.bump(cl, pr, g, e + arm.call(Vector3(0, -0.01, 0)), n, 0.02, 0.009, 0.006, bone)  # 눈두덩
+			Back.bump(cl, pr, g, e + arm.call(Vector3(0, 0.006, f * 0.006)), n, 0.013, 0.012, 0.006, dark)
 		for k in 3:  # 송곳니
-			var a := c + Vector3(s * (0.06 + k * 0.012), 0.045, (k - 1) * 0.02)
-			Back.cap(cl, pr, g, a, a + Vector3(s * 0.004, 0.022, 0.0), 0.006, 0.002, bone, 0.002)
+			var a: Vector3 = c + arm.call(Vector3(s * (0.06 + k * 0.012), 0.045, (k - 1) * 0.02))
+			Back.cap(cl, pr, g, a, a + arm.call(Vector3(s * 0.004, 0.022, 0.0)), 0.006, 0.002, bone, 0.002)
 		for k in 2:  # 뿔
 			var f := 1.0 if k == 0 else -1.0
-			var b := c + Vector3(s * 0.0, -0.03, f * 0.035)
-			Back.chain(cl, pr, g, [b, b + Vector3(s * 0.01, -0.035, f * 0.035), b + Vector3(s * 0.04, -0.06, f * 0.05), b + Vector3(s * 0.065, -0.065, f * 0.045)], [0.013, 0.01, 0.006, 0.002], bone, 0.004)
+			var b: Vector3 = c + arm.call(Vector3(0.0, -0.03, f * 0.035))
+			Back.chain(cl, pr, g, [b, b + arm.call(Vector3(s * 0.01, -0.035, f * 0.035)), b + arm.call(Vector3(s * 0.04, -0.06, f * 0.05)), b + arm.call(Vector3(s * 0.065, -0.065, f * 0.045))], [0.013, 0.01, 0.006, 0.002], bone, 0.004)
 		return
 	var m := cl.mat(col, "metal" if kind == "iron" else "leather")
 	var rim := cl.mat(col.darkened(0.4), "metal" if kind == "iron" else "leather")
 	var z := float(d.get("size", 1.0))
-	var top := shp + Vector3(s * 0.02 * (z - 1.0), -0.02 * (z - 1.0), 0.0)
+	var top: Vector3 = shp + arm.call(Vector3(s * 0.02 * (z - 1.0), -0.02 * (z - 1.0), 0.0)) + Vector3(0, 0, 0.03)  # 조금 등 쪽으로 — 굽힌 아래팔이 위팔 위로 접혀도 판이 덮이지 않게
 	for k in 3:  # 위에서 아래로 겹친 판(아래 판이 조금 작다)
-		var c := top + Vector3(s * (0.014 + k * 0.008), -0.004 + k * 0.03, 0.0) * z
+		var c: Vector3 = top + arm.call(Vector3(s * (0.014 + k * 0.008), -0.004 + k * 0.03, 0.0) * z)
 		var g := cl.group()
-		Back.ell(cl, pr, g, c, (0.064 - k * 0.006) * z, 0.036 * z, (0.062 - k * 0.005) * z, m, 0.006)
-		Back.ridge(cl, pr, g, [c + Vector3(-s * 0.03, 0.03, 0.05) * z, c + Vector3(s * 0.04, 0.034, 0.04) * z], Vector3(0, 0, 1), 0.004, 0.003, rim)
+		Back.ell(cl, pr, g, c, (0.064 - k * 0.006) * z, 0.036 * z, (0.062 - k * 0.005) * z, m, 0.006, rot)
+		Back.ridge(cl, pr, g, [c + arm.call(Vector3(-s * 0.03, 0.03, 0.05) * z), c + arm.call(Vector3(s * 0.04, 0.034, 0.04) * z)], Vector3(0, 0, 1), 0.004, 0.003, rim)
 		if kind == "iron":
 			for f: float in [1.0, -1.0]:
-				Back.bump(cl, pr, g, c + Vector3(s * 0.02, 0.014, f * 0.05) * z, Vector3(0, 0, f), 0.006, 0.006, 0.004, rim)
+				Back.bump(cl, pr, g, c + arm.call(Vector3(s * 0.02, 0.014, f * 0.05) * z), Vector3(0, 0, f), 0.006, 0.006, 0.004, rim)
 	if kind == "iron":
 		for k in 4:  # 판 위에 박은 가시
-			var a := top + Vector3(s * (0.0 + k * 0.016), -0.03 + k * 0.006, (k % 2 - 0.5) * 0.04) * z
-			Back.cap(cl, pr, cl.group(), a, a + Vector3(s * 0.01, -0.03, 0.0) * z, 0.008, 0.002, m, 0.002)
+			var a: Vector3 = top + arm.call(Vector3(s * (0.0 + k * 0.016), -0.03 + k * 0.006, (k % 2 - 0.5) * 0.04) * z)
+			Back.cap(cl, pr, cl.group(), a, a + arm.call(Vector3(s * 0.01, -0.03, 0.0) * z), 0.008, 0.002, m, 0.002)
 
 
 ## 이빨·발톱 목걸이: 목 아래 가슴 앞을 도는 끈에 휜 송곳니가 매달린다(등에선 끈만 목덜미에).

@@ -220,8 +220,9 @@ static func _elbow_guard(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary
 	var m := cl.mat(col, "leather")
 	var strap := cl.mat(col.lightened(0.12), "leather")
 	var t: Array = Back.BUILDS.get(str(bd["build"]), Back.BUILDS["normal"])
-	var ru := float(t[0]) * float(bd["bulk"]) * 0.8 + 0.006  # 팔꿈치 쪽 위팔 겉
-	var rf := float(t[1]) * float(bd["bulk"]) + 0.007  # 팔꿈치 혹 겉(살보다 조금만 크게 — 크면 검은 공처럼 보였다)
+	var ru := float(t[0]) * float(bd["bulk"]) * 0.8 + 0.007  # 팔꿈치 쪽 위팔 겉
+	var rf := float(t[1]) * float(bd["bulk"]) + 0.008  # 팔꿈치 겉(살보다 조금만 크게 — 크면 검은 공처럼 보였다)
+	var rp := float(t[1]) * float(bd["bulk"]) * 0.9 + 0.009  # 팔꿈치 끝 혹(Back.body가 등 쪽으로 0.008 내민 타원)을 덮는 컵 — 안 덮으면 분홍 살이 뚫고 나왔다
 	for s: int in [-1, 1]:
 		var tg := "l" if s < 0 else "r"
 		var el: Vector3 = j["elbow_" + tg]
@@ -230,5 +231,6 @@ static func _elbow_guard(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary
 		var g := cl.group()
 		Back.cap(cl, pr, g, el.lerp(sh, 0.16), el, ru, rf, m, 0.004)
 		Back.cap(cl, pr, g, el, el.lerp(wr, 0.2), rf, rf * 0.92, m, 0.004)
+		Back.ell(cl, pr, g, el + Vector3(0, 0, 0.008), rp, rp, rp, m, 0.004)
 		for q: Vector3 in [el.lerp(sh, 0.14), el.lerp(wr, 0.17)]:  # 위·아래 끈(가는 띠)
 			Back.cap(cl, pr, g, q + (el - q).normalized() * 0.004, q - (el - q).normalized() * 0.004, rf + 0.003, rf + 0.003, strap, 0.002)
