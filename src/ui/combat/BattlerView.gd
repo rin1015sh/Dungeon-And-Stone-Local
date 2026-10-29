@@ -27,6 +27,8 @@ var _icons: StatusIcons
 var _icon_bottom: float = 0.0  ## 아이콘 줄의 아래 끝(이름 줄 바로 위)
 var _flash: TextureRect = null  ## 대상 흰빛(그림 위에 같은 그림을 흰 실루엣으로 — 고를 때만)
 var _flash_t: float = 0.0
+var _float_at: int = -100000  ## 마지막 떠오른 숫자 시각(ms) — 연달아 뜨면 줄을 내린다
+var _float_row: int = 0
 
 
 func setup(u: Combatant, db: GameDatabase) -> void:
@@ -254,7 +256,10 @@ func float_text(text: String, col: Color, big: bool = false) -> void:
 	host.add_child(l)
 	l.z_index = 10  # 쓰러진 몬스터의 먼지(DeathDust z 5) 위에
 	var ms := l.get_combined_minimum_size()
-	var top := global_position.y + size.y * (0.22 if front else 0.12)  # 아군은 아래가 창 뒤로 가라앉아 있어 위쪽에
+	var now := Time.get_ticks_msec()
+	_float_row = _float_row + 1 if now - _float_at < int(UiTheme.ui_float("float_text_stack_sec", 0.35) * 1000.0) else 0  # 연달아 뜬 숫자(생명력·영혼력 회복 등)는 한 줄씩 아래로
+	_float_at = now
+	var top := global_position.y + size.y * (0.22 if front else 0.12) + _float_row * ms.y * 0.9  # 아군은 아래가 창 뒤로 가라앉아 있어 위쪽에
 	l.position = Vector2(clampf(global_position.x + size.x * 0.5 - ms.x * 0.5, 4.0, get_viewport_rect().size.x - ms.x - 4.0), maxf(top, 8.0))
 	l.pivot_offset = ms * 0.5
 	l.scale = Vector2(1.5, 1.5)
