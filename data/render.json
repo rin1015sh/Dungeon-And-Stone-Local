@@ -88,7 +88,6 @@
     "combat_boss_top_room": 72,
     "combat_party_height": 0.62,
     "combat_party_sink": 150,
-    "combat_party_sink_by_race": {"_comment": "탐험가 발을 아래 창 밑으로 묻는 깊이 = 그림 키 × 값(종족마다 — 없으면 combat_party_sink px). 인간 0.15 = 종아리부터 가려 망토 밑단까지 보인다(사용자 2026-10-29, UI43)", "human": 0.15},
     "combat_party_art_dir": "res://assets/party",
     "combat_party_size_max": 1.2,
     "combat_boss_head_room": 1.15,
