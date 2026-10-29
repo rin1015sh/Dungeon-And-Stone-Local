@@ -70,7 +70,7 @@ const LOOKS := {
 	## 순찰자 후보(사용자 2026-10-29 "인간 탐험가도 여러 개 — 반지의 제왕 아라고른 같은 느낌"): 몸에 맞춰 떨어지는 긴 망토(BackDrape)·가죽 웃옷·긴 장화·팔목 가죽.
 	"h6_ranger": {"race": "human", "name": "순찰자", "head": 1.75, "legs": 0.82, "spec": {"kit": {
 		"pants": Color("#2e2c28"), "shirt": Color("#3e3a32"), "sleeves": "long", "vest": Color("#3a2a1e"), "belt": Color("#24180f"), "pouch": true, "knife": true,
-		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"),
+		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"), "elbow_guard": Color("#1c1714"),
 		"cloak": {"c": Color("#33382e"), "len": 0.72, "flare": 1.2, "open": 1.0, "clasp": Color("#8a8070"), "collar": true}}}},
 	"h7_hooded": {"race": "human", "name": "두건 쓴 순찰자", "head": 1.75, "legs": 0.82, "spec": {"hair": "none", "kit": {
 		"pants": Color("#2a2824"), "shirt": Color("#38342c"), "sleeves": "long", "vest": Color("#33261a"), "belt": Color("#24180f"), "knife": true,
@@ -96,7 +96,8 @@ const LOOKS := {
 	"b9_iron_raider": {"race": "barbarian", "name": "쇠 어깨 약탈자", "head": 2.1, "legs": 0.72, "spec": {"kit": {
 		"pauldron": {"c": Color("#454a4e"), "side": "l", "kind": "iron", "size": 1.35}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#6a6e72")},
 		"pelt": Color("#5e5040"), "kilt": {"c": Color("#3e3024"), "len": 0.7, "slits": 8}, "leg_wraps": Color("#5a5040"),
-		"boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#55595c"), "armband": Color("#55595c"), "paint": Color("#3a3a2a")}}},
+		"boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#55595c"), "armband": Color("#55595c"), "paint": Color("#3a3a2a"),
+		"elbow_guard": Color("#1c1714")}}},
 }
 
 

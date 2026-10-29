@@ -6,7 +6,7 @@ extends RefCounted
 ##   hood_up 쓴 두건(얼굴만 드러나고 뒤로 어깨까지 흘러내림 — 머리카락은 그리지 않는다)
 ##   coat {c, len} 무릎까지 오는 긴 외투(긴 소매 · 깃 · 다리 사이 자락)
 ##   quilt {c} 누빔 갑옷(겜베슨 — 가로 누빔 골 · 긴 소매) · chain {c} 사슬 셔츠(쇠 · 고리 결)
-##   outer_belt {c} 겉옷 위 허리띠 · clasp {c} 망토 여밈 쇠
+##   outer_belt {c} 겉옷 위 허리띠 · clasp {c} 망토 여밈 쇠 · elbow_guard {c} 팔꿈치 가죽 보호대(모든 겹 위에)
 ## kit 키가 없으면 아무것도 하지 않는다(전투 그림은 그대로).
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
@@ -31,6 +31,8 @@ static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		_cloak(cl, pr, j, bd, cd, rng)
 	if kit.has("hood_up"):
 		_hood(cl, pr, j, hd, kit["hood_up"])
+	if kit.has("elbow_guard"):
+		_elbow_guard(cl, pr, j, bd, kit["elbow_guard"])
 
 
 static func _front(pr: Dictionary) -> bool:
@@ -210,3 +212,23 @@ static func _sleeve_end(j: Dictionary, t: String, off: float) -> float:
 ## 소매 위 끝: 어깨 조금 위 — 팔꿈치·손목을 어깨보다 높이 든 칸(활 시위 당김)은 그 위까지 덮는다(팔꿈치 맨살이 드러나지 않게).
 static func _sleeve_top(j: Dictionary, t: String) -> float:
 	return minf((j["shoulder_" + t] as Vector3).y - 0.06, minf((j["elbow_" + t] as Vector3).y, (j["wrist_" + t] as Vector3).y) - 0.04)
+
+
+## 팔꿈치 보호대(사용자 2026-10-29 "팔꿈치에서 살이 가시처럼 튀어나와 보기 안 좋다 — 검은 보호대로 가려"): 굽힌 팔에서 위팔·아래팔 겹이
+## 만나는 팔꿈치 끝이 소매·살 밖으로 뾰족하게 솟았다 → 팔꿈치를 감싸는 둥근 가죽 컵 + 위·아래로 짧게 이어진 판 + 끈.
+static func _elbow_guard(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: Color) -> void:
+	var m := cl.mat(col, "leather")
+	var strap := cl.mat(col.lightened(0.12), "leather")
+	var t: Array = Back.BUILDS.get(str(bd["build"]), Back.BUILDS["normal"])
+	var ru := float(t[0]) * float(bd["bulk"]) * 0.8 + 0.006  # 팔꿈치 쪽 위팔 겉
+	var rf := float(t[1]) * float(bd["bulk"]) + 0.007  # 팔꿈치 혹 겉(살보다 조금만 크게 — 크면 검은 공처럼 보였다)
+	for s: int in [-1, 1]:
+		var tg := "l" if s < 0 else "r"
+		var el: Vector3 = j["elbow_" + tg]
+		var sh: Vector3 = j["shoulder_" + tg]
+		var wr: Vector3 = j["wrist_" + tg]
+		var g := cl.group()
+		Back.cap(cl, pr, g, el.lerp(sh, 0.16), el, ru, rf, m, 0.004)
+		Back.cap(cl, pr, g, el, el.lerp(wr, 0.2), rf, rf * 0.92, m, 0.004)
+		for q: Vector3 in [el.lerp(sh, 0.14), el.lerp(wr, 0.17)]:  # 위·아래 끈(가는 띠)
+			Back.cap(cl, pr, g, q + (el - q).normalized() * 0.004, q - (el - q).normalized() * 0.004, rf + 0.003, rf + 0.003, strap, 0.002)
