@@ -41,6 +41,31 @@ const LOOKS := {
 	"b2_leather": {"race": "barbarian", "name": "가죽 갑옷", "head": 2.1, "legs": 0.72, "spec": {"kit": {
 		"pants": Color("#34302a"), "leg_wraps": Color("#6a5e4a"), "boots": Color("#3e2e20"), "boots_fur": Color("#7a6a54"), "bracers": Color("#3e2c1c"),
 		"coat": {"c": Color("#4a3020"), "len": 0.08}, "outer_belt": Color("#2a1c12"), "pelt": Color("#6e5e4a")}}},
+	## 야만전사 후보(사용자 2026-10-29 "바바리안 복장을 야만전사 느낌으로 여러 개 — 기획만"): 맨몸·가죽끈·띠 치마·뼈 장식(BackSavage).
+	"b3_berserker": {"race": "barbarian", "name": "광전사", "head": 2.1, "legs": 0.72, "spec": {"kit": {
+		"harness": {"c": Color("#2e2016"), "x": true, "ring": Color("#7a7064")}, "kilt": {"c": Color("#5a4030"), "len": 0.55, "slits": 7},
+		"paint": Color("#7a2a1e"), "leg_wraps": Color("#6a5e4a"), "boots": Color("#3e2e20"), "boots_fur": Color("#7a6a54"),
+		"bracers": Color("#3e2c1c"), "armband": Color("#6a5a3a")}}},
+	"b4_wolf_pelt": {"race": "barbarian", "name": "늑대 털가죽", "head": 2.1, "legs": 0.72, "spec": {"kit": {
+		"pelt": Color("#6a6050"), "kilt": {"c": Color("#5e5444"), "len": 0.5, "fur": true, "slits": 0}, "necklace": {"c": Color("#cbbb98"), "n": 7},
+		"paint": Color("#2e2a30"), "pants": Color("#3a3028"), "boots": Color("#3e2e20"), "boots_fur": Color("#6e6250"),
+		"bracers": Color("#3e2c1c"), "armband": Color("#6a5a3a")}}},
+	"b5_skull_hunter": {"race": "barbarian", "name": "해골 사냥꾼", "head": 2.1, "legs": 0.72, "spec": {"kit": {
+		"pauldron": {"c": Color("#a89a7c"), "side": "r", "kind": "skull"}, "harness": {"c": Color("#2a1c12"), "x": false, "ring": Color("#8a7a58")},
+		"necklace": {"c": Color("#cbbb98"), "n": 9}, "pants": Color("#2e2a24"), "loin": Color("#5a4a36"), "leg_wraps": Color("#6a5e4a"),
+		"boots": Color("#3a2a1e"), "bracers": Color("#3a2a1c")}}},
+	"b6_chieftain": {"race": "barbarian", "name": "족장 털갑옷", "head": 2.1, "legs": 0.72, "spec": {"kit": {
+		"vest": Color("#4a3020"), "pelt": Color("#7a6a52"), "kilt": {"c": Color("#6e5e4a"), "len": 0.6, "fur": true, "slits": 0},
+		"pants": Color("#34302a"), "outer_belt": Color("#2a1c12"), "boots": Color("#3e2e20"), "boots_fur": Color("#7a6a54"),
+		"bracers": Color("#3e2c1c"), "armband": Color("#8a7a58"), "necklace": {"c": Color("#cbbb98"), "n": 5}}}},
+	"b7_scrap_iron": {"race": "barbarian", "name": "고철 반갑옷", "head": 2.1, "legs": 0.72, "spec": {"kit": {
+		"pauldron": {"c": Color("#5e6266"), "side": "l", "kind": "iron"}, "harness": {"c": Color("#2e2016"), "x": false, "ring": Color("#6a6e72")},
+		"kilt": {"c": Color("#4a3a2a"), "len": 0.5, "slits": 5}, "pants": Color("#2e2a24"), "leg_wraps": Color("#5e5444"),
+		"boots": Color("#3a2a1e"), "bracers": Color("#55595c"), "armband": Color("#55595c"), "paint": Color("#2a2a34")}}},
+	"b8_hide_raider": {"race": "barbarian", "name": "가죽 누더기 약탈자", "head": 2.1, "legs": 0.72, "spec": {"kit": {
+		"pauldron": {"c": Color("#4a3424"), "side": "l", "kind": "leather"}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#7a7064")},
+		"pelt": Color("#5e5040"), "kilt": {"c": Color("#3e3024"), "len": 0.7, "slits": 8}, "leg_wraps": Color("#5a5040"),
+		"boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#3a2a1c"), "paint": Color("#3a3a2a")}}},
 }
 
 
