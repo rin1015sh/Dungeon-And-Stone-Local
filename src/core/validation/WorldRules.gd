@@ -122,6 +122,9 @@ static func _floors(v: ValidatorBase) -> void:
 					v.err(w, "regions.weights '%s'는 monsters에 있고 양수여야 한다" % m)
 			for m: Variant in JsonUtil.get_array(JsonUtil.get_dict(rd, "variants"), "monsters"):
 				v.ref(w + ".regions.variants", "monsters", m)
+			var groups := JsonUtil.get_array(rd, "groups")
+			if rd.has("groups") and (groups.size() != 2 or float(groups[0]) < 0.0 or float(groups[0]) > float(groups[1])):
+				v.err(w, "regions.groups는 [최소, 최대] (0 ≤ 최소 ≤ 최대)")
 		var lord := JsonUtil.get_dict(f, "lord")
 		if not lord.is_empty():
 			v.ref(w + ".lord", "monsters", lord.get("monster"))

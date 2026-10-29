@@ -6,7 +6,8 @@ extends RefCounted
 ## 보면 먼저 멈칫하고 돌아본 뒤(의심, suspect) 그래도 보이면 쫓는다(alerted — 종마다 소리, V21).
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
-## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}} — 몬스터 표는 층 JSON에만 둔다.
+## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}, "groups": [최소, 최대](선택 — 없으면 spawn.groups_per_region)}
+##   — 몬스터 표는 층 JSON에만 둔다. 시간이 지나 늘어나는 무리는 지역의 groups 평균에 비례해 나뉜다.
 ##   zone이 있고 지도에 구역 층(FloorMap.zones)이 있으면 그 구역 칸에만(1층 십자가), 없으면 중심에서 본 방향(dir) 원뿔.
 ## 변이종(명세 §6.0): 지역 variants {monsters, min_day, outer_ratio, chance} — min_day일 차부터 지역 바깥쪽
 ## (중심에서 지역 최대 거리의 outer_ratio 이상, 2층 포탈 쪽)에 생긴 무리의 각 마리가 chance 확률로 변이종이 된다.
@@ -116,11 +117,11 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 
 
 func spawn_initial(avoid: Vector2i) -> void:
-	var range_ := JsonUtil.get_array(_spawn(), "groups_per_region")
 	var cluster := JsonUtil.get_dict(_spawn(), "cluster")
 	for region in _regions():
 		if JsonUtil.get_array(region, "monsters").is_empty():
 			continue
+		var range_ := _group_range(region)
 		var n := _rng.randi_range(int(range_[0]), int(range_[1])) if range_.size() == 2 else 1
 		for i in n:
 			var spot := FieldSpawnBias.cluster_spot(_map, _rng, cluster, region, avoid,
@@ -399,7 +400,11 @@ func _process_respawns(player: Vector2i, now: float) -> void:
 		_extra_added += 1
 		var regions := _regions().filter(func(r: Dictionary) -> bool: return not JsonUtil.get_array(r, "monsters").is_empty())
 		if not regions.is_empty():
-			var region: Dictionary = _rng.pick(regions)
+			var weights: Array[float] = []
+			for r: Dictionary in regions:
+				var g := _group_range(r)
+				weights.append((float(g[0]) + float(g[1])) * 0.5 if g.size() == 2 else 1.0)
+			var region: Dictionary = regions[maxi(0, _rng.weighted_index(weights))]
 			spawn_group(region, player, Vector2i(-1, -1), FieldSpawnBias.growth_monster(_db, _rng, _spawn(), now, JsonUtil.get_str(region, "id")))
 	if not due.is_empty():
 		changed.emit()
@@ -448,6 +453,12 @@ func _regions() -> Array[Dictionary]:
 		if r is Dictionary:
 			out.append(r)
 	return out
+
+
+## 입장 때 지역 무리 수 [최소, 최대]: 지역 groups, 없으면 spawn.groups_per_region.
+func _group_range(region: Dictionary) -> Array:
+	var own := JsonUtil.get_array(region, "groups")
+	return own if own.size() == 2 else JsonUtil.get_array(_spawn(), "groups_per_region")
 
 
 func _region(id: String) -> Dictionary:

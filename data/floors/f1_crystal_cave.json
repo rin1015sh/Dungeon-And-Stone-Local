@@ -60,8 +60,9 @@
     }
   },
   "gen": {
-    "_comment": "거대한 십자가(CrossLayout) + 미로 동굴(등뼈 길·공동·방·잇는 굴·곁가지 — CrossTerrain). 지금 1층은 고정 지도(fixed_map)라 이 값들은 굽는 때만 쓴다 — 바꾸면 tools/bake_floor.gd로 다시 굽기. 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. (고정 지도를 끄면 입장마다 새로: 동굴 지형.) 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다.",
+    "_comment": "거대한 십자가(CrossLayout) + 미로 동굴(등뼈 길·공동·방·잇는 굴·곁가지 — CrossTerrain). 지금 1층은 고정 지도(fixed_map)라 이 값들은 굽는 때만 쓴다 — 바꾸면 tools/bake_floor.gd로 다시 굽기. 지도 한 변 = core_size + 2×(arm_length + margin) (홀수로 맞춤). 고정: 구역·기념비·포탈·암흑지대. (고정 지도를 끄면 입장마다 새로: 동굴 지형.) 굴 폭 = 붓 2~3칸(wide3_chance = 3칸일 확률) + 마지막에 한 칸 폭 목 없애기(widen_passes). 굴곡도 = spine.weights(side·stair가 클수록 급커브↑)·outward_run(짧을수록 직선↓)·long_run_chance(긴 직선 확률). 막다른 길 없음: 곁가지는 다른 굴에 합류하거나 reconnect_radius 안의 굴로 다시 이어진다. mixed_radius = 몬스터 지역의 중심부(4종 섞임)를 이 반지름 원으로 줄이고 원 밖 정사각형 모서리는 가까운 팔(한 종)에 붙인다(사용자 결정 2026-10-29, CR25 — 입장 때 구역 층에만 적용, 다시 굽지 않아도 된다).",
     "core_size": 153,
+    "mixed_radius": 55,
     "arm_length": 288,
     "arm_width": 135,
     "margin": 2,
@@ -277,7 +278,7 @@
       "count": 1
     }
   ],
-  "_regions_comment": "구역별 스폰 표(zone = CrossLayout 구역, monsters = 나올 수 있는 몬스터, weights = 뽑힐 가중치). 변이종(variants: {monsters, min_day, outer_ratio, chance})은 사용자 결정(2026-10-12)으로 1층에서 뺐다 — 다시 넣으려면 지역에 variants를 추가.",
+  "_regions_comment": "구역별 스폰 표(zone = CrossLayout 구역, monsters = 나올 수 있는 몬스터, weights = 뽑힐 가중치, groups = 입장 때 무리 수 [최소, 최대] — 없으면 spawn.groups_per_region). 중심부는 원(gen.mixed_radius 55)으로 좁혀 걷는 칸이 팔의 약 1/4이라 무리 수도 그만큼(칸당 밀도는 전과 같게, CR25). 변이종(variants: {monsters, min_day, outer_ratio, chance})은 사용자 결정(2026-10-12)으로 1층에서 뺐다 — 다시 넣으려면 지역에 variants를 추가.",
   "regions": [
     {
       "id": "f1_center",
@@ -294,7 +295,8 @@
         "gnome": 1,
         "ghoul": 1,
         "goblin": 1
-      }
+      },
+      "groups": [21, 25]
     },
     {
       "id": "f1_east",
@@ -373,10 +375,10 @@
   ],
   "source": "original",
   "spawn": {
-    "_comment": "groups_per_region = 입장 때 지역마다 무리 수, pack_by_day = 그날 새로 생기는 무리(= 한 번의 전투)의 [최소, 최대] 마릿수(몬스터 pack_size 최대를 넘지 않음 — 3일 차까지 한 마리, 사용자 결정 2026-10-22), 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
+    "_comment": "groups_per_region = 입장 때 지역마다 무리 수(지역 groups가 있으면 그것 — 팔은 중심부 모서리를 받아 넓어진 만큼 48~56에서 52~61로, CR25), pack_by_day = 그날 새로 생기는 무리(= 한 번의 전투)의 [최소, 최대] 마릿수(몬스터 pack_size 최대를 넘지 않음 — 3일 차까지 한 마리, 사용자 결정 2026-10-22), 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
     "groups_per_region": [
-      48,
-      56
+      52,
+      61
     ],
     "pack_by_day": [[1, 1], [1, 1], [1, 1], [1, 2], [1, 2], [2, 3], [2, 3]],
     "respawn_hours": 24,
