@@ -9,6 +9,8 @@ extends RefCounted
 ##   jag          땅 가장자리를 깎는 깊이(칸 비율, 0~0.45)
 ##   abyss_color · mist_color · rim_color(절벽 위 턱의 부스러진 테두리) · beam_color(발판 들보)
 ##   rail         {post, rope, every, height} — 허공 위 나무 발판의 난간(색·기둥 간격 칸·높이 칸)
+##   rise         {face, top, face_tiles, face_depth, top_tiles, fog, jag, dark} — 솟은 외곽(타일 "rise": true — 지도 바깥 둘레):
+##                내려가는 대신 위로 솟은 벽·절벽 면(face — 위 = 꼭대기, 성가퀴 틈 투명)과 그 너머 꼭대기 풍경(top — 사방으로 이어 붙임)
 
 const SHADER := "res://assets/shaders/abyss.gdshader"
 
@@ -33,16 +35,28 @@ static func material(art: FloorArt, map: FloorMap, tile: int) -> ShaderMaterial:
 	m.set_shader_parameter("mist_color", _c(a, "mist_color", "#141418"))
 	m.set_shader_parameter("rim_color", _c(a, "rim_color", "#9a8e80"))
 	m.set_shader_parameter("beam_color", _c(a, "beam_color", "#4a3824"))
+	var r := JsonUtil.get_dict(a, "rise")
+	if not r.is_empty():
+		for key: String in ["face", "top"]:
+			var rp := JsonUtil.get_str(r, key)
+			if ResourceLoader.exists(rp):
+				m.set_shader_parameter("rise_" + key, load(rp) as Texture2D)
+		m.set_shader_parameter("rise_w", JsonUtil.get_float(r, "face_tiles", 8.0) * tile)
+		m.set_shader_parameter("rise_h", JsonUtil.get_float(r, "face_depth", 3.0) * tile)
+		m.set_shader_parameter("rise_top_w", JsonUtil.get_float(r, "top_tiles", 8.0) * tile)
+		m.set_shader_parameter("rise_fog", JsonUtil.get_float(r, "fog", 6.0))
+		m.set_shader_parameter("rise_jag", clampf(JsonUtil.get_float(r, "jag", 0.0), 0.0, 0.45))
+		m.set_shader_parameter("rise_dark", _c(r, "dark", "#0c0a0a"))
 	return m
 
 
-## 칸 지도 그림(지도 칸 = 텍셀): r = 허공, g = 나무 발판(깎지 않는 가장자리).
+## 칸 지도 그림(지도 칸 = 텍셀): r = 허공, g = 나무 발판(깎지 않는 가장자리), b = 솟은 외곽.
 static func mask_texture(map: FloorMap) -> ImageTexture:
-	var img := Image.create(map.width, map.height, false, Image.FORMAT_RG8)
+	var img := Image.create(map.width, map.height, false, Image.FORMAT_RGB8)
 	for y in map.height:
 		for x in map.width:
 			var d := map.defs[map.tiles[y * map.width + x]]
-			img.set_pixel(x, y, Color(1.0 if d.is_void else 0.0, 1.0 if d.void_edge == "beam" else 0.0, 0.0))
+			img.set_pixel(x, y, Color(1.0 if d.is_void else 0.0, 1.0 if d.void_edge == "beam" else 0.0, 1.0 if d.is_rise else 0.0))
 	return ImageTexture.create_from_image(img)
 
 

@@ -35,6 +35,7 @@ var stand_rows: int = 1         ## 시트 세로 칸 수
 var stand_size: Vector2 = Vector2.ONE  ## 그리는 크기(칸 단위 — 아래 가운데 = 칸 아래쪽 가운데)
 var stand_under: String = ""    ## 소품 밑 바닥 타일(없으면 층 기본 바닥)
 var is_void: bool = false       ## 낭떠러지·구덩이(균열 — "void": true): 바닥을 그리지 않고 절벽 면·어둠을 칠한다(Abyss)
+var is_rise: bool = false       ## 솟은 외곽(void + "rise": true): 낭떠러지 대신 위로 솟은 벽·절벽 면과 그 너머 풍경(Abyss rise — 균열 지도 바깥 둘레)
 var void_edge: String = ""      ## 허공에 닿는 가장자리(art.void_edge): "" = 들쭉날쭉 깎인 땅, "beam" = 나무 발판(곧은 들보 면 + 난간)
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
@@ -60,6 +61,7 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.interact = JsonUtil.get_str(d, "interact")
 	t.scavenge = JsonUtil.get_str(d, "scavenge")
 	t.is_void = JsonUtil.get_bool(d, "void")
+	t.is_rise = t.is_void and JsonUtil.get_bool(d, "rise")
 	t.sprite = JsonUtil.get_str(d, "sprite")
 	var art := JsonUtil.get_dict(d, "art")
 	t.art_atlas = JsonUtil.get_str(art, "atlas")

@@ -68,7 +68,8 @@
         "jag": 0.42,
         "abyss_color": "#0c0506",
         "mist_color": "#3a1214",
-        "rim_color": "#b0928a"
+        "rim_color": "#b0928a",
+        "rise": {"face": "res://assets/floor/bf/rise_face.webp", "top": "res://assets/floor/bf/rise_top.webp", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "jag": 0.0, "fog": 5, "dark": "#0e0a0a"}
       },
       "decor": {
         "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",

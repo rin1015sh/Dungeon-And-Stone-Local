@@ -15,6 +15,7 @@ const Marks := preload("res://tools/floor_art/Marks.gd")
 const Props := preload("res://tools/floor_art/Props.gd")
 const RiftCommon := preload("res://tools/floor_art/rift/Common.gd")
 const RiftCliff := preload("res://tools/floor_art/rift/Cliff.gd")
+const RiftRise := preload("res://tools/floor_art/rift/Rise.gd")
 const RIFT_SPECS := "res://tools/floor_art/rift/specs.json"
 
 
@@ -76,7 +77,7 @@ func _init() -> void:
 
 
 ## 균열 장소 그림(A5 — tools/floor_art/rift/specs.json · <place>.gd): 바닥·벽 아틀라스, 서 있는 소품 시트, 뒷배경.
-## --only=<place>(bf·gc·gm·it) 또는 --only=<place>:stand|cliff|atlas 로 일부만.
+## --only=<place>(bf·gc·gm·it) 또는 --only=<place>:stand|cliff|rise|atlas 로 일부만.
 func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, scale: int) -> void:
 	var spec: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(RIFT_SPECS))
 	RiftCommon.skirt = skirt
@@ -130,6 +131,17 @@ func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, sca
 			Ink.grade(cp, 0.18, 1.08, Color("#1a1412"), Color("#e0d2b0"), 0.12)
 			cp.save(dir + "/chasm.webp")
 			print("그림: %s/chasm.webp" % dir)
+		if (part_only.is_empty() or part_only == "rise") and pd.has("rise"):
+			var rc: Dictionary = pd["rise"]
+			var fw := int(rc.get("face_tiles", 8)) * cell
+			var fp: Paint = RiftRise.face(fw, int(float(rc.get("face_depth", 3)) * cell), 9100, rc)
+			Ink.grade(fp, 0.18, 1.08, Color("#1a1412"), Color("#e0d2b0"), 0.12)
+			fp.save(dir + "/rise_face.webp")
+			var tw := int(rc.get("top_tiles", 8)) * cell
+			var tp: Paint = RiftRise.top(tw, tw, 9200, rc)
+			Ink.grade(tp, 0.18, 1.08, Color("#1a1412"), Color("#e0d2b0"), 0.12)
+			tp.save(dir + "/rise_top.webp")
+			print("그림: %s/rise_face.webp · rise_top.webp" % dir)
 
 
 ## 데칼 시트: 줄 = 종류, 칸 = 변형(투명 RGBA, 색 보정만 — 평균 맞추기 없음).

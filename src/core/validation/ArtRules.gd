@@ -77,7 +77,7 @@ static func _abyss(v: ValidatorBase, w: String, a: Dictionary) -> void:
 	if a.is_empty():
 		return
 	for key: String in a:
-		if not key in ["_comment", "cliff", "cliff_tiles", "cliff_depth", "jag", "abyss_color", "mist_color", "rim_color", "beam_color", "rail"]:
+		if not key in ["_comment", "cliff", "cliff_tiles", "cliff_depth", "jag", "abyss_color", "mist_color", "rim_color", "beam_color", "rail", "rise"]:
 			v.err(w, "모르는 키 '%s'" % key)
 	if not ResourceLoader.exists(JsonUtil.get_str(a, "cliff")):
 		v.err(w, "cliff 그림 없음 '%s' — tools/paint_floor.gd -- --only=<장소>:cliff" % JsonUtil.get_str(a, "cliff"))
@@ -89,6 +89,15 @@ static func _abyss(v: ValidatorBase, w: String, a: Dictionary) -> void:
 	var jag := JsonUtil.get_float(a, "jag", 0.32)
 	if jag < 0.0 or jag > 0.45:
 		v.err(w, "jag는 0~0.45(칸 비율 — 걷는 칸이 너무 깎이지 않게)")
+	var rise := JsonUtil.get_dict(a, "rise")
+	if not rise.is_empty():
+		for key: String in ["face", "top"]:
+			if not ResourceLoader.exists(JsonUtil.get_str(rise, key)):
+				v.err(w + ".rise", "%s 그림 없음 '%s' — tools/paint_floor.gd -- --only=<장소>:rise" % [key, JsonUtil.get_str(rise, key)])
+		if JsonUtil.get_float(rise, "face_depth", 3.0) <= 0.0 or JsonUtil.get_float(rise, "fog", 6.0) <= 0.0:
+			v.err(w + ".rise", "face_depth·fog는 양수")
+		if rise.has("dark"):
+			v.check_color(w + ".rise.dark", JsonUtil.get_str(rise, "dark"))
 	var rail := JsonUtil.get_dict(a, "rail")
 	for key: String in ["post", "rope"]:
 		if rail.has(key):

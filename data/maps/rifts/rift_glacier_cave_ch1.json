@@ -6,7 +6,7 @@
  "height": 44,
  "floor": "gc_snow",
  "legend": {
-  " ": "gc_void",
+  " ": "gc_rise",
   ".": "gc_snow",
   ",": "ice_floor",
   "=": "gc_lake",

@@ -4,6 +4,8 @@ shader_type canvas_item;
 //  허공 칸은 늘 허공, 땅 칸은 가장자리만 jag만큼 깎인다(바닥 그림이 없는 곳에 땅이 생기지 않게). 나무 발판은 깎지 않는다.
 //  허공 픽셀 = 위(북쪽)로 땅까지의 거리 d → d < cliff_h면 절벽 면 그림(cliff — 아래로 갈수록 어둠), 나무 발판 아래면 들보 면,
 //  아니면 깊은 어둠(abyss + 느리게 흐르는 안개). 땅 픽셀은 가장자리 2px만 칠하고(테두리 빛) 나머지는 버린다.
+//  솟은 외곽(mask b = rise — 균열 지도 바깥 둘레): 내려가는 대신 위로 솟는다 — 남쪽(아래)으로 땅까지의 거리 d < rise_h면
+//  벽·절벽 면(rise_face — 위 = 꼭대기, 성가퀴 틈은 투명), 그 너머는 꼭대기 풍경(rise_top — 세계 좌표로 이어 붙임, 멀수록 어둡게).
 //  꼭짓점 색 = 빛·안개(FloorView.vertex_mul) — 곱한다.
 uniform sampler2D mask : filter_nearest;
 uniform vec2 map_size = vec2(64.0, 64.0);
@@ -20,6 +22,15 @@ uniform vec4 beam_color : source_color = vec4(0.3, 0.22, 0.14, 1.0);
 uniform float beam_px = 9.0;     // 나무 발판 들보 면 높이 px
 uniform float mist_speed = 0.02;
 uniform float edge_fade = 2.5;   // 지도 끝에서 이 칸 수 안의 땅은 어둠으로 녹는다
+uniform sampler2D rise_face : filter_linear, repeat_enable;
+uniform sampler2D rise_top : filter_linear, repeat_enable;
+uniform float rise_w = 256.0;    // 솟은 면 그림 한 장의 가로 px(세계)
+uniform float rise_h = 96.0;     // 솟은 면 높이 px(세계)
+uniform float rise_top_w = 256.0;  // 꼭대기 풍경 그림 한 장의 크기 px(세계)
+uniform float rise_fog = 6.0;    // 꼭대기 풍경이 어둠에 묻히는 거리(칸)
+uniform float rise_jag = 0.0;    // 솟은 외곽 쪽 땅 가장자리를 깎는 깊이(성벽은 0 = 곧게)
+uniform vec4 rise_dark : source_color = vec4(0.05, 0.04, 0.04, 1.0);
+uniform float rise_band = 22.0;  // 땅 남쪽 솟은 외곽의 꼭대기 가장자리 띠 px(세계)
 varying vec2 world;
 
 void vertex() {
@@ -43,9 +54,9 @@ float vnoise(vec2 p) {
 	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-vec2 cell_at(vec2 c) {
+vec3 cell_at(vec2 c) {
 	ivec2 q = ivec2(clamp(c, vec2(0.0), map_size - 1.0));
-	return texelFetch(mask, q, 0).rg;
+	return texelFetch(mask, q, 0).rgb;
 }
 
 // 허공 정도(0 땅 ~ 1 허공)를 칸 가운데끼리 곧게 이은 값(경계에서 완만해야 잡음이 깊게 깎는다).
@@ -60,8 +71,14 @@ float field(vec2 p) {
 	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
+// 둘레 네 칸 중 솟은 외곽이 있는가(그쪽 땅 가장자리는 rise_jag로 깎는다).
+bool near_rise(vec2 p) {
+	vec2 i = floor(p - 0.5);
+	return max(max(cell_at(i).b, cell_at(i + vec2(1.0, 0.0)).b), max(cell_at(i + vec2(0.0, 1.0)).b, cell_at(i + vec2(1.0, 1.0)).b)) > 0.5;
+}
+
 bool is_void(vec2 p) {
-	vec2 own = cell_at(floor(p));
+	vec3 own = cell_at(floor(p));
 	if (own.r > 0.5) {
 		return true;
 	}
@@ -69,7 +86,11 @@ bool is_void(vec2 p) {
 		return false;
 	}
 	float n = smoothstep(0.2, 0.85, vnoise(p * 1.7) * 0.72 + vnoise(p * 4.1 + 17.0) * 0.28);  // 깎인 곳·남은 곳이 또렷하게(잔 톱니는 줄인다)
-	return field(p) + jag * n > 0.5;
+	return field(p) + (near_rise(p) ? rise_jag : jag) * n > 0.5;
+}
+
+bool is_rise(vec2 p) {
+	return cell_at(floor(p)).b > 0.5;
 }
 
 bool is_wood(vec2 p) {
@@ -86,6 +107,70 @@ vec3 deep(vec2 w, float below) {
 	return mix(abyss_color.rgb, mist_color.rgb, haze);
 }
 
+// 솟은 외곽 한 픽셀: 아래(남쪽)로 땅까지 d → 면, 아니면 꼭대기 풍경(땅에서 멀수록 어둡게).
+vec3 rise_color(vec2 p, float px, vec2 w) {
+	float step_px = 4.0;
+	float d = -1.0;
+	int n = int(rise_h / step_px) + 2;
+	for (int k = 1; k <= 64; k++) {
+		if (k > n) {
+			break;
+		}
+		if (!is_void(p + vec2(0.0, float(k) * step_px * px))) {
+			float lo = float(k - 1) * step_px;
+			float hi = float(k) * step_px;
+			for (int j = 0; j < 2; j++) {
+				float mid = (lo + hi) * 0.5;
+				if (is_void(p + vec2(0.0, mid * px))) {
+					lo = mid;
+				} else {
+					hi = mid;
+				}
+			}
+			d = hi;
+			break;
+		}
+	}
+	if (d >= 0.0) {
+		vec4 face = texture(rise_face, vec2(w.x / rise_w, 1.0 - d / rise_h));
+		if (face.a > 0.5) {
+			return face.rgb;
+		}
+	}
+	// 꼭대기 풍경: 땅(위·아래·옆)까지의 거리로 어둡게
+	float far = rise_fog;
+	for (int k = 0; k <= 10; k++) {
+		float r = float(k) * 0.75;
+		if (r > rise_fog) {
+			break;
+		}
+		if (!is_void(p + vec2(0.0, r + rise_h / tile)) || !is_void(p - vec2(0.0, r)) || !is_void(p + vec2(r, 0.0)) || !is_void(p - vec2(r, 0.0))) {
+			far = r;
+			break;
+		}
+	}
+	for (int s = 1; s <= 3; s++) {  // 옆(동·서) 면: 땅 옆에서 비스듬히 보이는 좁은 벽
+		float o = side_px * float(s) / 3.0;
+		if (!is_void(p - vec2(o * px, 0.0)) || !is_void(p + vec2(o * px, 0.0))) {
+			vec4 sf = texture(rise_face, vec2(w.y / rise_w + 0.31, 0.55));
+			return sf.rgb * (0.5 + 0.12 * float(s));
+		}
+	}
+	// 땅 남쪽에 솟은 외곽: 면은 보이지 않고 꼭대기 가장자리(성가퀴·눈 처마)를 위에서 본다 — 면 그림 윗부분을 rise_band px에 눌러 담는다
+	for (int k = 1; k <= 8; k++) {
+		float u = float(k) * rise_band / 8.0;
+		if (!is_void(p - vec2(0.0, u * px))) {
+			vec4 lip = texture(rise_face, vec2(w.x / rise_w, u / rise_band * 0.22));
+			if (lip.a > 0.5) {
+				return lip.rgb * (k <= 1 ? 0.45 : 0.9);
+			}
+			break;
+		}
+	}
+	vec3 top = texture(rise_top, w / rise_top_w).rgb * 0.8;
+	return mix(top, rise_dark.rgb, smoothstep(0.3, rise_fog, far) * 0.92);
+}
+
 void fragment() {
 	vec2 p = world / tile;
 	float px = 1.0 / tile;
@@ -97,13 +182,15 @@ void fragment() {
 		COLOR = vec4(deep(world, 6.0) * COLOR.rgb, k * k * (3.0 - 2.0 * k));
 	} else if (!is_void(p)) {
 		// 땅: 허공에 닿는 가장자리만 — 아래(절벽 위 턱)는 밝게 부스러진 테두리, 옆·위는 그늘
-		if (is_void(p + vec2(0.0, 2.0 * px))) {
+		if (is_void(p + vec2(0.0, 2.0 * px)) && !is_rise(p + vec2(0.0, 2.0 * px))) {
 			COLOR = vec4(rim_color.rgb * COLOR.rgb, 0.55);
 		} else if (is_void(p + vec2(1.6 * px, 0.0)) || is_void(p - vec2(1.6 * px, 0.0)) || is_void(p - vec2(0.0, 1.6 * px))) {
 			COLOR = vec4(vec3(0.0), 0.45);
 		} else {
 			discard;
 		}
+	} else if (is_rise(p)) {
+		COLOR = vec4(rise_color(p, px, world) * COLOR.rgb, 1.0);
 	} else {
 		float step_px = 3.0;
 		float d = -1.0;

@@ -91,7 +91,7 @@ func test_rift_vision_unlimited() -> void:
 
 
 func test_void_tiles_block_walk_not_sight() -> void:
-	for id: String in ["bf_void", "gc_void", "gm_void", "it_void"]:
+	for id: String in ["bf_void", "gc_void", "gm_void", "it_void", "bf_rise", "gc_rise"]:
 		var t := TileDef.from_dict(db.get_entry("tiles", id), 0)
 		assert_true(t.is_void and not t.walkable and not t.blocks_sight, "낭떠러지: " + id)
 
@@ -114,12 +114,33 @@ func test_abyss_mask_and_no_backdrop() -> void:
 		for x in map.width:
 			var d := map.def_at(Vector2i(x, y))
 			var c := img.get_pixel(x, y)
-			if (c.r > 0.5) != d.is_void or (c.g > 0.5) != (d.void_edge == "beam"):
+			if (c.r > 0.5) != d.is_void or (c.g > 0.5) != (d.void_edge == "beam") or (c.b > 0.5) != d.is_rise:
 				wrong += 1
 			voids += 1 if d.is_void else 0
 			beams += 1 if d.void_edge == "beam" else 0
 	assert_eq(wrong, 0, "칸 지도 그림 = 허공·발판")
 	assert_true(voids > 0 and beams > 0, "무너진 다리 챕터에 허공(%d)과 다리 발판(%d)" % [voids, beams])
+
+
+## 지도 바깥 둘레는 솟은 외곽(AM50): 성채 1·2챕터·빙하굴 1챕터의 지도 끝에 닿은 허공은 모두 rise(성벽·빙벽 + 너머 풍경),
+## 안쪽 구덩이(탄광 협곡·원형 갱·묘 구덩이·지하수맥)는 내려가는 낭떠러지 그대로.
+func test_outer_void_rises() -> void:
+	for ch: String in ["rift_blood_fortress_ch1", "rift_blood_fortress_ch2", "rift_glacier_cave_ch1"]:
+		var data := FloorMapFile.read("res://data/maps/rifts/%s.json" % ch)
+		var rises := 0
+		var pits := 0
+		for c: String in JsonUtil.get_dict(data, "legend"):
+			var def := TileDef.from_dict(db.get_entry("tiles", str(data["legend"][c])), 0)
+			rises += 1 if def.is_rise else 0
+			pits += 1 if def.is_void and not def.is_rise else 0
+		assert_true(rises == 1 and pits == 0, "%s: 바깥 둘레 = 솟은 외곽" % ch)
+	for ch: String in ["rift_green_mine_ch2", "rift_green_mine_ch3", "rift_iron_tomb_ch4", "rift_glacier_cave_ch3"]:
+		var data := FloorMapFile.read("res://data/maps/rifts/%s.json" % ch)
+		for c: String in JsonUtil.get_dict(data, "legend"):
+			assert_false(TileDef.from_dict(db.get_entry("tiles", str(data["legend"][c])), 0).is_rise, "%s: 안쪽 구덩이는 낭떠러지" % ch)
+	for rid: String in ["rift_blood_fortress", "rift_glacier_cave"]:
+		var rise := JsonUtil.get_dict(JsonUtil.get_dict(JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("rifts", rid), "look"), "art"), "abyss"), "rise")
+		assert_true(ResourceLoader.exists(JsonUtil.get_str(rise, "face")) and ResourceLoader.exists(JsonUtil.get_str(rise, "top")), "솟은 외곽 그림: " + rid)
 
 
 ## 그림 계약(tools/floor_art/rift/specs.json): 균열 장소의 바닥·벽은 재질 아틀라스, 소품은 서 있는 그림(art.stand — 벽 종류),

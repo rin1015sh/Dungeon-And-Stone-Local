@@ -6,7 +6,7 @@
  "height": 40,
  "floor": "fortress_floor",
  "legend": {
-  " ": "bf_void",
+  " ": "bf_rise",
   ".": "fortress_floor",
   ",": "bf_road",
   "\"": "bf_ash",
