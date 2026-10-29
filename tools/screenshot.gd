@@ -34,6 +34,7 @@ extends Node
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 ## --shots=<목록 json> --out=<폴더>: (explore) 장면 목록을 한 번에 찍어 <폴더>/<name>.png로(tools/ShotList.gd, 목록 예 tools/shots/floor1.json)
+##   --rift=<균열 id> [--chapter=n]과 함께면 그 챕터 안에서 찍는다(목록의 장면마다 "rift"·"chapter"가 있으면 맞는 것만 — tools/shots/rift_void.json)
 
 const ShotList := preload("res://tools/ShotList.gd")
 
@@ -108,7 +109,9 @@ func _run() -> void:
 		plaza_screen.enter_requested.emit()
 		await _frames(3)
 		var explore := _main.current_screen() as ExploreScreen
-		if _args.has("shots"):  # 장면 목록 일괄 캡처 → --out 폴더
+		if _args.has("shots"):  # 장면 목록 일괄 캡처 → --out 폴더(--rift면 그 균열 챕터에 들어가서)
+			if _args.has("rift"):
+				explore = await _enter_rift(explore)
 			get_tree().quit(await ShotList.run(self, explore, str(_args["shots"]), str(_args["out"])))
 			return
 		if _args.has("torch"):

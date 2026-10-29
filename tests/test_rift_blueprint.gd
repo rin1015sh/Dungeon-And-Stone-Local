@@ -96,8 +96,34 @@ func test_void_tiles_block_walk_not_sight() -> void:
 		assert_true(t.is_void and not t.walkable and not t.blocks_sight, "낭떠러지: " + id)
 
 
+## 낭떠러지는 세계 좌표 절벽 셰이더(AM49): 칸 지도 그림 r = 허공, g = 나무 발판(다리 — 깎지 않는다), 화면 고정 뒷배경은 없다.
+func test_abyss_mask_and_no_backdrop() -> void:
+	var cs := _enter("rift_green_mine")
+	cs.rift_run.debug_clear()
+	var fd := cs.rift_run.chapter_floor_def(1)
+	var art := FloorArt.resolve(db.render, fd)
+	assert_false(art.abyss.is_empty(), "탄광 낭떠러지 설정")
+	assert_false(JsonUtil.get_dict(fd, "art").has("backdrop"), "화면 고정 뒷배경 없음")
+	var map := RiftBlueprintGenerator.new().generate(db, fd, Rng.new(1))
+	var tex := Abyss.mask_texture(map)
+	var img := tex.get_image()
+	var wrong := 0
+	var voids := 0
+	var beams := 0
+	for y in map.height:
+		for x in map.width:
+			var d := map.def_at(Vector2i(x, y))
+			var c := img.get_pixel(x, y)
+			if (c.r > 0.5) != d.is_void or (c.g > 0.5) != (d.void_edge == "beam"):
+				wrong += 1
+			voids += 1 if d.is_void else 0
+			beams += 1 if d.void_edge == "beam" else 0
+	assert_eq(wrong, 0, "칸 지도 그림 = 허공·발판")
+	assert_true(voids > 0 and beams > 0, "무너진 다리 챕터에 허공(%d)과 다리 발판(%d)" % [voids, beams])
+
+
 ## 그림 계약(tools/floor_art/rift/specs.json): 균열 장소의 바닥·벽은 재질 아틀라스, 소품은 서 있는 그림(art.stand — 벽 종류),
-## 설계도에 쓰인 걷지 못하는 물건(낭떠러지 제외)은 모두 그림이 있다. 균열마다 뒷배경 그림이 있다.
+## 설계도에 쓰인 걷지 못하는 물건(낭떠러지 제외)은 모두 그림이 있다. 균열마다 낭떠러지 절벽 면 그림이 있다.
 func test_rift_tiles_have_art() -> void:
 	var spec: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tools/floor_art/rift/specs.json"))
 	for place: String in spec["places"]:
@@ -110,8 +136,8 @@ func test_rift_tiles_have_art() -> void:
 			var def := TileDef.from_dict(db.get_entry("tiles", str(tid)), 0)
 			assert_true(def.is_wall() and ResourceLoader.exists(def.stand_sheet), "서 있는 소품 그림: " + str(tid))
 	for rid: String in db.get_collection("rifts"):
-		var bd := JsonUtil.get_dict(JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("rifts", rid), "look"), "art"), "backdrop")
-		assert_true(ResourceLoader.exists(JsonUtil.get_str(bd, "image")), "뒷배경: " + rid)
+		var ab := JsonUtil.get_dict(JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("rifts", rid), "look"), "art"), "abyss")
+		assert_true(ResourceLoader.exists(JsonUtil.get_str(ab, "cliff")), "낭떠러지 절벽 면 그림: " + rid)
 	for rid: String in db.get_collection("rifts"):
 		for ch: Variant in JsonUtil.get_array(db.get_entry("rifts", rid), "chapters"):
 			var data := FloorMapFile.read(JsonUtil.get_str(JsonUtil.get_dict(ch, "map"), "blueprint"))

@@ -7,7 +7,8 @@ extends RefCounted
 ##   pulse    {tiles[], period_sec, depth, radius_m, strength} — 빛나는 타일의 느린 맥동(셰이더, 청크 다시 그리기 없음)
 ##   particles [{id, amount, lifetime, color, alpha, scale[min,max], velocity[min,max], direction[x,y], spread, gravity[x,y]}]
 ##   ambience {loop} — data/audio.json ambience 키(파일이 없으면 조용함)
-##   backdrop {image, drift, scale, cliff_color, cliff_depth} — 낭떠러지(void 타일) 너머로 비치는 뒷배경(Backdrop·VoidChunk)
+##   abyss {cliff, cliff_tiles, cliff_depth, jag, abyss_color, mist_color, rim_color, beam_color, rail} — 낭떠러지·구덩이(void 타일)를
+##          세계 좌표의 절벽 면 + 깊은 어둠으로(Abyss·VoidChunk — 화면에 고정된 뒷배경 그림은 쓰지 않는다)
 ##   battleback {image "res://…webp", half_width m} — 전투 화면 뒤 그림과 그 통로 반 폭(적이 앞뒤 줄로 그 안에 선다 — BattleStage·FoeRows,
 ##            그림 도구 tools/paint_battlebacks.gd — 균열 챕터는 챕터 battleback이 덮는다)
 ## 품질 "low"면 그레인·입자·맥동·횃불 흔들림을 끈다(GraphicsSettings).
@@ -27,7 +28,7 @@ var pulse_radius_m: float = 1.5
 var pulse_strength: float = 0.0
 var particles: Array[Dictionary] = []
 var ambience: String = ""
-var backdrop: Dictionary = {}
+var abyss: Dictionary = {}
 var battleback: String = ""
 var battleback_width: float = 0.0  ## 통로 반 폭(m) — 0이면 render.json 기본값
 var low_quality: bool = false
@@ -63,7 +64,7 @@ static func resolve(render: Dictionary, floor_def: Dictionary, quality: String =
 			if e is Dictionary:
 				a.particles.append(e)
 	a.ambience = JsonUtil.get_str(JsonUtil.get_dict(art, "ambience"), "loop")
-	a.backdrop = JsonUtil.get_dict(art, "backdrop")
+	a.abyss = JsonUtil.get_dict(art, "abyss")
 	var bb := JsonUtil.get_dict(art, "battleback")
 	a.battleback = JsonUtil.get_str(bb, "image")
 	a.battleback_width = JsonUtil.get_float(bb, "half_width")

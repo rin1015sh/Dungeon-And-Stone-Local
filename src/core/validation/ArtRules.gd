@@ -47,6 +47,9 @@ static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
 	check_battleback(v, w + ".battleback", art.get("battleback"))
 	_decor(v, w + ".decor", JsonUtil.get_dict(art, "decor"))
 	_macro(v, w + ".macro", JsonUtil.get_dict(art, "macro"))
+	_abyss(v, w + ".abyss", JsonUtil.get_dict(art, "abyss"))
+	if art.has("backdrop"):
+		v.err(w, "backdrop(화면 고정 뒷배경)은 없어졌다 — abyss(절벽 면 + 어둠, AM49)")
 	var loop := JsonUtil.get_str(JsonUtil.get_dict(art, "ambience"), "loop")
 	if not loop.is_empty() and not JsonUtil.get_dict(JsonUtil.get_dict(v.db.singletons, "audio"), "ambience").has(loop):
 		v.err(w + ".ambience", "'%s'가 data/audio.json ambience에 없다" % loop)
@@ -67,6 +70,29 @@ static func check_battleback(v: ValidatorBase, w: String, bb: Variant) -> void:
 	for key: String in (bb as Dictionary):
 		if not key in ["image", "half_width"]:
 			v.err(w, "모르는 키 '%s'" % key)
+
+
+## 낭떠러지·구덩이(Abyss): 절벽 면 그림·색·깎는 깊이·난간.
+static func _abyss(v: ValidatorBase, w: String, a: Dictionary) -> void:
+	if a.is_empty():
+		return
+	for key: String in a:
+		if not key in ["_comment", "cliff", "cliff_tiles", "cliff_depth", "jag", "abyss_color", "mist_color", "rim_color", "beam_color", "rail"]:
+			v.err(w, "모르는 키 '%s'" % key)
+	if not ResourceLoader.exists(JsonUtil.get_str(a, "cliff")):
+		v.err(w, "cliff 그림 없음 '%s' — tools/paint_floor.gd -- --only=<장소>:cliff" % JsonUtil.get_str(a, "cliff"))
+	for key: String in ["abyss_color", "mist_color", "rim_color", "beam_color"]:
+		if a.has(key):
+			v.check_color(w + "." + key, JsonUtil.get_str(a, key))
+	if JsonUtil.get_float(a, "cliff_tiles", 8.0) <= 0.0 or JsonUtil.get_float(a, "cliff_depth", 2.0) <= 0.0:
+		v.err(w, "cliff_tiles·cliff_depth는 양수")
+	var jag := JsonUtil.get_float(a, "jag", 0.32)
+	if jag < 0.0 or jag > 0.45:
+		v.err(w, "jag는 0~0.45(칸 비율 — 걷는 칸이 너무 깎이지 않게)")
+	var rail := JsonUtil.get_dict(a, "rail")
+	for key: String in ["post", "rope"]:
+		if rail.has(key):
+			v.check_color(w + ".rail." + key, JsonUtil.get_str(rail, key))
 
 
 ## 데칼 배치(FloorDecor): 시트·종류·규칙 키·참조.

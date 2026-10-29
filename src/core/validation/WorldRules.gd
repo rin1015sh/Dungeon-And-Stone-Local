@@ -38,6 +38,9 @@ static func _tiles(v: ValidatorBase) -> void:
 			var shape := JsonUtil.get_str(art, "shape")
 			if not shape.is_empty() and shape != "smooth":
 				v.err(w + ".art", "shape는 \"smooth\"만(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선)")
+		var ve := JsonUtil.get_str(art, "void_edge")
+		if not ve.is_empty() and (ve != "beam" or JsonUtil.get_str(t, "kind") != "floor"):
+			v.err(w + ".art", "void_edge는 바닥 타일의 \"beam\"만(허공 위 나무 발판 — 들보 면·난간, Abyss)")
 		var light := JsonUtil.get_dict(t, "light")
 		if not light.is_empty():
 			if JsonUtil.get_float(light, "radius_m") <= 0.0:

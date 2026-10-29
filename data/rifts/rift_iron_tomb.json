@@ -32,15 +32,15 @@
         "saturation": 0.7,
         "vignette_strength": 0.65
       },
-      "backdrop": {
-        "image": "res://assets/floor/it/backdrop.webp",
-        "drift": 0.18,
-        "scale": [
-          1.0,
-          1.0
-        ],
-        "cliff_color": "#16161a",
-        "cliff_depth": 1.2
+      "abyss": {
+        "_comment": "낭떠러지·구덩이(Abyss — 화면 고정 그림 없이 세계 좌표의 절벽 면 + 어둠, 사용자 결정 2026-10-29 AM49). 땅 가장자리는 jag만큼 들쭉날쭉 깎인다. [창작] 임시값",
+        "cliff": "res://assets/floor/it/chasm.webp",
+        "cliff_tiles": 8,
+        "cliff_depth": 2.25,
+        "jag": 0.3,
+        "abyss_color": "#040405",
+        "mist_color": "#121216",
+        "rim_color": "#8e8e96"
       },
       "decor": {
         "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",

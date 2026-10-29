@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://v4d66cou44dw"
-path="res://.godot/imported/backdrop.webp-bca1d76648a2b764c1fe68037af35dd5.ctex"
+uid="uid://dhref6egadp6a"
+path="res://.godot/imported/chasm.webp-c29c620a5f33e959d6592eeec6933b3d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/gm/backdrop.webp"
-dest_files=["res://.godot/imported/backdrop.webp-bca1d76648a2b764c1fe68037af35dd5.ctex"]
+source_file="res://assets/floor/gm/chasm.webp"
+dest_files=["res://.godot/imported/chasm.webp-c29c620a5f33e959d6592eeec6933b3d.ctex"]
 
 [params]
 

@@ -55,8 +55,8 @@ var prop_tex: Dictionary = {}         # 소품·턱 시트 경로 -> Texture2D(�
 var prop_by_def: Array[Texture2D] = [] # map.defs 번호 -> 소품 시트(없으면 null — 그리기에서 칸마다 사전을 찾지 않게)
 var stand_by_def: Array[Texture2D] = [] # map.defs 번호 -> 서 있는 소품 시트(art.stand — WallRow가 덩어리 대신 그림으로)
 var under_by_def: PackedInt32Array = PackedInt32Array()  # map.defs 번호 -> 소품 밑 바닥 타일 번호(FloorChunk)
-var void_layer: Node2D                # 낭떠러지 칸의 뒷배경(VoidChunk — 층 art.backdrop이 있을 때만)
-var backdrop_material: ShaderMaterial # 뒷배경 셰이더(화면 고정 + 시차 — backdrop.gdshader)
+var void_layer: Node2D                # 낭떠러지·구덩이(VoidChunk — 층 art.abyss가 있을 때만, 바닥·데칼 위에서 땅 가장자리를 깎는다)
+var abyss_material: ShaderMaterial    # 절벽 면·어둠 셰이더(세계 좌표 — abyss.gdshader)
 var smooth_by_def: PackedByteArray = PackedByteArray()  # map.defs 번호 -> 부드러운 암벽(WallShape)이면 1
 var smooth_any: bool = false
 var blend_by_def: PackedByteArray = PackedByteArray()   # map.defs 번호 -> 가장자리를 사선으로 다듬는 바닥(물 — FloorChunk)이면 1
@@ -99,9 +99,9 @@ func _ready() -> void:
 	decor_layer = Node2D.new()
 	decor_layer.z_index = -9
 	add_child(decor_layer)
-	if backdrop_material != null:
+	if abyss_material != null:
 		void_layer = Node2D.new()
-		void_layer.z_index = -11
+		void_layer.z_index = -9  # 데칼 층(-9)보다 나중에 붙여 같은 z에서 위에 — 가장자리 데칼도 함께 깎인다
 		add_child(void_layer)
 	if art.has_pulse():
 		glow_layer = Node2D.new()
