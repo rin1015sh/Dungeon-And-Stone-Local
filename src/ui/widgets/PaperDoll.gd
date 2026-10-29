@@ -84,13 +84,25 @@ class EquipSlot extends Control:
 		GothicStyle.draw_slot(self, r, "hover" if _cursor else "")
 		var id := actor.equipment.item_in(slot)
 		if not id.is_empty():
-			ItemIconPainter.draw(self, actor.db, id, r.grow(-4))
+			ItemIconPainter.draw(self, actor.db, id, _art_rect(id, r.grow(-4)))
 		elif blocked:
-			ItemIconPainter.draw(self, actor.db, actor.equipment.item_in("main_hand"), r.grow(-4), 0.25)
+			var main := actor.equipment.item_in("main_hand")
+			ItemIconPainter.draw(self, actor.db, main, _art_rect(main, r.grow(-4)), 0.25)
 		else:
 			ItemIconPainter.paint_ghost(self, ghost, r)
 		if _cursor:
 			draw_rect(r.grow(-1), UiTheme.color("select"), false, 2.0)
+
+	## 손 칸(긴 칸)은 가방 칸 크기 비율대로 — 칸 하나 = 긴 칸을 render.json ui.doll_hand_cells([가로, 세로] 칸)로 나눈 크기.
+	## 그대로 칸에 꽉 채우면 1×2 단검이 1×4 창만큼 길어 보였다(사용자 2026-10-29, UI47). 다른 칸은 칸에 맞춘다.
+	func _art_rect(item_id: String, r: Rect2) -> Rect2:
+		if not slot in ["main_hand", "off_hand"]:
+			return r
+		var cells := UiTheme.ui_array("doll_hand_cells")
+		var k := minf(r.size.x / float(cells[0]), r.size.y / float(cells[1])) if cells.size() == 2 else minf(r.size.x * 0.5, r.size.y * 0.25)
+		var sz := Vector2(ItemInfo.size(actor.db, item_id)) * k
+		sz = Vector2(minf(sz.x, r.size.x), minf(sz.y, r.size.y))
+		return Rect2(r.get_center() - sz * 0.5, sz)
 
 	## 가방에서 고른 아이템을 이 칸에 장착한다(스모크 테스트도 쓴다). 성공하면 true.
 	func drop(d: Dictionary) -> bool:

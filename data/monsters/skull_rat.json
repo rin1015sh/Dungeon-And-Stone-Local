@@ -2,7 +2,6 @@
   "id": "skull_rat",
   "name_ko": "스컬 랫",
   "grade": 9,
-  "rank": "ungraded",
   "floor": 1,
   "floor_tags": [
     "f1_rift_blood_fortress"
@@ -48,7 +47,9 @@
     "reveal_radius_m": 0,
     "row": "front"
   },
-  "essence_drops": [],
+  "_essence_comment": "무등급이던 몬스터(UI46) — 9등급이 되어도 정수 확률은 예전 무등급 값 그대로",
+  "essence_drops": [{"essence": "skull_rat", "chance": 0.005}],
+  "magic_stone_grade": 9,
   "drops": [],
   "skills": [
     "rat_gnaw",

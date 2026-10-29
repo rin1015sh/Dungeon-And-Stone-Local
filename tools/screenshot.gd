@@ -13,7 +13,7 @@ extends Node
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
-## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
+## --equip=<아이템 id>: 주무기 칸에 그 무기(장비 인형 그림 크기), --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
 ## --codex[=<분야 id>]: 도감(B) 열기 — 분야면 서적 쪽(--books = 서적 전부 읽은 것으로, --pick=<번호> = 그 대목에 커서, UI32 · --known --monster=<id> = 그 몬스터를 다 안다)
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
@@ -166,6 +166,9 @@ func _run() -> void:
 			explore.session.player.inventory = Inventory.new(explore.session.db, int(bag[0]), int(bag[1]))
 			for gid in str(_args["give"]).split(","):
 				explore.session.player.inventory.add(gid)
+		if _args.has("equip"):  # --equip=<아이템 id>: 그 무기를 주무기 칸에 낀다(장비 인형 그림 크기 확인 — UI47)
+			var epc := explore.session.player
+			epc.equipment.equip(epc.stats, str(_args["equip"]), "main_hand")
 		if _args.has("loot"):
 			var pc := explore.session.player
 			pc.inventory.add("magic_stone_9", 7)

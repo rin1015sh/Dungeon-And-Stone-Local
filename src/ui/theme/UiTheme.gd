@@ -112,6 +112,10 @@ static func ui_float(key: String, fallback: float = 0.0) -> float:
 	return JsonUtil.get_float(JsonUtil.get_dict(_render, "ui"), key, fallback)
 
 
+static func ui_array(key: String) -> Array:
+	return JsonUtil.get_array(JsonUtil.get_dict(_render, "ui"), key)
+
+
 static func ui_dict(key: String) -> Dictionary:
 	return JsonUtil.get_dict(JsonUtil.get_dict(_render, "ui"), key)
 

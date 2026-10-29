@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **무등급 → 9등급 · 단검 그림 · 전투 적 자리 (2026-10-29, 사용자)** — UI46·UI47·UI48. ① 데드맨·병사 데드맨·데드맨 지휘관·스컬 랫 `rank` 없앰 + `magic_stone_grade` 9 + `essence_drops` 0.5%(예전 무등급 확률 고정) → 1층 공적 108 → 112(`exp_budget.md` 다시 만듦, test_growth 기대값). sim_income은 1층 필드만 돌아(데드맨은 핏빛성채 균열) 영향 없음. ② `PaperDoll._art_rect`: 손 칸은 칸 ÷ `ui.doll_hand_cells`[2,4] × 아이템 크기(단검 1×2 = 창의 반), 캡처 `--equip=hunting_dagger`. ③ `BattleStage._pack`: 나올 적은 배율만, 자리는 처음 적만 가운데부터 · `_place_fresh` = `FoeRows.fit_new`(`_spares` 삭제) · `_scale`로 새 적도 같은 크기. 테스트 `test_count_layout_centered_and_new_beside`. 캡처: 고블린 1(가운데) · 1+1(가운데 그대로 + 왼쪽) · 1+3 · 블라터 + 고블린 3(블라터 한가운데, 둘레).
+
 - **게임 글꼴 송명 (2026-10-29, 사용자 "피어 앤 헝거 같은 살짝 고딕 느낌 폰트")** — UI45. 후보 5종(google/fonts OFL: 송명·나눔명조 Bold·고운바탕 Regular/Bold·디필레이아)을 render.json `font.path`만 바꿔 Tab·전투·여관을 찍어 비교 → 사용자가 송명. `UiTheme._dressed`(FontVariation: fallbacks = Noto, spacing_top 1·bottom 2) · `test_web`이 같은 resolve_font로 검사(송명에 없는 18자 — ◆▶◀ · 「」『』 ↑→↓ 등은 Noto) · 글자 크기 한 단계 + 숫자 34→38 · 전투 파티 창 이름 칸 132 · `export_presets` include에 `OFL-SongMyung.txt`. 웹 꾸러미 +2MB. 비교 그림 `docs/screens/font_songmyung.png`. 남은 것: 작은 글씨(15px) 가독성은 사람이 보고 판단.
 
 - **전투 회복 = 초록 숫자 (2026-10-29, 사용자)** — UI44. 새 `src/ui/combat/HealFloats.gd`(Node — 참가자 `pool.changed`에 메서드 연결, hp가 최대치 변화 없이 늘면 `+n` 초록 `dmg_heal` #8fd47a, 피해 숫자와 같은 `float_text` 큰 글씨). `CombatScreen._add_unit`에서 watch(증원·소환도). silent 추가: `combat.regen`·`combat.drain`·`effect.smite_heal` · `combat.absorb` 글에서 회복 수치 뺌 · 새 문구 `combat.float_heal` · STRINGS.md 다시 만듦. 캡처 옵션 `--heal`(참가자 모두 생명력 -40 → +25, 영혼력 -20 → +12)로 확인. 같은 날 추가: 영혼력 파랑 `dmg_soul` #7fa8e8 · 연달아 뜬 숫자는 한 줄 아래(`BattlerView._float_row`, `ui.float_text_stack_sec` 0.35).
