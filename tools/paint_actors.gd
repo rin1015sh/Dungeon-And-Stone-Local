@@ -68,6 +68,9 @@ const SIDE_HAIR := {"side": -0.55, "back": -0.15, "flick": 0.1, "jitter": 0.6, "
 const SIDE_SHELL := 0.7  ## 옆모습 껍데기 숱(SPIKY_GROW와 같게)
 ## 마감(방법 ⑤): 전투 그림 빛 그대로, 줄인 뒤 밝기·대비·안쪽 선
 const FRONT_LIGHT := 0.0
+## 탐험가 앞모습만 앞에서 비춘다(사용자 2026-10-29 "다 안대를 쓰고 있다" — 왼쪽 위 빛이면 얼굴 오른쪽 반이 그늘에 묻혀 오른 눈구멍이 안 보이고
+## 왼 눈만 짙어 안대처럼 보였다). 옆·뒤와 몬스터는 그대로.
+const FRONT_ROW_LIGHT := 1.0
 const LIGHT := Vector3(-0.2, -0.5, 0.85)
 const CONTRAST := 1.12   ## 줄인 뒤 명암 대비
 const GAMMA := 0.85      ## 줄인 뒤 밝기(1보다 작으면 중간 밝기를 올린다)
@@ -212,7 +215,7 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 			sp["hair_grow"] = _v("side_shell", SIDE_SHELL)
 	sp["mottle_amt"] = 0.08  # 살갗 얼룩·때는 줄이면 점박이로 보인다
 	sp["grime"] = 0.0
-	if _v("front_light", FRONT_LIGHT) > 0.0:
+	if _v("front_light", FRONT_LIGHT) > 0.0 or (size < 0.0 and absf(absf(turn) - PI) < 0.3 and _v("front_row_light", FRONT_ROW_LIGHT) > 0.0):
 		sp["light"] = LIGHT
 	for key: String in extra:  # 몬스터 맵 값
 		match key:

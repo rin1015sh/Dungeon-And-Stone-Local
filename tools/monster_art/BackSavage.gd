@@ -2,8 +2,8 @@ extends RefCounted
 ## 사람형(Back) 야만전사 장구 — 바바리안 옷차림 후보(tools/monster_art/MapLooks.gd b3~b8, 사용자 2026-10-29 "야만전사 느낌으로 여러 개"):
 ##   harness {c, x: true = 가슴·등에 X자 / false = 왼어깨 → 오른허리 한 줄, ring: 가운데 쇠고리 색} 맨몸 위 가죽 멜빵
 ##   kilt {c, len(0 = 엉덩이 ~ 1 = 무릎), fur, slits(갈라진 자락 수)} 가죽(털) 띠 치마
-##   pauldron {c, side: l|r, kind: leather|iron|skull} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
-##   necklace {c, n} 이빨·발톱 목걸이(앞에서 보인다) · paint {c} 팔·얼굴 전투 칠
+##   pauldron {c, side: l|r, kind: leather|iron|skull, size(털 어깨 위에 얹으려면 크게 — 1.3 안팎)} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
+##   necklace {c, n} 이빨·발톱 목걸이(앞에서 보인다) · paint {c} 팔 전투 칠
 ## kit 키가 없으면 아무것도 하지 않는다.
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
@@ -114,18 +114,20 @@ static func _pauldron(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d
 		return
 	var m := cl.mat(col, "metal" if kind == "iron" else "leather")
 	var rim := cl.mat(col.darkened(0.4), "metal" if kind == "iron" else "leather")
+	var z := float(d.get("size", 1.0))
+	var top := shp + Vector3(s * 0.02 * (z - 1.0), -0.02 * (z - 1.0), 0.0)
 	for k in 3:  # 위에서 아래로 겹친 판(아래 판이 조금 작다)
-		var c := shp + Vector3(s * (0.014 + k * 0.008), -0.004 + k * 0.03, 0.0)
+		var c := top + Vector3(s * (0.014 + k * 0.008), -0.004 + k * 0.03, 0.0) * z
 		var g := cl.group()
-		Back.ell(cl, pr, g, c, 0.064 - k * 0.006, 0.036, 0.062 - k * 0.005, m, 0.006)
-		Back.ridge(cl, pr, g, [c + Vector3(-s * 0.03, 0.03, 0.05), c + Vector3(s * 0.04, 0.034, 0.04)], Vector3(0, 0, 1), 0.004, 0.003, rim)
+		Back.ell(cl, pr, g, c, (0.064 - k * 0.006) * z, 0.036 * z, (0.062 - k * 0.005) * z, m, 0.006)
+		Back.ridge(cl, pr, g, [c + Vector3(-s * 0.03, 0.03, 0.05) * z, c + Vector3(s * 0.04, 0.034, 0.04) * z], Vector3(0, 0, 1), 0.004, 0.003, rim)
 		if kind == "iron":
 			for f: float in [1.0, -1.0]:
-				Back.bump(cl, pr, g, c + Vector3(s * 0.02, 0.014, f * 0.05), Vector3(0, 0, f), 0.006, 0.006, 0.004, rim)
+				Back.bump(cl, pr, g, c + Vector3(s * 0.02, 0.014, f * 0.05) * z, Vector3(0, 0, f), 0.006, 0.006, 0.004, rim)
 	if kind == "iron":
 		for k in 4:  # 판 위에 박은 가시
-			var a := shp + Vector3(s * (0.0 + k * 0.016), -0.03 + k * 0.006, (k % 2 - 0.5) * 0.04)
-			Back.cap(cl, pr, cl.group(), a, a + Vector3(s * 0.01, -0.03, 0.0), 0.008, 0.002, m, 0.002)
+			var a := top + Vector3(s * (0.0 + k * 0.016), -0.03 + k * 0.006, (k % 2 - 0.5) * 0.04) * z
+			Back.cap(cl, pr, cl.group(), a, a + Vector3(s * 0.01, -0.03, 0.0) * z, 0.008, 0.002, m, 0.002)
 
 
 ## 이빨·발톱 목걸이: 목 아래 가슴 앞을 도는 끈에 휜 송곳니가 매달린다(등에선 끈만 목덜미에).
@@ -149,7 +151,7 @@ static func _necklace(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d
 		Back.chain(cl, pr, g, [top, top + Vector3(a * 0.01, len * 0.6, -0.006), top + Vector3(a * 0.02 + 0.006, len, -0.002)], [0.008, 0.006, 0.0015], bone, 0.002)
 
 
-## 전투 칠: 두 위팔에 비스듬한 줄 셋 + 얼굴 눈가를 가로지르는 띠(맵 앞모습에서 보인다).
+## 전투 칠: 두 위팔에 비스듬한 줄 셋(얼굴 띠는 맵 앞모습에서 안대처럼 보여 뺐다 — 사용자 2026-10-29).
 static func _paint(cl: Clay, pr: Dictionary, j: Dictionary, col: Color) -> void:
 	var m := cl.mat(col, "skin", {"mottle": col.darkened(0.3), "mottle_amt": 0.5})
 	for s: int in [-1, 1]:
@@ -159,6 +161,3 @@ static func _paint(cl: Clay, pr: Dictionary, j: Dictionary, col: Color) -> void:
 		for k in 3:
 			var c := shp.lerp(el, 0.35 + k * 0.16)
 			BackKit.shell(cl, pr, ["upper_" + t], 0.002, m, cl.group(), _slant(cl, pr, c, 0.35 * s, 0.022))
-	var hc: Vector3 = j["head"]
-	var hh: float = j["head_h"]
-	BackKit.shell(cl, pr, ["face"], 0.002, m, cl.group(), _slant(cl, pr, hc + Vector3(0, -hh * 0.02, 0), 0.0, hh * 0.22))
