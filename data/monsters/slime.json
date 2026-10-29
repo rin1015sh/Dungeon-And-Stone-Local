@@ -33,6 +33,8 @@
     "damage_type": "blunt"
   },
   "behavior": {
+    "move_mult": 0.6,
+    "alert_sfx": "slime_squelch",
     "aggressive": true,
     "aggro_radius_m": 5.0,
     "leash_tiles": 0,

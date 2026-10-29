@@ -77,6 +77,7 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	fpos = Kinematics.center_of(pos)
 	lights = LightField.build(map, _mpt)
 	monsters = FieldMonsters.new(db, map, floor_def, rng)
+	monsters.alerted.connect(_on_monster_alerted)
 	lord = LordWatch.new(JsonUtil.get_dict(floor_def, "lord"))
 	features.setup(self)
 	parties.setup(self)
@@ -85,6 +86,12 @@ func _init(p_db: GameDatabase, p_floor_def: Dictionary, p_map: FloorMap, p_playe
 	player.died.connect(_on_player_died)
 	player.status_changed.connect(_on_status_changed)
 	player.light.went_out.connect(_on_light_out)
+
+
+## 몬스터가 의심 끝에 쫓기 시작했다: 글이 아니라 소리로(몬스터 behavior alert_sfx, 없으면 monster_alert — V21).
+func _on_monster_alerted(g: FieldMonsters.Group) -> void:
+	var beh := JsonUtil.get_dict(db.get_entry("monsters", g.leader()), "behavior")
+	sound.emit(JsonUtil.get_str(beh, "alert_sfx", "monster_alert"), g.pos)
 
 
 ## 입장 직후 한 번 부른다.
@@ -295,6 +302,7 @@ func pass_time(hours: float) -> void:
 		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
 		monsters.set_player_marks(player.statuses.ids())
+		monsters.set_player_moving(FieldStealth.moving(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		if g != null:
 			engage(g, false)

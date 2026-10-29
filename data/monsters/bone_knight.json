@@ -36,6 +36,8 @@
     "damage_type": "slash"
   },
   "behavior": {
+    "move_mult": 0.9,
+    "alert_sfx": "undead_moan",
     "aggressive": true,
     "aggro_radius_m": 5.0,
     "leash_tiles": 0,

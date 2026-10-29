@@ -35,6 +35,8 @@
     "damage_type": "pierce"
   },
   "behavior": {
+    "move_mult": 1.25,
+    "alert_sfx": "wolf_growl",
     "aggressive": true,
     "aggro_radius_m": 5.0,
     "leash_tiles": 0,

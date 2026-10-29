@@ -33,6 +33,7 @@
     "damage_type": "pierce"
   },
   "behavior": {
+    "alert_sfx": "raider_shout",
     "aggressive": true,
     "aggro_radius_m": 7.0,
     "leash_tiles": 0,

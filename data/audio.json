@@ -9,7 +9,13 @@
     "scream": "res://assets/audio/sfx/scream.ogg",
     "fight_far": "res://assets/audio/sfx/fight_far.ogg",
     "rift_open": "res://assets/audio/sfx/rift_open.ogg",
-    "gnome_alarm": "res://assets/audio/sfx/gnome_alarm.ogg"
+    "gnome_alarm": "res://assets/audio/sfx/gnome_alarm.ogg",
+    "monster_alert": "res://assets/audio/sfx/monster_alert.ogg",
+    "wolf_growl": "res://assets/audio/sfx/wolf_growl.ogg",
+    "goblin_shout": "res://assets/audio/sfx/goblin_shout.ogg",
+    "undead_moan": "res://assets/audio/sfx/undead_moan.ogg",
+    "slime_squelch": "res://assets/audio/sfx/slime_squelch.ogg",
+    "raider_shout": "res://assets/audio/sfx/raider_shout.ogg"
   },
   "ambience": {
     "f1_cave": "res://assets/audio/ambience/f1_cave.ogg"

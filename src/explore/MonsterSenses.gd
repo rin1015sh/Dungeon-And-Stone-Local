@@ -8,9 +8,16 @@ extends RefCounted
 ##   밖이면 무엇으로도(냄새·사냥·소리) 알아채지 않는다. 쫓는 중이면 시야각은 보지 않고 monsters.chase_keep_tiles만큼 더 넓게 놓치지 않는다.
 ##   숨는·먼저 덤비지 않는 몬스터의 거리 조건은 MonsterSteering._notices.
 ##   은신(0~1)만큼 사각형이 줄어든다(behavior ignores_stealth면 그대로).
+##   의심(V21): 보면 바로 쫓지 않고 monsters.suspect_hours [가까이, 화면 끝] 동안 멈칫해 돌아본 뒤 그래도 보이면 쫓는다.
+##   기척(V21): 바로 곁(monsters.hear_tiles)에서 움직이면 등 돌린 몬스터도 hear_hold_hours 멈춰 돌아본다(서 있으면 들리지 않는다).
 
 var half := Vector2(13.3, 7.5)  ## 화면 반 크기(칸, 여유를 뺀 값)
 var keep: float = 2.0
+var suspect_min: float = 0.03  ## 의심 시간(게임 시간): 바로 앞 ~ 화면 끝
+var suspect_max: float = 0.06
+var known_mult: float = 0.5    ## 쫓다 놓친 상대를 다시 보면 의심 시간 × 이 값
+var hear_tiles: float = 1.6    ## 바로 곁에서 움직이면 돌아본다
+var hear_hold: float = 0.05    ## 돌아보며 멈추는 시간
 var _cos_half: float = 0.0
 
 
@@ -26,6 +33,12 @@ func _init(db: GameDatabase) -> void:
 	half = Vector2(vw * 0.5 / (tw * zoom) - margin, vh * 0.5 / (th * zoom) - margin)
 	keep = float(db.bal("monsters.chase_keep_tiles", 2.0))
 	_cos_half = cos(deg_to_rad(float(db.bal("monsters.view_cone_deg", 180.0)) * 0.5))
+	var sus: Array = db.bal("monsters.suspect_hours", [0.03, 0.06])
+	suspect_min = float(sus[0])
+	suspect_max = float(sus[1])
+	known_mult = float(db.bal("monsters.suspect_known_mult", 0.5))
+	hear_tiles = float(db.bal("monsters.hear_tiles", 1.6))
+	hear_hold = float(db.bal("monsters.hear_hold_hours", 0.05))
 
 
 ## 플레이어에서 to(칸)만큼 떨어진 곳이 화면 안인가. shrink = 은신(0~1), chasing = 쫓는 중(조금 더 넓게).
