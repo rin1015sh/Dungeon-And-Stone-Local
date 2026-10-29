@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **인간 옷 교체 = h6 순찰자 (2026-10-29, 사용자 "h6으로 전부 교체")** — AM45. `MapLooks.CHOSEN` 인간 = `h6_ranger`. 다시 그림: `paint_actors --only=human`(KEEP h3·r0 포함 — r0은 원뿔 망토라 그대로) · `paint_monsters --only=human_back` · `paint_motions --only=human_back`. 동작 칸(휘두르기·활·주문·피격·쓰러짐) 모두 망토가 따라온다 — 몸을 크게 돌린 칸은 등 자락이 판처럼 보이는 정도. 캡처 `docs/screens/human_h6_combat.png`.
+
 - **인간 순찰자 옷차림 후보 6종 + 몸에 맞는 망토 (2026-10-29, 사용자 "아라고른 같은 느낌 · 망토는 코트처럼 몸에 맞게")** — AM45. 게임 그림은 그대로(h4). `MapLooks` h6~h11, 새 부품 `tools/monster_art/BackDrape.gd`(망토 기본 — 몸 겹 + 등 자락 + 몸 둘레 각도로 자른 앞 트임 + 여밈 쇠·젖힌 두건), `BackCloak`은 `cone: true`일 때만 옛 원뿔(r0 약탈자), `BackKit boots_tall`. 고친 것: 어깨가 공처럼 부풂(어깨 겹 얇게) · 겉허리띠가 망토를 뚫음(등 자락만 띄움) · 외투 다리 사이 자락이 부풂(h8 외투 len 0.42) · 젖힌 두건이 조개·▽ 문장처럼 보임(목둘레 천만). 비교 그림 `docs/screens/human_outfits.png`.
 
 - **바바리안 옷 교체 = b9(b8 + b7) · 탐험가 앞모습 "안대" 고침 (2026-10-29, 사용자)** — AM44. `MapLooks.CHOSEN` 바바리안 = `b9_iron_raider`(털 어깨·X자 멜빵·긴 띠 치마 + 가시 쇠 어깨받이 `size` 1.35·쇠 팔목·위팔 띠). 다시 그림: `paint_actors --only=human,barbarian`(KEEP 포함) · `paint_monsters --only=barbarian_back` · `paint_motions --only=barbarian_back`. 안대 원인 = 왼쪽 위 빛에 얼굴 오른쪽 반이 그늘 → 오른 눈구멍이 묻힘(크게 그려 보니 눈 둘 다 칠해져 있었다) → `FRONT_ROW_LIGHT`(탐험가 앞모습 줄만 앞빛). 앞머리를 없애는 것도 해 봤는데 바바리안 이마가 대머리처럼 드러나 버렸다. 전투 칠 얼굴 띠 삭제.
