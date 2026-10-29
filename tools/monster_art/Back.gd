@@ -310,13 +310,17 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	ell(cl, pr, g, ch, shw * 0.84, 0.112, 0.066 * dep, skin, 0.035)
 	ell(cl, pr, g, ch + Vector3(0, -0.068, 0.0), shw * 0.97, 0.055, 0.06 * dep, skin, 0.03)
 	for s: int in [-1, 1]:
-		ell(cl, pr, g, ch + Vector3(s * shw * 0.55, 0.02, 0.012), shw * 0.42, 0.085, 0.048 * dep, skin, 0.025, s * 0.18)  # 광배근
+		var lift := _arm_lift(j, "l" if s < 0 else "r")  # 팔을 들면 광배근을 안으로 좁힌다(늘어뜨린 팔이 가리던 옆구리에 둥근 혹이 드러났다)
+		ell(cl, pr, g, ch + Vector3(s * shw * lerpf(0.55, 0.38, lift), 0.02, 0.012), shw * lerpf(0.42, 0.16, lift), 0.085, 0.048 * dep * lerpf(1.0, 0.45, lift), skin, 0.025, s * 0.18 * (1.0 - lift))  # 광배근(팔을 들면 가슴 윤곽 안으로)
 		cap(cl, pr, g, nk + Vector3(0, 0.008, 0.012), j["shoulder_" + ("l" if s < 0 else "r")] + Vector3(-s * 0.012, -0.004, 0.0), (0.024 if thin else 0.032) * bulk, 0.022 * bulk, skin, 0.03)  # 승모근
 	cl.tag = "neck"
 	cap(cl, pr, g, nk + Vector3(0, 0.01, 0.004), j["head"] + Vector3(0, 0.035, 0.012), (0.024 if thin else 0.03) * bulk, 0.026 * bulk, skin, 0.02)
 	for s: int in [-1, 1]:  # 어깨세모근
 		cl.tag = "shoulder_" + ("l" if s < 0 else "r")
-		ell(cl, pr, g, j["shoulder_" + ("l" if s < 0 else "r")] + Vector3(s * 0.006, 0.028, 0.0), 0.03 * bulk, 0.048, 0.032 * bulk, skin, 0.03)
+		var side := "l" if s < 0 else "r"
+		var sj: Vector3 = j["shoulder_" + side]
+		var up_dir := ((j["elbow_" + side] as Vector3) - sj).normalized()  # 위팔 쪽으로(팔을 들면 따라 올라간다 — 관절 아래 고정이면 겨드랑이에 혹이 생겼다)
+		ell(cl, pr, g, sj + Vector3(s * 0.006, 0.0, 0.0) + up_dir * 0.028, 0.03 * bulk, lerpf(0.048, 0.036, _arm_lift(j, side)), 0.032 * bulk, skin, 0.03)
 	# 등 근육 · 뼈 결(옷 겹이 덮도록 몸통 부위로 기록)
 	cl.tag = "torso"
 	var bw: float = out["back_w"]
@@ -436,6 +440,13 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 
 
 ## 머리 표면의 점: lon 0 = 뒤통수 가운데, ±π/2 = 옆(+ = 몸의 오른쪽), π = 얼굴. lat + = 위. grow = 표면에서 띄움(키 비율).
+## 팔을 든 정도 0(곧게 늘어뜨림) ~ 1(위팔이 수평보다 위 — 앞·옆·위 어느 쪽으로 들든): 몸통 근육 덩어리를 팔 자세에 맞추는 데 쓴다.
+## (팔꿈치 높이만 보면 앞으로 내민 대검 자세를 못 잡아 옆구리에 둥근 혹이 남았다)
+static func _arm_lift(j: Dictionary, t: String) -> float:
+	var d := ((j["elbow_" + t] as Vector3) - (j["shoulder_" + t] as Vector3)).normalized()
+	return clampf((0.95 - d.y) / 0.6, 0.0, 1.0)
+
+
 static func on_head(hd: Dictionary, lat: float, lon: float, grow: float = 0.0) -> Vector3:
 	var c: Vector3 = hd["c"]
 	return c + Vector3((float(hd["ru"]) + grow) * cos(lat) * sin(lon), -(float(hd["rv"]) + grow) * sin(lat), (float(hd["rw"]) + grow) * cos(lat) * cos(lon))
