@@ -1,7 +1,7 @@
 extends RefCounted
 ## 뒷모습 사람형(Back)의 머리카락·옷: 몸 부위 기록(tag)을 부풀려 한 겹 씌우는 shell(화면 띠로 자름) + 주름 골 + 장식.
 ## kit 키(색): shirt(sleeves: long|rolled|short) · vest(가죽 조끼) · mantle(두건 달린 짧은 어깨 망토) · pelt(털 어깨 망토)
-##            pants · belt(pouch·knife: 허리 주머니·칼집) · boots(boots_fur: 털 단) · bracers(팔목 가죽) · armband(위팔 띠)
+##            pants · belt(pouch·knife: 허리 주머니·칼집) · boots(boots_fur: 털 단 · boots_tall: 무릎까지 오는 긴 장화) · bracers(팔목 가죽) · armband(위팔 띠)
 ##            leg_wraps(종아리 감은 천) · torn(옷 구멍 0~1)
 ## 머리카락·수염은 BackHair.
 
@@ -91,8 +91,8 @@ static func dress(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: 
 			var t := "l" if s < 0 else "r"
 			var kn: Vector3 = j["knee_" + t]
 			var an: Vector3 = j["ankle_" + t]
-			var top := kn.lerp(an, 0.4).y
-			shell(cl, pr, ["shin_" + t, "foot_" + t], 0.014, m, g, band(cl, pr, top, 0.05), 0.008)
+			var top := kn.y - 0.02 if kit.get("boots_tall", false) else kn.lerp(an, 0.4).y
+			shell(cl, pr, ["shin_" + t, "foot_" + t] + (["thigh_" + t] if kit.get("boots_tall", false) else []), 0.014, m, g, band(cl, pr, top, 0.05), 0.008)
 			if kit.has("boots_fur"):
 				var fm := cl.mat(kit["boots_fur"], "fur")
 				shell(cl, pr, ["shin_" + t], 0.026, fm, cl.group(), band(cl, pr, top - 0.012, top + 0.035, rng, 0.012, 8), 0.01)

@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **인간 순찰자 옷차림 후보 6종 + 몸에 맞는 망토 (2026-10-29, 사용자 "아라고른 같은 느낌 · 망토는 코트처럼 몸에 맞게")** — AM45. 게임 그림은 그대로(h4). `MapLooks` h6~h11, 새 부품 `tools/monster_art/BackDrape.gd`(망토 기본 — 몸 겹 + 등 자락 + 몸 둘레 각도로 자른 앞 트임 + 여밈 쇠·젖힌 두건), `BackCloak`은 `cone: true`일 때만 옛 원뿔(r0 약탈자), `BackKit boots_tall`. 고친 것: 어깨가 공처럼 부풂(어깨 겹 얇게) · 겉허리띠가 망토를 뚫음(등 자락만 띄움) · 외투 다리 사이 자락이 부풂(h8 외투 len 0.42) · 젖힌 두건이 조개·▽ 문장처럼 보임(목둘레 천만). 비교 그림 `docs/screens/human_outfits.png`.
+
 - **바바리안 옷 교체 = b9(b8 + b7) · 탐험가 앞모습 "안대" 고침 (2026-10-29, 사용자)** — AM44. `MapLooks.CHOSEN` 바바리안 = `b9_iron_raider`(털 어깨·X자 멜빵·긴 띠 치마 + 가시 쇠 어깨받이 `size` 1.35·쇠 팔목·위팔 띠). 다시 그림: `paint_actors --only=human,barbarian`(KEEP 포함) · `paint_monsters --only=barbarian_back` · `paint_motions --only=barbarian_back`. 안대 원인 = 왼쪽 위 빛에 얼굴 오른쪽 반이 그늘 → 오른 눈구멍이 묻힘(크게 그려 보니 눈 둘 다 칠해져 있었다) → `FRONT_ROW_LIGHT`(탐험가 앞모습 줄만 앞빛). 앞머리를 없애는 것도 해 봤는데 바바리안 이마가 대머리처럼 드러나 버렸다. 전투 칠 얼굴 띠 삭제.
 
 - **바바리안 야만전사 옷차림 후보 6종 (2026-10-29, 사용자 "기획만 — 여러 개 그려 줘")** — AM43. 게임 그림은 바꾸지 않음(CHOSEN = b2 가죽 갑옷 그대로). `MapLooks` b3 광전사 · b4 늑대 털가죽 · b5 해골 사냥꾼 · b6 족장 털갑옷 · b7 고철 반갑옷 · b8 가죽 누더기 약탈자, 새 부품 `BackSavage.gd`(X자/사선 멜빵 · 가죽·털 띠 치마(갈라진 자락) · 한쪽 어깨받이 가죽/가시 쇠/뿔 머리뼈 · 이빨 목걸이 · 팔·눈가 전투 칠), `Party.figure`가 `BackKit.dress` 다음에 부른다. 비교 그림 `docs/screens/barbarian_outfits.png`. 털 망토 후보는 전투 비율에서 달걀 모양이라 뺐다. 남은 것: 사용자가 고르면 CHOSEN 교체 + 맵·전투·동작 그림 다시 그리기.

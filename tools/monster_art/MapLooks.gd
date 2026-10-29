@@ -33,7 +33,7 @@ const LOOKS := {
 		"chain": Color("#6a6e72"), "outer_belt": Color("#2a1c14"), "cloak": {"c": Color("#4a2220"), "len": 0.38, "flare": 1.25, "open": 1.1, "clasp": Color("#8a7a58")}}}},
 	"r0_raider": {"race": "human", "name": "약탈자(두건·망토)", "head": 1.75, "legs": 0.82, "spec": {"hair": "none", "skin": Color("#8a6a56"), "mottle": Color("#4a3026"), "kit": {
 		"pants": Color("#2e2a26"), "shirt": Color("#4a4034"), "sleeves": "long", "belt": Color("#2a1e16"), "boots": Color("#2a221c"), "bracers": Color("#3a2a1e"),
-		"hood_up": Color("#3a342c"), "cloak": {"c": Color("#2c2a22"), "len": 0.3, "flare": 1.05, "open": 0.9, "fit": true}}}},
+		"hood_up": Color("#3a342c"), "cloak": {"c": Color("#2c2a22"), "len": 0.3, "flare": 1.05, "open": 0.9, "fit": true, "cone": true}}}},
 	"b0_barbarian": {"race": "barbarian", "name": "바바리안(머리만 작게)", "head": 2.1, "legs": 0.72, "spec": {}},
 	"b1_fur_cloak": {"race": "barbarian", "name": "털 망토", "head": 2.1, "legs": 0.72, "spec": {"kit": {
 		"pants": Color("#4a3a2a"), "leg_wraps": Color("#6a5e4a"), "vest": Color("#5a4030"), "belt": Color("#3a2818"), "pouch": true,
@@ -67,6 +67,31 @@ const LOOKS := {
 		"pauldron": {"c": Color("#4a3424"), "side": "l", "kind": "leather"}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#7a7064")},
 		"pelt": Color("#5e5040"), "kilt": {"c": Color("#3e3024"), "len": 0.7, "slits": 8}, "leg_wraps": Color("#5a5040"),
 		"boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#3a2a1c"), "paint": Color("#3a3a2a")}}},
+	## 순찰자 후보(사용자 2026-10-29 "인간 탐험가도 여러 개 — 반지의 제왕 아라고른 같은 느낌"): 몸에 맞춰 떨어지는 긴 망토(BackDrape)·가죽 웃옷·긴 장화·팔목 가죽.
+	"h6_ranger": {"race": "human", "name": "순찰자", "head": 1.75, "legs": 0.82, "spec": {"kit": {
+		"pants": Color("#2e2c28"), "shirt": Color("#3e3a32"), "sleeves": "long", "vest": Color("#3a2a1e"), "belt": Color("#24180f"), "pouch": true, "knife": true,
+		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"),
+		"cloak": {"c": Color("#33382e"), "len": 0.72, "flare": 1.2, "open": 1.0, "clasp": Color("#8a8070"), "collar": true}}}},
+	"h7_hooded": {"race": "human", "name": "두건 쓴 순찰자", "head": 1.75, "legs": 0.82, "spec": {"hair": "none", "kit": {
+		"pants": Color("#2a2824"), "shirt": Color("#38342c"), "sleeves": "long", "vest": Color("#33261a"), "belt": Color("#24180f"), "knife": true,
+		"boots": Color("#26201a"), "boots_tall": true, "bracers": Color("#33261a"), "hood_up": Color("#2e3029"),
+		"cloak": {"c": Color("#2e3029"), "len": 0.8, "flare": 1.25, "open": 0.85}}}},
+	"h8_strider": {"race": "human", "name": "떠돌이 검사(긴 가죽 외투)", "head": 1.75, "legs": 0.82, "spec": {"kit": {
+		"pants": Color("#2c2a26"), "boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#2e2218"),
+		"coat": {"c": Color("#3a2a1e"), "len": 0.42}, "outer_belt": Color("#1e140c"),
+		"cloak": {"c": Color("#2c2c2a"), "len": 0.62, "flare": 1.15, "open": 1.2, "clasp": Color("#7a7060")}}}},
+	"h9_north_guard": {"race": "human", "name": "북방 경비대", "head": 1.75, "legs": 0.82, "spec": {"kit": {
+		"pants": Color("#34302a"), "boots": Color("#2e2218"), "boots_tall": true, "bracers": Color("#3a2a1c"),
+		"quilt": Color("#4a4438"), "outer_belt": Color("#2a1c12"),
+		"cloak": {"c": Color("#3a2e26"), "len": 0.45, "flare": 1.1, "open": 1.1, "clasp": Color("#8a7a58"), "collar": true}}}},
+	"h10_mail_ranger": {"race": "human", "name": "사슬 순찰자", "head": 1.75, "legs": 0.82, "spec": {"kit": {
+		"pants": Color("#2e2c28"), "shirt": Color("#3a362e"), "sleeves": "long", "boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"),
+		"chain": Color("#4e5256"), "outer_belt": Color("#24180f"),
+		"cloak": {"c": Color("#30342c"), "len": 0.68, "flare": 1.2, "open": 1.0, "clasp": Color("#8a8070")}}}},
+	"h11_wayfarer": {"race": "human", "name": "길손(짧은 망토)", "head": 1.75, "legs": 0.82, "spec": {"kit": {
+		"pants": Color("#3a3630"), "shirt": Color("#5a5244"), "sleeves": "long", "vest": Color("#3e2c20"), "belt": Color("#2a1c14"), "pouch": true,
+		"boots": Color("#2e2218"), "bracers": Color("#3a2a1c"),
+		"cloak": {"c": Color("#4a3a2c"), "len": 0.3, "flare": 1.1, "open": 1.3, "collar": true}}}},
 	## b8 + b7(사용자 2026-10-29 "b8에 b7 합친 걸로 전부 교체"): 털 어깨·X자 멜빵·긴 띠 치마·맨다리 + 가시 쇠 어깨받이·쇠 팔목·쇠 위팔 띠.
 	"b9_iron_raider": {"race": "barbarian", "name": "쇠 어깨 약탈자", "head": 2.1, "legs": 0.72, "spec": {"kit": {
 		"pauldron": {"c": Color("#454a4e"), "side": "l", "kind": "iron", "size": 1.35}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#6a6e72")},

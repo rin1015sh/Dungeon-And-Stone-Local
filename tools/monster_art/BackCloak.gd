@@ -1,6 +1,7 @@
 extends RefCounted
 ## 사람형(Back) 겉옷 — 탐험 맵 몸 그림 고르기(tools/monster_art/MapLooks.gd)에서 쓴다:
-##   cloak {c, len, flare, open, fur, fit} 어깨에서 늘어진 망토(fit = 몸에 붙는 망토 — 단면이 몸처럼 납작한 타원이라 옆에서 봐도 볼록하지 않고
+##   cloak {c, len, flare, open, fur, clasp, collar} 몸에 맞춰 떨어지는 망토(BackDrape — 외투처럼 몸 겹 + 등 자락, 사용자 2026-10-29).
+##   cloak {…, cone: true, fit} 옛 원뿔 망토(fit = 몸에 붙는 망토 — 단면이 몸처럼 납작한 타원이라 옆에서 봐도 볼록하지 않고
 ##     어깨선을 따라 곧게 떨어진다, 사용자 2026-10-26 약탈자 "망토가 너무 볼록하게 두껍게 튀어나와 있다")(3D 원뿔 — 어느 쪽에서 봐도 덮이고, 팔은 그 안에서 흔들려 손만 나온다. 앞모습은 가운데가 트였다)
 ##   hood_up 쓴 두건(얼굴만 드러나고 뒤로 어깨까지 흘러내림 — 머리카락은 그리지 않는다)
 ##   coat {c, len} 무릎까지 오는 긴 외투(긴 소매 · 깃 · 다리 사이 자락)
@@ -11,6 +12,7 @@ extends RefCounted
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
+const BackDrape := preload("res://tools/monster_art/BackDrape.gd")
 
 
 static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Dictionary, kit: Dictionary, rng: RandomNumberGenerator) -> void:
@@ -23,7 +25,10 @@ static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 	if kit.has("outer_belt"):
 		_belt(cl, pr, j, kit["outer_belt"])
 	if kit.has("cloak"):
-		_cloak(cl, pr, j, bd, kit["cloak"], rng)
+		var cd: Dictionary = (kit["cloak"] as Dictionary).duplicate()
+		cd["under"] = 0.01 if kit.has("quilt") or kit.has("coat") or kit.has("chain") else 0.0  # 두꺼운 겹·겉허리띠가 망토를 뚫지 않게
+		cd["belt"] = kit.has("outer_belt")
+		_cloak(cl, pr, j, bd, cd, rng)
 	if kit.has("hood_up"):
 		_hood(cl, pr, j, hd, kit["hood_up"])
 
@@ -37,8 +42,12 @@ static func _all(cl: Clay) -> PackedVector2Array:
 	return PackedVector2Array([Vector2(-10, -10), Vector2(cl.w + 10, -10), Vector2(cl.w + 10, cl.h + 10), Vector2(-10, cl.h + 10)])
 
 
-## 망토: 목에서 hem까지 넓어지는 원뿔(몸 좌표) + 세로 주름. 앞모습은 가운데 V자로 트여 옷이 보이고 여밈 쇠가 목에.
+## 망토: cone이 아니면 몸에 맞춰 떨어지는 망토(BackDrape). cone = 옛 방식 — 목에서 hem까지 넓어지는 원뿔(몸 좌표) + 세로 주름,
+## 앞모습은 가운데 V자로 트여 옷이 보이고 여밈 쇠가 목에(약탈자 r0이 쓴다).
 static func _cloak(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Dictionary, rng: RandomNumberGenerator) -> void:
+	if not d.get("cone", false):
+		BackDrape.drape(cl, pr, j, bd, d, rng)
+		return
 	var col: Color = d["c"]
 	var m := cl.mat(col, "fur" if d.get("fur", false) else "cloth", {"mottle": col.darkened(0.3), "mottle_amt": 0.35})
 	var g := cl.group()
@@ -70,11 +79,11 @@ static func _cloak(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: D
 			var half := PackedVector2Array([Vector2(a.x, -10), Vector2(edge, -10), Vector2(edge, cl.h + 10), Vector2(b.x, cl.h + 10), b, a])
 			for part: PackedVector2Array in Geometry2D.intersect_polygons(band, half):
 				cl.set_clip(part)
-				_echain(cl, pr, g, spine, radii, depth, m, 0.03)
+				BackDrape.echain(cl, pr, g, spine, radii, depth, m, 0.03)
 		cl.set_clip(PackedVector2Array())
 	else:
 		cl.set_clip(band)
-		_echain(cl, pr, g, spine, radii, depth, m, 0.03)
+		BackDrape.echain(cl, pr, g, spine, radii, depth, m, 0.03)
 		cl.set_clip(PackedVector2Array())
 	for k in 11:  # 세로 주름(어깨에서 아래로 퍼진다)
 		var a := TAU * (k + rng.randf_range(0.2, 0.8)) / 11.0
@@ -89,23 +98,6 @@ static func _cloak(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: D
 		Back.ell(cl, pr, g, Vector3(0, nk.y + 0.03, -ra * 0.85), 0.016, 0.016, 0.01, cl.mat(d["clasp"], "metal"), 0.003)
 	if d.get("collar", false):  # 젖힌 두건(목 뒤 두툼한 천)
 		Back.ell(cl, pr, g, Vector3(0, nk.y + 0.005, 0.07), shw * 0.75, 0.05, 0.06, m, 0.02)
-
-
-## 단면이 타원인 캡슐 줄(몸 좌표 폭 us · 깊이 ws — 돌린 각도에 따라 화면 폭과 앞뒤 솟음을 섞는다, Back.ell과 같은 근사).
-static func _echain(cl: Clay, pr: Dictionary, g: int, pts: Array, us: Array, ws: Array, m: int, k: float) -> void:
-	var c: float = pr["c"]
-	var s: float = pr["s"]
-	var H: float = pr["H"]
-	for i in pts.size() - 1:
-		var rx := PackedFloat32Array()
-		var flat := 0.0
-		for j in [i, i + 1]:
-			var u := float(us[j])
-			var w := float(ws[j])
-			var x := sqrt(pow(u * c, 2.0) + pow(w * s, 2.0))
-			rx.append(x)
-			flat += sqrt(pow(u * s, 2.0) + pow(w * c, 2.0)) / x * 0.5
-		cl.cap(g, Back.P(pr, pts[i]), Back.P(pr, pts[i + 1]), rx[0] * H, rx[1] * H, m, k * H, flat)
 
 
 ## 쓴 두건: 머리를 감싼 천(얼굴은 드러남) + 뒤로 어깨까지 흘러내리는 자락 + 얼굴 둘레 테.
