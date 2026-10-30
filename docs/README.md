@@ -24,7 +24,7 @@
 | `docs/DEPLOY.md` | 웹(itch.io) 내보내기·올리기·웹에서 다른 점 | 정본 |
 | `docs/HANDOFF.md` | 다른 세션에 붙여 넣는 인계 프롬프트 · 새 기획 절차 · 큰 기획 후보 · 새 기획 요청서 | 새 세션·새 기획을 맡길 때 |
 | `docs/balance/*.md` | 밸런스 표(도구가 만든 것: `exp_budget`·`rift`·`formula`·`curve`(10층 곡선 — `tools/balance_curve.py`)·`essences`(`tools/essences_md.py`)·`item_pool`, 정리표: `stats`(비율 공식)·`city`, 사용자 정수 표 변환 `essence_table`(+ `essence_table_converted.csv`, 원본 `source/`)) | 데이터가 정본 — 데이터를 고치면 표가 낡는다(도구로 다시 만든다) |
-| `docs/plans/*.md` | 기획서(`map_design` 탐험 맵, `rift_spaces` 균열 공간, `rift_terrain` 균열 지형·특수 타일·상호작용 정리(배치도 `rift_boards/current/`), `rift_rooms` 균열 구역 재기획(구역 = 이유·지키는 무리·보관함, 균열 보급품) — 기획안·적용 안 함, `status_redesign`·`essence_redesign` 재기획 — 모두 적용됨, `city_redesign` 도시 재기획 — 기획안·적용 안 함, `floor1_fill` 1층·균열 채우기 — A·B·C·D·F 적용, `dungeon_loop_review` 미궁 반복 루프 진단 — A1·A2·A3·B1 적용, `balance_10floors` 10층 밸런스(층별 기준 탐험가·몬스터·보스·정수·장비·비율 공식·CTB) — 1층에 적용됨(2026-10-25, 맨 위 "적용 결과"), 표는 `balance/curve.md`) | 기록 — 맨 위에 적용 여부 |
+| `docs/plans/*.md` | 기획서(`map_design` 탐험 맵, `rift_spaces` 균열 공간, `rift_terrain` 균열 지형·특수 타일·상호작용 정리(배치도 `rift_boards/current/`), `rift_rooms` 균열 몬스터·아이템 배치(자리마다 이유 있는 무리 + 줍는 아이템, 조건 없음) — 기획안·적용 안 함, `status_redesign`·`essence_redesign` 재기획 — 모두 적용됨, `city_redesign` 도시 재기획 — 기획안·적용 안 함, `floor1_fill` 1층·균열 채우기 — A·B·C·D·F 적용, `dungeon_loop_review` 미궁 반복 루프 진단 — A1·A2·A3·B1 적용, `balance_10floors` 10층 밸런스(층별 기준 탐험가·몬스터·보스·정수·장비·비율 공식·CTB) — 1층에 적용됨(2026-10-25, 맨 위 "적용 결과"), 표는 `balance/curve.md`) | 기록 — 맨 위에 적용 여부 |
 
 ## 사용자가 준 원본 명세·지시서 (바꾸지 않는다)
 
