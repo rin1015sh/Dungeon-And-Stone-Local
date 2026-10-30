@@ -101,15 +101,15 @@ const LOOKS := {
 	## 새 종족 후보(사용자 2026-10-30 "엘프·드워프·수인 — 엘프·수인은 여성 · 머리는 어두운 색 · 드워프는 수염 · 여러 복장 중 하나를 고른다"
 	## → 2차 시안 12종 → 사용자가 준 참고 그림 세 장 "이 사진들 복장으로 다시"): 몸 = RaceParts.BODIES, 종족 소품 = RaceKit·RaceGear.
 	## note = 비교 그림 부제(tools/looks_sheet.py). 그림 = paint_look_preview(시안) → 고르면 paint_actors·paint_motions --look.
-	"e4_ranger": {"race": "elf", "name": "엘프 궁수", "note": "올리브 웃옷 · 가죽 팔목 · 엉덩이 가죽 띠 둘 · 허리 칼집 · 은 메달 · 무릎 장화 · 등까지 오는 검은 머리", "head": 1.7, "legs": 0.88,
+	"e4_ranger": {"race": "elf", "name": "엘프 궁수", "note": "녹색 겉옷(엉덩이 아래까지) · 가죽 팔목 · 엉덩이 가죽 띠 둘 · 허리 칼집 · 은 메달 · 무릎 장화 · 등까지 오는 검은 머리", "head": 1.7, "legs": 0.88,
 		"spec": {"hair": "long", "hair_c": Color("#141210"), "hair_len": 0.3, "hair_n": 12, "hair_w": 0.03, "hair_spread": 1.25, "kit": {
-		"shirt": Color("#5a6040"), "sleeves": "long", "vest": Color("#4a5236"), "bracers": Color("#5a3e28"), "elbow_guard": Color("#3a2a1c"),
+		"shirt": Color("#5a6040"), "sleeves": "long", "coat": {"c": Color("#4a5636"), "len": 0.16}, "outer_belt": Color("#3a2a1c"), "bracers": Color("#5a3e28"), "elbow_guard": Color("#3a2a1c"),
 		"hip_belts": {"c": Color("#4a3020"), "n": 2}, "sheath": {"c": Color("#2a2420")}, "pendant": Color("#a8a49a"),
 		"pants": Color("#5e5e52"), "boots": Color("#5a3e28"), "boots_tall": true}}},
-	"d4_axe": {"race": "dwarf", "name": "드워프 전사", "note": "뿔 투구 · 투구 위 굵은 머리 다발 · 털 어깨 · 무릎 사슬 · 놋쇠 팔목 · 땋은 수염 넷", "head": 2.3, "legs": 0.62,
+	"d4_axe": {"race": "dwarf", "name": "드워프 전사", "note": "이마까지 덮는 뿔 투구 · 털 어깨 · 무릎 사슬 · 놋쇠 팔목 · 땋은 수염 넷", "head": 2.3, "legs": 0.62,
 		"spec": {"hair": "none", "hair_c": Color("#4a2a1c"), "beard": Color("#4a2a1c"), "beard_long": {"len": 0.22, "braids": 4, "c": Color("#4a2a1c")},
-		"horns": Color("#8a7e66"), "horn_len": 0.6, "crest": {"c": Color("#4a2a1c"), "len": 1.3}, "kit": {
-		"helm": Color("#3a3e42"), "nasal": Color("#3a3e42"), "pelt": Color("#5a3a26"),
+		"horns": Color("#8a7e66"), "horn_len": 0.6, "kit": {
+		"helm": Color("#3a3e42"), "helm_brow": -0.12, "nasal": Color("#3a3e42"), "pelt": Color("#5a3a26"),
 		"chain": Color("#3a3e42"), "kilt": {"c": Color("#3a3e42"), "len": 0.85, "slits": 2, "mat": "metal"}, "outer_belt": Color("#2a1c12"), "buckle": Color("#7a6a40"),
 		"bracers": Color("#6a5a34"), "pants": Color("#3a3028"), "boots": Color("#2e2620")}}},
 	"k4_fox_rogue": {"race": "beastkin", "name": "여우 수인 도적", "note": "두 번 감은 붉은 목도리 · 짙은 가죽 조끼 · 감은 팔목 · 허리 띠·주머니·단검 · 밧줄 · 긴 검은 장화 · 어깨 아래까지 오는 머리", "head": 1.8, "legs": 0.84,

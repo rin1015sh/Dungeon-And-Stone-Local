@@ -137,7 +137,7 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 		j["ankle_" + t] = an
 		j["hip_" + t] = Vector3(s * (0.056 if fem else 0.062), hip_y + 0.02, 0.0)
 		j["knee_" + t] = Vector3(s * (stance * 0.55 + 0.004 if fem else stance * 0.8 + 0.012), lerpf(hip_y, -0.045, 0.5), -0.015 - knee * 0.06)
-		j["toe_" + t] = an + Vector3(s * 0.012, 0.03, -0.1)
+		j["toe_" + t] = an + Vector3(s * 0.012, 0.03, -0.078 if fem else -0.1)  # 여성은 발을 작게(사용자 "발이 너무 크다")
 		var shp := Vector3(s * sh, hip_y - 0.325 + hunch * 0.04 + (0.01 if fem else 0.0), -hunch * 0.09)
 		j["shoulder_" + t] = shp
 		var el: Vector3
@@ -275,7 +275,9 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	var bulk := float(sp.get("bulk", 1.0))
 	var dep := float(t[6]) * bulk
 	var thin := build == "thin"
-	var slim := thin or bool(sp.get("female", false))  # 가는 목·승모근·어깨(여성 — 갈비·척추 마디는 thin만)
+	var fem := bool(sp.get("female", false))
+	var slim := thin or fem  # 가는 목·승모근·어깨(여성 — 갈비·척추 마디는 thin만)
+	var fk := 0.78 if fem else 1.0  # 발 굵기
 	var big := build in ["muscular", "brute"]
 	var out := {"torso": cl.group(), "arm_l": cl.group(), "arm_r": cl.group(), "dep": dep, "bulk": bulk, "build": build}
 	var g: int = out["torso"]
@@ -299,8 +301,8 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 		cap(cl, pr, g, kn, an, float(t[4]) * bulk * 0.95, 0.019 * bulk, skin, 0.01)
 		ell(cl, pr, g, kn.lerp(an, 0.3) + Vector3(0, 0, 0.012), float(t[5]) * bulk, 0.068, float(t[5]) * bulk * 0.85, skin, 0.012)  # 종아리
 		cl.tag = "foot_" + tg
-		ell(cl, pr, g, an + Vector3(0, 0.022, 0.018), 0.021, 0.022, 0.02, skin, 0.006)  # 발뒤꿈치
-		cap(cl, pr, g, an + Vector3(0, 0.025, 0.0), j["toe_" + tg], 0.022, 0.017, skin, 0.006)
+		ell(cl, pr, g, an + Vector3(0, 0.022, 0.018), 0.021 * fk, 0.022 * fk, 0.02 * fk, skin, 0.006)  # 발뒤꿈치
+		cap(cl, pr, g, an + Vector3(0, 0.025, 0.0), j["toe_" + tg], 0.022 * fk, 0.017 * fk, skin, 0.006)
 		cl.tag = "thigh_" + tg
 		if not thin:
 			bump(cl, pr, g, hp.lerp(kn, 0.5) + Vector3(0, 0, 0.04), B, 0.03 * bulk, 0.08, 0.006, skin)  # 햄스트링
@@ -339,9 +341,10 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 		if not thin:
 			bump(cl, pr, g, Vector3(wa.x + s * 0.024, wa.y + 0.01, ch.z + 0.056 * dep), B, 0.02, 0.07, 0.006, skin)  # 척추세움근
 	groove(cl, pr, g, [Vector3(nk.x, nk.y + 0.03, bw - 0.01), Vector3(ch.x, ch.y, bw), Vector3(wa.x, wa.y, ch.z + 0.056 * dep), Vector3(pv.x, pv.y - 0.01, pv.z + 0.05 * dep)], B, 0.006, 0.009 if big else 0.006)  # 척추 골
-	groove(cl, pr, g, [Vector3(pv.x, pv.y - 0.005, pv.z + 0.05 * dep), Vector3(pv.x, pv.y + 0.075, pv.z + 0.06 * dep)], B, 0.005, 0.008)  # 엉덩이 골
-	for s: int in [-1, 1]:
+	for s: int in ([] if fem else [-1, 1]):  # 엉덩이 골·아래 주름(여성은 없다 — 몸에 붙는 바지에서 엉덩이 밑 그림자로 짙게 보였다)
 		groove(cl, pr, g, [Vector3(s * 0.005, pv.y + 0.09, 0.05), Vector3(s * 0.05, pv.y + 0.098, 0.05), Vector3(s * 0.09, pv.y + 0.085, 0.04)], B, 0.005, 0.006)
+	if not fem:
+		groove(cl, pr, g, [Vector3(pv.x, pv.y - 0.005, pv.z + 0.05 * dep), Vector3(pv.x, pv.y + 0.075, pv.z + 0.06 * dep)], B, 0.005, 0.008)  # 엉덩이 골
 	if thin:
 		for k in 6:  # 척추 마디 · 등 갈비
 			var y := nk.y + 0.04 + k * 0.035
