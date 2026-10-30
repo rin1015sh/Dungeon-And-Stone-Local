@@ -195,7 +195,18 @@
             "deadman"
           ]
         },
-        {"kind": "posts", "count": 3, "packs": [["deadman", "deadman"], ["deadman", "soldier_deadman"], ["soldier_deadman", "soldier_deadman", "deadman"]]}
+        {"kind": "posts", "count": 4, "packs": [["deadman", "deadman"], ["deadman", "soldier_deadman"], ["soldier_deadman", "soldier_deadman"], ["deadman", "deadman"]]}
+      ],
+      "loot": [
+        {"item": "fortress_bread", "count": 2},
+        {"item": "fortress_knight_sword", "count": 1},
+        {"item": "fortress_tourniquet", "count": 2},
+        {"item": "torch_stub", "count": 2},
+        {"item": "fortress_bread", "count": 1},
+        {"item": "fortress_holy_water", "count": 1},
+        {"item": "fortress_halberd", "count": 1},
+        {"item": "fortress_tourniquet", "count": 1},
+        {"item": "fortress_wine", "count": 1}
       ]
     },
     {
@@ -212,7 +223,14 @@
           "guard": true,
           "monsters": ["deadman", "deadman", "deadman", "deadman", "deadman", "deadman", "soldier_deadman", "soldier_deadman"]
         },
-        {"kind": "posts", "count": 2, "packs": [["deadman", "deadman", "deadman"], ["soldier_deadman", "deadman"]]}
+        {"kind": "posts", "count": 2, "packs": [["soldier_deadman", "deadman"], ["deadman", "deadman", "deadman"]]}
+      ],
+      "loot": [
+        {"item": "fortress_crossbow", "count": 1},
+        {"item": "fortress_chainmail", "count": 1},
+        {"item": "fortress_bread", "count": 2},
+        {"item": "fortress_wine", "count": 1},
+        {"item": "fortress_tourniquet", "count": 2}
       ],
       "hidden": [
         {
@@ -256,7 +274,17 @@
             ]
           ]
         },
-        {"kind": "posts", "count": 5, "packs": [["skeleton_archer", "skeleton_archer"], ["ghoul", "ghoul"], ["skeleton_mage", "skeleton_archer"], ["ghoul", "skeleton_archer"]]}
+        {"kind": "posts", "count": 4, "packs": [["skeleton_archer", "skeleton_archer"], ["ghoul", "ghoul"], ["skeleton_mage", "skeleton_archer"], ["ghoul", "skeleton_archer"]]}
+      ],
+      "loot": [
+        {"item": "fortress_cloak", "count": 1},
+        {"item": "fortress_wine", "count": 1},
+        {"item": "fortress_silver_cup", "count": 1},
+        {"item": "fortress_holy_water", "count": 2},
+        {"item": "fortress_bread", "count": 2},
+        {"item": "fortress_tourniquet", "count": 1},
+        {"item": "old_silver_coin", "count": 3},
+        {"item": "fortress_silver_cup", "count": 1}
       ],
       "hidden": [
         {
@@ -320,7 +348,19 @@
           ],
           "midboss": true
         },
-        {"kind": "posts", "count": 1, "packs": [["skull_rat", "skull_rat", "skull_rat"], ["skull_rat", "ghoul"]]}
+        {"kind": "posts", "count": 2, "packs": [["skull_rat", "skull_rat"], ["skull_rat", "skull_rat", "skull_rat"]]}
+      ],
+      "loot": [
+        {"item": "torch_stub", "count": 1},
+        {"item": "fortress_tourniquet", "count": 2},
+        {"item": "fortress_bread", "count": 1},
+        {"item": "rotten_meat", "count": 1},
+        {"item": "fortress_wine", "count": 1},
+        {"item": "fortress_holy_water", "count": 1},
+        {"item": "magic_stone_8", "count": 2},
+        {"item": "fortress_holy_water", "count": 1},
+        {"item": "fortress_silver_cup", "count": 1},
+        {"item": "fortress_wine", "count": 1}
       ],
       "hidden": [
         {
@@ -356,7 +396,19 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 4, "packs": [["gargoyle_statue"], ["bone_knight"], ["deathfiend"], ["chimera_wolf"]]}
+        {"kind": "posts", "count": 3, "packs": [["bone_knight"], ["gargoyle_statue"], ["gargoyle_statue"]]}
+      ],
+      "loot": [
+        {"item": "fortress_knight_sword", "count": 1},
+        {"item": "fortress_chainmail", "count": 1},
+        {"item": "fortress_holy_water", "count": 2},
+        {"item": "fortress_wine", "count": 2},
+        {"item": "fortress_silver_cup", "count": 1},
+        {"item": "fortress_tourniquet", "count": 1},
+        {"item": "fortress_bread", "count": 1},
+        {"item": "fortress_bread", "count": 1},
+        {"item": "fortress_tourniquet", "count": 1},
+        {"item": "fortress_wine", "count": 1}
       ],
       "hidden": [
         {

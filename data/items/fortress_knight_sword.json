@@ -1,0 +1,20 @@
+{
+  "id": "fortress_knight_sword",
+  "name_ko": "성채 기사의 장검",
+  "forge": {
+    "type": "sword",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "str",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "쓰러진 기사가 끝까지 놓지 않던 장검. 날밑에 핏빛 문장이 새겨져 있다.",
+  "art_color": "#9a8a8a",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

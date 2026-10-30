@@ -1,0 +1,20 @@
+{
+  "id": "tomb_knight_shield",
+  "name_ko": "기사단 방패",
+  "forge": {
+    "type": "shield",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "resist_dark",
+        "flat": 3
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "묘에 잠든 기사단의 방패. 문장 위로 금빛이 바랬다.",
+  "art_color": "#8a8070",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

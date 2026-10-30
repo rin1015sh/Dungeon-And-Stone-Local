@@ -1,0 +1,20 @@
+{
+  "id": "glacier_fur_cloak",
+  "name_ko": "탐사대 털망토",
+  "forge": {
+    "type": "cloak",
+    "material": "tanned",
+    "bonus": [
+      {
+        "target": "resist_cold",
+        "flat": 3
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "탐사대가 두고 간 두꺼운 털망토. 안쪽에 아직 온기가 남은 듯하다.",
+  "art_color": "#8a7058",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

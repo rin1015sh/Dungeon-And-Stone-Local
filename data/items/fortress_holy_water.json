@@ -1,0 +1,31 @@
+{
+  "id": "fortress_holy_water",
+  "name_ko": "성수 병",
+  "category": "tool",
+  "price": 3000,
+  "stack": 3,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "성채 예배당에 남아 있던 성수. 병마개 안쪽이 아직 서늘하다.",
+  "use_effects": [
+    {
+      "type": "smite",
+      "families": [
+        "undead",
+        "wraith",
+        "demon"
+      ],
+      "amount": 150,
+      "heal": 0
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#c8e0f0",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

@@ -23,6 +23,10 @@ const BY_ID := {
 	"ice_chips": "shard", "copper_ore": "pebble", "shroud_rag": "bandage",
 	"mine_bitter_tea": "flask", "mine_moss_salve": "vial", "mine_lunchbox": "tin", "mine_green_tonic": "flask",
 	"mine_powder_pouch": "pot_bomb", "mine_rough_gem": "gem",
+	"fortress_tourniquet": "bandage", "fortress_bread": "bread", "fortress_wine": "flask", "fortress_holy_water": "vial",
+	"fortress_silver_cup": "cup", "glacier_frost_herb": "herb", "glacier_oil_cake": "bread", "glacier_yeti_salve": "vial",
+	"glacier_ice_spike": "shard", "glacier_blue_crystal": "crystal", "tomb_incense": "incense", "tomb_embalm_salve": "flask",
+	"tomb_seal_charm": "tag", "tomb_lamp_oil": "vial", "tomb_silver_ring": "ring", "tomb_mask_shard": "tablet",
 }
 const BY_ICON := {"potion": "flask", "stone": "crystal", "gem": "gem", "bomb": "pot_bomb", "food": "bundle", "bread": "bread",
 	"torch": "torch", "lantern": "lantern", "book": "book", "horn": "horn", "ring": "ring", "amulet": "amulet", "pouch": "bundle"}
@@ -62,6 +66,12 @@ static func _by_name(how: String, ctx: Dictionary) -> void:
 	match how:
 		"tin":
 			RiftGear.tin(ctx)
+		"cup":
+			RiftGear.cup(ctx)
+		"herb":
+			RiftGear.herb(ctx)
+		"incense":
+			RiftGear.incense(ctx)
 		"bandage":
 			bandage(ctx)
 		"big_flask":

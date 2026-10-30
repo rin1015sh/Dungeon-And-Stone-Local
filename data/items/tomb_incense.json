@@ -1,0 +1,32 @@
+{
+  "id": "tomb_incense",
+  "name_ko": "정화의 향",
+  "category": "potion",
+  "price": 1500,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "묘지기가 피우던 향. 연기가 몸에 붙은 저주를 걷어 낸다.",
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "curse"
+    },
+    {
+      "type": "remove_status",
+      "status": "tomb_curse"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#8a7a6a",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

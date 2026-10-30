@@ -1,0 +1,19 @@
+{
+  "id": "glacier_fang_amulet",
+  "name_ko": "늑대 송곳니 목걸이",
+  "forge": {
+    "type": "amulet",
+    "material": "beast_bone",
+    "bonus": [
+      {
+        "target": "natural_regen",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "토템 앞에 바쳐져 있던 송곳니 목걸이. 짐승 냄새가 짙다.",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

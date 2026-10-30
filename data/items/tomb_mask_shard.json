@@ -1,0 +1,17 @@
+{
+  "id": "tomb_mask_shard",
+  "name_ko": "금박 장례 가면 조각",
+  "category": "misc",
+  "price": 3500,
+  "stack": 5,
+  "desc_ko": "금박을 입힌 장례 가면의 조각. 반쪽 얼굴이 웃고 있다.",
+  "size": [
+    1,
+    1
+  ],
+  "icon": "gem",
+  "color": "#d8b050",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

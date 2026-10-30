@@ -60,3 +60,35 @@ func test_rift_gear_bonus_does_not_take_the_shop_combo() -> void:
 	var mods: Array = JsonUtil.get_array(JsonUtil.get_dict(helmet, "equip"), "modifiers")
 	assert_true(mods.any(func(m: Dictionary) -> bool: return str(m["target"]) == "resist_poison"), "광부 안전모의 덤(독 내성)")
 	assert_true(db.has_entry("items", "quartz_ring"), "녹수정 반지가 있어도 대장간의 수정 반지는 그대로")
+
+
+func test_every_loot_and_post_is_reachable() -> void:
+	for rid: String in db.get_collection("rifts"):
+		for ch: Variant in JsonUtil.get_array(db.get_entry("rifts", rid), "chapters"):
+			var path := JsonUtil.get_str(JsonUtil.get_dict(ch as Dictionary, "map"), "blueprint")
+			var data := FloorMapFile.read(path)
+			var marks := JsonUtil.get_dict(data, "marks")
+			var seen := _reach(data, JsonUtil.get_array(marks, "entry"))
+			for key: String in ["loot", "posts"]:
+				for c: Variant in JsonUtil.get_array(marks, key):
+					assert_true(seen.has(Vector2i(int((c as Array)[0]), int((c as Array)[1]))), "%s %s %s에 시작에서 걸어서 닿는다" % [path.get_file(), key, c])
+
+
+## 설계도에서 시작 칸부터 걸을 수 있는 칸(4방향).
+func _reach(data: Dictionary, entry: Array) -> Dictionary:
+	var rows := JsonUtil.get_array(data, "rows")
+	var legend := JsonUtil.get_dict(data, "legend")
+	var walk := func(p: Vector2i) -> bool:
+		if p.y < 0 or p.y >= rows.size() or p.x < 0 or p.x >= str(rows[p.y]).length():
+			return false
+		return JsonUtil.get_bool(db.get_entry("tiles", str(legend.get(str(rows[p.y])[p.x], ""))), "walkable")
+	var start := Vector2i(int(entry[0]), int(entry[1]))
+	var seen := {start: true}
+	var queue: Array[Vector2i] = [start]
+	while not queue.is_empty():
+		var p: Vector2i = queue.pop_back()
+		for d in FloorMap.DIRS4:
+			if not seen.has(p + d) and walk.call(p + d):
+				seen[p + d] = true
+				queue.append(p + d)
+	return seen

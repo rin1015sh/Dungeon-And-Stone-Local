@@ -1,0 +1,20 @@
+{
+  "id": "glacier_orc_staff",
+  "name_ko": "오크 주술사의 지팡이",
+  "forge": {
+    "type": "staff",
+    "material": "oak",
+    "bonus": [
+      {
+        "target": "affinity_cold",
+        "flat": 3
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "얼음 속 오크 주술사가 쥐고 있던 지팡이. 끝에 얼음 구슬이 박혔다.",
+  "art_color": "#6a7a8a",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

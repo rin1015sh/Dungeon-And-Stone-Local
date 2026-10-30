@@ -166,7 +166,18 @@
             "frost_wolf"
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["frost_wolf", "frost_wolf"], ["yeti"], ["frost_wolf", "frost_wolf", "frost_wolf"]]}
+        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "frost_wolf"], ["frost_wolf", "frost_wolf"]]}
+      ],
+      "loot": [
+        {"item": "glacier_oil_cake", "count": 3},
+        {"item": "glacier_fur_cloak", "count": 1},
+        {"item": "glacier_hunter_bow", "count": 1},
+        {"item": "frozen_meat", "count": 2},
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "glacier_yeti_salve", "count": 1},
+        {"item": "glacier_fang_dagger", "count": 1},
+        {"item": "glacier_ice_spike", "count": 2},
+        {"item": "glacier_blue_crystal", "count": 1}
       ],
       "hidden": [
         {
@@ -289,7 +300,16 @@
             ]
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "sabertooth"], ["wormstone"]]}
+        {"kind": "posts", "count": 3, "packs": [["wormstone"], ["frost_wolf", "frost_wolf"], ["sabertooth"]]}
+      ],
+      "loot": [
+        {"item": "glacier_yeti_salve", "count": 2},
+        {"item": "glacier_oil_cake", "count": 2},
+        {"item": "torch_stub", "count": 1},
+        {"item": "glacier_fang_amulet", "count": 1},
+        {"item": "frozen_meat", "count": 2},
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "glacier_ice_spike", "count": 1}
       ],
       "hidden": [
         {
@@ -331,7 +351,17 @@
             "ice_orc_warrior"
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["ice_orc_warrior", "ice_orc_warrior"], ["ice_orc_shaman", "ice_orc_warrior"], ["sabertooth"], ["owlbear"]]}
+        {"kind": "posts", "count": 2, "packs": [["ice_golem"], ["sabertooth"]]}
+      ],
+      "loot": [
+        {"item": "glacier_oil_cake", "count": 2},
+        {"item": "torch_stub", "count": 1},
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "glacier_yeti_salve", "count": 1},
+        {"item": "glacier_blue_crystal", "count": 1},
+        {"item": "glacier_ice_spike", "count": 2},
+        {"item": "glacier_orc_staff", "count": 1},
+        {"item": "glacier_frost_herb", "count": 1}
       ],
       "field_effects": [
         "hypothermia"
@@ -429,7 +459,16 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 5, "packs": [["frost_wolf", "frost_wolf"], ["ice_golem"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
+        {"kind": "posts", "count": 4, "packs": [["ice_golem"], ["frost_wolf", "frost_wolf"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
+      ],
+      "loot": [
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "magic_stone_9", "count": 3},
+        {"item": "glacier_fur_cloak", "count": 1},
+        {"item": "glacier_ice_spike", "count": 2},
+        {"item": "glacier_blue_crystal", "count": 1},
+        {"item": "glacier_oil_cake", "count": 1},
+        {"item": "glacier_yeti_salve", "count": 1}
       ],
       "field_effects": [
         "hypothermia"

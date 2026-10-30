@@ -1,0 +1,20 @@
+{
+  "id": "fortress_chainmail",
+  "name_ko": "성채 사슬 갑옷",
+  "forge": {
+    "type": "chainmail",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "resist_dark",
+        "flat": 3
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "검게 녹슨 사슬 갑옷. 이상하게도 망자의 손톱이 잘 박히지 않는다.",
+  "art_color": "#6a6266",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

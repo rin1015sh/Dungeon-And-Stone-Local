@@ -1,0 +1,19 @@
+{
+  "id": "tomb_gauntlets",
+  "name_ko": "묘지기 건틀릿",
+  "forge": {
+    "type": "gauntlets",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "str",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "갑옷 진열실에 걸려 있던 건틀릿. 손가락 마디마다 쇠못이 박혔다.",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

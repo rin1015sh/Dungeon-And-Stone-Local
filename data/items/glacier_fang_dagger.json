@@ -1,0 +1,19 @@
+{
+  "id": "glacier_fang_dagger",
+  "name_ko": "늑대 이빨 단검",
+  "forge": {
+    "type": "dagger",
+    "material": "beast_bone",
+    "bonus": [
+      {
+        "target": "str",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "서리 늑대의 송곳니를 갈아 만든 단검. 날이 차갑다.",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

@@ -1,5 +1,5 @@
 {
- "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서)·놓인 물건(loot — 데이터 loot 순서)·대기 무리(posts — 데이터 posts packs 순서). 손으로 고쳐도 된다.",
  "rift": "rift_glacier_cave",
  "chapter": "ch3",
  "width": 92,
@@ -18,7 +18,7 @@
   "w": "gc_waterfall",
   "c": "gc_crystal"
  },
- "marks": {"entry": [0, 28], "slots": [[30, 18], [72, 8], [84, 34]], "exit": [86, 0], "hidden": [[2, 26]], "hazards": [[22, 16], [36, 29], [61, 11], [71, 32]]},
+ "marks": {"entry": [0, 28], "slots": [[30, 18], [72, 8], [84, 34]], "exit": [86, 0], "hidden": [[2, 26]], "hazards": [[22, 16], [36, 29], [61, 11], [71, 32]], "loot": [[5, 27], [6, 29], [46, 25], [66, 6], [76, 8], [58, 31], [85, 30], [83, 38]], "posts": [[47, 27], [12, 26]]},
  "rows": [
   "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,KKKK",
   "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK,,,KKKK",

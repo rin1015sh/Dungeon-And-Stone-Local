@@ -135,7 +135,8 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	assert_eq(run.chapter, 0)
 	assert_eq(run.session, cs)
 	assert_eq(_roaming(run).size(), 2, "1챕터 조우 2개")
-	assert_eq(run.remaining.size() - 2, 3, "+ 빈 곳에 대기 무리 3개(posts)")
+	var posts: Dictionary = JsonUtil.get_array(run.chapters()[0], "encounters").filter(func(e: Variant) -> bool: return JsonUtil.get_str(e, "kind") == "posts")[0]
+	assert_eq(run.remaining.size() - 2, JsonUtil.get_int(posts, "count"), "+ 대기 무리(posts — 설계도 고정 자리)")
 	var skipped := run.use_exit(cs)
 	assert_true(skipped != null and run.chapter == 1, "조우를 남겨도 다음 챕터로 간다(사용자 2026-10-26)")
 	cs = skipped

@@ -1,0 +1,17 @@
+{
+  "id": "fortress_silver_cup",
+  "name_ko": "영주가의 은 술잔",
+  "category": "misc",
+  "price": 2500,
+  "stack": 5,
+  "desc_ko": "영주의 문장이 새겨진 은 술잔. 가장자리에 검붉은 얼룩이 배었다.",
+  "size": [
+    1,
+    1
+  ],
+  "icon": "gem",
+  "color": "#c8c4c0",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

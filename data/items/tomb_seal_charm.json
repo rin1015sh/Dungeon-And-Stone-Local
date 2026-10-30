@@ -1,0 +1,30 @@
+{
+  "id": "tomb_seal_charm",
+  "name_ko": "봉인 부적",
+  "category": "tool",
+  "price": 2500,
+  "stack": 3,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "석관 뚜껑에 붙어 있던 부적. 망자에게 붙이면 움직임이 굳는다.",
+  "use_effects": [
+    {
+      "type": "smite",
+      "families": [
+        "undead"
+      ],
+      "amount": 30,
+      "status": "seal",
+      "heal": 0
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "scroll",
+  "color": "#d8c890",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

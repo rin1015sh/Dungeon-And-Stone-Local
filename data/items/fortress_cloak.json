@@ -1,0 +1,20 @@
+{
+  "id": "fortress_cloak",
+  "name_ko": "핏빛 문장 망토",
+  "forge": {
+    "type": "cloak",
+    "material": "linen",
+    "bonus": [
+      {
+        "target": "m_res",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "성채 문장이 수놓인 붉은 망토. 바래도 핏빛은 그대로다.",
+  "art_color": "#7a2a2a",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

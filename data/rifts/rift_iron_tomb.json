@@ -141,7 +141,15 @@
             "mummy"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["buried_one"]]}
+        {"kind": "posts", "count": 1, "packs": [["mummy", "mummy"]]}
+      ],
+      "loot": [
+        {"item": "tomb_lamp_oil", "count": 1},
+        {"item": "tomb_silver_ring", "count": 1},
+        {"item": "tomb_embalm_salve", "count": 1},
+        {"item": "tomb_incense", "count": 1},
+        {"item": "tomb_ritual_dagger", "count": 1},
+        {"item": "tomb_seal_charm", "count": 1}
       ],
       "hidden": [
         {
@@ -258,7 +266,16 @@
             "iron_cavalry"
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["mummy", "mummy", "mummy"], ["guardian_eye"], ["iron_lizardman", "mummy"]]}
+        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["guardian_eye"]]}
+      ],
+      "loot": [
+        {"item": "tomb_mask_shard", "count": 1},
+        {"item": "tomb_lamp_oil", "count": 1},
+        {"item": "tomb_silver_ring", "count": 1},
+        {"item": "tomb_embalm_salve", "count": 1},
+        {"item": "tomb_seal_charm", "count": 2},
+        {"item": "tomb_gauntlets", "count": 1},
+        {"item": "tomb_knight_shield", "count": 1}
       ],
       "hidden": [
         {
@@ -346,7 +363,14 @@
           ],
           "riddle": true
         },
-        {"kind": "posts", "count": 2, "packs": [["iron_lizardman"], ["mummy", "mummy"]]}
+        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["iron_lizardman"]]}
+      ],
+      "loot": [
+        {"item": "tomb_incense", "count": 1},
+        {"item": "tomb_greathelm", "count": 1},
+        {"item": "tomb_embalm_salve", "count": 1},
+        {"item": "tomb_seal_charm", "count": 1},
+        {"item": "tomb_lamp_oil", "count": 1}
       ],
       "hidden": [
         {
@@ -436,6 +460,14 @@
           "kind": "guardian"
         },
         {"kind": "posts", "count": 4, "packs": [["mummy", "mummy"], ["iron_cavalry"], ["guardian_eye", "mummy"], ["buried_one", "mummy"]]}
+      ],
+      "loot": [
+        {"item": "tomb_ritual_amulet", "count": 1},
+        {"item": "tomb_embalm_salve", "count": 1},
+        {"item": "tomb_mask_shard", "count": 1},
+        {"item": "magic_stone_9", "count": 3},
+        {"item": "tomb_incense", "count": 1},
+        {"item": "tomb_silver_ring", "count": 1}
       ],
       "hidden": [
         {

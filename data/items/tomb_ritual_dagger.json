@@ -1,0 +1,20 @@
+{
+  "id": "tomb_ritual_dagger",
+  "name_ko": "의식용 단검",
+  "forge": {
+    "type": "dagger",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "int",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "장례 의식에 쓰던 단검. 날에 기도문이 새겨져 있다.",
+  "art_color": "#a89a70",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}
