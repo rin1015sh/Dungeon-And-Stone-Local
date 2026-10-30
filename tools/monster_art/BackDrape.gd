@@ -92,8 +92,8 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 		[sy + 0.01, z0, shw * 0.6, bw * 0.2 + under],
 		[ch.y, z0, shw * 0.9, bw * 0.4 + under],
 		[pv.y, z0 + 0.014, shw * flare + 0.035, bw * 0.62 + 0.042 + under + belt],
-		[knee, z0 + 0.025, shw * flare + 0.05, bw * 0.45 + 0.022 + under + belt * 0.5],
-		[hem, z0 + 0.04, shw * flare + 0.07, bw * 0.35 + 0.016 + under]]  # 단이 뒤로 덜 빠지게(옆으로 돈 회피 칸에서 자락이 붕 떴다 — AM55)
+		[knee, z0 + 0.065, shw * flare + 0.05, bw * 0.45 + 0.022 + under + belt * 0.5],
+		[hem, z0 + 0.1, shw * flare + 0.07, bw * 0.35 + 0.016 + under]]  # 엉덩이는 그대로, 무릎·단만 뒤로 빼 등에서 단까지 비스듬히 곧게 — 옆모습에서 엉덩이에 붙지 않게(AM58). 굵기는 얇게(AM55 — 붕 뜨지 않게)
 	var spine: Array = []
 	var us: Array = []
 	var ws: Array = []
@@ -129,7 +129,7 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 			continue
 		var n := rv * cos(phi) + bv * sin(phi)
 		var p0 := _w(f, j, cos(phi) * (shw + 0.02), lerpf(sy + 0.06, ch.y + 0.02, absf(sin(phi))) + rng.randf_range(0.0, 0.04), sin(phi) * (bw + GROW + under))
-		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.04 + sin(phi) * float(ws[ws.size() - 1]))
+		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.1 + sin(phi) * float(ws[ws.size() - 1]))
 		var mid := p0.lerp(p1, 0.5) + n * 0.006 + rv * rng.randf_range(-0.01, 0.01)
 		Back.groove(cl, pr, g, [p0, mid, p1], n, 0.005, 0.009)
 	var front := -(0.066 * float(bd["dep"]) + GROW)
