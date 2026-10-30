@@ -72,18 +72,38 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 					if Geometry2D.is_polygon_clockwise(q) == Geometry2D.is_polygon_clockwise(band):  # 구멍 다각형은 빚을 자리가 아니다
 						next.append(q)
 			pieces = next
-	var tags := ["torso", "pelvis", "thigh_l", "thigh_r"]
-	if not j.get("map_face", false):  # 맵 몸: 큰 머리 밑 목까지 덮으면 앞모습에서 턱수염처럼 보인다
-		tags.append("neck")
+	var tags := ["torso", "pelvis", "thigh_l", "thigh_r"]  # 목은 덮지 않는다 — 덮으면 망토가 목을 통째로 감싸 머리까지 굵게 이어졌다(사용자 2026-10-30, AM52)
 	var under := float(d.get("under", 0.0))  # 안에 입은 두꺼운 겹(누빔·사슬·외투)만큼 더 띄운다
 	var belt := 0.025 if d.get("belt", false) else 0.0  # 겉허리띠: 등 자락만 더 띄워 덮는다(몸 겹까지 띄우면 윗몸이 부풀었다)
 	# 등 뒤 자락: 견갑골에서 엉덩이를 덮고, 단으로 갈수록 뒤로 비스듬히 빠지며 얇아진다(옆에서 보면 다리 뒤로 떨어지는 천 —
 	# 단까지 같은 굵기의 곧은 통이면 활 쏘는 옆모습에서 망토가 뻣뻣한 판처럼 보였다). 앞으로는 몸통 겹 안에 숨는다.
 	var z0 := bw * 0.4
 	var knee := lerpf(pv.y, hem, 0.55)
-	var spine: Array = [_w(f, j, 0, sy + 0.01, z0), _w(f, j, 0, ch.y, z0), _w(f, j, 0, pv.y, z0 + 0.014), _w(f, j, 0, knee, z0 + 0.04), _w(f, j, 0, hem, z0 + 0.07)]
-	var us: Array = [shw + 0.015, shw + 0.03, shw * flare + 0.035, shw * flare + 0.05, shw * flare + 0.075]
-	var ws: Array = [bw * 0.75 + under, bw * 0.62 + 0.02 + under, bw * 0.62 + 0.042 + under + belt, bw * 0.5 + 0.03 + under + belt * 0.5, bw * 0.4 + 0.022 + under]
+	# 등 자락 사슬: 열쇠 높이(어깨·가슴·골반·무릎·단)의 폭 us·깊이 ws를 촘촘한 마디로 고르게 잇는다 — 마디가 성기면 이음매 구(캡슐 끝)가
+	# 위 마디보다 깊어 등 한복판에 둥근 혹이 솟았다(사용자 2026-10-30, AM52). 위쪽은 몸 겹 안에 묻히게 얇게(어깨~가슴은 몸틀 그대로).
+	var keys: Array = [
+		[sy + 0.01, z0, shw * 0.75, bw * 0.55 + under],
+		[ch.y, z0, shw + 0.03, bw * 0.62 + 0.03 + under],
+		[pv.y, z0 + 0.014, shw * flare + 0.035, bw * 0.62 + 0.042 + under + belt],
+		[knee, z0 + 0.04, shw * flare + 0.05, bw * 0.5 + 0.03 + under + belt * 0.5],
+		[hem, z0 + 0.07, shw * flare + 0.075, bw * 0.4 + 0.022 + under]]
+	var spine: Array = []
+	var us: Array = []
+	var ws: Array = []
+	for k in keys.size() - 1:
+		var a: Array = keys[k]
+		var b: Array = keys[k + 1]
+		var n := 3
+		for i in n:
+			var t := float(i) / n
+			var e := t * t * (3.0 - 2.0 * t)
+			spine.append(_w(f, j, 0, lerpf(a[0], b[0], t), lerpf(a[1], b[1], e)))
+			us.append(lerpf(a[2], b[2], e))
+			ws.append(lerpf(a[3], b[3], e))
+	var last: Array = keys[keys.size() - 1]
+	spine.append(_w(f, j, 0, last[0], last[1]))
+	us.append(last[2])
+	ws.append(last[3])
 	for piece: PackedVector2Array in pieces:
 		BackKit.shell(cl, pr, tags, GROW + under, m, g, piece, 0.05, 0.0)
 		BackKit.shell(cl, pr, ["shoulder_l", "shoulder_r"], GROW * 0.45 + under, m, g, piece, 0.05, 0.0)  # 어깨는 얇게(두꺼우면 어깨가 공처럼 부풀었다)
@@ -97,7 +117,7 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 			continue
 		var n := rv * cos(phi) + bv * sin(phi)
 		var p0 := _w(f, j, cos(phi) * (shw + 0.02), lerpf(sy + 0.06, ch.y + 0.02, absf(sin(phi))) + rng.randf_range(0.0, 0.04), sin(phi) * (bw + GROW + under))
-		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.07 + sin(phi) * float(ws[4]))
+		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.07 + sin(phi) * float(ws[ws.size() - 1]))
 		var mid := p0.lerp(p1, 0.5) + n * 0.006 + rv * rng.randf_range(-0.01, 0.01)
 		Back.groove(cl, pr, g, [p0, mid, p1], n, 0.005, 0.009)
 	var front := -(0.066 * float(bd["dep"]) + GROW)
@@ -113,8 +133,8 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 		var rr: Array = []
 		for i in 9:
 			var a := lerpf(-PI * 0.6, PI * 0.6, i / 8.0)  # 0 = 목 뒤 가운데
-			pts.append(Vector3(nk.x, nk.y + 0.028 + 0.012 * absf(sin(a)), nk.z) + rv * (sin(a) * shw * 0.5) + bv * (cos(a) * (bw * 0.7 + under)))
-			rr.append(0.026 * (1.0 - 0.4 * absf(sin(a))))
+			pts.append(Vector3(nk.x, nk.y + 0.004 + 0.01 * absf(sin(a)), nk.z) + rv * (sin(a) * shw * 0.5) + bv * (cos(a) * (bw * 0.62 + under)))
+			rr.append(0.017 * (1.0 - 0.35 * absf(sin(a))))
 		Back.chain(cl, pr, hg, pts, rr, m, 0.02)
 
 
