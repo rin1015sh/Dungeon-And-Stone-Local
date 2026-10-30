@@ -4,6 +4,8 @@
 게임 크기(실제) + 전투 뒷모습 + 전투 동작 시트 전체(줄 = render.json ui.combat_party_motion.rows, 칸 3) + 쓰러짐.
 
   python3 tools/art_review.py --out <폴더> elf dwarf beastkin  → <폴더>/review_<종족>.png
+  --motion=<동작>: 여러 종족의 그 동작 줄(칸 3)만 한 장에 → <폴더>/motion_<동작>.png
+  --walk=<줄,…>(앞|왼쪽|오른쪽|뒤): 여러 종족의 걷기 시트 그 줄(칸 5, ×3)만 한 장에 → <폴더>/walk_<줄>.png
 """
 import argparse
 import json
@@ -106,16 +108,71 @@ def review(race, out_dir, font, small, title_font):
     print(path, img.size)
 
 
+def _sheet(title, lines, out_path, font, title_font):
+    """lines = [(이름, [그림 …])] → 이름표 + 그림 줄들(칸마다 바탕)."""
+    pad = 24
+    label_w = 150
+    cw = max(im.width for _, ims in lines for im in ims)
+    lh = [max(im.height for im in ims) for _, ims in lines]
+    W = pad * 2 + label_w + cw * max(len(ims) for _, ims in lines)
+    H = pad + 56 + sum(h + 8 for h in lh) + pad
+    img = Image.new("RGBA", (W, H), BG)
+    d = ImageDraw.Draw(img)
+    d.text((pad, pad - 6), title, font=title_font, fill=INK)
+    y = pad + 56
+    for (name, ims), h in zip(lines, lh):
+        d.text((pad, y + h // 2 - 12), name, font=font, fill=SUB)
+        for i, im in enumerate(ims):
+            x = pad + label_w + i * cw
+            d.rectangle((x + 2, y, x + cw - 2, y + h), fill=CELL_BG)
+            img.alpha_composite(im, (x + (cw - im.width) // 2, y + h - im.height))
+        y += h + 8
+    img.convert("RGB").save(out_path, optimize=True)
+    print(out_path, img.size)
+
+
+def motion_sheet(races, motion, out_dir, font, title_font):
+    rows = _rows()
+    lines = []
+    for race in races:
+        sheet = _load("assets/party/%s_back_motions.webp" % race)
+        mw, mh = sheet.width // 3, sheet.height // len(rows)
+        r = rows.index(motion)
+        ims = [sheet.crop((c * mw, r * mh, (c + 1) * mw, (r + 1) * mh)) for c in range(3)]
+        lines.append((_races().get(race, {}).get("name_ko", race), [im.resize((int(im.width * 0.5), int(im.height * 0.5)), Image.LANCZOS) for im in ims]))
+    _sheet("전투 동작 — %s(칸 1·2·3, 같은 배율)" % MOTION_NAMES.get(motion, motion), lines, os.path.join(out_dir, "motion_%s.png" % motion), font, title_font)
+
+
+def walk_sheet(races, walk_rows, out_dir, font, title_font):
+    lines = []
+    for race in races:
+        sheet = _load("assets/actors/%s.webp" % race)
+        cw, ch = sheet.width // 5, sheet.height // 4
+        for name in walk_rows:
+            r = WALK_ROWS.index(name)
+            ims = [sheet.crop((c * cw, r * ch, (c + 1) * cw, (r + 1) * ch)).resize((cw * 3, ch * 3), Image.NEAREST) for c in range(5)]
+            lines.append(("%s %s" % (_races().get(race, {}).get("name_ko", race), name), ims))
+    _sheet("탐험 맵 걷기 — %s(걸음 A·반걸음·섬·반걸음·걸음 B, ×3)" % "·".join(walk_rows), lines, os.path.join(out_dir, "walk_%s.png" % "_".join(walk_rows)), font, title_font)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
+    ap.add_argument("--motion", default="")
+    ap.add_argument("--walk", default="")
     ap.add_argument("races", nargs="+")
     a = ap.parse_args()
     font = ImageFont.truetype(FONT, 22)
     small = ImageFont.truetype(FONT, 16)
     title = ImageFont.truetype(FONT, 30)
-    for r in a.races:
-        review(r, a.out, font, small, title)
+    os.makedirs(a.out, exist_ok=True)
+    if a.motion:
+        motion_sheet(a.races, a.motion, a.out, font, title)
+    if a.walk:
+        walk_sheet(a.races, a.walk.split(","), a.out, font, title)
+    if not a.motion and not a.walk:
+        for r in a.races:
+            review(r, a.out, font, small, title)
 
 
 if __name__ == "__main__":
