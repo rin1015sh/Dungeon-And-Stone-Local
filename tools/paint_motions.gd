@@ -2,12 +2,14 @@ extends SceneTree
 ## 전투 탐험가 동작 시트(종족 뒷모습): tools/monster_art/party_motions.json의 동작마다 3칸(PartyMotion이 참고 시트에서 잰 관절을 3D 뼈대로,
 ## 대기 = BackPose.idle 들썩임). 게임이 쓴다 — BattlerView가 칸을 넘긴다(render.json ui.combat_party_motion, UI41).
 ##   godot --headless --path . --script res://tools/paint_motions.gd -- [--only=human_back,…] [--motions=idle,swing] [--out=<폴더> --png](미리보기) [--json=<후보 json>]
+##   --look=<MapLooks id,…>: 그 옷차림(종족 몸 + 옷)으로 <폴더>/<id>_back_motions·_dead를 그린다(옷차림 후보·새 종족 후보 — 게임 그림은 안 건드리게 --out과 같이).
 ## → <폴더>/<id>_motions.webp: 줄 = 선 동작(json 순서, 쓰러짐 빼고 · "동작@종족" 항목이 있으면 그 종족은 그것으로) · 칸 3. 칸 크기는 모두 같고 발 가운데 = 칸 아래 가운데(좌우 대칭으로 자른다 — 모든 칸의 발이 같은 땅에 닿아 아래 끝이 같다).
 ##   <폴더>/<id>_dead.webp: 쓰러짐 1칸(누운 몸 가운데 = 칸 아래 가운데).
 ## 고정한 줄: tools/monster_art/pinned/<id>_<동작>.png가 있으면 그 줄은 그리지 않은 그림 그대로(지금 human_back_wait — 사용자가 고른 예전 그림).
 
 const PIN_DIR := "res://tools/monster_art/pinned"  ## 고정한 줄(<id>_<동작>.png) — _pin
 const Party := preload("res://tools/monster_art/Party.gd")
+const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const SEED := 2026
 const LYING := "dead"
 
@@ -17,11 +19,17 @@ func _init() -> void:
 	var png := false
 	var only := PackedStringArray(["human_back", "barbarian_back"])
 	var pick := PackedStringArray()
+	var looks := {}  # 그릴 id → 옷차림(--look)
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--out="):
 			out = a.trim_prefix("--out=")
 		elif a.begins_with("--only="):
 			only = a.trim_prefix("--only=").split(",")
+		elif a.begins_with("--look="):
+			only = PackedStringArray()
+			for lk: String in a.trim_prefix("--look=").split(","):
+				only.append(lk + "_back")
+				looks[lk + "_back"] = lk
 		elif a.begins_with("--motions="):
 			pick = a.trim_prefix("--motions=").split(",")
 		png = png or a == "--png"
@@ -38,23 +46,30 @@ func _init() -> void:
 	for id: String in only:
 		if not names.is_empty():
 			var rows: Array = []
-			var race := id.trim_suffix("_back")
+			var race := MapLooks.race_of(str(looks[id])) if looks.has(id) else id.trim_suffix("_back")
+			var base := Party.spec_of(race + "_back")
+			if looks.has(id):
+				base = MapLooks.apply(base, str(looks[id]))
 			for m: String in names:
-				rows.append(_frames(id, data.get(m + "@" + race, data[m])))  # 동작@종족 = 그 종족만 다른 칸
+				rows.append(_frames(id, base, data.get(m + "@" + race, data[m])))  # 동작@종족 = 그 종족만 다른 칸
 			var sheet := _sheet(rows, true)
 			for r in names.size():
 				_pin(sheet, rows.size(), r, id + "_" + str(names[r]))
 			_save(sheet, out.path_join(id + "_motions"), png)
 		if data.has(LYING) and (pick.is_empty() or pick.has(LYING)):
-			_save(_sheet([[_frames(id, data[LYING])[0]]], false), out.path_join(id + "_dead"), png)
+			var lie_race := MapLooks.race_of(str(looks[id])) if looks.has(id) else id.trim_suffix("_back")
+			var lie := Party.spec_of(lie_race + "_back")
+			if looks.has(id):
+				lie = MapLooks.apply(lie, str(looks[id]))
+			_save(_sheet([[_frames(id, lie, data[LYING])[0]]], false), out.path_join(id + "_dead"), png)
 		print("시트: %s · 동작 %s" % [id, ", ".join(names)])
 	quit(0)
 
 
-func _frames(id: String, mo: Dictionary) -> Array[Image]:
+func _frames(id: String, base: Dictionary, mo: Dictionary) -> Array[Image]:
 	var row: Array[Image] = []
 	for fr: Dictionary in (mo["frames"] as Array):
-		var sp := Party.spec_of(id)
+		var sp := base.duplicate(true)
 		sp["motion_frame"] = fr
 		if mo.has("weapon"):
 			var kit: Dictionary = (sp.get("kit", {}) as Dictionary).duplicate()

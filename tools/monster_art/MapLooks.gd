@@ -98,6 +98,59 @@ const LOOKS := {
 		"pelt": Color("#5e5040"), "kilt": {"c": Color("#3e3024"), "len": 0.7, "slits": 8}, "leg_wraps": Color("#5a5040"),
 		"boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#55595c"), "armband": Color("#55595c"), "paint": Color("#3a3a2a"),
 		"elbow_guard": Color("#1c1714")}}},
+	## 새 종족 후보(사용자 2026-10-30 "엘프·드워프·수인 — 여러 복장·외형, 게임엔 아직 넣지 말고 · 엘프·수인은 여성 · 머리는 어두운 색 · 드워프는 수염"):
+	## 몸 = RaceParts.BODIES(종족), 여기는 옷(kit)과 외형(머리 모양·귀·꼬리)만 덮는다. 그림 = paint_actors --look · paint_motions --look.
+	"e0_ranger": {"race": "elf", "name": "엘프 순찰자", "head": 1.7, "legs": 0.88, "spec": {"kit": {
+		"pants": Color("#2e3028"), "shirt": Color("#3e4434"), "sleeves": "long", "vest": Color("#3a2c1e"), "belt": Color("#24180f"), "pouch": true,
+		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"),
+		"cloak": {"c": Color("#2e3a2a"), "len": 0.5, "flare": 1.15, "open": 1.0, "clasp": Color("#9a8a60")}}}},
+	"e1_archer": {"race": "elf", "name": "엘프 궁수(묶은 머리)", "head": 1.7, "legs": 0.88, "spec": {"ponytail": {"len": 0.2}, "hair_len": 0.06, "kit": {
+		"pants": Color("#36342a"), "shirt": Color("#4a5038"), "sleeves": "long", "vest": Color("#4a3624"), "belt": Color("#2a1c12"), "knife": true,
+		"boots": Color("#2e2218"), "boots_tall": true, "bracers": Color("#4a3624"), "elbow_guard": Color("#2a1e14")}}},
+	"e2_sage": {"race": "elf", "name": "엘프 현자(긴 외투)", "head": 1.7, "legs": 0.88, "spec": {"hair_c": Color("#16120f"), "hair_len": 0.24, "kit": {
+		"pants": Color("#2a2a2e"), "boots": Color("#22201e"), "coat": {"c": Color("#2e3440"), "len": 0.48}, "outer_belt": Color("#3a2c1e"),
+		"mantle": Color("#4a4a52")}}},
+	"e3_mail": {"race": "elf", "name": "엘프 검사(사슬 · 짧은 망토)", "head": 1.7, "legs": 0.88, "spec": {"braids": 1, "kit": {
+		"pants": Color("#2e2c28"), "shirt": Color("#3a3a34"), "sleeves": "long", "chain": Color("#5a6066"), "outer_belt": Color("#24180f"),
+		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#3a2a1c"),
+		"cloak": {"c": Color("#3a2e3a"), "len": 0.28, "flare": 1.1, "open": 1.2, "collar": true}}}},
+	"e4_druid": {"race": "elf", "name": "엘프 드루이드(치마)", "head": 1.7, "legs": 0.88, "spec": {"hair_c": Color("#1e1610"), "braids": 2, "kit": {
+		"shirt": Color("#5a5640"), "sleeves": "long", "vest": Color("#3e3424"), "kilt": {"c": Color("#3a4430"), "len": 0.75, "slits": 0},
+		"pants": Color("#2e2c24"), "belt": Color("#2a1c12"), "pouch": true, "boots": Color("#2e2218"), "boots_tall": true,
+		"mantle": Color("#3a4430"), "necklace": {"c": Color("#b8a888"), "n": 5}}}},
+	"d0_guard": {"race": "dwarf", "name": "드워프 전사(사슬 · 투구)", "head": 2.3, "legs": 0.62, "spec": {"hair": "none", "kit": {
+		"pants": Color("#3a342c"), "shirt": Color("#4a4034"), "sleeves": "long", "chain": Color("#5e6266"), "outer_belt": Color("#2a1c12"),
+		"boots": Color("#2e2218"), "bracers": Color("#55595c"), "helm": Color("#5a5e62")}}},
+	"d1_smith": {"race": "dwarf", "name": "드워프 대장장이(맨머리)", "head": 2.3, "legs": 0.62, "spec": {"hair": "none", "beard_long": {"len": 0.2, "braids": 1}, "kit": {
+		"pants": Color("#3e3428"), "shirt": Color("#7a6a50"), "sleeves": "rolled", "vest": Color("#4a3020"), "belt": Color("#2a1c12"), "pouch": true,
+		"boots": Color("#3a2a1e"), "bracers": Color("#3e2c1c"), "armband": Color("#6a6e72")}}},
+	"d2_plate": {"race": "dwarf", "name": "드워프 중갑", "head": 2.3, "legs": 0.62, "spec": {"hair": "none", "beard_long": {"len": 0.14, "braids": 2}, "kit": {
+		"pants": Color("#34302a"), "armor": Color("#646a70"), "boots": Color("#34302a"), "helm": Color("#5e646a"), "cape": Color("#4a2420")}}},
+	"d3_traveler": {"race": "dwarf", "name": "드워프 나그네(누빔 · 망토)", "head": 2.3, "legs": 0.62, "spec": {"beard_long": {"len": 0.18, "braids": 0}, "kit": {
+		"pants": Color("#3e3830"), "boots": Color("#2e2218"), "bracers": Color("#3a2a1c"), "quilt": Color("#5a5040"), "outer_belt": Color("#3a2818"),
+		"cloak": {"c": Color("#3e3226"), "len": 0.35, "flare": 1.15, "open": 1.1, "clasp": Color("#8a7a58"), "collar": true}}}},
+	"d4_miner": {"race": "dwarf", "name": "드워프 광부(털 어깨)", "head": 2.3, "legs": 0.62, "spec": {"beard_long": {"len": 0.12, "braids": 2}, "kit": {
+		"pants": Color("#3a3228"), "shirt": Color("#5a4c3a"), "sleeves": "long", "vest": Color("#3e2c1e"), "pelt": Color("#5e5040"),
+		"leg_wraps": Color("#5a5040"), "belt": Color("#2a1c12"), "pouch": true, "boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#3a2a1c")}}},
+	"k0_fox_hunter": {"race": "beastkin", "name": "여우 수인 사냥꾼", "head": 1.8, "legs": 0.84, "spec": {"kit": {
+		"pants": Color("#36302a"), "shirt": Color("#7a7462"), "sleeves": "long", "vest": Color("#3a3a2a"), "belt": Color("#2a1c12"), "pouch": true,
+		"boots": Color("#2e2218"), "bracers": Color("#3e2c1c")}}},
+	"k1_wolf_wild": {"race": "beastkin", "name": "늑대 수인(털 치마)", "head": 1.8, "legs": 0.84, "spec": {"ears": "wolf", "hair_c": Color("#1c1816"),
+		"fluff_tail": {"kind": "wolf", "c": Color("#2a2622")}, "hair": "long", "hair_len": 0.14, "kit": {
+		"shirt": Color("#4a3e30"), "sleeves": "short", "kilt": {"c": Color("#4e4434"), "len": 0.55, "fur": true, "slits": 0}, "pelt": Color("#4a4238"),
+		"leg_wraps": Color("#5a5040"), "boots": Color("#2e2218"), "boots_fur": Color("#4e4636"), "bracers": Color("#3a2a1c"), "necklace": {"c": Color("#c8b898"), "n": 5}}}},
+	"k2_cat_scout": {"race": "beastkin", "name": "고양이 수인 정찰병", "head": 1.8, "legs": 0.84, "spec": {"ears": "cat", "hair_c": Color("#141110"),
+		"fluff_tail": {"kind": "cat", "c": Color("#1c1816")}, "kit": {
+		"pants": Color("#2a2826"), "shirt": Color("#34302c"), "sleeves": "long", "vest": Color("#2e2218"), "belt": Color("#1e140c"), "knife": true,
+		"boots": Color("#221a14"), "boots_tall": true, "bracers": Color("#2e2218"), "elbow_guard": Color("#1c1714")}}},
+	"k3_fox_wanderer": {"race": "beastkin", "name": "여우 수인 길손(짧은 망토 · 묶은 머리)", "head": 1.8, "legs": 0.84, "spec": {"hair": "long", "hair_len": 0.05,
+		"ponytail": {"len": 0.16, "high": 0.45}, "kit": {
+		"pants": Color("#3a3630"), "shirt": Color("#6a5e4a"), "sleeves": "long", "belt": Color("#2a1c14"), "pouch": true, "boots": Color("#2e2218"),
+		"bracers": Color("#3a2a1c"), "cloak": {"c": Color("#4a3a2c"), "len": 0.18, "flare": 1.05, "open": 1.3, "collar": true}}}},
+	"k4_wolf_guard": {"race": "beastkin", "name": "늑대 수인 경비(사슬)", "head": 1.8, "legs": 0.84, "spec": {"ears": "wolf", "hair_c": Color("#241c16"),
+		"fluff_tail": {"kind": "wolf", "c": Color("#2e241c")}, "kit": {
+		"pants": Color("#2e2c28"), "shirt": Color("#3a362e"), "sleeves": "long", "chain": Color("#565a5e"), "outer_belt": Color("#24180f"),
+		"boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#4e5256")}}},
 }
 
 

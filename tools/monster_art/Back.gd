@@ -3,7 +3,7 @@ extends RefCounted
 ## 몸을 turn(라디안)만큼 돌려 화면에 투영한다. 좌표(키 비율): u = 몸의 오른쪽 · v = 아래(화면 y) · w = 등 쪽(뒷모습에서 보는 사람 쪽).
 ## turn 0 = 등을 정면으로, 1.1 안팎 = 오른쪽(적)을 보며 비스듬히 돌아선 옆모습(오른 옆구리·옆얼굴이 보인다).
 ## 캡슐은 돌려도 정확하고, 타원체는 돌린 폭으로 근사한다. 옷·장구는 BackKit·BackGear, 설계는 Party.
-## spec 키: height · turn · build(thin|normal|muscular|brute) · bulk · sh(어깨 반폭) · head(머리 크기) · skin · shade · mottle · nail
+## spec 키: height · turn · build(thin|slender|normal|muscular|brute) · bulk · sh(어깨 반폭) · head(머리 크기) · skin · shade · mottle · nail
 ##          pose{stance(발 벌림) · knee · hunch(앞으로 숙임) · arm_l/arm_r(hang|rest|ready|forward|spear|shield|down|slump)}
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
@@ -11,6 +11,7 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 ## 굵기(키 비율): 위팔 · 아래팔 시작/끝 · 허벅지 시작/끝 · 종아리 · 몸통 깊이 배율 · 허리 반폭
 const BUILDS := {
 	"thin": [0.021, 0.019, 0.012, 0.036, 0.021, 0.022, 0.8, 0.062],
+	"slender": [0.024, 0.022, 0.0135, 0.046, 0.026, 0.027, 0.9, 0.056],  # 여성 탐험가 후보(RaceParts — 마른 몸 thin의 갈비·척추 마디는 없다)
 	"normal": [0.029, 0.026, 0.016, 0.05, 0.03, 0.032, 1.0, 0.078],
 	"muscular": [0.035, 0.031, 0.018, 0.056, 0.033, 0.036, 1.08, 0.084],
 	"brute": [0.042, 0.037, 0.022, 0.062, 0.037, 0.04, 1.18, 0.094],

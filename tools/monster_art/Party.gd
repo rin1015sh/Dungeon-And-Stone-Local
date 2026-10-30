@@ -21,6 +21,7 @@ const PartyMotion := preload("res://tools/monster_art/PartyMotion.gd")
 const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
+const RaceParts := preload("res://tools/monster_art/RaceParts.gd")
 
 const RACES := ["human", "barbarian"]
 const VIEWS := ["back"]
@@ -82,6 +83,8 @@ static func spec_of(id: String) -> Dictionary:
 		"slime":
 			sp = Monsters.More.spec_of("slime").duplicate()
 			sp["back"] = true
+	if sp.is_empty() and RaceParts.BODIES.has(base):  # 새 종족 후보(엘프·드워프·수인 — RACES에 없어 게임은 아직 쓰지 않는다)
+		sp = (RaceParts.BODIES[base] as Dictionary).duplicate(true)
 	if MapLooks.CHOSEN.has(base):  # 탐험가 옷차림 = 맵 그림과 같이(AM42)
 		sp = MapLooks.apply(sp, str(MapLooks.CHOSEN[base]))
 	if not sp.is_empty():
@@ -145,14 +148,17 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var skin := cl.mat(skin_c, str(sp.get("skin_kind", "skin")), opts)  # skin_kind = 돌·쇠·털 몸(몬스터)
 	var mats := {"dark": cl.mat(Color("#1a0d0b"), "glow")}
 	var bd := Back.body(cl, pr, j, sp, skin, cl.mat(Color("#3a2e24"), "bone"))
+	RaceParts.body(cl, pr, j, bd, sp, skin)  # 여성 체형(새 종족 후보)
 	var hd := Back.head(cl, pr, j, skin, mats)
 	var kit: Dictionary = sp.get("kit", {})
 	BackKit.dress(cl, pr, j, bd, kit, rng)
 	BackSavage.wear(cl, pr, j, bd, kit, rng)  # 야만전사 장구(멜빵·띠 치마·어깨받이·목걸이·전투 칠 — 바바리안 옷차림 후보)
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
+	RaceParts.head(cl, pr, j, bd, hd, sp)  # 엘프·짐승 귀 · 묶은 머리 · 긴 수염
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
 	BackCloak.wear(cl, pr, j, bd, hd, kit, rng)  # 탐험 맵 겉옷(망토·두건·외투 — MapLooks)
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
+	RaceParts.tail(cl, pr, j, sp)  # 수인 털 꼬리
 	BackPose.props(cl, pr, j, sp)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)), Vector2(0, 1).rotated(roll))

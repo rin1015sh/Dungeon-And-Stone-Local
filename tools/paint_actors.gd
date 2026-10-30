@@ -200,7 +200,7 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 		sp["spiky"] = true
 		sp["fringe"] = false
 		sp["hair_grow"] = _v("spiky_grow", SPIKY_GROW)
-		sp["locks"] = LOCKS.merged({"back": _v("lock_back", float(LOCKS["back"]))}, true)
+		sp["locks"] = LOCKS.merged(sp.get("map_locks", {}) as Dictionary, true).merged({"back": _v("lock_back", float(LOCKS["back"]))}, true)  # map_locks = 종족 머리 타래(드워프는 짧게 — RaceParts)
 	sp["socket_eyes"] = _v("sockets", SOCKETS) > 0.0
 	sp["hair_flare"] = _v("hair_flare", HAIR_FLARE)
 	sp["eye_r"] = _v("eye_r", EYE_R)
