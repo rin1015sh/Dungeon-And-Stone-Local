@@ -56,7 +56,7 @@ func test_tomb_oil_needs_no_trap_triggered() -> void:
 	assert_true(clean.rift_run.take_hidden(clean, _at(clean, "tomb_oil")))
 	assert_eq(clean.player.inventory.count("tomb_oil"), 1, "함정을 하나도 발동시키지 않았다")
 	clean.rift_run.finish()
-	assert_eq(clean.player.inventory.count("tomb_oil"), 0, "균열 밖으로 가져가지 못한다(그 자리에서 쓴다)")
+	assert_eq(clean.player.inventory.count("tomb_oil"), 1, "스탯 영약도 균열 밖으로 가지고 나간다(RF27)")
 
 
 func test_steel_relic_only_when_blades_crushed() -> void:

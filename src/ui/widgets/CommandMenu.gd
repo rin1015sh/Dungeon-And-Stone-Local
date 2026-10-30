@@ -199,12 +199,36 @@ func _skill_target(skill_id: String, skill_index: int) -> void:
 	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _skills(skill_index), start)
 
 
-func _items() -> void:
+func _items(start: int = 0) -> void:
 	var opts: Array[Dictionary] = []
-	for id in _usable_items():
+	var ids := _usable_items()
+	for i in ids.size():
+		var id := ids[i]
+		var idx := i
 		opts.append(_opt(DataNames.entry(_battle.db, "items", id), Strings.t("combat.sub_stack", {"n": _unit.actor.inventory.count(id)}),
-			"", func() -> void: _choose({"kind": "item", "item": id})))
-	_sub(Strings.t("combat.menu_item"), opts, func() -> void: _root(ROOT_ITEM))
+			"", func() -> void: _item_pick(id, idx)))
+	_sub(Strings.t("combat.menu_item"), opts, func() -> void: _root(ROOT_ITEM), start)
+
+
+## 하나만 치는 아이템(성수 병 등 — RF27)은 적 하나를 고른다. 듣지 않는 적은 흐리게. 그 밖은 바로 쓴다.
+func _item_pick(id: String, item_index: int) -> void:
+	var e := BattleRules.single_smite(_battle.db, id)
+	if e.is_empty():
+		_choose({"kind": "item", "item": id})
+		return
+	var opts: Array[Dictionary] = []
+	var start := 0
+	for t in _battle.opponents(_unit):
+		if t == _last_target.get(_unit.get_instance_id()):
+			start = opts.size()
+		var o := _target_opt(t, t.label(), func() -> void:
+			_remember_target(t)
+			_choose({"kind": "item", "item": id, "target": t}))
+		if bool(o["enabled"]) and not BattleRules.smite_fits(e, t):
+			o["enabled"] = false
+			o["desc"] = Strings.t("combat.reason_item_no_effect")
+		opts.append(o)
+	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _items(item_index), start)
 
 
 func _usable_items() -> Array[String]:

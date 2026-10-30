@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **스탯 영약 반출 · 균열 전투 도구는 하나만 (2026-10-30, 사용자 "스탯 영약도 균열 밖으로 가지고 나갈 수 있게, 규칙에도 반영 · 아이템들은 하나만 치게", RF27)** — ① 피의 성배·설련화·녹색 결정·묘지기의 성유·강철 사리에서 `rift_bound` 삭제 + 설명의 "벗어나면 사라진다" 문장 삭제(여신의 눈물·갱도 폭약·무기고 열쇠는 그대로 균열 안에서만). ② 성수 병·얼음 송곳·고블린 화약 주머니·봉인 부적 `smite`에 `single: true` — `BattleRules.single_smite`·`smite_fits`, 행동 `{kind: item, item, target}`(`Battle._use_item`이 대상 Actor를 넘김, `ActionCheck`가 대상·계열 검사), `CommandMenu._item_pick`(아이템 → 적 고르기, 듣지 않는 적은 흐림 "듣지 않는다"), `CombatScreen._fallback`이 아이템도 다른 적에게. 피해 수치는 그대로. 테스트: `test_fortress.test_holy_water_hits_one_target`, UI 스모크 `_single_item_target`, `test_hidden_pieces` 성유 반출. 문서: ASSUMPTIONS RF27(RF18·RF25 표시)·CANON·REFERENCE·rift_hidden_pieces.
+
 - **키 정리 — 살피기 Enter뿐 · Backspace는 전투 행동창 뒤로만 (2026-10-30, 사용자 "F로 상호작용하는 거 제거하고 엔터로만 · 백스페이스는 전투화면에서 [공격 방어 스킬 아이템] 고를 때 뒤로 갈 때만", UI43)** — `input.json interact` = Enter·Kp Enter(F 삭제, 거리 `CityStreet`도 menu_confirm만). `ChoiceGrid.back_action`(기본 `pause` = Esc·P, 뒤로 갈 곳이 없으면 먹지 않고 넘김) — `CommandMenu` 두 판만 `menu_back`(Backspace). Esc로 옮긴 것: 작은 선택 창 뒤로(ChoicePopup can_back), 수수께끼 물러나기, Tab 메뉴 쪽 안 물리기(물릴 것 없으면 닫기), 도감 오른쪽 → 왼쪽(왼쪽이면 닫기). 탐험의 Backspace 일시정지 풀기·메뉴 닫기, 도시의 Backspace 막기 코드 삭제. UI 스모크: 탐험·Tab 메뉴에서 Backspace는 아무 일 없음, Esc로 정수 카드 되돌리기·탐험가 무리 지나가기·도감 왼쪽으로, 전투 행동창에서 Esc는 뒤로 가지 않음. 문서: CLAUDE.md·CANON·REFERENCE·HANDOFF·DEPLOY·PLAYTEST.
 
 - **새 플레이어블 종족 후보 — 엘프·드워프·수인 복장 시안 12종 (2026-10-30, 사용자 "엘프·드워프·수인 · 엘프·수인은 여성 · 머리 어두운 색 · 드워프 수염 · 여러 복장을 보여 주면 하나 골라 그것만")** — AM59. 범위: 그림 도구만(게임 그림·데이터 그대로). 완료 기준: 종족마다 은은하지만 종족이 읽히는 시안 4종을 앞·옆·뒤 + 맵 걷기로 한 장에, 눈으로 확인. 테스트: `check.sh`.

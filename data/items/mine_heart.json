@@ -1,7 +1,7 @@
 {
   "id": "mine_heart",
   "name_ko": "녹색 결정",
-  "desc_ko": "광차 밑에 깔려 있던 녹색 결정. 쥐면 맥박이 빨라진다. 탄광을 벗어나면 빛이 꺼진다.",
+  "desc_ko": "광차 밑에 깔려 있던 녹색 결정. 쥐면 맥박이 빨라진다.",
   "category": "potion",
   "size": [
     1,
@@ -12,7 +12,6 @@
   "icon": "potion",
   "color": "#5ab84a",
   "rarity": "numbers",
-  "rift_bound": "rift_green_mine",
   "consumable": true,
   "use_effects": [
     {
@@ -24,5 +23,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17) · 2026-10-30 가지고 나갈 수 있게(사용자, RF27)"
 }

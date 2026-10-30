@@ -10,6 +10,7 @@
   "use_effects": [
     {
       "type": "smite",
+      "single": true,
       "families": [
         "undead",
         "wraith",

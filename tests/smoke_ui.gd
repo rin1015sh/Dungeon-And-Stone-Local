@@ -442,12 +442,34 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	await _action("menu_up")
 	await _action("menu_up")
 	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "W·W → 공격")
+	await _single_item_target(combat, menu, g)
 	var turns := combat.battle.turns
 	await _action("menu_confirm")
 	_expect(menu.grid().title_text() == Strings.t("combat.menu_target"), "Enter → 대상 고르기")
 	await _action("menu_confirm")
 	await _frames(2)
 	_expect(combat.battle.turns > turns or not combat.battle.result.is_empty(), "Enter로 고른 공격이 차례를 쓴다")
+
+
+## 하나만 치는 균열 전투 도구(RF27): 아이템 → 적 고르기(듣지 않는 계열은 흐림) → Backspace로 아이템 목록 → 명령 칸.
+func _single_item_target(combat: CombatScreen, menu: CommandMenu, g: ChoiceGrid) -> void:
+	var me := combat.battle.current
+	me.actor.inventory.add("mine_powder_pouch", 1)
+	menu._item_pick("mine_powder_pouch", 0)
+	var t := menu.grid()
+	var foes := combat.battle.opponents(me)
+	var e := BattleRules.single_smite(DataRegistry.db, "mine_powder_pouch")
+	var ok := t.title_text() == Strings.t("combat.menu_target") and t.option_count() == foes.size()
+	for i in mini(t.option_count(), foes.size()):
+		ok = ok and (bool(t.option(i).get("enabled", true)) == (BattleRules.smite_fits(e, foes[i]) and BattleRules.is_targetable(combat.battle, me, foes[i])))
+	_expect(ok, "화약 주머니 → 적 하나 고르기(듣지 않는 적은 흐림)")
+	await _action("menu_back")
+	_expect(menu.grid().title_text() == Strings.t("combat.menu_item"), "Backspace → 아이템 목록")
+	await _action("menu_back")
+	_expect(menu.grid() == g and g.cursor() == CommandMenu.ROOT_ITEM, "Backspace → 명령 칸(아이템)")
+	me.actor.inventory.remove("mine_powder_pouch")
+	for i in 3:
+		await _action("menu_up")
 
 
 ## 행동 정하기(피어 앤 헝거식): 동료가 있으면 차례가 온 사람 + 아직 안 정한 동료의 행동을 먼저 다 고르고 나서 움직인다.

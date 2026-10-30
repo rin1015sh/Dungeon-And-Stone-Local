@@ -1,7 +1,7 @@
 {
   "id": "blood_chalice",
   "name_ko": "피의 성배",
-  "desc_ko": "우물에 부은 피가 굳어 생긴 잔. 아직 따뜻하다. 성채를 벗어나면 그저 붉은 흙이 된다.",
+  "desc_ko": "우물에 부은 피가 굳어 생긴 잔. 아직 따뜻하다.",
   "category": "potion",
   "size": [
     1,
@@ -12,7 +12,6 @@
   "icon": "potion",
   "color": "#8a1a1a",
   "rarity": "numbers",
-  "rift_bound": "rift_blood_fortress",
   "consumable": true,
   "use_effects": [
     {
@@ -24,5 +23,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17) · 2026-10-30 가지고 나갈 수 있게(사용자, RF27)"
 }

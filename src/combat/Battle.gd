@@ -206,7 +206,7 @@ func next_turn() -> Combatant:
 
 
 ## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "aim_weak": bool}
-##          | {"kind": "guard"} | {"kind": "item", "item": id} | {"kind": "flee"}
+##          | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant(하나만 치는 아이템)} | {"kind": "flee"}
 ## 적용했으면 true. 현재 차례가 아니거나 이미 처리했거나 행동이 잘못됐으면 false(차례를 쓰지 않는다).
 func act(c: Combatant, action: Dictionary) -> bool:
 	if not result.is_empty() or c == null or c != current or phase != PHASE_AWAIT:
@@ -226,7 +226,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 			c.actor.statuses.apply("guarding")
 			message.emit("combat.guard", {"name": c.label()}, "info")
 		"item":
-			if not _use_item(c, str(action.get("item", ""))):
+			if not _use_item(c, str(action.get("item", "")), action.get("target")):
 				phase = PHASE_AWAIT  # 아무 일도 일어나지 않았다(생명력이 이미 가득 등) — 차례를 쓰지 않는다
 				_busy -= 1
 				return false
@@ -331,8 +331,10 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 
 
 ## 아이템을 쓴다. 효과가 하나도 일어나지 않았으면(소모도 없음) 이유만 알리고 false.
-func _use_item(c: Combatant, item_id: String) -> bool:
-	var ctx := ItemUser.use(effects, c.actor, item_id, rng, null, {"in_battle": true})
+## target = 하나만 치는 아이템이 노리는 적(BattleRules.single_smite).
+func _use_item(c: Combatant, item_id: String, target: Variant = null) -> bool:
+	var ta: Actor = (target as Combatant).actor if target is Combatant else null
+	var ctx := ItemUser.use(effects, c.actor, item_id, rng, ta, {"in_battle": true})
 	if ctx == null:
 		message.emit("combat.no_item", {"name": c.label()}, "warn")
 		return false
