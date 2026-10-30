@@ -38,7 +38,7 @@
 | 기반 점검 | 릴리스 빌드에서 숨김(개발용) | `TitleScreen` `OS.is_debug_build()` |
 | 저장 | `user://dungeon_and_stone/save.json` → 브라우저 IndexedDB. 같은 주소의 다른 Godot 게임과 겹치지 않게 게임 이름 폴더를 둔다. 파일을 닫을 때 저장소로 동기화된다 | `SaveGame` |
 | 글꼴 | 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 Noto Sans KR에 있는 것만. 없던 기호 ▸ ✕를 › ×로 바꿨고 테스트가 지킨다 | `tests/test_web.gd` |
-| Esc | 전체 화면에서 Esc는 브라우저가 먼저 가져가 전체 화면만 풀린다. 미궁 정지는 P, 창 닫기·창구에서 나가기는 Backspace(UI14)나 빈 곳 오른쪽 클릭도 된다 | `data/input.json` |
+| Esc | 전체 화면에서 Esc는 브라우저가 먼저 가져가 전체 화면만 풀린다. 미궁 정지는 P, 창 닫기·선택 창 뒤로·창구에서 나가기도 Esc라 전체 화면에서는 한 번 더 눌러야 한다(UI43 — Backspace는 전투 행동창 뒤로만) | `data/input.json` |
 
 ## 4. 저장에 대해 플레이어가 알아야 할 것
 

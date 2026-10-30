@@ -147,12 +147,11 @@ func _realtime_combat_flow() -> void:
 	_expect(is_equal_approx(s.clock.total_hours, tp), "일시정지 중에는 시간이 멈춘다")
 	await _action("pause")
 	_expect(not explore.is_paused(), "일시정지 해제")
-	await _action("pause")
 	await _action("menu_back")
-	_expect(not explore.is_paused(), "취소(Backspace)로도 일시정지 해제")
+	_expect(not explore.is_paused() and not explore.menu().is_open(), "탐험에서 Backspace는 아무 일도 하지 않는다")
 	await _action("menu")
-	await _action("menu_back")
-	_expect(not explore.menu().is_open() and not explore.is_paused(), "취소(Backspace)로 메뉴 닫기(일시정지 아님)")
+	await _action("pause")
+	_expect(not explore.menu().is_open() and not explore.is_paused(), "Esc로 메뉴 닫기(일시정지 아님)")
 	await _tab_party_checks(explore)
 	await _explore_dialog_checks(explore)
 	await _party_checks(explore)
@@ -381,7 +380,7 @@ func _inventory_flow() -> void:
 	inv.cursor_to_cell(Vector2i(0, pc.inventory.height - 1))
 	await _action("menu_left")
 	_expect(menu.active_page() == "character", "가방 왼쪽 끝에서 A → 캐릭터 쪽")
-	pc.set_level(3)  # 정수 순서 바꾸기(UI34): W/S로 카드 · Enter 집기 · S 옮기기 · Enter 확정 · Backspace 되돌리기
+	pc.set_level(3)  # 정수 순서 바꾸기(UI34): W/S로 카드 · Enter 집기 · S 옮기기 · Enter 확정 · Esc 되돌리기
 	for e: Array in [["goblin", "red"], ["gnome", "blue"]]:
 		pc.essences.absorb(pc, {"essence": e[0], "color": e[1], "stats": {}})
 	menu.character().refresh()
@@ -396,7 +395,9 @@ func _inventory_flow() -> void:
 	await _action("menu_confirm")
 	await _action("menu_up")
 	await _action("menu_back")
-	_expect(str(pc.essences.absorbed[1]["essence"]) == "goblin" and menu.is_open(), "집어 옮기다 Backspace → 원래 자리(메뉴는 그대로)")
+	_expect(str(pc.essences.absorbed[0]["essence"]) == "goblin" and menu.is_open(), "메뉴에서 Backspace는 아무 일도 하지 않는다")
+	await _action("pause")
+	_expect(str(pc.essences.absorbed[1]["essence"]) == "goblin" and menu.is_open(), "집어 옮기다 Esc → 원래 자리(메뉴는 그대로)")
 	var gi := pc.skills.find(EssenceSet.granted_skills(DataRegistry.db, pc.essences.absorbed[0])[0])
 	var bi := pc.skills.find(EssenceSet.granted_skills(DataRegistry.db, pc.essences.absorbed[1])[0])
 	_expect(gi >= 0 and bi > gi, "전투 스킬 순서도 정수 순서")
@@ -432,6 +433,8 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	_expect(g.cursor() == CommandMenu.ROOT_SKILL, "S → 스킬 (%d)" % g.cursor())
 	await _action("menu_confirm")
 	_expect(Array(menu.grid().option_texts()).has(DataNames.entry(DataRegistry.db, "skills", "talk")), "Enter → 스킬 목록")
+	await _action("pause")
+	_expect(menu.grid() != g, "행동창에서 Esc는 뒤로 가지 않는다(뒤로 = Backspace)")
 	await _action("menu_back")
 	_expect(menu.grid() == g and g.cursor() == CommandMenu.ROOT_SKILL, "Backspace → 명령 칸, 커서는 스킬")
 	await _action("menu_down")
@@ -535,7 +538,7 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 	DialogueBox.auto_skip = true
 
 
-## 다른 탐험가 무리(FieldParties): 닿으면 선택 창 — 고르는 동안 시간이 멈추고, Backspace = 지나가기.
+## 다른 탐험가 무리(FieldParties): 닿으면 선택 창 — 고르는 동안 시간이 멈추고, Esc = 지나가기.
 func _party_checks(explore: ExploreScreen) -> void:
 	var s := explore.session
 	var g := s.parties._spawn(s, FieldParties.ROOKIE, FieldRoutes.random_cell_near(s.map, s.rng, s.pos, 6))  # 1층엔 돌아다니는 신참 무리가 없어 하나 세운다(사용자 2026-10-26)
@@ -545,10 +548,10 @@ func _party_checks(explore: ExploreScreen) -> void:
 	s.party_met.emit(g)
 	await _frames(2)
 	_expect(explore.has_node("PartyChoice") and s.realtime.is_paused("party"), "탐험가 무리 선택 창(시간 정지)")
-	await _action("menu_back")
+	await _action("pause")
 	await _frames(2)
 	_expect(not explore.has_node("PartyChoice") and not s.realtime.is_paused("party") and g.grace_until > s.clock.total_hours,
-		"Backspace = 지나간다(잠시 다시 말을 걸지 않는다)")
+		"Esc = 지나간다(잠시 다시 말을 걸지 않는다)")
 
 
 ## 전투 안내 → 아래 창 왼쪽 대화창: 떠 있는 동안 행동창이 열리지 않고, Enter로 넘기면 행동창이 열린다.
@@ -1096,8 +1099,8 @@ func _codex_checks(explore: ExploreScreen) -> void:
 	_expect(cx.index().current() == "dungeon" and cx.page() is LorePage, "W/S로 분야 → 오른쪽이 서적")
 	await _action("menu_confirm")
 	_expect(cx.active_page() == cx.page() and (cx.page() as LorePage).current_id() == "d_cave_shape", "Enter → 읽은 대목")
-	await _action("menu_back")
-	_expect(cx.active_page() == cx.index(), "Backspace → 왼쪽 목록")
+	await _action("pause")
+	_expect(cx.active_page() == cx.index() and cx.is_open(), "Esc → 왼쪽 목록")
 	await _action("codex")
 	_expect(not cx.is_open() and not s.realtime.is_paused("codex"), "B로 닫기 → 시간 다시 흐름")
 	known.erase("d_cave_shape")

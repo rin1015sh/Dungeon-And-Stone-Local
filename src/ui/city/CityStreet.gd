@@ -352,7 +352,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				step(int(pair[1]))
 				return
-	if event.is_action_pressed("menu_confirm") or event.is_action_pressed("interact"):
+	if event.is_action_pressed("menu_confirm"):
 		var id := focused_id()
 		if not id.is_empty():
 			get_viewport().set_input_as_handled()

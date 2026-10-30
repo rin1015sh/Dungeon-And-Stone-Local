@@ -1,7 +1,7 @@
 class_name GothicWindow
 extends PanelContainer
 ## 스톤샤드풍 창 틀: 돌판 테두리 + 머리 장식(고딕 아치 띠) + 가운데 이름판. 내용은 content(VBox)에 넣는다.
-## 닫기는 키(Backspace·Esc)로 — 창을 띄운 쪽이 받는다.
+## 닫기는 키(Esc)로 — 창을 띄운 쪽이 받는다.
 
 var content: VBoxContainer
 var _title: String = ""

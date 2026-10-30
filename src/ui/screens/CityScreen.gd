@@ -296,9 +296,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_codex.open()
 		get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("menu_back"):  # 도시에서는 Backspace를 쓰지 않는다(사용자 결정 2026-10-20)
-		get_viewport().set_input_as_handled()
-		return
 	if event.is_action_pressed("pause"):  # Esc: 시설에서 나가기 · 메뉴 닫기 · (거리에서) 정지 창
 		if _facility != null:
 			_facility.try_leave()

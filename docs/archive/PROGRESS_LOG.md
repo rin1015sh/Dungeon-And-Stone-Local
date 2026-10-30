@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **키 정리 — 살피기 Enter뿐 · Backspace는 전투 행동창 뒤로만 (2026-10-30, 사용자 "F로 상호작용하는 거 제거하고 엔터로만 · 백스페이스는 전투화면에서 [공격 방어 스킬 아이템] 고를 때 뒤로 갈 때만", UI43)** — `input.json interact` = Enter·Kp Enter(F 삭제, 거리 `CityStreet`도 menu_confirm만). `ChoiceGrid.back_action`(기본 `pause` = Esc·P, 뒤로 갈 곳이 없으면 먹지 않고 넘김) — `CommandMenu` 두 판만 `menu_back`(Backspace). Esc로 옮긴 것: 작은 선택 창 뒤로(ChoicePopup can_back), 수수께끼 물러나기, Tab 메뉴 쪽 안 물리기(물릴 것 없으면 닫기), 도감 오른쪽 → 왼쪽(왼쪽이면 닫기). 탐험의 Backspace 일시정지 풀기·메뉴 닫기, 도시의 Backspace 막기 코드 삭제. UI 스모크: 탐험·Tab 메뉴에서 Backspace는 아무 일 없음, Esc로 정수 카드 되돌리기·탐험가 무리 지나가기·도감 왼쪽으로, 전투 행동창에서 Esc는 뒤로 가지 않음. 문서: CLAUDE.md·CANON·REFERENCE·HANDOFF·DEPLOY·PLAYTEST.
+
 - **새 플레이어블 종족 후보 — 엘프·드워프·수인 복장 시안 12종 (2026-10-30, 사용자 "엘프·드워프·수인 · 엘프·수인은 여성 · 머리 어두운 색 · 드워프 수염 · 여러 복장을 보여 주면 하나 골라 그것만")** — AM59. 범위: 그림 도구만(게임 그림·데이터 그대로). 완료 기준: 종족마다 은은하지만 종족이 읽히는 시안 4종을 앞·옆·뒤 + 맵 걷기로 한 장에, 눈으로 확인. 테스트: `check.sh`.
   - 1차: 옷차림 15종을 맵 걷기 + 전투 동작 전체까지 그리다가 사용자가 멈춤("다 그리지 말고 시안만 · 종족 느낌도 안 나고 밋밋 — 바바리안·인간처럼 은은한 개성"). 1차 15종 정의는 지우고 2차로 바꿈.
   - 2차: 새 부품 `RaceKit.gd`(엘프 은 머리띠·화살통·사선 천 띠, 드워프 양어깨 쇠받이·큰 청동 버클·가죽 앞치마·코 가리개·등짐, 수인 목도리), `BackSavage pauldron side both`, 여성 얼굴 `Back` soft_face, 여성 체형 줄임(엉덩이 과함 → 작게, bulk 0.88/0.92). 시안 `MapLooks` e0~e3 · d0~d3 · k0~k3(note = 부제), 도구 `tools/paint_look_preview.gd`(앞·옆·뒤 한 줄) · `tools/looks_sheet.py --views`(시안 오른쪽에 맵 줄). 비교 그림 `docs/screens/race_looks/{elf,dwarf,beastkin}.png`.

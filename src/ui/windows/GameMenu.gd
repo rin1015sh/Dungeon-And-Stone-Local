@@ -5,7 +5,7 @@ extends Control
 ## 화면을 어둡게 덮고 아군(PartyPage — 짧은 생명력·영혼력·허기·피로) · 캐릭터 · 소지품 세 쪽을 나란히 보인다. 열면 소지품 쪽에 커서.
 ## 도감은 따로 B(CodexMenu — 사용자 2026-10-27, UI32).
 ## 아군 목록은 전위가 위·후위가 아래(사용자 2026-10-25). 고른 아군에서 Enter 한 번 더 = 전위/후위/파티에서 내보내기(한 번 더 묻는다).
-##   W/A/S/D = 지금 쪽 안의 커서(쪽 끝에서 A/D = 옆 쪽으로), Enter = 고르기, Backspace = 쪽 안에서 물리기(없으면 닫기), Tab·Esc = 닫기.
+##   W/A/S/D = 지금 쪽 안의 커서(쪽 끝에서 A/D = 옆 쪽으로), Enter = 고르기, Esc = 쪽 안에서 물리기(없으면 닫기), Tab = 닫기.
 ## 열려 있으면 opened_changed(true) — 탐험 화면이 시간을 멈춘다(메뉴 규칙). 키는 모두 이 메뉴가 먹는다.
 ## hold가 참이면(위에 떠 있는 대화창 등) 키를 받지 않고 지나보낸다.
 
@@ -217,14 +217,12 @@ func _input(event: InputEvent) -> void:
 	if p != null and p.busy():
 		return
 	get_viewport().set_input_as_handled()  # 열려 있는 동안 키는 모두 이 메뉴가 먹는다
+	if event.is_action_pressed("pause") and p != null and p.back():
+		return
 	if event.is_action_pressed("menu") or event.is_action_pressed("pause"):
 		close()
 		return
 	if p == null:
-		return
-	if event.is_action_pressed("menu_back"):
-		if not p.back():
-			close()
 		return
 	if event.is_action_pressed("menu_confirm"):
 		p.confirm()

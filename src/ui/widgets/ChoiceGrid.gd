@@ -3,7 +3,8 @@ extends VBoxContainer
 ## 고정 칸 선택판(포켓몬 기술 창처럼): 정해진 테두리 칸 열×줄(render.json combat_menu_columns·rows, 기본 2×3 = 한 쪽 6칸)에
 ## 선택지를 하나씩 넣는다. 칸 수·크기는 늘 같고(빈 칸도 테두리가 남는다), 넘치면 쪽을 나눈다(◀ 1/3 ▶).
 ##   키: menu_up/down/left/right(WASD) 커서 이동 — 맨 왼쪽·오른쪽 칸에서 한 번 더 누르면 이전·다음 쪽,
-##       menu_confirm(Enter) 확정, menu_back(Backspace) 뒤로. 마우스는 쓰지 않는다(사용자 결정 2026-10-19).
+##       menu_confirm(Enter) 확정, back_action 뒤로 — 기본 Esc(pause), 전투 행동창만 Backspace(menu_back, 사용자 결정 2026-10-30 UI43).
+##       마우스는 쓰지 않는다(사용자 결정 2026-10-19).
 ##   커서가 놓인 선택지의 설명(못 쓰면 그 이유)은 칸 아래 설명줄에 나온다.
 ## 선택지: {"text", "sub"(칸 오른쪽 아래 작은 글씨 — 대가·남은 차례·확률), "enabled", "desc", "on_pick": Callable}
 ## 칸은 Button이지만 포커스를 받지 않는다(Enter가 엔진 기본 ui_accept로 엉뚱한 버튼을 누르지 않게 키는 직접 받는다).
@@ -13,6 +14,8 @@ signal cursor_moved(index: int)
 
 ## 키 입력을 받는가(전투 행동창은 명령 칸과 목록 칸 두 판 중 하나만 받는다). 꺼져 있으면 커서는 그대로 보인다.
 var active: bool = true
+## 뒤로 키 액션. 뒤로 갈 곳(back)이 없으면 이 키는 먹지 않고 넘긴다(Esc가 정지·창 닫기로 간다).
+var back_action: String = "pause"
 
 var _head: HBoxContainer
 var _title: Label
@@ -130,9 +133,10 @@ func _input(event: InputEvent) -> void:
 	for a: String in ["menu_up", "menu_down", "menu_left", "menu_right"]:
 		if InputMap.has_action(a) and event.is_action_pressed(a, true):
 			act = a
-	for a: String in ["menu_confirm", "menu_back"]:
-		if InputMap.has_action(a) and event.is_action_pressed(a):
-			act = a
+	if InputMap.has_action("menu_confirm") and event.is_action_pressed("menu_confirm"):
+		act = "menu_confirm"
+	elif _back.is_valid() and InputMap.has_action(back_action) and event.is_action_pressed(back_action):
+		act = "back"
 	if act.is_empty():
 		return
 	get_viewport().set_input_as_handled()  # 먼저 막는다 — 확정으로 이 판이 닫히거나 사라질 수 있다
@@ -149,7 +153,7 @@ func _input(event: InputEvent) -> void:
 				move(1, 0)
 		"menu_confirm":
 			confirm()
-		"menu_back":
+		"back":
 			go_back()
 
 

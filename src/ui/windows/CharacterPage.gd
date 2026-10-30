@@ -4,7 +4,7 @@ extends MenuPage
 ## 세부 능력(0이 아닌 세부 스탯과 보정 · 영구 강화 · 패시브 · 걸린 상태). 내용은 높이를 고정하고 W/S로 스크롤한다.
 ## W/S = 한 줄로 이어진 자리 사이: 맨 위 요약 → 정수 카드 하나하나 → 세부 능력(그 안에서는 W/S가 스크롤 — 맨 위면 W로 마지막 카드로).
 ## 자리를 옮기면 그 자리가 보이게 스크롤한다(사용자 2026-10-28 "W/S가 제대로 안 먹는다" — 예전엔 끝 카드 아래로 스크롤한 뒤 W가 카드로 튀었다, UI39).
-## 커서 카드에서 Enter = 집기 → W/S로 위아래로 옮기기 → Enter = 확정 · Backspace = 집기 전 자리로(UI34). 바꾼 순서가 전투 스킬 목록의 정수 이능 순서(EssenceSet.move).
+## 커서 카드에서 Enter = 집기 → W/S로 위아래로 옮기기 → Enter = 확정 · Esc = 집기 전 자리로(UI34). 바꾼 순서가 전투 스킬 목록의 정수 이능 순서(EssenceSet.move).
 ## 쪽 테두리는 금색으로 밝히지 않는다(정수 카드 커서가 금색 — lit_frame).
 
 var pc: PlayerCharacter
@@ -124,7 +124,7 @@ func confirm() -> void:
 	_paint_cursor()
 
 
-## Backspace: 집은 카드를 원래 자리로 되돌린다.
+## Esc: 집은 카드를 원래 자리로 되돌린다.
 func back() -> bool:
 	if _grab < 0:
 		return false
