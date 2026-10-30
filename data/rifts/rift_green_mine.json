@@ -195,7 +195,8 @@
             "goblin_miner"
           ]
         },
-        {"kind": "posts", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"], ["goblin_miner"]]}
+        {"kind": "posts", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"], ["goblin_miner"]]},
+        {"kind": "roam", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"], ["goblin_miner"]]}
       ],
       "loot": [
         {"item": "torch_stub", "count": 1},
@@ -261,7 +262,8 @@
           ],
           "midboss": true
         },
-        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["goblin_miner", "goblin_miner"]]}
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["goblin_miner", "goblin_miner"]]},
+        {"kind": "roam", "count": 3, "packs": [["goblin_miner", "goblin_miner"]]}
       ],
       "loot": [
         {"item": "mine_lunchbox", "count": 1},
@@ -338,7 +340,8 @@
             "copper_golem"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["mineral_slime", "slime"]]}
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["mineral_slime", "slime"]]},
+        {"kind": "roam", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["mineral_slime", "slime"]]}
       ],
       "loot": [
         {"item": "mine_lunchbox", "count": 1},
@@ -409,7 +412,8 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 4, "packs": [["mineral_slime", "mineral_slime"], ["copper_golem"], ["slime", "slime"], ["goblin_miner", "hobgoblin_miner"]]}
+        {"kind": "posts", "count": 4, "packs": [["mineral_slime", "mineral_slime"], ["copper_golem"], ["slime", "slime"], ["goblin_miner", "hobgoblin_miner"]]},
+        {"kind": "roam", "count": 3, "packs": [["mineral_slime", "mineral_slime"], ["copper_golem"], ["slime", "slime"], ["goblin_miner", "hobgoblin_miner"]]}
       ],
       "loot": [
         {"item": "mine_lunchbox", "count": 2},

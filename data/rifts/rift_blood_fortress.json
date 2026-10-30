@@ -195,7 +195,8 @@
             "deadman"
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["deadman", "deadman"], ["deadman", "soldier_deadman"], ["soldier_deadman", "soldier_deadman"], ["deadman", "deadman"]]}
+        {"kind": "posts", "count": 4, "packs": [["deadman", "deadman"], ["deadman", "soldier_deadman"], ["soldier_deadman", "soldier_deadman"], ["deadman", "deadman"]]},
+        {"kind": "roam", "count": 3, "packs": [["deadman", "deadman"], ["deadman", "soldier_deadman"], ["soldier_deadman", "soldier_deadman"]]}
       ],
       "loot": [
         {"item": "fortress_bread", "count": 2},
@@ -213,17 +214,14 @@
       "id": "ch2",
       "battleback": {"image": "res://assets/battle/blood_fortress_ch2.webp", "half_width": 4.0},
       "name_ko": "도개교",
-      "desc_ko": "내려진 도개교 위를 데드맨 무리가 막아섰다.",
+      "desc_ko": "내려진 도개교 너머로 성채의 문이 보인다.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch2.json"
       },
       "encounters": [
-        {
-          "kind": "battle",
-          "guard": true,
-          "monsters": ["deadman", "deadman", "deadman", "deadman", "deadman", "deadman", "soldier_deadman", "soldier_deadman"]
-        },
-        {"kind": "posts", "count": 2, "packs": [["soldier_deadman", "deadman"], ["deadman", "deadman", "deadman"]]}
+        {"kind": "ambush", "trigger": [50, 19, 3, 3], "packs": [["deadman", "deadman", "deadman", "deadman", "deadman", "deadman", "soldier_deadman", "soldier_deadman"], ["deadman", "deadman", "deadman", "deadman", "deadman", "deadman", "soldier_deadman", "soldier_deadman"]], "from": [[37, 20], [65, 20]]},
+        {"kind": "posts", "count": 2, "packs": [["soldier_deadman", "deadman"], ["deadman", "deadman", "deadman"]]},
+        {"kind": "roam", "count": 3, "packs": [["soldier_deadman", "deadman"], ["deadman", "deadman", "deadman"]]}
       ],
       "loot": [
         {"item": "fortress_crossbow", "count": 1},
@@ -274,7 +272,8 @@
             ]
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["skeleton_archer", "skeleton_archer"], ["ghoul", "ghoul"], ["skeleton_mage", "skeleton_archer"], ["ghoul", "skeleton_archer"]]}
+        {"kind": "posts", "count": 4, "packs": [["skeleton_archer", "skeleton_archer"], ["ghoul", "ghoul"], ["skeleton_mage", "skeleton_archer"], ["ghoul", "skeleton_archer"]]},
+        {"kind": "roam", "count": 3, "packs": [["skeleton_archer", "skeleton_archer"], ["ghoul", "ghoul"], ["skeleton_mage", "skeleton_archer"], ["ghoul", "skeleton_archer"]]}
       ],
       "loot": [
         {"item": "fortress_cloak", "count": 1},
@@ -348,7 +347,8 @@
           ],
           "midboss": true
         },
-        {"kind": "posts", "count": 2, "packs": [["skull_rat", "skull_rat"], ["skull_rat", "skull_rat", "skull_rat"]]}
+        {"kind": "posts", "count": 2, "packs": [["skull_rat", "skull_rat"], ["skull_rat", "skull_rat", "skull_rat"]]},
+        {"kind": "roam", "count": 2, "packs": [["skull_rat", "skull_rat"], ["skull_rat", "skull_rat", "skull_rat"]]}
       ],
       "loot": [
         {"item": "torch_stub", "count": 1},
@@ -396,7 +396,8 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 3, "packs": [["bone_knight"], ["gargoyle_statue"], ["gargoyle_statue"]]}
+        {"kind": "posts", "count": 3, "packs": [["bone_knight"], ["gargoyle_statue"], ["gargoyle_statue"]]},
+        {"kind": "roam", "count": 3, "packs": [["bone_knight"], ["ghoul", "skeleton_archer"], ["bone_knight", "skeleton_archer"]]}
       ],
       "loot": [
         {"item": "fortress_knight_sword", "count": 1},

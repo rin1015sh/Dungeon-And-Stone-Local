@@ -48,7 +48,7 @@ func _run(db: GameDatabase, rift_id: String, seed_value: int) -> void:
 		var needs_item := not JsonUtil.get_dict(run.chapters()[run.chapter], "exit_requires").is_empty()
 		if not run.is_last_chapter() and not needs_item and not run.remaining.is_empty() and not run._can_leave(cs, true):
 			_bad("%s: 조우가 남았다고 길목이 막힌다(남은 조우 %d)" % [tag, run.remaining.size()])
-		if not _clear(cs, tag):
+		if not _clear(cs, tag) or not _spring(cs, tag):
 			return
 		_pick_loot(cs, tag)
 		_fetch_key(cs, tag)
@@ -98,7 +98,7 @@ func _clear(cs: ExploreSession, tag: String) -> bool:
 	var on_riddle := func(eg: FieldMonsters.Group) -> void: cs.answer_riddle(eg, RiftRiddle.PASS)
 	cs.encounter.connect(on_enc)
 	cs.riddle_asked.connect(on_riddle)
-	while not run.remaining.is_empty() and guard < 20:
+	while not run.remaining.is_empty() and guard < 40:
 		guard += 1
 		var g: FieldMonsters.Group = run.remaining[0]
 		var reached := true
@@ -119,6 +119,24 @@ func _clear(cs: ExploreSession, tag: String) -> bool:
 	if not run.remaining.is_empty():
 		_bad("%s: 걸어가 정리하지 못한 조우가 남았다 %d" % [tag, run.remaining.size()])
 		return false
+	return true
+
+
+## 매복(RiftAmbush)마다 그 칸으로 걸어가 터뜨리고, 나타난 무리 중 하나와 싸우면 모두 사라지는지 본다.
+func _spring(cs: ExploreSession, tag: String) -> bool:
+	for e: Dictionary in cs.ambushes.duplicate():
+		var r := RiftAmbush.trigger_rect(e)
+		_walk(cs, r.position + r.size / 2, tag + " 매복")
+		var n := cs.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "ambush").size()
+		if cs.ambushes.has(e) or n != JsonUtil.get_array(e, "packs").size():
+			_bad("%s: 매복 칸을 지나도 무리가 나타나지 않는다(나타난 무리 %d)" % [tag, n])
+			return false
+		if not _clear(cs, tag + " 매복"):
+			return false
+		if cs.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.tag == "ambush"):
+			_bad("%s: 매복 무리와 싸운 뒤에도 다른 무리가 남았다" % tag)
+			return false
+		print("   %s: 매복 %d무리 — 한 무리와 싸우고 모두 사라짐" % [tag, n])
 	return true
 
 
@@ -181,6 +199,8 @@ func _walk(cs: ExploreSession, cell: Vector2i, label: String) -> bool:
 
 func _walk_inner(cs: ExploreSession, cell: Vector2i, label: String) -> bool:
 	var path := _path(cs, Kinematics.cell_of(cs.fpos), cell)
+	if path.is_empty() and Kinematics.cell_of(cs.fpos) == cell:
+		return true  # 이미 그 칸에 서 있다(앞 전투를 그 자리에서 치렀다)
 	if path.is_empty():
 		_bad("%s: %s에서 %s까지 걸어갈 길이 없다" % [label, Kinematics.cell_of(cs.fpos), cell])
 		return false

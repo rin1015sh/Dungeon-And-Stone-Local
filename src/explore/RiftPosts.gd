@@ -4,22 +4,24 @@ extends RefCounted
 ## 시작 칸·출구·길목·이미 선 무리를 출발점으로 걸음 수 장(BFS)을 만들어, 가장 먼 칸(= 가장 빈 곳)의 balance rift.post_pick_ratio 이상인
 ## 칸 중 하나에 무리를 세운다. 하나 세울 때마다 그 자리를 출발점에 더해 다시 잰다 — 무리가 지도 곳곳에 고르게 퍼진다.
 ## 설계도에 marks.posts가 있으면(2026-10-30 — 그 장소에 있을 이유가 있는 무리, docs/plans/rift_rooms.md) packs[i]를 그 i번째 칸에 세운다.
+## roam(조우 kind "roam", 2026-10-30 RF26)이면 고정 칸을 쓰지 않고 같은 방법으로 빈 곳에 세우되(rift.roam_pick_ratio — 대기 무리보다 가까운 곳도),
+## 순찰하는 무리로 둔다.
 ## 대기 무리(Group.guard)는 순찰하지 않고 제자리에서 둘러보다 알아채면 쫓고, 놓치면 제자리로 돌아온다(MonsterPatrol).
 
 
 ## e = {"count": n, "packs": [구성, …]} — compose(구성) -> 몬스터 id 배열(RiftRun.compose). 세운 무리를 돌려준다.
-static func place(s: ExploreSession, e: Dictionary, compose: Callable, rng: Rng) -> Array[FieldMonsters.Group]:
+static func place(s: ExploreSession, e: Dictionary, compose: Callable, rng: Rng, roam: bool = false) -> Array[FieldMonsters.Group]:
 	var out: Array[FieldMonsters.Group] = []
 	var packs := JsonUtil.get_array(e, "packs")
 	if packs.is_empty():
 		return out
-	var fixed: Array = s.map.anchors.get("posts", [])
+	var fixed: Array = [] if roam else s.map.anchors.get("posts", [])
 	if not fixed.is_empty():
 		for i in mini(fixed.size(), packs.size()):
 			_stand(s, compose.call(packs[i]), fixed[i], out)
 		return out
 	var min_tiles := int(s.db.bal("rift.post_min_tiles", 8))
-	var ratio := float(s.db.bal("rift.post_pick_ratio", 0.75))
+	var ratio := float(s.db.bal("rift.roam_pick_ratio" if roam else "rift.post_pick_ratio", 0.75))
 	var taken: Array[Vector2i] = [s.map.entry]
 	taken.append_array(s.map.slots)
 	for p: Dictionary in s.map.portals:
@@ -43,18 +45,18 @@ static func place(s: ExploreSession, e: Dictionary, compose: Callable, rng: Rng)
 		cands.sort()  # 사전 순서 → 같은 시드면 같은 자리
 		var at: Vector2i = cands[rng.randi_range(0, cands.size() - 1)]
 		var ids: Array = compose.call(packs[rng.randi_range(0, packs.size() - 1)])
-		var g := _stand(s, ids, at, out)
+		var g := _stand(s, ids, at, out, not roam)
 		if g != null:
 			taken.append(g.pos)
 	return out
 
 
-static func _stand(s: ExploreSession, ids: Array, at: Vector2i, out: Array[FieldMonsters.Group]) -> FieldMonsters.Group:
+static func _stand(s: ExploreSession, ids: Array, at: Vector2i, out: Array[FieldMonsters.Group], guard: bool = true) -> FieldMonsters.Group:
 	var g := s.monsters.add_fixed(ids, at)
 	if g == null:
 		return null
-	g.tag = "battle"
-	g.guard = true
+	g.tag = "battle" if guard else "roam"  # roam = 보통 전투(떠도는 무리 — 세는 데만 갈린다)
+	g.guard = guard
 	out.append(g)
 	return g
 

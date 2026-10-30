@@ -502,7 +502,10 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 		var xy := str(_args["near"]).split(",")
 		explore.session.relocate(Vector2i(int(xy[0]), int(xy[1])))
 		for o: FieldMonsters.Group in explore.session.monsters.groups:
-			o.grace_until = explore.session.clock.total_hours + 100.0
+			o.grace_until = explore.session.clock.total_hours + 100.0 if o.tag != "ambush" else -1.0
+		for i in int(str(_args.get("chase", "0"))):  # --chase=N: 매복 무리(RiftAmbush)가 N걸음만큼 쫓아온 뒤
+			explore.session.pass_time(explore.session.move_hours())
+			await _frames(1)
 	elif str(_args.get("near", "")) == "scavenge":  # --near=scavenge: 뒤질 수 있는 장식 옆에 서서 살핀다(RF19 — 잡템 대화창은 --dialog)
 		var es := explore.session
 		var done := false

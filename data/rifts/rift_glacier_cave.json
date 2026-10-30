@@ -166,7 +166,8 @@
             "frost_wolf"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "frost_wolf"], ["frost_wolf", "frost_wolf"]]}
+        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "frost_wolf"], ["frost_wolf", "frost_wolf"]]},
+        {"kind": "roam", "count": 3, "packs": [["frost_wolf", "frost_wolf"]]}
       ],
       "loot": [
         {"item": "glacier_oil_cake", "count": 3},
@@ -300,7 +301,8 @@
             ]
           ]
         },
-        {"kind": "posts", "count": 3, "packs": [["wormstone"], ["frost_wolf", "frost_wolf"], ["sabertooth"]]}
+        {"kind": "posts", "count": 3, "packs": [["wormstone"], ["frost_wolf", "frost_wolf"], ["sabertooth"]]},
+        {"kind": "roam", "count": 2, "packs": [["wormstone"], ["frost_wolf", "frost_wolf"], ["sabertooth"]]}
       ],
       "loot": [
         {"item": "glacier_yeti_salve", "count": 2},
@@ -351,7 +353,8 @@
             "ice_orc_warrior"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["ice_golem"], ["sabertooth"]]}
+        {"kind": "posts", "count": 2, "packs": [["ice_golem"], ["sabertooth"]]},
+        {"kind": "roam", "count": 3, "packs": [["ice_golem"], ["sabertooth"]]}
       ],
       "loot": [
         {"item": "glacier_oil_cake", "count": 2},
@@ -459,7 +462,8 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 4, "packs": [["ice_golem"], ["frost_wolf", "frost_wolf"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
+        {"kind": "posts", "count": 4, "packs": [["ice_golem"], ["frost_wolf", "frost_wolf"], ["owlbear"], ["sabertooth", "frost_wolf"]]},
+        {"kind": "roam", "count": 3, "packs": [["ice_golem"], ["frost_wolf", "frost_wolf"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
       ],
       "loot": [
         {"item": "glacier_frost_herb", "count": 1},

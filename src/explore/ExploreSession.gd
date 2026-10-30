@@ -39,6 +39,7 @@ var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
 var scavenged: Dictionary = {}          ## 뒤진 균열 장식 칸 Vector2i → true(RiftScavenge)
 var loot: Dictionary = {}               ## 균열에 놓인 물건 칸 Vector2i → {item, count}(RiftLoot)
+var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
 var features: FieldFeatures = FieldFeatures.new()  ## 동굴 요소(시체·샘·모닥불·함정 … — data/events, 자리 = map.features)
@@ -511,6 +512,8 @@ func _on_enter_cell(from: Vector2i) -> void:
 		ExploreInteract.portal_here(self, map.portal_at(pos))
 	if rift_run != null:
 		rift_run.hazards.on_step(self, pos)
+		if not ambushes.is_empty():
+			rift_run.remaining.append_array(RiftAmbush.on_step(self, rift_run.compose))
 	features.on_step(self, pos)
 
 

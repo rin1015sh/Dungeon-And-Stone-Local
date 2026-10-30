@@ -136,18 +136,18 @@ func test_chapters_chain_guardian_and_escape() -> void:
 	assert_eq(run.session, cs)
 	assert_eq(_roaming(run).size(), 2, "1챕터 조우 2개")
 	var posts: Dictionary = JsonUtil.get_array(run.chapters()[0], "encounters").filter(func(e: Variant) -> bool: return JsonUtil.get_str(e, "kind") == "posts")[0]
-	assert_eq(run.remaining.size() - 2, JsonUtil.get_int(posts, "count"), "+ 대기 무리(posts — 설계도 고정 자리)")
+	assert_eq(run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.guard).size(), JsonUtil.get_int(posts, "count"), "+ 대기 무리(posts — 설계도 고정 자리)")
+	assert_true(run.remaining.any(func(g: FieldMonsters.Group) -> bool: return g.tag == "roam"), "+ 떠도는 무리(roam)")
 	var skipped := run.use_exit(cs)
 	assert_true(skipped != null and run.chapter == 1, "조우를 남겨도 다음 챕터로 간다(사용자 2026-10-26)")
 	cs = skipped
 	assert_true(cs != null and run.chapter == 1)
-	var bridge: FieldMonsters.Group = run.remaining[0]
-	assert_true(bridge.monster_ids.size() == 8 and bridge.guard and bridge.battle_rules.is_empty(), "도개교 = 다리 위에서 기다리는 데드맨 8(버티기 이벤트 없음)")
-	assert_eq(cs.map.tile_id_at(bridge.pos), "gm_planks", "다리 위")
+	assert_eq(cs.ambushes.size(), 1, "도개교 = 다리 한가운데를 지날 때 양쪽에서 나오는 매복(RF26 — 테스트는 test_rift_ambush)")
+	assert_false(run.remaining.any(func(g: FieldMonsters.Group) -> bool: return cs.map.tile_id_at(g.pos) == "gm_planks"), "다리 위에 기다리는 무리 없음")
 	_win_all(run)
 	cs = run.use_exit(cs)
 	assert_eq(_roaming(run).size(), 3, "외성벽 시가지 세 무리 — 연전이 아니라 따로 돌아다닌다")
-	assert_true(run.remaining.all(func(g: FieldMonsters.Group) -> bool: return g.waves.is_empty() and g.tag == "battle"), "무리마다 한 번 싸움")
+	assert_true(run.remaining.all(func(g: FieldMonsters.Group) -> bool: return g.waves.is_empty() and g.tag in ["battle", "roam"]), "무리마다 한 번 싸움")
 	var first: FieldMonsters.Group = run.remaining[0]
 	var before := run.remaining.size()
 	run.on_battle_end(cs, first, Battle.RESULT_VICTORY)
@@ -242,7 +242,7 @@ func test_field_effect_and_on_enter() -> void:
 
 ## 대기 무리(posts)가 아닌 조우 무리.
 func _roaming(run: RiftRun) -> Array:
-	return run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return not g.guard or g.monster_ids.size() == 8)
+	return run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return not g.guard and g.tag != "roam")  # 조우 자리의 무리(대기·떠도는 무리 빼고)
 
 
 ## 대기 무리(RF22): 모든 챕터에서 시작·출구·조우 자리와 떨어져 서로 흩어져 서고, 순찰하지 않는다.

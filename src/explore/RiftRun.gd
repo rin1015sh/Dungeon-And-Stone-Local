@@ -11,6 +11,8 @@ extends RefCounted
 ##   {"kind": "guardian", "with": [..]}                          수호자(5% 미만 확률로 변종 수호자 — variant.chance)
 ##   {"kind": "posts", "count": n, "packs": [구성, …]}            대기 무리 n개 — 지도의 빈 곳(시작·출구·다른 조우에서 가장 먼 칸)에
 ##                                                                  구성 하나씩 골라 세운다. 순찰하지 않고 서서 둘러본다(RiftPosts — 조우 자리를 쓰지 않는다)
+##   {"kind": "roam", "count": n, "packs": [구성, …]}             떠도는 무리 n개 — posts처럼 빈 곳에 세우되 순찰한다(사용자 2026-10-30 "균열 몬스터 빈도 늘려", RF26)
+##   {"kind": "ambush", "trigger": [x, y, w, h], "packs": [..], "from": [[x, y], ..]}  매복 — 그 칸에 들어서면 나타나 쫓는다(RiftAmbush)
 ##   구성 = 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}(무작위)
 ## 조우를 다 치우지 않아도 길목으로 다음 챕터에 갈 수 있다(사용자 2026-10-26). 마지막 챕터에는 처음엔 출구가 없고,
 ## 수호자를 쓰러뜨리면 그 자리에 바깥으로 돌아가는 탈출 포탈(rift_exit)이 생긴다(_open_escape).
@@ -100,14 +102,19 @@ func build_chapter(i: int) -> ExploreSession:
 	cs.start()
 	remaining.clear()
 	var encs := JsonUtil.get_array(ch, "encounters")
-	var posts: Array = []
+	var later := {"posts": [], "roam": []}
 	for k in encs.size():
-		if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") == "posts":
-			posts.append(encs[k])  # 다른 조우를 다 세운 뒤 빈 곳에
+		var kind := JsonUtil.get_str(encs[k], "kind") if encs[k] is Dictionary else ""
+		if later.has(kind):
+			later[kind].append(encs[k])  # 다른 조우를 다 세운 뒤 빈 곳에(대기 무리 다음 떠도는 무리)
 			continue
-		remaining.append_array(_place(cs, encs[k], map.slots[mini(k, map.slots.size() - 1)] if encs[k] is Dictionary and JsonUtil.get_str(encs[k], "kind") != "guardian" else map.slots[-1]))
-	for e: Dictionary in posts:
-		remaining.append_array(RiftPosts.place(cs, e, compose, outer.rng))
+		if kind == "ambush":
+			cs.ambushes.append(encs[k])  # 그 칸에 들어설 때 나타난다
+			continue
+		remaining.append_array(_place(cs, encs[k], map.slots[mini(k, map.slots.size() - 1)] if kind != "guardian" else map.slots[-1]))
+	for kind: String in ["posts", "roam"]:
+		for e: Dictionary in later[kind]:
+			remaining.append_array(RiftPosts.place(cs, e, compose, outer.rng, kind == "roam"))
 	_apply_field_effects()
 	hidden.place(cs, ch, outer.rng, i)
 	RiftLoot.place(cs, ch)
@@ -163,6 +170,9 @@ func chapter_floor_def(i: int) -> Dictionary:
 func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String, killed: Array[String] = []) -> bool:
 	if not remaining.has(g):
 		return false
+	if g.tag == "ambush":
+		RiftAmbush.clear(s, remaining)  # 매복 무리 하나와 싸웠다 — 이기든 도망치든 모두 사라진다
+		return true
 	if g.tag == "guardian" and not guardian_down and killed.has(guardian_id()):
 		guardian_down = true
 		_guardian_drops(s)
@@ -318,6 +328,7 @@ func finish() -> void:
 ## 디버그: 이 챕터의 조우를 모두 치운 것으로 한다(마지막 챕터면 수호자도).
 func debug_clear() -> void:
 	var cs := session
+	cs.ambushes.clear()
 	for g: FieldMonsters.Group in remaining:
 		cs.monsters.groups.erase(g)
 		if g.tag == "guardian":
@@ -346,7 +357,7 @@ func _place(s: ExploreSession, enc: Variant, cell: Vector2i) -> Array[FieldMonst
 	if g == null:
 		return out
 	g.tag = "riddle" if JsonUtil.get_bool(e, "riddle") else kind
-	g.guard = JsonUtil.get_bool(e, "guard")  # 그 자리를 지킨다(도개교 위 데드맨 무리)
+	g.guard = JsonUtil.get_bool(e, "guard")  # 그 자리를 지킨다
 	if kind == "waves":
 		g.battle_rules = {"survive_rounds": JsonUtil.get_int(e, "survive_rounds", 6), "reinforce": JsonUtil.get_dict(e, "reinforce")}
 	out.append(g)

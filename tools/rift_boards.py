@@ -5,7 +5,8 @@
 점: 노란 점 = 빛 나는 소품, 흰 점 = 살필 수 있는 잡템(scavenge).
 표시: 초록 = 시작·입구, 하늘 = 출구(마지막 챕터는 수호자 자리에 탈출 포탈), 빨강 = 조우(보라 = 수호자·중간 보스),
 노랑 = 히든 피스, 주황 = 함정·위험, 분홍 = 대기 무리(marks.posts 고정 자리), 초록 네모 = 바닥에 놓인 물건(loot — RiftLoot).
-고정 자리가 없는 대기 무리(posts)는 맨 위 줄에 수만 적는다.
+고정 자리가 없는 대기 무리(posts)·떠도는 무리(roam — 빈 곳 무작위)는 맨 위 줄에 수만 적는다.
+매복(ambush): 빨간 테두리 = 들어서면 터지는 칸, 빨간 점 = 무리가 나타나는 칸.
 """
 import glob
 import json
@@ -131,7 +132,7 @@ def board(rift, ch_index, tiles, monsters, items, cell):
     if "entry" in marks:
         dot(marks["entry"], (110, 220, 110))
         tags.append((marks["entry"], "시작" if ch_index == 0 else "입구(앞 챕터에서)", (130, 235, 130)))
-    encs = [e for e in ch.get("encounters", []) if e.get("kind") != "posts"]
+    encs = [e for e in ch.get("encounters", []) if e.get("kind") not in ("posts", "roam", "ambush")]
     encs.sort(key=lambda e: e.get("kind") == "guardian")
     guardian_at = None
     for p, e in zip(marks.get("slots", []), encs):
@@ -160,6 +161,17 @@ def board(rift, ch_index, tiles, monsters, items, cell):
     for p, pk in zip(marks.get("posts", []), next((e.get("packs", []) for e in ch.get("encounters", []) if e.get("kind") == "posts"), [])):
         dot(p, (240, 120, 170), 6)
         tags.append((p, encounter_label({"monsters": pk}, monsters, "")[0], (245, 150, 190)))
+    for e in ch.get("encounters", []):
+        if e.get("kind") != "ambush":
+            continue
+        x, y, rw, rh = e["trigger"]
+        x0, y0 = at([x, y])
+        x1, y1 = at([x + rw - 1, y + rh - 1])
+        d.rectangle([x0 - cell // 2, y0 - cell // 2, x1 + cell // 2, y1 + cell // 2], outline=(240, 60, 50), width=3)
+        tags.append(([x + rw // 2, y + rh], "매복 — 지나면 양쪽에서", (245, 110, 100)))
+        for fp, pk in zip(e.get("from", []), e.get("packs", [])):
+            dot(fp, (230, 70, 60), 7)
+            tags.append((fp, encounter_label({"monsters": pk}, monsters, "")[0], (245, 110, 100)))
     for p, lt in zip(marks.get("loot", []), ch.get("loot", [])):
         cx, cy = at(p)
         d.rectangle([cx - 5, cy - 5, cx + 5, cy + 5], fill=(120, 230, 140), outline=(0, 0, 0), width=2)
@@ -184,6 +196,9 @@ def board(rift, ch_index, tiles, monsters, items, cell):
     extra = []
     if posts and not marks.get("posts"):
         extra.append("대기 무리 %d" % posts[0].get("count", 0))
+    roam = sum(e.get("count", 0) for e in ch.get("encounters", []) if e.get("kind") == "roam")
+    if roam:
+        extra.append("떠도는 무리 %d" % roam)
     if ch.get("field_effects"):
         extra.append("필드: 저체온증")
     if ch.get("on_enter"):

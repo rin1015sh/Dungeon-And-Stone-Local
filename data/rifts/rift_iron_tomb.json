@@ -141,7 +141,8 @@
             "mummy"
           ]
         },
-        {"kind": "posts", "count": 1, "packs": [["mummy", "mummy"]]}
+        {"kind": "posts", "count": 1, "packs": [["mummy", "mummy"]]},
+        {"kind": "roam", "count": 3, "packs": [["mummy", "mummy"], ["mummy", "buried_one"]]}
       ],
       "loot": [
         {"item": "tomb_lamp_oil", "count": 1},
@@ -266,7 +267,8 @@
             "iron_cavalry"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["guardian_eye"]]}
+        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["guardian_eye"]]},
+        {"kind": "roam", "count": 3, "packs": [["mummy", "mummy"], ["mummy", "buried_one"]]}
       ],
       "loot": [
         {"item": "tomb_mask_shard", "count": 1},
@@ -363,7 +365,8 @@
           ],
           "riddle": true
         },
-        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["iron_lizardman"]]}
+        {"kind": "posts", "count": 2, "packs": [["mummy", "mummy"], ["iron_lizardman"]]},
+        {"kind": "roam", "count": 3, "packs": [["mummy", "mummy"], ["iron_lizardman"]]}
       ],
       "loot": [
         {"item": "tomb_incense", "count": 1},
@@ -459,7 +462,8 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 4, "packs": [["mummy", "mummy"], ["iron_cavalry"], ["guardian_eye", "mummy"], ["buried_one", "mummy"]]}
+        {"kind": "posts", "count": 4, "packs": [["mummy", "mummy"], ["iron_cavalry"], ["guardian_eye", "mummy"], ["buried_one", "mummy"]]},
+        {"kind": "roam", "count": 3, "packs": [["mummy", "mummy"], ["iron_cavalry"], ["buried_one", "mummy"]]}
       ],
       "loot": [
         {"item": "tomb_ritual_amulet", "count": 1},
