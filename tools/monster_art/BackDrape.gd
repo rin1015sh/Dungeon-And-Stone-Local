@@ -4,7 +4,7 @@ extends RefCounted
 ## 엉덩이 골·다리 사이로 파고들지 않게)으로 빚는다. 앞은 목 아래에서 단으로 갈수록 벌어지게 트여(몸 둘레 각도로 — 어느 쪽에서 봐도 맞는 자리) 옷이 보인다.
 ## 몸틀(어깨선에서 잰 몸의 오른쪽 rv · 등 쪽 bv)을 따른다 — 전투 동작은 카메라가 아니라 관절을 돌려 몸을 튼다(PartyMotion). 몸 좌표 축에 박아 두면
 ## 활 쏘는 칸에서 등 자락이 카메라를 향한 판처럼 옆구리를 다 가렸다(사용자 2026-10-29 "옆모습 망토가 어색 — 몸이 조금 드러나게").
-##   cloak {c, len(0 = 엉덩이 ~ 1 = 발목), flare(단 폭), open(앞 트임 배율), clasp(목 여밈 쇠 색), collar(젖힌 두건), fur}
+##   cloak {c, len(0 = 엉덩이 ~ 1 = 발목), flare(단 폭), open(앞 트임 배율), open_top(목 아래 트임 반각 — 없으면 OPEN_TOP), clasp(목 여밈 쇠 색), collar(젖힌 두건), fur}
 ##   under = 안에 입은 겹 두께 · belt = 겉허리띠(BackCloak이 누빔·사슬·외투·겉허리띠를 보고 채운다)
 ## 옛 원뿔 망토는 cloak에 cone: true(BackCloak._cloak).
 
@@ -66,7 +66,7 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 	var pieces: Array = [band]
 	var open := float(d.get("open", 1.0))
 	if open > 0.0:
-		for hole: PackedVector2Array in _opening(cl, pr, j, f, bw, nk.y + 0.012, hem + 0.06, open):
+		for hole: PackedVector2Array in _opening(cl, pr, j, f, bw, nk.y + 0.012, hem + 0.06, open, float(d.get("open_top", OPEN_TOP))):
 			var next: Array = []
 			for p: PackedVector2Array in pieces:
 				for q: PackedVector2Array in Geometry2D.clip_polygons(p, hole):
@@ -162,7 +162,7 @@ static func _area(poly: PackedVector2Array) -> float:
 ## 앞 트임 화면 다각형들: 몸 둘레(몸틀 타원)에서 앞 가운데 ±반각(위 → 아래로 벌어짐)을 왼쪽 반·오른쪽 반 따로, 보는 사람 쪽 부분만
 ## 높이마다 화면 왼쪽·오른쪽 끝을 찍는다(반쪽마다 따로 — 한꺼번에 재면 반각이 옆구리를 넘을 때 등 쪽 양 끝이 함께 보여 망토 전체가 잘렸다).
 ## 위·아래로는 화면 끝까지 늘려(band에서 구멍이 아니라 조각이 남게) 돌려준다. 보이는 앞면이 없으면(뒷모습) 빈 배열.
-static func _opening(cl: Clay, pr: Dictionary, j: Dictionary, f: Dictionary, bw: float, v0: float, v1: float, open: float) -> Array:
+static func _opening(cl: Clay, pr: Dictionary, j: Dictionary, f: Dictionary, bw: float, v0: float, v1: float, open: float, open_top: float = OPEN_TOP) -> Array:
 	var shw: float = f["shw"]
 	var rv: Vector3 = f["rv"]
 	var bv: Vector3 = f["bv"]
@@ -175,7 +175,7 @@ static func _opening(cl: Clay, pr: Dictionary, j: Dictionary, f: Dictionary, bw:
 		for r in rows + 1:
 			var t := r / float(rows)
 			var v := lerpf(v0, v1, t)
-			var a := lerpf(OPEN_TOP, OPEN_BOT * open, pow(t, 0.8))
+			var a := lerpf(open_top, OPEN_BOT * open, pow(t, 0.8))
 			var hip := clampf((v - (pv.y - 0.15)) / 0.15, 0.0, 1.0)  # 가슴 → 엉덩이 둘레
 			var ru := lerpf(shw + 0.06, 0.15, hip)
 			var rw := lerpf(bw + 0.05, 0.12, hip)
