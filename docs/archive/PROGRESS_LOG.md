@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **인간 회피 거북목·망토 붕 뜸 (2026-10-30, 사용자)** — AM55. `wait@human`(목·어깨·팔 x를 골반 위로, 머리 곧게), BackDrape 무릎·단 뒤로 빠짐·깊이 줄임. 인간 동작·뒷모습·맵 몸 다시 그림, 전후 `docs/screens/human_evade_fix.png`. 바바리안 회피는 원래 칸 그대로.
+
 - **회피 원래대로 · 주문 첫 칸 왼팔 (2026-10-30, 사용자)** — AM54. party_motions wait = f942dae 이전 칸, spell 0칸 EL·HL·`d` = 주먹·칼 첫 칸과 같게. 두 종족 동작 시트 다시 그림, 확인 그림 `docs/screens/spell_evade.png`(주문 1칸 · 회피 3칸).
 
 - **망토 어깨 경계·공격 첫 칸 왼팔·회피 동작 새로 (2026-10-30, 사용자)** — AM53. 망토 겉감 0.032 + 등 자락 어깨 마디 좁게(둥근 판 안 보임) · party_motions thrust·swing 0칸 왼팔 앞으로(`d` EL·HL "a"는 팔꿈치까지 하면 너무 앞이라 HL만 + 주먹 낮춤) · wait(회피) 3칸 새로 잼(왼쪽으로 낮게 비켜서며 두 주먹 막기, 두 종족 같은 칸 — `pinned/human_back_wait.png` 지움, `paint_motions._pin`은 남김) · 몸을 옮긴 칸에서 쉰 자세 x에 박혀 떠 보이던 장식 고침(Back.body 등 결·척추 골, BackKit 조끼 솔기·털 망토(`hem_poly` center)·어깨 망토 주름, BackSavage 띠 치마·멜빵·목걸이, BackHair 타래·땋은 머리, BackDrape 단 범위). 다시 그림: 두 종족 동작 시트·뒷모습·맵 몸. 전후 `docs/screens/human_motions_fix.png`(대기·주먹·칼·회피 3칸), 바바리안 회피 `docs/screens/barbarian_evade.png`.
