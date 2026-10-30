@@ -33,7 +33,8 @@ static func shell(cl: Clay, pr: Dictionary, tags: Array, grow: float, m: int, g:
 
 ## 몸통을 두른 옷 단: 몸통 둘레(타원 ru·rw)에서 보이는 쪽 반 바퀴를 돌며 단 높이 hem(φ)(φ = π/2가 등 가운데)을 찍고
 ## 위쪽(top_v)까지 닫은 다각형. 뒷모습·옆모습 어느 쪽이든 단이 몸을 따라 휜다.
-static func hem_poly(pr: Dictionary, top_v: float, ru: float, rw: float, hem: Callable) -> PackedVector2Array:
+## center = 몸통 둘레의 가운데(pr 좌표 — 몸을 옆으로 옮긴 동작 칸에서 단이 몸을 따라가게, AM53).
+static func hem_poly(pr: Dictionary, top_v: float, ru: float, rw: float, hem: Callable, center: Vector3 = Vector3.ZERO) -> PackedVector2Array:
 	var turn: float = pr["turn"]
 	var pts := PackedVector2Array()
 	var a0 := -turn - 0.35
@@ -43,7 +44,7 @@ static func hem_poly(pr: Dictionary, top_v: float, ru: float, rw: float, hem: Ca
 	for i in 25:
 		var phi := lerpf(a0, a1, i / 24.0)
 		var v: float = hem.call(phi)
-		pts.append(Back.P2(flat, Vector3(cos(phi) * ru, v, sin(phi) * rw)))
+		pts.append(Back.P2(flat, Vector3(center.x + cos(phi) * ru, v, center.z + sin(phi) * rw)))
 	var H: float = pr["H"]
 	var oy: float = pr["oy"]
 	var dir := signf(pts[0].x - pts[pts.size() - 1].x)
@@ -103,10 +104,12 @@ static func dress(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: 
 		var m := cl.mat(kit["vest"], "leather")
 		var g := cl.group()
 		shell(cl, pr, ["torso", "pelvis"], 0.016, m, g, band(cl, pr, nk.y + 0.015, pv.y - 0.025), 0.02, 0.002)
-		Back.groove(cl, pr, g, [Vector3(0, nk.y + 0.03, bw + 0.02), Vector3(0, pv.y - 0.03, 0.08)], B, 0.004, 0.007)  # 등 솔기
+		# 솔기·단은 지금 자리의 목·골반을 따른다(쉰 자세 x에 두면 몸을 옆으로 옮긴 회피 칸에서 몸 밖에 막대처럼 떠 보였다 — AM53)
+		var po := Vector3(pv.x, 0, pv.z)
+		Back.groove(cl, pr, g, [Vector3(nk.x, nk.y + 0.03, bw + 0.02), po + Vector3(0, pv.y - 0.03, 0.08)], B, 0.004, 0.007)  # 등 솔기
 		for s: int in [-1, 1]:
-			Back.groove(cl, pr, g, [Vector3(s * 0.065, nk.y + 0.04, bw + 0.015), Vector3(s * 0.06, pv.y - 0.03, 0.075)], B, 0.003, 0.004)
-		Back.ridge(cl, pr, g, [Vector3(-0.13, pv.y - 0.03, 0.03), Vector3(0, pv.y - 0.03, 0.08), Vector3(0.13, pv.y - 0.03, 0.03)], B, 0.005, 0.003, m)
+			Back.groove(cl, pr, g, [Vector3(nk.x + s * 0.065, nk.y + 0.04, bw + 0.015), po + Vector3(s * 0.06, pv.y - 0.03, 0.075)], B, 0.003, 0.004)
+		Back.ridge(cl, pr, g, [po + Vector3(-0.13, pv.y - 0.03, 0.03), po + Vector3(0, pv.y - 0.03, 0.08), po + Vector3(0.13, pv.y - 0.03, 0.03)], B, 0.005, 0.003, m)
 	if kit.has("bracers"):
 		var m := cl.mat(kit["bracers"], "leather")
 		var g := cl.group()
@@ -196,16 +199,16 @@ static func _mantle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col
 	var nk: Vector3 = j["neck"]
 	var ch: Vector3 = j["chest"]
 	var bw: float = bd["back_w"]
-	var shw := absf(j["shoulder_r"].x)
+	var shw := absf((j["shoulder_r"] as Vector3).x - (j["shoulder_l"] as Vector3).x) * 0.5
 	var jag: Array = []
 	for i in 40:
 		jag.append(rng.randf_range(-0.006, 0.006))
 	var hem := func(phi: float) -> float: return ch.y + 0.035 - 0.085 * pow(absf(cos(phi)), 1.4) + float(jag[int(absf(phi) * 7.0) % 40])
 	var tags := ["torso", "shoulder_l", "shoulder_r"] if j.get("map_face", false) else ["torso", "shoulder_l", "shoulder_r", "neck"]  # 맵 몸: 큰 머리 밑 목까지 덮으면 앞모습에서 턱수염처럼 보인다
-	shell(cl, pr, tags, 0.016, m, g, hem_poly(pr, nk.y - 0.012, shw * 1.3, bw + 0.03, hem), 0.04, 0.003)
+	shell(cl, pr, tags, 0.016, m, g, hem_poly(pr, nk.y - 0.012, shw * 1.3, bw + 0.03, hem, Vector3(ch.x, 0, ch.z)), 0.04, 0.003)
 	for s: int in [-1, 1]:  # 어깨에서 흘러내리는 주름
 		for k in 3:
-			var a := Vector3(s * (0.03 + k * 0.04), nk.y + 0.02, bw + 0.02)
+			var a := Vector3(nk.x + s * (0.03 + k * 0.04), nk.y + 0.02, bw + 0.02)
 			Back.groove(cl, pr, g, [a, a + Vector3(s * 0.02, 0.05, 0.0), a + Vector3(s * 0.03, 0.1, -0.01)], Vector3(s * 0.4, 0, 1), 0.006, 0.01)
 	# 목 뒤로 젖혀 늘어진 두건(끝이 뾰족한 천 자루)
 	var hg := cl.group()
@@ -228,12 +231,13 @@ static func _pelt(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col: 
 	var nk: Vector3 = j["neck"]
 	var ch: Vector3 = j["chest"]
 	var bw: float = bd["back_w"]
-	var shw := absf(j["shoulder_r"].x)
+	var shw := absf((j["shoulder_r"] as Vector3).x - (j["shoulder_l"] as Vector3).x) * 0.5
 	var jag: Array = []
 	for i in 40:
 		jag.append(rng.randf_range(-0.022, 0.018))
 	var hem := func(phi: float) -> float: return ch.y + 0.03 - 0.13 * pow(absf(cos(phi)), 1.2) + float(jag[int(absf(phi) * 9.0) % 40])
-	shell(cl, pr, ["torso", "shoulder_l", "shoulder_r", "neck"], 0.03, m, g, hem_poly(pr, nk.y - 0.03, shw * 1.35, bw + 0.035, hem), 0.03, 0.006)
-	for k in 10:  # 털 결(어깨에서 아래로 처진 골)
-		var q := Vector3(rng.randf_range(-0.15, 0.15), rng.randf_range(nk.y, ch.y - 0.08), bw + 0.035)
-		Back.groove(cl, pr, g, [q, q + Vector3(q.x * 0.15, 0.06, 0.0)], Vector3(q.x * 4.0, 0, 1), 0.008, 0.01)
+	shell(cl, pr, ["torso", "shoulder_l", "shoulder_r", "neck"], 0.03, m, g, hem_poly(pr, nk.y - 0.03, shw * 1.35, bw + 0.035, hem, Vector3(ch.x, 0, ch.z)), 0.03, 0.006)
+	for k in 10:  # 털 결(어깨에서 아래로 처진 골 — 지금 자리의 가슴을 따른다: 쉰 자세 x면 몸을 옮긴 칸에서 몸 밖에 점처럼 떠 보였다, AM53)
+		var q := Vector3(ch.x + rng.randf_range(-0.15, 0.15), rng.randf_range(nk.y, ch.y - 0.08), bw + 0.035)
+		var qx := q.x - ch.x
+		Back.groove(cl, pr, g, [q, q + Vector3(qx * 0.15, 0.06, 0.0)], Vector3(qx * 4.0, 0, 1), 0.008, 0.01)

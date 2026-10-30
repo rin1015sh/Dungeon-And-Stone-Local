@@ -12,7 +12,7 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
 
-const GROW := 0.024        ## 몸 위로 부풀리는 두께(외투 0.02보다 조금 두껍게)
+const GROW := 0.032        ## 몸 위로 부풀리는 두께(외투 0.02보다 두껍게 — 등 자락 윗부분이 이 겹 아래에 묻혀 어깨~등이 한 장으로 보이고, 안의 조끼가 비치지 않게)
 const OPEN_TOP := 0.7      ## 목 아래 앞 트임 반각(라디안 — 0 = 가운데 한 줄) — 0.32는 옆모습에서 몸을 다 가렸다(사용자 2026-10-29 "조금 드러나게")
 const OPEN_BOT := 1.65     ## 단의 앞 트임 반각(open 배율을 곱한다) — 0.95 → 1.65(옆구리 조금 너머): 망토는 등과 옆구리 뒤쪽을 덮고, 옆에서 보면 옆구리·다리가 드러난다
 
@@ -61,7 +61,8 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 		jag.append(rng.randf_range(-0.008, 0.008))
 	# 단: 몸 둘레를 따라 휘고 등 가운데가 앞 자락보다 길게 처진다(곧은 가로 단은 옆모습에서 통처럼 뻣뻣해 보였다)
 	var hem_at := func(phi: float) -> float: return hem + 0.022 * sin(phi) + float(jag[int(absf(phi) * 5.0) % 24])
-	var band := BackKit.hem_poly(f["pr2"], nk.y - 0.2, shw * flare + 0.1, bw + 0.16, hem_at)  # 단의 해진 자국은 jag로(지운 구멍은 단 위에 검은 점으로 보였다)
+	var body_mid := (nk + pv) * 0.5  # 몸통 가운데를 몸틀 좌표로(몸을 옆으로 옮긴 칸에서 자락 범위가 몸을 따라가게)
+	var band := BackKit.hem_poly(f["pr2"], nk.y - 0.2, shw * flare + 0.1, bw + 0.16, hem_at, Vector3(body_mid.x * rv.x + body_mid.z * rv.z, 0, body_mid.x * bv.x + body_mid.z * bv.z))  # 단의 해진 자국은 jag로(지운 구멍은 단 위에 검은 점으로 보였다)
 	var pieces: Array = [band]
 	var open := float(d.get("open", 1.0))
 	if open > 0.0:
@@ -82,8 +83,8 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 	# 등 자락 사슬: 열쇠 높이(어깨·가슴·골반·무릎·단)의 폭 us·깊이 ws를 촘촘한 마디로 고르게 잇는다 — 마디가 성기면 이음매 구(캡슐 끝)가
 	# 위 마디보다 깊어 등 한복판에 둥근 혹이 솟았다(사용자 2026-10-30, AM52). 위쪽은 몸 겹 안에 묻히게 얇게(어깨~가슴은 몸틀 그대로).
 	var keys: Array = [
-		[sy + 0.01, z0, shw * 0.75, bw * 0.55 + under],
-		[ch.y, z0, shw + 0.03, bw * 0.62 + 0.03 + under],
+		[sy + 0.01, z0, shw * 0.6, bw * 0.2 + under],
+		[ch.y, z0, shw * 0.9, bw * 0.4 + under],
 		[pv.y, z0 + 0.014, shw * flare + 0.035, bw * 0.62 + 0.042 + under + belt],
 		[knee, z0 + 0.04, shw * flare + 0.05, bw * 0.5 + 0.03 + under + belt * 0.5],
 		[hem, z0 + 0.07, shw * flare + 0.075, bw * 0.4 + 0.022 + under]]

@@ -158,7 +158,7 @@ static func _long(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: D
 	for k in 6:
 		var lo := lerpf(-0.8, 0.8, (k + rng.randf_range(0.2, 0.8)) / 6.0)
 		var a := Back.on_head(hd, rng.randf_range(-0.35, 0.1), lo, 0.004)
-		var b := Vector3(a.x * 1.2 + rng.randf_range(-0.01, 0.01), nk.y + ln * rng.randf_range(0.7, 1.0), bw + float(sp.get("hair_over", 0.016)))
+		var b := Vector3(nk.x + (a.x - nk.x) * 1.2 + rng.randf_range(-0.01, 0.01), nk.y + ln * rng.randf_range(0.7, 1.0), bw + float(sp.get("hair_over", 0.016)))
 		var mid := a.lerp(b, 0.45) + Vector3(0, 0, 0.012)
 		Back.chain(cl, pr, g, [a, mid, b], [0.02, 0.016, 0.005], m, 0.008)
 		Back.groove(cl, pr, g, [a.lerp(mid, 0.3), mid, b.lerp(mid, 0.2)], B, 0.0035, 0.005)
@@ -168,7 +168,7 @@ static func _long(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: D
 		var a := Back.on_head(hd, -0.25, s * 1.15, 0.006)
 		var pts: Array = []
 		for t in 9:
-			var q := a.lerp(Vector3(s * 0.07, nk.y + ln * 1.15, bw + float(sp.get("hair_over", 0.016)) + 0.01), t / 8.0)
+			var q := a.lerp(Vector3(nk.x + s * 0.07, nk.y + ln * 1.15, bw + float(sp.get("hair_over", 0.016)) + 0.01), t / 8.0)
 			pts.append(q + Vector3(s * sin(t * 0.7) * 0.006, 0, 0.004))
 		for t in pts.size():
 			Back.ell(cl, pr, g, pts[t] + Vector3(0.004 * (1 if t % 2 == 0 else -1), 0, 0), 0.012, 0.013, 0.011, m, 0.004)

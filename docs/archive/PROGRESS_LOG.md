@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **망토 어깨 경계·공격 첫 칸 왼팔·회피 동작 새로 (2026-10-30, 사용자)** — AM53. 망토 겉감 0.032 + 등 자락 어깨 마디 좁게(둥근 판 안 보임) · party_motions thrust·swing 0칸 왼팔 앞으로(`d` EL·HL "a"는 팔꿈치까지 하면 너무 앞이라 HL만 + 주먹 낮춤) · wait(회피) 3칸 새로 잼(왼쪽으로 낮게 비켜서며 두 주먹 막기, 두 종족 같은 칸 — `pinned/human_back_wait.png` 지움, `paint_motions._pin`은 남김) · 몸을 옮긴 칸에서 쉰 자세 x에 박혀 떠 보이던 장식 고침(Back.body 등 결·척추 골, BackKit 조끼 솔기·털 망토(`hem_poly` center)·어깨 망토 주름, BackSavage 띠 치마·멜빵·목걸이, BackHair 타래·땋은 머리, BackDrape 단 범위). 다시 그림: 두 종족 동작 시트·뒷모습·맵 몸. 전후 `docs/screens/human_motions_fix.png`(대기·주먹·칼·회피 3칸), 바바리안 회피 `docs/screens/barbarian_evade.png`.
+
 - **인간 망토 목 둘레·등 혹 (2026-10-30, 사용자)** — AM52. `BackDrape.drape`: 겉감 부위에서 `neck` 뺌 · collar 말이 낮고 가늘게 · 등 자락 사슬을 열쇠 높이 5개 → 13마디로 부드럽게(이음매 구가 혹으로 솟던 것), 어깨 쪽 폭 shw → shw × 0.75. 조끼가 비쳐 보이지 않게 가슴 깊이는 그대로 덮는다. 고정한 돌아선 자세 줄(`pinned/human_back_wait.png`)은 d9fa108 worktree에 같은 수정을 넣어 다시 그림. 다시 그림: 동작 시트·전투 뒷모습·맵 몸. 전후 `docs/screens/human_cloak_back.png`(대기·전투 자세·칼 휘두르기·활). 마지막 줄(돌아선 자세 `wait`)은 회피 동작 — 적 공격을 피하면(CombatScreen `"wait" if not hit`) 몸을 틀어 피하는 3칸.
 
 - **인간 탐험가 망토 밑단을 종아리로 (2026-10-29, 사용자 "캐릭터 전체가 아니라 망토 끝자락 단을 올려")** — AM51. 앞서 전투 화면 캐릭터를 통째로 올린 커밋(UI43)은 되돌림. h6 순찰자 `cloak.len` 0.72 → 0.55, 다시 그림: `paint_monsters --only=human_back`·`paint_motions --only=human_back`·`paint_actors --only=human`. 고정한 돌아선 자세 줄은 d9fa108 worktree(0.72로 고정 그림과 같은 것 확인)에서 0.55로 다시 그려 `tools/monster_art/pinned/human_back_wait.png`에 덮음. 전후 `docs/screens/human_cloak_calf.png`(왼쪽 = 뒷모습 그림 전·후, 오른쪽 = 전투 화면).

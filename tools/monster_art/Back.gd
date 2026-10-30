@@ -277,7 +277,7 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	var wa: Vector3 = j["waist"]
 	var ch: Vector3 = j["chest"]
 	var nk: Vector3 = j["neck"]
-	var shw := absf(j["shoulder_r"].x)
+	var shw := absf((j["shoulder_r"] as Vector3).x - (j["shoulder_l"] as Vector3).x) * 0.5  # 어깨 반폭(몸을 옆으로 옮긴 칸에서도 — 오른 어깨 x만 재면 한쪽이 부풀었다)
 	out["back_w"] = ch.z + 0.066 * dep  # 등 표면(가슴 높이)
 	# 다리(몸통과 녹여 붙인다)
 	for s: int in [-1, 1]:
@@ -324,15 +324,15 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	# 등 근육 · 뼈 결(옷 겹이 덮도록 몸통 부위로 기록)
 	cl.tag = "torso"
 	var bw: float = out["back_w"]
-	for s: int in [-1, 1]:
-		var sc := Vector3(s * shw * 0.42, ch.y - 0.035, bw)
+	for s: int in [-1, 1]:  # 등 결은 지금 자리의 가슴·허리·골반을 따른다(쉰 자세 x에 두면 몸을 옆으로 옮긴 회피 칸에서 몸 밖에 떠 보였다 — AM53)
+		var sc := Vector3(ch.x + s * shw * 0.42, ch.y - 0.035, bw)
 		bump(cl, pr, g, sc, B, 0.036, 0.05, 0.012 if thin else 0.007, skin, -s * 0.15)  # 견갑골
 		groove(cl, pr, g, [sc + Vector3(-s * 0.03, -0.04, 0), sc + Vector3(-s * 0.036, 0.0, 0), sc + Vector3(-s * 0.02, 0.05, 0)], B, 0.006, 0.007)
-		groove(cl, pr, g, [Vector3(s * shw * 0.7, ch.y - 0.02, bw - 0.01), Vector3(s * shw * 0.6, wa.y - 0.02, bw - 0.012), Vector3(s * 0.06, wa.y + 0.05, bw - 0.02)], Vector3(s * 0.5, 0, 1), 0.006, 0.006 if big else 0.004)  # 광배근 아래 골
+		groove(cl, pr, g, [Vector3(ch.x + s * shw * 0.7, ch.y - 0.02, bw - 0.01), Vector3(wa.x + s * shw * 0.6, wa.y - 0.02, bw - 0.012), Vector3(wa.x + s * 0.06, wa.y + 0.05, bw - 0.02)], Vector3(s * 0.5, 0, 1), 0.006, 0.006 if big else 0.004)  # 광배근 아래 골
 		if not thin:
-			bump(cl, pr, g, Vector3(s * 0.024, wa.y + 0.01, ch.z + 0.056 * dep), B, 0.02, 0.07, 0.006, skin)  # 척추세움근
-	groove(cl, pr, g, [Vector3(0, nk.y + 0.03, bw - 0.01), Vector3(0, ch.y, bw), Vector3(0, wa.y, ch.z + 0.056 * dep), Vector3(0, pv.y - 0.01, 0.05 * dep)], B, 0.006, 0.009 if big else 0.006)  # 척추 골
-	groove(cl, pr, g, [Vector3(0, pv.y - 0.005, 0.05 * dep), Vector3(0, pv.y + 0.075, 0.06 * dep)], B, 0.005, 0.008)  # 엉덩이 골
+			bump(cl, pr, g, Vector3(wa.x + s * 0.024, wa.y + 0.01, ch.z + 0.056 * dep), B, 0.02, 0.07, 0.006, skin)  # 척추세움근
+	groove(cl, pr, g, [Vector3(nk.x, nk.y + 0.03, bw - 0.01), Vector3(ch.x, ch.y, bw), Vector3(wa.x, wa.y, ch.z + 0.056 * dep), Vector3(pv.x, pv.y - 0.01, pv.z + 0.05 * dep)], B, 0.006, 0.009 if big else 0.006)  # 척추 골
+	groove(cl, pr, g, [Vector3(pv.x, pv.y - 0.005, pv.z + 0.05 * dep), Vector3(pv.x, pv.y + 0.075, pv.z + 0.06 * dep)], B, 0.005, 0.008)  # 엉덩이 골
 	for s: int in [-1, 1]:
 		groove(cl, pr, g, [Vector3(s * 0.005, pv.y + 0.09, 0.05), Vector3(s * 0.05, pv.y + 0.098, 0.05), Vector3(s * 0.09, pv.y + 0.085, 0.04)], B, 0.005, 0.006)
 	if thin:
