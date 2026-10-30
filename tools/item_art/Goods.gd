@@ -8,6 +8,7 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 const Blades := preload("res://tools/item_art/Blades.gd")
 const Wear2 := preload("res://tools/item_art/Wear2.gd")
 const Junk := preload("res://tools/item_art/Junk.gd")
+const RiftGear := preload("res://tools/item_art/RiftGear.gd")
 
 const BY_ID := {
 	"minor_potion": "vial", "medium_potion": "flask", "greater_potion": "big_flask", "soul_potion": "flask", "antidote": "vial",
@@ -20,6 +21,8 @@ const BY_ID := {
 	"tomb_oil": "vial", "steel_relic": "orb", "death_mask": "tablet", "tomb_gold": "gem", "fortress_key": "tag", "silver_chest": "tablet",
 	"blood_chalice": "flask", "snow_lotus": "mushroom", "eternal_ice": "shard", "mine_heart": "cluster", "green_vein": "crystal",
 	"ice_chips": "shard", "copper_ore": "pebble", "shroud_rag": "bandage",
+	"mine_bitter_tea": "flask", "mine_moss_salve": "vial", "mine_lunchbox": "tin", "mine_green_tonic": "flask",
+	"mine_powder_pouch": "pot_bomb", "mine_rough_gem": "gem",
 }
 const BY_ICON := {"potion": "flask", "stone": "crystal", "gem": "gem", "bomb": "pot_bomb", "food": "bundle", "bread": "bread",
 	"torch": "torch", "lantern": "lantern", "book": "book", "horn": "horn", "ring": "ring", "amulet": "amulet", "pouch": "bundle"}
@@ -57,6 +60,8 @@ static func paint(id: String, it: Dictionary, ctx: Dictionary) -> bool:
 ## 그림 이름 → 이 파일의 함수.
 static func _by_name(how: String, ctx: Dictionary) -> void:
 	match how:
+		"tin":
+			RiftGear.tin(ctx)
 		"bandage":
 			bandage(ctx)
 		"big_flask":

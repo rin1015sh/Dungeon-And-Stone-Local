@@ -1,0 +1,32 @@
+{
+  "id": "mine_moss_salve",
+  "name_ko": "형광 이끼 고약",
+  "category": "potion",
+  "price": 1200,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "빛나는 이끼를 짓이겨 기름에 갠 고약. 바르면 화끈하다가 이내 서늘해진다.",
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "poison"
+    },
+    {
+      "type": "remove_status",
+      "status": "acid_corrosion"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#7ad070",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

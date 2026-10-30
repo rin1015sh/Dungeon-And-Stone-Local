@@ -4,7 +4,8 @@
 칸 색: 걷는 바닥(타일 색을 밝게) · 벽(어둡게) · 소품(막는 것, 테두리) · 물·웅덩이(못 걷는 바닥) · 낭떠러지(검정) · 솟은 외곽(빗금).
 점: 노란 점 = 빛 나는 소품, 흰 점 = 살필 수 있는 잡템(scavenge).
 표시: 초록 = 시작·입구, 하늘 = 출구(마지막 챕터는 수호자 자리에 탈출 포탈), 빨강 = 조우(보라 = 수호자·중간 보스),
-노랑 = 히든 피스, 주황 = 함정·위험. 대기 무리(posts)는 자리 없이 맨 위 줄에 수만 적는다.
+노랑 = 히든 피스, 주황 = 함정·위험, 분홍 = 대기 무리(marks.posts 고정 자리), 초록 네모 = 바닥에 놓인 물건(loot — RiftLoot).
+고정 자리가 없는 대기 무리(posts)는 맨 위 줄에 수만 적는다.
 """
 import glob
 import json
@@ -156,6 +157,14 @@ def board(rift, ch_index, tiles, monsters, items, cell):
     for p, hd in zip(marks.get("hazards", []), hz):
         dot(p, (250, 140, 40))
         tags.append((p, tiles.get(hd["tile"], {}).get("name_ko", hd["id"]), (250, 160, 70)))
+    for p, pk in zip(marks.get("posts", []), next((e.get("packs", []) for e in ch.get("encounters", []) if e.get("kind") == "posts"), [])):
+        dot(p, (240, 120, 170), 6)
+        tags.append((p, encounter_label({"monsters": pk}, monsters, "")[0], (245, 150, 190)))
+    for p, lt in zip(marks.get("loot", []), ch.get("loot", [])):
+        cx, cy = at(p)
+        d.rectangle([cx - 5, cy - 5, cx + 5, cy + 5], fill=(120, 230, 140), outline=(0, 0, 0), width=2)
+        n = int(lt.get("count", 1))
+        tags.append((p, items.get(lt["item"], lt["item"]) + (" ×%d" % n if n > 1 else ""), (150, 240, 160)))
     for f in ch.get("features", []):
         dot(f["at"], (250, 140, 40))
         tags.append((f["at"], "피의 우물(이벤트)", (250, 160, 70)))
@@ -173,7 +182,7 @@ def board(rift, ch_index, tiles, monsters, items, cell):
     posts = [e for e in ch.get("encounters", []) if e.get("kind") == "posts"]
     title = "%s %d · %s" % (rift["name_ko"], ch_index + 1, ch["name_ko"])
     extra = []
-    if posts:
+    if posts and not marks.get("posts"):
         extra.append("대기 무리 %d" % posts[0].get("count", 0))
     if ch.get("field_effects"):
         extra.append("필드: 저체온증")

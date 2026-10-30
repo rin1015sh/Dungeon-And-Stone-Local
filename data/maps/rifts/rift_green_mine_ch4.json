@@ -1,5 +1,5 @@
 {
- "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서)·놓인 물건(loot — 데이터 loot 순서)·대기 무리(posts — 데이터 posts packs 순서). 손으로 고쳐도 된다.",
  "rift": "rift_green_mine",
  "chapter": "ch4",
  "width": 84,
@@ -23,28 +23,7 @@
   "n": "gm_tent",
   "f": "gm_fire"
  },
- "marks": {
-  "entry": [
-   42,
-   0
-  ],
-  "slots": [
-   [
-    38,
-    21
-   ],
-   [
-    42,
-    36
-   ]
-  ],
-  "exit": [
-   42,
-   57
-  ],
-  "hidden": [],
-  "hazards": []
- },
+ "marks": {"entry": [42, 0], "slots": [[38, 21], [42, 36]], "exit": [42, 57], "hidden": [], "hazards": [], "loot": [[35, 14], [47, 12], [16, 42], [72, 24], [27, 29], [48, 33], [34, 39], [61, 39], [68, 52]], "posts": [[17, 40], [70, 23], [24, 32], [60, 36]]},
  "rows": [
   "########################################.....#######################################",
   "#########################################...########################################",

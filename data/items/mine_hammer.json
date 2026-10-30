@@ -1,0 +1,19 @@
+{
+  "id": "mine_hammer",
+  "name_ko": "광부의 망치",
+  "forge": {
+    "type": "warhammer",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "str",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "바위를 깨던 묵직한 망치. 자루에 손때가 새까맣게 배었다.",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

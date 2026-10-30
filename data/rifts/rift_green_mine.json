@@ -195,7 +195,15 @@
             "goblin_miner"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"]]}
+        {"kind": "posts", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"], ["goblin_miner"]]}
+      ],
+      "loot": [
+        {"item": "torch_stub", "count": 1},
+        {"item": "mine_hammer", "count": 1},
+        {"item": "mine_rough_gem", "count": 1},
+        {"item": "mine_lunchbox", "count": 2},
+        {"item": "mine_bitter_tea", "count": 1},
+        {"item": "mine_helmet", "count": 1}
       ],
       "hidden": [
         {
@@ -253,7 +261,16 @@
           ],
           "midboss": true
         },
-        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "mineral_slime"], ["hobgoblin_miner"]]}
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["goblin_miner", "goblin_miner"]]}
+      ],
+      "loot": [
+        {"item": "mine_lunchbox", "count": 1},
+        {"item": "mine_bitter_tea", "count": 2},
+        {"item": "mine_moss_salve", "count": 2},
+        {"item": "magic_stone_9", "count": 2},
+        {"item": "mine_goblin_boots", "count": 1},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_powder_pouch", "count": 2}
       ],
       "hidden": [
         {
@@ -321,7 +338,17 @@
             "copper_golem"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["mineral_slime", "slime"], ["goblin_miner", "goblin_miner"]]}
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["mineral_slime", "slime"]]}
+      ],
+      "loot": [
+        {"item": "mine_lunchbox", "count": 1},
+        {"item": "mine_powder_pouch", "count": 1},
+        {"item": "mine_bitter_tea", "count": 1},
+        {"item": "mine_moss_salve", "count": 1},
+        {"item": "magic_stone_8", "count": 1},
+        {"item": "mine_powder_pouch", "count": 1},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_rough_gem", "count": 1}
       ],
       "hidden": [
         {
@@ -382,7 +409,18 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 4, "packs": [["slime", "slime"], ["mineral_slime", "mineral_slime"], ["copper_golem"], ["goblin_miner", "hobgoblin_miner"]]}
+        {"kind": "posts", "count": 4, "packs": [["mineral_slime", "mineral_slime"], ["copper_golem"], ["slime", "slime"], ["goblin_miner", "hobgoblin_miner"]]}
+      ],
+      "loot": [
+        {"item": "mine_lunchbox", "count": 2},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_quartz_ring", "count": 1},
+        {"item": "mine_rough_gem", "count": 2},
+        {"item": "mine_moss_salve", "count": 1},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_helmet", "count": 1},
+        {"item": "mine_powder_pouch", "count": 1},
+        {"item": "magic_stone_9", "count": 3}
       ]
     }
   ],

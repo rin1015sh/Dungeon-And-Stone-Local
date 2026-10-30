@@ -1,0 +1,28 @@
+{
+  "id": "mine_lunchbox",
+  "name_ko": "광부 도시락",
+  "category": "food",
+  "price": 600,
+  "stack": 5,
+  "consumable": true,
+  "desc_ko": "양철 통에 꾹꾹 눌러 담은 보리밥과 절인 고기. 뚜껑에 누군가의 이름이 긁혀 있다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 60
+    }
+  ],
+  "tags": [
+    "food"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "food",
+  "color": "#8a8478",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

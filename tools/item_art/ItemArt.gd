@@ -18,6 +18,7 @@ const Wear := preload("res://tools/item_art/Wear.gd")
 const Wear2 := preload("res://tools/item_art/Wear2.gd")
 const Goods := preload("res://tools/item_art/Goods.gd")
 const Style := preload("res://tools/item_art/Style.gd")
+const RiftGear := preload("res://tools/item_art/RiftGear.gd")
 
 const CELL := 80  ## 칸 하나의 그림 px(가방 칸 38px의 약 2배 — 줄여 쓴다)
 const KIND_OF := {"metal": "metal", "leather": "leather", "wood": "wood", "cloth": "cloth", "bone": "bone", "gem": "metal"}
@@ -61,6 +62,7 @@ static func paint(db: GameDatabase, id: String, seed_value: int) -> Paint:
 		done = Goods.paint(id, it, ctx)
 	if not done:
 		return null
+	RiftGear.extra(id, ctx)
 	Render.render(cl, p, float(maxi(W, H)) * 1.6)
 	for ln: Array in ctx["lines"]:
 		Ink.line(p, ln[0], ln[1], ln[2], ln[3], 0.9, 0.3)
@@ -75,6 +77,8 @@ static func paint(db: GameDatabase, id: String, seed_value: int) -> Paint:
 static func _ctx(cl: Clay, W: int, H: int, rng: RandomNumberGenerator, it: Dictionary, mat: Dictionary) -> Dictionary:
 	var kind := JsonUtil.get_str(mat, "kind", "metal")
 	var c := Color.from_string(JsonUtil.get_str(mat, "color", JsonUtil.get_str(it, "color", "#8a8a86")), Color("#8a8a86"))
+	if it.has("art_color"):  # 그 물건만의 색(균열 장비 — 녹수정 반지)
+		c = Color.from_string(JsonUtil.get_str(it, "art_color"), c)
 	var tier := JsonUtil.get_int(mat, "tier", 1)
 	var steel_c := c if kind == "metal" else Color("#7a7c80")
 	var ctx := {"cl": cl, "W": float(W), "H": float(H), "rng": rng, "tier": tier, "kind": kind, "c": c, "glows": [], "lines": [],

@@ -1,7 +1,7 @@
 extends SceneTree
 ## 균열 통과 점검(헤드리스): 모든 균열을 실제 이동(충돌 Kinematics·PlayerMotion)으로 처음부터 끝까지 걸어 본다.
 ##   godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2]
-## 챕터마다: 조우가 남은 채로도 길목이 열리는지(RF21) → 조우 자리로 걸어가 닿으면 이긴 것으로 친다(수수께끼는 정답) → 출구에 필요한 물건(폭약)이 히든 피스면
+## 챕터마다: 조우가 남은 채로도 길목이 열리는지(RF21) → 바닥에 놓인 물건을 모두 줍기(RiftLoot) → 조우 자리로 걸어가 닿으면 이긴 것으로 친다(수수께끼는 정답) → 출구에 필요한 물건(폭약)이 히든 피스면
 ## 그 옆으로 걸어가 살핀다(아니면 가방에 넣어 준다) → 앞 길목으로 걸어가 넘어가는지 → 뒤 길목으로 걸어 돌아갔다가 다시 앞으로.
 ## 마지막 챕터는 탈출 포탈에서 살피기로 나간다. 걸어서 닿지 못하거나 넘어가지 않으면 "!!"로 알리고 종료 코드 1.
 
@@ -50,6 +50,7 @@ func _run(db: GameDatabase, rift_id: String, seed_value: int) -> void:
 			_bad("%s: 조우가 남았다고 길목이 막힌다(남은 조우 %d)" % [tag, run.remaining.size()])
 		if not _clear(cs, tag):
 			return
+		_pick_loot(cs, tag)
 		_fetch_key(cs, tag)
 		var exit := RiftPassage.exit_portal(cs.map)
 		if exit.is_empty():
@@ -119,6 +120,23 @@ func _clear(cs: ExploreSession, tag: String) -> bool:
 		_bad("%s: 걸어가 정리하지 못한 조우가 남았다 %d" % [tag, run.remaining.size()])
 		return false
 	return true
+
+
+## 바닥에 놓인 물건(RiftLoot)마다 걸어가 줍는다(가방이 차지 않게 주운 것은 바로 뺀다).
+func _pick_loot(cs: ExploreSession, tag: String) -> void:
+	var n := 0
+	for at: Vector2i in cs.loot.keys():
+		var d: Dictionary = cs.loot[at]
+		if not _walk(cs, at, "%s 물건 %s" % [tag, d["item"]]) or cs.in_combat:
+			continue
+		cs.interact()
+		if cs.loot.has(at):
+			_bad("%s: %s의 %s를 줍지 못한다" % [tag, at, d["item"]])
+			continue
+		cs.player.inventory.remove(str(d["item"]), int(d["count"]))
+		n += 1
+	if n > 0:
+		print("   %s: 놓인 물건 %d개 주움" % [tag, n])
 
 
 ## 출구에 필요한 물건: 이 챕터 히든 피스면 걸어가 살핀다(닿지 못하면 알림), 아니면 가방에 넣는다.

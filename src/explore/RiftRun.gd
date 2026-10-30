@@ -110,6 +110,7 @@ func build_chapter(i: int) -> ExploreSession:
 		remaining.append_array(RiftPosts.place(cs, e, compose, outer.rng))
 	_apply_field_effects()
 	hidden.place(cs, ch, outer.rng, i)
+	RiftLoot.place(cs, ch)
 	hazards.place(cs, ch, outer.rng)
 	hidden.count_hazards(i, hazards)
 	for f: Variant in JsonUtil.get_array(ch, "features"):  # 챕터에 놓는 동굴 요소(핏빛 우물 — 고르는 선택지가 있는 것)

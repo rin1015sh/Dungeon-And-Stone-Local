@@ -69,6 +69,11 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 			_hazard(v, cw + ".hazards", h if h is Dictionary else {})
 		for h: Variant in JsonUtil.get_array(ch, "hidden"):
 			_hidden(v, cw + ".hidden", h if h is Dictionary else {}, has_riddle)
+		for l: Variant in JsonUtil.get_array(ch, "loot"):
+			var ld: Dictionary = l if l is Dictionary else {}
+			v.ref(cw + ".loot", "items", ld.get("item"))
+			if JsonUtil.get_int(ld, "count", 1) < 1:
+				v.err(cw + ".loot", "count는 1 이상")
 		if ch.has("exit_requires"):
 			var req := JsonUtil.get_dict(ch, "exit_requires")
 			v.ref(cw + ".exit_requires", "items", req.get("item"))
@@ -97,9 +102,30 @@ static func _blueprint(v: ValidatorBase, w: String, ch: Dictionary, encounters: 
 	var hz := 0
 	for h: Variant in JsonUtil.get_array(ch, "hazards"):
 		hz += JsonUtil.get_int(h if h is Dictionary else {}, "count", 1)
-	for pair: Array in [["slots", encounters], ["hidden", JsonUtil.get_array(ch, "hidden").size()], ["hazards", hz]]:
+	var pairs: Array = [["slots", encounters], ["hidden", JsonUtil.get_array(ch, "hidden").size()], ["hazards", hz],
+		["loot", JsonUtil.get_array(ch, "loot").size()]]
+	if marks.has("posts"):  # 대기 무리 고정 자리 = posts packs 하나씩
+		var packs := 0
+		for e: Variant in JsonUtil.get_array(ch, "encounters"):
+			if e is Dictionary and JsonUtil.get_str(e, "kind") == "posts":
+				packs += JsonUtil.get_array(e, "packs").size()
+		pairs.append(["posts", packs])
+	for pair: Array in pairs:
 		if JsonUtil.get_array(marks, pair[0]).size() != int(pair[1]):
 			v.err(w, "%s: marks.%s %d개 ≠ 데이터 %d개" % [path, pair[0], JsonUtil.get_array(marks, pair[0]).size(), pair[1]])
+	for key: String in ["loot", "posts"]:  # 놓인 물건·대기 무리는 걸을 수 있는 칸에
+		for p: Variant in JsonUtil.get_array(marks, key):
+			if not _walkable(v.db, data, p):
+				v.err(w, "%s: marks.%s %s는 걸을 수 있는 칸이어야 한다" % [path, key, p])
+
+
+static func _walkable(db: GameDatabase, data: Dictionary, p: Variant) -> bool:
+	var a: Array = p if p is Array else []
+	var rows := JsonUtil.get_array(data, "rows")
+	if a.size() != 2 or int(a[1]) < 0 or int(a[1]) >= rows.size() or int(a[0]) < 0 or int(a[0]) >= str(rows[int(a[1])]).length():
+		return false
+	var ch := str(rows[int(a[1])])[int(a[0])]
+	return JsonUtil.get_bool(db.get_entry("tiles", str(JsonUtil.get_dict(data, "legend").get(ch, ""))), "walkable")
 
 
 ## 구성: 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}.

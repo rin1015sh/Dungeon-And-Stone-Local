@@ -25,6 +25,7 @@
     "particles_z": 6,
     "camera_zoom": 1.5,
     "chunk_size": 16,
+    "loot_px_ratio": 0.8,
     "stream_chunks": 3,
     "face_shade": 0.9,
     "edge_shade": 0.45,

@@ -3,7 +3,7 @@ extends RefCounted
 ## 살피기(interact 키)와 포탈 안내(ExploreSession이 부른다 — 세션 파일을 짧게 유지).
 ##   층 포탈: 아래층은 아직 잠김(M6) · 균열 포탈: 들어간다(RiftWatch.enter → 세션 transfer)
 ##   균열 출구: 다음 챕터 / 탈출(RiftRun.use_exit) · 동굴 요소(FieldFeatures — 시체·샘·모닥불 …)
-##   대현자 기념비: 마석이 있으면 바쳐 균열을 연다(RiftWatch.try_offer) · 균열 장식: 잡템 뒤지기(RiftScavenge)
+##   대현자 기념비: 마석이 있으면 바쳐 균열을 연다(RiftWatch.try_offer) · 균열에 놓인 물건 줍기(RiftLoot) · 균열 장식: 잡템 뒤지기(RiftScavenge)
 
 
 static func run(s: ExploreSession) -> void:
@@ -26,6 +26,8 @@ static func run(s: ExploreSession) -> void:
 				_use_floor_portal(s, portal)
 		return
 	if s.features.interact(s):
+		return
+	if RiftLoot.run(s):
 		return
 	for d in FloorMap.DIRS4:
 		var def := s.map.def_at(s.pos + d)
@@ -52,6 +54,9 @@ static func target_name(s: ExploreSession) -> String:
 	var feature := s.features.target_name(s)
 	if not feature.is_empty():
 		return feature
+	var loot := RiftLoot.target_name(s)
+	if not loot.is_empty():
+		return loot
 	for d in FloorMap.DIRS4:
 		var def := s.map.def_at(s.pos + d)
 		if def != null and (def.interact == "monument" or (def.interact == "hidden_piece" and s.rift_run != null)):

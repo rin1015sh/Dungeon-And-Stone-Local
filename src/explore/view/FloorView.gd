@@ -5,6 +5,7 @@ extends Node2D
 ##   그림 파일: FloorTextures(타일 아틀라스·소품·턱·데칼 시트), 거시 색조: FloorTint
 ##   벽:   WallRow(한 줄 × 청크 폭) — y_sort로 캐릭터와 앞뒤 가림. 윗면은 앞면 높이만큼 위로 올라간다.
 ##   청크·벽 줄 노드는 플레이어 둘레 stream_chunks 청크 안에만 둔다(큰 지도에서 노드 수·정렬 비용을 일정하게).
+##   균열 바닥에 놓인 물건: LootView
 ##   캐릭터: ActorView — 발 위치가 정렬 기준. 남쪽 벽에 가려지면 실루엣을 겹친다.
 ## 밝기: 칸 꼭짓점마다 (정적 광원 + 시야 빛)을 계산해 draw_polygon 꼭짓점 색으로 섞는다(셰이더 없이).
 ## 안개(시야 3상태): 미탐험 = 그리지 않음(순흑 배경), 기억 = 탈색·저명도, 보임 = 빛. 경계는 꼭짓점마다
@@ -103,6 +104,10 @@ func _ready() -> void:
 		void_layer = Node2D.new()
 		void_layer.z_index = -9  # 데칼 층(-9)보다 나중에 붙여 같은 z에서 위에 — 가장자리 데칼도 함께 깎인다
 		add_child(void_layer)
+	if not session.loot.is_empty():  # 균열 바닥에 놓인 물건(RiftLoot)
+		var lv := LootView.new()
+		add_child(lv)
+		lv.setup(self)
 	if art.has_pulse():
 		glow_layer = Node2D.new()
 		glow_layer.z_index = JsonUtil.get_int(_cfg, "glow_z", 5)

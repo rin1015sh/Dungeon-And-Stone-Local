@@ -4,6 +4,8 @@ extends RefCounted
 ## GameDatabase.load_all이 데이터를 읽은 직후 한 번 부른다(오토로드·GameDatabase를 참조하지 않는다 — 원본 사전만 다룬다).
 ##   1) 아이템 JSON의 "forge": {"type", "material"} — equip·price·tier는 공식으로 덮고, 나머지(이름·크기·그림·색·분류·희귀도)는
 ##      비어 있을 때만 채운다(지금 장비 — id·이름·크기 유지, 저장 호환).
+##      forge "bonus": [{target, flat|percent}] = 그 물건만의 덤(균열에서 줍는 장비 — 2026-10-30 docs/plans/rift_rooms.md). 덤이 있는 물건은
+##      공식 조합을 차지하지 않는다(같은 종류 × 소재의 범용 장비 "<소재>_<종류>"는 그대로 만든다 — 대장간이 판다).
 ##   2) 종류 × 그 종류가 쓰는 소재(kinds)의 모든 조합 중 1)이 차지하지 않은 것을 "<소재>_<종류>" id, "<소재> <종류>" 이름으로 만든다.
 ## 수치(balance.items):
 ##   공격력·마력(weapon.attack·magic) = 종류 값 × attack_by_tier[등급−1] × 소재 atk — 반올림
@@ -30,8 +32,11 @@ static func forge_all(cols: Dictionary, bal: Dictionary) -> void:
 		var m: Dictionary = mats.get(JsonUtil.get_str(f, "material"), {})
 		if t.is_empty() or m.is_empty():
 			continue  # forge가 없거나 잘못됐다(검증기가 알린다)
-		claimed[_key(t, m)] = true
+		var bonus := JsonUtil.get_array(f, "bonus")
+		if bonus.is_empty():
+			claimed[_key(t, m)] = true
 		var made := build(t, m, cfg)
+		_add_bonus(made, bonus)
 		for k: String in made:
 			if k in ["equip", "price", "tier", "forged"] or not it.has(k):
 				it[k] = made[k]
@@ -103,6 +108,21 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 		"price": nice(price), "icon": JsonUtil.get_str(t, "icon"), "color": JsonUtil.get_str(m, "color"),
 		"rarity": str(rarities[tier - 1]) if rarities.size() >= tier else "common", "tier": tier,
 		"forged": {"type": JsonUtil.get_str(t, "id"), "material": JsonUtil.get_str(m, "id")}, "equip": equip, "source": "placeholder"}
+
+
+## 덤 수정자를 장비 수정자에 더한다(같은 대상의 고정값은 합친다).
+static func _add_bonus(made: Dictionary, bonus: Array) -> void:
+	var mods: Array = (made["equip"] as Dictionary)["modifiers"]
+	for b: Variant in bonus:
+		var d: Dictionary = b if b is Dictionary else {}
+		var target := JsonUtil.get_str(d, "target")
+		var same: Array = mods.filter(func(x: Dictionary) -> bool: return str(x["target"]) == target and x.has("flat"))
+		if d.has("flat") and not same.is_empty():
+			same[0]["flat"] = int(same[0]["flat"]) + JsonUtil.get_int(d, "flat")
+		elif d.has("percent"):
+			mods.append({"target": target, "percent": JsonUtil.get_float(d, "percent")})
+		else:
+			mods.append({"target": target, "flat": JsonUtil.get_int(d, "flat")})
 
 
 ## 가격표처럼 유효숫자 두 자리(100 미만은 5 단위).
