@@ -168,7 +168,7 @@ static func _long(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: D
 		var a := Back.on_head(hd, -0.25, s * 1.15, 0.006)
 		var pts: Array = []
 		for t in 9:
-			var q := a.lerp(Vector3(nk.x + s * 0.07, nk.y + ln * 1.15, bw + float(sp.get("hair_over", 0.016)) + 0.01), t / 8.0)
+			var q := a.lerp(Vector3(nk.x + s * 0.07, nk.y + ln * 1.15, bw + minf(float(sp.get("hair_over", 0.016)), 0.03) + 0.006), t / 8.0)  # 등에 붙게(털 망토 위로 띄운 0.06이면 옆모습에서 꼬리처럼 떴다 — AM57)
 			pts.append(q + Vector3(s * sin(t * 0.7) * 0.006, 0, 0.004))
 		for t in pts.size():
 			Back.ell(cl, pr, g, pts[t] + Vector3(0.004 * (1 if t % 2 == 0 else -1), 0, 0), 0.012, 0.013, 0.011, m, 0.004)

@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **인간 팔 안쪽 살 검게 · 바바리안 땋은 머리 (2026-10-30, 사용자)** — AM57. `Back.body` arm_under(팔 = 천 색, 손 = 살갗), h6_ranger `arm_under: #16120f`, BackHair braids 등 띄움 ≤ 0.03. 두 종족 동작·뒷모습·맵 몸 다시 그림, 전후 `docs/screens/arm_braid_fix.png`.
+
 - **회피 몸 돌리기 · 바바리안 거북목 · ㄴ자 (2026-10-30, 사용자)** — AM56. wait 2·3칸 turn 1.6, 두 종족 같은 칸(목 세움), BackDrape 옆모습 앞 조각 허벅지 빼기·작은 조각 버림, h6 knife 뺌. 두 종족 동작·뒷모습·맵 몸 다시 그림, `docs/screens/evade_turn.png`. 남은 것: 바바리안 옆모습에서 땋은 머리가 등 뒤로 떠 보인다(hair_over 0.06 — 털 망토 위로 띄운 값).
 
 - **인간 회피 거북목·망토 붕 뜸 (2026-10-30, 사용자)** — AM55. `wait@human`(목·어깨·팔 x를 골반 위로, 머리 곧게), BackDrape 무릎·단 뒤로 빠짐·깊이 줄임. 인간 동작·뒷모습·맵 몸 다시 그림, 전후 `docs/screens/human_evade_fix.png`. 바바리안 회피는 원래 칸 그대로.

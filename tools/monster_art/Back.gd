@@ -343,7 +343,10 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 				for s: int in [-1, 1]:
 					groove(cl, pr, g, [Vector3(s * 0.02, y + 0.01, bw), Vector3(s * shw * 0.5, y + 0.02, bw - 0.01), Vector3(s * shw * 0.8, y + 0.04, bw - 0.03)], Vector3(s * 0.4, 0, 1), 0.0045, 0.006)
 	cl.tag = ""
-	# 팔
+	# 팔(spec arm_under = 위팔·아래팔 살갗 대신 칠할 색 — 소매 사이로 팔 안쪽 살이 드러나지 않게, 손은 살갗 그대로 — AM57)
+	var hand_skin := skin
+	if sp.has("arm_under"):
+		skin = cl.mat(sp["arm_under"], "cloth")
 	for s: int in [-1, 1]:
 		var tg := "l" if s < 0 else "r"
 		var ga: int = out["arm_" + tg]
@@ -358,9 +361,9 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 		cap(cl, pr, ga, el, wr, float(t[1]) * bulk, float(t[2]) * bulk, skin, 0.01)
 		cl.tag = "hand_" + tg
 		var dr := (hd - wr).normalized()
-		ell(cl, pr, ga, wr.lerp(hd, 0.55), 0.021 * bulk, 0.026, 0.02 * bulk, skin, 0.006)
-		cap(cl, pr, ga, wr.lerp(hd, 0.25) + Vector3(-s * 0.012, 0, -0.012), hd + Vector3(-s * 0.012, -0.005, -0.016), 0.008 * bulk, 0.007 * bulk, skin, 0.004)  # 엄지
-		ridge(cl, pr, ga, [hd + Vector3(-0.016, 0, 0.004), hd + Vector3(0.0, 0.004, 0.008), hd + Vector3(0.016, 0, 0.004)], B + dr, 0.006 * bulk, 0.004, skin)  # 주먹 마디
+		ell(cl, pr, ga, wr.lerp(hd, 0.55), 0.021 * bulk, 0.026, 0.02 * bulk, hand_skin, 0.006)
+		cap(cl, pr, ga, wr.lerp(hd, 0.25) + Vector3(-s * 0.012, 0, -0.012), hd + Vector3(-s * 0.012, -0.005, -0.016), 0.008 * bulk, 0.007 * bulk, hand_skin, 0.004)  # 엄지
+		ridge(cl, pr, ga, [hd + Vector3(-0.016, 0, 0.004), hd + Vector3(0.0, 0.004, 0.008), hd + Vector3(0.016, 0, 0.004)], B + dr, 0.006 * bulk, 0.004, hand_skin)  # 주먹 마디
 		var out_n := Vector3(s * 0.6, 0, 1)
 		cl.tag = "upper_" + tg
 		if not thin:
@@ -370,6 +373,7 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 		if thin:
 			ridge(cl, pr, ga, [el, wr], out_n, float(t[2]) * 0.4, float(t[2]) * 0.25, skin)
 		cl.tag = ""
+	skin = hand_skin
 	out["nail"] = nail
 	return out
 
