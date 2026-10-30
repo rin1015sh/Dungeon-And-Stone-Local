@@ -6,7 +6,7 @@ extends RefCounted
 
 ## 게임 그림의 옷차림(사용자 2026-10-26 "h4 b2로" → 2026-10-29 바바리안 "b8에 b7 합친 걸로" = b9 · 인간 "h6으로") — 탐험 맵 걷기 그림(paint_actors)과
 ## 전투 뒷모습(Party.spec_of → paint_monsters --only=party)·전투 동작(paint_motions)이 같이 쓴다.
-const CHOSEN := {"human": "h6_ranger", "barbarian": "b9_iron_raider"}
+const CHOSEN := {"human": "h6_ranger", "barbarian": "b9_iron_raider", "elf": "e4_ranger", "dwarf": "d4_axe", "beastkin": "k4_fox_rogue"}  ## 새 종족(사용자 2026-10-30 6차 시안 확정 — AM59)
 ## 게임 그림 말고도 남겨 두는 옷차림 → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다):
 ##   h3_coat(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") · r0_raider(맵 약탈자 무리 — render.json view.raider_sprite, 사용자 2026-10-26 "전투 화면처럼 두건·망토로")
 const KEEP := ["h3_coat", "r0_raider"]

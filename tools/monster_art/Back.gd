@@ -139,7 +139,7 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 		var t := "l" if s < 0 else "r"
 		var an := Vector3(s * stance, -0.045, 0.0)
 		j["ankle_" + t] = an
-		j["hip_" + t] = Vector3(s * (0.056 if fem else 0.062), hip_y + 0.02, 0.0)
+		j["hip_" + t] = Vector3(s * (0.056 if fem else 0.062), hip_y + 0.02 - float(sp.get("high_hips", 0.0)), 0.0)  # high_hips = 가랑이를 허리띠 쪽으로(다리가 길어 보이게 — 수인, 사용자 2026-10-30)
 		j["knee_" + t] = Vector3(s * (stance * 0.55 + 0.004 if fem else stance * 0.8 + 0.012), lerpf(hip_y, -0.045, 0.5), -0.015 - knee * 0.06)
 		j["toe_" + t] = an + Vector3(s * 0.012, 0.03, -0.078 if fem else -0.1)  # 여성은 발을 작게(사용자 "발이 너무 크다")
 		var shp := Vector3(s * sh, hip_y - 0.325 + hunch * 0.04 + (0.01 if fem else 0.0), -hunch * 0.09)
@@ -315,9 +315,10 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 		groove(cl, pr, g, [an + Vector3(0, -0.07, 0.022), an + Vector3(0, 0.0, 0.02)], Vector3(s * 0.3, 0, 1), 0.004, 0.004)  # 아킬레스
 	# 몸통
 	cl.tag = "pelvis"
-	ell(cl, pr, g, pv, 0.1 * bulk, 0.062, 0.06 * dep, skin, 0.03)
+	var hh2 := float(sp.get("high_hips", 0.0))  # 골반·엉덩이를 위로 줄인다(다리 갈라지는 곳이 올라간다)
+	ell(cl, pr, g, pv + Vector3(0, -hh2 * 0.3, 0), 0.1 * bulk, 0.062 - hh2 * 0.5, 0.06 * dep, skin, 0.03)
 	for s: int in [-1, 1]:
-		ell(cl, pr, g, pv + Vector3(s * 0.046 * bulk, 0.035, 0.022), 0.056 * bulk, 0.06, 0.048 * dep, skin, 0.02)  # 엉덩이
+		ell(cl, pr, g, pv + Vector3(s * 0.046 * bulk, 0.035 - hh2 * 0.9, 0.022), 0.056 * bulk, 0.06 - hh2 * 0.4, 0.048 * dep, skin, 0.02)  # 엉덩이
 	cl.tag = "torso"
 	ell(cl, pr, g, wa, float(t[7]) * bulk, 0.09, 0.056 * dep, skin, 0.035)
 	ell(cl, pr, g, ch, shw * 0.84, 0.112, 0.066 * dep, skin, 0.035)

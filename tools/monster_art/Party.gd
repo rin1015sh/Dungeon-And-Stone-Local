@@ -24,7 +24,7 @@ const Monsters := preload("res://tools/monster_art/Specs.gd")
 const RaceParts := preload("res://tools/monster_art/RaceParts.gd")
 const RaceKit := preload("res://tools/monster_art/RaceKit.gd")
 
-const RACES := ["human", "barbarian"]
+const RACES := ["human", "barbarian", "elf", "dwarf", "beastkin"]  ## 엘프·드워프·수인 = 새 종족(AM59 — 그림만 있고 races.json에서 아직 꺼져 있다)
 const VIEWS := ["back"]
 const REF_H := 540.0  ## 사람 키(px) — 바바리안은 더 크게 그려 무대에서도 더 크게 보인다
 ## 아군으로 소환될 수 있는 몬스터(정수 스킬 summon · 정수 패시브 low_hp_summons — tests/test_monster_art.gd가 데이터와 맞춰 본다)

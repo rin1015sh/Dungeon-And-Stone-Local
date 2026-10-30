@@ -1,7 +1,7 @@
 extends RefCounted
 ## 새 플레이어블 종족 후보(사용자 2026-10-30 "엘프·드워프·수인 — 종족별로 여러 복장·외형을 뽑아 줘, 게임에 바로 적용하지는 말고"):
 ## 몸 설계(BODIES — Party.spec_of가 <종족>_back으로 쓴다, Party.RACES에는 없다 = 게임은 아직 모른다)와 몸 부품.
-##   female(true) 여성 체형 — 둥근 엉덩이·가슴(옷 겹이 따라 덮도록 pelvis·torso 기록), 체격은 build "slender"(Back.BUILDS)
+##   high_hips 가랑이를 허리띠 쪽으로 올림(다리가 길어 보이게 — 수인) · female(true) 여성 체형 — 둥근 엉덩이·가슴(옷 겹이 따라 덮도록 pelvis·torso 기록), 체격은 build "slender"(Back.BUILDS)
 ##   ears: elf(뒤로 솟은 뾰족한 귀) · fox · cat · wolf(머리 위 짐승 귀 — 털색 hair_c, 안쪽 ear_in)
 ##   fluff_tail {kind: fox|cat|wolf, c, tip} 털 꼬리(꼬리뼈에서 — 여우 = 굵고 끝이 밝음, 고양이 = 가늘고 끝이 올라감, 늑대 = 굵게 처짐)
 ##   crest {c, len} 정수리에서 묶어 뒤로 넘겨 어깨까지 흘러내리는 굵은 머리 다발(말꼬리)(드워프 투구 위 — 참고 그림) · map_locks 탐험 맵 짧은 머리 타래 값(paint_actors LOCKS에 덮음) · beard_long {len, braids, c} 가슴까지 내려오는 긴 수염(드워프 — 땋은 가닥 수 braids) · ponytail {len, high} 묶은 머리
@@ -21,7 +21,7 @@ const BODIES := {
 		"legs": 0.86, "hair": "short", "map_locks": {"front": 0.3, "temple": 0.25, "side": 0.05, "n": 20}, "hair_c": Color("#2e1e14"), "beard": Color("#2e1e14"), "beard_long": {"len": 0.16, "braids": 2},
 		"pose": {"stance": 0.1, "knee": 0.16, "arm_l": "hang", "arm_r": "hang"},
 		"kit": {"pants": Color("#4a3e30"), "shirt": Color("#6a5a44"), "sleeves": "rolled", "belt": Color("#2e2018"), "boots": Color("#3a2a1e")}, "blood": 0.0, "grime": 0.3},
-	"beastkin": {"height": REF_H * 0.98, "build": "slender", "bulk": 0.92, "female": true, "sh": 0.09, "skin": Color("#cfa282"), "mottle": Color("#a07458"), "mottle_amt": 0.25,
+	"beastkin": {"height": REF_H * 0.98, "build": "slender", "bulk": 0.92, "female": true, "high_hips": 0.085, "sh": 0.09, "skin": Color("#cfa282"), "mottle": Color("#a07458"), "mottle_amt": 0.25,
 		"hair": "short", "hair_c": Color("#2e2016"), "ears": "fox", "ear_in": Color("#6a4a3c"), "fluff_tail": {"kind": "fox", "c": Color("#3a2618"), "tip": Color("#8a7664")},
 		"pose": {"stance": 0.07, "knee": 0.14, "arm_l": "hang", "arm_r": "ready"},
 		"kit": {"pants": Color("#3a3228"), "shirt": Color("#5e5040"), "sleeves": "long", "belt": Color("#2a1c14"), "boots": Color("#2e2218")}, "blood": 0.0, "grime": 0.2},
@@ -38,7 +38,7 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, sp: Di
 	var ch: Vector3 = j["chest"]
 	cl.tag = "pelvis"
 	for s: int in [-1, 1]:  # 골반 옆을 둥글게(허리는 slender라 가늘다 → 잘록한 허리 · 뒤로 키우면 엉덩이가 너무 컸다)
-		Back.ell(cl, pr, g, pv + Vector3(s * 0.068, 0.025, -0.004), 0.04, 0.062, 0.04 * dep, skin, 0.03)
+		Back.ell(cl, pr, g, pv + Vector3(s * 0.068, 0.025 - float(sp.get("high_hips", 0.0)) * 0.9, -0.004), 0.04, 0.062, 0.04 * dep, skin, 0.03)
 	cl.tag = "torso"
 	for s: int in [-1, 1]:  # 가슴(앞 — 몸 좌표 −w): 겨드랑이 높이로 올려(사용자 "너무 낮게 달려 있다")
 		Back.ell(cl, pr, g, ch + Vector3(s * 0.036, -0.03, -0.046 * dep), 0.03, 0.027, 0.026, skin, 0.03)

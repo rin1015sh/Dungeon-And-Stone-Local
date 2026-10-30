@@ -92,7 +92,7 @@
         7
       ]
     },
-    "sprite": "res://assets/sprites/races/dwarf.png",
+    "sprite": "res://assets/actors/dwarf.webp",
     "source": "placeholder"
   },
   {
@@ -152,7 +152,7 @@
         12
       ]
     },
-    "sprite": "res://assets/sprites/races/beastkin.png",
+    "sprite": "res://assets/actors/beastkin.webp",
     "source": "placeholder"
   },
   {
