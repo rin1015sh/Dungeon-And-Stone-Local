@@ -219,7 +219,7 @@ func passage_step(s: ExploreSession, from: Vector2i) -> bool:
 	return true
 
 
-## 앞으로 지날 수 있는가(조우를 다 치웠고, 필요한 물건이 있으면 쓴다 — 한 챕터에 한 번). quiet면 못 지나는 이유를 알리지 않는다.
+## 앞으로 지날 수 있는가(조우는 남아도 된다 — RF21. 마지막 챕터는 수호자가 쓰러져야, 필요한 물건이 있으면 쓴다 — 한 챕터에 한 번). quiet면 못 지나는 이유를 알리지 않는다.
 func _can_leave(s: ExploreSession, quiet: bool) -> bool:
 	if is_last_chapter() and not guardian_down:
 		return false  # 탈출 포탈은 수호자가 쓰러진 뒤에야 생긴다
