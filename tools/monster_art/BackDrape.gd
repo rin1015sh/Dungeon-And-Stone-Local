@@ -73,6 +73,12 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 					if Geometry2D.is_polygon_clockwise(q) == Geometry2D.is_polygon_clockwise(band):  # 구멍 다각형은 빚을 자리가 아니다
 						next.append(q)
 			pieces = next
+		var keep: Array = []  # 트임을 잘라낸 뒤 남은 가는 조각은 버린다(옆으로 돈 칸에서 다리 앞에 ㄴ자 막대로 남았다 — AM56)
+		var full := absf(_area(band))
+		for q: PackedVector2Array in pieces:
+			if absf(_area(q)) > full * 0.04:
+				keep.append(q)
+		pieces = keep
 	var tags := ["torso", "pelvis", "thigh_l", "thigh_r"]  # 목은 덮지 않는다 — 덮으면 망토가 목을 통째로 감싸 머리까지 굵게 이어졌다(사용자 2026-10-30, AM52)
 	var under := float(d.get("under", 0.0))  # 안에 입은 두꺼운 겹(누빔·사슬·외투)만큼 더 띄운다
 	var belt := 0.025 if d.get("belt", false) else 0.0  # 겉허리띠: 등 자락만 더 띄워 덮는다(몸 겹까지 띄우면 윗몸이 부풀었다)
@@ -105,8 +111,13 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 	spine.append(_w(f, j, 0, last[0], last[1]))
 	us.append(last[2])
 	ws.append(last[3])
+	var side_view := absf(float((f["pr2"] as Dictionary)["s"])) > 0.6  # 옆모습: 트임 앞쪽 조각은 앞으로 내민 허벅지만 가늘게 덮어 ㄴ자 막대로 보였다(AM56)
+	var big := 0.0
 	for piece: PackedVector2Array in pieces:
-		BackKit.shell(cl, pr, tags, GROW + under, m, g, piece, 0.05, 0.0)
+		big = maxf(big, absf(_area(piece)))
+	for piece: PackedVector2Array in pieces:
+		var main := absf(_area(piece)) >= big
+		BackKit.shell(cl, pr, tags if main or not side_view else ["torso", "pelvis"], GROW + under, m, g, piece, 0.05, 0.0)
 		BackKit.shell(cl, pr, ["shoulder_l", "shoulder_r"], GROW * 0.45 + under, m, g, piece, 0.05, 0.0)  # 어깨는 얇게(두꺼우면 어깨가 공처럼 부풀었다)
 		cl.set_clip(piece)
 		echain(cl, pr, g, spine, us, ws, m, 0.05, f["pr2"])
@@ -137,6 +148,15 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 			pts.append(Vector3(nk.x, nk.y + 0.004 + 0.01 * absf(sin(a)), nk.z) + rv * (sin(a) * shw * 0.5) + bv * (cos(a) * (bw * 0.62 + under)))
 			rr.append(0.017 * (1.0 - 0.35 * absf(sin(a))))
 		Back.chain(cl, pr, hg, pts, rr, m, 0.02)
+
+
+static func _area(poly: PackedVector2Array) -> float:
+	var a := 0.0
+	for i in poly.size():
+		var p := poly[i]
+		var q := poly[(i + 1) % poly.size()]
+		a += p.x * q.y - q.x * p.y
+	return a * 0.5
 
 
 ## 앞 트임 화면 다각형들: 몸 둘레(몸틀 타원)에서 앞 가운데 ±반각(위 → 아래로 벌어짐)을 왼쪽 반·오른쪽 반 따로, 보는 사람 쪽 부분만
