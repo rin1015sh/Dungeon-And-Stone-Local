@@ -87,21 +87,42 @@ static func _scarf(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: D
 	var col: Color = d["c"]
 	var fur: bool = d.get("fur", false)
 	var m := _mat(cl, col, "fur" if fur else "cloth")
+	var md := _mat(cl, col.darkened(0.18), "fur" if fur else "cloth")
 	var g := cl.group()
 	var nk: Vector3 = j["neck"] + Vector3(0, 0.025, 0.0)
-	var r := (0.062 if fur else 0.05) * float(bd["bulk"])
-	var pts: Array = []
-	var rad: Array = []
-	for k in 13:
-		var a := k / 12.0 * TAU
-		pts.append(nk + Vector3(cos(a) * r, sin(a) * 0.006, sin(a) * r * 0.9))
-		rad.append(0.034 if fur else 0.024)
-	Back.chain(cl, pr, g, pts, rad, m, 0.01)
-	if d.get("tail", not fur):
-		var bw: float = bd["back_w"]
-		# 끝자락 하나가 왼어깨 뒤로 비스듬히(둘을 나란히 늘어뜨리면 등에 M 자처럼 보였다)
-		var a := nk + Vector3(-0.025, 0.01, r * 0.8)
-		Back.chain(cl, pr, g, [a, Vector3(nk.x - 0.05, nk.y + 0.07, bw + 0.02), Vector3(nk.x - 0.075, nk.y + 0.15, bw + 0.016), Vector3(nk.x - 0.085, nk.y + 0.2, bw + 0.012)], [0.02, 0.017, 0.013, 0.006], m, 0.004)
+	var bk := float(bd["bulk"])
+	var r := (0.062 if fur else 0.05) * bk
+	# 감은 바퀴: 털 깃은 한 바퀴, 천 목도리는 두 바퀴(아래는 어깨에 얹히고 위는 턱 밑 — 앞이 조금 처져 늘어진 천처럼)
+	var wraps: Array = [[0.0, 1.0, 0.034 if fur else 0.026]] if fur else [[0.018, 1.12, 0.026], [-0.012, 0.98, 0.024]]
+	for wi in wraps.size():
+		var w: Array = wraps[wi]
+		var pts: Array = []
+		var rad: Array = []
+		for k in 17:
+			var a := k / 16.0 * TAU
+			var front := maxf(0.0, -sin(a))  # 앞(−w)일수록 처진다
+			pts.append(nk + Vector3(cos(a) * r * float(w[1]), float(w[0]) + front * 0.018 + sin(a * 3.0 + wi) * 0.003, sin(a) * r * float(w[1]) * 0.9))
+			rad.append(float(w[2]) * (1.0 + 0.15 * sin(a * 2.0 + wi * 1.7)))  # 굵기가 고르지 않게 — 천이 접힌 듯
+		Back.chain(cl, pr, g, pts, rad, md if wi == 0 else m, 0.012)
+		if not fur:
+			for k in 8:  # 감은 결(비스듬한 주름)
+				var a := (k + 0.5) / 8.0 * TAU
+				var c := nk + Vector3(cos(a) * r * float(w[1]) * 1.25, float(w[0]), sin(a) * r * float(w[1]) * 1.15)
+				Back.groove(cl, pr, g, [c + Vector3(0, -0.015, 0), c + Vector3(cos(a) * 0.004, 0.015, sin(a) * 0.004)], Vector3(cos(a), 0, sin(a)), 0.004, 0.006)
+	if fur or not d.get("tail", true):
+		return
+	var dep: float = bd["dep"]
+	var fw := (j["chest"] as Vector3).z - 0.066 * dep - 0.012
+	var knot := nk + Vector3(-0.035 * bk, 0.035, -r * 1.0)
+	Back.ell(cl, pr, g, knot, 0.026, 0.022, 0.022, m, 0.006)  # 매듭
+	# 앞 자락: 매듭에서 가슴 왼쪽으로 늘어진 넓은 천(끝이 조금 벌어진다)
+	Back.chain(cl, pr, g, [knot + Vector3(0, 0.01, 0), Vector3(knot.x - 0.008, knot.y + 0.06, fw - 0.004), Vector3(knot.x - 0.004, knot.y + 0.12, fw - 0.002)], [0.022, 0.02, 0.018], m, 0.006)
+	Back.ell(cl, pr, g, Vector3(knot.x - 0.004, knot.y + 0.13, fw - 0.002), 0.024, 0.01, 0.012, md, 0.004)  # 자락 끝
+	Back.groove(cl, pr, g, [knot + Vector3(0, 0.02, -0.01), Vector3(knot.x - 0.006, knot.y + 0.11, fw - 0.02)], Vector3(0, 0, -1), 0.003, 0.005)
+	# 등 끝자락: 하나만 왼어깨 뒤로 비스듬히(둘을 나란히 늘어뜨리면 등에 M 자처럼 보였다)
+	var bw: float = bd["back_w"]
+	var a0 := nk + Vector3(-0.025, 0.01, r * 0.8)
+	Back.chain(cl, pr, g, [a0, Vector3(nk.x - 0.05, nk.y + 0.07, bw + 0.022), Vector3(nk.x - 0.075, nk.y + 0.15, bw + 0.018), Vector3(nk.x - 0.085, nk.y + 0.2, bw + 0.014)], [0.022, 0.02, 0.016, 0.008], md, 0.004)
 
 
 ## 화살통: 오른어깨 뒤에서 왼허리 뒤로 비스듬히 + 위로 삐져나온 화살 깃 + 가슴을 가로지르는 끈.

@@ -43,7 +43,7 @@ static func _sheath(cl: Clay, pr: Dictionary, j: Dictionary, d: Dictionary) -> v
 	var g := cl.group()
 	var pv: Vector3 = j["pelvis"]
 	var top := Vector3(pv.x - 0.115, pv.y - 0.04, pv.z + 0.01)
-	var bot := Vector3(pv.x - 0.17, pv.y + 0.34, pv.z + 0.13)
+	var bot := Vector3(pv.x - 0.15, pv.y + 0.22, pv.z + 0.17)  # 뒤로 눕혀 짧게(곧게 내리면 앞모습에서 지팡이처럼 땅까지 닿았다)
 	Back.cap(cl, pr, g, top, bot, 0.016, 0.011, m, 0.003)
 	Back.ell(cl, pr, g, bot, 0.012, 0.014, 0.012, metal, 0.002)  # 칼집 끝 쇠
 	var up := (top - bot).normalized()

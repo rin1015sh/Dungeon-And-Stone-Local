@@ -1,6 +1,6 @@
 extends RefCounted
 ## 뒷모습 사람형(Back)의 머리카락·수염: 머리선(목덜미 낮게·귀 위·이마 높게)까지 뒤통수를 덮는 겹 + 결 골 + 덥수룩한 뭉치.
-## spec 키: hair(short · long · ragged · none) · hair_c · hair_len(긴 머리 길이) · hair_over(등에서 띄움 — 털 망토 위로) · braids(땋은 머리 수) · beard(수염 색)
+## spec 키: hair(short · long · ragged · none) · hair_c · hair_len(긴 머리 길이) · hair_n·hair_w·hair_spread(긴 머리 타래 수·굵기·퍼짐) · hair_over(등에서 띄움 — 털 망토 위로) · braids(땋은 머리 수) · beard(수염 색)
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
@@ -155,12 +155,15 @@ static func _long(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: D
 	var nk: Vector3 = j["neck"]
 	var bw: float = bd["back_w"]
 	var ln := float(sp.get("hair_len", 0.16))
-	for k in 6:
-		var lo := lerpf(-0.8, 0.8, (k + rng.randf_range(0.2, 0.8)) / 6.0)
+	var n := int(sp.get("hair_n", 6))  # hair_n·hair_w = 타래 수·굵기(새 종족 후보 여성 — 숱 많은 긴 머리)
+	var hw := float(sp.get("hair_w", 0.02))
+	var spread := float(sp.get("hair_spread", 0.8))  # 뒤통수에서 타래가 퍼지는 폭(라디안 — 크면 옆머리까지)
+	for k in n:
+		var lo := lerpf(-spread, spread, (k + rng.randf_range(0.2, 0.8)) / n)
 		var a := Back.on_head(hd, rng.randf_range(-0.35, 0.1), lo, 0.004)
 		var b := Vector3(nk.x + (a.x - nk.x) * 1.2 + rng.randf_range(-0.01, 0.01), nk.y + ln * rng.randf_range(0.7, 1.0), bw + float(sp.get("hair_over", 0.016)))
 		var mid := a.lerp(b, 0.45) + Vector3(0, 0, 0.012)
-		Back.chain(cl, pr, g, [a, mid, b], [0.02, 0.016, 0.005], m, 0.008)
+		Back.chain(cl, pr, g, [a, mid, b], [hw, hw * 0.85, hw * 0.3], m, 0.008)
 		Back.groove(cl, pr, g, [a.lerp(mid, 0.3), mid, b.lerp(mid, 0.2)], B, 0.0035, 0.005)
 	var tie := cl.mat(Color("#4a3020"), "leather")
 	for i in int(sp.get("braids", 0)):

@@ -11,7 +11,7 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 ## 굵기(키 비율): 위팔 · 아래팔 시작/끝 · 허벅지 시작/끝 · 종아리 · 몸통 깊이 배율 · 허리 반폭
 const BUILDS := {
 	"thin": [0.021, 0.019, 0.012, 0.036, 0.021, 0.022, 0.8, 0.062],
-	"slender": [0.024, 0.022, 0.0135, 0.046, 0.026, 0.027, 0.9, 0.056],  # 여성 탐험가 후보(RaceParts — 마른 몸 thin의 갈비·척추 마디는 없다)
+	"slender": [0.022, 0.02, 0.0125, 0.046, 0.025, 0.026, 0.9, 0.05],  # 여성 탐험가 후보(RaceParts — 마른 몸 thin의 갈비·척추 마디는 없다)
 	"normal": [0.029, 0.026, 0.016, 0.05, 0.03, 0.032, 1.0, 0.078],
 	"muscular": [0.035, 0.031, 0.018, 0.056, 0.033, 0.036, 1.08, 0.084],
 	"brute": [0.042, 0.037, 0.022, 0.062, 0.037, 0.04, 1.18, 0.094],
@@ -122,6 +122,7 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 	var knee := float(pose.get("knee", 0.15))
 	var hunch := float(pose.get("hunch", 0.0))
 	var sh := float(sp.get("sh", 0.125))
+	var fem := bool(sp.get("female", false))  # 여성(새 종족 후보 — RaceParts): 처진 어깨 · 모은 다리 · 몸에 붙인 팔(사용자 2026-10-30 "뻣뻣하다")
 	var j := {}
 	var hip_y := -0.49 + knee * 0.025 + hunch * 0.01
 	j["pelvis"] = Vector3(0, hip_y, 0)
@@ -134,10 +135,10 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 		var t := "l" if s < 0 else "r"
 		var an := Vector3(s * stance, -0.045, 0.0)
 		j["ankle_" + t] = an
-		j["hip_" + t] = Vector3(s * 0.062, hip_y + 0.02, 0.0)
-		j["knee_" + t] = Vector3(s * (stance * 0.8 + 0.012), lerpf(hip_y, -0.045, 0.5), -0.015 - knee * 0.06)
+		j["hip_" + t] = Vector3(s * (0.056 if fem else 0.062), hip_y + 0.02, 0.0)
+		j["knee_" + t] = Vector3(s * (stance * 0.55 + 0.004 if fem else stance * 0.8 + 0.012), lerpf(hip_y, -0.045, 0.5), -0.015 - knee * 0.06)
 		j["toe_" + t] = an + Vector3(s * 0.012, 0.03, -0.1)
-		var shp := Vector3(s * sh, hip_y - 0.325 + hunch * 0.04, -hunch * 0.09)
+		var shp := Vector3(s * sh, hip_y - 0.325 + hunch * 0.04 + (0.01 if fem else 0.0), -hunch * 0.09)
 		j["shoulder_" + t] = shp
 		var el: Vector3
 		var wr: Vector3
@@ -166,6 +167,9 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 			_:
 				el = shp + Vector3(s * 0.035, 0.16, 0.012)
 				wr = el + Vector3(s * 0.016, 0.15, -0.035)
+		if fem:  # 팔꿈치·손을 몸쪽으로
+			el.x -= s * 0.012
+			wr.x -= s * 0.016
 		j["elbow_" + t] = el
 		j["wrist_" + t] = wr
 		j["hand_" + t] = wr + (wr - el).normalized() * 0.035
@@ -271,6 +275,7 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	var bulk := float(sp.get("bulk", 1.0))
 	var dep := float(t[6]) * bulk
 	var thin := build == "thin"
+	var slim := thin or bool(sp.get("female", false))  # 가는 목·승모근·어깨(여성 — 갈비·척추 마디는 thin만)
 	var big := build in ["muscular", "brute"]
 	var out := {"torso": cl.group(), "arm_l": cl.group(), "arm_r": cl.group(), "dep": dep, "bulk": bulk, "build": build}
 	var g: int = out["torso"]
@@ -314,15 +319,15 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 	for s: int in [-1, 1]:
 		var lift := _arm_lift(j, "l" if s < 0 else "r")  # 팔을 들면 광배근을 안으로 좁힌다(늘어뜨린 팔이 가리던 옆구리에 둥근 혹이 드러났다)
 		ell(cl, pr, g, ch + Vector3(s * shw * lerpf(0.55, 0.38, lift), 0.02, 0.012), shw * lerpf(0.42, 0.16, lift), 0.085, 0.048 * dep * lerpf(1.0, 0.45, lift), skin, 0.025, s * 0.18 * (1.0 - lift))  # 광배근(팔을 들면 가슴 윤곽 안으로)
-		cap(cl, pr, g, nk + Vector3(0, 0.008, 0.012), j["shoulder_" + ("l" if s < 0 else "r")] + Vector3(-s * 0.012, -0.004, 0.0), (0.024 if thin else 0.032) * bulk, 0.022 * bulk, skin, 0.03)  # 승모근
+		cap(cl, pr, g, nk + Vector3(0, 0.008, 0.012), j["shoulder_" + ("l" if s < 0 else "r")] + Vector3(-s * 0.012, -0.004, 0.0), (0.02 if slim else 0.032) * bulk, (0.018 if slim else 0.022) * bulk, skin, 0.03)  # 승모근
 	cl.tag = "neck"
-	cap(cl, pr, g, nk + Vector3(0, 0.01, 0.004), j["head"] + Vector3(0, 0.035, 0.012), (0.024 if thin else 0.03) * bulk, 0.026 * bulk, skin, 0.02)
+	cap(cl, pr, g, nk + Vector3(0, 0.01, 0.004), j["head"] + Vector3(0, 0.035, 0.012), (0.022 if slim else 0.03) * bulk, (0.022 if slim else 0.026) * bulk, skin, 0.02)
 	for s: int in [-1, 1]:  # 어깨세모근
 		cl.tag = "shoulder_" + ("l" if s < 0 else "r")
 		var side := "l" if s < 0 else "r"
 		var sj: Vector3 = j["shoulder_" + side]
 		var up_dir := ((j["elbow_" + side] as Vector3) - sj).normalized()  # 위팔 쪽으로(팔을 들면 따라 올라간다 — 관절 아래 고정이면 겨드랑이에 혹이 생겼다)
-		ell(cl, pr, g, sj + Vector3(s * 0.006, 0.0, 0.0) + up_dir * 0.028, 0.03 * bulk, lerpf(0.048, 0.036, _arm_lift(j, side)), 0.032 * bulk, skin, 0.03)
+		ell(cl, pr, g, sj + Vector3(s * 0.006, 0.0, 0.0) + up_dir * 0.028, (0.024 if slim else 0.03) * bulk, lerpf(0.048, 0.036, _arm_lift(j, side)), (0.026 if slim else 0.032) * bulk, skin, 0.03)
 	# 등 근육 · 뼈 결(옷 겹이 덮도록 몸통 부위로 기록)
 	cl.tag = "torso"
 	var bw: float = out["back_w"]

@@ -190,8 +190,8 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 		rb = {"head": lb["head"] if float(lb["head"]) > 0.0 else rb.get("head", HEAD), "legs": lb["legs"] if float(lb["legs"]) > 0.0 else rb.get("legs", LEGS)}
 	sp["head"] = float(sp.get("head", 1.0)) * _v("head", float(rb.get("head", HEAD)))
 	sp["legs"] = _v("legs", float(rb.get("legs", LEGS)))
-	sp["wide"] = _v("wide", WIDE)
-	sp["bulk"] = float(sp.get("bulk", 1.0)) * _v("bulk", BULK)
+	sp["wide"] = _v("wide", WIDE) * (0.9 if sp.get("female", false) else 1.0)  # 여성(새 종족 후보): 덜 넓고 덜 굵게 — 맵 배율에서 뻣뻣한 통짜 몸이 됐다
+	sp["bulk"] = float(sp.get("bulk", 1.0)) * _v("bulk", BULK) * (0.88 if sp.get("female", false) else 1.0)
 	sp["map_face"] = _v("map_face", MAP_FACE) > 0.0  # 1 = 입·튀어나온 턱 없는 얼굴, 0 = 전투 그림 얼굴(코·입)
 	sp["hair_high"] = _v("hair_high", HAIR_HIGH)
 	sp["hair_grow"] = _v("hair_grow", HAIR_GROW)
