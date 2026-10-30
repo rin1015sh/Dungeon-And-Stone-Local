@@ -86,26 +86,31 @@ func _run(db: GameDatabase, rift_id: String, seed_value: int) -> void:
 func _clear(cs: ExploreSession, tag: String) -> bool:
 	var run := cs.rift_run
 	var guard := 0
+	# 전투 시작은 정리하는 내내 듣는다 — 이긴 뒤 시간이 흐르는 사이 방의 보스가 알아채 바로 거는 전투(FieldMonsters — 보스는 화면에 들면 곧장)도
+	# 놓치지 않게. 걷는 동안만 들으면 그 전투가 끝나지 않은 채(in_combat) 남아 다음 조우로 걸어가지 못했다(녹색 탄광 2챕터 동골렘 → 고블린 폭탄병).
+	var hits: Array = []
+	var on_enc := func(eg: FieldMonsters.Group, _pf: bool) -> void: hits.append(eg)
+	var on_riddle := func(eg: FieldMonsters.Group) -> void: cs.answer_riddle(eg, RiftRiddle.PASS)
+	cs.encounter.connect(on_enc)
+	cs.riddle_asked.connect(on_riddle)
 	while not run.remaining.is_empty() and guard < 20:
 		guard += 1
 		var g: FieldMonsters.Group = run.remaining[0]
-		var hits: Array = []
-		var on_enc := func(eg: FieldMonsters.Group, _pf: bool) -> void: hits.append(eg)
-		var on_riddle := func(eg: FieldMonsters.Group) -> void: cs.answer_riddle(eg, RiftRiddle.PASS)
-		cs.encounter.connect(on_enc)
-		cs.riddle_asked.connect(on_riddle)
-		var reached := _walk(cs, g.pos, "%s 조우 %s" % [tag, g.monster_ids])
-		cs.encounter.disconnect(on_enc)
-		cs.riddle_asked.disconnect(on_riddle)
+		var reached := true
+		if not cs.in_combat:
+			reached = _walk(cs, g.pos, "%s 조우 %s" % [tag, g.monster_ids])
 		if not reached and hits.is_empty() and run.remaining.has(g):
-			return false
-		for eg: FieldMonsters.Group in hits:
+			break
+		while not hits.is_empty():
+			var eg: FieldMonsters.Group = hits.pop_front()
 			while run.remaining.has(eg) and cs.in_combat:
 				var waves := eg.waves.size()
 				cs.resolve_encounter(eg, Battle.RESULT_VICTORY, 1, eg.monster_ids.duplicate())
 				if waves > 0 and run.remaining.has(eg):
 					cs.in_combat = true  # 연전(engage는 call_deferred) — 다음 구성도 이긴 것으로
 		cs.player.pool.fill_all()
+	cs.encounter.disconnect(on_enc)
+	cs.riddle_asked.disconnect(on_riddle)
 	if not run.remaining.is_empty():
 		_bad("%s: 조우가 남았다 %d" % [tag, run.remaining.size()])
 		return false
