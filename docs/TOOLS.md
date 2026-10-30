@@ -31,7 +31,7 @@
 - **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 
 - **전투 탐험가 동작 시트**(UI41 — 게임이 쓴다): `godot --headless --path . --script res://tools/paint_motions.gd [-- --only=human_back,… --motions=idle,swing]` → `assets/party/<id>_motions.webp`(줄 = render.json `ui.combat_party_motion.rows` 순서 7동작, 칸 3 — 대기는 들썩임) + `<id>_dead.webp`(누운 몸). 미리보기 png는 `--out=<폴더> --png`. 동작 관절 = `tools/monster_art/party_motions.json`(참고 시트 120px 칸에서 잰 2D 점 → `PartyMotion`이 3D 뼈대로). **아군 그림(`paint_monsters --only=party`)·옷을 바꿨으면 이것도 다시**(약 3분). 고정한 줄: `tools/monster_art/pinned/<id>_<동작>.png`가 있으면 그 줄은 다시 그리지 않고 그 그림을 넣는다(지금 `human_back_wait` — 사용자가 고른 예전 그림, AM48). 캡처: `screenshot.tscn -- --screen=explore --combat --mate=human,barbarian,human --motions=swing,damage,stance,fall --motion_t=0.2`.
-- **옷차림·새 종족 후보 그림**(AM42·AM59 — 게임은 안 쓴다): 맵 `paint_actors.gd -- --look=<id,…> --out=<폴더>` · 전투 동작 `paint_motions.gd -- --look=<id,…> --out=<폴더> --png`(한 종 약 1분 반 — 여러 개면 프로세스를 나눠 동시에) → 비교 그림 `python3 tools/looks_sheet.py --map <폴더> --combat <폴더> --out <png> [--title 제목] <id …>`(옷차림 이름 = `MapLooks` name).
+- **옷차림·새 종족 후보 그림**(AM42·AM59 — 게임은 안 쓴다): 시안 `paint_look_preview.gd -- --look=<id,…> --out=<폴더>`(전투 그림 크기 앞·옆·뒤 `<id>_views.png`) · 맵 `paint_actors.gd -- --look=<id,…> --out=<폴더>` → 비교 그림 `python3 tools/looks_sheet.py --map <폴더> --views <폴더> --out <png> [--title 제목] [--cols N] <id …>`(제목·부제 = `MapLooks` name·note). 고른 하나만 전투 동작 `paint_motions.gd -- --look=<id> --out=<폴더> --png`(약 1분 반, `--combat <폴더>`로 비교 그림에).
 
 ## 웹 내보내기
 

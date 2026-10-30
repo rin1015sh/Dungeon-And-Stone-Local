@@ -1,11 +1,12 @@
 """옷차림 후보 비교 그림(사용자에게 보여 줄 한 장 — 게임은 쓰지 않는다).
 
-옷차림마다 한 칸: 위 = 전투 동작(대기·전투 자세·주먹·칼·활·주문·피격 + 쓰러짐, paint_motions --look),
+옷차림마다 한 칸: 위 = 시안(전투 그림 크기 앞·옆·뒤, paint_look_preview --look → --views 폴더)
+또는 전투 동작(대기·전투 자세·주먹·칼·활·주문·피격 + 쓰러짐, paint_motions --look → --combat 폴더),
 아래 = 탐험 맵 걷기(앞 섬·앞 걸음·옆 걸음·옆 섬·뒤 섬 ×2.5 + 실제 크기, paint_actors --look).
 배율은 모든 칸이 같다(종족 키 차이가 그대로 보인다).
 
-  python3 tools/looks_sheet.py --map <paint_actors --out 폴더> --combat <paint_motions --out 폴더> --out <png> e0_ranger e1_archer …
-이름(제목)은 tools/monster_art/MapLooks.gd의 name을 읽는다.
+  python3 tools/looks_sheet.py --map <폴더> (--views <폴더> | --combat <폴더>) --out <png> [--title 제목] e0_bow e1_blade …
+제목·부제는 tools/monster_art/MapLooks.gd의 name·note를 읽는다.
 """
 import argparse
 import os
@@ -22,13 +23,22 @@ SUB = (170, 158, 140, 255)
 MOTION_ROWS = ["idle", "stance", "thrust", "swing", "heavy", "shoot", "spell", "damage", "wait"]
 SHOW = [("idle", 0), ("stance", 1), ("thrust", 2), ("swing", 2), ("shoot", 1), ("spell", 1), ("damage", 1)]
 COMBAT_K = 0.4  # 전투 그림 줄임
+VIEW_K = 0.85  # 시안 그림 줄임
 MAP_K = 2.5  # 맵 그림 키움(실제 크기 칸은 따로)
 MAP_CELLS = [(2, 0), (0, 0), (0, 1), (2, 1), (2, 3)]  # (칸, 줄): 앞 섬 · 앞 걸음 · 옆 걸음 · 옆 섬 · 뒤 섬
 
 
 def look_names():
     src = open(os.path.join(ROOT, "tools", "monster_art", "MapLooks.gd"), encoding="utf-8").read()
-    return dict(re.findall(r'"([a-z]\d+_[a-z_]+)": \{"race": "[a-z]+", "name": "([^"]+)"', src))
+    out = {}
+    for lid, name, note in re.findall(r'"([a-z]\d+_[a-z_]+)": \{"race": "[a-z]+", "name": "([^"]+)"(?:, "note": "([^"]+)")?', src):
+        out[lid] = (name, note)
+    return out
+
+
+def views_frames(folder, lid):
+    im = Image.open(os.path.join(folder, lid + "_views.png")).convert("RGBA")
+    return [im.resize((int(im.width * VIEW_K), int(im.height * VIEW_K)), Image.LANCZOS)]
 
 
 def trim(im):
@@ -60,37 +70,65 @@ def map_frames(folder, lid):
     return big, real
 
 
-def panel(lid, title, mdir, cdir, font, small):
-    comb = combat_frames(cdir, lid)
+def _hcrop(im, pad=12):
+    box = im.getbbox()
+    if not box:
+        return im
+    return im.crop((max(0, box[0] - pad), 0, min(im.width, box[2] + pad), im.height))
+
+
+def panel(lid, title, note, mdir, cdir, vdir, font, small):
+    comb = views_frames(vdir, lid) if vdir else combat_frames(cdir, lid)
     big, real = map_frames(mdir, lid)
+    big = [_hcrop(im) for im in big]
     pad = 16
+    top = pad + 52
     ch = max(im.height for im in comb)
     mh = big[0].height
-    w = max(sum(im.width for im in comb), sum(im.width for im in big) + 140) + pad * 2
-    h = pad + 40 + ch + 24 + mh + pad
+    cw = sum(im.width for im in comb)
+    mw = sum(im.width for im in big) + 90
+    side = bool(vdir)  # 시안: 맵 줄을 시안 오른쪽에(한 줄로)
+    if side:
+        w = cw + 40 + mw + pad * 2
+        h = top + max(ch, mh + 20) + pad
+    else:
+        w = max(cw, mw + 60) + pad * 2
+        h = top + ch + 24 + mh + pad
     p = Image.new("RGBA", (w, h), PANEL)
     d = ImageDraw.Draw(p)
     d.text((pad, pad - 4), lid.split("_")[0] + "  " + title, font=font, fill=INK)
+    if note:
+        d.text((pad + 2, pad + 26), note, font=small, fill=SUB)
+    base = top + max(ch, mh + 20) if side else top + ch
     x = pad
     for im in comb:  # 발 = 칸 아래 가운데
-        p.alpha_composite(im, (x, pad + 40 + ch - im.height))
+        p.alpha_composite(im, (x, base - im.height))
         x += im.width
-    y = pad + 40 + ch + 8
-    d.line((pad, y, w - pad, y), fill=(84, 74, 66, 255), width=1)
-    d.text((pad, y + 4), "맵 ×2.5", font=small, fill=SUB)
-    x = pad + 60
+    if side:
+        x += 40
+        d.line((x - 20, top, x - 20, base), fill=(84, 74, 66, 255), width=1)
+        d.text((x, top - 2), "맵 ×2.5", font=small, fill=SUB)
+        y = base - mh
+    else:
+        y = top + ch + 8
+        d.line((pad, y, w - pad, y), fill=(84, 74, 66, 255), width=1)
+        d.text((pad, y + 4), "맵 ×2.5", font=small, fill=SUB)
+        x = pad + 60
+        y += 16
     for im in big:
-        p.alpha_composite(im, (x, y + 16))
+        p.alpha_composite(im, (x, y))
         x += im.width
-    d.text((x + 20, y + 4), "실제", font=small, fill=SUB)
-    p.alpha_composite(real, (x + 30, y + 16 + mh - real.height - 10))
+    d.text((x + 16, y + mh - real.height - 34), "실제", font=small, fill=SUB)
+    p.alpha_composite(real, (x + 20, y + mh - real.height - 10))
     return p
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--map", required=True)
-    ap.add_argument("--combat", required=True)
+    ap.add_argument("--combat", default="")
+    ap.add_argument("--views", default="")
+    ap.add_argument("--cols", type=int, default=1)
     ap.add_argument("--out", required=True)
     ap.add_argument("--title", default="")
     ap.add_argument("looks", nargs="+")
@@ -98,18 +136,19 @@ def main():
     names = look_names()
     font = ImageFont.truetype(FONT, 26)
     small = ImageFont.truetype(FONT, 16)
-    panels = [panel(lid, names.get(lid, lid), a.map, a.combat, font, small) for lid in a.looks]
+    panels = [panel(lid, *names.get(lid, (lid, "")), a.map, a.combat, a.views, font, small) for lid in a.looks]
     gap = 10
     top = 56 if a.title else gap
-    W = max(p.width for p in panels) + gap * 2
-    H = top + sum(p.height + gap for p in panels)
+    pw = max(p.width for p in panels)
+    ph = max(p.height for p in panels)
+    rows = (len(panels) + a.cols - 1) // a.cols
+    W = a.cols * (pw + gap) + gap
+    H = top + rows * (ph + gap)
     sheet = Image.new("RGBA", (W, H), BG)
     if a.title:
         ImageDraw.Draw(sheet).text((gap + 6, 12), a.title, font=ImageFont.truetype(FONT, 30), fill=INK)
-    y = top
-    for p in panels:
-        sheet.alpha_composite(p, (gap, y))
-        y += p.height + gap
+    for i, p in enumerate(panels):
+        sheet.alpha_composite(p, (gap + (i % a.cols) * (pw + gap), top + (i // a.cols) * (ph + gap)))
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     sheet.convert("RGB").save(a.out, optimize=True)
     print(a.out, sheet.size)

@@ -2,7 +2,7 @@ extends RefCounted
 ## 사람형(Back) 야만전사 장구 — 바바리안 옷차림 후보(tools/monster_art/MapLooks.gd b3~b8, 사용자 2026-10-29 "야만전사 느낌으로 여러 개"):
 ##   harness {c, x: true = 가슴·등에 X자 / false = 왼어깨 → 오른허리 한 줄, ring: 가운데 쇠고리 색} 맨몸 위 가죽 멜빵
 ##   kilt {c, len(0 = 엉덩이 ~ 1 = 무릎), fur, slits(갈라진 자락 수)} 가죽(털) 띠 치마
-##   pauldron {c, side: l|r, kind: leather|iron|skull, size(털 어깨 위에 얹으려면 크게 — 1.3 안팎)} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
+##   pauldron {c, side: l|r|both, kind: leather|iron|skull, size(털 어깨 위에 얹으려면 크게 — 1.3 안팎)} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
 ##   necklace {c, n} 이빨·발톱 목걸이(앞에서 보인다) · paint {c} 팔 전투 칠
 ## kit 키가 없으면 아무것도 하지 않는다.
 
@@ -21,7 +21,9 @@ static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: D
 	if kit.has("necklace"):
 		_necklace(cl, pr, j, bd, kit["necklace"], rng)
 	if kit.has("pauldron"):
-		_pauldron(cl, pr, j, bd, kit["pauldron"], rng)
+		var pd: Dictionary = kit["pauldron"]
+		for side: String in (["l", "r"] if str(pd.get("side", "l")) == "both" else [str(pd.get("side", "l"))]):  # both = 양쪽 어깨(새 종족 후보 드워프)
+			_pauldron(cl, pr, j, bd, pd.merged({"side": side}, true), rng)
 
 
 ## 앞 표면(가슴 높이)의 몸 좌표 w.

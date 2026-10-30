@@ -14,14 +14,14 @@ const REF_H := 540.0  ## Party.REF_H와 같게
 
 ## 종족 몸(Party 설계 형식 — 옷은 MapLooks가 kit을 통째로 덮는다). 머리색은 모두 어두운 갈색·검정(사용자).
 const BODIES := {
-	"elf": {"height": REF_H * 1.02, "build": "slender", "female": true, "sh": 0.088, "skin": Color("#d8b496"), "mottle": Color("#b08a70"), "mottle_amt": 0.2,
+	"elf": {"height": REF_H * 1.02, "build": "slender", "bulk": 0.88, "female": true, "sh": 0.088, "skin": Color("#d8b496"), "mottle": Color("#b08a70"), "mottle_amt": 0.2,
 		"hair": "long", "hair_c": Color("#2a1c14"), "hair_len": 0.2, "ears": "elf", "pose": {"stance": 0.06, "knee": 0.12, "arm_l": "hang", "arm_r": "ready"},
 		"kit": {"pants": Color("#3a3a2e"), "shirt": Color("#5a5a44"), "sleeves": "long", "belt": Color("#2a1c14"), "boots": Color("#2e2418")}, "blood": 0.0, "grime": 0.15},
 	"dwarf": {"height": REF_H * 0.8, "build": "brute", "bulk": 1.12, "sh": 0.15, "head": 1.12, "skin": Color("#c08e6c"), "mottle": Color("#946048"), "mottle_amt": 0.35,
 		"legs": 0.86, "hair": "short", "map_locks": {"front": 0.3, "temple": 0.25, "side": 0.05, "n": 20}, "hair_c": Color("#2e1e14"), "beard": Color("#2e1e14"), "beard_long": {"len": 0.16, "braids": 2},
 		"pose": {"stance": 0.1, "knee": 0.16, "arm_l": "hang", "arm_r": "hang"},
 		"kit": {"pants": Color("#4a3e30"), "shirt": Color("#6a5a44"), "sleeves": "rolled", "belt": Color("#2e2018"), "boots": Color("#3a2a1e")}, "blood": 0.0, "grime": 0.3},
-	"beastkin": {"height": REF_H * 0.98, "build": "slender", "female": true, "sh": 0.09, "skin": Color("#cfa282"), "mottle": Color("#a07458"), "mottle_amt": 0.25,
+	"beastkin": {"height": REF_H * 0.98, "build": "slender", "bulk": 0.92, "female": true, "sh": 0.09, "skin": Color("#cfa282"), "mottle": Color("#a07458"), "mottle_amt": 0.25,
 		"hair": "short", "hair_c": Color("#2e2016"), "ears": "fox", "ear_in": Color("#6a4a3c"), "fluff_tail": {"kind": "fox", "c": Color("#3a2618"), "tip": Color("#8a7664")},
 		"pose": {"stance": 0.07, "knee": 0.14, "arm_l": "hang", "arm_r": "ready"},
 		"kit": {"pants": Color("#3a3228"), "shirt": Color("#5e5040"), "sleeves": "long", "belt": Color("#2a1c14"), "boots": Color("#2e2218")}, "blood": 0.0, "grime": 0.2},
@@ -37,8 +37,8 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, sp: Di
 	var pv: Vector3 = j["pelvis"]
 	var ch: Vector3 = j["chest"]
 	cl.tag = "pelvis"
-	for s: int in [-1, 1]:  # 엉덩이 옆 둥글게(허리는 slender라 가늘다)
-		Back.ell(cl, pr, g, pv + Vector3(s * 0.066, 0.025, 0.006), 0.056, 0.075, 0.056 * dep, skin, 0.03)
+	for s: int in [-1, 1]:  # 엉덩이 옆을 조금 둥글게(허리는 slender라 가늘다 — 크게 하면 뒷모습 엉덩이가 너무 컸다)
+		Back.ell(cl, pr, g, pv + Vector3(s * 0.06, 0.0, 0.0), 0.034, 0.05, 0.036 * dep, skin, 0.03)
 	cl.tag = "torso"
 	for s: int in [-1, 1]:  # 가슴(앞 — 몸 좌표 −w)
 		Back.ell(cl, pr, g, ch + Vector3(s * 0.038, 0.014, -0.044 * dep), 0.032, 0.027, 0.024, skin, 0.03)

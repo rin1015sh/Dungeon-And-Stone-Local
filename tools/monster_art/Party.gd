@@ -22,6 +22,7 @@ const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
 const RaceParts := preload("res://tools/monster_art/RaceParts.gd")
+const RaceKit := preload("res://tools/monster_art/RaceKit.gd")
 
 const RACES := ["human", "barbarian"]
 const VIEWS := ["back"]
@@ -157,6 +158,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	RaceParts.head(cl, pr, j, bd, hd, sp)  # 엘프·짐승 귀 · 묶은 머리 · 긴 수염
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
 	BackCloak.wear(cl, pr, j, bd, hd, kit, rng)  # 탐험 맵 겉옷(망토·두건·외투 — MapLooks)
+	RaceKit.wear(cl, pr, j, bd, hd, kit)  # 새 종족 후보 장식(머리띠·천 띠·화살통·목도리·앞치마·버클·등짐)
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
 	RaceParts.tail(cl, pr, j, sp)  # 수인 털 꼬리
 	BackPose.props(cl, pr, j, sp)

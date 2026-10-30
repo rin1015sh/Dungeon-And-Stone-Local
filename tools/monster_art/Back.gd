@@ -175,6 +175,7 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 ## 탐험 맵 몸 비율(피어 앤 헝거 맵 그림 — 약간 큰 머리·짧고 굵은 몸, tools/paint_actors.gd): legs = 다리 길이 배율(발은 그대로,
 ## 위 몸은 그만큼 내려온다), wide = 가로 배율, head(spec)로 커진 머리는 목 위로 올린다. 전투 그림은 모두 1이라 그대로.
 static func _chunky(j: Dictionary, sp: Dictionary, hip_y: float) -> Dictionary:
+	j["soft_face"] = bool(sp.get("female", false))  # 여성 얼굴(새 종족 후보 — RaceParts): 눈썹뼈·광대·코·턱을 낮고 작게
 	var lf := float(sp.get("legs", 1.0))
 	var wd := float(sp.get("wide", 1.0))
 	if lf == 1.0 and wd == 1.0 and float(sp.get("head", 1.0)) == 1.0 and not sp.get("map_face", false) and not sp.get("socket_eyes", false):
@@ -410,16 +411,18 @@ static func head(cl: Clay, pr: Dictionary, j: Dictionary, skin: int, mats: Dicti
 		# 턱선은 따로 붙이지 않는다 — 좁아지는 사슬의 아래 윤곽이 곧은 턱선이 된다(따로 붙인 조각은 이음매가 입·해골 턱처럼 보였다)
 		cap(cl, pr, g, hc + Vector3(0, rv * 0.5, -rw * 0.22), (j["neck"] as Vector3) + Vector3(0, -0.01, -0.012), ru * 0.5, ru * 0.42, skin, 0.09)  # 턱 밑~목(오목한 틈에 주름 선이 그어지지 않게)
 	else:
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8, rv * 0.5, rw * 0.72, skin, 0.012)  # 턱
+		var jaw := 0.82 if j.get("soft_face", false) else 1.0
+		ell(cl, pr, g, hc + Vector3(0, rv * 0.62, -rw * 0.38), ru * 0.8 * jaw, rv * 0.5 * jaw, rw * 0.72, skin, 0.012)  # 턱
 	if not plain:
-		var soft := 0.55 if j.get("socket_eyes", false) else 1.0  # 맵 그림: 광대·코를 낮게(작은 그림에서 둥근 광대가 안경테처럼 빛났다)
-		ell(cl, pr, g, hc + Vector3(0, -rv * 0.32, -rw * 0.82), ru * 0.8, rv * 0.18, rw * 0.25, skin, 0.008)  # 눈썹뼈
+		var soft := 0.55 if j.get("socket_eyes", false) or j.get("soft_face", false) else 1.0  # 맵 그림: 광대·코를 낮게(작은 그림에서 둥근 광대가 안경테처럼 빛났다)
+		ell(cl, pr, g, hc + Vector3(0, -rv * 0.32, -rw * lerpf(0.72, 0.82, (soft - 0.55) / 0.45)), ru * 0.8, rv * 0.18 * lerpf(0.6, 1.0, (soft - 0.55) / 0.45), rw * 0.25, skin, 0.008)  # 눈썹뼈
 		for s: int in [-1, 1]:
 			ell(cl, pr, g, hc + Vector3(s * ru * 0.68, rv * 0.08, -rw * lerpf(0.5, 0.62, soft)), ru * 0.3, rv * 0.22, rw * 0.32 * soft, skin, 0.008)  # 광대
 		cap(cl, pr, g, hc + Vector3(0, -rv * 0.18, -rw * lerpf(0.95, 1.02, soft)), hc + Vector3(0, rv * 0.28, -rw * lerpf(1.05, 1.22, soft)), hh * 0.07 * lerpf(0.8, 1.0, soft), hh * 0.065 * lerpf(0.8, 1.0, soft), skin, 0.006)  # 코
 	# 맵 얼굴(plain): 코·입·귀 없는 매끈한 달걀형 — 눈은 칠한 눈구멍뿐(사용자 2026-10-17 "코랑 입 귀 지워")
 	if not plain:
-		ell(cl, pr, g, hc + Vector3(0, rv * 0.98, -rw * 0.72), ru * 0.38, rv * 0.2, rw * 0.3, skin, 0.008)  # 턱끝
+		var tip := 0.7 if j.get("soft_face", false) else 1.0
+		ell(cl, pr, g, hc + Vector3(0, rv * 0.98 * lerpf(1.0, 0.94, 1.0 - tip), -rw * 0.72), ru * 0.38 * tip, rv * 0.2 * tip, rw * 0.3 * tip, skin, 0.008)  # 턱끝
 	cl.tag = "ear"
 	if str(j.get("ears", "")) == "long":  # 고블린 귀: 머리 옆에서 바깥·조금 위로 뻗은 길고 뾰족한 귀
 		for s: int in [-1, 1]:
