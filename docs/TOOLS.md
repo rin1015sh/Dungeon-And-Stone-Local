@@ -32,6 +32,7 @@
 
 - **전투 탐험가 동작 시트**(UI41 — 게임이 쓴다): `godot --headless --path . --script res://tools/paint_motions.gd [-- --only=human_back,… --motions=idle,swing]` → `assets/party/<id>_motions.webp`(줄 = render.json `ui.combat_party_motion.rows` 순서 7동작, 칸 3 — 대기는 들썩임) + `<id>_dead.webp`(누운 몸). 미리보기 png는 `--out=<폴더> --png`. 동작 관절 = `tools/monster_art/party_motions.json`(참고 시트 120px 칸에서 잰 2D 점 → `PartyMotion`이 3D 뼈대로). **아군 그림(`paint_monsters --only=party`)·옷을 바꿨으면 이것도 다시**(약 3분). 고정한 줄: `tools/monster_art/pinned/<id>_<동작>.png`가 있으면 그 줄은 다시 그리지 않고 그 그림을 넣는다(지금 `human_back_wait` — 사용자가 고른 예전 그림, AM48). 캡처: `screenshot.tscn -- --screen=explore --combat --mate=human,barbarian,human --motions=swing,damage,stance,fall --motion_t=0.2`.
 - **옷차림·새 종족 후보 그림**(AM42·AM59 — 게임은 안 쓴다): 시안 `paint_look_preview.gd -- --look=<id,…> --out=<폴더>`(전투 그림 크기 앞·옆·뒤 `<id>_views.png`) · 맵 `paint_actors.gd -- --look=<id,…> --out=<폴더>` → 비교 그림 `python3 tools/looks_sheet.py --map <폴더> --views <폴더> --out <png> [--title 제목] [--cols N] <id …>`(제목·부제 = `MapLooks` name·note). 고른 하나만 전투 동작 `paint_motions.gd -- --look=<id> --out=<폴더> --png`(약 1분 반, `--combat <폴더>`로 비교 그림에).
+- **종족 그림 확인 시트**(AM59 — 사용자 확인용): `python3 tools/art_review.py --out docs/screens/race_looks <종족 …>` → `review_<종족>.png`(맵 걷기 시트 전체 ×2 + 게임 크기 + 전투 뒷모습 + 전투 동작 시트 전체 + 쓰러짐, 줄·칸 이름표).
 
 ## 웹 내보내기
 
