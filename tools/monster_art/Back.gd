@@ -346,10 +346,10 @@ static func body(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary, skin: 
 		if not thin:
 			bump(cl, pr, g, Vector3(wa.x + s * 0.024, wa.y + 0.01, ch.z + 0.056 * dep), B, 0.02, 0.07, 0.006, skin)  # 척추세움근
 	groove(cl, pr, g, [Vector3(nk.x, nk.y + 0.03, bw - 0.01), Vector3(ch.x, ch.y, bw), Vector3(wa.x, wa.y, ch.z + 0.056 * dep), Vector3(pv.x, pv.y - 0.01, pv.z + 0.05 * dep)], B, 0.006, 0.009 if big else 0.006)  # 척추 골
-	for s: int in ([] if fem else [-1, 1]):  # 엉덩이 골·아래 주름(여성은 없다 — 몸에 붙는 바지에서 엉덩이 밑 그림자로 짙게 보였다)
-		groove(cl, pr, g, [Vector3(s * 0.005, pv.y + 0.09, 0.05), Vector3(s * 0.05, pv.y + 0.098, 0.05), Vector3(s * 0.09, pv.y + 0.085, 0.04)], B, 0.005, 0.006)
-	if not fem:
+	if not fem:  # 엉덩이 골·아래 주름(여성은 없다 — 몸에 붙는 바지에서 엉덩이 밑 그림자로 짙게 보였다)
 		groove(cl, pr, g, [Vector3(pv.x, pv.y - 0.005, pv.z + 0.05 * dep), Vector3(pv.x, pv.y + 0.075, pv.z + 0.06 * dep)], B, 0.005, 0.008)  # 엉덩이 골
+	for s: int in ([] if fem else [-1, 1]):
+		groove(cl, pr, g, [Vector3(s * 0.005, pv.y + 0.09, 0.05), Vector3(s * 0.05, pv.y + 0.098, 0.05), Vector3(s * 0.09, pv.y + 0.085, 0.04)], B, 0.005, 0.006)
 	if thin:
 		for k in 6:  # 척추 마디 · 등 갈비
 			var y := nk.y + 0.04 + k * 0.035
