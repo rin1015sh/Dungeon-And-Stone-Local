@@ -131,6 +131,10 @@ static func skeleton(sp: Dictionary) -> Dictionary:
 	j["neck"] = Vector3(0, hip_y - 0.345 + hunch * 0.05, -hunch * 0.13)
 	j["head_h"] = 0.13 * float(sp.get("head", 1.0))
 	j["head"] = Vector3(0, j["neck"].y - 0.072 + hunch * 0.02, j["neck"].z - 0.012 - hunch * 0.05)
+	if bool(sp.get("female", false)):  # 여성: 목을 세우고 머리를 어깨 위로(사용자 "거북목") — 가슴은 조금 앞으로
+		j["neck"] = (j["neck"] as Vector3) + Vector3(0, -0.006, 0.014)
+		j["head"] = (j["head"] as Vector3) + Vector3(0, -0.01, 0.026)
+		j["chest"] = (j["chest"] as Vector3) + Vector3(0, 0, -0.006)
 	for s: int in [-1, 1]:
 		var t := "l" if s < 0 else "r"
 		var an := Vector3(s * stance, -0.045, 0.0)

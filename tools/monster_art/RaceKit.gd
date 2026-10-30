@@ -86,43 +86,56 @@ static func _buckle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col
 static func _scarf(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Dictionary) -> void:
 	var col: Color = d["c"]
 	var fur: bool = d.get("fur", false)
-	var m := _mat(cl, col, "fur" if fur else "cloth")
-	var md := _mat(cl, col.darkened(0.18), "fur" if fur else "cloth")
 	var g := cl.group()
 	var nk: Vector3 = j["neck"] + Vector3(0, 0.025, 0.0)
 	var bk := float(bd["bulk"])
-	var r := (0.062 if fur else 0.05) * bk
-	# 감은 바퀴: 털 깃은 한 바퀴, 천 목도리는 두 바퀴(아래는 어깨에 얹히고 위는 턱 밑 — 앞이 조금 처져 늘어진 천처럼)
-	var wraps: Array = [[0.0, 1.0, 0.034 if fur else 0.026]] if fur else [[0.018, 1.12, 0.026], [-0.012, 0.98, 0.024]]
-	for wi in wraps.size():
-		var w: Array = wraps[wi]
-		var pts: Array = []
-		var rad: Array = []
-		for k in 17:
-			var a := k / 16.0 * TAU
-			var front := maxf(0.0, -sin(a))  # 앞(−w)일수록 처진다
-			pts.append(nk + Vector3(cos(a) * r * float(w[1]), float(w[0]) + front * 0.018 + sin(a * 3.0 + wi) * 0.003, sin(a) * r * float(w[1]) * 0.9))
-			rad.append(float(w[2]) * (1.0 + 0.15 * sin(a * 2.0 + wi * 1.7)))  # 굵기가 고르지 않게 — 천이 접힌 듯
-		Back.chain(cl, pr, g, pts, rad, md if wi == 0 else m, 0.012)
-		if not fur:
-			for k in 8:  # 감은 결(비스듬한 주름)
-				var a := (k + 0.5) / 8.0 * TAU
-				var c := nk + Vector3(cos(a) * r * float(w[1]) * 1.25, float(w[0]), sin(a) * r * float(w[1]) * 1.15)
-				Back.groove(cl, pr, g, [c + Vector3(0, -0.015, 0), c + Vector3(cos(a) * 0.004, 0.015, sin(a) * 0.004)], Vector3(cos(a), 0, sin(a)), 0.004, 0.006)
-	if fur or not d.get("tail", true):
+	var r := (0.062 if fur else 0.054) * bk
+	if fur:
+		_ring(cl, pr, g, nk, r, 1.0, 0.0, 0.034, _mat(cl, col, "fur"), 0)
 		return
+	# 두툼하게 두 바퀴: 아래 바퀴는 어깨에 얹혀 넓고 어둡게, 위 바퀴는 턱 밑에서 밝게 부풀어 — 명암으로 겹이 읽히게(사용자 "입체감 있게")
+	var lo := _mat(cl, col.darkened(0.28), "cloth")
+	var hi := _mat(cl, col.lightened(0.1), "cloth")
+	var mid := _mat(cl, col, "cloth")
+	_ring(cl, pr, g, nk, r * 1.28, 0.03, 0.022, 0.036, lo, 0)
+	_ring(cl, pr, g, nk, r * 1.06, -0.008, 0.016, 0.034, hi, 1)
 	var dep: float = bd["dep"]
-	var fw := (j["chest"] as Vector3).z - 0.066 * dep - 0.012
-	var knot := nk + Vector3(-0.035 * bk, 0.035, -r * 1.0)
-	Back.ell(cl, pr, g, knot, 0.026, 0.022, 0.022, m, 0.006)  # 매듭
-	# 앞 자락: 매듭에서 가슴 왼쪽으로 늘어진 넓은 천(끝이 조금 벌어진다)
-	Back.chain(cl, pr, g, [knot + Vector3(0, 0.01, 0), Vector3(knot.x - 0.008, knot.y + 0.06, fw - 0.004), Vector3(knot.x - 0.004, knot.y + 0.12, fw - 0.002)], [0.022, 0.02, 0.018], m, 0.006)
-	Back.ell(cl, pr, g, Vector3(knot.x - 0.004, knot.y + 0.13, fw - 0.002), 0.024, 0.01, 0.012, md, 0.004)  # 자락 끝
-	Back.groove(cl, pr, g, [knot + Vector3(0, 0.02, -0.01), Vector3(knot.x - 0.006, knot.y + 0.11, fw - 0.02)], Vector3(0, 0, -1), 0.003, 0.005)
+	var fw := (j["chest"] as Vector3).z - 0.066 * dep - 0.016
+	var knot := nk + Vector3(-0.042 * bk, 0.05, -r * 1.25)
+	Back.ell(cl, pr, g, knot, 0.034, 0.03, 0.03, mid, 0.008)  # 매듭(굵게)
+	Back.groove(cl, pr, g, [knot + Vector3(-0.02, -0.012, -0.02), knot + Vector3(0.02, 0.012, -0.024)], Vector3(0, 0, -1), 0.004, 0.008)
+	# 앞 자락 둘: 매듭에서 가슴으로 늘어진 넓은 천(하나는 길고 바깥으로, 하나는 짧고 안쪽 — 겹쳐 두께가 보인다)
+	for e: Array in [[-0.01, 0.12, 0.024, lo], [0.014, 0.08, 0.02, mid]]:  # 크게 하면 가슴에 주머니처럼 보였다
+		var x0 := knot.x + float(e[0])
+		var ln := float(e[1])
+		var w := float(e[2])
+		var pts: Array = [knot + Vector3(float(e[0]) * 0.5, 0.012, 0.0), Vector3(x0, knot.y + ln * 0.5, fw - 0.01), Vector3(x0 + float(e[0]) * 0.6, knot.y + ln, fw - 0.006)]
+		Back.chain(cl, pr, g, pts, [w * 0.8, w, w * 0.9], int(e[3]), 0.008)
+		Back.ell(cl, pr, g, pts[2] + Vector3(0, 0.008, 0), w * 1.05, 0.012, w * 0.5, int(e[3]), 0.004)  # 자락 끝(조금 벌어짐)
+		Back.groove(cl, pr, g, [pts[0], pts[1], pts[2]], Vector3(0, 0, -1), 0.004, 0.008)  # 세로 주름
 	# 등 끝자락: 하나만 왼어깨 뒤로 비스듬히(둘을 나란히 늘어뜨리면 등에 M 자처럼 보였다)
 	var bw: float = bd["back_w"]
-	var a0 := nk + Vector3(-0.025, 0.01, r * 0.8)
-	Back.chain(cl, pr, g, [a0, Vector3(nk.x - 0.05, nk.y + 0.07, bw + 0.022), Vector3(nk.x - 0.075, nk.y + 0.15, bw + 0.018), Vector3(nk.x - 0.085, nk.y + 0.2, bw + 0.014)], [0.022, 0.02, 0.016, 0.008], md, 0.004)
+	var a0 := nk + Vector3(-0.03, 0.02, r * 1.0)
+	var back: Array = [a0, Vector3(nk.x - 0.055, nk.y + 0.08, bw + 0.026), Vector3(nk.x - 0.08, nk.y + 0.16, bw + 0.02), Vector3(nk.x - 0.09, nk.y + 0.21, bw + 0.016)]
+	Back.chain(cl, pr, g, back, [0.028, 0.026, 0.022, 0.012], lo, 0.006)
+	Back.groove(cl, pr, g, back, Vector3(0, 0, 1), 0.004, 0.008)
+
+
+## 목도리 한 바퀴: 목 둘레(앞은 조금 처짐) — 굵기가 고르지 않게(천이 접힌 듯) + 비스듬한 감은 결.
+static func _ring(cl: Clay, pr: Dictionary, g: int, nk: Vector3, r: float, dy: float, sag: float, th: float, m: int, seed_k: int) -> void:
+	var pts: Array = []
+	var rad: Array = []
+	for k in 19:
+		var a := k / 18.0 * TAU
+		var front := maxf(0.0, -sin(a))  # 앞(−w)일수록 처진다
+		pts.append(nk + Vector3(cos(a) * r, dy + front * sag + sin(a * 3.0 + seed_k) * 0.003, sin(a) * r * 0.92))
+		rad.append(th * (1.0 + 0.18 * sin(a * 2.0 + seed_k * 1.7)))
+	Back.chain(cl, pr, g, pts, rad, m, 0.012)
+	for k in 9:  # 감은 결(비스듬한 주름)
+		var a := (k + 0.5) / 9.0 * TAU
+		var front := maxf(0.0, -sin(a))
+		var c := nk + Vector3(cos(a) * (r + th * 0.9), dy + front * sag, sin(a) * (r + th * 0.9) * 0.92)
+		Back.groove(cl, pr, g, [c + Vector3(0, -th * 0.7, 0), c + Vector3(cos(a) * 0.004, th * 0.7, sin(a) * 0.004)], Vector3(cos(a), 0, sin(a)), 0.004, 0.007)
 
 
 ## 화살통: 오른어깨 뒤에서 왼허리 뒤로 비스듬히 + 위로 삐져나온 화살 깃 + 가슴을 가로지르는 끈.

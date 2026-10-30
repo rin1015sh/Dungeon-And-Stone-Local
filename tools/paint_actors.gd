@@ -181,7 +181,7 @@ func _figure(base: Dictionary, name: String, turn: float, phase: float, extra: D
 	sp["turn"] = turn
 	sp["pitch"] = _v("pitch", PITCH)
 	var arms: String = ARM_POSES[int(_v("arms", EXPLORER_ARMS if size < 0.0 else ARMS))]
-	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": arms, "arm_r": arms, "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH)}, true)
+	sp["pose"] = (sp.get("pose", {}) as Dictionary).merged({"arm_l": arms, "arm_r": arms, "stance": _v("stance", STANCE), "knee": _v("knee", KNEE), "hunch": _v("hunch", HUNCH) * (0.2 if sp.get("female", false) else 1.0)}, true)  # 여성은 거의 숙이지 않는다(사용자 "거북목")
 	sp["gait"] = {"thigh_f": _v("thigh_f", THIGH_F), "shin_f": _v("shin_f", SHIN_F), "thigh_b": _v("thigh_b", THIGH_B), "shin_b": _v("shin_b", SHIN_B),
 		"lift": _v("lift", LIFT), "twist": _v("twist", TWIST), "arm_f": _v("arm_f", ARM_F), "fore_f": _v("fore_f", FORE_F), "arm_b": _v("arm_b", ARM_B), "fore_b": _v("fore_b", FORE_B)}
 	var rb: Dictionary = RACE_BODY.get(name, {})
