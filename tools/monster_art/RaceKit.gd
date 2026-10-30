@@ -2,7 +2,7 @@ extends RefCounted
 ## 새 종족 후보의 옷 장식(사용자 2026-10-30 "종족 느낌도 안 나고 밋밋 — 휘황찬란 말고 바바리안·인간처럼 은은한 개성"):
 ## 한눈에 종족이 읽히는 작은 소품. Party.figure가 겉옷(BackCloak) 다음에 부른다. kit 키:
 ##   circlet {c, gem} 이마를 두른 가는 머리띠(엘프) · sash {c, w, tail} 왼어깨 → 오른허리 비스듬한 천 띠 + 허리 옆에 늘어진 끝
-##   quiver {c, n} 등에 비스듬히 멘 화살통(깃이 오른어깨 위로) + 가슴을 가로지르는 끈 · scarf {c, tail} 목에 두른 천 + 등으로 늘어진 끝
+##   quiver {c, n, fletch} 등에 비스듬히 멘 화살통(깃이 오른어깨 위로) + 가슴을 가로지르는 끈 · scarf {c, tail, fur} 목에 두른 천 + 등으로 늘어진 끝(fur = 털 깃 — 끝 없이 굵게)
 ##   apron {c, len} 가슴 ~ 무릎 가죽 앞치마(대장장이) · buckle {c} 허리 앞 큰 네모 버클 · nasal {c} 투구 코 가리개
 ##   pack {c, roll, pick} 등짐(배낭 + 위에 말아 묶은 담요 + 비스듬한 곡괭이 자루)
 ## 양쪽 어깨받이는 BackSavage pauldron {side: "both"}.
@@ -11,6 +11,7 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
 const BackSavage := preload("res://tools/monster_art/BackSavage.gd")
+const RaceGear := preload("res://tools/monster_art/RaceGear.gd")
 
 
 static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Dictionary, kit: Dictionary) -> void:
@@ -28,6 +29,7 @@ static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		_pack(cl, pr, j, bd, kit["pack"])
 	if kit.has("circlet"):
 		_circlet(cl, pr, hd, kit["circlet"])
+	RaceGear.wear(cl, pr, j, bd, kit)  # 엉덩이 띠·칼집·밧줄·메달·등 도끼
 	if kit.has("nasal"):
 		var hh: float = hd["hh"]
 		Back.cap(cl, pr, cl.group(), Back.on_head(hd, 0.45, PI, hh * 0.1), Back.on_head(hd, -0.12, PI, hh * 0.16), hh * 0.05, hh * 0.04, cl.mat(kit["nasal"], "metal"), 0.003)
@@ -83,22 +85,23 @@ static func _buckle(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, col
 ## 목도리: 목을 두른 굵은 천 고리 + 등으로 늘어진 두 끝.
 static func _scarf(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Dictionary) -> void:
 	var col: Color = d["c"]
-	var m := _mat(cl, col, "cloth")
+	var fur: bool = d.get("fur", false)
+	var m := _mat(cl, col, "fur" if fur else "cloth")
 	var g := cl.group()
 	var nk: Vector3 = j["neck"] + Vector3(0, 0.025, 0.0)
-	var r := 0.05 * float(bd["bulk"])
+	var r := (0.062 if fur else 0.05) * float(bd["bulk"])
 	var pts: Array = []
 	var rad: Array = []
 	for k in 13:
 		var a := k / 12.0 * TAU
 		pts.append(nk + Vector3(cos(a) * r, sin(a) * 0.006, sin(a) * r * 0.9))
-		rad.append(0.024)
+		rad.append(0.034 if fur else 0.024)
 	Back.chain(cl, pr, g, pts, rad, m, 0.01)
-	if d.get("tail", true):
+	if d.get("tail", not fur):
 		var bw: float = bd["back_w"]
-		for s: float in [-1.0, 1.0]:
-			var a := nk + Vector3(s * 0.02, 0.01, r * 0.8)
-			Back.chain(cl, pr, g, [a, Vector3(nk.x + s * 0.03, nk.y + 0.08, bw + 0.02), Vector3(nk.x + s * 0.045, nk.y + (0.16 if s > 0 else 0.13), bw + 0.016)], [0.02, 0.018, 0.012], m, 0.004)
+		# 끝자락 하나가 왼어깨 뒤로 비스듬히(둘을 나란히 늘어뜨리면 등에 M 자처럼 보였다)
+		var a := nk + Vector3(-0.025, 0.01, r * 0.8)
+		Back.chain(cl, pr, g, [a, Vector3(nk.x - 0.05, nk.y + 0.07, bw + 0.02), Vector3(nk.x - 0.075, nk.y + 0.15, bw + 0.016), Vector3(nk.x - 0.085, nk.y + 0.2, bw + 0.012)], [0.02, 0.017, 0.013, 0.006], m, 0.004)
 
 
 ## 화살통: 오른어깨 뒤에서 왼허리 뒤로 비스듬히 + 위로 삐져나온 화살 깃 + 가슴을 가로지르는 끈.
@@ -116,7 +119,7 @@ static func _quiver(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: 
 	Back.cap(cl, pr, g, top, top + (top - bot).normalized() * 0.01, 0.034, 0.034, rim, 0.002)  # 아가리 테
 	var dir := (top - bot).normalized()
 	var shaft := cl.mat(Color("#5a4630"), "wood")
-	var fl := cl.mat(d.get("fletch", Color("#9a9488")), "cloth")
+	var fl := cl.mat(d.get("fletch", Color("#9a9488")), "cloth")  # fletch = 깃 색
 	for k in int(d.get("n", 4)):
 		var off := Vector3((k - 1.5) * 0.012, 0.0, (k % 2) * 0.008)
 		var a: Vector3 = top + off

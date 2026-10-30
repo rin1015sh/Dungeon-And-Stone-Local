@@ -99,54 +99,35 @@ const LOOKS := {
 		"boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#55595c"), "armband": Color("#55595c"), "paint": Color("#3a3a2a"),
 		"elbow_guard": Color("#1c1714")}}},
 	## 새 종족 후보(사용자 2026-10-30 "엘프·드워프·수인 — 엘프·수인은 여성 · 머리는 어두운 색 · 드워프는 수염 · 여러 복장 중 하나를 고른다"
-	## → 첫 시안 "종족 느낌도 안 나고 밋밋 — 휘황찬란 말고 바바리안·인간처럼 은은한 개성"): 몸 = RaceParts.BODIES, 종족 소품 = RaceKit.
+	## → 2차 시안 12종 → 사용자가 준 참고 그림 세 장 "이 사진들 복장으로 다시"): 몸 = RaceParts.BODIES, 종족 소품 = RaceKit·RaceGear.
 	## note = 비교 그림 부제(tools/looks_sheet.py). 그림 = paint_look_preview(시안) → 고르면 paint_actors·paint_motions --look.
-	"e0_bow": {"race": "elf", "name": "숲의 궁수", "note": "이끼색 웃옷 · 짧은 어깨 망토 · 등 화살통 · 은 머리띠", "head": 1.7, "legs": 0.88, "spec": {"kit": {
-		"shirt": Color("#5e6a52"), "sleeves": "long", "vest": Color("#3a4630"), "belt": Color("#3a2a1c"), "pants": Color("#2e302a"), "mantle": Color("#4a5a40"),
-		"boots": Color("#2e2418"), "boots_tall": true, "bracers": Color("#4a3a2a"), "quiver": {"c": Color("#4a3624")}, "circlet": {"c": Color("#c8c4b8")}}}},
-	"e1_blade": {"race": "elf", "name": "은빛 검객", "note": "가는 사슬 위 사선 천 띠 · 한쪽 가죽 어깨받이 · 묶은 머리", "head": 1.7, "legs": 0.88,
-		"spec": {"ponytail": {"len": 0.2}, "hair_len": 0.06, "kit": {
-		"shirt": Color("#3e4a48"), "sleeves": "long", "chain": Color("#3e4448"), "sash": {"c": Color("#2e5254")}, "pauldron": {"c": Color("#4a3a2a"), "side": "l", "kind": "leather", "size": 0.8},
-		"pants": Color("#2a2c2a"), "belt": Color("#24180f"), "boots": Color("#2a2018"), "boots_tall": true, "bracers": Color("#5a5e62")}}},
-	"e2_sage": {"race": "elf", "name": "숲의 현자", "note": "남회색 긴 망토(은 여밈) · 은 머리띠 · 땋은 두 갈래", "head": 1.7, "legs": 0.88,
-		"spec": {"hair_c": Color("#1e1610"), "braids": 2, "kit": {
-		"pants": Color("#2a2c28"), "boots": Color("#26201a"), "boots_tall": true, "shirt": Color("#6a6a62"), "sleeves": "long", "vest": Color("#3a4252"), "belt": Color("#3a2c1e"),
-		"cloak": {"c": Color("#3a4252"), "len": 0.75, "flare": 1.2, "open": 0.55, "clasp": Color("#c8c4b8"), "collar": true}, "circlet": {"c": Color("#c8c4b8"), "gem": Color("#4a6a7a")}}}},
-	"e3_scout": {"race": "elf", "name": "숲길 정찰병", "note": "청록 목도리 · 가죽 조끼 · 단검 · 긴 장화", "head": 1.7, "legs": 0.88, "spec": {"kit": {
-		"shirt": Color("#6e6a5a"), "sleeves": "long", "vest": Color("#4a3624"), "scarf": {"c": Color("#3e5e5e")}, "belt": Color("#2a1c12"), "knife": true, "pouch": true,
-		"pants": Color("#2e302a"), "boots": Color("#2e2418"), "boots_tall": true, "bracers": Color("#4a3a2a")}}},
-	"d0_ironside": {"race": "dwarf", "name": "강철 전사", "note": "양어깨 쇠받이 · 사슬 · 큰 청동 버클 · 코 가리개 투구", "head": 2.3, "legs": 0.62,
-		"spec": {"hair": "none", "kit": {
-		"shirt": Color("#4a3a30"), "sleeves": "long", "chain": Color("#3a3e42"), "pauldron": {"c": Color("#3e4246"), "side": "both", "kind": "iron", "size": 1.05},
-		"belt": Color("#2a1c12"), "buckle": Color("#8a6a3a"), "helm": Color("#44484c"), "nasal": Color("#44484c"),
-		"pants": Color("#3a342c"), "boots": Color("#2e2218"), "bracers": Color("#3e4246")}}},
-	"d1_smith": {"race": "dwarf", "name": "대장장이", "note": "가죽 앞치마 · 걷은 소매 · 쇠 팔목 · 한 갈래 땋은 수염", "head": 2.3, "legs": 0.62,
-		"spec": {"beard_long": {"len": 0.2, "braids": 1}, "kit": {
-		"shirt": Color("#7a6a50"), "sleeves": "rolled", "apron": {"c": Color("#4a3020"), "len": 0.85}, "belt": Color("#2a1c12"), "buckle": Color("#8a6a3a"),
-		"pants": Color("#3e3428"), "boots": Color("#3a2a1e"), "bracers": Color("#3e4246"), "armband": Color("#4a4e52")}}},
-	"d2_guardian": {"race": "dwarf", "name": "산문 수호병", "note": "판금 · 진홍 짧은 망토 · 뿔 투구", "head": 2.3, "legs": 0.62,
-		"spec": {"hair": "none", "horns": Color("#8a8070"), "horn_len": 0.45, "kit": {
-		"pants": Color("#34302a"), "armor": Color("#42474c"), "boots": Color("#34302a"), "helm": Color("#42474c"), "nasal": Color("#42474c"), "buckle": Color("#8a6a3a"),
-		"cloak": {"c": Color("#5a2622"), "len": 0.3, "flare": 1.1, "open": 1.2, "clasp": Color("#8a6a3a")}}}},
-	"d3_wander": {"race": "dwarf", "name": "떠돌이 광부", "note": "누빔 · 등짐(담요 · 곡괭이) · 털 단 장화", "head": 2.3, "legs": 0.62, "spec": {"kit": {
-		"quilt": Color("#6a5a44"), "outer_belt": Color("#3a2818"), "pack": {"c": Color("#5a4430"), "roll": Color("#4a5060"), "pick": true},
-		"pants": Color("#3a3228"), "boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#3a2a1c")}}},
-	"k0_fox_drifter": {"race": "beastkin", "name": "여우 떠돌이", "note": "녹슨 붉은 목도리 · 짧은 조끼 · 짧은 띠 치마 · 감은 종아리", "head": 1.8, "legs": 0.84, "spec": {"kit": {
-		"shirt": Color("#7a7462"), "sleeves": "long", "vest": Color("#4a3424"), "scarf": {"c": Color("#7a3a26")}, "kilt": {"c": Color("#4a3a2a"), "len": 0.3, "slits": 4},
-		"pants": Color("#3a3228"), "leg_wraps": Color("#8a7e68"), "belt": Color("#2a1c12"), "boots": Color("#2e2218"), "bracers": Color("#4a3424")}}},
-	"k1_wolf_hunter": {"race": "beastkin", "name": "늑대 사냥꾼", "note": "털 어깨 · 한쪽 가죽 어깨받이 · 사선 멜빵 · 송곳니 목걸이 · 감은 천", "head": 1.8, "legs": 0.84,
-		"spec": {"ears": "wolf", "hair_c": Color("#1c1816"), "hair": "long", "hair_len": 0.14, "fluff_tail": {"kind": "wolf", "c": Color("#2a2622")}, "kit": {
-		"shirt": Color("#4a4034"), "sleeves": "long", "pelt": Color("#4a4238"), "pauldron": {"c": Color("#4a3424"), "side": "r", "kind": "leather", "size": 0.9},
-		"harness": {"c": Color("#2a1c12"), "x": false, "ring": Color("#6a6e72")}, "necklace": {"c": Color("#c8b898"), "n": 5},
-		"pants": Color("#2e2a26"), "leg_wraps": Color("#6a6050"), "boots": Color("#2e2218"), "bracers": Color("#6a6050")}}},
-	"k2_cat_thief": {"race": "beastkin", "name": "고양이 도적", "note": "몸에 붙는 검은 옷 · 자줏빛 사선 천 띠 · 짧은 어깨 망토 · 긴 장화", "head": 1.8, "legs": 0.84,
-		"spec": {"ears": "cat", "hair_c": Color("#141110"), "fluff_tail": {"kind": "cat", "c": Color("#1c1816")}, "kit": {
-		"shirt": Color("#2a2826"), "sleeves": "long", "pants": Color("#24221f"), "sash": {"c": Color("#4a2e40"), "w": 0.04}, "mantle": Color("#2e2a2a"),
-		"belt": Color("#1e140c"), "knife": true, "boots": Color("#1e1814"), "boots_tall": true, "bracers": Color("#2e2218"), "elbow_guard": Color("#1c1714")}}},
-	"k3_fox_warrior": {"race": "beastkin", "name": "여우 검사", "note": "짙은 웃옷 · 황토빛 허리띠 · 털 치마 · 쇠 팔목 · 묶은 머리", "head": 1.8, "legs": 0.84,
-		"spec": {"hair": "long", "hair_len": 0.05, "ponytail": {"len": 0.16, "high": 0.45}, "kit": {
-		"shirt": Color("#3a3830"), "sleeves": "long", "coat": {"c": Color("#2e3430"), "len": 0.08}, "outer_belt": Color("#7a5a2e"), "kilt": {"c": Color("#5e5040"), "len": 0.7, "fur": true, "slits": 3},
-		"pants": Color("#2e2a26"), "boots": Color("#2e2218"), "boots_fur": Color("#5e5444"), "bracers": Color("#3e4246")}}},
+	"e4_ranger": {"race": "elf", "name": "엘프 궁수", "note": "흰 털 깃 회색 망토 · 올리브 웃옷 · 엉덩이 가죽 띠 둘 · 허리 칼집 · 화살통 · 무릎 장화 · 짧은 검은 머리", "head": 1.7, "legs": 0.88,
+		"spec": {"hair": "short", "hair_c": Color("#141210"), "kit": {
+		"shirt": Color("#5a6040"), "sleeves": "long", "vest": Color("#4a5236"), "bracers": Color("#5a3e28"), "elbow_guard": Color("#3a2a1c"),
+		"hip_belts": {"c": Color("#4a3020"), "n": 2}, "sheath": {"c": Color("#2a2420")}, "quiver": {"c": Color("#4a3624"), "fletch": Color("#7a3a2e")},
+		"cloak": {"c": Color("#5e605e"), "len": 0.62, "flare": 1.25, "open": 1.0}, "scarf": {"c": Color("#b0aa9c"), "fur": true}, "pendant": Color("#a8a49a"),
+		"pants": Color("#5e5e52"), "boots": Color("#5a3e28"), "boots_tall": true}}},
+	"d4_axe": {"race": "dwarf", "name": "드워프 도끼 전사", "note": "뿔 투구 · 머리 장식 · 털 어깨 · 무릎 사슬 · 놋쇠 팔목 · 땋은 수염 넷 · 등 양날 도끼", "head": 2.3, "legs": 0.62,
+		"spec": {"hair": "none", "hair_c": Color("#4a2a1c"), "beard": Color("#4a2a1c"), "beard_long": {"len": 0.22, "braids": 4, "c": Color("#4a2a1c")},
+		"horns": Color("#8a7e66"), "horn_len": 0.6, "kit": {
+		"helm": Color("#3a3e42"), "plume": Color("#5a2e1e"), "nasal": Color("#3a3e42"), "pelt": Color("#5a3a26"),
+		"chain": Color("#3a3e42"), "kilt": {"c": Color("#3a3e42"), "len": 0.85, "slits": 2, "mat": "metal"}, "outer_belt": Color("#2a1c12"), "buckle": Color("#7a6a40"),
+		"bracers": Color("#6a5a34"), "pants": Color("#3a3028"), "boots": Color("#2e2620"), "back_axe": {"c": Color("#3a3e42")}}}},
+	"k4_fox_rogue": {"race": "beastkin", "name": "수인 도적 — 여우", "note": "붉은 목도리 · 짙은 가죽 조끼 · 감은 팔목 · 허리 띠·주머니·단검 · 밧줄 · 긴 검은 장화", "head": 1.8, "legs": 0.84,
+		"spec": {"hair": "short", "hair_c": Color("#2a1a12"), "kit": {
+		"shirt": Color("#2e2a30"), "sleeves": "long", "vest": Color("#3a2626"), "scarf": {"c": Color("#7a2a24")}, "bracers": Color("#4a3024"), "elbow_guard": Color("#2a1e18"),
+		"belt": Color("#3a2418"), "pouch": true, "knife": true, "hip_belts": {"c": Color("#3a2418"), "n": 1}, "rope": Color("#8a7a5a"),
+		"pants": Color("#24222a"), "boots": Color("#1a1614"), "boots_tall": true}}},
+	"k5_cat_rogue": {"race": "beastkin", "name": "수인 도적 — 고양이", "note": "같은 옷 · 고양이 귀·꼬리", "head": 1.8, "legs": 0.84,
+		"spec": {"hair": "short", "hair_c": Color("#1a1412"), "ears": "cat", "fluff_tail": {"kind": "cat", "c": Color("#1e1814")}, "kit": {
+		"shirt": Color("#2e2a30"), "sleeves": "long", "vest": Color("#3a2626"), "scarf": {"c": Color("#7a2a24")}, "bracers": Color("#4a3024"), "elbow_guard": Color("#2a1e18"),
+		"belt": Color("#3a2418"), "pouch": true, "knife": true, "hip_belts": {"c": Color("#3a2418"), "n": 1}, "rope": Color("#8a7a5a"),
+		"pants": Color("#24222a"), "boots": Color("#1a1614"), "boots_tall": true}}},
+	"k6_wolf_rogue": {"race": "beastkin", "name": "수인 도적 — 늑대", "note": "같은 옷 · 늑대 귀·꼬리", "head": 1.8, "legs": 0.84,
+		"spec": {"hair": "short", "hair_c": Color("#1e1a18"), "ears": "wolf", "fluff_tail": {"kind": "wolf", "c": Color("#2a2622")}, "kit": {
+		"shirt": Color("#2e2a30"), "sleeves": "long", "vest": Color("#3a2626"), "scarf": {"c": Color("#7a2a24")}, "bracers": Color("#4a3024"), "elbow_guard": Color("#2a1e18"),
+		"belt": Color("#3a2418"), "pouch": true, "knife": true, "hip_belts": {"c": Color("#3a2418"), "n": 1}, "rope": Color("#8a7a5a"),
+		"pants": Color("#24222a"), "boots": Color("#1a1614"), "boots_tall": true}}},
 }
 
 

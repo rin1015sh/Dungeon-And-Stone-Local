@@ -1,7 +1,7 @@
 extends RefCounted
 ## 사람형(Back) 야만전사 장구 — 바바리안 옷차림 후보(tools/monster_art/MapLooks.gd b3~b8, 사용자 2026-10-29 "야만전사 느낌으로 여러 개"):
 ##   harness {c, x: true = 가슴·등에 X자 / false = 왼어깨 → 오른허리 한 줄, ring: 가운데 쇠고리 색} 맨몸 위 가죽 멜빵
-##   kilt {c, len(0 = 엉덩이 ~ 1 = 무릎), fur, slits(갈라진 자락 수)} 가죽(털) 띠 치마
+##   kilt {c, len(0 = 엉덩이 ~ 1 = 무릎), fur, slits(갈라진 자락 수), mat(재질 — metal = 사슬 치마)} 가죽(털) 띠 치마
 ##   pauldron {c, side: l|r|both, kind: leather|iron|skull, size(털 어깨 위에 얹으려면 크게 — 1.3 안팎)} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
 ##   necklace {c, n} 이빨·발톱 목걸이(앞에서 보인다) · paint {c} 팔 전투 칠
 ## kit 키가 없으면 아무것도 하지 않는다.
@@ -65,7 +65,7 @@ static func _harness(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d:
 static func _kilt(cl: Clay, pr: Dictionary, j: Dictionary, d: Dictionary, rng: RandomNumberGenerator) -> void:
 	var col: Color = d["c"]
 	var fur: bool = d.get("fur", false)
-	var m := cl.mat(col, "fur" if fur else "leather", {"mottle": col.darkened(0.35), "mottle_amt": 0.45})
+	var m := cl.mat(col, str(d.get("mat", "fur" if fur else "leather")), {"mottle": col.darkened(0.35), "mottle_amt": 0.45})  # mat metal = 사슬 치마(새 종족 후보 드워프)
 	var g := cl.group()
 	var pv: Vector3 = j["pelvis"]
 	var kn := ((j["knee_l"] as Vector3) + (j["knee_r"] as Vector3)) * 0.5
