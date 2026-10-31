@@ -847,33 +847,23 @@ func _city_flow() -> void:
 	await _action("move_left")
 	await _seconds(UiTheme.render_float("city.step_sec", 0.25) + 0.15)
 	_expect(street.focused_id() == first, "A 한 번 = 다시 왼쪽 건물")
-	_expect(street.building_rect("exchange") == Rect2(), "13구역 거리엔 거래소가 없다(CT54)")
-	st.residence = 3
-	st.changed.emit()
-	await _frames(1)
-	_expect(street.building_rect("exchange") != Rect2() and street.focused_id() == first, "컴멜비 5구역으로 옮기면 거래소가 선다(가리키던 건물은 그대로)")
-	st.residence = 1
-	st.changed.emit()
-	await _frames(1)
-	_expect(street.building_rect("exchange") == Rect2(), "13구역으로 되돌리면 다시 없다")
-	var ids := st.facility_ids()  # 이사(CT60): 오른쪽 끝 건물에서 D를 한 번 더 → 선택 창 → 값을 내고 다음 구역(행동력 그대로)
-	for _i in ids.size() - 1 - ids.find(street.focused_id()):  # 끝 건물까지만(한 번 더 누르면 이사 창)
+	_expect(street.building_rect("exchange") == Rect2(), "거리에는 거래소가 없다 — 특별 시설(CT63)")
+	var ids := st.facility_ids()  # 오른쪽 끝 건물에서 D를 한 번 더 → 특별 시설로 가는 창 → 고르면 그 시설 안(CT63)
+	for _i in ids.size() - 1 - ids.find(street.focused_id()):  # 끝 건물까지만(한 번 더 누르면 가는 창)
 		await _action("move_right")
 		await _seconds(UiTheme.render_float("city.step_sec", 0.25) + 0.1)
 	_expect(street.focused_id() == ids[-1], "D를 계속 누르면 오른쪽 끝 건물")
-	var move_cost := CityResidence.next_cost(st)
-	pc.inventory.add_money(move_cost)
-	var move_money := pc.inventory.money
-	var move_ap := st.ap
 	await _action("move_right")
 	await _frames(2)
 	var pop := city.find_children("*", "ChoicePopup", true, false)
-	if _expect(not pop.is_empty(), "끝에서 D = 이사 선택 창"):
+	if _expect(not pop.is_empty(), "끝에서 D = 특별 시설로 가는 창"):
 		await _action("menu_confirm")
 		await _frames(3)
-		_expect(CityResidence.tier(st) == 2 and pc.inventory.money == move_money - move_cost and st.ap == move_ap, "값을 내고 라비기온 7구역으로(행동력은 그대로)")
-	st.residence = 1
-	st.changed.emit()
+		var ex_view := city.facility_view()
+		_expect(ex_view != null and ex_view.facility_id() == "exchange" and st.ap == 3, "고르면 알미너스 중앙 거래소 안으로(행동력은 나올 때)")
+		city.leave_facility()
+		await _frames(1)
+	st.ap = 3
 	street.scroll_to(0.0)
 	await _frames(1)
 	street.scroll_to(0.0)

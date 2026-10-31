@@ -6,6 +6,14 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **거주 등급 없앰 — 도시 구역 하나 · 특별 시설만 따로 (2026-10-31, 사용자 "그 거주지역 등급 상승 체계를 없애고 도시 구역은 하나로 통일, 특별시설(마탑·거래소 등등)만 따로 이동 — 지금 거주지역이 너무 어두워", CT63)** — 범위: 도시 규칙·데이터·거리 화면·검증·테스트·거리 레이어 그림. 완료 기준: 이사·등급이 없고, 거리는 밝은 그림 하나, 거래소는 거리 끝에서 따로 가고, 등급이 막던 것은 열림. 테스트: `check.sh` + 캡처(네 그림 등급 비교 · 거리 두 곳 · 가는 창 · 여관 내부 · 도서관 방).
+  - 네 그림 등급을 캡처해 비교 → 3(옛 컴멜비 5구역 — 사암·푸른 지붕)을 하나로(`city.json district{name_ko 라비기온, look 3, street_tint, smithy_material_tier 4}`).
+  - 코드: 새 `src/city/CityDistrict.gd`(이름·look·특별 시설·facility_x·street_width·art_path), 지움 `CityResidence.gd`·효과 `residence_up.gd`. `CityState`(residence 없앰 — 옛 저장 키 무시, `facility_ids`가 특별 시설을 뺌, `enter_facility` 구역 검사 없앰) · `CityActions`(이사·min_residence 없앰) · `CityShop`(`shop.stock` 하나, 소재 상한 = district) · `CityInfo`(tier 거름·`locked` 없앰) · `CityAmbient`·`CityHappenings`(구역 조건 없앰) · `CityStreet`(look 고정, 특별 시설 자리 당김) · `CityScreen.offer_travel`(거리 끝 D → "어디로 갈까" → `choose_facility`) · `FacilityView`·`CityHud` · 검증(`CityRules` district·special·place_ko, `min_residence`·`residence` 남아 있으면 오류, WHEN_KEYS에서 residence 뺌, 사건이 여는 활동은 extra만).
+  - 데이터: 거래소 `special`·`place_ko 컴멜비 5구역`(facility_order에서 뺌) · `shop.stock` · `inn_feast` extra(여관 목록에서 빼고 `inn_special` 사건이 연다, 사건 조건 없앰) · 여관 식사 min_residence 없앰 · 거리 사건 14개 `residence_max` 없앰 · 은행 shows residence 없앰 · `library_rare` tier_bonus 없앰 · 문구 `city.travel_title`·`travel_cancel`(이사·구역 문구 지움).
+  - 그림: `paint_city.gd`(LOOKS 4 · FIRST_LOOK 거래소 3 · 건물 자리 `CityDistrict.facility_x`) → `--only=street`로 거리 레이어 다시(거래소 자리를 당긴 길이 4380). 도시 실내 방도 맞춰 밝게(`RoomArt.AMBIENT` 0.66).
+  - 테스트: `test_residence` → `test_district`(6), `test_exchange`(특별 시설), `test_library`(층으로만), `test_meals`, `test_city`, UI 스모크(거리에 거래소 없음 · 끝에서 D → 가는 창 → Enter → 거래소 안). 캡처 `--look`·`--travel`.
+  - 남은 것: 마탑 등 다른 특별 시설(기획), 그림 등급 1·2·4 그림은 남겨 둠(`district.look`으로 바꿔 볼 수 있다).
+
 - **도서관 실내 방(탑뷰) · 행동력은 나올 때 (2026-10-31, 사용자 "도시를 횡스크롤 + 건물 내부는 탐험 화면처럼 WASD 탑뷰 어떻게 생각해" → 의견(건물 하나로 시범 제안) → "건물 들어가서 나오면 행동력 1 소모하는 걸로 하고 일단 도서관 내부를 구현해 봐", CT62)** — 범위: 행동력 규칙(모든 시설) + 도서관 하나만 실내 방(거리는 그대로). 완료 기준: 도서관에 들어가면 탐험처럼 걷는 3/4 탑뷰 방, 책장 바라보고 Enter로 읽기, 문으로 나오면 행동력 1, 그림은 손그림풍. 테스트: `check.sh` + 캡처(방 · 이름판 · 읽기 결과).
   - 행동력: `CityState.enter_facility`는 `can_spend`만 보고 `visit_cost`를 적어 두고, `leave_facility`가 그만큼 뺀다(안에서 아무것도 안 해도 1, placeholder 시설 0). 시험 `test_city.test_only_visit_costs_ap`, UI 스모크 기대값(안에서는 그대로, 나오면 1).
   - 데이터: 컬렉션 `rooms`(manifest) + `data/rooms/library.json`(20×13 — 뒷벽 B 두 줄, 문 D 둘, 책장 자리 여섯·사서 책상(rest)·독서대(needs library_rare), 소품 책상·사서·탁자 넷·독서대) + `_template.json` · 시설 `library.room` · `city.json room`(걷기 4.5칸/초, 몸 0.3, 한 방문 활동 1, 충돌 타일) · `render.json city.room.zoom` 1.4 · 문구 `city.reason_visit_done`.

@@ -16,24 +16,18 @@ static func config(state: CityState) -> Dictionary:
 	return CityValues.city_section(state.db, state.overrides, "shop")
 
 
-## 판매 목록. act_id의 활동에 stock이 있으면 그것(대장간·떠돌이 상인), 없으면 city.json shop.stock_by_residence(거주 등급까지 쌓아서 — CT51)
-## 또는 shop.stock — 그 창구가 다루는 물건만(deals). 활동 material_tiers면 2단계 ~ 거주 등급 소재 상한의 장비를 종류마다 하나씩 덧붙인다(대장간).
+## 판매 목록. act_id의 활동에 stock이 있으면 그것(대장간·떠돌이 상인), 없으면 city.json shop.stock
+## — 그 창구가 다루는 물건만(deals). 활동 material_tiers면 2단계 ~ 소재 상한(city.json district.smithy_material_tier)의 장비를 종류마다 하나씩 덧붙인다(대장간).
 static func stock(state: CityState, act_id: String = "") -> Array[String]:
 	var db := state.db
 	var out: Array[String] = []
 	var list: Variant = config(state).get("stock")
-	var by_tier: Variant = config(state).get("stock_by_residence")
-	if by_tier is Array:
-		list = []
-		for i in mini(CityResidence.tier(state), (by_tier as Array).size()):
-			if by_tier[i] is Array:
-				(list as Array).append_array(by_tier[i])
 	var act := state.activity(act_id) if not act_id.is_empty() else {}
 	var own: Variant = act.get("stock")
 	if own is Array:
 		list = (own as Array).duplicate()
 		if JsonUtil.get_bool(act, "material_tiers"):
-			for t in range(2, CityResidence.smithy_material_tier(state) + 1):
+			for t in range(2, CityDistrict.smithy_material_tier(state) + 1):
 				(list as Array).append_array(tier_gear(db, t))
 	if list is Array:
 		for v: Variant in list:

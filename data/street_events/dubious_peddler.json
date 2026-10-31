@@ -3,9 +3,7 @@
   "name_ko": "수상한 약장수",
   "art": "res://assets/city/events/dubious_peddler.webp",
   "weight": 1.5,
-  "when": {
-    "residence_max": 1
-  },
+  "when": {},
   "cooldown_months": 3,
   "choices": [
     {

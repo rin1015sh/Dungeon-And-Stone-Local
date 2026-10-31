@@ -28,7 +28,7 @@
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
   - **장면 목록 일괄 캡처**(탐험 맵 그림 전후 비교): `--screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>` → 장면마다 PNG + 걸음당 프레임(`bench`). 기준은 `docs/screens/before/`(`tools/ShotList.gd`).
-  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · 실내 방(도서관, CT62) `--room_at=x,y --face=up|down|left|right`(선 자리·보는 쪽 — 이름판) · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
+  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · 실내 방(도서관, CT62) `--room_at=x,y --face=up|down|left|right`(선 자리·보는 쪽 — 이름판) · `--look=<1~4>`(도시 그림 등급, CT63) · `--travel`(거리 끝 특별 시설 창) · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
   - 그 밖의 옵션(전투 `--combat --monster=<id> --summon=… --summon_each --god`, 균열 `--rift=<id> --chapter=n --engage --near=boss|guardian|<x>,<y> --spotted --chase=N`(매복 무리가 N걸음 쫓아온 뒤), 메뉴 `--menu=… --keys=…`, 대화창 `--dialog`, 귀환 정산 `--screen=plaza --returning=<쪽>` …)은 `tools/screenshot.gd` 맨 위 주석.
 - **그림 다시 만들기**(도시·시설 실내 방·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 

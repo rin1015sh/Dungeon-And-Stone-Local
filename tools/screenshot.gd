@@ -2,7 +2,7 @@ extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
-## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --residence=<1~4> 거주 등급
+## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
 ##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
 ##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
@@ -427,15 +427,14 @@ func _city(city: CityScreen) -> void:
 		st.period = str(_args.get("period", "0")).to_int()
 	if _args.has("happen"):
 		st.happenings.assign(str(_args["happen"]).split(","))
-	if _args.has("residence"):  # --residence=<1~4>: 거주 등급(건물 외관·시설 — CT50)
-		st.residence = str(_args["residence"]).to_int()
+	if _args.has("look"):  # --look=<1~4>: 도시 그림 등급(CT63 — 디버그 임시값)
+		st.set_override("city/district/look", str(_args["look"]).to_int())
 	st.changed.emit()
 	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
-	if _args.has("move"):  # --move: 거리 오른쪽 끝에서 D 한 번 더 — 이사 선택 창(CT60)
-		city.pc.inventory.add_money(CityResidence.next_cost(st))
+	if _args.has("travel"):  # --travel: 거리 오른쪽 끝에서 D 한 번 더 — 특별 시설로 가는 창(CT63)
 		city.street().scroll_to(city.street().max_offset())
 		await _frames(2)
-		city.offer_move()
+		city.offer_travel()
 		await _frames(4)
 	if _args.has("weather"):
 		city.state.weather = str(_args["weather"])

@@ -10,8 +10,7 @@
     "bank_tax"
   ],
   "shows": [
-    "bank_balance",
-    "residence"
+    "bank_balance"
   ],
   "source": "original"
 }

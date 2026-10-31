@@ -42,7 +42,7 @@ func _ready() -> void:
 	var bg := TextureRect.new()
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	var path := CityResidence.building_path(JsonUtil.get_str(f, "interior"), CityResidence.tier(_state))  # 구역마다 다른 내부(<경로>_t<등급> — CT54)
+	var path := CityDistrict.art_path(JsonUtil.get_str(f, "interior"), CityDistrict.look(_state))  # 도시 그림 등급(<경로>_t<look> — CT63)
 	bg.texture = load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
@@ -253,8 +253,6 @@ func _info_text() -> String:
 				lines.append(Strings.t("city.info_merit", {"merit": CityContext.fmt(_state.temple_merit)}))
 			"bank_balance":
 				lines.append(Strings.t("city.info_balance", {"balance": _state.bank_balance}))
-			"residence":
-				lines.append(Strings.t("city.info_residence", {"name": CityResidence.name_of(_state)}))
 			"lore":
 				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state).size()}))
 			"survey":

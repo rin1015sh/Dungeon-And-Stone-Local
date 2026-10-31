@@ -12,7 +12,7 @@ const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const WARM := Color("#ffb060")
 const COOL := Color("#9fb2c0")
 const VOID := Color("#0b0a09")
-const AMBIENT := 0.5
+const AMBIENT := 0.66  ## 빛이 닿지 않는 곳 배율(2026-10-31 도시를 밝은 구역 하나로 — 실내 방도 맞춰 밝게, CT63)
 
 
 ## 도서관 열람실: room = data/rooms/library.json. 돌려주는 값 = 그린 Paint.

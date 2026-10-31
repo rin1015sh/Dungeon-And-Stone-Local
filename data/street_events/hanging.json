@@ -8,8 +8,7 @@
     "tax_month": 1,
     "periods": [
       "early"
-    ],
-    "residence_max": 1
+    ]
   },
   "source": "placeholder"
 }

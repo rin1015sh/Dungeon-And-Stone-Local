@@ -232,7 +232,7 @@ func test_shop_uses_item_prices() -> void:
 	assert_false(CityShop.buy(s, pc, "shop_trade", "magic_stone_9").ok, "판매 목록에 없는 것은 못 산다")
 	var t := _state()  # 정한 값: 판매 목록 · 판매가 50% · 마석은 제값
 	_inside(t, "shop")
-	assert_eq(CityShop.stock(t), (JsonUtil.get_array(JsonUtil.get_dict(db.singletons["city"], "shop"), "stock_by_residence")[0] as Array).map(func(v: Variant) -> String: return str(v)), "뒷골목 판매 목록(CT51)")
+	assert_eq(CityShop.stock(t), (JsonUtil.get_array(JsonUtil.get_dict(db.singletons["city"], "shop"), "stock")).map(func(v: Variant) -> String: return str(v)), "판매 목록 하나(CT63)")
 	assert_eq(CityShop.sell_price(t, "torch"), CityShop.price(db, "torch") / 2, "판매가 = 가격 50%")
 	assert_false(CityShop.sell(t, pc, "shop_trade", "magic_stone_9").ok, "마석은 받지 않는다(귀환 정산 — CT58)")
 

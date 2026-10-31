@@ -3,7 +3,8 @@
   "name_ko": "알미너스 중앙 거래소",
   "order": 9,
   "x": 2678,
-  "min_residence": 3,
+  "special": true,
+  "place_ko": "컴멜비 5구역",
   "slot": 650,
   "building": "res://assets/city/buildings/exchange.webp",
   "interior": "res://assets/city/interiors/exchange.webp",
@@ -11,5 +12,5 @@
     "exchange_trade"
   ],
   "source": "original",
-  "notes": "사용자 2026-10-27(CT54): 컴멜비 5구역부터, 상점 옆(사용자 「상점 옆에 배치」). slot = 거리에서 차지하는 폭 — 거래소가 서지 않는 구역에서는 그만큼 뒤 건물을 당기고 거리를 줄인다(CityResidence.facility_x·street_width). 그 아래 구역 거리에는 없다(CityResidence.allows_facility). 그림은 min_residence 등급부터만 그린다(building = 그 등급 그림, _t<등급>은 그 위)."
+  "notes": "특별 시설(사용자 2026-10-31 CT63 — 도시 구역을 하나로, 특별 시설만 따로): 거리에 서지 않고 거리 오른쪽 끝에서 D → 고르는 창(place_ko = 창에 보이는 곳). slot = 예전 거리에서 차지하던 폭 — x 뒤 건물을 그만큼 당긴다(CityDistrict.facility_x·street_width). 그림은 컴멜비 5구역 등급부터(building = 그 그림, _t4는 그 위 — paint_city FIRST_LOOK)."
 }

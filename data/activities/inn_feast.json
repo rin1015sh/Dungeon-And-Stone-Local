@@ -2,8 +2,7 @@
   "id": "inn_feast",
   "name_ko": "특식",
   "facility": "inn",
-  "min_residence": 4,
-  "event_min_residence": 3,
+  "extra": true,
   "cost_stones": 4000,
   "effects": [
     {
@@ -17,5 +16,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "특식: 거주 등급 4에서 늘, 3에서는 오늘의 거리 '여관 특식'이 걸린 순에만(event_min_residence — CT51)"
+  "notes": "특식: 오늘의 거리 '여관 특식'이 걸린 순에만(extra — 2026-10-31 거주 등급을 없애며 CT63)"
 }

@@ -30,17 +30,13 @@ static func check(state: CityState, pc: PlayerCharacter, act_id: String, extra_s
 		if not CityTax.owed(state, pc.race_id):
 			return "city.reason_tax_none"
 		extra_stones += CityTax.amount(state, pc.race_id)
-	if _moves_up(act):  # 이사(거주 등급) — 다음 등급 값이 있어야
-		if CityResidence.next_cost(state) < 0:
-			return "city.reason_residence_max"
-		extra_stones += CityResidence.next_cost(state)
 	if pc.inventory.money < cost(state, act_id) + extra_stones:
 		return "city.reason_no_money"
 	var book := _effect_of(act, "learn_info")  # 도서관: 지금 등급·층에서 읽을 것이 남아 있어야(CT52)
 	if not book.is_empty():
 		var field := JsonUtil.get_str(book, "field", CityInfo.ANY)
-		if CityInfo.readable(state, field, JsonUtil.get_int(book, "tier_bonus")).is_empty():
-			return "city.reason_books_locked" if CityInfo.locked(state, field) else "city.reason_no_books"
+		if CityInfo.readable(state, field).is_empty():
+			return "city.reason_no_books"
 	var need := JsonUtil.get_str(act, "requires_item")  # 그 물건이 있어야(도서관 고서 해독 — 네크로노미콘)
 	if not need.is_empty() and pc.inventory.count(need) <= 0:
 		return "city.reason_no_item"
@@ -63,21 +59,10 @@ static func _effect_of(act: Dictionary, type: String) -> Dictionary:
 	return {}
 
 
-## 이사 활동인가(효과 residence_up).
-static func _moves_up(act: Dictionary) -> bool:
-	for e: Variant in JsonUtil.get_array(act, "effects"):
-		if e is Dictionary and JsonUtil.get_str(e, "type") == "residence_up":
-			return true
-	return false
-
-
-## 선택지 칸 오른쪽 아래 글: 세금이면 낼 금액, 이사면 다음 등급 값, 아니면 이용료(없으면 "").
+## 선택지 칸 오른쪽 아래 글: 세금이면 낼 금액, 아니면 이용료(없으면 "").
 static func price_text(state: CityState, pc: PlayerCharacter, act_id: String) -> String:
 	if _pays_tax(state.activity(act_id)):
 		return Strings.t("city.cost_stones", {"n": CityTax.amount(state, pc.race_id)})
-	if _moves_up(state.activity(act_id)):
-		var c := CityResidence.next_cost(state)
-		return Strings.t("city.cost_stones", {"n": c}) if c >= 0 else ""
 	var stones := cost(state, act_id)
 	return Strings.t("city.cost_stones", {"n": stones}) if stones > 0 else ""
 
@@ -110,13 +95,12 @@ static func perform(state: CityState, pc: PlayerCharacter, act_id: String, regis
 	return ctx
 
 
-## 이 시설의 활동 id: 이번 순 사건(CityHappenings — 맨 앞) + 데이터 순서. 거주 등급이 모자란 활동은 빠진다(min_residence — CT51).
+## 이 시설의 활동 id: 이번 순 사건(CityHappenings — 맨 앞) + 데이터 순서.
 static func activities_of(state: CityState, facility_id: String) -> Array[String]:
 	var out: Array[String] = []
 	for id in CityHappenings.activities_at(state, facility_id):
-		if CityResidence.allows_activity(state, state.activity(id), true):
-			out.append(id)
+		out.append(id)
 	for v: Variant in JsonUtil.get_array(state.db.get_entry("facilities", facility_id), "activities"):
-		if state.db.has_entry("activities", str(v)) and not out.has(str(v)) and CityResidence.allows_activity(state, state.activity(str(v))):
+		if state.db.has_entry("activities", str(v)) and not out.has(str(v)):
 			out.append(str(v))
 	return out

@@ -5,8 +5,8 @@ extends Control
 ##   날씨(CityState.weather — city.json weather)에 따라 하늘 그림을 바꾸고 나머지 레이어·건물에 색을 곱한다(맑음 = 밝게).
 ##   거리 레이어 위에 시설 건물(고를 수 있음 — 화면 가운데 건물 강조, 윤곽 셰이더)과 이름판, 맨 앞에 화면 비네트.
 ##   이번 순 오늘의 거리 사건이 걸린 건물(CityHappenings.lit)은 등롱 불빛이 켜져 일렁인다(글로 알리지 않는다 — UI19).
-##   거주 구역(CityResidence, CT50·CT54)이 바뀌면 건물 목록(그 구역에 서는 시설 — 거래소는 컴멜비 5구역부터)·건물 그림·거리 레이어
-##   (<경로>_t<등급> — 길바닥·담·가로수가 구역마다 다르다)를 다시 고르고, 먼 도시 레이어엔 구역 색(residence.tiers[].street_tint)을 날씨 색에 곱한다.
+##   도시 구역은 하나(CityDistrict, CT63): 건물·거리 레이어 그림은 그림 등급 look의 것(<경로>_t<look>), 먼 도시 레이어엔 구역 색(district.street_tint)을
+##   날씨 색에 곱한다. 특별 시설(거래소 …)은 거리에 서지 않는다 — 그 자리만큼 뒤 건물을 당긴다(CityDistrict.facility_x).
 ##   키보드만(사용자 결정 2026-10-19): A/D·←/→ 한 번 = 옆 건물로 넘어가 그 건물이 화면 가운데에 온다(부드럽게 미끄러짐 —
 ##   사용자 결정 2026-10-20, 누르고 있으면 계속 넘어간다), 가운데 건물을 Enter/F로 들어간다.
 ##   CityScreen이 set_process(false)로 멈추면(메뉴·대화창·정지 창) A/D도 받지 않는다.
@@ -14,7 +14,7 @@ extends Control
 ## 그림 파일이 없으면 이름판과 빈 자리만 그린다(그림 없이도 고를 수 있다).
 
 signal facility_chosen(facility_id: String)
-signal end_reached  ## 오른쪽 끝 건물에서 D를 한 번 더 — 이사(CityScreen, CT60)
+signal end_reached  ## 오른쪽 끝 건물에서 D를 한 번 더 — 특별 시설로 가는 창(CityScreen.offer_travel, CT63)
 
 const FALLBACK_SIZE := Vector2(400, 400)
 const HIGHLIGHT := preload("res://assets/shaders/city_highlight.gdshader")
@@ -25,9 +25,9 @@ var _content: Control  # 거리 레이어 + 건물 + 이름판(스크롤 1배)
 var _front: Control  # 화면 고정 레이어(앞)
 var _layers: Array[Dictionary] = []  # {id, node: TextureRect, parallax, y, height, scale, screen}
 var _weather: String = "?"
-var _look_tier: int = 0  # 거리 레이어·구역 색을 맞춘 거주 등급
+var _look_tier: int = 0  # 거리 레이어·구역 색을 맞춘 그림 등급
 var _buildings: Array[Dictionary] = []  # {id, node: TextureRect, plate, label, x, w, h}
-var _tier: int = 1  # 지금 그린 건물 그림의 거주 등급(CityResidence — 이사하면 그림을 바꾼다, CT50)
+var _tier: int = 1  # 지금 그린 건물·거리 그림 등급(CityDistrict.look — 디버그로 바꾸면 다시 세운다)
 var _offset: float = 0.0
 var _scale: float = 1.0
 var _street_w: float = 3600.0
@@ -56,8 +56,8 @@ func _ready() -> void:
 		var front := JsonUtil.get_bool(d, "front")
 		var parent := _front if front else (_content if JsonUtil.get_float(d, "parallax", 1.0) >= 1.0 and not JsonUtil.get_bool(d, "screen") else _back)
 		_add_layer(d, parent)
-	_tier = CityResidence.tier(_state)
-	_street_w = CityResidence.street_width(_state.db, JsonUtil.get_float(street, "width", _street_w), _tier)
+	_tier = CityDistrict.look(_state)
+	_street_w = CityDistrict.street_width(_state.db, JsonUtil.get_float(street, "width", _street_w))
 	for id in _state.facility_ids():
 		_add_building(id)
 	resized.connect(_layout)
@@ -90,7 +90,7 @@ func _add_building(id: String) -> void:
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_SCALE
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art.texture = _tex(CityResidence.building_path(JsonUtil.get_str(f, "building"), _tier))
+	art.texture = _tex(CityDistrict.art_path(JsonUtil.get_str(f, "building"), _tier))
 	var mat := ShaderMaterial.new()
 	mat.shader = HIGHLIGHT
 	mat.set_shader_parameter("outline_color", UiTheme.render_color("city.selected_outline", UiTheme.color("gold")))
@@ -115,10 +115,10 @@ func _add_building(id: String) -> void:
 	plate.add_child(label)
 	add_child(plate)  # 이름판은 비네트보다 앞
 	_buildings.append({"id": id, "node": art, "glow": glow, "plate": plate, "label": label,
-		"x": CityResidence.facility_x(_state.db, id, _tier), "w": size_u.x, "h": size_u.y})  # 구역에 서지 않는 시설 자리는 당긴다(CT54)
+		"x": CityDistrict.facility_x(_state.db, id), "w": size_u.x, "h": size_u.y})  # 특별 시설 자리는 당긴다(CT63)
 
 
-## 건물을 지금 구역 것으로 다시 세운다(거래소처럼 구역마다 서는 시설이 다르다). 가리키던 건물은 그대로 가리킨다.
+## 건물을 지금 그림 등급 것으로 다시 세운다. 가리키던 건물은 그대로 가리킨다.
 func _rebuild_buildings() -> void:
 	var was := focused_id()
 	for b in _buildings:
@@ -127,8 +127,8 @@ func _rebuild_buildings() -> void:
 			n.get_parent().remove_child(n)
 			n.queue_free()
 	_buildings.clear()
-	_tier = CityResidence.tier(_state)
-	_street_w = CityResidence.street_width(_state.db, JsonUtil.get_float(CityValues.city_section(_state.db, {}, "street"), "width", _street_w), _tier)
+	_tier = CityDistrict.look(_state)
+	_street_w = CityDistrict.street_width(_state.db, JsonUtil.get_float(CityValues.city_section(_state.db, {}, "street"), "width", _street_w))
 	for id in _state.facility_ids():
 		_add_building(id)
 	_focus = -1
@@ -250,7 +250,7 @@ func _place_plates() -> void:
 func refresh() -> void:
 	if _state == null:
 		return
-	if CityResidence.tier(_state) != _tier:  # 이사했다: 그 구역에 서는 건물과 그 거리 외관으로
+	if CityDistrict.look(_state) != _tier:  # 그림 등급이 바뀌었다(디버그): 그 등급 건물·거리 외관으로
 		_rebuild_buildings()
 		return
 	_apply_weather()
@@ -268,7 +268,7 @@ func refresh() -> void:
 		(b["label"] as Label).add_theme_color_override("font_color", UiTheme.color("text_title" if can else "text_disabled"))
 
 
-## 날씨·구역이 바뀌었으면 하늘 그림·거리 레이어·색을 맞춘다(색 = 날씨 tint × 구역 street_tint).
+## 날씨·그림 등급이 바뀌었으면 하늘 그림·거리 레이어·색을 맞춘다(색 = 날씨 tint × 구역 street_tint).
 func _apply_weather() -> void:
 	if _state.weather == _weather and _tier == _look_tier:
 		return
@@ -276,11 +276,11 @@ func _apply_weather() -> void:
 	_look_tier = _tier
 	var w := _state.weather_def()
 	var tint := _rgb(w.get("tint"))
-	var back := tint * _rgb(CityResidence.def(_state).get("street_tint"))  # 먼 도시만 구역 색(건물은 그림이 이미 밝다)
+	var back := tint * _rgb(CityDistrict.street_tint(_state))  # 먼 도시만 구역 색(건물은 그림이 이미 밝다)
 	for L in _layers:
 		var tr: TextureRect = L["node"]
-		if str(L["id"]) != "sky":  # 구역마다 그린 레이어(<경로>_t<등급> — 원경·중경·거리)
-			var art := _tex(CityResidence.building_path(str(L["path"]), _tier))
+		if str(L["id"]) != "sky":  # 그림 등급마다 그린 레이어(<경로>_t<등급> — 원경·중경·거리)
+			var art := _tex(CityDistrict.art_path(str(L["path"]), _tier))
 			if art != null and art != tr.texture:
 				tr.texture = art
 		match str(L["id"]):

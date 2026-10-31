@@ -3,9 +3,7 @@
   "name_ko": "여관 특식",
   "facility": "inn",
   "weight": 2,
-  "when": {
-    "residence_min": 3
-  },
+  "when": {},
   "activities": [
     "inn_feast"
   ],

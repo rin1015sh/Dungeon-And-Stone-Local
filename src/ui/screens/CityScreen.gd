@@ -25,7 +25,7 @@ var _codex: CodexMenu  ## 도감(B — UI32)
 var _debug: CityDebugPanel
 var _event_running := false  # 거리 사건 장면·선택 중 — 일러스트가 덮고 도시 조작을 막는다
 var _event_view: StreetEventView
-var _moving := false  # 이사 선택 창이 떠 있다
+var _moving := false  # 특별 시설로 가는 창이 떠 있다
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) -> void:
@@ -38,7 +38,7 @@ func _ready() -> void:
 	_street = CityStreet.new()
 	_street.setup(state)
 	_street.facility_chosen.connect(choose_facility)
-	_street.end_reached.connect(offer_move)
+	_street.end_reached.connect(offer_travel)
 	add_child(_street)
 	_street.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
@@ -218,26 +218,26 @@ func _street_choice(id: String, choices: Array) -> int:
 	return i
 
 
-## 거리 오른쪽 끝에서 D: 다음 구역으로 이사(값을 내고 — 행동력은 쓰지 않는다, CT60). 가장 높으면 이유 한 줄.
-func offer_move() -> void:
+## 거리 오른쪽 끝에서 D: 특별 시설(거래소 … — 거리에 서지 않는 곳)로 가는 작은 창(CT63). 고르면 그 시설에 바로 들어간다
+## (행동력은 다른 시설처럼 나올 때 1). 특별 시설이 없으면 아무 일도 없다.
+func offer_travel() -> void:
 	if _facility != null or _event_running or _moving or _menu.is_open() or _dialog.busy():
 		return
-	var cost := CityResidence.next_cost(state)
-	if cost < 0:
-		say(Strings.t("city.reason_residence_max"))
+	var ids := CityDistrict.special_ids(state.db)
+	if ids.is_empty():
 		return
 	_moving = true
-	var can := pc.inventory.money >= cost
-	var opts: Array[Dictionary] = [
-		{"text": CityResidence.name_of(state, CityResidence.tier(state) + 1), "sub": Strings.t("city.cost_stones", {"n": cost}),
-			"enabled": can, "desc": "" if can else Strings.t("city.reason_no_money")},
-		{"text": Strings.t("city.move_cancel")}]
-	var i: int = await ChoicePopup.ask(self, Strings.t("city.move_title"), opts, true)
+	var opts: Array[Dictionary] = []
+	for id in ids:
+		var f := state.db.get_entry("facilities", id)
+		var shut := state.closed.has(id)
+		opts.append({"text": JsonUtil.get_str(f, "name_ko", id), "sub": JsonUtil.get_str(f, "place_ko"), "enabled": not shut,
+			"desc": Strings.t("city.reason_closed") if shut else ""})
+	opts.append({"text": Strings.t("city.travel_cancel")})
+	var i: int = await ChoicePopup.ask(self, Strings.t("city.travel_title"), opts, true)
 	_moving = false
-	if i == 0 and CityResidence.upgrade(state, pc).is_empty():
-		state.changed.emit()
-		_street.refresh()
-		_hud.refresh()
+	if i >= 0 and i < ids.size() and is_inside_tree():
+		choose_facility(ids[i])
 
 
 ## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
