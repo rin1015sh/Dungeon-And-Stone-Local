@@ -1,4 +1,7 @@
 {
-	"barbarian_back": 540.0,
+	"barbarian_back": 540,
+	"beastkin_back": 540,
+	"dwarf_back": 540,
+	"elf_back": 540,
 	"human_back": 540
 }

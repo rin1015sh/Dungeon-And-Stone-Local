@@ -5,12 +5,11 @@
   "x": 733,
   "building": "res://assets/city/buildings/inn.webp",
   "interior": "res://assets/city/interiors/inn.webp",
+  "room": "inn",
   "activities": [
     "inn_rest",
     "inn_snack",
-    "inn_meal",
-    "inn_hearty",
-    "inn_feast"
+    "inn_meal"
   ],
   "source": "original"
 }

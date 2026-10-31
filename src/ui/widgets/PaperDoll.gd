@@ -94,7 +94,7 @@ class EquipSlot extends Control:
 			draw_rect(r.grow(-1), UiTheme.color("select"), false, 2.0)
 
 	## 손 칸(긴 칸)은 가방 칸 크기 비율대로 — 칸 하나 = 긴 칸을 render.json ui.doll_hand_cells([가로, 세로] 칸)로 나눈 크기.
-	## 그대로 칸에 꽉 채우면 1×2 단검이 1×4 창만큼 길어 보였다(사용자 2026-10-29, UI47). 다른 칸은 칸에 맞춘다.
+	## 그대로 칸에 꽉 채우면 1×2 단검이 1×4 창만큼 길어 보였다(사용자 2026-10-29, UI49). 다른 칸은 칸에 맞춘다.
 	func _art_rect(item_id: String, r: Rect2) -> Rect2:
 		if not slot in ["main_hand", "off_hand"]:
 			return r

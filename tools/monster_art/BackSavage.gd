@@ -1,8 +1,8 @@
 extends RefCounted
 ## 사람형(Back) 야만전사 장구 — 바바리안 옷차림 후보(tools/monster_art/MapLooks.gd b3~b8, 사용자 2026-10-29 "야만전사 느낌으로 여러 개"):
 ##   harness {c, x: true = 가슴·등에 X자 / false = 왼어깨 → 오른허리 한 줄, ring: 가운데 쇠고리 색} 맨몸 위 가죽 멜빵
-##   kilt {c, len(0 = 엉덩이 ~ 1 = 무릎), fur, slits(갈라진 자락 수)} 가죽(털) 띠 치마
-##   pauldron {c, side: l|r, kind: leather|iron|skull, size(털 어깨 위에 얹으려면 크게 — 1.3 안팎)} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
+##   kilt {c, len(0 = 엉덩이 ~ 1 = 무릎), fur, slits(갈라진 자락 수), mat(재질 — metal = 사슬 치마)} 가죽(털) 띠 치마
+##   pauldron {c, side: l|r|both, kind: leather|iron|skull, size(털 어깨 위에 얹으려면 크게 — 1.3 안팎)} 한쪽 어깨받이(skull = 짐승 머리뼈를 얹음)
 ##   necklace {c, n} 이빨·발톱 목걸이(앞에서 보인다) · paint {c} 팔 전투 칠
 ## kit 키가 없으면 아무것도 하지 않는다.
 
@@ -21,7 +21,9 @@ static func wear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, kit: D
 	if kit.has("necklace"):
 		_necklace(cl, pr, j, bd, kit["necklace"], rng)
 	if kit.has("pauldron"):
-		_pauldron(cl, pr, j, bd, kit["pauldron"], rng)
+		var pd: Dictionary = kit["pauldron"]
+		for side: String in (["l", "r"] if str(pd.get("side", "l")) == "both" else [str(pd.get("side", "l"))]):  # both = 양쪽 어깨(새 종족 후보 드워프)
+			_pauldron(cl, pr, j, bd, pd.merged({"side": side}, true), rng)
 
 
 ## 앞 표면(가슴 높이)의 몸 좌표 w.
@@ -44,7 +46,7 @@ static func _harness(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d:
 	var m := cl.mat(col, "leather")
 	var g := cl.group()
 	var ch: Vector3 = j["chest"]
-	var c := Vector3(0, ch.y + 0.01, ch.z)
+	var c := Vector3(ch.x, ch.y + 0.01, ch.z)
 	var slope := 1.15 * absf(cos(float(pr["turn"]))) + 0.35  # 옆에서 보면 몸통 폭이 줄어 더 가파르게
 	var slopes: Array = [slope, -slope] if d.get("x", true) else [-slope]
 	for s: float in slopes:
@@ -53,17 +55,17 @@ static func _harness(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d:
 	var bw: float = bd["back_w"]
 	var fw := _front_w(j, bd)
 	if d.get("x", true):  # 가운데 쇠고리(보이는 쪽에만)
-		Back.bump(cl, pr, g, Vector3(0, c.y, bw + 0.012), Vector3(0, 0, 1), 0.022, 0.022, 0.012, ring)
-		Back.bump(cl, pr, g, Vector3(0, c.y, fw - 0.012), Vector3(0, 0, -1), 0.022, 0.022, 0.012, ring)
+		Back.bump(cl, pr, g, Vector3(c.x, c.y, bw + 0.012), Vector3(0, 0, 1), 0.022, 0.022, 0.012, ring)
+		Back.bump(cl, pr, g, Vector3(c.x, c.y, fw - 0.012), Vector3(0, 0, -1), 0.022, 0.022, 0.012, ring)
 	else:  # 버클
-		Back.bump(cl, pr, g, Vector3(0.05, c.y + 0.03, fw - 0.012), Vector3(0, 0, -1), 0.016, 0.02, 0.01, ring)
+		Back.bump(cl, pr, g, Vector3(c.x + 0.05, c.y + 0.03, fw - 0.012), Vector3(0, 0, -1), 0.016, 0.02, 0.01, ring)
 
 
 ## 띠 치마: 엉덩이에서 단까지 두르고, 단에서 위로 갈라진 틈(띠 자락) + 세로 골.
 static func _kilt(cl: Clay, pr: Dictionary, j: Dictionary, d: Dictionary, rng: RandomNumberGenerator) -> void:
 	var col: Color = d["c"]
 	var fur: bool = d.get("fur", false)
-	var m := cl.mat(col, "fur" if fur else "leather", {"mottle": col.darkened(0.35), "mottle_amt": 0.45})
+	var m := cl.mat(col, str(d.get("mat", "fur" if fur else "leather")), {"mottle": col.darkened(0.35), "mottle_amt": 0.45})  # mat metal = 사슬 치마(새 종족 후보 드워프)
 	var g := cl.group()
 	var pv: Vector3 = j["pelvis"]
 	var kn := ((j["knee_l"] as Vector3) + (j["knee_r"] as Vector3)) * 0.5
@@ -75,10 +77,10 @@ static func _kilt(cl: Clay, pr: Dictionary, j: Dictionary, d: Dictionary, rng: R
 	for k in slits:  # 갈라진 자락: 단에서 위로 좁은 틈
 		var u := lerpf(-0.13, 0.13, (k + 0.5) / slits) + rng.randf_range(-0.01, 0.01)
 		for w: float in [0.07, -0.08]:
-			var a := Back.P2(pr, Vector3(u, hem - 0.01, w))
+			var a := Back.P2(pr, Vector3(pv.x + u, hem - 0.01, pv.z + w))
 			cl.erase(g, a, 0.006 * H, rng.randf_range(0.03, 0.05) * H, 0.2)
-		Back.groove(cl, pr, g, [Vector3(u, top + 0.04, 0.085), Vector3(u, hem - 0.03, 0.09)], Vector3(0, 0, 1), 0.004, 0.006)
-		Back.groove(cl, pr, g, [Vector3(u, top + 0.04, -0.085), Vector3(u, hem - 0.03, -0.09)], Vector3(0, 0, -1), 0.004, 0.006)
+		Back.groove(cl, pr, g, [Vector3(pv.x + u, top + 0.04, pv.z + 0.085), Vector3(pv.x + u, hem - 0.03, pv.z + 0.09)], Vector3(0, 0, 1), 0.004, 0.006)
+		Back.groove(cl, pr, g, [Vector3(pv.x + u, top + 0.04, pv.z - 0.085), Vector3(pv.x + u, hem - 0.03, pv.z - 0.09)], Vector3(0, 0, -1), 0.004, 0.006)
 	var bm := cl.mat(col.darkened(0.45), "leather")  # 허리 둘레 접힌 단
 	BackKit.shell(cl, pr, ["pelvis", "torso"], 0.03, bm, cl.group(), BackKit.band(cl, pr, top - 0.005, top + 0.03), 0.01, 0.002)
 
@@ -149,16 +151,16 @@ static func _necklace(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d
 	var g := cl.group()
 	var nk: Vector3 = j["neck"]
 	var fw := _front_w(j, bd)
-	var shw := absf(j["shoulder_r"].x)
+	var shw := absf((j["shoulder_r"] as Vector3).x - (j["shoulder_l"] as Vector3).x) * 0.5
 	var n := int(d.get("n", 7))
 	var pts: Array = []
 	for i in 11:
 		var a := lerpf(-1.0, 1.0, i / 10.0)
-		pts.append(Vector3(a * shw * 0.55, nk.y + 0.03 + 0.07 * (1.0 - a * a), fw - 0.012 + absf(a) * 0.03))
+		pts.append(Vector3(nk.x + a * shw * 0.55, nk.y + 0.03 + 0.07 * (1.0 - a * a), fw - 0.012 + absf(a) * 0.03))
 	Back.chain(cl, pr, g, pts, [0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004, 0.004], cord, 0.002)
 	for i in n:
 		var a := lerpf(-0.75, 0.75, i / float(max(1, n - 1)))
-		var top := Vector3(a * shw * 0.55, nk.y + 0.03 + 0.07 * (1.0 - a * a), fw - 0.016 + absf(a) * 0.03)
+		var top := Vector3(nk.x + a * shw * 0.55, nk.y + 0.03 + 0.07 * (1.0 - a * a), fw - 0.016 + absf(a) * 0.03)
 		var len := (0.04 if i % 2 == 0 else 0.028) * (1.2 - absf(a) * 0.4)
 		Back.chain(cl, pr, g, [top, top + Vector3(a * 0.01, len * 0.6, -0.006), top + Vector3(a * 0.02 + 0.006, len, -0.002)], [0.008, 0.006, 0.0015], bone, 0.002)
 

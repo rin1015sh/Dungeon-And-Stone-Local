@@ -22,6 +22,7 @@ var _grid: ChoiceGrid
 var _panel_box: VBoxContainer
 var _leaving: bool = false
 var top_reserve: float = 0.0  ## 패널 위에 비워 둘 높이(메뉴 자리)
+var _art_pic: Control = null  # 결과 그림(요리·펼친 책)이 덮고 있으면 그 그림
 var _summary: PackedStringArray = []  # 할 게 없어 바로 나갈 때의 이유(거리 화면 위 알림으로 보여 준다)
 
 
@@ -41,7 +42,7 @@ func _ready() -> void:
 	var bg := TextureRect.new()
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	var path := CityResidence.building_path(JsonUtil.get_str(f, "interior"), CityResidence.tier(_state))  # 구역마다 다른 내부(<경로>_t<등급> — CT54)
+	var path := CityDistrict.art_path(JsonUtil.get_str(f, "interior"), CityDistrict.look(_state))  # 도시 그림 등급(<경로>_t<look> — CT63)
 	bg.texture = load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
@@ -124,25 +125,33 @@ func _choose(act_id: String, tab: String = "") -> void:
 	if not why.is_empty():
 		_dialog.say(Strings.t(why), "warn")
 		return
-	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
-	match panel:
-		"shop":
-			var sp := ShopPanel.new()
-			sp.mode = tab if tab in ShopPanel.TABS else "buy"
-			sp.back = _close_panel.bind(_entries().find([act_id, sp.mode]))
-			p = sp
-		"bank":
-			p = BankPanel.new()
-		"essence_remove":
-			p = EssenceRemovePanel.new()
+	var p := new_panel(act_id, tab)  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
 	if p == null:
 		return
-	p.setup(_state, _pc, act_id)
+	if p is ShopPanel:
+		(p as ShopPanel).back = _close_panel.bind(_entries().find([act_id, (p as ShopPanel).mode]))
 	p.leave = try_leave
 	p.result.connect(_on_trade)
 	_panel_box.add_child(p)
 	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
 	_sync_menu()
+
+
+## 패널형 활동의 창구(상점·대장간 = 쪽 tab, 은행, 정수 제거). 패널이 아니면 null. 나가기·돌아가기는 부르는 쪽이 넣는다(실내 방 RoomView도 쓴다).
+func new_panel(act_id: String, tab: String = "") -> CityPanel:
+	var p: CityPanel
+	match JsonUtil.get_str(_state.activity(act_id), "panel"):
+		"shop":
+			var sp := ShopPanel.new()
+			sp.mode = tab if tab in ShopPanel.TABS else "buy"
+			p = sp
+		"bank":
+			p = BankPanel.new()
+		"essence_remove":
+			p = EssenceRemovePanel.new()
+	if p != null:
+		p.setup(_state, _pc, act_id)
+	return p
 
 
 ## 창구를 닫고 선택 창으로(커서는 연 칸에).
@@ -159,7 +168,7 @@ func _close_panel(cursor: int) -> void:
 
 ## 활동 결과(무엇이 얼마나 바뀌었는지)를 대화창에 쌓는다(한 쪽씩 Enter).
 func show_result(ctx: CityContext) -> void:
-	_show_art(ctx)
+	_art_pic = _show_art(ctx)
 	if ctx.ok:
 		_dialog.say(Strings.t("city.did", {"name": JsonUtil.get_str(_state.activity(ctx.activity_id), "name_ko")}), "info")
 	for msg: Dictionary in ctx.messages:
@@ -168,8 +177,8 @@ func show_result(ctx: CityContext) -> void:
 
 ## 결과 그림이 실내 그림 위를 가득 덮는다 — 여관 식사(city.meal.<요리 id> → data/meals art, CT47) ·
 ## 도서관 서적(city.fx.book_new → 그 분야의 펼친 책 그림 city.json library.fields art, CT57 — 글은 아래 대화창에).
-## 대화창은 그 위. 결과를 다 넘기면 방문이 끝나 거리로 나가며 함께 사라진다.
-func _show_art(ctx: CityContext) -> void:
+## 대화창은 그 위. 결과를 다 넘기면 방문이 끝나 거리로 나가며 함께 사라진다(실내 방 RoomView는 다 넘기면 걷어 낸다 — 덮은 그림을 돌려준다).
+func _show_art(ctx: CityContext) -> Control:
 	for msg: Dictionary in ctx.messages:
 		var key := str(msg["key"])
 		var art := ""
@@ -180,7 +189,7 @@ func _show_art(ctx: CityContext) -> void:
 		else:
 			continue
 		if art.is_empty() or not ResourceLoader.exists(art):
-			return
+			return null
 		var pic := TextureRect.new()
 		pic.texture = load(art) as Texture2D
 		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -192,7 +201,8 @@ func _show_art(ctx: CityContext) -> void:
 		pic.modulate.a = 0.0
 		create_tween().tween_property(pic, "modulate:a", 1.0, UiTheme.render_float("city.meal_art.fade_sec", 0.35))
 		art_shown.emit()
-		return
+		return pic
+	return null
 
 
 ## 창구 거래 결과: 넘기지 않는 글로 대화창에 남긴다(마지막 거래만).
@@ -251,8 +261,6 @@ func _info_text() -> String:
 				lines.append(Strings.t("city.info_merit", {"merit": CityContext.fmt(_state.temple_merit)}))
 			"bank_balance":
 				lines.append(Strings.t("city.info_balance", {"balance": _state.bank_balance}))
-			"residence":
-				lines.append(Strings.t("city.info_residence", {"name": CityResidence.name_of(_state)}))
 			"lore":
 				lines.append(Strings.t("city.info_lore", {"n": CityInfo.known_of(_state).size()}))
 			"survey":

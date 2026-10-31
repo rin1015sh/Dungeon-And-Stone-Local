@@ -57,15 +57,24 @@
           ]
         }
       ],
-      "backdrop": {
-        "image": "res://assets/floor/gm/backdrop.webp",
-        "drift": 0.16,
-        "scale": [
-          1.0,
-          1.0
-        ],
-        "cliff_color": "#1e1a16",
-        "cliff_depth": 1.2
+      "abyss": {
+        "_comment": "낭떠러지·구덩이(Abyss — 화면 고정 그림 없이 세계 좌표의 절벽 면 + 어둠, 사용자 결정 2026-10-29 AM49). 땅 가장자리는 jag만큼 들쭉날쭉 깎인다. [창작] 임시값",
+        "cliff": "res://assets/floor/gm/chasm.webp",
+        "cliff_tiles": 8,
+        "cliff_depth": 2.25,
+        "jag": 0.4,
+        "abyss_color": "#040506",
+        "mist_color": "#121814",
+        "rim_color": "#9094a0",
+        "beam_color": "#4e3a24",
+        "rail": {
+          "post": "#5e4a32",
+          "rope": "#9a8462",
+          "every": 2,
+          "height": 0.75,
+          "support_every": 4,
+          "support_depth": 2.6
+        }
       },
       "decor": {
         "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
@@ -186,7 +195,16 @@
             "goblin_miner"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"]]}
+        {"kind": "posts", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"], ["goblin_miner"]]},
+        {"kind": "roam", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["slime", "slime"], ["goblin_miner"]]}
+      ],
+      "loot": [
+        {"item": "torch_stub", "count": 1},
+        {"item": "mine_hammer", "count": 1},
+        {"item": "mine_rough_gem", "count": 1},
+        {"item": "mine_lunchbox", "count": 2},
+        {"item": "mine_bitter_tea", "count": 1},
+        {"item": "mine_helmet", "count": 1}
       ],
       "hidden": [
         {
@@ -244,7 +262,17 @@
           ],
           "midboss": true
         },
-        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "mineral_slime"], ["hobgoblin_miner"]]}
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["goblin_miner", "goblin_miner"]]},
+        {"kind": "roam", "count": 3, "packs": [["goblin_miner", "goblin_miner"]]}
+      ],
+      "loot": [
+        {"item": "mine_lunchbox", "count": 1},
+        {"item": "mine_bitter_tea", "count": 2},
+        {"item": "mine_moss_salve", "count": 2},
+        {"item": "magic_stone_9", "count": 2},
+        {"item": "mine_goblin_boots", "count": 1},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_powder_pouch", "count": 2}
       ],
       "hidden": [
         {
@@ -312,7 +340,18 @@
             "copper_golem"
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["mineral_slime", "slime"], ["goblin_miner", "goblin_miner"]]}
+        {"kind": "posts", "count": 2, "packs": [["goblin_miner", "goblin_miner"], ["mineral_slime", "slime"]]},
+        {"kind": "roam", "count": 3, "packs": [["goblin_miner", "goblin_miner"], ["mineral_slime", "slime"]]}
+      ],
+      "loot": [
+        {"item": "mine_lunchbox", "count": 1},
+        {"item": "mine_powder_pouch", "count": 1},
+        {"item": "mine_bitter_tea", "count": 1},
+        {"item": "mine_moss_salve", "count": 1},
+        {"item": "magic_stone_8", "count": 1},
+        {"item": "mine_powder_pouch", "count": 1},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_rough_gem", "count": 1}
       ],
       "hidden": [
         {
@@ -373,7 +412,19 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 4, "packs": [["slime", "slime"], ["mineral_slime", "mineral_slime"], ["copper_golem"], ["goblin_miner", "hobgoblin_miner"]]}
+        {"kind": "posts", "count": 4, "packs": [["mineral_slime", "mineral_slime"], ["copper_golem"], ["slime", "slime"], ["goblin_miner", "hobgoblin_miner"]]},
+        {"kind": "roam", "count": 3, "packs": [["mineral_slime", "mineral_slime"], ["copper_golem"], ["slime", "slime"], ["goblin_miner", "hobgoblin_miner"]]}
+      ],
+      "loot": [
+        {"item": "mine_lunchbox", "count": 2},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_quartz_ring", "count": 1},
+        {"item": "mine_rough_gem", "count": 2},
+        {"item": "mine_moss_salve", "count": 1},
+        {"item": "mine_green_tonic", "count": 1},
+        {"item": "mine_helmet", "count": 1},
+        {"item": "mine_powder_pouch", "count": 1},
+        {"item": "magic_stone_9", "count": 3}
       ]
     }
   ],

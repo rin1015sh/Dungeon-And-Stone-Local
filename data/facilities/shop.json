@@ -5,6 +5,7 @@
   "x": 2248,
   "building": "res://assets/city/buildings/shop.webp",
   "interior": "res://assets/city/interiors/shop.webp",
+  "room": "shop",
   "activities": [
     "shop_trade"
   ],

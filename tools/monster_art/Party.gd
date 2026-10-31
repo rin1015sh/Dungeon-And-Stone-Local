@@ -21,8 +21,10 @@ const PartyMotion := preload("res://tools/monster_art/PartyMotion.gd")
 const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
 const Monsters := preload("res://tools/monster_art/Specs.gd")
+const RaceParts := preload("res://tools/monster_art/RaceParts.gd")
+const RaceKit := preload("res://tools/monster_art/RaceKit.gd")
 
-const RACES := ["human", "barbarian"]
+const RACES := ["human", "barbarian", "elf", "dwarf", "beastkin"]  ## 엘프·드워프·수인 = 새 종족(AM59 — 그림만 있고 races.json에서 아직 꺼져 있다)
 const VIEWS := ["back"]
 const REF_H := 540.0  ## 사람 키(px) — 바바리안은 더 크게 그려 무대에서도 더 크게 보인다
 ## 아군으로 소환될 수 있는 몬스터(정수 스킬 summon · 정수 패시브 low_hp_summons — tests/test_monster_art.gd가 데이터와 맞춰 본다)
@@ -82,6 +84,8 @@ static func spec_of(id: String) -> Dictionary:
 		"slime":
 			sp = Monsters.More.spec_of("slime").duplicate()
 			sp["back"] = true
+	if sp.is_empty() and RaceParts.BODIES.has(base):  # 새 종족 후보(엘프·드워프·수인 — RACES에 없어 게임은 아직 쓰지 않는다)
+		sp = (RaceParts.BODIES[base] as Dictionary).duplicate(true)
 	if MapLooks.CHOSEN.has(base):  # 탐험가 옷차림 = 맵 그림과 같이(AM42)
 		sp = MapLooks.apply(sp, str(MapLooks.CHOSEN[base]))
 	if not sp.is_empty():
@@ -145,14 +149,18 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	var skin := cl.mat(skin_c, str(sp.get("skin_kind", "skin")), opts)  # skin_kind = 돌·쇠·털 몸(몬스터)
 	var mats := {"dark": cl.mat(Color("#1a0d0b"), "glow")}
 	var bd := Back.body(cl, pr, j, sp, skin, cl.mat(Color("#3a2e24"), "bone"))
+	RaceParts.body(cl, pr, j, bd, sp, skin)  # 여성 체형(새 종족 후보)
 	var hd := Back.head(cl, pr, j, skin, mats)
 	var kit: Dictionary = sp.get("kit", {})
 	BackKit.dress(cl, pr, j, bd, kit, rng)
 	BackSavage.wear(cl, pr, j, bd, kit, rng)  # 야만전사 장구(멜빵·띠 치마·어깨받이·목걸이·전투 칠 — 바바리안 옷차림 후보)
 	BackHair.hair(cl, pr, j, bd, hd, sp, rng)
+	RaceParts.head(cl, pr, j, bd, hd, sp)  # 엘프·짐승 귀 · 묶은 머리 · 긴 수염
 	BackGear.gear(cl, pr, j, bd, hd, kit, rng)
 	BackCloak.wear(cl, pr, j, bd, hd, kit, rng)  # 탐험 맵 겉옷(망토·두건·외투 — MapLooks)
+	RaceKit.wear(cl, pr, j, bd, hd, kit)  # 새 종족 후보 장식(머리띠·천 띠·화살통·목도리·앞치마·버클·등짐)
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
+	RaceParts.tail(cl, pr, j, sp)  # 수인 털 꼬리
 	BackPose.props(cl, pr, j, sp)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)), Vector2(0, 1).rotated(roll))

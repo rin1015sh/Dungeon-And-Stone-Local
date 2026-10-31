@@ -40,7 +40,7 @@
   },
   "street": {
     "_comment": "거리 = 옆에서 본 긴 그림. 좌표는 '거리 단위'(화면 높이 720 기준 px). width = 거리 길이, 건물 위치는 각 시설의 x. layers = 뒤에서 앞 순서(시설 건물은 parallax 1 레이어 바로 위에 그린다). parallax 0~1 = 스크롤을 따라가는 비율(작을수록 멀다), y·height = 레이어가 차지하는 세로 구간, scale = 그림 1px이 몇 거리 단위인가, screen = 화면에 고정(스크롤 안 함), front = 건물보다 앞.",
-    "width": 5030,
+    "width": 4380,
     "layers": [
       {
         "id": "sky",
@@ -139,13 +139,73 @@
     ]
   },
   "facility_entry_cost": 1,
+  "room": {
+    "_comment": "시설 실내(탑뷰 — data/rooms, CT62·CT64·CT66): 걷는 빠르기(칸/초) · 몸 반 폭(칸) · 모서리 미끄러짐 · 한 방문에 할 수 있는 활동 수(창구는 세지 않는다 — 행동력은 나올 때 facility_entry_cost) · 계단·사다리 빠르기 배율(그 칸 위에서는 좌우를 막는다 — CT65) · art_scale = 방 그림 배율(칸 = view.floor_tile_px × art_scale px — tools/paint_rooms.gd·RoomWorld) · 충돌 지도에 쓰는 타일(data/tiles). legend = 모든 방이 같이 쓰는 칸 글자(방 JSON legend가 덮는다 — 숫자·기호는 잡동사니 가구·흩어진 것, CT68) — kind: floor(material) · rug · decor · wall · walldeco · furniture · door · doorway · locked(opens = 이번 순 사건 id) · entry(밟으면 나간다) · stairs · ladder · open(아래층이 보이는 트인 곳) · rail · void · npc. 값은 임시값.",
+    "walk_tiles_per_sec": 4.5,
+    "body_half": 0.3,
+    "corner_assist": 0.45,
+    "activities_per_visit": 1,
+    "stairs_speed": 0.7,
+    "ladder_speed": 0.5,
+    "art_scale": 1.5,
+    "floor_tile": "cave_floor",
+    "block_tile": "rock_wall",
+    "legend": {
+      "#": {"name_ko": "벽", "kind": "wall"},
+      " ": {"name_ko": "밖", "kind": "void"},
+      ".": {"name_ko": "바닥", "kind": "floor"},
+      ",": {"name_ko": "깔개", "kind": "rug", "color": "#7a3a34"},
+      "=": {"name_ko": "통로 깔개", "kind": "rug", "color": "#8a2e2a"},
+      "_": {"name_ko": "흙·모래", "kind": "floor", "material": "dirt"},
+      ":": {"name_ko": "대리석", "kind": "floor", "material": "marble"},
+      "D": {"name_ko": "입구", "kind": "entry"},
+      "+": {"name_ko": "문", "kind": "door"},
+      "/": {"name_ko": "문간", "kind": "doorway"},
+      "X": {"name_ko": "잠긴 문", "kind": "locked", "opens": ""},
+      "^": {"name_ko": "계단", "kind": "stairs"},
+      "H": {"name_ko": "사다리", "kind": "ladder"},
+      "z": {"name_ko": "트인 곳(아래층이 보임)", "kind": "open"},
+      "r": {"name_ko": "난간", "kind": "rail"},
+      "@": {"name_ko": "사람", "kind": "npc"},
+      "W": {"name_ko": "창", "kind": "walldeco", "style": "window", "color": "#8a9aa4", "light": true},
+      "1": {"name_ko": "둥근 걸상", "kind": "furniture", "shape": "stool", "color": "#6a4a2e"},
+      "2": {"name_ko": "쇠띠 궤", "kind": "furniture", "shape": "chest", "color": "#5a3e28"},
+      "3": {"name_ko": "바구니", "kind": "furniture", "shape": "basket", "color": "#8a6a3a", "variant": "apples"},
+      "4": {"name_ko": "양동이", "kind": "furniture", "shape": "bucket", "color": "#6a5038"},
+      "5": {"name_ko": "화분", "kind": "furniture", "shape": "plant", "color": "#9a5236"},
+      "6": {"name_ko": "빗자루", "kind": "furniture", "shape": "broom", "color": "#b89a5a"},
+      "7": {"name_ko": "쌓은 궤짝", "kind": "furniture", "shape": "crates", "color": "#5a4430"},
+      "8": {"name_ko": "바닥 촛대", "kind": "furniture", "shape": "candle", "color": "#e8dcc0", "light": true},
+      "9": {"name_ko": "책 더미", "kind": "furniture", "shape": "books", "color": "#5a3a2a"},
+      "0": {"name_ko": "옷걸이(망토)", "kind": "furniture", "shape": "coat", "color": "#4a3a2e"},
+      "!": {"name_ko": "장작 묶음", "kind": "furniture", "shape": "logs", "color": "#8a6a44"},
+      "%": {"name_ko": "누운 술통", "kind": "furniture", "shape": "cask", "color": "#7a5a36"},
+      "&": {"name_ko": "바닥 등", "kind": "furniture", "shape": "lantern", "color": "#e8c070", "light": true},
+      "*": {"name_ko": "물동이", "kind": "furniture", "shape": "jug", "color": "#9a6a44"},
+      "<": {"name_ko": "빈 병", "kind": "furniture", "shape": "bottles", "color": "#2e4a2e"},
+      ">": {"name_ko": "접시 더미", "kind": "furniture", "shape": "stack", "color": "#c8bca8"},
+      "?": {"name_ko": "기대 세운 창", "kind": "furniture", "shape": "spear", "color": "#6a4a2e"},
+      "|": {"name_ko": "대걸레", "kind": "furniture", "shape": "mop", "color": "#a89c84"},
+      "~": {"name_ko": "치즈 바퀴", "kind": "furniture", "shape": "cheese", "color": "#d8b860"},
+      "`": {"name_ko": "흩어진 종이", "kind": "decor", "style": "papers", "color": "#d8cca8"},
+      "'": {"name_ko": "마른 풀", "kind": "decor", "style": "rushes", "color": "#a89a5a"},
+      "-": {"name_ko": "부스러기", "kind": "decor", "style": "crumbs", "color": "#a8865a"},
+      "(": {"name_ko": "구석 거미줄", "kind": "decor", "style": "cobweb", "color": "#d8d8d0"},
+      ")": {"name_ko": "갈라진 바닥", "kind": "decor", "style": "cracks", "color": "#1e1a16"},
+      "[": {"name_ko": "쏟은 술", "kind": "decor", "style": "spill", "color": "#4a1e1e"},
+      "]": {"name_ko": "얼룩", "kind": "decor", "style": "stain", "color": "#2a241c"},
+      "{": {"name_ko": "흘린 동전", "kind": "decor", "style": "coins", "color": "#c8a048"},
+      "}": {"name_ko": "재·그을음", "kind": "decor", "style": "ash", "color": "#2a2826"}
+    },
+    "source": "placeholder"
+  },
+
   "facility_order": [
     "guild",
     "inn",
     "library",
     "temple",
     "shop",
-    "exchange",
     "smithy",
     "bank",
     "training"
@@ -203,13 +263,8 @@
     ]
   },
   "shop": {
-    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율. 마석은 사지 않는다(귀환 정산 — city.json settle, CT58). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 거주 등급(CT51): stock_by_residence[등급−1] = 그 등급에서 새로 들여오는 물건(아래 등급 것은 그대로 판다). 매입 비율은 구역마다 같다(sell_ratio — CT60).",
-    "stock_by_residence": [
-      ["stone_bread", "ration", "torch", "minor_potion", "antidote", "bandage"],
-      ["medium_potion", "soul_potion", "whetstone", "smoke_bomb"],
-      ["greater_potion", "lantern"],
-      []
-    ],
+    "_comment": "상점: 아이템 price를 쓴다. stock = 파는 아이템 id(null = price > 0인 아이템 전부, 마석·균열 귀속 제외). sell_ratio = 판매가 비율. 마석은 사지 않는다(귀환 정산 — city.json settle, CT58). 2026-10-20: 장비(아이템 category가 equipment_categories — 무기·방어구)는 대장간(smithy_trade — 활동의 stock·deals)에서만 사고판다. 상점 판매 목록은 장비가 아닌 것만. 2026-10-31 판매 목록은 하나 — 라비기온 7구역(옛 2등급까지의 물건, CT63·CT64).",
+    "stock": ["stone_bread", "ration", "torch", "minor_potion", "antidote", "bandage", "medium_potion", "soul_potion", "whetstone", "smoke_bomb"],
     "sell_ratio": 0.5,
     "equipment_categories": [
       "weapon",
@@ -266,16 +321,15 @@
     ],
     "due_month": 12
   },
-  "residence": {
-    "_comment": "거주 구역(사용자 2026-10-27, CT50 — 라프도니아 14구역 설정을 받아 구역으로): 거리 오른쪽 끝에서 D를 한 번 더 누르면 '이사' — 다음 등급 upgrade_cost를 내고 더 나은 구역으로 옮긴다(되돌리지 않는다, 행동력은 쓰지 않는다 — 사용자 2026-10-28 CT60: 은행 이사·구역 물가 price_mult는 없앴다, 값 3만·8만·20만 = 1층 원정 순수익 약 1만 8000의 2·5·11번쯤). 13구역 라비기온(뒷골목 셋방) → 7구역 라비기온(광장 가까운 대로변) → 5구역 컴멜비(상업지구) → 3구역 컴멜비(사용자 2026-10-27 「2구역은 너무 높다, 일단 3」 — 2구역 북반구 중산층은 그 위). 1구역 카르논(명성 필요)·6구역 노움트리(귀족만)는 명성이 생기면. 등급이 바꾸는 것 — 건물 외관(assets/city/buildings/<시설>_t<등급>.webp, 1 = 기본 그림) · 활동 min_residence(여관 식사 등급 — 오늘의 거리 사건으로 붙는 활동은 event_min_residence) · 상점 shop.stock_by_residence · 대장간 smithy_material_tier(살 수 있는 소재 단계 상한) · 도서관 서적 tier · 거리 사건 residence_weight·when.residence_min/max. street_tint = 거리의 먼 도시 레이어(원경·중경·안개)에 날씨 색과 함께 곱하는 색(CT54 — 높은 구역일수록 밝다; 거리·건물·내부 그림은 구역마다 따로 그린 <경로>_t<등급>). 구역 번호·값은 임시값.",
-    "tiers": [
-      {"name_ko": "라비기온 13구역", "upgrade_cost": 0, "smithy_material_tier": 1, "street_tint": [1.0, 1.0, 1.0]},
-      {"name_ko": "라비기온 7구역", "upgrade_cost": 30000, "smithy_material_tier": 2, "street_tint": [1.06, 1.05, 1.02]},
-      {"name_ko": "컴멜비 5구역", "upgrade_cost": 80000, "smithy_material_tier": 3, "street_tint": [1.14, 1.12, 1.05]},
-      {"name_ko": "컴멜비 3구역", "upgrade_cost": 200000, "smithy_material_tier": 4, "street_tint": [1.22, 1.2, 1.12]}
-    ],
+  "district": {
+    "_comment": "도시 구역 하나(사용자 결정 2026-10-31 CT63 — 거주 등급·이사를 없애고 하나로 통일, '지금 거주지역이 너무 어두워'). name_ko = 사는 구역(달력 카드). look = 그림 등급 — 건물·거리 레이어(far·mid·street)·시설 내부 그림 <경로>_t<look>(1 = 옛 라비기온 13구역 뒷골목 · 2 = 7구역 · 3 = 컴멜비 5구역 사암·푸른 지붕 · 4 = 3구역 석회암·청동 — 지금 2(사용자 2026-10-31 '라비기온 7구역으로 전면 조정, 거래소 없이' CT64) — tools/paint_city.gd가 넷 다 그린다). street_tint = 먼 도시 레이어(원경·중경·안개)에 날씨 색과 함께 곱하는 색. smithy_material_tier = 대장간에서 살 수 있는 소재 단계 상한(값이 비싸 돈이 막는다). 특별 시설(facilities special — 지금은 없다, 거래소는 없앴다 CT64)은 거리에 서지 않고, 거리 오른쪽 끝에서 D → 고르는 창으로 간다(행동력은 다른 시설처럼 나올 때 1). 값은 임시값.",
+    "name_ko": "라비기온 7구역",
+    "look": 2,
+    "street_tint": [1.06, 1.05, 1.02],
+    "smithy_material_tier": 2,
     "source": "placeholder"
   },
+
   "library": {
     "_comment": "도서관 서적(CT52): 분야마다 읽기 활동(효과 learn_info field). 한 번 읽으면 per_read[최소, 최대]개 — 아직 모르는 항목 중 거주 등급 이하(tier)·갔던 층 + 1 이하(floor)만(data/city_info). 얻은 것은 도감(B)의 서적에서 다시 읽는다. art = 읽을 때 시설 안을 덮는 펼친 책 그림(tools/paint_books.gd, CT57).",
     "fields": [

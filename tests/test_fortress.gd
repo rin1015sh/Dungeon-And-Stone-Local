@@ -245,6 +245,31 @@ func test_goddess_tear_and_horn_and_hidden() -> void:
 	assert_eq(s.player.inventory.count("goddess_tear"), 0, "성채 밖으로는 가져갈 수 없다")
 
 
+## 균열 전투 도구(성수 병 등)는 고른 적 하나만 친다(사용자 2026-10-30, RF27). 대상이 없거나 듣지 않으면 쓰지 않는다.
+func test_holy_water_hits_one_target() -> void:
+	var b := _battle(["deadman", "deadman", "chimera_wolf"])
+	var me := b.side_units(Combatant.SIDE_PARTY)[0]
+	me.actor.inventory.add("fortress_holy_water", 3)
+	var foes := b.side_units(Combatant.SIDE_ENEMY)
+	var a: Combatant = foes[0]
+	var other: Combatant = foes[1]
+	var cw: Combatant = foes[2]
+	var hp_other := other.actor.pool.get_current("hp")
+	b.current = me
+	b.phase = Battle.PHASE_AWAIT
+	assert_false(b.act(me, {"kind": "item", "item": "fortress_holy_water"}), "대상을 고르지 않으면 쓰지 않는다")
+	assert_false(b.act(me, {"kind": "item", "item": "fortress_holy_water", "target": cw}), "짐승에게는 듣지 않는다")
+	assert_eq(me.actor.inventory.count("fortress_holy_water"), 3, "쓰지 않았으면 그대로")
+	var hp_a := a.actor.pool.get_current("hp")
+	assert_true(b.act(me, {"kind": "item", "item": "fortress_holy_water", "target": a}))
+	assert_true(a.actor.dead or a.actor.pool.get_current("hp") < hp_a, "고른 데드맨이 맞는다")
+	assert_near(other.actor.pool.get_current("hp"), hp_other, 0.001, "다른 데드맨은 그대로")
+	assert_eq(me.actor.inventory.count("fortress_holy_water"), 2)
+	for id: String in ["fortress_holy_water", "glacier_ice_spike", "mine_powder_pouch", "tomb_seal_charm"]:
+		assert_false(BattleRules.single_smite(db, id).is_empty(), id + ": 하나만")
+	assert_true(BattleRules.single_smite(db, "goddess_tear").is_empty(), "여신의 눈물은 그대로 전원")
+
+
 func test_telegraph_waits_through_extra_action() -> void:
 	var b := _battle(["blater"], 2)
 	var bl := b.side_units(Combatant.SIDE_ENEMY)[0]

@@ -1,0 +1,32 @@
+{
+  "id": "glacier_oil_cake",
+  "name_ko": "기름 과자",
+  "category": "food",
+  "price": 500,
+  "stack": 5,
+  "consumable": true,
+  "desc_ko": "탐사대가 챙겨 온 기름진 과자. 얼어도 부서지지 않는다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 35
+    },
+    {
+      "type": "remove_status",
+      "status": "hypothermia"
+    }
+  ],
+  "tags": [
+    "food"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "bread",
+  "color": "#a88a50",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

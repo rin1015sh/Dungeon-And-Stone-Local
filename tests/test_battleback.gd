@@ -87,7 +87,7 @@ func test_boss_pinned_center() -> void:
 	assert_eq((wide["pos"] as Array)[1], Vector2(0.0, 0.0), "벽보다 넓은 보스도 가운데")
 
 
-## 적 수별 자리(UI48): 하나 = 한가운데, 둘 = 가운데 둘(대칭), 나중에 온 적은 지금 선 적을 옮기지 않고 바로 옆에.
+## 적 수별 자리(UI50): 하나 = 한가운데, 둘 = 가운데 둘(대칭), 나중에 온 적은 지금 선 적을 옮기지 않고 바로 옆에.
 func test_count_layout_centered_and_new_beside() -> void:
 	assert_eq((FoeRows.arrange(PackedFloat32Array([0.8]), 2.5, 0.2)["pos"] as Array)[0], Vector2(0.0, 0.0), "하나 = 가운데")
 	var two: Array = FoeRows.arrange(PackedFloat32Array([0.8, 0.8]), 2.5, 0.2)["pos"]

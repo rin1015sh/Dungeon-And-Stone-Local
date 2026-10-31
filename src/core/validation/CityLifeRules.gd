@@ -3,7 +3,7 @@ extends RefCounted
 ## 검사 규칙: 도시 생활(2026-10-20) — 오늘의 거리(city_events), 세금(city.json tax),
 ## 사건으로만 열리는 활동(activities "extra": true — 시설 목록에 넣지 않고, 사건이 연다).
 
-const WHEN_KEYS := ["from_month", "periods", "weather", "residence_min", "residence_max"]
+const WHEN_KEYS := ["from_month", "periods", "weather"]
 
 
 static func run(v: ValidatorBase) -> void:
@@ -13,6 +13,7 @@ static func run(v: ValidatorBase) -> void:
 	_extras(v, opened)
 	_tax(v, JsonUtil.get_dict(city, "tax"))
 	CityStreetRules.run(v)
+	CityRoomRules.run(v)
 
 
 static func _events(v: ValidatorBase, city: Dictionary, opened: Dictionary) -> void:
@@ -41,7 +42,7 @@ static func _events(v: ValidatorBase, city: Dictionary, opened: Dictionary) -> v
 				v.err(w, "when.weather '%s'이(가) 날씨에 없다" % x)
 
 
-## 사건이 여는 활동: 있고, 그 시설 것이고, extra(사건 전용)거나 거주 등급이 낮아도 사건으로 열리는 것(event_min_residence — CT51)이어야 한다.
+## 사건이 여는 활동: 있고, 그 시설 것이고, extra(사건 전용)여야 한다.
 static func _extra_ref(v: ValidatorBase, w: String, act_id: String, fac: String) -> void:
 	if not v.db.has_entry("activities", act_id):
 		v.err(w, "활동 '%s' 없음" % act_id)
@@ -49,8 +50,8 @@ static func _extra_ref(v: ValidatorBase, w: String, act_id: String, fac: String)
 	var a := v.db.get_entry("activities", act_id)
 	if JsonUtil.get_str(a, "facility") != fac:
 		v.err(w, "활동 '%s'의 facility가 '%s'가 아니다" % [act_id, fac])
-	if not JsonUtil.get_bool(a, "extra") and not a.has("event_min_residence"):
-		v.err(w, "활동 '%s'는 extra(사건 전용)도 event_min_residence도 아니다" % act_id)
+	if not JsonUtil.get_bool(a, "extra"):
+		v.err(w, "활동 '%s'는 extra(사건 전용)가 아니다" % act_id)
 
 
 ## extra 활동은 시설 목록에 없고, 사건이 연다. 그 밖의 활동은 자기 시설 목록에 있다.

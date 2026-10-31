@@ -121,6 +121,20 @@ func test_cross_shape_and_compass_directions() -> void:
 	assert_false(map.is_walkable(corner))
 
 
+func test_mixed_center_is_a_circle_and_corners_join_arms() -> void:
+	var map := _gen(1)
+	var lay := _lay()
+	assert_true(lay.mixed_radius > 0.0 and lay.mixed_radius < lay.core_half, "중심부 원은 정사각형보다 작다")
+	var r := int(lay.mixed_radius)
+	assert_eq(map.zone_at(map.center + Vector2i(r - 1, 0)), "center", "원 안 = 중심부")
+	assert_eq(map.zone_at(map.center + Vector2i(r + 2, 0)), "east", "원 밖 = 팔(한 종)")
+	assert_eq(map.zone_at(map.center + Vector2i(0, -(r + 2))), "north")
+	var c := lay.core_half - 1
+	assert_eq(map.zone_at(map.center + Vector2i(c, c - 5)), "east", "정사각형 모서리는 가까운 팔로(대각선으로 나눔)")
+	assert_eq(map.zone_at(map.center + Vector2i(-(c - 5), c)), "south")
+	assert_eq(lay.zone_of(map.center + Vector2i(c, c)), "center", "지형 뼈대(zone_of)는 그대로 정사각형")
+
+
 func test_fixed_places_same_every_entry() -> void:
 	var a := _gen(1)
 	var b := _gen(2)

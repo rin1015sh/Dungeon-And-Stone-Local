@@ -4,7 +4,7 @@ extends RefCounted
 ## 엉덩이 골·다리 사이로 파고들지 않게)으로 빚는다. 앞은 목 아래에서 단으로 갈수록 벌어지게 트여(몸 둘레 각도로 — 어느 쪽에서 봐도 맞는 자리) 옷이 보인다.
 ## 몸틀(어깨선에서 잰 몸의 오른쪽 rv · 등 쪽 bv)을 따른다 — 전투 동작은 카메라가 아니라 관절을 돌려 몸을 튼다(PartyMotion). 몸 좌표 축에 박아 두면
 ## 활 쏘는 칸에서 등 자락이 카메라를 향한 판처럼 옆구리를 다 가렸다(사용자 2026-10-29 "옆모습 망토가 어색 — 몸이 조금 드러나게").
-##   cloak {c, len(0 = 엉덩이 ~ 1 = 발목), flare(단 폭), open(앞 트임 배율), clasp(목 여밈 쇠 색), collar(젖힌 두건), fur}
+##   cloak {c, len(0 = 엉덩이 ~ 1 = 발목), flare(단 폭), open(앞 트임 배율), open_top(목 아래 트임 반각 — 없으면 OPEN_TOP), clasp(목 여밈 쇠 색), collar(젖힌 두건), fur}
 ##   under = 안에 입은 겹 두께 · belt = 겉허리띠(BackCloak이 누빔·사슬·외투·겉허리띠를 보고 채운다)
 ## 옛 원뿔 망토는 cloak에 cone: true(BackCloak._cloak).
 
@@ -12,7 +12,7 @@ const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
 
-const GROW := 0.024        ## 몸 위로 부풀리는 두께(외투 0.02보다 조금 두껍게)
+const GROW := 0.032        ## 몸 위로 부풀리는 두께(외투 0.02보다 두껍게 — 등 자락 윗부분이 이 겹 아래에 묻혀 어깨~등이 한 장으로 보이고, 안의 조끼가 비치지 않게)
 const OPEN_TOP := 0.7      ## 목 아래 앞 트임 반각(라디안 — 0 = 가운데 한 줄) — 0.32는 옆모습에서 몸을 다 가렸다(사용자 2026-10-29 "조금 드러나게")
 const OPEN_BOT := 1.65     ## 단의 앞 트임 반각(open 배율을 곱한다) — 0.95 → 1.65(옆구리 조금 너머): 망토는 등과 옆구리 뒤쪽을 덮고, 옆에서 보면 옆구리·다리가 드러난다
 
@@ -61,44 +61,75 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 		jag.append(rng.randf_range(-0.008, 0.008))
 	# 단: 몸 둘레를 따라 휘고 등 가운데가 앞 자락보다 길게 처진다(곧은 가로 단은 옆모습에서 통처럼 뻣뻣해 보였다)
 	var hem_at := func(phi: float) -> float: return hem + 0.022 * sin(phi) + float(jag[int(absf(phi) * 5.0) % 24])
-	var band := BackKit.hem_poly(f["pr2"], nk.y - 0.2, shw * flare + 0.1, bw + 0.16, hem_at)  # 단의 해진 자국은 jag로(지운 구멍은 단 위에 검은 점으로 보였다)
+	var body_mid := (nk + pv) * 0.5  # 몸통 가운데를 몸틀 좌표로(몸을 옆으로 옮긴 칸에서 자락 범위가 몸을 따라가게)
+	var band := BackKit.hem_poly(f["pr2"], nk.y - 0.2, shw * flare + 0.1, bw + 0.16, hem_at, Vector3(body_mid.x * rv.x + body_mid.z * rv.z, 0, body_mid.x * bv.x + body_mid.z * bv.z))  # 단의 해진 자국은 jag로(지운 구멍은 단 위에 검은 점으로 보였다)
 	var pieces: Array = [band]
 	var open := float(d.get("open", 1.0))
 	if open > 0.0:
-		for hole: PackedVector2Array in _opening(cl, pr, j, f, bw, nk.y + 0.012, hem + 0.06, open):
+		for hole: PackedVector2Array in _opening(cl, pr, j, f, bw, nk.y + 0.012, hem + 0.06, open, float(d.get("open_top", OPEN_TOP))):
 			var next: Array = []
 			for p: PackedVector2Array in pieces:
 				for q: PackedVector2Array in Geometry2D.clip_polygons(p, hole):
 					if Geometry2D.is_polygon_clockwise(q) == Geometry2D.is_polygon_clockwise(band):  # 구멍 다각형은 빚을 자리가 아니다
 						next.append(q)
 			pieces = next
-	var tags := ["torso", "pelvis", "thigh_l", "thigh_r"]
-	if not j.get("map_face", false):  # 맵 몸: 큰 머리 밑 목까지 덮으면 앞모습에서 턱수염처럼 보인다
-		tags.append("neck")
+		var keep: Array = []  # 트임을 잘라낸 뒤 남은 가는 조각은 버린다(옆으로 돈 칸에서 다리 앞에 ㄴ자 막대로 남았다 — AM56)
+		var full := absf(_area(band))
+		for q: PackedVector2Array in pieces:
+			if absf(_area(q)) > full * 0.04:
+				keep.append(q)
+		pieces = keep
+	var tags := ["torso", "pelvis", "thigh_l", "thigh_r"]  # 목은 덮지 않는다 — 덮으면 망토가 목을 통째로 감싸 머리까지 굵게 이어졌다(사용자 2026-10-30, AM52)
 	var under := float(d.get("under", 0.0))  # 안에 입은 두꺼운 겹(누빔·사슬·외투)만큼 더 띄운다
 	var belt := 0.025 if d.get("belt", false) else 0.0  # 겉허리띠: 등 자락만 더 띄워 덮는다(몸 겹까지 띄우면 윗몸이 부풀었다)
 	# 등 뒤 자락: 견갑골에서 엉덩이를 덮고, 단으로 갈수록 뒤로 비스듬히 빠지며 얇아진다(옆에서 보면 다리 뒤로 떨어지는 천 —
 	# 단까지 같은 굵기의 곧은 통이면 활 쏘는 옆모습에서 망토가 뻣뻣한 판처럼 보였다). 앞으로는 몸통 겹 안에 숨는다.
 	var z0 := bw * 0.4
 	var knee := lerpf(pv.y, hem, 0.55)
-	var spine: Array = [_w(f, j, 0, sy + 0.01, z0), _w(f, j, 0, ch.y, z0), _w(f, j, 0, pv.y, z0 + 0.014), _w(f, j, 0, knee, z0 + 0.04), _w(f, j, 0, hem, z0 + 0.07)]
-	var us: Array = [shw + 0.015, shw + 0.03, shw * flare + 0.035, shw * flare + 0.05, shw * flare + 0.075]
-	# 어깨 ~ 가슴 깊이를 같게(등판이 평평한 한 면 — 위가 얕으면 둥근 등을 따라 덮은 몸 겹이 견갑골 위로 둥근 혹처럼 드러났다, 사용자 2026-10-29 AM49)
-	var ws: Array = [bw * 0.68 + 0.03 + under, bw * 0.68 + 0.035 + under, bw * 0.64 + 0.05 + under + belt, bw * 0.5 + 0.03 + under + belt * 0.5, bw * 0.4 + 0.022 + under]
+	# 등 자락 사슬: 열쇠 높이(어깨·가슴·골반·무릎·단)의 폭 us·깊이 ws를 촘촘한 마디로 고르게 잇는다 — 마디가 성기면 이음매 구(캡슐 끝)가
+	# 위 마디보다 깊어 등 한복판에 둥근 혹이 솟았다(사용자 2026-10-30, AM52). 위쪽은 몸 겹 안에 묻히게 얇게(어깨~가슴은 몸틀 그대로).
+	var keys: Array = [
+		[sy + 0.01, z0, shw * 0.6, bw * 0.2 + under],
+		[ch.y, z0, shw * 0.9, bw * 0.4 + under],
+		[pv.y, z0 + 0.014, shw * flare + 0.035, bw * 0.62 + 0.042 + under + belt],
+		[knee, z0 + 0.065, shw * flare + 0.05, bw * 0.45 + 0.022 + under + belt * 0.5],
+		[hem, z0 + 0.1, shw * flare + 0.07, bw * 0.35 + 0.016 + under]]  # 엉덩이는 그대로, 무릎·단만 뒤로 빼 등에서 단까지 비스듬히 곧게 — 옆모습에서 엉덩이에 붙지 않게(AM58). 굵기는 얇게(AM55 — 붕 뜨지 않게)
+	var spine: Array = []
+	var us: Array = []
+	var ws: Array = []
+	for k in keys.size() - 1:
+		var a: Array = keys[k]
+		var b: Array = keys[k + 1]
+		var n := 3
+		for i in n:
+			var t := float(i) / n
+			var e := t * t * (3.0 - 2.0 * t)
+			spine.append(_w(f, j, 0, lerpf(a[0], b[0], t), lerpf(a[1], b[1], e)))
+			us.append(lerpf(a[2], b[2], e))
+			ws.append(lerpf(a[3], b[3], e))
+	var last: Array = keys[keys.size() - 1]
+	spine.append(_w(f, j, 0, last[0], last[1]))
+	us.append(last[2])
+	ws.append(last[3])
+	var side_view := absf(float((f["pr2"] as Dictionary)["s"])) > 0.6  # 옆모습: 트임 앞쪽 조각은 앞으로 내민 허벅지만 가늘게 덮어 ㄴ자 막대로 보였다(AM56)
+	var big := 0.0
 	for piece: PackedVector2Array in pieces:
-		BackKit.shell(cl, pr, tags, GROW + under, m, g, piece, 0.05, 0.0)
+		big = maxf(big, absf(_area(piece)))
+	for piece: PackedVector2Array in pieces:
+		var main := absf(_area(piece)) >= big
+		BackKit.shell(cl, pr, tags if main or not side_view else ["torso", "pelvis"], GROW + under, m, g, piece, 0.05, 0.0)
 		BackKit.shell(cl, pr, ["shoulder_l", "shoulder_r"], GROW * 0.45 + under, m, g, piece, 0.05, 0.0)  # 어깨는 얇게(두꺼우면 어깨가 공처럼 부풀었다)
 		cl.set_clip(piece)
 		echain(cl, pr, g, spine, us, ws, m, 0.05, f["pr2"])
 		cl.set_clip(PackedVector2Array())
 	var open_bot := OPEN_BOT * open
-	for k in 16:  # 세로 주름: 몸 둘레 어느 쪽에서 봐도 어깨 바로 아래에서 단으로 퍼지며 처진다(앞 트임 자리는 빼고 — 가슴에서 시작하면 그 위가 매끈한 둥근 덩어리로 보였다, AM49)
+	for k in 16:  # 세로 주름: 몸 둘레 어느 쪽에서 봐도 어깨·견갑골 아래에서 단으로 퍼지며 처진다(앞 트임 자리는 빼고)
 		var phi := TAU * (k + rng.randf_range(0.2, 0.8)) / 16.0 - PI
 		if absf(wrapf(phi + PI * 0.5, -PI, PI)) < open_bot * 0.9:
 			continue
 		var n := rv * cos(phi) + bv * sin(phi)
-		var p0 := _w(f, j, cos(phi) * (shw + 0.02), sy + 0.05 + rng.randf_range(0.0, 0.04), sin(phi) * (bw + GROW + under))
-		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.07 + sin(phi) * float(ws[4]))
+		var p0 := _w(f, j, cos(phi) * (shw + 0.02), lerpf(sy + 0.06, ch.y + 0.02, absf(sin(phi))) + rng.randf_range(0.0, 0.04), sin(phi) * (bw + GROW + under))
+		var p1 := _w(f, j, cos(phi) * (shw * flare + 0.07), float(hem_at.call(phi)) - 0.01, z0 + 0.1 + sin(phi) * float(ws[ws.size() - 1]))
 		var mid := p0.lerp(p1, 0.5) + n * 0.006 + rv * rng.randf_range(-0.01, 0.01)
 		Back.groove(cl, pr, g, [p0, mid, p1], n, 0.005, 0.009)
 	var front := -(0.066 * float(bd["dep"]) + GROW)
@@ -114,15 +145,24 @@ static func drape(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, d: Di
 		var rr: Array = []
 		for i in 9:
 			var a := lerpf(-PI * 0.6, PI * 0.6, i / 8.0)  # 0 = 목 뒤 가운데
-			pts.append(Vector3(nk.x, nk.y + 0.028 + 0.012 * absf(sin(a)), nk.z) + rv * (sin(a) * shw * 0.5) + bv * (cos(a) * (bw * 0.7 + under)))
-			rr.append(0.026 * (1.0 - 0.4 * absf(sin(a))))
+			pts.append(Vector3(nk.x, nk.y + 0.004 + 0.01 * absf(sin(a)), nk.z) + rv * (sin(a) * shw * 0.5) + bv * (cos(a) * (bw * 0.62 + under)))
+			rr.append(0.017 * (1.0 - 0.35 * absf(sin(a))))
 		Back.chain(cl, pr, hg, pts, rr, m, 0.02)
+
+
+static func _area(poly: PackedVector2Array) -> float:
+	var a := 0.0
+	for i in poly.size():
+		var p := poly[i]
+		var q := poly[(i + 1) % poly.size()]
+		a += p.x * q.y - q.x * p.y
+	return a * 0.5
 
 
 ## 앞 트임 화면 다각형들: 몸 둘레(몸틀 타원)에서 앞 가운데 ±반각(위 → 아래로 벌어짐)을 왼쪽 반·오른쪽 반 따로, 보는 사람 쪽 부분만
 ## 높이마다 화면 왼쪽·오른쪽 끝을 찍는다(반쪽마다 따로 — 한꺼번에 재면 반각이 옆구리를 넘을 때 등 쪽 양 끝이 함께 보여 망토 전체가 잘렸다).
 ## 위·아래로는 화면 끝까지 늘려(band에서 구멍이 아니라 조각이 남게) 돌려준다. 보이는 앞면이 없으면(뒷모습) 빈 배열.
-static func _opening(cl: Clay, pr: Dictionary, j: Dictionary, f: Dictionary, bw: float, v0: float, v1: float, open: float) -> Array:
+static func _opening(cl: Clay, pr: Dictionary, j: Dictionary, f: Dictionary, bw: float, v0: float, v1: float, open: float, open_top: float = OPEN_TOP) -> Array:
 	var shw: float = f["shw"]
 	var rv: Vector3 = f["rv"]
 	var bv: Vector3 = f["bv"]
@@ -135,7 +175,7 @@ static func _opening(cl: Clay, pr: Dictionary, j: Dictionary, f: Dictionary, bw:
 		for r in rows + 1:
 			var t := r / float(rows)
 			var v := lerpf(v0, v1, t)
-			var a := lerpf(OPEN_TOP, OPEN_BOT * open, pow(t, 0.8))
+			var a := lerpf(open_top, OPEN_BOT * open, pow(t, 0.8))
 			var hip := clampf((v - (pv.y - 0.15)) / 0.15, 0.0, 1.0)  # 가슴 → 엉덩이 둘레
 			var ru := lerpf(shw + 0.06, 0.15, hip)
 			var rw := lerpf(bw + 0.05, 0.12, hip)

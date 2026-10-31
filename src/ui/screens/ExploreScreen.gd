@@ -163,14 +163,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	var riddle := get_node_or_null("RiddleDialog") as RiddleDialog
-	if riddle != null:  # 수수께끼 대화창이 떠 있으면 탐험 키는 먹지 않는다. 정지 키·취소 키(Backspace) = 물러나기
-		if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):
+	if riddle != null:  # 수수께끼 대화창이 떠 있으면 탐험 키는 먹지 않는다. 정지 키 = 물러나기
+		if event.is_action_pressed("pause"):
 			riddle.cancel()
 		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
 		return
 	var feature := get_node_or_null("FeatureChoice") as ChoicePopup
-	if feature != null:  # 동굴 요소 선택 창: 탐험 키는 먹지 않는다(W/S·Enter·Backspace는 창이 먼저 받는다). 정지 키 = 그만두기
+	if feature != null:  # 동굴 요소 선택 창: 탐험 키는 먹지 않는다(W/S·Enter는 창이 먼저 받는다). 정지 키 = 그만두기
 		if event.is_action_pressed("pause"):
 			feature.picked.emit(-1)
 		if event is InputEventKey or event is InputEventAction:
@@ -181,13 +181,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_menu.close()
 		else:
 			set_paused(not is_paused())
-		get_viewport().set_input_as_handled()
-		return
-	if event.is_action_pressed("menu_back") and (_menu.is_open() or is_paused()):  # 취소: 메뉴를 닫고, 없으면 일시정지를 푼다
-		if _menu.is_open():
-			_menu.close()
-		else:
-			set_paused(false)
 		get_viewport().set_input_as_handled()
 		return
 	if is_paused():
@@ -288,7 +281,7 @@ func _on_riddle(group: FieldMonsters.Group) -> void:
 		session.monsters.set_grace(group, session.clock.total_hours))
 
 
-## 동굴 요소의 행동이 여럿이다(맑은 샘 등): 작은 선택 창(ChoicePopup — W/S·Enter, Backspace = 그만두기). 고르는 동안 시간을 멈춘다.
+## 동굴 요소의 행동이 여럿이다(맑은 샘 등): 작은 선택 창(ChoicePopup — W/S·Enter, Esc = 그만두기). 고르는 동안 시간을 멈춘다.
 func _on_feature_choice(at: Vector2i) -> void:
 	if has_node("FeatureChoice"):
 		return

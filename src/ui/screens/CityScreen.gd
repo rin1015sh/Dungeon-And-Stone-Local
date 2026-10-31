@@ -1,9 +1,10 @@
 class_name CityScreen
 extends Control
 ## 도시 화면(라비기온 구역): 횡스크롤 거리(CityStreet) ↔ 시설 내부(FacilityView), 귀퉁이 정보 카드(CityHud — 달력·탐험가·메뉴).
-## 시설을 고르면 행동력(facility_entry_cost)을 쓰고 들어간다. 나오면 행동력이 0일 때 다음 순으로 넘어간다.
+## 시설을 고르면 들어가고(행동력 facility_entry_cost가 있어야), 나올 때 그 행동력을 쓴다. 행동력이 0이 되면 다음 순으로 넘어간다.
 ## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
-## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 거리 아래에도 대화창(못 들어가는 이유 등).
+## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 실내 방이 있는 시설(도서관 — RoomView)은 걸어서 문으로 나온다.
+## 행동력은 시설 한 번 다녀오기에 1 — 나올 때 쓴다(CT62). 거리 아래에도 대화창(못 들어가는 이유 등).
 ## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다. 거리에서 Esc = 정지 창(계속 · 타이틀로).
 ## 마우스는 쓰지 않는다(A/D 스크롤, Enter 들어가기 — 사용자 결정 2026-10-19).
 
@@ -24,7 +25,7 @@ var _codex: CodexMenu  ## 도감(B — UI32)
 var _debug: CityDebugPanel
 var _event_running := false  # 거리 사건 장면·선택 중 — 일러스트가 덮고 도시 조작을 막는다
 var _event_view: StreetEventView
-var _moving := false  # 이사 선택 창이 떠 있다
+var _moving := false  # 특별 시설로 가는 창이 떠 있다
 
 
 func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) -> void:
@@ -37,7 +38,7 @@ func _ready() -> void:
 	_street = CityStreet.new()
 	_street.setup(state)
 	_street.facility_chosen.connect(choose_facility)
-	_street.end_reached.connect(offer_move)
+	_street.end_reached.connect(offer_travel)
 	add_child(_street)
 	_street.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
@@ -94,7 +95,7 @@ func is_debug_open() -> bool:
 	return _debug.visible
 
 
-## 거리에서 시설을 고른다: 행동력을 쓰고 내부로. 못 들어가면 안내.
+## 거리에서 시설을 고른다: 내부로(행동력은 나올 때). 못 들어가면 안내.
 func choose_facility(id: String) -> void:
 	if _facility != null or _event_running:
 		return
@@ -102,10 +103,13 @@ func choose_facility(id: String) -> void:
 	if not why.is_empty():
 		say(Strings.t(why))
 		return
-	_facility = FacilityView.new()
+	var has_room := not JsonUtil.get_str(state.db.get_entry("facilities", id), "room").is_empty()
+	_facility = RoomView.new() if has_room else FacilityView.new()  # 실내 방이 있으면 걸어 다니는 방(CT62)
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
 	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
+	if _facility is RoomView:
+		(_facility as RoomView).art_hidden.connect(func() -> void: _hud.visible = true)
 	_menu.close()  # 시설 안에서는 Tab 메뉴를 쓰지 않는다
 	_hud.set_facility_mode(true)
 	add_child(_facility)
@@ -214,26 +218,26 @@ func _street_choice(id: String, choices: Array) -> int:
 	return i
 
 
-## 거리 오른쪽 끝에서 D: 다음 구역으로 이사(값을 내고 — 행동력은 쓰지 않는다, CT60). 가장 높으면 이유 한 줄.
-func offer_move() -> void:
+## 거리 오른쪽 끝에서 D: 특별 시설(거래소 … — 거리에 서지 않는 곳)로 가는 작은 창(CT63). 고르면 그 시설에 바로 들어간다
+## (행동력은 다른 시설처럼 나올 때 1). 특별 시설이 없으면 아무 일도 없다.
+func offer_travel() -> void:
 	if _facility != null or _event_running or _moving or _menu.is_open() or _dialog.busy():
 		return
-	var cost := CityResidence.next_cost(state)
-	if cost < 0:
-		say(Strings.t("city.reason_residence_max"))
+	var ids := CityDistrict.special_ids(state.db)
+	if ids.is_empty():
 		return
 	_moving = true
-	var can := pc.inventory.money >= cost
-	var opts: Array[Dictionary] = [
-		{"text": CityResidence.name_of(state, CityResidence.tier(state) + 1), "sub": Strings.t("city.cost_stones", {"n": cost}),
-			"enabled": can, "desc": "" if can else Strings.t("city.reason_no_money")},
-		{"text": Strings.t("city.move_cancel")}]
-	var i: int = await ChoicePopup.ask(self, Strings.t("city.move_title"), opts, true)
+	var opts: Array[Dictionary] = []
+	for id in ids:
+		var f := state.db.get_entry("facilities", id)
+		var shut := state.closed.has(id)
+		opts.append({"text": JsonUtil.get_str(f, "name_ko", id), "sub": JsonUtil.get_str(f, "place_ko"), "enabled": not shut,
+			"desc": Strings.t("city.reason_closed") if shut else ""})
+	opts.append({"text": Strings.t("city.travel_cancel")})
+	var i: int = await ChoicePopup.ask(self, Strings.t("city.travel_title"), opts, true)
 	_moving = false
-	if i == 0 and CityResidence.upgrade(state, pc).is_empty():
-		state.changed.emit()
-		_street.refresh()
-		_hud.refresh()
+	if i >= 0 and i < ids.size() and is_inside_tree():
+		choose_facility(ids[i])
 
 
 ## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
@@ -294,9 +298,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("codex") and _facility == null and not _menu.is_open():
 		_codex.open()
-		get_viewport().set_input_as_handled()
-		return
-	if event.is_action_pressed("menu_back"):  # 도시에서는 Backspace를 쓰지 않는다(사용자 결정 2026-10-20)
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("pause"):  # Esc: 시설에서 나가기 · 메뉴 닫기 · (거리에서) 정지 창

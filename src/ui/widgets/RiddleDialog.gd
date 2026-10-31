@@ -2,7 +2,7 @@ class_name RiddleDialog
 extends CenterContainer
 ## 수수께끼 문지기 대화창(강철의 묘 — RiftRiddle). 문항·벽화에서 본 힌트·선택지(섞인 순서)를 보이고, 정답이면 "지나간다 / 약해진 문지기와 싸운다"를 고른다.
 ## 선택지는 ChoiceGrid(W/S·Enter). 고르면 answered(결과 RiftRiddle.PASS/WEAKEN/WRONG)를 내고 스스로 닫힌다.
-## 정지 키·Backspace는 고르지 않고 물러난다(cancelled — ExploreScreen이 받는다).
+## 정지 키(Esc)는 고르지 않고 물러난다(cancelled — ExploreScreen이 받는다).
 
 signal answered(outcome: String)
 signal cancelled
@@ -30,7 +30,7 @@ func setup(riddle: RiftRiddle, pc: PlayerCharacter) -> void:
 	_show(opts)
 
 
-## 고르지 않고 물러난다(정지 키·Backspace).
+## 고르지 않고 물러난다(정지 키 Esc).
 func cancel() -> void:
 	if is_queued_for_deletion():
 		return

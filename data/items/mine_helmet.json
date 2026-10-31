@@ -1,0 +1,19 @@
+{
+  "id": "mine_helmet",
+  "name_ko": "광부 안전모",
+  "forge": {
+    "type": "helm",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "resist_poison",
+        "flat": 3
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "초를 꽂는 받침이 달린 쇠 모자. 이마 쪽이 돌에 수없이 긁혀 있다.",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

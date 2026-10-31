@@ -1,7 +1,7 @@
 class_name HealFloats
 extends Node
 ## 전투 중 생명력·영혼력이 차오르면(회복 아이템·스킬·재생·흡혈·집어삼키기 …) 그 참가자 위에 "+n"을 피해 숫자처럼 띄운다 — 생명력 초록, 영혼력 파랑
-## (사용자 결정 2026-10-29 "회복되면 대화 글 대신 피해 숫자처럼 초록색으로" · "영혼력 회복도 파란 숫자로", UI44 — 회복 문구는 render.json ui.notice.silent).
+## (사용자 결정 2026-10-29 "회복되면 대화 글 대신 피해 숫자처럼 초록색으로" · "영혼력 회복도 파란 숫자로", UI46 — 회복 문구는 render.json ui.notice.silent).
 ## 효과마다 사건을 따로 내지 않고 자원 묶음(ResourcePool.changed)을 지켜본다: 최대치가 그대로인데 현재치가 늘면 회복.
 
 const COLORS := {"hp": "dmg_heal", "soul": "dmg_soul"}  # 자원 -> palette 색 키

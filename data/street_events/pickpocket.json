@@ -3,9 +3,7 @@
   "name_ko": "소매치기",
   "art": "res://assets/city/events/pickpocket.webp",
   "weight": 3,
-  "when": {
-    "residence_max": 1
-  },
+  "when": {},
   "cooldown_months": 2,
   "weather_weight": {
     "fog": 2

@@ -25,6 +25,7 @@
     "particles_z": 6,
     "camera_zoom": 1.5,
     "chunk_size": 16,
+    "loot_px_ratio": 0.8,
     "stream_chunks": 3,
     "face_shade": 0.9,
     "edge_shade": 0.45,
@@ -223,7 +224,7 @@
     "hover_brighten": 0.15,
     "selected_outline": "#d6cbb0",
     "outline_px": 3,
-    "ui": {"_comment": "도시 화면 카드(피어 앤 헝거 2풍: 거의 검은 반투명 판 + 뼈빛 가는 테두리 + 뼈빛 강조 — 노란 강조 없앰, 돈은 palette.gold, UI43)", "border": "#5a5246", "border_lit": "#d6cbb0", "accent": "#d6cbb0", "blood": "#8c2a22", "bone": "#d8cfb4", "dim": "#8d877a", "card_padding": 12},
+    "ui": {"_comment": "도시 화면 카드(피어 앤 헝거 2풍: 거의 검은 반투명 판 + 뼈빛 가는 테두리 + 뼈빛 강조 — 노란 강조 없앰, 돈은 palette.gold, UI45)", "border": "#5a5246", "border_lit": "#d6cbb0", "accent": "#d6cbb0", "blood": "#8c2a22", "bone": "#d8cfb4", "dim": "#8d877a", "card_padding": 12},
     "dim_unaffordable": 0.35,
     "happening_glow": "#ffb85ad0",
     "happening_glow_px": 170,
@@ -245,6 +246,10 @@
     "debug_edit_width": 110,
     "info_width": 520,
     "info_height": 420,
+    "room": {
+      "_comment": "시설 실내 방(탑뷰 — RoomView, CT62): zoom = 화면 배율(방이 화면보다 작으면 고정 — 왼쪽 위 달력 카드(calendar_width)를 비켜 오른쪽 빈 곳 가운데).",
+      "zoom": 1.4
+    },
     "plaza": {
       "_comment": "차원광장(미궁 입구) 화면: 하늘(날씨)·원경 far 레이어 일부(far_region = 그림 px, 화면 y·height 거리 단위) 위에 background(tools/paint_city.gd --only=plaza). portal_rect = 돌 고리 안쪽 뒷면 원의 상자(화면 720 기준 px, tools/city_art/Plaza.gd portal_rect()로 계산), far_y = 원경을 올려 회랑 위로 첨탑만 보이게. 초 = 도착 뒤 열리기까지·열리는 데·들어갈 때 걸리는 시간.",
       "background": "res://assets/city/plaza.webp",

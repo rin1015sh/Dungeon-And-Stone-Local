@@ -1,0 +1,30 @@
+{
+  "id": "fortress_tourniquet",
+  "name_ko": "군용 지혈대",
+  "category": "tool",
+  "price": 600,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "성채 병사들이 허리에 차고 다니던 가죽 지혈대. 핏자국이 겹겹이 말라붙었다.",
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "bleeding"
+    },
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 20
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "bandage",
+  "color": "#8a6a4a",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

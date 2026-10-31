@@ -49,7 +49,7 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	for i in n:
 		if v.under_by_def[i] < 0:
 			v.under_by_def[i] = v.base_floor
-	v.backdrop_material = Backdrop.material(v.art)
+	v.abyss_material = Abyss.material(v.art, map, v.tile)
 	apply_detail(v)
 	if any:
 		v.tex_material = ShaderMaterial.new()

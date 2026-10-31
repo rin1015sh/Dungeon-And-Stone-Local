@@ -1,0 +1,194 @@
+{
+ "_comment": "균열 낭떠러지·구덩이(Abyss) 장면 — 챕터마다: godot --path . res://tools/screenshot.tscn -- --screen=explore --seed=1 --rift=<균열> --chapter=<n> --shots=res://tools/shots/rift_void.json --out=<폴더> (그 챕터 장면만 찍힌다)",
+ "shots": [
+  {
+   "name": "blood_fortress_ch1_1",
+   "rift": "rift_blood_fortress",
+   "chapter": 1,
+   "at": [
+    17,
+    35
+   ]
+  },
+  {
+   "name": "blood_fortress_ch1_2",
+   "rift": "rift_blood_fortress",
+   "chapter": 1,
+   "at": [
+    8,
+    9
+   ]
+  },
+  {
+   "name": "blood_fortress_ch1_3",
+   "rift": "rift_blood_fortress",
+   "chapter": 1,
+   "at": [
+    72,
+    9
+   ]
+  },
+  {
+   "name": "blood_fortress_ch2_1",
+   "rift": "rift_blood_fortress",
+   "chapter": 2,
+   "at": [
+    7,
+    33
+   ]
+  },
+  {
+   "name": "blood_fortress_ch2_2",
+   "rift": "rift_blood_fortress",
+   "chapter": 2,
+   "at": [
+    13,
+    5
+   ]
+  },
+  {
+   "name": "blood_fortress_ch2_3",
+   "rift": "rift_blood_fortress",
+   "chapter": 2,
+   "at": [
+    32,
+    35
+   ]
+  },
+  {
+   "name": "glacier_cave_ch1_1",
+   "rift": "rift_glacier_cave",
+   "chapter": 1,
+   "at": [
+    7,
+    36
+   ]
+  },
+  {
+   "name": "glacier_cave_ch1_2",
+   "rift": "rift_glacier_cave",
+   "chapter": 1,
+   "at": [
+    12,
+    7
+   ]
+  },
+  {
+   "name": "glacier_cave_ch1_3",
+   "rift": "rift_glacier_cave",
+   "chapter": 1,
+   "at": [
+    36,
+    5
+   ]
+  },
+  {
+   "name": "glacier_cave_ch2_1",
+   "rift": "rift_glacier_cave",
+   "chapter": 2,
+   "at": [
+    58,
+    8
+   ]
+  },
+  {
+   "name": "glacier_cave_ch2_2",
+   "rift": "rift_glacier_cave",
+   "chapter": 2,
+   "at": [
+    24,
+    8
+   ]
+  },
+  {
+   "name": "glacier_cave_ch3_1",
+   "rift": "rift_glacier_cave",
+   "chapter": 3,
+   "at": [
+    70,
+    32
+   ]
+  },
+  {
+   "name": "green_mine_ch2_1",
+   "rift": "rift_green_mine",
+   "chapter": 2,
+   "at": [
+    56,
+    25
+   ]
+  },
+  {
+   "name": "green_mine_ch2_2",
+   "rift": "rift_green_mine",
+   "chapter": 2,
+   "at": [
+    48,
+    6
+   ]
+  },
+  {
+   "name": "green_mine_ch2_3",
+   "rift": "rift_green_mine",
+   "chapter": 2,
+   "at": [
+    35,
+    23
+   ]
+  },
+  {
+   "name": "green_mine_ch3_1",
+   "rift": "rift_green_mine",
+   "chapter": 3,
+   "at": [
+    14,
+    31
+   ]
+  },
+  {
+   "name": "green_mine_ch3_2",
+   "rift": "rift_green_mine",
+   "chapter": 3,
+   "at": [
+    54,
+    39
+   ]
+  },
+  {
+   "name": "green_mine_ch3_3",
+   "rift": "rift_green_mine",
+   "chapter": 3,
+   "at": [
+    44,
+    15
+   ]
+  },
+  {
+   "name": "iron_tomb_ch2_1",
+   "rift": "rift_iron_tomb",
+   "chapter": 2,
+   "at": [
+    19,
+    25
+   ]
+  },
+  {
+   "name": "iron_tomb_ch4_1",
+   "rift": "rift_iron_tomb",
+   "chapter": 4,
+   "at": [
+    8,
+    33
+   ]
+  },
+  {
+   "name": "iron_tomb_ch4_2",
+   "rift": "rift_iron_tomb",
+   "chapter": 4,
+   "at": [
+    68,
+    33
+   ]
+  }
+ ]
+}

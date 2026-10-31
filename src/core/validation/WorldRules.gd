@@ -38,6 +38,11 @@ static func _tiles(v: ValidatorBase) -> void:
 			var shape := JsonUtil.get_str(art, "shape")
 			if not shape.is_empty() and shape != "smooth":
 				v.err(w + ".art", "shape는 \"smooth\"만(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선)")
+		if JsonUtil.get_bool(t, "rise") and (not JsonUtil.get_bool(t, "void") or JsonUtil.get_bool(t, "walkable")):
+			v.err(w, "rise(솟은 외곽)는 void이고 걸을 수 없는 타일만")
+		var ve := JsonUtil.get_str(art, "void_edge")
+		if not ve.is_empty() and (ve != "beam" or JsonUtil.get_str(t, "kind") != "floor"):
+			v.err(w + ".art", "void_edge는 바닥 타일의 \"beam\"만(허공 위 나무 발판 — 들보 면·난간, Abyss)")
 		var light := JsonUtil.get_dict(t, "light")
 		if not light.is_empty():
 			if JsonUtil.get_float(light, "radius_m") <= 0.0:
@@ -122,6 +127,9 @@ static func _floors(v: ValidatorBase) -> void:
 					v.err(w, "regions.weights '%s'는 monsters에 있고 양수여야 한다" % m)
 			for m: Variant in JsonUtil.get_array(JsonUtil.get_dict(rd, "variants"), "monsters"):
 				v.ref(w + ".regions.variants", "monsters", m)
+			var groups := JsonUtil.get_array(rd, "groups")
+			if rd.has("groups") and (groups.size() != 2 or float(groups[0]) < 0.0 or float(groups[0]) > float(groups[1])):
+				v.err(w, "regions.groups는 [최소, 최대] (0 ≤ 최소 ≤ 최대)")
 		var lord := JsonUtil.get_dict(f, "lord")
 		if not lord.is_empty():
 			v.ref(w + ".lord", "monsters", lord.get("monster"))

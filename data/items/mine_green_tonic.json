@@ -1,0 +1,33 @@
+{
+  "id": "mine_green_tonic",
+  "name_ko": "녹광 물약",
+  "category": "potion",
+  "price": 6000,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "녹색 결정 가루를 녹인 물약. 마시면 상처 둘레가 희미하게 빛나며 아문다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "max(50, floor({max_hp} * 0.25))"
+    },
+    {
+      "type": "remove_status",
+      "status": "poison"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#48c060",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

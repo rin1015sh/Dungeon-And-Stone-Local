@@ -1,0 +1,19 @@
+{
+  "id": "tomb_greathelm",
+  "name_ko": "묘지기의 통투구",
+  "forge": {
+    "type": "greathelm",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "m_res",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "얼굴까지 가리는 통투구. 숨구멍으로 묘의 냉기가 스민다.",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

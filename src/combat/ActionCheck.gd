@@ -3,7 +3,7 @@ extends RefCounted
 ## 전투 행동이 지금 실행 가능한지 검사한다(순수 로직). 문제가 있으면 이유(문자열 키), 없으면 "".
 ## 잘못된 행동은 차례를 쓰지 않는다 — 화면은 메뉴를 다시 열고, AI는 기본 공격으로 바꾼다.
 ##   행동: {"kind": "skill", "skill": id, "target": Combatant, "aim_weak": bool}
-##       | {"kind": "guard"} | {"kind": "item", "item": id} | {"kind": "flee"}
+##       | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant} | {"kind": "flee"}
 
 
 static func reason(b: Battle, c: Combatant, action: Dictionary) -> String:
@@ -22,6 +22,12 @@ static func reason(b: Battle, c: Combatant, action: Dictionary) -> String:
 			var id := str(action.get("item", ""))
 			if c.actor.inventory.count(id) <= 0 or not JsonUtil.get_bool(b.db.get_entry("items", id), "combat_usable"):
 				return "combat.no_item"
+			var e := BattleRules.single_smite(b.db, id)
+			if not e.is_empty():  # 하나만 치는 아이템: 듣는 적 하나를 골라야 한다
+				var t: Variant = action.get("target")
+				if not t is Combatant or not (t as Combatant).is_active() or (t as Combatant).side == c.side \
+						or not BattleRules.is_targetable(b, c, t) or not BattleRules.smite_fits(e, t):
+					return "combat.reason_no_target"
 			return ""
 	return "combat.reason_unknown"
 

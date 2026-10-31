@@ -1,0 +1,20 @@
+{
+  "id": "mine_goblin_boots",
+  "name_ko": "고블린 가죽 장화",
+  "forge": {
+    "type": "boots",
+    "material": "tanned",
+    "bonus": [
+      {
+        "target": "agi",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "고블린 광부가 신던 장화를 사람 발에 맞게 늘인 것. 바닥에 쇠못이 박혀 있다.",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)",
+  "art_color": "#5e6440"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "tomb_embalm_salve",
+  "name_ko": "방부 연고",
+  "category": "potion",
+  "price": 6000,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "시신을 보존하던 연고. 산 사람의 상처에도 썩음을 멈춘다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "max(50, floor({max_hp} * 0.25))"
+    },
+    {
+      "type": "remove_status",
+      "status": "rot"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#a89a60",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

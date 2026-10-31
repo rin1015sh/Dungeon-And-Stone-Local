@@ -1,0 +1,262 @@
+{
+ "id": "bank",
+ "name_ko": "은행",
+ "facility": "bank",
+ "art_dir": "res://assets/city/rooms/bank",
+ "floor": "marble",
+ "wall": "marble",
+ "regions": [
+  {
+   "rect": [0, 0, 28, 12],
+   "floor": "parquet"
+  }
+ ],
+ "legend": {
+  "c": {
+   "name_ko": "놋쇠 창살 창구",
+   "kind": "furniture",
+   "shape": "counter",
+   "color": "#a8843a",
+   "variant": "bank",
+   "light": true
+  },
+  "I": {
+   "name_ko": "대리석 기둥",
+   "kind": "furniture",
+   "shape": "pillar",
+   "color": "#c8c0b0"
+  },
+  "b": {
+   "name_ko": "대기 의자",
+   "kind": "furniture",
+   "shape": "bench",
+   "color": "#5a3e28"
+  },
+  "K": {
+   "name_ko": "벽시계",
+   "kind": "walldeco",
+   "style": "clock",
+   "color": "#8a6a3a"
+  },
+  "n": {
+   "name_ko": "놋쇠 등",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#e8c070",
+   "light": true
+  },
+  "Z": {
+   "name_ko": "쇠창살(너머로 금고)",
+   "kind": "furniture",
+   "shape": "grille",
+   "color": "#5a5a60"
+  },
+  "V": {
+   "name_ko": "둥근 금고 문",
+   "kind": "walldeco",
+   "style": "vault",
+   "color": "#6a6a64"
+  },
+  "T": {
+   "name_ko": "장부 책상",
+   "kind": "furniture",
+   "shape": "desk",
+   "color": "#6a4a2e",
+   "light": true
+  },
+  "S": {
+   "name_ko": "장부 선반",
+   "kind": "walldeco",
+   "style": "shelf_boxes",
+   "color": "#6a5a3a"
+  },
+  "P": {
+   "name_ko": "포고문",
+   "kind": "walldeco",
+   "style": "board",
+   "color": "#b8a47c"
+  },
+  "e": {
+   "name_ko": "인장·밀랍",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#7a2a24",
+   "top": "seal"
+  },
+  "g": {
+   "name_ko": "금화 자루",
+   "kind": "furniture",
+   "shape": "sack",
+   "color": "#b89a40"
+  },
+  "v": {
+   "name_ko": "세무관실 깔개",
+   "kind": "rug",
+   "color": "#3a2a4a"
+  },
+  "U": {
+   "name_ko": "대여 금고 칸",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#5a5a58",
+   "top": "boxes"
+  },
+  "x": {
+   "name_ko": "철 궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#4a4a4c"
+  },
+  "A": {
+   "name_ko": "초상화",
+   "kind": "walldeco",
+   "style": "painting",
+   "color": "#5a3a3a"
+  },
+  "B": {
+   "name_ko": "놋쇠 벽 등",
+   "kind": "walldeco",
+   "style": "sconce",
+   "color": "#e8c070",
+   "light": true
+  },
+  "J": {
+   "name_ko": "대여 금고 열쇠 판",
+   "kind": "walldeco",
+   "style": "keys",
+   "color": "#a8843a"
+  },
+  "q": {
+   "name_ko": "장부 선반",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#5a3e28",
+   "top": "boxes"
+  }
+ },
+ "rows": [
+  "############################",
+  "##AA#AA#SSSSSBPPPBSSSSSS#AA#",
+  "##AA#AA#SSSSSBPPPBSSSSSS#AA#",
+  "#qqq.qqq5.................0#",
+  "#..................`n......#",
+  "#...........`...@..........#",
+  "#9.......`..8.TTTTe........#",
+  "#9.............`.....99....#",
+  "#........bbb.vvvvvvv.......#",
+  "#............vvvvvvv.......#",
+  "#292......................5#",
+  "#######################^####",
+  "#######################^####",
+  "##VVV#PBAAKKBAAPBAA#B##^#JJ#",
+  "##VVV#PBAAKKBAAPBAA#B##^#JJ#",
+  "#ZZZ#2:9::::9::::72#:#:^::(#",
+  "#2gg#:::::{::::::::#:#&::::#",
+  "#:::#:::@::::::@:::#:#:::UU#",
+  "#:::cccccccccccccccc:#:::::#",
+  "#5:::5:::@:==::::::::#:::::#",
+  "#::::::::n:==:n::::::#:::UU#",
+  "#::::::`:::==::::::::+:::::#",
+  "#::I::::I::=={:I::::I#:::::#",
+  "#0:::::::::==::::::::#:::UU#",
+  "#:::::bbb::==:bbb::::#9::::#",
+  "#::::::::::==::::::::#:::::#",
+  "#::I::::I::==::I`:::I#:::::#",
+  "#::::::::::==:@::::::#xx::2#",
+  "#5:::::::::==:::::::5#::::2#",
+  "###########DD###############"
+ ],
+ "start": [12.0, 28.3],
+ "npcs": [
+  {
+   "at": [16, 5],
+   "name_ko": "세무관",
+   "look": "res://assets/actors/looks/n6_banker_h0.webp",
+   "staff": true,
+   "act": "write",
+   "face": [0, 1]
+  },
+  {
+   "at": [8, 17],
+   "name_ko": "은행원",
+   "look": "res://assets/actors/looks/n6_banker_h1.webp",
+   "staff": true,
+   "act": "count",
+   "face": [0, 1]
+  },
+  {
+   "at": [15, 17],
+   "name_ko": "은행원",
+   "look": "res://assets/actors/looks/n6_banker_h2.webp",
+   "staff": true,
+   "act": "count",
+   "face": [0, 1]
+  },
+  {
+   "at": [14, 27],
+   "name_ko": "경비병",
+   "look": "res://assets/actors/looks/n13_guard_h3.webp",
+   "staff": false,
+   "act": "guard",
+   "face": [0, 1]
+  },
+  {
+   "at": [9, 19],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h1_cloak_h4.webp",
+   "staff": false,
+   "act": "idle",
+   "face": [0, -1]
+  }
+ ],
+ "spots": [
+  {
+   "rect": [14, 5, 4, 2],
+   "activities": [
+    "bank_tax"
+   ],
+   "name_ko": "세무관"
+  },
+  {
+   "rect": [6, 17, 5, 2],
+   "activities": [
+    "bank_account"
+   ],
+   "name_ko": "은행원"
+  },
+  {
+   "rect": [13, 17, 5, 2],
+   "activities": [
+    "bank_account"
+   ],
+   "name_ko": "은행원"
+  }
+ ],
+ "names": [
+  [
+   16,
+   9,
+   "세무실",
+   "room"
+  ],
+  [
+   12,
+   21,
+   "로비",
+   "room"
+  ],
+  [
+   24,
+   21,
+   "계단실",
+   "room"
+  ],
+  [
+   2,
+   13,
+   "금고 문 — 창살 너머",
+   "label"
+  ]
+ ],
+ "source": "original"
+}

@@ -8,7 +8,7 @@
 0. **작업 전에 최신 main을 받아 합친다**(`git fetch origin main` → 브랜치가 뒤처졌으면 `git merge origin/main`). 다른 세션이 main에 병합한 작업(예: 2026-10-16 전투 그림)이 빠진 채 진행되는 일이 있었다.
 1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다**(PROGRESS = 지금 상태 · 다음 할 일 · 최근 작업 10줄, 8KB 안). 어떤 문서를 언제 읽는지는 **`docs/README.md`(문서 지도)**. 자주 쓰는 것: 확정된 기획·설정 요약 `docs/CANON.md`, 핵심 개념·데이터 키 사전·파일 구조 `docs/REFERENCE.md`, 도구 명령 `docs/TOOLS.md`, 가정·결정 근거 `docs/ASSUMPTIONS.md`(번호로 검색), 옛 작업 기록 `docs/archive/PROGRESS_LOG.md`(날짜·키워드로 검색). **문서끼리 어긋나면 날짜가 늦은 사용자 결정이 이긴다**(우선순위는 CANON.md 맨 위). **그림 작업이면 `docs/ART.md`(그림체 규칙·도구 명령·절차)를 먼저 읽는다.**
 2. PROGRESS.md의 **"다음 할 일"**부터 진행한다. 질문하지 말고 진행하되, 모호한 부분은 합리적으로 가정하고 ASSUMPTIONS.md에 "가정 / 이유 / 바꾸는 방법"을 남긴다.
-   - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 CANON.md 요약으로 진행).
+   - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 CANON.md 요약으로 진행). 사용자가 준 원작 정리 `docs/LORE.md`는 참고용 — 우리 게임과 다른 곳이 많고 어긋나면 우리 쪽이 이긴다(FL2).
 3. 작업이 끝날 때마다 기록한다: 자세한 기록(한 일·수치·남은 것)은 `docs/archive/PROGRESS_LOG.md` "작업 기록" 맨 위, PROGRESS.md에는 "최근 작업" 한 줄 + "다음 할 일" 갱신(PROGRESS.md §5). 정해진 기획이 바뀌었으면 CANON.md, 새 데이터 키는 REFERENCE.md. 마일스톤 단위로 **항상 실행 가능한 상태**에서 커밋한다(커밋 메시지는 한국어로 짧게).
 4. 큰 작업 시작 시 PROGRESS_LOG 맨 위에 "범위 / 완료 기준 / 테스트 방법"을 먼저 쓰고, 끝나면 `docs/PLAYTEST.md` 맨 위에 사용자용 테스트 플레이 체크리스트를 추가한다(최근 여섯 절만 — 밀려난 절은 `docs/archive/PLAYTEST_OLD.md`로).
 
@@ -24,12 +24,13 @@
   5. `godot --headless --path . --quit-after 120` — 메인 씬 스모크
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
 - **도구 명령**(시뮬레이터 `sim_walk`·`sim_rift`·`sim_income`, 층 지도, 굽기, 글 md, 정수 표, 화면 캡처, 그림, 웹 내보내기)은 **`docs/TOOLS.md`**. 바꾼 것에 따라 반드시:
-  - 1층 생성기·`gen` → `bake_floor.gd` · 층 `art.decor` → `bake_decor.gd` · `ko.json` → `strings_md.gd` · 정수 → `essences_md.py` · 아이템 소재·종류·배율 → `item_pool.py`
+  - 1층 생성기·`gen` → `bake_floor.gd` · 층 `art.decor` → `bake_decor.gd` · `ko.json` → `strings_md.gd` · 글(서적·`desc_ko`·`flavor_ko`·ko.json 문장) → `texts_md.py`(→ `docs/TEXTS.md` — 사용자가 고쳐 보내면 `--apply`) · 정수 → `essences_md.py` · 아이템 소재·종류·배율 → `item_pool.py`
+  - 층·몬스터·정수·균열·서적을 더함 → `python3 tools/floor_status.py`(2~10층 찍는 틀 `docs/plans/floors_2_10.md`)
   - 밀도·탐험가 → `sim_walk` · 균열 지도·조우·길목 → `sim_rift`("모두 통과") · 값·드롭 → `sim_income`(→ `docs/balance/city.md`)
   - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.
 - **웹(itch.io)**: 내보내기 명령은 `docs/TOOLS.md`, 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`.
-  - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(본 폰트 송명 + 대신 채우는 Noto Sans KR — render.json `font`, UI45)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
+  - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(본 폰트 송명 + 대신 채우는 Noto Sans KR — render.json `font`, UI47)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
 - **Godot이 없는 환경**(모바일 웹 등): 정적 검토만 하고 PROGRESS.md에 **"미검증(Godot 실행 필요)"**을 명시한다. 검증하지 않은 것을 검증했다고 쓰지 않는다.
 
 ## 코드 규칙
@@ -37,14 +38,14 @@
 - GDScript **정적 타이핑 필수**(`var hp: int`, `func f(a: int) -> void`). 주요 클래스엔 `class_name`. 오토로드는 `class_name`을 두지 않는다(이름 충돌).
 - 한 스크립트 = 한 책임, **300줄 이내** 지향.
 - `.tscn` 최소화. UI·노드 트리는 코드로 만든다. 현재 `.tscn`은 `src/Main.tscn`, `tests/smoke_ui.tscn`, `tools/screenshot.tscn`뿐.
-- 키 입력은 `data/input.json`(액션 → 키 이름)에서 `InputSetup`이 등록한다. project.godot의 [input]은 쓰지 않는다. **선택(확인) = Enter**(`menu_confirm`, 포커스 버튼 `ui_accept`), **취소 = Backspace**(`menu_back` — Esc로 하던 창 닫기·시설 나가기도), 커서 = W/S/A/D(사용자 결정 2026-10-16, ASSUMPTIONS UI14). 고르는 작은 창은 `ChoicePopup`.
-- **마우스·터치 금지(사용자 결정 2026-10-19, UI17)**: 게임은 키보드로만 다룬다 — `Main._input`이 마우스·터치 입력을 모두 막고 커서를 숨긴다. 새 UI에 클릭·끌어놓기·마우스 올림(툴팁) 조작을 넣지 않는다. 고르기는 `ChoiceGrid`(W/A/S/D·Enter·Backspace) 또는 포커스 버튼(`ui_up/down/left/right`도 W/A/S/D — 디버그 패널은 `UiTheme.keyboard_panel`). 설명은 커서가 놓인 것을 화면에 바로 보인다(소지품 아이템 설명 등). **Tab 메뉴**(`GameMenu` — 왼쪽 아군 목록(W/S·Enter로 볼 아군, 짧은 생명력·영혼력·허기·피로) · 가운데 고른 아군 정보·정수 · 오른쪽 그 아군 장비 + 공용 가방, I·C 없음, 탐험 하단 바 없음 — UI26) · **도감 B**(`CodexMenu` — 몬스터 · 도서관 서적 분야, UI32). **아이템은 Tab 메뉴에서만 쓴다** — 단축칸(hotbar)·횃불 T·식사 E 키 없음(UI18).
+- 키 입력은 `data/input.json`(액션 → 키 이름)에서 `InputSetup`이 등록한다. project.godot의 [input]은 쓰지 않는다. **선택(확인) = Enter**(`menu_confirm`, 포커스 버튼 `ui_accept`), **취소 = Esc**(`pause` — 창 닫기·시설 나가기·선택 창 뒤로), **상호작용(살피기·줍기) = Enter**(`interact` — F 없음), **Backspace는 전투 행동창 뒤로에만**(`menu_back`, `CommandMenu`의 `ChoiceGrid.back_action`), 커서 = W/S/A/D(사용자 결정 2026-10-16·2026-10-30, ASSUMPTIONS UI14·UI43). 고르는 작은 창은 `ChoicePopup`.
+- **마우스·터치 금지(사용자 결정 2026-10-19, UI17)**: 게임은 키보드로만 다룬다 — `Main._input`이 마우스·터치 입력을 모두 막고 커서를 숨긴다. 새 UI에 클릭·끌어놓기·마우스 올림(툴팁) 조작을 넣지 않는다. 고르기는 `ChoiceGrid`(W/A/S/D·Enter·Esc) 또는 포커스 버튼(`ui_up/down/left/right`도 W/A/S/D — 디버그 패널은 `UiTheme.keyboard_panel`). 설명은 커서가 놓인 것을 화면에 바로 보인다(소지품 아이템 설명 등). **Tab 메뉴**(`GameMenu` — 왼쪽 아군 목록(W/S·Enter로 볼 아군, 짧은 생명력·영혼력·허기·피로) · 가운데 고른 아군 정보·정수 · 오른쪽 그 아군 장비 + 공용 가방, I·C 없음, 탐험 하단 바 없음 — UI26) · **도감 B**(`CodexMenu` — 몬스터 · 도서관 서적 분야, UI32). **아이템은 Tab 메뉴에서만 쓴다** — 단축칸(hotbar)·횃불 T·식사 E 키 없음(UI18).
 - **콘텐츠는 `data/*.json`만 편집해서 추가**하는 것이 정상 경로다. 코드에 매직 넘버 금지:
   규칙 수치 → `data/balance.json`, 시점·UI 수치·팔레트·폰트 → `data/render.json`.
-- **UI 색(사용자 결정 2026-10-29, UI43)**: 선택·커서·지금 차례 = `palette.select`(뼈빛), 노란 `gold`는 스톤·값에만. 창 판은 `UiTheme.panel_box` 하나(Tab 쪽도). 채도 높은 색을 새로 넣지 않는다.
+- **UI 색(사용자 결정 2026-10-29, UI45)**: 선택·커서·지금 차례 = `palette.select`(뼈빛), 노란 `gold`는 스톤·값에만. 창 판은 `UiTheme.panel_box` 하나(Tab 쪽도). 채도 높은 색을 새로 넣지 않는다.
 - **UI 문자열은 `Strings.t("키", {인자})` + `data/strings/ko.json`**. 하드코딩 금지(테스트가 코드 속 키의 존재를 검사한다). 데이터 항목의 이름은 각 JSON의 `name_ko`. **스톤 금액**은 문구에 `{n} 스톤`으로 쓰면 `Strings.t`가 만 단위로 바꾼다(1만 5000 · 1억 5000만), "스톤" 글자가 없는 자리는 `Strings.stones(n)`(UI31).
 - **부연설명 금지(사용자 결정 2026-10-15)**: 화면에 "무엇인지·어떻게 하는지"를 풀어 쓰는 문장을 넣지 않는다 — 시설·활동 소개, 조작 키 안내줄, "행동력을 다 쓰면~" 같은 규칙 안내, 창 아래 주석, 명령 설명줄, 툴팁 설명 모두. 데이터에 `desc_ko`(소개 문장)도 새로 만들지 않는다 — **예외: 아이템의 짧은 플레이버 텍스트**(사용자 요청 2026-10-25, IT7 — 몰입용 한두 문장, 쓰는 법·수치 설명은 넣지 않는다. 장비는 소재·종류 `flavor_ko`를 ItemForge가 잇는다). 화면에는 이름·수치·상태·못 하는 이유(짧게)만. 보스 등장 대사·결과 문구 같은 장면 묘사는 괜찮다.
-- **간접 체험 — 화면으로 알 수 있는 건 글로 알리지 않는다(사용자 결정 2026-10-19, UI19)**: 피어 앤 헝거처럼 몰입이 먼저다. 횃불 켬·꺼짐, 포션·식사 결과, 상태 변화, 대기·휴식, 안전지대·어둠 드나듦, 버리기, 전투의 피해·회피·쓰러짐(떠오르는 숫자·무대로 보인다)은 문구를 띄우지 않는다(render.json `ui.notice.silent`, 기록에만). 대화창에는 화면으로 알 수 없는 것만 — 얻은 물건·발견·경고·못 하는 이유·장면. 위 알림 띠는 없다(예외: 전투 스킬·아이템 이름은 무대 위 작은 알림창 `SkillBanner` — render.json `ui.notice.banner`, UI21). 새 알림 문구를 만들면 먼저 "화면에 이미 보이는가?"를 따지고, 보이면 silent에 넣거나 그림·연출(예: 대기·휴식의 화면 어두워짐)로 바꾼다. **소리(비명·싸움·외침·의성어)는 글로 쓰지 않는다** — 소리 키(`ExploreSession.sound` → `AudioBus.play_sfx`, `data/audio.json sfx`)로(사용자 결정 2026-10-22, UI20). 장면 묘사·결과 문구도 꼭 필요한 정보가 있을 때만 — 문구를 늘리지 않는다.
+- **간접 체험 — 화면으로 알 수 있는 건 글로 알리지 않는다(사용자 결정 2026-10-19, UI19)**: 피어 앤 헝거처럼 몰입이 먼저다. 횃불 켬·꺼짐, 포션·식사 결과, 상태 변화, 대기·휴식, 안전지대·어둠 드나듦, 버리기, 전투의 피해·회피·쓰러짐(떠오르는 숫자·무대로 보인다)은 문구를 띄우지 않는다(render.json `ui.notice.silent`, 기록에만). 대화창에는 화면으로 알 수 없는 것만 — 얻은 물건·발견·경고·못 하는 이유·장면. 위 알림 띠는 없다(예외: 전투 스킬·아이템 이름은 무대 위 작은 알림창 `SkillBanner` — render.json `ui.notice.banner`, UI21). 새 알림 문구를 만들면 먼저 "화면에 이미 보이는가?"를 따지고, 보이면 silent에 넣거나 그림·연출(예: 대기·휴식의 화면 어두워짐)로 바꾼다. **소리(비명·싸움·외침·의성어)는 글로 쓰지 않는다** — 소리 키(`ExploreSession.sound` → `AudioBus.play_sfx`, `data/audio.json sfx`)로(사용자 결정 2026-10-22, UI20). 장면 묘사·결과 문구도 꼭 필요한 정보가 있을 때만 — 문구를 늘리지 않는다. **대화창은 한 번에 한 문장**(사용자 결정 2026-10-31, UI44 — `DialogueBox`가 `DialogueSplit`으로 문장마다 쪽을 나눈다. 이 규칙을 끄거나 여러 문장을 한 쪽에 몰아 보이는 코드를 넣지 않는다).
 - **결과 문구는 서술형**: "능력치는 오르지 않았다" 같은 게임 말투·수치 나열 대신 장면으로 쓴다("고된 훈련으로 근육통만 생겼다"). 도시 활동은 `city.lines.<활동>.<결과>.<번호>`(여러 개면 `CityLines`가 하나 고름).
 - 모든 무작위는 `Rng`(시드 고정 가능)를 거친다.
 - 시스템 간 통신은 `EventBus` 시그널. 레지스트리/핸들러 패턴(효과·이벤트·생성기·시설·AI 조건 = id → 핸들러 1파일).
@@ -89,7 +90,7 @@ src/explore/    지도·생성기(generators/)·ExploreSession·이동·시야·
 src/progress/   성장·정수·전리품·드롭·저장      src/items/  가방·장비      src/city/  도시 규칙(+effects/)
 src/ui/         InputSetup·theme/·widgets/·windows/(Tab 메뉴)·city/·combat/·screens/
 tests/          test_*.gd(단위) · smoke_ui(UI 스모크)
-tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/, paint_books + book_art/) · sim_*(밸런스 시뮬레이터)
+tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/, paint_books + book_art/, paint_rooms + city_art/Room*) · sim_*(밸런스 시뮬레이터)
 assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ battle/(전투 뒷그림) (그림은 코드가 그린 WebP)
 ```
 파일 하나하나의 역할은 **`docs/REFERENCE.md` "파일 구조(자세히)"**.

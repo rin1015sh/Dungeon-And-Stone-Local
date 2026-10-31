@@ -1,28 +1,35 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 층은 M1에서 채운다. visibility_cap_m은 광원이 있어도 넘지 못하는 상한.",
-  "id": "f1_crystal_cave",
-  "name_ko": "1층 수정동굴",
-  "floor": 1,
+  "_comment": "층 템플릿(로드되지 않음 — '_' 파일). 새 층 = 이 파일을 f<n>_<id>.json으로 복사해 채운다. 키마다 실제 예는 f1_crystal_cave.json, 만드는 순서·이름 규칙은 docs/plans/floors_2_10.md §1·§4, 빠진 것은 python3 tools/floor_status.py --floor=<n>. 수치는 모두 임시값(source placeholder)으로 시작한다.",
+  "id": "f2_example",
+  "name_ko": "2층 이름",
+  "floor": 2,
   "generator": "crystal_cave",
-  "close_hours": 168,
-  "resets_each_entry": true,
-  "visibility_cap_m": 8.0,
+  "close_hours": 240,
+  "visibility_cap_m": 9.0,
   "visibility_source": "placeholder",
-  "ambient_light": "crystal",
-  "ambient_color": "#c4bcff",
+  "ambient_light_m": 3.0,
+  "ambient_source": "placeholder",
+  "ambient_color": "#8a90b0",
   "art": {
-    "_comment": "탐험 맵 그림(FloorArt). 빠진 키는 render.json view·lighting 기본값.",
+    "_comment": "탐험 맵 그림(FloorArt — map_design.md §5.1). battleback = 전투 뒷그림(tools/paint_battlebacks.gd), decor = 데칼 시트·굽기(tools/floor_art/Specs.gd place f<n> → tools/bake_decor.gd --floor=<id>), ambience.loop = audio.json ambience 키. macro·pulse·particles는 f1 참고(빼면 render.json 기본값).",
+    "battleback": {"image": "res://assets/battle/f2_example.webp", "half_width": 3.6},
     "palette": {"unexplored": "#000000", "near_black": "#141018", "tone": "#f2eef4", "memory_tint": "#8a92b8", "memory_brightness": 0.3},
     "post": {"saturation": 0.8, "vignette_strength": 0.55, "vignette_radius": 0.45, "grain_strength": 0.045},
-    "pulse": {"tiles": ["crystal_wall"], "period_sec": 7.0, "depth": 0.5, "radius_m": 1.4, "strength": 0.24},
-    "particles": [{"id": "dust", "amount": 36, "lifetime": 9.0, "color": "#d8d0ff", "alpha": 0.22, "scale": [1.5, 3.0], "velocity": [2.0, 7.0], "direction": [0.0, -1.0], "spread": 180.0, "gravity": [0.0, 0.0]}],
-    "ambience": {"loop": "f1_cave"}
+    "ambience": {"loop": "f2_example"},
+    "decor": {"sheet": "res://assets/floor/f2/decals.webp", "baked": "res://data/maps/f2_example_decor.json", "variants": 4, "kinds": [], "on_tiles": [], "spots": [], "rules": []}
   },
-  "landmarks": ["square_crystal_junction", "boulder_pond"],
-  "safe_zones": ["sage_monument"],
+  "gen": {"_comment": "생성기(src/explore/generators/<generator>.gd)가 읽는 값 — 생성기마다 다르다. 생성기의 validate가 필요한 키를 알려 준다."},
+  "fixed_map": {"_comment": "모든 게임에서 같은 지도(tools/bake_floor.gd --floor=<id> --seed=<n>). 빼면 입장마다 seed로 새로 만든다.", "file": "res://data/maps/f2_example.json", "seed": 1},
+  "landmarks": [{"id": "landmark_id", "placement": "random", "count": 1}],
   "regions": [
-    {"id": "f1_east", "dir": "east", "monsters": ["blade_wolf"]}
+    {"id": "f2_east", "zone": "east", "dir": "east", "name_ko": "동쪽", "monsters": ["monster_id"], "weights": {"monster_id": 1}, "groups": [40, 50]}
   ],
-  "portals": [{"to": "f2", "count": 4}],
-  "source": "original"
+  "spawn": {"_comment": "f1 spawn과 같은 키(groups_per_region · pack_by_day · respawn_hours · growth_every_hours · max_extra_groups · cluster · growth_bias).", "groups_per_region": [40, 50], "pack_by_day": [[2, 3]], "respawn_hours": 24, "growth_every_hours": 24, "max_extra_groups": 18},
+  "explorers": {"_comment": "다른 탐험가 — f1 explorers와 같은 키. 거래 값(trades price)과 약탈자 몫은 그 층 마석으로."},
+  "features_gap": 6,
+  "features": [{"event": "explorer_corpse", "count": 20, "spot": "room", "gap": 45}],
+  "portals": [{"id": "to_f3_a", "dir": "north", "to_floor": 3, "dest": "floor3_a"}],
+  "rift_offering": {"_comment": "기념비(또는 그 층 제단)에 바쳐 균열을 여는 규칙(RF22) — 그 층 필드 몬스터와 마석.", "item": "magic_stone_8", "count": 4, "kills": [], "source": "placeholder"},
+  "lord": {"_comment": "계층군주(LordWatch) — 부르는 법은 층마다 다르다(floors_2_10.md §3). monster = data/monsters(pattern = src/combat/patterns/<id>.gd).", "monster": "lord_id", "monument": true, "respawn_hours": 24.0, "vision_m": 3.0, "spawn_distance_tiles": 4, "tint": "#ff6a5a", "source": "placeholder"},
+  "source": "placeholder"
 }

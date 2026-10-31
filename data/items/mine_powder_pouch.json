@@ -1,0 +1,34 @@
+{
+  "id": "mine_powder_pouch",
+  "name_ko": "고블린 화약 주머니",
+  "category": "tool",
+  "price": 2000,
+  "stack": 3,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "고블린이 심지째 묶어 둔 화약 주머니. 냄새만 맡아도 눈이 맵다.",
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "humanoid",
+        "slime",
+        "construct"
+      ],
+      "amount": 40,
+      "damage_type": "fire",
+      "status": "burn",
+      "heal": 0
+    }
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "bomb",
+  "color": "#8a5a30",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

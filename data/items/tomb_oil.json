@@ -1,7 +1,7 @@
 {
   "id": "tomb_oil",
   "name_ko": "묘지기의 성유",
-  "desc_ko": "묘지기가 등잔에 쓰던 성유. 손등에 바르면 몸이 가벼워진다. 묘 밖으로 나가면 날아가 버린다.",
+  "desc_ko": "묘지기가 등잔에 쓰던 성유. 손등에 바르면 몸이 가벼워진다.",
   "category": "potion",
   "size": [
     1,
@@ -12,7 +12,6 @@
   "icon": "potion",
   "color": "#c89a3a",
   "rarity": "numbers",
-  "rift_bound": "rift_iron_tomb",
   "consumable": true,
   "use_effects": [
     {
@@ -24,5 +23,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17) · 2026-10-30 가지고 나갈 수 있게(사용자, RF27)"
 }

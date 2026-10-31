@@ -25,7 +25,7 @@ var backdrop_width: float = 0.0
 
 var _stage: BattleStage
 var _roster: PartyRoster
-var _heals: HealFloats  # 회복 = 초록 숫자(UI44)
+var _heals: HealFloats  # 회복 = 초록 숫자(UI46)
 var _looping: bool = false  # 차례 진행 루프가 도는 중(재진입 방지)
 var _menu: CommandMenu
 var _route: NoticeRoute
@@ -162,9 +162,9 @@ func _loop() -> void:
 	_show_result()
 
 
-## 정해 둔 행동이 안 될 때: 같은 스킬을 다른 적에게 → 기본 공격 → 방어.
+## 정해 둔 행동이 안 될 때: 같은 스킬·아이템을 다른 적에게 → 기본 공격 → 방어.
 func _fallback(c: Combatant, action: Dictionary) -> void:
-	if str(action.get("kind")) == "skill":
+	if str(action.get("kind")) in ["skill", "item"]:
 		var t: Variant = action.get("target")
 		if t is Combatant and not (t as Combatant).is_active() and (t as Combatant).side != c.side:
 			for o: Combatant in battle.opponents(c):

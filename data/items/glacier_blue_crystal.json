@@ -1,0 +1,17 @@
+{
+  "id": "glacier_blue_crystal",
+  "name_ko": "푸른 빙결정",
+  "category": "misc",
+  "price": 2000,
+  "stack": 5,
+  "desc_ko": "녹지 않는 푸른 결정. 손에 쥐면 손바닥이 시리다.",
+  "size": [
+    1,
+    1
+  ],
+  "icon": "stone",
+  "color": "#7ac0e8",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

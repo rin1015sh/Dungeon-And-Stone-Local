@@ -1,8 +1,8 @@
 class_name DialogueBox
 extends PanelContainer
 ## 하단 대화창(피어 앤 헝거식, 사용자 결정 2026-10-18): 알림·전투 안내를 대사처럼 한 쪽씩 보여 주고 Enter로 넘긴다.
-## 한 쪽 = 화면에 보이는 줄(긴 글은 창 폭으로 미리 접는다)을 창 높이에 들어가는 만큼(최대 render.json ui.dialog.lines) — 쪽을 미리 정해
-## 넘치면 다음 쪽으로 넘기고, 창 안에서 다시 접지 않는다(밀려 쓰다 잘리지 않게, 사용자 요청 2026-10-27).
+## **한 쪽 = 한 문장**(사용자 결정 2026-10-31, UI44 — `DialogueSplit`이 문장으로 나눈다, 책 제목 줄은 첫 문장에 붙는다). 한 문장이 창보다 길면
+## 창 폭으로 미리 접은 줄을 창 높이에 들어가는 만큼(최대 render.json ui.dialog.lines)씩 쪽으로 나누고, 창 안에서 다시 접지 않는다(사용자 요청 2026-10-27).
 ## 글자는 한 자씩 나오고(chars_per_sec), 나오는 중에 Enter = 바로 다 보이기.
 ## 게임 전체가 이 창 하나(전투 화면 모양·자리 — place_bottom)를 쓴다(사용자 결정 2026-10-27, UI36).
 ## 줄이 남아 있는 동안(busy) 보이고, 다 넘기면 숨고 drained를 낸다(idle_text가 있으면 그 글을 흐리게 남긴 채 보인다).
@@ -26,7 +26,7 @@ var idle_text: String = "":
 ## idle_text 색(log_<kind>). 비어 있으면 흐린 글.
 var idle_kind: String = ""
 
-var _queue: Array[Dictionary] = []  # 아직 안 보인 줄 {"parts": 접은 줄들, "kind"}
+var _queue: Array[Dictionary] = []  # 아직 안 보인 문장 {"parts": 접은 줄들, "kind"} — 한 쪽에 하나만
 var _page: Array[Dictionary] = []  # 지금 쪽의 보이는 줄 {"text", "kind"}
 var _text: RichTextLabel
 var _mark: Control
@@ -117,12 +117,10 @@ func set_speaker(text: String) -> void:
 func say(text: String, kind: String = "info") -> void:
 	if text.is_empty() or _skipping():
 		return
-	_queue.append({"parts": _wrap(text), "kind": kind})
-	if _page.is_empty():
+	for s in DialogueSplit.sentences(text):
+		_queue.append({"parts": _wrap(s), "kind": kind})
+	if _page.is_empty() and not _queue.is_empty():
 		_next_page()
-	elif _page.size() < _per_page():  # 지금 쪽에 자리가 남았으면 이어 붙인다
-		_fill()
-		_render()
 
 
 ## 넘길 줄이 남았는가.
@@ -209,22 +207,19 @@ func _wrap_width() -> float:
 	return maxf(40.0, w - _cfg("pad_x", 22.0) * 2.0 - 2.0)
 
 
-## 지금 쪽을 기다리는 줄로 채운다 — 한 글(책 한 대목 등)이 남은 자리엔 안 들어가도 새 쪽엔 들어가면 통째로 다음 쪽으로,
-## 한 쪽보다 긴 글만 나눠서 남은 부분을 다음 쪽으로.
+## 빈 쪽을 다음 문장 하나로 채운다(다른 문장은 섞지 않는다 — UI44). 창보다 긴 문장만 들어가는 줄까지 보이고 남은 줄은 다음 쪽으로.
 func _fill() -> void:
-	var n := _per_page()
-	while _page.size() < n and not _queue.is_empty():
-		var q: Dictionary = _queue[0]
-		var parts: PackedStringArray = q["parts"]
-		if not _page.is_empty() and parts.size() > n - _page.size() and parts.size() <= n:
-			return
-		var take := mini(n - _page.size(), parts.size())
-		for i in take:
-			_page.append({"text": parts[i], "kind": q["kind"]})
-		if take < parts.size():
-			q["parts"] = parts.slice(take)
-		else:
-			_queue.pop_front()
+	if not _page.is_empty() or _queue.is_empty():
+		return
+	var q: Dictionary = _queue[0]
+	var parts: PackedStringArray = q["parts"]
+	var take := mini(_per_page(), parts.size())
+	for i in take:
+		_page.append({"text": parts[i], "kind": q["kind"]})
+	if take < parts.size():
+		q["parts"] = parts.slice(take)
+	else:
+		_queue.pop_front()
 
 
 func _next_page() -> void:

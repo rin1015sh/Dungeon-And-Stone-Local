@@ -1,17 +1,19 @@
 {
- "_comment": "균열 그림 계약(A5): tools/paint_floor.gd가 읽어 assets/floor/<place>/에 그린다. 바닥 = <style>.webp(한 줄 변형 6칸), 벽 = 윗면 줄 + 앞면 줄, 서 있는 소품 = stand.webp(칸 [2, 3] 바닥 칸 — 아래 가운데가 발, order 순서), 뒷배경 = backdrop.webp(1280×720). 그리는 코드는 tools/floor_art/rift/<place>.gd.",
+ "_comment": "균열 그림 계약(A5): tools/paint_floor.gd가 읽어 assets/floor/<place>/에 그린다. 바닥 = <style>.webp(한 줄 변형 6칸), 벽 = 윗면 줄 + 앞면 줄, 서 있는 소품 = stand.webp(칸 [2, 3] 바닥 칸 — 아래 가운데가 발, order 순서), 낭떠러지 절벽 면 = chasm.webp(cliff_size — 가로로 이어지는 띠, 장소마다 places.<장소>.cliff, 칠은 공통 Cliff.gd), 솟은 외곽 = rise_face.webp·rise_top.webp(places.<장소>.rise — 공통 Rise.gd). 그리는 코드는 tools/floor_art/rift/<place>.gd.",
  "stand_cell": [
   2,
   3
  ],
  "stand_cols": 8,
  "variants": 6,
- "backdrop_size": [
-  1280,
-  720
+ "cliff_size": [
+  512,
+  144
  ],
  "places": {
   "bf": {
+   "rise": {"kind": "castle", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "stone": "#6a5650", "stone_dark": "#2a1e1c", "roof": "#4e3c3a", "roof_dark": "#1c1414", "lane": "#0e0a0a"},
+   "cliff": {"kind": "rock", "top": "#6a4a42", "mid": "#3a2422", "deep": "#0c0506", "strata": 20, "accent": "ash"},
    "name_ko": "핏빛성채",
    "floors": [
     {
@@ -125,6 +127,8 @@
    ]
   },
   "gc": {
+   "rise": {"kind": "ice", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "ice": "#9ab6cc", "ice_dark": "#2a3e52", "snow": "#eef4fa", "snow_shade": "#a8bccc"},
+   "cliff": {"kind": "ice", "top": "#a8c0d4", "mid": "#4a6278", "deep": "#05080e", "strata": 26},
    "name_ko": "빙하굴",
    "floors": [
     {
@@ -203,6 +207,7 @@
    ]
   },
   "gm": {
+   "cliff": {"kind": "rock", "top": "#5a5e6a", "mid": "#2a2c34", "deep": "#040506", "strata": 18, "accent": "timber", "wood": "#5a4430"},
    "name_ko": "녹색 탄광",
    "floors": [
     {
@@ -295,6 +300,7 @@
    ]
   },
   "it": {
+   "cliff": {"kind": "masonry", "top": "#6a6a70", "mid": "#2e2e34", "deep": "#040405", "strata": 16},
    "name_ko": "강철의 묘",
    "floors": [
     {

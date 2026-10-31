@@ -47,7 +47,7 @@
     "reveal_radius_m": 0,
     "row": "front"
   },
-  "_essence_comment": "무등급이던 몬스터(UI46) — 9등급이 되어도 정수 확률은 예전 무등급 값 그대로",
+  "_essence_comment": "무등급이던 몬스터(UI48) — 9등급이 되어도 정수 확률은 예전 무등급 값 그대로",
   "essence_drops": [{"essence": "deadman", "chance": 0.005}],
   "magic_stone_grade": 9,
   "drops": [],

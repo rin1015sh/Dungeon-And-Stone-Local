@@ -1,0 +1,28 @@
+{
+  "id": "fortress_bread",
+  "name_ko": "성채 군량 빵",
+  "category": "food",
+  "price": 300,
+  "stack": 5,
+  "consumable": true,
+  "desc_ko": "돌처럼 굳은 검은 빵. 성채 문장이 찍혀 있다.",
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 40
+    }
+  ],
+  "tags": [
+    "food"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "bread",
+  "color": "#5a4232",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

@@ -2,7 +2,7 @@
 
 이 폴더에 **OFL 라이선스** 한글 폰트 파일(.ttf / .otf)을 넣으면 `UiTheme`이 자동으로 기본 폰트로 쓴다.
 
-현재 번들(2026-10-29, UI45):
+현재 번들(2026-10-29, UI47):
 - `SongMyung-Regular.ttf` — 송명(Song Myung, google/fonts `ofl/songmyung`), 라이선스 `OFL-SongMyung.txt`(SIL OFL 1.1). **본 폰트** — `data/render.json`의 `font.path`.
 - `NotoSansKR-Regular.otf` — Noto Sans KR Regular 한국어 서브셋(notofonts/noto-cjk, `Sans/SubsetOTF/KR`), 라이선스 `OFL.txt`(SIL OFL 1.1). **대신 채우는 폰트** — `font.fallbacks`(송명에 없는 기호 ◆ ▶ · 「」 등과 KS X 1001 밖 한글 8800여 자).
 - `font.spacing_top/bottom` = 줄 위아래 여백(px, 송명은 줄 높이가 좁다).

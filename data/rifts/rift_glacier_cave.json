@@ -60,15 +60,16 @@
           ]
         }
       ],
-      "backdrop": {
-        "image": "res://assets/floor/gc/backdrop.webp",
-        "drift": 0.1,
-        "scale": [
-          1.0,
-          1.0
-        ],
-        "cliff_color": "#3a4a5a",
-        "cliff_depth": 1.2
+      "abyss": {
+        "_comment": "낭떠러지·구덩이(Abyss — 화면 고정 그림 없이 세계 좌표의 절벽 면 + 어둠, 사용자 결정 2026-10-29 AM49). 땅 가장자리는 jag만큼 들쭉날쭉 깎인다. [창작] 임시값",
+        "cliff": "res://assets/floor/gc/chasm.webp",
+        "cliff_tiles": 8,
+        "cliff_depth": 2.25,
+        "jag": 0.36,
+        "abyss_color": "#05080e",
+        "mist_color": "#1c2a3a",
+        "rim_color": "#e0ecf6",
+        "rise": {"face": "res://assets/floor/gc/rise_face.webp", "top": "res://assets/floor/gc/rise_top.webp", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "jag": 0.25, "fog": 5, "dark": "#1a2430"}
       },
       "decor": {
         "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
@@ -165,7 +166,19 @@
             "frost_wolf"
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["frost_wolf", "frost_wolf"], ["yeti"], ["frost_wolf", "frost_wolf", "frost_wolf"]]}
+        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "frost_wolf"], ["frost_wolf", "frost_wolf"]]},
+        {"kind": "roam", "count": 3, "packs": [["frost_wolf", "frost_wolf"]]}
+      ],
+      "loot": [
+        {"item": "glacier_oil_cake", "count": 3},
+        {"item": "glacier_fur_cloak", "count": 1},
+        {"item": "glacier_hunter_bow", "count": 1},
+        {"item": "frozen_meat", "count": 2},
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "glacier_yeti_salve", "count": 1},
+        {"item": "glacier_fang_dagger", "count": 1},
+        {"item": "glacier_ice_spike", "count": 2},
+        {"item": "glacier_blue_crystal", "count": 1}
       ],
       "hidden": [
         {
@@ -288,7 +301,17 @@
             ]
           ]
         },
-        {"kind": "posts", "count": 2, "packs": [["frost_wolf", "sabertooth"], ["wormstone"]]}
+        {"kind": "posts", "count": 3, "packs": [["wormstone"], ["frost_wolf", "frost_wolf"], ["sabertooth"]]},
+        {"kind": "roam", "count": 2, "packs": [["wormstone"], ["frost_wolf", "frost_wolf"], ["sabertooth"]]}
+      ],
+      "loot": [
+        {"item": "glacier_yeti_salve", "count": 2},
+        {"item": "glacier_oil_cake", "count": 2},
+        {"item": "torch_stub", "count": 1},
+        {"item": "glacier_fang_amulet", "count": 1},
+        {"item": "frozen_meat", "count": 2},
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "glacier_ice_spike", "count": 1}
       ],
       "hidden": [
         {
@@ -330,7 +353,18 @@
             "ice_orc_warrior"
           ]
         },
-        {"kind": "posts", "count": 4, "packs": [["ice_orc_warrior", "ice_orc_warrior"], ["ice_orc_shaman", "ice_orc_warrior"], ["sabertooth"], ["owlbear"]]}
+        {"kind": "posts", "count": 2, "packs": [["ice_golem"], ["sabertooth"]]},
+        {"kind": "roam", "count": 3, "packs": [["ice_golem"], ["sabertooth"]]}
+      ],
+      "loot": [
+        {"item": "glacier_oil_cake", "count": 2},
+        {"item": "torch_stub", "count": 1},
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "glacier_yeti_salve", "count": 1},
+        {"item": "glacier_blue_crystal", "count": 1},
+        {"item": "glacier_ice_spike", "count": 2},
+        {"item": "glacier_orc_staff", "count": 1},
+        {"item": "glacier_frost_herb", "count": 1}
       ],
       "field_effects": [
         "hypothermia"
@@ -428,7 +462,17 @@
         {
           "kind": "guardian"
         },
-        {"kind": "posts", "count": 5, "packs": [["frost_wolf", "frost_wolf"], ["ice_golem"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
+        {"kind": "posts", "count": 4, "packs": [["ice_golem"], ["frost_wolf", "frost_wolf"], ["owlbear"], ["sabertooth", "frost_wolf"]]},
+        {"kind": "roam", "count": 3, "packs": [["ice_golem"], ["frost_wolf", "frost_wolf"], ["owlbear"], ["sabertooth", "frost_wolf"]]}
+      ],
+      "loot": [
+        {"item": "glacier_frost_herb", "count": 1},
+        {"item": "magic_stone_9", "count": 3},
+        {"item": "glacier_fur_cloak", "count": 1},
+        {"item": "glacier_ice_spike", "count": 2},
+        {"item": "glacier_blue_crystal", "count": 1},
+        {"item": "glacier_oil_cake", "count": 1},
+        {"item": "glacier_yeti_salve", "count": 1}
       ],
       "field_effects": [
         "hypothermia"

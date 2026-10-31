@@ -1,0 +1,37 @@
+{
+  "id": "glacier_yeti_salve",
+  "name_ko": "예티 기름 연고",
+  "category": "potion",
+  "price": 1200,
+  "stack": 5,
+  "consumable": true,
+  "combat_usable": true,
+  "desc_ko": "예티 기름을 졸인 연고. 바르면 언 살갗이 금세 풀린다.",
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "frost"
+    },
+    {
+      "type": "remove_status",
+      "status": "frozen"
+    },
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 15
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "size": [
+    1,
+    1
+  ],
+  "icon": "potion",
+  "color": "#d8d0b0",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

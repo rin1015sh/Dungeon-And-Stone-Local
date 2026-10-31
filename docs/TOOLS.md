@@ -8,6 +8,9 @@
 - 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
 - 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
 - 1층 원정 한 번 벌이(헤드리스, 몇 분): `godot --headless --path . --script res://tools/sim_income.gd -- [--seeds=1,2,3] [--hours=60] [--bag=10x6]` → 출처별(몬스터·약탈자·탐험가·동굴 요소) 스톤·정수·요소별 벌이. 값·드롭을 바꿨으면 돌려 보고 `docs/balance/city.md`에 적는다(CT43).
+- 도시 실내 사람 동작 그림(약 2분 — 41명 35장): `godot --headless --path . --script res://tools/paint_actors.gd -- --acts[=<옷차림__동작,…>]` → `assets/actors/acts/`(ART.md, CT69). 방 JSON npcs의 act·look을 바꿨으면 다시 돌린다.
+- 도시 실내 배치도(파이썬, 몇 초): `python3 tools/city_boards.py [--cell=14]` → 게임 지도(`data/rooms/<건물>.json` — 한 지도에 층이 다, CT66)를 칸 종류(바닥 재질·벽·벽 장식·가구·빛·바닥 장식·계단·사다리·문·잠긴 문·트인 곳·난간)와 표시로 그린 PNG — 건물별 + `all.png`(`docs/plans/city_boards/`). 지도를 고쳤으면 다시 그린다.
+- 균열 배치도(파이썬, 몇 초): `python3 tools/rift_boards.py [--out=docs/plans/rift_boards/current] [--cell=12]` → 설계도(`data/maps/rifts/`)를 칸 종류(바닥·벽·소품·못 걷는 바닥·낭떠러지·솟은 외곽)와 표시(시작·입구·출구·조우·수호자·히든 피스·위험)로 그린 PNG — 챕터별 + 균열별 모음. 설계도·조우·히든 피스를 바꿨으면 다시 그린다.
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로> [--procedural]` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과. 1층은 고정 지도라 시드는 시작 위치·무리만 바꾼다(`--procedural` = 고정 지도 무시하고 그 시드로 새로).
 
 ## 굽기 (데이터를 바꿨으면 필수 — 테스트가 파일과 규칙 결과를 비교한다)
@@ -18,6 +21,8 @@
 ## 문서 만들기 (손으로 고치지 않는다)
 
 - **게임 글 md**(사용자가 글을 고치는 곳): `godot --headless --path . --script res://tools/strings_md.gd` → `docs/STRINGS.md`(ko.json 전부, 한 줄 = ``- `키` 글``) · 사용자가 고친 md를 넣기 `… -- --apply`(있는 키의 글만 바꾼다). **ko.json 문구를 추가·수정했으면 다시 만든다**(md가 낡으면 사용자가 옛 글을 고치게 된다).
+- **게임 글 모음 ↔ 데이터**(파이썬, 1초): `python3 tools/texts_md.py` → `docs/TEXTS.md`(도서관 책 · 플레이버·설명 글(아이템·소재·종류·몬스터·정수·스킬·상태·균열·수수께끼 …) · 상황 문구(ko.json의 문장) — 약 1,180개). 사용자가 고친 파일 적용: `python3 tools/texts_md.py --apply --md=<파일> [--dry]` — 바뀐 글만 그 자리에서 바꾼다(파일 모양 유지, ko.json `{자리표시자}`가 달라진 줄은 건너뜀). 적용 뒤 ko.json을 바꿨으면 `strings_md.gd`, 그리고 `texts_md.py`로 다시 만들고 `check.sh`.
+- **층 찍어내기 점검표**(파이썬, 1초): `python3 tools/floor_status.py` → `docs/balance/floor_status.md`(1~10층 × 부품 17 — ● 갖춤 · ◐ 일부 · ○ 없음) · `--floor=<n>`이면 그 층만 자세히(파일을 쓰지 않는다). 층 데이터·몬스터·정수·균열·서적을 더했으면 다시 돌린다(부품 목록 `docs/plans/floors_2_10.md` §1).
 - **정수 표**: `python3 tools/essences_md.py` → `docs/balance/essences.md`(정수·정수 스킬을 바꿨으면 다시 만든다 — 손으로 고치지 않는다).
 
 ## 화면 캡처 · 그림
@@ -25,11 +30,13 @@
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
   - **장면 목록 일괄 캡처**(탐험 맵 그림 전후 비교): `--screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>` → 장면마다 PNG + 걸음당 프레임(`bench`). 기준은 `docs/screens/before/`(`tools/ShotList.gd`).
-  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
-  - 그 밖의 옵션(전투 `--combat --monster=<id> --summon=… --summon_each --god`, 균열 `--rift=<id> --chapter=n --engage --near=boss|guardian --spotted`, 메뉴 `--menu=… --keys=…`, 대화창 `--dialog`, 귀환 정산 `--screen=plaza --returning=<쪽>` …)은 `tools/screenshot.gd` 맨 위 주석.
-- **그림 다시 만들기**(도시·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
+  - city 옵션: `--scroll=<화면 px> --facility=<id> --activity=<id> --debug --weather=<id>` · 실내 방(도서관, CT62) `--room_at=x,y --face=up|down|left|right`(선 자리·보는 쪽 — 이름판) · `--look=<1~4>`(도시 그림 등급, CT63) · `--travel`(거리 끝 특별 시설 창) · plaza(차원광장) 옵션: `--opening`(포탈이 열리는 중) `--weather=<id>`
+  - 그 밖의 옵션(전투 `--combat --monster=<id> --summon=… --summon_each --god`, 균열 `--rift=<id> --chapter=n --engage --near=boss|guardian|<x>,<y> --spotted --chase=N`(매복 무리가 N걸음 쫓아온 뒤), 메뉴 `--menu=… --keys=…`, 대화창 `--dialog`, 귀환 정산 `--screen=plaza --returning=<쪽>` …)은 `tools/screenshot.gd` 맨 위 주석.
+- **그림 다시 만들기**(도시·시설 실내 방·몬스터 전투·전투 뒷그림·아군 뒷모습·탐험 맵 재질·몸 그림·아이템·여관 요리·도서관 서적·상태이상 아이콘): 명령·옵션·걸리는 시간은 **`docs/ART.md` §0**. 그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다(헤드리스 테스트는 그림을 검증하지 못한다). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 
 - **전투 탐험가 동작 시트**(UI41 — 게임이 쓴다): `godot --headless --path . --script res://tools/paint_motions.gd [-- --only=human_back,… --motions=idle,swing]` → `assets/party/<id>_motions.webp`(줄 = render.json `ui.combat_party_motion.rows` 순서 7동작, 칸 3 — 대기는 들썩임) + `<id>_dead.webp`(누운 몸). 미리보기 png는 `--out=<폴더> --png`. 동작 관절 = `tools/monster_art/party_motions.json`(참고 시트 120px 칸에서 잰 2D 점 → `PartyMotion`이 3D 뼈대로). **아군 그림(`paint_monsters --only=party`)·옷을 바꿨으면 이것도 다시**(약 3분). 고정한 줄: `tools/monster_art/pinned/<id>_<동작>.png`가 있으면 그 줄은 다시 그리지 않고 그 그림을 넣는다(지금 `human_back_wait` — 사용자가 고른 예전 그림, AM48). 캡처: `screenshot.tscn -- --screen=explore --combat --mate=human,barbarian,human --motions=swing,damage,stance,fall --motion_t=0.2`.
+- **옷차림·새 종족 후보 그림**(AM42·AM59 — 게임은 안 쓴다): 시안 `paint_look_preview.gd -- --look=<id,…> --out=<폴더>`(전투 그림 크기 앞·옆·뒤 `<id>_views.png`) · 맵 `paint_actors.gd -- --look=<id,…> --out=<폴더>` → 비교 그림 `python3 tools/looks_sheet.py --map <폴더> --views <폴더> --out <png> [--title 제목] [--cols N] <id …>`(제목·부제 = `MapLooks` name·note). 고른 하나만 전투 동작 `paint_motions.gd -- --look=<id> --out=<폴더> --png`(약 1분 반, `--combat <폴더>`로 비교 그림에).
+- **종족 그림 확인 시트**(AM59 — 사용자 확인용): `python3 tools/art_review.py --out docs/screens/race_looks <종족 …>` → `review_<종족>.png`(맵 걷기 시트 전체 ×2 + 게임 크기 + 전투 뒷모습 + 전투 동작 시트 전체 + 쓰러짐, 줄·칸 이름표).
 
 ## 웹 내보내기
 

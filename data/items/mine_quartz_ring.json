@@ -1,0 +1,20 @@
+{
+  "id": "mine_quartz_ring",
+  "name_ko": "녹수정 반지",
+  "forge": {
+    "type": "ring",
+    "material": "quartz",
+    "bonus": [
+      {
+        "target": "sight",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "armor",
+  "stack": 1,
+  "desc_ko": "갱도에서 캔 초록 수정을 깎아 끼운 반지. 어둠 속에서 아주 희미하게 빛난다.",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)",
+  "art_color": "#5ad070"
+}

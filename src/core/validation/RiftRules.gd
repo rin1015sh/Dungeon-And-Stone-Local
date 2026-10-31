@@ -3,7 +3,8 @@ extends RefCounted
 ## 검사 규칙: 균열(rifts/*.json, RiftRun 형식) — 개방 마석·모양(타일)·챕터·조우·수호자·드롭,
 ## 수수께끼(RiftRiddle)·탐험 위험과 함정(RiftHazards)·히든 피스와 벽화(RiftHidden)·출구 조건(exit_requires).
 
-const KINDS := ["battle", "chain", "waves", "guardian", "posts"]
+const KINDS := ["battle", "chain", "waves", "guardian", "posts", "roam", "ambush"]
+const NO_SLOT := ["posts", "roam", "ambush"]  ## 조우 자리(marks.slots)를 쓰지 않는 조우
 
 
 static func run(v: ValidatorBase) -> void:
@@ -51,8 +52,11 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 				v.err(cw, "조우 kind '%s'는 %s 중 하나" % [kind, KINDS])
 			if kind == "guardian":
 				guardians += 1
-			if kind == "posts" and (JsonUtil.get_int(ed, "count") < 1 or JsonUtil.get_array(ed, "packs").is_empty()):
-				v.err(cw, "posts: count는 1 이상, packs는 구성 하나 이상")
+			if (kind == "posts" or kind == "roam") and (JsonUtil.get_int(ed, "count") < 1 or JsonUtil.get_array(ed, "packs").is_empty()):
+				v.err(cw, "%s: count는 1 이상, packs는 구성 하나 이상" % kind)
+			if kind == "ambush" and (JsonUtil.get_array(ed, "trigger").size() != 4 or JsonUtil.get_array(ed, "packs").is_empty() \
+					or JsonUtil.get_array(ed, "packs").size() != JsonUtil.get_array(ed, "from").size()):
+				v.err(cw, "ambush: trigger는 [x, y, w, h], packs와 from은 같은 수(하나 이상)")
 			for spec: Variant in [ed.get("monsters", []), ed.get("start", []), ed.get("with", [])] + JsonUtil.get_array(ed, "battles") + JsonUtil.get_array(ed, "packs"):
 				_composition(v, cw, spec)
 			_composition(v, cw, JsonUtil.get_dict(ed, "reinforce").get("monsters", []))
@@ -69,6 +73,11 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 			_hazard(v, cw + ".hazards", h if h is Dictionary else {})
 		for h: Variant in JsonUtil.get_array(ch, "hidden"):
 			_hidden(v, cw + ".hidden", h if h is Dictionary else {}, has_riddle)
+		for l: Variant in JsonUtil.get_array(ch, "loot"):
+			var ld: Dictionary = l if l is Dictionary else {}
+			v.ref(cw + ".loot", "items", ld.get("item"))
+			if JsonUtil.get_int(ld, "count", 1) < 1:
+				v.err(cw + ".loot", "count는 1 이상")
 		if ch.has("exit_requires"):
 			var req := JsonUtil.get_dict(ch, "exit_requires")
 			v.ref(cw + ".exit_requires", "items", req.get("item"))
@@ -76,7 +85,7 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 				_stat_at_least(v, cw + ".exit_requires.bypass", JsonUtil.get_dict(req, "bypass"))
 		var map := JsonUtil.get_dict(ch, "map")
 		if map.has("blueprint"):
-			_blueprint(v, cw + ".map", ch, encs.filter(func(e: Variant) -> bool: return not (e is Dictionary and JsonUtil.get_str(e, "kind") == "posts")).size())  # 대기 무리는 조우 자리를 쓰지 않는다
+			_blueprint(v, cw + ".map", ch, encs.filter(func(e: Variant) -> bool: return not (e is Dictionary and JsonUtil.get_str(e, "kind") in NO_SLOT)).size())  # 대기·떠도는 무리·매복은 조우 자리를 쓰지 않는다
 		else:
 			var size := JsonUtil.get_array(map, "size")
 			if size.size() != 2 or int(size[0]) < 20 or int(size[1]) < 12:
@@ -97,9 +106,38 @@ static func _blueprint(v: ValidatorBase, w: String, ch: Dictionary, encounters: 
 	var hz := 0
 	for h: Variant in JsonUtil.get_array(ch, "hazards"):
 		hz += JsonUtil.get_int(h if h is Dictionary else {}, "count", 1)
-	for pair: Array in [["slots", encounters], ["hidden", JsonUtil.get_array(ch, "hidden").size()], ["hazards", hz]]:
+	var pairs: Array = [["slots", encounters], ["hidden", JsonUtil.get_array(ch, "hidden").size()], ["hazards", hz],
+		["loot", JsonUtil.get_array(ch, "loot").size()]]
+	if marks.has("posts"):  # 대기 무리 고정 자리 = posts packs 하나씩
+		var packs := 0
+		for e: Variant in JsonUtil.get_array(ch, "encounters"):
+			if e is Dictionary and JsonUtil.get_str(e, "kind") == "posts":
+				packs += JsonUtil.get_array(e, "packs").size()
+		pairs.append(["posts", packs])
+	for pair: Array in pairs:
 		if JsonUtil.get_array(marks, pair[0]).size() != int(pair[1]):
 			v.err(w, "%s: marks.%s %d개 ≠ 데이터 %d개" % [path, pair[0], JsonUtil.get_array(marks, pair[0]).size(), pair[1]])
+	for key: String in ["loot", "posts"]:  # 놓인 물건·대기 무리는 걸을 수 있는 칸에
+		for p: Variant in JsonUtil.get_array(marks, key):
+			if not _walkable(v.db, data, p):
+				v.err(w, "%s: marks.%s %s는 걸을 수 있는 칸이어야 한다" % [path, key, p])
+	for e: Variant in JsonUtil.get_array(ch, "encounters"):  # 매복: 나타나는 칸은 걸을 수 있고 trigger는 지도 안
+		if e is Dictionary and JsonUtil.get_str(e, "kind") == "ambush":
+			for p: Variant in JsonUtil.get_array(e, "from"):
+				if not _walkable(v.db, data, p):
+					v.err(w, "%s: ambush from %s는 걸을 수 있는 칸이어야 한다" % [path, p])
+			var r := JsonUtil.get_array(e, "trigger")
+			if r.size() == 4 and not (_walkable(v.db, data, [r[0], r[1]]) and _walkable(v.db, data, [int(r[0]) + int(r[2]) - 1, int(r[1]) + int(r[3]) - 1])):
+				v.err(w, "%s: ambush trigger %s의 모서리가 걸을 수 있는 칸이 아니다" % [path, r])
+
+
+static func _walkable(db: GameDatabase, data: Dictionary, p: Variant) -> bool:
+	var a: Array = p if p is Array else []
+	var rows := JsonUtil.get_array(data, "rows")
+	if a.size() != 2 or int(a[1]) < 0 or int(a[1]) >= rows.size() or int(a[0]) < 0 or int(a[0]) >= str(rows[int(a[1])]).length():
+		return false
+	var ch := str(rows[int(a[1])])[int(a[0])]
+	return JsonUtil.get_bool(db.get_entry("tiles", str(JsonUtil.get_dict(data, "legend").get(ch, ""))), "walkable")
 
 
 ## 구성: 몬스터 id 배열 또는 {"pick": [..], "count": [최소, 최대]}.

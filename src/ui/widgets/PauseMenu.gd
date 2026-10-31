@@ -2,7 +2,7 @@ class_name PauseMenu
 extends CenterContainer
 ## 일시정지 메뉴(탐험 화면 위): [계속] · [그래픽 높음/낮음] · [탐험 포기].
 ## 탐험 포기는 실수로 누르지 않게 한 번 더 눌러야 확정한다(abandon_requested).
-## 키: 열리면 [계속]에 포커스 — W/S(방향키)로 옮기고 Enter로 고른다(취소 Backspace = 계속은 ExploreScreen이 받는다).
+## 키: 열리면 [계속]에 포커스 — W/S(방향키)로 옮기고 Enter로 고른다(Esc = 계속은 ExploreScreen이 받는다).
 
 signal resume_requested
 signal abandon_requested

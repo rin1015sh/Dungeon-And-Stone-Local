@@ -1,0 +1,17 @@
+{
+  "id": "mine_rough_gem",
+  "name_ko": "덜 다듬은 녹색 원석",
+  "category": "misc",
+  "price": 3000,
+  "stack": 5,
+  "desc_ko": "광맥에서 떼어 낸 녹색 원석. 다듬으면 제법 값이 나간다.",
+  "size": [
+    1,
+    1
+  ],
+  "icon": "gem",
+  "color": "#3aa058",
+  "rarity": "fine",
+  "source": "placeholder",
+  "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
+}

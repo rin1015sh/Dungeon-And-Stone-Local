@@ -10,7 +10,7 @@ const COLLECTIONS := ["activities", "facilities"]
 ## 디버그로 바꿀 값이 아닌 것(이름·설명·연결·그림·배치).
 const FIXED_KEYS := ["id", "name_ko", "desc_ko", "facility", "panel", "source", "type", "notes", "order", "version",
 	"place", "street", "facility_order", "periods", "building", "interior", "x", "activities", "shows", "extra", "stock", "deals", "equipment_categories",
-	"stock_by_residence", "fields", "tabs"]
+	"fields", "tabs", "room", "special", "place_ko", "look"]
 
 
 ## 미정 값 경로 전부(정렬). '_'로 시작하는 키(주석)는 건너뛴다.

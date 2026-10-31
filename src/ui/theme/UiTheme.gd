@@ -28,7 +28,7 @@ static func build(render: Dictionary) -> Theme:
 		th.set_stylebox("hover", t, box(color("button_hover"), color("accent_dim"), r, pad))
 		th.set_stylebox("pressed", t, box(color("button_pressed"), color("accent"), r, pad))
 		th.set_stylebox("disabled", t, box(color("button_disabled"), color("panel_border"), r, pad))
-		th.set_stylebox("focus", t, box(Color.TRANSPARENT, color("select"), r, pad))  # 키보드 커서 = 뼈빛(UI43)
+		th.set_stylebox("focus", t, box(Color.TRANSPARENT, color("select"), r, pad))  # 키보드 커서 = 뼈빛(UI45)
 	for t: String in ["Label", "Button", "OptionButton", "CheckButton", "CheckBox", "PopupMenu"]:
 		th.set_color("font_color", t, color("text"))
 	for t: String in ["Button", "OptionButton", "CheckButton"]:
@@ -59,7 +59,7 @@ static func apply_global_font() -> void:
 
 ## 폰트 결정: render.font.path → assets/fonts의 첫 폰트 파일 → 시스템 한글 폰트(SystemFont).
 ## 웹 내보내기에는 시스템 폰트가 없으므로 OFL 한글 폰트를 assets/fonts에 넣어야 한다.
-## font.fallbacks = 본 폰트에 없는 글자(기호·드문 한글)를 채울 폰트, spacing_top/bottom = 줄 위아래 여백(px) — 송명 본문 + Noto 대신(UI45).
+## font.fallbacks = 본 폰트에 없는 글자(기호·드문 한글)를 채울 폰트, spacing_top/bottom = 줄 위아래 여백(px) — 송명 본문 + Noto 대신(UI47).
 static func resolve_font(cfg: Dictionary) -> Font:
 	var path := JsonUtil.get_str(cfg, "path")
 	if not path.is_empty() and ResourceLoader.exists(path):

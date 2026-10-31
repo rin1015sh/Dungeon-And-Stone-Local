@@ -1,4 +1,4 @@
-# 문서 지도 — 무엇을 언제 읽는가 (2026-10-28)
+# 문서 지도 — 무엇을 언제 읽는가 (2026-10-31)
 
 > 새 세션은 **`CLAUDE.md`(자동으로 읽힘) → `docs/PROGRESS.md`** 두 개만 읽으면 이어갈 수 있다. 나머지는 필요할 때 찾아 읽는다.
 > 문서끼리 어긋나면 **날짜가 늦은 사용자 결정이 이긴다**(순서는 `CANON.md` §0).
@@ -14,6 +14,7 @@
 | `docs/REFERENCE.md` | **§0 핵심 개념**(수식·스탯·시야·전투·정수·아이템 …) · 데이터 키 사전(패시브·AI·보스·균열·상태이상·재기획 키, 동굴 요소, 도시 규칙) · 파일 하나하나의 역할 | 데이터·코드를 고칠 때 |
 | `docs/ASSUMPTIONS.md` | 모든 가정·사용자 결정(번호 · 가정 / 이유 / 바꾸는 법). 행 앞의 "(바뀜 → X)"는 X가 대신한다 | 번호(J17·RF16·UI19 …)나 키워드로 **검색**해서 |
 | `docs/STRINGS.md` | 게임 글 전부(`ko.json`) — 사용자가 고치고 `tools/strings_md.gd --apply`로 게임에 넣는다 | 문구를 고칠 때 · ko.json을 바꾼 뒤 다시 만든다 |
+| `docs/TEXTS.md` | 읽을거리 전부 — 도서관 책 · 플레이버·설명 글 · 상황 문구(ko.json의 문장). 사용자가 고쳐 보내면 `tools/texts_md.py --apply`로 데이터에 넣는다 | 글을 고칠 때 · 데이터 글을 바꾼 뒤 다시 만든다 |
 | `docs/PLAYTEST.md` | 작업마다 사용자가 직접 해 볼 체크리스트(위가 최신, **최근 여섯 절만** — 그 전은 `archive/PLAYTEST_OLD.md`) | 작업이 끝나 체크리스트를 추가할 때, 플레이 점검할 때 |
 
 ## 주제별
@@ -24,12 +25,13 @@
 | `docs/DEPLOY.md` | 웹(itch.io) 내보내기·올리기·웹에서 다른 점 | 정본 |
 | `docs/HANDOFF.md` | 다른 세션에 붙여 넣는 인계 프롬프트 · 새 기획 절차 · 큰 기획 후보 · 새 기획 요청서 | 새 세션·새 기획을 맡길 때 |
 | `docs/balance/*.md` | 밸런스 표(도구가 만든 것: `exp_budget`·`rift`·`formula`·`curve`(10층 곡선 — `tools/balance_curve.py`)·`essences`(`tools/essences_md.py`)·`item_pool`, 정리표: `stats`(비율 공식)·`city`, 사용자 정수 표 변환 `essence_table`(+ `essence_table_converted.csv`, 원본 `source/`)) | 데이터가 정본 — 데이터를 고치면 표가 낡는다(도구로 다시 만든다) |
-| `docs/plans/*.md` | 기획서(`map_design` 탐험 맵, `rift_spaces` 균열 공간, `status_redesign`·`essence_redesign` 재기획 — 모두 적용됨, `city_redesign` 도시 재기획 — 기획안·적용 안 함, `floor1_fill` 1층·균열 채우기 — A·B·C·D·F 적용, `dungeon_loop_review` 미궁 반복 루프 진단 — A1·A2·A3·B1 적용, `balance_10floors` 10층 밸런스(층별 기준 탐험가·몬스터·보스·정수·장비·비율 공식·CTB) — 1층에 적용됨(2026-10-25, 맨 위 "적용 결과"), 표는 `balance/curve.md`) | 기록 — 맨 위에 적용 여부 |
+| `docs/plans/*.md` | 기획서(`map_design` 탐험 맵, `rift_spaces` 균열 공간, `rift_terrain` 균열 지형·특수 타일·상호작용 정리(배치도 `rift_boards/current/`), `rift_rooms` 균열 몬스터·아이템 배치(자리마다 이유 있는 무리 + 줍는 아이템, 조건 없음) — 기획안·적용 안 함, `status_redesign`·`essence_redesign` 재기획 — 모두 적용됨, `city_redesign` 도시 재기획 — 기획안·적용 안 함, **`city_interiors` 도시 실내 복층·여러 방(계단·사다리·교회 참고 그림·건물별 장식) — 구현됨(CT66), 배치도 `city_boards/` ← `tools/city_boards.py`(data/rooms를 그린다)**, `floor1_fill` 1층·균열 채우기 — A·B·C·D·F 적용, `dungeon_loop_review` 미궁 반복 루프 진단 — A1·A2·A3·B1 적용, **`floors_2_10` 2~10층 찍어내기**(층 하나의 부품 17 · 1층에 묶인 코드 M6-0 · 층별 명세 · 찍는 순서 — 기획·틀만, 갖춘 정도는 `balance/floor_status.md` ← `tools/floor_status.py`), `balance_10floors` 10층 밸런스(층별 기준 탐험가·몬스터·보스·정수·장비·비율 공식·CTB) — 1층에 적용됨(2026-10-25, 맨 위 "적용 결과"), 표는 `balance/curve.md`) | 기록 — 맨 위에 적용 여부 |
 
 ## 사용자가 준 원본 명세·지시서 (바꾸지 않는다)
 
 | 문서 | 무엇 |
 |---|---|
+| `docs/LORE.md` | 원작 「던전 앤 스톤」 세계관 정리(사용자 2026-10-31 — 세계·도시·성장·미궁 규칙·층별·몬스터 등급표·보스). **원작 기준이라 우리 게임과 수치·설정이 다른 곳이 많다** — 참고용(우선순위 맨 아래, FL2). 층 명세(`floors_2_10.md`)의 원천 |
 | `docs/PROMPT.md` | 맨 처음 마스터 지시서. 세계관 요약 §4.3은 지금도 유효, 나머지는 많이 바뀌었다(CANON §11) |
 | `docs/PROMPT_FLOOR1_V2.md` | 1층 명세 v2 — 1층 몬스터·정수·균열·레벨의 원천 |
 | `docs/PROMPT_ART_MAP.md` | 탐험 맵 그래픽 개편 지시서(A0~A6) |

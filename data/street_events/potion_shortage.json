@@ -3,9 +3,7 @@
   "name_ko": "포션 품귀",
   "art": "res://assets/city/events/potion_shortage.webp",
   "weight": 1.5,
-  "when": {
-    "residence_max": 1
-  },
+  "when": {},
   "cooldown_months": 3,
   "effects": [
     {

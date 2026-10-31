@@ -153,6 +153,7 @@
 - `collection.item_types` 아이템 종류
 - `collection.events` 이벤트
 - `collection.facilities` 시설
+- `collection.rooms` 실내 방
 - `collection.tiles` 타일
 - `collection.landmarks` 랜드마크
 - `collection.activities` 도시 활동
@@ -232,6 +233,8 @@
 - `explore.scavenge_found` {tile}을(를) 뒤져 {item}을(를) 찾았다.
 - `explore.scavenge_empty` {tile}에는 건질 것이 없다.
 - `explore.scavenge_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
+- `explore.loot_found` {item}을(를) 주웠다.
+- `explore.loot_found_n` {item} {n}개를 주웠다.
 - `explore.hidden_found` 숨겨진 것을 찾았다 — [{item}].
 - `explore.rift_item_lost` [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
 - `explore.rift_opened` 동굴 곳곳에 균열 포탈 {count}개가 열렸다!
@@ -570,6 +573,7 @@
 - `combat.reason_no_flee` 도망칠 길이 없다.
 - `combat.reason_leader_only` 일행을 이끄는 사람만 할 수 있다.
 - `combat.reason_veiled` 장막 너머의 동료를 알아볼 수 없다.
+- `combat.reason_item_no_effect` 듣지 않는다
 - `combat.sealed` {name}의 [{skill}]이(가) 봉인되었다.
 - `combat.survive_round` 버텨라! ({round}/{total})
 - `combat.pushed_back` {name}이(가) 밀려나 다음 차례가 늦어진다.
@@ -848,7 +852,6 @@
 - `city.spent_stones` {n} 스톤을 치렀다.
 - `city.info_merit` 신전 공적치 {merit}
 - `city.info_balance` 은행 잔액 {balance} 스톤
-- `city.info_residence` 거주 {name}
 - `city.info_lore` 읽은 대목 {n}
 - `city.info_survey` 의뢰 {name} 조사 {n}/{cap} · 한 마리 {stones} 스톤
 - `city.reason_unknown` 알 수 없는 시설·활동이다.
@@ -905,11 +908,9 @@
 - `city.shop_sell_name` {item} ×{n}
 - `city.hud_tax` 세금 {n} 스톤 · {month}번째 달까지
 - `city.reason_tax_none` 낼 세금이 없다
-- `city.reason_residence_max` 더 옮겨 갈 구역이 없다
-- `city.move_title` 이사
-- `city.move_cancel` 그만둔다
+- `city.travel_title` 어디로 갈까
+- `city.travel_cancel` 그만둔다
 - `city.reason_no_books` 이 분야는 다 읽었다
-- `city.reason_books_locked` 이 구역 도서관엔 더 귀한 책이 없다
 - `city.debug_reroll` 사건 다시
 - `city.debug_tax_due` 세금 기한으로
 - `city.debug_life` 사건 {events} · 거리 {street} · 세금 {tax}(냄 {paid})
@@ -918,7 +919,7 @@
 - `city.reason_closed` 문이 닫혀 있다
 - `city.debug_street` 거리 사건
 - `city.reason_no_item` 필요한 물건이 없다.
-- `city.reason_residence` 이 구역엔 없는 곳이다
+- `city.reason_visit_done` 오늘은 이만하면 됐다
 
 ### `city.fx`
 
@@ -943,7 +944,6 @@
 - `city.fx.item_no_room` {name}을(를) 넣을 자리가 없다.
 - `city.fx.item_undecided` 받을 것이 정해지지 않았다. (미정)
 - `city.fx.tax_paid` 세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.
-- `city.fx.residence_up` 계약서에 서명하고 짐수레를 불렀다. 오늘부터 {name}에서 산다.
 - `city.fx.money_lost` {n} 스톤을 잃었다.
 - `city.fx.money_got` {n} 스톤을 받았다.
 - `city.fx.closed` {name}이(가) 문을 닫았다.

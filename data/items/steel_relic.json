@@ -1,7 +1,7 @@
 {
   "id": "steel_relic",
   "name_ko": "강철 사리",
-  "desc_ko": "회전 칼날 속에서 굳은 강철 구슬. 묘를 지키던 이의 마지막 조각이다. 묘를 벗어나면 녹이 슬어 부서진다.",
+  "desc_ko": "회전 칼날 속에서 굳은 강철 구슬. 묘를 지키던 이의 마지막 조각이다.",
   "category": "potion",
   "size": [
     1,
@@ -12,7 +12,6 @@
   "icon": "potion",
   "color": "#8a9098",
   "rarity": "numbers",
-  "rift_bound": "rift_iron_tomb",
   "consumable": true,
   "use_effects": [
     {
@@ -24,5 +23,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17)"
+  "notes": "히든 피스(2026-10-24, docs/plans/rift_hidden_pieces.md §6 · RF17) · 2026-10-30 가지고 나갈 수 있게(사용자, RF27)"
 }

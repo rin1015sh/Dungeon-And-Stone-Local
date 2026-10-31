@@ -1,0 +1,19 @@
+{
+  "id": "fortress_halberd",
+  "name_ko": "수비대 미늘창",
+  "forge": {
+    "type": "halberd",
+    "material": "steel",
+    "bonus": [
+      {
+        "target": "p_res",
+        "flat": 1
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "성문 수비대가 들던 미늘창. 자루에 수비대 번호가 깎여 있다.",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

@@ -1,8 +1,8 @@
 class_name MenuPage
 extends PanelContainer
 ## Tab 메뉴(GameMenu)의 한 쪽(소지품 · 캐릭터 · 도감): 게임 전체 창 판(UiTheme.panel_box) + 위 글자 제목·가는 선 + 내용(content).
-## 지금 쪽은 제목이 밝고, 다른 쪽은 통째로 한 단계 어둡다(금색 테두리 없음 — 사용자 결정 2026-10-29, UI43).
-## 키는 GameMenu가 받아 지금 쪽(active)에 넘긴다 — nav(방향)·confirm(Enter)·back(Backspace).
+## 지금 쪽은 제목이 밝고, 다른 쪽은 통째로 한 단계 어둡다(금색 테두리 없음 — 사용자 결정 2026-10-29, UI45).
+## 키는 GameMenu가 받아 지금 쪽(active)에 넘긴다 — nav(방향)·confirm(Enter)·back(Esc).
 ## nav가 false를 돌려주면(그 방향에 고를 것이 없다) GameMenu가 옆 쪽으로 옮긴다.
 
 var content: VBoxContainer
@@ -44,7 +44,7 @@ func confirm() -> void:
 	pass
 
 
-## Backspace: 쪽 안에서 물릴 것(옮기던 물건 등)이 있으면 물리고 true. 없으면 false(GameMenu가 닫는다).
+## Esc: 쪽 안에서 물릴 것(옮기던 물건 등)이 있으면 물리고 true. 없으면 false(GameMenu가 닫는다).
 func back() -> bool:
 	return false
 

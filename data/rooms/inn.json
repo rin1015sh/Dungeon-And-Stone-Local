@@ -1,0 +1,393 @@
+{
+ "id": "inn",
+ "name_ko": "여관",
+ "facility": "inn",
+ "art_dir": "res://assets/city/rooms/inn",
+ "floor": "honey",
+ "wall": "plaster",
+ "regions": [
+  {
+   "rect": [21, 13, 8, 16],
+   "floor": "terracotta"
+  },
+  {
+   "rect": [14, 30, 16, 10],
+   "floor": "cobble"
+  },
+  {
+   "rect": [0, 30, 14, 10],
+   "floor": "cobble"
+  }
+ ],
+ "legend": {
+  "c": {
+   "name_ko": "바(계산대)",
+   "kind": "furniture",
+   "shape": "counter",
+   "color": "#6a4a2e",
+   "variant": "inn",
+   "light": true
+  },
+  "B": {
+   "name_ko": "술통 벽",
+   "kind": "walldeco",
+   "style": "barrels",
+   "color": "#7a5a36"
+  },
+  "F": {
+   "name_ko": "큰 난로(불)",
+   "kind": "walldeco",
+   "style": "hearth",
+   "color": "#d8702a",
+   "light": true
+  },
+  "T": {
+   "name_ko": "원탁",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#6a4a2e",
+   "variant": "inn",
+   "light": true
+  },
+  "o": {
+   "name_ko": "의자",
+   "kind": "furniture",
+   "shape": "seat",
+   "color": "#4a3424"
+  },
+  "l": {
+   "name_ko": "류트·빈 걸상",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#8a6a3a",
+   "top": "lute"
+  },
+  "t": {
+   "name_ko": "사냥 트로피(사슴 뿔)",
+   "kind": "walldeco",
+   "style": "trophy",
+   "color": "#a08a6a"
+  },
+  "S": {
+   "name_ko": "아궁이(불)",
+   "kind": "walldeco",
+   "style": "stove",
+   "color": "#c8602a",
+   "light": true
+  },
+  "P": {
+   "name_ko": "솥",
+   "kind": "furniture",
+   "shape": "pot",
+   "color": "#3a3a3a"
+  },
+  "k": {
+   "name_ko": "도마 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#7a5a3a",
+   "top": "food"
+  },
+  "m": {
+   "name_ko": "매단 고기·마늘",
+   "kind": "walldeco",
+   "style": "hanging",
+   "color": "#8a4a3a"
+  },
+  "s": {
+   "name_ko": "곡식 자루",
+   "kind": "furniture",
+   "shape": "sack",
+   "color": "#8a7a5a"
+  },
+  "b": {
+   "name_ko": "침대",
+   "kind": "furniture",
+   "shape": "bed",
+   "color": "#7a5a44"
+  },
+  "w": {
+   "name_ko": "세면대",
+   "kind": "furniture",
+   "shape": "font",
+   "color": "#8a9aa0"
+  },
+  "x": {
+   "name_ko": "궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "R": {
+   "name_ko": "와인 걸이",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#5a2a24",
+   "top": "bottles"
+  },
+  "q": {
+   "name_ko": "쥐덫",
+   "kind": "decor",
+   "style": "trap",
+   "color": "#6a5a4a"
+  },
+  "a": {
+   "name_ko": "술통",
+   "kind": "furniture",
+   "shape": "barrel",
+   "color": "#7a5a36"
+  },
+  "n": {
+   "name_ko": "등잔",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#e8c070",
+   "light": true
+  },
+  "e": {
+   "name_ko": "객실 문(잠김)",
+   "kind": "walldeco",
+   "style": "door_shut",
+   "color": "#5a3e28"
+  },
+  "v": {
+   "name_ko": "난롯가 깔개",
+   "kind": "rug",
+   "color": "#6e3a22"
+  },
+  "L": {
+   "name_ko": "잔칫상",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#7a5634",
+   "top": "food",
+   "light": true
+  },
+  "j": {
+   "name_ko": "긴 걸상",
+   "kind": "furniture",
+   "shape": "bench",
+   "color": "#5a3e28"
+  },
+  "U": {
+   "name_ko": "양념 단지 선반",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#6a4a2e",
+   "top": "jars"
+  },
+  "A": {
+   "name_ko": "액자 그림(사냥 풍경)",
+   "kind": "walldeco",
+   "style": "painting",
+   "color": "#8a7a5a"
+  },
+  "G": {
+   "name_ko": "망토 걸이 못",
+   "kind": "walldeco",
+   "style": "pegs",
+   "color": "#5a4a34"
+  },
+  "C": {
+   "name_ko": "거미줄",
+   "kind": "walldeco",
+   "style": "cobweb",
+   "color": "#d8d8d0"
+  },
+  "E": {
+   "name_ko": "말린 약초·마늘 다발",
+   "kind": "walldeco",
+   "style": "herbs",
+   "color": "#6a7a44"
+  },
+  "M": {
+   "name_ko": "벽 촛대",
+   "kind": "walldeco",
+   "style": "sconce",
+   "color": "#e8c070",
+   "light": true
+  },
+  "p": {
+   "name_ko": "빵 바구니",
+   "kind": "furniture",
+   "shape": "basket",
+   "color": "#8a6a3a",
+   "variant": "bread"
+  },
+  "i": {
+   "name_ko": "양파 바구니",
+   "kind": "furniture",
+   "shape": "basket",
+   "color": "#8a6a3a",
+   "variant": "onions"
+  }
+ },
+ "rows": [
+  "##############################",
+  "#####WW#####WW######WW#AA##WW#",
+  "#####WW#####WW######WW#AA##WW#",
+  "#2.....#2.....#2....0#.bb.1w0#",
+  "#..bb..#..bb..#..bb..#.bb....#",
+  "#.....1#.....1#......#n....x.#",
+  "####e######e######e######+####",
+  "#,,,,,,,8,,,,,,,,,,,,8,,,,,,5#",
+  "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+  "#^############################",
+  "#^############################",
+  "#^MFFFAABBBBBBBGGGGt##SSSmmmm#",
+  "#^MFFFAABBBBBBBGGGGt##SSSmmmm#",
+  "#^!...!............0#PP....UU#",
+  "#.vvvvv.a>@.<a...ll.#4@}.....#",
+  "#.vvvvvcccccccc.....#........#",
+  "#.vvvvv.1..1....]...+....kkk>#",
+  "#..........'........#.......~#",
+  "#5..o..........LLLL.#..-...pp#",
+  "#..oTT-....o@..jjjj.#...]....#",
+  "#.'.TTo'..oTT.......#......ss#",
+  "#.......'..TTo1'...%#....-.ss#",
+  "#8.'.....[..-...o.-.#*.kk....#",
+  "#....o.........oTT..#*.kk..3i#",
+  "#...oTT..'..@..@TTo.#........#",
+  "#...@TTo.....'.....<#......aa#",
+  "#...]....TTo..[...aa#........#",
+  "#7...'..oTT..<...'..#4.......#",
+  "#6..........'.......#|..H....#",
+  "##############DD########H#####",
+  "########################H#####",
+  "#CCEEEEE#M##CC#CC#EEEEE#HEECC#",
+  "#CCEEEEE#M##CC#CC#EEEEE#HEECC#",
+  "#ss.~~.pi3.UU.#(........H..RR#",
+  "#.............#.)aaaaaaa...RR#",
+  "#....-........#.....]......RR#",
+  "#..q..ss.-..../..aaaaaaa...RR#",
+  "#%............#.......[..2...#",
+  "#%..777..4..!(#q.aaaaaaa..n77#",
+  "##############################"
+ ],
+ "start": [15.0, 28.3],
+ "npcs": [
+  {
+   "at": [10, 14],
+   "name_ko": "여관 주인",
+   "look": "res://assets/actors/looks/n2_innkeeper_h0.webp",
+   "staff": true,
+   "act": "wipe",
+   "face": [0, 1]
+  },
+  {
+   "at": [12, 19],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h3_coat_h1.webp",
+   "staff": false,
+   "act": "drink",
+   "face": [0, 1]
+  },
+  {
+   "at": [22, 14],
+   "name_ko": "요리사",
+   "look": "res://assets/actors/looks/n9_cook_h2.webp",
+   "staff": false,
+   "act": "stir",
+   "face": [0, -1]
+  },
+  {
+   "at": [4, 25],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h0_traveler_h3.webp",
+   "staff": false,
+   "act": "drink",
+   "face": [1, 0]
+  },
+  {
+   "at": [15, 24],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h1_cloak_h4.webp",
+   "staff": false,
+   "act": "drink",
+   "face": [1, 0]
+  },
+  {
+   "at": [12, 24],
+   "name_ko": "여관 일꾼",
+   "look": "res://assets/actors/looks/n12_maid_h5.webp",
+   "staff": false,
+   "act": "sweep",
+   "face": [0, 1]
+  }
+ ],
+ "spots": [
+  {
+   "rect": [23, 3, 2, 2],
+   "activities": [
+    "inn_rest"
+   ],
+   "name_ko": "침대"
+  },
+  {
+   "rect": [7, 14, 8, 2],
+   "activities": [
+    "inn_snack",
+    "inn_meal"
+   ],
+   "rest": true,
+   "name_ko": "여관 주인"
+  }
+ ],
+ "names": [
+  [
+   12,
+   7,
+   "객실 복도",
+   "room"
+  ],
+  [
+   25,
+   4,
+   "내 방",
+   "room"
+  ],
+  [
+   10,
+   4,
+   "잠긴 객실",
+   "label"
+  ],
+  [
+   10,
+   18,
+   "주점",
+   "room"
+  ],
+  [
+   24,
+   18,
+   "주방",
+   "room"
+  ],
+  [
+   3,
+   11,
+   "큰 난로",
+   "label"
+  ],
+  [
+   17,
+   14,
+   "음유시인 구석",
+   "label"
+  ],
+  [
+   21,
+   33,
+   "술 창고",
+   "room"
+  ],
+  [
+   6,
+   34,
+   "식료 창고",
+   "room"
+  ]
+ ],
+ "source": "original"
+}

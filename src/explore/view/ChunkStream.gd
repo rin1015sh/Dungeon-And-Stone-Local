@@ -107,7 +107,7 @@ func _build(key: Vector2i, player_chunk: Vector2i) -> void:
 		var vc := VoidChunk.new()
 		vc.setup(view, cells)
 		if vc.has_void():
-			vc.material = view.backdrop_material
+			vc.material = view.abyss_material
 			view.void_layer.add_child(vc)
 			void_chunks[key] = vc
 		else:

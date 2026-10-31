@@ -1,0 +1,280 @@
+{
+ "id": "smithy",
+ "name_ko": "대장간",
+ "facility": "smithy",
+ "art_dir": "res://assets/city/rooms/smithy",
+ "floor": "cobble",
+ "wall": "brick",
+ "regions": [
+  {
+   "rect": [0, 0, 28, 8],
+   "floor": "oak"
+  },
+  {
+   "rect": [1, 11, 8, 10],
+   "floor": "flag"
+  },
+  {
+   "rect": [1, 22, 26, 5],
+   "floor": "dirt"
+  }
+ ],
+ "legend": {
+  "F": {
+   "name_ko": "큰 화덕(불·덮개)",
+   "kind": "furniture",
+   "shape": "forge",
+   "color": "#e0702a",
+   "light": true
+  },
+  "w": {
+   "name_ko": "풀무",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#5a4030",
+   "top": "bellows"
+  },
+  "A": {
+   "name_ko": "모루",
+   "kind": "furniture",
+   "shape": "anvil",
+   "color": "#4a4c50"
+  },
+  "Q": {
+   "name_ko": "담금 통",
+   "kind": "furniture",
+   "shape": "barrel",
+   "color": "#3a4a54",
+   "variant": "water"
+  },
+  "g": {
+   "name_ko": "숫돌 바퀴",
+   "kind": "furniture",
+   "shape": "wheel",
+   "color": "#7a7a72"
+  },
+  "k": {
+   "name_ko": "석탄 더미",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#2a2a2a"
+  },
+  "R": {
+   "name_ko": "쇠막대 걸이",
+   "kind": "furniture",
+   "shape": "rack",
+   "color": "#5a5a5a"
+  },
+  "V": {
+   "name_ko": "무기 걸이",
+   "kind": "furniture",
+   "shape": "rack",
+   "color": "#7a6a5a"
+  },
+  "M": {
+   "name_ko": "갑옷 받침대",
+   "kind": "furniture",
+   "shape": "stand",
+   "color": "#8a8a8a"
+  },
+  "s": {
+   "name_ko": "방패 벽",
+   "kind": "walldeco",
+   "style": "shields",
+   "color": "#7a3a2a"
+  },
+  "T": {
+   "name_ko": "연장 벽(집게·망치)",
+   "kind": "walldeco",
+   "style": "tools",
+   "color": "#5a5a5a"
+  },
+  "f": {
+   "name_ko": "화덕 덮개",
+   "kind": "walldeco",
+   "style": "hood",
+   "color": "#3a2a22"
+  },
+  "L": {
+   "name_ko": "장작 더미",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#6a4a2a"
+  },
+  "p": {
+   "name_ko": "물 펌프",
+   "kind": "furniture",
+   "shape": "pump",
+   "color": "#4a5a64"
+  },
+  "j": {
+   "name_ko": "버린 쇠",
+   "kind": "decor",
+   "style": "scrap",
+   "color": "#5a5450"
+  },
+  "o": {
+   "name_ko": "광석 자루",
+   "kind": "furniture",
+   "shape": "sack",
+   "color": "#6a5a4a"
+  },
+  "i": {
+   "name_ko": "잉곳 더미",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#8a8070"
+  },
+  "y": {
+   "name_ko": "나무 울타리",
+   "kind": "furniture",
+   "shape": "fence",
+   "color": "#6a5030"
+  },
+  "G": {
+   "name_ko": "진열 탁자(칼·도끼)",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#6a4a2e",
+   "top": "cloth"
+  },
+  "c": {
+   "name_ko": "궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "K": {
+   "name_ko": "앞치마 걸이",
+   "kind": "walldeco",
+   "style": "pegs",
+   "color": "#5a4030"
+  },
+  "C": {
+   "name_ko": "거미줄",
+   "kind": "walldeco",
+   "style": "cobweb",
+   "color": "#d8d8d0"
+  },
+  "B": {
+   "name_ko": "벽 등잔",
+   "kind": "walldeco",
+   "style": "sconce",
+   "color": "#e8c070",
+   "light": true
+  },
+  "P": {
+   "name_ko": "걸어 둔 집게·편자",
+   "kind": "walldeco",
+   "style": "pots",
+   "color": "#3a3a3c"
+  },
+  "Z": {
+   "name_ko": "쇳밥",
+   "kind": "decor",
+   "style": "shavings",
+   "color": "#8a8a88"
+  }
+ },
+ "rows": [
+  "############################",
+  "#CC##WW###KKKK#####WW####CC#",
+  "#CC##WW###KKKK#####WW####CC#",
+  "#77.2.......oo.......ii.0.(#",
+  "#7..............ooo..ii....#",
+  "#.........).....ooo....`...#",
+  "#.......%%................4#",
+  "#########################H##",
+  "#########################H##",
+  "##sssssss#Bffff#TTTT#PPPBH##",
+  "##sssssss#Bffff#TTTT#PPPBH##",
+  "#?......?#?FFFFw..!!.kk..H.#",
+  "#.V...V..#.FFFF......kk....#",
+  "#.V...V..#.}.}.}........R..#",
+  "#.V...V..#.......@.@Z...R..#",
+  "#......../......AA.Q....R..#",
+  "#&.......#.....4..Z.......7#",
+  "#..M@M.M.#.1.g.Z..........7#",
+  "#........#........]......oo#",
+  "#..GGGG..#..........ii...oo#",
+  "#2......2#2.........ii....6#",
+  "##############+#############",
+  "#_______________________y_%#",
+  "#_LLL!______]_____jjj___y_%#",
+  "#_LLL!__4p________jjj___y__#",
+  "#______}_cc_____]__Z_oo____#",
+  "#_____@__cc________________#",
+  "#############DD#############"
+ ],
+ "start": [14.0, 26.3],
+ "npcs": [
+  {
+   "at": [17, 14],
+   "name_ko": "대장장이",
+   "look": "res://assets/actors/looks/n5_smith_h4.webp",
+   "staff": true,
+   "act": "hammer",
+   "face": [0, 1]
+  },
+  {
+   "at": [19, 14],
+   "name_ko": "견습생",
+   "look": "res://assets/actors/looks/n10_apprentice_h5.webp",
+   "staff": false,
+   "act": "quench",
+   "face": [0, 1]
+  },
+  {
+   "at": [6, 26],
+   "name_ko": "견습생",
+   "look": "res://assets/actors/looks/n10_apprentice_h6.webp",
+   "staff": false,
+   "act": "sweep",
+   "face": [0, 1]
+  },
+  {
+   "at": [4, 17],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h3_coat_h7.webp",
+   "staff": false,
+   "act": "idle",
+   "face": [0, -1]
+  }
+ ],
+ "spots": [
+  {
+   "rect": [16, 14, 2, 2],
+   "activities": [
+    "smithy_trade"
+   ],
+   "name_ko": "대장장이"
+  }
+ ],
+ "names": [
+  [
+   20,
+   6,
+   "다락 창고",
+   "room"
+  ],
+  [
+   18,
+   18,
+   "작업장",
+   "room"
+  ],
+  [
+   4,
+   19,
+   "진열실",
+   "room"
+  ],
+  [
+   12,
+   25,
+   "뒷마당",
+   "room"
+  ]
+ ],
+ "source": "original"
+}

@@ -2,7 +2,7 @@ extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
-## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --residence=<1~4> 거주 등급
+## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
 ##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
 ##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
@@ -12,6 +12,7 @@ extends Node
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다(--trap=all = 모두 드러내기만), --murals = 벽화 힌트를 다 본 상태
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
+## 실내 방(도서관 — CT62): --facility=library [--room_at=x,y --face=up|down|left|right] [--activity=<id>].
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --equip=<아이템 id>: 주무기 칸에 그 무기(장비 인형 그림 크기), --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
@@ -29,12 +30,13 @@ extends Node
 ## --extra_turn: 지금 차례를 추가 차례로 표시해 파티 창 이름 옆 표시를 본다
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들 — --rift … --engage 균열 조우에서도), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
-## --heal: --combat에서 참가자 모두 생명력을 깎았다가 25, 영혼력을 깎았다가 12 채운다(초록·파랑 회복 숫자 확인, UI44)
+## --heal: --combat에서 참가자 모두 생명력을 깎았다가 25, 영혼력을 깎았다가 12 채운다(초록·파랑 회복 숫자 확인, UI46)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
 ## --shots=<목록 json> --out=<폴더>: (explore) 장면 목록을 한 번에 찍어 <폴더>/<name>.png로(tools/ShotList.gd, 목록 예 tools/shots/floor1.json)
+##   --rift=<균열 id> [--chapter=n]과 함께면 그 챕터 안에서 찍는다(목록의 장면마다 "rift"·"chapter"가 있으면 맞는 것만 — tools/shots/rift_void.json)
 
 const ShotList := preload("res://tools/ShotList.gd")
 
@@ -109,7 +111,9 @@ func _run() -> void:
 		plaza_screen.enter_requested.emit()
 		await _frames(3)
 		var explore := _main.current_screen() as ExploreScreen
-		if _args.has("shots"):  # 장면 목록 일괄 캡처 → --out 폴더
+		if _args.has("shots"):  # 장면 목록 일괄 캡처 → --out 폴더(--rift면 그 균열 챕터에 들어가서)
+			if _args.has("rift"):
+				explore = await _enter_rift(explore)
 			get_tree().quit(await ShotList.run(self, explore, str(_args["shots"]), str(_args["out"])))
 			return
 		if _args.has("torch"):
@@ -166,7 +170,7 @@ func _run() -> void:
 			explore.session.player.inventory = Inventory.new(explore.session.db, int(bag[0]), int(bag[1]))
 			for gid in str(_args["give"]).split(","):
 				explore.session.player.inventory.add(gid)
-		if _args.has("equip"):  # --equip=<아이템 id>: 그 무기를 주무기 칸에 낀다(장비 인형 그림 크기 확인 — UI47)
+		if _args.has("equip"):  # --equip=<아이템 id>: 그 무기를 주무기 칸에 낀다(장비 인형 그림 크기 확인 — UI49)
 			var epc := explore.session.player
 			epc.equipment.equip(epc.stats, str(_args["equip"]), "main_hand")
 		if _args.has("loot"):
@@ -368,7 +372,7 @@ func _run() -> void:
 			var hv := str(_args["hit"])
 			await get_tree().create_timer(hv.to_float() if hv.is_valid_float() else 0.25).timeout
 			_quick = true
-		if _args.has("heal"):  # --heal: 전투 참가자 모두 생명력을 깎았다가 일부 채워 초록 회복 숫자(UI44)를 본다
+		if _args.has("heal"):  # --heal: 전투 참가자 모두 생명력을 깎았다가 일부 채워 초록 회복 숫자(UI46)를 본다
 			await _frames(10)
 			for n: Node in _main.find_children("*", "", true, false):
 				if n is CombatScreen:
@@ -439,15 +443,14 @@ func _city(city: CityScreen) -> void:
 		st.period = str(_args.get("period", "0")).to_int()
 	if _args.has("happen"):
 		st.happenings.assign(str(_args["happen"]).split(","))
-	if _args.has("residence"):  # --residence=<1~4>: 거주 등급(건물 외관·시설 — CT50)
-		st.residence = str(_args["residence"]).to_int()
+	if _args.has("look"):  # --look=<1~4>: 도시 그림 등급(CT63 — 디버그 임시값)
+		st.set_override("city/district/look", str(_args["look"]).to_int())
 	st.changed.emit()
 	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
-	if _args.has("move"):  # --move: 거리 오른쪽 끝에서 D 한 번 더 — 이사 선택 창(CT60)
-		city.pc.inventory.add_money(CityResidence.next_cost(st))
+	if _args.has("travel"):  # --travel: 거리 오른쪽 끝에서 D 한 번 더 — 특별 시설로 가는 창(CT63)
 		city.street().scroll_to(city.street().max_offset())
 		await _frames(2)
-		city.offer_move()
+		city.offer_travel()
 		await _frames(4)
 	if _args.has("weather"):
 		city.state.weather = str(_args["weather"])
@@ -457,9 +460,18 @@ func _city(city: CityScreen) -> void:
 	if _args.has("facility"):
 		city.choose_facility(str(_args["facility"]))
 		await _frames(2)
+		var room := city.facility_view() as RoomView
+		if room != null and _args.has("room_at"):  # --room_at=x,y(칸) --face=up|down|left|right: 실내 방(CT62)에서 선 자리·보는 쪽
+			var at := str(_args["room_at"]).split(",")
+			room.pos = Vector2(at[0].to_float(), at[1].to_float())
+			room.facing = {"up": Vector2i.UP, "down": Vector2i.DOWN, "left": Vector2i.LEFT, "right": Vector2i.RIGHT}.get(str(_args.get("face", "up")), Vector2i.UP)
+			await _frames(3)
 		if _args.has("activity"):
 			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
-			city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
+			if room != null:
+				room.use(str(_args["activity"]))
+			else:
+				city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
 			if name.is_empty():
 				push_warning("활동 없음: " + str(_args["activity"]))
 			if _args.has("advance"):  # --advance=N: 결과 대화창을 N쪽 넘긴다(--dialog와 함께 — 뒤 쪽 문구 확인)
@@ -515,7 +527,10 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 		var xy := str(_args["near"]).split(",")
 		explore.session.relocate(Vector2i(int(xy[0]), int(xy[1])))
 		for o: FieldMonsters.Group in explore.session.monsters.groups:
-			o.grace_until = explore.session.clock.total_hours + 100.0
+			o.grace_until = explore.session.clock.total_hours + 100.0 if o.tag != "ambush" else -1.0
+		for i in int(str(_args.get("chase", "0"))):  # --chase=N: 매복 무리(RiftAmbush)가 N걸음만큼 쫓아온 뒤
+			explore.session.pass_time(explore.session.move_hours())
+			await _frames(1)
 	elif str(_args.get("near", "")) == "scavenge":  # --near=scavenge: 뒤질 수 있는 장식 옆에 서서 살핀다(RF19 — 잡템 대화창은 --dialog)
 		var es := explore.session
 		var done := false

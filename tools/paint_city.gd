@@ -16,8 +16,12 @@ const Settle := preload("res://tools/city_art/Settle.gd")
 const SEED := 1015
 ## 그림 시드 순서(시설 id → 번호). 시설이 늘어도 기존 그림이 바뀌지 않게 고정 — 새 시설은 끝에 붙인다.
 const SEED_ORDER := ["bank", "inn", "library", "shop", "temple", "training", "smithy", "guild", "exchange"]
-## 거주 구역마다 따로 그리는 레이어(<경로>_t<등급> — CityStreet가 고른다, CT54). 나머지는 한 장.
+## 그림 등급마다 따로 그리는 레이어(<경로>_t<등급> — CityStreet가 city.json district.look 것을 고른다, CT54·CT63). 나머지는 한 장.
 const TIER_LAYERS := ["far", "mid", "street"]
+## 그림 등급 수(1 = 옛 라비기온 13구역 뒷골목 · 2 = 7구역 · 3 = 컴멜비 5구역 · 4 = 3구역 — 지금 게임은 district.look 하나만 쓴다, CT63).
+const LOOKS := 4
+## 그 등급부터 그리는 시설(그 등급 그림 = 기본 경로, 위 등급 = _t<등급>) — 거래소는 컴멜비 5구역 그림부터.
+const FIRST_LOOK := {"exchange": 3}
 const MAX_VIEW := 1700.0  ## 이 너비(거리 단위)까지 보이는 화면에서 시차 레이어가 끊기지 않게 그린다
 
 
@@ -39,17 +43,17 @@ func _init() -> void:
 	var baseline := int(GameDatabase.single(db.render, "city.baseline", 600))
 	var scale := float(GameDatabase.single(db.render, "city.building_scale", 0.85))
 	var width := JsonUtil.get_int(street, "width", 3600)
-	var spans: Array = []  # 등급 → [[x0, x1] …](그 구역에 서는 건물만, 서지 않는 시설 자리는 당긴다 — CityResidence.facility_x, CT54)
-	var tiers := maxi(1, JsonUtil.get_array(JsonUtil.get_dict(db.singletons.get("city", {}), "residence"), "tiers").size())
+	var spans: Array = []  # 등급 → [[x0, x1] …](거리에 서는 건물만 — 특별 시설 자리는 당긴다, CityDistrict.facility_x, CT63)
+	var tiers := LOOKS
 	for id: String in db.get_collection("facilities"):
 		var f := db.get_entry("facilities", id)
 		var i := SEED_ORDER.find(id) + 1 if SEED_ORDER.has(id) else 100 + absi(id.hash()) % 900
 		var size: Vector2i = Buildings.SIZES.get(id, Vector2i(400, 400))
-		var t0 := clampi(JsonUtil.get_int(f, "min_residence", 1), 1, tiers)
+		var t0 := clampi(int(FIRST_LOOK.get(id, 1)), 1, tiers)
 		var mine := only == "facility" and id == one
 		if only.is_empty() or only == "buildings" or mine:
 			var base := JsonUtil.get_str(f, "building")
-			for t in range(t0, tiers + 1):  # 거주 등급마다(서는 등급 = 기본 경로, 그 위 = <이름>_t<등급> — CityResidence.building_path, CT50·CT54)
+			for t in range(t0, tiers + 1):  # 그림 등급마다(첫 등급 = 기본 경로, 그 위 = <이름>_t<등급> — CityDistrict.art_path)
 				Buildings.paint(id, SEED + i * 101, t).save(_tier_path(base, t, t0))
 				print("그림: 건물 %s 등급 %d %dx%d" % [id, t, size.x, size.y])
 		if only.is_empty() or only == "interiors" or mine:
@@ -60,8 +64,8 @@ func _init() -> void:
 	for t in range(1, tiers + 1):
 		var here: Array = []
 		for id: String in db.get_collection("facilities"):
-			if JsonUtil.get_int(db.get_entry("facilities", id), "min_residence", 1) <= t:
-				var x := CityResidence.facility_x(db, id, t)
+			if not CityDistrict.is_special(db, id):
+				var x := CityDistrict.facility_x(db, id)
 				here.append([x, x + Buildings.SIZES.get(id, Vector2i(400, 400)).x * scale])
 		here.sort_custom(func(a: Array, c: Array) -> bool: return float(a[0]) < float(c[0]))
 		spans.append(here)
@@ -69,7 +73,7 @@ func _init() -> void:
 		for layer: Variant in JsonUtil.get_array(street, "layers"):
 			var tiered := JsonUtil.get_str(layer as Dictionary, "id") in TIER_LAYERS
 			for t in range(1, tiers + 1 if tiered else 2):  # 구역마다 그리는 레이어는 그 구역 거리 길이로, 나머지는 가장 긴 거리로
-				var w := int(CityResidence.street_width(db, width, t)) if tiered else width
+				var w := int(CityDistrict.street_width(db, width)) if tiered else width
 				_paint_layer(layer as Dictionary, w, baseline, spans[t - 1], t)
 		for kind: Variant in JsonUtil.get_array(JsonUtil.get_dict(db.singletons.get("city", {}), "weather"), "kinds"):
 			var sky_path := JsonUtil.get_str(kind as Dictionary, "sky")

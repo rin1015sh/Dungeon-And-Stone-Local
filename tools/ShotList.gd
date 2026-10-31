@@ -1,7 +1,8 @@
 extends RefCounted
 ## 장면 목록 일괄 캡처(screenshot.gd --shots=<목록 json> --out=<폴더>). 한 번 들어간 탐험 화면에서 장면마다
 ## 순간이동·횃불·안개 걷기를 맞춰 찍고 <폴더>/<name>.png로 남긴다. 탐험 맵 그림 작업의 전후 비교용(docs/screens/).
-## 목록 = {"bench": {"at", "steps", "torch"}(선택 — 걸음당 프레임), "shots": [{"name", "at": [x, y], "torch": bool, "reveal": bool, "lord": bool, "wait": 프레임}]}
+## 목록 = {"bench": {"at", "steps", "torch"}(선택 — 걸음당 프레임), "shots": [{"name", "at": [x, y], "torch": bool, "reveal": bool, "lord": bool, "wait": 프레임,
+##         "rift": 균열 id, "chapter": n(있으면 그 균열 챕터에 들어가 찍을 때만 — screenshot --rift --chapter)}]}
 ## 찍는 동안 몬스터는 멈춘다(monsters_enabled = false — 순간이동한 자리에서 전투가 걸리지 않게). 계층군주는 되돌릴 수 없어 마지막 장면에만.
 
 
@@ -23,6 +24,8 @@ static func run(host: Node, explore: ExploreScreen, list_path: String, out_dir: 
 			continue
 		var d := shot as Dictionary
 		var name := JsonUtil.get_str(d, "name", "shot")
+		if d.has("rift") and (s.rift_run == null or s.rift_run.rift_id != str(d["rift"]) or s.rift_run.chapter + 1 != JsonUtil.get_int(d, "chapter", 1)):
+			continue  # 다른 균열·챕터 장면
 		var at := JsonUtil.get_array(d, "at")
 		if at.size() == 2 and not ExploreDebug.teleport(s, Vector2i(int(at[0]), int(at[1]))):
 			print("  %s: %s 칸으로 갈 수 없음" % [name, at])

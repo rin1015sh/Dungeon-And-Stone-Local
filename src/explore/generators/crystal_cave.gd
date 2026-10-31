@@ -26,6 +26,7 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 		FloorMapFile.apply(data, map)
 		FieldFeaturePlacer.apply_tiles(db, map)
 		lay.mark_zones(map)
+		lay.mark_mixed_center(map)
 		_add_safe_zones(map, floor_def)
 		_add_portals(map, lay, floor_def)
 	else:
@@ -58,6 +59,7 @@ func build(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	_place_crystals(map, lay, g, tiles, rng)
 	FieldFeaturePlacer.place(db, map, lay, floor_def, g, rng)
 	FieldFeaturePlacer.apply_tiles(db, map)
+	lay.mark_mixed_center(map)
 	_place_entry(map, lay, g, JsonUtil.get_str(tiles, "floor"), rng)
 	return map
 
@@ -70,6 +72,8 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 		out.append("crystal_cave: gen.core_size ≥ 13, arm_width ≥ 9, arm_length ≥ 16")
 	if lay.arm_half > lay.core_half:
 		out.append("crystal_cave: gen.arm_width는 core_size 이하")
+	if lay.mixed_radius < 0.0:
+		out.append("crystal_cave: gen.mixed_radius는 0 이상(0 = 중심부 정사각형 전체)")
 	if lay.dark_depth < 1 or lay.dark_depth >= lay.arm_length - 4:
 		out.append("crystal_cave: gen.dark_depth는 1 이상, arm_length - 4 미만")
 	if lay.portal_inset < 3 or lay.portal_inset >= lay.dark_depth:
@@ -277,7 +281,7 @@ func _place_entry(map: FloorMap, lay: CrossLayout, g: Dictionary, floor_tile: St
 	for attempt in ENTRY_TRIES:
 		var p := Vector2i(rng.randi_range(0, map.width - 1), rng.randi_range(0, map.height - 1))
 		var i := map.idx(p)
-		if map.tiles[i] != floor_index or map.dark[i] != 0 or not CrossLayout.ARMS.has(map.zone_at(p)):
+		if map.tiles[i] != floor_index or map.dark[i] != 0 or not CrossLayout.ARMS.has(lay.zone_of(p)):
 			continue
 		if lay.arm_depth(p) <= max_depth and Vector2(p - map.center).length() >= min_dist and not _inside_landmark(map, p):
 			map.entry = p

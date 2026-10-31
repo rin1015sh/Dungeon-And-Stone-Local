@@ -158,12 +158,13 @@ static func shuffle_rows(b: Battle, side: int) -> void:
 
 
 ## 여신의 눈물·갱도 폭약: 상대 진영의 해당 계열에게 고정 피해(damage_type — 기본 신성) + 상태. 해당하는 적이 없으면 사용자 회복.
+## single이면 고른 적 하나만(e.target = 그 적의 Actor — 균열 전투 도구, RF27).
 ## 피해는 보호막·버티기(revive_once)·피해로 풀리는 상태를 거친다(DamageApply).
 static func smite(b: Battle, c: Combatant, e: Dictionary) -> void:
 	var hit := false
+	var single := bool(e.get("single", false))
 	for f in b.opponents(c):
-		var fam: Array = JsonUtil.get_array((f.actor as Monster).def, "family") if f.actor is Monster else []
-		if fam.any(func(x: Variant) -> bool: return (e.get("families", []) as Array).has(x)):
+		if smite_fits(e, f) and (not single or f.actor == e.get("target")):
 			hit = true
 			var ctx := EffectContext.new(b.db, c.actor, f.actor, b.rng)
 			# 신성 피해도 약점·면역을 따른다(성수에 약한 언데드 ×배율). 알아낸 상성은 도감에 남는다.
@@ -181,6 +182,20 @@ static func smite(b: Battle, c: Combatant, e: Dictionary) -> void:
 	if not hit:
 		c.actor.pool.modify("hp", float(e.get("heal", 0.0)) * c.actor.statuses.heal_mult(), "smite")
 		b.message.emit("effect.smite_heal", {"name": c.label()}, "good")
+
+
+## 하나만 치는 전투 아이템이면 그 smite 효과(대상을 고른다), 아니면 빈 것.
+static func single_smite(db: GameDatabase, item_id: String) -> Dictionary:
+	for e: Variant in JsonUtil.get_array(db.get_entry("items", item_id), "use_effects"):
+		if e is Dictionary and JsonUtil.get_str(e, "type") == "smite" and JsonUtil.get_bool(e, "single"):
+			return e
+	return {}
+
+
+## smite가 이 상대에게 듣는가(몬스터 계열이 families에 있다).
+static func smite_fits(e: Dictionary, t: Combatant) -> bool:
+	var fam: Array = JsonUtil.get_array((t.actor as Monster).def, "family") if t.actor is Monster else []
+	return fam.any(func(x: Variant) -> bool: return JsonUtil.get_array(e, "families").has(x))
 
 
 ## 증원(효과 summon의 사건): 같은 진영에 몬스터를 더한다(한 진영 최대 combat.max_side_units).

@@ -66,10 +66,40 @@
     "source": "placeholder"
   },
   {
+    "id": "elf",
+    "color": "#9aa88a",
+    "name_ko": "엘프",
+    "enabled": true,
+    "stat_ranges": {
+      "str": [
+        5,
+        8
+      ],
+      "agi": [
+        10,
+        14
+      ],
+      "p_res": [
+        3,
+        6
+      ],
+      "m_res": [
+        8,
+        12
+      ],
+      "int": [
+        9,
+        13
+      ]
+    },
+    "sprite": "res://assets/actors/elf.webp",
+    "source": "placeholder"
+  },
+  {
     "id": "dwarf",
     "color": "#9a7b5c",
     "name_ko": "드워프",
-    "enabled": false,
+    "enabled": true,
     "stat_ranges": {
       "str": [
         8,
@@ -92,7 +122,7 @@
         7
       ]
     },
-    "sprite": "res://assets/sprites/races/dwarf.png",
+    "sprite": "res://assets/actors/dwarf.webp",
     "source": "placeholder"
   },
   {
@@ -129,7 +159,7 @@
     "id": "beastkin",
     "color": "#9c8466",
     "name_ko": "수인",
-    "enabled": false,
+    "enabled": true,
     "stat_ranges": {
       "str": [
         7,
@@ -152,7 +182,7 @@
         12
       ]
     },
-    "sprite": "res://assets/sprites/races/beastkin.png",
+    "sprite": "res://assets/actors/beastkin.webp",
     "source": "placeholder"
   },
   {

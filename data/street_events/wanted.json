@@ -3,9 +3,7 @@
   "name_ko": "현상수배",
   "art": "res://assets/city/events/wanted.webp",
   "weight": 1,
-  "when": {
-    "residence_max": 1
-  },
+  "when": {},
   "cooldown_months": 3,
   "source": "placeholder"
 }

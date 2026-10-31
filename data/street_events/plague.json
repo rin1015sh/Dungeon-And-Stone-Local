@@ -3,9 +3,7 @@
   "name_ko": "역병 소문",
   "art": "res://assets/city/events/plague.webp",
   "weight": 1,
-  "when": {
-    "residence_max": 1
-  },
+  "when": {},
   "cooldown_months": 4,
   "effects": [
     {

@@ -1,0 +1,19 @@
+{
+  "id": "fortress_crossbow",
+  "name_ko": "망루 석궁",
+  "forge": {
+    "type": "crossbow",
+    "material": "oak",
+    "bonus": [
+      {
+        "target": "accuracy",
+        "flat": 3
+      }
+    ]
+  },
+  "category": "weapon",
+  "stack": 1,
+  "desc_ko": "망루에 걸려 있던 석궁. 시위가 아직 팽팽하다.",
+  "source": "placeholder",
+  "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
+}

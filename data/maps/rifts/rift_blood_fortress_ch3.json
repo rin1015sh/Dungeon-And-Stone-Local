@@ -1,5 +1,5 @@
 {
- "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서). 손으로 고쳐도 된다.",
+ "_comment": "균열 챕터 설계도(docs/plans/rift_spaces.md). 한 글자 = 한 칸(legend), rows[y][x]. marks: 시작·조우 자리(slots — 데이터 encounters 순서, 수호자는 마지막)·출구·히든 피스(hidden — 데이터 hidden 순서)·위험 묶음 가운데(hazards — 데이터 hazards × count 순서)·놓인 물건(loot — 데이터 loot 순서)·대기 무리(posts — 데이터 posts packs 순서). 손으로 고쳐도 된다.",
  "rift": "rift_blood_fortress",
  "chapter": "ch3",
  "width": 84,
@@ -27,29 +27,7 @@
   "u": "bf_cage",
   "s": "bf_sack"
  },
- "marks": {
-  "entry": [
-   0,
-   27
-  ],
-  "slots": [
-   [
-    41,
-    26
-   ]
-  ],
-  "exit": [
-   83,
-   21
-  ],
-  "hidden": [
-   [
-    41,
-    22
-   ]
-  ],
-  "hazards": []
- },
+ "marks": {"entry": [0, 27], "slots": [[41, 26]], "exit": [83, 21], "hidden": [[41, 22]], "hazards": [], "loot": [[25, 13], [61, 24], [64, 23], [15, 33], [52, 35], [38, 13], [29, 16], [30, 30]], "posts": [[27, 14], [64, 24], [19, 35], [27, 30]]},
  "rows": [
   "####################################################################################",
   "####################################################################################",

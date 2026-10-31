@@ -3,6 +3,7 @@ extends RefCounted
 ## · 허리천 뒷자락(loin) · 창(spear·lance — 쥔 손) · 방패(shield — 안쪽 면과 손잡이 끈이 보인다, shield_kind round|kite).
 
 const BackExtras := preload("res://tools/monster_art/BackExtras.gd")
+const BackTools := preload("res://tools/monster_art/BackTools.gd")
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
 const BackKit := preload("res://tools/monster_art/BackKit.gd")
@@ -20,7 +21,7 @@ static func gear(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 		_cape(cl, pr, j, bd, kit["cape"], rng)
 	if kit.has("helm"):
 		_helm(cl, pr, hd, kit, rng)
-	if kit.has("weapon") and not BackExtras.HAND_WEAPONS.has(str(kit["weapon"])):  # 손 무기는 BackExtras
+	if kit.has("weapon") and not BackExtras.HAND_WEAPONS.has(str(kit["weapon"])) and not BackTools.KINDS.has(str(kit["weapon"])):  # 손 무기는 BackExtras, 일 도구는 BackTools
 		if str(kit["weapon"]) == "dagger":
 			_dagger(cl, pr, j, kit, str(kit.get("weapon_hand", "r")))
 		else:
@@ -159,6 +160,8 @@ static func _helm(cl: Clay, pr: Dictionary, hd: Dictionary, kit: Dictionary, rng
 	var H: float = pr["H"]
 	var low := c.y + rv * (0.55 if kit.get("closed", false) else 0.25)
 	BackKit.shell(cl, pr, ["skull", "ear"] + (["face"] if kit.get("closed", false) else []), 0.016, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, low), 0.01)
+	if kit.has("helm_brow"):  # 이마까지 덮는 깊은 챙(눈썹 위 helm_brow — 드워프: 큰 맵 머리에서 이마가 훤히 드러났다, 사용자 2026-10-30)
+		BackKit.shell(cl, pr, ["face"], 0.016, m, g, BackKit.band(cl, pr, c.y - rv * 2.0, c.y + rv * float(kit["helm_brow"])), 0.01)
 	Back.ridge(cl, pr, g, [Back.on_head(hd, 1.4, PI, 0.018), Back.on_head(hd, 0.9, 0.0, 0.018), Back.on_head(hd, 0.2, 0.0, 0.018)], Vector3(0, -0.3, 1), 0.007, 0.006, m)  # 가운데 능선
 	Back.ell(cl, pr, g, Back.on_head(hd, -0.15, 0.0, 0.02), float(hd["ru"]) * 0.9, rv * 0.25, float(hd["rw"]) * 0.3, m, 0.004)  # 목 가리개
 	if kit.has("plume"):

@@ -82,7 +82,6 @@ func test_inn_meal_serves_a_dish_and_eases_fatigue() -> void:
 	var s := CityState.new(db, 7)
 	s.start()
 	s.facility = "inn"
-	s.residence = 2  # 식사는 장인 거리부터(CT51)
 	var pc := _pc()
 	pc.fatigue.set_value(40.0)
 	var ctx := CityActions.perform(s, pc, "inn_meal", ContentRegistries.new().city_effects)

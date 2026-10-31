@@ -1,7 +1,7 @@
 extends SceneTree
 ## 균열 통과 점검(헤드리스): 모든 균열을 실제 이동(충돌 Kinematics·PlayerMotion)으로 처음부터 끝까지 걸어 본다.
 ##   godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2]
-## 챕터마다: 조우 자리로 걸어가 닿으면 이긴 것으로 친다(수수께끼는 정답) → 출구에 필요한 물건(폭약)이 히든 피스면
+## 챕터마다: 조우가 남은 채로도 길목이 열리는지(RF21) → 바닥에 놓인 물건을 모두 줍기(RiftLoot) → 조우 자리로 걸어가 닿으면 이긴 것으로 친다(수수께끼는 정답) → 출구에 필요한 물건(폭약)이 히든 피스면
 ## 그 옆으로 걸어가 살핀다(아니면 가방에 넣어 준다) → 앞 길목으로 걸어가 넘어가는지 → 뒤 길목으로 걸어 돌아갔다가 다시 앞으로.
 ## 마지막 챕터는 탈출 포탈에서 살피기로 나간다. 걸어서 닿지 못하거나 넘어가지 않으면 "!!"로 알리고 종료 코드 1.
 
@@ -44,8 +44,13 @@ func _run(db: GameDatabase, rift_id: String, seed_value: int) -> void:
 	print("== %s (시드 %d, 챕터 %d)" % [rift_id, seed_value, run.chapters().size()])
 	while true:
 		var tag := "%s %d챕터" % [rift_id, run.chapter + 1]
-		if not _clear(cs, tag):
+		# 조우가 남아도 길목은 열린다(RF21 — 출구 물건이 필요한 챕터는 물건을 쓰게 되니 보지 않는다)
+		var needs_item := not JsonUtil.get_dict(run.chapters()[run.chapter], "exit_requires").is_empty()
+		if not run.is_last_chapter() and not needs_item and not run.remaining.is_empty() and not run._can_leave(cs, true):
+			_bad("%s: 조우가 남았다고 길목이 막힌다(남은 조우 %d)" % [tag, run.remaining.size()])
+		if not _clear(cs, tag) or not _spring(cs, tag):
 			return
+		_pick_loot(cs, tag)
 		_fetch_key(cs, tag)
 		var exit := RiftPassage.exit_portal(cs.map)
 		if exit.is_empty():
@@ -82,34 +87,74 @@ func _run(db: GameDatabase, rift_id: String, seed_value: int) -> void:
 		cs = next
 
 
-## 남은 조우를 모두 찾아가 이긴다.
+## 남은 조우를 모두 찾아가 이긴다(게임은 남겨도 넘어갈 수 있다 — 여기선 모든 조우에 걸어서 닿는지를 본다).
 func _clear(cs: ExploreSession, tag: String) -> bool:
 	var run := cs.rift_run
 	var guard := 0
-	while not run.remaining.is_empty() and guard < 20:
+	# 전투 시작은 정리하는 내내 듣는다 — 이긴 뒤 시간이 흐르는 사이 방의 보스가 알아채 바로 거는 전투(FieldMonsters — 보스는 화면에 들면 곧장)도
+	# 놓치지 않게. 걷는 동안만 들으면 그 전투가 끝나지 않은 채(in_combat) 남아 다음 조우로 걸어가지 못했다(녹색 탄광 2챕터 동골렘 → 고블린 폭탄병).
+	var hits: Array = []
+	var on_enc := func(eg: FieldMonsters.Group, _pf: bool) -> void: hits.append(eg)
+	var on_riddle := func(eg: FieldMonsters.Group) -> void: cs.answer_riddle(eg, RiftRiddle.PASS)
+	cs.encounter.connect(on_enc)
+	cs.riddle_asked.connect(on_riddle)
+	while not run.remaining.is_empty() and guard < 40:
 		guard += 1
 		var g: FieldMonsters.Group = run.remaining[0]
-		var hits: Array = []
-		var on_enc := func(eg: FieldMonsters.Group, _pf: bool) -> void: hits.append(eg)
-		var on_riddle := func(eg: FieldMonsters.Group) -> void: cs.answer_riddle(eg, RiftRiddle.PASS)
-		cs.encounter.connect(on_enc)
-		cs.riddle_asked.connect(on_riddle)
-		var reached := _walk(cs, g.pos, "%s 조우 %s" % [tag, g.monster_ids])
-		cs.encounter.disconnect(on_enc)
-		cs.riddle_asked.disconnect(on_riddle)
+		var reached := true
+		if not cs.in_combat:
+			reached = _walk(cs, g.pos, "%s 조우 %s" % [tag, g.monster_ids])
 		if not reached and hits.is_empty() and run.remaining.has(g):
-			return false
-		for eg: FieldMonsters.Group in hits:
+			break
+		while not hits.is_empty():
+			var eg: FieldMonsters.Group = hits.pop_front()
 			while run.remaining.has(eg) and cs.in_combat:
 				var waves := eg.waves.size()
 				cs.resolve_encounter(eg, Battle.RESULT_VICTORY, 1, eg.monster_ids.duplicate())
 				if waves > 0 and run.remaining.has(eg):
 					cs.in_combat = true  # 연전(engage는 call_deferred) — 다음 구성도 이긴 것으로
 		cs.player.pool.fill_all()
+	cs.encounter.disconnect(on_enc)
+	cs.riddle_asked.disconnect(on_riddle)
 	if not run.remaining.is_empty():
-		_bad("%s: 조우가 남았다 %d" % [tag, run.remaining.size()])
+		_bad("%s: 걸어가 정리하지 못한 조우가 남았다 %d" % [tag, run.remaining.size()])
 		return false
 	return true
+
+
+## 매복(RiftAmbush)마다 그 칸으로 걸어가 터뜨리고, 나타난 무리 중 하나와 싸우면 모두 사라지는지 본다.
+func _spring(cs: ExploreSession, tag: String) -> bool:
+	for e: Dictionary in cs.ambushes.duplicate():
+		var r := RiftAmbush.trigger_rect(e)
+		_walk(cs, r.position + r.size / 2, tag + " 매복")
+		var n := cs.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "ambush").size()
+		if cs.ambushes.has(e) or n != JsonUtil.get_array(e, "packs").size():
+			_bad("%s: 매복 칸을 지나도 무리가 나타나지 않는다(나타난 무리 %d)" % [tag, n])
+			return false
+		if not _clear(cs, tag + " 매복"):
+			return false
+		if cs.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.tag == "ambush"):
+			_bad("%s: 매복 무리와 싸운 뒤에도 다른 무리가 남았다" % tag)
+			return false
+		print("   %s: 매복 %d무리 — 한 무리와 싸우고 모두 사라짐" % [tag, n])
+	return true
+
+
+## 바닥에 놓인 물건(RiftLoot)마다 걸어가 줍는다(가방이 차지 않게 주운 것은 바로 뺀다).
+func _pick_loot(cs: ExploreSession, tag: String) -> void:
+	var n := 0
+	for at: Vector2i in cs.loot.keys():
+		var d: Dictionary = cs.loot[at]
+		if not _walk(cs, at, "%s 물건 %s" % [tag, d["item"]]) or cs.in_combat:
+			continue
+		cs.interact()
+		if cs.loot.has(at):
+			_bad("%s: %s의 %s를 줍지 못한다" % [tag, at, d["item"]])
+			continue
+		cs.player.inventory.remove(str(d["item"]), int(d["count"]))
+		n += 1
+	if n > 0:
+		print("   %s: 놓인 물건 %d개 주움" % [tag, n])
 
 
 ## 출구에 필요한 물건: 이 챕터 히든 피스면 걸어가 살핀다(닿지 못하면 알림), 아니면 가방에 넣는다.
@@ -154,6 +199,8 @@ func _walk(cs: ExploreSession, cell: Vector2i, label: String) -> bool:
 
 func _walk_inner(cs: ExploreSession, cell: Vector2i, label: String) -> bool:
 	var path := _path(cs, Kinematics.cell_of(cs.fpos), cell)
+	if path.is_empty() and Kinematics.cell_of(cs.fpos) == cell:
+		return true  # 이미 그 칸에 서 있다(앞 전투를 그 자리에서 치렀다)
 	if path.is_empty():
 		_bad("%s: %s에서 %s까지 걸어갈 길이 없다" % [label, Kinematics.cell_of(cs.fpos), cell])
 		return false

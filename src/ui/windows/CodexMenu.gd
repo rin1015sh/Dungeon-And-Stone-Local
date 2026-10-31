@@ -118,14 +118,11 @@ func _input(event: InputEvent) -> void:
 	if hold.is_valid() and bool(hold.call()):
 		return
 	get_viewport().set_input_as_handled()  # 열려 있는 동안 키는 모두 이 창이 먹는다
+	if event.is_action_pressed("pause") and _active == _page:  # Esc: 오른쪽이면 왼쪽으로, 왼쪽이면 닫기
+		_focus(_index)
+		return
 	if event.is_action_pressed("codex") or event.is_action_pressed("menu") or event.is_action_pressed("pause"):
 		close()
-		return
-	if event.is_action_pressed("menu_back"):
-		if _active == _page:
-			_focus(_index)
-		else:
-			close()
 		return
 	if event.is_action_pressed("menu_confirm"):
 		if _active == _index:

@@ -118,8 +118,8 @@ func _build_dock(m: int) -> void:
 func refresh() -> void:
 	var place: Dictionary = CityValues.city_section(_state.db, {}, "place")
 	var district := JsonUtil.get_str(place, place_key)
-	if place_key == "district_ko" and not CityResidence.name_of(_state).is_empty():
-		district = CityResidence.name_of(_state)  # 사는 구역(CT50 — 이사하면 바뀐다)
+	if place_key == "district_ko" and not CityDistrict.name_of(_state).is_empty():
+		district = CityDistrict.name_of(_state)  # 사는 구역(city.json district — CT63)
 	_place.text = Strings.t("city.place", {"city": JsonUtil.get_str(place, "city_ko"), "district": district})
 	var w := JsonUtil.get_str(_state.weather_def(), "name_ko")
 	_date.text = date_text(_state) if w.is_empty() else Strings.t("city.date_weather", {"date": date_text(_state), "weather": w})

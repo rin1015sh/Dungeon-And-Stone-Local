@@ -2,16 +2,16 @@
   "id": "bank",
   "name_ko": "은행",
   "order": 7,
-  "x": 3880,
+  "x": 3230,
   "building": "res://assets/city/buildings/bank.webp",
   "interior": "res://assets/city/interiors/bank.webp",
+  "room": "bank",
   "activities": [
     "bank_account",
     "bank_tax"
   ],
   "shows": [
-    "bank_balance",
-    "residence"
+    "bank_balance"
   ],
   "source": "original"
 }

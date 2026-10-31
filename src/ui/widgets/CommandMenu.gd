@@ -4,7 +4,7 @@ extends HBoxContainer
 ## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 밝다, 줄 높이·간격이 명령 칸과 같아 줄이 나란하다). 스킬·아이템·대상을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
 ##   공격 → 대상(약점이 있는 적은 "약점 노리기"도) · 스킬 → 보유 스킬 + 맨 끝 "도주"(성공 확률) → 필요하면 대상 · 아이템 → 전투용 소지품
 ##   대상을 고를 때 커서가 놓인 적은 무대에서 발밑 고리가 빛난다(target_hovered).
-## 키: 위·아래(W·S) 이동, Enter 확정, Backspace 뒤로. 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
+## 키: 위·아래(W·S) 이동, Enter 확정, Backspace 뒤로(게임에서 Backspace를 쓰는 곳은 여기뿐 — UI43). 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
 ## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 닫아 중복 선택을 막는다). 적 차례에는 명령 칸이 흐리게 남는다.
 
 signal chosen(action: Dictionary)
@@ -35,6 +35,7 @@ func _init() -> void:
 	add_child(left)
 	_left = left
 	_cmds = ChoiceGrid.new(1, 4, UiTheme.metric("combat_cmd_slot_height", 40), true)
+	_cmds.back_action = "menu_back"  # Backspace는 전투 행동창에서만 쓴다(UI43)
 	_cmds.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(null))
 	left.add_child(_cmds)
 	var right := _window()
@@ -45,6 +46,7 @@ func _init() -> void:
 	_list = ChoiceGrid.new(2, 3, UiTheme.metric("combat_list_slot_height", 40))
 	_list.visible = false
 	_list.active = false
+	_list.back_action = "menu_back"
 	_list.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(_list.current_option().get("target")))
 	stack.add_child(_list)
 
@@ -197,12 +199,36 @@ func _skill_target(skill_id: String, skill_index: int) -> void:
 	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _skills(skill_index), start)
 
 
-func _items() -> void:
+func _items(start: int = 0) -> void:
 	var opts: Array[Dictionary] = []
-	for id in _usable_items():
+	var ids := _usable_items()
+	for i in ids.size():
+		var id := ids[i]
+		var idx := i
 		opts.append(_opt(DataNames.entry(_battle.db, "items", id), Strings.t("combat.sub_stack", {"n": _unit.actor.inventory.count(id)}),
-			"", func() -> void: _choose({"kind": "item", "item": id})))
-	_sub(Strings.t("combat.menu_item"), opts, func() -> void: _root(ROOT_ITEM))
+			"", func() -> void: _item_pick(id, idx)))
+	_sub(Strings.t("combat.menu_item"), opts, func() -> void: _root(ROOT_ITEM), start)
+
+
+## 하나만 치는 아이템(성수 병 등 — RF27)은 적 하나를 고른다. 듣지 않는 적은 흐리게. 그 밖은 바로 쓴다.
+func _item_pick(id: String, item_index: int) -> void:
+	var e := BattleRules.single_smite(_battle.db, id)
+	if e.is_empty():
+		_choose({"kind": "item", "item": id})
+		return
+	var opts: Array[Dictionary] = []
+	var start := 0
+	for t in _battle.opponents(_unit):
+		if t == _last_target.get(_unit.get_instance_id()):
+			start = opts.size()
+		var o := _target_opt(t, t.label(), func() -> void:
+			_remember_target(t)
+			_choose({"kind": "item", "item": id, "target": t}))
+		if bool(o["enabled"]) and not BattleRules.smite_fits(e, t):
+			o["enabled"] = false
+			o["desc"] = Strings.t("combat.reason_item_no_effect")
+		opts.append(o)
+	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _items(item_index), start)
 
 
 func _usable_items() -> Array[String]:
