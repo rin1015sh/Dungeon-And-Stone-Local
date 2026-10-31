@@ -144,5 +144,9 @@ func test_npcs_play_their_act() -> void:
 			var sheet := NpcActSheet.load_for(db.render, str(n["look"]), str(n["act"]))
 			assert_true(sheet != null, "%s %s 동작 그림(%s)" % [f, n["name_ko"], n["act"]])
 	assert_true(acts >= 30, "사람 대부분이 동작을 한다(%d)" % acts)
-	var smith := NpcActSheet.load_for(db.render, "res://assets/actors/looks/n5_smith.webp", "hammer")
-	assert_true(smith.seq.size() > 1 and smith.col_at(0.0) != smith.col_at(1.0 / smith.fps * 3.0), "망치질은 칸이 바뀐다")
+	var forge := CityRoom.load_for(s, "smithy")
+	var smith: NpcActSheet = null
+	for n: Dictionary in forge.npcs:
+		if str(n["act"]) == "hammer":
+			smith = NpcActSheet.load_for(db.render, str(n["look"]), "hammer")
+	assert_true(smith != null and smith.seq.size() > 1 and smith.col_at(0.0) != smith.col_at(1.0 / smith.fps * 3.0), "대장장이 망치질은 칸이 바뀐다")

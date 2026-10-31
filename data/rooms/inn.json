@@ -269,7 +269,7 @@
   {
    "at": [10, 14],
    "name_ko": "여관 주인",
-   "look": "res://assets/actors/looks/n2_innkeeper.webp",
+   "look": "res://assets/actors/looks/n2_innkeeper_h0.webp",
    "staff": true,
    "act": "wipe",
    "face": [0, 1]
@@ -277,7 +277,7 @@
   {
    "at": [12, 19],
    "name_ko": "손님",
-   "look": "res://assets/actors/looks/h3_coat.webp",
+   "look": "res://assets/actors/looks/h3_coat_h1.webp",
    "staff": false,
    "act": "drink",
    "face": [0, 1]
@@ -285,7 +285,7 @@
   {
    "at": [22, 14],
    "name_ko": "요리사",
-   "look": "res://assets/actors/looks/n9_cook.webp",
+   "look": "res://assets/actors/looks/n9_cook_h2.webp",
    "staff": false,
    "act": "stir",
    "face": [0, -1]
@@ -293,7 +293,7 @@
   {
    "at": [4, 25],
    "name_ko": "손님",
-   "look": "res://assets/actors/looks/h0_traveler.webp",
+   "look": "res://assets/actors/looks/h0_traveler_h3.webp",
    "staff": false,
    "act": "drink",
    "face": [1, 0]
@@ -301,7 +301,7 @@
   {
    "at": [15, 24],
    "name_ko": "손님",
-   "look": "res://assets/actors/looks/h1_cloak.webp",
+   "look": "res://assets/actors/looks/h1_cloak_h4.webp",
    "staff": false,
    "act": "drink",
    "face": [1, 0]
@@ -309,7 +309,7 @@
   {
    "at": [12, 24],
    "name_ko": "여관 일꾼",
-   "look": "res://assets/actors/looks/n12_maid.webp",
+   "look": "res://assets/actors/looks/n12_maid_h5.webp",
    "staff": false,
    "act": "sweep",
    "face": [0, 1]

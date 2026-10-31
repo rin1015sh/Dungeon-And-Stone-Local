@@ -188,6 +188,13 @@ func _acts(db: GameDatabase) -> void:
 	var defs := NpcActs.load_acts()
 	var index := {}
 	var pick := _acts_only.split(",", false)
+	var walked := {}
+	for pair: Array in NpcActs.wanted(db):  # 사람 걷기 시트(머리색 변형 <옷차림>_h<번호> — 시트가 있어야 사람이 선다)
+		var lk := str(pair[0])
+		if MapLooks.has(lk) and not walked.has(lk) and (pick.is_empty() or pick.has("%s__%s" % [lk, pair[1]])):
+			walked[lk] = true
+			_look = lk
+			_explorer(MapLooks.race_of(lk), "looks/" + lk)
 	for pair: Array in NpcActs.wanted(db):
 		var key := "%s__%s" % [pair[0], pair[1]]
 		if not defs.has(pair[1]) or (not pick.is_empty() and not pick.has(key)):

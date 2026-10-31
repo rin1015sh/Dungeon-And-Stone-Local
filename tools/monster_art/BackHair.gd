@@ -1,6 +1,6 @@
 extends RefCounted
 ## 뒷모습 사람형(Back)의 머리카락·수염: 머리선(목덜미 낮게·귀 위·이마 높게)까지 뒤통수를 덮는 겹 + 결 골 + 덥수룩한 뭉치.
-## spec 키: hair(short · long · ragged · none) · hair_c · hair_len(긴 머리 길이) · hair_n·hair_w·hair_spread(긴 머리 타래 수·굵기·퍼짐) · hair_over(등에서 띄움 — 털 망토 위로) · braids(땋은 머리 수) · beard(수염 색)
+## spec 키: hair(short · long · ragged · none) · hair_c · hair_matte(윤기 없이) · hair_len(긴 머리 길이) · hair_n·hair_w·hair_spread(긴 머리 타래 수·굵기·퍼짐) · hair_over(등에서 띄움 — 털 망토 위로) · braids(땋은 머리 수) · beard(수염 색)
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
@@ -11,9 +11,10 @@ const BackKit := preload("res://tools/monster_art/BackKit.gd")
 static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Dictionary, sp: Dictionary, rng: RandomNumberGenerator) -> void:
 	var kind := str(sp.get("hair", "short"))
 	var col: Color = sp.get("hair_c", Color("#3a2a1e"))
-	var m := cl.mat(col, "hair", {"mottle": col.lightened(0.15), "mottle_amt": 0.3})
+	var matte: bool = sp.get("hair_matte", false)  # 윤기 없는 머리(도시 실내 사람 — 사용자 "머리카락에서 빛나는 회색 없애", CT69): 반사광·밝은 결·밝은 얼룩 없이
+	var m := cl.mat(col, "hair", {"mottle": col.darkened(0.25), "mottle_amt": 0.3, "spec": 0.0} if matte else {"mottle": col.lightened(0.15), "mottle_amt": 0.3})
 	if sp.has("beard"):
-		_beard(cl, pr, hd, cl.mat(sp["beard"], "hair"))
+		_beard(cl, pr, hd, cl.mat(sp["beard"], "hair", {"spec": 0.0} if matte else {}))
 	if kind == "none":
 		return
 	var g := cl.group()
@@ -55,7 +56,8 @@ static func hair(cl: Clay, pr: Dictionary, j: Dictionary, bd: Dictionary, hd: Di
 			pts.append(Back.on_head(hd, la, lo + sin(t * 1.3 + k) * 0.08, 0.016))
 		Back.groove(cl, pr, g, pts, Back.head_n(0.3, lo), 0.004, 0.006)
 	if sp.get("spiky", false):
-		_spikes(cl, pr, hd, m, cl.mat(col.lightened(0.28), "hair", {"mottle": col.lightened(0.4), "mottle_amt": 0.3}), g, rng, nape, high, sp.get("locks", {}))
+		var ml := cl.mat(col.lightened(0.1), "hair", {"mottle": col.darkened(0.2), "mottle_amt": 0.3, "spec": 0.0}) if matte else cl.mat(col.lightened(0.28), "hair", {"mottle": col.lightened(0.4), "mottle_amt": 0.3})
+		_spikes(cl, pr, hd, m, ml, g, rng, nape, high, sp.get("locks", {}))
 	if sp.get("fringe", false):
 		_fringe(cl, pr, hd, m, g, rng, float(sp.get("hair_flare", 0.13)))
 	if kind == "long":

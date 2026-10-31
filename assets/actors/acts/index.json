@@ -1,30 +1,12 @@
 {
-	"h0_traveler__drink": {
+	"h0_traveler_h0__read": {
 		"cell": [
-			48.0,
-			90.0
+			54,
+			88
 		],
-		"foot": 4.0,
-		"fps": 2.0,
-		"frames": 2.0,
-		"seq": [
-			0.0,
-			0.0,
-			0.0,
-			0.0,
-			1.0,
-			1.0,
-			0.0
-		]
-	},
-	"h0_traveler__read": {
-		"cell": [
-			54.0,
-			88.0
-		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 2.5,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -34,40 +16,63 @@
 			0.0
 		]
 	},
-	"h11_wayfarer__clap": {
+	"h0_traveler_h3__drink": {
 		"cell": [
-			48.0,
-			90.0
+			48,
+			90
 		],
-		"foot": 4.0,
-		"fps": 4.0,
-		"frames": 2.0,
+		"foot": 4,
+		"fps": 2.0,
+		"frames": 2,
+		"seq": [
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			1.0,
+			0.0
+		]
+	},
+	"h0_traveler_h9__drink": {
+		"cell": [
+			48,
+			90
+		],
+		"foot": 4,
+		"fps": 2.0,
+		"frames": 2,
+		"seq": [
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			1.0,
+			0.0
+		]
+	},
+	"h11_wayfarer_h3__idle": {
+		"cell": [
+			48,
+			90
+		],
+		"foot": 4,
+		"fps": 1.2,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"h11_wayfarer__idle": {
+	"h11_wayfarer_h3__pray": {
 		"cell": [
-			48.0,
-			90.0
+			48,
+			88
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 1.2,
-		"frames": 2.0,
-		"seq": [
-			0.0,
-			1.0
-		]
-	},
-	"h11_wayfarer__pray": {
-		"cell": [
-			48.0,
-			88.0
-		],
-		"foot": 4.0,
-		"fps": 1.2,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -75,14 +80,27 @@
 			1.0
 		]
 	},
-	"h11_wayfarer__read": {
+	"h11_wayfarer_h9__clap": {
 		"cell": [
-			54.0,
-			88.0
+			48,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 4.0,
+		"frames": 2,
+		"seq": [
+			0.0,
+			1.0
+		]
+	},
+	"h11_wayfarer_h9__read": {
+		"cell": [
+			54,
+			88
+		],
+		"foot": 4,
 		"fps": 2.5,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -92,14 +110,14 @@
 			0.0
 		]
 	},
-	"h1_cloak__drink": {
+	"h1_cloak_h4__drink": {
 		"cell": [
-			54.0,
-			90.0
+			54,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 2.0,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -110,40 +128,71 @@
 			0.0
 		]
 	},
-	"h1_cloak__idle": {
+	"h1_cloak_h4__idle": {
 		"cell": [
-			54.0,
-			90.0
+			54,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 1.2,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"h3_coat__clap": {
+	"h3_coat_h1__drink": {
 		"cell": [
-			48.0,
-			90.0
+			50,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 2.0,
+		"frames": 2,
+		"seq": [
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			1.0,
+			0.0
+		]
+	},
+	"h3_coat_h2__idle": {
+		"cell": [
+			46,
+			90
+		],
+		"foot": 4,
+		"fps": 1.2,
+		"frames": 2,
+		"seq": [
+			0.0,
+			1.0
+		]
+	},
+	"h3_coat_h4__clap": {
+		"cell": [
+			48,
+			90
+		],
+		"foot": 4,
 		"fps": 4.0,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"h3_coat__drink": {
+	"h3_coat_h7__drink": {
 		"cell": [
-			50.0,
-			90.0
+			50,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 2.0,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -154,27 +203,45 @@
 			0.0
 		]
 	},
-	"h3_coat__idle": {
+	"h3_coat_h7__idle": {
 		"cell": [
-			46.0,
-			90.0
+			46,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 1.2,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"h4_gambeson__swing": {
+	"h3_coat_h8__drink": {
 		"cell": [
-			82.0,
-			88.0
+			50,
+			90
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 2.0,
+		"frames": 2,
+		"seq": [
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			1.0,
+			0.0
+		]
+	},
+	"h4_gambeson_h8__swing": {
+		"cell": [
+			82,
+			88
+		],
+		"foot": 4,
 		"fps": 5.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			0.0,
@@ -185,25 +252,25 @@
 	},
 	"h7_hooded__idle": {
 		"cell": [
-			52.0,
-			89.0
+			52,
+			89
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 1.2,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"n0_librarian__write": {
+	"n0_librarian_h5__write": {
 		"cell": [
-			54.0,
-			88.0
+			54,
+			88
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 4.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			1.0,
@@ -211,14 +278,29 @@
 			2.0
 		]
 	},
-	"n10_apprentice__quench": {
+	"n0_librarian_h6__write": {
 		"cell": [
-			64.0,
-			90.0
+			54,
+			88
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 4.0,
+		"frames": 3,
+		"seq": [
+			0.0,
+			1.0,
+			0.0,
+			2.0
+		]
+	},
+	"n10_apprentice_h5__quench": {
+		"cell": [
+			64,
+			90
+		],
+		"foot": 4,
 		"fps": 3.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			0.0,
@@ -229,7 +311,7 @@
 			2.0
 		]
 	},
-	"n10_apprentice__sweep": {
+	"n10_apprentice_h6__sweep": {
 		"cell": [
 			56,
 			90
@@ -242,14 +324,14 @@
 			1.0
 		]
 	},
-	"n11_archer__shoot": {
+	"n11_archer_h7__shoot": {
 		"cell": [
-			78.0,
-			91.0
+			78,
+			91
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 3.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			1.0,
@@ -259,7 +341,7 @@
 			2.0
 		]
 	},
-	"n12_maid__sweep": {
+	"n12_maid_h5__sweep": {
 		"cell": [
 			56,
 			88
@@ -272,27 +354,27 @@
 			1.0
 		]
 	},
-	"n13_guard__guard": {
+	"n13_guard_h3__guard": {
 		"cell": [
-			46.0,
-			89.0
+			46,
+			89
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 1.2,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"n14_scholar__read": {
+	"n14_scholar_h7__read": {
 		"cell": [
-			54.0,
-			85.0
+			54,
+			85
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 2.5,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -302,14 +384,14 @@
 			0.0
 		]
 	},
-	"n1_guild_clerk__write": {
+	"n1_guild_clerk_h6__write": {
 		"cell": [
-			50.0,
-			86.0
+			50,
+			86
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 4.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			1.0,
@@ -317,42 +399,27 @@
 			2.0
 		]
 	},
-	"n2_innkeeper__wipe": {
+	"n2_innkeeper_h0__wipe": {
 		"cell": [
-			46.0,
-			86.0
+			46,
+			86
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 3.0,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"n3_priest__pray": {
+	"n3_priest_h8__read": {
 		"cell": [
-			48.0,
-			87.0
+			54,
+			87
 		],
-		"foot": 4.0,
-		"fps": 1.2,
-		"frames": 2.0,
-		"seq": [
-			0.0,
-			0.0,
-			1.0,
-			1.0
-		]
-	},
-	"n3_priest__read": {
-		"cell": [
-			54.0,
-			87.0
-		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 2.5,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -362,27 +429,14 @@
 			0.0
 		]
 	},
-	"n4_merchant__count": {
+	"n3_priest_h9__pray": {
 		"cell": [
-			46.0,
-			87.0
+			48,
+			87
 		],
-		"foot": 4.0,
-		"fps": 3.0,
-		"frames": 2.0,
-		"seq": [
-			0.0,
-			1.0
-		]
-	},
-	"n4_merchant__pray": {
-		"cell": [
-			46.0,
-			87.0
-		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 1.2,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			0.0,
@@ -390,14 +444,42 @@
 			1.0
 		]
 	},
-	"n5_smith__hammer": {
+	"n4_merchant_h0__pray": {
 		"cell": [
-			64.0,
-			87.0
+			46,
+			87
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 1.2,
+		"frames": 2,
+		"seq": [
+			0.0,
+			0.0,
+			1.0,
+			1.0
+		]
+	},
+	"n4_merchant_h1__count": {
+		"cell": [
+			46,
+			87
+		],
+		"foot": 4,
+		"fps": 3.0,
+		"frames": 2,
+		"seq": [
+			0.0,
+			1.0
+		]
+	},
+	"n5_smith_h4__hammer": {
+		"cell": [
+			64,
+			87
+		],
+		"foot": 4,
 		"fps": 6.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			0.0,
@@ -406,42 +488,55 @@
 			2.0
 		]
 	},
-	"n6_banker__count": {
+	"n6_banker_h0__write": {
 		"cell": [
-			46.0,
-			87.0
+			54,
+			88
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 4.0,
+		"frames": 3,
+		"seq": [
+			0.0,
+			1.0,
+			0.0,
+			2.0
+		]
+	},
+	"n6_banker_h1__count": {
+		"cell": [
+			46,
+			87
+		],
+		"foot": 4,
 		"fps": 3.0,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0
 		]
 	},
-	"n6_banker__write": {
+	"n6_banker_h2__count": {
 		"cell": [
-			54.0,
-			88.0
+			46,
+			87
 		],
-		"foot": 4.0,
-		"fps": 4.0,
-		"frames": 3.0,
+		"foot": 4,
+		"fps": 3.0,
+		"frames": 2,
 		"seq": [
 			0.0,
-			1.0,
-			0.0,
-			2.0
+			1.0
 		]
 	},
-	"n7_trainer__lecture": {
+	"n7_trainer_h5__lecture": {
 		"cell": [
-			58.0,
-			89.0
+			58,
+			89
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 2.0,
-		"frames": 2.0,
+		"frames": 2,
 		"seq": [
 			0.0,
 			1.0,
@@ -449,14 +544,14 @@
 			0.0
 		]
 	},
-	"n7_trainer__swing": {
+	"n7_trainer_h6__swing": {
 		"cell": [
-			82.0,
-			88.0
+			82,
+			88
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 5.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			0.0,
@@ -465,24 +560,7 @@
 			2.0
 		]
 	},
-	"n8_acolyte__read": {
-		"cell": [
-			54.0,
-			87.0
-		],
-		"foot": 4.0,
-		"fps": 2.5,
-		"frames": 2.0,
-		"seq": [
-			0.0,
-			0.0,
-			0.0,
-			0.0,
-			1.0,
-			0.0
-		]
-	},
-	"n8_acolyte__sweep": {
+	"n8_acolyte_h1__sweep": {
 		"cell": [
 			56,
 			89
@@ -495,14 +573,31 @@
 			1.0
 		]
 	},
-	"n8_acolyte__write": {
+	"n8_acolyte_h2__read": {
 		"cell": [
-			54.0,
-			88.0
+			54,
+			87
 		],
-		"foot": 4.0,
+		"foot": 4,
+		"fps": 2.5,
+		"frames": 2,
+		"seq": [
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			0.0
+		]
+	},
+	"n8_acolyte_h8__write": {
+		"cell": [
+			54,
+			88
+		],
+		"foot": 4,
 		"fps": 4.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			1.0,
@@ -510,14 +605,14 @@
 			2.0
 		]
 	},
-	"n9_cook__stir": {
+	"n9_cook_h2__stir": {
 		"cell": [
-			70.0,
-			86.0
+			70,
+			86
 		],
-		"foot": 4.0,
+		"foot": 4,
 		"fps": 4.0,
-		"frames": 3.0,
+		"frames": 3,
 		"seq": [
 			0.0,
 			1.0,

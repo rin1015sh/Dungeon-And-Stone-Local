@@ -171,7 +171,7 @@
   {
    "at": [16, 5],
    "name_ko": "세무관",
-   "look": "res://assets/actors/looks/n6_banker.webp",
+   "look": "res://assets/actors/looks/n6_banker_h0.webp",
    "staff": true,
    "act": "write",
    "face": [0, 1]
@@ -179,7 +179,7 @@
   {
    "at": [8, 17],
    "name_ko": "은행원",
-   "look": "res://assets/actors/looks/n6_banker.webp",
+   "look": "res://assets/actors/looks/n6_banker_h1.webp",
    "staff": true,
    "act": "count",
    "face": [0, 1]
@@ -187,7 +187,7 @@
   {
    "at": [15, 17],
    "name_ko": "은행원",
-   "look": "res://assets/actors/looks/n6_banker.webp",
+   "look": "res://assets/actors/looks/n6_banker_h2.webp",
    "staff": true,
    "act": "count",
    "face": [0, 1]
@@ -195,7 +195,7 @@
   {
    "at": [14, 27],
    "name_ko": "경비병",
-   "look": "res://assets/actors/looks/n13_guard.webp",
+   "look": "res://assets/actors/looks/n13_guard_h3.webp",
    "staff": false,
    "act": "guard",
    "face": [0, 1]
@@ -203,7 +203,7 @@
   {
    "at": [9, 19],
    "name_ko": "손님",
-   "look": "res://assets/actors/looks/h1_cloak.webp",
+   "look": "res://assets/actors/looks/h1_cloak_h4.webp",
    "staff": false,
    "act": "idle",
    "face": [0, -1]

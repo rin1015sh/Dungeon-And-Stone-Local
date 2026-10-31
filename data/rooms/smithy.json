@@ -211,7 +211,7 @@
   {
    "at": [17, 14],
    "name_ko": "대장장이",
-   "look": "res://assets/actors/looks/n5_smith.webp",
+   "look": "res://assets/actors/looks/n5_smith_h4.webp",
    "staff": true,
    "act": "hammer",
    "face": [0, 1]
@@ -219,7 +219,7 @@
   {
    "at": [19, 14],
    "name_ko": "견습생",
-   "look": "res://assets/actors/looks/n10_apprentice.webp",
+   "look": "res://assets/actors/looks/n10_apprentice_h5.webp",
    "staff": false,
    "act": "quench",
    "face": [0, 1]
@@ -227,7 +227,7 @@
   {
    "at": [6, 26],
    "name_ko": "견습생",
-   "look": "res://assets/actors/looks/n10_apprentice.webp",
+   "look": "res://assets/actors/looks/n10_apprentice_h6.webp",
    "staff": false,
    "act": "sweep",
    "face": [0, 1]
@@ -235,7 +235,7 @@
   {
    "at": [4, 17],
    "name_ko": "손님",
-   "look": "res://assets/actors/looks/h3_coat.webp",
+   "look": "res://assets/actors/looks/h3_coat_h7.webp",
    "staff": false,
    "act": "idle",
    "face": [0, -1]

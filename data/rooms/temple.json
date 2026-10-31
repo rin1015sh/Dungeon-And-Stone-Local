@@ -368,7 +368,7 @@
   {
    "at": [21, 5],
    "name_ko": "성가대원",
-   "look": "res://assets/actors/looks/n3_priest.webp",
+   "look": "res://assets/actors/looks/n3_priest_h8.webp",
    "staff": false,
    "act": "read",
    "face": [0, 1]
@@ -376,7 +376,7 @@
   {
    "at": [17, 15],
    "name_ko": "신관",
-   "look": "res://assets/actors/looks/n3_priest.webp",
+   "look": "res://assets/actors/looks/n3_priest_h9.webp",
    "staff": true,
    "act": "pray",
    "face": [0, 1]
@@ -384,7 +384,7 @@
   {
    "at": [10, 28],
    "name_ko": "기도하는 신도",
-   "look": "res://assets/actors/looks/n4_merchant.webp",
+   "look": "res://assets/actors/looks/n4_merchant_h0.webp",
    "staff": false,
    "act": "pray",
    "face": [0, -1]
@@ -392,7 +392,7 @@
   {
    "at": [21, 34],
    "name_ko": "수도사",
-   "look": "res://assets/actors/looks/n8_acolyte.webp",
+   "look": "res://assets/actors/looks/n8_acolyte_h1.webp",
    "staff": false,
    "act": "sweep",
    "face": [0, 1]
@@ -400,7 +400,7 @@
   {
    "at": [30, 17],
    "name_ko": "수도사",
-   "look": "res://assets/actors/looks/n8_acolyte.webp",
+   "look": "res://assets/actors/looks/n8_acolyte_h2.webp",
    "staff": false,
    "act": "read",
    "face": [0, 1]
@@ -408,7 +408,7 @@
   {
    "at": [13, 30],
    "name_ko": "신도",
-   "look": "res://assets/actors/looks/h11_wayfarer.webp",
+   "look": "res://assets/actors/looks/h11_wayfarer_h3.webp",
    "staff": false,
    "act": "pray",
    "face": [0, -1]

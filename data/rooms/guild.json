@@ -281,7 +281,7 @@
   {
    "at": [4, 5],
    "name_ko": "기록원",
-   "look": "res://assets/actors/looks/n0_librarian.webp",
+   "look": "res://assets/actors/looks/n0_librarian_h5.webp",
    "staff": true,
    "act": "write",
    "face": [0, 1]
@@ -289,7 +289,7 @@
   {
    "at": [21, 18],
    "name_ko": "길드 접수원",
-   "look": "res://assets/actors/looks/n1_guild_clerk.webp",
+   "look": "res://assets/actors/looks/n1_guild_clerk_h6.webp",
    "staff": true,
    "act": "write",
    "face": [0, 1]
@@ -297,7 +297,7 @@
   {
    "at": [8, 29],
    "name_ko": "탐험가",
-   "look": "res://assets/actors/looks/h3_coat.webp",
+   "look": "res://assets/actors/looks/h3_coat_h7.webp",
    "staff": false,
    "act": "drink",
    "face": [0, 1]
@@ -305,7 +305,7 @@
   {
    "at": [23, 28],
    "name_ko": "탐험가",
-   "look": "res://assets/actors/looks/h3_coat.webp",
+   "look": "res://assets/actors/looks/h3_coat_h8.webp",
    "staff": false,
    "act": "drink",
    "face": [0, -1]
@@ -321,7 +321,7 @@
   {
    "at": [19, 30],
    "name_ko": "탐험가",
-   "look": "res://assets/actors/looks/h0_traveler.webp",
+   "look": "res://assets/actors/looks/h0_traveler_h9.webp",
    "staff": false,
    "act": "drink",
    "face": [-1, 0]

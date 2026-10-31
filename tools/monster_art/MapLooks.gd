@@ -163,24 +163,49 @@ const LOOKS := {
 }
 
 
+## 도시 실내 사람 머리(사용자 2026-10-31 "머리카락에서 빛나는 회색 없애고 머리 색도 어두운 계열에서 다양하게", CT69):
+## 사람 옷차림(NPC)은 윤기 없는 머리(hair_matte · 밝은 결 없음), "<옷차림>_h<번호>"는 그 옷에 HAIR_DARK[번호] 머리색(수염도 같은 색).
+const NPC := ["n0_librarian", "n1_guild_clerk", "n2_innkeeper", "n3_priest", "n4_merchant", "n5_smith", "n6_banker", "n7_trainer", "n8_acolyte", "n9_cook",
+	"n10_apprentice", "n11_archer", "n12_maid", "n13_guard", "n14_scholar", "h0_traveler", "h1_cloak", "h3_coat", "h4_gambeson", "h7_hooded", "h11_wayfarer"]
+const HAIR_DARK := [Color("#1c1816"), Color("#2e2018"), Color("#3e2616"), Color("#45201a"), Color("#2e2a26"), Color("#4a3420"), Color("#24201e"), Color("#3a2c22"),
+	Color("#1e2226"), Color("#502c1a")]  ## 검정 · 짙은 갈색 · 밤색 · 붉은 갈색 · 잿빛 갈색 · 호두색 · 숯빛 · 커피색 · 푸른 검정 · 적갈색
+
+
+## "<옷차림>_h<번호>" → [옷차림, 번호](번호 없으면 -1).
+static func split(id: String) -> Array:
+	var i := id.rfind("_h")
+	if i > 0 and id.substr(i + 2).is_valid_int() and LOOKS.has(id.substr(0, i)):
+		return [id.substr(0, i), int(id.substr(i + 2))]
+	return [id, -1]
+
+
 static func has(id: String) -> bool:
-	return LOOKS.has(id)
+	return LOOKS.has(str(split(id)[0]))
 
 
 static func race_of(id: String) -> String:
-	return str((LOOKS.get(id, {}) as Dictionary).get("race", "human"))
+	return str((LOOKS.get(str(split(id)[0]), {}) as Dictionary).get("race", "human"))
 
 
 ## 종족 설계(Party.spec_of(<종족>_back))에 이 옷차림을 덮는다.
 static func apply(base: Dictionary, id: String) -> Dictionary:
 	var sp := base.duplicate(true)
-	var lk: Dictionary = LOOKS.get(id, {})
+	var sv := split(id)
+	var lk: Dictionary = LOOKS.get(str(sv[0]), {})
 	for key: String in (lk.get("spec", {}) as Dictionary):
 		sp[key] = (lk["spec"] as Dictionary)[key]
+	if NPC.has(str(sv[0])):
+		sp["hair_matte"] = true
+		sp["map_locks"] = (sp.get("map_locks", {}) as Dictionary).merged({"light": 0}, true)
+	if int(sv[1]) >= 0:
+		var hc: Color = HAIR_DARK[int(sv[1]) % HAIR_DARK.size()]
+		sp["hair_c"] = hc
+		if sp.has("beard"):
+			sp["beard"] = hc
 	return sp
 
 
 ## 머리·다리 배율(없으면 -1 — paint_actors의 종족 값을 쓴다).
 static func body(id: String) -> Dictionary:
-	var lk: Dictionary = LOOKS.get(id, {})
+	var lk: Dictionary = LOOKS.get(str(split(id)[0]), {})
 	return {"head": float(lk.get("head", -1.0)), "legs": float(lk.get("legs", -1.0))}

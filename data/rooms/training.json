@@ -186,7 +186,7 @@
   {
    "at": [15, 4],
    "name_ko": "구경꾼",
-   "look": "res://assets/actors/looks/h3_coat.webp",
+   "look": "res://assets/actors/looks/h3_coat_h4.webp",
    "staff": false,
    "act": "clap",
    "face": [0, 1]
@@ -194,7 +194,7 @@
   {
    "at": [23, 22],
    "name_ko": "교관",
-   "look": "res://assets/actors/looks/n7_trainer.webp",
+   "look": "res://assets/actors/looks/n7_trainer_h5.webp",
    "staff": true,
    "act": "lecture",
    "face": [0, 1]
@@ -202,7 +202,7 @@
   {
    "at": [7, 16],
    "name_ko": "수련생",
-   "look": "res://assets/actors/looks/n7_trainer.webp",
+   "look": "res://assets/actors/looks/n7_trainer_h6.webp",
    "staff": false,
    "act": "swing",
    "face": [0, -1]
@@ -210,7 +210,7 @@
   {
    "at": [16, 18],
    "name_ko": "궁수",
-   "look": "res://assets/actors/looks/n11_archer.webp",
+   "look": "res://assets/actors/looks/n11_archer_h7.webp",
    "staff": false,
    "act": "shoot",
    "face": [0, -1]
@@ -218,7 +218,7 @@
   {
    "at": [4, 16],
    "name_ko": "수련생",
-   "look": "res://assets/actors/looks/h4_gambeson.webp",
+   "look": "res://assets/actors/looks/h4_gambeson_h8.webp",
    "staff": false,
    "act": "swing",
    "face": [0, -1]
@@ -226,7 +226,7 @@
   {
    "at": [22, 4],
    "name_ko": "구경꾼",
-   "look": "res://assets/actors/looks/h11_wayfarer.webp",
+   "look": "res://assets/actors/looks/h11_wayfarer_h9.webp",
    "staff": false,
    "act": "clap",
    "face": [0, 1]

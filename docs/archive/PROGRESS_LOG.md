@@ -6,6 +6,7 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도시 실내 사람 머리 — 윤기 없이 · 어두운 머리색 여러 가지 (2026-10-31, 사용자 "머리카락에서 빛나는 회색 없애고 머리 색도 어두운 계열에서 다양하게", CT70)** — 원인: 머리 재질 반사광(Render spec — 거의 흰색으로 섞임) + 짧은 머리의 밝은 결(LOCKS light 4가닥마다 col.lightened(0.28)) + 사서·학자 센머리. 고침: BackHair `hair_matte`(반사 0 · 밝은 결 없음 · 얼룩 어둡게), MapLooks `NPC`·`HAIR_DARK`(10색)·`split`("<옷차림>_h<번호>"), 방 JSON 사람 40명 look을 번호 돌려 배정(두건 쓴 h7 빼고), `paint_actors --acts`가 걷기 시트도 그림. 탐험가 그림은 그대로. 테스트: `check.sh` + 동작 시트 확대 보기.
 - **도시 실내 사람 + 동작 (2026-10-31, 사용자 "건물 내에 npc 추가 — 플레이어 캐릭터 양식 참고, 건물에 어울리는 애니메이션까지", CT69)** — 범위: 사람 배치·옷·동작 그림·게임 재생. 완료 기준: 여덟 건물에 일하는 사람이 있고 바라보는 쪽 동작 칸이 돌며, 동작 그림이 모두 있다(테스트). 테스트: `check.sh`(494개 — `test_npcs_play_their_act` 새로) + 동작 시트 확대 보기 + 실내 캡처.
   - 그림: `paint_actors.gd --acts`(NpcActs — 방 JSON에서 (look, act) 쌍을 모아 `_figure`에 motion_frame·kit을 넘김) · `tools/monster_art/npc_acts.json`(16동작) · `BackTools.gd`(손 도구 10) · BackExtras가 BackTools를 부르고 BackGear는 도구를 창으로 그리지 않게. 옷 MapLooks n8~n14 + KEEP에 h0·h1·h4·h7·h11(걷기 시트 `--look --out=res://assets/actors/looks`).
   - 처음 그려 보고 고친 것: 도구가 창(BackGear 장대 무기)으로 같이 그려짐 → 제외 · 책이 납작해 옆에서 안 보임 → 얼굴 쪽으로 기운 두꺼운 판 · 빗자루가 옆으로 길게 누움(손 높이가 비슷하면 땅까지 길게 뻗음) → 아래 손 앞쪽 땅까지 · 망치 든 손을 더 위로.
