@@ -8,6 +8,7 @@
 - 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
 - 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
 - 1층 원정 한 번 벌이(헤드리스, 몇 분): `godot --headless --path . --script res://tools/sim_income.gd -- [--seeds=1,2,3] [--hours=60] [--bag=10x6]` → 출처별(몬스터·약탈자·탐험가·동굴 요소) 스톤·정수·요소별 벌이. 값·드롭을 바꿨으면 돌려 보고 `docs/balance/city.md`에 적는다(CT43).
+- 도시 실내 복층 배치도(파이썬, 몇 초 — 기획안, 게임은 안 읽는다): `python3 tools/city_boards.py [--cell=18]` → 설계도(`docs/plans/city_boards/<건물>.json` — 층마다 칸 글자·방·사람·활동 자리·층 사이 링크)를 칸 종류(바닥 재질·벽·벽 장식·가구·빛·바닥 장식·계단·사다리·문·잠긴 문·트인 곳·난간)와 표시로 그린 PNG — 건물별 + `all.png`. 기획은 `docs/plans/city_interiors.md`.
 - 균열 배치도(파이썬, 몇 초): `python3 tools/rift_boards.py [--out=docs/plans/rift_boards/current] [--cell=12]` → 설계도(`data/maps/rifts/`)를 칸 종류(바닥·벽·소품·못 걷는 바닥·낭떠러지·솟은 외곽)와 표시(시작·입구·출구·조우·수호자·히든 피스·위험)로 그린 PNG — 챕터별 + 균열별 모음. 설계도·조우·히든 피스를 바꿨으면 다시 그린다.
 - 층 전체 지도(디버그 미니맵, 헤드리스): `godot --headless --path . --script res://tools/floor_map.gd -- --seed=<시드> --out=<png 경로> [--procedural]` → 구역 색·암흑지대·고정 장소·무리 + 검사 결과. 1층은 고정 지도라 시드는 시작 위치·무리만 바꾼다(`--procedural` = 고정 지도 무시하고 그 시드로 새로).
 
