@@ -8,7 +8,7 @@
 0. **작업 전에 최신 main을 받아 합친다**(`git fetch origin main` → 브랜치가 뒤처졌으면 `git merge origin/main`). 다른 세션이 main에 병합한 작업(예: 2026-10-16 전투 그림)이 빠진 채 진행되는 일이 있었다.
 1. **이 파일과 `docs/PROGRESS.md`만 읽으면 이어갈 수 있다**(PROGRESS = 지금 상태 · 다음 할 일 · 최근 작업 10줄, 8KB 안). 어떤 문서를 언제 읽는지는 **`docs/README.md`(문서 지도)**. 자주 쓰는 것: 확정된 기획·설정 요약 `docs/CANON.md`, 핵심 개념·데이터 키 사전·파일 구조 `docs/REFERENCE.md`, 도구 명령 `docs/TOOLS.md`, 가정·결정 근거 `docs/ASSUMPTIONS.md`(번호로 검색), 옛 작업 기록 `docs/archive/PROGRESS_LOG.md`(날짜·키워드로 검색). **문서끼리 어긋나면 날짜가 늦은 사용자 결정이 이긴다**(우선순위는 CANON.md 맨 위). **그림 작업이면 `docs/ART.md`(그림체 규칙·도구 명령·절차)를 먼저 읽는다.**
 2. PROGRESS.md의 **"다음 할 일"**부터 진행한다. 질문하지 말고 진행하되, 모호한 부분은 합리적으로 가정하고 ASSUMPTIONS.md에 "가정 / 이유 / 바꾸는 방법"을 남긴다.
-   - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 CANON.md 요약으로 진행).
+   - 예외: 세계관·원작 설정 질문은 문서를 검색하지 말고 사용자에게 원문 텍스트를 요청한다(그동안은 CANON.md 요약으로 진행). 사용자가 준 원작 정리 `docs/LORE.md`는 참고용 — 우리 게임과 다른 곳이 많고 어긋나면 우리 쪽이 이긴다(FL2).
 3. 작업이 끝날 때마다 기록한다: 자세한 기록(한 일·수치·남은 것)은 `docs/archive/PROGRESS_LOG.md` "작업 기록" 맨 위, PROGRESS.md에는 "최근 작업" 한 줄 + "다음 할 일" 갱신(PROGRESS.md §5). 정해진 기획이 바뀌었으면 CANON.md, 새 데이터 키는 REFERENCE.md. 마일스톤 단위로 **항상 실행 가능한 상태**에서 커밋한다(커밋 메시지는 한국어로 짧게).
 4. 큰 작업 시작 시 PROGRESS_LOG 맨 위에 "범위 / 완료 기준 / 테스트 방법"을 먼저 쓰고, 끝나면 `docs/PLAYTEST.md` 맨 위에 사용자용 테스트 플레이 체크리스트를 추가한다(최근 여섯 절만 — 밀려난 절은 `docs/archive/PLAYTEST_OLD.md`로).
 
@@ -25,6 +25,7 @@
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
 - **도구 명령**(시뮬레이터 `sim_walk`·`sim_rift`·`sim_income`, 층 지도, 굽기, 글 md, 정수 표, 화면 캡처, 그림, 웹 내보내기)은 **`docs/TOOLS.md`**. 바꾼 것에 따라 반드시:
   - 1층 생성기·`gen` → `bake_floor.gd` · 층 `art.decor` → `bake_decor.gd` · `ko.json` → `strings_md.gd` · 정수 → `essences_md.py` · 아이템 소재·종류·배율 → `item_pool.py`
+  - 층·몬스터·정수·균열·서적을 더함 → `python3 tools/floor_status.py`(2~10층 찍는 틀 `docs/plans/floors_2_10.md`)
   - 밀도·탐험가 → `sim_walk` · 균열 지도·조우·길목 → `sim_rift`("모두 통과") · 값·드롭 → `sim_income`(→ `docs/balance/city.md`)
   - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
 - **클라우드(리눅스) 세션**: Godot 4.7.2 리눅스판을 내려받아 검증할 수 있다(`curl -L -o g.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip`, 압축 해제 후 `GODOT=<경로> bash tools/check.sh`). 화면 캡처는 `xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- …`.

@@ -6,6 +6,14 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **2~10층 찍는 틀 · 도서관 서적 세계관 (2026-10-31, 사용자 "2층부터 10층 개발을 1층 작업 기반으로 도장 찍듯이 — 체계적으로 정리 · 세계관 정보를 도서관 모든 분야에 은은하게, 엘든링·다크소울처럼" + 원작 세계관 정리 LORE.md 제공, FL2~FL6·CT61)** — 범위: 문서·점검 도구·서적 데이터(게임 코드 그대로). 완료 기준: 층 하나의 부품 목록·1층에 묶인 코드·층별 명세·찍는 순서가 한 문서에, 갖춘 정도를 도구가 세고, 서적 모든 분야에 세계관 조각. 테스트: `check.sh`, 도감·도서관 캡처.
+  - `docs/LORE.md`: 사용자가 준 원작 정리를 그대로 넣음(참고용 — 우선순위 맨 아래, FL2).
+  - `docs/plans/floors_2_10.md`: §1 부품 17(파일·도구·확인), §2-1 먼저 고칠 코드 M6-0 A~K(층 이동 없음 `ExploreInteract._use_floor_portal`, 시뮬레이터 셋 f1 고정, `GameState.rift_calendar` 하나, `FieldPartyMeet.STONE`, 군주 부르는 조건이 기념비뿐, 층 상태 저장 …), §2-2 생성기 갈래 넷(동굴·들판·탑·바다 — `fields` 하나로 일곱 층), §3 층 명세서 양식 + 2~10층 명세(우리 층 표 + 원작 요약 + 우리 게임에서는), §4 마일스톤 셋 17단계, §5 사용자 결정 6, §6 원작과 다른 것 표.
+  - `tools/floor_status.py`(Godot 없이): 1~10층 × 부품 17 → `docs/balance/floor_status.md`(●◐○), `--floor=<n>` 자세히. 지금 1층 ●(군주 전용 등장 문구만 ◐ — any를 씀), 2층은 서적 4권(◐)뿐.
+  - `data/floors/_template.json`: 옛 M1 스키마 → 지금 키(art·gen·fixed_map·regions·spawn·explorers·features·portals·rift_offering·lord).
+  - 서적: 85권(68 → 기존 50권 끝에 한두 문장 덧붙임 + 「마석의 시세」를 CT58에 맞춰 「마석의 값」으로 다시 씀 + 새 17권 — 미궁 5(항상성·마녀의 흔적·가장 높은 곳의 문·둘째 층 네 들판·망자의 땅 새 비석) · 몬스터 4(빛이 되어 흩어지는 것·등급 없는 것들·죽지 않는 것의 핵·둘째 층 무리) · 상태이상 2 · 무기 1(문을 넘는 것) · 생존 1(바늘이 도는 땅) · 도시 4(스무 해·도시에서 잠드는 재주·군주 토벌의 법·처음 맨 위에 닿은 이들)). 바꾼 항목 `source: lore`. 원작 실명 인물·군주 기원은 넣지 않음. 글 최장 223자 — 대화창 두 쪽, 도감 아래 칸에 다 보임(캡처 확인).
+  - 남은 것: M6-0(PROGRESS A00), 사용자 결정(floors_2_10 §5), 2층을 만들 때 floor 2 서적 4권 내용 맞추기 + 나머지 분야 floor 2 한 권씩.
+
 - **스탯 영약 반출 · 균열 전투 도구는 하나만 (2026-10-30, 사용자 "스탯 영약도 균열 밖으로 가지고 나갈 수 있게, 규칙에도 반영 · 아이템들은 하나만 치게", RF27)** — ① 피의 성배·설련화·녹색 결정·묘지기의 성유·강철 사리에서 `rift_bound` 삭제 + 설명의 "벗어나면 사라진다" 문장 삭제(여신의 눈물·갱도 폭약·무기고 열쇠는 그대로 균열 안에서만). ② 성수 병·얼음 송곳·고블린 화약 주머니·봉인 부적 `smite`에 `single: true` — `BattleRules.single_smite`·`smite_fits`, 행동 `{kind: item, item, target}`(`Battle._use_item`이 대상 Actor를 넘김, `ActionCheck`가 대상·계열 검사), `CommandMenu._item_pick`(아이템 → 적 고르기, 듣지 않는 적은 흐림 "듣지 않는다"), `CombatScreen._fallback`이 아이템도 다른 적에게. 피해 수치는 그대로. 테스트: `test_fortress.test_holy_water_hits_one_target`, UI 스모크 `_single_item_target`, `test_hidden_pieces` 성유 반출. 문서: ASSUMPTIONS RF27(RF18·RF25 표시)·CANON·REFERENCE·rift_hidden_pieces.
 
 - **키 정리 — 살피기 Enter뿐 · Backspace는 전투 행동창 뒤로만 (2026-10-30, 사용자 "F로 상호작용하는 거 제거하고 엔터로만 · 백스페이스는 전투화면에서 [공격 방어 스킬 아이템] 고를 때 뒤로 갈 때만", UI43)** — `input.json interact` = Enter·Kp Enter(F 삭제, 거리 `CityStreet`도 menu_confirm만). `ChoiceGrid.back_action`(기본 `pause` = Esc·P, 뒤로 갈 곳이 없으면 먹지 않고 넘김) — `CommandMenu` 두 판만 `menu_back`(Backspace). Esc로 옮긴 것: 작은 선택 창 뒤로(ChoicePopup can_back), 수수께끼 물러나기, Tab 메뉴 쪽 안 물리기(물릴 것 없으면 닫기), 도감 오른쪽 → 왼쪽(왼쪽이면 닫기). 탐험의 Backspace 일시정지 풀기·메뉴 닫기, 도시의 Backspace 막기 코드 삭제. UI 스모크: 탐험·Tab 메뉴에서 Backspace는 아무 일 없음, Esc로 정수 카드 되돌리기·탐험가 무리 지나가기·도감 왼쪽으로, 전투 행동창에서 Esc는 뒤로 가지 않음. 문서: CLAUDE.md·CANON·REFERENCE·HANDOFF·DEPLOY·PLAYTEST.
