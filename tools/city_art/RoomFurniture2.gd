@@ -1,6 +1,7 @@
 extends RefCounted
 ## 시설 실내 가구 — 칸마다 하나씩 세우는 것(RoomFurniture 전용): barrel 통(variant water) · crate 궤짝 · sack 자루 · seat 의자·걸상 · post 촛대·등 ·
-## pillar 기둥 · urn 항아리 · dummy 허수아비 · stand 갑옷 받침대 · target 과녁 · globe 지구본 · pump 펌프 · wheel 숫돌 바퀴 · pot 솥 · lectern 독서대 · rack 걸이.
+## pillar 기둥 · urn 항아리 · dummy 허수아비 · stand 갑옷 받침대 · target 과녁 · globe 지구본 · pump 펌프 · wheel 숫돌 바퀴 · pot 솥 · lectern 독서대 · rack 걸이
+## + 잡동사니(stool · chest · basket · bucket · plant · broom · crates · candle · books · coat · logs · cask · lantern · jug · cheese · bottles · stack · spear · mop)는 RoomClutter.
 ## 무리 칸마다 그 칸 아래쪽(발)에 세운다 — 위 줄부터 그려 아래 줄이 앞을 가린다.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -10,13 +11,14 @@ const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const Props := preload("res://tools/city_art/Props.gd")
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomProps := preload("res://tools/city_art/RoomProps.gd")
+const RoomClutter := preload("res://tools/city_art/RoomClutter.gd")
 
 const PAD := 10
 
 
 static func per_cell(shape: String, d: Dictionary, size: Vector2i, t: int, seed_value: int) -> Paint:
 	var col := Color.from_string(JsonUtil.get_str(d, "color", "#5a3e28"), Color("#5a3e28"))
-	var tall := {"pillar": 1.9, "post": 1.4, "dummy": 1.6, "stand": 1.3, "target": 1.2, "rack": 1.6, "lectern": 1.3, "urn": 0.9, "globe": 1.0, "pump": 1.1}.get(shape, 0.8) as float
+	var tall := {"pillar": 1.9, "post": 1.4, "dummy": 1.6, "stand": 1.3, "target": 1.2, "rack": 1.6, "lectern": 1.3, "urn": 0.9, "globe": 1.0, "pump": 1.1}.get(shape, RoomClutter.HEIGHT.get(shape, 0.8)) as float
 	var p := Paint.new(size.x * t + PAD * 2 + 20, size.y * t + int(tall * t) + 30, seed_value)
 	var flames: Array = []
 	for cy in size.y:
@@ -117,6 +119,8 @@ static func _one(p: Paint, shape: String, d: Dictionary, col: Color, cx: float, 
 			Bits.open_book(p, Vector2(cx, g - t * 1.16), t * 0.3)
 		"rack":
 			Props.weapon_rack(p, cx, g)
+		_:
+			return RoomClutter.one(p, shape, d, col, cx, g, t)
 	return Vector2.ZERO
 
 

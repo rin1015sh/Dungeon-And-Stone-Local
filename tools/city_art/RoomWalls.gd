@@ -3,7 +3,7 @@ extends RefCounted
 ## 도시 실내 일러스트 부품 InteriorBits·Props를 그대로 쓴다): glass 색유리 · window 창 · books 책장 · book_ladder 책장 사다리 · sealed 봉인된 책장 ·
 ## shelf_bottles/jars/boxes 선반 · board 게시판·포고문 · chart 등급표 · banner 깃발 · shields 방패 · trophy 박제·뿔 · niche 아치 벽감 · statue 성인상 ·
 ## curtain 휘장 · bones 납골 벽 · barrels 술통 벽 · hanging 매단 고기·약초 · clock 벽시계 · vault 금고 문 · pillar_gold 금빛 기둥 · tools 연장 ·
-## weapons 무기 벽 · hearth 난로 · stove 아궁이 · hood 화덕 덮개 · door_shut 닫힌 문.
+## weapons 무기 벽 · hearth 난로 · stove 아궁이 · hood 화덕 덮개 · door_shut 닫힌 문 · 그 밖의 작은 것은 RoomWallBits.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -12,6 +12,7 @@ const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const Props := preload("res://tools/city_art/Props.gd")
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomMaterials := preload("res://tools/city_art/RoomMaterials.gd")
+const RoomWallBits := preload("res://tools/city_art/RoomWallBits.gd")
 
 
 static func material(p: Paint, wall: String, t: int) -> Callable:
@@ -151,6 +152,8 @@ static func decorate(p: Paint, rows: PackedStringArray, legend: Dictionary, t: i
 				p.fill_poly(dr, Mat.planks(p, col, 0, 0, true, 8))
 				Ink.path(p, dr, 2.0)
 				p.fill_rect(r.position.x + r.size.x * 0.62, r.position.y + r.size.y * 0.55, 4, 4, p.flat(Color("#8a7448"), 0.1))
+			var other:
+				RoomWallBits.draw(p, other, r, col, t)
 
 
 static func _circle(c: Vector2, r: float) -> PackedVector2Array:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmiwxykkslht3"
-path="res://.godot/imported/f_67_1x1.webp-5dcc8ff722221bef03b7e0bec0c9d94e.ctex"
+uid="uid://bfwgnn6gry3iq"
+path="res://.godot/imported/f_30_1x1.webp-457b066129a357cb0110625f2e219924.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/city/rooms/bank/f_67_1x1.webp"
-dest_files=["res://.godot/imported/f_67_1x1.webp-5dcc8ff722221bef03b7e0bec0c9d94e.ctex"]
+source_file="res://assets/city/rooms/library/f_30_1x1.webp"
+dest_files=["res://.godot/imported/f_30_1x1.webp-457b066129a357cb0110625f2e219924.ctex"]
 
 [params]
 

@@ -6,6 +6,11 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도시 실내 — 층 사이 검은 틈 없앰 · 잡동사니·흩어진 것·작은 벽 장식 (2026-10-31, 사용자 "장식 요소가 너무 부족함. 조금 어지럽혀도 되니 가구·단순 장식 추가 · 복층 사이 검은 공간 없이 벽끼리 딱 붙게", CT68)** — 범위: 여덟 건물 지도·그림. 완료 기준: 캡처에서 층 사이 검은 띠가 없고, 방마다 잡동사니가 보이며, 입구에서 닿던 칸이 하나도 끊기지 않는다. 테스트: `check.sh`(493개 통과) + 28장 캡처(새 방 넷 포함).
+  - 층 사이: 밖·계단·사다리뿐인 줄을 지움(신전·여관·길드·도서관 넷씩, 나머지 둘씩) — regions·npcs·spots·names·start를 당김. 남은 밖 칸: 좁던 위층을 건물 폭으로(잡화점·대장간 다락 · 은행 세무실 · 훈련장 관람석 · 길드 회의실), 새 방(여관 식료 창고 · 길드 유실물 창고 · 도서관 옛 서고 · 신전 유골 안치실), 나머지 벽.
+  - 그림: `RoomClutter.gd`(잡동사니 19 — RoomFurniture2 match 밖) · `RoomLitter.gd`(흩어진 것 17 — RoomDecor match 밖) · `RoomWallBits.gd`(작은 벽 장식 15 — RoomWalls match 밖) · RoomFurniture tall 윗면 boxes. 공통 범례 `city.json room.legend`에 숫자·기호 28자.
+  - 배치: 설계 스크립트로 건물마다 60~110칸(두 번 — 두 번째는 주점·회관·훈련 마당처럼 넓은 곳에 탁자·걸상·궤짝·물통·긴 의자). 놓을 때마다 BFS로 끊긴 칸 검사(고친 것: 신전 예배당 왼쪽 아래 화분이 세례실 문간 길을 막음 · 열람실 학자 옆 의자 · 은행 계단실 복도 · 훈련장 관람석 끝 칸).
+  - 건물별 정리 그림 `docs/screens/interiors/*.png`(층별 캡처 28곳) · 배치도 `city_boards.py` 다시 만듦.
 - **도시 실내 건물별 바닥·벽 재질 · 밝기 · 특색 가구 (2026-10-31, 사용자 "죄다 마루바닥이 똑같고 너무 어둡다 — 7구역처럼 적당히 밝고 한눈에 건물 특색이 드러나게", CT67)** — 범위: 바닥·벽 재질 · 밝기 · 건물마다 가구·깔개 더하기. 완료 기준: 여덟 건물 캡처에서 바닥만 보고도 건물이 구별되고, 거리 그림과 비슷한 밝기, 새 가구로 막힌 자리 없음. 테스트: `check.sh`(자리 닿음 BFS 포함) + 여덟 건물 캡처.
   - 재질: `tools/city_art/RoomMaterials.gd` 새로 — 바닥 12(oak 못 박은 넓은 판 #7a5634 · honey #9a7040 · parquet 바구니 엮음 · terracotta 타일 #9e5236 · brick 엮음 #8a4a34 · limestone 큰 판석 #b4ab98 · flag 막돌 · cobble 자갈 · marble 바둑판 #cfc6b0/#3e3832 · dirt · dark · wood), 벽 7(limestone · plaster · panel · brick · timber · marble · ashlar). `RoomPaint._floor_shader` 없앰, `RoomWalls.material()`은 RoomMaterials.wall. 벽 윗면 #3a3530/#4c463e로 밝게.
   - 건물마다 바닥/벽과 regions — ASSUMPTIONS CT67 ②.

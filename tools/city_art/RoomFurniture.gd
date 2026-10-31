@@ -12,6 +12,7 @@ const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomProps := preload("res://tools/city_art/RoomProps.gd")
 const RoomProps2 := preload("res://tools/city_art/RoomProps2.gd")
 const RoomFurniture2 := preload("res://tools/city_art/RoomFurniture2.gd")
+const RoomClutter := preload("res://tools/city_art/RoomClutter.gd")
 
 const PAD := 10
 const PER_CELL := ["barrel", "crate", "sack", "seat", "post", "pillar", "urn", "dummy", "stand", "target", "globe", "pump", "wheel", "pot", "lectern", "rack"]
@@ -21,7 +22,7 @@ static func paint(d: Dictionary, size: Vector2i, t: int, seed_value: int) -> Pai
 	var shape := JsonUtil.get_str(d, "shape", "block")
 	var col := Color.from_string(JsonUtil.get_str(d, "color", "#5a3e28"), Color("#5a3e28"))
 	var variant := JsonUtil.get_str(d, "variant", JsonUtil.get_str(d, "top"))
-	if shape in PER_CELL:
+	if shape in PER_CELL or RoomClutter.HEIGHT.has(shape):
 		return RoomFurniture2.per_cell(shape, d, size, t, seed_value)
 	match shape:
 		"counter":

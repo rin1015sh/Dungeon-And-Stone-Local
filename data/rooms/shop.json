@@ -7,11 +7,11 @@
  "wall": "timber",
  "regions": [
   {
-   "rect": [8, 0, 16, 8],
+   "rect": [0, 0, 24, 8],
    "floor": "oak"
   },
   {
-   "rect": [17, 13, 6, 12],
+   "rect": [17, 11, 6, 12],
    "floor": "oak"
   }
  ],
@@ -111,46 +111,89 @@
    "shape": "tall",
    "color": "#6a4a2e",
    "top": "jars"
+  },
+  "A": {
+   "name_ko": "가방·망토 걸이",
+   "kind": "walldeco",
+   "style": "pegs",
+   "color": "#6a5038"
+  },
+  "N": {
+   "name_ko": "말린 약초 다발",
+   "kind": "walldeco",
+   "style": "herbs",
+   "color": "#6a7a44"
+  },
+  "C": {
+   "name_ko": "거미줄",
+   "kind": "walldeco",
+   "style": "cobweb",
+   "color": "#d8d8d0"
+  },
+  "i": {
+   "name_ko": "양파 바구니",
+   "kind": "furniture",
+   "shape": "basket",
+   "color": "#8a6a3a",
+   "variant": "onions"
+  },
+  "k": {
+   "name_ko": "감자 바구니",
+   "kind": "furniture",
+   "shape": "basket",
+   "color": "#8a6a3a",
+   "variant": "potatoes"
+  },
+  "l": {
+   "name_ko": "양털 바구니",
+   "kind": "furniture",
+   "shape": "basket",
+   "color": "#8a6a3a",
+   "variant": "wool"
+  },
+  "Q": {
+   "name_ko": "톱밥",
+   "kind": "decor",
+   "style": "sawdust",
+   "color": "#c8a86a"
   }
  },
  "rows": [
-  "        ################",
-  "        #####WW#########",
-  "        #####WW#########",
-  "        #.bb........x..#",
-  "        #......jjj.....#",
-  "        #......jjj.....#",
-  "        #..............#",
-  "        ##############H#",
-  "                      H ",
-  "                      H ",
+  "########################",
+  "#CCAAAA######WW##NNNNCC#",
+  "#CCAAAA######WW##NNNNCC#",
+  "#77..2..4.bb0.......x..#",
+  "#(.............jjj.....#",
+  "#.....`..1..&..jjj.....#",
+  "#%.ss........9....)....#",
   "######################H#",
-  "##SSSSSSSSSSSSS#######H#",
-  "##SSSSSSSSSSSSS#######H#",
-  "#...............#.....H#",
-  "#......@.....q..#.xxx..#",
+  "######################H#",
+  "##SSSSSSSSSSSSS##CCNNNH#",
+  "##SSSSSSSSSSSSS##CCNNNH#",
+  "#5.........&..77#(....H#",
+  "#...2..@.<...q..#.xxx..#",
   "#...ccccccc.....+.xx...#",
-  "#............q..#......#",
-  "#...............#......#",
-  "#.....n.........#.KK...#",
-  "#..TT....TT.PP..#......#",
-  "#..TT....TT.PP..#......#",
-  "#...............#..;;;.#",
+  "#i....{......q..#.....s#",
+  "#3lQ....].`.....#.....s#",
+  "#k....n........*#.KK9..#",
+  "#..TT1...TT.PP.*#.1`..%#",
+  "#..TT....TT.PP..#.....%#",
+  "#..........Q...4#*.;;;.#",
   "#s.UU.....@...a.#..;;;.#",
-  "#s.UU.vvvv....a.#..;;;.#",
-  "#.....vvvv......#......#",
+  "#s.UU.vvvv..-.a.#..;;;.#",
+  "#.....vvvv......#77...2#",
   "#######DD###############"
  ],
- "start": [8.0, 24.3],
+ "start": [8.0, 22.3],
  "npcs": [
   {
-   "at": [7, 14],
+   "at": [7, 12],
    "name_ko": "상점 주인",
    "look": "res://assets/actors/looks/n4_merchant.webp",
    "staff": true
   },
   {
-   "at": [10, 22],
+   "at": [10, 20],
    "name_ko": "손님",
    "look": "res://assets/actors/looks/h3_coat.webp",
    "staff": false
@@ -158,14 +201,14 @@
  ],
  "spots": [
   {
-   "rect": [4, 14, 7, 2],
+   "rect": [4, 12, 7, 2],
    "activities": [
     "shop_trade"
    ],
    "name_ko": "상점 주인"
   },
   {
-   "rect": [12, 19, 2, 2],
+   "rect": [12, 17, 2, 2],
    "activities": [
     "shop_peddler"
    ],
@@ -181,19 +224,19 @@
   ],
   [
    8,
-   22,
+   20,
    "매장",
    "room"
   ],
   [
    19,
-   19,
+   17,
    "뒷창고",
    "room"
   ],
   [
    12,
-   19,
+   17,
    "노점 자리",
    "label"
   ]

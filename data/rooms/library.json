@@ -7,23 +7,27 @@
  "wall": "panel",
  "regions": [
   {
-   "rect": [1, 25, 7, 8],
+   "rect": [1, 23, 7, 8],
    "floor": "oak"
   },
   {
-   "rect": [1, 35, 7, 6],
+   "rect": [1, 33, 7, 6],
    "floor": "oak"
   },
   {
-   "rect": [24, 25, 5, 10],
+   "rect": [24, 23, 5, 10],
    "floor": "flag"
   },
   {
-   "rect": [24, 36, 5, 5],
+   "rect": [24, 34, 5, 5],
    "floor": "flag"
   },
   {
-   "rect": [12, 44, 18, 12],
+   "rect": [12, 40, 18, 12],
+   "floor": "dark"
+  },
+  {
+   "rect": [0, 40, 13, 12],
    "floor": "dark"
   }
  ],
@@ -141,76 +145,123 @@
    "shape": "tall",
    "color": "#5a3a2a",
    "top": "books"
+  },
+  "A": {
+   "name_ko": "초상화",
+   "kind": "walldeco",
+   "style": "painting",
+   "color": "#6a4a3a"
+  },
+  "B": {
+   "name_ko": "벽 촛대",
+   "kind": "walldeco",
+   "style": "sconce",
+   "color": "#e8c070",
+   "light": true
+  },
+  "E": {
+   "name_ko": "거미줄",
+   "kind": "walldeco",
+   "style": "cobweb",
+   "color": "#d8d8d0"
+  },
+  "F": {
+   "name_ko": "벽 지도",
+   "kind": "walldeco",
+   "style": "map",
+   "color": "#c8b890"
+  },
+  "G": {
+   "name_ko": "낡은 책장",
+   "kind": "walldeco",
+   "style": "books",
+   "color": "#4a3424"
+  },
+  "b": {
+   "name_ko": "작은 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#5a3e28",
+   "top": "books"
+  },
+  "c": {
+   "name_ko": "의자",
+   "kind": "furniture",
+   "shape": "seat",
+   "color": "#4a3424"
+  },
+  "P": {
+   "name_ko": "기운 책장",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#4a3424",
+   "top": "books"
   }
  },
  "rows": [
   "##############################",
-  "##SSSSlSSSS#WWWW#SSSSlSSSSS###",
-  "##SSSSlSSSS#WWWW#SSSSlSSSSS###",
-  "#............................#",
-  "#............................#",
+  "##SSSSlSSSS#WWWW#SSSSlSSSSSAA#",
+  "##SSSSlSSSS#WWWW#SSSSlSSSSSAA#",
+  "#...........................5#",
+  "#9....9......................#",
   "#.......rrrrrrrrrrrrrrr......#",
   "#.......rzzzzzzzzzzzzzr.UUUU.#",
-  "#..a....rzzzzzzzzzzzzzr......#",
-  "#.......rzzzzzzzzzzzzzr......#",
+  "#..ab...rzzzzzzzzzzzzzr......#",
+  "#.......rzzzzzzzzzzzzzr.9...1#",
   "#...k...rzzzzzzzzzzzzzr......#",
-  "#.......rzzzzzzzzzzzzzr.UUUU.#",
+  "#.....`.rzzzzzzzzzzzzzr.UUUU.#",
   "#.......rzzzzzzzzzzzzzr......#",
-  "#..a....rzzzzzzzzzzzzzr......#",
-  "#.......rzzzzzzzzzzzzzr......#",
-  "#.......rzzzzzzzzzzzzzr...g..#",
+  "#..ab...rzzzzzzzzzzzzzr......#",
+  "#9......rzzzzzzzzzzzzzr......#",
+  "#....`..rzzzzzzzzzzzzzr...g..#",
   "#.UUU...rrrrrrrrrrrrrrr......#",
   "#........vvvvvvvvvvvvv.......#",
-  "#.........................C..#",
-  "#.......................^....#",
+  "#5....1........`..........C..#",
+  "#...........9.....9.....^....#",
   "########################^#####",
-  "                        ^     ",
-  "                        ^     ",
   "########################^#####",
-  "##SSSSS###SSlSSWWSSlSS##^#####",
-  "##SSSSS###SSlSSWWSSlSS##^#####",
-  "#.......#.....vvv......#^C...#",
-  "#.......#.....vvv....UU#.....#",
-  "#.dd.i..#.TTT.vvv.TTTUU#.....#",
-  "#......./.TTT.vvv.TTT..#.....#",
-  "#.......#.....vvv....../.....#",
-  "#.dd.i..#....kvvvk.@...#.....#",
-  "#.......#.....vvv......#.....#",
-  "#.......#.TTT.vvv.TTT..#.....#",
-  "#.......#.TTT.vvv.TTT..#.....#",
-  "#########.....vvv......#.....#",
-  "#.......#.....vvv......#######",
-  "#.mmm...#......@.......#..^..#",
+  "##SSSSSB#BSSlSSWWSSlSSB#^#FFF#",
+  "##SSSSSB#BSSlSSWWSSlSSB#^#FFF#",
+  "#......9#5....vvv.....8#^C..5#",
+  "#.......#.c.c.vvv.c.cUU#.....#",
+  "#.ddci..#.TTT.vvv.TTTUU#.....#",
+  "#...`.../.TTT.vvv.TTT..#.....#",
+  "#.......#.....vvv....../....0#",
+  "#.ddci..#..`.kvvvk.@...#.....#",
+  "#......8#.c.c.vvv...c..#.....#",
+  "#..`..`.#.TTT.vvv.TTT.9#.....#",
+  "#9......#.TTT.vvv.TTT..#..2.8#",
+  "#########.c.c.vvv.c.c..#.....#",
+  "#.......#9....vvv..`...#######",
+  "#.mmm...#....9.@.9.....#..^.(#",
   "#.....g./.....KKK....g.X..^..#",
-  "#.......#..............#..^..#",
+  "#.`..`..#....`.........#..^..#",
   "#.mmm...#..............#..^..#",
-  "#.......#..............#..^..#",
+  "#2....9.#............77#2.^.7#",
   "###############DD#########^###",
-  "                          ^   ",
-  "                          ^   ",
-  "            ##############^###",
-  "            ##ssssss#sssss^###",
-  "            ##ssssss#sssss^###",
-  "            #.............^..#",
-  "            #................#",
-  "            #................#",
-  "            #......kR........#",
-  "            #.............xx.#",
-  "            #.............xx.#",
-  "            #...xx...........#",
-  "            #................#",
-  "            ##################"
+  "##########################^###",
+  "#GGGGEEGGGGEEEssssssBsssss^EE#",
+  "#GGGGEEGGGGEEEssssssBsssss^EE#",
+  "#(.........(#(............^..#",
+  "#.99.)......#.9......).......#",
+  "#.......9...#...........`....#",
+  "#PP...`.....#......kR..8.....#",
+  "#PP..9..`.../.............xx.#",
+  "#...`.......#.....`.......xx.#",
+  "#.9......9..#...xx...........#",
+  "#77...2....(#..9......9.....2#",
+  "##############################"
  ],
- "start": [16.0, 40.3],
+ "start": [16.0, 38.3],
  "npcs": [
   {
-   "at": [15, 36],
+   "at": [15, 34],
    "name_ko": "사서",
    "look": "res://assets/actors/looks/n0_librarian.webp",
    "staff": true
   },
   {
-   "at": [19, 30],
+   "at": [19, 28],
    "name_ko": "책 읽는 학자",
    "look": "res://assets/actors/looks/n6_banker.webp",
    "staff": false
@@ -236,25 +287,25 @@
    ]
   },
   {
-   "rect": [10, 24, 2, 1],
+   "rect": [10, 22, 2, 1],
    "activities": [
     "library_dungeon"
    ]
   },
   {
-   "rect": [13, 24, 2, 1],
+   "rect": [13, 22, 2, 1],
    "activities": [
     "library_arms"
    ]
   },
   {
-   "rect": [17, 24, 2, 1],
+   "rect": [17, 22, 2, 1],
    "activities": [
     "library_ailments"
    ]
   },
   {
-   "rect": [14, 36, 3, 2],
+   "rect": [14, 34, 3, 2],
    "activities": [
     "library_decode"
    ],
@@ -262,7 +313,7 @@
    "name_ko": "사서"
   },
   {
-   "rect": [20, 50, 1, 1],
+   "rect": [20, 46, 1, 1],
    "activities": [
     "library_rare"
    ],
@@ -284,38 +335,44 @@
   ],
   [
    15,
-   35,
+   33,
    "열람실",
    "room"
   ],
   [
    3,
-   31,
+   29,
    "필사실",
    "room"
   ],
   [
    4,
-   37,
+   35,
    "지도 보관실",
    "room"
   ],
   [
    26,
-   29,
+   27,
    "나선 계단",
    "room"
   ],
   [
    26,
-   38,
+   36,
    "서고 계단",
    "room"
   ],
   [
    21,
-   53,
+   49,
    "지하 서고",
+   "room"
+  ],
+  [
+   6,
+   45,
+   "옛 서고",
    "room"
   ]
  ],

@@ -1,10 +1,11 @@
 extends RefCounted
 ## 시설 실내 바닥 층 장식(RoomPaint 전용): 깔개 · 바닥 장식 무리(style — dais 제단 단 · steps 단 계단 · mosaic 원형 상감 · rosette 장미 원판 ·
-## bones 뼈 · straw 짚 · footprints 발자국 · feathers 깃털·먼지 · scrap 버린 쇠 · rope 줄 · trap 쥐덫) · 계단 · 사다리 · 트인 곳 · 난간 · 문턱.
+## bones 뼈 · straw 짚 · footprints 발자국 · feathers 깃털·먼지 · scrap 버린 쇠 · rope 줄 · trap 쥐덫 · 그 밖은 RoomLitter 흩어진 것) · 계단 · 사다리 · 트인 곳 · 난간 · 문턱.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
+const RoomLitter := preload("res://tools/city_art/RoomLitter.gd")
 
 
 static func _hex(d: Dictionary, fallback: String) -> Color:
@@ -112,6 +113,8 @@ static func decor(p: Paint, rows: PackedStringArray, legend: Dictionary, t: int)
 			"trap":
 				for c: Vector2i in cells:
 					p.fill_rect(c.x * t + t * 0.3, c.y * t + t * 0.4, t * 0.4, t * 0.25, p.flat(col, 0.1))
+			var other:
+				RoomLitter.draw(p, other, cells, col, t)
 
 
 static func _circle(c: Vector2, r: float, squash: float = 1.0) -> PackedVector2Array:
