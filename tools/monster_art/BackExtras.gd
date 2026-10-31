@@ -6,6 +6,7 @@ extends RefCounted
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Back := preload("res://tools/monster_art/Back.gd")
+const BackTools := preload("res://tools/monster_art/BackTools.gd")
 
 const HAND_WEAPONS := ["sword", "greatsword", "axe", "pick", "staff", "bow", "club", "cleaver", "bomb"]
 
@@ -36,6 +37,7 @@ static func extras(cl: Clay, pr: Dictionary, j: Dictionary, hd: Dictionary, sp: 
 	var kit: Dictionary = sp.get("kit", {})
 	if HAND_WEAPONS.has(str(kit.get("weapon", ""))):
 		_hand_weapon(cl, pr, j, kit, sp)
+	BackTools.draw(cl, pr, j, kit, sp)  # 일 도구(도시 실내 NPC 동작 — CT69)
 
 
 ## 뿔: 머리 위 양옆에서 위·바깥·뒤로 휘어 뾰족하게.

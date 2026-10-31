@@ -237,7 +237,7 @@
   "#^MFFFAABBBBBBBGGGGt##SSSmmmm#",
   "#^MFFFAABBBBBBBGGGGt##SSSmmmm#",
   "#^!...!............0#PP....UU#",
-  "#.vvvvv.a>@.<a...ll.#4.}..@..#",
+  "#.vvvvv.a>@.<a...ll.#4@}.....#",
   "#.vvvvvcccccccc.....#........#",
   "#.vvvvv.1..1....]...+....kkk>#",
   "#..........'........#.......~#",
@@ -247,8 +247,8 @@
   "#.......'..TTo1'...%#....-.ss#",
   "#8.'.....[..-...o.-.#*.kk....#",
   "#....o.........oTT..#*.kk..3i#",
-  "#...oTT..'......TTo.#........#",
-  "#....TTo.....'.....<#......aa#",
+  "#...oTT..'..@..@TTo.#........#",
+  "#...@TTo.....'.....<#......aa#",
   "#...]....TTo..[...aa#........#",
   "#7...'..oTT..<...'..#4.......#",
   "#6..........'.......#|..H....#",
@@ -270,19 +270,49 @@
    "at": [10, 14],
    "name_ko": "여관 주인",
    "look": "res://assets/actors/looks/n2_innkeeper.webp",
-   "staff": true
+   "staff": true,
+   "act": "wipe",
+   "face": [0, 1]
   },
   {
    "at": [12, 19],
    "name_ko": "손님",
    "look": "res://assets/actors/looks/h3_coat.webp",
-   "staff": false
+   "staff": false,
+   "act": "drink",
+   "face": [0, 1]
   },
   {
-   "at": [26, 14],
+   "at": [22, 14],
    "name_ko": "요리사",
-   "look": "res://assets/actors/looks/n2_innkeeper.webp",
-   "staff": false
+   "look": "res://assets/actors/looks/n9_cook.webp",
+   "staff": false,
+   "act": "stir",
+   "face": [0, -1]
+  },
+  {
+   "at": [4, 25],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h0_traveler.webp",
+   "staff": false,
+   "act": "drink",
+   "face": [1, 0]
+  },
+  {
+   "at": [15, 24],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h1_cloak.webp",
+   "staff": false,
+   "act": "drink",
+   "face": [1, 0]
+  },
+  {
+   "at": [12, 24],
+   "name_ko": "여관 일꾼",
+   "look": "res://assets/actors/looks/n12_maid.webp",
+   "staff": false,
+   "act": "sweep",
+   "face": [0, 1]
   }
  ],
  "spots": [

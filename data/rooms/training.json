@@ -155,7 +155,7 @@
   "###BB#NN#BB####BB####BB####BB###",
   "###BB#NN#BB####BB####BB####BB###",
   "#.bbbbb.bbbb.bbbbb..bbbbb.1.3..#",
-  "#......-.-.....@.....<.........#",
+  "#......-.-.....@.....<@........#",
   "#...`.......<.....-.....`.1....#",
   "#rrrrrrrrrrrrrrrrrrrrrrrrrrrr..#",
   "#zzzzzzzzzzzzzzzzzzzzzzzzzzzz..#",
@@ -167,9 +167,9 @@
   "#?__________o___e___#.R..M.M.._#",
   "#______________g_ge_#.R......._#",
   "#___d__d__d_________+.R......._#",
-  "#h__________Q__e_e__#......ss2_#",
+  "#h__@__@____Q__e_e__#......ss2_#",
   "#h____Q_Q__________R#......ss2_#",
-  "#_____________@____R#?..?.4..._#",
+  "#_____________._@__R#?..?.4..._#",
   "#___d__d__d_________############",
   "#_______]___77__hhh__0....UUU9_#",
   "#%4___________Q_hhh__.KKK....._#",
@@ -187,19 +187,49 @@
    "at": [15, 4],
    "name_ko": "구경꾼",
    "look": "res://assets/actors/looks/h3_coat.webp",
-   "staff": false
+   "staff": false,
+   "act": "clap",
+   "face": [0, 1]
   },
   {
    "at": [23, 22],
    "name_ko": "교관",
    "look": "res://assets/actors/looks/n7_trainer.webp",
-   "staff": true
+   "staff": true,
+   "act": "lecture",
+   "face": [0, 1]
   },
   {
-   "at": [14, 18],
+   "at": [7, 16],
    "name_ko": "수련생",
    "look": "res://assets/actors/looks/n7_trainer.webp",
-   "staff": false
+   "staff": false,
+   "act": "swing",
+   "face": [0, -1]
+  },
+  {
+   "at": [16, 18],
+   "name_ko": "궁수",
+   "look": "res://assets/actors/looks/n11_archer.webp",
+   "staff": false,
+   "act": "shoot",
+   "face": [0, -1]
+  },
+  {
+   "at": [4, 16],
+   "name_ko": "수련생",
+   "look": "res://assets/actors/looks/h4_gambeson.webp",
+   "staff": false,
+   "act": "swing",
+   "face": [0, -1]
+  },
+  {
+   "at": [22, 4],
+   "name_ko": "구경꾼",
+   "look": "res://assets/actors/looks/h11_wayfarer.webp",
+   "staff": false,
+   "act": "clap",
+   "face": [0, 1]
   }
  ],
  "spots": [

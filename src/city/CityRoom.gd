@@ -20,7 +20,7 @@ var map: FloorMap
 var start: Vector2 = Vector2.ZERO
 ## 지금 선 가구 무리 {char, rect: Rect2i, def}.
 var furniture: Array[Dictionary] = []
-## 사람 {at: Vector2i, look, name_ko, staff, face: Vector2i}.
+## 사람 {at: Vector2i, look, name_ko, staff, face: Vector2i, act(동작 id — NpcActSheet, CT69)}.
 var npcs: Array[Dictionary] = []
 ## 지금 살필 수 있는 자리 {rect: Rect2i, acts: Array[String], rest, name_ko}.
 var spots: Array[Dictionary] = []
@@ -116,7 +116,8 @@ func _build(state: CityState, room_id: String) -> void:
 		var at := JsonUtil.get_array(n, "at")
 		var f := JsonUtil.get_array(n, "face")
 		npcs.append({"at": Vector2i(int(at[0]), int(at[1])), "look": JsonUtil.get_str(n, "look"), "name_ko": JsonUtil.get_str(n, "name_ko"),
-			"staff": JsonUtil.get_bool(n, "staff", true), "face": Vector2i(int(f[0]), int(f[1])) if f.size() == 2 else Vector2i(0, 1)})
+			"staff": JsonUtil.get_bool(n, "staff", true), "face": Vector2i(int(f[0]), int(f[1])) if f.size() == 2 else Vector2i(0, 1),
+			"act": JsonUtil.get_str(n, "act")})
 	for v: Variant in JsonUtil.get_array(def, "spots"):
 		var s: Dictionary = v
 		var acts: Array[String] = []

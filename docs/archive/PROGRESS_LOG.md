@@ -6,6 +6,11 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도시 실내 사람 + 동작 (2026-10-31, 사용자 "건물 내에 npc 추가 — 플레이어 캐릭터 양식 참고, 건물에 어울리는 애니메이션까지", CT69)** — 범위: 사람 배치·옷·동작 그림·게임 재생. 완료 기준: 여덟 건물에 일하는 사람이 있고 바라보는 쪽 동작 칸이 돌며, 동작 그림이 모두 있다(테스트). 테스트: `check.sh`(494개 — `test_npcs_play_their_act` 새로) + 동작 시트 확대 보기 + 실내 캡처.
+  - 그림: `paint_actors.gd --acts`(NpcActs — 방 JSON에서 (look, act) 쌍을 모아 `_figure`에 motion_frame·kit을 넘김) · `tools/monster_art/npc_acts.json`(16동작) · `BackTools.gd`(손 도구 10) · BackExtras가 BackTools를 부르고 BackGear는 도구를 창으로 그리지 않게. 옷 MapLooks n8~n14 + KEEP에 h0·h1·h4·h7·h11(걷기 시트 `--look --out=res://assets/actors/looks`).
+  - 처음 그려 보고 고친 것: 도구가 창(BackGear 장대 무기)으로 같이 그려짐 → 제외 · 책이 납작해 옆에서 안 보임 → 얼굴 쪽으로 기운 두꺼운 판 · 빗자루가 옆으로 길게 누움(손 높이가 비슷하면 땅까지 길게 뻗음) → 아래 손 앞쪽 땅까지 · 망치 든 손을 더 위로.
+  - 게임: `NpcActSheet`(src/ui/city) · RoomWorld `_Standing`이 act가 있으면 칸을 돌린다(위치로 정한 어긋남) · CityRoom npcs에 act · CityRoomRules 동작 그림 확인.
+  - 사람 23 → 41(ASSUMPTIONS CT69 ⑥). 요리사는 솥 앞(22,14), 견습생은 담금 통 앞(19,14), 수련생은 허수아비 앞(7,16)으로 옮김.
 - **도시 실내 — 층 사이 검은 틈 없앰 · 잡동사니·흩어진 것·작은 벽 장식 (2026-10-31, 사용자 "장식 요소가 너무 부족함. 조금 어지럽혀도 되니 가구·단순 장식 추가 · 복층 사이 검은 공간 없이 벽끼리 딱 붙게", CT68)** — 범위: 여덟 건물 지도·그림. 완료 기준: 캡처에서 층 사이 검은 띠가 없고, 방마다 잡동사니가 보이며, 입구에서 닿던 칸이 하나도 끊기지 않는다. 테스트: `check.sh`(493개 통과) + 28장 캡처(새 방 넷 포함).
   - 층 사이: 밖·계단·사다리뿐인 줄을 지움(신전·여관·길드·도서관 넷씩, 나머지 둘씩) — regions·npcs·spots·names·start를 당김. 남은 밖 칸: 좁던 위층을 건물 폭으로(잡화점·대장간 다락 · 은행 세무실 · 훈련장 관람석 · 길드 회의실), 새 방(여관 식료 창고 · 길드 유실물 창고 · 도서관 옛 서고 · 신전 유골 안치실), 나머지 벽.
   - 그림: `RoomClutter.gd`(잡동사니 19 — RoomFurniture2 match 밖) · `RoomLitter.gd`(흩어진 것 17 — RoomDecor match 밖) · `RoomWallBits.gd`(작은 벽 장식 15 — RoomWalls match 밖) · RoomFurniture tall 윗면 boxes. 공통 범례 `city.json room.legend`에 숫자·기호 28자.

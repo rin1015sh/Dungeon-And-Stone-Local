@@ -202,7 +202,7 @@
   "##############################",
   "##SSSSlSSSS#WWWW#SSSSlSSSSSAA#",
   "##SSSSlSSSS#WWWW#SSSSlSSSSSAA#",
-  "#...........................5#",
+  "#......................@....5#",
   "#9....9......................#",
   "#.......rrrrrrrrrrrrrrr......#",
   "#.......rzzzzzzzzzzzzzr.UUUU.#",
@@ -225,12 +225,12 @@
   "#......9#5....vvv.....8#^C..5#",
   "#.......#.c.c.vvv.c.cUU#.....#",
   "#.ddci..#.TTT.vvv.TTTUU#.....#",
-  "#...`.../.TTT.vvv.TTT..#.....#",
+  "#.@.`.../.TTT.vvv.TTT..#.....#",
   "#.......#.....vvv....../....0#",
   "#.ddci..#..`.kvvvk.@...#.....#",
   "#......8#.c.c.vvv...c..#.....#",
   "#..`..`.#.TTT.vvv.TTT.9#.....#",
-  "#9......#.TTT.vvv.TTT..#..2.8#",
+  "#9......#.TTT@vvv.TTT..#..2.8#",
   "#########.c.c.vvv.c.c..#.....#",
   "#.......#9....vvv..`...#######",
   "#.mmm...#....9.@.9.....#..^.(#",
@@ -258,13 +258,41 @@
    "at": [15, 34],
    "name_ko": "사서",
    "look": "res://assets/actors/looks/n0_librarian.webp",
-   "staff": true
+   "staff": true,
+   "act": "write",
+   "face": [0, 1]
   },
   {
    "at": [19, 28],
    "name_ko": "책 읽는 학자",
-   "look": "res://assets/actors/looks/n6_banker.webp",
-   "staff": false
+   "look": "res://assets/actors/looks/n14_scholar.webp",
+   "staff": false,
+   "act": "read",
+   "face": [0, 1]
+  },
+  {
+   "at": [2, 26],
+   "name_ko": "필경사",
+   "look": "res://assets/actors/looks/n8_acolyte.webp",
+   "staff": false,
+   "act": "write",
+   "face": [0, -1]
+  },
+  {
+   "at": [23, 3],
+   "name_ko": "책 찾는 탐험가",
+   "look": "res://assets/actors/looks/h11_wayfarer.webp",
+   "staff": false,
+   "act": "read",
+   "face": [0, -1]
+  },
+  {
+   "at": [13, 31],
+   "name_ko": "책 읽는 사람",
+   "look": "res://assets/actors/looks/h0_traveler.webp",
+   "staff": false,
+   "act": "read",
+   "face": [0, 1]
   }
  ],
  "spots": [

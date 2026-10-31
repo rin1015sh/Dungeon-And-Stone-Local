@@ -176,7 +176,7 @@
   "#i....{......q..#.....s#",
   "#3lQ....].`.....#.....s#",
   "#k....n........*#.KK9..#",
-  "#..TT1...TT.PP.*#.1`..%#",
+  "#.@TT1...TT.PP.*#.1`..%#",
   "#..TT....TT.PP..#.....%#",
   "#..........Q...4#*.;;;.#",
   "#s.UU.....@...a.#..;;;.#",
@@ -190,13 +190,25 @@
    "at": [7, 12],
    "name_ko": "상점 주인",
    "look": "res://assets/actors/looks/n4_merchant.webp",
-   "staff": true
+   "staff": true,
+   "act": "count",
+   "face": [0, 1]
   },
   {
    "at": [10, 20],
    "name_ko": "손님",
    "look": "res://assets/actors/looks/h3_coat.webp",
-   "staff": false
+   "staff": false,
+   "act": "idle",
+   "face": [0, -1]
+  },
+  {
+   "at": [2, 17],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h11_wayfarer.webp",
+   "staff": false,
+   "act": "idle",
+   "face": [1, 0]
   }
  ],
  "spots": [

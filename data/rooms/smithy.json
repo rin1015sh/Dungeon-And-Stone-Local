@@ -191,10 +191,10 @@
   "#?......?#?FFFFw..!!.kk..H.#",
   "#.V...V..#.FFFF......kk....#",
   "#.V...V..#.}.}.}........R..#",
-  "#.V...V..#.......@..Z...R..#",
+  "#.V...V..#.......@.@Z...R..#",
   "#......../......AA.Q....R..#",
   "#&.......#.....4..Z.......7#",
-  "#..M.M.M.#.1@g.Z..........7#",
+  "#..M@M.M.#.1.g.Z..........7#",
   "#........#........]......oo#",
   "#..GGGG..#..........ii...oo#",
   "#2......2#2.........ii....6#",
@@ -203,7 +203,7 @@
   "#_LLL!______]_____jjj___y_%#",
   "#_LLL!__4p________jjj___y__#",
   "#______}_cc_____]__Z_oo____#",
-  "#________cc________________#",
+  "#_____@__cc________________#",
   "#############DD#############"
  ],
  "start": [14.0, 26.3],
@@ -212,13 +212,33 @@
    "at": [17, 14],
    "name_ko": "대장장이",
    "look": "res://assets/actors/looks/n5_smith.webp",
-   "staff": true
+   "staff": true,
+   "act": "hammer",
+   "face": [0, 1]
   },
   {
-   "at": [12, 17],
+   "at": [19, 14],
    "name_ko": "견습생",
-   "look": "res://assets/actors/looks/n5_smith.webp",
-   "staff": false
+   "look": "res://assets/actors/looks/n10_apprentice.webp",
+   "staff": false,
+   "act": "quench",
+   "face": [0, 1]
+  },
+  {
+   "at": [6, 26],
+   "name_ko": "견습생",
+   "look": "res://assets/actors/looks/n10_apprentice.webp",
+   "staff": false,
+   "act": "sweep",
+   "face": [0, 1]
+  },
+  {
+   "at": [4, 17],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h3_coat.webp",
+   "staff": false,
+   "act": "idle",
+   "face": [0, -1]
   }
  ],
  "spots": [

@@ -128,3 +128,21 @@ func test_visit_costs_one_on_leave() -> void:
 	assert_eq(s.ap, 3)
 	s.leave_facility()
 	assert_eq(s.ap, 2)
+
+
+## 사람마다 그 건물에 맞는 동작(CT69): act가 있으면 동작 그림이 있고 칸이 돈다.
+func test_npcs_play_their_act() -> void:
+	var s := _state()
+	var acts := 0
+	for f in s.facility_ids():
+		var r := CityRoom.load_for(s, f)
+		for n: Dictionary in r.npcs:
+			assert_eq(r.kind_at(n["at"]), "npc", "%s %s 자리 = 사람 칸" % [f, n["name_ko"]])
+			if str(n["act"]).is_empty():
+				continue
+			acts += 1
+			var sheet := NpcActSheet.load_for(db.render, str(n["look"]), str(n["act"]))
+			assert_true(sheet != null, "%s %s 동작 그림(%s)" % [f, n["name_ko"], n["act"]])
+	assert_true(acts >= 30, "사람 대부분이 동작을 한다(%d)" % acts)
+	var smith := NpcActSheet.load_for(db.render, "res://assets/actors/looks/n5_smith.webp", "hammer")
+	assert_true(smith.seq.size() > 1 and smith.col_at(0.0) != smith.col_at(1.0 / smith.fps * 3.0), "망치질은 칸이 바뀐다")

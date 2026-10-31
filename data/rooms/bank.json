@@ -154,7 +154,7 @@
   "#2gg#:::::{::::::::#:#&::::#",
   "#:::#:::@::::::@:::#:#:::UU#",
   "#:::cccccccccccccccc:#:::::#",
-  "#5:::5:::::==::::::::#:::::#",
+  "#5:::5:::@:==::::::::#:::::#",
   "#::::::::n:==:n::::::#:::UU#",
   "#::::::`:::==::::::::+:::::#",
   "#::I::::I::=={:I::::I#:::::#",
@@ -172,25 +172,41 @@
    "at": [16, 5],
    "name_ko": "세무관",
    "look": "res://assets/actors/looks/n6_banker.webp",
-   "staff": true
+   "staff": true,
+   "act": "write",
+   "face": [0, 1]
   },
   {
    "at": [8, 17],
    "name_ko": "은행원",
    "look": "res://assets/actors/looks/n6_banker.webp",
-   "staff": true
+   "staff": true,
+   "act": "count",
+   "face": [0, 1]
   },
   {
    "at": [15, 17],
    "name_ko": "은행원",
    "look": "res://assets/actors/looks/n6_banker.webp",
-   "staff": true
+   "staff": true,
+   "act": "count",
+   "face": [0, 1]
   },
   {
    "at": [14, 27],
    "name_ko": "경비병",
-   "look": "res://assets/actors/looks/n7_trainer.webp",
-   "staff": false
+   "look": "res://assets/actors/looks/n13_guard.webp",
+   "staff": false,
+   "act": "guard",
+   "face": [0, 1]
+  },
+  {
+   "at": [9, 19],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h1_cloak.webp",
+   "staff": false,
+   "act": "idle",
+   "face": [0, -1]
   }
  ],
  "spots": [

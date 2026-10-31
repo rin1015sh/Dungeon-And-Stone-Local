@@ -2,7 +2,7 @@ class_name RoomWorld
 extends Node2D
 ## 시설 실내 지도 그리기(RoomView가 쓴다 — CT66): 바닥 그림 한 장(floor.webp — 바닥·깔개·바닥 장식) 위에 발 높이로 앞뒤를 정하는 것들 —
 ##   벽 줄(walls.webp를 칸 줄마다 잘라 그 줄 아래 끝에 세운다 — 벽 북쪽에 선 사람은 벽에 가린다) · 가구 무리 그림(f_<글자>_<w>x<h>.webp, 발 = 무리 아래 가운데) ·
-##   잠긴 문(지금 잠겨 있을 때만) · 사람(몸 그림 시트의 선 그림) · 플레이어. 그림은 tools/paint_rooms.gd가 그린다(칸 = view.floor_tile_px × city.json room.art_scale px).
+##   잠긴 문(지금 잠겨 있을 때만) · 사람(몸 그림 시트의 선 그림, 동작 act가 있으면 NpcActSheet 칸을 돌린다) · 플레이어. 그림은 tools/paint_rooms.gd가 그린다(칸 = view.floor_tile_px × city.json room.art_scale px).
 ## 그림 파일이 없으면 그 자리는 비운다(걷기·살피기는 그대로).
 
 var player: ActorView
@@ -65,6 +65,8 @@ func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -
 			continue
 		var person := _Standing.new()
 		person.sheet = sheet
+		person.act = NpcActSheet.load_for(db.render, str(n["look"]), str(n.get("act", "")))
+		person.phase = float(absi(hash(n["at"])) % 997) / 997.0 * 10.0  # 사람마다 동작이 엇갈리게(위치로 정한 값 — 무작위가 아니다)
 		person.facing = n["face"]
 		person.position = (Vector2(n["at"]) + Vector2(0.5, 0.5)) * tile
 		sorter.add_child(person)
@@ -85,14 +87,31 @@ static func _tex(path: String) -> Texture2D:
 	return load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
 
 
-## 서 있는 사람(몸 그림 시트의 선 그림 한 칸). 발밑 그림자.
+## 사람(몸 그림 시트의 선 그림 한 칸 — 동작 그림(act)이 있으면 그 칸을 돌린다, CT69). 발밑 그림자.
 class _Standing extends Node2D:
 	var sheet: ActorSheet
+	var act: NpcActSheet
 	var facing: Vector2i = Vector2i(0, 1)
+	var phase: float = 0.0
+	var _t: float = 0.0
+	var _col: int = -1
+
+	func _ready() -> void:
+		set_process(act != null)
+
+	func _process(delta: float) -> void:
+		_t += delta
+		var c := act.col_at(_t + phase)
+		if c != _col:
+			_col = c
+			queue_redraw()
 
 	func _draw() -> void:
 		var w := sheet.world_size()
 		draw_set_transform_matrix(Transform2D(0.0, Vector2(1.0, 0.35), 0.0, Vector2(0, -1)))
 		draw_circle(Vector2.ZERO, w.x * 0.3, Color(0, 0, 0, 0.45))
 		draw_set_transform_matrix(Transform2D.IDENTITY)
-		sheet.draw(self, facing, sheet.stand)
+		if act != null:
+			act.draw(self, facing, act.col_at(_t + phase))
+		else:
+			sheet.draw(self, facing, sheet.stand)

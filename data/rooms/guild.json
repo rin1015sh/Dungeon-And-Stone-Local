@@ -248,7 +248,7 @@
   "#######^######################",
   "##QQQQQ^ggBff#mmBffSSSSSSBmmF#",
   "##QQQQQ^ggBff#mmBffSSSSSSBmmF#",
-  "#..`...^.....5..............7#",
+  "#..`@..^.....5..............7#",
   "#....`............9..@.`...R.#",
   "#................cccccccc....#",
   "#..GGG.......n.............R.#",
@@ -258,10 +258,10 @@
   "#.b...TT1`MMMMvvvvvvv......E.#",
   "#.b.......MMMMvvvvvvv.......?#",
   "#.b....-....`.vvvvvvv1TT.a...#",
-  "#........@...........1TT1a...#",
+  "#....................1TT1a...#",
   "#...................-..@..<..#",
-  "#.bbbb....-.............[....#",
-  "#......TT1......]TT.<....%.2.#",
+  "#.bbbb..@.-.............[....#",
+  "#......TT1......]TT@<....%.2.#",
   "#H....1TT.......1TT1.........#",
   "#H..........6....4..........5#",
   "#H############DD##############",
@@ -282,25 +282,49 @@
    "at": [4, 5],
    "name_ko": "기록원",
    "look": "res://assets/actors/looks/n0_librarian.webp",
-   "staff": true
+   "staff": true,
+   "act": "write",
+   "face": [0, 1]
   },
   {
    "at": [21, 18],
    "name_ko": "길드 접수원",
    "look": "res://assets/actors/looks/n1_guild_clerk.webp",
-   "staff": true
+   "staff": true,
+   "act": "write",
+   "face": [0, 1]
   },
   {
-   "at": [9, 27],
+   "at": [8, 29],
    "name_ko": "탐험가",
    "look": "res://assets/actors/looks/h3_coat.webp",
-   "staff": false
+   "staff": false,
+   "act": "drink",
+   "face": [0, 1]
   },
   {
    "at": [23, 28],
    "name_ko": "탐험가",
    "look": "res://assets/actors/looks/h3_coat.webp",
-   "staff": false
+   "staff": false,
+   "act": "drink",
+   "face": [0, -1]
+  },
+  {
+   "at": [4, 17],
+   "name_ko": "탐험가",
+   "look": "res://assets/actors/looks/h7_hooded.webp",
+   "staff": false,
+   "act": "idle",
+   "face": [0, -1]
+  },
+  {
+   "at": [19, 30],
+   "name_ko": "탐험가",
+   "look": "res://assets/actors/looks/h0_traveler.webp",
+   "staff": false,
+   "act": "drink",
+   "face": [-1, 0]
   }
  ],
  "spots": [

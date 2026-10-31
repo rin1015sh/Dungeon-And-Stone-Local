@@ -100,6 +100,9 @@ static func _room(v: ValidatorBase, id: String) -> void:
 		if at.size() != 2 or int(at[1]) >= rows.size() or int(at[0]) >= rows[int(at[1])].length():
 			v.err(w + ".npcs", "at가 지도 밖이다")
 		_art(v, w + ".npcs", JsonUtil.get_str(n as Dictionary, "look"))
+		var act := JsonUtil.get_str(n as Dictionary, "act")
+		if not act.is_empty():  # 동작 그림(tools/paint_actors.gd --acts — CT69)
+			_art(v, w + ".npcs", "res://assets/actors/acts/%s__%s.webp" % [JsonUtil.get_str(n as Dictionary, "look").get_file().get_basename(), act])
 	for f: String in ["floor.webp", "walls.webp"]:
 		_art(v, w, JsonUtil.get_str(r, "art_dir").path_join(f))
 

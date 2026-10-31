@@ -326,7 +326,7 @@
   "##EEEES#SNNVJGGGGGGGGJVNNS#SRRRHj#",
   "#u....U#..ddddddd@dddddd..#ww....#",
   "#u....U#.CdddkdAAAAdkdddC.#.....x#",
-  "#.P.ZP.#IZddddddddddddddZI#8.....#",
+  "#.P.ZP.#IZddddddddddddddZI#8..@..#",
   "#.YYYY.#...ssssssssssss...#.....0#",
   "#.ZP.../.8......oo....L.8.#.tt...#",
   "#....P.#.......oOoo.......+......#",
@@ -339,11 +339,11 @@
   "#b..FF.#.pppppp====pppppp.#.KK.KK#",
   "#b...../..@....====.......#.KK.KK#",
   "#b.....#Ipppppp====ppppppI#......#",
-  "#......#.......====......./.....8#",
+  "#......#.....@.====......./.....8#",
   "#8...$.#.pppppp====pppppp.#...Z..#",
   "#......#.......====.......#......#",
   "#.^^..4#Ipppppp====ppppppI#.bbbb.#",
-  "#.^^...#5......====.......#......#",
+  "#.^^...#5......====..@....#......#",
   "#.^^...#.(6....====.....45#6....5#",
   "##^^############DD################",
   "##^^##############################",
@@ -369,19 +369,49 @@
    "at": [21, 5],
    "name_ko": "성가대원",
    "look": "res://assets/actors/looks/n3_priest.webp",
-   "staff": false
+   "staff": false,
+   "act": "read",
+   "face": [0, 1]
   },
   {
    "at": [17, 15],
    "name_ko": "신관",
    "look": "res://assets/actors/looks/n3_priest.webp",
-   "staff": true
+   "staff": true,
+   "act": "pray",
+   "face": [0, 1]
   },
   {
    "at": [10, 28],
    "name_ko": "기도하는 신도",
    "look": "res://assets/actors/looks/n4_merchant.webp",
-   "staff": false
+   "staff": false,
+   "act": "pray",
+   "face": [0, -1]
+  },
+  {
+   "at": [21, 34],
+   "name_ko": "수도사",
+   "look": "res://assets/actors/looks/n8_acolyte.webp",
+   "staff": false,
+   "act": "sweep",
+   "face": [0, 1]
+  },
+  {
+   "at": [30, 17],
+   "name_ko": "수도사",
+   "look": "res://assets/actors/looks/n8_acolyte.webp",
+   "staff": false,
+   "act": "read",
+   "face": [0, 1]
+  },
+  {
+   "at": [13, 30],
+   "name_ko": "신도",
+   "look": "res://assets/actors/looks/h11_wayfarer.webp",
+   "staff": false,
+   "act": "pray",
+   "face": [0, -1]
   }
  ],
  "spots": [

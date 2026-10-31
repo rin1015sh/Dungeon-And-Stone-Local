@@ -9,7 +9,8 @@ extends RefCounted
 const CHOSEN := {"human": "h6_ranger", "barbarian": "b9_iron_raider", "elf": "e4_ranger", "dwarf": "d4_axe", "beastkin": "k4_fox_rogue"}  ## 새 종족(사용자 2026-10-30 6차 시안 확정 — AM59)
 ## 게임 그림 말고도 남겨 두는 옷차림 → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다):
 ##   n0_librarian(도서관 실내 방 사서 — CT62) · h3_coat(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") · r0_raider(맵 약탈자 무리 — render.json view.raider_sprite, 사용자 2026-10-26 "전투 화면처럼 두건·망토로")
-const KEEP := ["h3_coat", "r0_raider", "n0_librarian", "n1_guild_clerk", "n2_innkeeper", "n3_priest", "n4_merchant", "n5_smith", "n6_banker", "n7_trainer"]
+const KEEP := ["h3_coat", "r0_raider", "n0_librarian", "n1_guild_clerk", "n2_innkeeper", "n3_priest", "n4_merchant", "n5_smith", "n6_banker", "n7_trainer",
+	"n8_acolyte", "n9_cook", "n10_apprentice", "n11_archer", "n12_maid", "n13_guard", "n14_scholar", "h0_traveler", "h1_cloak", "h7_hooded", "h11_wayfarer", "h4_gambeson"]  ## n8~ · h0·h1·h7·h11·h4 = 도시 실내 사람(CT69)
 
 
 const LOOKS := {
@@ -115,6 +116,25 @@ const LOOKS := {
 		"coat": {"c": Color("#2a2a34"), "len": 0.55}, "outer_belt": Color("#1a1814")}}},
 	"n7_trainer": {"race": "human", "name": "교관", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#3a2e24"), "bulk": 1.1,
 		"kit": {"pants": Color("#3e3830"), "boots": Color("#2e2218"), "bracers": Color("#3a2a1c"), "quilt": Color("#6a5e48"), "outer_belt": Color("#3a2818")}}},
+	## 도시 실내 사람(2026-10-31, CT69): 수도사 · 요리사 · 견습생 · 궁수 · 여관 일꾼 · 경비병 · 학자.
+	"n8_acolyte": {"race": "human", "name": "수도사", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#4a3a2a"),
+		"kit": {"pants": Color("#3a3228"), "shirt": Color("#6a5a44"), "sleeves": "long", "boots": Color("#2a221a"),
+		"coat": {"c": Color("#5a4630"), "len": 0.95}, "outer_belt": Color("#a8946a")}}},
+	"n9_cook": {"race": "human", "name": "요리사", "head": 1.7, "legs": 0.8, "spec": {"hair": "short", "hair_c": Color("#2e241c"), "bulk": 1.15,
+		"kit": {"pants": Color("#3a342c"), "shirt": Color("#c8bea8"), "sleeves": "rolled", "apron": {"c": Color("#d8d0bc")}, "belt": Color("#3a2818"), "boots": Color("#2a2018")}}},
+	"n10_apprentice": {"race": "human", "name": "대장간 견습생", "head": 1.75, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#6a4a2e"),
+		"kit": {"pants": Color("#34302a"), "shirt": Color("#7a6a52"), "sleeves": "rolled", "apron": {"c": Color("#4a3020")}, "boots": Color("#26201a")}}},
+	"n11_archer": {"race": "human", "name": "궁수 수련생", "head": 1.75, "legs": 0.82, "spec": {"hair": "long", "hair_c": Color("#4a3424"), "hair_len": 0.06,
+		"kit": {"pants": Color("#34322c"), "shirt": Color("#5a5444"), "sleeves": "long", "vest": Color("#3e4a34"), "belt": Color("#2a1c14"),
+		"bracers": Color("#3a2a1c"), "boots": Color("#2a2018"), "boots_tall": true}}},
+	"n12_maid": {"race": "human", "name": "여관 일꾼", "head": 1.7, "legs": 0.82, "spec": {"hair": "long", "hair_c": Color("#7a5434"), "hair_len": 0.1,
+		"kit": {"pants": Color("#4a3a2e"), "shirt": Color("#8a7a62"), "sleeves": "rolled", "apron": {"c": Color("#c8bca4")}, "boots": Color("#2e2218")}}},
+	"n13_guard": {"race": "human", "name": "은행 경비병", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#2a2420"),
+		"kit": {"pants": Color("#2e2c2a"), "shirt": Color("#3a3a3e"), "sleeves": "long", "boots": Color("#1e1a16"), "boots_tall": true,
+		"chain": Color("#6a6e72"), "outer_belt": Color("#2a1c14"), "mantle": Color("#2a2a3a")}}},
+	"n14_scholar": {"race": "human", "name": "학자", "head": 1.7, "legs": 0.82, "spec": {"hair": "long", "hair_c": Color("#8a8478"), "hair_len": 0.06, "beard": Color("#8a8478"),
+		"kit": {"pants": Color("#2c2a26"), "shirt": Color("#5a4e3e"), "sleeves": "long", "boots": Color("#221a14"),
+		"coat": {"c": Color("#5a2a2a"), "len": 0.8}, "outer_belt": Color("#2a1c14")}}},
 	## b8 + b7(사용자 2026-10-29 "b8에 b7 합친 걸로 전부 교체"): 털 어깨·X자 멜빵·긴 띠 치마·맨다리 + 가시 쇠 어깨받이·쇠 팔목·쇠 위팔 띠.
 	"b9_iron_raider": {"race": "barbarian", "name": "쇠 어깨 약탈자", "head": 1.92, "legs": 0.72, "spec": {"kit": {
 		"pauldron": {"c": Color("#454a4e"), "side": "l", "kind": "iron", "size": 1.35}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#6a6e72")},
