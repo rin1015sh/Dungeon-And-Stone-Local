@@ -1,64 +1,51 @@
 extends SceneTree
-## 시설 실내 방 그림(탑뷰 3/4 — data/rooms, CT62): 방 한 장 + 소품.
-##   godot --headless --path . --script res://tools/paint_rooms.gd [-- --only=<방 id>] [--out=<폴더>]
-## → 방 JSON의 art·props[].art 경로(assets/city/rooms/). 칸 = render.json view.floor_tile_px × art_scale px.
-## 방마다 그리는 함수: 방 = RoomArt.library · RoomRooms.<id>, 소품 = kind(없으면 소품 id 앞부분 — table_nw → table) → RoomProps·RoomProps2(크기 = rect, variant)
-## — 새 방·소품은 아래 rooms·props 표에 한 줄. 같은 그림 경로는 한 번만 그린다. 같은 시드면 같은 그림.
+## 시설 실내 지도 그림(탑뷰 3/4 한 지도 — data/rooms, CT62·CT64·CT66): 방마다 바닥 층 · 벽 층 · 가구 무리 그림 · 잠긴 문.
+##   godot --headless --path . --script res://tools/paint_rooms.gd [-- --only=<방 id>]
+## → 방 JSON art_dir/ floor.webp · walls.webp · f_<글자 코드>_<w>x<h>.webp(CityRoom.furniture_art). 칸 = view.floor_tile_px × city.json room.art_scale px.
+## 바닥·벽 = RoomPaint(+ RoomDecor·RoomWalls), 가구 = RoomFurniture(+ RoomFurniture2 · RoomProps·RoomProps2). 같은 시드면 같은 그림.
 
-const RoomArt := preload("res://tools/city_art/RoomArt.gd")
-const RoomProps := preload("res://tools/city_art/RoomProps.gd")
-const RoomRooms := preload("res://tools/city_art/RoomRooms.gd")
-const RoomProps2 := preload("res://tools/city_art/RoomProps2.gd")
+const RoomPaint := preload("res://tools/city_art/RoomPaint.gd")
+const RoomFurniture := preload("res://tools/city_art/RoomFurniture.gd")
 const SEED := 7310
 
 
 func _initialize() -> void:
 	var only := ""
-	var out := ""
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
 			only = a.trim_prefix("--only=")
-		elif a.begins_with("--out="):
-			out = a.trim_prefix("--out=")
-	var render: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/render.json"))
-	var view: Dictionary = render.get("view", {})
-	var t := int(float((view.get("floor_tile_px", [32, 32]) as Array)[0]) * float(view.get("art_scale", 2)))
-	var dir := DirAccess.open("res://data/rooms")
-	for f in dir.get_files():
-		if not f.ends_with(".json") or f.begins_with("_"):
-			continue
-		var room: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/rooms/" + f))
-		var id := str(room.get("id", ""))
+	var db := GameDatabase.new()
+	db.load_all("res://data")
+	var view: Dictionary = db.render.get("view", {})
+	var scale := JsonUtil.get_float(JsonUtil.get_dict(db.singletons.get("city", {}), "room"), "art_scale", 1.5)
+	var t := int(float((view.get("floor_tile_px", [32, 32]) as Array)[0]) * scale)
+	for id: String in db.get_collection("rooms"):
 		if not only.is_empty() and id != only:
 			continue
 		var t0 := Time.get_ticks_msec()
-		var rooms := {"library": RoomArt.library, "guild": RoomRooms.guild, "inn": RoomRooms.inn, "temple": RoomRooms.temple, "shop": RoomRooms.shop,
-			"smithy": RoomRooms.smithy, "bank": RoomRooms.bank, "training": RoomRooms.training}
-		var props := {"table": RoomProps.table, "desk": RoomProps.desk, "lectern": RoomProps.lectern, "counter": RoomProps2.counter,
-			"altar": RoomProps2.altar, "candles": RoomProps2.candles, "pew": RoomProps2.pew, "anvil": RoomProps2.anvil, "rack": RoomProps2.rack,
-			"bench": RoomProps2.bench, "dummy": RoomProps2.dummy, "barrel": RoomProps2.barrel, "crate": RoomProps2.crate, "sack": RoomProps2.sack}
-		if not rooms.has(id):
-			push_warning("방 그림 함수가 없다: RoomArt.%s" % id)
-			continue
-		var p: RefCounted = (rooms[id] as Callable).call(room, t, SEED + id.hash() % 1000)
-		p.call("save", _path(str(room.get("art", "")), out))
+		var room := db.get_entry("rooms", id)
+		var legend := CityRoom.legend_of(db, room)
+		var rows := PackedStringArray()
+		for r: Variant in JsonUtil.get_array(room, "rows"):
+			rows.append(str(r))
+		var dir := JsonUtil.get_str(room, "art_dir")
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
+		var layers: Dictionary = RoomPaint.paint(room, rows, legend, t, SEED + id.hash() % 1000)
+		layers["floor"].call("save", dir.path_join("floor.webp"))
+		layers["walls"].call("save", dir.path_join("walls.webp"))
 		var done := {}
-		for v: Variant in room.get("props", []):
-			var d: Dictionary = v
-			var art := str(d.get("art", ""))
-			if art.is_empty() or done.has(art):
+		for g: Dictionary in CityRoom.groups(rows, legend, ["furniture", "locked"]):
+			var ch := str(g["char"])
+			var rc: Rect2i = g["rect"]
+			var d := JsonUtil.get_dict(legend, ch)
+			var size := rc.size if JsonUtil.get_str(d, "kind") == "furniture" else Vector2i.ONE
+			var path := CityRoom.furniture_art(room, ch, size)
+			if done.has(path):
 				continue
-			done[art] = true
-			var kind := str(d.get("kind", str(d.get("id", "")).get_slice("_", 0)))
-			var r: Array = d.get("rect", [0, 0, 1, 1])
-			if not props.has(kind):
-				push_warning("소품 그림 함수가 없다: RoomProps.%s" % kind)
-				continue
-			var pp: RefCounted = (props[kind] as Callable).call(t, SEED + art.hash() % 1000, Vector2i(int(r[2]), int(r[3])), str(d.get("variant", "")))
-			pp.call("save", _path(art, out))
-		print("방 %s: %d ms" % [id, Time.get_ticks_msec() - t0])
+			done[path] = true
+			if JsonUtil.get_str(d, "kind") == "locked":
+				d = {"shape": "door", "color": "#4a3424"}
+			var p: RefCounted = RoomFurniture.paint(d, size, t, SEED + path.hash() % 1000)
+			p.call("save", path)
+		print("방 %s: %d칸×%d칸 · 가구 그림 %d · %d ms" % [id, rows[0].length(), rows.size(), done.size(), Time.get_ticks_msec() - t0])
 	quit(0)
-
-
-static func _path(path: String, out: String) -> String:
-	return path if out.is_empty() else out.path_join(path.get_file())

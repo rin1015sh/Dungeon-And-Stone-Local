@@ -799,7 +799,12 @@ func _library_flow() -> void:
 	var start := room.pos
 	await _hold("move_up", 0.4)
 	_expect(room.pos.y < start.y - 0.5 and room.facing == Vector2i.UP, "W를 누르고 있으면 위로 걷는다")
-	room.pos = Vector2(2.0, 3.6)
+	var shelf := {}
+	for sp: Dictionary in room.room().spots:
+		if (sp["acts"] as Array).has("library_dungeon"):
+			shelf = sp
+	var rc: Rect2i = shelf["rect"]
+	room.pos = Vector2(rc.position.x + rc.size.x * 0.5, rc.end.y + 0.5)
 	room.facing = Vector2i.UP
 	await _frames(2)
 	_expect(room.entries(room.focus()) == [["library_dungeon", ""]], "책장을 바라보면 그 분야 이름판")
@@ -808,10 +813,30 @@ func _library_flow() -> void:
 	await _frames(3)
 	_expect(st.known_info.size() > known and city.facility_view() == room, "Enter = 그 책장 읽기, 읽고 나도 방에 남는다")
 	_expect(room.reason("library_arms") == "city.reason_visit_done", "한 방문에 활동 한 번")
-	room.pos = Vector2(10.0, 11.4)
+	room.pos = room.room().start
 	await _hold("move_down", 0.5)
 	await _frames(2)
 	_expect(city.facility_view() == null and st.ap == 2, "문을 밟으면 거리로 — 나올 때 행동력 1")
+	city.choose_facility("smithy")  # 사다리(CT66): 좌우는 막고 위로 오른다 — 다락은 같은 지도
+	await _frames(2)
+	var smithy := city.facility_view() as RoomView
+	if not _expect(smithy != null, "대장간 실내"):
+		return
+	var foot := Vector2i(-1, -1)
+	for y in smithy.room().height:
+		for x in smithy.room().width:
+			if smithy.room().kind_at(Vector2i(x, y)) == "ladder" and y > foot.y:
+				foot = Vector2i(x, y)
+	smithy.pos = Vector2(foot) + Vector2(0.5, 0.5)
+	await _frames(1)
+	var x0 := smithy.pos.x
+	await _hold("move_left", 0.25)
+	_expect(is_equal_approx(smithy.pos.x, x0) and smithy.room().kind_at(Kinematics.cell_of(smithy.pos)) == "ladder", "사다리 위에서는 좌우로 못 간다")
+	var y0 := smithy.pos.y
+	await _hold("move_up", 0.8)
+	_expect(smithy.pos.y < y0 - 1.0 and smithy.facing == Vector2i.UP, "사다리를 오른다(뒷모습)")
+	smithy.try_leave()
+	await _frames(2)
 
 
 func _press(screen: Node, text: String) -> void:

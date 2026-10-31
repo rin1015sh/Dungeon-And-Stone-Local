@@ -1,10 +1,10 @@
-"""도시 실내 복층 배치도 — 기획용 설계도(docs/plans/city_boards/<건물>.json)를 그림으로(균열 배치도 tools/rift_boards.py와 같은 꼴).
-  python3 tools/city_boards.py [--cell=18] [--out=docs/plans/city_boards]
-건물마다 <건물>.png(층을 옆으로 나란히 + 그 건물 범례) + 모아 본 all.png.
+"""도시 실내 배치도 — 게임 지도(data/rooms/<건물>.json — 한 지도에 층이 다 있다, CT66)를 그림으로(균열 배치도 tools/rift_boards.py와 같은 꼴).
+  python3 tools/city_boards.py [--cell=14] [--out=docs/plans/city_boards]
+건물마다 <건물>.png(지도 + 그 건물 범례) + 모아 본 all.png. 공통 칸 글자는 data/city.json room.legend.
 칸 색: 바닥(층 재질 — 판자·돌판·대리석·흙·어두운 돌) · 벽(어둡게) · 벽 장식(벽 위 색 띠) · 가구(테두리) · 빛 나는 가구(노란 점) · 바닥 장식(바닥 위 무늬) ·
 깔개 · 계단(줄무늬) · 사다리(가로대) · 문(주황) · 문간 · 잠긴 문(빨간 X) · 입구(초록) · 트인 곳(아래층이 보임 — 빗금) · 난간.
 표시: 흰 동그라미 = 사람(직원), 회색 = 분위기 사람 · 금색 이름표 = 주 활동 자리 · 흰 = 부 활동 · 보라 = 사건 때만 · 하늘색 = 층 사이(같은 글자끼리 이어진다).
-게임은 이 파일을 읽지 않는다(기획안 — docs/plans/city_interiors.md).
+기획 기록은 docs/plans/city_interiors.md.
 """
 import glob
 import json
@@ -36,12 +36,19 @@ def mix(a, b, t):
     return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
 
 
-def look(ch, legend, base):
-    if ch in legend:
-        name, kind, col = legend[ch][0], legend[ch][1], legend[ch][2]
+KIND = {"floor": "floor", "rug": "rug", "decor": "decor", "wall": "wall", "walldeco": "walldeco", "door": "door", "doorway": "doorway",
+        "locked": "locked", "entry": "entry", "stairs": "stairs_up", "ladder": "ladder", "open": "open", "rail": "rail", "void": "void", "npc": "npc_cell"}
+
+
+def look(ch, legend):
+    d = legend.get(ch, {})
+    kind = d.get("kind", "void")
+    if kind == "furniture":
+        kind = "light" if d.get("light") else "furniture"
     else:
-        name, kind, col = COMMON.get(ch, ("?", "floor", None))
-    return name, kind, hexc(col) if col else None, base
+        kind = KIND.get(kind, "floor")
+    col = d.get("color")
+    return d.get("name_ko", ch), kind, hexc(col) if col else None
 
 
 def draw_cell(d, x0, y0, c, kind, col, base):
@@ -113,108 +120,124 @@ def tag(d, font, x, y, text, col, w, h, taken, top):
     d.text((tx, ty - 1), text, font=font, fill=col)
 
 
-def floor_img(b, fl, legend, cell, font, big, mid):
-    rows = fl["rows"]
-    w, h = max(len(r) for r in rows) * cell, len(rows) * cell
-    pad_top = 34
-    img = Image.new("RGB", (max(w, 260) + 16, h + pad_top + 12), (24, 24, 28))
-    d = ImageDraw.Draw(img)
-    base = FLOORS.get(fl.get("floor", "wood"), FLOORS["wood"])
-    ox, oy = 8, pad_top
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
-            _, kind, col, _ = look(ch, legend, base)
-            draw_cell(d, ox + x * cell, oy + y * cell, cell, kind, col, base)
-    d.text((8, 4), fl["name_ko"], font=big, fill=(240, 236, 228))
-    taken = []
-    for x, y, t in fl.get("rooms", []):  # 방 이름(큰 글씨, 그림자)
-        tw = d.textlength(t, font=mid)
-        tx, ty = ox + x * cell + cell // 2 - tw / 2, oy + y * cell
-        d.text((tx + 1, ty + 1), t, font=mid, fill=(0, 0, 0))
-        d.text((tx, ty), t, font=mid, fill=(250, 246, 236))
-        taken.append((tx - 2, ty, tx + tw + 2, ty + 20))
-    for x, y, t, kind in fl.get("npcs", []):
-        cx, cy = ox + x * cell + cell // 2, oy + y * cell + cell // 2
-        fill = (236, 226, 200) if kind == "staff" else (150, 150, 150)
-        d.ellipse([cx - 6, cy - 6, cx + 6, cy + 6], fill=fill, outline=(0, 0, 0), width=2)
-        tag(d, font, cx, cy, t, fill, img.width, img.height, taken, pad_top)
-    for x, y, t, kind in fl.get("spots", []):
-        cx, cy = ox + x * cell + cell // 2, oy + y * cell + cell // 2
-        d.rectangle([cx - 4, cy - 4, cx + 4, cy + 4], fill=SPOT[kind], outline=(0, 0, 0))
-        tag(d, font, cx, cy + 14, t, SPOT[kind], img.width, img.height, taken, pad_top)
-    for x, y, key, t in fl.get("links", []):
-        cx, cy = ox + x * cell + cell // 2, oy + y * cell + cell // 2
-        d.ellipse([cx - 8, cy - 8, cx + 8, cy + 8], fill=(120, 200, 250), outline=(0, 0, 0), width=2)
-        d.text((cx - 4, cy - 10), key, font=font, fill=(0, 0, 0))
-        tag(d, font, cx, cy, t, (140, 210, 255), img.width, img.height, taken, pad_top)
-    for x, y, t in fl.get("labels", []):
-        tag(d, font, ox + x * cell + cell // 2, oy + y * cell + cell // 2, t, (200, 190, 170), img.width, img.height, taken, pad_top)
-    return img
-
-
 def legend_img(b, width, cell, font):
     used = set("".join("".join(f["rows"]) for f in b["floors"]))
-    items = [(ch, v[0], v[1], v[2]) for ch, v in b["legend"].items() if ch in used]
-    items += [(ch, v[0], v[1], v[2]) for ch, v in COMMON.items() if ch in used and ch not in b["legend"] and ch not in "#. @_:"]
-    col_w = 230
+    items = [(ch,) + look(ch, b["legend"]) for ch in b["legend"] if ch in used and ch not in "#. @"]
+    col_w = 210
     per = max(1, (width - 16) // col_w)
     rows = (len(items) + per - 1) // per
     img = Image.new("RGB", (width, rows * (cell + 6) + 14), (24, 24, 28))
     d = ImageDraw.Draw(img)
     for i, (ch, name, kind, col) in enumerate(items):
         x0, y0 = 8 + (i % per) * col_w, 8 + (i // per) * (cell + 6)
-        draw_cell(d, x0, y0, cell, kind, hexc(col) if col else None, FLOORS["wood"])
-        d.text((x0 + cell + 6, y0 - 1), name, font=font, fill=(220, 214, 200))
+        draw_cell(d, x0, y0, cell, kind, col, FLOORS["wood"])
+        d.text((x0 + cell + 6, y0 - 2), name, font=font, fill=(220, 214, 200))
     return img
 
 
-def building(b, cell):
-    font = ImageFont.truetype(FONT, 13)
-    big = ImageFont.truetype(FONT, 17)
+def material(room, legend, x, y):
+    d = legend.get(room["rows"][y][x], {})
+    if d.get("kind") == "floor" and d.get("material"):
+        return d["material"]
+    m = room.get("floor", "wood")
+    for rg in room.get("regions", []):
+        r = rg["rect"]
+        if r[0] <= x < r[0] + r[2] and r[1] <= y < r[1] + r[3]:
+            m = rg.get("floor", m)
+    return m
+
+
+def acts_text(sp, acts):
+    ids = ([sp["activity"]] if sp.get("activity") else []) + sp.get("activities", [])
+    names = " · ".join(acts.get(a, {}).get("name_ko", a) for a in ids)
+    if sp.get("rest"):
+        names += (" · " if names else "") + "(사건)"
+    head = sp.get("name_ko", "")
+    kind = "event" if not ids or all(acts.get(a, {}).get("extra") for a in ids) else "main"
+    return (head + " — " + names if head else names), kind
+
+
+def building(room, legend, acts, cell):
+    font = ImageFont.truetype(FONT, 12)
     mid = ImageFont.truetype(FONT, 15)
     title = ImageFont.truetype(FONT, 22)
-    legend = b["legend"]
-    floors = [floor_img(b, f, legend, cell, font, big, mid) for f in b["floors"]]
-    gap = 14
-    w = sum(f.width for f in floors) + gap * (len(floors) - 1) + 16
-    w = max(w, 900)
-    lg = legend_img(b, w, cell, font)
-    head = 64
-    h = head + max(f.height for f in floors) + lg.height + 10
-    img = Image.new("RGB", (w, h), (16, 16, 18))
+    rows = room["rows"]
+    mw, mh = max(len(r) for r in rows) * cell, len(rows) * cell
+    lg = legend_img({"legend": legend, "floors": [{"rows": rows}]}, max(mw + 16, 900), cell, font)
+    head = 40
+    img = Image.new("RGB", (max(mw + 16, 900), head + mh + 12 + lg.height), (16, 16, 18))
     d = ImageDraw.Draw(img)
-    d.text((10, 6), b["name_ko"], font=title, fill=(244, 240, 230))
-    d.text((10, 38), b.get("note", ""), font=font, fill=(190, 184, 170))
-    x = 8
-    for f in floors:
-        img.paste(f, (x, head))
-        x += f.width + gap
-    img.paste(lg, (0, head + max(f.height for f in floors) + 4))
+    d.text((10, 6), room["name_ko"] + "  ·  한 지도(위층 북쪽 · 지하 남쪽, 계단·사다리 줄로 이어짐)", font=title, fill=(244, 240, 230))
+    ox, oy = 8, head
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            _, kind, col = look(ch, legend)
+            draw_cell(d, ox + x * cell, oy + y * cell, cell, kind, col, FLOORS.get(material(room, legend, x, y), FLOORS["wood"]))
+    taken = []
+    for x, y, t, k in room.get("names", []):
+        if k == "room":
+            tw = d.textlength(t, font=mid)
+            tx, ty = ox + x * cell + cell // 2 - tw / 2, oy + y * cell
+            d.text((tx + 1, ty + 1), t, font=mid, fill=(0, 0, 0))
+            d.text((tx, ty), t, font=mid, fill=(250, 246, 236))
+            taken.append((tx - 2, ty, tx + tw + 2, ty + 20))
+    for n in room.get("npcs", []):
+        x, y = n["at"]
+        cx, cy = ox + x * cell + cell // 2, oy + y * cell + cell // 2
+        fill = (236, 226, 200) if n.get("staff", True) else (150, 150, 150)
+        d.ellipse([cx - 5, cy - 5, cx + 5, cy + 5], fill=fill, outline=(0, 0, 0), width=2)
+        tag(d, font, cx, cy, n["name_ko"], fill, img.width, img.height, taken, head)
+    for sp in room.get("spots", []):
+        r = sp["rect"]
+        cx, cy = ox + (r[0] + r[2] / 2) * cell, oy + (r[1] + r[3]) * cell
+        t, kind = acts_text(sp, acts)
+        d.rectangle([cx - 4, cy - 4, cx + 4, cy + 4], fill=SPOT[kind], outline=(0, 0, 0))
+        tag(d, font, cx, cy + 12, t, SPOT[kind], img.width, img.height, taken, head)
+    for x, y, t, k in room.get("names", []):
+        if k != "room":
+            tag(d, font, ox + x * cell + cell // 2, oy + y * cell + cell // 2, t, (200, 190, 170), img.width, img.height, taken, head)
+    img.paste(lg, (0, head + mh + 8))
     return img
 
 
 def main():
-    args = {"cell": "18", "out": "docs/plans/city_boards"}
+    args = {"cell": "14", "out": "docs/plans/city_boards"}
     for a in sys.argv[1:]:
         if a.startswith("--") and "=" in a:
             k, v = a[2:].split("=", 1)
             args[k] = v
     cell = int(args["cell"])
     out = os.path.join(ROOT, args["out"])
+    with open(os.path.join(ROOT, "data", "city.json"), encoding="utf-8") as f:
+        common = json.load(f)["room"]["legend"]
+    acts = {}
+    for path in glob.glob(os.path.join(ROOT, "data", "activities", "*.json")):
+        if not os.path.basename(path).startswith("_"):
+            with open(path, encoding="utf-8") as f:
+                a = json.load(f)
+            acts[a["id"]] = a
     imgs = []
-    for path in sorted(glob.glob(os.path.join(ROOT, "docs", "plans", "city_boards", "*.json"))):
+    for path in sorted(glob.glob(os.path.join(ROOT, "data", "rooms", "*.json"))):
+        if os.path.basename(path).startswith("_"):
+            continue
         with open(path, encoding="utf-8") as f:
-            b = json.load(f)
-        img = building(b, cell)
-        img.save(os.path.join(out, b["id"] + ".png"))
+            room = json.load(f)
+        legend = dict(common)
+        legend.update(room.get("legend", {}))
+        img = building(room, legend, acts, cell)
+        img.save(os.path.join(out, room["id"] + ".png"))
         imgs.append(img)
-        print(b["id"], img.size)
-    w = max(i.width for i in imgs)
-    allimg = Image.new("RGB", (w, sum(i.height for i in imgs)), (16, 16, 18))
+        print(room["id"], img.size)
+    w = sum(i.width for i in imgs[:4])
+    rows = [imgs[k:k + 4] for k in range(0, len(imgs), 4)]
+    allimg = Image.new("RGB", (max(sum(i.width for i in r) for r in rows), sum(max(i.height for i in r) for r in rows)), (16, 16, 18))
     y = 0
-    for i in imgs:
-        allimg.paste(i, (0, y))
-        y += i.height
+    for r in rows:
+        x = 0
+        for i in r:
+            allimg.paste(i, (x, y))
+            x += i.width
+        y += max(i.height for i in r)
     allimg.save(os.path.join(out, "all.png"))
 
 

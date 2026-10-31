@@ -1,81 +1,290 @@
 {
-  "id": "inn",
-  "name_ko": "여관 주점",
-  "facility": "inn",
-  "art": "res://assets/city/rooms/inn.webp",
-  "floor": "boards",
-  "rows": [
-    "################",
-    "#BBBBBBBBBBBBBB#",
-    "#BBBBBBBBBBBBBB#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#######DD#######"
+ "id": "inn",
+ "name_ko": "여관",
+ "facility": "inn",
+ "art_dir": "res://assets/city/rooms/inn",
+ "floor": "wood",
+ "wall": "plaster",
+ "regions": [
+  {
+   "rect": [0, 0, 30, 10],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 12, 30, 20],
+   "floor": "wood"
+  },
+  {
+   "rect": [14, 34, 16, 10],
+   "floor": "dark"
+  }
+ ],
+ "legend": {
+  "c": {
+   "name_ko": "바(계산대)",
+   "kind": "furniture",
+   "shape": "counter",
+   "color": "#6a4a2e",
+   "variant": "inn",
+   "light": true
+  },
+  "B": {
+   "name_ko": "술통 벽",
+   "kind": "walldeco",
+   "style": "barrels",
+   "color": "#7a5a36"
+  },
+  "F": {
+   "name_ko": "큰 난로(불)",
+   "kind": "walldeco",
+   "style": "hearth",
+   "color": "#d8702a",
+   "light": true
+  },
+  "T": {
+   "name_ko": "원탁",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#6a4a2e",
+   "variant": "inn",
+   "light": true
+  },
+  "o": {
+   "name_ko": "의자",
+   "kind": "furniture",
+   "shape": "seat",
+   "color": "#4a3424"
+  },
+  "l": {
+   "name_ko": "류트·빈 걸상",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#8a6a3a",
+   "top": "lute"
+  },
+  "t": {
+   "name_ko": "사냥 트로피(사슴 뿔)",
+   "kind": "walldeco",
+   "style": "trophy",
+   "color": "#a08a6a"
+  },
+  "S": {
+   "name_ko": "아궁이(불)",
+   "kind": "walldeco",
+   "style": "stove",
+   "color": "#c8602a",
+   "light": true
+  },
+  "P": {
+   "name_ko": "솥",
+   "kind": "furniture",
+   "shape": "pot",
+   "color": "#3a3a3a"
+  },
+  "k": {
+   "name_ko": "도마 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#7a5a3a",
+   "top": "food"
+  },
+  "m": {
+   "name_ko": "매단 고기·마늘",
+   "kind": "walldeco",
+   "style": "hanging",
+   "color": "#8a4a3a"
+  },
+  "s": {
+   "name_ko": "곡식 자루",
+   "kind": "furniture",
+   "shape": "sack",
+   "color": "#8a7a5a"
+  },
+  "b": {
+   "name_ko": "침대",
+   "kind": "furniture",
+   "shape": "bed",
+   "color": "#7a5a44"
+  },
+  "w": {
+   "name_ko": "세면대",
+   "kind": "furniture",
+   "shape": "font",
+   "color": "#8a9aa0"
+  },
+  "x": {
+   "name_ko": "궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "R": {
+   "name_ko": "와인 걸이",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#5a2a24",
+   "top": "bottles"
+  },
+  "q": {
+   "name_ko": "쥐덫",
+   "kind": "decor",
+   "style": "trap",
+   "color": "#6a5a4a"
+  },
+  "a": {
+   "name_ko": "술통",
+   "kind": "furniture",
+   "shape": "barrel",
+   "color": "#7a5a36"
+  },
+  "n": {
+   "name_ko": "등잔",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#e8c070",
+   "light": true
+  },
+  "e": {
+   "name_ko": "객실 문(잠김)",
+   "kind": "walldeco",
+   "style": "door_shut",
+   "color": "#5a3e28"
+  }
+ },
+ "rows": [
+  "##############################",
+  "#####WW#####WW######WW#####WW#",
+  "#####WW#####WW######WW#####WW#",
+  "#......#......#......#.bb..w.#",
+  "#..bb..#..bb..#..bb..#.bb....#",
+  "#......#......#......#n....x.#",
+  "####e######e######e######+####",
+  "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+  "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+  "#^############################",
+  " ^                            ",
+  " ^                            ",
+  "#^############################",
+  "#^#FFF##BBBBBBB####t##mmmmmmm#",
+  "#^#FFF##BBBBBBB####t##mmmmmmm#",
+  "#^..................#PP......#",
+  "#.......a.@..a...ll.#.....@..#",
+  "#......cccccccc.....#........#",
+  "#...................+....kkk.#",
+  "#...................#........#",
+  "#...o...............#........#",
+  "#..oTT.....o@.......#........#",
+  "#...TTo...oTT.......#......ss#",
+  "#..........TTo......#......ss#",
+  "#...............o...#........#",
+  "#....o.........oTT..#........#",
+  "#...oTT.........TTo.#........#",
+  "#....TTo............#........#",
+  "#...................#........#",
+  "#...................#........#",
+  "#...................#...H....#",
+  "##############DD########H#####",
+  "                        H     ",
+  "                        H     ",
+  "              ##########H#####",
+  "              ##########H#####",
+  "              ##########H#####",
+  "              #.........H..RR#",
+  "              #..aaaaaaa...RR#",
+  "              #............RR#",
+  "              #..aaaaaaa...RR#",
+  "              #..............#",
+  "              #q.aaaaaaa..n..#",
+  "              ################"
+ ],
+ "start": [15.0, 30.3],
+ "npcs": [
+  {
+   "at": [10, 16],
+   "name_ko": "여관 주인",
+   "look": "res://assets/actors/looks/n2_innkeeper.webp",
+   "staff": true
+  },
+  {
+   "at": [12, 21],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h3_coat.webp",
+   "staff": false
+  },
+  {
+   "at": [26, 16],
+   "name_ko": "요리사",
+   "look": "res://assets/actors/looks/n2_innkeeper.webp",
+   "staff": false
+  }
+ ],
+ "spots": [
+  {
+   "rect": [23, 3, 2, 2],
+   "activities": [
+    "inn_rest"
+   ],
+   "name_ko": "침대"
+  },
+  {
+   "rect": [7, 16, 8, 2],
+   "activities": [
+    "inn_snack",
+    "inn_meal"
+   ],
+   "rest": true,
+   "name_ko": "여관 주인"
+  }
+ ],
+ "names": [
+  [
+   12,
+   7,
+   "객실 복도",
+   "room"
   ],
-  "start": [8.0, 9.3],
-  "props": [
-    {
-      "id": "counter",
-      "art": "res://assets/city/rooms/inn_counter.webp",
-      "kind": "counter",
-      "variant": "inn",
-      "rect": [6, 4, 5, 1],
-      "lamp": true
-    },
-    {
-      "id": "keeper",
-      "sprite": "res://assets/actors/looks/n2_innkeeper.webp",
-      "rect": [8, 3, 1, 1],
-      "face": [0, 1]
-    },
-    {
-      "id": "table_w",
-      "art": "res://assets/city/rooms/inn_table.webp",
-      "kind": "table",
-      "variant": "inn",
-      "rect": [2, 7, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "table_e",
-      "art": "res://assets/city/rooms/inn_table.webp",
-      "kind": "table",
-      "variant": "inn",
-      "rect": [11, 7, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "barrel_a",
-      "art": "res://assets/city/rooms/inn_barrel.webp",
-      "kind": "barrel",
-      "rect": [14, 5, 1, 1]
-    },
-    {
-      "id": "barrel_b",
-      "art": "res://assets/city/rooms/inn_barrel.webp",
-      "kind": "barrel",
-      "rect": [14, 6, 1, 1]
-    }
+  [
+   25,
+   4,
+   "내 방",
+   "room"
   ],
-  "spots": [
-    {
-      "rect": [12, 1, 3, 2],
-      "activity": "inn_rest"
-    },
-    {
-      "rect": [6, 3, 5, 2],
-      "activities": [
-        "inn_snack",
-        "inn_meal"
-      ],
-      "rest": true,
-      "name_ko": "여관 주인"
-    }
+  [
+   10,
+   4,
+   "잠긴 객실",
+   "label"
   ],
-  "source": "original"
+  [
+   10,
+   20,
+   "주점",
+   "room"
+  ],
+  [
+   24,
+   20,
+   "주방",
+   "room"
+  ],
+  [
+   3,
+   13,
+   "큰 난로",
+   "label"
+  ],
+  [
+   17,
+   16,
+   "음유시인 구석",
+   "label"
+  ],
+  [
+   21,
+   37,
+   "술 창고",
+   "room"
+  ]
+ ],
+ "source": "original"
 }

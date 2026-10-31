@@ -1,77 +1,303 @@
 {
-  "id": "library",
-  "name_ko": "도서관 열람실",
-  "facility": "library",
-  "art": "res://assets/city/rooms/library.webp",
-  "rows": [
-    "####################",
-    "#BBBBBBBBBBBBBBBBBB#",
-    "#BBBBBBBBBBBBBBBBBB#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#..................#",
-    "#########DD#########"
+ "id": "library",
+ "name_ko": "도서관",
+ "facility": "library",
+ "art_dir": "res://assets/city/rooms/library",
+ "floor": "wood",
+ "wall": "ashlar",
+ "regions": [
+  {
+   "rect": [0, 0, 30, 20],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 22, 30, 20],
+   "floor": "wood"
+  },
+  {
+   "rect": [12, 44, 18, 12],
+   "floor": "dark"
+  }
+ ],
+ "legend": {
+  "S": {
+   "name_ko": "높은 책장",
+   "kind": "walldeco",
+   "style": "books",
+   "color": "#5a3a2a"
+  },
+  "l": {
+   "name_ko": "이동 사다리(책장)",
+   "kind": "walldeco",
+   "style": "book_ladder",
+   "color": "#7a5a3a"
+  },
+  "W": {
+   "name_ko": "높은 창",
+   "kind": "walldeco",
+   "style": "window",
+   "color": "#8a9aa4",
+   "light": true
+  },
+  "T": {
+   "name_ko": "독서 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#5a3e28",
+   "light": true
+  },
+  "K": {
+   "name_ko": "사서 책상",
+   "kind": "furniture",
+   "shape": "desk",
+   "color": "#6a4a2e",
+   "light": true
+  },
+  "g": {
+   "name_ko": "지구본",
+   "kind": "furniture",
+   "shape": "globe",
+   "color": "#6a7a5a"
+  },
+  "k": {
+   "name_ko": "촛대",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#e8c070",
+   "light": true
+  },
+  "d": {
+   "name_ko": "필사대",
+   "kind": "furniture",
+   "shape": "lectern",
+   "color": "#6a4a2e"
+  },
+  "i": {
+   "name_ko": "잉크·두루마리 통",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#3a3a40",
+   "top": "scrolls"
+  },
+  "a": {
+   "name_ko": "안락의자",
+   "kind": "furniture",
+   "shape": "seat",
+   "color": "#5a2a24"
+  },
+  "R": {
+   "name_ko": "쇠사슬 책 독서대",
+   "kind": "furniture",
+   "shape": "lectern",
+   "color": "#7a6a5a",
+   "needs": "library_rare"
+  },
+  "s": {
+   "name_ko": "봉인된 책장",
+   "kind": "walldeco",
+   "style": "sealed",
+   "color": "#3a2a2a"
+  },
+  "x": {
+   "name_ko": "먼지 쌓인 궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "C": {
+   "name_ko": "나선 계단 기둥",
+   "kind": "furniture",
+   "shape": "pillar",
+   "color": "#6a5a4a"
+  },
+  "m": {
+   "name_ko": "지도 서랍장",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#6a5030",
+   "top": "papers"
+  },
+  "X": {
+   "name_ko": "서고 문(잠김)",
+   "kind": "locked",
+   "opens": "rare_books"
+  }
+ },
+ "rows": [
+  "##############################",
+  "##SSSSlSSSS#WWWW#SSSSlSSSSS###",
+  "##SSSSlSSSS#WWWW#SSSSlSSSSS###",
+  "#............................#",
+  "#............................#",
+  "#.......rrrrrrrrrrrrrrr......#",
+  "#.......rzzzzzzzzzzzzzr......#",
+  "#..a....rzzzzzzzzzzzzzr......#",
+  "#.......rzzzzzzzzzzzzzr......#",
+  "#...k...rzzzzzzzzzzzzzr......#",
+  "#.......rzzzzzzzzzzzzzr......#",
+  "#.......rzzzzzzzzzzzzzr......#",
+  "#..a....rzzzzzzzzzzzzzr......#",
+  "#.......rzzzzzzzzzzzzzr......#",
+  "#.......rzzzzzzzzzzzzzr......#",
+  "#.......rrrrrrrrrrrrrrr......#",
+  "#............................#",
+  "#.........................C..#",
+  "#.......................^....#",
+  "########################^#####",
+  "                        ^     ",
+  "                        ^     ",
+  "########################^#####",
+  "##SSSSS###SSlSSWWSSlSS##^#####",
+  "##SSSSS###SSlSSWWSSlSS##^#####",
+  "#.......#..............#^C...#",
+  "#.......#..............#.....#",
+  "#.dd.i..#.TTT.....TTT..#.....#",
+  "#......./.TTT.....TTT..#.....#",
+  "#.......#............../.....#",
+  "#.dd.i..#....k...k.@...#.....#",
+  "#.......#..............#.....#",
+  "#.......#.TTT.....TTT..#.....#",
+  "#.......#.TTT.....TTT..#.....#",
+  "#########..............#.....#",
+  "#.......#..............#######",
+  "#.mmm...#......@.......#..^..#",
+  "#.....g./.....KKK....g.X..^..#",
+  "#.......#..............#..^..#",
+  "#.mmm...#..............#..^..#",
+  "#.......#..............#..^..#",
+  "###############DD#########^###",
+  "                          ^   ",
+  "                          ^   ",
+  "            ##############^###",
+  "            ##ssssss#sssss^###",
+  "            ##ssssss#sssss^###",
+  "            #.............^..#",
+  "            #................#",
+  "            #................#",
+  "            #......kR........#",
+  "            #.............xx.#",
+  "            #.............xx.#",
+  "            #...xx...........#",
+  "            #................#",
+  "            ##################"
+ ],
+ "start": [16.0, 40.3],
+ "npcs": [
+  {
+   "at": [15, 36],
+   "name_ko": "사서",
+   "look": "res://assets/actors/looks/n0_librarian.webp",
+   "staff": true
+  },
+  {
+   "at": [19, 30],
+   "name_ko": "책 읽는 학자",
+   "look": "res://assets/actors/looks/n6_banker.webp",
+   "staff": false
+  }
+ ],
+ "spots": [
+  {
+   "rect": [2, 2, 4, 1],
+   "activities": [
+    "library_monsters"
+   ]
+  },
+  {
+   "rect": [7, 2, 4, 1],
+   "activities": [
+    "library_survival"
+   ]
+  },
+  {
+   "rect": [17, 2, 4, 1],
+   "activities": [
+    "library_society"
+   ]
+  },
+  {
+   "rect": [10, 24, 2, 1],
+   "activities": [
+    "library_dungeon"
+   ]
+  },
+  {
+   "rect": [13, 24, 2, 1],
+   "activities": [
+    "library_arms"
+   ]
+  },
+  {
+   "rect": [17, 24, 2, 1],
+   "activities": [
+    "library_ailments"
+   ]
+  },
+  {
+   "rect": [14, 36, 3, 2],
+   "activities": [
+    "library_decode"
+   ],
+   "rest": true,
+   "name_ko": "사서"
+  },
+  {
+   "rect": [20, 50, 1, 1],
+   "activities": [
+    "library_rare"
+   ],
+   "name_ko": "쇠사슬 책"
+  }
+ ],
+ "names": [
+  [
+   15,
+   17,
+   "2층 회랑",
+   "room"
   ],
-  "start": [10.0, 11.3],
-  "props": [
-    {
-      "id": "desk",
-      "art": "res://assets/city/rooms/library_desk.webp",
-      "rect": [2, 6, 3, 1],
-      "lamp": true
-    },
-    {
-      "id": "librarian",
-      "sprite": "res://assets/actors/looks/n0_librarian.webp",
-      "rect": [3, 5, 1, 1],
-      "face": [0, 1]
-    },
-    {
-      "id": "table_nw",
-      "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [6, 6, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "table_ne",
-      "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [12, 6, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "table_sw",
-      "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [6, 9, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "table_se",
-      "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [12, 9, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "lectern",
-      "art": "res://assets/city/rooms/library_lectern.webp",
-      "rect": [17, 5, 1, 1],
-      "needs": "library_rare"
-    }
+  [
+   11,
+   9,
+   "트인 곳 — 아래로 열람실",
+   "label"
   ],
-  "spots": [
-    {"rect": [1, 1, 2, 2], "activity": "library_dungeon"},
-    {"rect": [4, 1, 2, 2], "activity": "library_arms"},
-    {"rect": [7, 1, 2, 2], "activity": "library_ailments"},
-    {"rect": [11, 1, 2, 2], "activity": "library_monsters"},
-    {"rect": [14, 1, 2, 2], "activity": "library_survival"},
-    {"rect": [17, 1, 2, 2], "activity": "library_society"},
-    {"rect": [2, 5, 3, 2], "activity": "library_decode", "rest": true},
-    {"rect": [17, 5, 1, 1], "activity": "library_rare"}
+  [
+   15,
+   35,
+   "열람실",
+   "room"
   ],
-  "source": "original"
+  [
+   3,
+   31,
+   "필사실",
+   "room"
+  ],
+  [
+   4,
+   37,
+   "지도 보관실",
+   "room"
+  ],
+  [
+   26,
+   29,
+   "나선 계단",
+   "room"
+  ],
+  [
+   26,
+   38,
+   "서고 계단",
+   "room"
+  ],
+  [
+   21,
+   53,
+   "지하 서고",
+   "room"
+  ]
+ ],
+ "source": "original"
 }

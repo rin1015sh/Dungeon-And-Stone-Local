@@ -1,9 +1,10 @@
 class_name CityRoomRules
 extends RefCounted
-## 검사 규칙: 시설 실내 방(data/rooms — CityRoom, CT62) · 시설 JSON room 참조 · city.json room.
-## 그림 파일이 없으면 경고만(방은 그림 없이도 걷는다 — tools/paint_rooms.gd로 그린다).
+## 검사 규칙: 시설 실내(data/rooms — CityRoom, CT62·CT64·CT66) · 시설 JSON room 참조 · city.json room(공통 범례).
+## 칸 글자마다 범례가 있는가 · 입구·들어온 자리 · 살필 자리마다 입구에서 걸어서 닿는가(잠긴 문은 열고, needs 가구는 비켜) · 활동·사건 참조 · 그림(없으면 경고만).
 
-const CHARS := "#B.D"
+const KINDS := ["floor", "rug", "decor", "wall", "walldeco", "furniture", "door", "doorway", "locked", "entry", "stairs", "ladder", "open", "rail", "void", "npc"]
+const WALK := ["floor", "rug", "decor", "door", "doorway", "entry", "stairs", "ladder", "locked"]
 
 
 static func run(v: ValidatorBase) -> void:
@@ -27,44 +28,50 @@ static func _room(v: ValidatorBase, id: String) -> void:
 	var w := "rooms/" + id
 	var fac := JsonUtil.get_str(r, "facility")
 	v.ref(w + ".facility", "facilities", fac)
-	var rows := JsonUtil.get_array(r, "rows")
+	var legend := CityRoom.legend_of(v.db, r)
+	var rows := PackedStringArray()
+	for row: Variant in JsonUtil.get_array(r, "rows"):
+		rows.append(str(row))
 	if rows.is_empty():
 		v.err(w, "rows가 비었다")
 		return
-	var width := str(rows[0]).length()
-	var doors := 0
-	for row: Variant in rows:
-		if str(row).length() != width:
-			v.err(w, "rows의 길이가 모두 같아야 한다")
-		for ch in str(row):
-			if not ch in CHARS:
-				v.err(w, "rows 글자는 # B . D 중에서: '%s'" % ch)
-			doors += 1 if ch == "D" else 0
-	if doors == 0:
-		v.err(w, "문(D)이 없다 — 나갈 수 없다")
+	var entries := 0
+	for row in rows:
+		for ch in row:
+			var d := JsonUtil.get_dict(legend, ch)
+			if d.is_empty():
+				v.err(w, "칸 글자 '%s'의 범례가 없다" % ch)
+				continue
+			entries += 1 if JsonUtil.get_str(d, "kind") == "entry" else 0
+	for ch: String in legend:
+		var d := JsonUtil.get_dict(legend, ch)
+		var k := JsonUtil.get_str(d, "kind")
+		if not k in KINDS:
+			v.err("%s.legend.%s" % [w, ch], "kind는 %s 중에서" % [KINDS])
+		if not JsonUtil.get_str(d, "needs").is_empty():
+			v.ref("%s.legend.%s.needs" % [w, ch], "activities", JsonUtil.get_str(d, "needs"))
+		if not JsonUtil.get_str(d, "opens").is_empty():
+			v.ref("%s.legend.%s.opens" % [w, ch], "city_events", JsonUtil.get_str(d, "opens"))
+	if entries == 0:
+		v.err(w, "입구(kind entry)가 없다 — 나갈 수 없다")
 	var walk := func(c: Vector2i) -> bool:
-		return c.y >= 0 and c.y < rows.size() and c.x >= 0 and c.x < width and str(rows[c.y])[c.x] in ".D"
+		if c.y < 0 or c.y >= rows.size() or c.x < 0 or c.x >= rows[c.y].length():
+			return false
+		var d := JsonUtil.get_dict(legend, rows[c.y][c.x])
+		return JsonUtil.get_str(d, "kind") in WALK or (JsonUtil.get_str(d, "kind") == "furniture" and not JsonUtil.get_str(d, "needs").is_empty())
 	var st := JsonUtil.get_array(r, "start")
-	if st.size() != 2 or not walk.call(Vector2i(floori(float(st[0])), floori(float(st[1])))):
-		v.err(w, "start는 바닥 칸 [x, y]")
-	_art(v, w, JsonUtil.get_str(r, "art"))
-	var fac_acts := JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities")
-	for p: Variant in JsonUtil.get_array(r, "props"):
-		var d: Dictionary = p
-		var pw := "%s.props.%s" % [w, JsonUtil.get_str(d, "id")]
-		var rc := CityRoom.rect_of(d)
-		for y in range(rc.position.y, rc.end.y):
-			for x in range(rc.position.x, rc.end.x):
-				if not walk.call(Vector2i(x, y)) or str(rows[y])[x] == "D":
-					v.err(pw, "rect는 바닥 칸 위에(크기 1 이상)")
-		if rc.size.x < 1 or rc.size.y < 1:
-			v.err(pw, "rect [x, y, w, h] — 크기 1 이상")
-		if JsonUtil.get_str(d, "art").is_empty() == JsonUtil.get_str(d, "sprite").is_empty():
-			v.err(pw, "art 또는 sprite 하나")
-		_art(v, pw, JsonUtil.get_str(d, "art") + JsonUtil.get_str(d, "sprite"))
-		var needs := JsonUtil.get_str(d, "needs")
-		if not needs.is_empty():
-			v.ref(pw + ".needs", "activities", needs)
+	var start := Vector2i(floori(float(st[0])), floori(float(st[1]))) if st.size() == 2 else Vector2i(-1, -1)
+	if not walk.call(start):
+		v.err(w, "start는 걷는 칸 [x, y]")
+		return
+	var seen := {start: true}
+	var todo: Array[Vector2i] = [start]
+	while not todo.is_empty():
+		var c: Vector2i = todo.pop_back()
+		for d: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			if not seen.has(c + d) and walk.call(c + d):
+				seen[c + d] = true
+				todo.append(c + d)
 	var placed: Array[String] = []
 	for s: Variant in JsonUtil.get_array(r, "spots"):
 		var d: Dictionary = s
@@ -77,11 +84,24 @@ static func _room(v: ValidatorBase, id: String) -> void:
 				v.err(w + ".spots", "활동 '%s'은(는) '%s' 시설 활동이 아니다" % [act, fac])
 		placed.append_array(acts)
 		var rc := CityRoom.rect_of(d)
-		if rc.size.x < 1 or rc.size.y < 1 or rc.position.x < 0 or rc.position.y < 0 or rc.end.x > width or rc.end.y > rows.size():
-			v.err(w + ".spots", "rect가 방 밖이다: %s" % [acts])
-	for a: Variant in fac_acts:  # 이번 순 사건 활동 말고는 자리가 있어야 걸어가서 한다
+		var reach := false
+		for y in range(rc.position.y, rc.end.y):
+			for x in range(rc.position.x, rc.end.x):
+				for dd: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+					var n := Vector2i(x, y) + dd
+					reach = reach or (seen.has(n) and not rc.has_point(n))
+		if not reach:
+			v.err(w + ".spots", "입구에서 걸어서 닿지 않는 자리: %s" % [acts if not acts.is_empty() else JsonUtil.get_str(d, "name_ko")])
+	for a: Variant in JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities"):  # 이번 순 사건 활동 말고는 자리가 있어야 걸어가서 한다
 		if not placed.has(str(a)):
 			v.err(w, "시설 활동 '%s'을(를) 할 자리(spots)가 없다" % a)
+	for n: Variant in JsonUtil.get_array(r, "npcs"):
+		var at := JsonUtil.get_array(n as Dictionary, "at")
+		if at.size() != 2 or int(at[1]) >= rows.size() or int(at[0]) >= rows[int(at[1])].length():
+			v.err(w + ".npcs", "at가 지도 밖이다")
+		_art(v, w + ".npcs", JsonUtil.get_str(n as Dictionary, "look"))
+	for f: String in ["floor.webp", "walls.webp"]:
+		_art(v, w, JsonUtil.get_str(r, "art_dir").path_join(f))
 
 
 static func _art(v: ValidatorBase, w: String, path: String) -> void:

@@ -1,7 +1,6 @@
 extends RefCounted
-## 시설 실내 방 소품 그림 2(탑뷰 3/4 — RoomProps와 같은 규칙: 투명 바탕, 그림 아래 가운데 = rect 아래 가운데, 윗면 + 앞면 띠로 높이).
-## 크기는 rect(칸 수 size)에 맞춘다. 계산대(counter)는 variant로 위에 놓인 것이 다르다 — inn 잔·술병 · shop 저울·단지 · guild 장부·종 · bank 놋쇠 창살·동전.
-## 낮은 소품(통·궤짝·자루·허수아비·무기 걸이)은 도시 소품(Props — 옆에서 본 그림)을 줄여 세운다.
+## 시설 실내 가구 큰 모양(RoomFurniture가 부른다 — CT64·CT66): 투명 바탕, 그림 아래 가운데 = 무리 아래 가운데, 윗면 + 앞면 띠로 높이. 크기는 무리 칸 수(size).
+## 계산대(variant inn 잔·술병 · shop 저울·단지 · guild 장부·종 · bank 놋쇠 창살·동전) · 제단 · 봉헌 촛대 · 긴 의자 · 모루 · 걸상.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -116,13 +115,6 @@ static func anvil(t: int, seed_value: int, size: Vector2i, _variant: String) -> 
 	return _done(p, [], Vector2.ZERO)
 
 
-## 무기 걸이(rect 2×1).
-static func rack(t: int, seed_value: int, size: Vector2i, _variant: String) -> Paint:
-	var p := Paint.new(size.x * t + PAD * 2, t + 90, seed_value)
-	Props.weapon_rack(p, p.w * 0.5, p.h - t * 0.3)
-	return _done(p, [], Vector2.ZERO)
-
-
 ## 긴 걸상(rect w×1).
 static func bench(t: int, seed_value: int, size: Vector2i, _variant: String) -> Paint:
 	var lift := int(t * 0.4)
@@ -130,36 +122,6 @@ static func bench(t: int, seed_value: int, size: Vector2i, _variant: String) -> 
 	var seat := Rect2(PAD + 8, p.h - t * 0.66 - lift, size.x * t - 16, t * 0.3)
 	RoomProps._legs(p, seat, lift, Color("#2a1d14"), 5.0)
 	RoomProps._slab(p, seat, 6, Mat.planks(p, Color("#4a3423"), 0, 0, false, 10), p.flat(Color("#2e2016"), 0.1))
-	return _done(p, [], Vector2.ZERO)
-
-
-## 허수아비(rect 1×1).
-static func dummy(t: int, seed_value: int, _size: Vector2i, _variant: String) -> Paint:
-	var p := Paint.new(t + PAD * 2 + 40, t + 100, seed_value)
-	Props.dummy(p, p.w * 0.5, p.h - t * 0.35, 0.62)
-	return _done(p, [], Vector2.ZERO)
-
-
-## 통(rect 1×1) — variant water = 물 담금 통(위에 물).
-static func barrel(t: int, seed_value: int, _size: Vector2i, variant: String) -> Paint:
-	var p := Paint.new(t + PAD * 2, t + 60, seed_value)
-	var g := p.h - t * 0.3
-	Props.barrel(p, p.w * 0.5, g, t * 0.62, t * 0.78)
-	var lid := Paint.poly([Vector2(p.w * 0.5 - t * 0.31, g - t * 0.78), Vector2(p.w * 0.5 + t * 0.31, g - t * 0.78), Vector2(p.w * 0.5 + t * 0.27, g - t * 0.9), Vector2(p.w * 0.5 - t * 0.27, g - t * 0.9)])
-	p.fill_poly(lid, p.flat(Color("#26343a") if variant == "water" else Color("#4a3423"), 0.15))
-	Ink.path(p, lid, 1.6)
-	return _done(p, [], Vector2.ZERO)
-
-
-static func crate(t: int, seed_value: int, _size: Vector2i, _variant: String) -> Paint:
-	var p := Paint.new(t + PAD * 2, t + 50, seed_value)
-	Props.crate(p, p.w * 0.5, p.h - t * 0.3, t * 0.7)
-	return _done(p, [], Vector2.ZERO)
-
-
-static func sack(t: int, seed_value: int, _size: Vector2i, _variant: String) -> Paint:
-	var p := Paint.new(t + PAD * 2, t + 40, seed_value)
-	Props.sack(p, p.w * 0.5, p.h - t * 0.3, t * 0.6)
 	return _done(p, [], Vector2.ZERO)
 
 

@@ -6,7 +6,7 @@ extends FacilityView
 ##   오른쪽 아래 카드로 열고(Esc·나가기 = 창구만 닫기 — 창구는 방문 활동 수에 세지 않는다).
 ##   문 칸을 밟거나 Esc = 나가기 — 행동력은 나올 때 1(CityState.leave_facility). 한 방문의 활동은 city.json room.activities_per_visit개,
 ##   다 하면 남은 자리는 못 하는 이유만 보인다. 바라보는 자리 위에 이름판(활동 이름 · 못 하면 짧은 이유 — 부연설명 없음).
-## 그리기: 방 그림(바닥·벽·벽 가구 — tools/paint_rooms.gd) 위에 소품·사람·플레이어를 발 높이로 정렬(탐험과 같은 3/4 시점, 칸 = view.floor_tile_px).
+## 지도는 한 장에 층이 다 있다(위층 북쪽·지하 남쪽, 계단·사다리 줄로 이어짐 — CT66). 그리기는 RoomWorld(바닥 그림 + 발 높이로 정렬한 벽 줄·가구·사람·플레이어).
 ## 방이 화면보다 작으면 고정(왼쪽 위 달력 카드를 비켜 오른쪽 빈 곳 가운데), 크면 플레이어를 따라간다(render.json city.room.zoom).
 
 signal art_hidden  ## 결과 그림이 걷혔다 — 도시 화면이 귀퉁이 카드를 다시 보인다
@@ -66,53 +66,16 @@ func _build_world(view: Dictionary) -> void:
 	_vp.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR if linear \
 		else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	box.add_child(_vp)
-	var art_scale := maxf(1.0, JsonUtil.get_float(view, "art_scale", 2.0))
-	var world := Node2D.new()
+	var world := RoomWorld.new()
 	_vp.add_child(world)
-	var bg := Sprite2D.new()
-	bg.centered = false
-	bg.texture = _tex(JsonUtil.get_str(_room.def, "art"))
-	bg.scale = Vector2.ONE / art_scale
-	world.add_child(bg)
-	var sorter := Node2D.new()  # 발 높이(y)로 앞뒤를 정한다
-	sorter.y_sort_enabled = true
-	world.add_child(sorter)
-	for p: Dictionary in _room.props:
-		sorter.add_child(_prop_node(p, art_scale))
-	_player = ActorView.new()
-	sorter.add_child(_player)
-	_player.setup_for(_pc, _state.db.render)
-	_player.drop_camera()
+	world.build(_room, _state.db, _pc, _tile)
+	_player = world.player
 	_player.face(facing)
 	_cam = Camera2D.new()
 	var zoom := UiTheme.render_float("city.room.zoom", 1.6)
 	_cam.zoom = Vector2(zoom, zoom)
 	world.add_child(_cam)
 	_cam.make_current()
-
-
-## 소품: 그림(발 = rect 아래 가운데) 또는 서 있는 사람(몸 그림 시트 — 발 = rect 가운데).
-func _prop_node(p: Dictionary, art_scale: float) -> Node2D:
-	var rc: Rect2i = p["rect"]
-	var sheet: ActorSheet = ActorSheet.load_for(_state.db.render, str(p["sprite"])) if not str(p["sprite"]).is_empty() else null
-	if sheet != null:
-		var person := _Standing.new()
-		person.sheet = sheet
-		person.facing = p["face"]
-		person.position = (Vector2(rc.position) + Vector2(rc.size) * 0.5) * _tile
-		return person
-	var s := Sprite2D.new()
-	s.texture = _tex(str(p["art"]))
-	s.centered = false
-	s.scale = Vector2.ONE / art_scale
-	s.position = Vector2((rc.position.x + rc.size.x * 0.5) * _tile, rc.end.y * _tile)
-	if s.texture != null:
-		s.offset = Vector2(-s.texture.get_width() * 0.5, -s.texture.get_height())
-	return s
-
-
-static func _tex(path: String) -> Texture2D:
-	return load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
 
 
 func _build_plate() -> void:
@@ -144,12 +107,23 @@ func _process(delta: float) -> void:
 	_sync_view()
 
 
-## dir 쪽으로 sec초만큼 걷는다(벽·소품에 막힌다 — 탐험과 같은 Kinematics). 문 칸에 들어서면 나간다.
+## dir 쪽으로 sec초만큼 걷는다(벽·가구에 막힌다 — 탐험과 같은 Kinematics). 문 칸에 들어서면 나간다.
+## 계단·사다리 칸 위에서는 좌우를 막고(CT65) 느리게 — 계단은 오르면 뒷모습·내리면 앞모습, 사다리는 늘 뒷모습(피어 앤 헝거 1처럼 걷기 그림을 그대로).
 func walk(dir: Vector2, sec: float) -> void:
 	if _leaving or dir == Vector2.ZERO:
 		return
-	facing = PlayerMotion.facing_of(dir)
 	var speed := CityRoom.rule(_state, "walk_tiles_per_sec", 4.5)
+	var cell := Kinematics.cell_of(pos)
+	var k := _room.kind_at(cell)
+	if k == "stairs" or k == "ladder":
+		if dir.y == 0.0:
+			return
+		dir = Vector2(0.0, signf(dir.y))
+		pos.x = move_toward(pos.x, cell.x + 0.5, sec * speed)  # 칸 가운데로 붙는다
+		speed *= CityRoom.rule(_state, "ladder_speed" if k == "ladder" else "stairs_speed", 0.6)
+		facing = Vector2i.UP if k == "ladder" or dir.y < 0.0 else Vector2i.DOWN
+	else:
+		facing = PlayerMotion.facing_of(dir)
 	pos = Kinematics.move(_room.map, pos, dir.normalized() * speed * sec, CityRoom.rule(_state, "body_half", 0.3),
 		CityRoom.rule(_state, "corner_assist", 0.45), 0.25)
 	if _room.is_door(Kinematics.cell_of(pos)):
@@ -338,16 +312,3 @@ func try_leave() -> void:
 	if _acting:
 		return
 	super.try_leave()
-
-
-## 서 있는 사람(몸 그림 시트의 선 그림 한 칸 — 사서 등). 발밑 그림자.
-class _Standing extends Node2D:
-	var sheet: ActorSheet
-	var facing: Vector2i = Vector2i(0, 1)
-
-	func _draw() -> void:
-		var w := sheet.world_size()
-		draw_set_transform_matrix(Transform2D(0.0, Vector2(1.0, 0.35), 0.0, Vector2(0, -1)))
-		draw_circle(Vector2.ZERO, w.x * 0.3, Color(0, 0, 0, 0.45))
-		draw_set_transform_matrix(Transform2D.IDENTITY)
-		sheet.draw(self, facing, sheet.stand)

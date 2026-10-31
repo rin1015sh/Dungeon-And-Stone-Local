@@ -1,94 +1,429 @@
 {
-  "id": "temple",
-  "name_ko": "신전 예배당",
-  "facility": "temple",
-  "art": "res://assets/city/rooms/temple.webp",
-  "floor": "flag",
-  "rows": [
-    "################",
-    "#BBBBBBBBBBBBBB#",
-    "#BBBBBBBBBBBBBB#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#######DD#######"
+ "id": "temple",
+ "name_ko": "신전",
+ "facility": "temple",
+ "art_dir": "res://assets/city/rooms/temple",
+ "floor": "stone",
+ "wall": "ashlar",
+ "regions": [
+  {
+   "rect": [0, 2, 10, 9],
+   "floor": "wood"
+  },
+  {
+   "rect": [10, 0, 24, 12],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 14, 34, 25],
+   "floor": "stone"
+  },
+  {
+   "rect": [0, 41, 26, 16],
+   "floor": "dark"
+  }
+ ],
+ "legend": {
+  "G": {
+   "name_ko": "색유리 세 폭(가운데 금빛 상)",
+   "kind": "walldeco",
+   "style": "glass",
+   "color": "#c0508a"
+  },
+  "J": {
+   "name_ko": "금빛 머리 기둥",
+   "kind": "walldeco",
+   "style": "pillar_gold",
+   "color": "#c8a040"
+  },
+  "N": {
+   "name_ko": "성인상 벽감",
+   "kind": "walldeco",
+   "style": "statue",
+   "color": "#a09880"
+  },
+  "E": {
+   "name_ko": "아치 벽감",
+   "kind": "walldeco",
+   "style": "niche",
+   "color": "#6a5a4a"
+  },
+  "R": {
+   "name_ko": "휘장",
+   "kind": "walldeco",
+   "style": "curtain",
+   "color": "#5a2a34"
+  },
+  "d": {
+   "name_ko": "제단 단",
+   "kind": "decor",
+   "style": "dais",
+   "color": "#8a8478"
+  },
+  "s": {
+   "name_ko": "단 계단",
+   "kind": "decor",
+   "style": "steps",
+   "color": "#9a9488"
+  },
+  "A": {
+   "name_ko": "돌 제단",
+   "kind": "furniture",
+   "shape": "altar",
+   "color": "#b8b0a0",
+   "light": true
+  },
+  "k": {
+   "name_ko": "흰 초 무더기",
+   "kind": "furniture",
+   "shape": "candles",
+   "color": "#e8dcc0",
+   "light": true
+  },
+  "C": {
+   "name_ko": "키 큰 촛대",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#c8a040",
+   "light": true
+  },
+  "L": {
+   "name_ko": "독서대(펼친 경전)",
+   "kind": "furniture",
+   "shape": "lectern",
+   "color": "#8a6a44"
+  },
+  "o": {
+   "name_ko": "원형 상감 바닥",
+   "kind": "decor",
+   "style": "mosaic",
+   "color": "#7a7a84"
+  },
+  "O": {
+   "name_ko": "장미 문양 원판",
+   "kind": "decor",
+   "style": "rosette",
+   "color": "#9a9aa8"
+  },
+  "p": {
+   "name_ko": "긴 의자",
+   "kind": "furniture",
+   "shape": "pew",
+   "color": "#5a3e28"
+  },
+  "I": {
+   "name_ko": "기둥",
+   "kind": "furniture",
+   "shape": "pillar",
+   "color": "#9a9488"
+  },
+  "u": {
+   "name_ko": "항아리(붉은 흙)",
+   "kind": "furniture",
+   "shape": "urn",
+   "color": "#8a4a34"
+  },
+  "U": {
+   "name_ko": "항아리(초록 유약)",
+   "kind": "furniture",
+   "shape": "urn",
+   "color": "#3e6a4a"
+  },
+  "Y": {
+   "name_ko": "봉헌 촛대",
+   "kind": "furniture",
+   "shape": "candles",
+   "color": "#d8b060",
+   "light": true
+  },
+  "c": {
+   "name_ko": "기도 의자",
+   "kind": "furniture",
+   "shape": "seat",
+   "color": "#5a3e28"
+  },
+  "F": {
+   "name_ko": "성수반",
+   "kind": "furniture",
+   "shape": "font",
+   "color": "#8aa0b0"
+  },
+  "$": {
+   "name_ko": "헌금함",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#6a5030",
+   "top": "coins"
+  },
+  "w": {
+   "name_ko": "제의 옷장",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#4a3424"
+  },
+  "t": {
+   "name_ko": "제의실 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#5a3e28",
+   "top": "cloth"
+  },
+  "x": {
+   "name_ko": "궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "K": {
+   "name_ko": "고해실",
+   "kind": "furniture",
+   "shape": "booth",
+   "color": "#3e2c20"
+  },
+  "b": {
+   "name_ko": "걸상",
+   "kind": "furniture",
+   "shape": "bench",
+   "color": "#5a3e28"
+  },
+  "Q": {
+   "name_ko": "석관",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#7a746a",
+   "top": "lid"
+  },
+  "T": {
+   "name_ko": "큰 석관(봉인)",
+   "kind": "furniture",
+   "shape": "block",
+   "color": "#8a8070",
+   "top": "lid"
+  },
+  "B": {
+   "name_ko": "납골 벽(쌓은 뼈)",
+   "kind": "walldeco",
+   "style": "bones",
+   "color": "#c8bca0"
+  },
+  "y": {
+   "name_ko": "흩어진 뼈",
+   "kind": "decor",
+   "style": "bones",
+   "color": "#a89c84"
+  },
+  "m": {
+   "name_ko": "악보대",
+   "kind": "furniture",
+   "shape": "lectern",
+   "color": "#6a5030"
+  },
+  "g": {
+   "name_ko": "큰 종",
+   "kind": "furniture",
+   "shape": "bell",
+   "color": "#a88a3a"
+  },
+  "q": {
+   "name_ko": "종 줄",
+   "kind": "decor",
+   "style": "rope",
+   "color": "#8a7a5a"
+  },
+  "f": {
+   "name_ko": "비둘기 깃털·먼지",
+   "kind": "decor",
+   "style": "feathers",
+   "color": "#8a8478"
+  },
+  "e": {
+   "name_ko": "촛대",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#c8a040",
+   "light": true
+  },
+  "X": {
+   "name_ko": "봉인된 묘실 문",
+   "kind": "locked",
+   "opens": "feast_day"
+  }
+ },
+ "rows": [
+  "          ########################",
+  "          #RRR#JGGGGGGGGJ#RRR#####",
+  "###########RRR#JGGGGGGGGJ#RRR#####",
+  "##WWWWWW###...bbb..bbbbb..bbb....#",
+  "##WWWWWW###......m......m........#",
+  "#........##..........@...........#",
+  "#...gg...##.rrrrrrrrrrrrrrrrrr...#",
+  "#...gg...##.zzzzzzzzzzzzzzzzzz...#",
+  "#....qfff//.zzzzzzzzzzzzzzzzzz...#",
+  "#.....fff##.zzzzzzzzzzzzzzzzzz...#",
+  "###########.zzzzzzzzzzzzzzzzzz...#",
+  "          #####################H##",
+  "                               H  ",
+  "                               H  ",
+  "###############################H##",
+  "##EEEE###NN#JGGGGGGGGJ#NN###RRRH##",
+  "##EEEE###NN#JGGGGGGGGJ#NN###RRRH##",
+  "#u....U#..ddddddd@dddddd..#ww....#",
+  "#u....U#.CdddkdAAAAdkdddC.#.....x#",
+  "#......#I.dddddddddddddd.I#......#",
+  "#.YYYY.#...ssssssssssss...#......#",
+  "#....../........oo....L...#.tt...#",
+  "#......#.......oOoo.......+......#",
+  "#..cc..#I.....oooooo.....I#.....e#",
+  "#......#.....OooOOooO.....#......#",
+  "########......oooooo......#......#",
+  "#......#.......oOoo.......#......#",
+  "#......#I.......oo.......I########",
+  "#...FF.#.......====.......#......#",
+  "#b..FF.#.pppppp====pppppp.#.KK.KK#",
+  "#b...../..@....====.......#.KK.KK#",
+  "#b.....#Ipppppp====ppppppI#......#",
+  "#......#.......====......./......#",
+  "#....$.#.pppppp====pppppp.#......#",
+  "#......#.......====.......#......#",
+  "#.^^...#Ipppppp====ppppppI#.bbbb.#",
+  "#.^^...#.......====.......#......#",
+  "#.^^...#.......====.......#......#",
+  "##^^############DD################",
+  "  ^^                              ",
+  "  ^^                              ",
+  "##^^######################        ",
+  "#B^^BBBBBBBBBBBBB#BBBBBBB#        ",
+  "#B^^BBBBBBBBBBBBB#BBBBBBB#        ",
+  "#................#.......#        ",
+  "#................#.e.....#        ",
+  "#.....QQ..QQ..QQ.#.......#        ",
+  "#...e..........e.#..TTT..#        ",
+  "#....I...I...I...#..TTT..#        ",
+  "#................X.......#        ",
+  "#.....QQ..QQ..QQ.#.......#        ",
+  "#................#yyyyyy.#        ",
+  "#....I...I...I...#yyyyyy.#        ",
+  "#..............e.#yyyyyy.#        ",
+  "#.....QQ..QQ..QQ.#.......#        ",
+  "#................#.......#        ",
+  "##########################        "
+ ],
+ "start": [17.0, 37.3],
+ "npcs": [
+  {
+   "at": [21, 5],
+   "name_ko": "성가대원",
+   "look": "res://assets/actors/looks/n3_priest.webp",
+   "staff": false
+  },
+  {
+   "at": [17, 17],
+   "name_ko": "신관",
+   "look": "res://assets/actors/looks/n3_priest.webp",
+   "staff": true
+  },
+  {
+   "at": [10, 30],
+   "name_ko": "기도하는 신도",
+   "look": "res://assets/actors/looks/n4_merchant.webp",
+   "staff": false
+  }
+ ],
+ "spots": [
+  {
+   "rect": [15, 17, 4, 2],
+   "activities": [
+    "temple_remove_essence"
+   ],
+   "rest": true,
+   "name_ko": "신관"
+  },
+  {
+   "rect": [2, 20, 4, 1],
+   "activities": [
+    "temple_service"
+   ]
+  }
+ ],
+ "names": [
+  [
+   4,
+   5,
+   "종탑",
+   "room"
   ],
-  "start": [8.0, 11.3],
-  "props": [
-    {
-      "id": "altar",
-      "art": "res://assets/city/rooms/temple_altar.webp",
-      "kind": "altar",
-      "rect": [6, 4, 4, 1],
-      "lamp": true
-    },
-    {
-      "id": "priest",
-      "sprite": "res://assets/actors/looks/n3_priest.webp",
-      "rect": [8, 3, 1, 1],
-      "face": [0, 1]
-    },
-    {
-      "id": "candles",
-      "art": "res://assets/city/rooms/temple_candles.webp",
-      "kind": "candles",
-      "rect": [12, 4, 2, 1],
-      "lamp": true
-    },
-    {
-      "id": "pew_0",
-      "art": "res://assets/city/rooms/temple_pew.webp",
-      "kind": "pew",
-      "rect": [2, 6, 4, 1]
-    },
-    {
-      "id": "pew_1",
-      "art": "res://assets/city/rooms/temple_pew.webp",
-      "kind": "pew",
-      "rect": [10, 6, 4, 1]
-    },
-    {
-      "id": "pew_2",
-      "art": "res://assets/city/rooms/temple_pew.webp",
-      "kind": "pew",
-      "rect": [2, 8, 4, 1]
-    },
-    {
-      "id": "pew_3",
-      "art": "res://assets/city/rooms/temple_pew.webp",
-      "kind": "pew",
-      "rect": [10, 8, 4, 1]
-    },
-    {
-      "id": "pew_4",
-      "art": "res://assets/city/rooms/temple_pew.webp",
-      "kind": "pew",
-      "rect": [2, 10, 4, 1]
-    },
-    {
-      "id": "pew_5",
-      "art": "res://assets/city/rooms/temple_pew.webp",
-      "kind": "pew",
-      "rect": [10, 10, 4, 1]
-    }
+  [
+   4,
+   6,
+   "큰 종 — 창밖으로 라비기온 지붕",
+   "label"
   ],
-  "spots": [
-    {
-      "rect": [6, 3, 4, 2],
-      "activity": "temple_remove_essence",
-      "rest": true,
-      "name_ko": "신관"
-    },
-    {
-      "rect": [12, 4, 2, 1],
-      "activity": "temple_service"
-    }
+  [
+   21,
+   4,
+   "성가대석",
+   "room"
   ],
-  "source": "original"
+  [
+   20,
+   8,
+   "트인 곳 — 아래로 예배당",
+   "label"
+  ],
+  [
+   16,
+   27,
+   "예배당",
+   "room"
+  ],
+  [
+   3,
+   19,
+   "봉헌 곁방",
+   "room"
+  ],
+  [
+   3,
+   31,
+   "세례실",
+   "room"
+  ],
+  [
+   29,
+   19,
+   "제의실",
+   "room"
+  ],
+  [
+   29,
+   33,
+   "고해실",
+   "room"
+  ],
+  [
+   17,
+   15,
+   "색유리 세 폭",
+   "label"
+  ],
+  [
+   13,
+   24,
+   "원형 상감",
+   "label"
+  ],
+  [
+   9,
+   44,
+   "납골당",
+   "room"
+  ],
+  [
+   21,
+   45,
+   "봉인된 묘실",
+   "room"
+  ]
+ ],
+ "source": "original"
 }

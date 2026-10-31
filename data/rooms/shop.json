@@ -1,70 +1,190 @@
 {
-  "id": "shop",
-  "name_ko": "잡화점",
-  "facility": "shop",
-  "art": "res://assets/city/rooms/shop.webp",
-  "floor": "boards",
-  "rows": [
-    "################",
-    "#BBBBBBBBBBBBBB#",
-    "#BBBBBBBBBBBBBB#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#######DD#######"
+ "id": "shop",
+ "name_ko": "잡화점",
+ "facility": "shop",
+ "art_dir": "res://assets/city/rooms/shop",
+ "floor": "wood",
+ "wall": "timber",
+ "regions": [
+  {
+   "rect": [8, 0, 16, 8],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 10, 24, 16],
+   "floor": "wood"
+  }
+ ],
+ "legend": {
+  "c": {
+   "name_ko": "계산대(저울)",
+   "kind": "furniture",
+   "shape": "counter",
+   "color": "#6a4a2e",
+   "variant": "shop",
+   "light": true
+  },
+  "S": {
+   "name_ko": "벽 선반(포션·단지)",
+   "kind": "walldeco",
+   "style": "shelf_bottles",
+   "color": "#6a5a3a"
+  },
+  "T": {
+   "name_ko": "진열대",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#7a5a3a",
+   "top": "potions"
+  },
+  "n": {
+   "name_ko": "매단 랜턴",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#e8c070",
+   "light": true
+  },
+  "s": {
+   "name_ko": "자루",
+   "kind": "furniture",
+   "shape": "sack",
+   "color": "#8a7a5a"
+  },
+  "a": {
+   "name_ko": "통",
+   "kind": "furniture",
+   "shape": "barrel",
+   "color": "#7a5a36"
+  },
+  "q": {
+   "name_ko": "밧줄·가방 걸이",
+   "kind": "furniture",
+   "shape": "rack",
+   "color": "#8a6a3a"
+  },
+  "P": {
+   "name_ko": "떠돌이 상인 노점",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#8a4a6a",
+   "top": "potions",
+   "needs": "shop_peddler"
+  },
+  "x": {
+   "name_ko": "궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "K": {
+   "name_ko": "장부 책상",
+   "kind": "furniture",
+   "shape": "desk",
+   "color": "#6a4a2e"
+  },
+  ";": {
+   "name_ko": "짚",
+   "kind": "decor",
+   "style": "straw",
+   "color": "#a8945c"
+  },
+  "b": {
+   "name_ko": "상인 침상",
+   "kind": "furniture",
+   "shape": "bed",
+   "color": "#7a5a44"
+  },
+  "j": {
+   "name_ko": "잡동사니",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#6a6050"
+  }
+ },
+ "rows": [
+  "        ################",
+  "        #####WW#########",
+  "        #####WW#########",
+  "        #.bb........x..#",
+  "        #......jjj.....#",
+  "        #......jjj.....#",
+  "        #..............#",
+  "        ##############H#",
+  "                      H ",
+  "                      H ",
+  "######################H#",
+  "##SSSSSSSSSSSSS#######H#",
+  "##SSSSSSSSSSSSS#######H#",
+  "#...............#.....H#",
+  "#......@.....q..#.xxx..#",
+  "#...ccccccc.....+.xx...#",
+  "#............q..#......#",
+  "#...............#......#",
+  "#.....n.........#.KK...#",
+  "#..TT....TT.PP..#......#",
+  "#..TT....TT.PP..#......#",
+  "#...............#..;;;.#",
+  "#s........@...a.#..;;;.#",
+  "#s............a.#..;;;.#",
+  "#...............#......#",
+  "#######DD###############"
+ ],
+ "start": [8.0, 24.3],
+ "npcs": [
+  {
+   "at": [7, 14],
+   "name_ko": "상점 주인",
+   "look": "res://assets/actors/looks/n4_merchant.webp",
+   "staff": true
+  },
+  {
+   "at": [10, 22],
+   "name_ko": "손님",
+   "look": "res://assets/actors/looks/h3_coat.webp",
+   "staff": false
+  }
+ ],
+ "spots": [
+  {
+   "rect": [4, 14, 7, 2],
+   "activities": [
+    "shop_trade"
+   ],
+   "name_ko": "상점 주인"
+  },
+  {
+   "rect": [12, 19, 2, 2],
+   "activities": [
+    "shop_peddler"
+   ],
+   "name_ko": "떠돌이 상인"
+  }
+ ],
+ "names": [
+  [
+   16,
+   3,
+   "다락",
+   "room"
   ],
-  "start": [8.0, 9.3],
-  "props": [
-    {
-      "id": "counter",
-      "art": "res://assets/city/rooms/shop_counter.webp",
-      "kind": "counter",
-      "variant": "shop",
-      "rect": [5, 4, 6, 1],
-      "lamp": true
-    },
-    {
-      "id": "merchant",
-      "sprite": "res://assets/actors/looks/n4_merchant.webp",
-      "rect": [8, 3, 1, 1],
-      "face": [0, 1]
-    },
-    {
-      "id": "crate_a",
-      "art": "res://assets/city/rooms/shop_crate.webp",
-      "kind": "crate",
-      "rect": [2, 6, 1, 1]
-    },
-    {
-      "id": "crate_b",
-      "art": "res://assets/city/rooms/shop_crate.webp",
-      "kind": "crate",
-      "rect": [2, 7, 1, 1]
-    },
-    {
-      "id": "barrel",
-      "art": "res://assets/city/rooms/shop_barrel.webp",
-      "kind": "barrel",
-      "rect": [13, 6, 1, 1]
-    },
-    {
-      "id": "sack",
-      "art": "res://assets/city/rooms/shop_sack.webp",
-      "kind": "sack",
-      "rect": [13, 7, 1, 1]
-    }
+  [
+   8,
+   22,
+   "매장",
+   "room"
   ],
-  "spots": [
-    {
-      "rect": [5, 3, 6, 2],
-      "activity": "shop_trade",
-      "rest": true,
-      "name_ko": "상점 주인"
-    }
+  [
+   19,
+   19,
+   "뒷창고",
+   "room"
   ],
-  "source": "original"
+  [
+   12,
+   19,
+   "노점 자리",
+   "label"
+  ]
+ ],
+ "source": "original"
 }

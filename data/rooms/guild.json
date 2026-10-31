@@ -1,69 +1,286 @@
 {
-  "id": "guild",
-  "name_ko": "탐험가 길드 회관",
-  "facility": "guild",
-  "art": "res://assets/city/rooms/guild.webp",
-  "floor": "boards",
-  "rows": [
-    "################",
-    "#BBBBBBBBBBBBBB#",
-    "#BBBBBBBBBBBBBB#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#######DD#######"
+ "id": "guild",
+ "name_ko": "탐험가 길드",
+ "facility": "guild",
+ "art_dir": "res://assets/city/rooms/guild",
+ "floor": "wood",
+ "wall": "timber",
+ "regions": [
+  {
+   "rect": [0, 0, 26, 14],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 16, 30, 20],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 38, 16, 10],
+   "floor": "dark"
+  }
+ ],
+ "legend": {
+  "c": {
+   "name_ko": "접수 카운터",
+   "kind": "furniture",
+   "shape": "counter",
+   "color": "#6a4a2e",
+   "variant": "guild",
+   "light": true
+  },
+  "Q": {
+   "name_ko": "의뢰 게시판(종이 겹침)",
+   "kind": "walldeco",
+   "style": "board",
+   "color": "#c4b898"
+  },
+  "g": {
+   "name_ko": "등급표(그림만)",
+   "kind": "walldeco",
+   "style": "chart",
+   "color": "#a08a5a"
+  },
+  "m": {
+   "name_ko": "박제한 칼날늑대 머리",
+   "kind": "walldeco",
+   "style": "trophy",
+   "color": "#7a6a5a"
+  },
+  "R": {
+   "name_ko": "고블린 창 걸이",
+   "kind": "furniture",
+   "shape": "rack",
+   "color": "#6a5030"
+  },
+  "M": {
+   "name_ko": "지도 탁자(1층 지도)",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#b8a47c",
+   "variant": "guild"
+  },
+  "b": {
+   "name_ko": "대기 걸상",
+   "kind": "furniture",
+   "shape": "bench",
+   "color": "#5a3e28"
+  },
+  "a": {
+   "name_ko": "술통",
+   "kind": "furniture",
+   "shape": "barrel",
+   "color": "#7a5a36"
+  },
+  "T": {
+   "name_ko": "술 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#6a4a2e",
+   "variant": "inn",
+   "light": true
+  },
+  "f": {
+   "name_ko": "길드 깃발(방패 문장)",
+   "kind": "walldeco",
+   "style": "banner",
+   "color": "#5a2a24"
+  },
+  "S": {
+   "name_ko": "서류 칸 선반",
+   "kind": "walldeco",
+   "style": "shelf_boxes",
+   "color": "#6a5a3a"
+  },
+  "K": {
+   "name_ko": "기록원 책상",
+   "kind": "furniture",
+   "shape": "desk",
+   "color": "#6a4a2e",
+   "light": true
+  },
+  "j": {
+   "name_ko": "표본 유리병",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#6a8a7a",
+   "top": "jars"
+  },
+  "y": {
+   "name_ko": "몬스터 뼈 표본",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#c8bca0"
+  },
+  "L": {
+   "name_ko": "긴 회의 탁자",
+   "kind": "furniture",
+   "shape": "table",
+   "color": "#5a3e28",
+   "top": "papers"
+  },
+  "x": {
+   "name_ko": "압수품 궤짝",
+   "kind": "furniture",
+   "shape": "crate",
+   "color": "#5a4430"
+  },
+  "w": {
+   "name_ko": "낡은 무기 더미",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#6a6a6a"
+  },
+  "n": {
+   "name_ko": "등잔",
+   "kind": "furniture",
+   "shape": "post",
+   "color": "#e8c070",
+   "light": true
+  },
+  "X": {
+   "name_ko": "회의실 문(잠김)",
+   "kind": "locked",
+   "opens": ""
+  }
+ },
+ "rows": [
+  "##########################    ",
+  "#SSSSSSSSSSS#ff#SSSSSSSSS#    ",
+  "#SSSSSSSSSSS#ff#SSSSSSSSS#    ",
+  "#.............#..........#    ",
+  "#........j....#..........#    ",
+  "#...@....j....#..........#    ",
+  "#..KKK...j....#..LLLLLL..#    ",
+  "#.............#..LLLLLL..#    ",
+  "#.............X..........#    ",
+  "#....n...yy...#..........#    ",
+  "#........yy...#..........#    ",
+  "#.............#..........#    ",
+  "#......^......#..........#    ",
+  "#######^##################    ",
+  "       ^                      ",
+  "       ^                      ",
+  "#######^######################",
+  "##QQQQQ^gg#ff#mm#ffSSSSSS#mm##",
+  "##QQQQQ^gg#ff#mm#ffSSSSSS#mm##",
+  "#......^.....................#",
+  "#....................@.....R.#",
+  "#................cccccccc....#",
+  "#............n.............R.#",
+  "#............................#",
+  "#............................#",
+  "#.........MMMM..........n....#",
+  "#.b.......MMMM...............#",
+  "#.b.......MMMM...............#",
+  "#.b...................TT.a...#",
+  "#........@............TT.a...#",
+  "#......................@.....#",
+  "#.bbbb.......................#",
+  "#............................#",
+  "#H...........................#",
+  "#H...........................#",
+  "#H############DD##############",
+  " H                            ",
+  " H                            ",
+  "#H##############              ",
+  "#H##############              ",
+  "#H##############              ",
+  "#H......xx.....#              ",
+  "#...xx.........#              ",
+  "#...xx.....www.#              ",
+  "#..........www.#              ",
+  "#...xxx........#              ",
+  "#..............#              ",
+  "################              "
+ ],
+ "start": [15.0, 34.3],
+ "npcs": [
+  {
+   "at": [4, 5],
+   "name_ko": "기록원",
+   "look": "res://assets/actors/looks/n0_librarian.webp",
+   "staff": true
+  },
+  {
+   "at": [21, 20],
+   "name_ko": "길드 접수원",
+   "look": "res://assets/actors/looks/n1_guild_clerk.webp",
+   "staff": true
+  },
+  {
+   "at": [9, 29],
+   "name_ko": "탐험가",
+   "look": "res://assets/actors/looks/h3_coat.webp",
+   "staff": false
+  },
+  {
+   "at": [23, 30],
+   "name_ko": "탐험가",
+   "look": "res://assets/actors/looks/h3_coat.webp",
+   "staff": false
+  }
+ ],
+ "spots": [
+  {
+   "rect": [3, 5, 3, 2],
+   "activities": [
+    "guild_records"
+   ],
+   "name_ko": "기록원"
+  },
+  {
+   "rect": [2, 18, 5, 1],
+   "activities": [
+    "guild_survey"
+   ],
+   "name_ko": "의뢰 게시판"
+  },
+  {
+   "rect": [17, 20, 8, 2],
+   "activities": [
+    "guild_tags"
+   ],
+   "rest": true,
+   "name_ko": "길드 접수원"
+  }
+ ],
+ "names": [
+  [
+   6,
+   11,
+   "기록실",
+   "room"
   ],
-  "start": [8.0, 9.3],
-  "props": [
-    {
-      "id": "counter",
-      "art": "res://assets/city/rooms/guild_counter.webp",
-      "kind": "counter",
-      "variant": "guild",
-      "rect": [9, 4, 5, 1],
-      "lamp": true
-    },
-    {
-      "id": "clerk",
-      "sprite": "res://assets/actors/looks/n1_guild_clerk.webp",
-      "rect": [11, 3, 1, 1],
-      "face": [0, 1]
-    },
-    {
-      "id": "table_w",
-      "art": "res://assets/city/rooms/guild_table.webp",
-      "kind": "table",
-      "variant": "guild",
-      "rect": [2, 7, 3, 2],
-      "lamp": true
-    },
-    {
-      "id": "table_e",
-      "art": "res://assets/city/rooms/guild_table.webp",
-      "kind": "table",
-      "variant": "guild",
-      "rect": [11, 7, 3, 2],
-      "lamp": true
-    }
+  [
+   19,
+   4,
+   "회의실(잠김)",
+   "room"
   ],
-  "spots": [
-    {
-      "rect": [2, 1, 4, 2],
-      "activity": "guild_survey"
-    },
-    {
-      "rect": [9, 3, 5, 2],
-      "activities": [
-        "guild_tags",
-        "guild_records"
-      ],
-      "rest": true,
-      "name_ko": "길드 접수원"
-    }
+  [
+   13,
+   30,
+   "길드 회관",
+   "room"
   ],
-  "source": "original"
+  [
+   10,
+   25,
+   "지도 탁자",
+   "label"
+  ],
+  [
+   22,
+   28,
+   "술자리",
+   "label"
+  ],
+  [
+   8,
+   44,
+   "지하 창고",
+   "room"
+  ]
+ ],
+ "source": "original"
 }

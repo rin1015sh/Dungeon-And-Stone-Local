@@ -1,74 +1,238 @@
 {
-  "id": "training",
-  "name_ko": "훈련장",
-  "facility": "training",
-  "art": "res://assets/city/rooms/training.webp",
-  "floor": "sand",
-  "rows": [
-    "################",
-    "#BBBBBBBBBBBBBB#",
-    "#BBBBBBBBBBBBBB#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#..............#",
-    "#######DD#######"
+ "id": "training",
+ "name_ko": "훈련장",
+ "facility": "training",
+ "art_dir": "res://assets/city/rooms/training",
+ "floor": "dirt",
+ "wall": "timber",
+ "regions": [
+  {
+   "rect": [10, 0, 22, 9],
+   "floor": "wood"
+  },
+  {
+   "rect": [0, 11, 32, 20],
+   "floor": "dirt"
+  },
+  {
+   "rect": [21, 14, 9, 7],
+   "floor": "wood"
+  },
+  {
+   "rect": [21, 22, 9, 8],
+   "floor": "wood"
+  }
+ ],
+ "legend": {
+  "d": {
+   "name_ko": "허수아비",
+   "kind": "furniture",
+   "shape": "dummy",
+   "color": "#a08a5a"
+  },
+  "g": {
+   "name_ko": "과녁",
+   "kind": "furniture",
+   "shape": "target",
+   "color": "#8a3a2a"
+  },
+  "f": {
+   "name_ko": "나무 울타리",
+   "kind": "furniture",
+   "shape": "fence",
+   "color": "#6a5030"
+  },
+  "w": {
+   "name_ko": "물통",
+   "kind": "furniture",
+   "shape": "barrel",
+   "color": "#4a5a64",
+   "variant": "water"
+  },
+  "R": {
+   "name_ko": "연습 무기 걸이",
+   "kind": "furniture",
+   "shape": "rack",
+   "color": "#7a6a5a"
+  },
+  "M": {
+   "name_ko": "갑옷 받침대",
+   "kind": "furniture",
+   "shape": "stand",
+   "color": "#8a8a8a"
+  },
+  "s": {
+   "name_ko": "방패 더미",
+   "kind": "furniture",
+   "shape": "pile",
+   "color": "#7a3a2a"
+  },
+  "K": {
+   "name_ko": "교관 책상",
+   "kind": "furniture",
+   "shape": "desk",
+   "color": "#6a4a2e",
+   "light": true
+  },
+  "b": {
+   "name_ko": "걸상",
+   "kind": "furniture",
+   "shape": "bench",
+   "color": "#5a3e28"
+  },
+  "B": {
+   "name_ko": "깃발",
+   "kind": "walldeco",
+   "style": "banner",
+   "color": "#5a2a24"
+  },
+  "y": {
+   "name_ko": "발자국",
+   "kind": "decor",
+   "style": "footprints",
+   "color": "#9a8460"
+  },
+  "Y": {
+   "name_ko": "연습 무기 벽",
+   "kind": "walldeco",
+   "style": "weapons",
+   "color": "#7a6a5a"
+  }
+ },
+ "rows": [
+  "          ######################",
+  "          #####BB####BB####BB###",
+  "          #####BB####BB####BB###",
+  "          #..bbbbb..bbbbb......#",
+  "          #....@...............#",
+  "          #....................#",
+  "          #rrrrrrrrrrrrrrrrrr..#",
+  "          #zzzzzzzzzzzzzzzzzz..#",
+  "          ####################^#",
+  "                              ^ ",
+  "                              ^ ",
+  "##############################^#",
+  "##BB##BB####BB##BB####YYYY####^#",
+  "##BB##BB####BB##BB####YYYY####^#",
+  "#___________________#.........^#",
+  "#___________________#.R..M.M.._#",
+  "#______________g_g__#.R......._#",
+  "#___d__d__d_________+.R......._#",
+  "#___________________#......ss._#",
+  "#___________________#......ss._#",
+  "#_____________@_____#........._#",
+  "#___d__d__d_________############",
+  "#____________________........._#",
+  "#____________________.KKK....._#",
+  "#_fffffff_fffffff____..@......_#",
+  "#___________________/........._#",
+  "#____yyyyyy__________........._#",
+  "#____yyyyyy_______w__........._#",
+  "#____yyyyyy__________........._#",
+  "#____________________........._#",
+  "###############DD###############"
+ ],
+ "start": [16.0, 29.3],
+ "npcs": [
+  {
+   "at": [15, 4],
+   "name_ko": "구경꾼",
+   "look": "res://assets/actors/looks/h3_coat.webp",
+   "staff": false
+  },
+  {
+   "at": [23, 24],
+   "name_ko": "교관",
+   "look": "res://assets/actors/looks/n7_trainer.webp",
+   "staff": true
+  },
+  {
+   "at": [14, 20],
+   "name_ko": "수련생",
+   "look": "res://assets/actors/looks/n7_trainer.webp",
+   "staff": false
+  }
+ ],
+ "spots": [
+  {
+   "rect": [4, 17, 1, 1],
+   "activities": [
+    "training_train"
+   ],
+   "name_ko": "허수아비"
+  },
+  {
+   "rect": [7, 17, 1, 1],
+   "activities": [
+    "training_train"
+   ],
+   "name_ko": "허수아비"
+  },
+  {
+   "rect": [10, 17, 1, 1],
+   "activities": [
+    "training_train"
+   ],
+   "name_ko": "허수아비"
+  },
+  {
+   "rect": [4, 21, 1, 1],
+   "activities": [
+    "training_train"
+   ],
+   "name_ko": "허수아비"
+  },
+  {
+   "rect": [7, 21, 1, 1],
+   "activities": [
+    "training_train"
+   ],
+   "name_ko": "허수아비"
+  },
+  {
+   "rect": [10, 21, 1, 1],
+   "activities": [
+    "training_train"
+   ],
+   "name_ko": "허수아비"
+  },
+  {
+   "rect": [22, 23, 3, 2],
+   "rest": true,
+   "name_ko": "교관"
+  }
+ ],
+ "names": [
+  [
+   20,
+   4,
+   "관람석",
+   "room"
   ],
-  "start": [8.0, 10.3],
-  "props": [
-    {
-      "id": "dummy_a",
-      "art": "res://assets/city/rooms/training_dummy.webp",
-      "kind": "dummy",
-      "rect": [3, 5, 1, 1]
-    },
-    {
-      "id": "dummy_b",
-      "art": "res://assets/city/rooms/training_dummy.webp",
-      "kind": "dummy",
-      "rect": [5, 5, 1, 1]
-    },
-    {
-      "id": "dummy_c",
-      "art": "res://assets/city/rooms/training_dummy.webp",
-      "kind": "dummy",
-      "rect": [4, 8, 1, 1]
-    },
-    {
-      "id": "trainer",
-      "sprite": "res://assets/actors/looks/n7_trainer.webp",
-      "rect": [11, 4, 1, 1],
-      "face": [0, 1]
-    },
-    {
-      "id": "rack",
-      "art": "res://assets/city/rooms/training_rack.webp",
-      "kind": "rack",
-      "rect": [12, 8, 2, 1]
-    }
+  [
+   18,
+   7,
+   "난간 너머 마당",
+   "label"
   ],
-  "spots": [
-    {
-      "rect": [3, 5, 1, 1],
-      "activity": "training_train"
-    },
-    {
-      "rect": [5, 5, 1, 1],
-      "activity": "training_train"
-    },
-    {
-      "rect": [4, 8, 1, 1],
-      "activity": "training_train"
-    },
-    {
-      "rect": [11, 4, 1, 1],
-      "rest": true,
-      "name_ko": "교관"
-    }
+  [
+   9,
+   19,
+   "마당(지붕 없음)",
+   "room"
   ],
-  "source": "original"
+  [
+   25,
+   17,
+   "무기고",
+   "room"
+  ],
+  [
+   25,
+   26,
+   "교관실",
+   "room"
+  ]
+ ],
+ "source": "original"
 }
