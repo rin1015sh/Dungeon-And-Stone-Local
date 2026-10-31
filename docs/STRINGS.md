@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(973줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -153,6 +153,7 @@
 - `collection.item_types` 아이템 종류
 - `collection.events` 이벤트
 - `collection.facilities` 시설
+- `collection.rooms` 실내 방
 - `collection.tiles` 타일
 - `collection.landmarks` 랜드마크
 - `collection.activities` 도시 활동
@@ -232,6 +233,8 @@
 - `explore.scavenge_found` {tile}을(를) 뒤져 {item}을(를) 찾았다.
 - `explore.scavenge_empty` {tile}에는 건질 것이 없다.
 - `explore.scavenge_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
+- `explore.loot_found` {item}을(를) 주웠다.
+- `explore.loot_found_n` {item} {n}개를 주웠다.
 - `explore.hidden_found` 숨겨진 것을 찾았다 — [{item}].
 - `explore.rift_item_lost` [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
 - `explore.rift_opened` 동굴 곳곳에 균열 포탈 {count}개가 열렸다!
@@ -569,6 +572,7 @@
 - `combat.reason_no_flee` 도망칠 길이 없다.
 - `combat.reason_leader_only` 일행을 이끄는 사람만 할 수 있다.
 - `combat.reason_veiled` 장막 너머의 동료를 알아볼 수 없다.
+- `combat.reason_item_no_effect` 듣지 않는다
 - `combat.sealed` {name}의 [{skill}]이(가) 봉인되었다.
 - `combat.survive_round` 버텨라! ({round}/{total})
 - `combat.pushed_back` {name}이(가) 밀려나 다음 차례가 늦어진다.
@@ -918,6 +922,7 @@
 - `city.debug_street` 거리 사건
 - `city.reason_no_item` 필요한 물건이 없다.
 - `city.reason_residence` 이 구역엔 없는 곳이다
+- `city.reason_visit_done` 오늘은 이만하면 됐다
 
 ### `city.fx`
 

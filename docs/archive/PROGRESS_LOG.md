@@ -6,6 +6,15 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도서관 실내 방(탑뷰) · 행동력은 나올 때 (2026-10-31, 사용자 "도시를 횡스크롤 + 건물 내부는 탐험 화면처럼 WASD 탑뷰 어떻게 생각해" → 의견(건물 하나로 시범 제안) → "건물 들어가서 나오면 행동력 1 소모하는 걸로 하고 일단 도서관 내부를 구현해 봐", CT62)** — 범위: 행동력 규칙(모든 시설) + 도서관 하나만 실내 방(거리는 그대로). 완료 기준: 도서관에 들어가면 탐험처럼 걷는 3/4 탑뷰 방, 책장 바라보고 Enter로 읽기, 문으로 나오면 행동력 1, 그림은 손그림풍. 테스트: `check.sh` + 캡처(방 · 이름판 · 읽기 결과).
+  - 행동력: `CityState.enter_facility`는 `can_spend`만 보고 `visit_cost`를 적어 두고, `leave_facility`가 그만큼 뺀다(안에서 아무것도 안 해도 1, placeholder 시설 0). 시험 `test_city.test_only_visit_costs_ap`, UI 스모크 기대값(안에서는 그대로, 나오면 1).
+  - 데이터: 컬렉션 `rooms`(manifest) + `data/rooms/library.json`(20×13 — 뒷벽 B 두 줄, 문 D 둘, 책장 자리 여섯·사서 책상(rest)·독서대(needs library_rare), 소품 책상·사서·탁자 넷·독서대) + `_template.json` · 시설 `library.room` · `city.json room`(걷기 4.5칸/초, 몸 0.3, 한 방문 활동 1, 충돌 타일) · `render.json city.room.zoom` 1.4 · 문구 `city.reason_visit_done`.
+  - 코드: `src/city/CityRoom.gd`(방 → FloorMap 충돌, 지금 서는 소품·자리, `target`·`activities_at`·`is_door`), `src/ui/city/RoomView.gd`(FacilityView를 이어받음 — SubViewport 월드 · 방 그림 + y 정렬 소품·사서(`_Standing` 시트 선 칸)·플레이어 `ActorView` · 4방향 걷기 Kinematics · 문 칸 = 나가기 · 바라보는 자리 이름판 · 활동 → `show_result` → 다 넘기면 그림 걷기 `art_hidden` · 카메라는 방이 작으면 달력 카드를 비켜 고정), `CityScreen.choose_facility`(room 있으면 RoomView), `ActorView.drop_camera`, `FacilityView._show_art`가 그림을 돌려줌(`_art_pic`), 검증 `src/core/validation/CityRoomRules.gd`(rows 글자·문·start·소품 rect·자리 활동·시설 활동마다 자리), 캡처 `--room_at=x,y --face=…`.
+  - 그림: `tools/paint_rooms.gd` + `tools/city_art/RoomArt.gd`(방 1280×832 — 엇갈린 판자 바닥, 바랜 붉은 통로 깔개, 돌벽 앞 책장 여섯(Bits.books_shader)·뾰족 아치 창·창빛 줄기·벽 촛대 넷·사다리, 옆벽·앞벽 윗면과 문 틈, 소품 그림자, 어둡게 내린 뒤 촛불·창·탁자·등 둘레만 밝힘) + `RoomProps.gd`(독서 탁자 + 긴 의자 · 사서 책상 · 쇠사슬 책 독서대 — 윗면 + 앞면 띠). 약 20초. 사서 = `MapLooks n0_librarian`(센 머리·수염·발목까지 짙은 겉옷, KEEP) → `assets/actors/looks/n0_librarian.webp`.
+  - 고친 것(캡처 보고): 달력 카드가 첫 책장을 가림 → 방을 카드 오른쪽 빈 곳 가운데로 · 배율 1.6 → 1.4 · 긴 의자가 두 번째 탁자처럼 보임 → 낮고 얇게, 다리 보이게.
+  - 테스트: `tests/test_city_room.gd`(4 — 지도·자리·독서대·책상·방문 행동력), UI 스모크 `_library_flow`(W 누르고 걷기 · 책장 이름판 · Enter 읽기 · 한 방문 하나 · 문으로 나오면 행동력 2).
+  - 남은 것: 직접 해 보기(PROGRESS B4a), 다른 시설 방, 위 구역(7·5·3) 방 그림(지금 13구역 한 장), 거리 걷는 캐릭터.
+
 - **게임 글 모음 TEXTS.md (2026-10-31, 사용자 "플레이버 텍스트·도서관 책·상황 설명 텍스트 전부 파일 하나로 — 내가 고쳐 보내면 반영")** — 새 `tools/texts_md.py`(Godot 없이): 내보내기 → `docs/TEXTS.md` 1,180개(도서관 책 제목·본문 136 · 플레이버·설명 481 — 아이템·소재·종류·몬스터·정수·스킬·상태이상·게이지·랜드마크·종족·직업·균열·수수께끼 · 상황 문구 563 — ko.json에서 문장으로 끝나는 글, 디버그·기반 점검·버튼 묶음 제외). 항목 = `#### 이름 · \`파일:경로\``(경로 `.키`·`[번호]`·`{id}`) + 글. `--apply`: 바뀐 글만, JSON 글자열을 그 자리에서 바꿔 파일 모양 유지(같은 글이 여럿이면 다시 씀), ko.json 자리표시자가 달라지면 건너뜀, 모르는 항목은 알림. 시험: 손대지 않은 파일 적용 = 0개, 책·아이템·ko 글 바꿈 → 세 파일 한 줄씩, 자리표시자 바꾼 줄 건너뜀(시험 뒤 되돌림).
 
 - **대화창 한 쪽 = 한 문장 (2026-10-31, 사용자 "게임에서 대화 로그 나올 때 한 번에 한 문장만 — 앞으로도 항상", UI44)** — 새 `src/ui/widgets/DialogueSplit.gd`(`sentences` — 줄바꿈·`.!?…`(닫는 따옴표까지) 뒤 빈칸에서 나눔, 『…』·「…」 제목 줄은 첫 문장에 붙임). `DialogueBox.say`가 문장마다 줄을 쌓고 `_fill`은 쪽 하나에 문장 하나만(전에는 남은 줄에 다음 알림을 이어 붙였다). 긴 문장은 전처럼 줄 단위로 쪽을 넘김. 테스트 `test_dialogue_split`(3) + UI 스모크 "대화창은 한 번에 한 문장". 규칙은 CLAUDE.md·CANON·REFERENCE·ASSUMPTIONS UI44.

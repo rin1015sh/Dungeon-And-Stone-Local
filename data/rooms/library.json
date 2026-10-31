@@ -1,0 +1,72 @@
+{
+  "id": "library",
+  "name_ko": "도서관 열람실",
+  "facility": "library",
+  "art": "res://assets/city/rooms/library.webp",
+  "rows": [
+    "####################",
+    "#BBBBBBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBBBBBB#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#..................#",
+    "#########DD#########"
+  ],
+  "start": [10.0, 11.3],
+  "props": [
+    {
+      "id": "desk",
+      "art": "res://assets/city/rooms/library_desk.webp",
+      "rect": [2, 6, 3, 1]
+    },
+    {
+      "id": "librarian",
+      "sprite": "res://assets/actors/looks/n0_librarian.webp",
+      "rect": [3, 5, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "table_nw",
+      "art": "res://assets/city/rooms/library_table.webp",
+      "rect": [6, 6, 3, 2]
+    },
+    {
+      "id": "table_ne",
+      "art": "res://assets/city/rooms/library_table.webp",
+      "rect": [12, 6, 3, 2]
+    },
+    {
+      "id": "table_sw",
+      "art": "res://assets/city/rooms/library_table.webp",
+      "rect": [6, 9, 3, 2]
+    },
+    {
+      "id": "table_se",
+      "art": "res://assets/city/rooms/library_table.webp",
+      "rect": [12, 9, 3, 2]
+    },
+    {
+      "id": "lectern",
+      "art": "res://assets/city/rooms/library_lectern.webp",
+      "rect": [17, 5, 1, 1],
+      "needs": "library_rare"
+    }
+  ],
+  "spots": [
+    {"rect": [1, 1, 2, 2], "activity": "library_dungeon"},
+    {"rect": [4, 1, 2, 2], "activity": "library_arms"},
+    {"rect": [7, 1, 2, 2], "activity": "library_ailments"},
+    {"rect": [11, 1, 2, 2], "activity": "library_monsters"},
+    {"rect": [14, 1, 2, 2], "activity": "library_survival"},
+    {"rect": [17, 1, 2, 2], "activity": "library_society"},
+    {"rect": [2, 5, 3, 2], "activity": "library_decode", "rest": true},
+    {"rect": [17, 5, 1, 1], "activity": "library_rare"}
+  ],
+  "source": "original"
+}

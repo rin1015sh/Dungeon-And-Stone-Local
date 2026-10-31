@@ -22,6 +22,7 @@ var _grid: ChoiceGrid
 var _panel_box: VBoxContainer
 var _leaving: bool = false
 var top_reserve: float = 0.0  ## 패널 위에 비워 둘 높이(메뉴 자리)
+var _art_pic: Control = null  # 결과 그림(요리·펼친 책)이 덮고 있으면 그 그림
 var _summary: PackedStringArray = []  # 할 게 없어 바로 나갈 때의 이유(거리 화면 위 알림으로 보여 준다)
 
 
@@ -159,7 +160,7 @@ func _close_panel(cursor: int) -> void:
 
 ## 활동 결과(무엇이 얼마나 바뀌었는지)를 대화창에 쌓는다(한 쪽씩 Enter).
 func show_result(ctx: CityContext) -> void:
-	_show_art(ctx)
+	_art_pic = _show_art(ctx)
 	if ctx.ok:
 		_dialog.say(Strings.t("city.did", {"name": JsonUtil.get_str(_state.activity(ctx.activity_id), "name_ko")}), "info")
 	for msg: Dictionary in ctx.messages:
@@ -168,8 +169,8 @@ func show_result(ctx: CityContext) -> void:
 
 ## 결과 그림이 실내 그림 위를 가득 덮는다 — 여관 식사(city.meal.<요리 id> → data/meals art, CT47) ·
 ## 도서관 서적(city.fx.book_new → 그 분야의 펼친 책 그림 city.json library.fields art, CT57 — 글은 아래 대화창에).
-## 대화창은 그 위. 결과를 다 넘기면 방문이 끝나 거리로 나가며 함께 사라진다.
-func _show_art(ctx: CityContext) -> void:
+## 대화창은 그 위. 결과를 다 넘기면 방문이 끝나 거리로 나가며 함께 사라진다(실내 방 RoomView는 다 넘기면 걷어 낸다 — 덮은 그림을 돌려준다).
+func _show_art(ctx: CityContext) -> Control:
 	for msg: Dictionary in ctx.messages:
 		var key := str(msg["key"])
 		var art := ""
@@ -180,7 +181,7 @@ func _show_art(ctx: CityContext) -> void:
 		else:
 			continue
 		if art.is_empty() or not ResourceLoader.exists(art):
-			return
+			return null
 		var pic := TextureRect.new()
 		pic.texture = load(art) as Texture2D
 		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -192,7 +193,8 @@ func _show_art(ctx: CityContext) -> void:
 		pic.modulate.a = 0.0
 		create_tween().tween_property(pic, "modulate:a", 1.0, UiTheme.render_float("city.meal_art.fade_sec", 0.35))
 		art_shown.emit()
-		return
+		return pic
+	return null
 
 
 ## 창구 거래 결과: 넘기지 않는 글로 대화창에 남긴다(마지막 거래만).

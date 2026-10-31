@@ -44,6 +44,7 @@ func _run() -> void:
 	await _city_flow()
 	await _tax_flow()
 	await _street_flow()
+	await _library_flow()
 	SaveGame.delete(TEST_SAVE)
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
@@ -746,6 +747,50 @@ func _frames(n: int) -> void:
 		await get_tree().process_frame
 
 
+## 액션 키를 sec초 동안 누르고 있다가 뗀다(실내 방 걷기).
+func _hold(action: String, sec: float) -> void:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await get_tree().create_timer(sec).timeout
+	var up := InputEventAction.new()
+	up.action = action
+	Input.parse_input_event(up)
+	await _frames(1)
+
+
+## 도서관 실내 방(탑뷰 — CT62): W/A/S/D로 걷고, 책장을 바라보고 Enter = 읽기, 한 방문에 한 번, 문을 밟으면 거리로(행동력은 나올 때 1).
+func _library_flow() -> void:
+	_main.call("_show_title")
+	var city := await _new_city("도서관")
+	if city == null:
+		return
+	var st := city.state
+	st.happenings.clear()
+	city.choose_facility("library")
+	await _frames(2)
+	var room := city.facility_view() as RoomView
+	if not _expect(room != null and st.ap == 3, "도서관 = 걸어 다니는 실내 방(행동력은 아직 그대로)"):
+		return
+	var start := room.pos
+	await _hold("move_up", 0.4)
+	_expect(room.pos.y < start.y - 0.5 and room.facing == Vector2i.UP, "W를 누르고 있으면 위로 걷는다")
+	room.pos = Vector2(2.0, 3.6)
+	room.facing = Vector2i.UP
+	await _frames(2)
+	_expect(str(room.focus().get("activity", "")) == "library_dungeon", "책장을 바라보면 그 분야 이름판")
+	var known := st.known_info.size()
+	await _action("interact")
+	await _frames(3)
+	_expect(st.known_info.size() > known and city.facility_view() == room, "Enter = 그 책장 읽기, 읽고 나도 방에 남는다")
+	_expect(room.reason("library_arms") == "city.reason_visit_done", "한 방문에 활동 한 번")
+	room.pos = Vector2(10.0, 11.4)
+	await _hold("move_down", 0.5)
+	await _frames(2)
+	_expect(city.facility_view() == null and st.ap == 2, "문을 밟으면 거리로 — 나올 때 행동력 1")
+
+
 func _press(screen: Node, text: String) -> void:
 	for b: Node in screen.find_children("*", "Button", true, false):
 		var btn := b as Button
@@ -848,7 +893,7 @@ func _city_flow() -> void:
 	_expect(street.focused_id() == "inn", "여관을 화면 가운데로")
 	await _action("menu_confirm")
 	var fv := city.facility_view()
-	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 2, "Enter → 행동력 1을 쓰고 여관 안으로"):
+	if not _expect(fv != null and fv.facility_id() == "inn" and st.ap == 3, "Enter → 여관 안으로(행동력은 나올 때 — CT62)"):
 		return
 	_expect(_has_button(fv, Strings.t("city.leave")), "시설 안에 나가기")
 	await _action("menu")
@@ -905,7 +950,7 @@ func _city_flow() -> void:
 	await _frames(1)
 	await _action("menu_confirm")
 	fv = city.facility_view()
-	if not _expect(fv != null and fv.facility_id() == street.focused_id() and st.ap == 1, "Space로 가운데 건물에 들어간다"):
+	if not _expect(fv != null and fv.facility_id() == street.focused_id() and st.ap == 2, "Enter로 가운데 건물에 들어간다(여관을 다녀와 행동력 2)"):
 		return
 	if fv.facility_id() == "inn":
 		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
@@ -916,7 +961,7 @@ func _city_flow() -> void:
 	_expect(city.facility_view() == null, "거리로 나왔다")
 	city.choose_facility("shop")
 	fv = city.facility_view()
-	if not _expect(fv != null and st.ap == 0, "상점(행동력 0)"):
+	if not _expect(fv != null and st.ap == 1, "상점(마지막 행동력 — 나올 때 쓴다)"):
 		return
 	_press_prefix(fv, Strings.t("city.shop_tab_buy"))  # 선택 창 [구매] → 구매 목록이 바로 열린다
 	var money := pc.inventory.money
@@ -972,9 +1017,9 @@ func _city_flow() -> void:
 	st.ap = 1
 	city.choose_facility("inn")
 	fv = city.facility_view()
-	if _expect(fv != null and st.ap == 0, "하순 마지막 행동력으로 여관"):
+	if _expect(fv != null and st.ap == 1, "하순 마지막 행동력으로 여관"):
 		_press_prefix(fv, DataNames.entry(DataRegistry.db, "activities", "inn_rest"))
-		_expect(st.ap == 0, "시설 안 활동은 행동력을 쓰지 않는다")
+		_expect(st.ap == 1, "시설 안 활동은 행동력을 쓰지 않는다(나올 때 쓴다)")
 		fatigue = pc.fatigue.value  # 휴식(임시값)으로 줄어든 값이 미궁으로 이어진다(활동 뒤 저절로 나와 하순이 끝난다)
 	var plaza := (await _screen(PlazaScreen)) as PlazaScreen
 	if not _expect(plaza != null, "하순이 끝나면 저절로 차원광장으로"):

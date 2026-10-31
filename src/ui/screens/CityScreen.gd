@@ -1,9 +1,10 @@
 class_name CityScreen
 extends Control
 ## 도시 화면(라비기온 구역): 횡스크롤 거리(CityStreet) ↔ 시설 내부(FacilityView), 귀퉁이 정보 카드(CityHud — 달력·탐험가·메뉴).
-## 시설을 고르면 행동력(facility_entry_cost)을 쓰고 들어간다. 나오면 행동력이 0일 때 다음 순으로 넘어간다.
+## 시설을 고르면 들어가고(행동력 facility_entry_cost가 있어야), 나올 때 그 행동력을 쓴다. 행동력이 0이 되면 다음 순으로 넘어간다.
 ## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
-## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 거리 아래에도 대화창(못 들어가는 이유 등).
+## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 실내 방이 있는 시설(도서관 — RoomView)은 걸어서 문으로 나온다.
+## 행동력은 시설 한 번 다녀오기에 1 — 나올 때 쓴다(CT62). 거리 아래에도 대화창(못 들어가는 이유 등).
 ## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다. 거리에서 Esc = 정지 창(계속 · 타이틀로).
 ## 마우스는 쓰지 않는다(A/D 스크롤, Enter 들어가기 — 사용자 결정 2026-10-19).
 
@@ -94,7 +95,7 @@ func is_debug_open() -> bool:
 	return _debug.visible
 
 
-## 거리에서 시설을 고른다: 행동력을 쓰고 내부로. 못 들어가면 안내.
+## 거리에서 시설을 고른다: 내부로(행동력은 나올 때). 못 들어가면 안내.
 func choose_facility(id: String) -> void:
 	if _facility != null or _event_running:
 		return
@@ -102,10 +103,13 @@ func choose_facility(id: String) -> void:
 	if not why.is_empty():
 		say(Strings.t(why))
 		return
-	_facility = FacilityView.new()
+	var has_room := not JsonUtil.get_str(state.db.get_entry("facilities", id), "room").is_empty()
+	_facility = RoomView.new() if has_room else FacilityView.new()  # 실내 방이 있으면 걸어 다니는 방(CT62)
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
 	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
+	if _facility is RoomView:
+		(_facility as RoomView).art_hidden.connect(func() -> void: _hud.visible = true)
 	_menu.close()  # 시설 안에서는 Tab 메뉴를 쓰지 않는다
 	_hud.set_facility_mode(true)
 	add_child(_facility)

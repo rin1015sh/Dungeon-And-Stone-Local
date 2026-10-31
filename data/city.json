@@ -139,6 +139,16 @@
     ]
   },
   "facility_entry_cost": 1,
+  "room": {
+    "_comment": "시설 실내 방(탑뷰 — data/rooms, CT62): 걷는 빠르기(칸/초) · 몸 반 폭(칸) · 모서리 미끄러짐 · 한 방문에 할 수 있는 활동 수(그 뒤로는 둘러보고 나가기만 — 행동력은 나올 때 facility_entry_cost) · 충돌 지도에 쓰는 타일(data/tiles — 바닥·막힘). 값은 임시값.",
+    "walk_tiles_per_sec": 4.5,
+    "body_half": 0.3,
+    "corner_assist": 0.45,
+    "activities_per_visit": 1,
+    "floor_tile": "cave_floor",
+    "block_tile": "rock_wall",
+    "source": "placeholder"
+  },
   "facility_order": [
     "guild",
     "inn",

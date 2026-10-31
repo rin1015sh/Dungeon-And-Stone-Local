@@ -62,6 +62,13 @@ func setup_for(actor: Actor, render: Dictionary) -> void:
 	add_child(_camera)
 
 
+## 따라가는 카메라를 뗀다(시설 실내 방 — 화면이 카메라를 따로 둔다, RoomView).
+func drop_camera() -> void:
+	if _camera != null:
+		_camera.queue_free()
+		_camera = null
+
+
 func _process(delta: float) -> void:
 	_animate(delta)
 	if _glow == null or not _glow.enabled:

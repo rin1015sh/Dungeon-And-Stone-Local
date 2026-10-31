@@ -12,6 +12,7 @@ extends Node
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다(--trap=all = 모두 드러내기만), --murals = 벽화 힌트를 다 본 상태
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
+## 실내 방(도서관 — CT62): --facility=library [--room_at=x,y --face=up|down|left|right] [--activity=<id>].
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
@@ -444,9 +445,18 @@ func _city(city: CityScreen) -> void:
 	if _args.has("facility"):
 		city.choose_facility(str(_args["facility"]))
 		await _frames(2)
+		var room := city.facility_view() as RoomView
+		if room != null and _args.has("room_at"):  # --room_at=x,y(칸) --face=up|down|left|right: 실내 방(CT62)에서 선 자리·보는 쪽
+			var at := str(_args["room_at"]).split(",")
+			room.pos = Vector2(at[0].to_float(), at[1].to_float())
+			room.facing = {"up": Vector2i.UP, "down": Vector2i.DOWN, "left": Vector2i.LEFT, "right": Vector2i.RIGHT}.get(str(_args.get("face", "up")), Vector2i.UP)
+			await _frames(3)
 		if _args.has("activity"):
 			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
-			city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
+			if room != null:
+				room.use(str(_args["activity"]))
+			else:
+				city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
 			if name.is_empty():
 				push_warning("활동 없음: " + str(_args["activity"]))
 			if _args.has("advance"):  # --advance=N: 결과 대화창을 N쪽 넘긴다(--dialog와 함께 — 뒤 쪽 문구 확인)

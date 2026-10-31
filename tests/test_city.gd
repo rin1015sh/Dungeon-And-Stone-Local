@@ -58,22 +58,26 @@ func test_spending_all_ap_moves_to_next_period() -> void:
 	assert_eq(s.ap, 3)
 
 
-## 행동력은 시설에 들어갈 때만 1 쓴다(어느 시설이든). 시설 안 활동은 행동력을 쓰지 않는다.
-func test_only_entry_costs_ap() -> void:
+## 행동력은 시설 한 번 다녀오기에 1 — 나올 때 쓴다(어느 시설이든, CT62). 시설 안 활동은 행동력을 쓰지 않는다.
+func test_only_visit_costs_ap() -> void:
 	var s := _state()
 	var pc := _pc()
 	for f: String in s.facility_ids():
 		var t := _state()
 		assert_eq(t.enter_facility(f), "", "들어가기 " + f)
+		assert_eq(t.ap, 3, f + " 안에서는 아직 행동력 그대로")
+		t.leave_facility()
 		var stub := JsonUtil.get_bool(db.get_entry("facilities", f), "placeholder")
-		assert_eq(t.ap, 3 if stub else 2, f + (" 입장 = 행동력 그대로(기능 없는 자리)" if stub else " 입장 = 행동력 1"))
+		assert_eq(t.ap, 3 if stub else 2, f + (" 다녀와도 행동력 그대로(기능 없는 자리)" if stub else " 다녀오면 행동력 1"))
 	assert_eq(s.enter_facility("inn"), "")
 	for i in 5:
 		assert_true(CityActions.perform(s, pc, "inn_rest", _reg()).ok, "안에서는 몇 번이든")
-	assert_eq(s.ap, 2, "시설 안 활동은 행동력을 쓰지 않는다")
-	assert_false(s.spend_ap(3), "모자라면 쓰지 않는다")
-	assert_eq(s.ap, 2, "0 아래로 내려가지 않는다")
+	assert_eq(s.ap, 3, "시설 안 활동은 행동력을 쓰지 않는다")
+	assert_false(s.spend_ap(4), "모자라면 쓰지 않는다")
 	s.leave_facility()
+	assert_eq(s.ap, 2, "나오면서 1")
+	s.leave_facility()
+	assert_eq(s.ap, 2, "거리에서 다시 나가기 = 쓰지 않는다")
 	s.ap = 0
 	assert_eq(s.enter_facility("library"), "city.reason_no_ap", "행동력 0이면 시설에 못 들어간다")
 	assert_eq(s.ap, 0)

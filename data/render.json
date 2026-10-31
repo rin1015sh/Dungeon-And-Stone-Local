@@ -239,6 +239,10 @@
     "debug_edit_width": 110,
     "info_width": 520,
     "info_height": 420,
+    "room": {
+      "_comment": "시설 실내 방(탑뷰 — RoomView, CT62): zoom = 화면 배율(방이 화면보다 작으면 고정 — 왼쪽 위 달력 카드(calendar_width)를 비켜 오른쪽 빈 곳 가운데).",
+      "zoom": 1.4
+    },
     "plaza": {
       "_comment": "차원광장(미궁 입구) 화면: 하늘(날씨)·원경 far 레이어 일부(far_region = 그림 px, 화면 y·height 거리 단위) 위에 background(tools/paint_city.gd --only=plaza). portal_rect = 돌 고리 안쪽 뒷면 원의 상자(화면 720 기준 px, tools/city_art/Plaza.gd portal_rect()로 계산), far_y = 원경을 올려 회랑 위로 첨탑만 보이게. 초 = 도착 뒤 열리기까지·열리는 데·들어갈 때 걸리는 시간.",
       "background": "res://assets/city/plaza.webp",

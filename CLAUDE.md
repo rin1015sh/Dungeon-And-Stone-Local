@@ -89,7 +89,7 @@ src/explore/    지도·생성기(generators/)·ExploreSession·이동·시야·
 src/progress/   성장·정수·전리품·드롭·저장      src/items/  가방·장비      src/city/  도시 규칙(+effects/)
 src/ui/         InputSetup·theme/·widgets/·windows/(Tab 메뉴)·city/·combat/·screens/
 tests/          test_*.gd(단위) · smoke_ui(UI 스모크)
-tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/, paint_books + book_art/) · sim_*(밸런스 시뮬레이터)
+tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/, paint_books + book_art/, paint_rooms + city_art/Room*) · sim_*(밸런스 시뮬레이터)
 assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ battle/(전투 뒷그림) (그림은 코드가 그린 WebP)
 ```
 파일 하나하나의 역할은 **`docs/REFERENCE.md` "파일 구조(자세히)"**.

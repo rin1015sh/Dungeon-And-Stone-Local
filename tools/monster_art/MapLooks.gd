@@ -8,8 +8,8 @@ extends RefCounted
 ## 전투 뒷모습(Party.spec_of → paint_monsters --only=party)·전투 동작(paint_motions)이 같이 쓴다.
 const CHOSEN := {"human": "h6_ranger", "barbarian": "b9_iron_raider", "elf": "e4_ranger", "dwarf": "d4_axe", "beastkin": "k4_fox_rogue"}  ## 새 종족(사용자 2026-10-30 6차 시안 확정 — AM59)
 ## 게임 그림 말고도 남겨 두는 옷차림 → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다):
-##   h3_coat(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") · r0_raider(맵 약탈자 무리 — render.json view.raider_sprite, 사용자 2026-10-26 "전투 화면처럼 두건·망토로")
-const KEEP := ["h3_coat", "r0_raider"]
+##   n0_librarian(도서관 실내 방 사서 — CT62) · h3_coat(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") · r0_raider(맵 약탈자 무리 — render.json view.raider_sprite, 사용자 2026-10-26 "전투 화면처럼 두건·망토로")
+const KEEP := ["h3_coat", "r0_raider", "n0_librarian"]
 
 
 const LOOKS := {
@@ -94,6 +94,10 @@ const LOOKS := {
 		"pants": Color("#3a3630"), "shirt": Color("#5a5244"), "sleeves": "long", "vest": Color("#3e2c20"), "belt": Color("#2a1c14"), "pouch": true,
 		"boots": Color("#2e2218"), "bracers": Color("#3a2a1c"),
 		"cloak": {"c": Color("#4a3a2c"), "len": 0.3, "flare": 1.1, "open": 1.3, "collar": true}}}},
+	## 도시 실내 방 NPC(2026-10-31, CT62): 도서관 사서 — 발목까지 오는 짙은 겉옷 · 끈 허리띠 · 센 머리와 수염.
+	"n0_librarian": {"race": "human", "name": "도서관 사서", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#9a958a"), "beard": Color("#a29c90"),
+		"skin": Color("#b89a82"), "kit": {"pants": Color("#2c2a26"), "shirt": Color("#4a463c"), "sleeves": "long", "boots": Color("#221a14"),
+		"coat": {"c": Color("#2e3a32"), "len": 0.95}, "outer_belt": Color("#6a5a3c")}}},
 	## b8 + b7(사용자 2026-10-29 "b8에 b7 합친 걸로 전부 교체"): 털 어깨·X자 멜빵·긴 띠 치마·맨다리 + 가시 쇠 어깨받이·쇠 팔목·쇠 위팔 띠.
 	"b9_iron_raider": {"race": "barbarian", "name": "쇠 어깨 약탈자", "head": 1.92, "legs": 0.72, "spec": {"kit": {
 		"pauldron": {"c": Color("#454a4e"), "side": "l", "kind": "iron", "size": 1.35}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#6a6e72")},

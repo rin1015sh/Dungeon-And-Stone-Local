@@ -5,6 +5,7 @@
   "x": 1309,
   "building": "res://assets/city/buildings/library.webp",
   "interior": "res://assets/city/interiors/library.webp",
+  "room": "library",
   "activities": [
     "library_dungeon",
     "library_arms",
