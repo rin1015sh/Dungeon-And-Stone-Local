@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **건물 안 창구 카드 · 도서관 1층만 · 지나가는 낮은 가구 (2026-10-31, 사용자 "건물 내에서 활동하려면 UI가 위에 고정돼 너무 크고 좌상단 창이랑 겹쳐 글자가 안 보임 · 도서관 2층 없애고 1층 각 책장에서 각 분야 책 · 막는 타일 중 지나갈 법한 것은 지나가게", CT75)** — 범위: RoomView 창구 자리 · 도서관 지도 · 낮은 가구 충돌. 완료 기준: 창구 카드가 오른쪽 아래에 제 크기로 뜨고 달력과 겹치지 않음, 도서관 1층에서 여섯 분야를 모두 읽음, 책 더미·의자 위를 걸어감. 테스트: `check.sh` + 캡처(잡화점 구매 창구 · 도서관 열람실·작은 서가·의자 위).
+  - 창구: `RoomView.open_panel`이 `set_anchors_preset(BOTTOM_RIGHT)` 뒤 offset_right·bottom만 넣어 left·top이 화면 전체(−1280·−720)로 남았다 → 카드가 (0,0)~대화창 위까지 늘어나 달력 카드 밑에 깔림. `_place_panel`(제 최소 크기 · minimum_size_changed에 다시)로 고침. 이름판은 `RoomView.avoid`(CityScreen이 `CityHud.calendar_rect`를 넣음)에 걸리면 그 오른쪽으로.
+  - 도서관: 줄 0~20(2층 회랑·계단 줄) 지움 → 30×31. 옛 나선 계단 방 = 작은 서가(윗벽 SSFSS — 몬스터와 정수 [24,1] · 생존과 야영 [27,1]), 열람실 윗벽 [20,1] = 도시와 탐험가(미궁·소재와 무기·상태이상은 그대로), 책 찾는 탐험가 (26,3). 안 쓰는 범례(안락의자·나선 계단 기둥·초상화·작은 탁자) 지움. `paint_rooms --only=library`(가구 그림 30 → 22) · `city_boards.py`.
+  - 낮은 가구: `city.json room.walk_shapes`(books·bottles·stack·cheese·stool·seat·basket·bucket) — `CityRoom.walk_through`(범례 walk가 덮는다)면 충돌 지도에서 걷는 칸, `furniture[].low` → RoomWorld가 y 정렬 밖(사람 아래)에 그림. 검증 BFS(`CityRoomRules`)도 같게.
+  - 테스트: `test_floors_connect_in_one_map`은 잠긴 문을 연 셈(도서관 계단은 잠긴 지하로만). 캡처 도구 `--activity`가 실내 창구면 `open_panel`.
+
 - **건물 안 가구 뒤지기 · 도시 잡템 · 건물 안 Tab 메뉴 (2026-10-31, 사용자 "도시 건물 타일과 상호작용 · 잡템 새로(대장간 철조각 — 전투, 도서관 새 책 등) · 건물 안에서 Tab 메뉴", CT74)** — 테스트: `check.sh`(495개 — test_city_room 가구 뒤지기 · test_scavenge는 균열 표만 · UI 스모크 건물 안 Tab) + 캡처(이름판).
   - 코드: `CityScavenge`(새 — RiftScavenge와 같은 표·문구, 한 순 한 번 CityState.searched) · CityRoom.searchables·target(활동 자리 다음) · RoomView 이름판·interact·menu_ok·paused · CityScreen _overlay_ok·_on_overlay(Tab·B를 걷는 중에만, 열면 걷기 멈춤)·use_item(건물 안에서도).
   - 데이터: 잡템 18(data/items — 던지기 smite single · 피로·허기·빛·상태 풀기 · 팔기) · scavenge 표 10 · city.json room.search · ko.json reason_searched. 그림 Junk2 7가지 + 기존 그림.

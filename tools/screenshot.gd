@@ -473,7 +473,9 @@ func _city(city: CityScreen) -> void:
 			await _frames(3)
 		if _args.has("activity"):
 			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
-			if room != null:
+			if room != null and not JsonUtil.get_str(city.state.activity(str(_args["activity"])), "panel").is_empty():
+				room.open_panel(str(_args["activity"]), str(_args.get("tab", "")))  # 창구(상점·은행 …)는 방 안 카드로
+			elif room != null:
 				room.use(str(_args["activity"]))
 			else:
 				city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))

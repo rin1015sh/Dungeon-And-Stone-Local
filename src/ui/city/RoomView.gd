@@ -26,6 +26,8 @@ var _held: Array[String] = []
 var _acting: bool = false  # 활동 결과를 넘기는 중 · 선택 창
 ## Tab 메뉴·도감이 열려 있는 동안 걷기·살피기를 멈춘다(CityScreen이 켠다 — CT74).
 var paused: bool = false
+## 이름판이 비켜 갈 화면 자리(왼쪽 위 달력 카드 — CityScreen이 넣는다, () -> Rect2).
+var avoid: Callable
 var _plate: PanelContainer
 var _plate_name: Label
 var _plate_why: Label
@@ -166,6 +168,9 @@ func _sync_view() -> void:
 		var m := float(UiTheme.metric("margin", 16))
 		_plate.position = Vector2(clampf(top.x - _plate.size.x * 0.5, m, size.x - _plate.size.x - m),
 			clampf(top.y - _plate.size.y - UiTheme.render_float("city.plate_offset_px", 8.0), m, size.y - _plate.size.y - m))
+		var card: Rect2 = avoid.call() if avoid.is_valid() else Rect2()
+		if card.has_area() and card.intersects(Rect2(_plate.global_position, _plate.size)):  # 달력 카드에 걸리면 그 오른쪽으로
+			_plate.global_position.x = card.end.x + m * 0.5
 
 
 func _refresh_plate() -> void:
@@ -275,11 +280,23 @@ func open_panel(act_id: String, tab: String = "") -> void:
 	_menu.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_menu.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_menu.add_child(p)
-	var m := float(UiTheme.metric("margin", 16))
-	_menu.offset_right = -m
-	_menu.offset_bottom = _dialog.offset_top - m * 0.5
+	_menu.minimum_size_changed.connect(_place_panel)
+	_place_panel()
 	_acting = true
 	_plate.visible = false
+
+
+## 창구 카드 자리: 대화창 위 오른쪽 아래 귀퉁이에 제 크기만큼(위로 자라도 화면 위 여백까지).
+## set_anchors_preset만 하면 0 크기 카드의 오프셋이 화면 전체로 남아 왼쪽 위 달력 카드까지 덮었다(2026-10-31 사용자 "위에 고정돼 너무 크고 글자가 안 보임").
+func _place_panel() -> void:
+	if _menu == null:
+		return
+	var m := float(UiTheme.metric("margin", 16))
+	var sz := _menu.get_combined_minimum_size()
+	_menu.offset_right = -m
+	_menu.offset_left = -m - sz.x
+	_menu.offset_bottom = _dialog.offset_top - m * 0.5
+	_menu.offset_top = maxf(_menu.offset_bottom - sz.y, -size.y + m)
 
 
 ## 지금 열린 창구(없으면 null).

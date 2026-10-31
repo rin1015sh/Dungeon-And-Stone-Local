@@ -29,6 +29,7 @@ static func _room(v: ValidatorBase, id: String) -> void:
 	var fac := JsonUtil.get_str(r, "facility")
 	v.ref(w + ".facility", "facilities", fac)
 	var legend := CityRoom.legend_of(v.db, r)
+	var cfg := JsonUtil.get_dict(v.db.singletons.get("city", {}), "room")
 	var rows := PackedStringArray()
 	for row: Variant in JsonUtil.get_array(r, "rows"):
 		rows.append(str(row))
@@ -58,7 +59,7 @@ static func _room(v: ValidatorBase, id: String) -> void:
 		if c.y < 0 or c.y >= rows.size() or c.x < 0 or c.x >= rows[c.y].length():
 			return false
 		var d := JsonUtil.get_dict(legend, rows[c.y][c.x])
-		return JsonUtil.get_str(d, "kind") in WALK or (JsonUtil.get_str(d, "kind") == "furniture" and not JsonUtil.get_str(d, "needs").is_empty())
+		return JsonUtil.get_str(d, "kind") in WALK or (JsonUtil.get_str(d, "kind") == "furniture" and (not JsonUtil.get_str(d, "needs").is_empty() or CityRoom.walk_through(cfg, d)))
 	var st := JsonUtil.get_array(r, "start")
 	var start := Vector2i(floori(float(st[0])), floori(float(st[1]))) if st.size() == 2 else Vector2i(-1, -1)
 	if not walk.call(start):

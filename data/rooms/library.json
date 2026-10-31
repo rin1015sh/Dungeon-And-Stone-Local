@@ -7,27 +7,27 @@
  "wall": "panel",
  "regions": [
   {
-   "rect": [1, 23, 7, 8],
+   "rect": [1, 2, 7, 8],
    "floor": "oak"
   },
   {
-   "rect": [1, 33, 7, 6],
+   "rect": [1, 12, 7, 6],
    "floor": "oak"
   },
   {
-   "rect": [24, 23, 5, 10],
+   "rect": [24, 2, 5, 10],
    "floor": "flag"
   },
   {
-   "rect": [24, 34, 5, 5],
+   "rect": [24, 13, 5, 5],
    "floor": "flag"
   },
   {
-   "rect": [12, 40, 18, 12],
+   "rect": [12, 19, 18, 12],
    "floor": "dark"
   },
   {
-   "rect": [0, 40, 13, 12],
+   "rect": [0, 19, 13, 12],
    "floor": "dark"
   }
  ],
@@ -91,12 +91,6 @@
    "color": "#3a3a40",
    "top": "scrolls"
   },
-  "a": {
-   "name_ko": "안락의자",
-   "kind": "furniture",
-   "shape": "seat",
-   "color": "#5a2a24"
-  },
   "R": {
    "name_ko": "쇠사슬 책 독서대",
    "kind": "furniture",
@@ -115,12 +109,6 @@
    "kind": "furniture",
    "shape": "crate",
    "color": "#5a4430"
-  },
-  "C": {
-   "name_ko": "나선 계단 기둥",
-   "kind": "furniture",
-   "shape": "pillar",
-   "color": "#6a5a4a"
   },
   "m": {
    "name_ko": "지도 서랍장",
@@ -145,12 +133,6 @@
    "shape": "tall",
    "color": "#5a3a2a",
    "top": "books"
-  },
-  "A": {
-   "name_ko": "초상화",
-   "kind": "walldeco",
-   "style": "painting",
-   "color": "#6a4a3a"
   },
   "B": {
    "name_ko": "벽 촛대",
@@ -177,13 +159,6 @@
    "style": "books",
    "color": "#4a3424"
   },
-  "b": {
-   "name_ko": "작은 탁자",
-   "kind": "furniture",
-   "shape": "table",
-   "color": "#5a3e28",
-   "top": "books"
-  },
   "c": {
    "name_ko": "의자",
    "kind": "furniture",
@@ -198,64 +173,11 @@
    "top": "books"
   }
  },
- "rows": [
-  "##############################",
-  "##SSSSlSSSS#WWWW#SSSSlSSSSSAA#",
-  "##SSSSlSSSS#WWWW#SSSSlSSSSSAA#",
-  "#......................@....5#",
-  "#9....9......................#",
-  "#.......rrrrrrrrrrrrrrr......#",
-  "#.......rzzzzzzzzzzzzzr.UUUU.#",
-  "#..ab...rzzzzzzzzzzzzzr......#",
-  "#.......rzzzzzzzzzzzzzr.9...1#",
-  "#...k...rzzzzzzzzzzzzzr......#",
-  "#.....`.rzzzzzzzzzzzzzr.UUUU.#",
-  "#.......rzzzzzzzzzzzzzr......#",
-  "#..ab...rzzzzzzzzzzzzzr......#",
-  "#9......rzzzzzzzzzzzzzr......#",
-  "#....`..rzzzzzzzzzzzzzr...g..#",
-  "#.UUU...rrrrrrrrrrrrrrr......#",
-  "#........vvvvvvvvvvvvv.......#",
-  "#5....1........`..........C..#",
-  "#...........9.....9.....^....#",
-  "########################^#####",
-  "########################^#####",
-  "##SSSSSB#BSSlSSWWSSlSSB#^#FFF#",
-  "##SSSSSB#BSSlSSWWSSlSSB#^#FFF#",
-  "#......9#5....vvv.....8#^C..5#",
-  "#.......#.c.c.vvv.c.cUU#.....#",
-  "#.ddci..#.TTT.vvv.TTTUU#.....#",
-  "#.@.`.../.TTT.vvv.TTT..#.....#",
-  "#.......#.....vvv....../....0#",
-  "#.ddci..#..`.kvvvk.@...#.....#",
-  "#......8#.c.c.vvv...c..#.....#",
-  "#..`..`.#.TTT.vvv.TTT.9#.....#",
-  "#9......#.TTT@vvv.TTT..#..2.8#",
-  "#########.c.c.vvv.c.c..#.....#",
-  "#.......#9....vvv..`...#######",
-  "#.mmm...#....9.@.9.....#..^.(#",
-  "#.....g./.....KKK....g.X..^..#",
-  "#.`..`..#....`.........#..^..#",
-  "#.mmm...#..............#..^..#",
-  "#2....9.#............77#2.^.7#",
-  "###############DD#########^###",
-  "##########################^###",
-  "#GGGGEEGGGGEEEssssssBsssss^EE#",
-  "#GGGGEEGGGGEEEssssssBsssss^EE#",
-  "#(.........(#(............^..#",
-  "#.99.)......#.9......).......#",
-  "#.......9...#...........`....#",
-  "#PP...`.....#......kR..8.....#",
-  "#PP..9..`.../.............xx.#",
-  "#...`.......#.....`.......xx.#",
-  "#.9......9..#...xx...........#",
-  "#77...2....(#..9......9.....2#",
-  "##############################"
- ],
- "start": [16.0, 38.3],
+ "rows": ["##SSSSSB#BSSlSSWWSSlSSB#SSFSS#", "##SSSSSB#BSSlSSWWSSlSSB#SSFSS#", "#......9#5....vvv.....8#....5#", "#.......#.c.c.vvv.c.cUU#..@..#", "#.ddci..#.TTT.vvv.TTTUU#.....#", "#.@.`.../.TTT.vvv.TTT..#.....#", "#.......#.....vvv....../....0#", "#.ddci..#..`.kvvvk.@...#.....#", "#......8#.c.c.vvv...c..#.....#", "#..`..`.#.TTT.vvv.TTT.9#.....#", "#9......#.TTT@vvv.TTT..#..2.8#", "#########.c.c.vvv.c.c..#.....#", "#.......#9....vvv..`...#######", "#.mmm...#....9.@.9.....#..^.(#", "#.....g./.....KKK....g.X..^..#", "#.`..`..#....`.........#..^..#", "#.mmm...#..............#..^..#", "#2....9.#............77#2.^.7#", "###############DD#########^###", "##########################^###", "#GGGGEEGGGGEEEssssssBsssss^EE#", "#GGGGEEGGGGEEEssssssBsssss^EE#", "#(.........(#(............^..#", "#.99.)......#.9......).......#", "#.......9...#...........`....#", "#PP...`.....#......kR..8.....#", "#PP..9..`.../.............xx.#", "#...`.......#.....`.......xx.#", "#.9......9..#...xx...........#", "#77...2....(#..9......9.....2#", "##############################"],
+ "start": [16.0, 17.3],
  "npcs": [
   {
-   "at": [15, 34],
+   "at": [15, 13],
    "name_ko": "사서",
    "look": "res://assets/actors/looks/n0_librarian_h6.webp",
    "staff": true,
@@ -263,7 +185,7 @@
    "face": [0, 1]
   },
   {
-   "at": [19, 28],
+   "at": [19, 7],
    "name_ko": "책 읽는 학자",
    "look": "res://assets/actors/looks/n14_scholar_h7.webp",
    "staff": false,
@@ -271,7 +193,7 @@
    "face": [0, 1]
   },
   {
-   "at": [2, 26],
+   "at": [2, 5],
    "name_ko": "필경사",
    "look": "res://assets/actors/looks/n8_acolyte_h8.webp",
    "staff": false,
@@ -279,7 +201,7 @@
    "face": [0, -1]
   },
   {
-   "at": [23, 3],
+   "at": [26, 3],
    "name_ko": "책 찾는 탐험가",
    "look": "res://assets/actors/looks/h11_wayfarer_h9.webp",
    "staff": false,
@@ -287,7 +209,7 @@
    "face": [0, -1]
   },
   {
-   "at": [13, 31],
+   "at": [13, 10],
    "name_ko": "책 읽는 사람",
    "look": "res://assets/actors/looks/h0_traveler_h0.webp",
    "staff": false,
@@ -297,112 +219,49 @@
  ],
  "spots": [
   {
-   "rect": [2, 2, 4, 1],
-   "activities": [
-    "library_monsters"
-   ]
+   "rect": [10, 1, 2, 1],
+   "activities": ["library_dungeon"]
   },
   {
-   "rect": [7, 2, 4, 1],
-   "activities": [
-    "library_survival"
-   ]
+   "rect": [13, 1, 2, 1],
+   "activities": ["library_arms"]
   },
   {
-   "rect": [17, 2, 4, 1],
-   "activities": [
-    "library_society"
-   ]
+   "rect": [17, 1, 2, 1],
+   "activities": ["library_ailments"]
   },
   {
-   "rect": [10, 22, 2, 1],
-   "activities": [
-    "library_dungeon"
-   ]
+   "rect": [20, 1, 2, 1],
+   "activities": ["library_society"]
   },
   {
-   "rect": [13, 22, 2, 1],
-   "activities": [
-    "library_arms"
-   ]
+   "rect": [24, 1, 2, 1],
+   "activities": ["library_monsters"]
   },
   {
-   "rect": [17, 22, 2, 1],
-   "activities": [
-    "library_ailments"
-   ]
+   "rect": [27, 1, 2, 1],
+   "activities": ["library_survival"]
   },
   {
-   "rect": [14, 34, 3, 2],
-   "activities": [
-    "library_decode"
-   ],
+   "rect": [14, 13, 3, 2],
+   "activities": ["library_decode"],
    "rest": true,
    "name_ko": "사서"
   },
   {
-   "rect": [20, 46, 1, 1],
-   "activities": [
-    "library_rare"
-   ],
+   "rect": [20, 25, 1, 1],
+   "activities": ["library_rare"],
    "name_ko": "쇠사슬 책"
   }
  ],
  "names": [
-  [
-   15,
-   17,
-   "2층 회랑",
-   "room"
-  ],
-  [
-   11,
-   9,
-   "트인 곳 — 아래로 열람실",
-   "label"
-  ],
-  [
-   15,
-   33,
-   "열람실",
-   "room"
-  ],
-  [
-   3,
-   29,
-   "필사실",
-   "room"
-  ],
-  [
-   4,
-   35,
-   "지도 보관실",
-   "room"
-  ],
-  [
-   26,
-   27,
-   "나선 계단",
-   "room"
-  ],
-  [
-   26,
-   36,
-   "서고 계단",
-   "room"
-  ],
-  [
-   21,
-   49,
-   "지하 서고",
-   "room"
-  ],
-  [
-   6,
-   45,
-   "옛 서고",
-   "room"
-  ]
+  [15, 12, "열람실", "room"],
+  [3, 8, "필사실", "room"],
+  [4, 14, "지도 보관실", "room"],
+  [26, 6, "작은 서가", "room"],
+  [26, 15, "서고 계단", "room"],
+  [21, 28, "지하 서고", "room"],
+  [6, 24, "옛 서고", "room"]
  ],
  "source": "original"
 }

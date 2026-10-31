@@ -19,6 +19,8 @@ func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -
 	bg.texture = _tex(dir.path_join("floor.webp"))
 	bg.scale = Vector2.ONE / art_scale
 	add_child(bg)
+	var low := Node2D.new()  # 지나가는 낮은 가구(책 더미·의자 …)는 사람 발 아래 — 밟고 선 사람을 가리지 않게
+	add_child(low)
 	sorter = Node2D.new()
 	sorter.y_sort_enabled = true
 	add_child(sorter)
@@ -47,7 +49,7 @@ func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -
 		s.scale = Vector2.ONE / art_scale
 		s.position = Vector2((rc.position.x + rc.size.x * 0.5) * tile, rc.end.y * tile)
 		s.offset = Vector2(-s.texture.get_width() * 0.5, -s.texture.get_height())
-		sorter.add_child(s)
+		(low if bool(f.get("low", false)) else sorter).add_child(s)
 	for y in room.height:  # 잠긴 문(이번 순 사건이 열면 그냥 문간 — 그림 없음)
 		for x in room.width:
 			if room.kind_at(Vector2i(x, y)) == "locked":

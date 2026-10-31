@@ -60,8 +60,10 @@ func test_every_facility_is_a_room_with_reachable_spots() -> void:
 
 
 ## 복층은 한 지도(CT66): 건물마다 계단·사다리 칸이 있고, 입구에서 그 줄을 따라 위층·지하까지 걸어서 간다.
+## 잠긴 문은 연 셈으로(도서관은 1층뿐 — 지하 서고는 희귀서 입고 순에만 열린다, 사용자 2026-10-31 "도서관 2층 없애기").
 func test_floors_connect_in_one_map() -> void:
 	var s := _state()
+	s.happenings.assign(db.get_collection("city_events").keys())
 	for f in s.facility_ids():
 		var r := CityRoom.load_for(s, f)
 		var seen := _reach(r)

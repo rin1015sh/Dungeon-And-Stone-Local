@@ -44,6 +44,11 @@ func set_facility_mode(on: bool) -> void:
 
 
 ## 시설 패널이 비워 둘 위쪽 높이(메뉴 아래부터).
+## 왼쪽 위 달력 카드의 화면 자리(실내 방 이름판이 비켜 간다).
+func calendar_rect() -> Rect2:
+	return _calendar.get_global_rect() if _calendar != null and _calendar.is_visible_in_tree() else Rect2()
+
+
 func dock_bottom() -> float:
 	return UiTheme.metric("margin", 16) + _dock.get_combined_minimum_size().y
 

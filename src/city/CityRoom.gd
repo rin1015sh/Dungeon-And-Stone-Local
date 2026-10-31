@@ -18,7 +18,7 @@ var width: int = 0
 var height: int = 0
 var map: FloorMap
 var start: Vector2 = Vector2.ZERO
-## 지금 선 가구 무리 {char, rect: Rect2i, def}.
+## 지금 선 가구 무리 {char, rect: Rect2i, def, low(지나가는 낮은 가구 — walk_through)}.
 var furniture: Array[Dictionary] = []
 ## 뒤질 수 있는 가구·벽 장식(CityScavenge — CT74) {rect, acts(빈 것), rest, name_ko, search(scavenge 표 id), key("방 id:x,y")}.
 var searchables: Array[Dictionary] = []
@@ -106,11 +106,12 @@ func _build(state: CityState, room_id: String) -> void:
 			if k == "furniture" and not JsonUtil.get_str(d, "needs").is_empty() and not open.has(JsonUtil.get_str(d, "needs")):
 				k = "floor"
 			_kind[Vector2i(x, y)] = k
-			if k in WALK:
+			if k in WALK or (k == "furniture" and walk_through(cfg, d)):
 				map.set_tile(Vector2i(x, y), floor_tile)
 	for g: Dictionary in groups(rows, legend, ["furniture"]):
 		if _kind.get((g["cells"] as Array)[0], "") == "furniture":
-			furniture.append({"char": g["char"], "rect": g["rect"], "def": JsonUtil.get_dict(legend, str(g["char"]))})
+			var gd := JsonUtil.get_dict(legend, str(g["char"]))
+			furniture.append({"char": g["char"], "rect": g["rect"], "def": gd, "low": walk_through(cfg, gd)})
 	var search := JsonUtil.get_dict(JsonUtil.get_dict(cfg, "search"), JsonUtil.get_str(def, "facility"))
 	for g: Dictionary in groups(rows, legend, ["furniture", "walldeco"]):
 		var gd := JsonUtil.get_dict(legend, str(g["char"]))
@@ -140,6 +141,14 @@ func _build(state: CityState, room_id: String) -> void:
 		if acts.is_empty() and not JsonUtil.get_bool(s, "rest"):
 			continue
 		spots.append({"rect": rect_of(s), "acts": acts, "rest": JsonUtil.get_bool(s, "rest"), "name_ko": JsonUtil.get_str(s, "name_ko")})
+
+
+## 몸이 지나가는 낮은 가구인가(책 더미·빈 병·의자·걸상 … — city.json room.walk_shapes, 범례 walk가 덮는다 — 사용자 2026-10-31 "지나갈 수 있을 법한 타일은 지나가게").
+## 그림은 그대로 서고(사람 발 아래에 그린다 — RoomWorld), 뒤지기도 그대로.
+static func walk_through(cfg: Dictionary, d: Dictionary) -> bool:
+	if d.has("walk"):
+		return JsonUtil.get_bool(d, "walk")
+	return JsonUtil.get_array(cfg, "walk_shapes").has(JsonUtil.get_str(d, "shape"))
 
 
 ## 자리 정의의 활동 id(activity 하나 또는 activities 여럿).
