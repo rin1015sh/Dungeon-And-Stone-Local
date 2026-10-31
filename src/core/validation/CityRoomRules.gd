@@ -48,7 +48,7 @@ static func _room(v: ValidatorBase, id: String) -> void:
 	if st.size() != 2 or not walk.call(Vector2i(floori(float(st[0])), floori(float(st[1])))):
 		v.err(w, "start는 바닥 칸 [x, y]")
 	_art(v, w, JsonUtil.get_str(r, "art"))
-	var acts := JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities")
+	var fac_acts := JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities")
 	for p: Variant in JsonUtil.get_array(r, "props"):
 		var d: Dictionary = p
 		var pw := "%s.props.%s" % [w, JsonUtil.get_str(d, "id")]
@@ -65,17 +65,22 @@ static func _room(v: ValidatorBase, id: String) -> void:
 		var needs := JsonUtil.get_str(d, "needs")
 		if not needs.is_empty():
 			v.ref(pw + ".needs", "activities", needs)
+	var placed: Array[String] = []
 	for s: Variant in JsonUtil.get_array(r, "spots"):
 		var d: Dictionary = s
-		var act := JsonUtil.get_str(d, "activity")
-		v.ref(w + ".spots", "activities", act)
-		if JsonUtil.get_str(v.db.get_entry("activities", act), "facility") != fac:
-			v.err(w + ".spots", "활동 '%s'은(는) '%s' 시설 활동이 아니다" % [act, fac])
+		var acts := CityRoom.spot_activities(d)
+		if acts.is_empty() and not JsonUtil.get_bool(d, "rest"):
+			v.err(w + ".spots", "자리에 activity·activities가 없다")
+		for act in acts:
+			v.ref(w + ".spots", "activities", act)
+			if JsonUtil.get_str(v.db.get_entry("activities", act), "facility") != fac:
+				v.err(w + ".spots", "활동 '%s'은(는) '%s' 시설 활동이 아니다" % [act, fac])
+		placed.append_array(acts)
 		var rc := CityRoom.rect_of(d)
 		if rc.size.x < 1 or rc.size.y < 1 or rc.position.x < 0 or rc.position.y < 0 or rc.end.x > width or rc.end.y > rows.size():
-			v.err(w + ".spots", "rect가 방 밖이다: " + act)
-	for a: Variant in acts:  # 이번 순 사건 활동 말고는 자리가 있어야 걸어가서 한다
-		if not JsonUtil.get_array(r, "spots").any(func(s: Variant) -> bool: return JsonUtil.get_str(s as Dictionary, "activity") == str(a)):
+			v.err(w + ".spots", "rect가 방 밖이다: %s" % [acts])
+	for a: Variant in fac_acts:  # 이번 순 사건 활동 말고는 자리가 있어야 걸어가서 한다
+		if not placed.has(str(a)):
 			v.err(w, "시설 활동 '%s'을(를) 할 자리(spots)가 없다" % a)
 
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b6d4uc2n4diqo"
-path="res://.godot/imported/exchange.webp-a93afe174e7aec543266da4ed4194d16.ctex"
+uid="uid://c752meb53r5aw"
+path="res://.godot/imported/guild.webp-4bcbe60b11fb7b638ff8ade01c2173ce.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/city/interiors/exchange.webp"
-dest_files=["res://.godot/imported/exchange.webp-a93afe174e7aec543266da4ed4194d16.ctex"]
+source_file="res://assets/city/rooms/guild.webp"
+dest_files=["res://.godot/imported/guild.webp-4bcbe60b11fb7b638ff8ade01c2173ce.ctex"]
 
 [params]
 

@@ -125,25 +125,33 @@ func _choose(act_id: String, tab: String = "") -> void:
 	if not why.is_empty():
 		_dialog.say(Strings.t(why), "warn")
 		return
-	var p: CityPanel  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
-	match panel:
-		"shop":
-			var sp := ShopPanel.new()
-			sp.mode = tab if tab in ShopPanel.TABS else "buy"
-			sp.back = _close_panel.bind(_entries().find([act_id, sp.mode]))
-			p = sp
-		"bank":
-			p = BankPanel.new()
-		"essence_remove":
-			p = EssenceRemovePanel.new()
+	var p := new_panel(act_id, tab)  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
 	if p == null:
 		return
-	p.setup(_state, _pc, act_id)
+	if p is ShopPanel:
+		(p as ShopPanel).back = _close_panel.bind(_entries().find([act_id, (p as ShopPanel).mode]))
 	p.leave = try_leave
 	p.result.connect(_on_trade)
 	_panel_box.add_child(p)
 	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
 	_sync_menu()
+
+
+## 패널형 활동의 창구(상점·대장간 = 쪽 tab, 은행, 정수 제거). 패널이 아니면 null. 나가기·돌아가기는 부르는 쪽이 넣는다(실내 방 RoomView도 쓴다).
+func new_panel(act_id: String, tab: String = "") -> CityPanel:
+	var p: CityPanel
+	match JsonUtil.get_str(_state.activity(act_id), "panel"):
+		"shop":
+			var sp := ShopPanel.new()
+			sp.mode = tab if tab in ShopPanel.TABS else "buy"
+			p = sp
+		"bank":
+			p = BankPanel.new()
+		"essence_remove":
+			p = EssenceRemovePanel.new()
+	if p != null:
+		p.setup(_state, _pc, act_id)
+	return p
 
 
 ## 창구를 닫고 선택 창으로(커서는 연 칸에).

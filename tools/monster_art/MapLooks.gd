@@ -9,7 +9,7 @@ extends RefCounted
 const CHOSEN := {"human": "h6_ranger", "barbarian": "b9_iron_raider", "elf": "e4_ranger", "dwarf": "d4_axe", "beastkin": "k4_fox_rogue"}  ## 새 종족(사용자 2026-10-30 6차 시안 확정 — AM59)
 ## 게임 그림 말고도 남겨 두는 옷차림 → assets/actors/looks/<id>.webp(paint_actors가 같이 그린다):
 ##   n0_librarian(도서관 실내 방 사서 — CT62) · h3_coat(나중에 NPC 탐험가 — 사용자 "h3도 저장해 줘") · r0_raider(맵 약탈자 무리 — render.json view.raider_sprite, 사용자 2026-10-26 "전투 화면처럼 두건·망토로")
-const KEEP := ["h3_coat", "r0_raider", "n0_librarian"]
+const KEEP := ["h3_coat", "r0_raider", "n0_librarian", "n1_guild_clerk", "n2_innkeeper", "n3_priest", "n4_merchant", "n5_smith", "n6_banker", "n7_trainer"]
 
 
 const LOOKS := {
@@ -98,6 +98,23 @@ const LOOKS := {
 	"n0_librarian": {"race": "human", "name": "도서관 사서", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#9a958a"), "beard": Color("#a29c90"),
 		"skin": Color("#b89a82"), "kit": {"pants": Color("#2c2a26"), "shirt": Color("#4a463c"), "sleeves": "long", "boots": Color("#221a14"),
 		"coat": {"c": Color("#2e3a32"), "len": 0.95}, "outer_belt": Color("#6a5a3c")}}},
+	## 도시 실내 방 NPC(2026-10-31, CT64): 길드 접수원 · 여관 주인 · 신관 · 상점 주인 · 대장장이 · 은행원 · 교관.
+	"n1_guild_clerk": {"race": "human", "name": "길드 접수원", "head": 1.7, "legs": 0.82, "spec": {"hair": "long", "hair_c": Color("#3a2a1e"), "hair_len": 0.08,
+		"kit": {"pants": Color("#2e2a24"), "shirt": Color("#8a7e64"), "sleeves": "long", "vest": Color("#3a4a3a"), "belt": Color("#2a1c14"), "boots": Color("#2a1e16"), "mantle": Color("#5a2a24")}}},
+	"n2_innkeeper": {"race": "human", "name": "여관 주인", "head": 1.7, "legs": 0.8, "spec": {"hair": "short", "hair_c": Color("#5a3e2a"), "beard": Color("#5a3e2a"), "bulk": 1.15,
+		"kit": {"pants": Color("#3a3228"), "shirt": Color("#9a8c6e"), "sleeves": "rolled", "apron": {"c": Color("#8a7e66")}, "belt": Color("#3a2818"), "boots": Color("#2e2218")}}},
+	"n3_priest": {"race": "human", "name": "신관", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#2a2420"),
+		"kit": {"pants": Color("#3a3832"), "shirt": Color("#b8ae96"), "sleeves": "long", "boots": Color("#2a221a"),
+		"coat": {"c": Color("#b4aa92"), "len": 0.95}, "sash": {"c": Color("#8a6a2a")}, "outer_belt": Color("#8a6a2a")}}},
+	"n4_merchant": {"race": "human", "name": "상점 주인", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#4a3a2a"),
+		"kit": {"pants": Color("#3a3228"), "shirt": Color("#7a6a4e"), "sleeves": "long", "vest": Color("#5a3a26"), "belt": Color("#2a1c14"), "pouch": true, "boots": Color("#2e2218")}}},
+	"n5_smith": {"race": "human", "name": "대장장이", "head": 1.7, "legs": 0.8, "spec": {"hair": "short", "hair_c": Color("#2a2420"), "beard": Color("#2a2420"), "bulk": 1.2,
+		"kit": {"pants": Color("#2e2a24"), "shirt": Color("#5a4e3e"), "sleeves": "rolled", "apron": {"c": Color("#3e2a1c")}, "bracers": Color("#3a2a1c"), "boots": Color("#221a14")}}},
+	"n6_banker": {"race": "human", "name": "은행원", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#6a6458"),
+		"kit": {"pants": Color("#24242a"), "shirt": Color("#a89e88"), "sleeves": "long", "boots": Color("#1a1814"),
+		"coat": {"c": Color("#2a2a34"), "len": 0.55}, "outer_belt": Color("#1a1814")}}},
+	"n7_trainer": {"race": "human", "name": "교관", "head": 1.7, "legs": 0.82, "spec": {"hair": "short", "hair_c": Color("#3a2e24"), "bulk": 1.1,
+		"kit": {"pants": Color("#3e3830"), "boots": Color("#2e2218"), "bracers": Color("#3a2a1c"), "quilt": Color("#6a5e48"), "outer_belt": Color("#3a2818")}}},
 	## b8 + b7(사용자 2026-10-29 "b8에 b7 합친 걸로 전부 교체"): 털 어깨·X자 멜빵·긴 띠 치마·맨다리 + 가시 쇠 어깨받이·쇠 팔목·쇠 위팔 띠.
 	"b9_iron_raider": {"race": "barbarian", "name": "쇠 어깨 약탈자", "head": 1.92, "legs": 0.72, "spec": {"kit": {
 		"pauldron": {"c": Color("#454a4e"), "side": "l", "kind": "iron", "size": 1.35}, "harness": {"c": Color("#2a1c12"), "x": true, "ring": Color("#6a6e72")},

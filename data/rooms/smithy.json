@@ -1,0 +1,56 @@
+{
+  "id": "smithy",
+  "name_ko": "대장간 작업장",
+  "facility": "smithy",
+  "art": "res://assets/city/rooms/smithy.webp",
+  "floor": "flag",
+  "rows": [
+    "################",
+    "#BBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBB#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#######DD#######"
+  ],
+  "start": [8.0, 9.3],
+  "props": [
+    {
+      "id": "anvil",
+      "art": "res://assets/city/rooms/smithy_anvil.webp",
+      "kind": "anvil",
+      "rect": [7, 5, 2, 1]
+    },
+    {
+      "id": "smith",
+      "sprite": "res://assets/actors/looks/n5_smith.webp",
+      "rect": [8, 4, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "tub",
+      "art": "res://assets/city/rooms/smithy_tub.webp",
+      "kind": "barrel",
+      "variant": "water",
+      "rect": [10, 5, 1, 1]
+    },
+    {
+      "id": "rack",
+      "art": "res://assets/city/rooms/smithy_rack.webp",
+      "kind": "rack",
+      "rect": [12, 4, 2, 1]
+    }
+  ],
+  "spots": [
+    {
+      "rect": [7, 4, 2, 2],
+      "activity": "smithy_trade",
+      "name_ko": "대장장이"
+    }
+  ],
+  "source": "original"
+}

@@ -1,0 +1,94 @@
+{
+  "id": "temple",
+  "name_ko": "신전 예배당",
+  "facility": "temple",
+  "art": "res://assets/city/rooms/temple.webp",
+  "floor": "flag",
+  "rows": [
+    "################",
+    "#BBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBB#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#######DD#######"
+  ],
+  "start": [8.0, 11.3],
+  "props": [
+    {
+      "id": "altar",
+      "art": "res://assets/city/rooms/temple_altar.webp",
+      "kind": "altar",
+      "rect": [6, 4, 4, 1],
+      "lamp": true
+    },
+    {
+      "id": "priest",
+      "sprite": "res://assets/actors/looks/n3_priest.webp",
+      "rect": [8, 3, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "candles",
+      "art": "res://assets/city/rooms/temple_candles.webp",
+      "kind": "candles",
+      "rect": [12, 4, 2, 1],
+      "lamp": true
+    },
+    {
+      "id": "pew_0",
+      "art": "res://assets/city/rooms/temple_pew.webp",
+      "kind": "pew",
+      "rect": [2, 6, 4, 1]
+    },
+    {
+      "id": "pew_1",
+      "art": "res://assets/city/rooms/temple_pew.webp",
+      "kind": "pew",
+      "rect": [10, 6, 4, 1]
+    },
+    {
+      "id": "pew_2",
+      "art": "res://assets/city/rooms/temple_pew.webp",
+      "kind": "pew",
+      "rect": [2, 8, 4, 1]
+    },
+    {
+      "id": "pew_3",
+      "art": "res://assets/city/rooms/temple_pew.webp",
+      "kind": "pew",
+      "rect": [10, 8, 4, 1]
+    },
+    {
+      "id": "pew_4",
+      "art": "res://assets/city/rooms/temple_pew.webp",
+      "kind": "pew",
+      "rect": [2, 10, 4, 1]
+    },
+    {
+      "id": "pew_5",
+      "art": "res://assets/city/rooms/temple_pew.webp",
+      "kind": "pew",
+      "rect": [10, 10, 4, 1]
+    }
+  ],
+  "spots": [
+    {
+      "rect": [6, 3, 4, 2],
+      "activity": "temple_remove_essence",
+      "rest": true,
+      "name_ko": "신관"
+    },
+    {
+      "rect": [12, 4, 2, 1],
+      "activity": "temple_service"
+    }
+  ],
+  "source": "original"
+}

@@ -13,7 +13,8 @@ const PAD := 10  ## 좌우 여백(px)
 
 
 ## 독서 탁자(rect 3×2): 뒤 칸 = 탁자(윗면에 펼친 책·초·책 더미·잉크병), 앞 칸 = 긴 의자.
-static func table(t: int, seed_value: int) -> Paint:
+## variant: "" 도서관(펼친 책·책 더미·잉크병) · inn 주점(잔·접시·빵) · guild 길드(지도·종이).
+static func table(t: int, seed_value: int, _size: Vector2i = Vector2i.ONE, variant: String = "") -> Paint:
 	var lift := int(t * 0.55)
 	var p := Paint.new(3 * t + PAD * 2, 2 * t + lift + 30, seed_value)
 	var ox := float(PAD)
@@ -21,10 +22,27 @@ static func table(t: int, seed_value: int) -> Paint:
 	var top := Rect2(ox + 6, floor_y - 2 * t - lift + 14, 3 * t - 12, t - 14)
 	_legs(p, top, lift, Color("#2a1d14"))
 	_slab(p, top, 9, Mat.planks(p, Color("#4e3725"), 0, 0, false, 14), Mat.planks(p, Color("#3a281b"), 0, 0, false, 7))
-	Bits.open_book(p, Vector2(top.position.x + top.size.x * 0.42, top.position.y + top.size.y * 0.3), 15)
-	Bits.open_book(p, Vector2(top.position.x + top.size.x * 0.8, top.position.y + top.size.y * 0.34), 12)
-	_book_stack(p, Vector2(top.position.x + 14, top.position.y + top.size.y * 0.66), 3)
-	_inkwell(p, Vector2(top.position.x + top.size.x * 0.6, top.position.y + top.size.y * 0.72))
+	match variant:
+		"inn":
+			for k in 4:
+				Bits.mug(p, top.position.x + top.size.x * (0.36 + k * 0.15), top.position.y + top.size.y * (0.5 + (k % 2) * 0.25))
+			var plate := Paint.rect_poly(top.position.x + top.size.x * 0.62, top.position.y + 6, 30, 12)
+			p.fill_poly(plate, p.flat(Color("#9a9080"), 0.1))
+			Ink.path(p, plate, 1.0)
+			p.fill_rect(top.position.x + top.size.x * 0.64, top.position.y + 4, 18, 9, p.flat(Color("#8a6a3a"), 0.15))  # 빵
+		"guild":
+			var map := Paint.rect_poly(top.position.x + top.size.x * 0.3, top.position.y + 4, top.size.x * 0.4, top.size.y - 10)
+			p.fill_poly(map, p.flat(Color("#b8a47c"), 0.15))
+			Ink.path(p, map, 1.0)
+			for k in 5:
+				var a := Vector2(top.position.x + top.size.x * (0.33 + k * 0.07), top.position.y + 10 + (k % 2) * 10)
+				Ink.line(p, a, a + Vector2(14, 8), 1.0, Color("#5a2a1a"), 0.6, 0.6)
+			_inkwell(p, Vector2(top.position.x + top.size.x * 0.8, top.position.y + top.size.y * 0.72))
+		_:
+			Bits.open_book(p, Vector2(top.position.x + top.size.x * 0.42, top.position.y + top.size.y * 0.3), 15)
+			Bits.open_book(p, Vector2(top.position.x + top.size.x * 0.8, top.position.y + top.size.y * 0.34), 12)
+			_book_stack(p, Vector2(top.position.x + 14, top.position.y + top.size.y * 0.66), 3)
+			_inkwell(p, Vector2(top.position.x + top.size.x * 0.6, top.position.y + top.size.y * 0.72))
 	var candle := Vector2(top.position.x + top.size.x * 0.2, top.position.y + top.size.y * 0.42)
 	_candle(p, candle, 18)
 	var seat_lift := lift * 0.5
@@ -39,7 +57,7 @@ static func table(t: int, seed_value: int) -> Paint:
 
 
 ## 사서 책상(rect 3×1): 앞을 막은 무거운 책상 · 펼친 장부 · 기름 등 · 깃펜과 잉크 · 책 더미 · 두루마리.
-static func desk(t: int, seed_value: int) -> Paint:
+static func desk(t: int, seed_value: int, _size: Vector2i = Vector2i.ONE, _variant: String = "") -> Paint:
 	var lift := int(t * 0.62)
 	var p := Paint.new(3 * t + PAD * 2, t + lift + 60, seed_value)
 	var ox := float(PAD)
@@ -68,7 +86,7 @@ static func desk(t: int, seed_value: int) -> Paint:
 
 
 ## 희귀서 독서대(rect 1×1, 이번 순 '희귀서 입고'에만): 기둥 하나 · 기운 받침 · 쇠사슬 묶인 큰 책 · 곁의 초.
-static func lectern(t: int, seed_value: int) -> Paint:
+static func lectern(t: int, seed_value: int, _size: Vector2i = Vector2i.ONE, _variant: String = "") -> Paint:
 	var p := Paint.new(t + PAD * 2 + 20, t + 96, seed_value)
 	var cx := p.w * 0.5
 	var floor_y := float(p.h)

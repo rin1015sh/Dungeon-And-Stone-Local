@@ -1,8 +1,9 @@
 class_name RoomView
 extends FacilityView
 ## 시설 실내 방(탑뷰 — CityRoom, 사용자 결정 2026-10-31 "도서관 내부를 탐험 화면처럼 WASD로", CT62).
-##   탐험처럼 W/A/S/D로 걷고(4방향, 가장 나중에 누른 키), 살필 자리를 바라보고 Enter = 그 자리 활동(결과는 대화창 — 서적은 펼친 책 그림이 덮었다가
-##   다 넘기면 걷힌다). 자리에 활동이 여럿이면(사서 책상 — 고서 해독·이번 순 사건) 작은 선택 창.
+##   탐험처럼 W/A/S/D로 걷고(4방향, 가장 나중에 누른 키), 살필 자리를 바라보고 Enter = 그 자리 활동(결과는 대화창 — 서적·요리는 그림이 덮었다가
+##   다 넘기면 걷힌다). 자리에 칸이 여럿이면(여관 주인 — 요기·식사, 상점 계산대 — 구매·판매) 작은 선택 창, 창구(상점·대장간·은행·정수 제거)는
+##   오른쪽 아래 카드로 열고(Esc·나가기 = 창구만 닫기 — 창구는 방문 활동 수에 세지 않는다).
 ##   문 칸을 밟거나 Esc = 나가기 — 행동력은 나올 때 1(CityState.leave_facility). 한 방문의 활동은 city.json room.activities_per_visit개,
 ##   다 하면 남은 자리는 못 하는 이유만 보인다. 바라보는 자리 위에 이름판(활동 이름 · 못 하면 짧은 이유 — 부연설명 없음).
 ## 그리기: 방 그림(바닥·벽·벽 가구 — tools/paint_rooms.gd) 위에 소품·사람·플레이어를 발 높이로 정렬(탐험과 같은 3/4 시점, 칸 = view.floor_tile_px).
@@ -191,25 +192,39 @@ func _sync_view() -> void:
 
 
 func _refresh_plate() -> void:
-	var acts: Array[String] = []
-	if not _focus.is_empty():
-		acts = _room.activities_at(_state, _focus)
-	_plate.visible = not acts.is_empty()
-	if acts.is_empty():
+	var opts := entries(_focus)
+	_plate.visible = not opts.is_empty()
+	if opts.is_empty():
 		return
-	var why: String = reason(acts[0]) if acts.size() == 1 else ""
-	_plate_name.text = JsonUtil.get_str(_state.activity(acts[0]), "name_ko") if acts.size() == 1 else JsonUtil.get_str(_state.db.get_entry("rooms", _room.id), "name_ko")
-	_plate_why.text = Strings.t(why) if not why.is_empty() else CityActions.price_text(_state, _pc, acts[0])
+	var one: bool = opts.size() == 1
+	var why: String = reason(str(opts[0][0])) if one else ""
+	_plate_name.text = str(_focus.get("name_ko", "")) if not str(_focus.get("name_ko", "")).is_empty() else _entry_text(opts[0])
+	_plate_why.text = Strings.t(why) if not why.is_empty() else (CityActions.price_text(_state, _pc, str(opts[0][0])) if one else "")
 	_plate_why.visible = not _plate_why.text.is_empty()
 	_plate.add_theme_stylebox_override("panel", CityUi.plate_box(why.is_empty()))
 
 
-## 이 활동을 지금 못 하는 이유(문자열 키, 할 수 있으면 ""): 이번 방문에 할 만큼 했다 → 활동 조건(CityActions.check).
+## 자리에서 고를 칸: [활동 id, 창구 쪽("" 또는 buy·sell)] — 상점·대장간 창구는 [구매]·[판매] 두 칸(메뉴 시설과 같다, CT49).
+func entries(spot: Dictionary) -> Array[Array]:
+	var out: Array[Array] = []
+	for act_id in _room.activities_at(_state, spot):
+		if JsonUtil.get_str(_state.activity(act_id), "panel") == "shop":
+			for tab in CityShop.tabs(_state, act_id):
+				out.append([act_id, tab])
+		else:
+			out.append([act_id, ""])
+	return out
+
+
+func _entry_text(e: Array) -> String:
+	return Strings.t("city.shop_tab_" + str(e[1])) if not str(e[1]).is_empty() else JsonUtil.get_str(_state.activity(str(e[0])), "name_ko")
+
+
+## 이 활동을 지금 못 하는 이유(문자열 키, 할 수 있으면 ""): 이번 방문에 할 만큼 했다(창구는 세지 않는다) → 활동 조건(CityActions.check).
 func reason(act_id: String) -> String:
-	if _done >= int(CityRoom.rule(_state, "activities_per_visit", 1.0)):
+	var panel := not JsonUtil.get_str(_state.activity(act_id), "panel").is_empty()
+	if not panel and _done >= int(CityRoom.rule(_state, "activities_per_visit", 1.0)):
 		return "city.reason_visit_done"
-	if not JsonUtil.get_str(_state.activity(act_id), "panel").is_empty():
-		return "city.reason_panel"
 	return CityActions.check(_state, _pc, act_id)
 
 
@@ -221,28 +236,75 @@ func _unhandled_input(event: InputEvent) -> void:
 		interact()
 
 
-## 바라보는 자리를 살핀다: 활동이 하나면 바로, 여럿이면 작은 선택 창(Esc = 그만두기).
+## 바라보는 자리를 살핀다: 칸이 하나면 바로, 여럿이면 작은 선택 창(Esc = 그만두기). 창구면 그 패널을 연다.
 func interact() -> void:
-	var acts := _room.activities_at(_state, _room.target(pos, facing))
-	if acts.is_empty():
+	var opts := entries(_room.target(pos, facing))
+	if opts.is_empty():
 		return
-	var act_id := acts[0]
-	if acts.size() > 1:
+	var pick: Array = opts[0]
+	if opts.size() > 1:
 		_acting = true
-		var opts: Array[Dictionary] = []
-		for a in acts:
-			var why := reason(a)
-			opts.append({"text": JsonUtil.get_str(_state.activity(a), "name_ko"), "enabled": why.is_empty(),
-				"sub": CityActions.price_text(_state, _pc, a), "desc": Strings.t(why) if not why.is_empty() else ""})
-		var i: int = await ChoicePopup.ask(self, JsonUtil.get_str(_state.db.get_entry("rooms", _room.id), "name_ko"), opts, true)
+		var rows: Array[Dictionary] = []
+		for e in opts:
+			var why := reason(str(e[0]))
+			rows.append({"text": _entry_text(e), "enabled": why.is_empty(), "sub": CityActions.price_text(_state, _pc, str(e[0])),
+				"desc": Strings.t(why) if not why.is_empty() else ""})
+		var title := str(_focus.get("name_ko", "")) if not str(_focus.get("name_ko", "")).is_empty() else JsonUtil.get_str(_state.db.get_entry("facilities", _facility_id), "name_ko")
+		var i: int = await ChoicePopup.ask(self, title, rows, true)
 		_acting = false
-		if i < 0 or i >= acts.size() or not is_inside_tree():
+		if i < 0 or i >= opts.size() or not is_inside_tree():
 			return
-		act_id = acts[i]
-	await use(act_id)
+		pick = opts[i]
+	if JsonUtil.get_str(_state.activity(str(pick[0])), "panel").is_empty():
+		await use(str(pick[0]))
+	else:
+		open_panel(str(pick[0]), str(pick[1]))
 
 
-## 활동 한 번: 결과를 대화창에 쌓고(서적은 펼친 책 그림), 다 넘기면 그림을 걷고 다시 걷는다. 못 하면 이유 한 줄.
+## 창구(상점·대장간·은행·정수 제거)를 오른쪽 아래 카드로 연다. 거래 결과는 대화창 평소 글, 나가기·돌아가기·Esc = 창구만 닫고 다시 걷는다.
+func open_panel(act_id: String, tab: String = "") -> void:
+	var why := reason(act_id)
+	if not why.is_empty():
+		_dialog.say(Strings.t(why), "warn")
+		return
+	var p := new_panel(act_id, tab)
+	if p == null:
+		return
+	p.leave = close_panel
+	if p is ShopPanel:
+		(p as ShopPanel).back = close_panel
+	p.result.connect(_on_trade)
+	_menu = CityUi.card()
+	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
+	add_child(_menu)
+	move_child(_menu, _dialog.get_index())
+	_menu.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_menu.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_menu.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_menu.add_child(p)
+	var m := float(UiTheme.metric("margin", 16))
+	_menu.offset_right = -m
+	_menu.offset_bottom = _dialog.offset_top - m * 0.5
+	_acting = true
+	_plate.visible = false
+
+
+## 지금 열린 창구(없으면 null).
+func panel() -> CityPanel:
+	return _menu.get_child(0) as CityPanel if _menu != null and _menu.get_child_count() > 0 else null
+
+
+func close_panel() -> void:
+	if _menu == null:
+		return
+	_menu.queue_free()
+	_menu = null
+	_dialog.idle_text = ""
+	_acting = false
+	_focus = {}
+
+
+## 활동 한 번: 결과를 대화창에 쌓고(서적·요리는 그림이 덮는다), 다 넘기면 그림을 걷고 다시 걷는다. 못 하면 이유 한 줄.
 func use(act_id: String) -> void:
 	var why := reason(act_id)
 	if not why.is_empty():
@@ -268,8 +330,11 @@ func use(act_id: String) -> void:
 	_focus = {}
 
 
-## 나가기(문 칸·Esc). 결과를 넘기는 중이면 다 넘긴 뒤에.
+## 나가기(문 칸·Esc). 창구가 열려 있으면 창구만 닫는다. 결과를 넘기는 중이면 다 넘긴 뒤에.
 func try_leave() -> void:
+	if _menu != null:
+		close_panel()
+		return
 	if _acting:
 		return
 	super.try_leave()

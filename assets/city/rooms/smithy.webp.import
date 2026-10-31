@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://du211sj6cwsn7"
-path="res://.godot/imported/exchange.webp-14470743533479549b6745c442cef414.ctex"
+uid="uid://bt2c4edephqhf"
+path="res://.godot/imported/smithy.webp-fbe74e52dfdf63d2b282f6add003b575.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/city/buildings/exchange.webp"
-dest_files=["res://.godot/imported/exchange.webp-14470743533479549b6745c442cef414.ctex"]
+source_file="res://assets/city/rooms/smithy.webp"
+dest_files=["res://.godot/imported/smithy.webp-fbe74e52dfdf63d2b282f6add003b575.ctex"]
 
 [params]
 

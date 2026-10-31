@@ -1,0 +1,66 @@
+{
+  "id": "bank",
+  "name_ko": "은행 창구",
+  "facility": "bank",
+  "art": "res://assets/city/rooms/bank.webp",
+  "floor": "checker",
+  "rows": [
+    "################",
+    "#BBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBB#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#######DD#######"
+  ],
+  "start": [8.0, 9.3],
+  "props": [
+    {
+      "id": "counter",
+      "art": "res://assets/city/rooms/bank_counter.webp",
+      "kind": "counter",
+      "variant": "bank",
+      "rect": [3, 4, 10, 1],
+      "lamp": true
+    },
+    {
+      "id": "teller_a",
+      "sprite": "res://assets/actors/looks/n6_banker.webp",
+      "rect": [5, 3, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "teller_b",
+      "sprite": "res://assets/actors/looks/n6_banker.webp",
+      "rect": [10, 3, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "bench_w",
+      "art": "res://assets/city/rooms/bank_bench.webp",
+      "kind": "bench",
+      "rect": [2, 8, 3, 1]
+    },
+    {
+      "id": "bench_e",
+      "art": "res://assets/city/rooms/bank_bench.webp",
+      "kind": "bench",
+      "rect": [11, 8, 3, 1]
+    }
+  ],
+  "spots": [
+    {
+      "rect": [3, 3, 5, 2],
+      "activity": "bank_account"
+    },
+    {
+      "rect": [8, 3, 5, 2],
+      "activity": "bank_tax"
+    }
+  ],
+  "source": "original"
+}

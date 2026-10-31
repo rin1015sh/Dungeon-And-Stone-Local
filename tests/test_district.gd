@@ -1,6 +1,6 @@
 extends TestCase
-## 도시 구역 하나(사용자 결정 2026-10-31, CT63 — 거주 등급·이사를 없애고 통일, 특별 시설만 따로): 이름·그림 등급 · 여관 식사 · 상점·대장간 ·
-## 거리 사건 · 특별 시설은 거리에 없다 · 그림 · 저장.
+## 도시 구역 하나(사용자 결정 2026-10-31, CT63 — 거주 등급·이사를 없애고 통일 → CT64 라비기온 7구역, 거래소 없음): 이름·그림 등급 · 여관 식사 ·
+## 상점·대장간 · 거리 사건 · 특별 시설 · 그림 · 저장.
 
 
 func _state() -> CityState:
@@ -11,32 +11,34 @@ func _state() -> CityState:
 
 func test_one_district_no_moving() -> void:
 	var s := _state()
-	assert_eq(CityDistrict.name_of(s), "라비기온", "사는 구역은 하나")
-	assert_eq(CityDistrict.look(s), 3, "그림은 밝은 등급(컴멜비 5구역 그림)")
+	assert_eq(CityDistrict.name_of(s), "라비기온 7구역", "사는 구역은 하나 — 라비기온 7구역(CT64)")
+	assert_eq(CityDistrict.look(s), 2, "그림은 7구역 그림")
 	assert_false((db.singletons.get("city", {}) as Dictionary).has("residence"), "거주 등급 표는 없다")
 	for id: String in db.get_collection("activities"):
 		for e: Variant in JsonUtil.get_array(db.get_entry("activities", id), "effects"):
 			assert_true(JsonUtil.get_str(e as Dictionary, "type") != "residence_up", "이사 효과 없음: " + id)
 
 
-func test_inn_meals_always_feast_on_event() -> void:
+func test_inn_meals_hearty_and_feast_on_event() -> void:
 	var s := _state()
 	s.happenings.clear()
-	assert_eq(CityActions.activities_of(s, "inn"), ["inn_rest", "inn_snack", "inn_meal", "inn_hearty"] as Array[String], "식사 값대 셋은 늘")
+	assert_eq(CityActions.activities_of(s, "inn"), ["inn_rest", "inn_snack", "inn_meal"] as Array[String], "7구역 여관 = 휴식·요기·식사")
 	s.happenings.assign(["inn_special"])
-	assert_true(CityActions.activities_of(s, "inn").has("inn_feast"), "여관 특식 사건이 걸린 순에 특식")
+	var acts := CityActions.activities_of(s, "inn")
+	assert_true(acts.has("inn_feast") and acts.has("inn_hearty"), "여관 특식 사건이 걸린 순에 든든한 식사·특식")
 	assert_true(CityHappenings.eligible(_state()).has("inn_special"), "여관 특식 사건은 언제든 걸릴 수 있다")
 
 
 func test_shop_and_smithy_stock() -> void:
 	var s := _state()
 	var shop := CityShop.stock(s, "shop_trade")
-	assert_true(shop.has("ration") and shop.has("medium_potion") and shop.has("lantern"), "상점은 예전 네 등급 물건을 모두 판다")
+	assert_true(shop.has("ration") and shop.has("medium_potion") and not shop.has("lantern"), "상점 = 7구역 물건(옛 2등급까지)")
 	var top := 0
 	for id in CityShop.stock(s, "smithy_trade"):
 		top = maxi(top, JsonUtil.get_int(db.get_entry("items", id), "tier", 1))
 	assert_eq(top, CityDistrict.smithy_material_tier(s), "대장간 소재 단계 상한 = district.smithy_material_tier")
-	assert_true(CityShop.stock(s, "smithy_trade").has("lightium_sword"), "라이티늄부터 살 수 있다(값이 막는다)")
+	assert_eq(CityDistrict.smithy_material_tier(s), 2, "대장간 = 라이티늄까지(7구역)")
+	assert_true(CityShop.stock(s, "smithy_trade").has("lightium_sword"), "라이티늄 검")
 
 
 func test_street_events_have_no_district_condition() -> void:
@@ -47,20 +49,15 @@ func test_street_events_have_no_district_condition() -> void:
 		assert_false(w.has("residence_max") or w.has("residence_min"), "구역 조건 없음: " + id)
 
 
-## 특별 시설(거래소)은 거리에 서지 않고, 그 자리만큼 뒤 건물을 당긴다. 들어가는 것은 거리 끝 창에서(enter_facility는 그대로).
-func test_special_facilities_off_street() -> void:
+## 특별 시설(시설 special — 거리 끝 D로 따로 간다)은 지금 없다 — 거래소를 없앴다(CT64). 거리는 데이터 x 그대로.
+func test_no_special_facilities_now() -> void:
 	var s := _state()
-	assert_eq(CityDistrict.special_ids(db), ["exchange"] as Array[String], "특별 시설 = 거래소")
-	assert_false(s.facility_ids().has("exchange"), "거리에는 없다")
-	assert_eq(s.enter_facility("exchange"), "", "따로 가서 들어간다")
-	s.leave_facility()
-	assert_eq(s.ap, 2, "다녀오면 행동력 1")
-	var slot := JsonUtil.get_float(db.get_entry("facilities", "exchange"), "slot")
-	var raw := func(id: String) -> float: return float(JsonUtil.get_int(db.get_entry("facilities", id), "x"))
-	assert_eq(CityDistrict.facility_x(db, "smithy"), float(raw.call("smithy")) - slot, "거래소 뒤 건물은 당긴다")
-	assert_eq(CityDistrict.facility_x(db, "shop"), float(raw.call("shop")), "앞 건물은 그대로")
+	assert_true(CityDistrict.special_ids(db).is_empty(), "특별 시설 없음")
+	assert_false(db.has_entry("facilities", "exchange") or db.has_entry("activities", "exchange_trade"), "거래소 없음")
+	assert_eq(CityDistrict.facility_x(db, "smithy"), float(JsonUtil.get_int(db.get_entry("facilities", "smithy"), "x")), "건물 자리 = 데이터 x")
 	var w := JsonUtil.get_float(JsonUtil.get_dict(db.singletons.get("city", {}), "street"), "width")
-	assert_eq(CityDistrict.street_width(db, w), w - slot, "거리 길이도 그만큼 짧다")
+	assert_eq(CityDistrict.street_width(db, w), w, "거리 길이 = 데이터")
+	assert_eq(s.facility_ids().size(), 8, "거리 시설 여덟")
 
 
 func test_art_and_save() -> void:

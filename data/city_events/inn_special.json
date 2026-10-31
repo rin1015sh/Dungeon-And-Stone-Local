@@ -5,6 +5,7 @@
   "weight": 2,
   "when": {},
   "activities": [
+    "inn_hearty",
     "inn_feast"
   ],
   "source": "placeholder"

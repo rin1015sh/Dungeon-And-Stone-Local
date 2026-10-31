@@ -4,7 +4,7 @@ extends RefCounted
 ## 시설 JSON room이 방 id를 가리키면 메뉴(FacilityView) 대신 이 방을 걷는다(RoomView). 걷기·충돌은 탐험과 같은 Kinematics.
 ## rows 글자: # 벽 · B 벽에 붙은 가구(막힘 — 그림에 그려져 있다) · . 바닥 · D 문(밟으면 나간다).
 ## 소품(props)은 rect 칸을 막는다. needs = 그 활동이 지금 시설에 있을 때만 선다(희귀서 입고 같은 이번 순 사건 — 없으면 칸도 비운다).
-## 살필 자리(spots)는 rect 칸을 바라보고 살피면 그 활동, rest = 자리가 정해지지 않은 이 시설 활동도 여기서.
+## 살필 자리(spots)는 rect 칸을 바라보고 살피면 그 활동(activity 하나 또는 activities 여럿 — 지금 있는 것만), rest = 자리가 정해지지 않은 이 시설 활동도 여기서.
 ## 오토로드를 참조하지 않는다.
 
 const BLOCKED := ["#", "B"]
@@ -18,7 +18,7 @@ var map: FloorMap
 var start: Vector2 = Vector2.ZERO
 ## 지금 선 소품 {id, rect: Rect2i, art, sprite, face: Vector2i}.
 var props: Array[Dictionary] = []
-## 지금 살필 수 있는 자리 {rect: Rect2i, activity, rest}.
+## 지금 살필 수 있는 자리 {rect: Rect2i, acts: Array[String](지금 있는 활동), rest}.
 var spots: Array[Dictionary] = []
 var _doors: Dictionary = {}  # Vector2i → true
 
@@ -75,10 +75,23 @@ func _build(state: CityState, room_id: String) -> void:
 				map.set_tile(Vector2i(x, y), JsonUtil.get_str(cfg, "block_tile", "rock_wall"))
 	for v: Variant in JsonUtil.get_array(def, "spots"):
 		var s: Dictionary = v
-		var act := JsonUtil.get_str(s, "activity")
-		if not open.has(act) and not JsonUtil.get_bool(s, "rest"):
+		var acts: Array[String] = []
+		for a in spot_activities(s):
+			if open.has(a):
+				acts.append(a)
+		if acts.is_empty() and not JsonUtil.get_bool(s, "rest"):
 			continue
-		spots.append({"rect": rect_of(s), "activity": act if open.has(act) else "", "rest": JsonUtil.get_bool(s, "rest")})
+		spots.append({"rect": rect_of(s), "acts": acts, "rest": JsonUtil.get_bool(s, "rest")})
+
+
+## 자리 정의의 활동 id(activity 하나 또는 activities 여럿).
+static func spot_activities(s: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	if not JsonUtil.get_str(s, "activity").is_empty():
+		out.append(JsonUtil.get_str(s, "activity"))
+	for a: Variant in JsonUtil.get_array(s, "activities"):
+		out.append(str(a))
+	return out
 
 
 static func rect_of(d: Dictionary) -> Rect2i:
@@ -102,13 +115,14 @@ func target(pos: Vector2, facing: Vector2i) -> Dictionary:
 ## 그 자리에서 할 수 있는 활동: 자리의 활동 + (rest면) 다른 자리에 없는 이 시설 활동(이번 순 사건 등).
 func activities_at(state: CityState, spot: Dictionary) -> Array[String]:
 	var out: Array[String] = []
-	if not str(spot.get("activity", "")).is_empty():
-		out.append(str(spot["activity"]))
+	if spot.is_empty():
+		return out
+	out.assign(spot.get("acts", []))
 	if bool(spot.get("rest", false)):
 		var placed: Array[String] = []
 		for s: Dictionary in spots:
-			placed.append(str(s["activity"]))
+			placed.append_array(s["acts"] as Array[String])
 		for act in CityActions.activities_of(state, JsonUtil.get_str(def, "facility")):
-			if not placed.has(act) and not out.has(act) and JsonUtil.get_str(state.activity(act), "panel").is_empty():
+			if not placed.has(act) and not out.has(act):
 				out.append(act)
 	return out

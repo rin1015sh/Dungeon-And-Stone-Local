@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://80ccrkln7fgb"
-path="res://.godot/imported/exchange_t4.webp-de396bee77e6084f2dbdec727a3346d7.ctex"
+uid="uid://choqjsbr3mbkl"
+path="res://.godot/imported/inn_table.webp-9b2b1ccd239781bd3efc1d00056255b0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/city/buildings/exchange_t4.webp"
-dest_files=["res://.godot/imported/exchange_t4.webp-de396bee77e6084f2dbdec727a3346d7.ctex"]
+source_file="res://assets/city/rooms/inn_table.webp"
+dest_files=["res://.godot/imported/inn_table.webp-9b2b1ccd239781bd3efc1d00056255b0.ctex"]
 
 [params]
 

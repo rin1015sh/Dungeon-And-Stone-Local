@@ -6,6 +6,13 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **라비기온 7구역 · 거래소 없앰 · 시설 여덟 곳 모두 실내 방 (2026-10-31, 사용자 "다른 시설도 도서관처럼 실내 방으로 — 도시를 라비기온 7구역으로 전면 조정하고(거래소 없는) 나머지 건물들도 도서관처럼 내부를 그려줘", CT64)** — 범위: 구역 값·거래소 삭제·방 일곱(데이터·그림·사람)·방 안 창구·테스트. 완료 기준: 거리 시설 여덟 곳 모두 들어가면 걷는 방, 시설 활동마다 걸어가서 할 자리, 창구도 방 안에서, 7구역 그림·물건, 거래소 없음. 테스트: `check.sh` + 일곱 방 캡처.
+  - 구역: `district` 라비기온 7구역 · look 2 · 대장간 상한 2 · `shop.stock` 옛 1~2등급 · 여관 든든한 식사도 extra(`inn_special`이 든든한 식사·특식). 거래소 시설·활동·그림 8장·`test_exchange` 삭제, 대장간·은행·훈련장 x −650, 거리 폭 4380(거리 레이어는 이미 그 길이 — 다시 그리지 않음).
+  - 방: `data/rooms/{guild,inn,temple,shop,smithy,bank,training}.json`(자리 `activities` 여럿·`name_ko`, 소품 `kind`·`variant`·`lamp`, 방 `floor`). `CityRoom`(자리 acts·`spot_activities`, rest 자리는 창구 활동도) · `RoomView`(`entries` — 상점 창구는 [구매]·[판매], 선택 창, `open_panel`/`close_panel` — 창구는 방문 활동 수에 안 셈, Esc = 창구 닫기) · `FacilityView.new_panel` · 검증 `CityRoomRules`(자리 활동 여럿).
+  - 그림: `RoomArt` 정리(base·walls·finish·checker·sconce), `RoomRooms.gd`(일곱 방 뒷벽 — 게시판·방패·깃발 / 난로·술병 선반·약초·계단 / 색유리 창·빛줄기·기둥·촛대 / 선반 세 줄 / 화덕·덮개·연장·검 / 금고 문·기둥·저울·놋쇠 등 / 무기 걸이·방패·높은 창), `RoomProps2.gd`(계산대 inn·shop·guild·bank(놋쇠 창살) · 제단 · 봉헌 촛대 · 긴 의자 · 모루 · 무기 걸이 · 걸상 · 허수아비 · 통(물) · 궤짝 · 자루), 탁자 variant inn·guild. `paint_rooms.gd` 약 1분 반. 사람 `MapLooks n1~n7`(KEEP) → `assets/actors/looks/`.
+  - 테스트: `test_city_room`(모든 시설 방 · 활동마다 자리 · 사람 · 사건 활동은 rest 자리), `test_district`(7구역 · 특별 시설 없음), UI 스모크(`_room_do` — 자리 앞 Enter → 선택 창 S·Enter, 여관 휴식·상점 구매/판매·은행 맡기기·찾기·돈 없을 때 이유, 창구 Esc = 창구만).
+  - 남은 것: 직접 해 보기(배치·크기), 방 그림이 7구역 하나(그림 등급 따라 바뀌지 않는다).
+
 - **거주 등급 없앰 — 도시 구역 하나 · 특별 시설만 따로 (2026-10-31, 사용자 "그 거주지역 등급 상승 체계를 없애고 도시 구역은 하나로 통일, 특별시설(마탑·거래소 등등)만 따로 이동 — 지금 거주지역이 너무 어두워", CT63)** — 범위: 도시 규칙·데이터·거리 화면·검증·테스트·거리 레이어 그림. 완료 기준: 이사·등급이 없고, 거리는 밝은 그림 하나, 거래소는 거리 끝에서 따로 가고, 등급이 막던 것은 열림. 테스트: `check.sh` + 캡처(네 그림 등급 비교 · 거리 두 곳 · 가는 창 · 여관 내부 · 도서관 방).
   - 네 그림 등급을 캡처해 비교 → 3(옛 컴멜비 5구역 — 사암·푸른 지붕)을 하나로(`city.json district{name_ko 라비기온, look 3, street_tint, smithy_material_tier 4}`).
   - 코드: 새 `src/city/CityDistrict.gd`(이름·look·특별 시설·facility_x·street_width·art_path), 지움 `CityResidence.gd`·효과 `residence_up.gd`. `CityState`(residence 없앰 — 옛 저장 키 무시, `facility_ids`가 특별 시설을 뺌, `enter_facility` 구역 검사 없앰) · `CityActions`(이사·min_residence 없앰) · `CityShop`(`shop.stock` 하나, 소재 상한 = district) · `CityInfo`(tier 거름·`locked` 없앰) · `CityAmbient`·`CityHappenings`(구역 조건 없앰) · `CityStreet`(look 고정, 특별 시설 자리 당김) · `CityScreen.offer_travel`(거리 끝 D → "어디로 갈까" → `choose_facility`) · `FacilityView`·`CityHud` · 검증(`CityRules` district·special·place_ko, `min_residence`·`residence` 남아 있으면 오류, WHEN_KEYS에서 residence 뺌, 사건이 여는 활동은 extra만).

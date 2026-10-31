@@ -1,0 +1,69 @@
+{
+  "id": "guild",
+  "name_ko": "탐험가 길드 회관",
+  "facility": "guild",
+  "art": "res://assets/city/rooms/guild.webp",
+  "floor": "boards",
+  "rows": [
+    "################",
+    "#BBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBB#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#######DD#######"
+  ],
+  "start": [8.0, 9.3],
+  "props": [
+    {
+      "id": "counter",
+      "art": "res://assets/city/rooms/guild_counter.webp",
+      "kind": "counter",
+      "variant": "guild",
+      "rect": [9, 4, 5, 1],
+      "lamp": true
+    },
+    {
+      "id": "clerk",
+      "sprite": "res://assets/actors/looks/n1_guild_clerk.webp",
+      "rect": [11, 3, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "table_w",
+      "art": "res://assets/city/rooms/guild_table.webp",
+      "kind": "table",
+      "variant": "guild",
+      "rect": [2, 7, 3, 2],
+      "lamp": true
+    },
+    {
+      "id": "table_e",
+      "art": "res://assets/city/rooms/guild_table.webp",
+      "kind": "table",
+      "variant": "guild",
+      "rect": [11, 7, 3, 2],
+      "lamp": true
+    }
+  ],
+  "spots": [
+    {
+      "rect": [2, 1, 4, 2],
+      "activity": "guild_survey"
+    },
+    {
+      "rect": [9, 3, 5, 2],
+      "activities": [
+        "guild_tags",
+        "guild_records"
+      ],
+      "rest": true,
+      "name_ko": "길드 접수원"
+    }
+  ],
+  "source": "original"
+}

@@ -1,0 +1,74 @@
+{
+  "id": "training",
+  "name_ko": "훈련장",
+  "facility": "training",
+  "art": "res://assets/city/rooms/training.webp",
+  "floor": "sand",
+  "rows": [
+    "################",
+    "#BBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBB#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#######DD#######"
+  ],
+  "start": [8.0, 10.3],
+  "props": [
+    {
+      "id": "dummy_a",
+      "art": "res://assets/city/rooms/training_dummy.webp",
+      "kind": "dummy",
+      "rect": [3, 5, 1, 1]
+    },
+    {
+      "id": "dummy_b",
+      "art": "res://assets/city/rooms/training_dummy.webp",
+      "kind": "dummy",
+      "rect": [5, 5, 1, 1]
+    },
+    {
+      "id": "dummy_c",
+      "art": "res://assets/city/rooms/training_dummy.webp",
+      "kind": "dummy",
+      "rect": [4, 8, 1, 1]
+    },
+    {
+      "id": "trainer",
+      "sprite": "res://assets/actors/looks/n7_trainer.webp",
+      "rect": [11, 4, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "rack",
+      "art": "res://assets/city/rooms/training_rack.webp",
+      "kind": "rack",
+      "rect": [12, 8, 2, 1]
+    }
+  ],
+  "spots": [
+    {
+      "rect": [3, 5, 1, 1],
+      "activity": "training_train"
+    },
+    {
+      "rect": [5, 5, 1, 1],
+      "activity": "training_train"
+    },
+    {
+      "rect": [4, 8, 1, 1],
+      "activity": "training_train"
+    },
+    {
+      "rect": [11, 4, 1, 1],
+      "rest": true,
+      "name_ko": "교관"
+    }
+  ],
+  "source": "original"
+}

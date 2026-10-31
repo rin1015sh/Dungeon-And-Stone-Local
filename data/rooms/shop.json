@@ -1,0 +1,70 @@
+{
+  "id": "shop",
+  "name_ko": "잡화점",
+  "facility": "shop",
+  "art": "res://assets/city/rooms/shop.webp",
+  "floor": "boards",
+  "rows": [
+    "################",
+    "#BBBBBBBBBBBBBB#",
+    "#BBBBBBBBBBBBBB#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#######DD#######"
+  ],
+  "start": [8.0, 9.3],
+  "props": [
+    {
+      "id": "counter",
+      "art": "res://assets/city/rooms/shop_counter.webp",
+      "kind": "counter",
+      "variant": "shop",
+      "rect": [5, 4, 6, 1],
+      "lamp": true
+    },
+    {
+      "id": "merchant",
+      "sprite": "res://assets/actors/looks/n4_merchant.webp",
+      "rect": [8, 3, 1, 1],
+      "face": [0, 1]
+    },
+    {
+      "id": "crate_a",
+      "art": "res://assets/city/rooms/shop_crate.webp",
+      "kind": "crate",
+      "rect": [2, 6, 1, 1]
+    },
+    {
+      "id": "crate_b",
+      "art": "res://assets/city/rooms/shop_crate.webp",
+      "kind": "crate",
+      "rect": [2, 7, 1, 1]
+    },
+    {
+      "id": "barrel",
+      "art": "res://assets/city/rooms/shop_barrel.webp",
+      "kind": "barrel",
+      "rect": [13, 6, 1, 1]
+    },
+    {
+      "id": "sack",
+      "art": "res://assets/city/rooms/shop_sack.webp",
+      "kind": "sack",
+      "rect": [13, 7, 1, 1]
+    }
+  ],
+  "spots": [
+    {
+      "rect": [5, 3, 6, 2],
+      "activity": "shop_trade",
+      "rest": true,
+      "name_ko": "상점 주인"
+    }
+  ],
+  "source": "original"
+}

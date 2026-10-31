@@ -2,10 +2,13 @@ extends SceneTree
 ## 시설 실내 방 그림(탑뷰 3/4 — data/rooms, CT62): 방 한 장 + 소품.
 ##   godot --headless --path . --script res://tools/paint_rooms.gd [-- --only=<방 id>] [--out=<폴더>]
 ## → 방 JSON의 art·props[].art 경로(assets/city/rooms/). 칸 = render.json view.floor_tile_px × art_scale px.
-## 방마다 그리는 함수: 방 = RoomArt.<id>, 소품 = RoomProps의 소품 id 앞부분(table_nw → table) — 새 방·소품은 아래 rooms·props 표에 한 줄. 같은 시드면 같은 그림.
+## 방마다 그리는 함수: 방 = RoomArt.library · RoomRooms.<id>, 소품 = kind(없으면 소품 id 앞부분 — table_nw → table) → RoomProps·RoomProps2(크기 = rect, variant)
+## — 새 방·소품은 아래 rooms·props 표에 한 줄. 같은 그림 경로는 한 번만 그린다. 같은 시드면 같은 그림.
 
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomProps := preload("res://tools/city_art/RoomProps.gd")
+const RoomRooms := preload("res://tools/city_art/RoomRooms.gd")
+const RoomProps2 := preload("res://tools/city_art/RoomProps2.gd")
 const SEED := 7310
 
 
@@ -29,8 +32,11 @@ func _initialize() -> void:
 		if not only.is_empty() and id != only:
 			continue
 		var t0 := Time.get_ticks_msec()
-		var rooms := {"library": RoomArt.library}
-		var props := {"table": RoomProps.table, "desk": RoomProps.desk, "lectern": RoomProps.lectern}
+		var rooms := {"library": RoomArt.library, "guild": RoomRooms.guild, "inn": RoomRooms.inn, "temple": RoomRooms.temple, "shop": RoomRooms.shop,
+			"smithy": RoomRooms.smithy, "bank": RoomRooms.bank, "training": RoomRooms.training}
+		var props := {"table": RoomProps.table, "desk": RoomProps.desk, "lectern": RoomProps.lectern, "counter": RoomProps2.counter,
+			"altar": RoomProps2.altar, "candles": RoomProps2.candles, "pew": RoomProps2.pew, "anvil": RoomProps2.anvil, "rack": RoomProps2.rack,
+			"bench": RoomProps2.bench, "dummy": RoomProps2.dummy, "barrel": RoomProps2.barrel, "crate": RoomProps2.crate, "sack": RoomProps2.sack}
 		if not rooms.has(id):
 			push_warning("방 그림 함수가 없다: RoomArt.%s" % id)
 			continue
@@ -43,11 +49,12 @@ func _initialize() -> void:
 			if art.is_empty() or done.has(art):
 				continue
 			done[art] = true
-			var kind := str(d.get("id", "")).get_slice("_", 0)
+			var kind := str(d.get("kind", str(d.get("id", "")).get_slice("_", 0)))
+			var r: Array = d.get("rect", [0, 0, 1, 1])
 			if not props.has(kind):
 				push_warning("소품 그림 함수가 없다: RoomProps.%s" % kind)
 				continue
-			var pp: RefCounted = (props[kind] as Callable).call(t, SEED + art.hash() % 1000)
+			var pp: RefCounted = (props[kind] as Callable).call(t, SEED + art.hash() % 1000, Vector2i(int(r[2]), int(r[3])), str(d.get("variant", "")))
 			pp.call("save", _path(art, out))
 		print("방 %s: %d ms" % [id, Time.get_ticks_msec() - t0])
 	quit(0)

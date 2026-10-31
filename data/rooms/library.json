@@ -23,7 +23,8 @@
     {
       "id": "desk",
       "art": "res://assets/city/rooms/library_desk.webp",
-      "rect": [2, 6, 3, 1]
+      "rect": [2, 6, 3, 1],
+      "lamp": true
     },
     {
       "id": "librarian",
@@ -34,22 +35,26 @@
     {
       "id": "table_nw",
       "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [6, 6, 3, 2]
+      "rect": [6, 6, 3, 2],
+      "lamp": true
     },
     {
       "id": "table_ne",
       "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [12, 6, 3, 2]
+      "rect": [12, 6, 3, 2],
+      "lamp": true
     },
     {
       "id": "table_sw",
       "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [6, 9, 3, 2]
+      "rect": [6, 9, 3, 2],
+      "lamp": true
     },
     {
       "id": "table_se",
       "art": "res://assets/city/rooms/library_table.webp",
-      "rect": [12, 9, 3, 2]
+      "rect": [12, 9, 3, 2],
+      "lamp": true
     },
     {
       "id": "lectern",

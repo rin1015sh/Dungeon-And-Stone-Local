@@ -17,61 +17,106 @@ const AMBIENT := 0.66  ## 빛이 닿지 않는 곳 배율(2026-10-31 도시를 �
 
 ## 도서관 열람실: room = data/rooms/library.json. 돌려주는 값 = 그린 Paint.
 static func library(room: Dictionary, t: int, seed_value: int) -> Paint:
+	var p := base(room, t, seed_value, "boards", "ashlar")
+	var lights: Array = []  # [Vector2, 반지름, 색, 세기]
+	var rows: Array = room["rows"]
+	var cols := str(rows[0]).length()
+	var door := door_span(rows, t)
+	_runner(p, door.x + t * 0.12, 3.25 * t, door.y - door.x - t * 0.24, p.h - 3.25 * t)
+	window(p, door.x + t * 0.12, 0.42 * t, door.y - door.x - t * 0.24, 2.18 * t)
+	lights.append([Vector2((door.x + door.y) * 0.5, 2.0 * t), 3.2 * t, COOL, 0.55])
+	shaft(p, Vector2(door.x + t * 0.2, 3.0 * t), Vector2(door.y - t * 0.2, 3.0 * t), Vector2(door.x - t * 0.6, 7.6 * t), Vector2(door.y + t * 0.9, 7.6 * t), COOL, 0.14)
+	var spots: Array = room.get("spots", [])
+	for s: Variant in spots:
+		var rc := rect(s as Dictionary)
+		if rc.position.y == 1:  # 뒷벽 책장
+			_bookcase(p, rc.position.x * t + 5, 0.22 * t, rc.size.x * t - 10, 2.78 * t, t)
+	for gx: int in _gaps(spots, cols, door, t):
+		lights.append(sconce(p, Vector2((gx + 0.5) * t, 1.35 * t), t))
+	_ladder(p, 4.92 * t, 0.5 * t, 2.5 * t, t)
+	walls(p, room, t)
+	finish(p, room, t, lights)
+	return p
+
+
+## 방 바탕: 어둠 → 바닥(floor = boards 판자 · flag 돌판 · checker 대리석 바둑판 · sand 다진 흙) →
+## 뒷벽 앞면(wall = ashlar 돌 · plaster 회벽 · brick 벽돌 · timber 판자벽 + 처마 들보 + 굽도리).
+static func base(room: Dictionary, t: int, seed_value: int, floor: String, wall: String) -> Paint:
 	var rows: Array = room["rows"]
 	var cols := str(rows[0]).length()
 	var p := Paint.new(cols * t, rows.size() * t, seed_value)
 	p.fill_rect(0, 0, p.w, p.h, p.flat(VOID, 0.05))
-	var lights: Array = []  # [Vector2, 반지름, 색, 세기]
-	var floor_r := Rect2(t, 3 * t, (cols - 2) * t, (rows.size() - 4) * t)
-	p.fill_rect(floor_r.position.x, floor_r.position.y, floor_r.size.x, floor_r.size.y + t, floor_boards(p, Color("#4a3423"), 21))
-	var door := _door_span(rows, t)
-	_runner(p, door.x + t * 0.12, 3.25 * t, door.y - door.x - t * 0.24, p.h - 3.25 * t)
-	_back_wall(p, cols, t)
-	var window_x := door.x  # 창은 문 위 — 가운데 통로 끝
-	_window(p, window_x + t * 0.12, 0.42 * t, door.y - door.x - t * 0.24, 2.18 * t)
-	lights.append([Vector2((door.x + door.y) * 0.5, 2.0 * t), 3.2 * t, COOL, 0.55])
-	_shaft(p, Vector2(door.x + t * 0.2, 3.0 * t), Vector2(door.y - t * 0.2, 3.0 * t), Vector2(door.x - t * 0.6, 7.6 * t), Vector2(door.y + t * 0.9, 7.6 * t), COOL, 0.14)
-	var spots: Array = room.get("spots", [])
-	for s: Variant in spots:
-		var rc := _rect(s as Dictionary)
-		if rc.position.y == 1:  # 뒷벽 책장
-			_bookcase(p, rc.position.x * t + 5, 0.22 * t, rc.size.x * t - 10, 2.78 * t, t)
-	for gx: int in _gaps(spots, cols, door, t):
-		var c := Vector2((gx + 0.5) * t, 1.35 * t)
-		_sconce(p, c, t)
-		lights.append([c + Vector2(0, t * 0.6), 2.4 * t, WARM, 0.62])
-	_ladder(p, 4.92 * t, 0.5 * t, 2.5 * t, t)
-	_side_walls(p, cols, rows.size(), t)
-	_front_wall(p, cols, rows.size(), t, door)
-	Ink.shade(p, Paint.rect_poly(t, 3 * t, (cols - 2) * t, 0.7 * t), Vector2(0, 3 * t), Vector2(0, 3.7 * t), 0.55, 0.0)  # 뒷벽 밑 그늘
-	for v: Variant in room.get("props", []):
-		var d: Dictionary = v
-		var rc := _rect(d)
-		if not str(d.get("needs", "")).is_empty():
-			continue  # 이번 순에만 서는 소품은 그림자도 없이(없을 때 빈 바닥)
-		_prop_shadow(p, rc, t)
-		match str(d.get("id", "")):
-			"desk":
-				lights.append([Vector2((rc.position.x + 0.4) * t, (rc.position.y + 0.1) * t), 2.6 * t, WARM, 0.7])
-			_:
-				if str(d.get("id", "")).begins_with("table"):
-					lights.append([Vector2((rc.position.x + rc.size.x * 0.5) * t, (rc.position.y + 0.4) * t), 2.4 * t, WARM, 0.55])
-	_grime(p, floor_r)
-	light(p, lights, AMBIENT)
-	Ink.grade(p, 0.24, 1.12)
-	Ink.finish(p, 0.04, 0.45)
+	var sh: Callable
+	match floor:
+		"flag":
+			sh = Mat.ashlar(p, Color("#55524a"), 0, 0, 74, 52)
+		"checker":
+			sh = checker(p, Color("#6a6458"), Color("#2e2a26"), t)
+		"sand":
+			sh = Bits.sand_shader(p)
+		_:
+			sh = floor_boards(p, Color("#4a3423"), 21)
+	p.fill_rect(t, 3 * t, (cols - 2) * t, (rows.size() - 3) * t, sh)
+	var wsh: Callable
+	match wall:
+		"plaster":
+			wsh = Mat.plaster(p, Color("#7a6e5a"), 0.25)
+		"brick":
+			wsh = Mat.brick(p, Color("#5a3a2c"), 0, 0, 30, 12)
+		"timber":
+			wsh = Mat.planks(p, Color("#3e2c1e"), 0, 0, true, 16)
+		_:
+			wsh = Mat.ashlar(p, Color("#4a463e"), 0, 0, 58, 26)
+	_back_wall(p, cols, t, wsh)
 	return p
 
 
+## 옆벽·앞벽(문 틈)·뒷벽 밑 그늘 — 벽 장식을 다 그린 뒤.
+static func walls(p: Paint, room: Dictionary, t: int) -> void:
+	var rows: Array = room["rows"]
+	var cols := str(rows[0]).length()
+	_side_walls(p, cols, rows.size(), t)
+	_front_wall(p, cols, rows.size(), t, door_span(rows, t))
+	Ink.shade(p, Paint.rect_poly(t, 3 * t, (cols - 2) * t, 0.7 * t), Vector2(0, 3 * t), Vector2(0, 3.7 * t), 0.55, 0.0)
+
+
+## 마무리: 소품 그림자(이번 순에만 서는 needs 소품은 빼고) · lamp 소품 둘레 촛불빛 · 바닥 때 · 빛 · 색 보정 · 그레인.
+static func finish(p: Paint, room: Dictionary, t: int, lights: Array) -> void:
+	var rows: Array = room["rows"]
+	for v: Variant in room.get("props", []):
+		var d: Dictionary = v
+		if not str(d.get("needs", "")).is_empty():
+			continue
+		var rc := rect(d)
+		_prop_shadow(p, rc, t)
+		if bool(d.get("lamp", false)):
+			lights.append([Vector2((rc.position.x + rc.size.x * 0.5) * t, (rc.position.y + 0.3) * t), 2.5 * t, WARM, 0.62])
+	_grime(p, Rect2(t, 3 * t, (str(rows[0]).length() - 2) * t, (rows.size() - 4) * t))
+	light(p, lights, AMBIENT)
+	Ink.grade(p, 0.24, 1.12)
+	Ink.finish(p, 0.04, 0.45)
+
+
+## 대리석 바둑판(칸 반 크기) — 칸마다 결·얼룩.
+static func checker(p: Paint, a: Color, b: Color, t: int) -> Callable:
+	var s := t / 2
+	return func(x: int, y: int) -> Color:
+		var odd := (floori(x / float(s)) + floori(y / float(s))) % 2 == 1
+		var c := (b if odd else a).lerp(Color("#8a8070"), absf(p.nz("vs", x, y) - 0.5) * 0.2)
+		if posmod(x, s) == 0 or posmod(y, s) == 0:
+			c = c.darkened(0.35)
+		return p.vary(c, x, y, 0.12)
+
+
 ## 문 칸(D)의 x 범위(px): Vector2(왼쪽, 오른쪽).
-static func _door_span(rows: Array, t: int) -> Vector2:
+static func door_span(rows: Array, t: int) -> Vector2:
 	var last := str(rows[rows.size() - 1])
 	var a := last.find("D")
 	var b := last.rfind("D")
 	return Vector2(a * t, (b + 1) * t) if a >= 0 else Vector2(last.length() * t * 0.5 - t, last.length() * t * 0.5 + t)
 
 
-static func _rect(d: Dictionary) -> Rect2i:
+static func rect(d: Dictionary) -> Rect2i:
 	var r: Array = d.get("rect", [0, 0, 0, 0])
 	return Rect2i(int(r[0]), int(r[1]), int(r[2]), int(r[3]))
 
@@ -80,7 +125,7 @@ static func _rect(d: Dictionary) -> Rect2i:
 static func _gaps(spots: Array, cols: int, door: Vector2, t: int) -> Array[int]:
 	var used := {}
 	for s: Variant in spots:
-		var rc := _rect(s as Dictionary)
+		var rc := rect(s as Dictionary)
 		if rc.position.y == 1:
 			for x in range(rc.position.x, rc.end.x):
 				used[x] = true
@@ -138,8 +183,8 @@ static func _runner(p: Paint, x: float, y: float, rw: float, rh: float) -> void:
 
 
 ## 뒷벽: 위 처마(짙은 들보) + 돌벽 앞면 + 밑 굽도리.
-static func _back_wall(p: Paint, cols: int, t: int) -> void:
-	p.fill_rect(t, 0.18 * t, (cols - 2) * t, 2.82 * t, Mat.ashlar(p, Color("#4a463e"), 0, 0, 58, 26))
+static func _back_wall(p: Paint, cols: int, t: int, wall_sh: Callable) -> void:
+	p.fill_rect(t, 0.18 * t, (cols - 2) * t, 2.82 * t, wall_sh)
 	Ink.shade(p, Paint.rect_poly(t, 0.18 * t, (cols - 2) * t, 2.82 * t), Vector2(0, 0.2 * t), Vector2(0, 3 * t), 0.55, 0.15)
 	var beam := Paint.rect_poly(t * 0.6, 0, (cols - 1.2) * t, 0.3 * t)
 	p.fill_poly(beam, Mat.beam(p, Color("#2a1e15")))
@@ -169,7 +214,7 @@ static func _bookcase(p: Paint, x: float, y: float, bw: float, bh: float, t: int
 
 
 ## 가운데 높은 창(뾰족 아치): 흐린 하늘빛 유리 · 납 창살 · 돌 틀 · 창턱.
-static func _window(p: Paint, x: float, y: float, ww: float, wh: float) -> void:
+static func window(p: Paint, x: float, y: float, ww: float, wh: float) -> void:
 	var outer := Paint.arch_poly(x - 8, y - 8, ww + 16, wh + 16, true)
 	p.fill_poly(outer, Mat.ashlar(p, Color("#5a564c"), int(x), int(y), 30, 18))
 	Ink.path(p, outer, 2.2)
@@ -187,7 +232,7 @@ static func _window(p: Paint, x: float, y: float, ww: float, wh: float) -> void:
 
 
 ## 창빛 줄기(바닥 위 사다리꼴, 더하기 빛 — 멀수록 옅게).
-static func _shaft(p: Paint, a0: Vector2, a1: Vector2, b0: Vector2, b1: Vector2, c: Color, strength: float) -> void:
+static func shaft(p: Paint, a0: Vector2, a1: Vector2, b0: Vector2, b1: Vector2, c: Color, strength: float) -> void:
 	var poly := Paint.poly([a0, a1, b1, b0])
 	var r := Paint.bounds(poly)
 	for y in range(int(r.position.y), int(r.end.y)):
@@ -197,8 +242,8 @@ static func _shaft(p: Paint, a0: Vector2, a1: Vector2, b0: Vector2, b1: Vector2,
 				p.add_light(x, y, c, strength * (1.0 - tt * 0.8) * (0.6 + 0.6 * p.nz("vs", x, y)))
 
 
-## 벽 촛대: 쇠 받침 + 초 + 불꽃.
-static func _sconce(p: Paint, c: Vector2, t: int) -> void:
+## 벽 촛대: 쇠 받침 + 초 + 불꽃. 돌려주는 값 = 빛 [자리, 반지름, 색, 세기].
+static func sconce(p: Paint, c: Vector2, t: int) -> Array:
 	var plate := Paint.rect_poly(c.x - 5, c.y - 4, 10, 18)
 	p.fill_poly(plate, p.flat(Color("#2a2622"), 0.1))
 	Ink.path(p, plate, 1.4)
@@ -210,6 +255,7 @@ static func _sconce(p: Paint, c: Vector2, t: int) -> void:
 	Ink.path(p, candle, 1.0)
 	_flame(p, Vector2(c.x, c.y + 3), 1.0)
 	Ink.glow(p, c.x, c.y, t * 0.9, WARM, 0.45)
+	return [c + Vector2(0, t * 0.6), 2.4 * t, WARM, 0.62]
 
 
 static func _flame(p: Paint, base: Vector2, s: float) -> void:
