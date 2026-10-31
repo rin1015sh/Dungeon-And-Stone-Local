@@ -1,5 +1,5 @@
 extends RefCounted
-## 시설 실내 벽 층 장식(RoomPaint 전용): 벽 재질(ashlar 돌 · plaster 회벽 · brick 벽돌 · timber 판자벽) · 벽 윗면 · 벽 장식 무리(style — 앞에서 본 벽이라
+## 시설 실내 벽 층 장식(RoomPaint 전용): 벽 재질(RoomMaterials.wall) · 벽 윗면 · 벽 장식 무리(style — 앞에서 본 벽이라
 ## 도시 실내 일러스트 부품 InteriorBits·Props를 그대로 쓴다): glass 색유리 · window 창 · books 책장 · book_ladder 책장 사다리 · sealed 봉인된 책장 ·
 ## shelf_bottles/jars/boxes 선반 · board 게시판·포고문 · chart 등급표 · banner 깃발 · shields 방패 · trophy 박제·뿔 · niche 아치 벽감 · statue 성인상 ·
 ## curtain 휘장 · bones 납골 벽 · barrels 술통 벽 · hanging 매단 고기·약초 · clock 벽시계 · vault 금고 문 · pillar_gold 금빛 기둥 · tools 연장 ·
@@ -11,21 +11,15 @@ const Mat := preload("res://tools/city_art/Mat.gd")
 const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const Props := preload("res://tools/city_art/Props.gd")
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
+const RoomMaterials := preload("res://tools/city_art/RoomMaterials.gd")
 
 
 static func material(p: Paint, wall: String, t: int) -> Callable:
-	match wall:
-		"plaster":
-			return Mat.plaster(p, Color("#7a6e5a"), 0.25)
-		"brick":
-			return Mat.brick(p, Color("#5a3a2c"), 0, 0, int(t * 0.5), int(t * 0.2))
-		"timber":
-			return Mat.planks(p, Color("#3e2c1e"), 0, 0, true, int(t * 0.28))
-	return Mat.ashlar(p, Color("#3e3b36"), 0, 0, int(t * 0.95), int(t * 0.42))
+	return RoomMaterials.wall(p, wall, t)
 
 
 static func top_shader(p: Paint) -> Callable:
-	return func(x: int, y: int) -> Color: return p.vary(Color("#26231f").lerp(Color("#34302a"), p.nz("cell", x, y) * 0.6), x, y, 0.12)
+	return func(x: int, y: int) -> Color: return p.vary(Color("#3a3530").lerp(Color("#4c463e"), p.nz("cell", x, y) * 0.6), x, y, 0.12)
 
 
 static func decorate(p: Paint, rows: PackedStringArray, legend: Dictionary, t: int) -> void:

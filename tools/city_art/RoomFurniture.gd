@@ -1,6 +1,6 @@
 extends RefCounted
 ## 시설 실내 가구 무리 그림(tools/paint_rooms.gd 전용 — CT66): 범례 shape → 투명 그림(가로 = 무리 폭 + 여백, 아래 끝 = 무리 아래 끝 — RoomWorld가 발을 맞춘다).
-## 무리 모양: table(윗면 top) · desk · counter(variant) · altar · candles · pew · anvil · bench · block(top) · tall(top) · bed · font · booth · bell · pile ·
+## 무리 모양: table(윗면 top) · desk · counter(variant) · altar · candles · pew · anvil · bench · block(top) · tall(top — books · jars · boxes) · bed · font · booth · bell · pile ·
 ##   forge · grille · fence. 칸마다 하나씩 세우는 것(barrel · crate · sack · seat · post · pillar · urn · dummy · stand · target · globe · pump · wheel ·
 ##   pot · lectern · rack)은 RoomFurniture2. 빛 나는 가구(light)는 불꽃 둘레 번짐. 칠한 뒤 빛 · Ink.grade · Ink.finish.
 
@@ -123,7 +123,7 @@ static func paint(d: Dictionary, size: Vector2i, t: int, seed_value: int) -> Pai
 				Ink.line(p, Vector2(cx, gy), Vector2(cx, gy - lift * t), 5.0, col, 1.0, 0.2)
 			for yy: float in [0.35, 0.75]:
 				Ink.line(p, Vector2(foot.position.x + 4, foot.position.y + t * 0.8 - lift * t * yy), Vector2(foot.end.x - 4, foot.end.y - t * 0.2 - lift * t * yy), 4.0, col.lightened(0.1), 1.0, 0.3)
-	return done(p, lights, 0.68)
+	return done(p, lights, 0.86)
 
 
 ## 잠긴 문(1칸): 아치 나무 문 + 쇠띠 + 고리 — 벽 줄 높이로 세운다(RoomWorld가 지금 잠겨 있을 때만 세운다).
@@ -135,7 +135,7 @@ static func _door(t: int, seed_value: int, col: Color) -> Paint:
 		Ink.line(p, Vector2(PAD + 2, p.h * (0.35 + k * 0.35)), Vector2(PAD + t - 2, p.h * (0.35 + k * 0.35)), 3.0, Color("#3a3c40"), 1.0, 0.1)
 	p.fill_poly(_ellipse(Vector2(PAD + t * 0.7, p.h * 0.55), 4, 4), p.flat(Color("#8a7448"), 0.1))
 	Ink.path(p, dr, 2.0)
-	return done(p, [], 0.7)
+	return done(p, [], 0.86)
 
 
 ## 빛·색 보정·그레인. lights = 불꽃 자리들(둘레를 밝히고 번짐).
@@ -146,7 +146,7 @@ static func done(p: Paint, flames: Array, ambient: float) -> Paint:
 	RoomArt.light(p, ls, ambient)
 	for f: Vector2 in flames:
 		Ink.glow(p, f.x, f.y - 10, 20, RoomArt.WARM, 0.45)
-	Ink.grade(p, 0.24, 1.12)
+	Ink.grade(p, 0.12, 1.05)
 	Ink.finish(p, 0.04, 0.0)
 	return p
 
@@ -212,6 +212,11 @@ static func _shelf_items(p: Paint, front: Rect2, v: String, t: int) -> void:
 			var c: Color = [Color("#2f4430"), Color("#4e2a1c"), Color("#6a7a6a"), Color("#7a6a4a")][p.rng.randi() % 4]
 			if v == "jars":
 				p.fill_rect(x, ground - hh, 8, hh, p.flat(c.lightened(0.2), 0.15), 0.85)
+			elif v == "boxes":  # 서랍·대여 금고 칸: 놋쇠 손잡이 단 네모
+				var bw := 14.0
+				p.fill_rect(x, ground - 13, bw, 12, p.flat(Color("#6a5a44").lerp(c, 0.2), 0.12))
+				p.fill_rect(x + bw * 0.5 - 2, ground - 8, 4, 3, p.flat(Color("#c8a048"), 0.1))
+				x += bw - 4
 			else:
 				p.fill_rect(x, ground - hh, 5, hh, p.flat(c, 0.2))
 			x += 9

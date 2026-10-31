@@ -3,20 +3,32 @@
  "name_ko": "신전",
  "facility": "temple",
  "art_dir": "res://assets/city/rooms/temple",
- "floor": "stone",
- "wall": "ashlar",
+ "floor": "limestone",
+ "wall": "limestone",
  "regions": [
   {
    "rect": [0, 2, 10, 9],
-   "floor": "wood"
+   "floor": "oak"
   },
   {
    "rect": [10, 0, 24, 12],
-   "floor": "wood"
+   "floor": "oak"
   },
   {
-   "rect": [0, 14, 34, 25],
-   "floor": "stone"
+   "rect": [1, 17, 6, 8],
+   "floor": "flag"
+  },
+  {
+   "rect": [1, 26, 6, 12],
+   "floor": "flag"
+  },
+  {
+   "rect": [27, 17, 6, 10],
+   "floor": "parquet"
+  },
+  {
+   "rect": [27, 28, 6, 10],
+   "floor": "oak"
   },
   {
    "rect": [0, 41, 26, 16],

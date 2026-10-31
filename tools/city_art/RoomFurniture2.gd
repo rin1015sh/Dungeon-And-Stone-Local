@@ -29,10 +29,10 @@ static func per_cell(shape: String, d: Dictionary, size: Vector2i, t: int, seed_
 	var ls: Array = []
 	for f: Vector2 in flames:
 		ls.append([f, 90.0, RoomArt.WARM, 0.8])
-	RoomArt.light(p, ls, 0.68)
+	RoomArt.light(p, ls, 0.86)
 	for f: Vector2 in flames:
 		Ink.glow(p, f.x, f.y, 18, RoomArt.WARM, 0.5)
-	Ink.grade(p, 0.24, 1.12)
+	Ink.grade(p, 0.12, 1.05)
 	Ink.finish(p, 0.04, 0.0)
 	return p
 

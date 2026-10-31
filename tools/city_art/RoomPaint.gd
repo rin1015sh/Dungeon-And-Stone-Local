@@ -1,6 +1,6 @@
 extends RefCounted
 ## 시설 실내 한 지도 그림(탑뷰 3/4 — data/rooms, CT66; tools/paint_rooms.gd 전용): 칸 글자 + 범례 → 바닥 층(floor.webp) · 벽 층(walls.webp).
-## 바닥 층 = 재질(판자 wood · 돌판 stone · 대리석 marble · 흙 dirt · 어두운 돌 dark — 범례 material > regions > 방 floor) · 깔개 · 바닥 장식(RoomDecor) ·
+## 바닥 층 = 재질(RoomMaterials — 건물마다 다른 바닥, 범례 material > regions > 방 floor) · 깔개 · 바닥 장식(RoomDecor) ·
 ##   계단·사다리·문간·트인 곳·난간 · 벽 밑 그늘 · 가구 그림자 · 때. 벽 층(투명) = 벽 윗면(어두운 돌 머리)·앞면(방 wall 재질) + 벽 장식(RoomWalls).
 ## 빛: 빛 나는 가구·벽 장식(light) 둘레만 밝히고 나머지는 어둡게(두 층에 같은 빛) → Ink.grade → Ink.finish. 가구는 RoomFurniture가 따로 그린다.
 
@@ -11,8 +11,9 @@ const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomWalls := preload("res://tools/city_art/RoomWalls.gd")
 const RoomDecor := preload("res://tools/city_art/RoomDecor.gd")
+const RoomMaterials := preload("res://tools/city_art/RoomMaterials.gd")
 
-const AMBIENT := 0.6
+const AMBIENT := 0.84  ## 빛이 닿지 않는 곳 배율 — 라비기온 7구역 거리 그림 밝기쯤(CT67, 예전 0.6)
 const WALLISH := ["wall", "walldeco"]
 
 
@@ -29,8 +30,8 @@ static func paint(room: Dictionary, rows: PackedStringArray, legend: Dictionary,
 			return "void"
 		return JsonUtil.get_str(JsonUtil.get_dict(legend, rows[y][x]), "kind", "void")
 	var mats := _materials(room, rows, legend, w, h)
-	for m: String in ["wood", "stone", "marble", "dirt", "dark"]:
-		var sh := _floor_shader(fl, m, t)
+	for m: String in mats:
+		var sh := RoomMaterials.floor(fl, m, t)
 		for c: Vector2i in mats.get(m, []):
 			fl.fill_rect(c.x * t, c.y * t, t, t, sh)
 	for y in h:
@@ -64,8 +65,8 @@ static func paint(room: Dictionary, rows: PackedStringArray, legend: Dictionary,
 				p.buf[k + j] *= f[i]
 		for L: Array in lights:
 			Ink.glow(p, L[0].x, L[0].y, float(L[1]) * 0.35, L[2], float(L[3]) * 0.3)
-		Ink.grade(p, 0.24, 1.12)
-		Ink.finish(p, 0.04, 0.0)
+		Ink.grade(p, 0.12, 1.05)
+		Ink.finish(p, 0.035, 0.0)
 	return {"floor": fl, "walls": wl}
 
 
@@ -90,19 +91,6 @@ static func _materials(room: Dictionary, rows: PackedStringArray, legend: Dictio
 				out[m] = []
 			(out[m] as Array).append(Vector2i(x, y))
 	return out
-
-
-static func _floor_shader(p: Paint, m: String, t: int) -> Callable:
-	match m:
-		"stone":
-			return Mat.ashlar(p, Color("#736a5c"), 0, 0, int(t * 1.6), int(t * 1.1))
-		"marble":
-			return RoomArt.checker(p, Color("#77705f"), Color("#3a3530"), t)
-		"dirt":
-			return Bits.sand_shader(p)
-		"dark":
-			return Mat.ashlar(p, Color("#3e3c3a"), 0, 0, int(t * 1.2), int(t * 0.8))
-	return RoomArt.floor_boards(p, Color("#4e3725"), int(t * 0.42))
 
 
 ## 벽 밑 그늘(벽 앞면 바로 아래 칸 윗쪽) · 가구 발밑 그림자.

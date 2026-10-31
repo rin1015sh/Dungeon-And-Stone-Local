@@ -127,10 +127,10 @@ static func bench(t: int, seed_value: int, size: Vector2i, _variant: String) -> 
 
 ## 빛·색 보정·그레인(RoomArt와 같은 식). glow = 불꽃 둘레 번짐(없으면 Vector2.ZERO).
 static func _done(p: Paint, lights: Array, glow: Vector2) -> Paint:
-	RoomArt.light(p, lights, 0.66)
+	RoomArt.light(p, lights, 0.86)
 	if glow != Vector2.ZERO:
 		Ink.glow(p, glow.x, glow.y - 12, 22, RoomArt.WARM, 0.45)
-	Ink.grade(p, 0.24, 1.12)
+	Ink.grade(p, 0.12, 1.05)
 	Ink.finish(p, 0.04, 0.0)
 	return p
 

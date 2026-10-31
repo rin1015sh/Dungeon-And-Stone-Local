@@ -3,16 +3,16 @@
  "name_ko": "잡화점",
  "facility": "shop",
  "art_dir": "res://assets/city/rooms/shop",
- "floor": "wood",
+ "floor": "brick",
  "wall": "timber",
  "regions": [
   {
    "rect": [8, 0, 16, 8],
-   "floor": "wood"
+   "floor": "oak"
   },
   {
-   "rect": [0, 10, 24, 16],
-   "floor": "wood"
+   "rect": [17, 13, 6, 12],
+   "floor": "oak"
   }
  ],
  "legend": {
@@ -99,6 +99,18 @@
    "kind": "furniture",
    "shape": "pile",
    "color": "#6a6050"
+  },
+  "v": {
+   "name_ko": "문간 깔개",
+   "kind": "rug",
+   "color": "#5a4a6a"
+  },
+  "U": {
+   "name_ko": "물건 선반",
+   "kind": "furniture",
+   "shape": "tall",
+   "color": "#6a4a2e",
+   "top": "jars"
   }
  },
  "rows": [
@@ -124,9 +136,9 @@
   "#..TT....TT.PP..#......#",
   "#..TT....TT.PP..#......#",
   "#...............#..;;;.#",
-  "#s........@...a.#..;;;.#",
-  "#s............a.#..;;;.#",
-  "#...............#......#",
+  "#s.UU.....@...a.#..;;;.#",
+  "#s.UU.vvvv....a.#..;;;.#",
+  "#.....vvvv......#......#",
   "#######DD###############"
  ],
  "start": [8.0, 24.3],
