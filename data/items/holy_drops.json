@@ -1,0 +1,31 @@
+{
+  "id": "holy_drops",
+  "name_ko": "성수 몇 방울",
+  "desc_ko": "성수반 바닥에 남은 것을 작은 병에 받았다. 축성은 아직 풀리지 않았다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 3,
+  "price": 400,
+  "color": "#c8e0f0",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "undead",
+        "wraith"
+      ],
+      "amount": 60,
+      "damage_type": "holy",
+      "heal": 0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

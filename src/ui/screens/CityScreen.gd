@@ -5,7 +5,7 @@ extends Control
 ## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
 ## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 실내 방이 있는 시설(도서관 — RoomView)은 걸어서 문으로 나온다.
 ## 행동력은 시설 한 번 다녀오기에 1 — 나올 때 쓴다(CT62). 거리 아래에도 대화창(못 들어가는 이유 등).
-## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다. 거리에서 Esc = 정지 창(계속 · 타이틀로).
+## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다(걸어 다니는 건물 안에서도 — CT74). 거리에서 Esc = 정지 창(계속 · 타이틀로).
 ## 마우스는 쓰지 않는다(A/D 스크롤, Enter 들어가기 — 사용자 결정 2026-10-19).
 
 signal dungeon_requested
@@ -49,12 +49,12 @@ func _ready() -> void:
 	_menu = GameMenu.new()
 	_menu.setup(pc, GameState.party() if GameState.player == pc else ([pc] as Array[PlayerCharacter]))
 	_menu.use_requested.connect(use_item)
-	_menu.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
+	_menu.opened_changed.connect(_on_overlay)
 	add_child(_menu)
 	_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_codex = CodexMenu.new()
 	_codex.setup(pc, state.known_info)
-	_codex.opened_changed.connect(func(on: bool) -> void: _street.set_process(not on))
+	_codex.opened_changed.connect(_on_overlay)
 	add_child(_codex)
 	_codex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_dialog = DialogueBox.new()  # 전투와 같은 대화창(UI36)
@@ -110,7 +110,6 @@ func choose_facility(id: String) -> void:
 	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
 	if _facility is RoomView:
 		(_facility as RoomView).art_hidden.connect(func() -> void: _hud.visible = true)
-	_menu.close()  # 시설 안에서는 Tab 메뉴를 쓰지 않는다
 	_hud.set_facility_mode(true)
 	add_child(_facility)
 	move_child(_facility, _street.get_index() + 1)
@@ -240,9 +239,21 @@ func offer_travel() -> void:
 		choose_facility(ids[i])
 
 
-## 거리에서 소지품 쓰기(city.json item_use.categories 분류만 — 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
+## Tab 메뉴·도감을 열 수 있는가: 거리, 또는 걸어 다니는 건물 안에서 걷는 중(활동·창구·대화 중이 아닐 때 — CT74).
+func _overlay_ok() -> bool:
+	return _facility == null or (_facility is RoomView and (_facility as RoomView).menu_ok())
+
+
+## Tab 메뉴·도감이 열리고 닫힘: 거리 스크롤 · 건물 안 걷기를 멈춘다.
+func _on_overlay(on: bool) -> void:
+	_street.set_process(not on)
+	if _facility is RoomView:
+		(_facility as RoomView).paused = on
+
+
+## 소지품 쓰기(거리·건물 안 — city.json item_use.categories 분류만, 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
 func use_item(item_id: String) -> void:
-	if _facility != null:
+	if _facility != null and not _facility is RoomView:
 		return
 	var db := state.db
 	var cats := JsonUtil.get_array(CityValues.city_section(db, state.overrides, "item_use"), "categories")
@@ -292,11 +303,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event is InputEventKey or event is InputEventAction:
 			get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("menu") and _facility == null:
+	if event.is_action_pressed("menu") and _overlay_ok():
 		_menu.toggle()
 		get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed("codex") and _facility == null and not _menu.is_open():
+	if event.is_action_pressed("codex") and _overlay_ok() and not _menu.is_open():
 		_codex.open()
 		get_viewport().set_input_as_handled()
 		return

@@ -1,0 +1,16 @@
+{
+  "id": "torn_bounty",
+  "name_ko": "찢어진 수배서",
+  "desc_ko": "게시판에서 떨어진 수배서. 현상금 자리만 찢겨 나갔다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 40,
+  "color": "#c8b890",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

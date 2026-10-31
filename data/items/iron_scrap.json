@@ -1,0 +1,35 @@
+{
+  "id": "iron_scrap",
+  "name_ko": "쇳조각",
+  "desc_ko": "모루 밑에 쓸어 모은 쇳조각. 모서리가 아직 날카롭다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 150,
+  "color": "#6a6c70",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "beast",
+        "humanoid",
+        "orc",
+        "troll",
+        "frost_beast",
+        "undead"
+      ],
+      "amount": 40,
+      "damage_type": "pierce",
+      "heal": 0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

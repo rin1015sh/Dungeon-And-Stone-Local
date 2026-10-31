@@ -1,0 +1,16 @@
+{
+  "id": "broken_seal",
+  "name_ko": "깨진 봉랍",
+  "desc_ko": "뜯긴 서류에서 떨어진 붉은 봉랍 조각. 문장 반쪽이 남아 있다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 30,
+  "color": "#8a2a24",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

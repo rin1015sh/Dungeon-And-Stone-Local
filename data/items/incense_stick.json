@@ -1,0 +1,27 @@
+{
+  "id": "incense_stick",
+  "name_ko": "향 한 개비",
+  "desc_ko": "제단 앞에서 피우다 남은 향. 연기가 가라앉으면 마음도 가라앉는다.",
+  "category": "potion",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 150,
+  "color": "#8a6a5a",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "remove_status",
+      "status": "fear"
+    }
+  ],
+  "tags": [
+    "potion"
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

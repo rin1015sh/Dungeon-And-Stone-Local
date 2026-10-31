@@ -1,0 +1,16 @@
+{
+  "id": "twine",
+  "name_ko": "노끈 타래",
+  "desc_ko": "짐을 묶다 남은 노끈. 어디에 쓰든 하나쯤 있으면 든든하다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 80,
+  "color": "#a8946a",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

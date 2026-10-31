@@ -1,0 +1,27 @@
+{
+  "id": "stale_crust",
+  "name_ko": "딱딱한 빵 끄트머리",
+  "desc_ko": "손님이 남기고 간 빵 끄트머리. 이로 뜯어야 할 만큼 굳었다.",
+  "category": "food",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 10,
+  "color": "#a8804a",
+  "rarity": "common",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 15
+    }
+  ],
+  "tags": [
+    "food"
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

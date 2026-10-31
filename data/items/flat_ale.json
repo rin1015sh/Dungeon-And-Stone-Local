@@ -1,0 +1,31 @@
+{
+  "id": "flat_ale",
+  "name_ko": "김빠진 맥주",
+  "desc_ko": "뚜껑을 덜 닫아 김이 다 빠진 맥주. 그래도 목은 축인다.",
+  "category": "food",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 3,
+  "price": 30,
+  "color": "#b8863a",
+  "rarity": "common",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "fatigue",
+      "amount": -6
+    },
+    {
+      "type": "restore_resource",
+      "resource": "hunger",
+      "amount": 5
+    }
+  ],
+  "tags": [
+    "food"
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

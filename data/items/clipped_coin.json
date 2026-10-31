@@ -1,0 +1,16 @@
+{
+  "id": "clipped_coin",
+  "name_ko": "깎인 은화",
+  "desc_ko": "가장자리를 몰래 깎아 낸 은화. 창구에서는 받아 주지 않는다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 300,
+  "color": "#b8b4a8",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

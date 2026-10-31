@@ -1,0 +1,23 @@
+{
+  "id": "dog_eared_book",
+  "name_ko": "귀퉁이 접힌 책",
+  "desc_ko": "누군가 읽다 만 자리마다 귀퉁이를 접어 두었다. 끝까지 읽은 사람은 없는 듯하다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 3,
+  "price": 200,
+  "color": "#5a3a2a",
+  "rarity": "common",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "fatigue",
+      "amount": -12
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

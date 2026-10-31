@@ -1104,7 +1104,8 @@
       "cave_truffle_soup": "미궁 동굴에서 캐 왔다는 송로를 갈아 넣은 수프. 눈이 밝아지고 속이 든든하다."
     },
     "reason_no_item": "필요한 물건이 없다.",
-    "reason_read_this_visit": "오늘은 이 분야를 이미 읽었다"
+    "reason_read_this_visit": "오늘은 이 분야를 이미 읽었다",
+    "reason_searched": "이미 뒤져 보았다"
   },
   "field": {
     "_comment": "1층 동굴 요소(data/events) 문구 — 번호(.1 .2 …)가 여럿이면 하나를 고른다. corpse는 구역별(center/east/west/south/north).",

@@ -1,0 +1,25 @@
+{
+  "id": "wrist_wrap",
+  "name_ko": "손목 감개",
+  "desc_ko": "수련생들이 손목에 감던 천. 땀 냄새가 배어 있다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 100,
+  "color": "#b8ac90",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": 6
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

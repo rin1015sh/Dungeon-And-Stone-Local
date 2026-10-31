@@ -160,3 +160,34 @@ func test_npcs_play_their_act() -> void:
 		if str(n["act"]) == "hammer":
 			smith = NpcActSheet.load_for(db.render, str(n["look"]), "hammer")
 	assert_true(smith != null and smith.seq.size() > 1 and smith.col_at(0.0) != smith.col_at(1.0 / smith.fps * 3.0), "대장장이 망치질은 칸이 바뀐다")
+
+
+## 가구 뒤지기(CT74): 건물마다 뒤질 가구가 있고, 바라보고 뒤지면 그 건물 잡템(또는 빈손), 한 자리는 한 순에 한 번 — 순이 바뀌면 다시.
+func test_search_furniture_once_per_period() -> void:
+	var s := _state()
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+	var found := {}
+	for f in s.facility_ids():
+		var r := CityRoom.load_for(s, f)
+		assert_true(r.searchables.size() >= 3, "%s 뒤질 가구 %d" % [f, r.searchables.size()])
+		for sp: Dictionary in r.searchables:
+			var res := CityScavenge.run(s, pc, sp)
+			if str(res["key"]) == "explore.scavenge_found":
+				found[f] = true
+			assert_eq(str(CityScavenge.run(s, pc, sp)["key"]), "city.reason_searched", "%s %s는 이번 순에 한 번" % [f, sp["name_ko"]])
+	assert_true(found.size() >= 6, "건물 대부분에서 무언가 찾는다(%s)" % [found.keys()])
+	assert_true(pc.inventory.count("iron_scrap") + pc.inventory.count("rusty_nails") + pc.inventory.count("broken_blade") > 0, "대장간 잡템")
+	var smithy := CityRoom.load_for(s, "smithy")
+	s.next_period()
+	assert_false(CityScavenge.done(s, smithy.searchables[0]), "순이 바뀌면 다시 뒤진다")
+	var r2 := CityRoom.load_for(s, "library")
+	var shelf := r2.searchables.filter(func(sp: Dictionary) -> bool: return str(sp["search"]) == "library_shelf")
+	assert_false(shelf.is_empty(), "도서관 책장·책 더미")
+	var faced := 0
+	for sp: Dictionary in shelf:  # 활동 자리와 겹치지 않는 책장 칸 아래에서 위를 보면 뒤질 자리
+		var rc: Rect2i = sp["rect"]
+		for x in range(rc.position.x, rc.end.x):
+			var below := Vector2(x + 0.5, rc.end.y + 0.5)
+			if r2.map.is_walkable(Kinematics.cell_of(below)) and not r2.spots.any(func(s2: Dictionary) -> bool: return (s2["rect"] as Rect2i).has_point(Vector2i(x, rc.end.y - 1))):
+				faced += 1 if r2.target(below, Vector2i.UP).has("search") else 0
+	assert_true(faced > 0, "가구를 바라보면 뒤질 자리")

@@ -1,6 +1,6 @@
 # 게임 글 모음 — 도서관 책 · 플레이버 · 상황 문구
 
-> 게임에 나오는 읽을거리를 한 파일에 모았다(1179개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
+> 게임에 나오는 읽을거리를 한 파일에 모았다(1197개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
 > - 항목 = `#### 이름 · \`파일:경로\`` 줄 + 그 아래 글. **`####` 줄(특히 \` \` 안 경로)은 바꾸지 말고, 아래 글만** 고친다. 글은 여러 줄이어도 된다(다음 `#` 줄 전까지가 한 글).
 > - `{이름}`은 자리표시자(게임이 값을 넣는다) — 그대로 둔다(바꾸면 그 줄은 적용하지 않는다). `\n`이 필요한 자리는 그냥 줄을 바꿔 쓴다.
 > - 대화창은 **한 쪽에 한 문장**이다(UI44) — 문장을 끊으면 Enter 한 번씩 넘어간다.
@@ -10,7 +10,7 @@
 ## 차례
 
 - **도서관 책** — 미궁에 관하여(24) · 소재와 무기에 관하여(18) · 상태이상에 관하여(24) · 몬스터와 정수에 관하여(24) · 생존과 야영에 관하여(18) · 도시와 탐험가에 관하여(28)
-- **플레이버 · 설명 글** — 아이템(113) · 장비 소재(37) · 장비 종류(31) · 몬스터(104) · 정수(51) · 스킬(11) · 상태이상(66) · 전투 게이지(6) · 랜드마크(3) · 종족 · 직업(6) · 균열(설명 · 챕터)(21) · 수수께끼(문제 · 벽화)(32)
+- **플레이버 · 설명 글** — 아이템(131) · 장비 소재(37) · 장비 종류(31) · 몬스터(104) · 정수(51) · 스킬(11) · 상태이상(66) · 전투 게이지(6) · 랜드마크(3) · 종족 · 직업(6) · 균열(설명 · 챕터)(21) · 수수께끼(문제 · 벽화)(32)
 - **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(86) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(11) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(25) · 도시 · lines(46) · 도시 · street(37) · 도시 · meal(24) · 동굴 요소(75) · 동굴 요소 · corpse(15)
 
 ## 도서관 책
@@ -451,6 +451,21 @@
 #### 뼈 목걸이 · `data/items/bone_amulet.json:.desc_ko`
 짐승 뼈를 깎은 부적. 마음이 가라앉는다.
 
+#### 부러진 화살촉 · `data/items/broken_arrowhead.json:.desc_ko`
+과녁에 박혔다 빠진 화살에서 떨어진 촉. 끝은 아직 쓸 만하다.
+
+#### 부러진 칼날 · `data/items/broken_blade.json:.desc_ko`
+담금질을 버티지 못하고 갈라진 날. 대장장이는 다시 녹일 생각이었다.
+
+#### 깨진 봉랍 · `data/items/broken_seal.json:.desc_ko`
+뜯긴 서류에서 떨어진 붉은 봉랍 조각. 문장 반쪽이 남아 있다.
+
+#### 양초 토막 · `data/items/candle_stub.json:.desc_ko`
+촛대에서 빼낸 짧은 초. 밤새 버티지는 못한다.
+
+#### 깎인 은화 · `data/items/clipped_coin.json:.desc_ko`
+가장자리를 몰래 깎아 낸 은화. 창구에서는 받아 주지 않는다.
+
 #### 구리 광석 조각 · `data/items/copper_ore.json:.desc_ko`
 푸른 녹이 슨 광석 조각. 대장간에서 몇 푼 쳐준다.
 
@@ -463,14 +478,23 @@
 #### 데스마스크 · `data/items/death_mask.json:.desc_ko`
 이름 모를 기사의 얼굴을 본뜬 쇠 가면. 눈구멍이 아직도 이쪽을 본다.
 
+#### 귀퉁이 접힌 책 · `data/items/dog_eared_book.json:.desc_ko`
+누군가 읽다 만 자리마다 귀퉁이를 접어 두었다. 끝까지 읽은 사람은 없는 듯하다.
+
 #### 뼈 대검 · `data/items/dread_bone_greatsword.json:.desc_ko`
 계층군주가 휘두르던 뼈 대검. 군주가 공포라는 이름을 얻기 전부터 쥐고 있던 것이라 한다.
+
+#### 빈 병 · `data/items/empty_bottle.json:.desc_ko`
+바닥에 찌꺼기가 말라붙은 빈 병. 던지면 요란하게 깨진다.
 
 #### 만년빙 결정 · `data/items/eternal_ice.json:.desc_ko`
 녹지 않는 얼음. 손바닥에 올려도 차갑기만 하다.
 
 #### 탐험가 신원패 · `data/items/explorer_tag.json:.desc_ko`
 스무 해를 채운 날 처음 목에 거는 쇠 패. 길드에 돌려주면 누군가는 소식을 듣는다.
+
+#### 김빠진 맥주 · `data/items/flat_ale.json:.desc_ko`
+뚜껑을 덜 닫아 김이 다 빠진 맥주. 그래도 목은 축인다.
 
 #### 수정동굴의 계층석 · `data/items/floor_stone_1.json:.desc_ko`
 수정동굴의 숨이 굳은 돌. 쥐면 발밑 깊은 곳의 울림이 전해지는데, 기념비 곁에서 가장 크다.
@@ -565,6 +589,9 @@
 #### 녹색 광맥 덩이 · `data/items/green_vein.json:.desc_ko`
 초록빛이 결을 따라 흐르는 광맥 덩이. 무겁고 값지다.
 
+#### 성수 몇 방울 · `data/items/holy_drops.json:.desc_ko`
+성수반 바닥에 남은 것을 작은 병에 받았다. 축성은 아직 풀리지 않았다.
+
 #### 사냥 활 · `data/items/hunting_bow.json:.desc_ko`
 짐승을 잡던 활. 성벽 밖 들판에 아직 짐승이 뛰놀던 시절의 꼴 그대로다.
 
@@ -577,11 +604,20 @@
 #### 빙정 · `data/items/ice_crystal.json:.desc_ko`
 작은 연못 속에서 건진 붉은 얼음 구슬. 삼키면 냉기를 다루는 감각이 깨어난다.
 
+#### 향 한 개비 · `data/items/incense_stick.json:.desc_ko`
+제단 앞에서 피우다 남은 향. 연기가 가라앉으면 마음도 가라앉는다.
+
+#### 잉크병 · `data/items/ink_pot.json:.desc_ko`
+마개를 꽉 닫아 둔 검은 잉크. 쏟으면 좀처럼 지워지지 않는다.
+
 #### 철 투구 · `data/items/iron_helm.json:.desc_ko`
 이마와 정수리를 지키는 투구. 횃불을 꽂을 홈이 있다.
 
 #### 철퇴 · `data/items/iron_mace.json:.desc_ko`
 쇠뭉치를 박은 곤봉. 단단한 것을 깨는 데 좋다.
+
+#### 쇳조각 · `data/items/iron_scrap.json:.desc_ko`
+모루 밑에 쓸어 모은 쇳조각. 모서리가 아직 날카롭다.
 
 #### 랜턴 · `data/items/lantern.json:.desc_ko`
 기름을 채워 오래 켜 두는 등. 높은 층의 어둠은 이 불빛마저 몇 걸음 안에서 삼킨다고 한다.
@@ -603,6 +639,9 @@
 
 #### 남은 음식 · `data/items/leftovers.json:.desc_ko`
 여관에서 싸 준 식은 음식. 배는 채워 준다.
+
+#### 흩어진 책장 · `data/items/loose_pages.json:.desc_ko`
+제본이 풀려 떨어져 나온 낱장. 앞뒤 장이 없어 무슨 책인지 알 수 없다.
 
 #### 5등급 마석 · `data/items/magic_stone_5.json:.desc_ko`
 속에서 빛이 천천히 맴도는 마석. 이 정도면 미궁 꽤 높은 층 몬스터의 것이다.
@@ -688,6 +727,9 @@
 #### 녹슨 군장 버클 · `data/items/rusty_buckle.json:.desc_ko`
 성채 병사들의 군장에 달려 있던 버클. 녹 사이로 문장이 보인다.
 
+#### 녹슨 못 한 줌 · `data/items/rusty_nails.json:.desc_ko`
+굽은 못과 부러진 못이 뒤섞여 있다. 녹이 손에 묻어난다.
+
 #### 녹슨 곡괭이 날 · `data/items/rusty_pick_head.json:.desc_ko`
 자루가 빠진 곡괭이 날. 녹을 벗기면 쓸 만하다.
 
@@ -708,6 +750,9 @@
 
 #### 샘물 병 · `data/items/spring_water.json:.desc_ko`
 맑은 샘에서 떠 온 물. 한 모금이면 다리가 가벼워진다.
+
+#### 딱딱한 빵 끄트머리 · `data/items/stale_crust.json:.desc_ko`
+손님이 남기고 간 빵 끄트머리. 이로 뜯어야 할 만큼 굳었다.
 
 #### 강철 사리 · `data/items/steel_relic.json:.desc_ko`
 회전 칼날 속에서 굳은 강철 구슬. 묘를 지키던 이의 마지막 조각이다.
@@ -766,8 +811,14 @@
 #### 타다 남은 횃불 · `data/items/torch_stub.json:.desc_ko`
 누군가 쓰다 버린 횃불 토막. 버린 이가 차원문 밖으로 돌아갔는지는 알 수 없다.
 
+#### 찢어진 수배서 · `data/items/torn_bounty.json:.desc_ko`
+게시판에서 떨어진 수배서. 현상금 자리만 찢겨 나갔다.
+
 #### 여행용 망토 · `data/items/travel_cloak.json:.desc_ko`
 찬 바닥에서 덮고 자는 망토. 라비기온 뒷골목에서는 이것 한 장이 이불이다.
+
+#### 노끈 타래 · `data/items/twine.json:.desc_ko`
+짐을 묶다 남은 노끈. 어디에 쓰든 하나쯤 있으면 든든하다.
 
 #### 깨진 항아리 조각 · `data/items/urn_shard.json:.desc_ko`
 부장품 항아리의 조각. 유약이 아직 곱다.
@@ -777,6 +828,9 @@
 
 #### 나무 방패 · `data/items/wooden_shield.json:.desc_ko`
 판자에 쇠테를 두른 방패.
+
+#### 손목 감개 · `data/items/wrist_wrap.json:.desc_ko`
+수련생들이 손목에 감던 천. 땀 냄새가 배어 있다.
 
 ### 장비 소재
 

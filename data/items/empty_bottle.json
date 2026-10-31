@@ -1,0 +1,34 @@
+{
+  "id": "empty_bottle",
+  "name_ko": "빈 병",
+  "desc_ko": "바닥에 찌꺼기가 말라붙은 빈 병. 던지면 요란하게 깨진다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 20,
+  "color": "#8aa08a",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "beast",
+        "humanoid",
+        "orc",
+        "troll",
+        "frost_beast"
+      ],
+      "amount": 20,
+      "damage_type": "blunt",
+      "heal": 0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "broken_arrowhead",
+  "name_ko": "부러진 화살촉",
+  "desc_ko": "과녁에 박혔다 빠진 화살에서 떨어진 촉. 끝은 아직 쓸 만하다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 60,
+  "color": "#7a7a72",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "beast",
+        "humanoid",
+        "orc",
+        "troll",
+        "frost_beast",
+        "undead"
+      ],
+      "amount": 35,
+      "damage_type": "pierce",
+      "heal": 0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

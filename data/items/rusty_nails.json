@@ -1,0 +1,35 @@
+{
+  "id": "rusty_nails",
+  "name_ko": "녹슨 못 한 줌",
+  "desc_ko": "굽은 못과 부러진 못이 뒤섞여 있다. 녹이 손에 묻어난다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 80,
+  "color": "#7a5a40",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "beast",
+        "humanoid",
+        "orc",
+        "troll",
+        "frost_beast"
+      ],
+      "amount": 25,
+      "damage_type": "pierce",
+      "heal": 0,
+      "status": "bleeding"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

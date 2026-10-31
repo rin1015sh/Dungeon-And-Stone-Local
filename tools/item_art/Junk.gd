@@ -5,11 +5,12 @@ extends RefCounted
 const F := preload("res://tools/item_art/Frame.gd")
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Wear2 := preload("res://tools/item_art/Wear2.gd")
+const Junk2 := preload("res://tools/item_art/Junk2.gd")
 
 const BY_ID := {
 	"old_silver_coin": "coins", "old_gold_coin": "coins", "rotten_meat": "spoiled_meat", "frozen_meat": "spoiled_meat",
 	"glow_moss": "moss", "rusty_pick_head": "pick_head", "urn_shard": "potsherd", "rusty_buckle": "buckle",
-	"frost_bone_charm": "bone_charm",
+	"frost_bone_charm": "bone_charm", "clipped_coin": "coins", "broken_seal": "potsherd",
 }
 
 
@@ -33,7 +34,7 @@ static func paint(id: String, ctx: Dictionary) -> bool:
 			ctx["m"] = cl.mat(Color(ctx["c"]).darkened(0.15), "bone")
 			Wear2.amulet(ctx)
 		_:
-			return false
+			return Junk2.paint(id, ctx)  # 도시 건물 잡템(CT74)
 	return true
 
 

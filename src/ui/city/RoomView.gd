@@ -24,6 +24,8 @@ var _player: ActorView
 var _tile: float = 32.0
 var _held: Array[String] = []
 var _acting: bool = false  # 활동 결과를 넘기는 중 · 선택 창
+## Tab 메뉴·도감이 열려 있는 동안 걷기·살피기를 멈춘다(CityScreen이 켠다 — CT74).
+var paused: bool = false
 var _plate: PanelContainer
 var _plate_name: Label
 var _plate_why: Label
@@ -95,6 +97,8 @@ func _build_plate() -> void:
 
 
 func _process(delta: float) -> void:
+	if paused:
+		return
 	if _room == null:
 		return
 	if _leaving or _acting or _dialog.busy():
@@ -165,6 +169,14 @@ func _sync_view() -> void:
 
 
 func _refresh_plate() -> void:
+	if _focus.has("search"):  # 뒤질 가구(CT74): 이름 · 이번 순에 뒤졌으면 그 이유
+		var searched := CityScavenge.done(_state, _focus)
+		_plate.visible = true
+		_plate_name.text = str(_focus.get("name_ko", ""))
+		_plate_why.text = Strings.t("city.reason_searched") if searched else ""
+		_plate_why.visible = searched
+		_plate.add_theme_stylebox_override("panel", CityUi.plate_box(not searched))
+		return
 	var opts := entries(_focus)
 	_plate.visible = not opts.is_empty()
 	if opts.is_empty():
@@ -193,13 +205,18 @@ func _entry_text(e: Array) -> String:
 	return Strings.t("city.shop_tab_" + str(e[1])) if not str(e[1]).is_empty() else JsonUtil.get_str(_state.activity(str(e[0])), "name_ko")
 
 
+## Tab 메뉴·도감을 열어도 되는가: 걷는 중(활동 결과·선택 창·창구·대화가 없을 때 — CT74).
+func menu_ok() -> bool:
+	return _room != null and not _leaving and not _acting and _menu == null and not _dialog.busy()
+
+
 ## 이 활동을 지금 못 하는 이유(문자열 키, 할 수 있으면 "") — 활동 조건(CityActions.check — 도서관 분야는 한 방문에 한 번).
 func reason(act_id: String) -> String:
 	return CityActions.check(_state, _pc, act_id)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _room == null or _leaving or _acting or _dialog.busy():
+	if _room == null or _leaving or _acting or paused or _dialog.busy():
 		return
 	if event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
@@ -208,7 +225,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## 바라보는 자리를 살핀다: 칸이 하나면 바로, 여럿이면 작은 선택 창(Esc = 그만두기). 창구면 그 패널을 연다.
 func interact() -> void:
-	var opts := entries(_room.target(pos, facing))
+	var at := _room.target(pos, facing)
+	if at.has("search"):  # 가구 뒤지기(CT74)
+		var r := CityScavenge.run(_state, _pc, at)
+		_dialog.say(Strings.t(str(r["key"]), r["args"] as Dictionary), str(r["tone"]))
+		_refresh_plate()
+		return
+	var opts := entries(at)
 	if opts.is_empty():
 		return
 	var pick: Array = opts[0]

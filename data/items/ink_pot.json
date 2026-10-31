@@ -1,0 +1,35 @@
+{
+  "id": "ink_pot",
+  "name_ko": "잉크병",
+  "desc_ko": "마개를 꽉 닫아 둔 검은 잉크. 쏟으면 좀처럼 지워지지 않는다.",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 3,
+  "price": 120,
+  "color": "#1e2230",
+  "rarity": "common",
+  "consumable": true,
+  "combat_usable": true,
+  "use_effects": [
+    {
+      "type": "smite",
+      "single": true,
+      "families": [
+        "beast",
+        "humanoid",
+        "orc",
+        "troll",
+        "frost_beast"
+      ],
+      "amount": 10,
+      "damage_type": "blunt",
+      "heal": 0,
+      "status": "blind"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

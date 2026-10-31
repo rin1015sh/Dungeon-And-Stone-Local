@@ -1,0 +1,24 @@
+{
+  "id": "candle_stub",
+  "name_ko": "양초 토막",
+  "desc_ko": "촛대에서 빼낸 짧은 초. 밤새 버티지는 못한다.",
+  "category": "light",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 60,
+  "color": "#e8dcc0",
+  "rarity": "common",
+  "consumable": true,
+  "use_effects": [
+    {
+      "type": "light_source",
+      "radius_m": 5.0,
+      "hours": 8
+    }
+  ],
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}

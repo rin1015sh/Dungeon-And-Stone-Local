@@ -20,6 +20,8 @@ var map: FloorMap
 var start: Vector2 = Vector2.ZERO
 ## 지금 선 가구 무리 {char, rect: Rect2i, def}.
 var furniture: Array[Dictionary] = []
+## 뒤질 수 있는 가구·벽 장식(CityScavenge — CT74) {rect, acts(빈 것), rest, name_ko, search(scavenge 표 id), key("방 id:x,y")}.
+var searchables: Array[Dictionary] = []
 ## 사람 {at: Vector2i, look, name_ko, staff, face: Vector2i, act(동작 id — NpcActSheet, CT69)}.
 var npcs: Array[Dictionary] = []
 ## 지금 살필 수 있는 자리 {rect: Rect2i, acts: Array[String], rest, name_ko}.
@@ -109,6 +111,17 @@ func _build(state: CityState, room_id: String) -> void:
 	for g: Dictionary in groups(rows, legend, ["furniture"]):
 		if _kind.get((g["cells"] as Array)[0], "") == "furniture":
 			furniture.append({"char": g["char"], "rect": g["rect"], "def": JsonUtil.get_dict(legend, str(g["char"]))})
+	var search := JsonUtil.get_dict(JsonUtil.get_dict(cfg, "search"), JsonUtil.get_str(def, "facility"))
+	for g: Dictionary in groups(rows, legend, ["furniture", "walldeco"]):
+		var gd := JsonUtil.get_dict(legend, str(g["char"]))
+		if not _kind.get((g["cells"] as Array)[0], "") in ["furniture", "walldeco"]:
+			continue
+		var table := JsonUtil.get_str(gd, "scavenge", JsonUtil.get_str(search, JsonUtil.get_str(gd, "shape", JsonUtil.get_str(gd, "style"))))
+		if table.is_empty() or not state.db.has_entry("scavenge", table):
+			continue
+		var rc: Rect2i = g["rect"]
+		searchables.append({"rect": rc, "acts": [] as Array[String], "rest": false, "name_ko": JsonUtil.get_str(gd, "name_ko"), "search": table,
+			"key": "%s:%d,%d" % [id, rc.position.x, rc.position.y]})
 	var st := JsonUtil.get_array(def, "start")
 	start = Vector2(float(st[0]), float(st[1])) if st.size() == 2 else Vector2(width * 0.5, height - 1.5)
 	for v: Variant in JsonUtil.get_array(def, "npcs"):
@@ -153,10 +166,13 @@ func is_door(cell: Vector2i) -> bool:
 	return kind_at(cell) == "entry"
 
 
-## 몸(칸 좌표 pos)이 facing을 보고 있을 때 바로 앞 칸의 살필 자리(없으면 {}).
+## 몸(칸 좌표 pos)이 facing을 보고 있을 때 바로 앞 칸의 살필 자리(활동 자리가 먼저, 없으면 뒤질 가구 — search 키가 있다, 없으면 {}).
 func target(pos: Vector2, facing: Vector2i) -> Dictionary:
 	var ahead := Kinematics.cell_of(pos + Vector2(facing) * 0.8)
 	for s: Dictionary in spots:
+		if (s["rect"] as Rect2i).has_point(ahead):
+			return s
+	for s: Dictionary in searchables:
 		if (s["rect"] as Rect2i).has_point(ahead):
 			return s
 	return {}

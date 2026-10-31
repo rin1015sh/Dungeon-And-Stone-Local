@@ -796,6 +796,12 @@ func _library_flow() -> void:
 	var room := city.facility_view() as RoomView
 	if not _expect(room != null and st.ap == 2, "도서관 = 걸어 다니는 실내 방(들어가며 행동력 1 — CT72)"):
 		return
+	await _action("menu")  # 건물 안에서도 Tab 메뉴(CT74) — 열려 있는 동안 걷지 않는다
+	await _frames(2)
+	_expect(city.menu().is_open() and room.paused, "건물 안에서 Tab = 메뉴(걷기 멈춤)")
+	await _action("menu")
+	await _frames(2)
+	_expect(not city.menu().is_open() and not room.paused and city.facility_view() == room, "Tab을 다시 누르면 닫히고 방에 그대로")
 	var start := room.pos
 	await _hold("move_up", 0.4)
 	_expect(room.pos.y < start.y - 0.5 and room.facing == Vector2i.UP, "W를 누르고 있으면 위로 걷는다")
@@ -926,7 +932,9 @@ func _city_flow() -> void:
 	if not _expect(fv is RoomView and fv.facility_id() == "inn" and st.ap == 2, "Enter → 여관 실내 방으로(들어가며 행동력 1 — CT72)"):
 		return
 	await _action("menu")
-	_expect(not city.menu().is_open(), "시설 안에서는 Tab 메뉴가 열리지 않는다")
+	_expect(city.menu().is_open(), "시설 안에서도 Tab 메뉴(CT74)")
+	await _action("menu")
+	_expect(not city.menu().is_open(), "Tab으로 닫는다")
 	pc.pool.modify("hp", -30.0)
 	pc.fatigue.set_value(60.0)
 	await _room_do(fv as RoomView, "inn_rest")  # 계단 앞에서 Enter

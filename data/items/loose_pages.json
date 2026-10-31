@@ -1,0 +1,16 @@
+{
+  "id": "loose_pages",
+  "name_ko": "흩어진 책장",
+  "desc_ko": "제본이 풀려 떨어져 나온 낱장. 앞뒤 장이 없어 무슨 책인지 알 수 없다.",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 10,
+  "price": 60,
+  "color": "#d8cca8",
+  "rarity": "common",
+  "source": "placeholder",
+  "notes": "도시 건물 가구 뒤지기 잡템(CT74, 2026-10-31)"
+}
