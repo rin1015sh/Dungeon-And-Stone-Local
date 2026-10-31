@@ -43,8 +43,10 @@ func _initialize() -> void:
 			if done.has(path):
 				continue
 			done[path] = true
-			if JsonUtil.get_str(d, "kind") == "locked":
-				d = {"shape": "door", "color": "#4a3424"}
+			if JsonUtil.get_str(d, "kind") == "locked":  # 옆벽(위아래가 벽)의 잠긴 문은 옆에서 본 닫힌 문(CT71)
+				var at: Vector2i = rc.position
+				var wallish := func(yy: int) -> bool: return yy >= 0 and yy < rows.size() and JsonUtil.get_str(JsonUtil.get_dict(legend, rows[yy][at.x]), "kind") in ["wall", "walldeco"]
+				d = {"shape": "door", "color": "#4a3424", "side": wallish.call(at.y - 1) and wallish.call(at.y + 1)}
 			var p: RefCounted = RoomFurniture.paint(d, size, t, SEED + path.hash() % 1000)
 			p.call("save", path)
 		print("방 %s: %d칸×%d칸 · 가구 그림 %d · %d ms" % [id, rows[0].length(), rows.size(), done.size(), Time.get_ticks_msec() - t0])

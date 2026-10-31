@@ -43,7 +43,7 @@ static func paint(d: Dictionary, size: Vector2i, t: int, seed_value: int) -> Pai
 			if size.y == 1:
 				return RoomProps2.bench(t, seed_value, size, variant)
 	if shape == "door":
-		return _door(t, seed_value, col)
+		return _door(t, seed_value, col, JsonUtil.get_bool(d, "side"))
 	var lift := {"table": 0.5, "desk": 0.6, "block": 0.6, "tall": 1.3, "bed": 0.35, "font": 0.55, "booth": 1.6, "bell": 1.2, "pile": 0.3,
 		"forge": 0.7, "grille": 1.1, "fence": 0.7, "counter": 0.62, "pew": 0.42, "bench": 0.4}.get(shape, 0.6) as float
 	var p := Paint.new(size.x * t + PAD * 2, size.y * t + int(lift * t) + 70, seed_value)
@@ -128,7 +128,17 @@ static func paint(d: Dictionary, size: Vector2i, t: int, seed_value: int) -> Pai
 
 
 ## 잠긴 문(1칸): 아치 나무 문 + 쇠띠 + 고리 — 벽 줄 높이로 세운다(RoomWorld가 지금 잠겨 있을 때만 세운다).
-static func _door(t: int, seed_value: int, col: Color) -> Paint:
+static func _door(t: int, seed_value: int, col: Color, side: bool = false) -> Paint:
+	if side:  # 옆벽 문: 옆에서 본 닫힌 문 — 칸 가운데 세로로 선 두꺼운 판(쇠띠 둘 · 손잡이)
+		var q := Paint.new(t + PAD * 2, int(t * 1.9), seed_value)
+		var slab := Paint.rect_poly(PAD + t * 0.36, 4, t * 0.28, q.h - 6)
+		q.fill_poly(slab, Mat.planks(q, col, 0, 0, true, 5))
+		q.fill_rect(PAD + t * 0.36, 4, t * 0.1, q.h - 6, q.flat(col.lightened(0.18), 0.08))  # 빛 받는 앞 모서리
+		for k in 2:
+			Ink.line(q, Vector2(PAD + t * 0.36, q.h * (0.3 + k * 0.4)), Vector2(PAD + t * 0.64, q.h * (0.3 + k * 0.4)), 3.0, Color("#3a3c40"), 1.0, 0.1)
+		Ink.path(q, slab, 2.0)
+		q.fill_poly(_ellipse(Vector2(PAD + t * 0.38, q.h * 0.55), 3, 4), q.flat(Color("#8a7448"), 0.1))
+		return done(q, [], 0.86)
 	var p := Paint.new(t + PAD * 2, int(t * 1.6), seed_value)
 	var dr := Paint.arch_poly(PAD + 2, 4, t - 4, p.h - 6, false)
 	p.fill_poly(dr, Mat.planks(p, col, 0, 0, true, 8))

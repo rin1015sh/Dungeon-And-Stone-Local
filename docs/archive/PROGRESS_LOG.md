@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도시 실내 — 벽 입체 · 옆벽 문 · 통로 · 기둥 (2026-10-31, 사용자 "옆벽 문이 정면 문처럼 · 기둥에 막혀 못 감 · 통로 들어가기 힘듦 · 벽이 타일처럼 — 벽·바닥·천장 구분이 안 감", CT71)** — 테스트: 새 `tools/sim_room_walk.gd`(통로 4905번 진입 — 고치기 전 ±0.45칸 비낌에서 475번 막힘, 고친 뒤 0) + `check.sh` + 캡처.
+  - 벽: `RoomWallForm.gd` 새로(cap 검은 윗면 + 밝은 테 · face 그늘·처마·굽도리·꺾인 끝 · threshold 방향 · door 옆벽 문짝/앞벽 문틀) · RoomPaint._walls 다시 씀 · RoomDecor.threshold 지움 · 은행 벽 재질 marble = 붙임기둥 회벽(바닥 바둑판과 같은 무늬였다) · 잠긴 문 옆모습(paint_rooms가 위아래 벽이면 side).
+  - 통로: 걸어서 못 가는 곳은 원래 없었다(±0.3칸 비낌 2943번 모두 통과) — 칸 반쯤 비껴 서면 corner_assist 0.45가 못 밀어 줬다 → `city.json room.corner_assist` 0.8.
+  - 기둥: 키 큰 가구 그림이 문간 앞 칸을 덮는 곳 검사(파이썬) → 신전 (8,21)·(25,21)·(8,29)·(25,29) 기둥 뺌, 은행 기둥 줄 x3·x20 → x4·x19.
 - **도시 실내 사람 머리 — 윤기 없이 · 어두운 머리색 여러 가지 (2026-10-31, 사용자 "머리카락에서 빛나는 회색 없애고 머리 색도 어두운 계열에서 다양하게", CT70)** — 원인: 머리 재질 반사광(Render spec — 거의 흰색으로 섞임) + 짧은 머리의 밝은 결(LOCKS light 4가닥마다 col.lightened(0.28)) + 사서·학자 센머리. 고침: BackHair `hair_matte`(반사 0 · 밝은 결 없음 · 얼룩 어둡게), MapLooks `NPC`·`HAIR_DARK`(10색)·`split`("<옷차림>_h<번호>"), 방 JSON 사람 40명 look을 번호 돌려 배정(두건 쓴 h7 빼고), `paint_actors --acts`가 걷기 시트도 그림. 탐험가 그림은 그대로. 테스트: `check.sh` + 동작 시트 확대 보기.
 - **도시 실내 사람 + 동작 (2026-10-31, 사용자 "건물 내에 npc 추가 — 플레이어 캐릭터 양식 참고, 건물에 어울리는 애니메이션까지", CT69)** — 범위: 사람 배치·옷·동작 그림·게임 재생. 완료 기준: 여덟 건물에 일하는 사람이 있고 바라보는 쪽 동작 칸이 돌며, 동작 그림이 모두 있다(테스트). 테스트: `check.sh`(494개 — `test_npcs_play_their_act` 새로) + 동작 시트 확대 보기 + 실내 캡처.
   - 그림: `paint_actors.gd --acts`(NpcActs — 방 JSON에서 (look, act) 쌍을 모아 `_figure`에 motion_frame·kit을 넘김) · `tools/monster_art/npc_acts.json`(16동작) · `BackTools.gd`(손 도구 10) · BackExtras가 BackTools를 부르고 BackGear는 도구를 창으로 그리지 않게. 옷 MapLooks n8~n14 + KEEP에 h0·h1·h4·h7·h11(걷기 시트 `--look --out=res://assets/actors/looks`).

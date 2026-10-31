@@ -143,7 +143,7 @@
     "_comment": "시설 실내(탑뷰 — data/rooms, CT62·CT64·CT66): 걷는 빠르기(칸/초) · 몸 반 폭(칸) · 모서리 미끄러짐 · 한 방문에 할 수 있는 활동 수(창구는 세지 않는다 — 행동력은 나올 때 facility_entry_cost) · 계단·사다리 빠르기 배율(그 칸 위에서는 좌우를 막는다 — CT65) · art_scale = 방 그림 배율(칸 = view.floor_tile_px × art_scale px — tools/paint_rooms.gd·RoomWorld) · 충돌 지도에 쓰는 타일(data/tiles). legend = 모든 방이 같이 쓰는 칸 글자(방 JSON legend가 덮는다 — 숫자·기호는 잡동사니 가구·흩어진 것, CT68) — kind: floor(material) · rug · decor · wall · walldeco · furniture · door · doorway · locked(opens = 이번 순 사건 id) · entry(밟으면 나간다) · stairs · ladder · open(아래층이 보이는 트인 곳) · rail · void · npc. 값은 임시값.",
     "walk_tiles_per_sec": 4.5,
     "body_half": 0.3,
-    "corner_assist": 0.45,
+    "corner_assist": 0.8,
     "activities_per_visit": 1,
     "stairs_speed": 0.7,
     "ladder_speed": 0.5,

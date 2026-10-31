@@ -49,8 +49,8 @@ static func wall(p: Paint, w: String, t: int) -> Callable:
 			return Mat.brick(p, Color("#7a4634"), 0, 0, int(t * 0.5), int(t * 0.2))
 		"timber":
 			return Mat.planks(p, Color("#6a4a30"), 0, 0, true, int(t * 0.28))
-		"marble":
-			return _tiles(p, Color("#cfc6b4"), Color("#8a8070"), int(t * 0.95), 0.0)
+		"marble":  # 바닥 바둑판과 헷갈리지 않게 — 크림색 회벽 판 + 세로 붙임기둥 줄
+			return _pilaster(p, Color("#c4b9a2"), t)
 	return Mat.ashlar(p, Color("#6a655c"), 0, 0, int(t * 0.95), int(t * 0.42))
 
 
@@ -152,3 +152,16 @@ static func _panel(p: Paint, base: Color, t: int) -> Callable:
 		elif u < 6 or v < 6:
 			c = base.lightened(0.18)
 		return p.vary(c.darkened(absf(p.nz("vs", x, y) - 0.5) * 0.3), x, y, 0.12)
+
+
+## 붙임기둥 벽: 크림색 회벽 판, 칸 1.5개마다 세로 기둥(밝은 면 + 그늘 줄).
+static func _pilaster(p: Paint, base: Color, t: int) -> Callable:
+	var span := int(t * 1.5)
+	return func(x: int, y: int) -> Color:
+		var u := posmod(x, span)
+		var c := base.darkened(absf(p.nz("vs", x, y) - 0.5) * 0.2)
+		if u < 5:
+			c = base.lightened(0.12)
+		elif u < 8:
+			c = base.darkened(0.35)
+		return p.vary(c, x, y, 0.06)

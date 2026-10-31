@@ -11,6 +11,7 @@ const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomWalls := preload("res://tools/city_art/RoomWalls.gd")
 const RoomDecor := preload("res://tools/city_art/RoomDecor.gd")
+const RoomWallForm := preload("res://tools/city_art/RoomWallForm.gd")
 const RoomMaterials := preload("res://tools/city_art/RoomMaterials.gd")
 
 const AMBIENT := 0.84  ## 빛이 닿지 않는 곳 배율 — 라비기온 7구역 거리 그림 밝기쯤(CT67, 예전 0.6)
@@ -52,8 +53,8 @@ static func paint(room: Dictionary, rows: PackedStringArray, legend: Dictionary,
 					RoomDecor.open_drop(fl, x, y, t, str(kind.call(x, y - 1)) != "open")
 				"rail":
 					RoomDecor.rail(fl, x, y, t, str(kind.call(x - 1, y)) != "rail", str(kind.call(x + 1, y)) != "rail")
-				"door", "doorway", "locked", "entry":
-					RoomDecor.threshold(fl, x, y, t, str(kind.call(x, y)) == "entry")
+				"door", "doorway", "locked", "entry":  # 옆벽(위아래가 벽) 문은 세로 문턱(CT71)
+					RoomWallForm.threshold(fl, x, y, t, str(kind.call(x, y - 1)) in WALLISH and str(kind.call(x, y + 1)) in WALLISH, str(kind.call(x, y)) == "entry")
 	_shadows(fl, rows, legend, kind, t)
 	_walls(wl, room, rows, legend, kind, t)
 	var lights := _lights(rows, legend, t)
@@ -120,27 +121,27 @@ static func _shadows(p: Paint, rows: PackedStringArray, legend: Dictionary, kind
 ## 벽 층: 칸마다 윗면·앞면, 그 위에 벽 장식 무리(RoomWalls).
 static func _walls(p: Paint, room: Dictionary, rows: PackedStringArray, legend: Dictionary, kind: Callable, t: int) -> void:
 	var face_sh := RoomWalls.material(p, JsonUtil.get_str(room, "wall", "ashlar"), t)
+	var isw := func(x: int, y: int) -> bool: return str(kind.call(x, y)) in WALLISH
+	var isf := func(x: int, y: int) -> bool: return str(kind.call(x, y)) in WALLISH and (str(kind.call(x, y)) == "walldeco" or is_face(kind, x, y))
 	for y in rows.size():
 		for x in rows[y].length():
-			var k: String = kind.call(x, y)
-			if not k in WALLISH:
+			if not isw.call(x, y):
 				continue
-			if k == "walldeco" or is_face(kind, x, y):
+			if isf.call(x, y):
 				p.fill_rect(x * t, y * t, t, t, face_sh)
-				if not str(kind.call(x, y + 1)) in WALLISH:  # 굽도리 + 바닥선
-					p.fill_rect(x * t, y * t + t - t * 0.12, t, t * 0.12, p.flat(Color("#2a1f17"), 0.08))
-					Ink.line(p, Vector2(x * t, y * t + t), Vector2(x * t + t, y * t + t), 2.0, Ink.INK, 0.8, 0.4)
-				if not str(kind.call(x, y - 1)) in WALLISH or not is_face(kind, x, y - 1):
-					Ink.line(p, Vector2(x * t, y * t), Vector2(x * t + t, y * t), 2.0, Ink.INK, 0.85, 0.4)
-				Ink.shade(p, Paint.rect_poly(x * t, y * t, t, t), Vector2(0, y * t), Vector2(0, y * t + t), 0.25, 0.05)
+				RoomWallForm.face(p, x, y, t, not isf.call(x, y - 1), not isw.call(x, y + 1), not isf.call(x - 1, y), not isf.call(x + 1, y))
 			else:
-				p.fill_rect(x * t, y * t, t, t, RoomWalls.top_shader(p))
-				for d: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]:
-					if not str(kind.call(x + d.x, y + d.y)) in WALLISH:
-						var a := Vector2(x * t + (t if d.x > 0 else 0), y * t + (t if d.y > 0 else 0))
-						var b := a + (Vector2(0, t) if d.x != 0 else Vector2(t, 0))
-						Ink.line(p, a, b, 2.0, Color("#6a645a"), 0.6, 0.3)
+				var cx := x
+				var cy := y
+				RoomWallForm.cap(p, x, y, t, func(dx: int, dy: int) -> bool: return isw.call(cx + dx, cy + dy), isf.call(x, y + 1))
 	RoomWalls.decorate(p, rows, legend, t)
+	for y in rows.size():  # 문틀·문짝(벽 장식 위)
+		for x in rows[y].length():
+			var k: String = kind.call(x, y)
+			if not k in ["door", "doorway", "entry"]:
+				continue
+			var side: bool = isw.call(x, y - 1) and isw.call(x, y + 1)
+			RoomWallForm.door(p, x, y, t, side, k == "door", not isw.call(x - 1, y))
 
 
 ## 앞면인가: 아래 칸이 벽이 아니거나, 아래가 벽(앞면)이고 그 아래가 벽이 아니며 위도 벽이면(두 칸 높이 뒷벽).
