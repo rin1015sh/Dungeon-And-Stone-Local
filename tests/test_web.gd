@@ -6,7 +6,7 @@ const REGEX := "\"(?:[^\"\\\\]|\\\\.)*\""
 
 
 func _font() -> Font:
-	return load(str(db.render.get("font", {}).get("path", ""))) as Font
+	return UiTheme.resolve_font(JsonUtil.get_dict(db.render, "font"))  # 본 폰트 + fallbacks(송명에 없는 기호는 Noto, UI47)
 
 
 func _missing(text: String, font: Font, out: Dictionary) -> void:

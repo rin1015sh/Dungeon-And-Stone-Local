@@ -4,8 +4,9 @@ extends Control
 ## 그 위 가운데에 적이 이쪽을 보고 서고(덩치에 따라 크게, 아군 머리보다 위 — 가리지 않게, 자리 고정),
 ## 화면 아래쪽 앞줄에 아군이 등을 보이고 선다(다리는 아래 창에 가린다). 뒤에는 그 층·균열의 전투 뒷그림(소실점 통로 — set_backdrop).
 ## 적이 많아 통로 벽(뒷그림 half_width m) 안에 한 줄로 못 서면 뒷줄로 — 깊이만큼 작아지고 소실점 쪽으로 다가간다(FoeRows, UI29).
-## 전투 중에 나올 수 있는 적(소환·분열·증원 — BattleReserve)의 자리는 처음 정렬 때 함께 정해 비워 둔다(_spares). 새 적은 그 자리에 서고,
-## 쓰러진 적의 자리도 다시 빈자리가 된다 — 전투 중에 다른 적을 옮기거나 줄이지 않는다(사용자 2026-10-27, UI37).
+## 처음 선 적은 그 수만으로 가운데에 선다(하나 = 한가운데, 둘 = 가운데 둘 …, 보스는 늘 한가운데 + 잡몹은 그 둘레 — 사용자 2026-10-29, UI50).
+## 전투 중에 나올 수 있는 적(소환·분열·증원 — BattleReserve)은 크기(축척)를 정할 때만 함께 센다 — 나중에 와도 다 들어가게.
+## 새 적은 지금 선 적을 옮기지 않고 남은 자리 중 가운데에 가까운 옆자리에, 쓰러진 적의 자리도 다시 빈자리(UI37·UI50).
 ## 배치 수치는 render.json ui.combat_* (bottom_reserve = 아래 창 높이).
 
 var _views: Dictionary = {}  # Combatant -> BattlerView
@@ -15,9 +16,9 @@ var _floor_y: float = 0.0    # 적 발 높이(px) — 빛 웅덩이도 여기
 var _layout_queued: bool = false
 var _back: Texture2D = null  # 전투 뒷그림(층 art.battleback · 균열 look.art.battleback) — 없으면 어둠뿐
 var _half_width: float = 3.0  # 통로 반 폭(m, 앞줄 적 크기 기준) — 적이 이 안에 선다
-var _deep: bool = false  # 처음 정렬(_pack)에 뒷줄이 있었다 — 앞줄을 당겨 세운다. 소환으로 바꾸지 않는다(앞줄이 들썩이지 않게)
-var _reserve_from: Callable  # (지금 선 적 몬스터 id 배열) -> 비워 둘 자리의 몬스터 id 배열(BattleReserve.plan — CombatScreen이 넣는다)
-var _spares: Array[Dictionary] = []  # 비워 둔 자리 {"id": 몬스터 id, "x", "row", "h"} — 앞줄·가운데에 가까운 것부터
+var _deep: bool = false  # 처음 정렬(_pack)에 뒷줄이 있었다(나올 적까지 세면) — 앞줄을 당겨 세운다. 소환으로 바꾸지 않는다(앞줄이 들썩이지 않게)
+var _reserve_from: Callable  # (지금 선 적 몬스터 id 배열) -> 나올 수 있는 적 몬스터 id 배열(BattleReserve.plan — CombatScreen이 넣는다)
+var _scale: float = 1.0  # 처음 정렬 때 정한 적 크기 배율(화면 폭·줄 수 맞춤) — 나중에 온 적도 같은 배율
 
 
 func setup(db: GameDatabase) -> void:
@@ -126,10 +127,7 @@ func layout() -> void:
 		_floor_y = maxf(stage_h * UiTheme.ui_float("combat_enemy_floor_min", 0.4), minf(_floor_y, ally_top + stage_h * UiTheme.ui_float("combat_enemy_overlap", 0.14)))
 	for u: Combatant in _slots.keys():
 		if not _views.has(u):
-			if u.actor is Monster:  # 쓰러진 자리는 다시 빈자리(같은 몬스터가 또 나오면 그 자리에)
-				var sl: Dictionary = _slots[u]
-				_spares.push_front({"id": (u.actor as Monster).monster_id, "x": sl["x"], "row": sl["row"], "h": sl["h"]})
-			_slots.erase(u)
+			_slots.erase(u)  # 쓰러진 자리는 다시 빈자리
 	var fresh: Array[Combatant] = foes.filter(func(u: Combatant) -> bool: return not _slots.has(u))
 	if not fresh.is_empty():
 		var boss_new := fresh.any(func(u: Combatant) -> bool: return (_views[u] as BattlerView).boss)  # 보스는 늘 가운데 — 다시 정렬
@@ -204,8 +202,9 @@ func _foe_height(v: BattlerView, stage_h: float) -> float:
 	return minf(base_h * pow(clampf(v.size_k, 0.3, 2.4), UiTheme.ui_float("combat_enemy_size_exp", 1.0)), room / maxf(1.0, v.height_ratio()))
 
 
-## 적 전원의 자리를 새로 정한다(처음 나왔을 때, 또는 새 적이 들어갈 빈자리가 없을 때): 통로 안에 앞줄부터(FoeRows),
-## 줄이 combat_rows_max를 넘거나 한 마리가 화면 폭을 넘으면 다 같이 줄인다.
+## 적 전원의 자리를 새로 정한다(처음 나왔을 때, 보스가 새로 나왔을 때, 새 적이 들어갈 자리가 없을 때).
+## 크기: 지금 선 적 + 전투 중에 나올 수 있는 적(BattleReserve)을 함께 통로 안에 세워 보고(FoeRows.arrange_fit) 줄이 combat_rows_max를
+## 넘거나 한 마리가 화면 폭을 넘으면 다 같이 줄인다 — 나중에 와도 다시 줄이지 않게. 자리: 지금 선 적만으로 가운데부터(UI50).
 func _pack(foes: Array[Combatant], stage_h: float) -> void:
 	var ppm := _ppm(stage_h)
 	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
@@ -213,7 +212,7 @@ func _pack(foes: Array[Combatant], stage_h: float) -> void:
 	for u in foes:
 		looks.append(_views[u])
 	var spare_ids: Array[String] = []
-	if _reserve_from.is_valid():  # 전투 중에 나올 적의 자리도 함께(크기 견본 — 무대에 붙이지 않는다)
+	if _reserve_from.is_valid():  # 전투 중에 나올 적(크기 견본 — 무대에 붙이지 않는다)
 		var present: Array = foes.map(func(u: Combatant) -> String: return (u.actor as Monster).monster_id if u.actor is Monster else "")
 		spare_ids.assign(_reserve_from.call(present))
 	var probes: Array[BattlerView] = []
@@ -239,49 +238,43 @@ func _pack(foes: Array[Combatant], stage_h: float) -> void:
 		if (_views[foes[i]] as BattlerView).boss:
 			pinned = i
 			break
-	var out := FoeRows.arrange_fit(widths, _half_width, gap, UiTheme.metric("combat_rows_max", 3), pinned)
+	var rows_max := UiTheme.metric("combat_rows_max", 3)
+	var k := float(FoeRows.arrange_fit(widths, _half_width, gap, rows_max, pinned)["k"])  # 나올 적까지 들어가는 배율
+	var now := PackedFloat32Array()
+	for i in foes.size():
+		now.append(widths[i] * k)
+	var out := FoeRows.arrange_fit(now, _half_width, gap * k, rows_max, pinned)  # 지금 선 적만 — 가운데부터
+	var k2 := float(out["k"])
+	_scale = fit * k * k2
 	var pos: Array = out["pos"]
 	_slots.clear()
-	_spares.clear()
 	_deep = false
-	for i in widths.size():
+	var taken: Array[Vector3] = []
+	for i in foes.size():
 		var p: Vector2 = pos[i]
-		var sl := {"x": p.x, "row": int(p.y), "h": heights[i] * fit * float(out["k"]) / stage_h}
-		if i < foes.size():
-			_slots[foes[i]] = sl
-		else:
-			sl["id"] = spare_ids[i - foes.size()]
-			_spares.append(sl)
+		_slots[foes[i]] = {"x": p.x, "row": int(p.y), "h": heights[i] * _scale / stage_h}
+		taken.append(Vector3(p.x, p.y, now[i] * k2))
 		_deep = _deep or int(p.y) > 0
-	_spares.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-		return int(a["row"]) < int(b["row"]) or (int(a["row"]) == int(b["row"]) and absf(float(a["x"])) < absf(float(b["x"]))))
+	for i in range(foes.size(), widths.size()):  # 나올 적이 차례로 설 자리(미리 보기 — 뒷줄이 생기면 처음부터 앞줄을 당겨 둔다)
+		var at := FoeRows.fit_new(taken, widths[i] * k * k2, _half_width, gap * k * k2, rows_max)
+		if at.y < 0.0:
+			break
+		taken.append(Vector3(at.x, at.y, widths[i] * k * k2))
+		_deep = _deep or int(at.y) > 0
 
 
-## 새 적을 미리 비워 둔 자리에(같은 몬스터 자리 먼저, 없으면 다른 빈자리 — 그 자리 폭에 맞춘 키로). 빈자리가 없으면 지금 자리를 건드리지 않고
-## 남은 틈에(FoeRows.fit_new). 하나라도 못 넣으면 false(다시 정렬 — 진영 상한까지 자리를 잡아 두므로 보통 일어나지 않는다).
+## 새 적(소환·증원·분열): 지금 선 적을 옮기지 않고 남은 자리 중 앞줄·가운데에 가까운 곳(FoeRows.fit_new — 가운데 옆, 쓰러진 자리도),
+## 처음 정한 크기 배율 그대로. 하나라도 못 넣으면 false(다시 정렬).
 func _place_fresh(fresh: Array[Combatant], stage_h: float) -> bool:
 	var ppm := _ppm(stage_h)
-	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm
+	var gap := float(UiTheme.metric("combat_enemy_gap", 24)) / ppm * _scale
 	for u in fresh:
 		var v: BattlerView = _views[u]
-		var id := (u.actor as Monster).monster_id if u.actor is Monster else ""
-		var k := _spares.find_custom(func(sp: Dictionary) -> bool: return str(sp["id"]) == id)
-		if k < 0 and not _spares.is_empty():
-			k = 0
-		if k >= 0:
-			var sp: Dictionary = _spares.pop_at(k)
-			var h := stage_h * float(sp["h"])
-			if str(sp["id"]) != id:  # 다른 몬스터 자리: 그 자리 폭을 넘지 않는 키
-				var room := BattlerView.probe(_db, str(sp["id"]))
-				h = minf(_foe_height(v, stage_h), h * room.width_for(h) / maxf(1.0, v.width_for(h)))
-				room.free()
-			_slots[u] = {"x": sp["x"], "row": sp["row"], "h": h / stage_h}
-			continue
 		var taken: Array[Vector3] = []
 		for o: Combatant in _slots:
 			var sl: Dictionary = _slots[o]
 			taken.append(Vector3(float(sl["x"]), float(sl["row"]), (_views[o] as BattlerView).width_for(stage_h * float(sl["h"])) / ppm))
-		var hn := _foe_height(v, stage_h)
+		var hn := _foe_height(v, stage_h) * _scale
 		var at := FoeRows.fit_new(taken, v.width_for(hn) / ppm, _half_width, gap, UiTheme.metric("combat_rows_max", 3))
 		if at.y < 0.0:
 			return false

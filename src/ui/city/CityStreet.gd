@@ -93,7 +93,7 @@ func _add_building(id: String) -> void:
 	art.texture = _tex(CityDistrict.art_path(JsonUtil.get_str(f, "building"), _tier))
 	var mat := ShaderMaterial.new()
 	mat.shader = HIGHLIGHT
-	mat.set_shader_parameter("outline_color", UiTheme.render_color("city.selected_outline", UiTheme.color("gold")))
+	mat.set_shader_parameter("outline_color", UiTheme.render_color("city.selected_outline", UiTheme.color("select")))
 	art.material = mat
 	_content.add_child(art)
 	var glow := TextureRect.new()

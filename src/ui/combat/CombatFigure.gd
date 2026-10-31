@@ -22,13 +22,13 @@ static func paint(c: CanvasItem, shape: String, color: Color, front: bool, foot:
 		_outline_glow(c, foot, h, glow)
 
 
-## 그림 파일(MonsterArt)을 쓸 때의 발밑: 그림자 + (고른 대상·차례면) 금빛 고리. rx = 그림 폭의 절반.
+## 그림 파일(MonsterArt)을 쓸 때의 발밑: 그림자 + (고른 대상·차례면) 뼈빛 고리. rx = 그림 폭의 절반.
 static func ground(c: CanvasItem, foot: Vector2, rx: float, h: float, glow: float) -> void:
 	_shadow(c, foot, rx, h / 100.0)
 	if glow > 0.0:
 		var ring := _ellipse(foot + Vector2(0, 2), rx * 1.05, rx * 0.19, 32)
 		ring.append(ring[0])
-		c.draw_polyline(ring, Color(0.95, 0.78, 0.35, glow), maxf(2.0, h / 60.0), true)
+		c.draw_polyline(ring, Color(UiTheme.color("select"), glow), maxf(2.0, h / 60.0), true)
 
 
 ## 발에서 머리 꼭대기까지(키 h에 대한 비율) — 이름표 자리.
@@ -157,8 +157,8 @@ static func _blob(c: CanvasItem, color: Color, front: bool, foot: Vector2, k: fl
 		c.draw_colored_polygon(_ellipse(foot + Vector2(0, -27 * k), 12.0 * k, 4.0 * k, 16), Color(0.05, 0.03, 0.03, 0.9))
 
 
-## 대상으로 고른 참가자: 발밑에 금빛 고리.
+## 대상으로 고른 참가자: 발밑에 뼈빛 고리.
 static func _outline_glow(c: CanvasItem, foot: Vector2, h: float, strength: float) -> void:
 	var ring := _ellipse(foot + Vector2(0, 2), h * 0.42, h * 0.075, 32)
 	ring.append(ring[0])
-	c.draw_polyline(ring, Color(0.95, 0.78, 0.35, strength), maxf(2.0, h / 60.0), true)
+	c.draw_polyline(ring, Color(UiTheme.color("select"), strength), maxf(2.0, h / 60.0), true)

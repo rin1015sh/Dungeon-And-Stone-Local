@@ -81,8 +81,8 @@ func _build_calendar(m: int) -> void:
 	ap.add_child(_ap)
 	_fatigue = _value_row(v, Strings.t("city.fatigue_label"))
 	_money = _value_row(v, Strings.t("city.money_label"))
-	_money.add_theme_color_override("font_color", CityUi.c("accent"))
-	_tax = CityUi.label("", "small", "accent")
+	_money.add_theme_color_override("font_color", UiTheme.color("gold"))
+	_tax = UiTheme.label("", "small", "gold")
 	v.add_child(_tax)
 
 
@@ -140,7 +140,7 @@ func refresh() -> void:
 	var tier := _pc.fatigue.tier_name()
 	if not tier.is_empty():
 		_fatigue.text += Strings.t("city.hud_fatigue_tier", {"tier": tier})
-	_fatigue.add_theme_color_override("font_color", CityUi.c("bone" if tier.is_empty() else "accent"))
+	_fatigue.add_theme_color_override("font_color", CityUi.c("bone") if tier.is_empty() else UiTheme.color("warn"))
 	_money.text = Strings.t("city.cost_stones", {"n": _pc.inventory.money})
 
 

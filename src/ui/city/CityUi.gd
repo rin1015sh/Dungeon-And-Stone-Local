@@ -1,6 +1,6 @@
 class_name CityUi
 extends RefCounted
-## 도시 화면 카드 스타일(피어 앤 헝거 2풍): 거의 검은 반투명 판 · 뼈빛 가는 테두리 · 호박색/핏빛 강조. 색·여백은 render.json city.ui.
+## 도시 화면 카드 스타일(피어 앤 헝거 2풍): 거의 검은 반투명 판 · 뼈빛 가는 테두리 · 뼈빛/핏빛 강조(돈은 palette.gold — UI45). 색·여백은 render.json city.ui.
 
 
 static func c(key: String, fallback: Color = Color.MAGENTA) -> Color:

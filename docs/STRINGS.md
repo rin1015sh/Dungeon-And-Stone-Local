@@ -545,6 +545,7 @@
 - `combat.float_immune` 면역
 - `combat.float_blocked` 막힘
 - `combat.float_miss` 회피
+- `combat.float_heal` +{n}
 - `combat.drop_ask` {what} — 획득할까?
 - `combat.drop_take` 획득한다
 - `combat.drop_leave` 두고 간다
@@ -628,7 +629,7 @@
 - `combat.tarunbas_roar` {name}이(가) 울부짖는다 — 몸이 부풀어 오르고 연달아 움직인다!
 - `combat.kirdui_intro` 검은 거체가 몸을 일으킨다. {name}의 송곳니 사이로 김이 새어 나온다.
 - `combat.split` {name}이(가) 둘로 갈라진다 — {monster}!
-- `combat.absorb` {name}이(가) {target}을(를) 집어삼켰다. 생명력 {amount} 회복.
+- `combat.absorb` {name}이(가) {target}을(를) 집어삼켰다.
 - `combat.absorb_none` {name}이(가) 삼킬 것을 찾지 못했다.
 - `combat.summon_expired` {name}이(가) 사라졌다.
 - `combat.death_blast` {name}이(가) 쓰러지며 폭발한다!

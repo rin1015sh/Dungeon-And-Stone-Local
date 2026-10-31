@@ -1,7 +1,7 @@
 class_name DropMark
 extends Control
 ## 전투 무대에 남은 드롭(DropPickup): 정수 = 그 색으로 빛나는 구슬(천천히 떠오르내림), 전리품 = 아이템 그림 + 희미한 빛.
-## 지금 묻고 있는 드롭이면 둘레에 금빛 고리가 뛴다. 고르고 나면 흐려지며 사라진다(vanish).
+## 지금 묻고 있는 드롭이면 둘레에 뼈빛 고리가 뛴다. 고르고 나면 흐려지며 사라진다(vanish).
 
 var drop: Dictionary = {}
 var _db: GameDatabase
@@ -43,8 +43,8 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var c := size * 0.5 + Vector2(0.0, sin(_t * 2.2) * size.y * 0.05)
 	var r := size.x * 0.5
-	if _current:  # 지금 묻는 드롭: 둘레 금빛 고리
-		var gold := UiTheme.color("gold")
+	if _current:  # 지금 묻는 드롭: 둘레 뼈빛 고리
+		var gold := UiTheme.color("select")
 		var k := 0.5 + 0.5 * sin(_t * 6.0)
 		draw_arc(c, r * (0.92 + 0.06 * k), 0.0, TAU, 40, Color(gold, 0.55 + 0.4 * k), 2.5, true)
 	if str(drop.get("kind")) == "essence":

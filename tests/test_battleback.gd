@@ -85,3 +85,18 @@ func test_boss_pinned_center() -> void:
 			assert_true(absf(p.x) > 1.5, "뒷줄 가운데는 보스 몸 밖 틈(몸 뒤에 숨지 않게)")
 	var wide := FoeRows.arrange(PackedFloat32Array([0.8, 6.0]), 2.0, 0.2, 1)
 	assert_eq((wide["pos"] as Array)[1], Vector2(0.0, 0.0), "벽보다 넓은 보스도 가운데")
+
+
+## 적 수별 자리(UI50): 하나 = 한가운데, 둘 = 가운데 둘(대칭), 나중에 온 적은 지금 선 적을 옮기지 않고 바로 옆에.
+func test_count_layout_centered_and_new_beside() -> void:
+	assert_eq((FoeRows.arrange(PackedFloat32Array([0.8]), 2.5, 0.2)["pos"] as Array)[0], Vector2(0.0, 0.0), "하나 = 가운데")
+	var two: Array = FoeRows.arrange(PackedFloat32Array([0.8, 0.8]), 2.5, 0.2)["pos"]
+	assert_near((two[0] as Vector2).x, -(two[1] as Vector2).x, 0.001, "둘 = 가운데를 사이에 두고")
+	assert_eq(int((two[0] as Vector2).y) + int((two[1] as Vector2).y), 0, "둘 다 앞줄")
+	var taken: Array[Vector3] = [Vector3(0.0, 0, 0.8)]
+	var at := FoeRows.fit_new(taken, 0.8, 2.5, 0.2, 3)
+	assert_eq(int(at.y), 0, "앞줄")
+	assert_near(absf(at.x), 1.0, 0.001, "가운데 적 바로 옆(폭 0.8 + 틈 0.2)")
+	taken.append(Vector3(at.x, 0, 0.8))
+	var at2 := FoeRows.fit_new(taken, 0.8, 2.5, 0.2, 3)
+	assert_near(at2.x, -at.x, 0.001, "다음은 반대쪽 옆")

@@ -28,16 +28,17 @@ static func build(render: Dictionary) -> Theme:
 		th.set_stylebox("hover", t, box(color("button_hover"), color("accent_dim"), r, pad))
 		th.set_stylebox("pressed", t, box(color("button_pressed"), color("accent"), r, pad))
 		th.set_stylebox("disabled", t, box(color("button_disabled"), color("panel_border"), r, pad))
-		th.set_stylebox("focus", t, box(Color.TRANSPARENT, color("accent_dim"), r, pad))
+		th.set_stylebox("focus", t, box(Color.TRANSPARENT, color("select"), r, pad))  # 키보드 커서 = 뼈빛(UI45)
 	for t: String in ["Label", "Button", "OptionButton", "CheckButton", "CheckBox", "PopupMenu"]:
 		th.set_color("font_color", t, color("text"))
 	for t: String in ["Button", "OptionButton", "CheckButton"]:
 		th.set_color("font_hover_color", t, color("text_title"))
 		th.set_color("font_pressed_color", t, color("text_title"))
+		th.set_color("font_focus_color", t, color("text_title"))
 		th.set_color("font_disabled_color", t, color("text_disabled"))
 	th.set_color("font_hover_color", "PopupMenu", color("text_title"))
 	th.set_color("default_color", "RichTextLabel", color("text"))
-	th.set_stylebox("background", "ProgressBar", box(color("bar_bg"), color("panel_border"), r, 0))
+	th.set_stylebox("background", "ProgressBar", box(color("bar_bg"), Color.TRANSPARENT, r, 0))
 	th.set_stylebox("fill", "ProgressBar", box(color("accent"), Color.TRANSPARENT, r, 0))
 	th.set_constant("separation", "VBoxContainer", metric("spacing", 8))
 	th.set_constant("separation", "HBoxContainer", metric("spacing", 8))
@@ -58,12 +59,13 @@ static func apply_global_font() -> void:
 
 ## 폰트 결정: render.font.path → assets/fonts의 첫 폰트 파일 → 시스템 한글 폰트(SystemFont).
 ## 웹 내보내기에는 시스템 폰트가 없으므로 OFL 한글 폰트를 assets/fonts에 넣어야 한다.
+## font.fallbacks = 본 폰트에 없는 글자(기호·드문 한글)를 채울 폰트, spacing_top/bottom = 줄 위아래 여백(px) — 송명 본문 + Noto 대신(UI47).
 static func resolve_font(cfg: Dictionary) -> Font:
 	var path := JsonUtil.get_str(cfg, "path")
 	if not path.is_empty() and ResourceLoader.exists(path):
 		var f := load(path) as Font
 		if f != null:
-			return f
+			return _dressed(f, cfg)
 	var dir := JsonUtil.get_str(cfg, "dir", "res://assets/fonts")
 	if DirAccess.dir_exists_absolute(dir):
 		for file: String in DirAccess.get_files_at(dir):
@@ -82,6 +84,21 @@ static func resolve_font(cfg: Dictionary) -> Font:
 	return sys
 
 
+static func _dressed(base: Font, cfg: Dictionary) -> Font:
+	var fv := FontVariation.new()
+	fv.base_font = base
+	var fb: Array[Font] = []
+	for p: Variant in JsonUtil.get_array(cfg, "fallbacks"):
+		if ResourceLoader.exists(str(p)):
+			var f := load(str(p)) as Font
+			if f != null:
+				fb.append(f)
+	fv.fallbacks = fb
+	fv.spacing_top = JsonUtil.get_int(cfg, "spacing_top")
+	fv.spacing_bottom = JsonUtil.get_int(cfg, "spacing_bottom")
+	return fv
+
+
 static func color(key: String, fallback: Color = Color.MAGENTA) -> Color:
 	var pal := JsonUtil.get_dict(_render, "palette")
 	return Color.from_string(JsonUtil.get_str(pal, key), fallback)
@@ -93,6 +110,10 @@ static func metric(key: String, fallback: int = 0) -> int:
 
 static func ui_float(key: String, fallback: float = 0.0) -> float:
 	return JsonUtil.get_float(JsonUtil.get_dict(_render, "ui"), key, fallback)
+
+
+static func ui_array(key: String) -> Array:
+	return JsonUtil.get_array(JsonUtil.get_dict(_render, "ui"), key)
 
 
 static func ui_dict(key: String) -> Dictionary:

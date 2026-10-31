@@ -1,7 +1,7 @@
 class_name PartyRoster
 extends VBoxContainer
 ## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 이름 · 상태 아이콘(3개씩 깜빡이며 넘김 — StatusIcons, UI25) · 정해 둔 행동 · 계측값 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
-## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 금빛 테두리.
+## 지금 차례인 사람의 줄은 밝게, 아군을 대상으로 고르는 중이면 그 줄에 뼈빛 테두리.
 ## 줄 높이·간격 = 왼쪽 명령 칸과 같다(combat_cmd_slot_height·combat_slot_gap — 두 창의 줄이 나란하다, 사용자 요청 2026-10-24).
 
 const RES := ["hp", "soul"]
@@ -32,13 +32,13 @@ func add_unit(u: Combatant) -> void:
 	name_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	h.add_child(name_box)
 	var extra := PanelContainer.new()
-	var ebox := UiTheme.box(Color(0.12, 0.09, 0.03, 0.95), UiTheme.color("gold"), 2, 0)
+	var ebox := UiTheme.box(UiTheme.color("panel_bg"), UiTheme.color("select"), 2, 0)
 	ebox.content_margin_left = 5
 	ebox.content_margin_right = 5
 	extra.add_theme_stylebox_override("panel", ebox)
 	extra.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	extra.visible = false
-	extra.add_child(UiTheme.label(Strings.t("combat.extra_turn"), "small", "gold"))
+	extra.add_child(UiTheme.label(Strings.t("combat.extra_turn"), "small", "select"))
 	name_box.add_child(extra)
 	var nm := UiTheme.label(u.label(), "body", "text")
 	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -48,7 +48,7 @@ func add_unit(u: Combatant) -> void:
 	name_box.add_child(nm)
 	var icons := StatusIcons.new(true)
 	h.add_child(icons)
-	var plan := UiTheme.label("", "small", "gold")
+	var plan := UiTheme.label("", "small", "select")
 	plan.custom_minimum_size.x = UiTheme.metric("combat_roster_plan_width", 150)
 	plan.clip_text = true
 	plan.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -136,12 +136,12 @@ func _style() -> void:
 		var cur := u == _current
 		var tgt := u == _target
 		var bg := UiTheme.color("slot_hover") if cur else Color(0, 0, 0, 0)
-		var border := UiTheme.color("gold") if tgt else (UiTheme.color("slot_border") if cur else Color(0, 0, 0, 0))
+		var border := UiTheme.color("select") if tgt else (UiTheme.color("slot_border") if cur else Color(0, 0, 0, 0))
 		var box := UiTheme.box(bg, border, 2, UiTheme.metric("combat_roster_pad", 6))
 		box.content_margin_top = 0  # 높이는 명령 칸에 맞춘다(내용은 가운데)
 		box.content_margin_bottom = 0
 		if tgt:
 			box.set_border_width_all(2)
 		(row["panel"] as PanelContainer).add_theme_stylebox_override("panel", box)
-		(row["name"] as Label).add_theme_color_override("font_color", UiTheme.color("gold" if cur else "text"))
+		(row["name"] as Label).add_theme_color_override("font_color", UiTheme.color("select" if cur else "text"))
 		(row["extra"] as Control).visible = cur and u.extra_turn and u.is_active()  # 지금 차례가 추가 차례일 때만

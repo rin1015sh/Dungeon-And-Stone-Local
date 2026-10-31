@@ -19,7 +19,7 @@ static func build(db: GameDatabase, item_id: String, actor: Actor = null, count:
 static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int = 1) -> PanelContainer:
 	var d := ItemInfo.def(db, item_id)
 	var p := PanelContainer.new()
-	p.add_theme_stylebox_override("panel", GothicStyle.frame_box())
+	p.add_theme_stylebox_override("panel", UiTheme.panel_box(UiTheme.metric("padding", 8)))
 	p.custom_minimum_size.x = UiTheme.metric("tooltip_width", 270)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 4)

@@ -1,7 +1,7 @@
 class_name InventoryGrid
 extends Control
 ## 격자 가방 그리기(스톤샤드식). 칸 = inv_cell px. 아이템은 크기만큼 칸을 덮고 그림 + 개수를 그린다.
-## 조작은 Tab 메뉴의 소지품 쪽(InventoryPage)이 키로 한다: 커서(금빛 테두리) · 옮기는 중이면 놓을 자리(초록/빨강).
+## 조작은 Tab 메뉴의 소지품 쪽(InventoryPage)이 키로 한다: 커서(뼈빛 테두리) · 옮기는 중이면 놓을 자리(초록/빨강).
 ## 옮기기 데이터: {"type": "item", "from": "grid", "index": i, "id": id} / {"from": "slot", "slot": 칸, "id": id}
 
 signal changed
@@ -78,7 +78,7 @@ func _draw() -> void:
 		draw_rect(Rect2(_drop_rect.position * cell, _drop_rect.size * cell),
 			Color(UiTheme.color("slot_ok" if _drop_ok else "slot_bad"), 0.6))
 	if _cursor.has_area():
-		draw_rect(Rect2(_cursor.position * cell, _cursor.size * cell).grow(-1), UiTheme.color("gold"), false, 2.0)
+		draw_rect(Rect2(_cursor.position * cell, _cursor.size * cell).grow(-1), UiTheme.color("select"), false, 2.0)
 
 
 ## 옮기던 것을 pos에 놓는다. 성공하면 true.

@@ -58,5 +58,5 @@ func _paint_rows() -> void:
 	for i in _rows.size():
 		var cur := i == _cursor
 		var bg := UiTheme.color("slot_hover") if cur and active else Color(0, 0, 0, 0)
-		var border := UiTheme.color("gold") if cur else Color(0, 0, 0, 0)
+		var border := UiTheme.color("select") if cur else Color(0, 0, 0, 0)
 		_rows[i].add_theme_stylebox_override("panel", UiTheme.box(bg, border, 2, UiTheme.metric("combat_roster_pad", 6)))

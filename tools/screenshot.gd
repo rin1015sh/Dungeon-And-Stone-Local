@@ -15,7 +15,7 @@ extends Node
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## 실내 방(도서관 — CT62): --facility=library [--room_at=x,y --face=up|down|left|right] [--activity=<id>].
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
-## --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
+## --equip=<아이템 id>: 주무기 칸에 그 무기(장비 인형 그림 크기), --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
 ## --codex[=<분야 id>]: 도감(B) 열기 — 분야면 서적 쪽(--books = 서적 전부 읽은 것으로, --pick=<번호> = 그 대목에 커서, UI32 · --known --monster=<id> = 그 몬스터를 다 안다)
 ##   (--loot: 마석·장비 몇 개를 가방에 넣고 도감 기록을 채운다, --give=id,id: 그 아이템들만 든 큰 가방)
@@ -31,6 +31,7 @@ extends Node
 ## --extra_turn: 지금 차례를 추가 차례로 표시해 파티 창 이름 옆 표시를 본다
 ## --summon=N: 적 N마리 증원(--summon=id,id면 그 몬스터들 — --rift … --engage 균열 조우에서도), --ally_summon[=id,id]: 아군 소환수(기본 병사 시체), --win: 적을 모두 쓰러뜨려 승리 결과 칸(보상)
 ## --mate[=종족,종족]: 그 종족 동료들을 붙인다(값이 없으면 인간 하나 + 행동 정하기 화면)
+## --heal: --combat에서 참가자 모두 생명력을 깎았다가 25, 영혼력을 깎았다가 12 채운다(초록·파랑 회복 숫자 확인, UI46)
 ## --hit[=초]: 첫 적을 기본 공격하고 그 초만큼 기다려 찍는다(피해 숫자 확인 — 길게 기다리면 적의 반격까지)
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
@@ -170,6 +171,9 @@ func _run() -> void:
 			explore.session.player.inventory = Inventory.new(explore.session.db, int(bag[0]), int(bag[1]))
 			for gid in str(_args["give"]).split(","):
 				explore.session.player.inventory.add(gid)
+		if _args.has("equip"):  # --equip=<아이템 id>: 그 무기를 주무기 칸에 낀다(장비 인형 그림 크기 확인 — UI49)
+			var epc := explore.session.player
+			epc.equipment.equip(epc.stats, str(_args["equip"]), "main_hand")
 		if _args.has("loot"):
 			var pc := explore.session.player
 			pc.inventory.add("magic_stone_9", 7)
@@ -372,6 +376,18 @@ func _run() -> void:
 					hs._on_chosen({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": hs.battle.side_units(Combatant.SIDE_ENEMY)[0]})
 			var hv := str(_args["hit"])
 			await get_tree().create_timer(hv.to_float() if hv.is_valid_float() else 0.25).timeout
+			_quick = true
+		if _args.has("heal"):  # --heal: 전투 참가자 모두 생명력을 깎았다가 일부 채워 초록 회복 숫자(UI46)를 본다
+			await _frames(10)
+			for n: Node in _main.find_children("*", "", true, false):
+				if n is CombatScreen:
+					for hu: Combatant in (n as CombatScreen).battle.units:
+						hu.actor.pool.modify("hp", -40.0, "debug")
+						hu.actor.pool.modify("hp", 25.0, "debug")
+						if hu.actor.pool.has_resource("soul"):
+							hu.actor.pool.modify("soul", -20.0, "debug")
+							hu.actor.pool.modify("soul", 12.0, "debug")
+			await get_tree().create_timer(0.25).timeout
 			_quick = true
 		if _args.has("keys"):  # 행동창 키 입력 흉내: --keys=menu_right,menu_right,menu_confirm (쪽 넘김·커서 확인)
 			await _frames(10)

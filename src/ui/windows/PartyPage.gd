@@ -2,7 +2,7 @@ class_name PartyPage
 extends MenuPage
 ## Tab 메뉴 맨 왼쪽 쪽(사용자 요청 2026-10-25, UI26): 아군 목록 — 줄마다 이름 + 생명력·영혼력·허기·피로 짧은 막대
 ## (탐험 화면 하단 바를 없앤 대신 여기서 본다). W/S = 커서, Enter = 그 아군을 고른다(가운데·오른쪽 쪽이
-## 그 아군으로 바뀐다). 고른 아군은 금빛 테두리, 커서는 밝은 바탕. 도감은 따로 B(CodexMenu — UI32).
+## 그 아군으로 바뀐다). 고른 아군은 뼈빛 테두리, 커서는 밝은 바탕. 도감은 따로 B(CodexMenu — UI32).
 ## 전위·후위(사용자 2026-10-25): 전위가 위, 후위가 아래(GameMenu가 줄 순서로 넘긴다), 이름 옆에 줄. 이미 고른 아군에서 Enter를
 ## 한 번 더 누르면 ally_menu_requested — GameMenu가 전위/후위/파티에서 내보내기 창을 띄운다(그동안 asking).
 
@@ -131,14 +131,14 @@ func _add_row(i: int) -> void:
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(nm)
-	head.add_child(UiTheme.label(Strings.t("party." + pc.get_row()), "small", "gold" if pc.get_row() == "front" else "text_dim"))
+	head.add_child(UiTheme.label(Strings.t("party." + pc.get_row()), "small", "text" if pc.get_row() == "front" else "text_dim"))
 	var fills: Array = []
 	for r: String in BARS:
 		if not pc.pool.has_resource(r):
 			continue
 		var rd: ResourceDef = pc.db.resources.get(r)
 		fills.append(_bar_row(v, rd.name_ko if rd != null else r, rd.color if rd != null else Color.GRAY, r))
-	fills.append(_bar_row(v, Strings.t("party.fatigue"), UiTheme.color("bar_fatigue", UiTheme.color("gold")), "fatigue"))
+	fills.append(_bar_row(v, Strings.t("party.fatigue"), UiTheme.color("bar_fatigue"), "fatigue"))
 	_fills.append(fills)
 
 
@@ -169,5 +169,5 @@ func _paint_rows() -> void:
 		var cur := active and i == _cursor
 		var sel := i == selected
 		var bg := UiTheme.color("slot_hover") if cur else Color(0, 0, 0, 0)
-		var border := UiTheme.color("gold") if sel else Color(0, 0, 0, 0)
+		var border := UiTheme.color("select") if sel else Color(0, 0, 0, 0)
 		_rows[i].add_theme_stylebox_override("panel", UiTheme.box(bg, border, 2, UiTheme.metric("combat_roster_pad", 6)))

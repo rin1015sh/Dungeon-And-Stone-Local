@@ -2,7 +2,7 @@
   {
     "id": "hp",
     "name_ko": "생명력",
-    "color": "#8e2b2b",
+    "color": "#7c2924",
     "max_formula": "floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res})",
     "start": "full",
     "scope": "always",
@@ -18,7 +18,7 @@
   {
     "id": "soul",
     "name_ko": "영혼력",
-    "color": "#4a5d8a",
+    "color": "#3e5070",
     "max_formula": "{bal.soul.base} + min({level} - 1, {bal.soul.early_level_cap} - 1) * {bal.soul.per_level_early} + max({level} - {bal.soul.early_level_cap}, 0) * {bal.soul.per_level_late}",
     "start": "full",
     "scope": "always",
@@ -35,7 +35,7 @@
     "id": "hunger",
     "name_ko": "허기",
     "_comment": "속값은 포만도(100=배부름, 0=아사 직전 — 규칙·문턱·음식 amount는 이 값). display_inverted=true: 화면에는 허기 = 100 − 포만도(0 = 배부름, 100 = 굶주림, 막대는 차오를수록 배고픔 — 사용자 2026-10-27, UI35).",
-    "color": "#8a6d3b",
+    "color": "#7a6040",
     "max": 100,
     "start": "full",
     "scope": "dungeon_only",
