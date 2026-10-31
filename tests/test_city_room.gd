@@ -121,13 +121,23 @@ func test_event_activities_land_on_rest_spots() -> void:
 	assert_true(gym.activities_at(s, trainer).has("training_lecture"), "교관 특강 — 교관에게")
 
 
-## 행동력은 건물 한 번 다녀오기에 1 — 나올 때(CT62). 층을 오가도 그대로.
-func test_visit_costs_one_on_leave() -> void:
+## 행동력은 건물에 들어갈 때 1(CT72). 안에서는 활동을 몇 번이든 — 도서관 서적은 한 방문에 분야마다 한 번.
+func test_visit_costs_one_on_enter_and_library_field_once() -> void:
 	var s := _state()
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
+	pc.inventory.money = 100000
 	assert_eq(s.enter_facility("library"), "")
-	assert_eq(s.ap, 3)
+	assert_eq(s.ap, 2, "들어가면서 1")
+	var fields := CityInfo.field_ids(db).filter(func(f: String) -> bool: return CityActions.check(s, pc, "library_" + f).is_empty())
+	assert_true(fields.size() >= 2, "읽을 분야가 둘 이상")
+	var a := "library_" + str(fields[0])
+	assert_true(CityActions.perform(s, pc, a, ContentRegistries.new().city_effects).ok, "한 분야 읽기")
+	assert_eq(CityActions.check(s, pc, a), "city.reason_read_this_visit", "같은 분야는 이번 방문에 한 번")
+	assert_eq(CityActions.check(s, pc, "library_" + str(fields[1])), "", "다른 분야는 이어서 읽는다")
 	s.leave_facility()
-	assert_eq(s.ap, 2)
+	assert_eq(s.ap, 2, "나올 때는 쓰지 않는다")
+	s.enter_facility("library")
+	assert_eq(CityActions.check(s, pc, a), "", "다시 들어오면 그 분야도 또")
 
 
 ## 사람마다 그 건물에 맞는 동작(CT69): act가 있으면 동작 그림이 있고 칸이 돈다.

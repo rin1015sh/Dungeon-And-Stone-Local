@@ -3,9 +3,9 @@ extends FacilityView
 ## 시설 실내 방(탑뷰 — CityRoom, 사용자 결정 2026-10-31 "도서관 내부를 탐험 화면처럼 WASD로", CT62).
 ##   탐험처럼 W/A/S/D로 걷고(4방향, 가장 나중에 누른 키), 살필 자리를 바라보고 Enter = 그 자리 활동(결과는 대화창 — 서적·요리는 그림이 덮었다가
 ##   다 넘기면 걷힌다). 자리에 칸이 여럿이면(여관 주인 — 요기·식사, 상점 계산대 — 구매·판매) 작은 선택 창, 창구(상점·대장간·은행·정수 제거)는
-##   오른쪽 아래 카드로 열고(Esc·나가기 = 창구만 닫기 — 창구는 방문 활동 수에 세지 않는다).
-##   문 칸을 밟거나 Esc = 나가기 — 행동력은 나올 때 1(CityState.leave_facility). 한 방문의 활동은 city.json room.activities_per_visit개,
-##   다 하면 남은 자리는 못 하는 이유만 보인다. 바라보는 자리 위에 이름판(활동 이름 · 못 하면 짧은 이유 — 부연설명 없음).
+##   오른쪽 아래 카드로 열고(Esc·나가기 = 창구만 닫기).
+##   문 칸을 밟거나 Esc = 나가기 — 행동력은 들어갈 때 1(CityState.enter_facility, CT72). 안에서는 활동을 몇 번이든(도서관 서적은 분야마다 한 번).
+##   바라보는 자리 위에 이름판(활동 이름 · 못 하면 짧은 이유 — 부연설명 없음).
 ## 지도는 한 장에 층이 다 있다(위층 북쪽·지하 남쪽, 계단·사다리 줄로 이어짐 — CT66). 그리기는 RoomWorld(바닥 그림 + 발 높이로 정렬한 벽 줄·가구·사람·플레이어).
 ## 방이 화면보다 작으면 고정(왼쪽 위 달력 카드를 비켜 오른쪽 빈 곳 가운데), 크면 플레이어를 따라간다(render.json city.room.zoom).
 
@@ -23,7 +23,6 @@ var _cam: Camera2D
 var _player: ActorView
 var _tile: float = 32.0
 var _held: Array[String] = []
-var _done: int = 0      # 이번 방문에 한 활동 수
 var _acting: bool = false  # 활동 결과를 넘기는 중 · 선택 창
 var _plate: PanelContainer
 var _plate_name: Label
@@ -194,11 +193,8 @@ func _entry_text(e: Array) -> String:
 	return Strings.t("city.shop_tab_" + str(e[1])) if not str(e[1]).is_empty() else JsonUtil.get_str(_state.activity(str(e[0])), "name_ko")
 
 
-## 이 활동을 지금 못 하는 이유(문자열 키, 할 수 있으면 ""): 이번 방문에 할 만큼 했다(창구는 세지 않는다) → 활동 조건(CityActions.check).
+## 이 활동을 지금 못 하는 이유(문자열 키, 할 수 있으면 "") — 활동 조건(CityActions.check — 도서관 분야는 한 방문에 한 번).
 func reason(act_id: String) -> String:
-	var panel := not JsonUtil.get_str(_state.activity(act_id), "panel").is_empty()
-	if not panel and _done >= int(CityRoom.rule(_state, "activities_per_visit", 1.0)):
-		return "city.reason_visit_done"
 	return CityActions.check(_state, _pc, act_id)
 
 
@@ -288,8 +284,6 @@ func use(act_id: String) -> void:
 	_refresh_plate()
 	var ctx := CityActions.perform(_state, _pc, act_id, _registry)
 	show_result(ctx)
-	if ctx.ok:
-		_done += 1
 	await _dialog.wait()
 	if not is_inside_tree():
 		return

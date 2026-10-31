@@ -8,6 +8,8 @@ shader_type canvas_item;
 //  벽·절벽 면(rise_face — 위 = 꼭대기, 성가퀴 틈은 투명), 그 너머는 꼭대기 풍경(rise_top — 세계 좌표로 이어 붙임, 멀수록 어둡게).
 //  꼭짓점 색 = 빛·안개(FloorView.vertex_mul) — 곱한다.
 uniform sampler2D mask : filter_nearest;
+// 칸 거리(Abyss.dist_texture × 15): r = 반대쪽까지 체비쇼프 · g = 위로 땅까지 · b = 아래로 땅까지 — 땅 찾기 걸음을 경계 칸 안에서만(균열 렉, CT73)
+uniform sampler2D dist : filter_nearest;
 uniform vec2 map_size = vec2(64.0, 64.0);
 uniform float tile = 32.0;
 uniform sampler2D cliff : filter_linear, repeat_enable;
@@ -59,6 +61,24 @@ vec3 cell_at(vec2 c) {
 	return texelFetch(mask, q, 0).rgb;
 }
 
+// 지도 밖 칸(가장자리 칸 값을 이어 쓴다)은 지도에서 떨어진 만큼 반대쪽·옆 거리를 늘린다(위·아래는 가장자리 그대로).
+vec4 dist_at(vec2 c) {
+	vec2 cc = clamp(c, vec2(0.0), map_size - 1.0);
+	vec4 v = texelFetch(dist, ivec2(cc), 0) * 15.0;
+	vec2 ofs = abs(c - cc);
+	v.r += max(ofs.x, ofs.y);
+	v.a += ofs.x;
+	return v;
+}
+
+// 옆 땅까지 거리(칸)를 칸 가운데끼리 이은 값 — 꼭대기 풍경 안개가 칸 모양 계단으로 보이지 않게.
+float side_far(vec2 p) {
+	vec2 q = p - 0.5;
+	vec2 i = floor(q);
+	vec2 f = fract(q);
+	return mix(mix(dist_at(i).a, dist_at(i + vec2(1.0, 0.0)).a, f.x), mix(dist_at(i + vec2(0.0, 1.0)).a, dist_at(i + vec2(1.0, 1.0)).a, f.x), f.y);
+}
+
 // 허공 정도(0 땅 ~ 1 허공)를 칸 가운데끼리 곧게 이은 값(경계에서 완만해야 잡음이 깊게 깎는다).
 float field(vec2 p) {
 	vec2 q = p - 0.5;
@@ -82,7 +102,7 @@ bool is_void(vec2 p) {
 	if (own.r > 0.5) {
 		return true;
 	}
-	if (own.g > 0.5) {
+	if (own.g > 0.5 || dist_at(floor(p)).r > 1.5) {  // 나무 발판 · 둘레 여덟 칸에 허공이 없는 땅은 깎이지 않는다
 		return false;
 	}
 	float n = smoothstep(0.2, 0.85, vnoise(p * 1.7) * 0.72 + vnoise(p * 4.1 + 17.0) * 0.28);  // 깎인 곳·남은 곳이 또렷하게(잔 톱니는 줄인다)
@@ -109,16 +129,24 @@ vec3 deep(vec2 w, float below) {
 
 // 솟은 외곽 한 픽셀: 아래(남쪽)로 땅까지 d → 면, 아니면 꼭대기 풍경(땅에서 멀수록 어둡게).
 vec3 rise_color(vec2 p, float px, vec2 w) {
+	vec4 dd = dist_at(floor(p));
+	float fy = fract(p.y);
 	float step_px = 4.0;
 	float d = -1.0;
-	int n = int(rise_h / step_px) + 2;
-	for (int k = 1; k <= 64; k++) {
-		if (k > n) {
+	float d0 = (dd.b - fy) * tile;  // 아래 가장 가까운 땅 칸 윗선까지(px) — 땅 경계는 그 칸 안에만 있다
+	int n = d0 <= rise_h && dd.b < 14.5 ? int(tile * 1.5 / step_px) + 2 : 0;
+	float lo0 = max(0.0, d0 - 1.0);
+	for (int k = 0; k <= 64; k++) {
+		if (k >= n) {
 			break;
 		}
-		if (!is_void(p + vec2(0.0, float(k) * step_px * px))) {
-			float lo = float(k - 1) * step_px;
-			float hi = float(k) * step_px;
+		float at = lo0 + float(k) * step_px;
+		if (at > rise_h) {
+			break;
+		}
+		if (!is_void(p + vec2(0.0, at * px))) {
+			float lo = max(0.0, at - step_px);
+			float hi = at;
 			for (int j = 0; j < 2; j++) {
 				float mid = (lo + hi) * 0.5;
 				if (is_void(p + vec2(0.0, mid * px))) {
@@ -137,19 +165,12 @@ vec3 rise_color(vec2 p, float px, vec2 w) {
 			return face.rgb;
 		}
 	}
-	// 꼭대기 풍경: 땅(위·아래·옆)까지의 거리로 어둡게
-	float far = rise_fog;
-	for (int k = 0; k <= 10; k++) {
-		float r = float(k) * 0.75;
-		if (r > rise_fog) {
+	// 꼭대기 풍경: 땅(위·아래·옆)까지의 거리로 어둡게(칸 거리 그림으로 — 예전엔 네 방향을 걸어 쟀다)
+	float far = clamp(min(min(dd.g - 1.0 + fy, dd.b - fy - rise_h / tile), side_far(p) - 0.5), 0.0, rise_fog);
+	for (int s = 1; s <= 3; s++) {  // 옆(동·서) 면: 땅 옆에서 비스듬히 보이는 좁은 벽(옆 칸에 땅이 있을 때만)
+		if (dd.r > 1.5) {
 			break;
 		}
-		if (!is_void(p + vec2(0.0, r + rise_h / tile)) || !is_void(p - vec2(0.0, r)) || !is_void(p + vec2(r, 0.0)) || !is_void(p - vec2(r, 0.0))) {
-			far = r;
-			break;
-		}
-	}
-	for (int s = 1; s <= 3; s++) {  // 옆(동·서) 면: 땅 옆에서 비스듬히 보이는 좁은 벽
 		float o = side_px * float(s) / 3.0;
 		if (!is_void(p - vec2(o * px, 0.0)) || !is_void(p + vec2(o * px, 0.0))) {
 			vec4 sf = texture(rise_face, vec2(w.y / rise_w + 0.31, 0.55));
@@ -159,6 +180,9 @@ vec3 rise_color(vec2 p, float px, vec2 w) {
 	// 땅 남쪽에 솟은 외곽: 면은 보이지 않고 꼭대기 가장자리(성가퀴·눈 처마)를 위에서 본다 — 면 그림 윗부분을 rise_band px에 눌러 담는다
 	for (int k = 1; k <= 8; k++) {
 		float u = float(k) * rise_band / 8.0;
+		if (dd.g > 1.5 || u > fy * tile + rise_band) {  // 바로 위 칸이 땅일 때만
+			break;
+		}
 		if (!is_void(p - vec2(0.0, u * px))) {
 			vec4 lip = texture(rise_face, vec2(w.x / rise_w, u / rise_band * 0.22));
 			if (lip.a > 0.5) {
@@ -192,19 +216,26 @@ void fragment() {
 	} else if (is_rise(p)) {
 		COLOR = vec4(rise_color(p, px, world) * COLOR.rgb, 1.0);
 	} else {
+		vec4 dd = dist_at(floor(p));
 		float step_px = 3.0;
 		float d = -1.0;
 		bool wood = false;
-		int n = int(cliff_h / step_px) + 2;
-		for (int k = 1; k <= 64; k++) {
-			if (k > n) {
+		float d0 = (fract(p.y) + dd.g - 1.0) * tile;  // 위 가장 가까운 땅 칸 아랫선까지(px) — 땅 경계는 그 칸 안에만 있다
+		int n = d0 <= cliff_h && dd.g < 14.5 ? int(tile * 1.5 / step_px) + 2 : 0;
+		float lo0 = max(0.0, d0 - 1.0);
+		for (int k = 0; k <= 64; k++) {
+			if (k >= n) {
 				break;
 			}
-			vec2 q = p - vec2(0.0, float(k) * step_px * px);
+			float at = lo0 + float(k) * step_px;
+			if (at > cliff_h) {
+				break;
+			}
+			vec2 q = p - vec2(0.0, at * px);
 			if (!is_void(q)) {
 				// 두 번 반으로 나눠 경계를 다듬는다
-				float lo = float(k - 1) * step_px;
-				float hi = float(k) * step_px;
+				float lo = max(0.0, at - step_px);
+				float hi = at;
 				for (int j = 0; j < 2; j++) {
 					float mid = (lo + hi) * 0.5;
 					if (is_void(p - vec2(0.0, mid * px))) {
@@ -219,13 +250,8 @@ void fragment() {
 			}
 		}
 		float below = d >= 0.0 ? d / tile : cliff_h / tile;
-		if (d < 0.0) {
-			for (int k = 1; k <= 8; k++) {  // 절벽 면 아래: 더 위로 성큼성큼 찾아 깊이를 잰다
-				below = cliff_h / tile + float(k) * 0.75;
-				if (!is_void(p - vec2(0.0, below))) {
-					break;
-				}
-			}
+		if (d < 0.0) {  // 절벽 면 아래: 위 땅까지 깊이(칸 거리 그림 — 예전엔 성큼성큼 걸어 쟀다)
+			below = clamp(d0 / tile, cliff_h / tile, cliff_h / tile + 6.0);
 		}
 		vec3 col = deep(world, below);
 		if (d >= 0.0 && wood) {
@@ -249,6 +275,9 @@ void fragment() {
 			// 옆 벽: 동·서 가까이에 땅이 있으면 비스듬히 보이는 좁은 벽 면
 			float sl = 0.0;
 			for (int s = 1; s <= 3; s++) {
+				if (dd.r > 1.5) {  // 옆 칸에 땅이 없으면 옆 벽도 없다
+					break;
+				}
 				float o = side_px * float(s) / 3.0;
 				if (!is_void(p - vec2(o * px, 0.0)) || !is_void(p + vec2(o * px, 0.0))) {
 					sl = 1.0 - float(s - 1) / 3.0;

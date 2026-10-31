@@ -32,11 +32,14 @@ func test_reading_gives_one_or_two_until_done() -> void:
 	var reads := 0
 	while CityActions.check(s, pc, "library_dungeon").is_empty():
 		var before := s.known_info.size()
+		s.visit_done.clear()  # 다시 들어온 셈(한 방문에 분야마다 한 번 — CT72)
 		CityActions.perform(s, pc, "library_dungeon", _reg())
 		var got := s.known_info.size() - before
 		assert_true(got >= 1 and got <= 2, "한 번에 1~2개 (%d)" % got)
 		reads += 1
 		assert_true(reads < 20)
+		if CityActions.check(s, pc, "library_dungeon") == "city.reason_read_this_visit":
+			s.visit_done.clear()
 	for id in s.known_info:
 		assert_eq(JsonUtil.get_str(db.get_entry("city_info", id), "field"), "dungeon", "그 분야 책만")
 	assert_true(reads >= 2, "한 번에 분야 전부를 주지 않는다")

@@ -918,7 +918,7 @@
 - `city.reason_closed` 문이 닫혀 있다
 - `city.debug_street` 거리 사건
 - `city.reason_no_item` 필요한 물건이 없다.
-- `city.reason_visit_done` 오늘은 이만하면 됐다
+- `city.reason_read_this_visit` 오늘은 이 분야를 이미 읽었다
 
 ### `city.fx`
 

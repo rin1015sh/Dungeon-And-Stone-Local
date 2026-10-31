@@ -8,6 +8,7 @@
 - 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
 - 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
 - 1층 원정 한 번 벌이(헤드리스, 몇 분): `godot --headless --path . --script res://tools/sim_income.gd -- [--seeds=1,2,3] [--hours=60] [--bag=10x6]` → 출처별(몬스터·약탈자·탐험가·동굴 요소) 스톤·정수·요소별 벌이. 값·드롭을 바꿨으면 돌려 보고 `docs/balance/city.md`에 적는다(CT43).
+- 걷기 프레임 시간(렉 찾기, 약 15초): `xvfb-run -a -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- --screen=explore [--rift=<균열 id>] --prof=12` → 평균·95%·최대 ms·50 ms 넘는 프레임·그리기 호출(CT73). 같은 명령을 `--headless`로 돌리면 스크립트만(그리기 빼고) — 둘을 견줘 원인이 그리기인지 스크립트인지 가른다.
 - 도시 실내 걷기 시뮬(몇 초): `godot --headless --path . --script res://tools/sim_room_walk.gd [-- --only=<방 id>]` → 모든 통로(문간·문·계단·사다리·한 칸 길)에 진짜 이동 규칙으로 ±0.45칸 비껴 들어가 보고 "모두 통과"(CT71). 방 지도·body_half·corner_assist를 바꾸면 돌린다.
 - 도시 실내 사람 동작 그림(약 2분 — 41명 35장): `godot --headless --path . --script res://tools/paint_actors.gd -- --acts[=<옷차림__동작,…>]` → `assets/actors/acts/`(ART.md, CT69). 방 JSON npcs의 act·look을 바꿨으면 다시 돌린다.
 - 도시 실내 배치도(파이썬, 몇 초): `python3 tools/city_boards.py [--cell=14]` → 게임 지도(`data/rooms/<건물>.json` — 한 지도에 층이 다, CT66)를 칸 종류(바닥 재질·벽·벽 장식·가구·빛·바닥 장식·계단·사다리·문·잠긴 문·트인 곳·난간)와 표시로 그린 PNG — 건물별 + `all.png`(`docs/plans/city_boards/`). 지도를 고쳤으면 다시 그린다.

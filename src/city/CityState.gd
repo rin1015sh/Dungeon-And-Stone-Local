@@ -1,7 +1,8 @@
 class_name CityState
 extends RefCounted
 ## 도시(라비기온) 진행 상태: 순(旬) 달력 · 행동력 · 신전 공적치 · 은행 잔액 · 얻은 소문/정보 · 지금 들어가 있는 시설.
-## 행동력은 시설 한 번 다녀오기(들어갔다 나오기)에 facility_entry_cost — 나올 때 쓴다(사용자 결정 2026-10-31, CT62). 시설 안 활동은 행동력을 쓰지 않는다.
+## 행동력은 시설에 들어갈 때 facility_entry_cost를 쓴다(사용자 결정 2026-10-31, CT72 — CT62 '나올 때'를 바꿈). 시설 안에서는 활동을 몇 번이든(행동력을 쓰지 않는다 —
+## 도서관 서적은 한 방문에 분야마다 한 번, visit_done).
 ## 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(expedition_due). 미궁에서 돌아오면 다음 달 상순(return_from_dungeon).
 ## 규칙 값은 data/city.json. 디버그 임시값(overrides)은 저장하지 않는다.
 ## 오토로드를 참조하지 않는다.
@@ -27,8 +28,8 @@ var weather: String = ""
 var expedition_month: int = 0
 ## 지금 들어가 있는 시설 id(거리면 "").
 var facility: String = ""
-## 이번 방문을 마치고 나올 때 쓸 행동력(들어갈 때 정한다 — CT62).
-var visit_cost: int = 0
+## 이번 방문에 한 활동 id(들어갈 때 비운다 — 도서관 분야는 한 방문에 한 번, CT72).
+var visit_done: Array[String] = []
 ## 이번 순의 오늘의 거리 사건 id(CityHappenings) · 한 판에 한 번인 사건 중 이미 나온 것.
 var happenings: Array[String] = []
 var seen_once: Array[String] = []
@@ -191,7 +192,7 @@ func spend_ap(n: int) -> bool:
 	return true
 
 
-## 거리 → 시설 내부. 행동력 facility_entry_cost가 있어야 들어가고, 쓰는 것은 나올 때(leave_facility — CT62). 실패하면 이유 문자열 키.
+## 거리 → 시설 내부. 들어갈 때 행동력 facility_entry_cost를 쓴다(CT72). 실패하면 이유 문자열 키.
 func enter_facility(id: String) -> String:
 	if not facility.is_empty():
 		return "city.reason_inside"
@@ -201,18 +202,17 @@ func enter_facility(id: String) -> String:
 		return "city.reason_closed"
 	if not can_spend(entry_cost_of(id)):
 		return "city.reason_no_ap"
+	ap -= entry_cost_of(id)
 	facility = id
-	visit_cost = entry_cost_of(id)
+	visit_done.clear()
 	changed.emit()
 	return ""
 
 
-## 시설 → 거리. 이번 방문의 행동력을 쓰고(활동을 안 했어도 — CT62), 다 썼으면 다음 순으로 넘어간다(넘어갔으면 true).
+## 시설 → 거리(행동력은 들어갈 때 썼다 — CT72). 행동력이 0이면 다음 순으로 넘어간다(넘어갔으면 true).
 func leave_facility() -> bool:
-	if not facility.is_empty():
-		ap = maxi(0, ap - visit_cost)
 	facility = ""
-	visit_cost = 0
+	visit_done.clear()
 	changed.emit()
 	return advance_if_spent()
 

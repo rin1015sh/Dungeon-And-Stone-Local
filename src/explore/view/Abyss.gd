@@ -23,6 +23,7 @@ static func material(art: FloorArt, map: FloorMap, tile: int) -> ShaderMaterial:
 	var m := ShaderMaterial.new()
 	m.shader = load(SHADER) as Shader
 	m.set_shader_parameter("mask", mask_texture(map))
+	m.set_shader_parameter("dist", dist_texture(map))
 	m.set_shader_parameter("map_size", Vector2(map.width, map.height))
 	m.set_shader_parameter("tile", float(tile))
 	var path := JsonUtil.get_str(a, "cliff")
@@ -57,6 +58,90 @@ static func mask_texture(map: FloorMap) -> ImageTexture:
 		for x in map.width:
 			var d := map.defs[map.tiles[y * map.width + x]]
 			img.set_pixel(x, y, Color(1.0 if d.is_void else 0.0, 1.0 if d.void_edge == "beam" else 0.0, 1.0 if d.is_rise else 0.0))
+	return ImageTexture.create_from_image(img)
+
+
+## 칸 거리 그림(균열 렉 — CT73, 셰이더가 땅 찾기 걸음을 경계 칸 안에서만 하게): r = 반대쪽(허공 칸이면 땅, 땅 칸이면 허공)까지 체비쇼프 거리,
+## g = 위(북쪽)로 가장 가까운 땅 칸까지(바로 위가 땅이면 1), b = 아래(남쪽)로, a = 같은 줄 옆으로 — 모두 칸 수 / FAR(FAR에서 멈춤).
+## 균열 지도(작다)만 낭떠러지 셰이더를 쓴다 — r은 경계 칸에서만 퍼뜨린다.
+const FAR := 15
+
+
+static func dist_texture(map: FloorMap) -> ImageTexture:
+	var w := map.width
+	var h := map.height
+	var vd := PackedByteArray()
+	vd.resize(w * h)
+	for i in w * h:
+		vd[i] = 1 if map.defs[map.tiles[i]].is_void else 0
+	var far := PackedByteArray()
+	far.resize(w * h)
+	far.fill(FAR)
+	var front := PackedInt32Array()
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var edge := false
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					var xx := x + dx
+					var yy := y + dy
+					if xx >= 0 and yy >= 0 and xx < w and yy < h and vd[yy * w + xx] != vd[i]:
+						edge = true
+			if edge:
+				far[i] = 1
+				front.append(i)
+	var level := 1
+	while not front.is_empty() and level < FAR - 1:
+		var next := PackedInt32Array()
+		for i in front:
+			var x := i % w
+			var y := i / w
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					var xx := x + dx
+					var yy := y + dy
+					if xx < 0 or yy < 0 or xx >= w or yy >= h:
+						continue
+					var j := yy * w + xx
+					if vd[j] == vd[i] and far[j] > level + 1:
+						far[j] = level + 1
+						next.append(j)
+		front = next
+		level += 1
+	var up := PackedByteArray()
+	up.resize(w * h)
+	var down := PackedByteArray()
+	down.resize(w * h)
+	for x in w:
+		var run := FAR
+		for y in h:
+			var i := y * w + x
+			run = 0 if vd[i] == 0 else mini(FAR, run + 1)
+			up[i] = run
+		run = FAR
+		for y in range(h - 1, -1, -1):
+			var i := y * w + x
+			run = 0 if vd[i] == 0 else mini(FAR, run + 1)
+			down[i] = run
+	var side := PackedByteArray()  # 같은 줄 왼쪽·오른쪽 중 가까운 땅까지
+	side.resize(w * h)
+	for y in h:
+		var run := FAR
+		for x in w:
+			var i := y * w + x
+			run = 0 if vd[i] == 0 else mini(FAR, run + 1)
+			side[i] = run
+		run = FAR
+		for x in range(w - 1, -1, -1):
+			var i := y * w + x
+			run = 0 if vd[i] == 0 else mini(FAR, run + 1)
+			side[i] = mini(side[i], run)
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			img.set_pixel(x, y, Color(far[i] / float(FAR), up[i] / float(FAR), down[i] / float(FAR), side[i] / float(FAR)))
 	return ImageTexture.create_from_image(img)
 
 

@@ -6,6 +6,9 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **시설 방문 규칙 · 균열 렉 (2026-10-31, 사용자 "건물 안에서 행동 계속 · 행동력은 들어갈 때 한 번 · 도서관은 한 방문에 한 분야 한 번 · 균열 안 렉", CT72·CT73)** — 테스트: `check.sh` + `screenshot --prof`(옛/새 셰이더 같은 걸음).
+  - 방문(CT72): CityState.enter_facility가 행동력을 쓰고 visit_done을 비움, leave_facility는 쓰지 않음(visit_cost 없앰) · RoomView 한 방문 활동 수 제한·reason_visit_done 없앰(city.json activities_per_visit 지움) · CityActions.check: learn_info 활동은 visit_done에 있으면 reason_read_this_visit, perform이 성공하면 visit_done에 넣음 · 테스트 test_city(입장 때 1)·test_city_room(분야마다 한 번)·test_library(다시 들어온 셈)·UI 스모크.
+  - 렉(CT73): 재 보니 그리기 쪽(헤드리스 7 ms 똑같음, xvfb 성채 132~146 · 필드 55, 낭떠러지 셰이더를 끄면 55). abyss.gdshader 픽셀마다 땅 찾기 최대 64걸음 → `Abyss.dist_texture`(r·g·b·a = 반대쪽·위·아래·옆 칸 거리) + 셰이더는 경계 칸 1.5칸만 걷기 · 먼 픽셀 바로 · 깎기 잡음 건너뜀 · 안개 거리 보간. 결과 성채 76~83 · 빙하굴 95→76 · 묘 66→59 · 탄광 그대로. 옛/새 캡처 평균 차 3~5(빙하굴 안개 계단 줄무늬가 매끄러워진 것). `screenshot.gd --prof` 새 옵션.
 - **도시 실내 — 벽 입체 · 옆벽 문 · 통로 · 기둥 (2026-10-31, 사용자 "옆벽 문이 정면 문처럼 · 기둥에 막혀 못 감 · 통로 들어가기 힘듦 · 벽이 타일처럼 — 벽·바닥·천장 구분이 안 감", CT71)** — 테스트: 새 `tools/sim_room_walk.gd`(통로 4905번 진입 — 고치기 전 ±0.45칸 비낌에서 475번 막힘, 고친 뒤 0) + `check.sh` + 캡처.
   - 벽: `RoomWallForm.gd` 새로(cap 검은 윗면 + 밝은 테 · face 그늘·처마·굽도리·꺾인 끝 · threshold 방향 · door 옆벽 문짝/앞벽 문틀) · RoomPaint._walls 다시 씀 · RoomDecor.threshold 지움 · 은행 벽 재질 marble = 붙임기둥 회벽(바닥 바둑판과 같은 무늬였다) · 잠긴 문 옆모습(paint_rooms가 위아래 벽이면 side).
   - 통로: 걸어서 못 가는 곳은 원래 없었다(±0.3칸 비낌 2943번 모두 통과) — 칸 반쯤 비껴 서면 corner_assist 0.45가 못 밀어 줬다 → `city.json room.corner_assist` 0.8.

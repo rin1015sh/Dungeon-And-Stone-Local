@@ -32,7 +32,9 @@ static func check(state: CityState, pc: PlayerCharacter, act_id: String, extra_s
 		extra_stones += CityTax.amount(state, pc.race_id)
 	if pc.inventory.money < cost(state, act_id) + extra_stones:
 		return "city.reason_no_money"
-	var book := _effect_of(act, "learn_info")  # 도서관: 지금 등급·층에서 읽을 것이 남아 있어야(CT52)
+	var book := _effect_of(act, "learn_info")  # 도서관: 한 방문에 분야마다 한 번(CT72) · 지금 등급·층에서 읽을 것이 남아 있어야(CT52)
+	if not book.is_empty() and state.visit_done.has(act_id):
+		return "city.reason_read_this_visit"
 	if not book.is_empty():
 		var field := JsonUtil.get_str(book, "field", CityInfo.ANY)
 		if CityInfo.readable(state, field).is_empty():
@@ -91,6 +93,8 @@ static func perform(state: CityState, pc: PlayerCharacter, act_id: String, regis
 		var h := registry.instance(JsonUtil.get_str(e, "type")) as CityEffect
 		if h != null:
 			h.apply(ctx, e)
+	if ctx.ok:
+		state.visit_done.append(act_id)
 	state.changed.emit()
 	return ctx
 
