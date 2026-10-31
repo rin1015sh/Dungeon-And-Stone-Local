@@ -19,6 +19,7 @@
 ## 문서 만들기 (손으로 고치지 않는다)
 
 - **게임 글 md**(사용자가 글을 고치는 곳): `godot --headless --path . --script res://tools/strings_md.gd` → `docs/STRINGS.md`(ko.json 전부, 한 줄 = ``- `키` 글``) · 사용자가 고친 md를 넣기 `… -- --apply`(있는 키의 글만 바꾼다). **ko.json 문구를 추가·수정했으면 다시 만든다**(md가 낡으면 사용자가 옛 글을 고치게 된다).
+- **게임 글 모음 ↔ 데이터**(파이썬, 1초): `python3 tools/texts_md.py` → `docs/TEXTS.md`(도서관 책 · 플레이버·설명 글(아이템·소재·종류·몬스터·정수·스킬·상태·균열·수수께끼 …) · 상황 문구(ko.json의 문장) — 약 1,180개). 사용자가 고친 파일 적용: `python3 tools/texts_md.py --apply --md=<파일> [--dry]` — 바뀐 글만 그 자리에서 바꾼다(파일 모양 유지, ko.json `{자리표시자}`가 달라진 줄은 건너뜀). 적용 뒤 ko.json을 바꿨으면 `strings_md.gd`, 그리고 `texts_md.py`로 다시 만들고 `check.sh`.
 - **층 찍어내기 점검표**(파이썬, 1초): `python3 tools/floor_status.py` → `docs/balance/floor_status.md`(1~10층 × 부품 17 — ● 갖춤 · ◐ 일부 · ○ 없음) · `--floor=<n>`이면 그 층만 자세히(파일을 쓰지 않는다). 층 데이터·몬스터·정수·균열·서적을 더했으면 다시 돌린다(부품 목록 `docs/plans/floors_2_10.md` §1).
 - **정수 표**: `python3 tools/essences_md.py` → `docs/balance/essences.md`(정수·정수 스킬을 바꿨으면 다시 만든다 — 손으로 고치지 않는다).
 
