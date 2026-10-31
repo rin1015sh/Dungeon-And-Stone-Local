@@ -886,6 +886,12 @@ func _city_flow() -> void:
 		box.advance()
 		box.advance()
 	_expect(pages_ok and seen.replace("\n", "").replace(" ", "") == ("짧은 머리말" + long_text).replace(" ", ""), "긴 글은 쪽마다 들어가는 줄까지만, 넘기면 빠짐없이")
+	box.say("첫째 문장이다. 둘째 문장이다!")  # 한 쪽 = 한 문장(UI44)
+	var first := box.page_text()
+	box.advance()
+	box.advance()
+	_expect(first == "첫째 문장이다." and box.page_text() == "둘째 문장이다!", "대화창은 한 번에 한 문장")
+	box.clear()
 	DialogueBox.auto_skip = true
 	await _action("debug_toggle")
 	_expect(city.is_debug_open(), "F1로 도시 디버그 패널")
