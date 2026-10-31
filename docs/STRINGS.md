@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(973줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -851,7 +851,6 @@
 - `city.spent_stones` {n} 스톤을 치렀다.
 - `city.info_merit` 신전 공적치 {merit}
 - `city.info_balance` 은행 잔액 {balance} 스톤
-- `city.info_residence` 거주 {name}
 - `city.info_lore` 읽은 대목 {n}
 - `city.info_survey` 의뢰 {name} 조사 {n}/{cap} · 한 마리 {stones} 스톤
 - `city.reason_unknown` 알 수 없는 시설·활동이다.
@@ -908,11 +907,9 @@
 - `city.shop_sell_name` {item} ×{n}
 - `city.hud_tax` 세금 {n} 스톤 · {month}번째 달까지
 - `city.reason_tax_none` 낼 세금이 없다
-- `city.reason_residence_max` 더 옮겨 갈 구역이 없다
-- `city.move_title` 이사
-- `city.move_cancel` 그만둔다
+- `city.travel_title` 어디로 갈까
+- `city.travel_cancel` 그만둔다
 - `city.reason_no_books` 이 분야는 다 읽었다
-- `city.reason_books_locked` 이 구역 도서관엔 더 귀한 책이 없다
 - `city.debug_reroll` 사건 다시
 - `city.debug_tax_due` 세금 기한으로
 - `city.debug_life` 사건 {events} · 거리 {street} · 세금 {tax}(냄 {paid})
@@ -921,7 +918,6 @@
 - `city.reason_closed` 문이 닫혀 있다
 - `city.debug_street` 거리 사건
 - `city.reason_no_item` 필요한 물건이 없다.
-- `city.reason_residence` 이 구역엔 없는 곳이다
 - `city.reason_visit_done` 오늘은 이만하면 됐다
 
 ### `city.fx`
@@ -947,7 +943,6 @@
 - `city.fx.item_no_room` {name}을(를) 넣을 자리가 없다.
 - `city.fx.item_undecided` 받을 것이 정해지지 않았다. (미정)
 - `city.fx.tax_paid` 세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.
-- `city.fx.residence_up` 계약서에 서명하고 짐수레를 불렀다. 오늘부터 {name}에서 산다.
 - `city.fx.money_lost` {n} 스톤을 잃었다.
 - `city.fx.money_got` {n} 스톤을 받았다.
 - `city.fx.closed` {name}이(가) 문을 닫았다.
