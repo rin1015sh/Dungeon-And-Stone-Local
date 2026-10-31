@@ -35,7 +35,7 @@
 | 14 | **전투 뒷그림** | 수정동굴 1장 + 균열 챕터별 | `assets/battle/…` · 층·균열 `art.battleback` | `paint_battlebacks.gd`(+`tools/battle_art/Scene*.gd`) | 캡처 |
 | 15 | **소리** | 환경음 `f1_cave` | `data/audio.json` ambience·sfx | (소리 파일 없음 — UI20) | — |
 | 16 | **글** | 지역 이름·포탈·군주 문구 | `data/strings/ko.json`(`explore.boss_notice.<군주>` 등) | `strings_md.gd` → `docs/STRINGS.md` | `test_strings` |
-| 17 | **도서관 서적** | 81권(floor 1) | `data/city_info/<분야>.json` 항목 `floor: n` — **분야 여섯 개에 한 권 이상**(CT52 고서 문체, 세계관은 은근히 — CT61) | 손 | `test_library`(숫자·존댓말 금지) |
+| 17 | **도서관 서적** | 68권(floor 1) | `data/city_info/<분야>.json` 항목 `floor: n` — **분야 여섯 개에 한 권 이상**(CT52 고서 문체) | 손 | `test_library`(숫자·존댓말 금지) |
 
 밸런스 문서(`docs/balance/curve.md`·`exp_budget.md`·`city.md`)는 부품이 아니라 결과물이다 — 5·6·9를 바꾸면 도구로 다시 만든다(CLAUDE.md "도구 명령").
 
@@ -112,7 +112,7 @@
 - **균열**: 원작에 2층 균열 정보가 없다 → 창작 또는 원문 필요. 원작 1층 균열 넷이 2층 들판의 8등급 마석으로 열렸으니, 2층 균열도 들판 넷과 짝을 지으면 자연스럽다(§5).
 - **군주 — 후회의 군주**: 원작 정보 없음. 제안: 들판 넷에 하나씩 "후회의 조각"(제단·비석)을 두고 네 곳을 모두 깨우면(한 원정 안에, 혼자서는 시간이 모자라게) 부를 수 있다 — 원작의 "네 구역 동시 공략"을 혼자·소수 파티 게임으로 옮긴 것. **사용자 확인 필요.**
 - **그림**: 짙은 남색 밤하늘 · 높은 곳의 흩뿌린 빛 점 · 들판마다 색조(소굴 = 회갈 바위, 망자 = 흑녹 진흙, 사막 = 검은 바위 + 모래 주황, 숲 = 짙은 초록).
-- **서적(이미 넣음, 2026-10-31)**: `d_floor2_fields`·`d_floor2_grave`·`m_floor2_packs`·`v_compass` — 2층을 만들 때 내용과 맞춘다(소재와 무기·상태이상·도시 분야 floor 2 한 권씩 더).
+- **서적**: 분야마다 floor 2 한 권 이상(네 들판 · 망자의 땅 비석 · 무리 · 길 찾기 등).
 
 ### 3층 — 순례자의 길 (필드 7등급 · 6 드묾 · Lv 4 · 정수 4 · 장비 2 · **5인**)
 
@@ -202,7 +202,7 @@
 **마일스톤 3 — 다 갖춘 층**
 13. 균열: rift JSON + 챕터 설계도(`data/maps/rifts/`) + `rift_boards.py` 배치도 + 히든 피스 + 균열 아이템(그림까지) → `sim_rift`("모두 통과").
 14. 계층군주: 몬스터 + `patterns/<id>.gd` + `BossParamRules` + 부르는 조건(§2 I) + 보상 → `sim_battle`.
-15. 글: ko.json(지역·포탈·군주 문구) → `strings_md.gd` · **서적 floor n을 분야마다 한 권 이상**(CT52·CT61).
+15. 글: ko.json(지역·포탈·군주 문구) → `strings_md.gd` · **서적 floor n을 분야마다 한 권 이상**(CT52).
 16. `python3 tools/floor_status.py --floor=<n>` → ○·◐가 없을 때까지.
 17. `check.sh` → PROGRESS·PROGRESS_LOG·PLAYTEST·CANON(층 요약)·REFERENCE(새 키).
 
@@ -230,4 +230,4 @@
 | 즉사 함정·드래곤 피어 즉사·베르자크 9중첩 영구 부하 | 불합리한 즉사 금지 — 보이고 배울 수 있게 | CANON §1 |
 | 생명력 0 → 정신력 카운트다운 | 사망 = 바로 타이틀 | CT·UI16 |
 | 몬스터 부산물 반출(왜곡 마법) | 몬스터는 부산물을 떨어뜨리지 않는다 | RF17 |
-| 군주의 기원(마녀 편 군주·제국 원정대) | 넣지 않음 — 서적에 아주 흐릿한 흔적만(CT61) | LORE "넣을지 판단" |
+| 군주의 기원(마녀 편 군주·제국 원정대) | 넣지 않음 | LORE "넣을지 판단" |

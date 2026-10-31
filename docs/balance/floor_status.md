@@ -20,7 +20,7 @@
 | 몬스터 그림 assets/monsters | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 정수 data/essences | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 균열 data/rifts | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 도서관 서적(floor n) | ● | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 도서관 서적(floor n) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 
 ## 1층 (필드 등급 9 · 파티 1)
 - ● 층 정의 data/floors — f1_crystal_cave
@@ -39,7 +39,7 @@
 - ● 몬스터 그림 assets/monsters — 51장
 - ● 정수 data/essences — 51종
 - ● 균열 data/rifts — 핏빛성채 5챕터 / 빙하굴 4챕터 / 녹색 탄광 4챕터 / 강철의 묘 4챕터
-- ● 도서관 서적(floor n) — 81권
+- ● 도서관 서적(floor n) — 68권
 
 ## 2층 (필드 등급 8 · 파티 2)
 - ○ 층 정의 data/floors — f2_<id>.json 없음
@@ -47,7 +47,7 @@
 - ○ 몬스터 그림 assets/monsters — 0장
 - ○ 정수 data/essences — 0종
 - ○ 균열 data/rifts
-- ◐ 도서관 서적(floor n) — 4권 · 빠진 분야 arms, ailments, society
+- ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 
 ## 3층 (필드 등급 7 · 파티 5)
 - ○ 층 정의 data/floors — f3_<id>.json 없음
