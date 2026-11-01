@@ -57,6 +57,7 @@ func test_maze_cave_has_medium_caverns_lakes_and_crystals() -> void:
 	var map := _gen(1)
 	var lay := _lay()
 	# 중간 크기 공동: 9×9가 통째로 바닥인 자리가 구역마다 있다 / 너무 큰 공동은 없다(사용자 결정 2026-10-16 — 17×17이 통째로 트인 곳 없음)
+	# 예외: 팔 끝 암흑지대는 벽을 걷어낸 트인 굴(사용자 결정 2026-11-01, CR26) — 암흑지대 둘레 8칸까지는 거대 공동을 세지 않는다
 	var open_by_zone := {}
 	var huge := 0
 	for y in range(4, map.height - 4, 3):
@@ -64,7 +65,7 @@ func test_maze_cave_has_medium_caverns_lakes_and_crystals() -> void:
 			if _open_square(map, Vector2i(x, y), 4):
 				var z := map.zone_at(Vector2i(x, y))
 				open_by_zone[z] = int(open_by_zone.get(z, 0)) + 1
-				if _open_square(map, Vector2i(x, y), 8):
+				if _open_square(map, Vector2i(x, y), 8) and not _near_dark(map, Vector2i(x, y), 8):
 					huge += 1
 	for z: String in [CrossLayout.ZONE_CENTER] + Array(CrossLayout.ARMS):
 		assert_true(int(open_by_zone.get(z, 0)) >= 10, "%s에 공동 (%d곳)" % [z, int(open_by_zone.get(z, 0))])
@@ -77,6 +78,29 @@ func test_maze_cave_has_medium_caverns_lakes_and_crystals() -> void:
 			walk += 1
 	var cross := lay.core_rect().get_area() + 4 * lay.arm_rect("east").get_area()
 	assert_true(walk > cross * 0.25 and walk < cross * 0.6, "십자가 안 바닥 비율 %.2f — 바위 덩어리와 굴이 섞인다" % (float(walk) / cross))
+
+
+func _near_dark(map: FloorMap, c: Vector2i, r: int) -> bool:
+	for y in range(c.y - r, c.y + r + 1):
+		for x in range(c.x - r, c.x + r + 1):
+			if map.is_dark(Vector2i(x, y)):
+				return true
+	return false
+
+
+func test_dark_zone_is_open_cave() -> void:
+	# 암흑지대 = 벽을 걷어낸 트인 굴(CR26): 팔 끝 암흑지대 사각형 가운데(가장자리 8칸 안쪽)에는 바위벽이 없다
+	var map := _gen(1)
+	var lay := _lay()
+	var wall := map.index_of("rock_wall")
+	for dir in CrossLayout.ARMS:
+		var r := lay.dark_rect(dir).grow(-8)
+		var walls := 0
+		for y in range(r.position.y, r.end.y):
+			for x in range(r.position.x, r.end.x):
+				if map.tiles[y * map.width + x] == wall:
+					walls += 1
+		assert_eq(walls, 0, "%s 암흑지대 안 바위벽" % dir)
 
 
 func _open_square(map: FloorMap, c: Vector2i, r: int) -> bool:

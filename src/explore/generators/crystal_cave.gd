@@ -61,7 +61,8 @@ func build(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	FieldFeaturePlacer.place(db, map, lay, floor_def, g, rng)
 	FieldFeaturePlacer.apply_tiles(db, map)
 	if DarkClearing.apply(map, lay, g, tiles):
-		_widen_map(map, g, tiles)  # 걷어낸 가장자리 물결에 생긴 한 칸 폭 목
+		_widen_map(map, g, tiles)  # 걷어낸 가장자리 물결에 생긴 한 칸 폭 목·작은 홈
+		_trim_dead_ends(map, g, tiles)
 	lay.mark_mixed_center(map)
 	_place_entry(map, lay, g, JsonUtil.get_str(tiles, "floor"), rng)
 	return map
