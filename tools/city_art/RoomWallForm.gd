@@ -69,8 +69,14 @@ static func threshold(p: Paint, x: int, y: int, t: int, side: bool, entry: bool)
 	else:
 		p.fill_rect(x * t + 2, y * t + t * 0.3, t - 4, t * 0.4, Mat.planks(p, Color("#5a4632"), 0, 0, false, 8))
 		Ink.path(p, Paint.rect_poly(x * t + 2, y * t + t * 0.3, t - 4, t * 0.4), 1.2, true, Ink.INK, 0.6)
-	if entry:
-		p.fill_rect(x * t, y * t + t * 0.6, t, t * 0.4, p.flat(Color("#2a2e34"), 0.05))
+	if entry:  # 건물 입구: 칸 전체 = 닳은 돌 문지방, 아래쪽은 바깥(낮빛 — 안보다 밝다)
+		p.fill_rect(x * t, y * t, t, t, func(px: int, py: int) -> Color: return p.vary(Color("#5e584e").lerp(Color("#726a5e"), p.nz("lo", px, py)), px, py, 0.05))
+		Ink.line(p, Vector2(x * t, y * t + t * 0.08), Vector2(x * t + t, y * t + t * 0.08), 1.6, Ink.INK, 0.75, 0.2)
+		var out_y := y * t + t * 0.58
+		p.fill_rect(x * t, out_y, t, y * t + t - out_y, func(px: int, py: int) -> Color:
+			var k := (py - out_y) / (y * t + t - out_y)
+			return p.vary(Color("#55606a").lerp(Color("#7c8890"), k), px, py, 0.03))
+		Ink.line(p, Vector2(x * t, out_y), Vector2(x * t + t, out_y), 2.0, Ink.INK, 0.85, 0.2)
 
 
 ## 문짝·문틀(벽 층): side면 옆벽 — 문짝을 방 안쪽으로 열어 벽에 붙인 얇은 판(옆에서 본 문), 위 벽 끝에 상인방 그늘.
@@ -99,3 +105,31 @@ static func door(p: Paint, x: int, y: int, t: int, side: bool, door_leaf: bool, 
 			var leaf := Paint.rect_poly(x * t + (t * 0.14 if hinge_left else t * 0.7), y * t + t * 0.16, t * 0.16, t * 0.8)
 			p.fill_poly(leaf, Mat.planks(p, wood.lightened(0.05), 0, 0, true, 5))
 			Ink.path(p, leaf, 1.4)
+
+
+## 건물 입구(맨 아래 바깥벽 — 윗면으로 그린 벽에 난 문): 벽 두께 문설주(윗면색 + 밝은 테) · 안쪽으로 활짝 열어 문설주 곁에 세운 문짝(위에서 본 판).
+## wall_l·wall_r = 그 옆이 벽(문 양 끝). 한 칸 문(양옆이 다 벽)은 문짝 하나(왼쪽), 넓은 문은 양 끝에 하나씩.
+static func entry(p: Paint, x: int, y: int, t: int, wall_l: bool, wall_r: bool) -> void:
+	var wood := Color("#5a3e28")
+	var post_w := t * 0.2
+	for side: int in [-1, 1]:
+		if (side < 0 and not wall_l) or (side > 0 and not wall_r):
+			continue
+		var px: float = x * t if side < 0 else x * t + t - post_w
+		var post := Paint.rect_poly(px, y * t - t * 0.12, post_w, t * 0.7)
+		p.fill_poly(post, p.flat(CAP, 0.04))
+		p.fill_rect(px, y * t - t * 0.12, post_w, 3, p.flat(RIM_LIT, 0.05))
+		Ink.path(p, post, 1.6)
+		if side > 0 and wall_l:
+			continue  # 한 칸 문은 문짝 하나
+		var span: float = t - post_w * 2.0 if wall_l and wall_r else t - post_w
+		var hx: float = px + (post_w if side < 0 else 0.0)
+		var thick := t * 0.17
+		var top: float = y * t - span
+		var leaf := Paint.rect_poly(hx if side < 0 else hx - thick, top, thick, y * t - top)
+		p.fill_poly(leaf, Mat.planks(p, wood.lightened(0.12), 0, 0, true, 4))
+		Ink.shade(p, leaf, Vector2(0, top), Vector2(0, y * t), 0.05, 0.4)
+		Ink.path(p, leaf, 1.5)
+		var shadow := Paint.rect_poly(hx + (thick if side < 0 else -thick * 2.0), top + t * 0.08, thick, y * t - top - t * 0.08)
+		p.fill_poly(shadow, p.flat(Color("#0a0806"), 0.0), 0.25)
+		p.fill_rect(hx + (thick * 0.5 if side < 0 else -thick * 0.5) - 2, top + span * 0.45, 4, 4, p.flat(Color("#9a8458"), 0.05))

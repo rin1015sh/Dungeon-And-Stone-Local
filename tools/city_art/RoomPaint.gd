@@ -105,6 +105,11 @@ static func _shadows(p: Paint, rows: PackedStringArray, legend: Dictionary, kind
 				Ink.shade(p, Paint.rect_poly(x * t, y * t, t, t * 0.6), Vector2(0, y * t), Vector2(0, y * t + t * 0.6), 0.55, 0.0)
 			if str(kind.call(x - 1, y)) in WALLISH:
 				Ink.shade(p, Paint.rect_poly(x * t, y * t, t * 0.4, t), Vector2(x * t, 0), Vector2(x * t + t * 0.4, 0), 0.4, 0.0)
+			if str(kind.call(x, y + 1)) in WALLISH:  # 아래 벽에 닿는 바닥 끝 — 벽 발치 그늘 + 먹선(바닥과 벽이 이어 보이지 않게)
+				Ink.shade(p, Paint.rect_poly(x * t, y * t + t * 0.7, t, t * 0.3), Vector2(0, y * t + t * 0.7), Vector2(0, y * t + t), 0.0, 0.5)
+				Ink.line(p, Vector2(x * t, y * t + t - 1), Vector2(x * t + t, y * t + t - 1), 1.8, Ink.INK, 0.8, 0.3)
+			if str(kind.call(x + 1, y)) in WALLISH:
+				Ink.shade(p, Paint.rect_poly(x * t + t * 0.75, y * t, t * 0.25, t), Vector2(x * t + t * 0.75, 0), Vector2(x * t + t, 0), 0.0, 0.3)
 	for g: Dictionary in CityRoom.groups(rows, legend, ["furniture"]):
 		var rc: Rect2i = g["rect"]
 		var c := (Vector2(rc.position) + Vector2(rc.size) * Vector2(0.5, 0.7)) * t
@@ -141,12 +146,17 @@ static func _walls(p: Paint, room: Dictionary, rows: PackedStringArray, legend: 
 			if not k in ["door", "doorway", "entry"]:
 				continue
 			var side: bool = isw.call(x, y - 1) and isw.call(x, y + 1)
+			if k == "entry" and not side:
+				RoomWallForm.entry(p, x, y, t, isw.call(x - 1, y), isw.call(x + 1, y))
+				continue
 			RoomWallForm.door(p, x, y, t, side, k == "door", not isw.call(x - 1, y))
 
 
-## 앞면인가: 아래 칸이 벽이 아니거나, 아래가 벽(앞면)이고 그 아래가 벽이 아니며 위도 벽이면(두 칸 높이 뒷벽).
+## 앞면인가: 맨 아래 바깥벽(아래가 지도 밖)은 윗면. 아래 칸이 벽이 아니거나, 아래가 벽(앞면)이고 그 아래가 벽이 아니며 위도 벽이면(두 칸 높이 뒷벽).
 static func is_face(kind: Callable, x: int, y: int) -> bool:
 	var below: String = kind.call(x, y + 1)
+	if below == "void":  # 건물 맨 아래 바깥벽: 안에서는 바깥쪽 앞면이 안 보인다 — 윗면만(입구 벽, 사용자 2026-11-01)
+		return false
 	if not below in WALLISH:
 		return true
 	var below2: String = kind.call(x, y + 2)
@@ -167,6 +177,9 @@ static func _lights(rows: PackedStringArray, legend: Dictionary, t: int) -> Arra
 			c.y = rc.end.y * t + t * 0.6
 		var radius := (3.2 + maxf(rc.size.x, rc.size.y) * 0.4) * t
 		out.append([c, radius, RoomArt.COOL if cool else RoomArt.WARM, 0.55 if cool else 0.8])
+	for g: Dictionary in CityRoom.groups(rows, legend, ["entry"]):  # 입구 = 바깥 낮빛이 문으로 들어온다
+		var er: Rect2i = g["rect"]
+		out.append([Vector2(er.position.x + er.size.x * 0.5, er.position.y - 0.3) * t, (2.4 + er.size.x * 0.5) * t, RoomArt.COOL, 0.3])
 	return out
 
 
