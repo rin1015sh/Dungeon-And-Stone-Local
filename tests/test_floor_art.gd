@@ -115,3 +115,34 @@ func test_wall_shape_smooth() -> void:
 	assert_eq(s.floors.size(), 2, "깎은 아래쪽 두 모서리에 바닥을 채운다")
 	var inner := WallShape.build(map, 0, 0, 4, 32.0, 16.0, smooth, face_h, variant)
 	assert_eq(inner.tops.size() + inner.faces.size(), 0, "벽이 없는 줄(오목 모서리도 없음)")
+
+
+## 균열 벽 모양: round = 직각 덩어리 모서리도 깎고 모든 칸 윗면을 벽 그림으로 · bevel = 직각 모서리는 그대로, 계단 사선만 깎는다.
+func test_wall_shape_round_and_bevel() -> void:
+	var face_h := func(_d: TileDef) -> int: return 24
+	var variant := func(_x: int, _y: int, _d: TileDef) -> int: return 0
+	var block := FloorMap.new(db, 6, 6, "cave_floor")  # 2×2 덩어리 (2,2)~(3,3)
+	for c: Vector2i in [Vector2i(2, 2), Vector2i(3, 2), Vector2i(2, 3), Vector2i(3, 3)]:
+		block.set_tile(c, "rock_wall")
+	var shape := PackedByteArray()
+	shape.resize(block.defs.size())
+	shape[block.index_of("rock_wall")] = WallShape.ROUND
+	var r := WallShape.build(block, 2, 0, 6, 32.0, 16.0, shape, face_h, variant)
+	assert_eq(r.tops.size(), 2, "round: 줄의 벽 칸 둘 다 윗면(바위 속도 그림)")
+	for top in r.tops:
+		assert_true(top.has("def"), "round 윗면은 벽 그림")
+	assert_false((r.tops[0]["poly"] as PackedVector2Array).has(Vector2(64, 64)), "round: 덩어리 왼위 모서리를 깎는다")
+	assert_eq(r.faces.size(), 2, "round: 남쪽이 벽인 칸도 앞면을 깐다(앞면 높이가 다른 벽 사이 틈)")
+	shape[block.index_of("rock_wall")] = WallShape.BEVEL
+	var b := WallShape.build(block, 2, 0, 6, 32.0, 16.0, shape, face_h, variant)
+	assert_true((b.tops[0]["poly"] as PackedVector2Array).has(Vector2(64, 64)), "bevel: 직각 모서리는 그대로")
+	var stairs := FloorMap.new(db, 7, 7, "cave_floor")  # x + y >= 6 = 벽(계단 사선)
+	for y in 7:
+		for x in 7:
+			if x + y >= 6:
+				stairs.set_tile(Vector2i(x, y), "rock_wall")
+	var st := WallShape.build(stairs, 3, 0, 7, 32.0, 16.0, shape, face_h, variant)
+	assert_false((st.tops[0]["poly"] as PackedVector2Array).has(Vector2(96, 96)), "bevel: 계단 한 단의 모서리는 깎는다")
+	var above := WallShape.build(stairs, 2, 0, 7, 32.0, 16.0, shape, face_h, variant)
+	var fillets := above.tops.filter(func(t: Dictionary) -> bool: return t.get("fillet", false))
+	assert_true(fillets.size() >= 1, "bevel: 계단 사이 오목 자리를 메운다")

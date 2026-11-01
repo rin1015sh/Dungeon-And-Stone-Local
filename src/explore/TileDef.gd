@@ -23,7 +23,7 @@ var scavenge: String = ""  ## 균열 장식 잡템 표(data/scavenge.json id) �
 var sprite: String = ""
 var art_atlas: String = ""      ## 재질 아틀라스(tools/paint_floor.gd → assets/floor). 바닥 = 한 줄에 변형, 벽 = 윗면 줄 + 앞면 줄
 var art_variants: int = 0       ## 아틀라스 한 줄의 변형 수(짝수 — FloorArtLayer)
-var art_shape: String = ""      ## "smooth" = 부드러운 암벽(WallShape — 둥근 윤곽, 윗면은 검게, 남쪽 앞면만)
+var art_shape: String = ""      ## 벽: "smooth" = 부드러운 암벽(WallShape — 둥근 윤곽, 윗면은 검게, 남쪽 앞면만) · "round" = 같은 윤곽 + 벽 그림 윗면(균열 자연 암벽) · "bevel" = 계단만 곧은 사선(균열 지은 벽). 바닥: "smooth" = 가장자리 사선(물)
 var prop_sheet: String = ""     ## 소품 그림 시트(art.prop — 동굴 요소·포탈: 바닥 위에 얹는 그림, 마름모 대신)
 var prop_cell: int = 0          ## 시트 칸 번호(왼쪽 위부터 가로로)
 var prop_cols: int = 0          ## 시트 가로 칸 수(0 = 정사각 칸으로 계산)

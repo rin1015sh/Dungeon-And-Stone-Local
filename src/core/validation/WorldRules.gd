@@ -36,8 +36,9 @@ static func _tiles(v: ValidatorBase) -> void:
 			if not prop.is_empty() and not ResourceLoader.exists(prop):
 				v.err(w + ".art", "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % prop)
 			var shape := JsonUtil.get_str(art, "shape")
-			if not shape.is_empty() and shape != "smooth":
-				v.err(w + ".art", "shape는 \"smooth\"만(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선)")
+			var is_wall := JsonUtil.get_str(t, "kind") == "wall"
+			if not shape.is_empty() and shape != "smooth" and not (is_wall and shape in ["round", "bevel"]):
+				v.err(w + ".art", "shape는 \"smooth\"(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선) · 벽만 \"round\"(둥근 윤곽 + 벽 그림 윗면)·\"bevel\"(계단만 곧은 사선)")
 		if JsonUtil.get_bool(t, "rise") and (not JsonUtil.get_bool(t, "void") or JsonUtil.get_bool(t, "walkable")):
 			v.err(w, "rise(솟은 외곽)는 void이고 걸을 수 없는 타일만")
 		var ve := JsonUtil.get_str(art, "void_edge")
