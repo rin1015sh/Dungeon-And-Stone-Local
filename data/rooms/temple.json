@@ -7,35 +7,75 @@
  "wall": "limestone",
  "regions": [
   {
-   "rect": [0, 2, 10, 9],
+   "rect": [
+    0,
+    2,
+    9,
+    7
+   ],
    "floor": "oak"
   },
   {
-   "rect": [10, 0, 24, 12],
+   "rect": [
+    8,
+    0,
+    20,
+    10
+   ],
    "floor": "oak"
   },
   {
-   "rect": [1, 15, 6, 8],
+   "rect": [
+    1,
+    12,
+    5,
+    6
+   ],
    "floor": "flag"
   },
   {
-   "rect": [1, 24, 6, 12],
+   "rect": [
+    1,
+    17,
+    5,
+    11
+   ],
    "floor": "flag"
   },
   {
-   "rect": [27, 15, 6, 10],
+   "rect": [
+    21,
+    12,
+    6,
+    6
+   ],
    "floor": "parquet"
   },
   {
-   "rect": [27, 26, 6, 10],
+   "rect": [
+    21,
+    18,
+    6,
+    10
+   ],
    "floor": "oak"
   },
   {
-   "rect": [0, 37, 26, 16],
+   "rect": [
+    0,
+    29,
+    20,
+    12
+   ],
    "floor": "dark"
   },
   {
-   "rect": [26, 37, 8, 16],
+   "rect": [
+    20,
+    29,
+    8,
+    12
+   ],
    "floor": "dark"
   }
  ],
@@ -109,18 +149,6 @@
    "shape": "lectern",
    "color": "#8a6a44"
   },
-  "o": {
-   "name_ko": "원형 상감 바닥",
-   "kind": "decor",
-   "style": "mosaic",
-   "color": "#7a7a84"
-  },
-  "O": {
-   "name_ko": "장미 문양 원판",
-   "kind": "decor",
-   "style": "rosette",
-   "color": "#9a9aa8"
-  },
   "p": {
    "name_ko": "긴 의자",
    "kind": "furniture",
@@ -184,12 +212,6 @@
    "color": "#5a3e28",
    "top": "cloth"
   },
-  "x": {
-   "name_ko": "궤짝",
-   "kind": "furniture",
-   "shape": "crate",
-   "color": "#5a4430"
-  },
   "K": {
    "name_ko": "고해실",
    "kind": "furniture",
@@ -240,18 +262,6 @@
    "shape": "bell",
    "color": "#a88a3a"
   },
-  "q": {
-   "name_ko": "종 줄",
-   "kind": "decor",
-   "style": "rope",
-   "color": "#8a7a5a"
-  },
-  "f": {
-   "name_ko": "비둘기 깃털·먼지",
-   "kind": "decor",
-   "style": "feathers",
-   "color": "#8a8478"
-  },
   "e": {
    "name_ko": "촛대",
    "kind": "furniture",
@@ -289,12 +299,6 @@
    "style": "pegs",
    "color": "#e8e0cc"
   },
-  "a": {
-   "name_ko": "마른 꽃 줄",
-   "kind": "walldeco",
-   "style": "garland",
-   "color": "#9a4a5a"
-  },
   "P": {
    "name_ko": "꽃잎",
    "kind": "decor",
@@ -309,119 +313,151 @@
   }
  },
  "rows": [
-  "##################################",
-  "###########RRRSJGGGGGGGGJSRRRMMMM#",
-  "###########RRRSJGGGGGGGGJSRRRMMMM#",
-  "##WWWWWW###9..bbb..bbbbb..bbb...9#",
-  "##WWWWWW###......m......m..`.....#",
-  "#(......(##..`.......@........8..#",
-  "#...gg...##.rrrrrrrrrrrrrrrrrr..8#",
-  "#.).gg...##.zzzzzzzzzzzzzzzzzz...#",
-  "#....qfff//.zzzzzzzzzzzzzzzzzz...#",
-  "#2....fff##.zzzzzzzzzzzzzzzzzz...#",
-  "###########.zzzzzzzzzzzzzzzzzz...#",
-  "###############################H##",
-  "###############################H##",
-  "##EEEES#SNNVJGGGGGGGGJVNNS#SRRRHj#",
-  "##EEEES#SNNVJGGGGGGGGJVNNS#SRRRHj#",
-  "#u....U#..ddddddd@dddddd..#ww....#",
-  "#u....U#.CdddkdAAAAdkdddC.#.....x#",
-  "#.P.ZP.#IZddddddddddddddZI#8..@..#",
-  "#.YYYY.#...ssssssssssss...#.....0#",
-  "#.ZP.../.8......oo....L.8.#.tt...#",
-  "#....P.#.......oOoo.......+......#",
-  "#..cc..#......oooooo......#...`.e#",
-  "#5....5#.....OooOOooO.....#......#",
-  "########......oooooo......#.....5#",
-  "#*....8#.......oOoo.......#22...9#",
-  "#..P..Z#I.......oo.......I########",
-  "#...FF.#......P====P......#8.....#",
-  "#b..FF.#.pppppp====pppppp.#.KK.KK#",
-  "#b...../..@....====.......#.KK.KK#",
-  "#b.....#.pppppp====pppppp.#......#",
-  "#......#.....@.====......./.....8#",
-  "#8...$.#.pppppp====pppppp.#...Z..#",
-  "#......#.......====.......#......#",
-  "#.^^..4#Ipppppp====ppppppI#.bbbb.#",
-  "#.^^...#5......====..@....#......#",
-  "#.^^...#.(6....====.....45#6....5#",
-  "##^^############DD################",
-  "##^^##############################",
-  "#B^^BBBBBBBBBBBBB#BBBBBBB#BBBBBBB#",
-  "#B^^BBBBBBBBBBBBB#BBBBBBB#BBBBBBB#",
-  "#.......8.......(#......(#.u.U.u(#",
-  "#.......)...y....#.eZ....#.......#",
-  "#.....QQ..QQ..QQ.#.......#......8#",
-  "#...eZ........Ze.#..TTT..#.......#",
-  "#....I...I...I...#..TTT../...)...#",
-  "#................X.......#.......#",
-  "#u....QQ..QQ..QQ.#...)...#..QQ...#",
-  "#................#yyyyyy.#.......#",
-  "#....I...I..)I..u#yyyyyy.#......8#",
-  "#..y...........e.#yyyyyy.#....y..#",
-  "#.....QQ..QQ..QQ.#.......#.y.....#",
-  "#(..............(#u.....u#(U.e.u.#",
-  "##################################"
+  "############################",
+  "#########RRSJGGGGGJSRRRMMMM#",
+  "#########RRSJGGGGGJSRRRMMMM#",
+  "##WWWWW##9.bbb.bbb..bbb....#",
+  "##WWWWW##....m....m........#",
+  "#(......#.......@.......8..#",
+  "#..gg...#.rrrrrrrrrrrrrr..8#",
+  "#..gg.../.zzzzzzzzzzzzzz...#",
+  "#########.zzzzzzzzzzzzzz...#",
+  "#########################H##",
+  "##EEES#SNVJGGGGGJVNS#SRRRHj#",
+  "##EEES#SNVJGGGGGJVNS#SRRRHj#",
+  "#u...U#.ddddd@dddd..#ww....#",
+  "#u...U#.CdkdAAAkddC.#......#",
+  "#..Z..#IddddddddddZI#8..@..#",
+  "#.YYY./.8........L8.#.tt...#",
+  "#.cc..#.............+.....e#",
+  "#######.............#......#",
+  "#..FF.#I...........I########",
+  "#b.FF.#.pppp...pppp.#.KK.KK#",
+  "#b..../.@...........#.KK.KK#",
+  "#b....#.pppp...pppp.#......#",
+  "#.....#...@........./.....8#",
+  "#8..$.#.pppp...pppp.#......#",
+  "#.....#.............#......#",
+  "#.^...#Ipppp...ppppI#.bbbb.#",
+  "#.^...#5........@...#......#",
+  "#.^...#...........4.#.....5#",
+  "##^##########D##############",
+  "##^#########################",
+  "#B^BBBBBBBBBBBBBBBB#BBBBBBB#",
+  "#B^BBBBBBBBBBBBBBBB#BBBBBBB#",
+  "#......8.....#.....#.u.U.u(#",
+  "#............#.e...#.......#",
+  "#..e.QQ.QQ.QQ#.TTT.#......8#",
+  "#...I...I.I..#.TTT./...)...#",
+  "#............X.....#.......#",
+  "#u..IQQ.QQIQQ#.....#..QQ..8#",
+  "#...........e#.....#.......#",
+  "#....QQ.QQ.QQ#u...u#(U.e.u.#",
+  "############################"
  ],
- "start": [17.0, 35.3],
+ "start": [
+  13.0,
+  27.3
+ ],
  "npcs": [
   {
-   "at": [21, 5],
+   "at": [
+    16,
+    5
+   ],
    "name_ko": "성가대원",
    "look": "res://assets/actors/looks/n3_priest_h8.webp",
    "staff": false,
    "act": "read",
-   "face": [0, 1],
+   "face": [
+    0,
+    1
+   ],
    "talk": "chorister"
   },
   {
-   "at": [17, 15],
+   "at": [
+    13,
+    12
+   ],
    "name_ko": "신관",
    "look": "res://assets/actors/looks/n3_priest_h9.webp",
    "staff": true,
    "act": "pray",
-   "face": [0, 1]
+   "face": [
+    0,
+    1
+   ]
   },
   {
-   "at": [10, 28],
+   "at": [
+    8,
+    20
+   ],
    "name_ko": "기도하는 신도",
    "look": "res://assets/actors/looks/n4_merchant_h0.webp",
    "staff": false,
    "act": "pray",
-   "face": [0, -1],
+   "face": [
+    0,
+    -1
+   ],
    "talk": "believer"
   },
   {
-   "at": [21, 34],
+   "at": [
+    16,
+    26
+   ],
    "name_ko": "수도사",
    "look": "res://assets/actors/looks/n8_acolyte_h1.webp",
    "staff": false,
    "act": "sweep",
-   "face": [0, 1],
+   "face": [
+    0,
+    1
+   ],
    "talk": "monk"
   },
   {
-   "at": [30, 17],
+   "at": [
+    24,
+    14
+   ],
    "name_ko": "수도사",
    "look": "res://assets/actors/looks/n8_acolyte_h2.webp",
    "staff": false,
    "act": "read",
-   "face": [0, 1],
+   "face": [
+    0,
+    1
+   ],
    "talk": "monk"
   },
   {
-   "at": [13, 30],
+   "at": [
+    10,
+    22
+   ],
    "name_ko": "신도",
    "look": "res://assets/actors/looks/h11_wayfarer_h3.webp",
    "staff": false,
    "act": "pray",
-   "face": [0, -1],
+   "face": [
+    0,
+    -1
+   ],
    "talk": "believer"
   }
  ],
  "spots": [
   {
-   "rect": [15, 15, 4, 2],
+   "rect": [
+    12,
+    12,
+    3,
+    2
+   ],
    "activities": [
     "temple_remove_essence"
    ],
@@ -429,7 +465,12 @@
    "name_ko": "신관"
   },
   {
-   "rect": [2, 18, 4, 1],
+   "rect": [
+    2,
+    15,
+    3,
+    1
+   ],
    "activities": [
     "temple_service"
    ]
@@ -437,86 +478,86 @@
  ],
  "names": [
   [
-   4,
+   3,
    5,
    "종탑",
    "room"
   ],
   [
-   4,
+   3,
    6,
    "큰 종 — 창밖으로 라비기온 지붕",
    "label"
   ],
   [
-   21,
+   16,
    4,
    "성가대석",
    "room"
   ],
   [
-   20,
-   8,
+   15,
+   7,
    "트인 곳 — 아래로 예배당",
    "label"
   ],
   [
-   16,
-   25,
+   13,
+   18,
    "예배당",
    "room"
   ],
   [
-   3,
-   17,
+   2,
+   14,
    "봉헌 곁방",
    "room"
   ],
   [
-   3,
-   29,
+   2,
+   21,
    "세례실",
    "room"
   ],
   [
-   29,
-   17,
+   23,
+   14,
    "제의실",
    "room"
   ],
   [
-   29,
-   31,
+   23,
+   23,
    "고해실",
    "room"
   ],
   [
-   17,
    13,
+   10,
    "색유리 세 폭",
    "label"
   ],
   [
-   13,
-   22,
+   10,
+   17,
    "원형 상감",
    "label"
   ],
   [
-   9,
-   40,
+   8,
+   32,
    "납골당",
    "room"
   ],
   [
-   21,
-   41,
+   16,
+   33,
    "봉인된 묘실",
    "room"
   ],
   [
-   29,
-   41,
+   23,
+   33,
    "유골 안치실",
    "room"
   ]

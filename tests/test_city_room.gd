@@ -60,7 +60,7 @@ func test_every_facility_is_a_room_with_reachable_spots() -> void:
 
 
 ## 복층은 한 지도(CT66): 건물마다 계단·사다리 칸이 있고, 입구에서 그 줄을 따라 위층·지하까지 걸어서 간다.
-## 잠긴 문은 연 셈으로(도서관은 1층뿐 — 지하 서고는 희귀서 입고 순에만 열린다, 사용자 2026-10-31 "도서관 2층 없애기").
+## 잠긴 문은 연 셈으로. 도서관은 1층뿐(2026-10-31 2층 · 2026-11-01 지하 없앰 — 희귀서는 1층 잠긴 작은 서고, 입고 순에만 열린다). 실내는 2026-11-01 절반으로 줄였다.
 func test_floors_connect_in_one_map() -> void:
 	var s := _state()
 	s.happenings.assign(db.get_collection("city_events").keys())
@@ -75,8 +75,11 @@ func test_floors_connect_in_one_map() -> void:
 				links += 1
 			top = mini(top, c.y)
 			bottom = maxi(bottom, c.y)
+		if f == "library":  # 도서관은 1층뿐(사용자 2026-11-01 "도서관은 지하실 없애")
+			assert_eq(links, 0, "도서관은 계단이 없다")
+			continue
 		assert_true(links > 0, f + " 계단·사다리로 층을 잇는다")
-		assert_true(bottom - top > 18, f + " 입구에서 다른 층까지 걸어서 닿는다(%d줄)" % (bottom - top))
+		assert_true(bottom - top > 12, f + " 입구에서 다른 층까지 걸어서 닿는다(%d줄)" % (bottom - top))
 
 
 func test_library_shelves_desk_and_locked_archive() -> void:
@@ -95,7 +98,7 @@ func test_library_shelves_desk_and_locked_archive() -> void:
 	var locked := 0
 	for c: Vector2i in _reach(r):
 		locked += 1 if r.kind_at(c) == "locked" else 0
-	assert_eq(_reach(r).size() < _reach_open(s).size(), true, "잠긴 서고 문 — 희귀서 입고 순에만 지하 서고로")
+	assert_eq(_reach(r).size() < _reach_open(s).size(), true, "잠긴 서고 문 — 희귀서 입고 순에만 작은 서고로")
 
 
 func _reach_open(s: CityState) -> Dictionary:

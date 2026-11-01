@@ -7,15 +7,30 @@
  "wall": "brick",
  "regions": [
   {
-   "rect": [0, 0, 28, 8],
+   "rect": [
+    0,
+    0,
+    17,
+    6
+   ],
    "floor": "oak"
   },
   {
-   "rect": [1, 11, 8, 10],
+   "rect": [
+    1,
+    8,
+    6,
+    8
+   ],
    "floor": "flag"
   },
   {
-   "rect": [1, 22, 26, 5],
+   "rect": [
+    1,
+    17,
+    15,
+    4
+   ],
    "floor": "dirt"
   }
  ],
@@ -40,24 +55,11 @@
    "shape": "anvil",
    "color": "#4a4c50"
   },
-  "Q": {
-   "name_ko": "담금 통",
-   "kind": "furniture",
-   "shape": "barrel",
-   "color": "#3a4a54",
-   "variant": "water"
-  },
   "g": {
    "name_ko": "숫돌 바퀴",
    "kind": "furniture",
    "shape": "wheel",
    "color": "#7a7a72"
-  },
-  "k": {
-   "name_ko": "석탄 더미",
-   "kind": "furniture",
-   "shape": "pile",
-   "color": "#2a2a2a"
   },
   "R": {
    "name_ko": "쇠막대 걸이",
@@ -95,35 +97,11 @@
    "style": "hood",
    "color": "#3a2a22"
   },
-  "L": {
-   "name_ko": "장작 더미",
-   "kind": "furniture",
-   "shape": "pile",
-   "color": "#6a4a2a"
-  },
   "p": {
    "name_ko": "물 펌프",
    "kind": "furniture",
    "shape": "pump",
    "color": "#4a5a64"
-  },
-  "j": {
-   "name_ko": "버린 쇠",
-   "kind": "decor",
-   "style": "scrap",
-   "color": "#5a5450"
-  },
-  "o": {
-   "name_ko": "광석 자루",
-   "kind": "furniture",
-   "shape": "sack",
-   "color": "#6a5a4a"
-  },
-  "i": {
-   "name_ko": "잉곳 더미",
-   "kind": "furniture",
-   "shape": "pile",
-   "color": "#8a8070"
   },
   "y": {
    "name_ko": "나무 울타리",
@@ -137,12 +115,6 @@
    "shape": "table",
    "color": "#6a4a2e",
    "top": "cloth"
-  },
-  "c": {
-   "name_ko": "궤짝",
-   "kind": "furniture",
-   "shape": "crate",
-   "color": "#5a4430"
   },
   "K": {
    "name_ko": "앞치마 걸이",
@@ -177,76 +149,102 @@
   }
  },
  "rows": [
-  "############################",
-  "#CC##WW###KKKK#####WW####CC#",
-  "#CC##WW###KKKK#####WW####CC#",
-  "#77.2.......oo.......ii.0.(#",
-  "#7..............ooo..ii....#",
-  "#.........).....ooo....`...#",
-  "#.......%%................4#",
-  "#########################H##",
-  "#########################H##",
-  "##sssssss#Bffff#TTTT#PPPBH##",
-  "##sssssss#Bffff#TTTT#PPPBH##",
-  "#?......?#?FFFFw..!!.kk..H.#",
-  "#.V...V..#.FFFF......kk....#",
-  "#.V...V..#.}.}.}........R..#",
-  "#.V...V..#.......@.@Z...R..#",
-  "#......../......AA.Q....R..#",
-  "#&.......#.....4..Z.......7#",
-  "#..M@M.M.#.1.g.Z..........7#",
-  "#........#........]......oo#",
-  "#..GGGG..#..........ii...oo#",
-  "#2......2#2.........ii....6#",
-  "##############+#############",
-  "#_______________________y_%#",
-  "#_LLL!______]_____jjj___y_%#",
-  "#_LLL!__4p________jjj___y__#",
-  "#______}_cc_____]__Z_oo____#",
-  "#_____@__cc________________#",
-  "#############DD#############"
+  "#################",
+  "#CC#WW##KK##W####",
+  "#CC#WW##KK##W####",
+  "#772..........0.#",
+  "#7.............4#",
+  "###############H#",
+  "##sssss#BffTTPBH#",
+  "##sssss#BffTTPBH#",
+  "#......#FFF....H#",
+  "#.V..V.#FFF.....#",
+  "#.V..V.#}.....R.#",
+  "#.V..V.#...@@.R.#",
+  "#&...../..AA..R.#",
+  "#.M@M.M#1g......#",
+  "#......#...]....#",
+  "#2GGGG.#.......6#",
+  "##########+######",
+  "#_____________y_#",
+  "#___!_________y_#",
+  "#___!_4p______y_#",
+  "#____@__________#",
+  "#########DD######"
  ],
- "start": [14.0, 26.3],
+ "start": [
+  10.0,
+  20.3
+ ],
  "npcs": [
   {
-   "at": [17, 14],
+   "at": [
+    11,
+    11
+   ],
    "name_ko": "대장장이",
    "look": "res://assets/actors/looks/n5_smith_h4.webp",
    "staff": true,
    "act": "hammer",
-   "face": [0, 1]
+   "face": [
+    0,
+    1
+   ]
   },
   {
-   "at": [19, 14],
+   "at": [
+    12,
+    11
+   ],
    "name_ko": "견습생",
    "look": "res://assets/actors/looks/n10_apprentice_h5.webp",
    "staff": false,
    "act": "quench",
-   "face": [0, 1],
+   "face": [
+    0,
+    1
+   ],
    "talk": "apprentice"
   },
   {
-   "at": [6, 26],
+   "at": [
+    5,
+    20
+   ],
    "name_ko": "견습생",
    "look": "res://assets/actors/looks/n10_apprentice_h6.webp",
    "staff": false,
    "act": "sweep",
-   "face": [0, 1],
+   "face": [
+    0,
+    1
+   ],
    "talk": "apprentice"
   },
   {
-   "at": [4, 17],
+   "at": [
+    3,
+    13
+   ],
    "name_ko": "손님",
    "look": "res://assets/actors/looks/h3_coat_h7.webp",
    "staff": false,
    "act": "idle",
-   "face": [0, -1],
+   "face": [
+    0,
+    -1
+   ],
    "talk": "customer"
   }
  ],
  "spots": [
   {
-   "rect": [16, 14, 2, 2],
+   "rect": [
+    10,
+    11,
+    2,
+    2
+   ],
    "activities": [
     "smithy_trade"
    ],
@@ -255,26 +253,26 @@
  ],
  "names": [
   [
-   20,
-   6,
+   12,
+   4,
    "다락 창고",
    "room"
   ],
   [
-   18,
-   18,
+   11,
+   14,
    "작업장",
    "room"
   ],
   [
-   4,
-   19,
+   3,
+   15,
    "진열실",
    "room"
   ],
   [
-   12,
-   25,
+   9,
+   20,
    "뒷마당",
    "room"
   ]

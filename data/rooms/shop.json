@@ -7,11 +7,21 @@
  "wall": "timber",
  "regions": [
   {
-   "rect": [0, 0, 24, 8],
+   "rect": [
+    0,
+    0,
+    17,
+    6
+   ],
    "floor": "oak"
   },
   {
-   "rect": [17, 11, 6, 12],
+   "rect": [
+    11,
+    8,
+    5,
+    9
+   ],
    "floor": "oak"
   }
  ],
@@ -50,12 +60,6 @@
    "shape": "sack",
    "color": "#8a7a5a"
   },
-  "a": {
-   "name_ko": "통",
-   "kind": "furniture",
-   "shape": "barrel",
-   "color": "#7a5a36"
-  },
   "q": {
    "name_ko": "밧줄·가방 걸이",
    "kind": "furniture",
@@ -82,28 +86,11 @@
    "shape": "desk",
    "color": "#6a4a2e"
   },
-  ";": {
-   "name_ko": "짚",
-   "kind": "decor",
-   "style": "straw",
-   "color": "#a8945c"
-  },
   "b": {
    "name_ko": "상인 침상",
    "kind": "furniture",
    "shape": "bed",
    "color": "#7a5a44"
-  },
-  "j": {
-   "name_ko": "잡동사니",
-   "kind": "furniture",
-   "shape": "pile",
-   "color": "#6a6050"
-  },
-  "v": {
-   "name_ko": "문간 깔개",
-   "kind": "rug",
-   "color": "#5a4a6a"
   },
   "U": {
    "name_ko": "물건 선반",
@@ -130,27 +117,6 @@
    "style": "cobweb",
    "color": "#d8d8d0"
   },
-  "i": {
-   "name_ko": "양파 바구니",
-   "kind": "furniture",
-   "shape": "basket",
-   "color": "#8a6a3a",
-   "variant": "onions"
-  },
-  "k": {
-   "name_ko": "감자 바구니",
-   "kind": "furniture",
-   "shape": "basket",
-   "color": "#8a6a3a",
-   "variant": "potatoes"
-  },
-  "l": {
-   "name_ko": "양털 바구니",
-   "kind": "furniture",
-   "shape": "basket",
-   "color": "#8a6a3a",
-   "variant": "wool"
-  },
   "Q": {
    "name_ko": "톱밥",
    "kind": "decor",
@@ -159,70 +125,95 @@
   }
  },
  "rows": [
-  "########################",
-  "#CCAAAA######WW##NNNNCC#",
-  "#CCAAAA######WW##NNNNCC#",
-  "#77..2..4.bb0.......x..#",
-  "#(.............jjj.....#",
-  "#.....`..1..&..jjj.....#",
-  "#%.ss........9....)....#",
-  "######################H#",
-  "######################H#",
-  "##SSSSSSSSSSSSS##CCNNNH#",
-  "##SSSSSSSSSSSSS##CCNNNH#",
-  "#5.........&..77#(....H#",
-  "#...2..@.<...q..#.xxx..#",
-  "#...ccccccc.....+.xx...#",
-  "#i....{......q..#.....s#",
-  "#3lQ....].`.....#.....s#",
-  "#k....n........*#.KK9..#",
-  "#.@TT1...TT.PP.*#.1`..%#",
-  "#..TT....TT.PP..#.....%#",
-  "#..........Q...4#*.;;;.#",
-  "#s.UU.....@...a.#..;;;.#",
-  "#s.UU.vvvv..-.a.#..;;;.#",
-  "#.....vvvv......#77...2#",
-  "#######DD###############"
+  "#################",
+  "#CAA####WW#NNNN##",
+  "#CAA####WW#NNNN##",
+  "#..2.1bb......x.#",
+  "#.......9.......#",
+  "###############H#",
+  "#SSSSSSSSS###NNH#",
+  "#SSSSSSSSS###NNH#",
+  "#5.....&..#....H#",
+  "#..2@<..q.#.xxx.#",
+  "#..cccc...+.xx..#",
+  "#.......q.#....s#",
+  "#@TT.TTPP.#.KK.s#",
+  "#.TT.TTPP.#.....#",
+  "#........4#.....#",
+  "#sUU..@...#.....#",
+  "#sUU......#77...#",
+  "####D############"
  ],
- "start": [8.0, 22.3],
+ "start": [
+  4.0,
+  16.3
+ ],
  "npcs": [
   {
-   "at": [7, 12],
+   "at": [
+    4,
+    9
+   ],
    "name_ko": "상점 주인",
    "look": "res://assets/actors/looks/n4_merchant_h1.webp",
    "staff": true,
    "act": "count",
-   "face": [0, 1]
+   "face": [
+    0,
+    1
+   ]
   },
   {
-   "at": [10, 20],
+   "at": [
+    6,
+    15
+   ],
    "name_ko": "손님",
    "look": "res://assets/actors/looks/h3_coat_h2.webp",
    "staff": false,
    "act": "idle",
-   "face": [0, -1],
+   "face": [
+    0,
+    -1
+   ],
    "talk": "customer"
   },
   {
-   "at": [2, 17],
+   "at": [
+    1,
+    12
+   ],
    "name_ko": "손님",
    "look": "res://assets/actors/looks/h11_wayfarer_h3.webp",
    "staff": false,
    "act": "idle",
-   "face": [1, 0],
+   "face": [
+    1,
+    0
+   ],
    "talk": "customer"
   }
  ],
  "spots": [
   {
-   "rect": [4, 12, 7, 2],
+   "rect": [
+    3,
+    9,
+    4,
+    2
+   ],
    "activities": [
     "shop_trade"
    ],
    "name_ko": "상점 주인"
   },
   {
-   "rect": [12, 17, 2, 2],
+   "rect": [
+    7,
+    12,
+    2,
+    2
+   ],
    "activities": [
     "shop_peddler"
    ],
@@ -231,26 +222,26 @@
  ],
  "names": [
   [
-   16,
+   10,
    3,
    "다락",
    "room"
   ],
   [
-   8,
-   20,
+   4,
+   15,
    "매장",
    "room"
   ],
   [
-   19,
-   17,
+   13,
+   12,
    "뒷창고",
    "room"
   ],
   [
+   7,
    12,
-   17,
    "노점 자리",
    "label"
   ]
