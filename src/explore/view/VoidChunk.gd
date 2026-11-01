@@ -3,6 +3,7 @@ extends Node2D
 ## 청크 하나의 낭떠러지·구덩이(void 타일): 탐험한 허공 칸과 허공에 닿은 땅 칸에 절벽 셰이더(Abyss — abyss.gdshader)를 칠한다.
 ## 셰이더가 땅 가장자리를 들쭉날쭉 깎고 절벽 면·깊은 어둠을 세계 좌표로 그린다(화면 고정 그림 없음 — 칸 모양 경계가 보이지 않게).
 ## 허공 위 나무 발판(art.void_edge "beam")에는 들보 아래 받침 기둥(이 노드 — 셰이더 위)과 난간(북쪽 = 캐릭터 뒤, 남쪽 = 앞)을 얹는다.
+## 낮은 물(타일 art.sunk — 핏물 해자) 위를 건너는 발판(도개교)도 같다: 셰이더가 없는 곳이라 남쪽 들보 면과 물 위 그림자를 직접 그린다.
 ## 바닥·데칼 위(void_layer z). 빛은 바닥과 같게 FloorView.vertex_mul.
 
 const EDGE := 3  # 지도 끝에서 이 칸 수 안의 땅도 칠한다(abyss.gdshader edge_fade보다 크게)
@@ -15,6 +16,8 @@ var _outer: Array[Rect2i] = []        # 지도 밖 칸 묶음(가장 가까운 �
 var _outer_at: Array[Vector2i] = []   # 묶음마다 가장 가까운 지도 끝 칸(허공이나 길) — 셰이더가 그 칸 값을 이어 쓴다
 var _beams_n: Array[Vector2i] = []    # 북쪽이 허공인 나무 발판 칸
 var _beams_s: Array[Vector2i] = []    # 남쪽이 허공인 나무 발판 칸
+var _decks: Array[Vector2i] = []      # 남쪽이 낮은 물인 나무 발판 칸(들보 면·그림자를 직접 — 허공은 셰이더가 그린다, MoatDeck)
+var _decks_n: Array[Vector2i] = []    # 북쪽이 낮은 물인 나무 발판 칸(가장자리 먹선)
 var _under: Node2D   # 받침 기둥(셰이더 위, 같은 z)
 var _rail_back: Node2D   # 북쪽 난간(캐릭터 뒤)
 var _rail_front: Node2D  # 남쪽 난간(캐릭터 앞)
@@ -42,6 +45,13 @@ func setup(p_view: FloorView, p_cells: Rect2i) -> void:
 						_beams_n.append(p)
 					if _void_at(map, p + Vector2i(0, 1)):
 						_beams_s.append(p)
+			if d.void_edge == "beam" and not d.is_void:  # 낮은 물 위 다리(도개교)
+				if _sunk_at(map, p + Vector2i(0, -1)):
+					_beams_n.append(p)
+					_decks_n.append(p)
+				if _sunk_at(map, p + Vector2i(0, 1)):
+					_beams_s.append(p)
+					_decks.append(p)
 	_find_outer(map)
 	if not has_void():
 		return
@@ -54,7 +64,7 @@ func setup(p_view: FloorView, p_cells: Rect2i) -> void:
 
 
 func has_void() -> bool:
-	return not _quads.is_empty() or not _outer.is_empty()
+	return not _quads.is_empty() or not _outer.is_empty() or not _beams_n.is_empty() or not _beams_s.is_empty()
 
 
 ## 이 청크가 지도 끝에 닿아 있으면 그 바깥 MARGIN칸 중 가장 가까운 지도 칸이 벽이 아닌 칸.
@@ -152,6 +162,7 @@ func _quad(x: float, y: float, w: float, h: float) -> void:
 
 
 ## 발판 아래 받침 기둥: 남쪽이 허공인 발판 칸 every칸마다 들보 아래로 내려가며 어둠에 묻히는 기둥 + 사선 버팀대.
+## 낮은 물 위 발판은 그 전에 물 위 그림자, 뒤에 들보 면(허공 위는 셰이더가 그린다)을 — 기둥이 들보 면 뒤로.
 func _draw_under() -> void:
 	var map := view.map
 	var t := float(view.tile)
@@ -159,6 +170,7 @@ func _draw_under() -> void:
 	var every := maxi(2, JsonUtil.get_int(rail, "support_every", 4))
 	var wood := Abyss.color(view.art, "beam_color", "#4a3824")
 	var depth := JsonUtil.get_float(rail, "support_depth", 2.6) * t
+	MoatDeck.shadows(self, t, rail)
 	for p in _beams_s:
 		if map.explored[p.y * map.width + p.x] == 0 or posmod(p.x, every) != 0:
 			continue
@@ -186,7 +198,9 @@ func _draw_under() -> void:
 		_cols[2] = cb.darkened(0.4)
 		_cols[3] = cb.darkened(0.4)
 		_batch.add(_pts, _cols)
+	MoatDeck.faces(self, t, rail, wood)
 	_batch.flush(_under)
+	MoatDeck.ink(self, _under, t, rail, wood)
 
 
 ## 난간: edge = 0(칸 북쪽 가장자리) / 1(남쪽). every칸마다 기둥, 그 사이에 위·가운데 줄(밧줄·가로대).
@@ -241,6 +255,10 @@ static func _near_explored(map: FloorMap, p: Vector2i) -> bool:
 
 static func _void_at(map: FloorMap, q: Vector2i) -> bool:
 	return map.in_bounds(q) and map.def_at(q).is_void
+
+
+static func _sunk_at(map: FloorMap, q: Vector2i) -> bool:
+	return map.in_bounds(q) and map.def_at(q).sunk
 
 
 ## 지도 끝 EDGE칸 안(나가는 길 — 셰이더가 어둠으로 녹인다).

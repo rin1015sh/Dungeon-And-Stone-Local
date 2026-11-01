@@ -41,6 +41,8 @@ static func _tiles(v: ValidatorBase) -> void:
 				v.err(w + ".art", "shape는 \"smooth\"(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선) · 벽만 \"round\"(둥근 윤곽 + 벽 그림 윗면)·\"bevel\"(계단만 곧은 사선)")
 		if JsonUtil.get_bool(t, "rise") and (not JsonUtil.get_bool(t, "void") or JsonUtil.get_bool(t, "walkable")):
 			v.err(w, "rise(솟은 외곽)는 void이고 걸을 수 없는 타일만")
+		if JsonUtil.get_bool(art, "sunk") and (JsonUtil.get_str(t, "kind") != "floor" or JsonUtil.get_bool(t, "walkable")):
+			v.err(w + ".art", "sunk(땅보다 낮은 물 — 위를 건너는 발판에 들보 면·그림자)는 걸을 수 없는 바닥 타일만")
 		var ve := JsonUtil.get_str(art, "void_edge")
 		if not ve.is_empty() and (ve != "beam" or JsonUtil.get_str(t, "kind") != "floor"):
 			v.err(w + ".art", "void_edge는 바닥 타일의 \"beam\"만(허공 위 나무 발판 — 들보 면·난간, Abyss)")

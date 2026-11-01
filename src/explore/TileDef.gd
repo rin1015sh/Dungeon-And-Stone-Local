@@ -37,6 +37,7 @@ var stand_under: String = ""    ## 소품 밑 바닥 타일(없으면 층 기본
 var is_void: bool = false       ## 낭떠러지·구덩이(균열 — "void": true): 바닥을 그리지 않고 절벽 면·어둠을 칠한다(Abyss)
 var is_rise: bool = false       ## 솟은 외곽(void + "rise": true): 낭떠러지 대신 위로 솟은 벽·절벽 면과 그 너머 풍경(Abyss rise — 균열 지도 바깥 둘레)
 var void_edge: String = ""      ## 허공에 닿는 가장자리(art.void_edge): "" = 들쭉날쭉 깎인 땅, "beam" = 나무 발판(곧은 들보 면 + 난간)
+var sunk: bool = false          ## 땅보다 낮은 물(art.sunk — 핏물 해자): 그 위를 건너는 나무 발판(void_edge "beam")은 낭떠러지 위처럼 들보 면·그림자·받침·난간(VoidChunk)
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
@@ -69,6 +70,7 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.art_salt = t.id.hash()
 	t.art_shape = JsonUtil.get_str(art, "shape")
 	t.void_edge = JsonUtil.get_str(art, "void_edge")
+	t.sunk = JsonUtil.get_bool(art, "sunk")
 	var prop := JsonUtil.get_dict(art, "prop")
 	t.prop_sheet = JsonUtil.get_str(prop, "sheet")
 	t.prop_cell = JsonUtil.get_int(prop, "cell", 0)
