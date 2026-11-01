@@ -160,6 +160,8 @@ static func is_face(kind: Callable, x: int, y: int) -> bool:
 	if not below in WALLISH:
 		return true
 	var below2: String = kind.call(x, y + 2)
+	if below2 == "void" and below == "wall":  # 맨 아래 바깥벽(윗면) 바로 위 옆벽 끝 — 윗면으로 이어 모서리가 끊기지 않게
+		return false
 	return below == "walldeco" or (not below2 in WALLISH and str(kind.call(x, y - 1)) in WALLISH)
 
 
