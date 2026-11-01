@@ -72,22 +72,33 @@
   "ai": [
     {
       "if": "foe_status",
+      "use": "blood_lick",
+      "status": "bleeding",
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.5
+        }
+      ],
+      "target": "with_status",
+      "target_status": "bleeding"
+    },
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "wolf_blade_graze"
+    },
+    {
+      "if": "foe_status",
       "use": "blood_rending_fang",
       "status": "bleeding",
       "not": true,
       "target": "without_status",
-      "target_status": "bleeding"
-    },
-    {
-      "if": "foe_status",
-      "use": "blood_lick",
-      "status": "bleeding",
-      "target": "with_status",
       "target_status": "bleeding"
     }
   ],
   "desc_ko": "털끝이 피에 젖은 듯 붉다. 상처 난 먹잇감을 놓지 않는다.",
   "source": "placeholder",
   "drops": [],
-  "notes": "10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 50→34, 근력 9→11, 민첩 19→18, 물리내성 4→12, 항마력 2→6, 정신력 2→4, 무기 7→10"
+  "notes": "AI(2026-11-01 몬스터 스킬 검사): 피 핥기(피 흘리는 적이 있으면 반쯤) → 칼날 스치기(30%) → 찢는 이빨 — 전에는 한 명이라도 피를 안 흘리면 늘 찢는 이빨이라 피 핥기가 드물고 칼날 스치기는 규칙이 없어 쓰지 않았다 · 10층 곡선으로 다시 매김(2026-10-25, C18 — 9등급 일반 기준): 생명력 50→34, 근력 9→11, 민첩 19→18, 물리내성 4→12, 항마력 2→6, 정신력 2→4, 무기 7→10"
 }

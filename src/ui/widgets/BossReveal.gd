@@ -6,8 +6,8 @@ extends Control
 ##   ② 카메라가 보스 쪽으로 천천히 옮겨 간다
 ##   ③ 보스가 깨어나 일어선다: 기다리는 자세(무릎 꿇음·왕좌·웅크림 …)에서 선 자세로 일어서는 칸을 돈다(<id>_rise.webp — 사용자 2026-11-01 "앉아 있다가
 ##      일어서는 그림"), 다 일어서면 하얗게 번쩍 + 화면이 짧게 흔들림 + 소리(sfx boss_reveal — 파일이 없으면 조용). 그 뒤로 맵 그림은 선 채(Group.awake)
-##   ④ 위쪽 띠 아래에 보스 이름(크게)과 가는 선 — 글은 이름뿐(부연설명 없음). 대화창(보스 한 줄)은 아래에 그대로
-##   ⑤ 잠깐 머문 뒤 끝난다. 이어서 화면이 보스 한 줄(explore.boss_notice)을 보이고 Enter 뒤 전투(ExploreScreen._on_encounter).
+##   ④ 잠깐 머문 뒤 끝난다. 이어서 화면이 보스 한 줄(explore.boss_notice)을 보이고 Enter 뒤 전투(ExploreScreen._on_encounter).
+## 화면에 글은 없다 — 보스 이름 글씨·선은 지웠다(사용자 2026-11-01 "보스 이름이 화면에 뜨는 거 삭제", V24).
 ## 수치 = render.json ui.boss_reveal. 오토로드 AudioBus를 쓴다(UI).
 
 signal done
@@ -19,11 +19,9 @@ var _cfg: Dictionary = {}
 var _top: ColorRect
 var _bottom: ColorRect
 var _shade: ColorRect
-var _title: Label
-var _line: ColorRect
 
 
-## 화면 parent 위에 연출을 띄우고 끝날 때까지 기다린다. 연출은 남겨 둔다(띠·이름 — 전투 화면이 덮은 뒤 close()로 걷는다).
+## 화면 parent 위에 연출을 띄우고 끝날 때까지 기다린다. 연출은 남겨 둔다(띠 — 전투 화면이 덮은 뒤 close()로 걷는다).
 ## below = 이 창보다 아래에 깐다(대화창 — 보스 한 줄이 띠 위에 보이게).
 static func play(parent: Control, view: FloorView, group: FieldMonsters.Group, db: GameDatabase, below: Control = null) -> BossReveal:
 	var r := BossReveal.new()
@@ -54,24 +52,6 @@ func _run() -> void:
 	_shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_top = _bar(true)
 	_bottom = _bar(false)
-	_title = UiTheme.label(DataNames.entry(_db, "monsters", _group.boss), "title", "text_title")
-	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title.modulate.a = 0.0
-	add_child(_title)
-	_title.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	_title.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_title.offset_top = bar + _f("title_gap_px", 28.0)
-	_line = ColorRect.new()
-	_line.color = UiTheme.color("text_title")
-	_line.modulate.a = 0.0
-	_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_line)
-	_line.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	var lw := _f("line_width_px", 420.0)
-	_line.offset_left = -lw * 0.5
-	_line.offset_right = lw * 0.5
-	_line.offset_top = bar + _f("title_gap_px", 28.0) + float(UiTheme.metric("title_font_size", 60)) * 1.35
-	_line.offset_bottom = _line.offset_top + 1.0
 	var into := _f("bars_sec", 0.45)
 	var tw := create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tw.tween_property(_top, "offset_bottom", bar, into)
@@ -110,9 +90,6 @@ func _run() -> void:
 	AudioBus.play_sfx("boss_reveal")
 	if cam != null:
 		_shake(cam, cam.position)
-	var show := create_tween().set_parallel(true)
-	show.tween_property(_title, "modulate:a", 1.0, _f("title_fade_sec", 0.5))
-	show.tween_property(_line, "modulate:a", 0.7, _f("title_fade_sec", 0.5))
 	await get_tree().create_timer(_f("hold_sec", 1.3)).timeout
 	if not is_inside_tree():
 		return
@@ -146,6 +123,6 @@ func _shake(cam: Camera2D, at: Vector2, k: float = 1.0) -> void:
 	cam.position = at
 
 
-## 띠·이름을 걷는다(전투 화면이 덮은 뒤).
+## 띠를 걷는다(전투 화면이 덮은 뒤).
 func close() -> void:
 	queue_free()

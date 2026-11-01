@@ -23,6 +23,8 @@ var _still: float = 1.0
 var _last_pos: Vector2 = Vector2.INF
 var _up: bool = false
 var _settled: bool = false
+var _big_ratio: float = 1.3  ## 앞장과 따르는 마리의 키가 이 배보다 차이 나면 옆으로 비켜 선다(render view.pack.big_ratio)
+var _beside: float = 0.6  ## 그때 옆 간격 = 두 몸 폭 평균 × 이 값
 var _rise_sec: float = 0.0  ## 일어서는 데 걸리는 시간(0 = 일어서는 중이 아님 — rise())
 
 
@@ -34,6 +36,8 @@ func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
 	_side = JsonUtil.get_float(pack, "side_px", 16.0)
 	_follow = JsonUtil.get_float(pack, "follow_rate", 6.0)
 	_step = JsonUtil.get_float(pack, "step_offset_sec", 0.13)
+	_big_ratio = JsonUtil.get_float(pack, "big_ratio", 1.3)
+	_beside = JsonUtil.get_float(pack, "beside_k", 0.6)
 	_build()
 
 
@@ -88,7 +92,12 @@ func _target(i: int) -> Vector2:
 	if _members.size() == 2:
 		side = 0.35
 	var k := _unit()
-	return back * row * _spacing * k + perp * side * _side * k
+	var lateral := side * _side * k
+	var s0 := _members[0].size()
+	var si := _members[i].size()
+	if maxf(s0.y, si.y) > minf(s0.y, si.y) * _big_ratio:  # 키가 크게 다르면(데스핀드·타룬바스) 바로 뒤에 서면 몸에 겹쳐 어깨 위에 떠 보였다 — 몸 폭만큼 옆으로 비켜 선다
+		lateral = signf(side) * maxf(absf(lateral), (s0.x + si.x) * 0.5 * _beside)
+	return back * row * _spacing * k + perp * lateral
 
 
 ## 큰 몬스터가 섞이면 간격을 넓힌다(사람 몸 시트 폭 36px = 1).
