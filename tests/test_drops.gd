@@ -38,7 +38,7 @@ func test_take_item_and_essence() -> void:
 	var stone := {"kind": "item", "id": "magic_stone_9", "count": 2, "slot": 0}
 	assert_eq(DropPickup.check(stone, pc), "", "누구나 주울 수 있다")
 	var m := DropPickup.take(stone, pc)
-	assert_eq(str(m["key"]), "reward.loot_by")
+	assert_eq(str(m["key"]), "item.got_by_n", "둘 — 통일된 획득 문구(개수)")
 	assert_eq(pc.inventory.count("magic_stone_9"), 2, "가방에")
 	var ess := {"kind": "essence", "inst": EssenceDrop.make(d, "goblin", "", Rng.new(1)), "slot": 0}
 	assert_eq(DropPickup.check(ess, pc), "", "빈 슬롯이 있으면 흡수할 수 있다")

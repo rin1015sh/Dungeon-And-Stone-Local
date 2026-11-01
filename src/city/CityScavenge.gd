@@ -33,4 +33,4 @@ static func run(state: CityState, pc: PlayerCharacter, spot: Dictionary) -> Dict
 		return {"key": "explore.scavenge_no_room", "args": {"item": name}, "tone": "warn"}
 	state.searched.append(str(spot["key"]))
 	pc.inventory.add(item, 1)
-	return {"key": "explore.scavenge_found", "args": {"tile": tile, "item": name}, "tone": "good"}
+	return {"key": ItemInfo.got_key(1), "args": {"item": name, "n": 1}, "tone": "good"}

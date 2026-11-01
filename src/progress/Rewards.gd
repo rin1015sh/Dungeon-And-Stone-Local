@@ -33,7 +33,7 @@ static func grant(pc: PlayerCharacter, killed: Array[String], rng: Rng, _now_hou
 			var got := pc.inventory.add(str(drop["id"]), want)
 			var item_name := DataNames.entry(db, "items", str(drop["id"]))
 			if got > 0:
-				msgs.append(_m("reward.loot", {"item": item_name, "count": got}, "good"))
+				msgs.append(_m(ItemInfo.got_key(got), {"item": item_name, "n": got}, "good"))
 			if got < want:
 				msgs.append(_m("reward.bag_full", {"item": item_name, "count": want - got, "item_id": str(drop["id"])}, "warn"))
 	if pc.get_level() > before:

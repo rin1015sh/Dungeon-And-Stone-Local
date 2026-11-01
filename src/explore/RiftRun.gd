@@ -439,7 +439,7 @@ func _guardian_drops(s: ExploreSession) -> void:
 		var item := JsonUtil.get_str(dd, "item")
 		if db.has_entry("items", item) and outer.rng.chance(JsonUtil.get_float(dd, "chance")):
 			var got := outer.player.inventory.add(item, 1)
-			s.message.emit("reward.loot" if got > 0 else "reward.bag_full", {"item": DataNames.entry(db, "items", item), "count": 1},
+			s.message.emit(ItemInfo.got_key(1) if got > 0 else "reward.bag_full", {"item": DataNames.entry(db, "items", item), "n": 1, "count": 1},
 				"good" if got > 0 else "warn")
 
 

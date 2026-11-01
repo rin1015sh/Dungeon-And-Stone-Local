@@ -46,7 +46,7 @@ static func run(s: ExploreSession) -> bool:
 		return true
 	s.loot.erase(p)
 	s.player.inventory.add(item, n)
-	s.message.emit("explore.loot_found" if n == 1 else "explore.loot_found_n", {"item": name, "n": n}, "good")
+	s.message.emit(ItemInfo.got_key(n), {"item": name, "n": n}, "good")
 	s.tiles_changed.emit(Rect2i(p, Vector2i.ONE))
 	return true
 

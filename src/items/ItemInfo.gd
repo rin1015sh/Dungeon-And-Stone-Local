@@ -22,6 +22,12 @@ static func stack(db: GameDatabase, id: String) -> int:
 	return maxi(1, JsonUtil.get_int(def(db, id), "stack", 1))
 
 
+## 아이템을 얻었다는 문구 키 하나(사용자 2026-11-01 "아이템 획득 문구 전부 통일"): item.got(_n) — 누가 받았는지 보일 때는 item.got_by(_n).
+## 인자: {"item": 이름, "n": 개수, "who": 받은 사람}.
+static func got_key(n: int, by: bool = false) -> String:
+	return ("item.got_by" if by else "item.got") + ("" if n == 1 else "_n")
+
+
 static func equip(db: GameDatabase, id: String) -> Dictionary:
 	return JsonUtil.get_dict(def(db, id), "equip")
 

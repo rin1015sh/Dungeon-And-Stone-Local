@@ -554,7 +554,7 @@ func _explore_dialog_checks(explore: ExploreScreen) -> void:
 	await _action("wait")
 	await _frames(2)
 	_expect(not dlg.busy() and explore.shade_alpha() > 0.0, "대기 = 글 대신 화면이 잠깐 어두워진다")
-	s.message.emit("field.got", {"item": "x"}, "good")
+	s.message.emit("item.got", {"item": "x"}, "good")
 	await _frames(1)
 	_expect(dlg.busy(), "아이템 획득 = 대화창(Enter)")
 	dlg.clear()

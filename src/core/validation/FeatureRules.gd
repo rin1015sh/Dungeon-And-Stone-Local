@@ -114,7 +114,7 @@ static func _action(v: ValidatorBase, w: String, a: Dictionary) -> void:
 		v.ref(w + ".alert", "monsters", al.get("monster"))
 	if a.has("sound") and not JsonUtil.get_dict(JsonUtil.get_dict(v.db.singletons, "audio"), "sfx").has(JsonUtil.get_str(a, "sound")):
 		v.err(w + ".sound", "'%s'가 data/audio.json sfx에 없다" % a.get("sound"))
-	if a.has("line"):  # 문구는 없어도 된다(얻은 물건은 field.got이 알린다 — UI19)
+	if a.has("line"):  # 문구는 없어도 된다(얻은 물건은 item.got이 알린다 — UI19)
 		_line(v, w + ".line", JsonUtil.get_str(a, "line"), JsonUtil.get_bool(a, "line_zone"))
 	for key: String in ["done", "missing"]:
 		if a.has(key):

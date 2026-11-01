@@ -1,6 +1,6 @@
 class_name ChoicePopup
 extends Control
-## 작은 선택 창(사용자 결정 2026-10-16 — 획득할까? · 누가 받을까?): 질문 한 줄 + 세로 선택지(ChoiceGrid 1열).
+## 작은 선택 창(사용자 결정 2026-10-16 — 획득할까? · 누가 받을까?): 질문 한 줄 + 세로 선택지(ChoiceGrid 1열). 질문이 ""이면 선택지만.
 ## 키: W/S(menu_up/down) 커서, Enter(menu_confirm) 고르기, Esc(pause)는 can_back일 때만 뒤로(-1).
 ## 선택지: {"text", "sub", "enabled", "desc"(못 고르는 이유)}.
 ##   var i: int = await ChoicePopup.ask(parent, "질문", options, can_back, 가리킬 자리)
@@ -38,6 +38,9 @@ func open(title: String, options: Array[Dictionary], can_back: bool, near: Vecto
 	head.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	head.custom_minimum_size.x = UiTheme.metric("popup_width", 340)
 	v.add_child(head)
+	if title.is_empty():  # 질문 없이 선택지만(동전 앞면·뒷면 — 사용자 2026-11-01 "물어보지 말고 앞면 뒷면만")
+		head.visible = false
+		head.custom_minimum_size.x = UiTheme.metric("popup_width", 340) * 0.55
 	grid = ChoiceGrid.new(1, clampi(options.size(), 1, UiTheme.metric("popup_rows", 5)), UiTheme.metric("popup_slot_height", 40), true)
 	v.add_child(grid)
 	_desc = UiTheme.label("", "small", "warn")  # 커서가 놓인 칸의 이유(못 받는 사람 등) — 있을 때만

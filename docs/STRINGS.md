@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1001줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1000줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -38,6 +38,7 @@
 - [동굴 요소 `field`](#field) — 1층 동굴 요소를 살필 때(번호가 여럿이면 하나를 고른다)
 - [dir8 `dir8`](#dir8) — —
 - [buff `buff`](#buff) — —
+- [item `item`](#item) — —
 
 <a id="app"></a>
 ## 앱 `app`
@@ -227,15 +228,15 @@
 - `explore.rift_exit_needs` 길이 막혀 있다. [{item}]이(가) 있어야 할 것 같다.
 - `explore.rift_exit_used` [{item}]을(를) 썼다.
 - `explore.rift_key_held` 가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.
-- `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.
-- `explore.fortress_necronomicon` 썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].
+- `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다.
+- `explore.fortress_necronomicon` 썩은 책장 사이에 피로 쓴 책 한 권이 끼어 있다.
 - `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
-- `explore.scavenge_found` {tile}을(를) 뒤져 {item}을(를) 찾았다.
 - `explore.scavenge_empty` {tile}에는 건질 것이 없다.
 - `explore.scavenge_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
-- `explore.loot_found` {item}을(를) 주웠다.
-- `explore.loot_found_n` {item} {n}개를 주웠다.
-- `explore.hidden_found` 숨겨진 것을 찾았다 — [{item}].
+- `explore.chest` 상자
+- `explore.chest_nothing` 상자 안은 비어 있었다.
+- `explore.coin_heads` 앞면
+- `explore.coin_tails` 뒷면
 - `explore.rift_item_lost` [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
 - `explore.rift_opened` 동굴 곳곳에 균열 포탈 {count}개가 열렸다!
 - `explore.rift_forced` 기념비가 마석을 삼키고, 옆에 {name}(으)로 통하는 균열 포탈이 열렸다.
@@ -295,8 +296,8 @@
 - `explore.cannot_use` {item}은(는) 여기서 쓸 수 있는 물건이 아니다.
 - `explore.paused` 일시정지
 - `explore.ambush` 잠결에 무언가가 다가왔다!
-- `explore.glacier_crystal` 연못 바닥에서 붉게 빛나는 얼음 구슬을 건졌다 — [{item}].
-- `explore.glacier_shard` 금 간 기둥을 부수자 마력이 서린 얼음 조각이 굴러 나왔다 — [{item}].
+- `explore.glacier_crystal` 연못 바닥에서 붉은 빛이 일렁인다.
+- `explore.glacier_shard` 금 간 기둥을 부수자 얼음 조각이 굴러 나왔다.
 - `explore.hazard_pass` 위험한 길을 무사히 지났다.
 - `explore.hazard_fail` 발을 헛디뎠다!
 - `explore.hazard_slick_pass` 미끄러운 얼음 위를 조심조심 건넜다.
@@ -305,9 +306,9 @@
 - `explore.hazard_slope_fail` 급경사에서 미끄러져 바닥까지 굴렀다!
 - `explore.hazard_rope_pass` 언 로프를 붙잡고 끝까지 건넜다.
 - `explore.hazard_rope_fail` 언 로프를 놓쳐 아래로 떨어졌다!
-- `explore.mine_gem` 철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 [{item}]이(가) 초록빛으로 반짝인다.
-- `explore.mine_quartz` 광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다 — [{item}].
-- `explore.mine_explosive` 낡은 상자 속에 광부들이 숨겨 둔 [{item}]이(가) 있다.
+- `explore.mine_gem` 철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 무언가 초록빛으로 반짝인다.
+- `explore.mine_quartz` 광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다.
+- `explore.mine_explosive` 낡은 상자 속에 광부들이 숨겨 둔 것이 있다.
 - `explore.mine_blast` 무너진 갱도가 뚫렸다.
 - `explore.mine_smash` 무너진 바위를 맨손으로 밀어 치웠다.
 - `explore.rift_exit_forced` 힘으로 길을 열었다.
@@ -374,27 +375,27 @@
 
 ### `explore.hidden`
 
-- `explore.hidden.tomb_oil` 벽감 깊숙이 봉해진 기름 단지가 그대로 있다. 묘지기들이 관절에 바르던 [{item}]이다.
+- `explore.hidden.tomb_oil` 벽감 깊숙이 봉해진 기름 단지가 그대로 있다. 묘지기들이 관절에 바르던 것이다.
 - `explore.hidden.tomb_oil_locked` 벽감 안의 기름 단지가 깨져 있다. 함정이 울린 진동에 쓰러진 모양이다.
 - `explore.hidden.steel_relic_reveal` 칼날이 부서지며 홈 바닥이 갈라졌다. 틈에서 작은 함 하나가 굴러 나왔다.
-- `explore.hidden.steel_relic` 작은 함 속에 쇳빛 구슬이 들어 있다 — [{item}].
+- `explore.hidden.steel_relic` 작은 함 속에 쇳빛 구슬이 들어 있다.
 - `explore.hidden.coffin_locked` 관 뚜껑에 봉인이 걸려 있다. 문지기의 물음에 답한 자만 열 수 있을 것 같다.
-- `explore.hidden.death_mask` 봉인이 풀린 관 안, 이름 모를 왕의 얼굴에 [{item}]가 씌워져 있다.
+- `explore.hidden.death_mask` 봉인이 풀린 관 안, 이름 모를 왕의 얼굴에 가면이 씌워져 있다.
 - `explore.hidden.treasure_mark` 금화 사이에 벽화와 같은 문양이 새겨진 상자가 묻혀 있다.
 - `explore.hidden.treasure_plain` 금화가 수북하다. 아무 문양도 없다.
 - `explore.hidden.treasure_cursed` 금화가 손안에서 잿가루로 부서졌다. 차가운 기운이 등줄기를 타고 오른다.
-- `explore.hidden.tomb_gold` 금화 더미 속에서 [{item}]을 끌어냈다.
-- `explore.hidden.fortress_key` 고문대 손잡이에 녹슨 열쇠꾸러미가 걸려 있다 — [{item}].
+- `explore.hidden.tomb_gold` 금화 더미 속을 헤집었다.
+- `explore.hidden.fortress_key` 고문대 손잡이에 녹슨 열쇠꾸러미가 걸려 있다.
 - `explore.hidden.wagon_locked` 수레 짐칸에 자물쇠가 채워져 있다.
-- `explore.hidden.silver_chest` 열쇠가 맞았다. 짐칸 깊숙한 곳에 [{item}]가 실려 있다.
+- `explore.hidden.silver_chest` 열쇠가 맞았다. 짐칸 깊숙한 곳에 무언가 실려 있다.
 - `explore.hidden.falls_locked` 물보라가 거세다. 젖은 몸으로는 폭포 뒤로 들어갈 엄두가 나지 않는다.
-- `explore.hidden.snow_lotus` 폭포 뒤 바위틈에 얼음꽃 한 송이가 피어 있다 — [{item}].
+- `explore.hidden.snow_lotus` 폭포 뒤 바위틈에 얼음꽃 한 송이가 피어 있다.
 - `explore.hidden.ice_core_locked` 얼음 가루가 쉴 새 없이 쏟아져 고드름 속이 보이지 않는다.
-- `explore.hidden.eternal_ice` 가루가 그친 공동, 고드름 속에 푸른 결정이 갇혀 있다. 조심스레 깨어 [{item}]을 꺼냈다.
+- `explore.hidden.eternal_ice` 가루가 그친 공동, 고드름 속에 푸른 결정이 갇혀 있다.
 - `explore.hidden.cart_fail` 광차를 힘껏 밀었지만 바퀴가 철로에서 빠지며 옆으로 넘어졌다.
-- `explore.hidden.mine_heart` 광차가 무너진 벽을 들이받자 숨은 갱도가 열렸다. 안쪽에서 [{item}]이 빛난다.
+- `explore.hidden.mine_heart` 광차가 무너진 벽을 들이받자 숨은 갱도가 열렸다. 안쪽에서 무언가 빛난다.
 - `explore.hidden.vein_reveal` 다리를 건너뛰는 순간, 아래 벼랑에 녹색 광맥이 드러난 것이 보였다.
-- `explore.hidden.green_vein` 벼랑에 붙은 광맥에서 [{item}]를 떼어 냈다.
+- `explore.hidden.green_vein` 벼랑에 붙은 광맥이 드러나 있다.
 
 <a id="effect"></a>
 ## 효과 `effect`
@@ -669,8 +670,6 @@
 > 전투 드롭 · 획득할까? · 경험치
 
 - `reward.first_kill` 처음 쓰러뜨린 {name} — 공적 {exp}.
-- `reward.loot` {item} ×{count}을(를) 주웠다.
-- `reward.loot_by` {who}이(가) {item} ×{count}을(를) 주웠다.
 - `reward.loot_left` {what}을(를) 두고 간다.
 - `reward.essence_absorbed` {who}의 몸속으로 {what}이(가) 스며들었다.
 - `reward.essence_refused` {what}이(가) {who}에게 스며들지 못했다. {reason}
@@ -940,7 +939,6 @@
 - `city.fx.restore` 상처가 아물고 머리가 맑아졌다.
 - `city.fx.restore_full` 다친 데도 없이 개운하게 일어났다.
 - `city.fx.restore_undecided` 몸 상태는 그대로다. (미정)
-- `city.fx.item_got` {name}을(를) 챙겼다.
 - `city.fx.item_no_room` {name}을(를) 넣을 자리가 없다.
 - `city.fx.item_undecided` 받을 것이 정해지지 않았다. (미정)
 - `city.fx.tax_paid` 세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.
@@ -1284,8 +1282,6 @@
 - `field.done_today` 오늘은 이만하면 됐다.
 - `field.missing` {status} 상태가 아니다.
 - `field.no_cost` {item}이(가) 없다.
-- `field.got` {item}을(를) 챙겼다.
-- `field.got_n` {item} {n}개를 챙겼다.
 - `field.no_room` 가방이 가득 차 {item}을(를) 두고 간다.
 - `field.learned` {monster}의 습성을 짐작할 수 있게 됐다.
 - `field.found_hidden` 발밑에 무언가 있다.
@@ -1445,3 +1441,15 @@
 - `buff.cat_magical` 마법
 - `buff.left_battle` 전투 {n}번
 - `buff.left_hour` {n}시간
+
+<a id="item"></a>
+## item `item`
+
+> —
+
+> 아이템을 얻었다는 문구는 이것 하나(사용자 2026-11-01 "아이템 획득 문구 전부 통일" — ItemInfo.got_key)
+
+- `item.got` {item}을(를) 얻었다.
+- `item.got_n` {item} {n}개를 얻었다.
+- `item.got_by` {who}이(가) {item}을(를) 얻었다.
+- `item.got_by_n` {who}이(가) {item} {n}개를 얻었다.

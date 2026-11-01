@@ -61,7 +61,7 @@ static func take(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
 		m["left"] = want - got
 		m["got"] = got
 		return m
-	return _m("reward.loot_by", {"who": pc.display_name, "item": name, "count": got}, "good")
+	return _m(ItemInfo.got_key(got, true), {"who": pc.display_name, "item": name, "n": got}, "good")
 
 
 ## 두고 간다 — 정수는 흩어지고 전리품은 사라진다. reason = 아무도 받을 수 없던 이유 키.

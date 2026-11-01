@@ -137,7 +137,9 @@ func take(cs: ExploreSession, p: Vector2i, floor_tile: String, riddle: RiftRiddl
 		cs.player.inventory.remove(JsonUtil.get_str(need, "item"), 1)
 	_spent(cs, p, floor_tile, hd)
 	cs.player.inventory.add(item, count)
-	cs.message.emit(JsonUtil.get_str(hd, "message", "explore.hidden_found"), {"item": DataNames.entry(cs.db, "items", item)}, "good")
+	if hd.has("message"):  # 장면 한 줄(아이템 이름은 넣지 않는다) → 얻은 물건은 통일 문구로
+		cs.message.emit(JsonUtil.get_str(hd, "message"), {}, "info")
+	cs.message.emit(ItemInfo.got_key(count), {"item": DataNames.entry(cs.db, "items", item), "n": count}, "good")
 	cs.refresh_view()
 	return true
 

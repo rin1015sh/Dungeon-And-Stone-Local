@@ -74,12 +74,12 @@ static func _result(s: ExploreSession, p: Vector2i, hit: bool) -> void:
 		var item := str(d["item"])
 		var n := int(d["count"])
 		s.player.inventory.add(item, n)
-		s.message.emit("explore.chest_found" if n == 1 else "explore.chest_found_n", {"item": DataNames.entry(s.db, "items", item), "n": n}, "good")
+		s.message.emit(ItemInfo.got_key(n), {"item": DataNames.entry(s.db, "items", item), "n": n}, "good")
 	else:
 		var junk := junk_item(s)
 		if not junk.is_empty() and s.player.inventory.fits(junk, 1):
 			s.player.inventory.add(junk, 1)
-			s.message.emit("explore.chest_junk", {"item": DataNames.entry(s.db, "items", junk)}, "info")
+			s.message.emit(ItemInfo.got_key(1), {"item": DataNames.entry(s.db, "items", junk), "n": 1}, "good")
 		else:
 			s.message.emit("explore.chest_nothing", {}, "info")
 	s.tiles_changed.emit(Rect2i(p, Vector2i.ONE))

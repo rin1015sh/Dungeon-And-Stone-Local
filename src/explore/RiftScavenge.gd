@@ -44,5 +44,5 @@ static func run(s: ExploreSession) -> bool:
 	s.scavenged[p] = true
 	s.tiles_changed.emit(Rect2i(p, Vector2i.ONE))
 	s.player.inventory.add(item, 1)
-	s.message.emit("explore.scavenge_found", {"tile": def.name_ko, "item": name}, "good")
+	s.message.emit(ItemInfo.got_key(1), {"item": name, "n": 1}, "good")
 	return true

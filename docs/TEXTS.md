@@ -1,6 +1,6 @@
 # 게임 글 모음 — 도서관 책 · 플레이버 · 상황 문구
 
-> 게임에 나오는 읽을거리를 한 파일에 모았다(1227개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
+> 게임에 나오는 읽을거리를 한 파일에 모았다(1223개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
 > - 항목 = `#### 이름 · \`파일:경로\`` 줄 + 그 아래 글. **`####` 줄(특히 \` \` 안 경로)은 바꾸지 말고, 아래 글만** 고친다. 글은 여러 줄이어도 된다(다음 `#` 줄 전까지가 한 글).
 > - `{이름}`은 자리표시자(게임이 값을 넣는다) — 그대로 둔다(바꾸면 그 줄은 적용하지 않는다). `\n`이 필요한 자리는 그냥 줄을 바꿔 쓴다.
 > - 대화창은 **한 쪽에 한 문장**이다(UI44) — 문장을 끊으면 Enter 한 번씩 넘어간다.
@@ -11,7 +11,7 @@
 
 - **도서관 책** — 미궁에 관하여(24) · 소재와 무기에 관하여(18) · 상태이상에 관하여(24) · 몬스터와 정수에 관하여(24) · 생존과 야영에 관하여(18) · 도시와 탐험가에 관하여(28)
 - **플레이버 · 설명 글** — 아이템(129) · 장비 소재(37) · 장비 종류(31) · 몬스터(104) · 정수(51) · 스킬(11) · 상태이상(66) · 전투 게이지(6) · 랜드마크(3) · 종족 · 직업(6) · 균열(설명 · 챕터)(21) · 수수께끼(문제 · 벽화)(32)
-- **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(86) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(11) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(25) · 도시 · lines(36) · 도시 · street(37) · 도시 · meal(24) · 도시 · npc(42) · 동굴 요소(75) · 동굴 요소 · corpse(15)
+- **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(83) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(9) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(24) · 도시 · lines(36) · 도시 · street(37) · 도시 · meal(24) · 도시 · npc(42) · 동굴 요소(73) · 동굴 요소 · corpse(15) · item(4)
 
 ## 도서관 책
 
@@ -2059,16 +2059,13 @@
 가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.
 
 #### fortress_tear · `data/strings/ko.json:.explore.fortress_tear`
-조각상을 깨뜨리자 작은 상자가 나왔다. 안에는 [{item}]이(가) 맑게 빛난다.
+조각상을 깨뜨리자 작은 상자가 나왔다.
 
 #### fortress_necronomicon · `data/strings/ko.json:.explore.fortress_necronomicon`
-썩은 책장 사이에서 피로 쓴 책 한 권을 찾았다 — [{item}].
+썩은 책장 사이에 피로 쓴 책 한 권이 끼어 있다.
 
 #### hidden_no_room · `data/strings/ko.json:.explore.hidden_no_room`
 {item}을(를) 찾았지만 가방에 자리가 없다.
-
-#### scavenge_found · `data/strings/ko.json:.explore.scavenge_found`
-{tile}을(를) 뒤져 {item}을(를) 찾았다.
 
 #### scavenge_empty · `data/strings/ko.json:.explore.scavenge_empty`
 {tile}에는 건질 것이 없다.
@@ -2076,14 +2073,8 @@
 #### scavenge_no_room · `data/strings/ko.json:.explore.scavenge_no_room`
 {item}을(를) 찾았지만 가방에 자리가 없다.
 
-#### loot_found · `data/strings/ko.json:.explore.loot_found`
-{item}을(를) 주웠다.
-
-#### loot_found_n · `data/strings/ko.json:.explore.loot_found_n`
-{item} {n}개를 주웠다.
-
-#### hidden_found · `data/strings/ko.json:.explore.hidden_found`
-숨겨진 것을 찾았다 — [{item}].
+#### chest_nothing · `data/strings/ko.json:.explore.chest_nothing`
+상자 안은 비어 있었다.
 
 #### rift_item_lost · `data/strings/ko.json:.explore.rift_item_lost`
 [{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.
@@ -2203,10 +2194,10 @@
 잠결에 무언가가 다가왔다!
 
 #### glacier_crystal · `data/strings/ko.json:.explore.glacier_crystal`
-연못 바닥에서 붉게 빛나는 얼음 구슬을 건졌다 — [{item}].
+연못 바닥에서 붉은 빛이 일렁인다.
 
 #### glacier_shard · `data/strings/ko.json:.explore.glacier_shard`
-금 간 기둥을 부수자 마력이 서린 얼음 조각이 굴러 나왔다 — [{item}].
+금 간 기둥을 부수자 얼음 조각이 굴러 나왔다.
 
 #### hazard_pass · `data/strings/ko.json:.explore.hazard_pass`
 위험한 길을 무사히 지났다.
@@ -2233,13 +2224,13 @@
 언 로프를 놓쳐 아래로 떨어졌다!
 
 #### mine_gem · `data/strings/ko.json:.explore.mine_gem`
-철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 [{item}]이(가) 초록빛으로 반짝인다.
+철로가 끊긴 벽을 부수자 좁은 샛길이 나왔다. 안쪽에서 무언가 초록빛으로 반짝인다.
 
 #### mine_quartz · `data/strings/ko.json:.explore.mine_quartz`
-광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다 — [{item}].
+광맥을 깨뜨리자 탁한 초록 수정이 떨어졌다.
 
 #### mine_explosive · `data/strings/ko.json:.explore.mine_explosive`
-낡은 상자 속에 광부들이 숨겨 둔 [{item}]이(가) 있다.
+낡은 상자 속에 광부들이 숨겨 둔 것이 있다.
 
 #### mine_blast · `data/strings/ko.json:.explore.mine_blast`
 무너진 갱도가 뚫렸다.
@@ -2310,7 +2301,7 @@
 ### 탐험 알림 · hidden
 
 #### hidden.tomb_oil · `data/strings/ko.json:.explore.hidden.tomb_oil`
-벽감 깊숙이 봉해진 기름 단지가 그대로 있다. 묘지기들이 관절에 바르던 [{item}]이다.
+벽감 깊숙이 봉해진 기름 단지가 그대로 있다. 묘지기들이 관절에 바르던 것이다.
 
 #### hidden.tomb_oil_locked · `data/strings/ko.json:.explore.hidden.tomb_oil_locked`
 벽감 안의 기름 단지가 깨져 있다. 함정이 울린 진동에 쓰러진 모양이다.
@@ -2319,13 +2310,13 @@
 칼날이 부서지며 홈 바닥이 갈라졌다. 틈에서 작은 함 하나가 굴러 나왔다.
 
 #### hidden.steel_relic · `data/strings/ko.json:.explore.hidden.steel_relic`
-작은 함 속에 쇳빛 구슬이 들어 있다 — [{item}].
+작은 함 속에 쇳빛 구슬이 들어 있다.
 
 #### hidden.coffin_locked · `data/strings/ko.json:.explore.hidden.coffin_locked`
 관 뚜껑에 봉인이 걸려 있다. 문지기의 물음에 답한 자만 열 수 있을 것 같다.
 
 #### hidden.death_mask · `data/strings/ko.json:.explore.hidden.death_mask`
-봉인이 풀린 관 안, 이름 모를 왕의 얼굴에 [{item}]가 씌워져 있다.
+봉인이 풀린 관 안, 이름 모를 왕의 얼굴에 가면이 씌워져 있다.
 
 #### hidden.treasure_mark · `data/strings/ko.json:.explore.hidden.treasure_mark`
 금화 사이에 벽화와 같은 문양이 새겨진 상자가 묻혀 있다.
@@ -2337,40 +2328,40 @@
 금화가 손안에서 잿가루로 부서졌다. 차가운 기운이 등줄기를 타고 오른다.
 
 #### hidden.tomb_gold · `data/strings/ko.json:.explore.hidden.tomb_gold`
-금화 더미 속에서 [{item}]을 끌어냈다.
+금화 더미 속을 헤집었다.
 
 #### hidden.fortress_key · `data/strings/ko.json:.explore.hidden.fortress_key`
-고문대 손잡이에 녹슨 열쇠꾸러미가 걸려 있다 — [{item}].
+고문대 손잡이에 녹슨 열쇠꾸러미가 걸려 있다.
 
 #### hidden.wagon_locked · `data/strings/ko.json:.explore.hidden.wagon_locked`
 수레 짐칸에 자물쇠가 채워져 있다.
 
 #### hidden.silver_chest · `data/strings/ko.json:.explore.hidden.silver_chest`
-열쇠가 맞았다. 짐칸 깊숙한 곳에 [{item}]가 실려 있다.
+열쇠가 맞았다. 짐칸 깊숙한 곳에 무언가 실려 있다.
 
 #### hidden.falls_locked · `data/strings/ko.json:.explore.hidden.falls_locked`
 물보라가 거세다. 젖은 몸으로는 폭포 뒤로 들어갈 엄두가 나지 않는다.
 
 #### hidden.snow_lotus · `data/strings/ko.json:.explore.hidden.snow_lotus`
-폭포 뒤 바위틈에 얼음꽃 한 송이가 피어 있다 — [{item}].
+폭포 뒤 바위틈에 얼음꽃 한 송이가 피어 있다.
 
 #### hidden.ice_core_locked · `data/strings/ko.json:.explore.hidden.ice_core_locked`
 얼음 가루가 쉴 새 없이 쏟아져 고드름 속이 보이지 않는다.
 
 #### hidden.eternal_ice · `data/strings/ko.json:.explore.hidden.eternal_ice`
-가루가 그친 공동, 고드름 속에 푸른 결정이 갇혀 있다. 조심스레 깨어 [{item}]을 꺼냈다.
+가루가 그친 공동, 고드름 속에 푸른 결정이 갇혀 있다.
 
 #### hidden.cart_fail · `data/strings/ko.json:.explore.hidden.cart_fail`
 광차를 힘껏 밀었지만 바퀴가 철로에서 빠지며 옆으로 넘어졌다.
 
 #### hidden.mine_heart · `data/strings/ko.json:.explore.hidden.mine_heart`
-광차가 무너진 벽을 들이받자 숨은 갱도가 열렸다. 안쪽에서 [{item}]이 빛난다.
+광차가 무너진 벽을 들이받자 숨은 갱도가 열렸다. 안쪽에서 무언가 빛난다.
 
 #### hidden.vein_reveal · `data/strings/ko.json:.explore.hidden.vein_reveal`
 다리를 건너뛰는 순간, 아래 벼랑에 녹색 광맥이 드러난 것이 보였다.
 
 #### hidden.green_vein · `data/strings/ko.json:.explore.hidden.green_vein`
-벼랑에 붙은 광맥에서 [{item}]를 떼어 냈다.
+벼랑에 붙은 광맥이 드러나 있다.
 
 ### 아이템 · 스킬 효과
 
@@ -2825,12 +2816,6 @@
 #### first_kill · `data/strings/ko.json:.reward.first_kill`
 처음 쓰러뜨린 {name} — 공적 {exp}.
 
-#### loot · `data/strings/ko.json:.reward.loot`
-{item} ×{count}을(를) 주웠다.
-
-#### loot_by · `data/strings/ko.json:.reward.loot_by`
-{who}이(가) {item} ×{count}을(를) 주웠다.
-
 #### loot_left · `data/strings/ko.json:.reward.loot_left`
 {what}을(를) 두고 간다.
 
@@ -3034,9 +3019,6 @@
 
 #### fx.restore_full · `data/strings/ko.json:.city.fx.restore_full`
 다친 데도 없이 개운하게 일어났다.
-
-#### fx.item_got · `data/strings/ko.json:.city.fx.item_got`
-{name}을(를) 챙겼다.
 
 #### fx.item_no_room · `data/strings/ko.json:.city.fx.item_no_room`
 {name}을(를) 넣을 자리가 없다.
@@ -3522,12 +3504,6 @@
 #### no_cost · `data/strings/ko.json:.field.no_cost`
 {item}이(가) 없다.
 
-#### got · `data/strings/ko.json:.field.got`
-{item}을(를) 챙겼다.
-
-#### got_n · `data/strings/ko.json:.field.got_n`
-{item} {n}개를 챙겼다.
-
 #### no_room · `data/strings/ko.json:.field.no_room`
 가방이 가득 차 {item}을(를) 두고 간다.
 
@@ -3781,3 +3757,17 @@
 
 #### corpse.north.3 · `data/strings/ko.json:.field.corpse.north.3`
 목에 올가미 자국이 남아 있다. 시체의 주머니를 뒤진다.
+
+### item
+
+#### got · `data/strings/ko.json:.item.got`
+{item}을(를) 얻었다.
+
+#### got_n · `data/strings/ko.json:.item.got_n`
+{item} {n}개를 얻었다.
+
+#### got_by · `data/strings/ko.json:.item.got_by`
+{who}이(가) {item}을(를) 얻었다.
+
+#### got_by_n · `data/strings/ko.json:.item.got_by_n`
+{who}이(가) {item} {n}개를 얻었다.

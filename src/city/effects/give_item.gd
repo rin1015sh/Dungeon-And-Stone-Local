@@ -14,7 +14,7 @@ func apply(ctx: CityContext, data: Dictionary) -> void:
 		ctx.say("city.fx.item_no_room", {"name": name}, "warn")
 		return
 	ctx.pc.inventory.add(id, n)
-	ctx.say("city.fx.item_got", {"name": name, "n": n}, "good")
+	ctx.say(ItemInfo.got_key(n), {"item": name, "n": n}, "good")
 
 
 func validate(data: Dictionary, db: GameDatabase) -> PackedStringArray:

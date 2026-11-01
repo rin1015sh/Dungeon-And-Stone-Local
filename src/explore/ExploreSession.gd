@@ -412,7 +412,8 @@ func take_drop(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
 	var to := pc if str(drop.get("kind")) == "essence" else player  # 물건은 공용 가방(플레이어 것)으로
 	var m := DropPickup.take(drop, to)
 	if int(m.get("left", 0)) > 0 and rift_run != null and rift_run.keep_overflow(self, str(drop.get("id")), int(m["left"])):
-		m = DropPickup._m("reward.loot_by", {"who": to.display_name, "item": DataNames.entry(db, "items", str(drop.get("id"))), "count": int(drop.get("count", 1))}, "good")
+		var held_n := int(drop.get("count", 1))
+		m = DropPickup._m(ItemInfo.got_key(held_n, true), {"who": to.display_name, "item": DataNames.entry(db, "items", str(drop.get("id"))), "n": held_n}, "good")
 	message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	return m
 

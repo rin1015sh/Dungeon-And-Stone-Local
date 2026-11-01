@@ -100,7 +100,7 @@ static func _give(s: ExploreSession, list: Array) -> void:
 			s.player.inventory.add(item, 1)
 			got += 1
 		if got > 0:
-			s.message.emit("field.got" if got == 1 else "field.got_n", {"item": name, "n": got}, "good")
+			s.message.emit(ItemInfo.got_key(got), {"item": name, "n": got}, "good")
 		if got < n:
 			s.message.emit("field.no_room", {"item": name}, "warn")
 

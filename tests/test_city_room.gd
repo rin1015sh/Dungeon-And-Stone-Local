@@ -199,7 +199,7 @@ func test_search_furniture_once_per_period() -> void:
 		assert_true(r.searchables.size() >= 3, "%s 뒤질 가구 %d" % [f, r.searchables.size()])
 		for sp: Dictionary in r.searchables:
 			var res := CityScavenge.run(s, pc, sp)
-			if str(res["key"]) == "explore.scavenge_found":
+			if str(res["key"]) == "item.got":
 				found[f] = true
 			assert_eq(str(CityScavenge.run(s, pc, sp)["key"]), "city.reason_searched", "%s %s는 이번 순에 한 번" % [f, sp["name_ko"]])
 	assert_true(found.size() >= 6, "건물 대부분에서 무언가 찾는다(%s)" % [found.keys()])
