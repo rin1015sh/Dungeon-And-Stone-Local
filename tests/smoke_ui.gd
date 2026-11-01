@@ -241,7 +241,7 @@ func _realtime_combat_flow() -> void:
 	var won := battle.result == Battle.RESULT_VICTORY
 	var picked := await _take_drops(combat, true)
 	if picked > 0:
-		_expect("\n".join(_logs).contains("주웠다") or "\n".join(_logs).contains("스며들었다"), "드롭을 주웠다(기록)")
+		_expect("\n".join(_logs).contains("얻었다") or "\n".join(_logs).contains("스며들었다"), "드롭을 주웠다(기록)")
 	await _frames(3)
 	_expect(explore.combat_screen() == null and not s.in_combat, "결과·보상 안내를 다 넘기면 탐험으로 복귀")
 	if won:
