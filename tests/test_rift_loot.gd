@@ -93,6 +93,26 @@ func test_chest_guess_back_out_keeps_it_closed() -> void:
 	assert_true(RiftChest.locked(cs.loot[at]), "상자는 그대로")
 
 
+## 가방이 가득하면 동전 전에 "가방에 자리가 없다."만 — 담긴 물건 이름을 미리 알리지 않는다(사용자 2026-11-01).
+func test_chest_full_bag_does_not_name_the_item() -> void:
+	var cs := _chapter(0)
+	var at: Vector2i = cs.loot.keys().filter(func(c: Vector2i) -> bool: return str((cs.loot[c] as Dictionary)["item"]) == "mine_hammer")[0]
+	cs.pos = at + Vector2i(0, 1) if cs.map.is_walkable(at + Vector2i(0, 1)) else at
+	while cs.player.inventory.fits("mine_hammer", 1):
+		if cs.player.inventory.add("magic_stone_9", 99) == 0:
+			break
+	assert_false(cs.player.inventory.fits("mine_hammer", 1), "가방이 가득")
+	var said: Array[String] = []
+	cs.message.connect(func(key: String, args: Dictionary, _kind: String) -> void: said.append(Strings.t(key, args)))
+	var asked := [false]
+	cs.coin_guess.connect(func(_then: Callable) -> void: asked[0] = true)
+	assert_true(RiftLoot.run(cs))
+	assert_false(asked[0], "자리가 없으면 앞뒤를 묻지 않는다")
+	assert_eq(said, [Strings.t("city.reason_bag_full")] as Array[String], "자리가 없다는 말만")
+	assert_false(said.any(func(l: String) -> bool: return l.contains(DataNames.entry(db, "items", "mine_hammer"))), "담긴 물건 이름은 말하지 않는다")
+	assert_true(RiftChest.locked(cs.loot[at]), "상자는 그대로")
+
+
 func test_chest_pick_rule() -> void:
 	var list := [{"item": "fortress_bread", "count": 2}, {"item": "fortress_knight_sword", "count": 1}, {"item": "fortress_wine", "count": 1},
 		{"item": "fortress_chainmail", "count": 1}, {"item": "fortress_halberd", "count": 1}, {"item": "fortress_holy_water", "count": 1},

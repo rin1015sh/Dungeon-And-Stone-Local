@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **균열 상자 — 가방이 가득할 때 담긴 물건을 미리 말하지 않게 (2026-11-01, 사용자 "상자 열 때 코인 던지기 전에 가방이 가득 차면 아이템을 미리 말하던데 문구 바꿔줘")**: `RiftChest.open`이 `explore.scavenge_no_room`("{item}을(를) 찾았지만 가방에 자리가 없다.") 대신 있던 문구 `city.reason_bag_full`("가방에 자리가 없다.")를 씀 — 물건 이름은 동전을 맞힌 뒤에만. 바닥에 놓인 물건·뒤지기는 보이는 것이라 그대로. 테스트 `test_rift_loot.test_chest_full_bag_does_not_name_the_item`.
+
 - **전투 뒤 마석 획득 문구 한 줄로 (2026-11-01, 사용자 "마석 획득할 때 문장 하나하나 띄우지 말고 n등급 마석 x개를 획득했다로 — 다른 등급이 섞인 경우도", UI51)**
   - `src/progress/StoneTally.gd`(새): {id: 개수} → 한 등급 `item.got(_n)` · 여러 등급 `item.got_list`("{items}를 얻었다." — `item.count_of` "{item} {n}개", `item.list_sep` ", ", 높은 등급부터).
   - `ExploreSession.take_drop`: 가방에 다 들어간 마석은 알리지 않고 `stone` {id, n}을 돌려줌 → `CombatDrops.collect`가 모아 첫 마석 자리에 한 줄(`stones` 콜백 = `ExploreSession.announce_stones` — 탐험 기록에도 한 줄). 넘친 마석은 예전처럼 "가방이 가득".

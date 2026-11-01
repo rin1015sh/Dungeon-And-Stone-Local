@@ -7,7 +7,7 @@ extends RefCounted
 ##   — 한 챕터에 chest.max_per_chapter개까지(장비 먼저, 그다음 값 높은 순 — 장비가 아닌 것은 chest.max_non_gear개). 나머지는 지금처럼 바닥에 놓인다.
 ## 열기(open): 앞면·뒷면을 고르고(ExploreSession.guess — 화면이 W/S 선택 창, Esc면 그만둠) → 동전(CoinToss "chest", 연출 toss) →
 ##   맞히면 담긴 물건, 못 맞히면 그 균열의 잡템 하나(balance chest.junk[균열 id] = data/scavenge.json 표). 어느 쪽이든 상자는 열린 빈 채 남는다(한 번뿐).
-## 가방에 자리가 없으면 고르지 않는다.
+## 가방에 자리가 없으면 고르지 않는다 — "가방에 자리가 없다."만(담긴 물건 이름은 동전을 맞힌 뒤에야, 사용자 2026-11-01).
 
 
 ## 상자에 담을 항목 번호들(loot 목록 순서).
@@ -52,7 +52,7 @@ static func open(s: ExploreSession, p: Vector2i) -> bool:
 	var item := str(d["item"])
 	var n := int(d["count"])
 	if not s.player.inventory.fits(item, n):
-		s.message.emit("explore.scavenge_no_room", {"item": DataNames.entry(s.db, "items", item)}, "warn")
+		s.message.emit("city.reason_bag_full", {}, "warn")  # 동전 전에 담긴 물건 이름을 알리지 않는다(사용자 2026-11-01)
 		return true
 	s.guess(func(pick: int) -> void:
 		if pick < 0 or not s.loot.has(p) or not locked(s.loot[p] as Dictionary):
