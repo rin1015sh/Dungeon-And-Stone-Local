@@ -5,14 +5,16 @@ extends Node2D
 ## 없는 타일은 색칠한 칸(타일 색 × 꼭짓점 색)으로 그린다.
 ## 포탈처럼 표식 색(color_mark)이 있는 타일은 가운데에 마름모를 얹는다.
 ## 서 있는 소품(art.stand) 칸엔 밑 바닥(stand.under — 없으면 층 기본 바닥)을, 낭떠러지(void) 칸은 뒷배경이 있으면 비워 둔다.
+## 칸 모양·UV는 그리는 칸(탐험·타일)이 바뀔 때만 다시 만들고(ChunkMesh), 시야만 바뀌면 꼭짓점 색만 다시 채운다.
 
 var view: FloorView
 var cells: Rect2i
 
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
-var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
 var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
-var _batch := QuadBatch.new()  # 칸들을 그림마다 한 번에(draw_polygon 칸마다 부르면 느리다)
+var _mesh := ChunkMesh.new()  # 칸들을 그림마다 한 번에(draw_polygon 칸마다 부르면 느리다) — 모양은 두고 색만 다시
+var _shape := PackedInt32Array()  # 모양을 만들 때 칸마다(탐험했으면 타일 번호, 아니면 -1) — 달라지면 모양을 다시 만든다
+var _marks: Array[Array] = []  # [x, y, 표식 색] — 표식 마름모는 바닥을 다 그린 뒤 위에
 var _blends: Array[Array] = []  # [x, y, 모서리 방향, 칠할 타일] — 물 가장자리 사선(setup에서 한 번, 물·바닥 타일은 바뀌지 않는다)
 
 
@@ -26,7 +28,39 @@ func setup(p_view: FloorView, p_cells: Rect2i) -> void:
 func _draw() -> void:
 	var map := view.map
 	var t := view.tile
-	var marks: Array[Array] = []  # [x, y, 표식 색] — 표식 마름모는 바닥을 다 그린 뒤 위에
+	var now := _cell_state()
+	if now != _shape:
+		_shape = now
+		_build()
+	_mesh.draw(self, view)
+	for m in _marks:
+		_draw_mark(m[0], m[1], t, view.vertex_color(m[0], m[1], m[2]))
+	var r := view.wall_round * t
+	for b in _blends:
+		if map.explored[int(b[1]) * map.width + int(b[0])] != 0:
+			_corner_tri(int(b[0]), int(b[1]), t, r, b[2], b[3])
+
+
+## 칸마다 탐험했으면 타일 번호, 아니면 -1(그리는 칸이 바뀌었는지 — 원정 중 새 시체 타일 등).
+func _cell_state() -> PackedInt32Array:
+	var map := view.map
+	var out := PackedInt32Array()
+	out.resize(cells.size.x * cells.size.y)
+	var k := 0
+	for y in range(cells.position.y, cells.end.y):
+		var i := y * map.width + cells.position.x
+		for x in cells.size.x:
+			out[k] = map.tiles[i + x] if map.explored[i + x] != 0 else -1
+			k += 1
+	return out
+
+
+## 칸 모양·UV·표식을 다시 만든다(그리는 칸이 바뀌었을 때만).
+func _build() -> void:
+	var map := view.map
+	var t := view.tile
+	_mesh.clear()
+	_marks.clear()
 	for y in range(cells.position.y, cells.end.y):
 		for x in range(cells.position.x, cells.end.x):
 			var i := y * map.width + x
@@ -47,27 +81,11 @@ func _draw() -> void:
 			if tex != null:
 				var v := FloorArtLayer.variant(x, y, def.art_variants, def.art_salt)
 				set_uv_cell(_uvs, tex, v, def.art_variants, 0.0, 1.0)
-				_cols[0] = view.vertex_mul(x, y, def.color_floor)
-				_cols[1] = view.vertex_mul(x + 1, y, def.color_floor)
-				_cols[2] = view.vertex_mul(x + 1, y + 1, def.color_floor)
-				_cols[3] = view.vertex_mul(x, y + 1, def.color_floor)
-				_batch.add(_pts, _cols, _uvs, tex)
+				_mesh.add_tex(_pts, _uvs, tex, x, y, def.color_floor, def.index)
 			else:
-				var base := def.color_floor * view.cell_jitter(x, y)
-				_cols[0] = view.vertex_color(x, y, base)
-				_cols[1] = view.vertex_color(x + 1, y, base)
-				_cols[2] = view.vertex_color(x + 1, y + 1, base)
-				_cols[3] = view.vertex_color(x, y + 1, base)
-				_batch.add(_pts, _cols)
+				_mesh.add_plain(_pts, x, y, def.color_floor * view.cell_jitter(x, y))
 			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null and tex == null:  # 그림이 있으면 표식 마름모는 그리지 않는다
-				marks.append([x, y, def.color_mark])
-	_batch.flush(self)
-	for m in marks:
-		_draw_mark(m[0], m[1], t, view.vertex_color(m[0], m[1], m[2]))
-	var r := view.wall_round * t
-	for b in _blends:
-		if map.explored[int(b[1]) * map.width + int(b[0])] != 0:
-			_corner_tri(int(b[0]), int(b[1]), t, r, b[2], b[3])
+				_marks.append([x, y, def.color_mark])
 
 
 ## 가장자리를 다듬는 바닥(물 — art.shape "smooth")의 칸 모서리를 사선으로: 물 칸의 볼록 모서리(맞닿은 두 이웃이 다른 바닥)는

@@ -79,24 +79,6 @@ float side_far(vec2 p) {
 	return mix(mix(dist_at(i).a, dist_at(i + vec2(1.0, 0.0)).a, f.x), mix(dist_at(i + vec2(0.0, 1.0)).a, dist_at(i + vec2(1.0, 1.0)).a, f.x), f.y);
 }
 
-// 허공 정도(0 땅 ~ 1 허공)를 칸 가운데끼리 곧게 이은 값(경계에서 완만해야 잡음이 깊게 깎는다).
-float field(vec2 p) {
-	vec2 q = p - 0.5;
-	vec2 i = floor(q);
-	vec2 f = fract(q);
-	float a = cell_at(i).r;
-	float b = cell_at(i + vec2(1.0, 0.0)).r;
-	float c = cell_at(i + vec2(0.0, 1.0)).r;
-	float d = cell_at(i + vec2(1.0, 1.0)).r;
-	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-}
-
-// 둘레 네 칸 중 솟은 외곽이 있는가(그쪽 땅 가장자리는 rise_jag로 깎는다).
-bool near_rise(vec2 p) {
-	vec2 i = floor(p - 0.5);
-	return max(max(cell_at(i).b, cell_at(i + vec2(1.0, 0.0)).b), max(cell_at(i + vec2(0.0, 1.0)).b, cell_at(i + vec2(1.0, 1.0)).b)) > 0.5;
-}
-
 bool is_void(vec2 p) {
 	vec3 own = cell_at(floor(p));
 	if (own.r > 0.5) {
@@ -105,8 +87,19 @@ bool is_void(vec2 p) {
 	if (own.g > 0.5 || dist_at(floor(p)).r > 1.5) {  // 나무 발판 · 둘레 여덟 칸에 허공이 없는 땅은 깎이지 않는다
 		return false;
 	}
+	// 허공 정도(0 땅 ~ 1 허공)를 칸 가운데끼리 곧게 이은 값(경계에서 완만해야 잡음이 깊게 깎는다)과
+	// 둘레 네 칸 중 솟은 외곽이 있는가(그쪽 땅 가장자리는 rise_jag로 깎는다) — 같은 네 칸을 한 번만 읽는다(균열 렉)
+	vec2 q = p - 0.5;
+	vec2 i = floor(q);
+	vec2 f = fract(q);
+	vec3 a = cell_at(i);
+	vec3 b = cell_at(i + vec2(1.0, 0.0));
+	vec3 c = cell_at(i + vec2(0.0, 1.0));
+	vec3 d = cell_at(i + vec2(1.0, 1.0));
+	float field = mix(mix(a.r, b.r, f.x), mix(c.r, d.r, f.x), f.y);
+	bool near_rise = max(max(a.b, b.b), max(c.b, d.b)) > 0.5;
 	float n = smoothstep(0.2, 0.85, vnoise(p * 1.7) * 0.72 + vnoise(p * 4.1 + 17.0) * 0.28);  // 깎인 곳·남은 곳이 또렷하게(잔 톱니는 줄인다)
-	return field(p) + (near_rise(p) ? rise_jag : jag) * n > 0.5;
+	return field + (near_rise ? rise_jag : jag) * n > 0.5;
 }
 
 bool is_rise(vec2 p) {
@@ -200,11 +193,12 @@ void fragment() {
 	float px = 1.0 / tile;
 	vec2 edge = min(p, map_size - p);
 	float border = min(edge.x, edge.y);
-	if (!is_void(p) && border < edge_fade) {
+	bool here_void = is_void(p);
+	if (!here_void && border < edge_fade) {
 		// 지도 끝으로 나가는 땅(입구·출구 길): 깊은 어둠으로 녹는다(지도 밖은 다 덮는다)
 		float k = clamp(1.0 - border / edge_fade, 0.0, 1.0);
 		COLOR = vec4(deep(world, 6.0) * COLOR.rgb, k * k * (3.0 - 2.0 * k));
-	} else if (!is_void(p)) {
+	} else if (!here_void) {
 		// 땅: 허공에 닿는 가장자리만 — 아래(절벽 위 턱)는 밝게 부스러진 테두리, 옆·위는 그늘
 		if (is_void(p + vec2(0.0, 2.0 * px)) && !is_rise(p + vec2(0.0, 2.0 * px))) {
 			COLOR = vec4(rim_color.rgb * COLOR.rgb, 0.55);

@@ -11,7 +11,8 @@ const MARGIN := 16  # 지도 밖으로 이어 칠하는 칸 수(지도 끝의 �
 var view: FloorView
 var cells: Rect2i
 var _quads: Array[Vector2i] = []      # 셰이더로 칠할 칸(허공 + 허공에 닿은 땅)
-var _outer: Array[Vector2i] = []      # 지도 밖 칸(가장 가까운 지도 끝 칸이 허공이나 길) — 셰이더가 지도 끝 칸 값을 이어 쓴다
+var _outer: Array[Rect2i] = []        # 지도 밖 칸 묶음(가장 가까운 지도 끝 칸이 같은 칸끼리 — 띠·모서리 사각형 하나, 색이 한결같다)
+var _outer_at: Array[Vector2i] = []   # 묶음마다 가장 가까운 지도 끝 칸(허공이나 길) — 셰이더가 그 칸 값을 이어 쓴다
 var _beams_n: Array[Vector2i] = []    # 북쪽이 허공인 나무 발판 칸
 var _beams_s: Array[Vector2i] = []    # 남쪽이 허공인 나무 발판 칸
 var _under: Node2D   # 받침 기둥(셰이더 위, 같은 z)
@@ -20,6 +21,8 @@ var _rail_front: Node2D  # 남쪽 난간(캐릭터 앞)
 var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK])
 var _batch := QuadBatch.new()  # 칸들을 한 번에(draw_polygon 칸마다 부르면 느리다)
+var _vmul := PackedColorArray()   # 그리는 동안 꼭짓점 빛 배율(청크 꼭짓점 격자 — 칸마다 네 번씩 다시 계산하지 않게)
+var _vset := PackedByteArray()    # _vmul 칸을 이번에 계산했는가
 
 
 func setup(p_view: FloorView, p_cells: Rect2i) -> void:
@@ -67,11 +70,22 @@ func _find_outer(map: FloorMap) -> void:
 		ext = ext.grow_side(SIDE_BOTTOM, MARGIN)
 	if ext == cells:
 		return
+	# 지도 밖 칸은 가장 가까운 지도 끝 칸(c)의 값을 그대로 쓰므로 c가 같은 칸끼리는 색이 같다 — 한 사각형으로 묶는다
+	# (옆 = 한 줄 띠, 모서리 = 네모 하나). 지도가 작은 균열에서 끝 청크 하나가 칸 수백 개를 그려 걸음마다 끊겼다.
+	var groups := {}  # c -> Rect2i
 	for y in range(ext.position.y, ext.end.y):
 		for x in range(ext.position.x, ext.end.x):
 			var q := Vector2i(x, y)
-			if not map.in_bounds(q) and not map.def_at(_clamp(map, q)).is_wall():  # 허공은 이어지고, 나가는 길은 어둠으로(벽 너머는 검은 바위 그대로)
-				_outer.append(q)
+			if map.in_bounds(q):
+				continue
+			var c := _clamp(map, q)
+			if map.def_at(c).is_wall():  # 허공은 이어지고, 나가는 길은 어둠으로(벽 너머는 검은 바위 그대로)
+				continue
+			var cell := Rect2i(q, Vector2i.ONE)
+			groups[c] = (groups[c] as Rect2i).merge(cell) if groups.has(c) else cell
+	for c: Vector2i in groups:
+		_outer_at.append(c)
+		_outer.append(groups[c])
 
 
 static func _clamp(map: FloorMap, q: Vector2i) -> Vector2i:
@@ -90,30 +104,44 @@ func _layer(z: int, relative: bool, painter: Callable) -> Node2D:
 func _draw() -> void:
 	var map := view.map
 	var t := float(view.tile)
+	var gw := cells.size.x + 1
+	_vmul.resize(gw * (cells.size.y + 1))
+	_vset.resize(_vmul.size())
+	_vset.fill(0)
 	for p in _quads:
 		# 허공은 빛이 닿지 않아 탐험되지 않기도 한다(어두운 구덩이) — 이웃이 탐험됐으면 칠하고 꼭짓점 안개로 어둠에 녹인다
 		if map.explored[p.y * map.width + p.x] == 0 and not (map.defs[map.tiles[p.y * map.width + p.x]].is_void and _near_explored(map, p)):
 			continue
 		_quad(p.x * t, p.y * t, t, t)
-		_cols[0] = view.vertex_mul(p.x, p.y, Color.WHITE)
-		_cols[1] = view.vertex_mul(p.x + 1, p.y, Color.WHITE)
-		_cols[2] = view.vertex_mul(p.x + 1, p.y + 1, Color.WHITE)
-		_cols[3] = view.vertex_mul(p.x, p.y + 1, Color.WHITE)
+		_cols[0] = _mul(p.x, p.y, gw)
+		_cols[1] = _mul(p.x + 1, p.y, gw)
+		_cols[2] = _mul(p.x + 1, p.y + 1, gw)
+		_cols[3] = _mul(p.x, p.y + 1, gw)
 		_batch.add(_pts, _cols)
-	for q in _outer:  # 지도 밖: 가장 가까운 지도 끝 칸·꼭짓점의 탐험·빛을 그대로
-		var c := _clamp(map, q)
+	for i in _outer.size():  # 지도 밖: 가장 가까운 지도 끝 칸·꼭짓점의 탐험·빛을 그대로(묶음 네 모서리도 지도 끝으로 당긴 꼭짓점)
+		var c := _outer_at[i]
 		if map.explored[c.y * map.width + c.x] == 0 and not _near_explored(map, c):
 			continue
-		_quad(q.x * t, q.y * t, t, t)
+		var r := _outer[i]
+		_quad(r.position.x * t, r.position.y * t, r.size.x * t, r.size.y * t)
 		for k in 4:
-			var vx := clampi(q.x + (1 if k == 1 or k == 2 else 0), 0, map.width)
-			var vy := clampi(q.y + (1 if k >= 2 else 0), 0, map.height)
-			_cols[k] = view.vertex_mul(vx, vy, Color.WHITE)
+			var vx := clampi(r.position.x + (r.size.x if k == 1 or k == 2 else 0), 0, map.width)
+			var vy := clampi(r.position.y + (r.size.y if k >= 2 else 0), 0, map.height)
+			_cols[k] = _mul(vx, vy, gw)
 		_batch.add(_pts, _cols)
 	_batch.flush(self)
 	for n: Node2D in [_under, _rail_back, _rail_front]:
 		if n != null:
 			n.queue_redraw()
+
+
+## 꼭짓점 (vx, vy)의 빛 배율(FloorView.vertex_mul, 흰 바탕) — 이번 그리기에서 처음이면 계산해 둔다. 이 청크의 꼭짓점(지도 끝으로 당긴 것 포함)만.
+func _mul(vx: int, vy: int, gw: int) -> Color:
+	var gi := (vy - cells.position.y) * gw + vx - cells.position.x
+	if _vset[gi] == 0:
+		_vset[gi] = 1
+		_vmul[gi] = view.vertex_mul(vx, vy, Color.WHITE)
+	return _vmul[gi]
 
 
 func _quad(x: float, y: float, w: float, h: float) -> void:

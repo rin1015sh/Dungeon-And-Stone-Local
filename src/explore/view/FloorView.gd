@@ -228,7 +228,8 @@ func refresh(full: bool = false) -> void:
 		stream.redraw_all()
 	else:
 		update_fog(dirty)
-		stream.redraw_rect(_diff.changed_cells(_vlight, _vfog, _vknown))  # 값이 바뀐 곳만(밝은 균열은 걸어도 거의 안 바뀐다)
+		for cr in _diff.changed_rects(_vlight, _vfog, _vknown, chunk):  # 값이 바뀐 곳만(밝은 균열은 걸어도 거의 안 바뀐다)
+			stream.redraw_rect(cr)
 	player_view.face(session.facing)
 	player_view.set_occluded(_occludes(session.pos + Vector2i(0, 1)))
 	sync_monsters()
