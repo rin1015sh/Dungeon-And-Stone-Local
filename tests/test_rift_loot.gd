@@ -148,8 +148,8 @@ func test_rift_gear_beats_the_smithy() -> void:
 		return 0
 	assert_true(int(str_of.call(sword)) >= int(str_of.call(plain)) + 2, "힘도 더 오른다")
 	var hammer := JsonUtil.get_dict(db.get_entry("items", "mine_hammer"), "equip")
-	var agi := JsonUtil.get_array(hammer, "modifiers").filter(func(m: Dictionary) -> bool: return str(m["target"]) == "agi")
-	assert_eq(int((agi[0] as Dictionary)["flat"]), -3, "깎이는 수치는 그대로")
+	var cuts := JsonUtil.get_array(hammer, "modifiers").filter(func(m: Dictionary) -> bool: return JsonUtil.get_float(m, "flat") < 0.0)
+	assert_true(cuts.is_empty(), "깎이는 수치가 없다(IT13)")
 	assert_true(int(db.get_entry("items", "fortress_knight_sword")["price"]) > int(db.get_entry("items", "steel_sword")["price"]), "값도 더 나간다")
 
 

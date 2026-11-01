@@ -1,6 +1,6 @@
 extends TestCase
 ## 아이템 공식(ItemForge — 사용자 결정 2026-10-23, docs/balance/item_pool.md): 장비 = 종류 × 소재 등급.
-## 증가 스탯·공격력만 등급 배율을 받고 감소는 종류 값 그대로(소재 가벼움·무거움만), 소재 특성, 가격, 지금 장비 id 유지.
+## 증가 스탯·공격력만 등급 배율을 받는다. 장비는 스탯을 깎지 않는다(IT13 — 종류 특색은 오르는 스탯으로). 소재 특성, 가격, 지금 장비 id 유지.
 
 
 func _mods(id: String) -> Dictionary:
@@ -31,17 +31,37 @@ func test_every_type_and_material_is_forged() -> void:
 	assert_true(n >= 300, "종류 × 소재 조합 %d개" % n)
 
 
-func test_spear_grows_attack_but_penalty_stays() -> void:
-	assert_eq(_atk("steel_spear"), 13, "강철 창 공격력 13")
-	assert_eq(_mods("steel_spear").get("agi"), -2.0, "창 = 민첩 −2(사용자 예)")
-	assert_eq(_atk("mithril_spear"), 260, "미스릴(5단계) 창 = 13 × 20(attack_by_tier — 10층 기획)")
-	assert_eq(_atk("mystium_spear"), 390, "미스티움(6단계) 창 = 13 × 30")
-	assert_eq(_mods("airilje_spear").get("agi"), -2.0, "감소는 등급과 무관")
-	assert_eq(_mods("lightium_spear").get("agi"), -1.0, "라이티늄은 가벼워 민첩 감소 절반")
-	assert_eq(_mods("adamantium_plate").get("agi"), -6.0, "아다만티움은 무거워 판금 −4 × 1.5")
+func test_spear_grows_attack() -> void:
+	assert_eq(_atk("steel_spear"), 12, "강철 창 공격력 12")
+	assert_eq(_mods("steel_spear").get("agi"), 1.0, "창 = 길이로 먼저 닿는다 — 민첩 +1")
+	assert_eq(_atk("mithril_spear"), 240, "미스릴(5단계) 창 = 12 × 20(attack_by_tier — 10층 기획)")
+	assert_eq(_atk("mystium_spear"), 360, "미스티움(6단계) 창 = 12 × 30")
 	assert_eq(_mods("steel_sword").get("accuracy"), 3.0)
 	assert_eq(_mods("airilje_sword").get("accuracy"), 3.0, "명중률은 % 값이라 단계 배율이 없다(unscaled)")
 	assert_eq(_mods("airilje_sword").get("str"), 4.0, "증가는 1 × 4.0(3단계 grow_by_tier)")
+
+
+func test_no_equipment_lowers_a_stat() -> void:
+	var n := 0
+	for id: String in db.get_collection("items"):
+		for m: Variant in JsonUtil.get_array(ItemInfo.equip(db, id), "modifiers"):
+			var d: Dictionary = m
+			var val := JsonUtil.get_float(d, "flat", JsonUtil.get_float(d, "percent"))
+			if str(d["target"]).begins_with("dmg_taken"):
+				val = -val  # 받는 피해는 줄어야 이롭다
+			assert_true(val > 0.0, "%s의 %s %s — 장비는 스탯을 깎지 않는다(IT13)" % [id, d["target"], val])
+			n += 1
+	assert_true(n > 300, "수정자 %d개를 봤다" % n)
+
+
+func test_types_have_their_own_character() -> void:
+	var plate := _mods("steel_plate")
+	var leather := _mods("leather_armor")
+	assert_true(float(plate.get("p_res")) >= 3.0 * float(leather.get("p_res")), "판금 = 물리내성이 크게(사용자 예)")
+	assert_false(plate.has("agi"), "판금은 민첩을 주지 않는다")
+	assert_true(float(leather.get("agi", 0.0)) > 0.0, "가죽 = 물리내성은 조금, 민첩이 오른다(사용자 예)")
+	assert_eq(_mods("lightium_plate").get("agi"), 1.0, "라이티늄은 가벼워 민첩 +1")
+	assert_false(_mods("adamantium_plate").has("agi"), "아다만티움은 민첩을 깎지 않는다")
 
 
 func test_material_traits() -> void:
@@ -52,11 +72,11 @@ func test_material_traits() -> void:
 	var drake := _mods("drake_leather_armor")
 	var g4 := float(JsonUtil.get_array(JsonUtil.get_dict(db.balance, "items"), "grow_by_tier")[3])
 	assert_eq(drake.get("p_res"), roundf(3.0 * g4 * 0.5), "드레이크 가죽 = 물리내성 증가 절반")
-	assert_eq(drake.get("m_res"), roundf(1.0 * g4 * 2.0) + 2.0, "항마력 증가 ×2 +2")
+	assert_eq(_mods("drake_cloak").get("m_res"), roundf(1.0 * g4 * 2.0) + 2.0, "항마력 증가 ×2 +2")
 	var myst := _mods("mystium_spear")
 	var g6 := float(JsonUtil.get_array(JsonUtil.get_dict(db.balance, "items"), "grow_by_tier")[5])
-	assert_eq(myst.get("agi"), -1.0, "미스티움 주 스탯 +1이 창의 민첩 −2와 합쳐진다")
-	assert_eq(myst.get("str"), roundf(1.0 * g6) + 1.0, "창 근력 증가 × 6단계 + 미스티움 +1")
+	assert_eq(myst.get("agi"), roundf(1.0 * g6) + 1.0, "창 민첩 증가 × 6단계 + 미스티움 +1")
+	assert_eq(myst.get("str"), 1.0, "창은 근력이 오르지 않는다 — 미스티움 +1만")
 
 
 func test_prices_and_rarity() -> void:

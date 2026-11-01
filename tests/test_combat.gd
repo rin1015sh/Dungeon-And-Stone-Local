@@ -346,7 +346,7 @@ func test_invalid_actions_do_not_use_the_turn() -> void:
 
 func test_party_and_monsters_act_in_agility_order() -> void:
 	var pc := PlayerCharacter.create(db, "human", "warrior", "빠름", {"str": 10, "agi": 14})
-	var ally := PlayerCharacter.create(db, "human", "archer", "느림", {"str": 10, "agi": 2})
+	var ally := PlayerCharacter.create(db, "human", "archer", "느림", {"str": 10, "agi": 0})  # 시작 장비(가죽 갑옷·활·장화)가 민첩을 올린다(IT13)
 	var party: Array[Actor] = [pc, ally]
 	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(4), party, ["goblin", "blade_wolf"], Combatant.SIDE_PARTY)
 	for u in b.units:

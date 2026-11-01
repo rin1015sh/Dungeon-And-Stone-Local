@@ -46,7 +46,7 @@ for t in _load("item_types.json"):
     w = t.get("weapon")
     TYPES.append({"id": t["id"], "name": t["name_ko"], "slot": t["slot"], "category": t["category"], "kinds": t["kinds"],
                   "weapon": ({"type": w["damage_type"], "atk": w["attack"], "magic": w.get("magic"), "two_handed": t.get("two_handed", False), "ranged": w.get("ranged", False)} if w else None),
-                  "grow": t["grow"], "penalty": t["penalty"], "price_mult": t["price_mult"], "size": t["size"], "note": t.get("notes", "")})
+                  "grow": t["grow"], "price_mult": t["price_mult"], "size": t["size"], "note": t.get("notes", "")})
 RES_KO = {r["id"]: r["name_ko"] for r in _load("resources.json")}
 STATUS_KO = {x["id"]: x["name_ko"] for x in _load("statuses.json")}
 
@@ -102,11 +102,6 @@ def build(t: dict, m: dict) -> dict:
     flat: dict = {}
     for k, v in t["grow"].items():
         flat[k] = flat.get(k, 0) + max(1, rnd(v * (1.0 if unscaled(k) else g) * smult.get(k, 1.0)))
-    for k, v in t["penalty"].items():
-        if k == "agi" and "agi_pen" in tr:
-            ap = tr["agi_pen"]
-            v = -math.floor(abs(v) * ap + (0.5 if ap > 1 else 0))
-        flat[k] = flat.get(k, 0) + v
     extra = list(tr.get("mods", [])) + list(tr.get("weapon_mods" if t["weapon"] else "armor_mods", []))
     pct: dict = {}
     for md in extra:
@@ -149,12 +144,12 @@ def main() -> None:
     md = []
     md.append("# 아이템 풀 — 종류 × 소재 공식 (2026-10-23 적용)\n")
     md.append("> 생성: `python3 tools/item_pool.py` — 게임 데이터(`data/materials.json`·`item_types.json`·`balance.json items`)를 읽어 `ItemForge`와 같은 계산으로 만든다. 이 파일은 손으로 고치지 않는다(데이터를 고치고 다시 만든다). 같은 내용 CSV: `docs/balance/item_pool.csv`.")
-    md.append("> 사용자 요청: \"아이템 종류(검·철퇴·창)와 소재 등급(강철·미스티움 …)으로 스탯이 오르게, 종류마다 특색(창 = 공격력↑ 민첩↓), 높은 소재일수록 증가율만 커지게, 감소는 알아서\".\n")
+    md.append("> 사용자 요청: \"아이템 종류(검·철퇴·창)와 소재 등급(강철·미스티움 …)으로 스탯이 오르게, 종류마다 특색(창 = 공격력↑ 민첩↓), 높은 소재일수록 증가율만 커지게, 감소는 알아서\" → 2026-11-01 \"아이템으로 스탯을 깎는 일은 막고 각 아이템마다 특색이 있게(판금 = 물리내성 크게, 가죽 = 물리내성 조금 + 민첩)\"(IT13).\n")
     md.append("## 1. 공식\n")
     md.append("| 값 | 공식 |\n|---|---|")
     md.append("| 공격력·마력 | 종류 기본값 × 공격력 배율(아래) — 반올림 |")
     md.append("| **증가** 스탯 | 종류 기본값 × 증가 배율(아래) — 반올림, 최소 1. 명중률·시각·속성 내성/감응도(%% 값)는 배율 없이 |")
-    md.append("| **감소** 스탯 | 종류 값 그대로(등급과 무관) — 소재 특성 '가벼움'(라이티늄·미스릴 ×0.5)·'무거움'(아다만티움 ×1.5)만 바꾼다 |")
+    md.append("| 감소 스탯 | 없음 — 장비는 스탯을 깎지 않는다(IT13). 종류의 특색은 무엇이 오르는지로 |")
     md.append("| 소재 특성 | 소재마다 고정 효과(등급 배율을 받지 않는다) |")
     md.append("| 구입가 | %s × 종류 가격 계수 × 소재 종류 계수 × 등급 가격 배율 × 소재 개별 계수 → 유효숫자 두 자리 |" % won(BASE_PRICE))
     md.append("| 판매가 | 구입가 × %.1f(상점 `sell_ratio`) |\n" % SELL_RATIO)
@@ -172,16 +167,16 @@ def main() -> None:
     md.append("| 등급 | 소재 | 종류 | 출처 | 특성 |\n|---|---|---|---|---|")
     for m in sorted(MATERIALS, key=lambda x: (x["tier"], list(KIND_KO).index(x["kind"]))):
         md.append("| %d | %s | %s | %s | %s |" % (m["tier"], m["name"], KIND_KO[m["kind"]], m["source"], m["note"]))
-    md.append("\n## 3. 종류 (1단계 기준 값 — 증가는 등급 배율을 받고, 감소는 고정)\n")
-    md.append("| 종류 | 칸 | 쓰는 소재 | 피해·공격력 | 증가 | 감소 | 가격 계수 | 특색 |\n|---|---|---|---|---|---|---|---|")
+    md.append("\n## 3. 종류 (1단계 기준 값 — 증가는 등급 배율을 받는다)\n")
+    md.append("| 종류 | 칸 | 쓰는 소재 | 피해·공격력 | 증가 | 가격 계수 | 특색 |\n|---|---|---|---|---|---|---|")
     for t in TYPES:
         w = t["weapon"]
         wtxt = ""
         if w:
             wtxt = "%s %d%s%s" % ({"slash": "참격", "pierce": "관통", "blunt": "타격"}[w["type"]], w["atk"], " 양손" if w.get("two_handed") else "",
                                   " 원거리" if w.get("ranged") else "")
-        md.append("| %s | %s | %s | %s | %s | %s | ×%.2f | %s |" % (t["name"], t["slot"], "·".join(KIND_KO[k] for k in t["kinds"]), wtxt,
-                                                                  fmt_stats(t["grow"]), fmt_stats(t["penalty"]) or "없음", t["price_mult"], t["note"]))
+        md.append("| %s | %s | %s | %s | %s | ×%.2f | %s |" % (t["name"], t["slot"], "·".join(KIND_KO[k] for k in t["kinds"]), wtxt,
+                                                                  fmt_stats(t["grow"]), t["price_mult"], t["note"]))
     md.append("\n## 4. 전체 목록 (종류 × 소재)\n")
     md.append("이름 = 소재 + 종류(예: 라이티늄 창). 같은 등급에 금속이 둘이면 둘 다 있다.\n")
     for t in TYPES:

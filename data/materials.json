@@ -19,11 +19,16 @@
     "kind": "metal",
     "color": "#eef0f2",
     "trait": {
-      "agi_pen": 0.5
+      "mods": [
+        {
+          "target": "agi",
+          "flat": 1
+        }
+      ]
     },
     "price_mult": 1.0,
     "source": "original",
-    "notes": "원작 — 강철보다 2배 가볍고 단단한 흰 금속 — 민첩 감소 절반"
+    "notes": "원작 — 강철보다 2배 가볍고 단단한 흰 금속 — 가벼워 민첩 +1"
   },
   {
     "id": "airilje",
@@ -113,13 +118,16 @@
         {
           "target": "m_res",
           "flat": 2
+        },
+        {
+          "target": "agi",
+          "flat": 1
         }
-      ],
-      "agi_pen": 0.5
+      ]
     },
     "price_mult": 1.0,
     "source": "original",
-    "notes": "원작 — 5단계 금속, 가볍다 — 민첩 감소 절반·항마력 +2"
+    "notes": "원작 — 5단계 금속, 가볍다 — 민첩 +1·항마력 +2"
   },
   {
     "id": "adamantium",
@@ -135,12 +143,11 @@
           "percent": -0.5
         }
       ],
-      "agi_pen": 1.5,
       "atk": 1.1
     },
     "price_mult": 1.1,
     "source": "original",
-    "notes": "원작 — 무겁다(민첩 감소 ×1.5) — 방어구면 받는 마법(속성) 피해 −50%, 무기면 공격력 ×1.1"
+    "notes": "원작 — 방어구면 받는 마법(속성) 피해 −50%, 무기면 공격력 ×1.1"
   },
   {
     "id": "mystium",

@@ -12,7 +12,7 @@ extends RefCounted
 ##   공격력·마력(weapon.attack·magic) = 종류 값 × attack_by_tier[등급−1] × 소재 atk — 반올림
 ##   증가(grow) = 종류 값 × grow_by_tier[등급−1] × 소재 stat_mult — 반올림, 최소 1. 단 unscaled(명중률·시각·속성 내성/감응도 — % 단위)는 단계 배율 없이
 ##   (소재 장비 = 범용 — 10층에서도 힘의 약 4분의 1, 그 위는 넘버스 몫: docs/plans/balance_10floors.md §6)
-##   감소(penalty) = 종류 값 그대로. 소재 agi_pen만 민첩 감소에 곱한다(가벼움 0.5 = 내림 · 무거움 1.5 = 반올림)
+##   장비는 스탯을 깎지 않는다(사용자 결정 2026-11-01, IT13) — 종류의 특색은 무엇이 오르는지로(판금 = 물리내성 크게, 가죽 = 민첩)
 ##   소재 trait: mods(모든 장비) · weapon_mods(무기 — 대상 "dmg_dealt:weapon"은 그 무기 피해 유형) · armor_mods(무기가 아닌 것)
 ##   구입가 = base_price × 종류 price_mult × kind_price[소재 종류] × price_by_tier[등급−1] × 소재 price_mult → 유효숫자 두 자리
 ##   희귀도 = rarity_by_tier[등급−1]. 판매가는 상점 sell_ratio(city.json). 설명(desc_ko) = 소재 flavor_ko + 종류 flavor_ko(IT7 — 아이템 JSON에 desc_ko가 있으면 그것).
@@ -69,13 +69,6 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 	for k: String in g:
 		var gm := 1.0 if unscaled(cfg, k) else grow
 		flat[k] = float(flat.get(k, 0.0)) + maxf(1.0, roundf(float(g[k]) * gm * JsonUtil.get_float(smult, k, 1.0)))
-	var pen := JsonUtil.get_dict(t, "penalty")
-	for k: String in pen:
-		var v := float(pen[k])
-		if k == "agi" and feat.has("agi_pen"):
-			var ap := JsonUtil.get_float(feat, "agi_pen", 1.0)
-			v = -floorf(absf(v) * ap + (0.5 if ap > 1.0 else 0.0))
-		flat[k] = float(flat.get(k, 0.0)) + v
 	var weapon := JsonUtil.get_dict(t, "weapon")
 	var extra: Array = JsonUtil.get_array(feat, "mods").duplicate()
 	extra.append_array(JsonUtil.get_array(feat, "weapon_mods" if not weapon.is_empty() else "armor_mods"))
@@ -113,7 +106,7 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 		"forged": {"type": JsonUtil.get_str(t, "id"), "material": JsonUtil.get_str(m, "id")}, "equip": equip, "source": "placeholder"}
 
 
-## 균열 장비 배율: 공격력·마력 × attack_mult, 오르는 고정 스탯 × grow_mult(최소 +1 더), 값 × price_mult. 깎이는 수치는 그대로.
+## 균열 장비 배율: 공격력·마력 × attack_mult, 오르는 고정 스탯 × grow_mult(최소 +1 더), 값 × price_mult.
 static func _boost(made: Dictionary, rg: Dictionary) -> void:
 	if rg.is_empty():
 		return

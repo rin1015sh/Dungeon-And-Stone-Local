@@ -33,6 +33,9 @@ static func run(v: ValidatorBase) -> void:
 				list.append(d)
 			v.check_modifier_list(w + ".trait." + key, list)
 		v.check_stat_map(w + ".trait.stat_mult", JsonUtil.get_dict(tr, "stat_mult"))
+		_no_cut(v, w + ".trait", JsonUtil.get_array(tr, "mods") + JsonUtil.get_array(tr, "weapon_mods") + JsonUtil.get_array(tr, "armor_mods"))
+		if tr.has("agi_pen"):
+			v.err(w + ".trait.agi_pen", "민첩 감소는 없앴다(IT13)")
 	for id: String in v.entries("item_types"):
 		var t := v.db.get_entry("item_types", id)
 		var w := "item_types/" + id
@@ -43,21 +46,24 @@ static func run(v: ValidatorBase) -> void:
 		for k: Variant in JsonUtil.get_array(t, "kinds"):
 			if not KINDS.has(str(k)):
 				v.err(w, "소재 종류 '%s' 없음" % k)
-		for key in ["grow", "penalty"]:
-			var mods: Array = []
-			var d := JsonUtil.get_dict(t, key)
-			for target: String in d:
-				mods.append({"target": target, "flat": d[target]})
-				if (key == "grow") != (float(d[target]) > 0.0):
-					v.err(w + "." + key, "%s는 %s" % [target, "양수" if key == "grow" else "음수"])
-			v.check_modifier_list(w + "." + key, mods)
+		if t.has("penalty"):  # 장비는 스탯을 깎지 않는다(사용자 결정 2026-11-01, IT13)
+			v.err(w + ".penalty", "감소 스탯은 없앴다 — 특색은 grow로")
+		var mods: Array = []
+		var g := JsonUtil.get_dict(t, "grow")
+		for target: String in g:
+			mods.append({"target": target, "flat": g[target]})
+			if float(g[target]) <= 0.0:
+				v.err(w + ".grow", "%s는 양수" % target)
+		v.check_modifier_list(w + ".grow", mods)
 		var found := false
 		for mid: String in v.entries("materials"):
 			found = found or JsonUtil.get_array(t, "kinds").has(JsonUtil.get_str(v.db.get_entry("materials", mid), "kind"))
 		if not found:
 			v.err(w, "쓸 수 있는 소재가 없다")
 	for id: String in v.entries("items"):
-		var f := JsonUtil.get_dict(v.db.get_entry("items", id), "forge")
+		var it := v.db.get_entry("items", id)
+		_no_cut(v, "items/%s.equip" % id, JsonUtil.get_array(JsonUtil.get_dict(it, "equip"), "modifiers"))
+		var f := JsonUtil.get_dict(it, "forge")
 		if f.is_empty():
 			continue
 		v.ref("items/%s.forge.type" % id, "item_types", f.get("type"))
@@ -66,3 +72,13 @@ static func run(v: ValidatorBase) -> void:
 		var m := v.db.get_entry("materials", JsonUtil.get_str(f, "material"))
 		if not t.is_empty() and not m.is_empty() and not JsonUtil.get_array(t, "kinds").has(JsonUtil.get_str(m, "kind")):
 			v.err("items/" + id + ".forge", "%s은(는) %s 소재를 쓰지 않는다" % [f.get("type"), m.get("kind")])
+
+
+## 장비 수정자가 스탯을 깎지 않는가(IT13): 고정값은 양수만. 비율은 dmg_taken(받는 피해 — 음수가 이롭다)만 음수를 허락한다.
+static func _no_cut(v: ValidatorBase, where: String, mods: Array) -> void:
+	for md: Variant in mods:
+		var d: Dictionary = md if md is Dictionary else {}
+		var target := JsonUtil.get_str(d, "target")
+		var val := JsonUtil.get_float(d, "flat", JsonUtil.get_float(d, "percent"))
+		if (val < 0.0) != target.begins_with("dmg_taken"):
+			v.err(where, "%s %s — 장비는 스탯을 깎지 않는다(IT13)" % [target, val])
