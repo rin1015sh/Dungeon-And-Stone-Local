@@ -1,0 +1,254 @@
+<title>던전 앤 스톤 수치 도감</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<!-- tools/balance_sheet.py가 이 틀에 데이터를 넣어 docs/balance/all_stats.html을 만든다. 이 틀을 고치면 도구를 다시 돌린다. -->
+<style>
+  /* 배치: 위 = 종류 탭(이름 + 개수) → 아래 = 그 종류의 표 묶음(작은 탭) → 검색·거르기 → 표(머리·첫 열 고정). 게임 팔레트(render.json)를 그대로 쓴다. */
+  :root {
+    --bg: #0b0a09;
+    --panel: #15120f;
+    --line: #2e2822;
+    --line-soft: #1f1b17;
+    --text: #c9c0b6;
+    --dim: #7a726b;
+    --title: #e0d6c2;
+    --bone: #d6cbb0;
+    --blood: #b2433a;
+    --blood-dim: #4a2422;
+    --good: #8c9a6c;
+    --warn: #a8844a;
+    --cold: #7f97b8;
+    --row-hi: #1c1814;
+    --f-display: "Song Myung", "Noto Serif KR", serif;
+    --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #ebe7df; --panel: #f6f3ee; --line: #cfc6b8; --line-soft: #ded7cc; --text: #2b2520; --dim: #6f665c;
+      --title: #1a1511; --bone: #4a3f30; --blood: #9a2f28; --blood-dim: #ecd2cd; --good: #4f6a33; --warn: #8a5f1c;
+      --cold: #3f5f8a; --row-hi: #e2ddd3; color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #ebe7df; --panel: #f6f3ee; --line: #cfc6b8; --line-soft: #ded7cc; --text: #2b2520; --dim: #6f665c;
+    --title: #1a1511; --bone: #4a3f30; --blood: #9a2f28; --blood-dim: #ecd2cd; --good: #4f6a33; --warn: #8a5f1c;
+    --cold: #3f5f8a; --row-hi: #e2ddd3; color-scheme: light;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--f-body); font-size: 14px; line-height: 1.5; }
+  .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .wrap > * { min-width: 0; }
+  header { display: grid; gap: 4px; }
+  h1 { font-family: var(--f-display); font-weight: 400; font-size: 1.9rem; color: var(--title); margin: 0; letter-spacing: 0.02em; text-wrap: balance; }
+  .sub { color: var(--dim); font-size: 0.86rem; margin: 0; }
+  code { font-size: 0.9em; background: var(--line-soft); padding: 0 4px; border-radius: 3px; }
+
+  .kinds { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+  .kind { font: inherit; color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px; cursor: pointer; display: grid; gap: 0; text-align: left; min-width: 88px; }
+  .kind b { font-family: var(--f-display); font-weight: 400; font-size: 1.08rem; color: var(--title); }
+  .kind span { font-size: 0.78rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .kind:hover { border-color: var(--dim); }
+  .kind[aria-selected="true"] { border-color: var(--bone); background: var(--panel); box-shadow: inset 0 -2px 0 var(--bone); }
+  .kind:focus-visible, .sheet:focus-visible, th button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--bone); outline-offset: 2px; }
+
+  .sheets { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .sheet { font: inherit; background: none; border: none; color: var(--dim); padding: 4px 0; cursor: pointer; border-bottom: 2px solid transparent; }
+  .sheet:hover { color: var(--text); }
+  .sheet[aria-selected="true"] { color: var(--title); border-bottom-color: var(--blood); }
+  .note { color: var(--dim); font-size: 0.84rem; margin: 0; max-width: 90ch; }
+
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tools input, .tools select { font: inherit; font-size: 0.88rem; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; min-width: 0; }
+  .tools input { flex: 1 1 220px; max-width: 340px; }
+  .tools label { display: flex; gap: 6px; align-items: center; color: var(--dim); font-size: 0.82rem; }
+  .count { color: var(--dim); font-size: 0.82rem; margin-left: auto; font-variant-numeric: tabular-nums; }
+  .reset { font: inherit; font-size: 0.82rem; color: var(--dim); background: none; border: 1px solid var(--line); border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+
+  .scroll { overflow: auto; max-height: calc(100vh - 230px); min-height: 240px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); }
+  table { border-collapse: separate; border-spacing: 0; font-size: 0.86rem; font-variant-numeric: tabular-nums; width: max-content; min-width: 100%; }
+  th, td { padding: 5px 10px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; vertical-align: top; text-align: left; }
+  td.num { text-align: right; }
+  td.wide { white-space: normal; min-width: 22ch; max-width: 46ch; }
+  thead th { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line); padding: 0; }
+  th button { font: inherit; font-weight: 500; color: var(--bone); background: none; border: none; padding: 7px 10px; cursor: pointer; width: 100%; text-align: left; white-space: nowrap; }
+  th button .arrow { color: var(--blood); margin-left: 4px; }
+  th:first-child, td:first-child { position: sticky; left: 0; z-index: 1; background: var(--panel); border-right: 1px solid var(--line-soft); }
+  thead th:first-child { z-index: 3; }
+  td:first-child { color: var(--title); font-weight: 500; }
+  tbody tr:hover td { background: var(--row-hi); }
+  .id { color: var(--dim); font-size: 0.8rem; }
+
+  .lv-low { color: var(--cold); }
+  .lv-ok { color: var(--good); }
+  .lv-high { color: var(--blood); font-weight: 700; }
+  .lv-warn { color: var(--warn); }
+  .chip { display: inline-block; padding: 0 6px; border-radius: 3px; background: var(--line-soft); }
+
+  .rules { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); }
+  .rules section { min-width: 0; }
+  .rules h2 { font-family: var(--f-display); font-weight: 400; color: var(--title); font-size: 1.2rem; margin: 0 0 8px; }
+  .rules ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 80ch; }
+  .rules li b { color: var(--title); }
+  .empty { color: var(--dim); padding: 24px; }
+  @media (max-width: 520px) { h1 { font-size: 1.5rem; } .kind { min-width: 0; padding: 6px 10px; } .scroll { max-height: 70vh; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>던전 앤 스톤 수치 도감</h1>
+    <p class="sub">몬스터 · 보스 · 정수 · 상태이상 · 장비 · 아이템 · 플레이어 기준. <code>tools/balance_sheet.py</code>가 게임 데이터에서 만든 표입니다. 곡선比 100% = 계획한 기준값과 같음.</p>
+  </header>
+  <nav class="kinds" id="kinds" role="tablist" aria-label="종류"></nav>
+  <div class="sheets" id="sheets" role="tablist" aria-label="표"></div>
+  <p class="note" id="note" hidden></p>
+  <div class="tools" id="tools"></div>
+  <div id="view"></div>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+
+const WIDE = /효과|설명|특수|스탯 변화|^스킬$|색:스킬|시작 장비|^스탯$|[1-6]단계$|주기 피해|쓰는 곳|세부 스탯|페이즈|약점|상태 면역/;
+const FILTERABLE = ["지역", "등급", "구분", "종류", "칸", "단계", "색", "분류", "희귀도", "몬스터 구분", "역할", "사용", "전투 한정", "전투 뒤 남음", "전투 중", "몬스터", "정수", "층"];
+const state = { kind: null, sheet: {}, sort: null, q: "", filters: {} };
+
+function el(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+}
+function numOf(v) {
+  if (typeof v === "number") return v;
+  const m = String(v).replace(/,/g, "").match(/^-?\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : NaN;
+}
+function level(header, v) {
+  const n = numOf(v);
+  if (isNaN(n) || !String(v).endsWith("%")) return "";
+  if (header.includes("比")) return n < 70 ? "lv-low" : n > 130 ? "lv-high" : (n < 85 || n > 115) ? "lv-warn" : "lv-ok";
+  if (header.includes("→")) return n >= 40 ? "lv-high" : n >= 20 ? "lv-warn" : "";
+  return "";
+}
+function fmt(v) {
+  if (typeof v === "number") return Number.isInteger(v) ? (Math.abs(v) >= 10000 ? v.toLocaleString("ko-KR") : String(v)) : String(Math.round(v * 100) / 100);
+  return v == null ? "" : String(v);
+}
+
+function save() { try { localStorage.setItem("ds-sheet", JSON.stringify(state.sheet)); } catch (e) { /* 저장 못 해도 된다 */ } }
+function load() { try { Object.assign(state.sheet, JSON.parse(localStorage.getItem("ds-sheet") || "{}")); } catch (e) { /* 없음 */ } }
+
+function kindById(id) { return DATA.tabs.find(t => t.id === id) || DATA.tabs[0]; }
+
+function renderKinds() {
+  const nav = document.getElementById("kinds");
+  nav.replaceChildren(...DATA.tabs.map(t => el("button", {
+    class: "kind", role: "tab", id: "kind-" + t.id, "aria-selected": String(t.id === state.kind),
+    onclick: () => { location.hash = t.id; }
+  }, el("b", { text: t.name }), el("span", { text: t.count }))));
+}
+
+function renderSheets(tab) {
+  const box = document.getElementById("sheets");
+  const note = document.getElementById("note");
+  if (!tab.sheets.length) { box.replaceChildren(); note.hidden = true; return null; }
+  let cur = tab.sheets.find(s => s.name === state.sheet[tab.id]) || tab.sheets.find(s => s.main) || tab.sheets[0];
+  box.replaceChildren(...tab.sheets.map(s => el("button", {
+    class: "sheet", role: "tab", "aria-selected": String(s === cur),
+    onclick: () => { state.sheet[tab.id] = s.name; state.sort = null; state.q = ""; state.filters = {}; save(); render(); }
+  }, s.label)));
+  note.textContent = cur.note || "";
+  note.hidden = !cur.note;
+  return cur;
+}
+
+function renderTools(sheet, shown) {
+  const tools = document.getElementById("tools");
+  const q = el("input", { id: "q", type: "search", placeholder: "이름·효과로 찾기", value: state.q, "aria-label": "찾기" });
+  q.addEventListener("input", () => { state.q = q.value; renderTable(sheet); });
+  const kids = [q];
+  sheet.headers.forEach((h, i) => {
+    if (!FILTERABLE.includes(h)) return;
+    const vals = [...new Set(sheet.rows.map(r => fmt(r[i])))].filter(v => v !== "");
+    if (vals.length < 2 || vals.length > 70) return;
+    vals.sort((a, b) => (numOf(a) - numOf(b)) || a.localeCompare(b, "ko"));
+    const sel = el("select", { id: "f-" + i, "aria-label": h }, el("option", { value: "", text: "전체" }), ...vals.map(v => el("option", { value: v, text: v })));
+    sel.value = state.filters[i] || "";
+    sel.addEventListener("change", () => { if (sel.value) state.filters[i] = sel.value; else delete state.filters[i]; renderTable(sheet); });
+    kids.push(el("label", {}, h, sel));
+  });
+  kids.push(el("button", { class: "reset", onclick: () => { state.q = ""; state.filters = {}; state.sort = null; render(); } }, "초기화"));
+  kids.push(el("span", { class: "count", id: "count" }));
+  tools.replaceChildren(...kids);
+}
+
+function renderTable(sheet) {
+  const view = document.getElementById("view");
+  const q = state.q.trim().toLowerCase();
+  let rows = sheet.rows.filter(r => {
+    for (const [i, v] of Object.entries(state.filters)) if (fmt(r[i]) !== v) return false;
+    return !q || r.some(c => fmt(c).toLowerCase().includes(q));
+  });
+  if (state.sort) {
+    const { i, dir } = state.sort;
+    rows = rows.slice().sort((a, b) => {
+      const x = numOf(a[i]), y = numOf(b[i]);
+      const c = (!isNaN(x) && !isNaN(y)) ? x - y : fmt(a[i]).localeCompare(fmt(b[i]), "ko");
+      return c * dir;
+    });
+  }
+  document.getElementById("count").textContent = sheet.rows.length + "개 중 " + rows.length + "개";
+  const idCol = sheet.headers.indexOf("id");
+  const head = el("tr", {}, ...sheet.headers.map((h, i) => {
+    if (i === idCol) return null;
+    const arrow = state.sort && state.sort.i === i ? (state.sort.dir > 0 ? "▲" : "▼") : "";
+    return el("th", { scope: "col" }, el("button", {
+      onclick: () => { state.sort = state.sort && state.sort.i === i ? (state.sort.dir > 0 ? { i, dir: -1 } : null) : { i, dir: isNaN(numOf(sheet.rows[0] && sheet.rows[0][i])) ? 1 : -1 }; renderTable(sheet); }
+    }, h, arrow ? el("span", { class: "arrow", text: arrow }) : null));
+  }));
+  const body = el("tbody", {}, ...rows.map(r => el("tr", {}, ...r.map((c, i) => {
+    if (i === idCol) return null;
+    const h = sheet.headers[i];
+    const s = fmt(c);
+    const cls = [WIDE.test(h) ? "wide" : "", (i > 0 && !WIDE.test(h) && /^-?[\d,]+(\.\d+)?%?$/.test(s)) ? "num" : "", level(h, s)].filter(Boolean).join(" ");
+    const td = el("td", cls ? { class: cls } : {}, s);
+    if (i === 0 && idCol >= 0 && r[idCol]) td.append(el("div", { class: "id", text: r[idCol] }));
+    return td;
+  }))));
+  view.replaceChildren(rows.length ? el("div", { class: "scroll" }, el("table", {}, el("thead", {}, head), body)) : el("p", { class: "empty", text: "맞는 줄이 없습니다. 찾는 말이나 거르기를 바꿔 보세요." }));
+}
+
+function renderRules() {
+  document.getElementById("tools").replaceChildren();
+  const li = s => { const e = el("li"); e.innerHTML = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>"); return e; };
+  document.getElementById("view").replaceChildren(el("div", { class: "rules" },
+    el("section", {}, el("h2", { text: "전투·성장 공식" }), el("ul", {}, ...DATA.formulas.map(li))),
+    el("section", {}, el("h2", { text: "곡선에서 많이 벗어난 것" }), el("p", { class: "note", text: DATA.check_note }), el("ul", {}, ...DATA.checks.map(li)))));
+}
+
+function render() {
+  const tab = kindById(state.kind);
+  state.kind = tab.id;
+  renderKinds();
+  const sheet = renderSheets(tab);
+  if (tab.id === "rules" || !sheet) { renderRules(); return; }
+  renderTools(sheet);
+  renderTable(sheet);
+}
+
+function route() {
+  const id = (location.hash || "").slice(1);
+  const next = DATA.tabs.some(t => t.id === id) ? id : DATA.tabs[0].id;
+  if (next !== state.kind) { state.sort = null; state.q = ""; state.filters = {}; }
+  state.kind = next;
+  render();
+}
+load();
+window.addEventListener("hashchange", route);
+route();
+</script>

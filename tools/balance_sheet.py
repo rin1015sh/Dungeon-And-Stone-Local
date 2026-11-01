@@ -1,6 +1,7 @@
 """밸런스 총정리 — 몬스터·보스·정수·상태이상·아이템·플레이어 기준을 한 파일에 모은다.
     python3 tools/balance_sheet.py
-→ docs/balance/all_stats.md(읽기용) + docs/balance/all_stats.xlsx(정렬·필터용, 같은 표를 시트마다).
+→ docs/balance/all_stats.md(읽기용) + all_stats.html(종류별 탭 화면 — 브라우저로 연다) + all_stats.xlsx(정렬·필터용, 같은 표를 시트마다).
+쓰는 부분은 tools/balance_sheet_out.py, 화면 틀은 tools/balance_sheet_view.html.
 데이터(data/*.json)가 정본이다 — 이 파일들은 손으로 고치지 않고, 데이터를 바꿨으면 다시 돌린다.
 곡선 기준값은 tools/balance_curve.py, 장비 계산은 tools/item_pool.py(= ItemForge), 스킬 효과 글은 tools/essences_md.py를 그대로 쓴다.
 """
@@ -16,10 +17,9 @@ import balance_curve as BC  # noqa: E402
 import essences_md as EM  # noqa: E402
 import item_pool as IP  # noqa: E402
 import restat_monsters as RS  # noqa: E402
+import balance_sheet_out as OUT  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_MD = os.path.join(ROOT, "docs", "balance", "all_stats.md")
-OUT_XLSX = os.path.join(ROOT, "docs", "balance", "all_stats.xlsx")
 MAIN = ["str", "agi", "p_res", "m_res", "int"]
 MAIN_KO = ["근력", "민첩", "물내", "항마", "정신"]
 
@@ -335,6 +335,9 @@ def monster_tables() -> list:
             prow.append([m["name_ko"], p.get("name_ko", p.get("id")), p.get("desc_ko", "")])
     out.append(Table("2-5. 몬스터 스킬 전체", ["몬스터", "스킬", "id", "대상", "비용", "효과"], rows, note="위력 = 공격력에 곱하는 값(물리: 근력×2 + 무기).", sheet="몬스터 스킬"))
     out.append(Table("2-6. 몬스터 패시브", ["몬스터", "패시브", "설명"], prow, sheet="몬스터 패시브"))
+    boss_names = {m["name_ko"] for m in MONSTERS if rank(m) in BOSS_RANKS}
+    out.append(Table("2-7. 보스·정예 스킬", ["몬스터", "스킬", "id", "대상", "비용", "효과"], [r for r in rows if r[0] in boss_names],
+                     note="2-5에서 보스·정예만 뽑은 것. 페이즈·패턴(예고 기술·게이지)은 BossHooks/patterns 코드에 있어 여기 다 나오지 않는다.", sheet="보스 스킬"))
     return out
 
 
@@ -542,111 +545,15 @@ def checks() -> list:
     return lines or ["눈에 띄게 어긋난 것 없음."]
 
 
-# ── 출력 ────────────────────────────────────────────────────
-def md_cell(v) -> str:
-    if isinstance(v, float):
-        v = "%g" % v
-    elif isinstance(v, int) and abs(v) >= 10000:
-        v = "{:,}".format(v)
-    return str(v).replace("|", "\\|").replace("\n", " ")
-
-
-def write_md(sections: list, chk: list) -> None:
-    w = ["# 밸런스 총정리 — 몬스터 · 보스 · 정수 · 상태이상 · 아이템 · 플레이어", "",
-         "> `python3 tools/balance_sheet.py`가 `data/*.json`에서 만든다 — **손으로 고치지 않는다**(데이터를 바꿨으면 다시 돌린다).",
-         "> 같은 표를 시트별로 정렬·필터해 보려면 `docs/balance/all_stats.xlsx`. 곡선(기준값) = `docs/balance/curve.md`, 공식 설명 = `docs/balance/stats.md`.",
-         "> 수치 대부분이 임시값(`source: placeholder`). '곡선比'는 계획한 기준값 대비 — 100%면 계획대로, 크면 강하다.", "",
-         "## 목차", "", "0. 공식 · 6. 자동 점검(맨 위로 올림) · 1. 플레이어 기준 · 2. 몬스터(등급별 평균 → 보스 → 전체 → 스킬·패시브) · 3. 정수 · 4. 상태이상 · 5. 아이템", "",
-         "## 0. 공식(지금 데이터 값)", ""] + ["- " + x for x in formulas()] + ["", "## 6. 자동 점검 — 곡선에서 많이 벗어난 것", "",
-         "> 몬스터: 생명력 곡선比 60~140% · 주스탯 70~130% 밖(성격 ±30%는 의도라 그 밖만) / 정수: 기준 합·생명력 75~125% 밖. 기준 = 수치를 매길 때 쓴 곡선 목표(restat_monsters).", ""]
-    w += ["- " + x for x in chk] + [""]
-    for head, tables in sections:
-        w += ["## " + head, ""]
-        for t in tables:
-            w += ["### " + t.title, ""]
-            if t.note:
-                w += ["> " + t.note, ""]
-            w.append("| " + " | ".join(t.headers) + " |")
-            w.append("|" + "---|" * len(t.headers))
-            w += ["| " + " | ".join(md_cell(c) for c in row) + " |" for row in t.rows]
-            w.append("")
-    with open(OUT_MD, "w", encoding="utf-8") as f:
-        f.write("\n".join(w))
-
-
-def xl_row(row: list) -> list:
-    """'104%' 같은 글자는 숫자(1.04)로 — 엑셀에서 정렬·필터가 되게(표시는 % 서식)."""
-    out = []
-    for v in row:
-        if isinstance(v, str) and re.fullmatch(r"-?\d+(\.\d+)?%", v):
-            out.append(float(v[:-1]) / 100.0)
-        else:
-            out.append(v)
-    return out
-
-
-def write_xlsx(sections: list, chk: list) -> bool:
-    try:
-        from openpyxl import Workbook
-        from openpyxl.styles import Alignment, Font, PatternFill
-        from openpyxl.utils import get_column_letter
-    except ImportError:
-        print("openpyxl 없음 — xlsx는 건너뜀(pip install openpyxl)")
-        return False
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "공식·점검"
-    ws.append(["밸런스 총정리 — tools/balance_sheet.py가 data/*.json에서 만든다(손으로 고치지 않는다)"])
-    ws.append([])
-    ws.append(["공식"])
-    for x in formulas():
-        ws.append([x])
-    ws.append([])
-    ws.append(["자동 점검"])
-    for x in chk:
-        ws.append([x.replace("**", "")])
-    ws.column_dimensions["A"].width = 160
-    head_fill = PatternFill("solid", fgColor="DDD6C8")
-    sheets = {}
-    for _head, tables in sections:
-        for t in tables:
-            name = (t.sheet or t.title)[:31]
-            if name in sheets:
-                sh = sheets[name]
-                for row in t.rows:
-                    sh.append(xl_row(row))
-                continue
-            sh = wb.create_sheet(name)
-            sheets[name] = sh
-            sh.append(t.headers)
-            for c in sh[1]:
-                c.font = Font(bold=True)
-                c.fill = head_fill
-                c.alignment = Alignment(wrap_text=True, vertical="top")
-            for row in t.rows:
-                sh.append(xl_row(row))
-            sh.freeze_panes = "C2" if len(t.headers) > 6 else "A2"
-            sh.auto_filter.ref = "A1:%s1" % get_column_letter(len(t.headers))
-    for sh in sheets.values():
-        for row in sh.iter_rows(min_row=2):
-            for c in row:
-                if isinstance(c.value, float) and c.column_letter and isinstance(sh.cell(1, c.column).value, str) and ("比" in sh.cell(1, c.column).value or "→" in sh.cell(1, c.column).value):
-                    c.number_format = "0%"
-        for i, col in enumerate(sh.iter_cols(min_row=1, max_row=min(sh.max_row, 200)), start=1):
-            width = max(len(str(c.value)) if c.value is not None else 0 for c in col)
-            sh.column_dimensions[get_column_letter(i)].width = max(6, min(60, width * 1.6 + 2))
-    wb.save(OUT_XLSX)
-    return True
-
-
 def main() -> None:
     sections = [("1. 플레이어 기준", player_tables()), ("2. 몬스터", monster_tables()), ("3. 정수", essence_tables()),
                 ("4. 상태이상", status_tables()), ("5. 아이템", item_tables())]
     chk = checks()
-    write_md(sections, chk)
-    ok = write_xlsx(sections, chk)
+    OUT.write_md(sections, formulas(), chk)
+    ok = OUT.write_xlsx(sections, formulas(), chk)
+    OUT.write_html(sections, formulas(), chk)
     n = sum(len(t.rows) for _h, ts in sections for t in ts)
-    print("all_stats.md%s: 표 %d개 · %d줄 · 점검 %d건 (몬스터 %d · 정수 %d · 상태 %d · 스킬 %d · 아이템 %d)" % (
+    print("all_stats.md + .html%s: 표 %d개 · %d줄 · 점검 %d건 (몬스터 %d · 정수 %d · 상태 %d · 스킬 %d · 아이템 %d)" % (
         " + .xlsx" if ok else "", sum(len(ts) for _h, ts in sections), n, len(chk), len(MONSTERS), len(ESSENCES), len(STATUSES), len(SKILLS), len(ITEMS)))
 
 
