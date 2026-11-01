@@ -21,7 +21,7 @@
       "top": "#2a2530",
       "face": "#6a6074"
     },
-    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6, "shape": "smooth"},
+    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6, "shape": "smooth", "doors": ["rough", "cave", "rough"]},
     "source": "placeholder"
   },
   {
@@ -39,7 +39,7 @@
       "color": "#8f6cff",
       "intensity": 0.8
     },
-    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6, "shape": "smooth"},
+    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6, "shape": "smooth", "doors": ["rough", "cave", "rough"]},
     "source": "original"
   },
   {
@@ -257,13 +257,13 @@
     "notes": "수호자 방 바닥 gm_rubble 위에 서는 세로 차원문(RF21)"
   },
   {"id": "fortress_floor", "name_ko": "핏빛 포석", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#3e3436"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/bf/cobble.webp", "variants": 6}},
-  {"id": "fortress_wall", "name_ko": "흑빛 성벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#1a1214", "face": "#463638"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/bf/masonry.webp", "variants": 6, "shape": "bevel"}},
+  {"id": "fortress_wall", "name_ko": "흑빛 성벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#1a1214", "face": "#463638"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/bf/masonry.webp", "variants": 6, "shape": "bevel", "doors": ["square", "round", "pointed", "gate"]}},
   {"id": "ice_floor", "name_ko": "얼음 바닥", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#7c95a8"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/gc/ice.webp", "variants": 6}},
-  {"id": "ice_wall", "name_ko": "얼음벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#2b3d4c", "face": "#a9c6da"}, "source": "placeholder", "light": {"radius_m": 1.5, "color": "#bfe3ff", "intensity": 0.4}, "art": {"atlas": "res://assets/floor/gc/icewall.webp", "variants": 6, "shape": "round"}},
+  {"id": "ice_wall", "name_ko": "얼음벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#2b3d4c", "face": "#a9c6da"}, "source": "placeholder", "light": {"radius_m": 1.5, "color": "#bfe3ff", "intensity": 0.4}, "art": {"atlas": "res://assets/floor/gc/icewall.webp", "variants": 6, "shape": "round", "doors": ["rough", "cave", "rough"]}},
   {"id": "mine_floor", "name_ko": "갱도 바닥", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5a4a3a"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/gm/minedirt.webp", "variants": 6}},
-  {"id": "mine_wall", "name_ko": "갱도 벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#22242a", "face": "#4e505a"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/gm/minewall.webp", "variants": 6, "shape": "round"}},
+  {"id": "mine_wall", "name_ko": "갱도 벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#22242a", "face": "#4e505a"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/gm/minewall.webp", "variants": 6, "shape": "round", "doors": ["timber", "timber", "rough"]}},
   {"id": "metal_floor", "name_ko": "금속 바닥", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#4a4e54"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/it/steelplates.webp", "variants": 6}},
-  {"id": "metal_wall", "name_ko": "벽화가 새겨진 금속벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#202326", "face": "#5a6068"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/it/muralwall.webp", "variants": 6, "shape": "bevel"}},
+  {"id": "metal_wall", "name_ko": "벽화가 새겨진 금속벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#202326", "face": "#5a6068"}, "source": "placeholder", "art": {"atlas": "res://assets/floor/it/muralwall.webp", "variants": 6, "shape": "bevel", "doors": ["square", "gate", "round", "square"]}},
   {"id": "fountain_statue", "name_ko": "분수대 조각상", "kind": "wall", "walkable": false, "blocks_sight": false, "interact": "hidden_piece", "colors": {"top": "#5a6a7a", "face": "#9ab0c0"}, "light": {"radius_m": 1.5, "color": "#bfe6ff", "intensity": 0.5}, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/bf/stand.webp", "cell": 29, "cols": 8, "rows": 4, "size": [2, 3]}}},
   {"id": "bookshelf", "name_ko": "썩은 책장", "kind": "wall", "walkable": false, "blocks_sight": false, "interact": "hidden_piece", "colors": {"top": "#3a2a20", "face": "#6a4a30"}, "source": "placeholder", "art": {"stand": {"sheet": "res://assets/floor/bf/stand.webp", "cell": 30, "cols": 8, "rows": 4, "size": [2, 3]}}},
   {"id": "ice_pond", "name_ko": "작은 연못", "kind": "wall", "walkable": false, "blocks_sight": false, "interact": "hidden_piece", "colors": {"top": "#3a6a8a", "face": "#5a8aa8"}, "light": {"radius_m": 1.2, "color": "#ff7a8a", "intensity": 0.35}, "source": "original", "notes": "빙정이 잠긴 연못(시작 지점 근처)", "art": {"stand": {"sheet": "res://assets/floor/gc/stand.webp", "cell": 12, "cols": 8, "rows": 2, "size": [2, 3], "under": "gc_snow"}}},
@@ -617,7 +617,7 @@
   {"id": "gc_bones", "name_ko": "얼어붙은 뼈", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#b4bcc6"}, "source": "original", "art": {"atlas": "res://assets/floor/gc/frozenbones.webp", "variants": 6}},
   {"id": "gc_gravel", "name_ko": "얼음 자갈", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#969ca4"}, "source": "original", "art": {"atlas": "res://assets/floor/gc/icegravel.webp", "variants": 6}},
   {"id": "gc_river", "name_ko": "지하 강", "kind": "floor", "walkable": false, "blocks_sight": false, "colors": {"floor": "#285a8c"}, "light": {"radius_m": 1.2, "color": "#7ad0ff", "intensity": 0.25}, "source": "original", "art": {"atlas": "res://assets/floor/gc/river.webp", "variants": 6, "shape": "smooth"}},
-  {"id": "gc_cliff", "name_ko": "바위 절벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#262c32", "face": "#46505c"}, "face_px": 56, "source": "original", "art": {"atlas": "res://assets/floor/gc/cliff.webp", "variants": 6, "shape": "round"}},
+  {"id": "gc_cliff", "name_ko": "바위 절벽", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#262c32", "face": "#46505c"}, "face_px": 56, "source": "original", "art": {"atlas": "res://assets/floor/gc/cliff.webp", "variants": 6, "shape": "round", "doors": ["rough", "cave", "rough"]}},
   {"id": "gc_icicle", "name_ko": "고드름 기둥", "kind": "wall", "walkable": false, "blocks_sight": false, "colors": {"top": "#687e89", "face": "#bee6fa"}, "face_px": 30, "light": {"radius_m": 1.5, "color": "#bfe8ff", "intensity": 0.35}, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gc/stand.webp", "cell": 0, "cols": 8, "rows": 2, "size": [2, 3]}}},
   {"id": "gc_guide", "name_ko": "길잡이 얼음 기둥", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#426e84", "face": "#78c8f0"}, "face_px": 40, "light": {"radius_m": 3.0, "color": "#9fd8ff", "intensity": 0.7}, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gc/stand.webp", "cell": 1, "cols": 8, "rows": 2, "size": [2, 3]}}},
   {"id": "gc_pine", "name_ko": "언 침엽수", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#162621", "face": "#28463c"}, "face_px": 40, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gc/stand.webp", "cell": 2, "cols": 8, "rows": 2, "size": [2, 3], "under": "gc_snow"}}},
@@ -638,7 +638,7 @@
   {"id": "gm_stairs", "name_ko": "나무 계단", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#7a5a3a"}, "source": "original", "art": {"atlas": "res://assets/floor/gm/woodstairs.webp", "variants": 6}},
   {"id": "gm_planks", "name_ko": "나무 발판", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5e4a34"}, "source": "original", "art": {"atlas": "res://assets/floor/gm/planks.webp", "variants": 6, "void_edge": "beam"}},
   {"id": "gm_ooze", "name_ko": "슬라임 웅덩이", "kind": "floor", "walkable": false, "blocks_sight": false, "colors": {"floor": "#5ac850"}, "light": {"radius_m": 1.5, "color": "#8aff6a", "intensity": 0.45}, "source": "original", "art": {"atlas": "res://assets/floor/gm/ooze.webp", "variants": 6, "shape": "smooth"}},
-  {"id": "gm_cavein", "name_ko": "무너진 흙", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#2a2622", "face": "#5a544c"}, "face_px": 40, "source": "original", "art": {"atlas": "res://assets/floor/gm/cavein.webp", "variants": 6, "shape": "round"}},
+  {"id": "gm_cavein", "name_ko": "무너진 흙", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#2a2622", "face": "#5a544c"}, "face_px": 40, "source": "original", "art": {"atlas": "res://assets/floor/gm/cavein.webp", "variants": 6, "shape": "round", "doors": ["timber", "rough"]}},
   {"id": "gm_support", "name_ko": "버팀목", "kind": "wall", "walkable": false, "blocks_sight": false, "colors": {"top": "#422f1b", "face": "#785632"}, "face_px": 40, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gm/stand.webp", "cell": 0, "cols": 8, "rows": 3, "size": [2, 3]}}},
   {"id": "gm_crystal", "name_ko": "녹색 결정", "kind": "wall", "walkable": false, "blocks_sight": true, "colors": {"top": "#428c3c", "face": "#78ff6e"}, "face_px": 44, "light": {"radius_m": 4.0, "color": "#7aff5a", "intensity": 1.0}, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gm/stand.webp", "cell": 1, "cols": 8, "rows": 3, "size": [2, 3], "under": "gm_stone"}}},
   {"id": "gm_cart", "name_ko": "광차", "kind": "wall", "walkable": false, "blocks_sight": false, "colors": {"top": "#31261b", "face": "#5a4632"}, "face_px": 14, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gm/stand.webp", "cell": 2, "cols": 8, "rows": 3, "size": [2, 3], "under": "gm_rail"}}},

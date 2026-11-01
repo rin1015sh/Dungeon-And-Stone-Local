@@ -19,7 +19,7 @@
     "wall_skirt_px": 4,
     "wall_round": 0.5,
     "wall_bulge": 0.06,
-    "door": {"_comment": "문(아치 — WallDoors, AM62): 방 북쪽 벽에 뚫린 max_cells칸 이하 통로 들머리에 벽 앞면을 아치로 잇고 위는 검은 벽 머리. depth = 북쪽으로 이어져야 하는 통로 길이(칸 — 동굴 벽 굴곡은 문이 아니다) · lintel = 아치 가운데 두께(앞면 높이 비율 — 그 아래 트인 높이가 플레이어 키쯤) · spring = 아치가 시작되는 곳(앞면 위에서부터 비율 — 그 아래는 곧은 문설주) · shade_tiles·shade_alpha = 아치 바로 밑 옅은 그늘(아치 안은 뒤 통로가 보인다)", "max_cells": 4, "depth": 2, "lintel": 0.14, "spring": 0.42, "shade_tiles": 0.3, "shade_alpha": 0.3},
+    "door": {"_comment": "문(WallDoors·DoorArt — AM62·AM64): 방 북쪽 벽에 뚫린 max_cells칸 이하 통로 들머리(북쪽으로 depth칸 이어짐)에 벽 앞면을 이은 문틀·아치를 덮고 위는 둥근 검은 벽 머리. 모양은 벽 타일 art.doors에서 자리마다 고른다. kinds.<모양> = {spring: 아치가 시작되는 곳, crown: 꼭대기 — 앞면 위에서부터 앞면 높이 비율}로 기본값(DoorArt.DEFAULTS)을 덮어쓴다", "max_cells": 4, "depth": 2, "kinds": {}},
     "memory_desat": 0.65,
     "unexplored_color": "#000000",
     "near_black": "#0c0b0e",
