@@ -164,6 +164,26 @@ func test_npcs_play_their_act() -> void:
 	assert_true(smith != null and smith.seq.size() > 1 and smith.col_at(0.0) != smith.col_at(1.0 / smith.fps * 3.0), "대장장이 망치질은 칸이 바뀐다")
 
 
+## 말 걸기(CT76): 일하는 사람이 아닌 사람은 모두 할 말이 있고(city.npc.<talk>.1~), 바라보면 그 사람이 살필 자리. 훈련장 교관 자리는 늘 훈련.
+func test_people_talk_and_trainer_trains() -> void:
+	var s := _state()
+	for f in s.facility_ids():
+		var r := CityRoom.load_for(s, f)
+		for n: Dictionary in r.npcs:
+			if bool(n["staff"]):
+				continue
+			assert_true(Strings.has("city.npc.%s.1" % n["talk"]), "%s %s 할 말" % [f, n["name_ko"]])
+			var at: Vector2i = n["at"]
+			var seen := _reach(r)
+			for d: Vector2i in [Vector2i.DOWN, Vector2i.UP, Vector2i.LEFT, Vector2i.RIGHT]:
+				if seen.has(at + d):
+					var t := r.target(Vector2(at + d) + Vector2(0.5, 0.5), -d)
+					assert_eq(str(t.get("talk", "")), str(n["talk"]), "%s %s 바라보면 말 걸기" % [f, n["name_ko"]])
+					break
+	var tr := CityRoom.load_for(s, "training")
+	assert_true(tr.spots.any(func(sp: Dictionary) -> bool: return str(sp["name_ko"]) == "교관" and (sp["acts"] as Array).has("training_train")), "교관에게서 훈련")
+
+
 ## 가구 뒤지기(CT74): 건물마다 뒤질 가구가 있고, 바라보고 뒤지면 그 건물 잡템(또는 빈손), 한 자리는 한 순에 한 번 — 순이 바뀌면 다시.
 func test_search_furniture_once_per_period() -> void:
 	var s := _state()

@@ -371,7 +371,8 @@
    "look": "res://assets/actors/looks/n3_priest_h8.webp",
    "staff": false,
    "act": "read",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "chorister"
   },
   {
    "at": [17, 15],
@@ -387,7 +388,8 @@
    "look": "res://assets/actors/looks/n4_merchant_h0.webp",
    "staff": false,
    "act": "pray",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "believer"
   },
   {
    "at": [21, 34],
@@ -395,7 +397,8 @@
    "look": "res://assets/actors/looks/n8_acolyte_h1.webp",
    "staff": false,
    "act": "sweep",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "monk"
   },
   {
    "at": [30, 17],
@@ -403,7 +406,8 @@
    "look": "res://assets/actors/looks/n8_acolyte_h2.webp",
    "staff": false,
    "act": "read",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "monk"
   },
   {
    "at": [13, 30],
@@ -411,7 +415,8 @@
    "look": "res://assets/actors/looks/h11_wayfarer_h3.webp",
    "staff": false,
    "act": "pray",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "believer"
   }
  ],
  "spots": [

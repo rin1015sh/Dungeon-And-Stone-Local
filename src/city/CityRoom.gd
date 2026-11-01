@@ -22,7 +22,7 @@ var start: Vector2 = Vector2.ZERO
 var furniture: Array[Dictionary] = []
 ## 뒤질 수 있는 가구·벽 장식(CityScavenge — CT74) {rect, acts(빈 것), rest, name_ko, search(scavenge 표 id), key("방 id:x,y")}.
 var searchables: Array[Dictionary] = []
-## 사람 {at: Vector2i, look, name_ko, staff, face: Vector2i, act(동작 id — NpcActSheet, CT69)}.
+## 사람 {at: Vector2i, look, name_ko, staff, face: Vector2i, act(동작 id — NpcActSheet, CT69), talk(말 걸면 city.npc.<talk>.<번호> — CT76)}.
 var npcs: Array[Dictionary] = []
 ## 지금 살필 수 있는 자리 {rect: Rect2i, acts: Array[String], rest, name_ko}.
 var spots: Array[Dictionary] = []
@@ -131,7 +131,7 @@ func _build(state: CityState, room_id: String) -> void:
 		var f := JsonUtil.get_array(n, "face")
 		npcs.append({"at": Vector2i(int(at[0]), int(at[1])), "look": JsonUtil.get_str(n, "look"), "name_ko": JsonUtil.get_str(n, "name_ko"),
 			"staff": JsonUtil.get_bool(n, "staff", true), "face": Vector2i(int(f[0]), int(f[1])) if f.size() == 2 else Vector2i(0, 1),
-			"act": JsonUtil.get_str(n, "act")})
+			"act": JsonUtil.get_str(n, "act"), "talk": JsonUtil.get_str(n, "talk")})
 	for v: Variant in JsonUtil.get_array(def, "spots"):
 		var s: Dictionary = v
 		var acts: Array[String] = []
@@ -175,12 +175,15 @@ func is_door(cell: Vector2i) -> bool:
 	return kind_at(cell) == "entry"
 
 
-## 몸(칸 좌표 pos)이 facing을 보고 있을 때 바로 앞 칸의 살필 자리(활동 자리가 먼저, 없으면 뒤질 가구 — search 키가 있다, 없으면 {}).
+## 몸(칸 좌표 pos)이 facing을 보고 있을 때 바로 앞 칸의 살필 자리(활동 자리가 먼저, 다음은 말 걸 사람 — talk 키, 다음은 뒤질 가구 — search 키, 없으면 {}).
 func target(pos: Vector2, facing: Vector2i) -> Dictionary:
 	var ahead := Kinematics.cell_of(pos + Vector2(facing) * 0.8)
 	for s: Dictionary in spots:
 		if (s["rect"] as Rect2i).has_point(ahead):
 			return s
+	for n: Dictionary in npcs:
+		if n["at"] == ahead and not str(n["talk"]).is_empty():
+			return {"rect": Rect2i(ahead, Vector2i.ONE), "acts": [] as Array[String], "rest": false, "name_ko": n["name_ko"], "talk": n["talk"], "at": ahead}
 	for s: Dictionary in searchables:
 		if (s["rect"] as Rect2i).has_point(ahead):
 			return s

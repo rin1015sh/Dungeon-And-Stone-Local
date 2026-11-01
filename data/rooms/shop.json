@@ -200,7 +200,8 @@
    "look": "res://assets/actors/looks/h3_coat_h2.webp",
    "staff": false,
    "act": "idle",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "customer"
   },
   {
    "at": [2, 17],
@@ -208,7 +209,8 @@
    "look": "res://assets/actors/looks/h11_wayfarer_h3.webp",
    "staff": false,
    "act": "idle",
-   "face": [1, 0]
+   "face": [1, 0],
+   "talk": "customer"
   }
  ],
  "spots": [

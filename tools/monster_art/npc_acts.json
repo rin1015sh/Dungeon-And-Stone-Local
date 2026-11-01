@@ -1,5 +1,6 @@
 {
- "_comment": "도시 실내 NPC 동작(tools/paint_actors.gd --acts → assets/actors/acts/<옷차림>__<동작>.webp + index.json, CT69). 칸 좌표는 party_motions.json과 같은 뒷모습 120px 칸(가운데 x 60 · 땅 y 117 · z = 보는 사람 쪽 px — 몸 앞은 z −). from = 전투 동작 칸을 빌려 씀(pick = 칸 번호), frames = 쉬는 자세(idle 첫 칸)에 set(관절 덮어쓰기)·ik(손 자리 {l|r: {hand, pole}})·d(먼 쪽 a/보는 쪽 t)·turn·kit(이 칸만 도구 값). kit = 손 도구(BackTools — weapon 오른손 · off_tool 다른 손 · hot · steam · book_c, 무기는 BackExtras). seq = 재생 칸 순서, fps = 초당 칸.",
+ "_comment": "도시 실내 NPC 동작(tools/paint_actors.gd --acts → assets/actors/acts/<옷차림>__<동작>.webp + index.json, CT69). 칸 좌표는 party_motions.json과 같은 뒷모습 120px 칸(가운데 x 60 · 땅 y 117 · z = 보는 사람 쪽 px — 몸 앞은 z −). from = 전투 동작 칸을 빌려 씀(pick = 칸 번호), frames = 쉬는 자세(idle 첫 칸)에 set(관절 덮어쓰기)·ik(손 자리 {l|r: {hand, pole}})·d(먼 쪽 a/보는 쪽 t)·turn·kit(이 칸만 도구 값). kit = 손 도구(BackTools — weapon 오른손 · off_tool 다른 손 · hot · steam · book_c, 무기는 BackExtras). seq = 재생 칸 순서, fps = 초당 칸. 그릴 때 seq 사이를 관절 보간 칸으로 채운다(NpcActs.tween — 화면 칸 빠르기 _tween_fps, 2026-11-01).",
+ "_tween_fps": 10,
  "idle": {
   "from": "idle",
   "pick": [

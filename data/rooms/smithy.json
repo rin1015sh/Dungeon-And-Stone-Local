@@ -222,7 +222,8 @@
    "look": "res://assets/actors/looks/n10_apprentice_h5.webp",
    "staff": false,
    "act": "quench",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "apprentice"
   },
   {
    "at": [6, 26],
@@ -230,7 +231,8 @@
    "look": "res://assets/actors/looks/n10_apprentice_h6.webp",
    "staff": false,
    "act": "sweep",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "apprentice"
   },
   {
    "at": [4, 17],
@@ -238,7 +240,8 @@
    "look": "res://assets/actors/looks/h3_coat_h7.webp",
    "staff": false,
    "act": "idle",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "customer"
   }
  ],
  "spots": [

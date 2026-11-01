@@ -280,7 +280,8 @@
    "look": "res://assets/actors/looks/h3_coat_h1.webp",
    "staff": false,
    "act": "drink",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "drinker"
   },
   {
    "at": [22, 14],
@@ -288,7 +289,8 @@
    "look": "res://assets/actors/looks/n9_cook_h2.webp",
    "staff": false,
    "act": "stir",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "cook"
   },
   {
    "at": [4, 25],
@@ -296,7 +298,8 @@
    "look": "res://assets/actors/looks/h0_traveler_h3.webp",
    "staff": false,
    "act": "drink",
-   "face": [1, 0]
+   "face": [1, 0],
+   "talk": "drinker"
   },
   {
    "at": [15, 24],
@@ -304,7 +307,8 @@
    "look": "res://assets/actors/looks/h1_cloak_h4.webp",
    "staff": false,
    "act": "drink",
-   "face": [1, 0]
+   "face": [1, 0],
+   "talk": "drinker"
   },
   {
    "at": [12, 24],
@@ -312,7 +316,8 @@
    "look": "res://assets/actors/looks/n12_maid_h5.webp",
    "staff": false,
    "act": "sweep",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "servant"
   }
  ],
  "spots": [

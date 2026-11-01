@@ -32,6 +32,8 @@ var _plate: PanelContainer
 var _plate_name: Label
 var _plate_why: Label
 var _focus: Dictionary = {}
+var _world: RoomWorld
+var _talked: Dictionary = {}  # 사람 칸 → 다음에 할 줄(이 방문 안에서만)
 
 
 func _ready() -> void:
@@ -72,6 +74,7 @@ func _build_world(view: Dictionary) -> void:
 	var world := RoomWorld.new()
 	_vp.add_child(world)
 	world.build(_room, _state.db, _pc, _tile)
+	_world = world
 	_player = world.player
 	_player.face(facing)
 	_cam = Camera2D.new()
@@ -174,6 +177,12 @@ func _sync_view() -> void:
 
 
 func _refresh_plate() -> void:
+	if _focus.has("talk"):  # 말 걸 사람(CT76): 이름만
+		_plate.visible = true
+		_plate_name.text = str(_focus.get("name_ko", ""))
+		_plate_why.visible = false
+		_plate.add_theme_stylebox_override("panel", CityUi.plate_box(true))
+		return
 	if _focus.has("search"):  # 뒤질 가구(CT74): 이름 · 이번 순에 뒤졌으면 그 이유
 		var searched := CityScavenge.done(_state, _focus)
 		_plate.visible = true
@@ -231,6 +240,9 @@ func _unhandled_input(event: InputEvent) -> void:
 ## 바라보는 자리를 살핀다: 칸이 하나면 바로, 여럿이면 작은 선택 창(Esc = 그만두기). 창구면 그 패널을 연다.
 func interact() -> void:
 	var at := _room.target(pos, facing)
+	if at.has("talk"):
+		await talk(at)
+		return
 	if at.has("search"):  # 가구 뒤지기(CT74)
 		var r := CityScavenge.run(_state, _pc, at)
 		_dialog.say(Strings.t(str(r["key"]), r["args"] as Dictionary), str(r["tone"]))
@@ -257,6 +269,31 @@ func interact() -> void:
 		await use(str(pick[0]))
 	else:
 		open_panel(str(pick[0]), str(pick[1]))
+
+
+## 사람에게 말 걸기(CT76): 그 사람이 이쪽을 보고 한 문장(대화창 이름판 = 그 사람). 걸 때마다 다음 줄, 다 넘기면 하던 일로 돌아간다.
+func talk(who: Dictionary) -> void:
+	var base := "city.npc." + str(who["talk"])
+	var n := 0
+	while Strings.has("%s.%d" % [base, n + 1]):
+		n += 1
+	if n == 0:
+		return
+	var at: Vector2i = who["at"]
+	var said: int = _talked.get(at, absi(hash([at, _state.month, _state.period])) % n)
+	_talked[at] = said + 1
+	_acting = true
+	_plate.visible = false
+	_world.face_npc(at, -facing)
+	_dialog.set_speaker(str(who["name_ko"]))
+	_dialog.say(Strings.t("%s.%d" % [base, said % n + 1]), "info")
+	await _dialog.wait()
+	if not is_inside_tree():
+		return
+	_dialog.set_speaker(JsonUtil.get_str(_state.db.get_entry("facilities", _facility_id), "name_ko", _facility_id))
+	_world.face_npc(at)
+	_acting = false
+	_focus = {}
 
 
 ## 창구(상점·대장간·은행·정수 제거)를 오른쪽 아래 카드로 연다. 거래 결과는 대화창 평소 글, 나가기·돌아가기·Esc = 창구만 닫고 다시 걷는다.

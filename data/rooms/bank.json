@@ -198,7 +198,8 @@
    "look": "res://assets/actors/looks/n13_guard_h3.webp",
    "staff": false,
    "act": "guard",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "guard"
   },
   {
    "at": [9, 19],
@@ -206,7 +207,8 @@
    "look": "res://assets/actors/looks/h1_cloak_h4.webp",
    "staff": false,
    "act": "idle",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "customer"
   }
  ],
  "spots": [

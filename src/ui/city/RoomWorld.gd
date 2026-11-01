@@ -8,6 +8,7 @@ extends Node2D
 var player: ActorView
 var sorter: Node2D
 var _tile: float = 32.0
+var _people: Dictionary = {}  # 칸 → 사람(_Standing)
 
 
 func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -> void:
@@ -70,12 +71,22 @@ func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -
 		person.act = NpcActSheet.load_for(db.render, str(n["look"]), str(n.get("act", "")))
 		person.phase = float(absi(hash(n["at"])) % 997) / 997.0 * 10.0  # 사람마다 동작이 엇갈리게(위치로 정한 값 — 무작위가 아니다)
 		person.facing = n["face"]
+		person.home = n["face"]
+		_people[n["at"]] = person
 		person.position = (Vector2(n["at"]) + Vector2(0.5, 0.5)) * tile
 		sorter.add_child(person)
 	player = ActorView.new()
 	sorter.add_child(player)
 	player.setup_for(pc, db.render)
 	player.drop_camera()
+
+
+## 사람이 dir 쪽을 보게(말 걸 때 — 0이면 원래 보던 쪽으로).
+func face_npc(at: Vector2i, dir: Vector2i = Vector2i.ZERO) -> void:
+	var p: _Standing = _people.get(at)
+	if p != null:
+		p.facing = dir if dir != Vector2i.ZERO else p.home
+		p.queue_redraw()
 
 
 static func _has_wall(room: CityRoom, y: int) -> bool:
@@ -94,6 +105,7 @@ class _Standing extends Node2D:
 	var sheet: ActorSheet
 	var act: NpcActSheet
 	var facing: Vector2i = Vector2i(0, 1)
+	var home: Vector2i = Vector2i(0, 1)
 	var phase: float = 0.0
 	var _t: float = 0.0
 	var _col: int = -1

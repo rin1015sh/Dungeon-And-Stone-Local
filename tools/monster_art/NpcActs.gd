@@ -35,8 +35,54 @@ static func load_acts() -> Dictionary:
 				fr["p"] = p
 				frames.append(fr)
 		var seq: Array = a.get("seq", range(frames.size()))
-		out[id] = {"frames": frames, "kit": kit, "seq": seq, "fps": float(a.get("fps", 3.0))}
+		out[id] = tween(frames, seq, float(a.get("fps", 3.0)), float(data.get("_tween_fps", 10.0)))
+		out[id]["kit"] = kit
 	return out
+
+
+## 사이 칸 채우기(사용자 2026-11-01 "NPC 애니메이션이 너무 어색하다" — 2~3칸이 툭툭 바뀌었다): seq 한 걸음을 k+1 칸으로 나누고,
+## 다른 자세로 넘어가는 걸음은 그 사이를 관절·손 자리 보간(부드럽게 — smoothstep)으로 채운다. 같은 자세가 이어지는 걸음은 그 칸을 k+1번.
+## 걸음 길이(1/fps)는 그대로라 동작 빠르기는 같다. k = 화면 칸 빠르기(_tween_fps) ÷ fps − 1(1~3).
+static func tween(keys: Array, seq: Array, fps: float, target_fps: float) -> Dictionary:
+	var k := clampi(roundi(target_fps / maxf(0.1, fps)) - 1, 1, 3)
+	var frames: Array = keys.duplicate()
+	var out_seq: Array = []
+	var made := {}
+	for i in seq.size():
+		var a := int(seq[i])
+		var b := int(seq[(i + 1) % seq.size()])
+		out_seq.append(a)
+		for j in range(1, k + 1):
+			if a == b:
+				out_seq.append(a)
+				continue
+			var key := "%d>%d>%d" % [a, b, j]
+			if not made.has(key):
+				var t := float(j) / float(k + 1)
+				made[key] = frames.size()
+				frames.append(blend(keys[a], keys[b], t * t * (3.0 - 2.0 * t)))
+			out_seq.append(made[key])
+	return {"frames": frames, "seq": out_seq, "fps": fps * (k + 1)}
+
+
+## 두 칸(PartyMotion 형식 — p 관절 · ik 손 자리 · turn …)을 t만큼 섞는다. 숫자는 보간, 글자(d 앞뒤)·한쪽에만 있는 값은 가까운 쪽.
+static func blend(a: Variant, b: Variant, t: float) -> Variant:
+	if (a is float or a is int) and (b is float or b is int):
+		return lerpf(float(a), float(b), t)
+	if a is Array and b is Array and (a as Array).size() == (b as Array).size():
+		var arr: Array = []
+		for i in (a as Array).size():
+			arr.append(blend(a[i], b[i], t))
+		return arr
+	if a is Dictionary and b is Dictionary:
+		var d := {}
+		for key: Variant in a:
+			d[key] = blend(a[key], b[key], t) if (b as Dictionary).has(key) else a[key]
+		for key: Variant in b:
+			if not d.has(key):
+				d[key] = b[key]
+		return d
+	return a if t < 0.5 else b
 
 
 ## 방 JSON들에서 그릴 [옷차림 이름, 동작] 쌍(옷차림 이름 = look 파일 이름 — looks/<MapLooks id> 또는 종족 시트).

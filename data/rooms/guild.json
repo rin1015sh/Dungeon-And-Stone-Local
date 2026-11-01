@@ -300,7 +300,8 @@
    "look": "res://assets/actors/looks/h3_coat_h7.webp",
    "staff": false,
    "act": "drink",
-   "face": [0, 1]
+   "face": [0, 1],
+   "talk": "explorer"
   },
   {
    "at": [23, 28],
@@ -308,7 +309,8 @@
    "look": "res://assets/actors/looks/h3_coat_h8.webp",
    "staff": false,
    "act": "drink",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "explorer"
   },
   {
    "at": [4, 17],
@@ -316,7 +318,8 @@
    "look": "res://assets/actors/looks/h7_hooded.webp",
    "staff": false,
    "act": "idle",
-   "face": [0, -1]
+   "face": [0, -1],
+   "talk": "explorer"
   },
   {
    "at": [19, 30],
@@ -324,7 +327,8 @@
    "look": "res://assets/actors/looks/h0_traveler_h9.webp",
    "staff": false,
    "act": "drink",
-   "face": [-1, 0]
+   "face": [-1, 0],
+   "talk": "explorer"
   }
  ],
  "spots": [
