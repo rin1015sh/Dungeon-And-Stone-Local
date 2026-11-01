@@ -231,7 +231,7 @@ func refresh(full: bool = false) -> void:
 		for cr in _diff.changed_rects(_vlight, _vfog, _vknown, chunk):  # 값이 바뀐 곳만(밝은 균열은 걸어도 거의 안 바뀐다)
 			stream.redraw_rect(cr)
 	player_view.face(session.facing)
-	player_view.set_occluded(_occludes(session.pos + Vector2i(0, 1)))
+	player_view.set_occluded(_occludes(session.pos))
 	sync_monsters()
 	player_view.set_light(_light_color, kind == "torch", _vision * tile)
 	if _particles != null:
@@ -452,6 +452,13 @@ func _process(_delta: float) -> void:
 	stream.process_one()
 
 
-## 칸 p의 벽이 바로 북쪽 칸에 선 캐릭터를 가리는가.
+## 칸 p에 선 캐릭터를 남쪽 벽이 가리는가: 바로 남쪽 벽, 또는 앞면이 칸보다 높아 그 윗면이 한 칸 너머까지 올라오는 남쪽 벽(벽 높이 48px — AM63).
 func _occludes(p: Vector2i) -> bool:
-	return map.in_bounds(p) and map.def_at(p).is_wall() and map.explored[map.idx(p)] != 0
+	for k in range(1, 4):
+		var q := p + Vector2i(0, k)
+		if not map.in_bounds(q):
+			return false
+		var d := map.def_at(q)
+		if d.is_wall() and map.explored[map.idx(q)] != 0 and k * tile - wall_face_of(d) < tile - 4:
+			return true
+	return false

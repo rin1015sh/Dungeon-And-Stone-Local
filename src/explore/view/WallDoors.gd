@@ -6,15 +6,15 @@ extends RefCounted
 ##   양옆이 다듬는 벽(art.shape — WallShape) · 적어도 한쪽은 남쪽이 열려 있다(방의 북쪽 벽 앞면 줄) · 문 칸 남쪽은 모두 열린 칸(방)
 ##   · 북쪽으로 depth칸 통로가 이어진다(줄마다 양옆이 벽이고 열린 칸이 있다 — 울퉁불퉁한 동굴 벽의 굴곡은 문이 아니다) · 포탈·동굴 요소 칸이 아니다.
 ## 그림(WallRow의 줄 조각 — 줄 아래 가장자리로 캐릭터와 y 정렬, 문을 지나는 캐릭터는 아치·벽 머리에 가려진다):
-##   검은 벽 머리(문 칸 윗면 자리) → 아치(문설주 높이 spring부터 가운데 lintel까지, 벽 앞면 그림) → 아치 밑 그늘(통로 안 어둠) → 아치 먹선.
+##   검은 벽 머리(문 칸 윗면 자리 — 아치 위) → 아치(벽 앞면 그림, 위에 덮을 뿐 — 아치 안으로 뒤 통로 바닥이 보인다) → 아치 바로 밑 옅은 그늘 → 아치 먹선.
 ## 수치 = render.json view.door(FloorTextures가 읽어 둔다).
 
 static var max_cells: int = 4
 static var depth: int = 2          ## 문 북쪽으로 이어져야 하는 통로 길이(칸)
-static var lintel: float = 0.3      ## 아치 가운데 두께(앞면 높이 비율)
-static var spring: float = 0.7      ## 문설주 높이(앞면 위에서부터 앞면 높이 비율 — 아치가 시작되는 곳)
-static var shade_tiles: float = 0.45  ## 아치 밑 그늘 길이(칸)
-static var shade_alpha: float = 0.6
+static var lintel: float = 0.14     ## 아치 가운데 두께(앞면 높이 비율 — 그 아래가 플레이어 키쯤)
+static var spring: float = 0.42     ## 아치가 시작되는 곳(앞면 위에서부터 앞면 높이 비율 — 그 아래는 곧은 문설주)
+static var shade_tiles: float = 0.3  ## 아치 바로 밑 그늘 길이(칸 — 아치 안은 뒤 통로가 그대로 보인다)
+static var shade_alpha: float = 0.3
 const STRIPS := 6  ## 칸마다 아치를 나누는 토막 수
 
 
@@ -22,10 +22,10 @@ const STRIPS := 6  ## 칸마다 아치를 나누는 토막 수
 static func configure(cfg: Dictionary) -> void:
 	max_cells = maxi(1, JsonUtil.get_int(cfg, "max_cells", 4))
 	depth = maxi(1, JsonUtil.get_int(cfg, "depth", 2))
-	lintel = JsonUtil.get_float(cfg, "lintel", 0.3)
-	spring = JsonUtil.get_float(cfg, "spring", 0.7)
-	shade_tiles = JsonUtil.get_float(cfg, "shade_tiles", 0.45)
-	shade_alpha = JsonUtil.get_float(cfg, "shade_alpha", 0.6)
+	lintel = JsonUtil.get_float(cfg, "lintel", 0.14)
+	spring = JsonUtil.get_float(cfg, "spring", 0.42)
+	shade_tiles = JsonUtil.get_float(cfg, "shade_tiles", 0.3)
+	shade_alpha = JsonUtil.get_float(cfg, "shade_alpha", 0.3)
 
 
 ## 칸 p가 문 칸인가.

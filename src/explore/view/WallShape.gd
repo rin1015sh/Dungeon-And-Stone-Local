@@ -8,7 +8,7 @@ extends RefCounted
 ## 사선은 가운데를 bulge만큼 모서리 쪽으로 살짝 휘게 해(바위 결) 기계적인 팔각형이 되지 않게 한다.
 ## 3/4 시점: 덩어리 윗면은 앞면 높이만큼 위로 올려 검게(art.unexplored) 칠하고 — 바위 속은 보이지 않는다 —
 ## 남쪽을 향한 윤곽만 앞면 띠(위 = 올린 윤곽, 아래 = 바닥 윤곽 + 밑동)로 그린다.
-## 윗면은 보이는 것을 가릴 때만 필요하다: 북쪽이 열린 벽 칸 + 아래쪽 오목 메움. 나머지 바위 속 칸은 그리지 않는다.
+## 윗면은 보이는 것을 가릴 때만 필요하다: 북쪽이 열린 벽 칸(앞면이 칸보다 높으면 그 높이 안에 바닥이 있는 칸까지) + 아래쪽 오목 메움. 나머지 바위 속 칸은 그리지 않는다.
 ## 줄마다 한 번(build) 계산해 두고, 그릴 때는 탐험 여부·빛만 본다(WallRow).
 ## 캐릭터와의 앞뒤(y 정렬): 아래쪽 모서리를 깎은 벽 칸·위쪽 오목 메움은 앞면이 칸 아래 가장자리보다 위(북쪽)에 있으니
 ## 따로 묶어(piece) 그 사선의 위쪽 끝 y로 정렬한다 — 줄 전체(칸 아래 가장자리)로 정렬하면 사선 앞에 선 캐릭터를 벽이 덮는다.
@@ -93,7 +93,7 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, sm
 	_corner(poly, o, p.x, cut[Vector2i(-1, 1)], Vector2(r, t), Vector2(0, t - r), Vector2(0, t), bulge, _floor_near(map, p, Vector2i(-1, 1)) if own else -1)
 	for i in range(from_floor, floors.size()):
 		floors[i]["piece"] = piece
-	if n:
+	if n or _open_behind(map, p, t, h):
 		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece})
 	if not so:
 		return
@@ -109,6 +109,16 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, sm
 	else:
 		pts.append(o + Vector2(t, t))
 	_add_faces(pts, p.x, o.x, t, def.index, v, h, piece)
+
+
+## 앞면이 칸보다 높은 벽(48px — AM63): 북쪽 벽 칸 너머의 바닥도 이 칸 윗면이 가린다 — 그 칸 윗면을 그려야 바닥이 띠로 비치지 않는다.
+static func _open_behind(map: FloorMap, p: Vector2i, t: float, h: int) -> bool:
+	var k := 2
+	while (k - 1) * t < h:
+		if not _wall(map, p + Vector2i(0, -k)):
+			return true
+		k += 1
+	return false
 
 
 ## 깎은 아래 모서리 c에 채울 바닥: 남쪽 이웃(앞면이 서는 쪽), 아니면 옆 이웃의 바닥 타일 번호(-1 = 층 기본 바닥).

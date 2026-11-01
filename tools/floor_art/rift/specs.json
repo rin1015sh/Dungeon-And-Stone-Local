@@ -69,27 +69,27 @@
     {
      "tile": "fortress_wall",
      "style": "masonry",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "bf_house",
      "style": "house",
-     "face_px": 40
+     "face_px": 48
     },
     {
      "tile": "bf_pillar",
      "style": "pillar",
-     "face_px": 56
+     "face_px": 64
     },
     {
      "tile": "bf_window",
      "style": "stainedglass",
-     "face_px": 40
+     "face_px": 48
     },
     {
      "tile": "bf_gate",
      "style": "gate",
-     "face_px": 36
+     "face_px": 48
     }
    ],
    "stands": [
@@ -176,17 +176,17 @@
     {
      "tile": "ice_wall",
      "style": "icewall",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "gc_cliff",
      "style": "cliff",
-     "face_px": 40
+     "face_px": 56
     },
     {
      "tile": "gc_waterfall",
      "style": "waterfall",
-     "face_px": 48
+     "face_px": 56
     }
    ],
    "stands": [
@@ -251,32 +251,32 @@
     {
      "tile": "mine_wall",
      "style": "minewall",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "gm_cavein",
      "style": "cavein",
-     "face_px": 30
+     "face_px": 40
     },
     {
      "tile": "gm_shack",
      "style": "shack",
-     "face_px": 40
+     "face_px": 48
     },
     {
      "tile": "gm_lift",
      "style": "lift",
-     "face_px": 44
+     "face_px": 52
     },
     {
      "tile": "rail_wall_cracked",
      "style": "crackedwall",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "ore_vein",
      "style": "orevein",
-     "face_px": 24
+     "face_px": 48
     }
    ],
    "stands": [
@@ -348,22 +348,22 @@
     {
      "tile": "metal_wall",
      "style": "muralwall",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "it_banner_wall",
      "style": "bannerwall",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "it_niche",
      "style": "niche",
-     "face_px": 24
+     "face_px": 48
     },
     {
      "tile": "it_pillar",
      "style": "pillar",
-     "face_px": 56
+     "face_px": 64
     },
     {
      "tile": "it_door",
@@ -378,7 +378,7 @@
     {
      "tile": "tomb_mural",
      "style": "mural",
-     "face_px": 24
+     "face_px": 48
     }
    ],
    "stands": [
