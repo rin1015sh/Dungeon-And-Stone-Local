@@ -94,6 +94,7 @@ func _ready() -> void:
 	session.sound.connect(func(key: String, _at: Vector2i) -> void: AudioBus.play_sfx(key))
 	session.coin_toss.connect(_on_coin_toss)
 	session.coin_guess.connect(_on_coin_guess)
+	session.lord_rising.connect(_on_lord_rising)
 	session.transfer.connect(_on_transfer)
 	_build_pause_overlay()
 	session.start()
@@ -406,6 +407,21 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 			EventBus.monster_killed.emit(id, session.player.id)
 		_bury_mates()
 		session.resolve_encounter(group, result, turns, killed))
+
+
+## 계층군주 소환 연출(ExploreSession.lord_rising — V27): 시간을 멈추고 구더기가 땅에서 나와 모여 군주를 이루는 것을 보인 뒤 알림.
+func _on_lord_rising(group: FieldMonsters.Group, then: Callable) -> void:
+	session.realtime.set_paused("lord_rise", true)
+	_coin_busy = true
+	_view.sync_monsters()
+	AudioBus.play_sfx("lord_rise")
+	var fx := LordRiseFx.play(_view, group, session.rng.randi_range(1, 1 << 20))
+	await fx.done
+	_coin_busy = false
+	if not is_inside_tree():
+		return
+	session.realtime.set_paused("lord_rise", false)
+	then.call()
 
 
 ## 동전 앞뒤 고르기(ExploreSession.coin_guess — 상자, V25): 시간을 멈추고 W/S 선택 창(앞면·뒷면, Esc = 그만둠).

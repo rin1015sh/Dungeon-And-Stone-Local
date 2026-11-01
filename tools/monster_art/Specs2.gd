@@ -23,8 +23,16 @@ static func spec_of(id: String) -> Dictionary:
 				"pose": {"hunch": 0.65, "knee": 0.4, "arm_l": "rest", "arm_r": "rest", "sh": 0.16, "hip": 0.085, "neck": 0.5, "arms": 1.15, "weight": 0.4},
 				"body": {"build": "brute", "bulk": 1.1, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "demon", "mouth": "fangs", "horns": true, "horn_len": 1.0, "size": 1.05},
 				"extras": {"spikes": C("#1e1a1c"), "lumps": 5}, "kit": {"loin": C("#1e1a1a")}}
-		"dreadfear":  # 계층군주 — 첨부 그림 참고(Lord.gd): 거대한 상반신·털 목도리·눈가린 얼굴·숫양 뿔·까마귀 머리·배의 얼굴·붉은 날개
-			return {"kind": "lord", "height": 640, "color": C("#d6a45e"), "shade": C("#661646"), "wing": C("#7e2a3e"), "fur": C("#7a6a58"), "horn": C("#cdb892"), "eyes": C("#f4d27a"), "birds": 7}
+		"dreadfear":  # 계층군주 — 사용자 2026-11-01 다시 그림(V27): 사람 꼴 + 온몸에 구더기가 붙어 꿈틀댄다, 삐딱한 자세(한쪽으로 기울고 고개 꺾임)·벌린 다리,
+			# 숫양 뿔·노란 눈은 이어 쓰고 뼈 대검을 늘어뜨려 쥔다(스킬 뼈 대검 내려치기). 옛 거대 상반신·날개·털 목도리는 Lord.gd에 남김
+			return {"height": 700, "width": 1.18, "skin": C("#b4a284"), "mottle": C("#6a4436"), "mottle_amt": 0.65, "shade": C("#3a1a26"), "blood": 0.55,
+				"eyes": C("#f4d27a"), "glow": 1.0, "horn": C("#cdb892"),
+				"pose": {"hunch": 0.3, "knee": 0.3, "arm_l": "hang", "arm_r": "hang", "tilt": -0.32, "lean": 0.45, "twist": 0.25, "sh": 0.13,
+					"stance": 0.22, "weight": 0.8, "knees_out": 0.35, "splay": 0.35, "arms": 1.12},
+				"body": {"build": "normal", "bulk": 1.08, "hands": "claw", "claws": 0.7, "feet": "bare"},
+				"head": {"type": "gaunt", "mouth": "fangs", "horns": C("#cdb892"), "horn_len": 0.95, "size": 1.08},
+				"kit": {"loin": C("#2a1e1e"), "weapon": "greatsword", "weapon_c": C("#cfc2a0")},
+				"extras": {"maggots": 120, "maggot_c": C("#e2d6b0")}}
 		"kambormir":
 			return {"height": 600, "skin": C("#ddd0d4"), "shade": C("#6a4a5a"), "eyes": C("#ff2a2a"), "glow": 1.0, "hair": "slick", "hair_c": C("#141014"),
 				"pose": {"arm_l": "rest", "arm_r": "hang", "sh": 0.115, "weight": 0.5, "tilt": -0.08},

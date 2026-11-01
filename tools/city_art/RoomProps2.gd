@@ -89,12 +89,19 @@ static func pew(t: int, seed_value: int, size: Vector2i, _variant: String) -> Pa
 	var lift := int(t * 0.42)
 	var p := Paint.new(size.x * t + PAD * 2, t + lift + 40, seed_value)
 	var seat := Rect2(PAD + 6, p.h - t * 0.7 - lift, size.x * t - 12, t * 0.36)
-	RoomProps._legs(p, seat, lift, Color("#2a1d14"), 6.0)
-	RoomProps._slab(p, seat, 6, Mat.planks(p, Color("#45311f"), 0, 0, false, 10), p.flat(Color("#2e2016"), 0.1))
-	var back := Paint.rect_poly(seat.position.x, seat.end.y - 4, seat.size.x, lift + 10)
-	p.fill_poly(back, Mat.planks(p, Color("#3a281b"), 0, 0, false, 9))
-	Ink.shade(p, back, Vector2(0, seat.end.y), Vector2(0, seat.end.y + lift), 0.1, 0.45)
+	# 등받이(V27 — 전엔 앉는 판 아래 앞면으로 붙어 어두운 막대로만 보였다): 앉는 판 뒤쪽(위)에 서서 판보다 높이 솟는다
+	var back_h := t * 0.62
+	var back := Paint.rect_poly(seat.position.x, seat.position.y - back_h, seat.size.x, back_h + 6)
+	p.fill_poly(back, func(x: int, y: int) -> Color:
+		var k := clampf((y - (seat.position.y - back_h)) / back_h, 0.0, 1.0)
+		return p.vary(Color("#4e3826").lerp(Color("#2a1d14"), k * 0.7), x, y, 0.08))
+	for k in range(1, 3):
+		var yy := seat.position.y - back_h + back_h * k / 3.0
+		Ink.line(p, Vector2(seat.position.x + 2, yy), Vector2(seat.end.x - 2, yy), 1.0, Color("#1e140c"), 0.6, 0.3)
 	Ink.path(p, back, 1.8)
+	Ink.line(p, Vector2(seat.position.x + 1, seat.position.y - back_h + 1), Vector2(seat.end.x - 1, seat.position.y - back_h + 1), 1.4, Color("#a88a62"), 0.7, 0.2)  # 등받이 윗날 빛
+	RoomProps._legs(p, seat, lift, Color("#2a1d14"), 6.0)
+	RoomProps._slab(p, seat, lift - 4, Mat.planks(p, Color("#6a4c32"), 0, 0, false, 10), Mat.planks(p, Color("#2e2016"), 0, 0, true, 12))
 	return _done(p, [], Vector2.ZERO)
 
 

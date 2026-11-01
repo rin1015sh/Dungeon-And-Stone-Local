@@ -52,10 +52,12 @@ func summon(s: ExploreSession) -> bool:
 		return false
 	state = ACTIVE
 	trigger_id = s.player.id
-	s.message.emit("explore.lord_summoned", {"name": DataNames.entry(s.db, "monsters", mid)}, "danger")
-	s.message.emit("explore.lord_bond", {}, "warn")
 	s.monsters.changed.emit()
 	s.refresh_view()
+	var g := group
+	s.lord_rise(g, func() -> void:  # 화면이 소환 연출(구더기가 모여 군주를 이룬다 — LordRiseFx)을 보인 뒤 알린다(V27)
+		s.message.emit("explore.lord_summoned", {"name": DataNames.entry(s.db, "monsters", mid)}, "danger")
+		s.message.emit("explore.lord_bond", {}, "warn"))
 	return true
 
 

@@ -23,6 +23,7 @@ signal tiles_changed(cells: Rect2i)  ## 원정 중에 타일이 바뀌었다(새
 signal party_met(group: FieldMonsters.Group)  ## 탐험가 무리에 닿았다(FieldParties) — 화면이 FieldPartyMeet 선택지를 띄우고 act를 부른다
 signal monument_choice(at: Vector2i)  ## 기념비에서 할 일이 있다(Monument — 마석·계층석 바치기·계층군주 부르기) — 화면이 고르게 하고 Monument.act를 부른다
 signal feature_choice(at: Vector2i)  ## 동굴 요소의 행동이 여럿이다(맑은 샘 등) — 화면이 고르게 하고 features.act를 부른다
+signal lord_rising(group: FieldMonsters.Group, then: Callable)  ## 계층군주 소환(LordWatch): 화면이 연출(LordRiseFx)을 보인 뒤 then을 부른다
 signal coin_guess(then: Callable)  ## 동전 앞뒤 고르기(상자 — RiftChest): 화면이 W/S 선택 창을 띄우고 then(0 앞면 · 1 뒷면 · -1 그만둠)을 부른다
 signal coin_toss(heads: bool, then: Callable)  ## 동전 던지기(CoinToss — 상자 등): 화면이 동전 연출(CoinFlip)을 보인 뒤 then을 부른다
 
@@ -560,6 +561,14 @@ func _on_status_changed(status_id: String, active: bool) -> void:
 func _on_light_out(item_id: String) -> void:
 	_view_dirty = true
 	_say("explore.light_out", {"item": DataNames.entry(db, "items", item_id)}, "warn")
+
+
+## 계층군주 소환 연출: 받는 화면이 없으면(테스트·시뮬) 바로 then.
+func lord_rise(group: FieldMonsters.Group, then: Callable) -> void:
+	if lord_rising.get_connections().is_empty():
+		then.call()
+	else:
+		lord_rising.emit(group, then)
 
 
 ## 동전 앞뒤를 고르게 한다: 받는 화면이 없으면(테스트·시뮬) 앞면(0)을 고른 것으로.

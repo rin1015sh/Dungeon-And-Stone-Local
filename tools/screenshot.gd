@@ -14,7 +14,7 @@ extends Node
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다(--trap=all = 모두 드러내기만), --murals = 벽화 힌트를 다 본 상태
 ## --near=mon:<id>: 그 몬스터가 낀 무리 앞에 선다 · --near=chest [--open_chest=<초>] [--pick=0|1]: 첫 상자 아래 칸(열고 그 초 뒤 — 앞뒤 고르기 창, --pick이면 고른 뒤 동전 연출, --dialog와 함께)
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
-## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m), --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
+## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m) — --lord_at=<초> --dialog: 소환 연출을 그 시각에 멈춰 찍는다, --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## 실내 방(도서관 — CT62): --facility=library [--room_at=x,y --face=up|down|left|right] [--activity=<id>].
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --equip=<아이템 id>: 주무기 칸에 그 무기(장비 인형 그림 크기), --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
@@ -259,6 +259,14 @@ func _run() -> void:
 			return
 		if _args.has("lord"):
 			explore.session.lord.summon(explore.session)
+			if _args.has("lord_at"):  # --lord_at=<초>: 소환 연출(LordRiseFx)을 그 시각에 멈춰 찍는다(--dialog와 함께 — 느린 캡처에서도 시각이 정확하다, V27)
+				await _frames(3)
+				for n: Node in _main.find_children("*", "LordRiseFx", true, false):
+					var fx := n as LordRiseFx
+					fx.set_process(false)
+					fx._t = float(str(_args["lord_at"]))
+					fx._process(0.0)
+					fx.set_process(false)
 		if _args.has("combat"):
 			GameState.debug_invulnerable = _args.has("god") or GameState.debug_invulnerable  # --god: 무적(계층군주처럼 첫 차례에 쓰러뜨리는 적을 찍을 때)
 			if GameState.debug_invulnerable:  # 디버그 패널 무적과 같게 — 생명력이 1 밑으로 내려가지 않는다(플래그만으로는 막지 못했다)

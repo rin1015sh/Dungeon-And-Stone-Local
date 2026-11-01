@@ -9,6 +9,7 @@ const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Cave := preload("res://tools/floor_art/Cave.gd")
 const Decals := preload("res://tools/floor_art/Decals.gd")
+const Solid := preload("res://tools/floor_art/Solid.gd")
 
 ## 시트 칸 순서(tiles.json art.prop.cell이 이 번호를 가리킨다).
 const ORDER := ["corpse", "ghoul_feast", "stone_heap", "dead_campfire", "broken_gear", "offering", "spring", "drip",
@@ -40,58 +41,80 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 			_lying_body(p, c, w * 0.86, -1.42, "res://assets/actors/human.webp", 0)
 			Cave._stone(p, c + Vector2(30, 14) * u, 8 * u, 6 * u, LEATHER)  # 굴러 나온 등짐
 			Ink.line(p, c + Vector2(24, 11) * u, c + Vector2(36, 11) * u, 1.0 * u, Ink.INK, 0.6, 0.4)
-		"ghoul_feast":
-			Decals._blob(p, c, 26 * u, Color("#3a3422"), 0.7, 0.25)
-			Decals._blob(p, c + Vector2(-4, 2) * u, 14 * u, BLOOD, 0.8, 0.35)
+		"ghoul_feast":  # 뜯긴 고깃덩이와 뼈 더미(입체 — V27)
+			Decals._blob(p, c + Vector2(0, 6) * u, 28 * u, BLOOD.darkened(0.2), 0.8, 0.3)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 24 * u, 8 * u)
+			for k in 5:
+				var q := c + Vector2(p.rng.randf_range(-16, 16), p.rng.randf_range(-2, 8) + k * 0.8) * u
+				Solid.lump(p, q, p.rng.randf_range(6, 10) * u, 4 * u, p.rng.randf_range(5, 9) * u, Color("#6a2a22").lightened(p.rng.randf_range(-0.1, 0.15)), 0.5, 0.0, u)
 			for k in 3:
-				Decals._bones(p, c + Vector2(p.rng.randf_range(-10, 10), p.rng.randf_range(-6, 6)) * u, u * 1.3)
-			for k in 6:
-				Cave._stone(p, c + Vector2(p.rng.randf_range(-16, 16), p.rng.randf_range(-8, 8)) * u, 2.5 * u, 2.0 * u, Color("#6a2a22"))
-		"stone_heap":
-			_shadow(p, c, 24 * u, 10 * u)
-			for k in 14:
-				var q := c + Vector2(p.rng.randf_range(-16, 16), p.rng.randf_range(-6, 8) - k * 0.6) * u
-				var r := p.rng.randf_range(4.0, 8.0) * u
-				Cave._stone(p, q, r, r * 0.75, STONE.lightened(p.rng.randf_range(-0.1, 0.2)))
-		"dead_campfire":
-			Decals._blob(p, c, 18 * u, Color("#2a2826"), 0.85, 0.15)
+				Decals._bones(p, c + Vector2(p.rng.randf_range(-12, 12), p.rng.randf_range(-2, 4)) * u, u * 1.4)
+			Solid.lump(p, c + Vector2(10, 8) * u, 6 * u, 4 * u, 7 * u, BONE, 0.2, 0.0, u)  # 해골
+			Cave._dot(p, c + Vector2(8, 2) * u, 1.4 * u, Ink.INK, 0.9)
+			Cave._dot(p, c + Vector2(12, 2) * u, 1.4 * u, Ink.INK, 0.9)
+		"stone_heap":  # 쌓인 돌무더기(뒤에서 앞으로 — V27)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 28 * u, 10 * u)
+			for row in 3:
+				for k in 4 - row:
+					var q := c + Vector2((k - (3 - row) * 0.5) * 12 + p.rng.randf_range(-3, 3), 8 - row * 7 + (2 - row) * 0.0) * u
+					var r := p.rng.randf_range(7.0, 10.0) * u
+					Solid.lump(p, q + Vector2(0, -row * 2) * u, r, r * 0.45, r * 0.9, STONE.lightened(p.rng.randf_range(-0.08, 0.15)), 0.45, 0.0, u)
+		"dead_campfire":  # 돌로 두른 꺼진 모닥불 — 재 둔덕 + 숯이 된 장작(입체 — V27)
+			Solid.shadow(p, c + Vector2(0, 4) * u, 24 * u, 10 * u)
+			var ring: Array = []
 			for k in 9:
 				var a := TAU * k / 9.0
-				Cave._stone(p, c + Vector2(cos(a) * 17, sin(a) * 11) * u, 4.0 * u, 3.0 * u, STONE)
-			for k in 3:
-				var d := Vector2.from_angle(p.rng.randf() * TAU) * 11 * u
-				Decals._stick(p, c - d, c + d, 3.0 * u, Color("#1e1814"))
-			for k in 8:
-				Cave._dot(p, c + Vector2(p.rng.randf_range(-8, 8), p.rng.randf_range(-5, 5)) * u, 1.2 * u, Color("#8a8680"), 0.6)
-		"broken_gear":
-			_shadow(p, c, 26 * u, 10 * u)
-			Cave._stone(p, c + Vector2(10, 0) * u, 13 * u, 10 * u, WOOD)  # 깨진 둥근 방패
-			Ink.line(p, c + Vector2(4, -8) * u, c + Vector2(14, 8) * u, 1.6 * u, Ink.INK, 0.9, 0.6)
-			Cave._dot(p, c + Vector2(10, 0) * u, 3.0 * u, METAL, 0.9)
-			Decals._stick(p, c + Vector2(-26, 6) * u, c + Vector2(-2, -6) * u, 3.0 * u, METAL)  # 부러진 칼
-			Decals._stick(p, c + Vector2(-6, -4) * u, c + Vector2(-2, -12) * u, 2.0 * u, METAL)
-			Decals._stick(p, c + Vector2(-26, 6) * u, c + Vector2(-32, 9) * u, 3.4 * u, LEATHER)
-			Cave._stone(p, c + Vector2(-8, 10) * u, 7 * u, 5.5 * u, METAL.darkened(0.15))  # 투구
-		"offering":
-			_shadow(p, c, 20 * u, 8 * u)
-			var slab := PackedVector2Array([c + Vector2(-16, -6) * u, c + Vector2(16, -8) * u, c + Vector2(18, 6) * u, c + Vector2(-17, 8) * u])
-			p.fill_poly(slab, func(x: int, y: int) -> Color: return p.vary(STONE.lightened(0.1), x, y, 0.08))
-			Ink.path(p, slab, 1.2 * u, true, Ink.INK, 0.8, 0.6)
+				ring.append([sin(a), c + Vector2(cos(a) * 18, sin(a) * 10 + 4) * u])
+			ring.sort_custom(func(x: Array, y: Array) -> bool: return float(x[0]) < float(y[0]))
+			for e: Array in ring.slice(0, 4):
+				Solid.lump(p, e[1], 5 * u, 3 * u, 5 * u, STONE, 0.5, 0.0, u)
+			Solid.lump(p, c + Vector2(0, 5) * u, 12 * u, 6 * u, 4 * u, Color("#3a3634"), 0.6, 0.0, u)  # 재
+			Solid.log(p, c + Vector2(-12, 2) * u, c + Vector2(8, 8) * u, 3.2 * u, Color("#1e1814"), Color("#3a2a20"), u)
+			Solid.log(p, c + Vector2(10, 0) * u, c + Vector2(-6, 9) * u, 3.0 * u, Color("#241c16"), Color("#4a3426"), u)
+			for e: Array in ring.slice(4):
+				Solid.lump(p, e[1], 5 * u, 3 * u, 5 * u, STONE.lightened(0.05), 0.5, 0.0, u)
+		"broken_gear":  # 기대어 선 깨진 둥근 방패 · 굴러 있는 투구 · 부러진 칼(입체 — V27)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 28 * u, 9 * u)
+			var sh := c + Vector2(10, 2) * u
+			var disc := Cave._ellipse(sh + Vector2(0, -10) * u, 12 * u, 14 * u, 28)  # 세워 기댄 방패(앞면)
+			p.fill_poly(Cave._ellipse(sh + Vector2(3, -9) * u, 12 * u, 14 * u, 28), p.flat(WOOD.darkened(0.5), 0.05))  # 두께
+			p.fill_poly(disc, func(x: int, y: int) -> Color:
+				var t := clampf(((x - sh.x) + (y - sh.y + 10 * u)) / (24.0 * u) + 0.5, 0.0, 1.0)
+				return p.vary(WOOD.lightened(0.18).lerp(WOOD.darkened(0.3), t), x, y, 0.1))
+			Ink.path(p, disc, 1.4 * u, true, Ink.INK, 0.9, 0.4)
+			Ink.line(p, sh + Vector2(-4, -22) * u, sh + Vector2(3, 0) * u, 1.5 * u, Ink.INK, 0.9, 0.7)  # 금
+			Solid.lump(p, sh + Vector2(0, -8) * u, 3.4 * u, 2 * u, 3 * u, METAL, 0.1, 0.0, u)  # 방패 장식
+			Decals._stick(p, c + Vector2(-28, 8) * u, c + Vector2(-6, 0) * u, 3.0 * u, METAL)
+			Decals._stick(p, c + Vector2(-28, 8) * u, c + Vector2(-34, 11) * u, 3.4 * u, LEATHER)
+			Solid.lump(p, c + Vector2(-10, 12) * u, 8 * u, 5 * u, 8 * u, METAL.darkened(0.1), 0.15, 0.0, u)  # 투구
+			Ink.line(p, c + Vector2(-16, 9) * u, c + Vector2(-4, 9) * u, 1.0 * u, Ink.INK, 0.8, 0.3)
+		"offering":  # 낮은 돌 제단 — 위에 초 둘과 바친 금화(입체 — V27)
+			var slab := c + Vector2(0, 8) * u
+			Solid.shadow(p, slab, 22 * u, 8 * u)
+			Solid.block(p, slab, 34 * u, 12 * u, 9 * u, func(x: int, y: int) -> Color: return p.vary(STONE.darkened(0.12), x, y, 0.08),
+				func(x: int, y: int) -> Color: return p.vary(STONE.lightened(0.18), x, y, 0.08), func(x: int, y: int) -> Color: return p.vary(STONE.darkened(0.4), x, y, 0.08), u)
+			var top := slab + Vector2(2, -13) * u
 			for k in 7:
-				Cave._dot(p, c + Vector2(p.rng.randf_range(-12, 12), p.rng.randf_range(-4, 4)) * u, 1.8 * u, Color("#c9a24a"), 0.95)
+				Cave._dot(p, top + Vector2(p.rng.randf_range(-12, 12), p.rng.randf_range(-3, 3)) * u, 1.8 * u, Color("#c9a24a"), 0.95)
 			for k in 2:
-				var q := c + Vector2(-8 + k * 14, -4) * u
-				Decals._stick(p, q, q + Vector2(0, -9) * u, 3.0 * u, Color("#d8d0b8"))
-				Ink.glow(p, q.x, q.y - 11 * u, 7 * u, Color("#ffb46a"), 0.5, false)
-				Cave._dot(p, q + Vector2(0, -11) * u, 1.5 * u, Color("#ffe0a0"), 1.0)
-		"spring":
-			for k in 10:
-				var a := TAU * k / 10.0
-				Cave._stone(p, c + Vector2(cos(a) * 20, sin(a) * 12) * u, 4.5 * u, 3.4 * u, STONE)
-			Decals._blob(p, c, 15 * u, Color("#203a52"), 1.0, 0.1)
-			Decals._blob(p, c + Vector2(-3, -2) * u, 9 * u, Color("#3a6a8a"), 0.6, 0.1)
+				var q := top + Vector2(-8 + k * 14, 0) * u
+				Solid.drum(p, q, 1.8 * u, 9 * u, Color("#d8d0b8"), Color("#efe6cc"), u * 0.6)
+				Ink.glow(p, q.x, q.y - 12 * u, 7 * u, Color("#ffb46a"), 0.5, false)
+				Cave._dot(p, q + Vector2(0, -12) * u, 1.5 * u, Color("#ffe0a0"), 1.0)
+		"spring":  # 돌을 둘러 쌓은 샘 — 뒤쪽 돌 · 물 · 앞쪽 돌(입체 — V27)
+			var ring: Array = []
+			for k in 11:
+				var a := TAU * k / 11.0
+				ring.append([sin(a), c + Vector2(cos(a) * 21, sin(a) * 12 + 4) * u])
+			ring.sort_custom(func(x: Array, y: Array) -> bool: return float(x[0]) < float(y[0]))
+			for e: Array in ring.slice(0, 5):
+				Solid.lump(p, e[1], 5.5 * u, 3 * u, 6 * u, STONE, 0.5, 0.0, u)
+			Decals._blob(p, c + Vector2(0, 4) * u, 15 * u, Color("#162a3c"), 1.0, 0.1)
+			Decals._blob(p, c + Vector2(-3, 2) * u, 9 * u, Color("#2f5a78"), 0.6, 0.1)
 			for k in 4:
-				Decals._spot(p, c + Vector2(p.rng.randf_range(-9, 4), p.rng.randf_range(-6, 2)) * u, 1.2 * u, Color("#d8ecff"), 0.8)
+				Decals._spot(p, c + Vector2(p.rng.randf_range(-9, 4), p.rng.randf_range(-2, 6)) * u, 1.2 * u, Color("#d8ecff"), 0.8)
+			for e: Array in ring.slice(5):
+				Solid.lump(p, e[1], 5.5 * u, 3 * u, 6 * u, STONE.lightened(0.06), 0.5, 0.0, u)
 		"drip":
 			Decals._blob(p, c, 14 * u, Color("#1e2434"), 0.75, 0.2)
 			for r: float in [5.0, 9.0, 13.0]:
@@ -112,26 +135,28 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 				p.fill_poly(Cave._ellipse(cap, p.rng.randf_range(4, 7) * u, 2.8 * u, 16), func(x: int, y: int) -> Color:
 					return Color("#6af0dc").lerp(Color("#1e6a64"), clampf((y - cap.y) / (3.0 * u) * 0.5 + 0.4, 0.0, 1.0)))
 				Ink.path(p, Cave._ellipse(cap, 6 * u, 2.8 * u, 16), 0.8 * u, true, Color("#0a2422"), 0.6, 0.3)
-		"wolf_den":
-			Decals._blob(p, c, 26 * u, Color("#4a4034"), 0.9, 0.3)
-			for k in 40:  # 털·마른 풀
-				var q := c + Vector2(p.rng.randf_range(-22, 22), p.rng.randf_range(-13, 13)) * u
+		"wolf_den":  # 털과 마른 풀을 깔아 다진 둔덕 + 갉아 먹은 뼈(입체 — V27)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 28 * u, 10 * u)
+			Solid.lump(p, c + Vector2(0, 6) * u, 26 * u, 10 * u, 7 * u, Color("#4a4034"), 0.7, 0.0, u)
+			for k in 50:  # 털·마른 풀
+				var q := c + Vector2(p.rng.randf_range(-22, 22), p.rng.randf_range(-8, 12)) * u
 				var d := Vector2.from_angle(p.rng.randf() * TAU) * p.rng.randf_range(3, 7) * u
 				Ink.line(p, q, q + d, 0.9 * u, Color("#8a7a62") if p.rng.randf() < 0.6 else Color("#2a2420"), 0.8, 0.4)
-			Decals._bones(p, c + Vector2(8, 2) * u, u * 1.2)
-		"gnome_trinkets":
-			Decals._blob(p, c, 16 * u, Color("#4a3c2c"), 0.6, 0.3)
-			for k in 10:
-				var q := c + Vector2(p.rng.randf_range(-15, 15), p.rng.randf_range(-8, 8)) * u
+			Decals._bones(p, c + Vector2(8, 0) * u, u * 1.3)
+			Solid.lump(p, c + Vector2(-10, 6) * u, 4 * u, 2.5 * u, 4 * u, BONE, 0.2, 0.0, u)
+		"gnome_trinkets":  # 진흙 위에 늘어놓은 반짝이는 잡동사니(입체 — V27)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 20 * u, 7 * u)
+			for k in 9:
+				var q := c + Vector2(p.rng.randf_range(-15, 15), p.rng.randf_range(-2, 10)) * u
 				var col := [Color("#c9a24a"), Color("#8ab0c8"), Color("#a86a48"), Color("#d8d0c0")][k % 4] as Color
-				Cave._stone(p, q, 2.4 * u, 2.0 * u, col)
-				Decals._spot(p, q - Vector2(1, 1) * u, 0.8 * u, Color("#fff8e0"), 0.9)
-		"gnome_stash":
-			_shadow(p, c, 22 * u, 10 * u)
-			Cave._stone(p, c, 20 * u, 13 * u, Color("#4a3c2c"))  # 진흙 둔덕
-			Decals._blob(p, c + Vector2(2, 2) * u, 6 * u, Color("#0e0a08"), 0.95, 0.2)  # 구멍
+				Solid.lump(p, q, 3.0 * u, 2.0 * u, 3.0 * u, col, 0.2, 0.0, u * 0.7)
+				Decals._spot(p, q - Vector2(1, 3) * u, 0.8 * u, Color("#fff8e0"), 0.9)
+		"gnome_stash":  # 진흙 둔덕에 판 구멍 — 안에 반짝이는 것(입체 — V27)
+			Solid.shadow(p, c + Vector2(0, 8) * u, 24 * u, 9 * u)
+			Solid.lump(p, c + Vector2(0, 8) * u, 21 * u, 9 * u, 11 * u, Color("#4a3c2c"), 0.5, 0.0, u)
+			Decals._blob(p, c + Vector2(2, 0) * u, 6 * u, Color("#0e0a08"), 0.95, 0.2)
 			for k in 4:
-				Decals._spot(p, c + Vector2(p.rng.randf_range(-3, 6), p.rng.randf_range(0, 5)) * u, 1.1 * u, Color("#ffe080"), 1.0)
+				Decals._spot(p, c + Vector2(p.rng.randf_range(-3, 6), p.rng.randf_range(-2, 3)) * u, 1.1 * u, Color("#ffe080"), 1.0)
 		"goblin_camp":
 			Ink.glow(p, c.x, c.y - 8 * u, 34 * u, Color("#ff9a40"), 0.45, false)
 			Decals._blob(p, c, 14 * u, Color("#2a2420"), 0.9, 0.2)
@@ -142,34 +167,34 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 			var rag := PackedVector2Array([c + Vector2(16, 6) * u, c + Vector2(30, 2) * u, c + Vector2(32, 14) * u, c + Vector2(18, 16) * u])
 			p.fill_poly(rag, func(x: int, y: int) -> Color: return p.vary(Color("#5a4a30"), x, y, 0.12))
 			Ink.path(p, rag, 1.0 * u, true, Ink.INK, 0.6, 0.8)
-		"torch_stubs":
+		"torch_stubs":  # 다 타고 버려진 횃불 토막(누운 막대 — 입체, V27)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 22 * u, 7 * u)
 			for k in 4:
-				var b := c + Vector2(p.rng.randf_range(-18, 18), p.rng.randf_range(-6, 8)) * u
-				var d := Vector2.from_angle(p.rng.randf() * TAU) * p.rng.randf_range(8, 13) * u
-				Decals._stick(p, b - d, b + d, 3.2 * u, WOOD)
-				Cave._dot(p, b + d, 3.0 * u, Color("#0e0a08"), 0.95)
+				var b := c + Vector2(p.rng.randf_range(-16, 16), p.rng.randf_range(-2, 10)) * u
+				var d := Vector2.from_angle(p.rng.randf_range(-0.6, 0.6)) * p.rng.randf_range(8, 12) * u
+				Solid.log(p, b - d, b + d, 2.4 * u, WOOD, Color("#1a1210"), u * 0.8)
 		"old_skeleton":
 			_shadow(p, c, 26 * u, 9 * u)
 			_skeleton(p, c, u)
-		"cairn":
-			_shadow(p, foot, 16 * u, 6 * u)
+		"cairn":  # 쌓아 올린 돌탑(입체 — V27)
+			Solid.shadow(p, foot, 18 * u, 6 * u)
 			var y := foot.y
 			for k in 6:
 				var r := (13.0 - k * 1.7) * u
-				Cave._stone(p, Vector2(foot.x + p.rng.randf_range(-2, 2) * u, y - r * 0.4), r, r * 0.6, STONE.lightened(k * 0.03))
-				y -= r * 1.0
-		"cache":
-			_shadow(p, c, 20 * u, 8 * u)
-			Cave._stone(p, c + Vector2(-6, -2) * u, 12 * u, 10 * u, CLOTH.lightened(0.05))  # 자루
-			Ink.line(p, c + Vector2(-10, -11) * u, c + Vector2(-2, -11) * u, 1.6 * u, LEATHER, 0.9, 0.4)
-			var box := PackedVector2Array([c + Vector2(4, -6) * u, c + Vector2(22, -6) * u, c + Vector2(22, 8) * u, c + Vector2(4, 8) * u])
-			p.fill_poly(box, func(x: int, y: int) -> Color: return p.vary(WOOD, x, y, 0.1))
-			Ink.path(p, box, 1.2 * u, true, Ink.INK, 0.85, 0.4)
-			Ink.line(p, c + Vector2(4, 0) * u, c + Vector2(22, 0) * u, 1.6 * u, METAL, 0.8, 0.3)
-		"goblin_snare":
-			Decals._stick(p, c + Vector2(-14, 4) * u, c + Vector2(-12, -10) * u, 2.4 * u, WOOD)
-			Ink.path(p, Cave._ellipse(c + Vector2(4, 2) * u, 12 * u, 6 * u, 18), 1.4 * u, true, Color("#8a7450"), 0.85, 1.0)
-			Ink.line(p, c + Vector2(-12, -8) * u, c + Vector2(-8, 0) * u, 1.2 * u, Color("#8a7450"), 0.85, 0.8)
+				Solid.lump(p, Vector2(foot.x + p.rng.randf_range(-2, 2) * u, y), r, r * 0.45, r * 0.85, STONE.lightened(k * 0.03), 0.35, 0.0, u)
+				y -= r * 0.8
+		"cache":  # 숨겨 둔 자루와 작은 나무 궤짝(입체 — V27)
+			Solid.shadow(p, c + Vector2(0, 8) * u, 24 * u, 8 * u)
+			Solid.block(p, c + Vector2(12, 10) * u, 18 * u, 10 * u, 11 * u, func(x: int, y: int) -> Color: return p.vary(WOOD.darkened(0.1), x, y, 0.1),
+				func(x: int, y: int) -> Color: return p.vary(WOOD.lightened(0.2), x, y, 0.1), func(x: int, y: int) -> Color: return p.vary(WOOD.darkened(0.45), x, y, 0.1), u)
+			Ink.line(p, c + Vector2(3, 5) * u, c + Vector2(21, 5) * u, 1.4 * u, METAL, 0.8, 0.3)
+			Solid.lump(p, c + Vector2(-6, 10) * u, 11 * u, 6 * u, 15 * u, CLOTH.lightened(0.08), 0.25, -0.3, u)  # 자루
+			Ink.line(p, c + Vector2(-10, -3) * u, c + Vector2(-3, -3) * u, 1.6 * u, LEATHER, 0.9, 0.4)
+		"goblin_snare":  # 박아 세운 말뚝 + 바닥에 깐 올가미 고리(입체 말뚝 — V27)
+			Ink.path(p, Cave._ellipse(c + Vector2(4, 4) * u, 12 * u, 6 * u, 18), 1.6 * u, true, Color("#8a7450"), 0.9, 1.0)
+			Solid.shadow(p, c + Vector2(-13, 6) * u, 5 * u, 2 * u)
+			Solid.drum(p, c + Vector2(-13, 6) * u, 2.4 * u, 16 * u, WOOD, WOOD.lightened(0.25), u * 0.7)
+			Ink.line(p, c + Vector2(-12, -8) * u, c + Vector2(-6, 2) * u, 1.3 * u, Color("#8a7450"), 0.9, 0.8)
 		"wet_slope":
 			for k in 6:
 				var a := c + Vector2(p.rng.randf_range(-24, 24), p.rng.randf_range(-14, 10)) * u

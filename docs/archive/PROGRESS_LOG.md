@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **납작한 그림 입체로 · 드레드피어 다시 그림 · 군주 소환 연출 (2026-11-01, V27)** — 범위: 실내 장식·1층 동굴 요소 중 납작한 것 / 드레드피어 전투·맵 그림 / 탐험 화면 소환 애니메이션. 테스트: `check.sh` + 캡처(실내 7곳 전후 · 1층 장면 18 · 소환 연출 8시각 · 전투).
+  - 찾기: 실내 7곳·1층 동굴 요소 시트·장면 목록을 캡처해 봄 → ASSUMPTIONS V27 ①.
+  - 그림: `Solid.gd`(처음 lump는 빛 방향이 반대로 들어가 오른쪽 아래가 밝았고, 고친 뒤엔 대비가 없어 다시) · `Props.gd` 13종 · `RoomSolid.gd` 8종 + 신전 긴 의자 등받이(`RoomProps2.pew`) → `paint_floor --only=props` · `paint_rooms`(7곳).
+  - 드레드피어: `Specs2.dreadfear` 사람 꼴 + `Extras._maggots` · 크기 1.6. 처음 thin 체형은 전투 무대에서 너무 가늘어 normal·폭 1.18로.
+  - 연출: `LordRiseFx` · `LordWatch.summon`이 알림을 연출 뒤로(`ExploreSession.lord_rise`) · `ExploreScreen._on_lord_rising`(시간 멈춤·키 막음). 처음엔 군주가 어둠 속이라 다 모인 뒤에도 안 보였다 → 연출 동안만 보이게.
+
 - **도서관 결과 문구 지움 · 획득 문구 통일 지키기 · 균열 장비 강화 (2026-11-01, V26)** — 테스트: `test_item_lines`(새) · `test_rift_loot.test_rift_gear_beats_the_smithy` · `check.sh` · 캡처(도서관 소재와 무기 읽기 0~5쪽 — 책 글만).
   - 도서관: `CityLines.quiet` + `FacilityView.show_result/_on_trade` 거름 · library_* 7종 `"quiet": ["stat_up", "stat_fail", "fatigue_up"]` · ko.json city.lines.library_read·library_rare 지움.
   - 문구: RiftRun.keep_overflow는 알리지 않고 부른 쪽이 item.got(_by) + explore.rift_key_held("가방에 자리가 없어 손에 쥐었다.") · CLAUDE.md 규칙 한 줄.

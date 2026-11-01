@@ -10,6 +10,7 @@ const Mat := preload("res://tools/city_art/Mat.gd")
 const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const RoomArt := preload("res://tools/city_art/RoomArt.gd")
 const RoomProps := preload("res://tools/city_art/RoomProps.gd")
+const RoomSolid := preload("res://tools/city_art/RoomSolid.gd")
 const RoomProps2 := preload("res://tools/city_art/RoomProps2.gd")
 const RoomFurniture2 := preload("res://tools/city_art/RoomFurniture2.gd")
 const RoomClutter := preload("res://tools/city_art/RoomClutter.gd")
@@ -105,12 +106,7 @@ static func paint(d: Dictionary, size: Vector2i, t: int, seed_value: int) -> Pai
 			p.fill_poly(bell, func(x: int, y: int) -> Color: return p.vary(col.lightened(0.25 * clampf(1.0 - (x - c.x + t * 0.6) / (t * 1.2), 0.0, 1.0)), x, y, 0.1))
 			Ink.path(p, bell, 2.0)
 		"pile":
-			for k in size.x * size.y * 6:
-				var a := Vector2(foot.position.x + p.rng.randf_range(4, foot.size.x - 4), foot.position.y + p.rng.randf_range(4, foot.size.y - 2))
-				var s := p.rng.randf_range(t * 0.12, t * 0.24)
-				var chunk := Paint.poly([a + Vector2(-s, 0), a + Vector2(-s * 0.4, -s * 0.9), a + Vector2(s * 0.5, -s * 0.8), a + Vector2(s, 0)])
-				p.fill_poly(chunk, p.flat(col.lightened(p.rng.randf_range(-0.15, 0.15)), 0.12))
-				Ink.path(p, chunk, 1.0, true, Ink.INK, 0.7)
+			RoomSolid.pile(p, foot, t, col)
 		"grille":
 			Ink.line(p, Vector2(foot.position.x, foot.end.y - lift * t), Vector2(foot.end.x, foot.end.y - lift * t), 4.0, col.lightened(0.2), 1.0, 0.1)
 			var x := foot.position.x + 4

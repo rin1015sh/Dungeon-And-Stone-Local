@@ -27,6 +27,7 @@
     "camera_zoom": 1.5,
     "chunk_size": 16,
     "loot_px_ratio": 0.8,
+    "lord_rise": {"_comment": "계층군주 소환 연출(LordRiseFx — V27): 둘레 radius칸 안에서 구더기 count마리가 emerge_sec 동안 땅에서 솟고 crawl_sec 동안 가운데로 기어 모여, heap_sec 동안 heap_height칸 높이 더미를 이루고, rise_sec 동안 군주가 더미에서 일어선다(남은 구더기는 흩어져 사라짐). worm_size = 구더기 길이(칸 대비)", "count": 34, "radius": 3.2, "emerge_sec": 1.0, "crawl_sec": 1.1, "heap_sec": 0.8, "heap_height": 1.6, "rise_sec": 1.0, "worm_size": 0.2},
     "chest": {"_comment": "균열 상자(V25 — LootView): 닫힌·열린 그림(tools/paint_chest.gd), width_ratio = 그림 폭(칸 대비)", "closed": "res://assets/floor/chest/closed.webp", "open": "res://assets/floor/chest/open.webp", "width_ratio": 1.3},
     "stream_chunks": 3,
     "face_shade": 0.9,

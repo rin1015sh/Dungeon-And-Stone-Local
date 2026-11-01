@@ -2,6 +2,7 @@ extends RefCounted
 ## 사람형에 덧붙이는 것: 뒤(날개·꼬리) · 앞(가시·몸에 박힌 눈·꿰맨 자국·허리 폭탄·얼음 결정) · 칠한 뒤(꿰맨 실·서리).
 ## extras 키: wings(색 — 박쥐 날개) · wing_span · tail(색) · spikes(색 — 어깨·등 가시) · body_eyes(개수) · stitches(true)
 ##            bombs(개수) · crystals(색) · frost(0~1) · lumps(울퉁불퉁 혹 개수 — 바위 피부)
+##            maggots(개수) · maggot_c(색) — 몸통·팔·다리 겉에 붙어 꿈틀대는 구더기(마디진 짧은 통 — 드레드피어, V27)
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -59,6 +60,8 @@ static func front(cl: Clay, j: Dictionary, H: float, ex: Dictionary, rng: Random
 				if z > Clay.EMPTY * 0.5:
 					var r := rng.randf_range(0.02, 0.045) * H
 					cl.bump(g, c, r, r * rng.randf_range(0.7, 1.1), r * 0.35, 0, 2.0, rng.randf() * PI)
+	if ex.has("maggots"):
+		_maggots(cl, j, H, int(ex["maggots"]), ex.get("maggot_c", Color("#ddd0aa")) as Color, rng)
 	if ex.has("spikes"):
 		var m := cl.mat(ex["spikes"], "bone")
 		var g := cl.group()
@@ -145,3 +148,59 @@ static func after(p: Paint, _cl: Clay, j: Dictionary, H: float, ex: Dictionary, 
 			var y := rng.randi_range(0, p.h - 1)
 			if p.alpha_at(x, y) > 0.9 and p.nz("mid", x, y) > 0.5:
 				p.blend(x, y, Color(0.92, 0.97, 1.0), 0.7)
+
+
+## 구더기: 몸 겉(그 자리에서 가장 앞에 있는 몸 덩어리의 표면) 위에 마디 4~5개 짧은 통. 몸통이 가장 많고 팔·다리에 듬성듬성.
+static func _maggots(cl: Clay, j: Dictionary, H: float, n: int, col: Color, rng: RandomNumberGenerator) -> void:
+	var m := cl.mat(col, "skin")
+	var g := cl.group()
+	var groups: Array[int] = []
+	for key: String in ["torso", "arm_l", "arm_r", "leg_l", "leg_r"]:
+		if j.has(key):
+			groups.append(int(j[key]))
+	var segs: Array = [["neck", "pelvis", 5], ["shoulder_l", "elbow_l", 2], ["shoulder_r", "elbow_r", 2], ["elbow_l", "hand_l", 1],
+		["elbow_r", "hand_r", 1], ["hip_l", "knee_l", 2], ["hip_r", "knee_r", 2], ["knee_l", "ankle_l", 1], ["knee_r", "ankle_r", 1]]
+	var weights: Array = segs.map(func(e: Array) -> float: return float(e[2]))
+	var total := 0.0
+	for w: float in weights:
+		total += w
+	for i in n:
+		var pick := rng.randf() * total
+		var si := 0
+		while si < segs.size() - 1 and pick > float(weights[si]):
+			pick -= float(weights[si])
+			si += 1
+		var a: String = segs[si][0]
+		var b: String = segs[si][1]
+		if not j.has(a) or not j.has(b):
+			continue
+		var pa: Vector3 = j[a]
+		var pb: Vector3 = j[b]
+		var t := rng.randf_range(0.1, 0.9)
+		var spread := 0.07 if si == 0 else 0.025
+		var c2 := Vector2(lerpf(pa.x, pb.x, t), lerpf(pa.y, pb.y, t)) + Vector2(rng.randf_range(-spread, spread) * H, rng.randf_range(-0.01, 0.01) * H)
+		var z := Clay.EMPTY
+		for gg in groups:
+			z = maxf(z, cl.surf(gg, c2.x, c2.y))
+		if z <= Clay.EMPTY * 0.5:
+			continue
+		var len := rng.randf_range(0.03, 0.05) * H
+		var ang := rng.randf() * TAU
+		var dir := Vector2.from_angle(ang)
+		var bend := rng.randf_range(-0.6, 0.6)
+		var pts: Array = []
+		var radii: Array = []
+		var r0 := rng.randf_range(0.0075, 0.0105) * H
+		for k in 5:
+			var u := float(k) / 4.0
+			var off := dir.rotated(bend * u) * len * (u - 0.5)
+			# 반쯤 파고든 놈(뒤쪽 끝이 살 속으로)과 붙어 기는 놈
+			var sink := -r0 * 0.6 * (1.0 - u) if i % 3 == 0 else r0 * 0.15
+			pts.append(Vector3(c2.x + off.x, c2.y + off.y, z + sink))
+			radii.append(r0 * (0.55 + 0.45 * sin(u * PI)) + r0 * 0.15)
+		cl.chain(g, pts, radii, m, 3.0)
+		for k in 3:  # 마디 골
+			var u := 0.25 + k * 0.22
+			var q: Vector3 = (pts[1] as Vector3).lerp(pts[3] as Vector3, (u - 0.25) / 0.5)
+			var nrm := dir.rotated(bend * u).orthogonal()
+			cl.groove(g, Vector2(q.x, q.y) - nrm * r0, Vector2(q.x, q.y) + nrm * r0, r0 * 0.18, r0 * 0.25)
