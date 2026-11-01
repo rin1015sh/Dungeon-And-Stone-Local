@@ -195,6 +195,12 @@
     "_max_size_comment": "파티 최대 인원(플레이어 포함 — 원작 정규 파티 5인, J16)",
     "max_size": 5
   },
+  "boss_gate": {
+    "_comment": "보스 방 문 닫힘(사용자 2026-11-01 \"뒤에서 문·창살이 닫혀 도망칠 수 없게\" — V23, BossGates): 보스가 깨어나면 보스가 있는 공간의 문목(가로나 세로로 진짜 벽 사이 폭 width칸 이하 — 서 있는 장식은 벽으로 치지 않는다)을 tile로 막고, 보스 무리가 쓰러지면 연다. 공간이 max_cells칸을 넘으면(트인 곳) 닫지 않는다. 전투에서 도망쳐도 닫힌 채",
+    "tile": "boss_gate",
+    "width": 4,
+    "max_cells": 3000
+  },
   "monsters": {
     "_comment": "필드 몬스터 — 판단은 ai(V22). 감지 = 화면(사용자 2026-10-29 \"화면 밖에서 감지하는 일은 없게, 화면 안에 들어오면 어그로\" — V19): 플레이어 카메라 사각형(뷰포트 ÷ 칸 크기 × 줌, render.json view)에서 screen_margin_tiles 안쪽이고 벽에 가리지 않고 바라보는 쪽(view_cone_deg — 등 돌리고 있으면 모른다, V20)이면 알아채고, 밖이면 모른다(숨는 몬스터 reveal_radius_m·먼저 덤비지 않는 몬스터 aggressive false는 화면 안이어도 behavior aggro_radius_m 안이어야). 쫓는 중엔 시야각을 보지 않고 chase_keep_tiles만큼 더 넓게 놓치지 않는다(벽에 가리면 놓친다). 은신만큼 사각형이 준다. 순찰 = 집 둘레 wander_radius 안 지점 사이를 짧게 쉬며 계속(home_drift_chance로 집이 옮겨 가 같은 자리를 맴돌지 않는다), 칸 길은 straight_lookahead_tiles까지 곧게 편다. 직접 추적 direct_chase_tiles(곧게 걸을 수 있을 때)",
     "_boss_engage_comment": "방에서 기다리는 보스·중간 보스(boss_ranks): 플레이어 눈에 실제로 보이고(시야·빛) 화면 안이고 벽에 가리지 않으면 등장 연출 뒤 전투(V16 → V19 → V22)",

@@ -140,8 +140,14 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 		j = Back.stride(j, float(sp["walk"]), sp.get("gait", {}))
 	if sp.has("idle"):  # 전투 대기 숨쉬기 한 칸(tools/paint_idle.gd 미리보기)
 		j = BackPose.idle(j, float(sp["idle"]))
+	var j_seat := j  # 앉을 자리(왕좌·바위)는 기다리는 자세에 맞춰 그 자리에 둔다(일어서도 남는다)
 	if sp.has("rest"):  # 보스가 방에서 기다리는 자세(앉음·무릎 꿇음·웅크림)
 		j = BackPose.apply(j, sp)
+		j_seat = j
+		if float(sp.get("rise", 0.0)) > 0.0:  # 일어서는 중(보스 등장 연출 — tools/paint_actors.gd _rise, V22): 기다리는 자세 → 선 자세
+			var up := sp.duplicate()
+			up["rest"] = "stand"
+			j = BackPose.blend(j, BackPose.apply(Back.skeleton(sp), up), float(sp["rise"]))
 	var skin_c: Color = sp.get("skin", Color("#c49a78"))
 	var opts := {"mottle": sp.get("mottle", skin_c.darkened(0.35)), "mottle_amt": float(sp.get("mottle_amt", 0.35))}
 	if sp.has("shade"):
@@ -161,7 +167,7 @@ static func figure(sp: Dictionary, seed_value: int) -> Paint:
 	RaceKit.wear(cl, pr, j, bd, hd, kit)  # 새 종족 후보 장식(머리띠·천 띠·화살통·목도리·앞치마·버클·등짐)
 	BackExtras.extras(cl, pr, j, hd, sp, skin)
 	RaceParts.tail(cl, pr, j, sp)  # 수인 털 꼬리
-	BackPose.props(cl, pr, j, sp)
+	BackPose.props(cl, pr, j_seat, sp)
 	Render.render(cl, p, H, sp.get("light", Render.LIGHT))
 	Fur.comb(cl, p, H, float(sp.get("fur_len", 1.0)), Vector2(0, 1).rotated(roll))
 	if sp.get("map_face", false) or sp.get("socket_eyes", false):  # 탐험 맵 얼굴(피어 앤 헝거 맵 그림) — 입은 그리지 않는다

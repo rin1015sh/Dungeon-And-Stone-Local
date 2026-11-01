@@ -23,6 +23,7 @@ var _still: float = 1.0
 var _last_pos: Vector2 = Vector2.INF
 var _up: bool = false
 var _settled: bool = false
+var _rise_sec: float = 0.0  ## 일어서는 데 걸리는 시간(0 = 일어서는 중이 아님 — rise())
 
 
 func setup(p_group: FieldMonsters.Group, db: GameDatabase) -> void:
@@ -68,6 +69,8 @@ func _build() -> void:
 			order.push_front(group.boss)
 		for i in order.size():
 			_members.append(PackMember.for_monster(_db, order[i], i == 0 and not group.boss.is_empty()))
+		if group.awake and not _members.is_empty():
+			_members[0].rise_t = 1.0  # 이미 일어선 보스(전투에서 도망친 뒤 등)
 	_offsets.resize(_members.size())
 	for i in _members.size():
 		_offsets[i] = _target(i)
@@ -112,7 +115,23 @@ func _set_facing(d: Vector2) -> void:
 		queue_redraw()
 
 
+## 보스가 일어선다(등장 연출 — BossReveal, V22): sec초 동안 일어서는 칸을 돈다. 그 뒤로는 선 채(Group.awake).
+func rise(sec: float) -> void:
+	group.awake = true
+	if _members.is_empty() or _members[0].rise_tex == null:
+		return
+	_members[0].rise_t = 0.0
+	_rise_sec = maxf(0.01, sec)
+	queue_redraw()
+
+
 func _process(delta: float) -> void:
+	if _rise_sec > 0.0 and not _members.is_empty():
+		var m := _members[0]
+		m.rise_t = minf(1.0, m.rise_t + delta / _rise_sec)
+		if m.rise_t >= 1.0:
+			_rise_sec = 0.0
+		queue_redraw()
 	if position != _last_pos and _last_pos != Vector2.INF:
 		var d := position - _last_pos
 		_set_facing(d)

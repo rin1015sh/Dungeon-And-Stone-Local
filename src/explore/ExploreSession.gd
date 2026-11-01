@@ -36,6 +36,7 @@ var lights: LightField
 var monsters: FieldMonsters
 var lord: LordWatch  ## 계층군주 소환 감시(층 JSON "lord")
 var rifts: RiftWatch = RiftWatch.new()  ## 균열 포탈(자연·강제 개방)
+var gates := BossGates.new()  ## 보스 방 문 닫힘(V23) — 깨어난 보스 무리 id → 막은 칸
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
 var scavenged: Dictionary = {}          ## 뒤진 균열 장식 칸 Vector2i → true(RiftScavenge)
 var loot: Dictionary = {}               ## 균열에 놓인 물건 칸 Vector2i → {item, count}(RiftLoot)
@@ -354,6 +355,24 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 	encounter.emit(group, party_first)
 
 
+## 보스가 깨어났다(등장 연출 — BossReveal): 그 방의 문목을 창살로 막는다(V23). 막은 칸이 있으면 true.
+func close_boss_gates(g: FieldMonsters.Group) -> bool:
+	var cells := gates.close(map, g, pos, db, monsters.groups)
+	_cells_changed(cells)
+	if not cells.is_empty():
+		sound.emit("boss_gate", g.pos)
+	return not cells.is_empty()
+
+
+func _cells_changed(cells: Array[Vector2i]) -> void:
+	if cells.is_empty():
+		return
+	var box := Rect2i(cells[0], Vector2i.ONE)
+	for c in cells:
+		box = box.expand(c).expand(c + Vector2i.ONE)
+	tiles_changed.emit(box)
+
+
 ## 수수께끼에 답했다(RiftRiddle.PASS/WEAKEN/WRONG). 전투가 필요하면 바로 시작한다.
 func answer_riddle(group: FieldMonsters.Group, outcome: String) -> void:
 	if rift_run != null and rift_run.riddle != null and rift_run.riddle.apply(self, group, outcome):
@@ -422,6 +441,8 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 		monsters.remove(group, clock.total_hours)
 	elif result == Battle.RESULT_FLED:
 		monsters.set_grace(group, clock.total_hours)
+	if group != null and gates.at.has(group.id) and not monsters.groups.has(group):
+		_cells_changed(gates.open(map, group.id))  # 보스를 쓰러뜨렸다 — 창살이 열린다
 	if ended:
 		return
 	if not chained:

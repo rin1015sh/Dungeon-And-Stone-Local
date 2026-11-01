@@ -84,6 +84,8 @@ func redraw_rect(dirty: Rect2i) -> void:
 	for row in range(r.position.y, r.end.y):
 		for cx in range(cx0, cx1 + 1):
 			var wr: WallRow = wall_rows.get(Vector2i(cx, row))
+			if wr == null and floor_chunks.has(Vector2i(cx, row / chunk)):
+				wr = _new_row(Vector2i(cx, row / chunk), row)  # 원정 중에 벽이 새로 생긴 줄(보스 방 창살 — BossGates)
 			if wr != null:
 				wr.queue_redraw()
 
@@ -129,14 +131,9 @@ func _build(key: Vector2i, player_chunk: Vector2i) -> void:
 		view.glow_layer.add_child(gc)
 		glow_chunks[key] = gc
 	for row in range(cells.position.y, cells.end.y):
-		if _row_has_wall(row, cells.position.x, cells.end.x):
-			var wr := WallRow.new()
-			wr.setup(view, row, cells.position.x, cells.end.x)
-			wr.material = view.tex_material
-			view.add_child(wr)
-			wall_rows[Vector2i(key.x, row)] = wr
-			if near:
-				wr.build_shape()
+		var wr := _new_row(key, row)
+		if wr != null and near:
+			wr.build_shape()
 
 
 ## 청크의 거시 색조·데칼 자리를 계산한다. redraw면 그 청크 그림을 다시 그린다(미뤄 계산한 경우).
@@ -152,6 +149,19 @@ func _finish(key: Vector2i, redraw: bool) -> void:
 			if wr != null:
 				wr.build_shape()
 		redraw_rect(cells)
+
+
+## 청크 key의 줄 row에 벽 줄 노드를 만든다(그 줄에 벽이 없으면 null).
+func _new_row(key: Vector2i, row: int) -> WallRow:
+	var cells := Rect2i(key * view.chunk, Vector2i(view.chunk, view.chunk)).intersection(Rect2i(0, 0, view.map.width, view.map.height))
+	if not _row_has_wall(row, cells.position.x, cells.end.x):
+		return null
+	var wr := WallRow.new()
+	wr.setup(view, row, cells.position.x, cells.end.x)
+	wr.material = view.tex_material
+	view.add_child(wr)
+	wall_rows[Vector2i(key.x, row)] = wr
+	return wr
 
 
 func _row_has_wall(row: int, x0: int, x1: int) -> bool:

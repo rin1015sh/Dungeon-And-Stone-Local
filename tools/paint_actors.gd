@@ -345,6 +345,9 @@ func _monster_sheet(id: String, data_size: float) -> void:
 
 
 ## 보스 기다리는 자세(3/4 앞모습 한 장, 크게) → <out>/monsters/<id>.webp(MonsterView가 보스 방에 그린다).
+## 사람 꼴 보스는 일어서는 칸도 그린다(V22 — 등장 연출): <id>_rise.webp(칸 RISE_FRAMES장, 왼쪽 = 기다리는 자세 → 오른쪽 = 선 자세) + rise.json.
+## 두 그림 모두 발(그림 가운데 아래)을 칸 가운데 아래에 맞춘다(기다리는 그림 = 일어서는 첫 칸).
+const RISE_FRAMES := 5
 func _idle(id: String, data_size: float) -> void:
 	var t0 := Time.get_ticks_msec()
 	var m := MapMonster.idle_of(id)
@@ -353,7 +356,21 @@ func _idle(id: String, data_size: float) -> void:
 	var size := maxf(float(m.get("size", data_size)), _v("boss_min", BOSS_MIN)) * _v("boss_scale", BOSS_SCALE)
 	var img: Image
 	if str(m["kind"]) == "figure":
-		img = _figure(m["spec"], id, PI + IDLE_TURN, 0.0, m.get("map", {}), size)
+		var frames: Array[Image] = []
+		for i in RISE_FRAMES:
+			var extra: Dictionary = (m.get("map", {}) as Dictionary).duplicate()
+			extra["rise"] = float(i) / float(RISE_FRAMES - 1)
+			frames.append(_figure(m["spec"], id, PI + IDLE_TURN, 0.0, extra, size))
+		var packed := _feet_sheet(frames)
+		var dir_r := _out.path_join("monsters")
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir_r))
+		(packed["sheet"] as Image).save_webp(dir_r.path_join("%s_rise.webp" % id), false)
+		_save_rise(id, packed["cell"], frames.size())
+		var first := Image.create_empty(packed["cell"].x, packed["cell"].y, false, Image.FORMAT_RGBA8)
+		first.blit_rect(packed["sheet"], Rect2i(Vector2i.ZERO, packed["cell"]), Vector2i.ZERO)
+		first.save_webp(dir_r.path_join("%s.webp" % id), false)
+		print("그림: 보스 기다리는 자세 + 일어서기 %s %d칸 %s (%d ms)" % [id, frames.size(), str(packed["cell"]), Time.get_ticks_msec() - t0])
+		return
 	else:
 		var body := JsonUtil.get_float(_cfg, "body_px", 84.0)
 		var raw := MapMonster.paint(id, "down", 0.0, body * size * MONSTER_RENDER, SEED + id.hash() % 997)
@@ -368,6 +385,33 @@ func _idle(id: String, data_size: float) -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir_out))
 	out.save_webp(dir_out.path_join("%s.webp" % id), false)
 	print("그림: 보스 기다리는 자세 %s %dx%d (%d ms)" % [id, out.get_width(), out.get_height(), Time.get_ticks_msec() - t0])
+
+
+## 발(그림 가운데 아래)을 맞춘 칸들 → 한 줄 시트. 칸 = 가장 넓은 폭(가운데에서 좌우 같게) × 가장 높은 키.
+func _feet_sheet(frames: Array[Image]) -> Dictionary:
+	var half := 4
+	var tall := 4
+	for img in frames:
+		var u := img.get_used_rect()
+		half = maxi(half, maxi(img.get_width() / 2 - u.position.x, u.end.x - img.get_width() / 2) + 2)
+		tall = maxi(tall, img.get_height() - u.position.y + 2)
+	var cell := Vector2i(half * 2, tall)
+	var sheet := Image.create_empty(cell.x * frames.size(), cell.y, false, Image.FORMAT_RGBA8)
+	for i in frames.size():
+		var img := frames[i]
+		var u := img.get_used_rect()
+		sheet.blit_rect(img, u, Vector2i(i * cell.x + half - img.get_width() / 2 + u.position.x, cell.y - (img.get_height() - u.position.y)))
+	return {"sheet": sheet, "cell": cell}
+
+
+## 일어서는 칸 색인 <out>/monsters/rise.json {id: {cell: [w, h], frames}}(있던 것에 더한다).
+func _save_rise(id: String, cell: Vector2i, n: int) -> void:
+	var path := _out.path_join("monsters/rise.json")
+	var cur: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
+	var all: Dictionary = cur if cur is Dictionary else {}
+	all[id] = {"cell": [cell.x, cell.y], "frames": n}
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	f.store_string(JSON.stringify(all, "\t", true))
 
 
 ## 몬스터 시트 색인(있던 것에 이번 것을 더한다).

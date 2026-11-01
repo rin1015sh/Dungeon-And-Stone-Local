@@ -361,9 +361,10 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	_codex.close()
 	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
 	var reveal: BossReveal = null
-	if not group.boss.is_empty():  # 기다리던 보스를 봤다: 등장 연출(V22) → 한 줄 → Enter 뒤에 전투(갑자기 끌려가지 않게 — V17)
-		_hud.visible = false  # 띠가 귀퉁이 창을 자르지 않게(전투가 끝나면 다시)
-		reveal = await BossReveal.play(self, _view, group, session.db, _dialog)
+	if not group.boss.is_empty():  # 기다리던 보스를 봤다: 등장 연출(V22 — 이미 깨어난 보스는 빼고) → 한 줄 → Enter 뒤에 전투(갑자기 끌려가지 않게 — V17)
+		if not group.awake:
+			_hud.visible = false  # 띠가 귀퉁이 창을 자르지 않게(전투가 끝나면 다시)
+			reveal = await BossReveal.play(self, _view, group, session.db, _dialog)
 		if not is_inside_tree() or session.ended:
 			return
 		_dialog.say(boss_notice(session.db, group.boss), "danger")

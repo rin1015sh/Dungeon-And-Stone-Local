@@ -38,6 +38,7 @@ class Group extends RefCounted:
 	var tag: String = ""                  ## 균열 조우 종류(battle/chain/waves/guardian/roam/ambush), 필드 무리는 ""
 	var waves: Array = []                 ## 연전: 이기면 바로 이어지는 다음 구성들(몬스터 id 배열)
 	var battle_rules: Dictionary = {}     ## 전투 목표(BattleObjective — 생존 웨이브)
+	var awake: bool = false               ## 보스가 등장 연출로 일어섰다(맵 그림이 선 자세 — MonsterView.rise)
 	var boss: String = ""                 ## 방에서 기다리는 보스·중간보스(구성이나 연전에 있으면) — 움직이지 않고, 가까이 오면 바로 전투
 	var route: Array[Vector2i] = []       ## 멀리 걸어갈 길(send_to — 대기 중에 따라 걷는다)
 	var party: Dictionary = {}            ## 탐험가 무리(FieldParties): {"kind", …} — 비어 있으면 몬스터 무리

@@ -572,6 +572,13 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 					g.grace_until = -1.0
 					var wait_s := str(_args["spotted"])  # --spotted=<초>: 그만큼 뒤에 찍는다(보스 등장 연출 중간 — V22, 기본 1.5)
 					await get_tree().create_timer(wait_s.to_float() if wait_s.is_valid_float() else 1.5).timeout
+					if _args.has("then_at"):  # --then_at=x,y: 등장 연출 뒤 그 칸으로 옮겨 찍는다(보스 방 창살 확인 — V23)
+						var ta := str(_args["then_at"]).split(",")
+						explore.session.pos = Vector2i(ta[0].to_int(), ta[1].to_int())
+						explore.session.fpos = Kinematics.center_of(explore.session.pos)
+						explore.session.body_moved.emit(explore.session.fpos)
+						explore.session.refresh_view()
+						await _frames(6)
 				break
 	if _args.has("slay"):  # --slay: 수호자를 쓰러뜨린 것으로 — 그 자리에 탈출 포탈(RiftRun._open_escape)
 		var rr := explore.session.rift_run

@@ -1,0 +1,58 @@
+{
+	"blater": {
+		"cell": [
+			120.0,
+			235.0
+		],
+		"frames": 5.0
+	},
+	"corpse_golem": {
+		"cell": [
+			156.0,
+			194.0
+		],
+		"frames": 5.0
+	},
+	"goblin_bomber": {
+		"cell": [
+			114,
+			204
+		],
+		"frames": 5
+	},
+	"ildium": {
+		"cell": [
+			128.0,
+			224.0
+		],
+		"frames": 5.0
+	},
+	"kambormir": {
+		"cell": [
+			124.0,
+			209.0
+		],
+		"frames": 5.0
+	},
+	"katumba": {
+		"cell": [
+			196.0,
+			219.0
+		],
+		"frames": 5.0
+	},
+	"kirdui": {
+		"cell": [
+			154.0,
+			301.0
+		],
+		"frames": 5.0
+	},
+	"tarunbas": {
+		"cell": [
+			152.0,
+			199.0
+		],
+		"frames": 5.0
+	}
+}

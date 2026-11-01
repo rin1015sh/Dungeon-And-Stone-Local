@@ -17,6 +17,13 @@ var color: Color = Color.GRAY
 var tint: Color = Color.WHITE
 var art_scale: float = 0.5
 var fps: float = 7.0
+## 보스가 일어서는 칸(tools/paint_actors.gd _idle — <id>_rise.webp + rise.json, V22). rise_t < 0 = 기다리는 그림(texture), 0~1 = 일어서는 칸.
+var rise_tex: Texture2D = null
+var rise_cell := Vector2.ZERO
+var rise_n: int = 0
+var rise_t: float = -1.0
+static var _rise_index: Dictionary = {}
+static var _rise_read: bool = false
 
 
 ## 몬스터 한 마리. idle = 보스가 기다리는 자세(걷기 시트를 쓰지 않는다).
@@ -35,10 +42,27 @@ static func for_monster(db: GameDatabase, monster_id: String, idle: bool) -> Pac
 		if not path.is_empty() and ResourceLoader.exists(path):
 			m.texture = load(path) as Texture2D
 			break
+	if idle:  # 보스: 일어서는 칸(있으면)
+		var meta := JsonUtil.get_dict(_rise_meta(dir), monster_id)
+		var cell := JsonUtil.get_array(meta, "cell")
+		var rise_path := dir.path_join(monster_id + "_rise.webp")
+		if cell.size() == 2 and ResourceLoader.exists(rise_path):
+			m.rise_tex = load(rise_path) as Texture2D
+			m.rise_cell = Vector2(float(cell[0]), float(cell[1]))
+			m.rise_n = maxi(1, JsonUtil.get_int(meta, "frames", 1))
 	var back_path := dir.path_join(monster_id + "_back.webp")
 	if ResourceLoader.exists(back_path):
 		m.back = load(back_path) as Texture2D
 	return m
+
+
+static func _rise_meta(dir: String) -> Dictionary:
+	if not _rise_read:
+		_rise_read = true
+		var path := dir.path_join("rise.json")
+		var v: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
+		_rise_index = v if v is Dictionary else {}
+	return _rise_index
 
 
 ## 사람 몸 시트 한 장(탐험가·약탈자).
@@ -83,6 +107,15 @@ func draw(c: CanvasItem, at: Vector2, facing: Vector2i, walk_t: float, walking: 
 	if texture == null:
 		c.draw_set_transform(at)
 		FigurePainter.paint(c, shape, scale, color, facing)
+		c.draw_set_transform_matrix(Transform2D.IDENTITY)
+		return
+	if rise_tex != null and rise_t >= 0.0:  # 보스가 일어서는 중(또는 선 채)
+		var col := clampi(roundi(rise_t * float(rise_n - 1)), 0, rise_n - 1)
+		var rs := rise_cell * art_scale
+		_shadow(c, at, rs.x * 0.32)
+		var rflip := -1.0 if facing.x < 0 else 1.0
+		c.draw_set_transform_matrix(Transform2D(0.0, Vector2(rflip, 1.0), 0.0, at))
+		c.draw_texture_rect_region(rise_tex, Rect2(-rs.x * 0.5, -rs.y, rs.x, rs.y), Rect2(Vector2(col * rise_cell.x, 0.0), rise_cell), tint)
 		c.draw_set_transform_matrix(Transform2D.IDENTITY)
 		return
 	var tex := back if up and back != null else texture

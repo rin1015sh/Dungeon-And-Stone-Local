@@ -213,7 +213,7 @@ func use_exit(s: ExploreSession) -> ExploreSession:
 ## 길목 둘레 칸에 들어섰다(ExploreSession._on_enter_cell). 넘어가면 transfer를 내고 true.
 ## 잠긴 출구는 바깥에서 길목 둘레로 들어설 때만 이유를 알린다(둘레 안에서 걸을 때마다 알리지 않게).
 func passage_step(s: ExploreSession, from: Vector2i) -> bool:
-	if s != session or finished:
+	if s != session or finished or s.gates.sealed():  # 깨어난 보스가 길목을 막았다(BossGates — V23)
 		return false
 	var zone := int(db.bal("rift.passage_zone", 1))
 	var d := RiftPassage.dir_at(s.map, s.pos, zone)

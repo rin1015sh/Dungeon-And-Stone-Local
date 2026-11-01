@@ -15,7 +15,7 @@
     "goblin_shout": "res://assets/audio/sfx/goblin_shout.ogg",
     "undead_moan": "res://assets/audio/sfx/undead_moan.ogg",
     "slime_squelch": "res://assets/audio/sfx/slime_squelch.ogg",
-    "raider_shout": "res://assets/audio/sfx/raider_shout.ogg", "boss_reveal": "res://assets/audio/sfx/boss_reveal.ogg"
+    "raider_shout": "res://assets/audio/sfx/raider_shout.ogg", "boss_reveal": "res://assets/audio/sfx/boss_reveal.ogg", "boss_gate": "res://assets/audio/sfx/boss_gate.ogg"
   },
   "ambience": {
     "f1_cave": "res://assets/audio/ambience/f1_cave.ogg"

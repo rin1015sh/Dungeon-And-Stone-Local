@@ -135,6 +135,19 @@ static func _plant(j: Dictionary) -> void:
 		j["hand_" + t] = h
 
 
+## 두 자세를 섞는다(관절 Vector3를 t만큼 — 보스가 일어서는 중간 그림). 몸통·머리는 먼저, 팔은 조금 늦게 따라온다.
+static func blend(a: Dictionary, b: Dictionary, t: float) -> Dictionary:
+	var out := a.duplicate()
+	var e := t * t * (3.0 - 2.0 * t)
+	for key: Variant in b:
+		if a.has(key) and a[key] is Vector3 and b[key] is Vector3:
+			var k := e
+			if str(key).begins_with("elbow") or str(key).begins_with("wrist") or str(key).begins_with("hand"):
+				k = clampf(e * 1.15 - 0.15, 0.0, 1.0)  # 팔은 몸이 일어선 뒤에
+			out[key] = (a[key] as Vector3).lerp(b[key] as Vector3, k)
+	return out
+
+
 ## 앉을 자리(throne = 돌 왕좌 · seat = 바위). floor·kneel·squat·stand는 없음.
 static func props(cl: Clay, pr: Dictionary, j: Dictionary, sp: Dictionary) -> void:
 	var rest := str(sp.get("rest", ""))
