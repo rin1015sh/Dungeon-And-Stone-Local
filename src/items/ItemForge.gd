@@ -15,7 +15,7 @@ extends RefCounted
 ##   장비는 스탯을 깎지 않는다(사용자 결정 2026-11-01, IT13) — 종류의 특색은 무엇이 오르는지로(판금 = 물리내성 크게, 가죽 = 민첩)
 ##   소재 trait: mods(모든 장비) · weapon_mods(무기 — 대상 "dmg_dealt:weapon"은 그 무기 피해 유형) · armor_mods(무기가 아닌 것)
 ##   구입가 = base_price × 종류 price_mult × kind_price[소재 종류] × price_by_tier[등급−1] × 소재 price_mult → 유효숫자 두 자리
-##   희귀도 = rarity_by_tier[등급−1]. 판매가는 상점 sell_ratio(city.json). 설명(desc_ko) = 소재 flavor_ko + 종류 flavor_ko(IT7 — 아이템 JSON에 desc_ko가 있으면 그것).
+##   희귀도 = rarity_by_tier[등급−1]. 판매가는 상점 sell_ratio(city.json). 설명(desc_ko) = 종류 flavor_ko + 빈 줄 + 소재 flavor_ko(IT7·IT14 — 아이템 JSON에 desc_ko가 있으면 그것).
 
 
 static func forge_all(cols: Dictionary, bal: Dictionary) -> void:
@@ -98,7 +98,7 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 		* JsonUtil.get_float(JsonUtil.get_dict(cfg, "kind_price"), JsonUtil.get_str(m, "kind"), 1.0) \
 		* _at(cfg, "price_by_tier", tier, 1.0) * JsonUtil.get_float(m, "price_mult", 1.0)
 	var rarities := JsonUtil.get_array(cfg, "rarity_by_tier")
-	var flavor := ("%s %s" % [JsonUtil.get_str(m, "flavor_ko"), JsonUtil.get_str(t, "flavor_ko")]).strip_edges()  # 소재 한 줄 + 생김새 한 줄(IT7)
+	var flavor := ("%s\n\n%s" % [JsonUtil.get_str(t, "flavor_ko"), JsonUtil.get_str(m, "flavor_ko")]).strip_edges()  # 생김새 + 빈 줄 + 소재의 내력(IT7·IT14)
 	return {"name_ko": "%s %s" % [JsonUtil.get_str(m, "name_ko"), JsonUtil.get_str(t, "name_ko")], "desc_ko": flavor,
 		"category": JsonUtil.get_str(t, "category", "armor"), "size": JsonUtil.get_array(t, "size").duplicate(), "stack": 1,
 		"price": nice(price), "icon": JsonUtil.get_str(t, "icon"), "color": JsonUtil.get_str(m, "color"),

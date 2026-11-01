@@ -13,7 +13,7 @@
   "stack": 1,
   "icon": "armor",
   "color": "#7a5a3a",
-  "desc_ko": "무두질한 가죽 조끼. 움직이기 편하다.",
+  "desc_ko": "무두질한 가죽 조끼.\n\n움직이기 편하다. 미궁에 처음 드는 이들은 대개 이것을 입고, 살아남은 이들은 대개 이것을 기워 입는다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 leather_armor × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

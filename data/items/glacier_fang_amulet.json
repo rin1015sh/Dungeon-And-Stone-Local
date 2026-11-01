@@ -13,7 +13,7 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "토템 앞에 바쳐져 있던 송곳니 목걸이. 짐승 냄새가 짙다.",
+  "desc_ko": "토템 앞에 바쳐져 있던 늑대 송곳니 목걸이. 짐승 냄새가 짙다.\n\n얼음 오크들은 가장 사나운 늑대의 이빨을 가장 용맹한 전사에게 걸어 주었다. 그 전사는 지금 없다.",
   "source": "placeholder",
   "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
 }

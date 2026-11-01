@@ -6,7 +6,7 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "영주의 지하 창고에서 나온 술. 한 모금이면 떨림이 멎는다.",
+  "desc_ko": "영주의 지하 창고에서 나온 검붉은 술.\n\n한 모금이면 떨림이 멎는다. 영주도 처음에는 떨림을 멎게 하려고 마셨다.",
   "use_effects": [
     {
       "type": "restore_resource",

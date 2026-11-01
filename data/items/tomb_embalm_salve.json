@@ -6,7 +6,7 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "시신을 보존하던 연고. 산 사람의 상처에도 썩음을 멈춘다.",
+  "desc_ko": "시신을 보존하던 연고.\n\n산 사람의 상처에도 썩음을 멈춘다. 죽은 자를 위한 약이 산 자를 살린다. 묘지기들은 그 일을 알았을까.",
   "use_effects": [
     {
       "type": "restore_resource",

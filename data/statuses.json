@@ -394,7 +394,7 @@
     "id": "snare",
     "name_ko": "속박",
     "kind": "debuff",
-    "desc_ko": "발이 묶였다. 도망칠 수 없고 몸놀림이 둔하다.",
+    "desc_ko": "발이 묶였다. 도망칠 수 없고 몸이 무겁다.",
     "duration": {
       "amount": 2,
       "unit": "turn"

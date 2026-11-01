@@ -6,7 +6,7 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "녹색 결정 가루를 녹인 물약. 마시면 상처 둘레가 희미하게 빛나며 아문다.",
+  "desc_ko": "녹색 결정 가루를 녹인 물약.\n\n마시면 상처 둘레가 희미하게 빛나며 아문다. 그 빛이 언제 꺼지는지는 마신 자도 모른다.",
   "use_effects": [
     {
       "type": "restore_resource",

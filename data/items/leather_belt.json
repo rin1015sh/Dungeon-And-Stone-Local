@@ -13,7 +13,7 @@
   "stack": 1,
   "icon": "belt",
   "color": "#7a4a2a",
-  "desc_ko": "주머니를 몇 개 달 수 있다.",
+  "desc_ko": "주머니를 몇 개 달 수 있는 가죽 허리띠.\n\n탐험가의 허리띠에는 그가 살아온 만큼의 주머니가 달린다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 belt × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

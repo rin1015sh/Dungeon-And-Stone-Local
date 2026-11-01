@@ -13,7 +13,7 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "서리 늑대의 송곳니를 갈아 만든 단검. 날이 차갑다.",
+  "desc_ko": "서리 늑대의 송곳니를 갈아 만든 단검. 날이 차갑다.\n\n늑대가 물던 것을 이제는 사람이 문다. 송곳니는 그 차이를 모른다.",
   "source": "placeholder",
   "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
 }

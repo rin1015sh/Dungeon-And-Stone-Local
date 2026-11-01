@@ -13,7 +13,7 @@
   "stack": 1,
   "icon": "mace",
   "color": "#8d8d92",
-  "desc_ko": "쇠뭉치를 박은 곤봉. 단단한 것을 깨는 데 좋다.",
+  "desc_ko": "쇠뭉치를 박은 곤봉.\n\n단단한 것을 깨는 데 좋다. 뼈든 껍질이든 갑옷이든, 쇠뭉치는 가리지 않는다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 mace × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

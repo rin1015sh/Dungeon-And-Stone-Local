@@ -11,7 +11,7 @@
   "icon": "amulet",
   "color": "#d8cfb8",
   "rarity": "common",
-  "desc_ko": "짐승 뼈를 깎은 부적. 마음이 가라앉는다.",
+  "desc_ko": "짐승 뼈를 깎아 끈에 꿴 부적.\n\n성벽 밖에 짐승이 뛰놀던 시절, 사냥꾼들은 잡은 짐승의 뼈를 목에 걸고 그 넋을 달랬다. 이제는 짐승도, 그 풍습을 아는 이도 없다.",
   "equip": {
     "slot": "neck",
     "modifiers": [

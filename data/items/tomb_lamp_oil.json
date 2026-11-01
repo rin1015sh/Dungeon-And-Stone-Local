@@ -5,7 +5,7 @@
   "price": 800,
   "stack": 5,
   "consumable": true,
-  "desc_ko": "묘지기가 등잔에 붓던 기름. 횃불에 적시면 하루를 버틴다.",
+  "desc_ko": "묘지기가 등잔에 붓던 기름.\n\n횃불에 적시면 하루를 버틴다. 묘지기는 하룻밤도 등잔을 끄지 않았다. 망자가 어둠을 싫어한다고 믿었다.",
   "use_effects": [
     {
       "type": "light_source",

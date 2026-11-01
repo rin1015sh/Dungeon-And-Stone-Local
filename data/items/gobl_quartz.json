@@ -11,7 +11,7 @@
   "icon": "potion",
   "color": "#9ad08a",
   "rarity": "numbers",
-  "desc_ko": "광맥에서 캐낸 탁한 초록 수정. 가루를 내어 삼키면 독이 덜 받는다.",
+  "desc_ko": "광맥에서 캐낸 탁한 초록 수정.\n\n탄광 고블린들은 이것을 갈아 먹으며 독 연기 속에서 일했다. 가루를 내어 삼키면 독이 덜 받는다.",
   "consumable": true,
   "use_effects": [
     {

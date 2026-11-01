@@ -6,7 +6,7 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "묘지기가 피우던 향. 연기가 몸에 붙은 저주를 걷어 낸다.",
+  "desc_ko": "묘지기가 피우던 향.\n\n연기가 몸에 붙은 저주를 걷어 낸다. 묘의 저주는 도둑을 위한 것이었다. 묘지기는 그 연기 속에서만 무사했다.",
   "use_effects": [
     {
       "type": "remove_status",

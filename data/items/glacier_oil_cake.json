@@ -5,7 +5,7 @@
   "price": 500,
   "stack": 5,
   "consumable": true,
-  "desc_ko": "탐사대가 챙겨 온 기름진 과자. 얼어도 부서지지 않는다.",
+  "desc_ko": "탐사대가 챙겨 온 기름진 과자. 얼어도 부서지지 않는다.\n\n탐사대장은 대원마다 열 개씩 나누어 주었다. 마지막 대원의 주머니에는 아홉 개가 남아 있었다.",
   "use_effects": [
     {
       "type": "restore_resource",

@@ -6,7 +6,7 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "성채 병사들이 허리에 차고 다니던 가죽 지혈대. 핏자국이 겹겹이 말라붙었다.",
+  "desc_ko": "성채 병사들이 허리에 차던 가죽 지혈대. 핏자국이 겹겹이 말라붙었다.\n\n묶은 손은 여럿이었고, 묶인 다리도 여럿이었다. 지혈대만이 그 모두를 기억한다.",
   "use_effects": [
     {
       "type": "remove_status",

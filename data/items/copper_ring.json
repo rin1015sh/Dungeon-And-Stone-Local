@@ -11,7 +11,7 @@
   "icon": "ring",
   "color": "#b07a4a",
   "rarity": "common",
-  "desc_ko": "녹이 슨 구리 반지. 손가락이 조금 서늘하다.",
+  "desc_ko": "녹이 슨 구리 반지. 손가락이 조금 서늘하다.\n\n안쪽에 이름이 새겨져 있었던 듯하나, 녹이 먼저 읽어 버렸다.",
   "equip": {
     "slot": "ring",
     "modifiers": [

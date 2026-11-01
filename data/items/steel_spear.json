@@ -13,7 +13,7 @@
   "stack": 1,
   "icon": "spear",
   "color": "#a9adb5",
-  "desc_ko": "긴 창. 다가오기 전에 찌른다.",
+  "desc_ko": "강철 날을 단 긴 창.\n\n다가오기 전에 찌른다. 창을 든 자는 거리를 믿는다. 그 거리가 무너지는 순간까지는.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 spear × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

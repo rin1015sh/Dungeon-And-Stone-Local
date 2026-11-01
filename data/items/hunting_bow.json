@@ -13,7 +13,7 @@
   "stack": 1,
   "icon": "bow",
   "color": "#8a6a44",
-  "desc_ko": "짐승을 잡던 활. 성벽 밖 들판에 아직 짐승이 뛰놀던 시절의 꼴 그대로다.",
+  "desc_ko": "짐승을 잡던 활.\n\n성벽 밖 들판에 아직 짐승이 뛰놀던 시절의 꼴 그대로다. 활은 남았고, 들판은 남지 않았다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 bow × 소재 oak로 계산한다(이 파일의 값 없음)."
 }

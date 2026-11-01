@@ -13,7 +13,7 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "갑옷 진열실에 걸려 있던 건틀릿. 손가락 마디마다 쇠못이 박혔다.",
+  "desc_ko": "갑옷 진열실에 걸려 있던 건틀릿. 손가락 마디마다 쇠못이 박혔다.\n\n묘에 잠든 기사단은 맨손으로 무덤을 판 적이 없었다. 이 손이 그 대신 팠다.",
   "source": "placeholder",
   "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
 }

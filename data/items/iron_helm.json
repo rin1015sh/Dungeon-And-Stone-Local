@@ -13,7 +13,7 @@
   "stack": 1,
   "icon": "helmet",
   "color": "#8d9097",
-  "desc_ko": "이마와 정수리를 지키는 투구. 횃불을 꽂을 홈이 있다.",
+  "desc_ko": "이마와 정수리를 지키는 쇠 투구. 횃불을 꽂을 홈이 있다.\n\n미궁의 탐험가가 쓰는 투구는 머리보다 불을 먼저 생각해 만든다. 어둠 속에서는 불이 곧 머리다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 helm × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

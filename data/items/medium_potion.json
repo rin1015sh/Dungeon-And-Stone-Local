@@ -11,7 +11,7 @@
   "icon": "potion",
   "color": "#c04848",
   "rarity": "common",
-  "desc_ko": "깊은 상처도 아물지만 통증이 오래 간다.",
+  "desc_ko": "약사들이 마석 가루와 약초로 빚은 물약.\n\n깊은 상처도 아물지만 통증이 오래 간다. 상처가 닫히는 소리를 몸이 기억하는 탓이라 한다.",
   "use_effects": [
     {
       "type": "restore_resource",

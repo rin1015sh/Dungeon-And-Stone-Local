@@ -6,7 +6,9 @@
   "price": 10000,
   "stack": 5,
   "weight": 1.0,
-  "tags": ["light"],
+  "tags": [
+    "light"
+  ],
   "light_radius_m": 4.0,
   "light_radius_source": "placeholder",
   "burn_hours": 72,
@@ -14,5 +16,6 @@
   "equip": null,
   "numbers": null,
   "bound": false,
-  "source": "original"
+  "source": "original",
+  "desc_ko": "기름 먹인 천을 감은 횃불.\n\n한 번 불을 붙이면 사흘쯤 탄다. 투구 홈에 꽂아 두면 손이 자유롭다. 미궁에서 불을 든 손은 칼을 들 수 없기에."
 }

@@ -11,7 +11,7 @@
   "icon": "potion",
   "color": "#8fd0ff",
   "rarity": "fine",
-  "desc_ko": "세 번째 기둥 속에 박혀 있던 얼음 조각. 녹여 마시면 추위가 덜 스민다.",
+  "desc_ko": "빙하굴 세 번째 기둥 속에 박혀 있던 얼음 조각.\n\n녹여 마시면 추위가 덜 스민다. 기둥은 그 조각을 품은 채 오래도록 얼어 있었다. 무언가를 지키려는 듯이.",
   "consumable": true,
   "use_effects": [
     {

@@ -13,7 +13,7 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "쓰러진 기사가 끝까지 놓지 않던 장검. 날밑에 핏빛 문장이 새겨져 있다.",
+  "desc_ko": "쓰러진 기사가 끝까지 놓지 않던 장검. 날밑에 핏빛 문장이 새겨져 있다.\n\n기사는 영주에게 맹세했다. 영주가 무엇이 되었든. 맹세는 기사보다 오래 남았다.",
   "art_color": "#9a8a8a",
   "source": "placeholder",
   "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"

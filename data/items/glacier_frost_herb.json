@@ -6,7 +6,7 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "얼음 틈에서 자란 푸른 약초. 씹으면 몸속에서 열이 올라온다.",
+  "desc_ko": "얼음 틈에서 자란 푸른 약초.\n\n씹으면 몸속에서 열이 올라온다. 이 땅에서 가장 차가운 곳에서 자란 것이 가장 뜨겁다.",
   "use_effects": [
     {
       "type": "restore_resource",

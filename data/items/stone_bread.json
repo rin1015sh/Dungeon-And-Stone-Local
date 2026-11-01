@@ -11,7 +11,7 @@
   "icon": "bread",
   "color": "#a08660",
   "rarity": "common",
-  "desc_ko": "이름처럼 딱딱하다. 한 끼라기보다 이를 단련하는 간식.",
+  "desc_ko": "이름처럼 딱딱한 빵.\n\n한 끼라기보다 이를 단련하는 간식이다. 라비기온의 아이들은 이것으로 이를 갈고 자란다.",
   "use_effects": [
     {
       "type": "restore_resource",

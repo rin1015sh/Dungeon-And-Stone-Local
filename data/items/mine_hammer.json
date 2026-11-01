@@ -13,7 +13,7 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "바위를 깨던 묵직한 망치. 자루에 손때가 새까맣게 배었다.",
+  "desc_ko": "바위를 깨던 묵직한 망치. 자루에 손때가 새까맣게 배었다.\n\n광부는 평생 바위만 깼다. 마지막에 깬 것이 바위였는지는 알 수 없다.",
   "source": "placeholder",
   "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)"
 }
