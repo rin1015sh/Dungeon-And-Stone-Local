@@ -166,7 +166,11 @@
     "chest": "상자",
     "chest_found": "상자 안에서 {item}을(를) 꺼냈다.",
     "chest_found_n": "상자 안에서 {item} {n}개를 꺼냈다.",
-    "chest_trap": "자물쇠 틈에서 바늘이 튀어나와 손끝을 찔렀다.",
+    "chest_junk": "상자 안에는 {item}뿐이었다.",
+    "chest_nothing": "상자 안은 비어 있었다.",
+    "coin_ask": "어느 면에 걸까?",
+    "coin_heads": "앞면",
+    "coin_tails": "뒷면",
     "hidden_found": "숨겨진 것을 찾았다 — [{item}].",
     "rift_item_lost": "[{item}]이(가) 균열을 나서는 순간 빛을 잃고 흩어졌다.",
     "rift_opened": "동굴 곳곳에 균열 포탈 {count}개가 열렸다!",
@@ -548,8 +552,6 @@
     "banner_skill": "{skill}",
     "banner_item": "{item}",
     "start_first": "{enemies}을(를) 먼저 발견했다. 싸운다.",
-    "start_coin_heads": "{enemies}보다 한 발 먼저 움직였다.",
-    "start_coin_tails": "{enemies}이(가) 먼저 덮쳐 온다.",
     "split_blocked": "{name}이(가) 그을린 몸을 비틀지만 갈라지지 못한다."
   },
   "knowledge": {

@@ -196,20 +196,16 @@
     "max_size": 5
   },
   "coin": {
-    "_comment": "동전 던지기(사용자 2026-11-01 \"피어 앤 헝거처럼 동전 던지기 — 보스 전투 등 중요한 전투에서도\" — V25, CoinToss): 앞면 = 성공. heads = 앞면 확률(종류마다 덮어쓸 수 있다). chest = 상자 열기(RiftChest), battle = 구성·연전에 ranks 등급 몬스터가 있는 전투의 선공(앞면 아군 · 뒷면 적 — combat.first_strike_gauge만큼 앞서 시작)",
+    "_comment": "동전 던지기(사용자 2026-11-01 \"피어 앤 헝거처럼 동전 던지기\" — V25, CoinToss): heads = 앞면 확률(종류마다 덮어쓸 수 있다). chest = 상자(RiftChest — 고른 면과 같으면 담긴 물건, 다르면 잡템). 전투 선공 동전은 없앴다(사용자 — 보스의 아주 강한 패턴을 덜 아프게 맞는 데 쓸 생각, 보류)",
     "heads": 0.5,
-    "chest": {"heads": 0.5},
-    "battle": {"heads": 0.5, "ranks": ["guardian", "variant_guardian", "midboss", "lord"]}
+    "chest": {"heads": 0.5}
   },
   "chest": {
-    "_comment": "균열 상자(V25, RiftChest): 챕터 loot 가운데 장비 또는 값 min_price 이상(가장 좋은 회복약)을 한 챕터 max_per_chapter개까지(장비 먼저 · 값 높은 순 — 장비가 아닌 것은 max_non_gear개) 상자에 담는다 — loot 항목의 \"chest\": true/false가 이긴다. 동전 뒷면 = 자물쇠 함정 trap(효과 목록, 아군 1인 — 함정과 같은 형식), 상자는 잠긴 채 남아 다시 던질 수 있다",
+    "_comment": "균열 상자(V25, RiftChest): 챕터 loot 가운데 장비 또는 값 min_price 이상(가장 좋은 회복약)을 한 챕터 max_per_chapter개까지(장비 먼저 · 값 높은 순 — 장비가 아닌 것은 max_non_gear개) 상자에 담는다 — loot 항목의 \"chest\": true/false가 이긴다. 열 때 앞뒤를 고르고 동전 — 맞히면 담긴 물건, 못 맞히면 junk[균열 id](data/scavenge.json 표)에서 잡템 하나. 상자는 한 번 열면 빈 채",
     "min_price": 6000,
     "max_per_chapter": 3,
     "max_non_gear": 1,
-    "trap": [
-      {"type": "restore_resource", "resource": "hp", "amount": "-floor({max_hp} * 0.08)"},
-      {"type": "apply_status", "status": "poison", "chance": 0.35}
-    ]
+    "junk": {"rift_blood_fortress": "fortress_stores", "rift_glacier_cave": "glacier_camp", "rift_green_mine": "mine_stores", "rift_iron_tomb": "tomb_relics"}
   },
   "boss_gate": {
     "_comment": "보스 방 문 닫힘(사용자 2026-11-01 \"뒤에서 문·창살이 닫혀 도망칠 수 없게\" — V23, BossGates): 보스가 깨어나면 보스가 있는 공간의 문목(가로나 세로로 진짜 벽 사이 폭 width칸 이하 — 서 있는 장식은 벽으로 치지 않는다)을 tile로 막고, 보스 무리가 쓰러지면 연다. 공간이 max_cells칸을 넘으면(트인 곳) 닫지 않는다. 전투에서 도망쳐도 닫힌 채",

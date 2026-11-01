@@ -47,28 +47,50 @@ func test_pick_up_once_and_keep_it_outside() -> void:
 	assert_eq(cs.player.inventory.count("mine_rough_gem"), 1, "균열 밖으로 가지고 나간다")
 
 
-## 상자(V25): 장비·좋은 회복약만, 한 챕터 3개까지 — 동전 앞면이면 꺼내고(상자는 열린 채 남는다), 뒷면이면 함정(생명력이 준다)이고 다시 던질 수 있다.
-func test_chest_holds_gear_and_opens_by_coin() -> void:
-	var cs := _chapter(0)
-	var chests: Array = cs.loot.keys().filter(func(c: Vector2i) -> bool: return RiftChest.locked(cs.loot[c]))
-	assert_true(chests.size() >= 1 and chests.size() <= int(db.bal("chest.max_per_chapter")), "상자 %d개" % chests.size())
-	var at: Vector2i = cs.loot.keys().filter(func(c: Vector2i) -> bool: return str((cs.loot[c] as Dictionary)["item"]) == "mine_hammer")[0]
-	assert_true(RiftChest.locked(cs.loot[at]), "장비는 상자에")
-	cs.pos = at + Vector2i(0, 1) if cs.map.is_walkable(at + Vector2i(0, 1)) else at
-	assert_eq(RiftLoot.target_name(cs), Strings.t("explore.chest"), "열기 전엔 안이 보이지 않는다")
-	var tails := 0
-	for i in 60:
-		var hp := cs.player.pool.get_current("hp")
+## 상자(V25): 장비·좋은 회복약만, 한 챕터 3개까지 — 앞뒤를 고르고 동전: 맞히면 담긴 물건, 못 맞히면 그 균열 잡템. 어느 쪽이든 한 번 열면 빈 상자.
+func test_chest_guess_gives_item_or_junk() -> void:
+	var junk: Array = JsonUtil.get_array(db.get_entry("scavenge", "mine_stores"), "items").map(func(e: Variant) -> String: return str((e as Dictionary)["item"]))
+	var hits := 0
+	var misses := 0
+	for seed in 12:
+		var cs := _chapter(0)
+		cs.rng = Rng.new(100 + seed * 7)
+		var chests: Array = cs.loot.keys().filter(func(c: Vector2i) -> bool: return RiftChest.locked(cs.loot[c]))
+		assert_true(chests.size() >= 1 and chests.size() <= int(db.bal("chest.max_per_chapter")), "상자 %d개" % chests.size())
+		var at: Vector2i = cs.loot.keys().filter(func(c: Vector2i) -> bool: return str((cs.loot[c] as Dictionary)["item"]) == "mine_hammer")[0]
+		assert_true(RiftChest.locked(cs.loot[at]), "장비는 상자에")
+		cs.pos = at + Vector2i(0, 1) if cs.map.is_walkable(at + Vector2i(0, 1)) else at
+		assert_eq(RiftLoot.target_name(cs), Strings.t("explore.chest"), "열기 전엔 안이 보이지 않는다")
+		var pick := seed % 2  # 앞면·뒷면 번갈아 고른다
+		var heads := [false]
+		cs.coin_guess.connect(func(then: Callable) -> void: then.call(pick))
+		cs.coin_toss.connect(func(h: bool, then: Callable) -> void:
+			heads[0] = h
+			then.call())
 		assert_true(RiftLoot.run(cs))
-		if not RiftChest.locked(cs.loot[at]):
-			break
-		tails += 1
-		assert_true(cs.player.pool.get_current("hp") < hp, "뒷면 = 자물쇠 함정")
-		cs.player.pool.fill_all()
-	assert_false(RiftChest.locked(cs.loot[at]), "언젠가 앞면")
-	assert_eq(cs.player.inventory.count("mine_hammer"), 1, "앞면이면 꺼낸다")
-	assert_true(cs.loot.has(at), "열린 상자는 남는다")
-	assert_false(RiftLoot.run(cs) and cs.player.inventory.count("mine_hammer") > 1, "빈 상자에서 두 번 꺼내지 않는다")
+		assert_false(RiftChest.locked(cs.loot[at]), "한 번 열면 빈 상자")
+		var hit: bool = (pick == 0) == bool(heads[0])
+		if hit:
+			hits += 1
+			assert_eq(cs.player.inventory.count("mine_hammer"), 1, "맞히면 담긴 물건")
+		else:
+			misses += 1
+			assert_eq(cs.player.inventory.count("mine_hammer"), 0, "못 맞히면 장비는 없다")
+			assert_true(junk.any(func(j: String) -> bool: return cs.player.inventory.count(j) > 0), "그 균열 잡템 하나")
+		assert_false(RiftLoot.target(cs) == at, "빈 상자는 다시 살피지 않는다")
+	assert_true(hits > 0 and misses > 0, "맞힘 %d · 못 맞힘 %d" % [hits, misses])
+
+
+func test_chest_guess_back_out_keeps_it_closed() -> void:
+	var cs := _chapter(0)
+	var at: Vector2i = cs.loot.keys().filter(func(c: Vector2i) -> bool: return str((cs.loot[c] as Dictionary)["item"]) == "mine_hammer")[0]
+	cs.pos = at + Vector2i(0, 1) if cs.map.is_walkable(at + Vector2i(0, 1)) else at
+	var tossed := [false]
+	cs.coin_guess.connect(func(then: Callable) -> void: then.call(-1))
+	cs.coin_toss.connect(func(_h: bool, _then: Callable) -> void: tossed[0] = true)
+	assert_true(RiftLoot.run(cs))
+	assert_false(tossed[0], "Esc로 물러나면 던지지 않는다")
+	assert_true(RiftChest.locked(cs.loot[at]), "상자는 그대로")
 
 
 func test_chest_pick_rule() -> void:
@@ -90,16 +112,7 @@ func test_chest_pick_rule() -> void:
 	assert_true(boxes * 3 < all_rifts, "상자를 남용하지 않는다: 놓인 물건 %d개 중 상자 %d" % [all_rifts, boxes])
 
 
-func test_important_battles_flip_a_coin() -> void:
-	assert_true(CoinToss.important(db, ["blater"]), "수호자")
-	assert_true(CoinToss.important(db, ["skull_rat", "corpse_golem"]), "중간보스가 낀 구성")
-	assert_false(CoinToss.important(db, ["goblin", "goblin"]), "보통 전투는 정정당당하게")
-	var reg := ContentRegistries.new()
-	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10})
-	var party: Array[Actor] = [pc]
-	var b := Battle.from_encounter(db, reg, Rng.new(1), party, ["blater"], Combatant.SIDE_PARTY, "combat.start_coin_heads")
-	assert_eq(str(b.history[0]["key"]), "combat.start_coin_heads")
-	assert_true(b.side_units(Combatant.SIDE_PARTY)[0].gauge > b.side_units(Combatant.SIDE_ENEMY)[0].gauge, "앞면 = 아군이 앞서 시작")
+func test_coin_is_fair() -> void:
 	var heads := 0
 	var rng := Rng.new(9)
 	for i in 400:
