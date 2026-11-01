@@ -3,8 +3,8 @@ extends Node2D
 ## 벽 한 줄(청크 폭) 그리기. 노드 위치 = 그 줄의 바닥 아래 가장자리((row+1) × tile) → y 정렬 기준.
 ## 벽 칸 하나 = 윗면(바닥 칸 자리에서 앞면 높이만큼 위로 올림) + 앞면(남쪽을 향한 면).
 ## 남쪽에 다른 벽이 있으면 그 벽의 윗면이 이 앞면을 덮는다(나중에 그려지므로 자연스럽게 가려짐).
-## 부드러운 암벽(타일 art.shape "smooth"·"round"·"bevel")은 WallShape로: 다듬은 윤곽, 남쪽을 향한 윤곽만 앞면.
-## 윗면은 smooth = 검게, round·bevel(균열) = 벽 그림 윗줄로.
+## 부드러운 암벽(타일 art.shape "smooth"·"round"·"bevel")은 WallShape로: 다듬은 윤곽, 윗면은 검게, 남쪽을 향한 윤곽만 앞면.
+## 그 벽에 뚫린 좁은 북쪽 통로에는 문(아치 — WallDoors).
 
 var view: FloorView
 var row: int = 0
@@ -16,7 +16,8 @@ var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLAC
 var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _shape: WallShape = null  # 부드러운 암벽 모양(setup에서 한 번 — 벽 칸은 바뀌지 않는다)
 var _pieces: Array[Node2D] = []  # 깎은 모서리·오목 메움 조각(WallShape.PIECE_*) — 자기 y로 캐릭터와 앞뒤를 가린다
-var _batch := QuadBatch.new()   # 벽 그림 윗면(round·bevel) — 칸마다 draw_polygon을 부르지 않게
+var _batch := QuadBatch.new()   # 앞면 — 칸마다 draw_polygon을 부르지 않게
+var _doors: Array[Dictionary] = []  # 이 줄의 문(WallDoors.find — 서쪽 문설주가 이 청크에 있는 것)
 
 
 func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
@@ -31,6 +32,7 @@ func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
 ## 부드러운 암벽 모양을 계산한다(줄당 0.1~0.2ms — 화면 밖 청크는 ChunkStream이 미뤄 부른다).
 func build_shape() -> void:
 	if view.smooth_any:
+		_doors = WallDoors.find(view.map, row, x0, x1, view.smooth_by_def)
 		_shape = WallShape.build(view.map, row, x0, x1, view.tile, view.tile * view.wall_round, view.smooth_by_def,
 			view.wall_face_of, func(x: int, y: int, def: TileDef) -> int: return FloorArtLayer.variant(x, y, def.art_variants, def.art_salt + 1),
 			view.tile * view.wall_bulge)
@@ -59,6 +61,8 @@ func _draw() -> void:
 		_draw_shape(self, t, WallShape.PIECE_ROW, Vector2.ZERO)
 		for n in _pieces:
 			n.queue_redraw()
+	for d in _doors:
+		WallDoors.draw(view, self, row, d)
 	for x in range(x0, x1):
 		var i := row * map.width + x
 		if map.explored[i] == 0:
@@ -135,13 +139,9 @@ func _draw_shape(cv: CanvasItem, t: int, piece: int, at: Vector2) -> void:
 			continue
 		var poly: PackedVector2Array = (top["poly"] as PackedVector2Array).duplicate()
 		var up := Vector2(0, float(top["h"])) + lift
-		if top.has("def"):  # 균열 벽(round·bevel): 벽 그림 윗줄(그 칸 변형)을 바닥 평면 자리대로
-			_top_textured(poly, int(top["x"]), map.defs[int(top["def"])], up)
-			continue
 		for k in poly.size():
 			poly[k] -= up
 		cv.draw_colored_polygon(poly, dark)
-	_batch.flush(cv)
 	for f in _shape.faces:
 		if int(f.get("piece", 0)) != piece or map.explored[row * map.width + int(f["x"])] == 0:
 			continue
@@ -178,33 +178,6 @@ func _draw_shape(cv: CanvasItem, t: int, piece: int, at: Vector2) -> void:
 		_cols[3] = la
 		_batch.add(_pts, _cols, _uvs, tex)
 	_batch.flush(cv)  # 앞면은 윗면(위에서 먼저 flush)보다 나중에
-
-
-## 벽 그림 윗면 하나(바닥 평면 다각형 poly — 칸 x, row 안): UV = 칸 안 자리 × 아틀라스 윗줄 변형, 빛 = 칸 네 꼭짓점 배율을 이어서.
-## 다각형은 첫 점에서 부채꼴로 나눈다(볼록이거나 첫 점 = 오목 메움의 모서리).
-func _top_textured(poly: PackedVector2Array, x: int, def: TileDef, up: Vector2) -> void:
-	var tex := view.tile_tex[def.index]
-	if tex == null:
-		return
-	var t := float(view.tile)
-	var n := def.art_variants
-	var split := clampf((float(tex.get_width()) / n) / tex.get_height(), 0.0, 1.0)
-	var hx := 0.5 / tex.get_width()
-	var hy := 0.5 / tex.get_height()
-	var col := float(FloorArtLayer.variant(x, row, n, def.art_salt))
-	var c00 := view.vertex_mul(x, row, def.color_top)
-	var c10 := view.vertex_mul(x + 1, row, def.color_top)
-	var c01 := view.vertex_mul(x, row + 1, def.color_top)
-	var c11 := view.vertex_mul(x + 1, row + 1, def.color_top)
-	var pts := PackedVector2Array()
-	var uvs := PackedVector2Array()
-	var cols := PackedColorArray()
-	for q in poly:
-		var f := Vector2(clampf(q.x / t - x, 0.0, 1.0), clampf(q.y / t - row, 0.0, 1.0))
-		pts.append(q - up)
-		uvs.append(Vector2(clampf((col + f.x) / n, col / n + hx, (col + 1.0) / n - hx), clampf(f.y * split, hy, split - hy)))
-		cols.append(c00.lerp(c10, f.x).lerp(c01.lerp(c11, f.x), f.y))
-	_batch.add(pts, cols, uvs, tex)
 
 
 ## 바닥 평면 점 p(월드 px)에 가장 가까운 꼭짓점의 빛 × 면 그늘.

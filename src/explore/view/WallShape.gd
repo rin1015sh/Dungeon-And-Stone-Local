@@ -14,8 +14,10 @@ extends RefCounted
 ## 따로 묶어(piece) 그 사선의 위쪽 끝 y로 정렬한다 — 줄 전체(칸 아래 가장자리)로 정렬하면 사선 앞에 선 캐릭터를 벽이 덮는다.
 ## 모양(smooth 배열 값 — 타일 art.shape):
 ##   SMOOTH "smooth" = 위 그대로(1층 암벽·수정벽 — 윗면 검게)
-##   ROUND  "round"  = 같은 둥근 윤곽이지만 윗면은 벽 그림(아틀라스 윗줄)으로 모든 벽 칸에 — 균열 자연 암벽(얼음벽·갱도 벽 …)
-##   BEVEL  "bevel"  = 지은 벽(성벽·금속벽): 직각 모서리는 그대로 두고 두 칸 이상 이어진 계단만 곧은 45° 사선으로(휨 없음), 윗면은 벽 그림
+##   ROUND  "round"  = 같은 둥근 윤곽 — 균열 자연 암벽(얼음벽·갱도 벽 …), 깎은 자리는 옆 바닥 그림
+##   BEVEL  "bevel"  = 지은 벽(성벽·금속벽): 직각 모서리는 그대로 두고 두 칸 이상 이어진 계단만 곧은 45° 사선으로(휨 없음)
+## 윗면은 모두 검다 — 방과 방 사이가 검은 거리로 떨어져 보인다(사용자 레퍼런스 2026-11-01, AM62).
+## 문(WallDoors — 방 북쪽 벽에 뚫린 좁은 통로) 양옆 벽의 아래 모서리는 깎지 않는다(아치가 곧은 문설주에 얹힌다).
 ## 깎는 모서리 쪽에 낭떠러지(void)가 있으면 깎지 않는다 — 깎은 자리에 바닥 조각이 허공 위로 보인다.
 const SMOOTH := 1
 const ROUND := 2
@@ -26,7 +28,7 @@ const PIECE_FILLET := 2  ## 위쪽 오목 메움(사선 가운데 = 칸 위 + r/
 
 const STEPS := 4
 
-## build 결과: tops = [{x, poly(바닥 평면 월드 좌표), h, def(벽 그림으로 칠할 때 — ROUND·BEVEL)}] · faces = [{x(탐험 확인 칸), a, b(바닥 평면 선분, 왼→오), def, v(변형), u0, u1, h}]
+## build 결과: tops = [{x, poly(바닥 평면 월드 좌표), h}] · faces = [{x(탐험 확인 칸), a, b(바닥 평면 선분, 왼→오), def, v(변형), u0, u1, h}]
 var tops: Array[Dictionary] = []
 var floors: Array[Dictionary] = []  ## [{x, poly, def(옆 바닥 — 없으면 층 기본 바닥)}] 벽 칸의 깎은 아래쪽 모서리 삼각형 — 바닥 그림을 채운다(바닥은 바닥 칸에만 그려지므로)
 var _bulge: float = 0.0
@@ -74,6 +76,8 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, sm
 	var cut := {}  # 모서리(바깥 대각선 방향) -> 깎는가
 	for c: Vector2i in [Vector2i(-1, -1), Vector2i(1, -1), Vector2i(1, 1), Vector2i(-1, 1)]:
 		var k := _open(map, p + Vector2i(c.x, 0)) and _open(map, p + Vector2i(0, c.y))
+		if k and c.y > 0 and WallDoors.is_door(map, p + Vector2i(c.x, 0), smooth):
+			k = false  # 문설주는 곧게
 		cut[c] = k and (mode != BEVEL or _stair(map, p, c, smooth))
 	var bulge := 0.0 if mode == BEVEL else _bulge  # 지은 벽은 곧은 사선
 	var h: int = face_h.call(def)
@@ -89,15 +93,11 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, sm
 	_corner(poly, o, p.x, cut[Vector2i(-1, 1)], Vector2(r, t), Vector2(0, t - r), Vector2(0, t), bulge, _floor_near(map, p, Vector2i(-1, 1)) if own else -1)
 	for i in range(from_floor, floors.size()):
 		floors[i]["piece"] = piece
-	if mode != SMOOTH:  # 벽 그림 윗면 — 모든 벽 칸(바위 속도 그림이 보인다)
-		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece, "def": def.index})
-	elif n:
+	if n:
 		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece})
-	var v: int = variant.call(p.x, p.y, def)
 	if not so:
-		if mode != SMOOTH:  # 균열 벽: 남쪽 벽 윗면이 덮는 앞면도 깐다(앞면 높이가 다른 벽끼리 — 얼음벽·바위 절벽 — 윗면 사이 틈을 메운다)
-			_add_faces(PackedVector2Array([o + Vector2(0, t), o + Vector2(t, t)]), p.x, o.x, t, def.index, v, h, PIECE_ROW)
 		return
+	var v: int = variant.call(p.x, p.y, def)
 	# 남쪽을 향한 윤곽: 아래쪽 모서리 사선 + 아래 변(왼→오 순서로)
 	var pts := PackedVector2Array()
 	if cut[Vector2i(-1, 1)]:
@@ -139,15 +139,9 @@ func _fillets(map: FloorMap, p: Vector2i, t: float, r: float, smooth: PackedByte
 		var poly := PackedVector2Array([corner])
 		poly.append_array(arc)
 		var h: int = face_h.call(wdef)
-		var textured := smooth[wdef.index] != SMOOTH
 		if c.y > 0:
-			if textured:
-				tops.append({"x": p.x, "poly": poly, "h": h, "fillet": true, "def": wdef.index})
-			else:
-				tops.append({"x": p.x, "poly": poly, "h": h, "fillet": true})
+			tops.append({"x": p.x, "poly": poly, "h": h, "fillet": true})
 			continue
-		if textured:  # 위쪽 메움도 윗면이 보인다(북쪽 벽 앞면 위를 덮는 바위 머리) — 앞면 띠보다 먼저
-			tops.append({"x": p.x, "poly": poly, "h": h, "fillet": true, "def": wdef.index, "piece": PIECE_FILLET})
 		# 위쪽 메움: 원호가 남쪽을 향한다 — 왼→오 순서로 앞면.
 		var pts := arc.duplicate()
 		if pts[0].x > pts[pts.size() - 1].x:

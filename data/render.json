@@ -19,6 +19,7 @@
     "wall_skirt_px": 4,
     "wall_round": 0.5,
     "wall_bulge": 0.06,
+    "door": {"_comment": "문(아치 — WallDoors, AM62): 방 북쪽 벽에 뚫린 max_cells칸 이하 통로 들머리에 벽 앞면을 아치로 잇고 위는 검은 벽 머리. depth = 북쪽으로 이어져야 하는 통로 길이(칸 — 동굴 벽 굴곡은 문이 아니다) · lintel = 아치 가운데 두께 · spring = 문설주 높이(앞면 위에서부터, 앞면 높이 비율) · shade_tiles·shade_alpha = 아치 밑 그늘", "max_cells": 4, "depth": 2, "lintel": 0.3, "spring": 0.7, "shade_tiles": 0.45, "shade_alpha": 0.6},
     "memory_desat": 0.65,
     "unexplored_color": "#000000",
     "near_black": "#0c0b0e",

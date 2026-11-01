@@ -50,6 +50,7 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	v.wall_round = JsonUtil.get_float(cfg, "wall_round", 0.5)
 	v.base_floor = map.index_of(JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(v.session.floor_def, "gen"), "tiles"), "floor", "cave_floor"))
 	v.wall_bulge = JsonUtil.get_float(cfg, "wall_bulge", 0.06)
+	WallDoors.configure(JsonUtil.get_dict(cfg, "door"))
 	for i in n:
 		if v.under_by_def[i] < 0:
 			v.under_by_def[i] = v.base_floor
