@@ -1,7 +1,9 @@
 """게임 글 모음 ↔ md: 도서관 책 · 플레이버 텍스트(아이템·소재·몬스터·정수 … 설명) · 상황 문구(ko.json의 문장)를
 docs/TEXTS.md 한 파일로 모으고(export, 기본), 사용자가 고친 md를 데이터에 되돌린다(apply).
     python3 tools/texts_md.py                 → docs/TEXTS.md 다시 쓰기
+    python3 tools/texts_md.py --only=books_items → docs/TEXTS_BOOKS_ITEMS.md(도서관 책 + 아이템 플레이버만)
     python3 tools/texts_md.py --apply [--md=<고친 파일>] [--dry]  → 바뀐 글만 data/에 넣는다(--dry = 무엇이 바뀔지만)
+      (어느 md든 경로로 찾으니 TEXTS.md · TEXTS_BOOKS_ITEMS.md 모두 같은 명령으로 적용된다)
 항목 = "#### 이름 · `파일:경로`" 줄 + 그 아래 글(다음 # 줄 전까지). 경로: .키 · [번호] · {id}(목록에서 id가 그것인 항목).
 적용은 이미 있는 글만 바꾼다(새 항목·지운 항목은 무시하고 알린다). ko.json 글의 {자리표시자}가 달라지면 건너뛴다.
 파일 모양을 지키려고 JSON 글자열을 그 자리에서 바꾸고, 같은 글이 파일에 여럿이면 파일을 다시 쓴다.
@@ -15,6 +17,11 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MD = os.path.join(ROOT, "docs", "TEXTS.md")
+# 일부만 뽑는 파일: 이름 → (md 경로, 큰 제목, 남길 (큰 제목, 작은 제목 목록 — None = 모두))
+SUBSETS = {
+    "books_items": (os.path.join(ROOT, "docs", "TEXTS_BOOKS_ITEMS.md"), "게임 글 모음 — 도서관 서적 · 아이템 플레이버",
+                    [("도서관 책", None), ("플레이버 · 설명 글", ["아이템", "장비 소재", "장비 종류"])]),
+}
 HEAD = re.compile(r"^#### (.*?) · `([^`]+)`\s*$")
 KO = "data/strings/ko.json"
 
@@ -175,18 +182,32 @@ def collect() -> list:
 
 
 # ---- 내보내기 ----
-def export() -> None:
+def export(only: str = "") -> None:
     parts = collect()
+    md, title, extra = MD, "게임 글 모음 — 도서관 책 · 플레이버 · 상황 문구", []
+    if only:
+        md, title, keep = SUBSETS[only]
+        picked = []
+        for big, subs in keep:
+            secs = [sec for b, ss in parts if b == big for sec in ss if subs is None or sec[0] in subs]
+            picked.append((big, secs))
+        parts = picked
+        extra = [
+            "> - **장비의 글**: 아이템 파일에 있는 장비(강철 검 등)는 \"아이템\"의 글이 그대로 보인다. "
+            "무작위로 생기는 장비는 \"장비 종류\"(생김새) + 빈 줄 + \"장비 소재\"(내력)를 이어 붙여 보인다(ItemForge).",
+            "> - 나머지 글(몬스터·정수·상태·상황 문구 …)은 `docs/TEXTS.md`. 적용 명령은 같다: `python3 tools/texts_md.py --apply --md=docs/TEXTS_BOOKS_ITEMS.md`.",
+        ]
     total = sum(len(e) for _, secs in parts for _, e in secs)
     lines = [
-        "# 게임 글 모음 — 도서관 책 · 플레이버 · 상황 문구",
+        "# " + title,
         "",
-        "> 게임에 나오는 읽을거리를 한 파일에 모았다(%d개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`)." % total,
+        "> 게임에 나오는 읽을거리를 한 파일에 모았다(%d개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply --md=%s`)." % (total, os.path.relpath(md, ROOT).replace(os.sep, "/")),
         "> - 항목 = `#### 이름 · \\`파일:경로\\`` 줄 + 그 아래 글. **`####` 줄(특히 \\` \\` 안 경로)은 바꾸지 말고, 아래 글만** 고친다. 글은 여러 줄이어도 된다(다음 `#` 줄 전까지가 한 글).",
         "> - `{이름}`은 자리표시자(게임이 값을 넣는다) — 그대로 둔다(바꾸면 그 줄은 적용하지 않는다). `\\n`이 필요한 자리는 그냥 줄을 바꿔 쓴다.",
         "> - 대화창은 **한 쪽에 한 문장**이다(UI44) — 문장을 끊으면 Enter 한 번씩 넘어간다.",
         "> - 도서관 책: 고서 문체, **숫자·%·괄호·존댓말 금지**(CT52). 거주 등급·층은 제목 줄에 적혀 있다(바꾸지 않는다).",
         "> - 항목을 지우거나 새로 써도 게임에는 들어가지 않는다(새 글은 따로 말해 주면 데이터에 더한다). 버튼·이름 같은 짧은 화면 글은 `docs/STRINGS.md`, 이름(`name_ko`)은 각 데이터 파일.",
+    ] + extra + [
         "",
         "## 차례",
         "",
@@ -199,9 +220,9 @@ def export() -> None:
             lines += ["", "### " + title]
             for key, name, text in entries:
                 lines += ["", "#### %s · `%s`" % (name.replace("\n", " "), key), text]
-    with open(MD, "w", encoding="utf-8") as f:
+    with open(md, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
-    print("%d개 → %s" % (total, os.path.relpath(MD, ROOT)))
+    print("%d개 → %s" % (total, os.path.relpath(md, ROOT)))
 
 
 # ---- 적용 ----
@@ -284,8 +305,12 @@ def main() -> None:
     md = args.get("md") or MD
     if "apply" in args:
         apply(md, "dry" in args)
+    elif args.get("only"):
+        export(args["only"])
     else:
         export()
+        for name in SUBSETS:  # 일부만 뽑은 파일도 함께 새로 쓴다(어긋나지 않게)
+            export(name)
 
 
 if __name__ == "__main__":

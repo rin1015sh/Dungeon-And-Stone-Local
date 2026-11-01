@@ -15,6 +15,7 @@
 | `docs/ASSUMPTIONS.md` | 모든 가정·사용자 결정(번호 · 가정 / 이유 / 바꾸는 법). 행 앞의 "(바뀜 → X)"는 X가 대신한다 | 번호(J17·RF16·UI19 …)나 키워드로 **검색**해서 |
 | `docs/STRINGS.md` | 게임 글 전부(`ko.json`) — 사용자가 고치고 `tools/strings_md.gd --apply`로 게임에 넣는다 | 문구를 고칠 때 · ko.json을 바꾼 뒤 다시 만든다 |
 | `docs/TEXTS.md` | 읽을거리 전부 — 도서관 책 · 플레이버·설명 글 · 상황 문구(ko.json의 문장). 사용자가 고쳐 보내면 `tools/texts_md.py --apply`로 데이터에 넣는다 | 글을 고칠 때 · 데이터 글을 바꾼 뒤 다시 만든다 |
+| `docs/TEXTS_BOOKS_ITEMS.md` | TEXTS.md 중 도서관 책 + 아이템 플레이버(아이템·장비 소재·장비 종류)만. 고쳐 보내면 `tools/texts_md.py --apply --md=docs/TEXTS_BOOKS_ITEMS.md` | 서적·아이템 글만 고칠 때 |
 | `docs/PLAYTEST.md` | 작업마다 사용자가 직접 해 볼 체크리스트(위가 최신, **최근 여섯 절만** — 그 전은 `archive/PLAYTEST_OLD.md`) | 작업이 끝나 체크리스트를 추가할 때, 플레이 점검할 때 |
 
 ## 주제별
