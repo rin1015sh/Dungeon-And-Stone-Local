@@ -136,6 +136,23 @@ func test_rift_gear_bonus_does_not_take_the_shop_combo() -> void:
 	assert_true(db.has_entry("items", "quartz_ring"), "녹수정 반지가 있어도 대장간의 수정 반지는 그대로")
 
 
+## 균열 장비는 대장간의 같은 종류 × 소재보다 세다(balance items.rift_gear — 사용자 2026-11-01 "균열 소재 장비 수치 올려줘").
+func test_rift_gear_beats_the_smithy() -> void:
+	var sword := JsonUtil.get_dict(db.get_entry("items", "fortress_knight_sword"), "equip")
+	var plain := JsonUtil.get_dict(db.get_entry("items", "steel_sword"), "equip")
+	assert_true(int(JsonUtil.get_dict(sword, "weapon")["attack"]) > int(JsonUtil.get_dict(plain, "weapon")["attack"]), "공격력이 높다")
+	var str_of := func(e: Dictionary) -> int:
+		for m: Dictionary in JsonUtil.get_array(e, "modifiers"):
+			if str(m["target"]) == "str" and m.has("flat"):
+				return int(m["flat"])
+		return 0
+	assert_true(int(str_of.call(sword)) >= int(str_of.call(plain)) + 2, "힘도 더 오른다")
+	var hammer := JsonUtil.get_dict(db.get_entry("items", "mine_hammer"), "equip")
+	var agi := JsonUtil.get_array(hammer, "modifiers").filter(func(m: Dictionary) -> bool: return str(m["target"]) == "agi")
+	assert_eq(int((agi[0] as Dictionary)["flat"]), -3, "깎이는 수치는 그대로")
+	assert_true(int(db.get_entry("items", "fortress_knight_sword")["price"]) > int(db.get_entry("items", "steel_sword")["price"]), "값도 더 나간다")
+
+
 func test_every_loot_and_post_is_reachable() -> void:
 	for rid: String in db.get_collection("rifts"):
 		for ch: Variant in JsonUtil.get_array(db.get_entry("rifts", rid), "chapters"):

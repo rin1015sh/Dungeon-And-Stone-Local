@@ -6,6 +6,11 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **도서관 결과 문구 지움 · 획득 문구 통일 지키기 · 균열 장비 강화 (2026-11-01, V26)** — 테스트: `test_item_lines`(새) · `test_rift_loot.test_rift_gear_beats_the_smithy` · `check.sh` · 캡처(도서관 소재와 무기 읽기 0~5쪽 — 책 글만).
+  - 도서관: `CityLines.quiet` + `FacilityView.show_result/_on_trade` 거름 · library_* 7종 `"quiet": ["stat_up", "stat_fail", "fatigue_up"]` · ko.json city.lines.library_read·library_rare 지움.
+  - 문구: RiftRun.keep_overflow는 알리지 않고 부른 쪽이 item.got(_by) + explore.rift_key_held("가방에 자리가 없어 손에 쥐었다.") · CLAUDE.md 규칙 한 줄.
+  - 장비: `ItemForge._boost`·`_add_bonus(mult)` + balance `items.rift_gear`. `item_pool.py`는 균열 장비를 다루지 않는다(돌리면 이번 일과 무관하게 잡템 두 줄이 빠져 되돌림 — 도구 쪽 잔여).
+
 - **균열 상자 · 동전 던지기 (2026-11-01, 사용자 "장비나 꽤 쓸만한 아이템은 상자에 · 남용은 말고 · 상자 그림(연·닫힌) · 피어 앤 헝거처럼 동전 던지기로 획득 · 동전 애니메이션(첨부 영상) · 보스 등 중요한 전투에도 동전", V25)** — 범위: 상자에 담을 물건 규칙 · 상자 열기(동전·함정) · 중요한 전투 선공 동전 · 동전·상자 그림 · 연출. 완료 기준: 균열 장비가 상자로, 동전 연출이 영상처럼, 보스 전투 전에 동전. 테스트: `test_rift_loot`(상자 규칙·동전 열기·함정·중요한 전투) + `sim_rift` + `check.sh` + 캡처(성채 1장 상자 · 연출 30장).
   - 코드: `src/explore/CoinToss.gd`·`RiftChest.gd` 새로, `RiftLoot`(상자 표시 · 잠긴 상자는 RiftChest.open · 열린 상자는 살피기 대상 아님 · 이름은 "상자"), `ExploreSession.coin_toss`/`toss`, `LootView._draw_chest`, `src/ui/widgets/CoinFlip.gd`, `ExploreScreen._on_coin_toss`(시간 멈춤·키 막음) · `_on_encounter`(중요한 전투면 동전 → `Battle.from_encounter(first_side, start_key)`), `Battle.start(start_key)`.
   - 그림: `tools/paint_coin.gd`(높이장 돋을새김 — 판·테·구슬 고리·옆얼굴/문장·새김 선 → 법선·왼쪽 위 빛 금속 칠 → 오목한 곳 때) → `assets/ui/coin/`, `tools/paint_chest.gd`(rift/Kit 상자·판자·그림자 + 쇠띠·덧댐·자물쇠·둥근 뚜껑) → `assets/floor/chest/`.

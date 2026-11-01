@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1000줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(994줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -227,7 +227,7 @@
 
 - `explore.rift_exit_needs` 길이 막혀 있다. [{item}]이(가) 있어야 할 것 같다.
 - `explore.rift_exit_used` [{item}]을(를) 썼다.
-- `explore.rift_key_held` 가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.
+- `explore.rift_key_held` 가방에 자리가 없어 손에 쥐었다.
 - `explore.fortress_tear` 조각상을 깨뜨리자 작은 상자가 나왔다.
 - `explore.fortress_necronomicon` 썩은 책장 사이에 피로 쓴 책 한 권이 끼어 있다.
 - `explore.hidden_no_room` {item}을(를) 찾았지만 가방에 자리가 없다.
@@ -1003,25 +1003,11 @@
 
 - `city.lines.inn_meal.fatigue_same.1` 느긋하게 그릇을 비웠다.
 
-#### `city.lines.library_read`
-
-- `city.lines.library_read.stat_up.1` 읽은 내용이 머릿속에 차곡차곡 쌓인다. {stat}이 늘었다.
-
-- `city.lines.library_read.stat_fail.1` 글자가 좀처럼 눈에 들어오지 않았다.
-- `city.lines.library_read.stat_fail.2` 같은 줄만 몇 번이고 다시 읽었다.
-
-- `city.lines.library_read.fatigue_up.1` 눈이 뻑뻑하다.
-- `city.lines.library_read.fatigue_up.2` 어깨가 뻐근하다.
-
 #### `city.lines.temple_service`
 
 - `city.lines.temple_service.merit.1` 신전 바닥을 닦고 촛농을 긁어냈다. 신관이 고개를 끄덕인다.
 - `city.lines.temple_service.merit.2` 구호소에서 죽을 나눠 주었다. 손등이 데었다.
 - `city.lines.temple_service.merit.3` 제단의 향로를 닦았다. 손에 밴 향이 좀처럼 빠지지 않는다.
-
-#### `city.lines.library_rare`
-
-- `city.lines.library_rare.stat_fail.1` 귀한 책이었지만 글자가 너무 낡아 반도 읽지 못했다.
 
 #### `city.lines.inn_feast`
 

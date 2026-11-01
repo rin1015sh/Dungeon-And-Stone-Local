@@ -172,7 +172,8 @@ func show_result(ctx: CityContext) -> void:
 	if ctx.ok:
 		_dialog.say(Strings.t("city.did", {"name": JsonUtil.get_str(_state.activity(ctx.activity_id), "name_ko")}), "info")
 	for msg: Dictionary in ctx.messages:
-		_dialog.say(CityLines.text(_state, ctx.activity_id, msg), str(msg["kind"]))
+		if not CityLines.quiet(_state, ctx.activity_id, msg):
+			_dialog.say(CityLines.text(_state, ctx.activity_id, msg), str(msg["kind"]))
 
 
 ## 결과 그림이 실내 그림 위를 가득 덮는다 — 여관 식사(city.meal.<요리 id> → data/meals art, CT47) ·
@@ -210,6 +211,8 @@ func _on_trade(ctx: CityContext) -> void:
 	var lines := PackedStringArray()
 	var kind := "info"
 	for msg: Dictionary in ctx.messages:
+		if CityLines.quiet(_state, ctx.activity_id, msg):
+			continue
 		lines.append(CityLines.text(_state, ctx.activity_id, msg))
 		kind = str(msg["kind"])
 	_dialog.idle_kind = kind if kind in ["info", "good", "warn"] else ""

@@ -2,6 +2,7 @@
   "id": "library_monsters",
   "name_ko": "몬스터와 정수에 관하여",
   "facility": "library",
+  "quiet": ["stat_up", "stat_fail", "fatigue_up"],
   "cost_stones": 0,
   "lines": "library_read",
   "effects": [

@@ -6,6 +6,7 @@ extends RefCounted
 ##      비어 있을 때만 채운다(지금 장비 — id·이름·크기 유지, 저장 호환).
 ##      forge "bonus": [{target, flat|percent}] = 그 물건만의 덤(균열에서 줍는 장비 — 2026-10-30 docs/plans/rift_rooms.md). 덤이 있는 물건은
 ##      공식 조합을 차지하지 않는다(같은 종류 × 소재의 범용 장비 "<소재>_<종류>"는 그대로 만든다 — 대장간이 판다).
+##      덤이 있는 물건(균열 장비)은 balance items.rift_gear 배율로 대장간 것보다 세다(공격력·오르는 스탯·덤·값 — 사용자 2026-11-01).
 ##   2) 종류 × 그 종류가 쓰는 소재(kinds)의 모든 조합 중 1)이 차지하지 않은 것을 "<소재>_<종류>" id, "<소재> <종류>" 이름으로 만든다.
 ## 수치(balance.items):
 ##   공격력·마력(weapon.attack·magic) = 종류 값 × attack_by_tier[등급−1] × 소재 atk — 반올림
@@ -36,7 +37,9 @@ static func forge_all(cols: Dictionary, bal: Dictionary) -> void:
 		if bonus.is_empty():
 			claimed[_key(t, m)] = true
 		var made := build(t, m, cfg)
-		_add_bonus(made, bonus)
+		if not bonus.is_empty():  # 균열 장비: 대장간 것보다 세게(balance items.rift_gear — 사용자 2026-11-01)
+			_boost(made, JsonUtil.get_dict(cfg, "rift_gear"))
+		_add_bonus(made, bonus, JsonUtil.get_float(JsonUtil.get_dict(cfg, "rift_gear"), "bonus_mult", 1.0))
 		for k: String in made:
 			if k in ["equip", "price", "tier", "forged"] or not it.has(k):
 				it[k] = made[k]
@@ -110,12 +113,34 @@ static func build(t: Dictionary, m: Dictionary, cfg: Dictionary) -> Dictionary:
 		"forged": {"type": JsonUtil.get_str(t, "id"), "material": JsonUtil.get_str(m, "id")}, "equip": equip, "source": "placeholder"}
 
 
-## 덤 수정자를 장비 수정자에 더한다(같은 대상의 고정값은 합친다).
-static func _add_bonus(made: Dictionary, bonus: Array) -> void:
+## 균열 장비 배율: 공격력·마력 × attack_mult, 오르는 고정 스탯 × grow_mult(최소 +1 더), 값 × price_mult. 깎이는 수치는 그대로.
+static func _boost(made: Dictionary, rg: Dictionary) -> void:
+	if rg.is_empty():
+		return
+	var equip: Dictionary = made["equip"]
+	var gm := JsonUtil.get_float(rg, "grow_mult", 1.0)
+	for md: Dictionary in equip["modifiers"]:
+		if md.has("flat") and int(md["flat"]) > 0 and gm > 1.0:
+			md["flat"] = maxi(int(md["flat"]) + 1, int(roundf(int(md["flat"]) * gm)))
+	if equip.has("weapon"):
+		var w: Dictionary = equip["weapon"]
+		var am := JsonUtil.get_float(rg, "attack_mult", 1.0)
+		for k in ["attack", "magic"]:
+			if w.has(k):
+				w[k] = int(roundf(float(w[k]) * am))
+	made["price"] = nice(float(made["price"]) * JsonUtil.get_float(rg, "price_mult", 1.0))
+
+
+## 덤 수정자를 장비 수정자에 더한다(같은 대상의 고정값은 합친다). mult = 덤 배율(균열 장비 — 반올림, 0이 되지 않게).
+static func _add_bonus(made: Dictionary, bonus: Array, mult: float = 1.0) -> void:
 	var mods: Array = (made["equip"] as Dictionary)["modifiers"]
 	for b: Variant in bonus:
 		var d: Dictionary = b if b is Dictionary else {}
 		var target := JsonUtil.get_str(d, "target")
+		if d.has("flat") and mult != 1.0:
+			var fv := JsonUtil.get_int(d, "flat")
+			d = d.duplicate()
+			d["flat"] = int(signf(fv)) * maxi(absi(fv), int(roundf(absf(fv) * mult)))
 		var same: Array = mods.filter(func(x: Dictionary) -> bool: return str(x["target"]) == target and x.has("flat"))
 		if d.has("flat") and not same.is_empty():
 			same[0]["flat"] = int(same[0]["flat"]) + JsonUtil.get_int(d, "flat")

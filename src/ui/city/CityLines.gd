@@ -6,6 +6,12 @@ extends RefCounted
 ## 번호가 여럿이면 날짜·행동력·결과로 정해지는 하나를 고른다(난수를 쓰지 않는다 — 판정 난수 순서를 흐트리지 않게).
 
 
+## 활동 데이터 "quiet": [결과 이름 …]에 든 결과는 보이지 않는다(도서관 읽기의 정신력·피로 결과 — 사용자 2026-11-01 "정신력 오르는 거랑 눈이 뻑뻑하고 같은 이런 문구 없애").
+static func quiet(state: CityState, activity_id: String, msg: Dictionary) -> bool:
+	var key := str(msg["key"])
+	return JsonUtil.get_array(state.activity(activity_id), "quiet").has(key.get_slice(".", key.get_slice_count(".") - 1))
+
+
 static func text(state: CityState, activity_id: String, msg: Dictionary) -> String:
 	var key := str(msg["key"])
 	var outcome := key.get_slice(".", key.get_slice_count(".") - 1)

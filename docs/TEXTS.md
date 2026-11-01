@@ -1,6 +1,6 @@
 # 게임 글 모음 — 도서관 책 · 플레이버 · 상황 문구
 
-> 게임에 나오는 읽을거리를 한 파일에 모았다(1223개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
+> 게임에 나오는 읽을거리를 한 파일에 모았다(1217개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
 > - 항목 = `#### 이름 · \`파일:경로\`` 줄 + 그 아래 글. **`####` 줄(특히 \` \` 안 경로)은 바꾸지 말고, 아래 글만** 고친다. 글은 여러 줄이어도 된다(다음 `#` 줄 전까지가 한 글).
 > - `{이름}`은 자리표시자(게임이 값을 넣는다) — 그대로 둔다(바꾸면 그 줄은 적용하지 않는다). `\n`이 필요한 자리는 그냥 줄을 바꿔 쓴다.
 > - 대화창은 **한 쪽에 한 문장**이다(UI44) — 문장을 끊으면 Enter 한 번씩 넘어간다.
@@ -11,7 +11,7 @@
 
 - **도서관 책** — 미궁에 관하여(24) · 소재와 무기에 관하여(18) · 상태이상에 관하여(24) · 몬스터와 정수에 관하여(24) · 생존과 야영에 관하여(18) · 도시와 탐험가에 관하여(28)
 - **플레이버 · 설명 글** — 아이템(129) · 장비 소재(37) · 장비 종류(31) · 몬스터(104) · 정수(51) · 스킬(11) · 상태이상(66) · 전투 게이지(6) · 랜드마크(3) · 종족 · 직업(6) · 균열(설명 · 챕터)(21) · 수수께끼(문제 · 벽화)(32)
-- **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(83) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(9) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(24) · 도시 · lines(36) · 도시 · street(37) · 도시 · meal(24) · 도시 · npc(42) · 동굴 요소(73) · 동굴 요소 · corpse(15) · item(4)
+- **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(83) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(9) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(24) · 도시 · lines(30) · 도시 · street(37) · 도시 · meal(24) · 도시 · npc(42) · 동굴 요소(73) · 동굴 요소 · corpse(15) · item(4)
 
 ## 도서관 책
 
@@ -2056,7 +2056,7 @@
 [{item}]을(를) 썼다.
 
 #### rift_key_held · `data/strings/ko.json:.explore.rift_key_held`
-가방에 자리가 없어 [{item}]을(를) 손에 쥐었다.
+가방에 자리가 없어 손에 쥐었다.
 
 #### fortress_tear · `data/strings/ko.json:.explore.fortress_tear`
 조각상을 깨뜨리자 작은 상자가 나왔다.
@@ -3130,21 +3130,6 @@
 #### lines.inn_meal.fatigue_same.1 · `data/strings/ko.json:.city.lines.inn_meal.fatigue_same.1`
 느긋하게 그릇을 비웠다.
 
-#### lines.library_read.stat_up.1 · `data/strings/ko.json:.city.lines.library_read.stat_up.1`
-읽은 내용이 머릿속에 차곡차곡 쌓인다. {stat}이 늘었다.
-
-#### lines.library_read.stat_fail.1 · `data/strings/ko.json:.city.lines.library_read.stat_fail.1`
-글자가 좀처럼 눈에 들어오지 않았다.
-
-#### lines.library_read.stat_fail.2 · `data/strings/ko.json:.city.lines.library_read.stat_fail.2`
-같은 줄만 몇 번이고 다시 읽었다.
-
-#### lines.library_read.fatigue_up.1 · `data/strings/ko.json:.city.lines.library_read.fatigue_up.1`
-눈이 뻑뻑하다.
-
-#### lines.library_read.fatigue_up.2 · `data/strings/ko.json:.city.lines.library_read.fatigue_up.2`
-어깨가 뻐근하다.
-
 #### lines.temple_service.merit.1 · `data/strings/ko.json:.city.lines.temple_service.merit.1`
 신전 바닥을 닦고 촛농을 긁어냈다. 신관이 고개를 끄덕인다.
 
@@ -3153,9 +3138,6 @@
 
 #### lines.temple_service.merit.3 · `data/strings/ko.json:.city.lines.temple_service.merit.3`
 제단의 향로를 닦았다. 손에 밴 향이 좀처럼 빠지지 않는다.
-
-#### lines.library_rare.stat_fail.1 · `data/strings/ko.json:.city.lines.library_rare.stat_fail.1`
-귀한 책이었지만 글자가 너무 낡아 반도 읽지 못했다.
 
 #### lines.inn_feast.spent_stones.1 · `data/strings/ko.json:.city.lines.inn_feast.spent_stones.1`
 특식 값으로 {n} 스톤을 냈다.

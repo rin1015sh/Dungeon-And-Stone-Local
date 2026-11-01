@@ -401,7 +401,12 @@ func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], col
 	for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null, mult, colors, not defer_drops):
 		if str(m["key"]) == "reward.bag_full" and rift_run != null \
 				and rift_run.keep_overflow(self, str(m["args"].get("item_id", "")), int(m["args"].get("count", 1))):
-			continue  # 출구에 필요한 물건은 손에 쥐었다(RiftRun.held)
+			var held_n := int(m["args"].get("count", 1))  # 출구에 필요한 물건은 손에 쥐었다(RiftRun.held)
+			var got_m := DropPickup._m(ItemInfo.got_key(held_n), {"item": m["args"].get("item", ""), "n": held_n}, "good")
+			for mm: Dictionary in [got_m, DropPickup._m("explore.rift_key_held", {}, "info")]:
+				message.emit(str(mm["key"]), mm["args"], str(mm["kind"]))
+				out.append(mm)
+			continue
 		message.emit(str(m["key"]), m["args"], str(m["kind"]))
 		out.append(m)
 	return out
@@ -414,6 +419,9 @@ func take_drop(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
 	if int(m.get("left", 0)) > 0 and rift_run != null and rift_run.keep_overflow(self, str(drop.get("id")), int(m["left"])):
 		var held_n := int(drop.get("count", 1))
 		m = DropPickup._m(ItemInfo.got_key(held_n, true), {"who": to.display_name, "item": DataNames.entry(db, "items", str(drop.get("id"))), "n": held_n}, "good")
+		message.emit(str(m["key"]), m["args"], str(m["kind"]))
+		message.emit("explore.rift_key_held", {}, "info")
+		return m
 	message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	return m
 

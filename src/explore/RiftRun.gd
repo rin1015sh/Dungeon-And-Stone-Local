@@ -299,11 +299,11 @@ func _restore(i: int) -> ExploreSession:
 
 
 ## 가방에 들어가지 못한 전리품: 이 균열의 출구에 필요한 물건이면 손에 쥔다(잃어서 균열에 갇히지 않게). 쥐었으면 true.
+## 알리지 않는다 — 부른 쪽이 item.got(_by) 뒤에 explore.rift_key_held("가방에 자리가 없어 손에 쥐었다.")를 낸다.
 func keep_overflow(s: ExploreSession, item: String, count: int) -> bool:
 	for ch: Variant in chapters():
 		if JsonUtil.get_str(JsonUtil.get_dict(ch if ch is Dictionary else {}, "exit_requires"), "item") == item:
-			held[item] = int(held.get(item, 0)) + count
-			s.message.emit("explore.rift_key_held", {"item": DataNames.entry(db, "items", item)}, "good")
+			held[item] = int(held.get(item, 0)) + count  # 알림은 부른 쪽이(통일된 획득 문구 + "손에 쥐었다")
 			return true
 	return false
 
