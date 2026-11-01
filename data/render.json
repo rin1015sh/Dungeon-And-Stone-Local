@@ -2,6 +2,7 @@
   "version": 1,
   "_comment": "시점·타일·UI 수치와 팔레트. view 값은 M1의 3/4 시점 렌더링이 읽는다.",
   "view": {
+    "outline": {"_comment": "상호작용 대상 검은 테두리(CT77 — Outline): texel = 실내 가구 그림 셰이더 굵기(그림 텍셀), world_px = 탐험 소품·벽 소품·균열 물건 실루엣 비낌(세계 px — 화면 배율 camera_zoom을 곱한 만큼 보인다), rect_px = 실내 벽 장식(책장 등) 둘레 선 굵기. skip_events = 테두리를 두르지 않는 동굴 요소(시체·유골 — 사용자 2026-11-01 \"시체·사람에게는 테두리 빼\"). 사람(실내 NPC)도 두르지 않는다.", "texel": 2.5, "world_px": 1.3, "rect_px": 2.0, "skip_events": ["explorer_corpse", "fresh_corpse", "ghoul_feast", "old_skeleton", "raider_remains"]},
     "projection": "oblique_3_4",
     "floor_tile_px": [32, 32],
     "wall_tile_px": [32, 56],

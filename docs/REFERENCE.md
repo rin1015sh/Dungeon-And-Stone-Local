@@ -120,6 +120,7 @@ src/
                          CityEffect + effects/<type>.gd(fatigue·stat_chance·learn_info·temple_merit·restore·give_item·meal·item_boon), CityShop·CityBank·CityTemple(패널형), CityContext, CityInfo, Meals·MealForge(여관 요리 → 버프 상태)
   ui/InputSetup.gd       data/input.json → InputMap
   ui/theme/UiTheme.gd    render.json → Theme, 위젯 생성 도우미
+  ui/theme/Outline.gd    상호작용 대상 검은 테두리(셰이더 재질 · 실루엣 여덟 방향 — render.json view.outline, CT77)
   ui/theme/GothicStyle   스톤샤드풍 창 꾸밈(돌판·칸·이름판·아치)
   ui/widgets/            ResourceBar, ResourcePanel, StatPanel, LogPanel(기반 점검 기록창), DialogueBox(하단 대화창 — 알림·전투 안내를 Enter로 넘김), DialogueSplit(대화창 글을 문장으로 나눔 — 한 쪽 한 문장), NoticeRoute(알림을 보일지 — 탐험·전투·도시), DataSummary, ExploreHud, DebugPanel, ChoiceGrid(고정 칸 선택판 — 전투·시설·창구·광장·수수께끼), SkillBrief, PauseMenu,
                          GothicWindow(수수께끼 창 틀), InventoryGrid, PaperDoll, ItemTooltip, ItemIconPainter, CommandMenu, EssencePanel, RiddleDialog, ChoicePopup(작은 선택 창 — W/S·Enter·Esc) …

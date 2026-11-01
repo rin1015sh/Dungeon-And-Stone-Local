@@ -116,54 +116,6 @@ static func bank(p: Paint) -> void:
 	Parts.lantern(p, 338, 254)
 
 
-## 훈련장: 왼쪽 총안 달린 돌 문루(열린 아치 문 너머 마당) · 오른쪽 뾰족한 통나무 목책 · 목책 뒤 목조 막사와 기와 · 허수아비·무기걸이·깃발.
-static func training(p: Paint) -> void:
-	var g := float(p.h)
-	Parts.roof(p, Paint.poly([Vector2(220, 168), Vector2(268, 92), Vector2(560, 92), Vector2(598, 168)]), Mat.clay(p, CLAY, 0, 92))
-	var bar := Paint.rect_poly(232, 164, 352, 120)
-	Parts.wall(p, bar, Mat.plaster(p, Color("#7d735c"), 0.1), 0.2)
-	for bx: float in [232.0, 320.0, 408.0, 496.0, 575.0]:
-		p.fill_poly(Paint.rect_poly(bx, 164, 9, 120), Mat.beam(p))
-	for wx: float in [270.0, 444.0, 522.0]:
-		Parts.window(p, wx, 196, 36, 40, "square", wx != 444.0)
-	var x := 214.0
-	while x < 600.0:
-		var top := 244.0 + p.rng.randf_range(-6, 6)
-		var log := Paint.poly([Vector2(x, g), Vector2(x, top + 14), Vector2(x + 10, top), Vector2(x + 20, top + 14), Vector2(x + 20, g)])
-		p.fill_poly(log, Mat.planks(p, Color("#4f3a28"), int(x), 0, true, 20))
-		Ink.shade(p, log, Vector2(x, 0), Vector2(x + 20, 0), 0.0, 0.45)
-		Ink.path(p, log, 1.8)
-		x += 20.0
-	for yy: float in [292.0, 352.0]:
-		Ink.line(p, Vector2(214, yy), Vector2(600, yy + 3), 6.0, Color("#2a1e15"), 1.0, 0.5)
-	var tower := Paint.rect_poly(18, 70, 210, g - 70)
-	Parts.wall(p, tower, Mat.rubble(p, Color("#575349")), 0.2)
-	for i in 5:
-		var mx := 18.0 + i * 46.0
-		var merlon := Paint.rect_poly(mx, 40, 26, 32)
-		p.fill_poly(merlon, Mat.rubble(p, Color("#575349")))
-		Ink.path(p, merlon, Parts.LINE)
-	Parts.ledge(p, 10, 66, 226, 8)
-	var gate := Paint.arch_poly(58, 196, 130, g - 196)
-	p.fill_poly(gate, func(x2: int, y2: int) -> Color:
-		var t := clampf((y2 - 196.0) / (g - 196.0), 0.0, 1.0)
-		return p.vary(Color("#16130f").lerp(Color("#5a4c36"), t * t), x2, y2, 0.2))
-	Props.dummy(p, 122, g - 8, 0.8)
-	Ink.path(p, gate, 6.0, false, Color("#4a463e"), 1.0, 0.3)
-	Ink.hatch(p, gate, 6.0, 55.0, 0.3)
-	for gx: float in [52.0, 188.0]:
-		var jamb := Paint.rect_poly(gx, 250, 10, g - 250)
-		p.fill_poly(jamb, p.flat(Color("#55504a"), 0.2))
-	Parts.window(p, 104, 110, 34, 44, "arch", true)
-	Props.banner(p, 36, 250, Color("#6e2420"), 160)
-	Props.banner(p, 194, 250, Color("#6e2420"), 160)
-	Parts.sign(p, 228, 214, "swords", 1.0, 40)
-	Props.dummy(p, 300, g, 1.0)
-	Props.dummy(p, 400, g, 0.95)
-	Props.weapon_rack(p, 500, g)
-	Props.barrel(p, 572, g, 34, 44)
-
-
 static func rose_window(p: Paint, c: Vector2, r: float, lit: bool) -> void:
 	var ring := _circle(c, r + 6)
 	p.fill_poly(ring, p.flat(Parts.FRAME, 0.2))

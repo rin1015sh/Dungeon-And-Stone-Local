@@ -43,8 +43,14 @@ func _draw() -> void:
 			var long := size * 1.8
 			var k := long / tex.get_height()
 			draw_set_transform(feet + Vector2(0, -size * 0.3), -PI * 0.36, Vector2(k, k))
-			draw_texture(tex, -Vector2(tex.get_width(), tex.get_height()) * 0.5, Color(1, 1, 1, 1.0 if lit else 0.45))
+			var at := -Vector2(tex.get_width(), tex.get_height()) * 0.5
+			Outline.texture_rect(self, tex, Rect2(at, Vector2(tex.get_size())), view.outline_px / k)  # 주울 물건 = 검은 테두리(CT77)
+			draw_texture(tex, at, Color(1, 1, 1, 1.0 if lit else 0.45))
 			draw_set_transform(Vector2.ZERO)
 			continue
 		var r := Rect2(feet - Vector2(size * 0.5, size * 0.85), Vector2(size, size))
+		if tex != null:
+			var sc := minf(r.size.x / tex.get_width(), r.size.y / tex.get_height())
+			var sz := Vector2(tex.get_size()) * sc
+			Outline.texture_rect(self, tex, Rect2(r.get_center() - sz * 0.5, sz), view.outline_px)
 		ItemIconPainter.draw(self, s.db, item, r, 1.0 if lit else 0.45)

@@ -193,6 +193,7 @@ func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> voi
 	_cols[3] = view.vertex_mul(x, row + 1, def.color_top)
 	draw_polygon(_pts, _cols, _uvs, tex)
 	if h <= 0 or split >= 1.0:
+		_line_block(x, t, h)
 		return
 	_quad(x * t, -h, t, h + view.wall_skirt)  # 밑동만큼 바닥 쪽으로 내려온다(그림 아래 끝이 들쭉날쭉 — 투명)
 	FloorChunk.set_uv_cell(_uvs, tex, FloorArtLayer.variant(x, row, n, def.art_salt + 1), n, split, 1.0)
@@ -205,6 +206,13 @@ func _draw_textured(x: int, t: int, h: int, def: TileDef, tex: Texture2D) -> voi
 	_cols[2] = right
 	_cols[3] = left
 	draw_polygon(_pts, _cols, _uvs, tex)
+	_line_block(x, t, h)
+
+
+## 대현자 기념비처럼 살필 수 있는 벽 덩어리 = 윗면·앞면 둘레 검은 선(CT77).
+func _line_block(x: int, t: int, h: int) -> void:
+	if view.interactive_at(Vector2i(x, row)):
+		draw_rect(Rect2(x * t, -t - h, t, t + maxi(h, 0)), Color.BLACK, false, view.outline_px * 1.5)
 
 
 ## 서 있는 소품(art.stand): 시트 칸 그림을 칸 아래쪽 가운데에 세운다(크기 = stand_size칸, 같은 줄 캐릭터와 y 정렬).
@@ -220,6 +228,8 @@ func _draw_stand(x: int, t: int, def: TileDef, tex: Texture2D) -> void:
 	c = c.lerp(view.vertex_mul(x, row, def.color_face).lerp(view.vertex_mul(x + 1, row, def.color_face), 0.5), 0.5)
 	for k in 4:
 		_cols[k] = c
+	if view.interactive_at(Vector2i(x, row)):  # 뒤질 균열 장식 등 = 검은 테두리(CT77)
+		Outline.polygon(self, _pts, _uvs, tex, view.outline_px)
 	draw_polygon(_pts, _cols, _uvs, tex)
 
 

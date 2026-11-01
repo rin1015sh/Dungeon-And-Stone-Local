@@ -40,13 +40,13 @@ func test_happenings_roll_by_rules_and_open_activities() -> void:
 	assert_false(CityHappenings.eligible(s).has("feast_day"), "축일은 맑은 날만")
 	s.weather = "clear"
 	assert_true(CityHappenings.eligible(s).has("feast_day"))
-	s.happenings.assign(["lecture"])
-	s.facility = "training"
+	s.happenings.assign(["rare_books"])
+	s.facility = "library"
 	var pc := _pc()
-	assert_eq(CityActions.activities_of(s, "training")[0], "training_lecture", "사건 활동이 맨 앞")
-	assert_eq(CityActions.check(s, pc, "training_lecture"), "")
+	assert_eq(CityActions.activities_of(s, "library")[0], "library_rare", "사건 활동이 맨 앞")
+	assert_eq(CityActions.check(s, pc, "library_rare"), "")
 	s.happenings.clear()
-	assert_eq(CityActions.check(s, pc, "training_lecture"), "city.reason_not_here", "사건이 없으면 고를 수 없다")
+	assert_eq(CityActions.check(s, pc, "library_rare"), "city.reason_not_here", "사건이 없으면 고를 수 없다")
 
 
 func test_tax_by_race_year_and_deadline() -> void:

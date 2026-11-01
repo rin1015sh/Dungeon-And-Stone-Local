@@ -100,13 +100,13 @@ func test_late_period_ends_in_dungeon_and_return_starts_next_month() -> void:
 	assert_eq([s.month, s.period_name()], [3, "상순"], "중간에 들어갔다 와도 다음 달 상순")
 
 
-func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
+func test_rest_lowers_and_reading_raises_fatigue_and_stats() -> void:
 	var s := _state()
 	var pc := _pc()
 	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_dungeon/effects/2/amount", 3],
 			["activities/library_dungeon/effects/1/chance", 1.0], ["activities/library_dungeon/effects/1/amount", 2],
-			["activities/training_train/effects/0/stats", ["str"]], ["activities/training_train/effects/0/chance", 1.0],
-			["activities/training_train/effects/0/amount", 1], ["activities/training_train/effects/1/amount", 4]]:
+			["activities/library_arms/effects/1/stats", ["str"]], ["activities/library_arms/effects/1/chance", 1.0],
+			["activities/library_arms/effects/1/amount", 1], ["activities/library_arms/effects/2/amount", 4]]:
 		s.set_override(str(kv[0]), kv[1])
 	pc.fatigue.set_value(10.0)
 	_inside(s, "inn")
@@ -118,10 +118,9 @@ func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 	assert_near(pc.fatigue.value, 8.0, 0.001, "독서는 피로도를 늘린다")
 	assert_near(pc.stats.get_base("int"), int_before + 2.0, 0.001, "판정 성공 → 정신력 상승(영구)")
 	var str_before := pc.stats.get_base("str")
-	_inside(s, "training")
-	CityActions.perform(s, pc, "training_train", _reg())
-	assert_near(pc.fatigue.value, 12.0, 0.001, "훈련은 피로도를 늘린다")
-	assert_near(pc.stats.get_base("str"), str_before + 1.0, 0.001, "판정 성공 → 근력 상승")
+	CityActions.perform(s, pc, "library_arms", _reg())
+	assert_near(pc.fatigue.value, 12.0, 0.001, "다른 분야도 피로도를 늘린다")
+	assert_near(pc.stats.get_base("str"), str_before + 1.0, 0.001, "판정 성공 → 고른 능력치 상승")
 	assert_eq(pc.stat_history.size(), 2, "어떤 활동으로 올랐는지 기록")
 	assert_eq(str(pc.stat_history[0]["activity"]), "library_dungeon")
 	assert_eq(str(pc.stat_history[1]["stat"]), "str")
@@ -130,15 +129,13 @@ func test_rest_lowers_and_read_train_raise_fatigue_and_stats() -> void:
 func test_failed_roll_still_costs_fatigue() -> void:
 	var s := _state()
 	var pc := _pc()
-	s.set_override("activities/training_train/effects/0/stats", ["str"])
-	s.set_override("activities/training_train/effects/0/chance", 0.0)
-	s.set_override("activities/training_train/effects/0/amount", 1)
-	s.set_override("activities/training_train/effects/1/amount", 4)
-	_inside(s, "training")
-	var before := pc.stats.get_base("str")
-	var ctx := CityActions.perform(s, pc, "training_train", _reg())
+	s.set_override("activities/library_dungeon/effects/1/chance", 0.0)
+	s.set_override("activities/library_dungeon/effects/2/amount", 4)
+	_inside(s, "library")
+	var before := pc.stats.get_base("int")
+	var ctx := CityActions.perform(s, pc, "library_dungeon", _reg())
 	assert_true(ctx.ok)
-	assert_eq(pc.stats.get_base("str"), before, "판정 실패 → 능력치 그대로")
+	assert_eq(pc.stats.get_base("int"), before, "판정 실패 → 능력치 그대로")
 	assert_near(pc.fatigue.value, 4.0, 0.001, "피로도는 판정과 상관없이")
 	assert_eq(s.ap, 3, "활동은 행동력을 쓰지 않는다")
 
@@ -148,12 +145,12 @@ func test_same_seed_same_rolls() -> void:
 	for r in 2:
 		var s := _state(1234)
 		var pc := _pc()
-		s.set_override("activities/training_train/effects/0/stats", ["str", "agi", "p_res"])
-		s.set_override("activities/training_train/effects/0/chance", 0.5)
-		s.set_override("activities/training_train/effects/0/amount", 1)
-		_inside(s, "training")
-		for i in 30:
-			CityActions.perform(s, pc, "training_train", _reg())
+		_inside(s, "library")
+		for f in CityInfo.field_ids(db):  # 분야마다 한 번(한 방문에 분야 하나 — CT72)
+			s.set_override("activities/library_%s/effects/1/stats" % f, ["str", "agi", "p_res"])
+			s.set_override("activities/library_%s/effects/1/pick" % f, "random")
+			s.set_override("activities/library_%s/effects/1/chance" % f, 0.7)
+			CityActions.perform(s, pc, "library_" + f, _reg())
 		runs.append(pc.stat_history.map(func(h: Dictionary) -> String: return str(h["stat"])))
 	assert_true((runs[0] as Array).size() > 0, "성공이 한 번은 있다")
 	assert_eq(runs[0], runs[1], "같은 시드 → 같은 판정·같은 능력치")

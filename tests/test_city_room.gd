@@ -106,21 +106,15 @@ func _reach_open(s: CityState) -> Dictionary:
 	return _reach(r)
 
 
-## 이번 순 사건 활동(특식·떠돌이 상인·교관 특강 …)은 rest 자리에서 한다.
+## 이번 순 사건 활동(특식·떠돌이 상인 …)은 rest 자리에서 한다.
 func test_event_activities_land_on_rest_spots() -> void:
 	var s := _state()
-	s.happenings.assign(["inn_special", "peddler", "lecture"])
+	s.happenings.assign(["inn_special", "peddler"])
 	var inn := CityRoom.load_for(s, "inn")
 	var bar := _spot_with(inn, "inn_snack")
 	assert_true(inn.activities_at(s, bar).has("inn_feast") and inn.activities_at(s, bar).has("inn_hearty"), "여관 특식 순 — 주인에게 특식·든든한 식사")
 	var shop := CityRoom.load_for(s, "shop")
 	assert_false(_spot_with(shop, "shop_peddler").is_empty(), "떠돌이 상인 노점")
-	var gym := CityRoom.load_for(s, "training")
-	var trainer := {}
-	for sp: Dictionary in gym.spots:
-		if str(sp["name_ko"]) == "교관":
-			trainer = sp
-	assert_true(gym.activities_at(s, trainer).has("training_lecture"), "교관 특강 — 교관에게")
 
 
 ## 행동력은 건물에 들어갈 때 1(CT72). 안에서는 활동을 몇 번이든 — 도서관 서적은 한 방문에 분야마다 한 번.
@@ -164,8 +158,8 @@ func test_npcs_play_their_act() -> void:
 	assert_true(smith != null and smith.seq.size() > 1 and smith.col_at(0.0) != smith.col_at(1.0 / smith.fps * 3.0), "대장장이 망치질은 칸이 바뀐다")
 
 
-## 말 걸기(CT76): 일하는 사람이 아닌 사람은 모두 할 말이 있고(city.npc.<talk>.1~), 바라보면 그 사람이 살필 자리. 훈련장 교관 자리는 늘 훈련.
-func test_people_talk_and_trainer_trains() -> void:
+## 말 걸기(CT76): 일하는 사람이 아닌 사람은 모두 할 말이 있고(city.npc.<talk>.1~), 바라보면 그 사람이 살필 자리.
+func test_people_talk() -> void:
 	var s := _state()
 	for f in s.facility_ids():
 		var r := CityRoom.load_for(s, f)
@@ -180,8 +174,19 @@ func test_people_talk_and_trainer_trains() -> void:
 					var t := r.target(Vector2(at + d) + Vector2(0.5, 0.5), -d)
 					assert_eq(str(t.get("talk", "")), str(n["talk"]), "%s %s 바라보면 말 걸기" % [f, n["name_ko"]])
 					break
-	var tr := CityRoom.load_for(s, "training")
-	assert_true(tr.spots.any(func(sp: Dictionary) -> bool: return str(sp["name_ko"]) == "교관" and (sp["acts"] as Array).has("training_train")), "교관에게서 훈련")
+
+
+## 검은 테두리(CT77): 활동 자리마다 테두리를 두를 그림(가구 · 벽 장식 — 사람은 두르지 않는다)이 있다 — 이름판이 없으니 테두리로만 알아본다.
+func test_every_spot_has_something_outlined() -> void:
+	var s := _state()
+	for f in s.facility_ids():
+		var r := CityRoom.load_for(s, f)
+		var walldeco := CityRoom.groups(r.rows, r.legend, ["walldeco"])
+		for sp: Dictionary in r.spots:
+			var rc: Rect2i = sp["rect"]
+			var hit := r.furniture.any(func(g: Dictionary) -> bool: return (g["rect"] as Rect2i).intersects(rc))
+			hit = hit or walldeco.any(func(g: Dictionary) -> bool: return (g["rect"] as Rect2i).intersects(rc))
+			assert_true(hit, "%s %s 자리에 테두리 두를 그림" % [f, sp["name_ko"]])
 
 
 ## 가구 뒤지기(CT74): 건물마다 뒤질 가구가 있고, 바라보고 뒤지면 그 건물 잡템(또는 빈손), 한 자리는 한 순에 한 번 — 순이 바뀌면 다시.

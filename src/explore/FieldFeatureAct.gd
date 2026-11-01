@@ -54,6 +54,7 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	if JsonUtil.get_bool(a, "clear"):
 		e["cleared"] = true
 		s.map.set_tile(e["pos"], JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor"))
+		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))  # 테두리·소품을 다시 그린다
 	s.refresh_view()
 
 

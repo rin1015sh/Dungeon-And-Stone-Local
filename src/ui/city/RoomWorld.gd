@@ -40,9 +40,13 @@ func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -
 			s.position = Vector2(0, (y + 1) * tile)
 			s.offset = Vector2(0, -ta)
 			sorter.add_child(s)
+	var hot := room.interactive_rects()
+	var lined := Outline.material(db.render)
 	for f: Dictionary in room.furniture:
 		var rc: Rect2i = f["rect"]
 		var s := Sprite2D.new()
+		if hot.any(func(h: Rect2i) -> bool: return h.intersects(rc)):
+			s.material = lined  # 상호작용 대상 = 검은 테두리(CT77)
 		s.texture = _tex(CityRoom.furniture_art(room.def, str(f["char"]), rc.size))
 		if s.texture == null:
 			continue
@@ -51,6 +55,14 @@ func build(room: CityRoom, db: GameDatabase, pc: PlayerCharacter, tile: float) -
 		s.position = Vector2((rc.position.x + rc.size.x * 0.5) * tile, rc.end.y * tile)
 		s.offset = Vector2(-s.texture.get_width() * 0.5, -s.texture.get_height())
 		(low if bool(f.get("low", false)) else sorter).add_child(s)
+	for g: Dictionary in CityRoom.groups(room.rows, room.legend, ["walldeco"]):  # 벽 장식(책장 …) 중 상호작용 대상 = 둘레 검은 선
+		var rc: Rect2i = g["rect"]
+		if room.kind_at(rc.position) == "walldeco" and hot.any(func(h: Rect2i) -> bool: return h.intersects(rc)):
+			var frame := _Frame.new()
+			frame.size = Vector2(rc.size) * tile
+			frame.width = Outline.cfg(db.render, "rect_px", 1.5)
+			frame.position = Vector2(rc.position.x, rc.end.y) * tile
+			sorter.add_child(frame)
 	for y in room.height:  # 잠긴 문(이번 순 사건이 열면 그냥 문간 — 그림 없음)
 		for x in room.width:
 			if room.kind_at(Vector2i(x, y)) == "locked":
@@ -98,6 +110,16 @@ static func _has_wall(room: CityRoom, y: int) -> bool:
 
 static func _tex(path: String) -> Texture2D:
 	return load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
+
+
+## 벽 장식 둘레 검은 선(발 = 아래 왼쪽 — 벽 줄과 같은 y로 정렬, CT77).
+class _Frame extends Node2D:
+	var size: Vector2
+	var width: float = 1.5
+
+	func _draw() -> void:
+		var h := width * 0.5
+		draw_rect(Rect2(Vector2(h, -size.y + h), size - Vector2(width, width)), Color.BLACK, false, width)
 
 
 ## 사람(몸 그림 시트의 선 그림 한 칸 — 동작 그림(act)이 있으면 그 칸을 돌린다, CT69). 발밑 그림자.

@@ -67,6 +67,8 @@ var wall_round: float = 0.5          # 암벽 모서리를 깎는 폭(칸 비율
 var wall_bulge: float = 0.06         # 깎은 사선 가운데가 모서리 쪽으로 휘는 정도(칸 비율 — view.wall_bulge)
 var wall_skirt: int = 0              # 벽 앞면 밑동(px — render.json view.wall_skirt_px)
 var prop_highlight: float = 1.15      # 소품(상호작용 대상) 밝기 배율 — 주변보다 한 단계 밝게
+var outline_px: float = 0.9           # 상호작용 대상 검은 테두리 비낌(세계 px — render.json view.outline.world_px, CT77)
+var outline_skip: Array = []          # 테두리를 두르지 않는 동굴 요소 id(view.outline.skip_events — 시체·유골)
 
 
 func setup(p_session: ExploreSession) -> void:
@@ -160,6 +162,22 @@ func _build_particles() -> void:
 
 
 ## 칸 p 중심에 선 캐릭터의 발 위치(월드 좌표).
+## 그 칸이 지금 살필 수 있는 대상인가(검은 테두리 — CT77): 동굴 요소 · 포탈(길목 빼고) · 대현자 기념비 · 아직 안 뒤진 균열 장식.
+## 히든 피스는 숨은 것이라, 시체·유골(view.outline.skip_events)과 사람은 사용자 결정으로 두르지 않는다.
+func interactive_at(c: Vector2i) -> bool:
+	if session.features.live_at(c, outline_skip):
+		return true
+	if session.features.has_at(c):
+		return false  # 테두리를 두르지 않는 요소(시체·유골) 칸
+	var pt := session.map.portal_at(c)
+	if not pt.is_empty():
+		return not bool(pt.get("passage", false))
+	var def := session.map.def_at(c)
+	if def == null:
+		return false
+	return def.interact == "monument" or (not def.scavenge.is_empty() and not session.scavenged.has(c))
+
+
 func feet_position(p: Vector2i) -> Vector2:
 	return feet_of(Kinematics.center_of(p))
 

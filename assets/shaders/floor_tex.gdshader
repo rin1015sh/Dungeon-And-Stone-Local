@@ -13,7 +13,11 @@ void vertex() {
 
 void fragment() {
 	vec4 t = texture(TEXTURE, UV);
-	float l = dot(t.rgb, vec3(0.299, 0.587, 0.114));
-	vec3 c = mix(t.rgb, vec3(l), (1.0 - vcol.a) * memory_desat);
-	COLOR = vec4(c * vcol.rgb, t.a);
+	if (vcol == vec4(0.0)) {  // 검은 테두리 실루엣(Outline.polygon — 꼭짓점 색 (0,0,0,0)): 거의 투명한 픽셀은 버린다(그림 칸 가장자리 점선, CT77)
+		COLOR = vec4(0.0, 0.0, 0.0, step(0.5, t.a));
+	} else {
+		float l = dot(t.rgb, vec3(0.299, 0.587, 0.114));
+		vec3 c = mix(t.rgb, vec3(l), (1.0 - vcol.a) * memory_desat);
+		COLOR = vec4(c * vcol.rgb, t.a);
+	}
 }

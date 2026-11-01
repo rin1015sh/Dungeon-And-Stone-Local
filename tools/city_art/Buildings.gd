@@ -23,7 +23,7 @@ const CLAY := Color("#6b3b2d")
 
 ## id → 크기(px, 화면 720 높이 기준 1:1)
 const SIZES := {"inn": Vector2i(560, 470), "library": Vector2i(440, 520), "temple": Vector2i(430, 600),
-	"shop": Vector2i(400, 500), "bank": Vector2i(470, 450), "training": Vector2i(600, 400),
+	"shop": Vector2i(400, 500), "bank": Vector2i(470, 450),
 	"smithy": Vector2i(520, 440), "guild": Vector2i(580, 560), "exchange": Vector2i(660, 600)}
 
 
@@ -42,8 +42,6 @@ static func paint(id: String, seed_value: int, tier: int = 1) -> Paint:
 			More.shop(p)
 		"bank":
 			More.bank(p)
-		"training":
-			More.training(p)
 		"smithy":
 			More3.smithy(p)
 		"guild":

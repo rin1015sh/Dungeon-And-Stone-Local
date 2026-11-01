@@ -11,7 +11,6 @@ var _fatigue_label: Label
 var _light_label: Label
 var _zone_label: Label
 var _found_label: Label
-var _interact_label: Label
 
 
 func bind(session: ExploreSession) -> void:
@@ -40,9 +39,6 @@ func refresh() -> void:
 		_:
 			_light_label.text = Strings.t("explore.light_dark", {"vision": vision})
 	_zone_label.visible = s.in_safe_zone()
-	var target := ExploreInteract.target_name(s)
-	_interact_label.visible = not target.is_empty()
-	_interact_label.text = Strings.t("explore.hud_interact", {"key": InputSetup.key_label("interact"), "target": target})
 	_found_label.text = Strings.t("explore.hud_found", {
 		"landmarks": s.found_count(s.map.landmarks), "landmarks_total": s.map.landmarks.size(),
 		"portals": s.found_count(s.map.portals), "portals_total": s.map.portals.size()})
@@ -64,7 +60,6 @@ func _build() -> void:
 	_light_label = _add(top, UiTheme.label("", "small", "text"))
 	_zone_label = _add(top, UiTheme.label(Strings.t("explore.hud_safe"), "small", "good"))
 	_found_label = _add(top, UiTheme.label("", "small", "text_dim"))
-	_interact_label = _add(top, UiTheme.label("", "small", "text_title"))
 
 
 

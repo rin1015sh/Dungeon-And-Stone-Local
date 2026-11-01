@@ -166,6 +166,16 @@ static func rect_of(d: Dictionary) -> Rect2i:
 	return Rect2i(int(r[0]), int(r[1]), int(r[2]), int(r[3])) if r.size() == 4 else Rect2i()
 
 
+## 상호작용 대상 칸 무리(활동 자리 · 뒤질 가구 — 검은 테두리를 두를 것, CT77).
+func interactive_rects() -> Array[Rect2i]:
+	var out: Array[Rect2i] = []
+	for s: Dictionary in spots:
+		out.append(s["rect"])
+	for s: Dictionary in searchables:
+		out.append(s["rect"])
+	return out
+
+
 ## 칸의 지금 kind(지도 밖 = void).
 func kind_at(cell: Vector2i) -> String:
 	return str(_kind.get(cell, "void"))

@@ -5,7 +5,7 @@ extends FacilityView
 ##   다 넘기면 걷힌다). 자리에 칸이 여럿이면(여관 주인 — 요기·식사, 상점 계산대 — 구매·판매) 작은 선택 창, 창구(상점·대장간·은행·정수 제거)는
 ##   오른쪽 아래 카드로 열고(Esc·나가기 = 창구만 닫기).
 ##   문 칸을 밟거나 Esc = 나가기 — 행동력은 들어갈 때 1(CityState.enter_facility, CT72). 안에서는 활동을 몇 번이든(도서관 서적은 분야마다 한 번).
-##   바라보는 자리 위에 이름판(활동 이름 · 못 하면 짧은 이유 — 부연설명 없음).
+##   이름판은 띄우지 않는다(사용자 2026-11-01) — 살필 수 있는 가구·벽 장식·사람은 검은 테두리(RoomWorld, CT77). 못 하면 Enter 때 짧은 이유.
 ## 지도는 한 장에 층이 다 있다(위층 북쪽·지하 남쪽, 계단·사다리 줄로 이어짐 — CT66). 그리기는 RoomWorld(바닥 그림 + 발 높이로 정렬한 벽 줄·가구·사람·플레이어).
 ## 방이 화면보다 작으면 고정(왼쪽 위 달력 카드를 비켜 오른쪽 빈 곳 가운데), 크면 플레이어를 따라간다(render.json city.room.zoom).
 
@@ -26,11 +26,6 @@ var _held: Array[String] = []
 var _acting: bool = false  # 활동 결과를 넘기는 중 · 선택 창
 ## Tab 메뉴·도감이 열려 있는 동안 걷기·살피기를 멈춘다(CityScreen이 켠다 — CT74).
 var paused: bool = false
-## 이름판이 비켜 갈 화면 자리(왼쪽 위 달력 카드 — CityScreen이 넣는다, () -> Rect2).
-var avoid: Callable
-var _plate: PanelContainer
-var _plate_name: Label
-var _plate_why: Label
 var _focus: Dictionary = {}
 var _world: RoomWorld
 var _talked: Dictionary = {}  # 사람 칸 → 다음에 할 줄(이 방문 안에서만)
@@ -47,7 +42,6 @@ func _ready() -> void:
 	_dialog = DialogueBox.new()  # 전투와 같은 대화창(UI36) — 줄이 없으면 숨는다(방에는 정보 줄이 없다)
 	DialogueBox.place_bottom(_dialog, self)
 	_dialog.set_speaker(JsonUtil.get_str(f, "name_ko", _facility_id))
-	_build_plate()
 	_sync_view()
 
 
@@ -84,21 +78,6 @@ func _build_world(view: Dictionary) -> void:
 	_cam.make_current()
 
 
-func _build_plate() -> void:
-	_plate = PanelContainer.new()
-	_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 0)
-	_plate.add_child(v)
-	_plate_name = CityUi.label("", "body", "bone")
-	_plate_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(_plate_name)
-	_plate_why = CityUi.label("", "small", "dim")
-	_plate_why.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	v.add_child(_plate_why)
-	_plate.visible = false
-	add_child(_plate)
-	move_child(_plate, _dialog.get_index())  # 대화창 아래
 
 
 func _process(delta: float) -> void:
@@ -160,47 +139,9 @@ func _sync_view() -> void:
 	if room_px.x > view.x - left and room_px.x <= view.x:
 		cx = room_px.x * 0.5
 	_cam.position = Vector2(cx, room_px.y * 0.5 if room_px.y <= view.y else clampf(at.y, view.y * 0.5, room_px.y - view.y * 0.5))
-	var spot: Dictionary = {} if _leaving or _acting else _room.target(pos, facing)
-	if spot != _focus:
-		_focus = spot
-		_refresh_plate()
-	if _plate.visible:
-		var rc: Rect2i = _focus["rect"]
-		var top := (_vp.get_canvas_transform() * Vector2((rc.position.x + rc.size.x * 0.5) * _tile, rc.position.y * _tile))
-		_plate.reset_size()
-		var m := float(UiTheme.metric("margin", 16))
-		_plate.position = Vector2(clampf(top.x - _plate.size.x * 0.5, m, size.x - _plate.size.x - m),
-			clampf(top.y - _plate.size.y - UiTheme.render_float("city.plate_offset_px", 8.0), m, size.y - _plate.size.y - m))
-		var card: Rect2 = avoid.call() if avoid.is_valid() else Rect2()
-		if card.has_area() and card.intersects(Rect2(_plate.global_position, _plate.size)):  # 달력 카드에 걸리면 그 오른쪽으로
-			_plate.global_position.x = card.end.x + m * 0.5
+	_focus = {} if _leaving or _acting else _room.target(pos, facing)  # 바라보는 자리(이름판은 띄우지 않는다 — 사용자 2026-11-01, 대상은 검은 테두리 CT77)
 
 
-func _refresh_plate() -> void:
-	if _focus.has("talk"):  # 말 걸 사람(CT76): 이름만
-		_plate.visible = true
-		_plate_name.text = str(_focus.get("name_ko", ""))
-		_plate_why.visible = false
-		_plate.add_theme_stylebox_override("panel", CityUi.plate_box(true))
-		return
-	if _focus.has("search"):  # 뒤질 가구(CT74): 이름 · 이번 순에 뒤졌으면 그 이유
-		var searched := CityScavenge.done(_state, _focus)
-		_plate.visible = true
-		_plate_name.text = str(_focus.get("name_ko", ""))
-		_plate_why.text = Strings.t("city.reason_searched") if searched else ""
-		_plate_why.visible = searched
-		_plate.add_theme_stylebox_override("panel", CityUi.plate_box(not searched))
-		return
-	var opts := entries(_focus)
-	_plate.visible = not opts.is_empty()
-	if opts.is_empty():
-		return
-	var one: bool = opts.size() == 1
-	var why: String = reason(str(opts[0][0])) if one else ""
-	_plate_name.text = str(_focus.get("name_ko", "")) if not str(_focus.get("name_ko", "")).is_empty() else _entry_text(opts[0])
-	_plate_why.text = Strings.t(why) if not why.is_empty() else (CityActions.price_text(_state, _pc, str(opts[0][0])) if one else "")
-	_plate_why.visible = not _plate_why.text.is_empty()
-	_plate.add_theme_stylebox_override("panel", CityUi.plate_box(why.is_empty()))
 
 
 ## 자리에서 고를 칸: [활동 id, 창구 쪽("" 또는 buy·sell)] — 상점·대장간 창구는 [구매]·[판매] 두 칸(메뉴 시설과 같다, CT49).
@@ -246,7 +187,6 @@ func interact() -> void:
 	if at.has("search"):  # 가구 뒤지기(CT74)
 		var r := CityScavenge.run(_state, _pc, at)
 		_dialog.say(Strings.t(str(r["key"]), r["args"] as Dictionary), str(r["tone"]))
-		_refresh_plate()
 		return
 	var opts := entries(at)
 	if opts.is_empty():
@@ -283,7 +223,6 @@ func talk(who: Dictionary) -> void:
 	var said: int = _talked.get(at, absi(hash([at, _state.month, _state.period])) % n)
 	_talked[at] = said + 1
 	_acting = true
-	_plate.visible = false
 	_world.face_npc(at, -facing)
 	_dialog.set_speaker(str(who["name_ko"]))
 	_dialog.say(Strings.t("%s.%d" % [base, said % n + 1]), "info")
@@ -320,7 +259,6 @@ func open_panel(act_id: String, tab: String = "") -> void:
 	_menu.minimum_size_changed.connect(_place_panel)
 	_place_panel()
 	_acting = true
-	_plate.visible = false
 
 
 ## 창구 카드 자리: 대화창 위 오른쪽 아래 귀퉁이에 제 크기만큼(위로 자라도 화면 위 여백까지).
@@ -358,7 +296,6 @@ func use(act_id: String) -> void:
 		_dialog.say(Strings.t(why), "warn")
 		return
 	_acting = true
-	_refresh_plate()
 	var ctx := CityActions.perform(_state, _pc, act_id, _registry)
 	show_result(ctx)
 	await _dialog.wait()

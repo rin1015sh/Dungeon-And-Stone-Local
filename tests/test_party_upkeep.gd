@@ -46,14 +46,14 @@ func test_starved_mate_leaves_party() -> void:
 	assert_false(pc.dead, "플레이어는 멀쩡")
 
 
-func test_city_rest_heals_mates_but_training_is_players_own() -> void:
+func test_city_rest_heals_mates_but_reading_is_players_own() -> void:
 	var s := CityState.new(db, 7)
 	s.start()
 	var pc := _pc()
 	var mate := _pc("동료")
 	s.mates = [mate]
 	s.set_override("activities/inn_rest/effects/1/amount", 5)
-	s.set_override("activities/training_train/effects/1/amount", 4)
+	s.set_override("activities/library_dungeon/effects/2/amount", 4)
 	pc.fatigue.set_value(10.0)
 	mate.fatigue.set_value(10.0)
 	mate.pool.set_current("hp", 5.0)
@@ -64,9 +64,9 @@ func test_city_rest_heals_mates_but_training_is_players_own() -> void:
 	assert_near(mate.fatigue.value, 5.0, 0.001, "여관 휴식은 동료도")
 	assert_eq(mate.pool.get_current("hp"), mate.pool.get_max("hp"), "생명력도 같이 회복")
 	assert_eq(mate.pool.get_current("soul"), mate.pool.get_max("soul"), "영혼력도")
-	s.facility = "training"
-	CityActions.perform(s, pc, "training_train", reg)
-	assert_near(pc.fatigue.value, 9.0, 0.001, "훈련 피로는 플레이어")
+	s.facility = "library"
+	CityActions.perform(s, pc, "library_dungeon", reg)
+	assert_near(pc.fatigue.value, 9.0, 0.001, "독서 피로는 플레이어")
 	assert_near(mate.fatigue.value, 5.0, 0.001, "동료는 그대로")
 
 

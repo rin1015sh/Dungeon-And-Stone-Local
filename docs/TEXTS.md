@@ -1,6 +1,6 @@
 # 게임 글 모음 — 도서관 책 · 플레이버 · 상황 문구
 
-> 게임에 나오는 읽을거리를 한 파일에 모았다(1197개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
+> 게임에 나오는 읽을거리를 한 파일에 모았다(1227개). **고친 뒤 이 파일을 보내 주면 바뀐 글만 게임에 넣는다**(`python3 tools/texts_md.py --apply`).
 > - 항목 = `#### 이름 · \`파일:경로\`` 줄 + 그 아래 글. **`####` 줄(특히 \` \` 안 경로)은 바꾸지 말고, 아래 글만** 고친다. 글은 여러 줄이어도 된다(다음 `#` 줄 전까지가 한 글).
 > - `{이름}`은 자리표시자(게임이 값을 넣는다) — 그대로 둔다(바꾸면 그 줄은 적용하지 않는다). `\n`이 필요한 자리는 그냥 줄을 바꿔 쓴다.
 > - 대화창은 **한 쪽에 한 문장**이다(UI44) — 문장을 끊으면 Enter 한 번씩 넘어간다.
@@ -10,8 +10,8 @@
 ## 차례
 
 - **도서관 책** — 미궁에 관하여(24) · 소재와 무기에 관하여(18) · 상태이상에 관하여(24) · 몬스터와 정수에 관하여(24) · 생존과 야영에 관하여(18) · 도시와 탐험가에 관하여(28)
-- **플레이버 · 설명 글** — 아이템(131) · 장비 소재(37) · 장비 종류(31) · 몬스터(104) · 정수(51) · 스킬(11) · 상태이상(66) · 전투 게이지(6) · 랜드마크(3) · 종족 · 직업(6) · 균열(설명 · 챕터)(21) · 수수께끼(문제 · 벽화)(32)
-- **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(86) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(11) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(25) · 도시 · lines(46) · 도시 · street(37) · 도시 · meal(24) · 동굴 요소(75) · 동굴 요소 · corpse(15)
+- **플레이버 · 설명 글** — 아이템(129) · 장비 소재(37) · 장비 종류(31) · 몬스터(104) · 정수(51) · 스킬(11) · 상태이상(66) · 전투 게이지(6) · 랜드마크(3) · 종족 · 직업(6) · 균열(설명 · 챕터)(21) · 수수께끼(문제 · 벽화)(32)
+- **상황 문구** — 기록 · 일반 알림(18) · 캐릭터 만들기(1) · 탐험 알림 · boss_notice(10) · 탐험 알림(86) · 탐험 알림 · hidden(21) · 아이템 · 스킬 효과(16) · 전투(132) · 보상 · 정수(11) · 소지품(3) · 아군(2) · 도감(1) · 도감(몬스터)(3) · 정수 칸(3) · 수수께끼(1) · 차원광장 · 정산(4) · 도시(28) · 도시 · fx(25) · 도시 · lines(36) · 도시 · street(37) · 도시 · meal(24) · 도시 · npc(42) · 동굴 요소(75) · 동굴 요소 · corpse(15)
 
 ## 도서관 책
 
@@ -451,9 +451,6 @@
 #### 뼈 목걸이 · `data/items/bone_amulet.json:.desc_ko`
 짐승 뼈를 깎은 부적. 마음이 가라앉는다.
 
-#### 부러진 화살촉 · `data/items/broken_arrowhead.json:.desc_ko`
-과녁에 박혔다 빠진 화살에서 떨어진 촉. 끝은 아직 쓸 만하다.
-
 #### 부러진 칼날 · `data/items/broken_blade.json:.desc_ko`
 담금질을 버티지 못하고 갈라진 날. 대장장이는 다시 녹일 생각이었다.
 
@@ -828,9 +825,6 @@
 
 #### 나무 방패 · `data/items/wooden_shield.json:.desc_ko`
 판자에 쇠테를 두른 방패.
-
-#### 손목 감개 · `data/items/wrist_wrap.json:.desc_ko`
-수련생들이 손목에 감던 천. 땀 냄새가 배어 있다.
 
 ### 장비 소재
 
@@ -2761,7 +2755,7 @@
 {name}이(가) 둘로 갈라진다 — {monster}!
 
 #### absorb · `data/strings/ko.json:.combat.absorb`
-{name}이(가) {target}을(를) 집어삼켰다. 생명력 {amount} 회복.
+{name}이(가) {target}을(를) 집어삼켰다.
 
 #### absorb_none · `data/strings/ko.json:.combat.absorb_none`
 {name}이(가) 삼킬 것을 찾지 못했다.
@@ -3169,30 +3163,6 @@
 #### lines.library_read.fatigue_up.2 · `data/strings/ko.json:.city.lines.library_read.fatigue_up.2`
 어깨가 뻐근하다.
 
-#### lines.training_train.spent_stones.1 · `data/strings/ko.json:.city.lines.training_train.spent_stones.1`
-교관에게 {n} 스톤을 건넸다.
-
-#### lines.training_train.stat_up.1 · `data/strings/ko.json:.city.lines.training_train.stat_up.1`
-땀 흘린 보람이 있다. {stat}이 늘었다.
-
-#### lines.training_train.stat_up.2 · `data/strings/ko.json:.city.lines.training_train.stat_up.2`
-몸이 달라진 게 느껴진다. {stat}이 늘었다.
-
-#### lines.training_train.stat_fail.1 · `data/strings/ko.json:.city.lines.training_train.stat_fail.1`
-고된 훈련으로 근육통만 생겼다.
-
-#### lines.training_train.stat_fail.2 · `data/strings/ko.json:.city.lines.training_train.stat_fail.2`
-교관의 호통만 실컷 들었다.
-
-#### lines.training_train.stat_fail.3 · `data/strings/ko.json:.city.lines.training_train.stat_fail.3`
-허수아비만 애꿎게 두들겼다.
-
-#### lines.training_train.fatigue_up.1 · `data/strings/ko.json:.city.lines.training_train.fatigue_up.1`
-온몸이 욱신거린다.
-
-#### lines.training_train.fatigue_up.2 · `data/strings/ko.json:.city.lines.training_train.fatigue_up.2`
-팔다리가 천근만근이다.
-
 #### lines.temple_service.merit.1 · `data/strings/ko.json:.city.lines.temple_service.merit.1`
 신전 바닥을 닦고 촛농을 긁어냈다. 신관이 고개를 끄덕인다.
 
@@ -3201,12 +3171,6 @@
 
 #### lines.temple_service.merit.3 · `data/strings/ko.json:.city.lines.temple_service.merit.3`
 제단의 향로를 닦았다. 손에 밴 향이 좀처럼 빠지지 않는다.
-
-#### lines.training_lecture.stat_fail.1 · `data/strings/ko.json:.city.lines.training_lecture.stat_fail.1`
-교관의 시범은 화려했지만 몸이 따라가지 못했다.
-
-#### lines.training_spar.stat_fail.1 · `data/strings/ko.json:.city.lines.training_spar.stat_fail.1`
-상대 모험가에게 몇 번이고 바닥에 메다꽂혔다. 배운 건 낙법뿐이다.
 
 #### lines.library_rare.stat_fail.1 · `data/strings/ko.json:.city.lines.library_rare.stat_fail.1`
 귀한 책이었지만 글자가 너무 낡아 반도 읽지 못했다.
@@ -3415,6 +3379,134 @@
 
 #### meal.cave_truffle_soup · `data/strings/ko.json:.city.meal.cave_truffle_soup`
 미궁 동굴에서 캐 왔다는 송로를 갈아 넣은 수프. 눈이 밝아지고 속이 든든하다.
+
+### 도시 · npc
+
+#### npc.drinker.1 · `data/strings/ko.json:.city.npc.drinker.1`
+오늘 맥주는 물을 탔군.
+
+#### npc.drinker.2 · `data/strings/ko.json:.city.npc.drinker.2`
+미궁에서 돌아온 놈들은 늘 술값부터 치르더라.
+
+#### npc.drinker.3 · `data/strings/ko.json:.city.npc.drinker.3`
+한 잔만 더 하고 일어나야지.
+
+#### npc.cook.1 · `data/strings/ko.json:.city.npc.cook.1`
+솥에 손 대지 마, 데여.
+
+#### npc.cook.2 · `data/strings/ko.json:.city.npc.cook.2`
+오늘 고기가 어디서 왔는지는 묻지 마.
+
+#### npc.cook.3 · `data/strings/ko.json:.city.npc.cook.3`
+간을 볼 틈도 없다고.
+
+#### npc.servant.1 · `data/strings/ko.json:.city.npc.servant.1`
+발 좀 들어 줘요, 쓸게요.
+
+#### npc.servant.2 · `data/strings/ko.json:.city.npc.servant.2`
+탐험가들은 흙을 너무 묻혀 와요.
+
+#### npc.servant.3 · `data/strings/ko.json:.city.npc.servant.3`
+어젯밤에도 누가 여기서 잠들었지 뭐예요.
+
+#### npc.explorer.1 · `data/strings/ko.json:.city.npc.explorer.1`
+이번 달에 돌아오지 못한 파티가 셋이래.
+
+#### npc.explorer.2 · `data/strings/ko.json:.city.npc.explorer.2`
+수정동굴 안쪽은 아직도 꺼림칙해.
+
+#### npc.explorer.3 · `data/strings/ko.json:.city.npc.explorer.3`
+정수 하나에 목숨을 걸다니, 우리도 참.
+
+#### npc.scholar.1 · `data/strings/ko.json:.city.npc.scholar.1`
+조용히 해 주게, 이 대목이 까다롭단 말일세.
+
+#### npc.scholar.2 · `data/strings/ko.json:.city.npc.scholar.2`
+이 책을 쓴 자는 끝내 돌아오지 못했다네.
+
+#### npc.scholar.3 · `data/strings/ko.json:.city.npc.scholar.3`
+본문보다 여백에 남은 글이 더 흥미롭군.
+
+#### npc.scribe.1 · `data/strings/ko.json:.city.npc.scribe.1`
+한 글자라도 틀리면 처음부터 다시야.
+
+#### npc.scribe.2 · `data/strings/ko.json:.city.npc.scribe.2`
+잉크가 또 말라 버렸네.
+
+#### npc.scribe.3 · `data/strings/ko.json:.city.npc.scribe.3`
+이 지도는 벌써 열 번째 베끼는 거야.
+
+#### npc.seeker.1 · `data/strings/ko.json:.city.npc.seeker.1`
+분명 이 서가에 있었는데.
+
+#### npc.seeker.2 · `data/strings/ko.json:.city.npc.seeker.2`
+살아 돌아오려면 읽어 둬야지.
+
+#### npc.seeker.3 · `data/strings/ko.json:.city.npc.seeker.3`
+글은 눈에 안 들어오는데 그림은 무섭군.
+
+#### npc.reader.1 · `data/strings/ko.json:.city.npc.reader.1`
+이 장만 읽고 갈게요.
+
+#### npc.reader.2 · `data/strings/ko.json:.city.npc.reader.2`
+미궁에서 이걸 읽은 사람은 몇이나 살았을까요.
+
+#### npc.reader.3 · `data/strings/ko.json:.city.npc.reader.3`
+촛불이 조금만 더 밝았으면.
+
+#### npc.customer.1 · `data/strings/ko.json:.city.npc.customer.1`
+값이 또 올랐군.
+
+#### npc.customer.2 · `data/strings/ko.json:.city.npc.customer.2`
+이걸로 한 달을 버텨야 해.
+
+#### npc.customer.3 · `data/strings/ko.json:.city.npc.customer.3`
+좋은 물건은 늘 남보다 먼저 팔리지.
+
+#### npc.guard.1 · `data/strings/ko.json:.city.npc.guard.1`
+볼일이 없으면 지나가시오.
+
+#### npc.guard.2 · `data/strings/ko.json:.city.npc.guard.2`
+금고 쪽으로는 한 걸음도 다가오지 마시오.
+
+#### npc.guard.3 · `data/strings/ko.json:.city.npc.guard.3`
+오늘은 조용하군.
+
+#### npc.apprentice.1 · `data/strings/ko.json:.city.npc.apprentice.1`
+뜨거우니까 물러서요.
+
+#### npc.apprentice.2 · `data/strings/ko.json:.city.npc.apprentice.2`
+스승님 망치는 한 번도 빗나간 적이 없어요.
+
+#### npc.apprentice.3 · `data/strings/ko.json:.city.npc.apprentice.3`
+쇠는 식기 전에 두드려야 한대요.
+
+#### npc.chorister.1 · `data/strings/ko.json:.city.npc.chorister.1`
+다음 성가가 몇 장이었더라.
+
+#### npc.chorister.2 · `data/strings/ko.json:.city.npc.chorister.2`
+높은 음은 늘 갈라져.
+
+#### npc.chorister.3 · `data/strings/ko.json:.city.npc.chorister.3`
+오늘 저녁에도 망자를 위한 노래를 부르지.
+
+#### npc.believer.1 · `data/strings/ko.json:.city.npc.believer.1`
+부디 돌아오게 해 주소서.
+
+#### npc.believer.2 · `data/strings/ko.json:.city.npc.believer.2`
+아들이 미궁에 들어간 지 석 달째예요.
+
+#### npc.believer.3 · `data/strings/ko.json:.city.npc.believer.3`
+기도라도 해야 마음이 놓여요.
+
+#### npc.monk.1 · `data/strings/ko.json:.city.npc.monk.1`
+평안하시오, 탐험가.
+
+#### npc.monk.2 · `data/strings/ko.json:.city.npc.monk.2`
+촛농은 지워도 지워도 쌓이는군.
+
+#### npc.monk.3 · `data/strings/ko.json:.city.npc.monk.3`
+돌아오지 못한 이들의 이름을 오늘도 적었소.
 
 ### 동굴 요소
 

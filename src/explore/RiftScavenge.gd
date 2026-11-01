@@ -34,6 +34,7 @@ static func run(s: ExploreSession) -> bool:
 			item = JsonUtil.get_str(list[i] as Dictionary, "item")
 	if item.is_empty():
 		s.scavenged[p] = true
+		s.tiles_changed.emit(Rect2i(p, Vector2i.ONE))  # 다 뒤진 장식은 테두리를 지운다(CT77)
 		s.message.emit("explore.scavenge_empty", {"tile": def.name_ko}, "info")
 		return true
 	var name := DataNames.entry(s.db, "items", item)
@@ -41,6 +42,7 @@ static func run(s: ExploreSession) -> bool:
 		s.message.emit("explore.scavenge_no_room", {"item": name}, "warn")
 		return true
 	s.scavenged[p] = true
+	s.tiles_changed.emit(Rect2i(p, Vector2i.ONE))
 	s.player.inventory.add(item, 1)
 	s.message.emit("explore.scavenge_found", {"tile": def.name_ko, "item": name}, "good")
 	return true

@@ -32,8 +32,6 @@ static func paint(id: String, seed_value: int, tier: int = 1) -> Paint:
 			lights = Rooms.shop(p)
 		"bank":
 			lights = Rooms.bank(p)
-		"training":
-			lights = Rooms.training(p)
 		"smithy":
 			lights = Rooms2.smithy(p)
 		"guild":

@@ -110,7 +110,6 @@ func choose_facility(id: String) -> void:
 	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
 	if _facility is RoomView:
 		(_facility as RoomView).art_hidden.connect(func() -> void: _hud.visible = true)
-		(_facility as RoomView).avoid = _hud.calendar_rect  # 이름판이 달력 카드에 가리지 않게
 	_hud.set_facility_mode(true)
 	add_child(_facility)
 	move_child(_facility, _street.get_index() + 1)

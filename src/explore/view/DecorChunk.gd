@@ -83,6 +83,8 @@ func _draw() -> void:
 		_quad(Vector2((x + 0.5) * t, (y + 1.0) * t - size * 0.5 - t * 0.12), size, size)
 		FloorChunk.set_uv_turned(_uvs, ptex, def.prop_cell % cols, cols, def.prop_cell / cols, rows, 0, false)
 		_corner_light(Vector2i(x, y), def.color_floor, view.prop_highlight)
+		if view.interactive_at(q):  # 살필 수 있는 소품 = 검은 테두리(CT77)
+			Outline.polygon(self, _pts, _uvs, ptex, view.outline_px)
 		draw_polygon(_pts, _cols, _uvs, ptex)
 
 

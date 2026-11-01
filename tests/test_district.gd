@@ -57,7 +57,7 @@ func test_no_special_facilities_now() -> void:
 	assert_eq(CityDistrict.facility_x(db, "smithy"), float(JsonUtil.get_int(db.get_entry("facilities", "smithy"), "x")), "건물 자리 = 데이터 x")
 	var w := JsonUtil.get_float(JsonUtil.get_dict(db.singletons.get("city", {}), "street"), "width")
 	assert_eq(CityDistrict.street_width(db, w), w, "거리 길이 = 데이터")
-	assert_eq(s.facility_ids().size(), 8, "거리 시설 여덟")
+	assert_eq(s.facility_ids().size(), 7, "거리 시설 일곱(훈련장 없앰 — 2026-11-01)")
 
 
 func test_art_and_save() -> void:

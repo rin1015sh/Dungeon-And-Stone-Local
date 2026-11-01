@@ -42,6 +42,8 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 		v.decor_sheet = load(v.decor.sheet) as Texture2D
 		any = true
 	v.prop_highlight = JsonUtil.get_float(cfg, "prop_highlight", 1.15)
+	v.outline_px = Outline.cfg(v.session.db.render, "world_px", 0.9)
+	v.outline_skip = JsonUtil.get_array(JsonUtil.get_dict(JsonUtil.get_dict(v.session.db.render, "view"), "outline"), "skip_events")
 	v.wall_skirt = JsonUtil.get_int(cfg, "wall_skirt_px", 0)
 	v.wall_round = JsonUtil.get_float(cfg, "wall_round", 0.5)
 	v.base_floor = map.index_of(JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(v.session.floor_def, "gen"), "tiles"), "floor", "cave_floor"))

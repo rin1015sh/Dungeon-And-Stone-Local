@@ -81,6 +81,16 @@ func spawn_guards(s: ExploreSession) -> void:
 		s.monsters.add_fixed(ids, e["pos"])
 
 
+## 그 칸에 지금 살필 수 있는 요소가 있는가(찾았고 · 다 쓰지 않았고 · 행동이 있다 — 검은 테두리, CT77). skip = 두르지 않을 요소 id(시체·유골).
+func live_at(cell: Vector2i, skip: Array = []) -> bool:
+	var e: Dictionary = _by_cell.get(cell, {})
+	return not e.is_empty() and not skip.has(e["id"]) and bool(e["found"]) and not bool(e["cleared"]) and not JsonUtil.get_array(e["def"], "actions").is_empty()
+
+
+func has_at(cell: Vector2i) -> bool:
+	return _by_cell.has(cell)
+
+
 ## 살필 요소(서 있는 칸 → 옆 칸 4방향). 없으면 {}.
 func target(s: ExploreSession) -> Dictionary:
 	for p: Vector2i in [s.pos] + FloorMap.DIRS4.map(func(d: Vector2i) -> Vector2i: return s.pos + d):

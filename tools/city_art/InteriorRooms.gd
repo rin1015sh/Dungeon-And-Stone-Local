@@ -134,27 +134,5 @@ static func bank(p: Paint) -> Array:
 	return [[Vector2(560, 340), 280.0, WARM, 0.7], [Vector2(190, 340), 240.0, WARM, 0.55], [Vector2(360, 222), 220.0, COOL, 0.3]]
 
 
-## 훈련장(실내 훈련실): 거친 돌 뒷벽의 무기걸이·방패 · 깃발 · 모래 바닥 · 허수아비 · 횃불 · 앞쪽 나무 울타리.
-static func training(p: Paint) -> Array:
-	var I := _I()
-	I.room(p, Mat.rubble(p, Color("#55514a")), Mat.planks(p, Color("#3a2b1f"), 0, 0, true, 18), Bits.sand_shader(p), Mat.planks(p, Color("#241a12"), 0, 0, false, 22))
-	for s: float in [1.3, 1.9, 2.8]:
-		Ink.line(p, I.pt(Vector2(170, 110), s), I.pt(Vector2(550, 110), s), 9.0 * s, Color("#22180f"), 1.0, 0.5)
-	Props.weapon_rack(p, 230, 330)
-	Props.weapon_rack(p, 490, 330)
-	for sx: float in [300.0, 360.0, 420.0]:
-		Bits.shield(p, Vector2(sx, 190), 24)
-	Props.banner(p, 360, 300, Color("#6e2420"), 180)
-	Props.dummy(p, 250, 470, 1.5)
-	Props.dummy(p, 470, 420, 1.15)
-	Npc.figure(p, 378, 474, 204, {"body": "male", "top": Color("#6a4a30"), "bottom": Color("#4a4034"), "belt": Color("#2a1e14"), "arms": "crossed", "bare_arms": true, "hair": "short", "hair_c": Color("#241a14"), "beard": "stubble", "scar": true, "skin": Color("#b48462"), "light": -1.0})
-	for side: float in [1.0, 0.0]:
-		var tx := 70.0 if side > 0.0 else 650.0
-		Bits.torch(p, Vector2(tx, 230))
-	Props.barrel(p, 640, 520, 60, 76)
-	Props.fence(p, 560, 960, 535, 70)
-	return [[Vector2(70, 220), 300.0, WARM, 0.75], [Vector2(650, 220), 300.0, WARM, 0.7], [Vector2(360, 400), 320.0, WARM, 0.4]]
-
-
 static func _I() -> GDScript:
 	return load("res://tools/city_art/Interiors.gd")

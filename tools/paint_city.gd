@@ -15,7 +15,7 @@ const Events := preload("res://tools/city_art/Events.gd")
 const Settle := preload("res://tools/city_art/Settle.gd")
 const SEED := 1015
 ## 그림 시드 순서(시설 id → 번호). 시설이 늘어도 기존 그림이 바뀌지 않게 고정 — 새 시설은 끝에 붙인다.
-const SEED_ORDER := ["bank", "inn", "library", "shop", "temple", "training", "smithy", "guild", "exchange"]
+const SEED_ORDER := ["bank", "inn", "library", "shop", "temple", "training", "smithy", "guild", "exchange"]  # 시드 순서 — 없앤 시설(훈련장·거래소)도 자리는 둔다(뒤 건물 그림이 바뀌지 않게)
 ## 그림 등급마다 따로 그리는 레이어(<경로>_t<등급> — CityStreet가 city.json district.look 것을 고른다, CT54·CT63). 나머지는 한 장.
 const TIER_LAYERS := ["far", "mid", "street"]
 ## 그림 등급 수(1 = 옛 라비기온 13구역 뒷골목 · 2 = 7구역 · 3 = 컴멜비 5구역 · 4 = 3구역 — 지금 게임은 district.look 하나만 쓴다, CT63).

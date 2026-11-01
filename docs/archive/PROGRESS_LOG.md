@@ -6,6 +6,16 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **훈련장 없앰 · 사람·시체 테두리 되돌림 (2026-11-01, 사용자 "훈련장 게임에서 삭제해 완전히 · NPC·시체·사람한테는 테두리 빼, 롤백", CT78·CT77)** — 테스트: `check.sh` + 캡처(거리 끝 = 은행 · 여관 · 1층 시체).
+  - 훈련장: data(facilities/activities 셋/city_events 둘/rooms/items 둘) · city.json facility_order·room.search.training·street.width 3880 · street_events 화재·검문 · scavenge training_gear · ko.json lines·npc · 그림(city/rooms/training · buildings·interiors training* · items 둘 · 옷차림 5 · 동작 6 + index) · tools(Buildings·Buildings2·Interiors·InteriorRooms 훈련장 그리기) · city_boards · 테스트(test_city 능력치 판정 → 도서관 분야 · test_city_life 사건 → 희귀서 입고 · test_party_upkeep · test_city_room · test_district 일곱).
+  - 테두리: RoomWorld 사람 재질·CityRoom.npc_interactive 지움, 사람 동작 그림·NpcActs 여백·paint_actors foot를 CT76 그대로(git) · `view.outline.skip_events`(시체·유골 다섯) → `FieldFeatures.live_at(skip)`.
+
+- **이름판 없앰 · 상호작용 대상 검은 테두리 (2026-11-01, 사용자 "NPC나 상호작용 요소에 가까이 갔을 때 창 뜨는 거 없애 · 상호작용 요소를 검은 테두리로 — 건물·미궁·균열", CT77)** — 범위: 실내 이름판 · 탐험 HUD 살피기 줄 · 테두리 그리기. 완료 기준: 가까이 가도 창이 없고, 살필 수 있는 것만 검은 테두리(다 쓰면 사라짐). 테스트: `check.sh`(test_city_room 자리마다 테두리 그림) + 캡처(도서관·훈련장·여관·핏빛성채 1장·1층 시체).
+  - 지움: RoomView `_plate`·`_refresh_plate`·`avoid`(CT75에서 넣은 달력 비키기), CityHud `calendar_rect`, ExploreHud `_interact_label`, ko.json `explore.hud_interact`.
+  - 그리기: `assets/shaders/outline.gdshader` · `src/ui/theme/Outline.gd`(material(굵기 키) · polygon · texture_rect) · floor_tex 셰이더에 실루엣 갈래(꼭짓점 색 (0,0,0,0) → 검정, 알파 0.5 문턱 — 처음엔 그림 칸 가장자리 옅은 픽셀까지 검게 나왔다; 균열 소품 칸 둘레 점선 네모는 원래 바닥 그림이라 그대로).
+  - 대상: `CityRoom.interactive_rects`·`npc_interactive` → RoomWorld(가구 Sprite2D 재질 · 사람 재질 · 벽 장식 `_Frame` 사각 선) / `FloorView.interactive_at`(FieldFeatures.live_at · 포탈 · monument · scavenge 안 뒤짐) → DecorChunk 소품 · WallRow 서 있는 소품·벽 덩어리 `_line_block` · LootView. 뒤지기·요소 다 씀(clear)에 tiles_changed를 내 다시 그린다.
+  - 사람 동작 그림 칸 여백 2 → 6px(`NpcActs.MARGIN` — 3.5텍셀 테두리가 칸 밖에서 잘리거나 위 줄 발이 머리 위에 짧은 선으로 끼었다) · `paint_actors --acts` 다시.
+
 - **실내 사람 동작 · 말 걸기 · 훈련장 (2026-11-01, 사용자 "건물 내부 NPC 애니메이션이 너무 어색하고 잘 안 보임 · 훈련장 NPC는 어디 있나, 상호작용되는 게 없다", CT76)** — 범위: NPC 동작 그림 · 훈련장 배치 · 말 걸기. 완료 기준: 동작이 툭툭 끊기지 않고 눈에 띄게 움직임, 훈련장 교관에게서 훈련, 일하지 않는 사람 모두 한 문장. 테스트: `check.sh`(test_city_room 말 걸기·교관) + 동작 시트 확대 보기 + 캡처.
   - 원인: 동작이 2~3칸(fps 1.2~6)뿐이라 자세가 툭 바뀌었고, 읽기·기도·셈·쓰기·닦기·젓기는 손이 120px 칸에서 4~5px만 움직여 화면에서 1px 남짓 · 훈련장 수련생·궁수는 등을 보여 휘두르기·쏘기가 안 보였고, 교관 자리는 사건 순 활동만 있어 평소엔 아무것도 없었다.
   - 그림: `NpcActs.tween`·`blend`(관절 p · ik 손·팔꿈치 방향 · turn 보간, 글자 값은 가까운 쪽) → 동작마다 6~9칸, fps는 걸음 × (k+1). `npc_acts.json` 동작 크기(읽기·기도·박수·셈·경비·닦기·쓰기·젓기). `paint_actors --acts` 다시(41장, 약 7분 반 + 바꾼 동작 다시).
