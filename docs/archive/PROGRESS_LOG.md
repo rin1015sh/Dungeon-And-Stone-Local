@@ -6,6 +6,11 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **이동 70% · 걷기 그림 · 적 AI 전면 개편 · 보스 등장 (2026-11-01, 사용자 "이동속도 70% · 걷는 애니메이션 꽤 느리게 · 적 AI 다 갈아엎고 다시(장식에 가리거나 코너를 돌면 바로 포기, 지능적으로 안 보임, 오래 쓸 AI) · 보스가 안 보여도 전투 — 고치거나 아이디어", V22)** — 범위: 속도·걷기 그림 · 감지·판단·추적·수색 전부 · 보스 조우 조건·연출. 완료 기준: 장식 뒤·모퉁이 너머로 사라져도 따라오고(발소리·내다보기), 숨으면 수색 뒤 포기, 흘끗 본 것은 조사, 동료를 부르고, 보스는 보여야 깨어나며 연출이 있다, check.sh·sim_rift 통과. 테스트: 새 `test_monster_ai`(9 — 화면 · 의심 → 추적 · 등 뒤·벽·곁눈·장식 · ㄱ자 굴 모퉁이 · 놓침 → 수색 → 귀환 · 조사 · 발소리 · 무리 부르기 · 성격), `test_monster_patrol`(순찰만 남김), `test_field_monsters`(보스 visible_now), `test_fortress`(벤시 — `MonsterMind.can_see`) + sim_walk·sim_rift + 캡처(보스 등장).
+  - 코드: `src/explore/ai/MonsterSight.gd`·`MonsterMind.gd`·`MonsterHunt.gd` 새로, `MonsterSteering`(걷기만 — decide → mind.think, 보이는 추적만 거리 장), `MonsterPatrol`(수색 빼고 `follow` 공개), `FieldMonsters`(Group 기억 필드 · `STATE_INVESTIGATE` · 상태별 빠르기 · `boss_seen`), `MonsterSenses` 지움. `BossReveal`(src/ui/widgets) · `ExploreScreen._on_encounter`(연출 → 한 줄 → 전투, 귀퉁이 창 숨김) · `ActorView.camera()` · `FloorView.monster_view()`. 캡처 `--spotted=<초>`.
+  - 처음 실패해서 고친 것: `_set`이 Object._set과 이름이 겹쳐 파싱 오류 → `_go_state` · 내다보기가 움직이던 방향만 봐서 ㄱ자 모퉁이에서 바로 수색 → 되돌아가는 쪽만 빼고 길 거리로 가장 먼 칸 · 보스 이름이 대화창 뒤에 가림 → 위쪽 띠 아래로 · sim_rift가 길목에 선 무리를 막힌 칸으로 봄 → 지나가게(부딪치면 전투).
+  - 수치: ASSUMPTIONS V22. 데이터: balance `monsters.ai`, 몬스터 31종 behavior `ai`, render.json `ui.boss_reveal`·`walk_fps`, audio.json `boss_reveal`.
+
 - **훈련장 없앰 · 사람·시체 테두리 되돌림 (2026-11-01, 사용자 "훈련장 게임에서 삭제해 완전히 · NPC·시체·사람한테는 테두리 빼, 롤백", CT78·CT77)** — 테스트: `check.sh` + 캡처(거리 끝 = 은행 · 여관 · 1층 시체).
   - 훈련장: data(facilities/activities 셋/city_events 둘/rooms/items 둘) · city.json facility_order·room.search.training·street.width 3880 · street_events 화재·검문 · scavenge training_gear · ko.json lines·npc · 그림(city/rooms/training · buildings·interiors training* · items 둘 · 옷차림 5 · 동작 6 + index) · tools(Buildings·Buildings2·Interiors·InteriorRooms 훈련장 그리기) · city_boards · 테스트(test_city 능력치 판정 → 도서관 분야 · test_city_life 사건 → 희귀서 입고 · test_party_upkeep · test_city_room · test_district 일곱).
   - 테두리: RoomWorld 사람 재질·CityRoom.npc_interactive 지움, 사람 동작 그림·NpcActs 여백·paint_actors foot를 CT76 그대로(git) · `view.outline.skip_events`(시체·유골 다섯) → `FieldFeatures.live_at(skip)`.

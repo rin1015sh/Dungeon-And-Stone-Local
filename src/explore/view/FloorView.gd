@@ -249,6 +249,11 @@ func cells_changed(r: Rect2i) -> void:
 	stream.redraw_rect(r.grow(1))
 
 
+## 무리 그림(없으면 null — 보스 등장 연출).
+func monster_view(group_id: int) -> MonsterView:
+	return _monster_views.get(group_id) as MonsterView
+
+
 ## 몬스터 무리 그림을 세션 상태에 맞춘다: 새 무리는 만들고, 사라진 무리는 지우고, 보이는 것만 표시.
 func sync_monsters() -> void:
 	var alive := {}

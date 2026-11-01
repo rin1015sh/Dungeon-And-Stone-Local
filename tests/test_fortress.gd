@@ -63,9 +63,10 @@ func test_banshee_immune_and_grudge_mark() -> void:
 		if map.is_walkable(map.entry + d):
 			near = map.entry + d
 	g.place(near)
-	assert_false(steer._notices(g, map.entry), "벤시는 먼저 덤비지 않는다")
-	steer.player_marks = ["grudge_mark"]
-	assert_true(steer._notices(g, map.entry), "원한의 징표가 있으면 알아채고 쫓는다")
+	g.facing = Vector2(map.entry - near)
+	assert_false(steer.mind.can_see(g, Kinematics.center_of(map.entry)), "벤시는 먼저 덤비지 않는다")
+	steer.mind.marks = ["grudge_mark"]
+	assert_true(steer.mind.can_see(g, Kinematics.center_of(map.entry)), "원한의 징표가 있으면 알아채고 쫓는다")
 
 
 func test_deathfiend_preservation_regen() -> void:

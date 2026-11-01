@@ -360,7 +360,12 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	_menu.close()
 	_codex.close()
 	_dialog.clear()  # 마주친 안내는 전투 화면이 이어서 보인다
-	if not group.boss.is_empty():  # 기다리던 보스가 알아챘다: 한 줄 보이고 Enter 뒤에 전투(갑자기 끌려가지 않게 — V17)
+	var reveal: BossReveal = null
+	if not group.boss.is_empty():  # 기다리던 보스를 봤다: 등장 연출(V22) → 한 줄 → Enter 뒤에 전투(갑자기 끌려가지 않게 — V17)
+		_hud.visible = false  # 띠가 귀퉁이 창을 자르지 않게(전투가 끝나면 다시)
+		reveal = await BossReveal.play(self, _view, group, session.db, _dialog)
+		if not is_inside_tree() or session.ended:
+			return
 		_dialog.say(boss_notice(session.db, group.boss), "danger")
 		await _dialog.wait()
 		if not is_inside_tree() or session.ended:
@@ -382,9 +387,12 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	_combat.drop_leaver = func(d: Dictionary, reason: String) -> Dictionary: return session.leave_drop(d, reason)
 	add_child(_combat)
 	_combat.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	if reveal != null:
+		reveal.close()
 	_combat.finished.connect(func(result: String, turns: int, killed: Array[String]) -> void:
 		_combat.queue_free()
 		_combat = null
+		_hud.visible = true
 		_defeated = result == Battle.RESULT_DEFEAT
 		for id in killed:
 			EventBus.monster_killed.emit(id, session.player.id)

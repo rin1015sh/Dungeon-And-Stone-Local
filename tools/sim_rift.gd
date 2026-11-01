@@ -225,7 +225,7 @@ func _walk_inner(cs: ExploreSession, cell: Vector2i, label: String) -> bool:
 	return true
 
 
-## 4방향 최단 길(시작 칸 제외, 목표 칸 포함). 목표 칸이 걸을 수 없거나 무리가 서 있어도 마지막 칸으로는 둔다.
+## 4방향 최단 길(시작 칸 제외, 목표 칸 포함). 목표 칸이 걸을 수 없어도 마지막 칸으로는 둔다. 무리가 선 칸도 지난다(부딪치면 전투).
 func _path(cs: ExploreSession, from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 	var prev := {from: from}
 	var queue: Array[Vector2i] = [from]
@@ -239,8 +239,8 @@ func _path(cs: ExploreSession, from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 			var q := p + d
 			if prev.has(q) or not cs.map.in_bounds(q):
 				continue
-			if q != to and (not cs.map.is_walkable(q) or cs.monsters.group_at(q) != null):
-				continue
+			if q != to and not cs.map.is_walkable(q):
+				continue  # 다른 무리가 길목에 서 있어도 지나간다 — 부딪치면 그 무리와 싸운다(게임과 같다, 정리 루프가 이긴 것으로)
 			prev[q] = p
 			queue.append(q)
 	var out: Array[Vector2i] = []

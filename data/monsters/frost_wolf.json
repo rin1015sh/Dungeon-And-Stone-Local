@@ -36,6 +36,7 @@
     "damage_type": "pierce"
   },
   "behavior": {
+    "ai": {"alertness": 1.2, "tenacity": 1.4, "calls": true},
     "move_mult": 1.25,
     "alert_sfx": "wolf_growl",
     "aggressive": true,

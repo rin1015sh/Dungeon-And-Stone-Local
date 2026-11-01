@@ -62,6 +62,11 @@ func setup_for(actor: Actor, render: Dictionary) -> void:
 	add_child(_camera)
 
 
+## 따라가는 카메라(없으면 null — 보스 등장 연출이 잠깐 옮긴다).
+func camera() -> Camera2D:
+	return _camera
+
+
 ## 따라가는 카메라를 뗀다(시설 실내 방 — 화면이 카메라를 따로 둔다, RoomView).
 func drop_camera() -> void:
 	if _camera != null:

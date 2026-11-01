@@ -35,6 +35,7 @@
     "damage_type": "blunt"
   },
   "behavior": {
+    "ai": {"calls": true},
     "aggressive": true,
     "aggro_radius_m": 2.0,
     "leash_tiles": 8,

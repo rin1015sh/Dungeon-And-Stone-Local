@@ -2,8 +2,8 @@ class_name FieldMonsters
 extends RefCounted
 ## 탐험 맵 위의 몬스터 무리(순수 로직): 지역별 스폰, 리스폰, 머문 시간에 따른 증가, 배회·추적·영역 이탈, 접촉.
 ## 무리 하나 = 대표 하나(연속 좌표 fpos, 칸 단위) + 구성(몬스터 id 목록). 닿으면(contact_tiles) 무리 전체와 전투한다.
-## 쫓지 않을 때는 순찰 지점 사이를 걷고 서서 둘러본다(MonsterPatrol), 알아채는 것은 화면 안·벽에 안 가림·바라보는 쪽(MonsterSenses) —
-## 보면 먼저 멈칫하고 돌아본 뒤(의심, suspect) 그래도 보이면 쫓는다(alerted — 종마다 소리, V21).
+## 판단은 MonsterMind(src/explore/ai — V22): 화면 안·벽에 안 가림·뒤로 돌지 않았으면 경계도가 차올라 의심 → 추적(alerted — 종마다 소리),
+## 놓치면 기억(마지막으로 본 칸 · 움직이던 쪽)으로 쫓다 수색 → 귀환, 흘끗 본 것·발소리·동료의 외침은 조사. 쫓지 않을 때는 순찰(MonsterPatrol).
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
 ## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}, "groups": [최소, 최대](선택 — 없으면 spawn.groups_per_region)}
@@ -20,7 +20,8 @@ const STATE_IDLE := "idle"
 const STATE_CHASE := "chase"
 const STATE_RETURN := "return"
 const STATE_SEARCH := "search"
-const STATE_SUSPECT := "suspect"  ## 무언가 봤다 — 멈춰 그쪽을 보고, suspect_until까지 계속 보이면 쫓는다
+const STATE_SUSPECT := "suspect"  ## 무언가 봤다 — 멈춰 그쪽을 보고, 경계도가 1이 되면 쫓는다
+const STATE_INVESTIGATE := "investigate"  ## 흘끗 본 곳·발소리·동료의 외침이 있던 곳을 보러 간다(MonsterMind)
 
 
 class Group extends RefCounted:
@@ -45,10 +46,19 @@ class Group extends RefCounted:
 	var patrol: Array[Vector2i] = []      ## 순찰·수색·귀환으로 걷는 칸 길(MonsterPatrol)
 	var rest_until: float = -1.0          ## 순찰 지점·수색 자리에서 이 시각까지 서서 둘러본다(< 0 = 걷는 중)
 	var next_look: float = 0.0            ## 서 있을 때 다음에 고개를 돌릴 시각
-	var last_seen: Vector2i = Vector2i(-1, -1)  ## 마지막으로 알아챈 플레이어 칸(놓치면 거기까지 가서 찾는다)
+	var awareness: float = 0.0            ## 경계도 0~1(1 = 쫓는다 — MonsterMind)
+	var sees: bool = false                ## 이번 판단에서 플레이어가 보였다
+	var target: Vector2i = Vector2i(-1, -1)  ## 마지막으로 보거나 들은 플레이어 칸(놓치면 거기까지 쫓는다)
+	var stimulus: Vector2i = Vector2i(-1, -1)  ## 이상한 것이 있던 칸(조사하러 간다)
+	var seen_at: float = -1.0             ## 마지막으로 보거나 들은 시각
+	var vel: Vector2 = Vector2.ZERO       ## 그때 플레이어의 움직임(칸/게임 시간 — 사라진 쪽을 내다본다)
+	var phase: String = ""                ## 추적·수색·조사의 단계(MonsterMind — pursue/predict/sweep/go/look)
+	var hunt_until: float = -1.0          ## 수색을 그만둘 시각
+	var points: Array[Vector2i] = []      ## 남은 수색 지점
+	var known: bool = false               ## 이 무리가 플레이어를 쫓아 본 적이 있다(다시 보면 빨리 알아챈다)
+	var called: bool = false              ## 동료의 외침을 듣고 달려오는 중(조사)
 	var guard: bool = false               ## 대기 무리(균열 posts — RiftPosts): 순찰하지 않고 제자리에서 둘러본다
 	var leashed: bool = false             ## 영역(leash_tiles)을 벗어나 돌아가는 중 — 반쯤 돌아갈 때까지 다시 쫓지 않는다
-	var suspect_until: float = -1.0       ## 의심(STATE_SUSPECT): 이 시각까지 계속 보이면 쫓는다
 	var hold_until: float = -1.0          ## 가까이서 움직이는 기척에 멈춰 돌아보는 중(이 시각까지 걷지 않는다)
 
 	func leader() -> String:
@@ -237,6 +247,8 @@ func remove(g: Group, now: float) -> void:
 func set_grace(g: Group, now: float) -> void:
 	g.grace_until = now + float(_db.bal("combat.flee_grace_hours", 0.5))
 	g.state = STATE_RETURN
+	g.awareness = 0.0
+	g.phase = ""
 	g.patrol.clear()
 	g.rest_until = -1.0
 
@@ -249,18 +261,17 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 	var max_moves := float(_db.bal("monsters.update_max_moves", 12))
 	var moved := false
 	var near: Array[Group] = []
+	_steer.mind.track_player(player, hours)
 	for g in groups:
 		if not is_awake(g, pcell):
 			continue  # 멀리(시야·화면 밖) 있는 무리는 쉰다 — 큰 지도에서 계산량이 무리 수에 비례해 늘지 않게
 		near.append(g)
-		var budget := minf(hours / _steer.move_hours(g.leader()), max_moves)
-		var was := g.state
-		_steer.decide(g, pcell, now)
+		var started := _steer.decide(g, player, pcell, hours, now)
 		_steer.turn(g, hours, now)
+		var budget := minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g), max_moves)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
 			moved = true
-		_steer.decide(g, pcell, now)
-		if was == STATE_SUSPECT and g.state == STATE_CHASE:
+		if _steer.decide(g, player, pcell, 0.0, now) or started:
 			alerted.emit(g)
 	if moved:
 		changed.emit()
@@ -269,12 +280,18 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 	for g in near:  # 쉬는 무리는 멀어서 닿을 수 없다
 		if g.grace_until > now or not g.hostile():
 			continue
-		if g.boss != "":  # 보스: 화면에 들어오고 벽에 가리지 않으면 바로(움직이지 않으니 벽 너머에서 끌어오지 않는다, V19)
-			if _steer.on_screen(g, pcell) and _steer.sees(g.pos, pcell):
+		if g.boss != "":  # 보스: 플레이어 눈에 실제로 보일 때(시야·빛 — map.visible_now) + 화면 안 + 벽에 안 가림(V22 — 예전엔 어둠 속 안 보이는 보스도 걸렸다)
+			if boss_seen(g, pcell):
 				return g
 		elif _steer.in_contact(g, player) and (g.state == STATE_CHASE or _aggressive(g.leader())):
 			return g
 	return null
+
+
+## 방에서 기다리는 보스가 플레이어 눈에 보이는가: 그 칸이 지금 보이는 칸(시야 반경·빛 — Fov) · 화면 안 · 벽에 가리지 않음.
+func boss_seen(g: Group, pcell: Vector2i) -> bool:
+	return _map.visible_now.size() > _map.idx(g.pos) and _map.visible_now[_map.idx(g.pos)] != 0 \
+		and _steer.on_screen(g, pcell) and _steer.sees(g.pos, pcell)
 
 
 ## 플레이어 칸 pcell 둘레 monsters.active_radius_tiles 안이라 움직이는 무리인가(0 = 모두).
@@ -357,17 +374,17 @@ func region_cells(region_id: String) -> Array[Vector2i]:
 
 
 func set_player_stealth(v: float) -> void:
-	_steer.player_stealth = v
+	_steer.mind.stealth = v
 
 
 ## 플레이어에게 걸린 상태(원한의 징표 등). ExploreSession이 시간 흐름마다 넣는다.
 func set_player_marks(ids: Array) -> void:
-	_steer.player_marks = ids
+	_steer.mind.marks = ids
 
 
 ## 플레이어가 방금 움직였는가(가까이서 움직이면 등 돌린 몬스터도 돌아본다 — FieldStealth.moving).
 func set_player_moving(v: bool) -> void:
-	_steer.player_moving = v
+	_steer.mind.moving = v
 
 
 ## 지금 시각(미궁 n일 차)과 칸 위치로 무리에 변이종을 섞는다.
@@ -434,7 +451,7 @@ func _free_cell_near(p: Vector2i) -> Vector2i:
 func _aggressive(monster_id: String) -> bool:
 	var beh := _behavior(monster_id)
 	var need := JsonUtil.get_str(beh, "passive_unless_status")
-	if not need.is_empty() and _steer.player_marks.has(need):
+	if not need.is_empty() and _steer.mind.marks.has(need):
 		return true
 	return JsonUtil.get_bool(beh, "aggressive", true)
 

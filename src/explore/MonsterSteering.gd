@@ -1,15 +1,13 @@
 class_name MonsterSteering
 extends RefCounted
-## 필드 몬스터 무리의 판단·이동(순수 로직). FieldMonsters가 가진다(이쪽은 FieldMonsters를 참조하지 않는다 → 순환 없음).
-##   decide: 대기(idle: 순찰) / 의심(suspect: 봤다 — 멈칫하고 그쪽을 본다) / 추적(chase: 의심 끝에도 보임) / 수색(search: 놓친 자리 둘러보기) /
-##           귀환(return: 영역 이탈·도망친 플레이어 유예·수색 끝)
-##   감지:   화면 안 + 벽에 안 가림 + 바라보는 쪽이면 알아채고 화면 밖이면 모른다(V19·V20) — MonsterSenses
-##   walk:   칸 길찾기로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다(Kinematics 충돌).
-##           먼 곳으로 보낸 무리(route)는 대기 중에 그 길을 따라 걷는다. 쫓지 않을 때 갈 곳은 MonsterPatrol.
-## 몬스터별 지도 행동(behavior): wander_radius·wander_chance(순찰 범위·빈도 — 고블린은 넓게 순찰)·leash_tiles(영역)·
-##   passive_unless_status(그 상태가 없으면 알아채지 않음)·ignores_stealth(은신 무시)·move_mult(빠르기 배율)·alert_sfx(쫓기 시작할 때 소리)·aggro_radius_m(숨는·먼저 덤비지 않는 몬스터만 — 그 거리 안이어야 안다).
-##   추적: 플레이어가 direct_chase_tiles 안이고 곧게 걸어갈 수 있으면 곧장 다가가 닿는 거리에서 멈춘다.
-## 거리 장(플레이어에서 시작하는 BFS)은 플레이어 칸이 바뀔 때만 다시 만든다(매 프레임 호출 대비).
+## 필드 몬스터 무리의 걷기(순수 로직). FieldMonsters가 가진다. 판단은 MonsterMind(src/explore/ai — 감각·경계도·기억·수색, V22),
+## 쫓지 않을 때 갈 곳은 MonsterPatrol(순찰·귀환), 놓친 상대·조사·수색 길은 MonsterHunt가 Group.patrol에 넣는다.
+##   walk: 칸 길로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다(Kinematics 충돌). 보이는 상대를 쫓을 때는 거리 장(플레이어에서 BFS)을
+##         따라 내려가고, direct_chase_tiles 안이고 곧게 걸어갈 수 있으면 곧장 다가가 닿는 거리에서 멈춘다.
+##         먼 곳으로 보낸 무리(route)는 대기 중에 그 길을 따라 걷는다.
+## 몬스터별 지도 행동(behavior): wander_radius·wander_chance·leash_tiles·passive_unless_status·ignores_stealth·move_mult(빠르기 배율)·
+##   alert_sfx·aggro_radius_m·reveal_radius_m·aggressive, 성격 ai {alertness, tenacity, calls}(MonsterMind).
+## 거리 장은 플레이어 칸이 바뀔 때만 다시 만든다(매 프레임 호출 대비).
 
 var groups: Array  ## FieldMonsters.groups (같은 배열을 공유)
 
@@ -24,8 +22,8 @@ var _move_hours: float = 0.02
 var _lookahead: int = 8
 var _mpt: float = 1.0
 var _now: float = 0.0
-var _senses: MonsterSenses
 var _patrol: MonsterPatrol
+var mind: MonsterMind
 var _field_cell: Vector2i = Vector2i(-1, -1)
 var _field: Dictionary = {}
 
@@ -41,65 +39,14 @@ func _init(db: GameDatabase, map: FloorMap, rng: Rng, p_groups: Array) -> void:
 	_move_hours = maxf(0.0001, float(db.bal("explore.move_hours_base", 0.02)))
 	_lookahead = int(db.bal("monsters.straight_lookahead_tiles", 8))
 	_mpt = maxf(0.01, float(db.bal("explore.meters_per_tile", 1.0)))
-	_senses = MonsterSenses.new(db)
 	_patrol = MonsterPatrol.new(db, map, rng, can_enter, clear_walk)
+	mind = MonsterMind.new(db, map, rng, _patrol, p_groups)
 
 
-func decide(g: FieldMonsters.Group, player: Vector2i, now: float) -> void:
+## 한 번 생각한다(MonsterMind.think). 추적을 새로 시작했으면 true.
+func decide(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, hours: float, now: float) -> bool:
 	_now = now
-	var before := g.state
-	var leash := JsonUtil.get_int(_behavior(g.leader()), "leash_tiles")
-	var from_home := Vector2(g.pos - g.home).length()
-	if g.grace_until > now:
-		g.state = FieldMonsters.STATE_RETURN
-	elif leash > 0 and (from_home > leash or (g.leashed and from_home > leash * 0.5)):
-		g.state = FieldMonsters.STATE_RETURN  # 영역을 벗어났으면 반쯤 돌아갈 때까지는 다시 쫓지 않는다(경계에서 왔다 갔다 하지 않게)
-		g.leashed = true
-	elif g.hostile() and (g.alert_until > now or _notices(g, player, now)):
-		g.leashed = false
-		g.last_seen = player
-		if g.alert_until > now or g.state == FieldMonsters.STATE_CHASE or (g.state == FieldMonsters.STATE_SUSPECT and now >= g.suspect_until):
-			g.state = FieldMonsters.STATE_CHASE  # 계속 보인다 — 쫓는다
-			g.look = Vector2.ZERO
-			if player != g.pos:
-				g.facing = Vector2(player - g.pos).normalized()
-		elif g.state != FieldMonsters.STATE_SUSPECT:  # 처음 봤다 — 멈칫하고 그쪽을 본다(멀수록·처음 보는 상대일수록 오래)
-			g.suspect_until = now + _suspect_hours(g, player, before == FieldMonsters.STATE_SEARCH)
-			g.state = FieldMonsters.STATE_SUSPECT
-	elif g.state == FieldMonsters.STATE_SUSPECT:
-		g.state = FieldMonsters.STATE_SEARCH  # 사라졌다 — 본 자리까지 가서 두리번거린다
-	elif g.state == FieldMonsters.STATE_CHASE:
-		g.state = FieldMonsters.STATE_SEARCH if g.last_seen.x >= 0 else FieldMonsters.STATE_RETURN
-	elif g.state == FieldMonsters.STATE_SEARCH and _patrol.search_done(g, now):
-		g.state = FieldMonsters.STATE_RETURN
-	if g.state == FieldMonsters.STATE_RETURN and g.pos == g.home and g.waypoint.x < 0.0:
-		g.state = FieldMonsters.STATE_IDLE
-		g.leashed = false
-	if g.state != before:
-		g.waypoint = Vector2(-1, -1)  # 상태가 바뀌면 새로 길을 정한다
-		_patrol.enter(g)
-	if g.state == FieldMonsters.STATE_SUSPECT and player != g.pos:
-		g.look = Vector2(player - g.pos).normalized()  # 의심: 그쪽으로 고개를 돌린다(MonsterPatrol.turn)
-	elif g.hostile() and g.state != FieldMonsters.STATE_CHASE and g.hold_until <= now and _hears(g, player):
-		g.look = Vector2(player - g.pos).normalized()  # 바로 곁에서 움직이는 기척 — 멈춰 돌아본다(알아채는 것은 돌아본 뒤 시야로)
-		g.hold_until = now + _senses.hear_hold
-
-
-## 의심 시간(게임 시간): 화면 가장자리에 가까울수록 길게(suspect_hours [가까이, 화면 끝]), 쫓다 놓친 상대(수색 중)면 짧게.
-func _suspect_hours(g: FieldMonsters.Group, player: Vector2i, known: bool) -> float:
-	var to := Vector2(player - g.pos).abs()
-	var f := clampf(maxf(to.x / maxf(1.0, _senses.half.x), to.y / maxf(1.0, _senses.half.y)), 0.0, 1.0)
-	var t := lerpf(_senses.suspect_min, _senses.suspect_max, f)
-	return t * _senses.known_mult if known else t
-
-
-## 바로 곁(hear_tiles — 은신만큼 준다)에서 플레이어가 움직이고 벽에 가리지 않으면 들린다. 서 있으면 들리지 않는다.
-func _hears(g: FieldMonsters.Group, player: Vector2i) -> bool:
-	if not player_moving:
-		return false
-	var beh := _behavior(g.leader())
-	var shrink := 0.0 if JsonUtil.get_bool(beh, "ignores_stealth") else player_stealth
-	return Vector2(player - g.pos).length() <= _senses.hear_tiles * (1.0 - shrink) and _line_of_sight(g.pos, player)
+	return mind.think(g, player, pcell, hours, now)
 
 
 ## 시간이 hours만큼 흘렀다: 서서 둘러보거나 돌아본다(FieldMonsters.update가 걷기 전에 부른다).
@@ -112,47 +59,14 @@ func face_open(g: FieldMonsters.Group) -> void:
 	_patrol.face_open(g)
 
 
-## 플레이어 은신(FieldStealth, 0~1) — 그만큼 화면 사각형이 줄어든다. FieldMonsters가 넣는다.
-var player_stealth: float = 0.0
-## 플레이어에게 걸린 상태 id들(벤시: behavior "passive_unless_status"가 없으면 알아채지 않는다).
-var player_marks: Array = []
-## 플레이어가 방금 움직였는가(바로 곁의 몬스터가 돌아본다). FieldMonsters가 넣는다.
-var player_moving: bool = false
-
-
-## 알아챘는가(V19·V20): 화면 안 + 벽에 가리지 않음 + 바라보는 쪽(시야각)이면 안다, 화면 밖이면 모른다.
-## 쫓는 중이면 시야각은 보지 않고(모퉁이를 돌 때마다 놓치지 않게) 화면을 chase_keep_tiles만큼 넓게 본다 — 벽에 가리면 놓친다.
-## 예외 — 숨어 기다리는 몬스터(reveal_radius_m: 노움)와 먼저 덤비지 않는 몬스터(aggressive false: 구울·문지기)는
-## aggro_radius_m 안으로 다가와야 안다(한 번 알아채면 화면 규칙으로 쫓는다).
-func _notices(g: FieldMonsters.Group, player: Vector2i, _now_h: float = 0.0) -> bool:
-	var chasing := g.state == FieldMonsters.STATE_CHASE
-	if not on_screen(g, player, chasing) or not _line_of_sight(g.pos, player):
-		return false
-	if not chasing and not _senses.in_cone(g.facing, Vector2(player - g.pos)):
-		return false  # 등 돌리고 있다
-	var beh := _behavior(g.leader())
-	if chasing or not _lurks(beh):
-		return true
-	var shrink := 0.0 if JsonUtil.get_bool(beh, "ignores_stealth") else player_stealth
-	return Vector2(g.pos - player).length() <= JsonUtil.get_float(beh, "aggro_radius_m", 2.0) / _mpt * (1.0 - shrink)
-
-
-## 숨어 기다리거나 먼저 덤비지 않는 몬스터(상태 조건을 채운 벤시는 덤빈다).
-func _lurks(beh: Dictionary) -> bool:
-	if JsonUtil.get_float(beh, "reveal_radius_m") > 0.0:
-		return true
-	var need := JsonUtil.get_str(beh, "passive_unless_status")
-	return not JsonUtil.get_bool(beh, "aggressive", true) and (need.is_empty() or not player_marks.has(need))
-
-
-## 무리 g가 플레이어 화면 안에 있는가(은신·상태 조건 반영).
+## 무리 g가 플레이어 화면 안에 있는가(은신·상태 조건 반영 — 보스 조우 · 테스트).
 func on_screen(g: FieldMonsters.Group, player: Vector2i, chasing: bool = false) -> bool:
 	var beh := _behavior(g.leader())
 	var need := JsonUtil.get_str(beh, "passive_unless_status")
-	if not need.is_empty() and not player_marks.has(need):
+	if not need.is_empty() and not mind.marks.has(need):
 		return false
-	var shrink := 0.0 if JsonUtil.get_bool(beh, "ignores_stealth") else player_stealth
-	return _senses.on_screen(Vector2(g.pos - player), shrink, chasing)
+	var shrink := 0.0 if JsonUtil.get_bool(beh, "ignores_stealth") else mind.stealth
+	return mind.sight.on_screen(Vector2(g.pos - player), shrink, chasing)
 
 
 ## 무리를 budget(칸)만큼 걷게 한다. 움직였으면 true.
@@ -171,11 +85,11 @@ func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: floa
 	for guard in 64:
 		if left <= 0.00001:
 			break
-		if g.state == FieldMonsters.STATE_CHASE and in_contact(g, player):
+		if g.state == FieldMonsters.STATE_CHASE and g.sees and in_contact(g, player):
 			break
 		var target := Vector2(-1, -1)
 		var stop_short := 0.0
-		if direct_ok and g.state == FieldMonsters.STATE_CHASE and g.fpos.distance_to(player) <= _direct \
+		if direct_ok and g.state == FieldMonsters.STATE_CHASE and g.sees and g.fpos.distance_to(player) <= _direct \
 				and clear_walk(g.fpos, player):
 			target = player
 			stop_short = contact - 0.05
@@ -218,30 +132,33 @@ func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: floa
 	return moved
 
 
-## 다음에 걸어갈 칸 중심. 추적: 플레이어까지의 거리 장을 따라 내려간다. 그 밖(순찰·수색·귀환): MonsterPatrol.
-## 갈 곳이 없으면 (-1, -1).
+## 다음에 걸어갈 칸 중심. 보이는 상대를 쫓을 때: 플레이어까지의 거리 장을 따라 내려간다. 놓친 상대·조사·수색: MonsterHunt가 정한 길.
+## 순찰·귀환: MonsterPatrol. 갈 곳이 없으면 (-1, -1).
 func _next_waypoint(g: FieldMonsters.Group, pcell: Vector2i) -> Vector2:
 	var best := g.pos
-	if g.state != FieldMonsters.STATE_CHASE and not g.route.is_empty():
+	if g.state == FieldMonsters.STATE_IDLE and not g.route.is_empty():
 		var nxt: Vector2i = g.route.pop_front()
 		if (nxt - g.pos).length_squared() == 1 and can_enter(nxt, g):
 			return Kinematics.center_of(nxt)
 		g.route.clear()  # 막혔다(다른 무리) — 남은 길은 버리고 집 쪽으로 다가간다
-	match g.state:
-		FieldMonsters.STATE_CHASE:
-			var field := distance_field(pcell)
-			var here: int = field.get(g.pos, 1 << 20)
-			for d in FloorMap.DIRS4:
-				var q := g.pos + d
-				if q != pcell and can_enter(q, g) and int(field.get(q, 1 << 20)) < here:
-					here = field[q]
-					best = q
-			if best != g.pos:
-				best = _straight_descent(g, best, field, pcell)
-		_:
-			var q := _patrol.next_cell(g, _now, _behavior(g.leader()))
-			if q.x >= 0:
+	if g.state == FieldMonsters.STATE_CHASE and g.sees:
+		var field := distance_field(pcell)
+		var here: int = field.get(g.pos, 1 << 20)
+		for d in FloorMap.DIRS4:
+			var q := g.pos + d
+			if q != pcell and can_enter(q, g) and int(field.get(q, 1 << 20)) < here:
+				here = field[q]
 				best = q
+		if best != g.pos:
+			best = _straight_descent(g, best, field, pcell)
+	elif g.state in [FieldMonsters.STATE_CHASE, FieldMonsters.STATE_SEARCH, FieldMonsters.STATE_INVESTIGATE]:
+		var q := mind.hunt.next_cell(g, _now)
+		if q.x >= 0:
+			best = q
+	else:
+		var q := _patrol.next_cell(g, _now, _behavior(g.leader()))
+		if q.x >= 0:
+			best = q
 	if best == g.pos:
 		# 칸 한가운데가 아니면(직접 추적 뒤 등) 지금 칸 중심으로 돌아가 격자에 맞춘다.
 		var c := Kinematics.center_of(g.pos)
@@ -322,18 +239,9 @@ func clear_walk(a: Vector2, b: Vector2) -> bool:
 	return true
 
 
-## 칸 a에서 b가 보이는가(벽이 막지 않음).
+## 칸 a에서 b가 보이는가(몬스터 시선 — 몸 세 줄, 서 있는 장식은 막지 않는다 — MonsterSight).
 func sees(a: Vector2i, b: Vector2i) -> bool:
-	return _line_of_sight(a, b)
-
-
-func _line_of_sight(a: Vector2i, b: Vector2i) -> bool:
-	var n := maxi(absi(b.x - a.x), absi(b.y - a.y))
-	for i in range(1, n):
-		var p := Vector2i(Vector2(a).lerp(Vector2(b), float(i) / n).round())
-		if _map.blocks_sight(p):
-			return false
-	return true
+	return mind.sight.sees(Kinematics.center_of(a), Kinematics.center_of(b))
 
 
 ## 한 칸을 가는 데 드는 게임 시간 — 플레이어와 같다(민첩과 무관, 사용자 결정 2026-10-17).

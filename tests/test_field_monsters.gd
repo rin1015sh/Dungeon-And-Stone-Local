@@ -87,10 +87,18 @@ func test_chase_until_contact() -> void:
 	var g := _place(fm, "blade_wolf", Vector2i(12, 7))
 	g.facing = Vector2(-1, 0)  # 플레이어 쪽을 보고 있다(시야각 — test_monster_patrol)
 	var player := Vector2i(8, 7)
-	fm.update(_c(player), 0.0, 0.0, false)  # 먼저 멈칫하고 본다(의심 — V21)
+	fm.set_player_moving(true)
+	fm.update(_c(player), 0.01, 0.01, false)  # 먼저 멈칫하고 본다(의심 — 경계도가 차오르는 중, V22)
 	assert_eq(g.state, FieldMonsters.STATE_SUSPECT)
-	var hit := fm.update(_c(player), fm._steer.move_hours("blade_wolf") * 3.0 + 0.00001, 1.0, false)
-	assert_eq(g.pos, Vector2i(9, 7), "세 걸음 다가온다")
+	var t := 0.01
+	for i in 20:  # 경계도가 차면 쫓는다(의심하는 동안은 서 있다)
+		t += 0.002
+		fm.update(_c(player), 0.002, t, false)
+		if g.state == FieldMonsters.STATE_CHASE:
+			break
+	assert_eq(g.state, FieldMonsters.STATE_CHASE)
+	var hit := fm.update(_c(player), fm._steer.move_hours("blade_wolf") * 3.0 + 0.00001, t + 0.1, false)
+	assert_true(g.pos.x <= 9, "다가온다 (%s)" % str(g.pos))
 	assert_true(hit == g, "붙으면 전투")
 
 
@@ -102,12 +110,13 @@ func test_non_aggressive_waits_and_grace() -> void:
 	assert_true(g.state != FieldMonsters.STATE_CHASE)
 	g.place(Vector2i(4, 7))
 	g.facing = Vector2(-1, 0)  # 플레이어 쪽을 본다(등 돌리고 있으면 모른다 — V20)
-	assert_true(fm.update(_c(player), 0.0, 0.0, false) == null, "구울은 먼저 덤비지 않으니 멈칫하는 동안은 싸우지 않는다(V21)")
-	assert_true(fm.update(_c(player), 0.0, 0.1, false) == g, "바로 옆이면 싸운다")
+	fm.set_player_moving(true)
+	assert_true(fm.update(_c(player), 0.001, 0.001, false) == null, "구울은 먼저 덤비지 않으니 알아채기 전에는 싸우지 않는다")
+	assert_true(fm.update(_c(player), 0.1, 0.1, false) == g, "바로 옆에서 알아채면 싸운다")
 	fm.set_grace(g, 0.1)
 	assert_true(fm.update(_c(player), 0.0, 0.1, false) == null, "도망친 직후에는 쫓지 않는다")
 	fm.update(_c(player), 0.0, 1.0, false)
-	assert_true(fm.update(_c(player), 0.0, 1.1, false) == g, "유예가 지나면 다시")
+	assert_true(fm.update(_c(player), 0.1, 1.1, false) == g, "유예가 지나면 다시(다시 알아채고)")
 	assert_true(fm.update(_c(player), 0.0, 1.1, true) == null, "안전지대에서는 덤비지 않는다")
 
 
@@ -239,14 +248,17 @@ func test_boss_waits_then_engages() -> void:
 	var fm := FieldMonsters.new(db, map, {"regions": [], "spawn": {}}, Rng.new(1))
 	var g := fm.add_fixed(["goblin", "blater"], Vector2i(30, 3))
 	assert_eq(g.boss, "blater", "구성에 보스가 있으면 보스 방")
-	var reach := MonsterSenses.new(db).half.x  # 화면 반 폭(V19)
+	var reach := MonsterSight.new(db, map).half.x  # 화면 반 폭(V19)
 	assert_true(reach >= 8.0, "멀리서 마주쳐도 전투(%.1f칸)" % reach)
 	var far := _c(Vector2i(30 - int(reach) - 3, 3))
 	assert_true(fm.update(far, 2.0, 1.0, false) == null, "화면 밖이면 기다린다")
 	assert_eq(g.pos, Vector2i(30, 3), "보스는 쫓아오지 않는다")
 	assert_true(fm.update(_c(Vector2i(30, 8)), 0.01, 1.5, false) == null, "벽 너머면 가까워도 모른다")
 	var near := _c(Vector2i(30 - int(floor(reach)), 3))
-	assert_true(fm.update(near, 0.01, 2.0, false) == g, "화면에 들어오면 바로 전투")
+	map.visible_now.fill(0)
+	assert_true(fm.update(near, 0.01, 2.0, false) == null, "화면 안이어도 플레이어 눈에 안 보이면(어둠·시야 밖) 아니다(V22)")
+	map.visible_now.fill(1)
+	assert_true(fm.update(near, 0.01, 2.0, false) == g, "보이면 바로 전투")
 	var plain := fm.add_fixed(["goblin"], Vector2i(10, 10))
 	assert_eq(plain.boss, "", "보스 없는 무리는 보통")
 	var chain := fm.add_fixed(["goblin"], Vector2i(12, 3))

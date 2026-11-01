@@ -570,7 +570,8 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 					o.grace_until = explore.session.clock.total_hours + 100.0
 				if _args.has("spotted"):  # --spotted: 그 보스만 알아채게 둔다 — 전투 직전 한 줄(explore.boss_notice, --dialog와 함께)
 					g.grace_until = -1.0
-					await get_tree().create_timer(1.5).timeout
+					var wait_s := str(_args["spotted"])  # --spotted=<초>: 그만큼 뒤에 찍는다(보스 등장 연출 중간 — V22, 기본 1.5)
+					await get_tree().create_timer(wait_s.to_float() if wait_s.is_valid_float() else 1.5).timeout
 				break
 	if _args.has("slay"):  # --slay: 수호자를 쓰러뜨린 것으로 — 그 자리에 탈출 포탈(RiftRun._open_escape)
 		var rr := explore.session.rift_run

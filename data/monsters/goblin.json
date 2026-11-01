@@ -34,6 +34,7 @@
     "damage_type": "pierce"
   },
   "behavior": {
+    "ai": {"alertness": 1.1, "calls": true},
     "alert_sfx": "goblin_shout",
     "aggressive": true,
     "aggro_radius_m": 5.0,

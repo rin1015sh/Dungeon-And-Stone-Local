@@ -7,8 +7,8 @@ extends RefCounted
 ##     쉬는 시간은 짧고, 지점을 고를 때 home_drift_chance로 그 지점이 새 집이 된다 — 같은 둘레를 맴돌지 않고 굴을 따라 옮겨 다닌다(V14).
 ##     칸 길은 곧게 걸을 수 있는 데까지(straight_lookahead_tiles) 건너뛰어 칸칸이 꺾어 걷지 않는다(V14).
 ##   대기 무리(Group.guard — 균열 posts)는 지점을 고르지 않고 제자리에서 둘러보기만 한다.
-##   수색(search): 쫓던 플레이어를 놓치면 마지막으로 본 칸(Group.last_seen)까지 가서 search_hours 동안 둘러본다.
 ##   귀환(return): 칸 길(FieldRoutes)로 집까지(예전엔 집 쪽으로 욕심껏 한 칸이라 굽은 굴에서 왔다 갔다 했다).
+##   놓친 상대·조사·수색 길은 MonsterHunt(src/explore/ai)가 Group.patrol에 넣고, 걷기는 여기 follow를 같이 쓴다(V22).
 ##   고개 돌리기: Group.look 쪽으로 한 칸 걷는 시간마다 turn_deg_per_tile씩 돈다.
 
 const DIRS8: Array[Vector2i] = [Vector2i(0, -1), Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1),
@@ -19,13 +19,11 @@ var _rng: Rng
 var _can_enter: Callable  ## (칸, 무리) -> bool — MonsterSteering.can_enter
 var _pause: Array = [0.1, 0.3]
 var _look: Array = [0.04, 0.1]
-var _search_hours: float = 0.3
 var _min_tiles: float = 3.0
 var _wander_chance: float = 0.5
 var _wander_radius: float = 6.0
 var _turn_per_hour: float = 0.0
 var _route_radius: int = 90
-var _search_radius: int = 48
 var _clear: Callable  ## (점 a, 점 b) -> bool — MonsterSteering.clear_walk
 var _lookahead: int = 8
 var _drift: float = 0.25
@@ -40,42 +38,34 @@ func _init(db: GameDatabase, map: FloorMap, rng: Rng, can_enter: Callable, clear
 	_drift = float(db.bal("monsters.home_drift_chance", 0.25))
 	_pause = db.bal("monsters.patrol_pause_hours", [0.1, 0.3])
 	_look = db.bal("monsters.patrol_look_hours", [0.04, 0.1])
-	_search_hours = float(db.bal("monsters.search_hours", 0.3))
 	_min_tiles = float(db.bal("monsters.patrol_min_tiles", 3))
 	_wander_chance = float(db.bal("monsters.wander_chance", 0.5))
 	_wander_radius = float(db.bal("monsters.wander_radius", 6))
 	var move_hours := maxf(0.0001, float(db.bal("explore.move_hours_base", 0.02)))
 	_turn_per_hour = deg_to_rad(float(db.bal("monsters.turn_deg_per_tile", 30))) / move_hours
 	_route_radius = int(db.bal("monsters.route_radius", 90))
-	_search_radius = int(db.bal("monsters.chase_path_radius", 24)) * 2
 
 
-## 상태가 바뀌었다: 걷던 길을 버리고 새로 정한다. 수색이면 마지막으로 본 칸까지의 길.
+## 상태가 바뀌었다: 걷던 길을 버린다(새 길은 그 상태가 정한다).
 func enter(g: FieldMonsters.Group) -> void:
 	g.patrol.clear()
 	g.rest_until = -1.0
-	g.look = Vector2.ZERO
-	if g.state == FieldMonsters.STATE_SEARCH and g.last_seen.x >= 0:
-		g.patrol = FieldRoutes.path(_map, g.pos, g.last_seen, _search_radius)
+	if g.state != FieldMonsters.STATE_SUSPECT:
+		g.look = Vector2.ZERO
 
 
-## 수색을 마쳤는가(놓친 자리에 닿아 둘러보는 시간이 지났다).
-func search_done(g: FieldMonsters.Group, now: float) -> bool:
-	return g.patrol.is_empty() and g.rest_until >= 0.0 and now >= g.rest_until
-
-
-## 쫓지 않는 무리가 다음에 걸어갈 칸. 서서 둘러보는 중이면 (-1, -1).
+## 순찰·귀환하는 무리가 다음에 걸어갈 칸. 서서 둘러보는 중이면 (-1, -1).
 func next_cell(g: FieldMonsters.Group, now: float, beh: Dictionary) -> Vector2i:
 	if g.state == FieldMonsters.STATE_RETURN and g.patrol.is_empty() and g.pos != g.home and now >= g.rest_until:
 		g.patrol = FieldRoutes.path(_map, g.pos, g.home, _route_radius)
 		if g.patrol.is_empty():
 			g.rest_until = now + _pause[0]  # 길이 없다(막힘) — 잠시 뒤 다시 찾는다
-	var step := _follow(g, now)
+	var step := follow(g, now)
 	if step.x >= 0 or g.state == FieldMonsters.STATE_RETURN:
 		return step
 	if g.rest_until < 0.0:  # 지점에 닿았다 — 서서 둘러본다
-		g.rest_until = now + (_search_hours if g.state == FieldMonsters.STATE_SEARCH else _span(_pause))
-		g.next_look = now + (0.0 if g.state == FieldMonsters.STATE_SEARCH else _span(_look))
+		g.rest_until = now + _span(_pause)
+		g.next_look = now + _span(_look)
 		return step
 	if g.state != FieldMonsters.STATE_IDLE or now < g.rest_until:
 		return step
@@ -87,16 +77,17 @@ func next_cell(g: FieldMonsters.Group, now: float, beh: Dictionary) -> Vector2i:
 		g.rest_until = now + _span(_pause)  # 그 자리에 더 선다
 		return step
 	g.rest_until = -1.0
-	return _follow(g, now)
+	return follow(g, now)
 
 
 ## 시간이 hours만큼 흘렀다: 서 있는 무리는 가끔 트인 쪽으로 고개를 돌리고, 돌아볼 쪽(look)이 있으면 그쪽으로 돈다.
 func turn(g: FieldMonsters.Group, hours: float, now: float) -> void:
+	var hunting := g.state == FieldMonsters.STATE_SEARCH or g.state == FieldMonsters.STATE_INVESTIGATE
 	var standing := g.patrol.is_empty() and g.rest_until >= 0.0 and g.route.is_empty() \
-		and (g.state == FieldMonsters.STATE_IDLE or g.state == FieldMonsters.STATE_SEARCH)
+		and (g.state == FieldMonsters.STATE_IDLE or hunting)
 	if standing and now >= g.next_look and g.look == Vector2.ZERO:
 		g.look = _open_look(g)
-		g.next_look = now + _span(_look) * (0.6 if g.state == FieldMonsters.STATE_SEARCH else 1.0)
+		g.next_look = now + _span(_look) * (0.25 if hunting else 1.0)  # 찾는 중엔 두리번거린다
 	if g.look == Vector2.ZERO:
 		return
 	var a := g.facing.angle_to(g.look)
@@ -117,7 +108,8 @@ func face_open(g: FieldMonsters.Group) -> void:
 			return
 
 
-func _follow(g: FieldMonsters.Group, now: float) -> Vector2i:
+## 걸을 칸 길(Group.patrol)을 따라 다음 칸(곧게 걸을 수 있는 데까지 건너뛴다). 길이 끝났으면 (-1, -1).
+func follow(g: FieldMonsters.Group, now: float) -> Vector2i:
 	if g.patrol.is_empty():
 		return Vector2i(-1, -1)
 	var nxt: Vector2i = g.patrol[0]

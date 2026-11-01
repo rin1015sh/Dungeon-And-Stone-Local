@@ -36,6 +36,7 @@
     "damage_type": "slash"
   },
   "behavior": {
+    "ai": {"alertness": 0.7, "tenacity": 1.5},
     "move_mult": 0.9,
     "alert_sfx": "undead_moan",
     "aggressive": true,
