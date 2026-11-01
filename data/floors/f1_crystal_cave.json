@@ -111,6 +111,7 @@
     },
     "roughen_chance": 0.08,
     "dark_depth": 54,
+    "dark_open": {"_comment": "암흑지대 벽 걷기(DarkClearing, 사용자 결정 2026-11-01 CR26 — 미로 없이 트인 굴). border = 팔 옆·팔 끝에 남기는 벽 두께, wobble = 벽 가장자리 물결 폭(밝은 쪽 경계도 이만큼 남긴다). 바꾸면 bake_floor·bake_decor 다시 굽기", "border": 3, "wobble": 3},
     "portal_inset": 18,
     "portal_room_radius": 3.5,
     "crystal_wall_chance": 0.07,

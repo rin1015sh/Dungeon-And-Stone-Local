@@ -112,7 +112,7 @@ src/
                          DamageApply(모든 피해 공통: 보호막→버티기→생명력→피해로 풀리는 상태),
                          EffectHandler, EffectContext, EffectRegistry, effects/<type>.gd(효과 1파일=1타입)
   explore/               TileDef, FloorMap, GridAlgo, FloorGenerator, generators/<id>.gd(생성기 1파일=1종 — crystal_cave 1층·rift_blueprint 균열 설계도·rift_chapter 옛 방 잇기),
-                         CrossLayout·CrossTerrain·CaveCarver·CrossLayoutCheck(1층 십자가 뼈대·굴 파기·검사), CaveChambers·CaveLinks·CaveDecor(방·공동·잇는 굴·등뼈 길·호수/기둥/수정),
+                         CrossLayout·CrossTerrain·CaveCarver·CrossLayoutCheck(1층 십자가 뼈대·굴 파기·검사), CaveChambers·CaveLinks·CaveDecor(방·공동·잇는 굴·등뼈 길·호수/기둥/수정), DarkClearing(암흑지대 벽 걷기 — gen.dark_open, CR26),
                          FloorMapFile(고정 지도 파일 읽기/쓰기), FloorArtCheck(그림 층 검사 — 변형 연속·장식 막힘·요소 겹침)·FloorArtLayer(칸마다 재질 변형)·FloorDecor(데칼 배치 규칙), FieldFeaturePlacer·FieldFeatures·FieldFeatureAct(동굴 요소 배치·규칙·행동), GridWiden(통로 폭 ≥ 2)·GridSpurs(막다른 길),
                          Fov, Vision, LightField, ExploreSession(탐험 규칙), RealtimeDriver(실시간), Kinematics(충돌),
                          PlayerMotion, FieldMonsters + MonsterSteering(몬스터 걷기·길 따라 걷기) + ai/{MonsterMind(경계도·상태·기억·무리 부르기),MonsterSight(화면·시야각·몸 세 시선·발소리 길 거리),MonsterHunt(놓친 상대 쫓기·내다보기·수색·조사 길)} + MonsterPatrol(순찰·둘러보기·귀환 길), FieldSpawnBias(소굴 둘레·날짜별 무리), FieldRoutes(칸 BFS 길),
