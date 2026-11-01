@@ -16,6 +16,7 @@ signal session_switch(target: ExploreSession)  ## 균열 챕터 ↔ 바깥 층(M
 const POST_SHADER := "res://assets/shaders/post_grade.gdshader"
 const MOVE_DIRS := {"move_up": Vector2.UP, "move_down": Vector2.DOWN, "move_left": Vector2.LEFT, "move_right": Vector2.RIGHT}
 
+var _coin_busy := false  ## 동전 연출 중(CoinFlip) — 키를 먹지 않는다
 var session: ExploreSession
 var _tone: CanvasModulate
 var _tone_base: Color = Color.WHITE
@@ -91,6 +92,7 @@ func _ready() -> void:
 	session.party_met.connect(_on_party_met)
 	session.tiles_changed.connect(_view.cells_changed)
 	session.sound.connect(func(key: String, _at: Vector2i) -> void: AudioBus.play_sfx(key))
+	session.coin_toss.connect(_on_coin_toss)
 	session.transfer.connect(_on_transfer)
 	_build_pause_overlay()
 	session.start()
@@ -158,6 +160,10 @@ func _notification(what: int) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _ended or _typing() or _combat != null:
 		return  # 전투 중에는 디버그 패널도 열지 않는다(전투 화면 뒤에 숨어 버린다)
+	if _coin_busy:  # 동전이 떨어지는 동안은 아무 키도 먹지 않는다
+		if event is InputEventKey or event is InputEventAction:
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("debug_toggle"):
 		_debug.visible = not _debug.visible
 		get_viewport().set_input_as_handled()
@@ -354,8 +360,6 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var party: Array[Actor] = []
 	party.append_array(_party())
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
-	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids)  # 정정당당하게(C11)
-	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_menu.close()
 	_codex.close()
@@ -371,6 +375,23 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 		await _dialog.wait()
 		if not is_inside_tree() or session.ended:
 			return
+	# 보통 전투는 정정당당하게(C11). 중요한 전투(수호자·중간보스·계층군주 — CoinToss.important)는 동전: 앞면 아군 선공 · 뒷면 적 선공(V25)
+	var first := Battle.FIRST_NONE
+	var start_key := ""
+	var all_ids: Array = group.monster_ids.duplicate()
+	for w: Variant in group.waves:
+		if w is Array:
+			all_ids.append_array(w)
+	if CoinToss.important(session.db, all_ids):
+		var heads := CoinToss.flip(session.db, session.rng, "battle")
+		_hud.visible = false
+		await CoinFlip.play(self, heads)
+		if not is_inside_tree() or session.ended:
+			return
+		first = Combatant.SIDE_PARTY if heads else Combatant.SIDE_ENEMY
+		start_key = "combat.start_coin_heads" if heads else "combat.start_coin_tails"
+	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, first, start_key)
+	BattleRules.set_objective(battle, group.battle_rules)
 	_combat = CombatScreen.new()
 	_combat.setup(battle)
 	var art := FloorArt.resolve(session.db.render, session.floor_def)
@@ -399,6 +420,18 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 			EventBus.monster_killed.emit(id, session.player.id)
 		_bury_mates()
 		session.resolve_encounter(group, result, turns, killed))
+
+
+## 동전 던지기(ExploreSession.coin_toss — 상자 등, V25): 시간을 멈추고 동전을 던져 보인 뒤 결과를 적용한다.
+func _on_coin_toss(heads: bool, then: Callable) -> void:
+	session.realtime.set_paused("coin", true)
+	_coin_busy = true
+	await CoinFlip.play(self, heads)
+	_coin_busy = false
+	if not is_inside_tree():
+		return
+	session.realtime.set_paused("coin", false)
+	then.call()
 
 
 ## 파티 = 플레이어 + 동료(세션의 동료 배열 — Main이 GameState.companions를 넘긴다).

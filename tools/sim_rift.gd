@@ -148,7 +148,13 @@ func _pick_loot(cs: ExploreSession, tag: String) -> void:
 		if not _walk(cs, at, "%s 물건 %s" % [tag, d["item"]]) or cs.in_combat:
 			continue
 		cs.interact()
-		if cs.loot.has(at):
+		for i in 40:  # 상자(RiftChest — V25): 동전이 뒷면이면 함정 — 생명력을 채우고 다시 던진다
+			if not RiftChest.locked(cs.loot.get(at, {}) as Dictionary):
+				break
+			cs.player.pool.fill_all()
+			cs.player.statuses.clear_temporary()
+			cs.interact()
+		if cs.loot.has(at) and not bool((cs.loot[at] as Dictionary).get("opened", false)):
 			_bad("%s: %s의 %s를 줍지 못한다" % [tag, at, d["item"]])
 			continue
 		cs.player.inventory.remove(str(d["item"]), int(d["count"]))
