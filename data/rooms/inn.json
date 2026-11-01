@@ -14,24 +14,6 @@
     12
    ],
    "floor": "terracotta"
-  },
-  {
-   "rect": [
-    10,
-    24,
-    13,
-    7
-   ],
-   "floor": "cobble"
-  },
-  {
-   "rect": [
-    0,
-    24,
-    11,
-    7
-   ],
-   "floor": "cobble"
   }
  ],
  "legend": {
@@ -77,12 +59,6 @@
    "color": "#8a6a3a",
    "top": "lute"
   },
-  "t": {
-   "name_ko": "사냥 트로피(사슴 뿔)",
-   "kind": "walldeco",
-   "style": "trophy",
-   "color": "#a08a6a"
-  },
   "S": {
    "name_ko": "아궁이(불)",
    "kind": "walldeco",
@@ -109,12 +85,6 @@
    "style": "hanging",
    "color": "#8a4a3a"
   },
-  "s": {
-   "name_ko": "곡식 자루",
-   "kind": "furniture",
-   "shape": "sack",
-   "color": "#8a7a5a"
-  },
   "b": {
    "name_ko": "침대",
    "kind": "furniture",
@@ -127,31 +97,11 @@
    "shape": "font",
    "color": "#8a9aa0"
   },
-  "R": {
-   "name_ko": "와인 걸이",
-   "kind": "furniture",
-   "shape": "tall",
-   "color": "#5a2a24",
-   "top": "bottles"
-  },
-  "q": {
-   "name_ko": "쥐덫",
-   "kind": "decor",
-   "style": "trap",
-   "color": "#6a5a4a"
-  },
   "a": {
    "name_ko": "술통",
    "kind": "furniture",
    "shape": "barrel",
    "color": "#7a5a36"
-  },
-  "n": {
-   "name_ko": "등잔",
-   "kind": "furniture",
-   "shape": "post",
-   "color": "#e8c070",
-   "light": true
   },
   "e": {
    "name_ko": "객실 문(잠김)",
@@ -192,18 +142,6 @@
    "style": "pegs",
    "color": "#5a4a34"
   },
-  "C": {
-   "name_ko": "거미줄",
-   "kind": "walldeco",
-   "style": "cobweb",
-   "color": "#d8d8d0"
-  },
-  "E": {
-   "name_ko": "말린 약초·마늘 다발",
-   "kind": "walldeco",
-   "style": "herbs",
-   "color": "#6a7a44"
-  },
   "M": {
    "name_ko": "벽 촛대",
    "kind": "walldeco",
@@ -217,13 +155,6 @@
    "shape": "basket",
    "color": "#8a6a3a",
    "variant": "bread"
-  },
-  "i": {
-   "name_ko": "양파 바구니",
-   "kind": "furniture",
-   "shape": "basket",
-   "color": "#8a6a3a",
-   "variant": "onions"
   }
  },
  "rows": [
@@ -249,15 +180,8 @@
   "#..oTT...@@TTo#.......#",
   "#..@TT........#.......#",
   "#..]..TTo.....#.......#",
-  "#7...oTT.'....#..H....#",
-  "##########D######H#####",
-  "#################H#####",
-  "##EEEEM##CC##EEEEHEE###",
-  "##EEEEM##CC##EEEEHEE###",
-  "#ss..i..UU#......H..RR#",
-  "#.........#...].....RR#",
-  "#.....4.../........nRR#",
-  "#######################"
+  "#7...oTT.'....#.......#",
+  "##########D############"
  ],
  "start": [
   10.0,
@@ -424,18 +348,6 @@
    12,
    "음유시인 구석",
    "label"
-  ],
-  [
-   15,
-   27,
-   "술 창고",
-   "room"
-  ],
-  [
-   5,
-   28,
-   "식료 창고",
-   "room"
   ]
  ],
  "source": "original"

@@ -59,24 +59,6 @@
     10
    ],
    "floor": "oak"
-  },
-  {
-   "rect": [
-    0,
-    29,
-    20,
-    12
-   ],
-   "floor": "dark"
-  },
-  {
-   "rect": [
-    20,
-    29,
-    8,
-    12
-   ],
-   "floor": "dark"
   }
  ],
  "legend": {
@@ -115,12 +97,6 @@
    "kind": "decor",
    "style": "dais",
    "color": "#8a8478"
-  },
-  "s": {
-   "name_ko": "단 계단",
-   "kind": "decor",
-   "style": "steps",
-   "color": "#9a9488"
   },
   "A": {
    "name_ko": "돌 제단",
@@ -224,32 +200,6 @@
    "shape": "bench",
    "color": "#5a3e28"
   },
-  "Q": {
-   "name_ko": "석관",
-   "kind": "furniture",
-   "shape": "block",
-   "color": "#7a746a",
-   "top": "lid"
-  },
-  "T": {
-   "name_ko": "큰 석관(봉인)",
-   "kind": "furniture",
-   "shape": "block",
-   "color": "#8a8070",
-   "top": "lid"
-  },
-  "B": {
-   "name_ko": "납골 벽(쌓은 뼈)",
-   "kind": "walldeco",
-   "style": "bones",
-   "color": "#c8bca0"
-  },
-  "y": {
-   "name_ko": "흩어진 뼈",
-   "kind": "decor",
-   "style": "bones",
-   "color": "#a89c84"
-  },
   "m": {
    "name_ko": "악보대",
    "kind": "furniture",
@@ -268,11 +218,6 @@
    "shape": "post",
    "color": "#c8a040",
    "light": true
-  },
-  "X": {
-   "name_ko": "봉인된 묘실 문",
-   "kind": "locked",
-   "opens": "feast_day"
   },
   "S": {
    "name_ko": "벽 촛대",
@@ -298,12 +243,6 @@
    "kind": "walldeco",
    "style": "pegs",
    "color": "#e8e0cc"
-  },
-  "P": {
-   "name_ko": "꽃잎",
-   "kind": "decor",
-   "style": "petals",
-   "color": "#c8c0d8"
   },
   "Z": {
    "name_ko": "촛농",
@@ -338,22 +277,10 @@
   "#.....#...@........./.....8#",
   "#8..$.#.pppp...pppp.#......#",
   "#.....#.............#......#",
-  "#.^...#Ipppp...ppppI#.bbbb.#",
-  "#.^...#5........@...#......#",
-  "#.^...#...........4.#.....5#",
-  "##^##########D##############",
-  "##^#########################",
-  "#B^BBBBBBBBBBBBBBBB#BBBBBBB#",
-  "#B^BBBBBBBBBBBBBBBB#BBBBBBB#",
-  "#......8.....#.....#.u.U.u(#",
-  "#............#.e...#.......#",
-  "#..e.QQ.QQ.QQ#.TTT.#......8#",
-  "#...I...I.I..#.TTT./...)...#",
-  "#............X.....#.......#",
-  "#u..IQQ.QQIQQ#.....#..QQ..8#",
-  "#...........e#.....#.......#",
-  "#....QQ.QQ.QQ#u...u#(U.e.u.#",
-  "############################"
+  "#.....#Ipppp...ppppI#.bbbb.#",
+  "#.....#5........@...#......#",
+  "#.....#...........4.#.....5#",
+  "#############D##############"
  ],
  "start": [
   13.0,
@@ -542,24 +469,6 @@
    17,
    "원형 상감",
    "label"
-  ],
-  [
-   8,
-   32,
-   "납골당",
-   "room"
-  ],
-  [
-   16,
-   33,
-   "봉인된 묘실",
-   "room"
-  ],
-  [
-   23,
-   33,
-   "유골 안치실",
-   "room"
   ]
  ],
  "source": "original"

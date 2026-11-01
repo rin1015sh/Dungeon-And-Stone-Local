@@ -8,30 +8,12 @@
  "regions": [
   {
    "rect": [
-    0,
-    23,
-    12,
-    9
-   ],
-   "floor": "dark"
-  },
-  {
-   "rect": [
     11,
     3,
     12,
     6
    ],
    "floor": "parquet"
-  },
-  {
-   "rect": [
-    11,
-    23,
-    13,
-    9
-   ],
-   "floor": "dark"
   }
  ],
  "legend": {
@@ -127,18 +109,6 @@
    "color": "#5a3e28",
    "top": "papers"
   },
-  "x": {
-   "name_ko": "압수품 궤짝",
-   "kind": "furniture",
-   "shape": "crate",
-   "color": "#5a4430"
-  },
-  "w": {
-   "name_ko": "낡은 무기 더미",
-   "kind": "furniture",
-   "shape": "pile",
-   "color": "#6a6a6a"
-  },
   "n": {
    "name_ko": "등잔",
    "kind": "furniture",
@@ -177,30 +147,6 @@
    "color": "#e8c070",
    "light": true
   },
-  "C": {
-   "name_ko": "거미줄",
-   "kind": "walldeco",
-   "style": "cobweb",
-   "color": "#d8d8d0"
-  },
-  "N": {
-   "name_ko": "벽 얼룩·금",
-   "kind": "walldeco",
-   "style": "damp",
-   "color": "#2a3026"
-  },
-  "O": {
-   "name_ko": "주인 없는 망토 걸이",
-   "kind": "walldeco",
-   "style": "pegs",
-   "color": "#4a4034"
-  },
-  "P": {
-   "name_ko": "열쇠 판",
-   "kind": "walldeco",
-   "style": "keys",
-   "color": "#a8843a"
-  },
   "F": {
    "name_ko": "붙은 종이(수배서)",
    "kind": "walldeco",
@@ -219,13 +165,6 @@
    "shape": "tall",
    "color": "#5a3e28",
    "top": "boxes"
-  },
-  "l": {
-   "name_ko": "유실물 선반",
-   "kind": "furniture",
-   "shape": "tall",
-   "color": "#5a4430",
-   "top": "jars"
   }
  },
  "rows": [
@@ -250,17 +189,8 @@
   "#...............1TT1a..#",
   "#.bbb..@..........@....#",
   "#.....TT....TT@<.......#",
-  "#H...1TT6..1TT1........#",
-  "#H########DD############",
-  "#H######################",
-  "#H##NN#F#CC#OOOOO#PP####",
-  "#H##NN#F#CC#OOOOO#PP####",
-  "#H......77.#llll..lll..#",
-  "#......www.#...........#",
-  "#.)....www./........E..#",
-  "#..xxx.....#...........#",
-  "#......%...#..*.......0#",
-  "########################"
+  "#....1TT6..1TT1........#",
+  "##########DD############"
  ],
  "start": [
   11.0,
@@ -425,18 +355,6 @@
    17,
    "술자리",
    "label"
-  ],
-  [
-   7,
-   28,
-   "지하 창고",
-   "room"
-  ],
-  [
-   17,
-   27,
-   "유실물 창고",
-   "room"
   ]
  ],
  "source": "original"
