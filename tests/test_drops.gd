@@ -87,3 +87,15 @@ func test_kill_drops_are_magic_stone_only() -> void:
 		for d: Dictionary in drops:
 			if not str(d["id"]).begins_with("magic_stone_"):
 				assert_false(JsonUtil.get_str(db.get_entry("items", str(d["id"])), "rift_bound").is_empty(), id + ": 잡템 없음 — " + str(d["id"]))
+
+
+## 마석 획득은 한 줄(사용자 2026-11-01): 한 등급이면 "9등급 마석 3개를 얻었다.", 여러 등급이면 높은 등급부터 한 문장.
+func test_stone_pickups_merge_into_one_line() -> void:
+	assert_true(StoneTally.message(db, {}).is_empty(), "마석이 없으면 문구 없음")
+	var one := StoneTally.message(db, {"magic_stone_9": 3})
+	assert_eq(Strings.t(str(one["key"]), one["args"]), "9등급 마석 3개를 얻었다.")
+	var single := StoneTally.message(db, {"magic_stone_9": 1})
+	assert_eq(Strings.t(str(single["key"]), single["args"]), "9등급 마석을(를) 얻었다.")
+	var mixed := StoneTally.message(db, {"magic_stone_9": 3, "magic_stone_7": 1, "magic_stone_8": 2})
+	assert_eq(Strings.t(str(mixed["key"]), mixed["args"]), "7등급 마석 1개, 8등급 마석 2개, 9등급 마석 3개를 얻었다.")
+	assert_true(StoneTally.is_stone(db, "magic_stone_9") and not StoneTally.is_stone(db, "torch"), "마석만 모은다")

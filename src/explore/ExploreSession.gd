@@ -423,7 +423,18 @@ func take_drop(drop: Dictionary, pc: PlayerCharacter) -> Dictionary:
 		message.emit(str(m["key"]), m["args"], str(m["kind"]))
 		message.emit("explore.rift_key_held", {}, "info")
 		return m
+	if str(drop.get("kind")) == "item" and not m.has("left") and StoneTally.is_stone(db, str(drop.get("id"))):
+		m["stone"] = {"id": str(drop.get("id")), "n": int(drop.get("count", 1))}  # 마석은 한 줄로 모아 알린다(CombatDrops → announce_stones)
+		return m
 	message.emit(str(m["key"]), m["args"], str(m["kind"]))
+	return m
+
+
+## 전투 뒤 모은 마석 획득 한 줄을 기록에 남기고 돌려준다(StoneTally). tally = {id: 개수}.
+func announce_stones(tally: Dictionary) -> Dictionary:
+	var m := StoneTally.message(db, tally)
+	if not m.is_empty():
+		message.emit(str(m["key"]), m["args"], str(m["kind"]))
 	return m
 
 

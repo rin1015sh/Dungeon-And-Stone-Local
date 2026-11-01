@@ -1281,6 +1281,9 @@
     "got": "{item}을(를) 얻었다.",
     "got_n": "{item} {n}개를 얻었다.",
     "got_by": "{who}이(가) {item}을(를) 얻었다.",
-    "got_by_n": "{who}이(가) {item} {n}개를 얻었다."
+    "got_by_n": "{who}이(가) {item} {n}개를 얻었다.",
+    "got_list": "{items}를 얻었다.",
+    "count_of": "{item} {n}개",
+    "list_sep": ", "
   }
 }

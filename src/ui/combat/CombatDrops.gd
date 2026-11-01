@@ -5,12 +5,15 @@ extends RefCounted
 ##   획득 → 정수는 받을 사람이 둘 이상이면 "누가 받을까?"(못 받는 사람은 흐리고 이유 — Esc는 앞 질문으로), 하나면 바로 그 사람.
 ##   마석 같은 물건은 묻지 않고 공용 가방으로(사용자 2026-10-27 — 가방은 파티가 하나를 같이 쓴다, UI26).
 ##   받을 수 있는 사람이 없으면(정수 슬롯·겹침) 묻지 않고 두고 간다. 실제로 주고 두는 일은 taker(drop, pc)·leaver(drop, reason).
+##   마석은 하나씩 알리지 않는다 — taker가 "stone" {id, n}을 돌려주면 모아 두었다가 첫 마석 자리에 한 줄(stones(tally) → 안내, StoneTally).
 
 
 ## 드롭을 다 처리하고 안내 메시지 목록을 돌려준다. spots = 쓰러진 순서(killed)대로의 무대 좌표.
 static func collect(screen: Control, stage: Control, db: GameDatabase, drops: Array[Dictionary], spots: Array[Vector2],
-		takers: Array[PlayerCharacter], taker: Callable, leaver: Callable) -> Array[Dictionary]:
+		takers: Array[PlayerCharacter], taker: Callable, leaver: Callable, stones: Callable = Callable()) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
+	var tally := {}
+	var stone_at := -1
 	var marks: Array[DropMark] = []
 	var per_spot := {}
 	for d in drops:
@@ -30,10 +33,19 @@ static func collect(screen: Control, stage: Control, db: GameDatabase, drops: Ar
 		marks[i].set_current(true)
 		var near := marks[i].global_position - screen.global_position + Vector2(marks[i].size.x * 0.5, marks[i].size.y)
 		var msg: Dictionary = await _offer(screen, db, drops[i], takers, taker, leaver, near)
-		if not msg.is_empty():
+		if msg.has("stone"):
+			var st: Dictionary = msg["stone"]
+			tally[str(st["id"])] = int(tally.get(str(st["id"]), 0)) + int(st["n"])
+			if stone_at < 0:
+				stone_at = out.size()
+		elif not msg.is_empty():
 			out.append(msg)
 		if is_instance_valid(marks[i]):
 			marks[i].vanish()
+	if not tally.is_empty():
+		var line: Dictionary = stones.call(tally) if stones.is_valid() else StoneTally.message(db, tally)
+		if not line.is_empty():
+			out.insert(stone_at, line)
 	return out
 
 

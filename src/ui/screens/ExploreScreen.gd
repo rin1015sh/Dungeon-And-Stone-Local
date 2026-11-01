@@ -394,6 +394,7 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 		return msgs
 	_combat.drop_taker = func(d: Dictionary, pc: PlayerCharacter) -> Dictionary: return session.take_drop(d, pc)
 	_combat.drop_leaver = func(d: Dictionary, reason: String) -> Dictionary: return session.leave_drop(d, reason)
+	_combat.drop_stones = func(tally: Dictionary) -> Dictionary: return session.announce_stones(tally)
 	add_child(_combat)
 	_combat.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	if reveal != null:

@@ -19,6 +19,7 @@ var reward_provider: Callable = Callable()
 var drops: Array[Dictionary] = []
 var drop_taker: Callable = Callable()
 var drop_leaver: Callable = Callable()
+var drop_stones: Callable = Callable()  ## (마석 {id: 개수}) -> 한 줄 안내 — 없으면 StoneTally로 대화창에만(CombatDrops)
 ## 전투 뒷그림 경로와 통로 반 폭 m(층·균열 그림 설정 battleback — ExploreScreen이 채운다). 경로가 비면 어둠.
 var backdrop: String = ""
 var backdrop_width: float = 0.0
@@ -339,7 +340,7 @@ func _show_result() -> void:
 			if u.actor is PlayerCharacter and not u.summoned and not u.actor.dead:
 				takers.append(u.actor as PlayerCharacter)
 		if not takers.is_empty():
-			rewards.append_array(await CombatDrops.collect(self, _stage, battle.db, drops, _spots, takers, drop_taker, drop_leaver))
+			rewards.append_array(await CombatDrops.collect(self, _stage, battle.db, drops, _spots, takers, drop_taker, drop_leaver, drop_stones))
 		drops.clear()
 		if not is_inside_tree():
 			return
