@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **전투 아래 창 정리 · 대상은 무대에서 (2026-11-02, 사용자 — 피어 앤 헝거 화면 참고, UI52)**
+  - 범위: 파티 창(정해 둔 행동 칸 없앰·추가 턴 칸·차례 강조), 명령 칸 숨김, 대상 고르기를 무대로. 완료 기준: UI 스모크(무대 고르기·약점 W/S·Backspace·아이템 대상·조사·명령 칸 숨김) · 캡처 · check.sh. 테스트: `tests/smoke_ui.gd`, 캡처 `screenshot.tscn -- --screen=explore --combat --monster=goblin --summon --extra_turn --keys=rev_up,menu_confirm,menu_right`.
+  - 한 것: `src/ui/combat/TargetPicker.gd`(새 — A/D 적, W/S 약점·아군 줄, Enter·Backspace, 위쪽 작은 창), `CommandMenu`(`_pick`·`_foes` 무대 x 순, 대상 목록 칸·`_target_opt` 없앰, `set_stage`, 닫히면 명령 칸 투명), `SkillBanner.hold`·`release`(대상 이름을 붙들어 둠, 고를 수 없으면 흐림), `PartyRoster`(정해 둔 행동 칸 없앰, 추가 턴 = 이름 왼쪽 고정 칸 `combat_roster_extra_width`, 지금 차례 줄 뼈빛 띠 `combat_turn_glow`), `CombatScreen`(`_plan_text` 없앰, `set_stage`). 문구: `combat.tag_part`·`tag_blocked` 더함, `menu_target`·`plan_target`·`target_weak`·`target_statuses`·`sub_hp` 없앰.
+  - 확인: UI 스모크 통과(첫 번째 실행은 관계없는 '+12시간' 디버그 버튼 항목이 실패 — 다시 돌리면 통과, 원래 가끔 실패하던 것), 캡처로 위쪽 작은 창·흰빛·추가 턴 칸·차례 띠 확인. 약점 W/S는 시험에서 고블린에게 잠깐 약점을 줘서 봤다(키르뒤 캡처는 적이 먼저 움직여 키 타이밍이 어긋남).
+  - 남은 것: Rev Up 이름 바꾸기(사용자에게 후보를 물음) · 직접 해 보고 띠 밝기(`combat_turn_glow`)·위쪽 창 자리 조절.
+
 - **Rev Up — 피어 앤 헝거 2식 전투 자원 (2026-11-02, 사용자 "전투가 너무 단조로움 … 피어앤헝거 랭크업(rev Up)" → "적 자세는 빼고 레벨업만 진행해. 아군만 적용 키도 eq로", C20)**
   - 범위: 아군 전투 자원 Rev(충전·상한·방어 덤·피해 스킬 위력·다 얹은 평타 2회), 행동 정하기의 E/Q, 파티 창 삼각형. 완료 기준: 단위 시험·UI 스모크(E/Q → 얹힘)·캡처 확인·check.sh 통과. 테스트: `tests/test_rev.gd`, `smoke_ui._keyboard_menu`, 캡처 `screenshot.tscn -- --screen=explore --combat --mate=human,barbarian --keys=rev_up,rev_up`.
   - 한 것: `Combatant.rev` · `src/combat/BattleRev.gd`(새 — `cap`·`uses_rev`·`on_turn_start`·`on_guard`·`plan_max`·`applies`·`power`·`use`) · `Battle.next_turn`(차례 시작 충전)·`act`(방어 덤, 행동 `"rev"`)·`_use_skill`(효과 목록을 `BattleRev.use`로 — `BattleTargets.boosted`로 power에 곱하고, 3개 평타는 효과를 두 번). UI: `src/ui/combat/RevPips.gd`(새 — 그린 삼각형, 빈 칸 테두리·모은 것 흐린 채움·얹을 것 뼈빛 + 올림), `PartyRoster`(이름 옆, `rev_pick`·`set_rev_pick`, setup에 battle), `CombatScreen._input`(행동 정하는 동안 E/Q — `plan_max`까지), `_on_chosen`(피해 스킬이면 `action.rev`, 아니면 지움)·뒤로·쓰러짐·실행 때 정리. 데이터: `balance combat.rev{max 3, per_turn 1, guard_bonus 1, power [1, 1.3, 1.6, 2], basic_full_hits 2, basic_full_power 1}`(임시값), `input.json rev_up E · rev_down Q`, `render.json ui.combat_rev{size 11, gap 3, lift 3}`, `combat_roster_name_width` 132 → 176(삼각형이 들어가도 "이름 없는 탐험가"가 잘리지 않게).

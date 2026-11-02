@@ -71,6 +71,7 @@ func _ready() -> void:
 	_banner = SkillBanner.new()
 	add_child(_banner)
 	_banner.place_top()
+	_menu.set_stage(_stage, _banner)  # 대상은 무대에서 고르고, 고르는 대상 이름은 위쪽 작은 창에(사용자 2026-11-02)
 	for u in battle.units:
 		_add_unit(u)
 	_route = NoticeRoute.new(battle.db)
@@ -144,7 +145,6 @@ func _loop() -> void:
 			_just_planned = null
 			var action: Dictionary = _plan[c]
 			_plan.erase(c)
-			_roster.set_plan(c, "")
 			_roster.set_rev_pick(c, 0)
 			if not battle.act(c, action):
 				_fallback(c, action)
@@ -214,7 +214,6 @@ func _on_chosen(action: Dictionary) -> void:
 	else:
 		_roster.set_rev_pick(u, 0)  # 피해가 없는 행동에는 얹지 않는다
 	_plan[u] = action
-	_roster.set_plan(u, _plan_text(action))
 	_plan_i += 1
 	if _plan_i < _planning.size():
 		_open_plan()
@@ -247,25 +246,7 @@ func _on_root_back() -> void:
 	_plan_i -= 1
 	_roster.set_rev_pick(_planning[_plan_i], int((_plan.get(_planning[_plan_i], {}) as Dictionary).get("rev", 0)))
 	_plan.erase(_planning[_plan_i])
-	_roster.set_plan(_planning[_plan_i], "")
 	_open_plan()
-
-
-## 파티 창에 보일 정해 둔 행동(짧게): "공격 → 고블린 A" · "방어" · "포션".
-func _plan_text(action: Dictionary) -> String:
-	var t: Variant = action.get("target")
-	var what := ""
-	match str(action.get("kind")):
-		"skill":
-			var id := str(action.get("skill", Battle.BASIC_ATTACK))
-			what = Strings.t("combat.cmd_attack") if id == Battle.BASIC_ATTACK else DataNames.entry(battle.db, "skills", id)
-		"guard":
-			what = Strings.t("combat.cmd_guard")
-		"item":
-			what = DataNames.entry(battle.db, "items", str(action.get("item")))
-		"flee":
-			what = Strings.t("combat.cmd_flee")
-	return Strings.t("combat.plan_target", {"act": what, "target": (t as Combatant).label()}) if t is Combatant else what
 
 
 func _on_event(e: Dictionary) -> void:
@@ -338,7 +319,6 @@ func _drop_fallen() -> void:
 		if not u.is_active():
 			_planning.erase(u)
 			_plan.erase(u)
-			_roster.set_plan(u, "")
 			_roster.set_rev_pick(u, 0)
 	if _planning.is_empty() or battle.current == null or not battle.current.is_active():
 		_planning.clear()

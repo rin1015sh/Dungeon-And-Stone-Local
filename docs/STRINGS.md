@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(997줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(994줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -472,8 +472,6 @@
 - `combat.start_ambushed` {enemies}이(가) 덮쳐 왔다!
 - `combat.party` 탐험가
 - `combat.menu_root` {name}의 차례
-- `combat.menu_target` 누구를?
-- `combat.plan_target` {act} → {target}
 - `combat.menu_skill` 스킬
 - `combat.menu_item` 아이템
 - `combat.cmd_attack` 공격
@@ -483,10 +481,8 @@
 - `combat.cmd_flee` 도주
 - `combat.sub_count` {n}개
 - `combat.sub_chance` 성공 {chance}%
-- `combat.sub_hp` 생명력 {hp}%
 - `combat.sub_stack` ×{n}
 - `combat.no_usable_item` 전투 중에 쓸 수 있는 소지품이 없다.
-- `combat.target_statuses` 상태: {list}
 - `combat.brief_damage` {type} 피해 {power}%
 - `combat.brief_hits` {text} ×{n}
 - `combat.extra_turn` 추가 턴
@@ -499,7 +495,6 @@
 - `combat.brief_cleanse` 상태 해제
 - `combat.brief_cooldown` 재사용 {n}차례
 - `combat.target_line` {name} (생명력 {hp}%)
-- `combat.target_weak` 약점 노리기: {name}
 - `combat.miss` {source}의 공격이 빗나갔다.
 - `combat.immune` {source}의 공격이 {target}에게 통하지 않는다.
 - `combat.hit` {source} → {target}, {amount}의 피해.
@@ -574,6 +569,8 @@
 - `combat.reason_leader_only` 일행을 이끄는 사람만 할 수 있다.
 - `combat.reason_veiled` 장막 너머의 동료를 알아볼 수 없다.
 - `combat.reason_item_no_effect` 듣지 않는다
+- `combat.tag_part` {name} [{part}]
+- `combat.tag_blocked` {name} · {why}
 - `combat.sealed` {name}의 [{skill}]이(가) 봉인되었다.
 - `combat.survive_round` 버텨라! ({round}/{total})
 - `combat.pushed_back` {name}이(가) 밀려나 다음 차례가 늦어진다.

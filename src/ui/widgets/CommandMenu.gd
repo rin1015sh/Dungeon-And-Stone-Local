@@ -1,11 +1,11 @@
 class_name CommandMenu
 extends HBoxContainer
-## 전투 아래 창(피어 앤 헝거식): 왼쪽 = 명령 칸(공격 · 스킬 · 방어 · 아이템, 세로 한 줄),
-## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 밝다, 줄 높이·간격이 명령 칸과 같아 줄이 나란하다). 스킬·아이템·대상을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
-##   공격 → 대상(약점이 있는 적은 "약점 노리기"도) · 스킬 → 보유 스킬 + 맨 끝 "도주"(성공 확률) → 필요하면 대상 · 아이템 → 전투용 소지품
-##   대상을 고를 때 커서가 놓인 적은 무대에서 발밑 고리가 빛난다(target_hovered).
+## 전투 아래 창(피어 앤 헝거식): 왼쪽 = 명령 칸(공격 · 스킬 · 방어 · 아이템, 세로 한 줄 — 행동을 정할 때만 보이고 그 밖에는 숨는다, 자리는 그대로),
+## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 빛난다, 줄 높이·간격이 명령 칸과 같아 줄이 나란하다). 스킬·아이템을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
+##   공격 → 대상 · 스킬 → 보유 스킬 + 맨 끝 "도주"(성공 확률) → 필요하면 대상 · 아이템 → 전투용 소지품(하나만 치는 것은 대상)
+##   대상은 아래 창 목록이 아니라 무대에서 고른다(TargetPicker — 적 A/D, 약점 W/S, 아군은 파티 창 줄 — 사용자 2026-11-02). 커서가 놓인 대상은 target_hovered.
 ## 키: 위·아래(W·S) 이동, Enter 확정, Backspace 뒤로(게임에서 Backspace를 쓰는 곳은 여기뿐 — UI43). 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
-## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 닫아 중복 선택을 막는다). 적 차례에는 명령 칸이 흐리게 남는다.
+## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 닫아 중복 선택을 막는다).
 
 signal chosen(action: Dictionary)
 signal target_hovered(target: Combatant)
@@ -23,6 +23,8 @@ var _cmds: ChoiceGrid
 var _list: ChoiceGrid
 var _roster: Control
 var _left: PanelContainer
+var _picker: TargetPicker
+var _stage: BattleStage = null
 var _open: bool = false
 var _skill_cursor: Dictionary = {}  # 유닛 instance id -> 스킬 칸 커서
 var _last_target: Dictionary = {}   # 유닛 instance id -> 마지막으로 고른 대상(Combatant)
@@ -47,8 +49,11 @@ func _init() -> void:
 	_list.visible = false
 	_list.active = false
 	_list.back_action = "menu_back"
-	_list.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(_list.current_option().get("target")))
+	_list.cursor_moved.connect(func(_i: int) -> void: target_hovered.emit(null))
 	stack.add_child(_list)
+	_picker = TargetPicker.new()
+	_picker.hovered.connect(func(t: Combatant) -> void: target_hovered.emit(t))
+	add_child(_picker)
 
 
 static func _window() -> PanelContainer:
@@ -64,21 +69,26 @@ func set_roster(r: Control) -> void:
 	_list.get_parent().move_child(r, 0)
 
 
+## 무대(적 순서 — 왼쪽부터)와 위쪽 작은 창(고르는 대상 이름)을 잇는다.
+func set_stage(stage: BattleStage, tag: SkillBanner) -> void:
+	_stage = stage
+	_picker.set_tag(tag)
+
+
 func open(battle: Battle, unit: Combatant) -> void:
 	_battle = battle
 	_unit = unit
 	_open = true
+	_left.modulate.a = 1.0
 	_root(ROOT_ATTACK)
 
 
 func close() -> void:
 	_open = false
+	_picker.close()
 	_show_list(false)
 	_cmds.active = false
-	var opts: Array[Dictionary] = []
-	for k: String in ["combat.cmd_attack", "combat.cmd_skill", "combat.cmd_guard", "combat.cmd_item"]:
-		opts.append(_opt(Strings.t(k), "", "", Callable(), false))
-	_cmds.show_choices("", opts)
+	_left.modulate.a = 0.0  # 행동을 정할 때만 보인다(사용자 2026-11-02) — 자리는 남겨 파티 창이 움직이지 않게
 	target_hovered.emit(null)
 
 
@@ -86,9 +96,13 @@ func is_open() -> bool:
 	return _open
 
 
-## 지금 키를 받는 칸(명령 칸 또는 목록 칸).
+## 지금 키를 받는 칸(명령 칸 또는 목록 칸). 대상을 고르는 중이면 picker().
 func grid() -> ChoiceGrid:
 	return _list if _list.visible else _cmds
+
+
+func picker() -> TargetPicker:
+	return _picker
 
 
 func root_grid() -> ChoiceGrid:
@@ -96,6 +110,7 @@ func root_grid() -> ChoiceGrid:
 
 
 func _show_list(on: bool) -> void:
+	_picker.close()
 	_list.visible = on
 	_list.active = on
 	_cmds.active = not on and _open
@@ -120,20 +135,11 @@ func _sub(title: String, opts: Array[Dictionary], back: Callable, start: int = 0
 	_list.show_choices(title, opts, back, start)
 
 
-## 공격: 적 목록. 약점이 있는 적은 약점 노리기(명중이 낮고 피해가 크다)도 고를 수 있다.
+## 공격: 무대에서 적을 고른다. 약점이 있는 적은 W/S로 약점 노리기(명중이 낮고 피해가 크다).
 func _attack() -> void:
-	var opts: Array[Dictionary] = []
-	var start := 0
-	for t: Combatant in _battle.opponents(_unit):
-		if t == _last_target.get(_unit.get_instance_id()):
-			start = opts.size()
-		opts.append(_target_opt(t, t.label(), func() -> void: _choose_skill(Battle.BASIC_ATTACK, t)))
-		if not t.actor.weak_point().is_empty():
-			var aim := func() -> void:
-				_remember_target(t)
-				_choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t, "aim_weak": true})
-			opts.append(_target_opt(t, Strings.t("combat.target_weak", {"name": t.label()}), aim))
-	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _root(ROOT_ATTACK), start)
+	_pick(_foes(), func(t: Combatant, weak: bool) -> void:
+		_choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t, "aim_weak": weak}),
+		func() -> void: _root(ROOT_ATTACK), true)
 
 
 ## 스킬: 보유 스킬(대화·조사 포함) + 맨 끝 도주. 칸 오른쪽 아래에 대가 또는 못 쓰는 이유.
@@ -170,33 +176,25 @@ func _skills(start: int = 0) -> void:
 	_sub(Strings.t("combat.menu_skill"), opts, back, start)
 
 
-## 스킬 대상: 적 하나 → 적 목록, 아무나 하나 → 전장의 모두, 아군 하나 → 아군 목록. 그 밖은 바로 쓴다.
+## 스킬 대상: 적 하나 → 무대의 적, 아무나 하나 → 적 + 아군, 아군 하나 → 파티 창의 아군. 그 밖은 바로 쓴다.
 func _skill_target(skill_id: String, skill_index: int) -> void:
 	var kind := JsonUtil.get_str(_battle.db.get_entry("skills", skill_id), "target")
 	var list: Array[Combatant] = []
 	match kind:
 		"enemy_single", "enemy_row":
-			list = _battle.opponents(_unit)
+			list = _foes()
 		"any_single":
-			list = _battle.side_units(_unit.side)
-			list.append_array(_battle.opponents(_unit))
+			list = _foes()
+			list.append_array(_battle.side_units(_unit.side))
 		"ally_single":
-			list = _battle.side_units(_unit.side)
+			for u in _battle.side_units(_unit.side):
+				if u == _unit or not _unit.actor.statuses.has_flag("no_ally_single"):  # 배신의 장막: 다른 아군을 알아볼 수 없다
+					list.append(u)
 		_:
 			_choose({"kind": "skill", "skill": skill_id})
 			return
-	var opts: Array[Dictionary] = []
-	var start := 0
-	var veiled := kind == "ally_single" and _unit.actor.statuses.has_flag("no_ally_single")
-	for t in list:
-		if t == _last_target.get(_unit.get_instance_id()):
-			start = opts.size()
-		var o := _target_opt(t, t.label(), func() -> void: _choose_skill(skill_id, t))
-		if veiled and t != _unit:  # 배신의 장막: 다른 아군을 알아볼 수 없다(자기 자신은 된다)
-			o["enabled"] = false
-			o["desc"] = Strings.t("combat.reason_veiled")
-		opts.append(o)
-	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _skills(skill_index), start)
+	_pick(list, func(t: Combatant, _weak: bool) -> void: _choose({"kind": "skill", "skill": skill_id, "target": t}),
+		func() -> void: _skills(skill_index))
 
 
 func _items(start: int = 0) -> void:
@@ -210,25 +208,42 @@ func _items(start: int = 0) -> void:
 	_sub(Strings.t("combat.menu_item"), opts, func() -> void: _root(ROOT_ITEM), start)
 
 
-## 하나만 치는 아이템(성수 병 등 — RF27)은 적 하나를 고른다. 듣지 않는 적은 흐리게. 그 밖은 바로 쓴다.
+## 하나만 치는 아이템(성수 병 등 — RF27)은 무대에서 적 하나를 고른다(듣지 않는 적은 고를 수 없다 — 위쪽 창에 이유). 그 밖은 바로 쓴다.
 func _item_pick(id: String, item_index: int) -> void:
 	var e := BattleRules.single_smite(_battle.db, id)
 	if e.is_empty():
 		_choose({"kind": "item", "item": id})
 		return
-	var opts: Array[Dictionary] = []
-	var start := 0
-	for t in _battle.opponents(_unit):
-		if t == _last_target.get(_unit.get_instance_id()):
-			start = opts.size()
-		var o := _target_opt(t, t.label(), func() -> void:
-			_remember_target(t)
-			_choose({"kind": "item", "item": id, "target": t}))
-		if bool(o["enabled"]) and not BattleRules.smite_fits(e, t):
-			o["enabled"] = false
-			o["desc"] = Strings.t("combat.reason_item_no_effect")
-		opts.append(o)
-	_sub(Strings.t("combat.menu_target"), opts, func() -> void: _items(item_index), start)
+	var why := func(t: Combatant) -> String: return "" if BattleRules.smite_fits(e, t) else "combat.reason_item_no_effect"
+	_pick(_foes(), func(t: Combatant, _weak: bool) -> void: _choose({"kind": "item", "item": id, "target": t}),
+		func() -> void: _items(item_index), false, why)
+
+
+## 무대에서 대상을 고른다(명령 칸·목록은 그대로 두고 키만 넘긴다). 마지막으로 고른 대상에 커서.
+func _pick(list: Array[Combatant], on_pick: Callable, back: Callable, weak: bool = false, why: Callable = Callable()) -> void:
+	_show_list(false)
+	_cmds.active = false
+	if list.is_empty():
+		back.call()
+		return
+	var remember := func(t: Combatant, aim: bool) -> void:
+		_last_target[_unit.get_instance_id()] = t
+		on_pick.call(t, aim)
+	var last: Variant = _last_target.get(_unit.get_instance_id())
+	_picker.pick(list, remember, back, last as Combatant if last is Combatant and list.has(last) else null, weak, why)
+
+
+## 고를 수 있는 적(은신은 빼고 — 다른 적이 없으면 BattleRules.targetable이 모두 돌려준다), 무대 왼쪽부터.
+func _foes() -> Array[Combatant]:
+	var out: Array[Combatant] = BattleRules.targetable(_battle, _unit)
+	if _stage != null:
+		out.sort_custom(func(a: Combatant, b: Combatant) -> bool: return _x(a) < _x(b))
+	return out
+
+
+func _x(u: Combatant) -> float:
+	var v := _stage.view(u)
+	return v.position.x + v.size.x * 0.5 if v != null else float(u.order) * 10000.0
 
 
 func _usable_items() -> Array[String]:
@@ -237,20 +252,6 @@ func _usable_items() -> Array[String]:
 		if JsonUtil.get_bool(_battle.db.get_entry("items", id), "combat_usable"):
 			out.append(id)
 	return out
-
-
-## 대상 칸: 이름 + (아군만) 생명력 %, 설명줄에 걸린 상태. 적의 생명력은 보이지 않는다. 적 쪽에서 고를 수 없는 대상(은신)은 꺼 둔다.
-func _target_opt(t: Combatant, text: String, cb: Callable) -> Dictionary:
-	var names := PackedStringArray()
-	for sid in t.actor.statuses.ids():
-		names.append(DataNames.entry(_battle.db, "statuses", sid))
-	var ok := t.side == _unit.side or BattleRules.is_targetable(_battle, _unit, t)
-	var desc := Strings.t("combat.reason_hidden") if not ok else \
-		(Strings.t("combat.target_statuses", {"list": ", ".join(names)}) if not names.is_empty() else "")
-	var sub := Strings.t("combat.sub_hp", {"hp": roundi(t.actor.pool.get_ratio("hp") * 100.0)}) if t.side == _unit.side else ""
-	var o := _opt(text, sub, desc, cb, ok)
-	o["target"] = t
-	return o
 
 
 func _opt(text: String, sub: String, desc: String, cb: Callable, enabled: bool = true) -> Dictionary:
@@ -277,15 +278,6 @@ func _short_reason(skill_id: String, why: String) -> String:
 		"combat.reason_sealed":
 			return Strings.t("combat.skill_sealed")
 	return Strings.t("combat.skill_unusable")
-
-
-func _remember_target(t: Combatant) -> void:
-	_last_target[_unit.get_instance_id()] = t
-
-
-func _choose_skill(skill_id: String, target: Combatant) -> void:
-	_remember_target(target)
-	_choose({"kind": "skill", "skill": skill_id, "target": target})
 
 
 func _choose(action: Dictionary) -> void:

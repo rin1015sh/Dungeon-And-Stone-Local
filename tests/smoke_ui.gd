@@ -210,16 +210,9 @@ func _realtime_combat_flow() -> void:
 		"스킬 메뉴에 대화·조사")
 	_expect(skill_labels.has(Strings.t("combat.cmd_flee")), "도주는 스킬 목록에")
 	_press(combat, DataNames.entry(DataRegistry.db, "skills", "investigate"))
-	var foe_u: Combatant = null  # 고를 수 있는 적을 조사한다(대상 목록 첫 칸은 아군 — 숨은 노움처럼 못 고르는 적도 있다)
-	for i in menu.grid().option_count():
-		for u: Combatant in battle.side_units(Combatant.SIDE_ENEMY):
-			if foe_u == null and u.label() == str(menu.grid().option(i).get("text")) and bool(menu.grid().option(i).get("enabled", true)):
-				foe_u = u
-				menu.grid()._set_cursor(i)
-	if foe_u != null:
-		menu.grid().confirm()
-	else:
-		_press_first(menu.grid())
+	var foe_u: Combatant = menu.picker().current()  # 조사(아무나 하나): 무대에서 고른다 — 적이 먼저(숨은 노움처럼 못 고르는 적은 빠진다)
+	_expect(foe_u != null and foe_u.side == Combatant.SIDE_ENEMY, "조사 → 무대에서 적부터 고른다")
+	menu.picker().confirm()
 	_expect_log("[조사]", "조사 결과")
 	await _frames(1)
 	if foe_u != null and battle.result.is_empty() and combat.stage().view(foe_u) != null:
@@ -232,7 +225,7 @@ func _realtime_combat_flow() -> void:
 		if await _open_menu(combat) == null:
 			break
 		_press(combat, Strings.t("combat.cmd_attack"))
-		_press_first(menu.grid())
+		menu.picker().confirm()
 	await _frames(2)
 	_expect(not battle.result.is_empty(), "전투가 끝난다 (%s, 차례 %d, 적 %s)" % [battle.result, battle.turns,
 		battle.side_units(Combatant.SIDE_ENEMY).map(func(u: Combatant) -> String: return "%s:%d" % [(u.actor as Monster).monster_id, int(u.actor.pool.get_current("hp"))])])
@@ -303,7 +296,7 @@ func _riddle_flow() -> void:
 		if menu == null:
 			break
 		_press(combat, Strings.t("combat.cmd_attack"))
-		_press_first(menu.grid())
+		menu.picker().confirm()
 	await _frames(2)
 	_expect(battle.result == Battle.RESULT_VICTORY, "강화된 문지기를 쓰러뜨린다")
 	explore.session.player.pool.set_min_value("hp", 0.0)
@@ -459,7 +452,24 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	combat.battle.event.connect(grab)
 	var turns := combat.battle.turns
 	await _action("menu_confirm")
-	_expect(menu.grid().title_text() == Strings.t("combat.menu_target"), "Enter → 대상 고르기")
+	var pk := menu.picker()
+	_expect(pk.active and pk.current() != null and not menu.grid().active, "Enter → 무대에서 대상 고르기(아래 창 목록 없음)")
+	_expect(combat.banner().text() == pk.current().label(), "위쪽 작은 창에 고르는 적 이름 (%s)" % combat.banner().text())
+	var stage_view := combat.stage().view(pk.current())
+	_expect(stage_view != null and stage_view._target, "고르는 적이 무대에서 빛난다")
+	var wm := pk.current().actor as Monster  # 약점 노리기: 시험 동안만 이 고블린에게 약점을 준다(데이터 사본)
+	var old_def := wm.def
+	wm.def = old_def.duplicate()
+	wm.def["weak_point"] = {"name_ko": "머리"}
+	await _action("menu_down")
+	_expect(pk.aiming_weak() and combat.banner().text() == Strings.t("combat.tag_part", {"name": pk.current().label(), "part": "머리"}),
+		"S → 약점 노리기(위쪽 창에 \"이름 [부위]\") (%s)" % combat.banner().text())
+	await _action("menu_up")
+	_expect(not pk.aiming_weak() and combat.banner().text() == pk.current().label(), "W → 다시 몸")
+	wm.def = old_def
+	await _action("menu_back")
+	_expect(not pk.active and menu.grid() == g and combat.banner().text().is_empty(), "Backspace → 명령 칸(위쪽 창 닫힘)")
+	await _action("menu_confirm")
 	await _action("menu_confirm")
 	await _frames(2)
 	combat.battle.event.disconnect(grab)
@@ -472,15 +482,16 @@ func _single_item_target(combat: CombatScreen, menu: CommandMenu, g: ChoiceGrid)
 	var me := combat.battle.current
 	me.actor.inventory.add("mine_powder_pouch", 1)
 	menu._item_pick("mine_powder_pouch", 0)
-	var t := menu.grid()
-	var foes := combat.battle.opponents(me)
+	var pk := menu.picker()
 	var e := BattleRules.single_smite(DataRegistry.db, "mine_powder_pouch")
-	var ok := t.title_text() == Strings.t("combat.menu_target") and t.option_count() == foes.size()
-	for i in mini(t.option_count(), foes.size()):
-		ok = ok and (bool(t.option(i).get("enabled", true)) == (BattleRules.smite_fits(e, foes[i]) and BattleRules.is_targetable(combat.battle, me, foes[i])))
-	_expect(ok, "화약 주머니 → 적 하나 고르기(듣지 않는 적은 흐림)")
+	var ok := pk.active and pk.targets().size() == BattleRules.targetable(combat.battle, me).size()
+	for t: Combatant in pk.targets():
+		var name_shown := combat.banner().text()
+		ok = ok and (name_shown == t.label()) == BattleRules.smite_fits(e, t)  # 듣지 않는 적은 "이름 · 듣지 않는다"
+		await _action("menu_right")
+	_expect(ok, "화약 주머니 → 무대에서 적 하나 고르기(듣지 않는 적은 위쪽 창에 이유)")
 	await _action("menu_back")
-	_expect(menu.grid().title_text() == Strings.t("combat.menu_item"), "Backspace → 아이템 목록")
+	_expect(not pk.active and menu.grid().title_text() == Strings.t("combat.menu_item"), "Backspace → 아이템 목록")
 	await _action("menu_back")
 	_expect(menu.grid() == g and g.cursor() == CommandMenu.ROOT_ITEM, "Backspace → 명령 칸(아이템)")
 	me.actor.inventory.remove("mine_powder_pouch")
@@ -496,11 +507,13 @@ func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
 	var mu := b.add(mate, Combatant.SIDE_PARTY)
 	combat._add_unit(mu)
 	menu.close()
+	_expect(is_zero_approx(menu._left.modulate.a), "행동을 정하지 않을 때 명령 칸은 숨는다")
 	combat._begin_planning(b.current)
 	var turns := b.turns
+	_expect(is_equal_approx(menu._left.modulate.a, 1.0), "차례가 오면 명령 칸이 나온다")
 	_press(combat, Strings.t("combat.cmd_guard"))
 	_expect(b.turns == turns and menu.is_open() and combat._planning.size() == 2 and combat._plan_i == 1, "한 사람을 정하면 다음 사람 차례(아직 움직이지 않음)")
-	_expect(_has_label(combat, Strings.t("combat.cmd_guard")), "파티 창에 정해 둔 행동")
+	_expect(not _has_label(combat._roster, Strings.t("combat.cmd_guard")), "파티 창에 정해 둔 행동은 보이지 않는다")
 	await _action("menu_back")
 	_expect(combat._plan_i == 0 and combat._plan.is_empty(), "뒤로 → 앞사람 다시 고르기")
 	b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.apply("stun", 2.0)  # 탐험가 다음 차례를 건너뛰어 동료 차례가 오게
