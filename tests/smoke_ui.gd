@@ -438,6 +438,7 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "W·W → 공격")
 	await _single_item_target(combat, menu, g)
 	var me := combat.battle.current
+	me.rev = 2  # 차례마다 차는 Rev는 없다(per_turn 0) — 시험용으로 채워 둔다
 	var top := BattleRev.plan_max(combat.battle, me)
 	for i in BattleRev.cap(DataRegistry.db) + 1:
 		await _action("rev_up")
