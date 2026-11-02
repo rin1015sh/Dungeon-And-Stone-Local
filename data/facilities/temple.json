@@ -4,8 +4,6 @@
   "order": 4,
   "x": 1783,
   "building": "res://assets/city/buildings/temple.webp",
-  "interior": "res://assets/city/interiors/temple.webp",
-  "room": "temple",
   "activities": [
     "temple_remove_essence",
     "temple_service"

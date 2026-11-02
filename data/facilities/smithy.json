@@ -4,8 +4,6 @@
   "order": 6,
   "x": 2688,
   "building": "res://assets/city/buildings/smithy.webp",
-  "interior": "res://assets/city/interiors/smithy.webp",
-  "room": "smithy",
   "activities": [
     "smithy_trade"
   ],

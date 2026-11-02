@@ -13,7 +13,7 @@ static func run(v: ValidatorBase) -> void:
 	_extras(v, opened)
 	_tax(v, JsonUtil.get_dict(city, "tax"))
 	CityStreetRules.run(v)
-	CityRoomRules.run(v)
+	TownRules.run(v)
 
 
 static func _events(v: ValidatorBase, city: Dictionary, opened: Dictionary) -> void:

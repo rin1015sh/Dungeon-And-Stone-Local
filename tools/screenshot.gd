@@ -4,7 +4,7 @@ extends Node
 ## --prof=<초>: (--rift 등으로 자리를 잡은 뒤) W/A/S/D를 돌려 누르며 걷고 프레임 시간(평균·95%·99%·최대·16.7ms·50ms 넘는 수)·그리기 호출을 찍고 끝(렉 찾기 — CT73)
 ## --screen=coin [--tails] [--frames=N] --out=<폴더>: 동전 연출을 N 시각마다 찍는다(V25)
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
-## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
+## city: --town_at=x,y(칸) [--face=up|down|left|right] 동네 지도에서 선 자리 · --door=<시설 id> 그 문 앞(CT82), --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
 ##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
 ##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
@@ -15,7 +15,6 @@ extends Node
 ## --near=mon:<id>: 그 몬스터가 낀 무리 앞에 선다 · --near=chest [--open_chest=<초>] [--pick=0|1]: 첫 상자 아래 칸(열고 그 초 뒤 — 앞뒤 고르기 창, --pick이면 고른 뒤 동전 연출, --dialog와 함께)
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m) — --lord_at=<초> --dialog: 소환 연출을 그 시각에 멈춰 찍는다, --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
-## 실내 방(도서관 — CT62): --facility=library [--room_at=x,y --face=up|down|left|right] [--activity=<id>].
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
 ## --equip=<아이템 id>: 주무기 칸에 그 무기(장비 인형 그림 크기), --tooltip: 아이템 툴팁(비교) 띄우기, --menu: Tab 메뉴 열기(--menu=party|character|inventory = 커서를 그 쪽에, --cell=<x>,<y> = 소지품 커서 칸, --ask = 그 칸에서 Enter)
 ## --monument[=ready|lord]: 대현자 기념비 곁에서 살피기(마석 넷 · ready = 네 종 처치 · lord = 균열 수호자 넷도) — 기념비 고르기 창
@@ -491,10 +490,15 @@ func _city(city: CityScreen) -> void:
 	if _args.has("look"):  # --look=<1~4>: 도시 그림 등급(CT63 — 디버그 임시값)
 		st.set_override("city/district/look", str(_args["look"]).to_int())
 	st.changed.emit()
-	city.street().scroll_to(str(_args.get("scroll", "0")).to_float())
-	if _args.has("travel"):  # --travel: 거리 오른쪽 끝에서 D 한 번 더 — 특별 시설로 가는 창(CT63)
-		city.street().scroll_to(city.street().max_offset())
-		await _frames(2)
+	var faces := {"up": Vector2i.UP, "down": Vector2i.DOWN, "left": Vector2i.LEFT, "right": Vector2i.RIGHT}
+	if _args.has("town_at"):  # --town_at=x,y(칸) --face=…: 동네 지도에서 선 자리·보는 쪽(CT82)
+		var at := str(_args["town_at"]).split(",")
+		city.town().pos = Vector2(at[0].to_float(), at[1].to_float())
+		city.town().facing = faces.get(str(_args.get("face", "down")), Vector2i.DOWN)
+	if _args.has("door"):  # --door=<시설 id>: 그 문 앞에서 문을 본다
+		city.town().stand_before(str(_args["door"]))
+	await _frames(3)
+	if _args.has("travel"):  # --travel: 구역문에서 Enter — 특별 시설로 가는 창(CT63)
 		city.offer_travel()
 		await _frames(4)
 	if _args.has("weather"):
@@ -505,20 +509,9 @@ func _city(city: CityScreen) -> void:
 	if _args.has("facility"):
 		city.choose_facility(str(_args["facility"]))
 		await _frames(2)
-		var room := city.facility_view() as RoomView
-		if room != null and _args.has("room_at"):  # --room_at=x,y(칸) --face=up|down|left|right: 실내 방(CT62)에서 선 자리·보는 쪽
-			var at := str(_args["room_at"]).split(",")
-			room.pos = Vector2(at[0].to_float(), at[1].to_float())
-			room.facing = {"up": Vector2i.UP, "down": Vector2i.DOWN, "left": Vector2i.LEFT, "right": Vector2i.RIGHT}.get(str(_args.get("face", "up")), Vector2i.UP)
-			await _frames(3)
 		if _args.has("activity"):
 			var name := DataNames.entry(city.state.db, "activities", str(_args["activity"]))
-			if room != null and not JsonUtil.get_str(city.state.activity(str(_args["activity"])), "panel").is_empty():
-				room.open_panel(str(_args["activity"]), str(_args.get("tab", "")))  # 창구(상점·은행 …)는 방 안 카드로
-			elif room != null:
-				room.use(str(_args["activity"]))
-			else:
-				city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
+			city.facility_view()._choose(str(_args["activity"]), str(_args.get("tab", "")))
 			if name.is_empty():
 				push_warning("활동 없음: " + str(_args["activity"]))
 			if _args.has("advance"):  # --advance=N: 결과 대화창을 N쪽 넘긴다(--dialog와 함께 — 뒤 쪽 문구 확인)

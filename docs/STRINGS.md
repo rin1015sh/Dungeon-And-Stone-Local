@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(993줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(951줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -154,7 +154,7 @@
 - `collection.item_types` 아이템 종류
 - `collection.events` 이벤트
 - `collection.facilities` 시설
-- `collection.rooms` 실내 방
+- `collection.town` 도시 지도
 - `collection.tiles` 타일
 - `collection.landmarks` 랜드마크
 - `collection.activities` 도시 활동
@@ -914,7 +914,12 @@
 - `city.debug_street` 거리 사건
 - `city.reason_no_item` 필요한 물건이 없다.
 - `city.reason_read_this_visit` 오늘은 이 분야를 이미 읽었다
-- `city.reason_searched` 이미 뒤져 보았다
+
+### `city.town`
+
+> 도시 동네 지도(TownView, CT82) — 화면으로 알 수 없는 것만.
+
+- `city.town.portal_closed` 돌 고리는 잠잠하다.
 
 ### `city.fx`
 
@@ -1164,94 +1169,6 @@
 - `city.meal.whole_pig_roast` 홀 한가운데서 통째로 돌려 구운 돼지를 나눠 받았다. 몸이 한층 두꺼워진 것 같다.
 - `city.meal.royal_herb_hotpot` 이름 모를 약초가 가득한 전골. 냄비 바닥까지 긁어 먹고 나니 몸이 독기를 밀어낸다.
 - `city.meal.cave_truffle_soup` 미궁 동굴에서 캐 왔다는 송로를 갈아 넣은 수프. 눈이 밝아지고 속이 든든하다.
-
-### `city.npc`
-
-> 도시 실내 사람에게 말 걸기(바라보고 Enter — RoomView, 2026-11-01 CT76): 방 JSON npcs[].talk → city.npc.<talk>.<번호>. 한 번에 한 문장, 걸 때마다 다음 줄. 쓰는 법·규칙 안내는 넣지 않는다(장면 대사만).
-
-#### `city.npc.drinker`
-
-- `city.npc.drinker.1` 오늘 맥주는 물을 탔군.
-- `city.npc.drinker.2` 미궁에서 돌아온 놈들은 늘 술값부터 치르더라.
-- `city.npc.drinker.3` 한 잔만 더 하고 일어나야지.
-
-#### `city.npc.cook`
-
-- `city.npc.cook.1` 솥에 손 대지 마, 데여.
-- `city.npc.cook.2` 오늘 고기가 어디서 왔는지는 묻지 마.
-- `city.npc.cook.3` 간을 볼 틈도 없다고.
-
-#### `city.npc.servant`
-
-- `city.npc.servant.1` 발 좀 들어 줘요, 쓸게요.
-- `city.npc.servant.2` 탐험가들은 흙을 너무 묻혀 와요.
-- `city.npc.servant.3` 어젯밤에도 누가 여기서 잠들었지 뭐예요.
-
-#### `city.npc.explorer`
-
-- `city.npc.explorer.1` 이번 달에 돌아오지 못한 파티가 셋이래.
-- `city.npc.explorer.2` 수정동굴 안쪽은 아직도 꺼림칙해.
-- `city.npc.explorer.3` 정수 하나에 목숨을 걸다니, 우리도 참.
-
-#### `city.npc.scholar`
-
-- `city.npc.scholar.1` 조용히 해 주게, 이 대목이 까다롭단 말일세.
-- `city.npc.scholar.2` 이 책을 쓴 자는 끝내 돌아오지 못했다네.
-- `city.npc.scholar.3` 본문보다 여백에 남은 글이 더 흥미롭군.
-
-#### `city.npc.scribe`
-
-- `city.npc.scribe.1` 한 글자라도 틀리면 처음부터 다시야.
-- `city.npc.scribe.2` 잉크가 또 말라 버렸네.
-- `city.npc.scribe.3` 이 지도는 벌써 열 번째 베끼는 거야.
-
-#### `city.npc.seeker`
-
-- `city.npc.seeker.1` 분명 이 서가에 있었는데.
-- `city.npc.seeker.2` 살아 돌아오려면 읽어 둬야지.
-- `city.npc.seeker.3` 글은 눈에 안 들어오는데 그림은 무섭군.
-
-#### `city.npc.reader`
-
-- `city.npc.reader.1` 이 장만 읽고 갈게요.
-- `city.npc.reader.2` 미궁에서 이걸 읽은 사람은 몇이나 살았을까요.
-- `city.npc.reader.3` 촛불이 조금만 더 밝았으면.
-
-#### `city.npc.customer`
-
-- `city.npc.customer.1` 값이 또 올랐군.
-- `city.npc.customer.2` 이걸로 한 달을 버텨야 해.
-- `city.npc.customer.3` 좋은 물건은 늘 남보다 먼저 팔리지.
-
-#### `city.npc.guard`
-
-- `city.npc.guard.1` 볼일이 없으면 지나가시오.
-- `city.npc.guard.2` 금고 쪽으로는 한 걸음도 다가오지 마시오.
-- `city.npc.guard.3` 오늘은 조용하군.
-
-#### `city.npc.apprentice`
-
-- `city.npc.apprentice.1` 뜨거우니까 물러서요.
-- `city.npc.apprentice.2` 스승님 망치는 한 번도 빗나간 적이 없어요.
-- `city.npc.apprentice.3` 쇠는 식기 전에 두드려야 한대요.
-
-#### `city.npc.chorister`
-
-- `city.npc.chorister.1` 다음 성가가 몇 장이었더라.
-- `city.npc.chorister.2` 높은 음은 늘 갈라져.
-- `city.npc.chorister.3` 오늘 저녁에도 망자를 위한 노래를 부르지.
-
-#### `city.npc.believer`
-
-- `city.npc.believer.1` 부디 돌아오게 해 주소서.
-- `city.npc.believer.2` 아들이 미궁에 들어간 지 석 달째예요.
-- `city.npc.believer.3` 기도라도 해야 마음이 놓여요.
-
-#### `city.npc.monk`
-
-- `city.npc.monk.1` 평안하시오, 탐험가.
-- `city.npc.monk.2` 촛농은 지워도 지워도 쌓이는군.
-- `city.npc.monk.3` 돌아오지 못한 이들의 이름을 오늘도 적었소.
 
 <a id="field"></a>
 ## 동굴 요소 `field`

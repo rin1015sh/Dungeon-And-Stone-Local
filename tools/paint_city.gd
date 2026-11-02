@@ -1,13 +1,12 @@
 extends SceneTree
 ## 도시 그림 생성기: 거리 레이어(하늘·원경·중경·안개·거리·비네트) · 시설 건물 · 시설 내부를
 ## 손으로 칠한 듯한 어두운 일러스트(피어 앤 헝거 2풍 — 거친 붓결·잉크 윤곽·빗금·탁한 색·그레인)로 그려 data가 가리키는 경로에 저장한다.
-##   godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|interiors|plaza|events] [--facility=<id>] [--event=<id>]
+##   godot --headless --path . --script res://tools/paint_city.gd [-- --only=street|buildings|plaza|events] [--facility=<id>] [--event=<id>]
 ## (--facility: 그 시설 건물·내부만 다시 그린다 — 다른 그림은 그대로 · --event: 그 거리 사건 일러스트만 — data/street_events art, CT45)
 ## 좌표 = '거리 단위'(화면 높이 720 기준 px). 건물 위치는 data/facilities x, 레이어 목록·경로는 data/city.json street,
 ## 땅 높이·건물 배율은 render.json city.baseline·building_scale. 손으로 그린 그림으로 바꾸려면 같은 경로에 덮어쓰면 된다.
 
 const Buildings := preload("res://tools/city_art/Buildings.gd")
-const Interiors := preload("res://tools/city_art/Interiors.gd")
 const Street := preload("res://tools/city_art/Street.gd")
 const Backdrop := preload("res://tools/city_art/Backdrop.gd")
 const Plaza := preload("res://tools/city_art/Plaza.gd")
@@ -56,11 +55,6 @@ func _init() -> void:
 			for t in range(t0, tiers + 1):  # 그림 등급마다(첫 등급 = 기본 경로, 그 위 = <이름>_t<등급> — CityDistrict.art_path)
 				Buildings.paint(id, SEED + i * 101, t).save(_tier_path(base, t, t0))
 				print("그림: 건물 %s 등급 %d %dx%d" % [id, t, size.x, size.y])
-		if only.is_empty() or only == "interiors" or mine:
-			var inner := JsonUtil.get_str(f, "interior")
-			for t in range(t0, tiers + 1):
-				Interiors.paint(id, SEED + i * 211, t).save(_tier_path(inner, t, t0))
-				print("그림: 내부 %s 등급 %d" % [id, t])
 	for t in range(1, tiers + 1):
 		var here: Array = []
 		for id: String in db.get_collection("facilities"):

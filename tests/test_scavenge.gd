@@ -70,13 +70,7 @@ func test_search_once_and_keep_items() -> void:
 
 
 func test_junk_is_sellable_misc() -> void:
-	var city_tables := {}  # 도시 건물 가구 뒤지기 표(CT74)는 쓸 수 있는 잡템도 준다 — 균열 표만 본다
-	for fac: Variant in JsonUtil.get_dict(JsonUtil.get_dict(db.singletons.get("city", {}), "room"), "search").values():
-		for t: Variant in (fac as Dictionary).values():
-			city_tables[str(t)] = true
-	for t: String in db.get_collection("scavenge"):
-		if city_tables.has(t):
-			continue
+	for t: String in db.get_collection("scavenge"):  # 균열 장식 표만 남았다(도시 가구 뒤지기 CT74는 실내와 함께 지웠다 — 2026-11-02)
 		for e: Variant in JsonUtil.get_array(db.get_entry("scavenge", t), "items"):
 			var it := db.get_entry("items", str((e as Dictionary)["item"]))
 			assert_eq(JsonUtil.get_str(it, "category"), "misc", str(e))

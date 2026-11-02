@@ -1,12 +1,11 @@
 class_name CityScreen
 extends Control
-## 도시 화면(라비기온 구역): 횡스크롤 거리(CityStreet) ↔ 시설 내부(FacilityView), 귀퉁이 정보 카드(CityHud — 달력·탐험가·메뉴).
-## 시설을 고르면 들어가고(행동력 facility_entry_cost가 있어야), 나올 때 그 행동력을 쓴다. 행동력이 0이 되면 다음 순으로 넘어간다.
-## 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다. 하순에 행동력을 다 쓰고 거리로 나오면 미궁으로 떠난다(dungeon_requested).
-## 시설 안에서 활동을 한 번 하면 결과를 시설 대화창에서 넘긴 뒤 저절로 거리로 나온다. 실내 방이 있는 시설(도서관 — RoomView)은 걸어서 문으로 나온다.
-## 행동력은 시설 한 번 다녀오기에 1 — 나올 때 쓴다(CT62). 거리 아래에도 대화창(못 들어가는 이유 등).
-## Tab 메뉴(소지품·캐릭터·도감 한 화면, GameMenu)와 디버그 패널(F1)을 쓸 수 있다(걸어 다니는 건물 안에서도 — CT74). 거리에서 Esc = 정지 창(계속 · 타이틀로).
-## 마우스는 쓰지 않는다(A/D 스크롤, Enter 들어가기 — 사용자 결정 2026-10-19).
+## 도시 화면(라비기온 7구역): 걸어 다니는 동네 지도(TownView — 2D 3/4 탑뷰, CT82 — 횡스크롤 거리는 버렸다) ↔ 시설 창(FacilityView — 동네 위에 어둡게),
+## 귀퉁이 정보 카드(CityHud — 달력·탐험가·메뉴).
+## 시설 문 앞에서 Enter = 들어가기(행동력 facility_entry_cost를 들어갈 때 쓴다 — CT72). 안에서는 활동을 몇 번이든, 나가기·Esc로 그 문 앞에.
+## 행동력이 0인 채로 나오면 다음 순, 하순이면 미궁으로 떠난다(dungeon_requested). 새 게임 시작 후·미궁 귀환 후 모두 이 화면으로 온다.
+## Tab 메뉴(GameMenu)·도감(B)·디버그 패널(F1)은 동네를 걷는 동안. Esc = 정지 창(계속 · 타이틀로). 동네 아래에도 대화창(못 들어가는 이유 등).
+## 마우스는 쓰지 않는다(W/A/S/D 걷기, Enter 들어가기 — 사용자 결정 2026-10-19).
 
 signal dungeon_requested
 signal title_requested
@@ -15,7 +14,7 @@ signal executed  ## 세금을 못 내고 기한을 넘겼다 — 처형(사망�
 var state: CityState
 var pc: PlayerCharacter
 var _registry: ScriptRegistry
-var _street: CityStreet
+var _town: TownView
 var _facility: FacilityView
 var _hud: CityHud
 var _dialog: DialogueBox  # 거리 아래 대화창(못 들어가는 이유 등 — 화면으로 알 수 있는 순 넘김·포션 결과는 보이지 않는다)
@@ -35,12 +34,13 @@ func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) 
 
 
 func _ready() -> void:
-	_street = CityStreet.new()
-	_street.setup(state)
-	_street.facility_chosen.connect(choose_facility)
-	_street.end_reached.connect(offer_travel)
-	add_child(_street)
-	_street.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_town = TownView.new()
+	_town.setup(state, pc)
+	_town.facility_chosen.connect(choose_facility)
+	_town.travel_requested.connect(offer_travel)
+	_town.told.connect(func(key: String) -> void: say(Strings.t(key)))
+	add_child(_town)
+	_town.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var m := UiTheme.metric("margin", 16)
 	_hud = CityHud.new()
 	_hud.setup(state, pc)
@@ -59,7 +59,6 @@ func _ready() -> void:
 	_codex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_dialog = DialogueBox.new()  # 전투와 같은 대화창(UI36)
 	DialogueBox.place_bottom(_dialog, self)
-	_dialog.shown_changed.connect(func(on: bool) -> void: _street.set_process(not on and not _menu.is_open() and not _event_running))
 	_menu.hold = _dialog.busy
 	_route = NoticeRoute.new(state.db)
 	EventBus.notice.connect(_on_notice)
@@ -75,12 +74,19 @@ func _ready() -> void:
 	_debug.offset_top = UiTheme.render_float("city.hud_height", 104.0) + m
 	state.expedition_due.connect(_on_expedition_due)
 	state.period_started.connect(func(_m: int, _p: int) -> void: street_event.call_deferred(""))
+	state.period_started.connect(func(_m: int, _p: int) -> void: _town.refresh_weather())
 	state.advance_if_spent.call_deferred()  # 행동력이 0인 채로 왔으면 바로 다음 순(하순이면 미궁으로)
 	street_event.call_deferred("")  # 시작·귀환한 순의 거리 사건
 
 
-func street() -> CityStreet:
-	return _street
+func town() -> TownView:
+	return _town
+
+
+## 동네 걷기를 멈출지: 시설 창·메뉴·도감·대화창·거리 사건·작은 창이 떠 있으면 멈춘다.
+func _process(_delta: float) -> void:
+	_town.paused = _facility != null or _menu.is_open() or _codex.is_open() or _dialog.busy() or _event_running or _moving \
+		or has_node("PauseChoice") or has_node("StreetChoice") or _debug.visible
 
 
 func facility_view() -> FacilityView:
@@ -95,7 +101,7 @@ func is_debug_open() -> bool:
 	return _debug.visible
 
 
-## 거리에서 시설을 고른다: 내부로(행동력은 나올 때). 못 들어가면 안내.
+## 동네에서 시설 문을 골랐다: 시설 창으로(행동력은 들어갈 때 1 — CT72). 못 들어가면 안내.
 func choose_facility(id: String) -> void:
 	if _facility != null or _event_running:
 		return
@@ -103,18 +109,15 @@ func choose_facility(id: String) -> void:
 	if not why.is_empty():
 		say(Strings.t(why))
 		return
-	var has_room := not JsonUtil.get_str(state.db.get_entry("facilities", id), "room").is_empty()
-	_facility = RoomView.new() if has_room else FacilityView.new()  # 실내 방이 있으면 걸어 다니는 방(CT62)
+	_facility = FacilityView.new()
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
 	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
-	if _facility is RoomView:
-		(_facility as RoomView).art_hidden.connect(func() -> void: _hud.visible = true)
+	_facility.art_hidden.connect(func() -> void: _hud.visible = true)
 	_hud.set_facility_mode(true)
 	add_child(_facility)
-	move_child(_facility, _street.get_index() + 1)
+	move_child(_facility, _town.get_index() + 1)
 	_facility.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_street.visible = false
 
 
 func leave_facility() -> void:
@@ -122,13 +125,13 @@ func leave_facility() -> void:
 		return
 	for line in _facility.summary():
 		say(line)
+	var id := _facility.facility_id()
 	_facility.queue_free()
 	_facility = null
-	_street.visible = true
+	_town.place_at_door(id)
 	_hud.visible = true
 	_hud.set_facility_mode(false)
 	state.leave_facility()
-	_street.refresh()
 
 
 ## 하순이 끝났다: 미궁으로 떠난다(미궁 기록 첫 줄에 남긴다). 세금 기한을 넘겼으면 처형 장면을 넘긴 뒤 끝(CityTax).
@@ -158,7 +161,6 @@ func street_event(force_id: String = "") -> void:
 		return
 	_event_running = true
 	_menu.close()
-	_street.set_process(false)
 	_event_view = StreetEventView.new()
 	add_child(_event_view)
 	move_child(_event_view, _dialog.get_index())  # 대화창·선택 창은 그림 위
@@ -184,14 +186,12 @@ func street_event(force_id: String = "") -> void:
 		if str(m["key"]) in CityAmbient.SHOWN_FX:
 			say(Strings.t(str(m["key"]), m["args"]), str(m["kind"]))
 	_hud.refresh()
-	_street.refresh()
 	await _dialog.wait()
 	if not is_inside_tree():
 		return
 	_event_view.close()
 	_event_view = null
 	_event_running = false
-	_street.set_process(not _menu.is_open() and not _dialog.busy())
 
 
 func event_view() -> StreetEventView:
@@ -217,8 +217,8 @@ func _street_choice(id: String, choices: Array) -> int:
 	return i
 
 
-## 거리 오른쪽 끝에서 D: 특별 시설(거래소 … — 거리에 서지 않는 곳)로 가는 작은 창(CT63). 고르면 그 시설에 바로 들어간다
-## (행동력은 다른 시설처럼 나올 때 1). 특별 시설이 없으면 아무 일도 없다.
+## 구역문을 바라보고 Enter: 특별 시설(동네에 서지 않는 곳)로 가는 작은 창(CT63). 고르면 그 시설에 바로 들어간다
+## (행동력은 다른 시설처럼 들어갈 때 1). 특별 시설이 없으면 아무 일도 없다.
 func offer_travel() -> void:
 	if _facility != null or _event_running or _moving or _menu.is_open() or _dialog.busy():
 		return
@@ -239,21 +239,19 @@ func offer_travel() -> void:
 		choose_facility(ids[i])
 
 
-## Tab 메뉴·도감을 열 수 있는가: 거리, 또는 걸어 다니는 건물 안에서 걷는 중(활동·창구·대화 중이 아닐 때 — CT74).
+## Tab 메뉴·도감을 열 수 있는가: 동네를 걷는 중(시설 창·대화가 없을 때).
 func _overlay_ok() -> bool:
-	return _facility == null or (_facility is RoomView and (_facility as RoomView).menu_ok())
+	return _facility == null and not _dialog.busy()
 
 
-## Tab 메뉴·도감이 열리고 닫힘: 거리 스크롤 · 건물 안 걷기를 멈춘다.
-func _on_overlay(on: bool) -> void:
-	_street.set_process(not on)
-	if _facility is RoomView:
-		(_facility as RoomView).paused = on
+## Tab 메뉴·도감이 열리고 닫힘(걷기는 _process가 멈춘다).
+func _on_overlay(_on: bool) -> void:
+	pass
 
 
-## 소지품 쓰기(거리·건물 안 — city.json item_use.categories 분류만, 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
+## 소지품 쓰기(동네에서 — city.json item_use.categories 분류만, 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
 func use_item(item_id: String) -> void:
-	if _facility != null and not _facility is RoomView:
+	if _facility != null:
 		return
 	var db := state.db
 	var cats := JsonUtil.get_array(CityValues.city_section(db, state.overrides, "item_use"), "categories")
@@ -327,12 +325,10 @@ func _pause_choice() -> void:
 	pop.name = "PauseChoice"
 	add_child(pop)
 	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_street.set_process(false)
 	pop.open(Strings.t("explore.paused"), [{"text": Strings.t("pause.resume")}, {"text": Strings.t("city.btn_title")}], false, Vector2(-1, -1))
 	var i: int = await pop.picked
 	pop.queue_free()
 	if not is_inside_tree():
 		return
-	_street.set_process(true)
 	if i == 1:
 		title_requested.emit()

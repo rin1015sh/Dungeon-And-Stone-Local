@@ -1,16 +1,17 @@
 class_name FacilityView
 extends Control
-## 시설 내부(피어 앤 헝거식 배치, 사용자 요청 2026-10-18 "건물 안 UI 재배치 · 나가기 버튼"):
-##   뒷배경 일러스트(data facilities.interior)를 화면 가득 가리지 않고,
+## 시설 창(피어 앤 헝거식 배치, 사용자 요청 2026-10-18 "건물 안 UI 재배치 · 나가기 버튼"):
+##   건물 실내 그림·걷는 방은 지웠다(사용자 2026-11-02 "이미 제작한 건물 내부는 다 지우고") — 문 앞 동네(TownView)가 어둡게 비친다(render.json city.town.facility_dim),
 ##   아래 = 대화창(DialogueBox — 이름판에 시설 이름, 평소엔 시설 정보 줄, 활동 결과는 한 쪽씩 Enter로 넘김),
 ##   대화창 위 오른쪽 = 선택 창(활동 + 맨 끝 "나가기", W/S·Enter — 도시에서는 Backspace를 쓰지 않는다, 사용자 결정 2026-10-20).
 ## 왼쪽 위 달력·탐험가 카드는 그대로, 오른쪽 위 메뉴(소지품·캐릭터)는 숨긴다(시설 안에서는 창을 쓰지 않는다).
 ## 들어올 때 쓴 행동력은 돌려주지 않는다 — 활동 전에 나가도 된다(나가기 버튼, 사용자 결정 2026-10-18: 예전엔 활동 전엔 못 나갔다).
-## 활동 한 번이면 결과를 다 넘긴 뒤 저절로 거리로 나간다. 패널형 활동(상점·은행·정수 제거)은 선택 창 자리에 그 패널(선택판 맨 끝 나가기)을 열고,
+## 안에서는 활동을 몇 번이든(CT72 — 결과를 다 넘기면 다시 선택 창, 도서관 서적은 분야마다 한 번). 패널형 활동(상점·은행·정수 제거)은 선택 창 자리에 그 패널(선택판 맨 끝 나가기)을 열고,
 ## 거래 결과는 대화창에 남긴다(거래마다 Enter를 누르지 않게 넘기지 않는 글로). 할 수 있는 활동이 하나도 없으면 들어오자마자 그 이유를 들고 나간다.
 
 signal leave_requested
 signal art_shown  ## 결과 그림(요리·펼친 책)이 시설 안을 덮었다 — 도시 화면이 귀퉁이 카드를 숨긴다
+signal art_hidden  ## 결과 그림이 걷혔다 — 귀퉁이 카드를 다시 보인다
 
 var _state: CityState
 var _pc: PlayerCharacter
@@ -39,11 +40,8 @@ func facility_id() -> String:
 
 func _ready() -> void:
 	var f := _state.db.get_entry("facilities", _facility_id)
-	var bg := TextureRect.new()
-	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	var path := CityDistrict.art_path(JsonUtil.get_str(f, "interior"), CityDistrict.look(_state))  # 도시 그림 등급(<경로>_t<look> — CT63)
-	bg.texture = load(path) as Texture2D if not path.is_empty() and ResourceLoader.exists(path) else null
+	var bg := ColorRect.new()
+	bg.color = Color(0, 0, 0, TownBrush.num(_state.db.render, "facility_dim", 0.55))
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -94,7 +92,16 @@ func _show_choices(cursor: int = -1) -> void:
 	_sync_menu()
 
 
-## 선택 창의 칸들: [활동 id, 창구 쪽("" 또는 buy·sell)].
+## 선택 창의 칸들: [활동 id, 창구 쪽("" 또는 buy·sell)] — 시험이 W/S로 고를 칸을 찾는다.
+func entries() -> Array[Array]:
+	return _entries()
+
+
+## 선택 창 커서(시험).
+func cursor() -> int:
+	return _grid.cursor()
+
+
 func _entries() -> Array[Array]:
 	var out: Array[Array] = []
 	for act_id in CityActions.activities_of(_state, _facility_id):
@@ -112,14 +119,13 @@ func _choose(act_id: String, tab: String = "") -> void:
 	if panel.is_empty():
 		var ctx := CityActions.perform(_state, _pc, act_id, _registry)
 		show_result(ctx)
-		if ctx.ok:  # 활동 한 번 = 이 방문의 끝: 결과를 다 넘기면 저절로 거리로 나간다
-			_leaving = true
-			_sync_menu()
-			await _dialog.wait()
-			if is_inside_tree():
-				leave_requested.emit.call_deferred()
-		else:
-			_show_choices()
+		_sync_menu()
+		await _dialog.wait()  # 결과를 다 넘기면 그림을 걷고 다시 선택 창(CT72 — 안에서는 활동을 몇 번이든)
+		if not is_inside_tree():
+			return
+		_hide_art()
+		_show_choices()
+		_refresh_info()
 		return
 	var why := CityActions.check(_state, _pc, act_id)
 	if not why.is_empty():
@@ -137,7 +143,7 @@ func _choose(act_id: String, tab: String = "") -> void:
 	_sync_menu()
 
 
-## 패널형 활동의 창구(상점·대장간 = 쪽 tab, 은행, 정수 제거). 패널이 아니면 null. 나가기·돌아가기는 부르는 쪽이 넣는다(실내 방 RoomView도 쓴다).
+## 패널형 활동의 창구(상점·대장간 = 쪽 tab, 은행, 정수 제거). 패널이 아니면 null. 나가기·돌아가기는 부르는 쪽이 넣는다.
 func new_panel(act_id: String, tab: String = "") -> CityPanel:
 	var p: CityPanel
 	match JsonUtil.get_str(_state.activity(act_id), "panel"):
@@ -178,7 +184,7 @@ func show_result(ctx: CityContext) -> void:
 
 ## 결과 그림이 실내 그림 위를 가득 덮는다 — 여관 식사(city.meal.<요리 id> → data/meals art, CT47) ·
 ## 도서관 서적(city.fx.book_new → 그 분야의 펼친 책 그림 city.json library.fields art, CT57 — 글은 아래 대화창에).
-## 대화창은 그 위. 결과를 다 넘기면 방문이 끝나 거리로 나가며 함께 사라진다(실내 방 RoomView는 다 넘기면 걷어 낸다 — 덮은 그림을 돌려준다).
+## 대화창은 그 위. 결과를 다 넘기면 걷어 낸다(_hide_art).
 func _show_art(ctx: CityContext) -> Control:
 	for msg: Dictionary in ctx.messages:
 		var key := str(msg["key"])
@@ -204,6 +210,17 @@ func _show_art(ctx: CityContext) -> Control:
 		art_shown.emit()
 		return pic
 	return null
+
+
+func _hide_art() -> void:
+	if _art_pic == null:
+		return
+	var pic := _art_pic
+	_art_pic = null
+	var tw := create_tween()
+	tw.tween_property(pic, "modulate:a", 0.0, UiTheme.render_float("city.meal_art.fade_sec", 0.35))
+	tw.tween_callback(pic.queue_free)
+	art_hidden.emit()
 
 
 ## 창구 거래 결과: 넘기지 않는 글로 대화창에 남긴다(마지막 거래만).

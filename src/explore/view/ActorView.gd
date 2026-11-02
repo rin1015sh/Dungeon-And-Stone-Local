@@ -67,7 +67,7 @@ func camera() -> Camera2D:
 	return _camera
 
 
-## 따라가는 카메라를 뗀다(시설 실내 방 — 화면이 카메라를 따로 둔다, RoomView).
+## 따라가는 카메라를 뗀다(도시 동네 지도 — 화면이 카메라를 따로 둔다, TownView).
 func drop_camera() -> void:
 	if _camera != null:
 		_camera.queue_free()

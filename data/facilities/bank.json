@@ -4,8 +4,6 @@
   "order": 7,
   "x": 3230,
   "building": "res://assets/city/buildings/bank.webp",
-  "interior": "res://assets/city/interiors/bank.webp",
-  "room": "bank",
   "activities": [
     "bank_account",
     "bank_tax"

@@ -1,12 +1,9 @@
 extends RefCounted
-## 시설 내부 배경 일러스트(960×540, 화면을 덮도록 확대). 한 점 투시의 방: 뒷벽 + 양 옆벽 + 천장 + 바닥, 가구는 InteriorRooms.
+## 한 점 투시 방 그리기 부품과 빛 칠(light) — 거리 사건·정산 천막 그림이 쓴다(시설 내부 배경 일러스트는 2026-11-02에 지웠다 — 도시 동네 지도 M0).
 ## 어둡게 칠한 뒤 촛불·난로·창빛만 다시 밝히는 방식(빛이 닿는 곳만 보인다). 오른쪽은 활동 창이 덮으므로 볼거리는 왼쪽·가운데에.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
-const Rooms := preload("res://tools/city_art/InteriorRooms.gd")
-const Rooms2 := preload("res://tools/city_art/InteriorRooms2.gd")
-const Rooms3 := preload("res://tools/city_art/InteriorRooms3.gd")
 const Refine := preload("res://tools/city_art/Refine.gd")
 ## 거주 구역마다 방의 밝기(빛이 닿지 않는 곳의 배율 — 1 = 13구역, CT54).
 const AMBIENT := [0.58, 0.66, 0.78, 0.88]
@@ -17,35 +14,6 @@ const VP := Vector2(360, 230)  ## 소실점
 const BACK := Rect2(170, 110, 380, 220)  ## 뒷벽
 
 
-## tier = 거주 구역(2~ = 더 밝은 방 + Refine 구역 색 — 같은 시드라 가구는 같다, CT54).
-static func paint(id: String, seed_value: int, tier: int = 1) -> Paint:
-	var p := Paint.new(W, H, seed_value)
-	var lights: Array = []  # [Vector2 위치, 반지름, 색, 세기]
-	match id:
-		"inn":
-			lights = Rooms.inn(p)
-		"library":
-			lights = Rooms.library(p)
-		"temple":
-			lights = Rooms.temple(p)
-		"shop":
-			lights = Rooms.shop(p)
-		"bank":
-			lights = Rooms.bank(p)
-		"smithy":
-			lights = Rooms2.smithy(p)
-		"guild":
-			lights = Rooms2.guild(p)
-		"exchange":
-			lights = Rooms3.exchange(p)
-	light(p, lights, AMBIENT[clampi(tier, 1, AMBIENT.size()) - 1])
-	Refine.look(p, tier, "interior")
-	Ink.grade(p, 0.25 if tier < 3 else 0.12, 1.12)
-	Ink.finish(p, 0.04, 0.5)
-	return p
-
-
-## 투시: 뒷벽 평면의 점 q를 s배(1 = 뒷벽, 클수록 앞) 앞으로 끌어낸 위치.
 static func pt(q: Vector2, s: float) -> Vector2:
 	return VP + (q - VP) * s
 

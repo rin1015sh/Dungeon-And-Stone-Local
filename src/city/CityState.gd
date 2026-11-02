@@ -30,8 +30,6 @@ var expedition_month: int = 0
 var facility: String = ""
 ## 이번 방문에 한 활동 id(들어갈 때 비운다 — 도서관 분야는 한 방문에 한 번, CT72).
 var visit_done: Array[String] = []
-## 이번 순에 뒤진 건물 안 가구("방 id:x,y" — CityScavenge, 순이 바뀌면 비운다, CT74).
-var searched: Array[String] = []
 ## 이번 순의 오늘의 거리 사건 id(CityHappenings) · 한 판에 한 번인 사건 중 이미 나온 것.
 var happenings: Array[String] = []
 var seen_once: Array[String] = []
@@ -162,7 +160,6 @@ func next_period() -> void:
 ## 새 순 시작: 행동력을 채우고 은행 이자(bank.interest_per_period)를 붙인다.
 func _begin_period() -> void:
 	ap = ap_per_period()
-	searched.clear()
 	roll_weather()
 	CityHappenings.roll(self)
 	closed.clear()

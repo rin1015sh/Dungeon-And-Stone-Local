@@ -109,7 +109,7 @@ static func _facilities(v: ValidatorBase, city: Dictionary) -> void:
 	for id: String in v.entries("facilities"):
 		var f := v.db.get_entry("facilities", id)
 		var w := "facilities/" + id
-		for key: String in ["building", "interior"]:
+		for key: String in ["building"]:
 			var path := JsonUtil.get_str(f, key)
 			if not path.is_empty() and not path.begins_with(IMAGE_PREFIX):
 				v.err(w, key + "는 res:// 경로여야 한다")
@@ -120,8 +120,8 @@ static func _facilities(v: ValidatorBase, city: Dictionary) -> void:
 			v.err(w, "min_residence는 없앴다 — 도시 구역은 하나(CT63), 거리에 서지 않는 곳은 special")
 		if JsonUtil.get_bool(f, "special") and JsonUtil.get_str(f, "place_ko").is_empty():
 			v.err(w, "특별 시설(special)은 place_ko(가는 창에 보이는 곳)도")
-		if JsonUtil.get_bool(f, "special") and (JsonUtil.get_array(city, "facility_order").has(id) or not JsonUtil.get_str(f, "room").is_empty()):
-			v.err(w, "특별 시설은 거리 순서(facility_order)에 넣지 않는다 · 실내 방은 아직 거리 시설만")
+		if JsonUtil.get_bool(f, "special") and JsonUtil.get_array(city, "facility_order").has(id):
+			v.err(w, "특별 시설은 거리 순서(facility_order)에 넣지 않는다")
 		var acts := JsonUtil.get_array(f, "activities")
 		if acts.is_empty() and not JsonUtil.get_bool(f, "placeholder"):
 			v.warn(w, "활동이 없다")

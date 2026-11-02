@@ -258,9 +258,28 @@
     "debug_edit_width": 110,
     "info_width": 520,
     "info_height": 420,
-    "room": {
-      "_comment": "시설 실내 방(탑뷰 — RoomView, CT62): zoom = 화면 배율(방이 화면보다 작으면 고정 — 왼쪽 위 달력 카드(calendar_width)를 비켜 오른쪽 빈 곳 가운데).",
-      "zoom": 1.4
+    "town": {
+      "_comment": "도시 동네 지도(TownView — 2D 3/4 탑뷰, CT82 — M0 시제품, 직접 보고 조절): zoom = 화면 배율 · actor_scale = 사람 그림 배율(집 한 층보다 작게) · storey_px = 한 층 높이(세계 px — 칸 32) · base_px = 집 밑단 · roof_rise = 지붕 마루 높이(깊이 대비) · fade_alpha = 플레이어를 가린 집의 불투명도 · fade_speed = 바뀌는 빠르기(초당) · facility_dim = 시설 창이 열린 동안 동네를 덮는 어둠 · chunk = 바닥 청크(칸) · colors = 재질 그림(무채색)에 곱하는 색 — walls·roofs·slate는 집마다 고르는 목록, 나머지는 바닥·시설·소품.",
+      "zoom": 1.0,
+      "actor_scale": 0.78,
+      "storey_px": 34,
+      "base_px": 6,
+      "roof_rise": 0.3,
+      "fade_alpha": 0.3,
+      "fade_speed": 4.0,
+      "facility_dim": 0.55,
+      "chunk": 16,
+      "ground_ao": 0.13,
+      "colors": {
+        "street": "#7a7062", "avenue": "#8e8474", "paving": "#8c8474", "plaza": "#958b7a", "dais": "#958b7a", "stairs": "#8a8274", "bridge": "#7e7466",
+        "yard": "#7a6650", "court": "#6e6048", "water": "#3a4a50", "retain": "#6e675c", "wall": "#5e5850", "wall_top": "#4a4540", "gate": "#1a1714",
+        "walls": ["#c4b596", "#8c96a2", "#a08568", "#9a958a", "#b8a888", "#7f8a92", "#a89a80"],
+        "roofs": ["#7a5442", "#6c4a3a", "#845c46", "#5e4234"],
+        "slate": ["#565a62", "#4e535a"],
+        "timber": "#3e2e24", "plinth": "#6a645a", "glass": "#1e2428", "glass_lit": "#c8a060", "frame": "#d8ccb4", "door": "#4a3424",
+        "stone": "#a8a090", "stone_dark": "#7c766a", "lead": "#5a6066", "brick": "#7a4a3a", "awning": "#7a3a32", "cloth": "#8a7a62",
+        "iron": "#2a2826", "lamp": "#e8c890", "ink": "#16120e", "ring": "#8a8478"
+      }
     },
     "plaza": {
       "_comment": "차원광장(미궁 입구) 화면: 하늘(날씨)·원경 far 레이어 일부(far_region = 그림 px, 화면 y·height 거리 단위) 위에 background(tools/paint_city.gd --only=plaza). portal_rect = 돌 고리 안쪽 뒷면 원의 상자(화면 720 기준 px, tools/city_art/Plaza.gd portal_rect()로 계산), far_y = 원경을 올려 회랑 위로 첨탑만 보이게. 초 = 도착 뒤 열리기까지·열리는 데·들어갈 때 걸리는 시간.",

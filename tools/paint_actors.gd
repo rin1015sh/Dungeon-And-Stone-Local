@@ -6,14 +6,12 @@ extends SceneTree
 ##   피어 앤 헝거 맵 그림처럼 곧게 선 약 3.3등신(큰 머리·마른 몸·붙인 다리)·움푹한 눈구멍 얼굴(입 없음)·대비를 키운 칠·진한 바깥선(장비는 몸에 그리지 않는다 — 사용자 결정 a+b, ASSUMPTIONS AM27).
 ## 몬스터: 전투 일러스트(assets/monsters/<id>.webp — 정면)를 몸 높이 색인으로 데이터 size에 맞춰 줄인다 → assets/actors/monsters/<id>.webp
 ##   (뒷모습 그림이 있으면 <id>_back.webp도). 걷기는 게임이 흔들어 보인다(MonsterView).
-## 도시 실내 NPC 동작(--acts[=<옷차림__동작,…>]): 방 JSON 사람의 act를 그 옷차림으로 → assets/actors/acts/(NpcActs, CT69).
 ## 칸 크기·배율은 render.json view.actor_sheet. 줄인 뒤 1px 잉크 바깥선을 두른다(작은 그림에서 윤곽이 읽히게).
 
 const Party := preload("res://tools/monster_art/Party.gd")
 const MapMonster := preload("res://tools/monster_art/MapMonster.gd")
 const MapLooks := preload("res://tools/monster_art/MapLooks.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
-const NpcActs := preload("res://tools/monster_art/NpcActs.gd")
 
 ## 정한 값(사용자 2026-10-17 — 피어 앤 헝거 맵 그림 참고 시트를 보고 여러 방법·템플릿을 비교해 고름: 방법 ⑤ + 머리 템플릿 5).
 ## 시험할 때는 --set=<상수 이름 소문자>=<값>으로 이번만 바꾸고 --out=<폴더>로 따로 그린다(게임 그림을 건드리지 않는다).
@@ -94,8 +92,6 @@ const BOSS_SCALE := 1.4
 var _idle_ids := PackedStringArray()  ## --idle=<id,...>: 보스가 방에서 기다리는 자세 한 장만 그린다(MapMonster.BOSSES)
 var _set: Dictionary = {}  ## --set=head=2,legs=0.8: 맨 위 상수를 이번만 바꾼다(키 = 상수 이름 소문자)
 var _look := ""  ## 지금 그리는 옷차림(MapLooks id — 빈 값 = 전투 그림 옷)
-var _acts_on := false  ## --acts: 도시 실내 NPC 동작 시트만
-var _acts_only := ""  ## --acts=<옷차림__동작,…>: 그것만
 
 
 func _init() -> void:
@@ -110,9 +106,6 @@ func _init() -> void:
 			looks = a.trim_prefix("--look=").split(",")
 		elif a.begins_with("--out="):
 			_out = a.trim_prefix("--out=")
-		elif a.begins_with("--acts"):
-			_acts_only = a.trim_prefix("--acts").trim_prefix("=")
-			_acts_on = true
 		elif a.begins_with("--set="):
 			for kv in a.trim_prefix("--set=").split(","):
 				var pair := kv.split("=")
@@ -121,10 +114,6 @@ func _init() -> void:
 	db.load_all("res://data")
 	_cfg = JsonUtil.get_dict(JsonUtil.get_dict(db.render, "view"), "actor_sheet")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/actors/monsters"))
-	if _acts_on:
-		_acts(db)
-		quit(0)
-		return
 	if not looks.is_empty():  # 옷차림 후보만: <out>/<id>.webp
 		for id: String in looks:
 			if MapLooks.has(id):
@@ -181,54 +170,6 @@ func _explorer(race: String, file: String = "") -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	sheet.save_webp(path, false)
 	print("그림: %s %dx%d (%d ms)" % [path, sheet.get_width(), sheet.get_height(), Time.get_ticks_msec() - t0])
-
-
-## 도시 실내 NPC 동작 시트(NpcActs): 아래·옆·위 × 동작 칸(오른쪽 = 옆 뒤집기) → assets/actors/acts/<옷차림>__<동작>.webp + index.json.
-func _acts(db: GameDatabase) -> void:
-	var defs := NpcActs.load_acts()
-	var index := {}
-	var pick := _acts_only.split(",", false)
-	var walked := {}
-	for pair: Array in NpcActs.wanted(db):  # 사람 걷기 시트(머리색 변형 <옷차림>_h<번호> — 시트가 있어야 사람이 선다)
-		var lk := str(pair[0])
-		if MapLooks.has(lk) and not walked.has(lk) and (pick.is_empty() or pick.has("%s__%s" % [lk, pair[1]])):
-			walked[lk] = true
-			_look = lk
-			_explorer(MapLooks.race_of(lk), "looks/" + lk)
-	for pair: Array in NpcActs.wanted(db):
-		var key := "%s__%s" % [pair[0], pair[1]]
-		if not defs.has(pair[1]) or (not pick.is_empty() and not pick.has(key)):
-			continue
-		var t0 := Time.get_ticks_msec()
-		var look := str(pair[0])
-		var race := MapLooks.race_of(look) if MapLooks.has(look) else look
-		_look = look if MapLooks.has(look) else str(MapLooks.CHOSEN.get(race, ""))
-		var base := Party.spec_of(race + "_back")
-		if not _look.is_empty():
-			base = MapLooks.apply(base, _look)
-		var def: Dictionary = defs[pair[1]]
-		var frames := {}
-		for row: int in [0, 1, 3]:
-			var turn: float = {0: PI, 1: -SIDE_TURN, 3: 0.0}[row]
-			for c in (def["frames"] as Array).size():
-				var fr: Dictionary = def["frames"][c]
-				var kit: Dictionary = (base.get("kit", {}) as Dictionary).duplicate()
-				kit.merge(def["kit"] as Dictionary, true)
-				kit.merge(fr.get("kit", {}) as Dictionary, true)
-				var img := _figure(base, race, turn, 0.0, {"motion_frame": fr, "kit": kit})
-				frames[Vector2i(c, row)] = img
-				if row == 1:
-					var fl := img.duplicate() as Image
-					fl.flip_x()
-					frames[Vector2i(c, 2)] = fl
-		var packed := NpcActs.pack(frames, (def["frames"] as Array).size())
-		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(NpcActs.OUT))
-		(packed["sheet"] as Image).save_webp(NpcActs.OUT.path_join(key + ".webp"), false)
-		var cell: Vector2i = packed["cell"]
-		index[key] = {"cell": [cell.x, cell.y], "foot": 4, "frames": (def["frames"] as Array).size(), "seq": def["seq"], "fps": def["fps"]}
-		print("그림: NPC 동작 %s %d칸 (%d ms)" % [key, (def["frames"] as Array).size(), Time.get_ticks_msec() - t0])
-	_look = ""
-	NpcActs.save_index(index)
 
 
 ## 한 장(사람형): 돌림·걸음으로 그려 사람 키 = actor_sheet.body_px × k(그림 배율 적용)로 줄이고 바깥선. 발 = 그림 아래 가운데.

@@ -410,7 +410,7 @@ func test_street_layers_and_art() -> void:
 	var spans: Array = []
 	for id: String in db.get_collection("facilities"):
 		var f := db.get_entry("facilities", id)
-		for key: String in ["building", "interior"]:
+		for key: String in ["building"]:
 			assert_true(ResourceLoader.exists(JsonUtil.get_str(f, key)), "%s %s 그림 있음" % [id, key])
 		var tex := load(JsonUtil.get_str(f, "building")) as Texture2D
 		var x := float(JsonUtil.get_int(f, "x"))

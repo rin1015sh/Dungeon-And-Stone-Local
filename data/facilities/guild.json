@@ -4,8 +4,6 @@
   "order": 1,
   "x": 140,
   "building": "res://assets/city/buildings/guild.webp",
-  "interior": "res://assets/city/interiors/guild.webp",
-  "room": "guild",
   "activities": [
     "guild_survey",
     "guild_tags",

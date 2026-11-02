@@ -64,7 +64,7 @@ func test_art_and_save() -> void:
 	var s := _state()
 	for id in s.facility_ids():
 		var f := db.get_entry("facilities", id)
-		for key: String in ["building", "interior"]:
+		for key: String in ["building"]:
 			var b := JsonUtil.get_str(f, key)
 			assert_true(CityDistrict.art_path(b, CityDistrict.look(s)) != b, "%s %s 그림 등급 %d" % [id, key, CityDistrict.look(s)])
 	for layer: String in ["far", "mid", "street"]:
