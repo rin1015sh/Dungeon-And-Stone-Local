@@ -20,7 +20,7 @@
         {
           "type": "damage",
           "scaling": "phys",
-          "power": 3.0,
+          "power": 3.9,
           "damage_type": "blunt"
         }
       ]

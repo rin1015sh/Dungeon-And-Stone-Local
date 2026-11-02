@@ -463,13 +463,15 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 	elif result == Battle.RESULT_VICTORY:
 		monsters.remove(group, clock.total_hours)
 	elif result == Battle.RESULT_FLED:
-		monsters.set_grace(group, clock.total_hours)
+		monsters.set_flee_grace(group, clock.total_hours)  # 도주 = 전투 화면을 벗어날 뿐 — 무리는 물러나지 않는다
 	if group != null and gates.at.has(group.id) and not monsters.groups.has(group):
 		_cells_changed(gates.open(map, group.id))  # 보스를 쓰러뜨렸다 — 창살이 열린다
 	if ended:
 		return
 	if not chained:
-		pass_time(turns * float(db.bal("combat.hours_per_turn", 0.01)))
+		var spent := turns * float(db.bal("combat.hours_per_turn", 0.01))
+		monsters.hold_contacts(clock.total_hours + spent + float(db.bal("combat.after_battle_hold_hours", 0.15)))  # 다음 전투 전에 탐험 화면을 한 번 거친다
+		pass_time(spent)
 	if not ended:
 		refresh_view()
 

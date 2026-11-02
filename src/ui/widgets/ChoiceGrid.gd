@@ -33,6 +33,7 @@ var _cols: int = 2
 var _rows: int = 3
 var _slot_h: int = 50
 var _compact: bool = false
+var _inline_sub: bool = false  ## 작은 글씨(sub)를 이름과 같은 줄 오른쪽에 — 칸이 낮아진다(전투 스킬 목록)
 
 
 ## cols·rows 0이면 render.json combat_menu_columns·rows. slot_h 0이면 combat_slot_height. compact = 제목줄·설명줄 없이 칸만(쪽이 여럿이면 쪽 표시만).
@@ -70,6 +71,21 @@ func _init(cols: int = 0, rows: int = 0, slot_h: int = 0, compact: bool = false)
 	_desc.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_desc.visible = not compact
 	add_child(_desc)
+
+
+## 작은 글씨(대가·확률)를 이름 줄 오른쪽에 둔다 — 칸 높이를 줄일 때(전투 아래 창의 스킬 목록).
+func set_inline_sub(on: bool) -> void:
+	_inline_sub = on
+	for sub in _subs:
+		sub.vertical_alignment = VERTICAL_ALIGNMENT_CENTER if on else VERTICAL_ALIGNMENT_BOTTOM
+		sub.offset_bottom = 0 if on else -2
+
+
+## 설명줄 줄 수·높이를 바꾼다(전투 아래 창처럼 높이가 정해진 창 — 설명이 창 밖으로 잘리지 않게).
+func set_desc_size(lines: int, height: int) -> void:
+	_desc.max_lines_visible = lines
+	_desc.custom_minimum_size.y = height
+	_desc.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 
 
 ## 선택지를 채운다. back이 없으면(맨 위 메뉴) 뒤로 키는 아무 일도 하지 않는다. start = 처음 커서 자리.
@@ -279,9 +295,9 @@ func _style(b: Button, state: String) -> void:
 	var box := UiTheme.box(bg, border, 2, 0)
 	box.set_border_width_all(2 if state == "selected" else 1)
 	box.content_margin_left = UiTheme.metric("combat_slot_text_x", 22)
-	box.content_margin_right = UiTheme.metric("combat_slot_pad", 8)
+	box.content_margin_right = UiTheme.metric("combat_slot_inline_sub_width", 76) if _inline_sub else UiTheme.metric("combat_slot_pad", 8)  # 같은 줄 오른쪽이 작은 글씨 자리
 	box.content_margin_top = 2
-	box.content_margin_bottom = 2 if _compact else UiTheme.metric("combat_slot_sub_height", 18)  # 아래쪽은 작은 글씨(sub) 자리
+	box.content_margin_bottom = 2 if _compact or _inline_sub else UiTheme.metric("combat_slot_sub_height", 18)  # 아래쪽은 작은 글씨(sub) 자리
 	for s: String in ["normal", "hover", "pressed", "disabled", "focus", "hover_pressed"]:
 		b.add_theme_stylebox_override(s, box)
 	var fg := UiTheme.color("text_title" if state == "selected" else "text")

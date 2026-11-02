@@ -149,6 +149,8 @@
     "max_side_units": 6,
     "hours_per_turn": 0.01,
     "flee_grace_hours": 0.5,
+    "_after_battle_hold_comment": "전투가 끝난 뒤 이만큼(게임 시간 — 실제 1초 = 0.1시간)은 어느 무리와 닿아도 전투를 걸지 않는다 — 탐험 화면을 한 번 거쳐 간다(사용자 2026-11-02). 도주한 무리는 물러나지 않고 flee_grace_hours 동안만 안 건다",
+    "after_battle_hold_hours": 0.15,
     "_element_comment": "속성 피해(G6, ASSUMPTIONS GC1): 대상 resist_<유형> 1점당 피해 −1%(최대 75%), 공격자 affinity_<유형> 1점당 +2%",
     "element_resist_per_point": 0.01,
     "element_resist_max": 0.75,

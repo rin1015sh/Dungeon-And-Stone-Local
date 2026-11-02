@@ -74,6 +74,7 @@ class Group extends RefCounted:
 var groups: Array[Group] = []
 
 var _db: GameDatabase
+var _hold_until: float = -1.0  # 전투 뒤 이 시각(게임 시간)까지 닿아도 전투를 걸지 않는다(hold_contacts)
 var _map: FloorMap
 var _floor_def: Dictionary
 var _rng: Rng
@@ -239,7 +240,18 @@ func remove(g: Group, now: float) -> void:
 	changed.emit()
 
 
-## 플레이어가 도망친 무리: 잠시 쫓지 않고 제자리로 돌아간다.
+## 전투가 끝난 뒤 until(게임 시간)까지는 어느 무리와도 닿아도 전투를 걸지 않는다 — 탐험 화면을 한 번 거쳐 간다(사용자 2026-11-02).
+func hold_contacts(until: float) -> void:
+	_hold_until = maxf(_hold_until, until)
+
+
+## 도주한 무리(사용자 2026-11-02 — 도주는 전투 화면을 벗어날 뿐): 물러나지 않고 하던 대로(쫓던 무리는 계속 쫓는다),
+## combat.flee_grace_hours 동안만 다시 전투를 걸지 않는다.
+func set_flee_grace(g: Group, now: float) -> void:
+	g.grace_until = now + float(_db.bal("combat.flee_grace_hours", 0.5))
+
+
+## 잠시 쫓지 않고 제자리로 돌아간다(수수께끼를 그만둠·균열 연출 등).
 func set_grace(g: Group, now: float) -> void:
 	g.grace_until = now + float(_db.bal("combat.flee_grace_hours", 0.5))
 	g.state = STATE_RETURN
@@ -270,7 +282,7 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 			alerted.emit(g)
 	if moved:
 		changed.emit()
-	if player_safe:
+	if player_safe or now < _hold_until:
 		return null
 	for g in near:  # 쉬는 무리는 멀어서 닿을 수 없다
 		if g.grace_until > now or not g.hostile():

@@ -20,7 +20,7 @@
         {
           "type": "damage",
           "scaling": "phys",
-          "power": 1.9,
+          "power": 2.47,
           "damage_type": "pierce"
         }
       ]

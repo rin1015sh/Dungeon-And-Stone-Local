@@ -45,7 +45,9 @@ func _init() -> void:
 	add_child(right)
 	var stack := VBoxContainer.new()
 	right.add_child(stack)
-	_list = ChoiceGrid.new(2, 3, UiTheme.metric("combat_list_slot_height", 40))
+	_list = ChoiceGrid.new(2, 3, UiTheme.metric("combat_list_slot_height", 34))
+	_list.set_inline_sub(true)
+	_list.set_desc_size(UiTheme.metric("combat_list_desc_lines", 2), UiTheme.metric("combat_list_desc_height", 34))  # 스킬 설명이 아래 창 밖으로 잘리지 않게(사용자 2026-11-02)
 	_list.visible = false
 	_list.active = false
 	_list.back_action = "menu_back"
@@ -155,7 +157,7 @@ func _skills(start: int = 0) -> void:
 		var at := opts.size()  # 목록 칸 번호(건너뛴 스킬이 있으면 스킬 번호와 다르다)
 		var why := _battle.can_use(_unit, id)
 		var sub := _short_reason(id, why) if not why.is_empty() else _cost_text(sk)
-		var desc := SkillBrief.describe(db, sk)
+		var desc := SkillBrief.describe(db, sk).replace("\n", " · ")  # 한 줄로 이어 아래 창 안에 들게(사용자 2026-11-02)
 		if not why.is_empty():
 			desc = Strings.t(why) + "  " + desc
 		var pick := func() -> void:

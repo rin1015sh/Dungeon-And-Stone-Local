@@ -168,7 +168,10 @@ func test_resolve_victory_and_flee() -> void:
 	s.engage(g2, false)
 	s.resolve_encounter(g2, Battle.RESULT_FLED, 1)
 	assert_true(s.monsters.groups.has(g2), "도망치면 무리는 남는다")
-	assert_true(g2.grace_until > s.clock.total_hours, "도망친 뒤 잠시 쫓지 않는다")
+	assert_true(g2.grace_until > s.clock.total_hours, "도망친 뒤 잠시 전투를 걸지 않는다")
+	g2.state = FieldMonsters.STATE_CHASE
+	s.monsters.set_flee_grace(g2, s.clock.total_hours)
+	assert_eq(g2.state, FieldMonsters.STATE_CHASE, "도주해도 무리는 물러나지 않는다(전투 화면만 벗어난다)")
 	var g3: FieldMonsters.Group = s.monsters.groups[1] if s.monsters.groups[0] == g2 else s.monsters.groups[0]
 	var first := g3.monster_ids[0]
 	var size := g3.monster_ids.size()
@@ -273,3 +276,18 @@ func test_every_waiting_boss_has_a_notice_line() -> void:
 	for id: String in db.get_collection("monsters"):
 		if ranks.has(JsonUtil.get_str(db.get_entry("monsters", id), "rank")):
 			assert_true(Strings.has("explore.boss_notice." + id), "%s 전투 직전 문구" % id)
+
+
+## 전투 뒤 탐험 화면을 한 번 거친다: after_battle_hold_hours 동안은 무리와 닿아도 전투가 시작되지 않는다(사용자 2026-11-02).
+func test_hold_contacts_after_battle() -> void:
+	var s := _session()
+	var g: FieldMonsters.Group = s.monsters.groups[0]
+	s.engage(g, false)
+	s.resolve_encounter(g, Battle.RESULT_FLED, 0)
+	var other: FieldMonsters.Group = s.monsters.groups[1] if s.monsters.groups[0] == g else s.monsters.groups[0]
+	other.state = FieldMonsters.STATE_CHASE
+	other.pos = Kinematics.cell_of(s.fpos)
+	other.fpos = s.fpos
+	assert_true(s.monsters.update(s.fpos, 0.0, s.clock.total_hours, false) == null, "전투 바로 뒤에는 닿아도 전투가 없다")
+	var later := s.clock.total_hours + float(db.bal("combat.after_battle_hold_hours", 0.15)) + 0.01
+	assert_true(s.monsters.update(s.fpos, 0.0, later, false) != null, "조금 지나면 다시 전투가 걸린다")

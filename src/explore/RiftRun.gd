@@ -179,7 +179,7 @@ func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String, ki
 		_open_escape(s, g.pos)
 		g.tag = "battle"  # 남은 동반은 보통 무리
 	if result == Battle.RESULT_FLED:
-		s.monsters.set_grace(g, s.clock.total_hours)
+		s.monsters.set_flee_grace(g, s.clock.total_hours)  # 도주 = 전투 화면을 벗어날 뿐(사용자 2026-11-02)
 		return true
 	if result != Battle.RESULT_VICTORY:
 		return true
