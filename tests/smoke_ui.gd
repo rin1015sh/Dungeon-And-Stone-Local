@@ -444,12 +444,27 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	await _action("menu_up")
 	_expect(g.cursor() == CommandMenu.ROOT_ATTACK, "W·W → 공격")
 	await _single_item_target(combat, menu, g)
+	var me := combat.battle.current
+	var top := BattleRev.plan_max(combat.battle, me)
+	for i in BattleRev.cap(DataRegistry.db) + 1:
+		await _action("rev_up")
+	_expect(top >= 1 and combat._roster.rev_pick(me) == top, "E → Rev 올리기(얹을 수 있는 만큼까지) (%d/%d)" % [combat._roster.rev_pick(me), top])
+	await _action("rev_down")
+	_expect(combat._roster.rev_pick(me) == top - 1, "Q → Rev 내리기")
+	await _action("rev_up")
+	var acts: Array[Dictionary] = []
+	var grab := func(e: Dictionary) -> void:
+		if str(e.get("type")) == "act" and e.get("unit") == me:
+			acts.append(e.get("action", {}))
+	combat.battle.event.connect(grab)
 	var turns := combat.battle.turns
 	await _action("menu_confirm")
 	_expect(menu.grid().title_text() == Strings.t("combat.menu_target"), "Enter → 대상 고르기")
 	await _action("menu_confirm")
 	await _frames(2)
+	combat.battle.event.disconnect(grab)
 	_expect(combat.battle.turns > turns or not combat.battle.result.is_empty(), "Enter로 고른 공격이 차례를 쓴다")
+	_expect(not acts.is_empty() and int(acts[0].get("rev", 0)) == top, "고른 Rev가 공격에 얹힌다")
 
 
 ## 하나만 치는 균열 전투 도구(RF27): 아이템 → 적 고르기(듣지 않는 계열은 흐림) → Backspace로 아이템 목록 → 명령 칸.

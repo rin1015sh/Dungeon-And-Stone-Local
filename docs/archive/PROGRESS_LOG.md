@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **Rev Up — 피어 앤 헝거 2식 전투 자원 (2026-11-02, 사용자 "전투가 너무 단조로움 … 피어앤헝거 랭크업(rev Up)" → "적 자세는 빼고 레벨업만 진행해. 아군만 적용 키도 eq로", C20)**
+  - 범위: 아군 전투 자원 Rev(충전·상한·방어 덤·피해 스킬 위력·다 얹은 평타 2회), 행동 정하기의 E/Q, 파티 창 삼각형. 완료 기준: 단위 시험·UI 스모크(E/Q → 얹힘)·캡처 확인·check.sh 통과. 테스트: `tests/test_rev.gd`, `smoke_ui._keyboard_menu`, 캡처 `screenshot.tscn -- --screen=explore --combat --mate=human,barbarian --keys=rev_up,rev_up`.
+  - 한 것: `Combatant.rev` · `src/combat/BattleRev.gd`(새 — `cap`·`uses_rev`·`on_turn_start`·`on_guard`·`plan_max`·`applies`·`power`·`use`) · `Battle.next_turn`(차례 시작 충전)·`act`(방어 덤, 행동 `"rev"`)·`_use_skill`(효과 목록을 `BattleRev.use`로 — `BattleTargets.boosted`로 power에 곱하고, 3개 평타는 효과를 두 번). UI: `src/ui/combat/RevPips.gd`(새 — 그린 삼각형, 빈 칸 테두리·모은 것 흐린 채움·얹을 것 뼈빛 + 올림), `PartyRoster`(이름 옆, `rev_pick`·`set_rev_pick`, setup에 battle), `CombatScreen._input`(행동 정하는 동안 E/Q — `plan_max`까지), `_on_chosen`(피해 스킬이면 `action.rev`, 아니면 지움)·뒤로·쓰러짐·실행 때 정리. 데이터: `balance combat.rev{max 3, per_turn 1, guard_bonus 1, power [1, 1.3, 1.6, 2], basic_full_hits 2, basic_full_power 1}`(임시값), `input.json rev_up E · rev_down Q`, `render.json ui.combat_rev{size 11, gap 3, lift 3}`, `combat_roster_name_width` 132 → 176(삼각형이 들어가도 "이름 없는 탐험가"가 잘리지 않게).
+  - 확인: 단위 시험 527개 통과(새 5개 — 충전·상한·방어 덤·적 없음, 위력 ×1.6, 다 얹은 평타 2타, 방어에 안 얹힘·가진 만큼만, plan_max), UI 스모크 통과(E 여러 번 → 얹을 수 있는 만큼, Q → 하나 내림, 공격 행동에 rev가 실림), 캡처로 삼각형 세 상태 확인.
+  - 남은 것: 직접 해 보고 위력 배율·방어 덤 조절 · 시뮬레이터(`sim_battle`·`sim_party`)는 Rev를 쓰지 않는다 — 실제 플레이어는 시뮬레이터보다 조금 세다 · "Rev를 요구하는 스킬"(`rev_cost`)은 새 강한 정수 스킬을 만들 때 · Rev를 쓸 때 소리·몸짓 · `CombatScreen`(약 420줄)·`Battle`(약 440줄) 나누기.
+
 - **적 AI 단순화 — 화면 안이면 어그로 · 구울 맵 그림 크게 (2026-11-02, 사용자 "그냥 플레이어 화면 안에 들어오면 어그로 끌리게 · 이리저리 이동하면 바로 어그로가 풀려 · 구울 탐험화면에서 크기 늘리고", V28)**
   - 범위: 필드 몬스터 감지·추적 유지(MonsterMind·MonsterSight), 구울 맵 그림 크기. 완료 기준: 화면 안 = 한 번의 갱신에 추적 · 화면 안에서 움직여도 놓치지 않음 · 구울만 맵에서 커짐 · check.sh 통과. 테스트: `tests/test_monster_ai.gd`(새로 씀 — 바로 쫓기·등/벽 무시·기둥 사이를 세 바퀴 돌아도 유지·영역은 놓친 뒤에만·모퉁이·화면 밖 놓침 → 수색 → 귀환·무리 부르기), `test_field_monsters` 두 곳(의심 단계 없음).
   - 한 것: `MonsterMind` 306 → 약 230줄 — 화면 안(`_visible`: 은신·쫓는 중 여유·숨는/먼저 덤비지 않는 몬스터의 aggro_radius·상태 조건)이면 CHASE, 아니면 기억이 다할 때까지 마지막 칸 → 내다보기 → 수색 → 귀환. 영역(leash_tiles)은 화면 밖으로 놓쳤을 때만(바로 귀환). 시야각·벽 시선·경계도·의심·발소리·alertness 없앰(`MonsterSight.cone` 삭제 — `sees`는 보스 조우만), `STATE_SUSPECT`·`Group.awareness/known/leashed/hold_until` 삭제. balance 쓰지 않는 키 13개 지움, `chase_path_radius` 24 → 40(벽 너머 화면 안 상대에게 돌아가는 길). 몬스터 27종 behavior `ai.alertness` 지움.

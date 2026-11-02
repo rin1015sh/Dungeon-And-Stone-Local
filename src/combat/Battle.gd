@@ -174,6 +174,8 @@ func next_turn() -> Combatant:
 		turns += 1
 		c.extra_turn = _is_extra(c)
 		c.last_turn = turns
+		if not bool(c.memo.get("in_extra", false)):
+			BattleRev.on_turn_start(self, c)  # Rev Up(C20): 자기 차례마다 하나
 		_busy += 1
 		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
 		if not bool(c.memo.get("in_extra", false)):  # 추가 행동(같은 라운드의 두 번째 차례)은 지속시간·쿨타임을 다시 세지 않는다
@@ -205,7 +207,7 @@ func next_turn() -> Combatant:
 	return null
 
 
-## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "aim_weak": bool}
+## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "aim_weak": bool, "rev": 얹을 Rev 개수(BattleRev)}
 ##          | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant(하나만 치는 아이템)} | {"kind": "flee"}
 ## 적용했으면 true. 현재 차례가 아니거나 이미 처리했거나 행동이 잘못됐으면 false(차례를 쓰지 않는다).
 func act(c: Combatant, action: Dictionary) -> bool:
@@ -221,9 +223,11 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	var delay := 0.0
 	match str(action.get("kind", "")):
 		"skill":
-			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), bool(action.get("aim_weak", false)))
+			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), bool(action.get("aim_weak", false)),
+				int(action.get("rev", 0)))
 		"guard":
 			c.actor.statuses.apply("guarding")
+			BattleRev.on_guard(self, c)
 			message.emit("combat.guard", {"name": c.label()}, "info")
 		"item":
 			if not _use_item(c, str(action.get("item", "")), action.get("target")):
@@ -289,7 +293,7 @@ func unit_of(actor: Actor) -> Combatant:
 	return null
 
 
-func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool) -> float:
+func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool, rev: int = 0) -> float:
 	var sk := db.get_entry("skills", skill_id)
 	var why := can_use(c, skill_id)
 	if sk.is_empty() or not why.is_empty():
@@ -303,7 +307,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool)
 	if skill_id != BASIC_ATTACK:
 		message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
 	var kind := JsonUtil.get_str(sk, "target")
-	var fx := BattlePassives.skill_effects(self, c, skill_id, sk)
+	var fx := BattleRev.use(self, c, skill_id, sk, BattlePassives.skill_effects(self, c, skill_id, sk), rev)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
 	BattleRules.apply_cover(self, c, kind, targets)  # 대신 맞기
 	var mis := BattleTargets.misdirect(self, c, kind) if not targets.is_empty() else {}
