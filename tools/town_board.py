@@ -1,7 +1,7 @@
 """도시 동네 지도 배치도 — data/town/<id>.json(라비기온 7구역, CT82)을 위에서 본 그림으로.
   python3 tools/town_board.py [--map=district7] [--out=docs/plans/town]
 areas(길·광장·계단·옹벽·수로)·buildings(시설 — 뼈빛 테두리·금색 이름)·props(가로등 점)는 데이터 그대로,
-blocks(주택 덩어리)는 게임처럼 남쪽을 보는 집 줄(깊이 4~7칸)로 나눈 스케치(필지 경계는 게임과 다를 수 있다 — 게임은 TownMap이 지도 seed로 나눈다).
+blocks(주택 덩어리 — 게임은 그 각도로 기운 작은 집으로 채운다)는 집 줄 스케치(각도 없이 — 게임은 TownMap이 지도 seed로 세운다).
 기획 기록은 docs/plans/city_town.md. 위 = 북, 1칸 = 4px.
 """
 import json
@@ -36,7 +36,7 @@ def rect(d, r, fill, outline=None, w=1):
 
 
 def lots(d, rng, b):
-    x0, y0, x1, y1 = b
+    x0, y0, x1, y1 = b[:4]
     if x1 - x0 <= 8 and y1 - y0 > x1 - x0:
         y = y0
         while y < y1:
@@ -96,6 +96,8 @@ def main():
     rng = random.Random(data.get("seed", 7))
     for b in data["blocks"]:
         lots(d, rng, b)
+        if len(b) >= 5 and b[4]:
+            label(d, P((b[0] + b[2]) / 2, (b[1] + b[3]) / 2), "%+d°" % b[4], f_s)
     for p in data.get("props", []):
         pts = []
         if "at" in p:
@@ -136,8 +138,8 @@ def main():
         "",
         "시설 = 뼈빛 테두리 · 금색 이름",
         "  금색 칸 = 문(앞에서 위를 보고 Enter)",
-        "갈색 칸 = 집(남쪽을 보는 줄 — 밝은 선이 앞면)",
-        "  필지 경계는 스케치(게임은 TownMap)",
+        "갈색 칸 = 주택 덩어리(스케치 — 게임은 기운 작은 집)",
+        "  숫자 = 덩어리 각도(도)",
         "검은 띠 = 옹벽(테라스) · 성벽 · 구역문",
         "줄무늬 = 계단 · 노란 점 = 가로등",
         "초록 고리 = 들어온 자리(차원광장)",

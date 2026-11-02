@@ -1,15 +1,18 @@
 class_name TownHouse
 extends Node2D
-## 도시 동네 지도의 집 한 채(CT82 — 2D 3/4 탑뷰): 필지(바닥 칸)의 남쪽 끝에 앞면이 서고, 지붕은 그 위로 필지 깊이만큼(앞면 높이만큼 북쪽으로 밀린다).
-## 노드 위치 = (0, 앞면 아래 끝 y) — 발 높이로 앞뒤를 정한다(y_sort). 그림은 처음 한 번(TownBrush — 재질 그림 × 색).
-##   ridge "x" = 마루가 동서(처마가 길 쪽 — 남쪽 경사면이 넓게 보이고 지붕창·굴뚝), "y" = 박공이 길 쪽(앞면 위 삼각 박공, 좌우 경사면).
-## 시설 건물 꾸밈(간판·차양·아치·기둥·첨탑·원형 돔)은 TownLandmark가 덧그린다.
+## 도시 동네 지도의 집 한 채(CT82): 기운 필지(가운데·폭·깊이·각도)에 벽 네 면과 지붕(박공·모임)을 3D로 세워 게임 시점으로 그린다(TownSolid).
+##   카메라 쪽 벽 두 면이 보이고(각도가 틀어져 있으면), 지붕은 처마가 벽 밖으로 나오고 가파르다(render.json city.town.roof_pitch).
+##   벽: 밑단 돌 · 층마다 창(불 켠 창 · 덧문) · 앞쪽 벽 1층 문 · 반목조 집은 위층에 들보 · 처마 밑 그늘. 지붕: 지붕창 · 굴뚝.
+##   시설 꾸밈(큰 문·기둥·간판·차양·화덕)과 신전·원형 도서관은 TownLandmark.
+## 노드 위치 = (0, 필지 가장 남쪽 끝 y) — 발 높이로 앞뒤를 정한다(y_sort). 처음 한 번 그린다(TownBrush).
 
 var house: Dictionary
 var render: Dictionary
 var tile: float = 32.0
-## 그린 범위(세계 좌표 — 가림 판정에 쓴다).
+## 그린 범위(세계 px — 가림 판정에 쓴다).
 var bounds: Rect2
+## 짓는 동안: 앞쪽 벽(문이 나는 벽 — TownLandmark.dress가 쓴다) {face, a: Vector2, b: Vector2}.
+var front: Dictionary = {}
 var _fade: float = 1.0
 var _goal: float = 1.0
 
@@ -19,26 +22,47 @@ func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
 	render = p_render
 	tile = p_tile
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	var rc: Rect2i = h["rect"]
-	position = Vector2(0, rc.end.y * tile)
-	var top := -rc.size.y * tile - height() - roof_rise() - tile * 3.0
-	bounds = Rect2(rc.position.x * tile - 8.0, position.y + top, rc.size.x * tile + 16.0, -top)
+	var front_y := 0.0
+	if h.has("circle"):
+		var c: Array = h["circle"]
+		front_y = float(c[1]) + float(c[2])
+	else:
+		for p in corners():
+			front_y = maxf(front_y, p.y)
+	position = Vector2(0, front_y * tile)
+	bounds = _build().measure()
 
 
-## 앞면 높이(세계 px).
-func height() -> float:
-	return int(house.get("floors", 2)) * TownBrush.num(render, "storey_px", 34.0) + TownBrush.num(render, "base_px", 6.0)
+func num(key: String, fallback: float) -> float:
+	return TownBrush.num(render, key, fallback)
 
 
-func roof_rise() -> float:
-	var rc: Rect2i = house["rect"]
-	var depth := (rc.size.y if str(house.get("ridge", "x")) == "x" else rc.size.x) * tile
-	return clampf(depth * TownBrush.num(render, "roof_rise", 0.3), 20.0, 110.0)
+func col(key: String, i: int = 0) -> Color:
+	return TownBrush.col(render, key, i)
 
 
-## 가림(플레이어가 이 집 뒤에 있으면 흐리게 — TownWorld가 부른다).
+## 고르는 값(0~999)에서 k번째 선택.
+func pick(k: int, n: int) -> int:
+	return int(absi(int(house.get("look", 0)) * (k * 7 + 3) + k * 131) / 7) % maxi(1, n)
+
+
+## 필지 네 모서리(시계 반대 — 북서·북동·남동·남서, 각도만큼 돈다).
+func corners() -> PackedVector2Array:
+	var c: Vector2 = house.get("center", Vector2.ZERO)
+	var s: Vector2 = house.get("size", Vector2.ONE)
+	var a := float(house.get("angle", 0.0))
+	var ax := Vector2(cos(a), sin(a)) * s.x * 0.5
+	var ay := Vector2(-sin(a), cos(a)) * s.y * 0.5
+	return PackedVector2Array([c - ax - ay, c + ax - ay, c + ax + ay, c - ax + ay])
+
+
+## 벽 높이(칸).
+func wall_height() -> float:
+	return int(house.get("floors", 2)) * num("storey", 1.0) + num("base", 0.2)
+
+
 func set_fade(on: bool) -> void:
-	_goal = TownBrush.num(render, "fade_alpha", 0.3) if on else 1.0
+	_goal = num("fade_alpha", 0.3) if on else 1.0
 	set_process(not is_equal_approx(_fade, _goal))
 
 
@@ -47,7 +71,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_fade = move_toward(_fade, _goal, delta * TownBrush.num(render, "fade_speed", 4.0))
+	_fade = move_toward(_fade, _goal, delta * num("fade_speed", 4.0))
 	modulate.a = _fade
 	if is_equal_approx(_fade, _goal):
 		set_process(false)
@@ -55,164 +79,198 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var b := TownBrush.new()
-	var style := str(house.get("style", "house"))
-	if style == "rotunda":
-		TownLandmark.rotunda(b, self)
-	elif style == "gothic":
-		TownLandmark.gothic(b, self)
-	else:
-		draw_box(b)
-		TownLandmark.dress(b, self)
+	_build().flush(b)
 	b.flush(self)
 
 
-## 고르는 값(0~999)에서 k번째 선택.
-func pick(k: int, n: int) -> int:
-	return int(absi(int(house.get("look", 0)) * (k * 7 + 3) + k * 131) / 7) % maxi(1, n)
+func _build() -> TownSolid:
+	var s := TownSolid.new(tile, position.y, render)
+	match str(house.get("style", "")):
+		"rotunda":
+			TownLandmark.rotunda(s, self)
+		"gothic":
+			TownLandmark.gothic(s, self)
+		_:
+			build_house(s)
+			TownLandmark.dress(s, self)
+	return s
 
 
 func wall_color() -> Color:
-	match str(house.get("style", "house")):
+	match str(house.get("style", "")):
 		"stone", "workshop":
-			return TownBrush.col(render, "stone")
-		"hall", "inn", "arcade":
-			return TownBrush.col(render, "walls", [0, 4, 6][pick(1, 3)])
-	return TownBrush.col(render, "walls", pick(1, 7))
-
-
-func roof_color() -> Color:
-	var slate := str(house.get("style", "")) in ["stone", "workshop"] or pick(2, 4) == 0
-	return TownBrush.col(render, "slate", pick(3, 2)) if slate else TownBrush.col(render, "roofs", pick(3, 4))
-
-
-func roof_mat() -> String:
-	return "slate" if str(house.get("style", "")) in ["stone", "workshop"] or pick(2, 4) == 0 else "clay"
+			return col("stone", pick(1, 3))
+		"timber", "inn", "hall":
+			return col("timber_fill", pick(1, 2))
+	return col("plaster", pick(1, 5))
 
 
 func wall_mat() -> String:
 	return "ashlar" if str(house.get("style", "")) in ["stone", "workshop"] else "plaster"
 
 
-## 앞면 사각형(로컬 — 아래 끝 y = 0).
-func front() -> Rect2:
-	var rc: Rect2i = house["rect"]
-	return Rect2(rc.position.x * tile, -height(), rc.size.x * tile, height())
+func roof_color() -> Color:
+	return col("slate", pick(3, 3)) if pick(2, 5) < 3 else col("roofs", pick(3, 3))
 
 
-## 상자 집: 지붕 → 앞면(밑단·층 띠·창·문) → 처마 그늘 → 윤곽.
-func draw_box(b: TownBrush) -> void:
-	var rc: Rect2i = house["rect"]
-	var f := front()
-	var x0 := f.position.x
-	var x1 := f.end.x
-	var hgt := height()
-	var depth := rc.size.y * tile
-	var rise := roof_rise()
-	var rcol := roof_color()
-	var ink := TownBrush.col(render, "ink")
-	var uv := Vector2(pick(4, 97) * 13.0, pick(5, 89) * 7.0)
-	var o := 4.0
-	if str(house.get("ridge", "x")) == "x":
-		var yr := -depth * 0.5 - hgt - rise
-		var yb := -depth - hgt
-		var hip := 0.0 if not str(house.get("style", "")) in ["stone", "hall"] else minf(rise * 0.9, f.size.x * 0.3)
-		b.poly_cols(PackedVector2Array([Vector2(x0 - o + hip, yr), Vector2(x1 + o - hip, yr), Vector2(x1 + o, yb), Vector2(x0 - o, yb)]),
-			PackedColorArray([TownBrush.shade(rcol, 0.62), TownBrush.shade(rcol, 0.62), TownBrush.shade(rcol, 0.5), TownBrush.shade(rcol, 0.5)]), roof_mat(), uv)  # 북쪽 경사면
-		b.poly_cols(PackedVector2Array([Vector2(x0 - o, -hgt + 2), Vector2(x1 + o, -hgt + 2), Vector2(x1 + o - hip, yr), Vector2(x0 - o + hip, yr)]),
-			PackedColorArray([TownBrush.shade(rcol, 0.92), TownBrush.shade(rcol, 0.92), TownBrush.shade(rcol, 1.12), TownBrush.shade(rcol, 1.12)]), roof_mat(), uv)  # 남쪽 경사면
-		if hip > 0.0:  # 모임지붕 양 끝 삼각
-			b.poly(PackedVector2Array([Vector2(x0 - o, -hgt + 2), Vector2(x0 - o + hip, yr), Vector2(x0 - o, yb)]), TownBrush.shade(rcol, 1.0), roof_mat(), uv)
-			b.poly(PackedVector2Array([Vector2(x1 + o, -hgt + 2), Vector2(x1 + o, yb), Vector2(x1 + o - hip, yr)]), TownBrush.shade(rcol, 0.72), roof_mat(), uv)
-		b.line(Vector2(x0 - o + hip, yr), Vector2(x1 + o - hip, yr), 2.0, TownBrush.shade(rcol, 0.45))
-		b.line(Vector2(x0 - o, yb), Vector2(x1 + o, yb), 1.5, ink)  # 뒤 처마
-		b.line(Vector2(x0 - o, -hgt + 2), Vector2(x0 - o, yb), 1.5, ink)  # 지붕 옆 끝
-		b.line(Vector2(x1 + o, -hgt + 2), Vector2(x1 + o, yb), 1.5, ink)
-		_roof_bits(b, x0, x1, -hgt, yr, rcol)
+func roof_mat() -> String:
+	return "slate" if pick(2, 5) < 3 else "clay"
+
+
+## 상자 집: 벽 네 면(+ 창·문·들보) → 지붕(박공 또는 모임, 처마가 나온다) → 지붕창·굴뚝.
+func build_house(s: TownSolid) -> void:
+	var cs := corners()
+	var c: Vector2 = house["center"]
+	var hgt := wall_height()
+	var fi := 0
+	for i in 4:  # 문이 나는 벽 = 가장 남쪽을 보는 벽
+		var m := (cs[i] + cs[(i + 1) % 4]) * 0.5 - c
+		var mf := (cs[fi] + cs[(fi + 1) % 4]) * 0.5 - c
+		if m.normalized().y > mf.normalized().y:
+			fi = i
+	for i in 4:
+		var a := cs[i]
+		var b := cs[(i + 1) % 4]
+		var out := (a + b) * 0.5 - c
+		var f := s.face(PackedVector3Array([Vector3(a.x, a.y, 0), Vector3(b.x, b.y, 0), Vector3(b.x, b.y, hgt), Vector3(a.x, a.y, hgt)]),
+			wall_color(), wall_mat(), Vector3(out.x, out.y, 0))
+		if i == fi:
+			front = {"face": f, "a": a, "b": b}
+		if not f.is_empty():
+			_wall_details(s, f, a, b, hgt, i == fi and str(house.get("facility", "")).is_empty())
+	_roof(s, cs, c, hgt)
+
+
+func _roof(s: TownSolid, cs: PackedVector2Array, c: Vector2, hgt: float) -> void:
+	var size: Vector2 = house["size"]
+	var a := float(house.get("angle", 0.0))
+	var ax := Vector2(cos(a), sin(a))
+	var ay := Vector2(-sin(a), cos(a))
+	var along_x := (size.x >= size.y) == bool(house.get("ridge_long", true))
+	var r := ax if along_x else ay
+	var p := ay if along_x else ax
+	var hr := (size.x if along_x else size.y) * 0.5
+	var hp := (size.y if along_x else size.x) * 0.5
+	var o := num("overhang", 0.28)
+	var rise := hp * (num("facility_pitch", 0.8) if not str(house.get("facility", "")).is_empty() else num("roof_pitch", 1.15))
+	var ze := hgt - 0.05
+	var zr := hgt + rise
+	var rc := roof_color()
+	var rm := roof_mat()
+	var E := func(i: float, j: float) -> Vector3:
+		var q: Vector2 = c + r * (hr + o) * i + p * (hp + o) * j
+		return Vector3(q.x, q.y, ze)
+	var hip := str(house.get("roof", "gable")) == "hip"
+	var rl := maxf(0.0, hr - hp) if hip else hr + o
+	var q0 := Vector3(c.x - r.x * rl, c.y - r.y * rl, zr)
+	var q1 := Vector3(c.x + r.x * rl, c.y + r.y * rl, zr)
+	s.face(PackedVector3Array([E.call(-1.0, 1.0), E.call(1.0, 1.0), q1, q0]), rc, rm, Vector3(p.x, p.y, 1.0))
+	s.face(PackedVector3Array([E.call(1.0, -1.0), E.call(-1.0, -1.0), q0, q1]), rc, rm, Vector3(-p.x, -p.y, 1.0))
+	if hip:
+		s.face(PackedVector3Array([E.call(-1.0, -1.0), E.call(-1.0, 1.0), q0]), rc, rm, Vector3(-r.x, -r.y, 1.0))
+		s.face(PackedVector3Array([E.call(1.0, 1.0), E.call(1.0, -1.0), q1]), rc, rm, Vector3(r.x, r.y, 1.0))
 	else:
-		var xm := (x0 + x1) * 0.5
-		var deep := rc.size.y * tile
-		b.poly_cols(PackedVector2Array([Vector2(x0 - o, -hgt + 2), Vector2(xm, -hgt - rise), Vector2(xm, -hgt - rise - deep), Vector2(x0 - o, -hgt - deep)]),
-			PackedColorArray([TownBrush.shade(rcol, 1.0), TownBrush.shade(rcol, 1.12), TownBrush.shade(rcol, 1.0), TownBrush.shade(rcol, 0.9)]), roof_mat(), uv)
-		b.poly_cols(PackedVector2Array([Vector2(xm, -hgt - rise), Vector2(x1 + o, -hgt + 2), Vector2(x1 + o, -hgt - deep), Vector2(xm, -hgt - rise - deep)]),
-			PackedColorArray([TownBrush.shade(rcol, 0.78), TownBrush.shade(rcol, 0.7), TownBrush.shade(rcol, 0.6), TownBrush.shade(rcol, 0.7)]), roof_mat(), uv)
-		b.line(Vector2(xm, -hgt - rise), Vector2(xm, -hgt - rise - deep), 2.0, TownBrush.shade(rcol, 0.45))
-		if pick(6, 3) == 0:
-			_chimney(b, x0 + (x1 - x0) * 0.72, -hgt - rise * 0.5 - deep * 0.5)
-	_facade(b, f)
-	if str(house.get("ridge", "x")) == "y":  # 박공(앞면 위 삼각)
-		var xm := (x0 + x1) * 0.5
-		var wc := wall_color()
-		b.poly_cols(PackedVector2Array([Vector2(x0, -hgt), Vector2(x1, -hgt), Vector2(xm, -hgt - rise + 3)]),
-			PackedColorArray([TownBrush.shade(wc, 0.95), TownBrush.shade(wc, 0.95), TownBrush.shade(wc, 1.05)]), wall_mat(), uv)
-		var gw := minf(10.0, f.size.x * 0.25)
-		b.rect(Rect2(xm - gw * 0.5, -hgt - rise * 0.55, gw, rise * 0.32), TownBrush.col(render, "glass"))
-		b.line(Vector2(x0 - o, -hgt + 2), Vector2(xm, -hgt - rise), 3.0, TownBrush.shade(rcol, 0.55))
-		b.line(Vector2(xm, -hgt - rise), Vector2(x1 + o, -hgt + 2), 3.0, TownBrush.shade(rcol, 0.45))
-	b.rect_v(Rect2(x0, -hgt, f.size.x, 7), Color(0, 0, 0, 0.45), Color(0, 0, 0, 0.0))  # 처마 그늘
-	b.line(Vector2(x0 - o, -hgt + 1), Vector2(x1 + o, -hgt + 1), 2.5, TownBrush.shade(rcol, 0.4))  # 앞 처마
-	b.line(Vector2(x0, -hgt), Vector2(x0, 0), 1.5, ink)
-	b.line(Vector2(x1, -hgt), Vector2(x1, 0), 1.5, ink)
+		for k: float in [-1.0, 1.0]:  # 박공 벽(삼각)
+			var w0 := c + r * hr * k - p * hp
+			var w1 := c + r * hr * k + p * hp
+			var top := c + r * hr * k
+			var f := s.face(PackedVector3Array([Vector3(w0.x, w0.y, hgt), Vector3(w1.x, w1.y, hgt), Vector3(top.x, top.y, zr - 0.08)]),
+				wall_color(), wall_mat(), Vector3(r.x * k, r.y * k, 0))
+			if not f.is_empty() and hp > 1.2:
+				var g := c + r * hr * k
+				s.decal(f, _quad_v(g - p * 0.18, g + p * 0.18, hgt + rise * 0.3, hgt + rise * 0.55), col("glass"), "", false)
+	var side := 1.0 if p.y >= 0.0 else -1.0  # 남쪽을 보는 경사면
+	if hp >= 1.5 and hr >= 1.4 and pick(4, 3) != 0:
+		_dormer(s, c, r, p * side, hp, o, ze, zr, rc, rm)
+	if pick(5, 4) != 0:
+		var at := c + r * hr * (0.45 if pick(6, 2) == 0 else -0.45) - p * side * hp * 0.25
+		_chimney(s, at, r, hgt + rise * 0.5, zr + 0.55)
 
 
-## 앞면: 벽(아래가 조금 어둡다) · 밑단 · 층마다 창 · 1층 문 · 층 띠(반목조 집은 들보).
-func _facade(b: TownBrush, f: Rect2) -> void:
-	var wc := wall_color()
-	var uv := Vector2(pick(7, 61) * 11.0, pick(8, 53) * 5.0)
-	b.rect_v(f, TownBrush.shade(wc, 1.02), TownBrush.shade(wc, 0.8), wall_mat(), uv)
-	var base := TownBrush.num(render, "base_px", 6.0)
-	b.rect(Rect2(f.position.x, -base, f.size.x, base), TownBrush.col(render, "plinth"), "ashlar")
-	var storey := TownBrush.num(render, "storey_px", 34.0)
+## 지붕창: 경사면 위에 세운 작은 앞벽(창) + 작은 박공 지붕(뒤로 큰 지붕에 닿을 때까지).
+func _dormer(s: TownSolid, c: Vector2, r: Vector2, p: Vector2, hp: float, o: float, ze: float, zr: float, rc: Color, rm: String) -> void:
+	var span := hp + o
+	var z_at := func(t: float) -> float: return zr - (zr - ze) * t / span
+	var t := hp * 0.55
+	var hw := 0.38
+	var g := c + p * t
+	var zb: float = z_at.call(t)
+	var zt := zb + 0.55
+	var apex := zt + 0.32
+	var t2 := (zr - apex) * span / (zr - ze)
+	var t3 := (zr - zt) * span / (zr - ze)
+	var gl := g - r * hw
+	var gr := g + r * hw
+	var f := s.face(PackedVector3Array([Vector3(gl.x, gl.y, zb), Vector3(gr.x, gr.y, zb), Vector3(gr.x, gr.y, zt), Vector3(g.x, g.y, apex), Vector3(gl.x, gl.y, zt)]),
+		wall_color(), wall_mat(), Vector3(p.x, p.y, 0))
+	s.decal(f, _quad_v(g - r * 0.18, g + r * 0.18, zb + 0.08, zt - 0.06), col("glass_lit") if pick(7, 3) == 0 else col("glass"), "", pick(7, 3) != 0)
+	var e := hw + 0.1
+	var gb := c + p * t2
+	var ll := c + p * t3 - r * e
+	var lr := c + p * t3 + r * e
+	var fl := g - r * e + p * 0.06
+	var fr := g + r * e + p * 0.06
+	s.face(PackedVector3Array([Vector3(fl.x, fl.y, zt - 0.04), Vector3(g.x + p.x * 0.06, g.y + p.y * 0.06, apex + 0.04), Vector3(gb.x, gb.y, apex + 0.04), Vector3(ll.x, ll.y, zt - 0.04)]),
+		rc, rm, Vector3(-r.x, -r.y, 1.0))
+	s.face(PackedVector3Array([Vector3(g.x + p.x * 0.06, g.y + p.y * 0.06, apex + 0.04), Vector3(fr.x, fr.y, zt - 0.04), Vector3(lr.x, lr.y, zt - 0.04), Vector3(gb.x, gb.y, apex + 0.04)]),
+		rc, rm, Vector3(r.x, r.y, 1.0))
+
+
+func _chimney(s: TownSolid, at: Vector2, r: Vector2, z0: float, z1: float) -> void:
+	var q := Vector2(-r.y, r.x)
+	var h := 0.22
+	var base := PackedVector2Array([at - r * h - q * h, at + r * h - q * h, at + r * h + q * h, at - r * h + q * h])
+	s.box(base, z0, z1, col("brick"), "ashlar", TownBrush.shade(col("brick"), 0.4), "")
+
+
+## 벽 하나의 장식: 밑단 · (반목조) 들보 · 층마다 창 · 1층 문(앞벽) · 처마 밑 그늘.
+func _wall_details(s: TownSolid, f: Dictionary, a: Vector2, b: Vector2, hgt: float, with_door: bool) -> void:
+	var length := a.distance_to(b)
+	var base := num("base", 0.2)
+	var storey := num("storey", 1.0)
 	var floors := int(house.get("floors", 2))
-	var timber := str(house.get("style", "house")) in ["inn", "hall"] or (str(house.get("style", "house")) == "house" and pick(9, 5) == 0)
-	var n := maxi(1, int((f.size.x - 6.0) / 24.0))
-	var door_i := pick(10, n) if str(house.get("facility", "")).is_empty() else -1
+	var style := str(house.get("style", "plaster"))
+	var q := func(d0: float, d1: float, z0: float, z1: float) -> PackedVector3Array:
+		return _quad_v(a.lerp(b, d0 / length), a.lerp(b, d1 / length), z0, z1)
+	s.decal(f, q.call(0.0, length, 0.0, base), col("plinth"), "ashlar")
+	if style == "timber":
+		s.decal(f, q.call(0.0, length, base, base + storey), col("stone", pick(1, 3)), "ashlar")  # 1층은 돌
+	var n := maxi(1, int((length - 0.25) / 1.1))
+	var door_k := pick(8, n) if with_door else -1
+	var shutters := style == "plaster" and pick(9, 2) == 0
 	for fl in floors:
-		var y0 := -base - (fl + 1) * storey
-		if timber and fl > 0:
-			b.rect(Rect2(f.position.x, y0 + storey - 3, f.size.x, 3), TownBrush.col(render, "timber"))
+		var z0 := base + fl * storey
+		if style == "timber" and fl > 0:
+			var tc := col("timber")
+			s.decal(f, q.call(0.0, length, z0 - 0.04, z0 + 0.08), tc)
 			for k in n + 1:
-				var bx := f.position.x + 2 + (f.size.x - 4) * float(k) / n
-				b.rect(Rect2(bx - 1.5, y0, 3, storey), TownBrush.col(render, "timber"))
-		elif fl > 0:
-			b.rect(Rect2(f.position.x, y0 + storey - 2, f.size.x, 2), TownBrush.shade(wc, 1.15))
+				var d := clampf(length * float(k) / n, 0.05, length - 0.05)
+				s.decal(f, q.call(d - 0.05, d + 0.05, z0, z0 + storey), tc)
+			if pick(10 + fl, 2) == 0 and n >= 2:  # 버팀대
+				var d0 := length / n * 0.1
+				var p0 := a.lerp(b, d0 / length)
+				var p1 := a.lerp(b, (length / n * 0.9) / length)
+				s.decal(f, PackedVector3Array([Vector3(p0.x, p0.y, z0 + 0.08), Vector3(p0.x, p0.y, z0 + 0.2), Vector3(p1.x, p1.y, z0 + storey - 0.02), Vector3(p1.x, p1.y, z0 + storey - 0.14)]), tc)
+		elif style == "stone" and fl > 0:
+			s.decal(f, q.call(0.0, length, z0 - 0.03, z0 + 0.04), TownBrush.shade(wall_color(), 1.2))
 		for k in n:
-			var cx := f.position.x + (f.size.x) * (k + 0.5) / n
-			if fl == 0 and k == door_i:
-				_door(b, cx, -base, 12.0, storey - 6)
-			elif fl == 0 and str(house.get("facility", "")).is_empty() and pick(11 + k, 4) == 0:
-				_window(b, cx, y0 + 8, 18.0, storey - 14, true)  # 가게 창
-			else:
-				_window(b, cx, y0 + 7, 9.0, storey - 15, pick(20 + k + fl * 5, 7) == 0)
+			var d := length * (k + 0.5) / n
+			if fl == 0 and k == door_k:
+				s.decal(f, q.call(d - 0.32, d + 0.32, base, base + 0.82), col("plinth"), "ashlar")
+				s.decal(f, q.call(d - 0.25, d + 0.25, base, base + 0.76), col("door"), "wood")
+				continue
+			var lit_w := pick(20 + k + fl * 7, 4) == 0
+			var wz := z0 + storey * 0.3
+			s.decal(f, q.call(d - 0.24, d + 0.24, wz - 0.05, wz + 0.5), col("frame"))
+			s.decal(f, q.call(d - 0.18, d + 0.18, wz, wz + 0.45), col("glass_lit") if lit_w else col("glass"), "", not lit_w)
+			s.decal(f, q.call(d - 0.02, d + 0.02, wz, wz + 0.45), col("frame"))
+			s.decal(f, q.call(d - 0.26, d + 0.26, wz - 0.1, wz - 0.04), col("plinth"))
+			if shutters:
+				s.decal(f, q.call(d - 0.36, d - 0.2, wz, wz + 0.45), col("shutter", pick(11, 3)), "wood")
+				s.decal(f, q.call(d + 0.2, d + 0.36, wz, wz + 0.45), col("shutter", pick(11, 3)), "wood")
+	s.decal(f, q.call(0.0, length, hgt - 0.22, hgt), Color(0, 0, 0, 0.45), "", false)
 
 
-func _window(b: TownBrush, cx: float, y: float, w: float, h: float, lit: bool) -> void:
-	b.rect(Rect2(cx - w * 0.5 - 1.5, y - 1.5, w + 3, h + 3), TownBrush.col(render, "frame"))
-	b.rect_v(Rect2(cx - w * 0.5, y, w, h), TownBrush.col(render, "glass_lit" if lit else "glass"), TownBrush.shade(TownBrush.col(render, "glass_lit" if lit else "glass"), 0.7))
-	b.rect(Rect2(cx - 0.75, y, 1.5, h), TownBrush.shade(TownBrush.col(render, "frame"), 0.8))
-	b.rect(Rect2(cx - w * 0.5 - 2.5, y + h + 1.5, w + 5, 2.5), TownBrush.col(render, "ink"))
-
-
-func _door(b: TownBrush, cx: float, bottom: float, w: float, h: float) -> void:
-	b.rect(Rect2(cx - w * 0.5 - 2, bottom - h - 2, w + 4, h + 2), TownBrush.shade(TownBrush.col(render, "plinth"), 0.8))
-	b.rect_v(Rect2(cx - w * 0.5, bottom - h, w, h), TownBrush.col(render, "door"), TownBrush.shade(TownBrush.col(render, "door"), 0.6), "wood")
-
-
-## 남쪽 경사면의 지붕창·굴뚝.
-func _roof_bits(b: TownBrush, x0: float, x1: float, eave: float, ridge: float, rcol: Color) -> void:
-	var w := x1 - x0
-	if w >= 7 * tile * 0.7 and pick(12, 2) == 0:
-		var n := 1 if w < 8 * tile else 2
-		for k in n:
-			var cx := x0 + w * (k + 1) / (n + 1)
-			var y := lerpf(eave, ridge, 0.55)
-			b.rect_v(Rect2(cx - 8, y - 4, 16, 14), wall_color(), TownBrush.shade(wall_color(), 0.85), "plaster")
-			b.rect(Rect2(cx - 4, y, 8, 9), TownBrush.col(render, "glass"))
-			b.poly(PackedVector2Array([Vector2(cx - 11, y - 2), Vector2(cx, y - 12), Vector2(cx + 11, y - 2)]), TownBrush.shade(rcol, 1.05), roof_mat())
-	if pick(13, 3) != 0:
-		_chimney(b, x0 + w * (0.2 + 0.6 * pick(14, 10) / 10.0), ridge + 2)
-
-
-func _chimney(b: TownBrush, cx: float, base_y: float) -> void:
-	var c := TownBrush.col(render, "brick")
-	b.rect_v(Rect2(cx - 5, base_y - 20, 10, 22), TownBrush.shade(c, 1.1), TownBrush.shade(c, 0.75), "ashlar")
-	b.rect(Rect2(cx - 6.5, base_y - 23, 13, 4), TownBrush.shade(c, 0.6))
+## 벽 위 사각(바닥 두 점 a·b, 높이 z0~z1).
+static func _quad_v(a: Vector2, b: Vector2, z0: float, z1: float) -> PackedVector3Array:
+	return PackedVector3Array([Vector3(a.x, a.y, z0), Vector3(b.x, b.y, z0), Vector3(b.x, b.y, z1), Vector3(a.x, a.y, z1)])

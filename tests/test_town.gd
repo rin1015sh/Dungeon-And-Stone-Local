@@ -8,10 +8,10 @@ func _town() -> TownMap:
 
 func test_district_is_dense_and_every_door_is_reachable() -> void:
 	var t := _town()
-	assert_eq(Vector2i(t.width, t.height), Vector2i(160, 220), "7구역 전체 160×220칸")
+	assert_eq(Vector2i(t.width, t.height), Vector2i(128, 176), "7구역 전체 128×176칸")
 	assert_true(t.is_walkable(t.start), "들어온 자리는 걷는 칸")
 	var plain := t.houses.filter(func(h: Dictionary) -> bool: return str(h["facility"]).is_empty())
-	assert_true(plain.size() >= 300, "집이 오밀조밀하다(%d채)" % plain.size())
+	assert_true(plain.size() >= 400, "집이 오밀조밀하다(%d채)" % plain.size())
 	var reach := t.map.reachable_from(t.start)
 	var order: Array = JsonUtil.get_array(db.singletons.get("city", {}), "facility_order")
 	for fac: Variant in order:
@@ -23,25 +23,28 @@ func test_district_is_dense_and_every_door_is_reachable() -> void:
 	assert_eq(t.house_of("library").get("style", ""), "rotunda", "도서관은 원형 열람당(사용자 2026-11-02)")
 
 
-func test_lots_are_shallow_and_do_not_overlap() -> void:
+func test_houses_are_small_and_twisted() -> void:
 	var t := _town()
-	var grid := PackedByteArray()
-	grid.resize(t.width * t.height)
-	var overlaps := 0
-	var bad := 0
+	var big := 0
+	var twisted := 0
+	var plain := 0
 	for h: Dictionary in t.houses:
-		var rc: Rect2i = h["rect"]
-		if str(h["facility"]).is_empty() and (mini(rc.size.x, rc.size.y) < 2 or mini(rc.size.x, rc.size.y) > TownMap.ROW_MAX + 2):
-			bad += 1
-		if str(h.get("style", "")) == "rotunda":
+		if not str(h["facility"]).is_empty():
 			continue
-		for y in range(rc.position.y, rc.end.y):
-			for x in range(rc.position.x, rc.end.x):
-				var i := y * t.width + x
-				overlaps += grid[i]
-				grid[i] = 1
-	assert_eq(bad, 0, "집 깊이는 얕다(줄 깊이 %d~%d)" % [TownMap.ROW_MIN, TownMap.ROW_MAX])
-	assert_eq(overlaps, 0, "필지가 겹치지 않는다")
+		plain += 1
+		var size: Vector2 = h["size"]
+		if size.x > TownMap.W_MAX + 0.01 or size.y > TownMap.D_MAX + 0.01:
+			big += 1
+		if absf(rad_to_deg(float(h["angle"]))) > 3.0:
+			twisted += 1
+		for y in range((h["rect"] as Rect2i).position.y, (h["rect"] as Rect2i).end.y):
+			for x in range((h["rect"] as Rect2i).position.x, (h["rect"] as Rect2i).end.x):
+				var d := Vector2(x + 0.5, y + 0.5) - (h["center"] as Vector2)
+				var a := float(h["angle"])
+				if absf(d.dot(Vector2(cos(a), sin(a)))) <= size.x * 0.5 and absf(d.dot(Vector2(-sin(a), cos(a)))) <= size.y * 0.5:
+					assert_eq(t.kind_at(Vector2i(x, y)), "house", "집 칸은 막힌다")
+	assert_eq(big, 0, "집은 작다(폭 ≤ %.1f · 깊이 ≤ %.1f칸)" % [TownMap.W_MAX, TownMap.D_MAX])
+	assert_true(twisted * 2 >= plain, "집 절반 이상이 길과 어긋나게 기울었다(%d/%d)" % [twisted, plain])
 
 
 func test_walk_blocked_by_houses_and_stairs_go_up_down() -> void:

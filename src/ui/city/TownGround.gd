@@ -42,7 +42,29 @@ func _draw() -> void:
 						cols, MAT.get(k, "cobble"))
 					if k == "water" and town.ground_at(c + Vector2i.UP) != "water":  # 둑 앞면
 						b.rect_v(Rect2(p, Vector2(tile, tile * 0.35)), TownBrush.col(render, "retain"), TownBrush.shade(TownBrush.col(render, "retain"), 0.45), "ashlar")
+	_litter(b)
 	b.flush(self)
+
+
+## 바닥에 흩어진 종이·부스러기(참고 그림처럼 — 칸마다 고정된 값으로 고른다, 무작위가 아니다).
+func _litter(b: TownBrush) -> void:
+	var chance := TownBrush.num(render, "litter", 0.035)
+	var c := TownBrush.col(render, "litter")
+	for y in range(rect.position.y, rect.end.y):
+		for x in range(rect.position.x, rect.end.x):
+			var k := town.ground_at(Vector2i(x, y))
+			if not k in ["street", "avenue", "paving", "plaza", "yard"]:
+				continue
+			var h := absi(hash(Vector2i(x, y) * 7919)) % 10000
+			if float(h) / 10000.0 >= chance:
+				continue
+			var p := (Vector2(x, y) + Vector2(float(h % 97) / 97.0, float(h % 89) / 89.0) * 0.8) * tile
+			var a := float(h % 360) * PI / 180.0
+			var u := Vector2(cos(a), sin(a)) * (3.5 + h % 3)
+			var v := Vector2(-u.y, u.x) * 0.7
+			var cc := TownBrush.shade(c, 0.8 + float(h % 5) * 0.06)
+			cc.a = 0.75
+			b.poly(PackedVector2Array([p - u - v, p + u - v, p + u + v, p - u + v]), cc)
 
 
 ## 옹벽·성벽: 아래 두 칸 안에 길이 있으면 앞면(마름돌 — 위가 밝고 아래가 어둡다), 아니면 위면(어두운 잡석).

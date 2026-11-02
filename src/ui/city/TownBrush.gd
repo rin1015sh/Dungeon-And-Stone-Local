@@ -37,6 +37,15 @@ func poly_cols(pts: PackedVector2Array, cols: PackedColorArray, mat: String = ""
 	if pts.size() < 3:
 		return
 	var t := tex(mat)
+	var uvs := PackedVector2Array()
+	if t != null:
+		var size := Vector2(t.get_width(), t.get_height()) * SCALE
+		for p in pts:
+			uvs.append((p + uv_off) / size)
+	_add(pts, cols, uvs, t)
+
+
+func _add(pts: PackedVector2Array, cols: PackedColorArray, uvs: PackedVector2Array, t: Texture2D) -> void:
 	var run: Array = _runs.back() if not _runs.is_empty() else []
 	if run.is_empty() or run[0] != t:
 		run = [t, PackedVector2Array(), PackedColorArray(), PackedVector2Array(), PackedInt32Array()]
@@ -49,15 +58,29 @@ func poly_cols(pts: PackedVector2Array, cols: PackedColorArray, mat: String = ""
 	vp.append_array(pts)
 	vc.append_array(cols)
 	if t != null:
-		var size := Vector2(t.get_width(), t.get_height()) * SCALE
-		for p in pts:
-			vu.append((p + uv_off) / size)
+		vu.append_array(uvs)
 	for k in range(1, pts.size() - 1):
 		vi.append_array([base, base + k, base + k + 1])
 	run[1] = vp  # 꾸러미 배열은 값으로 복사된다 — 다시 넣는다
 	run[2] = vc
 	run[3] = vu
 	run[4] = vi
+
+
+## 볼록 다각형 하나 — 재질 좌표를 직접(세계 px 단위 — 면 위 좌표, TownSolid).
+func poly_uv(pts: PackedVector2Array, c: Color, uvs_px: PackedVector2Array, mat: String) -> void:
+	var t := tex(mat)
+	if t == null:
+		poly(pts, c)
+		return
+	var size := Vector2(t.get_width(), t.get_height()) * SCALE
+	var uvs := PackedVector2Array()
+	for u in uvs_px:
+		uvs.append(u / size)
+	var cols := PackedColorArray()
+	cols.resize(pts.size())
+	cols.fill(c)
+	_add(pts, cols, uvs, t)
 
 
 func rect(r: Rect2, c: Color, mat: String = "", uv_off: Vector2 = Vector2.ZERO) -> void:

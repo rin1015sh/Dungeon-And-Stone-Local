@@ -1,7 +1,7 @@
 class_name TownMap
 extends RefCounted
 ## 도시 동네 지도(라비기온 7구역 — 2D 3/4 탑뷰, CT82): data/town/<id>.json을 칸 지도로 편다.
-##   areas(길·광장·계단·옹벽·수로 …)를 순서대로 칠하고, blocks(주택 덩어리)를 남쪽을 보는 집 줄로 쌓아 필지마다 집 한 채씩,
+##   areas(길·광장·계단·옹벽·수로 …)를 순서대로 칠하고, buildings(시설)를 세운 뒤 blocks(주택 덩어리)를 기운 줄의 작은 집으로 채우고,
 ##   buildings(시설)과 props(가로등·천막·통 …)를 놓는다. 걷기 판정은 FloorMap(걷는 칸 = city.json town.floor_tile) — Kinematics가 쓴다.
 ## 필지 나누기는 지도 seed의 Rng(같은 지도 = 같은 동네). 오토로드를 참조하지 않는다(헤드리스 시험 — tests/test_town.gd).
 
@@ -9,11 +9,15 @@ extends RefCounted
 const KINDS := ["void", "street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "court", "water", "retain", "wall", "gate",
 	"dais", "house", "prop"]
 const WALK := ["street", "avenue", "paving", "plaza", "stairs", "bridge", "yard"]
-const ROW_MIN := 4  ## 집 줄 깊이(칸)
-const ROW_MAX := 7
-const LOT_MIN := 4  ## 필지 폭(칸)
-const LOT_MAX := 8
-const ALLEY_CHANCE := 0.35  ## 줄 사이 두 칸 골목
+const W_MIN := 3.2  ## 집 폭(칸 — 줄 방향)
+const W_MAX := 5.4
+const D_MIN := 3.4  ## 집 깊이(칸)
+const D_MAX := 5.0
+const JITTER := 5.0  ## 집마다 더 비트는 각도(도)
+const FLOORS_MIN := 2
+const FLOORS_MAX := 4
+const HIP_CHANCE := 0.4  ## 모임지붕(나머지는 박공)
+const ALLEY_CHANCE := 0.3  ## 줄 사이 골목
 
 var id: String = ""
 var def: Dictionary = {}
@@ -21,7 +25,7 @@ var width: int = 0
 var height: int = 0
 var start: Vector2i = Vector2i.ZERO
 var map: FloorMap
-## 집: {id, rect: Rect2i, ridge: "x"|"y", floors, look(0~999 — 색·지붕·굴뚝을 고르는 값), facility(시설이면 id), style, circle(원형이면 [cx, cy, r]), door: Vector2i}
+## 집: {id, center: Vector2(칸), size: Vector2(폭·깊이), angle(라디안), rect: Rect2i(감싸는 칸), floors, roof(hip·gable), ridge_long, style(stone·timber·plaster 또는 시설 꼴), look(0~999), facility(시설이면 id), circle(원형이면 [cx, cy, r]), door: Vector2i}
 var houses: Array[Dictionary] = []
 ## 소품: {kind, rect: Rect2i}
 var props: Array[Dictionary] = []
@@ -59,10 +63,10 @@ func _build(db: GameDatabase, map_id: String, cfg: Dictionary) -> void:
 	for a: Variant in JsonUtil.get_array(def, "areas"):
 		_paint_area(a as Dictionary)
 	var rng := Rng.new(maxi(1, JsonUtil.get_int(def, "seed", 7)))
-	for b: Variant in JsonUtil.get_array(def, "blocks"):
-		_block(_rect(b as Array), rng)
 	for b: Variant in JsonUtil.get_array(def, "buildings"):
 		_building(b as Dictionary, rng)
+	for b: Variant in JsonUtil.get_array(def, "blocks"):
+		_block(b as Array, rng)
 	for p: Variant in JsonUtil.get_array(def, "props"):
 		_props(p as Dictionary)
 	map = FloorMap.new(db, width, height, JsonUtil.get_str(cfg, "block_tile", "rock_wall"))
@@ -161,41 +165,74 @@ func _paint_area(a: Dictionary) -> void:
 			gates[c] = {"gate": JsonUtil.get_str(a, "id"), "travel": JsonUtil.get_bool(a, "travel")}
 
 
-## 덩어리 → 남쪽을 보는 집 줄(깊이 ROW_MIN~ROW_MAX칸)을 북에서 남으로 쌓고, 줄마다 폭 LOT_MIN~LOT_MAX칸 필지(참고 그림처럼 앞면이 모두 남쪽 —
-## 뒷줄 집 앞면 위로 앞줄 지붕이 겹친다). 줄 사이에 가끔 두 칸 골목(덩어리 양옆 길과 이어진다). 좁고 긴 덩어리(폭 ≤ 8)는 남북으로 늘어선 박공집.
-func _block(r: Rect2i, rng: Rng) -> void:
-	if r.size.x <= LOT_MAX and r.size.y > r.size.x:
-		_row(r, false, rng)
-		return
-	var y := r.position.y
-	while y < r.end.y:
-		var rest := r.end.y - y
-		var d := rng.randi_range(ROW_MIN, ROW_MAX)
-		if rest - d < ROW_MIN:
-			d = rest if rest <= ROW_MAX + 2 else rest - ROW_MIN
-		_row(Rect2i(r.position.x, y, r.size.x, d), true, rng)
-		y += d
-		if r.end.y - y >= ROW_MIN * 2 + 2 and rng.randf() < ALLEY_CHANCE:
-			_fill(Rect2i(r.position.x, y, r.size.x, 2), "street")  # 줄 사이 골목
-			y += 2
+## 덩어리 [x0, y0, x1, y1, 각도(도)] → 그 각도로 기운 줄을 따라 작은 집(폭 W_MIN~W_MAX · 깊이 D_MIN~D_MAX칸)을 붙여 세운다
+## (참고 그림처럼 길과 어긋나게 뒤틀린 동네 — 사용자 2026-11-02). 집마다 조금씩 더 비튼다. 덩어리 밖으로 나가는 집은 줄여 보고 안 되면 뺀다.
+## 남은 틈은 작은 집으로 한 번 더 메우고, 그래도 남으면 길(걷는다).
+func _block(b: Array, rng: Rng) -> void:
+	var r := _rect(b.slice(0, 4))
+	var ang := deg_to_rad(float(b[4])) if b.size() >= 5 else 0.0
+	var c := Vector2(r.position) + Vector2(r.size) * 0.5
+	var ax := Vector2(cos(ang), sin(ang))
+	var ay := Vector2(-sin(ang), cos(ang))
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for k in 4:
+		var d := Vector2(r.position) + Vector2(r.size.x * (k % 2), r.size.y * (k / 2)) - c
+		var l := Vector2(d.dot(ax), d.dot(ay))
+		lo = lo.min(l)
+		hi = hi.max(l)
+	var v := lo.y
+	while v < hi.y - 2.0:
+		var dep := rng.randf_range(D_MIN, D_MAX)
+		var u := lo.x
+		while u < hi.x - 2.0:
+			var w := rng.randf_range(W_MIN, W_MAX)
+			var jit := deg_to_rad(rng.randf_range(-JITTER, JITTER))
+			var ctr := c + ax * (u + w * 0.5) + ay * (v + dep * 0.5)
+			if not _try_house(ctr, Vector2(w, dep), ang + jit, r, rng):
+				_try_house(ctr, Vector2(w, dep) * 0.7, ang + jit, r, rng)
+			u += w
+		v += dep
+		if rng.randf() < ALLEY_CHANCE:
+			v += 1.6  # 줄 사이 골목
+	for y in range(r.position.y, r.end.y - 2):  # 틈 메우기
+		for x in range(r.position.x, r.end.x - 2):
+			if kind_at(Vector2i(x, y)) == "street":
+				var s := Vector2(rng.randf_range(2.6, 3.4), rng.randf_range(2.6, 3.2))
+				_try_house(Vector2(x, y) + s * 0.5 + Vector2(0.1, 0.1), s, ang + deg_to_rad(rng.randf_range(-JITTER, JITTER)), r, rng)
 
 
-## 한 줄의 필지: along_x면 동서로 폭 LOT_MIN~LOT_MAX칸씩(깊이 = 줄 높이), 아니면 남북으로.
-func _row(r: Rect2i, along_x: bool, rng: Rng) -> void:
-	var length := r.size.x if along_x else r.size.y
-	var depth := r.size.y if along_x else r.size.x
-	var pos := 0
-	while pos < length:
-		var rest := length - pos
-		var lw := rng.randi_range(LOT_MIN, LOT_MAX)
-		if rest - lw < LOT_MIN:
-			lw = rest if rest <= LOT_MAX + 2 else rest - LOT_MIN
-		var lot := Rect2i(r.position.x + pos, r.position.y, lw, depth) if along_x else Rect2i(r.position.x, r.position.y + pos, depth, lw)
-		var ridge := "x" if along_x else "y"
-		if along_x and lw <= 6 and rng.randf() < 0.45:
-			ridge = "y"  # 좁은 집은 박공을 길 쪽으로(지붕선이 들쭉날쭉하게)
-		_add_house({"rect": lot, "ridge": ridge, "floors": rng.randi_range(2, 4), "look": rng.randi_range(0, 999), "style": "house"})
-		pos += lw
+## 기운 사각 필지에 집 하나(칸 가운데가 필지 안인 칸을 집으로). 덩어리 밖·이미 찬 칸이면 세우지 않는다.
+func _try_house(ctr: Vector2, size: Vector2, ang: float, r: Rect2i, rng: Rng) -> bool:
+	var ax := Vector2(cos(ang), sin(ang))
+	var ay := Vector2(-sin(ang), cos(ang))
+	var box := Rect2(Vector2(r.position), Vector2(r.size)).grow(0.35)
+	var lo := Vector2i(1 << 20, 1 << 20)
+	var hi := Vector2i(-1, -1)
+	for k in 4:
+		var p := ctr + ax * size.x * (0.5 if k % 2 == 1 else -0.5) + ay * size.y * (0.5 if k >= 2 else -0.5)
+		if not box.has_point(p):
+			return false
+		lo = Vector2i(mini(lo.x, int(floor(p.x))), mini(lo.y, int(floor(p.y))))
+		hi = Vector2i(maxi(hi.x, int(floor(p.x))), maxi(hi.y, int(floor(p.y))))
+	var cells: Array[Vector2i] = []
+	for y in range(lo.y, hi.y + 1):
+		for x in range(lo.x, hi.x + 1):
+			var d := Vector2(x + 0.5, y + 0.5) - ctr
+			if absf(d.dot(ax)) <= size.x * 0.5 and absf(d.dot(ay)) <= size.y * 0.5:
+				if kind_at(Vector2i(x, y)) != "street" or not r.has_point(Vector2i(x, y)):
+					return false
+				cells.append(Vector2i(x, y))
+	if cells.size() < 4:
+		return false
+	for cc in cells:
+		_put(cc, "house")
+	var styles := ["stone", "timber", "plaster"]
+	houses.append({"id": "h%d" % houses.size(), "center": ctr, "size": size, "angle": ang, "rect": Rect2i(lo, hi - lo + Vector2i.ONE),
+		"floors": rng.randi_range(FLOORS_MIN, FLOORS_MAX), "roof": "hip" if rng.randf() < HIP_CHANCE else "gable",
+		"ridge_long": rng.randf() < 0.7, "style": styles[rng.randi_range(0, 2)], "look": rng.randi_range(0, 999),
+		"facility": "", "door": Vector2i(-1, -1)})
+	return true
 
 
 func _building(b: Dictionary, rng: Rng) -> void:
@@ -216,7 +253,13 @@ func _building(b: Dictionary, rng: Rng) -> void:
 		h["rect"] = Rect2i(lo, hi - lo + Vector2i.ONE)
 		houses.append(h)
 	else:
-		h["rect"] = _rect(JsonUtil.get_array(b, "rect"))
+		var rc := _rect(JsonUtil.get_array(b, "rect"))
+		h["rect"] = rc
+		h["center"] = Vector2(rc.position) + Vector2(rc.size) * 0.5
+		h["size"] = Vector2(rc.size)
+		h["angle"] = 0.0
+		h["roof"] = JsonUtil.get_str(b, "roof", "hip")
+		h["ridge_long"] = true
 		_add_house(h)
 	var door: Vector2i = h["door"]
 	for dx in [-1, 0, 1]:
