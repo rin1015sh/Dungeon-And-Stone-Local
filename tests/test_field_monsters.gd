@@ -97,10 +97,10 @@ func test_chase_until_contact() -> void:
 
 
 func test_non_aggressive_waits_and_grace() -> void:
-	var fm := _room_field("ghoul")
-	var g := _place(fm, "ghoul", Vector2i(12, 7))
+	var fm := _room_field("riddle_gatekeeper")  # 먼저 덤비지 않는 몬스터(aggressive false — 벤시·수수께끼 문지기)
+	var g := _place(fm, "riddle_gatekeeper", Vector2i(12, 7))
 	var player := Vector2i(3, 7)
-	assert_true(fm.update(_c(player), _move_hours("ghoul") * 5.0, 0.0, false) == null, "구울은 멀리서는 덤비지 않는다")
+	assert_true(fm.update(_c(player), _move_hours("riddle_gatekeeper") * 5.0, 0.0, false) == null, "멀리서는 덤비지 않는다")
 	assert_true(g.state != FieldMonsters.STATE_CHASE)
 	g.place(Vector2i(4, 7))
 	fm.set_player_moving(true)
@@ -110,6 +110,14 @@ func test_non_aggressive_waits_and_grace() -> void:
 	fm.update(_c(player), 0.0, 1.0, false)
 	assert_true(fm.update(_c(player), 0.1, 1.1, false) == g, "유예가 지나면 다시(다시 알아채고)")
 	assert_true(fm.update(_c(player), 0.0, 1.1, true) == null, "안전지대에서는 덤비지 않는다")
+
+
+## 구울은 먼저 덤빈다(사용자 2026-11-02 — 화면 안이면 다른 몬스터처럼 쫓는다, V28).
+func test_ghoul_chases_on_screen() -> void:
+	var fm := _room_field("ghoul")
+	var g := _place(fm, "ghoul", Vector2i(12, 7))
+	fm.update(_c(Vector2i(3, 7)), 0.001, 0.001, false)
+	assert_eq(g.state, FieldMonsters.STATE_CHASE)
 
 
 func test_gnome_hides_until_close() -> void:
