@@ -81,11 +81,30 @@ func _build() -> void:
 			if tex != null:
 				var v := FloorArtLayer.variant(x, y, def.art_variants, def.art_salt)
 				set_uv_cell(_uvs, tex, v, def.art_variants, 0.0, 1.0)
+				if def.art_directional and _vertical(map, x, y, def):  # 세로 철로: 그림의 가로 방향을 화면 세로로
+					var tr := _uvs[1]
+					_uvs[1] = _uvs[3]
+					_uvs[3] = tr
 				_mesh.add_tex(_pts, _uvs, tex, x, y, def.color_floor, def.index)
 			else:
 				_mesh.add_plain(_pts, x, y, def.color_floor * view.cell_jitter(x, y))
 			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null and tex == null:  # 그림이 있으면 표식 마름모는 그리지 않는다
 				_marks.append([x, y, def.color_mark])
+
+
+## 칸 (x, y)의 같은 타일이 가로보다 세로로 더 길게 이어지는가(한 방향 무늬 — 철로).
+static func _vertical(map: FloorMap, x: int, y: int, def: TileDef) -> bool:
+	var h := 1
+	var v := 1
+	for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var q := Vector2i(x, y) + d
+		while map.in_bounds(q) and map.def_at(q) == def:
+			if d.y == 0:
+				h += 1
+			else:
+				v += 1
+			q += d
+	return v > h
 
 
 ## 가장자리를 다듬는 바닥(물 — art.shape "smooth")의 칸 모서리를 사선으로: 물 칸의 볼록 모서리(맞닿은 두 이웃이 다른 바닥)는
