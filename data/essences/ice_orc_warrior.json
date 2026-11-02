@@ -32,11 +32,13 @@
   ],
   "stats": {
     "str": 16,
+    "p_res": 8,
+    "m_res": 3,
     "resist_cold": 7
   },
   "resources": {
     "hp": 23
   },
   "source": "placeholder",
-  "notes": "명세 §10"
+  "notes": "명세 §10 · 2026-11-02 주 스탯 합 16 → 27(7등급 기준 — 물리내성 +8·항마력 +3, J19)"
 }
