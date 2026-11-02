@@ -88,6 +88,10 @@ class Plan:
 		self.labels: list = []  # (x, z, 글, 종류)
 		self.notes: list = []  # (머리, 글)
 		self.section_x = 0.0
+		self.raised: list = []  # (점들, 높이) — 단 위에 돋운 땅(돋운 광장 등)
+		self.pavings: list = []  # 점들 — 광장 판석(다각형)
+		self.discs: list = []  # (x, z, r, 높이, 색) — 둥근 단(광장 돌 단 등)
+		self.slabs: list = []  # (점들, 밑 높이, 위 높이 — 땅 기준) — 떠 있는 지붕(회랑): 밑으로는 보이고 지붕은 가린다
 
 	# 줄: 앞선(서→동 꺾은선)을 따라 집을 한 채씩 붙인다. 앞면 = 선, 집은 북쪽(뒤)으로 depth만큼.
 	def row(self, line: list, seed: int, st=(2, 4), depth=(4.5, 6.0), w=(4.0, 6.5), gap=(0.0, 0.35),
@@ -150,6 +154,8 @@ def raster(p: Plan):
 	for line, h in reversed(p.bands):
 		poly = [px(X0 - 2, Z0 - 2)] + [px(x, z) for x, z in line] + [px(X1 + 2, Z0 - 2)]
 		dg.polygon(poly, fill=h)
+	for poly, h in p.raised:
+		dg.polygon([px(*q) for q in poly], fill=h)
 	# 남쪽 끝 단(마지막 경계 남쪽)은 맨 아래 높이 — bands 마지막 항목이 그 높이를 갖는다.
 	for x0, z0, x1, z1, hi, lo in p.stairs:
 		for k in range(int((z1 - z0) * S) + 1):
@@ -169,6 +175,9 @@ def raster(p: Plan):
 		gx, gz = px(x, z)
 		base = float(g[int(gz), int(gx)])
 		db.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=base + top)
+	for x, z, r, h, _c in p.discs:
+		gx, gz = px(x, z)
+		db.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=float(g[int(gz), int(gx)]) + h)
 	for pts, h in p.walls:
 		for a, b in zip(pts, pts[1:]):
 			gx, gz = px(*a)
@@ -182,12 +191,25 @@ def raster(p: Plan):
 	suf = np.maximum.accumulate(k[::-1], axis=0)[::-1]
 	suf = np.vstack([suf[1:], np.full((1, W), -1e9, np.float32)])
 	vis = (g - TAN * zz) >= suf - 0.05
+	for poly, y0, y1 in p.slabs:  # 떠 있는 지붕: 시선이 지붕 높이 사이를 지나면 가려진다
+		M = Image.new("L", (W, H), 0)
+		ImageDraw.Draw(M).polygon([px(*q) for q in poly], fill=1)
+		m = np.array(M).astype(bool)
+		gx, gz = px(sum(q[0] for q in poly) / len(poly), sum(q[1] for q in poly) / len(poly))
+		base = float(g[min(int(gz), H - 1), min(int(gx), W - 1)])
+		zc = zz[:, 0]
+		for c in np.nonzero(m.any(axis=0))[0]:
+			rs = np.nonzero(m[:, c])[0]
+			r = g[:, c][:, None] + TAN * (zc[rs][None, :] - zc[:, None])
+			hit = (rs[None, :] > np.arange(H)[:, None]) & (r >= base + y0) & (r <= base + y1)
+			vis[:, c] &= ~hit.any(axis=1)
 	return g, b, vis
 
 
 # ---------- 그리기 ----------
 
-def draw_plan(p: Plan) -> Image.Image:
+def draw_plan(p: Plan, clean: bool = False) -> Image.Image:
+	"""clean = 카메라 그림의 바닥·지붕 색으로 쓸 판(빗금·글·선 없음)."""
 	g, b, vis = raster(p)
 	img = np.zeros((H, W, 3), np.uint8)
 	for h, c in GROUND.items():
@@ -205,9 +227,17 @@ def draw_plan(p: Plan) -> Image.Image:
 	for x, z, r in p.plazas:
 		d.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=PLAZA_C, outline=(96, 90, 80), width=2)
 		d.ellipse([px(x - 2, z - 2), px(x + 2, z + 2)], outline=(70, 66, 60), width=3)
+	for poly in p.pavings:
+		d.polygon([px(*q) for q in poly], fill=PLAZA_C)
+	for x, z, r in p.plazas:
+		if p.pavings:
+			d.ellipse([px(x - 3.4, z - 3.4), px(x + 3.4, z + 3.4)], fill=(160, 152, 134), outline=(96, 90, 80), width=2)
+			d.ellipse([px(x - 2, z - 2), px(x + 2, z + 2)], outline=(70, 66, 60), width=3)
+	for x, z, r, _h, c in p.discs:
+		d.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=c, outline=(96, 90, 80), width=1)
 	# 가려진 땅 = 어둡게 + 빗금(카메라에서 안 보이는 곳)
 	arr = np.array(im).astype(np.float32)
-	hid = (~vis) & (b < -50)
+	hid = (~vis) & (b < -50) & (not clean)
 	yy, xx = np.mgrid[0:H, 0:W]
 	hatch = ((xx + yy) % 9) < 2
 	arr[hid] *= 0.52
@@ -231,13 +261,16 @@ def draw_plan(p: Plan) -> Image.Image:
 		d.rectangle([px(x0, z0), px(x1, z1)], outline=(60, 56, 50), width=1)
 	for pts, h in p.walls:
 		d.line([px(*q) for q in pts], fill=WALL if h > 3 else (70, 64, 58), width=max(3, int(0.6 * S)) if h > 3 else 3)
-	for path in p.paths:
+	for path in ([] if clean else p.paths):
 		dashed(d, [px(*q) for q in path], ALLEY, 3, 10, 7)
 	rng = random.Random(p.key)
 	for hs in p.houses:
 		poly = [px(*q) for q in hs["poly"]]
+		if hs["kind"] == "post":
+			d.polygon(poly, fill=(70, 64, 58))
+			continue
 		if hs["kind"] == "fac":
-			d.polygon(poly, fill=FAC, outline=BONE, width=3)
+			d.polygon(poly, fill=FAC, outline=(60, 44, 36) if clean else BONE, width=1 if clean else 3)
 		elif hs["kind"] == "shed":
 			d.polygon(poly, fill=(128, 104, 84), outline=(52, 46, 40), width=1)
 		else:
@@ -245,11 +278,18 @@ def draw_plan(p: Plan) -> Image.Image:
 			c = rng.choice(ROOFS)
 			k = 1.0 - (t - 3.8) * 0.06
 			d.polygon(poly, fill=tuple(int(v * k) for v in c), outline=(46, 38, 34), width=1)
-		a, bq = hs["front"]
-		d.line([px(*a), px(*bq)], fill=BONE, width=3)
+		hs["roof"] = im.getpixel((int(sum(q[0] for q in poly) / 4), int(sum(q[1] for q in poly) / 4))) if 0 <= sum(q[0] for q in poly) / 4 < W and 0 <= sum(q[1] for q in poly) / 4 < H else FAC
+		if not clean:
+			a, bq = hs["front"]
+			d.line([px(*a), px(*bq)], fill=BONE, width=3)
 	for x, z, r, _t, _n in p.rounds:
 		d.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=FAC, outline=BONE, width=3)
 		d.ellipse([px(x - r * 0.5, z - r * 0.5), px(x + r * 0.5, z + r * 0.5)], outline=(170, 140, 110), width=2)
+	if clean:
+		return im
+	dp = ImageDraw.Draw(im, "RGBA")
+	for poly in getattr(p, "arcades", []):  # 회랑 지붕(떠 있는 판)
+		dp.polygon([px(*q) for q in poly], fill=(104, 74, 60, 150), outline=(226, 216, 196, 255))
 	for hs in p.houses:
 		if hs.get("name"):
 			cx = sum(q[0] for q in hs["poly"]) / 4
@@ -493,36 +533,38 @@ def plan_b() -> Plan:
 	return p
 
 
+C, Sn = math.cos(math.radians(28.8)), math.sin(math.radians(28.8))
+
+
+def fan_block(p: Plan, x0: float, x1: float, zf: float, L: float, seed: int, zs: float, back: bool = True, back_st=(3, 4), gate: bool = True):
+	"""안 3 덩어리: 뒷줄(x0~x1, 앞 = zf, 안마당을 봄) + 서쪽 날개(뒤집은 사선 — 남남동) + 동쪽 날개(사선 — 남남서) + 남쪽 낮은 담(zs)."""
+	if back:
+		p.row([(x0, zf), (x1, zf)], seed, st=back_st, depth=(5, 6), jitter=0.5)
+	wa, wb = (x0 - L * C, zf + 1.0 + L * Sn), (x0 - 0.2, zf + 1.0)
+	ea, eb = (x1 + 0.2, zf + 1.0), (x1 + L * C, zf + 1.0 + L * Sn)
+	p.row([wa, wb], seed + 1, st=(2, 3), depth=(4, 5), jitter=0.3, w=(3.6, 5.0))
+	p.row([ea, eb], seed + 2, st=(2, 3), depth=(4, 5), jitter=0.3, w=(3.6, 5.0))
+	p.yards.append([(x0, zf + 0.4), (x1, zf + 0.4), (eb[0] - 0.6, eb[1] + 0.4), (eb[0] - 0.6, zs), (wa[0] + 0.6, zs), (wa[0] + 0.6, wa[1] + 0.4)])
+	if zs - wa[1] > 1.0:
+		p.walls.append(([(wa[0], wa[1] + 0.5), (wa[0], zs)], 1.1))
+		p.walls.append(([(eb[0], eb[1] + 0.5), (eb[0], zs)], 1.1))
+	mid = (x0 + x1) / 2
+	if gate:
+		p.walls.append(([(wa[0], zs), (mid - 1.8, zs)], 1.1))
+		p.walls.append(([(mid + 1.8, zs), (eb[0], zs)], 1.1))
+	return wa[0], eb[0]
+
+
 def plan_c() -> Plan:
 	p = Plan("c", "안 3 · 부채꼴 안마당", "첫 구상의 덩어리 동네를 남쪽으로 열어서 — 덩어리마다 뒷줄 + 비스듬히 벌어진 날개 + 안마당")
 	p.bands = [(flat(-30), TOP), (flat(10), MID), (flat(Z1 + 2), LOW)]
 	common(p, -4)
-	C, Sn = math.cos(math.radians(28.8)), math.sin(math.radians(28.8))
-
-	def block(x0: float, x1: float, zf: float, L: float, seed: int, zs: float, back: bool = True, back_st=(3, 4), gate: bool = True):
-		"""뒷줄(x0~x1, 앞 = zf, 안마당을 봄) + 서쪽 날개(뒤집은 사선 — 남남동) + 동쪽 날개(사선 — 남남서) + 남쪽 낮은 담(zs)."""
-		if back:
-			p.row([(x0, zf), (x1, zf)], seed, st=back_st, depth=(5, 6), jitter=0.5)
-		wa, wb = (x0 - L * C, zf + 1.0 + L * Sn), (x0 - 0.2, zf + 1.0)
-		ea, eb = (x1 + 0.2, zf + 1.0), (x1 + L * C, zf + 1.0 + L * Sn)
-		p.row([wa, wb], seed + 1, st=(2, 3), depth=(4, 5), jitter=0.3, w=(3.6, 5.0))
-		p.row([ea, eb], seed + 2, st=(2, 3), depth=(4, 5), jitter=0.3, w=(3.6, 5.0))
-		p.yards.append([(x0, zf + 0.4), (x1, zf + 0.4), (eb[0] - 0.6, eb[1] + 0.4), (eb[0] - 0.6, zs), (wa[0] + 0.6, zs), (wa[0] + 0.6, wa[1] + 0.4)])
-		if zs - wa[1] > 1.0:
-			p.walls.append(([(wa[0], wa[1] + 0.5), (wa[0], zs)], 1.1))
-			p.walls.append(([(eb[0], eb[1] + 0.5), (eb[0], zs)], 1.1))
-		mid = (x0 + x1) / 2
-		if gate:
-			p.walls.append(([(wa[0], zs), (mid - 1.8, zs)], 1.1))
-			p.walls.append(([(mid + 1.8, zs), (eb[0], zs)], 1.1))
-		return wa[0], eb[0]
-
 	# 꼭대기 단(+7.2): 신전(앞뜰이 안마당) · 덩어리 · 원형 도서관
 	p.box(-10, -47, 20, 10, 12.0, "신전")
 	p.yards.append([(-10, -46.6), (10, -46.6), (13, -36), (-13, -36)])
-	block(-42, -26, -48, 9, 40, -36)
-	block(26, 42, -48, 9, 42, -36)
-	block(62, 72, -50, 6, 44, -38, back_st=(2, 3))
+	fan_block(p, -42, -26, -48, 9, 40, -36)
+	fan_block(p, 26, 42, -48, 9, 42, -36)
+	fan_block(p, 62, 72, -50, 6, 44, -38, back_st=(2, 3))
 	p.rounds.append((-66, -44, 6.0, 7.0, "도서관"))
 	# 광장 단(0): 광장 = 가장 큰 부채꼴 마당 — 뒷줄 = 길드 + 집 줄, 서쪽 날개 = 거울 사선 줄, 동쪽 날개 = 여관(사선)
 	p.box(-15, -14, 11, 8, 6.0, "탐험가 길드")
@@ -530,8 +572,8 @@ def plan_c() -> Plan:
 	p.row([(-15 - 13 * C, -13 + 13 * Sn), (-15.2, -13)], 51, st=(2, 3), depth=(4.5, 5.5))
 	p.box(14.2, -13, 13, 6, 5.2, "여관", yaw=-28.8)
 	p.plazas.append((0, -2, 9))
-	block(-62, -46, -20, 9, 52, -7)
-	block(36, 50, -20, 8, 53, -7)
+	fan_block(p, -62, -46, -20, 9, 52, -7)
+	fan_block(p, 36, 50, -20, 8, 53, -7)
 	p.box(64, -2, 12, 7, 6.0, "은행")
 	p.row([(-80, -2), (-73, -2)], 55, st=(2, 3))
 	p.stairs += [(-3, -35, 0.2, -30, TOP, MID), (-3, 10, 3, 15, MID, LOW)]
@@ -541,8 +583,8 @@ def plan_c() -> Plan:
 	p.row([(-62, 17), (-52, 17)], 60, st=(2, 3), depth=(4.5, 5.5))
 	p.box(-52, 17, 12, 6, 4.2, "잡화점")
 	p.row([(-40, 17), (-30, 17)], 61, st=(2, 3), depth=(4.5, 5.5))
-	block(-62, -30, 17, 10, 62, 29, back=False, gate=False)
-	block(14, 28, 17, 8, 63, 28, back_st=(1, 2))
+	fan_block(p, -62, -30, 17, 10, 62, 29, back=False, gate=False)
+	fan_block(p, 14, 28, 17, 8, 63, 28, back_st=(1, 2))
 	p.box(44, 22, 12, 7, 4.5, "대장간")
 	p.yards.append([(44, 22.6), (56, 22.6), (56, 30), (44, 30)])
 	# 뒷골목 = 덩어리 사이 틈 · 뒷줄 뒤 띠 · 옹벽 밑
