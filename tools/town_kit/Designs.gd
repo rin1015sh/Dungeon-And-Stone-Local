@@ -44,6 +44,8 @@ static func stack(k: Kit, x0: float, z0: float, x1: float, z1: float, y0: float,
 		var back := side.duplicate()
 		back["lit"] = 0.1
 		k.box(x0, z0, x1, z1, y, y + h, {"s": F.wall(lv), "e": F.wall(side), "w": F.wall(side), "n": F.wall(back)}, F.wall(side))
+		if lv.has("door") and is_equal_approx(y, y0):
+			step(k, x0 + F.door_x(x1 - x0, float(lv["door"])), z1, y)
 		y += h
 	return [x0, z0, x1, z1, y]
 
@@ -63,6 +65,11 @@ static func dormer(k: Kit, r: Array, rise: float, cx: float, ci: int) -> void:
 	var yb := float(r[4]) + rise * (1.0 - (zf - zm) / half)
 	k.box(cx - 0.42, zm, cx + 0.42, zf, yb - 0.3, yb + 0.62, {"s": F.gable("plaster", ci), "e": F.plain("wood"), "w": F.plain("wood")}, F.gable("plaster", ci, false))
 	k.gable_roof(cx - 0.42, zm, cx + 0.42, zf, yb + 0.62, 0.38, false, 0.08, F.roof(ci, true), F.gable("plaster", ci, false))
+
+
+## 문 앞 디딤돌(문 가운데 x, 벽 앞 z, 바닥 y).
+static func step(k: Kit, x: float, z: float, y: float) -> void:
+	k.box(x - 0.62, z, x + 0.62, z + 0.36, y, y + 0.12, {"top": F.plain("stone", 2)}, F.plain("stone", 2))
 
 
 static func chimney(k: Kit, x: float, z: float, y0: float, y1: float) -> void:
@@ -114,7 +121,8 @@ static func _turret_house(k: Kit) -> void:
 
 static func _bell_tower(k: Kit) -> void:
 	var h := 6 * F.storey
-	k.box(-1.4, -1.4, 1.4, 1.4, 0.0, h, {"s": F.tower(0, 6, true), "e": F.tower(1, 6, true), "w": F.tower(1, 6, true), "n": F.tower(1, 6, true)}, F.tower(0, 6, true))
+	k.box(-1.4, -1.4, 1.4, 1.4, 0.0, h, {"s": F.tower(0, 6, true, true), "e": F.tower(1, 6, true), "w": F.tower(1, 6, true), "n": F.tower(1, 6, true)}, F.tower(0, 6, true))
+	step(k, 0.0, 1.4, 0.0)
 	k.pyramid(-1.4, -1.4, 1.4, 1.4, h, 5.0, 0.2, F.roof(3))
 	for c: Vector2 in [Vector2(-1.4, -1.4), Vector2(1.4, -1.4), Vector2(1.4, 1.4), Vector2(-1.4, 1.4)]:
 		k.box(c.x - 0.22, c.y - 0.22, c.x + 0.22, c.y + 0.22, h, h + 0.4, {}, F.plain("stone"))
@@ -125,7 +133,8 @@ static func _chapel(k: Kit) -> void:
 	var r := stack(k, -2.2, -4.0, 2.2, 1.8, 0.0, [{"style": "stone", "floors": 2, "base": 0.25, "ci": 1, "win": "gothic", "lit": 0.5}])
 	gable(k, r, false, 1.5, 0, "stone")
 	var h := 5 * F.storey
-	k.box(-1.2, 1.8, 1.2, 4.0, 0.0, h, {"s": F.wall({"style": "stone", "floors": 1, "door": 0.5, "ci": 0, "win": "gothic", "base": 0.25}), "top": F.plain("stone")}, F.tower(0, 5, true))
+	k.box(-1.2, 1.8, 1.2, 4.0, 0.0, h, {"s": F.tower(0, 5, true, true), "top": F.plain("stone")}, F.tower(0, 5, true))
+	step(k, 0.0, 4.0, 0.0)
 	k.pyramid(-1.2, 1.8, 1.2, 4.0, h, 4.4, 0.18, F.roof(0))
 
 
@@ -141,7 +150,7 @@ static func _bridge_pair(k: Kit) -> void:
 
 
 static func _arch_house(k: Kit) -> void:
-	var r := stack(k, -2.6, -2.0, 2.6, 2.0, 0.0, [{"style": "stone", "floors": 1, "base": 0.2, "arch": true, "ci": 2}, {"style": "timber", "floors": 2, "jetty": 0.2, "ci": 2}])
+	var r := stack(k, -2.6, -2.0, 2.6, 2.0, 0.0, [{"style": "stone", "floors": 1, "base": 0.2, "arch": true, "door": 0.0, "ci": 2}, {"style": "timber", "floors": 2, "jetty": 0.2, "ci": 2}])
 	var rise := gable(k, r, true, 1.15, 0, "timber")
 	dormer(k, r, rise, 0.0, 0)
 
@@ -219,6 +228,7 @@ static func _step_gable(k: Kit) -> void:
 
 static func _workshop(k: Kit) -> void:
 	k.box(-2.2, -1.6, 2.2, 1.6, 0.0, F.storey + 0.2, {"s": F.wall({"style": "stone", "floors": 1, "base": 0.2, "door": 0.3, "ci": 2, "lit": 0.8})}, F.wall({"style": "stone", "floors": 1, "base": 0.2, "ci": 1}))
+	step(k, -2.2 + F.door_x(4.4, 0.3), 1.6, 0.0)
 	k.shed_roof(-2.2, -1.6, 2.2, 1.6, F.storey + 0.2, F.storey + 1.6, 0.25, F.roof(1), F.plain("wood"))
 	chimney(k, 1.3, -0.9, F.storey, F.storey + 2.8)
 

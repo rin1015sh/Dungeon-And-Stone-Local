@@ -20,6 +20,22 @@ const ROOF := [Color("#4a3a2e"), Color("#3f342b"), Color("#54423a"), Color("#3a3
 const WOOD := Color("#3b2a1e")
 static var P := 64.0
 static var storey := 1.15
+## 문(사용자 2026-11-02 "플레이어가 들어갈 수 있을 정도의 사이즈"): 폭 0.86칸(사람 몸 한 칸이 지나간다) · 높이 한 층의 0.88(사람 키보다 조금 높다).
+const DOOR_W := 0.86
+const DOOR_H := 0.88
+
+
+## 벽 폭(칸)과 문 자리(0~1)로 문 가운데가 벽 왼쪽 끝에서 몇 칸인가(창 칸 나누기와 같은 규칙 — Designs가 문 앞 디딤돌을 놓는다).
+static func door_x(width: float, frac: float) -> float:
+	var n := maxi(1, int(width / 1.05))
+	var k := clampi(int(frac * n), 0, n - 1)
+	return width * (k + 0.5) / n
+
+
+static func _door(p: Paint, cx: float, ground: float, arch: bool) -> void:
+	var dw := P * DOOR_W
+	var dh := storey * P * DOOR_H
+	Parts.door(p, cx - dw * 0.5, ground - dh, dw, dh, arch, WOOD, true)
 
 
 static func _box(poly: PackedVector2Array) -> Rect2:
@@ -51,6 +67,8 @@ static func wall(o: Dictionary) -> Callable:
 		Parts.wall(p, poly, _shader(p, "plaster" if style == "timber" else style, ci))
 		if style == "timber":
 			Buildings._timber(p, r.position.x, maxf(r.position.y, g - base - floors * fh), W, minf(r.size.y, floors * fh), maxi(2, int(W / (P * 0.8))))
+		if base > 0.0:
+			Parts.plinth(p, r.position.x, g - base, W, base)
 		var n := maxi(1, int(W / (P * 1.05)))
 		var door := float(o.get("door", -1.0))
 		var door_k := clampi(int(door * n), 0, n - 1) if door >= 0.0 else -1
@@ -66,7 +84,7 @@ static func wall(o: Dictionary) -> Callable:
 					Ink.path(p, a, Parts.LINE)
 					continue
 				if fl == 0 and k == door_k:
-					Parts.door(p, cx - P * 0.22, g - base - fh * 0.72, P * 0.44, fh * 0.72, int(o.get("look", 0)) % 2 == 0, WOOD, true)
+					_door(p, cx, g, int(o.get("ci", 0)) % 2 == 0)  # 문은 땅까지(기단을 끊는다)
 					continue
 				if fl == 0 and bool(o.get("shop", false)):
 					var sw := Paint.rect_poly(cx - P * 0.38, g - base - fh * 0.78, P * 0.76, fh * 0.58)
@@ -79,8 +97,6 @@ static func wall(o: Dictionary) -> Callable:
 				Parts.window(p, cx - ww * 0.5, top + fh * 0.24, ww, wh, str(o.get("win", "square")), lit, bool(o.get("shutters", false)))
 				if bool(o.get("flowers", false)) and fl == 1 and k % 2 == 0:
 					Dress._flower_box(p, Rect2(cx - ww * 0.5, top + fh * 0.24, ww, wh), k)
-		if base > 0.0:
-			Parts.plinth(p, r.position.x, g - base, W, base)
 		if not str(o.get("sign", "")).is_empty():
 			Parts.sign(p, r.position.x + W * 0.78, g - base - fh * 0.98, str(o["sign"]), 1.0, P * 0.42)
 
@@ -123,10 +139,12 @@ static func plain(kind: String, ci: int = 0) -> Callable:
 
 
 ## 탑 벽: 돌 + 층마다 좁은 뾰족 창(맨 위는 종 창 — 어둡게, 종).
-static func tower(ci: int, floors: int, belfry: bool) -> Callable:
+static func tower(ci: int, floors: int, belfry: bool, door: bool = false) -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
 		var r := _box(poly)
 		Parts.wall(p, poly, _shader(p, "stone", ci))
+		if door:
+			_door(p, r.get_center().x, r.end.y, true)
 		var fh := storey * P
 		for fl in floors:
 			var y := r.end.y - (fl + 1) * fh
@@ -135,7 +153,7 @@ static func tower(ci: int, floors: int, belfry: bool) -> Callable:
 				p.fill_poly(a, p.flat(Color("#120f0e"), 0.05))
 				Ink.path(p, a, Parts.LINE)
 				Ink.glow(p, r.get_center().x, y + fh * 0.6, P * 0.25, Color("#c9a24a"), 0.5, true)
-			elif fl > 0:
+			elif fl > 0 or not door:
 				Parts.window(p, r.get_center().x - P * 0.12, y + fh * 0.22, P * 0.24, fh * 0.48, "gothic", fl % 2 == 1)
 			Parts.ledge(p, r.position.x - 2, y + fh - 3, r.size.x + 4, 4)
 
