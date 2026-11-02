@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **all_stats.html 내려받으면 깨지던 것 (2026-11-02, 사용자 "html로 다운받으면 제대로 안 보임")**: 파일이 Artifact 게시용 조각(문서 껍데기 없음)이라 charset이 없어 브라우저가 windows-1252로 읽어 한글이 깨지고 쿼크 모드였다. `balance_sheet_out.write_html`이 저장소 파일에 `<!doctype html>`·`<html lang="ko">`·`<meta charset="utf-8">`·viewport·기본 리셋을 씌운다. 게시용 조각은 `python3 tools/balance_sheet.py --artifact=<경로>`. 확인: 문자셋 헤더 없는 http 서버로 옛·새 파일 비교(옛 windows-1252/BackCompat → 새 UTF-8/CSS1Compat, 캡처로 한글 확인).
+
 - **밸런스 총정리 — 종류별 탭 화면 (2026-11-01, 사용자 "편하게 종류별로 볼 수 있게")**: `docs/balance/all_stats.html`(브라우저로 연다) — 위 탭 몬스터 54·보스 11·정수 51·상태이상 87·장비 319·아이템·플레이어·공식·점검, 탭마다 작은 탭(전체 목록·평균·스킬…), 찾기 상자 · 지역/등급/구분/종류/칸/색 거르기 · 열 머리 눌러 정렬 · 머리 줄·이름 열 고정 · 곡선比는 색(70% 아래 푸름 · 85~115% 초록 · 130% 위 붉음), 한 대 %는 20%↑ 누름·40%↑ 붉음. 게임 팔레트·송명/Noto Sans KR, 어두운·밝은 테마, 폰 너비.
   - 도구 나눔: `balance_sheet.py`(표 만들기 561줄) · `balance_sheet_out.py`(md·xlsx·html 쓰기, 탭 구성 `TABS`) · `balance_sheet_view.html`(화면 틀 — 데이터를 `/*DATA*/` 자리에 넣는다). 표 하나 더함: 2-7 보스·정예 스킬.
   - 확인: Playwright 캡처 3장(데스크톱 어둠·밝음, 폰 400px) — 가로 넘침 없음, 스크립트 오류 없음.

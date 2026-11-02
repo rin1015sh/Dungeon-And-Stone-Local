@@ -1,6 +1,7 @@
 """밸런스 총정리 — 몬스터·보스·정수·상태이상·아이템·플레이어 기준을 한 파일에 모은다.
     python3 tools/balance_sheet.py
 → docs/balance/all_stats.md(읽기용) + all_stats.html(종류별 탭 화면 — 브라우저로 연다) + all_stats.xlsx(정렬·필터용, 같은 표를 시트마다).
+--artifact=<경로>: Artifact 게시용 조각(문서 껍데기 없는 html)도 쓴다. 저장소의 all_stats.html은 바로 열 수 있는 완전한 문서.
 쓰는 부분은 tools/balance_sheet_out.py, 화면 틀은 tools/balance_sheet_view.html.
 데이터(data/*.json)가 정본이다 — 이 파일들은 손으로 고치지 않고, 데이터를 바꿨으면 다시 돌린다.
 곡선 기준값은 tools/balance_curve.py, 장비 계산은 tools/item_pool.py(= ItemForge), 스킬 효과 글은 tools/essences_md.py를 그대로 쓴다.
@@ -551,7 +552,8 @@ def main() -> None:
     chk = checks()
     OUT.write_md(sections, formulas(), chk)
     ok = OUT.write_xlsx(sections, formulas(), chk)
-    OUT.write_html(sections, formulas(), chk)
+    frag = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--artifact=")), "")
+    OUT.write_html(sections, formulas(), chk, frag)
     n = sum(len(t.rows) for _h, ts in sections for t in ts)
     print("all_stats.md + .html%s: 표 %d개 · %d줄 · 점검 %d건 (몬스터 %d · 정수 %d · 상태 %d · 스킬 %d · 아이템 %d)" % (
         " + .xlsx" if ok else "", sum(len(ts) for _h, ts in sections), n, len(chk), len(MONSTERS), len(ESSENCES), len(STATUSES), len(SKILLS), len(ITEMS)))

@@ -41,7 +41,14 @@ def merged_sheets(sections: list) -> dict:
     return out
 
 
-def write_html(sections: list, formulas: list, chk: list) -> None:
+# 내려받아 바로 여는 파일은 완전한 문서여야 한다(charset이 없으면 한글이 깨지고, doctype이 없으면 쿼크 모드).
+# 화면 틀(VIEW)은 Artifact 게시용 조각이라 껍데기를 여기서 씌운다 — 게시 서버가 씌우는 것과 같은 기본값.
+DOC_HEAD = ('<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n'
+            '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+            "<style>*,*::before,*::after{box-sizing:border-box}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>\n")
+
+
+def write_html(sections: list, formulas: list, chk: list, fragment_path: str = "") -> None:
     sheets = merged_sheets(sections)
     counts = {k: len(v["rows"]) for k, v in sheets.items()}
     counts["점검"] = len(chk)
@@ -58,8 +65,14 @@ def write_html(sections: list, formulas: list, chk: list) -> None:
     with open(VIEW, encoding="utf-8") as f:
         page = f.read()
     assert "/*DATA*/null" in page
+    page = page.replace("/*DATA*/null", blob)
+    if fragment_path:  # Artifact 게시용(껍데기 없는 조각)
+        with open(fragment_path, "w", encoding="utf-8") as f:
+            f.write(page)
+    head, sep, body = page.partition('<div class="wrap">')
+    assert sep, "화면 틀에 <div class=\"wrap\">가 있어야 한다"
     with open(OUT_HTML, "w", encoding="utf-8") as f:
-        f.write(page.replace("/*DATA*/null", blob))
+        f.write(DOC_HEAD + head.rstrip() + "\n</head>\n<body>\n" + sep + body.rstrip() + "\n</body>\n</html>\n")
 
 
 def md_cell(v) -> str:
