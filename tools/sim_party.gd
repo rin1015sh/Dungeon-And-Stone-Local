@@ -12,6 +12,9 @@ extends SceneTree
 ## 공격은 쓸 수 있는 정수 액티브 중 위력 합이 가장 큰 것, 없으면 기본 공격.
 ## --curve=<층>: 파티를 10층 곡선의 그 층 기준 탐험가로(docs/balance/curve.json — 첫 전사 = 탱커, 나머지 = 딜러: 정수를 흡수한 뒤
 ##   주 스탯·생명력·공격력을 곡선 값에 맞춘다 — 이능은 1층 정수 그대로). 보스가 "몇 층 위 파티용"인지 확인할 때(docs/plans/balance_10floors.md §4).
+## --rev=full: 기세(C20)를 쓴다 — 기세가 가득(max)이면 그 차례의 공격(정수 스킬이든 기본 공격이든)에 모두 얹는다. 기세는 얹지 않은
+##   기본 공격·방어로 찬다. --rev=build: 기세가 가득이 아니면 정수 스킬 대신 기본 공격으로 기세를 모으고, 가득이면 가장 센 공격에 모두 얹는다(상한 보기).
+##   기본(none)은 기세를 쓰지 않는다(예전 리포트와 같은 조건). 기본이 아닌 값이면 리포트 파일은 쓰지 않는다.
 
 const CFG := "res://tools/sim_parties.json"
 const OUT := "res://docs/balance/rift.md"
@@ -30,12 +33,13 @@ func _initialize() -> void:
 	cfg["real_essences"] = str(args.get("essences", "real")) == "real"
 	cfg["race_base"] = str(args.get("base", "race")) == "race"
 	cfg["essence_mult"] = str(args.get("essence_mult", "1")).to_float()
+	cfg["rev"] = str(args.get("rev", "none"))
 	var curve_floor := str(args.get("curve", cfg.get("curve_floor", "")))
 	if not curve_floor.is_empty() and curve_floor != "none":  # 기본 = sim_parties.json curve_floor(균열 = 3층 파티용), --curve=none이면 예전처럼 1층 정수 파티
 		var refs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/balance/curve.json"))
 		cfg["curve"] = refs.get(str(int(float(curve_floor))), {})
 		cfg["level"] = int(JsonUtil.get_float(cfg["curve"], "level", 4))
-	var custom := args.has("essences") or args.has("base") or args.has("essence_mult") or args.has("curve")
+	var custom := args.has("essences") or args.has("base") or args.has("essence_mult") or args.has("curve") or args.has("rev")
 	var n := str(args["n"]).to_int()
 	var who := "곡선 %s층 기준 탐험가 5인(docs/balance/curve.json)" % curve_floor if cfg.has("curve") else "1층 정수 파티"
 	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json` — %s, 시나리오당 %d회)." % [who, n], "",
@@ -143,7 +147,13 @@ func _party_action(b: Battle, c: Combatant, cfg: Dictionary, ai: String) -> Dict
 	for f in foes:
 		if best == null or f.actor.pool.get_current("hp") < best.actor.pool.get_current("hp"):
 			best = f
-	return {"kind": "skill", "skill": _best_skill(b, c), "target": best}
+	var act := {"kind": "skill", "skill": _best_skill(b, c), "target": best}
+	var rev := str(cfg.get("rev", "none"))
+	if rev != "none" and c.rev >= BattleRev.cap(b.db):
+		act["rev"] = c.rev  # 기세가 가득이면 모두 얹는다
+	elif rev == "build":
+		act["skill"] = Battle.BASIC_ATTACK  # 기세를 모은다
+	return act
 
 
 ## 종족 stat_ranges의 가운데(반올림).
