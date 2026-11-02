@@ -22,6 +22,7 @@ const LIST := [
 	["v14", "외쪽지붕 공방", "_workshop"],
 	["v15", "높은 단 위의 집 · 계단", "_podium"],
 	["v16", "탑 달린 저택", "_manor"],
+	["v17", "탐험가 길드", "_guild"],
 ]
 
 
@@ -250,3 +251,23 @@ static func _manor(k: Kit) -> void:
 	var h := 5 * F.storey
 	k.box(2.0, 0.4, 4.2, 2.6, 0.0, h, {"s": F.wall({"style": "stone", "floors": 5, "ci": 1, "win": "arch", "base": 0.25})}, F.tower(1, 5, false))
 	k.pyramid(2.0, 0.4, 4.2, 2.6, h, 4.0, 0.2, F.roof(3))
+
+
+## 탐험가 길드(사용자 2026-11-02 "차원광장 옆에는 탐험가 길드"): 3층 돌 회관 + 가운데 앞으로 나온 박공 현관(문 · 칼 간판) ·
+## 현관 양옆 현수막(돌 고리 문장) · 서쪽 모퉁이 탑 + 깃발.
+static func _guild(k: Kit) -> void:
+	var r := stack(k, -5.0, -2.6, 5.0, 2.2, 0.0, [{"style": "stone", "floors": 3, "base": 0.3, "ci": 0, "win": "arch", "lit": 0.55}])
+	k.hip_roof(r[0], r[1], r[2], r[3], r[4], 2.0, 0.3, F.roof(0))
+	dormer(k, r, 2.0, -3.4, 0)
+	dormer(k, r, 2.0, 3.4, 0)
+	var c := stack(k, -1.6, 2.2, 1.6, 3.2, 0.0, [{"style": "stone", "floors": 3, "base": 0.3, "ci": 1, "door": 0.5, "win": "gothic", "lit": 0.7, "sign": "swords"}])
+	k.gable_roof(c[0], 1.4, c[2], c[3], c[4], 2.3, false, 0.25, F.roof(0), F.gable("stone", 1))
+	for x: float in [-2.75, 2.75]:
+		k.face(Kit._pts([Vector3(x - 0.42, 1.25, 2.24), Vector3(x + 0.42, 1.25, 2.24), Vector3(x + 0.42, 3.15, 2.24), Vector3(x - 0.42, 3.15, 2.24)]), Vector3(0, 0, 1), F.banner())
+	var h := 5 * F.storey + 0.3
+	k.box(-6.3, -2.2, -4.5, -0.4, 0.0, h, {"s": F.tower(0, 5, false)}, F.tower(1, 5, false))
+	k.pyramid(-6.3, -2.2, -4.5, -0.4, h, 3.4, 0.2, F.roof(0))
+	var top := h + 3.4
+	k.box(-5.43, -1.33, -5.37, -1.27, top - 0.2, top + 1.6, {}, F.plain("dark"))
+	k.face(Kit._pts([Vector3(-5.4, top + 0.75, -1.3), Vector3(-4.3, top + 0.8, -1.3), Vector3(-4.3, top + 1.5, -1.3), Vector3(-5.4, top + 1.55, -1.3)]), Vector3(0, 0, 1), F.banner())
+	chimney(k, 3.6, -1.4, r[4], r[4] + 2.4)

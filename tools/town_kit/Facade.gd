@@ -173,3 +173,19 @@ static func gallery() -> Callable:
 		p.fill_poly(poly, Mat.planks(p, Color("#4d3726"), 0, 0, true, int(P * 0.12)))
 		Ink.line(p, Vector2(r.position.x, r.position.y + 3), Vector2(r.end.x, r.position.y + 3), 5.0, TIMBER, 1.0, 0.2)
 		Ink.path(p, poly, 1.6)
+
+
+## 길드 깃발·현수막(검붉은 천 + 뼈빛 돌 고리 문장 — 차원광장의 돌 고리, 아래 술).
+static func banner() -> Callable:
+	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
+		var r := _box(poly)
+		p.fill_poly(poly, func(x: int, y: int) -> Color: return p.vary(Color("#5a2622"), x, y, 0.1))
+		var c := Vector2(r.get_center().x, r.position.y + r.size.y * 0.42)
+		var rad := minf(r.size.x, r.size.y) * 0.3
+		p.fill_poly(Icons._circle(c, rad), p.flat(Color("#c9bc9a"), 0.08))
+		p.fill_poly(Icons._circle(c, rad * 0.68), p.flat(Color("#5a2622"), 0.1))
+		Ink.line(p, Vector2(r.position.x + 3, r.position.y + 4), Vector2(r.end.x - 3, r.position.y + 4), 4.0, Color("#8a7a52"), 1.0, 0.2)
+		for i in int(r.size.x / 7.0):
+			var x := r.position.x + 4 + i * 7.0
+			Ink.line(p, Vector2(x, r.end.y - 9), Vector2(x, r.end.y - 2), 1.6, Color("#8a7a52"), 1.0, 0.3)
+		Ink.path(p, poly, 1.6)

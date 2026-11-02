@@ -3,6 +3,7 @@ tools/town_variants.gd가 남긴 날 그림(variants/raw/<id>_raw.png — 그림
   ① 붓 자국 뭉개기(쿠와하라 — 유화처럼 색이 덩어리진다) ② 면마다 잉크 윤곽(면 번호가 바뀌는 곳 · 바깥은 굵게, 떨림·끊김)
   ③ 어두운 곳 펜 빗금 ④ 종이 결·얼룩 ⑤ 색 정리(채도 조금 빼고 따뜻하게) → variants/<id>_hand.png · sheet_hand.png
   python3 tools/town_handdrawn.py [--front] [v01 v05 …]   (--front = 정면 판 variants/front/)
+  python3 tools/town_handdrawn.py --dir=concept   (도시 구상 그림 — raw/의 모든 <이름>_raw.png → <이름>_hand.png)
 """
 import os
 import sys
@@ -15,6 +16,12 @@ DIR = os.path.join(ROOT, "docs", "plans", "town", "variants")
 if "--front" in sys.argv:  # 정면 판(tools/town_variants.gd --view=front)
     DIR = os.path.join(DIR, "front")
     sys.argv.remove("--front")
+SHEET = True
+for a in list(sys.argv):
+    if a.startswith("--dir="):  # 다른 그림 묶음(예: --dir=concept → docs/plans/town/concept — tools/town_concept.gd), 모아 보기 없음
+        DIR = os.path.join(ROOT, "docs", "plans", "town", a[len("--dir="):])
+        SHEET = False
+        sys.argv.remove(a)
 FONT = os.path.join(ROOT, "assets", "fonts", "NotoSansKR-Regular.otf")
 PAPER = np.array([216, 205, 180]) / 255.0
 INK = np.array([26, 20, 16]) / 255.0
@@ -132,6 +139,12 @@ def sheet(names):
 
 def main():
     import re
+    if not SHEET:
+        for f in sorted(os.listdir(os.path.join(DIR, "raw"))):
+            if f.endswith("_raw.png"):
+                hand(f[:-len("_raw.png")])
+                print("손그림:", f)
+        return
     src = open(os.path.join(ROOT, "tools", "town_kit", "Designs.gd"), encoding="utf-8").read()
     names = re.findall(r'\["(v\d+)", "([^"]+)", "_\w+"\]', src)
     want = set(sys.argv[1:])
