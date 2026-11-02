@@ -1,5 +1,5 @@
 extends TestCase
-## Rev Up(C20): 아군만 — 방어·Rev 없는 기본 공격으로 차고(상한, 차례마다 차는 per_turn은 0), 피해 스킬에 얹으면 위력이 오르고, 다 얹은 기본 공격은 두 번.
+## 기세(C20): 아군만 — 방어·기세 없는 기본 공격으로 차고(상한, 차례마다 차는 per_turn은 0), 피해 스킬에 얹으면 위력이 오르고, 다 얹은 기본 공격은 두 번.
 
 
 func _pc(name: String) -> PlayerCharacter:
@@ -54,7 +54,7 @@ func test_charge_cap_and_guard() -> void:
 		b.act(c, {"kind": "guard"})
 	assert_eq(c.rev, cap, "상한까지만")
 	for u in b.side_units(Combatant.SIDE_ENEMY):
-		assert_eq(u.rev, 0, "적은 Rev가 없다")
+		assert_eq(u.rev, 0, "적은 기세가 없다")
 
 
 func test_rev_multiplies_damage() -> void:
@@ -118,8 +118,8 @@ func test_basic_attack_charges() -> void:
 	var c := _to_party(b)
 	assert_eq(c.rev, _bal("per_turn"), "차례가 와도 per_turn(0)만")
 	b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null})
-	assert_eq(c.rev, _bal("per_turn") + _bal("basic_bonus"), "Rev를 얹지 않은 기본 공격 → basic_bonus개 더")
+	assert_eq(c.rev, _bal("per_turn") + _bal("basic_bonus"), "기세를 얹지 않은 기본 공격 → basic_bonus개 더")
 	c = _to_party(b)
 	c.rev = 2
 	b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null, "rev": 1})
-	assert_eq(c.rev, 1, "Rev를 얹은 기본 공격은 채우지 않는다")
+	assert_eq(c.rev, 1, "기세를 얹은 기본 공격은 채우지 않는다")

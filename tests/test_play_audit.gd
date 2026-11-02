@@ -45,16 +45,16 @@ func test_poison_resistance_reduces_poison() -> void:
 	assert_true(t0 - tough.pool.get_current("hp") < w0 - weak.pool.get_current("hp"), "독 저항이 중독 피해를 줄인다")
 
 
-func test_spawned_monsters_get_letters() -> void:
+## 같은 적 여럿 = 무리(C22): 소환으로 생긴 적도 A·B 꼬리표 없이 같은 이름.
+func test_spawned_monsters_share_name() -> void:
 	var b := _battle(1, ["goblin", "goblin"])
 	var c := b.side_units(Combatant.SIDE_ENEMY)[0]
 	BattleRules.summon(b, c, {"monster": "goblin"})
 	BattleRules.summon(b, c, {"monster": "goblin"})
 	var labels := b.side_units(Combatant.SIDE_ENEMY).map(func(u: Combatant) -> String: return u.label())
 	assert_eq(labels.size(), 4)
-	for i in labels.size():
-		for j in range(i + 1, labels.size()):
-			assert_true(labels[i] != labels[j], "이름이 겹치지 않는다: %s" % str(labels))
+	for l: String in labels:
+		assert_eq(l, DataNames.entry(db, "monsters", "goblin"), "꼬리표 없음: %s" % str(labels))
 
 
 func test_bone_knight_type_sets_essence_color() -> void:

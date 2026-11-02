@@ -6,6 +6,10 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **기세(이름) · 같은 적 여럿 = 무리 (2026-11-02, 사용자 "이름은 기세로 · 데드맨 a, 데드맨 b 하지 말고 한 번에 데드맨 무리", C20·C22)**
+  - 이름: 문서·주석·시험 글의 "Rev Up/Rev" → "기세"(화면에는 원래 글자가 없다 — 삼각형뿐). 코드 키는 그대로(`rev`·`BattleRev`·`RevPips`·`rev_up`/`rev_down`·`balance combat.rev`).
+  - 무리: `Battle.from_encounter`의 A·B 꼬리표와 `LETTERS`·`spawn_label`(소환·분열·증원 4곳)을 없앴다. 시작 안내 `{enemies}` = `Battle.enemy_names()`(같은 이름 둘 이상 → `combat.group` "{name} 무리"). 시험 `test_combat.test_group_name`.
+
 - **Rev 차례마다 충전 없앰 (2026-11-02, 사용자 "자기 차례 올 때 주는 거 없애", C20)**: `balance combat.rev.per_turn` 1 → 0(코드 기본값도 0). 이제 Rev는 방어(+1)·Rev를 얹지 않은 기본 공격(+1)으로만 찬다, 전투 시작 0개. 시험 `test_rev`를 balance 값 기준으로 다시 씀, UI 스모크는 E/Q 시험 전에 Rev 2개를 채워 둔다.
 
 - **기본 공격도 Rev를 채운다 (2026-11-02, 사용자 "일반 공격하면 랭크업 되게", C20)**: Rev를 얹지 않은 기본 공격 → `balance combat.rev.basic_bonus` 1개 더(맞든 빗나가든, `BattleRev.on_basic` — `Battle._use_skill` 끝에서 Rev가 줄지 않았으면). Rev를 얹은 기본 공격은 채우지 않는다(가정). 시험 `test_rev.test_basic_attack_charges`. 이제 차례 시작 1 + 평타 1이라 평타 두 번이면 3개가 찬다 — 너무 빠르면 `per_turn`이나 `basic_bonus`를 0으로.

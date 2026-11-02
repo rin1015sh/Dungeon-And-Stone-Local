@@ -206,7 +206,7 @@ static func summon(b: Battle, c: Combatant, e: Dictionary) -> void:
 		return
 	if c.actor.dead:
 		return  # 시전하다 쓰러졌다(정수판 분열의 생명력 소모 등)
-	var m := Monster.create(b.db, mid, b.spawn_label(mid))
+	var m := Monster.create(b.db, mid)
 	var u := b.add(m, c.side, JsonUtil.get_str(m.behavior(), "row", "front"))
 	if int(e.get("rounds", 0)) > 0:
 		u.memo[BattleSpawns.EXPIRE] = int(e["rounds"])

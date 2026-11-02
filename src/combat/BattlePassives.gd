@@ -16,7 +16,7 @@ static func on_start(b: Battle) -> void:
 	for u in b.units.duplicate():
 		for id: Variant in _list(u.actor, "start_summons"):
 			if b.side_units(u.side).size() < int(b.db.bal("combat.max_side_units", 6)):
-				var m := Monster.create(b.db, str(id), b.spawn_label(str(id)))
+				var m := Monster.create(b.db, str(id))
 				var su := b.add(m, u.side, JsonUtil.get_str(m.behavior(), "row", "front"))
 				su.summoned = true
 				b.message.emit("combat.summon", {"name": u.label(), "monster": m.display_name}, "danger")

@@ -1,7 +1,7 @@
 class_name PartyRoster
 extends VBoxContainer
 ## 전투 아래 오른쪽 파티 창(피어 앤 헝거의 이름·체력·이성 줄처럼): 아군 한 줄씩 — 추가 턴 작은 창 자리(C14 — 늘 비워 둔 칸이라 떠도 이름이 밀리지 않는다)
-## · 이름 · Rev 삼각형(RevPips — C20) · 상태 아이콘(3개씩 깜빡이며 넘김 — StatusIcons, UI25) · 계측값 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
+## · 이름 · 기세 삼각형(RevPips — C20) · 상태 아이콘(3개씩 깜빡이며 넘김 — StatusIcons, UI25) · 계측값 · 생명력 막대 · 영혼력 막대(+ 전투 게이지).
 ## 누가 누구를 치는지(정해 둔 행동)는 보이지 않는다(사용자 2026-11-02). 지금 차례인 사람의 줄은 뼈빛으로 빛나고, 아군을 대상으로 고르는 중이면 그 줄에 뼈빛 테두리.
 ## 줄 높이·간격 = 왼쪽 명령 칸과 같다(combat_cmd_slot_height·combat_slot_gap — 두 창의 줄이 나란하다, 사용자 요청 2026-10-24).
 
@@ -12,7 +12,7 @@ var _db: GameDatabase
 var _current: Combatant = null
 var _target: Combatant = null
 var _battle: Battle = null
-var _rev_pick: Dictionary = {}  # Combatant -> 이번 행동에 얹을 Rev(행동 정하기 · 정해 둔 행동)
+var _rev_pick: Dictionary = {}  # Combatant -> 이번 행동에 얹을 기세(행동 정하기 · 정해 둔 행동)
 
 
 func setup(db: GameDatabase, battle: Battle = null) -> void:
@@ -33,7 +33,7 @@ func add_unit(u: Combatant) -> void:
 	var slot := CenterContainer.new()  # 추가 턴 작은 창 자리(이름 왼쪽 — 사용자 2026-10-24·2026-11-02): 늘 비워 둔다
 	slot.custom_minimum_size.x = UiTheme.metric("combat_roster_extra_width", 64)
 	h.add_child(slot)
-	var name_box := HBoxContainer.new()  # 이름 + Rev 삼각형
+	var name_box := HBoxContainer.new()  # 이름 + 기세 삼각형
 	name_box.custom_minimum_size.x = UiTheme.metric("combat_roster_name_width", 170)
 	name_box.add_theme_constant_override("separation", 6)
 	name_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -100,7 +100,7 @@ func rev_pick(u: Combatant) -> int:
 	return int(_rev_pick.get(u, 0))
 
 
-## 이번 행동에 얹을 Rev(0이면 지운다).
+## 이번 행동에 얹을 기세(0이면 지운다).
 func set_rev_pick(u: Combatant, n: int) -> void:
 	if n > 0:
 		_rev_pick[u] = n

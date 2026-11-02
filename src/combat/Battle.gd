@@ -12,7 +12,6 @@ extends RefCounted
 signal message(key: String, args: Dictionary, kind: String)
 signal event(e: Dictionary)
 
-const LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const BASIC_ATTACK := "basic_attack"
 const RESULT_VICTORY := "victory"
 const RESULT_DEFEAT := "defeat"
@@ -64,20 +63,14 @@ func _record(key: String, args: Dictionary, kind: String) -> void:
 
 const FIRST_NONE := -1  ## 아무도 먼저 움직이지 않는다(맵 조우 기본)
 
-## 탐험 조우로 전투를 꾸린다. 같은 몬스터가 여럿이면 이름 뒤에 A, B, C를 붙인다.
+## 탐험 조우로 전투를 꾸린다. 같은 몬스터가 여럿이어도 이름에 A·B를 붙이지 않는다 — 시작 안내에서 "데드맨 무리"로 묶는다(사용자 2026-11-02).
 static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: Rng, party: Array[Actor],
 		monster_ids: Array, first_side: int = FIRST_NONE) -> Battle:
 	var b := Battle.new(p_db, regs.effects, regs.ai_conditions, p_rng)
 	for a in party:
 		b.add(a, Combatant.SIDE_PARTY, (a as PlayerCharacter).get_row() if a is PlayerCharacter else "front")  # 전위·후위(사용자 2026-10-25)
-	var total := {}
 	for id: Variant in monster_ids:
-		total[id] = int(total.get(id, 0)) + 1
-	var seen := {}
-	for id: Variant in monster_ids:
-		seen[id] = int(seen.get(id, 0)) + 1
-		var label := " " + LETTERS[mini(int(seen[id]) - 1, LETTERS.length() - 1)] if int(total[id]) > 1 else ""
-		var m := Monster.create(p_db, str(id), label)
+		var m := Monster.create(p_db, str(id))
 		b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))
 	b.start(first_side)
 	return b
@@ -94,13 +87,11 @@ func add(actor: Actor, side: int, row: String = "front") -> Combatant:
 ## 전투 시작. 맵에서 마주친 전투는 늘 정정당당하게(FIRST_NONE — 사용자 결정 2026-10-22, C11): 누구도 게이지를 앞서 받지 않는다.
 ## first_side(Combatant.SIDE_PARTY|SIDE_ENEMY)를 주면 그쪽이 combat.first_strike_gauge만큼 앞서 시작한다(특수한 기습 — 앞으로 넣을 자리).
 func start(first_side: int = FIRST_NONE) -> void:
-	var names := PackedStringArray()
 	for u in units:
 		u.gauge = 0.0
-		if u.side == Combatant.SIDE_ENEMY:
-			names.append(u.label())
+	var names := enemy_names()
 	var key := "combat.start" if first_side == FIRST_NONE else ("combat.start_first" if first_side == Combatant.SIDE_PARTY else "combat.start_ambushed")
-	message.emit(key, {"enemies": ", ".join(names)}, "danger")
+	message.emit(key, {"enemies": names}, "danger")
 	BattleRules.on_start(self)  # 동반 소환(start_summons)도 여기서 생긴다 — 기습 게이지는 그 뒤에 준다
 	if first_side != FIRST_NONE:
 		var bonus := float(db.bal("combat.first_strike_gauge", 50))
@@ -175,7 +166,7 @@ func next_turn() -> Combatant:
 		c.extra_turn = _is_extra(c)
 		c.last_turn = turns
 		if not bool(c.memo.get("in_extra", false)):
-			BattleRev.on_turn_start(self, c)  # Rev Up(C20): 자기 차례마다 하나
+			BattleRev.on_turn_start(self, c)  # 기세(C20): 자기 차례마다 하나
 		_busy += 1
 		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
 		if not bool(c.memo.get("in_extra", false)):  # 추가 행동(같은 라운드의 두 번째 차례)은 지속시간·쿨타임을 다시 세지 않는다
@@ -207,7 +198,7 @@ func next_turn() -> Combatant:
 	return null
 
 
-## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "rev": 얹을 Rev 개수(BattleRev)}
+## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "rev": 얹을 기세 개수(BattleRev)}
 ##          | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant(하나만 치는 아이템)} | {"kind": "flee"}
 ## 적용했으면 true. 현재 차례가 아니거나 이미 처리했거나 행동이 잘못됐으면 false(차례를 쓰지 않는다).
 func act(c: Combatant, action: Dictionary) -> bool:
@@ -332,7 +323,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 	if skill_id != BASIC_ATTACK and history.size() == said:  # 확률 상태가 안 걸리는 등 조용히 끝났다 — 썼다는 것은 알린다
 		message.emit("combat.no_effect", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "info")
 	if skill_id == BASIC_ATTACK and c.rev == rev_before:
-		BattleRev.on_basic(self, c)  # Rev를 얹지 않은 기본 공격은 Rev를 하나 채운다(사용자 2026-11-02)
+		BattleRev.on_basic(self, c)  # 기세를 얹지 않은 기본 공격은 기세를 하나 채운다(사용자 2026-11-02)
 	return JsonUtil.get_float(sk, "delay_cost")
 
 
@@ -353,13 +344,21 @@ func _use_item(c: Combatant, item_id: String, target: Variant = null) -> bool:
 	return true
 
 
-## 전투 중 새로 생긴 몬스터의 이름 꼬리표: 같은 몬스터가 이미 n마리 있었으면 n+1번째 글자(" B", " C" …).
-func spawn_label(monster_id: String) -> String:
-	var n := 0
+## 맞닥뜨린 적 이름: 같은 몬스터가 둘 이상이면 "데드맨 무리"(combat.group)로 묶는다 — 나온 순서대로, 쉼표로.
+func enemy_names() -> String:
+	var order: Array[String] = []
+	var count := {}
 	for u in units:
-		if u.actor is Monster and (u.actor as Monster).monster_id == monster_id:
-			n += 1
-	return " " + (LETTERS[n] if n < LETTERS.length() else str(n + 1))
+		if u.side != Combatant.SIDE_ENEMY:
+			continue
+		var n := u.label()
+		if not count.has(n):
+			order.append(n)
+		count[n] = int(count.get(n, 0)) + 1
+	var parts := PackedStringArray()
+	for n in order:
+		parts.append(Strings.t("combat.group", {"name": n}) if int(count[n]) > 1 else n)
+	return ", ".join(parts)
 
 
 func _relay(ctx: EffectContext, c: Combatant) -> void:

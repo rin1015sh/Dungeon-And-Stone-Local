@@ -20,7 +20,7 @@ static func split(b: Battle, c: Combatant, e: Dictionary) -> void:
 	if half < 1.0:
 		return
 	c.actor.pool.set_current("hp", hp - half)
-	var m := Monster.create(b.db, (c.actor as Monster).monster_id, b.spawn_label((c.actor as Monster).monster_id))
+	var m := Monster.create(b.db, (c.actor as Monster).monster_id)
 	m.pool.set_current("hp", half)
 	var u := b.add(m, c.side, c.row)
 	u.uses[str(e.get("skill", ""))] = 99

@@ -19,7 +19,7 @@ var memo: Dictionary = {}       ## 보스 패턴·예고 공격의 전투 중 �
 var summoned: bool = false      ## 전투 중 생겨난 개체(소환·분열·동반·증원). 아군 소환수는 AI가 움직이고 승패에 들지 않는다
 var last_turn: int = -1         ## 마지막으로 차례가 온 순번(Battle.turns)
 var joined_at: int = 0          ## 들어온 때의 Battle.turns(소환·증원은 그 뒤 차례만 추가 차례 판정에 센다)
-var rev: int = 0                ## 모아 둔 Rev(아군만 — BattleRev, C20)
+var rev: int = 0                ## 모아 둔 기세(아군만 — BattleRev, C20)
 var extra_turn: bool = false    ## 지금 차례가 추가 차례인가 — 지난 자기 차례 뒤로 아직 차례가 오지 않은 다른 참가자가 있다(민첩, C14)
 
 

@@ -365,3 +365,16 @@ func test_party_and_monsters_act_in_agility_order() -> void:
 			party_turns += 1
 	assert_eq(party_turns, 2, "아군 둘 다 행동한다")
 	assert_true(int(count[expected[0]]) > int(count[expected[3]]) * 2, "빠를수록 더 자주 행동한다")
+
+
+## 같은 적 여럿 = "무리"(C22): A·B 꼬리표 없이, 시작 안내는 "고블린 무리, 노움"처럼 묶는다.
+func test_group_name() -> void:
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10, "agi": 10, "p_res": 10, "m_res": 10, "int": 6})
+	var party: Array[Actor] = [pc]
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["goblin", "goblin", "gnome"])
+	for u in b.side_units(Combatant.SIDE_ENEMY):
+		assert_false(u.label().ends_with(" A") or u.label().ends_with(" B"), "이름 꼬리표 없음 (%s)" % u.label())
+	var goblin := DataNames.entry(db, "monsters", "goblin")
+	var gnome := DataNames.entry(db, "monsters", "gnome")
+	assert_eq(b.enemy_names(), Strings.t("combat.group", {"name": goblin}) + ", " + gnome)
+	assert_true(str(b.history[0]["args"]["enemies"]).begins_with(Strings.t("combat.group", {"name": goblin})), "시작 안내에 무리")

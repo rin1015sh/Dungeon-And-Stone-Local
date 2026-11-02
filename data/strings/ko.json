@@ -361,6 +361,7 @@
   },
   "combat": {
     "start": "{enemies}와(과) 맞닥뜨렸다.",
+    "group": "{name} 무리",
     "start_ambushed": "{enemies}이(가) 덮쳐 왔다!",
     "party": "탐험가",
     "menu_root": "{name}의 차례",

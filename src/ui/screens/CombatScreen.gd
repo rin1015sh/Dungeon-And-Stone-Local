@@ -6,7 +6,7 @@ extends Control
 ##   안내(방금 일어난 일·결과·보상) = 대화창(DialogueBox) — 아래 창 전체를 덮고(2026-10-20) 한 쪽씩 Enter로 넘긴다(사용자 결정 2026-10-18).
 ##   대화창이 떠 있는 동안은 차례가 멈추고 아래 창은 숨어 조작되지 않는다(다 넘기면 다음 차례). 결과·보상도 대화창으로 보이고, 다 넘기면 탐험으로 돌아간다.
 ## 아군 행동은 피어 앤 헝거처럼 먼저 전원 정하고(행동 정하기) 차례가 오면 실행한다(_loop).
-## 행동을 정하는 동안 E/Q = 그 사람의 Rev 올리기·내리기(BattleRev — C20, 파티 창 삼각형). 피해를 주는 스킬을 고르면 행동에 "rev"로 얹힌다.
+## 행동을 정하는 동안 E/Q = 그 사람의 기세 올리기·내리기(BattleRev — C20, 파티 창 삼각형). 피해를 주는 스킬을 고르면 행동에 "rev"로 얹힌다.
 ## 전투 규칙은 Battle, 이 화면은 차례 진행과 연출만. 행동 순서는 Battle/Timeline이 정하고, 지금 차례인 사람의 줄·발밑이 밝다.
 
 signal finished(result: String, turns: int, killed: Array[String])
@@ -223,7 +223,7 @@ func _on_chosen(action: Dictionary) -> void:
 	_loop()
 
 
-## 행동을 정하는 동안 E/Q: 지금 정하는 사람의 Rev를 하나 올리고 내린다(얹을 수 있는 만큼 — BattleRev.plan_max).
+## 행동을 정하는 동안 E/Q: 지금 정하는 사람의 기세를 하나 올리고 내린다(얹을 수 있는 만큼 — BattleRev.plan_max).
 func _input(event: InputEvent) -> void:
 	if _planning.is_empty() or not _menu.is_open() or not _menu.is_visible_in_tree() or not event.is_pressed() or event.is_echo():
 		return

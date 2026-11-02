@@ -1,6 +1,6 @@
 class_name RevPips
 extends Control
-## 파티 창 이름 옆 Rev 삼각형(피어 앤 헝거 2식 — C20). 글자가 아니라 그린다(웹 글꼴에 ▲ 없음).
+## 파티 창 이름 옆 기세 삼각형(피어 앤 헝거 2식 — C20). 글자가 아니라 그린다(웹 글꼴에 ▲ 없음).
 ## 빈 칸 = 테두리만(text_dim) · 모아 둔 것 = 채움(text_dim) · 이번 행동에 얹을 것 = 뼈빛(select)으로 채우고 조금 올린다.
 ## 수치 = render.json ui.combat_rev{size, gap, lift}.
 
