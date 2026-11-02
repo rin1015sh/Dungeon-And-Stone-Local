@@ -52,7 +52,7 @@ def outward(a, b, d):
 	return [(a[0] - uz * d, a[1] + ux * d), (b[0] - uz * d, b[1] + ux * d)]
 
 
-def ring_north(p: Plan, base: float):
+def ring_north(p: Plan, base: float, stair=(-35.0, -30.0, TOP)):
 	"""북쪽 반: 앞면이 광장을 본다. 북 = 길드 + 집 줄(정면), 북동 = 여관 + 집(사선), 북서 = 집(뒤집은 사선)."""
 	p.box(-HW, NZ, 10.2, 8, 6.4, "탐험가 길드")
 	p.row([(0.6, NZ), (HW, NZ)], 70, st=(3, 4), depth=(5.5, 6.5), jitter=0.3)
@@ -60,7 +60,7 @@ def ring_north(p: Plan, base: float):
 	p.row([(HW + 12 * C + 0.4, NZ + 0.2 + 12 * Sn), lerp((HW, NZ), EV, 0.86)], 71, st=(2, 3), depth=(4.5, 5.5), jitter=0.2)
 	p.row([lerp(WV, (-HW, NZ), 0.14), (-HW - 0.2, NZ + 0.2)], 72, st=(2, 4), depth=(4.5, 5.5), jitter=0.2)
 	p.box(-9.5, -12.2, 3.6, 2.6, 2.4, "정산 천막")
-	p.stairs.append((0.5 - 1.2, -35, 0.5 + 1.2, -30, TOP, base))
+	p.stairs.append((0.5 - 1.2, stair[0], 0.5 + 1.2, stair[1], stair[2], base))
 
 
 def ring_south(p: Plan, kind: str):

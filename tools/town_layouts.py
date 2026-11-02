@@ -363,7 +363,7 @@ def board(p: Plan) -> Image.Image:
 	im = Image.new("RGB", (M + W + M + RW + M, M + 44 + H + M), BG)
 	d = ImageDraw.Draw(im)
 	d.text((M, M - 4), p.title, font=font(28), fill=BONE)
-	d.text((M + 330, M + 6), p.one, font=font(16), fill=DIM)
+	d.text((M + max(330, d.textlength(p.title, font=font(28)) + 24), M + 6), p.one, font=font(16), fill=DIM)
 	im.paste(plan, (M, M + 44))
 	d.rectangle([M - 1, M + 43, M + W, M + 44 + H], outline=(70, 66, 60))
 	x = M + W + M
