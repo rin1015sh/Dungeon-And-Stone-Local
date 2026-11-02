@@ -5,6 +5,8 @@ extends RefCounted
 ## 크기 값은 render.json city.town(storey · base · roof_pitch · facility_pitch · overhang)과 같은 것을 쓴다(게임 TownHouse와 같은 집).
 
 var faces: Array[Dictionary] = []
+## false면 카메라 반대쪽 면도 남긴다(다른 시점 비교·3D 렌더 — tools/town_styles.gd).
+var cull := true
 var storey := 1.0
 var base := 0.2
 var pitch := 1.15
@@ -35,14 +37,14 @@ func add(kind: String, pts: PackedVector3Array, outward: Vector3, info: Dictiona
 	var n := normal_of(pts)
 	if n.dot(outward) < 0.0:
 		n = -n
-	if n.y + n.z <= 0.03:
+	if cull and n.y + n.z <= 0.03:
 		return {}
 	var u: Vector3
 	var v: Vector3
 	if absf(n.z) > 0.97:
 		u = Vector3.RIGHT
 		v = Vector3(0, 1, 0)
-	elif absf(n.z) < 0.3:
+	elif absf(n.z) < 0.02:  # 곧게 선 면(벽)만 — 가파른 첨탑 면은 아래 지붕 틀(면 위 내리막)로
 		u = Vector3(0, 0, 1).cross(-Vector3(n.x, n.y, 0).normalized()).normalized()
 		v = Vector3(0, 0, -1)
 	else:

@@ -17,20 +17,25 @@ static func light_k(n: Vector3) -> float:
 	return 0.7 + 0.5 * maxf(0.0, n.dot(LIGHT.normalized()))
 
 
-static func compose(sp: Paint, f: Dictionary, flat: Paint, P: float, S: float, origin: Vector2) -> void:
+## 게임 시점 화면 축(x, y − z).
+const GAME_AX := Vector3(1, 0, 0)
+const GAME_AY := Vector3(0, 1, -1)
+
+
+static func compose(sp: Paint, f: Dictionary, flat: Paint, P: float, S: float, origin: Vector2, ax: Vector3 = GAME_AX, ay: Vector3 = GAME_AY) -> void:
 	var o: Vector3 = f["o"]
 	var u: Vector3 = f["u"]
 	var v: Vector3 = f["v"]
-	var so := proj(o, S, origin)
-	var du := Vector2(u.x, u.y - u.z) * S
-	var dv := Vector2(v.x, v.y - v.z) * S
+	var so := Vector2(o.dot(ax), o.dot(ay)) * S - origin
+	var du := Vector2(u.dot(ax), u.dot(ay)) * S
+	var dv := Vector2(v.dot(ax), v.dot(ay)) * S
 	var det := du.x * dv.y - du.y * dv.x
 	if absf(det) < 0.5:
 		return  # 거의 옆에서 본 면
 	var k := light_k(f["n"])
 	var pts := PackedVector2Array()
 	for q: Vector3 in f["pts"]:
-		pts.append(proj(q, S, origin))
+		pts.append(Vector2(q.dot(ax), q.dot(ay)) * S - origin)
 	var sh := func(x: int, y: int) -> Color:
 		var d := Vector2(x + 0.5, y + 0.5) - so
 		var lu := (d.x * dv.y - d.y * dv.x) / det
