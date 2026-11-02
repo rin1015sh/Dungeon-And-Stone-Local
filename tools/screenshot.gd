@@ -38,6 +38,7 @@ extends Node
 ## --drops[=who]: (--win과 함께) 첫 몬스터 자리에 정수 하나를 더 떨어뜨리고 "획득할까?" 창이 뜬 채 찍는다(=who: 획득한다를 눌러 받을 사람 고르기 창)
 ## --many: (--essence와 함께) 만렙 + 수호자 정수 여럿, --skills: 전투 행동창에서 스킬 목록, --keys=a,b: 행동창 키 액션 차례로
 ## --lock: (--essence와 함께) 정수를 하나 더 흡수한 뒤 레벨 1로 내려 잠긴 정수를 보인다
+## --hold=<초> [--live_walk=right:1.5,down:1,wait:0.5]: 찍지 않고 그만큼 더 돌린다(--write-movie 트레일러 녹화 — tools/trailer/make_trailer.sh, 시작 프레임을 HOLD_START로 찍는다)
 ## --shots=<목록 json> --out=<폴더>: (explore) 장면 목록을 한 번에 찍어 <폴더>/<name>.png로(tools/ShotList.gd, 목록 예 tools/shots/floor1.json)
 ##   --rift=<균열 id> [--chapter=n]과 함께면 그 챕터 안에서 찍는다(목록의 장면마다 "rift"·"chapter"가 있으면 맞는 것만 — tools/shots/rift_void.json)
 
@@ -446,6 +447,16 @@ func _run() -> void:
 		for n: Node in _main.find_children("*", "CombatScreen", true, false):
 			(n as CombatScreen).battle.message.emit("combat.use_skill", {"name": "", "skill": str(_args["banner"])}, "system")
 	await _frames(2 if _quick else 6)
+	if _args.has("hold"):  # 트레일러 녹화(--write-movie): 찍지 않고 그 자리에서 --live_walk 뒤 --hold초 더 돌리고 끝낸다(tools/trailer/)
+		print("HOLD_START %d" % Engine.get_frames_drawn())
+		if _args.has("pan") and _main.current_screen() is CityScreen:  # --pan=<px>: 도시 거리를 --hold초 동안 그만큼 천천히 민다
+			var street := (_main.current_screen() as CityScreen).street()
+			create_tween().tween_method(street.scroll_to, street._offset, street._offset + float(str(_args["pan"])), float(str(_args["hold"])))
+		if _args.has("live_walk"):
+			await _live_walk(str(_args["live_walk"]))
+		await get_tree().create_timer(float(str(_args["hold"]))).timeout
+		get_tree().quit(0)
+		return
 	var img := get_viewport().get_texture().get_image()
 	var out := str(_args["out"])
 	var err := img.save_png(out)
@@ -668,6 +679,9 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 		for g: FieldMonsters.Group in run.remaining:
 			if g.tag == str(_args["engage"]):
 				pick = g
+		if _args.has("god"):  # --god: 균열 조우 전투도 무적(트레일러 녹화 — 수호자에게 첫 차례에 쓰러지지 않게)
+			GameState.debug_invulnerable = true
+			explore.session.player.pool.set_min_value("hp", 1.0)
 		explore.session.engage(pick, true)
 	return explore
 
@@ -721,3 +735,16 @@ func _profile_walk(sec: float) -> void:
 	print("프레임 %d · 평균 %.1f ms · 95%% %.1f ms · 99%% %.1f ms · 최대 %.1f ms · 16.7ms 넘는 프레임 %d · 50ms 넘는 프레임 %d" % [times.size(), avg,
 		times[int(times.size() * 0.95)], times[int(times.size() * 0.99)], times.back(), hitch, slow])
 	print("그리기 호출 %d · 노드 %d · 처리 %.1f ms" % [Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), Performance.get_monitor(Performance.OBJECT_NODE_COUNT), Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0])
+
+
+## --live_walk=right:1.5,down:1,wait:0.5,…: 그 이동 키를 게임 시간으로 그 초만큼 눌러 걷는다(트레일러 녹화 — 무비 메이커의 고정 fps에서도 같은 길이).
+func _live_walk(spec: String) -> void:
+	for part in spec.split(","):
+		var kv := part.split(":")
+		var act := "move_" + kv[0]
+		var on := kv[0] != "wait" and InputMap.has_action(act)
+		if on:
+			Input.action_press(act)
+		await get_tree().create_timer(float(kv[1]) if kv.size() > 1 else 1.0).timeout
+		if on:
+			Input.action_release(act)

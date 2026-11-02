@@ -43,6 +43,12 @@
 - **옷차림·새 종족 후보 그림**(AM42·AM59 — 게임은 안 쓴다): 시안 `paint_look_preview.gd -- --look=<id,…> --out=<폴더>`(전투 그림 크기 앞·옆·뒤 `<id>_views.png`) · 맵 `paint_actors.gd -- --look=<id,…> --out=<폴더>` → 비교 그림 `python3 tools/looks_sheet.py --map <폴더> --views <폴더> --out <png> [--title 제목] [--cols N] <id …>`(제목·부제 = `MapLooks` name·note). 고른 하나만 전투 동작 `paint_motions.gd -- --look=<id> --out=<폴더> --png`(약 1분 반, `--combat <폴더>`로 비교 그림에).
 - **종족 그림 확인 시트**(AM59 — 사용자 확인용): `python3 tools/art_review.py --out docs/screens/race_looks <종족 …>` → `review_<종족>.png`(맵 걷기 시트 전체 ×2 + 게임 크기 + 전투 뒷모습 + 전투 동작 시트 전체 + 쓰러짐, 줄·칸 이름표).
 
+## 트레일러
+
+- **1분 트레일러**(`docs/trailer/trailer.mp4`, 1280×720·30fps·소리 포함): `GODOT=<godot 경로> python3 tools/trailer.py --work=<작업 폴더> --record` (리눅스·xvfb — 녹화 약 5분 + 편집 약 2분). `--record`가 없으면 `<작업 폴더>/clips/*.avi`를 그대로 써서 편집만 다시 한다.
+  - 장면은 Godot 무비 메이커로 실제 화면을 녹화한다: `screenshot.tscn -- … --hold=<초>`(찍지 않고 더 돌림) · `--live_walk=right:1.5,down:1`(게임 시간으로 걷기) · `--pan=<px>`(도시 거리 밀기). 녹화할 장면 = `CLIPS`, 편집(프레임·초·자막·카드) = `TIMELINE`(trailer.py 맨 위).
+  - 자막·카드 글꼴은 송명(`·` 같은 기호가 없다), 소리는 numpy로 합성(낮은 울림·화음·북·카드마다 큰 울림) — 소리 파일이 생기면 바꾼다.
+
 ## 웹 내보내기
 
 - **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다.
