@@ -91,7 +91,6 @@ func test_kirdui_frenzy_super_regen_and_swing() -> void:
 	var swing := JsonUtil.get_array(db.get_entry("skills", "kirdui_swing"), "effects")[0] as Dictionary
 	var plain := {"scaling": "phys", "power": 1.0, "damage_type": "blunt"}
 	assert_near(DamageCalc.attack_power(db, k, swing) - DamageCalc.attack_power(db, k, plain), k.stats.get_value("str"), 0.01, "휘두르기: 근력×1 추가")
-	assert_eq(JsonUtil.get_str(k.weak_point(), "on_hit_status"), "regen_stopped", "머리를 맞히면 재생 정지")
 
 
 func test_tarunbas_pattern_and_collapse() -> void:

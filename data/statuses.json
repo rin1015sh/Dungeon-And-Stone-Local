@@ -1050,7 +1050,7 @@
     "id": "golem_skeleton",
     "name_ko": "뼈대 형태",
     "kind": "debuff",
-    "desc_ko": "살점이 떨어져 뼈대만 남았다. 마력핵이 드러난다.",
+    "desc_ko": "살점이 떨어져 뼈대만 남았다.",
     "battle_only": true,
     "modifiers": [
       {

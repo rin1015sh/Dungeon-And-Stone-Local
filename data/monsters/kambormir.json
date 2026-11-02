@@ -20,12 +20,6 @@
     "sun": 2.0,
     "holy": 1.5
   },
-  "weak_point": {
-    "name_ko": "심장",
-    "multiplier": 2.0,
-    "requires": "aim",
-    "on_hit_status": "regen_stopped"
-  },
   "stats": {
     "str": 36,
     "agi": 45,

@@ -210,7 +210,7 @@ func test_ildium_pattern_magnet_and_overheat() -> void:
 	var act := b.ai_action(il)
 	assert_eq(act["skill"], "ild_steel_fist", "끌려온 대상에게 주먹")
 	assert_eq(act["target"], me)
-	assert_near(DamageCalc.hit_chance(db, il.actor, me.actor, false, 1.0), 1.0, 0.001, "확정 명중")
+	assert_near(DamageCalc.hit_chance(db, il.actor, me.actor, 1.0), 1.0, 0.001, "확정 명중")
 	BossHooks.apply_effects(b, il, b.side_units(Combatant.SIDE_PARTY)[0], JsonUtil.get_array(db.get_entry("skills", "ild_tomb_trap"), "effects"))
 	assert_true(b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.has("telegraphed"), "분묘의 함정 예고")
 	il.actor.pool.set_current("hp", il.actor.pool.get_max("hp") * 0.45)

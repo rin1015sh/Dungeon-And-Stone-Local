@@ -183,11 +183,6 @@ func magic_power() -> float:
 	return JsonUtil.get_float(equipment.weapon(), "magic", 0.0)
 
 
-## 약점 정보 {name_ko, …}. 없으면 빈 사전.
-func weak_point() -> Dictionary:
-	return {}
-
-
 ## 개발용(기반 점검·디버그): 사망 상태를 되돌린다. 게임 규칙상 죽음은 영구다.
 func debug_revive() -> void:
 	dead = false

@@ -75,9 +75,8 @@ static func _monsters(v: ValidatorBase) -> void:
 		if not v.db.tag_ids("monster_shapes").has(JsonUtil.get_str(m, "shape", "humanoid")):
 			v.err(w, "shape '%s' 미등록(tags.monster_shapes)" % m.get("shape"))
 		v.check_color(w, JsonUtil.get_str(m, "color"))
-		var wp: Variant = m.get("weak_point")
-		if wp != null and not (wp is Dictionary and (wp as Dictionary).has("name_ko")):
-			v.err(w, "weak_point는 null 또는 {name_ko, …}")
+		if m.has("weak_point"):
+			v.err(w, "weak_point(부위 약점)는 없앴다(사용자 2026-11-02)")
 		var beh := JsonUtil.get_dict(m, "behavior")
 		var pack := JsonUtil.get_array(beh, "pack_size")
 		if pack.size() != 2 or int(pack[0]) < 1 or int(pack[0]) > int(pack[1]):

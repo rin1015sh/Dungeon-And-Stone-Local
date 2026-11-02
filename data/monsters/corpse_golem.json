@@ -20,12 +20,6 @@
     "fire": 1.5,
     "holy": 1.5
   },
-  "weak_point": {
-    "name_ko": "마력핵",
-    "multiplier": 2.5,
-    "requires": "aim",
-    "requires_status": "golem_skeleton"
-  },
   "stats": {
     "str": 42,
     "agi": 38,

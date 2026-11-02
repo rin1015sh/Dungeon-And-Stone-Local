@@ -100,6 +100,11 @@ func _order() -> void:
 			move_child(_views[u], -1)
 
 
+## 적이 선 원근 줄(0 = 앞줄, 클수록 뒤 — TargetPicker의 W/S).
+func foe_row(u: Combatant) -> int:
+	return _row(u)
+
+
 func _row(u: Combatant) -> int:
 	return int((_slots.get(u, {}) as Dictionary).get("row", 0))
 

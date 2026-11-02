@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(994줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(992줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -499,7 +499,6 @@
 - `combat.immune` {source}의 공격이 {target}에게 통하지 않는다.
 - `combat.hit` {source} → {target}, {amount}의 피해.
 - `combat.crit` {source}의 일격이 {target}의 급소를 스쳤다! {amount}의 피해.
-- `combat.weak_hit` {source}가 {target}의 약점을 꿰뚫었다! {amount}의 피해.
 - `combat.effective` 잘 먹힌다.
 - `combat.lethal` {target}이(가) 치명상을 입고 무너진다.
 - `combat.use_skill` {name}: [{skill}]
@@ -569,7 +568,6 @@
 - `combat.reason_leader_only` 일행을 이끄는 사람만 할 수 있다.
 - `combat.reason_veiled` 장막 너머의 동료를 알아볼 수 없다.
 - `combat.reason_item_no_effect` 듣지 않는다
-- `combat.tag_part` {name} [{part}]
 - `combat.tag_blocked` {name} · {why}
 - `combat.sealed` {name}의 [{skill}]이(가) 봉인되었다.
 - `combat.survive_round` 버텨라! ({round}/{total})
@@ -585,7 +583,7 @@
 - `combat.soul_slash_essence` {name}의 영혼에서 [{essence}]이(가) 떨어져 나가 사라졌다!
 - `combat.soul_slash_soul` {name}의 영혼력이 {amount} 흩어졌다.
 - `combat.smite` 여신의 눈물이 {target}을(를) 태운다! ({amount})
-- `combat.golem_skeleton` {name}의 살점이 무너져 내리고 뼈대가 드러난다 — 마력핵이 보인다!
+- `combat.golem_skeleton` {name}의 살점이 무너져 내리고 뼈대가 드러난다!
 - `combat.golem_mumble_1` {name}: "…춥다… 춥다… 누가 문을…"
 - `combat.golem_mumble_2` {name}: "내 손… 내 손은 어디… 여기, 여기 있다…"
 - `combat.golem_mumble_3` {name}: "배고파, 배고파, 같이 있자, 같이…"

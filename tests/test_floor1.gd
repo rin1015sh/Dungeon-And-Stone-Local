@@ -27,17 +27,17 @@ func _hit(src: Actor, tgt: Actor, effect: Dictionary, seed_value: int) -> Effect
 func test_formula_matches_spec() -> void:
 	var a := Actor.new(db, {"str": 10, "agi": 10})
 	var t := Actor.new(db, {"agi": 10})
-	assert_near(DamageCalc.hit_chance(db, a, t, false), 0.95, 0.0001, "같은 민첩 → 기본 명중 95")
+	assert_near(DamageCalc.hit_chance(db, a, t), 0.95, 0.0001, "같은 민첩 → 기본 명중 95")
 	var slow := Actor.new(db, {"agi": 0})
 	var off := float(db.bal("combat.agi_offset"))
-	assert_near(DamageCalc.hit_chance(db, slow, t, false), 0.95 * pow(off / (10.0 + off), float(db.bal("combat.hit_agi_exp"))), 0.0001,
+	assert_near(DamageCalc.hit_chance(db, slow, t), 0.95 * pow(off / (10.0 + off), float(db.bal("combat.hit_agi_exp"))), 0.0001,
 		"민첩 비율((0+offset)/(10+offset))^hit_agi_exp")
 	assert_near(DamageCalc.attack_power(db, a, {"scaling": "phys"}), 2.0 + 20.0, 0.0001, "근력×2 + 맨손")
 	var gob := Monster.create(db, "goblin")
 	var gw := JsonUtil.get_float(JsonUtil.get_dict(gob.def, "natural_weapon"), "attack")
 	assert_near(DamageCalc.attack_power(db, gob, {"scaling": "phys"}), gob.stats.get_value("str") * 2.0 + gw, 0.0001, "근력×2 + 몬스터 natural_weapon")
 	t.statuses.apply("blind")
-	assert_true(DamageCalc.hit_chance(db, t, a, false) < 0.7, "실명 → 명중률 −30")
+	assert_true(DamageCalc.hit_chance(db, t, a) < 0.7, "실명 → 명중률 −30")
 
 
 func test_on_hit_passive_and_filter() -> void:

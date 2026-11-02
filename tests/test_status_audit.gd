@@ -235,7 +235,7 @@ func _flag(id: String, flag: String) -> String:
 		"always_hit":
 			foe.actor.statuses.apply(id)
 			me.actor.stats.set_base("accuracy", -200.0)
-			return "빗나갈 수 있다" if DamageCalc.hit_chance(db, me.actor, foe.actor, false) < 1.0 else ""
+			return "빗나갈 수 있다" if DamageCalc.hit_chance(db, me.actor, foe.actor) < 1.0 else ""
 		"draws_attacks":
 			var mate := PlayerCharacter.create(db, "human", "warrior", "동료", {"str": 9, "agi": 8, "p_res": 9, "m_res": 6, "int": 6})
 			var lure := b.add(mate, Combatant.SIDE_PARTY)

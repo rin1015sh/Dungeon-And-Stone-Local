@@ -2,7 +2,7 @@ class_name ActionCheck
 extends RefCounted
 ## 전투 행동이 지금 실행 가능한지 검사한다(순수 로직). 문제가 있으면 이유(문자열 키), 없으면 "".
 ## 잘못된 행동은 차례를 쓰지 않는다 — 화면은 메뉴를 다시 열고, AI는 기본 공격으로 바꾼다.
-##   행동: {"kind": "skill", "skill": id, "target": Combatant, "aim_weak": bool}
+##   행동: {"kind": "skill", "skill": id, "target": Combatant, "rev": int}
 ##       | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant} | {"kind": "flee"}
 
 

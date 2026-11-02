@@ -19,11 +19,6 @@
     "holy": 1.5,
     "fire": 1.25
   },
-  "weak_point": {
-    "name_ko": "머리",
-    "multiplier": 2.0,
-    "requires": "aim"
-  },
   "stats": {
     "str": 19,
     "agi": 15,

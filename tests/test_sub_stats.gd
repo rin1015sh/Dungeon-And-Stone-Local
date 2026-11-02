@@ -65,12 +65,12 @@ func test_regen_stats() -> void:
 
 func test_accuracy_and_blind() -> void:
 	var foe := _actor()
-	var plain := DamageCalc.hit_chance(db, _actor(), foe, false, 60.0)
-	var sharp := DamageCalc.hit_chance(db, _actor({"accuracy": 20}), foe, false, 60.0)
+	var plain := DamageCalc.hit_chance(db, _actor(), foe, 60.0)
+	var sharp := DamageCalc.hit_chance(db, _actor({"accuracy": 20}), foe, 60.0)
 	assert_true(sharp > plain, "명중률이 명중 확률을 올린다")
 	var blind := _actor()
 	blind.statuses.apply("blind")
-	assert_true(DamageCalc.hit_chance(db, blind, foe, false, 60.0) < plain, "실명은 명중률을 깎는다")
+	assert_true(DamageCalc.hit_chance(db, blind, foe, 60.0) < plain, "실명은 명중률을 깎는다")
 
 
 func test_affinities_and_resistances_by_element() -> void:

@@ -12,7 +12,7 @@ var registry: EffectRegistry = null
 var item_id: String = ""
 var success: bool = false
 var messages: Array[Dictionary] = []  # {"key": String, "args": Dictionary, "kind": String}
-## 전투 정보(전투 중일 때): {"aim_weak": bool, …}
+## 전투 정보(전투 중일 때): {"skill_id", "skill_name", "summons", …}
 var info: Dictionary = {}
 ## 화면 연출·전투 처리용 사건: {"type": "damage"|"flee", …}
 var events: Array[Dictionary] = []

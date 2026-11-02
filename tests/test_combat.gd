@@ -146,17 +146,12 @@ func test_affinity_status_and_guard() -> void:
 	assert_eq(DamageCalc.resolve(db, atk, target, cold, NO_ROLL)["amount"], roundi(normal * 0.5), "방어 태세: 절반")
 
 
-func test_weak_point_and_lethal() -> void:
+func test_lethal() -> void:
 	var d := _fresh_db()
 	d.put_entry("monsters", {"id": "test_skel", "name_ko": "시험 해골", "grade": 9, "type": "body", "family": ["undead"],
-		"weak_point": {"name_ko": "갈비뼈 사이 핵"}, "stats": {}, "resources": {"hp": 100}, "behavior": {"pack_size": [1, 1]}, "skills": [], "ai": []})
+		"stats": {}, "resources": {"hp": 100}, "behavior": {"pack_size": [1, 1]}, "skills": [], "ai": []})
 	var atk := Actor.new(d, {"str": 10, "agi": 10})
 	var skel := Monster.create(d, "test_skel")
-	var plain: int = DamageCalc.resolve(d, atk, skel, SLASH, NO_ROLL)["amount"]
-	var aimed := DamageCalc.resolve(d, atk, skel, SLASH, NO_ROLL, true)
-	assert_true(aimed["weak"])
-	assert_eq(aimed["amount"], roundi(plain * float(d.bal("combat.weak_point_damage_mult"))))
-	assert_true(DamageCalc.hit_chance(d, atk, skel, true) < DamageCalc.hit_chance(d, atk, skel, false), "약점은 맞히기 어렵다")
 	var lethal_roll := {"hit": 0.0, "crit": 0.0, "var": 0.5, "lethal": 0.0}
 	assert_false(DamageCalc.resolve(d, atk, skel, SLASH, lethal_roll)["lethal"], "생명력이 넉넉하면 치명상 없음")
 	skel.pool.set_current("hp", 40.0)

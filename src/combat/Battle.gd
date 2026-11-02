@@ -207,7 +207,7 @@ func next_turn() -> Combatant:
 	return null
 
 
-## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "aim_weak": bool, "rev": 얹을 Rev 개수(BattleRev)}
+## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "rev": 얹을 Rev 개수(BattleRev)}
 ##          | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant(하나만 치는 아이템)} | {"kind": "flee"}
 ## 적용했으면 true. 현재 차례가 아니거나 이미 처리했거나 행동이 잘못됐으면 false(차례를 쓰지 않는다).
 func act(c: Combatant, action: Dictionary) -> bool:
@@ -223,8 +223,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	var delay := 0.0
 	match str(action.get("kind", "")):
 		"skill":
-			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), bool(action.get("aim_weak", false)),
-				int(action.get("rev", 0)))
+			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), int(action.get("rev", 0)))
 		"guard":
 			c.actor.statuses.apply("guarding")
 			BattleRev.on_guard(self, c)
@@ -293,7 +292,7 @@ func unit_of(actor: Actor) -> Combatant:
 	return null
 
 
-func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool, rev: int = 0) -> float:
+func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -> float:
 	var sk := db.get_entry("skills", skill_id)
 	var why := can_use(c, skill_id)
 	if sk.is_empty() or not why.is_empty():
@@ -317,7 +316,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, aim_weak: bool,
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
 	var said := history.size()
-	var info := {"aim_weak": aim_weak, "skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
+	var info := {"skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
 		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size()}
 	for t in targets:
 		if c.actor.dead:

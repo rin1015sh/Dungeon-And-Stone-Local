@@ -23,7 +23,7 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if per_summon > 0.0 and int(ctx.info.get("summons", 0)) > 0:
 		data = data.duplicate()
 		data["power"] = JsonUtil.get_float(data, "power", 1.0) * (1.0 + per_summon * int(ctx.info["summons"]))
-	var r := DamageCalc.resolve(ctx.db, source, target, data, rolls, bool(ctx.info.get("aim_weak", false)))
+	var r := DamageCalc.resolve(ctx.db, source, target, data, rolls)
 	Passives.on_attacked(ctx)
 	if not ctx.info.has("skill_id"):
 		for st in source.statuses.ids():
@@ -51,13 +51,8 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	var landed_amount := int(r["amount"]) if lost > 0 else 0  # 보호막이 다 막았으면 맞힌 것으로 치지 않는다
 	if lost > 0:
 		Passives.on_damaged(ctx, dtype)
-	var wp_status := JsonUtil.get_str(target.weak_point(), "on_hit_status") if bool(r["weak"]) else ""
-	if not wp_status.is_empty():
-		Passives.try_status(ctx.db, null, source, target, wp_status)  # 약점 적중 시 대상에게(캠보르미어 심장 → 재생 정지)
 	if bool(r["crit"]):
 		ctx.say("combat.crit", args, "danger")
-	elif bool(r["weak"]):
-		ctx.say("combat.weak_hit", args, "danger")
 	else:
 		ctx.say("combat.hit", args, "info")
 	if float(r["affinity"]) > 1.0:

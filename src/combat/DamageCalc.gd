@@ -11,24 +11,21 @@ extends RefCounted
 ##   "ignore_defense": true면 방어 계수를 1로 본다(배신의 장막 오인 공격). "defense_ignore": 0.2면 방어의 20%를 무시.
 ##   속성 내성·감응도(G6): 피해 유형 x에 대상 resist_x 1점당 −element_resist_per_point(최대 element_resist_max), 공격자 affinity_x 1점당 +affinity_per_point.
 ##   "str_bonus": k — 물리 공격력에 근력×k를 더한다(키르뒤 휘두르기). 공격자 상태의 crit_bonus도 치명타율에 더한다(샤벨 타이거 기습).
-##   약점: 몬스터 weak_point {name_ko, multiplier(없으면 combat.weak_point_damage_mult), ignore_reduction, requires_status}.
 ##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다.
 ##   받는/주는 피해 수정자는 하나하나 곱한다(방어 −50% × 피의 장막 −40% = ×0.3 — 더해서 0이 되지 않는다).
 ##   결과 raw = 상성·피해 수정자·속성을 곱하기 전 피해(비율형 추가 피해의 기준).
 ## 무작위 값은 rolls(0~1)로 받아서 순수 계산만 한다(테스트 가능).
 
 
-## rolls: {"hit", "crit", "var", "lethal"} 각 0~1. 결과: hit, crit, lethal, weak, amount, damage_type, affinity
-static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: Dictionary, rolls: Dictionary,
-		aim_weak: bool = false) -> Dictionary:
+## rolls: {"hit", "crit", "var", "lethal"} 각 0~1. 결과: hit, crit, lethal, amount, damage_type, affinity
+static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: Dictionary, rolls: Dictionary) -> Dictionary:
 	var dtype := JsonUtil.get_str(effect, "damage_type", "blunt")
 	if dtype == "weapon":
 		dtype = attacker.attack_damage_type()
 	var category := damage_category(db, dtype)
-	var weak := aim_weak and not defender.weak_point().is_empty()
-	var out := {"hit": false, "crit": false, "lethal": false, "weak": weak, "amount": 0, "damage_type": dtype,
+	var out := {"hit": false, "crit": false, "lethal": false, "amount": 0, "damage_type": dtype,
 		"affinity": defender.damage_affinity(dtype, category)}
-	if JsonUtil.get_float(rolls, "hit") >= hit_chance(db, attacker, defender, weak, JsonUtil.get_float(effect, "accuracy", -1.0)):
+	if JsonUtil.get_float(rolls, "hit") >= hit_chance(db, attacker, defender, JsonUtil.get_float(effect, "accuracy", -1.0)):
 		return out
 	out["hit"] = true
 	var magic := JsonUtil.get_str(effect, "scaling", "phys") == "magic"
@@ -39,17 +36,13 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 	raw *= Passives.damage_mult_vs(attacker, defender)
 	var variance := _c(db, "damage_variance", 0.1)
 	raw *= 1.0 + (JsonUtil.get_float(rolls, "var", 0.5) * 2.0 - 1.0) * variance
-	# 약점(weak_point)을 노려 성공하면 "ignore_reduction": true인 몬스터는 받는 피해 감소만 무시한다(스켈레톤 핵 — 늘어나는 것은 그대로).
-	var wp := defender.weak_point()
-	if weak:
-		raw *= JsonUtil.get_float(wp, "multiplier", _c(db, "weak_point_damage_mult", 2.0))
 	if JsonUtil.get_float(rolls, "crit", 1.0) < crit_chance(db, attacker, defender, Passives.crit_bonus(attacker, dtype) + JsonUtil.get_float(effect, "crit_bonus")
 			+ attacker.statuses.sum_key("crit_bonus") + defender.statuses.sum_key("crit_taken")):
 		out["crit"] = true
 		raw *= _c(db, "crit_mult", 1.5)
 	out["raw"] = raw
 	var amount := raw * float(out["affinity"])
-	amount *= _modifier_mult(defender.stats, "dmg_taken", dtype, category, weak and JsonUtil.get_bool(wp, "ignore_reduction"))
+	amount *= _modifier_mult(defender.stats, "dmg_taken", dtype, category)
 	amount *= _modifier_mult(attacker.stats, "dmg_dealt", dtype, category)
 	amount *= element_mult(db, attacker, defender, dtype)
 	var dealt := 0 if float(out["affinity"]) <= 0.0 else maxi(int(_c(db, "min_damage", 1.0)), roundi(amount))
@@ -79,14 +72,12 @@ static func attack_power(db: GameDatabase, attacker: Actor, effect: Dictionary) 
 
 
 ## accuracy: 스킬 명중(퍼센트, 음수면 기본값). 명중률 스탯(accuracy)이 더해진다(실명은 이것을 깎는다).
-static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, aim_weak: bool, accuracy: float = -1.0) -> float:
-	if defender.statuses.has_flag("always_hit") and not aim_weak:
+static func hit_chance(db: GameDatabase, attacker: Actor, defender: Actor, accuracy: float = -1.0) -> float:
+	if defender.statuses.has_flag("always_hit"):
 		return 1.0  # 자석에 끌려온 대상(일디움 자석 끌어당기기)
 	var acc := (accuracy if accuracy >= 0.0 else _c(db, "default_accuracy", 95.0)) + attacker.stats.get_value("accuracy") \
 		+ defender.statuses.sum_key("hit_taken") + Passives.hit_bonus_vs(attacker, defender)  # 표식 · 패시브 hit_vs_status
 	var h := acc / 100.0 * pow(agi_ratio(db, attacker, defender), _c(db, "hit_agi_exp", 0.3))
-	if aim_weak:
-		h *= _c(db, "weak_point_hit_mult", 0.6)
 	return clampf(h, _c(db, "hit_min", 0.3), _c(db, "hit_max", 1.0))
 
 
@@ -147,13 +138,11 @@ static func damage_category(db: GameDatabase, dtype: String) -> String:
 
 
 ## "dmg_taken:<유형|분류|all>" 수정자를 하나하나 곱으로 모은다(flat은 기준 1에 더한다). skip_reductions면 1 미만으로 줄이는 것은 뺀다.
-static func _modifier_mult(stats: StatBlock, prefix: String, dtype: String, category: String, skip_reductions: bool = false) -> float:
+static func _modifier_mult(stats: StatBlock, prefix: String, dtype: String, category: String) -> float:
 	var base := 1.0
 	var mult := 1.0
 	for key: String in [dtype, category, "all"]:
 		for mod: Modifier in stats.get_modifiers(prefix + ":" + key):
-			if skip_reductions and (mod.percent < 0.0 or mod.flat < 0.0):
-				continue
 			base += mod.flat
 			mult *= maxf(0.0, 1.0 + mod.percent)
 	return maxf(0.0, base * mult)

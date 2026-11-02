@@ -18,7 +18,6 @@
   "weaknesses": {
     "cold": 1.5
   },
-  "weak_point": null,
   "stats": {
     "str": 43,
     "agi": 52,

@@ -86,7 +86,7 @@ func _initialize() -> void:
 		for b: Array in benches:
 			var atk := _bench(db, b, true)
 			var dmg := _avg(db, atk, m, _skill_damage(db, Battle.BASIC_ATTACK))
-			var hit := DamageCalc.hit_chance(db, atk, m, false)
+			var hit := DamageCalc.hit_chance(db, atk, m)
 			row += " %d · %d%% · %d타 |" % [roundi(dmg), roundi(hit * 100.0), ceili(hp / maxf(1.0, dmg))]
 		lines.append(row)
 	lines.append("")

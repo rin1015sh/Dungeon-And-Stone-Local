@@ -19,12 +19,6 @@
     "holy": 1.5,
     "fire": 1.25
   },
-  "weak_point": {
-    "name_ko": "핵",
-    "multiplier": 1.5,
-    "ignore_reduction": true,
-    "requires": "aim"
-  },
   "stats": {
     "str": 9,
     "agi": 13,
@@ -64,7 +58,7 @@
     {
       "id": "skeleton_core",
       "name_ko": "갈비뼈 속 핵",
-      "desc_ko": "베고 찌르는 공격은 갈비뼈에 막힌다. 핵을 노리거나 부숴라.",
+      "desc_ko": "베고 찌르는 공격은 갈비뼈에 막힌다.",
       "modifiers": [
         {
           "target": "dmg_taken:slash",

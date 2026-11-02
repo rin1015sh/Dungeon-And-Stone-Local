@@ -14,7 +14,7 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 		return false
 	ctx.say("combat.hit", args, "danger")
 	DamageApply.hurt(ctx, t, amount, "attack:" + ctx.source.id, "dark")
-	ctx.events.append({"type": "damage", "target": t, "hit": true, "amount": amount, "crit": false, "weak": false,
+	ctx.events.append({"type": "damage", "target": t, "hit": true, "amount": amount, "crit": false,
 		"damage_type": "dark", "affinity": 1.0})
 	return true
 

@@ -3,7 +3,7 @@ extends HBoxContainer
 ## 전투 아래 창(피어 앤 헝거식): 왼쪽 = 명령 칸(공격 · 스킬 · 방어 · 아이템, 세로 한 줄 — 행동을 정할 때만 보이고 그 밖에는 숨는다, 자리는 그대로),
 ## 오른쪽 = 파티 창(PartyRoster — 지금 차례인 사람의 줄이 빛난다, 줄 높이·간격이 명령 칸과 같아 줄이 나란하다). 스킬·아이템을 고를 때는 오른쪽이 목록 칸(ChoiceGrid 2×3)으로 바뀐다.
 ##   공격 → 대상 · 스킬 → 보유 스킬 + 맨 끝 "도주"(성공 확률) → 필요하면 대상 · 아이템 → 전투용 소지품(하나만 치는 것은 대상)
-##   대상은 아래 창 목록이 아니라 무대에서 고른다(TargetPicker — 적 A/D, 약점 W/S, 아군은 파티 창 줄 — 사용자 2026-11-02). 커서가 놓인 대상은 target_hovered.
+##   대상은 아래 창 목록이 아니라 무대에서 고른다(TargetPicker — 적 A/D 같은 줄 · W/S 뒷줄·앞줄, 아군은 파티 창 줄 — 사용자 2026-11-02). 커서가 놓인 대상은 target_hovered.
 ## 키: 위·아래(W·S) 이동, Enter 확정, Backspace 뒤로(게임에서 Backspace를 쓰는 곳은 여기뿐 — UI43). 스킬 칸 커서와 마지막 대상은 차례가 바뀌어도 기억한다.
 ## 고르면 chosen(action)을 한 번만 낸다(고른 즉시 닫아 중복 선택을 막는다).
 
@@ -73,6 +73,7 @@ func set_roster(r: Control) -> void:
 func set_stage(stage: BattleStage, tag: SkillBanner) -> void:
 	_stage = stage
 	_picker.set_tag(tag)
+	_picker.set_space(_x, func(u: Combatant) -> int: return _stage.foe_row(u))
 
 
 func open(battle: Battle, unit: Combatant) -> void:
@@ -135,11 +136,10 @@ func _sub(title: String, opts: Array[Dictionary], back: Callable, start: int = 0
 	_list.show_choices(title, opts, back, start)
 
 
-## 공격: 무대에서 적을 고른다. 약점이 있는 적은 W/S로 약점 노리기(명중이 낮고 피해가 크다).
+## 공격: 무대에서 적을 고른다(A/D 같은 줄, W/S 뒷줄·앞줄).
 func _attack() -> void:
-	_pick(_foes(), func(t: Combatant, weak: bool) -> void:
-		_choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t, "aim_weak": weak}),
-		func() -> void: _root(ROOT_ATTACK), true)
+	_pick(_foes(), func(t: Combatant) -> void: _choose({"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": t}),
+		func() -> void: _root(ROOT_ATTACK))
 
 
 ## 스킬: 보유 스킬(대화·조사 포함) + 맨 끝 도주. 칸 오른쪽 아래에 대가 또는 못 쓰는 이유.
@@ -193,7 +193,7 @@ func _skill_target(skill_id: String, skill_index: int) -> void:
 		_:
 			_choose({"kind": "skill", "skill": skill_id})
 			return
-	_pick(list, func(t: Combatant, _weak: bool) -> void: _choose({"kind": "skill", "skill": skill_id, "target": t}),
+	_pick(list, func(t: Combatant) -> void: _choose({"kind": "skill", "skill": skill_id, "target": t}),
 		func() -> void: _skills(skill_index))
 
 
@@ -215,34 +215,32 @@ func _item_pick(id: String, item_index: int) -> void:
 		_choose({"kind": "item", "item": id})
 		return
 	var why := func(t: Combatant) -> String: return "" if BattleRules.smite_fits(e, t) else "combat.reason_item_no_effect"
-	_pick(_foes(), func(t: Combatant, _weak: bool) -> void: _choose({"kind": "item", "item": id, "target": t}),
-		func() -> void: _items(item_index), false, why)
+	_pick(_foes(), func(t: Combatant) -> void: _choose({"kind": "item", "item": id, "target": t}),
+		func() -> void: _items(item_index), why)
 
 
 ## 무대에서 대상을 고른다(명령 칸·목록은 그대로 두고 키만 넘긴다). 마지막으로 고른 대상에 커서.
-func _pick(list: Array[Combatant], on_pick: Callable, back: Callable, weak: bool = false, why: Callable = Callable()) -> void:
+func _pick(list: Array[Combatant], on_pick: Callable, back: Callable, why: Callable = Callable()) -> void:
 	_show_list(false)
 	_cmds.active = false
 	if list.is_empty():
 		back.call()
 		return
-	var remember := func(t: Combatant, aim: bool) -> void:
+	var remember := func(t: Combatant) -> void:
 		_last_target[_unit.get_instance_id()] = t
-		on_pick.call(t, aim)
+		on_pick.call(t)
 	var last: Variant = _last_target.get(_unit.get_instance_id())
-	_picker.pick(list, remember, back, last as Combatant if last is Combatant and list.has(last) else null, weak, why)
+	_picker.pick(list, remember, back, last as Combatant if last is Combatant and list.has(last) else null, why)
 
 
-## 고를 수 있는 적(은신은 빼고 — 다른 적이 없으면 BattleRules.targetable이 모두 돌려준다), 무대 왼쪽부터.
+## 고를 수 있는 적(은신은 빼고 — 다른 적이 없으면 BattleRules.targetable이 모두 돌려준다). 순서·줄은 TargetPicker가 무대 자리로.
 func _foes() -> Array[Combatant]:
-	var out: Array[Combatant] = BattleRules.targetable(_battle, _unit)
-	if _stage != null:
-		out.sort_custom(func(a: Combatant, b: Combatant) -> bool: return _x(a) < _x(b))
-	return out
+	return BattleRules.targetable(_battle, _unit)
 
 
+## 무대 가로 자리(TargetPicker — 같은 줄 안 순서·줄을 옮길 때 가장 가까운 대상).
 func _x(u: Combatant) -> float:
-	var v := _stage.view(u)
+	var v := _stage.view(u) if _stage != null else null
 	return v.position.x + v.size.x * 0.5 if v != null else float(u.order) * 10000.0
 
 

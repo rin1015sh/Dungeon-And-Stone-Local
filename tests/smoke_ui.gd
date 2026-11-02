@@ -457,16 +457,7 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	_expect(combat.banner().text() == pk.current().label(), "위쪽 작은 창에 고르는 적 이름 (%s)" % combat.banner().text())
 	var stage_view := combat.stage().view(pk.current())
 	_expect(stage_view != null and stage_view._target, "고르는 적이 무대에서 빛난다")
-	var wm := pk.current().actor as Monster  # 약점 노리기: 시험 동안만 이 고블린에게 약점을 준다(데이터 사본)
-	var old_def := wm.def
-	wm.def = old_def.duplicate()
-	wm.def["weak_point"] = {"name_ko": "머리"}
-	await _action("menu_down")
-	_expect(pk.aiming_weak() and combat.banner().text() == Strings.t("combat.tag_part", {"name": pk.current().label(), "part": "머리"}),
-		"S → 약점 노리기(위쪽 창에 \"이름 [부위]\") (%s)" % combat.banner().text())
-	await _action("menu_up")
-	_expect(not pk.aiming_weak() and combat.banner().text() == pk.current().label(), "W → 다시 몸")
-	wm.def = old_def
+	_picker_rows()
 	await _action("menu_back")
 	_expect(not pk.active and menu.grid() == g and combat.banner().text().is_empty(), "Backspace → 명령 칸(위쪽 창 닫힘)")
 	await _action("menu_confirm")
@@ -477,6 +468,41 @@ func _keyboard_menu(combat: CombatScreen, menu: CommandMenu) -> void:
 	_expect(not acts.is_empty() and int(acts[0].get("rev", 0)) == top, "고른 Rev가 공격에 얹힌다")
 
 
+## 무대 대상 고르기의 줄(UI52): 앞줄 둘·뒷줄 하나 + 아군 — 처음은 앞줄 가운데, W = 뒷줄(가로로 가까운 적), S = 앞줄, 앞줄에서 S = 아군,
+## A/D = 같은 줄 안에서 돈다. 무대 자리는 가짜 함수로 준다.
+func _picker_rows() -> void:
+	var mk := func(id: String, side: int) -> Combatant:
+		var a: Actor = Monster.create(DataRegistry.db, id) if side == Combatant.SIDE_ENEMY else PlayerCharacter.create(DataRegistry.db, "human", "warrior", "줄 시험", {})
+		return Combatant.new(a, side)
+	var fl: Combatant = mk.call("goblin", Combatant.SIDE_ENEMY)
+	var fr: Combatant = mk.call("goblin", Combatant.SIDE_ENEMY)
+	var bk: Combatant = mk.call("goblin", Combatant.SIDE_ENEMY)
+	var me: Combatant = mk.call("", Combatant.SIDE_PARTY)
+	var xs := {fl: -1.0, fr: 1.0, bk: 0.8, me: 0.0}
+	var rows := {fl: 0, fr: 0, bk: 1}
+	var pk := TargetPicker.new()
+	add_child(pk)
+	pk.set_space(func(u: Combatant) -> float: return float(xs[u]), func(u: Combatant) -> int: return int(rows.get(u, 0)))
+	var picked: Array = []
+	var cands: Array[Combatant] = [bk, fr, me, fl]
+	pk.pick(cands, func(t: Combatant) -> void: picked.append(t), Callable())
+	var ok := pk.current() in [fl, fr]
+	pk.change_row(true)
+	ok = ok and pk.current() == bk
+	_expect(ok and not pk.change_row(true), "W → 뒷줄 적(더 뒤는 없다)")
+	pk.move(1)
+	_expect(pk.current() == bk, "뒷줄이 하나면 A/D로 그대로")
+	pk.change_row(false)
+	_expect(pk.current() == fr, "S → 앞줄(가로로 가까운 적)")
+	pk.move(1)
+	_expect(pk.current() == fl, "D → 같은 줄에서 돈다")
+	pk.change_row(false)
+	_expect(pk.current() == me, "앞줄에서 S → 아군")
+	pk.confirm()
+	_expect(picked == [me] and not pk.active, "Enter → 고름")
+	pk.queue_free()
+
+
 ## 하나만 치는 균열 전투 도구(RF27): 아이템 → 적 고르기(듣지 않는 계열은 흐림) → Backspace로 아이템 목록 → 명령 칸.
 func _single_item_target(combat: CombatScreen, menu: CommandMenu, g: ChoiceGrid) -> void:
 	var me := combat.battle.current
@@ -485,9 +511,9 @@ func _single_item_target(combat: CombatScreen, menu: CommandMenu, g: ChoiceGrid)
 	var pk := menu.picker()
 	var e := BattleRules.single_smite(DataRegistry.db, "mine_powder_pouch")
 	var ok := pk.active and pk.targets().size() == BattleRules.targetable(combat.battle, me).size()
-	for t: Combatant in pk.targets():
-		var name_shown := combat.banner().text()
-		ok = ok and (name_shown == t.label()) == BattleRules.smite_fits(e, t)  # 듣지 않는 적은 "이름 · 듣지 않는다"
+	for i in pk.targets().size():
+		var t := pk.current()  # 커서가 놓인 적(같은 줄 안에서 D로 넘긴다)
+		ok = ok and t != null and (combat.banner().text() == t.label()) == BattleRules.smite_fits(e, t)  # 듣지 않는 적은 "이름 · 듣지 않는다"
 		await _action("menu_right")
 	_expect(ok, "화약 주머니 → 무대에서 적 하나 고르기(듣지 않는 적은 위쪽 창에 이유)")
 	await _action("menu_back")

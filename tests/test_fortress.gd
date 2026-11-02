@@ -18,23 +18,21 @@ func _battle(monsters: Array, n_party: int = 1, seed_value: int = 3) -> Battle:
 	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(seed_value), party, monsters)
 
 
-func _ctx_hit(src: Actor, tgt: Actor, fx: Array, seed_value: int = 1, aim_weak: bool = false) -> EffectContext:
+func _ctx_hit(src: Actor, tgt: Actor, fx: Array, seed_value: int = 1) -> EffectContext:
 	var reg := ContentRegistries.new()
 	var ctx := EffectContext.new(db, src, tgt, Rng.new(seed_value))
 	ctx.registry = reg.effects
-	ctx.info = {"aim_weak": aim_weak}
 	reg.effects.apply_all(ctx, fx)
 	return ctx
 
 
-func test_skeleton_core_weak_point() -> void:
+func test_skeleton_core_reduction() -> void:
 	var atk := Actor.new(db, {"str": 10})
 	var sk := Monster.create(db, "skeleton_archer")
 	var plain := Actor.new(db, {"p_res": sk.stats.get_value("p_res")})  # 같은 방어의 보통 대상
 	var fx := {"scaling": "phys", "power": 1.0, "damage_type": "slash", "accuracy": 1000}
 	var base := float(DamageCalc.resolve(db, atk, plain, fx, HIT)["amount"])
 	assert_near(float(DamageCalc.resolve(db, atk, sk, fx, HIT)["amount"]), base * 0.6, 1.0, "갈비뼈 속 핵: 베기 −40%")
-	assert_near(float(DamageCalc.resolve(db, atk, sk, fx, HIT, true)["amount"]), base * 1.5, 1.0, "핵을 노려 맞히면 감소 무시 ×1.5")
 	var blunt := fx.duplicate()
 	blunt["damage_type"] = "blunt"
 	assert_near(float(DamageCalc.resolve(db, atk, sk, blunt, HIT)["amount"]), base, 1.0, "둔기는 정상")
@@ -149,14 +147,13 @@ func test_bone_knight_type_and_soul_slash() -> void:
 func test_corpse_golem_skeleton_form() -> void:
 	var b := _battle(["corpse_golem"], 2)
 	var gol := b.side_units(Combatant.SIDE_ENEMY)[0]
-	assert_true(gol.actor.weak_point().is_empty(), "마력핵은 처음엔 드러나지 않는다")
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
 	Meters.add(db, gol.actor, "golem_fire", 160.0)
 	assert_true(gol.actor.statuses.has("golem_burned"), "화염 누적 150")
 	var hp: float = me.actor.pool.get_current("hp")
 	BossHooks.turn_end(b, gol, false)
 	assert_eq(str(gol.memo["phase"]), "p2", "뼈대 형태")
-	assert_true(gol.actor.statuses.has("golem_skeleton") and not gol.actor.weak_point().is_empty(), "마력핵 노출")
+	assert_true(gol.actor.statuses.has("golem_skeleton"), "뼈대 형태 상태")
 	assert_true(me.actor.pool.get_current("hp") < hp, "바뀔 때 살점폭발 자동 발동")
 	var b2 := _battle(["corpse_golem"])
 	var g2 := b2.side_units(Combatant.SIDE_ENEMY)[0]
@@ -191,7 +188,7 @@ func test_blater_pattern() -> void:
 	assert_true(me.actor.statuses.has("telegraphed"), "사형 선고 예고")
 
 
-func test_kambormir_feast_and_heart() -> void:
+func test_kambormir_feast() -> void:
 	var b := _battle(["kambormir"], 3)
 	var k := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var party := b.side_units(Combatant.SIDE_PARTY)
@@ -200,14 +197,6 @@ func test_kambormir_feast_and_heart() -> void:
 	BossHooks.turn_end(b, k, false)
 	assert_eq(k.actor.statuses.stacks("vamp_blood_feast"), 2, "제물 1명당 근력·민첩 +10%")
 	assert_near(k.actor.stats.get_value("str"), JsonUtil.get_float(JsonUtil.get_dict((k.actor as Monster).def, "stats"), "str") * 1.2, 0.01)
-	_ctx_hit(party[2].actor, k.actor, [{"type": "damage", "power": 1.0, "damage_type": "weapon", "accuracy": 1000}], 2, true)
-	var ok := k.actor.statuses.has("regen_stopped")
-	for s in 20:
-		if ok:
-			break
-		_ctx_hit(party[2].actor, k.actor, [{"type": "damage", "power": 1.0, "damage_type": "weapon", "accuracy": 1000}], s + 3, true)
-		ok = k.actor.statuses.has("regen_stopped")
-	assert_true(ok, "심장을 맞히면 재생 정지")
 	assert_eq(Progression.first_kill_exp(db, (k.actor as Monster).def), 6, "5등급 + 상위 변이종 = 6")
 
 

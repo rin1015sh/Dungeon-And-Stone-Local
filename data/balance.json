@@ -130,8 +130,6 @@
     "min_damage": 1,
     "lethal_chance_base": 0.1,
     "lethal_hp_ratio": 0.3,
-    "weak_point_hit_mult": 0.6,
-    "weak_point_damage_mult": 2.0,
     "_flee_comment": "도주 = flee_base + flee_agi_share × (아군 평균 민첩 − 적 평균)/(아군 + 적), 10~90%. no_flee_ranks가 상대에 있으면 도주 불가",
     "flee_base": 0.5,
     "flee_agi_share": 0.8,
