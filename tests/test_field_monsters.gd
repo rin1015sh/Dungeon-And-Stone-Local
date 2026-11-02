@@ -85,17 +85,11 @@ func test_bumping_a_group_starts_combat() -> void:
 func test_chase_until_contact() -> void:
 	var fm := _room_field("blade_wolf")
 	var g := _place(fm, "blade_wolf", Vector2i(12, 7))
-	g.facing = Vector2(-1, 0)  # 플레이어 쪽을 보고 있다(시야각 — test_monster_patrol)
+	g.facing = Vector2(1, 0)  # 등 돌리고 있어도 화면 안이면 바로 쫓는다(V28)
 	var player := Vector2i(8, 7)
 	fm.set_player_moving(true)
-	fm.update(_c(player), 0.01, 0.01, false)  # 먼저 멈칫하고 본다(의심 — 경계도가 차오르는 중, V22)
-	assert_eq(g.state, FieldMonsters.STATE_SUSPECT)
 	var t := 0.01
-	for i in 20:  # 경계도가 차면 쫓는다(의심하는 동안은 서 있다)
-		t += 0.002
-		fm.update(_c(player), 0.002, t, false)
-		if g.state == FieldMonsters.STATE_CHASE:
-			break
+	fm.update(_c(player), 0.001, t, false)
 	assert_eq(g.state, FieldMonsters.STATE_CHASE)
 	var hit := fm.update(_c(player), fm._steer.move_hours("blade_wolf") * 3.0 + 0.00001, t + 0.1, false)
 	assert_true(g.pos.x <= 9, "다가온다 (%s)" % str(g.pos))
@@ -109,10 +103,8 @@ func test_non_aggressive_waits_and_grace() -> void:
 	assert_true(fm.update(_c(player), _move_hours("ghoul") * 5.0, 0.0, false) == null, "구울은 멀리서는 덤비지 않는다")
 	assert_true(g.state != FieldMonsters.STATE_CHASE)
 	g.place(Vector2i(4, 7))
-	g.facing = Vector2(-1, 0)  # 플레이어 쪽을 본다(등 돌리고 있으면 모른다 — V20)
 	fm.set_player_moving(true)
-	assert_true(fm.update(_c(player), 0.001, 0.001, false) == null, "구울은 먼저 덤비지 않으니 알아채기 전에는 싸우지 않는다")
-	assert_true(fm.update(_c(player), 0.1, 0.1, false) == g, "바로 옆에서 알아채면 싸운다")
+	assert_true(fm.update(_c(player), 0.1, 0.1, false) == g, "바로 옆(aggro_radius_m 안)이면 알아채고 싸운다")
 	fm.set_grace(g, 0.1)
 	assert_true(fm.update(_c(player), 0.0, 0.1, false) == null, "도망친 직후에는 쫓지 않는다")
 	fm.update(_c(player), 0.0, 1.0, false)

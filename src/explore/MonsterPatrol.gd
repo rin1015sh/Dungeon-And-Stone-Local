@@ -50,8 +50,7 @@ func _init(db: GameDatabase, map: FloorMap, rng: Rng, can_enter: Callable, clear
 func enter(g: FieldMonsters.Group) -> void:
 	g.patrol.clear()
 	g.rest_until = -1.0
-	if g.state != FieldMonsters.STATE_SUSPECT:
-		g.look = Vector2.ZERO
+	g.look = Vector2.ZERO
 
 
 ## 순찰·귀환하는 무리가 다음에 걸어갈 칸. 서서 둘러보는 중이면 (-1, -1).

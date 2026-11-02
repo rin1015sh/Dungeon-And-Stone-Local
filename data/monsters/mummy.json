@@ -36,7 +36,7 @@
     "damage_type": "blunt"
   },
   "behavior": {
-    "ai": {"alertness": 0.7, "tenacity": 1.5},
+    "ai": {"tenacity": 1.5},
     "move_mult": 0.7,
     "alert_sfx": "undead_moan",
     "aggressive": true,

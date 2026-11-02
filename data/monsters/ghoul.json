@@ -14,6 +14,7 @@
   ],
   "shape": "beast",
   "size": 1.0,
+  "map_scale": 1.5,
   "color": "#6f7a6a",
   "immunities": [],
   "weaknesses": {

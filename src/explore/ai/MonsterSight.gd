@@ -1,19 +1,15 @@
 class_name MonsterSight
 extends RefCounted
 ## 필드 몬스터의 감각(순수 로직 — MonsterMind가 가진다, 사용자 2026-11-01 적 AI 전면 개편 V22).
-##   본다 = 플레이어 화면 사각형 안(V19 — 화면 밖에서는 무엇으로도 모른다) + 시야각 안(뒤로 완전히 돈 것만 못 본다 — monsters.view_cone_deg)
-##          + 눈에서 플레이어 몸까지 막히지 않음. 시선은 몸 가운데와 양 어깨(몸 폭 body_half) 세 줄 — 하나라도 트이면 보인다
-##          (예전엔 칸 중심 한 줄이라 모퉁이 칸을 스치기만 해도 놓쳤다). 시선을 막는 것은 벽뿐 — 서 있는 장식(천막·나무·석상·결정 …,
-##          타일 art.stand)은 몸을 다 가리지 못해 막지 않는다(사용자 "단순 장식 타일에 가려지면 바로 포기").
-##   듣는다 = 플레이어가 움직이고, 열린 칸을 따라 잰 길 거리(벽 너머 직선이 아니라 돌아가는 길)가 r 안.
+##   본다 = 플레이어 화면 사각형 안(V19·V28 — 사용자 2026-11-02 "그냥 화면 안에 들어오면 어그로": 바라보는 쪽·벽은 보지 않는다).
+##   시선(sees) = 눈에서 몸 가운데·양 어깨 세 줄 중 하나라도 벽에 막히지 않음 — 방에서 기다리는 보스 조우(FieldMonsters.boss_seen)만 쓴다.
+##   길 거리(path_steps) = 열린 칸을 따라 잰 걸음 수(무리 부르기).
 ## 화면 = 플레이어를 가운데 둔 카메라 사각형(칸) — 뷰포트 ÷ (view.floor_tile_px × camera_zoom)의 반, 가장자리에서 monsters.screen_margin_tiles 안쪽.
 ## 오토로드를 참조하지 않는다.
 
 var half := Vector2(13.3, 7.5)  ## 화면 반 크기(칸, 여유를 뺀 값)
 var keep: float = 2.0           ## 쫓는 중엔 화면을 이만큼 더 넓게(끝에서 쫓기·놓치기를 되풀이하지 않게)
 var body: float = 0.3           ## 플레이어 몸 반 폭(어깨 시선)
-var _cos_cone: float = -0.5     ## 시야각 끝(이 밖 = 등 뒤)
-var _cos_front: float = 0.5     ## 정면(이 안 = 바로 알아본다, 밖 = 곁눈 — 느리게)
 var _map: FloorMap
 var _block := PackedByteArray()  # 타일 번호 → 시선을 막는가(1)
 
@@ -31,8 +27,6 @@ func _init(db: GameDatabase, map: FloorMap) -> void:
 	half = Vector2(vw * 0.5 / (tw * zoom) - margin, vh * 0.5 / (th * zoom) - margin)
 	keep = float(db.bal("monsters.chase_keep_tiles", 2.0))
 	body = float(db.bal("explore.body_half_extent", 0.3))
-	_cos_cone = cos(deg_to_rad(float(db.bal("monsters.view_cone_deg", 240.0)) * 0.5))
-	_cos_front = cos(deg_to_rad(float(db.bal("monsters.ai.front_deg", 120.0)) * 0.5))
 
 
 ## 플레이어에서 to(칸)만큼 떨어진 곳이 화면 안인가. shrink = 은신(0~1), chasing = 쫓는 중(조금 더 넓게).
@@ -41,16 +35,6 @@ func on_screen(to: Vector2, shrink: float = 0.0, chasing: bool = false) -> bool:
 	if chasing:
 		h += Vector2(keep, keep)
 	return absf(to.x) <= h.x and absf(to.y) <= h.y
-
-
-## 바라보는 쪽 facing에서 본 to 쪽의 보이는 정도: 정면 1 · 곁눈 side · 등 뒤 0.
-func cone(facing: Vector2, to: Vector2, side: float) -> float:
-	if to.length_squared() < 0.0001 or facing.length_squared() < 0.0001:
-		return 1.0
-	var c := facing.normalized().dot(to.normalized())
-	if c >= _cos_front:
-		return 1.0
-	return side if c >= _cos_cone - 0.001 else 0.0
 
 
 ## 눈(from)에서 몸(to)이 보이는가: 몸 가운데·양 어깨 세 시선 중 하나라도 벽에 막히지 않으면.

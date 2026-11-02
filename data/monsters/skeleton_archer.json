@@ -42,7 +42,7 @@
     "ranged": true
   },
   "behavior": {
-    "ai": {"alertness": 0.7, "tenacity": 1.5},
+    "ai": {"tenacity": 1.5},
     "alert_sfx": "undead_moan",
     "aggressive": true,
     "aggro_radius_m": 5.0,

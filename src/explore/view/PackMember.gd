@@ -38,6 +38,11 @@ static func for_monster(db: GameDatabase, monster_id: String, idle: bool) -> Pac
 	var dir := JsonUtil.get_str(_cfg(db.render), "monster_dir", "res://assets/actors/monsters")
 	if not idle:
 		m.sheet = ActorSheet.load_monster(db.render, monster_id)
+	var k := JsonUtil.get_float(def, "map_scale", 1.0)  # 탐험 맵에서만 크게·작게(전투 그림은 size — 2026-11-02 구울)
+	m.art_scale *= k
+	m.scale *= k
+	if m.sheet != null:
+		m.sheet.scale *= k
 	for path: String in [dir.path_join(monster_id + ".webp"), JsonUtil.get_str(def, "sprite")]:
 		if not path.is_empty() and ResourceLoader.exists(path):
 			m.texture = load(path) as Texture2D

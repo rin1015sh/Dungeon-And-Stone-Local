@@ -6,6 +6,12 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **적 AI 단순화 — 화면 안이면 어그로 · 구울 맵 그림 크게 (2026-11-02, 사용자 "그냥 플레이어 화면 안에 들어오면 어그로 끌리게 · 이리저리 이동하면 바로 어그로가 풀려 · 구울 탐험화면에서 크기 늘리고", V28)**
+  - 범위: 필드 몬스터 감지·추적 유지(MonsterMind·MonsterSight), 구울 맵 그림 크기. 완료 기준: 화면 안 = 한 번의 갱신에 추적 · 화면 안에서 움직여도 놓치지 않음 · 구울만 맵에서 커짐 · check.sh 통과. 테스트: `tests/test_monster_ai.gd`(새로 씀 — 바로 쫓기·등/벽 무시·기둥 사이를 세 바퀴 돌아도 유지·영역은 놓친 뒤에만·모퉁이·화면 밖 놓침 → 수색 → 귀환·무리 부르기), `test_field_monsters` 두 곳(의심 단계 없음).
+  - 한 것: `MonsterMind` 306 → 약 230줄 — 화면 안(`_visible`: 은신·쫓는 중 여유·숨는/먼저 덤비지 않는 몬스터의 aggro_radius·상태 조건)이면 CHASE, 아니면 기억이 다할 때까지 마지막 칸 → 내다보기 → 수색 → 귀환. 영역(leash_tiles)은 화면 밖으로 놓쳤을 때만(바로 귀환). 시야각·벽 시선·경계도·의심·발소리·alertness 없앰(`MonsterSight.cone` 삭제 — `sees`는 보스 조우만), `STATE_SUSPECT`·`Group.awareness/known/leashed/hold_until` 삭제. balance 쓰지 않는 키 13개 지움, `chase_path_radius` 24 → 40(벽 너머 화면 안 상대에게 돌아가는 길). 몬스터 27종 behavior `ai.alertness` 지움.
+  - 구울: 몬스터 키 `map_scale`(맵 그림만 — `PackMember.for_monster`가 걷기 시트·한 장 그림·도형 배율에 곱한다) · `ghoul.json` 1.5. 전투 그림(`size`)은 그대로.
+  - 남은 것: 직접 해 보고 화면 끝에서 쫓기 시작하는 거리·기억 시간(5초) 조절, 먼저 덤비지 않는 몬스터(구울 aggro_radius 2m)도 화면 안이면 덤비게 할지 사용자 확인, sim_walk 다시 돌려 전투 간격 보기.
+
 - **7등급 정수 둘 기준 합으로 (2026-11-02, 사용자 "홉고블린 광부·아이스 오크 전사: 16으로 기준 27보다 낮음 — 이거 수정하고 나머지는 그대로", J19)**: 홉고블린 광부 정수 근력 16 + **물리내성 7 + 민첩 4** = 27, 아이스 오크 전사 정수 근력 16 + **물리내성 8 + 항마력 3** = 27(근력·속성 내성 7·생명력 23 그대로). 총정리 §6의 나머지 어긋남은 그대로 둔다(사용자 결정 — PROGRESS 다음 할 일에서 뺌). `essences_md.py`·`balance_sheet.py` 다시 만듦(점검 30 → 28건), 아티팩트 갱신.
 
 - **all_stats.html 내려받으면 깨지던 것 (2026-11-02, 사용자 "html로 다운받으면 제대로 안 보임")**: 파일이 Artifact 게시용 조각(문서 껍데기 없음)이라 charset이 없어 브라우저가 windows-1252로 읽어 한글이 깨지고 쿼크 모드였다. `balance_sheet_out.write_html`이 저장소 파일에 `<!doctype html>`·`<html lang="ko">`·`<meta charset="utf-8">`·viewport·기본 리셋을 씌운다. 게시용 조각은 `python3 tools/balance_sheet.py --artifact=<경로>`. 확인: 문자셋 헤더 없는 http 서버로 옛·새 파일 비교(옛 windows-1252/BackCompat → 새 UTF-8/CSS1Compat, 캡처로 한글 확인).

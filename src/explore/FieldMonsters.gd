@@ -2,8 +2,8 @@ class_name FieldMonsters
 extends RefCounted
 ## 탐험 맵 위의 몬스터 무리(순수 로직): 지역별 스폰, 리스폰, 머문 시간에 따른 증가, 배회·추적·영역 이탈, 접촉.
 ## 무리 하나 = 대표 하나(연속 좌표 fpos, 칸 단위) + 구성(몬스터 id 목록). 닿으면(contact_tiles) 무리 전체와 전투한다.
-## 판단은 MonsterMind(src/explore/ai — V22): 화면 안·벽에 안 가림·뒤로 돌지 않았으면 경계도가 차올라 의심 → 추적(alerted — 종마다 소리),
-## 놓치면 기억(마지막으로 본 칸 · 움직이던 쪽)으로 쫓다 수색 → 귀환, 흘끗 본 것·발소리·동료의 외침은 조사. 쫓지 않을 때는 순찰(MonsterPatrol).
+## 판단은 MonsterMind(src/explore/ai — V22·V28): 플레이어 화면 안에 들면 바로 추적(alerted — 종마다 소리), 화면 안에 있는 동안은 놓치지 않는다.
+## 화면 밖으로 놓치면 기억(마지막으로 본 칸 · 움직이던 쪽)으로 쫓다 수색 → 귀환, 동료의 외침은 조사. 쫓지 않을 때는 순찰(MonsterPatrol).
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
 ## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}, "groups": [최소, 최대](선택 — 없으면 spawn.groups_per_region)}
@@ -14,14 +14,13 @@ extends RefCounted
 ## 몬스터는 게임 시간에 따라 움직인다. 탐험 시간은 실시간으로 흐르므로(RealtimeDriver) 플레이어가 가만히 있어도 움직인다.
 
 signal changed
-signal alerted(g: Group)  ## 의심 끝에 쫓기 시작했다(ExploreSession이 behavior alert_sfx 소리로)
+signal alerted(g: Group)  ## 쫓기 시작했다(ExploreSession이 behavior alert_sfx 소리로)
 
 const STATE_IDLE := "idle"
 const STATE_CHASE := "chase"
 const STATE_RETURN := "return"
 const STATE_SEARCH := "search"
-const STATE_SUSPECT := "suspect"  ## 무언가 봤다 — 멈춰 그쪽을 보고, 경계도가 1이 되면 쫓는다
-const STATE_INVESTIGATE := "investigate"  ## 흘끗 본 곳·발소리·동료의 외침이 있던 곳을 보러 간다(MonsterMind)
+const STATE_INVESTIGATE := "investigate"  ## 동료의 외침이 있던 곳을 보러 간다(MonsterMind)
 
 
 class Group extends RefCounted:
@@ -47,20 +46,16 @@ class Group extends RefCounted:
 	var patrol: Array[Vector2i] = []      ## 순찰·수색·귀환으로 걷는 칸 길(MonsterPatrol)
 	var rest_until: float = -1.0          ## 순찰 지점·수색 자리에서 이 시각까지 서서 둘러본다(< 0 = 걷는 중)
 	var next_look: float = 0.0            ## 서 있을 때 다음에 고개를 돌릴 시각
-	var awareness: float = 0.0            ## 경계도 0~1(1 = 쫓는다 — MonsterMind)
-	var sees: bool = false                ## 이번 판단에서 플레이어가 보였다
-	var target: Vector2i = Vector2i(-1, -1)  ## 마지막으로 보거나 들은 플레이어 칸(놓치면 거기까지 쫓는다)
+	var sees: bool = false                ## 이번 판단에서 플레이어가 보였다(화면 안)
+	var target: Vector2i = Vector2i(-1, -1)  ## 마지막으로 본 플레이어 칸(놓치면 거기까지 쫓는다)
 	var stimulus: Vector2i = Vector2i(-1, -1)  ## 이상한 것이 있던 칸(조사하러 간다)
-	var seen_at: float = -1.0             ## 마지막으로 보거나 들은 시각
+	var seen_at: float = -1.0             ## 마지막으로 본 시각
 	var vel: Vector2 = Vector2.ZERO       ## 그때 플레이어의 움직임(칸/게임 시간 — 사라진 쪽을 내다본다)
 	var phase: String = ""                ## 추적·수색·조사의 단계(MonsterMind — pursue/predict/sweep/go/look)
 	var hunt_until: float = -1.0          ## 수색을 그만둘 시각
 	var points: Array[Vector2i] = []      ## 남은 수색 지점
-	var known: bool = false               ## 이 무리가 플레이어를 쫓아 본 적이 있다(다시 보면 빨리 알아챈다)
 	var called: bool = false              ## 동료의 외침을 듣고 달려오는 중(조사)
 	var guard: bool = false               ## 대기 무리(균열 posts — RiftPosts): 순찰하지 않고 제자리에서 둘러본다
-	var leashed: bool = false             ## 영역(leash_tiles)을 벗어나 돌아가는 중 — 반쯤 돌아갈 때까지 다시 쫓지 않는다
-	var hold_until: float = -1.0          ## 가까이서 움직이는 기척에 멈춰 돌아보는 중(이 시각까지 걷지 않는다)
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
@@ -248,7 +243,6 @@ func remove(g: Group, now: float) -> void:
 func set_grace(g: Group, now: float) -> void:
 	g.grace_until = now + float(_db.bal("combat.flee_grace_hours", 0.5))
 	g.state = STATE_RETURN
-	g.awareness = 0.0
 	g.phase = ""
 	g.patrol.clear()
 	g.rest_until = -1.0

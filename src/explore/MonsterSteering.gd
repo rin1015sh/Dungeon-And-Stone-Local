@@ -1,12 +1,12 @@
 class_name MonsterSteering
 extends RefCounted
-## 필드 몬스터 무리의 걷기(순수 로직). FieldMonsters가 가진다. 판단은 MonsterMind(src/explore/ai — 감각·경계도·기억·수색, V22),
+## 필드 몬스터 무리의 걷기(순수 로직). FieldMonsters가 가진다. 판단은 MonsterMind(src/explore/ai — 화면 안이면 추적·기억·수색, V22·V28),
 ## 쫓지 않을 때 갈 곳은 MonsterPatrol(순찰·귀환), 놓친 상대·조사·수색 길은 MonsterHunt가 Group.patrol에 넣는다.
 ##   walk: 칸 길로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다(Kinematics 충돌). 보이는 상대를 쫓을 때는 거리 장(플레이어에서 BFS)을
 ##         따라 내려가고, direct_chase_tiles 안이고 곧게 걸어갈 수 있으면 곧장 다가가 닿는 거리에서 멈춘다.
 ##         먼 곳으로 보낸 무리(route)는 대기 중에 그 길을 따라 걷는다.
 ## 몬스터별 지도 행동(behavior): wander_radius·wander_chance·leash_tiles·passive_unless_status·ignores_stealth·move_mult(빠르기 배율)·
-##   alert_sfx·aggro_radius_m·reveal_radius_m·aggressive, 성격 ai {alertness, tenacity, calls}(MonsterMind).
+##   alert_sfx·aggro_radius_m·reveal_radius_m·aggressive, 성격 ai {tenacity, calls}(MonsterMind).
 ## 거리 장은 플레이어 칸이 바뀔 때만 다시 만든다(매 프레임 호출 대비).
 
 var groups: Array  ## FieldMonsters.groups (같은 배열을 공유)
@@ -73,10 +73,6 @@ func on_screen(g: FieldMonsters.Group, player: Vector2i, chasing: bool = false) 
 func walk(g: FieldMonsters.Group, player: Vector2, pcell: Vector2i, budget: float) -> bool:
 	if g.boss != "":  # 보스는 방 가운데서 움직이지 않는다
 		return false
-	if g.state == FieldMonsters.STATE_SUSPECT:
-		return false  # 멈칫하고 보는 중
-	if g.state != FieldMonsters.STATE_CHASE and g.hold_until > _now:
-		return false  # 기척에 멈춰 돌아보는 중
 	var left := budget
 	var moved := false
 	var contact := _contact
