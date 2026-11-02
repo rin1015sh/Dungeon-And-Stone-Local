@@ -16,7 +16,7 @@ const ATLASES := [
 	{"place": "f1", "path": "res://assets/floor/f1/water.webp", "style": "water", "kind": "floor", "tile": "pond_water", "variants": 6, "seed": 401},
 	{"place": "f1", "path": "res://assets/floor/f1/mud.webp", "style": "mud", "kind": "floor", "tile": "feat_mud", "variants": 6, "seed": 501},
 	{"place": "f1", "path": "res://assets/floor/f1/boulder.webp", "style": "rock", "kind": "wall", "tile": "boulder", "variants": 2, "seed": 921, "face_px": 14},
-	{"place": "f1", "path": "res://assets/floor/f1/monument.webp", "style": "monument", "painter": "marks", "kind": "wall", "tile": "monument", "variants": 2, "seed": 901, "face_px": 40},
+	{"place": "f1", "path": "res://assets/floor/f1/monument.webp", "style": "monument", "painter": "marks", "kind": "wall", "tile": "monument", "variants": 2, "seed": 901, "face_px": 56},
 	{"place": "f1", "path": "res://assets/floor/f1/square_crystal.webp", "style": "square_crystal", "painter": "marks", "kind": "wall", "tile": "square_crystal", "variants": 2, "seed": 911, "face_px": 28},
 ]
 

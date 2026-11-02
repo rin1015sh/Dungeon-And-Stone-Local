@@ -23,7 +23,7 @@ var scavenge: String = ""  ## 균열 장식 잡템 표(data/scavenge.json id) �
 var sprite: String = ""
 var art_atlas: String = ""      ## 재질 아틀라스(tools/paint_floor.gd → assets/floor). 바닥 = 한 줄에 변형, 벽 = 윗면 줄 + 앞면 줄
 var art_variants: int = 0       ## 아틀라스 한 줄의 변형 수(짝수 — FloorArtLayer)
-var art_shape: String = ""      ## "smooth" = 부드러운 암벽(WallShape — 둥근 윤곽, 윗면은 검게, 남쪽 앞면만)
+var art_shape: String = ""      ## 벽: "smooth" = 부드러운 암벽(WallShape — 둥근 윤곽, 윗면은 검게, 남쪽 앞면만) · "round" = 같은 윤곽 + 벽 그림 윗면(균열 자연 암벽) · "bevel" = 계단만 곧은 사선(균열 지은 벽). 바닥: "smooth" = 가장자리 사선(물)
 var prop_sheet: String = ""     ## 소품 그림 시트(art.prop — 동굴 요소·포탈: 바닥 위에 얹는 그림, 마름모 대신)
 var prop_cell: int = 0          ## 시트 칸 번호(왼쪽 위부터 가로로)
 var prop_cols: int = 0          ## 시트 가로 칸 수(0 = 정사각 칸으로 계산)
@@ -37,6 +37,9 @@ var stand_under: String = ""    ## 소품 밑 바닥 타일(없으면 층 기본
 var is_void: bool = false       ## 낭떠러지·구덩이(균열 — "void": true): 바닥을 그리지 않고 절벽 면·어둠을 칠한다(Abyss)
 var is_rise: bool = false       ## 솟은 외곽(void + "rise": true): 낭떠러지 대신 위로 솟은 벽·절벽 면과 그 너머 풍경(Abyss rise — 균열 지도 바깥 둘레)
 var void_edge: String = ""      ## 허공에 닿는 가장자리(art.void_edge): "" = 들쭉날쭉 깎인 땅, "beam" = 나무 발판(곧은 들보 면 + 난간)
+var art_doors: PackedStringArray = PackedStringArray()  ## 이 벽에 뚫린 문의 모양 후보(art.doors — DoorArt: square·round·pointed·gate·rough·cave·timber)
+var art_directional: bool = false  ## 한 방향 무늬(art.directional — 철로): 세로로 더 길게 이어진 칸은 그림을 90° 돌린다(FloorChunk)
+var sunk: bool = false          ## 땅보다 낮은 물(art.sunk — 핏물 해자): 그 위를 건너는 나무 발판(void_edge "beam")은 낭떠러지 위처럼 들보 면·그림자·받침·난간(VoidChunk)
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
@@ -69,6 +72,10 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.art_salt = t.id.hash()
 	t.art_shape = JsonUtil.get_str(art, "shape")
 	t.void_edge = JsonUtil.get_str(art, "void_edge")
+	t.sunk = JsonUtil.get_bool(art, "sunk")
+	t.art_directional = JsonUtil.get_bool(art, "directional")
+	for k: Variant in JsonUtil.get_array(art, "doors"):
+		t.art_doors.append(str(k))
 	var prop := JsonUtil.get_dict(art, "prop")
 	t.prop_sheet = JsonUtil.get_str(prop, "sheet")
 	t.prop_cell = JsonUtil.get_int(prop, "cell", 0)

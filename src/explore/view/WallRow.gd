@@ -3,7 +3,8 @@ extends Node2D
 ## 벽 한 줄(청크 폭) 그리기. 노드 위치 = 그 줄의 바닥 아래 가장자리((row+1) × tile) → y 정렬 기준.
 ## 벽 칸 하나 = 윗면(바닥 칸 자리에서 앞면 높이만큼 위로 올림) + 앞면(남쪽을 향한 면).
 ## 남쪽에 다른 벽이 있으면 그 벽의 윗면이 이 앞면을 덮는다(나중에 그려지므로 자연스럽게 가려짐).
-## 부드러운 암벽(타일 art.shape "smooth")은 WallShape로: 둥글게 다듬은 윤곽, 윗면은 검게, 남쪽을 향한 윤곽만 앞면.
+## 부드러운 암벽(타일 art.shape "smooth"·"round"·"bevel")은 WallShape로: 다듬은 윤곽, 윗면은 검게, 남쪽을 향한 윤곽만 앞면.
+## 그 벽에 뚫린 좁은 북쪽 통로에는 문(아치 — WallDoors).
 
 var view: FloorView
 var row: int = 0
@@ -15,6 +16,8 @@ var _cols := PackedColorArray([Color.BLACK, Color.BLACK, Color.BLACK, Color.BLAC
 var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _shape: WallShape = null  # 부드러운 암벽 모양(setup에서 한 번 — 벽 칸은 바뀌지 않는다)
 var _pieces: Array[Node2D] = []  # 깎은 모서리·오목 메움 조각(WallShape.PIECE_*) — 자기 y로 캐릭터와 앞뒤를 가린다
+var _batch := QuadBatch.new()   # 앞면 — 칸마다 draw_polygon을 부르지 않게
+var _doors: Array[Dictionary] = []  # 이 줄의 문(WallDoors.find — 서쪽 문설주가 이 청크에 있는 것)
 
 
 func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
@@ -29,6 +32,7 @@ func setup(p_view: FloorView, p_row: int, p_x0: int, p_x1: int) -> void:
 ## 부드러운 암벽 모양을 계산한다(줄당 0.1~0.2ms — 화면 밖 청크는 ChunkStream이 미뤄 부른다).
 func build_shape() -> void:
 	if view.smooth_any:
+		_doors = WallDoors.find(view.map, row, x0, x1, view.smooth_by_def)
 		_shape = WallShape.build(view.map, row, x0, x1, view.tile, view.tile * view.wall_round, view.smooth_by_def,
 			view.wall_face_of, func(x: int, y: int, def: TileDef) -> int: return FloorArtLayer.variant(x, y, def.art_variants, def.art_salt + 1),
 			view.tile * view.wall_bulge)
@@ -57,6 +61,8 @@ func _draw() -> void:
 		_draw_shape(self, t, WallShape.PIECE_ROW, Vector2.ZERO)
 		for n in _pieces:
 			n.queue_redraw()
+	for d in _doors:
+		WallDoors.draw(view, self, row, d)
 	for x in range(x0, x1):
 		var i := row * map.width + x
 		if map.explored[i] == 0:
@@ -107,24 +113,27 @@ func _draw_shape(cv: CanvasItem, t: int, piece: int, at: Vector2) -> void:
 	var lift := Vector2(0, (row + 1) * t) + at  # at = 그리는 노드의 위치(조각은 자기 y에 놓인다)
 	var dark := view.art.unexplored
 	var ftex := view.tile_tex[view.base_floor] if view.base_floor >= 0 else null
-	if ftex != null:  # 깎은 모서리 아래 바닥(바닥 칸 그림을 이어서)
-		var fdef := map.defs[view.base_floor]
+	for fl in _shape.floors:  # 깎은 모서리 아래 바닥(옆 바닥 칸 그림을 이어서 — 없으면 층 기본 바닥)
+		if int(fl.get("piece", 0)) != piece or map.explored[row * map.width + int(fl["x"])] == 0:
+			continue
+		var fi := int(fl.get("def", -1))
+		var tex := view.tile_tex[fi] if fi >= 0 else ftex
+		if tex == null:
+			continue
+		var fdef := map.defs[fi if fi >= 0 else view.base_floor]
 		var n := fdef.art_variants
-		for fl in _shape.floors:
-			if int(fl.get("piece", 0)) != piece or map.explored[row * map.width + int(fl["x"])] == 0:
-				continue
-			var poly: PackedVector2Array = fl["poly"]
-			var x := int(fl["x"])
-			var col := float(FloorArtLayer.variant(x, row, n, fdef.art_salt))
-			var pts := PackedVector2Array()
-			var uvs := PackedVector2Array()
-			var cols := PackedColorArray()
-			for q in poly:
-				pts.append(q - lift)
-				uvs.append(Vector2((col + clampf(q.x / t - x, 0.0, 1.0)) / n, clampf(q.y / t - row, 0.0, 1.0)))
-				var v := Vector2i(clampi(roundi(q.x / t), 0, map.width), clampi(roundi(q.y / t), 0, map.height))
-				cols.append(view.vertex_mul(v.x, v.y, fdef.color_floor))
-			cv.draw_polygon(pts, cols, uvs, ftex)
+		var poly: PackedVector2Array = fl["poly"]
+		var x := int(fl["x"])
+		var col := float(FloorArtLayer.variant(x, row, n, fdef.art_salt))
+		var pts := PackedVector2Array()
+		var uvs := PackedVector2Array()
+		var cols := PackedColorArray()
+		for q in poly:
+			pts.append(q - lift)
+			uvs.append(Vector2((col + clampf(q.x / t - x, 0.0, 1.0)) / n, clampf(q.y / t - row, 0.0, 1.0)))
+			var v := Vector2i(clampi(roundi(q.x / t), 0, map.width), clampi(roundi(q.y / t), 0, map.height))
+			cols.append(view.vertex_mul(v.x, v.y, fdef.color_floor))
+		cv.draw_polygon(pts, cols, uvs, tex)
 	for top in _shape.tops:
 		if int(top.get("piece", 0)) != piece or map.explored[row * map.width + int(top["x"])] == 0:
 			continue
@@ -167,7 +176,8 @@ func _draw_shape(cv: CanvasItem, t: int, piece: int, at: Vector2) -> void:
 		_cols[1] = lb
 		_cols[2] = lb
 		_cols[3] = la
-		cv.draw_polygon(_pts, _cols, _uvs, tex)
+		_batch.add(_pts, _cols, _uvs, tex)
+	_batch.flush(cv)  # 앞면은 윗면(위에서 먼저 flush)보다 나중에
 
 
 ## 바닥 평면 점 p(월드 px)에 가장 가까운 꼭짓점의 빛 × 면 그늘.

@@ -36,10 +36,16 @@ static func _tiles(v: ValidatorBase) -> void:
 			if not prop.is_empty() and not ResourceLoader.exists(prop):
 				v.err(w + ".art", "그림 파일 없음 '%s' — tools/paint_floor.gd로 그린다" % prop)
 			var shape := JsonUtil.get_str(art, "shape")
-			if not shape.is_empty() and shape != "smooth":
-				v.err(w + ".art", "shape는 \"smooth\"만(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선)")
+			var is_wall := JsonUtil.get_str(t, "kind") == "wall"
+			if not shape.is_empty() and shape != "smooth" and not (is_wall and shape in ["round", "bevel"]):
+				v.err(w + ".art", "shape는 \"smooth\"(벽 = 사선 모서리·윗면 숨김, 바닥 = 가장자리 사선) · 벽만 \"round\"(둥근 윤곽 + 벽 그림 윗면)·\"bevel\"(계단만 곧은 사선)")
 		if JsonUtil.get_bool(t, "rise") and (not JsonUtil.get_bool(t, "void") or JsonUtil.get_bool(t, "walkable")):
 			v.err(w, "rise(솟은 외곽)는 void이고 걸을 수 없는 타일만")
+		for k: Variant in JsonUtil.get_array(art, "doors"):
+			if not str(k) in ["square", "round", "pointed", "gate", "rough", "cave", "timber"] or JsonUtil.get_str(t, "kind") != "wall":
+				v.err(w + ".art.doors", "문 모양은 벽 타일의 square·round·pointed·gate·rough·cave·timber(DoorArt) — '%s'" % k)
+		if JsonUtil.get_bool(art, "sunk") and (JsonUtil.get_str(t, "kind") != "floor" or JsonUtil.get_bool(t, "walkable")):
+			v.err(w + ".art", "sunk(땅보다 낮은 물 — 위를 건너는 발판에 들보 면·그림자)는 걸을 수 없는 바닥 타일만")
 		var ve := JsonUtil.get_str(art, "void_edge")
 		if not ve.is_empty() and (ve != "beam" or JsonUtil.get_str(t, "kind") != "floor"):
 			v.err(w + ".art", "void_edge는 바닥 타일의 \"beam\"만(허공 위 나무 발판 — 들보 면·난간, Abyss)")

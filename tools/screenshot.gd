@@ -1,7 +1,7 @@
 extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
-## --prof=<초>: (--rift 등으로 자리를 잡은 뒤) W/A/S/D를 돌려 누르며 걷고 프레임 시간(평균·95%·최대·50ms 넘는 수)·그리기 호출을 찍고 끝(렉 찾기 — CT73)
+## --prof=<초>: (--rift 등으로 자리를 잡은 뒤) W/A/S/D를 돌려 누르며 걷고 프레임 시간(평균·95%·99%·최대·16.7ms·50ms 넘는 수)·그리기 호출을 찍고 끝(렉 찾기 — CT73)
 ## --screen=coin [--tails] [--frames=N] --out=<폴더>: 동전 연출을 N 시각마다 찍는다(V25)
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
 ## city: --scroll=<화면 px> 거리 스크롤, --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
@@ -717,5 +717,7 @@ func _profile_walk(sec: float) -> void:
 	for v in times:
 		avg += v / times.size()
 	var slow := times.filter(func(v: float) -> bool: return v > 50.0).size()
-	print("프레임 %d · 평균 %.1f ms · 95%% %.1f ms · 최대 %.1f ms · 50ms 넘는 프레임 %d" % [times.size(), avg, times[int(times.size() * 0.95)], times.back(), slow])
+	var hitch := times.filter(func(v: float) -> bool: return v > 16.7).size()
+	print("프레임 %d · 평균 %.1f ms · 95%% %.1f ms · 99%% %.1f ms · 최대 %.1f ms · 16.7ms 넘는 프레임 %d · 50ms 넘는 프레임 %d" % [times.size(), avg,
+		times[int(times.size() * 0.95)], times[int(times.size() * 0.99)], times.back(), hitch, slow])
 	print("그리기 호출 %d · 노드 %d · 처리 %.1f ms" % [Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), Performance.get_monitor(Performance.OBJECT_NODE_COUNT), Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0])

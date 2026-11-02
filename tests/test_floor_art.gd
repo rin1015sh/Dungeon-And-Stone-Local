@@ -115,3 +115,57 @@ func test_wall_shape_smooth() -> void:
 	assert_eq(s.floors.size(), 2, "깎은 아래쪽 두 모서리에 바닥을 채운다")
 	var inner := WallShape.build(map, 0, 0, 4, 32.0, 16.0, smooth, face_h, variant)
 	assert_eq(inner.tops.size() + inner.faces.size(), 0, "벽이 없는 줄(오목 모서리도 없음)")
+
+
+## 균열 벽 모양: round = 직각 덩어리 모서리도 깎는다(윗면은 검게 — 북쪽이 열린 칸만) · bevel = 직각 모서리는 그대로, 계단 사선만 깎는다.
+func test_wall_shape_round_and_bevel() -> void:
+	var face_h := func(_d: TileDef) -> int: return 24
+	var variant := func(_x: int, _y: int, _d: TileDef) -> int: return 0
+	var block := FloorMap.new(db, 6, 6, "cave_floor")  # 2×2 덩어리 (2,2)~(3,3)
+	for c: Vector2i in [Vector2i(2, 2), Vector2i(3, 2), Vector2i(2, 3), Vector2i(3, 3)]:
+		block.set_tile(c, "rock_wall")
+	var shape := PackedByteArray()
+	shape.resize(block.defs.size())
+	shape[block.index_of("rock_wall")] = WallShape.ROUND
+	var r := WallShape.build(block, 2, 0, 6, 32.0, 16.0, shape, face_h, variant)
+	assert_eq(r.tops.size(), 2, "round: 북쪽이 열린 벽 칸만 윗면(검게)")
+	assert_false((r.tops[0]["poly"] as PackedVector2Array).has(Vector2(64, 64)), "round: 덩어리 왼위 모서리를 깎는다")
+	assert_eq(r.faces.size(), 0, "남쪽이 벽인 칸은 앞면이 없다")
+	shape[block.index_of("rock_wall")] = WallShape.BEVEL
+	var b := WallShape.build(block, 2, 0, 6, 32.0, 16.0, shape, face_h, variant)
+	assert_true((b.tops[0]["poly"] as PackedVector2Array).has(Vector2(64, 64)), "bevel: 직각 모서리는 그대로")
+	var stairs := FloorMap.new(db, 7, 7, "cave_floor")  # x + y >= 6 = 벽(계단 사선)
+	for y in 7:
+		for x in 7:
+			if x + y >= 6:
+				stairs.set_tile(Vector2i(x, y), "rock_wall")
+	var st := WallShape.build(stairs, 3, 0, 7, 32.0, 16.0, shape, face_h, variant)
+	assert_false((st.tops[0]["poly"] as PackedVector2Array).has(Vector2(96, 96)), "bevel: 계단 한 단의 모서리는 깎는다")
+	var above := WallShape.build(stairs, 2, 0, 7, 32.0, 16.0, shape, face_h, variant)
+	var fillets := above.tops.filter(func(t: Dictionary) -> bool: return t.get("fillet", false))
+	assert_true(fillets.size() >= 1, "bevel: 계단 사이 오목 자리를 메운다")
+
+
+## 문(WallDoors): 방 북쪽 벽에 뚫린 좁은 통로(북쪽으로 depth칸 이어짐)만 문 — 벽의 작은 굴곡·넓은 틈은 아니다. 문설주 아래 모서리는 깎지 않는다.
+func test_wall_doors() -> void:
+	var map := FloorMap.new(db, 9, 8, "cave_floor")
+	for y in 4:  # 0~3줄 = 벽, 가운데 (4,1)~(4,3) = 북쪽으로 이어지는 통로 · (1,3) = 굴곡(한 줄짜리 홈)
+		for x in 9:
+			if x != 4 and not (x == 1 and y == 3):
+				map.set_tile(Vector2i(x, y), "rock_wall")
+	var smooth := PackedByteArray()
+	smooth.resize(map.defs.size())
+	smooth[map.index_of("rock_wall")] = WallShape.SMOOTH
+	WallDoors.configure({"max_cells": 4, "depth": 2})
+	assert_eq(WallDoors.run_at(map, Vector2i(4, 3), smooth), Vector2i(4, 4), "통로 들머리 = 문")
+	assert_false(WallDoors.is_door(map, Vector2i(1, 3), smooth), "벽의 작은 홈은 문이 아니다")
+	assert_false(WallDoors.is_door(map, Vector2i(4, 5), smooth), "방 안 칸은 문이 아니다")
+	var doors := WallDoors.find(map, 3, 0, 9, smooth)
+	assert_eq(doors.size(), 1, "줄의 문 하나")
+	var face_h := func(_d: TileDef) -> int: return 24
+	var variant := func(_x: int, _y: int, _d: TileDef) -> int: return 0
+	var s := WallShape.build(map, 3, 0, 9, 32.0, 16.0, smooth, face_h, variant)
+	var flank_cuts := s.floors.filter(func(fl: Dictionary) -> bool: return int(fl["x"]) in [3, 5])
+	assert_eq(flank_cuts.size(), 0, "문설주(3,3)·(5,3)의 아래 모서리는 깎지 않는다(아치가 곧은 문설주에 얹힌다)")
+	assert_true(s.floors.any(func(fl: Dictionary) -> bool: return int(fl["x"]) == 2), "홈 옆 벽 모서리는 그대로 깎인다")
+	WallDoors.configure({})

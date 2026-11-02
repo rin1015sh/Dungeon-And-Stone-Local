@@ -7,6 +7,7 @@
 
 - 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
 - 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
+- 균열 줄무늬 바닥 어긋남(파이썬, 1초): `python3 tools/rift_strip_check.py [타일id,…]` — 카펫·레일·발판·계단·홈이 이웃 줄에서 폭·위치가 갑자기 바뀌는 곳(벽이 아닌 칸만)을 적는다. 광차·분기·잔해처럼 일부러 끊은 곳도 나오니 지도를 보고 판단. 설계도를 고쳤으면 돌려 본다.
 - 몬스터 스킬 실전 점검(헤드리스, 약 1분): `godot --headless --path . --script res://tools/sim_skills.gd`(`MON=<id>` 환경 변수면 그 몬스터만 + 쓴 횟수) → 몬스터마다 AI + 보스 패턴으로 16판, 가진 스킬을 한 번이라도 꺼내 쓰는지. 몬스터 스킬·AI 규칙·보스 패턴을 바꿨으면 돌린다("모두 씀"이어야 한다). 스킬이 효과를 내는지는 단위 테스트 `test_monster_skills`.
 - 1층 원정 한 번 벌이(헤드리스, 몇 분): `godot --headless --path . --script res://tools/sim_income.gd -- [--seeds=1,2,3] [--hours=60] [--bag=10x6]` → 출처별(몬스터·약탈자·탐험가·동굴 요소) 스톤·정수·요소별 벌이. 값·드롭을 바꿨으면 돌려 보고 `docs/balance/city.md`에 적는다(CT43).
 - 걷기 프레임 시간(렉 찾기, 약 15초): `xvfb-run -a -s "-screen 0 1280x720x24" godot --rendering-driver opengl3 --path . res://tools/screenshot.tscn -- --screen=explore [--rift=<균열 id>] --prof=12` → 평균·95%·최대 ms·50 ms 넘는 프레임·그리기 호출(CT73). 같은 명령을 `--headless`로 돌리면 스크립트만(그리기 빼고) — 둘을 견줘 원인이 그리기인지 스크립트인지 가른다.

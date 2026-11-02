@@ -4,6 +4,8 @@ extends RefCounted
 ## 재질 셰이더(floor_tex). 파일이 없으면 그 타일은 색칠한 칸으로 남는다. 그리기에서 칸마다 사전을 찾지 않게 타일 번호 배열로 둔다.
 
 const TEX_SHADER := "res://assets/shaders/floor_tex.gdshader"
+## 벽 타일 art.shape -> WallShape 모양(smooth = 1층 암벽 · round = 균열 자연 암벽 · bevel = 균열 지은 벽의 계단 사선만).
+const WALL_SHAPES := {"smooth": WallShape.SMOOTH, "round": WallShape.ROUND, "bevel": WallShape.BEVEL}
 
 
 static func load_into(v: FloorView, cfg: Dictionary) -> void:
@@ -30,7 +32,7 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 			v.stand_by_def[i] = v.prop_tex[def.stand_sheet]
 			any = true
 		v.under_by_def[i] = map.index_of(def.stand_under) if not def.stand_under.is_empty() else -1
-		v.smooth_by_def[i] = 1 if def.is_wall() and def.art_shape == "smooth" and v.tile_tex[i] != null else 0
+		v.smooth_by_def[i] = WALL_SHAPES.get(def.art_shape, 0) if def.is_wall() and v.tile_tex[i] != null else 0
 		v.blend_by_def[i] = 1 if not def.is_wall() and def.art_shape == "smooth" and v.tile_tex[i] != null else 0
 		v.blend_any = v.blend_any or v.blend_by_def[i] != 0
 		v.smooth_any = v.smooth_any or v.smooth_by_def[i] != 0
@@ -48,6 +50,7 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	v.wall_round = JsonUtil.get_float(cfg, "wall_round", 0.5)
 	v.base_floor = map.index_of(JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(v.session.floor_def, "gen"), "tiles"), "floor", "cave_floor"))
 	v.wall_bulge = JsonUtil.get_float(cfg, "wall_bulge", 0.06)
+	WallDoors.configure(JsonUtil.get_dict(cfg, "door"))
 	for i in n:
 		if v.under_by_def[i] < 0:
 			v.under_by_def[i] = v.base_floor

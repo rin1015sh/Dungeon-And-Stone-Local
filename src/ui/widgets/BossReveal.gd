@@ -5,7 +5,8 @@ extends Control
 ##   ① 위아래 검은 띠가 들어오고 화면 가장자리가 어두워진다(시간은 이미 멈춰 있다 — 전투 시작). 그 방의 문목에 창살이 내려온다(ExploreSession.close_boss_gates — V23, 짧은 흔들림 + sfx boss_gate)
 ##   ② 카메라가 보스 쪽으로 천천히 옮겨 간다
 ##   ③ 보스가 깨어나 일어선다: 기다리는 자세(무릎 꿇음·왕좌·웅크림 …)에서 선 자세로 일어서는 칸을 돈다(<id>_rise.webp — 사용자 2026-11-01 "앉아 있다가
-##      일어서는 그림"), 다 일어서면 하얗게 번쩍 + 화면이 짧게 흔들림 + 소리(sfx boss_reveal — 파일이 없으면 조용). 그 뒤로 맵 그림은 선 채(Group.awake)
+##      일어서는 그림"), 다 일어서면 화면이 짧게 흔들림 + 소리(sfx boss_reveal — 파일이 없으면 조용). 그 뒤로 맵 그림은 선 채(Group.awake).
+##      하얗게 번쩍이던 빛은 없앴다(사용자 2026-11-01 "보스 클로즈업 때 흰색 빛 잠깐 나는 것 없애 줘").
 ##   ④ 잠깐 머문 뒤 끝난다. 이어서 화면이 보스 한 줄(explore.boss_notice)을 보이고 Enter 뒤 전투(ExploreScreen._on_encounter).
 ## 화면에 글은 없다 — 보스 이름 글씨·선은 지웠다(사용자 2026-11-01 "보스 이름이 화면에 뜨는 거 삭제", V24).
 ## 수치 = render.json ui.boss_reveal. 오토로드 AudioBus를 쓴다(UI).
@@ -72,7 +73,7 @@ func _run() -> void:
 	if not is_inside_tree():
 		return
 	var mv := _view.monster_view(_group.id) if _view != null else null
-	if mv != null:  # 깨어나 일어선다(일어서는 칸 — 없는 보스는 한 번 부풀고) — 다 일어서면 번쩍 + 흔들림 + 소리
+	if mv != null:  # 깨어나 일어선다(일어서는 칸 — 없는 보스는 한 번 부풀고) — 다 일어서면 흔들림 + 소리
 		if _view.session.pos != _group.pos:
 			_group.facing = Vector2(_view.session.pos - _group.pos).normalized()  # 플레이어 쪽으로 돈다
 		mv.face_toward(_view.player_view.position)
@@ -83,10 +84,7 @@ func _run() -> void:
 		await wake.finished
 		if not is_inside_tree():
 			return
-		var hit := create_tween()
-		hit.tween_property(mv, "modulate", Color(2.0, 1.85, 1.8), 0.08)
-		hit.tween_property(mv, "modulate", Color.WHITE, 0.35)
-		hit.parallel().tween_property(mv, "scale", Vector2.ONE, 0.3)
+		create_tween().tween_property(mv, "scale", Vector2.ONE, 0.3)
 	AudioBus.play_sfx("boss_reveal")
 	if cam != null:
 		_shake(cam, cam.position)
