@@ -2,12 +2,16 @@
   python3 tools/town_variants_sheet.py
 """
 import os
+import sys
 import re
 
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIR = os.path.join(ROOT, "docs", "plans", "town", "variants")
+if "--front" in sys.argv:  # 정면 판(tools/town_variants.gd --view=front)
+    DIR = os.path.join(DIR, "front")
+    sys.argv.remove("--front")
 FONT = os.path.join(ROOT, "assets", "fonts", "NotoSansKR-Regular.otf")
 CELL = 400
 COLS = 4

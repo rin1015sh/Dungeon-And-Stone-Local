@@ -2,7 +2,7 @@
 tools/town_variants.gd가 남긴 날 그림(variants/raw/<id>_raw.png — 그림자·바닥 없음, 종이색 배경)과 면 번호 그림(<id>_id.png)으로
   ① 붓 자국 뭉개기(쿠와하라 — 유화처럼 색이 덩어리진다) ② 면마다 잉크 윤곽(면 번호가 바뀌는 곳 · 바깥은 굵게, 떨림·끊김)
   ③ 어두운 곳 펜 빗금 ④ 종이 결·얼룩 ⑤ 색 정리(채도 조금 빼고 따뜻하게) → variants/<id>_hand.png · sheet_hand.png
-  python3 tools/town_handdrawn.py [v01 v05 …]
+  python3 tools/town_handdrawn.py [--front] [v01 v05 …]   (--front = 정면 판 variants/front/)
 """
 import os
 import sys
@@ -12,6 +12,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIR = os.path.join(ROOT, "docs", "plans", "town", "variants")
+if "--front" in sys.argv:  # 정면 판(tools/town_variants.gd --view=front)
+    DIR = os.path.join(DIR, "front")
+    sys.argv.remove("--front")
 FONT = os.path.join(ROOT, "assets", "fonts", "NotoSansKR-Regular.otf")
 PAPER = np.array([216, 205, 180]) / 255.0
 INK = np.array([26, 20, 16]) / 255.0

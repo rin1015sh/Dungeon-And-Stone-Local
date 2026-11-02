@@ -2,7 +2,8 @@ extends SceneTree
 ## 집 바리에이션 그림(사용자 2026-11-02 "도시 기획은 버리고 건물의 다양한 바리에이션을 뽑는데 집중"): tools/town_kit/Designs.LIST의 집을
 ## 하나씩 3D로 지어(면은 횡스크롤 건물 붓 — Facade) 따뜻한 해·하늘빛으로 정사영 렌더(그림자 없음 — 사용자 2026-11-02) → docs/plans/town/variants/<id>.png,
 ## 손그림 마감용 날 그림·면 번호 그림 → variants/raw/(python3 tools/town_handdrawn.py가 <id>_hand.png로).
-##   xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . --script res://tools/town_variants.gd [-- --only=v01,v05]
+##   xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . --script res://tools/town_variants.gd [-- --only=v01,v05] [--view=front]
+## --view=front = 정면(남쪽에서 곧게) → variants/front/
 ## 모아 보기: python3 tools/town_variants_sheet.py → docs/plans/town/variants/sheet.png
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -10,7 +11,12 @@ const Ink := preload("res://tools/city_art/Ink.gd")
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Designs := preload("res://tools/town_kit/Designs.gd")
 
-const OUT := "res://docs/plans/town/variants"
+const BASE := "res://docs/plans/town/variants"
+## 시점: side = 남동쪽에서 비스듬히(옆면이 보인다) · front = 남쪽에서 곧게(사용자 2026-11-02 "정면 버전도").
+## 내려다보는 각도 약 18°(사용자 2026-11-02 "너무 위에서 본 뷰 — 문이 조금 더 바로 선 것처럼").
+const VIEWS := {"side": Vector3(0.55, 0.37, 1.0), "front": Vector3(0.0, 0.325, 1.0)}
+var OUT := BASE
+var _view := "side"
 const SIZE := 820
 
 
@@ -19,6 +25,9 @@ func _init() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
 			only = a.trim_prefix("--only=").split(",")
+		elif a.begins_with("--view="):
+			_view = a.trim_prefix("--view=")
+	OUT = BASE if _view == "side" else BASE.path_join(_view)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT.path_join("raw")))
 	for d: Array in Designs.LIST:
 		if not only.is_empty() and not only.has(str(d[0])):
@@ -79,7 +88,7 @@ func _render(fn: String) -> Array:
 	cam.size = maxf(ext.y * 1.25, maxf(ext.x, ext.z) * 1.35) + 1.5
 	cam.far = 300.0
 	world.add_child(cam)
-	var dir := Vector3(0.55, 0.62, 1.0).normalized()
+	var dir: Vector3 = (VIEWS.get(_view, VIEWS["side"]) as Vector3).normalized()
 	cam.look_at_from_position(ctr + dir * 60.0, ctr, Vector3.UP)
 	cam.make_current()
 	for i in 4:
