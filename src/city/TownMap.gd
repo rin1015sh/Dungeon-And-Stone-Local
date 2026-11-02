@@ -251,6 +251,7 @@ func _building(b: Dictionary, rng: Rng) -> void:
 			hi = Vector2i(maxi(hi.x, cc.x), maxi(hi.y, cc.y))
 			_put(cc, "house")
 		h["rect"] = Rect2i(lo, hi - lo + Vector2i.ONE)
+		h["id"] = "h%d" % houses.size()
 		houses.append(h)
 	else:
 		var rc := _rect(JsonUtil.get_array(b, "rect"))

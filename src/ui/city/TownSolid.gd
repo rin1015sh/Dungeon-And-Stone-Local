@@ -80,7 +80,7 @@ func box(base: PackedVector2Array, z0: float, z1: float, col: Color, mat: String
 	var top := PackedVector3Array()
 	for p in base:
 		top.append(Vector3(p.x, p.y, z1))
-	out.append(face(top, top_col if top_col.a > 0.0 else col, top_mat if not top_mat.is_empty() else mat, Vector3.UP))
+	out.append(face(top, top_col if top_col.a > 0.0 else col, top_mat if not top_mat.is_empty() else mat, Vector3(0, 0, 1)))
 	return out
 
 

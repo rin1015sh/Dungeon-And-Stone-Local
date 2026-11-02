@@ -8,6 +8,9 @@ var size: Vector2 = Vector2(32, 32)  ## 차지한 칸 크기(세계 px)
 var render: Dictionary
 var tile: float = 32.0
 var look: int = 0
+var _art: Texture2D  # 구운 그림(붙잡아 둔다)
+const ART_DIR := "res://assets/town/props"
+const ART_SCALE := 1.5  ## 구운 그림 배율(칸당 48px ÷ 32)
 
 
 func setup(p_kind: String, rect: Rect2i, p_render: Dictionary, p_tile: float) -> void:
@@ -18,6 +21,7 @@ func setup(p_kind: String, rect: Rect2i, p_render: Dictionary, p_tile: float) ->
 	position = Vector2((rect.position.x + rect.size.x * 0.5) * tile, rect.end.y * tile)
 	look = absi(rect.position.x * 31 + rect.position.y * 17)
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 
 
 func _c(key: String, i: int = 0) -> Color:
@@ -25,6 +29,12 @@ func _c(key: String, i: int = 0) -> Color:
 
 
 func _draw() -> void:
+	if _art == null and ResourceLoader.exists(ART_DIR.path_join(kind + ".webp")):
+		_art = load(ART_DIR.path_join(kind + ".webp")) as Texture2D
+	if _art != null:  # 구운 그림(tools/paint_town_houses.gd --props — 횡스크롤 소품 붓, CT85): 발 = 아래 가운데
+		var sz := _art.get_size() / ART_SCALE * tile / 32.0
+		draw_texture_rect(_art, Rect2(Vector2(-sz.x * 0.5, -sz.y), sz), false)
+		return
 	var b := TownBrush.new()
 	b.ellipse(Vector2(0, -3), Vector2(size.x * 0.42, 5), Color(0, 0, 0, 0.35))
 	match kind:

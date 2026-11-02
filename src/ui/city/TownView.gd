@@ -140,6 +140,7 @@ func _sync_view() -> void:
 	var at := p.position - Vector2(0, _tile * 0.6)
 	_cam.position = Vector2(clampf(at.x, view.x * 0.5, maxf(view.x * 0.5, map_px.x - view.x * 0.5)),
 		clampf(at.y, view.y * 0.5, maxf(view.y * 0.5, map_px.y - view.y * 0.5)))
+	_world.stream(_cam.position)
 	_world.update_fade(p.position)
 
 

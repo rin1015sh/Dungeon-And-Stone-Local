@@ -4,7 +4,7 @@ extends Node2D
 ##   카메라 쪽 벽 두 면이 보이고(각도가 틀어져 있으면), 지붕은 처마가 벽 밖으로 나오고 가파르다(render.json city.town.roof_pitch).
 ##   벽: 밑단 돌 · 층마다 창(불 켠 창 · 덧문) · 앞쪽 벽 1층 문 · 반목조 집은 위층에 들보 · 처마 밑 그늘. 지붕: 지붕창 · 굴뚝.
 ##   시설 꾸밈(큰 문·기둥·간판·차양·화덕)과 신전·원형 도서관은 TownLandmark.
-## 노드 위치 = (0, 필지 가장 남쪽 끝 y) — 발 높이로 앞뒤를 정한다(y_sort). 처음 한 번 그린다(TownBrush).
+## 노드 위치 = (0, 필지 가장 남쪽 끝 y) — 발 높이로 앞뒤를 정한다(y_sort). 구운 그림(assets/town/houses — CT85)이 있으면 그것을, 없으면 선 그림(TownBrush).
 
 var house: Dictionary
 var render: Dictionary
@@ -15,6 +15,14 @@ var bounds: Rect2
 var front: Dictionary = {}
 var _fade: float = 1.0
 var _goal: float = 1.0
+## 구운 그림(tools/paint_town_houses.gd — 횡스크롤 건물 붓으로 그린 집, CT85): 그림판 경로 · 영역 · 그릴 자리(노드 기준). 없으면 선 그림(TownSolid).
+var _page: String = ""
+var _tex: Texture2D  # 그림판(노드가 붙잡아 둔다 — 그리기 명령은 RID만 들고 있어 놓으면 풀려 하얗게 나온다)
+var _region := Rect2()
+var _dest := Rect2()
+static var _index: Dictionary = {}
+static var _index_loaded := false
+const INDEX := "res://assets/town/houses/index.json"
 
 
 func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
@@ -22,15 +30,53 @@ func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
 	render = p_render
 	tile = p_tile
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	var front_y := 0.0
+	position = Vector2(0, front_y_of(h) * tile)
+	var e := baked(h)
+	if not e.is_empty():
+		var r: Array = e["rect"]
+		var o: Array = e["off"]
+		var k := float(_index.get("scale", 1.5))
+		_page = "res://assets/town/houses/p%d.webp" % int(e["page"])
+		_region = Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+		_dest = Rect2(Vector2(float(o[0]), float(o[1])) * tile / 32.0, _region.size / k * tile / 32.0)
+		bounds = Rect2(_dest.position + position, _dest.size)
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		texture_repeat = CanvasItem.TEXTURE_REPEAT_DISABLED
+	else:
+		bounds = _build().measure()
+
+
+## 이 집의 구운 그림 자리(index.json — 모양 값이 같을 때만, 아니면 {}).
+static func baked(h: Dictionary) -> Dictionary:
+	if not _index_loaded:
+		_index_loaded = true
+		if ResourceLoader.exists(INDEX) or FileAccess.file_exists(INDEX):
+			var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(INDEX))
+			_index = d if d is Dictionary else {}
+	var e: Dictionary = JsonUtil.get_dict(JsonUtil.get_dict(_index, "houses"), str(h.get("id", "")))
+	return e if str(e.get("key", "")) == bake_key(h) else {}
+
+
+## 필지 가장 남쪽 끝(칸 — 노드 원점 y).
+static func front_y_of(h: Dictionary) -> float:
 	if h.has("circle"):
 		var c: Array = h["circle"]
-		front_y = float(c[1]) + float(c[2])
-	else:
-		for p in corners():
-			front_y = maxf(front_y, p.y)
-	position = Vector2(0, front_y * tile)
-	bounds = _build().measure()
+		return float(c[1]) + float(c[2])
+	var c: Vector2 = h.get("center", Vector2.ZERO)
+	var s: Vector2 = h.get("size", Vector2.ONE)
+	var a := float(h.get("angle", 0.0))
+	var ax := Vector2(cos(a), sin(a)) * s.x * 0.5
+	var ay := Vector2(-sin(a), cos(a)) * s.y * 0.5
+	return c.y + absf(ax.y) + absf(ay.y)
+
+
+## 구운 그림이 이 집 것인가를 가리는 모양 값(tools/paint_town_houses.gd가 index.json에 적는다).
+static func bake_key(h: Dictionary) -> String:
+	var c: Vector2 = h.get("center", Vector2.ZERO)
+	var s: Vector2 = h.get("size", Vector2.ZERO)
+	return "%08x" % (hash([snappedf(c.x, 0.01), snappedf(c.y, 0.01), snappedf(s.x, 0.01), snappedf(s.y, 0.01), snappedf(float(h.get("angle", 0.0)), 0.001),
+		int(h.get("floors", 0)), str(h.get("style", "")), str(h.get("roof", "")), bool(h.get("ridge_long", true)), int(h.get("look", 0)),
+		str(h.get("facility", "")), str(h.get("circle", ""))]) & 0xffffffff)
 
 
 func num(key: String, fallback: float) -> float:
@@ -78,6 +124,12 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if not _page.is_empty():
+		if _tex == null:
+			_tex = load(_page) as Texture2D
+		if _tex != null:
+			draw_texture_rect_region(_tex, _dest, _region)
+			return
 	var b := TownBrush.new()
 	_build().flush(b)
 	b.flush(self)

@@ -73,3 +73,18 @@ func test_no_interiors_left() -> void:
 	assert_false(ResourceLoader.exists("res://assets/city/interiors/inn.webp"), "실내 그림 없음")
 	for id in ["cobble", "slabs", "plaster", "clay", "slate", "lead"]:
 		assert_true(ResourceLoader.exists("res://assets/town/mat/%s.webp" % id), "재질 그림 " + id)
+
+
+func test_every_house_is_baked() -> void:
+	var t := _town()
+	var missing := PackedStringArray()
+	for h: Dictionary in t.houses:
+		if TownHouse.baked(h).is_empty():
+			missing.append(str(h["id"]))
+	assert_true(missing.is_empty(), "집 그림이 다 구워졌다 — 지도를 바꿨으면 tools/paint_town_houses.gd로 다시 굽는다(빠짐 %d: %s)" % [missing.size(), ", ".join(missing.slice(0, 8))])
+	var idx: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(TownHouse.INDEX))
+	var pages := {}
+	for e: Variant in (idx["houses"] as Dictionary).values():
+		pages[int((e as Dictionary)["page"])] = true
+	for k: int in pages:
+		assert_true(ResourceLoader.exists("res://assets/town/houses/p%d.webp" % k), "그림판 %d" % k)

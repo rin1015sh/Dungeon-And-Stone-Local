@@ -60,7 +60,7 @@
     [3, 166, 125, 171, 0]
   ],
   "buildings": [
-    {"facility": "temple", "rect": [50, 13, 72, 30], "style": "gothic", "floors": 4, "door": [61, 29]},
+    {"facility": "temple", "rect": [52, 16, 70, 30], "style": "gothic", "floors": 4, "door": [61, 29]},
     {"facility": "library", "circle": [99, 22, 6], "style": "rotunda", "floors": 3, "door": [99, 27]},
     {"facility": "guild", "rect": [36, 62, 50, 70], "style": "hall", "floors": 3, "door": [43, 69]},
     {"facility": "bank", "rect": [72, 62, 86, 70], "style": "stone", "floors": 3, "door": [79, 69]},
