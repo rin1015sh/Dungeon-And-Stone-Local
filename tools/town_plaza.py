@@ -21,7 +21,12 @@ NZ, SZ, HW = -16.0, 7.0, 11.0  # 북쪽 변 z · 남쪽 변 z · 북·남 변 �
 DX = (SZ - NZ) / 2 / SL  # 비스듬한 변의 x 길이
 WV, EV = (-HW - DX, PC[1]), (HW + DX, PC[1])  # 서·동 꼭짓점(거리가 나가는 곳)
 HEX = [(-HW, NZ), (HW, NZ), EV, (HW, SZ), (-HW, SZ), WV]
-SIN, COS = math.sin(math.radians(18)), math.cos(math.radians(18))
+# 화면 = 탐험 화면과 같은 3/4 사선 투영(사용자 2026-11-02 "화면각을 저렇게 눕히지 말고 탐험화면과 같은 각으로" — CT92):
+# 바닥 깊이는 줄이지 않고(render.json view.floor_tile_px 32×32), 벽 앞면은 높이 그대로 선다(wall_tile_px 80 − 32 = 앞면 48px).
+# 화면 y = 땅 깊이 z × KZ − 높이 × KY. 가림 기울기 = KY / KZ = 1(집은 제 높이만큼만 뒤를 가린다 — 18°에서는 약 3배).
+SIN, COS = 1.0, 1.0
+tl.TAN = 1.0
+tl.CAM_LABEL = "카메라(탐험 화면과 같은 3/4)"
 VARIANTS = {
 	"arcade": "광장 A · 남쪽 회랑",
 	"shops": "광장 B · 남쪽 가게 줄 + 문루",
@@ -77,7 +82,7 @@ def ring_south(p: Plan, kind: str):
 		for i, (a, b) in enumerate(edges):
 			fa, fb = outward(a, b, 5.0)
 			p.row([fa, fb], 80 + i, st=(1, 2), depth=(5.0, 5.0), jitter=0.0, w=(3.6, 5.2))
-		p.box(-2.5, SZ + 6.0, 5.0, 6.0, top_of(2) + 0.4, "문루")
+		p.box(-2.5, SZ + 6.0, 5.0, 6.0, top_of(3) + 0.6, "문루")
 	else:  # raised
 		for i, (a, b) in enumerate(edges):
 			fa, fb = outward(a, b, 4.6)
@@ -263,12 +268,12 @@ NOTES = {
 	"arcade": [
 		("남쪽", "남쪽 반을 회랑(기둥 + 낮은 지붕, 노점이 선다)으로 막는다. 지붕 밑으로 광장 앞쪽이 보이고, 지붕 띠 너머로 돌 고리와 북쪽 집들이 보인다. 회랑 바깥은 광장 둘레 길."),
 		("좋은 점", "광장이 닫혀 보이면서도 거의 다 보인다. 회랑 밑 노점·거리 사건 자리가 생긴다. 남쪽에 문이 없어도 어색하지 않다."),
-		("아쉬움", "회랑 지붕 밑 띠(약 3칸)는 가려진다 — 그 밑을 걸으면 회랑을 흐리게."),
+		("아쉬움", "회랑 지붕 바로 뒤 좁은 띠만 가려진다 — 그 밑을 걸으면 회랑을 흐리게."),
 	],
 	"shops": [
-		("남쪽", "남쪽 반도 집으로 막는다. 2~3층 가게 줄이 앞면을 바깥(광장 둘레 길)으로 두고 등을 광장에 댄다. 가운데 문루(아치 통로)로 들어온다."),
+		("남쪽", "남쪽 반도 집으로 막는다. 2층 가게 줄이 앞면을 바깥(광장 둘레 길)으로 두고 등을 광장에 댄다. 가운데 문루(아치 통로)로 들어온다."),
 		("좋은 점", "진짜로 사방이 막힌 광장 — 아늑하다. 바깥 둘레 길에 가게 문이 줄지어 선다."),
-		("아쉬움", "가게 줄이 광장 바닥 남쪽 절반 가까이를 가린다(빗금) — 광장에 들어서면 남쪽 줄을 늘 흐리게 해야 한다. 문루가 돌 고리 바로 앞이라 2층보다 높이면 고리를 가린다."),
+		("아쉬움", "가게 줄 뒤 광장 남쪽 가장자리(약 4칸 띠)는 가려진다 — 그 띠를 걸을 때만 가게 줄을 흐리게. 3/4 화면이라 3층 문루도 돌 고리를 가리지 않는다."),
 	],
 	"raised": [
 		("남쪽", "광장을 반 단(2.4칸) 돋운다. 남쪽 반은 둘레 길에 선 1층 가게 줄 — 지붕 꼭대기가 광장 바닥 높이쯤이라 광장을 둘러싸는 '지붕 담'이 된다. 남·서·동 계단으로 오른다."),
@@ -281,7 +286,7 @@ NOTES = {
 def board(kind: str, p: Plan) -> Image.Image:
 	region(-46, 46, -54, 30, 7)
 	plan = tl.draw_plan(p)
-	region(-34, 34, -58, 24, 10)
+	region(-36, 36, -52, 24, 8)
 	view, _sid = camera_view(p)
 	M = 18
 	RW = view.width
@@ -289,7 +294,7 @@ def board(kind: str, p: Plan) -> Image.Image:
 	im = Image.new("RGB", (M + plan.width + M + RW + M, M + 44 + Hh + M), tl.BG)
 	d = ImageDraw.Draw(im)
 	d.text((M, M - 4), VARIANTS[kind], font=font(28), fill=tl.BONE)
-	d.text((M + 430, M + 6), "안 3 바탕 · 왼쪽 = 위에서 본 배치(빗금 = 가려진 땅) · 오른쪽 = 게임 카메라에서 본 상자", font=font(15), fill=tl.DIM)
+	d.text((M + 430, M + 6), "안 3 바탕 · 왼쪽 = 위에서 본 배치(빗금 = 가려진 땅) · 오른쪽 = 탐험 화면과 같은 3/4로 본 상자", font=font(15), fill=tl.DIM)
 	im.paste(plan, (M, M + 44))
 	x = M + plan.width + M
 	im.paste(view, (x, M + 44))
@@ -327,16 +332,24 @@ def main():
 		d.text((M, y), VARIANTS[kind], font=font(20), fill=tl.BONE)
 		ov.paste(v, (M, y + 30))
 	ov.save(os.path.join(out, "plaza_views.png"), optimize=True)
-	# 고른 안(회랑)을 넣은 7구역 전체
+	# 고른 안(B 가게 줄 + 문루 — 사용자 2026-11-02 "그 2안으로")을 넣은 7구역 전체: 배치도 + 3/4 화면
 	region(-80, 80, -60, 42, 6)
-	full = plan_ring("arcade")
+	full = plan_ring("shops")
 	full.title = "안 3 · 둘러싼 광장"
-	full.one = "부채꼴 안마당 동네 + 육각 광장(북쪽 반 = 광장을 보는 집 · 남쪽 반 = 회랑)"
+	full.one = "부채꼴 안마당 동네 + 육각 광장(남쪽 반 = 가게 줄 + 문루) · 탐험 화면 3/4"
 	full.notes = [
-		("짜임", "안 3 그대로(덩어리 = 뒷줄 + 벌어진 날개 + 안마당). 광장 단 가운데에 육각 광장 — 북쪽 변 정면 줄(길드), 북동 변 사선(여관), 북서 변 뒤집은 사선, 남쪽 세 변은 회랑. 서·동 꼭짓점과 남쪽 문으로 드나든다."),
+		("짜임", "안 3 그대로(덩어리 = 뒷줄 + 벌어진 날개 + 안마당). 광장 단 가운데에 육각 광장 — 북쪽 변 정면 줄(길드), 북동 변 사선(여관), 북서 변 뒤집은 사선, 남쪽 세 변은 2층 가게 줄(문은 바깥 둘레 길) + 가운데 문루. 서·동 꼭짓점과 문루로 드나든다."),
 		("뒷골목", "광장 북쪽 줄 뒤 띠(옹벽 밑)와 덩어리 사이 틈, 안마당. 길드 옆 골목으로 꼭대기 단에 오른다."),
+		("3/4 화면", "탐험 화면처럼 바닥 깊이를 줄이지 않으면 집은 제 높이만큼만 뒤를 가린다(18°에서는 약 3배). 그래서 빗금이 확 줄었다 — 안마당과 광장이 거의 다 보인다."),
 	]
 	tl.board(full).save(os.path.join(out, "c2.png"), optimize=True)
+	view, _sid = camera_view(full)
+	M = 18
+	im = Image.new("RGB", (M + view.width + M, M + 44 + view.height + M), tl.BG)
+	d = ImageDraw.Draw(im)
+	d.text((M, M - 4), "안 3 · 둘러싼 광장 — 탐험 화면 3/4로 본 7구역(상자)", font=font(26), fill=tl.BONE)
+	im.paste(view, (M, M + 44))
+	im.save(os.path.join(out, "c2_view.png"), optimize=True)
 	print("wrote c2")
 
 

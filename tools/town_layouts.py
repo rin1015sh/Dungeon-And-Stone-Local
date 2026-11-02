@@ -19,7 +19,8 @@ FONT = os.path.join(ROOT, "assets", "fonts", "NotoSansKR-Regular.otf")
 S = 6  # 1칸 = 6px
 X0, X1, Z0, Z1 = -80, 80, -60, 42
 W, H = (X1 - X0) * S, (Z1 - Z0) * S
-TAN = math.tan(math.radians(18.0))
+TAN = math.tan(math.radians(18.0))  # 가림 기울기(땅 깊이 1칸당 가리는 높이) — 탐험 화면 3/4(사선 투영)이면 1.0
+CAM_LABEL = "카메라(남쪽 18°)"
 SL = math.tan(math.radians(28.8))  # 사선 줄 기울기(칸 z / 칸 x)
 STOREY, ROOF = 1.15, 1.5
 TOP, UP, MID, LOW, CANAL = 7.2, 3.6, 0.0, -3.6, -7.2
@@ -302,7 +303,7 @@ def draw_plan(p: Plan, clean: bool = False) -> Image.Image:
 	# 카메라
 	cx, cy = W - 70, H - 14
 	d.polygon([(cx, cy - 34), (cx - 9, cy - 16), (cx + 9, cy - 16)], fill=BONE)
-	d.text((cx - 150, cy - 30), "카메라(남쪽 18°)", font=font(15), fill=BONE)
+	d.text((cx - 12 - d.textlength(CAM_LABEL, font=font(15)), cy - 30), CAM_LABEL, font=font(15), fill=BONE)
 	return im
 
 
