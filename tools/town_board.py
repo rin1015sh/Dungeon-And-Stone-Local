@@ -1,7 +1,7 @@
-"""3D 도시 구상 배치도 — 라비기온 7구역(차원광장 포함) 위에서 본 그림(기획 단계 스케치, 게임 데이터 아님).
-  python3 tools/city3d_board.py [--out=docs/plans/city3d]
-좌표는 미터(1칸 = 1m) — 동서 160m × 남북 220m, 위가 북쪽(카메라는 남쪽에서 북쪽을 본다).
-기획 기록은 docs/plans/city_3d.md. 실제 지도는 구현 때 data/town/*.json으로 다시 만든다.
+"""걸어 다니는 도시 지도 구상 배치도 — 라비기온 7구역(차원광장 포함) 위에서 본 그림(기획 단계 스케치, 게임 데이터 아님).
+  python3 tools/town_board.py [--out=docs/plans/town]
+좌표는 지도 칸 — 동서 160칸 × 남북 220칸, 위가 북쪽(실내·미궁과 같은 3/4 탑뷰 — 건물 남쪽 앞면이 보인다).
+기획 기록은 docs/plans/city_town.md. 실제 지도는 구현 때 data/town/*.json으로 다시 만든다.
 """
 import os
 import random
@@ -17,9 +17,9 @@ MARGIN = 24
 LEGEND_W = 300
 
 LEVELS = [  # (y0, y1, 이름, 높이, 바닥색)
-    (0, 70, "상단 +6m", 6, (92, 90, 84)),
-    (70, 152, "중단 0m", 0, (78, 74, 68)),
-    (152, 220, "하단 −4m", -4, (60, 56, 52)),
+    (0, 70, "상단(높음)", 6, (92, 90, 84)),
+    (70, 152, "중단", 0, (78, 74, 68)),
+    (152, 220, "하단(낮음)", -4, (60, 56, 52)),
 ]
 HOUSES = [  # 주택 덩어리(둘레 필지 + 가운데 안마당) — 길은 골목 3~4m · 거리 5~6m · 대로 16m
     (4, 6, 70, 28), (102, 6, 156, 16), (144, 18, 156, 66), (102, 20, 111, 50), (102, 52, 142, 64),
@@ -93,7 +93,7 @@ def label(d, xy, text, font, fill=BONE, anchor="mm"):
 
 
 def main():
-    out = os.path.join(ROOT, "docs", "plans", "city3d")
+    out = os.path.join(ROOT, "docs", "plans", "town")
     for a in sys.argv[1:]:
         if a.startswith("--out="):
             out = os.path.join(ROOT, a[6:])
@@ -165,29 +165,29 @@ def main():
     # 범례
     lx = MARGIN * 2 + W * PX
     ly = MARGIN
-    d.text((lx, ly), "라비기온 7구역 — 3D 구상 배치도", font=f_big, fill=BONE)
+    d.text((lx, ly), "라비기온 7구역 — 걷는 도시 구상 배치도", font=f_big, fill=BONE)
     ly += 26
     lines = [
-        "1칸 = 1m · 동서 160m × 남북 220m",
-        "위 = 북. 카메라는 남쪽에서 내려다본다",
+        "동서 160칸 × 남북 220칸",
+        "위 = 북 · 3/4 탑뷰(건물 남쪽 앞면이 보임)",
         "",
         "높낮이(테라스 셋)",
     ]
     for y0, y1, n, _h, c in LEVELS:
-        lines.append(f"  {n}  (남북 {y0}~{y1}m)")
+        lines.append(f"  {n}  (남북 {y0}~{y1}칸)")
     lines += [
         "",
         "시설 = 뼈빛 테두리 · 금색 이름",
-        "갈색 칸 = 주택 필지(폭 5~9m, 3~5층)",
+        "갈색 칸 = 주택 필지(폭 5~9칸, 3~5층)",
         "녹회색 = 덩어리 안 안마당(빨래·우물)",
         "검은 띠 = 옹벽(테라스 경계) · 성벽",
         "줄무늬 = 계단",
         "",
         "걸음 거리(광장 고리 → 문)",
-        "  여관 20m · 은행 30m · 길드 40m",
-        "  잡화점 60m · 신전 80m",
-        "  대장간·도서관 약 100m",
-        "  (초속 4m면 가장 먼 곳도 25초 안팎)",
+        "  여관 20 · 은행 30 · 길드 40칸",
+        "  잡화점 60 · 신전 80칸",
+        "  대장간·도서관 약 100칸",
+        "  (초당 4칸이면 가장 먼 곳도 25초 안팎)",
         "",
         "거리 성격",
         "  대로·광장: 넓고 밝다(가로등)",
@@ -202,7 +202,7 @@ def main():
     # 축척
     sx, sy = lx, ly + 16
     d.line([(sx, sy), (sx + 20 * PX, sy)], fill=BONE, width=3)
-    d.text((sx + 20 * PX + 8, sy - 8), "20m", font=f, fill=BONE)
+    d.text((sx + 20 * PX + 8, sy - 8), "20칸", font=f, fill=BONE)
     img.save(os.path.join(out, "district7.png"))
     print("저장:", os.path.join(out, "district7.png"))
 
