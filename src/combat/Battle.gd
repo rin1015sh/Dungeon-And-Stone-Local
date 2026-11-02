@@ -306,6 +306,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 	if skill_id != BASIC_ATTACK:
 		message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
 	var kind := JsonUtil.get_str(sk, "target")
+	var rev_before := c.rev
 	var fx := BattleRev.use(self, c, skill_id, sk, BattlePassives.skill_effects(self, c, skill_id, sk), rev)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
 	BattleRules.apply_cover(self, c, kind, targets)  # 대신 맞기
@@ -330,6 +331,8 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 		BattleRules.consume_on_attack(self, c)  # 진군 명령 등: 스킬 한 번(광역·연타 전체)에 쓰고 사라진다
 	if skill_id != BASIC_ATTACK and history.size() == said:  # 확률 상태가 안 걸리는 등 조용히 끝났다 — 썼다는 것은 알린다
 		message.emit("combat.no_effect", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "info")
+	if skill_id == BASIC_ATTACK and c.rev == rev_before:
+		BattleRev.on_basic(self, c)  # Rev를 얹지 않은 기본 공격은 Rev를 하나 채운다(사용자 2026-11-02)
 	return JsonUtil.get_float(sk, "delay_cost")
 
 

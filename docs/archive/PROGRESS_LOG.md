@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **기본 공격도 Rev를 채운다 (2026-11-02, 사용자 "일반 공격하면 랭크업 되게", C20)**: Rev를 얹지 않은 기본 공격 → `balance combat.rev.basic_bonus` 1개 더(맞든 빗나가든, `BattleRev.on_basic` — `Battle._use_skill` 끝에서 Rev가 줄지 않았으면). Rev를 얹은 기본 공격은 채우지 않는다(가정). 시험 `test_rev.test_basic_attack_charges`. 이제 차례 시작 1 + 평타 1이라 평타 두 번이면 3개가 찬다 — 너무 빠르면 `per_turn`이나 `basic_bonus`를 0으로.
+
 - **부위 약점 없앰 · 무대 고르기 W/S = 뒷줄·앞줄 (2026-11-02, 사용자 "부위약점 관련 게임에서 전부 제거해. 부위약점만 · ws로 뒤에 있는 적도 선택", C21·UI52)**
   - 한 것: 몬스터 54종 JSON에서 `weak_point` 키(6종 값 + 48종 null) 지움, 검증기는 있으면 오류. `DamageCalc.resolve`(약점 인자·`weak` 결과·배율·`ignore_reduction` 경로)·`hit_chance`(약점 인자 — 호출 15곳 정리)·`_modifier_mult`(skip_reductions), `damage.gd`(약점 적중 상태·문구), `meter_damage.gd`, `Battle`(`aim_weak`), `Actor`/`Monster.weak_point()`, `balance combat.weak_point_*`, 문구 `combat.weak_hit`·`tag_part`, render silent 목록. 글: 스켈레톤 패시브 "핵을 노리거나 부숴라" → 앞 문장만, 시체골렘 뼈대 상태·문구의 "마력핵". 시험: test_combat(치명상만), test_fortress(핵 조준·마력핵·캠보르미어 심장 줄), test_glacier(키르뒤 머리 줄).
   - 무대 고르기(`TargetPicker` 다시 씀): 적은 원근 줄(`BattleStage.foe_row`)로 나뉘어 A/D = 같은 줄 안에서 돈다, W = 더 뒷줄 · S = 더 앞줄(가로로 가장 가까운 적), 아군이 섞이면(조사) 앞줄에서 S = 아군, 처음 커서 = 앞줄 가운데(마지막 대상이 있으면 그것). 스모크 `_picker_rows`(가짜 자리로 줄 옮기기).

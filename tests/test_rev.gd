@@ -104,3 +104,15 @@ func test_plan_max_counts_coming_charge() -> void:
 	assert_eq(BattleRev.plan_max(b, c), 1, "지금 차례면 가진 만큼")
 	b.act(c, {"kind": "guard"})
 	assert_eq(BattleRev.plan_max(b, c), mini(BattleRev.cap(db), 3), "차례가 아직이면 그때 찰 것까지")
+
+
+func test_basic_attack_charges() -> void:
+	var b := _battle()
+	var c := _to_party(b)
+	assert_eq(c.rev, 1)
+	b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null})
+	assert_eq(c.rev, 1 + int(db.bal("combat.rev.basic_bonus", 1)), "Rev를 얹지 않은 기본 공격 → 하나 더")
+	c = _to_party(b)
+	var had := c.rev
+	b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null, "rev": 1})
+	assert_eq(c.rev, had - 1, "Rev를 얹은 기본 공격은 채우지 않는다")

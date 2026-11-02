@@ -1,7 +1,8 @@
 class_name BattleRev
 extends RefCounted
 ## Rev Up(피어 앤 헝거 2식 — 사용자 결정 2026-11-02, C20). 아군(직접 조종하는 사람 — 소환수 빼고)만 쓴다.
-## 자기 차례 시작마다 combat.rev.per_turn개 차고 max개까지, 방어하면 guard_bonus개 더(Combatant.rev — 전투가 끝나면 사라진다).
+## 자기 차례 시작마다 combat.rev.per_turn개 차고 max개까지, 방어하면 guard_bonus개, Rev를 얹지 않은 기본 공격을 하면 basic_bonus개 더
+## (Combatant.rev — 전투가 끝나면 사라진다).
 ## 피해를 주는 스킬(기본 공격 포함)에 n개를 얹으면 위력 × power[n]. max개를 모두 얹은 기본 공격은 basic_full_hits번 × basic_full_power.
 ## 피해가 없는 스킬·방어·아이템·도주에는 얹지 않는다(행동의 "rev"를 무시하고 쓰지도 않는다).
 ## 정수 스킬에 Rev 비용을 새로 붙이지 않는다(C15 — 위력을 줄이는 셈).
@@ -28,6 +29,11 @@ static func on_turn_start(b: Battle, c: Combatant) -> void:
 
 static func on_guard(b: Battle, c: Combatant) -> void:
 	charge(b, c, int(b.db.bal("combat.rev.guard_bonus", 1)))
+
+
+## Rev를 얹지 않은 기본 공격을 했다(Battle._use_skill — 맞든 빗나가든).
+static func on_basic(b: Battle, c: Combatant) -> void:
+	charge(b, c, int(b.db.bal("combat.rev.basic_bonus", 1)))
 
 
 ## 행동을 미리 정할 때 얹을 수 있는 개수: 지금 차례인 사람은 가진 만큼, 차례가 아직 안 온 사람은 그 차례에 찰 것까지.
