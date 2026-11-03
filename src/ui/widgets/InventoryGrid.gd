@@ -9,6 +9,8 @@ signal changed
 var actor: Actor  ## 가방 주인(파티 공용 가방 — UI26)
 var wearer: Actor  ## 장비 칸에서 끌어온 것을 벗길 사람(Tab 메뉴에서 고른 아군)
 var cell: int = 38
+## 고르기 창(ItemPickWindow)에서 고를 수 없는 아이템을 어둡게 — Callable(id: String) -> bool (비어 있으면 모두 고를 수 있다).
+var pick_filter: Callable = Callable()
 
 var _cursor: Rect2i = Rect2i()  # 커서가 덮은 칸(빈 칸 = 1×1, 아이템 = 그 크기)
 var _drop_rect: Rect2i = Rect2i()
@@ -69,6 +71,8 @@ func _draw() -> void:
 		if _cursor.has_area() and Rect2i(Vector2i(s["pos"]), ItemInfo.size(actor.db, id)) == _cursor:
 			draw_rect(r.grow(-1), Color(UiTheme.color("slot_hover"), 0.8))
 		ItemIconPainter.draw(self, actor.db, id, r.grow(-3))
+		if pick_filter.is_valid() and not bool(pick_filter.call(id)):
+			draw_rect(r.grow(-1), Color(0, 0, 0, 0.6))
 		if int(s["count"]) > 1:
 			var t := str(s["count"])
 			var pos := r.end - Vector2(font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 3, 4)

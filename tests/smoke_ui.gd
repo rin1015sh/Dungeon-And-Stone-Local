@@ -1039,8 +1039,21 @@ func _city_flow() -> void:
 	await _frames(1)
 	_expect(fv.find_children("*", "ShopPanel", true, false).is_empty() and city.facility_view() == fv, "돌아가기 → 창구를 닫고 선택 창으로")
 	await _fac_do(fv, "shop_trade", "sell")  # 선택 창에서 S → [판매]
-	shop_panel = fv.find_children("*", "ShopPanel", true, false)
-	_expect(shop_panel.size() == 1 and (shop_panel[0] as ShopPanel).mode == "sell", "W/S로 [판매]를 고른다")
+	var pick := fv.find_children("*", "ItemPickWindow", true, false)
+	_expect(pick.size() == 1 and fv.find_children("*", "ShopPanel", true, false).is_empty(), "[판매] → 소지품 창만 따로 열린다(ItemPickWindow)")
+	var sellable := CityShop.sellable(st, pc, "shop_trade")
+	if _expect(pick.size() == 1 and not sellable.is_empty(), "팔 수 있는 물건이 가방에 있다"):
+		var at := 0
+		for i in pc.inventory.stacks().size():
+			if str(pc.inventory.stacks()[i]["id"]) == sellable[0]:
+				at = i
+		(pick[0] as ItemPickWindow).page.cursor_to_cell(Vector2i(pc.inventory.stacks()[at]["pos"]))
+		var before_sale := pc.inventory.money
+		await _action("menu_confirm")
+		_expect(pc.inventory.money > before_sale, "소지품 창에서 Enter → 그 아이템을 판다")
+	await _action("pause")
+	await _frames(2)
+	_expect(city.facility_view() == fv and fv.find_children("*", "ItemPickWindow", true, false).is_empty(), "Esc → 소지품 창만 닫고 선택 창으로")
 	await _action("pause")
 	await _frames(2)
 	_expect(city.facility_view() == null, "Esc → 동네로")

@@ -5,6 +5,9 @@
   "cost_stones": 0,
   "panel": "shop",
   "deals": "equipment",
+  "tabs": [
+    "buy"
+  ],
   "stock": [
     "hunting_dagger",
     "steel_sword",

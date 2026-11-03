@@ -180,7 +180,8 @@ func test_every_activity_runs_with_all_values_null() -> void:
 				"shop":
 					var item: String = CityShop.stock(s, act_id)[0]
 					assert_true(CityShop.buy(s, pc, act_id, item).ok, "사기")
-					assert_true(CityShop.sell(s, pc, act_id, item).ok, "팔기")
+					if "sell" in CityShop.tabs(s, act_id):
+						assert_true(CityShop.sell(s, pc, act_id, item).ok, "팔기")
 				"bank":
 					assert_true(CityBank.deposit(s, pc, act_id, 100).ok, "맡기기")
 					assert_true(CityBank.withdraw(s, pc, act_id, 100).ok, "찾기")

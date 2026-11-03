@@ -7,6 +7,7 @@ extends MenuPage
 ## 장착·벗기가 가방 자리 때문에 안 되면 알림(EventBus.notice).
 
 signal use_requested(item_id: String)
+signal picked(item_id: String)  ## 고르기 모드(set_pick_mode): Enter로 아이템을 골랐다
 
 var actor: Actor  ## 공용 가방 주인(플레이어)
 var wearer: Actor  ## 장비 인형에 보이는 아군(set_wearer)
@@ -23,6 +24,9 @@ var _sort: PanelContainer
 var _cursor: Dictionary = {"kind": "cell", "cell": Vector2i.ZERO}  # kind: slot(slot) / sort / cell(cell)
 var _carry: Dictionary = {}  # 옮기는 중인 묶음(InventoryGrid 옮기기 데이터)
 var _tip: Control = null
+var pick_mode: bool = false  ## 고르기 모드 — 장비 인형·정렬 없이 가방만, Enter = 아이템 고르기(ItemPickWindow)
+var _pick_filter: Callable = Callable()
+var _pick_price: Callable = Callable()
 var _asking: bool = false  # 작은 선택 창이 떠 있다(GameMenu가 키를 넘기지 않는다)
 
 
@@ -66,6 +70,23 @@ func setup(p_actor: Actor) -> void:
 	refresh()
 
 
+## 고르기 모드로 바꾼다(소지품 창만 따로 — 상점 판매 등). filter(id) -> bool = 고를 수 있는 아이템(아니면 어둡게), price(id) -> int = 설명에 보일 값(없으면 기본 가격).
+func set_pick_mode(filter: Callable, price: Callable = Callable()) -> void:
+	pick_mode = true
+	_pick_filter = filter
+	_pick_price = price
+	grid.pick_filter = filter
+	_doll_box.visible = false
+	_sort.visible = false
+	_stats.visible = false
+	_money.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_money.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_cursor = {"kind": "cell", "cell": Vector2i.ZERO}
+	_fix_cursor()
+	_fit()
+	_show_cursor()
+
+
 ## 쪽을 꽉 채우게 가방 칸·장비 칸을 함께 키운다(칸 수는 그대로 — 사용자 2026-10-25). 기본 크기(render.json inv_cell·doll_slot)보다 작게는 줄이지 않는다.
 func _fit() -> void:
 	var base_cell := float(UiTheme.metric("inv_cell", 38))
@@ -77,12 +98,15 @@ func _fit() -> void:
 	var inv := actor.inventory
 	var k := minf(w / (inv.width * base_cell), (w - 24.0) / (5.0 * base_slot))  # 인형 = 칸 5개 + 사이 6px × 4
 	k = minf(k, (h - 6.0) / (2.0 * base_slot + inv.height * base_cell))
+	if pick_mode:  # 인형이 없다 — 가방만 쪽을 채운다
+		k = minf(w / (inv.width * base_cell), (content.size.y - _bar.get_combined_minimum_size().y - gap - inset.y * 2.0) / (inv.height * base_cell))
 	var cell := int(floorf(base_cell * maxf(1.0, k)))
 	if cell == grid.cell:
 		return
 	grid.set_cell(cell)
 	_slot_px = floorf(base_slot * cell / base_cell)
-	_make_doll()
+	if not pick_mode:
+		_make_doll()
 	refresh()
 
 
@@ -171,6 +195,16 @@ func nav(d: Vector2i) -> bool:
 
 
 func confirm() -> void:
+	if pick_mode:
+		var pi := actor.inventory.stack_at(_cursor["cell"])
+		if pi < 0:
+			return
+		var pid := str(actor.inventory.stacks()[pi]["id"])
+		if _pick_filter.is_valid() and not bool(_pick_filter.call(pid)):
+			EventBus.notice.emit("city.reason_cannot_sell", {}, "warn")
+			return
+		picked.emit(pid)
+		return
 	if carrying():
 		_place()
 		return
@@ -317,7 +351,7 @@ func _ask(title: String, opts: Array[Dictionary], can_back: bool = true) -> int:
 ## 고를 수 있는 자리: 장비 칸 · 정렬 · 가방(옮기는 중이면 모든 칸, 아니면 아이템 하나 = 한 자리).
 func _targets() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	if not carrying():
+	if not carrying() and not pick_mode:
 		for slot: String in doll.slots:
 			out.append({"at": {"kind": "slot", "slot": slot}, "rect": _rect_of({"kind": "slot", "slot": slot})})
 		out.append({"at": {"kind": "sort"}, "rect": _rect_of({"kind": "sort"})})
@@ -386,7 +420,10 @@ func _tip_for() -> Control:
 				return ItemTooltip.panel(actor.db, str(_carry["id"]), false)
 			if i >= 0:
 				var s: Dictionary = actor.inventory.stacks()[i]
-				return ItemTooltip.build(actor.db, str(s["id"]), wearer, int(s["count"]))
+				var sid := str(s["id"])
+				if pick_mode:
+					return ItemTooltip.build(actor.db, sid, null, int(s["count"]), int(_pick_price.call(sid)) if _pick_price.is_valid() else -1)
+				return ItemTooltip.build(actor.db, sid, wearer, int(s["count"]))
 	return null
 
 

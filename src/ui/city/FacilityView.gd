@@ -131,6 +131,9 @@ func _choose(act_id: String, tab: String = "") -> void:
 	if not why.is_empty():
 		_dialog.say(Strings.t(why), "warn")
 		return
+	if panel == "shop" and tab == "sell":  # 팔기 = 소지품 창만 따로 열어 가방에서 고른다(ItemPickWindow)
+		_open_sell(act_id)
+		return
 	var p := new_panel(act_id, tab)  # 창구(상점·은행·정수 제거)는 연 것이 이 방문의 활동 — 거래를 마치면 나가기·Esc
 	if p == null:
 		return
@@ -141,6 +144,20 @@ func _choose(act_id: String, tab: String = "") -> void:
 	_panel_box.add_child(p)
 	_menu.custom_minimum_size.x = UiTheme.render_float("city.interior_panel_width", 440.0)
 	_sync_menu()
+
+
+## 판매: 가방 창을 따로 열어 팔 물건을 고른다(하나씩 — 고른 뒤에도 창은 그대로, Esc = 닫고 선택 창으로).
+func _open_sell(act_id: String) -> void:
+	var win := ItemPickWindow.open(self, _pc, Strings.t("city.shop_tab_sell"),
+		func(id: String) -> bool: return CityShop.can_sell(_state, id, act_id),
+		func(id: String) -> int: return CityShop.sell_price(_state, id, act_id))
+	_grid.active = false
+	win.picked.connect(func(id: String) -> void:
+		_on_trade(CityShop.sell(_state, _pc, act_id, id, 1))
+		win.refresh())
+	win.closed.connect(func() -> void:
+		_show_choices(maxi(0, _entries().find([act_id, "sell"])))
+		_refresh_info())
 
 
 ## 패널형 활동의 창구(상점·대장간 = 쪽 tab, 은행, 정수 제거). 패널이 아니면 null. 나가기·돌아가기는 부르는 쪽이 넣는다.

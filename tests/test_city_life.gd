@@ -104,11 +104,10 @@ func test_equipment_only_at_smithy() -> void:
 	s.facility = "smithy"
 	var sword := "steel_sword"
 	assert_true(CityShop.buy(s, pc, "smithy_trade", sword).ok, "대장간에서 장비를 산다")
-	assert_true(CityShop.sellable(s, pc, "smithy_trade").has(sword))
 	pc.inventory.add("ration", 1)
-	assert_false(CityShop.sellable(s, pc, "smithy_trade").has("ration"), "대장간은 식량을 받지 않는다")
 	assert_false(CityShop.sell(s, pc, "smithy_trade", "ration").ok)
-	assert_true(CityShop.sell(s, pc, "smithy_trade", sword).ok, "장비는 대장간에 판다")
+	assert_false(CityShop.sell(s, pc, "smithy_trade", sword).ok, "대장간은 사 주지 않는다(2026-11-03 — 사기만)")
+	assert_eq(CityShop.tabs(s, "smithy_trade"), ["buy"] as Array[String], "대장간 창구 = 구매만")
 	s.facility = "shop"
 	pc.inventory.add(sword, 1)
 	assert_false(CityShop.sellable(s, pc, "shop_trade").has(sword), "상점은 장비를 받지 않는다")

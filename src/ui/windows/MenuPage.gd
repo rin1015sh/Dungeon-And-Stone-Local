@@ -34,6 +34,10 @@ func _init(title: String) -> void:
 	v.add_child(content)
 
 
+func set_title(t: String) -> void:
+	_title.text = t
+
+
 ## 커서 이동(d = (±1, 0) / (0, ±1)). 그 방향에 더 고를 것이 없으면 false.
 func nav(_d: Vector2i) -> bool:
 	return false

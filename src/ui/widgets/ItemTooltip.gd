@@ -5,9 +5,9 @@ extends RefCounted
 
 
 ## 툴팁 Control. actor가 있으면 장착품과 비교한다.
-static func build(db: GameDatabase, item_id: String, actor: Actor = null, count: int = 1) -> Control:
+static func build(db: GameDatabase, item_id: String, actor: Actor = null, count: int = 1, price: int = -1) -> Control:
 	var row := BoxContainer.new()  # 옆으로 나란히 — 화면에 자리가 없으면 띄우는 쪽이 세로로 쌓는다(InventoryPage._place_tip)
-	row.add_child(panel(db, item_id, false, count))
+	row.add_child(panel(db, item_id, false, count, price))
 	if actor != null and not ItemInfo.equip(db, item_id).is_empty():
 		var slot := actor.equipment.pick_slot(item_id)
 		var worn := actor.equipment.item_in(slot) if not slot.is_empty() else ""
@@ -16,7 +16,8 @@ static func build(db: GameDatabase, item_id: String, actor: Actor = null, count:
 	return row
 
 
-static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int = 1) -> PanelContainer:
+## price >= 0이면 가격 줄에 그 값을 보인다(상점에서 팔 때의 판매가).
+static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int = 1, price: int = -1) -> PanelContainer:
 	var d := ItemInfo.def(db, item_id)
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", UiTheme.panel_box(UiTheme.metric("padding", 8)))
@@ -67,9 +68,9 @@ static func panel(db: GameDatabase, item_id: String, equipped: bool, count: int 
 		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		dl.custom_minimum_size.x = UiTheme.metric("tooltip_width", 270) - 24
 		v.add_child(dl)
-	var price := UiTheme.label(Strings.t("inventory.price", {"price": ItemInfo.price(db, item_id)}), "small", "gold")
-	price.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	v.add_child(price)
+	var price_label := UiTheme.label(Strings.t("inventory.price", {"price": ItemInfo.price(db, item_id) if price < 0 else price}), "small", "gold")
+	price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	v.add_child(price_label)
 	return p
 
 
