@@ -13,7 +13,6 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "망루에 걸려 있던 석궁. 시위가 아직 팽팽하다.\n\n마지막 사수는 성벽 아래를 겨눈 채 죽었다. 쏘지 못한 화살이 아직 홈에 걸려 있었다.",
   "source": "placeholder",
   "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
 }

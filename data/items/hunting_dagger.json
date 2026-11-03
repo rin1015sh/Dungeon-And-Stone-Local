@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "dagger",
   "color": "#9da1a8",
-  "desc_ko": "가죽을 벗길 때 쓰던 칼.\n\n급할 때는 찌를 수도 있다. 사냥감이 사라진 뒤로, 이 칼이 찌르는 것은 대개 사람이다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 dagger × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

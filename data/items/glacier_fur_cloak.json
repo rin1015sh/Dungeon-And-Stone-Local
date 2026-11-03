@@ -13,7 +13,6 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "탐사대가 두고 간 두꺼운 털망토.\n\n안쪽에 아직 온기가 남은 듯하다. 망토를 벗어 둔 이가 왜 그랬는지는 생각하지 않는 편이 낫다.",
   "art_color": "#8a7058",
   "source": "placeholder",
   "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"

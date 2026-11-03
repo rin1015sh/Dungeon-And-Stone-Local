@@ -13,7 +13,6 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "장례 의식에 쓰던 단검.\n\n날에 새겨진 기도문은 어느 신전에서도 쓰지 않는 말이다. 그 말을 알던 신도, 그 신을 섬기던 이들도 묘 안에 함께 잠들었다.",
   "art_color": "#a89a70",
   "source": "placeholder",
   "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"

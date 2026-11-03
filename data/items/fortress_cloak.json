@@ -13,7 +13,6 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "성채 문장이 수놓인 붉은 망토.\n\n바래도 핏빛은 그대로다. 그 붉은색은 처음부터 물감이 아니었다는 말이 있다.",
   "art_color": "#7a2a2a",
   "source": "placeholder",
   "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"

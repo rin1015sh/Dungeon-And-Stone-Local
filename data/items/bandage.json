@@ -1,7 +1,6 @@
 {
   "id": "bandage",
   "name_ko": "붕대",
-  "desc_ko": "삶아 말린 무명 천.\n\n미궁에 드는 이라면 누구나 한 뭉치쯤 품고 간다. 가장 흔한 것이 가장 먼저 떨어진다.",
   "category": "tool",
   "price": 400,
   "stack": 10,

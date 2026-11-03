@@ -6,7 +6,6 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "빛나는 이끼를 짓이겨 기름에 갠 고약.\n\n바르면 화끈하다가 이내 서늘해진다. 광부들의 상처는 이 빛으로 덮였다. 어둠 속에서도 서로를 찾을 수 있게.",
   "use_effects": [
     {
       "type": "remove_status",

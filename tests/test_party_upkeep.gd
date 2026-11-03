@@ -53,7 +53,7 @@ func test_city_rest_heals_mates_but_reading_is_players_own() -> void:
 	var mate := _pc("동료")
 	s.mates = [mate]
 	s.set_override("activities/inn_rest/effects/1/amount", 5)
-	s.set_override("activities/library_dungeon/effects/2/amount", 4)
+	s.set_override("activities/library_dungeon/effects/1/amount", 4)
 	pc.fatigue.set_value(10.0)
 	mate.fatigue.set_value(10.0)
 	mate.pool.set_current("hp", 5.0)

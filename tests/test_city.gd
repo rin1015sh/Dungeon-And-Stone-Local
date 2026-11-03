@@ -103,10 +103,10 @@ func test_late_period_ends_in_dungeon_and_return_starts_next_month() -> void:
 func test_rest_lowers_and_reading_raises_fatigue_and_stats() -> void:
 	var s := _state()
 	var pc := _pc()
-	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_dungeon/effects/2/amount", 3],
-			["activities/library_dungeon/effects/1/chance", 1.0], ["activities/library_dungeon/effects/1/amount", 2],
-			["activities/library_arms/effects/1/stats", ["str"]], ["activities/library_arms/effects/1/chance", 1.0],
-			["activities/library_arms/effects/1/amount", 1], ["activities/library_arms/effects/2/amount", 4]]:
+	for kv: Array in [["activities/inn_rest/effects/1/amount", 5], ["activities/library_dungeon/effects/1/amount", 3],
+			["activities/library_dungeon/effects/0/chance", 1.0], ["activities/library_dungeon/effects/0/amount", 2],
+			["activities/library_arms/effects/0/stats", ["str"]], ["activities/library_arms/effects/0/chance", 1.0],
+			["activities/library_arms/effects/0/amount", 1], ["activities/library_arms/effects/1/amount", 4]]:
 		s.set_override(str(kv[0]), kv[1])
 	pc.fatigue.set_value(10.0)
 	_inside(s, "inn")
@@ -129,8 +129,8 @@ func test_rest_lowers_and_reading_raises_fatigue_and_stats() -> void:
 func test_failed_roll_still_costs_fatigue() -> void:
 	var s := _state()
 	var pc := _pc()
-	s.set_override("activities/library_dungeon/effects/1/chance", 0.0)
-	s.set_override("activities/library_dungeon/effects/2/amount", 4)
+	s.set_override("activities/library_dungeon/effects/0/chance", 0.0)
+	s.set_override("activities/library_dungeon/effects/1/amount", 4)
 	_inside(s, "library")
 	var before := pc.stats.get_base("int")
 	var ctx := CityActions.perform(s, pc, "library_dungeon", _reg())
@@ -147,9 +147,9 @@ func test_same_seed_same_rolls() -> void:
 		var pc := _pc()
 		_inside(s, "library")
 		for f in CityInfo.field_ids(db):  # 분야마다 한 번(한 방문에 분야 하나 — CT72)
-			s.set_override("activities/library_%s/effects/1/stats" % f, ["str", "agi", "p_res"])
-			s.set_override("activities/library_%s/effects/1/pick" % f, "random")
-			s.set_override("activities/library_%s/effects/1/chance" % f, 0.7)
+			s.set_override("activities/library_%s/effects/0/stats" % f, ["str", "agi", "p_res"])
+			s.set_override("activities/library_%s/effects/0/pick" % f, "random")
+			s.set_override("activities/library_%s/effects/0/chance" % f, 0.7)
 			CityActions.perform(s, pc, "library_" + f, _reg())
 		runs.append(pc.stat_history.map(func(h: Dictionary) -> String: return str(h["stat"])))
 	assert_true((runs[0] as Array).size() > 0, "성공이 한 번은 있다")

@@ -6,7 +6,6 @@
   "stack": 10,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "옅은 붉은 물약.\n\n상처가 빠르게 아문다. 아무는 동안 신경이 곤두선다. 싸구려 약은 몸을 서두르게 한다.",
   "use_effects": [
     {
       "type": "restore_resource",

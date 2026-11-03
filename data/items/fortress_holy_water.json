@@ -6,7 +6,6 @@
   "stack": 3,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "성채 예배당에 남아 있던 성수. 병마개 안쪽이 아직 서늘하다.\n\n영주가 피에 미쳐 갈 때도 예배당의 늙은 사제는 성수를 길었다. 아무도 마시러 오지 않았지만.",
   "use_effects": [
     {
       "type": "smite",

@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "cloak",
   "color": "#4a3f35",
-  "desc_ko": "찬 바닥에서 덮고 자는 망토.\n\n라비기온 뒷골목에서는 이것 한 장이 이불이다. 미궁에서도 그렇다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 cloak × 소재 linen로 계산한다(이 파일의 값 없음)."
 }

@@ -11,7 +11,6 @@
   "icon": "potion",
   "color": "#e04a5a",
   "rarity": "numbers",
-  "desc_ko": "작은 연못 속에서 건진 붉은 얼음 구슬.\n\n삼키면 냉기를 다루는 감각이 깨어난다. 붉은 얼음은 차가움 속에 갇힌 불이라는 말이 있다.",
   "consumable": true,
   "use_effects": [
     {

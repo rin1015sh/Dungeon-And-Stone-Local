@@ -6,7 +6,6 @@
   "stack": 3,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "결정 굴에서 떼어 낸 얼음 송곳.\n\n던지면 박힌 자리가 얼어붙는다. 빙하굴의 겨울은 떼어 내도 제 일을 잊지 않는다.",
   "use_effects": [
     {
       "type": "smite",

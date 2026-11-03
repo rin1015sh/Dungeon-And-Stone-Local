@@ -13,7 +13,6 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "얼음 속 오크 주술사가 쥐고 있던 지팡이. 끝에 얼음 구슬이 박혔다.\n\n주술사는 얼음에게 부족을 지켜 달라 빌었다. 얼음은 그 부탁을 들어주었다. 부족째 얼려서.",
   "art_color": "#6a7a8a",
   "source": "placeholder",
   "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"

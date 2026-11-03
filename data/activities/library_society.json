@@ -7,10 +7,6 @@
   "lines": "library_read",
   "effects": [
     {
-      "type": "learn_info",
-      "field": "society"
-    },
-    {
       "type": "stat_chance",
       "stats": [
         "int"

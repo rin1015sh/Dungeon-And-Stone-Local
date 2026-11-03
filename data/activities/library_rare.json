@@ -7,10 +7,6 @@
   "extra": true,
   "effects": [
     {
-      "type": "learn_info",
-      "field": "any"
-    },
-    {
       "type": "stat_chance",
       "stats": [
         "int"

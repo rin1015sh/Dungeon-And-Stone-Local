@@ -1,7 +1,6 @@
 {
   "id": "incense_stick",
   "name_ko": "향 한 개비",
-  "desc_ko": "제단 앞에서 피우다 남은 향.\n\n연기가 가라앉으면 마음도 가라앉는다. 무엇을 위해 피웠던 향인지는 연기와 함께 날아갔다.",
   "category": "potion",
   "size": [
     1,

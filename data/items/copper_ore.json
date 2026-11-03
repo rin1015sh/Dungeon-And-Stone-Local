@@ -1,7 +1,6 @@
 {
   "id": "copper_ore",
   "name_ko": "구리 광석 조각",
-  "desc_ko": "푸른 녹이 슨 구리 광석 조각.\n\n대장간에서 몇 푼 쳐준다. 몇 푼을 위해 미궁에 드는 이도 있다.",
   "category": "misc",
   "size": [
     1,

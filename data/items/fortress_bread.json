@@ -5,7 +5,6 @@
   "price": 300,
   "stack": 5,
   "consumable": true,
-  "desc_ko": "돌처럼 굳은 검은 빵. 성채의 문장이 찍혀 있다.\n\n성채가 포위되던 날 병사들에게 나누어 준 군량이다. 성은 무너졌고, 빵은 남았다.",
   "use_effects": [
     {
       "type": "restore_resource",

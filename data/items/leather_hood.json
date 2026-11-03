@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "hood",
   "color": "#5f5446",
-  "desc_ko": "머리와 목을 덮는 가죽 두건.\n\n동굴 천장에서 떨어지는 물방울은 차갑다. 그보다 차가운 것도 떨어진다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 hood × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

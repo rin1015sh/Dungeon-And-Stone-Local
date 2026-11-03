@@ -13,7 +13,6 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "성문 수비대가 들던 미늘창. 자루에 수비대 번호가 깎여 있다.\n\n수비대는 성문을 끝까지 지켰다. 성문 안쪽에서 무엇이 일어나는지는 모른 채로.",
   "source": "placeholder",
   "notes": "핏빛성채 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
 }

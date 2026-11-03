@@ -6,7 +6,6 @@
   "stack": 3,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "고블린이 심지째 묶어 둔 화약 주머니.\n\n냄새만 맡아도 눈이 맵다. 고블린은 그것을 무기라 부르지 않고 연장이라 불렀다. 쓰는 곳이 같았을 뿐이다.",
   "use_effects": [
     {
       "type": "smite",

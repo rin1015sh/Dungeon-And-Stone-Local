@@ -13,7 +13,6 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "갱도에서 캔 초록 수정을 깎아 끼운 반지.\n\n어둠 속에서 아주 희미하게 빛난다. 광부는 그것을 아내에게 주려 했다. 반지는 갱도를 나서지 못했다.",
   "source": "placeholder",
   "notes": "녹색 탄광 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md)",
   "art_color": "#5ad070"

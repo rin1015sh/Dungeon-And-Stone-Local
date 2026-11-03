@@ -1,7 +1,6 @@
 {
   "id": "greater_potion",
   "name_ko": "상급 포션",
-  "desc_ko": "짙은 붉은 물약.\n\n마시면 살이 차오르는 것이 느껴진다. 가장 좋은 약이 늘 가장 늦게 손에 든다.",
   "category": "potion",
   "price": 20000,
   "stack": 10,

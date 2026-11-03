@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "armor",
   "color": "#6b6152",
-  "desc_ko": "천을 여러 겹 누빈 갑옷.\n\n덥고 답답하다. 그 답답함이 칼날 하나를 막는다면, 견딜 만한 더위다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 padded × 소재 linen로 계산한다(이 파일의 값 없음)."
 }

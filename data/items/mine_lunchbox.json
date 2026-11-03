@@ -5,7 +5,6 @@
   "price": 600,
   "stack": 5,
   "consumable": true,
-  "desc_ko": "양철 통에 꾹꾹 눌러 담은 보리밥과 절인 고기.\n\n뚜껑에 누군가의 이름이 긁혀 있다. 그는 점심때까지 돌아오지 못했다.",
   "use_effects": [
     {
       "type": "restore_resource",

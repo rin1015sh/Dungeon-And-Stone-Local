@@ -861,10 +861,9 @@ func _library_flow() -> void:
 	var fv := city.facility_view()
 	if not _expect(fv != null and fv.facility_id() == "library" and st.ap == 2, "도서관 문 앞에서 Enter = 들어간다(행동력 1 — CT72)"):
 		return
-	var known := st.known_info.size()
 	await _fac_do(fv, "library_dungeon")
 	await _frames(3)
-	_expect(st.known_info.size() > known and city.facility_view() == fv, "서적 읽기 — 읽고 나도 시설 창에 남는다(CT72)")
+	_expect(city.facility_view() == fv, "독서 — 읽고 나도 시설 창에 남는다(CT72)")
 	_expect(CityActions.check(st, city.pc, "library_dungeon") == "city.reason_read_this_visit" and CityActions.check(st, city.pc, "library_arms") != "city.reason_read_this_visit", "같은 분야는 한 방문에 한 번, 다른 분야는 이어서")
 	await _action("pause")
 	await _frames(2)
@@ -1228,20 +1227,11 @@ func _has_label(root: Node, text: String) -> bool:
 ## 도감(B — UI32): 몬스터 · 서적 분야. W/S로 분야를 옮기면 오른쪽이 바뀌고, 읽은 대목이 보인다. B로 닫으면 시간이 다시 흐른다.
 func _codex_checks(explore: ExploreScreen) -> void:
 	var s := explore.session
-	var known := explore.codex().known
-	known.append("d_cave_shape")
 	await _action("codex")
 	var cx := explore.codex()
 	_expect(cx.is_open() and cx.page() is BestiaryPage and s.realtime.is_paused("codex"), "B = 도감(몬스터부터), 시간 멈춤")
-	await _action("menu_down")
-	_expect(cx.index().current() == "dungeon" and cx.page() is LorePage, "W/S로 분야 → 오른쪽이 서적")
-	await _action("menu_confirm")
-	_expect(cx.active_page() == cx.page() and (cx.page() as LorePage).current_id() == "d_cave_shape", "Enter → 읽은 대목")
-	await _action("pause")
-	_expect(cx.active_page() == cx.index() and cx.is_open(), "Esc → 왼쪽 목록")
 	await _action("codex")
 	_expect(not cx.is_open() and not s.realtime.is_paused("codex"), "B로 닫기 → 시간 다시 흐름")
-	known.erase("d_cave_shape")
 
 
 ## Tab 메뉴(UI26): 왼쪽 아군 목록 — W/S·Enter로 아군을 고르면 가운데·오른쪽이 그 아군.

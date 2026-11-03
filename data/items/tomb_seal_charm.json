@@ -6,7 +6,6 @@
   "stack": 3,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "석관 뚜껑에 붙어 있던 부적.\n\n망자에게 붙이면 움직임이 굳는다. 떼어 낸 석관이 그 뒤로 어떻게 되었는지는 생각하지 않는 편이 낫다.",
   "use_effects": [
     {
       "type": "smite",

@@ -6,7 +6,6 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "예티 기름을 졸인 연고.\n\n바르면 언 살갗이 금세 풀린다. 예티는 그 기름으로 설원의 겨울을 견뎠다. 사람은 예티를 잡아 겨울을 견딘다.",
   "use_effects": [
     {
       "type": "remove_status",

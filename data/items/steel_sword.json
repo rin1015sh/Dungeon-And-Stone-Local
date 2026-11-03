@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "sword",
   "color": "#b8bcc4",
-  "desc_ko": "평범한 강철 검.\n\n날이 서 있는 동안은 믿을 만하다. 그 뒤로는 쥔 자의 몫이다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 sword × 소재 steel로 계산한다(이 파일의 값 없음)."
 }

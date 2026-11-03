@@ -19,7 +19,6 @@ func setup(db: GameDatabase, known: Array[String]) -> void:
 	custom_minimum_size.x = MenuPage.cfg("codex_index_width", 250.0)
 	sections.clear()
 	sections.append(MONSTERS)
-	sections.append_array(CityInfo.field_ids(db))
 	for id in sections:
 		var row := PanelContainer.new()
 		var text := Strings.t("codex.monsters") if id == MONSTERS \

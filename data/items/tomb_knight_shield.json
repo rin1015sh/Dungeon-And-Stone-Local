@@ -13,7 +13,6 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "묘에 잠든 기사단의 방패.\n\n문장 위로 금빛이 바랬다. 기사단은 사라졌고, 그 이름을 지키라는 명령만 남아 묘를 돌고 있다.",
   "art_color": "#8a8070",
   "source": "placeholder",
   "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"

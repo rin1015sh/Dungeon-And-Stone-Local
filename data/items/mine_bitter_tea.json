@@ -6,7 +6,6 @@
   "stack": 5,
   "consumable": true,
   "combat_usable": true,
-  "desc_ko": "갱도에서 졸음을 쫓던 검은 찻물.\n\n식은 지 오래인데도 혀끝이 저리다. 광부들은 이것을 마시고 사흘 밤을 팠다. 나흘째에 갱도가 무너졌다.",
   "use_effects": [
     {
       "type": "fatigue",

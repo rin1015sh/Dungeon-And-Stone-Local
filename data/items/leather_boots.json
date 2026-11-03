@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "boots",
   "color": "#5d4330",
-  "desc_ko": "발목까지 오는 가죽 장화. 발소리가 덜 난다.\n\n동굴에서는 조용히 걷는 자가 오래 걷는다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 boots × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

@@ -13,7 +13,6 @@
   },
   "category": "weapon",
   "stack": 1,
-  "desc_ko": "언 숲 사냥꾼의 활. 손잡이에 늑대 가죽을 감았다.\n\n사냥꾼은 굶주린 무리를 먹이려 설원에 나갔다. 돌아온 것은 활뿐이었다.",
   "source": "placeholder",
   "notes": "빙하굴 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
 }

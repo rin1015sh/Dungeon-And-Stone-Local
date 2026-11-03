@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "gloves",
   "color": "#6e5038",
-  "desc_ko": "손에 맞춘 가죽 장갑. 손이 미끄러지지 않는다.\n\n피에 젖은 손잡이를 쥐어 본 자는 장갑을 벗지 않는다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 gloves × 소재 tanned로 계산한다(이 파일의 값 없음)."
 }

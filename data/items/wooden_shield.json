@@ -13,7 +13,6 @@
   "stack": 1,
   "icon": "shield",
   "color": "#7a5a3a",
-  "desc_ko": "판자에 쇠테를 두른 방패.\n\n신참들이 가장 먼저 사는 방패다. 그리고 가장 먼저 쪼개지는 방패다. 쪼개진 만큼 쥔 이는 살았다.",
   "source": "placeholder",
   "notes": "아이템 공식(2026-10-23): equip·price는 ItemForge가 종류 shield × 소재 oak로 계산한다(이 파일의 값 없음)."
 }

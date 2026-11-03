@@ -13,7 +13,6 @@
   },
   "category": "armor",
   "stack": 1,
-  "desc_ko": "망자의 목에 걸려 있던 수정 목걸이.\n\n맑은 소리가 난다. 망자가 길을 잃지 않도록 걸어 준 것이다. 지금은 산 자가 길을 잃지 않으려 건다.",
   "art_color": "#e0d8a0",
   "source": "placeholder",
   "notes": "강철의 묘 줍는 자리(2026-10-30 — docs/plans/rift_rooms.md, RF25)"
