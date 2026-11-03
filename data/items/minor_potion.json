@@ -10,7 +10,8 @@
     {
       "type": "restore_resource",
       "resource": "hp",
-      "amount": 40
+      "amount": 40,
+      "percent": 0.15
     },
     {
       "type": "apply_status",

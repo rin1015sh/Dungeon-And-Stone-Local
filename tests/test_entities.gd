@@ -126,7 +126,7 @@ func test_effect_registry() -> void:
 	assert_eq(reg.check_data({"type": "light_source", "radius_m": 5, "hours": 1}, db).size(), 0)
 
 
-## 포션: 특정값(minor = 40) 또는 최대치 비율(medium 30%·greater 50%)로 회복하고, 쓴 결과에 수치(res·delta)가 남는다.
+## 포션: 특정값과 최대치 비율 중 더 큰 쪽으로 회복하고, 쓴 결과에 수치(res·delta)가 남는다.
 func test_potions_heal_fixed_or_percent() -> void:
 	var reg := EffectRegistry.new()
 	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {})
@@ -135,16 +135,17 @@ func test_potions_heal_fixed_or_percent() -> void:
 	var hp_max := pc.pool.get_max("hp")
 	pc.pool.set_current("hp", 1.0)
 	var ctx := ItemUser.use(reg, pc, "minor_potion", Rng.new(1))
-	assert_near(pc.pool.get_current("hp"), minf(41.0, hp_max), 0.001, "작은 포션 = 특정값 40")
+	var low := maxf(40.0, floorf(hp_max * 0.15))
+	assert_near(pc.pool.get_current("hp"), minf(1.0 + low, hp_max), 0.001, "하급 포션 = 40 또는 15% 중 큰 값")
 	var num: Dictionary = {}
 	for m: Dictionary in ctx.messages:
 		if str(m["key"]) == "effect.restore":
 			num = m["args"]
 	assert_eq(str(num.get("res", "")), "hp", "쓴 결과에 자원")
-	assert_eq(int(num.get("delta", 0)), int(minf(40.0, hp_max - 1.0)), "쓴 결과에 늘어난 수치")
+	assert_eq(int(num.get("delta", 0)), int(minf(low, hp_max - 1.0)), "쓴 결과에 늘어난 수치")
 	pc.pool.set_current("hp", 1.0)
 	ItemUser.use(reg, pc, "medium_potion", Rng.new(1))
-	assert_near(pc.pool.get_current("hp"), minf(1.0 + floorf(hp_max * 0.3), hp_max), 0.001, "중간 포션 = 최대치 30%")
+	assert_near(pc.pool.get_current("hp"), minf(1.0 + maxf(90.0, floorf(hp_max * 0.3)), hp_max), 0.001, "중급 포션 = 90 또는 30% 중 큰 값")
 
 
 func test_player_create_and_item_use() -> void:

@@ -577,6 +577,7 @@
     "regen_of": "{res} 재생",
     "eff_restore": "{res} +{amount}",
     "eff_lower": "{res} -{amount}",
+    "eff_restore_either": "{res} +{amount} 또는 +{pct}%",
     "eff_restore_pct": "{res} +{pct}%",
     "eff_lower_pct": "{res} -{pct}%",
     "eff_light": "빛 {m}m · {hours}시간",

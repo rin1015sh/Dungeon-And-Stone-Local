@@ -95,7 +95,10 @@ static func _effect_line(db: GameDatabase, e: Dictionary) -> String:
 			var r := JsonUtil.get_str(e, "resource")
 			var inv := db.resources.has(r) and (db.resources[r] as ResourceDef).display_inverted  # 허기: 먹으면 허기가 준다(UI35)
 			var rname: String = db.resources[r].name_ko if db.resources.has(r) else r
-			if e.has("percent"):  # 최대치의 비율로 회복(포션)
+			if e.has("percent") and e.has("amount"):  # 특정값 또는 최대치 비율 중 큰 쪽(포션)
+				return Strings.t("inventory.eff_restore_either", {"res": rname, "amount": absi(roundi(JsonUtil.get_float(e, "amount"))),
+					"pct": absi(roundi(JsonUtil.get_float(e, "percent") * 100.0))})
+			if e.has("percent"):  # 최대치의 비율로 회복
 				var pct := roundi(JsonUtil.get_float(e, "percent") * 100.0)
 				return Strings.t("inventory.eff_lower_pct" if inv == (pct > 0) else "inventory.eff_restore_pct", {"res": rname, "pct": absi(pct)})
 			var amount := roundi(JsonUtil.get_float(e, "amount"))

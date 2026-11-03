@@ -15,6 +15,7 @@
     {
       "type": "restore_resource",
       "resource": "hp",
+      "amount": 90,
       "percent": 0.3
     },
     {
