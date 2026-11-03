@@ -29,6 +29,9 @@ PX = 32
 CHUNK = 512
 KINDS = ["void", "street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "court", "water", "retain", "wall", "gate", "dais", "house", "prop"]
 K = {k: i for i, k in enumerate(KINDS)}
+STEP = 0.2  # 계단 턱 높이(칸 — 6px 남짓, CT102)
+WALK_W = 18  # 집 둘레 판석 보도 폭(px, CT102)
+SUN = (0.8, -0.47)  # 높이 1칸당 그림자가 뻗는 쪽(동 · 북 — 집 그림 해가 서남쪽 위)
 SHADE = 0.8  # 바닥 전체 밝기(예전 1.1 언저리 → 어둡게, CT101)
 MORTAR = np.array([0.15, 0.13, 0.11], np.float32)
 MOSS = np.array([0.24, 0.27, 0.16], np.float32)
@@ -232,6 +235,93 @@ def water(xs, ys, base):
     return col, ink
 
 
+# ---------- 집 밑(장난감처럼 얹힌 느낌을 없앤다 — CT102) ----------
+
+def footprints(town):
+    """집 · 시설 바닥 다각형(칸)과 높이(칸 — 층 × 1.2 + 지붕)."""
+    out = []
+    for h in town["houses"]:
+        (cx, cy), (w, d), a = h["center"], h["size"], math.radians(h["angle"])
+        ax, ay = (math.cos(a), math.sin(a)), (-math.sin(a), math.cos(a))
+        poly = [(cx + ax[0] * w * sx / 2 + ay[0] * d * sy / 2, cy + ax[1] * w * sx / 2 + ay[1] * d * sy / 2) for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        out.append((poly, h.get("floors", 2) * 1.2 + 1.6))
+    for b in town["buildings"]:
+        if "rect" in b:
+            x0, y0, x1, y1 = b["rect"]
+            poly = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+        else:
+            cx, cy, r = b["circle"]
+            poly = [(cx + math.cos(t) * r, cy + math.sin(t) * r) for t in np.linspace(0, 2 * math.pi, 25)[:-1]]
+        out.append((poly, b.get("floors", 3) * 1.2 + 2.2))
+    return out
+
+
+def _hull(pts):
+    pts = sorted(set(pts))
+    if len(pts) < 3:
+        return pts
+    def half(seq):
+        h = []
+        for p in seq:
+            while len(h) >= 2 and (h[-1][0] - h[-2][0]) * (p[1] - h[-2][1]) - (h[-1][1] - h[-2][1]) * (p[0] - h[-2][0]) <= 0:
+                h.pop()
+            h.append(p)
+        return h
+    lo, up = half(pts), half(reversed(pts))
+    return lo[:-1] + up[:-1]
+
+
+def _grow_mask(m, n):
+    out = m.copy()
+    for _ in range(n):
+        g = out.copy()
+        g[1:] |= out[:-1]
+        g[:-1] |= out[1:]
+        g[:, 1:] |= out[:, :-1]
+        g[:, :-1] |= out[:, 1:]
+        out = g
+    return out
+
+
+def footing(town, kind, col, ink, W, H):
+    """집 · 시설 둘레 판석 보도(연석 먹선 · 그 바깥 도랑 그늘) · 벽 밑 젖은 그늘 · 해 반대쪽(동 · 북)으로 드리운 그림자."""
+    fp = footprints(town)
+    hm = Image.new("L", (W, H), 0)
+    sh = Image.new("L", (W, H), 0)
+    dh, ds = ImageDraw.Draw(hm), ImageDraw.Draw(sh)
+    for poly, top in fp:
+        q = [(x * PX, y * PX) for x, y in poly]
+        dh.polygon(q, fill=255)
+        v = (SUN[0] * top * PX, SUN[1] * top * PX)
+        ds.polygon(_hull(q + [(x + v[0], y + v[1]) for x, y in q]), fill=255)
+    house = np.asarray(hm) > 0
+    road = np.isin(kind, [K["street"], K["avenue"]])
+    # 보도: 집에서 WALK_W px 안의 돌길 → 줄지어 깐 밝은 판석
+    walk = _grow_mask(house, WALK_W) & ~house & road
+    ys, xs = np.nonzero(walk)
+    if len(ys):
+        y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+        yy, xx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
+        c, k = slabs(xx, yy, hexc("#6e675a") * SHADE * 1.12, 14.0, 18.0, 30.0, 77, var=0.1, moss=0.05)
+        m = walk[y0:y1, x0:x1]
+        col[y0:y1, x0:x1][m] = c[m]
+        ink[y0:y1, x0:x1][m] = k[m]
+    # 연석: 보도 바깥 가장자리 먹선 + 그 바깥 2px 도랑 그늘
+    rim = _grow_mask(walk, 1) & ~walk & road
+    ink[rim] = np.maximum(ink[rim], 0.7)
+    gutter = _grow_mask(walk, 4) & ~walk & road
+    col[gutter] *= 0.72
+    # 벽 밑 젖은 그늘(6px)
+    near = _grow_mask(house, 6) & ~house
+    col[near] *= 0.62
+    near2 = _grow_mask(house, 2) & ~house
+    ink[near2] = np.maximum(ink[near2], 0.55)
+    # 드리운 그림자(살짝 흐리게 — 손그림 빗금이 어두운 곳에 들어간다)
+    shade = np.asarray(sh.filter(ImageFilter.GaussianBlur(3))).astype(np.float32) / 255.0
+    shade = shade * ~house * (kind != K["water"])
+    col *= (1.0 - 0.42 * shade)[..., None]
+
+
 # ---------- 바닥 장식(위에서 본 그림 위에 그린다) ----------
 
 def decorate(town, kind, cell_kind, col, ink, W, H):
@@ -399,9 +489,14 @@ def main():
         zb = np.interp(xs1, line[:, 0], line[:, 1])
         hmap[ys1 < zb[None, :]] = b["h"]
     chs = np.array(cells["heights"], np.float32).reshape(ch, cw)
-    cell_h = np.repeat(np.repeat(chs, PX, 0), PX, 1)
+    # 계단: 칸 가운데 높이를 세로로 이어 잘게(STEP칸 턱) — 칸마다 큰 턱 하나가 아니게(CT102)
+    cy = (np.arange(H) + 0.5) / PX - 0.5
+    c0 = np.clip(np.floor(cy).astype(np.int64), 0, ch - 1)
+    c1 = np.clip(c0 + 1, 0, ch - 1)
+    f = (cy - np.floor(cy)).astype(np.float32)[:, None]
+    hv = np.repeat(chs[c0] * (1 - f) + chs[c1] * f, PX, 1)
     st = kind == K["stairs"]
-    hmap[st] = cell_h[st]
+    hmap[st] = np.floor(hv[st] / STEP + 0.5) * STEP
     for a in town["areas"]:
         if "h" in a:
             hmap[kind == K[a["kind"]]] = a["h"]
@@ -457,6 +552,7 @@ def main():
     curb = hard & near
     col[curb] = col[curb] * 0.7
     ink[curb & ~np.roll(near, 1, 0)] = 0.6
+    footing(town, kind, col, ink, W, H)
     decorate(town, kind, cell_kind, col, ink, W, H)
     # 4) 3/4로 올린다(남쪽부터 북쪽으로 — 높은 땅이 앞의 낮은 땅 위로, 높이 차는 앞면)
     top = int(math.ceil(float(cells["max_h"]) * PX)) + 4

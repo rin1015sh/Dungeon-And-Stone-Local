@@ -23,7 +23,8 @@ import town_v3_small as small  # noqa: E402
 
 EXTENT = small.EXTENT
 CATALOG = small.CATALOG_S
-HIGH, MIDH, LOWH, WATER = 3.0, 0.0, -2.4, -4.2
+HIGH, MIDH, LOWH, WATER = 2.0, 0.0, -1.6, -2.8  # 단 높이(칸) — 옹벽 · 계단 턱이 너무 높다(CT102: 3.0 · −2.4 · −4.2에서 낮춤)
+GROW = 0.5  # 블록을 길 쪽으로 넓히는 칸(길이 너무 넓다 — CT102)
 OUTLINE = [(-38, -73), (38, -73), (38, 33), (-38, 33)]
 BAND1, BAND2 = -40.6, -6.6  # 윗단 / 중단 / 아랫단 경계(옹벽 — 위 단의 남쪽 길 바로 아래)
 
@@ -115,16 +116,34 @@ class City(Town):
 			self.mark(num, ax + (mx - ax) * 0.35, az + (mz - az) * 0.35)
 		return True
 
+	def grow(self, b: Blk, g: float) -> Blk:
+		"""블록 변을 바깥(길 쪽)으로 g칸 넓힌다 — 그 띠가 빈 땅(블록 사이 길)일 때만. 계단 · 큰길 · 광장 · 마당 · 시설 · 옹벽 · 성벽 쪽은 그대로."""
+		cen = ((b.nw[0] + b.ne[0] + b.se[0] + b.sw[0]) / 4, (b.nw[1] + b.ne[1] + b.se[1] + b.sw[1]) / 4)
+		lines = {}
+		for k, (p, q) in {"n": (b.nw, b.ne), "s": (b.sw, b.se), "w": (b.nw, b.sw), "e": (b.ne, b.se)}.items():
+			u = _norm(_sub(q, p))
+			n = (-u[1], u[0])
+			mid = ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
+			if _dot(n, _sub(mid, cen)) < 0:
+				n = (-n[0], -n[1])
+			strip = [p, q, (q[0] + n[0] * g, q[1] + n[1] * g), (p[0] + n[0] * g, p[1] + n[1] * g)]
+			pm = self.pmask(strip)
+			off = g if pm.any() and (self.mask[pm] != 0).mean() < 0.05 else 0.0
+			lines[k] = ((p[0] + n[0] * off, p[1] + n[1] * off), u)
+		c = lambda a, bb: _cross(lines[a][0], lines[a][1], lines[bb][0], lines[bb][1])  # noqa: E731
+		return Blk(c("n", "w"), c("n", "e"), c("s", "e"), c("s", "w"))
+
 	def block(self, b: Blk, seed: int, st=(2, 3), rows="nsew", dn=5.0, ds=5.4, cw=6.0, tw=6.0, fixed=(), alley=None, inner="yard"):
 		"""둘레 줄집 블록. 남쪽 줄 = 남쪽 변(길)을 보고, 북쪽 줄 = 북쪽 변에 등을 대고 안뜰을 본다, 동서 세로 줄 = 남쪽을 보는 집을 쌓는다.
 		변마다 집 폭이 변을 꼭 나눠 떨어진다(틈 없음). fixed = [(줄, x0, x1, 깊이, top, num, fid, 이름)] — x는 지도 가로 좌표.
 		alley = 남쪽 줄 골목 자리(x, 폭 2.6 — 안뜰로). 깊이가 두 줄보다 얕으면 북쪽 줄을 줄여 등을 맞댄다."""
 		r = random.Random(seed)
+		b = self.grow(b, GROW)
 		depth_w = math.hypot(*_sub(b.sw, b.nw))
 		depth_e = math.hypot(*_sub(b.se, b.ne))
 		dmin = min(depth_w, depth_e)
-		if "n" in rows and "s" in rows and dmin < dn + ds + 0.3:
-			dn = max(0.0, dmin - ds)
+		if "n" in rows and "s" in rows and dmin - dn - ds < 2.5:  # 안뜰이 좁은 틈만 남으면 등을 맞댄 두 줄로
+			dn = max(0.0, min(6.0, dmin - ds))
 			if dn < 3.0:
 				rows = rows.replace("n", "")
 
