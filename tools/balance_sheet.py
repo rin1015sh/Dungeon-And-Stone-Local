@@ -187,7 +187,7 @@ def formulas() -> list:
         "속성: 대상 내성 1점당 −%d%%(최대 %d%%) · 공격자 감응도 1점당 +%d%%" % (
             r0(c["element_resist_per_point"] * 100), r0(c["element_resist_max"] * 100), r0(c["affinity_per_point"] * 100)),
         "상태이상 저항(적이 건 것) = %g × 저항 스탯 / (저항 스탯 + 거는 쪽 근력·정신력 중 큰 값) — 같으면 %d%%" % (st["resist_max"], r0(st["resist_max"] * 50)),
-        "주기 피해(차례마다): 출혈 %g · 중독 %g · 화상 %g · 부패 %g · 덫 %g · 아사 시간당 %g" % (
+        "주기 피해(차례·중첩마다, 고정값 또는 생명력 비율 중 센 쪽 — 출혈·중독·화상·부패는 현재 생명력): 출혈 %g · 중독 %g · 화상 %g · 부패 %g · 덫 %g · 아사 시간당 %g" % (
             st["bleed_per_turn"], st["poison_per_turn"], st["burn_per_turn"], st["rot_per_turn"], st["trap_damage"], BAL["hunger"]["starvation_hp_per_hour"]),
         "플레이어 최대 생명력 = %d + 레벨×%d + 물리내성×%g + 항마력×%g + 정수 생명력 · 최대 영혼력 = %d + %d레벨까지 레벨당 %d, 그 뒤 %d" % (
             hp["base"], hp["per_level"], hp["per_p_res"], hp["per_m_res"], soul["base"], soul["early_level_cap"], soul["per_level_early"], soul["per_level_late"]),

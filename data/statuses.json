@@ -86,7 +86,8 @@
         "trigger": "turn",
         "resource": "hp",
         "amount": "-{bal.status.bleed_per_turn}",
-        "hp_ratio": "{bal.status.bleed_ratio}"
+        "hp_ratio": "{bal.status.bleed_ratio}",
+        "hp_ratio_of": "current"
       }
     ],
     "source": "placeholder",
@@ -118,7 +119,8 @@
         "resource": "hp",
         "amount": "-{bal.status.poison_per_turn}",
         "damage_type": "poison",
-        "hp_ratio": "{bal.status.poison_ratio}"
+        "hp_ratio": "{bal.status.poison_ratio}",
+        "hp_ratio_of": "current"
       }
     ],
     "resist": {
@@ -228,7 +230,8 @@
         "resource": "hp",
         "amount": "-{bal.status.burn_per_turn}",
         "damage_type": "fire",
-        "hp_ratio": "{bal.status.burn_ratio}"
+        "hp_ratio": "{bal.status.burn_ratio}",
+        "hp_ratio_of": "current"
       }
     ],
     "source": "placeholder",
@@ -448,7 +451,8 @@
         "trigger": "turn",
         "resource": "hp",
         "amount": "-{bal.status.rot_per_turn}",
-        "hp_ratio": "{bal.status.rot_ratio}"
+        "hp_ratio": "{bal.status.rot_ratio}",
+        "hp_ratio_of": "current"
       }
     ],
     "source": "placeholder",

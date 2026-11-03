@@ -409,7 +409,8 @@ func _periodic(trigger: String, amount: float, unit_only: String = "") -> void:
 				var per := Formula.value(pd.get("amount", 0.0), _pool.resolve)
 				var ratio := Formula.value(pd.get("hp_ratio", 0.0), _pool.resolve)  # 후반에도 무의미해지지 않게: 고정값과 비율 중 센 쪽(2026-11-03 밸런스)
 				if res == "hp" and per < 0.0 and ratio > 0.0:
-					per = minf(per, -floorf(_pool.get_max("hp") * ratio * hp_ratio_scale))
+					var basis := _pool.get_current("hp") if JsonUtil.get_str(pd, "hp_ratio_of") == "current" else _pool.get_max("hp")  # 출혈·중독·화상·부패 = 현재 생명력 비례(BL3)
+					per = minf(per, -floorf(basis * ratio * hp_ratio_scale))
 				if res == "hp" and per < 0.0:
 					per *= dot_mult * _element_resist(JsonUtil.get_str(pd, "damage_type"))
 				_pool.modify(res, per * n * amount, SOURCE_PREFIX + id)
