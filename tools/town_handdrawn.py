@@ -69,14 +69,13 @@ def dilate(m, n=1):
     return m
 
 
-def hand(vid):
-    raw = np.asarray(Image.open(os.path.join(DIR, "raw", vid + "_raw.png")).convert("RGB")).astype(float) / 255.0
-    ids = np.asarray(Image.open(os.path.join(DIR, "raw", vid + "_id.png")).convert("RGB")).astype(np.int64)
-    code = ids[..., 0] * 65536 + ids[..., 1] * 256 + ids[..., 2]
+def finish(raw, code, sprite=False):
+    """날 그림(H, W, 3 · 0~1)과 면 번호(H, W)로 손그림 마감 → (그림, 불투명도). sprite면 배경을 투명하게(바깥 먹선까지만 남김 — 게임 집 그림, CT97)."""
     mask = code != 0
     H, W = mask.shape
-    img = kuwahara(raw, 3)
-    img = kuwahara(img, 2)
+    r1, r2 = (2, 1) if sprite else (3, 2)
+    img = kuwahara(raw, r1)
+    img = kuwahara(img, r2)
     img = np.clip(img, 0, 1) ** 0.88  # 조금 밝게(종이 위 물감)
     yy, xx = np.mgrid[0:H, 0:W]
     # 붓결: 비스듬히 늘인 잡음으로 밝기를 흔든다
@@ -104,6 +103,8 @@ def hand(vid):
     thick = noise(H, W, 18, 21)
     edge = edge | (dilate(edge, 1) & (thick > 0.35))
     sil = (dilate(mask, 3) & ~mask) & (dilate(mask, 2) | (thick > 0.5))
+    if sprite:  # 게임 그림은 작아서 바깥 먹선을 얇게(2px)
+        sil = (dilate(mask, 2) & ~mask) & (dilate(mask, 1) | (thick > 0.5))
     jitter = noise(H, W, 14, 17)
     a = np.where(edge, 0.75 + jitter * 0.25, 0.0)
     a = np.maximum(a, np.where(sil, 0.92, 0.0))
@@ -113,7 +114,16 @@ def hand(vid):
     lum = img @ np.array([0.3, 0.59, 0.11])
     img = img * 0.85 + lum[..., None] * 0.15
     img = img * np.array([1.03, 1.0, 0.94])
-    out = Image.fromarray((np.clip(img, 0, 1) * 255).astype(np.uint8))
+    alpha = np.where(mask, 1.0, np.where(sil, a, 0.0)) if sprite else np.ones(mask.shape)
+    return np.clip(img, 0, 1), alpha
+
+
+def hand(vid):
+    raw = np.asarray(Image.open(os.path.join(DIR, "raw", vid + "_raw.png")).convert("RGB")).astype(float) / 255.0
+    ids = np.asarray(Image.open(os.path.join(DIR, "raw", vid + "_id.png")).convert("RGB")).astype(np.int64)
+    code = ids[..., 0] * 65536 + ids[..., 1] * 256 + ids[..., 2]
+    img, _a = finish(raw, code)
+    out = Image.fromarray((img * 255).astype(np.uint8))
     out.save(os.path.join(DIR, vid + "_hand.png"))
     if not SHEET:  # 묶음 그림(구상 그림)은 커밋용 jpg도(큰 png는 커밋하지 않는다)
         out.convert("RGB").save(os.path.join(DIR, vid + "_hand.jpg"), quality=86)

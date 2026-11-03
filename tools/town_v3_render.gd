@@ -1,8 +1,7 @@
 extends SceneTree
 ## 도시 구상 v3 — 게임 동네 지도(data/town/district7.json · TownMap)를 집 키트 17채(tools/town_kit/Designs — 손그림 집)로 세워
 ## 탐험 화면과 같은 3/4(바닥 깊이 그대로 · 높이 그대로 위로 — CT92)로 렌더한다. 사용자 2026-11-03 "좋은데 이대로 진행해 봐"(CT95).
-##   집: 지도의 집마다 바닥 크기가 가장 가까운 바리에이션을 골라(같은 크기면 집 번호로 돌려 가며) 그 크기 · 각도 · 땅 높이로 세운다.
-##   시설: 길드 = v17 · 신전 = 예배당(크게) · 은행 = 맨사드 · 여관 = 회랑 집 · 잡화점 = 가게집 · 대장간 = 공방 · 도서관 = 원형 열람당.
+##   집: tools/town_kit/HouseFit(바닥 크기가 가장 가까운 바리에이션 · 시설은 정한 것 — 게임 집 그림 굽기 tools/paint_town_hand.gd와 같은 집).
 ##   땅: 칸마다 높이(단 · 계단 · 수로)로 윗면 + 남쪽이 낮으면 앞면(옹벽 · 계단 단 · 둑).
 ## 3/4 투영: Godot 카메라는 사선 투영이 없어서 장면을 밀어(y' = 높이 − 남쪽 깊이) 수평 정사영으로 찍는다.
 ## → docs/plans/town/v3/raw/{town,plaza}_raw.png · _id.png(면 번호) — python3 tools/town_handdrawn.py --dir=v3 → town_hand.png · plaza_hand.png
@@ -11,17 +10,12 @@ extends SceneTree
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Kit := preload("res://tools/town_kit/Kit.gd")
-const Designs := preload("res://tools/town_kit/Designs.gd")
 const F := preload("res://tools/town_kit/Facade.gd")
+const HouseFit := preload("res://tools/town_kit/HouseFit.gd")
 
 const OUT := "res://docs/plans/town/v3"
 const PX := 20  ## 칸당 px(전체 그림)
 const PLAZA_PX := 34  ## 광장 가까이 그림
-## 보통 집으로 쓸 바리에이션(탑 · 종탑 · 예배당 · 저택은 빼고 — 3/4에서는 높이가 줄지 않아 탑처럼 솟는다).
-const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house",
-	"_gallery_house", "_mansard", "_step_gable", "_workshop", "_manor"]
-const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"guild": "_guild", "temple": "_chapel", "bank": "_mansard", "inn": "_gallery_house", "shop": "_shop_house", "smithy": "_workshop"}
 const GROUND := {
 	"cobble": ["#8f8676", ["street", "house", "prop", "dais", "gate"]],
 	"slabs": ["#a39b8a", ["avenue", "paving", "bridge", "retain"]],
@@ -31,7 +25,6 @@ const GROUND := {
 	"water": ["#5a6e72", ["water"]],
 }
 
-var _tpl := {}
 var _root: Node3D
 var _town: TownMap
 
@@ -107,9 +100,7 @@ func _init() -> void:
 		_save(vp.get_texture().get_image(), "raw/%s_id.png" % s[0])
 	print("그림: %d ms · 면 %d" % [Time.get_ticks_msec() - t0, k[0]])
 	vp.queue_free()
-	for key: String in _tpl:
-		((_tpl[key] as Array)[0] as Node3D).free()
-	_tpl.clear()
+	HouseFit.clear()
 	await process_frame
 	quit(0)
 
@@ -129,20 +120,6 @@ func _ids(node: Node, n: Array) -> void:
 			m.albedo_color = Color8(k % 251, (k * 7) % 253, 40 + (k / 251) * 9)
 			(ch as MeshInstance3D).material_override = m
 		_ids(ch, n)
-
-
-func _mat(name: String, tint: Color, scale: float = 0.5) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_texture = load("res://assets/town/mat/%s.webp" % name) as Texture2D
-	m.albedo_color = tint
-	m.uv1_triplanar = true
-	m.uv1_world_triplanar = true
-	m.uv1_scale = Vector3.ONE * scale
-	m.roughness = 1.0
-	m.metallic_specular = 0.1
-	m.vertex_color_use_as_albedo = true
-	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-	return m
 
 
 ## 땅: 재질마다 한 덩어리(윗면) + 앞면 한 덩어리(마름돌). 칸 가장자리 선이 생기지 않게 재질끼리만 나눈다.
@@ -180,11 +157,11 @@ func _ground() -> void:
 			continue
 		var mi := MeshInstance3D.new()
 		mi.mesh = (tops[m] as SurfaceTool).commit()
-		mi.material_override = _mat(m if m != "stairs" else "slabs", Color((GROUND[m] as Array)[0]), 0.35)
+		mi.material_override = HouseFit.mat(m if m != "stairs" else "slabs", Color((GROUND[m] as Array)[0]), 0.35)
 		_root.add_child(mi)
 	var fm := MeshInstance3D.new()
 	fm.mesh = faces.commit()
-	fm.material_override = _mat("ashlar", Color("#9a9384"), 0.45)
+	fm.material_override = HouseFit.mat("ashlar", Color("#9a9384"), 0.45)
 	_root.add_child(fm)
 
 
@@ -195,97 +172,12 @@ func _quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, n: V
 		st.add_vertex(p)
 
 
-func _template(fn: String) -> Array:
-	if not _tpl.has(fn):
-		var holder := Node3D.new()
-		var k := Kit.new(holder, 64.0)
-		Designs.new().call(fn, k)
-		_tpl[fn] = [holder, k.lo, k.hi]
-	return _tpl[fn]
-
-
-## 집 한 채: 바닥 크기가 가장 가까운 바리에이션(시설은 정한 것) → 그 필지 크기로 늘이고 각도대로 돌려 땅 높이에 세운다.
+## 집 한 채: tools/town_kit/HouseFit(게임 집 그림 굽기와 같은 집) → 땅 높이에 세운다.
 func _house(h: Dictionary, i: int) -> int:
-	var fac := str(h.get("facility", ""))
-	if fac == "library":
-		_rotunda(h)
-		return 1
-	var size: Vector2 = h.get("size", Vector2(4, 4))
-	var ctr: Vector2 = h.get("center", Vector2.ZERO)
-	var fn := str(FAC_FNS.get(fac, ""))
-	if fn.is_empty():
-		var best: Array = []
-		for f: String in HOUSE_FNS:
-			var t: Array = _template(f)
-			var w: float = (t[2] as Vector3).x - (t[1] as Vector3).x
-			var d: float = (t[2] as Vector3).z - (t[1] as Vector3).z
-			best.append([absf(log(w / size.x)) + absf(log(d / size.y)) + 0.25 * maxf(0.0, (t[2] as Vector3).y - TALL), f])
-		best.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
-		fn = str(best[i % 3][1])
-	var tp: Array = _template(fn)
-	var lo: Vector3 = tp[1]
-	var hi: Vector3 = tp[2]
-	var sx := size.x / (hi.x - lo.x) * 1.1  # 바리에이션 크기엔 처마 · 디딤돌이 들어 있어 벽이 필지보다 작아진다 — 조금 키워 필지를 채운다
-	var sz := size.y / (hi.z - lo.z) * 1.1
-	if not fac.is_empty():  # 시설은 비율을 지킨다(신전 · 은행이 일그러지지 않게) — 더 큰 쪽에 맞춘다
-		sx = minf(sx, sz) if fac != "temple" else maxf(sx, sz) * 0.9
-		sz = sx
-	var node := (tp[0] as Node3D).duplicate() as Node3D
-	var a := float(h.get("angle", 0.0))
-	var sy := clampf(sqrt(sx * sz), 0.72, 1.25)  # 필지 크기를 따라 높이도 조금(작으면 탑처럼 솟지 않게 · 크면 큰 집답게 — CT96)
-	if fac == "temple":
-		sy = minf(sqrt(sx * sz), 1.3)
-	var basis := Basis(Vector3.UP, -a) * Basis.from_scale(Vector3(sx, sy, sz))
-	if i % 2 == 1 and fac.is_empty():
-		basis = basis * Basis.from_scale(Vector3(-1, 1, 1))
-	var mid := Vector3((lo.x + hi.x) * 0.5, 0.0, (lo.z + hi.z) * 0.5)
-	if i % 2 == 1 and fac.is_empty():
-		mid.x = -mid.x
-	node.transform = Transform3D(basis, Vector3(ctr.x, float(h.get("elev", 0.0)), ctr.y) - basis * mid)
+	var node := HouseFit.make(h, i)
+	node.position.y += float(h.get("elev", 0.0))
 	_root.add_child(node)
 	return 1
-
-
-func _rotunda(h: Dictionary) -> void:
-	var c: Array = h["circle"]
-	var at := Vector3(float(c[0]), float(h.get("elev", 0.0)), float(c[1]))
-	var r := float(c[2])
-	var wall := MeshInstance3D.new()
-	var cm := CylinderMesh.new()
-	cm.top_radius = r * 0.92
-	cm.bottom_radius = r * 0.92
-	cm.height = 5.4
-	cm.radial_segments = 48
-	wall.mesh = cm
-	wall.position = at + Vector3(0, 2.7, 0)
-	wall.material_override = _mat("ashlar", Color("#b9b0a0"), 0.5)
-	_root.add_child(wall)
-	var drum := MeshInstance3D.new()
-	var dm := CylinderMesh.new()
-	dm.top_radius = r * 0.62
-	dm.bottom_radius = r * 0.62
-	dm.height = 1.4
-	drum.mesh = dm
-	drum.position = at + Vector3(0, 6.1, 0)
-	drum.material_override = _mat("plaster", Color("#c8bea8"), 0.5)
-	_root.add_child(drum)
-	var dome := MeshInstance3D.new()
-	var sm := SphereMesh.new()
-	sm.radius = r * 0.66
-	sm.height = r * 0.66
-	sm.is_hemisphere = true
-	sm.radial_segments = 48
-	dome.mesh = sm
-	dome.position = at + Vector3(0, 6.8, 0)
-	dome.material_override = _mat("lead", Color("#6a7480"), 0.6)
-	_root.add_child(dome)
-	var door := MeshInstance3D.new()
-	var bm := BoxMesh.new()
-	bm.size = Vector3(1.2, 1.9, 0.3)
-	door.mesh = bm
-	door.position = at + Vector3(0, 0.95, r * 0.92)
-	door.material_override = _mat("wood", Color("#4a3426"), 0.8)
-	_root.add_child(door)
 
 
 ## 소품: 가로등 · 천막 · 공시판 · 우물 · 묘비 · 상자(노점).
@@ -337,7 +229,7 @@ func _dais() -> void:
 		cm.radial_segments = 48
 		mi.mesh = cm
 		mi.position = Vector3(c.x, h + 0.15 + 0.3 * i, c.y)
-		mi.material_override = _mat("slabs", Color("#a9a08c"), 0.5)
+		mi.material_override = HouseFit.mat("slabs", Color("#a9a08c"), 0.5)
 		_root.add_child(mi)
 	var ring := MeshInstance3D.new()
 	var tm := TorusMesh.new()
@@ -347,7 +239,7 @@ func _dais() -> void:
 	ring.mesh = tm
 	ring.position = Vector3(c.x, h + 0.9 + 1.95, c.y)
 	ring.rotation_degrees = Vector3(90, 0, 0)
-	ring.material_override = _mat("ashlar", Color("#9a9384"), 1.2)
+	ring.material_override = HouseFit.mat("ashlar", Color("#9a9384"), 1.2)
 	_root.add_child(ring)
 
 
