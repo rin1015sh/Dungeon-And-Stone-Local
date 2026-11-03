@@ -178,5 +178,5 @@ func test_ground_and_props_are_baked() -> void:
 	assert_true(right >= t.width * 32 - 1 and bottom >= t.height * 32 - 1, "바닥이 지도를 다 덮는다")
 	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais",
 			"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods",  # 장식(CT101)
-			"sign", "walllamp", "wagon", "rail", "boat", "household"]:  # 생활 소품(CT103)
+			"sign", "walllamp", "wagon", "rail", "boat", "household", "anvil"]:  # 생활 소품(CT103) · 모루(CT105)
 		assert_true(ResourceLoader.exists("res://assets/town/props/%s.webp" % k), "소품 그림 " + k)

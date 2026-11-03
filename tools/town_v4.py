@@ -526,6 +526,10 @@ def life(t: City):
 			t.spot("tree", cx, cz - 1.2, 1.0, 1.0)
 		near(t, "bench", cx, cz + 1.4, 2.0, 0.8)
 		near(t, "planter", cx + 1.5, cz + 0.2, 0.9, 0.9)
+	for h in t.p.houses:  # 대장간 문 옆 모루(CT105)
+		if h.get("facility") == "smithy":
+			(fx, fz), (w, _d) = h["front_c"], h["wd"]
+			near(t, "anvil", fx + w / 2 - 1.3, fz + 1.1, 0.9, 0.9)
 	# 포장마차: 서문 길 · 둑길 창고 앞 · 아랫길
 	near(t, "wagon", -22.5, -23.0, 2.6, 1.0)
 	near(t, "wagon", 29.5, 18.6, 2.6, 1.0)

@@ -10,22 +10,22 @@ const Designs := preload("res://tools/town_kit/Designs2.gd")  # Designs + 3차 �
 const Mat := preload("res://tools/city_art/Mat.gd")
 
 ## 보통 집으로 쓸 바리에이션(탑 · 종탑 · 예배당은 빼고 — 3/4에서는 높이가 줄지 않아 탑처럼 솟는다).
-const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house",
+const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house2",
 	"_gallery_house", "_mansard", "_step_gable", "_workshop", "_manor"]
 ## 구역마다 고르는 바리에이션(사용자 3차 개선 "구역별 건축물 차별화", CT103): 윗단 행정 · 종교 = 큰 석조, 광장 · 시장 = 가게 · 차양,
 ## 좌우 주거 = 반목조 주택 · 작은 공방, 강변 = 창고 · 공방. 이웃(집 번호가 하나 차이)은 늘 다른 바리에이션(i % 3).
 const ZONE_FNS := {
 	"civic": ["_mansard", "_manor", "_tall_hip", "_step_gable"],
-	"market": ["_shop_house", "_corner_shop", "_gallery_house", "_arch_house", "_eaves_dormers"],
+	"market": ["_shop_house2", "_corner_shop", "_gallery_house", "_arch_house", "_eaves_dormers"],
 	"res": ["_narrow_jetty", "_row_timber", "_eaves_dormers", "_cross_gable", "_gallery_house", "_arch_house", "_workshop"],
 	"river": ["_warehouse", "_workshop", "_row_timber", "_eaves_dormers"],
 }
 const ZONE_ROOF := {"civic": ["grey", "dark", "grey"], "market": ["red", "brown", "red", "dark"], "res": ["brown", "dark", "brown", "red", "brown"],
 	"river": ["dark", "grey", "brown"]}
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_inn", "shop": "_shop_house", "smithy": "_workshop"}
+const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_inn", "shop": "_shop_house2", "smithy": "_smithy"}
 ## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
-const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house", "pawnshop": "_shop_house", "guard_post": "_mansard",
+const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house2", "pawnshop": "_shop_house2", "guard_post": "_mansard",
 	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_warehouse", "gate": "_tall_hip"}
 ## 지붕 기운(어두운 갈색 밑색 Facade.ROOF에 곱한다 — 예전 색감 안에서만 조금씩: 갈색 · 붉은 갈색 · 잿빛 · 짙은 갈색, CT99).
 const ROOF_TINTS := {"brown": Color(1.0, 1.0, 1.0), "red": Color(1.12, 0.92, 0.84), "grey": Color(0.9, 0.96, 1.06), "dark": Color(0.82, 0.8, 0.78),

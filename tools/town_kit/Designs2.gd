@@ -9,6 +9,7 @@ const F2 := preload("res://tools/town_kit/Facade.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
+const Deco3D := preload("res://tools/town_kit/Deco3D.gd")
 
 
 static func _cathedral(k: Kit) -> void:
@@ -81,8 +82,7 @@ static func _corner_shop(k: Kit) -> void:
 		{"style": "stone", "floors": 1, "base": 0.2, "shop": true, "door": 0.15, "sign": "bag", "ci": 1},
 		{"style": "timber", "floors": 1, "jetty": 0.18, "ci": 0, "shutters": true}])
 	gable(k, r, true, 0.95, 0, "timber")
-	var y := F2.storey * 0.96
-	k.face(PackedVector3Array([Vector3(-2.8, y, 2.0), Vector3(2.8, y, 2.0), Vector3(2.8, y - 0.3, 2.75), Vector3(-2.8, y - 0.3, 2.75)]), Vector3(0, 1, 0.4), F2.awning())
+	awning(k, -2.8, 2.8, 2.0, -2.8 + F2.door_x(5.6, 0.15))
 	var yb := F2.storey + 0.2
 	k.box(-2.0, 2.18, 0.4, 2.8, yb, yb + 0.1, {"top": F2.plain("wood")}, F2.plain("wood"))  # 2층 발코니
 	k.face(PackedVector3Array([Vector3(-2.0, yb + 0.1, 2.8), Vector3(0.4, yb + 0.1, 2.8), Vector3(0.4, yb + 0.5, 2.8), Vector3(-2.0, yb + 0.5, 2.8)]), Vector3(0, 0, 1), F2.gallery())
@@ -158,3 +158,43 @@ static func _inn(k: Kit) -> void:
 		k.box(x - 0.07, 2.96, x + 0.07, 3.1, 0.0, y - 0.12, {}, F2.plain("wood"))
 	chimney(k, -3.8, -1.2, r[4], r[4] + rise + 0.6)
 	chimney(k, 3.8, -1.2, r[4], r[4] + rise + 0.6)
+
+
+
+## 차양(문 위는 비운다 — 3/4에서 차양이 문을 가리지 않게, 사용자 2026-11-03 "잡화점 천막 때문에 문이 안 보임", CT105): x0~x1 벽 앞 z, 문 가운데 door.
+static func awning(k: Kit, x0: float, x1: float, z: float, door: float) -> void:
+	var y := F2.storey * 1.02
+	for seg: Vector2 in [Vector2(x0, door - 0.7), Vector2(door + 0.7, x1)]:
+		if seg.y - seg.x < 0.6:
+			continue
+		k.face(PackedVector3Array([Vector3(seg.x, y, z), Vector3(seg.y, y, z), Vector3(seg.y, y - 0.18, z + 0.55), Vector3(seg.x, y - 0.18, z + 0.55)]), Vector3(0, 1, 0.4), F2.awning())
+
+
+## 가게집(잡화점 · 시장 가게 — Designs._shop_house를 차양만 고쳐서): 문 위 차양을 비운다.
+static func _shop_house2(k: Kit) -> void:
+	var r := stack(k, -2.2, -2.0, 2.2, 2.0, 0.0, [{"style": "plaster", "floors": 1, "base": 0.15, "shop": true, "door": 0.99, "sign": "bag", "ci": 3}, {"style": "timber", "floors": 2, "jetty": 0.2, "ci": 3, "flowers": true}])
+	gable(k, r, false, 1.45, 2, "timber")
+	awning(k, -2.2, 2.2, 2.0, -2.2 + F2.door_x(4.4, 0.99))
+
+
+## 대장간(CT105 — 사용자 "대장간 연기랑 모루"): 돌 공방 + 열린 화덕 아치(불빛) + 큰 벽돌 굴뚝 · 굴뚝 연기 덩이 + 옆 외쪽지붕 작업 처마.
+static func _smithy(k: Kit) -> void:
+	k.box(-2.4, -1.8, 2.0, 1.8, 0.0, F2.storey + 0.3, {"s": F2.wall({"style": "stone", "floors": 1, "base": 0.25, "door": 0.25, "arch": true, "ci": 2, "lit": 1.0})},
+		F2.wall({"style": "stone", "floors": 1, "base": 0.25, "ci": 1}))
+	step(k, -2.4 + F2.door_x(4.4, 0.25), 1.8, 0.0)
+	k.shed_roof(-2.4, -1.8, 2.0, 1.8, F2.storey + 0.3, F2.storey + 1.4, 0.25, F2.roof(3), F2.plain("wood"))
+	# 옆 작업 처마(기둥 둘 · 낮은 외쪽지붕)
+	for z: float in [-1.4, 1.5]:
+		k.box(3.25, z - 0.07, 3.39, z + 0.07, 0.0, F2.storey * 0.95, {}, F2.plain("wood"))
+	k.shed_roof(2.0, -1.6, 3.5, 1.7, F2.storey * 0.95, F2.storey + 0.3, 0.1, F2.roof(3, true), F2.plain("wood"))
+	# 큰 굴뚝 + 연기(잿빛 덩이 셋이 비스듬히 오른다)
+	var cy := F2.storey + 3.2
+	k.box(0.6, -1.3, 1.5, -0.4, 0.0, cy, {"top": F2.plain("dark")}, F2.plain("brick"))
+	k.box(0.5, -1.4, 1.6, -0.3, cy, cy + 0.2, {"top": F2.plain("dark")}, F2.plain("stone", 1))
+	var smoke := func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
+		p.fill_poly(poly, p.flat(Color("#8c8882"), 0.1))
+	for i in 4:
+		Deco3D.blob(k, Vector3(1.05 + i * 0.55, cy + 0.6 + i * 0.85, -0.85 - i * 0.15), Vector3(0.5 + i * 0.16, 0.4 + i * 0.1, 0.45 + i * 0.12), smoke, 8, 4)
+	# 화덕 불빛(열린 아치 안 아래쪽 — 벌건 숯불)
+	var ax := -2.4 + 4.4 * 2.5 / 4.0
+	k.face(PackedVector3Array([Vector3(ax - 0.36, 0.05, 1.82), Vector3(ax + 0.36, 0.05, 1.82), Vector3(ax + 0.36, 0.55, 1.82), Vector3(ax - 0.36, 0.55, 1.82)]), Vector3(0, 0, 1), Deco3D.Props3D.glow())

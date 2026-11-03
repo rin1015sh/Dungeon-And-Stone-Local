@@ -10,7 +10,7 @@ const Ink := preload("res://tools/city_art/Ink.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
 
 const KINDS := ["tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods",
-	"sign", "walllamp", "wagon", "rail", "boat", "household"]  # 3차 개선(CT103): 가게 간판 · 벽 등불 · 포장마차 · 부두 난간 · 거룻배 · 골목 살림
+	"sign", "walllamp", "wagon", "rail", "boat", "household", "anvil"]  # 3차 개선(CT103): 가게 간판 · 벽 등불 · 포장마차 · 부두 난간 · 거룻배 · 골목 살림
 const BARK := Color("#4a3628")
 const LEAF := [Color("#3c4a2a"), Color("#46532e"), Color("#36422a"), Color("#4e5a32")]
 const BRONZE := Color("#4c5a4a")
@@ -36,6 +36,7 @@ static func build(kind: String, k: Kit) -> void:
 		"rail": _rail(k)
 		"boat": _boat(k)
 		"household": _household(k)
+		"anvil": _anvil(k)
 
 
 ## 잎 붓: 짙은 초록 잎 무늬(먹선 없이 — 덩이 둘레만 손그림 마감이 긋는다).
@@ -234,3 +235,16 @@ static func _household(k: Kit) -> void:
 	k.box(-0.02, -0.24, 0.16, -0.12, 0.0, 0.35, {}, Props3D.paint(Color("#a08a5a"), "vwood", 0.8))  # 빗자루 솔
 	Props3D.cyl(k, 0.45, 0.1, 0.22, 0.0, 0.3, Props3D.paint(Color("#8a7048"), "rubble", 0.8), Props3D.paint(Color("#6a5236")), 10)  # 바구니
 	Props3D._crate(k, 0.1, 0.32, 0.4)
+
+
+
+## 모루(대장간 앞 — CT105): 나무 그루터기 받침 + 쇠 모루(받침 · 허리 · 윗면 · 뿔) + 얹은 망치.
+static func _anvil(k: Kit) -> void:
+	Props3D.cyl(k, 0.0, 0.0, 0.3, 0.0, 0.45, Props3D.paint(Color("#5a4232"), "vwood"), Props3D.paint(Color("#7a5e40")), 12)
+	var iron := Props3D.paint(Color("#2e2a28"), "", 1.2)
+	k.box(-0.24, -0.15, 0.24, 0.15, 0.45, 0.55, {"top": iron}, iron)
+	k.box(-0.13, -0.1, 0.13, 0.1, 0.55, 0.7, {}, iron)
+	k.box(-0.36, -0.14, 0.3, 0.14, 0.7, 0.86, {"top": Props3D.paint(Color("#4a4642"), "", 1.2)}, iron)
+	k.box(0.3, -0.07, 0.52, 0.07, 0.74, 0.84, {"top": iron}, iron)  # 뿔
+	k.box(-0.3, 0.02, 0.05, 0.06, 0.86, 0.9, {}, Props3D.paint(Props3D.WOOD))  # 망치 자루
+	k.box(-0.36, -0.03, -0.24, 0.11, 0.86, 0.98, {"top": iron}, iron)  # 망치 머리
