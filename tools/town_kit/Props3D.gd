@@ -227,7 +227,7 @@ static func _laundry(k: Kit) -> void:
 
 static func _dais(k: Kit) -> void:
 	for i in 3:  # 세 단 돌 단
-		cyl(k, 0.0, 0.0, 3.4 - 0.65 * i, 0.3 * i, 0.3 * (i + 1), paint(STONE.darkened(0.05 * i), "stone"), paint(Color("#a9a08c").darkened(0.06 * i), "rubble"), 32)
+		cyl(k, 0.0, 0.0, 3.4 - 0.65 * i, 0.3 * i, 0.3 * (i + 1), paint(STONE.darkened(0.12 + 0.05 * i), "stone"), paint(Color("#857d6c").darkened(0.05 * i), "rubble"), 32)  # 어두운 바닥에 맞춰(CT101)
 	var y0 := 0.9
 	var r1 := 1.95
 	var r0 := 1.5

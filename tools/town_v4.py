@@ -91,7 +91,7 @@ def split(L, target, r, lo=0.82, hi=1.18):
 class City(Town):
 	def __init__(self):
 		super().__init__("district", "7구역 v4 · 블록 도시", "80 × 110칸 · 둘레 줄집 블록 · 옛길을 따라 비튼 동네 둘", 4)
-		self.blocks: list = []  # (Blk, 안뜰 다각형 또는 None)
+		self.blocks: list = []  # (Blk, 안뜰 다각형 또는 None, 골목이 뚫렸나)
 		self.gates: list = []  # (id, (x0, z0, x1, z1))
 		self.start = (0.5, -12.5)
 
@@ -206,7 +206,7 @@ class City(Town):
 					self.p.yards.append(court)
 				elif inner == "paving":
 					self.p.pavings.append(court)
-		self.blocks.append((b, court))
+		self.blocks.append((b, court, alley is not None))
 		return b
 
 
@@ -311,11 +311,13 @@ def plan_v4():
 
 def dress(t: City):
 	"""거리 소품: 블록 남쪽 줄 앞 9칸마다 가로등 · 광장 · 시장 · 시설 문 옆 · 뒷마당 빨래."""
-	for b, _court in t.blocks:
+	for b, _court, _open in t.blocks:
 		a, u, inn, L, _yaw = b.frame("s")
 		k = 3.0
 		while k < L - 1.5:
-			t.spot("lamp", a[0] + u[0] * k - inn[0] * 0.75, a[1] + u[1] * k - inn[1] * 0.75, 0.8, 0.8)
+			for dk in (0.0, 1.0, -1.0, 2.0, -2.0, 3.0):  # 문 앞을 비켜 옆 집 경계 쪽으로
+				if t.spot("lamp", a[0] + u[0] * (k + dk) - inn[0] * 1.15, a[1] + u[1] * (k + dk) - inn[1] * 1.15, 0.8, 0.8):
+					break
 			k += 9.0
 	if t.spot("well", -6.5, -18.0, 1.6, 1.6):
 		t.mark(14, -6.5, -18.0)
@@ -339,20 +341,91 @@ def dress(t: City):
 				"bank": ("planter", "planter"), "temple": ("planter", "planter")}.get(fid, {11: ("barrel", "barrel"), 13: ("planter", "crate"), 19: ("crate", "crate"), 21: ("cart", "crate")}.get(num, ("crate", "barrel")))
 		for sgn, kind in zip((-1, 1), kinds):
 			for along in (w / 2 - 0.7, w / 2 - 1.6):
-				x = fx + ux * along * sgn + nx * 0.75
-				z = fz + uz * along * sgn + nz * 0.75
+				x = fx + ux * along * sgn + nx * 1.1
+				z = fz + uz * along * sgn + nz * 1.1
 				if t.spot(kind, x, z, 1.8 if kind == "cart" else 0.9, 0.9):
 					break
-	t.spot("cart", -33.5, -21.2, 1.8, 0.9)
+	t.spot("cart", -27.5, -21.2, 1.8, 0.9)
 	t.spot("barrel", -3.4, 18.0, 0.9, 0.9)
-	n = 0
-	for b, court in t.blocks:
-		if court is None or n >= 7:
+	deco(t)
+
+
+def clear(t: City, x, z, r) -> bool:
+	"""(x, z) 둘레 r칸이 집 · 소품 · 문 앞이 아닌가(나무 · 석상처럼 그림이 넓은 소품)."""
+	pm = t.pmask([(x - r, z - r), (x + r, z - r), (x + r, z + r), (x - r, z + r)])
+	return pm.any() and not (t.mask[pm] >= 2).any() and not (pm & t.door).any()
+
+
+def near(t: City, kind, x, z, w, d) -> bool:
+	"""그 자리가 막혔으면 반 칸 · 한 칸 옆으로 비켜 놓는다."""
+	for dx, dz in ((0, 0), (0.5, 0), (-0.5, 0), (0, 0.5), (0, -0.5), (1, 0), (-1, 0), (0, 1), (0, -1), (1.5, 0), (-1.5, 0)):
+		if t.spot(kind, x + dx, z + dz, w, d):
+			return True
+	return False
+
+
+def deco(t: City):
+	"""도시 장식(사용자 2026-11-03 "도시에 있을 법한 장식 요소", CT101): 안뜰 나무 · 덤불 · 장작 · 빨래, 신전 앞뜰 석상 · 깃발,
+	도서관 뜰 · 묘지 · 둑길 나무, 성문 이정표 · 물구유, 광장 깃발 · 돌말뚝, 둑길 돌말뚝 · 짐더미. 걷는 길 가운데는 비운다."""
+	def tree(x, z, r=1.1):
+		if clear(t, x, z, r):
+			return t.spot("tree", x, z, 1.0, 1.0)
+		return t.spot("bush", x, z, 1.0, 1.0) if clear(t, x, z, 0.6) else False
+
+	# 블록 안뜰: 골목이 뚫린 마당 = 빨래 · 장작, 막힌 정원 = 나무 · 덤불
+	for b, court, opened in t.blocks:
+		if court is None:
 			continue
 		cx = sum(q[0] for q in court) / 4
 		cz = sum(q[1] for q in court) / 4
-		if t.spot("laundry", cx, cz, 2.4, 0.8):
-			n += 1
+		if opened:
+			near(t, "laundry", cx, cz - 0.6, 2.4, 0.8)
+			near(t, "woodpile", cx + 2.6, cz + 0.8, 1.8, 0.8)
+		else:
+			if not tree(cx, cz):
+				t.spot("laundry", cx, cz, 2.4, 0.8)
+			for q in court:  # 귀퉁이 덤불
+				bx, bz = cx + (q[0] - cx) * 0.6, cz + (q[1] - cz) * 0.6
+				if clear(t, bx, bz, 0.6):
+					t.spot("bush", bx, bz, 1.0, 1.0)
+	# 신전 앞뜰: 석상 둘 · 신전 문 양옆 깃발
+	for x in (-4.6, 4.6):
+		if clear(t, x, -50.0, 0.9):
+			t.spot("statue", x, -50.0, 1.5, 1.5)
+		near(t, "banner", x * 1.45, -58.6, 0.8, 0.8)
+	# 도서관 뜰 · 묘지 나무
+	for x, z in ((20.6, -61.6), (35.8, -61.6), (20.6, -71.2), (35.8, -71.2), (-36.0, -61.6), (-26.4, -71.4), (-26.4, -61.8)):
+		tree(x, z, 0.9)
+	for x, z in ((22.0, -64.0), (34.4, -64.0), (-36.2, -66.5)):
+		t.spot("bush", x, z, 1.0, 1.0)
+	# 성문: 이정표 · 물구유
+	t.spot("signpost", -31.2, -24.6, 0.8, 0.8)
+	t.spot("trough", -35.6, -21.0, 1.8, 0.8)
+	t.spot("signpost", 19.3, -58.6, 0.8, 0.8)
+	t.spot("trough", 17.6, -70.8, 0.8, 1.8)
+	# 광장: 네 귀 깃발 · 시장 계단 위 돌말뚝
+	for x, z in ((-11.7, -30.2), (11.7, -30.2), (-11.7, -12.2), (11.7, -12.2)):
+		near(t, "banner", x, z, 0.8, 0.8)
+	for x in (-3.6, 3.6):
+		t.spot("bollard", x, -11.4, 0.7, 0.7)
+	# 계단 머리 이정표
+	for x, z in ((-17.6, -44.0), (24.6, -44.0), (28.4, -10.0), (-10.6, 6.4)):
+		t.spot("signpost", x, z, 0.8, 0.8)
+	# 시장 귀 짐더미 · 대장간 장작
+	for x, z in ((-7.8, 3.6), (7.8, 3.6)):
+		t.spot("goods", x, z, 1.6, 1.0)
+	for x, z in ((5.0, 17.6), (-21.5, -66.4), (-30.0, 10.4), (-6.0, 10.6), (12.0, -0.6)):  # 장작더미(대장간 앞 · 안뜰)
+		near(t, "woodpile", x, z, 1.8, 0.8)
+	near(t, "laundry", -25.5, 19.6, 2.4, 0.8)  # 빨래터(수로 돌계단 옆)
+	near(t, "laundry", -34.5, -29.0, 2.4, 0.8)  # 은행 블록 뒷마당(골목 안)
+	# 둑길: 물가 돌말뚝 · 나무 · 창고 앞 짐더미
+	for x in range(-36, 38, 6):
+		if abs(x) > 3:
+			t.spot("bollard", x + 0.5, 21.0, 0.7, 0.7)
+	for x in (-31.0, -15.0, 13.0, 31.5):
+		tree(x, 19.6, 0.9)
+	for x, z in ((21.5, 17.6), (36.6, 17.6), (-20.0, 17.6)):
+		t.spot("goods", x, z, 1.6, 1.0)
 
 
 def main():

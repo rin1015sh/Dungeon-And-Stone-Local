@@ -6,7 +6,8 @@ extends RefCounted
 
 const AREA_KINDS := ["street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "water", "retain", "wall", "gate", "dais"]
 const STYLES := ["gothic", "rotunda", "hall", "stone", "inn", "arcade", "workshop"]
-const PROPS := ["lamp", "tent", "board", "barrel", "crate", "sacks", "well", "grave", "stall", "cart", "bench", "planter", "fountain", "laundry"]
+const PROPS := ["lamp", "tent", "board", "barrel", "crate", "sacks", "well", "grave", "stall", "cart", "bench", "planter", "fountain", "laundry",
+	"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods"]  # 장식(CT101)
 
 
 static func run(v: ValidatorBase) -> void:

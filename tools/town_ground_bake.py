@@ -1,15 +1,19 @@
-"""동네 바닥을 한 장으로 굽는다(사용자 2026-11-03 "바닥 타일 전체적으로 교체 · 지금처럼 단순 격자 말고", CT99).
+"""동네 바닥을 한 장으로 굽는다(CT99 → CT101 사용자 2026-11-03 "도시랑 건물 텍스처가 부조화 — 바닥 · 배경 텍스처 다시, 조금 더 어둡게,
+건물 그림체처럼 세밀하게, 도시에 있을 법한 장식 요소도").
   godot --headless --path . --script res://tools/town_cells.gd   (칸 정보 → user://town_cells.json)
-  python3 tools/town_ground_bake.py                               (→ assets/town/ground/g<cx>_<cy>.webp + index.json)
-칸마다 같은 무늬를 찍지 않는다 — data/town 지도의 곡선 · 다각형(굽은 길 · 원 광장 · 다각형 마당)을 칸당 32px로 그려 재질을 입힌다:
-  자갈길 = 크기가 제각각인 둥근 돌(보로노이) · 큰길 · 시설 앞 · 다리 = 불규칙한 판석 · 광장 = 동심원으로 깐 판석 · 흙마당 = 얼룩 흙 + 잔돌 ·
-  정원 = 풀 · 덤불 · 물 = 잔물결 · 계단 = 판석 + 단마다 앞면. 그다음 단 높이만큼 3/4로 올려(화면 y = 남쪽 깊이 − 높이) 옹벽 · 둑 앞면에
-  마름돌을 쌓고, 손그림 마감(tools/town_handdrawn.finish — 재질이 바뀌는 곳에 먹선)을 한 뒤 512px 조각으로 자른다.
-색은 예전 바닥 색(render.json city.town.colors — 사용자 "전체적 색감이 예전이 나은 것 같은데").
+  python3 tools/town_ground_bake.py [--preview]                   (→ assets/town/ground/g<cx>_<cy>.webp + index.json)
+칸마다 같은 무늬를 찍지 않는다 — data/town 지도의 곡선 · 다각형을 칸당 32px로 그려 재질을 입힌다. 집 그림(손그림 집 키트)과 같은 그림체로:
+  돌마다 먹선(굵기가 흔들리고 가끔 끊긴다) · 왼쪽 위가 밝고 오른쪽 아래가 어두운 돌 · 어두운 곳은 펜 빗금(town_handdrawn.finish) · 줄눈에 흙 · 이끼.
+  자갈길 = 크기가 제각각인 둥근 돌 · 큰길 · 시설 앞 · 계단 · 다리 = 엇갈려 깐 네모 판석 · 광장 = 동심원 판석 · 흙마당 = 얼룩 흙 + 잔돌 · 지푸라기 ·
+  정원 = 풀 붓질 + 덤불(먹선) + 꽃 · 물 = 어두운 물 + 물결 줄.
+  바닥 장식: 집 · 옹벽 밑 그늘과 때 · 벽 밑 잡초 · 큰길 가운데 배수 도랑과 쇠살대 · 하수도 맨홀(입구 자리) · 웅덩이 · 금 · 지푸라기 · 낙엽.
+  그다음 단 높이만큼 3/4로 올려(화면 y = 남쪽 깊이 − 높이) 옹벽 · 둑 앞면에 마름돌(먹선 줄눈)을 쌓고, 손그림 마감을 한 뒤 512px 조각으로 자른다.
+색은 render.json city.town.colors를 더 어둡게(SHADE) — 집 그림의 어두운 갈색 지붕 · 바랜 회벽과 어울리게.
 """
 import json
 import math
 import os
+import random
 import sys
 
 import numpy as np
@@ -25,6 +29,9 @@ PX = 32
 CHUNK = 512
 KINDS = ["void", "street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "court", "water", "retain", "wall", "gate", "dais", "house", "prop"]
 K = {k: i for i, k in enumerate(KINDS)}
+SHADE = 0.8  # 바닥 전체 밝기(예전 1.1 언저리 → 어둡게, CT101)
+MORTAR = np.array([0.15, 0.13, 0.11], np.float32)
+MOSS = np.array([0.24, 0.27, 0.16], np.float32)
 
 
 def hexc(s):
@@ -34,18 +41,20 @@ def hexc(s):
 
 def hash2(i, j, seed):
     """정수 격자 → 0~1(같은 자리는 늘 같은 값)."""
-    h = (i.astype(np.int64) * 374761393 + j.astype(np.int64) * 668265263 + seed * 2246822519) & 0xFFFFFFFF
+    h = (np.asarray(i).astype(np.int64) * 374761393 + np.asarray(j).astype(np.int64) * 668265263 + seed * 2246822519) & 0xFFFFFFFF
     h = ((h ^ (h >> 13)) * 1274126177) & 0xFFFFFFFF
     return ((h ^ (h >> 16)) & 0xFFFF).astype(np.float32) / 65535.0
 
 
 def voronoi(xs, ys, cell, seed, jitter=0.85):
-    """세계 px 좌표(xs, ys)에서 흔들린 격자점 보로노이: (가까운 점과의 거리, 둘째와의 차 = 줄눈까지, 돌 번호)."""
+    """흔들린 격자점 보로노이: (가까운 점까지, 줄눈까지(근사), 돌 번호, 돌 가운데에서 본 x · y)."""
     gx, gy = xs / cell, ys / cell
     ix, iy = np.floor(gx).astype(np.int64), np.floor(gy).astype(np.int64)
     f1 = np.full(xs.shape, 1e9, np.float32)
     f2 = np.full(xs.shape, 1e9, np.float32)
     cid = np.zeros(xs.shape, np.int64)
+    ox = np.zeros(xs.shape, np.float32)
+    oy = np.zeros(xs.shape, np.float32)
     for dy in (-1, 0, 1):
         for dx in (-1, 0, 1):
             cx, cy = ix + dx, iy + dy
@@ -55,8 +64,10 @@ def voronoi(xs, ys, cell, seed, jitter=0.85):
             closer = d < f1
             f2 = np.where(closer, f1, np.minimum(f2, d))
             cid = np.where(closer, cx * 100003 + cy, cid)
+            ox = np.where(closer, (gx - px) * cell, ox)
+            oy = np.where(closer, (gy - py) * cell, oy)
             f1 = np.where(closer, d, f1)
-    return f1 * cell, (f2 - f1) * cell, cid
+    return f1 * cell, (f2 - f1) * cell * 0.5, cid, ox, oy
 
 
 def noise(xs, ys, scale, seed):
@@ -79,71 +90,266 @@ def fbm(xs, ys, scale, seed, oct=3):
     return v / t
 
 
-def stones(xs, ys, base, cell, seed, mortar, gap=1.6, dome=0.22, var=0.16):
-    """돌 깐 바닥: 돌마다 밝기 · 색 조금씩 · 돌 가운데가 볼록(왼쪽 위가 밝다) · 줄눈."""
-    f1, edge, cid = voronoi(xs, ys, cell, seed)
+def ink_line(xs, ys, edge, width, seed, strength=0.7):
+    """줄눈 · 테두리 먹선: 굵기가 흔들리고(펜 눌림) 가끔 끊긴다."""
+    w = width * (0.7 + 0.6 * noise(xs, ys, 9, seed))
+    a = np.clip((w - edge) / 0.7, 0, 1)
+    gaps = noise(xs, ys, 13, seed + 1) > 0.18
+    return a * strength * (0.75 + 0.25 * noise(xs, ys, 5, seed + 2)) * gaps
+
+
+def stone_fill(xs, ys, base, cid, lit, seed, var):
+    """돌 한 장의 색: 돌마다 밝기 · 따뜻함, 왼쪽 위 밝게, 잔 구멍 · 얼룩."""
     tone = 1.0 + (hash2(cid, cid * 7, seed + 3) - 0.5) * 2 * var
-    warm = (hash2(cid, cid * 3, seed + 5) - 0.5) * 0.06
+    warm = (hash2(cid, cid * 3, seed + 5) - 0.5) * 0.07
     col = base[None, None, :] * tone[..., None]
     col[..., 0] += warm
-    col[..., 2] -= warm
-    shade = 1.0 + dome * (1.0 - np.clip(f1 / (cell * 0.55), 0, 1)) - 0.06
-    col = col * shade[..., None]
-    grain = (fbm(xs, ys, 6, seed + 11, 2) - 0.5) * 0.12
-    col = col * (1.0 + grain[..., None])
-    m = np.clip((gap - edge) / gap, 0, 1)
-    col = col * (1 - m[..., None]) + mortar[None, None, :] * m[..., None]
+    col[..., 2] -= warm * 0.8
+    col = col * (1.0 + 0.2 * lit)[..., None]
+    pits = noise(xs, ys, 2.2, seed + 9) < 0.12
+    col[pits] *= 0.78
+    stain = fbm(xs, ys, 30, seed + 13, 3)
+    col = col * (0.86 + 0.24 * stain)[..., None]
     return col
 
 
-def plaza_stones(xs, ys, cx, cy, base, mortar):
-    """광장: 가운데를 둘러 동심원으로 깐 판석."""
+def mortar(xs, ys, seed, moss):
+    m = np.broadcast_to(MORTAR, xs.shape + (3,)).copy()
+    green = fbm(xs, ys, 26, seed + 17, 2) > 0.8 - moss
+    m[green] = MOSS
+    return m
+
+
+def cobbles(xs, ys, base, cell, seed, moss=0.12, var=0.18):
+    """자갈길: 크기가 제각각인 둥근 돌 · 먹선 줄눈 · 줄눈에 흙 · 이끼."""
+    f1, edge, cid, ox, oy = voronoi(xs, ys, cell, seed)
+    r = cell * 0.55
+    lit = np.clip(-(ox + oy) * 0.7 / r, -1, 1)
+    col = stone_fill(xs, ys, base, cid, lit, seed, var)
+    rim = np.clip(1.0 - edge / 2.6, 0, 1) * (lit < 0.2)  # 아래 · 오른쪽 둘레 그늘
+    col = col * (1.0 - 0.3 * rim)[..., None]
+    gap = 0.7 + 0.5 * noise(xs, ys, 7, seed + 21)
+    m = edge < gap
+    col[m] = mortar(xs, ys, seed, moss)[m]
+    ink = ink_line(xs, ys, edge, 0.8, seed + 30, 0.5)
+    return col, ink
+
+
+def slabs(xs, ys, base, rh, lmin, lmax, seed, var=0.12, moss=0.1):
+    """판석: 엇갈려 깐 네모 돌(줄마다 길이가 다르다) — 귀퉁이가 조금 닳고 금이 간다."""
+    row = np.floor(ys / rh).astype(np.int64)
+    L = lmin + hash2(row, row * 3, seed + 1) * (lmax - lmin)
+    off = hash2(row, row, seed) * L
+    u = (xs + off) / L
+    ci = np.floor(u).astype(np.int64)
+    cid = row * 100003 + ci
+    fu, fv = u - ci, ys / rh - row
+    jit = (noise(xs, ys, 6, seed + 4) - 0.5) * 1.4
+    edge = np.minimum(np.minimum(fu, 1 - fu) * L, np.minimum(fv, 1 - fv) * rh) + jit
+    lit = np.clip(-((fu - 0.5) * 1.2 + (fv - 0.5) * 1.2), -1, 1)
+    col = stone_fill(xs, ys, base, cid, lit * 0.6, seed, var)
+    rim = np.clip(1.0 - edge / 2.4, 0, 1) * ((fu > 0.5) | (fv > 0.5))
+    col = col * (1.0 - 0.28 * rim)[..., None]
+    m = edge < 0.7
+    col[m] = mortar(xs, ys, seed, moss)[m]
+    ink = ink_line(xs, ys, edge, 0.85, seed + 30, 0.48)
+    return col, ink
+
+
+def plaza_stones(xs, ys, cx, cy, base):
+    """광장: 가운데를 둘러 동심원으로 깐 판석(먹선 줄눈)."""
     r = np.hypot(xs - cx, ys - cy)
     ring = np.floor(r / 22.0)
     a = np.arctan2(ys - cy, xs - cx)
     n = np.maximum(6, np.floor(2 * np.pi * (ring + 0.5) * 22.0 / 30.0))
-    seg = np.floor((a + np.pi + ring * 0.37) / (2 * np.pi) * n)
+    t = (a + np.pi + ring * 0.37) / (2 * np.pi) * n
+    seg = np.floor(t)
     cid = (ring * 1000 + seg).astype(np.int64)
-    tone = 1.0 + (hash2(cid, cid * 5, 41) - 0.5) * 0.24
-    col = base[None, None, :] * tone[..., None]
     er = np.minimum(r - ring * 22.0, (ring + 1) * 22.0 - r)
-    ea = np.abs(((a + np.pi + ring * 0.37) / (2 * np.pi) * n) - seg - 0.5)
-    ea = (0.5 - ea) * 2 * np.pi * np.maximum(r, 1) / n
-    e = np.minimum(er, ea)
-    m = np.clip((1.6 - e) / 1.6, 0, 1)
-    col = col * (1.0 + (fbm(xs, ys, 7, 43, 2)[..., None] - 0.5) * 0.12)
-    return col * (1 - m[..., None]) + mortar[None, None, :] * m[..., None]
+    ea = (0.5 - np.abs(t - seg - 0.5)) * 2 * np.pi * np.maximum(r, 1) / n
+    e = np.minimum(er, ea) + (noise(xs, ys, 6, 44) - 0.5) * 1.2
+    lit = np.clip(-((xs - cx) + (ys - cy)) / np.maximum(r, 1) * 0.3, -1, 1)
+    col = stone_fill(xs, ys, base, cid, lit, 41, 0.13)
+    band = (ring % 5 == 4)  # 다섯 줄마다 짙은 돌 띠
+    col[band] *= 0.8
+    m = e < 0.7
+    col[m] = mortar(xs, ys, 41, 0.05)[m]
+    return col, ink_line(xs, ys, e, 0.85, 45, 0.48)
 
 
 def dirt(xs, ys, base, seed):
-    """흙마당: 얼룩 흙 + 잔돌 + 마른 풀 자국."""
+    """흙마당: 얼룩 흙 · 다져진 길 · 먹선 잔돌 · 지푸라기 · 마른 풀."""
     v = fbm(xs, ys, 40, seed, 4)
-    col = base[None, None, :] * (0.82 + 0.36 * v[..., None])
-    f1, _e, cid = voronoi(xs, ys, 9, seed + 3, 0.9)
-    peb = (f1 < 1.6) & (hash2(cid, cid, seed + 5) < 0.35)
-    col[peb] = col[peb] * 0.72 + 0.06
-    grass = fbm(xs, ys, 18, seed + 9, 3) > 0.66
-    col[grass] = col[grass] * np.array([0.88, 0.98, 0.78], np.float32)
-    return col
+    col = base[None, None, :] * (0.78 + 0.4 * v[..., None])
+    damp = fbm(xs, ys, 70, seed + 2, 3) > 0.62
+    col[damp] *= 0.8
+    f1, _e, cid, ox, oy = voronoi(xs, ys, 9, seed + 3, 0.9)
+    peb = (f1 < 1.8) & (hash2(cid, cid, seed + 5) < 0.4)
+    col[peb] = col[peb] * 1.18 + 0.02
+    ink = np.where((f1 > 1.4) & (f1 < 2.3) & (hash2(cid, cid, seed + 5) < 0.4) & (oy > -0.3), 0.55, 0.0)
+    # 지푸라기 · 잔가지: 짧은 비스듬한 획
+    _f, _e2, sid, sx, sy = voronoi(xs, ys, 11, seed + 7, 0.9)
+    ang = hash2(sid, sid, seed + 8) * np.pi
+    along = sx * np.cos(ang) + sy * np.sin(ang)
+    across = -sx * np.sin(ang) + sy * np.cos(ang)
+    straw = (np.abs(across) < 0.6) & (np.abs(along) < 3.5) & (hash2(sid, sid, seed + 9) < 0.35)
+    col[straw] = np.array([0.62, 0.53, 0.33], np.float32) * SHADE
+    grass = fbm(xs, ys, 18, seed + 9, 3) > 0.68
+    col[grass] = col[grass] * np.array([0.82, 0.95, 0.7], np.float32)
+    return col, ink
 
 
 def garden(xs, ys, base, seed):
-    """정원(닿지 않는 틈): 풀 + 덤불 덩이."""
+    """정원(안뜰): 풀 붓질 + 덤불(먹선 · 왼쪽 위 밝게) + 꽃."""
     v = fbm(xs, ys, 22, seed, 4)
-    col = base[None, None, :] * (0.8 + 0.4 * v[..., None])
-    f1, _e, cid = voronoi(xs, ys, 26, seed + 3, 0.8)
-    bush = (f1 < 9.0) & (hash2(cid, cid, seed + 5) < 0.55)
-    shade = np.clip(1.15 - f1 / 9.0 * 0.4, 0.7, 1.2)
-    col[bush] = (np.array([0.27, 0.32, 0.2], np.float32)[None, :] * shade[bush][:, None])
-    return col
+    col = base[None, None, :] * (0.75 + 0.4 * v[..., None])
+    _f, _e, sid, sx, sy = voronoi(xs, ys, 4.5, seed + 1, 0.95)
+    blade = (np.abs(sx + sy * 0.25) < 0.55) & (sy < 0.2) & (sy > -2.6)  # 위로 선 풀잎 획
+    tone = hash2(sid, sid, seed + 2)
+    col[blade & (tone < 0.5)] *= 0.72
+    col[blade & (tone >= 0.5)] *= 1.18
+    f1, edge, cid, ox, oy = voronoi(xs, ys, 24, seed + 3, 0.8)
+    rad = 7.0 + hash2(cid, cid, seed + 6) * 4.0
+    bush = (f1 < rad) & (hash2(cid, cid, seed + 5) < 0.55)
+    lit = np.clip(-(ox + oy) * 0.7 / rad, -1, 1)
+    leaf = noise(xs, ys, 2.5, seed + 7)
+    bc = np.array([0.2, 0.25, 0.14], np.float32)[None, None, :] * (1.0 + 0.45 * lit[..., None]) * (0.85 + 0.3 * leaf[..., None])
+    col[bush] = bc[bush]
+    flower = bush & (leaf > 0.86) & (hash2(cid, cid, seed + 8) < 0.4)
+    fc = np.where((hash2(cid, cid, seed + 10) < 0.5)[..., None], np.array([0.62, 0.36, 0.3], np.float32), np.array([0.7, 0.64, 0.42], np.float32))
+    col[flower] = fc[flower]
+    ink = np.where(bush, 0.0, ink_line(xs, ys, np.abs(f1 - rad), 1.0, seed + 30, 0.7) * (hash2(cid, cid, seed + 5) < 0.55))
+    return col, ink
 
 
 def water(xs, ys, base):
     v = fbm(xs * 0.4, ys * 1.6, 14, 51, 3)
-    col = base[None, None, :] * (0.85 + 0.3 * v[..., None])
-    rip = np.abs(np.sin(xs * 0.11 + fbm(xs, ys, 30, 53, 2) * 6)) > 0.97
-    col[rip] = col[rip] * 1.35
-    return col
+    col = base[None, None, :] * (0.78 + 0.3 * v[..., None])
+    wave = np.sin(xs * 0.09 + fbm(xs, ys, 30, 53, 2) * 7 + ys * 0.02)
+    hi = (wave > 0.96) & (noise(xs, ys, 11, 55) > 0.55)
+    col[hi] = col[hi] * 1.3 + 0.02
+    ink = np.where((wave < -0.96) & (noise(xs, ys, 11, 57) > 0.45), 0.35, 0.0)
+    return col, ink
+
+
+# ---------- 바닥 장식(위에서 본 그림 위에 그린다) ----------
+
+def decorate(town, kind, cell_kind, col, ink, W, H):
+    """집 · 옹벽 밑 그늘 · 벽 밑 잡초 · 배수 도랑 · 쇠살대 · 맨홀 · 웅덩이 · 금 · 낙엽(CT101)."""
+    rnd = random.Random(101)
+    hard = np.isin(kind, [K["street"], K["avenue"], K["paving"], K["plaza"], K["bridge"], K["stairs"]])
+    ground = np.isin(kind, [K["street"], K["avenue"], K["paving"], K["plaza"], K["bridge"], K["yard"], K["court"]])
+    # 1) 집 · 옹벽 밑 그늘과 때(벽에 가까울수록 어둡고, 남쪽보다 북쪽(집 앞 그늘)을 더)
+    solid = np.isin(cell_kind, [K["house"], K["retain"]]).astype(np.uint8) * 255
+    near = np.asarray(Image.fromarray(solid).filter(ImageFilter.GaussianBlur(10))).astype(np.float32) / 255.0
+    grime = np.clip(near * 1.6, 0, 1) * (cell_kind != K["house"])
+    col *= (1.0 - 0.32 * grime)[..., None]
+    # 2) 벽 밑 잡초 · 이끼 덤불(벽에서 0~8px)
+    ring = (np.asarray(Image.fromarray(solid).filter(ImageFilter.MaxFilter(13))) > 0) & (solid == 0) & ground
+    ys, xs = np.nonzero(ring)
+    sel = np.random.default_rng(3).random(len(ys)) < 0.012
+    weeds = Image.new("L", (W, H), 0)
+    wd = ImageDraw.Draw(weeds)
+    for y, x in zip(ys[sel], xs[sel]):
+        for k in range(rnd.randint(3, 6)):
+            a = rnd.uniform(-2.4, -0.7)
+            L = rnd.uniform(3, 7)
+            wd.line([(x, y), (x + math.cos(a) * L, y + math.sin(a) * L)], fill=255, width=1)
+    wm = np.asarray(weeds) > 0
+    col[wm] = MOSS * 1.2
+    ink[wm] = np.maximum(ink[wm], 0.25)
+    dec = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    dd = ImageDraw.Draw(dec)
+    il = Image.new("L", (W, H), 0)
+    idr = ImageDraw.Draw(il)
+
+    def P(q):
+        return (q[0] * PX, q[1] * PX)
+
+    # 3) 큰길 가운데 배수 도랑(작은 네모 돌 두 줄) + 쇠살대
+    for a in town["areas"]:
+        if a["kind"] != "avenue" or "line" not in a:
+            continue
+        pts = [P(q) for q in a["line"]]
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            L = math.hypot(bx - ax, by - ay)
+            ux, uy = (bx - ax) / L, (by - ay) / L
+            nx, ny = -uy, ux
+            s = 0.0
+            while s < L:
+                cx, cy = ax + ux * s, ay + uy * s
+                for side in (-1, 1):
+                    q = [(cx + nx * side * 1 + ux * 0, cy + ny * side * 1), (cx + nx * side * 6, cy + ny * side * 6),
+                         (cx + nx * side * 6 + ux * 7, cy + ny * side * 6 + uy * 7), (cx + nx * side * 1 + ux * 7, cy + ny * side * 1 + uy * 7)]
+                    t = rnd.randint(70, 92)
+                    dd.polygon(q, fill=(t, t - 6, t - 12, 255))
+                    idr.polygon(q, outline=150)
+                dd.line([(cx, cy), (cx + ux * 8, cy + uy * 8)], fill=(34, 30, 26, 255), width=2)
+                s += 8.0
+            s = 3 * PX
+            while s < L - PX:
+                cx, cy = ax + ux * s, ay + uy * s
+                g = [(cx + nx * 7 - ux * 9, cy + ny * 7 - uy * 9), (cx + nx * 7 + ux * 9, cy + ny * 7 + uy * 9),
+                     (cx - nx * 7 + ux * 9, cy - ny * 7 + uy * 9), (cx - nx * 7 - ux * 9, cy - ny * 7 - uy * 9)]
+                dd.polygon(g, fill=(40, 36, 32, 255))
+                for k in range(-6, 7, 3):
+                    dd.line([(cx + nx * 6 + ux * k, cy + ny * 6 + uy * k), (cx - nx * 6 + ux * k, cy - ny * 6 + uy * k)], fill=(78, 72, 64, 255), width=1)
+                idr.polygon(g, outline=230)
+                s += 6 * PX
+    # 4) 하수도 맨홀(입구 자리 — 걷는 돌길 위만)
+    for x, y in town.get("sewer", {}).get("entrances", []):
+        cx, cy = x * PX, y * PX
+        if not (0 <= int(cy) < H and 0 <= int(cx) < W and hard[int(cy), int(cx)]):
+            continue
+        R = 13
+        dd.ellipse([cx - R, cy - R, cx + R, cy + R], fill=(52, 46, 40, 255))
+        dd.ellipse([cx - R + 3, cy - R + 3, cx + R - 3, cy + R - 3], fill=(66, 58, 50, 255))
+        for k in range(-8, 9, 4):
+            dd.line([(cx - 9, cy + k), (cx + 9, cy + k)], fill=(44, 38, 34, 255), width=1)
+            dd.line([(cx + k, cy - 9), (cx + k, cy + 9)], fill=(44, 38, 34, 255), width=1)
+        dd.arc([cx - R + 2, cy - R + 2, cx + R - 2, cy + R - 2], 200, 330, fill=(110, 96, 80, 255), width=1)
+        idr.ellipse([cx - R, cy - R, cx + R, cy + R], outline=240, width=2)
+        idr.ellipse([cx - R + 3, cy - R + 3, cx + R - 3, cy + R - 3], outline=170)
+    # 5) 웅덩이 · 금 · 낙엽 · 지푸라기(걷는 돌길 위에 흩는다)
+    hy, hx = np.nonzero(hard[::8, ::8])
+    order = np.random.default_rng(11).permutation(len(hy))
+    n_pud, n_crack, n_leaf = 0, 0, 0
+    for k in order:
+        y, x = int(hy[k]) * 8, int(hx[k]) * 8
+        roll = rnd.random()
+        if roll < 0.006 and n_pud < 26:
+            rx, ry = rnd.uniform(10, 22), rnd.uniform(5, 10)
+            blob = [(x + math.cos(t) * rx * rnd.uniform(0.75, 1.1), y + math.sin(t) * ry * rnd.uniform(0.75, 1.1)) for t in np.linspace(0, 2 * math.pi, 14)[:-1]]
+            dd.polygon(blob, fill=(46, 52, 56, 200))
+            dd.line([(x - rx * 0.5, y - ry * 0.3), (x + rx * 0.1, y - ry * 0.45)], fill=(120, 126, 124, 220), width=1)
+            idr.polygon(blob, outline=120)
+            n_pud += 1
+        elif roll < 0.02 and n_crack < 120:
+            px_, py_ = float(x), float(y)
+            a = rnd.uniform(0, 2 * math.pi)
+            seg = [(px_, py_)]
+            for _ in range(rnd.randint(3, 6)):
+                a += rnd.uniform(-0.9, 0.9)
+                px_ += math.cos(a) * rnd.uniform(4, 9)
+                py_ += math.sin(a) * rnd.uniform(4, 9)
+                seg.append((px_, py_))
+            idr.line(seg, fill=190, width=1)
+            n_crack += 1
+        elif roll < 0.06 and n_leaf < 700:
+            for _ in range(rnd.randint(1, 4)):
+                lx, ly = x + rnd.uniform(-10, 10), y + rnd.uniform(-10, 10)
+                if rnd.random() < 0.5:  # 낙엽
+                    c = rnd.choice([(118, 78, 40), (96, 70, 36), (130, 96, 46)])
+                    dd.ellipse([lx - 2.2, ly - 1.4, lx + 2.2, ly + 1.4], fill=c + (255,))
+                    idr.point((lx + 2, ly + 1), fill=140)
+                else:  # 지푸라기
+                    a = rnd.uniform(0, math.pi)
+                    dd.line([(lx, ly), (lx + math.cos(a) * 5, ly + math.sin(a) * 5)], fill=(150, 128, 78, 255), width=1)
+            n_leaf += 1
+    da = np.asarray(dec).astype(np.float32) / 255.0
+    a = da[..., 3:4] * ground[..., None]
+    col[:] = col * (1 - a) + da[..., :3] * a
+    ink[:] = np.maximum(ink, np.asarray(il).astype(np.float32) / 255.0 * 0.7 * ground)
 
 
 def main():
@@ -199,59 +405,69 @@ def main():
     for a in town["areas"]:
         if "h" in a:
             hmap[kind == K[a["kind"]]] = a["h"]
-    # 3) 재질(위에서 본 그림)
+    # 3) 재질(위에서 본 그림) + 먹선
     col = np.zeros((H, W, 3), np.float32)
-    mortar = hexc("#2c2824")
+    ink = np.zeros((H, W), np.float32)
     plaza_c = None
     for a in town["areas"]:
         if a["kind"] == "plaza":
             plaza_c = (a["circle"][0] * PX, a["circle"][1] * PX)
+
+    def C(name, k=1.0):
+        return hexc(colors[name]) * SHADE * k
+
     for y0 in range(0, H, CHUNK):
         for x0 in range(0, W, CHUNK):
             y1, x1 = min(H, y0 + CHUNK), min(W, x0 + CHUNK)
             ys, xs = np.mgrid[y0:y1, x0:x1].astype(np.float32)
             kk = kind[y0:y1, x0:x1]
             out = np.zeros((y1 - y0, x1 - x0, 3), np.float32)
+            oink = np.zeros((y1 - y0, x1 - x0), np.float32)
             todo = {
-                "street": lambda: stones(xs, ys, hexc(colors["street"]) * 1.12, 11.0, 3, mortar),
-                "avenue": lambda: stones(xs, ys, hexc(colors["avenue"]) * 1.08, 24.0, 5, mortar, gap=2.4, dome=0.1, var=0.14),
-                "paving": lambda: stones(xs, ys, hexc(colors["paving"]) * 1.08, 20.0, 7, mortar, gap=2.2, dome=0.1, var=0.14),
-                "bridge": lambda: stones(xs, ys, hexc(colors["bridge"]) * 1.1, 18.0, 9, mortar, gap=2.0, dome=0.08),
-                "stairs": lambda: stones(xs, ys, hexc(colors["stairs"]) * 1.1, 22.0, 13, mortar, gap=2.2, dome=0.08),
-                "retain": lambda: stones(xs, ys, hexc(colors["retain"]) * 1.15, 26.0, 15, mortar, gap=1.4, dome=0.04),
-                "plaza": lambda: plaza_stones(xs, ys, plaza_c[0], plaza_c[1], hexc(colors["plaza"]) * 1.08, mortar) if plaza_c else None,
-                "dais": lambda: plaza_stones(xs, ys, plaza_c[0], plaza_c[1], hexc(colors["plaza"]) * 1.08, mortar) if plaza_c else None,
-                "yard": lambda: dirt(xs, ys, hexc(colors["yard"]) * 1.08, 17),
-                "court": lambda: garden(xs, ys, hexc(colors["court"]) * 1.15, 19),
-                "water": lambda: water(xs, ys, hexc(colors["water"]) * 1.15),
+                "street": lambda: cobbles(xs, ys, C("street", 1.12), 13.0, 3),
+                "avenue": lambda: slabs(xs, ys, C("avenue", 1.06), 22.0, 30.0, 52.0, 5),
+                "paving": lambda: slabs(xs, ys, C("paving", 1.06), 24.0, 26.0, 46.0, 7),
+                "bridge": lambda: slabs(xs, ys, C("bridge", 1.08), 18.0, 34.0, 50.0, 9),
+                "stairs": lambda: slabs(xs, ys, C("stairs", 1.08), 16.0, 30.0, 46.0, 13),
+                "retain": lambda: slabs(xs, ys, C("retain", 1.1), 14.0, 26.0, 36.0, 15),
+                "plaza": lambda: plaza_stones(xs, ys, plaza_c[0], plaza_c[1], C("plaza", 1.06)) if plaza_c else None,
+                "dais": lambda: plaza_stones(xs, ys, plaza_c[0], plaza_c[1], C("plaza", 1.06)) if plaza_c else None,
+                "yard": lambda: dirt(xs, ys, C("yard", 1.06), 17),
+                "court": lambda: garden(xs, ys, C("court", 1.12), 19),
+                "water": lambda: water(xs, ys, C("water", 1.1)),
             }
             for name, fn in todo.items():
                 m = kk == K[name]
                 if m.any():
-                    c = fn()
-                    if c is not None:
-                        out[m] = c[m]
+                    r = fn()
+                    if r is not None:
+                        out[m] = r[0][m]
+                        oink[m] = r[1][m]
             rest = (kk != K["void"]) & (out.sum(-1) == 0)  # 집 밑 · 소품 칸 등 남은 곳 = 흙
             if rest.any():
-                out[rest] = dirt(xs, ys, hexc(colors["yard"]) * 1.08, 17)[rest]
+                out[rest] = dirt(xs, ys, C("yard", 1.06), 17)[0][rest]
             col[y0:y1, x0:x1] = out
-    # 길 가장자리 연석(돌길과 흙 · 정원이 만나는 곳을 어둡게 한 줄)
+            ink[y0:y1, x0:x1] = oink
+    # 길 가장자리 연석(돌길과 흙 · 정원이 만나는 곳: 어두운 돌 한 줄 + 먹선)
     hard = np.isin(kind, [K["street"], K["avenue"], K["paving"], K["plaza"], K["bridge"]])
     soft = np.isin(kind, [K["yard"], K["court"]])
     near = np.zeros_like(hard)
-    for sh in ((1, 0), (-1, 0), (0, 1), (0, -1), (2, 0), (0, 2), (-2, 0), (0, -2)):
+    for sh in ((1, 0), (-1, 0), (0, 1), (0, -1), (2, 0), (0, 2), (-2, 0), (0, -2), (3, 0), (0, 3), (-3, 0), (0, -3)):
         near |= np.roll(np.roll(soft, sh[0], 0), sh[1], 1)
     curb = hard & near
-    col[curb] = col[curb] * 0.62
+    col[curb] = col[curb] * 0.7
+    ink[curb & ~np.roll(near, 1, 0)] = 0.6
+    decorate(town, kind, cell_kind, col, ink, W, H)
     # 4) 3/4로 올린다(남쪽부터 북쪽으로 — 높은 땅이 앞의 낮은 땅 위로, 높이 차는 앞면)
     top = int(math.ceil(float(cells["max_h"]) * PX)) + 4
     SH = H + top
     scr = np.zeros((SH, W, 3), np.float32)
+    sink = np.zeros((SH, W), np.float32)
     code = np.zeros((SH, W), np.int64)
     ylim = np.full(W, SH, np.int64)
     prev_h = hmap[H - 1].copy()
     cols_i = np.arange(W)
-    face_stone = hexc(colors["retain"]) * 1.05
+    face_stone = hexc(colors["retain"]) * SHADE * 1.05
     for i in range(H - 1, -1, -1):
         h = hmap[i]
         k = kind[i]
@@ -260,40 +476,43 @@ def main():
         if vis.any():
             span = np.where(vis, ylim - sy, 0)
             wall = vis & (h - prev_h > 0.05) & (span > 1)
-            # 윗면 한 줄
             ys_ = sy[vis]
             scr[ys_, cols_i[vis]] = col[i, vis]
+            sink[ys_, cols_i[vis]] = ink[i, vis]
             code[ys_, cols_i[vis]] = k[vis] + 1
-            # 앞면(옹벽 · 계단 단 · 둑): 마름돌 — 화면 좌표로 줄눈
+            # 앞면(옹벽 · 계단 단 · 둑): 마름돌 — 화면 좌표로 줄눈(먹선), 돌마다 밝기 · 위가 밝고 아래가 어둡다
             mx = int(span[wall].max()) if wall.any() else 0
             for dd in range(1, mx):
                 m = wall & (span > dd)
                 yy = sy[m] + dd
                 xx = cols_i[m]
                 row = yy // 11
-                brick = ((xx + (row % 2) * 13) % 26 < 2) | (yy % 11 == 0)
-                tone = 1.0 + (hash2(row, (xx + (row % 2) * 13) // 26, 61) - 0.5) * 0.22
-                c = face_stone[None, :] * (tone * (0.92 - 0.25 * (dd / max(mx, 1))))[:, None]
-                c[brick] = c[brick] * 0.55
+                bx = (xx + (row % 2) * 13) // 26
+                joint = ((xx + (row % 2) * 13) % 26 < 1) | (yy % 11 == 0)
+                tone = 1.0 + (hash2(row, bx, 61) - 0.5) * 0.26
+                c = face_stone[None, :] * (tone * (0.95 - 0.35 * (dd / max(mx, 1))))[:, None]
+                c[(yy % 11) == 1] *= 1.12  # 돌 윗변 빛
                 stair = k[m] == K["stairs"]
                 c[stair] = c[stair] * 0.8
                 scr[yy, xx] = c
+                sink[yy, xx] = np.where(joint, 0.65, np.where(dd == 1, 0.8, 0.0))  # 줄눈 · 윗단 모서리
                 code[yy, xx] = 50 + (k[m] == K["stairs"])
-            # 빈 칸(뒤쪽 높은 땅이 더 위로 그려져 생긴 틈)은 앞면 위 칸에서 메운다
             fill = vis & ~wall & (span > 1)
             for dd in range(1, int(span[fill].max()) if fill.any() else 0):
                 m = fill & (span > dd)
                 scr[sy[m] + dd, cols_i[m]] = col[i, m]
+                sink[sy[m] + dd, cols_i[m]] = ink[i, m]
                 code[sy[m] + dd, cols_i[m]] = k[m] + 1
             ylim = np.where(vis, sy, ylim)
         prev_h = np.where(k != K["void"], h, prev_h)
-    # 5) 손그림 마감 · 조각
+    # 5) 손그림 마감(집과 같은 finish — 어두운 곳 펜 빗금 · 종이 결 · 재질 경계 먹선) + 돌 먹선 · 조각
     os.makedirs(OUT, exist_ok=True)
     for f in os.listdir(OUT):
         if f.startswith("g") and (f.endswith(".webp") or f.endswith(".import")):
             os.remove(os.path.join(OUT, f))
     pad = 16
     chunks = []
+    preview = Image.new("RGB", (W, SH)) if "--preview" in sys.argv else None
     for y0 in range(0, SH, CHUNK):
         for x0 in range(0, W, CHUNK):
             y1, x1 = min(SH, y0 + CHUNK), min(W, x0 + CHUNK)
@@ -302,13 +521,20 @@ def main():
             if not (cc != 0).any():
                 continue
             img, alpha = th.finish(np.clip(scr[ya:yb, xa:xb], 0, 1).astype(np.float64), cc, sprite=True)
+            a = sink[ya:yb, xa:xb][..., None].astype(np.float64)
+            img = img * (1 - a) + th.INK[None, None, :] * a
             alpha = np.where(cc != 0, 1.0, 0.0)  # 바닥은 바깥 먹선 없이(빈곳 = 검은 바깥)
             rgba = np.dstack([img, alpha])[y0 - ya:y0 - ya + (y1 - y0), x0 - xa:x0 - xa + (x1 - x0)]
             name = "g%d_%d" % (x0 // CHUNK, y0 // CHUNK)
-            Image.fromarray((rgba * 255).astype(np.uint8), "RGBA").save(os.path.join(OUT, name + ".webp"), quality=88)
+            im = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
+            im.save(os.path.join(OUT, name + ".webp"), quality=90)
+            if preview is not None:
+                preview.paste(im.convert("RGB"), (x0, y0))
             chunks.append({"file": name, "rect": [x0, y0 - top, x1 - x0, y1 - y0]})
     json.dump({"_comment": "tools/town_ground_bake.py가 만든다(손으로 고치지 않는다). 바닥 조각 그림: rect = [x, y, w, h] 게임 px(칸당 32 — 화면 y = 남쪽 깊이 − 높이, 높은 단은 0보다 위).",
                "tile": PX, "chunks": chunks}, open(os.path.join(OUT, "index.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    if preview is not None:
+        preview.save(os.path.join(user_dir(), "ground_preview.png"))
     print("바닥: %d×%d px → 조각 %d장" % (W, SH, len(chunks)))
 
 

@@ -176,5 +176,6 @@ func test_ground_and_props_are_baked() -> void:
 		assert_true(ResourceLoader.exists("res://assets/town/ground/%s.webp" % (c as Dictionary)["file"]), "바닥 조각 " + str((c as Dictionary)["file"]))
 	var t := _town()
 	assert_true(right >= t.width * 32 - 1 and bottom >= t.height * 32 - 1, "바닥이 지도를 다 덮는다")
-	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais"]:
+	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais",
+			"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods"]:  # 장식(CT101)
 		assert_true(ResourceLoader.exists("res://assets/town/props/%s.webp" % k), "소품 그림 " + k)

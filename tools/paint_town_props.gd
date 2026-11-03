@@ -6,6 +6,7 @@ extends SceneTree
 
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Props3D := preload("res://tools/town_kit/Props3D.gd")
+const Deco3D := preload("res://tools/town_kit/Deco3D.gd")
 
 const RAW := "user://town_props"
 const S := 48.0
@@ -46,11 +47,14 @@ func _init() -> void:
 	world.add_child(cam)
 	cam.make_current()
 	await process_frame
-	for kind: String in Props3D.KINDS:
+	for kind: String in Props3D.KINDS + Deco3D.KINDS:
 		if not only.is_empty() and not only.has(kind):
 			continue
 		var holder := Node3D.new()
-		Props3D.build(kind, Kit.new(holder, 64.0))
+		if kind in Deco3D.KINDS:
+			Deco3D.build(kind, Kit.new(holder, 64.0))
+		else:
+			Props3D.build(kind, Kit.new(holder, 64.0))
 		shear.add_child(holder)
 		var b := _bounds(holder)  # (x0, y'0, x1, y'1)
 		var half := maxf(absf(b.x), absf(b.z)) + MARGIN
@@ -94,7 +98,7 @@ func _ids(node: Node, n: Array) -> void:
 	for ch in node.get_children():
 		if ch is MeshInstance3D:
 			n[0] += 1
-			var k: int = n[0]
+			var k: int = n[0] if not ch.has_meta("gid") else 4000 + int(ch.get_meta("gid"))  # 잎 덩이 = 한 면(Deco3D.blob)
 			var m := StandardMaterial3D.new()
 			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
