@@ -63,6 +63,11 @@ class Town:
 		self.st: dict = {}
 		self.rng = random.Random(seed)
 		self.places: dict = {}
+		# 집 놓기 기준(안마다 바꿀 수 있다): 문 앞 비울 깊이 · 문 앞이 막혀도 되는 몫 · 다른 것과 겹쳐도 되는 몫
+		self.strip = 1.6
+		self.strip_block = 0.25
+		self.overlap = 0.03
+		self.street_overlap = 0.03  # 길 · 마당 칸에 걸쳐도 되는 몫(건물과 겹침은 overlap)
 
 	# ----- 자리 판 -----
 	def m(self, x, z):
@@ -136,7 +141,8 @@ class Town:
 		self.mask[self.lmask(pts, w)] = 1
 
 	# ----- 집 -----
-	def try_house(self, poly, front, top, kind="house", name="", force=False, strip=1.6) -> bool:
+	def try_house(self, poly, front, top, kind="house", name="", force=False, strip=None) -> bool:
+		strip = self.strip if strip is None else strip
 		pm = self.pmask(poly)
 		if not pm.any():
 			return False
@@ -145,14 +151,25 @@ class Town:
 		nx, nz = -(bz - az) / L, (bx - ax) / L
 		sm = self.pmask([(ax, az), (bx, bz), (bx + nx * strip, bz + nz * strip), (ax + nx * strip, az + nz * strip)])
 		if not force:
-			if (self.mask[pm] != 0).mean() > 0.03:
+			if (self.mask[pm] >= 2).mean() > self.overlap or (self.mask[pm] == 1).mean() > self.street_overlap:
 				return False
-			if sm.any() and (self.mask[sm] >= 2).mean() > 0.25:
+			if sm.any() and (self.mask[sm] >= 2).mean() > self.strip_block:
 				return False
 		self.mask[pm] = 2
 		self.mask[sm & (self.mask == 0)] = 1
 		self.p.houses.append({"poly": poly, "front": front, "top": top, "kind": kind, "name": name})
 		return True
+
+	def fit(self, cx, cz, w, d, yaw, top, front_fixed: bool = True) -> bool:
+		"""맞는 가장 큰 크기로(깊이부터 줄이고, 그다음 폭) — 큰 집이 조금 겹친다고 작은 집으로 건너뛰지 않게(CT96)."""
+		for kw in (1.0, 0.85, 0.7):
+			for kd in (1.0, 0.85, 0.7, 0.55):
+				ww, dd = w * kw, d * kd
+				if ww < 3.2 or dd < 3.2:
+					continue
+				if self.house(cx, cz if front_fixed else cz - (d - dd) * 0.5, ww, dd, yaw, top * (0.85 + 0.15 * kd)):
+					return True
+		return False
 
 	def house(self, cx, cz, w, d, yaw, top, kind="house", name="", force=False) -> bool:
 		poly = rect(cx, cz, w, d, yaw)
@@ -183,8 +200,7 @@ class Town:
 					cx = a[0] + ux * (s + ww / 2) - nx * (sw / 2 + sb)
 					cz = a[1] + uz * (s + ww / 2) - nz * (sw / 2 + sb)
 					top = top_of(r.randint(*st)) + r.uniform(-0.3, 0.6)
-					if not self.house(cx, cz, ww, dd, yaw, top):
-						self.house(cx, cz, ww * 0.8, dd * 0.65, yaw, top_of(max(1, st[0] - 1)))
+					self.fit(cx, cz, ww, dd, yaw, top)
 					s += ww + r.uniform(*gap)
 			else:
 				s = 1.0
@@ -195,8 +211,7 @@ class Town:
 						yaw = r.uniform(-14, 14)
 						cx = qx + side * (sw / 2 + sb + ww / 2)
 						top = top_of(r.randint(*st)) + r.uniform(-0.3, 0.6)
-						if not self.house(cx, qz + r.uniform(-1, 1), ww, dd, yaw, top):
-							self.house(cx, qz, ww * 0.8, dd * 0.7, yaw, top_of(max(1, st[0] - 1)))
+						self.fit(cx, qz + r.uniform(-1, 1), ww, dd, yaw, top)
 					s += (r.uniform(*d) + r.uniform(1.8, 3.2)) / max(abs(uz), 0.5)
 
 	def fill(self, seed: int, tries: int = 4000, st=(1, 3), w=(4.0, 7.0), d=(4.5, 7.0), yj=18.0):
@@ -209,8 +224,7 @@ class Town:
 				continue
 			ww, dd = r.uniform(*w), r.uniform(*d)
 			yaw, top = r.uniform(-yj, yj), top_of(r.randint(*st)) + r.uniform(-0.3, 0.5)
-			if not self.house(x, z + dd / 2, ww, dd, yaw, top):
-				self.house(x, z + dd * 0.35, ww * 0.7, dd * 0.7, yaw, top)
+			self.fit(x, z + dd / 2, ww, dd, yaw, top, front_fixed=False)
 
 	# ----- 장소 -----
 	def street_point(self, name: str, x: float):

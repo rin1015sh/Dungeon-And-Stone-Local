@@ -19,7 +19,7 @@ const PX := 20  ## 칸당 px(전체 그림)
 const PLAZA_PX := 34  ## 광장 가까이 그림
 ## 보통 집으로 쓸 바리에이션(탑 · 종탑 · 예배당 · 저택은 빼고 — 3/4에서는 높이가 줄지 않아 탑처럼 솟는다).
 const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house",
-	"_gallery_house", "_mansard", "_step_gable", "_workshop"]
+	"_gallery_house", "_mansard", "_step_gable", "_workshop", "_manor"]
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
 const FAC_FNS := {"guild": "_guild", "temple": "_chapel", "bank": "_mansard", "inn": "_gallery_house", "shop": "_shop_house", "smithy": "_workshop"}
 const GROUND := {
@@ -225,14 +225,14 @@ func _house(h: Dictionary, i: int) -> int:
 	var tp: Array = _template(fn)
 	var lo: Vector3 = tp[1]
 	var hi: Vector3 = tp[2]
-	var sx := size.x / (hi.x - lo.x)
-	var sz := size.y / (hi.z - lo.z)
+	var sx := size.x / (hi.x - lo.x) * 1.1  # 바리에이션 크기엔 처마 · 디딤돌이 들어 있어 벽이 필지보다 작아진다 — 조금 키워 필지를 채운다
+	var sz := size.y / (hi.z - lo.z) * 1.1
 	if not fac.is_empty():  # 시설은 비율을 지킨다(신전 · 은행이 일그러지지 않게) — 더 큰 쪽에 맞춘다
 		sx = minf(sx, sz) if fac != "temple" else maxf(sx, sz) * 0.9
 		sz = sx
 	var node := (tp[0] as Node3D).duplicate() as Node3D
 	var a := float(h.get("angle", 0.0))
-	var sy := clampf(sqrt(sx * sz), 0.72, 1.0)  # 필지가 바리에이션보다 작으면 높이도 조금 — 가는 탑처럼 솟지 않게
+	var sy := clampf(sqrt(sx * sz), 0.72, 1.25)  # 필지 크기를 따라 높이도 조금(작으면 탑처럼 솟지 않게 · 크면 큰 집답게 — CT96)
 	if fac == "temple":
 		sy = minf(sqrt(sx * sz), 1.3)
 	var basis := Basis(Vector3.UP, -a) * Basis.from_scale(Vector3(sx, sy, sz))
