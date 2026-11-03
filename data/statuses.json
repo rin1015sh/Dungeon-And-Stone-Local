@@ -46,7 +46,8 @@
       {
         "trigger": "time",
         "resource": "hp",
-        "amount": "-{bal.hunger.starvation_hp_per_hour}"
+        "amount": "-{bal.hunger.starvation_hp_per_hour}",
+        "hp_ratio": "{bal.hunger.starvation_hp_ratio}"
       }
     ],
     "source": "placeholder"
@@ -84,7 +85,8 @@
       {
         "trigger": "turn",
         "resource": "hp",
-        "amount": "-{bal.status.bleed_per_turn}"
+        "amount": "-{bal.status.bleed_per_turn}",
+        "hp_ratio": "{bal.status.bleed_ratio}"
       }
     ],
     "source": "placeholder",
@@ -115,7 +117,8 @@
         "trigger": "turn",
         "resource": "hp",
         "amount": "-{bal.status.poison_per_turn}",
-        "damage_type": "poison"
+        "damage_type": "poison",
+        "hp_ratio": "{bal.status.poison_ratio}"
       }
     ],
     "resist": {
@@ -144,10 +147,11 @@
     "mental": true,
     "resist": {
       "stats": [
-        "p_res"
+        "m_res",
+        "int"
       ]
     },
-    "notes": "명세 §4 정신계 — 정신력·항마력으로 저항",
+    "notes": "명세 §4 정신계 — 항마력·정신력 평균으로 저항(2026-11-03: 데이터가 물리내성으로 뒤바뀌어 있던 것을 문서대로 바로잡음)",
     "after_immune": 1
   },
   {
@@ -224,7 +228,8 @@
         "trigger": "turn",
         "resource": "hp",
         "amount": "-{bal.status.burn_per_turn}",
-        "damage_type": "fire"
+        "damage_type": "fire",
+        "hp_ratio": "{bal.status.burn_ratio}"
       }
     ],
     "source": "placeholder",
@@ -313,7 +318,8 @@
       {
         "trigger": "turn",
         "resource": "hp",
-        "amount": "-{bal.status.trap_damage}"
+        "amount": "-{bal.status.trap_damage}",
+        "hp_ratio": "{bal.status.trap_ratio}"
       }
     ],
     "source": "placeholder"
@@ -383,10 +389,10 @@
     "source": "placeholder",
     "resist": {
       "stats": [
-        "m_res"
+        "p_res"
       ]
     },
-    "notes": "명세 §4 육체계 — 물리내성으로 저항",
+    "notes": "명세 §4 육체계 — 물리내성으로 저항(2026-11-03: 항마력으로 뒤바뀌어 있던 것을 바로잡음)",
     "skip_chance": 0.5,
     "after_immune": 1
   },
@@ -442,7 +448,8 @@
       {
         "trigger": "turn",
         "resource": "hp",
-        "amount": "-{bal.status.rot_per_turn}"
+        "amount": "-{bal.status.rot_per_turn}",
+        "hp_ratio": "{bal.status.rot_ratio}"
       }
     ],
     "source": "placeholder",
@@ -746,7 +753,8 @@
       }
     ],
     "source": "placeholder",
-    "notes": "명세 §7.4 [창] 효과 미정 → 새로 정함. 치명타 보정은 패시브"
+    "notes": "명세 §7.4 [창] 효과 미정 → 새로 정함. 치명타 보정은 패시브",
+    "crit_bonus": 0.1
   },
   {
     "id": "dread_buff_maggot_nest",
@@ -938,7 +946,7 @@
   },
   {
     "id": "heal_block",
-    "name_ko": "원한",
+    "name_ko": "붙든 상처",
     "kind": "debuff",
     "desc_ko": "원한이 상처를 붙든다. 받는 치유와 재생이 절반이 된다.",
     "duration": {
@@ -1371,7 +1379,7 @@
   },
   {
     "id": "ildium_overheat",
-    "name_ko": "과열",
+    "name_ko": "달궈진 강철",
     "kind": "buff",
     "desc_ko": "강철 몸이 벌겋게 달아올랐다. 힘은 세지고 몸은 물러졌다.",
     "battle_only": true,
@@ -1518,8 +1526,65 @@
     "battle_only": true,
     "source": "placeholder"
   },
-  {"id": "smoke_cover", "name_ko": "연막", "kind": "buff", "duration": {"amount": 2, "unit": "turn"}, "flee_bonus": 0.3, "source": "placeholder", "notes": "연막탄(2026-10-23): 도주 확률 +30%p(BattleRules.flee_chance — 상태 키 flee_bonus)"},
-  {"id": "whetted", "name_ko": "벼린 날", "kind": "buff", "duration": {"amount": 3, "unit": "hour"}, "modifiers": [{"target": "dmg_dealt:physical", "percent": 0.1}], "source": "placeholder", "notes": "숫돌(2026-10-23): 3시간 동안 주는 물리 피해 +10%"},
-  {"id": "tomb_curse", "name_ko": "묘의 저주", "kind": "debuff", "duration": {"amount": 6, "unit": "hour"}, "modifiers": [{"target": "dmg_taken:all", "percent": 0.1}], "source": "placeholder", "notes": "강철의 묘 가짜 보물 더미(히든 피스 J) — 6시간 받는 피해 +10%"},
-  {"id": "blast_scorched", "name_ko": "그을림", "kind": "debuff", "duration": {"amount": 3, "unit": "turn"}, "flags": ["no_split"], "battle_only": true, "source": "placeholder", "notes": "갱도 폭약(히든 피스 H) — 분열하지 못한다(BattleSpawns.split)"}
+  {
+    "id": "smoke_cover",
+    "name_ko": "연막",
+    "kind": "buff",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "flee_bonus": 0.3,
+    "source": "placeholder",
+    "notes": "연막탄(2026-10-23): 도주 확률 +30%p(BattleRules.flee_chance — 상태 키 flee_bonus)"
+  },
+  {
+    "id": "whetted",
+    "name_ko": "벼린 날",
+    "kind": "buff",
+    "duration": {
+      "amount": 3,
+      "unit": "hour"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_dealt:physical",
+        "percent": 0.1
+      }
+    ],
+    "source": "placeholder",
+    "notes": "숫돌(2026-10-23): 3시간 동안 주는 물리 피해 +10%"
+  },
+  {
+    "id": "tomb_curse",
+    "name_ko": "묘의 저주",
+    "kind": "debuff",
+    "duration": {
+      "amount": 6,
+      "unit": "hour"
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.1
+      }
+    ],
+    "source": "placeholder",
+    "notes": "강철의 묘 가짜 보물 더미(히든 피스 J) — 6시간 받는 피해 +10%"
+  },
+  {
+    "id": "blast_scorched",
+    "name_ko": "그을림",
+    "kind": "debuff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "flags": [
+      "no_split"
+    ],
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "갱도 폭약(히든 피스 H) — 분열하지 못한다(BattleSpawns.split)"
+  }
 ]

@@ -33,7 +33,7 @@
     "base": 50,
     "per_level": 10,
     "per_p_res": 3.0,
-    "regen_per_natural_regen_per_hour": 0.1
+    "regen_ratio_per_natural_regen_per_hour": 0.002, "_regen_comment": "자연재생력 1점 = 시간당 최대 생명력 0.2%(2026-11-03: 예전 고정 0.1HP/시간은 정수 자연재생력 30점이 시간당 3HP라 무의미했다 — 휴식은 5%/시간)"
   },
   "soul": {
     "_comment": "최대 영혼력 = base + 5레벨까지 레벨당 +10, 이후 +30 (PROMPT_FLOOR1_V2 §5.1, Lv1 30은 [창])",
@@ -43,12 +43,13 @@
     "per_level_late": 30,
     "regen_ratio_per_turn": 0.02,
     "regen_ratio_per_hour": 0.05,
-    "regen_stat_coef": 0.01
+    "regen_stat_coef": 0.03
   },
   "hunger": {
     "decay_per_hour": 1.5,
     "appetite_coef": 0.01,
-    "starvation_hp_per_hour": 2.0
+    "starvation_hp_per_hour": 2.0,
+    "starvation_hp_ratio": 0.016
   },
   "rest": {
     "hp_ratio_per_hour": 0.05,
@@ -59,6 +60,9 @@
     "poison_per_turn": 2,
     "burn_per_turn": 4,
     "trap_damage": 6,
+    "bleed_ratio": 0.025, "poison_ratio": 0.02, "burn_ratio": 0.035, "rot_ratio": 0.02, "trap_ratio": 0.05,
+    "monster_dot_scale": 0.25,
+    "_ratio_comment": "지속 피해 = max(고정값, 최대 생명력 × 비율) — 고정값은 1층 기준(생명력 약 120), 비율은 그 값을 환산해 후반에도 같은 체감(2026-11-03). 몬스터는 비율 × monster_dot_scale(보스 생명력이 수천이라). 면역·내성·dot_mult는 그대로 곱해진다",
     "rot_per_turn": 2,
     "_resist_comment": "상태이상 저항(statuses resist.stats — 적이 건 것만, 10층 비율 공식): 확률 = resist_max × 저항 스탯 평균 / (저항 + 거는 쪽 근력·정신력 중 큰 값) — 같으면 30%",
     "resist_max": 0.6,
@@ -90,8 +94,8 @@
     "roam_pick_ratio": 0.4,
     "ambush_alert_hours": 1.0,
     "waterfall_ratio": 0.1,
-    "fall_damage": 20,
-    "_fall_comment": "빙하굴 3챕터: 폭포(최대 생명력 10%) + 낙하(명세 '위력 40' → 고정 피해 임시값)",
+    "fall_ratio": 0.16,
+    "_fall_comment": "빙하굴 3챕터: 폭포(최대 생명력 10%) + 낙하(명세 '위력 40' → 최대 생명력 16%, 1층 생명력 약 120에서 20)",
     "_hazard_comment": "챕터 탐험 위험(RiftHazards, 10층 비율 공식): 성공 확률 = clamp(base + share × (스탯 − dc)/(스탯 + dc), min, max). min_gap = 묶음 사이·시작·조우 자리와의 거리(칸). near_entry_m = 히든 피스 near_entry 반경",
     "hazard_base": 0.5,
     "hazard_share": 0.5,
@@ -122,7 +126,7 @@
     "mag_atk_per_int": 2.0,
     "unarmed_atk": 2,
     "default_accuracy": 95,
-    "hit_agi_exp": 0.3,
+    "hit_agi_exp": 0.5,
     "agi_offset": 10,
     "hit_min": 0.3,
     "hit_max": 1.0,
@@ -130,6 +134,10 @@
     "min_damage": 1,
     "lethal_chance_base": 0.1,
     "lethal_hp_ratio": 0.3,
+    "lethal_immune_ranks": ["midboss", "guardian", "variant_guardian", "lord"],
+    "regen_per_round_max": 0.04,
+    "taken_build_min": 0.4, "taken_total_min": 0.2, "taken_total_max": 2.5, "dealt_total_max": 3.0,
+    "_cap_comment": "2026-11-03 상한: 정수·장비 수정자의 곱은 받는 피해 ×0.4까지만(taken_build_min), 상태·몬스터 고유까지 전체 받는 피해 ×0.2~×2.5·주는 피해 ×3.0. 치명상은 중간 보스·수호자·변이종·계층군주에게 듣지 않는다. 차례당 재생(regen_per_round) 합은 최대 생명력 4%까지",
     "_flee_comment": "도주 = flee_base + flee_agi_share × (아군 평균 민첩 − 적 평균)/(아군 + 적), 10~90%. no_flee_ranks가 상대에 있으면 도주 불가",
     "flee_base": 0.5,
     "flee_agi_share": 0.8,

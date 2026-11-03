@@ -58,7 +58,7 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if float(r["affinity"]) > 1.0:
 		ctx.say("combat.effective", args, "good")
 	_riders(ctx, data, float(r.get("raw", r["amount"])), dtype, origin)
-	if bool(r["lethal"]) and lost > 0 and not target.dead \
+	if bool(r["lethal"]) and lost > 0 and not target.dead and not _lethal_immune(ctx, target) \
 			and target.pool.get_ratio("hp") <= float(ctx.db.bal("combat.lethal_hp_ratio", 0.3)):
 		var now := target.pool.get_current("hp")
 		if Passives.endure(ctx, target, int(ceil(now))):
@@ -114,3 +114,11 @@ func validate(data: Dictionary, _db: GameDatabase) -> PackedStringArray:
 	if JsonUtil.get_float(data, "power", 1.0) <= 0.0:
 		out.append("damage: power는 0보다 커야 한다")
 	return out
+
+
+## 치명상(급소 즉사)이 듣지 않는 몬스터 — 중간 보스·수호자·변이종·계층군주(combat.lethal_immune_ranks).
+static func _lethal_immune(ctx: EffectContext, target: Actor) -> bool:
+	if not (target is Monster):
+		return false
+	var rank := JsonUtil.get_str((target as Monster).def, "rank")
+	return (ctx.db.bal("combat.lethal_immune_ranks", []) as Array).has(rank)

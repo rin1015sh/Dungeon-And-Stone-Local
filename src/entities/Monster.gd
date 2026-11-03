@@ -24,6 +24,11 @@ static func create(p_db: GameDatabase, p_monster_id: String, label: String = "")
 	return m
 
 
+## 몬스터는 비율 지속 피해를 줄여 받는다(보스 생명력이 수천 — balance status.monster_dot_scale).
+func _hp_ratio_dot_scale() -> float:
+	return float(db.bal("status.monster_dot_scale", 0.25))
+
+
 func damage_affinity(damage_type: String, category: String) -> float:
 	for im: Variant in JsonUtil.get_array(def, "immunities"):
 		if str(im) == damage_type or str(im) == category or str(im) == "all":

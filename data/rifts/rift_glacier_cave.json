@@ -378,7 +378,7 @@
         {
           "type": "restore_resource",
           "resource": "hp",
-          "amount": "-{bal.rift.fall_damage}"
+          "amount": "-floor({max_hp} * {bal.rift.fall_ratio})"
         }
       ],
       "hazards": [

@@ -63,7 +63,7 @@ static func turn_end(b: Battle, c: Combatant) -> void:
 	_low_hp_summons(b)
 	if bool(c.memo.get("in_extra", false)):
 		return
-	var r := Passives.sum(c.actor, "regen_per_round")
+	var r := minf(Passives.sum(c.actor, "regen_per_round"), float(b.db.bal("combat.regen_per_round_max", 0.04)))
 	if r > 0.0 and c.is_active() and not c.actor.statuses.has_flag("no_regen"):
 		var amount := roundi(c.actor.pool.get_max("hp") * r * c.actor.statuses.heal_mult())
 		var healed := c.actor.pool.modify("hp", float(amount), "regen")

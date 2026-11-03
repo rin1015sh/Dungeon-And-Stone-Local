@@ -9,7 +9,7 @@
     "visible": true,
     "cost_strict": true,
     "regen": [
-      {"trigger": "time", "basis": "flat", "rate": "{natural_regen} * {bal.hp.regen_per_natural_regen_per_hour}"},
+      {"trigger": "time", "basis": "max_ratio", "rate": "{natural_regen} * {bal.hp.regen_ratio_per_natural_regen_per_hour}"},
       {"trigger": "rest", "basis": "max_ratio", "rate": "{bal.rest.hp_ratio_per_hour}"}
     ],
     "thresholds": [],

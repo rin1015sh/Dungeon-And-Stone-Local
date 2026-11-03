@@ -194,7 +194,7 @@
       },
       {
         "at_least": 80,
-        "name_ko": "탈진",
+        "name_ko": "기진맥진",
         "modifiers": [
           {
             "target": "str",

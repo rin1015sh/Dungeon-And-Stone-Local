@@ -31,6 +31,8 @@ var _pool: ResourcePool
 var _active: Dictionary = {}  # id -> {"stacks": int, "remaining": float(음수 = 영구), "unit": String, "mods"?: Array}
 ## 지속 피해(주기 효과로 생명력이 줄어드는 것) 배율 — 소유자 패시브 dot_mult(본 나이트 방부제)의 곱. Actor가 맞춘다.
 var dot_mult: float = 1.0
+## 비율 지속 피해(periodic hp_ratio — 최대 생명력의 몇 %)의 소유자별 배율. 몬스터는 balance status.monster_dot_scale(보스 생명력이 수천이라 비율 그대로면 중독 한 방에 녹는다). Actor가 맞춘다.
+var hp_ratio_scale: float = 1.0
 ## 소유자 패시브 status_immune의 합(썩은 거구의 출혈 면역 …). Actor가 맞춘다 — 모든 부여 경로가 immune()에서 막힌다.
 var passive_immune: Array[String] = []
 var _refreshing: bool = false
@@ -405,6 +407,9 @@ func _periodic(trigger: String, amount: float, unit_only: String = "") -> void:
 			var res := JsonUtil.get_str(pd, "resource")
 			if _pool.has_resource(res):
 				var per := Formula.value(pd.get("amount", 0.0), _pool.resolve)
+				var ratio := Formula.value(pd.get("hp_ratio", 0.0), _pool.resolve)  # 후반에도 무의미해지지 않게: 고정값과 비율 중 센 쪽(2026-11-03 밸런스)
+				if res == "hp" and per < 0.0 and ratio > 0.0:
+					per = minf(per, -floorf(_pool.get_max("hp") * ratio * hp_ratio_scale))
 				if res == "hp" and per < 0.0:
 					per *= dot_mult * _element_resist(JsonUtil.get_str(pd, "damage_type"))
 				_pool.modify(res, per * n * amount, SOURCE_PREFIX + id)

@@ -4,14 +4,14 @@ extends RefCounted
 ##   공격력: 물리 = (무기 공격력 — 몬스터는 natural_weapon, 없으면 맨손 값) + 근력×2, 마법 = 스킬 기본값(base) + 마력(지팡이 weapon.magic) + 정신력×2
 ##   피해 = 공격력 × 위력 × 공격력/(공격력 + 방어×defense_ratio) × 상성 × 받는/주는 피해 수정자 × 조건부 위력 × 편차 (치명타면 ×1.5)
 ##     — 방어가 공격력의 절반이면 절반, 1/3이면 60%: 스탯이 수백이 되어도 "상대보다 얼마나 단단한가"로 같은 뜻이다.
-##   명중 = (스킬 명중 accuracy, 기본 95 + 명중률 스탯)% × (공격 민첩 / 대상 민첩)^hit_agi_exp, 30~100%로 제한(약점 노리기 ×배율)
-##   치명타 = 5% + crit_agi_share × 공격 민첩/(공격 민첩 + 대상 민첩) + 스킬·패시브 crit_bonus (+ 대상 상태 crit_taken, 명중엔 hit_taken — 표식)
+##   명중 = (스킬 명중 accuracy, 기본 95 + 명중률 스탯)% × ((공격 민첩+10) / (대상 민첩+10))^hit_agi_exp(0.5), 30~100%로 제한(약점 노리기 ×배율)
+##   치명타 = crit_base(4%) + crit_agi_share(12%) × 공격 민첩/(공격 민첩 + 대상 민첩) + 스킬·패시브 crit_bonus (+ 대상 상태 crit_taken, 명중엔 hit_taken — 표식)
 ##   조건부 위력: 효과 "power_if_status": {"status": [..], "power": 1.5} — 대상이 그 상태면 위력을 바꾼다.
 ##   패시브 power_vs_status {"status", "mult"}: 그 상태의 대상에게 피해 배율.
 ##   "ignore_defense": true면 방어 계수를 1로 본다(배신의 장막 오인 공격). "defense_ignore": 0.2면 방어의 20%를 무시.
 ##   속성 내성·감응도(G6): 피해 유형 x에 대상 resist_x 1점당 −element_resist_per_point(최대 element_resist_max), 공격자 affinity_x 1점당 +affinity_per_point.
 ##   "str_bonus": k — 물리 공격력에 근력×k를 더한다(키르뒤 휘두르기). 공격자 상태의 crit_bonus도 치명타율에 더한다(샤벨 타이거 기습).
-##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다.
+##   치명상(급소): 치명타가 들어가 대상 생명력이 일정 비율 이하로 떨어지면 확률로 즉사 — 양쪽 모두, 끌 수 없다(중간 보스·수호자·변이종·계층군주는 듣지 않는다 — lethal_immune_ranks).
 ##   받는/주는 피해 수정자는 하나하나 곱한다(방어 −50% × 피의 장막 −40% = ×0.3 — 더해서 0이 되지 않는다).
 ##   결과 raw = 상성·피해 수정자·속성을 곱하기 전 피해(비율형 추가 피해의 기준).
 ## 무작위 값은 rolls(0~1)로 받아서 순수 계산만 한다(테스트 가능).
@@ -42,8 +42,8 @@ static func resolve(db: GameDatabase, attacker: Actor, defender: Actor, effect: 
 		raw *= _c(db, "crit_mult", 1.5)
 	out["raw"] = raw
 	var amount := raw * float(out["affinity"])
-	amount *= _modifier_mult(defender.stats, "dmg_taken", dtype, category)
-	amount *= _modifier_mult(attacker.stats, "dmg_dealt", dtype, category)
+	amount *= _modifier_mult(db, defender.stats, "dmg_taken", dtype, category)
+	amount *= _modifier_mult(db, attacker.stats, "dmg_dealt", dtype, category)
 	amount *= element_mult(db, attacker, defender, dtype)
 	var dealt := 0 if float(out["affinity"]) <= 0.0 else maxi(int(_c(db, "min_damage", 1.0)), roundi(amount))
 	out["amount"] = dealt
@@ -108,8 +108,8 @@ static func element_mult(db: GameDatabase, attacker: Actor, defender: Actor, dty
 ## 추가 속성 피해(냉기 몽둥이 등): base만큼을 그 유형으로 — 대상 상성·받는 피해 수정자·내성·감응도를 따른다(방어·명중 없음).
 static func rider(db: GameDatabase, attacker: Actor, defender: Actor, dtype: String, base: float) -> int:
 	var category := damage_category(db, dtype)
-	var amount := base * defender.damage_affinity(dtype, category) * _modifier_mult(defender.stats, "dmg_taken", dtype, category) \
-		* _modifier_mult(attacker.stats, "dmg_dealt", dtype, category) * element_mult(db, attacker, defender, dtype)
+	var amount := base * defender.damage_affinity(dtype, category) * _modifier_mult(db, defender.stats, "dmg_taken", dtype, category) \
+		* _modifier_mult(db, attacker.stats, "dmg_dealt", dtype, category) * element_mult(db, attacker, defender, dtype)
 	return maxi(0, roundi(amount))
 
 
@@ -137,15 +137,29 @@ static func damage_category(db: GameDatabase, dtype: String) -> String:
 	return "physical"
 
 
-## "dmg_taken:<유형|분류|all>" 수정자를 하나하나 곱으로 모은다(flat은 기준 1에 더한다). skip_reductions면 1 미만으로 줄이는 것은 뺀다.
-static func _modifier_mult(stats: StatBlock, prefix: String, dtype: String, category: String) -> float:
+## "dmg_taken:<유형|분류|all>" 수정자를 하나하나 곱으로 모은다(flat은 기준 1에 더한다).
+## 상한·하한(2026-11-03 밸런스 — 곱연산이 끝없이 쌓여 정수 10개로 베기 −77%가 되던 것):
+##   · 정수·장비가 붙인 수정자(essence:/equip:)의 곱은 받는 피해 combat.taken_build_min(0.4)까지만 내려간다.
+##   · 전체(상태·몬스터 고유 포함) 곱은 받는 피해 taken_total_min(0.2)~taken_total_max(2.5), 주는 피해 dealt_total_max(3.0)까지.
+static func _modifier_mult(db: GameDatabase, stats: StatBlock, prefix: String, dtype: String, category: String) -> float:
 	var base := 1.0
-	var mult := 1.0
+	var build := 1.0
+	var other := 1.0
 	for key: String in [dtype, category, "all"]:
 		for mod: Modifier in stats.get_modifiers(prefix + ":" + key):
 			base += mod.flat
-			mult *= maxf(0.0, 1.0 + mod.percent)
-	return maxf(0.0, base * mult)
+			var m := maxf(0.0, 1.0 + mod.percent)
+			if mod.source_id.begins_with("essence:") or mod.source_id.begins_with("equip:"):
+				build *= m
+			else:
+				other *= m
+	var taken := prefix == "dmg_taken"
+	if taken:
+		build = maxf(build, _c(db, "taken_build_min", 0.4))
+	var total := maxf(0.0, base * build * other)
+	if taken:
+		return clampf(total, _c(db, "taken_total_min", 0.2), _c(db, "taken_total_max", 2.5)) if total > 0.0 else 0.0
+	return minf(total, _c(db, "dealt_total_max", 3.0))
 
 
 static func _c(db: GameDatabase, key: String, fallback: float) -> float:

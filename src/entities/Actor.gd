@@ -47,6 +47,7 @@ func _init(p_db: GameDatabase, bases: Dictionary = {}, level: int = 1, resource_
 	# 람다로 self를 잡으면 RefCounted 순환 참조(누수)가 생기므로 메서드로 잇는다.
 	statuses.applied.connect(_on_status_applied)
 	statuses.removed.connect(_on_status_removed)
+	statuses.hp_ratio_scale = _hp_ratio_dot_scale()
 	pool.sync_initial()
 
 
@@ -164,7 +165,13 @@ func _sync_passive_flags() -> void:
 		for st: Variant in JsonUtil.get_array(p, "status_immune"):
 			immune.append(str(st))
 	statuses.dot_mult = m
+	statuses.hp_ratio_scale = _hp_ratio_dot_scale()
 	statuses.passive_immune = immune
+
+
+## 비율 지속 피해 배율(플레이어 쪽 1.0 — Monster가 덮어쓴다).
+func _hp_ratio_dot_scale() -> float:
+	return 1.0
 
 
 ## 기본 공격이 원거리인가(활 등 무기 데이터 "ranged": true).
