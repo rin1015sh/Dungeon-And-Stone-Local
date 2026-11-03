@@ -9,6 +9,8 @@ const STREAM := 8  ## 집 노드를 올리고 내리는 칸 묶음
 const KEEP := Vector2i(4, 3)  ## 화면 가운데 묶음에서 몇 묶음까지 올려 둘까(가로·세로 — 화면 40×22칸 + 남쪽 집 지붕)
 
 var player: ActorView
+## 플레이어 발 자리(앞뒤 순서) — 몸은 그 안에서 땅 높이만큼 위로(player.position.y = −높이).
+var player_root: Node2D
 var sorter: Node2D
 var town: TownMap
 var _tile: float = 32.0
@@ -50,8 +52,10 @@ func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) 
 		var ctr: Vector2i = town.dais["center"]
 		var r := int(ceil(float(town.dais["r"])))
 		_prop("dais", Rect2i(ctr - Vector2i(r, r), Vector2i(r * 2, r * 2)), db.render)
+	player_root = Node2D.new()
+	sorter.add_child(player_root)
 	player = ActorView.new()
-	sorter.add_child(player)
+	player_root.add_child(player)
 	player.setup_for(pc, db.render)
 	player.drop_camera()
 	var k := TownBrush.num(db.render, "actor_scale", 0.78)
@@ -63,6 +67,7 @@ func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) 
 func _prop(kind: String, rect: Rect2i, render: Dictionary) -> void:
 	var n := TownProp.new()
 	n.setup(kind, rect, render, _tile)
+	n.lift = town.height_at(Vector2i(rect.get_center())) * _tile
 	sorter.add_child(n)
 
 
@@ -100,10 +105,10 @@ func live_count() -> int:
 
 
 ## 플레이어(세계 px — 발)를 가린 집을 흐리게: 발이 집 앞면 아래 끝보다 위(북쪽)이고 집 그림 범위 안이면.
-func update_fade(foot: Vector2) -> void:
+func update_fade(foot: Vector2, lift: float = 0.0) -> void:
 	var now: Array[TownHouse] = []
 	for h: TownHouse in _live.values():
-		if foot.y < h.position.y - 2.0 and h.bounds.has_point(foot - Vector2(0, 14)):
+		if foot.y < h.position.y - 2.0 and h.bounds.has_point(foot - Vector2(0, 14 + lift)):
 			now.append(h)
 	for h in _faded:
 		if is_instance_valid(h) and not now.has(h):

@@ -6,7 +6,7 @@ extends RefCounted
 
 const AREA_KINDS := ["street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "water", "retain", "wall", "gate", "dais"]
 const STYLES := ["gothic", "rotunda", "hall", "stone", "inn", "arcade", "workshop"]
-const PROPS := ["lamp", "tent", "board", "barrel", "crate", "sacks"]
+const PROPS := ["lamp", "tent", "board", "barrel", "crate", "sacks", "well", "grave"]
 
 
 static func run(v: ValidatorBase) -> void:
@@ -60,9 +60,9 @@ static func run(v: ValidatorBase) -> void:
 			v.err(w, "구역문 %s 앞에 걸어 닿지 않는다" % g)
 
 
-## 구역문 칸 가운데 길 쪽 한 줄(안쪽으로 이어진 칸)만 본다.
+## 구역문 칸 가운데 길 쪽 한 줄(안쪽으로 이어진 칸)만 본다(성벽 · 지도 밖 빈곳은 길이 아니다).
 static func _edge_cell(t: TownMap, g: Vector2i) -> bool:
 	for n: Vector2i in [g + Vector2i.DOWN, g + Vector2i.RIGHT, g + Vector2i.LEFT, g + Vector2i.UP]:
-		if t.map.in_bounds(n) and t.kind_at(n) != "gate" and t.kind_at(n) != "wall":
+		if t.map.in_bounds(n) and not t.kind_at(n) in ["gate", "wall", "void"]:
 			return true
 	return false

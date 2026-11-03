@@ -8,6 +8,8 @@ var size: Vector2 = Vector2(32, 32)  ## 차지한 칸 크기(세계 px)
 var render: Dictionary
 var tile: float = 32.0
 var look: int = 0
+## 선 땅 높이(세계 px — 3/4 화면에서 위로 올려 그린다, 앞뒤 순서는 발 그대로).
+var lift: float = 0.0
 var _art: Texture2D  # 구운 그림(붙잡아 둔다)
 const ART_DIR := "res://assets/town/props"
 const ART_SCALE := 1.5  ## 구운 그림 배율(칸당 48px ÷ 32)
@@ -29,6 +31,7 @@ func _c(key: String, i: int = 0) -> Color:
 
 
 func _draw() -> void:
+	draw_set_transform(Vector2(0, -lift))
 	if _art == null and ResourceLoader.exists(ART_DIR.path_join(kind + ".webp")):
 		_art = load(ART_DIR.path_join(kind + ".webp")) as Texture2D
 	if _art != null:  # 구운 그림(tools/paint_town_houses.gd --props — 횡스크롤 소품 붓, CT85): 발 = 아래 가운데
@@ -78,6 +81,9 @@ func _draw() -> void:
 			b.rect(Rect2(-14, -40, 3, 28), _c("timber"))
 			b.rect(Rect2(11, -40, 3, 28), _c("timber"))
 			b.poly(PackedVector2Array([Vector2(-20, -38), Vector2(0, -50), Vector2(20, -38)]), _c("roofs", 1), "clay")
+		"grave":
+			b.rect_v(Rect2(-5, -16, 10, 14), TownBrush.shade(_c("stone"), 1.05), TownBrush.shade(_c("stone"), 0.7), "ashlar")
+			b.ellipse(Vector2(0, -16), Vector2(5, 3), TownBrush.shade(_c("stone"), 1.2), "", 10)
 		"dais":
 			_dais(b)
 	b.flush(self)

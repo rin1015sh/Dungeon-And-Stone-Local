@@ -138,10 +138,15 @@ static func _pack(t: TownMap) -> void:
 		push_warning("구운 집이 없다 — 먼저 --part로 굽는다")
 		return
 	var items: Array[Dictionary] = []
+	var live := {}  # 지금 지도의 집만(지도를 바꾸면 옛 지도의 구운 집이 user://에 남아 있다 — CT95)
+	for h: Dictionary in t.houses:
+		live[str(h["id"])] = true
 	for f in dir.get_files():
 		if not f.ends_with(".png"):
 			continue
 		var id := f.get_basename()
+		if not live.has(id):
+			continue
 		var img := Image.load_from_file(ProjectSettings.globalize_path(BAKE.path_join(f)))
 		var meta: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BAKE.path_join(id + ".json")))
 		items.append({"id": id, "img": img, "meta": meta})

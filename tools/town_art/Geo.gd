@@ -2,7 +2,7 @@ extends RefCounted
 ## 동네 집 굽기(tools/paint_town.gd --houses)의 모양: 집 한 채(TownMap 집 사전)를 3D 면으로 —
 ## 면마다 종류(wall · gable · roof · dormer · chimney · 시설 면)와 면 위 2D 좌표틀(o + u·lu + v·lv, 칸)을 붙인다.
 ## 화가(Elev)는 그 틀에서 횡스크롤 건물처럼 평평한 입면도를 그리고, Warp가 게임 시점(화면 = (x, y − z))으로 옮겨 붙인다.
-## 크기 값은 render.json city.town(storey · base · roof_pitch · facility_pitch · overhang)과 같은 것을 쓴다(게임 TownHouse와 같은 집).
+## 크기 값은 render.json city.town(storey · base · roof_pitch · facility_pitch · roof_rise_max · overhang)과 같은 것을 쓴다(게임 TownHouse와 같은 집).
 
 var faces: Array[Dictionary] = []
 ## false면 카메라 반대쪽 면도 남긴다(다른 시점 비교·3D 렌더 — tools/town_styles.gd).
@@ -11,6 +11,7 @@ var storey := 1.0
 var base := 0.2
 var pitch := 1.15
 var facility_pitch := 0.8
+var rise_max := 99.0
 var overhang := 0.28
 
 
@@ -20,6 +21,7 @@ func _init(render: Dictionary) -> void:
 	base = JsonUtil.get_float(c, "base", base)
 	pitch = JsonUtil.get_float(c, "roof_pitch", pitch)
 	facility_pitch = JsonUtil.get_float(c, "facility_pitch", facility_pitch)
+	rise_max = JsonUtil.get_float(c, "roof_rise_max", rise_max)
 	overhang = JsonUtil.get_float(c, "overhang", overhang)
 
 
@@ -122,7 +124,7 @@ func _roof(h: Dictionary, c: Vector2, hgt: float) -> void:
 	var hr := (size.x if along_x else size.y) * 0.5
 	var hp := (size.y if along_x else size.x) * 0.5
 	var o := overhang
-	var rise := hp * (facility_pitch if not str(h.get("facility", "")).is_empty() else pitch)
+	var rise := minf(hp * (facility_pitch if not str(h.get("facility", "")).is_empty() else pitch), rise_max)
 	var ze := hgt - 0.05
 	var zr := hgt + rise
 	var e := func(i: float, j: float) -> Vector3:

@@ -3,7 +3,7 @@ tools/town_variants.gd가 남긴 날 그림(variants/raw/<id>_raw.png — 그림
   ① 붓 자국 뭉개기(쿠와하라 — 유화처럼 색이 덩어리진다) ② 면마다 잉크 윤곽(면 번호가 바뀌는 곳 · 바깥은 굵게, 떨림·끊김)
   ③ 어두운 곳 펜 빗금 ④ 종이 결·얼룩 ⑤ 색 정리(채도 조금 빼고 따뜻하게) → variants/<id>_hand.png · sheet_hand.png
   python3 tools/town_handdrawn.py [--front] [v01 v05 …]   (--front = 정면 판 variants/front/)
-  python3 tools/town_handdrawn.py --dir=concept   (도시 구상 그림 — raw/의 모든 <이름>_raw.png → <이름>_hand.png)
+  python3 tools/town_handdrawn.py --dir=concept   (도시 구상 그림 — raw/의 모든 <이름>_raw.png → <이름>_hand.png + 커밋용 <이름>_hand.jpg)
 """
 import os
 import sys
@@ -115,6 +115,8 @@ def hand(vid):
     img = img * np.array([1.03, 1.0, 0.94])
     out = Image.fromarray((np.clip(img, 0, 1) * 255).astype(np.uint8))
     out.save(os.path.join(DIR, vid + "_hand.png"))
+    if not SHEET:  # 묶음 그림(구상 그림)은 커밋용 jpg도(큰 png는 커밋하지 않는다)
+        out.convert("RGB").save(os.path.join(DIR, vid + "_hand.jpg"), quality=86)
     return out
 
 

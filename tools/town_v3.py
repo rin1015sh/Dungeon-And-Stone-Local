@@ -156,7 +156,10 @@ class Town:
 
 	def house(self, cx, cz, w, d, yaw, top, kind="house", name="", force=False) -> bool:
 		poly = rect(cx, cz, w, d, yaw)
-		return self.try_house(poly, (poly[0], poly[1]), top, kind, name, force)
+		ok = self.try_house(poly, (poly[0], poly[1]), top, kind, name, force)
+		if ok:
+			self.p.houses[-1].update({"yaw": yaw, "front_c": (cx, cz), "wd": (w, d)})
+		return ok
 
 	def along(self, name: str, seed: int, st=(2, 4), w=(4.5, 7.5), d=(5.0, 8.0), yj=11.0, setback=(0.2, 1.2), gap=(0.0, 0.7), ns_side=(-1, 1)):
 		"""길을 따라 집 — 동서 길은 북쪽 편, 남북 길은 양옆에 남쪽을 보는 집을 엇갈려."""
@@ -223,7 +226,7 @@ class Town:
 				return z, th, sw
 		raise ValueError(f"{name}: x={x} 밖")
 
-	def fac(self, num, w, d, top, street=None, x=None, at=None, yaw=None, name="", setback=0.4, jit=0.0, kind="fac"):
+	def fac(self, num, w, d, top, street=None, x=None, at=None, yaw=None, name="", setback=0.4, jit=0.0, kind="fac", fid=""):
 		"""시설·장소 건물. street + x = 그 길 북쪽 편 · at = (앞면 가운데 x, z)."""
 		if street is not None:
 			z, th, sw = self.street_point(street, x)
@@ -237,6 +240,7 @@ class Town:
 			yaw = 0.0 if yaw is None else yaw
 		poly = rect(cx, cz, w, d, yaw)
 		self.try_house(poly, (poly[0], poly[1]), top, kind, name, force=True)
+		self.p.houses[-1].update({"num": num, "facility": fid, "yaw": yaw, "front_c": (cx, cz), "wd": (w, d)})
 		mx, mz = sum(q[0] for q in poly) / 4, sum(q[1] for q in poly) / 4
 		if num:  # 번호는 앞면 왼쪽 귀퉁이 안쪽(가운데에는 이름이 온다)
 			ax, az = poly[0]

@@ -13,6 +13,8 @@ var tile: float = 32.0
 var bounds: Rect2
 ## 짓는 동안: 앞쪽 벽(문이 나는 벽 — TownLandmark.dress가 쓴다) {face, a: Vector2, b: Vector2}.
 var front: Dictionary = {}
+## 선 땅 높이(세계 px — 단 위의 집은 3/4 화면에서 그만큼 위로, 앞뒤 순서는 발 그대로, CT95).
+var lift: float = 0.0
 var _fade: float = 1.0
 var _goal: float = 1.0
 ## 구운 그림(tools/paint_town_houses.gd — 횡스크롤 건물 붓으로 그린 집, CT85): 그림판 경로 · 영역 · 그릴 자리(노드 기준). 없으면 선 그림(TownSolid).
@@ -31,6 +33,7 @@ func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
 	tile = p_tile
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	position = Vector2(0, front_y_of(h) * tile)
+	lift = float(h.get("elev", 0.0)) * tile
 	var e := baked(h)
 	if not e.is_empty():
 		var r: Array = e["rect"]
@@ -38,12 +41,13 @@ func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
 		var k := float(_index.get("scale", 1.5))
 		_page = "res://assets/town/houses/p%d.webp" % int(e["page"])
 		_region = Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
-		_dest = Rect2(Vector2(float(o[0]), float(o[1])) * tile / 32.0, _region.size / k * tile / 32.0)
+		_dest = Rect2(Vector2(float(o[0]), float(o[1])) * tile / 32.0 - Vector2(0, lift), _region.size / k * tile / 32.0)
 		bounds = Rect2(_dest.position + position, _dest.size)
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		texture_repeat = CanvasItem.TEXTURE_REPEAT_DISABLED
 	else:
 		bounds = _build().measure()
+		bounds.position.y -= lift
 
 
 ## 이 집의 구운 그림 자리(index.json — 모양 값이 같을 때만, 아니면 {}).
@@ -136,7 +140,7 @@ func _draw() -> void:
 
 
 func _build() -> TownSolid:
-	var s := TownSolid.new(tile, position.y, render)
+	var s := TownSolid.new(tile, position.y + lift, render)
 	match str(house.get("style", "")):
 		"rotunda":
 			TownLandmark.rotunda(s, self)
@@ -204,7 +208,8 @@ func _roof(s: TownSolid, cs: PackedVector2Array, c: Vector2, hgt: float) -> void
 	var hr := (size.x if along_x else size.y) * 0.5
 	var hp := (size.y if along_x else size.x) * 0.5
 	var o := num("overhang", 0.28)
-	var rise := hp * (num("facility_pitch", 0.8) if not str(house.get("facility", "")).is_empty() else num("roof_pitch", 1.15))
+	var rise := minf(hp * (num("facility_pitch", 0.8) if not str(house.get("facility", "")).is_empty() else num("roof_pitch", 1.15)),
+		num("roof_rise_max", 99.0))  # 깊은 집(v3 — 집 키트 크기)도 지붕이 산처럼 솟지 않게
 	var ze := hgt - 0.05
 	var zr := hgt + rise
 	var rc := roof_color()

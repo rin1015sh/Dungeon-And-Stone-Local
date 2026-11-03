@@ -133,15 +133,18 @@ func _sync_view() -> void:
 	if _world == null:
 		return
 	var p := _world.player
-	p.position = pos * _tile
+	var lift := _town.elevation(pos) * _tile
+	_world.player_root.position = pos * _tile
+	p.position = Vector2(0, -lift)
 	p.face(facing)
 	var map_px := Vector2(_town.width, _town.height) * _tile
+	var top := -_town.max_height() * _tile  # 높은 단은 위로 올라가 그려진다
 	var view := Vector2(_vp.size) / _cam.zoom
-	var at := p.position - Vector2(0, _tile * 0.6)
+	var at := pos * _tile - Vector2(0, lift + _tile * 0.6)
 	_cam.position = Vector2(clampf(at.x, view.x * 0.5, maxf(view.x * 0.5, map_px.x - view.x * 0.5)),
-		clampf(at.y, view.y * 0.5, maxf(view.y * 0.5, map_px.y - view.y * 0.5)))
-	_world.stream(_cam.position)
-	_world.update_fade(p.position)
+		clampf(at.y, top + view.y * 0.5, maxf(top + view.y * 0.5, map_px.y - view.y * 0.5)))
+	_world.stream(_cam.position + Vector2(0, lift))
+	_world.update_fade(pos * _tile, lift)
 
 
 func _unhandled_input(event: InputEvent) -> void:

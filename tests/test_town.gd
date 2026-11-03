@@ -1,5 +1,6 @@
 extends TestCase
 ## 도시 동네 지도(CT82 — 2026-11-02 사용자 "횡스크롤을 버리자 · 7구역 전체 · M0"): 라비기온 7구역 칸 지도 · 시설 문 · 걷기 · 실내는 없다.
+## v3(CT95 — 2026-11-03 "좋은데 이대로 진행해 봐"): 도시 구상 v3 안 A 1/4 판(80 × 110칸 · 살짝 뒤틀린 집 · 단 셋 · 수로 · 퀘스트 자리).
 
 
 func _town() -> TownMap:
@@ -8,10 +9,10 @@ func _town() -> TownMap:
 
 func test_district_is_dense_and_every_door_is_reachable() -> void:
 	var t := _town()
-	assert_eq(Vector2i(t.width, t.height), Vector2i(128, 176), "7구역 전체 128×176칸")
+	assert_eq(Vector2i(t.width, t.height), Vector2i(80, 110), "v3 1/4 판 80×110칸(세로로 길다)")
 	assert_true(t.is_walkable(t.start), "들어온 자리는 걷는 칸")
 	var plain := t.houses.filter(func(h: Dictionary) -> bool: return str(h["facility"]).is_empty())
-	assert_true(plain.size() >= 400, "집이 오밀조밀하다(%d채)" % plain.size())
+	assert_true(plain.size() >= 70, "집이 오밀조밀하다(%d채)" % plain.size())
 	var reach := t.map.reachable_from(t.start)
 	var order: Array = JsonUtil.get_array(db.singletons.get("city", {}), "facility_order")
 	for fac: Variant in order:
@@ -23,7 +24,7 @@ func test_district_is_dense_and_every_door_is_reachable() -> void:
 	assert_eq(t.house_of("library").get("style", ""), "rotunda", "도서관은 원형 열람당(사용자 2026-11-02)")
 
 
-func test_houses_are_small_and_twisted() -> void:
+func test_houses_are_twisted_and_block_walking() -> void:
 	var t := _town()
 	var big := 0
 	var twisted := 0
@@ -33,7 +34,7 @@ func test_houses_are_small_and_twisted() -> void:
 			continue
 		plain += 1
 		var size: Vector2 = h["size"]
-		if size.x > TownMap.W_MAX + 0.01 or size.y > TownMap.D_MAX + 0.01:
+		if size.x > 12.5 or size.y > 12.5:
 			big += 1
 		if absf(rad_to_deg(float(h["angle"]))) > 3.0:
 			twisted += 1
@@ -42,9 +43,10 @@ func test_houses_are_small_and_twisted() -> void:
 				var d := Vector2(x + 0.5, y + 0.5) - (h["center"] as Vector2)
 				var a := float(h["angle"])
 				if absf(d.dot(Vector2(cos(a), sin(a)))) <= size.x * 0.5 and absf(d.dot(Vector2(-sin(a), cos(a)))) <= size.y * 0.5:
-					assert_eq(t.kind_at(Vector2i(x, y)), "house", "집 칸은 막힌다")
-	assert_eq(big, 0, "집은 작다(폭 ≤ %.1f · 깊이 ≤ %.1f칸)" % [TownMap.W_MAX, TownMap.D_MAX])
-	assert_true(twisted * 2 >= plain, "집 절반 이상이 길과 어긋나게 기울었다(%d/%d)" % [twisted, plain])
+					if t.kind_at(Vector2i(x, y)) != "void":  # 지도 가장자리 빈곳에 걸친 집 끝은 그대로 빈곳
+						assert_eq(t.kind_at(Vector2i(x, y)), "house", "집 칸은 막힌다")
+	assert_eq(big, 0, "집은 사람 크기 문에 맞는 크기(폭 · 깊이 ≤ 12칸 — 창고가 가장 크다)")
+	assert_true(twisted * 2 >= plain, "집 절반 이상이 살짝 뒤틀렸다(%d/%d)" % [twisted, plain])
 
 
 func test_walk_blocked_by_houses_and_stairs_go_up_down() -> void:
@@ -59,7 +61,7 @@ func test_walk_blocked_by_houses_and_stairs_go_up_down() -> void:
 		for x in t.width:
 			if t.kind_at(Vector2i(x, y)) == "stairs":
 				stairs += 1
-	assert_true(stairs > 40, "테라스 사이 계단")
+	assert_true(stairs > 40, "단 사이 계단")
 	assert_true(t.gates.size() > 0, "구역문")
 	var ring := t.target(Vector2(t.dais["center"]) + Vector2(0.5, float(t.dais["r"]) + 0.5), Vector2i.UP)
 	assert_true(ring.has("ring"), "광장 돌 단을 바라본다")
@@ -88,3 +90,38 @@ func test_every_house_is_baked() -> void:
 		pages[int((e as Dictionary)["page"])] = true
 	for k: int in pages:
 		assert_true(ResourceLoader.exists("res://assets/town/houses/p%d.webp" % k), "그림판 %d" % k)
+
+
+func test_terraces_heights_and_places() -> void:
+	var t := _town()
+	var north := t.height_at(Vector2i(10, 10))
+	var mid := t.height_at(t.start)
+	var south := t.height_at(Vector2i(10, 92))
+	assert_true(north > mid and mid > south, "북쪽이 높은 단 셋(%.1f · %.1f · %.1f)" % [north, mid, south])
+	var retain := 0
+	for x in t.width:
+		for y in t.height:
+			if t.kind_at(Vector2i(x, y)) == "retain":
+				retain += 1
+	assert_true(retain > 60, "단 경계는 옹벽(%d칸)" % retain)
+	var stair := Vector2i(-1, -1)
+	for y in t.height:
+		for x in t.width:
+			if stair.x < 0 and t.kind_at(Vector2i(x, y)) == "stairs" and t.kind_at(Vector2i(x, y + 1)) == "stairs":
+				stair = Vector2i(x, y)
+	assert_true(stair.x >= 0, "계단")
+	assert_true(t.height_at(stair) > t.height_at(stair + Vector2i.DOWN), "계단은 남쪽으로 내려간다")
+	var e := t.elevation(Vector2(stair) + Vector2(0.5, 0.95))
+	assert_true(e < t.height_at(stair) and e > t.height_at(stair + Vector2i.DOWN), "계단 위 몸 높이는 칸 사이를 잇는다")
+	var ids := {}
+	for p: Dictionary in t.places:
+		ids[str(p["id"])] = true
+	for id in ["tavern", "well", "sewer_entrance", "black_market", "guard_post", "under_bridge"]:
+		assert_true(ids.has(id), "퀘스트 자리 " + id)
+	var water := 0
+	for y in t.height:
+		for x in t.width:
+			if t.kind_at(Vector2i(x, y)) == "water":
+				water += 1
+				assert_true(t.height_at(Vector2i(x, y)) < south, "수로 물은 아랫단보다 낮다")
+	assert_true(water > 100, "남쪽 수로")

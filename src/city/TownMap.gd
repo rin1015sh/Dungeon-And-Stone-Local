@@ -35,7 +35,12 @@ var doors: Dictionary = {}
 var gates: Dictionary = {}
 ## 광장 돌 단 {center: Vector2i, r}
 var dais: Dictionary = {}
+## 퀘스트 · 거리 사건 자리(data places — 지금은 자리만, CT95): [{id, name_ko, at: [Vector2(칸)]}]
+var places: Array[Dictionary] = []
 var _kind := PackedByteArray()
+var _h := PackedFloat32Array()  # 칸 높이(칸 — 단 · 계단 · 수로, 3/4 화면에서 위로 올려 그린다)
+var _set_h: Dictionary = {}
+var _max_h: float = 0.0  # 영역이 높이를 따로 정한 칸(h)
 var _under: Dictionary = {}  # 소품 칸 → 그 밑 바닥 종류(그리기)
 
 
@@ -58,17 +63,30 @@ func _build(db: GameDatabase, map_id: String, cfg: Dictionary) -> void:
 	height = int(size[1]) if size.size() == 2 else 0
 	_kind.resize(width * height)
 	_kind.fill(0)
+	_h.resize(width * height)
+	_h.fill(0.0)
 	var st := JsonUtil.get_array(def, "start")
 	start = Vector2i(int(st[0]), int(st[1])) if st.size() == 2 else Vector2i(width / 2, height / 2)
 	for a: Variant in JsonUtil.get_array(def, "areas"):
 		_paint_area(a as Dictionary)
+	_heights(JsonUtil.get_array(def, "bands"))
 	var rng := Rng.new(maxi(1, JsonUtil.get_int(def, "seed", 7)))
+	for e: Variant in JsonUtil.get_array(def, "houses"):
+		_explicit_house(e as Dictionary, rng)
 	for b: Variant in JsonUtil.get_array(def, "buildings"):
 		_building(b as Dictionary, rng)
 	for b: Variant in JsonUtil.get_array(def, "blocks"):
 		_block(b as Array, rng)
 	for p: Variant in JsonUtil.get_array(def, "props"):
 		_props(p as Dictionary)
+	for pl: Variant in JsonUtil.get_array(def, "places"):
+		var at: Array[Vector2] = []
+		for v: Variant in JsonUtil.get_array(pl as Dictionary, "at"):
+			at.append(Vector2(float((v as Array)[0]), float((v as Array)[1])))
+		places.append({"id": JsonUtil.get_str(pl as Dictionary, "id"), "name_ko": JsonUtil.get_str(pl as Dictionary, "name_ko"), "at": at})
+	for h in houses:  # 집이 선 땅 높이(3/4 화면에서 위로 올려 그린다)
+		var hc: Vector2 = h["center"] if h.has("center") else Vector2(float(h["circle"][0]), float(h["circle"][1]))
+		h["elev"] = height_at(Vector2i(hc.floor()))
 	map = FloorMap.new(db, width, height, JsonUtil.get_str(cfg, "block_tile", "rock_wall"))
 	var floor_tile := JsonUtil.get_str(cfg, "floor_tile", "cave_floor")
 	for y in height:
@@ -87,6 +105,30 @@ func kind_at(c: Vector2i) -> String:
 func ground_at(c: Vector2i) -> String:
 	var k := kind_at(c)
 	return str(_under.get(c, "street")) if k == "prop" else k
+
+
+## 칸 높이(칸 — 단 · 계단 · 수로). 지도 밖은 0.
+func height_at(c: Vector2i) -> float:
+	if c.x < 0 or c.y < 0 or c.x >= width or c.y >= height:
+		return 0.0
+	return _h[c.y * width + c.x]
+
+
+## 가장 높은 땅(칸 — 카메라가 위로 얼마나 더 갈 수 있나).
+func max_height() -> float:
+	return _max_h
+
+
+## 몸 자리(칸 좌표)의 높이 — 계단에서는 칸 사이를 이어 부드럽게.
+func elevation(pos: Vector2) -> float:
+	var c := Kinematics.cell_of(pos)
+	var h := height_at(c)
+	if kind_at(c) == "stairs":
+		var t: float = pos.y - floorf(pos.y) - 0.5
+		var n := c + (Vector2i.DOWN if t > 0.0 else Vector2i.UP)
+		if kind_at(n) in WALK:
+			h = lerpf(h, height_at(n), absf(t))
+	return h
 
 
 func is_walkable(c: Vector2i) -> bool:
@@ -149,7 +191,11 @@ static func circle_cells(cx: float, cy: float, r: float) -> Array[Vector2i]:
 func _paint_area(a: Dictionary) -> void:
 	var k := JsonUtil.get_str(a, "kind", "street")
 	var cells: Array[Vector2i] = []
-	if a.has("circle"):
+	if a.has("poly"):
+		cells = poly_cells(_vecs(JsonUtil.get_array(a, "poly")))
+	elif a.has("line"):
+		cells = line_cells(_vecs(JsonUtil.get_array(a, "line")), JsonUtil.get_float(a, "width", 3.0))
+	elif a.has("circle"):
 		var c := JsonUtil.get_array(a, "circle")
 		cells = circle_cells(float(c[0]), float(c[1]), float(c[2]))
 		if k == "dais":
@@ -161,6 +207,10 @@ func _paint_area(a: Dictionary) -> void:
 				cells.append(Vector2i(x, y))
 	for c in cells:
 		_put(c, k)
+		if a.has("h"):
+			_set_h[c] = JsonUtil.get_float(a, "h")
+		else:
+			_set_h.erase(c)
 		if k == "gate":
 			gates[c] = {"gate": JsonUtil.get_str(a, "id"), "travel": JsonUtil.get_bool(a, "travel")}
 
@@ -307,3 +357,128 @@ func _props(p: Dictionary) -> void:
 				_under[Vector2i(x, y)] = kind_at(Vector2i(x, y))
 		_fill(r, "prop")
 		props.append({"kind": k, "rect": r})
+
+
+static func _vecs(a: Array) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	for v: Variant in a:
+		out.append(Vector2(float((v as Array)[0]), float((v as Array)[1])))
+	return out
+
+
+## 다각형 안의 칸(칸 가운데가 안).
+func poly_cells(poly: PackedVector2Array) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for p in poly:
+		lo = lo.min(p)
+		hi = hi.max(p)
+	for y in range(maxi(0, int(floor(lo.y))), mini(height, int(ceil(hi.y)) + 1)):
+		for x in range(maxi(0, int(floor(lo.x))), mini(width, int(ceil(hi.x)) + 1)):
+			if Geometry2D.is_point_in_polygon(Vector2(x + 0.5, y + 0.5), poly):
+				out.append(Vector2i(x, y))
+	return out
+
+
+## 굽은 길(꺾은선 둘레 width/2 안의 칸).
+func line_cells(line: PackedVector2Array, w: float) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var seen := {}
+	var r := w * 0.5
+	for i in line.size() - 1:
+		var a := line[i]
+		var b := line[i + 1]
+		for y in range(maxi(0, int(floor(minf(a.y, b.y) - r))), mini(height, int(ceil(maxf(a.y, b.y) + r)) + 1)):
+			for x in range(maxi(0, int(floor(minf(a.x, b.x) - r))), mini(width, int(ceil(maxf(a.x, b.x) + r)) + 1)):
+				var c := Vector2i(x, y)
+				if seen.has(c):
+					continue
+				var q := Geometry2D.get_closest_point_to_segment(Vector2(x + 0.5, y + 0.5), a, b)
+				if q.distance_to(Vector2(x + 0.5, y + 0.5)) <= r:
+					seen[c] = true
+					out.append(c)
+	return out
+
+
+## 단 높이: bands = [{h, line(그 단의 남쪽 경계)}…, {h}] 북→남. 경계가 지나는 칸은 옹벽(길·계단·물·다리는 그대로).
+## 계단 칸은 위(북)에서 아래(남)로 이어지게 높이를 나눈다. 영역이 h를 정한 칸(수로 물)은 그 값.
+func _heights(bands: Array) -> void:
+	if bands.is_empty():
+		return
+	var lines: Array[PackedVector2Array] = []
+	var hs: Array[float] = []
+	for b: Variant in bands:
+		lines.append(_vecs(JsonUtil.get_array(b as Dictionary, "line")))
+		hs.append(JsonUtil.get_float(b as Dictionary, "h"))
+	for y in height:
+		for x in width:
+			var h := hs[hs.size() - 1]
+			for i in range(lines.size() - 1, -1, -1):
+				if lines[i].size() >= 2 and float(y) + 0.5 < _z_on(lines[i], float(x) + 0.5):
+					h = hs[i]
+			_h[y * width + x] = h
+	for i in lines.size():  # 옹벽: 경계가 지나는 칸(위 단 높이)
+		if lines[i].size() < 2:
+			continue
+		for x in width:
+			var c := Vector2i(x, int(floor(_z_on(lines[i], float(x) + 0.5))))
+			if kind_at(c) in ["street", "avenue", "paving", "yard", "plaza"]:
+				_put(c, "retain")
+				_h[c.y * width + c.x] = hs[i]
+	var stairs := {}
+	for y in height:
+		for x in width:
+			if kind_at(Vector2i(x, y)) == "stairs":
+				stairs[Vector2i(x, y)] = true
+	for c: Vector2i in stairs:  # 계단: 같은 열에서 계단 칸 위아래 끝의 높이를 잇는다
+		var top := c
+		while stairs.has(top + Vector2i.UP):
+			top += Vector2i.UP
+		var bot := c
+		while stairs.has(bot + Vector2i.DOWN):
+			bot += Vector2i.DOWN
+		var hi := height_at(top + Vector2i.UP)
+		var lo := height_at(bot + Vector2i.DOWN)
+		var n := float(bot.y - top.y + 2)
+		_h[c.y * width + c.x] = lerpf(hi, lo, float(c.y - top.y + 1) / n)
+	for c: Vector2i in _set_h:
+		_h[c.y * width + c.x] = float(_set_h[c])
+	for v in _h:
+		_max_h = maxf(_max_h, v)
+
+
+## 꺾은선(동서로 이어진 경계)이 x에서 지나는 z.
+static func _z_on(line: PackedVector2Array, x: float) -> float:
+	for i in line.size() - 1:
+		var a := line[i]
+		var b := line[i + 1]
+		if a.x <= x and x <= b.x and b.x > a.x:
+			return lerpf(a.y, b.y, (x - a.x) / (b.x - a.x))
+	return line[line.size() - 1].y if x > line[line.size() - 1].x else line[0].y
+
+
+## 목록으로 준 집 하나(구상 배치 — 가운데 · 폭 · 깊이 · 각도(도) · 층 · place). 칸 가운데가 필지 안인 칸을 집으로(길 칸도 덮는다).
+func _explicit_house(e: Dictionary, rng: Rng) -> void:
+	var ctr := Vector2(_vecs([JsonUtil.get_array(e, "center")])[0])
+	var sz := JsonUtil.get_array(e, "size")
+	var size := Vector2(float(sz[0]), float(sz[1]))
+	var ang := deg_to_rad(JsonUtil.get_float(e, "angle"))
+	var ax := Vector2(cos(ang), sin(ang))
+	var ay := Vector2(-sin(ang), cos(ang))
+	var lo := Vector2i(1 << 20, 1 << 20)
+	var hi := Vector2i(-1, -1)
+	for k in 4:
+		var p := ctr + ax * size.x * (0.5 if k % 2 == 1 else -0.5) + ay * size.y * (0.5 if k >= 2 else -0.5)
+		lo = Vector2i(mini(lo.x, int(floor(p.x))), mini(lo.y, int(floor(p.y))))
+		hi = Vector2i(maxi(hi.x, int(floor(p.x))), maxi(hi.y, int(floor(p.y))))
+	for y in range(lo.y, hi.y + 1):
+		for x in range(lo.x, hi.x + 1):
+			var d := Vector2(x + 0.5, y + 0.5) - ctr
+			if absf(d.dot(ax)) <= size.x * 0.5 and absf(d.dot(ay)) <= size.y * 0.5 and kind_at(Vector2i(x, y)) != "void":
+				_put(Vector2i(x, y), "house")
+	var styles := ["stone", "timber", "plaster"]
+	houses.append({"id": "h%d" % houses.size(), "center": ctr, "size": size, "angle": ang, "rect": Rect2i(lo, hi - lo + Vector2i.ONE),
+		"floors": clampi(JsonUtil.get_int(e, "floors", rng.randi_range(FLOORS_MIN, FLOORS_MAX)), 1, 5),
+		"roof": "hip" if rng.randf() < HIP_CHANCE else "gable", "ridge_long": rng.randf() < 0.7, "style": styles[rng.randi_range(0, 2)],
+		"look": rng.randi_range(0, 999), "facility": "", "place": JsonUtil.get_str(e, "place"), "door": Vector2i(-1, -1)})
