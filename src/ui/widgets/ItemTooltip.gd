@@ -7,7 +7,9 @@ extends RefCounted
 ## 툴팁 Control. actor가 있으면 장착품과 비교한다.
 static func build(db: GameDatabase, item_id: String, actor: Actor = null, count: int = 1, price: int = -1) -> Control:
 	var row := BoxContainer.new()  # 옆으로 나란히 — 화면에 자리가 없으면 띄우는 쪽이 세로로 쌓는다(InventoryPage._place_tip)
-	row.add_child(panel(db, item_id, false, count, price))
+	var main := panel(db, item_id, false, count, price)
+	main.set_meta("hovered", true)  # 지금 보고 있는 아이템 — 띄우는 쪽이 커서에 더 가깝게 놓는다(InventoryPage._place_tip)
+	row.add_child(main)
 	if actor != null and not ItemInfo.equip(db, item_id).is_empty():
 		var slot := actor.equipment.pick_slot(item_id)
 		var worn := actor.equipment.item_in(slot) if not slot.is_empty() else ""

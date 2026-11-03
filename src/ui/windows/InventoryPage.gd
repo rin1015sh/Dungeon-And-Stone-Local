@@ -467,5 +467,13 @@ func _place_tip() -> void:
 	_tip.size = sz
 	if is_nan(x):
 		x = clampf(r.end.x + gap, gap, maxf(gap, view.x - sz.x - gap))
+	if _tip is BoxContainer and _tip.get_child_count() > 1 and not (_tip as BoxContainer).vertical:
+		# 지금 보는 아이템 설명이 커서에 더 가깝게: 커서 왼쪽에 뜨면 보는 쪽이 오른쪽, 오른쪽에 뜨면 왼쪽(비교 장비는 바깥쪽)
+		var main: Node = null
+		for c: Node in _tip.get_children():
+			if c.has_meta("hovered"):
+				main = c
+		if main != null:
+			_tip.move_child(main, _tip.get_child_count() - 1 if x + sz.x <= r.position.x + 1.0 else 0)
 	var y := clampf(_cursor_global().y, gap, maxf(gap, view.y - sz.y - gap))
 	_tip.global_position = Vector2(x, y)
