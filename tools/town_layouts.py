@@ -37,6 +37,7 @@ PLAZA_C = (176, 168, 148)
 ROOFS = [(112, 76, 60), (98, 66, 54), (122, 86, 66), (88, 64, 56), (106, 82, 70), (94, 72, 62)]
 FAC = (138, 92, 66)
 WALL = (40, 37, 34)
+SEWER = (110, 168, 186)
 
 
 def font(n: int) -> ImageFont.FreeTypeFont:
@@ -92,6 +93,12 @@ class Plan:
 		self.raised: list = []  # (점들, 높이) — 단 위에 돋운 땅(돋운 광장 등)
 		self.pavings: list = []  # 점들 — 광장 판석(다각형)
 		self.discs: list = []  # (x, z, r, 높이, 색) — 둥근 단(광장 돌 단 등)
+		self.streets: list = []  # (점들, 폭) — 포석 길(밝게)
+		self.channels: list = []  # (점들, 폭, 물 높이) — 굽은 수로
+		self.bridges: list = []  # (점들, 폭, 높이) — 다리 판
+		self.outline: list = []  # 점들 — 지도 안쪽(밖은 검은 빈곳 — 참고 그림처럼)
+		self.sewers: list = []  # 점들 — 하수도 굴(땅 밑, 배치도에만 점선)
+		self.markers: list = []  # (x, z, 번호) — 장소 번호(배치도에만)
 		self.slabs: list = []  # (점들, 밑 높이, 위 높이 — 땅 기준) — 떠 있는 지붕(회랑): 밑으로는 보이고 지붕은 가린다
 
 	# 줄: 앞선(서→동 꺾은선)을 따라 집을 한 채씩 붙인다. 앞면 = 선, 집은 북쪽(뒤)으로 depth만큼.
@@ -157,11 +164,19 @@ def raster(p: Plan):
 		dg.polygon(poly, fill=h)
 	for poly, h in p.raised:
 		dg.polygon([px(*q) for q in poly], fill=h)
+	for pts, w, lv in p.channels:
+		thick(dg, pts, w, lv)
+	for pts, w, h in p.bridges:
+		thick(dg, pts, w, h)
 	# 남쪽 끝 단(마지막 경계 남쪽)은 맨 아래 높이 — bands 마지막 항목이 그 높이를 갖는다.
 	for x0, z0, x1, z1, hi, lo in p.stairs:
 		for k in range(int((z1 - z0) * S) + 1):
 			zz = z0 + k / S
 			dg.line([px(x0, zz), px(x1, zz)], fill=hi + (lo - hi) * (zz - z0) / max(z1 - z0, 1e-6))
+	if p.outline:
+		M = Image.new("L", (W, H), 0)
+		ImageDraw.Draw(M).polygon([px(*q) for q in p.outline], fill=1)
+		dg.bitmap((0, 0), Image.fromarray(((1 - np.array(M)) * 255).astype(np.uint8)), fill=-30.0)
 	g = np.array(G)
 	B = Image.new("F", (W, H), -99.0)
 	db = ImageDraw.Draw(B)
@@ -174,11 +189,11 @@ def raster(p: Plan):
 		db.polygon([px(*q) for q in hs["poly"]], fill=base + hs["top"])
 	for x, z, r, top, _n in p.rounds:
 		gx, gz = px(x, z)
-		base = float(g[int(gz), int(gx)])
+		base = float(g[min(max(int(gz), 0), H - 1), min(max(int(gx), 0), W - 1)])
 		db.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=base + top)
 	for x, z, r, h, _c in p.discs:
 		gx, gz = px(x, z)
-		db.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=float(g[int(gz), int(gx)]) + h)
+		db.ellipse([px(x - r, z - r), px(x + r, z + r)], fill=float(g[min(max(int(gz), 0), H - 1), min(max(int(gx), 0), W - 1)]) + h)
 	for pts, h in p.walls:
 		for a, b in zip(pts, pts[1:]):
 			gx, gz = px(*a)
@@ -207,22 +222,45 @@ def raster(p: Plan):
 	return g, b, vis
 
 
+def thick(d, pts, w, fill):
+	"""굵은 꺾은선(이음매 둥글게)."""
+	q = [px(*a) for a in pts]
+	d.line(q, fill=fill, width=max(1, int(w * S)))
+	for x, y in q:
+		r = w * S / 2
+		d.ellipse([x - r, y - r, x + r, y + r], fill=fill)
+
+
 # ---------- 그리기 ----------
 
 def draw_plan(p: Plan, clean: bool = False) -> Image.Image:
 	"""clean = 카메라 그림의 바닥·지붕 색으로 쓸 판(빗금·글·선 없음)."""
 	g, b, vis = raster(p)
 	img = np.zeros((H, W, 3), np.uint8)
-	for h, c in GROUND.items():
-		img[np.abs(g - h) < 0.01] = c
+	known = {h for _l, h in p.bands} | {h for _q, h in p.raised} | {lv for _q, _w, lv in p.channels} | {h for _q, _w, h in p.bridges}
 	ramp = np.ones((H, W), bool)
-	for h in GROUND:
-		ramp &= np.abs(g - h) >= 0.01
+	for h in known:
+		c = GROUND.get(h, tuple(int(min(255, max(0, v + h * 4.5))) for v in (122, 114, 98)))
+		m = np.abs(g - h) < 0.01
+		img[m] = c
+		ramp &= ~m
 	img[ramp] = (132, 124, 108)  # 계단
+	img[g < -20] = (12, 11, 10)  # 지도 밖
 	im = Image.fromarray(img)
 	d = ImageDraw.Draw(im)
 	for x0, z0, x1, z1 in p.water:
 		d.rectangle([px(x0, z0), px(x1, z1)], fill=WATER)
+	if p.streets:  # 한 번에 섞는다(겹치는 이음매가 더 밝아지지 않게)
+		SM = Image.new("L", (W, H), 0)
+		ds = ImageDraw.Draw(SM)
+		for pts, w in p.streets:
+			thick(ds, pts, w, 46)
+		im = Image.composite(Image.new("RGB", (W, H), (236, 226, 204)), im, SM)
+		d = ImageDraw.Draw(im)
+	for pts, w, _lv in p.channels:
+		thick(d, pts, w, WATER)
+	for pts, w, _h in p.bridges:
+		thick(d, pts, w, (124, 104, 84))
 	for poly in p.yards:
 		d.polygon([px(*q) for q in poly], fill=YARD)
 	for x, z, r in p.plazas:
@@ -264,6 +302,13 @@ def draw_plan(p: Plan, clean: bool = False) -> Image.Image:
 		d.line([px(*q) for q in pts], fill=WALL if h > 3 else (70, 64, 58), width=max(3, int(0.6 * S)) if h > 3 else 3)
 	for path in ([] if clean else p.paths):
 		dashed(d, [px(*q) for q in path], ALLEY, 3, 10, 7)
+	for path in ([] if clean else p.sewers):
+		dashed(d, [px(*q) for q in path], SEWER, 3, 6, 5)
+	if p.outline:
+		M = Image.new("L", (W, H), 255)
+		ImageDraw.Draw(M).polygon([px(*q) for q in p.outline], fill=0)
+		im.paste((12, 11, 10), (0, 0), M)
+		d = ImageDraw.Draw(im)
 	rng = random.Random(p.key)
 	for hs in p.houses:
 		poly = [px(*q) for q in hs["poly"]]
@@ -300,6 +345,14 @@ def draw_plan(p: Plan, clean: bool = False) -> Image.Image:
 		lab(d, px(x, z), name, "fac")
 	for x, z, text, kind in p.labels:
 		lab(d, px(x, z), text, kind)
+	for x, z, n in p.markers:
+		cx, cy = px(x, z)
+		r = 9
+		d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(30, 28, 26), outline=GOLD, width=2)
+		t = str(n)
+		f = font(11 if len(t) > 1 else 12)
+		tw = d.textlength(t, font=f)
+		d.text((cx - tw / 2, cy - 8), t, font=f, fill=BONE)
 	# 카메라
 	cx, cy = W - 70, H - 14
 	d.polygon([(cx, cy - 34), (cx - 9, cy - 16), (cx + 9, cy - 16)], fill=BONE)
@@ -319,7 +372,7 @@ def dashed(d, pts, color, width, on, off):
 
 
 def lab(d, at, text, kind):
-	style = {"fac": (font(19), GOLD), "street": (font(14), BONE), "alley": (font(14), ALLEY), "band": (font(14), DIM), "note": (font(13), DIM)}
+	style = {"sewer": (font(13), SEWER), "fac": (font(19), GOLD), "street": (font(14), BONE), "alley": (font(14), ALLEY), "band": (font(14), DIM), "note": (font(13), DIM)}
 	f, c = style[kind]
 	bb = d.textbbox((0, 0), text, font=f)
 	x, y = at[0] - (bb[2] - bb[0]) / 2, at[1] - (bb[3] - bb[1]) / 2 - bb[1]

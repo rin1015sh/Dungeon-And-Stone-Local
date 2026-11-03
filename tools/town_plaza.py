@@ -179,7 +179,7 @@ def camera_view(p: Plan) -> tuple:
 						if hid < 5000 and p.houses[k]["kind"] == "post":
 							col = (120, 112, 100)
 					else:
-						col = STONE
+						col = STONE if prev > -20 else (12, 11, 10)
 					out[y + 1:ylim, c] = col
 					sid[y + 1:ylim, c] = hid * 2 + 1 if hid else -3
 					sz[y + 1:ylim, c] = zc[i]
@@ -254,7 +254,10 @@ def camera_view(p: Plan) -> tuple:
 			mz = max(q[1] for q in hs["poly"])
 			lab(d, P(mx, mz, hs["base"] + hs["top"] + 1.4), hs["name"], "fac")
 	for x, z, r, t, n in p.rounds:
-		lab(d, P(x, z + r, 7.2 + t + 1.4), n, "fac")
+		if n:
+			gi = min(max(int((z - Z0) * S), 0), H - 1)
+			gj = min(max(int((x - tl.X0) * S), 0), W - 1)
+			lab(d, P(x, z + r, float(g[gi, gj]) + t + 1.4), n, "fac")
 	lab(d, P(cx + 7.5, cz, (2.4 if p.raised else 0) + 2.6), "차원광장", "fac")
 	return img, sid
 
