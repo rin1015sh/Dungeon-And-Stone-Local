@@ -1,6 +1,7 @@
 extends TestCase
 ## 도시 동네 지도(CT82 — 2026-11-02 사용자 "횡스크롤을 버리자 · 7구역 전체 · M0"): 라비기온 7구역 칸 지도 · 시설 문 · 걷기 · 실내는 없다.
 ## v3(CT95 — 2026-11-03 "좋은데 이대로 진행해 봐"): 도시 구상 v3 안 A 1/4 판(80 × 110칸 · 살짝 뒤틀린 집 · 단 셋 · 수로 · 퀘스트 자리).
+## v4(CT100 — 2026-11-03 "흩뿌려진 거 말고 맨 처음 기획처럼 딱딱 맞아떨어지게, 각도 비튼 버전도"): 블록 둘레 줄집 · 비튼 블록 동네 둘(tools/town_v4.py).
 
 
 func _town() -> TownMap:
@@ -51,6 +52,16 @@ func test_houses_are_tidy_shallow_and_block_walking() -> void:
 						overlap += 1
 					owner[Vector2i(x, y)] = h["id"]
 	assert_true(shallow * 10 >= plain * 9, "집 대부분이 얕다(깊이 ≤ 6칸 — %d/%d)" % [shallow, plain])
+	# 블록 도시(CT100): 집은 블록 둘레에 맞닿아 선다 — 거의 모든 집이 옆집과 칸을 맞댄다 · 비튼 블록 집도 있다
+	var touching := {}
+	for c: Vector2i in owner:
+		for d: Vector2i in [Vector2i.RIGHT, Vector2i.DOWN]:
+			if owner.has(c + d) and owner[c + d] != owner[c]:
+				touching[owner[c]] = true
+				touching[owner[c + d]] = true
+	assert_true(touching.size() * 10 >= plain * 9, "집이 블록으로 맞닿아 선다(%d/%d)" % [touching.size(), plain])
+	var tilted := t.houses.filter(func(h: Dictionary) -> bool: return absf(rad_to_deg(float(h["angle"]))) > 8.0)
+	assert_true(tilted.size() >= 12, "옛길을 따라 비튼 블록의 집(%d채)" % tilted.size())
 	assert_true(overlap <= plain, "집끼리 거의 겹치지 않는다(겹친 칸 %d — 기운 집 모서리 한 칸 정도만)" % overlap)
 
 

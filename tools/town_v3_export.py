@@ -1,5 +1,5 @@
-"""도시 구상 v3 안 A 1/4 판(tools/town_v3_small.py)을 게임 동네 지도 데이터로 내보낸다(CT95).
-  python3 tools/town_v3_export.py   → data/town/district7.json
+"""동네 배치를 게임 동네 지도 데이터로 내보낸다 — 지금은 블록 도시 v4(tools/town_v4.py, CT100), 옛 v3 안 A 1/4 판(town_v3_small.py, CT95)은 --plan=v3.
+  python3 tools/town_v3_export.py [--plan=v3]   → data/town/district7.json
 구상 좌표(x −40~40 · z −75~35, 칸)를 지도 칸(x 0~80 · y 0~110)으로 옮긴다. 집 크기 · 각도는 구상 그대로(1칸 = 집 키트 1칸 = 사람 한 칸).
 TownMap이 읽는 꼴: bands(단 높이 · 경계선) · areas(poly · line+width · circle · rect) · houses(뒤틀린 집 목록) · buildings(시설 7) · props · places(퀘스트 자리) · sewer.
 지도를 바꿨으면 집 그림을 다시 굽는다(tools/paint_town_houses.gd — CLAUDE.md).
@@ -12,6 +12,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import town_v3 as tv  # noqa: E402
 import town_v3_small as small  # noqa: E402
+import town_v4 as v4  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "town", "district7.json")
@@ -40,10 +41,13 @@ def floors_of(top: float) -> int:
 
 
 def main():
+	blocks = "--plan=v3" not in sys.argv
 	tv.set_extent(*small.EXTENT, 8)
-	t, _notes = small.plan_a_small()
+	t, _notes = v4.plan_v4() if blocks else small.plan_a_small()
+	catalog = v4.CATALOG if blocks else small.CATALOG_S
 	p = t.p
-	areas = [{"kind": "yard", "poly": pts(p.outline)}]  # 길 밖 땅 = 흙 뒷마당(돌길과 구분 — CT98)
+	# v4: 블록 사이 땅은 모두 돌길, 안뜰만 흙(막힌 안뜰은 TownMap이 정원으로) · v3: 길 밖 땅 = 흙 뒷마당(CT98)
+	areas = [{"kind": "street" if blocks else "yard", "poly": pts(p.outline)}]
 	for line, w, lv in p.channels:
 		areas.append({"kind": "water", "line": pts(line), "width": w, "h": lv})
 	main_roads = [t.st["main"][0], t.st["main_s"][0]]
@@ -67,8 +71,9 @@ def main():
 	for x0, z0, x1, z1, _hi, _lo in p.stairs:
 		a, b = P(x0, z0), P(x1, z1)
 		areas.append({"kind": "stairs", "rect": [math.floor(a[0]), math.floor(a[1]), math.ceil(b[0]), math.ceil(b[1])]})
-	areas.append({"kind": "gate", "rect": [47, 0, 53, 3], "id": "north", "travel": True})
-	areas.append({"kind": "gate", "rect": [0, 63, 2, 68], "id": "west", "travel": True})
+	for gid, rc in (t.gates if blocks else [("north", (7, -75, 13, -72)), ("west", (-40, -12, -38, -7))]):
+		a, b = P(rc[0], rc[1]), P(rc[2], rc[3])
+		areas.append({"kind": "gate", "rect": [int(a[0]), int(a[1]), int(b[0]), int(b[1])], "id": gid, "travel": True})
 
 	houses, buildings, props = [], [], []
 	for h in p.houses:
@@ -116,19 +121,19 @@ def main():
 		props.append({"kind": kind, "rect": [x0, z0, max(x0 + 1, int(math.floor(gx + w / 2 + 0.5))), max(z0 + 1, int(math.floor(gz + d / 2 + 0.5)))]})
 	places = []
 	for num, spots in sorted(t.places.items()):
-		cat = next(c for c in small.CATALOG_S if c[0] == num)
+		cat = next(c for c in catalog if c[0] == num)
 		places.append({"id": PLACE_IDS[num], "name_ko": cat[1], "at": [P(x, z) for x, z in spots], "hook_ko": cat[4]})
 	bands = [{"h": h, "line": pts(line)} for line, h in p.bands[:-1]] + [{"h": p.bands[-1][1]}]
 	out = {
-		"_comment": "도시 동네 지도 — 라비기온 7구역 v3(CT95 — 2026-11-03 사용자 \"좋은데 이대로 진행해 봐\": 도시 구상 v3 안 A를 넓이 1/4로 줄인 판 · docs/plans/city_town_v3.md §7). "
-		"tools/town_v3_export.py가 tools/town_v3_small.py에서 만든다 — 손으로 고치지 말고 배치 파일을 고쳐 다시 내보낸다. 좌표 = 칸(x 동, y 남). "
+		"_comment": "도시 동네 지도 — 라비기온 7구역 v4 블록 도시(CT100 — 2026-11-03 사용자 \"흩뿌려진 거 말고 맨 처음 기획한 것처럼 딱딱 맞아떨어지게, 각도 비튼 버전이 들어가게, 실제 도시처럼\" · docs/plans/city_town_v3.md §13). "
+		"tools/town_v3_export.py가 tools/town_v4.py에서 만든다 — 손으로 고치지 말고 배치 파일을 고쳐 다시 내보낸다. 좌표 = 칸(x 동, y 남). "
 		"bands = 단(위에서부터 · line = 그 단의 남쪽 경계, 마지막은 경계 없음 · h = 높이(칸) — 3/4 화면에서 위로 올려 그린다, 경계 칸은 옹벽, 길이 넘는 곳은 계단). "
-		"areas는 순서대로 칠한다(poly = 다각형 · line + width = 굽은 길 · circle · rect, h = 그 칸 높이를 따로). houses = 뒤틀린 집(가운데 · 폭 · 깊이 · 각도(도, + = 시계 방향) · 층, place = 퀘스트 자리). "
+		"areas는 순서대로 칠한다(poly = 다각형 · line + width = 길 · circle · rect, h = 그 칸 높이를 따로). houses = 블록 둘레 줄집(가운데 · 폭 · 깊이 · 각도(도, + = 시계 방향) · 층, place = 퀘스트 자리). "
 		"buildings = 시설(문 = 앞면 맨 아래 줄). places = 퀘스트 · 거리 사건 자리(지금은 자리만). sewer = 하수도 굴 · 입구(땅 밑 — 지금은 자리만).",
 		"id": "district7",
 		"name_ko": "라비기온 7구역",
 		"size": [80, 110],
-		"start": [40, 58],
+		"start": [int(v) for v in P(*t.start)] if blocks else [40, 58],
 		"seed": 7,
 		"bands": bands,
 		"areas": areas,
