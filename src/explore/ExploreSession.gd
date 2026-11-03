@@ -12,6 +12,7 @@ signal bumped(at: Vector2i)
 signal view_changed
 signal time_passed(hours: float)
 signal message(key: String, args: Dictionary, kind: String)
+signal item_numbers(messages: Array)  ## 아이템을 쓴 결과(회복 수치 등) — Tab 메뉴가 숫자로 띄운다
 signal closing_warning(hours_left: float)
 signal floor_closed
 signal player_died(cause: String)
@@ -257,6 +258,7 @@ func use_item(item_id: String, on: Actor = null) -> bool:
 		return false
 	for m: Dictionary in ctx.messages:
 		message.emit(str(m["key"]), m["args"], str(m["kind"]))
+	item_numbers.emit(ctx.messages)
 	if ctx.messages.is_empty() and not ctx.success:  # 쓸 효과가 없는 물건(장비 등) — 조용히 끝나지 않게
 		_say("explore.cannot_use", {"item": DataNames.entry(db, "items", item_id)}, "info")
 	if ctx.success:

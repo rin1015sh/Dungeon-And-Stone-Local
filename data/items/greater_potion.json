@@ -10,7 +10,7 @@
     {
       "type": "restore_resource",
       "resource": "hp",
-      "amount": "max(150, floor({max_hp} * 0.5))"
+      "percent": 0.5
     },
     {
       "type": "remove_status",

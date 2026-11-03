@@ -263,6 +263,7 @@ func use_item(item_id: String) -> void:
 		return
 	for m: Dictionary in ctx.messages:
 		_on_notice(str(m["key"]), m["args"], str(m["kind"]))
+	_menu.float_use_numbers(ctx.messages)
 	_menu.refresh()
 	_hud.refresh()
 
