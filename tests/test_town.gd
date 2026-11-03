@@ -22,7 +22,7 @@ func test_district_is_dense_and_every_door_is_reachable() -> void:
 		var front := Vector2i(t.door_front(str(fac)).floor())
 		assert_true(reach[t.map.idx(front)] != 0, "%s 문 앞까지 걸어 닿는다" % fac)
 		assert_eq(t.target(t.door_front(str(fac)), Vector2i.UP).get("door", ""), str(fac), "%s 문 앞에서 위를 보면 그 문" % fac)
-	assert_eq(t.house_of("library").get("style", ""), "rotunda", "도서관은 원형 열람당(사용자 2026-11-02)")
+	assert_false(t.house_of("library").has("circle"), "도서관은 돔을 얹은 네모 석조관(사용자 2026-11-03 — 원통 열람당에서 바꿈, CT104)")
 
 
 func test_houses_are_tidy_shallow_and_block_walking() -> void:

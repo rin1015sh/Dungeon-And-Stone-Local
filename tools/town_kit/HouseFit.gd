@@ -23,13 +23,19 @@ const ZONE_FNS := {
 const ZONE_ROOF := {"civic": ["grey", "dark", "grey"], "market": ["red", "brown", "red", "dark"], "res": ["brown", "dark", "brown", "red", "brown"],
 	"river": ["dark", "grey", "brown"]}
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_manor", "shop": "_shop_house", "smithy": "_workshop"}
+const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_inn", "shop": "_shop_house", "smithy": "_workshop"}
 ## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
 const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house", "pawnshop": "_shop_house", "guard_post": "_mansard",
 	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_warehouse", "gate": "_tall_hip"}
 ## 지붕 기운(어두운 갈색 밑색 Facade.ROOF에 곱한다 — 예전 색감 안에서만 조금씩: 갈색 · 붉은 갈색 · 잿빛 · 짙은 갈색, CT99).
-const ROOF_TINTS := {"brown": Color(1.0, 1.0, 1.0), "red": Color(1.12, 0.92, 0.84), "grey": Color(0.9, 0.96, 1.06), "dark": Color(0.82, 0.8, 0.78)}
-const FAC_ROOF := {"guild": "dark", "temple": "grey", "bank": "grey", "inn": "red", "shop": "red", "smithy": "dark"}
+const ROOF_TINTS := {"brown": Color(1.0, 1.0, 1.0), "red": Color(1.12, 0.92, 0.84), "grey": Color(0.9, 0.96, 1.06), "dark": Color(0.82, 0.8, 0.78),
+	"pale": Color(1.8, 2.1, 2.5), "slate": Color(0.96, 1.12, 1.38), "crimson": Color(1.3, 0.84, 0.72)}
+## 시설 지붕 · 외벽 기운(사용자 2026-11-03 "주요 건물은 다른 건물과 비교되게 — 신전은 비교적 하얀 색감", CT104):
+## 신전 = 흰 석회석 벽 · 옅은 잿빛 지붕, 도서관 = 따뜻한 사암 · 구리 돔, 은행 = 옅은 잿돌 · 청회색 슬레이트, 길드 = 짙은 돌 · 검붉은 지붕,
+## 여관 = 따뜻한 벽 · 붉은 지붕, 잡화점 = 붉은 지붕, 대장간 = 그을린 벽 · 짙은 지붕. 외벽 기운은 지붕이 아닌 면에 곱한다(1보다 크면 밝게).
+const FAC_ROOF := {"guild": "crimson", "temple": "pale", "bank": "slate", "inn": "red", "shop": "red", "smithy": "dark", "library": "slate"}
+const FAC_WALL := {"temple": Color(1.95, 1.98, 2.05), "library": Color(1.6, 1.42, 1.1), "bank": Color(1.26, 1.26, 1.3), "guild": Color(0.84, 0.82, 0.82),
+	"inn": Color(1.12, 1.02, 0.88), "smithy": Color(0.74, 0.7, 0.68)}
 
 static var _tpl := {}
 
@@ -68,7 +74,7 @@ static func mat(name: String, tint: Color, scale: float = 0.5) -> StandardMateri
 ## 집 한 채(땅 높이 0) — 지도 집 i번째(TownMap.houses[i]).
 static func make(h: Dictionary, i: int) -> Node3D:
 	var fac := str(h.get("facility", ""))
-	if fac == "library":
+	if fac == "library" and h.has("circle"):  # 옛 원형 열람당 지도(v3)
 		return _rotunda(h)
 	var size: Vector2 = h.get("size", Vector2(4, 4))
 	var ctr: Vector2 = h.get("center", Vector2.ZERO)
@@ -106,10 +112,12 @@ static func make(h: Dictionary, i: int) -> Node3D:
 		mid.x = -mid.x
 	node.transform = Transform3D(basis, Vector3(ctr.x, 0.0, ctr.y) - basis * mid)
 	var tint: Color = ROOF_TINTS[_roof_of(h, i)]
+	var wall: Color = FAC_WALL.get(fac, Color.WHITE)
 	for mi: Node in node.find_children("*", "MeshInstance3D", true, false):
-		if (mi as MeshInstance3D).has_meta("roof"):
+		var roof := (mi as MeshInstance3D).has_meta("roof")
+		if roof or wall != Color.WHITE:
 			var m := ((mi as MeshInstance3D).material_override as StandardMaterial3D).duplicate() as StandardMaterial3D
-			m.albedo_color = tint
+			m.albedo_color = tint if roof else wall
 			(mi as MeshInstance3D).material_override = m
 	return node
 

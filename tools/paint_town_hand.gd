@@ -122,7 +122,7 @@ func _ids(node: Node, n: Array) -> void:
 	for ch in node.get_children():
 		if ch is MeshInstance3D:
 			n[0] += 1
-			var k: int = n[0]
+			var k: int = n[0] if not ch.has_meta("gid") else 4000 + int(ch.get_meta("gid"))  # 한 묶음 = 한 면(돔 갈빗대 — Designs2.dome)
 			var m := StandardMaterial3D.new()
 			m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED

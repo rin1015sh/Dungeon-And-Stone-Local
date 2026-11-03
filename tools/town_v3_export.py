@@ -24,7 +24,7 @@ PLACE_IDS = {
 	17: "graveyard", 18: "poorhouse", 19: "pawnshop", 20: "abandoned_house", 21: "warehouse", 22: "gate",
 	23: "sewer_entrance", 24: "black_market", 25: "under_bridge",
 }
-STYLE = {"temple": ("gothic", 4), "library": ("rotunda", 3), "guild": ("hall", 3), "bank": ("stone", 3), "inn": ("inn", 3),
+STYLE = {"temple": ("gothic", 4), "library": ("stone", 3), "guild": ("hall", 3), "bank": ("stone", 3), "inn": ("inn", 3),
 		"shop": ("arcade", 2), "smithy": ("workshop", 2)}
 
 
