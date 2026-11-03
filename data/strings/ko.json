@@ -608,8 +608,7 @@
   },
   "character": {
     "title": "캐릭터",
-    "name_line": "{name} · {race} {template}",
-    "level_line": "레벨 {level} · 공적 {exp} / {next}",
+    "level_line": "{race} · 레벨 {level} · 공적 {exp} / {next}",
     "max": "최대",
     "attack": "공격력",
     "crit": "치명타율",

@@ -154,12 +154,11 @@ func _paint_cursor(follow: bool = false) -> void:
 
 func _build_summary() -> void:
 	var db := pc.db
-	_box.add_child(UiTheme.label(Strings.t("character.name_line", {"name": pc.display_name, "race": pc.race_name(),
-		"template": pc.template_name()}), "header", "text_title"))
 	var lv := pc.get_level()
 	var next := Progression.exp_for_next(db, lv)
-	_box.add_child(UiTheme.label(Strings.t("character.level_line", {"level": lv, "exp": pc.progression.exp_total,
-		"next": next if next >= 0 else Strings.t("character.max")}), "body", "text_dim"))
+	# 이름·직업은 왼쪽 아군 목록에 이미 있다 — 종족 · 레벨 · 공적을 한 줄로(사용자 2026-11-03)
+	_box.add_child(UiTheme.label(Strings.t("character.level_line", {"race": pc.race_name(), "level": lv, "exp": pc.progression.exp_total,
+		"next": next if next >= 0 else Strings.t("character.max")}), "header", "text_title"))
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
 	bar.custom_minimum_size.y = UiTheme.metric("bar_height", 14)

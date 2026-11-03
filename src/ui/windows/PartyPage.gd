@@ -24,8 +24,10 @@ func _init() -> void:
 	super(Strings.t("party.title"))
 
 
+## 5인(파티 최대 — balance party.max_size)이 다 들어가게 카드를 촘촘하게(render.json ui.menu party_row_pad·party_row_gap·party_line_gap·party_font_size).
 func setup(p_party: Array[PlayerCharacter]) -> void:
 	party = p_party
+	content.add_theme_constant_override("separation", int(MenuPage.cfg("party_row_gap", 4.0)))
 	custom_minimum_size.x = MenuPage.cfg("party_width", 230.0)
 	_build()
 
@@ -121,7 +123,7 @@ func _add_row(i: int) -> void:
 	content.add_child(panel)
 	_rows.append(panel)
 	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 2)
+	v.add_theme_constant_override("separation", int(MenuPage.cfg("party_line_gap", 0.0)))
 	panel.add_child(v)
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 6)
@@ -146,7 +148,9 @@ func _bar_row(parent: Control, label: String, col: Color, key: String) -> Array:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	parent.add_child(row)
+	var fs := int(MenuPage.cfg("party_font_size", 13.0))
 	var l := UiTheme.label(label, "small", "text_dim")
+	l.add_theme_font_size_override("font_size", fs)
 	l.custom_minimum_size.x = MenuPage.cfg("party_label_width", 48.0)
 	row.add_child(l)
 	var bar := ProgressBar.new()
@@ -158,6 +162,7 @@ func _bar_row(parent: Control, label: String, col: Color, key: String) -> Array:
 	bar.add_theme_stylebox_override("background", UiTheme.box(Color(0, 0, 0, 0.5), Color.TRANSPARENT, 1, 0))
 	row.add_child(bar)
 	var val := UiTheme.label("", "small", "text")
+	val.add_theme_font_size_override("font_size", fs)
 	val.custom_minimum_size.x = MenuPage.cfg("party_value_width", 58.0)
 	val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	row.add_child(val)
@@ -170,4 +175,4 @@ func _paint_rows() -> void:
 		var sel := i == selected
 		var bg := UiTheme.color("slot_hover") if cur else Color(0, 0, 0, 0)
 		var border := UiTheme.color("select") if sel else Color(0, 0, 0, 0)
-		_rows[i].add_theme_stylebox_override("panel", UiTheme.box(bg, border, 2, UiTheme.metric("combat_roster_pad", 6)))
+		_rows[i].add_theme_stylebox_override("panel", UiTheme.box(bg, border, 2, int(MenuPage.cfg("party_row_pad", 3.0))))
