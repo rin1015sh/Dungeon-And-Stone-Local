@@ -23,6 +23,13 @@ from town_layouts import Plan, top_of, font  # noqa: E402
 
 X0, X1, Z0, Z1 = -80, 80, -150, 70
 MS = 2  # 자리 판 해상도(칸당 px)
+BOARD_S = 4  # 배치도 · 3/4 그림 배율(칸당 px)
+
+
+def set_extent(x0: int, x1: int, z0: int, z1: int, board_s: int):
+	"""작은 판(1/4 안 등)을 그릴 때 동네 넓이를 바꾼다 — Town · wig · board가 이 값을 읽는다."""
+	global X0, X1, Z0, Z1, BOARD_S
+	X0, X1, Z0, Z1, BOARD_S = x0, x1, z0, z1, board_s
 OUT = os.path.join(tl.ROOT, "docs", "plans", "town", "v3")
 
 
@@ -291,7 +298,7 @@ class Town:
 def board(t: Town, catalog: list, notes: list) -> Image.Image:
 	p = t.p
 	tp.PC = t.plaza_at
-	tp.region(X0, X1, Z0, Z1, 4)
+	tp.region(X0, X1, Z0, Z1, BOARD_S)
 	plan = tl.draw_plan(p)
 	view, _ = tp.camera_view(p)
 	M, LW = 18, 540
@@ -326,14 +333,13 @@ def board(t: Town, catalog: list, notes: list) -> Image.Image:
 	return im, view
 
 
-def main():
-	import town_v3_plans as plans
+def render(fns: list, catalog: list, overview: bool = True):
 	os.makedirs(OUT, exist_ok=True)
 	open(os.path.join(OUT, ".gdignore"), "w").close()
 	views = []
-	for fn in plans.PLANS:
+	for fn in fns:
 		t, notes = fn()
-		im, view = board(t, plans.CATALOG, notes)
+		im, view = board(t, catalog, notes)
 		im.save(os.path.join(OUT, f"{t.p.key}.png"), optimize=True)
 		views.append((t.p.title, view))
 		# 광장 가까이(게임 화면 한 장쯤 — 가로 72칸)
@@ -346,8 +352,10 @@ def main():
 		ImageDraw.Draw(ci).text((M, M - 4), t.p.title + " — 광장 가까이(탐험 화면 3/4 · 상자)", font=font(24), fill=tl.BONE)
 		ci.paste(close, (M, M + 44))
 		ci.save(os.path.join(OUT, f"{t.p.key}_plaza.png"), optimize=True)
-		missing = [n for n, *_ in plans.CATALOG if n not in t.places]
+		missing = [n for n, *_ in catalog if n not in t.places]
 		print("wrote", t.p.key, im.size, "houses", len(t.p.houses), "missing", missing)
+	if not overview:
+		return
 	M = 16
 	sc = 0.62
 	vs = [(ti, v.resize((int(v.width * sc), int(v.height * sc)), Image.LANCZOS)) for ti, v in views]
@@ -360,6 +368,18 @@ def main():
 		x += v.width + M
 	ov.save(os.path.join(OUT, "overview.png"), optimize=True)
 	print("wrote overview", ov.size)
+
+
+def main():
+	"""python3 tools/town_v3.py [--small] — --small = 안 A를 넓이 1/4(80 × 110)로 줄인 판(CT94)."""
+	import town_v3 as tv  # 배치 파일이 불러 쓰는 같은 모듈(직접 실행한 __main__과 전역이 다르다)
+	import town_v3_plans as plans
+	if "--small" in sys.argv:
+		import town_v3_small as small
+		tv.set_extent(*small.EXTENT, 8)
+		tv.render([small.plan_a_small], small.CATALOG_S, overview=False)
+	else:
+		tv.render(plans.PLANS, plans.CATALOG)
 
 
 if __name__ == "__main__":
