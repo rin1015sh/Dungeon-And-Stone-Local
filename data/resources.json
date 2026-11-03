@@ -3,7 +3,7 @@
     "id": "hp",
     "name_ko": "생명력",
     "color": "#7c2924",
-    "max_formula": "floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res})",
+    "max_formula": "floor({bal.hp.base} + {level} * {bal.hp.per_level} + {p_res} * {bal.hp.per_p_res} + {m_res} * {bal.hp.per_m_res})",
     "start": "full",
     "scope": "always",
     "visible": true,

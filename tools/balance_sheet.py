@@ -189,8 +189,8 @@ def formulas() -> list:
         "상태이상 저항(적이 건 것) = %g × 저항 스탯 / (저항 스탯 + 거는 쪽 근력·정신력 중 큰 값) — 같으면 %d%%" % (st["resist_max"], r0(st["resist_max"] * 50)),
         "주기 피해(차례마다): 출혈 %g · 중독 %g · 화상 %g · 부패 %g · 덫 %g · 아사 시간당 %g" % (
             st["bleed_per_turn"], st["poison_per_turn"], st["burn_per_turn"], st["rot_per_turn"], st["trap_damage"], BAL["hunger"]["starvation_hp_per_hour"]),
-        "플레이어 최대 생명력 = %d + 레벨×%d + 물리내성×%g + 정수 생명력 · 최대 영혼력 = %d + %d레벨까지 레벨당 %d, 그 뒤 %d" % (
-            hp["base"], hp["per_level"], hp["per_p_res"], soul["base"], soul["early_level_cap"], soul["per_level_early"], soul["per_level_late"]),
+        "플레이어 최대 생명력 = %d + 레벨×%d + 물리내성×%g + 항마력×%g + 정수 생명력 · 최대 영혼력 = %d + %d레벨까지 레벨당 %d, 그 뒤 %d" % (
+            hp["base"], hp["per_level"], hp["per_p_res"], hp["per_m_res"], soul["base"], soul["early_level_cap"], soul["per_level_early"], soul["per_level_late"]),
         "정수 드롭: 등급별 %s · 구분별 %s · 균열 ×%g · 수호자 정수 스탯·생명력 ×%g" % (
             " · ".join("%s등급 %g%%" % (k, v * 100) for k, v in BAL["essence"]["drop_chance_by_grade"].items()),
             " · ".join("%s %g%%" % (RANK_KO.get(k, k), v * 100) for k, v in BAL["essence"]["drop_chance_by_rank"].items()),
@@ -222,7 +222,7 @@ def player_tables() -> list:
         Table("1-1. 종족 시작 스탯(굴림 범위)", ["종족", "id", "사용", *MAIN_KO, "평균 합"], races, sheet="종족"),
         Table("1-2. 직업", ["직업", "id", "역할", "사용", "스탯 보너스", "공격 유형", "시작 장비"], classes, sheet="직업"),
         Table("1-3. 레벨", ["레벨", "누적 경험치", "생명력(물내·정수 0)", "최대 영혼력", "정수 칸"], levels,
-              note="실제 생명력 = 이 값 + 물리내성×%g + 정수 생명력. 경험치 = 종별 첫 처치 %d − 등급." % (hp["per_p_res"], PROG["exp"]["grade_base"]), sheet="레벨"),
+              note="실제 생명력 = 이 값 + 물리내성×%g + 항마력×%g + 정수 생명력. 경험치 = 종별 첫 처치 %d − 등급." % (hp["per_p_res"], hp["per_m_res"], PROG["exp"]["grade_base"]), sheet="레벨"),
         Table("1-4. 기준 탐험가(층별 — balance_curve.py 가정)", ["층", "레벨", "역할", *MAIN_KO, "생명력", "공격력"], refs,
               note="몬스터 표의 '한 대 %'·'몇 대'가 이 값을 쓴다. 실제 캐릭터가 아니라 그 층을 도는 평균을 가정한 값.", sheet="기준 탐험가"),
     ]
