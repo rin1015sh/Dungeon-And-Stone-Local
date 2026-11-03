@@ -77,7 +77,9 @@ func test_essence_raises_max_hp_and_removal_takes_it_back() -> void:
 	var gain := int(JsonUtil.get_dict(inst, "resources").get("hp", 0))
 	assert_eq(gain, int(JsonUtil.get_dict(db.get_entry("essences", "ghoul"), "resources").get("hp", 0)), "생명력은 정수의 고정값")
 	assert_eq(pc.essences.absorb(pc, inst), "")
-	assert_near(pc.pool.get_max("hp"), hp + gain, 0.0001, "흡수하면 최대 생명력이 오른다")
+	var st := JsonUtil.get_dict(inst, "stats")  # 정수가 올리는 물리내성·항마력도 생명력을 준다(BL2)
+	var stat_hp := float(st.get("p_res", 0.0)) * float(db.bal("hp.per_p_res")) + float(st.get("m_res", 0.0)) * float(db.bal("hp.per_m_res"))
+	assert_near(pc.pool.get_max("hp"), floorf(hp + gain + stat_hp), 1.0, "흡수하면 최대 생명력이 오른다")
 	pc.essences.remove(pc, 0)
 	assert_near(pc.pool.get_max("hp"), hp, 0.0001, "제거하면 돌아간다")
 

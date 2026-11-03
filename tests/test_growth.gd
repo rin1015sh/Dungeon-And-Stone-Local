@@ -28,7 +28,7 @@ func test_level_thresholds() -> void:
 
 func test_level_rewards_soul_hp_slots() -> void:
 	var pc := _pc()
-	assert_eq(pc.pool.get_max("hp"), 84.0, "인간 Lv1 기준 탐험가 생명력 84 (§1의 102에서 근력×1.5 뺌 — J12)")
+	assert_eq(pc.pool.get_max("hp"), 99.0, "인간 Lv1 기준 탐험가 생명력 99 (§1의 102에서 근력×1.5 뺌 — J12, 항마력×3 더함 — BL2)")
 	assert_eq(pc.pool.get_max("soul"), 30.0, "Lv1 영혼력 30")
 	var expect := {2: 40.0, 5: 70.0, 6: 100.0, 11: 250.0}
 	for lv: int in expect:
@@ -36,7 +36,7 @@ func test_level_rewards_soul_hp_slots() -> void:
 		assert_eq(pc.pool.get_max("soul"), float(expect[lv]), "Lv%d 영혼력" % lv)
 		assert_eq(Progression.essence_slots(db, lv), lv, "슬롯 = 레벨")
 	pc.set_level(4)
-	assert_eq(pc.pool.get_max("hp"), 114.0, "레벨당 생명력 +10")
+	assert_eq(pc.pool.get_max("hp"), 129.0, "레벨당 생명력 +10")
 
 
 func test_exp_sources() -> void:
