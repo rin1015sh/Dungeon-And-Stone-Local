@@ -48,6 +48,7 @@
 
 ## 3. 최근 작업 (위가 최신, 10줄까지 — 자세한 것은 PROGRESS_LOG에서 제목으로)
 
+- 2026-11-03 **기세 3개 기본 공격 = 타격 두 번을 따로 보임**(효과를 겹쳐 한 번에 넣지 않고 `Battle._use_skill`이 타격마다 돌린다 — `strike` 사건 → 화면이 몸짓을 한 번 더, 피해 숫자는 render.json `combat_strike_gap_sec`(0.75초)만큼 늦춰 따로). 미검증: 실제 연출 타이밍은 캡처·플레이로 못 봄.
 - 2026-11-03 **Tab 캐릭터 쪽 맨 위 = "종족 · 레벨 · 공적" 한 줄**(이름·직업 줄 삭제 — 왼쪽 아군 목록에 있다) · **아군 목록 카드 촘촘하게**(5인 파티가 한 화면에 — render.json ui.menu party_font_size·party_row_pad·party_row_gap·party_line_gap).
 - 2026-11-03 **장비 비교 설명 — 지금 보는 아이템 설명이 커서에 더 가깝게**(왼쪽에 뜨면 오른쪽, 오른쪽에 뜨면 왼쪽 — 장착 중은 바깥쪽, `InventoryPage._place_tip`).
 - 2026-11-03 **팔기 = 소지품 창만 따로 열어 가방에서 고른다**(`ItemPickWindow` — `InventoryPage.set_pick_mode`, 상점·떠돌이 상인·거래소 공통, 다른 자리에서도 `ItemPickWindow.open(host, actor, 제목, filter, price)`로 쓴다) · **대장간은 사기만**(`smithy_trade` tabs ["buy"]).

@@ -81,13 +81,18 @@ func test_full_rev_basic_attack_hits_twice() -> void:
 	var c := _to_party(b)
 	c.rev = BattleRev.cap(db)
 	var n := [0]
+	var order: Array[String] = []  # 피해 · 타격(strike) 사건 순서 — 화면이 몸짓·피해 숫자를 타격마다 따로 보인다
 	var grab := func(e: Dictionary) -> void:
 		if str(e.get("type")) == "damage" and (e.get("unit") as Combatant) != null and (e.get("unit") as Combatant).side == Combatant.SIDE_ENEMY:
 			n[0] += 1
+			order.append("damage")
+		elif str(e.get("type")) == "strike":
+			order.append("strike")
 	b.event.connect(grab)
 	b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null, "rev": BattleRev.cap(db)})
 	b.event.disconnect(grab)
 	assert_eq(n[0], int(db.bal("combat.rev.basic_full_hits", 2)), "다 얹은 기본 공격은 두 번")
+	assert_eq(order, ["damage", "strike", "damage"] as Array[String], "첫 타격 피해 → 두 번째 타격 알림 → 두 번째 피해")
 	assert_eq(c.rev, 0)
 
 

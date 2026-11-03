@@ -61,6 +61,14 @@ static func power(db: GameDatabase, n: int) -> float:
 	return float(arr[clampi(n, 0, arr.size() - 1)])
 
 
+## 이 행동이 몇 번 치는가(Battle._use_skill이 use()보다 먼저 부른다 — use()가 기세를 쓰기 전에 본다): max개를 모두 얹은 기본 공격 = basic_full_hits번, 그 밖은 1번.
+## 효과를 겹쳐 한 번에 넣지 않고 Battle이 타격마다 따로 돌린다 — 화면이 모션·피해 숫자를 한 번씩 따로 보인다(사용자 2026-11-03).
+static func strikes(b: Battle, c: Combatant, skill_id: String, sk: Dictionary, want: int) -> int:
+	if skill_id == Battle.BASIC_ATTACK and mini(want, c.rev) >= cap(b.db) and uses_rev(b, c) and applies(sk):
+		return maxi(1, int(b.db.bal("combat.rev.basic_full_hits", 2)))
+	return 1
+
+
 ## 스킬을 쓸 때(Battle._use_skill): want개(가진 만큼으로 줄인다)를 쓰고 효과 목록을 바꿔 돌려준다.
 static func use(b: Battle, c: Combatant, skill_id: String, sk: Dictionary, fx: Array, want: int) -> Array:
 	var n := mini(want, c.rev)
@@ -68,9 +76,5 @@ static func use(b: Battle, c: Combatant, skill_id: String, sk: Dictionary, fx: A
 		return fx
 	c.rev -= n
 	if skill_id == Battle.BASIC_ATTACK and n >= cap(b.db):
-		var once := BattleTargets.boosted(fx, {"power_mult": float(b.db.bal("combat.rev.basic_full_power", 1.0)), "ignore_defense": false})
-		var out: Array = []
-		for i in maxi(1, int(b.db.bal("combat.rev.basic_full_hits", 2))):
-			out.append_array(once)
-		return out
+		return BattleTargets.boosted(fx, {"power_mult": float(b.db.bal("combat.rev.basic_full_power", 1.0)), "ignore_defense": false})  # 한 타격분 — 타격 수는 strikes()
 	return BattleTargets.boosted(fx, {"power_mult": power(b.db, n), "ignore_defense": false})

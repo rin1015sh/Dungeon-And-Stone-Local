@@ -33,6 +33,7 @@ var _menu: CommandMenu
 var _route: NoticeRoute
 var _dialog: DialogueBox
 var _banner: SkillBanner
+var _strike_delay: float = 0.0  # 이번 행동의 두 번째 타격 이후 사건을 미루는 초(_on_event)
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 한다)
 var _planning: Array[Combatant] = []  # 지금 행동을 정하는 사람들(파티 창 순서)
@@ -149,7 +150,7 @@ func _loop() -> void:
 			if not battle.act(c, action):
 				_fallback(c, action)
 			_refresh()
-			if not await _turn_gap():
+			if not await _strike_wait() or not await _turn_gap():
 				return
 			continue
 		await get_tree().create_timer(_ai_delay()).timeout
@@ -159,7 +160,7 @@ func _loop() -> void:
 			if not battle.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null}):
 				battle.act(c, {"kind": "guard"})
 		_refresh()
-		if not await _turn_gap():
+		if not await _strike_wait() or not await _turn_gap():
 			return
 	_looping = false
 	_show_result()
@@ -249,7 +250,36 @@ func _on_root_back() -> void:
 	_open_plan()
 
 
+## 한 행동이 여러 번 칠 때(기세 3개 기본 공격 — Battle "strike" 사건): 두 번째 타격부터는 몸짓·피해 숫자를 그만큼 늦춰 따로 보인다.
+## 규칙은 한꺼번에 끝나 있으니 화면만 늦춘다(_strike_delay = 이번 행동에서 지금 사건을 미룰 초).
 func _on_event(e: Dictionary) -> void:
+	var kind := str(e.get("type"))
+	if kind == "act":
+		_strike_delay = 0.0
+	elif kind == "strike":
+		_strike_delay = float(e.get("n", 1)) * _strike_gap()
+		_later(_strike_delay, _handle_event.bind({"type": "act", "unit": e.get("unit"), "action": e.get("action", {})}))
+		return
+	if _strike_delay > 0.0 and kind in ["damage", "down", "fled", "summon"]:
+		_later(_strike_delay, _handle_event.bind(e))
+		return
+	_handle_event(e)
+
+
+func _strike_gap() -> float:
+	return 0.0 if GameState.debug_fast_combat or DialogueBox.auto_skip else UiTheme.ui_float("combat_strike_gap_sec", 0.75)
+
+
+func _later(sec: float, f: Callable) -> void:
+	if sec <= 0.0:
+		f.call()
+		return
+	get_tree().create_timer(sec).timeout.connect(func() -> void:
+		if is_inside_tree():
+			f.call())
+
+
+func _handle_event(e: Dictionary) -> void:
 	var u: Combatant = e.get("unit")
 	var v: BattlerView = _stage.view(u) if u != null else null
 	match str(e.get("type")):
@@ -385,6 +415,15 @@ func _ai_delay() -> float:
 func _read() -> bool:
 	if _dialog.busy():
 		await _dialog.wait()
+	return is_inside_tree()
+
+
+## 여러 번 친 행동이면 마지막 타격이 보일 때까지 기다린다(그 뒤 지운다). 화면이 사라졌으면 false.
+func _strike_wait() -> bool:
+	var sec := _strike_delay
+	_strike_delay = 0.0
+	if sec > 0.0:
+		await get_tree().create_timer(sec).timeout
 	return is_inside_tree()
 
 

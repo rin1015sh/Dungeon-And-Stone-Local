@@ -298,6 +298,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 		message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
 	var kind := JsonUtil.get_str(sk, "target")
 	var rev_before := c.rev
+	var strikes := BattleRev.strikes(self, c, skill_id, sk, rev)  # 기세를 다 얹은 기본 공격 = 두 번 친다(타격마다 따로)
 	var fx := BattleRev.use(self, c, skill_id, sk, BattlePassives.skill_effects(self, c, skill_id, sk), rev)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
 	BattleRules.apply_cover(self, c, kind, targets)  # 대신 맞기
@@ -310,14 +311,21 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 	var said := history.size()
 	var info := {"skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
 		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size()}
-	for t in targets:
-		if c.actor.dead:
-			break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다
-		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
-		ctx.info = info
-		ctx.registry = effects
-		effects.apply_all(ctx, fx)
-		_relay(ctx, c)
+	for s in strikes:
+		if s > 0:
+			if c.actor.dead or not targets.any(func(t: Combatant) -> bool: return t.is_active()):
+				break  # 반격으로 쓰러졌거나 칠 상대가 없다 — 두 번째 타격은 하지 않는다
+			event.emit({"type": "strike", "unit": c, "n": s, "of": strikes, "action": {"kind": "skill", "skill": skill_id}})  # 화면: 몸짓을 한 번 더
+		for t in targets:
+			if c.actor.dead:
+				break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다
+			if s > 0 and not t.is_active():
+				continue
+			var ctx := EffectContext.new(db, c.actor, t.actor, rng)
+			ctx.info = info
+			ctx.registry = effects
+			effects.apply_all(ctx, fx)
+			_relay(ctx, c)
 	if fx.any(func(e: Variant) -> bool: return e is Dictionary and JsonUtil.get_str(e, "type") == "damage"):
 		BattleRules.consume_on_attack(self, c)  # 진군 명령 등: 스킬 한 번(광역·연타 전체)에 쓰고 사라진다
 	if skill_id != BASIC_ATTACK and history.size() == said:  # 확률 상태가 안 걸리는 등 조용히 끝났다 — 썼다는 것은 알린다
