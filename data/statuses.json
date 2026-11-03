@@ -147,11 +147,10 @@
     "mental": true,
     "resist": {
       "stats": [
-        "m_res",
-        "int"
+        "p_res"
       ]
     },
-    "notes": "명세 §4 정신계 — 항마력·정신력 평균으로 저항(2026-11-03: 데이터가 물리내성으로 뒤바뀌어 있던 것을 문서대로 바로잡음)",
+    "notes": "명세 §4 정신계 — 물리내성으로 저항(상태 재기획 2026-10-19: 상태마다 저항 스탯 하나. tests/test_status_redesign.gd가 고정)",
     "after_immune": 1
   },
   {
@@ -389,10 +388,10 @@
     "source": "placeholder",
     "resist": {
       "stats": [
-        "p_res"
+        "m_res"
       ]
     },
-    "notes": "명세 §4 육체계 — 물리내성으로 저항(2026-11-03: 항마력으로 뒤바뀌어 있던 것을 바로잡음)",
+    "notes": "명세 §4 육체계 — 항마력으로 저항(상태 재기획 2026-10-19, 위와 같음)",
     "skip_chance": 0.5,
     "after_immune": 1
   },

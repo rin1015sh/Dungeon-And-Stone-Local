@@ -341,7 +341,7 @@ func test_fatigue_tiers_apply_modifiers() -> void:
 	assert_eq(pc.fatigue.tier_name(), "지침")
 	assert_near(pc.stats.get_value("agi"), agi * 0.9, 0.01, "지침: 민첩 −10%")
 	pc.fatigue.set_value(90.0)
-	assert_eq(pc.fatigue.tier_name(), "탈진")
+	assert_eq(pc.fatigue.tier_name(), "기진맥진")
 	assert_near(pc.stats.get_value("agi"), agi * 0.8, 0.01, "탈진: 민첩 −20%(겹치지 않는다)")
 	pc.fatigue.set_value(150.0)
 	assert_near(pc.fatigue.value, 100.0, 0.001, "최댓값 100")

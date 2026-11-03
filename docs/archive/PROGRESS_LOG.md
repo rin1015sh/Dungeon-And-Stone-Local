@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **스탯·상태이상 밸런스 정리 (2026-11-03, 사용자 "스탯·상태이상 총정리 → 전부 수정", BL1)**: 범위 = 정적 검토로 찾은 문제 수정. 한 일: 지속 피해 비율화(`max(고정, 최대 생명력×비율)`, 몬스터 ×0.25, `periodic.hp_ratio` · `StatusSet.hp_ratio_scale`) · 피해 수정자 상·하한(`DamageCalc._modifier_mult` — 정수·장비 곱 ≥0.4, 전체 받는 ×0.2~2.5·주는 ×3.0) · 자연재생력·영혼 재생력 비율화 · 차례당 재생 합 4% · 명중 민첩 지수 0.5 · 치명상 보스급 면역 · 응시하는 눈 치명 · 이름 겹침 정리 · 낙하 피해 비율. 기절·마비 저항은 시험이 정본이라 문서를 고쳤다. 남은 것: 물리내성 생명력 3/점 곡선 재조정(몬스터·층 곡선 전체), `balance_sheet.py` 총정리·`formula_check` 다시 뽑기(미실행). 검증: check.sh(결과는 PROGRESS 한 줄).
+
 - **차양 문 비움 · 대장간은 되돌림 (2026-11-03, 사용자가 대장간을 "롤백해" — `_smithy` · 연기 · 화덕 불빛 · 모루 소품을 지우고 대장간은 `_workshop`으로. 아래는 처음 한 일 기록, 사용자 "대장간 연기랑 모루 넣고, 잡화점 천막 때문에 문이 안 보임", CT105)**: `Designs2._smithy`(화덕 아치 숯불 · 큰 굴뚝 · `Deco3D.blob` 연기 넷 · 작업 처마), `Designs2.awning`(문 위 비움) → `_shop_house2` · `_corner_shop`, HouseFit FAC_FNS shop · smithy · ZONE_FNS market · PLACE_FNS 가게를 새 꼴로, 모루 소품(`Deco3D._anvil` · TownRules · test_town), `town_v4.life` 대장간 문 옆 모루. 집 77채 다시 굽기. 그림 `plans/town/v4/shop_smithy_ct105.jpg` · `game_smithy.jpg` · `game_shop.jpg`.
 
 - **주요 시설 구별 · 도서관 박물관 (2026-11-03, 사용자 "주요 건물들은 다른 건물들과 비교되게 — 신전은 하얀 색감 · 도서관은 천문관 같다, 박물관처럼 일반 건물 위에 돔", CT104)**: `HouseFit.FAC_WALL`(외벽 기운 — 지붕 아닌 면에 곱함) · `FAC_ROOF`(pale · slate · crimson 추가), `Designs2._museum`(본관 + 기둥 현관 + 둥근 받침 위 낮은 돔 + 작은 탑, `dome()` — 세 칸씩 한 면 gid로 갈빗대 여섯) · `_inn`(얕은 4층 반목조 · 앞 박공 · 발코니 · 술잔 간판), `paint_town_hand._ids` gid 지원, 도서관 필지 원 → 네모(`town_v4` fac, export style "stone", test_town 원 아님 확인). 시설 7채 다시 굽기 · 바닥 다시 굽기. 그림 `plans/town/v4/facilities_ct104.jpg` · `compare_ct104.jpg`. 남은 것: 대장간이 작고 밋밋(연기 · 모루 소품) · 옛 원형 열람당 코드(`HouseFit._rotunda`, TownLandmark.rotunda)는 v3 지도용으로 남김.

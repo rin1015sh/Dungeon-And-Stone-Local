@@ -54,9 +54,11 @@ func test_appetite_changes_hunger() -> void:
 
 
 func test_regen_stats() -> void:
-	var hp0 := _actor().pool.regen_per_unit("hp", "time")
-	var hp1 := _actor({"natural_regen": 10}).pool.regen_per_unit("hp", "time")
-	assert_near(hp1 - hp0, 10.0 * float(db.bal("hp.regen_per_natural_regen_per_hour")), 0.0001, "자연재생력 → 시간당 생명력")
+	var a0 := _actor()
+	var a1 := _actor({"natural_regen": 10})
+	var hp0 := a0.pool.regen_per_unit("hp", "time")
+	var hp1 := a1.pool.regen_per_unit("hp", "time")
+	assert_near(hp1 - hp0, 10.0 * float(db.bal("hp.regen_ratio_per_natural_regen_per_hour")) * a1.pool.get_max("hp"), 0.0001, "자연재생력 → 시간당 생명력(최대 생명력 비율)")
 	for trig: String in ["turn", "time"]:
 		var s0 := _actor().pool.regen_per_unit("soul", trig)
 		var s1 := _actor({"soul_regen": 10}).pool.regen_per_unit("soul", trig)
