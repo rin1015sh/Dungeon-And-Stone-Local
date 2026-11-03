@@ -31,6 +31,7 @@ KINDS = ["void", "street", "avenue", "paving", "plaza", "stairs", "bridge", "yar
 K = {k: i for i, k in enumerate(KINDS)}
 STEP = 0.2  # 계단 턱 높이(칸 — 6px 남짓, CT102)
 WALK_W = 18  # 집 둘레 판석 보도 폭(px, CT102)
+
 SUN = (0.8, -0.47)  # 높이 1칸당 그림자가 뻗는 쪽(동 · 북 — 집 그림 해가 서남쪽 위)
 SHADE = 0.8  # 바닥 전체 밝기(예전 1.1 언저리 → 어둡게, CT101)
 MORTAR = np.array([0.15, 0.13, 0.11], np.float32)
@@ -109,10 +110,10 @@ def stone_fill(xs, ys, base, cid, lit, seed, var):
     col[..., 0] += warm
     col[..., 2] -= warm * 0.8
     col = col * (1.0 + 0.2 * lit)[..., None]
-    pits = noise(xs, ys, 2.2, seed + 9) < 0.12
-    col[pits] *= 0.78
+    pits = noise(xs, ys, 2.2, seed + 9) < 0.06
+    col[pits] *= 0.84
     stain = fbm(xs, ys, 30, seed + 13, 3)
-    col = col * (0.86 + 0.24 * stain)[..., None]
+    col = col * (0.93 + 0.12 * stain)[..., None]  # 얼룩을 덜(도로 잡음 줄이기 — CT103)
     return col
 
 
@@ -123,7 +124,7 @@ def mortar(xs, ys, seed, moss):
     return m
 
 
-def cobbles(xs, ys, base, cell, seed, moss=0.12, var=0.18):
+def cobbles(xs, ys, base, cell, seed, moss=0.06, var=0.12):
     """자갈길: 크기가 제각각인 둥근 돌 · 먹선 줄눈 · 줄눈에 흙 · 이끼."""
     f1, edge, cid, ox, oy = voronoi(xs, ys, cell, seed)
     r = cell * 0.55
@@ -233,6 +234,39 @@ def water(xs, ys, base):
     col[hi] = col[hi] * 1.3 + 0.02
     ink = np.where((wave < -0.96) & (noise(xs, ys, 11, 57) > 0.45), 0.35, 0.0)
     return col, ink
+
+
+def diag(xs, ys, base, size, seed):
+    """광장 · 시장: 45° 돌린 네모 판석(길과 다른 포장 — CT103)."""
+    u = (xs + ys) * 0.7071
+    v = (xs - ys) * 0.7071
+    iu, iv = np.floor(u / size), np.floor(v / size)
+    cid = (iu * 100003 + iv).astype(np.int64)
+    fu, fv = u / size - iu, v / size - iv
+    edge = np.minimum(np.minimum(fu, 1 - fu), np.minimum(fv, 1 - fv)) * size + (noise(xs, ys, 7, seed) - 0.5) * 0.8
+    lit = np.clip(-((fu - 0.5) + (fv - 0.5)) * 0.8, -1, 1)
+    col = stone_fill(xs, ys, base, cid, lit * 0.4, seed, 0.08)
+    m = edge < 0.8
+    col[m] = MORTAR * 1.3
+    return col, ink_line(xs, ys, edge, 0.8, seed + 30, 0.4)
+
+
+def planks(xs, ys, base, seed):
+    """나무 부두: 가로로 깐 널(엇갈린 이음 · 못 자국 · 먹선)."""
+    rh = 7.0
+    row = np.floor(ys / rh).astype(np.int64)
+    L = 40.0 + hash2(row, row, seed) * 30.0
+    off = hash2(row, row * 3, seed + 1) * L
+    u = (xs + off) / L
+    ci = np.floor(u).astype(np.int64)
+    tone = 1.0 + (hash2(row, ci, seed + 2) - 0.5) * 0.22
+    grain = (noise(xs * 0.2, ys * 2.0, 6, seed + 3) - 0.5) * 0.18
+    col = base[None, None, :] * (tone + grain)[..., None]
+    fv = ys / rh - row
+    edge = np.minimum(np.minimum(fv, 1 - fv) * rh, np.minimum(u - ci, 1 - (u - ci)) * L)
+    nail = (np.abs((u - ci) * L - 3.0) < 0.9) & (np.abs(fv - 0.5) < 0.18)
+    col[nail] *= 0.55
+    return col, ink_line(xs, ys, edge, 0.9, seed + 30, 0.55)
 
 
 # ---------- 집 밑(장난감처럼 얹힌 느낌을 없앤다 — CT102) ----------
@@ -442,6 +476,50 @@ def decorate(town, kind, cell_kind, col, ink, W, H):
     ink[:] = np.maximum(ink, np.asarray(il).astype(np.float32) / 255.0 * 0.7 * ground)
 
 
+def road(xs, ys, kk, main, h, C):
+    """돌길: 큰길 = 줄지어 깐 반듯한 돌(밝고 일정 — 윗단 행정 구역은 큰 마름돌), 골목 = 작은 자갈(어둡게)."""
+    alley = cobbles(xs, ys, C("street", 1.0), 11.0, 3)
+    setts = slabs(xs, ys, C("avenue", 1.18), 15.0, 20.0, 32.0, 31, var=0.07, moss=0.03)
+    civic = slabs(xs, ys, C("paving", 1.22), 20.0, 30.0, 44.0, 37, var=0.07, moss=0.02)
+    hi = (h > 1.0)
+    col = np.where(main[..., None], np.where(hi[..., None], civic[0], setts[0]), alley[0])
+    ink = np.where(main, np.where(hi, civic[1], setts[1]), alley[1])
+    return col, ink
+
+
+def entries(kind, diag_m, col, ink):
+    """광장 · 시장 진입부: 길이 포장으로 들어오는 곳에 짙은 화강암 띠(먹선 둘) — 들머리가 또렷하게(CT103)."""
+    road_m = np.isin(kind, [K["street"], K["avenue"]])
+    band = diag_m & _grow_mask(road_m, 12)
+    col[band] = col[band] * 0.62 + np.array([0.04, 0.035, 0.03], np.float32)
+    edge = band & ~_grow_mask(~band, 1)
+    edge |= band & _grow_mask(road_m, 1)
+    ink[edge] = np.maximum(ink[edge], 0.6)
+
+
+def lamp_light(town, col, W, H):
+    """가로등 · 벽 등불 밑 따뜻한 빛 웅덩이(창 · 등불의 따뜻한 빛 강조 — CT103)."""
+    pts = []
+    for p in town["props"]:
+        if p["kind"] not in ("lamp", "walllamp"):
+            continue
+        if "rect" in p:
+            x0, y0, x1, y1 = p["rect"]
+            pts.append(((x0 + x1) / 2 * PX, y1 * PX - 6))
+        elif "ring" in p:
+            cx, cy, r, n = p["ring"]
+            for i in range(int(n)):
+                a = 2 * math.pi * (i + 0.5) / n
+                pts.append(((math.floor(cx + math.cos(a) * r) + 0.5) * PX, (math.floor(cy + math.sin(a) * r) + 1) * PX - 6))
+    glow = Image.new("L", (W, H), 0)
+    gd = ImageDraw.Draw(glow)
+    for x, y in pts:
+        for rr, v in ((70, 40), (48, 80), (28, 130)):
+            gd.ellipse([x - rr, y - rr * 0.8, x + rr, y + rr * 0.8], fill=v)
+    g = np.asarray(glow.filter(ImageFilter.GaussianBlur(14))).astype(np.float32) / 255.0
+    col += (g[..., None] * np.array([0.16, 0.1, 0.02], np.float32)) * (col.sum(-1, keepdims=True) > 0)
+
+
 def main():
     town = json.load(open(os.path.join(ROOT, "data", "town", "district7.json"), encoding="utf-8"))
     cells = json.load(open(os.path.join(user_dir(), "town_cells.json")))
@@ -480,6 +558,21 @@ def main():
     court = np.array(court) > 140
     kind[court & (kind != K["void"])] = K["court"]
     kind[cell_kind == K["stairs"]] = K["stairs"]
+    # 포장 무늬 · 나무 부두 · 큰길과 골목(CT103): 광장 · 시장은 비스듬한 판석, 부두는 널, 블록 사이 길은 폭 2.5칸 넘으면 큰길(반듯한 돌) · 좁으면 골목(자갈)
+    pim = Image.new("L", (W, H), 0)
+    pd = ImageDraw.Draw(pim)
+    for a in town["areas"]:
+        if "poly" in a and (a.get("pattern") == "diag" or a.get("wood")):
+            pd.polygon([P(q) for q in a["poly"]], fill=1 if a.get("wood") else 2)
+    mim = Image.new("L", (W, H), 0)
+    md = ImageDraw.Draw(mim)
+    for a in town["areas"]:
+        if a.get("main") and "line" in a:
+            md.line([P(q) for q in a["line"]], fill=1, width=int(a["width"] * PX))
+    pat = np.asarray(pim)
+    wood_m = (pat == 1) & (kind == K["bridge"])
+    diag_m = (pat == 2) & np.isin(kind, [K["paving"]])
+    main_m = (np.asarray(mim) > 0) & (kind == K["street"])
     # 2) 높이: 단 경계선(곡선) · 계단 · 물(칸 정보)
     xs1 = (np.arange(W) + 0.5) / PX
     hmap = np.full((H, W), float(town["bands"][-1]["h"]), np.float32)
@@ -519,7 +612,7 @@ def main():
             out = np.zeros((y1 - y0, x1 - x0, 3), np.float32)
             oink = np.zeros((y1 - y0, x1 - x0), np.float32)
             todo = {
-                "street": lambda: cobbles(xs, ys, C("street", 1.12), 13.0, 3),
+                "street": lambda: road(xs, ys, kk, main_m[y0:y1, x0:x1], hmap[y0:y1, x0:x1], C),
                 "avenue": lambda: slabs(xs, ys, C("avenue", 1.06), 22.0, 30.0, 52.0, 5),
                 "paving": lambda: slabs(xs, ys, C("paving", 1.06), 24.0, 26.0, 46.0, 7),
                 "bridge": lambda: slabs(xs, ys, C("bridge", 1.08), 18.0, 34.0, 50.0, 9),
@@ -538,6 +631,16 @@ def main():
                     if r is not None:
                         out[m] = r[0][m]
                         oink[m] = r[1][m]
+            dm = diag_m[y0:y1, x0:x1]
+            if dm.any():
+                c, k2 = diag(xs, ys, C("plaza", 1.0), 26.0, 23)
+                out[dm] = c[dm]
+                oink[dm] = k2[dm]
+            wm = wood_m[y0:y1, x0:x1]
+            if wm.any():
+                c, k2 = planks(xs, ys, hexc("#5e4632") * SHADE * 1.1, 29)
+                out[wm] = c[wm]
+                oink[wm] = k2[wm]
             rest = (kk != K["void"]) & (out.sum(-1) == 0)  # 집 밑 · 소품 칸 등 남은 곳 = 흙
             if rest.any():
                 out[rest] = dirt(xs, ys, C("yard", 1.06), 17)[0][rest]
@@ -552,7 +655,9 @@ def main():
     curb = hard & near
     col[curb] = col[curb] * 0.7
     ink[curb & ~np.roll(near, 1, 0)] = 0.6
+    entries(kind, diag_m, col, ink)
     footing(town, kind, col, ink, W, H)
+    lamp_light(town, col, W, H)
     decorate(town, kind, cell_kind, col, ink, W, H)
     # 4) 3/4로 올린다(남쪽부터 북쪽으로 — 높은 땅이 앞의 낮은 땅 위로, 높이 차는 앞면)
     top = int(math.ceil(float(cells["max_h"]) * PX)) + 4

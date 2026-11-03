@@ -6,17 +6,27 @@ extends RefCounted
 ## 좌표: 칸(X 동, Y 위, Z 남) — 지도 칸(x, y)이 그대로 (X, Z). 땅 높이는 부르는 쪽이 더한다.
 
 const Kit := preload("res://tools/town_kit/Kit.gd")
-const Designs := preload("res://tools/town_kit/Designs.gd")
+const Designs := preload("res://tools/town_kit/Designs2.gd")  # Designs + 3차 개선 건물(CT103)
 const Mat := preload("res://tools/city_art/Mat.gd")
 
 ## 보통 집으로 쓸 바리에이션(탑 · 종탑 · 예배당은 빼고 — 3/4에서는 높이가 줄지 않아 탑처럼 솟는다).
 const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house",
 	"_gallery_house", "_mansard", "_step_gable", "_workshop", "_manor"]
+## 구역마다 고르는 바리에이션(사용자 3차 개선 "구역별 건축물 차별화", CT103): 윗단 행정 · 종교 = 큰 석조, 광장 · 시장 = 가게 · 차양,
+## 좌우 주거 = 반목조 주택 · 작은 공방, 강변 = 창고 · 공방. 이웃(집 번호가 하나 차이)은 늘 다른 바리에이션(i % 3).
+const ZONE_FNS := {
+	"civic": ["_mansard", "_manor", "_tall_hip", "_step_gable"],
+	"market": ["_shop_house", "_corner_shop", "_gallery_house", "_arch_house", "_eaves_dormers"],
+	"res": ["_narrow_jetty", "_row_timber", "_eaves_dormers", "_cross_gable", "_gallery_house", "_arch_house", "_workshop"],
+	"river": ["_warehouse", "_workshop", "_row_timber", "_eaves_dormers"],
+}
+const ZONE_ROOF := {"civic": ["grey", "dark", "grey"], "market": ["red", "brown", "red", "dark"], "res": ["brown", "dark", "brown", "red", "brown"],
+	"river": ["dark", "grey", "brown"]}
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"guild": "_guild", "temple": "_chapel", "bank": "_mansard", "inn": "_manor", "shop": "_shop_house", "smithy": "_workshop"}
+const FAC_FNS := {"guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_manor", "shop": "_shop_house", "smithy": "_workshop"}
 ## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
 const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house", "pawnshop": "_shop_house", "guard_post": "_mansard",
-	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_workshop", "gate": "_tall_hip"}
+	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_warehouse", "gate": "_tall_hip"}
 ## 지붕 기운(어두운 갈색 밑색 Facade.ROOF에 곱한다 — 예전 색감 안에서만 조금씩: 갈색 · 붉은 갈색 · 잿빛 · 짙은 갈색, CT99).
 const ROOF_TINTS := {"brown": Color(1.0, 1.0, 1.0), "red": Color(1.12, 0.92, 0.84), "grey": Color(0.9, 0.96, 1.06), "dark": Color(0.82, 0.8, 0.78)}
 const FAC_ROOF := {"guild": "dark", "temple": "grey", "bank": "grey", "inn": "red", "shop": "red", "smithy": "dark"}
@@ -63,9 +73,12 @@ static func make(h: Dictionary, i: int) -> Node3D:
 	var size: Vector2 = h.get("size", Vector2(4, 4))
 	var ctr: Vector2 = h.get("center", Vector2.ZERO)
 	var fn := str(FAC_FNS.get(fac, PLACE_FNS.get(str(h.get("place", "")), "")))
+	var zone := str(h.get("zone", ""))
+	if zone == "townhall":
+		fn = "_town_hall"
 	if fn.is_empty():
 		var best: Array = []
-		for f: String in HOUSE_FNS:
+		for f: String in ZONE_FNS.get(zone, HOUSE_FNS):
 			var t: Array = template(f)
 			var w: float = (t[2] as Vector3).x - (t[1] as Vector3).x
 			var d: float = (t[2] as Vector3).z - (t[1] as Vector3).z
@@ -85,7 +98,7 @@ static func make(h: Dictionary, i: int) -> Node3D:
 	var a := float(h.get("angle", 0.0))
 	var sy := clampf(sqrt(sx * sz), 0.8, 1.2)  # 필지 크기를 따라 높이도 조금(작으면 탑처럼 솟지 않게 · 크면 큰 집답게)
 	if fac == "temple":
-		sy = 1.25
+		sy = 1.1
 	var basis := Basis(Vector3.UP, -a) * Basis.from_scale(Vector3(sx, sy, sz))
 	var mid := Vector3((lo.x + hi.x) * 0.5, 0.0, (lo.z + hi.z) * 0.5)
 	if i % 2 == 1 and fac.is_empty():  # 좌우 뒤집기(같은 집이 덜 되풀이되어 보이게)
@@ -111,6 +124,12 @@ static func _roof_of(h: Dictionary, i: int) -> String:
 		return "red"
 	if place in ["guard_post", "gate"]:
 		return "grey"
+	var zone := str(h.get("zone", ""))
+	if zone == "townhall":
+		return "grey"
+	if ZONE_ROOF.has(zone):
+		var pool: Array = ZONE_ROOF[zone]
+		return str(pool[(i * 5 + 3) % pool.size()])
 	return ["brown", "red", "brown", "grey", "dark", "brown", "red"][(i * 5 + 3) % 7]
 
 
@@ -120,15 +139,15 @@ static func _rotunda(h: Dictionary) -> Node3D:
 	holder.position = Vector3(float(c[0]), 0.0, float(c[1]))
 	var r := float(c[2])
 	var parts := [
-		[_cyl(r * 0.92, 5.4), Vector3(0, 2.7, 0), mat("ashlar", Color("#b9b0a0"), 0.5)],
-		[_cyl(r * 0.62, 1.4), Vector3(0, 6.1, 0), mat("plaster", Color("#c8bea8"), 0.5)],
+		[_cyl(r * 0.92, 5.4), Vector3(0, 2.7, 0), mat("ashlar", Color("#6e665a"), 0.5)],  # 어두운 바닥 · 집 색에 맞춰(CT103 — 혼자 밝게 튀었다)
+		[_cyl(r * 0.62, 1.4), Vector3(0, 6.1, 0), mat("plaster", Color("#7e7462"), 0.5)],
 	]
 	var sm := SphereMesh.new()
 	sm.radius = r * 0.66
 	sm.height = r * 0.66
 	sm.is_hemisphere = true
 	sm.radial_segments = 48
-	parts.append([sm, Vector3(0, 6.8, 0), mat("lead", Color("#6a7480"), 0.6)])
+	parts.append([sm, Vector3(0, 6.8, 0), mat("lead", Color("#545c66"), 0.6)])
 	var bm := BoxMesh.new()
 	bm.size = Vector3(1.2, 1.9, 0.3)
 	parts.append([bm, Vector3(0, 0.95, r * 0.92), mat("wood", Color("#4a3426"), 0.8)])

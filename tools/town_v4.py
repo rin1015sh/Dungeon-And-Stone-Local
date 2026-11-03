@@ -94,9 +94,12 @@ class City(Town):
 		super().__init__("district", "7구역 v4 · 블록 도시", "80 × 110칸 · 둘레 줄집 블록 · 옛길을 따라 비튼 동네 둘", 4)
 		self.blocks: list = []  # (Blk, 안뜰 다각형 또는 None, 골목이 뚫렸나)
 		self.gates: list = []  # (id, (x0, z0, x1, z1))
+		self.lanes: list = []  # (점들, 폭) — 블록을 꿰뚫는 굽은 골목(CT103)
+		self.pockets: list = []  # 모퉁이 쉼터 다각형(CT103)
+		self.piers: list = []  # 강변 나무 부두 다각형(CT103)
 		self.start = (0.5, -12.5)
 
-	def put(self, fx, fz, w, d, yaw, top, num=0, fid="", name="", force=False) -> bool:
+	def put(self, fx, fz, w, d, yaw, top, num=0, fid="", name="", force=False, zone="res") -> bool:
 		"""앞면 가운데 (fx, fz) · 폭 w · 깊이 d(뒤 = 북쪽) 집. force가 아니면 다른 집 · 시설 · 옹벽과 겹치면 놓지 않는다(맞닿음은 괜찮다)."""
 		if w < 2.6 or d < 2.6:
 			return False
@@ -109,7 +112,8 @@ class City(Town):
 			if not pm.any() or (self.mask[pm] >= 2).any():
 				return False
 		self.try_house(poly, (poly[0], poly[1]), top, "fac" if (fid or num) else "house", name, force=True, strip=0.6)
-		self.p.houses[-1].update({"yaw": yaw, "front_c": (fx, fz), "wd": (w, d), "num": num, "facility": fid})
+		self.p.houses[-1].update({"yaw": yaw, "front_c": (fx, fz), "wd": (w, d), "num": num, "facility": fid,
+			"zone": "townhall" if name == "관청" else zone})
 		if num:
 			mx, mz = sum(q[0] for q in poly) / 4, sum(q[1] for q in poly) / 4
 			ax, az = poly[0]
@@ -133,10 +137,16 @@ class City(Town):
 		c = lambda a, bb: _cross(lines[a][0], lines[a][1], lines[bb][0], lines[bb][1])  # noqa: E731
 		return Blk(c("n", "w"), c("n", "e"), c("s", "e"), c("s", "w"))
 
-	def block(self, b: Blk, seed: int, st=(2, 3), rows="nsew", dn=5.0, ds=5.4, cw=6.0, tw=6.0, fixed=(), alley=None, inner="yard"):
+	def block(self, b: Blk, seed: int, st=(2, 3), rows="nsew", dn=5.0, ds=5.4, cw=6.0, tw=6.0, fixed=(), alley=None, inner="yard",
+			zone="res", zone_s=None, through=None, pocket=None, recess=0.3):
 		"""둘레 줄집 블록. 남쪽 줄 = 남쪽 변(길)을 보고, 북쪽 줄 = 북쪽 변에 등을 대고 안뜰을 본다, 동서 세로 줄 = 남쪽을 보는 집을 쌓는다.
 		변마다 집 폭이 변을 꼭 나눠 떨어진다(틈 없음). fixed = [(줄, x0, x1, 깊이, top, num, fid, 이름)] — x는 지도 가로 좌표.
-		alley = 남쪽 줄 골목 자리(x, 폭 2.6 — 안뜰로). 깊이가 두 줄보다 얕으면 북쪽 줄을 줄여 등을 맞댄다."""
+		alley = 남쪽 줄 골목 자리(x, 폭 2.6 — 안뜰로). 깊이가 두 줄보다 얕으면 북쪽 줄을 줄여 등을 맞댄다.
+		3차 개선(CT103): zone = 구역(집 꼴 · 지붕 색 — HouseFit.ZONE_FNS), zone_s = 남쪽 줄만 다른 구역(강변을 보는 줄),
+		through = (남쪽 틈 x, 북쪽 틈 x) — 블록을 꿰뚫는 완만하게 굽은 골목, pocket = (줄, x0, x1) — 모퉁이 작은 쉼터(집을 비운다),
+		recess = 남쪽 줄 집이 길에서 조금 물러서는 몫(앞선이 자로 그은 듯하지 않게)."""
+		if through is not None:
+			alley = through[0]
 		r = random.Random(seed)
 		b = self.grow(b, GROW)
 		depth_w = math.hypot(*_sub(b.sw, b.nw))
@@ -158,6 +168,7 @@ class City(Town):
 			s0 = max(0.0, b.edge_s(side, d, "w"))
 			s1 = min(L, b.edge_s(side, d, "e"))
 			occ = []
+			zn = (zone_s or zone) if side == "s" else zone
 			for row, x0, x1, dd, top, num, fid, name in fixed:
 				if row != side:
 					continue
@@ -165,11 +176,21 @@ class City(Town):
 				qf = 0.0 if side == "s" else dd
 				fx = a[0] + u[0] * (sa + sb) / 2 + inn[0] * qf
 				fz = a[1] + u[1] * (sa + sb) / 2 + inn[1] * qf
-				self.put(fx, fz, sb - sa, dd, yaw, top, num, fid, name, force=True)
+				self.put(fx, fz, sb - sa, dd, yaw, top, num, fid, name, force=True, zone=zn)
 				occ.append((sa, sb))
 			if side == "s" and alley is not None:
 				sa = (alley - a[0]) / u[0]
 				occ.append((sa, sa + 2.6))
+			if side == "n" and through is not None:
+				sa = (through[1] - a[0]) / u[0]
+				occ.append((sa, sa + 2.6))
+			if pocket is not None and pocket[0] == side:
+				sa, sb = (pocket[1] - a[0]) / u[0], (pocket[2] - a[0]) / u[0]
+				occ.append((sa, sb))
+				qf = d if side == "n" else 0.0
+				pk = [(a[0] + u[0] * sa + inn[0] * qq, a[1] + u[1] * sa + inn[1] * qq) for qq in (qf, qf - d if side == "n" else d)]
+				pk += [(a[0] + u[0] * sb + inn[0] * qq, a[1] + u[1] * sb + inn[1] * qq) for qq in ((qf - d if side == "n" else d), qf)]
+				self.pockets.append(pk)
 			s = s0
 			gaps = []
 			for x0, x1 in sorted(occ):
@@ -182,9 +203,10 @@ class City(Town):
 				s = g0
 				for w in split(g1 - g0, tw, r):
 					qf = 0.0 if side == "s" else d
-					fx = a[0] + u[0] * (s + w / 2) + inn[0] * qf
-					fz = a[1] + u[1] * (s + w / 2) + inn[1] * qf
-					self.put(fx, fz, w, d, yaw, top_r())
+					rc = recess if (side == "s" and w > 3.4 and r.random() < 0.3) else 0.0  # 몇 집은 길에서 조금 물러선다
+					fx = a[0] + u[0] * (s + w / 2) + inn[0] * (qf + rc)
+					fz = a[1] + u[1] * (s + w / 2) + inn[1] * (qf + rc)
+					self.put(fx, fz, w, d - rc, yaw, top_r(), zone=zn)
 					s += w
 		# 세로 줄(동서 끝): 남쪽 변의 틀로 — 북쪽 줄 앞선과 남쪽 줄 뒷선 사이
 		a, u, inn, L, yaw = b.frame("s")
@@ -210,7 +232,7 @@ class City(Town):
 			for d in split(qb - qa, 5.0, r, 0.9, 1.1):
 				fx = a[0] + u[0] * (sx + cw / 2) + back[0] * (q + d)
 				fz = a[1] + u[1] * (sx + cw / 2) + back[1] * (q + d)
-				self.put(fx, fz, cw, d, yaw, top_r())
+				self.put(fx, fz, cw, d, yaw, top_r(), zone=zone)
 				q += d
 			cs[0 if side == "w" else 1] = sx + cw if side == "w" else sx
 		court = None
@@ -225,6 +247,23 @@ class City(Town):
 					self.p.yards.append(court)
 				elif inner == "paving":
 					self.p.pavings.append(court)
+		if through is not None:  # 꿰뚫는 골목: 남쪽 틈 → 안뜰(완만한 굽이) → 북쪽 틈
+			a, u, inn, L, _y = b.frame("s")
+			an, un2, innn, _L2, _y2 = b.frame("n")
+			ps_ = (a[0] + u[0] * ((through[0] - a[0]) / u[0] + 1.3) - inn[0] * 0.8, a[1] + u[1] * ((through[0] - a[0]) / u[0] + 1.3) - inn[1] * 0.8)
+			pn_ = (an[0] + un2[0] * ((through[1] - an[0]) / un2[0] + 1.3) - innn[0] * 0.8, an[1] + un2[1] * ((through[1] - an[0]) / un2[0] + 1.3) - innn[1] * 0.8)
+			mx, mz = (ps_[0] + pn_[0]) / 2, (ps_[1] + pn_[1]) / 2
+			bend = 0.9 if (seed % 2) else -0.9
+			pts = []
+			for k in range(7):
+				tt = k / 6.0
+				cx, cz = mx + bend, mz
+				x = (1 - tt) ** 2 * ps_[0] + 2 * (1 - tt) * tt * cx + tt ** 2 * pn_[0]
+				z = (1 - tt) ** 2 * ps_[1] + 2 * (1 - tt) * tt * cz + tt ** 2 * pn_[1]
+				pts.append((x, z))
+			self.lane_n += 1
+			self.lanes.append((pts, 2.2))
+			self.street("through%d" % self.lane_n, pts, 2.2)  # 걷는 골목(소품이 막지 않게 길로 표시)
 		self.blocks.append((b, court, alley is not None))
 		return b
 
@@ -255,18 +294,19 @@ def plan_v4():
 	t.opened([(-37.5, -72.5), (-24.5, -72.5), (-24.5, -60.2), (-37.5, -60.2)])
 	t.graves(-36.8, -72, -25.2, -62, 3)
 	t.mark(17, -31, -66)
-	t.block(R(-24, -73, -10.5, -59.5), 11, rows="ns", dn=5.0, ds=5.5)
+	t.block(R(-24, -73, -10.5, -59.5), 11, rows="ns", dn=5.0, ds=5.5, zone="civic", tw=6.8)
 	t.fac(6, 17, 11, 12.0, at=(0, -59.5), yaw=0, name="신전", fid="temple")
 	t.opened([(-8.5, -73), (8.5, -73), (8.5, -70.5), (-8.5, -70.5)], "none")  # 신전 뒤 좁은 뜰
 	t.fac(22, 3.0, 4.0, 8.0, at=(12, -69))  # 북문 문루
 	t.opened([(18.5, -73), (38, -73), (38, -59.5), (18.5, -59.5)], "paving")  # 도서관 뜰(판석)
 	t.round(7, 28, -66.2, 6.0, 8.0, "도서관")
 	# 신전 거리(z −59.5 ~ −55.5) 남쪽 줄 · 신전 앞뜰
-	t.block(R(-38, -55.5, -17, -45), 13, rows="ns", dn=5.0, ds=5.4)
-	t.block(R(-13, -55.5, -6.5, -45), 14, rows="ns", tw=6.5, dn=5.0, ds=5.4)
+	t.block(R(-38, -55.5, -17, -45), 13, rows="ns", dn=5.0, ds=5.4, zone="civic", tw=7.0,
+			fixed=[("s", -34.5, -22.0, 6.0, 9.6, 0, "", "관청")])  # 관청(윗단 행정 — CT103)
+	t.block(R(-13, -55.5, -6.5, -45), 14, rows="ns", tw=6.5, dn=5.0, ds=5.4, zone="civic")
 	t.opened([(-6.5, -55.5), (6.5, -55.5), (6.5, -45), (-6.5, -45)], "paving")  # 신전 앞뜰
-	t.block(R(6.5, -55.5, 19.5, -45), 15, rows="ns", dn=5.0, ds=5.4)
-	t.block(R(24.5, -55.5, 38, -45), 16, rows="ns", dn=5.0, ds=5.4)
+	t.block(R(6.5, -55.5, 19.5, -45), 15, rows="ns", dn=5.0, ds=5.4, zone="civic", tw=6.8)
+	t.block(R(24.5, -55.5, 38, -45), 16, rows="ns", dn=5.0, ds=5.4, zone="civic", tw=7.0, pocket=("s", 24.0, 28.6))
 
 	# ================= 중단(높이 0) — 차원광장 =================
 	t.fac(2, 10.5, 8, 7.2, at=(-7.75, -31.5), yaw=0, name="탐험가 길드", fid="guild")
@@ -277,18 +317,18 @@ def plan_v4():
 	t.fac(3, 3.5, 2.6, 2.6, at=(-9.5, -14.0), yaw=0)
 	# 서쪽: 은행 블록(옹벽에 등) · 서문 길(z −25.5 ~ −20.5) · 경비대 블록
 	t.block(R(-38, -39.8, -17, -25.5), 21, rows="nswe", dn=4.8, ds=5.4, cw=5.5,
-			fixed=[("s", -32.6, -22.1, 8.0, 6.8, 5, "bank", "은행")], alley=-35.2)
-	t.block(R(-38, -20.5, -13, -11), 23, st=(1, 3), rows="ns", dn=4.4, ds=5.1,
-			fixed=[("s", -38.0, -31.0, 5.1, 6.0, 16, "", "경비 초소"), ("s", -24.0, -18.0, 5.1, 5.0, 13, "", "약초상")])
+			fixed=[("s", -32.6, -22.1, 8.0, 6.8, 5, "bank", "은행")], alley=-35.2, zone="res")
+	t.block(R(-38, -20.5, -13, -11), 23, st=(1, 3), rows="ns", dn=4.4, ds=5.1, zone="res", through=(-28.0, -27.2),
+			fixed=[("s", -38.0, -31.0, 5.1, 6.0, 16, "", "경비 초소"), ("s", -25.4, -19.4, 5.1, 5.0, 13, "", "약초상")])
 	t.mark(22, -36.5, -23)
 	# 동쪽 옛 골목(+14.6°): 광장 동쪽에서 동북으로 오르는 선술집 골목 — 북쪽 블록은 남쪽 변이, 남쪽 블록은 북쪽 변이 기운다
 	n0, n1 = (13, -23.5), (38, -30.0)  # 골목 북쪽 가
 	s0, s1 = (13, -19.5), (38, -26.0)  # 골목 남쪽 가
-	t.block(Blk((13, -39.8), (20.2, -39.8), (20.2, zline2(n0, n1, 20.2)), n0), 31, rows="nsw", dn=4.6, ds=5.0, cw=5.5)
+	t.block(Blk((13, -39.8), (20.2, -39.8), (20.2, zline2(n0, n1, 20.2)), n0), 31, rows="nsw", dn=4.6, ds=5.0, cw=5.5, zone="market")
 	t.block(Blk((23.8, -39.8), (38, -39.8), n1, (23.8, zline2(n0, n1, 23.8))), 32, rows="ns", dn=4.6, ds=5.0,
-			fixed=[("s", 25.0, 32.0, 5.0, 5.6, 11, "", "선술집"), ("n", 32.0, 38.0, 4.6, 4.8, 20, "", "폐가")])
+			fixed=[("s", 25.0, 32.0, 5.0, 5.6, 11, "", "선술집"), ("n", 32.0, 38.0, 4.6, 4.8, 20, "", "폐가")], zone="market")
 	t.block(Blk(s0, s1, (38, -11), (13, -11)), 33, st=(1, 3), rows="nswe", dn=4.4, ds=5.2, cw=5.5, alley=21.0,
-			fixed=[("s", 29.0, 35.0, 5.2, 4.8, 19, "", "전당포")])
+			fixed=[("s", 29.0, 35.0, 5.2, 4.8, 19, "", "전당포")], zone="market")
 
 	# ================= 아랫단(높이 −2.4) — 시장 · 아랫동네 · 수로 =================
 	t.opened([(-9, -6.6), (9, -6.6), (9, 4.5), (-9, 4.5)], "paving")  # 시장(계단 밑)
@@ -296,17 +336,23 @@ def plan_v4():
 	# 서쪽 아랫동네(−12.6°): 서문 밑에서 시장 쪽으로 내려오는 아랫길(가 = 북 · 남)
 	a0, a1 = (-38, -2.0), (-9, 4.5)
 	b0, b1 = (-38, 2.0), (-9, 8.5)
-	t.block(Blk((-31.5, -5.8), (-20.0, -5.8), (-20.0, zline2(a0, a1, -20.0)), (-31.5, zline2(a0, a1, -31.5))), 41, st=(1, 2), rows="s", ds=4.8,
+	t.block(Blk((-31.5, -5.8), (-20.0, -5.8), (-20.0, zline2(a0, a1, -20.0)), (-31.5, zline2(a0, a1, -31.5))), 41, st=(1, 2), rows="s", ds=4.8, zone="res",
 			fixed=[("s", -31.5, -24.0, 4.8, 5.0, 18, "", "구빈원")])
-	t.block(Blk((-17.4, -5.8), (-9.0, -5.8), a1, (-17.4, zline2(a0, a1, -17.4))), 42, st=(1, 2), rows="ns", dn=4.6, ds=4.8)
-	t.block(Blk(b0, (-20.4, zline2(b0, b1, -20.4)), (-20.4, 16.5), (-38, 16.5)), 43, st=(1, 2), rows="nsw", dn=4.6, ds=5.2, cw=5.0)
-	t.block(Blk((-17.8, zline2(b0, b1, -17.8)), (-2.5, zline2(b0, b1, -2.5)), (-2.5, 16.5), (-17.8, 16.5)), 44, st=(1, 2), rows="ns", dn=3.4, ds=5.2)
+	t.block(Blk((-17.4, -5.8), (-9.0, -5.8), a1, (-17.4, zline2(a0, a1, -17.4))), 42, st=(1, 2), rows="ns", dn=4.6, ds=4.8, zone="res")
+	t.block(Blk(b0, (-20.4, zline2(b0, b1, -20.4)), (-20.4, 16.5), (-38, 16.5)), 43, st=(1, 2), rows="nsw", dn=4.6, ds=5.2, cw=5.0,
+			zone="res", zone_s="river", through=(-30.0, -28.6))
+	t.block(Blk((-17.8, zline2(b0, b1, -17.8)), (-2.5, zline2(b0, b1, -2.5)), (-2.5, 16.5), (-17.8, 16.5)), 44, st=(1, 2), rows="ns", dn=3.4, ds=5.2, zone="res", zone_s="river")
 	# 동쪽: 가게 블록(시장 동쪽) · 대장간 · 창고(수로)
 	t.block(R(9, -5.8, 24.2, 5.5), 45, st=(1, 3), rows="ns", dn=4.8, ds=5.6,
-			fixed=[("s", 9.0, 18.0, 6.2, 4.6, 8, "shop", "잡화점")])
-	t.block(R(27.8, -5.8, 38, 5.5), 46, st=(1, 3), rows="ns", dn=4.8, ds=5.6)
+			fixed=[("s", 9.0, 18.0, 6.2, 4.6, 8, "shop", "잡화점")], zone="market", through=(19.6, 20.4))
+	t.block(R(27.8, -5.8, 38, 5.5), 46, st=(1, 3), rows="ns", dn=4.8, ds=5.6, zone="res", pocket=("s", 33.6, 38.0))
 	t.block(R(2.5, 10.5, 38, 16.5), 47, st=(1, 2), rows="s", ds=6.0,
-			fixed=[("s", 7.0, 16.0, 6.0, 5.0, 9, "smithy", "대장간"), ("s", 23.0, 35.0, 6.0, 5.0, 21, "", "창고")])
+			fixed=[("s", 7.0, 16.0, 6.0, 5.0, 9, "smithy", "대장간"), ("s", 23.0, 35.0, 6.0, 5.0, 21, "", "창고")], zone="river")
+	# 강변 나무 부두 둘(걸어 나가는 판자 · 둘레 난간 · 배를 맨다 — CT103)
+	for x0 in (-21.5, 17.0):
+		pier = [(x0, 21.0), (x0 + 3.0, 21.0), (x0 + 3.0, 25.2), (x0, 25.2)]
+		t.piers.append(pier)
+		t.mask[t.pmask(pier)] = 1
 	t.mark(15, -24, 21.0)
 	t.mark(25, 3.8, 24.0)
 	# 하수도: 큰 굴은 큰길 밑 → 다리 옆 배출구, 가지 굴 둘 · 갈림길 암시장
@@ -316,6 +362,10 @@ def plan_v4():
 	for x, z in ((4.5, -13.5), (-19, 4.5), (-4.5, 19.5), (36, -43), (22, -36)):
 		t.mark(23, x, z)
 	t.mark(24, -1.0, 12)
+	# 큰길(반듯한 돌 — 나머지 블록 사이 길 · 골목은 자갈, CT103): 신전 거리 · 윗단 남쪽 길 · 서문 길 · 선술집 골목 · 중단 남쪽 길 · 아랫길 · 둑길 · 북문 길
+	t.mains = [([(-38, -57.5), (38, -57.5)], 3.2), ([(-38, -42.8), (38, -42.8)], 3.6), ([(-38, -23.0), (-13, -23.0)], 4.2),
+			([(13, -21.5), (38, -28.0)], 3.4), ([(-38, -8.8), (38, -8.8)], 3.6), ([(-38, 0.0), (-9, 6.5)], 3.2), ([(9, 8.0), (38, 8.0)], 4.0),
+			([(-38, 18.9), (38, 18.9)], 4.4), ([(16.2, -73), (16.2, -59)], 4.0)]
 	dress(t)
 	t.p.label(-26, -57.5, "신전 거리", "street").label(-28, -23, "서문 거리", "street").label(26, -27, "선술집 골목", "street")
 	t.p.label(-26, 3.5, "아랫길", "street").label(20, 18.5, "둑길", "street")
@@ -445,6 +495,53 @@ def deco(t: City):
 		tree(x, 19.6, 0.9)
 	for x, z in ((21.5, 17.6), (36.6, 17.6), (-20.0, 17.6)):
 		t.spot("goods", x, z, 1.6, 1.0)
+	life(t)
+
+
+def life(t: City):
+	"""3차 개선(CT103) 생활 소품 — 구역 용도대로: 가게 간판 · 주거 벽 등불 · 골목 살림 · 포장마차 · 모퉁이 쉼터 · 광장 진입 돌말뚝 · 부두 난간 · 거룻배."""
+	shops = {"shop", "smithy", "inn", "bank"}
+	k = 0
+	for h in t.p.houses:
+		if "front_c" not in h or h.get("kind") == "post":
+			continue
+		(fx, fz), (w, _d), yaw = h["front_c"], h["wd"], h["yaw"]
+		ux, uz = math.cos(math.radians(yaw)), -math.sin(math.radians(yaw))
+		nx, nz = math.sin(math.radians(yaw)), math.cos(math.radians(yaw))
+		zone = h.get("zone", "")
+		if h.get("facility") in shops or h.get("num") in (11, 13, 19) or (zone == "market" and w > 4.0):
+			near(t, "sign", fx + ux * (w / 2 - 0.7) + nx * 1.0, fz + uz * (w / 2 - 0.7) + nz * 1.0, 0.8, 0.8)  # 문 옆 간판
+		elif zone in ("res", "market", "river") and w > 3.6:
+			k += 1
+			if k % 3 == 0:
+				near(t, "walllamp", fx - ux * (w / 2 - 0.6) + nx * 0.9, fz - uz * (w / 2 - 0.6) + nz * 0.9, 0.7, 0.7)  # 벽 등불
+	for pts, _w in t.lanes:  # 꿰뚫는 골목: 들머리 벽 등불 · 가운데 살림
+		near(t, "walllamp", pts[0][0] + 1.4, pts[0][1] - 0.6, 0.7, 0.7)
+		near(t, "household", pts[3][0] + 1.3, pts[3][1], 1.2, 0.8)
+	for pk in t.pockets:  # 모퉁이 쉼터: 뒤에 나무 · 앞에 벤치 · 화분
+		cx = sum(q[0] for q in pk) / 4
+		cz = sum(q[1] for q in pk) / 4
+		if clear(t, cx, cz - 1.2, 1.0):
+			t.spot("tree", cx, cz - 1.2, 1.0, 1.0)
+		near(t, "bench", cx, cz + 1.4, 2.0, 0.8)
+		near(t, "planter", cx + 1.5, cz + 0.2, 0.9, 0.9)
+	# 포장마차: 서문 길 · 둑길 창고 앞 · 아랫길
+	near(t, "wagon", -22.5, -23.0, 2.6, 1.0)
+	near(t, "wagon", 29.5, 18.6, 2.6, 1.0)
+	near(t, "wagon", -14.0, 6.2, 2.6, 1.0)
+	# 광장 진입부: 길이 광장에 들어오는 곳 양옆 돌말뚝(서문 길 · 선술집 골목 · 큰길)
+	for x, z in ((-12.3, -25.0), (-12.3, -21.0), (12.3, -23.1), (12.3, -19.8), (-3.4, -30.8), (3.4, -30.8)):
+		near(t, "bollard", x, z, 0.7, 0.7)
+	for x, z in ((-11.7, -16.0), (11.7, -16.0)):  # 광장 가장자리 화분
+		near(t, "planter", x, z, 0.9, 0.9)
+	# 부두: 끝 난간 · 뿌리에 짐 · 곁에 거룻배(물 위 — 걷지 않는 칸)
+	for pier in t.piers:
+		x0 = pier[0][0]
+		t.props.append(("rail", x0 + 1.5, 24.7, 3.0, 0.9))
+		t.props.append(("boat", x0 + 5.2, 24.2, 2.0, 1.0))
+		t.props.append(("boat", x0 - 2.4, 23.4, 2.0, 1.0))
+		near(t, "barrel", x0 - 0.8, 20.2, 0.9, 0.9)
+		near(t, "crate", x0 + 3.8, 20.2, 0.9, 0.9)
 
 
 def main():

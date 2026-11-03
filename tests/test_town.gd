@@ -59,7 +59,7 @@ func test_houses_are_tidy_shallow_and_block_walking() -> void:
 			if owner.has(c + d) and owner[c + d] != owner[c]:
 				touching[owner[c]] = true
 				touching[owner[c + d]] = true
-	assert_true(touching.size() * 10 >= plain * 9, "집이 블록으로 맞닿아 선다(%d/%d)" % [touching.size(), plain])
+	assert_true(touching.size() * 100 >= plain * 85, "집이 블록으로 맞닿아 선다(%d/%d — 꿰뚫는 골목 · 모퉁이 쉼터로 떨어진 집은 조금, CT103)" % [touching.size(), plain])
 	var tilted := t.houses.filter(func(h: Dictionary) -> bool: return absf(rad_to_deg(float(h.get("angle", 0.0)))) > 8.0)
 	assert_true(tilted.size() >= 12, "옛길을 따라 비튼 블록의 집(%d채)" % tilted.size())
 	assert_true(overlap <= plain, "집끼리 거의 겹치지 않는다(겹친 칸 %d — 기운 집 모서리 한 칸 정도만)" % overlap)
@@ -177,5 +177,6 @@ func test_ground_and_props_are_baked() -> void:
 	var t := _town()
 	assert_true(right >= t.width * 32 - 1 and bottom >= t.height * 32 - 1, "바닥이 지도를 다 덮는다")
 	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais",
-			"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods"]:  # 장식(CT101)
+			"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods",  # 장식(CT101)
+			"sign", "walllamp", "wagon", "rail", "boat", "household"]:  # 생활 소품(CT103)
 		assert_true(ResourceLoader.exists("res://assets/town/props/%s.webp" % k), "소품 그림 " + k)

@@ -93,7 +93,7 @@ static func wall(o: Dictionary) -> Callable:
 					p.fill_poly(sw, Mat.glass(p, g - base - fh * 0.78, g - base - fh * 0.2, k % 2 == 0))
 					Ink.path(p, sw, Parts.LINE)
 					continue
-				var lit := Paint.hash01(ci * 31 + k, fl, 7) < float(o.get("lit", 0.3))
+				var lit := Paint.hash01(ci * 31 + k, fl, 7) < float(o.get("lit", 0.42))  # 따뜻한 창빛을 조금 더(CT103)
 				var ww := P * 0.32
 				var wh := fh * 0.42
 				Parts.window(p, cx - ww * 0.5, top + fh * 0.24, ww, wh, str(o.get("win", "square")), lit, bool(o.get("shutters", false)))
@@ -118,8 +118,8 @@ static func gable(style: String, ci: int, window: bool = true) -> Callable:
 ## 지붕(어두운 갈색 너와·점판암 한 계열). small = 지붕창·작은 지붕(잔 비늘).
 static func roof(ci: int, small: bool = false) -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
-		var tw := int(P * (0.16 if small else 0.26))
-		var th := int(P * (0.1 if small else 0.16))
+		var tw := int(P * (0.18 if small else 0.3))  # 기와를 크게 · 덜 시끄럽게(CT103)
+		var th := int(P * (0.11 if small else 0.18))
 		Parts.roof(p, poly, _tiles(ROOF[ci % ROOF.size()], tw, th))
 
 
@@ -131,11 +131,11 @@ static func _tiles(base: Color, tw: int, th: int) -> Callable:
 		var col := floori(float(lx) / tw)
 		var by := posmod(y, th)
 		var bx := posmod(lx, tw)
-		var tone := base.lightened((Paint.hash01(row, col, 5) - 0.5) * 0.16)
+		var tone := base.lightened((Paint.hash01(row, col, 5) - 0.5) * 0.08)
 		if by >= th - 2:
-			tone = tone.darkened(0.35)
+			tone = tone.darkened(0.22)
 		elif bx == 0:
-			tone = tone.darkened(0.18)
+			tone = tone.darkened(0.08)
 		return tone
 
 

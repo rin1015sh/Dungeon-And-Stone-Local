@@ -37,6 +37,8 @@ var gates: Dictionary = {}
 var dais: Dictionary = {}
 ## 퀘스트 · 거리 사건 자리(data places — 지금은 자리만, CT95): [{id, name_ko, at: [Vector2(칸)]}]
 var places: Array[Dictionary] = []
+## 물 위에 뜨는 소품(물 칸에만 놓는다 — 칸 종류는 물 그대로).
+const FLOATING := ["boat"]
 var _kind := PackedByteArray()
 var _h := PackedFloat32Array()  # 칸 높이(칸 — 단 · 계단 · 수로, 3/4 화면에서 위로 올려 그린다)
 var _set_h: Dictionary = {}
@@ -351,6 +353,10 @@ func _props(p: Dictionary) -> void:
 		for v: Variant in JsonUtil.get_array(p, "at"):
 			at.append(Rect2i(Vector2i(int((v as Array)[0]), int((v as Array)[1])), Vector2i.ONE))
 	for r in at:
+		if k in FLOATING:  # 물 위 소품(거룻배 — CT103): 물 칸 그대로(걷지 않는다), 그림만
+			if kind_at(r.position) == "water":
+				props.append({"kind": k, "rect": r})
+			continue
 		if not is_walkable(r.position):
 			continue  # 길 위에만(집·물·벽 위의 소품은 건너뛴다)
 		for y in range(r.position.y, r.end.y):
@@ -482,7 +488,7 @@ func _explicit_house(e: Dictionary, rng: Rng) -> void:
 	houses.append({"id": "h%d" % houses.size(), "center": ctr, "size": size, "angle": ang, "rect": Rect2i(lo, hi - lo + Vector2i.ONE),
 		"floors": clampi(JsonUtil.get_int(e, "floors", rng.randi_range(FLOORS_MIN, FLOORS_MAX)), 1, 5),
 		"roof": "hip" if rng.randf() < HIP_CHANCE else "gable", "ridge_long": rng.randf() < 0.7, "style": styles[rng.randi_range(0, 2)],
-		"look": rng.randi_range(0, 999), "facility": "", "place": JsonUtil.get_str(e, "place"), "door": Vector2i(-1, -1)})
+		"look": rng.randi_range(0, 999), "facility": "", "place": JsonUtil.get_str(e, "place"), "zone": JsonUtil.get_str(e, "zone"), "door": Vector2i(-1, -1)})
 
 
 ## 들어온 자리에서 걸어 닿지 않는 걷는 칸(집 사이에 갇힌 틈)은 정원(court — 걷지 않는다)으로 — 이동할 수 없는 빈 길이 남지 않게(CT98).

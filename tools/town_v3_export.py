@@ -51,16 +51,29 @@ def main():
 	for line, w, lv in p.channels:
 		areas.append({"kind": "water", "line": pts(line), "width": w, "h": lv})
 	main_roads = [t.st["main"][0], t.st["main_s"][0]]
+	for line, w in getattr(t, "mains", []):  # 큰길(바닥 굽기가 반듯한 돌로 — CT103)
+		areas.append({"kind": "street", "line": pts(line), "width": w, "main": True})
 	for line, w in p.streets:
 		areas.append({"kind": "avenue" if line in main_roads else "street", "line": pts(line), "width": w})
 	areas.append({"kind": "street", "poly": pts([(-40, 28.5), (40, 28.5), (40, 35), (-40, 35)])})  # 수로 남쪽 둑길
+	plaza_sq = [(-13, -31.5), (13, -31.5), (13, -11), (-13, -11)]
+	market = [(-9, -6.6), (9, -6.6), (9, 4.5), (-9, 4.5)]
 	for poly in p.pavings:
 		if len(poly) <= 6:
+			e = {"kind": "paving", "poly": pts(poly)}
+			if blocks and poly in (plaza_sq, market):
+				e["pattern"] = "diag"  # 광장 · 시장 = 비스듬한 격자 판석(길과 다른 포장, CT103)
+			areas.append(e)
+	if blocks:
+		for poly in getattr(t, "pockets", []):  # 모퉁이 쉼터(판석)
 			areas.append({"kind": "paving", "poly": pts(poly)})
 	for poly in p.yards:
 		areas.append({"kind": "yard", "poly": pts(poly)})
 	for line, w, _h in p.bridges:
 		areas.append({"kind": "bridge", "line": pts(line), "width": w})
+	if blocks:
+		for poly in t.piers:  # 강변 나무 부두(걷는다 · 높이는 아랫단 그대로 — 물 높이로 가라앉지 않게)
+			areas.append({"kind": "bridge", "poly": pts(poly), "wood": True, "h": v4.LOWH})
 	cx, cz = t.plaza_at
 	areas.append({"kind": "plaza", "circle": P(cx, cz) + [8.0]})
 	areas.append({"kind": "dais", "circle": P(cx, cz) + [3.4]})
@@ -105,6 +118,8 @@ def main():
 		e = {"center": P(mx, mz), "size": [round(w, 2), round(d, 2)], "angle": round(-float(h.get("yaw", 0.0)), 2), "floors": floors_of(h["top"])}
 		if num:
 			e["place"] = PLACE_IDS[num]
+		if h.get("zone"):
+			e["zone"] = h["zone"]
 		houses.append(e)
 	for x, z, r, _top, name in p.rounds:
 		if name == "도서관":

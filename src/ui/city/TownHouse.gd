@@ -80,7 +80,7 @@ static func bake_key(h: Dictionary) -> String:
 	var s: Vector2 = h.get("size", Vector2.ZERO)
 	return "%08x" % (hash([snappedf(c.x, 0.01), snappedf(c.y, 0.01), snappedf(s.x, 0.01), snappedf(s.y, 0.01), snappedf(float(h.get("angle", 0.0)), 0.001),
 		int(h.get("floors", 0)), str(h.get("style", "")), str(h.get("roof", "")), bool(h.get("ridge_long", true)), int(h.get("look", 0)),
-		str(h.get("facility", "")), str(h.get("circle", ""))]) & 0xffffffff)
+		str(h.get("facility", "")), str(h.get("circle", "")), str(h.get("zone", ""))]) & 0xffffffff)
 
 
 func num(key: String, fallback: float) -> float:
