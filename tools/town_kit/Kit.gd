@@ -10,6 +10,8 @@ const Paint := preload("res://tools/city_art/Paint.gd")
 var root: Node3D
 var P := 64.0
 var _n := 0
+## 지금 짓는 면이 지붕인가(지붕 함수 안에서만 켠다 — 굽는 쪽이 집마다 지붕 색을 따로 입힌다, CT98).
+var _roof := false
 ## 지은 것의 범위(카메라 맞추기).
 var lo := Vector3(INF, INF, INF)
 var hi := Vector3(-INF, -INF, -INF)
@@ -92,6 +94,8 @@ func face(pts: PackedVector3Array, hint: Vector3, painter: Callable) -> void:
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
 	mi.material_override = mat
+	if _roof:
+		mi.set_meta("roof", true)
 	root.add_child(mi)
 
 
@@ -127,16 +131,19 @@ func gable_roof(x0: float, z0: float, x1: float, z1: float, y: float, rise: floa
 	var oz0 := z0 - over
 	var oz1 := z1 + over
 	var ye := y - over * rise / ((z1 - z0) * 0.5 if along_x else (x1 - x0) * 0.5)
+	_roof = true
 	if along_x:
 		var zm := (z0 + z1) * 0.5
 		face(PackedVector3Array([Vector3(ox0, ye, oz1), Vector3(ox1, ye, oz1), Vector3(ox1, y + rise, zm), Vector3(ox0, y + rise, zm)]), Vector3(0, 1, 1) * Vector3(1, (z1 - z0) * 0.5, rise), roof)
 		face(PackedVector3Array([Vector3(ox1, ye, oz0), Vector3(ox0, ye, oz0), Vector3(ox0, y + rise, zm), Vector3(ox1, y + rise, zm)]), Vector3(0, (z1 - z0) * 0.5, -rise), roof)
+		_roof = false
 		wall(Vector3(x1, 0, z1), Vector3(x1, 0, z0), y, y, gable, y + rise)
 		wall(Vector3(x0, 0, z0), Vector3(x0, 0, z1), y, y, gable, y + rise)
 	else:
 		var xm := (x0 + x1) * 0.5
 		face(PackedVector3Array([Vector3(ox1, ye, oz1), Vector3(ox1, ye, oz0), Vector3(xm, y + rise, oz0), Vector3(xm, y + rise, oz1)]), Vector3(rise, (x1 - x0) * 0.5, 0), roof)
 		face(PackedVector3Array([Vector3(ox0, ye, oz0), Vector3(ox0, ye, oz1), Vector3(xm, y + rise, oz1), Vector3(xm, y + rise, oz0)]), Vector3(-rise, (x1 - x0) * 0.5, 0), roof)
+		_roof = false
 		wall(Vector3(x0, 0, z1), Vector3(x1, 0, z1), y, y, gable, y + rise)
 		wall(Vector3(x1, 0, z0), Vector3(x0, 0, z0), y, y, gable, y + rise)
 
@@ -157,6 +164,7 @@ func hip_roof(x0: float, z0: float, x1: float, z1: float, y: float, rise: float,
 	else:
 		r0 = Vector3((x0 + x1) * 0.5, y + rise, z1 - w * 0.5)
 		r1 = Vector3((x0 + x1) * 0.5, y + rise, z0 + w * 0.5)
+	_roof = true
 	if w >= dd:
 		face(_pts([a, b, r1, r0]), Vector3(0, 1, 1), roof)
 		face(_pts([c, d, r0, r1]), Vector3(0, 1, -1), roof)
@@ -167,11 +175,14 @@ func hip_roof(x0: float, z0: float, x1: float, z1: float, y: float, rise: float,
 		face(_pts([c, d, r1]), Vector3(0, 1, -1), roof)
 		face(_pts([b, c, r1, r0]), Vector3(1, 1, 0), roof)
 		face(_pts([d, a, r0, r1]), Vector3(-1, 1, 0), roof)
+	_roof = false
 
 
 ## 외쪽지붕: 북쪽이 높다.
 func shed_roof(x0: float, z0: float, x1: float, z1: float, y_low: float, y_high: float, over: float, roof: Callable, side: Callable) -> void:
+	_roof = true
 	face(_pts([Vector3(x0 - over, y_low, z1 + over), Vector3(x1 + over, y_low, z1 + over), Vector3(x1 + over, y_high, z0 - over), Vector3(x0 - over, y_high, z0 - over)]), Vector3(0, z1 - z0, y_high - y_low), roof)
+	_roof = false
 	face(_pts([Vector3(x1, y_low, z1), Vector3(x1, y_low, z0), Vector3(x1, y_high, z0)]), Vector3.RIGHT, side)
 	face(_pts([Vector3(x0, y_low, z0), Vector3(x0, y_low, z1), Vector3(x0, y_high, z0)]), Vector3.LEFT, side)
 	wall(Vector3(x1, 0, z0), Vector3(x0, 0, z0), y_low, y_high, side)
@@ -181,11 +192,13 @@ func shed_roof(x0: float, z0: float, x1: float, z1: float, y_low: float, y_high:
 func pyramid(x0: float, z0: float, x1: float, z1: float, y: float, h: float, over: float, roof: Callable) -> void:
 	var top := Vector3((x0 + x1) * 0.5, y + h, (z0 + z1) * 0.5)
 	var cs := [Vector3(x0 - over, y, z1 + over), Vector3(x1 + over, y, z1 + over), Vector3(x1 + over, y, z0 - over), Vector3(x0 - over, y, z0 - over)]
+	_roof = true
 	for i in 4:
 		var a: Vector3 = cs[i]
 		var b: Vector3 = cs[(i + 1) % 4]
 		var m := (a + b) * 0.5 - Vector3(top.x, y, top.z)
 		face(_pts([a, b, top]), Vector3(m.x, h * 0.3, m.z), roof)
+	_roof = false
 
 
 ## 둥근 벽(탑): 조각 segs개, painter_i(i) → 조각마다 그림.
@@ -201,11 +214,13 @@ func cylinder(cx: float, cz: float, r: float, y0: float, y1: float, segs: int, p
 ## 원뿔 지붕.
 func cone(cx: float, cz: float, r: float, y: float, h: float, segs: int, roof: Callable) -> void:
 	var top := Vector3(cx, y + h, cz)
+	_roof = true
 	for i in segs:
 		var a0 := TAU * i / segs
 		var a1 := TAU * (i + 1) / segs
 		var am := (a0 + a1) * 0.5
 		face(_pts([Vector3(cx + cos(a1) * r, y, cz + sin(a1) * r), Vector3(cx + cos(a0) * r, y, cz + sin(a0) * r), top]), Vector3(cos(am), r / h, sin(am)), roof)
+	_roof = false
 
 
 static func _pts(a: Array) -> PackedVector3Array:

@@ -84,6 +84,7 @@ func _build(db: GameDatabase, map_id: String, cfg: Dictionary) -> void:
 		for v: Variant in JsonUtil.get_array(pl as Dictionary, "at"):
 			at.append(Vector2(float((v as Array)[0]), float((v as Array)[1])))
 		places.append({"id": JsonUtil.get_str(pl as Dictionary, "id"), "name_ko": JsonUtil.get_str(pl as Dictionary, "name_ko"), "at": at})
+	_close_pockets()
 	for h in houses:  # 집이 선 땅 높이(3/4 화면에서 위로 올려 그린다)
 		var hc: Vector2 = h["center"] if h.has("center") else Vector2(float(h["circle"][0]), float(h["circle"][1]))
 		h["elev"] = height_at(Vector2i(hc.floor()))
@@ -482,3 +483,23 @@ func _explicit_house(e: Dictionary, rng: Rng) -> void:
 		"floors": clampi(JsonUtil.get_int(e, "floors", rng.randi_range(FLOORS_MIN, FLOORS_MAX)), 1, 5),
 		"roof": "hip" if rng.randf() < HIP_CHANCE else "gable", "ridge_long": rng.randf() < 0.7, "style": styles[rng.randi_range(0, 2)],
 		"look": rng.randi_range(0, 999), "facility": "", "place": JsonUtil.get_str(e, "place"), "door": Vector2i(-1, -1)})
+
+
+## 들어온 자리에서 걸어 닿지 않는 걷는 칸(집 사이에 갇힌 틈)은 정원(court — 걷지 않는다)으로 — 이동할 수 없는 빈 길이 남지 않게(CT98).
+func _close_pockets() -> void:
+	var seen := PackedByteArray()
+	seen.resize(width * height)
+	var todo: Array[Vector2i] = [start]
+	seen[start.y * width + start.x] = 1
+	while not todo.is_empty():
+		var c: Vector2i = todo.pop_back()
+		for d: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			var n := c + d
+			if n.x < 0 or n.y < 0 or n.x >= width or n.y >= height or seen[n.y * width + n.x] != 0:
+				continue
+			if KINDS[_kind[n.y * width + n.x]] in WALK:
+				seen[n.y * width + n.x] = 1
+				todo.append(n)
+	for i in width * height:
+		if seen[i] == 0 and KINDS[_kind[i]] in WALK:
+			_kind[i] = KINDS.find("court")

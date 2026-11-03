@@ -12,7 +12,7 @@ func test_district_is_dense_and_every_door_is_reachable() -> void:
 	assert_eq(Vector2i(t.width, t.height), Vector2i(80, 110), "v3 1/4 판 80×110칸(세로로 길다)")
 	assert_true(t.is_walkable(t.start), "들어온 자리는 걷는 칸")
 	var plain := t.houses.filter(func(h: Dictionary) -> bool: return str(h["facility"]).is_empty())
-	assert_true(plain.size() >= 70, "집이 오밀조밀하다(%d채)" % plain.size())
+	assert_true(plain.size() >= 50, "집이 길을 따라 이어진다(%d채)" % plain.size())
 	var reach := t.map.reachable_from(t.start)
 	var order: Array = JsonUtil.get_array(db.singletons.get("city", {}), "facility_order")
 	for fac: Variant in order:
@@ -24,20 +24,22 @@ func test_district_is_dense_and_every_door_is_reachable() -> void:
 	assert_eq(t.house_of("library").get("style", ""), "rotunda", "도서관은 원형 열람당(사용자 2026-11-02)")
 
 
-func test_houses_are_twisted_and_block_walking() -> void:
+func test_houses_are_tidy_shallow_and_block_walking() -> void:
+	# 도시 2차 개선(CT98): 집은 길과 나란히(문은 카메라 쪽 ±47°) · 가로로 넓고 얕게(지붕이 벽 · 문을 덮지 않게) · 서로 칸이 겹치지 않는다
 	var t := _town()
-	var big := 0
-	var twisted := 0
 	var plain := 0
+	var shallow := 0
+	var owner := {}
+	var overlap := 0
 	for h: Dictionary in t.houses:
 		if not str(h["facility"]).is_empty():
 			continue
 		plain += 1
 		var size: Vector2 = h["size"]
-		if size.x > 12.5 or size.y > 12.5:
-			big += 1
-		if absf(rad_to_deg(float(h["angle"]))) > 3.0:
-			twisted += 1
+		assert_true(size.x <= 12.5 and size.y <= 12.5, "집은 사람 크기 문에 맞는 크기(폭 · 깊이 ≤ 12칸 — 창고가 가장 크다)")
+		assert_true(absf(rad_to_deg(float(h["angle"]))) <= 47.0, "문이 카메라 쪽(%s)" % h["id"])
+		if size.y <= 6.0:
+			shallow += 1
 		for y in range((h["rect"] as Rect2i).position.y, (h["rect"] as Rect2i).end.y):
 			for x in range((h["rect"] as Rect2i).position.x, (h["rect"] as Rect2i).end.x):
 				var d := Vector2(x + 0.5, y + 0.5) - (h["center"] as Vector2)
@@ -45,8 +47,31 @@ func test_houses_are_twisted_and_block_walking() -> void:
 				if absf(d.dot(Vector2(cos(a), sin(a)))) <= size.x * 0.5 and absf(d.dot(Vector2(-sin(a), cos(a)))) <= size.y * 0.5:
 					if t.kind_at(Vector2i(x, y)) != "void":  # 지도 가장자리 빈곳에 걸친 집 끝은 그대로 빈곳
 						assert_eq(t.kind_at(Vector2i(x, y)), "house", "집 칸은 막힌다")
-	assert_eq(big, 0, "집은 사람 크기 문에 맞는 크기(폭 · 깊이 ≤ 12칸 — 창고가 가장 크다)")
-	assert_true(twisted * 2 >= plain, "집 절반 이상이 살짝 뒤틀렸다(%d/%d)" % [twisted, plain])
+					if owner.has(Vector2i(x, y)):
+						overlap += 1
+					owner[Vector2i(x, y)] = h["id"]
+	assert_true(shallow * 10 >= plain * 9, "집 대부분이 얕다(깊이 ≤ 6칸 — %d/%d)" % [shallow, plain])
+	assert_true(overlap <= plain, "집끼리 거의 겹치지 않는다(겹친 칸 %d — 기운 집 모서리 한 칸 정도만)" % overlap)
+
+
+func test_every_walkable_cell_is_reachable_and_props_clear_doors() -> void:
+	# 이동할 수 없는 빈 길이 남지 않는다(닿지 않는 땅은 정원 court) · 소품이 시설 문 앞을 막지 않는다(CT98)
+	var t := _town()
+	var reach := t.map.reachable_from(t.start)
+	var lost := 0
+	for y in t.height:
+		for x in t.width:
+			if t.is_walkable(Vector2i(x, y)) and reach[t.map.idx(Vector2i(x, y))] == 0:
+				lost += 1
+	assert_eq(lost, 0, "걷는 칸은 모두 들어온 자리에서 닿는다")
+	var kinds := {}
+	for p: Dictionary in t.props:
+		kinds[str(p["kind"])] = true
+	for k in ["lamp", "stall", "bench", "well", "fountain", "planter"]:
+		assert_true(kinds.has(k), "거리 소품 " + k)
+	for fac: Variant in JsonUtil.get_array(db.singletons.get("city", {}), "facility_order"):
+		var front := Vector2i(t.door_front(str(fac)).floor())
+		assert_true(t.is_walkable(front), "%s 문 앞이 비어 있다" % fac)
 
 
 func test_walk_blocked_by_houses_and_stairs_go_up_down() -> void:

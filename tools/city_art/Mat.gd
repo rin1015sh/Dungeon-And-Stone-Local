@@ -158,10 +158,14 @@ static func thatch(p: Paint, base: Color) -> Callable:
 
 
 ## 유리: 위는 하늘빛 반사, 아래로 어두움. lit이면 따뜻한 안쪽 불빛.
+## 불 꺼진 창유리 위 · 아래 색(동네 집 키트는 어두운 청록으로 바꾼다 — CT98, tools/town_kit/HouseFit).
+static var glass_dark := [Color("#5a6458"), Color("#121614")]
+
+
 static func glass(p: Paint, top: float, bottom: float, lit: bool) -> Callable:
 	return func(x: int, y: int) -> Color:
 		var t := clampf((y - top) / maxf(1.0, bottom - top), 0.0, 1.0)
-		var c := Color("#e9b25c").lerp(Color("#9a4f1f"), t * 0.8) if lit else Color("#5a6458").lerp(Color("#121614"), t)
+		var c := Color("#e9b25c").lerp(Color("#9a4f1f"), t * 0.8) if lit else (glass_dark[0] as Color).lerp(glass_dark[1] as Color, t)
 		if not lit and p.nz("mid", x, y) > 0.66:
 			c = c.lightened(0.15)
 		return p.vary(c, x, y, 0.15)

@@ -43,7 +43,7 @@ def main():
 	tv.set_extent(*small.EXTENT, 8)
 	t, _notes = small.plan_a_small()
 	p = t.p
-	areas = [{"kind": "street", "poly": pts(p.outline)}]
+	areas = [{"kind": "yard", "poly": pts(p.outline)}]  # 길 밖 땅 = 흙 뒷마당(돌길과 구분 — CT98)
 	for line, w, lv in p.channels:
 		areas.append({"kind": "water", "line": pts(line), "width": w, "h": lv})
 	main_roads = [t.st["main"][0], t.st["main_s"][0]]
@@ -60,6 +60,10 @@ def main():
 	cx, cz = t.plaza_at
 	areas.append({"kind": "plaza", "circle": P(cx, cz) + [8.0]})
 	areas.append({"kind": "dais", "circle": P(cx, cz) + [3.4]})
+	for h in p.houses:  # 시설 문 앞 돌 마당(2칸)
+		if h.get("facility"):
+			(ax, az), (bx, bz) = h["front"]
+			areas.append({"kind": "paving", "poly": pts([(ax, az), (bx, bz), (bx, bz + 2.0), (ax, az + 2.0)])})
 	for x0, z0, x1, z1, _hi, _lo in p.stairs:
 		a, b = P(x0, z0), P(x1, z1)
 		areas.append({"kind": "stairs", "rect": [math.floor(a[0]), math.floor(a[1]), math.ceil(b[0]), math.ceil(b[1])]})
@@ -105,7 +109,11 @@ def main():
 	for x, z, _r, _h, _c in p.discs:
 		if (x, z) != t.plaza_at:
 			props.append({"kind": "well", "at": [[int(x + OX), int(z + OZ)]]})
-	props.append({"kind": "lamp", "ring": P(cx, cz) + [9.2, 6]})
+	props.append({"kind": "lamp", "ring": P(cx, cz) + [7.2, 6]})
+	for kind, x, z, w, d in t.props:  # 쓰임새 자리의 거리 소품(town_v3_small.dress — CT98)
+		gx, gz = x + OX, z + OZ
+		x0, z0 = int(math.floor(gx - w / 2 + 0.5)), int(math.floor(gz - d / 2 + 0.5))
+		props.append({"kind": kind, "rect": [x0, z0, max(x0 + 1, int(math.floor(gx + w / 2 + 0.5))), max(z0 + 1, int(math.floor(gz + d / 2 + 0.5)))]})
 	places = []
 	for num, spots in sorted(t.places.items()):
 		cat = next(c for c in small.CATALOG_S if c[0] == num)

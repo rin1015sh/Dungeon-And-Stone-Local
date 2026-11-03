@@ -22,6 +22,7 @@ import town_plaza as tp  # noqa: E402  (불러오면 탐험 화면 3/4 투영)
 from town_layouts import Plan, top_of, font  # noqa: E402
 
 X0, X1, Z0, Z1 = -80, 80, -150, 70
+STAIR_W = 3.6  ## 계단 폭(칸 — 모두 같게, CT98)
 MS = 2  # 자리 판 해상도(칸당 px)
 BOARD_S = 4  # 배치도 · 3/4 그림 배율(칸당 px)
 
@@ -60,6 +61,12 @@ class Town:
 		self.p.arcades = []
 		self.W, self.H = (X1 - X0) * MS, (Z1 - Z0) * MS
 		self.mask = np.zeros((self.H, self.W), np.uint8)  # 0 빈 땅 · 1 길·마당(지을 수 없지만 문 앞으로는 된다) · 2 건물·옹벽 · 3 물·지도 밖
+		self.road = np.zeros((self.H, self.W), bool)  # 길 · 골목 · 광장 · 다리 · 문 앞(이어진 길 — 문 앞이 여기에 닿아야 집을 놓는다, CT98)
+		self.door = np.zeros((self.H, self.W), bool)  # 문 앞(소품을 놓지 않는 곳)
+		self.need_road = False  # 켜면 문 앞이 길에 닿는 집만 놓는다
+		self.road_reach = 2  # 문 앞에서 길까지 몇 칸(자리 판 px) 안이면 닿았다고 보나 — 안쪽 집은 뒷마당 너머 가까운 길
+		self.props: list = []  # (종류, x, z, 폭, 깊이) — 거리 소품(CT98)
+		self.lane_n = 0
 		self.st: dict = {}
 		self.rng = random.Random(seed)
 		self.places: dict = {}
@@ -111,7 +118,8 @@ class Town:
 		self.st[name] = (pts, w)
 		lm = self.lmask(pts, w)
 		self.mask[lm & (self.mask != 3)] = 1
-		# 옹벽을 건너는 곳은 계단
+		self.road |= lm & (self.mask != 3)
+		# 옹벽을 건너는 곳은 계단(폭은 모두 같게 — CT98)
 		for line, h_n in self.bands[:-1]:
 			for (ax, az), (bx, bz) in zip(pts, pts[1:]):
 				za, zb = az - tl.zline(line, ax), bz - tl.zline(line, bx)
@@ -120,7 +128,7 @@ class Town:
 					x = ax + (bx - ax) * t
 					zc = tl.zline(line, x)
 					lo = self.height_at(x, zc + 3)
-					hw = max(w, 2.4) / 2
+					hw = STAIR_W / 2
 					self.p.stairs.append((x - hw, zc - 2.4, x + hw, zc + 2.4, h_n, lo))
 
 	def opened(self, poly: list, kind: str = "yard"):
@@ -129,7 +137,10 @@ class Town:
 			self.p.yards.append(poly)
 		elif kind == "paving":
 			self.p.pavings.append(poly)
-		self.mask[self.pmask(poly) & (self.mask != 3)] = 1
+		pm = self.pmask(poly) & (self.mask != 3)
+		self.mask[pm] = 1
+		if kind == "paving":
+			self.road |= pm
 
 	def channel(self, pts: list, w: float, lv: float):
 		self.p.channels.append((pts, w, lv))
@@ -138,7 +149,9 @@ class Town:
 	def bridge(self, pts: list, w: float):
 		x, z = (pts[0][0] + pts[-1][0]) / 2, (pts[0][1] + pts[-1][1]) / 2
 		self.p.bridges.append((pts, w, self.height_at(x, z)))
-		self.mask[self.lmask(pts, w)] = 1
+		lm = self.lmask(pts, w)
+		self.mask[lm] = 1
+		self.road |= lm
 
 	# ----- 집 -----
 	def try_house(self, poly, front, top, kind="house", name="", force=False, strip=None) -> bool:
@@ -155,9 +168,31 @@ class Town:
 				return False
 			if sm.any() and (self.mask[sm] >= 2).mean() > self.strip_block:
 				return False
+			if self.need_road and not (self._grow(sm, self.road_reach) & self.road).any():  # 문 앞이 길 · 골목에 닿지 않는 집은 놓지 않는다
+				return False
 		self.mask[pm] = 2
 		self.mask[sm & (self.mask == 0)] = 1
+		self.road |= sm & (self.mask == 1)
+		cx, cz = (ax + bx) / 2, (az + bz) / 2
+		dz = self.pmask([(cx - 0.9 * (bx - ax) / L, cz - 0.9 * (bz - az) / L), (cx + 0.9 * (bx - ax) / L, cz + 0.9 * (bz - az) / L),
+						(cx + 0.9 * (bx - ax) / L + nx * 1.8, cz + 0.9 * (bz - az) / L + nz * 1.8), (cx - 0.9 * (bx - ax) / L + nx * 1.8, cz - 0.9 * (bz - az) / L + nz * 1.8)])
+		self.door |= dz
 		self.p.houses.append({"poly": poly, "front": front, "top": top, "kind": kind, "name": name})
+		return True
+
+	@staticmethod
+	def _grow(m, n):
+		for _ in range(n):
+			m = m | np.roll(m, 1, 0) | np.roll(m, -1, 0) | np.roll(m, 1, 1) | np.roll(m, -1, 1)
+		return m
+
+	def spot(self, kind, x, z, w=1.0, d=1.0) -> bool:
+		"""거리 소품 하나(x, z = 가운데): 길 · 마당 위이고 문 앞 · 집 · 다른 소품이 아닌 곳에만(CT98). 놓으면 그 자리를 막는다."""
+		pm = self.pmask([(x - w / 2, z - d / 2), (x + w / 2, z - d / 2), (x + w / 2, z + d / 2), (x - w / 2, z + d / 2)])
+		if not pm.any() or (self.mask[pm] >= 2).any() or (pm & self.door).any():
+			return False
+		self.mask[pm] = 2
+		self.props.append((kind, x, z, w, d))
 		return True
 
 	def fit(self, cx, cz, w, d, yaw, top, front_fixed: bool = True) -> bool:
@@ -178,10 +213,12 @@ class Town:
 			self.p.houses[-1].update({"yaw": yaw, "front_c": (cx, cz), "wd": (w, d)})
 		return ok
 
-	def along(self, name: str, seed: int, st=(2, 4), w=(4.5, 7.5), d=(5.0, 8.0), yj=11.0, setback=(0.2, 1.2), gap=(0.0, 0.7), ns_side=(-1, 1)):
+	def along(self, name: str, seed: int, st=(2, 4), w=(4.5, 7.5), d=(5.0, 8.0), yj=11.0, setback=(0.2, 1.2), gap=(0.0, 0.7), ns_side=(-1, 1),
+			lane_every: int = 0, lane_w: float = 2.4):
 		"""길을 따라 집 — 동서 길은 북쪽 편, 남북 길은 양옆에 남쪽을 보는 집을 엇갈려."""
 		pts, sw = self.st[name]
 		r = random.Random(seed)
+		count = 0
 		for a, b in zip(pts, pts[1:]):
 			if b[0] < a[0]:
 				a, b = b, a
@@ -200,19 +237,36 @@ class Town:
 					cx = a[0] + ux * (s + ww / 2) - nx * (sw / 2 + sb)
 					cz = a[1] + uz * (s + ww / 2) - nz * (sw / 2 + sb)
 					top = top_of(r.randint(*st)) + r.uniform(-0.3, 0.6)
-					self.fit(cx, cz, ww, dd, yaw, top)
+					placed = self.fit(cx, cz, ww, dd, yaw, top)
 					s += ww + r.uniform(*gap)
+					if placed:
+						count += 1
+					if lane_every and placed and count % lane_every == 0 and s < L - 4:
+						self._lane(a, ux, uz, nx, nz, s + lane_w / 2, sw, d[1] + 1.5, lane_w)
+						s += lane_w
 			else:
 				s = 1.0
 				while s < L - 1:
 					qx, qz = a[0] + ux * s, a[1] + uz * s
 					for side in ns_side:
 						ww, dd, sb = r.uniform(*w), r.uniform(*d) * 0.9, r.uniform(*setback)
-						yaw = r.uniform(-14, 14)
+						yaw = r.uniform(-yj, yj)
 						cx = qx + side * (sw / 2 + sb + ww / 2)
 						top = top_of(r.randint(*st)) + r.uniform(-0.3, 0.6)
 						self.fit(cx, qz + r.uniform(-1, 1), ww, dd, yaw, top)
 					s += (r.uniform(*d) + r.uniform(1.8, 3.2)) / max(abs(uz), 0.5)
+
+	def _lane(self, a, ux, uz, nx, nz, s, sw, length, lw):
+		"""길가 집 줄 사이 골목(길에서 뒤로 — 뒷마당 · 안쪽 집으로 들어간다, CT98). 집에 막히면 짧게."""
+		x0 = a[0] + ux * s - nx * (sw / 2 - 0.3)
+		z0 = a[1] + uz * s - nz * (sw / 2 - 0.3)
+		for k in (1.0, 0.7, 0.45):
+			x1, z1 = x0 - nx * length * k, z0 - nz * length * k
+			lm = self.lmask([(x0, z0), (x1, z1)], lw)
+			if (self.mask[lm] >= 2).mean() < 0.02:
+				self.lane_n += 1
+				self.street("lane%d" % self.lane_n, [(x0, z0), (x1, z1)], lw)
+				return
 
 	def fill(self, seed: int, tries: int = 4000, st=(1, 3), w=(4.0, 7.0), d=(4.5, 7.0), yj=18.0):
 		"""남은 빈 땅에 안쪽 집(문 앞 틈이 있는 곳에만) — 안쪽 집 사이 틈이 뒷골목이 된다."""

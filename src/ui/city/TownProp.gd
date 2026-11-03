@@ -81,6 +81,58 @@ func _draw() -> void:
 			b.rect(Rect2(-14, -40, 3, 28), _c("timber"))
 			b.rect(Rect2(11, -40, 3, 28), _c("timber"))
 			b.poly(PackedVector2Array([Vector2(-20, -38), Vector2(0, -50), Vector2(20, -38)]), _c("roofs", 1), "clay")
+		"stall":  # 시장 좌판: 차양(줄무늬 천) · 기둥 · 물건 놓인 탁자(CT98)
+			var w := size.x
+			for x: float in [-w * 0.42, w * 0.42]:
+				b.rect(Rect2(x - 1.5, -34, 3, 34), _c("timber"))
+			b.rect_v(Rect2(-w * 0.44, -16, w * 0.88, 10), TownBrush.shade(_c("door"), 1.2), TownBrush.shade(_c("door"), 0.8), "wood")
+			for k in 5:  # 물건(과일 · 천 · 단지)
+				var gx := -w * 0.36 + k * w * 0.18
+				b.ellipse(Vector2(gx, -18), Vector2(4.5, 3.5), TownBrush.shade(_c("banner", k % 2) if k % 3 == 0 else _c("cloth"), 1.0 + 0.1 * (k % 2)), "", 10)
+			var aw := _c("awning")
+			for k in 6:  # 줄무늬 차양(앞으로 비스듬히)
+				var x0 := -w * 0.5 + k * w / 6.0
+				var cc := TownBrush.shade(aw, 1.1) if k % 2 == 0 else TownBrush.shade(_c("cloth"), 1.25)
+				b.poly(PackedVector2Array([Vector2(x0, -40), Vector2(x0 + w / 6.0, -40), Vector2(x0 + w / 6.0 + 1, -30), Vector2(x0 + 1, -30)]), cc, "wood")
+		"cart":  # 손수레: 짐칸 · 바퀴 둘 · 손잡이
+			var w := size.x
+			b.rect_v(Rect2(-w * 0.38, -24, w * 0.66, 12), TownBrush.shade(_c("door"), 1.3), TownBrush.shade(_c("door"), 0.85), "wood")
+			b.ellipse(Vector2(-w * 0.12, -16), Vector2(w * 0.24, 6), TownBrush.shade(_c("cloth"), 1.1), "dirt", 12)
+			for x: float in [-w * 0.25, w * 0.18]:
+				b.ellipse(Vector2(x, -8), Vector2(7, 7), TownBrush.shade(_c("door"), 0.7), "wood", 14)
+				b.ellipse(Vector2(x, -8), Vector2(2, 2), _c("iron"), "", 8)
+			b.line(Vector2(w * 0.28, -20), Vector2(w * 0.48, -12), 2.5, _c("timber"))
+		"bench":  # 벤치: 등받이 · 앉는 판 · 다리
+			var w := size.x
+			b.rect_v(Rect2(-w * 0.42, -22, w * 0.84, 5), TownBrush.shade(_c("door"), 1.25), TownBrush.shade(_c("door"), 0.9), "wood")
+			b.rect_v(Rect2(-w * 0.44, -14, w * 0.88, 5), TownBrush.shade(_c("door"), 1.35), TownBrush.shade(_c("door"), 1.0), "wood")
+			for x: float in [-w * 0.36, w * 0.36]:
+				b.rect(Rect2(x - 1.5, -10, 3, 10), _c("iron"))
+		"planter":  # 화분: 나무 상자 · 꽃
+			b.rect_v(Rect2(-10, -14, 20, 12), TownBrush.shade(_c("door"), 1.2), TownBrush.shade(_c("door"), 0.8), "wood")
+			for k in 6:
+				var fx := -8.0 + k * 3.2
+				b.ellipse(Vector2(fx, -17 - (k % 2) * 3), Vector2(3.5, 3), Color("#4e6a3a").lerp(Color("#6e8a48"), float(k % 3) / 2.0), "", 8)
+				if k % 2 == 0:
+					b.ellipse(Vector2(fx, -20 - (k % 3)), Vector2(1.8, 1.8), _c("banner", k % 2).lightened(0.25), "", 6)
+		"fountain":  # 분수: 둥근 돌 물받이 · 가운데 기둥 · 물
+			var r := size.x * 0.46
+			b.ellipse(Vector2(0, -10), Vector2(r, r * 0.55), TownBrush.shade(_c("stone"), 0.75), "ashlar", 28)
+			b.ellipse(Vector2(0, -14), Vector2(r, r * 0.55), TownBrush.shade(_c("stone"), 1.15), "ashlar", 28)
+			b.ellipse(Vector2(0, -14), Vector2(r - 5, r * 0.55 - 4), Color("#4a6a72"), "", 28)
+			b.rect_v(Rect2(-4, -38, 8, 24), TownBrush.shade(_c("stone"), 1.2), TownBrush.shade(_c("stone"), 0.85), "ashlar")
+			b.ellipse(Vector2(0, -38), Vector2(9, 4), TownBrush.shade(_c("stone"), 1.25), "", 16)
+			b.line(Vector2(0, -38), Vector2(-7, -22), 1.5, Color("#9ec4cc"))
+			b.line(Vector2(0, -38), Vector2(7, -22), 1.5, Color("#9ec4cc"))
+		"laundry":  # 빨랫줄: 기둥 둘 · 줄 · 널린 천
+			var w := size.x
+			for x: float in [-w * 0.46, w * 0.46]:
+				b.rect(Rect2(x - 1.5, -36, 3, 36), _c("timber"))
+			b.line(Vector2(-w * 0.46, -33), Vector2(w * 0.46, -33), 1.0, _c("iron"))
+			for k in 4:
+				var cx := -w * 0.3 + k * w * 0.2
+				var cc: Color = [_c("cloth"), _c("plaster", 2), _c("banner", 1), _c("plaster", 0)][k]
+				b.rect_v(Rect2(cx - 5, -33, 10, 10 + (k % 2) * 4), TownBrush.shade(cc, 1.15), TownBrush.shade(cc, 0.9))
 		"grave":
 			b.rect_v(Rect2(-5, -16, 10, 14), TownBrush.shade(_c("stone"), 1.05), TownBrush.shade(_c("stone"), 0.7), "ashlar")
 			b.ellipse(Vector2(0, -16), Vector2(5, 3), TownBrush.shade(_c("stone"), 1.2), "", 10)

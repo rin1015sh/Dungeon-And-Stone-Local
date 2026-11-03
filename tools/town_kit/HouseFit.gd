@@ -7,12 +7,19 @@ extends RefCounted
 
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Designs := preload("res://tools/town_kit/Designs.gd")
+const Mat := preload("res://tools/city_art/Mat.gd")
 
 ## 보통 집으로 쓸 바리에이션(탑 · 종탑 · 예배당은 빼고 — 3/4에서는 높이가 줄지 않아 탑처럼 솟는다).
 const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house",
 	"_gallery_house", "_mansard", "_step_gable", "_workshop", "_manor"]
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"guild": "_guild", "temple": "_chapel", "bank": "_mansard", "inn": "_gallery_house", "shop": "_shop_house", "smithy": "_workshop"}
+const FAC_FNS := {"guild": "_guild", "temple": "_chapel", "bank": "_mansard", "inn": "_manor", "shop": "_shop_house", "smithy": "_workshop"}
+## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
+const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house", "pawnshop": "_shop_house", "guard_post": "_mansard",
+	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_workshop", "gate": "_tall_hip"}
+## 지붕 색(밑색 Facade.ROOF에 곱한다): 갈색 · 적갈색 · 짙은 회색 · 짙은 갈색(사용자 2026-11-03 "지붕은 갈색, 적갈색, 어두운 회색 등으로 다양화").
+const ROOF_TINTS := {"brown": Color(0.80, 0.63, 0.50), "red": Color(0.88, 0.56, 0.44), "grey": Color(0.60, 0.61, 0.66), "dark": Color(0.62, 0.53, 0.46)}
+const FAC_ROOF := {"guild": "dark", "temple": "grey", "bank": "grey", "inn": "red", "shop": "red", "smithy": "dark"}
 
 static var _tpl := {}
 
@@ -20,6 +27,7 @@ static var _tpl := {}
 ## 바리에이션 원본(한 번만 짓는다): [Node3D, lo, hi].
 static func template(fn: String) -> Array:
 	if not _tpl.has(fn):
+		Mat.glass_dark = [Color("#3f5f58"), Color("#122220")]  # 창유리: 어두운 청록(CT98)
 		var holder := Node3D.new()
 		var k := Kit.new(holder, 64.0)
 		Designs.new().call(fn, k)
@@ -54,7 +62,7 @@ static func make(h: Dictionary, i: int) -> Node3D:
 		return _rotunda(h)
 	var size: Vector2 = h.get("size", Vector2(4, 4))
 	var ctr: Vector2 = h.get("center", Vector2.ZERO)
-	var fn := str(FAC_FNS.get(fac, ""))
+	var fn := str(FAC_FNS.get(fac, PLACE_FNS.get(str(h.get("place", "")), "")))
 	if fn.is_empty():
 		var best: Array = []
 		for f: String in HOUSE_FNS:
@@ -67,23 +75,43 @@ static func make(h: Dictionary, i: int) -> Node3D:
 	var tp: Array = template(fn)
 	var lo: Vector3 = tp[1]
 	var hi: Vector3 = tp[2]
-	var sx := size.x / (hi.x - lo.x) * 1.1  # 바리에이션 크기엔 처마 · 디딤돌이 들어 있어 벽이 필지보다 작아진다 — 조금 키워 필지를 채운다
-	var sz := size.y / (hi.z - lo.z) * 1.1
-	if not fac.is_empty():  # 시설은 비율을 지킨다(신전 · 은행이 일그러지지 않게)
-		sx = minf(sx, sz) if fac != "temple" else maxf(sx, sz) * 0.9
+	# 필지에 맞춘다(처마 · 디딤돌까지 필지 안 — 벽이 충돌 칸 밖으로 나가지 않게, CT98)
+	var sx := size.x / (hi.x - lo.x)
+	var sz := size.y / (hi.z - lo.z)
+	if not fac.is_empty() and fac != "temple":  # 시설은 비율을 지킨다(일그러지지 않게)
+		sx = minf(sx, sz)
 		sz = sx
 	var node := (tp[0] as Node3D).duplicate() as Node3D
 	var a := float(h.get("angle", 0.0))
-	var sy := clampf(sqrt(sx * sz), 0.72, 1.25)  # 필지 크기를 따라 높이도 조금(작으면 탑처럼 솟지 않게 · 크면 큰 집답게 — CT96)
+	var sy := clampf(sqrt(sx * sz), 0.8, 1.2)  # 필지 크기를 따라 높이도 조금(작으면 탑처럼 솟지 않게 · 크면 큰 집답게)
 	if fac == "temple":
-		sy = minf(sqrt(sx * sz), 1.3)
+		sy = 1.25
 	var basis := Basis(Vector3.UP, -a) * Basis.from_scale(Vector3(sx, sy, sz))
 	var mid := Vector3((lo.x + hi.x) * 0.5, 0.0, (lo.z + hi.z) * 0.5)
 	if i % 2 == 1 and fac.is_empty():  # 좌우 뒤집기(같은 집이 덜 되풀이되어 보이게)
 		basis = basis * Basis.from_scale(Vector3(-1, 1, 1))
 		mid.x = -mid.x
 	node.transform = Transform3D(basis, Vector3(ctr.x, 0.0, ctr.y) - basis * mid)
+	var tint: Color = ROOF_TINTS[_roof_of(h, i)]
+	for mi: Node in node.find_children("*", "MeshInstance3D", true, false):
+		if (mi as MeshInstance3D).has_meta("roof"):
+			var m := ((mi as MeshInstance3D).material_override as StandardMaterial3D).duplicate() as StandardMaterial3D
+			m.albedo_color = tint
+			(mi as MeshInstance3D).material_override = m
 	return node
+
+
+## 이 집의 지붕 색 이름: 시설 · 가게는 정한 것, 보통 집은 집 번호로 돌려 가며(갈색이 가장 많다).
+static func _roof_of(h: Dictionary, i: int) -> String:
+	var fac := str(h.get("facility", ""))
+	if FAC_ROOF.has(fac):
+		return str(FAC_ROOF[fac])
+	var place := str(h.get("place", ""))
+	if place in ["tavern", "herbalist", "pawnshop"]:
+		return "red"
+	if place in ["guard_post", "gate"]:
+		return "grey"
+	return ["brown", "red", "brown", "grey", "dark", "brown", "red"][(i * 5 + 3) % 7]
 
 
 static func _rotunda(h: Dictionary) -> Node3D:
