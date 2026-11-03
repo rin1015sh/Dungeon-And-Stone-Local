@@ -9,7 +9,6 @@ const F2 := preload("res://tools/town_kit/Facade.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
-const Deco3D := preload("res://tools/town_kit/Deco3D.gd")
 
 
 static func _cathedral(k: Kit) -> void:
@@ -176,25 +175,3 @@ static func _shop_house2(k: Kit) -> void:
 	gable(k, r, false, 1.45, 2, "timber")
 	awning(k, -2.2, 2.2, 2.0, -2.2 + F2.door_x(4.4, 0.99))
 
-
-## 대장간(CT105 — 사용자 "대장간 연기랑 모루"): 돌 공방 + 열린 화덕 아치(불빛) + 큰 벽돌 굴뚝 · 굴뚝 연기 덩이 + 옆 외쪽지붕 작업 처마.
-static func _smithy(k: Kit) -> void:
-	k.box(-2.4, -1.8, 2.0, 1.8, 0.0, F2.storey + 0.3, {"s": F2.wall({"style": "stone", "floors": 1, "base": 0.25, "door": 0.25, "arch": true, "ci": 2, "lit": 1.0})},
-		F2.wall({"style": "stone", "floors": 1, "base": 0.25, "ci": 1}))
-	step(k, -2.4 + F2.door_x(4.4, 0.25), 1.8, 0.0)
-	k.shed_roof(-2.4, -1.8, 2.0, 1.8, F2.storey + 0.3, F2.storey + 1.4, 0.25, F2.roof(3), F2.plain("wood"))
-	# 옆 작업 처마(기둥 둘 · 낮은 외쪽지붕)
-	for z: float in [-1.4, 1.5]:
-		k.box(3.25, z - 0.07, 3.39, z + 0.07, 0.0, F2.storey * 0.95, {}, F2.plain("wood"))
-	k.shed_roof(2.0, -1.6, 3.5, 1.7, F2.storey * 0.95, F2.storey + 0.3, 0.1, F2.roof(3, true), F2.plain("wood"))
-	# 큰 굴뚝 + 연기(잿빛 덩이 셋이 비스듬히 오른다)
-	var cy := F2.storey + 3.2
-	k.box(0.6, -1.3, 1.5, -0.4, 0.0, cy, {"top": F2.plain("dark")}, F2.plain("brick"))
-	k.box(0.5, -1.4, 1.6, -0.3, cy, cy + 0.2, {"top": F2.plain("dark")}, F2.plain("stone", 1))
-	var smoke := func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
-		p.fill_poly(poly, p.flat(Color("#8c8882"), 0.1))
-	for i in 4:
-		Deco3D.blob(k, Vector3(1.05 + i * 0.55, cy + 0.6 + i * 0.85, -0.85 - i * 0.15), Vector3(0.5 + i * 0.16, 0.4 + i * 0.1, 0.45 + i * 0.12), smoke, 8, 4)
-	# 화덕 불빛(열린 아치 안 아래쪽 — 벌건 숯불)
-	var ax := -2.4 + 4.4 * 2.5 / 4.0
-	k.face(PackedVector3Array([Vector3(ax - 0.36, 0.05, 1.82), Vector3(ax + 0.36, 0.05, 1.82), Vector3(ax + 0.36, 0.55, 1.82), Vector3(ax - 0.36, 0.55, 1.82)]), Vector3(0, 0, 1), Deco3D.Props3D.glow())

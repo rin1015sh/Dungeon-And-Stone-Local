@@ -23,7 +23,7 @@ const ZONE_FNS := {
 const ZONE_ROOF := {"civic": ["grey", "dark", "grey"], "market": ["red", "brown", "red", "dark"], "res": ["brown", "dark", "brown", "red", "brown"],
 	"river": ["dark", "grey", "brown"]}
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_inn", "shop": "_shop_house2", "smithy": "_smithy"}
+const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_inn", "shop": "_shop_house2", "smithy": "_workshop"}
 ## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
 const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house2", "pawnshop": "_shop_house2", "guard_post": "_mansard",
 	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_warehouse", "gate": "_tall_hip"}
