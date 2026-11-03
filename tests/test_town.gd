@@ -60,7 +60,7 @@ func test_houses_are_tidy_shallow_and_block_walking() -> void:
 				touching[owner[c]] = true
 				touching[owner[c + d]] = true
 	assert_true(touching.size() * 10 >= plain * 9, "집이 블록으로 맞닿아 선다(%d/%d)" % [touching.size(), plain])
-	var tilted := t.houses.filter(func(h: Dictionary) -> bool: return absf(rad_to_deg(float(h["angle"]))) > 8.0)
+	var tilted := t.houses.filter(func(h: Dictionary) -> bool: return absf(rad_to_deg(float(h.get("angle", 0.0)))) > 8.0)
 	assert_true(tilted.size() >= 12, "옛길을 따라 비튼 블록의 집(%d채)" % tilted.size())
 	assert_true(overlap <= plain, "집끼리 거의 겹치지 않는다(겹친 칸 %d — 기운 집 모서리 한 칸 정도만)" % overlap)
 
