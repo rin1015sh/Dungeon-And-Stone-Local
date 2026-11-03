@@ -17,8 +17,8 @@ const FAC_FNS := {"guild": "_guild", "temple": "_chapel", "bank": "_mansard", "i
 ## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
 const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house", "pawnshop": "_shop_house", "guard_post": "_mansard",
 	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_workshop", "gate": "_tall_hip"}
-## 지붕 색(밑색 Facade.ROOF에 곱한다): 갈색 · 적갈색 · 짙은 회색 · 짙은 갈색(사용자 2026-11-03 "지붕은 갈색, 적갈색, 어두운 회색 등으로 다양화").
-const ROOF_TINTS := {"brown": Color(0.80, 0.63, 0.50), "red": Color(0.88, 0.56, 0.44), "grey": Color(0.60, 0.61, 0.66), "dark": Color(0.62, 0.53, 0.46)}
+## 지붕 기운(어두운 갈색 밑색 Facade.ROOF에 곱한다 — 예전 색감 안에서만 조금씩: 갈색 · 붉은 갈색 · 잿빛 · 짙은 갈색, CT99).
+const ROOF_TINTS := {"brown": Color(1.0, 1.0, 1.0), "red": Color(1.12, 0.92, 0.84), "grey": Color(0.9, 0.96, 1.06), "dark": Color(0.82, 0.8, 0.78)}
 const FAC_ROOF := {"guild": "dark", "temple": "grey", "bank": "grey", "inn": "red", "shop": "red", "smithy": "dark"}
 
 static var _tpl := {}
@@ -27,7 +27,7 @@ static var _tpl := {}
 ## 바리에이션 원본(한 번만 짓는다): [Node3D, lo, hi].
 static func template(fn: String) -> Array:
 	if not _tpl.has(fn):
-		Mat.glass_dark = [Color("#3f5f58"), Color("#122220")]  # 창유리: 어두운 청록(CT98)
+		Mat.glass_dark = [Color("#4f5e58"), Color("#121816")]  # 창유리: 예전 어두운 녹회색에 아주 조금 청록(CT99)
 		var holder := Node3D.new()
 		var k := Kit.new(holder, 64.0)
 		Designs.new().call(fn, k)

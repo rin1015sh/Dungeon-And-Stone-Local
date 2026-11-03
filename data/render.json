@@ -259,7 +259,7 @@
     "info_width": 520,
     "info_height": 420,
     "town": {
-      "_comment": "도시 동네 지도(TownView — 2D 3/4 탑뷰, CT82 — 직접 보고 조절): zoom = 화면 배율 · actor_scale = 사람 그림 배율 · 집은 3D 면으로 세워 눌러 그린다(TownSolid — 칸 단위: storey = 한 층 높이, base = 밑단, roof_pitch = 지붕 기울기(올라감/반폭 — 1 = 45°) · facility_pitch = 시설 지붕 기울기(큰 건물이라 낮게), roof_rise_max = 지붕이 처마에서 솟는 높이 상한(칸 — 깊은 집도 산처럼 솟지 않게, CT95), overhang = 처마가 벽 밖으로 나온 길이) · light = 빛 방향(x 동, y 남, z 위 — 왼쪽 위에서) · ambient·diffuse = 면 밝기(그늘 + 빛 × 받는 정도) · ink_alpha = 면 가장자리 먹선 · fade_alpha = 플레이어를 가린 집의 불투명도 · fade_speed = 바뀌는 빠르기(초당) · facility_dim = 시설 창이 열린 동안 동네를 덮는 어둠 · chunk = 바닥 청크(칸) · ground_ao = 집·벽 둘레 바닥 그늘 · litter = 바닥에 흩어진 종이·부스러기(칸당 확률) · colors = 재질 그림(무채색)에 곱하는 색 — 돌길 · 광장 · 계단 · 옹벽은 지붕보다 밝은 같은 돌빛, 길 밖 땅(yard)은 흙 뒷마당, court = 걸어 닿지 않는 정원(CT98) — — 횡스크롤 도시 그림(회색 돌벽·크림 회벽과 검은 들보·청회색 슬레이트·호박빛 창) 색, 목록이면 집마다 고른다.",
+      "_comment": "도시 동네 지도(TownView — 2D 3/4 탑뷰, CT82 — 직접 보고 조절): zoom = 화면 배율 · actor_scale = 사람 그림 배율 · 집은 3D 면으로 세워 눌러 그린다(TownSolid — 칸 단위: storey = 한 층 높이, base = 밑단, roof_pitch = 지붕 기울기(올라감/반폭 — 1 = 45°) · facility_pitch = 시설 지붕 기울기(큰 건물이라 낮게), roof_rise_max = 지붕이 처마에서 솟는 높이 상한(칸 — 깊은 집도 산처럼 솟지 않게, CT95), overhang = 처마가 벽 밖으로 나온 길이) · light = 빛 방향(x 동, y 남, z 위 — 왼쪽 위에서) · ambient·diffuse = 면 밝기(그늘 + 빛 × 받는 정도) · ink_alpha = 면 가장자리 먹선 · fade_alpha = 플레이어를 가린 집의 불투명도 · fade_speed = 바뀌는 빠르기(초당) · facility_dim = 시설 창이 열린 동안 동네를 덮는 어둠 · chunk = 바닥 청크(칸) · ground_ao = 집·벽 둘레 바닥 그늘 · litter = 바닥에 흩어진 종이·부스러기(칸당 확률) · colors = 재질 그림(무채색)에 곱하는 색 — 예전 색감(CT99), 길 밖 땅(yard)은 흙 뒷마당, court = 걸어 닿지 않는 정원(CT98) · 바닥은 구운 그림(assets/town/ground — CT99)이 있으면 그것을 — — 횡스크롤 도시 그림(회색 돌벽·크림 회벽과 검은 들보·청회색 슬레이트·호박빛 창) 색, 목록이면 집마다 고른다.",
       "zoom": 1.0,
       "actor_scale": 1.0,
       "storey": 1.0,
@@ -279,8 +279,8 @@
       "ground_ao": 0.16,
       "litter": 0.035,
       "colors": {
-        "street": "#8b8375", "avenue": "#978f80", "paving": "#938b7c", "plaza": "#a39a88", "dais": "#a39a88", "stairs": "#978f80", "bridge": "#8a7a66",
-        "yard": "#7a6c56", "court": "#5f6046", "water": "#3e5258", "retain": "#8c8577", "wall": "#4e4a44", "wall_top": "#3c3834", "gate": "#141210",
+        "street": "#5a554c", "avenue": "#6c665c", "paving": "#6a645a", "plaza": "#736b5f", "dais": "#736b5f", "stairs": "#6c665c", "bridge": "#5e564c",
+        "yard": "#5a4c3c", "court": "#4e4436", "water": "#2e3a3e", "retain": "#5e5a52", "wall": "#4e4a44", "wall_top": "#3c3834", "gate": "#141210",
         "stone": ["#7a766d", "#6e6a62", "#837c70"], "stone_dark": "#5e5a54",
         "plaster": ["#b2a486", "#a69a80", "#9c968a", "#8f979c", "#b8ab90"], "timber_fill": ["#b9ab8d", "#a99b7d"], "timber": "#33271e",
         "slate": ["#474e5a", "#3f4550", "#4c5058"], "roofs": ["#5e4c40", "#56463b", "#665247"], "lead": "#5c646c", "brick": "#6e4a3c",

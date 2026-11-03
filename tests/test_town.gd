@@ -150,3 +150,20 @@ func test_terraces_heights_and_places() -> void:
 				water += 1
 				assert_true(t.height_at(Vector2i(x, y)) < south, "수로 물은 아랫단보다 낮다")
 	assert_true(water > 100, "남쪽 수로")
+
+
+func test_ground_and_props_are_baked() -> void:
+	# 바닥 = 곡선 길 · 동심원 광장 · 판석 · 흙을 3/4로 구운 조각(CT99 — tools/town_ground_bake.py), 소품 = 3D 손그림(tools/paint_town_props.gd)
+	var idx: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://assets/town/ground/index.json"))
+	assert_true(idx is Dictionary, "구운 바닥 목록 — 지도를 바꿨으면 town_cells.gd → town_ground_bake.py")
+	var right := 0.0
+	var bottom := 0.0
+	for c: Variant in JsonUtil.get_array(idx as Dictionary, "chunks"):
+		var r: Array = (c as Dictionary)["rect"]
+		right = maxf(right, float(r[0]) + float(r[2]))
+		bottom = maxf(bottom, float(r[1]) + float(r[3]))
+		assert_true(ResourceLoader.exists("res://assets/town/ground/%s.webp" % (c as Dictionary)["file"]), "바닥 조각 " + str((c as Dictionary)["file"]))
+	var t := _town()
+	assert_true(right >= t.width * 32 - 1 and bottom >= t.height * 32 - 1, "바닥이 지도를 다 덮는다")
+	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais"]:
+		assert_true(ResourceLoader.exists("res://assets/town/props/%s.webp" % k), "소품 그림 " + k)

@@ -25,7 +25,7 @@
   - 출력에 `SCRIPT ERROR` / `Parse Error` / `ERROR:`가 있으면 실패로 본다.
 - **도구 명령**(시뮬레이터 `sim_walk`·`sim_rift`·`sim_income`, 층 지도, 굽기, 글 md, 정수 표, 화면 캡처, 그림, 웹 내보내기)은 **`docs/TOOLS.md`**. 바꾼 것에 따라 반드시:
   - 1층 생성기·`gen` → `bake_floor.gd` · 층 `art.decor` → `bake_decor.gd` · `ko.json` → `strings_md.gd` · 글(서적·`desc_ko`·`flavor_ko`·ko.json 문장) → `texts_md.py`(→ `docs/TEXTS.md` — 사용자가 고쳐 보내면 `--apply`) · 정수 → `essences_md.py` · 아이템 소재·종류·배율 → `item_pool.py` · 몬스터·정수·상태이상·아이템·`balance.json` 수치 → `balance_sheet.py`(→ `docs/balance/all_stats.md`·`.html`·`.xlsx` 총정리)
-  - 동네 지도(`data/town` — v3는 `tools/town_v3_small.py` 배치 → `town_v3_export.py`로 만든다, CT95)·`TownMap` 집 크기·`render.json city.town` 집 높이·지붕 → 집 그림 다시 굽기(`paint_town_hand.gd` 넷 동시 `--part` → `town_hand_bake.py` → `paint_town_houses.gd --pack` — 손그림 집 키트, CT97)
+  - 동네 지도(`data/town` — v3는 `tools/town_v3_small.py` 배치 → `town_v3_export.py`로 만든다, CT95)·`TownMap` 집 크기·`render.json city.town` 집 높이·지붕 → 집 그림 다시 굽기(`paint_town_hand.gd` 넷 동시 `--part` → `town_hand_bake.py` → `paint_town_houses.gd --pack` — 손그림 집 키트, CT97) + 바닥 다시 굽기(`town_cells.gd` → `town_ground_bake.py` — CT99)
   - 층·몬스터·정수·균열·서적을 더함 → `python3 tools/floor_status.py`(2~10층 찍는 틀 `docs/plans/floors_2_10.md`)
   - 밀도·탐험가 → `sim_walk` · 균열 지도·조우·길목 → `sim_rift`("모두 통과") · 값·드롭 → `sim_income`(→ `docs/balance/city.md`)
   - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.

@@ -81,7 +81,7 @@ def finish(raw, code, sprite=False):
     # 붓결: 비스듬히 늘인 잡음으로 밝기를 흔든다
     sx = Image.fromarray((RNG.random((H // 3 + 2, W // 18 + 2)) * 255).astype(np.uint8)).resize((W, H), Image.BICUBIC).rotate(28, resample=Image.BICUBIC, expand=False)
     stroke = np.asarray(sx).astype(float) / 255.0
-    soft = 0.5 if sprite else 1.0  # 게임 그림은 질감 · 빗금 · 먹선을 덜(형태가 먼저 읽히게 — CT98)
+    soft = 0.85 if sprite else 1.0  # 게임 그림은 질감 · 빗금을 조금 덜(예전 색감 쪽으로 — CT99)
     img = img * (1.0 + (stroke[..., None] - 0.5) * 0.14 * soft)
     # 펜 빗금: 어두운 곳에 비스듬한 줄 · 더 어두우면 엇갈린 줄(끊기고 흔들린다)
     lum = img @ np.array([0.3, 0.59, 0.11])
@@ -108,8 +108,8 @@ def finish(raw, code, sprite=False):
     if sprite:  # 게임 그림은 작아서 바깥 먹선을 얇게(2px)
         sil = (dilate(mask, 2) & ~mask) & (dilate(mask, 1) | (thick > 0.5))
     jitter = noise(H, W, 14, 17)
-    a = np.where(edge, (0.75 + jitter * 0.25) * (0.7 if sprite else 1.0), 0.0)
-    a = np.maximum(a, np.where(sil, 0.85 if sprite else 0.92, 0.0))
+    a = np.where(edge, (0.75 + jitter * 0.25) * (0.9 if sprite else 1.0), 0.0)
+    a = np.maximum(a, np.where(sil, 0.92, 0.0))
     a *= np.where(noise(H, W, 30, 19) > 0.1, 1.0, 0.4)  # 가끔 끊김
     img = img * (1 - a[..., None]) + INK[None, None, :] * a[..., None]
     # 색 정리: 채도 조금 빼고 따뜻하게

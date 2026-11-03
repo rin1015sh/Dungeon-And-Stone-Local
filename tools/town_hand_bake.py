@@ -28,7 +28,29 @@ def user_dir() -> str:
     return os.path.join(base, "godot", "app_userdata", name)
 
 
+def props():
+    """--props: user://town_props/<kind>_raw · _id → assets/town/props/<kind>.webp(투명 배경 · 손그림 — CT99)."""
+    src = os.path.join(user_dir(), "town_props")
+    dst = os.path.join(ROOT, "assets", "town", "props")
+    os.makedirs(dst, exist_ok=True)
+    n = 0
+    for f in sorted(os.listdir(src)):
+        if not f.endswith("_raw.png"):
+            continue
+        kind = f[:-len("_raw.png")]
+        raw = np.asarray(Image.open(os.path.join(src, f)).convert("RGB")).astype(float) / 255.0
+        ids = np.asarray(Image.open(os.path.join(src, kind + "_id.png")).convert("RGB")).astype(np.int64)
+        code = ids[..., 0] * 65536 + ids[..., 1] * 256 + ids[..., 2]
+        img, alpha = th.finish(raw, code, sprite=True)
+        Image.fromarray((np.dstack([img, alpha]) * 255).astype(np.uint8), "RGBA").save(os.path.join(dst, kind + ".webp"), lossless=True)
+        n += 1
+    print("소품 손그림: %d → %s" % (n, dst))
+
+
 def main():
+    if "--props" in sys.argv:
+        props()
+        return
     src = os.path.join(user_dir(), "town_hand")
     dst = os.path.join(user_dir(), "town_bake")
     os.makedirs(dst, exist_ok=True)

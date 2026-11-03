@@ -44,7 +44,11 @@ func _init() -> void:
 			props = true
 	var db := GameDatabase.new()
 	db.load_all("res://data")
-	if props:
+	if props:  # 소품은 3D 손그림으로 바꿨다(CT99) — 옛 붓 소품으로 덮어쓰지 않게
+		print("소품은 tools/paint_town_props.gd(3D) → tools/town_hand_bake.py --props 로 굽는다(CT99). 옛 붓 소품이 필요하면 --old_props")
+		if not OS.get_cmdline_user_args().has("--old_props"):
+			quit(0)
+			return
 		_props(db)
 		quit(0)
 		return

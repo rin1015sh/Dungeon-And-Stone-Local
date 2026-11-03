@@ -28,7 +28,8 @@ func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) 
 	var chunk := int(TownBrush.num(db.render, "chunk", 16.0))
 	var ground := Node2D.new()
 	add_child(ground)
-	for cy in range(0, town.height, chunk):
+	var baked := _baked_ground(ground, tile)  # 구운 바닥이 있으면 칸 그리기(TownGround)는 쓰지 않는다
+	for cy in range(0, 0 if baked else town.height, chunk):
 		for cx in range(0, town.width, chunk):
 			var g := TownGround.new()
 			g.town = town
@@ -62,6 +63,31 @@ func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) 
 	player.scale = Vector2(k, k)
 	_tint = CanvasModulate.new()
 	add_child(_tint)
+
+
+## 구운 바닥(tools/town_ground_bake.py — 곡선 길 · 동심원 광장 · 판석 · 흙 · 옹벽 마름돌, 높이까지 3/4로 그린 조각 그림, CT99). 없으면 false.
+func _baked_ground(parent: Node2D, tile: float) -> bool:
+	const INDEX := "res://assets/town/ground/index.json"
+	if not FileAccess.file_exists(INDEX):
+		return false
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(INDEX))
+	if not d is Dictionary:
+		return false
+	var k := tile / float((d as Dictionary).get("tile", 32))
+	for c: Variant in JsonUtil.get_array(d as Dictionary, "chunks"):
+		var e := c as Dictionary
+		var tex := load("res://assets/town/ground/%s.webp" % str(e.get("file", ""))) as Texture2D
+		if tex == null:
+			continue
+		var r: Array = e.get("rect", [0, 0, 0, 0])
+		var sp := Sprite2D.new()
+		sp.texture = tex
+		sp.centered = false
+		sp.position = Vector2(float(r[0]), float(r[1])) * k
+		sp.scale = Vector2(k, k)
+		sp.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		parent.add_child(sp)
+	return parent.get_child_count() > 0
 
 
 func _prop(kind: String, rect: Rect2i, render: Dictionary) -> void:

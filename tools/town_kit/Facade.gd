@@ -11,14 +11,14 @@ const Dress := preload("res://tools/city_art/Dress.gd")
 const Buildings := preload("res://tools/city_art/Buildings.gd")
 const Icons := preload("res://tools/city_art/Icons.gd")
 
-## 회벽: 밝은 베이지 · 회백색(사용자 2026-11-03 "외벽은 밝은 베이지와 회백색", CT98).
-const PLASTER := [Color("#d8cbad"), Color("#cfc3a6"), Color("#e0d6bd"), Color("#c9c0a9"), Color("#dbd0b6")]
+## 회벽(사용자 2026-11-03 "전체적 색감이 예전이 나은 것 같은데" — CT99, 예전 바랜 크림 · 회갈색으로 되돌림).
+const PLASTER := [Color("#bfb092"), Color("#b3a687"), Color("#c7b998"), Color("#a99c80"), Color("#b8ab92")]
 const STONE := [Color("#7a756b"), Color("#6c675e"), Color("#837d71")]
 const BRICK := Color("#6e4a3a")
 const TIMBER := Color("#33251b")
 ## 지붕: 어두운 갈색 한 계열.
-## 지붕 밑색: 밝은 중간색 하나 — 집마다 굽는 쪽이 갈색 · 적갈색 · 짙은 회색으로 곱해 입힌다(CT98, HouseFit.ROOF_TINTS).
-const ROOF := [Color("#a49787"), Color("#9e9282"), Color("#a89b8b"), Color("#9a8f81")]
+## 지붕: 어두운 갈색 한 계열(예전 색 — CT99). 집마다 굽는 쪽이 같은 계열 안에서 조금씩 다른 기운을 곱한다(HouseFit.ROOF_TINTS).
+const ROOF := [Color("#4a3a2e"), Color("#3f342b"), Color("#54423a"), Color("#3a302a")]
 const WOOD := Color("#3b2a1e")
 static var P := 64.0
 static var storey := 1.15
@@ -131,11 +131,11 @@ static func _tiles(base: Color, tw: int, th: int) -> Callable:
 		var col := floori(float(lx) / tw)
 		var by := posmod(y, th)
 		var bx := posmod(lx, tw)
-		var tone := base.lightened((Paint.hash01(row, col, 5) - 0.5) * 0.08)
+		var tone := base.lightened((Paint.hash01(row, col, 5) - 0.5) * 0.16)
 		if by >= th - 2:
-			tone = tone.darkened(0.22)
+			tone = tone.darkened(0.35)
 		elif bx == 0:
-			tone = tone.darkened(0.1)
+			tone = tone.darkened(0.18)
 		return tone
 
 
