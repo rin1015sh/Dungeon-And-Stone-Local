@@ -53,13 +53,14 @@ def bottle(cv, x, y, z, col, h=0.26):
 
 
 def stool(cv, x, y):
-    """세 다리 걸상: 뒤 다리(어둡게) · 앞 두 다리(벌어진다) · 가로대 · 두께 있는 둥근 앉을 판."""
-    cv.front(x - 0.025, x + 0.025, y - 0.1, 0, 0.4, WOOD_D * 0.6, shade=(0.7, 0.5))
+    """세 다리 걸상(앉는 높이 0.53칸 ≈ 0.45m · 지름 0.44칸 — CT113): 뒤 다리(어둡게) · 앞 두 다리(벌어진다) · 가로대 · 두께 있는 둥근 앉을 판."""
+    h = 0.53
+    cv.front(x - 0.03, x + 0.03, y - 0.12, 0, h - 0.06, WOOD_D * 0.6, shade=(0.7, 0.5))
     for s in (-1, 1):
-        pts = [cv.to_px(x + s * 0.08, y + 0.08, 0.4), cv.to_px(x + s * 0.08 + s * 0.05, y + 0.08, 0.4), cv.to_px(x + s * 0.17, y + 0.12, 0.0), cv.to_px(x + s * 0.12, y + 0.12, 0.0)]
+        pts = [cv.to_px(x + s * 0.09, y + 0.1, h - 0.06), cv.to_px(x + s * 0.09 + s * 0.06, y + 0.1, h - 0.06), cv.to_px(x + s * 0.2, y + 0.14, 0.0), cv.to_px(x + s * 0.14, y + 0.14, 0.0)]
         cv.fill(pts, WOOD_D, shade=(0.95, 0.7))
-    cv.front(x - 0.12, x + 0.12, y + 0.1, 0.14, 0.18, WOOD_D * 0.85)
-    cv.cyl(x, y, 0.2, 0.37, 0.45, WOOD_L * 0.9, side=WOOD * 0.8, tex_top=M.wood("#7a5a3c", int(x * 31 + y * 17)))
+    cv.front(x - 0.14, x + 0.14, y + 0.12, 0.17, 0.21, WOOD_D * 0.85)
+    cv.cyl(x, y, 0.22, h - 0.07, h, WOOD_L * 0.9, side=WOOD * 0.8, tex_top=M.wood("#7a5a3c", int(x * 31 + y * 17)))
 
 
 def chair(cv, x, y, back=True):
@@ -128,18 +129,15 @@ def draw(cv, art, w, d, seed):
                 cv.fill(cv.ellipse_pts(bx, by, 0.43, 0.43, z, 20, 0, math.pi) + cv.ellipse_pts(bx, by, 0.43, 0.43, z + 0.06, 20, math.pi, 0), IRON)
             cv.fill(cv.ellipse_pts(bx, by, 0.3, 0.3, 0.95), hexc("#5a3e26"))
     elif art == "map_table" or art == "reading_table":
-        if art == "reading_table":
-            legs(cv, 0.6, 0, w - 0.6, d - 0.3, 0.8, WOOD_D)
-            cv.fill(cv.ellipse_pts(cx, d / 2, cx - 0.05, d / 2 - 0.08, 0.72, 30, 0, math.pi) + cv.ellipse_pts(cx, d / 2, cx - 0.05, d / 2 - 0.08, 0.8, 30, math.pi, 0), WOOD_D)
-            cv.fill(cv.ellipse_pts(cx, d / 2, cx - 0.05, d / 2 - 0.08, 0.8), None, tex=M.wood("#6a4c34", seed))
-            for (bx, by) in ((cx - 0.6, d / 2 - 0.1), (cx + 0.3, d / 2 + 0.2)):
-                cv.ground(bx, by, bx + 0.25, by + 0.32, PAPER, z=0.81)
-                cv.ground(bx + 0.25, by, bx + 0.5, by + 0.32, PAPER * 0.92, z=0.81)
-            for k in range(2):
-                x = cx - 0.15 + k * 0.4
-                cv.cyl(x, d / 2 - 0.3, 0.07, 0.8, 0.84, BRASS)
-                cv.front(x - 0.03, x + 0.03, d / 2 - 0.29, 0.84, 1.02, hexc("#e4d8bc"))
-                flame(cv, d / 2 - 0.29, x, 1.02, 0.45)
+        if art == "reading_table":  # 읽는 탁자: 둥근 판 + 의자(CT113) · 펼친 책 · 촛불
+            IF.dining(cv, w, d, seed, oval=True)
+            cy = d / 2
+            for (bx, by) in ((cx - 0.6, cy - 0.12), (cx + 0.3, cy + 0.05)):
+                cv.ground(bx, by, bx + 0.25, by + 0.32, PAPER, z=IF.TOP + 0.005)
+                cv.ground(bx + 0.25, by, bx + 0.5, by + 0.32, PAPER * 0.92, z=IF.TOP + 0.005)
+            cv.cyl(cx - 0.05, cy - 0.25, 0.06, IF.TOP, IF.TOP + 0.03, BRASS)
+            cv.front(cx - 0.08, cx - 0.02, cy - 0.24, IF.TOP + 0.03, IF.TOP + 0.2, hexc("#e4d8bc"))
+            flame(cv, cy - 0.23, cx - 0.05, IF.TOP + 0.2, 0.45)
         else:
             table(cv, 0.05, 0.05, w - 0.05, d - 0.05, 0.85)
             cv.ground(0.35, 0.25, w - 0.35, d - 0.3, hexc("#b8a47c"), z=0.86, tex=M.grainy("#b8a47c", seed, 0.12, 4))
@@ -325,15 +323,8 @@ def draw(cv, art, w, d, seed):
         cv.box(0.08, 0.18, 0.92, 0.92, 2.45, 2.65, hexc("#b8ae98"))
     elif art == "bench":
         IF.pew(cv, w, d, seed)
-    elif art == "table":  # 집 식탁(CT110): 판 + 다리 + 빵 · 그릇 · 잔 · 촛대
-        table(cv, 0.05, 0.1, w - 0.05, d - 0.05, 0.8)
-        rng = np.random.default_rng(seed)
-        cv.fill(cv.ellipse_pts(w * 0.3, d * 0.45, 0.22, 0.16, 0.81), hexc("#8a6a42"))
-        cv.cyl(w * 0.3, d * 0.45, 0.12, 0.81, 0.9, hexc("#b8884a"))
-        for k in range(max(2, int(w))):
-            mug(cv, 0.4 + k * (w - 0.8) / max(1, int(w) - 1), d * 0.7 + (k % 2) * 0.12, 0.81)
-        cv.cyl(w * 0.7, d * 0.35, 0.18, 0.81, 0.86, hexc("#7a7a74"))
-        cv.fill(cv.ellipse_pts(w * 0.7, d * 0.35, 0.12, 0.12, 0.86), hexc("#5a4a30"))
+    elif art == "table":  # 집 식탁(CT110 → CT113: 의자가 둘러앉는다)
+        IF.dining(cv, w, d, seed)
     elif art == "cot":  # 짚 침대: 낮은 나무 틀 + 짚 요 + 거친 담요
         cv.box(0.05, 0.1, w - 0.05, d - 0.05, 0, 0.28, WOOD, tex_side=M.wood("#5a4030", seed))
         cv.ground(0.12, 0.16, w - 0.12, d - 0.1, None, z=0.34, tex=M.grainy("#a08a5a", seed, 0.25, 9))

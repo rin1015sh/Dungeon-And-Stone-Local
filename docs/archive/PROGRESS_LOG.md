@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **탁자 · 의자 다시 (2026-11-04, CT113)**: 한 일 = ASSUMPTIONS CT113. 여관 홀 탁자 줄 다시 배치(2×2 여섯 · 류트 의자 그대로), 회랑 집 2×2. 실내 15곳 다시 구움, check.sh 통과.
+
 - **도서관 정문 · 분수 · 실내 입체감 (2026-11-04, CT112)**: 한 일 = ASSUMPTIONS CT112. 새 파일 `tools/interior_fine.py`. 다시 구움: h71(도서관) + 묶음 · 가림 판, 분수, 실내 15곳. 확인: 도서관 문 앞 캡처 · 시장 광장 · 여관 홀 · 복도 · 가구 모음. check.sh 통과.
 
 - **동네 손보기 여덟 가지 (2026-11-04, CT111)**: 범위 = 사용자 피드백 8개(걷기 애니메이션 · 히트박스 · 소품 묘사 · 계단 · 검은 아치 · 문턱 · 가림 · 차원문 · 실내 벽 · 보도블록 · 성벽). 완료 기준 = 캡처로 보고 check.sh 통과. 한 일 = ASSUMPTIONS CT111. 코드: `ActorView._animate`(세계 좌표) · `src/city/TownCollide.gd`(새 — 4×4 쪼갠 충돌) · `TownMap`(collide · 문 칸 안 target · 돌 단 단 높이 `_dais_steps` · `ground_height_at` · ON_WALL 소품) · `TownHouse.front_at`/`covers`(가림 판) · `TownWorld.update_fade`(정렬 y 반환 · 돌 단은 바닥 위 평평한 그림) · `TownView`(collide.move · 정렬 y). 도구: `tools/town_kit/PropsFine.gd`(새) · `Facade._gate` · `tools/town_ground_fine.py`(새) · `tools/town_house_masks.py`(새) · `town_overview.py --blocks/--raw`(바닥 64px · 소품 3배에 맞춤, 막힘 겹쳐 보기) · `town_dump.gd`(칸 · 쪼갠 충돌) · `town_cells.gd`(돌 단 높이 뺀 바닥) · `town_v3_export.py`(남쪽 성벽 · 남문). 다시 구움: 아치 집 14채 + 묶음 · 소품 8(lamp · well · cart · wagon · dais · dais_ring · citywall · citygate) · 바닥 전체 · 실내 15. 테스트: test_town에 쪼갠 충돌 · 집 문 36곳 + 시설 문 걸어 닿기 · 돌 단 오르기. 남은 것: 남쪽 성벽 안쪽 둑은 걷지 않는다(성벽에 몸이 가려지지 않게) · 동 · 서 성벽 옆면은 3/4에서 보이지 않아 윗면 · 성가퀴 · 탑으로만 입체를 낸다.

@@ -36,27 +36,97 @@ def _arch_pts(cv, y, x0, x1, z0, z1):
 
 # ---------- 둥근 탁자 ----------
 
+SEAT = 0.53   # 앉는 높이(칸 — 사람 키 ≈ 2칸 · 0.45m, CT113 사용자 "저기에 사람이 앉을 수 있다 생각하는 거냐")
+TOP = 0.88    # 탁자 높이(0.75m)
+BACK = 1.1    # 등받이 꼭대기
+
+
+def chair(cv, x, y, face, seed=0):
+    """의자 하나(앉는 사람이 바라보는 쪽 face = s · n · e · w). 앉을 판 0.46 × 0.42 · 높이 SEAT · 등받이 BACK.
+    s = 등받이가 북쪽(뒤 — 먼저 그린다), n = 등받이가 남쪽(앞 — 판을 가린다), e · w = 옆으로 앉는다(등받이 기둥 · 가로대가 옆에 선다)."""
+    hw, hd = 0.23, 0.21
+    seat_col = WOOD_L * 0.95
+    leg = WOOD_D
+    bx = {"e": x - hw + 0.03, "w": x + hw - 0.03}.get(face)
+    if face == "s":  # 등받이(뒤)
+        for sx in (-1, 1):
+            cv.front(x + sx * (hw - 0.03) - 0.03, x + sx * (hw - 0.03) + 0.03, y - hd + 0.03, 0.0, BACK, leg * 0.8, shade=(0.95, 0.6))
+        cv.front(x - hw, x + hw, y - hd + 0.03, BACK - 0.16, BACK, WOOD, shade=(1.05, 0.8))
+        for k in (-0.09, 0.0, 0.09):
+            cv.front(x + k - 0.018, x + k + 0.018, y - hd + 0.03, SEAT + 0.05, BACK - 0.16, leg * 0.9)
+    else:
+        for sx in (-1, 1):  # 뒤 다리
+            cv.front(x + sx * (hw - 0.03) - 0.025, x + sx * (hw - 0.03) + 0.025, y - hd + 0.04, 0.0, SEAT, leg * 0.6, shade=(0.8, 0.55))
+    if bx is not None:  # 옆 등받이: 기둥 둘(앞 · 뒤) + 위 가로대(옆에서 본 것 — 윗면 띠)
+        cv.front(bx - 0.025, bx + 0.025, y - hd + 0.04, SEAT, BACK, leg * 0.7)
+        for k in (0.33, 0.66):
+            cv.line(cv.to_px(bx, y - hd + 0.04, SEAT + 0.08 + k * 0.3), cv.to_px(bx, y + hd - 0.03, SEAT + 0.08 + k * 0.3), 3, leg * 0.85)
+        cv.ground(bx - 0.03, y - hd + 0.02, bx + 0.03, y + hd - 0.02, WOOD, z=BACK)
+    cv.box(x - hw, y - hd, x + hw, y + hd, SEAT - 0.05, SEAT, seat_col, side=WOOD_D * 1.1, tex_top=M.wood("#7a5a3c", seed + int(x * 37 + y * 11)))
+    cv.front(x - hw + 0.03, x + hw - 0.03, y + hd - 0.02, SEAT - 0.13, SEAT - 0.05, leg * 0.85)  # 앞 띠
+    for sx in (-1, 1):  # 앞 다리
+        cv.front(x + sx * (hw - 0.03) - 0.03, x + sx * (hw - 0.03) + 0.03, y + hd - 0.03, 0.0, SEAT - 0.05, leg, shade=(1.0, 0.7))
+    cv.front(x - hw + 0.03, x + hw - 0.03, y + hd - 0.03, 0.14, 0.18, leg * 0.75)
+    if bx is not None:
+        cv.front(bx - 0.025, bx + 0.025, y + hd - 0.03, SEAT, BACK, leg)
+    if face == "n":  # 등받이(앞 — 판 위로 선다)
+        for sx in (-1, 1):
+            cv.front(x + sx * (hw - 0.03) - 0.03, x + sx * (hw - 0.03) + 0.03, y + hd, SEAT, BACK, leg)
+        cv.front(x - hw, x + hw, y + hd, BACK - 0.16, BACK, WOOD, shade=(1.05, 0.8))
+        for k in (-0.09, 0.0, 0.09):
+            cv.front(x + k - 0.018, x + k + 0.018, y + hd, SEAT + 0.05, BACK - 0.16, leg * 0.9)
+
+
+def _top_items(cv, cx, cy, rx, ry, seed):
+    from interior_furn import mug
+    cv.cyl(cx + rx * 0.25, cy - ry * 0.2, 0.15, TOP, TOP + 0.005, hexc("#c8bca0"))  # 접시
+    cv.cyl(cx + rx * 0.25, cy - ry * 0.2, 0.09, TOP + 0.005, TOP + 0.01, hexc("#a89a7c"))
+    mug(cv, cx - rx * 0.4, cy - ry * 0.25, TOP)
+    mug(cv, cx + rx * 0.45, cy + ry * 0.35, TOP)
+    cv.cyl(cx - rx * 0.15, cy + ry * 0.3, 0.05, TOP, TOP + 0.02, BRASS)
+    cv.front(cx - rx * 0.15 - 0.025, cx - rx * 0.15 + 0.025, cy + ry * 0.3 + 0.01, TOP + 0.02, TOP + 0.18, hexc("#e4d8bc"))
+    _flame(cv, cy + ry * 0.3 + 0.02, cx - rx * 0.15, TOP + 0.18, 0.4)
+
+
 def round_table(cv, w, d, cx, seed):
-    from interior_furn import stool, mug
-    cy = d * 0.42
-    for sx in (cx - 0.42, cx + 0.42):  # 뒤 걸상(탁자에 반쯤 가린다)
-        stool(cv, sx, cy - 0.34)
-    cv.shadow(cx + 0.1, cy + 0.12, 0.5, 0.3, 0.35)
+    """둥근 탁자(지름 1.1칸 ≈ 0.95m · 높이 TOP) + 의자 넷(판 가장자리에서 0.35칸 — 사람이 앉을 틈). 덩어리 2×2칸."""
+    cy = d / 2
+    r = 0.55
+    gap = r + 0.3
+    chair(cv, cx, cy - gap, "s", seed)  # 북(먼저)
+    chair(cv, cx - gap, cy + 0.02, "e", seed + 1)
+    chair(cv, cx + gap, cy + 0.02, "w", seed + 2)
     for a in (0.0, math.pi / 2, math.pi, 3 * math.pi / 2):  # 십자 발
-        ex, ey = cx + math.cos(a) * 0.3, cy + 0.1 + math.sin(a) * 0.22
-        cv.line(cv.to_px(cx, cy + 0.1, 0.04), cv.to_px(ex, ey, 0.02), 7, WOOD_D * (0.6 if math.sin(a) < 0 else 0.9))
-    cv.cyl(cx, cy + 0.1, 0.075, 0.02, 0.7, WOOD, side=WOOD_D, tex_side=M.wood("#4a3424", seed + 2, False))  # 가운데 기둥
-    cv.cyl(cx, cy + 0.1, 0.13, 0.55, 0.62, WOOD_D)  # 기둥 머리
-    cv.cyl(cx, cy, 0.54, 0.66, 0.78, WOOD_L, side=WOOD_D * 1.1, tex_top=M.wood("#6a4c34", seed), tex_side=M.wood("#4a3424", seed + 1))
-    cv.cyl(cx + 0.08, cy - 0.06, 0.15, 0.78, 0.785, hexc("#c8bca0"))  # 접시
-    cv.cyl(cx + 0.08, cy - 0.06, 0.09, 0.785, 0.79, hexc("#a89a7c"))
-    mug(cv, cx - 0.24, cy - 0.1, 0.78)
-    mug(cv, cx + 0.3, cy + 0.15, 0.78)
-    cv.cyl(cx - 0.12, cy + 0.18, 0.05, 0.78, 0.8, BRASS)  # 촛대 · 촛불
-    cv.front(cx - 0.145, cx - 0.095, cy + 0.19, 0.8, 0.96, hexc("#e4d8bc"))
-    _flame(cv, cy + 0.2, cx - 0.12, 0.96, 0.4)
-    for sx in (cx - 0.46, cx + 0.46):  # 앞 걸상
-        stool(cv, sx, cy + 0.42)
+        ex, ey = cx + math.cos(a) * 0.32, cy + math.sin(a) * 0.24
+        cv.line(cv.to_px(cx, cy, 0.04), cv.to_px(ex, ey, 0.02), 8, WOOD_D * (0.6 if math.sin(a) < 0 else 0.9))
+    cv.cyl(cx, cy, 0.08, 0.02, TOP - 0.1, WOOD, side=WOOD_D, tex_side=M.wood("#4a3424", seed + 2, False))
+    cv.cyl(cx, cy, 0.15, TOP - 0.24, TOP - 0.14, WOOD_D)
+    cv.cyl(cx, cy, r, TOP - 0.1, TOP, WOOD_L, side=WOOD_D * 1.1, tex_top=M.wood("#6a4c34", seed), tex_side=M.wood("#4a3424", seed + 1))
+    _top_items(cv, cx, cy, r, r, seed)
+    chair(cv, cx, cy + gap, "n", seed + 3)  # 남(마지막 — 판 앞을 가린다)
+
+
+def dining(cv, w, d, seed, oval=False):
+    """긴 탁자(판 깊이 ≈ 1칸 · 높이 TOP · 다리 넷 + 가로대) + 의자(북 · 남 줄, 0.8칸마다 — 판에서 0.3칸 띄워). 덩어리 깊이 2칸 이상."""
+    from interior_furn import legs
+    y0, y1 = d / 2 - 0.48, d / 2 + 0.48
+    x0, x1 = 0.12, w - 0.12
+    n = max(1, int((x1 - x0 - 0.2) / 0.8))
+    xs = [x0 + (x1 - x0) * (k + 0.5) / n for k in range(n)]
+    for x in xs:
+        chair(cv, x, y0 - 0.12, "s", seed + int(x * 10))
+    if oval:
+        cx, cy = w / 2, d / 2
+        legs(cv, cx - 0.6, y0 + 0.15, cx + 0.6, y1 - 0.15, TOP - 0.08, WOOD_D)
+        cv.cyl(cx, cy, (x1 - x0) / 2, TOP - 0.08, TOP, WOOD_L, side=WOOD_D * 1.1, ry=(y1 - y0) / 2, tex_top=M.wood("#6a4c34", seed), tex_side=M.wood("#4a3424", seed + 1))
+    else:
+        legs(cv, x0 + 0.05, y0 + 0.05, x1 - 0.05, y1 - 0.05, TOP - 0.08, WOOD_D)
+        cv.box(x0, y0, x1, y1, TOP - 0.08, TOP, WOOD_L, side=WOOD_D * 1.1, tex_top=M.wood("#6a4c34", seed), tex_side=M.wood("#4a3424", seed + 8))
+        cv.front(x0 + 0.06, x1 - 0.06, y1 - 0.05, TOP - 0.22, TOP - 0.08, WOOD_D * 0.6, shade=(0.6, 0.9))
+    if not oval:
+        _top_items(cv, w / 2, d / 2, (x1 - x0) / 2, 0.4, seed)
+    for x in xs:
+        chair(cv, x, y1 + 0.32, "n", seed + int(x * 10) + 5)
 
 
 # ---------- 문 ----------
