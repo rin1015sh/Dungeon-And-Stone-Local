@@ -60,7 +60,7 @@ UI를 가린 스크린샷 한 장만 보고도 **"아, 이건 1층 수정동굴�
 ### 3.1 해상도·스케일·시점
 
 - 해상도·스트레치 설정은 **지금 그대로**(1280×720, canvas_items, expand). 정수배 스케일·픽셀 스냅으로 바꾸지 않는다.
-- **1칸 = 1m.** 그리는 크기는 `render.json view`(`floor_tile_px` 32×32, `wall_tile_px` 32×56, `camera_zoom` 1.5)를 따른다. 바꿔야 하면 render.json 값만 바꾸고 이유를 ASSUMPTIONS에 적는다.
+- **1칸 = 1m.** 그리는 크기는 `render.json view`(`floor_tile_px` 32×32, `wall_tile_px` 32×56, `camera_zoom` 2.0 — 2026-11-04 확대, ASSUMPTIONS BL6)를 따른다. 바꿔야 하면 render.json 값만 바꾸고 이유를 ASSUMPTIONS에 적는다.
 - `view.texture_filter`가 지금 nearest다. 손그림 타일로 바꾸면 linear가 맞을 수 있다 — 캡처로 비교해 정하고 ASSUMPTIONS에 적는다.
 - 시점은 지금의 **3/4 오블리크 뷰** 유지: 벽은 윗면 + 앞면(앞면은 표현 높이), 캐릭터 발 = 정렬 기준, 남쪽 벽에 가려지면 실루엣(`occluded_actor_alpha`) — 이미 있다. 그림만 바꾼다.
 - 탐험 화면의 캐릭터·몬스터 키는 **데이터 `size`**(사람 = 1.0, 고블린 0.7, 데스핀드 1.5, 타룬바스 1.8 …)로 정한다. 전투 그림과 같은 기준이라 두 화면의 덩치가 어긋나지 않는다. 바바리안은 아군 그림처럼 사람보다 크게(×1.14 — ART §3).

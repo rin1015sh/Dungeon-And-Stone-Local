@@ -236,3 +236,16 @@ func test_pack_call() -> void:
 	assert_eq(mate.state, FieldMonsters.STATE_INVESTIGATE, "동료가 부르면 온다")
 	assert_true(mate.called)
 	assert_eq(slime.state, FieldMonsters.STATE_IDLE, "다른 편(슬라임)은 오지 않는다")
+
+
+## 몬스터 감지 화면 = 보이는 화면(V19): 화면 확대(render.json view.camera_zoom)를 바꿔도 감지 범위가 그대로 따라간다.
+func test_sight_follows_camera_zoom() -> void:
+	var view := JsonUtil.get_dict(db.render, "view")
+	var zoom := JsonUtil.get_float(view, "camera_zoom", 2.0)
+	var tile := JsonUtil.get_array(view, "floor_tile_px")
+	var margin := float(db.bal("monsters.screen_margin_tiles", 0.5))
+	var half := MonsterSight.new(db, FloorMap.new(db, 3, 3, "rock_wall")).half
+	assert_near(half.x, 1280.0 * 0.5 / (float(tile[0]) * zoom) - margin, 0.0001, "감지 반 폭 = 화면 반 폭 − 여유")
+	assert_near(half.y, 720.0 * 0.5 / (float(tile[1]) * zoom) - margin, 0.0001, "감지 반 높이 = 화면 반 높이 − 여유")
+	var sight := MonsterSight.new(db, FloorMap.new(db, 3, 3, "rock_wall"))
+	assert_true(sight.on_screen(Vector2(half.x - 0.1, 0.0)) and not sight.on_screen(Vector2(half.x + 0.1, 0.0)), "화면 가장자리 안쪽만 본다")
