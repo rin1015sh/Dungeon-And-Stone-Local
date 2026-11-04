@@ -22,11 +22,14 @@ def main():
     sc = idx.get("scale", 1.5)
     top = 400
     W = dump["w"] * 32
-    H = max(c["rect"][1] + c["rect"][3] for c in g["chunks"]) + top
+    gs = 32 / g.get("tile", 32)  # 바닥 조각은 칸당 tile px로 구웠다(CT99 이후 64) → 여기는 칸당 32
+    H = round(max(c["rect"][1] + c["rect"][3] for c in g["chunks"]) * gs) + top
     im = Image.new("RGBA", (W, H), (14, 12, 10, 255))
     for c in g["chunks"]:
         x, y, _w, _h = c["rect"]
-        im.alpha_composite(Image.open(os.path.join(ROOT, "assets/town/ground", c["file"] + ".webp")).convert("RGBA"), (x, y + top))
+        gi = Image.open(os.path.join(ROOT, "assets/town/ground", c["file"] + ".webp")).convert("RGBA")
+        gi = gi.resize((round(gi.width * gs), round(gi.height * gs)), Image.LANCZOS)
+        im.alpha_composite(gi, (round(x * gs), round(y * gs) + top))
     items = [(h["front_y"] * 32, "h", h) for h in dump["houses"] if h["id"] in idx["houses"]] + [(p["y"], "p", p) for p in dump["props"]]
     items.sort(key=lambda t: t[0])
     pages, arts = {}, {}
@@ -45,7 +48,7 @@ def main():
             art = arts[a["kind"]]
             if art is None:
                 continue
-            spr = art.resize((max(1, round(art.width / 1.5)), max(1, round(art.height / 1.5))), Image.LANCZOS)
+            spr = art.resize((max(1, round(art.width / 3.0)), max(1, round(art.height / 3.0))), Image.LANCZOS)
             im.paste(spr, (round(a["x"] - spr.width / 2), round(a["y"] - a["lift"] - spr.height) + top), spr)
     bbox = im.convert("L").point(lambda v: 255 if v > 20 else 0).getbbox()
     im = im.crop((0, max(0, bbox[1] - 10), W, H)).convert("RGB")
