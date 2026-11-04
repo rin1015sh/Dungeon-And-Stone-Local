@@ -400,7 +400,7 @@ func grant_battle_rewards(group: FieldMonsters.Group, killed: Array[String], col
 		kills[id] = int(kills.get(id, 0)) + 1
 	var mult := JsonUtil.get_float(group.battle_rules, "essence_mult", 1.0) if group != null else 1.0
 	if defer_drops:
-		battle_drops = DropPickup.roll(db, killed, rng, rift_run != null, mult, colors)
+		battle_drops = DropPickup.roll(db, killed, rng, rift_run != null, mult, colors, player)
 	for m: Dictionary in Rewards.grant(player, killed, rng, clock.total_hours, rift_run != null, mult, colors, not defer_drops):
 		if str(m["key"]) == "reward.bag_full" and rift_run != null \
 				and rift_run.keep_overflow(self, str(m["args"].get("item_id", "")), int(m["args"].get("count", 1))):

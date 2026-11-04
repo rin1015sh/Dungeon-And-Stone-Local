@@ -44,6 +44,22 @@ static func drop_chance(db: GameDatabase, monster_def: Dictionary, in_rift: bool
 	return clampf(p, 0.0, 1.0)
 
 
+## 연속 실패 보정(balance essence.pity)이 걸리는 몬스터인가 — 등급 확률로 굴리는 일반 몬스터(정수 id가 있고, 랭크별 고정 확률·몬스터 essence_drops가 없는 것).
+static func pity_applies(db: GameDatabase, monster_id: String) -> bool:
+	var def := db.get_entry("monsters", monster_id)
+	if not JsonUtil.get_array(def, "essence_drops").is_empty() or essence_of_monster(db, monster_id).is_empty():
+		return false
+	var by_rank: Dictionary = db.bal("essence.drop_chance_by_rank", {})
+	return not by_rank.has(JsonUtil.get_str(def, "rank", "normal"))
+
+
+## 연속 실패 streak번에 곱하는 확률 배율 = min(max_mult, 1 + step × streak).
+static func pity_mult(db: GameDatabase, streak: int) -> float:
+	if not bool(db.bal("essence.pity.enabled", false)):
+		return 1.0
+	return minf(float(db.bal("essence.pity.max_mult", 5.0)), 1.0 + float(db.bal("essence.pity.step", 0.25)) * float(maxi(0, streak)))
+
+
 ## 그 몬스터에게서 나오는 정수 id(없으면 "").
 static func essence_of_monster(db: GameDatabase, monster_id: String) -> String:
 	var col := db.get_collection("essences")

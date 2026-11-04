@@ -5,13 +5,14 @@ extends SceneTree
 ## --pack=a,b: 한 무리 마릿수 [최소, 최대](1층 pack_by_day — 1~3일 차 [1,1], 4~5일 [1,2], 6~7일 [2,3]).
 ## --potions: 하급 포션 개수(생명력이 potion_at 아래면 마신다 — 최대 생명력 15% 또는 40 중 큰 값).
 ## --rest=r: 생명력이 r 아래면 여관 밖에서 쉰다(rest_hours 8 × 시간당 5% 회복, 쉬는 동안 매복 시간당 4% — 걸리면 그 무리와 싸운다). 0이면 쉬지 않는다.
+## --drops=on: 이긴 뒤 정수 드롭을 실제로 굴려(DropPickup — 연속 실패 보정 포함) 나온 정수를 흡수한다. --pity=off면 보정을 끈다. --level=n: 시작 레벨(정수 칸 수).
 ## --essence=<id>: 그 정수 하나를 흡수한 채(1층 Lv1 슬롯 1칸). 없으면 정수 없음.
 
 const MONSTERS := ["blade_wolf", "gnome", "ghoul", "goblin"]
 
 
 func _initialize() -> void:
-	var args := {"n": "200", "fights": "40", "pack": "1,1", "potions": "2", "rest": "0.5", "essence": ""}
+	var args := {"n": "200", "fights": "40", "pack": "1,1", "potions": "2", "rest": "0.5", "essence": "", "drops": "off", "pity": "on", "level": "1"}
 	for a: String in OS.get_cmdline_user_args():
 		var kv := a.trim_prefix("--").split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "true"
@@ -25,6 +26,10 @@ func _initialize() -> void:
 	var potions0 := str(args["potions"]).to_int()
 	var rest_at := str(args["rest"]).to_float()
 	var ess := str(args["essence"])
+	var drops_on := str(args["drops"]) == "on"
+	if str(args["pity"]) == "off":
+		((db.singletons["balance"] as Dictionary)["essence"] as Dictionary)["pity"] = {"enabled": false}
+	var absorbed_sum := 0
 	var died_at: Array[int] = []
 	var survived := 0
 	var hp_sum := 0.0
@@ -34,6 +39,7 @@ func _initialize() -> void:
 		var race := str(rng.pick(["human", "barbarian"]))
 		var cls := str(rng.pick(["warrior", "swordsman", "spearman", "archer"]))
 		var pc := PlayerCharacter.create(db, race, cls, "sim", CharacterRoller.roll_base_stats(db, race, cls, rng))
+		pc.set_level(str(args["level"]).to_int())
 		pc.pool.fill_all()
 		if not ess.is_empty():
 			pc.essences.absorb(pc, EssenceDrop.make(db, ess, "red", Rng.new(3)))
@@ -53,6 +59,13 @@ func _initialize() -> void:
 			if not res:
 				dead = true
 				break
+			if drops_on:
+				var killed: Array[String] = []
+				for k in size:
+					killed.append(kind)
+				for dr: Dictionary in DropPickup.roll(db, killed, rng, false, 1.0, [], pc):
+					if str(dr["kind"]) == "essence" and pc.essences.absorb(pc, dr["inst"]).is_empty():
+						absorbed_sum += 1
 			var ratio := pc.pool.get_ratio("hp")
 			if potions > 0 and ratio < 0.4:
 				pc.pool.modify("hp", maxf(40.0, 0.15 * pc.pool.get_max("hp")), "potion")
@@ -77,6 +90,8 @@ func _initialize() -> void:
 		avg_death += d
 	print("1층 혼자 원정 — Lv1%s, 무리 %d~%d마리, 연속 %d판, 포션 %d, 휴식 %.0f%%, %d명" % [
 		(" + 정수 " + ess) if not ess.is_empty() else "", pmin, pmax, fights, potions0, rest_at * 100.0, n])
+	if drops_on:
+		print("  원정 중 얻은 정수 평균 %.2f개 (보정 %s)" % [float(absorbed_sum) / n, str(args["pity"])])
 	print("  생존 %.0f%% · 사망 %d명(평균 %.1f번째 판에서)" % [100.0 * survived / n, died_at.size(), avg_death / maxf(1.0, died_at.size())])
 	quit(0)
 

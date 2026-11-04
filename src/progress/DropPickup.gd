@@ -8,15 +8,26 @@ extends RefCounted
 
 
 ## killed(쓰러뜨린 순서)마다 전리품·정수를 굴려 드롭 목록으로. 인자는 Rewards.grant와 같다.
+## owner가 있고 정수 칸이 비어 있으면 연속 실패 보정(EssenceDrop.pity_mult)이 일반 몬스터 정수 확률에 곱해진다 —
+## 정수를 못 얻은 처치마다 owner.progression.essence_miss가 오르고, 얻으면 0으로 돌아간다(칸이 차 있는 동안은 세지도 않는다).
 static func roll(db: GameDatabase, killed: Array[String], rng: Rng, in_rift: bool = false, essence_mult: float = 1.0,
-		colors: Array[String] = []) -> Array[Dictionary]:
+		colors: Array[String] = [], owner: PlayerCharacter = null) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
+	var pity_on := owner != null and bool(db.bal("essence.pity.enabled", false)) \
+			and owner.essences.absorbed.size() < Progression.essence_slots(db, owner.get_level())
+	var streak := owner.progression.essence_miss if owner != null else 0
 	for k in killed.size():
 		for drop in Loot.roll(db, killed[k], rng):
 			out.append({"kind": "item", "id": str(drop["id"]), "count": int(drop["count"]), "slot": k, "monster": killed[k]})
-		var ess := EssenceDrop.roll(db, killed[k], rng, in_rift, essence_mult, colors[k] if k < colors.size() else "")
+		var pity := pity_on and EssenceDrop.pity_applies(db, killed[k])
+		var mult := essence_mult * (EssenceDrop.pity_mult(db, streak) if pity else 1.0)
+		var ess := EssenceDrop.roll(db, killed[k], rng, in_rift, mult, colors[k] if k < colors.size() else "")
+		if pity:
+			streak = 0 if not ess.is_empty() else streak + 1
 		if not ess.is_empty():
 			out.append({"kind": "essence", "inst": ess, "slot": k, "monster": killed[k]})
+	if owner != null:
+		owner.progression.essence_miss = streak
 	return out
 
 

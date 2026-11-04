@@ -12,6 +12,7 @@ var kills: Dictionary = {}           # 몬스터 id -> 처치 수
 var portals_opened: Dictionary = {}  # 포탈 기록 키 -> true (기록 키 = 포탈 id 또는 "포탈 id@달")
 var lords_defeated: Dictionary = {}  # 계층군주 id -> true
 var dreaming_soul: String = ""       # "" / "waiting"(먹었지만 10레벨 전) / "done"
+var essence_miss: int = 0            # 정수 연속 실패 보정(balance essence.pity): 빈 정수 칸이 있는 동안 정수를 못 얻은 일반 처치 수
 ## 마지막 record_kill의 내역 {first, guardian, lord}(보상 메시지용).
 var last_kill: Dictionary = {}
 
@@ -167,7 +168,7 @@ static func essence_slots(db: GameDatabase, level: int) -> int:
 
 func to_dict() -> Dictionary:
 	return {"exp": exp_total, "kills": kills.duplicate(), "portals": portals_opened.duplicate(),
-		"lords": lords_defeated.duplicate(), "dreaming_soul": dreaming_soul}
+		"lords": lords_defeated.duplicate(), "dreaming_soul": dreaming_soul, "essence_miss": essence_miss}
 
 
 func load_dict(d: Dictionary) -> void:
@@ -176,3 +177,4 @@ func load_dict(d: Dictionary) -> void:
 	portals_opened = JsonUtil.get_dict(d, "portals").duplicate()
 	lords_defeated = JsonUtil.get_dict(d, "lords").duplicate()
 	dreaming_soul = JsonUtil.get_str(d, "dreaming_soul")
+	essence_miss = JsonUtil.get_int(d, "essence_miss")

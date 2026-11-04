@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **정수 연속 실패 보정 · 밸런스 다이얼 문서 (2026-11-04, 사용자 "연속 실패 보정으로 해봐 · 밸런스 관련해서 읽고 수정할 수 있게 기록해", BL4)**: 범위 = 난이도 점검(요인 목록 · sim_party · sim_survive) → 1인 1층 정수 없는 구간 보강. 한 일: `essence.pity`(step 0.25 · max 5 · 빈 칸일 때만) · `Progression.essence_miss` 저장 · `EssenceDrop.pity_mult/pity_applies` · `DropPickup.roll(owner)` · 시험 `test_pity_…` · `tools/sim_survive.gd`(--drops · --pity · --pack) · `tools/balance_knobs.py` → `docs/balance/tuning.md`. 결과: 40판 연속 생존 60→74%(정수 드롭 포함). 남은 것: 정수 없는 초반 화력(시작 장비·기세) · 4일차 이후 무리 크기 · 보스 첫 시도 승률 상한(블라터 78%·타룬바스 87%) · 몬스터 공격력 재조정 여부.
+
 - **스탯·상태이상 밸런스 정리 (2026-11-03, 사용자 "스탯·상태이상 총정리 → 전부 수정", BL1)**: 범위 = 정적 검토로 찾은 문제 수정. 한 일: 지속 피해 비율화(`max(고정, 최대 생명력×비율)`, 몬스터 ×0.25, `periodic.hp_ratio` · `StatusSet.hp_ratio_scale`) · 피해 수정자 상·하한(`DamageCalc._modifier_mult` — 정수·장비 곱 ≥0.4, 전체 받는 ×0.2~2.5·주는 ×3.0) · 자연재생력·영혼 재생력 비율화 · 차례당 재생 합 4% · 명중 민첩 지수 0.5 · 치명상 보스급 면역 · 응시하는 눈 치명 · 이름 겹침 정리 · 낙하 피해 비율. 기절·마비 저항은 시험이 정본이라 문서를 고쳤다. 남은 것: 물리내성 생명력 3/점 곡선 재조정(몬스터·층 곡선 전체), `balance_sheet.py` 총정리·`formula_check` 다시 뽑기(미실행). 검증: check.sh(결과는 PROGRESS 한 줄).
 
 - **차양 문 비움 · 대장간은 되돌림 (2026-11-03, 사용자가 대장간을 "롤백해" — `_smithy` · 연기 · 화덕 불빛 · 모루 소품을 지우고 대장간은 `_workshop`으로. 아래는 처음 한 일 기록, 사용자 "대장간 연기랑 모루 넣고, 잡화점 천막 때문에 문이 안 보임", CT105)**: `Designs2._smithy`(화덕 아치 숯불 · 큰 굴뚝 · `Deco3D.blob` 연기 넷 · 작업 처마), `Designs2.awning`(문 위 비움) → `_shop_house2` · `_corner_shop`, HouseFit FAC_FNS shop · smithy · ZONE_FNS market · PLACE_FNS 가게를 새 꼴로, 모루 소품(`Deco3D._anvil` · TownRules · test_town), `town_v4.life` 대장간 문 옆 모루. 집 77채 다시 굽기. 그림 `plans/town/v4/shop_smithy_ct105.jpg` · `game_smithy.jpg` · `game_shop.jpg`.

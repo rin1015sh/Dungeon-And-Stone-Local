@@ -230,3 +230,31 @@ func test_move_reorders_essence_skills() -> void:
 	copy.set_level(3)
 	copy.essences.load_dict(copy, JSON.parse_string(JSON.stringify(pc.essences.to_dict())))
 	assert_eq(copy.skills.filter(func(s: String) -> bool: return now.has(s)), now, "불러와도 같은 순서")
+
+
+## 연속 실패 보정(essence.pity): 못 얻을수록 배율이 오르고, 얻으면 돌아가며, 칸이 차면 멈춘다.
+func test_pity_raises_chance_until_a_drop_and_stops_when_full() -> void:
+	var d := GameDatabase.new()
+	d.load_all("res://data")
+	var step := float(d.bal("essence.pity.step"))
+	var cap := float(d.bal("essence.pity.max_mult"))
+	assert_near(EssenceDrop.pity_mult(d, 0), 1.0, 0.0001, "처음엔 배율 1")
+	assert_near(EssenceDrop.pity_mult(d, 2), 1.0 + 2.0 * step, 0.0001, "연속 실패마다 step만큼 오른다")
+	assert_near(EssenceDrop.pity_mult(d, 999), cap, 0.0001, "max_mult에서 멈춘다")
+	assert_true(EssenceDrop.pity_applies(d, "goblin"), "일반 몬스터는 보정이 걸린다")
+	assert_false(EssenceDrop.pity_applies(d, "blater"), "수호자는 고정 확률이라 보정 없음")
+	var pc := PlayerCharacter.create(d, "human", "warrior", "시험", {"str": 10})
+	var miss: Array[String] = ["goblin"]
+	for i in 30:
+		DropPickup.roll(d, miss, Rng.new(100 + i), false, 0.0, [], pc)  # 확률 0배 → 항상 실패
+	assert_eq(pc.progression.essence_miss, 30, "빈 칸이 있으면 실패를 센다")
+	(d.singletons["balance"]["essence"]["drop_chance_by_grade"] as Dictionary)["9"] = 1.0
+	DropPickup.roll(d, miss, Rng.new(1), false, 1.0, [], pc)
+	assert_eq(pc.progression.essence_miss, 0, "정수를 얻으면 처음으로")
+	assert_eq(pc.essences.absorb(pc, EssenceDrop.make(d, "goblin", "red", Rng.new(3))), "")
+	pc.progression.essence_miss = 7
+	DropPickup.roll(d, miss, Rng.new(2), false, 0.0, [], pc)
+	assert_eq(pc.progression.essence_miss, 7, "칸이 차면 세지 않는다")
+	var back := PlayerCharacter.create(d, "human", "warrior", "복원", {"str": 10})
+	back.progress_load_dict(pc.progress_to_dict())
+	assert_eq(back.progression.essence_miss, 7, "저장·불러오기")

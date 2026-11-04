@@ -40,6 +40,7 @@
 - **게임 글 모음 ↔ 데이터**(파이썬, 1초): `python3 tools/texts_md.py` → `docs/TEXTS.md`(도서관 책 · 플레이버·설명 글(아이템·소재·종류·몬스터·정수·스킬·상태·균열·수수께끼 …) · 상황 문구(ko.json의 문장) — 약 1,180개). 사용자가 고친 파일 적용: `python3 tools/texts_md.py --apply --md=<파일> [--dry]` — 바뀐 글만 그 자리에서 바꾼다(파일 모양 유지, ko.json `{자리표시자}`가 달라진 줄은 건너뜀). 적용 뒤 ko.json을 바꿨으면 `strings_md.gd`, 그리고 `texts_md.py`로 다시 만들고 `check.sh`.
 - **층 찍어내기 점검표**(파이썬, 1초): `python3 tools/floor_status.py` → `docs/balance/floor_status.md`(1~10층 × 부품 17 — ● 갖춤 · ◐ 일부 · ○ 없음) · `--floor=<n>`이면 그 층만 자세히(파일을 쓰지 않는다). 층 데이터·몬스터·정수·균열·서적을 더했으면 다시 돌린다(부품 목록 `docs/plans/floors_2_10.md` §1).
 - **밸런스 총정리**: `python3 tools/balance_sheet.py` → `docs/balance/all_stats.md` + **`all_stats.html`(종류별 탭 화면 — 브라우저로 연다: 검색·거르기·열 눌러 정렬)** + `all_stats.xlsx`(시트별 정렬·필터). 쓰는 부분 `balance_sheet_out.py`, 화면 틀 `balance_sheet_view.html`(Artifact용 조각 — html 파일은 도구가 `<!doctype>`·`<meta charset>` 껍데기를 씌워 내려받아 바로 열린다, 게시용 조각은 `--artifact=<경로>`) — 몬스터(등급×구분 평균·보스·전체·스킬·패시브, 곡선 목표 대비·한 대 %·몇 대)·정수(등급별 평균·전체·스킬)·상태이상 87종·장비(종류×단계)·쓰는 아이템·플레이어 기준·공식·자동 점검. 몬스터·정수·상태·아이템·`balance.json`을 바꿨으면 다시 만든다(openpyxl 없으면 md만).
+- **밸런스 다이얼 목록 · 난이도 점검 순서**: `python3 tools/balance_knobs.py` → `docs/balance/tuning.md`(balance.json 현재 값 + 무엇을 바꾸나·올리면·다시 돌릴 도구). 1인 1층 원정 생존율: `godot --headless --path . --script res://tools/sim_survive.gd -- [--n=200] [--fights=40] [--pack=1,2] [--drops=on] [--pity=off] [--essence=goblin]`.
 - **정수 표**: `python3 tools/essences_md.py` → `docs/balance/essences.md`(정수·정수 스킬을 바꿨으면 다시 만든다 — 손으로 고치지 않는다).
 
 ## 화면 캡처 · 그림
