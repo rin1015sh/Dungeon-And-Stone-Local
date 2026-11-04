@@ -95,6 +95,9 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, sm
 		floors[i]["piece"] = piece
 	if n or _open_behind(map, p, t, h):
 		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece})
+		if not so and h > t:  # 남쪽도 벽이라 앞면이 없다: 솟은 윗면 아래(몸통 자리)를 어둡게 덮는다 — 안 덮으면 벽 뒤 바닥이 띠로 비쳤다(사용자 2026-11-04 "벽 밑 잔상")
+			var y1 := (p.y + 1) * t
+			tops.append({"x": p.x, "poly": PackedVector2Array([Vector2(o.x, y1), Vector2(o.x + t, y1), Vector2(o.x + t, y1 + h - t), Vector2(o.x, y1 + h - t)]), "h": h, "piece": piece})
 	if not so:
 		return
 	var v: int = variant.call(p.x, p.y, def)

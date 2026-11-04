@@ -21,18 +21,18 @@
     "lightning": 1.5
   },
   "stats": {
-    "str": 12,
-    "agi": 15,
+    "str": 8,
+    "agi": 13,
     "p_res": 18,
     "m_res": 8,
     "int": 4
   },
   "resources": {
-    "hp": 55,
+    "hp": 30,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 11,
+    "attack": 8,
     "damage_type": "pierce"
   },
   "behavior": {

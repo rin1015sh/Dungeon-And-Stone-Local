@@ -1,6 +1,7 @@
 extends SceneTree
 ## 전투 시뮬레이터(헤드리스, docs/PROMPT_FLOOR1_V2.md §15). 밸런스 확인용 — check.sh에는 넣지 않는다.
-##   godot --headless --path . --script res://tools/sim_battle.gd -- [--n=200] [--speed_base=10] [--level=1] [--bench]
+##   godot --headless --path . --script res://tools/sim_battle.gd -- [--n=200] [--speed_base=10] [--level=1] [--bench] [--sc=a,b;c]
+## --sc: 시나리오를 직접 준다(;로 판 나눔, ,로 몬스터 — 목표 승률 없음).
 ## --bench: 무작위 캐릭터 대신 명세 기준 탐험가(인간 검사, 기준 스탯 고정)로 싸운다.
 ## 1층 필드 시나리오마다 종족·템플릿을 무작위로 굴린 Lv1 탐험가(기본 공격만, 포션 없음)로 n번 싸워
 ## 승률 · 평균 차례 수 · "적 행동 / 아군 행동" 비율을 출력한다. --speed_base를 주면 balance 값을 덮어쓴다.
@@ -29,14 +30,21 @@ func _initialize() -> void:
 	var n := str(args["n"]).to_int()
 	var level := str(args["level"]).to_int()
 	print("전투 시뮬레이터 — speed_base %s, Lv%d, 시나리오당 %d회" % [str(db.bal("combat.speed_base", 0)), level, n])
-	print("%-44s %6s %6s %7s %9s" % ["시나리오", "승률", "목표", "평균차례", "적/아군행동"])
+	print("%-44s %6s %6s %7s %9s %7s %6s" % ["시나리오", "승률", "목표", "평균차례", "적/아군행동", "잃은HP", "맞은수"])
 	var misses := 0
-	for row: Array in SCENARIOS:
+	var scenarios: Array = SCENARIOS
+	if args.has("sc"):
+		scenarios = []
+		for part: String in str(args["sc"]).split(";", false):
+			scenarios.append([Array(part.split(",", false)), 0.0])
+	for row: Array in scenarios:
 		var sc: Array = row[0]
 		var wins := 0
 		var turns := 0
 		var ally_acts := 0
 		var foe_acts := 0
+		var lost := 0.0
+		var hits := 0
 		for i in n:
 			var rng := Rng.new(1000 + i)
 			var races: Array = ["human", "barbarian"]
@@ -62,14 +70,18 @@ func _initialize() -> void:
 				else:
 					foe_acts += 1
 				turns += 1
+				var hp0 := pc.pool.get_current("hp")
 				b.act(c, b.ai_action(c))
+				if pc.pool.get_current("hp") < hp0 - 0.001:
+					hits += 1
+			lost += 1.0 - pc.pool.get_current("hp") / maxf(1.0, pc.pool.get_max("hp"))
 			if b.result == Battle.RESULT_VICTORY:
 				wins += 1
 		var rate := float(wins) / n
 		var ok := rate >= float(row[1])
 		if not ok:
 			misses += 1
-		print("%-44s %5.0f%% %5.0f%% %7.1f %9.2f %s" % [" + ".join(sc), 100.0 * rate, 100.0 * float(row[1]), float(turns) / n,
-			float(foe_acts) / maxf(1.0, float(ally_acts)), "" if ok else "← 목표 미달"])
+		print("%-44s %5.0f%% %5.0f%% %7.1f %9.2f %6.0f%% %6.1f %s" % [" + ".join(sc), 100.0 * rate, 100.0 * float(row[1]), float(turns) / n,
+			float(foe_acts) / maxf(1.0, float(ally_acts)), 100.0 * lost / n, float(hits) / n, "" if ok else "← 목표 미달"])
 	print("목표 미달 %d개" % misses)
 	quit(0)

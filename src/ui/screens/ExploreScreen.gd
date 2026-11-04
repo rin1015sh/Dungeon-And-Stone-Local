@@ -80,7 +80,6 @@ func _ready() -> void:
 	_debug.offset_top = m
 	_debug.regenerate_requested.connect(func(s: int) -> void: regenerate_requested.emit(s))
 	session.message.connect(_on_message)
-	session.item_numbers.connect(_menu.float_use_numbers)
 	session.view_changed.connect(_view.refresh)
 	session.moved.connect(func(_from: Vector2i, to: Vector2i) -> void: _view.move_player(to))
 	session.closing_warning.connect(func(h: float) -> void: EventBus.floor_closing.emit(session.map.floor_id, h))

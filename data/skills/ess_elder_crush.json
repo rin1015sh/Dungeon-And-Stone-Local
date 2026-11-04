@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.35,
+      "power": 1.2,
       "damage_type": "blunt",
       "power_if_status": {
         "status": [
           "snare"
         ],
-        "power": 1.53
+        "power": 1.36
       }
     },
     {

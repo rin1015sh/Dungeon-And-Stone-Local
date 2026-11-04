@@ -72,6 +72,30 @@ func test_steel_relic_only_when_blades_crushed() -> void:
 	assert_eq(cs2.player.inventory.count("steel_relic"), 1)
 
 
+## 칼날 홈(사용자 2026-11-04): 홈마다 칼날이 실제로 오가고, 닿으면 베인다. 단단하면 칼날이 부러지고 강철 유물이 나온다.
+func test_groove_blades_cut_or_break() -> void:
+	var cs := _chapter("rift_iron_tomb", 1)
+	assert_true(cs.blades != null and cs.blades.runs.size() == 7, "홈 일곱 줄마다 칼날")
+	assert_true(cs.rift_run.hazards.at.is_empty(), "바닥에서 튀어나오는 숨은 칼날 함정은 없다")
+	(cs.blades.def["bypass"] as Dictionary)["at_least"] = 9999.0  # 이 시험 탐험가는 베인다
+	var a := cs.blades.blade_at(0)
+	cs.blades.t += 1.6
+	assert_true(cs.blades.blade_at(0).distance_to(a) > 0.5, "칼날이 홈을 따라 움직인다")
+	assert_eq(cs.blades.blade_at(0).x, a.x, "홈 밖으로 벗어나지 않는다")
+	var hp := cs.player.pool.get_current("hp")
+	cs.fpos = cs.blades.blade_at(0)
+	assert_true(cs.blades.tick(cs, 0.01), "칼날이 지나가는 칸에 서 있으면 베인다")
+	assert_true(cs.player.pool.get_current("hp") < hp)
+	assert_false(cs.blades.tick(cs, 0.01), "베인 직후엔 다시 베이지 않는다")
+	assert_eq(_at(cs, "steel_relic"), Vector2i(-1, -1), "베였으면 유물은 나오지 않는다")
+	var cs2 := _chapter("rift_iron_tomb", 1, 7)
+	(cs2.blades.def["bypass"] as Dictionary)["at_least"] = 0.0
+	cs2.fpos = cs2.blades.blade_at(2)
+	cs2.blades.tick(cs2, 0.01)
+	assert_true(bool(cs2.blades.runs[2].get("broken", false)), "단단하면 칼날이 부러져 멈춘다")
+	assert_true(_at(cs2, "steel_relic").x >= 0, "칼날을 부수면 강철 유물이 나타난다")
+
+
 func test_coffin_needs_correct_riddle_and_treasure_one_real() -> void:
 	var cs := _chapter("rift_iron_tomb", 3)
 	var run := cs.rift_run

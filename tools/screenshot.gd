@@ -691,6 +691,13 @@ func _enter_rift(explore: ExploreScreen) -> ExploreScreen:
 			if g.tag == str(_args["engage"]):
 				pick = g
 		explore.session.engage(pick, true)
+	if _args.has("reveal"):  # 챕터 세션이 바뀐 뒤라 다시 걷는다
+		ExploreDebug.reveal(explore.session)
+		explore.session.refresh_view()
+	if _args.has("ezoom"):  # --ezoom=<배율>: 탐험 카메라 배율만 바꿔 찍는다(챕터 테두리 넓게 보기 — 그림 확인용)
+		for c: Node in explore.find_children("*", "Camera2D", true, false):
+			(c as Camera2D).zoom = Vector2.ONE * str(_args["ezoom"]).to_float()
+		await _frames(8)
 	return explore
 
 

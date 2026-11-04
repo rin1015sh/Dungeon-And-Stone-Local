@@ -21,7 +21,7 @@
       "top": "#2a2530",
       "face": "#6a6074"
     },
-    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6, "shape": "smooth", "doors": ["rough", "cave", "rough"]},
+    "art": {"atlas": "res://assets/floor/f1/rock.webp", "variants": 6, "shape": "smooth", "doors": ["none"]},
     "source": "placeholder"
   },
   {
@@ -39,7 +39,7 @@
       "color": "#8f6cff",
       "intensity": 0.8
     },
-    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6, "shape": "smooth", "doors": ["rough", "cave", "rough"]},
+    "art": {"atlas": "res://assets/floor/f1/crystal.webp", "variants": 6, "shape": "smooth", "doors": ["none"]},
     "source": "original"
   },
   {

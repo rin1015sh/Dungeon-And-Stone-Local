@@ -152,10 +152,10 @@ func test_wall_doors() -> void:
 	for y in 4:  # 0~3줄 = 벽, 가운데 (4,1)~(4,3) = 북쪽으로 이어지는 통로 · (1,3) = 굴곡(한 줄짜리 홈)
 		for x in 9:
 			if x != 4 and not (x == 1 and y == 3):
-				map.set_tile(Vector2i(x, y), "rock_wall")
+				map.set_tile(Vector2i(x, y), "ice_wall")
 	var smooth := PackedByteArray()
 	smooth.resize(map.defs.size())
-	smooth[map.index_of("rock_wall")] = WallShape.SMOOTH
+	smooth[map.index_of("ice_wall")] = WallShape.SMOOTH
 	WallDoors.configure({"max_cells": 4, "depth": 2})
 	assert_eq(WallDoors.run_at(map, Vector2i(4, 3), smooth), Vector2i(4, 4), "통로 들머리 = 문")
 	assert_false(WallDoors.is_door(map, Vector2i(1, 3), smooth), "벽의 작은 홈은 문이 아니다")
@@ -168,4 +168,11 @@ func test_wall_doors() -> void:
 	var flank_cuts := s.floors.filter(func(fl: Dictionary) -> bool: return int(fl["x"]) in [3, 5])
 	assert_eq(flank_cuts.size(), 0, "문설주(3,3)·(5,3)의 아래 모서리는 깎지 않는다(아치가 곧은 문설주에 얹힌다)")
 	assert_true(s.floors.any(func(fl: Dictionary) -> bool: return int(fl["x"]) == 2), "홈 옆 벽 모서리는 그대로 깎인다")
+	for y in 4:  # 1층 암벽(art.doors ["none"])은 같은 통로라도 아치가 없다(사용자 2026-11-04, AM65)
+		for x in 9:
+			if map.tile_id_at(Vector2i(x, y)) == "ice_wall":
+				map.set_tile(Vector2i(x, y), "rock_wall")
+	smooth.resize(map.defs.size())
+	smooth[map.index_of("rock_wall")] = WallShape.SMOOTH
+	assert_eq(WallDoors.run_at(map, Vector2i(4, 3), smooth), Vector2i(-1, -1), "수정동굴 벽은 아치가 없다")
 	WallDoors.configure({})

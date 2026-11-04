@@ -20,18 +20,18 @@
     "fire": 1.25
   },
   "stats": {
-    "str": 29,
-    "agi": 40,
-    "p_res": 44,
+    "str": 16,
+    "agi": 30,
+    "p_res": 29,
     "m_res": 48,
     "int": 36
   },
   "resources": {
-    "hp": 191,
+    "hp": 76,
     "soul": 120
   },
   "natural_weapon": {
-    "attack": 15,
+    "attack": 8,
     "damage_type": "blunt"
   },
   "behavior": {

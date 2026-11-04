@@ -23,14 +23,14 @@
     "holy": 1.5
   },
   "stats": {
-    "str": 4,
-    "agi": 13,
+    "str": 3,
+    "agi": 11,
     "p_res": 0,
     "m_res": 18,
     "int": 11
   },
   "resources": {
-    "hp": 24,
+    "hp": 13,
     "soul": 40
   },
   "natural_weapon": {

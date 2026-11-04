@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(965줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(967줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -324,6 +324,8 @@
 - `explore.trap_plate_fail` 압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!
 - `explore.trap_arrow_fail` 벽 틈에서 화살이 쏟아졌다!
 - `explore.trap_blades_fail` 회전 칼날에 베였다!
+- `explore.groove_blade_cut` 홈을 따라 미끄러져 온 칼날이 몸을 긋고 지나갔다.
+- `explore.groove_blade_break` 홈에서 달려든 칼날이 몸에 부딪혀 그대로 부러졌다.
 - `explore.mural_read` 벽화를 들여다본다. {hint}
 - `explore.riddle_pass` 문지기가 창을 거두고 옆으로 비켜선다.
 - `explore.riddle_weaken` 문지기를 묶던 봉인이 풀린다 — 약해진 문지기가 창을 겨눈다.

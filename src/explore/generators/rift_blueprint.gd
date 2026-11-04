@@ -7,7 +7,7 @@ extends FloorGenerator
 ## slots = 조우 자리(데이터 encounters 순서 — 수호자는 마지막), hidden = 히든 피스 자리(데이터 hidden 순서 — RiftHidden),
 ## hazards = 위험 묶음 가운데(데이터 hazards × count 순서 — RiftHazards), loot = 놓인 물건 자리(데이터 loot 순서 — RiftLoot),
 ## posts = 대기 무리 자리(데이터 posts packs 순서 — RiftPosts, 없으면 빈 곳을 재서 고른다). 출구 칸에는 tiles.exit(gen.tiles)를 깐다
-## (마지막 챕터가 아니면 RiftPassage가 원래 바닥 "under"로 되돌려 이어진 길목으로 만든다). 시작 자리 둘레 rift.entry_safe_radius = 안전지대.
+## (마지막 챕터가 아니면 RiftPassage가 원래 바닥 "under"로 되돌려 이어진 길목으로 만든다). 균열에는 안전지대가 없다(사용자 2026-11-04).
 
 
 func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
@@ -30,7 +30,6 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	var marks := JsonUtil.get_dict(data, "marks")
 	map.entry = _pos(JsonUtil.get_array(marks, "entry"))
 	map.center = map.entry
-	map.safe_zones.append({"center": map.entry, "radius": float(db.bal("rift.entry_safe_radius", 1.5))})
 	for p: Variant in JsonUtil.get_array(marks, "slots"):
 		map.slots.append(_pos(p))
 	for key: String in ["hidden", "hazards", "loot", "posts"]:

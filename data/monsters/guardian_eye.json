@@ -17,18 +17,18 @@
   "immunities": [],
   "weaknesses": {},
   "stats": {
-    "str": 7,
-    "agi": 24,
-    "p_res": 20,
+    "str": 4,
+    "agi": 18,
+    "p_res": 14,
     "m_res": 25,
     "int": 22
   },
   "resources": {
-    "hp": 68,
+    "hp": 31,
     "soul": 80
   },
   "natural_weapon": {
-    "attack": 3,
+    "attack": 2,
     "damage_type": "arcane"
   },
   "behavior": {

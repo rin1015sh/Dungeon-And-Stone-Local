@@ -172,6 +172,11 @@ func test_resolve_victory_and_flee() -> void:
 	g2.state = FieldMonsters.STATE_CHASE
 	s.monsters.set_flee_grace(g2, s.clock.total_hours)
 	assert_eq(g2.state, FieldMonsters.STATE_CHASE, "도주해도 무리는 물러나지 않는다(전투 화면만 벗어난다)")
+	g2.home = g2.pos
+	g2.seen_at = s.clock.total_hours
+	s.pass_time(0.02)
+	assert_true(g2.state != FieldMonsters.STATE_RETURN, "도주 유예 동안에도 제자리로 도망치지 않는다(사용자 2026-11-04)")
+	assert_true(g2.grace_until > s.clock.total_hours, "유예 동안은 전투를 걸지 않는다")
 	var g3: FieldMonsters.Group = s.monsters.groups[1] if s.monsters.groups[0] == g2 else s.monsters.groups[0]
 	var first := g3.monster_ids[0]
 	var size := g3.monster_ids.size()

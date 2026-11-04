@@ -19,18 +19,18 @@
     "holy": 1.5
   },
   "stats": {
-    "str": 18,
-    "agi": 18,
-    "p_res": 27,
+    "str": 11,
+    "agi": 14,
+    "p_res": 19,
     "m_res": 18,
     "int": 12
   },
   "resources": {
-    "hp": 92,
+    "hp": 41,
     "soul": 40
   },
   "natural_weapon": {
-    "attack": 17,
+    "attack": 10,
     "damage_type": "blunt"
   },
   "behavior": {

@@ -300,40 +300,7 @@
           "message": "explore.hidden.steel_relic"
         }
       ],
-      "hazards": [
-        {
-          "id": "blades",
-          "tile": "trap_blades",
-          "count": 2,
-          "hidden": true,
-          "detect": {
-            "stat": "int",
-            "dc": 9
-          },
-          "disarm": {
-            "stat": "agi",
-            "dc": 4
-          },
-          "check": {
-            "stat": "agi",
-            "dc": 18
-          },
-          "bypass": {
-            "stat": "p_res",
-            "at_least": 22,
-            "message": "explore.trap_crushed"
-          },
-          "fail": [
-            {
-              "type": "restore_resource",
-              "resource": "hp",
-              "amount": "-floor({max_hp} * 0.12)"
-            }
-          ],
-          "detect_message": "explore.trap_detected",
-          "fail_message": "explore.trap_blades_fail"
-        }
-      ]
+      "groove_blades": {"id": "blades", "tile": "it_groove", "speed": 3.2, "pause_sec": 0.7, "stagger": 0.37, "reach": 0.7, "hit_cooldown_sec": 1.2, "bypass": {"stat": "p_res", "at_least": 22, "message": "explore.groove_blade_break"}, "fail": [{"type": "restore_resource", "resource": "hp", "amount": "-floor({max_hp} * 0.12)"}], "fail_message": "explore.groove_blade_cut"}
     },
     {
       "id": "ch3",

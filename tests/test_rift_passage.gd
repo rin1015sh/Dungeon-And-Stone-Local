@@ -75,7 +75,7 @@ func test_walk_forward_and_back_keeps_state() -> void:
 	var zone := int(db.bal("rift.passage_zone"))
 	var d := second.pos - second.map.entry
 	assert_true(maxi(absi(d.x), absi(d.y)) > zone, "도착 자리는 뒤 길목 둘레 밖(바로 되돌아가지 않게)")
-	assert_true(second.in_safe_zone(), "도착 자리는 시작 안전지대 안")
+	assert_false(second.in_safe_zone(), "균열에는 안전지대가 없다(사용자 2026-11-04)")
 	var back := _step_on(second, second.map.entry)
 	assert_eq(back, first, "뒤 길목으로 들어서면 지나온 챕터 — 같은 세션(치운 상태 그대로)")
 	assert_eq(run.chapter, 0)

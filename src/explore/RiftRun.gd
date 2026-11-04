@@ -119,6 +119,7 @@ func build_chapter(i: int) -> ExploreSession:
 	hidden.place(cs, ch, outer.rng, i)
 	RiftLoot.place(cs, ch)
 	hazards.place(cs, ch, outer.rng)
+	cs.blades = GrooveBlades.build(map, JsonUtil.get_dict(ch, "groove_blades"))
 	hidden.count_hazards(i, hazards)
 	for f: Variant in JsonUtil.get_array(ch, "features"):  # 챕터에 놓는 동굴 요소(핏빛 우물 — 고르는 선택지가 있는 것)
 		var fd: Dictionary = f if f is Dictionary else {}

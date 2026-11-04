@@ -20,18 +20,18 @@
     "fire": 1.25
   },
   "stats": {
-    "str": 9,
-    "agi": 13,
+    "str": 6,
+    "agi": 11,
     "p_res": 14,
     "m_res": 8,
     "int": 6
   },
   "resources": {
-    "hp": 31,
+    "hp": 17,
     "soul": 15
   },
   "natural_weapon": {
-    "attack": 11,
+    "attack": 8,
     "damage_type": "pierce",
     "ranged": true
   },

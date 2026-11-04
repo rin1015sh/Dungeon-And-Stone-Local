@@ -32,6 +32,7 @@ class Group extends RefCounted:
 	var home: Vector2i
 	var state: String = "idle"
 	var grace_until: float = -1.0
+	var flee_until: float = -1.0          ## 도주 유예(set_flee_grace)가 끝나는 시각 — grace_until과 같으면 물러나지 않고 하던 대로 움직인다
 	var alert_until: float = -1.0          ## 이 시각까지는 보지 못해도 플레이어를 쫓는다(노움 은닉처를 건드렸다 — FieldFeatureAct)
 	var waypoint: Vector2 = Vector2(-1, -1)  ## 걸어가는 중인 칸 중심(없으면 x < 0)
 	var tag: String = ""                  ## 균열 조우 종류(battle/chain/waves/guardian/roam/ambush), 필드 무리는 ""
@@ -249,6 +250,7 @@ func hold_contacts(until: float) -> void:
 ## combat.flee_grace_hours 동안만 다시 전투를 걸지 않는다.
 func set_flee_grace(g: Group, now: float) -> void:
 	g.grace_until = now + float(_db.bal("combat.flee_grace_hours", 0.5))
+	g.flee_until = g.grace_until
 
 
 ## 잠시 쫓지 않고 제자리로 돌아간다(수수께끼를 그만둠·균열 연출 등).

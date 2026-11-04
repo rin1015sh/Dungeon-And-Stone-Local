@@ -45,7 +45,7 @@ static func run_at(map: FloorMap, p: Vector2i, smooth: PackedByteArray) -> Vecto
 		if not WallShape._smooth_wall(map, Vector2i(side, r), smooth):
 			return none
 		face = face or WallShape._open(map, Vector2i(side, r + 1))
-	if not face:
+	if not face or map.def_at(Vector2i(a - 1, r)).art_doors.has("none"):  # 아치를 두지 않는 벽(art.doors ["none"] — 1층 수정동굴, 사용자 2026-11-04)
 		return none
 	for k in range(1, depth + 1):  # 북쪽으로 통로가 depth칸 이어진다(양옆이 벽 — 동굴 벽의 작은 굴곡은 문이 아니다)
 		if not WallShape._wall(map, Vector2i(a - 1, r - k)) or not WallShape._wall(map, Vector2i(b + 1, r - k)):

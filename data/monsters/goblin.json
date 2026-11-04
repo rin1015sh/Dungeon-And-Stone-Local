@@ -18,18 +18,18 @@
   "immunities": [],
   "weaknesses": {},
   "stats": {
-    "str": 8,
-    "agi": 12,
+    "str": 6,
+    "agi": 10,
     "p_res": 12,
     "m_res": 8,
     "int": 5
   },
   "resources": {
-    "hp": 31,
+    "hp": 17,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 7,
+    "attack": 5,
     "damage_type": "pierce"
   },
   "behavior": {

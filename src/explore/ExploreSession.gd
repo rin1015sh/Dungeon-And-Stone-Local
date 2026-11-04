@@ -12,7 +12,6 @@ signal bumped(at: Vector2i)
 signal view_changed
 signal time_passed(hours: float)
 signal message(key: String, args: Dictionary, kind: String)
-signal item_numbers(messages: Array)  ## 아이템을 쓴 결과(회복 수치 등) — Tab 메뉴가 숫자로 띄운다
 signal closing_warning(hours_left: float)
 signal floor_closed
 signal player_died(cause: String)
@@ -44,6 +43,7 @@ var gates := BossGates.new()  ## 보스 방 문 닫힘(V23) — 깨어난 보스
 var rift_run: RiftRun = null            ## 균열 챕터 세션이면 그 균열
 var scavenged: Dictionary = {}          ## 뒤진 균열 장식 칸 Vector2i → true(RiftScavenge)
 var loot: Dictionary = {}               ## 균열에 놓인 물건 칸 Vector2i → {item, count}(RiftLoot)
+var blades: GrooveBlades = null         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
@@ -166,6 +166,8 @@ func found_count(list: Array[Dictionary]) -> int:
 
 ## 실시간 진행: 화면이 매 프레임 실제 경과 초를 넘긴다. 시간 흐름으로 시야가 바뀌었으면 다시 계산한다.
 func tick_realtime(real_sec: float) -> void:
+	if blades != null:
+		blades.tick(self, realtime.frame_sec(self, real_sec))
 	realtime.tick(self, real_sec)
 	if _view_dirty and not ended:
 		_view_dirty = false
@@ -258,7 +260,6 @@ func use_item(item_id: String, on: Actor = null) -> bool:
 		return false
 	for m: Dictionary in ctx.messages:
 		message.emit(str(m["key"]), m["args"], str(m["kind"]))
-	item_numbers.emit(ctx.messages)
 	if ctx.messages.is_empty() and not ctx.success:  # 쓸 효과가 없는 물건(장비 등) — 조용히 끝나지 않게
 		_say("explore.cannot_use", {"item": DataNames.entry(db, "items", item_id)}, "info")
 	if ctx.success:

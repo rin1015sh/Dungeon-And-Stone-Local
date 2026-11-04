@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.35,
+      "power": 1.2,
       "damage_type": "pierce"
     },
     {
@@ -19,7 +19,7 @@
       "status": "bleeding",
       "damage": {
         "scaling": "phys",
-        "power": 0.0,
+        "power": 0,
         "damage_type": "pierce",
         "accuracy": 1000
       },

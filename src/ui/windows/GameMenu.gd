@@ -189,47 +189,6 @@ func refresh() -> void:
 		p.refresh()
 
 
-## 아이템을 쓴 결과의 수치를 고른 아군 칸 위에 피해 숫자처럼 띄운다(회복 = 초록·영혼력 = 파랑, 줄면 "-n"). 문구는 없다(UI19·UI46).
-## messages = 효과 문맥(EffectContext.messages) — effect.restore의 res·delta만 본다.
-func float_use_numbers(messages: Array) -> void:
-	if not is_open():
-		return
-	var host := page("character") as Control
-	var area := host.get_global_rect() if host != null else get_global_rect()
-	var row := 0
-	for m: Variant in messages:
-		if not (m is Dictionary and str(m.get("key", "")) == "effect.restore"):
-			continue
-		var a: Dictionary = m.get("args", {})
-		var res := str(a.get("res", ""))
-		var delta := int(a.get("delta", 0))
-		var inv: bool = pc.db.resources.has(res) and (pc.db.resources[res] as ResourceDef).display_inverted  # 허기는 먹으면 줄어 보인다
-		var plus := (delta > 0) != inv
-		var col_key := {"hp": "dmg_heal", "soul": "dmg_soul"}.get(res, "text") as String
-		_float_label(Strings.t("combat.float_heal" if plus else "combat.float_loss", {"n": absi(delta)}), UiTheme.color(col_key), area, row)
-		row += 1
-
-
-func _float_label(text: String, col: Color, area: Rect2, row: int) -> void:
-	var l := UiTheme.label(text, "header", "text")
-	l.add_theme_color_override("font_color", col)
-	l.add_theme_font_size_override("font_size", UiTheme.metric("float_text_size", 34))
-	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
-	l.add_theme_constant_override("outline_size", UiTheme.metric("float_text_outline", 6))
-	l.top_level = true
-	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(l)
-	l.z_index = 20
-	var ms := l.get_combined_minimum_size()
-	l.position = Vector2(area.position.x + area.size.x * 0.5 - ms.x * 0.5, area.position.y + area.size.y * 0.3 + row * ms.y * 0.9)
-	var sec := UiTheme.ui_float("float_text_sec", 1.3)
-	var tw := l.create_tween()
-	tw.tween_interval(sec * 0.6)
-	tw.tween_property(l, "position:y", l.position.y - 36, sec * 0.4)
-	tw.parallel().tween_property(l, "modulate:a", 0.0, sec * 0.4)
-	tw.tween_callback(l.queue_free)
-
-
 func _make(name: String) -> MenuPage:
 	match name:
 		"party":

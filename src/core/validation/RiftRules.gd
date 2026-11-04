@@ -71,6 +71,8 @@ static func _rift(v: ValidatorBase, id: String, r: Dictionary) -> void:
 		EffectRules.check(v, cw + ".on_enter", JsonUtil.get_array(ch, "on_enter"), true)
 		for h: Variant in JsonUtil.get_array(ch, "hazards"):
 			_hazard(v, cw + ".hazards", h if h is Dictionary else {})
+		if ch.has("groove_blades"):  # 칼날 홈을 오가는 칼날(GrooveBlades) — 위험 묶음과 같은 키(tile·bypass·fail)
+			_hazard(v, cw + ".groove_blades", JsonUtil.get_dict(ch, "groove_blades"))
 		for h: Variant in JsonUtil.get_array(ch, "hidden"):
 			_hidden(v, cw + ".hidden", h if h is Dictionary else {}, has_riddle)
 		for l: Variant in JsonUtil.get_array(ch, "loot"):

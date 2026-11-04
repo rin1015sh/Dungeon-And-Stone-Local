@@ -19,18 +19,18 @@
     "cold": 1.5
   },
   "stats": {
-    "str": 43,
-    "agi": 52,
-    "p_res": 63,
+    "str": 24,
+    "agi": 32,
+    "p_res": 38,
     "m_res": 29,
     "int": 20
   },
   "resources": {
-    "hp": 361,
+    "hp": 144,
     "soul": 50
   },
   "natural_weapon": {
-    "attack": 38,
+    "attack": 21,
     "damage_type": "pierce"
   },
   "behavior": {

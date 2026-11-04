@@ -41,7 +41,6 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 		_carve(map, Rect2i(b.x, mini(a.y, b.y), cw, absi(b.y - a.y) + cw), floor_tile)
 	map.entry = _center(rooms[0])
 	map.center = map.entry
-	map.safe_zones.append({"center": map.entry, "radius": 1.5})
 	for i in range(1, n):
 		map.slots.append(_center(rooms[i]))
 	var last := rooms[n - 1]

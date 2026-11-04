@@ -17,18 +17,18 @@
   "immunities": [],
   "weaknesses": {},
   "stats": {
-    "str": 17,
-    "agi": 16,
-    "p_res": 30,
+    "str": 10,
+    "agi": 12,
+    "p_res": 21,
     "m_res": 15,
     "int": 8
   },
   "resources": {
-    "hp": 98,
+    "hp": 44,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 14,
+    "attack": 8,
     "damage_type": "blunt"
   },
   "behavior": {

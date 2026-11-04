@@ -32,9 +32,16 @@ func notice(id: String, who: String) -> void:
 		return
 	var panel := PanelContainer.new()
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", UiTheme.translucent_panel())
+	var sb := UiTheme.panel_box(0.0)
+	sb.content_margin_left = float(_cfg_int("pad_x", 22))
+	sb.content_margin_right = sb.content_margin_left
+	sb.content_margin_top = float(_cfg_int("pad_y", 12))
+	sb.content_margin_bottom = sb.content_margin_top
+	panel.add_theme_stylebox_override("panel", sb)
 	var severe := id in ["starving", "starvation", "collapse"]
-	panel.add_child(UiTheme.label(text, "body", "bad" if severe else "text_title"))
+	var label := UiTheme.label(text, "body", "bad" if severe else "text_title")
+	label.add_theme_font_size_override("font_size", _cfg_int("font_size", 26))
+	panel.add_child(label)
 	_stack.add_child(panel)
 	while _stack.get_child_count() > _cfg_int("max", 3):
 		var old := _stack.get_child(0)

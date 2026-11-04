@@ -84,7 +84,7 @@ func think(g: FieldMonsters.Group, p: Vector2, pcell: Vector2i, _hours: float, n
 	var leash := JsonUtil.get_int(beh, "leash_tiles")
 	var away := leash > 0 and Vector2(g.pos - g.home).length() > leash
 	g.sees = false
-	if g.grace_until > now:
+	if g.grace_until > now and not is_equal_approx(g.grace_until, g.flee_until):  # 도주 유예는 물러나지 않는다(C25 — 사용자 2026-11-04 "도주시 적 도망치는거 없애")
 		_go_state(g, RETURN)
 	elif not g.hostile():
 		pass

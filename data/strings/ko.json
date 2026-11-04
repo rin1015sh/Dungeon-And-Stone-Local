@@ -250,6 +250,8 @@
     "trap_plate_fail": "압력판이 꺼지며 벽에서 쇠말뚝이 튀어나왔다!",
     "trap_arrow_fail": "벽 틈에서 화살이 쏟아졌다!",
     "trap_blades_fail": "회전 칼날에 베였다!",
+    "groove_blade_cut": "홈을 따라 미끄러져 온 칼날이 몸을 긋고 지나갔다.",
+    "groove_blade_break": "홈에서 달려든 칼날이 몸에 부딪혀 그대로 부러졌다.",
     "mural_read": "벽화를 들여다본다. {hint}",
     "riddle_pass": "문지기가 창을 거두고 옆으로 비켜선다.",
     "riddle_weaken": "문지기를 묶던 봉인이 풀린다 — 약해진 문지기가 창을 겨눈다.",
