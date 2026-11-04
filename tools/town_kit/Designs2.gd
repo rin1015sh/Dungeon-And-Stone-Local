@@ -9,34 +9,81 @@ const F2 := preload("res://tools/town_kit/Facade.gd")
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Mat := preload("res://tools/city_art/Mat.gd")
+const G := preload("res://tools/town_kit/Gothic.gd")
+const C := preload("res://tools/town_kit/Classic.gd")
 
 
 static func _cathedral(k: Kit) -> void:
-	# 가운데 회랑(높은 3층 석조 · 첨두창) + 가파른 박공
-	var r := stack(k, -3.2, -5.0, 3.2, 2.2, 0.0, [{"style": "stone", "floors": 3, "base": 0.3, "ci": 1, "win": "gothic", "lit": 0.6}])
-	gable(k, r, false, 0.95, 1, "stone", 0.2)  # 지붕이 벽 · 탑을 가리지 않게 낮게
-	# 옆 회랑 둘(낮은 석조 + 회랑 쪽으로 기운 외쪽지붕) · 버팀벽
+	# CT109: 고딕 성당 — 정면 박공 본당(정문 · 왕의 회랑 · 장미창) + 앞으로 나온 쌍탑(계단 버팀벽 · 모서리 작은 첨탑 · 팔각 첨탑)
+	#   + 옆 회랑(버팀 기둥 · 날개 버팀벽) + 정문 위 뾰족 박공 + 본당 지붕 위 가는 첨탑.
+	var hn := 3 * F2.storey + 0.3
+	var stone := F2.plain("stone", 1)
+	k.box(-3.0, -5.0, 3.0, 2.4, 0.0, hn, {"e": G.nave(true), "w": G.nave(true), "top": stone}, G.nave(true))
+	k.gable_roof(-3.0, -5.0, 3.0, 2.4, hn, 2.4, false, 0.12, F2.roof(1), stone)
+	k.box(-0.08, -4.6, 0.08, 2.2, hn + 2.4, hn + 2.55, {}, F2.plain("dark"))  # 용마루 장식 띠
+	k.box(-0.35, -1.9, 0.35, -1.2, hn + 2.0, hn + 2.8, {"top": stone}, stone)
+	k.cone(0.0, -1.55, 0.36, hn + 2.8, 2.6, 8, G.spire())
+	# 서쪽 정면 = 지붕 앞을 가리는 높은 벽(정문 · 왕의 회랑 · 장미창) + 그 위 장식 박공
+	var hf := hn + 2.2
+	k.box(-3.0, 2.4, 3.0, 3.0, 0.0, hf, {"s": G.front(), "top": stone}, stone)
+	k.face(Kit._pts([Vector3(-3.0, hf, 3.0), Vector3(3.0, hf, 3.0), Vector3(0.0, hf + 2.6, 3.0)]), Vector3(0, 0, 1), G.gable())
+	k.face(Kit._pts([Vector3(-3.0, hf, 2.4), Vector3(-3.0, hf, 3.0), Vector3(0.0, hf + 2.6, 3.0), Vector3(0.0, hf + 2.6, 2.4)]), Vector3(-1, 1, 0), F2.roof(1))
+	k.face(Kit._pts([Vector3(3.0, hf, 3.0), Vector3(3.0, hf, 2.4), Vector3(0.0, hf + 2.6, 2.4), Vector3(0.0, hf + 2.6, 3.0)]), Vector3(1, 1, 0), F2.roof(1))
+	# 옆 회랑(낮은 석조 · 외쪽지붕) + 바깥 버팀 기둥(작은 첨탑) + 날개 버팀벽(본당 벽으로 비스듬히)
 	for s: float in [-1.0, 1.0]:
-		var x0 := -6.0 if s < 0 else 3.2
-		var x1 := -3.2 if s < 0 else 6.0
-		var a := stack(k, x0, -4.4, x1, 1.4, 0.0, [{"style": "stone", "floors": 1, "base": 0.3, "ci": 2, "win": "gothic", "lit": 0.5}])
-		var y := float(a[4])
-		if s < 0:
-			k.shed_roof(x0, -4.4, x1, 1.4, y, y + 1.0, 0.15, F2.roof(1), F2.plain("stone", 1))
-		else:
-			k.shed_roof(x0, -4.4, x1, 1.4, y, y + 1.0, 0.15, F2.roof(1), F2.plain("stone", 1))
-		var xb := x0 - 0.35 if s < 0 else x1
-		for z: float in [-3.6, -1.6, 0.4]:
-			k.box(xb, z, xb + 0.35, z + 0.45, 0.0, y - 0.2, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))
-	# 정면 종탑 + 첨탑 · 모서리 작은 첨탑
-	var h := 8 * F2.storey + 0.3
-	k.box(-1.5, 2.2, 1.5, 4.6, 0.0, h, {"s": F2.tower(0, 8, true, true), "top": F2.plain("stone")}, F2.tower(1, 8, true))
-	step(k, 0.0, 4.6, 0.0)
-	k.box(-1.0, 4.6, 1.0, 5.2, 0.0, 0.14, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))
-	k.pyramid(-1.5, 2.2, 1.5, 4.6, h, 4.2, 0.15, F2.roof(1))
-	for c: Vector2 in [Vector2(-1.5, 2.2), Vector2(1.5, 2.2), Vector2(1.5, 4.6), Vector2(-1.5, 4.6)]:
-		k.box(c.x - 0.2, c.y - 0.2, c.x + 0.2, c.y + 0.2, h, h + 0.5, {}, F2.plain("stone"))
-		k.pyramid(c.x - 0.2, c.y - 0.2, c.x + 0.2, c.y + 0.2, h + 0.5, 1.1, 0.03, F2.roof(1, true))
+		var x0 := -5.6 if s < 0 else 3.0
+		var x1 := -3.0 if s < 0 else 5.6
+		var ya := 1.6 * F2.storey
+		k.box(x0, -4.6, x1, 0.6, 0.0, ya, {"e": G.nave(false), "w": G.nave(false), "s": G.nave(false), "top": stone}, G.nave(false))
+		k.shed_roof(x0, -4.6, x1, 0.6, ya, ya + 0.9, 0.12, F2.roof(1), stone)
+		var xb := x0 - 0.4 if s < 0 else x1
+		for z: float in [-3.9, -2.2, -0.5]:
+			k.box(xb, z, xb + 0.4, z + 0.5, 0.0, ya + 0.9, {"top": stone}, stone)
+			k.pyramid(xb, z, xb + 0.4, z + 0.5, ya + 0.9, 0.9, 0.02, F2.roof(1, true))
+			var xo := xb + (0.2 if s < 0 else 0.2)
+			var xn := -3.0 if s < 0 else 3.0
+			k.face(Kit._pts([Vector3(xo, ya + 0.5, z + 0.5), Vector3(xn, hn - 0.6, z + 0.5), Vector3(xn, hn - 0.15, z + 0.5), Vector3(xo, ya + 0.85, z + 0.5)]), Vector3(0, 0, 1), stone)
+	# 쌍탑(정면보다 조금 앞) — 층마다 첨두창, 맨 위 종루, 모서리 계단 버팀벽, 난간 작은 첨탑 넷, 팔각 첨탑
+	var ht := 8 * F2.storey + 0.3
+	for s: float in [-1.0, 1.0]:
+		var tx0 := -5.4 if s < 0 else 3.0
+		var tx1 := tx0 + 2.4
+		var tw := G.tower(8, 1 if s < 0 else 2)
+		k.box(tx0, 0.4, tx1, 3.3, 0.0, ht, {"s": tw, "e": tw, "w": tw, "top": stone}, tw)
+		for xc: float in [tx0, tx1]:
+			k.box(xc - 0.24, 3.3, xc + 0.24, 3.72, 0.0, ht * 0.42, {"top": stone}, stone)
+			k.pyramid(xc - 0.24, 3.3, xc + 0.24, 3.72, ht * 0.42, 0.35, 0.0, F2.roof(1, true))
+			k.box(xc - 0.18, 3.3, xc + 0.18, 3.56, ht * 0.42, ht * 0.74, {"top": stone}, stone)
+		for c: Vector2 in [Vector2(tx0, 0.4), Vector2(tx1, 0.4), Vector2(tx1, 3.3), Vector2(tx0, 3.3)]:
+			k.box(c.x - 0.18, c.y - 0.18, c.x + 0.18, c.y + 0.18, ht, ht + 0.6, {"top": stone}, stone)
+			k.cone(c.x, c.y, 0.17, ht + 0.6, 1.2, 6, G.spire())
+		k.box(tx0 + 0.2, 0.6, tx1 - 0.2, 3.1, ht, ht + 0.35, {"top": stone}, stone)
+		k.cone((tx0 + tx1) * 0.5, 1.85, 1.0, ht + 0.35, 5.6, 8, G.spire())
+	# 정문 위 뾰족 박공(앞으로 내민 장식 삼각) · 디딤돌
+	k.face(Kit._pts([Vector3(-1.6, 3.05, 3.32), Vector3(1.6, 3.05, 3.32), Vector3(0.0, 4.7, 3.32)]), Vector3(0, 0, 1), G.gable())
+	for px: float in [-1.6, 1.36]:
+		k.box(px, 3.0, px + 0.24, 3.32, 0.0, 3.1, {"top": stone}, stone)
+		k.cone(px + 0.12, 3.16, 0.12, 3.1, 0.8, 6, G.spire())
+	step(k, 0.0, 3.32, 0.0)
+
+
+static func _bank(k: Kit) -> void:
+	# CT109: 은행 = 신고전풍 석조(거친 돌 1층 · 창살 아치창 · 박공 얹은 2층 창 · 이빨 처마) + 기둥 넷 현관 · 문장 새긴 삼각 박공
+	var h := 2 * F2.storey + 0.5
+	var stone := F2.plain("stone", 0)
+	k.box(-3.2, -2.4, 3.2, 1.6, 0.0, h, {"s": C.facade(), "e": C.side(), "w": C.side(), "top": stone}, C.side())
+	k.hip_roof(-3.2, -2.4, 3.2, 1.6, h, 1.3, 0.25, F2.roof(2))
+	chimney(k, -2.2, -1.4, h, h + 1.6)
+	chimney(k, 2.2, -1.4, h, h + 1.6)
+	k.box(-2.3, 1.6, 2.3, 2.75, 0.0, 0.42, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))  # 현관 단
+	for i in 2:
+		k.box(-1.0 - i * 0.18, 2.75 + i * 0.22, 1.0 + i * 0.18, 2.97 + i * 0.22, 0.0, 0.3 - i * 0.14, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))
+	for x: float in [-1.8, -0.6, 0.6, 1.8]:
+		k.box(x - 0.24, 2.2, x + 0.24, 2.66, 0.42, 0.58, {"top": stone}, stone)
+		k.cylinder(x, 2.43, 0.17, 0.58, 2.28, 10, func(i: int) -> Callable: return C.column(i))
+		k.box(x - 0.24, 2.2, x + 0.24, 2.66, 2.28, 2.42, {"top": stone}, stone)
+	k.box(-2.3, 1.6, 2.3, 2.7, 2.42, 2.95, {"s": C.frieze(), "top": stone}, stone)
+	k.gable_roof(-2.3, 1.6, 2.3, 2.7, 2.95, 0.6, false, 0.06, F2.roof(2), C.pediment())
 
 
 static func _town_hall(k: Kit) -> void:

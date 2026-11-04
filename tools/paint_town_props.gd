@@ -7,6 +7,7 @@ extends SceneTree
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Props3D := preload("res://tools/town_kit/Props3D.gd")
 const Deco3D := preload("res://tools/town_kit/Deco3D.gd")
+const Facade := preload("res://tools/town_kit/Facade.gd")
 
 const RAW := "user://town_props"
 const S := 96.0
@@ -52,9 +53,9 @@ func _init() -> void:
 			continue
 		var holder := Node3D.new()
 		if kind in Deco3D.KINDS:
-			Deco3D.build(kind, Kit.new(holder, 64.0))
+			Deco3D.build(kind, Kit.new(holder, Facade.P))
 		else:
-			Props3D.build(kind, Kit.new(holder, 64.0))
+			Props3D.build(kind, Kit.new(holder, Facade.P))
 		shear.add_child(holder)
 		var b := _bounds(holder)  # (x0, y'0, x1, y'1)
 		var half := maxf(absf(b.x), absf(b.z)) + MARGIN

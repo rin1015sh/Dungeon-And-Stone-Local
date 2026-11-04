@@ -8,6 +8,7 @@ extends RefCounted
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Designs := preload("res://tools/town_kit/Designs2.gd")  # Designs + 3차 개선 건물(CT103)
 const Mat := preload("res://tools/city_art/Mat.gd")
+const F := preload("res://tools/town_kit/Facade.gd")
 
 ## 보통 집으로 쓸 바리에이션(탑 · 종탑 · 예배당은 빼고 — 3/4에서는 높이가 줄지 않아 탑처럼 솟는다).
 const HOUSE_FNS := ["_narrow_jetty", "_eaves_dormers", "_tall_hip", "_cross_gable", "_arch_house", "_shop_house2",
@@ -23,7 +24,7 @@ const ZONE_FNS := {
 const ZONE_ROOF := {"civic": ["grey", "dark", "grey"], "market": ["red", "brown", "red", "dark"], "res": ["brown", "dark", "brown", "red", "brown"],
 	"river": ["dark", "grey", "brown"]}
 const TALL := 6.0  ## 이보다 높은 바리에이션은 덜 고른다(칸)
-const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_mansard", "inn": "_inn", "shop": "_shop_house2", "smithy": "_workshop"}
+const FAC_FNS := {"library": "_museum", "guild": "_guild", "temple": "_cathedral", "bank": "_bank", "inn": "_inn", "shop": "_shop_house2", "smithy": "_workshop"}
 ## 퀘스트 자리 집의 꼴(가게는 간판 · 차양, 초소는 돌집, 창고 · 공방은 외쪽지붕 — CT98).
 const PLACE_FNS := {"tavern": "_gallery_house", "herbalist": "_shop_house2", "pawnshop": "_shop_house2", "guard_post": "_mansard",
 	"poorhouse": "_eaves_dormers", "abandoned_house": "_narrow_jetty", "warehouse": "_warehouse", "gate": "_tall_hip"}
@@ -45,7 +46,7 @@ static func template(fn: String) -> Array:
 	if not _tpl.has(fn):
 		Mat.glass_dark = [Color("#4f5e58"), Color("#121816")]  # 창유리: 예전 어두운 녹회색에 아주 조금 청록(CT99)
 		var holder := Node3D.new()
-		var k := Kit.new(holder, 64.0)
+		var k := Kit.new(holder, F.P)  # 면 그림 해상도 = 붓 기준(Facade.P — CT109: 64로 남아 장식이 1.5배로 부풀었다)
 		Designs.new().call(fn, k)
 		_tpl[fn] = [holder, k.lo, k.hi]
 	return _tpl[fn]

@@ -502,6 +502,9 @@ func _city(city: CityScreen) -> void:
 		city.town().facing = faces.get(str(_args.get("face", "down")), Vector2i.DOWN)
 	if _args.has("door"):  # --door=<시설 id>: 그 문 앞에서 문을 본다
 		city.town().stand_before(str(_args["door"]))
+	if _args.has("zoom"):  # --zoom=<배율>: 동네 카메라 배율만 바꿔 찍는다(건물 전체 보기 — 그림 확인용)
+		for c: Node in city.town().find_children("*", "Camera2D", true, false):
+			(c as Camera2D).zoom = Vector2.ONE * str(_args["zoom"]).to_float()
 	await _frames(3)
 	if _args.has("travel"):  # --travel: 구역문에서 Enter — 특별 시설로 가는 창(CT63)
 		city.offer_travel()

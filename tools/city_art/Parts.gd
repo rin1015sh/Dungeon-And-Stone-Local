@@ -64,8 +64,23 @@ static func window(p: Paint, x: float, y: float, ww: float, wh: float, style: St
 	for i in rows:
 		var yy := y + wh * (i + 1) / (rows + 1.0)
 		Ink.line(p, Vector2(x, yy), Vector2(x + ww, yy), 2.0, BAR, 0.95, 0.3)
+	if lit:  # 커튼(안쪽 양옆 천 — 따뜻한 창에 사는 느낌, CT109)
+		for s: float in [0.0, 1.0]:
+			var cw := ww * 0.26
+			var cx0 := x + (0.0 if s == 0.0 else ww - cw)
+			var cur := Paint.poly([Vector2(cx0, y + 2), Vector2(cx0 + cw, y + 2), Vector2(cx0 + cw * (0.55 if s == 0.0 else 0.45), y + wh), Vector2(cx0 + (0.0 if s == 0.0 else cw), y + wh)])
+			p.fill_poly(cur, p.flat(Color("#7a3a28"), 0.12), 0.85)
+			Ink.line(p, Vector2(cx0 + cw * 0.5, y + 4), Vector2(cx0 + cw * 0.5, y + wh - 4), 0.8, Color("#4a2018"), 0.5, 0.3)
 	Ink.path(p, inner, 1.6)
 	Ink.path(p, outer, LINE)
+	if style == "square":  # 돌 인방 + 가운데 쐐기돌(CT109)
+		var lin := Paint.rect_poly(x - f - 4, y - f - 9, ww + f * 2.0 + 8, 9)
+		p.fill_poly(lin, p.flat(FRAME.lightened(0.12), 0.12))
+		Ink.shade(p, lin, Vector2(0, y - f - 9), Vector2(0, y - f), 0.0, 0.3)
+		Ink.path(p, lin, 1.4)
+		var key := Paint.poly([Vector2(x + ww * 0.5 - 6, y - f - 11), Vector2(x + ww * 0.5 + 6, y - f - 11), Vector2(x + ww * 0.5 + 4, y - f + 1), Vector2(x + ww * 0.5 - 4, y - f + 1)])
+		p.fill_poly(key, p.flat(FRAME.lightened(0.2), 0.1))
+		Ink.path(p, key, 1.2)
 	Ink.grime(p, x - f, y + wh + f + 5, ww + f * 2.0, 70.0, 0.45)
 	var sill := Paint.rect_poly(x - f - 3, y + wh + f, ww + f * 2.0 + 6, 5)
 	p.fill_poly(sill, p.flat(FRAME.lightened(0.08), 0.15))
@@ -91,7 +106,19 @@ static func door(p: Paint, x: float, y: float, dw: float, dh: float, arch: bool 
 	p.fill_poly(inner, Mat.planks(p, wood, int(x), int(y), true, int(maxf(8.0, dw / 4.0))))
 	Ink.shade(p, inner, Vector2(0, y), Vector2(0, y + 26), 0.6, 0.05)
 	for by: float in [y + dh * 0.38, y + dh * 0.78]:
-		Ink.line(p, Vector2(x + 2, by), Vector2(x + dw - 2, by), 4.0, IRON, 0.95, 0.2)
+		Ink.line(p, Vector2(x + 2, by), Vector2(x + dw * 0.72, by), 4.0, IRON, 0.95, 0.2)
+		for k in 2:  # 소용돌이 경첩 끝(CT109)
+			var cc := Vector2(x + dw * (0.74 + k * 0.08), by + (-5.0 if k == 0 else 5.0))
+			var curl := PackedVector2Array()
+			for i in 10:
+				curl.append(cc + Vector2.from_angle(TAU * i / 12.0 + (0.0 if k == 0 else PI)) * (6.0 - i * 0.4))
+			Ink.path(p, curl, 1.6, false, IRON, 0.95, 0.1)
+		for k in 3:  # 못 머리
+			Ink.glow(p, x + 6 + k * dw * 0.25, by, 1.6, Color("#5a564e"), 0.9)
+	var ring := PackedVector2Array()  # 문고리
+	for i in 14:
+		ring.append(Vector2(x + dw * 0.5, y + dh * 0.52) + Vector2.from_angle(TAU * i / 14.0) * 5.0)
+	Ink.path(p, ring, 1.8, true, Color("#6a5a3a"), 1.0, 0.1)
 	Ink.glow(p, x + dw * 0.75, y + dh * 0.58, 3.0, Color("#c9a24a"), 0.8)
 	Ink.path(p, inner, 1.8)
 	if lit_gap:

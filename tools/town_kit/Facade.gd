@@ -94,13 +94,57 @@ static func wall(o: Dictionary) -> Callable:
 					Ink.path(p, sw, Parts.LINE)
 					continue
 				var lit := Paint.hash01(ci * 31 + k, fl, 7) < float(o.get("lit", 0.42))  # 따뜻한 창빛을 조금 더(CT103)
-				var ww := P * 0.32
-				var wh := fh * 0.42
+				var ww := P * 0.4  # 창 = 사람 키의 2/3쯤(CT109)
+				var wh := fh * 0.56
 				Parts.window(p, cx - ww * 0.5, top + fh * 0.24, ww, wh, str(o.get("win", "square")), lit, bool(o.get("shutters", false)))
 				if bool(o.get("flowers", false)) and fl == 1 and k % 2 == 0:
 					Dress._flower_box(p, Rect2(cx - ww * 0.5, top + fh * 0.24, ww, wh), k)
 		if not str(o.get("sign", "")).is_empty():
 			Parts.sign(p, r.position.x + W * 0.78, g - base - fh * 0.98, str(o["sign"]), 1.0, P * 0.42)
+		_extras(p, r, g, base, fh, floors, style, ci, door_k >= 0)
+
+
+## 벽 잔손질(CT109 — "세부적인 요소들을 넣어서"): 집마다 몇 가지만(집 번호 · 벽 폭으로 정한 값 — 무작위가 아니다)
+##   홈통(오른쪽 끝 세로 관 · 쇠 띠) · 문 곁 벽등 · 밑동 담쟁이 · 회벽 잔금 · 환기 구멍.
+static func _extras(p: Paint, r: Rect2, g: float, base: float, fh: float, floors: int, style: String, ci: int, has_door: bool) -> void:
+	var h := Paint.hash01(ci * 13 + int(r.size.x), floors, 41)
+	var top := g - base - floors * fh
+	if h < 0.55 and floors >= 2:
+		var px := r.end.x - P * 0.12
+		var pipe := Paint.rect_poly(px - 4, top + 4, 8, g - top - 8)
+		p.fill_poly(pipe, p.flat(Color("#4a4842"), 0.1))
+		Ink.shade(p, pipe, Vector2(px - 4, 0), Vector2(px + 4, 0), 0.0, 0.4)
+		Ink.path(p, pipe, 1.2)
+		var yy := top + fh * 0.5
+		while yy < g - 10:
+			Ink.line(p, Vector2(px - 7, yy), Vector2(px + 7, yy), 2.4, Color("#2a2622"), 1.0, 0.1)
+			yy += fh * 0.8
+		var shoe := Paint.poly([Vector2(px - 4, g - 8), Vector2(px + 4, g - 8), Vector2(px + 12, g - 2), Vector2(px - 4, g - 2)])
+		p.fill_poly(shoe, p.flat(Color("#4a4842"), 0.1))
+		Ink.path(p, shoe, 1.0)
+	if has_door and Paint.hash01(ci, int(r.size.x), 43) < 0.6:
+		Parts.lantern(p, r.position.x + r.size.x * (0.3 if h > 0.5 else 0.7), g - base - fh * 0.72, 1.1)
+	if Paint.hash01(ci * 7, int(r.size.x), 47) < 0.3:  # 담쟁이(밑동에서 위로 번진 잎 무리)
+		var vx := r.position.x + r.size.x * (0.08 + Paint.hash01(ci, 3, 49) * 0.2)
+		for i in 110:
+			var t := sqrt(float(i) / 110.0)
+			var lx := vx + (Paint.hash01(i, ci, 51) - 0.5) * P * (0.3 + t * 0.7)
+			var ly := g - 4 - t * fh * minf(2.2, floors * 0.9)
+			var rr := 2.5 + Paint.hash01(i, 5, 52) * 2.5
+			var leaf := PackedVector2Array()
+			for j in 7:
+				leaf.append(Vector2(lx, ly) + Vector2.from_angle(TAU * j / 7.0) * rr * (1.0 if j % 2 == 0 else 0.7))
+			p.fill_poly(leaf, p.flat(Color("#3e4a2a").lightened(Paint.hash01(i, 7, 53) * 0.2), 0.1))
+			Ink.path(p, leaf, 0.6, true, Color("#1e2414"), 0.6, 0.1)
+	if style in ["plaster", "timber"]:  # 회벽 잔금
+		for i in 3:
+			var cx := r.position.x + r.size.x * Paint.hash01(i, ci, 55)
+			var cy := top + (g - top) * Paint.hash01(i, ci, 57)
+			var a := Vector2(cx, cy)
+			for j in 4:
+				var b := a + Vector2((Paint.hash01(i * 4 + j, ci, 59) - 0.5) * 22.0, 8.0 + Paint.hash01(j, i, 61) * 10.0)
+				Ink.line(p, a, b, 0.8, Color("#4a3e30"), 0.6, 0.4)
+				a = b
 
 
 ## 박공 삼각·지붕창 앞벽: 회벽(또는 돌) + 가운데 작은 창, 반목조면 가운데 들보.
