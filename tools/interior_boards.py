@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """도시 건물 실내 v2 기획 배치도 — docs/plans/interiors/boards.json → <id>.png · all.png + 검사.
 
-검사: 줄 길이가 같다 · 문(D)에서 모든 활동 자리 앞 칸에 걸어서 닿는다 · 한 화면(30×16칸)에 들어간다 ·
-문에서 가장 먼 활동 자리까지 걷는 시간(4.5칸/초). 기획용 도구 — 게임은 이 파일을 읽지 않는다.
+검사: 줄 길이가 같다 · 문(D)에서 모든 활동 자리 앞 칸에 걸어서 닿는다 · 방(벽과 방 사이 문으로 나뉜 곳)마다
+한 화면(30×16칸)에 들어간다 — 게임에서는 플레이어가 있는 방만 보인다 · 문에서 활동 자리마다 걷는 시간(4.5칸/초).
+기획용 도구 — 게임은 이 파일을 읽지 않는다.
 """
 import json
 from collections import deque
@@ -20,7 +21,7 @@ WALK = 4.5             # city.json town.walk_tiles_per_sec
 COLORS = {
     "#": (58, 52, 50), ".": (196, 182, 156), "D": (120, 168, 205),
     "wall": (150, 112, 84), "block": (122, 96, 70), "low": (214, 200, 168),
-    "npc": (226, 214, 190), "act": (206, 150, 70), "back": (150, 140, 120),
+    "npc": (226, 214, 190), "act": (206, 150, 70), "back": (150, 140, 120), "door": (150, 200, 160), "wallact": (206, 150, 70),
 }
 WALKABLE = {".", "D"}
 
@@ -29,6 +30,30 @@ def kind(room: dict, ch: str) -> str:
     if ch in ("#", ".", "D"):
         return ch
     return room["legend"][ch][1]
+
+
+def rooms_of(room: dict) -> list[list[tuple[int, int]]]:
+    """벽 · 벽 장식 · 문으로 나뉜 칸 덩어리 = 방."""
+    rows = room["rows"]
+    w, h = len(rows[0]), len(rows)
+    inside = lambda x, y: rows[y][x] not in ("#", "D") and kind(room, rows[y][x]) not in ("wall", "door", "wallact")
+    seen, out = set(), []
+    for y in range(h):
+        for x in range(w):
+            if (x, y) in seen or not inside(x, y):
+                continue
+            cells, q = [], deque([(x, y)])
+            seen.add((x, y))
+            while q:
+                cx, cy = q.popleft()
+                cells.append((cx, cy))
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    nx, ny = cx + dx, cy + dy
+                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in seen and inside(nx, ny):
+                        seen.add((nx, ny))
+                        q.append((nx, ny))
+            out.append(cells)
+    return out
 
 
 def check(rid: str, room: dict) -> list[str]:
@@ -43,7 +68,7 @@ def check(rid: str, room: dict) -> list[str]:
             msgs.append(f"{rid}: 범례에 없는 글자 {ch!r}")
     if msgs:
         return msgs
-    walk = lambda x, y: rows[y][x] in WALKABLE or kind(room, rows[y][x]) == "low"
+    walk = lambda x, y: rows[y][x] in WALKABLE or kind(room, rows[y][x]) in ("low", "door")
     start = [(x, h - 1) for x in range(w) if rows[h - 1][x] == "D"]
     dist = {p: 0 for p in start}
     q = deque(start)
@@ -54,8 +79,8 @@ def check(rid: str, room: dict) -> list[str]:
             if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in dist and walk(nx, ny):
                 dist[(nx, ny)] = dist[(x, y)] + 1
                 q.append((nx, ny))
-    far = 0
-    for ch in room["acts"]:
+    times = []
+    for ch, acts in room["acts"].items():
         best = None
         for y in range(h):
             for x in range(w):
@@ -65,14 +90,27 @@ def check(rid: str, room: dict) -> list[str]:
         if best is None:
             msgs.append(f"{rid}: 활동 자리 {ch!r} 앞에 닿지 못한다")
         else:
-            far = max(far, best)
+            times.append(f"{room['legend'][ch][0]} {best / WALK:.1f}초")
     floor = sum(1 for r in rows for c in r if c != "#")
     unreached = sum(1 for y in range(h) for x in range(w) if walk(x, y) and (x, y) not in dist)
     if unreached:
         msgs.append(f"{rid}: 닿지 않는 바닥 {unreached}칸")
-    fits = w <= SCREEN[0] and h + 2 <= SCREEN[1]   # 북벽 앞면이 위로 약 2칸 솟는다
-    print(f"{rid:8s} {w:2d}×{h:2d}칸 · 바닥 {floor:3d} · 한 화면 {'예' if fits else '아니오'} · "
-          f"문 → 가장 먼 활동 {far}칸({far / WALK:.1f}초)")
+    names = {}
+    for x, y, name in room.get("room_names", []):
+        names[(x, y)] = name
+    print(f"{rid:8s} 전체 {w}×{h}칸 · 바닥 {floor}")
+    for cells in rooms_of(room):
+        xs = [c[0] for c in cells]
+        ys = [c[1] for c in cells]
+        rw, rh = max(xs) - min(xs) + 3, max(ys) - min(ys) + 3   # 둘레 벽 포함
+        name = next((names[c] for c in cells if c in names), "?")
+        if name == "?":
+            msgs.append(f"{rid}: 이름 없는 방({min(xs)}, {min(ys)})")
+        fits = rw <= SCREEN[0] and rh + 2 <= SCREEN[1]   # 북벽 앞면이 위로 약 2칸 솟는다
+        if not fits:
+            msgs.append(f"{rid}: 방 '{name}' {rw}×{rh}칸이 한 화면을 넘는다")
+        print(f"    방 {name:8s} {rw:2d}×{rh:2d}칸 · 바닥 {len(cells):3d}")
+    print("    문 → " + " · ".join(times))
     return msgs
 
 
@@ -94,8 +132,12 @@ def draw(rid: str, room: dict) -> Image.Image:
             x0, y0 = pad + x * CELL, top + y * CELL
             d.rectangle([x0, y0, x0 + CELL - 1, y0 + CELL - 1], fill=COLORS[k], outline=(40, 36, 34))
             if ch not in ("#", "."):
-                tc = (30, 24, 20) if k in ("npc", "act", "low", "D") else (240, 230, 210)
+                tc = (30, 24, 20) if k in ("npc", "act", "wallact", "low", "door", "D") else (240, 230, 210)
                 d.text((x0 + CELL / 2, y0 + CELL / 2), ch, font=small, fill=tc, anchor="mm")
+    for x, y, name in room.get("room_names", []):
+        if len(room.get("room_names", [])) > 1:
+            d.text((pad + x * CELL + CELL / 2, top + y * CELL + CELL / 2), name, font=font,
+                   fill=(250, 245, 235), anchor="mm", stroke_width=3, stroke_fill=(40, 30, 25))
     lx = pad * 2 + w * CELL
     for i, (ch, name, k) in enumerate(leg):
         y0 = top + i * 20
