@@ -79,7 +79,7 @@ func test_ignores_facing_and_walls() -> void:
 	var away := _place(fm, "deadman", Vector2i(34, 30), Vector2(1, 0))
 	for x in range(26, 35):
 		fm._map.set_tile(Vector2i(x, 26), "rock_wall")
-	var walled := _place(fm, "deadman", Vector2i(30, 24), Vector2(0, -1))
+	var walled := _place(fm, "deadman", Vector2i(30, 25), Vector2(0, -1))  # 화면 반높이(확대 2.0 → 5.1칸) 안쪽
 	fm._map.set_tile(Vector2i(25, 30), "bf_tent")
 	var behind_prop := _place(fm, "deadman", Vector2i(21, 30), Vector2(1, 0))
 	fm.set_player_moving(false)
@@ -94,18 +94,18 @@ func test_moving_around_keeps_aggro() -> void:
 	var fm := _room()
 	for c: Vector2i in [Vector2i(28, 28), Vector2i(32, 28), Vector2i(28, 32), Vector2i(32, 32), Vector2i(30, 26), Vector2i(30, 34)]:
 		fm._map.set_tile(c, "rock_wall")
-	var g := _place(fm, "slime", Vector2i(37, 30), Vector2(1, 0))  # 느린 몬스터(닿기 전에 오래 쫓게)
+	var g := _place(fm, "slime", Vector2i(36, 30), Vector2(1, 0))  # 느린 몬스터(닿기 전에 오래 쫓게)
 	g.guard = false
 	var mh := float(db.bal("explore.move_hours_base"))
 	var loop: Array[Vector2i] = []
-	for x in range(26, 35):
+	for x in range(27, 35):  # 화면 반폭(확대 2.0 → 9.5칸) 안에서 도는 고리
 		loop.append(Vector2i(x, 30))
 	for y in range(30, 25, -1):
 		loop.append(Vector2i(34, y))
-	for x in range(34, 25, -1):
+	for x in range(34, 26, -1):
 		loop.append(Vector2i(x, 25))
 	for y in range(25, 31):
-		loop.append(Vector2i(25, y))
+		loop.append(Vector2i(27, y))
 	fm.set_player_moving(true)
 	var t := 0.0
 	var lost := ""
