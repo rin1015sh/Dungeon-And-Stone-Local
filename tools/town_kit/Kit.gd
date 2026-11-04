@@ -12,6 +12,10 @@ var P := 96.0
 var _n := 0
 ## 지금 짓는 면이 지붕인가(지붕 함수 안에서만 켠다 — 굽는 쪽이 집마다 지붕 색을 따로 입힌다, CT98).
 var _roof := false
+## 문 앞 디딤돌 자리(Designs.step — 집 문이 지도 어디에 있는지 뽑는 데 쓴다, CT110).
+var doors: Array[Vector3] = []
+## 그림 없이 꼴만(면 그림 · 메시를 만들지 않는다 — tools/town_doors.gd).
+static var dry := false
 ## 지은 것의 범위(카메라 맞추기).
 var lo := Vector3(INF, INF, INF)
 var hi := Vector3(-INF, -INF, -INF)
@@ -23,6 +27,11 @@ func _init(p_root: Node3D, p_px: float = 64.0) -> void:
 
 
 func face(pts: PackedVector3Array, hint: Vector3, painter: Callable) -> void:
+	if dry:
+		for q in pts:
+			lo = lo.min(q)
+			hi = hi.max(q)
+		return
 	var n := Vector3.ZERO
 	for i in pts.size():  # 뉴웰 법선, 바깥쪽(hint)으로
 		var qa := pts[i]

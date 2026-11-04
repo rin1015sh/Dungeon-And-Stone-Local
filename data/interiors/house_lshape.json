@@ -1,0 +1,89 @@
+{
+ "id": "house_lshape",
+ "facility": "",
+ "name_ko": "ㄱ자 집",
+ "art_dir": "res://assets/city/interiors/house_lshape",
+ "rows": [
+  "#RRRR#######",
+  "#....#######",
+  "#..qq#######",
+  "##+###HH#PP#",
+  "#..........#",
+  "#.tt...kk..#",
+  "#.tt.......#",
+  "#.........s#",
+  "#####DD#####"
+ ],
+ "legend": {
+  "R": {
+   "kind": "wallart",
+   "name_ko": "술통 선반",
+   "art": "barrel_shelf"
+  },
+  "q": {
+   "kind": "furniture",
+   "name_ko": "자루",
+   "art": "sack"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "H": {
+   "kind": "wallart",
+   "name_ko": "아궁이와 솥",
+   "art": "cook_hearth",
+   "light": {
+    "color": "#ff9a48",
+    "radius": 5.0,
+    "power": 0.85
+   }
+  },
+  "P": {
+   "kind": "wallart",
+   "name_ko": "그릇 선반",
+   "art": "plate_shelf"
+  },
+  "t": {
+   "kind": "furniture",
+   "name_ko": "식탁",
+   "art": "table"
+  },
+  "k": {
+   "kind": "furniture",
+   "name_ko": "걸상",
+   "art": "stool"
+  },
+  "s": {
+   "kind": "furniture",
+   "name_ko": "세면대",
+   "art": "washstand"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    2,
+    1
+   ],
+   "name_ko": "식료품 칸",
+   "floor": "dirt",
+   "wall": "plaster",
+   "ambient": 0.45
+  },
+  {
+   "at": [
+    5,
+    5
+   ],
+   "name_ko": "부엌",
+   "floor": "terracotta",
+   "wall": "plaster",
+   "ambient": 0.62
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

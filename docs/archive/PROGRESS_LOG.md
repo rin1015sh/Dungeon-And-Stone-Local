@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **일반 집 실내 8종 · 잠김 (2026-11-04, CT110)**: 한 일 = ASSUMPTIONS CT110. 코드: `Kit.doors`(Designs.step이 남김) · `Kit.dry`(그림 없이 꼴만) · HouseFit meta doors · design → `tools/town_doors.gd` → doors.json, `TownHouseDoors` → `TownMap.house_doors` · `target`(위를 볼 때 {house, design}) · `house_door_front`, `TownView` house_chosen · 잠김이면 told, `CityScreen.visit_house` · `InteriorView.setup_house` · `CityInterior.load_id`, `CityInteriorRules`(시설 없는 실내 · house_kinds 참조), screenshot `--house=<실내 id>`. 시험: test_city_interior `test_house_doors_locked_and_kinds`, UI 스모크 '일반 집 문 앞 Enter = 잠겨 있다'. 확인: 굽힌 그림 · 캡처(처마집 · 저택 · 공방). 남은 것: 집에 사람 · 뒤질 것 · 사건, 문 없는 집 34채.
+
 - **건물 다시 짓기 (2026-11-04, 사용자 "세부적인 요소들을 넣어서 건물을 다시 그리라는 소리였는데 — 신전 같은 것들 흰 벽돌 쌓아 놓은 것처럼만 보인다", CT109)**: 신전을 넓게 찍어 보니 종탑 · 본당 · 옆 회랑 상자 셋에 창 몇 개. 한 일 = ASSUMPTIONS CT109(고딕 성당 · 신고전 은행 · 집 부품 · 키트 해상도). 시험 굽기: `paint_town_hand.gd --only=h70`(신전) · h74(은행) · h3(보통 집) → `town_hand_bake.py h70` → user://town_bake/h70.png를 바로 본다(그림판 묶기 전). 집 한 채 약 70초(면 그림 96px라 두 배), 77채 넷 동시 약 25분. 확인: 굽힌 그림 · 동네 캡처(`--zoom=1.0`으로 건물 전체 — screenshot 새 옵션). 남은 것: 도서관 · 길드 · 여관 · 상점 고유 장식 더(지금은 집 부품 잔손질만), 대장간은 CT105대로.
 
 - **동네 그림 세밀하게 (2026-11-04, 사용자 "도시 전체가 그래픽이 플레이어랑 안 맞는데? 플레이어처럼 더 세부적 묘사 안 됨?", CT108)**: 원래 크기로 잘라 견줘 보니 ① 쿠와하라 두 번이 돌 · 기와 무늬를 뭉갬 ② 밝기 0.5 아래면 굵은 사선 빗금(차양 붉은 줄까지) ③ 무늬 크기가 동네 2배(CT107)와 함께 커져 돌 한 장 ≈ 사람 키 절반. 한 일: `town_handdrawn.finish(fine=True)` 세밀 판(위 ASSUMPTIONS CT108) — town_hand_bake(집 · 소품) · town_ground_bake · interior_bake가 쓴다, Facade 무늬 크기 줄임 · 기와 입체. 다시 구움: 집 77채(약 3분 넷 동시) → 마감 → 그림판 34장, 소품 30, 바닥 150조각(약 10분), 실내 7. 확인: 캡처(상점 · 신전 · 여관 앞). 남은 것: 차양 주름 · 회벽 잔 무늬 · 여관 막돌 1층이 바닥 자갈과 비슷해 보이는 것.

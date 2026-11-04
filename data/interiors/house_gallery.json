@@ -1,0 +1,99 @@
+{
+ "id": "house_gallery",
+ "facility": "",
+ "name_ko": "회랑 집",
+ "art_dir": "res://assets/city/interiors/house_gallery",
+ "rows": [
+  "#OO###OO###OO#",
+  "#bb.bb..bb.bb#",
+  "#............#",
+  "#HH##I+##GG###",
+  "#............#",
+  "#..oo....oo..#",
+  "#............#",
+  "#.nnn....qq..#",
+  "######DD######"
+ ],
+ "legend": {
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "b": {
+   "kind": "furniture",
+   "name_ko": "짚 침대",
+   "art": "cot"
+  },
+  "H": {
+   "kind": "wallart",
+   "name_ko": "아궁이와 솥",
+   "art": "cook_hearth",
+   "light": {
+    "color": "#ff9a48",
+    "radius": 5.0,
+    "power": 0.85
+   }
+  },
+  "I": {
+   "kind": "wallart",
+   "name_ko": "초상화",
+   "art": "portrait"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "G": {
+   "kind": "wallart",
+   "name_ko": "매단 약초",
+   "art": "herbs"
+  },
+  "o": {
+   "kind": "furniture",
+   "name_ko": "원탁 · 걸상",
+   "art": "round_table"
+  },
+  "n": {
+   "kind": "furniture",
+   "name_ko": "긴 의자",
+   "art": "bench"
+  },
+  "q": {
+   "kind": "furniture",
+   "name_ko": "자루",
+   "art": "sack"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    3,
+    2
+   ],
+   "name_ko": "침상 방",
+   "floor": "honey",
+   "wall": "plaster",
+   "ambient": 0.5
+  },
+  {
+   "at": [
+    5,
+    4
+   ],
+   "name_ko": "공동 방",
+   "floor": "honey",
+   "wall": "plaster",
+   "ambient": 0.6
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

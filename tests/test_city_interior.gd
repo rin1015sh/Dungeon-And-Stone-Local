@@ -70,3 +70,27 @@ func test_temple_rooms_and_side_spots() -> void:
 	assert_eq(str(r.rooms[r.room_at(Kinematics.cell_of(r.start()))]["name_ko"]), "전실", "들어오면 전실")
 	assert_true((r.target(Vector2(1.5, 14.5), Vector2i.UP).get("acts", []) as Array).has("temple_service"), "봉헌 곁방 촛대 = 봉사활동")
 	assert_true((r.target(Vector2(10.5, 3.5), Vector2i.UP).get("acts", []) as Array).has("temple_remove_essence"), "제단 = 정수 제거")
+
+
+func test_house_doors_locked_and_kinds() -> void:
+	var town := TownMap.load_for(db)
+	assert_true(town.house_doors.size() >= 20, "일반 집 문이 지도에 있다(tools/town_doors.gd — CT110)")
+	var kinds := JsonUtil.get_dict(JsonUtil.get_dict(db.singletons.get("city", {}), "interior"), "house_kinds")
+	var used := {}
+	for c: Vector2i in town.house_doors:
+		var e: Dictionary = town.house_doors[c]
+		assert_false(town.is_walkable(c), "문 칸은 집: %s" % e["house"])
+		assert_true(town.is_walkable(c + Vector2i.DOWN), "문 앞은 길: %s" % e["house"])
+		assert_true(kinds.has(str(e["design"])), "집 바리에이션마다 실내: " + str(e["design"]))
+		used[JsonUtil.get_str(kinds, str(e["design"]))] = true
+		var t := town.target(Vector2(c) + Vector2(0.5, 1.5), Vector2i.UP)
+		assert_eq(str(t.get("house", "")), str(e["house"]), "문 앞에서 위를 보면 그 집")
+	var ids := {}
+	for d: String in kinds:
+		ids[JsonUtil.get_str(kinds, d)] = true
+	assert_eq(ids.size(), 8, "집 실내는 8가지(바리에이션을 생김새로 묶어 돌려 쓴다)")
+	assert_true(JsonUtil.get_bool(JsonUtil.get_dict(db.singletons.get("city", {}), "interior"), "houses_locked"), "지금은 잠겨 있다")
+	var s := _state()
+	for iid: String in ids:
+		var r := CityInterior.load_id(s, iid)
+		assert_true(r != null and r.rooms.size() >= 1 and r.spots.is_empty(), "집 실내 %s: 방 · 활동 없음" % iid)

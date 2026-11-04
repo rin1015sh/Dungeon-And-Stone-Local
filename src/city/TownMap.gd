@@ -31,6 +31,8 @@ var houses: Array[Dictionary] = []
 var props: Array[Dictionary] = []
 ## 문 칸 → 시설 id(문 칸과 좌우 한 칸씩).
 var doors: Dictionary = {}
+## 일반 집 문(칸 → {house, design} — TownHouseDoors, CT110).
+var house_doors: Dictionary = {}
 ## 구역문 칸 → {id, travel}
 var gates: Dictionary = {}
 ## 광장 돌 단 {center: Vector2i, r}
@@ -77,6 +79,7 @@ func _build(db: GameDatabase, map_id: String, cfg: Dictionary) -> void:
 		_explicit_house(e as Dictionary, rng)
 	for b: Variant in JsonUtil.get_array(def, "buildings"):
 		_building(b as Dictionary, rng)
+	house_doors = TownHouseDoors.load_cells()
 	for b: Variant in JsonUtil.get_array(def, "blocks"):
 		_block(b as Array, rng)
 	for p: Variant in JsonUtil.get_array(def, "props"):
@@ -138,11 +141,13 @@ func is_walkable(c: Vector2i) -> bool:
 	return kind_at(c) in WALK
 
 
-## 몸(칸 좌표 pos)이 facing 쪽으로 바라보는 것: {door: 시설 id} · {gate: id, travel} · {ring: true} · {}.
+## 몸(칸 좌표 pos)이 facing 쪽으로 바라보는 것: {door: 시설 id} · {house: 집 id, design} · {gate: id, travel} · {ring: true} · {}.
 func target(pos: Vector2, facing: Vector2i) -> Dictionary:
 	var c := Kinematics.cell_of(pos) + facing
 	if doors.has(c):
 		return {"door": doors[c]}
+	if facing == Vector2i.UP and house_doors.has(c):
+		return (house_doors[c] as Dictionary).duplicate()
 	if gates.has(c):
 		return (gates[c] as Dictionary).duplicate()
 	if kind_at(c) == "dais":
@@ -156,6 +161,14 @@ func door_front(facility_id: String) -> Vector2:
 		if str(h.get("facility", "")) == facility_id:
 			var d: Vector2i = h["door"]
 			return Vector2(d.x + 0.5, d.y + 1.5)
+	return Vector2(start) + Vector2(0.5, 0.5)
+
+
+## 일반 집 문 앞(칸 좌표 몸 중심 — 없으면 들어온 자리).
+func house_door_front(house_id: String) -> Vector2:
+	for c: Vector2i in house_doors:
+		if str((house_doors[c] as Dictionary)["house"]) == house_id:
+			return Vector2(c.x + 0.5, c.y + 1.5)
 	return Vector2(start) + Vector2(0.5, 0.5)
 
 

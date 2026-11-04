@@ -139,7 +139,12 @@
     ]
   },
   "facility_entry_cost": 1,
-  "interior": {"_comment": "시설 실내(CT106 — data/interiors): max_room = 방 하나(둘레 벽 포함)의 가로 · 세로 칸 상한(한 화면 — 칸 32px × 도시 zoom). walk_tiles_per_sec · body_half · corner_assist = 실내 걷기(동네 town과 따로 — 실내 칸이 사람에 견줘 더 크다). 충돌 칸은 town 것.", "max_room": [30, 14], "walk_tiles_per_sec": 4.5, "body_half": 0.3, "corner_assist": 0.8},
+  "interior": {"_comment": "시설 실내(CT106 — data/interiors): max_room = 방 하나(둘레 벽 포함)의 가로 · 세로 칸 상한(한 화면 — 칸 32px × 도시 zoom). walk_tiles_per_sec · body_half · corner_assist = 실내 걷기(동네 town과 따로 — 실내 칸이 사람에 견줘 더 크다). 충돌 칸은 town 것.", "max_room": [30, 14], "walk_tiles_per_sec": 4.5, "body_half": 0.3, "corner_assist": 0.8,
+    "_houses_comment": "일반 집(CT110 — 사용자 2026-11-04 \"일반 건물도 내부 — 집 형태 보고 8개쯤 만들어 돌려 막기, 다만 게임에서는 일단 잠겨 있다고\"): houses_locked = 일반 집 문 앞 Enter가 '잠겨 있다.'만(false면 그 집 실내로 — 행동력은 쓰지 않는다), house_kinds = 집 바리에이션(assets/town/houses/doors.json design — tools/town_doors.gd) → data/interiors id.",
+    "houses_locked": true,
+    "house_kinds": {"_narrow_jetty": "house_narrow", "_row_timber": "house_narrow", "_eaves_dormers": "house_cottage", "_tall_hip": "house_townhouse", "_manor": "house_townhouse", "_town_hall": "house_townhouse",
+      "_cross_gable": "house_lshape", "_arch_house": "house_lshape", "_shop_house2": "house_shopfront", "_corner_shop": "house_shopfront", "_gallery_house": "house_gallery",
+      "_mansard": "house_merchant", "_step_gable": "house_merchant", "_workshop": "house_workshop", "_warehouse": "house_workshop"}},
   "town": {
     "_comment": "도시 동네 지도(2D 3/4 탑뷰 — 횡스크롤 거리 대신, 2026-11-02 사용자 \"7구역 전체 · M0 시제품\", CT82): map = data/town/<id>.json. 걷는 빠르기(칸/초) · 몸 반 폭(칸) · 모서리 미끄러짐 · 계단 칸 빠르기 배율(계단 위에서는 좌우를 막는다) · 충돌 지도에 쓰는 타일(data/tiles). 거리에서 통·상자는 뒤지지 않는다(사용자 2026-11-02). 동네를 사람 대비 2배로 키우며(CT107) 걷기 4.5 → 2.25칸/초(화면 속 빠르기는 그대로) · 몸 반 폭 0.3 → 0.15 · 모서리 0.8 → 0.4. 값은 임시값.",
     "map": "district7",

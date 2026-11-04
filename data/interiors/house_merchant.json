@@ -1,0 +1,104 @@
+{
+ "id": "house_merchant",
+ "facility": "",
+ "name_ko": "상인 집",
+ "art_dir": "res://assets/city/interiors/house_merchant",
+ "rows": [
+  "#QQQ##OO##QQQ#",
+  "#............#",
+  "#.zz......zz.#",
+  "#BB###+#K##OO#",
+  "#............#",
+  "#...ddd....x.#",
+  "#..........c.#",
+  "#.k..........#",
+  "######DD######"
+ ],
+ "legend": {
+  "Q": {
+   "kind": "wallart",
+   "name_ko": "서류 칸 벽",
+   "art": "doc_wall"
+  },
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "z": {
+   "kind": "furniture",
+   "name_ko": "궤짝 더미",
+   "art": "crates"
+  },
+  "B": {
+   "kind": "wallart",
+   "name_ko": "책장",
+   "art": "bookshelf"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "K": {
+   "kind": "wallart",
+   "name_ko": "벽시계",
+   "art": "clock"
+  },
+  "d": {
+   "kind": "furniture",
+   "name_ko": "집무 책상",
+   "art": "librarian_desk",
+   "light": {
+    "color": "#ffc070",
+    "radius": 2.5,
+    "power": 0.5
+   }
+  },
+  "x": {
+   "kind": "furniture",
+   "name_ko": "쇠 금고",
+   "art": "strongbox"
+  },
+  "c": {
+   "kind": "furniture",
+   "name_ko": "궤짝",
+   "art": "chest"
+  },
+  "k": {
+   "kind": "furniture",
+   "name_ko": "걸상",
+   "art": "stool"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    5,
+    1
+   ],
+   "name_ko": "문서고",
+   "floor": "oak",
+   "wall": "ashlar",
+   "ambient": 0.45
+  },
+  {
+   "at": [
+    5,
+    4
+   ],
+   "name_ko": "집무실",
+   "floor": "oak",
+   "wall": "ashlar",
+   "ambient": 0.62
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

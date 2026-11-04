@@ -4,7 +4,7 @@ extends Node
 ## --prof=<초>: (--rift 등으로 자리를 잡은 뒤) W/A/S/D를 돌려 누르며 걷고 프레임 시간(평균·95%·99%·최대·16.7ms·50ms 넘는 수)·그리기 호출을 찍고 끝(렉 찾기 — CT73)
 ## --screen=coin [--tails] [--frames=N] --out=<폴더>: 동전 연출을 N 시각마다 찍는다(V25)
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
-## city: --facility=<id> --in_at=x,y [--face=…] 실내(CT106)에서 그 칸에 선다(그 방만 보인다) ·
+## city: --house=<집 실내 id> 일반 집 실내(CT110) · --facility=<id> --in_at=x,y [--face=…] 실내(CT106)에서 그 칸에 선다(그 방만 보인다) ·
 ##   --town_at=x,y(칸) [--face=up|down|left|right] 동네 지도에서 선 자리 · --door=<시설 id> 그 문 앞(CT82), --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
 ##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
 ##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
@@ -514,8 +514,16 @@ func _city(city: CityScreen) -> void:
 		city.state.changed.emit()
 	if _args.has("meal_pick"):  # --meal_pick=<요리 id>: 여관 식사에서 그 요리가 나온다(요리 그림 확인)
 		Meals.force_pick = str(_args["meal_pick"])
+	if _args.has("house"):  # --house=<실내 id>: 일반 집 실내를 바로 연다(잠금과 상관없이 — 그림 확인용, CT110)
+		var kinds := JsonUtil.get_dict(CityValues.city_section(city.state.db, city.state.overrides, "interior"), "house_kinds")
+		for design: String in kinds:
+			if JsonUtil.get_str(kinds, design) == str(_args["house"]):
+				city.visit_house("h0", design)
+				break
+		_args["facility"] = ""
 	if _args.has("facility"):
-		city.choose_facility(str(_args["facility"]))
+		if not str(_args["facility"]).is_empty():
+			city.choose_facility(str(_args["facility"]))
 		await _frames(2)
 		var iv := city.facility_view() as InteriorView
 		if iv != null and _args.has("in_at"):  # --in_at=x,y [--face=…]: 실내에서 그 칸에 선다(그 방만 보인다 — CT106)

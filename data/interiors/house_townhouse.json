@@ -1,0 +1,110 @@
+{
+ "id": "house_townhouse",
+ "facility": "",
+ "name_ko": "돌 저택",
+ "art_dir": "res://assets/city/interiors/house_townhouse",
+ "rows": [
+  "#BB#O###BB#O#BB#",
+  "#..............#",
+  "#.....dd.......#",
+  "#..........c...#",
+  "#FFF##II+##II#K#",
+  "#..............#",
+  "#..tttttt......#",
+  "#..tttttt...nn.#",
+  "#..............#",
+  "#######DD#######"
+ ],
+ "legend": {
+  "B": {
+   "kind": "wallart",
+   "name_ko": "책장",
+   "art": "bookshelf"
+  },
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "d": {
+   "kind": "furniture",
+   "name_ko": "서재 책상",
+   "art": "records_desk",
+   "light": {
+    "color": "#ffc070",
+    "radius": 2.5,
+    "power": 0.5
+   }
+  },
+  "c": {
+   "kind": "furniture",
+   "name_ko": "궤짝",
+   "art": "chest"
+  },
+  "F": {
+   "kind": "wallart",
+   "name_ko": "벽난로",
+   "art": "fireplace",
+   "light": {
+    "color": "#ff9a48",
+    "radius": 5.5,
+    "power": 0.9
+   }
+  },
+  "I": {
+   "kind": "wallart",
+   "name_ko": "초상화",
+   "art": "portrait"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "K": {
+   "kind": "wallart",
+   "name_ko": "벽시계",
+   "art": "clock"
+  },
+  "t": {
+   "kind": "furniture",
+   "name_ko": "긴 식탁",
+   "art": "table"
+  },
+  "n": {
+   "kind": "furniture",
+   "name_ko": "긴 의자",
+   "art": "bench"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    3,
+    2
+   ],
+   "name_ko": "서재",
+   "floor": "oak",
+   "wall": "sandstone",
+   "ambient": 0.55
+  },
+  {
+   "at": [
+    5,
+    6
+   ],
+   "name_ko": "큰 방",
+   "floor": "oak",
+   "wall": "sandstone",
+   "ambient": 0.64
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

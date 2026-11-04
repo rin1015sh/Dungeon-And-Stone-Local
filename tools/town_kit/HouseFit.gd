@@ -48,7 +48,7 @@ static func template(fn: String) -> Array:
 		var holder := Node3D.new()
 		var k := Kit.new(holder, F.P)  # 면 그림 해상도 = 붓 기준(Facade.P — CT109: 64로 남아 장식이 1.5배로 부풀었다)
 		Designs.new().call(fn, k)
-		_tpl[fn] = [holder, k.lo, k.hi]
+		_tpl[fn] = [holder, k.lo, k.hi, k.doors]
 	return _tpl[fn]
 
 
@@ -112,6 +112,11 @@ static func make(h: Dictionary, i: int) -> Node3D:
 		basis = basis * Basis.from_scale(Vector3(-1, 1, 1))
 		mid.x = -mid.x
 	node.transform = Transform3D(basis, Vector3(ctr.x, 0.0, ctr.y) - basis * mid)
+	var doors := PackedVector3Array()  # 문 앞 디딤돌(세계 칸 — tools/town_doors.gd, CT110)
+	for q: Vector3 in (tp[3] as Array):
+		doors.append(node.transform * q)
+	node.set_meta("doors", doors)
+	node.set_meta("design", fn)
 	var tint: Color = ROOF_TINTS[_roof_of(h, i)]
 	var wall: Color = FAC_WALL.get(fac, Color.WHITE)
 	for mi: Node in node.find_children("*", "MeshInstance3D", true, false):

@@ -40,6 +40,7 @@ func _ready() -> void:
 	_town = TownView.new()
 	_town.setup(state, pc)
 	_town.facility_chosen.connect(choose_facility)
+	_town.house_chosen.connect(visit_house)
 	_town.travel_requested.connect(offer_travel)
 	_town.told.connect(func(key: String) -> void: say(Strings.t(key)))
 	add_child(_town)
@@ -125,14 +126,38 @@ func choose_facility(id: String) -> void:
 	_facility.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
+## 일반 집 문(CT110): city.json interior.houses_locked면 TownView가 '잠겨 있다.'만 — 풀렸으면 그 집 바리에이션의 실내(행동력은 쓰지 않는다).
+func visit_house(house_id: String, design: String) -> void:
+	if _facility != null or _event_running:
+		return
+	var iid := TownHouseDoors.interior_of(CityValues.city_section(state.db, state.overrides, "interior"), design)
+	if CityInterior.load_id(state, iid) == null:
+		say(Strings.t("city.interior.locked"))
+		return
+	var iv := InteriorView.new()
+	iv.setup_house(state, pc, _registry, iid, house_id)
+	_facility = iv
+	_facility.leave_requested.connect(leave_facility)
+	_hud.set_facility_mode(true)
+	add_child(_facility)
+	move_child(_facility, _town.get_index() + 1)
+	_facility.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
 func leave_facility() -> void:
 	if _facility == null:
 		return
 	for line in _facility.summary():
 		say(line)
 	var id := _facility.facility_id()
+	var house := _facility is InteriorView and not (_facility as InteriorView).interior_id.is_empty()
 	_facility.queue_free()
 	_facility = null
+	if house:
+		_town.place_at_house(id)
+		_hud.visible = true
+		_hud.set_facility_mode(false)
+		return
 	_town.place_at_door(id)
 	_hud.visible = true
 	_hud.set_facility_mode(false)

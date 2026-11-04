@@ -70,6 +70,7 @@ static func dormer(k: Kit, r: Array, rise: float, cx: float, ci: int) -> void:
 
 ## 문 앞 디딤돌(문 가운데 x, 벽 앞 z, 바닥 y).
 static func step(k: Kit, x: float, z: float, y: float) -> void:
+	k.doors.append(Vector3(x, y, z))
 	k.box(x - 0.62, z, x + 0.62, z + 0.36, y, y + 0.12, {"top": F.plain("stone", 2)}, F.plain("stone", 2))
 
 

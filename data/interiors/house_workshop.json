@@ -1,0 +1,84 @@
+{
+ "id": "house_workshop",
+ "facility": "",
+ "name_ko": "공방",
+ "art_dir": "res://assets/city/interiors/house_workshop",
+ "rows": [
+  "#TTT##OO##RRR#",
+  "#............#",
+  "#.wwww...ll..#",
+  "#............#",
+  "#.bb.....zz..#",
+  "#.bb.....zz..#",
+  "#.......g....#",
+  "#............#",
+  "######DD######"
+ ],
+ "legend": {
+  "T": {
+   "kind": "wallart",
+   "name_ko": "연장 벽",
+   "art": "tool_wall"
+  },
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "R": {
+   "kind": "wallart",
+   "name_ko": "술통 선반",
+   "art": "barrel_shelf"
+  },
+  "w": {
+   "kind": "furniture",
+   "name_ko": "작업대",
+   "art": "workbench",
+   "light": {
+    "color": "#ffc070",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "l": {
+   "kind": "furniture",
+   "name_ko": "목재 더미",
+   "art": "lumber"
+  },
+  "b": {
+   "kind": "furniture",
+   "name_ko": "통 셋",
+   "art": "barrels"
+  },
+  "z": {
+   "kind": "furniture",
+   "name_ko": "궤짝 더미",
+   "art": "crates"
+  },
+  "g": {
+   "kind": "furniture",
+   "name_ko": "숫돌 바퀴",
+   "art": "grindstone"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    5,
+    3
+   ],
+   "name_ko": "작업장",
+   "floor": "dirt",
+   "wall": "plank",
+   "ambient": 0.58
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

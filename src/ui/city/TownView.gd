@@ -8,6 +8,7 @@ extends Control
 ## 키보드만. CityScreen이 paused를 켜면(메뉴·대화창·시설 창·거리 사건) 걷지 않는다.
 
 signal facility_chosen(facility_id: String)
+signal house_chosen(house_id: String, design: String)  ## 일반 집 문(CT110 — 잠겨 있으면 told로 한 줄만)
 signal travel_requested
 signal told(key: String)  ## 화면으로 알 수 없는 짧은 한 줄(문구 키) — 도시 대화창에
 
@@ -79,6 +80,20 @@ func refresh_weather() -> void:
 func place_at_door(facility_id: String) -> void:
 	pos = _town.door_front(facility_id)
 	facing = Vector2i.DOWN
+	_sync_view()
+
+
+## 일반 집에서 나왔다: 그 집 문 앞에 남쪽을 보고 선다(CT110).
+func place_at_house(house_id: String) -> void:
+	pos = _town.house_door_front(house_id)
+	facing = Vector2i.DOWN
+	_sync_view()
+
+
+## 그 일반 집 문 앞에서 문을 바라본다(시험 · 캡처).
+func stand_before_house(house_id: String) -> void:
+	pos = _town.house_door_front(house_id)
+	facing = Vector2i.UP
 	_sync_view()
 
 
@@ -160,6 +175,11 @@ func interact() -> void:
 	var t := focus()
 	if t.has("door"):
 		facility_chosen.emit(str(t["door"]))
+	elif t.has("house"):
+		if JsonUtil.get_bool(CityValues.city_section(_state.db, _state.overrides, "interior"), "houses_locked", true):
+			told.emit("city.interior.locked")
+		else:
+			house_chosen.emit(str(t["house"]), str(t["design"]))
 	elif t.has("gate"):
 		if bool(t.get("travel", false)):
 			travel_requested.emit()

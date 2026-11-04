@@ -1,0 +1,115 @@
+{
+ "id": "house_cottage",
+ "facility": "",
+ "name_ko": "처마집",
+ "art_dir": "res://assets/city/interiors/house_cottage",
+ "rows": [
+  "##O###I###O##",
+  "#bb.....ww..#",
+  "#bb........c#",
+  "#........s..#",
+  "#HH#PP+#OO###",
+  "#...........#",
+  "#..ttt...kk.#",
+  "#..ttt......#",
+  "#.........q.#",
+  "#####DD######"
+ ],
+ "legend": {
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "I": {
+   "kind": "wallart",
+   "name_ko": "초상화",
+   "art": "portrait"
+  },
+  "b": {
+   "kind": "furniture",
+   "name_ko": "침대",
+   "art": "bed"
+  },
+  "w": {
+   "kind": "furniture",
+   "name_ko": "옷장",
+   "art": "wardrobe"
+  },
+  "c": {
+   "kind": "furniture",
+   "name_ko": "궤짝",
+   "art": "chest"
+  },
+  "s": {
+   "kind": "furniture",
+   "name_ko": "세면대",
+   "art": "washstand"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "H": {
+   "kind": "wallart",
+   "name_ko": "아궁이와 솥",
+   "art": "cook_hearth",
+   "light": {
+    "color": "#ff9a48",
+    "radius": 5.0,
+    "power": 0.85
+   }
+  },
+  "P": {
+   "kind": "wallart",
+   "name_ko": "그릇 선반",
+   "art": "plate_shelf"
+  },
+  "t": {
+   "kind": "furniture",
+   "name_ko": "식탁",
+   "art": "table"
+  },
+  "k": {
+   "kind": "furniture",
+   "name_ko": "걸상",
+   "art": "stool"
+  },
+  "q": {
+   "kind": "furniture",
+   "name_ko": "자루",
+   "art": "sack"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    5,
+    2
+   ],
+   "name_ko": "침실",
+   "floor": "oak",
+   "wall": "plaster",
+   "ambient": 0.5
+  },
+  {
+   "at": [
+    5,
+    6
+   ],
+   "name_ko": "거실",
+   "floor": "oak",
+   "wall": "plaster",
+   "ambient": 0.62
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

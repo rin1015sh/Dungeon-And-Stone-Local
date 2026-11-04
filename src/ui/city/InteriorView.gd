@@ -27,9 +27,19 @@ var _sell: ItemPickWindow
 var _cam_tween: Tween
 
 
+## 일반 집 실내 id(시설이 아닐 때 — CT110, setup_house).
+var interior_id: String = ""
+
+
+## 일반 집 실내로 연다(시설 · 활동 없음 — 이름판은 실내 이름).
+func setup_house(state: CityState, pc: PlayerCharacter, registry: ScriptRegistry, iid: String, house_id: String) -> void:
+	setup(state, pc, registry, house_id)
+	interior_id = iid
+
+
 func _ready() -> void:
-	var f := _state.db.get_entry("facilities", _facility_id)
-	_inner = CityInterior.load_for(_state, _facility_id)
+	var f := _state.db.get_entry("facilities", _facility_id) if interior_id.is_empty() else _state.db.get_entry("interiors", interior_id)
+	_inner = CityInterior.load_for(_state, _facility_id) if interior_id.is_empty() else CityInterior.load_id(_state, interior_id)
 	var view := JsonUtil.get_dict(_state.db.render, "view")
 	var ft := JsonUtil.get_array(view, "floor_tile_px")
 	_tile = float(ft[0]) if ft.size() == 2 else _tile

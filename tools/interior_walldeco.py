@@ -48,6 +48,8 @@ def candle(cv, yf, x, z, h=0.18):
 
 
 def draw(cv, art, x0, x1, yf, H, seed):
+    if draw_house(cv, art, x0, x1, yf, H, seed):
+        return
     w = x1 - x0
     cx = (x0 + x1) / 2
     if art == "window":
@@ -223,3 +225,66 @@ def draw(cv, art, x0, x1, yf, H, seed):
         cv.line(cv.to_px(cx, yf + 0.02, 1.8), cv.to_px(cx, yf + 0.02, 1.95), 3, DARK)
         cv.line(cv.to_px(cx, yf + 0.02, 1.8), cv.to_px(cx + 0.12, yf + 0.02, 1.8), 3, DARK)
         rect(cv, yf + 0.01, cx - 0.06, cx + 0.06, 1.05, 1.5, BRASS)
+
+
+def draw_house(cv, art, x0, x1, yf, H, seed):
+    """집 실내 벽 장식(CT110): 아궁이와 솥 · 그릇 선반 · 초상화 · 다락 사다리 · 매단 약초 · 연장 벽."""
+    w = x1 - x0
+    cx = (x0 + x1) / 2
+    if art == "cook_hearth":
+        cv.box(x0 + 0.05, yf, x1 - 0.05, yf + 0.35, 0.0, 1.3, STONE, tex_side=M.slabs("#7a7266", 0.4, 0.25, seed, 0.2))
+        pts = [cv.to_px(x0 + 0.15, yf, 2.6), cv.to_px(x1 - 0.15, yf, 2.6), cv.to_px(x1 - 0.05, yf + 0.35, 1.3), cv.to_px(x0 + 0.05, yf + 0.35, 1.3)]
+        cv.fill(pts, None, tex=M.wall("brick_soot", seed, yf + 0.35))
+        arch(cv, yf + 0.36, x0 + 0.3, x1 - 0.3, 0.0, 0.95, DARK * 1.3, lit=0.0)
+        for k in range(3):
+            flame(cv, yf + 0.37, cx - 0.25 + k * 0.25, 0.08, 1.1 - abs(k - 1) * 0.3, dy=0.02)
+        cv.line(cv.to_px(cx, yf + 0.38, 0.95), cv.to_px(cx, yf + 0.38, 0.62), 3, IRON)
+        cv.cyl(cx, yf + 0.4, 0.22, 0.35, 0.6, hexc("#2a2a2c"))
+        cv.fill(cv.ellipse_pts(cx, yf + 0.4, 0.17, 0.17, 0.6), hexc("#6a5a3a"))
+        cv.ground(x0, yf, x1, yf + 0.42, hexc("#4a3a2a"), z=1.32)
+    elif art == "plate_shelf":
+        for row in range(2):
+            z = 1.1 + row * 0.5
+            cv.box(x0 + 0.05, yf, x1 - 0.05, yf + 0.16, z - 0.05, z, WOOD)
+            for k in range(int(w * 3)):
+                px = x0 + 0.2 + k * (w - 0.4) / max(1, int(w * 3) - 1)
+                cv.fill([cv.to_px(px + 0.13 * math.cos(a), yf + 0.03, z + 0.15 + 0.15 * math.sin(a)) for a in np.linspace(0, math.tau, 16)], hexc("#c8bca0") if k % 2 == 0 else hexc("#8a7a60"))
+                cv.fill([cv.to_px(px + 0.06 * math.cos(a), yf + 0.04, z + 0.15 + 0.06 * math.sin(a)) for a in np.linspace(0, math.tau, 12)], hexc("#a89878"))
+    elif art == "portrait":
+        rect(cv, yf, cx - 0.32, cx + 0.32, 1.1, 1.95, hexc("#6a4a22"))
+        rect(cv, yf + 0.01, cx - 0.26, cx + 0.26, 1.16, 1.89, hexc("#3a3428"))
+        cv.fill([cv.to_px(cx + 0.11 * math.cos(a), yf + 0.02, 1.62 + 0.13 * math.sin(a)) for a in np.linspace(0, math.tau, 16)], hexc("#a08a6a"))
+        pts = [cv.to_px(cx - 0.2, yf + 0.02, 1.16), cv.to_px(cx - 0.12, yf + 0.02, 1.46), cv.to_px(cx + 0.12, yf + 0.02, 1.46), cv.to_px(cx + 0.2, yf + 0.02, 1.16)]
+        cv.fill(pts, hexc("#4a2a22"))
+    elif art == "ladder_up":
+        rect(cv, yf, x0 + 0.1, x1 - 0.1, 2.3, 3.0, DARK, lit=0.0)  # 다락 구멍
+        for s in (-1, 1):
+            cv.line(cv.to_px(cx + s * 0.25, yf + 0.25, 0.0), cv.to_px(cx + s * 0.25, yf + 0.05, 2.8), 5, WOOD_L)
+        for k in range(8):
+            z = 0.3 + k * 0.32
+            cv.line(cv.to_px(cx - 0.25, yf + 0.25 - z * 0.07, z), cv.to_px(cx + 0.25, yf + 0.25 - z * 0.07, z), 4, WOOD)
+    elif art == "herbs":
+        rect(cv, yf + 0.02, x0 + 0.05, x1 - 0.05, 2.1, 2.16, WOOD)
+        for k in range(int(w * 4)):
+            hx = x0 + 0.15 + k * (w - 0.3) / max(1, int(w * 4) - 1)
+            col = hexc(["#5a6a3a", "#7a6a3a", "#6a4a3a", "#4a5a3a"][k % 4])
+            pts = [cv.to_px(hx - 0.08, yf + 0.04, 2.05), cv.to_px(hx + 0.08, yf + 0.04, 2.05), cv.to_px(hx + 0.03, yf + 0.04, 1.55), cv.to_px(hx - 0.03, yf + 0.04, 1.55)]
+            cv.fill(pts, col)
+            cv.line(cv.to_px(hx, yf + 0.04, 2.13), cv.to_px(hx, yf + 0.04, 2.03), 2, hexc("#8a7a5a"))
+    elif art == "tool_wall":
+        rect(cv, yf, x0 + 0.08, x1 - 0.08, 0.9, 2.2, hexc("#4a3424"), tex=M.planks("#4a3424", 0.2, seed))
+        for k in range(int(w * 2.5)):
+            tx = x0 + 0.25 + k * (w - 0.5) / max(1, int(w * 2.5) - 1)
+            kind = k % 4
+            cv.line(cv.to_px(tx, yf + 0.03, 1.1), cv.to_px(tx, yf + 0.03, 1.9), 4, WOOD_L)
+            if kind == 0:
+                rect(cv, yf + 0.04, tx - 0.12, tx + 0.12, 1.8, 1.95, IRON)  # 망치
+            elif kind == 1:
+                rect(cv, yf + 0.04, tx - 0.03, tx + 0.15, 1.1, 1.5, hexc("#9a988e"))  # 톱
+            elif kind == 2:
+                cv.fill([cv.to_px(tx - 0.05, yf + 0.04, 1.9), cv.to_px(tx + 0.18, yf + 0.04, 1.95), cv.to_px(tx + 0.05, yf + 0.04, 1.75)], hexc("#8a8a84"))  # 도끼
+            else:
+                cv.fill([cv.to_px(tx + 0.12 * math.cos(a), yf + 0.04, 1.55 + 0.12 * math.sin(a)) for a in np.linspace(0, math.tau, 14)], hexc("#7a6a4a"))  # 밧줄 타래
+    else:
+        return False
+    return True

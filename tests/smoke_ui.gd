@@ -885,6 +885,19 @@ func _interior_flow() -> void:
 	await _action("pause")
 	await _frames(3)
 	_expect(city.facility_view() == null, "한 번 더 Esc = 동네로")
+	var cells := city.town().town().house_doors.keys()
+	if _expect(not cells.is_empty(), "일반 집 문이 있다(CT110)"):
+		city.town().stand_before_house(str((city.town().town().house_doors[cells[0]] as Dictionary)["house"]))
+		await _frames(2)
+		var ap := st.ap
+		_expect(not city.town().focus().is_empty() and city.town().focus().has("house"), "일반 집 문을 바라본다")
+		DialogueBox.auto_skip = false
+		await _action("interact")
+		await _frames(2)
+		_expect(city.facility_view() == null and city.dialog().busy() and st.ap == ap, "일반 집 문 앞 Enter = 잠겨 있다(들어가지 않는다)")
+		city.dialog().clear()
+		DialogueBox.auto_skip = true
+		await _frames(30)
 	await _city_title(city)
 
 

@@ -1,0 +1,87 @@
+{
+ "id": "house_narrow",
+ "facility": "",
+ "name_ko": "좁은 반목조 집",
+ "art_dir": "res://assets/city/interiors/house_narrow",
+ "rows": [
+  "#O#HH#PP#L#",
+  "#.........#",
+  "#.tt..kk..#",
+  "#.tt.....c#",
+  "#.........#",
+  "#bb.....q.#",
+  "####DD#####"
+ ],
+ "legend": {
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 3.0,
+    "power": 0.4
+   }
+  },
+  "H": {
+   "kind": "wallart",
+   "name_ko": "아궁이와 솥",
+   "art": "cook_hearth",
+   "light": {
+    "color": "#ff9a48",
+    "radius": 5.0,
+    "power": 0.85
+   }
+  },
+  "P": {
+   "kind": "wallart",
+   "name_ko": "그릇 선반",
+   "art": "plate_shelf"
+  },
+  "L": {
+   "kind": "wallart",
+   "name_ko": "다락 사다리",
+   "art": "ladder_up"
+  },
+  "t": {
+   "kind": "furniture",
+   "name_ko": "식탁",
+   "art": "table"
+  },
+  "k": {
+   "kind": "furniture",
+   "name_ko": "걸상",
+   "art": "stool"
+  },
+  "c": {
+   "kind": "furniture",
+   "name_ko": "궤짝",
+   "art": "chest"
+  },
+  "b": {
+   "kind": "furniture",
+   "name_ko": "짚 침대",
+   "art": "cot"
+  },
+  "q": {
+   "kind": "furniture",
+   "name_ko": "자루",
+   "art": "sack"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    5,
+    3
+   ],
+   "name_ko": "부엌 겸 방",
+   "floor": "honey",
+   "wall": "plaster",
+   "ambient": 0.6
+  }
+ ],
+ "spots": [],
+ "npcs": [],
+ "source": "original"
+}

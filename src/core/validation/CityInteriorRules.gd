@@ -16,13 +16,17 @@ static func run(v: ValidatorBase) -> void:
 			v.ref("facilities/%s.interior" % fid, "interiors", iid)
 	for iid: String in v.entries("interiors"):
 		_one(v, iid, max_room)
+	var kinds := JsonUtil.get_dict(JsonUtil.get_dict(city, "interior"), "house_kinds")  # 일반 집 바리에이션 → 실내(CT110)
+	for design: String in kinds:
+		v.ref("city.interior.house_kinds." + design, "interiors", JsonUtil.get_str(kinds, design))
 
 
 static func _one(v: ValidatorBase, iid: String, max_room: Array) -> void:
 	var d := v.db.get_entry("interiors", iid)
 	var w := "interiors/" + iid
 	var fac := JsonUtil.get_str(d, "facility")
-	v.ref(w + ".facility", "facilities", fac)
+	if not fac.is_empty():  # 일반 집 실내는 시설이 없다(CT110)
+		v.ref(w + ".facility", "facilities", fac)
 	var legend := JsonUtil.get_dict(d, "legend")
 	var rows := PackedStringArray()
 	for r: Variant in JsonUtil.get_array(d, "rows"):
@@ -98,6 +102,8 @@ static func _spots(v: ValidatorBase, w: String, d: Dictionary, fac: String, rows
 				ok = ok or reach.has(c + dir)
 		if not ok:
 			v.err(w, "자리 %s 앞에 바깥 문에서 걸어서 닿지 못한다" % [JsonUtil.get_array(sd, "activities")])
+	if fac.is_empty():
+		return
 	var all: Array = JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities").duplicate()
 	for eid: String in v.entries("city_events"):
 		var e := v.db.get_entry("city_events", eid)

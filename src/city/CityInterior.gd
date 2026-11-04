@@ -38,6 +38,15 @@ static func load_for(state: CityState, facility_id: String) -> CityInterior:
 	return r
 
 
+## 실내 id로 바로(일반 집 — 시설 활동 없음, CT110). 없으면 null.
+static func load_id(state: CityState, iid: String) -> CityInterior:
+	if iid.is_empty() or not state.db.has_entry("interiors", iid):
+		return null
+	var r := CityInterior.new()
+	r._build(state.db, iid, [] as Array[String], state.happenings)
+	return r
+
+
 ## 칸 글자의 범례(#·.·D는 정해진 것).
 static func cell_def(p_legend: Dictionary, ch: String) -> Dictionary:
 	match ch:

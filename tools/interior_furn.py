@@ -14,7 +14,7 @@ IRON, BRASS, PAPER = hexc("#38383a"), hexc("#9a7e48"), hexc("#c4b48e")
 STONE, CLOTH_R, CLOTH_G = hexc("#8a8274"), hexc("#6a2e26"), hexc("#3e4a34")
 
 HEIGHT = {"pillar": 2.7, "wardrobe": 2.1, "bookcase": 2.2, "candelabra": 1.95, "specimen_shelf": 2.1, "mannequin": 1.7, "bars": 1.9,
-          "teller_window": 1.9, "barrels": 1.0, "bed": 1.0, "weapon_rack": 1.5, "chained_lectern": 1.4, "basin": 1.2, "font": 1.2}
+          "teller_window": 1.9, "crates": 1.4, "workbench": 1.1, "barrels": 1.0, "bed": 1.0, "weapon_rack": 1.5, "chained_lectern": 1.4, "basin": 1.2, "font": 1.2}
 
 
 def legs(cv, x0, y0, x1, y1, h, col, t=0.08):
@@ -317,5 +317,49 @@ def draw(cv, art, w, d, seed):
             cv.front(x, x + 0.1, d - 0.25, 0, 0.42, WOOD_D)
         cv.box(0.05, 0.3, w - 0.05, d - 0.25, 0.38, 0.46, WOOD, tex_top=M.wood("#5e4430", seed))
         cv.box(0.05, 0.12, w - 0.05, 0.26, 0.46, 0.95, WOOD_D)
+    elif art == "table":  # 집 식탁(CT110): 판 + 다리 + 빵 · 그릇 · 잔 · 촛대
+        table(cv, 0.05, 0.1, w - 0.05, d - 0.05, 0.8)
+        rng = np.random.default_rng(seed)
+        cv.fill(cv.ellipse_pts(w * 0.3, d * 0.45, 0.22, 0.16, 0.81), hexc("#8a6a42"))
+        cv.cyl(w * 0.3, d * 0.45, 0.12, 0.81, 0.9, hexc("#b8884a"))
+        for k in range(max(2, int(w))):
+            mug(cv, 0.4 + k * (w - 0.8) / max(1, int(w) - 1), d * 0.7 + (k % 2) * 0.12, 0.81)
+        cv.cyl(w * 0.7, d * 0.35, 0.18, 0.81, 0.86, hexc("#7a7a74"))
+        cv.fill(cv.ellipse_pts(w * 0.7, d * 0.35, 0.12, 0.12, 0.86), hexc("#5a4a30"))
+    elif art == "cot":  # 짚 침대: 낮은 나무 틀 + 짚 요 + 거친 담요
+        cv.box(0.05, 0.1, w - 0.05, d - 0.05, 0, 0.28, WOOD, tex_side=M.wood("#5a4030", seed))
+        cv.ground(0.12, 0.16, w - 0.12, d - 0.1, None, z=0.34, tex=M.grainy("#a08a5a", seed, 0.25, 9))
+        cv.ground(0.4, 0.2, w - 0.12, d - 0.1, None, z=0.38, tex=M.grainy("#5a4a3a", seed + 1, 0.15, 5))
+        cv.front(0.4, w - 0.12, d - 0.1, 0.28, 0.38, hexc("#4a3a2e"))
+        cv.box(0.16, 0.22, 0.42, d - 0.2, 0.34, 0.44, hexc("#b8ac8a"))
+    elif art == "crates":  # 궤짝 더미(쌓인 나무 상자 · 쇠띠)
+        rng = np.random.default_rng(seed)
+        for (x0, y0, z0, s_) in ((0.1, 0.35, 0, 0.75), (min(w - 0.8, 0.95), 0.3, 0, 0.7), (0.3, 0.38, 0.75, 0.55)):
+            if x0 + s_ > w + 0.05:
+                continue
+            cv.box(x0, y0, x0 + s_, y0 + s_ * 0.8, z0, z0 + s_ * 0.9, hexc("#6a5038"), tex_side=M.planks("#6a5038", 0.18, seed), tex_top=M.wood("#7a5a3c", seed + 1))
+            cv.front(x0, x0 + s_, y0 + s_ * 0.8 + 0.001, z0 + s_ * 0.15, z0 + s_ * 0.22, IRON)
+            cv.front(x0, x0 + s_, y0 + s_ * 0.8 + 0.001, z0 + s_ * 0.68, z0 + s_ * 0.75, IRON)
+    elif art == "workbench":  # 작업대: 두꺼운 판 · 다리 · 바이스 · 연장 · 대팻밥
+        table(cv, 0.05, 0.15, w - 0.05, d - 0.05, 0.9, col=hexc("#6a4a30"))
+        cv.box(0.2, d - 0.3, 0.45, d - 0.02, 0.9, 1.05, IRON * 1.3)
+        cv.line(cv.to_px(w * 0.45, 0.4, 0.92), cv.to_px(w * 0.65, 0.45, 0.92), 4, WOOD_L)
+        cv.box(w * 0.45 - 0.06, 0.36, w * 0.45 + 0.06, 0.5, 0.91, 0.98, IRON)
+        cv.box(w * 0.75, 0.3, w * 0.75 + 0.4, 0.5, 0.91, 0.99, hexc("#8a6a3a"))
+        for k in range(6):
+            cv.fill(cv.ellipse_pts(0.6 + k * 0.32, d * 0.8 + (k % 2) * 0.08, 0.06, 0.03, 0.0), hexc("#c8a46a"))
+    elif art == "lumber":  # 목재 더미(가로로 쌓은 각목 · 통나무 끝)
+        for row in range(3):
+            for k in range(int(w * 2) - row):
+                x = 0.2 + k * 0.45 + row * 0.22
+                z = row * 0.22
+                cv.cyl(x, d * 0.6, 0.12, z, z + 0.22, hexc("#8a6a42"), ry=0.12)
+        cv.box(0.05, 0.2, w - 0.05, d * 0.6, 0.0, 0.1, hexc("#6a5038"))
+    elif art == "strongbox":  # 쇠 금고(쇠띠 · 큰 자물쇠)
+        cv.box(0.12, 0.3, 0.88, 0.85, 0, 0.62, IRON * 1.6, tex_side=M.grainy("#4a4a4e", seed, 0.15, 6))
+        for z in (0.12, 0.48):
+            cv.front(0.12, 0.88, 0.851, z, z + 0.06, hexc("#2a2a2c"))
+        cv.front(0.42, 0.58, 0.852, 0.22, 0.4, BRASS)
+        cv.ground(0.12, 0.3, 0.88, 0.85, hexc("#5a5a5e"), z=0.62)
     else:
         cv.box(0.1, 0.1, w - 0.1, d - 0.1, 0, 0.6, WOOD)
