@@ -8,6 +8,7 @@ import numpy as np
 import interior_mats as M
 from interior_canvas import hexc
 from interior_walldeco import candle, flame
+import interior_fine as IF
 
 WOOD_D, WOOD, WOOD_L = hexc("#3a2a1c"), hexc("#5a4030"), hexc("#7a5a3c")
 IRON, BRASS, PAPER = hexc("#38383a"), hexc("#9a7e48"), hexc("#c4b48e")
@@ -18,6 +19,11 @@ HEIGHT = {"pillar": 2.7, "wardrobe": 2.1, "bookcase": 2.2, "candelabra": 1.95, "
 
 
 def legs(cv, x0, y0, x1, y1, h, col, t=0.08):
+    """다리 넷(뒤 둘은 어둡게 먼저 — 위로 보인다) + 아래 가로대(CT112 — 앞 다리 둘만이라 납작했다)."""
+    for (lx, ly) in ((x0 + 0.04, y0 + 0.1), (x1 - 0.04 - t, y0 + 0.1)):
+        cv.front(lx, lx + t, ly, 0, h, col * 0.62, shade=(0.7, 0.5))
+    cv.front(x0 + 0.04, x1 - 0.04, y0 + 0.1, h * 0.22, h * 0.22 + 0.05, col * 0.55, shade=(0.8, 0.6))
+    cv.front(x0 + 0.04, x1 - 0.04, y1 - 0.06, h * 0.22, h * 0.22 + 0.05, col * 0.8, shade=(0.9, 0.7))
     for (lx, ly) in ((x0 + 0.04, y1 - 0.06), (x1 - 0.04 - t, y1 - 0.06)):
         cv.front(lx, lx + t, ly, 0, h, col)
 
@@ -26,6 +32,7 @@ def table(cv, x0, y0, x1, y1, h, col=None, tex=None, legs_col=None):
     col = WOOD if col is None else col
     legs(cv, x0 + 0.05, y0, x1 - 0.05, y1, h, legs_col if legs_col is not None else col * 0.7)
     cv.box(x0, y0, x1, y1, h - 0.08, h, col, tex_top=tex or M.wood("#6a4c34", 7), tex_side=M.wood("#4a3424", 8))
+    cv.front(x0 + 0.06, x1 - 0.06, y1 - 0.05, h - 0.22, h - 0.08, col * 0.55, shade=(0.6, 0.9))  # 판 밑 앞 띠(그늘 — CT112)
 
 
 def papers(cv, x0, y0, x1, y1, z, n, seed):
@@ -46,25 +53,37 @@ def bottle(cv, x, y, z, col, h=0.26):
 
 
 def stool(cv, x, y):
-    cv.front(x - 0.12, x - 0.06, y + 0.1, 0, 0.42, WOOD_D)
-    cv.front(x + 0.06, x + 0.12, y + 0.1, 0, 0.42, WOOD_D)
-    cv.cyl(x, y, 0.2, 0.38, 0.45, WOOD_L * 0.9)
+    """세 다리 걸상: 뒤 다리(어둡게) · 앞 두 다리(벌어진다) · 가로대 · 두께 있는 둥근 앉을 판."""
+    cv.front(x - 0.025, x + 0.025, y - 0.1, 0, 0.4, WOOD_D * 0.6, shade=(0.7, 0.5))
+    for s in (-1, 1):
+        pts = [cv.to_px(x + s * 0.08, y + 0.08, 0.4), cv.to_px(x + s * 0.08 + s * 0.05, y + 0.08, 0.4), cv.to_px(x + s * 0.17, y + 0.12, 0.0), cv.to_px(x + s * 0.12, y + 0.12, 0.0)]
+        cv.fill(pts, WOOD_D, shade=(0.95, 0.7))
+    cv.front(x - 0.12, x + 0.12, y + 0.1, 0.14, 0.18, WOOD_D * 0.85)
+    cv.cyl(x, y, 0.2, 0.37, 0.45, WOOD_L * 0.9, side=WOOD * 0.8, tex_top=M.wood("#7a5a3c", int(x * 31 + y * 17)))
 
 
 def chair(cv, x, y, back=True):
-    cv.front(x - 0.16, x + 0.16, y + 0.14, 0, 0.42, WOOD_D)
-    cv.ground(x - 0.18, y - 0.14, x + 0.18, y + 0.14, WOOD, z=0.44)
+    """의자: 뒤 다리 · 등받이(살 셋) · 앉을 판(두께) · 앞 다리 · 가로대."""
+    for s in (-1, 1):
+        cv.front(x + s * 0.15 - 0.03, x + s * 0.15 + 0.03, y - 0.1, 0, 0.44 + (0.52 if back else 0.0), WOOD_D * 0.7, shade=(0.85, 0.55))
     if back:
-        cv.front(x - 0.18, x + 0.18, y - 0.12, 0.44, 0.95, WOOD_D)
+        cv.front(x - 0.16, x + 0.16, y - 0.1, 0.86, 0.96, WOOD, shade=(1.0, 0.8))
+        for k in (-0.07, 0.0, 0.07):
+            cv.front(x + k - 0.015, x + k + 0.015, y - 0.1, 0.5, 0.86, WOOD_D * 0.85)
+    cv.box(x - 0.18, y - 0.14, x + 0.18, y + 0.14, 0.4, 0.45, WOOD, side=WOOD_D, tex_top=M.wood("#6a4c34", int(x * 13 + y * 7)))
+    for s in (-1, 1):
+        cv.front(x + s * 0.15 - 0.03, x + s * 0.15 + 0.03, y + 0.13, 0, 0.4, WOOD_D)
+    cv.front(x - 0.15, x + 0.15, y + 0.13, 0.12, 0.16, WOOD_D * 0.8)
 
 
 def draw(cv, art, w, d, seed):
     cx = w / 2
     if art in ("counter", "bar", "shop_counter"):
         h = 1.0
-        cv.front(0, w, d, 0, h - 0.08, WOOD, tex=M.planks("#5a4030", 0.22, seed), shade=(0.78, 0.55))
+        cv.front(0, w, d, 0, h - 0.08, WOOD, tex=M.planks("#5a4030", 0.22, seed), shade=(0.85, 0.6))
+        cv.front(0.02, w - 0.02, d + 0.004, 0.0, 0.12, WOOD_D * 0.7)  # 발 차는 굽
         for k in range(int(w)):
-            cv.front(k + 0.12, k + 0.88, d + 0.005, 0.15, h - 0.22, None, tex=M.wood("#4e3828", seed + k), shade=(0.7, 0.55))
+            IF.panel(cv, k + 0.1, k + 0.9, d, 0.18, h - 0.2, WOOD * 0.95, 0.07)
         cv.box(-0.05, 0, w + 0.05, d + 0.06, h - 0.08, h, WOOD_L, tex_top=M.wood("#7a5a3c", seed + 3))
         if art == "counter":
             papers(cv, 0.4, 0.15, w - 0.4, d - 0.1, h + 0.005, int(w), seed)
@@ -133,11 +152,7 @@ def draw(cv, art, w, d, seed):
         for k in range(int(round(w))):
             stool(cv, k + 0.5, d / 2)
     elif art == "round_table":
-        stool(cv, 0.22, 0.55)
-        stool(cv, w - 0.22, 0.55)
-        cv.front(cx - 0.07, cx + 0.07, 0.62, 0, 0.72, WOOD_D)
-        cv.cyl(cx, 0.62, 0.3, 0, 0.05, WOOD_D)
-        cv.cyl(cx, 0.45, 0.52, 0.68, 0.78, WOOD, tex_top=M.wood("#6a4c34", seed), tex_side=M.wood("#4a3424", seed + 1))
+        IF.round_table(cv, w, d, cx, seed)
         mug(cv, cx + 0.18, 0.5, 0.78)
         cv.fill(cv.ellipse_pts(cx - 0.18, 0.35, 0.16, 0.12, 0.785), hexc("#8a7a60"))
     elif art == "lute_chair":
@@ -146,16 +161,9 @@ def draw(cv, art, w, d, seed):
         cv.fill(pts, hexc("#8a5a2e"))
         cv.line(cv.to_px(0.62, 0.73, 0.6), cv.to_px(0.85, 0.73, 1.2), 4, WOOD_D)
     elif art == "bed":
-        cv.box(0.05, 0.05, w - 0.05, d - 0.05, 0, 0.45, WOOD, tex_side=M.wood("#5a4030", seed))
-        cv.front(0.05, w - 0.05, 0.12, 0.45, 0.95, WOOD_D)
-        cv.ground(0.15, 0.15, w - 0.15, d - 0.15, hexc("#6a4a3a"), z=0.55, tex=M.grainy("#6a4e3a", seed, 0.14, 5))
-        cv.ground(0.15, 0.6, w - 0.15, d - 0.12, CLOTH_R, z=0.6, tex=M.grainy("#5e2e26", seed + 1, 0.12, 6))
-        cv.front(0.15, w - 0.15, d - 0.12, 0.45, 0.6, CLOTH_R * 0.75)
-        cv.box(0.35, 0.18, w - 0.35, 0.52, 0.55, 0.68, hexc("#c8bca0"))
+        IF.bed(cv, w, d, seed, CLOTH_R)  # CT112
     elif art == "chest":
-        cv.box(0.12, 0.25, 0.88, 0.85, 0, 0.5, WOOD, tex_side=M.wood("#5a4030", seed))
-        cv.front(0.12, 0.88, 0.851, 0.1, 0.16, IRON)
-        cv.front(0.45, 0.55, 0.852, 0.25, 0.38, BRASS)
+        IF.chest(cv, 0.1, 0.3, 0.9, 0.85, 0.45, WOOD, seed)
     elif art in ("washstand", "candle_table"):
         table(cv, 0.12, 0.2, 0.88, 0.8, 0.75, WOOD)
         if art == "washstand":
@@ -167,10 +175,12 @@ def draw(cv, art, w, d, seed):
             cv.front(0.47, 0.53, 0.51, 0.8, 1.0, hexc("#e4d8bc"))
             flame(cv, 0.51, 0.5, 1.0, 0.5)
     elif art == "bookcase":
-        cv.box(0.05, 0.2, w - 0.05, d - 0.05, 0, 2.15, WOOD_D, tex_side=M.wood("#3a2a1c", seed, False))
+        IF.cabinet(cv, 0.05, 0.2, w - 0.05, d - 0.05, 2.2, WOOD_D * 1.15, tex_side=M.wood("#3a2a1c", seed, False))
         for k in range(5):
-            z = 0.12 + k * 0.4
-            cv.front(0.14, w - 0.14, d - 0.049, z, z + 0.33, None, tex=M.books(seed + k), shade=(0.7, 1.0))
+            z = 0.2 + k * 0.38
+            cv.front(0.12, w - 0.12, d - 0.06, z, z + 0.33, hexc("#120d09"))  # 칸 안(깊다)
+            cv.front(0.15, w - 0.15, d - 0.1, z, z + 0.3, None, tex=M.books(seed + k), shade=(0.75, 1.0))  # 책은 안으로 들어가 앉는다
+            cv.box(0.1, d - 0.18, w - 0.1, d - 0.05, z - 0.04, z, WOOD_L * 0.9)  # 칸 판(앞 모서리 빛)
     elif art == "chained_lectern":
         cv.front(cx - 0.1, cx + 0.1, 0.6, 0, 0.95, WOOD_D)
         cv.box(cx - 0.35, 0.45, cx + 0.35, 0.65, 0, 0.08, WOOD_D)
@@ -201,12 +211,10 @@ def draw(cv, art, w, d, seed):
         cv.box(cx - 0.25, 0.35, cx + 0.25, 0.7, 0.96, 1.04, hexc("#4a2a1e"))
         cv.ground(cx - 0.22, 0.38, cx + 0.22, 0.66, PAPER, z=1.045)
     elif art == "dais":
-        cv.box(-0.02, 0, w + 0.02, d, 0, 0.14, hexc("#aaa290"), tex_top=M.slabs("#b4ac98", 1.2, 0.9, seed, 0.1))
+        cv.box(-0.06, 0, w + 0.06, d + 0.04, 0, 0.08, hexc("#8a8270"), tex_side=M.slabs("#8a8270", 0.6, 0.08, seed, 0.1))  # 두 단(아래가 넓다)
+        cv.box(0.04, 0.02, w - 0.04, d - 0.18, 0.08, 0.2, hexc("#aaa290"), tex_side=M.slabs("#9a9280", 0.6, 0.12, seed + 1, 0.1), tex_top=M.slabs("#b4ac98", 1.2, 0.9, seed, 0.1))
     elif art == "pew":
-        cv.front(0.15, 0.3, d - 0.2, 0, 0.45, WOOD_D)
-        cv.front(w - 0.3, w - 0.15, d - 0.2, 0, 0.45, WOOD_D)
-        cv.box(0.05, 0.35, w - 0.05, d - 0.2, 0.4, 0.48, WOOD, tex_top=M.wood("#5e4430", seed))
-        cv.box(0.05, 0.1, w - 0.05, 0.28, 0.2, 1.0, WOOD_D, tex_side=M.wood("#4a3424", seed + 1))
+        IF.pew(cv, w, d, seed)
     elif art == "offering_candles":
         cv.box(0.1, 0.3, w - 0.1, 0.8, 0, 0.75, IRON, tex_side=M.grainy("#3a3a3a", seed, 0.2))
         cv.box(0.05, 0.25, w - 0.05, 0.85, 0.75, 0.8, hexc("#4a4844"))
@@ -223,10 +231,13 @@ def draw(cv, art, w, d, seed):
         cv.cyl(0.5, 0.55, 0.38, 0.75, 0.98, col)
         cv.fill(cv.ellipse_pts(0.5, 0.55, 0.3, 0.3, 0.98), hexc("#4a5a62") if art == "font" else hexc("#5a6a6a"))
     elif art == "wardrobe":
-        cv.box(0.05, 0.25, w - 0.05, d - 0.05, 0, 2.0, WOOD_D, tex_side=M.wood("#3e2c1e", seed, False))
-        cv.front(cx - 0.02, cx + 0.02, d - 0.049, 0.1, 1.9, hexc("#1a120c"))
-        for s in (-1, 1):
-            cv.front(cx + s * 0.1 - 0.025, cx + s * 0.1 + 0.025, d - 0.048, 0.95, 1.1, BRASS)
+        IF.cabinet(cv, 0.05, 0.25, w - 0.05, d - 0.05, 2.1, WOOD_D * 1.3, tex_side=M.wood("#3e2c1e", seed, False))
+        for s in (-1, 1):  # 문짝 둘(판 위아래)
+            a, b = (0.14, cx - 0.03) if s < 0 else (cx + 0.03, w - 0.14)
+            IF.panel(cv, a, b, d - 0.05, 0.22, 1.05, WOOD_D * 1.35)
+            IF.panel(cv, a, b, d - 0.05, 1.12, 1.9, WOOD_D * 1.35)
+            cv.front(cx + s * 0.1 - 0.025, cx + s * 0.1 + 0.025, d - 0.04, 0.95, 1.12, BRASS)
+        cv.front(cx - 0.015, cx + 0.015, d - 0.045, 0.15, 1.95, hexc("#140e09"))
     elif art == "peddler_stall":
         cv.ground(0.05, 0.1, w - 0.05, d - 0.05, hexc("#5a4a3a"), z=0.03, tex=M.grainy("#6a5038", seed, 0.15, 5))
         cv.box(0.15, 0.15, 0.85, 0.75, 0, 0.5, WOOD, tex_side=M.wood("#5a4030", seed))
@@ -313,10 +324,7 @@ def draw(cv, art, w, d, seed):
         cv.cyl(0.5, 0.55, 0.3, 0.22, 2.45, hexc("#cec4ae"), tex_side=M.slabs("#cec4ae", 3.0, 3.0, seed, 0.02, vein=0.2))
         cv.box(0.08, 0.18, 0.92, 0.92, 2.45, 2.65, hexc("#b8ae98"))
     elif art == "bench":
-        for x in (0.25, w - 0.35):
-            cv.front(x, x + 0.1, d - 0.25, 0, 0.42, WOOD_D)
-        cv.box(0.05, 0.3, w - 0.05, d - 0.25, 0.38, 0.46, WOOD, tex_top=M.wood("#5e4430", seed))
-        cv.box(0.05, 0.12, w - 0.05, 0.26, 0.46, 0.95, WOOD_D)
+        IF.pew(cv, w, d, seed)
     elif art == "table":  # 집 식탁(CT110): 판 + 다리 + 빵 · 그릇 · 잔 · 촛대
         table(cv, 0.05, 0.1, w - 0.05, d - 0.05, 0.8)
         rng = np.random.default_rng(seed)
@@ -337,9 +345,7 @@ def draw(cv, art, w, d, seed):
         for (x0, y0, z0, s_) in ((0.1, 0.35, 0, 0.75), (min(w - 0.8, 0.95), 0.3, 0, 0.7), (0.3, 0.38, 0.75, 0.55)):
             if x0 + s_ > w + 0.05:
                 continue
-            cv.box(x0, y0, x0 + s_, y0 + s_ * 0.8, z0, z0 + s_ * 0.9, hexc("#6a5038"), tex_side=M.planks("#6a5038", 0.18, seed), tex_top=M.wood("#7a5a3c", seed + 1))
-            cv.front(x0, x0 + s_, y0 + s_ * 0.8 + 0.001, z0 + s_ * 0.15, z0 + s_ * 0.22, IRON)
-            cv.front(x0, x0 + s_, y0 + s_ * 0.8 + 0.001, z0 + s_ * 0.68, z0 + s_ * 0.75, IRON)
+            IF.crate(cv, x0, y0, x0 + s_, y0 + s_ * 0.8, z0, z0 + s_ * 0.9, seed + int(x0 * 10))
     elif art == "workbench":  # 작업대: 두꺼운 판 · 다리 · 바이스 · 연장 · 대팻밥
         table(cv, 0.05, 0.15, w - 0.05, d - 0.05, 0.9, col=hexc("#6a4a30"))
         cv.box(0.2, d - 0.3, 0.45, d - 0.02, 0.9, 1.05, IRON * 1.3)
@@ -355,11 +361,7 @@ def draw(cv, art, w, d, seed):
                 z = row * 0.22
                 cv.cyl(x, d * 0.6, 0.12, z, z + 0.22, hexc("#8a6a42"), ry=0.12)
         cv.box(0.05, 0.2, w - 0.05, d * 0.6, 0.0, 0.1, hexc("#6a5038"))
-    elif art == "strongbox":  # 쇠 금고(쇠띠 · 큰 자물쇠)
-        cv.box(0.12, 0.3, 0.88, 0.85, 0, 0.62, IRON * 1.6, tex_side=M.grainy("#4a4a4e", seed, 0.15, 6))
-        for z in (0.12, 0.48):
-            cv.front(0.12, 0.88, 0.851, z, z + 0.06, hexc("#2a2a2c"))
-        cv.front(0.42, 0.58, 0.852, 0.22, 0.4, BRASS)
-        cv.ground(0.12, 0.3, 0.88, 0.85, hexc("#5a5a5e"), z=0.62)
+    elif art == "strongbox":  # 쇠 금고(쇠띠 · 큰 자물쇠 · 둥근 뚜껑)
+        IF.chest(cv, 0.12, 0.3, 0.88, 0.85, 0.5, IRON * 1.6, seed, hexc("#22201e"))
     else:
         cv.box(0.1, 0.1, w - 0.1, d - 0.1, 0, 0.6, WOOD)

@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import interior_furn as F  # noqa: E402
 import interior_mats as M  # noqa: E402
 import interior_walldeco as W  # noqa: E402
+import interior_fine as IF  # noqa: E402
 import town_handdrawn as th  # noqa: E402
 from interior_canvas import Canvas, P, hexc  # noqa: E402
 
@@ -186,6 +187,8 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
         if plan.legend[g["char"]]["kind"] in ("furniture",) and g["cells"][0] in R and not plan.legend[g["char"]].get("needs"):
             gw = g["x1"] - g["x0"]
             cv.shadow((g["x0"] + g["x1"]) / 2, g["y1"] - 0.25, gw * 0.55 + 0.1, 0.42, 0.42)
+            hh = F.HEIGHT.get(plan.legend[g["char"]].get("art", ""), 1.0)  # 드리운 그림자(빛 = 왼쪽 위 → 오른쪽 위로, CT112)
+            cv.shadow((g["x0"] + g["x1"]) / 2 + 0.25 + hh * 0.22, g["y1"] - 0.45 - hh * 0.12, gw * 0.5 + hh * 0.15, 0.35 + hh * 0.08, 0.28)
     # 높은 벽(북벽 앞면 · 옆벽 윗면) — 북쪽 줄부터
     wname = rd.get("wall", "ashlar")
     cap_id = cv.new_id()
@@ -223,12 +226,7 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
         if plan.legend[g["char"]]["kind"] != "door" or not all(c in full and role(R, *c) == "north" for c in g["cells"]):
             continue
         x0, x1, yf = g["x0"], g["x1"], g["y1"]
-        W.arch(cv, yf, x0 + 0.06, x1 - 0.06, 0.0, 2.3 + (x1 - x0 - 1) * 0.3, hexc("#4e463c"))
-        W.arch(cv, yf, x0 + 0.16, x1 - 0.16, 0.0, 2.2 + (x1 - x0 - 1) * 0.3, W.DARK, lit=0.0)
-        cv.ground(x0 + 0.16, yf - 0.65, x1 - 0.16, yf, None, tex=M.slabs("#6a6258", 1.0, 1.0, seed, 0.05), lit=0.55)
-        cv.front(x0 + 0.16, x0 + 0.28, yf - 0.4, 0.0, 2.0, None, tex=M.plank_door(seed + x0), shade=(0.5, 0.35))
-        if x1 - x0 > 1:
-            cv.front(x1 - 0.28, x1 - 0.16, yf - 0.4, 0.0, 2.0, None, tex=M.plank_door(seed + x1), shade=(0.5, 0.35))
+        IF.door_open(cv, x0, x1, yf, seed + x0)  # 두께 있는 문틀 · 이어지는 바닥 · 비스듬히 연 문짝(CT112)
     for g in groups:
         if plan.legend[g["char"]]["kind"] != "wallart" or not all(c in full and role(R, *c) == "north" for c in g["cells"]):
             continue

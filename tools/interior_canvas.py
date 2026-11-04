@@ -117,6 +117,19 @@ class Canvas:
         side = top * 0.72 if side is None else side
         self.front(x0, x1, y1, z0, z1, side, tex=tex_side, shade=shade)
         self.ground(x0, y0, x1, y1, top, tex=tex_top, z=z1)
+        e = min(0.035, (y1 - y0) * 0.25)  # 윗면 앞 모서리 빛(두께가 보이게 — CT112)
+        if e > 0.004:
+            self.edge_light(x0, x1, y1, z1, e)
+
+    def edge_light(self, x0, x1, y, z, e=0.03, k=1.28):
+        """윗면 앞 모서리(y) 띠를 밝게 — 면 번호는 그대로(먹선이 생기지 않게)."""
+        pts = [self.to_px(x0, y - e, z), self.to_px(x1, y - e, z), self.to_px(x1, y, z), self.to_px(x0, y, z)]
+        mk = self._mask(pts)
+        if mk is None:
+            return
+        sl, m = mk
+        reg = self.raw[sl]
+        reg[m] = np.clip(reg[m] * k, 0, 1)
 
     def ellipse_pts(self, cx, cy, rx, ry, z, n=28, a0=0.0, a1=math.tau):
         return [self.to_px(cx + rx * math.cos(a0 + (a1 - a0) * i / n), cy + ry * math.sin(a0 + (a1 - a0) * i / n), z) for i in range(n + 1)]
@@ -130,7 +143,15 @@ class Canvas:
         pts = lo + hi
         self.fill(pts, side, tex=tex_side, shade=None)
         self._cyl_shade(cx, r, pts)
-        self.fill(self.ellipse_pts(cx, cy, r, ry, z1), top, tex=tex_top)
+        cid = self.fill(self.ellipse_pts(cx, cy, r, ry, z1), top, tex=tex_top)
+        if r > 0.08:  # 윗면 앞쪽 테 빛(CT112)
+            ring = self.ellipse_pts(cx, cy, r, ry, z1, 20, 0.15, math.pi - 0.15) + self.ellipse_pts(cx, cy - 0.04, r * 0.93, ry * 0.93, z1, 20, math.pi - 0.15, 0.15)
+            mk = self._mask(ring)
+            if mk is not None:
+                sl, m = mk
+                reg = self.raw[sl]
+                reg[m] = np.clip(reg[m] * 1.22, 0, 1)
+        return cid
 
     def _cyl_shade(self, cx, r, pts):
         """둥근 옆면: 왼쪽이 밝고 오른쪽이 어둡다(빛 = 왼쪽 위)."""

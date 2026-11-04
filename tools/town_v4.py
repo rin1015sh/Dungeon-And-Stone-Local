@@ -397,7 +397,7 @@ def dress(t: City):
 		t.spot("stall", x, z, 2.2, 1.2)
 	for x, z in ((-6.5, -3.0), (6.0, -3.0), (-6.5, 1.5), (6.0, 1.5)):
 		t.spot("stall", x, z, 2.2, 1.2)
-	t.spot("fountain", 4.5, -0.6, 2.0, 2.0)
+	t.spot("fountain", -0.5, -0.6, 3.6, 3.6)  # 시장 광장 한가운데(CT112)
 	t.spot("crate", -7.6, -0.6, 0.9, 0.9)
 	for h in t.p.houses:
 		fid = h.get("facility", "")

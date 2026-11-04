@@ -142,14 +142,20 @@ static func _museum(k: Kit) -> void:
 	var y := float(r[4])
 	k.hip_roof(r[0], r[1], r[2], r[3], y, 0.9, 0.25, F2.roof(2))
 	# 정면 현관: 계단 둘 · 기둥 여섯 · 들보 · 삼각 박공
-	k.box(-3.3, 3.0, 3.3, 5.0, 0.0, 0.2, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))
-	k.box(-3.0, 3.0, 3.0, 4.7, 0.2, 0.4, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))
+	# 얕은 현관(CT112 — 깊으면 3/4에서 바닥만 넓게 보이고 문이 높이 떠 보였다 "도서관 들어갈 수 있는 거 맞냐?")
+	k.box(-3.3, 3.0, 3.3, 4.3, 0.0, 0.15, {"top": F2.plain("stone", 2)}, F2.plain("stone", 2))
+	k.box(-3.0, 3.0, 3.0, 4.0, 0.15, 0.3, {"top": F2.plain("dark")}, F2.plain("stone", 2))
 	var col := F2.plain("stone", 2)
 	for i in 6:
+		if i == 2 or i == 3:
+			continue  # 가운데 두 기둥은 비워 정문이 보이게
 		var x := -2.6 + i * 1.04
-		k.cylinder(x, 4.3, 0.17, 0.4, y - 0.35, 10, func(_j: int) -> Callable: return col)
-	k.box(-3.0, 3.0, 3.0, 4.6, y - 0.35, y + 0.05, {"top": F2.plain("stone")}, F2.plain("stone"))
-	k.gable_roof(-3.0, 3.0, 3.0, 4.6, y + 0.05, 1.0, false, 0.08, F2.roof(2), F2.gable("stone", 0, false))
+		k.cylinder(x, 3.7, 0.17, 0.3, y - 0.35, 10, func(_j: int) -> Callable: return col)
+	for x: float in [-1.3, 1.3]:
+		k.cylinder(x, 3.7, 0.17, 0.3, y - 0.35, 10, func(_j: int) -> Callable: return col)
+	_grand_door(k, 3.0, 0.3, minf(2.3, y - 0.6))
+	k.box(-3.0, 3.0, 3.0, 4.0, y - 0.35, y + 0.05, {"top": F2.plain("stone")}, F2.plain("stone"))
+	k.gable_roof(-3.0, 3.0, 3.0, 4.0, y + 0.05, 0.9, false, 0.08, F2.roof(2), F2.gable("stone", 0, false))
 	# 돔: 둥근 받침(창) + 반구 + 꼭대기 작은 탑
 	var dy := y + 0.6
 	k.cylinder(0.0, -0.8, 2.3, y - 0.1, dy + 0.75, 18, func(i: int) -> Callable: return F2.wall({"style": "stone", "floors": 1, "ci": 1, "win": "arch", "lit": 0.6 if i % 2 == 0 else 0.0}))
@@ -159,6 +165,39 @@ static func _museum(k: Kit) -> void:
 	k.cone(0.0, -0.8, 0.55, top + 0.7, 0.6, 10, _copper())
 	chimney(k, -5.2, -3.0, y, y + 1.3)
 	chimney(k, 5.2, -3.0, y, y + 1.3)
+
+
+## 큰 정문(벽 앞 z에 붙인 판): 아치 문틀(밝은 돌 · 이맛돌) · 두 짝 널문(쇠띠 · 고리) · 반원 채광창 · 문지방.
+static func _grand_door(k: Kit, z: float, y0: float, h: float) -> void:
+	var w := 0.85
+	var frame: Array[Vector2] = []
+	var leaf: Array[Vector2] = []
+	var spring := y0 + h - w
+	for i in 13:
+		var a := PI * i / 12.0
+		frame.append(Vector2(cos(a) * (w + 0.18), spring + sin(a) * (w + 0.18)))
+		leaf.append(Vector2(cos(a) * w, spring + sin(a) * w))
+	frame.append_array([Vector2(-w - 0.18, y0), Vector2(w + 0.18, y0)])
+	leaf.append_array([Vector2(-w, y0), Vector2(w, y0)])
+	_plate(k, frame, z + 0.01, F2.plain("stone", 1))
+	_plate(k, leaf, z + 0.02, F2.plain("wood"))
+	var glass: Array[Vector2] = []
+	for i in 13:
+		var a := PI * i / 12.0
+		glass.append(Vector2(cos(a) * (w - 0.08), spring + sin(a) * (w - 0.08)))
+	_plate(k, glass, z + 0.025, F2.plain("dark"))
+	_plate(k, [Vector2(-w, spring - 0.04), Vector2(w, spring - 0.04), Vector2(w, spring + 0.02), Vector2(-w, spring + 0.02)], z + 0.03, F2.plain("stone", 1))
+	_plate(k, [Vector2(-0.015, y0), Vector2(0.015, y0), Vector2(0.015, spring - 0.04), Vector2(-0.015, spring - 0.04)], z + 0.03, F2.plain("dark"))
+	for yy: float in [y0 + 0.3, y0 + (spring - y0) * 0.7]:
+		_plate(k, [Vector2(-w + 0.04, yy), Vector2(w - 0.04, yy), Vector2(w - 0.04, yy + 0.05), Vector2(-w + 0.04, yy + 0.05)], z + 0.035, F2.plain("dark"))
+	_plate(k, [Vector2(-0.12, spring + w + 0.05), Vector2(0.12, spring + w + 0.05), Vector2(0.09, spring + w + 0.3), Vector2(-0.09, spring + w + 0.3)], z + 0.015, F2.plain("stone", 0))
+
+
+static func _plate(k: Kit, pts2: Array, z: float, painter: Callable) -> void:
+	var pts := PackedVector3Array()
+	for q: Vector2 in pts2:
+		pts.append(Vector3(q.x, q.y, z))
+	k.face(pts, Vector3.BACK, painter)
 
 
 ## 반구 돔(위도 띠 면) — 가운데 c(밑면 높이), 반지름 r, 높이 h.

@@ -7,6 +7,7 @@ import numpy as np
 
 import interior_mats as M
 from interior_canvas import hexc
+import interior_fine as IF
 
 WOOD_D, WOOD, WOOD_L = hexc("#3a2a1c"), hexc("#5a4030"), hexc("#7a5a3c")
 IRON, BRASS, PAPER = hexc("#38383a"), hexc("#9a7e48"), hexc("#c4b48e")
@@ -89,11 +90,7 @@ def draw(cv, art, x0, x1, yf, H, seed):
             for s in (-1, 1):
                 cv.line(cv.to_px(hx + s * 0.12, yf + 0.06, 1.6), cv.to_px(hx + s * 0.34, yf + 0.06, 1.95), 4, hexc("#c8bca0"))
     elif art in ("door_shut", "door_closed"):
-        arch(cv, yf, x0 + 0.1, x1 - 0.1, 0.0, 1.95, STONE * 0.75)
-        arch(cv, yf, x0 + 0.16, x1 - 0.16, 0.0, 1.88, tex=M.plank_door(seed))
-        for z in (0.45, 1.35):
-            rect(cv, yf + 0.01, x0 + 0.18, x1 - 0.18, z, z + 0.07, IRON)
-        rect(cv, yf + 0.02, x1 - 0.38, x1 - 0.3, 0.9, 0.98, BRASS)
+        IF.door_shut(cv, x0, x1, yf, seed)  # 들어간 널문 · 문틀 · 문지방(CT112)
     elif art == "doc_wall":
         rect(cv, yf, x0 + 0.05, x1 - 0.05, 0.25, 2.15, WOOD_D)
         for zr in range(5):
@@ -120,13 +117,7 @@ def draw(cv, art, x0, x1, yf, H, seed):
         cv.box(x0 + 0.1, yf, x1 - 0.1, yf + 0.18, 0.86, 0.94, WOOD_L)
         rect(cv, yf + 0.05, cx - 0.2, cx + 0.1, 0.94, 1.08, hexc("#8a7a60"))
     elif art == "fireplace":
-        cv.box(x0 + 0.05, yf, x1 - 0.05, yf + 0.3, 0.0, 1.55, STONE, tex_side=M.slabs("#7a7266", 0.5, 0.3, seed, 0.2))
-        cv.front(x0 + 0.05, x1 - 0.05, yf + 0.3, 1.55, 1.72, hexc("#4a3a2a"))
-        cv.ground(x0, yf + 0.0, x1, yf + 0.42, hexc("#4a3a2a"), z=1.72)
-        arch(cv, yf + 0.31, x0 + 0.42, x1 - 0.42, 0.0, 1.05, DARK * 1.3, lit=0.0)
-        for k in range(3):
-            flame(cv, yf + 0.31, cx - 0.32 + k * 0.32, 0.12, 1.5 - abs(k - 1) * 0.4, dy=0.02)
-        cv.ground(x0 + 0.5, yf + 0.31, x1 - 0.5, yf + 0.55, hexc("#3a2a20"), z=0.06)
+        IF.fireplace(cv, x0, x1, yf, H, seed)  # 벽에서 나온 몸통 · 들어간 화구(CT112)
     elif art == "stained_glass":
         pw = w / 3
         cols = [("#7a2a26", "#a84a32"), ("#a88a3a", "#d4b25a"), ("#2e5a3a", "#4a7a4a")]

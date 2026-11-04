@@ -9,7 +9,7 @@ extends RefCounted
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Props3D := preload("res://tools/town_kit/Props3D.gd")
 
-const KINDS := ["lamp", "well", "cart", "wagon", "dais", "dais_ring", "citywall", "citygate"]
+const KINDS := ["fountain", "lamp", "well", "cart", "wagon", "dais", "dais_ring", "citywall", "citygate"]
 const ONLY := ["dais_ring", "citywall", "citygate"]  # 여기에만 있는 것(돌 단에서 떼어 낸 선 돌 고리 — 앞뒤 순서가 사람과 맞게)
 const IRON := Color("#2a2622")
 const BRASS := Color("#6a5a3a")
@@ -18,6 +18,7 @@ const BRASS := Color("#6a5a3a")
 static func build(kind: String, k: Kit) -> void:
 	match kind:
 		"lamp": _lamp(k)
+		"fountain": _fountain(k)
 		"well": _well(k)
 		"cart": _cart(k)
 		"wagon": _wagon(k)
@@ -305,3 +306,54 @@ static func _citywall(k: Kit, gate: bool) -> void:
 		k.box(x, -0.32, x + 0.5, 0.0, h, h + 0.42, {"top": _p(Color("#9a917c"))}, _p(WALL_STONE.lightened(0.05), "stone"))
 		Props3D.plate(k, [Vector2(x + 0.22, h + 0.08), Vector2(x + 0.28, h + 0.08), Vector2(x + 0.28, h + 0.32), Vector2(x + 0.22, h + 0.32)], 0.005, _p(Color("#141210"), "", 0.5))
 	k.box(-2.0, z0, 2.0, z0 + 0.14, h, h + 0.16, {"top": _p(Color("#8a8270"))}, _p(WALL_STONE, "", 1.0))  # 안쪽 낮은 난간
+
+
+
+# ---------- 분수(시장 광장 한가운데 — 3×3칸, CT112) ----------
+
+## 얕은 그릇(밖은 비스듬한 면 · 안은 물낯이 보인다): 가운데 c, 아래 반지름 r0 · 위 r1, 높이 y0 → y1.
+static func bowl(k: Kit, r0: float, r1: float, y0: float, y1: float, stone: Color, water: Color, segs: int = 14) -> void:
+	for i in segs:
+		var a0 := TAU * i / segs
+		var a1 := TAU * (i + 1) / segs
+		var am := (a0 + a1) * 0.5
+		k.face(Kit._pts([Vector3(cos(a0) * r0, y0, sin(a0) * r0), Vector3(cos(a1) * r0, y0, sin(a1) * r0),
+			Vector3(cos(a1) * r1, y1, sin(a1) * r1), Vector3(cos(a0) * r1, y1, sin(a0) * r1)]), Vector3(cos(am), (r1 - r0) / maxf(0.01, y1 - y0) * 0.5, sin(am)), _p(stone, "stone", 0.9))
+	annulus(k, 0.0, 0.0, r1, r1 - 0.07, y1, segs, _p(stone.lightened(0.12), "", 0.9))
+	inner_wall(k, 0.0, 0.0, r1 - 0.07, y1 - 0.1, y1, segs, _p(stone.darkened(0.3), "", 0.8))
+	disk(k, 0.0, 0.0, r1 - 0.07, y1 - 0.08, _p(water, "", 0.6), segs)
+
+
+static func _fountain(k: Kit) -> void:
+	var stone := Color("#857d6c")
+	var water := Color("#3a5a62")
+	var ro := 1.38
+	var ri := 1.16
+	var h := 0.48
+	tube(k, 0.0, 0.0, ro + 0.1, 0.0, 0.1, _p(stone.darkened(0.15), "stone"), 8)  # 밑 단(팔각)
+	disk(k, 0.0, 0.0, ro + 0.1, 0.1, _p(stone.darkened(0.1)), 8)
+	tube(k, 0.0, 0.0, ro, 0.1, h, _p(stone, "stone"), 8)  # 팔각 수반 벽(면마다 돌)
+	for i in 8:  # 모서리 기둥돌
+		var a := TAU * i / 8.0
+		k.box(cos(a) * ro - 0.07, sin(a) * ro - 0.07, cos(a) * ro + 0.07, sin(a) * ro + 0.07, 0.1, h + 0.06, {"top": _p(stone.lightened(0.15))}, _p(stone.lightened(0.05), "", 0.9))
+	annulus(k, 0.0, 0.0, ro + 0.04, ri, h, 8, _p(stone.lightened(0.14), "", 1.0))  # 갓돌
+	inner_wall(k, 0.0, 0.0, ri, 0.12, h, 8, _p(stone.darkened(0.32), "stone", 0.8))  # 안벽
+	disk(k, 0.0, 0.0, ri, 0.32, _p(water, "", 0.7), 16)  # 물낯
+	for r: float in [0.45, 0.75, 1.0]:  # 물결 고리(밝은 띠)
+		annulus(k, 0.0, 0.0, r + 0.025, r, 0.322, 20, _p(Color("#7f9aa0"), "", 0.0))
+	tube(k, 0.0, 0.0, 0.2, 0.3, 1.1, _p(stone.lightened(0.05), "stone"), 10)  # 기둥
+	tube(k, 0.0, 0.0, 0.26, 0.3, 0.45, _p(stone, "", 0.9), 10)
+	bowl(k, 0.22, 0.72, 1.0, 1.22, stone.lightened(0.05), water)  # 아래 그릇
+	tube(k, 0.0, 0.0, 0.11, 1.2, 1.75, _p(stone.lightened(0.08), "stone"), 8)
+	bowl(k, 0.1, 0.38, 1.68, 1.84, stone.lightened(0.1), water, 12)  # 위 그릇
+	tube(k, 0.0, 0.0, 0.05, 1.84, 2.1, _p(stone.lightened(0.12)), 8)  # 꼭지
+	disk(k, 0.0, 0.0, 0.08, 2.1, _p(stone.lightened(0.18)), 8)
+	var fall := Color(0.62, 0.76, 0.8)
+	for i in 6:  # 그릇 가장자리에서 떨어지는 물줄기(가는 판)
+		var a := TAU * (i + 0.5) / 6.0
+		for pair: Array in [[0.72, 1.18, 0.34], [0.38, 1.8, 1.2]]:
+			var rr: float = pair[0]
+			var yt: float = pair[1]
+			var yb: float = pair[2]
+			var q := Vector2(cos(a), sin(a)) * (rr + 0.03)
+			k.face(Kit._pts([Vector3(q.x - 0.03, yt, q.y), Vector3(q.x + 0.03, yt, q.y), Vector3(q.x + 0.02, yb, q.y), Vector3(q.x - 0.02, yb, q.y)]), Vector3(cos(a), 0.0, sin(a)), _p(fall, "", 0.0))
