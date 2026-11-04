@@ -1,5 +1,5 @@
 {
-  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설(M4). 거리의 배치 순서는 city.json facility_order(없으면 order), 그림은 building(옛 횡스크롤 거리 — M5에서 정리) 경로 — 동네 지도의 건물·문은 data/town(CT82), 시설 안은 시설 창(실내는 지움 — CT83). activities = data/activities의 id. x = 거리 위 왼쪽 끝 위치(거리 단위 — 화면 높이 720 기준 px, 건물 폭 = 그림 폭 × render.json city.building_scale). shows = 시설 패널 정보 줄(temple_merit·bank_balance·lore·survey). special = 특별 시설(거리에 서지 않고 거리 오른쪽 끝에서 D → 고르는 창으로 간다 — 거래소, CT63) · place_ko = 그 창에 보이는 곳 · slot = 예전 거리에서 차지하던 폭(x가 더 큰 건물을 그만큼 당기고 거리 폭도 줄인다). placeholder = 기능을 아직 만들지 않은 시설(활동 없음 — 들어가도 행동력을 쓰지 않고 나가기만 있다, 검증기가 '활동 없음'을 경고하지 않는다).",
+  "_comment": "스키마 템플릿(로드되지 않음). 도시 시설(M4). 거리의 배치 순서는 city.json facility_order(없으면 order), 그림은 building(옛 횡스크롤 거리 — M5에서 정리) 경로 — 동네 지도의 건물·문은 data/town(CT82), 시설 안 = interior(data/interiors의 id — 걸어 다니는 실내, CT106)가 있으면 실내, 없으면 시설 창(CT83). activities = data/activities의 id. x = 거리 위 왼쪽 끝 위치(거리 단위 — 화면 높이 720 기준 px, 건물 폭 = 그림 폭 × render.json city.building_scale). shows = 시설 패널 정보 줄(temple_merit·bank_balance·lore·survey). special = 특별 시설(거리에 서지 않고 거리 오른쪽 끝에서 D → 고르는 창으로 간다 — 거래소, CT63) · place_ko = 그 창에 보이는 곳 · slot = 예전 거리에서 차지하던 폭(x가 더 큰 건물을 그만큼 당기고 거리 폭도 줄인다). placeholder = 기능을 아직 만들지 않은 시설(활동 없음 — 들어가도 행동력을 쓰지 않고 나가기만 있다, 검증기가 '활동 없음'을 경고하지 않는다).",
   "id": "inn",
   "name_ko": "여관",
   "order": 1,

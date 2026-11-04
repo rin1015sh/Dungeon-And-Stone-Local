@@ -33,6 +33,7 @@
     "riddles": {"dir": "riddles"},
     "events": {"dir": "events"},
     "facilities": {"dir": "facilities"},
+    "interiors": {"dir": "interiors"},
     "activities": {"dir": "activities"},
     "town": {"dir": "town"},
     "city_info": {"dir": "city_info"},

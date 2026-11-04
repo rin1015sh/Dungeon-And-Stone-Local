@@ -1,5 +1,6 @@
 {
   "id": "inn",
+  "interior": "inn",
   "name_ko": "여관",
   "order": 2,
   "x": 733,

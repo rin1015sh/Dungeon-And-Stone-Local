@@ -1,0 +1,12 @@
+{
+  "_comment": "스키마 템플릿(로드되지 않음). 시설 실내(CT106 — 단층 · 방 몇 개 · 플레이어가 있는 방만 보인다): 시설 JSON interior가 이 id를 가리키면 시설 창 대신 이 실내를 걷는다. rows = 칸 글자(맨 윗줄 = 북벽 — 앞면이 보인다, '#' 벽 · '.' 바닥 · 'D' 바깥 문 — 밟으면 나간다, 그 밖은 legend). legend 글자 → {kind, name_ko, art(그림 이름 — tools/interior_bake.py), light {color, radius(칸), power}, needs(이 활동이 지금 있을 때만 선다), opens(이 사건 순에만 열리는 문), locked(늘 잠긴 문 — 벽 그림, Enter = 잠겨 있다)}. kind: wallart 벽에 붙은 것(벽) · furniture 가구(막힘, 같은 글자가 붙은 칸이 한 덩어리 — 그림 하나) · low 지나가는 낮은 것 · door 방 사이 문(지나감) · back 카운터 안쪽(못 들어감, 바닥) · npc 사람 자리(막힘 — npcs가 그린다). 방 = 벽 · 벽 장식 · 문으로 나뉜 칸 덩어리(CityInterior), rooms = 방마다 [at 칸, name_ko, floor 바닥 재질, wall 벽 재질, ambient 밝기]. spots = 활동 자리 {char(그 글자 칸 모두) 또는 at [x, y], activities(이번 순에 없는 것은 빠진다), name_ko(대화창 이름판)} — 그 칸 앞에서 바라보고 Enter. npcs = [{at, look(몸 그림 시트), name_ko, face [x, y], needs}]. art_dir = 구운 그림 폴더(tools/interior_bake.py → <방 번호>_bg.webp · _front.webp · f_<글자 코드>.webp + index.json).",
+  "id": "inn",
+  "facility": "inn",
+  "art_dir": "res://assets/city/interiors/inn",
+  "rows": ["#####", "#=@.#", "#...#", "##D##"],
+  "legend": {"=": {"kind": "furniture", "name_ko": "바", "art": "bar"}, "@": {"kind": "npc", "name_ko": "여관 주인"}},
+  "rooms": [{"at": [2, 2], "name_ko": "주점 홀", "floor": "honey", "wall": "plaster", "ambient": 0.62}],
+  "spots": [{"char": "=", "activities": ["inn_meal"], "name_ko": "여관 주인"}],
+  "npcs": [{"at": [2, 1], "look": "res://assets/actors/looks/n2_innkeeper.webp", "name_ko": "여관 주인"}],
+  "source": "original"
+}

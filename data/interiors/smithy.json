@@ -1,0 +1,115 @@
+{
+ "id": "smithy",
+ "facility": "smithy",
+ "name_ko": "대장간 실내",
+ "art_dir": "res://assets/city/interiors/smithy",
+ "rows": [
+  "#WW##FFFF##HH#",
+  "#...b....q...#",
+  "#.....@n.....#",
+  "#............#",
+  "#mm.......g..#",
+  "#............#",
+  "#rrr.........#",
+  "#............#",
+  "######DD######"
+ ],
+ "legend": {
+  "W": {
+   "kind": "wallart",
+   "name_ko": "무기 걸이",
+   "art": "weapon_wall"
+  },
+  "F": {
+   "kind": "wallart",
+   "name_ko": "큰 화덕(불빛)",
+   "art": "forge",
+   "light": {
+    "color": "#ff6a28",
+    "radius": 7.0,
+    "power": 0.75
+   }
+  },
+  "H": {
+   "kind": "wallart",
+   "name_ko": "방패 벽",
+   "art": "shield_wall"
+  },
+  "b": {
+   "kind": "furniture",
+   "name_ko": "풀무",
+   "art": "bellows"
+  },
+  "q": {
+   "kind": "furniture",
+   "name_ko": "담금 통",
+   "art": "quench_tub"
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "대장장이"
+  },
+  "n": {
+   "kind": "furniture",
+   "name_ko": "모루",
+   "art": "anvil"
+  },
+  "m": {
+   "kind": "furniture",
+   "name_ko": "갑옷 받침대",
+   "art": "mannequin"
+  },
+  "g": {
+   "kind": "furniture",
+   "name_ko": "숫돌 바퀴",
+   "art": "grindstone"
+  },
+  "r": {
+   "kind": "furniture",
+   "name_ko": "무기 진열대",
+   "art": "weapon_rack"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    6,
+    5
+   ],
+   "name_ko": "작업장",
+   "floor": "dirt",
+   "wall": "brick_soot",
+   "ambient": 0.6
+  }
+ ],
+ "spots": [
+  {
+   "char": "n",
+   "activities": [
+    "smithy_trade"
+   ],
+   "name_ko": "대장장이"
+  },
+  {
+   "at": [
+    6,
+    2
+   ],
+   "activities": [
+    "smithy_trade"
+   ],
+   "name_ko": "대장장이"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    6,
+    2
+   ],
+   "look": "res://assets/actors/looks/n5_smith.webp",
+   "name_ko": "대장장이"
+  }
+ ],
+ "source": "original"
+}

@@ -1,5 +1,6 @@
 {
   "id": "shop",
+  "interior": "shop",
   "name_ko": "상점",
   "order": 5,
   "x": 2248,

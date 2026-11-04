@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""도시 건물 실내 v2 기획 배치도 — docs/plans/interiors/boards.json → <id>.png · all.png + 검사.
+"""도시 건물 실내 배치도 — data/interiors/<id>.json(게임 지도 — CT106) → docs/plans/interiors/<id>.png · all.png + 검사.
 
 검사: 줄 길이가 같다 · 문(D)에서 모든 활동 자리 앞 칸에 걸어서 닿는다 · 방(벽과 방 사이 문으로 나뉜 곳)마다
 한 화면(30×16칸)에 들어간다 — 게임에서는 플레이어가 있는 방만 보인다 · 문에서 활동 자리마다 걷는 시간(4.5칸/초).
-기획용 도구 — 게임은 이 파일을 읽지 않는다.
+게임 그림은 tools/interior_bake.py — 이것은 칸 배치를 한눈에 보는 그림.
 """
 import json
 from collections import deque
@@ -12,8 +12,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "docs/plans/interiors/boards.json"
-OUT = SRC.parent
+SRC = ROOT / "data/interiors"
+OUT = ROOT / "docs/plans/interiors"
 FONT = str(ROOT / "assets/fonts/NotoSansKR-Regular.otf")
 CELL = 30
 SCREEN = (30, 16)      # 1280×720 ÷ (32px × zoom 1.3333)
@@ -148,8 +148,30 @@ def draw(rid: str, room: dict) -> Image.Image:
     return img
 
 
+KIND = {"furniture": "block", "wallart": "wall", "low": "low", "door": "door", "back": "back", "npc": "npc"}
+
+
+def load_room(path: Path) -> dict:
+    """게임 지도 → 배치도 꼴(legend [이름, 종류] · acts {글자: 활동} · room_names)."""
+    d = json.loads(path.read_text(encoding="utf-8"))
+    rows = d["rows"]
+    acts = {}
+    for sp in d.get("spots", []):
+        ch = sp.get("char") or rows[sp["at"][1]][sp["at"][0]]
+        acts.setdefault(ch, []).extend(sp["activities"])
+    legend = {}
+    for ch, e in d.get("legend", {}).items():
+        k = KIND.get(e.get("kind"), "block")
+        if ch in acts:
+            k = "wallact" if k == "wall" else ("act" if k in ("block", "npc") else k)
+        legend[ch] = [e.get("name_ko", ch), k]
+    return {"name_ko": d.get("name_ko", d["id"]), "rows": rows, "legend": legend, "acts": acts,
+            "room_names": [[r["at"][0], r["at"][1], r["name_ko"]] for r in d.get("rooms", [])]}
+
+
 def main() -> None:
-    data = json.loads(SRC.read_text(encoding="utf-8"))
+    rooms = {p.stem: load_room(p) for p in sorted(SRC.glob("*.json")) if not p.name.startswith("_")}
+    data = {"rooms": rooms}
     errors, imgs = [], []
     for rid, room in data["rooms"].items():
         errors += check(rid, room)

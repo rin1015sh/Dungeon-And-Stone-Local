@@ -1,0 +1,177 @@
+{
+ "id": "inn",
+ "facility": "inn",
+ "name_ko": "여관 실내",
+ "art_dir": "res://assets/city/interiors/inn",
+ "rows": [
+  "#################OO###",
+  "###############bb..cs#",
+  "###############bb....#",
+  "###############......#",
+  "###L###L###L#####+####",
+  "#....................#",
+  "#.v..................#",
+  "#TTTT#K###FFF#####+###",
+  "#,,,,,@,.............#",
+  "#=======.............#",
+  "#....................#",
+  "#...oo..oo....oo..oo.#",
+  "#....................#",
+  "#...oo..........oo..l#",
+  "#....................#",
+  "##########DD##########"
+ ],
+ "legend": {
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창(밤빛)",
+   "art": "window",
+   "light": {
+    "color": "#8fa4c0",
+    "radius": 3.0,
+    "power": 0.35
+   }
+  },
+  "b": {
+   "kind": "furniture",
+   "name_ko": "침대",
+   "art": "bed"
+  },
+  "c": {
+   "kind": "furniture",
+   "name_ko": "옷 궤",
+   "art": "chest"
+  },
+  "s": {
+   "kind": "furniture",
+   "name_ko": "세면대",
+   "art": "washstand"
+  },
+  "L": {
+   "kind": "wallart",
+   "name_ko": "다른 객실 문(잠김)",
+   "art": "door_shut",
+   "locked": true
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "v": {
+   "kind": "furniture",
+   "name_ko": "복도 촛대 탁자",
+   "art": "candle_table",
+   "light": {
+    "color": "#ffc070",
+    "radius": 3.0,
+    "power": 0.6
+   }
+  },
+  "T": {
+   "kind": "wallart",
+   "name_ko": "술통 선반",
+   "art": "barrel_shelf"
+  },
+  "K": {
+   "kind": "wallart",
+   "name_ko": "주방 배식구",
+   "art": "hatch"
+  },
+  "F": {
+   "kind": "wallart",
+   "name_ko": "벽난로(불빛)",
+   "art": "fireplace",
+   "light": {
+    "color": "#ff9a48",
+    "radius": 6.0,
+    "power": 0.95
+   }
+  },
+  ",": {
+   "kind": "back",
+   "name_ko": "바 안쪽(주인 자리)"
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "여관 주인"
+  },
+  "=": {
+   "kind": "furniture",
+   "name_ko": "바",
+   "art": "bar"
+  },
+  "o": {
+   "kind": "furniture",
+   "name_ko": "원탁·의자",
+   "art": "round_table"
+  },
+  "l": {
+   "kind": "furniture",
+   "name_ko": "빈 의자와 류트",
+   "art": "lute_chair"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    17,
+    2
+   ],
+   "name_ko": "내 방",
+   "floor": "honey",
+   "wall": "plaster",
+   "ambient": 0.52
+  },
+  {
+   "at": [
+    10,
+    5
+   ],
+   "name_ko": "객실 복도",
+   "floor": "honey",
+   "wall": "plaster",
+   "ambient": 0.45
+  },
+  {
+   "at": [
+    10,
+    10
+   ],
+   "name_ko": "주점 홀",
+   "floor": "honey",
+   "wall": "plaster",
+   "ambient": 0.62
+  }
+ ],
+ "spots": [
+  {
+   "char": "=",
+   "activities": [
+    "inn_snack",
+    "inn_meal",
+    "inn_hearty",
+    "inn_feast"
+   ],
+   "name_ko": "여관 주인"
+  },
+  {
+   "char": "b",
+   "activities": [
+    "inn_rest"
+   ],
+   "name_ko": "내 방"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    6,
+    8
+   ],
+   "look": "res://assets/actors/looks/n2_innkeeper.webp",
+   "name_ko": "여관 주인"
+  }
+ ],
+ "source": "original"
+}

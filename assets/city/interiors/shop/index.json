@@ -1,0 +1,64 @@
+{
+ "tile": 48,
+ "wall_h": 3.0,
+ "rooms": [
+  {
+   "bg": {
+    "file": "r0_bg.webp",
+    "origin": [
+     -0.30000000000000004,
+     -3.35
+    ]
+   },
+   "front": [
+    {
+     "file": "r0_f7.webp",
+     "origin": [
+      -0.1,
+      6.43
+     ],
+     "foot": 7.5
+    }
+   ]
+  }
+ ],
+ "wallart": [],
+ "furniture": {
+  "2,2": {
+   "file": "f_2_2.webp",
+   "origin": [
+    1.55,
+    0.25
+   ],
+   "foot": 3,
+   "room": 0
+  },
+  "2,4": {
+   "file": "f_2_4.webp",
+   "origin": [
+    1.55,
+    2.25
+   ],
+   "foot": 5,
+   "room": 0
+  },
+  "7,4": {
+   "file": "f_7_4.webp",
+   "origin": [
+    6.55,
+    2.25
+   ],
+   "foot": 6,
+   "room": 0
+  },
+  "1,6": {
+   "file": "f_1_6.webp",
+   "origin": [
+    0.55,
+    4.25
+   ],
+   "foot": 7,
+   "room": 0
+  }
+ }
+}

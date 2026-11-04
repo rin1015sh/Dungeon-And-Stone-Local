@@ -1,5 +1,6 @@
 {
   "id": "library",
+  "interior": "library",
   "name_ko": "도서관",
   "order": 3,
   "x": 1309,

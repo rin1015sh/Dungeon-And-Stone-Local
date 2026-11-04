@@ -1,0 +1,183 @@
+{
+ "id": "temple",
+ "facility": "temple",
+ "name_ko": "신전 실내",
+ "art_dir": "res://assets/city/interiors/temple",
+ "rows": [
+  "#UU####GGGGGGGG####UU#",
+  "#..C......@.......C..#",
+  "#........aaaa........#",
+  "#......________......#",
+  "#....................#",
+  "#..pppppp....pppppp..#",
+  "#....................#",
+  "#..pppppp....pppppp..#",
+  "#....................#",
+  "#..pppppp....pppppp..#",
+  "#....................#",
+  "#....................#",
+  "###+######++######+###",
+  "#vv.h#w........w#q.jj#",
+  "#....#..........#....#",
+  "#....#..........#....#",
+  "##########DD##########"
+ ],
+ "legend": {
+  "U": {
+   "kind": "wallart",
+   "name_ko": "아치 벽감·항아리",
+   "art": "niche_urn"
+  },
+  "G": {
+   "kind": "wallart",
+   "name_ko": "색유리 세 폭(빛 웅덩이)",
+   "art": "stained_glass",
+   "light": {
+    "color": "#e8c890",
+    "radius": 7.5,
+    "power": 0.8
+   }
+  },
+  "C": {
+   "kind": "furniture",
+   "name_ko": "키 큰 촛대",
+   "art": "candelabra",
+   "light": {
+    "color": "#ffc070",
+    "radius": 3.0,
+    "power": 0.55
+   }
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "신관"
+  },
+  "a": {
+   "kind": "furniture",
+   "name_ko": "돌 제단",
+   "art": "altar"
+  },
+  "_": {
+   "kind": "low",
+   "name_ko": "제단 단(디딤)",
+   "art": "dais"
+  },
+  "p": {
+   "kind": "furniture",
+   "name_ko": "긴 의자",
+   "art": "pew"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문(아치)",
+   "art": "arch"
+  },
+  "v": {
+   "kind": "furniture",
+   "name_ko": "봉헌 촛대",
+   "art": "offering_candles",
+   "light": {
+    "color": "#ffb060",
+    "radius": 2.6,
+    "power": 0.6
+   }
+  },
+  "h": {
+   "kind": "furniture",
+   "name_ko": "헌금함",
+   "art": "offering_box"
+  },
+  "w": {
+   "kind": "furniture",
+   "name_ko": "성수반",
+   "art": "font"
+  },
+  "q": {
+   "kind": "furniture",
+   "name_ko": "정화 대야",
+   "art": "basin"
+  },
+  "j": {
+   "kind": "furniture",
+   "name_ko": "제의 옷장",
+   "art": "wardrobe"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    10,
+    6
+   ],
+   "name_ko": "예배당",
+   "floor": "limestone",
+   "wall": "limestone",
+   "ambient": 0.72
+  },
+  {
+   "at": [
+    2,
+    14
+   ],
+   "name_ko": "봉헌 곁방",
+   "floor": "limestone",
+   "wall": "limestone",
+   "ambient": 0.55
+  },
+  {
+   "at": [
+    10,
+    14
+   ],
+   "name_ko": "전실",
+   "floor": "limestone",
+   "wall": "limestone",
+   "ambient": 0.66
+  },
+  {
+   "at": [
+    18,
+    14
+   ],
+   "name_ko": "제의실",
+   "floor": "limestone",
+   "wall": "limestone",
+   "ambient": 0.52
+  }
+ ],
+ "spots": [
+  {
+   "char": "a",
+   "activities": [
+    "temple_remove_essence",
+    "temple_feast"
+   ],
+   "name_ko": "신관"
+  },
+  {
+   "char": "v",
+   "activities": [
+    "temple_service"
+   ],
+   "name_ko": "봉헌 촛대"
+  },
+  {
+   "char": "q",
+   "activities": [
+    "temple_cleanse"
+   ],
+   "name_ko": "정화 대야"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    10,
+    1
+   ],
+   "look": "res://assets/actors/looks/n3_priest.webp",
+   "name_ko": "신관"
+  }
+ ],
+ "source": "original"
+}

@@ -92,7 +92,8 @@
     "city_events": "오늘의 거리",
     "street_events": "거리 사건",
     "meals": "여관 요리",
-    "scavenge": "균열 잡템 표"
+    "scavenge": "균열 잡템 표",
+    "interiors": "시설 실내"
   },
   "stat_group": {
     "body": "육체",
@@ -1069,8 +1070,10 @@
       "cave_truffle_soup": "미궁 동굴에서 캐 왔다는 송로를 갈아 넣은 수프. 눈이 밝아지고 속이 든든하다."
     },
     "reason_no_item": "필요한 물건이 없다.",
-    "reason_read_this_visit": "오늘은 이 분야를 이미 읽었다"
-
+    "reason_read_this_visit": "오늘은 이 분야를 이미 읽었다",
+    "interior": {
+      "locked": "잠겨 있다."
+    }
   },
   "field": {
     "_comment": "1층 동굴 요소(data/events) 문구 — 번호(.1 .2 …)가 여럿이면 하나를 고른다. corpse는 구역별(center/east/west/south/north).",

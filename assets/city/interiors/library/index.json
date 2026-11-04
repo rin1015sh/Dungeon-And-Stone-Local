@@ -1,0 +1,162 @@
+{
+ "tile": 48,
+ "wall_h": 3.0,
+ "rooms": [
+  {
+   "bg": {
+    "file": "r0_bg.webp",
+    "origin": [
+     4.7,
+     -3.35
+    ]
+   },
+   "front": [
+    {
+     "file": "r0_f3.webp",
+     "origin": [
+      4.9,
+      2.43
+     ],
+     "foot": 3.5
+    }
+   ]
+  },
+  {
+   "bg": {
+    "file": "r1_bg.webp",
+    "origin": [
+     -0.30000000000000004,
+     -0.35
+    ]
+   },
+   "front": [
+    {
+     "file": "r1_f10.webp",
+     "origin": [
+      -0.1,
+      9.43
+     ],
+     "foot": 10.5
+    },
+    {
+     "file": "r1_f11.webp",
+     "origin": [
+      0.9,
+      10.43
+     ],
+     "foot": 11.5
+    }
+   ]
+  }
+ ],
+ "wallart": [
+  {
+   "file": "w_2_3.webp",
+   "origin": [
+    1.8,
+    0.8
+   ],
+   "cell": [
+    2,
+    3
+   ],
+   "room": 1
+  },
+  {
+   "file": "w_5_3.webp",
+   "origin": [
+    4.8,
+    0.8
+   ],
+   "cell": [
+    5,
+    3
+   ],
+   "room": 1
+  },
+  {
+   "file": "w_8_3.webp",
+   "origin": [
+    7.8,
+    0.8
+   ],
+   "cell": [
+    8,
+    3
+   ],
+   "room": 1,
+   "closed_door": true
+  },
+  {
+   "file": "w_10_3.webp",
+   "origin": [
+    9.8,
+    0.8
+   ],
+   "cell": [
+    10,
+    3
+   ],
+   "room": 1
+  },
+  {
+   "file": "w_13_3.webp",
+   "origin": [
+    12.8,
+    0.8
+   ],
+   "cell": [
+    13,
+    3
+   ],
+   "room": 1
+  }
+ ],
+ "furniture": {
+  "8,1": {
+   "file": "f_8_1.webp",
+   "origin": [
+    7.55,
+    -0.8499999999999999
+   ],
+   "foot": 2,
+   "room": 0
+  },
+  "2,6": {
+   "file": "f_2_6.webp",
+   "origin": [
+    1.55,
+    3.3499999999999996
+   ],
+   "foot": 7,
+   "room": 1
+  },
+  "8,6": {
+   "file": "f_8_6.webp",
+   "origin": [
+    7.55,
+    4.25
+   ],
+   "foot": 8,
+   "room": 1
+  },
+  "14,6": {
+   "file": "f_14_6.webp",
+   "origin": [
+    13.55,
+    3.3499999999999996
+   ],
+   "foot": 7,
+   "room": 1
+  },
+  "13,9": {
+   "file": "f_13_9.webp",
+   "origin": [
+    12.55,
+    7.25
+   ],
+   "foot": 10,
+   "room": 1
+  }
+ }
+}

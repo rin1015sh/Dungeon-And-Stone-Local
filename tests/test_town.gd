@@ -103,12 +103,15 @@ func test_walk_blocked_by_houses_and_stairs_go_up_down() -> void:
 	assert_true(ring.has("ring"), "광장 돌 단을 바라본다")
 
 
-func test_no_interiors_left() -> void:
-	assert_false(db.collections.has("rooms") and not db.get_collection("rooms").is_empty(), "걸어 다니는 실내 방은 지웠다(사용자 2026-11-02)")
+func test_old_interiors_gone_new_ones_baked() -> void:
+	assert_false(db.collections.has("rooms") and not db.get_collection("rooms").is_empty(), "옛 복층 실내 방(data/rooms)은 지웠다(사용자 2026-11-02)")
 	for id: String in db.get_collection("facilities"):
 		var f := db.get_entry("facilities", id)
-		assert_false(f.has("room") or f.has("interior"), "%s 실내 항목 없음" % id)
-	assert_false(ResourceLoader.exists("res://assets/city/interiors/inn.webp"), "실내 그림 없음")
+		assert_false(f.has("room"), "%s 옛 실내 항목(room) 없음" % id)
+		var iid := JsonUtil.get_str(f, "interior")
+		if not iid.is_empty():  # 새 실내(CT106)는 구운 그림까지
+			assert_true(FileAccess.file_exists(JsonUtil.get_str(db.get_entry("interiors", iid), "art_dir").path_join("index.json")), "%s 실내 그림(index.json)" % id)
+	assert_false(ResourceLoader.exists("res://assets/city/interiors/inn.webp"), "옛 실내 배경 그림 없음")
 	for id in ["cobble", "slabs", "plaster", "clay", "slate", "lead"]:
 		assert_true(ResourceLoader.exists("res://assets/town/mat/%s.webp" % id), "재질 그림 " + id)
 

@@ -1,0 +1,165 @@
+{
+ "id": "guild",
+ "facility": "guild",
+ "name_ko": "탐험가 길드 실내",
+ "art_dir": "res://assets/city/interiors/guild",
+ "rows": [
+  "#SSSSOO###########",
+  "#xx.,,@,,#########",
+  "#xx..eee.#########",
+  "#........#########",
+  "##+#BBB#GG#F##L#H#",
+  "#.....,,,@,,,..tt#",
+  "#.....=======..tt#",
+  "#................#",
+  "#.mmm.......kk...#",
+  "#.mmm............#",
+  "#................#",
+  "#kk............kk#",
+  "########DD########"
+ ],
+ "legend": {
+  "S": {
+   "kind": "wallart",
+   "name_ko": "서류 칸 벽",
+   "art": "doc_wall"
+  },
+  "O": {
+   "kind": "wallart",
+   "name_ko": "창",
+   "art": "window",
+   "light": {
+    "color": "#a8b8c8",
+    "radius": 4.0,
+    "power": 0.5
+   }
+  },
+  "x": {
+   "kind": "furniture",
+   "name_ko": "표본 선반(뼈·병)",
+   "art": "specimen_shelf"
+  },
+  ",": {
+   "kind": "back",
+   "name_ko": "안쪽(직원 자리)"
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "기록원 · 접수원"
+  },
+  "e": {
+   "kind": "furniture",
+   "name_ko": "기록원 책상",
+   "art": "records_desk"
+  },
+  "+": {
+   "kind": "door",
+   "name_ko": "방 사이 문",
+   "art": "door"
+  },
+  "B": {
+   "kind": "wallart",
+   "name_ko": "의뢰 게시판",
+   "art": "notice_board"
+  },
+  "G": {
+   "kind": "wallart",
+   "name_ko": "등급표(9~1)",
+   "art": "rank_chart"
+  },
+  "F": {
+   "kind": "wallart",
+   "name_ko": "길드 깃발",
+   "art": "banner"
+  },
+  "L": {
+   "kind": "wallart",
+   "name_ko": "회의실 문(잠김)",
+   "art": "door_shut",
+   "locked": true
+  },
+  "H": {
+   "kind": "wallart",
+   "name_ko": "박제 머리(칼날늑대)",
+   "art": "trophy"
+  },
+  "t": {
+   "kind": "furniture",
+   "name_ko": "술통 둘",
+   "art": "barrels"
+  },
+  "=": {
+   "kind": "furniture",
+   "name_ko": "접수 카운터",
+   "art": "counter"
+  },
+  "m": {
+   "kind": "furniture",
+   "name_ko": "지도 탁자",
+   "art": "map_table"
+  },
+  "k": {
+   "kind": "furniture",
+   "name_ko": "걸상",
+   "art": "stool"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    4,
+    3
+   ],
+   "name_ko": "기록실",
+   "floor": "oak",
+   "wall": "stone_dark",
+   "ambient": 0.62
+  },
+  {
+   "at": [
+    8,
+    8
+   ],
+   "name_ko": "회관",
+   "floor": "oak",
+   "wall": "stone_dark",
+   "ambient": 0.7
+  }
+ ],
+ "spots": [
+  {
+   "char": "=",
+   "activities": [
+    "guild_survey",
+    "guild_tags"
+   ],
+   "name_ko": "길드 접수원"
+  },
+  {
+   "char": "e",
+   "activities": [
+    "guild_records"
+   ],
+   "name_ko": "기록원"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    6,
+    1
+   ],
+   "look": "res://assets/actors/looks/n14_scholar.webp",
+   "name_ko": "기록원"
+  },
+  {
+   "at": [
+    9,
+    5
+   ],
+   "look": "res://assets/actors/looks/n1_guild_clerk.webp",
+   "name_ko": "길드 접수원"
+  }
+ ],
+ "source": "original"
+}

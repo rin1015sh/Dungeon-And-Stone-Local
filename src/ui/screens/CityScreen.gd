@@ -11,6 +11,9 @@ signal dungeon_requested
 signal title_requested
 signal executed  ## 세금을 못 내고 기한을 넘겼다 — 처형(사망과 같다, CityTax)
 
+## 걸어 다니는 실내를 쓸까(CT106) — UI 스모크가 시설 창(FacilityView) 흐름을 보는 동안 끈다.
+static var interiors: bool = true
+
 var state: CityState
 var pc: PlayerCharacter
 var _registry: ScriptRegistry
@@ -87,6 +90,8 @@ func town() -> TownView:
 func _process(_delta: float) -> void:
 	_town.paused = _facility != null or _menu.is_open() or _codex.is_open() or _dialog.busy() or _event_running or _moving \
 		or has_node("PauseChoice") or has_node("StreetChoice") or _debug.visible
+	if _facility is InteriorView:  # 실내(CT106): Tab 메뉴 · 도감 · 디버그가 떠 있는 동안 걷지 않는다
+		(_facility as InteriorView).paused = _menu.is_open() or _codex.is_open() or _debug.visible or has_node("PauseChoice")
 
 
 func facility_view() -> FacilityView:
@@ -109,7 +114,7 @@ func choose_facility(id: String) -> void:
 	if not why.is_empty():
 		say(Strings.t(why))
 		return
-	_facility = FacilityView.new()
+	_facility = InteriorView.new() if interiors and CityInterior.load_for(state, id) != null else FacilityView.new()  # 실내가 있으면 걸어 다니는 실내(CT106)
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
 	_facility.art_shown.connect(func() -> void: _hud.visible = false)  # 그림이 덮는 동안 귀퉁이 카드는 숨긴다(요리·책)
@@ -239,8 +244,10 @@ func offer_travel() -> void:
 		choose_facility(ids[i])
 
 
-## Tab 메뉴·도감을 열 수 있는가: 동네를 걷는 중(시설 창·대화가 없을 때).
+## Tab 메뉴·도감을 열 수 있는가: 동네 · 실내를 걷는 중(시설 창 · 대화 · 실내 선택 창이 없을 때).
 func _overlay_ok() -> bool:
+	if _facility is InteriorView:
+		return (_facility as InteriorView).menu_ok() and not _dialog.busy()
 	return _facility == null and not _dialog.busy()
 
 
@@ -251,7 +258,7 @@ func _on_overlay(_on: bool) -> void:
 
 ## 소지품 쓰기(동네에서 — city.json item_use.categories 분류만, 포션 등). 결과는 막대·소지품으로 보이니 글로 알리지 않는다.
 func use_item(item_id: String) -> void:
-	if _facility != null:
+	if _facility != null and not _facility is InteriorView:
 		return
 	var db := state.db
 	var cats := JsonUtil.get_array(CityValues.city_section(db, state.overrides, "item_use"), "categories")
@@ -311,10 +318,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("pause"):  # Esc: 시설에서 나가기 · 메뉴 닫기 · (거리에서) 정지 창
-		if _facility != null:
-			_facility.try_leave()
-		elif _menu.is_open():
+		if _menu.is_open():
 			_menu.close()
+		elif _facility != null:
+			_facility.try_leave()
 		elif event.is_action_pressed("pause"):
 			_pause_choice()
 		get_viewport().set_input_as_handled()

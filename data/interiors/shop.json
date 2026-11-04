@@ -1,0 +1,116 @@
+{
+ "id": "shop",
+ "facility": "shop",
+ "name_ko": "상점 실내",
+ "art_dir": "res://assets/city/interiors/shop",
+ "rows": [
+  "#PPP#TT##RR#",
+  "#....@.....#",
+  "#.=====....#",
+  "#..Y.......#",
+  "#.yyy..xx..#",
+  "#......xx..#",
+  "#s.........#",
+  "#####DD#####"
+ ],
+ "legend": {
+  "P": {
+   "kind": "wallart",
+   "name_ko": "포션 선반",
+   "art": "potion_shelf"
+  },
+  "T": {
+   "kind": "wallart",
+   "name_ko": "횃불 다발",
+   "art": "torch_bundle"
+  },
+  "R": {
+   "kind": "wallart",
+   "name_ko": "밧줄·가방 걸이",
+   "art": "rope_hooks"
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "상인"
+  },
+  "=": {
+   "kind": "furniture",
+   "name_ko": "계산대·저울",
+   "art": "shop_counter",
+   "light": {
+    "color": "#ffc070",
+    "radius": 4.0,
+    "power": 0.45
+   }
+  },
+  "Y": {
+   "kind": "npc",
+   "name_ko": "떠돌이 상인(순에만)",
+   "needs": "shop_peddler"
+  },
+  "y": {
+   "kind": "furniture",
+   "name_ko": "떠돌이 노점(순에만)",
+   "art": "peddler_stall",
+   "needs": "shop_peddler"
+  },
+  "x": {
+   "kind": "furniture",
+   "name_ko": "진열대",
+   "art": "display_table"
+  },
+  "s": {
+   "kind": "furniture",
+   "name_ko": "자루",
+   "art": "sack"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    6,
+    5
+   ],
+   "name_ko": "매장",
+   "floor": "terracotta",
+   "wall": "plank",
+   "ambient": 0.68
+  }
+ ],
+ "spots": [
+  {
+   "char": "=",
+   "activities": [
+    "shop_trade"
+   ],
+   "name_ko": "상점 주인"
+  },
+  {
+   "char": "y",
+   "activities": [
+    "shop_peddler"
+   ],
+   "name_ko": "떠돌이 상인"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    5,
+    1
+   ],
+   "look": "res://assets/actors/looks/n4_merchant.webp",
+   "name_ko": "상점 주인"
+  },
+  {
+   "at": [
+    3,
+    3
+   ],
+   "look": "res://assets/actors/looks/n4_merchant_h1.webp",
+   "name_ko": "떠돌이 상인",
+   "needs": "shop_peddler"
+  }
+ ],
+ "source": "original"
+}

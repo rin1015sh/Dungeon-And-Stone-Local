@@ -1,0 +1,132 @@
+{
+ "id": "bank",
+ "facility": "bank",
+ "name_ko": "은행 실내",
+ "art_dir": "res://assets/city/interiors/bank",
+ "rows": [
+  "##N###VV###C##",
+  "#,,,@,,,,@,,,#",
+  "#===|====|===#",
+  "#............#",
+  "#.o........o.#",
+  "#............#",
+  "#.kkk....kkk.#",
+  "#..........g.#",
+  "######DD######"
+ ],
+ "legend": {
+  "N": {
+   "kind": "wallart",
+   "name_ko": "세금 포고문",
+   "art": "tax_notice"
+  },
+  "V": {
+   "kind": "wallart",
+   "name_ko": "둥근 금고 문(창살 너머)",
+   "art": "vault_door",
+   "light": {
+    "color": "#b8c4d0",
+    "radius": 5.0,
+    "power": 0.4
+   }
+  },
+  "C": {
+   "kind": "wallart",
+   "name_ko": "벽시계",
+   "art": "clock"
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "창구 직원 · 세무관"
+  },
+  "=": {
+   "kind": "furniture",
+   "name_ko": "놋쇠 창살",
+   "art": "bars"
+  },
+  "|": {
+   "kind": "furniture",
+   "name_ko": "창구",
+   "art": "teller_window"
+  },
+  "o": {
+   "kind": "furniture",
+   "name_ko": "대리석 기둥",
+   "art": "pillar"
+  },
+  "k": {
+   "kind": "furniture",
+   "name_ko": "대기 의자",
+   "art": "bench"
+  },
+  "g": {
+   "kind": "npc",
+   "name_ko": "경비병(분위기)"
+  },
+  ",": {
+   "kind": "back",
+   "name_ko": "창구 안쪽(직원 자리)"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    6,
+    5
+   ],
+   "name_ko": "로비",
+   "floor": "marble",
+   "wall": "ashlar",
+   "ambient": 0.74
+  }
+ ],
+ "spots": [
+  {
+   "at": [
+    4,
+    2
+   ],
+   "activities": [
+    "bank_account"
+   ],
+   "name_ko": "은행원"
+  },
+  {
+   "at": [
+    9,
+    2
+   ],
+   "activities": [
+    "bank_tax"
+   ],
+   "name_ko": "세무관"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    4,
+    1
+   ],
+   "look": "res://assets/actors/looks/n6_banker.webp",
+   "name_ko": "은행원"
+  },
+  {
+   "at": [
+    9,
+    1
+   ],
+   "look": "res://assets/actors/looks/n6_banker_h2.webp",
+   "name_ko": "세무관"
+  },
+  {
+   "at": [
+    11,
+    7
+   ],
+   "look": "res://assets/actors/looks/n13_guard.webp",
+   "name_ko": "경비병"
+  }
+ ],
+ "source": "original"
+}

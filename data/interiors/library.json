@@ -1,0 +1,183 @@
+{
+ "id": "library",
+ "facility": "library",
+ "name_ko": "도서관 실내",
+ "art_dir": "res://assets/city/interiors/library",
+ "rows": [
+  "######ZZ##ZZ######",
+  "######..rr..######",
+  "######......######",
+  "##11#22#%#33#44###",
+  "##..............##",
+  "#................#",
+  "#.55....ooo...66.#",
+  "#.......ooo......#",
+  "#.............@..#",
+  "#............ddd.#",
+  "##..............##",
+  "########DD########"
+ ],
+ "legend": {
+  "Z": {
+   "kind": "wallart",
+   "name_ko": "봉인 책장",
+   "art": "sealed_shelf"
+  },
+  "r": {
+   "kind": "furniture",
+   "name_ko": "쇠사슬 책 독서대",
+   "art": "chained_lectern",
+   "light": {
+    "color": "#ffc070",
+    "radius": 2.5,
+    "power": 0.55
+   }
+  },
+  "%": {
+   "kind": "door",
+   "name_ko": "서고 문(희귀서 입고 순에만 열림)",
+   "art": "door",
+   "opens": "rare_books"
+  },
+  "1": {
+   "kind": "wallart",
+   "name_ko": "책장 — 미궁",
+   "art": "bookshelf"
+  },
+  "2": {
+   "kind": "wallart",
+   "name_ko": "책장 — 몬스터와 정수",
+   "art": "bookshelf"
+  },
+  "3": {
+   "kind": "wallart",
+   "name_ko": "책장 — 소재와 무기",
+   "art": "bookshelf"
+  },
+  "4": {
+   "kind": "wallart",
+   "name_ko": "책장 — 상태이상",
+   "art": "bookshelf"
+  },
+  "5": {
+   "kind": "furniture",
+   "name_ko": "책장 — 생존과 야영",
+   "art": "bookcase"
+  },
+  "6": {
+   "kind": "furniture",
+   "name_ko": "책장 — 도시와 탐험가",
+   "art": "bookcase"
+  },
+  "o": {
+   "kind": "furniture",
+   "name_ko": "둥근 열람 탁자(돔 빛 아래)",
+   "art": "reading_table",
+   "light": {
+    "color": "#f4ecd8",
+    "radius": 5.5,
+    "power": 0.75
+   }
+  },
+  "@": {
+   "kind": "npc",
+   "name_ko": "사서"
+  },
+  "d": {
+   "kind": "furniture",
+   "name_ko": "사서 책상",
+   "art": "librarian_desk"
+  }
+ },
+ "rooms": [
+  {
+   "at": [
+    8,
+    2
+   ],
+   "name_ko": "희귀서 서고",
+   "floor": "sandstone",
+   "wall": "sandstone",
+   "ambient": 0.45
+  },
+  {
+   "at": [
+    8,
+    5
+   ],
+   "name_ko": "열람당",
+   "floor": "sandstone",
+   "wall": "sandstone",
+   "ambient": 0.66
+  }
+ ],
+ "spots": [
+  {
+   "char": "1",
+   "activities": [
+    "library_dungeon"
+   ],
+   "name_ko": "책장 — 미궁"
+  },
+  {
+   "char": "2",
+   "activities": [
+    "library_monsters"
+   ],
+   "name_ko": "책장 — 몬스터와 정수"
+  },
+  {
+   "char": "3",
+   "activities": [
+    "library_arms"
+   ],
+   "name_ko": "책장 — 소재와 무기"
+  },
+  {
+   "char": "4",
+   "activities": [
+    "library_ailments"
+   ],
+   "name_ko": "책장 — 상태이상"
+  },
+  {
+   "char": "5",
+   "activities": [
+    "library_survival"
+   ],
+   "name_ko": "책장 — 생존과 야영"
+  },
+  {
+   "char": "6",
+   "activities": [
+    "library_society"
+   ],
+   "name_ko": "책장 — 도시와 탐험가"
+  },
+  {
+   "char": "d",
+   "activities": [
+    "library_decode"
+   ],
+   "name_ko": "사서"
+  },
+  {
+   "char": "r",
+   "activities": [
+    "library_rare"
+   ],
+   "name_ko": "쇠사슬 책 독서대"
+  }
+ ],
+ "npcs": [
+  {
+   "at": [
+    14,
+    8
+   ],
+   "look": "res://assets/actors/looks/n0_librarian.webp",
+   "name_ko": "사서"
+  }
+ ],
+ "source": "original"
+}

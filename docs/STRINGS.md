@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(951줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(965줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -24,6 +24,7 @@
 - [디버그 `debug`](#debug) — F1 디버그 패널
 - [일시정지 `pause`](#pause) — Esc 정지 창
 - [전투 `combat`](#combat) — 전투 화면 — 명령 · 대화창 안내 · 보스 대사 · 전투 기록
+- [condition `condition`](#condition) — —
 - [지식 `knowledge`](#knowledge) — 몬스터 약점·저항(전투에서 알게 될 때 · 도감)
 - [보상 `reward`](#reward) — 전투 드롭 · 획득할까? · 경험치
 - [소지품 `inventory`](#inventory) — Tab 메뉴 소지품 쪽
@@ -163,6 +164,7 @@
 - `collection.street_events` 거리 사건
 - `collection.meals` 여관 요리
 - `collection.scavenge` 균열 잡템 표
+- `collection.interiors` 시설 실내
 
 <a id="stat_group"></a>
 ## 스탯 묶음 `stat_group`
@@ -541,6 +543,7 @@
 - `combat.float_blocked` 막힘
 - `combat.float_miss` 회피
 - `combat.float_heal` +{n}
+- `combat.float_loss` -{n}
 - `combat.drop_ask` {what} — 획득할까?
 - `combat.drop_take` 획득한다
 - `combat.drop_leave` 두고 간다
@@ -650,6 +653,21 @@
 - `combat.start_first` {enemies}을(를) 먼저 발견했다. 싸운다.
 - `combat.split_blocked` {name}이(가) 그을린 몸을 비틀지만 갈라지지 못한다.
 
+<a id="condition"></a>
+## condition `condition`
+
+> —
+
+- `condition.peckish` {who}은(는) 배고픔을 느낀다.
+- `condition.hungry` {who}은(는) 허기가 져 몸이 무겁다.
+- `condition.famished` {who}은(는) 굶주려 있다.
+- `condition.starving` {who}은(는) 굶주림에 쓰러질 것 같다.
+- `condition.starvation` {who}의 몸이 스스로를 갉아먹는다.
+- `condition.tired` {who}은(는) 피곤함을 느낀다.
+- `condition.weary` {who}은(는) 지쳐 있다.
+- `condition.spent` {who}은(는) 녹초가 되었다.
+- `condition.collapse` {who}은(는) 쓰러질 것 같다.
+
 <a id="knowledge"></a>
 ## 지식 `knowledge`
 
@@ -696,6 +714,9 @@
 - `inventory.regen_of` {res} 재생
 - `inventory.eff_restore` {res} +{amount}
 - `inventory.eff_lower` {res} -{amount}
+- `inventory.eff_restore_either` {res} +{amount} 또는 +{pct}%
+- `inventory.eff_restore_pct` {res} +{pct}%
+- `inventory.eff_lower_pct` {res} -{pct}%
 - `inventory.eff_light` 빛 {m}m · {hours}시간
 - `inventory.eff_status` {status} ({chance}%)
 - `inventory.sort` 정렬
@@ -732,8 +753,7 @@
 > Tab 메뉴 캐릭터 쪽
 
 - `character.title` 캐릭터
-- `character.name_line` {name} · {race} {template}
-- `character.level_line` 레벨 {level} · 공적 {exp} / {next}
+- `character.level_line` {race} · 레벨 {level} · 공적 {exp} / {next}
 - `character.max` 최대
 - `character.attack` 공격력
 - `character.crit` 치명타율
@@ -1169,6 +1189,10 @@
 - `city.meal.whole_pig_roast` 홀 한가운데서 통째로 돌려 구운 돼지를 나눠 받았다. 몸이 한층 두꺼워진 것 같다.
 - `city.meal.royal_herb_hotpot` 이름 모를 약초가 가득한 전골. 냄비 바닥까지 긁어 먹고 나니 몸이 독기를 밀어낸다.
 - `city.meal.cave_truffle_soup` 미궁 동굴에서 캐 왔다는 송로를 갈아 넣은 수프. 눈이 밝아지고 속이 든든하다.
+
+### `city.interior`
+
+- `city.interior.locked` 잠겨 있다.
 
 <a id="field"></a>
 ## 동굴 요소 `field`

@@ -35,6 +35,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	await _frames(2)
+	CityScreen.interiors = false  # 시설 창(FacilityView) 흐름은 실내를 끈 채로 — 실내는 _interior_flow
 	await _foundation_flow()
 	await _closing_flow()
 	await _starvation_flow()
@@ -45,6 +46,8 @@ func _run() -> void:
 	await _tax_flow()
 	await _street_flow()
 	await _library_flow()
+	CityScreen.interiors = true
+	await _interior_flow()
 	SaveGame.delete(TEST_SAVE)
 	print("UI 스모크 로그 %d줄" % _logs.size())
 	print("UI 스모크 %s" % ("실패" if _failed else "통과"))
@@ -813,6 +816,76 @@ func _fac_do(fv: FacilityView, act_id: String, tab: String = "") -> void:
 		await _action("menu_down" if d > 0 else "menu_up")
 	await _action("menu_confirm")
 	await _frames(2)
+
+
+## 걸어 다니는 실내(CT106): 여관 문 → 주점 홀만 보인다 · 바 앞 Enter = 고르는 창(요기 · 식사) · Tab 메뉴는 걷는 동안 ·
+## 북쪽 문을 지나 객실 복도(홀은 사라진다) → 내 방 침대 = 휴식 · Esc = 동네(그 문 앞). 상점 계산대 = 창구 카드, Esc = 카드만 닫기 → 한 번 더 = 나가기.
+func _interior_flow() -> void:
+	_main.call("_show_title")
+	var city := await _new_city("실내")
+	if city == null:
+		return
+	var st := city.state
+	st.happenings.clear()
+	city.pc.inventory.money = 5000
+	await _enter_door(city, "inn")
+	var iv := city.facility_view() as InteriorView
+	if not _expect(iv != null and st.ap == 2, "여관 문 앞 Enter = 걸어 다니는 실내(행동력 1 — CT106)"):
+		return
+	await _frames(3)
+	var inner := iv.interior()
+	var hall := iv.world().room()
+	_expect(str(inner.rooms[hall]["name_ko"]) == "주점 홀", "들어오면 주점 홀만 보인다")
+	var start := iv.pos
+	await _hold("move_up", 0.3)
+	_expect(iv.pos.y < start.y - 0.5, "W = 위로 걷는다")
+	await _action("menu")
+	await _frames(2)
+	_expect(city.menu().is_open(), "실내를 걷는 동안 Tab 메뉴가 열린다")
+	var before := iv.pos
+	await _hold("move_up", 0.2)
+	_expect(iv.pos == before, "Tab 메뉴가 열린 동안은 걷지 않는다")
+	await _action("menu")
+	await _frames(2)
+	iv.place(Vector2(4.5, 10.5), Vector2i.UP)
+	await _action("interact")
+	await _frames(3)
+	var pop := iv.find_children("*", "ChoicePopup", true, false)
+	_expect(not pop.is_empty(), "바 앞 Enter = 바에서 고르는 창(요기 · 식사)")
+	var money := city.pc.inventory.money
+	await _action("menu_confirm")
+	await _frames(6)
+	_expect(city.pc.inventory.money < money and city.facility_view() == iv, "요기 — 값을 내고 실내에 남는다")
+	iv.place(Vector2(18.5, 8.6), Vector2i.UP)
+	await _hold("move_up", 0.6)
+	await _frames(20)
+	_expect(str(inner.rooms[iv.world().room()]["name_ko"]) == "객실 복도", "홀 북쪽 문을 지나면 객실 복도만 보인다")
+	iv.place(Vector2(16.5, 3.5), Vector2i.UP)
+	await _frames(2)
+	city.pc.fatigue.set_value(60.0)
+	await _action("interact")
+	await _frames(6)
+	_expect(city.pc.fatigue.value < 60.0, "내 방 침대 Enter = 휴식(피로가 준다)")
+	await _action("pause")
+	await _frames(3)
+	_expect(city.facility_view() == null and Kinematics.cell_of(city.town().pos) == Vector2i(city.town().town().door_front("inn").floor()), "Esc = 동네로, 여관 문 앞")
+	await _enter_door(city, "shop")
+	iv = city.facility_view() as InteriorView
+	if not _expect(iv != null, "상점도 실내"):
+		return
+	iv.place(Vector2(5.5, 3.5), Vector2i.UP)
+	await _action("interact")
+	await _frames(3)
+	await _action("menu_confirm")
+	await _frames(3)
+	_expect(iv.panel() is ShopPanel, "계산대 → 구매 → 창구 카드")
+	await _action("pause")
+	await _frames(3)
+	_expect(city.facility_view() == iv and iv.panel() == null, "Esc = 창구만 닫는다")
+	await _action("pause")
+	await _frames(3)
+	_expect(city.facility_view() == null, "한 번 더 Esc = 동네로")
+	await _city_title(city)
 
 
 ## 동네 지도(CT82)에서 그 시설 문 앞에 서서 위를 보고 Enter.

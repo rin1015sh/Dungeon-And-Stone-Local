@@ -1,5 +1,6 @@
 {
   "id": "temple",
+  "interior": "temple",
   "name_ko": "신전",
   "order": 4,
   "x": 1783,

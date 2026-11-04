@@ -1,5 +1,6 @@
 {
   "id": "bank",
+  "interior": "bank",
   "name_ko": "은행",
   "order": 7,
   "x": 3230,
