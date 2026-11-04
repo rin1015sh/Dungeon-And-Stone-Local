@@ -83,16 +83,17 @@ func _process(delta: float) -> void:
 	_glow.energy = _glow_energy * (1.0 + sin(_time * 11.0) * f + sin(_time * 23.7) * f * 0.5)
 
 
-## 걷기: 발 위치가 움직이면 걸음 그림을 돌리고, 0.12초 넘게 멈추면 선 그림.
+## 걷기: 발 위치(세계 좌표)가 움직이면 걸음 그림을 돌리고, 0.12초 넘게 멈추면 선 그림.
 func _animate(delta: float) -> void:
 	if _sheet == null:
 		return
-	if position != _last_pos and _last_pos != Vector2.INF:
+	var at := global_position  # 부모(도시 player_root)만 움직여도 걷는다
+	if at != _last_pos and _last_pos != Vector2.INF:
 		_walk_t += delta
 		_still = 0.0
 	else:
 		_still += delta
-	_last_pos = position
+	_last_pos = at
 	var col := _sheet.col_at(_walk_t, _still < 0.12)
 	if col != _col:
 		_col = col

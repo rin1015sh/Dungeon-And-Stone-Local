@@ -81,9 +81,7 @@ static func wall(o: Dictionary) -> Callable:
 			for k in n:
 				var cx := r.position.x + W * (k + 0.5) / n
 				if fl == 0 and bool(o.get("arch", false)) and k == n / 2:
-					var a := Paint.arch_poly(cx - P * 0.5, g - base - fh * 0.95, P * 1.0, fh * 0.95, false)
-					p.fill_poly(a, p.flat(Color("#141110"), 0.05))
-					Ink.path(p, a, Parts.LINE)
+					_gate(p, cx, g - base, P * 1.0, fh * 0.95)  # 막힌 검은 아치 대신 닫힌 마차 대문(CT111 — 지나갈 수 없는 통로가 뚫려 보였다)
 					continue
 				if fl == 0 and k == door_k:
 					_door(p, cx, g, int(o.get("ci", 0)) % 2 == 0)  # 문은 땅까지(기단을 끊는다)
@@ -262,3 +260,30 @@ static func banner() -> Callable:
 			var x := r.position.x + 4 + i * 7.0
 			Ink.line(p, Vector2(x, r.end.y - 9), Vector2(x, r.end.y - 2), 1.6, Color("#8a7a52"), 1.0, 0.3)
 		Ink.path(p, poly, 1.6)
+
+
+## 마차 대문: 아치 홍예(쐐기돌 — 가운데 이맛돌) + 두 짝 널문(가운데 이음 · 쇠띠) + 오른짝 쪽문. 바닥 = 문지방 돌.
+static func _gate(p: Paint, cx: float, g: float, gw: float, gh: float) -> void:
+	var x := cx - gw * 0.5
+	var y := g - gh
+	var ring := Paint.arch_poly(x - 8.0, y - 8.0, gw + 16.0, gh + 8.0, false)
+	p.fill_poly(ring, p.flat(Color("#8a8272"), 0.25))
+	Ink.path(p, ring, Parts.LINE)
+	var r := gw * 0.5
+	var c := Vector2(cx, y + r)
+	for i in 9:  # 쐐기돌 이음
+		var t := PI + PI * (i + 1) / 10.0
+		Ink.line(p, c + Vector2.from_angle(t) * r, c + Vector2.from_angle(t) * (r + 8.0), 1.4, Color(0.08, 0.07, 0.06), 0.8, 0.1)
+	var key := PackedVector2Array([c + Vector2(-6, -r - 1), c + Vector2(6, -r - 1), c + Vector2(8, -r - 11), c + Vector2(-8, -r - 11)])
+	p.fill_poly(key, p.flat(Color("#a39a86"), 0.2))
+	Ink.path(p, key, 1.4)
+	Parts.door(p, x, y, gw, gh, true, Color("#33241a"))
+	Ink.line(p, Vector2(cx, y + 4.0), Vector2(cx, g), 2.2, Color(0.06, 0.04, 0.03), 1.0, 0.1)  # 두 짝 이음
+	for by: float in [y + gh * 0.3, y + gh * 0.62, y + gh * 0.9]:
+		Ink.line(p, Vector2(x + 3, by), Vector2(x + gw - 3, by), 3.0, Color("#2a2622"), 0.9, 0.2)
+	var wk := Paint.rect_poly(cx + gw * 0.1, g - gh * 0.52, gw * 0.26, gh * 0.5)  # 쪽문
+	Ink.path(p, wk, 1.6)
+	Ink.glow(p, cx + gw * 0.32, g - gh * 0.28, 2.0, Color("#6a5a3a"), 0.9)
+	var sill := Paint.rect_poly(x - 6.0, g - 4.0, gw + 12.0, 4.0)
+	p.fill_poly(sill, p.flat(Color("#6a655a"), 0.2))
+	Ink.path(p, sill, 1.2)

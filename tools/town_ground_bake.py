@@ -21,6 +21,7 @@ from PIL import Image, ImageDraw, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import town_handdrawn as th  # noqa: E402
+import town_ground_fine as gf  # noqa: E402
 from town_hand_bake import user_dir  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -332,14 +333,33 @@ def footing(town, kind, col, ink, W, H):
     road = np.isin(kind, [K["street"], K["avenue"]])
     # 보도: 집에서 WALK_W px 안의 돌길 → 줄지어 깐 밝은 판석
     walk = _grow_mask(house, WALK_W) & ~house & road
-    ys, xs = np.nonzero(walk)
-    if len(ys):
-        y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    # 집마다 그 집 벽 방향으로 네모 보도블록(기운 집도 벽에 줄이 맞는다 — CT111), 먼저 깐 집이 자리를 가진다
+    claimed = np.zeros_like(walk)
+    base = hexc("#6e675a") * SHADE * 1.12
+    for n, (poly, _top) in enumerate(fp):
+        q = np.array(poly, np.float32) * PX
+        x0, y0 = max(0, int(q[:, 0].min()) - WALK_W - 2), max(0, int(q[:, 1].min()) - WALK_W - 2)
+        x1, y1 = min(W, int(q[:, 0].max()) + WALK_W + 3), min(H, int(q[:, 1].max()) + WALK_W + 3)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        one = Image.new("L", (x1 - x0, y1 - y0), 0)
+        ImageDraw.Draw(one).polygon([(x - x0, y - y0) for x, y in q], fill=255)
+        mine = _grow_mask(np.asarray(one) > 0, WALK_W) & walk[y0:y1, x0:x1] & ~claimed[y0:y1, x0:x1]
+        if not mine.any():
+            continue
+        ex, ey = q[1] - q[0]
+        a = math.atan2(ey, ex)
+        ca, sa = math.cos(a), math.sin(a)
         yy, xx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
-        c, k = slabs(xx, yy, hexc("#6e675a") * SHADE * 1.12, 14.0, 18.0, 30.0, 77, var=0.1, moss=0.05)
-        m = walk[y0:y1, x0:x1]
-        col[y0:y1, x0:x1][m] = c[m]
-        ink[y0:y1, x0:x1][m] = k[m]
+        u = (xx - q[0][0]) * ca + (yy - q[0][1]) * sa
+        v = -(xx - q[0][0]) * sa + (yy - q[0][1]) * ca
+        c, k = gf.pavers(u + 4000.0, v + 4000.0, base, 22.0, 77 + n, var=0.12, moss=0.06, big=0.04, pair=0.22)
+        col[y0:y1, x0:x1][mine] = c[mine]
+        ink[y0:y1, x0:x1][mine] = k[mine]
+        claimed[y0:y1, x0:x1] |= mine
+    kerb = walk & _grow_mask(~walk & ~house, 4)  # 바깥 연석: 긴 화강암 한 줄(밝은 윗변)
+    col[kerb] = col[kerb] * 0.82 + np.array([0.03, 0.03, 0.035], np.float32)
+    ink[kerb & ~_grow_mask(~kerb, 1)] = np.maximum(ink[kerb & ~_grow_mask(~kerb, 1)], 0.5)
     # 연석: 보도 바깥 가장자리 먹선 + 그 바깥 2px 도랑 그늘
     rim = _grow_mask(walk, 1) & ~walk & road
     ink[rim] = np.maximum(ink[rim], 0.7)
@@ -479,8 +499,8 @@ def decorate(town, kind, cell_kind, col, ink, W, H):
 def road(xs, ys, kk, main, h, C):
     """돌길: 큰길 = 줄지어 깐 반듯한 돌(밝고 일정 — 윗단 행정 구역은 큰 마름돌), 골목 = 작은 자갈(어둡게)."""
     alley = cobbles(xs, ys, C("street", 1.0), 11.0, 3)
-    setts = slabs(xs, ys, C("avenue", 1.18), 15.0, 20.0, 32.0, 31, var=0.07, moss=0.03)
-    civic = slabs(xs, ys, C("paving", 1.22), 20.0, 30.0, 44.0, 37, var=0.07, moss=0.02)
+    setts = gf.pavers(xs, ys, C("avenue", 1.18), 26.0, 31, var=0.13, moss=0.05)  # 위에서 본 네모 보도블록(CT111)
+    civic = gf.pavers(xs, ys, C("paving", 1.22), 36.0, 37, var=0.12, moss=0.03, big=0.2, pair=0.2)
     hi = (h > 1.0)
     col = np.where(main[..., None], np.where(hi[..., None], civic[0], setts[0]), alley[0])
     ink = np.where(main, np.where(hi, civic[1], setts[1]), alley[1])
@@ -590,9 +610,20 @@ def main():
     hv = np.repeat(chs[c0] * (1 - f) + chs[c1] * f, PX, 1)
     st = kind == K["stairs"]
     hmap[st] = np.floor(hv[st] / STEP + 0.5) * STEP
+    sq = np.where(st, hv / STEP + 0.5, 0.0).astype(np.float32)  # 디딤판 자리(정수 = 단 — CT111)
     for a in town["areas"]:
         if "h" in a:
             hmap[kind == K[a["kind"]]] = a["h"]
+    sw_add, stair_side = gf.stair_walls(st, hv, kind, K, STEP)  # 계단 양옆 난간(CT111)
+    hmap += sw_add
+    kind[stair_side] = K["retain"]
+    berm = (kind == K["wall"]) | ((kind == K["gate"]) & (np.mgrid[0:H, 0:W][0] >= 3 * PX))  # 남쪽 성벽(소품) 밑 = 둑
+    bw_add, bwall, merlon, bgate, binner = gf.border_wall(kind, K, cw, ch, PX, hmap)
+    berm &= ~bwall
+    kind[berm] = K["court"]
+    kind[bwall] = K["wall"]
+    hmap += bw_add
+    gate_core = gf.shrink_x(bgate, 14)
     # 3) 재질(위에서 본 그림) + 먹선
     col = np.zeros((H, W, 3), np.float32)
     ink = np.zeros((H, W), np.float32)
@@ -614,9 +645,11 @@ def main():
             todo = {
                 "street": lambda: road(xs, ys, kk, main_m[y0:y1, x0:x1], hmap[y0:y1, x0:x1], C),
                 "avenue": lambda: slabs(xs, ys, C("avenue", 1.06), 22.0, 30.0, 52.0, 5),
-                "paving": lambda: slabs(xs, ys, C("paving", 1.06), 24.0, 26.0, 46.0, 7),
+                "paving": lambda: gf.pavers(xs, ys, C("paving", 1.06), 32.0, 7, var=0.14),
+                "wall": lambda: slabs(xs, ys, C("retain", 0.8) * np.array([1.06, 1.0, 0.9], np.float32), 20.0, 30.0, 48.0, 51, var=0.1, moss=0.12),  # 성벽 걷는 길(CT111)
+                "gate": lambda: slabs(xs, ys, C("retain", 0.84), 16.0, 24.0, 40.0, 53, var=0.1, moss=0.1),
                 "bridge": lambda: slabs(xs, ys, C("bridge", 1.08), 18.0, 34.0, 50.0, 9),
-                "stairs": lambda: slabs(xs, ys, C("stairs", 1.08), 16.0, 30.0, 46.0, 13),
+                "stairs": lambda: gf.treads(xs, ys, C("stairs", 1.08), sq[y0:y1, x0:x1], 13),
                 "retain": lambda: slabs(xs, ys, C("retain", 1.1), 14.0, 26.0, 36.0, 15),
                 "plaza": lambda: plaza_stones(xs, ys, plaza_c[0], plaza_c[1], C("plaza", 1.06)) if plaza_c else None,
                 "dais": lambda: plaza_stones(xs, ys, plaza_c[0], plaza_c[1], C("plaza", 1.06)) if plaza_c else None,
@@ -646,6 +679,12 @@ def main():
                 out[rest] = dirt(xs, ys, C("yard", 1.06), 17)[0][rest]
             col[y0:y1, x0:x1] = out
             ink[y0:y1, x0:x1] = oink
+    col[merlon] *= 1.18  # 성가퀴 갓돌
+    col[binner] *= 1.12
+    ink[binner & ~gf.edge_shrink(binner, 1)] = 0.6
+    beside = _grow_mask(stair_side, 8) & ~stair_side & st
+    col[beside] *= 0.72  # 난간 밑 그늘
+    ink[_grow_mask(stair_side, 1) & ~stair_side & st] = 0.7
     # 길 가장자리 연석(돌길과 흙 · 정원이 만나는 곳: 어두운 돌 한 줄 + 먹선)
     hard = np.isin(kind, [K["street"], K["avenue"], K["paving"], K["plaza"], K["bridge"]])
     soft = np.isin(kind, [K["yard"], K["court"]])
@@ -660,7 +699,7 @@ def main():
     lamp_light(town, col, W, H)
     decorate(town, kind, cell_kind, col, ink, W, H)
     # 4) 3/4로 올린다(남쪽부터 북쪽으로 — 높은 땅이 앞의 낮은 땅 위로, 높이 차는 앞면)
-    top = int(math.ceil(float(cells["max_h"]) * PX)) + 4
+    top = int(math.ceil(max(float(cells["max_h"]), float(hmap.max())) * PX)) + 4
     SH = H + top
     scr = np.zeros((SH, W, 3), np.float32)
     sink = np.zeros((SH, W), np.float32)
@@ -694,7 +733,12 @@ def main():
                 c = face_stone[None, :] * (tone * (0.95 - 0.35 * (dd / max(mx, 1))))[:, None]
                 c[(yy % 11) == 1] *= 1.12  # 돌 윗변 빛
                 stair = k[m] == K["stairs"]
-                c[stair] = c[stair] * 0.8
+                c[stair] = c[stair] * 0.62  # 계단 챌판: 디딤판보다 확실히 어둡게(CT111)
+                c[stair & (dd <= 2)] *= 1.45
+                gc = gate_core[i][m] & (dd > span[m] * 0.3)  # 성문 앞면: 아치 안 내리닫이 쇠살
+                if gc.any():
+                    bar = ((xx % 10) < 2) | ((yy % 13) < 2)
+                    c[gc] = np.where(bar[gc][:, None], np.array([0.22, 0.2, 0.18], np.float32), np.array([0.05, 0.045, 0.04], np.float32))
                 scr[yy, xx] = c
                 sink[yy, xx] = np.where(joint, 0.65, np.where(dd == 1, 0.8, 0.0))  # 줄눈 · 윗단 모서리
                 code[yy, xx] = 50 + (k[m] == K["stairs"])

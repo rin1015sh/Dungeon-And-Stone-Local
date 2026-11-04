@@ -53,10 +53,14 @@ func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) 
 		(_buckets[key] as Array).append(i)
 	for p: Dictionary in town.props:
 		_prop(str(p["kind"]), p["rect"], db.render)
-	if not town.dais.is_empty():
+	if not town.dais.is_empty():  # 돌 단은 바닥 바로 위(사람이 그 위를 걷는다 — 선 돌 고리는 소품 dais_ring으로 앞뒤를 가린다, CT111)
 		var ctr: Vector2i = town.dais["center"]
 		var r := int(ceil(float(town.dais["r"])))
-		_prop("dais", Rect2i(ctr - Vector2i(r, r), Vector2i(r * 2, r * 2)), db.render)
+		var flat := TownProp.new()
+		flat.setup("dais", Rect2i(ctr - Vector2i(r, r), Vector2i(r * 2, r * 2)), db.render, _tile)
+		flat.lift = float(town.dais.get("base", 0.0)) * _tile
+		add_child(flat)
+		move_child(flat, sorter.get_index())
 	player_root = Node2D.new()
 	sorter.add_child(player_root)
 	player = ActorView.new()
@@ -159,11 +163,21 @@ func live_count() -> int:
 
 
 ## 플레이어(세계 px — 발)를 가린 집을 흐리게: 발이 집 앞면 아래 끝보다 위(북쪽)이고 집 그림 범위 안이면.
-func update_fade(foot: Vector2, lift: float = 0.0) -> void:
+## 가림: 몸이 필지 앞 가장자리(그 x에서 — 기운 집은 남쪽 모서리가 아니라)보다 뒤(북)에 있고 그림에 덮이면 흐리게.
+## 돌려주는 값 = 앞뒤 순서용 발 y(px): 기운 집 앞에 서 있는데 집 모서리(정렬 y)보다 북쪽이면 그 집보다 앞에 그려지게 끌어 내린다(CT111).
+func update_fade(foot: Vector2, lift: float = 0.0) -> float:
 	var now: Array[TownHouse] = []
+	var sort_y := foot.y
+	var fx := foot.x / _tile
 	for h: TownHouse in _live.values():
-		if foot.y < h.position.y - 2.0 and h.bounds.has_point(foot - Vector2(0, 7 + lift)):
-			now.append(h)
+		if foot.y >= h.position.y or not h.bounds.has_point(foot - Vector2(0, 7 + lift)):
+			continue
+		var edge := TownHouse.front_at(h.house, fx) * _tile
+		if foot.y < edge - 2.0:
+			if h.covers(foot - Vector2(0, 7 + lift)) or h.covers(foot - Vector2(0, _tile * 0.8 + lift)):  # 그림이 몸을 실제로 덮을 때만
+				now.append(h)
+		else:
+			sort_y = maxf(sort_y, h.position.y + 0.5)
 	for h in _faded:
 		if is_instance_valid(h) and not now.has(h):
 			h.set_fade(false)
@@ -171,3 +185,4 @@ func update_fade(foot: Vector2, lift: float = 0.0) -> void:
 		if not _faded.has(h):
 			h.set_fade(true)
 	_faded = now
+	return sort_y

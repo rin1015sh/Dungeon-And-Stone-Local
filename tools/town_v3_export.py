@@ -87,6 +87,9 @@ def main():
 	for gid, rc in (t.gates if blocks else [("north", (7, -75, 13, -72)), ("west", (-40, -12, -38, -7))]):
 		a, b = P(rc[0], rc[1]), P(rc[2], rc[3])
 		areas.append({"kind": "gate", "rect": [int(a[0]), int(a[1]), int(b[0]), int(b[1])], "id": gid, "travel": True})
+	if blocks:  # 남쪽 강 건너 성벽(CT111 — 사용자 "마을 외곽은 성벽으로") · 다리 끝은 닫힌 남문(가지 않는다). 동 · 서 · 북 둘레는 빈 칸(void) — 바닥 굽기가 성벽으로 그린다.
+		areas.append({"kind": "wall", "rect": [0, 106, 80, 110]})  # 106~107 = 성벽 안 둑(흙) · 108~109 = 성벽(소품 citywall — 사람과 앞뒤가 맞게)
+		areas.append({"kind": "gate", "rect": [38, 106, 42, 110], "id": "south", "travel": False})
 
 	houses, buildings, props = [], [], []
 	for h in p.houses:
@@ -154,7 +157,7 @@ def main():
 		"areas": areas,
 		"houses": houses,
 		"buildings": buildings,
-		"props": props,
+		"props": props + ([{"kind": "citygate" if x == 38 else "citywall", "rect": [x, 108, x + 4, 110]} for x in range(2, 78, 4)] if blocks else []),
 		"places": places,
 		"sewer": {"tunnels": [pts(s) for s in p.sewers], "entrances": next(pl["at"] for pl in places if pl["id"] == "sewer_entrance")},
 		"source": "original",

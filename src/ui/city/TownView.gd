@@ -131,8 +131,8 @@ func walk(dir: Vector2, sec: float) -> void:
 		dir = Vector2(0.0, signf(dir.y))
 		speed *= TownMap.rule(_state.db, _state.overrides, "stairs_speed", 0.75)
 	facing = PlayerMotion.facing_of(dir)
-	pos = Kinematics.move(_town.map, pos, dir.normalized() * speed * sec, TownMap.rule(_state.db, _state.overrides, "body_half", 0.3),
-		TownMap.rule(_state.db, _state.overrides, "corner_assist", 0.8), 0.25)
+	pos = _town.collide.move(pos, dir.normalized() * speed * sec, TownMap.rule(_state.db, _state.overrides, "body_half", 0.3),
+		TownMap.rule(_state.db, _state.overrides, "corner_assist", 0.8))
 
 
 func _input_dir() -> Vector2:
@@ -159,7 +159,9 @@ func _sync_view() -> void:
 	_cam.position = Vector2(clampf(at.x, view.x * 0.5, maxf(view.x * 0.5, map_px.x - view.x * 0.5)),
 		clampf(at.y, top + view.y * 0.5, maxf(top + view.y * 0.5, map_px.y - view.y * 0.5)))
 	_world.stream(_cam.position + Vector2(0, lift))
-	_world.update_fade(pos * _tile, lift)
+	var sort_y := _world.update_fade(pos * _tile, lift)  # 기운 집 앞이면 그 집보다 앞에 그린다
+	_world.player_root.position.y = sort_y
+	p.position.y = -lift - (sort_y - pos.y * _tile)
 
 
 func _unhandled_input(event: InputEvent) -> void:

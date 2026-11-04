@@ -166,6 +166,12 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
             cv.ground(x, y, x + 1, y + 1, None, tex=M.slabs("#7a7266", 1.0, 1.0, seed + x, 0.05))
             if k == "exit":
                 cv.ground(x - 0.4, y + 1, x + 1.4, y + 1.8, None, tex=M.slabs("#6a727a", 0.45, 0.4, seed + 3, 0.2), lit=1.0)
+            elif role(R, x, y) == "south":  # 방 사이 통로: 문 너머 바닥이 조금 이어진다(어두워지며 — CT111)
+                cv.ground(x + 0.04, y + 1, x + 0.96, y + 1.7, None, tex=M.slabs("#5e574c", 1.0, 1.0, seed + x + 1, 0.05), lit=0.45)
+                cv.darken_rect(x + 0.04, y + 1.2, x + 0.96, y + 1.7, 0.0, 0.7)
+            elif role(R, x, y) == "side":
+                nx = x - 1 if (x + 1, y) in R else x + 1
+                cv.ground(max(nx, x - 0.7), y + 0.04, min(nx + 1, x + 1.7), y + 0.96, None, tex=M.slabs("#5e574c", 1.0, 1.0, seed + y + 3, 0.05), lit=0.45)
     # 벽 밑 그늘(북 · 서 · 동벽 곁) · 가구 접지 그늘
     for (x, y) in R:
         if (x, y - 1) in ring:
@@ -184,7 +190,7 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
     wname = rd.get("wall", "ashlar")
     cap_id = cv.new_id()
     hot = plan.spot_chars()
-    full = {c for c in ring if role(R, *c) != "south"}
+    full = {c for c in ring if role(R, *c) != "south" and not (role(R, *c) == "side" and plan.kind(*c) in ("door", "exit"))}  # 옆벽 문은 뚫린 채(CT111)
     face_rows = {}
     inside = R | ring
     for (x, y) in sorted(full, key=lambda c: (c[1], c[0])):
@@ -199,9 +205,9 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
                 face_rows[fy] = (cv.new_id(), cv.new_id(), cv.new_id())
             fid_w, fid_b, fid_c = face_rows[fy]
             if r == "north":
-                cv.front(x, x + 1, fy, 0, WALL_H, None, tex=M.wall(wname, seed + fy, fy), cid=fid_w, shade=(0.92, 0.66))
-                cv.front(x, x + 1, fy, 0, 0.2, M.base_color(wname), cid=fid_b, shade=(0.8, 0.55))  # 걸레받이
-                cv.front(x, x + 1, fy, WALL_H - 0.16, WALL_H, M.base_color(wname) * 1.15, cid=fid_c, shade=(1.0, 0.8))  # 처마 띠
+                cv.front(cx0, cx1, fy, 0, WALL_H, None, tex=M.wall(wname, seed + fy, fy), cid=fid_w, shade=(0.92, 0.66))  # 옆벽 윗면 폭까지만(삐져나오지 않게 — CT111)
+                cv.front(cx0, cx1, fy, 0, 0.2, M.base_color(wname), cid=fid_b, shade=(0.8, 0.55))  # 걸레받이
+                cv.front(cx0, cx1, fy, WALL_H - 0.16, WALL_H, M.base_color(wname) * 1.15, cid=fid_c, shade=(1.0, 0.8))  # 처마 띠
             else:  # 옆벽 끝 = 잘린 단면(어두운 돌 — 벽 두께만큼)
                 cv.front(cx0, cx1, fy, 0, WALL_H, CAP * 1.5, cid=cap_id, tex=M.grainy("#3a322a", seed, 0.3, 5), shade=(1.0, 0.7))
         cv.ground(cx0, cy0, cx1, y + 1, CAP, z=WALL_H, cid=cap_id, tex=M.grainy("#2e2721", seed, 0.25, 6))
@@ -258,12 +264,19 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
     for yy in sorted({c[1] for c in south}):
         row = [c for c in south if c[1] == yy]
         x0, x1 = min(c[0] for c in row), max(c[0] for c in row) + 1
-        fc = Canvas(x0 - 0.1, yy - LOW - 0.15, x1 - x0 + 0.2, LOW + 1.3, seed + yy)
-        sid, cid2 = fc.new_id(), fc.new_id()
+        fc = Canvas(x0 - 0.1, yy - LOW - 0.7, x1 - x0 + 0.2, LOW + 1.85, seed + yy)
+        sid, cid2, pid = fc.new_id(), fc.new_id(), fc.new_id()
         for (x, y) in row:
-            fc.front(x, x + 1, y + 1, 0, LOW, None, tex=M.wall(wname, seed + 5, y + 1), cid=sid, shade=(0.9, 0.62))
-            fc.ground(x, y, x + 1, y + 1, CAP, z=LOW, cid=cid2, tex=M.grainy("#2c2520", seed, 0.25, 6))
-            fc.ground(x, y, x + 1, y + 0.12, RIM, z=LOW, cid=cid2)
+            sx0 = x + (1 - CAP_IN if (x - 1, y) not in inside else 0)  # 모서리는 옆벽 두께만큼(CT111)
+            sx1 = x + 1 - (1 - CAP_IN if (x + 1, y) not in inside else 0)
+            fc.front(sx0, sx1, y + 1, 0, LOW, None, tex=M.wall(wname, seed + 5, y + 1), cid=sid, shade=(0.9, 0.62))
+            fc.ground(sx0, y, sx1, y + 1, CAP, z=LOW, cid=cid2, tex=M.grainy("#2c2520", seed, 0.25, 6))
+            fc.ground(sx0, y, sx1, y + 0.12, RIM, z=LOW, cid=cid2)
+            for side in (-1, 1):  # 문 곁 기둥(낮은 벽보다 높게 — 통로 들머리가 보이게)
+                if plan.kind(x + side, y) in ("door", "exit") and (x + side, y) in ring:
+                    px0 = x + 1 - 0.22 if side > 0 else x
+                    fc.front(px0, px0 + 0.22, y + 1, 0, LOW + 0.5, None, tex=M.wall(wname, seed + 9, y + 1), cid=pid, shade=(1.0, 0.7))
+                    fc.ground(px0, y + 0.55, px0 + 0.22, y + 1, RIM * 1.1, z=LOW + 0.5, cid=pid)
         fc.light(amb, lights)
         name = "r%d_f%d.webp" % (i, yy)
         finish(fc, os.path.join(out_dir, name))

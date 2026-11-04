@@ -99,7 +99,7 @@ func test_walk_blocked_by_houses_and_stairs_go_up_down() -> void:
 				stairs += 1
 	assert_true(stairs > 40, "단 사이 계단")
 	assert_true(t.gates.size() > 0, "구역문")
-	var ring := t.target(Vector2(t.dais["center"]) + Vector2(0.5, float(t.dais["r"]) + 0.5), Vector2i.UP)
+	var ring := t.target(Vector2(t.dais["at"]) + Vector2(0.0, 1.0), Vector2i.UP)
 	assert_true(ring.has("ring"), "광장 돌 단을 바라본다")
 
 
@@ -179,7 +179,7 @@ func test_ground_and_props_are_baked() -> void:
 		assert_true(ResourceLoader.exists("res://assets/town/ground/%s.webp" % (c as Dictionary)["file"]), "바닥 조각 " + str((c as Dictionary)["file"]))
 	var t := _town()
 	assert_true(right >= t.width * 32 - 1 and bottom >= t.height * 32 - 1, "바닥이 지도를 다 덮는다")
-	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais",
+	for k in ["lamp", "tent", "board", "barrel", "crate", "well", "stall", "cart", "bench", "planter", "fountain", "laundry", "dais", "dais_ring",
 			"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods",  # 장식(CT101)
 			"sign", "walllamp", "wagon", "rail", "boat", "household"]:  # 생활 소품(CT103)
 		assert_true(ResourceLoader.exists("res://assets/town/props/%s.webp" % k), "소품 그림 " + k)
@@ -192,3 +192,70 @@ func test_player_looks_the_same_size_in_town_and_dungeon() -> void:
 	var town: Dictionary = (d.render.get("city", {}) as Dictionary).get("town", {})
 	var explore_zoom := JsonUtil.get_float(JsonUtil.get_dict(d.render, "view"), "camera_zoom", 2.0)
 	assert_near(JsonUtil.get_float(town, "zoom", 1.0) * JsonUtil.get_float(town, "actor_scale", 1.0), explore_zoom, 0.01, "도시 zoom × actor_scale = 탐험 camera_zoom")
+
+
+## 걷기 충돌은 그림 모양에 맞춘다(CT111): 가로등은 칸 전체가 아니라 발 둘레만 · 문 앞에서 위로 걸으면 칸 지도보다 문에 더 붙고 · 거기서 문을 살핀다.
+func test_collide_fits_shapes_and_doors_reachable() -> void:
+	var t := _town()
+	var lamp := {}
+	for p in t.props:
+		if str(p["kind"]) == "lamp":
+			lamp = p
+			break
+	var r: Rect2i = lamp["rect"]
+	assert_true(t.collide.walkable_at(Vector2(r.position.x + 0.1, r.position.y + 0.1)), "가로등 칸 북서 모서리는 걷는다")
+	assert_false(t.collide.walkable_at(Vector2(r.position.x + 0.5, r.end.y - 0.1)), "가로등 발은 막힌다")
+	var front := t.door_front("inn")
+	var coarse := Kinematics.move(t.map, front, Vector2(0, -3), 0.15, 0.4, 0.25)
+	var fine := t.collide.move(front, Vector2(0, -3), 0.15, 0.4)
+	assert_true(fine.y <= coarse.y + 0.001, "쪼갠 충돌은 문에 칸 지도만큼 또는 더 붙는다")
+	assert_true(fine.y > front.y - 2.0, "그래도 건물 안으로 들어가지 않는다")
+	assert_eq(str(t.target(fine, Vector2i.UP).get("door", "")), "inn", "붙어 서서 위를 보면 여관 문")
+	var walk := 0
+	var block := 0
+	for y in t.height * t.collide.sub:
+		for x in t.width * t.collide.sub:
+			if t.collide.map.is_walkable(Vector2i(x, y)):
+				walk += 1
+			else:
+				block += 1
+	var coarse_walk := 0
+	for y in t.height:
+		for x in t.width:
+			coarse_walk += 1 if t.is_walkable(Vector2i(x, y)) else 0
+	assert_true(walk >= coarse_walk * t.collide.sub * t.collide.sub, "쪼갠 지도는 칸 지도에서 걷던 곳을 모두 걷는다")
+
+
+## 집 문마다: 문 앞에서 위로 걸어 붙으면 그 집 문을 살핀다(문턱 앞에서 막혀 못 닿는 일이 없다 — CT111).
+func test_every_house_door_reached_by_walking_up() -> void:
+	var t := _town()
+	var seen := {}
+	for c: Vector2i in t.house_doors:
+		var hid := str((t.house_doors[c] as Dictionary)["house"])
+		if seen.has(hid):
+			continue
+		seen[hid] = true
+		var p := t.collide.move(t.house_door_front(hid) + Vector2(0, 0.6), Vector2(0, -3), 0.15, 0.4)
+		assert_eq(str(t.target(p, Vector2i.UP).get("house", "")), hid, "%s 문에 걸어 닿는다(%s)" % [hid, p])
+	for fac: Variant in JsonUtil.get_array(db_city(), "facility_order"):
+		var p := t.collide.move(t.door_front(str(fac)) + Vector2(0, 0.6), Vector2(0, -3), 0.15, 0.4)
+		assert_eq(str(t.target(p, Vector2i.UP).get("door", "")), str(fac), "%s 문에 걸어 닿는다" % fac)
+
+
+func db_city() -> Dictionary:
+	var d := GameDatabase.new()
+	d.load_all("res://data")
+	return d.singletons.get("city", {})
+
+
+
+## 차원광장 돌 단 위를 걸어 오른다(CT111): 단마다 높아지고, 가운데 선 돌 고리만 막는다.
+func test_dais_steps_walkable_ring_blocks() -> void:
+	var t := _town()
+	var at: Vector2 = t.dais["at"]
+	var base := float(t.dais["base"])
+	assert_true(t.is_walkable(Vector2i((at + Vector2(0, 3.0)).floor())), "단 가장자리를 걷는다")
+	assert_near(t.height_at(Vector2i((at + Vector2(0, 1.5)).floor())) - base, 0.9, 0.01, "맨 윗단은 세 단 높이")
+	var p := t.collide.move(at + Vector2(0, 4.0), Vector2(0, -4.0), 0.15, 0.4)
+	assert_true(p.y < at.y + 1.5 and p.y > at.y, "앞에서 위로 걸으면 고리 앞까지 오른다(%s)" % p)
+	assert_true(t.target(p, Vector2i.UP).has("ring"), "고리 앞에서 위를 보면 고리")

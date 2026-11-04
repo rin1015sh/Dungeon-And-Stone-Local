@@ -154,6 +154,16 @@
     "stairs_speed": 0.75,
     "floor_tile": "cave_floor",
     "block_tile": "rock_wall",
+    "collision_sub": 4,
+    "house_inset": 0.04,
+    "prop_solid": {
+      "_comment": "소품 막는 상자(CT111 — TownCollide): 소품 칸 크기 대비 [폭, 깊이], 발(아래 가운데)에 붙는다. 없으면 칸 전체. [0, 0] = 막지 않는다.",
+      "lamp": [0.3, 0.3], "bollard": [0.35, 0.35], "signpost": [0.3, 0.3], "banner": [0.3, 0.3], "walllamp": [0, 0], "sign": [0.4, 0.3],
+      "tree": [0.45, 0.4], "bush": [0.7, 0.6], "grave": [0.6, 0.35], "planter": [0.8, 0.6], "crate": [0.8, 0.7], "barrel": [0.7, 0.6],
+      "bench": [0.9, 0.5], "laundry": [0.9, 0.2], "woodpile": [0.9, 0.6], "goods": [0.9, 0.7], "rail": [1.0, 0.25], "board": [0.9, 0.4],
+      "statue": [0.8, 0.6], "stall": [0.95, 0.75], "tent": [0.9, 0.8], "well": [0.85, 0.85], "fountain": [0.9, 0.85], "trough": [0.85, 0.6],
+      "wagon": [0.9, 0.7], "household": [0.9, 0.7], "dais_ring": [0.98, 0.84]
+    },
     "source": "placeholder"
   },
 

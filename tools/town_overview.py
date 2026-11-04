@@ -50,6 +50,31 @@ def main():
                 continue
             spr = art.resize((max(1, round(art.width / 3.0)), max(1, round(art.height / 3.0))), Image.LANCZOS)
             im.paste(spr, (round(a["x"] - spr.width / 2), round(a["y"] - a["lift"] - spr.height) + top), spr)
+    raw = [a.split("=", 1)[1] for a in sys.argv if a.startswith("--raw=")]
+    if raw:  # --raw=<경로>: 줄이지 않은 한 장(그림 확인용 — 커밋하지 않는다)
+        im.convert("RGB").save(raw[0], quality=90)
+        return
+    if "--blocks" in sys.argv:  # 막힌 칸(집 h · 소품 p · 벽 r 등)을 빨갛게 겹친다 — 높이만큼 위로
+        from PIL import ImageDraw
+        ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        dr = ImageDraw.Draw(ov)
+        sub = dump.get("sub", 1)
+        cs = 32 / sub
+        for y, row in enumerate(dump.get("fine", [])):  # 쪼갠 걷기 충돌(TownCollide — CT111)
+            for x, ch in enumerate(row):
+                if ch == "#":
+                    lift = dump["heights"][y // sub][x // sub] * 32
+                    dr.rectangle((x * cs, y * cs - lift + top, x * cs + cs - 1, y * cs + cs - 1 - lift + top), fill=(255, 40, 40, 80))
+        for y, row in enumerate(dump["kinds"] if not dump.get("fine") else []):
+            for x, ch in enumerate(row):
+                if ch != ".":
+                    lift = dump["heights"][y][x] * 32
+                    col = {"h": (255, 40, 40, 90), "p": (255, 220, 0, 120), "w": (40, 120, 255, 60)}.get(ch, (255, 0, 255, 70))
+                    dr.rectangle((x * 32, y * 32 - lift + top, x * 32 + 31, y * 32 + 31 - lift + top), fill=col, outline=(0, 0, 0, 120))
+        im.alpha_composite(ov)
+        im.convert("RGB").save(os.path.join(OUT, "town_blocks.jpg"), quality=85)
+        print("막힘 겹쳐 보기: town_blocks.jpg")
+        return
     bbox = im.convert("L").point(lambda v: 255 if v > 20 else 0).getbbox()
     im = im.crop((0, max(0, bbox[1] - 10), W, H)).convert("RGB")
     os.makedirs(OUT, exist_ok=True)

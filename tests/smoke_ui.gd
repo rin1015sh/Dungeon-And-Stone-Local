@@ -970,7 +970,7 @@ func _library_flow() -> void:
 	await _hold("move_up", 0.5)
 	_expect(town.pos.y < y0 - 0.5, "계단을 오른다")
 	var t := town.town()
-	town.pos = Vector2(t.dais["center"]) + Vector2(0.5, float(t.dais["r"]) + 0.5)
+	town.pos = Vector2(t.dais["at"]) + Vector2(0.0, 1.0)  # 돌 단 위 고리 앞(단은 걸어 오른다 — CT111)
 	town.facing = Vector2i.UP
 	DialogueBox.auto_skip = false
 	await _frames(1)

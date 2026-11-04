@@ -11,8 +11,9 @@ func _init() -> void:
 	var hs := PackedFloat32Array()
 	for y in t.height:
 		for x in t.width:
-			kinds.append(t.kind_at(Vector2i(x, y)))
-			hs.append(t.height_at(Vector2i(x, y)))
+			var c := Vector2i(x, y)
+			kinds.append("dais" if t.ground_at(c) == "dais" else t.kind_at(c))  # 선 돌 고리 칸(소품)도 바닥은 돌 단
+			hs.append(t.ground_height_at(c))
 	var f := FileAccess.open("user://town_cells.json", FileAccess.WRITE)
 	f.store_string(JSON.stringify({"width": t.width, "height": t.height, "max_h": t.max_height(), "kinds": kinds, "heights": hs}))
 	f.close()

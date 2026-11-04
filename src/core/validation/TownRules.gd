@@ -8,7 +8,7 @@ const AREA_KINDS := ["street", "avenue", "paving", "plaza", "stairs", "bridge", 
 const STYLES := ["gothic", "rotunda", "hall", "stone", "inn", "arcade", "workshop"]
 const PROPS := ["lamp", "tent", "board", "barrel", "crate", "sacks", "well", "grave", "stall", "cart", "bench", "planter", "fountain", "laundry",
 	"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods",  # 장식(CT101)
-	"sign", "walllamp", "wagon", "rail", "boat", "household"]  # 생활 소품(CT103)
+	"sign", "walllamp", "wagon", "rail", "boat", "household", "citywall", "citygate"]  # 생활 소품(CT103) · 남쪽 성벽(CT111)
 
 
 static func run(v: ValidatorBase) -> void:

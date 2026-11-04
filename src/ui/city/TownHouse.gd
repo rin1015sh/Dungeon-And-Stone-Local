@@ -25,6 +25,13 @@ var _dest := Rect2()
 static var _index: Dictionary = {}
 static var _index_loaded := false
 const INDEX := "res://assets/town/houses/index.json"
+const MASK := "res://assets/town/houses/mask.json"  # 그림 불투명 판(tools/town_house_masks.py — CT111)
+static var _masks: Dictionary = {}
+static var _masks_loaded := false
+var _mask := PackedByteArray()
+var _mask_w: int = 0
+var _mask_h: int = 0
+var _mask_cell: float = 8.0
 
 
 func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
@@ -43,6 +50,7 @@ func setup(h: Dictionary, p_render: Dictionary, p_tile: float) -> void:
 		_region = Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
 		_dest = Rect2(Vector2(float(o[0]), float(o[1])) * tile / 32.0 - Vector2(0, lift), _region.size / k * tile / 32.0)
 		bounds = Rect2(_dest.position + position, _dest.size)
+		_load_mask()
 		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		texture_repeat = CanvasItem.TEXTURE_REPEAT_DISABLED
 	else:
@@ -72,6 +80,55 @@ static func front_y_of(h: Dictionary) -> float:
 	var ax := Vector2(cos(a), sin(a)) * s.x * 0.5
 	var ay := Vector2(-sin(a), cos(a)) * s.y * 0.5
 	return c.y + absf(ax.y) + absf(ay.y)
+
+
+## 필지 앞(남쪽) 가장자리가 x(칸)에서 어디인가(칸 y — x가 필지 밖이면 −INF). 가림·앞뒤 판정(CT111).
+static func front_at(h: Dictionary, x: float) -> float:
+	if h.has("circle"):
+		var cc: Array = h["circle"]
+		var dx := x - float(cc[0])
+		return float(cc[1]) + sqrt(float(cc[2]) * float(cc[2]) - dx * dx) if absf(dx) < float(cc[2]) else -INF
+	var c: Vector2 = h.get("center", Vector2.ZERO)
+	var s: Vector2 = h.get("size", Vector2.ONE)
+	var a := float(h.get("angle", 0.0))
+	var ax := Vector2(cos(a), sin(a)) * s.x * 0.5
+	var ay := Vector2(-sin(a), cos(a)) * s.y * 0.5
+	var pts := [c - ax - ay, c + ax - ay, c + ax + ay, c - ax + ay]
+	var best := -INF
+	for i in 4:
+		var p: Vector2 = pts[i]
+		var q: Vector2 = pts[(i + 1) % 4]
+		if (p.x - x) * (q.x - x) <= 0.0 and not is_equal_approx(p.x, q.x):
+			best = maxf(best, lerpf(p.y, q.y, (x - p.x) / (q.x - p.x)))
+	return best
+
+
+func _load_mask() -> void:
+	if not _masks_loaded:
+		_masks_loaded = true
+		if FileAccess.file_exists(MASK):
+			var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(MASK))
+			_masks = d if d is Dictionary else {}
+	var m := JsonUtil.get_dict(JsonUtil.get_dict(_masks, "houses"), str(house.get("id", "")))
+	if m.is_empty():
+		return
+	_mask = Marshalls.base64_to_raw(JsonUtil.get_str(m, "bits"))
+	_mask_w = JsonUtil.get_int(m, "w")
+	_mask_h = JsonUtil.get_int(m, "h")
+	_mask_cell = JsonUtil.get_float(_masks, "cell", 8.0) * tile / 32.0
+
+
+## 그림이 세계 px 점 p를 덮는가(불투명 판 — 없으면 감싼 사각형).
+func covers(p: Vector2) -> bool:
+	if not bounds.has_point(p):
+		return false
+	if _mask.is_empty():
+		return true
+	var c := Vector2i(((p - bounds.position) / _mask_cell).floor())
+	if c.x < 0 or c.y < 0 or c.x >= _mask_w or c.y >= _mask_h:
+		return false
+	var i := c.y * _mask_w + c.x
+	return (_mask[i >> 3] >> (i & 7)) & 1 == 1
 
 
 ## 구운 그림이 이 집 것인가를 가리는 모양 값(tools/paint_town_houses.gd가 index.json에 적는다).

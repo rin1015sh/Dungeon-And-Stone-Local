@@ -8,6 +8,7 @@ const Kit := preload("res://tools/town_kit/Kit.gd")
 const Props3D := preload("res://tools/town_kit/Props3D.gd")
 const Deco3D := preload("res://tools/town_kit/Deco3D.gd")
 const Facade := preload("res://tools/town_kit/Facade.gd")
+const PropsFine := preload("res://tools/town_kit/PropsFine.gd")
 
 const RAW := "user://town_props"
 const S := 96.0
@@ -48,11 +49,13 @@ func _init() -> void:
 	world.add_child(cam)
 	cam.make_current()
 	await process_frame
-	for kind: String in Props3D.KINDS + Deco3D.KINDS:
+	for kind: String in Props3D.KINDS + Deco3D.KINDS + PropsFine.ONLY:
 		if not only.is_empty() and not only.has(kind):
 			continue
 		var holder := Node3D.new()
-		if kind in Deco3D.KINDS:
+		if kind in PropsFine.KINDS:  # 다시 그린 것(CT111)
+			PropsFine.build(kind, Kit.new(holder, Facade.P))
+		elif kind in Deco3D.KINDS:
 			Deco3D.build(kind, Kit.new(holder, Facade.P))
 		else:
 			Props3D.build(kind, Kit.new(holder, Facade.P))

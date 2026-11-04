@@ -8,7 +8,11 @@ extends RefCounted
 ## 칸 종류(그리기·걷기). 걷는 칸은 WALK.
 const KINDS := ["void", "street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "court", "water", "retain", "wall", "gate",
 	"dais", "house", "prop"]
-const WALK := ["street", "avenue", "paving", "plaza", "stairs", "bridge", "yard"]
+const WALK := ["street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "dais"]  # 돌 단 위도 걷는다(CT111 — 단마다 높이)
+## 차원광장 돌 단: 단 반지름(칸 — tools/town_kit/PropsFine._dais와 같게) · 단 하나 높이 · 선 돌 고리 반 폭(동서).
+const DAIS_STEPS := [3.4, 2.75, 2.1]
+const DAIS_STEP_H := 0.3
+const DAIS_RING_HALF := 2.0
 const W_MIN := 3.2  ## 집 폭(칸 — 줄 방향)
 const W_MAX := 5.4
 const D_MIN := 3.4  ## 집 깊이(칸)
@@ -25,6 +29,8 @@ var width: int = 0
 var height: int = 0
 var start: Vector2i = Vector2i.ZERO
 var map: FloorMap
+## 걷기 충돌(칸을 쪼개 집·소품을 실제 모양으로 — CT111). 칸 지도 map은 길찾기·검사용.
+var collide: TownCollide
 ## 집: {id, center: Vector2(칸), size: Vector2(폭·깊이), angle(라디안), rect: Rect2i(감싸는 칸), floors, roof(hip·gable), ridge_long, style(stone·timber·plaster 또는 시설 꼴), look(0~999), facility(시설이면 id), circle(원형이면 [cx, cy, r]), door: Vector2i}
 var houses: Array[Dictionary] = []
 ## 소품: {kind, rect: Rect2i}
@@ -35,16 +41,19 @@ var doors: Dictionary = {}
 var house_doors: Dictionary = {}
 ## 구역문 칸 → {id, travel}
 var gates: Dictionary = {}
-## 광장 돌 단 {center: Vector2i, r}
+## 광장 돌 단 {center: Vector2i, r, at: Vector2(칸), base(밑 땅 높이), ring: {칸: true}(선 돌 고리 칸 — 소품 dais_ring)}
 var dais: Dictionary = {}
 ## 퀘스트 · 거리 사건 자리(data places — 지금은 자리만, CT95): [{id, name_ko, at: [Vector2(칸)]}]
 var places: Array[Dictionary] = []
 ## 물 위에 뜨는 소품(물 칸에만 놓는다 — 칸 종류는 물 그대로).
 const FLOATING := ["boat"]
+## 성벽 위에 서는 소품(남쪽 성벽 · 남문 — 칸은 성벽 그대로, 그림만 앞뒤 순서로, CT111).
+const ON_WALL := ["citywall", "citygate"]
 var _kind := PackedByteArray()
 var _h := PackedFloat32Array()  # 칸 높이(칸 — 단 · 계단 · 수로, 3/4 화면에서 위로 올려 그린다)
 var _set_h: Dictionary = {}
 var _max_h: float = 0.0  # 영역이 높이를 따로 정한 칸(h)
+var _dais_h: Dictionary = {}  # 돌 단 칸 → 단 높이(바닥 그림은 단 없이 — 단은 소품 그림 dais)
 var _under: Dictionary = {}  # 소품 칸 → 그 밑 바닥 종류(그리기)
 
 
@@ -74,6 +83,7 @@ func _build(db: GameDatabase, map_id: String, cfg: Dictionary) -> void:
 	for a: Variant in JsonUtil.get_array(def, "areas"):
 		_paint_area(a as Dictionary)
 	_heights(JsonUtil.get_array(def, "bands"))
+	_dais_steps()
 	var rng := Rng.new(maxi(1, JsonUtil.get_int(def, "seed", 7)))
 	for e: Variant in JsonUtil.get_array(def, "houses"):
 		_explicit_house(e as Dictionary, rng)
@@ -99,6 +109,7 @@ func _build(db: GameDatabase, map_id: String, cfg: Dictionary) -> void:
 		for x in width:
 			if KINDS[_kind[y * width + x]] in WALK:
 				map.set_tile(Vector2i(x, y), floor_tile)
+	collide = TownCollide.build(self, db, cfg)
 
 
 func kind_at(c: Vector2i) -> String:
@@ -118,6 +129,11 @@ func height_at(c: Vector2i) -> float:
 	if c.x < 0 or c.y < 0 or c.x >= width or c.y >= height:
 		return 0.0
 	return _h[c.y * width + c.x]
+
+
+## 바닥 그림이 쓰는 높이(돌 단의 단은 빼고 — 단은 소품 그림이 그린다, CT111).
+func ground_height_at(c: Vector2i) -> float:
+	return height_at(c) - float(_dais_h.get(c, 0.0))
 
 
 ## 가장 높은 땅(칸 — 카메라가 위로 얼마나 더 갈 수 있나).
@@ -143,16 +159,54 @@ func is_walkable(c: Vector2i) -> bool:
 
 ## 몸(칸 좌표 pos)이 facing 쪽으로 바라보는 것: {door: 시설 id} · {house: 집 id, design} · {gate: id, travel} · {ring: true} · {}.
 func target(pos: Vector2, facing: Vector2i) -> Dictionary:
-	var c := Kinematics.cell_of(pos) + facing
+	var here := Kinematics.cell_of(pos)
+	var c := here + facing
+	if facing == Vector2i.UP:  # 문 칸 안까지 다가선 몸(쪼갠 충돌 — 문턱 앞에 붙어 선다, CT111)
+		for cc: Vector2i in [here, c]:
+			if doors.has(cc):
+				return {"door": doors[cc]}
+			if house_doors.has(cc):
+				return (house_doors[cc] as Dictionary).duplicate()
 	if doors.has(c):
 		return {"door": doors[c]}
-	if facing == Vector2i.UP and house_doors.has(c):
-		return (house_doors[c] as Dictionary).duplicate()
 	if gates.has(c):
 		return (gates[c] as Dictionary).duplicate()
-	if kind_at(c) == "dais":
+	if not dais.is_empty() and (dais["ring"] as Dictionary).has(c):
 		return {"ring": true}
 	return {}
+
+
+## 돌 단: 단마다 0.3칸씩 올라간다(걸어 오른다) · 가운데 선 돌 고리 칸은 소품(dais_ring — 막는 상자는 city.json town.prop_solid).
+func _dais_steps() -> void:
+	if dais.is_empty():
+		return
+	var at: Vector2 = dais["at"]
+	var r := int(ceil(float(dais["r"])))
+	var ctr: Vector2i = dais["center"]
+	dais["base"] = height_at(Vector2i(at.floor()))
+	for y in range(ctr.y - r - 1, ctr.y + r + 2):
+		for x in range(ctr.x - r - 1, ctr.x + r + 2):
+			var c := Vector2i(x, y)
+			if kind_at(c) != "dais":
+				continue
+			var d := (Vector2(c) + Vector2(0.5, 0.5)).distance_to(at)
+			var lvl := 0
+			for rr: float in DAIS_STEPS:
+				lvl += 1 if d <= rr else 0
+			_h[y * width + x] += lvl * DAIS_STEP_H
+			_dais_h[c] = lvl * DAIS_STEP_H
+			_max_h = maxf(_max_h, _h[y * width + x])
+			if absf(x + 0.5 - at.x) <= DAIS_RING_HALF and absf(y + 0.5 - at.y) <= 0.5:
+				(dais["ring"] as Dictionary)[c] = true
+	var lo := Vector2i(1 << 20, 1 << 20)
+	var hi := Vector2i(-1, -1)
+	for c: Vector2i in dais["ring"]:
+		lo = lo.min(c)
+		hi = hi.max(c)
+		_under[c] = "dais"
+		_put(c, "prop")
+	if hi.x >= 0:
+		props.append({"kind": "dais_ring", "rect": Rect2i(lo, hi - lo + Vector2i.ONE)})
 
 
 ## 시설 문 앞(나올 때 서는 자리 — 칸 좌표 몸 중심).
@@ -215,7 +269,7 @@ func _paint_area(a: Dictionary) -> void:
 		var c := JsonUtil.get_array(a, "circle")
 		cells = circle_cells(float(c[0]), float(c[1]), float(c[2]))
 		if k == "dais":
-			dais = {"center": Vector2i(int(c[0]), int(c[1])), "r": float(c[2])}
+			dais = {"center": Vector2i(int(c[0]), int(c[1])), "r": float(c[2]), "at": Vector2(float(c[0]), float(c[1])), "ring": {}}
 	else:
 		var r := _rect(JsonUtil.get_array(a, "rect"))
 		for y in range(r.position.y, r.end.y):
@@ -368,6 +422,10 @@ func _props(p: Dictionary) -> void:
 	for r in at:
 		if k in FLOATING:  # 물 위 소품(거룻배 — CT103): 물 칸 그대로(걷지 않는다), 그림만
 			if kind_at(r.position) == "water":
+				props.append({"kind": k, "rect": r})
+			continue
+		if k in ON_WALL:
+			if kind_at(r.position) in ["wall", "gate"]:
 				props.append({"kind": k, "rect": r})
 			continue
 		if not is_walkable(r.position):

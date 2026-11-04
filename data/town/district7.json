@@ -1040,6 +1040,26 @@
 			],
 			"id": "west",
 			"travel": true
+		},
+		{
+			"kind": "wall",
+			"rect": [
+				0,
+				106,
+				80,
+				110
+			]
+		},
+		{
+			"kind": "gate",
+			"rect": [
+				38,
+				106,
+				42,
+				110
+			],
+			"id": "south",
+			"travel": false
 		}
 	],
 	"houses": [
@@ -3759,6 +3779,177 @@
 				95,
 				61,
 				96
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				2,
+				108,
+				6,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				6,
+				108,
+				10,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				10,
+				108,
+				14,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				14,
+				108,
+				18,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				18,
+				108,
+				22,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				22,
+				108,
+				26,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				26,
+				108,
+				30,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				30,
+				108,
+				34,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				34,
+				108,
+				38,
+				110
+			]
+		},
+		{
+			"kind": "citygate",
+			"rect": [
+				38,
+				108,
+				42,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				42,
+				108,
+				46,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				46,
+				108,
+				50,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				50,
+				108,
+				54,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				54,
+				108,
+				58,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				58,
+				108,
+				62,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				62,
+				108,
+				66,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				66,
+				108,
+				70,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				70,
+				108,
+				74,
+				110
+			]
+		},
+		{
+			"kind": "citywall",
+			"rect": [
+				74,
+				108,
+				78,
+				110
 			]
 		}
 	],
