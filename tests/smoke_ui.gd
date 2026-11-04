@@ -122,6 +122,7 @@ func _starvation_flow() -> void:
 		return
 	await _action("debug_toggle")
 	_press(explore, Strings.t("debug.hunger_zero"))
+	explore.session.monsters_enabled = false  # 12시간 건너뛰는 동안 몬스터가 닿아 전투 화면이 뜨지 않게(항마력 생명력 뒤로 더 오래 버텨 노출이 늘었다)
 	for i in 10:
 		if explore.session.ended:
 			break
