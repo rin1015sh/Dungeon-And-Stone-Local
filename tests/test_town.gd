@@ -180,3 +180,12 @@ func test_ground_and_props_are_baked() -> void:
 			"tree", "bush", "woodpile", "trough", "signpost", "statue", "bollard", "banner", "goods",  # 장식(CT101)
 			"sign", "walllamp", "wagon", "rail", "boat", "household"]:  # 생활 소품(CT103)
 		assert_true(ResourceLoader.exists("res://assets/town/props/%s.webp" % k), "소품 그림 " + k)
+
+
+## 도시와 미궁에서 캐릭터가 화면에서 같은 크기로 보인다: 도시 zoom × 사람 배율 = 탐험 camera_zoom(탐험 몸 그림 배율 1).
+func test_player_looks_the_same_size_in_town_and_dungeon() -> void:
+	var d := GameDatabase.new()
+	d.load_all("res://data")
+	var town: Dictionary = (d.render.get("city", {}) as Dictionary).get("town", {})
+	var explore_zoom := JsonUtil.get_float(JsonUtil.get_dict(d.render, "view"), "camera_zoom", 2.0)
+	assert_near(JsonUtil.get_float(town, "zoom", 1.0) * JsonUtil.get_float(town, "actor_scale", 1.0), explore_zoom, 0.01, "도시 zoom × actor_scale = 탐험 camera_zoom")
