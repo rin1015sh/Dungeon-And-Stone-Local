@@ -69,8 +69,12 @@ def dilate(m, n=1):
     return m
 
 
-def finish(raw, code, sprite=False):
-    """날 그림(H, W, 3 · 0~1)과 면 번호(H, W)로 손그림 마감 → (그림, 불투명도). sprite면 배경을 투명하게(바깥 먹선까지만 남김 — 게임 집 그림, CT97)."""
+def finish(raw, code, sprite=False, fine=False):
+    """날 그림(H, W, 3 · 0~1)과 면 번호(H, W)로 손그림 마감 → (그림, 불투명도). sprite면 배경을 투명하게(바깥 먹선까지만 남김 — 게임 집 그림, CT97).
+    fine = 세밀 판(CT108 — 사용자 "도시 그래픽이 플레이어랑 안 맞는다, 플레이어처럼 세부 묘사"): 뭉개기 없이 재질 무늬를 살리고,
+    빗금은 아주 어두운 곳에만 가늘게, 먹선은 가늘게 — 칸당 64~96px로 구운 게임 그림(동네 집 · 바닥 · 소품 · 실내)."""
+    if fine:
+        return _finish_fine(raw, code, sprite)
     mask = code != 0
     H, W = mask.shape
     r1, r2 = (2, 1) if sprite else (3, 2)
@@ -116,6 +120,41 @@ def finish(raw, code, sprite=False):
     lum = img @ np.array([0.3, 0.59, 0.11])
     img = img * 0.85 + lum[..., None] * 0.15
     img = img * np.array([1.03, 1.0, 0.94])
+    alpha = np.where(mask, 1.0, np.where(sil, a, 0.0)) if sprite else np.ones(mask.shape)
+    return np.clip(img, 0, 1), alpha
+
+
+def _finish_fine(raw, code, sprite):
+    mask = code != 0
+    H, W = mask.shape
+    img = np.clip(raw, 0, 1) ** 0.92
+    yy, xx = np.mgrid[0:H, 0:W]
+    # 아주 옅은 붓결(밝기만 ±2%) — 3D로 찍은 재질 무늬 · 빛을 그대로 둔다
+    img = img * (1.0 + (noise(H, W, 7, 23)[..., None] - 0.5) * 0.04)
+    # 빗금: 어두운 그늘(밝기 0.3 아래)에만, 3px 간격 가는 줄
+    lum = img @ np.array([0.3, 0.59, 0.11])
+    wob = noise(H, W, 30, 3) * 3.0
+    breaks = noise(H, W, 7, 5) > 0.35
+    dark = np.clip((0.3 - lum) / 0.22, 0, 1)
+    h1 = ((xx * 0.55 + yy * 0.83 + wob) % 3.2) < 0.7
+    hatch = h1 * dark * 0.45 * breaks * mask
+    img = img * (1 - hatch[..., None] * 0.6)
+    # 종이 결(아주 옅게)
+    grain = 1.0 + (noise(H, W, 2, 11) - 0.5) * 0.04 + (noise(H, W, 40, 13) - 0.5) * 0.05
+    img = np.where(mask[..., None], img * grain[..., None], PAPER[None, None, :] * grain[..., None])
+    # 먹선: 면이 바뀌는 곳 1px(가끔 끊김) + 바깥 실루엣 1~2px
+    edge = np.zeros_like(mask)
+    for sh in [(1, 0), (0, 1)]:
+        edge |= (code != np.roll(np.roll(code, sh[0], 0), sh[1], 1))
+    edge &= mask
+    sil = (dilate(mask, 1) & ~mask) | ((dilate(mask, 2) & ~mask) & (noise(H, W, 16, 21) > 0.55))
+    a = np.where(edge, 0.55 + noise(H, W, 14, 17) * 0.25, 0.0)
+    a *= np.where(noise(H, W, 26, 19) > 0.12, 1.0, 0.45)
+    a = np.maximum(a, np.where(sil, 0.9, 0.0))
+    img = img * (1 - a[..., None]) + INK[None, None, :] * a[..., None]
+    lum = img @ np.array([0.3, 0.59, 0.11])
+    img = img * 0.9 + lum[..., None] * 0.1
+    img = img * np.array([1.02, 1.0, 0.96])
     alpha = np.where(mask, 1.0, np.where(sil, a, 0.0)) if sprite else np.ones(mask.shape)
     return np.clip(img, 0, 1), alpha
 

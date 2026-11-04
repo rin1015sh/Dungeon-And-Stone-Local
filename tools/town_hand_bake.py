@@ -1,5 +1,5 @@
 """게임 동네 집 그림 손그림 마감(CT97): tools/paint_town_hand.gd가 찍은 user://town_hand/<id>_raw.png · _id.png · .json을
-tools/town_handdrawn.finish(sprite=True)로 마감해 배경을 투명하게 → user://town_bake/<id>.png · .json(off · key)
+tools/town_handdrawn.finish(sprite=True, fine=True)로 마감해 배경을 투명하게 → user://town_bake/<id>.png · .json(off · key)
 — 그다음 paint_town_houses.gd --pack이 그림판(assets/town/houses/p<k>.webp + index.json)으로 묶는다.
   python3 tools/town_hand_bake.py [h3 h7 …]
 """
@@ -41,7 +41,7 @@ def props():
         raw = np.asarray(Image.open(os.path.join(src, f)).convert("RGB")).astype(float) / 255.0
         ids = np.asarray(Image.open(os.path.join(src, kind + "_id.png")).convert("RGB")).astype(np.int64)
         code = ids[..., 0] * 65536 + ids[..., 1] * 256 + ids[..., 2]
-        img, alpha = th.finish(raw, code, sprite=True)
+        img, alpha = th.finish(raw, code, sprite=True, fine=True)
         Image.fromarray((np.dstack([img, alpha]) * 255).astype(np.uint8), "RGBA").save(os.path.join(dst, kind + ".webp"), lossless=True)
         n += 1
     print("소품 손그림: %d → %s" % (n, dst))
@@ -65,7 +65,7 @@ def main():
         raw = np.asarray(Image.open(os.path.join(src, f)).convert("RGB")).astype(float) / 255.0
         ids = np.asarray(Image.open(os.path.join(src, hid + "_id.png")).convert("RGB")).astype(np.int64)
         code = ids[..., 0] * 65536 + ids[..., 1] * 256 + ids[..., 2]
-        img, alpha = th.finish(raw, code, sprite=True)
+        img, alpha = th.finish(raw, code, sprite=True, fine=True)
         rgba = np.dstack([img, alpha])
         Image.fromarray((rgba * 255).astype(np.uint8), "RGBA").save(os.path.join(dst, hid + ".png"))
         shutil.copyfile(os.path.join(src, hid + ".json"), os.path.join(dst, hid + ".json"))

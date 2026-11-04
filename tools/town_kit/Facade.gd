@@ -47,9 +47,9 @@ static func _box(poly: PackedVector2Array) -> Rect2:
 static func _shader(p: Paint, style: String, ci: int) -> Callable:
 	match style:
 		"stone":
-			return Mat.ashlar(p, STONE[ci % STONE.size()], 0, 0, int(P * 0.6), int(P * 0.27))
+			return Mat.ashlar(p, STONE[ci % STONE.size()], 0, 0, int(P * 0.34), int(P * 0.16))
 		"brick":
-			return Mat.brick(p, BRICK.lightened((ci % 3) * 0.04), 0, 0, int(P * 0.3), int(P * 0.13))
+			return Mat.brick(p, BRICK.lightened((ci % 3) * 0.04), 0, 0, int(P * 0.17), int(P * 0.075))
 		"rubble":
 			return Mat.rubble(p, STONE[ci % STONE.size()].darkened(0.1))
 	return Mat.plaster(p, PLASTER[ci % PLASTER.size()], 0.1 if ci % 3 == 0 else 0.0)
@@ -118,12 +118,13 @@ static func gable(style: String, ci: int, window: bool = true) -> Callable:
 ## 지붕(어두운 갈색 너와·점판암 한 계열). small = 지붕창·작은 지붕(잔 비늘).
 static func roof(ci: int, small: bool = false) -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
-		var tw := int(P * (0.18 if small else 0.3))  # 기와를 크게 · 덜 시끄럽게(CT103)
-		var th := int(P * (0.11 if small else 0.18))
+		var tw := int(P * (0.12 if small else 0.17))  # 기와 — CT103 크게 → CT108 사람 대비 2배 동네에서 실제 크기쯤(사람 키의 1/6)
+		var th := int(P * (0.08 if small else 0.11))
 		Parts.roof(p, poly, _tiles(ROOF[ci % ROOF.size()], tw, th))
 
 
 ## 차분한 기와 · 너와(줄 그늘 얕게, 장마다 밝기 차 작게 — 지붕이 탁하고 시끄럽지 않게, CT98).
+## CT108: 장마다 위는 빛을 받아 조금 밝고 아래 끝은 다음 줄에 덮여 그늘(입체) · 잔 결 · 가끔 바랜 장 · 이끼 — 대비는 낮게.
 static func _tiles(base: Color, tw: int, th: int) -> Callable:
 	return func(x: int, y: int) -> Color:
 		var row := floori(float(y) / th)
@@ -131,11 +132,21 @@ static func _tiles(base: Color, tw: int, th: int) -> Callable:
 		var col := floori(float(lx) / tw)
 		var by := posmod(y, th)
 		var bx := posmod(lx, tw)
-		var tone := base.lightened((Paint.hash01(row, col, 5) - 0.5) * 0.08)
+		var h := Paint.hash01(row, col, 5)
+		var tone := base.lightened((h - 0.5) * 0.1)
+		var t := float(by) / float(th)
+		tone = tone.lightened(0.07 * (1.0 - t)).darkened(0.1 * t * t)
+		if Paint.hash01(row, col, 11) > 0.93:
+			tone = tone.lerp(Color("#6a5a48"), 0.25)  # 바랜 장
+		elif Paint.hash01(row, col, 13) > 0.95:
+			tone = tone.lerp(Color("#4c5230"), 0.3)  # 이끼
+		tone = tone.darkened((Paint.hash01(x, y, 17) - 0.5) * 0.06)  # 잔 결
 		if by >= th - 2:
-			tone = tone.darkened(0.22)
+			tone = tone.darkened(0.26)
 		elif bx == 0:
-			tone = tone.darkened(0.08)
+			tone = tone.darkened(0.12)
+		elif bx == 1 or by == 0:
+			tone = tone.lightened(0.05)
 		return tone
 
 
@@ -144,11 +155,11 @@ static func plain(kind: String, ci: int = 0) -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
 		match kind:
 			"brick":
-				p.fill_poly(poly, Mat.brick(p, Color("#5b3a2c"), 0, 0, int(P * 0.2), int(P * 0.1)))
+				p.fill_poly(poly, Mat.brick(p, Color("#5b3a2c"), 0, 0, int(P * 0.13), int(P * 0.065)))
 			"stone":
-				p.fill_poly(poly, Mat.ashlar(p, STONE[ci % STONE.size()], 0, 0, int(P * 0.5), int(P * 0.25)))
+				p.fill_poly(poly, Mat.ashlar(p, STONE[ci % STONE.size()], 0, 0, int(P * 0.3), int(P * 0.15)))
 			"wood":
-				p.fill_poly(poly, Mat.planks(p, Color("#4d3726"), 0, 0, false, int(P * 0.14)))
+				p.fill_poly(poly, Mat.planks(p, Color("#4d3726"), 0, 0, false, int(P * 0.09)))
 			"dark":
 				p.fill_poly(poly, p.flat(Color("#1c1816"), 0.06))
 			"cobble":

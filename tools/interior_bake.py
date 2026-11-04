@@ -138,7 +138,7 @@ def lights_of(plan, R, ring, groups):
 
 
 def finish(cv, path):
-    img, alpha = th.finish(np.clip(cv.raw, 0, 1), cv.code, sprite=True)
+    img, alpha = th.finish(np.clip(cv.raw, 0, 1), cv.code, sprite=True, fine=True)
     rgba = (np.dstack([img, alpha]) * 255).astype(np.uint8)
     Image.fromarray(rgba, "RGBA").save(path, quality=92, alpha_quality=100, method=5)
     return rgba

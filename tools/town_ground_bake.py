@@ -721,7 +721,7 @@ def main():
             cc = code[ya:yb, xa:xb]
             if not (cc != 0).any():
                 continue
-            img, alpha = th.finish(np.clip(scr[ya:yb, xa:xb], 0, 1).astype(np.float64), cc, sprite=True)
+            img, alpha = th.finish(np.clip(scr[ya:yb, xa:xb], 0, 1).astype(np.float64), cc, sprite=True, fine=True)
             a = sink[ya:yb, xa:xb][..., None].astype(np.float64)
             img = img * (1 - a) + th.INK[None, None, :] * a
             alpha = np.where(cc != 0, 1.0, 0.0)  # 바닥은 바깥 먹선 없이(빈곳 = 검은 바깥)
