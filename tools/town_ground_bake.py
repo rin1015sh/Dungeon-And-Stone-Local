@@ -25,11 +25,11 @@ from town_hand_bake import user_dir  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "assets", "town", "ground")
-PX = 32
+PX = 64  # 칸당 px(CT107 — 동네를 사람 대비 2배로 키우며 32 → 64: 돌 · 붓결 같은 px 크기는 화면에서 그대로, 칸 크기 길 · 집은 2배)
 CHUNK = 512
 KINDS = ["void", "street", "avenue", "paving", "plaza", "stairs", "bridge", "yard", "court", "water", "retain", "wall", "gate", "dais", "house", "prop"]
 K = {k: i for i, k in enumerate(KINDS)}
-STEP = 0.2  # 계단 턱 높이(칸 — 6px 남짓, CT102)
+STEP = 0.1  # 계단 턱 높이(칸 — 6px 남짓, CT102 · CT107에서 칸이 사람 대비 2배라 반으로)
 WALK_W = 18  # 집 둘레 판석 보도 폭(px, CT102)
 
 SUN = (0.8, -0.47)  # 높이 1칸당 그림자가 뻗는 쪽(동 · 북 — 집 그림 해가 서남쪽 위)
@@ -732,7 +732,7 @@ def main():
             if preview is not None:
                 preview.paste(im.convert("RGB"), (x0, y0))
             chunks.append({"file": name, "rect": [x0, y0 - top, x1 - x0, y1 - y0]})
-    json.dump({"_comment": "tools/town_ground_bake.py가 만든다(손으로 고치지 않는다). 바닥 조각 그림: rect = [x, y, w, h] 게임 px(칸당 32 — 화면 y = 남쪽 깊이 − 높이, 높은 단은 0보다 위).",
+    json.dump({"_comment": "tools/town_ground_bake.py가 만든다(손으로 고치지 않는다). 바닥 조각 그림: rect = [x, y, w, h] 게임 px(칸당 tile px — 화면 y = 남쪽 깊이 − 높이, 높은 단은 0보다 위).",
                "tile": PX, "chunks": chunks}, open(os.path.join(OUT, "index.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     if preview is not None:
         preview.save(os.path.join(user_dir(), "ground_preview.png"))

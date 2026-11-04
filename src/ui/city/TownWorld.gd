@@ -6,7 +6,8 @@ extends Node2D
 ## 날씨·구역 색은 CanvasModulate 하나로 곱한다.
 
 const STREAM := 8  ## 집 노드를 올리고 내리는 칸 묶음
-const KEEP := Vector2i(4, 3)  ## 화면 가운데 묶음에서 몇 묶음까지 올려 둘까(가로·세로 — 화면 40×22칸 + 남쪽 집 지붕)
+const KEEP := Vector2i(2, 2)  ## 화면 가운데 묶음에서 몇 묶음까지 올려 둘까(가로·세로 — 화면 15×8칸 + 남쪽 집 지붕, CT107)
+const GROUND_REACH := Vector2(640, 480)  ## 바닥 조각을 올리는 화면 가운데 둘레(세계 px — 화면 15×8칸 = 480×270의 둘레 + 여유)
 
 var player: ActorView
 ## 플레이어 발 자리(앞뒤 순서) — 몸은 그 안에서 땅 높이만큼 위로(player.position.y = −높이).
@@ -20,6 +21,9 @@ var _at := Vector2i(-999, -999)  # 지금 올린 가운데 묶음
 var _render: Dictionary = {}
 var _faded: Array[TownHouse] = []
 var _tint: CanvasModulate
+var _ground: Array[Dictionary] = []  # 바닥 조각 {file, rect(세계 px), k}
+var _ground_live: Dictionary = {}  # 조각 번호 → Sprite2D(지금 올린 것)
+var _ground_parent: Node2D
 
 
 func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) -> void:
@@ -66,6 +70,7 @@ func build(p_town: TownMap, db: GameDatabase, pc: PlayerCharacter, tile: float) 
 
 
 ## 구운 바닥(tools/town_ground_bake.py — 곡선 길 · 동심원 광장 · 판석 · 흙 · 옹벽 마름돌, 높이까지 3/4로 그린 조각 그림, CT99). 없으면 false.
+## 조각은 목록만 읽고, 화면 둘레 것만 올린다(_stream_ground — 바닥 그림이 칸당 64px라 다 올리면 웹 메모리가 모자라다, CT107).
 func _baked_ground(parent: Node2D, tile: float) -> bool:
 	const INDEX := "res://assets/town/ground/index.json"
 	if not FileAccess.file_exists(INDEX):
@@ -74,20 +79,41 @@ func _baked_ground(parent: Node2D, tile: float) -> bool:
 	if not d is Dictionary:
 		return false
 	var k := tile / float((d as Dictionary).get("tile", 32))
+	_ground_parent = parent
 	for c: Variant in JsonUtil.get_array(d as Dictionary, "chunks"):
 		var e := c as Dictionary
-		var tex := load("res://assets/town/ground/%s.webp" % str(e.get("file", ""))) as Texture2D
-		if tex == null:
-			continue
 		var r: Array = e.get("rect", [0, 0, 0, 0])
-		var sp := Sprite2D.new()
-		sp.texture = tex
-		sp.centered = false
-		sp.position = Vector2(float(r[0]), float(r[1])) * k
-		sp.scale = Vector2(k, k)
-		sp.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-		parent.add_child(sp)
-	return parent.get_child_count() > 0
+		_ground.append({"file": "res://assets/town/ground/%s.webp" % str(e.get("file", "")),
+			"rect": Rect2(Vector2(float(r[0]), float(r[1])) * k, Vector2(float(r[2]), float(r[3])) * k), "k": k})
+	return not _ground.is_empty()
+
+
+## 화면 가운데(세계 px) 둘레(반경 GROUND_REACH × 화면)의 바닥 조각만 노드로.
+func _stream_ground(center: Vector2) -> void:
+	var reach := Rect2(center - GROUND_REACH, GROUND_REACH * 2.0)
+	for i in _ground.size():
+		var e: Dictionary = _ground[i]
+		var on := reach.intersects(e["rect"] as Rect2)
+		if on and not _ground_live.has(i):
+			var tex := load(str(e["file"])) as Texture2D
+			if tex == null:
+				continue
+			var sp := Sprite2D.new()
+			sp.texture = tex
+			sp.centered = false
+			sp.position = (e["rect"] as Rect2).position
+			sp.scale = Vector2(float(e["k"]), float(e["k"]))
+			sp.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+			_ground_parent.add_child(sp)
+			_ground_live[i] = sp
+		elif not on and _ground_live.has(i):
+			(_ground_live[i] as Node).queue_free()
+			_ground_live.erase(i)
+
+
+## 지금 올린 바닥 조각 수(시험).
+func ground_count() -> int:
+	return _ground_live.size()
 
 
 func _prop(kind: String, rect: Rect2i, render: Dictionary) -> void:
@@ -104,6 +130,8 @@ func set_tint(c: Color) -> void:
 
 ## 화면 가운데(세계 px) 둘레 묶음의 집만 노드로(구운 그림판도 둘레 것만 읽힌다 — 웹 메모리). 묶음이 바뀔 때만 다시 고른다.
 func stream(center: Vector2) -> void:
+	if not _ground.is_empty():
+		_stream_ground(center)
 	var at := Vector2i(center / _tile) / STREAM
 	if at == _at:
 		return
@@ -134,7 +162,7 @@ func live_count() -> int:
 func update_fade(foot: Vector2, lift: float = 0.0) -> void:
 	var now: Array[TownHouse] = []
 	for h: TownHouse in _live.values():
-		if foot.y < h.position.y - 2.0 and h.bounds.has_point(foot - Vector2(0, 14 + lift)):
+		if foot.y < h.position.y - 2.0 and h.bounds.has_point(foot - Vector2(0, 7 + lift)):
 			now.append(h)
 	for h in _faded:
 		if is_instance_valid(h) and not now.has(h):

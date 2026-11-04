@@ -66,14 +66,14 @@ func build(inner: CityInterior, db: GameDatabase, pc: PlayerCharacter, tile: flo
 		person.sheet = sheet
 		person.facing = n["face"]
 		person.position = (Vector2(n["at"]) + Vector2(0.5, 0.55)) * tile
-		var a := TownBrush.num(db.render, "actor_scale", 1.0)
+		var a := InteriorView._num(db.render, "actor_scale", 1.0)
 		person.scale = Vector2(a, a)
 		_add(_room_of(inner, Rect2i(n["at"], Vector2i.ONE)), sorter, person)
 	player = ActorView.new()
 	sorter.add_child(player)
 	player.setup_for(pc, db.render)
 	player.drop_camera()
-	var ps := TownBrush.num(db.render, "actor_scale", 1.0)
+	var ps := InteriorView._num(db.render, "actor_scale", 1.0)
 	player.scale = Vector2(ps, ps)
 	for i in _items.size():
 		for it: CanvasItem in _items[i]:

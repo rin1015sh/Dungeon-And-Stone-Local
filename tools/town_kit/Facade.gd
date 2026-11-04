@@ -20,7 +20,7 @@ const TIMBER := Color("#33251b")
 ## 지붕: 어두운 갈색 한 계열(예전 색 — CT99). 집마다 굽는 쪽이 같은 계열 안에서 조금씩 다른 기운을 곱한다(HouseFit.ROOF_TINTS).
 const ROOF := [Color("#4a3a2e"), Color("#3f342b"), Color("#54423a"), Color("#3a302a")]
 const WOOD := Color("#3b2a1e")
-static var P := 64.0
+static var P := 96.0
 static var storey := 1.15
 ## 문(사용자 2026-11-02 "플레이어가 들어갈 수 있을 정도의 사이즈"): 폭 0.86칸(사람 몸 한 칸이 지나간다) · 높이 한 층의 0.88(사람 키보다 조금 높다).
 const DOOR_W := 0.86

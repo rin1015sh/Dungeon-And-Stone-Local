@@ -140,7 +140,7 @@ func _sync_view() -> void:
 	var map_px := Vector2(_town.width, _town.height) * _tile
 	var top := -_town.max_height() * _tile  # 높은 단은 위로 올라가 그려진다
 	var view := Vector2(_vp.size) / _cam.zoom
-	var at := pos * _tile - Vector2(0, lift + _tile * 0.6)
+	var at := pos * _tile - Vector2(0, lift + _tile * 0.3)  # 몸 가운데쯤(사람 키 ≈ 1칸 — CT107)
 	_cam.position = Vector2(clampf(at.x, view.x * 0.5, maxf(view.x * 0.5, map_px.x - view.x * 0.5)),
 		clampf(at.y, top + view.y * 0.5, maxf(top + view.y * 0.5, map_px.y - view.y * 0.5)))
 	_world.stream(_cam.position + Vector2(0, lift))

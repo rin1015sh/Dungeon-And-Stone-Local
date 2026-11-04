@@ -75,10 +75,16 @@ func _build_world(view: Dictionary) -> void:
 	_vp.add_child(_world)
 	_world.build(_inner, _state.db, _pc, _tile)
 	_cam = Camera2D.new()
-	var zoom := TownBrush.num(_state.db.render, "zoom", 1.0)
+	var zoom := _num(_state.db.render, "zoom", TownBrush.num(_state.db.render, "zoom", 1.0))  # 실내는 동네와 따로(사람 · 벽 비율이 다르다)
 	_cam.zoom = Vector2(zoom, zoom)
 	_world.add_child(_cam)
 	_cam.make_current()
+
+
+## 걷기 규칙(city.json interior — 동네 town과 따로).
+func _rule(key: String, fallback: float) -> float:
+	var v := CityValues.num(CityValues.city_section(_state.db, _state.overrides, "interior"), key)
+	return v if v > 0.0 else fallback
 
 
 static func _num(render: Dictionary, key: String, fallback: float) -> float:
@@ -103,9 +109,8 @@ func walk(dir: Vector2, sec: float) -> void:
 	if _leaving or dir == Vector2.ZERO:
 		return
 	facing = PlayerMotion.facing_of(dir)
-	var speed := TownMap.rule(_state.db, _state.overrides, "walk_tiles_per_sec", 4.5)
-	pos = Kinematics.move(_inner.map, pos, dir.normalized() * speed * sec, TownMap.rule(_state.db, _state.overrides, "body_half", 0.3),
-		TownMap.rule(_state.db, _state.overrides, "corner_assist", 0.8), 0.25)
+	var speed := _rule("walk_tiles_per_sec", 4.5)
+	pos = Kinematics.move(_inner.map, pos, dir.normalized() * speed * sec, _rule("body_half", 0.3), _rule("corner_assist", 0.8), 0.25)
 	var cell := Kinematics.cell_of(pos)
 	var r := _inner.room_at(cell)
 	if r >= 0 and r != _world.room():

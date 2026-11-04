@@ -2,14 +2,14 @@ extends SceneTree
 ## 동네 거리 소품을 3D로 지어(tools/town_kit/Props3D) 탐험 화면 3/4로 찍는다(사용자 2026-11-03 "소품 3d 느낌 나게", CT99).
 ## → user://town_props/<kind>_raw.png · _id.png → python3 tools/town_hand_bake.py --props → assets/town/props/<kind>.webp
 ##   xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . --script res://tools/paint_town_props.gd [-- --only=lamp,well]
-## 그림은 가로 가운데 = 발자리 가운데, 아래 끝 = 발자리 앞(남) 끝(TownProp이 발 = 아래 가운데로 그린다), 칸당 48px(TownProp.ART_SCALE 1.5).
+## 그림은 가로 가운데 = 발자리 가운데, 아래 끝 = 발자리 앞(남) 끝(TownProp이 발 = 아래 가운데로 그린다), 칸당 96px(TownProp.ART_SCALE 3.0 — CT107).
 
 const Kit := preload("res://tools/town_kit/Kit.gd")
 const Props3D := preload("res://tools/town_kit/Props3D.gd")
 const Deco3D := preload("res://tools/town_kit/Deco3D.gd")
 
 const RAW := "user://town_props"
-const S := 48.0
+const S := 96.0
 const MARGIN := 0.3
 
 

@@ -8,7 +8,7 @@ extends RefCounted
 const Paint := preload("res://tools/city_art/Paint.gd")
 
 var root: Node3D
-var P := 64.0
+var P := 96.0
 var _n := 0
 ## 지금 짓는 면이 지붕인가(지붕 함수 안에서만 켠다 — 굽는 쪽이 집마다 지붕 색을 따로 입힌다, CT98).
 var _roof := false

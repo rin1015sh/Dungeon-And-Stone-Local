@@ -12,7 +12,7 @@ var look: int = 0
 var lift: float = 0.0
 var _art: Texture2D  # 구운 그림(붙잡아 둔다)
 const ART_DIR := "res://assets/town/props"
-const ART_SCALE := 1.5  ## 구운 그림 배율(칸당 48px ÷ 32)
+const ART_SCALE := 3.0  ## 구운 그림 배율(칸당 96px ÷ 32 — CT107)
 
 
 func setup(p_kind: String, rect: Rect2i, p_render: Dictionary, p_tile: float) -> void:

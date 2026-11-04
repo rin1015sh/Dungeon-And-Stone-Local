@@ -4,12 +4,12 @@ extends SceneTree
 ## 밀어 수평 정사영)로 한 채씩 찍는다 — 날 그림(종이색 배경) + 면 번호 그림 → user://town_hand/<집 id>_raw.png · _id.png · .json(off · key).
 ## 손그림 마감·투명 배경은 python3 tools/town_hand_bake.py(→ user://town_bake/<id>.png · .json), 그림판 묶기는 paint_town_houses.gd --pack.
 ##   xvfb-run -a -s "-screen 0 1280x720x24" <godot> --rendering-driver opengl3 --path . --script res://tools/paint_town_hand.gd [-- --part=i/n | --only=h3,h7]
-## 굽는 배율 S = 칸당 48px(paint_town_houses와 같다 — index.json scale 1.5), off = 노드 원점(0, 필지 남쪽 끝 × 32) 기준 그림 왼쪽 위(게임 px).
+## 굽는 배율 S = 칸당 96px(paint_town_houses와 같다 — index.json scale 3.0, CT107), off = 노드 원점(0, 필지 남쪽 끝 × 32) 기준 그림 왼쪽 위(게임 px).
 
 const HouseFit := preload("res://tools/town_kit/HouseFit.gd")
 
 const RAW := "user://town_hand"
-const S := 48.0
+const S := 96.0
 const GAME_TILE := 32.0
 const MARGIN := 0.35  ## 그림 둘레 여유(칸 — 바깥 먹선 자리)
 const PAPER := Color("#d8cdb4")

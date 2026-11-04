@@ -6,7 +6,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://tools/paint_town_houses.gd -- --only=h12,h40    (그 집만 — 시험)
 ##   godot --headless --path . --script res://tools/paint_town_houses.gd -- --pack            (구운 집 → assets/town/houses/p<k>.webp + index.json)
 ##   godot --headless --path . --script res://tools/paint_town_houses.gd -- --props           (거리 소품 → assets/town/props/<kind>.webp — PropArt)
-## 그림 배율: 칸당 S px(게임 32px의 1.5배 — TownHouse가 줄여 그린다), 입면도는 칸당 P px로 그려 줄인다.
+## 그림 배율: 칸당 S px(게임 32px의 3배 — CT107 — TownHouse가 줄여 그린다), 입면도는 칸당 P px로 그려 줄인다.
 ## 구운 집은 user://town_bake/<id>.png + .json(off = 노드 원점 기준 왼쪽 위 · key = 집 모양 값 — 지도가 바뀌면 key가 달라져 게임은 그 집을 선으로 그린다).
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -18,8 +18,8 @@ const Warp := preload("res://tools/town_art/Warp.gd")
 const Landmarks := preload("res://tools/town_art/Landmarks.gd")
 const PropArt := preload("res://tools/town_art/PropArt.gd")
 
-const S := 48.0
-const P := 64.0
+const S := 96.0
+const P := 96.0
 const GAME_TILE := 32.0
 const BAKE := "user://town_bake"
 const OUT := "res://assets/town/houses"
