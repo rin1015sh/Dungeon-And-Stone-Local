@@ -13,6 +13,7 @@ var essence_rng: Rng = Rng.new()
 ## 피로도(도시·미궁 공용, 핵심 스탯이 아닌 별도 수치). 규칙은 data/city.json fatigue.
 var fatigue: Fatigue = Fatigue.new()
 const FATIGUE_SOURCE := "fatigue"
+var _fatigue_tier_level: float = 0.0  # 마지막으로 알린 피로 단계(at_least)
 ## 활동으로 오른 능력치 기록 [{stat, amount, activity, month, period}] — 도시 독서·훈련(CityEffect stat_chance).
 var stat_history: Array[Dictionary] = []
 ## 전투 줄(사용자 2026-10-25): "front"(전위 — 적 어그로를 더 받는다) · "back"(후위). 비면 템플릿 역할로(default_row).
@@ -59,6 +60,10 @@ static func create(p_db: GameDatabase, p_race: String, p_class: String, p_name: 
 
 ## 피로도 단계 효과(수정자 출처 "fatigue")를 지금 값에 맞춰 다시 붙인다.
 func _on_fatigue_changed(_value: float, _delta: float, _source: String) -> void:
+	var worse := fatigue.tier_level() > _fatigue_tier_level
+	_fatigue_tier_level = fatigue.tier_level()
+	if worse and not fatigue.tier_id().is_empty():
+		condition_notice.emit(fatigue.tier_id())  # 피로 단계가 올랐다(내려갈 땐 알리지 않는다)
 	stats.remove_source(FATIGUE_SOURCE)
 	var mods := fatigue.effects()
 	if not mods.is_empty():

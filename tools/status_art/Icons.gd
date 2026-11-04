@@ -29,7 +29,7 @@ const GLYPHS := {
 
 ## 상태 id → [기호, 색]
 const MAP := {
-	"hungry": ["bowl", "#a07a48"], "starving": ["bowl", "#6a4a2a"], "starvation": ["skull", "#c8b890"],
+	"peckish": ["bowl", "#b8905a"], "hungry": ["bowl", "#a07a48"], "famished": ["bowl", "#84603a"], "starving": ["bowl", "#6a4a2a"], "starvation": ["skull", "#c8b890"],
 	"soul_exhaustion": ["lock", "#5a6ab8"], "bleeding": ["drop", "#b01818"], "poison": ["bubbles", "#6aa832"],
 	"stun": ["stars", "#e8d060"], "fear": ["ghost", "#a8b0c8"], "hyperalgesia": ["lightning", "#e05030"],
 	"hypothermia": ["snowflake", "#a8d0f0"], "burn": ["flame", "#e86a20"], "stamina_depleted": ["hourglass", "#b09060"],

@@ -108,7 +108,7 @@ func test_hunger_scope_thresholds() -> void:
 	pool.modify("hunger", -2)
 	pool.modify("hunger", -20)
 	pool.modify("hunger", 80)
-	assert_eq(seen, ["hungry:on", "starving:on", "hungry:off", "starving:off"])
+	assert_eq(seen, ["peckish:on", "hungry:on", "famished:on", "starving:on", "peckish:off", "hungry:off", "famished:off", "starving:off"])
 
 
 func test_appetite_scales_hunger_decay() -> void:

@@ -24,6 +24,7 @@ extends Node
 ## --dust[=초]: 첫 적을 쓰러뜨려 빛 먼지로 흩어지는 중간을 찍는다
 ## --motions=<동작,…> [--motion_t=초]: 아군 탐험가마다 전투 동작(PartySprite — idle·stance·thrust·guard·swing·spell·damage·wait·escape·fall)
 ## --race=<종족 id>: 캐릭터 만들기에서 그 종족을 고른다
+## --toast=<id,id,…>: 허기·피로 단계 알림(좌하단 ConditionToast)을 띄운 채(peckish·hungry·famished·starving·tired·weary·spent·collapse)
 ## --banner=<스킬 이름>: --combat에서 위쪽 스킬 알림창을 띄운다
 ## --known: --combat --monster=<id>에서 그 몬스터를 조사·상성까지 알고 있는 상태(무대엔 이름뿐 — 도감 B에서만 보인다)
 ## --parties: 곁에 신참 파티·약탈자·갓 죽은 탐험가를 세운다(다른 탐험가 맵 그림 확인 — --hostile이면 약탈자가 다가와 통행세 창)
@@ -444,6 +445,9 @@ func _run() -> void:
 	if _args.has("banner"):  # --banner=<스킬 이름>: 위쪽 스킬 알림창(SkillBanner)을 띄운 채(찍기 바로 전에 — 금방 사라진다)
 		for n: Node in _main.find_children("*", "CombatScreen", true, false):
 			(n as CombatScreen).battle.message.emit("combat.use_skill", {"name": "", "skill": str(_args["banner"])}, "system")
+	if _args.has("toast"):  # --toast=<id,id,…>: 허기·피로 단계 알림(ConditionToast — 예: peckish,famished,collapse)을 좌하단에 띄운 채
+		for id: String in str(_args["toast"]).split(","):
+			(_main._toast as ConditionToast).notice(id, "시험")
 	await _frames(2 if _quick else 6)
 	var img := get_viewport().get_texture().get_image()
 	var out := str(_args["out"])

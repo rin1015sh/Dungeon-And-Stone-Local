@@ -7,6 +7,8 @@ extends RefCounted
 
 signal died(cause: String)
 signal status_changed(status_id: String, active: bool)
+## 허기·피로가 한 단계 나빠졌다: 알림 문구 id(condition.<id> — 허기 상태 id · 피로 단계 id). 화면의 좌하단 알림(ConditionToast)이 받는다.
+signal condition_notice(id: String)
 
 var id: String = ""
 var display_name: String = ""
@@ -206,12 +208,14 @@ func _on_status_removed(status_id: String) -> void:
 	status_changed.emit(status_id, false)
 
 
-func _on_threshold(_res_id: String, threshold: Dictionary, entered: bool) -> void:
+func _on_threshold(res_id: String, threshold: Dictionary, entered: bool) -> void:
 	var status_id := JsonUtil.get_str(threshold, "apply_status")
 	if status_id.is_empty():
 		return
 	if entered:
 		statuses.apply(status_id)
+		if res_id == "hunger":
+			condition_notice.emit(status_id)  # 허기 단계 알림(좌하단 — ConditionToast)
 	else:
 		statuses.remove(status_id)
 
@@ -222,6 +226,8 @@ func _on_depleted(res_id: String) -> void:
 		kill(pool.get_last_source(res_id))
 	elif def.on_zero_kind == ResourceDef.ON_ZERO_STATUS:
 		statuses.apply(def.on_zero_id)
+		if res_id == "hunger":
+			condition_notice.emit(def.on_zero_id)
 
 
 func _on_recovered(res_id: String) -> void:

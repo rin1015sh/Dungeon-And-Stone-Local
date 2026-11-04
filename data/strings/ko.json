@@ -543,6 +543,17 @@
     "start_first": "{enemies}을(를) 먼저 발견했다. 싸운다.",
     "split_blocked": "{name}이(가) 그을린 몸을 비틀지만 갈라지지 못한다."
   },
+  "condition": {
+    "peckish": "{who}은(는) 배고픔을 느낀다.",
+    "hungry": "{who}은(는) 허기가 져 몸이 무겁다.",
+    "famished": "{who}은(는) 굶주려 있다.",
+    "starving": "{who}은(는) 굶주림에 쓰러질 것 같다.",
+    "starvation": "{who}의 몸이 스스로를 갉아먹는다.",
+    "tired": "{who}은(는) 피곤함을 느낀다.",
+    "weary": "{who}은(는) 지쳐 있다.",
+    "spent": "{who}은(는) 녹초가 되었다.",
+    "collapse": "{who}은(는) 쓰러질 것 같다."
+  },
   "knowledge": {
     "unknown": "???",
     "aff_weak": "{type} 약점 ×{mult}",

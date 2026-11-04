@@ -1,5 +1,22 @@
 [
   {
+    "id": "peckish",
+    "name_ko": "출출함",
+    "kind": "debuff",
+    "desc_ko": "슬슬 배가 고프다.",
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.02
+      },
+      {
+        "target": "agi",
+        "percent": -0.02
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
     "id": "hungry",
     "name_ko": "허기",
     "kind": "debuff",
@@ -12,6 +29,23 @@
       {
         "target": "agi",
         "percent": -0.05
+      }
+    ],
+    "source": "placeholder"
+  },
+  {
+    "id": "famished",
+    "name_ko": "주림",
+    "kind": "debuff",
+    "desc_ko": "굶주림에 몸이 처진다.",
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": -0.15
+      },
+      {
+        "target": "agi",
+        "percent": -0.15
       }
     ],
     "source": "placeholder"

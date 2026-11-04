@@ -179,35 +179,42 @@
     },
     "effects": [
       {
-        "at_least": 50,
-        "name_ko": "지침",
+        "id": "tired",
+        "at_least": 30,
+        "name_ko": "피곤",
         "modifiers": [
-          {
-            "target": "agi",
-            "percent": -0.1
-          },
-          {
-            "target": "int",
-            "percent": -0.1
-          }
+          {"target": "agi", "percent": -0.03}
         ]
       },
       {
-        "at_least": 80,
+        "id": "weary",
+        "at_least": 50,
+        "name_ko": "지침",
+        "modifiers": [
+          {"target": "str", "percent": -0.05},
+          {"target": "agi", "percent": -0.1},
+          {"target": "int", "percent": -0.1}
+        ]
+      },
+      {
+        "id": "spent",
+        "at_least": 70,
+        "name_ko": "녹초",
+        "modifiers": [
+          {"target": "str", "percent": -0.15},
+          {"target": "agi", "percent": -0.15},
+          {"target": "int", "percent": -0.15}
+        ]
+      },
+      {
+        "id": "collapse",
+        "at_least": 85,
         "name_ko": "기진맥진",
         "modifiers": [
-          {
-            "target": "str",
-            "percent": -0.2
-          },
-          {
-            "target": "agi",
-            "percent": -0.2
-          },
-          {
-            "target": "int",
-            "percent": -0.2
-          }
+          {"target": "str", "percent": -0.25},
+          {"target": "agi", "percent": -0.25},
+          {"target": "int", "percent": -0.25},
+          {"target": "accuracy", "flat": -50}
         ]
       }
     ]

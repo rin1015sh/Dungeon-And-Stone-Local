@@ -45,7 +45,9 @@
       {"trigger": "time", "basis": "flat", "rate": "-{bal.hunger.decay_per_hour} * (1 + {appetite} * {bal.hunger.appetite_coef})"}
     ],
     "thresholds": [
+      {"at_ratio": 0.5, "direction": "down", "apply_status": "peckish"},
       {"at_ratio": 0.3, "direction": "down", "apply_status": "hungry"},
+      {"at_ratio": 0.2, "direction": "down", "apply_status": "famished"},
       {"at_ratio": 0.1, "direction": "down", "apply_status": "starving"}
     ],
     "on_zero": {"status": "starvation"}

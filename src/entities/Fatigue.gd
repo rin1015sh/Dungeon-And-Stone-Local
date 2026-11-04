@@ -80,6 +80,16 @@ func effects() -> Array[Dictionary]:
 	return out
 
 
+## 단계 id(없으면 ""). 단계가 올라갈 때 알림 문구 키(condition.<id>)가 된다.
+func tier_id() -> String:
+	return JsonUtil.get_str(tier(), "id")
+
+
+## 단계의 at_least(없으면 0). 단계가 올랐는지 비교한다.
+func tier_level() -> float:
+	return JsonUtil.get_float(tier(), "at_least", 0.0)
+
+
 ## 단계 이름(없으면 "").
 func tier_name() -> String:
 	return JsonUtil.get_str(tier(), "name_ko")

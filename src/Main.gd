@@ -5,6 +5,8 @@ extends Control
 ##   타이틀 → 기반 점검(개발용)
 
 var _screen: Control = null
+var _toast: ConditionToast = null  # 허기·피로 단계 알림(좌하단, 어느 화면에서나 — 사용자 2026-11-04)
+var _watched: PlayerCharacter = null
 
 
 func _ready() -> void:
@@ -18,6 +20,11 @@ func _ready() -> void:
 	bg.color = UiTheme.color("bg")
 	add_child(bg)
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var layer := CanvasLayer.new()  # 화면 위에 늘 떠 있다(화면 갈아끼워도 남는다)
+	layer.layer = 20
+	add_child(layer)
+	_toast = ConditionToast.new()
+	layer.add_child(_toast)
 	if DataRegistry.has_errors():
 		var err := DataErrorScreen.new()
 		err.quit_requested.connect(_quit)
@@ -67,8 +74,23 @@ func _show_foundation() -> void:
 	_show(f)
 
 
+## 지금 탐험가의 허기·피로 단계 알림을 좌하단 알림에 잇는다(탐험가가 바뀌면 이전 것은 뗀다).
+func _watch_player() -> void:
+	if _watched != null and is_instance_valid(_watched) and _watched.condition_notice.is_connected(_on_condition):
+		_watched.condition_notice.disconnect(_on_condition)
+	_watched = GameState.player
+	if _watched != null:
+		_watched.condition_notice.connect(_on_condition)
+
+
+func _on_condition(id: String) -> void:
+	if _toast != null and _watched != null:
+		_toast.notice(id, _watched.display_name)
+
+
 func _start_run(pc: PlayerCharacter) -> void:
 	GameState.start_run(pc)
+	_watch_player()
 	LogPanel.clear_history()
 	_show_city()
 
@@ -105,6 +127,7 @@ func _continue() -> void:
 	if not GameState.load_run():
 		_show_title()
 		return
+	_watch_player()
 	LogPanel.clear_history()
 	_show_plaza()
 

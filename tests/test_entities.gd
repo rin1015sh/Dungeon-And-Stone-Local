@@ -68,7 +68,7 @@ func test_hunger_thresholds_drive_statuses() -> void:
 	a.advance_hours(20.0 / decay)
 	assert_true(a.statuses.has("starving"), "10% 이하 → 굶주림")
 	a.pool.modify("hunger", 60.0, "food")
-	assert_false(a.statuses.has("hungry") or a.statuses.has("starving"), "먹으면 해제")
+	assert_false(a.statuses.has("hungry") or a.statuses.has("starving") or a.statuses.has("famished"), "먹으면 해제")
 
 
 func test_starvation_kills_with_cause() -> void:
@@ -175,3 +175,30 @@ func test_player_create_and_item_use() -> void:
 	assert_false(pc.light.is_lit(), "사흘이면 꺼진다")
 	assert_true(went_out[0])
 	assert_true(ItemUser.use(reg, pc, "no_such_item", rng) == null)
+
+
+## 허기·피로 단계 알림 신호(condition_notice) — 단계가 나빠질 때만, 문구 키가 모두 있다.
+func test_condition_notices_on_worse_stages_only() -> void:
+	var a := _actor()
+	var got: Array[String] = []
+	a.condition_notice.connect(func(id: String) -> void: got.append(id))
+	a.pool.set_context("dungeon", true)
+	var decay := _b("hunger.decay_per_hour")
+	a.advance_hours(51.0 / decay)  # 100 → 49: 출출
+	a.advance_hours(20.0 / decay)  # 29: 허기
+	a.advance_hours(10.0 / decay)  # 19: 주림
+	a.advance_hours(10.0 / decay)  # 9: 굶주림
+	assert_eq(got, ["peckish", "hungry", "famished", "starving"], "허기 단계가 나빠질 때마다")
+	a.pool.modify("hunger", 60.0, "food")
+	assert_eq(got.size(), 4, "먹어서 나아질 땐 알리지 않는다")
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 10})
+	var fat: Array[String] = []
+	pc.condition_notice.connect(func(id: String) -> void: fat.append(id))
+	pc.fatigue.set_value(35.0)
+	pc.fatigue.set_value(40.0)
+	pc.fatigue.set_value(55.0)
+	pc.fatigue.set_value(90.0)
+	pc.fatigue.set_value(20.0)
+	assert_eq(fat, ["tired", "weary", "collapse"], "피로 단계가 오를 때만(같은 단계 안·내려갈 땐 없음)")
+	for id: String in ["peckish", "hungry", "famished", "starving", "starvation", "tired", "weary", "spent", "collapse"]:
+		assert_true(Strings.t("condition." + id, {"who": "가"}) != "condition." + id, "알림 문구: " + id)
