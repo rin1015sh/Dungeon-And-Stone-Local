@@ -42,9 +42,14 @@ static func spawn_and_engage(s: ExploreSession, monster_id: String = "") -> bool
 		func(r: Variant) -> bool: return r is Dictionary and not JsonUtil.get_array(r, "monsters").is_empty())
 	if regions.is_empty():
 		return false
-	var g := s.monsters.spawn_group(s.rng.pick(regions), s.pos, s.pos, monster_id)
+	var parts := monster_id.split("*")  # "ghoul*10" = 그 몬스터 10마리 무리(큰 무리 확인 — BattleHorde)
+	var g := s.monsters.spawn_group(s.rng.pick(regions), s.pos, s.pos, parts[0])
 	if g == null:
 		return false
+	if parts.size() == 2:
+		g.monster_ids.clear()
+		for i in maxi(1, parts[1].to_int()):
+			g.monster_ids.append(parts[0])
 	s.monsters.changed.emit()
 	s.engage(g, true)
 	return true

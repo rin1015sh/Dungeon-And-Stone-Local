@@ -2,7 +2,8 @@ extends SceneTree
 ## 1층 걷기 리듬 측정(docs/plans/floor1_fill.md D): 시작 자리에서 네 포탈까지 최단 길을 걸으며
 ## "무언가를 만나기까지 걸린 실제 초"를 잰다. 무언가 = 전투(닿은 무리 — 바로 이긴 것으로 친다) · 탐험가 무리(지나간다) ·
 ## 처음 보이는 동굴 요소 · 들리는 소리(비명·싸움 — ExploreSession.sound). 실제 초 = 게임 시간 / realtime_hours_per_sec.
-##   godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=1] [--no-parties]
+##   godot --headless --path . --script res://tools/sim_walk.gd -- [--floor=f1_crystal_cave] [--seeds=1,2,3] [--day=1] [--no-parties]
+## --floor=<층 id>: 그 층에서 잰다(2층 — floor2.md · M6-0 F). 포탈 = 그 층의 층 포탈 모두(아래층 비석 · 위층 포탈).
 ## --day=n: n일 차 아침에 출발한다(그 전까지 시작 자리에서 시간만 흘린다 — 시체·약탈자·구울이 늘어난 뒤).
 ## --no-parties: 층 JSON explorers를 빼고(다른 탐험가 없음) 잰다 — 비교용.
 
@@ -21,7 +22,7 @@ func _initialize() -> void:
 			args[a.substr(2)] = "true"
 	var db := GameDatabase.new()
 	db.load_all("res://data")
-	var def := db.get_entry("floors", "f1_crystal_cave").duplicate(true)
+	var def := db.get_entry("floors", str(args.get("floor", "f1_crystal_cave"))).duplicate(true)
 	if args.has("no-parties"):
 		def.erase("explorers")
 	var all_gaps: Array[float] = []

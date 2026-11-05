@@ -49,12 +49,12 @@
 
 | # | 무엇 | 지금 | 고칠 방향 | 결정 필요 |
 |---|---|---|---|---|
-| A | **층 사이 이동** | `ExploreInteract._use_floor_portal` = "잠겨 있다" 안내뿐 | 포탈 `to_floor`·`dest` → 다음 층 정의로 새 `ExploreSession`(Main `_enter_floor`처럼) → 플레이어·동료·가방·시계 이어서 넘김(`session_switch` 재사용). `Progression.record_portal`·`CityState.reach_floor` | 폐쇄 시각 셈(§5-1) |
-| B | **아래층으로 돌아가기** | 없음 | 위층 도착 지점에 아래로 가는 포탈 비석(원작: 아래층에서 올라오는 포탈이 열려 있어야 내려간다) | 돌아가면 아래층 상태를 기억하나 |
-| C | **원정 길이·폐쇄** | 원정 = 1층 168h, 실시간 1초 = 0.1h(28분) | 층마다 `close_hours`는 이미 데이터 — 원정 전체를 무엇으로 끝낼지 | §5-1 |
+| A | **층 사이 이동** ✔(2026-11-05 `FloorTravel` — 층 JSON `arrival` = 포탈 dest) | `ExploreInteract._use_floor_portal` = "잠겨 있다" 안내뿐 | 포탈 `to_floor`·`dest` → 다음 층 정의로 새 `ExploreSession`(Main `_enter_floor`처럼) → 플레이어·동료·가방·시계 이어서 넘김(`session_switch` 재사용). `Progression.record_portal`·`CityState.reach_floor` | 폐쇄 시각 셈(§5-1) |
+| B | **아래층으로 돌아가기** ✔(도착 비석 kind `floor_down` — 위층은 버린다) | 없음 | 위층 도착 지점에 아래로 가는 포탈 비석(원작: 아래층에서 올라오는 포탈이 열려 있어야 내려간다) | 돌아가면 아래층 상태를 기억하나 |
+| C | **원정 길이·폐쇄** ✔(사용자 — 원정 전체 240시간, 시계 하나) | 원정 = 1층 168h, 실시간 1초 = 0.1h(28분) | 층마다 `close_hours`는 이미 데이터 — 원정 전체를 무엇으로 끝낼지 | §5-1 |
 | D | **층 상태 이어짐** | 입장마다 새로(`resets_each_entry`는 낡은 키) | 원작: 1~5층은 달마다 초기화, 6층부터 시간·흔적이 이어진다 → 6층 전에 층 상태 저장(`SaveGame`) | 6층 착수 때 |
 | E | **생성기** | `crystal_cave` 하나(십자 전용 — `CrossLayout`·`CrossTerrain`) | §2-2의 생성기 갈래. 동굴 부품(`CaveCarver`·`CaveChambers`·`CaveLinks`·`CaveDecor`·`GridWiden`)은 재사용 | — |
-| F | **시뮬레이터 1층 고정** | `sim_walk`·`sim_rift`·`sim_income`이 `f1_crystal_cave`를 박아 둠 | `--floor=<id>` 인자(기본 1층) — `bake_floor`·`bake_decor`·`floor_map`은 이미 있다 | — |
+| F | **시뮬레이터 1층 고정** ◐(`sim_walk --floor=` — sim_income·sim_rift는 아직) | `sim_walk`·`sim_rift`·`sim_income`이 `f1_crystal_cave`를 박아 둠 | `--floor=<id>` 인자(기본 1층) — `bake_floor`·`bake_decor`·`floor_map`은 이미 있다 | — |
 | G | **균열 달력 하나** | `GameState.rift_calendar` 하나(1층) | 층 id → 달력(저장 포함). 원작: 2층 균열은 7일 차, 3층은 13일 차가 지나면 안 열린다 → 층 `rift.open_until_day` | — |
 | H | **약탈자·거래 마석** | `FieldPartyMeet.STONE = "magic_stone_9"` | 층 `explorers.stone`(그 층 마석, 기본 9등급) | — |
 | I | **군주 부르는 법** | 기념비(`lord.monument`)뿐 — `LordWatch`·`Monument` | 부르는 조건을 핸들러로(`lord.summon` = id → 파일 하나, 레지스트리 패턴): `monument`(1층) · 층마다 새 조건 | 층마다(§3) |

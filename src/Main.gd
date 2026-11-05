@@ -154,6 +154,8 @@ func _enter_floor(floor_id: String, seed_override: int = 0) -> void:
 
 ## 탐험 화면을 세션에 붙여 띄운다. 균열 챕터 ↔ 바깥 층으로 넘어갈 때도 여기로 온다(세션은 그대로 이어진다).
 func _show_session(session: ExploreSession, floor_id: String) -> void:
+	if GameState.city != null:
+		GameState.city.reach_floor(JsonUtil.get_int(session.floor_def, "floor", 1))  # 층 포탈로 올라온 층도(FloorTravel — 도서관 서적 floor)
 	var screen := ExploreScreen.new()
 	screen.setup(session)
 	screen.run_ended.connect(_on_run_ended)

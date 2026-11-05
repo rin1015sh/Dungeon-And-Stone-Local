@@ -8,10 +8,12 @@ extends RefCounted
 
 
 ## 나올 수 있는 몬스터 id(처음 나온 순서, 겹치지 않게).
-static func candidates(db: GameDatabase, monster_ids: Array, objective: Dictionary = {}) -> Array[String]:
+static func candidates(db: GameDatabase, monster_ids: Array, objective: Dictionary = {}, horde: Array = []) -> Array[String]:
 	var out: Array[String] = []
 	var seen_skills := {}
 	var queue: Array[String] = []
+	for id: Variant in horde:  # 큰 무리의 예비대(BattleHorde)가 먼저 들어온다
+		_add(db, str(id), out, queue)
 	for id: Variant in monster_ids:
 		if not queue.has(str(id)):
 			queue.append(str(id))
@@ -26,8 +28,8 @@ static func candidates(db: GameDatabase, monster_ids: Array, objective: Dictiona
 
 
 ## 처음 선 적 present(몬스터 id) 말고 비워 둘 자리 = 진영 상한(combat.max_side_units)까지, 나올 수 있는 몬스터를 돌려 가며.
-static func plan(db: GameDatabase, present: Array, objective: Dictionary = {}) -> Array[String]:
-	var cands := candidates(db, present, objective)
+static func plan(db: GameDatabase, present: Array, objective: Dictionary = {}, horde: Array = []) -> Array[String]:
+	var cands := candidates(db, present, objective, horde)
 	var out: Array[String] = []
 	if cands.is_empty():
 		return out

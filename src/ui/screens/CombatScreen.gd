@@ -49,7 +49,7 @@ func setup(b: Battle) -> void:
 func _ready() -> void:
 	_stage = BattleStage.new()
 	_stage.setup(battle.db)
-	_stage.set_reserve(func(present: Array) -> Array[String]: return BattleReserve.plan(battle.db, present, battle.objective))  # 소환·분열·증원 자리를 미리
+	_stage.set_reserve(func(present: Array) -> Array[String]: return BattleReserve.plan(battle.db, present, battle.objective, battle.horde))  # 소환·분열·증원·예비대 자리를 미리
 	_stage.set_backdrop(backdrop, backdrop_width)
 	add_child(_stage)
 	_stage.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -69,6 +69,10 @@ func _ready() -> void:
 	_dialog.instant = GameState.debug_fast_combat
 	_place_bottom(_dialog)  # 아래 창과 같은 자리에 겹쳐 전부 덮는다
 	_dialog.shown_changed.connect(_on_dialog_shown)
+	if not battle.horde.is_empty():  # 큰 무리: 뒤에 남은 수(BattleHorde)
+		var hc := HordeCount.new()
+		add_child(hc)
+		hc.setup(battle)
 	_banner = SkillBanner.new()
 	add_child(_banner)
 	_banner.place_top()

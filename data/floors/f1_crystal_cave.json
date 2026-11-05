@@ -3,7 +3,7 @@
   "name_ko": "1층 수정동굴",
   "floor": 1,
   "generator": "crystal_cave",
-  "close_hours": 168,
+  "close_hours": 240,
   "resets_each_entry": true,
   "_comment": "벽·천장의 수정이 빛을 내서 횃불 없이도 보인다(ambient). 암흑지대는 네 팔 끝(포탈 주변)에만 있고 거기서만 횃불이 필요하다. 시야 상한은 광원이 있어도 넘지 못하는 값(10m 미만).",
   "visibility_cap_m": 9.0,

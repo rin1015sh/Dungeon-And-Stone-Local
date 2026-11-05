@@ -435,6 +435,7 @@
     "float_immune": "면역",
     "float_blocked": "막힘",
     "float_miss": "회피",
+    "horde_left": "+{n}",
     "float_heal": "+{n}",
     "float_loss": "-{n}",
     "drop_ask": "{what} — 획득할까?",

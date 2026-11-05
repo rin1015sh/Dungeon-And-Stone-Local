@@ -5,7 +5,7 @@
 
 ## 시뮬레이터 · 점검
 
-- 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--seeds=1,2,3] [--day=n] [--no-parties]` → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
+- 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--floor=<층 id>] [--seeds=1,2,3] [--day=n] [--no-parties]`(2층 = `--floor=f2_land_of_dead`) → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
 - 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
 - 균열 줄무늬 바닥 어긋남(파이썬, 1초): `python3 tools/rift_strip_check.py [타일id,…]` — 카펫·레일·발판·계단·홈이 이웃 줄에서 폭·위치가 갑자기 바뀌는 곳(벽이 아닌 칸만)을 적는다. 광차·분기·잔해처럼 일부러 끊은 곳도 나오니 지도를 보고 판단. 설계도를 고쳤으면 돌려 본다.
 - 몬스터 스킬 실전 점검(헤드리스, 약 1분): `godot --headless --path . --script res://tools/sim_skills.gd`(`MON=<id>` 환경 변수면 그 몬스터만 + 쓴 횟수) → 몬스터마다 AI + 보스 패턴으로 16판, 가진 스킬을 한 번이라도 꺼내 쓰는지. 몬스터 스킬·AI 규칙·보스 패턴을 바꿨으면 돌린다("모두 씀"이어야 한다). 스킬이 효과를 내는지는 단위 테스트 `test_monster_skills`.
@@ -52,6 +52,7 @@
 ## 화면 캡처 · 그림
 
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
+  - 2층: `--up=floor2_south [--reveal --ezoom=0.6]` = 1층 그 포탈로 올라가 위층 도착 자리에서 찍는다(FloorTravel). 큰 무리 전투: `--combat --monster=ghoul*11`(앞 6마리 + 예비대 숫자). 균열 챕터도 `--reveal`·`--ezoom=<배율>`(챕터를 건넌 뒤 다시 걷는다).
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
   - **장면 목록 일괄 캡처**(탐험 맵 그림 전후 비교): `--screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>` → 장면마다 PNG + 걸음당 프레임(`bench`). 기준은 `docs/screens/before/`(`tools/ShotList.gd`).
   - city 옵션: `--town_at=x,y(칸) --face=up|down|left|right · --door=<시설 id>(그 문 앞) · --facility=<id> --activity=<id> --debug --weather=<id>`

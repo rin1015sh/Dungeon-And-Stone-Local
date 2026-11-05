@@ -37,6 +37,7 @@ var killed: Array[String] = []  ## 쓰러뜨린 몬스터 id (도감·경험치)
 var killed_colors: Array[String] = []  ## killed와 같은 순서: 타입이 정수 색을 정하면 그 색(본 나이트 types[].essence_color), 아니면 ""
 var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
 var objective: Dictionary = {}       ## 전투 목표(BattleObjective — 생존 웨이브). 비면 없음
+var horde: Array[String] = []        ## 큰 무리의 예비대(BattleHorde — 쓰러진 자리에 차례로 들어온다)
 ## 지금까지 나온 메시지 {key, args, kind} — 화면이 시그널을 잇기 전(전투 시작 안내·수호자 대사)의 것도 다시 보여 준다.
 var history: Array[Dictionary] = []
 
@@ -69,9 +70,11 @@ static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: R
 	var b := Battle.new(p_db, regs.effects, regs.ai_conditions, p_rng)
 	for a in party:
 		b.add(a, Combatant.SIDE_PARTY, (a as PlayerCharacter).get_row() if a is PlayerCharacter else "front")  # 전위·후위(사용자 2026-10-25)
-	for id: Variant in monster_ids:
+	var parts := BattleHorde.split(p_db, monster_ids)
+	for id: Variant in parts[0]:
 		var m := Monster.create(p_db, str(id))
 		b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))
+	b.horde = parts[1]
 	b.start(first_side)
 	return b
 
@@ -402,6 +405,7 @@ func _after_effects() -> void:
 				BattleDelayed.drop(self, u)
 				BattlePassives.on_down(self, u)
 		if downed:
+			BattleHorde.refill(self)  # 큰 무리: 빈자리에 예비대가 들어온다
 			BattlePassives.refresh_auras(self)  # 오러를 주던 개체가 쓰러지면 버프도 사라진다
 		BossHooks.check_all(self)
 		if not units.any(func(u: Combatant) -> bool: return u.actor.dead and not _announced.has(u)):

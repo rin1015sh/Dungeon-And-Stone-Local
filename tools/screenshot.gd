@@ -11,7 +11,7 @@ extends Node
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --at=x,y: 그 칸으로 순간이동(고정 지도 좌표 — 공동·이벤트 자리 확인), --interact: 그 자리에서 살피기(E), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터(--god = 무적), --mate: 동료를 붙여 행동 정하기 화면, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
-## --spotted: (--near=boss|guardian과 함께) 그 보스가 알아채 전투 직전 한 줄이 뜬다(--dialog로 띄운 채), --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss|<x>,<y>]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
+## --up=<포탈 dest>: 1층 그 포탈로 올라가 위층(2층) 도착 자리에서 찍는다(--reveal · --ezoom과 함께) · --spotted: (--near=boss|guardian과 함께) 그 보스가 알아채 전투 직전 한 줄이 뜬다(--dialog로 띄운 채), --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss|<x>,<y>]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다(--trap=all = 모두 드러내기만), --murals = 벽화 힌트를 다 본 상태
 ## --near=mon:<id>: 그 몬스터가 낀 무리 앞에 선다 · --near=chest [--open_chest=<초>] [--pick=0|1]: 첫 상자 아래 칸(열고 그 초 뒤 — 앞뒤 고르기 창, --pick이면 고른 뒤 동전 연출, --dialog와 함께)
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
@@ -123,6 +123,26 @@ func _run() -> void:
 				explore = await _enter_rift(explore)
 			get_tree().quit(await ShotList.run(self, explore, str(_args["shots"]), str(_args["out"])))
 			return
+		if _args.has("up"):  # --up=<포탈 dest>(예 floor2_south): 그 1층 포탈로 올라가 위층 도착 자리에서 찍는다(FloorTravel)
+			var ps := explore.session
+			for p: Dictionary in ps.map.portals:
+				if str(p.get("dest", "")) == str(_args["up"]):
+					ps.relocate(p["pos"])
+					ps.interact()
+			for f in 60:
+				await get_tree().process_frame
+				if _main.current_screen() is ExploreScreen and (_main.current_screen() as ExploreScreen).session != ps:
+					break
+			await _frames(4)
+			explore = _main.current_screen() as ExploreScreen
+			explore.dialog().clear()
+			if _args.has("reveal"):
+				ExploreDebug.reveal(explore.session)
+				explore.session.refresh_view()
+			if _args.has("ezoom"):
+				for c: Node in explore.find_children("*", "Camera2D", true, false):
+					(c as Camera2D).zoom = Vector2.ONE * str(_args["ezoom"]).to_float()
+			await _frames(6)
 		if _args.has("torch"):
 			explore.session.use_category("light")
 		var steps := str(_args["walk"]).to_int()

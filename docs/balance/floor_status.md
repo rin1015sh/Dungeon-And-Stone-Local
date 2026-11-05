@@ -4,23 +4,23 @@
 
 | 부품 | 1층 | 2층 | 3층 | 4층 | 5층 | 6층 | 7층 | 8층 | 9층 | 10층 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 층 정의 data/floors | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 생성기 src/explore/generators | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 고정 지도(bake_floor) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 층 정의 data/floors | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 생성기 src/explore/generators | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 고정 지도(bake_floor) | ● | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 데칼 시트·굽기(bake_decor) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 전투 뒷그림 | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 환경음 audio.ambience | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 지역 스폰 regions | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 전투 뒷그림 | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 환경음 audio.ambience | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 지역 스폰 regions | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 동굴 요소 features | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 다른 탐험가 explorers | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 위층 포탈 portals | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 위층 포탈 portals | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 계층군주 lord(+패턴) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 군주 등장 문구 explore.boss_notice | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 필드 몬스터 | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 몬스터 그림 assets/monsters | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 정수 data/essences | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 균열 data/rifts | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 도서관 서적(floor n) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 도서관 서적(floor n) | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 
 ## 1층 (필드 등급 9 · 파티 1)
 - ● 층 정의 data/floors — f1_crystal_cave
@@ -39,10 +39,20 @@
 - ● 몬스터 그림 assets/monsters — 51장
 - ● 정수 data/essences — 51종
 - ● 균열 data/rifts — 핏빛성채 5챕터 / 빙하굴 4챕터 / 녹색 탄광 4챕터 / 강철의 묘 4챕터
-- ● 도서관 서적(floor n) — 68권
+- ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 
 ## 2층 (필드 등급 8 · 파티 2)
-- ○ 층 정의 data/floors — f2_<id>.json 없음
+- ● 층 정의 data/floors — f2_land_of_dead
+- ● 생성기 src/explore/generators — fields
+- ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
+- ○ 데칼 시트·굽기(bake_decor) — art.decor 없음
+- ● 전투 뒷그림 — res://assets/battle/f1_crystal_cave.webp
+- ● 환경음 audio.ambience — f1_cave
+- ● 지역 스폰 regions — 3지역
+- ○ 동굴 요소 features — 0종 0곳
+- ○ 다른 탐험가 explorers
+- ● 위층 포탈 portals — 1개
+- ○ 계층군주 lord(+패턴)
 - ○ 필드 몬스터 — 0종 · 등급 [] (목표 8)
 - ○ 몬스터 그림 assets/monsters — 0장
 - ○ 정수 data/essences — 0종
