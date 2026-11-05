@@ -54,7 +54,7 @@ static func spec_of(id: String) -> Dictionary:
 ## 사람형 몬스터(전투 설계를 옮긴다)와 손볼 값(tweak — spec·map에 덮어쓴다).
 const FIGURES := {
 	"deadman": {}, "soldier_deadman": {}, "deadman_commander": {}, "skeleton_archer": {}, "skeleton_mage": {},
-	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {},
+	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
 	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
 	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
 	"goblin_miner": {}, "hobgoblin_miner": {}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},

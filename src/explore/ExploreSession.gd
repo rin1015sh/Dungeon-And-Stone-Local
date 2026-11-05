@@ -45,7 +45,8 @@ var scavenged: Dictionary = {}          ## 뒤진 균열 장식 칸 Vector2i →
 var loot: Dictionary = {}               ## 균열에 놓인 물건 칸 Vector2i → {item, count}(RiftLoot)
 var below: ExploreSession = null       ## 아래층 세션(이 층으로 올라온 곳 — FloorTravel). 위층만 아래층을 붙잡는다
 var below_at: Vector2i = Vector2i(-1, -1)  ## 아래층에서 올라온 포탈 칸(내려가면 여기 선다)
-var blades: GrooveBlades = null         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
+var blades: GrooveBlades = null
+var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 7일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
@@ -113,6 +114,9 @@ func start() -> void:
 	_say("explore.enter", {"floor": floor_name()}, "system")
 	if rift_run == null:
 		rifts.begin(self)
+	if floor_def.has("grave_wake"):
+		grave = GraveWake.new()
+		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))
 	_was_safe = in_safe_zone()
 	if monsters_enabled:
 		monsters.spawn_initial(pos)
@@ -182,7 +186,7 @@ func move_dir(dir: Vector2, real_sec: float) -> void:
 	var sec := realtime.frame_sec(self, real_sec)
 	if dir == Vector2.ZERO or sec <= 0.0:
 		return
-	PlayerMotion.move_by(self, dir.normalized() * sec * realtime.hours_per_sec(self) / move_hours())
+	PlayerMotion.move_by(self, dir.normalized() * sec * realtime.hours_per_sec(self) / move_hours() * map.def_at(pos).move_mult)  # 진창은 느리다(타일 move_mult)
 
 
 ## 한 칸 거리만큼 dir로 걷는다(테스트·디버그·캡처용, 시간 정지와 무관). 칸이 바뀌었거나 전투가 시작되면 true.
@@ -309,6 +313,8 @@ func pass_time(hours: float) -> void:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
 		lord.update(self, h)
+		if grave != null:
+			grave.update(self)
 		rifts.update(self, h)
 		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))

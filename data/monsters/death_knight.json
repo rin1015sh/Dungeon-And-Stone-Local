@@ -1,0 +1,88 @@
+{
+  "id": "death_knight",
+  "name_ko": "데스나이트",
+  "grade": 6,
+  "rank": "midboss",
+  "lineage": "death_knight",
+  "floor": 2,
+  "floor_tags": [
+    "f2d_event"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.3,
+  "color": "#2a2228",
+  "immunities": [],
+  "status_immune": [
+    "fear",
+    "bleeding"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 38,
+    "agi": 39,
+    "p_res": 59,
+    "m_res": 34,
+    "int": 22
+  },
+  "resources": {
+    "hp": 2400,
+    "soul": 120
+  },
+  "natural_weapon": {
+    "attack": 35,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 3.0
+    },
+    "alert_sfx": "boss_reveal",
+    "aggressive": true,
+    "aggro_radius_m": 7.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 6,
+  "essence_drops": [
+    {
+      "essence": "death_knight",
+      "chance": 0.25
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "blater_cursed_slash",
+    "blater_oath",
+    "blater_death_sentence"
+  ],
+  "passives": [
+    {
+      "id": "blater_grudge_aura",
+      "name_ko": "원한",
+      "desc_ko": "데스나이트의 원한이 적의 치유와 재생을 절반으로 만든다.",
+      "foe_statuses_on_start": [
+        "blater_grudge"
+      ]
+    }
+  ],
+  "ai": [],
+  "ai_cycle": [
+    "blater_cursed_slash",
+    "blater_cursed_slash",
+    "blater_death_sentence"
+  ],
+  "source": "placeholder",
+  "notes": "2층 망자의 땅 비석에서 원정 7일 차에 깨어나는 필드 보스(floor2.md §3 · GraveWake). 블라터(핏빛성채 수호자 — 같은 데스나이트) 스킬 · 원한 오러를 쓰고 생명력은 절반쯤. 2층 탐험가는 피하는 쪽이 정답에 가깝다. 임시값"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "grave_stone",
+  "name_ko": "새 비석",
+  "type": "feature",
+  "tile": "f2d_grave",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.grave_stone"
+    },
+    {
+      "id": "break",
+      "name_ko": "부순다",
+      "limit": "once",
+      "hours": 1.0,
+      "check": {
+        "stat": "str",
+        "dc": 14
+      },
+      "line": "field.grave_stone_break",
+      "fail_line": "field.grave_stone_break_fail",
+      "clear": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅 비석(floor2.md §3 · GraveWake) — 원정 7일 차 전에 부수면 데스나이트가 깨어나지 않는다. 판정 실패면 한 시간이 흐르고 다시 해 볼 수 있다. 임시값 standing = 서 있는 묘비(걷지 못함) — GraveWake가 사방이 트인 칸에만 세운다",
+  "standing": true
+}

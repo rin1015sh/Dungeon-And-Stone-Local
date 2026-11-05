@@ -1,0 +1,43 @@
+{
+  "id": "dullahan",
+  "name_ko": "듀라한의 정수",
+  "grade": 7,
+  "source_monster": "dullahan",
+  "family": "dullahan",
+  "rank": "normal",
+  "passive": {
+    "id": "dullahan_armor",
+    "name_ko": "목 없는 갑주",
+    "desc_ko": "빈 갑옷이 칼날을 받아 낸다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.15
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.15
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_cav_charge"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_cav_shield_wall"
+    }
+  ],
+  "stats": {
+    "p_res": 22,
+    "agi": 6
+  },
+  "resources": {
+    "hp": 24
+  },
+  "source": "placeholder",
+  "notes": "2층 망자의 땅 — 철기병 정수판 스킬을 함께 쓴다. 임시값"
+}

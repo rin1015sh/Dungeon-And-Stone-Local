@@ -38,6 +38,7 @@
     "damage_type": "dark"
   },
   "behavior": {
+    "mud_walker": true,
     "aggressive": false,
     "aggro_radius_m": 4.0,
     "leash_tiles": 0,

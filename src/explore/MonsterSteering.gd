@@ -246,5 +246,13 @@ func move_hours(monster_id: String) -> float:
 	return _move_hours / maxf(0.1, JsonUtil.get_float(_behavior(monster_id), "move_mult", 1.0))
 
 
+## 무리가 선 칸의 걷는 빠르기 배율(진창 — 타일 move_mult). behavior.mud_walker(구울 · 망자)면 1.
+func ground_mult(g: FieldMonsters.Group) -> float:
+	if JsonUtil.get_bool(_behavior(g.leader()), "mud_walker"):
+		return 1.0
+	var d := _map.def_at(g.pos)
+	return d.move_mult if d != null else 1.0
+
+
 func _behavior(monster_id: String) -> Dictionary:
 	return JsonUtil.get_dict(_db.get_entry("monsters", monster_id), "behavior")

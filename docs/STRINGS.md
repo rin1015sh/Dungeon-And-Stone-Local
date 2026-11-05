@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(968줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(973줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -263,6 +263,7 @@
 - `explore.rest_unsafe` 벽에 기대 {hours}시간을 졸았다. 쉰 것 같지 않다.
 - `explore.no_item` {item}이(가) 없다.
 - `explore.no_category` 가진 {category}이(가) 없다.
+- `explore.grave_wakes` 늪 어딘가의 비석 아래에서 무언가가 일어났다.
 - `explore.portal_locked` {floor}층으로 가는 포탈이다. 소용돌이가 아직 닫혀 있어 그 너머로 갈 수 없다.
 - `explore.monument` 대현자 기념비. 이 근처에는 아무것도 다가오지 않는다.
 - `explore.monument_opt_offer` {item} {n}개를 바친다
@@ -340,6 +341,7 @@
 
 > 방에서 기다리는 보스·중간 보스가 플레이어를 보고 전투에 들어가기 직전 대화창 한 줄(사용자 2026-10-28, V17 — 몬스터 id별, 없으면 any). 전투 안 첫 대사(combat.<보스>_intro)와 이어지게 쓴다
 
+- `explore.boss_notice.death_knight` 무너진 비석 곁에 검은 갑주의 기사가 서 있다. 투구 틈의 붉은 빛이 이쪽을 향한다.
 - `explore.boss_notice.any` {name}이(가) 당신을 응시한다.
 - `explore.boss_notice.blater` 녹슨 갑옷의 기사가 천천히 고개를 든다. 투구 틈의 붉은 눈이 당신을 응시한다.
 - `explore.boss_notice.kambormir` 창백한 사내가 천천히 고개를 돌린다. 핏기 없는 입가에 웃음이 번진다.
@@ -1251,6 +1253,9 @@
 - `field.mud_tracks` 진흙 바닥에 무리가 지나간 발자국이 깊게 패어 있다. 아직 축축하다.
 - `field.breeze` 바위 틈에서 서늘한 바람이 새어 나온다. 어딘가 큰 공간이 있다.
 - `field.cairn` 누군가 납작한 돌을 쌓아 탑을 세웠다. 맨 위의 돌에는 아직 먼지가 앉지 않았다.
+- `field.grave_stone` 진창 위에 갓 깎은 듯한 비석이 서 있다. 새겨진 이름은 없고, 손을 대면 돌이 차갑게 떨린다.
+- `field.grave_stone_break` 비석을 걷어차 쓰러뜨렸다. 진창에 처박힌 돌 아래에서 차가운 기운이 빠져나가 흩어졌다.
+- `field.grave_stone_break_fail` 한참을 내리쳐도 비석은 꿈쩍하지 않는다.
 - `field.blood_well_pour` 손바닥을 그어 우물에 피를 흘려 넣었다. 바닥에서 검붉은 잔이 떠오른다.
 - `field.blood_well_done` 우물은 더 이상 피를 받지 않는다.
 - `field.blood_well_look` 우물 바닥에서 비릿한 냄새가 올라온다. 무언가가 목마른 것 같다.

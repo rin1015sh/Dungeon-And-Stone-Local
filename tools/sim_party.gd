@@ -10,6 +10,8 @@ extends SceneTree
 ## (수호자·중간 보스가 있으면 그중 — 졸개가 셋 이상 쌓이면 졸개부터 —, 없으면 생명력이 가장 낮은 적).
 ## 시나리오 "party_statuses": [..] — 전투 전에 아군 전원에게 건다(빙하굴 3·4챕터 저체온증).
 ## 공격은 쓸 수 있는 정수 액티브 중 위력 합이 가장 큰 것, 없으면 기본 공격.
+## --members=0,2: sim_parties.json party 중 그 번호만(혼자 = --members=1 — 2층 무리 확인), --sc=a*12;b,c: 시나리오를 직접(;로 판, ,로 몬스터,
+##   id*n = n마리 — 목표 없음). 적이 진영 상한보다 많으면 큰 무리 예비대(BattleHorde)로 줄 선다.
 ## --curve=<층>: 파티를 10층 곡선의 그 층 기준 탐험가로(docs/balance/curve.json — 첫 전사 = 탱커, 나머지 = 딜러: 정수를 흡수한 뒤
 ##   주 스탯·생명력·공격력을 곡선 값에 맞춘다 — 이능은 1층 정수 그대로). 보스가 "몇 층 위 파티용"인지 확인할 때(docs/plans/balance_10floors.md §4).
 ## --rev=full: 기세(C20)를 쓴다 — 기세가 가득(max)이면 그 차례의 공격(정수 스킬이든 기본 공격이든)에 모두 얹는다. 기세는 얹지 않은
@@ -39,7 +41,22 @@ func _initialize() -> void:
 		var refs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/balance/curve.json"))
 		cfg["curve"] = refs.get(str(int(float(curve_floor))), {})
 		cfg["level"] = int(JsonUtil.get_float(cfg["curve"], "level", 4))
-	var custom := args.has("essences") or args.has("base") or args.has("essence_mult") or args.has("curve") or args.has("rev")
+	if args.has("members"):
+		var keep: Array = []
+		for k: String in str(args["members"]).split(","):
+			keep.append(cfg["party"][k.to_int()])
+		cfg["party"] = keep
+	if args.has("sc"):
+		var list: Array = []
+		for part: String in str(args["sc"]).split(";", false):
+			var ids: Array = []
+			for tok: String in part.split(",", false):
+				var bits := tok.split("*")
+				for k in (bits[1].to_int() if bits.size() == 2 else 1):
+					ids.append(bits[0])
+			list.append({"name": part, "monsters": ids, "ai": "naive", "min": 0.0, "max": 1.0})
+		cfg["scenarios"] = list
+	var custom := args.has("essences") or args.has("base") or args.has("essence_mult") or args.has("curve") or args.has("rev") or args.has("members") or args.has("sc")
 	var n := str(args["n"]).to_int()
 	var who := "곡선 %s층 기준 탐험가 5인(docs/balance/curve.json)" % curve_floor if cfg.has("curve") else "1층 정수 파티"
 	var lines := PackedStringArray(["# 균열 파티 시뮬레이션", "", "`tools/sim_party.gd`가 만든다(파티: `tools/sim_parties.json` — %s, 시나리오당 %d회)." % [who, n], "",
@@ -51,16 +68,19 @@ func _initialize() -> void:
 		var wins := 0
 		var turns := 0
 		var downs := 0
+		var hp_left := 0.0
 		for i in n:
 			var r := _fight(db, cfg, sc, i)
 			wins += 1 if r["win"] else 0
 			turns += int(r["turns"])
 			downs += int(r["downs"])
+			hp_left += float(r["hp_left"])
 		var rate := float(wins) / n
 		var ok := rate >= float(sc["min"]) and rate <= float(sc["max"])
 		misses += 0 if ok else 1
-		lines.append("| %s | %.0f%% | %.0f~%.0f%% | %.1f | %.2f |%s" % [sc["name"], rate * 100.0, float(sc["min"]) * 100.0,
-			float(sc["max"]) * 100.0, float(turns) / n, float(downs) / n, "" if ok else " ← 벗어남"])
+		lines.append("| %s | %.0f%% | %.0f~%.0f%% | %.1f | %.2f |%s%s" % [sc["name"], rate * 100.0, float(sc["min"]) * 100.0,
+			float(sc["max"]) * 100.0, float(turns) / n, float(downs) / n, "" if ok else " ← 벗어남",
+			" 남은 생명력 %.0f%%" % (100.0 * hp_left / n) if args.has("sc") else ""])
 	lines.append("")
 	lines.append("- 목표 벗어남 %d개" % misses)
 	lines.append("")
@@ -103,9 +123,11 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 		pc.pool.fill_all()
 		party.append(pc)
 		b.add(pc, Combatant.SIDE_PARTY, str(m["row"]))
-	for id: Variant in sc["monsters"]:
+	var parts := BattleHorde.split(db, sc["monsters"])  # 진영 상한을 넘으면 예비대(2층 큰 무리)
+	for id: Variant in parts[0]:
 		var mon := Monster.create(db, str(id))
 		b.add(mon, Combatant.SIDE_ENEMY, JsonUtil.get_str(mon.behavior(), "row", "front"))
+	b.horde = parts[1]
 	b.start(i % 2 == 0)
 	var t := 0
 	while t < 600:
@@ -117,7 +139,10 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 		if not b.act(c, action) and not b.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null}):
 			b.act(c, {"kind": "guard"})  # 거부된 행동이 같은 차례를 되풀이하지 않게(화면과 같은 대체 순서)
 	var downs := party.filter(func(a: Actor) -> bool: return a.dead).size()
-	return {"win": b.result == Battle.RESULT_VICTORY, "turns": t, "downs": downs}
+	var left := 0.0
+	for a in party:
+		left += a.pool.get_current("hp") / maxf(1.0, a.pool.get_max("hp"))
+	return {"win": b.result == Battle.RESULT_VICTORY, "turns": t, "downs": downs, "hp_left": left / maxf(1.0, party.size())}
 
 
 ## 곡선 기준 탐험가로 맞춘다: 주 스탯(근력은 무기 공격력을 빼고 공격력이 곡선 값이 되게)·최대 생명력.

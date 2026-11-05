@@ -1,0 +1,94 @@
+{
+  "id": "dullahan",
+  "name_ko": "듀라한",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "dullahan",
+  "floor": 2,
+  "floor_tags": [
+    "f2d_hard"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.15,
+  "color": "#3a3a44",
+  "immunities": [],
+  "status_immune": [
+    "fear",
+    "bleeding"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "lightning": 1.25
+  },
+  "stats": {
+    "str": 19,
+    "agi": 28,
+    "p_res": 50,
+    "m_res": 18,
+    "int": 14
+  },
+  "resources": {
+    "hp": 160,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 17,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.6
+    },
+    "alert_sfx": "undead_moan",
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 7,
+  "essence_drops": [
+    {
+      "essence": "dullahan",
+      "chance": 0.01
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "cav_charge",
+    "deadman_chop"
+  ],
+  "passives": [
+    {
+      "id": "dullahan_armor",
+      "name_ko": "목 없는 갑주",
+      "desc_ko": "빈 갑옷이 칼날을 받아 낸다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.2
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.2
+        }
+      ]
+    }
+  ],
+  "ai": [],
+  "ai_cycle": [
+    "cav_charge",
+    "deadman_chop",
+    "deadman_chop"
+  ],
+  "source": "placeholder",
+  "notes": "2층 망자의 땅 3구역 드묾(floor2.md §3) — 베기 · 찌르기 20% 덜 받고 물리내성이 높다. 2층 곡선 탐험가 혼자(sim_party --curve=2 --members=1) 이길 확률 절반쯤을 노림. 임시값"
+}

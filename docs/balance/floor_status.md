@@ -16,9 +16,9 @@
 | 위층 포탈 portals | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 계층군주 lord(+패턴) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 군주 등장 문구 explore.boss_notice | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 필드 몬스터 | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 몬스터 그림 assets/monsters | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 정수 data/essences | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 필드 몬스터 | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 몬스터 그림 assets/monsters | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 정수 data/essences | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 균열 data/rifts | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 도서관 서적(floor n) | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 
@@ -53,9 +53,9 @@
 - ○ 다른 탐험가 explorers
 - ● 위층 포탈 portals — 1개
 - ○ 계층군주 lord(+패턴)
-- ○ 필드 몬스터 — 0종 · 등급 [] (목표 8)
-- ○ 몬스터 그림 assets/monsters — 0장
-- ○ 정수 data/essences — 0종
+- ● 필드 몬스터 — 4종 · 등급 [6, 7, 9] (목표 8)
+- ● 몬스터 그림 assets/monsters — 4장
+- ● 정수 data/essences — 4종
 - ○ 균열 data/rifts
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 

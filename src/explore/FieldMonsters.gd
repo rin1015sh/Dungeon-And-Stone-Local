@@ -278,7 +278,7 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		near.append(g)
 		var started := _steer.decide(g, player, pcell, hours, now)
 		_steer.turn(g, hours, now)
-		var budget := minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g), max_moves)
+		var budget := minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g) * _steer.ground_mult(g), max_moves)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
 			moved = true
 		if _steer.decide(g, player, pcell, 0.0, now) or started:

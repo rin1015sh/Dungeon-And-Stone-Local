@@ -1,0 +1,41 @@
+{
+  "id": "death_knight",
+  "name_ko": "데스나이트의 정수",
+  "grade": 6,
+  "source_monster": "death_knight",
+  "family": "death_knight",
+  "rank": "midboss",
+  "passive": {
+    "id": "blater_grudge_aura",
+    "name_ko": "원한",
+    "desc_ko": "전투가 시작되면 적 전원의 치유가 줄어든다.",
+    "foe_statuses_on_start": [
+      "blater_grudge_weak"
+    ],
+    "notes": "원작 정수: 켜고 끄는 오오라(켜 둔 동안 자기 영혼력 재생 정지) — 켜고 끄기는 아직 없음(ASSUMPTIONS BF7)"
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_blater_cursed_slash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_blater_oath"
+    },
+    {
+      "color": "green",
+      "skill": "ess_blater_death_sentence"
+    }
+  ],
+  "stats": {
+    "str": 21,
+    "p_res": 17,
+    "resist_dark": 23
+  },
+  "resources": {
+    "hp": 34
+  },
+  "source": "placeholder",
+  "notes": "2층 망자의 땅 비석 보스 — 블라터(같은 데스나이트) 정수와 같은 판. 임시값"
+}

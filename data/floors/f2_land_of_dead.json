@@ -1,5 +1,5 @@
 {
-  "_comment": "2층 망자의 땅(docs/plans/floor2.md §3) — 1층 남쪽 포탈(dest floor2_south)에서 온다. 지금은 첫 걷기 판(M6-0): fields 생성기 marsh 문법 · 입장마다 새 지도 · 1층 몬스터를 다시 쓴 구역 셋. 진창 느려짐 · 걸어 오르는 둔덕 · 비석 데스나이트 · 새 몬스터 · 그림은 다음 단계. 수치는 모두 임시값",
+  "_comment": "2층 망자의 땅(docs/plans/floor2.md §3) — 1층 남쪽 포탈(dest floor2_south)에서 온다. 지금은 첫 걷기 판(M6-0): fields 생성기 marsh 문법 · 입장마다 새 지도 · 1층 몬스터를 다시 쓴 구역 셋. 1단계: 진창(move_mult) · 걸어 오르는 둔덕(시야만 막음) · 비석 데스나이트(grave_wake) · 새 몬스터 넷. 수치는 모두 임시값",
   "id": "f2_land_of_dead",
   "name_ko": "망자의 땅",
   "floor": 2,
@@ -12,36 +12,280 @@
   "ambient_source": "placeholder",
   "ambient_color": "#6a7290",
   "art": {
-    "_comment": "그림은 1층 · 핏빛성채 것을 빌려 쓴다(2층 그림 전까지 — floor2.md §8). [창작] 임시값",
-    "battleback": {"image": "res://assets/battle/f1_crystal_cave.webp", "half_width": 3.6},
-    "palette": {"unexplored": "#000000", "near_black": "#0e0e12", "tone": "#e8eaf0", "memory_tint": "#7a8098", "memory_brightness": 0.28},
-    "post": {"saturation": 0.6, "vignette_strength": 0.6, "vignette_radius": 0.42, "grain_strength": 0.05},
-    "particles": [{"id": "star", "amount": 30, "lifetime": 12.0, "color": "#d8e0ff", "alpha": 0.18, "scale": [1.0, 2.0], "velocity": [0.5, 2.0], "direction": [0.0, -1.0], "spread": 180.0, "gravity": [0.0, 0.0]}],
-    "ambience": {"loop": "f1_cave"},
-    "abyss": {"cliff": "res://assets/floor/bf/chasm.webp", "cliff_tiles": 8, "cliff_depth": 2.25, "jag": 0.35, "abyss_color": "#08080a", "mist_color": "#1a1c22", "rim_color": "#8a8a90",
-      "rise": {"face": "res://assets/floor/bf/rise_face.webp", "top": "res://assets/floor/bf/rise_top.webp", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "jag": 0.3, "fog": 4, "dark": "#08080a"}}
+    "_comment": "그림: 바닥 · 잔해 = assets/floor/f2d(paint_floor.gd --only=f2d — 핏빛성채 그리는 법 + 망자의 땅 색), 소품 = 핏빛성채 소품 시트, 전투 뒷그림 = tools/battle_art/SceneDead.gd. [창작] 임시값",
+    "battleback": {
+      "image": "res://assets/battle/f2_land_of_dead.webp",
+      "half_width": 3.6
+    },
+    "palette": {
+      "unexplored": "#000000",
+      "near_black": "#0e0e12",
+      "tone": "#e8eaf0",
+      "memory_tint": "#7a8098",
+      "memory_brightness": 0.28
+    },
+    "post": {
+      "saturation": 0.6,
+      "vignette_strength": 0.6,
+      "vignette_radius": 0.42,
+      "grain_strength": 0.05
+    },
+    "particles": [
+      {
+        "id": "star",
+        "amount": 30,
+        "lifetime": 12.0,
+        "color": "#d8e0ff",
+        "alpha": 0.18,
+        "scale": [
+          1.0,
+          2.0
+        ],
+        "velocity": [
+          0.5,
+          2.0
+        ],
+        "direction": [
+          0.0,
+          -1.0
+        ],
+        "spread": 180.0,
+        "gravity": [
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "ambience": {
+      "loop": "f1_cave"
+    },
+    "abyss": {
+      "cliff": "res://assets/floor/bf/chasm.webp",
+      "cliff_tiles": 8,
+      "cliff_depth": 2.25,
+      "jag": 0.35,
+      "abyss_color": "#08080a",
+      "mist_color": "#1a1c22",
+      "rim_color": "#8a8a90",
+      "rise": {
+        "face": "res://assets/floor/f2d/rise_face.webp",
+        "top": "res://assets/floor/f2d/rise_top.webp",
+        "face_tiles": 8,
+        "face_depth": 3,
+        "top_tiles": 8,
+        "jag": 0.3,
+        "fog": 4,
+        "dark": "#08080a"
+      }
+    }
   },
   "gen": {
     "_comment": "fields 생성기 marsh 문법(src/explore/generators/fields.gd): 남쪽부터 진창 · 잔해 · 단단한 땅 띠 셋, 잔해는 가운데 띠, 둔덕은 북쪽 띠. 크기는 1층 팔 두 개 길이쯤(곧게 걸어 남 → 북 약 15게임시간)",
     "grammar": "marsh",
-    "size": [200, 480],
+    "size": [
+      200,
+      480
+    ],
     "margin": 6,
     "edge_jag": 10,
-    "tiles": {"rise": "f2d_rise", "floor": "f2d_mud", "hard": "f2d_hard", "ruin": "f2d_ruin", "mound": "f2d_mound", "down": "f2_stone_down", "up": "f2_portal_up"},
-    "bands": [["f2d_marsh", 0.38], ["f2d_ruins", 0.34], ["f2d_hard", 0.28]],
+    "tiles": {
+      "rise": "f2d_rise",
+      "floor": "f2d_mud",
+      "hard": "f2d_hard",
+      "ruin": "f2d_ruin",
+      "mound": "f2d_mound",
+      "down": "f2_stone_down",
+      "up": "f2_portal_up"
+    },
+    "bands": [
+      [
+        "f2d_marsh",
+        0.38
+      ],
+      [
+        "f2d_ruins",
+        0.34
+      ],
+      [
+        "f2d_hard",
+        0.28
+      ]
+    ],
     "hard_from": 2,
-    "ruins": {"band": 1, "count": 70, "size": [4, 9], "broken": 0.35},
-    "mounds": {"band": 2, "count": 60, "radius": [1.5, 4.0]}
+    "ruins": {
+      "band": 1,
+      "count": 70,
+      "size": [
+        4,
+        9
+      ],
+      "broken": 0.35
+    },
+    "mounds": {
+      "band": 2,
+      "count": 60,
+      "radius": [
+        1.5,
+        4.0
+      ]
+    },
+    "props": [
+      {
+        "band": 0,
+        "tile": "f2d_deadtree",
+        "count": 110
+      },
+      {
+        "band": 0,
+        "tile": "f2d_stake",
+        "count": 50
+      },
+      {
+        "band": 0,
+        "tile": "f2d_gravestone",
+        "count": 40
+      },
+      {
+        "band": 1,
+        "tile": "f2d_gravestone",
+        "count": 140
+      },
+      {
+        "band": 1,
+        "tile": "f2d_statue",
+        "count": 30
+      },
+      {
+        "band": 1,
+        "tile": "f2d_deadtree",
+        "count": 40
+      },
+      {
+        "band": 2,
+        "tile": "f2d_rock",
+        "count": 90
+      },
+      {
+        "band": 2,
+        "tile": "f2d_deadtree",
+        "count": 40
+      }
+    ]
   },
   "regions": [
-    {"id": "f2d_marsh", "zone": "f2d_marsh", "name_ko": "검은 늪", "monsters": ["ghoul", "elder_ghoul"], "weights": {"ghoul": 4, "elder_ghoul": 1}, "groups": [22, 28], "horde": true},
-    {"id": "f2d_ruins", "zone": "f2d_ruins", "name_ko": "석조 잔해", "monsters": ["skeleton_archer", "skeleton_mage", "banshee", "ghoul_lord"], "weights": {"skeleton_archer": 2, "skeleton_mage": 2, "banshee": 1, "ghoul_lord": 1}, "groups": [32, 38]},
-    {"id": "f2d_hard", "zone": "f2d_hard", "name_ko": "굳은 땅", "monsters": ["deathfiend", "chimera_wolf", "ghoul_lord"], "weights": {"deathfiend": 2, "chimera_wolf": 2, "ghoul_lord": 1}, "groups": [26, 32]}
+    {
+      "id": "f2d_marsh",
+      "zone": "f2d_marsh",
+      "name_ko": "검은 늪",
+      "monsters": [
+        "ghoul",
+        "elder_ghoul"
+      ],
+      "weights": {
+        "ghoul": 4,
+        "elder_ghoul": 1
+      },
+      "groups": [
+        22,
+        28
+      ],
+      "horde": true
+    },
+    {
+      "id": "f2d_ruins",
+      "zone": "f2d_ruins",
+      "name_ko": "석조 잔해",
+      "monsters": [
+        "skeleton",
+        "skeleton_warrior",
+        "skeleton_archer",
+        "skeleton_mage",
+        "banshee",
+        "ghoul_lord"
+      ],
+      "weights": {
+        "skeleton": 3,
+        "skeleton_warrior": 2,
+        "skeleton_archer": 2,
+        "skeleton_mage": 1,
+        "banshee": 1,
+        "ghoul_lord": 1
+      },
+      "groups": [
+        32,
+        38
+      ]
+    },
+    {
+      "id": "f2d_hard",
+      "zone": "f2d_hard",
+      "name_ko": "굳은 땅",
+      "monsters": [
+        "deathfiend",
+        "chimera_wolf",
+        "ghoul_lord",
+        "dullahan"
+      ],
+      "weights": {
+        "deathfiend": 3,
+        "chimera_wolf": 3,
+        "ghoul_lord": 2,
+        "dullahan": 1
+      },
+      "groups": [
+        26,
+        32
+      ]
+    }
   ],
   "spawn": {
     "_comment": "f1 spawn과 같은 키. horde(지역 키) = 몬스터 pack_size 최대를 넘어 pack_by_day 그대로(열댓 무리 — 전투는 6마리 + 예비대, BattleHorde). 날짜 = 원정 날짜(10일)",
-    "groups_per_region": [26, 32],
-    "pack_by_day": [[4, 6], [4, 7], [5, 8], [6, 9], [6, 10], [7, 11], [8, 12], [9, 13], [10, 14], [12, 15]],
+    "groups_per_region": [
+      26,
+      32
+    ],
+    "pack_by_day": [
+      [
+        4,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        7,
+        11
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        9,
+        13
+      ],
+      [
+        10,
+        14
+      ],
+      [
+        12,
+        15
+      ]
+    ],
     "respawn_hours": 24,
     "growth_every_hours": 24,
     "max_extra_groups": 10
@@ -49,6 +293,23 @@
   "features_gap": 6,
   "features": [],
   "landmarks": [],
-  "portals": [{"id": "to_f3_dead", "dir": "north", "to_floor": 3, "dest": "floor3_from_dead"}],
-  "source": "placeholder"
+  "portals": [
+    {
+      "id": "to_f3_dead",
+      "dir": "north",
+      "to_floor": 3,
+      "dest": "floor3_from_dead"
+    }
+  ],
+  "source": "placeholder",
+  "grave_wake": {
+    "_comment": "비석(GraveWake — floor2.md §3): 잔해 구역 무작위 자리, 원정 day일 차에 monster가 깨어난다. 그 전에 부수면 없음. 임시값",
+    "event": "grave_stone",
+    "zone": "f2d_ruins",
+    "min_entry_tiles": 60,
+    "day": 7,
+    "monster": "death_knight",
+    "line": "explore.grave_wakes",
+    "sound": "boss_reveal"
+  }
 }

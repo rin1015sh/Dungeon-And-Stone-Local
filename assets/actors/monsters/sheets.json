@@ -1,247 +1,275 @@
 {
 	"banshee": {
 		"cell": [
-			36,
-			75
+			36.0,
+			75.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"blade_wolf": {
 		"cell": [
-			96,
-			69
+			96.0,
+			69.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"bone_knight": {
 		"cell": [
-			56,
-			113
+			56.0,
+			113.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"buried_one": {
 		"cell": [
-			46,
-			89
+			46.0,
+			89.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"chimera_wolf": {
 		"cell": [
-			96,
-			79
+			96.0,
+			79.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"copper_golem": {
 		"cell": [
-			74,
-			114
+			74.0,
+			114.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"deadman": {
 		"cell": [
-			46,
-			90
+			46.0,
+			90.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"deadman_commander": {
 		"cell": [
-			54,
-			104
+			54.0,
+			104.0
+		],
+		"foot": 4.0
+	},
+	"death_knight": {
+		"cell": [
+			66,
+			121
 		],
 		"foot": 4
 	},
 	"deathfiend": {
 		"cell": [
-			148,
-			168
+			148.0,
+			168.0
+		],
+		"foot": 4.0
+	},
+	"dullahan": {
+		"cell": [
+			58,
+			103
 		],
 		"foot": 4
 	},
 	"frost_wolf": {
 		"cell": [
-			100,
-			71
+			100.0,
+			71.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"gargoyle_statue": {
 		"cell": [
-			74,
-			93
+			74.0,
+			93.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"ghoul": {
 		"cell": [
-			64,
-			67
+			64.0,
+			67.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"ghoul_lord": {
 		"cell": [
-			78,
-			87
+			78.0,
+			87.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"gnome": {
 		"cell": [
-			68,
-			54
+			68.0,
+			54.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"goblin": {
 		"cell": [
-			44,
-			68
+			44.0,
+			68.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"goblin_miner": {
 		"cell": [
-			54,
-			82
+			54.0,
+			82.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"guardian_eye": {
 		"cell": [
-			52,
-			44
+			52.0,
+			44.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"hobgoblin_miner": {
 		"cell": [
-			62,
-			104
+			62.0,
+			104.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"ice_golem": {
 		"cell": [
-			74,
-			114
+			74.0,
+			114.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"ice_orc_shaman": {
 		"cell": [
-			58,
-			100
+			58.0,
+			100.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"ice_orc_warrior": {
 		"cell": [
-			58,
-			104
+			58.0,
+			104.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"iron_cavalry": {
 		"cell": [
-			66,
-			131
+			66.0,
+			131.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"iron_lizardman": {
 		"cell": [
-			56,
-			89
+			56.0,
+			89.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"mineral_slime": {
 		"cell": [
-			94,
-			55
+			94.0,
+			55.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"mummy": {
 		"cell": [
-			48,
-			90
+			48.0,
+			90.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"owlbear": {
 		"cell": [
-			130,
-			101
+			130.0,
+			101.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"riddle_gatekeeper": {
 		"cell": [
-			58,
-			110
+			58.0,
+			110.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"sabertooth": {
 		"cell": [
-			104,
-			73
+			104.0,
+			73.0
+		],
+		"foot": 4.0
+	},
+	"skeleton": {
+		"cell": [
+			48,
+			90
 		],
 		"foot": 4
 	},
 	"skeleton_archer": {
 		"cell": [
-			46,
-			90
+			46.0,
+			90.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"skeleton_mage": {
 		"cell": [
-			46,
-			90
+			46.0,
+			90.0
+		],
+		"foot": 4.0
+	},
+	"skeleton_warrior": {
+		"cell": [
+			48,
+			92
 		],
 		"foot": 4
 	},
 	"skull_rat": {
 		"cell": [
-			120,
-			64
+			120.0,
+			64.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"slime": {
 		"cell": [
-			74,
-			44
+			74.0,
+			44.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"soldier_deadman": {
 		"cell": [
-			48,
-			91
+			48.0,
+			91.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"wormstone": {
 		"cell": [
-			68,
-			81
+			68.0,
+			81.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"yeti": {
 		"cell": [
-			90,
-			131
+			90.0,
+			131.0
 		],
-		"foot": 4
+		"foot": 4.0
 	}
 }

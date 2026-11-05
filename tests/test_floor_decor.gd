@@ -59,6 +59,8 @@ func test_props_cover_feature_tiles() -> void:
 		if tile.is_empty() or tile == "feat_mud":
 			continue
 		var prop := JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("tiles", tile), "art"), "prop")
+		if prop.is_empty() and not JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("tiles", tile), "art"), "stand").is_empty():
+			continue  # 서 있는 소품 그림(art.stand — 망자의 땅 비석 standing 요소)
 		if prop.is_empty():
 			missing.append(tile)
 		else:

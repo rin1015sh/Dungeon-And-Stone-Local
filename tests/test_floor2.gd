@@ -91,3 +91,56 @@ func test_horde_pack_size_by_day() -> void:
 		most = maxi(most, fm.pack_count("ghoul", true, true))
 	assert_true(most > 6, "열댓 무리(구울 pack_size 최대를 넘는다): %d" % most)
 	assert_true(fm.pack_count("ghoul", true, false) <= 6, "horde가 아니면 pack_size 최대까지")
+
+
+func _f2_session(seed_value: int = 4, monsters: bool = false) -> ExploreSession:
+	var reg := ContentRegistries.new()
+	var def := db.get_entry("floors", F2)
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 12, "agi": 8})
+	var s := ExploreSession.new(db, def, reg.generator("fields").generate(db, def, Rng.new(seed_value)), pc, GameClock.new(), Rng.new(seed_value + 1), reg.effects)
+	s.monsters_enabled = monsters
+	s.start()
+	return s
+
+
+func test_mud_slows_and_mounds_block_sight() -> void:
+	var mud := db.get_entry("tiles", "f2d_mud")
+	assert_true(JsonUtil.get_float(mud, "move_mult") < 1.0, "진창은 느리다")
+	var mound := db.get_entry("tiles", "f2d_mound")
+	assert_true(JsonUtil.get_bool(mound, "walkable") and JsonUtil.get_bool(mound, "blocks_sight"), "둔덕은 걸어 오르되 너머를 가린다")
+	var s := _f2_session()
+	assert_eq(s.map.tile_id_at(s.pos), "f2d_mud", "도착은 진창")
+	var before := s.fpos
+	s.move_dir(Vector2.UP, 0.1)
+	var on_mud := before.distance_to(s.fpos)
+	s.map.set_tile(s.pos, "f2d_hard")
+	before = s.fpos
+	s.move_dir(Vector2.UP, 0.1)
+	assert_near(on_mud / before.distance_to(s.fpos), JsonUtil.get_float(mud, "move_mult"), 0.02, "진창에서는 그만큼 느리게 걷는다")
+	assert_true(JsonUtil.get_bool(JsonUtil.get_dict(db.get_entry("monsters", "ghoul"), "behavior"), "mud_walker"), "구울은 진창에서 느려지지 않는다")
+
+
+func test_grave_wakes_on_day_seven_unless_broken() -> void:
+	var s := _f2_session(4, true)
+	assert_true(s.grave != null and s.grave.pos.x >= 0, "비석이 섰다")
+	assert_eq(s.map.zone_at(s.grave.pos), "f2d_ruins", "잔해 구역")
+	var n := s.monsters.groups.size()
+	s.clock.advance(5.0 * 24.0)
+	assert_false(s.grave.update(s), "아직은 깨어나지 않는다")
+	s.clock.advance(1.0 * 24.0)
+	assert_true(s.grave.update(s), "원정 7일 차에 깨어난다")
+	assert_eq(s.monsters.groups.size(), n + 1)
+	var dk: FieldMonsters.Group = s.monsters.groups[-1]
+	assert_true(dk.monster_ids.has("death_knight") and dk.boss == "death_knight", "데스나이트 — 보스 무리")
+	var s2 := _f2_session(9, false)
+	var e: Dictionary = s2.features._by_cell[s2.grave.pos]
+	var brk: Dictionary = JsonUtil.get_array(e["def"], "actions").filter(func(a: Dictionary) -> bool: return a["id"] == "break")[0]
+	var b2 := brk.duplicate(true)
+	b2["check"] = {"stat": "str", "dc": 1}
+	var t0 := s2.clock.total_hours
+	FieldFeatureAct.run(s2, e, b2)
+	assert_true(s2.clock.total_hours > t0, "부수는 데 시간이 든다")
+	assert_true(s2.grave.broken(s2), "비석을 부쉈다")
+	s2.monsters_enabled = true
+	s2.clock.advance(7.0 * 24.0)
+	assert_false(s2.grave.update(s2), "부순 비석에서는 아무것도 깨어나지 않는다")

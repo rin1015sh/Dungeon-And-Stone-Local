@@ -5,7 +5,8 @@ extends FloorGenerator
 ## gen: {"size": [w, h], "grammar": "marsh", "margin": 바깥 둘레 칸, "edge_jag": 가장자리 들쭉날쭉 폭,
 ##       "tiles": {"rise", "floor", "hard", "ruin", "mound", "down", "up"},
 ##       "bands": [[구역 id, 남쪽부터 몫], …](합 1 — map.zones, 층 regions zone과 짝),
-##       "hard_from": 몇 번째 띠부터 단단한 땅, "ruins": {"band", "count", "size": [최소, 최대], "broken"}, "mounds": {"band", "count", "radius": [최소, 최대]}}
+##       "hard_from": 몇 번째 띠부터 단단한 땅, "ruins": {"band", "count", "size": [최소, 최대], "broken"}, "mounds": {"band", "count", "radius": [최소, 최대]},
+##       "props": [{"band", "tile", "count"}](서 있는 소품 한 칸씩 — 둘레 8칸이 모두 걸을 수 있는 칸에만, 길을 막지 않는다)}
 ## 공통: 바깥 = 솟은 외곽(rise), 시작 = 남쪽 가운데, 도착 비석(아래층 — 포탈 kind "floor_down") = 시작 두 칸 남쪽,
 ## 위층 포탈 = 북쪽 끝 가운데(층 JSON portals[0]). 불변식: 걸을 수 있는 칸은 모두 시작에서 닿는다(닿지 않는 칸은 외곽으로 메운다).
 
@@ -30,6 +31,8 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	var keep: Array[Vector2i] = [map.entry, up]
 	_ruins(map, rng, bands, JsonUtil.get_dict(g, "ruins"), JsonUtil.get_str(t, "ruin"), keep)
 	_mounds(map, rng, bands, JsonUtil.get_dict(g, "mounds"), JsonUtil.get_str(t, "mound"), keep)
+	for pd: Variant in JsonUtil.get_array(g, "props"):
+		_props(map, rng, bands, pd as Dictionary, keep)
 	map.center = map.entry
 	var down := map.entry + Vector2i(0, 2)
 	map.set_tile(down, JsonUtil.get_str(t, "down"))
@@ -140,6 +143,24 @@ func _mounds(map: FloorMap, rng: Rng, bands: Array[Vector2i], d: Dictionary, til
 			for x in range(int(c.x) - ri, int(c.x) + ri + 1):
 				if Vector2(x, y).distance_to(c) <= r * rng.randf_range(0.85, 1.0):
 					_put(map, Vector2i(x, y), tile, keep)
+
+
+## 서 있는 소품: 띠 band 안 무작위 칸 count개 — 둘레 8칸이 모두 걸을 수 있어야(소품끼리 붙지 않고 길을 막지 않는다).
+func _props(map: FloorMap, rng: Rng, bands: Array[Vector2i], d: Dictionary, keep: Array[Vector2i]) -> void:
+	if JsonUtil.get_int(d, "band", 0) >= bands.size():
+		return
+	var band := bands[JsonUtil.get_int(d, "band", 0)]
+	var tile := JsonUtil.get_str(d, "tile")
+	for i in JsonUtil.get_int(d, "count", 0):
+		for tries in 8:
+			var p := Vector2i(rng.randi_range(2, map.width - 3), rng.randi_range(band.x, band.y - 1))
+			var open := true
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					open = open and map.is_walkable(p + Vector2i(dx, dy))
+			if open:
+				_put(map, p, tile, keep)
+				break
 
 
 ## 걸을 수 있는 칸에만, 지켜 둘 자리(시작·포탈) 둘레는 비운다.

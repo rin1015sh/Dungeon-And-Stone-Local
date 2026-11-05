@@ -40,6 +40,7 @@ var void_edge: String = ""      ## 허공에 닿는 가장자리(art.void_edge):
 var art_doors: PackedStringArray = PackedStringArray()  ## 이 벽에 뚫린 문의 모양 후보(art.doors — DoorArt: square·round·pointed·gate·rough·cave·timber)
 var art_directional: bool = false  ## 한 방향 무늬(art.directional — 철로): 세로로 더 길게 이어진 칸은 그림을 90° 돌린다(FloorChunk)
 var sunk: bool = false          ## 땅보다 낮은 물(art.sunk — 핏물 해자): 그 위를 건너는 나무 발판(void_edge "beam")은 낭떠러지 위처럼 들보 면·그림자·받침·난간(VoidChunk)
+var move_mult: float = 1.0       ## 이 칸에서 걷는 빠르기 배율(진창 0.7 — 망자의 땅, floor2.md §3). 몬스터 behavior.mud_walker면 무시
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
@@ -57,6 +58,7 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.color_face = Color.from_string(JsonUtil.get_str(colors, "face"), t.color_face)
 	t.color_mark = Color.from_string(JsonUtil.get_str(colors, "mark"), Color.TRANSPARENT)
 	t.face_px = JsonUtil.get_int(d, "face_px", -1)
+	t.move_mult = clampf(JsonUtil.get_float(d, "move_mult", 1.0), 0.1, 2.0)
 	var light := JsonUtil.get_dict(d, "light")
 	t.light_radius_m = JsonUtil.get_float(light, "radius_m")
 	t.light_color = Color.from_string(JsonUtil.get_str(light, "color"), Color.WHITE)

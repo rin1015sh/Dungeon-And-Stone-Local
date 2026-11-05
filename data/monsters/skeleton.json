@@ -1,0 +1,88 @@
+{
+  "id": "skeleton",
+  "name_ko": "스켈레톤",
+  "grade": 9,
+  "rank": "normal",
+  "lineage": "skeleton",
+  "floor": 2,
+  "floor_tags": [
+    "f2d_ruins"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#d8d0b8",
+  "immunities": [],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25,
+    "blunt": 1.5
+  },
+  "stats": {
+    "str": 6,
+    "agi": 7,
+    "p_res": 10,
+    "m_res": 4,
+    "int": 2
+  },
+  "resources": {
+    "hp": 15,
+    "soul": 0
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.5
+    },
+    "alert_sfx": "undead_moan",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      4
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "skeleton",
+      "chance": 0.005
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "deadman_rusty_slash"
+  ],
+  "passives": [
+    {
+      "id": "skeleton_core",
+      "name_ko": "갈비뼈 속 핵",
+      "desc_ko": "베고 찌르는 공격은 갈비뼈에 막힌다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.4
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.4
+        }
+      ]
+    }
+  ],
+  "ai": [],
+  "ai_cycle": [
+    "deadman_rusty_slash"
+  ],
+  "source": "placeholder",
+  "notes": "2층 망자의 땅(floor2.md §3) — 데드맨 병사 수치를 BL8 뒤 9등급 기준으로 깎아 시작(임시값). 둔기 약점"
+}

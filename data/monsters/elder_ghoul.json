@@ -37,6 +37,7 @@
     "damage_type": "slash"
   },
   "behavior": {
+    "mud_walker": true,
     "move_mult": 0.8,
     "alert_sfx": "undead_moan",
     "aggressive": true,

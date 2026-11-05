@@ -1,0 +1,39 @@
+{
+  "id": "skeleton_warrior",
+  "name_ko": "스켈레톤 전사의 정수",
+  "grade": 9,
+  "source_monster": "skeleton_warrior",
+  "family": "skeleton_warrior",
+  "rank": "normal",
+  "passive": {
+    "id": "skwar_bone_shield",
+    "name_ko": "뼈 방패",
+    "desc_ko": "방패로 받아 낸 일격이 덜 아프다.",
+    "modifiers": [
+      {
+        "target": "dmg_taken:blunt",
+        "percent": -0.15
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_deadman_shield_bash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_deadman_chop"
+    }
+  ],
+  "stats": {
+    "str": 4,
+    "p_res": 8
+  },
+  "resources": {
+    "hp": 6
+  },
+  "source": "placeholder",
+  "notes": "2층 망자의 땅. 임시값"
+}

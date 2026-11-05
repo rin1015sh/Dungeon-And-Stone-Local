@@ -136,6 +136,7 @@ func _run() -> void:
 			await _frames(4)
 			explore = _main.current_screen() as ExploreScreen
 			explore.dialog().clear()
+			print("[up] %s" % JsonUtil.get_str(explore.session.floor_def, "id"))
 			if _args.has("reveal"):
 				ExploreDebug.reveal(explore.session)
 				explore.session.refresh_view()

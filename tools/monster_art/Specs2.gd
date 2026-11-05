@@ -8,6 +8,25 @@ static func C(hex: String) -> Color:
 
 static func spec_of(id: String) -> Dictionary:
 	match id:
+		# ── 2층 망자의 땅(floor2.md §3 — 원작 묘사 없음: 이름 · 등급에서 모습을 정함) ──
+		"skeleton":  # 맨손에 녹슨 칼 하나 든 해골(궁수 · 메이지와 같은 뼈, 무장은 가볍게)
+			return {"skin": C("#d4cab0"), "eyes": C("#c8d8ff"), "glow": 0.5, "pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.11, "weight": 0.3, "tilt": 0.05},
+				"body": {"build": "bones"}, "head": {"type": "skull", "mouth": "grin"},
+				"kit": {"loin": C("#3a342a"), "belt": C("#2a2016"), "weapon": "sword", "weapon_c": C("#7a6e5e")}}
+		"skeleton_warrior":  # 둥근 나무 방패와 투구를 쓴 해골(앞줄)
+			return {"skin": C("#d0c6aa"), "eyes": C("#c8d8ff"), "glow": 0.5, "pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.115, "weight": -0.3},
+				"body": {"build": "bones"}, "head": {"type": "skull", "mouth": "grin", "helm": C("#5a5448"), "visor": false},
+				"kit": {"armor": C("#4e4a42"), "plates": ["shoulders"], "belt": C("#2a2016"), "loin": C("#3a342a"), "weapon": "sword", "weapon_c": C("#7a6e5e"), "shield": C("#5a4632")}}
+		"dullahan":  # 목 없는 검은 판금 기사 — 목 자리에 푸른 불씨만(머리를 아주 작게)
+			return {"height": 620, "skin": C("#2a2a30"), "eyes": C("#80c8ff"), "glow": 1.0,
+				"pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.135, "weight": 0.4, "tilt": -0.04, "head": 0.25},
+				"body": {"build": "normal", "bulk": 1.2, "hands": "fist"}, "head": {"type": "skull", "mouth": "shut", "size": 0.35},
+				"kit": {"armor": C("#33333b"), "plates": ["chest", "shoulders", "legs"], "boots": C("#1e1e24"), "cape": C("#1a1a22"), "weapon": "greatsword", "weapon_c": C("#6a6a74"), "belt": C("#1a1a1e")}}
+		"death_knight":  # 비석에서 일어난 기사 — 블라터와 같은 데스나이트, 빛바랜 회흑 갑주 · 푸른 넋빛
+			return {"height": 680, "skin": C("#3a3438"), "eyes": C("#7ab8ff"), "glow": 1.0, "horn": C("#16141a"), "blood": 0.15,
+				"pose": {"knee": 0.15, "arm_l": "hang", "arm_r": "rest", "sh": 0.145, "weight": 0.4},
+				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "helm": C("#2a262c"), "horns": true, "horn_len": 0.6},
+				"kit": {"armor": C("#2e2a30"), "boots": C("#18161a"), "cape": C("#1c2230"), "weapon": "greatsword", "weapon_c": C("#5a5e68")}}
 		"iron_lizardman":
 			return {"skin": C("#6a7a64"), "shade": C("#2a3a2e"), "mottle": C("#3a4a36"), "eyes": C("#e0c040"), "nail": C("#2a2a24"),
 				"pose": {"knee": 0.3, "hunch": 0.25, "arm_l": "hang", "arm_r": "rest", "sh": 0.125, "weight": 0.4},
