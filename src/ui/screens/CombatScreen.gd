@@ -291,8 +291,9 @@ func _handle_event(e: Dictionary) -> void:
 			if v != null:
 				v.act(battle.db, e.get("action", {}))
 		"damage":
-			if v != null:
+			if v != null and not bool(e.get("dot", false)):  # 출혈 등 지속 피해(행동하며 흘림)는 숫자만 — 방금 한 공격 몸짓을 피격으로 끊지 않는다
 				v.motion("damage" if bool(e.get("hit")) and int(e.get("lost", e.get("amount", 0))) > 0 else ("wait" if not bool(e.get("hit")) else ""))  # 탐험가: 맞으면 피격, 피하면 몸을 틀어 피함
+			if v != null:
 				if not bool(e.get("hit")):  # 회피·면역·막힘도 피해 숫자처럼 크게(색만 다르게)
 					v.float_text(Strings.t("combat.float_miss"), UiTheme.color("dmg_none"), true)
 				elif bool(e.get("immune", false)):

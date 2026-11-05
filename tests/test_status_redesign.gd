@@ -185,3 +185,22 @@ func test_battle_skips_unit_that_fell_while_awaiting_input() -> void:
 	assert_true(c.actor.dead)
 	var nxt := b.next_turn()
 	assert_true(nxt != c, "쓰러진 사람의 입력을 영영 기다리지 않는다")
+
+
+## 출혈로 흘린 피(행동·차례 시작)는 "dot" 피해 사건 — 화면이 피격 몸짓으로 방금 한 공격 몸짓을 끊지 않는다(사용자 2026-11-05 "적 공격할 때 피격 애니메이션").
+func test_bleed_damage_event_is_marked_dot() -> void:
+	var reg := ContentRegistries.new()
+	var b := Battle.new(db, reg.effects, reg.ai_conditions, Rng.new(1))
+	var me := b.add(_a(), Combatant.SIDE_PARTY)
+	b.add(_a({"agi": 1}), Combatant.SIDE_ENEMY)
+	b.start()
+	var seen: Array = []
+	var grab := func(e: Dictionary) -> void: seen.append(e)
+	b.event.connect(grab)
+	me.actor.statuses.apply("bleeding", 5.0)
+	var hp := me.actor.pool.get_current("hp")
+	me.actor.statuses.on_acted()
+	BattleRules.report_dot(b, me, hp)
+	var dots := seen.filter(func(e: Dictionary) -> bool: return str(e.get("type")) == "damage" and bool(e.get("dot", false)))
+	assert_eq(dots.size(), 1, "출혈 피해 사건에 dot 표시")
+	b.event.disconnect(grab)

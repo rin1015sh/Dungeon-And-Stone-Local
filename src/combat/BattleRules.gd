@@ -231,7 +231,7 @@ static func report_dot(b: Battle, c: Combatant, hp_before: float) -> void:
 				break
 	b.message.emit("combat.dot" if not names.is_empty() else "combat.dot_plain",
 		{"name": c.label(), "amount": lost, "list": ", ".join(names)}, "warn")
-	b.event.emit({"type": "damage", "unit": c, "hit": true, "amount": lost, "crit": false})
+	b.event.emit({"type": "damage", "unit": c, "hit": true, "amount": lost, "crit": false, "dot": true})  # dot: 화면은 숫자만(피격 몸짓이 공격 몸짓을 끊지 않게)
 
 
 static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
