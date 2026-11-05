@@ -316,11 +316,11 @@
           },
           {
             "tile": "f2d_post",
-            "count": 6
+            "count": 3
           },
           {
             "tile": "f2d_tomb",
-            "count": 5
+            "count": 2
           }
         ]
       },
@@ -361,11 +361,11 @@
           },
           {
             "tile": "f2d_tomb",
-            "count": 7
+            "count": 3
           },
           {
             "tile": "f2d_post",
-            "count": 4
+            "count": 2
           }
         ],
         "level": "low",
@@ -579,11 +579,11 @@
         "props": [
           {
             "tile": "f2d_tomb_g",
-            "count": 22
+            "count": 11
           },
           {
             "tile": "f2d_sack",
-            "count": 3
+            "count": 2
           },
           {
             "tile": "f2d_statue",
@@ -673,15 +673,15 @@
           },
           {
             "tile": "f2d_statue_c",
-            "count": 4
+            "count": 2
           },
           {
             "tile": "f2d_candles",
-            "count": 3
+            "count": 2
           },
           {
             "tile": "f2d_pew",
-            "count": 3
+            "count": 2
           }
         ]
       },
@@ -738,15 +738,15 @@
           },
           {
             "tile": "f2d_banner",
-            "count": 4
+            "count": 2
           },
           {
             "tile": "f2d_armor",
-            "count": 3
+            "count": 2
           },
           {
             "tile": "f2d_barricade",
-            "count": 3
+            "count": 2
           }
         ],
         "level": "low",
@@ -789,11 +789,11 @@
         "props": [
           {
             "tile": "f2d_armor",
-            "count": 4
+            "count": 2
           },
           {
             "tile": "f2d_banner",
-            "count": 3
+            "count": 2
           },
           {
             "tile": "f2d_barricade",
@@ -1015,97 +1015,97 @@
       {
         "zone": "f2d_marsh",
         "tile": "f2d_deadtree",
-        "count": 70
+        "count": 35
       },
       {
         "zone": "f2d_marsh",
         "tile": "f2d_stake",
-        "count": 30
+        "count": 15
       },
       {
         "zone": "f2d_ruins",
         "tile": "f2d_tomb_g",
-        "count": 110
+        "count": 55
       },
       {
         "zone": "f2d_ruins",
         "tile": "f2d_statue",
-        "count": 16
+        "count": 8
       },
       {
         "zone": "f2d_hard",
         "tile": "f2d_rock",
-        "count": 45
-      },
-      {
-        "zone": "f2d_marsh",
-        "tile": "f2d_tomb",
-        "count": 40
-      },
-      {
-        "zone": "f2d_marsh",
-        "tile": "f2d_post",
-        "count": 25
-      },
-      {
-        "zone": "f2d_marsh",
-        "tile": "f2d_cage",
-        "count": 6
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_banner",
-        "count": 20
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_armor",
-        "count": 14
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_barricade",
-        "count": 12
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_wagon",
-        "count": 6
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_sack",
-        "count": 18
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_lantern",
         "count": 22
       },
       {
         "zone": "f2d_marsh",
+        "tile": "f2d_tomb",
+        "count": 20
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_post",
+        "count": 12
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_cage",
+        "count": 3
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_banner",
+        "count": 10
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_armor",
+        "count": 7
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_barricade",
+        "count": 6
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_wagon",
+        "count": 3
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_sack",
+        "count": 9
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_lantern",
+        "count": 11
+      },
+      {
+        "zone": "f2d_marsh",
         "tile": "f2d_lantern_m",
-        "count": 16
+        "count": 8
       },
       {
         "zone": "f2d_hard",
         "tile": "f2d_lantern_h",
-        "count": 14
+        "count": 7
       },
       {
         "zone": "f2d_ruins",
         "tile": "f2d_deadtree_g",
-        "count": 30
+        "count": 15
       },
       {
         "zone": "f2d_ruins",
         "tile": "f2d_bush",
-        "count": 40
+        "count": 20
       },
       {
         "zone": "f2d_hard",
         "tile": "f2d_bush",
-        "count": 30
+        "count": 15
       }
     ],
     "buildings": [
@@ -1620,6 +1620,194 @@
           -10
         ]
       }
+    ],
+    "landmarks_under": {
+      "g": "f2d_grass",
+      "h": "f2d_hard",
+      "s": "f2d_bridge",
+      "m": "f2d_mud"
+    },
+    "landmarks": [
+      {
+        "node": "graveyard",
+        "at": [
+          -9,
+          10
+        ],
+        "kind": "mausoleum",
+        "foot": [
+          6,
+          3
+        ]
+      },
+      {
+        "node": "graveyard",
+        "at": [
+          9,
+          3
+        ],
+        "kind": "angel",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "chapel",
+        "at": [
+          17,
+          6
+        ],
+        "kind": "tower",
+        "foot": [
+          4,
+          3
+        ]
+      },
+      {
+        "node": "tomb_gate",
+        "at": [
+          -6,
+          -6
+        ],
+        "kind": "knight",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "tomb_gate",
+        "at": [
+          6,
+          -6
+        ],
+        "kind": "knight",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "ossuary",
+        "at": [
+          -6,
+          -5
+        ],
+        "kind": "angel",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "crossroads",
+        "at": [
+          1,
+          -11
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "dullahan_ruin",
+        "at": [
+          10,
+          -4
+        ],
+        "kind": "mausoleum",
+        "foot": [
+          6,
+          3
+        ]
+      },
+      {
+        "node": "ferry",
+        "at": [
+          8,
+          6
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "levee_bend",
+        "at": [
+          0,
+          -5
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "summit",
+        "at": [
+          -6,
+          -5
+        ],
+        "kind": "knight",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "summit",
+        "at": [
+          6,
+          -5
+        ],
+        "kind": "knight",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "summit",
+        "at": [
+          0,
+          -11
+        ],
+        "kind": "angel",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "pass",
+        "at": [
+          5,
+          1
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ]
+      },
+      {
+        "node": "corridor",
+        "at": [
+          0,
+          -4
+        ],
+        "kind": "tower",
+        "foot": [
+          4,
+          3
+        ]
+      }
     ]
   },
   "regions": [
@@ -2013,7 +2201,7 @@
       {
         "zone": "f2d_ruins",
         "event": "dig_grave",
-        "count": 14
+        "count": 10
       }
     ]
   },

@@ -545,6 +545,22 @@
     "mid": "#36322a",
     "deep": "#0c0b09",
     "strata": 18
+   },
+   "bigs": {
+    "script": "res://tools/floor_art/rift/f2d_big.gd",
+    "cell": [
+     8,
+     10
+    ],
+    "cols": 6,
+    "order": [
+     "mausoleum",
+     "angel",
+     "tower",
+     "tree",
+     "knight",
+     "blank"
+    ]
    }
   }
  }

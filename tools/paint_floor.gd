@@ -127,6 +127,21 @@ func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, sca
 				img.blit_rect(p.to_image(), Rect2i(0, 0, cw, ch), Vector2i((k % cols) * cw, (k / cols) * ch))
 			img.save_webp(dir + "/stand.webp", false)
 			print("그림: %s/stand.webp %dx%d (소품 %d)" % [dir, img.get_width(), img.get_height(), stands.size()])
+		if (part_only.is_empty() or part_only == "big") and pd.has("bigs"):  # 큰 구조물 시트(FL16 — places.<장소>.bigs {script, cell [칸, 칸], cols, order})
+			var bg: Dictionary = pd["bigs"]
+			var bmod := load(str(bg["script"])) as GDScript
+			var bc: Array = bg["cell"]
+			var bw := int(bc[0]) * cell
+			var bh := int(bc[1]) * cell
+			var bcols := int(bg["cols"])
+			var order: Array = bg["order"]
+			var bimg := Image.create_empty(bcols * bw, ceili(order.size() / float(bcols)) * bh, false, Image.FORMAT_RGBA8)
+			for k in order.size():
+				var bp: Paint = bmod.call("paint", str(order[k]), bw, bh, 8000 + k * 37)
+				Ink.grade(bp, 0.18, 1.08, Color("#1a1412"), Color("#e0d2b0"), 0.12)
+				bimg.blit_rect(bp.to_image(), Rect2i(0, 0, bw, bh), Vector2i((k % bcols) * bw, (k / bcols) * bh))
+			bimg.save_webp(dir + "/big.webp", false)
+			print("그림: %s/big.webp %dx%d (큰 구조물 %d)" % [dir, bimg.get_width(), bimg.get_height(), order.size()])
 		if (part_only.is_empty() or part_only == "cliff") and pd.has("cliff"):
 			var cs: Array = spec["cliff_size"]
 			var cp: Paint = RiftCliff.paint(int(cs[0]), int(cs[1]), 9000, pd["cliff"])

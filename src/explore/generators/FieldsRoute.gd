@@ -70,6 +70,7 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 	FieldsRouteBuild.ruins(map, rng, g, walk)
 	FieldsRouteBuild.levels(map, g, ramps)
 	_tide_marks(map, g, nodes, radii, edge_cells)
+	FieldsRouteBuild.landmarks(map, g, nodes)  # 큰 구조물(소품보다 먼저 — 소품이 그 둘레를 피한다)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var bt := JsonUtil.get_str(nd, "beacon")
 		if not bt.is_empty():

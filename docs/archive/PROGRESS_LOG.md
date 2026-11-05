@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **망자의 땅 큰 구조물 (2026-11-05, FL16)**: `tools/floor_art/rift/f2d_big.gd`(영묘 · 천사상 · 종탑 · 고목 · 기사상 + 빈 칸), paint_floor `bigs`(→ big.webp 3072×640), 타일 24개, `FieldsRouteBuild.landmarks`(발자리 + 둘레 검사, 4칸 안에서 자리 찾기), FieldsRoute가 소품보다 먼저 세운다. 작은 소품 count 절반. 남은 것: 큰 그림 뒤(북쪽)를 걷는 캐릭터가 그림에 가린다(실루엣 없음), 그림이 납작한 편(손그림 질감 더 — 그림 작업이면 docs/ART.md 기준으로 다듬기).
+
 - **아귀 입 함정 · 목구멍 방 (2026-11-05, FL15)**: `src/explore/MawTraps.gd`(실제 초 — tick_realtime, 잡기 · 동전 `toss` · 삼킴 · 돌아올 자리), `src/explore/view/MawView.gd`(FloorView — 층에 maws가 있으면 start 전에 만든다), `FieldsRouteBuild.maws`, crypts `lit`, 새 타일 `f2d_flesh · fleshwall · sinew`(그림 flesh · fleshwall · 힘줄 — f2d.gd), 요소 `throat_wall`, 문구 `explore.maw_*` · `field.throat_*`. 흩뿌림(scatter)은 아귀 입 둘레 · 어둠 · 소품 밑 바닥이 다른 칸을 피한다. 장식 테두리 world_px 0.6. 테스트 `test_maws_open_catch_and_swallow`. 남은 것: 잡힐 때 입이 닫히는 순간 연출(지금은 문구 + 동전), 소리 파일.
 
 - **망자의 땅 변하는 지형 (2026-11-05, 사용자 "시작해" — floor2.md §14 3·4단계, FL14)**: `src/explore/FieldTerrain.gd`(물때 · 밤 안개 · 무른 땅 · 떨어짐 · 넋불 · 장례 행렬 — ExploreSession start · pass_time · enter_cell · refresh_view에서 부른다), `FieldsRoute._tide_marks`, `FieldsRouteBuild.crumble · marks · crypts`(fields.gd가 닿지 않는 칸을 메운 뒤 판다), RouteSpots `mark`, 요소 `goto`. 새 타일 flood · crack · crack_g · hole · wisp · sarcophagus · crypt_stairs, 그림 flood · crackstone · crackearth · pit · 넋불, 새 요소 crypt_stairs · crypt_exit · sarcophagus · drowned_chest, 소리 키 crumble(파일 없음). 테스트 셋(물때 · 밤 안개 · 무른 땅 · 떨어짐 · 묘실 · 행렬). 남은 것: 넋불 빛은 정적 광원이라 옮겨도 빛 자리가 따라가지 않는다(그림의 빛 무리만), 물때 바뀔 때 물가 절벽 모양은 다시 만들지 않는다(낮은 층끼리라 괜찮다), 높은 곳 시야 덤, 숨은 샛길 판정.

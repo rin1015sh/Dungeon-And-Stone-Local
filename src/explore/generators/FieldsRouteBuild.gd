@@ -354,3 +354,49 @@ static func _open9(map: FloorMap, q: Vector2i) -> bool:  # 입 그림 폭(가로
 			if not map.in_bounds(p) or not map.is_walkable(p) or map.def_at(p).ramp:
 				return false
 	return true
+
+
+## 큰 구조물(FL16 — 사용자 "커다란 구조물 · 토핑 뿌린 느낌"): gen "landmarks": [{"node", "at": [dx, dy](발 줄 가운데), "kind", "foot": [폭, 깊이]}],
+## "landmarks_under": {접미: 바닥 타일}. 발 칸(맨 아래 줄 가운데)에 큰 그림 타일 f2d_big_<kind>_<접미>, 발자리 나머지는 f2d_block_<접미>(그림 없음).
+## 자리는 발자리와 둘레 한 칸이 모두 걸을 수 있는 칸(비탈 아님)이어야 — 아니면 4칸 안에서 가장 가까운 그런 자리(길을 막지 않는다).
+## 밑 바닥 = 발 칸 바닥과 같은 그림(FieldsRoute.under_ok)인 접미, 없으면 건너뛴다.
+static func landmarks(map: FloorMap, g: Dictionary, nodes: Dictionary) -> void:
+	var unders := JsonUtil.get_dict(g, "landmarks_under")
+	for d: Dictionary in JsonUtil.get_array(g, "landmarks"):
+		var n: Vector2i = nodes.get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))
+		if n.x < 0:
+			continue
+		var at := JsonUtil.get_array(d, "at")
+		var ft := JsonUtil.get_array(d, "foot")
+		var fw := int(ft[0])
+		var fd := int(ft[1])
+		var c0 := n + Vector2i(int(at[0]), int(at[1]))
+		var spot := Vector2i(-1, -1)
+		for r in 5:
+			for dy in range(-r, r + 1):
+				for dx in range(-r, r + 1):
+					if spot.x < 0 and maxi(absi(dx), absi(dy)) == r and _foot_ok(map, c0 + Vector2i(dx, dy), fw, fd):
+						spot = c0 + Vector2i(dx, dy)
+			if spot.x >= 0:
+				break
+		if spot.x < 0:
+			continue
+		var suffix := ""
+		for k: String in unders:
+			if suffix.is_empty() and FieldsRoute.under_ok(map, spot, str(unders[k])):
+				suffix = k
+		if suffix.is_empty():
+			continue
+		for y in range(spot.y - fd + 1, spot.y + 1):
+			for x in range(spot.x - fw / 2, spot.x - fw / 2 + fw):
+				map.set_tile(Vector2i(x, y), "f2d_block_" + suffix)
+		map.set_tile(spot, "f2d_big_%s_%s" % [JsonUtil.get_str(d, "kind"), suffix])
+
+
+static func _foot_ok(map: FloorMap, c: Vector2i, fw: int, fd: int) -> bool:
+	for y in range(c.y - fd, c.y + 2):
+		for x in range(c.x - fw / 2 - 1, c.x - fw / 2 + fw + 1):
+			var q := Vector2i(x, y)
+			if not map.in_bounds(q) or not map.is_walkable(q) or map.def_at(q).ramp:
+				return false
+	return true

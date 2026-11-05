@@ -96,6 +96,8 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 		for td: Variant in JsonUtil.get_array(nd if nd is Dictionary else {}, "terraces"):
 			if (td as Dictionary).has("tile"):
 				tiles.append(JsonUtil.get_str(td, "tile"))
+	for u: Variant in JsonUtil.get_dict(g, "landmarks_under").values():
+		tiles.append(str(u))
 	for b: Variant in JsonUtil.get_array(g, "buildings"):
 		var bd: Dictionary = b if b is Dictionary else {}
 		if not ids.has(JsonUtil.get_str(bd, "node")) or JsonUtil.get_array(bd, "at").size() != 2 or JsonUtil.get_array(bd, "size").size() != 2:
