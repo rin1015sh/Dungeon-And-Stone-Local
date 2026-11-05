@@ -6,7 +6,7 @@
   "arrival": "floor2_south",
   "generator": "fields",
   "close_hours": 240,
-  "visibility_cap_m": 10.0,
+  "visibility_cap_m": 9.5,
   "visibility_source": "placeholder",
   "ambient_light_m": 7.0,
   "ambient_source": "placeholder",
