@@ -38,6 +38,7 @@ var is_void: bool = false       ## 낭떠러지·구덩이(균열 — "void": tr
 var is_rise: bool = false       ## 솟은 외곽(void + "rise": true): 낭떠러지 대신 위로 솟은 벽·절벽 면과 그 너머 풍경(Abyss rise — 균열 지도 바깥 둘레)
 var void_edge: String = ""      ## 허공에 닿는 가장자리(art.void_edge): "" = 들쭉날쭉 깎인 땅, "beam" = 나무 발판(곧은 들보 면 + 난간)
 var art_doors: PackedStringArray = PackedStringArray()  ## 이 벽에 뚫린 문의 모양 후보(art.doors — DoorArt: square·round·pointed·gate·rough·cave·timber)
+var art_top_tex: bool = false  ## 모양 벽(art.shape)의 윗면을 검게 대신 아틀라스 윗줄 그림으로(art.top_tex — 망자의 땅 덤불 둔덕, FL11)
 var art_directional: bool = false  ## 한 방향 무늬(art.directional — 철로): 세로로 더 길게 이어진 칸은 그림을 90° 돌린다(FloorChunk)
 var sunk: bool = false          ## 땅보다 낮은 물(art.sunk — 핏물 해자): 그 위를 건너는 나무 발판(void_edge "beam")은 낭떠러지 위처럼 들보 면·그림자·받침·난간(VoidChunk)
 var move_mult: float = 1.0       ## 이 칸에서 걷는 빠르기 배율(진창 0.7 — 망자의 땅, floor2.md §3). 몬스터 behavior.mud_walker면 무시
@@ -73,6 +74,7 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.art_variants = JsonUtil.get_int(art, "variants", 0)
 	t.art_salt = t.id.hash()
 	t.art_shape = JsonUtil.get_str(art, "shape")
+	t.art_top_tex = JsonUtil.get_bool(art, "top_tex")
 	t.void_edge = JsonUtil.get_str(art, "void_edge")
 	t.sunk = JsonUtil.get_bool(art, "sunk")
 	t.art_directional = JsonUtil.get_bool(art, "directional")

@@ -139,6 +139,10 @@ func _draw_shape(cv: CanvasItem, t: int, piece: int, at: Vector2) -> void:
 			continue
 		var poly: PackedVector2Array = (top["poly"] as PackedVector2Array).duplicate()
 		var up := Vector2(0, float(top["h"])) + lift
+		var tdef: TileDef = map.defs[int(top["def"])] if top.has("def") else null
+		if tdef != null and tdef.art_top_tex and view.tile_tex[tdef.index] != null:
+			_draw_top_tex(cv, poly, up, int(top["x"]), tdef, t)
+			continue
 		for k in poly.size():
 			poly[k] -= up
 		cv.draw_colored_polygon(poly, dark)
@@ -187,6 +191,23 @@ func _face_light(p: Vector2, def: TileDef) -> Color:
 	var c := view.vertex_mul(v.x, v.y, def.color_face)
 	var k := view.face_shade
 	return Color(c.r * k, c.g * k, c.b * k, c.a)
+
+
+## 모양 벽 윗면을 그림으로(art.top_tex): 바닥 평면 poly의 칸 안 자리 → 아틀라스 윗줄(변형 칸) UV, 빛은 꼭짓점 배율.
+func _draw_top_tex(cv: CanvasItem, poly: PackedVector2Array, up: Vector2, x: int, def: TileDef, t: int) -> void:
+	var tex := view.tile_tex[def.index]
+	var n := def.art_variants
+	var split := clampf((float(tex.get_width()) / n) / tex.get_height(), 0.0, 1.0)
+	var col := float(FloorArtLayer.variant(x, row, n, def.art_salt))
+	var pts := PackedVector2Array()
+	var uvs := PackedVector2Array()
+	var cols := PackedColorArray()
+	var map := view.map
+	for q in poly:
+		pts.append(q - up)
+		uvs.append(Vector2((col + clampf(q.x / t - x, 0.02, 0.98)) / n, clampf(q.y / t - row, 0.02, 0.98) * split))
+		cols.append(view.vertex_mul(clampi(roundi(q.x / t), 0, map.width), clampi(roundi(q.y / t), 0, map.height), def.color_top))
+	cv.draw_polygon(pts, cols, uvs, tex)
 
 
 ## 재질 아틀라스로 그린 벽: 윗면 = 아틀라스 윗줄의 변형, 앞면 = 아랫줄의 변형(FloorArtLayer — 줄을 따라 이웃이 늘 다름).

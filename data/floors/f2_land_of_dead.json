@@ -27,7 +27,7 @@
       "keep_hue": true
     },
     "post": {
-      "saturation": 0.85,
+      "saturation": 0.75,
       "vignette_strength": 0.4,
       "vignette_radius": 0.5,
       "grain_strength": 0.05
@@ -251,9 +251,9 @@
     "macro": {
       "_comment": "거시 색조: 구역마다 살짝 다른 잿빛(늪 = 차갑게, 굳은 땅 = 바랜 흙빛) + 저주파 밝기 얼룩(넓은 바닥이 한 장 무늬로 보이지 않게). [창작] 임시값",
       "zones": {
-        "f2d_marsh": "#d2dad6",
-        "f2d_ruins": "#e2e6d2",
-        "f2d_hard": "#eee2d0"
+        "f2d_marsh": "#d8dcd8",
+        "f2d_ruins": "#e4e2d8",
+        "f2d_hard": "#ece4d6"
       },
       "noise": {
         "freq": 0.06,
@@ -961,6 +961,16 @@
         "zone": "f2d_ruins",
         "tile": "f2d_deadtree_g",
         "count": 30
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_bush",
+        "count": 40
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_bush",
+        "count": 30
       }
     ],
     "buildings": [
@@ -1151,72 +1161,20 @@
       {
         "node": "graveyard",
         "tile": "f2d_fence",
-        "pad": 3
+        "pad": 3,
+        "along": "f2d_thicket"
       },
       {
         "node": "tomb_gate",
         "tile": "f2d_fence",
-        "pad": 3
+        "pad": 3,
+        "along": "f2d_thicket"
       },
       {
         "node": "ossuary",
         "tile": "f2d_fence",
-        "pad": 3
-      },
-      {
-        "node": "corridor",
-        "tile": "f2d_fence",
-        "pad": 3
-      }
-    ],
-    "outer_props": [
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_bush",
-        "count": 160,
-        "near": 7
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_tomb_o",
-        "count": 150,
-        "near": 8
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_deadtree_o",
-        "count": 90,
-        "near": 8
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_statue_o",
-        "count": 20,
-        "near": 6
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_bush",
-        "count": 140,
-        "near": 7
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_deadtree_o",
-        "count": 110,
-        "near": 8
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_tomb_o",
-        "count": 40,
-        "near": 6
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_statue_o",
-        "count": 10,
-        "near": 6
+        "pad": 3,
+        "along": "f2d_thicket"
       }
     ]
   },

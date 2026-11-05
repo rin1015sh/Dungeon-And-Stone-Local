@@ -28,7 +28,7 @@ const PIECE_FILLET := 2  ## 위쪽 오목 메움(사선 가운데 = 칸 위 + r/
 
 const STEPS := 4
 
-## build 결과: tops = [{x, poly(바닥 평면 월드 좌표), h}] · faces = [{x(탐험 확인 칸), a, b(바닥 평면 선분, 왼→오), def, v(변형), u0, u1, h}]
+## build 결과: tops = [{x, poly(바닥 평면 월드 좌표), h, def(있으면 — 윗면 그림 art.top_tex)}] · faces = [{x(탐험 확인 칸), a, b(바닥 평면 선분, 왼→오), def, v(변형), u0, u1, h}]
 var tops: Array[Dictionary] = []
 var floors: Array[Dictionary] = []  ## [{x, poly, def(옆 바닥 — 없으면 층 기본 바닥)}] 벽 칸의 깎은 아래쪽 모서리 삼각형 — 바닥 그림을 채운다(바닥은 바닥 칸에만 그려지므로)
 var _bulge: float = 0.0
@@ -93,8 +93,8 @@ func _wall_cell(map: FloorMap, p: Vector2i, t: float, r: float, def: TileDef, sm
 	_corner(poly, o, p.x, cut[Vector2i(-1, 1)], Vector2(r, t), Vector2(0, t - r), Vector2(0, t), bulge, _floor_near(map, p, Vector2i(-1, 1)) if own else -1)
 	for i in range(from_floor, floors.size()):
 		floors[i]["piece"] = piece
-	if n or _open_behind(map, p, t, h):
-		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece})
+	if n or _open_behind(map, p, t, h) or def.art_top_tex:  # 윗면 그림 벽(작은 석조 건물)은 속 칸까지 — 가운데가 검게 뚫려 보이지 않게
+		tops.append({"x": p.x, "poly": poly, "h": h, "piece": piece, "def": def.index})
 		if not so and h > t:  # 남쪽도 벽이라 앞면이 없다: 솟은 윗면 아래(몸통 자리)를 어둡게 덮는다 — 안 덮으면 벽 뒤 바닥이 띠로 비쳤다(사용자 2026-11-04 "벽 밑 잔상")
 			var y1 := (p.y + 1) * t
 			tops.append({"x": p.x, "poly": PackedVector2Array([Vector2(o.x, y1), Vector2(o.x + t, y1), Vector2(o.x + t, y1 + h - t), Vector2(o.x, y1 + h - t)]), "h": h, "piece": piece})
@@ -153,7 +153,7 @@ func _fillets(map: FloorMap, p: Vector2i, t: float, r: float, smooth: PackedByte
 		poly.append_array(arc)
 		var h: int = face_h.call(wdef)
 		if c.y > 0:
-			tops.append({"x": p.x, "poly": poly, "h": h, "fillet": true})
+			tops.append({"x": p.x, "poly": poly, "h": h, "fillet": true, "def": wdef.index})
 			continue
 		# 위쪽 메움: 원호가 남쪽을 향한다 — 왼→오 순서로 앞면.
 		var pts := arc.duplicate()

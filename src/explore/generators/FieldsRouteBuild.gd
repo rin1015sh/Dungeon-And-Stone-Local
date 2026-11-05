@@ -4,8 +4,9 @@ extends RefCounted
 ##   gen "buildings": [{"node", "at": [dx, dy](구간 가운데에서 왼쪽 위 모서리), "size": [w, h], "door": "n"|"s"|"e"|"w"|""(없으면 속이 찬 석조물),
 ##                     "wall", "floor", "path"(문에서 길까지 1칸 샛길 바닥 — 없으면 floor)}]
 ##     벽 테두리 + 안 바닥(걸을 수 있음), 문 칸에서 바깥으로 곧게 걸을 수 있는 칸에 닿을 때까지 샛길을 판다(최대 24칸 — 숨은 방은 덤불 너머).
-##   gen "ruins": [{"zone", "tile", "count"}] — 걸을 수 있는 칸 위 무너진 벽 조각(1 · 2 · 3칸 가로 · 세로)과 기둥(둘레가 모두 걸을 수 있을 때만 — 길을 막지 않는다)
-##   gen "fence": [{"node", "tile", "pad"}] — 그 구간 반지름 + pad 안, 걸을 수 있는 칸과 상하좌우로 맞닿은 메움 칸에 울타리(길이 지나는 곳은 걸을 수 있어 비워진다 = 문)
+##   gen "ruins": [{"zone", "tile", "count"}] — 걸을 수 있는 칸 위 무너진 벽 조각(2~4칸 가로)(둘레가 모두 걸을 수 있을 때만 — 길을 막지 않는다)
+##   gen "fence": [{"node", "tile", "pad", "along"}] — 그 구간 반지름 + pad 안, 소품 밑 바닥과 같은 칸 중 상하좌우로 along 타일(둔덕)과 맞닿은 칸
+##     (along이 없으면 걸을 수 있는 칸과 맞닿은 칸)에 울타리 — 둔덕 앞 가장자리를 두른다(길이 둔덕을 뚫고 나가는 곳은 비어 문이 된다)
 ##   gen "outer_props": [{"zone", "tile", "count", "near"}] — 걸을 수 있는 칸에서 near칸 안의 메움 칸(소품 밑 바닥과 같은 칸)에 서 있는 소품(길 밖 풍경)
 ## walk: 0 = 메움(아직 안 판 칸), 1 = 판 칸, 2 = 벽(메움으로 덮지 않는다).
 
@@ -60,8 +61,8 @@ static func ruins(map: FloorMap, rng: Rng, g: Dictionary, walk: PackedByteArray)
 				var p := Vector2i(rng.randi_range(4, map.width - 5), rng.randi_range(4, map.height - 5))
 				if map.zones[map.idx(p)] != zi:
 					continue
-				var len := rng.randi_range(1, 3)
-				var step := Vector2i.RIGHT if rng.randf() < 0.5 else Vector2i.DOWN
+				var len := rng.randi_range(2, 4)
+				var step := Vector2i.RIGHT  # 가로 벽 조각만(세로 1칸 폭은 둥근 윤곽에서 지그재그 기둥으로 보였다 — FL11)
 				var cells: Array[Vector2i] = []
 				for k in len:
 					cells.append(p + step * k)
@@ -88,14 +89,15 @@ static func fences(map: FloorMap, g: Dictionary, nodes: Dictionary, radii: Dicti
 		var r := float(radii[id]) + JsonUtil.get_float(f, "pad", 3.0)
 		var tile := JsonUtil.get_str(f, "tile")
 		var under := map.defs[map.index_of(tile)].stand_under
+		var along := JsonUtil.get_str(f, "along")
 		var ri := ceili(r)
 		for y in range(c.y - ri, c.y + ri + 1):
 			for x in range(c.x - ri, c.x + ri + 1):
 				var q := Vector2i(x, y)
-				if not _ok(map, q) or Vector2(q - c).length() > r or map.is_walkable(q) or map.tile_id_at(q) != under:
+				if not _ok(map, q) or Vector2(q - c).length() > r or map.tile_id_at(q) != under:
 					continue
 				for d in FloorMap.DIRS4:
-					if map.is_walkable(q + d):
+					if along.is_empty() and map.is_walkable(q + d) or not along.is_empty() and map.tile_id_at(q + d) == along:
 						map.set_tile(q, tile)
 						break
 

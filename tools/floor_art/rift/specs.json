@@ -478,11 +478,6 @@
      "dim": 0.45
     },
     {
-     "tile": "f2d_thicket",
-     "style": "thicket",
-     "dim": 0.55
-    },
-    {
      "tile": "f2d_bridge",
      "style": "flagstone"
     }
@@ -497,6 +492,11 @@
      "tile": "f2d_crypt",
      "style": "cryptstone",
      "face_px": 48
+    },
+    {
+     "tile": "f2d_thicket",
+     "style": "bank",
+     "face_px": 40
     }
    ],
    "stands": [

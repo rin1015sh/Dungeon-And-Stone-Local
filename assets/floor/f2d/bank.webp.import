@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dok2dh3iudrw4"
-path="res://.godot/imported/thicket.webp-4eb8644f26e62a87e796166ce521f109.ctex"
+uid="uid://bt330r5r5adax"
+path="res://.godot/imported/bank.webp-a809c185ff6e61938871e3860524c826.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2d/thicket.webp"
-dest_files=["res://.godot/imported/thicket.webp-4eb8644f26e62a87e796166ce521f109.ctex"]
+source_file="res://assets/floor/f2d/bank.webp"
+dest_files=["res://.godot/imported/bank.webp-a809c185ff6e61938871e3860524c826.ctex"]
 
 [params]
 

@@ -11,12 +11,13 @@ const Cave := preload("res://tools/floor_art/Cave.gd")
 const Decals := preload("res://tools/floor_art/Decals.gd")
 const Kit := preload("res://tools/floor_art/rift/Kit.gd")
 const BF := preload("res://tools/floor_art/rift/bf.gd")
+const Common := preload("res://tools/floor_art/rift/Common.gd")
 
 const WATER_DEEP := Color("#0a0e0e")
 const GLOSS := Color("#9ab0b0")
-const MOSS := Color("#4e5a2c")
-const MOSS_DARK := Color("#26301a")
-const GRASS := Color("#6a7038")
+const MOSS := Color("#5a5a3c")       # 사용자 2026-11-05 "초록은 에바" — 바랜 올리브 · 잿빛(FL11)
+const MOSS_DARK := Color("#2e2e22")
+const GRASS := Color("#6e6a4a")
 const DRY := Color("#8a7a4a")
 const LEAF := Color("#7a3a1e")
 const IRON := Color("#24221f")
@@ -34,6 +35,11 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 			_flags(p, col, s)
 		"thicket":
 			_thicket(p, col, s)
+		"bank":  # 길 밖 흙 둔덕(벽 — 둥근 윤곽 · 윗면 = 덤불, 앞면 = 흙 벼랑, 1층 수정동굴처럼 입체감, FL11)
+			if part == "face":
+				_bank_face(p, col, s)
+			else:
+				_thicket(p, col, s)
 		"cryptstone":
 			BF.base(p, "masonry", part, col, s)
 			_moss_over(p, s, 0.5 if part == "face" else 0.35)
@@ -43,7 +49,7 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 
 static func detail(p: Paint, style: String, part: String, v: int, col: Color) -> void:
 	match style:
-		"blackwater", "thicket":
+		"blackwater", "thicket", "bank":
 			return  # 길 밖은 맨바탕(칸마다 무늬가 찍히면 벽지처럼 보인다)
 		"graveearth", "dryearth", "flagstone":
 			_ground_detail(p, style, v)
@@ -157,6 +163,48 @@ static func _thicket(p: Paint, col: Color, s: int) -> void:
 			if dry[i] > 0.6:
 				c = c.lerp(DRY.darkened(0.4), (dry[i] - 0.6) * 1.2 * fine[i])
 			p.blend(x, y, c, 1.0)
+
+
+## 흙 둔덕 앞면: 위 턱 = 덤불 · 마른 풀이 늘어진 가장자리, 몸 = 층진 흙(빛 받은 기복 · 박힌 돌 · 뿌리), 아래로 갈수록 어둡고,
+## 바닥과 만나는 밑동은 들쭉날쭉 투명(Common.skirt — 바닥 위로 내려온다).
+static func _bank_face(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var main := float(h - Common.skirt)
+	var jag := Seam.field(w, 8, s + 9, 0.1, 3)
+	var lip := Seam.field(w, 8, s + 5, 0.12, 2)
+	var hf := Seam.field(w, h, s, 0.07, 4)
+	var strata := Seam.field(w, h, 611, 0.03, 2)
+	var stones := Seam.field(w, h, s + 3, 0.12, 1, true)
+	var fine := Seam.field(w, h, s + 6, 0.35, 1)
+	var u := w / 64.0
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var foot := main + (0.25 + jag[x] * 0.75) * Common.skirt
+			if y >= foot:
+				continue
+			var ly := (4.0 + lip[x] * 8.0) * u
+			var r := Seam.relief(hf, w, h, x, y, 6.0)
+			var t := 0.5 + r * 0.8 + (hf[i] - 0.5) * 0.3 + (fine[i] - 0.5) * 0.12
+			t += sin((y + strata[i] * 18.0 * u) / (7.0 * u)) * 0.06  # 흙 층
+			t -= smoothstep(main * 0.35, foot, float(y)) * 0.35  # 아래로 어둡게(그늘)
+			var c := col.darkened(0.55).lerp(col.lightened(0.3), clampf(t, 0.0, 1.0))
+			if stones[i] < 0.12:  # 박힌 돌
+				c = Color("#6a6658").darkened(0.2 - r * 0.3).lerp(Ink.INK, smoothstep(0.08, 0.12, stones[i]) * 0.6)
+			if y < ly:  # 위 턱: 늘어진 덤불 · 마른 풀
+				c = Color("#2a2a22").lerp(DRY.darkened(0.35), fine[i] * 0.6)
+			elif y < ly + 1.4 * u:
+				c = c.lerp(Ink.INK, 0.6)
+			elif y < ly + 8.0 * u:
+				c = c.darkened(0.35 * (1.0 - (y - ly) / (8.0 * u)))  # 턱 밑 그늘
+			if foot - y < 1.6 * u:
+				c = c.lerp(Ink.INK, 0.5)
+			p.blend(x, y, c, 1.0)
+	for k in 7:  # 뿌리 · 마른 풀 줄기가 턱에서 늘어진다
+		var x0 := Paint.hash01(k, s % 97, 7) * w
+		var y0 := (5.0 + lip[int(x0) % w] * 8.0) * u
+		Ink.line(p, Vector2(x0, y0), Vector2(x0 + (Paint.hash01(k, 2, 7) - 0.5) * 6 * u, y0 + (6 + Paint.hash01(k, 3, 7) * 14) * u), 0.9 * u, Color("#1e1a14"), 0.7, 0.8)
 
 
 ## 벽 위 이끼(아래쪽에 더 많이).
