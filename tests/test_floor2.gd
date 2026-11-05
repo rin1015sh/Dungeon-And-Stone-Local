@@ -32,9 +32,9 @@ func test_fields_route_map() -> void:
 				queue.append(p + d)
 	var walk := 0
 	for i in map.tiles.size():
-		if map.defs[map.tiles[i]].walkable:
+		if map.defs[map.tiles[i]].walkable and map.dark[i] == 0:
 			walk += 1
-	assert_eq(seen.size(), walk, "걸을 수 있는 칸은 모두 시작에서 닿는다")
+	assert_eq(seen.size(), walk, "걸을 수 있는 칸은 모두 시작에서 닿는다(지하 묘실 — 어둠 — 은 계단으로만)")
 	for id: String in nodes:
 		assert_true(seen.has(nodes[id]) or not map.is_walkable(nodes[id]), "구간 %s까지 걸어 닿는다" % id)
 	assert_true(seen.size() < map.width * map.height / 4, "열린 들판이 아니라 길(걸을 수 있는 칸이 지도의 4분의 1 미만): %d" % seen.size())
@@ -211,3 +211,59 @@ func test_explore_finds_dig_epitaph_tomb_and_tower() -> void:
 	s.map.explored[s.map.idx(far)] = 0
 	FieldFeatureAct.run(s, tower, climb)
 	assert_eq(s.map.explored[s.map.idx(far)], 1, "망루에 오르면 둘레 지도가 밝혀진다")
+
+
+
+func test_tide_floods_mire_and_cuts_isle() -> void:
+	var s := _f2_session(4, false)
+	var nodes: Dictionary = s.map.anchors["nodes"]
+	var tide: Dictionary = s.map.anchors["tide"]
+	var isle := Vector2i(-1, -1)
+	var mire := Vector2i(-1, -1)
+	for q: Vector2i in tide:
+		if str(tide[q]) == "deep" and isle.x < 0 and Vector2(q - (nodes["bell_isle"] as Vector2i)).length() < 4.0:
+			isle = q
+		if str(tide[q]) == "flood" and mire.x < 0 and Vector2(q - (nodes["mire"] as Vector2i)).length() < 4.0:
+			mire = q
+	assert_true(isle.x >= 0 and mire.x >= 0, "종탑 섬 · 진창에 물때 칸")
+	assert_true(s.map.is_walkable(isle), "첫날은 썰물 — 섬까지 걷는다")
+	s.pass_time(24.0)
+	assert_false(s.map.is_walkable(isle), "밀물 — 섬 갯길이 깊은 물에 잠긴다")
+	assert_eq(s.map.tile_id_at(mire), "f2d_flood", "밀물 — 진창은 얕은 물(걸을 수 있고 느리다)")
+	s.pass_time(24.0)
+	assert_true(s.map.is_walkable(isle), "다시 썰물")
+
+
+func test_night_fog_crumble_drop_and_crypt() -> void:
+	var s := _f2_session(4, false)
+	s.clock.total_hours = 22.0
+	var nodes: Dictionary = s.map.anchors["nodes"]
+	s.relocate(nodes["chapel"] + Vector2i(0, 6))
+	assert_true(s.vision_m <= 3.51, "밤 안개 — 늪 · 잔해에서 시야가 줄어든다: %.1f" % s.vision_m)
+	var cr: Dictionary = s.map.anchors["crumble"]
+	var c: Vector2i = cr.keys()[0]
+	s.relocate(c)
+	var next := c + Vector2i.DOWN if s.map.is_walkable(c + Vector2i.DOWN) else c + Vector2i.UP
+	s.enter_cell(next)
+	assert_eq(s.map.tile_id_at(c), "f2d_hole", "무른 땅은 지나가면 꺼진다")
+	var drops: Dictionary = s.map.anchors["drops"]
+	var d: Vector2i = drops.keys()[0]
+	s.relocate(d + Vector2i.LEFT)
+	s.enter_cell(d)
+	assert_true(s.map.is_dark(s.pos), "꺼진 땅으로 지하 묘실에 떨어진다")
+	var up: Dictionary = s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "crypt_exit")[0]
+	FieldFeatureAct.run(s, up, JsonUtil.get_array(up["def"], "actions")[0])
+	assert_false(s.map.is_dark(s.pos), "계단으로 납골당 마당에 나온다")
+	assert_true(s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "sarcophagus").size() >= 3, "묘실 석관")
+
+
+func test_procession_walks_at_night() -> void:
+	var s := _f2_session(4, true)
+	assert_true(s.terrain._procession != null and s.monsters.groups.has(s.terrain._procession), "원정은 자정에 시작 — 밤이라 장례 행렬이 나와 있다")
+	assert_true(s.terrain._procession.monster_ids.has("skeleton_mage"), "스켈레톤 행렬")
+	s.clock.total_hours = 10.0
+	s.terrain.update(s)
+	assert_true(s.terrain._procession == null, "낮 — 멀리 있는 행렬은 사라진다")
+	s.clock.total_hours = 21.0
+	s.terrain.update(s)
+	assert_true(s.terrain._procession != null, "다시 밤")

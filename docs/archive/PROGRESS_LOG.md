@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **망자의 땅 변하는 지형 (2026-11-05, 사용자 "시작해" — floor2.md §14 3·4단계, FL14)**: `src/explore/FieldTerrain.gd`(물때 · 밤 안개 · 무른 땅 · 떨어짐 · 넋불 · 장례 행렬 — ExploreSession start · pass_time · enter_cell · refresh_view에서 부른다), `FieldsRoute._tide_marks`, `FieldsRouteBuild.crumble · marks · crypts`(fields.gd가 닿지 않는 칸을 메운 뒤 판다), RouteSpots `mark`, 요소 `goto`. 새 타일 flood · crack · crack_g · hole · wisp · sarcophagus · crypt_stairs, 그림 flood · crackstone · crackearth · pit · 넋불, 새 요소 crypt_stairs · crypt_exit · sarcophagus · drowned_chest, 소리 키 crumble(파일 없음). 테스트 셋(물때 · 밤 안개 · 무른 땅 · 떨어짐 · 묘실 · 행렬). 남은 것: 넋불 빛은 정적 광원이라 옮겨도 빛 자리가 따라가지 않는다(그림의 빛 무리만), 물때 바뀔 때 물가 절벽 모양은 다시 만들지 않는다(낮은 층끼리라 괜찮다), 높은 곳 시야 덤, 숨은 샛길 판정.
+
 - **망자의 땅 살필 것 (2026-11-05, floor2.md §14 2단계, FL13)**: 요소 여섯 종 + 열쇠 아이템, 소품 그림 셋(흙무덤 · 비문석 · 영묘 철문 — f2d.gd), `FieldFeatureAct` spawn · clear_tile · reveal, `RouteSpots.scatter`, 예배당 성물실(벽 조각 stamp), 비석 터 영묘에 문. 테스트 `test_levels_meet_only_at_ramps` · `test_explore_finds_dig_epitaph_tomb_and_tower`. 남은 것: 숨은 샛길 판정 · 넋불, 3단계(물때 · 밤 안개 · 무너지는 땅), 4단계(지하 묘실 · 장례 행렬).
 
 - **망자의 땅 높낮이 · 장소 조각 (2026-11-05, 사용자 "진행해 · 특히 지형은 절벽 등 높고 낮은 층고", FL12 — floor2.md §14 1단계)**: `FieldsRouteBuild.levels · terrace · stamps`, 타일 `f2d_mud_low · hard_low · grass_low · scree · slope`, `TileDef.ramp`(MoatBank 절벽 없음), 절벽 그림 `assets/floor/f2d/chasm.webp`(specs places.f2d.cliff), 비탈 그림 stairs.webp. 소품 밑 바닥 검사는 같은 아틀라스도 허용(`FieldsRoute.under_ok`). 남은 것: 높은 곳 시야 덤 · 낮은 곳에서 높은 곳 가림(지금은 그림만), 망루 오르기, 2단계(무덤 파기 · 비문 · 잠긴 영묘 · 일지).

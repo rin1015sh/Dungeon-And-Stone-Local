@@ -252,3 +252,70 @@ static func stamps(map: FloorMap, g: Dictionary, nodes: Dictionary, walk: Packed
 				var ti: int = idx[ch]
 				map.tiles[map.idx(q)] = ti
 				walk[map.idx(q)] = 1 if map.defs[ti].walkable else 2
+
+
+
+## 무른 땅(FL14 — FieldTerrain): gen "crumble": [{"node", "at": [dx, dy](왼쪽 위), "size": [w, h], "tile"}] — 그 네모 안 걸을 수 있는 칸을
+## 무른 땅 타일로(map.anchors["crumble"]), "drops": [{"node", "at", "tile", "to": 표시 이름}] — 밟으면 꺼져 그 표시로 떨어지는 칸(anchors["drops"]).
+static func crumble(map: FloorMap, g: Dictionary, nodes: Dictionary) -> void:
+	var cr := {}
+	for c: Dictionary in JsonUtil.get_array(g, "crumble"):
+		var n: Vector2i = nodes.get(JsonUtil.get_str(c, "node"), Vector2i(-1, -1))
+		if n.x < 0:
+			continue
+		var at := JsonUtil.get_array(c, "at")
+		var sz := JsonUtil.get_array(c, "size")
+		for y in int(sz[1]):
+			for x in int(sz[0]):
+				var q := n + Vector2i(int(at[0]) + x, int(at[1]) + y)
+				if map.is_walkable(q) and not map.def_at(q).ramp:
+					map.set_tile(q, JsonUtil.get_str(c, "tile"))
+					cr[q] = true
+	var drops := {}
+	for d: Dictionary in JsonUtil.get_array(g, "drops"):
+		var n: Vector2i = nodes.get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))
+		var at := JsonUtil.get_array(d, "at")
+		var q := n + Vector2i(int(at[0]), int(at[1]))
+		if n.x >= 0 and map.is_walkable(q):
+			map.set_tile(q, JsonUtil.get_str(d, "tile"))
+			drops[q] = JsonUtil.get_str(d, "to")
+	if not cr.is_empty():
+		map.anchors["crumble"] = cr
+	if not drops.is_empty():
+		map.anchors["drops"] = drops
+
+
+## 표시(순간 이동 자리): gen "marks": [{"name", "node", "at"}] → map.anchors["marks"][name] = 칸(지하 묘실 계단 나오는 자리 등).
+static func marks(map: FloorMap, g: Dictionary, nodes: Dictionary) -> void:
+	var m: Dictionary = map.anchors.get("marks", {})
+	for d: Dictionary in JsonUtil.get_array(g, "marks"):
+		var n: Vector2i = nodes.get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))
+		var at := JsonUtil.get_array(d, "at")
+		if n.x >= 0:
+			m[JsonUtil.get_str(d, "name")] = n + Vector2i(int(at[0]), int(at[1]))
+	map.anchors["marks"] = m
+
+
+## 지하 묘실(FL14 — floor2.md §14-2 납골당 아래): gen "crypts": [{"at": [x, y](지도 칸 — 길에서 먼 메움 속), "legend", "rows",
+## "marks": {이름: [dx, dy]}}]. 시작에서 닿지 않는 따로 된 방이라 fields.gd가 닿지 않는 칸을 메운 뒤에 판다. 모두 어둠(map.dark — 횃불이 있어야 보인다).
+## 들어가고 나오는 길은 요소의 "goto"(계단) · 무른 땅 drops.
+static func crypts(map: FloorMap, g: Dictionary) -> void:
+	var m: Dictionary = map.anchors.get("marks", {})
+	for c: Dictionary in JsonUtil.get_array(g, "crypts"):
+		var at := JsonUtil.get_array(c, "at")
+		var o := Vector2i(int(at[0]), int(at[1]))
+		var legend := JsonUtil.get_dict(c, "legend")
+		var rows := JsonUtil.get_array(c, "rows")
+		for y in rows.size():
+			var row := str(rows[y])
+			for x in row.length():
+				var q := o + Vector2i(x, y)
+				if not legend.has(row[x]) or not _ok(map, q):
+					continue
+				map.set_tile(q, str(legend[row[x]]))
+				map.dark[map.idx(q)] = 1
+		var mk := JsonUtil.get_dict(c, "marks")
+		for name: String in mk:
+			var a: Array = mk[name]
+			m[name] = o + Vector2i(int(a[0]), int(a[1]))
+	map.anchors["marks"] = m

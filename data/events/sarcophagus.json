@@ -1,0 +1,61 @@
+{
+  "id": "sarcophagus",
+  "name_ko": "석관",
+  "type": "feature",
+  "tile": "f2d_sarcophagus",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.sarcophagus"
+    },
+    {
+      "id": "open",
+      "name_ko": "뚜껑을 민다",
+      "limit": "once",
+      "hours": 0.5,
+      "check": {
+        "stat": "str",
+        "dc": 10
+      },
+      "fail_line": "field.sarcophagus_fail",
+      "line": "field.sarcophagus_open",
+      "give": [
+        {
+          "one_of": [
+            "tomb_gold",
+            "old_gold_coin",
+            "death_mask",
+            "tomb_silver_ring",
+            "tomb_ritual_dagger"
+          ],
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.85
+        },
+        {
+          "item": "magic_stone_7",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.35
+        }
+      ],
+      "spawn": {
+        "monsters": [
+          "skeleton_warrior",
+          "skeleton"
+        ],
+        "chance": 0.35,
+        "line": "field.sarcophagus_wake"
+      }
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL14 — floor2.md §14-4·5). 지하 묘실 석관 — 근력 판정으로 뚜껑을 밀면 부장품, 가끔 주인이 일어난다. 임시값",
+  "standing": true
+}

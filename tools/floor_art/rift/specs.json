@@ -484,6 +484,23 @@
     {
      "tile": "f2d_slope",
      "style": "stairs"
+    },
+    {
+     "tile": "f2d_crack",
+     "style": "crackstone"
+    },
+    {
+     "tile": "f2d_crack_g",
+     "style": "crackearth"
+    },
+    {
+     "tile": "f2d_hole",
+     "style": "pit"
+    },
+    {
+     "tile": "f2d_flood",
+     "style": "flood",
+     "dim": 0.7
     }
    ],
    "walls": [
@@ -509,7 +526,8 @@
     "f2d_bush",
     "f2d_dig",
     "f2d_epitaph",
-    "f2d_tomb_door"
+    "f2d_tomb_door",
+    "f2d_wisp"
    ],
    "cliff": {
     "kind": "rock",

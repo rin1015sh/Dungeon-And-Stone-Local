@@ -1,0 +1,16 @@
+{
+  "id": "crypt_exit",
+  "name_ko": "올라가는 계단",
+  "type": "feature",
+  "tile": "f2d_crypt_stairs",
+  "actions": [
+    {
+      "id": "ascend",
+      "name_ko": "올라간다",
+      "limit": "always",
+      "goto": "crypt_out"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL14 — floor2.md §14-4·5). 지하 묘실 → 납골당 마당. 임시값"
+}

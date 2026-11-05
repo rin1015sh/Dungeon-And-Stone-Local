@@ -69,6 +69,7 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 	_zones_and_fill(map, nodes, zone_of, JsonUtil.get_dict(g, "zone_fill"), JsonUtil.get_str(t, "rise"), walk)
 	FieldsRouteBuild.ruins(map, rng, g, walk)
 	FieldsRouteBuild.levels(map, g, ramps)
+	_tide_marks(map, g, nodes, radii, edge_cells)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var bt := JsonUtil.get_str(nd, "beacon")
 		if not bt.is_empty():
@@ -81,6 +82,8 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 		_props(map, rng, str(pd.get("zone", "")), JsonUtil.get_str(pd, "tile"), JsonUtil.get_int(pd, "count"), nodes)
 	FieldsRouteBuild.fences(map, g, nodes, radii)
 	FieldsRouteBuild.outer_props(map, rng, g)
+	FieldsRouteBuild.crumble(map, g, nodes)
+	FieldsRouteBuild.marks(map, g, nodes)
 	map.anchors["nodes"] = nodes
 	map.anchors["node_r"] = radii
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
@@ -91,6 +94,32 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 				map.center = nodes[JsonUtil.get_str(nd, "id")]
 	if map.center.x < 0:
 		map.center = map.entry
+
+
+## 물때 칸(FieldTerrain): 길 · 구간 "tide": "flood" | "deep" — 그 길 칸 · 구간 반지름 안의 걸을 수 있는 낮은 땅(비탈 · 돌무더기 제외).
+static func _tide_marks(map: FloorMap, g: Dictionary, nodes: Dictionary, radii: Dictionary, edge_cells: Array) -> void:
+	var tide := {}
+	var low := func(q: Vector2i) -> bool: return map.in_bounds(q) and map.def_at(q).walkable and map.def_at(q).sunk
+	var ei := 0
+	for e: Dictionary in JsonUtil.get_array(g, "edges"):
+		var k := JsonUtil.get_str(e, "tide")
+		if not k.is_empty():
+			for q: Vector2i in edge_cells[ei]:
+				if low.call(q):
+					tide[q] = k
+		ei += 1
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		var k := JsonUtil.get_str(nd, "tide")
+		if k.is_empty():
+			continue
+		var c: Vector2i = nodes[JsonUtil.get_str(nd, "id")]
+		var r := ceili(float(radii[JsonUtil.get_str(nd, "id")]) * 1.25)
+		for y in range(c.y - r, c.y + r + 1):
+			for x in range(c.x - r, c.x + r + 1):
+				if low.call(Vector2i(x, y)):
+					tide[Vector2i(x, y)] = k
+	if not tide.is_empty():
+		map.anchors["tide"] = tide
 
 
 ## 두 점 사이 굽은 길: 1칸마다 옆으로 흔든(사인 두 겹 — 위상은 무작위) 점에 폭 width 붓. 판 칸 목록을 돌려준다.

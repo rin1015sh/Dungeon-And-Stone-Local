@@ -11,7 +11,7 @@ extends RefCounted
 ##    "after": {"action", "hours"}(그 행동을 하고 그만큼 지나야 — 아직이면 "wait" 문구, 안 했으면 missing),
 ##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound),
 ##    "spawn": {"monsters": [id …], "chance", "line"}(그 확률로 바로 옆에 그 무리가 일어나 쫓아온다 — 무덤 파기, FL13),
-##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13),
+##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13), "goto": 표시 이름(map.anchors.marks — 계단으로 옮겨 선다, FL14),
 ##    "hours": 해 보는 데 드는 시간(성공 · 실패 모두 흐른다), "check": {stat, dc}(성공 확률 = RiftHazards.success_chance — 실패면 "fail_line"을 말하고
 ##    횟수를 쓰지 않는다 — 다시 해 볼 수 있다: 망자의 땅 비석 부수기 GraveWake)}.
 
@@ -62,6 +62,9 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	if not learn.is_empty() and s.player.knowledge.learn_stats(learn):
 		s.message.emit("field.learned", {"monster": DataNames.entry(s.db, "monsters", learn)}, "good")
 	_alert(s, e["pos"], JsonUtil.get_dict(a, "alert"))
+	var goto := JsonUtil.get_str(a, "goto")  # 계단(지하 묘실 — FL14): map.anchors.marks의 그 자리로 옮겨 선다
+	if not goto.is_empty() and (s.map.anchors.get("marks", {}) as Dictionary).has(goto):
+		s.relocate((s.map.anchors["marks"] as Dictionary)[goto])
 	if JsonUtil.get_float(a, "reveal") > 0.0:
 		_reveal(s, e["pos"], JsonUtil.get_float(a, "reveal"))
 	if JsonUtil.get_bool(a, "clear"):

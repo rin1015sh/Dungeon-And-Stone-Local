@@ -2,25 +2,24 @@ class_name RouteSpots
 extends RefCounted
 ## 길 그래프 구간에 놓는 것(floor2.md §13 — 층 JSON "route_spots"): 입장 때 한 번.
 ##   guards: [{"node", "monsters": [..]}] — 그 구간 가운데에 지키는 무리(관문 · 엘리트 — 고정 무리, 리스폰 없음)
-##   features: [{"node", "event", "at": [dx, dy]}] — 그 구간 가운데에서 at만큼 떨어진 칸에 동굴 요소(쉼터 모닥불 · 곁길 보상)
+##   features: [{"node", "event", "at": [dx, dy], "tile"(없으면 요소의 tile)}] — 그 구간 가운데에서 at만큼 떨어진 칸에 동굴 요소(쉼터 모닥불 · 곁길 보상)
 ##   scatter: [{"zone" | "node"(+ "r"), "event", "count"}] — 그 구역(또는 구간 반지름 r 안)의 둘레 8칸이 트인 칸 count곳에 무작위로
 ##     (원정마다 자리가 바뀐다 — 파헤칠 무덤 · 비문, FL13)
-## 구간 자리는 map.anchors["nodes"](FieldsRoute). 자리가 걸을 수 없으면 둘레 빈 칸.
+## 자리는 "node"(map.anchors["nodes"] — FieldsRoute) 또는 "mark"(map.anchors["marks"] — 지하 묘실 등, FL14) + "at". 자리가 걸을 수 없으면 둘레 빈 칸.
 
 
 static func place_features(s: ExploreSession) -> void:
-	var nodes: Dictionary = s.map.anchors.get("nodes", {})
 	for f: Variant in JsonUtil.get_array(JsonUtil.get_dict(s.floor_def, "route_spots"), "features"):
 		var fd: Dictionary = f if f is Dictionary else {}
 		var at := JsonUtil.get_array(fd, "at")
-		var c: Vector2i = nodes.get(JsonUtil.get_str(fd, "node"), Vector2i(-1, -1))
+		var c := _anchor(s, fd)
 		if c.x < 0:
 			continue
 		var p := c + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO)
 		var def := s.db.get_entry("events", JsonUtil.get_str(fd, "event"))
 		if def.is_empty() or not s.map.is_walkable(p) or not s.map.portal_at(p).is_empty():
 			continue
-		s.map.set_tile(p, JsonUtil.get_str(def, "tile"))
+		s.map.set_tile(p, JsonUtil.get_str(fd, "tile", JsonUtil.get_str(def, "tile")))  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
 		s.features.add_at(s, JsonUtil.get_str(fd, "event"), p)
 
 
@@ -56,10 +55,17 @@ static func scatter(s: ExploreSession) -> void:
 
 
 static func place_guards(s: ExploreSession) -> void:
-	var nodes: Dictionary = s.map.anchors.get("nodes", {})
 	for gd: Variant in JsonUtil.get_array(JsonUtil.get_dict(s.floor_def, "route_spots"), "guards"):
 		var d: Dictionary = gd if gd is Dictionary else {}
-		var c: Vector2i = nodes.get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))
+		var at := JsonUtil.get_array(d, "at")
+		var c := _anchor(s, d) + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO)
 		var ids := JsonUtil.get_array(d, "monsters")
 		if c.x >= 0 and not ids.is_empty():
 			s.monsters.add_fixed(ids, c)
+
+
+## 자리 기준 칸: "node" 또는 "mark". 없으면 (-1, -1).
+static func _anchor(s: ExploreSession, d: Dictionary) -> Vector2i:
+	if d.has("mark"):
+		return (s.map.anchors.get("marks", {}) as Dictionary).get(JsonUtil.get_str(d, "mark"), Vector2i(-1, -1))
+	return (s.map.anchors.get("nodes", {}) as Dictionary).get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))

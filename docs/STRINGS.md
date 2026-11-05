@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(996줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1002줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -336,6 +336,7 @@
 - `explore.hidden_locked` 지금은 아무것도 할 수 없다.
 - `explore.hidden_failed` 손에 넣지 못했다.
 - `explore.hidden_decoy` 손대자마자 무너져 내렸다.
+- `explore.ground_gives` 발밑이 꺼졌다. 흙과 함께 아래로 떨어졌다.
 
 ### `explore.boss_notice`
 
@@ -1278,6 +1279,11 @@
 - `field.journal_2` 품속에 젖은 일지 한 장. 「묘역의 새 비석. 손을 대면 떨린다. 대장은 내버려 두자고 했다. 이레째에 무언가 깬다는 걸 우리는 몰랐다.」
 - `field.journal_3` 마지막 장이다. 「영묘 열쇠는 예배당 제단 뒤에 있다. 문을 연 건 실수였다. 남은 건 나 혼자다.」
 - `field.watch_post` 무너진 계단을 딛고 망루 위에 섰다. 안개 너머로 길과 불빛이 내려다보인다.
+- `field.sarcophagus` 돌 뚜껑에 누운 기사의 모습이 새겨져 있다. 얼굴만 누군가 망치로 뭉개 놓았다.
+- `field.sarcophagus_fail` 뚜껑이 손가락 한 마디만큼 밀리다 멈췄다.
+- `field.sarcophagus_open` 뚜껑이 미끄러져 떨어졌다. 마른 뼈 사이로 손에 걸리는 것이 있다.
+- `field.sarcophagus_wake` 관 속의 뼈가 먼저 손을 뻗었다.
+- `field.drowned_chest` 갯벌에 반쯤 묻힌 궤짝이다. 물에 불은 뚜껑을 비틀어 열었다.
 
 ### `field.corpse`
 

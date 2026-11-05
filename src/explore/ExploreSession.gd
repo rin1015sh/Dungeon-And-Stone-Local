@@ -46,6 +46,7 @@ var loot: Dictionary = {}               ## 균열에 놓인 물건 칸 Vector2i 
 var below: ExploreSession = null       ## 아래층 세션(이 층으로 올라온 곳 — FloorTravel). 위층만 아래층을 붙잡는다
 var below_at: Vector2i = Vector2i(-1, -1)  ## 아래층에서 올라온 포탈 칸(내려가면 여기 선다)
 var blades: GrooveBlades = null
+var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 7일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
@@ -116,6 +117,7 @@ func start() -> void:
 		rifts.begin(self)
 	RouteSpots.place_features(self)
 	RouteSpots.scatter(self)
+	terrain = FieldTerrain.setup(self)
 	if floor_def.has("grave_wake"):
 		grave = GraveWake.new()
 		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))
@@ -210,6 +212,8 @@ func enter_cell(cell: Vector2i) -> void:
 	moved.emit(from, cell)
 	refresh_view()
 	_on_enter_cell(from)
+	if terrain != null:
+		terrain.on_enter(self, from, cell)
 
 
 func wait(hours: float = -1.0) -> void:
@@ -312,6 +316,8 @@ func pass_time(hours: float) -> void:
 		_party_fatigue(Fatigue.DUNGEON_HOUR, h)
 		_bury_starved()
 		time_passed.emit(h)
+		if terrain != null:
+			terrain.update(self)
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
@@ -333,6 +339,8 @@ func refresh_view() -> void:
 	vision_m = Vision.radius_m(db, floor_def, map, player, pos)
 	if lord.is_active():
 		vision_m = minf(vision_m, lord.vision_cap_m())
+	if terrain != null:
+		vision_m = terrain.vision_cap(self, vision_m)
 	var radius := vision_m / _mpt
 	map.visible_now = Fov.compute(map, pos, radius)
 	var r := ceili(radius) + 1

@@ -25,14 +25,18 @@ const IRON := Color("#24221f")
 
 static func base(p: Paint, style: String, part: String, col: Color, s: int) -> void:
 	match style:
-		"blackwater":
+		"blackwater", "flood":
 			_water(p, col, s)
 		"graveearth":
 			_earth(p, col, s, 0.55, MOSS, GRASS)
 		"dryearth":
 			_earth(p, col, s, 0.25, DRY.darkened(0.25), DRY)
-		"flagstone":
+		"flagstone", "crackstone":
 			_flags(p, col, s)
+		"crackearth":
+			_earth(p, col, s, 0.55, MOSS, GRASS)
+		"pit":
+			_pit(p, col, s)
 		"thicket":
 			_thicket(p, col, s)
 		"bank":  # 길 밖 흙 둔덕(벽 — 둥근 윤곽 · 윗면 = 덤불, 앞면 = 흙 벼랑, 1층 수정동굴처럼 입체감, FL11)
@@ -49,10 +53,15 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 
 static func detail(p: Paint, style: String, part: String, v: int, col: Color) -> void:
 	match style:
-		"blackwater", "thicket", "bank":
+		"blackwater", "flood", "thicket", "bank":
 			return  # 길 밖은 맨바탕(칸마다 무늬가 찍히면 벽지처럼 보인다)
 		"graveearth", "dryearth", "flagstone":
 			_ground_detail(p, style, v)
+			return
+		"crackstone", "crackearth":  # 무른 땅(FL14): 모든 변형에 굵은 금 — 밟으면 꺼진다는 걸 보고 안다
+			_cracks(p, v)
+			return
+		"pit":
 			return
 		"cryptstone":
 			BF.detail(p, "masonry", part, v, col)
@@ -75,6 +84,8 @@ static func stand(tile: String, w: int, h: int, seed_value: int) -> Paint:
 			_lantern(p)
 		"f2d_bush":
 			_bush(p)
+		"f2d_wisp":
+			_wisp(p)
 		"f2d_dig":
 			_dig(p)
 		"f2d_epitaph":
@@ -366,3 +377,40 @@ static func _tomb_door(p: Paint) -> void:
 	for k in 7:  # 사슬
 		Cave._dot(p, Vector2(l + (18 + k * 4.5) * u, f.y - (38 + (k % 2) * 3) * u), 2.0 * u, Color("#4a4640"), 1.0)
 	Kit.box(p, Vector2(f.x, f.y - 30 * u), 9 * u, 4 * u, 10 * u, Color("#5a4a30"))
+
+
+## 무른 땅의 금: 가운데에서 갈라져 나가는 굵은 검은 금 + 가장자리 꺼진 그늘.
+static func _cracks(p: Paint, v: int) -> void:
+	var u := p.w / 64.0
+	var c := Vector2(p.w * 0.5, p.h * 0.5) + Vector2((Paint.hash01(v, 1, 3) - 0.5) * 10, (Paint.hash01(v, 2, 3) - 0.5) * 10) * u
+	Decals._blob(p, c, 12 * u, Color("#14120e"), 0.35, 0.5)
+	for k in 5:
+		var ang := TAU * (k + Paint.hash01(v, k, 4)) / 5.0
+		var a := c
+		for seg in 3:
+			var b := a + Vector2(cos(ang), sin(ang)) * (6 + Paint.hash01(v + seg, k, 5) * 6) * u
+			Ink.line(p, a, b, (2.2 - seg * 0.6) * u, Color("#0e0c0a"), 0.95, 0.6)
+			ang += (Paint.hash01(v, k + seg, 6) - 0.5) * 0.9
+			a = b
+
+
+## 꺼진 구멍: 가장자리 부서진 턱(밝게) → 안으로 갈수록 검다.
+static func _pit(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var hf := Seam.field(w, h, s, 0.08, 3)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var c := Color("#050404").lerp(col, clampf(hf[i] * 0.5, 0.0, 1.0))
+			p.blend(x, y, c, 1.0)
+
+
+## 넋불: 공중에 뜬 푸른 불덩이(발치 그림자 없음 — 떠 있다).
+static func _wisp(p: Paint) -> void:
+	var u := p.w / 128.0
+	var c := Vector2(p.w * 0.5, p.h - p.w * 0.14 - 40 * u)
+	Kit.glow(p, c, 34 * u, Color("#7ab8ff"), 0.6)
+	Kit.glow(p, c, 14 * u, Color("#cfe6ff"), 0.9)
+	p.fill_poly(Cave._ellipse(c, 5 * u, 7 * u, 16), func(_x: int, _y: int) -> Color: return Color("#eef6ff"))
+	Kit.shadow(p, Vector2(c.x, p.h - p.w * 0.14), 10 * u, 3 * u, 0.15)
