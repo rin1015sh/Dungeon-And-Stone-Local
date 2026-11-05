@@ -77,6 +77,161 @@
         "fog": 6,
         "dark": "#1c1d20"
       }
+    },
+    "decor": {
+      "_comment": "바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트, 실행 중 계산). 깊은 늪 가장자리 물기(shore) · 늪 웅덩이·썩은 물 · 잔해 구역 뼈 · 굳은 땅 옛 싸움터(쓰레기·뼈·자갈). 사용자 2026-11-05 \"황량하다\". [창작] 임시값",
+      "sheet": "res://assets/floor/f1/decals.webp",
+      "variants": 4,
+      "kinds": [
+        "shore",
+        "gravel",
+        "moss",
+        "wet",
+        "crystal_bits",
+        "claws",
+        "mud",
+        "rot",
+        "trash",
+        "bones"
+      ],
+      "on_tiles": [
+        "f2d_mud",
+        "f2d_hard",
+        "f2d_bridge",
+        "f2d_mound"
+      ],
+      "rules": [
+        {
+          "kind": "shore",
+          "near_tiles": {
+            "tiles": [
+              "f2d_deep"
+            ],
+            "radius": 1
+          },
+          "dense": true,
+          "orient": "toward",
+          "size": 1.35
+        },
+        {
+          "kind": "gravel",
+          "wall_north": true,
+          "dense": true,
+          "chance": 0.3
+        },
+        {
+          "kind": "bones",
+          "near_features": {
+            "ids": [
+              "explorer_corpse",
+              "old_skeleton"
+            ],
+            "radius": 5
+          },
+          "chance": 0.5
+        },
+        {
+          "kind": "wet",
+          "zones": [
+            "f2d_marsh"
+          ],
+          "noise": {
+            "key": "wet",
+            "freq": 0.06,
+            "above": 0.45
+          },
+          "chance": 0.7,
+          "size": 1.25
+        },
+        {
+          "kind": "rot",
+          "zones": [
+            "f2d_marsh"
+          ],
+          "noise": {
+            "key": "rot",
+            "freq": 0.05,
+            "above": 0.55
+          },
+          "chance": 0.6,
+          "size": 1.2
+        },
+        {
+          "kind": "mud",
+          "zones": [
+            "f2d_marsh"
+          ],
+          "chance": 0.12
+        },
+        {
+          "kind": "bones",
+          "zones": [
+            "f2d_ruins"
+          ],
+          "noise": {
+            "key": "bones",
+            "freq": 0.07,
+            "above": 0.45
+          },
+          "chance": 0.6,
+          "size": 1.2
+        },
+        {
+          "kind": "gravel",
+          "zones": [
+            "f2d_ruins"
+          ],
+          "chance": 0.14
+        },
+        {
+          "kind": "trash",
+          "zones": [
+            "f2d_hard"
+          ],
+          "noise": {
+            "key": "trash",
+            "freq": 0.06,
+            "above": 0.5
+          },
+          "chance": 0.55,
+          "size": 1.2
+        },
+        {
+          "kind": "bones",
+          "zones": [
+            "f2d_hard"
+          ],
+          "noise": {
+            "key": "bones2",
+            "freq": 0.05,
+            "above": 0.55
+          },
+          "chance": 0.45
+        },
+        {
+          "kind": "gravel",
+          "zones": [
+            "f2d_hard"
+          ],
+          "chance": 0.14
+        },
+        {
+          "kind": "bones",
+          "chance": 0.02
+        }
+      ]
+    },
+    "macro": {
+      "_comment": "거시 색조: 구역마다 살짝 다른 잿빛(늪 = 차갑게, 굳은 땅 = 바랜 흙빛) + 저주파 밝기 얼룩(넓은 바닥이 한 장 무늬로 보이지 않게). [창작] 임시값",
+      "zones": {
+        "f2d_marsh": "#d6dce2",
+        "f2d_ruins": "#e2e0de",
+        "f2d_hard": "#ece4d8"
+      },
+      "noise": {
+        "freq": 0.06,
+        "amount": 0.26
+      }
     }
   },
   "gen": {
@@ -112,7 +267,30 @@
         ],
         "r": 18,
         "zone": "f2d_marsh",
-        "kind": "arrival"
+        "kind": "arrival",
+        "props": [
+          {
+            "tile": "f2d_gallows",
+            "at": [
+              [
+                -9,
+                -7
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_cage",
+            "count": 2
+          },
+          {
+            "tile": "f2d_post",
+            "count": 6
+          },
+          {
+            "tile": "f2d_tomb",
+            "count": 5
+          }
+        ]
       },
       {
         "id": "levee_bend",
@@ -123,7 +301,17 @@
         "r": 10,
         "zone": "f2d_marsh",
         "kind": "place",
-        "tile": "f2d_hard"
+        "tile": "f2d_hard",
+        "props": [
+          {
+            "tile": "f2d_wagon",
+            "count": 1
+          },
+          {
+            "tile": "f2d_banner",
+            "count": 1
+          }
+        ]
       },
       {
         "id": "mire",
@@ -133,7 +321,21 @@
         ],
         "r": 16,
         "zone": "f2d_marsh",
-        "kind": "place"
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f2d_cage",
+            "count": 2
+          },
+          {
+            "tile": "f2d_tomb",
+            "count": 7
+          },
+          {
+            "tile": "f2d_post",
+            "count": 4
+          }
+        ]
       },
       {
         "id": "chapel",
@@ -145,7 +347,177 @@
         "zone": "f2d_marsh",
         "kind": "place",
         "tile": "f2d_bridge",
-        "beacon": "f2d_fire"
+        "beacon": "f2d_fire",
+        "props": [
+          {
+            "tile": "f2d_pew",
+            "at": [
+              [
+                -9,
+                -7
+              ],
+              [
+                -8,
+                -7
+              ],
+              [
+                -7,
+                -7
+              ],
+              [
+                -6,
+                -7
+              ],
+              [
+                6,
+                -7
+              ],
+              [
+                7,
+                -7
+              ],
+              [
+                8,
+                -7
+              ],
+              [
+                9,
+                -7
+              ],
+              [
+                -9,
+                -4
+              ],
+              [
+                -8,
+                -4
+              ],
+              [
+                -7,
+                -4
+              ],
+              [
+                -6,
+                -4
+              ],
+              [
+                6,
+                -4
+              ],
+              [
+                7,
+                -4
+              ],
+              [
+                8,
+                -4
+              ],
+              [
+                9,
+                -4
+              ],
+              [
+                -9,
+                4
+              ],
+              [
+                -8,
+                4
+              ],
+              [
+                -7,
+                4
+              ],
+              [
+                -6,
+                4
+              ],
+              [
+                6,
+                4
+              ],
+              [
+                7,
+                4
+              ],
+              [
+                8,
+                4
+              ],
+              [
+                9,
+                4
+              ],
+              [
+                -8,
+                7
+              ],
+              [
+                -7,
+                7
+              ],
+              [
+                -6,
+                7
+              ],
+              [
+                6,
+                7
+              ],
+              [
+                7,
+                7
+              ],
+              [
+                8,
+                7
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_altar",
+            "at": [
+              [
+                0,
+                -15
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_candles",
+            "at": [
+              [
+                -3,
+                -15
+              ],
+              [
+                3,
+                -15
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_statue_c",
+            "at": [
+              [
+                -13,
+                -11
+              ],
+              [
+                13,
+                -11
+              ],
+              [
+                -15,
+                2
+              ],
+              [
+                15,
+                2
+              ]
+            ]
+          }
+        ]
       },
       {
         "id": "graveyard",
@@ -155,7 +527,21 @@
         ],
         "r": 17,
         "zone": "f2d_ruins",
-        "kind": "pocket"
+        "kind": "pocket",
+        "props": [
+          {
+            "tile": "f2d_gravestone",
+            "count": 22
+          },
+          {
+            "tile": "f2d_sack",
+            "count": 3
+          },
+          {
+            "tile": "f2d_statue",
+            "count": 1
+          }
+        ]
       },
       {
         "id": "corridor",
@@ -165,7 +551,13 @@
         ],
         "r": 8,
         "zone": "f2d_ruins",
-        "kind": "place"
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f2d_banner",
+            "count": 2
+          }
+        ]
       },
       {
         "id": "tomb_gate",
@@ -177,7 +569,47 @@
         "zone": "f2d_ruins",
         "kind": "place",
         "tile": "f2d_bridge",
-        "beacon": "f2d_fire"
+        "beacon": "f2d_fire",
+        "props": [
+          {
+            "tile": "f2d_statue_c",
+            "at": [
+              [
+                -5,
+                -9
+              ],
+              [
+                5,
+                -9
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_candles",
+            "at": [
+              [
+                -4,
+                6
+              ],
+              [
+                4,
+                6
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_statue_c",
+            "count": 4
+          },
+          {
+            "tile": "f2d_candles",
+            "count": 3
+          },
+          {
+            "tile": "f2d_pew",
+            "count": 3
+          }
+        ]
       },
       {
         "id": "ossuary",
@@ -188,7 +620,21 @@
         "r": 14,
         "zone": "f2d_ruins",
         "kind": "pocket",
-        "tile": "f2d_bridge"
+        "tile": "f2d_bridge",
+        "props": [
+          {
+            "tile": "f2d_candles",
+            "count": 2
+          },
+          {
+            "tile": "f2d_statue_c",
+            "count": 1
+          },
+          {
+            "tile": "f2d_pew",
+            "count": 2
+          }
+        ]
       },
       {
         "id": "bridge",
@@ -210,7 +656,25 @@
         "r": 20,
         "zone": "f2d_hard",
         "kind": "place",
-        "beacon": "f2d_fire"
+        "beacon": "f2d_fire",
+        "props": [
+          {
+            "tile": "f2d_wagon",
+            "count": 2
+          },
+          {
+            "tile": "f2d_banner",
+            "count": 4
+          },
+          {
+            "tile": "f2d_armor",
+            "count": 3
+          },
+          {
+            "tile": "f2d_barricade",
+            "count": 3
+          }
+        ]
       },
       {
         "id": "dullahan_ruin",
@@ -220,7 +684,25 @@
         ],
         "r": 18,
         "zone": "f2d_hard",
-        "kind": "pocket"
+        "kind": "pocket",
+        "props": [
+          {
+            "tile": "f2d_armor",
+            "count": 4
+          },
+          {
+            "tile": "f2d_banner",
+            "count": 3
+          },
+          {
+            "tile": "f2d_barricade",
+            "count": 2
+          },
+          {
+            "tile": "f2d_statue",
+            "count": 2
+          }
+        ]
       },
       {
         "id": "watchtower",
@@ -241,7 +723,13 @@
         ],
         "r": 8,
         "zone": "f2d_hard",
-        "kind": "place"
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f2d_barricade",
+            "count": 2
+          }
+        ]
       },
       {
         "id": "summit",
@@ -251,7 +739,17 @@
         ],
         "r": 16,
         "zone": "f2d_hard",
-        "kind": "exit"
+        "kind": "exit",
+        "props": [
+          {
+            "tile": "f2d_banner",
+            "count": 2
+          },
+          {
+            "tile": "f2d_statue",
+            "count": 2
+          }
+        ]
       }
     ],
     "edges": [
@@ -376,6 +874,46 @@
         "zone": "f2d_hard",
         "tile": "f2d_rock",
         "count": 45
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_tomb",
+        "count": 40
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_post",
+        "count": 25
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_cage",
+        "count": 6
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_banner",
+        "count": 20
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_armor",
+        "count": 14
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_barricade",
+        "count": 12
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_wagon",
+        "count": 6
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_sack",
+        "count": 18
       }
     ]
   },

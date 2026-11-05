@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://yv2jxd8eip5y"
-path="res://.godot/imported/bloodpool.webp-c92bef00bba296b63d059a708aa393cc.ctex"
+uid="uid://cv64oxkt0kdso"
+path="res://.godot/imported/f2_land_of_dead_route.png-8010677beb7015789c78fe5dd7b6ef94.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2d/bloodpool.webp"
-dest_files=["res://.godot/imported/bloodpool.webp-c92bef00bba296b63d059a708aa393cc.ctex"]
+source_file="res://docs/plans/f2_land_of_dead_route.png"
+dest_files=["res://.godot/imported/f2_land_of_dead_route.png-8010677beb7015789c78fe5dd7b6ef94.ctex"]
 
 [params]
 

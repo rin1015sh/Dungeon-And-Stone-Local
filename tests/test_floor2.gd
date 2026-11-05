@@ -145,7 +145,10 @@ func test_grave_wakes_on_day_seven_unless_broken() -> void:
 	var b2 := brk.duplicate(true)
 	b2["check"] = {"stat": "str", "dc": 1}
 	var t0 := s2.clock.total_hours
-	FieldFeatureAct.run(s2, e, b2)
+	for tries in 10:  # 성공 확률은 상한이 있다(RiftHazards.success_chance) — 난수 하나에 기대지 않는다
+		FieldFeatureAct.run(s2, e, b2)
+		if s2.grave.broken(s2):
+			break
 	assert_true(s2.clock.total_hours > t0, "부수는 데 시간이 든다")
 	assert_true(s2.grave.broken(s2), "비석을 부쉈다")
 	s2.monsters_enabled = true

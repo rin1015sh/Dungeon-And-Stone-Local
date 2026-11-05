@@ -53,7 +53,7 @@
 ## 화면 캡처 · 그림
 
 - 화면 캡처(시각 확인, 창이 잠깐 뜸): `godot --path . res://tools/screenshot.tscn -- --screen=title|foundation|create|city|plaza|explore --out=<png 경로>`
-  - 2층: `--up=floor2_south [--reveal --ezoom=0.6]` = 1층 그 포탈로 올라가 위층 도착 자리에서 찍는다(FloorTravel). 큰 무리 전투: `--combat --monster=ghoul*11`(앞 6마리 + 예비대 숫자). 균열 챕터도 `--reveal`·`--ezoom=<배율>`(챕터를 건넌 뒤 다시 걷는다).
+  - 2층: `--up=floor2_south [--reveal --ezoom=0.6]` = 1층 그 포탈로 올라가 위층 도착 자리에서 찍는다(FloorTravel). `--nomon`이면 위층 몬스터를 치운다(`--at=x,y`로 순간이동해도 전투가 걸리지 않게 — 장식 확인). 큰 무리 전투: `--combat --monster=ghoul*11`(앞 6마리 + 예비대 숫자). 균열 챕터도 `--reveal`·`--ezoom=<배율>`(챕터를 건넌 뒤 다시 걷는다).
   - explore 옵션: `--seed=<층 시드> --walk=<걸음 수> --at=<x>,<y>(그 칸으로 순간이동) --interact(그 자리에서 살피기) --torch --reveal --debug`
   - **장면 목록 일괄 캡처**(탐험 맵 그림 전후 비교): `--screen=explore --seed=1 --shots=res://tools/shots/floor1.json --out=res://docs/screens/<before|after>` → 장면마다 PNG + 걸음당 프레임(`bench`). 기준은 `docs/screens/before/`(`tools/ShotList.gd`).
   - city 옵션: `--town_at=x,y(칸) --face=up|down|left|right · --door=<시설 id>(그 문 앞) · --facility=<id> --activity=<id> --debug --weather=<id>`

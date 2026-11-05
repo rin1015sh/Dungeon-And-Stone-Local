@@ -468,7 +468,8 @@
     },
     {
      "tile": "f2d_deep",
-     "style": "bloodpool"
+     "style": "blackwater",
+     "dim": 0.45
     },
     {
      "tile": "f2d_bridge",

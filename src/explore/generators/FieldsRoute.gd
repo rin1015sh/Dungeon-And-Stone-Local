@@ -6,7 +6,8 @@ extends RefCounted
 ##   "tiles": {"rise", "floor", "down", "up"}, "zone_fill": {구역: 메움 타일}, "zone_floor": {구역: 구간 기본 바닥},
 ##   "nodes": [{"id", "at": [x, y], "r", "zone", "tile"(없으면 zone_floor), "kind": arrival|exit|place|pocket, "beacon": 타일(가운데 위쪽 표지)}],
 ##   "edges": [{"a", "b", "width", "tile"(없으면 a 구간 바닥), "wiggle": 굽이 폭(칸), "walls": 타일(길 양옆 한 칸을 그 벽으로 — 회랑)}],
-##   "props": [{"zone", "tile", "count"}](서 있는 소품 — 둘레 8칸이 걸을 수 있는 칸에만)}
+##   "props": [{"zone", "tile", "count"}](서 있는 소품 — 둘레 8칸이 걸을 수 있는 칸에만),
+##   구간 "props": [{"tile", "count"}(그 구간 안 무작위) | {"tile", "at": [[dx, dy], …]}(가운데에서 그 칸들 — 예배당 긴 의자 줄)]}
 ## 지도 표시: map.anchors["nodes"] = {id: Vector2i 가운데}, ["node_r"] = {id: 반지름} — 지키는 무리(RouteGuards) · 비석(GraveWake)이 쓴다.
 ## 구역(map.zones) = 걸을 수 있는 칸은 가장 가까운 구간의 zone, 메움 칸도 같게(구역별 메움 지형).
 
@@ -52,6 +53,10 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 		var bt := JsonUtil.get_str(nd, "beacon")
 		if not bt.is_empty():
 			map.set_tile(nodes[JsonUtil.get_str(nd, "id")] + Vector2i(0, -int(float(radii[JsonUtil.get_str(nd, "id")]) * 0.5)), bt)
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		var id := JsonUtil.get_str(nd, "id")
+		for pd: Dictionary in JsonUtil.get_array(nd, "props"):
+			_node_props(map, rng, nodes[id], float(radii[id]), pd)
 	for pd: Dictionary in JsonUtil.get_array(g, "props"):
 		_props(map, rng, str(pd.get("zone", "")), JsonUtil.get_str(pd, "tile"), JsonUtil.get_int(pd, "count"), nodes)
 	map.anchors["nodes"] = nodes
@@ -169,6 +174,32 @@ static func _props(map: FloorMap, rng: Rng, zone: String, tile: String, count: i
 				ok = ok and Vector2(p - (nodes[id] as Vector2i)).length() > 3.0
 			if ok:
 				map.set_tile(p, tile)
+				break
+
+
+## 구간 소품: "at"이면 가운데에서 그 칸들(걸을 수 있고 소품 밑 바닥이 맞는 칸만), 아니면 구간 반지름 안 무작위 count개
+## (가운데 4칸 안은 비우고, 둘레 8칸이 걸을 수 있는 칸에만 — 길을 막지 않는다).
+static func _node_props(map: FloorMap, rng: Rng, c: Vector2i, r: float, pd: Dictionary) -> void:
+	var tile := JsonUtil.get_str(pd, "tile")
+	var under := map.defs[map.index_of(tile)].stand_under
+	var fits := func(q: Vector2i) -> bool: return map.is_walkable(q) and (under.is_empty() or map.tile_id_at(q) == under)
+	if pd.has("at"):
+		for o: Variant in JsonUtil.get_array(pd, "at"):
+			var q := c + Vector2i(int(o[0]), int(o[1]))
+			if fits.call(q):
+				map.set_tile(q, tile)
+		return
+	for i in JsonUtil.get_int(pd, "count"):
+		for tries in 30:
+			var q := c + Vector2i(rng.randi_range(-int(r), int(r)), rng.randi_range(-int(r), int(r)))
+			if Vector2(q - c).length() > r or Vector2(q - c).length() < 4.0 or not fits.call(q):
+				continue
+			var ok := true
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					ok = ok and map.is_walkable(q + Vector2i(dx, dy))
+			if ok:
+				map.set_tile(q, tile)
 				break
 
 

@@ -63,6 +63,8 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 		for k in ["tile", "beacon"]:
 			if d.has(k):
 				tiles.append(JsonUtil.get_str(d, k))
+		for pd: Variant in JsonUtil.get_array(d, "props"):
+			tiles.append(JsonUtil.get_str(pd if pd is Dictionary else {}, "tile"))
 	if not kinds.has("arrival") or not kinds.has("exit"):
 		out.append("fields: 구간 kind arrival · exit가 하나씩 있어야 한다")
 	for e: Variant in JsonUtil.get_array(g, "edges"):

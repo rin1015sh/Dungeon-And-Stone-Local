@@ -96,7 +96,9 @@ func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, sca
 			for f: Dictionary in pd["floors"]:
 				var colors := JsonUtil.get_dict(db.get_entry("tiles", str(f["tile"])), "colors")
 				var sd := 3000 + str(f["style"]).hash() % 1000
-				var row := _row({"seed": sd}, "floor", n, cell, cell, Color.from_string(JsonUtil.get_str(colors, "floor"), Color.GRAY),
+				var fc := Color.from_string(JsonUtil.get_str(colors, "floor"), Color.GRAY)
+				var dim := float(f.get("dim", 1.0))  # 그림 평균을 타일 색 × dim에 맞춘다(< 1 — 어둠 속 최저 밝기에서도 둘레보다 어둡게: 깊은 물)
+				var row := _row({"seed": sd}, "floor", n, cell, cell, Color(fc.r * dim, fc.g * dim, fc.b * dim),
 					func(part: String, v: int, w: int, h: int, col: Color, s: int) -> Paint: return RiftCommon.cell(mod, str(f["style"]), part, v, w, h, col, s))
 				row.save_webp("%s/%s.webp" % [dir, f["style"]], false)
 				print("그림: %s/%s.webp" % [dir, f["style"]])
