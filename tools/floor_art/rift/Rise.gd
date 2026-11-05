@@ -5,6 +5,7 @@ extends RefCounted
 ## 장소마다 specs.json places.<장소>.rise = {kind, stone, stone_dark, roof, roof_dark, ...}:
 ##   kind castle — 성벽(성가퀴·돌출 받침·마름돌·버팀벽·화살 구멍) + 너머 성 지붕들(경사 지붕·둥근 탑·굴뚝·좁은 골목)
 ##   kind ice    — 솟은 빙벽(세로 홈·눈 덮인 꼭대기·고드름) + 너머 설원(바람 결·바위·눈 덮인 전나무)
+##   kind grave  — 성벽 면(마름돌 — 묘지 담) + 너머 안개 낀 묘지 들판(덤불 · 마른 나무 · 묘비 실루엣 — 망자의 땅, 사용자 2026-11-05 첨부 그림, FL10)
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -16,7 +17,63 @@ static func face(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
 
 
 static func top(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
-	return _snowfield(w, h, seed_value, cfg) if str(cfg.get("kind", "castle")) == "ice" else _roofs(w, h, seed_value, cfg)
+	match str(cfg.get("kind", "castle")):
+		"ice":
+			return _snowfield(w, h, seed_value, cfg)
+		"grave":
+			return _deadfield(w, h, seed_value, cfg)
+	return _roofs(w, h, seed_value, cfg)
+
+
+## 담 너머 묘지 들판(위에서 내려다본 3/4): 검푸른 덤불 바탕 + 안개 얼룩, 묘비(작은 둥근 머리 판) · 마른 나무(가지 선) 실루엣이 흩어져 있다.
+## 가로 · 세로로 이어 붙여도 이음매 없게(바탕은 주기 잡음, 실루엣은 posmod로 감는다).
+static func _deadfield(w: int, h: int, s: int, cfg: Dictionary) -> Paint:
+	var p := Paint.new(w, h, s)
+	var ground := Color(str(cfg.get("ground", "#1e2418")))
+	var fogc := Color(str(cfg.get("fog_color", "#4a5050")))
+	var hf := Seam.field(w, h, s, 0.03, 3)
+	var fine := Seam.field(w, h, s + 3, 0.3, 1)
+	var fog := Seam.field(w, h, s + 5, 0.012, 3)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var c := Color("#0a0c08").lerp(ground, clampf(0.3 + hf[i] * 0.7 + (fine[i] - 0.5) * 0.4, 0.0, 1.0))
+			c = c.lerp(fogc, smoothstep(0.45, 0.8, fog[i]) * 0.45)
+			p.blend(x, y, c, 1.0)
+	var rng := p.rng
+	for k in 26:  # 묘비
+		var c := Vector2(rng.randf() * w, rng.randf() * h)
+		var hh := rng.randf_range(10.0, 18.0)
+		var ww := hh * 0.55
+		for yy in range(int(c.y - hh), int(c.y) + 1):
+			for xx in range(int(c.x - ww * 0.5), int(c.x + ww * 0.5) + 1):
+				var dy := (yy - (c.y - hh + ww * 0.5)) / (ww * 0.5)
+				var dx := (xx - c.x) / (ww * 0.5)
+				if yy > c.y - hh + ww * 0.5 or dx * dx + dy * dy <= 1.0:
+					p.blend(posmod(xx, w), posmod(yy, h), Color("#3a3c36").lerp(Color("#5a5c54"), 0.3 if xx < c.x else 0.0), 0.9)
+		for d in 4:
+			p.blend(posmod(int(c.x) + d - 2, w), posmod(int(c.y) + 1, h), Color("#050604"), 0.5)
+	for k in 9:  # 마른 나무
+		var b := Vector2(rng.randf() * w, rng.randf() * h)
+		var t := b + Vector2(rng.randf_range(-8, 8), -rng.randf_range(50, 80))
+		_branch(p, b, t, 5.0, 3, rng)
+	return p
+
+
+static func _branch(p: Paint, a: Vector2, b: Vector2, wd: float, depth: int, rng: RandomNumberGenerator) -> void:
+	var n := maxi(2, int(a.distance_to(b)))
+	for i in n:
+		var q := a.lerp(b, float(i) / float(n))
+		var r := int(ceil(wd * 0.5 * (1.0 - float(i) / float(n) * 0.5)))
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				p.blend(posmod(int(q.x) + dx, p.w), posmod(int(q.y) + dy, p.h), Color("#0e0f0c"), 0.95)
+	if depth <= 0:
+		return
+	for k in 2:
+		var m := a.lerp(b, rng.randf_range(0.4, 0.8))
+		var dir := (b - a).rotated(rng.randf_range(0.5, 1.0) * (-1.0 if k == 0 else 1.0)) * rng.randf_range(0.35, 0.55)
+		_branch(p, m, m + dir, maxf(1.0, wd * 0.55), depth - 1, rng)
 
 
 # ── 성 ─────────────────────────────────────────────────────

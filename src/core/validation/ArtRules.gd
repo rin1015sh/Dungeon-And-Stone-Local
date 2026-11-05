@@ -13,6 +13,11 @@ static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
 		if key == "memory_brightness":
 			if JsonUtil.get_float(pal, key) < 0.0:
 				v.err(w + ".palette", "memory_brightness는 0 이상")
+		elif key == "keep_hue":
+			pass
+		elif key == "memory_desat":
+			if JsonUtil.get_float(pal, key) < 0.0 or JsonUtil.get_float(pal, key) > 1.0:
+				v.err(w + ".palette", "memory_desat는 0~1")
 		elif key in ART_COLORS:
 			v.check_color(w + ".palette." + key, JsonUtil.get_str(pal, key))
 		else:

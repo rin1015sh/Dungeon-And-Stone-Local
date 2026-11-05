@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqvs26bbnhh7f"
-path="res://.godot/imported/cobble.webp-e49de797135b042a38252744a2f01dd3.ctex"
+uid="uid://bk0l7e0tliygy"
+path="res://.godot/imported/graveearth.webp-bc11cd26e03ce96e880ed04cc9d0eafa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2d/cobble.webp"
-dest_files=["res://.godot/imported/cobble.webp-e49de797135b042a38252744a2f01dd3.ctex"]
+source_file="res://assets/floor/f2d/graveearth.webp"
+dest_files=["res://.godot/imported/graveearth.webp-bc11cd26e03ce96e880ed04cc9d0eafa.ctex"]
 
 [params]
 

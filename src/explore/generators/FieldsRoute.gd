@@ -7,7 +7,8 @@ extends RefCounted
 ##   "nodes": [{"id", "at": [x, y], "r", "zone", "tile"(없으면 zone_floor), "kind": arrival|exit|place|pocket, "beacon": 타일(가운데 위쪽 표지)}],
 ##   "edges": [{"a", "b", "width", "tile"(없으면 a 구간 바닥), "wiggle": 굽이 폭(칸), "walls": 타일(길 양옆 한 칸을 그 벽으로 — 회랑)}],
 ##   "props": [{"zone", "tile", "count"}](서 있는 소품 — 둘레 8칸이 걸을 수 있는 칸에만),
-##   구간 "props": [{"tile", "count"}(그 구간 안 무작위) | {"tile", "at": [[dx, dy], …]}(가운데에서 그 칸들 — 예배당 긴 의자 줄)]}
+##   구간 "props": [{"tile", "count"}(그 구간 안 무작위) | {"tile", "at": [[dx, dy], …]}(가운데에서 그 칸들 — 예배당 긴 의자 줄)],
+##   "buildings" · "ruins" · "fence" · "outer_props"(석조 건물 · 숨은 방 · 무너진 벽 · 울타리 · 길 밖 풍경 — FieldsRouteBuild)}
 ## 지도 표시: map.anchors["nodes"] = {id: Vector2i 가운데}, ["node_r"] = {id: 반지름} — 지키는 무리(RouteGuards) · 비석(GraveWake)이 쓴다.
 ## 구역(map.zones) = 걸을 수 있는 칸은 가장 가까운 구간의 zone, 메움 칸도 같게(구역별 메움 지형).
 
@@ -42,6 +43,7 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 		var id := JsonUtil.get_str(nd, "id")
 		var tile := JsonUtil.get_str(nd, "tile", JsonUtil.get_str(zone_floor, str(zone_of[id]), JsonUtil.get_str(t, "floor")))
 		_blob(map, rng, nodes[id], float(radii[id]), tile, walk)
+	FieldsRouteBuild.buildings(map, g, nodes, walk)
 	var ei := 0
 	for e: Dictionary in JsonUtil.get_array(g, "edges"):
 		var wt := JsonUtil.get_str(e, "walls")
@@ -49,6 +51,7 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 			_walls(map, edge_cells[ei], wt, walk)
 		ei += 1
 	_zones_and_fill(map, nodes, zone_of, JsonUtil.get_dict(g, "zone_fill"), JsonUtil.get_str(t, "rise"), walk)
+	FieldsRouteBuild.ruins(map, rng, g, walk)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var bt := JsonUtil.get_str(nd, "beacon")
 		if not bt.is_empty():
@@ -59,6 +62,8 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 			_node_props(map, rng, nodes[id], float(radii[id]), pd)
 	for pd: Dictionary in JsonUtil.get_array(g, "props"):
 		_props(map, rng, str(pd.get("zone", "")), JsonUtil.get_str(pd, "tile"), JsonUtil.get_int(pd, "count"), nodes)
+	FieldsRouteBuild.fences(map, g, nodes, radii)
+	FieldsRouteBuild.outer_props(map, rng, g)
 	map.anchors["nodes"] = nodes
 	map.anchors["node_r"] = radii
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):

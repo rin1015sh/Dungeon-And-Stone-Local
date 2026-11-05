@@ -443,15 +443,17 @@
   "f2d": {
    "name_ko": "망자의 땅(2층 — floor2.md §3)",
    "rise": {
-    "kind": "castle",
+    "kind": "grave",
     "face_tiles": 8,
     "face_depth": 3,
     "top_tiles": 8,
-    "stone": "#7a7874",
-    "stone_dark": "#34332f",
+    "stone": "#6e6c60",
+    "stone_dark": "#2c2c26",
     "roof": "#5a5854",
     "roof_dark": "#2a2926",
-    "lane": "#1a1a1c"
+    "lane": "#1a1a1c",
+    "ground": "#1e2418",
+    "fog_color": "#4a5050"
    },
    "floors": [
     {
@@ -460,7 +462,11 @@
     },
     {
      "tile": "f2d_hard",
-     "style": "ash"
+     "style": "dryearth"
+    },
+    {
+     "tile": "f2d_grass",
+     "style": "graveearth"
     },
     {
      "tile": "f2d_mound",
@@ -472,8 +478,13 @@
      "dim": 0.45
     },
     {
+     "tile": "f2d_thicket",
+     "style": "thicket",
+     "dim": 0.55
+    },
+    {
      "tile": "f2d_bridge",
-     "style": "cobble"
+     "style": "flagstone"
     }
    ],
    "walls": [
@@ -481,10 +492,17 @@
      "tile": "f2d_ruin",
      "style": "masonry",
      "face_px": 48
+    },
+    {
+     "tile": "f2d_crypt",
+     "style": "cryptstone",
+     "face_px": 48
     }
    ],
    "stands": [
-    "bf_grave"
+    "f2d_fence",
+    "f2d_lantern",
+    "f2d_bush"
    ]
   }
  }

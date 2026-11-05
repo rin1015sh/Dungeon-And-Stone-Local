@@ -74,8 +74,16 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 		for k in ["tile", "walls"]:
 			if d.has(k):
 				tiles.append(JsonUtil.get_str(d, k))
-	for pd: Variant in JsonUtil.get_array(g, "props"):
-		tiles.append(JsonUtil.get_str(pd if pd is Dictionary else {}, "tile"))
+	for key in ["props", "ruins", "fence", "outer_props"]:
+		for pd: Variant in JsonUtil.get_array(g, key):
+			tiles.append(JsonUtil.get_str(pd if pd is Dictionary else {}, "tile"))
+	for b: Variant in JsonUtil.get_array(g, "buildings"):
+		var bd: Dictionary = b if b is Dictionary else {}
+		if not ids.has(JsonUtil.get_str(bd, "node")) or JsonUtil.get_array(bd, "at").size() != 2 or JsonUtil.get_array(bd, "size").size() != 2:
+			out.append("fields: 건물 — 없는 구간이거나 at · size가 [x, y]가 아니다")
+		for k in ["wall", "floor", "path"]:
+			if bd.has(k):
+				tiles.append(JsonUtil.get_str(bd, k))
 	for tid in tiles:
 		if not db.has_entry("tiles", tid):
 			out.append("fields: 타일 '%s' 없음" % tid)

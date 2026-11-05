@@ -10,7 +10,7 @@
   "visibility_source": "placeholder",
   "ambient_light_m": 7.0,
   "ambient_source": "placeholder",
-  "ambient_color": "#a8abb2",
+  "ambient_color": "#c0b4a8",
   "art": {
     "_comment": "그림: 바닥 · 잔해 = assets/floor/f2d(paint_floor.gd --only=f2d — 핏빛성채 그리는 법 + 망자의 땅 색), 소품 = 핏빛성채 소품 시트, 전투 뒷그림 = tools/battle_art/SceneDead.gd. [창작] 임시값",
     "battleback": {
@@ -19,13 +19,15 @@
     },
     "palette": {
       "unexplored": "#000000",
-      "near_black": "#38393c",
+      "near_black": "#3a3834",
       "tone": "#e4e4e2",
       "memory_tint": "#8c8e94",
-      "memory_brightness": 0.42
+      "memory_brightness": 0.5,
+      "memory_desat": 0.3,
+      "keep_hue": true
     },
     "post": {
-      "saturation": 0.42,
+      "saturation": 0.85,
       "vignette_strength": 0.4,
       "vignette_radius": 0.5,
       "grain_strength": 0.05
@@ -50,6 +52,30 @@
           -1.0
         ],
         "spread": 180.0,
+        "gravity": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "id": "mist",
+        "amount": 14,
+        "lifetime": 16.0,
+        "color": "#c8ccd0",
+        "alpha": 0.06,
+        "scale": [
+          40.0,
+          90.0
+        ],
+        "velocity": [
+          2.0,
+          6.0
+        ],
+        "direction": [
+          1.0,
+          -0.2
+        ],
+        "spread": 40.0,
         "gravity": [
           0.0,
           0.0
@@ -98,7 +124,8 @@
         "f2d_mud",
         "f2d_hard",
         "f2d_bridge",
-        "f2d_mound"
+        "f2d_mound",
+        "f2d_grass"
       ],
       "rules": [
         {
@@ -224,9 +251,9 @@
     "macro": {
       "_comment": "거시 색조: 구역마다 살짝 다른 잿빛(늪 = 차갑게, 굳은 땅 = 바랜 흙빛) + 저주파 밝기 얼룩(넓은 바닥이 한 장 무늬로 보이지 않게). [창작] 임시값",
       "zones": {
-        "f2d_marsh": "#d6dce2",
-        "f2d_ruins": "#e2e0de",
-        "f2d_hard": "#ece4d8"
+        "f2d_marsh": "#d2dad6",
+        "f2d_ruins": "#e2e6d2",
+        "f2d_hard": "#eee2d0"
       },
       "noise": {
         "freq": 0.06,
@@ -250,12 +277,12 @@
     },
     "zone_fill": {
       "f2d_marsh": "f2d_deep",
-      "f2d_ruins": "f2d_deep",
-      "f2d_hard": "f2d_rise"
+      "f2d_ruins": "f2d_thicket",
+      "f2d_hard": "f2d_thicket"
     },
     "zone_floor": {
       "f2d_marsh": "f2d_mud",
-      "f2d_ruins": "f2d_hard",
+      "f2d_ruins": "f2d_grass",
       "f2d_hard": "f2d_hard"
     },
     "nodes": [
@@ -530,7 +557,7 @@
         "kind": "pocket",
         "props": [
           {
-            "tile": "f2d_gravestone",
+            "tile": "f2d_tomb_g",
             "count": 22
           },
           {
@@ -862,7 +889,7 @@
       },
       {
         "zone": "f2d_ruins",
-        "tile": "f2d_gravestone",
+        "tile": "f2d_tomb_g",
         "count": 110
       },
       {
@@ -914,6 +941,282 @@
         "zone": "f2d_ruins",
         "tile": "f2d_sack",
         "count": 18
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_lantern",
+        "count": 22
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_lantern_m",
+        "count": 16
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_lantern_h",
+        "count": 14
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_deadtree_g",
+        "count": 30
+      }
+    ],
+    "buildings": [
+      {
+        "node": "graveyard",
+        "at": [
+          -3,
+          -14
+        ],
+        "size": [
+          6,
+          5
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "graveyard",
+        "at": [
+          -28,
+          -3
+        ],
+        "size": [
+          7,
+          6
+        ],
+        "door": "e",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "chapel",
+        "at": [
+          26,
+          -4
+        ],
+        "size": [
+          7,
+          6
+        ],
+        "door": "w",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "tomb_gate",
+        "at": [
+          -14,
+          -12
+        ],
+        "size": [
+          5,
+          4
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "tomb_gate",
+        "at": [
+          9,
+          -12
+        ],
+        "size": [
+          5,
+          4
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "ossuary",
+        "at": [
+          -3,
+          16
+        ],
+        "size": [
+          7,
+          6
+        ],
+        "door": "n",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "crossroads",
+        "at": [
+          -26,
+          -14
+        ],
+        "size": [
+          6,
+          4
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "dullahan_ruin",
+        "at": [
+          -8,
+          -30
+        ],
+        "size": [
+          8,
+          6
+        ],
+        "door": "s",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_hard"
+      },
+      {
+        "node": "watchtower",
+        "at": [
+          -2,
+          -9
+        ],
+        "size": [
+          4,
+          4
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "summit",
+        "at": [
+          -9,
+          -7
+        ],
+        "size": [
+          3,
+          3
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      },
+      {
+        "node": "summit",
+        "at": [
+          7,
+          -7
+        ],
+        "size": [
+          3,
+          3
+        ],
+        "door": "",
+        "wall": "f2d_crypt",
+        "floor": "f2d_bridge",
+        "path": "f2d_grass"
+      }
+    ],
+    "ruins": [
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_crypt",
+        "count": 28
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_crypt",
+        "count": 30
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_crypt",
+        "count": 8
+      }
+    ],
+    "fence": [
+      {
+        "node": "graveyard",
+        "tile": "f2d_fence",
+        "pad": 3
+      },
+      {
+        "node": "tomb_gate",
+        "tile": "f2d_fence",
+        "pad": 3
+      },
+      {
+        "node": "ossuary",
+        "tile": "f2d_fence",
+        "pad": 3
+      },
+      {
+        "node": "corridor",
+        "tile": "f2d_fence",
+        "pad": 3
+      }
+    ],
+    "outer_props": [
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_bush",
+        "count": 160,
+        "near": 7
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_tomb_o",
+        "count": 150,
+        "near": 8
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_deadtree_o",
+        "count": 90,
+        "near": 8
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_statue_o",
+        "count": 20,
+        "near": 6
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_bush",
+        "count": 140,
+        "near": 7
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_deadtree_o",
+        "count": 110,
+        "near": 8
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_tomb_o",
+        "count": 40,
+        "near": 6
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_statue_o",
+        "count": 10,
+        "near": 6
       }
     ]
   },
@@ -1133,6 +1436,46 @@
         "at": [
           -4,
           2
+        ]
+      },
+      {
+        "node": "graveyard",
+        "event": "explorer_corpse",
+        "at": [
+          -25,
+          -1
+        ]
+      },
+      {
+        "node": "graveyard",
+        "event": "old_skeleton",
+        "at": [
+          -23,
+          1
+        ]
+      },
+      {
+        "node": "chapel",
+        "event": "offering_pile",
+        "at": [
+          29,
+          -2
+        ]
+      },
+      {
+        "node": "ossuary",
+        "event": "explorer_corpse",
+        "at": [
+          0,
+          18
+        ]
+      },
+      {
+        "node": "dullahan_ruin",
+        "event": "offering_pile",
+        "at": [
+          -4,
+          -28
         ]
       }
     ]

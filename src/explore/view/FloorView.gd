@@ -41,6 +41,7 @@ var _vknown: PackedByteArray        # 꼭짓점 둘레 4×4칸 중 "아는" 칸 
 const KNOWN_ALL := 16
 var art: FloorArt
 var _nb: Color = Color.BLACK          # art 값 사본(vertex_color는 아주 자주 불린다)
+var _keep_hue: bool = false          # art.keep_hue — 근흑색 배율을 밝기 하나로(색조를 남긴다)
 var _unexplored: Color = Color.BLACK
 var _mem: Color = Color.GRAY         # 기억 색조 × 밝기
 var glow_texture: GradientTexture2D   # GlowChunk들이 같이 쓴다
@@ -48,6 +49,7 @@ var glow_material: ShaderMaterial
 var _particles: AmbientParticles
 var tile_tex: Array[Texture2D] = []  # map.defs 번호 -> 재질 아틀라스(없으면 null — 색칠한 칸으로 그린다)
 var tex_material: ShaderMaterial     # 아틀라스 그림의 기억 탈색(floor_tex) — 바닥 청크·벽 줄이 같이 쓴다
+var memory_desat: float = 0.65       # floor_tex가 기억 칸을 탈색하는 정도(vertex_mul의 근흑색 배율이 같은 탈색을 따라야 색이 뒤집히지 않는다)
 var decor: FloorDecor                 # 데칼 배치(층 art.decor)
 var tint := FloorTint.new()           # 거시 색조(층 art.macro) — 청크를 만들 때 그 꼭짓점만 채운다
 var decor_tex: Texture2D              # 데칼 시트(그래픽 품질 low면 null — 데칼을 그리지 않는다)
@@ -151,6 +153,7 @@ func set_quality(quality: String) -> void:
 func _set_art(a: FloorArt) -> void:
 	art = a
 	_nb = a.near_black
+	_keep_hue = a.keep_hue
 	_unexplored = a.unexplored
 	_mem = a.memory_tint * a.memory_brightness
 
@@ -318,17 +321,28 @@ func vertex_mul(vx: int, vy: int, mean: Color) -> Color:
 	if tint.enabled:
 		var tc := tint.colors[i]
 		lit = Color(lit.r * tc.r, lit.g * tc.g, lit.b * tc.b)
-	var fr := _nb.r / maxf(mean.r, 0.02)
-	var fg := _nb.g / maxf(mean.g, 0.02)
-	var fb := _nb.b / maxf(mean.b, 0.02)
 	var kn := _vknown[i]
 	if f == FOG_ALL_SEEN and kn == KNOWN_ALL:
-		return Color(maxf(lit.r, fr), maxf(lit.g, fg), maxf(lit.b, fb), 1.0)
+		if _keep_hue:
+			var q := _nb.get_luminance() / maxf(mean.get_luminance(), 0.02)
+			return Color(maxf(lit.r, q), maxf(lit.g, q), maxf(lit.b, q), 1.0)
+		return Color(maxf(lit.r, _nb.r / maxf(mean.r, 0.02)), maxf(lit.g, _nb.g / maxf(mean.g, 0.02)), maxf(lit.b, _nb.b / maxf(mean.b, 0.02)), 1.0)
 	var e := f & 7
 	if e == 0:
 		return Color(0, 0, 0, 0)
 	var s := f >> 3
 	var k := float(s) / float(e)
+	# 기억 칸은 셰이더가 그림을 (1 - k) × memory_desat만큼 탈색한다 — 근흑색 배율도 탈색한 평균으로 나눈다
+	# (그대로 나누면 색이 짙은 바닥이 보색으로 뒤집힌다: 풀밭이 보라 — FL10)
+	var l := mean.get_luminance()
+	var md := Color(l, l, l).lerp(mean, 1.0 - (1.0 - k) * memory_desat)
+	var fr := _nb.r / maxf(md.r, 0.02)
+	var fg := _nb.g / maxf(md.g, 0.02)
+	var fb := _nb.b / maxf(md.b, 0.02)
+	if _keep_hue:
+		fr = _nb.get_luminance() / maxf(md.get_luminance(), 0.02)
+		fg = fr
+		fb = fr
 	var m := _mem.lerp(lit, k) if s > 0 else _mem
 	var fade := known_fade(kn)
 	return Color(maxf(m.r, fr) * fade, maxf(m.g, fg) * fade, maxf(m.b, fb) * fade, k)

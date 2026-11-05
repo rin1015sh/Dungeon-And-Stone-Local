@@ -2,7 +2,8 @@ class_name FloorArt
 extends RefCounted
 ## 층의 그림 설정(층 JSON `art` — 균열 챕터는 균열 `look.art`) = render.json 기본값 위에 층 값을 덮는다.
 ##   palette  {unexplored(미탐험 = 순흑), near_black(보이는 곳의 가장 어두운 색), tone(CanvasModulate 색조),
-##             memory_tint, memory_brightness(기억 칸)}
+##             memory_tint, memory_brightness(기억 칸), memory_desat(기억 칸 그림 탈색 0~1 — 없으면 render.json view.memory_desat, FL10),
+##             keep_hue(true면 근흑색 아래를 올릴 때 밝기만 맞추고 타일 색조는 남긴다 — 어둠 · 기억 칸도 풀은 푸르게, FL10)}
 ##   post     {saturation, vignette_strength, vignette_radius, grain_strength} — 화면 후처리
 ##   pulse    {tiles[], period_sec, depth, radius_m, strength} — 빛나는 타일의 느린 맥동(셰이더, 청크 다시 그리기 없음)
 ##   particles [{id, amount, lifetime, color, alpha, scale[min,max], velocity[min,max], direction[x,y], spread, gravity[x,y]}]
@@ -20,6 +21,8 @@ var near_black: Color = Color(0.05, 0.045, 0.06)
 var tone: Color = Color.WHITE
 var memory_tint: Color = Color.GRAY
 var memory_brightness: float = 0.3
+var memory_desat: float = -1.0  ## < 0 = render.json 기본값
+var keep_hue: bool = false
 var post: Dictionary = {}
 var pulse_tiles: PackedStringArray = PackedStringArray()
 var pulse_period: float = 6.0
@@ -46,6 +49,8 @@ static func resolve(render: Dictionary, floor_def: Dictionary, quality: String =
 	a.tone = _color(pal, "tone", JsonUtil.get_str(lighting, "canvas_modulate", "#ffffff"))
 	a.memory_tint = _color(pal, "memory_tint", JsonUtil.get_str(view, "memory_tint", "#808080"))
 	a.memory_brightness = JsonUtil.get_float(pal, "memory_brightness", JsonUtil.get_float(view, "memory_brightness", 0.3))
+	a.memory_desat = JsonUtil.get_float(pal, "memory_desat", -1.0)
+	a.keep_hue = JsonUtil.get_bool(pal, "keep_hue")
 	var p := JsonUtil.get_dict(art, "post")
 	for key: String in POST_KEYS:
 		if p.has(key) or lighting.has(key):

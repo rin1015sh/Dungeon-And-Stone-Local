@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfmk0wr7uqdc0"
-path="res://.godot/imported/ash.webp-4c86134499090b08b47684793cc92dc1.ctex"
+uid="uid://dohyp4rk02y00"
+path="res://.godot/imported/dryearth.webp-c324358dba70730ff7f10e365709f28e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2d/ash.webp"
-dest_files=["res://.godot/imported/ash.webp-4c86134499090b08b47684793cc92dc1.ctex"]
+source_file="res://assets/floor/f2d/dryearth.webp"
+dest_files=["res://.godot/imported/dryearth.webp-c324358dba70730ff7f10e365709f28e.ctex"]
 
 [params]
 

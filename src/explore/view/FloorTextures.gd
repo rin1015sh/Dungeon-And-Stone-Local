@@ -59,7 +59,8 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	if any:
 		v.tex_material = ShaderMaterial.new()
 		v.tex_material.shader = load(TEX_SHADER) as Shader
-		v.tex_material.set_shader_parameter("memory_desat", JsonUtil.get_float(cfg, "memory_desat", 0.65))
+		v.memory_desat = v.art.memory_desat if v.art.memory_desat >= 0.0 else JsonUtil.get_float(cfg, "memory_desat", 0.65)
+		v.tex_material.set_shader_parameter("memory_desat", v.memory_desat)
 
 
 ## 그래픽 품질 low면 데칼을 그리지 않는다(소품·재질 그림은 남긴다 — 상호작용 대상이 보여야 한다).
