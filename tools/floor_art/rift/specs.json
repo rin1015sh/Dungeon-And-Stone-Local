@@ -447,11 +447,11 @@
     "face_tiles": 8,
     "face_depth": 3,
     "top_tiles": 8,
-    "stone": "#4e4c48",
-    "stone_dark": "#1a1918",
-    "roof": "#34322e",
-    "roof_dark": "#121110",
-    "lane": "#08080a"
+    "stone": "#7a7874",
+    "stone_dark": "#34332f",
+    "roof": "#5a5854",
+    "roof_dark": "#2a2926",
+    "lane": "#1a1a1c"
    },
    "floors": [
     {

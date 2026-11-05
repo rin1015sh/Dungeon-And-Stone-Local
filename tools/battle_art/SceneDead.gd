@@ -1,5 +1,5 @@
 extends RefCounted
-## 전투 뒷그림 — 2층 망자의 땅(f2_land_of_dead — docs/plans/floor2.md §3): 밤처럼 검은 하늘에 흩뿌린 빛, 웅덩이 진 검은 진창,
+## 전투 뒷그림 — 2층 망자의 땅(f2_land_of_dead — docs/plans/floor2.md §3): 잿빛으로 흐린 하늘에 흩뿌린 빛(사용자 2026-11-05 "너무 어둡다 — 잿빛으로"), 웅덩이 진 잿빛 진창,
 ## 기울어진 묘비들 · 마른 나무 · 박힌 말뚝, 지평선에 무너진 석조 잔해 실루엣, 낮게 깔린 안개와 떠도는 넋불 둘.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -9,11 +9,11 @@ const Mats := preload("res://tools/battle_art/Mats.gd")
 const Kit := preload("res://tools/battle_art/Kit.gd")
 const Kit2 := preload("res://tools/battle_art/Kit2.gd")
 
-const MUD := Color("#2a2622")
-const STONE := Color("#4a4842")
-const SKY_TOP := Color("#06080e")
-const SKY_LOW := Color("#1a1e2a")
-const CLOUD := Color("#10131c")
+const MUD := Color("#4a4844")
+const STONE := Color("#6a6862")
+const SKY_TOP := Color("#1c1e24")
+const SKY_LOW := Color("#4a4c52")
+const CLOUD := Color("#34363c")
 
 
 static func paint(w: int, h: int, seed_value: int) -> Paint:
@@ -24,11 +24,11 @@ static func paint(w: int, h: int, seed_value: int) -> Paint:
 	room.hy = 250.0
 	room.z_end = 40.0
 	room.fog_k = 0.07
-	room.fog_c = Color("#141822")
-	room.ambient = Color(0.13, 0.14, 0.18)
+	room.fog_c = Color("#4a4c50")
+	room.ambient = Color(0.3, 0.3, 0.31)
 	room.shape(func(_z: float) -> float: return 30.0, func(_z: float) -> float: return 30.0, func(_z: float) -> float: return 80.0)
 	room.lights = [
-		{"p": Vector3(0.0, 30.0, 20.0), "c": Color("#7a86a8"), "s": 1.4, "r": 40.0},
+		{"p": Vector3(0.0, 30.0, 20.0), "c": Color("#b8b8bc"), "s": 2.0, "r": 40.0},
 		{"p": Vector3(-2.5, 1.2, 9.0), "c": Color("#7ab8ff"), "s": 0.8, "r": 3.0},
 		{"p": Vector3(3.0, 1.5, 14.0), "c": Color("#7ab8ff"), "s": 0.7, "r": 3.0},
 	]
@@ -37,7 +37,7 @@ static func paint(w: int, h: int, seed_value: int) -> Paint:
 			var d := m.rock(P.x * 1.4, P.z * 1.4, MUD, 0.1)
 			var puddle := smoothstep(0.62, 0.68, m.nz("lo", P.x * 0.7 + 3.0, P.z * 0.5))
 			var prints := smoothstep(0.82, 0.86, m.nz("hi", P.x * 2.0, P.z * 2.0)) * (1.0 - puddle)
-			d["c"] = (d["c"] as Color).darkened(prints * 0.3).lerp(Color("#121418"), puddle * 0.85)
+			d["c"] = (d["c"] as Color).darkened(prints * 0.3).lerp(Color("#2a2b2e"), puddle * 0.7)
 			d["h"] = float(d["h"]) * 0.4
 			d["spec"] = puddle * 0.95
 			return d
@@ -45,10 +45,10 @@ static func paint(w: int, h: int, seed_value: int) -> Paint:
 	room.render(p)
 	_ruins(p, room)
 	_props(p, room, m)
-	Kit.grime(p, 0.25, Color("#08090c"))
+	Kit.grime(p, 0.18, Color("#1a1a1c"))
 	Kit.hatch_dark(p, 8000, 60.0, 0.03, 0.14, 0.35)
 	Kit.brush(p, 1.0)
-	Kit.finish(p, Color("#0c0e14"), Color("#d8dce8"), 0.35, 0.6)
+	Kit.finish(p, Color("#1c1c1e"), Color("#e4e4e2"), 0.55, 0.45)
 	Kit2.sparkle(p, Rect2(0, 0, w, room.hy - 40.0), 140, Color("#c8d4ff"), 1.2)  # 높은 천장에 흩뿌린 빛
 	Kit2.wisp(p, room, Vector3(-2.5, 1.2, 9.0), 0.12, Color("#7ab8ff"))
 	Kit2.wisp(p, room, Vector3(3.0, 1.5, 14.0), 0.1, Color("#7ab8ff"))
@@ -80,7 +80,7 @@ static func _ruins(p: Paint, room: Room) -> void:
 			pts.append(Vector3(x - 2.0, 0.4, z))
 		i += 1
 	pts.append(Vector3(40.0, 0.0, z))
-	Kit2.silhouette(p, Kit.proj(room, pts), Color("#161a22"), Color("#242a38"))
+	Kit2.silhouette(p, Kit.proj(room, pts), Color("#34353a"), Color("#56585e"))
 
 
 static func _props(p: Paint, room: Room, m: Mats) -> void:
@@ -119,15 +119,13 @@ static func _props(p: Paint, room: Room, m: Mats) -> void:
 				var base := room.pt(x, 0.0, z)
 				var top := room.pt(x + rng.randf_range(-0.6, 0.6), rng.randf_range(3.5, 6.0), z)
 				var wpx := clampf(room.px(0.22, z), 1.5, 8.0)
-				Ink.line(p, base, top, wpx, Color("#1a1a1e"), 1.0, 0.4)
+				Ink.line(p, base, top, wpx, Color("#2a2a2c"), 1.0, 0.4)
 				for b in 5:
 					var t := rng.randf_range(0.35, 0.9)
 					var a := base.lerp(top, t)
 					var end := a + Vector2(rng.randf_range(-1.0, 1.0), rng.randf_range(-0.9, -0.2)) * room.px(rng.randf_range(1.0, 2.0), z)
-					Ink.line(p, a, end, wpx * 0.45, Color("#1a1a1e"), 1.0, 0.4)
+					Ink.line(p, a, end, wpx * 0.45, Color("#2a2a2c"), 1.0, 0.4)
 			"stake":
 				var q := Kit.proj(room, [Vector3(x, 0.0, z), Vector3(x + 0.1, rng.randf_range(1.0, 1.8), z)])
 				Ink.line(p, q[0], q[1], clampf(room.px(0.1, z), 1.0, 5.0), room.lit(Vector3(x, 0.8, z), Vector3(0, 0.3, -1).normalized(), Color("#3a3028")), 1.0, 0.3)
 				Ink.line(p, q[0], q[1], 1.0, Ink.INK, 0.5, 0.3)
-	Kit.skull(p, room, Vector3(-1.4, 0.0, 6.5), 0.1, Color("#9a9488"))
-	Kit.skull(p, room, Vector3(1.8, 0.0, 8.0), 0.09, Color("#9a9488"))
