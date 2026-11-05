@@ -77,6 +77,20 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 	for key in ["props", "ruins", "fence", "outer_props"]:
 		for pd: Variant in JsonUtil.get_array(g, key):
 			tiles.append(JsonUtil.get_str(pd if pd is Dictionary else {}, "tile"))
+	for z: Variant in JsonUtil.get_dict(g, "zone_low").values():
+		tiles.append(str(z))
+	for k: Variant in JsonUtil.get_dict(g, "levels").values():
+		tiles.append(str(k))
+	for st: Variant in JsonUtil.get_array(g, "stamps"):
+		var sd: Dictionary = st if st is Dictionary else {}
+		if not ids.has(JsonUtil.get_str(sd, "node")):
+			out.append("fields: 장소 조각 — 없는 구간 '%s'" % JsonUtil.get_str(sd, "node"))
+		for v: Variant in JsonUtil.get_dict(sd, "legend").values():
+			tiles.append(str(v))
+	for nd: Variant in JsonUtil.get_array(g, "nodes"):
+		for td: Variant in JsonUtil.get_array(nd if nd is Dictionary else {}, "terraces"):
+			if (td as Dictionary).has("tile"):
+				tiles.append(JsonUtil.get_str(td, "tile"))
 	for b: Variant in JsonUtil.get_array(g, "buildings"):
 		var bd: Dictionary = b if b is Dictionary else {}
 		if not ids.has(JsonUtil.get_str(bd, "node")) or JsonUtil.get_array(bd, "at").size() != 2 or JsonUtil.get_array(bd, "size").size() != 2:

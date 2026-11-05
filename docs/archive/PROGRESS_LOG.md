@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **망자의 땅 높낮이 · 장소 조각 (2026-11-05, 사용자 "진행해 · 특히 지형은 절벽 등 높고 낮은 층고", FL12 — floor2.md §14 1단계)**: `FieldsRouteBuild.levels · terrace · stamps`, 타일 `f2d_mud_low · hard_low · grass_low · scree · slope`, `TileDef.ramp`(MoatBank 절벽 없음), 절벽 그림 `assets/floor/f2d/chasm.webp`(specs places.f2d.cliff), 비탈 그림 stairs.webp. 소품 밑 바닥 검사는 같은 아틀라스도 허용(`FieldsRoute.under_ok`). 남은 것: 높은 곳 시야 덤 · 낮은 곳에서 높은 곳 가림(지금은 그림만), 망루 오르기, 2단계(무덤 파기 · 비문 · 잠긴 영묘 · 일지).
+
 - **망자의 땅 입체감 (2026-11-05, 사용자 "초록은 에바 · 입체감이 없다 — 1층 수정동굴 참고 · 다 각져 있다", FL11)**: 길 밖 덤불을 바닥 → 흙 둔덕 벽(`shape round` — 둥근 윤곽 · 검은 윗면 · 흙 벼랑 앞면 그림 `bank`), 석조 건물 · 잔해 벽 `round` + 윗면 돌 그림(새 타일 키 `art.top_tex` — WallShape tops에 def, WallRow `_draw_top_tex`), 잔해는 가로 2~4칸, 풀 · 이끼 색을 올리브 · 잿빛으로, 길 밖 소품 지움 · 울타리는 둔덕 앞(`fence.along`). 남은 것: 남쪽을 향한 둔덕만 앞면이 보인다(1층과 같은 규칙 — 북쪽 가장자리는 검은 윗면만), 둔덕 윗면이 검어 멀리서는 단조롭다.
 
 - **망자의 땅 묘지 느낌 (2026-11-05, 사용자 첨부 그림 + "땅이 벽돌 같다 · 묘지 느낌 · 무채색 · 휑함 · 숨겨진 작은 방 · 외곽 장식 이상 · 석조 건축물", FL10)**: 한 일 — 바닥 그림 넷(`f2d.gd` graveearth · dryearth · flagstone · thicket + 납골당 벽 cryptstone, 소품 쇠 울타리 · 등불 · 덤불 = `assets/floor/f2d/stand.webp`), 새 타일 `f2d_grass · thicket · crypt · fence · lantern(_m · _h) · bush · deadtree_o · tomb_o · statue_o · tomb_g · deadtree_g`, `FieldsRouteBuild`(buildings · ruins · fence · outer_props), 숨은 방 넷 + 안에 요소(route_spots features), 솟은 외곽 `kind grave`(Rise.gd `_deadfield`). **색이 회색이던 원인**: `FloorView.vertex_mul`의 근흑색 배율이 채널별(근흑색 ÷ 타일 색)이라 어둠 속 색조가 지워졌고, 기억 칸은 셰이더 탈색과 어긋나 보색(풀밭 → 보라)이 됐다 → 탈색한 평균으로 나누게 고침(모든 층 — 색이 옅은 1층 · 균열은 거의 같다) + 층 팔레트 `keep_hue` · `memory_desat`. 남은 것: 지도 둘레 담 너머 그림은 아직 단순(안개 · 실루엣), 숨은 방 문이 그냥 보인다(덤불에 가린 문 · 살펴야 열리는 벽은 아직 없음), 붉은 하늘 느낌(첨부 그림)은 탐험 화면에 하늘이 없어 등불 빛 · 피 군기로만.

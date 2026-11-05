@@ -57,6 +57,8 @@ static func detail(p: Paint, style: String, part: String, v: int, col: Color) ->
 		"cryptstone":
 			BF.detail(p, "masonry", part, v, col)
 			return
+	if style == "stairs" and v == 2:  # 핏빛성채 계단의 피 얼룩 변형은 빼고
+		v = 0
 	if style in ["ash", "mudroad"] and part == "floor":  # 잔손질이 칸마다 찍히면 격자 무늬로 보인다(변형은 체스판 짝 · 홀 칸 — FloorArtLayer.variant)
 		if v != 2:
 			return

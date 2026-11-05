@@ -8,7 +8,9 @@ extends RefCounted
 ##   "edges": [{"a", "b", "width", "tile"(없으면 a 구간 바닥), "wiggle": 굽이 폭(칸), "walls": 타일(길 양옆 한 칸을 그 벽으로 — 회랑)}],
 ##   "props": [{"zone", "tile", "count"}](서 있는 소품 — 둘레 8칸이 걸을 수 있는 칸에만),
 ##   구간 "props": [{"tile", "count"}(그 구간 안 무작위) | {"tile", "at": [[dx, dy], …]}(가운데에서 그 칸들 — 예배당 긴 의자 줄)],
-##   "buildings" · "ruins" · "fence" · "outer_props"(석조 건물 · 숨은 방 · 무너진 벽 · 울타리 · 길 밖 풍경 — FieldsRouteBuild)}
+##   "buildings" · "ruins" · "fence" · "outer_props"(석조 건물 · 숨은 방 · 무너진 벽 · 울타리 · 길 밖 풍경 — FieldsRouteBuild),
+##   높낮이(FL12): "zone_low" {구역: 낮은 땅 타일(art.sunk 바닥)}, 구간 · 길 "level": "low", 길 "ramp": true(높낮이가 바뀌는 곳이 비탈),
+##   구간 "terraces" [{at, r, level, ramp: [dx, dy](비탈 방향)}], "stamps"(손으로 그린 장소 조각), "levels" {scree, ramp}(절벽 밑 · 비탈 타일)}
 ## 지도 표시: map.anchors["nodes"] = {id: Vector2i 가운데}, ["node_r"] = {id: 반지름} — 지키는 무리(RouteGuards) · 비석(GraveWake)이 쓴다.
 ## 구역(map.zones) = 걸을 수 있는 칸은 가장 가까운 구간의 zone, 메움 칸도 같게(구역별 메움 지형).
 
@@ -21,6 +23,8 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 	var radii := {}
 	var zone_of := {}
 	var zone_floor := JsonUtil.get_dict(g, "zone_floor")
+	var zone_low := JsonUtil.get_dict(g, "zone_low")  # 낮은 땅(sunk 바닥) 타일 — level "low"인 구간 · 길 · 단(FL12)
+	var ramps := {}  # 높낮이 사이 비탈이 될 수 있는 칸(FieldsRouteBuild.levels)
 	map.zone_ids = PackedStringArray([""])
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var id := JsonUtil.get_str(nd, "id")
@@ -37,13 +41,25 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 	for e: Dictionary in JsonUtil.get_array(g, "edges"):
 		var a := JsonUtil.get_str(e, "a")
 		var b := JsonUtil.get_str(e, "b")
-		var tile := JsonUtil.get_str(e, "tile", JsonUtil.get_str(zone_floor, str(zone_of.get(a, "")), JsonUtil.get_str(t, "floor")))
-		edge_cells.append(_path(map, rng, nodes[a], nodes[b], JsonUtil.get_float(e, "width", 5.0), JsonUtil.get_float(e, "wiggle", 4.0), tile, walk))
+		var zf := zone_low if JsonUtil.get_str(e, "level") == "low" else zone_floor
+		var tile := JsonUtil.get_str(e, "tile", JsonUtil.get_str(zf, str(zone_of.get(a, "")), JsonUtil.get_str(t, "floor")))
+		var cells := _path(map, rng, nodes[a], nodes[b], JsonUtil.get_float(e, "width", 5.0), JsonUtil.get_float(e, "wiggle", 4.0), tile, walk)
+		edge_cells.append(cells)
+		if JsonUtil.get_bool(e, "ramp"):
+			for q in cells:
+				ramps[q] = true
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var id := JsonUtil.get_str(nd, "id")
-		var tile := JsonUtil.get_str(nd, "tile", JsonUtil.get_str(zone_floor, str(zone_of[id]), JsonUtil.get_str(t, "floor")))
+		var zf := zone_low if JsonUtil.get_str(nd, "level") == "low" else zone_floor
+		var tile := JsonUtil.get_str(nd, "tile", JsonUtil.get_str(zf, str(zone_of[id]), JsonUtil.get_str(t, "floor")))
 		_blob(map, rng, nodes[id], float(radii[id]), tile, walk)
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		var id := JsonUtil.get_str(nd, "id")
+		for td: Dictionary in JsonUtil.get_array(nd, "terraces"):
+			var zf := zone_low if JsonUtil.get_str(td, "level") == "low" else zone_floor
+			FieldsRouteBuild.terrace(map, rng, nodes[id], td, JsonUtil.get_str(td, "tile", JsonUtil.get_str(zf, str(zone_of[id]), JsonUtil.get_str(t, "floor"))), walk, ramps)
 	FieldsRouteBuild.buildings(map, g, nodes, walk)
+	FieldsRouteBuild.stamps(map, g, nodes, walk)
 	var ei := 0
 	for e: Dictionary in JsonUtil.get_array(g, "edges"):
 		var wt := JsonUtil.get_str(e, "walls")
@@ -52,6 +68,7 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 		ei += 1
 	_zones_and_fill(map, nodes, zone_of, JsonUtil.get_dict(g, "zone_fill"), JsonUtil.get_str(t, "rise"), walk)
 	FieldsRouteBuild.ruins(map, rng, g, walk)
+	FieldsRouteBuild.levels(map, g, ramps)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var bt := JsonUtil.get_str(nd, "beacon")
 		if not bt.is_empty():
@@ -169,7 +186,7 @@ static func _props(map: FloorMap, rng: Rng, zone: String, tile: String, count: i
 	for i in count:
 		for tries in 30:
 			var p := Vector2i(rng.randi_range(2, map.width - 3), rng.randi_range(2, map.height - 3))
-			if map.zones[map.idx(p)] != zi or (not under.is_empty() and map.tile_id_at(p) != under):
+			if map.zones[map.idx(p)] != zi or (not under.is_empty() and not under_ok(map, p, under)):
 				continue
 			var ok := true
 			for dy in range(-1, 2):
@@ -187,7 +204,7 @@ static func _props(map: FloorMap, rng: Rng, zone: String, tile: String, count: i
 static func _node_props(map: FloorMap, rng: Rng, c: Vector2i, r: float, pd: Dictionary) -> void:
 	var tile := JsonUtil.get_str(pd, "tile")
 	var under := map.defs[map.index_of(tile)].stand_under
-	var fits := func(q: Vector2i) -> bool: return map.is_walkable(q) and (under.is_empty() or map.tile_id_at(q) == under)
+	var fits := func(q: Vector2i) -> bool: return map.is_walkable(q) and (under.is_empty() or under_ok(map, q, under))
 	if pd.has("at"):
 		for o: Variant in JsonUtil.get_array(pd, "at"):
 			var q := c + Vector2i(int(o[0]), int(o[1]))
@@ -206,6 +223,14 @@ static func _node_props(map: FloorMap, rng: Rng, c: Vector2i, r: float, pd: Dict
 			if ok:
 				map.set_tile(q, tile)
 				break
+
+
+## 소품 밑 바닥 under와 같은 그림인 칸인가(같은 타일 또는 같은 아틀라스 — 낮은 땅 타일은 높은 땅과 그림을 같이 쓴다, FL12).
+static func under_ok(map: FloorMap, q: Vector2i, under: String) -> bool:
+	if map.tile_id_at(q) == under:
+		return true
+	var a := map.defs[map.index_of(under)].art_atlas
+	return not a.is_empty() and map.def_at(q).art_atlas == a
 
 
 static func _inside(map: FloorMap, p: Vector2i) -> bool:

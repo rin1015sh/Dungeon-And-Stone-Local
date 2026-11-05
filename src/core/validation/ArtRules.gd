@@ -82,7 +82,7 @@ static func _abyss(v: ValidatorBase, w: String, a: Dictionary) -> void:
 	if a.is_empty():
 		return
 	for key: String in a:
-		if not key in ["_comment", "cliff", "cliff_tiles", "cliff_depth", "jag", "abyss_color", "mist_color", "rim_color", "beam_color", "rail", "rise"]:
+		if not key in ["_comment", "cliff", "cliff_tiles", "cliff_depth", "jag", "abyss_color", "mist_color", "rim_color", "beam_color", "rail", "rise", "bank"]:
 			v.err(w, "모르는 키 '%s'" % key)
 	if not ResourceLoader.exists(JsonUtil.get_str(a, "cliff")):
 		v.err(w, "cliff 그림 없음 '%s' — tools/paint_floor.gd -- --only=<장소>:cliff" % JsonUtil.get_str(a, "cliff"))

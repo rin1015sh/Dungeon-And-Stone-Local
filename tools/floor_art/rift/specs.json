@@ -480,6 +480,10 @@
     {
      "tile": "f2d_bridge",
      "style": "flagstone"
+    },
+    {
+     "tile": "f2d_slope",
+     "style": "stairs"
     }
    ],
    "walls": [
@@ -503,7 +507,14 @@
     "f2d_fence",
     "f2d_lantern",
     "f2d_bush"
-   ]
+   ],
+   "cliff": {
+    "kind": "rock",
+    "top": "#6e6656",
+    "mid": "#36322a",
+    "deep": "#0c0b09",
+    "strata": 18
+   }
   }
  }
 }

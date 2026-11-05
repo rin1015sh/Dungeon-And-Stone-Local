@@ -45,7 +45,7 @@ static func _bank(map: FloorMap, q: Vector2i) -> bool:
 	if not map.in_bounds(q):
 		return false
 	var d := map.def_at(q)
-	return not d.is_wall() and not d.is_void and not d.sunk and d.void_edge != "beam"
+	return not d.is_wall() and not d.is_void and not d.sunk and not d.ramp and d.void_edge != "beam"  # 비탈 · 계단은 절벽 없이 이어진다(FL12)
 
 
 ## 물 칸 p의 볼록 모서리 c가 땅 그림으로 깎였는가(FloorChunk._find_blends와 같은 조건).
