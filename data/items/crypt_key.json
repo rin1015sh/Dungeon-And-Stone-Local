@@ -1,0 +1,17 @@
+{
+  "id": "crypt_key",
+  "name_ko": "영묘 열쇠",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "pouch",
+  "color": "#5a5448",
+  "rarity": "numbers",
+  "desc_ko": "녹이 이빨까지 먹어 들어간 무거운 열쇠. 손잡이에 감긴 검은 끈은 장례 때 쓰던 것이다.\n이것으로 잠근 이는 다시 열 생각이 없었다.",
+  "source": "placeholder",
+  "notes": "망자의 땅 예배당 성물실 → 비석 터 영묘(FL13)"
+}

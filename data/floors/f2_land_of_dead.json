@@ -1095,7 +1095,7 @@
           6,
           5
         ],
-        "door": "",
+        "door": "s",
         "wall": "f2d_crypt",
         "floor": "f2d_bridge",
         "path": "f2d_grass"
@@ -1373,6 +1373,23 @@
           "           F",
           "           F"
         ]
+      },
+      {
+        "node": "chapel",
+        "at": [
+          -10,
+          -18
+        ],
+        "legend": {
+          "W": "f2d_crypt"
+        },
+        "rows": [
+          "     W",
+          "     W",
+          "     W",
+          "     W",
+          "WW WWW"
+        ]
       }
     ]
   },
@@ -1579,14 +1596,6 @@
         ]
       },
       {
-        "node": "watchtower",
-        "event": "cairn",
-        "at": [
-          0,
-          0
-        ]
-      },
-      {
         "node": "graveyard",
         "event": "old_skeleton",
         "at": [
@@ -1596,7 +1605,7 @@
       },
       {
         "node": "graveyard",
-        "event": "explorer_corpse",
+        "event": "journal_2",
         "at": [
           -25,
           -1
@@ -1620,7 +1629,7 @@
       },
       {
         "node": "ossuary",
-        "event": "explorer_corpse",
+        "event": "journal_3",
         "at": [
           0,
           18
@@ -1636,11 +1645,55 @@
       },
       {
         "node": "ferry",
-        "event": "explorer_corpse",
+        "event": "journal_1",
         "at": [
           -29,
           4
         ]
+      },
+      {
+        "node": "watchtower",
+        "event": "watch_post",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "node": "chapel",
+        "event": "sacristy_chest",
+        "at": [
+          -8,
+          -17
+        ]
+      },
+      {
+        "node": "graveyard",
+        "event": "sealed_tomb",
+        "at": [
+          0,
+          -10
+        ]
+      },
+      {
+        "node": "graveyard",
+        "event": "old_skeleton",
+        "at": [
+          -1,
+          -12
+        ]
+      }
+    ],
+    "scatter": [
+      {
+        "zone": "f2d_ruins",
+        "event": "epitaph",
+        "count": 7
+      },
+      {
+        "zone": "f2d_ruins",
+        "event": "dig_grave",
+        "count": 14
       }
     ]
   }

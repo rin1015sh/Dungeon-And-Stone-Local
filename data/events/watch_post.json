@@ -1,0 +1,24 @@
+{
+  "id": "watch_post",
+  "name_ko": "무너진 망루",
+  "type": "feature",
+  "tile": "feat_cairn",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.cairn"
+    },
+    {
+      "id": "climb",
+      "name_ko": "올라 둘러본다",
+      "limit": "day",
+      "hours": 0.25,
+      "reveal": 48,
+      "line": "field.watch_post"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL13 — floor2.md §14-3). 망루 둔덕 — 올라가면 둘레 48칸 지도가 밝혀진다. 임시값"
+}

@@ -163,3 +163,51 @@ func test_route_guards_and_features() -> void:
 	assert_eq(at_bridge.size(), 1, "기사의 다리 관문 무리")
 	assert_true(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("dullahan")), "듀라한의 폐허 엘리트")
 	assert_true(s.features.list.any(func(e: Dictionary) -> bool: return e["id"] == "dead_campfire"), "예배당 쉼터 모닥불")
+
+
+func test_levels_meet_only_at_ramps() -> void:
+	var map := _f2_map()
+	var lows := 0
+	var bad := 0
+	var ramps := 0
+	for y in range(1, map.height - 1):
+		for x in range(1, map.width - 1):
+			var d := map.def_at(Vector2i(x, y))
+			ramps += 1 if d.ramp else 0
+			if not (d.walkable and d.sunk):
+				continue
+			lows += 1
+			for dd in FloorMap.DIRS4:
+				var n := map.def_at(Vector2i(x, y) + dd)
+				if n.walkable and not n.sunk and not n.ramp:
+					bad += 1
+	assert_true(lows > 500, "낮은 땅이 있다(진창 지름길 · 분지 · 구덩이): %d" % lows)
+	assert_true(ramps > 20, "비탈이 있다: %d" % ramps)
+	assert_eq(bad, 0, "높은 땅과 낮은 땅은 비탈로만 맞닿는다(나머지는 절벽)")
+	var nodes: Dictionary = map.anchors["nodes"]
+	assert_true(map.def_at(nodes["crossroads"]).sunk, "갈림목은 낮은 분지")
+
+
+func test_explore_finds_dig_epitaph_tomb_and_tower() -> void:
+	var s := _f2_session(4, true)
+	var ids := {}
+	for e: Dictionary in s.features.list:
+		ids[e["id"]] = int(ids.get(e["id"], 0)) + 1
+	assert_true(int(ids.get("dig_grave", 0)) >= 8 and int(ids.get("epitaph", 0)) >= 4, "흙무덤 · 비문석이 흩어져 있다: %s" % ids)
+	for k in ["sealed_tomb", "sacristy_chest", "watch_post", "journal_1", "journal_2", "journal_3"]:
+		assert_true(ids.has(k), "%s가 놓였다" % k)
+	var tomb: Dictionary = s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "sealed_tomb")[0]
+	var open_a: Dictionary = JsonUtil.get_array(tomb["def"], "actions").filter(func(a: Dictionary) -> bool: return a["id"] == "open")[0]
+	var n := s.monsters.groups.size()
+	FieldFeatureAct.run(s, tomb, open_a)
+	assert_false(tomb["cleared"], "열쇠 없이는 열리지 않는다")
+	s.player.inventory.add("crypt_key", 1)
+	FieldFeatureAct.run(s, tomb, open_a)
+	assert_true(tomb["cleared"] and s.map.is_walkable(tomb["pos"]), "열쇠로 열면 문 칸이 트인다")
+	assert_eq(s.monsters.groups.size(), n + 1, "영묘를 지키던 스켈레톤이 일어난다")
+	var tower: Dictionary = s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "watch_post")[0]
+	var climb: Dictionary = JsonUtil.get_array(tower["def"], "actions").filter(func(a: Dictionary) -> bool: return a["id"] == "climb")[0]
+	var far: Vector2i = tower["pos"] + Vector2i(-40, 0)
+	s.map.explored[s.map.idx(far)] = 0
+	FieldFeatureAct.run(s, tower, climb)
+	assert_eq(s.map.explored[s.map.idx(far)], 1, "망루에 오르면 둘레 지도가 밝혀진다")

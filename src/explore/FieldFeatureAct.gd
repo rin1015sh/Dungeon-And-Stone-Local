@@ -10,6 +10,8 @@ extends RefCounted
 ##    "clear": true(하고 나면 요소가 사라진다 — 줍는 것), "done"·"missing" 문구 키(못 하는 이유),
 ##    "after": {"action", "hours"}(그 행동을 하고 그만큼 지나야 — 아직이면 "wait" 문구, 안 했으면 missing),
 ##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound),
+##    "spawn": {"monsters": [id …], "chance", "line"}(그 확률로 바로 옆에 그 무리가 일어나 쫓아온다 — 무덤 파기, FL13),
+##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13),
 ##    "hours": 해 보는 데 드는 시간(성공 · 실패 모두 흐른다), "check": {stat, dc}(성공 확률 = RiftHazards.success_chance — 실패면 "fail_line"을 말하고
 ##    횟수를 쓰지 않는다 — 다시 해 볼 수 있다: 망자의 땅 비석 부수기 GraveWake)}.
 
@@ -60,11 +62,39 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	if not learn.is_empty() and s.player.knowledge.learn_stats(learn):
 		s.message.emit("field.learned", {"monster": DataNames.entry(s.db, "monsters", learn)}, "good")
 	_alert(s, e["pos"], JsonUtil.get_dict(a, "alert"))
+	if JsonUtil.get_float(a, "reveal") > 0.0:
+		_reveal(s, e["pos"], JsonUtil.get_float(a, "reveal"))
 	if JsonUtil.get_bool(a, "clear"):
 		e["cleared"] = true
-		s.map.set_tile(e["pos"], JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor"))
+		var floor_tile := JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor")
+		s.map.set_tile(e["pos"], JsonUtil.get_str(a, "clear_tile", floor_tile))
 		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))  # 테두리·소품을 다시 그린다
+	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"))
 	s.refresh_view()
+
+
+## 무덤에서 일어나는 무리(FL13): chance로 pos 바로 옆에 세우고 곧장 쫓아오게.
+static func _spawn(s: ExploreSession, pos: Vector2i, sp: Dictionary) -> void:
+	var ids := JsonUtil.get_array(sp, "monsters")
+	if ids.is_empty() or not s.monsters_enabled or not s.rng.chance(JsonUtil.get_float(sp, "chance", 1.0)):
+		return
+	var g := s.monsters.add_fixed(ids, pos + Vector2i.DOWN)
+	if g == null:
+		return
+	g.alert_until = s.clock.total_hours + 1.0
+	g.state = FieldMonsters.STATE_CHASE
+	say_line(s, JsonUtil.get_str(sp, "line"), {"pos": pos}, "danger")
+
+
+## 둘레 radius칸 지도를 밝힌다(망루에 오르기 — FL13).
+static func _reveal(s: ExploreSession, c: Vector2i, radius: float) -> void:
+	var ri := ceili(radius)
+	for y in range(c.y - ri, c.y + ri + 1):
+		for x in range(c.x - ri, c.x + ri + 1):
+			var q := Vector2i(x, y)
+			if s.map.in_bounds(q) and Vector2(q - c).length() <= radius:
+				s.map.explored[s.map.idx(q)] = 1
+	s.view_changed.emit()
 
 
 ## 문구 하나: key.1, key.2 …가 있으면 그중 하나(zone이면 key.<구역>.n), 없으면 key 그대로.

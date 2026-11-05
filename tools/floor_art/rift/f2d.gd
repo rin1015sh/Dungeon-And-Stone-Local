@@ -75,6 +75,12 @@ static func stand(tile: String, w: int, h: int, seed_value: int) -> Paint:
 			_lantern(p)
 		"f2d_bush":
 			_bush(p)
+		"f2d_dig":
+			_dig(p)
+		"f2d_epitaph":
+			_epitaph(p)
+		"f2d_tomb_door":
+			_tomb_door(p)
 		_:
 			return BF.stand(tile, w, h, seed_value)
 	return p
@@ -308,3 +314,55 @@ static func _bush(p: Paint) -> void:
 		var a := f + Vector2((Paint.hash01(k, 1, 4) - 0.5) * 36, -8 - Paint.hash01(k, 2, 4) * 16) * u
 		var b := a + Vector2((Paint.hash01(k, 3, 4) - 0.5) * 24, -(6 + Paint.hash01(k, 4, 4) * 16)) * u
 		Ink.line(p, a, b, 1.1 * u, Color("#1a1a12").lerp(DRY.darkened(0.3), Paint.hash01(k, 5, 4)), 0.9, 0.6)
+
+
+## 새로 덮은 흙무덤(파헤칠 수 있다 — FL13): 검은 흙 둔덕 + 기울어진 나무 십자가 + 흩어진 흙덩이.
+static func _dig(p: Paint) -> void:
+	var u := p.w / 128.0
+	var f := Vector2(p.w * 0.5, p.h - p.w * 0.14)
+	Kit.shadow(p, f, 30 * u, 8 * u, 0.4)
+	Kit.blob(p, f + Vector2(0, -6) * u, 28 * u, 10 * u, Color("#3e3426"))
+	Kit.blob(p, f + Vector2(-4, -9) * u, 18 * u, 6 * u, Color("#4a3e2c"))
+	for k in 9:
+		Cave._dot(p, f + Vector2((Paint.hash01(k, 1, 9) - 0.5) * 60, -2 - Paint.hash01(k, 2, 9) * 12) * u, (1.2 + Paint.hash01(k, 3, 9) * 1.5) * u, Color("#2a2218"), 0.8)
+	var b := f + Vector2(8, -12) * u
+	var lean := Vector2(4, 0) * u
+	Kit.post(p, b, b + Vector2(0, -44) * u + lean, 4.0 * u, Color("#5a4632"))
+	Kit.post(p, b + Vector2(-11, -30) * u + lean * 0.7, b + Vector2(11, -31) * u + lean * 0.7, 3.6 * u, Color("#5a4632"))
+
+
+## 큰 비문석(읽을 수 있다 — FL13): 넓은 판석 위 각진 머리, 새긴 글줄 몇, 아래 받침 · 이끼.
+static func _epitaph(p: Paint) -> void:
+	var u := p.w / 128.0
+	var f := Vector2(p.w * 0.5, p.h - p.w * 0.14)
+	Kit.shadow(p, f, 30 * u, 8 * u, 0.45)
+	Kit.box(p, f + Vector2(0, 0), 52 * u, 18 * u, 8 * u, Color("#5a5850"))
+	var b := f + Vector2(0, -8) * u
+	var pts := PackedVector2Array([b + Vector2(-18, 0) * u, b + Vector2(-18, -62) * u, b + Vector2(-10, -72) * u, b + Vector2(10, -72) * u, b + Vector2(18, -62) * u, b + Vector2(18, 0) * u])
+	p.fill_poly(pts, func(x: int, y: int) -> Color: return p.vary(Color("#6e6c62").lightened(0.12 - (x - b.x) / (18.0 * u) * 0.12), x, y, 0.08))
+	Ink.path(p, pts, 1.6 * u, true, Ink.INK, 0.9, 0.3)
+	for k in 6:  # 글줄
+		var y := b.y - (56 - k * 8) * u
+		Ink.line(p, Vector2(b.x - 12 * u, y), Vector2(b.x + (8 - Paint.hash01(k, 4, 2) * 10) * u, y), 1.2 * u, Color("#2a2a24"), 0.7, 0.4)
+	Decals._blob(p, b + Vector2(-10, -6) * u, 6 * u, MOSS, 0.6, 0.4)
+	Decals._blob(p, b + Vector2(12, -30) * u, 4 * u, MOSS_DARK, 0.5, 0.4)
+
+
+## 영묘의 잠긴 철문(열쇠로 연다 — FL13): 돌 문틀 + 녹슨 쇠창살 문 + 사슬 자물쇠. 칸 하나 폭(이웃 벽과 이어진다).
+static func _tomb_door(p: Paint) -> void:
+	var u := p.w / 128.0
+	var f := Vector2(p.w * 0.5, p.h - p.w * 0.14)
+	var l := f.x - 32.0 * u
+	Kit.box(p, Vector2(l + 5 * u, f.y), 10 * u, 10 * u, 84 * u, Color("#6a675c"))
+	Kit.box(p, Vector2(l + 59 * u, f.y), 10 * u, 10 * u, 84 * u, Color("#6a675c"))
+	Kit.box(p, Vector2(f.x, f.y - 84 * u), 64 * u, 10 * u, 10 * u, Color("#6a675c"))
+	p.fill_rect(l + 10 * u, f.y - 84 * u, 44 * u, 84 * u, func(_x: int, _y: int) -> Color: return Color("#0c0c0a"))
+	for k in 6:
+		var x := l + (14 + k * 7.2) * u
+		Ink.line(p, Vector2(x, f.y), Vector2(x, f.y - 82 * u), 2.4 * u, IRON, 1.0, 0.1)
+		Ink.line(p, Vector2(x - 0.8 * u, f.y - 4 * u), Vector2(x - 0.8 * u, f.y - 78 * u), 0.7 * u, Color("#7a5a3a"), 0.5, 0.2)
+	for ry: float in [20.0, 60.0]:
+		Ink.line(p, Vector2(l + 10 * u, f.y - ry * u), Vector2(l + 54 * u, f.y - ry * u), 2.6 * u, IRON, 1.0, 0.1)
+	for k in 7:  # 사슬
+		Cave._dot(p, Vector2(l + (18 + k * 4.5) * u, f.y - (38 + (k % 2) * 3) * u), 2.0 * u, Color("#4a4640"), 1.0)
+	Kit.box(p, Vector2(f.x, f.y - 30 * u), 9 * u, 4 * u, 10 * u, Color("#5a4a30"))

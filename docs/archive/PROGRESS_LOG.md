@@ -6,6 +6,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **망자의 땅 살필 것 (2026-11-05, floor2.md §14 2단계, FL13)**: 요소 여섯 종 + 열쇠 아이템, 소품 그림 셋(흙무덤 · 비문석 · 영묘 철문 — f2d.gd), `FieldFeatureAct` spawn · clear_tile · reveal, `RouteSpots.scatter`, 예배당 성물실(벽 조각 stamp), 비석 터 영묘에 문. 테스트 `test_levels_meet_only_at_ramps` · `test_explore_finds_dig_epitaph_tomb_and_tower`. 남은 것: 숨은 샛길 판정 · 넋불, 3단계(물때 · 밤 안개 · 무너지는 땅), 4단계(지하 묘실 · 장례 행렬).
+
 - **망자의 땅 높낮이 · 장소 조각 (2026-11-05, 사용자 "진행해 · 특히 지형은 절벽 등 높고 낮은 층고", FL12 — floor2.md §14 1단계)**: `FieldsRouteBuild.levels · terrace · stamps`, 타일 `f2d_mud_low · hard_low · grass_low · scree · slope`, `TileDef.ramp`(MoatBank 절벽 없음), 절벽 그림 `assets/floor/f2d/chasm.webp`(specs places.f2d.cliff), 비탈 그림 stairs.webp. 소품 밑 바닥 검사는 같은 아틀라스도 허용(`FieldsRoute.under_ok`). 남은 것: 높은 곳 시야 덤 · 낮은 곳에서 높은 곳 가림(지금은 그림만), 망루 오르기, 2단계(무덤 파기 · 비문 · 잠긴 영묘 · 일지).
 
 - **망자의 땅 입체감 (2026-11-05, 사용자 "초록은 에바 · 입체감이 없다 — 1층 수정동굴 참고 · 다 각져 있다", FL11)**: 길 밖 덤불을 바닥 → 흙 둔덕 벽(`shape round` — 둥근 윤곽 · 검은 윗면 · 흙 벼랑 앞면 그림 `bank`), 석조 건물 · 잔해 벽 `round` + 윗면 돌 그림(새 타일 키 `art.top_tex` — WallShape tops에 def, WallRow `_draw_top_tex`), 잔해는 가로 2~4칸, 풀 · 이끼 색을 올리브 · 잿빛으로, 길 밖 소품 지움 · 울타리는 둔덕 앞(`fence.along`). 남은 것: 남쪽을 향한 둔덕만 앞면이 보인다(1층과 같은 규칙 — 북쪽 가장자리는 검은 윗면만), 둔덕 윗면이 검어 멀리서는 단조롭다.

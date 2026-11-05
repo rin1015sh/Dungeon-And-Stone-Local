@@ -47,7 +47,7 @@ func add_runtime(s: ExploreSession, id: String, at: Vector2i) -> Dictionary:
 					cell = q
 	if def.is_empty() or cell.x < 0:
 		return {}
-	var e := {"id": id, "pos": cell, "def": def, "found": true, "used": {}, "cleared": false, "noticed": false}
+	var e := {"id": id, "pos": cell, "def": def, "found": not def.has("hidden"), "used": {}, "cleared": false, "noticed": false}
 	list.append(e)
 	_by_cell[cell] = e
 	s.map.features.append({"id": id, "pos": cell})

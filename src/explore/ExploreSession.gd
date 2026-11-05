@@ -115,6 +115,7 @@ func start() -> void:
 	if rift_run == null:
 		rifts.begin(self)
 	RouteSpots.place_features(self)
+	RouteSpots.scatter(self)
 	if floor_def.has("grave_wake"):
 		grave = GraveWake.new()
 		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))

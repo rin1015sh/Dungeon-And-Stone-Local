@@ -506,7 +506,10 @@
    "stands": [
     "f2d_fence",
     "f2d_lantern",
-    "f2d_bush"
+    "f2d_bush",
+    "f2d_dig",
+    "f2d_epitaph",
+    "f2d_tomb_door"
    ],
    "cliff": {
     "kind": "rock",

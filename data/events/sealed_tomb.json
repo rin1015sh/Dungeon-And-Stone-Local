@@ -1,0 +1,70 @@
+{
+  "id": "sealed_tomb",
+  "name_ko": "영묘 철문",
+  "type": "feature",
+  "tile": "f2d_tomb_door",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.sealed_tomb"
+    },
+    {
+      "id": "open",
+      "name_ko": "연다",
+      "limit": "once",
+      "cost": {
+        "item": "crypt_key",
+        "count": 1
+      },
+      "missing": "field.sealed_tomb_locked",
+      "line": "field.sealed_tomb_open",
+      "give": [
+        {
+          "item": "tomb_gold",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 1.0
+        },
+        {
+          "one_of": [
+            "death_mask",
+            "bone_amulet",
+            "tomb_ritual_amulet",
+            "tomb_silver_ring"
+          ],
+          "count": [
+            1,
+            1
+          ],
+          "chance": 1.0
+        },
+        {
+          "item": "magic_stone_7",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.5
+        }
+      ],
+      "spawn": {
+        "monsters": [
+          "skeleton_warrior",
+          "skeleton_warrior",
+          "skeleton_mage"
+        ],
+        "chance": 1.0,
+        "line": "field.sealed_tomb_guard"
+      },
+      "clear": true,
+      "clear_tile": "f2d_bridge"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL13 — floor2.md §14-3). 비석 터 영묘 — 예배당 성물실의 열쇠로 연다. 열면 지키던 스켈레톤이 일어난다. 임시값",
+  "standing": true
+}

@@ -1,0 +1,67 @@
+{
+  "id": "dig_grave",
+  "name_ko": "흙무덤",
+  "type": "feature",
+  "tile": "f2d_dig",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.dig_grave"
+    },
+    {
+      "id": "dig",
+      "name_ko": "파헤친다",
+      "limit": "once",
+      "hours": 1.0,
+      "line": "field.dig_grave_dig",
+      "give": [
+        {
+          "one_of": [
+            "old_silver_coin",
+            "copper_ring",
+            "bone_amulet",
+            "urn_shard",
+            "shroud_rag",
+            "death_mask",
+            "old_gold_coin",
+            "rusty_buckle"
+          ],
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.55
+        },
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.2
+        }
+      ],
+      "effects": [
+        {
+          "type": "fatigue",
+          "amount": 6
+        }
+      ],
+      "spawn": {
+        "monsters": [
+          "ghoul",
+          "ghoul"
+        ],
+        "chance": 0.3,
+        "line": "field.dig_grave_wake"
+      },
+      "clear": true,
+      "clear_tile": "f2d_dug"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL13 — floor2.md §14-3). 새로 덮은 흙무덤 — 파면 한 시간 · 피로, 물건 또는 구울. 임시값",
+  "standing": true
+}

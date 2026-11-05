@@ -1,0 +1,17 @@
+{
+  "id": "epitaph",
+  "name_ko": "비문석",
+  "type": "feature",
+  "tile": "f2d_epitaph",
+  "actions": [
+    {
+      "id": "read",
+      "name_ko": "읽는다",
+      "limit": "always",
+      "line": "field.epitaph"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL13 — floor2.md §14-3). 큰 비석 — 비문(번호 변형 하나). 임시값",
+  "standing": true
+}

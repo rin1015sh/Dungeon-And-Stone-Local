@@ -1,0 +1,42 @@
+{
+  "id": "sacristy_chest",
+  "name_ko": "성물함",
+  "type": "feature",
+  "tile": "feat_cache",
+  "actions": [
+    {
+      "id": "open",
+      "name_ko": "뒤진다",
+      "limit": "once",
+      "line": "field.sacristy",
+      "give": [
+        {
+          "item": "crypt_key",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 1.0
+        },
+        {
+          "item": "candle_stub",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.7
+        },
+        {
+          "item": "incense_stick",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.5
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅(FL13 — floor2.md §14-3). 무너진 예배당 성물실 — 영묘 열쇠. 임시값"
+}
