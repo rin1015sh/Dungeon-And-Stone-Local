@@ -36,6 +36,9 @@ func _ready() -> void:
 	_btn(grid, Strings.t("debug.reveal"), func() -> void: ExploreDebug.reveal(_session))
 	_btn(grid, Strings.t("debug.to_monument"), func() -> void: ExploreDebug.to_monument(_session))
 	_btn(grid, Strings.t("debug.to_portal"), func() -> void: ExploreDebug.teleport(_session, ExploreDebug.nearest_portal(_session)))
+	_btn(grid, Strings.t("debug.go_up"), func() -> void:
+		if not ExploreDebug.go_up(_session):
+			_session.message.emit("debug.go_up_none", {}, "system"))
 	_btn(grid, Strings.t("debug.level_up"), func() -> void: _change_level(1))
 	_btn(grid, Strings.t("debug.level_down"), func() -> void: _change_level(-1))
 	_btn(grid, Strings.t("debug.stat_up", {"stat": DataNames.entry(db, "stats", "str"), "amount": bump}), func() -> void: _bump("str", bump))

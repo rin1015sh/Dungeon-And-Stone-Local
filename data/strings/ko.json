@@ -358,7 +358,9 @@
     "portal_open_locked": "포탈 즉시 개방 (M4)",
     "later": "다음 마일스톤에서: {list}",
     "spawn_monster": "몬스터 소환(바로 전투)",
-    "give_essence": "정수 흡수(무작위)"
+    "give_essence": "정수 흡수(무작위)",
+    "go_up": "위층으로(2층)",
+    "go_up_none": "오를 위층이 없다."
   },
   "pause": {
     "resume": "계속",

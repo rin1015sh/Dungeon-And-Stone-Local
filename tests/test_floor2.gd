@@ -293,3 +293,22 @@ func test_maws_open_catch_and_swallow() -> void:
 	FieldFeatureAct.run(s, wall, climb)
 	assert_eq(s.pos, marks["maw_return"], "힘줄을 타고 삼킨 입 옆으로 올라온다")
 	assert_true(Vector2(s.pos - c).length() <= 3.5, "그 입 옆")
+
+
+func test_debug_go_up_to_floor2() -> void:
+	var reg := ContentRegistries.new()
+	var def1 := db.get_entry("floors", "f1_crystal_cave")
+	var s1 := ExploreSession.new(db, def1, reg.generator("crystal_cave").generate(db, def1, Rng.new(5)), PlayerCharacter.create(db, "human", "warrior", "시험", {"agi": 8}), GameClock.new(), Rng.new(6), reg.effects)
+	s1.monsters_enabled = false
+	s1.start()
+	var got: Array = []
+	var cb := func(t: ExploreSession) -> void: got.append(t)
+	s1.transfer.connect(cb)
+	assert_true(ExploreDebug.go_up(s1), "디버그 — 위층으로")
+	s1.transfer.disconnect(cb)
+	assert_eq(got.size(), 1)
+	var s2: ExploreSession = got[0]
+	assert_eq(JsonUtil.get_int(s2.floor_def, "floor"), 2, "2층 세션으로 넘어간다")
+	s2.detach()
+	s2.below = null  # 위층이 아래층을 붙잡는 고리를 끊는다(테스트가 끝나면 둘 다 풀리게)
+	got.clear()

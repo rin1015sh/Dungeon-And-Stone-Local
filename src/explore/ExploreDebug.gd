@@ -27,6 +27,21 @@ static func close_in(s: ExploreSession, hours_left: float) -> void:
 	s.pass_time(0.0001)
 
 
+## 위층(지금은 2층)으로 바로 오른다: 만들어진 층으로 가는 층 포탈 하나로 FloorTravel.up(포탈 자리에서 올라간 것으로 — 내려오면 그 포탈 앞).
+## 갈 층이 없거나 균열 안이면 false.
+static func go_up(s: ExploreSession) -> bool:
+	if s.rift_run != null:
+		return false
+	for portal: Dictionary in s.map.portals:
+		if str(portal.get("kind", "")) == "floor_down" or FloorTravel.floor_for(s.db, str(portal.get("dest", ""))).is_empty():
+			continue
+		var next := FloorTravel.up(s, portal)
+		if next != null:
+			s.transfer.emit(next)
+			return true
+	return false
+
+
 static func nearest_portal(s: ExploreSession) -> Vector2i:
 	var best := Vector2i(-1, -1)
 	for portal: Dictionary in s.map.portals:
