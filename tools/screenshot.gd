@@ -147,6 +147,19 @@ func _run() -> void:
 				for c: Node in explore.find_children("*", "Camera2D", true, false):
 					(c as Camera2D).zoom = Vector2.ONE * str(_args["ezoom"]).to_float()
 			await _frames(6)
+			if _args.has("cam"):  # --cam=x,y: 탐험 카메라를 그 칸(지도 좌표)에 고정해 찍는다(지도 전체 이어 붙이기 — --ezoom과 함께)
+				var cxy := str(_args["cam"]).split(",")
+				var fv: FloorView = explore.get("_view")
+				fv.stream.radius = 40  # 지도 전체를 그린다(보통은 플레이어 둘레 청크만)
+				fv.stream.active = Rect2i()
+				fv.stream.around(Vector2i(cxy[0].to_int(), cxy[1].to_int()))
+				await _frames(10)
+				for c: Node in explore.find_children("*", "Camera2D", true, false):
+					var cam := c as Camera2D
+					cam.position_smoothing_enabled = false
+					cam.top_level = true
+					cam.global_position = Vector2(cxy[0].to_float(), cxy[1].to_float()) * float(explore.session.db.render["view"]["floor_tile_px"][0])
+				await _frames(4)
 		if _args.has("torch"):
 			explore.session.use_category("light")
 		var steps := str(_args["walk"]).to_int()

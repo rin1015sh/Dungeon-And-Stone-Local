@@ -1631,18 +1631,6 @@
       {
         "node": "graveyard",
         "at": [
-          -9,
-          10
-        ],
-        "kind": "mausoleum",
-        "foot": [
-          6,
-          3
-        ]
-      },
-      {
-        "node": "graveyard",
-        "at": [
           9,
           3
         ],
@@ -1710,18 +1698,6 @@
         "foot": [
           2,
           2
-        ]
-      },
-      {
-        "node": "dullahan_ruin",
-        "at": [
-          10,
-          -4
-        ],
-        "kind": "mausoleum",
-        "foot": [
-          6,
-          3
         ]
       },
       {
