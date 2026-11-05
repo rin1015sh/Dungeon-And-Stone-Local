@@ -46,7 +46,7 @@
 - ● 생성기 src/explore/generators — fields
 - ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
 - ○ 데칼 시트·굽기(bake_decor) — art.decor 없음
-- ● 전투 뒷그림 — res://assets/battle/f1_crystal_cave.webp
+- ● 전투 뒷그림 — res://assets/battle/f2_land_of_dead.webp
 - ● 환경음 audio.ambience — f1_cave
 - ● 지역 스폰 regions — 3지역
 - ○ 동굴 요소 features — 0종 0곳

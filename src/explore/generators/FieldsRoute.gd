@@ -1,0 +1,176 @@
+class_name FieldsRoute
+extends RefCounted
+## fields 생성기 문법 "route"(사용자 2026-11-05 "2층은 오픈 필드가 아니라 의도된 경로가 있는 느낌으로" — docs/plans/floor2.md §13):
+## 손으로 설계한 길 그래프(구간 · 길)를 판다. 길 밖은 구역마다 메움 지형(깊은 늪 · 솟은 외곽 …)이라 넘을 수 없다.
+## gen: {"grammar": "route", "size": [w, h], "seed": 고정 시드(같은 지도 — 길을 익힌다),
+##   "tiles": {"rise", "floor", "down", "up"}, "zone_fill": {구역: 메움 타일}, "zone_floor": {구역: 구간 기본 바닥},
+##   "nodes": [{"id", "at": [x, y], "r", "zone", "tile"(없으면 zone_floor), "kind": arrival|exit|place|pocket, "beacon": 타일(가운데 위쪽 표지)}],
+##   "edges": [{"a", "b", "width", "tile"(없으면 a 구간 바닥), "wiggle": 굽이 폭(칸), "walls": 타일(길 양옆 한 칸을 그 벽으로 — 회랑)}],
+##   "props": [{"zone", "tile", "count"}](서 있는 소품 — 둘레 8칸이 걸을 수 있는 칸에만)}
+## 지도 표시: map.anchors["nodes"] = {id: Vector2i 가운데}, ["node_r"] = {id: 반지름} — 지키는 무리(RouteGuards) · 비석(GraveWake)이 쓴다.
+## 구역(map.zones) = 걸을 수 있는 칸은 가장 가까운 구간의 zone, 메움 칸도 같게(구역별 메움 지형).
+
+const BLOCK := 4  ## 구역 나누기를 이 칸 묶음으로(지도 전체 × 구간 수 계산을 줄인다)
+
+
+static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dictionary, rng: Rng) -> void:
+	var t := JsonUtil.get_dict(g, "tiles")
+	var nodes := {}
+	var radii := {}
+	var zone_of := {}
+	var zone_floor := JsonUtil.get_dict(g, "zone_floor")
+	map.zone_ids = PackedStringArray([""])
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		var id := JsonUtil.get_str(nd, "id")
+		var at := JsonUtil.get_array(nd, "at")
+		nodes[id] = Vector2i(int(at[0]), int(at[1]))
+		radii[id] = JsonUtil.get_float(nd, "r", 8.0)
+		var z := JsonUtil.get_str(nd, "zone")
+		zone_of[id] = z
+		if not map.zone_ids.has(z):
+			map.zone_ids.append(z)
+	var walk := PackedByteArray()
+	walk.resize(map.width * map.height)
+	var edge_cells: Array = []
+	for e: Dictionary in JsonUtil.get_array(g, "edges"):
+		var a := JsonUtil.get_str(e, "a")
+		var b := JsonUtil.get_str(e, "b")
+		var tile := JsonUtil.get_str(e, "tile", JsonUtil.get_str(zone_floor, str(zone_of.get(a, "")), JsonUtil.get_str(t, "floor")))
+		edge_cells.append(_path(map, rng, nodes[a], nodes[b], JsonUtil.get_float(e, "width", 5.0), JsonUtil.get_float(e, "wiggle", 4.0), tile, walk))
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		var id := JsonUtil.get_str(nd, "id")
+		var tile := JsonUtil.get_str(nd, "tile", JsonUtil.get_str(zone_floor, str(zone_of[id]), JsonUtil.get_str(t, "floor")))
+		_blob(map, rng, nodes[id], float(radii[id]), tile, walk)
+	var ei := 0
+	for e: Dictionary in JsonUtil.get_array(g, "edges"):
+		var wt := JsonUtil.get_str(e, "walls")
+		if not wt.is_empty():
+			_walls(map, edge_cells[ei], wt, walk)
+		ei += 1
+	_zones_and_fill(map, nodes, zone_of, JsonUtil.get_dict(g, "zone_fill"), JsonUtil.get_str(t, "rise"), walk)
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		var bt := JsonUtil.get_str(nd, "beacon")
+		if not bt.is_empty():
+			map.set_tile(nodes[JsonUtil.get_str(nd, "id")] + Vector2i(0, -int(float(radii[JsonUtil.get_str(nd, "id")]) * 0.5)), bt)
+	for pd: Dictionary in JsonUtil.get_array(g, "props"):
+		_props(map, rng, str(pd.get("zone", "")), JsonUtil.get_str(pd, "tile"), JsonUtil.get_int(pd, "count"), nodes)
+	map.anchors["nodes"] = nodes
+	map.anchors["node_r"] = radii
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		match JsonUtil.get_str(nd, "kind"):
+			"arrival":
+				map.entry = nodes[JsonUtil.get_str(nd, "id")]
+			"exit":
+				map.center = nodes[JsonUtil.get_str(nd, "id")]
+	if map.center.x < 0:
+		map.center = map.entry
+
+
+## 두 점 사이 굽은 길: 1칸마다 옆으로 흔든(사인 두 겹 — 위상은 무작위) 점에 폭 width 붓. 판 칸 목록을 돌려준다.
+static func _path(map: FloorMap, rng: Rng, a: Vector2i, b: Vector2i, width: float, wiggle: float, tile: String, walk: PackedByteArray) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var d := Vector2(b - a)
+	var n := maxi(1, ceili(d.length()))
+	var side := Vector2(-d.y, d.x).normalized()
+	var p1 := rng.randf_range(0.0, TAU)
+	var p2 := rng.randf_range(0.0, TAU)
+	var k1 := rng.randf_range(1.0, 2.0)
+	var k2 := rng.randf_range(2.5, 4.0)
+	var ti := map.index_of(tile)
+	var seen := {}
+	for i in n + 1:
+		var u := float(i) / float(n)
+		var fade := sin(u * PI)  # 양 끝(구간)에서는 흔들림 없이
+		var off := (sin(u * TAU * k1 * 0.5 + p1) * 0.65 + sin(u * TAU * k2 * 0.5 + p2) * 0.35) * wiggle * fade
+		var c := Vector2(a).lerp(Vector2(b), u) + side * off
+		var r := width * 0.5 * rng.randf_range(0.9, 1.1)
+		var ri := ceili(r)
+		for y in range(int(c.y) - ri, int(c.y) + ri + 1):
+			for x in range(int(c.x) - ri, int(c.x) + ri + 1):
+				var q := Vector2i(x, y)
+				if Vector2(q).distance_to(c) <= r and _inside(map, q) and not seen.has(q):
+					seen[q] = true
+					map.tiles[map.idx(q)] = ti
+					walk[map.idx(q)] = 1
+					out.append(q)
+	return out
+
+
+## 구간: 가장자리가 들쭉날쭉한 둥근 터(반지름이 각도마다 ±15%).
+static func _blob(map: FloorMap, rng: Rng, c: Vector2i, r: float, tile: String, walk: PackedByteArray) -> void:
+	var ti := map.index_of(tile)
+	var p1 := rng.randf_range(0.0, TAU)
+	var p2 := rng.randf_range(0.0, TAU)
+	var ri := ceili(r * 1.2)
+	for y in range(c.y - ri, c.y + ri + 1):
+		for x in range(c.x - ri, c.x + ri + 1):
+			var q := Vector2i(x, y)
+			var v := Vector2(q - c)
+			var ang := v.angle()
+			var lim := r * (1.0 + 0.1 * sin(ang * 3.0 + p1) + 0.06 * sin(ang * 7.0 + p2))
+			if v.length() <= lim and _inside(map, q):
+				map.tiles[map.idx(q)] = ti
+				walk[map.idx(q)] = 1
+
+
+## 회랑: 길 칸 둘레(8방향) 중 판 칸이 아닌 곳을 벽으로.
+static func _walls(map: FloorMap, cells: Array, tile: String, walk: PackedByteArray) -> void:
+	var ti := map.index_of(tile)
+	for q: Vector2i in cells:
+		for dy in range(-1, 2):
+			for dx in range(-1, 2):
+				var p := q + Vector2i(dx, dy)
+				if _inside(map, p) and walk[map.idx(p)] == 0:
+					map.tiles[map.idx(p)] = ti
+					walk[map.idx(p)] = 2  # 벽 — 메움으로 덮지 않는다
+
+
+## 구역 = 가장 가까운 구간(BLOCK칸 묶음마다 한 번 셈), 판 칸이 아닌 곳은 그 구역의 메움 지형(지도 둘레는 솟은 외곽).
+static func _zones_and_fill(map: FloorMap, nodes: Dictionary, zone_of: Dictionary, fill: Dictionary, rise: String, walk: PackedByteArray) -> void:
+	var ids: Array = nodes.keys()
+	var fill_idx := {}
+	for z: String in fill:
+		fill_idx[z] = map.index_of(str(fill[z]))
+	var rise_i := map.index_of(rise)
+	for by in range(0, map.height, BLOCK):
+		for bx in range(0, map.width, BLOCK):
+			var c := Vector2(bx + BLOCK * 0.5, by + BLOCK * 0.5)
+			var best := ""
+			var bd := INF
+			for id: String in ids:
+				var dd := c.distance_squared_to(Vector2(nodes[id]))
+				if dd < bd:
+					bd = dd
+					best = id
+			var z := str(zone_of[best])
+			var zi := map.zone_ids.find(z)
+			for y in range(by, mini(by + BLOCK, map.height)):
+				for x in range(bx, mini(bx + BLOCK, map.width)):
+					var i := y * map.width + x
+					map.zones[i] = zi
+					if walk[i] == 0:
+						map.tiles[i] = rise_i if not _inside(map, Vector2i(x, y)) else int(fill_idx.get(z, rise_i))
+
+
+## 서 있는 소품 count개를 구역 zone 안 걸을 수 있는 칸에(둘레 8칸이 모두 걸을 수 있어야 — 길을 막지 않는다, 구간 가운데는 비운다).
+static func _props(map: FloorMap, rng: Rng, zone: String, tile: String, count: int, nodes: Dictionary) -> void:
+	var zi := map.zone_ids.find(zone)
+	var under := map.defs[map.index_of(tile)].stand_under  # 소품 그림 밑 바닥과 같은 바닥에만(다른 바닥 위면 네모 자국이 남는다)
+	for i in count:
+		for tries in 30:
+			var p := Vector2i(rng.randi_range(2, map.width - 3), rng.randi_range(2, map.height - 3))
+			if map.zones[map.idx(p)] != zi or (not under.is_empty() and map.tile_id_at(p) != under):
+				continue
+			var ok := true
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					ok = ok and map.is_walkable(p + Vector2i(dx, dy))
+			for id: String in nodes:
+				ok = ok and Vector2(p - (nodes[id] as Vector2i)).length() > 3.0
+			if ok:
+				map.set_tile(p, tile)
+				break
+
+
+static func _inside(map: FloorMap, p: Vector2i) -> bool:
+	return p.x >= 3 and p.y >= 3 and p.x < map.width - 3 and p.y < map.height - 3

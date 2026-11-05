@@ -465,6 +465,14 @@
     {
      "tile": "f2d_mound",
      "style": "rubble"
+    },
+    {
+     "tile": "f2d_deep",
+     "style": "bloodpool"
+    },
+    {
+     "tile": "f2d_bridge",
+     "style": "cobble"
     }
    ],
    "walls": [

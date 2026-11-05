@@ -114,6 +114,7 @@ func start() -> void:
 	_say("explore.enter", {"floor": floor_name()}, "system")
 	if rift_run == null:
 		rifts.begin(self)
+	RouteSpots.place_features(self)
 	if floor_def.has("grave_wake"):
 		grave = GraveWake.new()
 		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))
@@ -121,6 +122,7 @@ func start() -> void:
 	if monsters_enabled:
 		monsters.spawn_initial(pos)
 		features.spawn_guards(self)
+		RouteSpots.place_guards(self)
 		parties.start(self)
 	refresh_view()
 
