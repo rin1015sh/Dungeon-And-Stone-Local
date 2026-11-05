@@ -32,7 +32,8 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 			"to_floor": JsonUtil.get_int(sd, "to_floor"), "dest": JsonUtil.get_str(sd, "dest"), "found": false})
 	_seal_unreachable(map, JsonUtil.get_str(t, "rise"))
 	map.dark = FloorMap._zeros(w * h)
-	FieldsRouteBuild.crypts(map, g)  # 닿지 않는 따로 된 방(지하 묘실) — 메운 뒤에 판다(FL14)
+	FieldsRouteBuild.crypts(map, g)
+	FieldsRouteBuild.maws(map, g, map.anchors.get("nodes", {}))  # 닿지 않는 따로 된 방(지하 묘실) — 메운 뒤에 판다(FL14)
 	return map
 
 

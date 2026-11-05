@@ -1520,6 +1520,105 @@
             2
           ]
         }
+      },
+      {
+        "at": [
+          150,
+          330
+        ],
+        "lit": true,
+        "legend": {
+          "#": "f2d_fleshwall",
+          ".": "f2d_flesh"
+        },
+        "rows": [
+          "##################",
+          "####..........####",
+          "##..............##",
+          "#................#",
+          "#................#",
+          "#................#",
+          "#................#",
+          "##..............##",
+          "####..........####",
+          "######......######",
+          "##################"
+        ],
+        "marks": {
+          "throat_in": [
+            9,
+            6
+          ],
+          "throat_wall": [
+            9,
+            1
+          ]
+        }
+      }
+    ],
+    "maws": [
+      {
+        "node": "levee_bend",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "node": "chapel",
+        "at": [
+          -14,
+          14
+        ]
+      },
+      {
+        "node": "graveyard",
+        "at": [
+          4,
+          8
+        ]
+      },
+      {
+        "node": "tomb_gate",
+        "at": [
+          -6,
+          6
+        ]
+      },
+      {
+        "node": "crossroads",
+        "at": [
+          12,
+          -8
+        ]
+      },
+      {
+        "node": "dullahan_ruin",
+        "at": [
+          -6,
+          -6
+        ]
+      },
+      {
+        "node": "watchtower",
+        "at": [
+          -6,
+          4
+        ]
+      },
+      {
+        "node": "summit",
+        "at": [
+          8,
+          4
+        ]
+      },
+      {
+        "node": "ferry",
+        "at": [
+          10,
+          -10
+        ]
       }
     ]
   },
@@ -1895,6 +1994,14 @@
           2
         ],
         "tile": "f2d_cache"
+      },
+      {
+        "mark": "throat_wall",
+        "event": "throat_wall",
+        "at": [
+          0,
+          0
+        ]
       }
     ],
     "scatter": [
@@ -2014,5 +2121,38 @@
       "from": 20,
       "to": 4
     }
+  },
+  "maws": {
+    "_comment": "아귀 입 함정(MawTraps — FL15, 사용자 2026-11-05). 실제 초 주기로 벌어졌다 닫힌다, 벌어졌을 때(openness > 0.6) 입 안(reach 칸)에 들어서면 잡힘 → 동전(coin.maw.heads) 앞면 = 빠져나옴, 뒷면 = 목구멍 방 + throat_monsters 중 한 무리와 전투. 임시값",
+    "period_sec": 5.0,
+    "open_sec": 1.8,
+    "phase_step": 0.37,
+    "reach": 0.85,
+    "cooldown_sec": 4.0,
+    "throat_monsters": [
+      [
+        "ghoul",
+        "ghoul",
+        "ghoul"
+      ],
+      [
+        "skeleton",
+        "skeleton_warrior"
+      ],
+      [
+        "banshee"
+      ],
+      [
+        "elder_ghoul",
+        "ghoul"
+      ],
+      [
+        "deathfiend"
+      ],
+      [
+        "chimera_wolf",
+        "ghoul"
+      ]
+    ]
   }
 }

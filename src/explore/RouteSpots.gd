@@ -34,7 +34,7 @@ static func scatter(s: ExploreSession) -> void:
 		var c: Vector2i = nodes.get(JsonUtil.get_str(fd, "node"), Vector2i(-1, -1))
 		var r := JsonUtil.get_float(fd, "r", 10.0)
 		for n in JsonUtil.get_int(fd, "count"):
-			for tries in 60:
+			for tries in (60 if c.x >= 0 else 600):  # 구역 전체에서 고를 땐 넉넉히(소품 밑 바닥이 맞는 칸만 — 드물다)
 				var p: Vector2i
 				if c.x >= 0:
 					p = c + Vector2i(s.rng.randi_range(-int(r), int(r)), s.rng.randi_range(-int(r), int(r)))
@@ -47,6 +47,10 @@ static func scatter(s: ExploreSession) -> void:
 					for dx in range(-1, 2):
 						var q := p + Vector2i(dx, dy)
 						open = open and s.map.is_walkable(q) and not s.features.live_at(q) and not s.map.def_at(q).ramp
+				var under := s.map.defs[s.map.index_of(JsonUtil.get_str(def, "tile"))].stand_under
+				open = open and (under.is_empty() or FieldsRoute.under_ok(s.map, p, under)) and not s.map.is_dark(p)
+				for mw: Vector2i in s.map.anchors.get("maws", []):  # 아귀 입 둘레는 비운다(FL15)
+					open = open and Vector2(p - mw).length() > 2.5
 				if not open or Vector2(p - s.map.entry).length() < 6.0:
 					continue
 				s.map.set_tile(p, JsonUtil.get_str(def, "tile"))

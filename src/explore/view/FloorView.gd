@@ -116,6 +116,10 @@ func _ready() -> void:
 		var bv := GrooveBladeView.new()
 		add_child(bv)
 		bv.setup(self)
+	if session.floor_def.has("maws"):  # 아귀 입(MawTraps — 망자의 땅, FL15 — 그림 노드는 start 전에 만든다: 무리는 그릴 때 본다)
+		var mv := MawView.new()
+		add_child(mv)
+		mv.setup(self)
 	if art.has_pulse():
 		glow_layer = Node2D.new()
 		glow_layer.z_index = JsonUtil.get_int(_cfg, "glow_z", 5)

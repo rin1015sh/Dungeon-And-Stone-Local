@@ -210,7 +210,8 @@
   "coin": {
     "_comment": "동전 던지기(사용자 2026-11-01 \"피어 앤 헝거처럼 동전 던지기\" — V25, CoinToss): heads = 앞면 확률(종류마다 덮어쓸 수 있다). chest = 상자(RiftChest — 고른 면과 같으면 담긴 물건, 다르면 잡템). 전투 선공 동전은 없앴다(사용자 — 보스의 아주 강한 패턴을 덜 아프게 맞는 데 쓸 생각, 보류)",
     "heads": 0.5,
-    "chest": {"heads": 0.5}
+    "chest": {"heads": 0.5},
+    "maw": {"heads": 0.5, "_comment": "아귀 입(MawTraps — FL15): 앞면 = 빠져나온다, 뒷면 = 목구멍 방"}
   },
   "chest": {
     "_comment": "균열 상자(V25, RiftChest): 챕터 loot 가운데 장비 또는 값 min_price 이상(가장 좋은 회복약)을 한 챕터 max_per_chapter개까지(장비 먼저 · 값 높은 순 — 장비가 아닌 것은 max_non_gear개) 상자에 담는다 — loot 항목의 \"chest\": true/false가 이긴다. 열 때 앞뒤를 고르고 동전 — 맞히면 담긴 물건, 못 맞히면 junk[균열 id](data/scavenge.json 표)에서 잡템 하나. 상자는 한 번 열면 빈 채",

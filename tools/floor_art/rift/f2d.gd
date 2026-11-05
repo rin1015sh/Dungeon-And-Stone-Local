@@ -35,6 +35,13 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 			_flags(p, col, s)
 		"crackearth":
 			_earth(p, col, s, 0.55, MOSS, GRASS)
+		"flesh":  # 목구멍 방(아귀 입 — FL15) 바닥: 젖은 살 · 핏줄 · 번들거림
+			_flesh(p, col, s)
+		"fleshwall":
+			if part == "face":
+				_flesh_face(p, col, s)
+			else:
+				_flesh(p, col.darkened(0.3), s)
 		"pit":
 			_pit(p, col, s)
 		"thicket":
@@ -53,7 +60,7 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 
 static func detail(p: Paint, style: String, part: String, v: int, col: Color) -> void:
 	match style:
-		"blackwater", "flood", "thicket", "bank":
+		"blackwater", "flood", "thicket", "bank", "flesh", "fleshwall":
 			return  # 길 밖은 맨바탕(칸마다 무늬가 찍히면 벽지처럼 보인다)
 		"graveearth", "dryearth", "flagstone":
 			_ground_detail(p, style, v)
@@ -86,6 +93,8 @@ static func stand(tile: String, w: int, h: int, seed_value: int) -> Paint:
 			_bush(p)
 		"f2d_wisp":
 			_wisp(p)
+		"f2d_sinew":
+			_sinew(p)
 		"f2d_dig":
 			_dig(p)
 		"f2d_epitaph":
@@ -414,3 +423,58 @@ static func _wisp(p: Paint) -> void:
 	Kit.glow(p, c, 14 * u, Color("#cfe6ff"), 0.9)
 	p.fill_poly(Cave._ellipse(c, 5 * u, 7 * u, 16), func(_x: int, _y: int) -> Color: return Color("#eef6ff"))
 	Kit.shadow(p, Vector2(c.x, p.h - p.w * 0.14), 10 * u, 3 * u, 0.15)
+
+
+## 젖은 살: 덩어리진 기복(빛 받은 쪽 분홍 · 골은 검붉게) + 가는 핏줄 + 번들거림.
+static func _flesh(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var hf := Seam.field(w, h, s, 0.07, 3)
+	var vein := Seam.field(w, h, s + 4, 0.09, 1, true)
+	var gl := Seam.field(w, h, s + 5, 0.05, 2)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var r := Seam.relief(hf, w, h, x, y, 5.0)
+			var c := Color("#1a0606").lerp(col.lightened(0.25), clampf(0.45 + r * 0.8 + (hf[i] - 0.5) * 0.4, 0.0, 1.0))
+			if vein[i] < 0.06:
+				c = c.lerp(Color("#3a0a14"), 0.7)
+			c = c.lerp(Color("#e8a0a0"), pow(clampf(r * 2.0, 0.0, 1.0), 3.0) * smoothstep(0.5, 0.8, gl[i]) * 0.5)
+			p.blend(x, y, c, 1.0)
+
+
+## 살 벽 앞면: 가로로 겹친 주름(목구멍 고리) + 아래로 갈수록 어둡게, 밑동은 들쭉날쭉 투명(Common.skirt).
+static func _flesh_face(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var main := float(h - Common.skirt)
+	var jag := Seam.field(w, 8, s + 9, 0.1, 3)
+	var hf := Seam.field(w, h, s, 0.08, 3)
+	var u := w / 64.0
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var foot := main + (0.25 + jag[x] * 0.75) * Common.skirt
+			if y >= foot:
+				continue
+			var fold := sin((y + hf[i] * 10.0 * u) / (6.0 * u))
+			var t := 0.5 + fold * 0.35 + (hf[i] - 0.5) * 0.3 - smoothstep(main * 0.3, foot, float(y)) * 0.35
+			var c := Color("#160404").lerp(col.lightened(0.2), clampf(t, 0.0, 1.0))
+			if fold > 0.92:
+				c = c.lerp(Color("#d88a84"), 0.35)
+			if foot - y < 1.6 * u:
+				c = c.lerp(Ink.INK, 0.5)
+			p.blend(x, y, c, 1.0)
+
+
+## 힘줄 벽(올라갈 수 있는 곳 — throat_wall): 목구멍 벽에서 늘어진 굵은 힘줄 셋.
+static func _sinew(p: Paint) -> void:
+	var u := p.w / 128.0
+	var f := Vector2(p.w * 0.5, p.h - p.w * 0.14)
+	Kit.shadow(p, f, 22 * u, 5 * u, 0.4)
+	for k in 3:
+		var x := f.x + (k - 1) * 14 * u
+		var top := Vector2(x + (k - 1) * 4 * u, f.y - 120 * u)
+		Ink.line(p, top, Vector2(x, f.y - 2 * u), 7.0 * u, Color("#6a2a2a"), 1.0, 1.2)
+		Ink.line(p, top + Vector2(-2, 0) * u, Vector2(x - 2 * u, f.y - 4 * u), 2.0 * u, Color("#c8807a"), 0.6, 1.2)
+		Ink.line(p, top + Vector2(3, 0) * u, Vector2(x + 3 * u, f.y - 2 * u), 1.4 * u, Ink.INK, 0.7, 1.2)

@@ -1,0 +1,25 @@
+{
+  "id": "throat_wall",
+  "name_ko": "늘어진 힘줄",
+  "type": "feature",
+  "tile": "f2d_sinew",
+  "standing": true,
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.throat_wall"
+    },
+    {
+      "id": "climb",
+      "name_ko": "붙잡고 기어오른다",
+      "limit": "always",
+      "hours": 0.25,
+      "line": "field.throat_climb",
+      "goto": "maw_return"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "아귀 입 목구멍 방(FL15) — 힘줄을 타고 삼킨 입 옆으로 올라온다(goto maw_return — MawTraps.swallow가 정한다). 임시값"
+}

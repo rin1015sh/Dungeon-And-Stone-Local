@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1002줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1007줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -337,6 +337,9 @@
 - `explore.hidden_failed` 손에 넣지 못했다.
 - `explore.hidden_decoy` 손대자마자 무너져 내렸다.
 - `explore.ground_gives` 발밑이 꺼졌다. 흙과 함께 아래로 떨어졌다.
+- `explore.maw_caught` 발밑의 땅이 입을 벌려 다리를 물었다.
+- `explore.maw_escape` 이빨이 다물리기 직전에 다리를 빼냈다.
+- `explore.maw_swallowed` 끈적한 어둠이 몸을 삼켰다. 축축한 살 위로 굴러떨어졌다.
 
 ### `explore.boss_notice`
 
@@ -1284,6 +1287,8 @@
 - `field.sarcophagus_open` 뚜껑이 미끄러져 떨어졌다. 마른 뼈 사이로 손에 걸리는 것이 있다.
 - `field.sarcophagus_wake` 관 속의 뼈가 먼저 손을 뻗었다.
 - `field.drowned_chest` 갯벌에 반쯤 묻힌 궤짝이다. 물에 불은 뚜껑을 비틀어 열었다.
+- `field.throat_wall` 벽에서 굵은 힘줄이 늘어져 있다. 위쪽에서 희미하게 바깥바람이 새어 든다.
+- `field.throat_climb` 미끄러운 힘줄을 붙잡고 기어올랐다. 입술 사이로 몸을 밀어내자 차가운 공기가 닿았다.
 
 ### `field.corpse`
 

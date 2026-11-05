@@ -501,6 +501,10 @@
      "tile": "f2d_flood",
      "style": "flood",
      "dim": 0.7
+    },
+    {
+     "tile": "f2d_flesh",
+     "style": "flesh"
     }
    ],
    "walls": [
@@ -518,6 +522,11 @@
      "tile": "f2d_thicket",
      "style": "bank",
      "face_px": 40
+    },
+    {
+     "tile": "f2d_fleshwall",
+     "style": "fleshwall",
+     "face_px": 48
     }
    ],
    "stands": [
@@ -527,7 +536,8 @@
     "f2d_dig",
     "f2d_epitaph",
     "f2d_tomb_door",
-    "f2d_wisp"
+    "f2d_wisp",
+    "f2d_sinew"
    ],
    "cliff": {
     "kind": "rock",

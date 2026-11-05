@@ -46,6 +46,7 @@ var loot: Dictionary = {}               ## 균열에 놓인 물건 칸 Vector2i 
 var below: ExploreSession = null       ## 아래층 세션(이 층으로 올라온 곳 — FloorTravel). 위층만 아래층을 붙잡는다
 var below_at: Vector2i = Vector2i(-1, -1)  ## 아래층에서 올라온 포탈 칸(내려가면 여기 선다)
 var blades: GrooveBlades = null
+var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — FL15)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 7일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
@@ -118,6 +119,7 @@ func start() -> void:
 	RouteSpots.place_features(self)
 	RouteSpots.scatter(self)
 	terrain = FieldTerrain.setup(self)
+	maws = MawTraps.build(self)
 	if floor_def.has("grave_wake"):
 		grave = GraveWake.new()
 		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))
@@ -179,6 +181,8 @@ func found_count(list: Array[Dictionary]) -> int:
 func tick_realtime(real_sec: float) -> void:
 	if blades != null:
 		blades.tick(self, realtime.frame_sec(self, real_sec))
+	if maws != null:
+		maws.tick(self, realtime.frame_sec(self, real_sec))
 	realtime.tick(self, real_sec)
 	if _view_dirty and not ended:
 		_view_dirty = false

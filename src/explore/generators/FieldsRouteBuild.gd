@@ -313,9 +313,44 @@ static func crypts(map: FloorMap, g: Dictionary) -> void:
 				if not legend.has(row[x]) or not _ok(map, q):
 					continue
 				map.set_tile(q, str(legend[row[x]]))
-				map.dark[map.idx(q)] = 1
+				if not JsonUtil.get_bool(c, "lit"):
+					map.dark[map.idx(q)] = 1
 		var mk := JsonUtil.get_dict(c, "marks")
 		for name: String in mk:
 			var a: Array = mk[name]
 			m[name] = o + Vector2i(int(a[0]), int(a[1]))
 	map.anchors["marks"] = m
+
+
+
+## 아귀 입 자리(FL15 — MawTraps): gen "maws": [{"node", "at": [dx, dy]}] — 그 칸과 둘레(가로 5칸 · 위 1칸 · 아래 3칸)가 걸을 수 있을 때만(아니면 가장 가까운 그런 칸, 4칸 안).
+static func maws(map: FloorMap, g: Dictionary, nodes: Dictionary) -> void:
+	var out: Array = []
+	for d: Dictionary in JsonUtil.get_array(g, "maws"):
+		var n: Vector2i = nodes.get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))
+		if n.x < 0:
+			continue
+		var at := JsonUtil.get_array(d, "at")
+		var c := n + Vector2i(int(at[0]), int(at[1]))
+		var best := Vector2i(-1, -1)
+		for r in 5:
+			for dy in range(-r, r + 1):
+				for dx in range(-r, r + 1):
+					var q := c + Vector2i(dx, dy)
+					if best.x < 0 and _open9(map, q) and not out.has(q):
+						best = q
+			if best.x >= 0:
+				break
+		if best.x >= 0:
+			out.append(best)
+	if not out.is_empty():
+		map.anchors["maws"] = out
+
+
+static func _open9(map: FloorMap, q: Vector2i) -> bool:  # 입 그림 폭(가로 5칸)이 빈 곳 — 남쪽 3칸까지(남쪽 벽 · 소품 그림은 위로 솟아 입을 가린다)
+	for dy in range(-1, 4):
+		for dx in range(-2, 3):
+			var p := q + Vector2i(dx, dy)
+			if not map.in_bounds(p) or not map.is_walkable(p) or map.def_at(p).ramp:
+				return false
+	return true
