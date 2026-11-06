@@ -11,6 +11,7 @@ const Cave := preload("res://tools/floor_art/Cave.gd")
 const Decals := preload("res://tools/floor_art/Decals.gd")
 const Kit := preload("res://tools/floor_art/rift/Kit.gd")
 const BF := preload("res://tools/floor_art/rift/bf.gd")
+const F2D := preload("res://tools/floor_art/rift/f2d.gd")
 
 const LOAM := Color("#24261f")
 const LEAF_D := Color("#232c22")
@@ -37,6 +38,10 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 			_path(p, col, s)
 		"trampled":
 			_floor(p, col, s, 0.15, 0.5)
+		"brook":
+			_brook(p, col, s)
+		"pebbles":
+			_pebbles(p, col, s)
 		_:
 			BF.base(p, style, part, col, s)
 
@@ -45,6 +50,10 @@ static func detail(p: Paint, style: String, part: String, v: int, col: Color) ->
 	var u := p.w / 64.0
 	var c := Vector2(p.w * 0.5, p.h * 0.5)
 	match style:
+		"brook":
+			return
+		"pebbles":
+			return
 		"snarepath":  # 올가미: 고리진 밧줄 + 휘어 박은 말뚝
 			_dots(p, c, v, 3, ROOT, 1.2)
 			var pts := PackedVector2Array()
@@ -112,6 +121,46 @@ static func _floor(p: Paint, col: Color, s: int, litter: float, wet: float) -> v
 				c = c.lerp(MOSS, (moss[i] - 0.62) * 1.6)
 			if wet > 0.0:
 				c = c.lerp(SILVER, pow(clampf(r * 1.8, 0.0, 1.0), 2.5) * wet * 0.45)
+			p.blend(x, y, c, 1.0)
+
+
+## 개울: 흐르는 얕은 물(가로로 늘인 물결 · 은빛 반짝임 · 바닥 자갈이 비친다). 변형마다 다른 물결(같은 무늬가 칸마다 찍히지 않게).
+static func _brook(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var flow := Seam.field(w, h, s, 0.06, 3)
+	var ripple := Seam.field(w, h, s + 1, 0.2, 2)
+	var stones := Seam.field(w, h, s + 2, 0.12, 1)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var f := Seam.at(flow, w, h, x / 3, y)  # 흐름 방향으로 늘인 결
+			var c := col.darkened(0.35).lerp(col.lightened(0.15), clampf(0.4 + (f - 0.5) * 0.9 + (stones[i] - 0.5) * 0.3, 0.0, 1.0))
+			if stones[i] > 0.72:
+				c = c.lerp(Color("#5a5c52"), (stones[i] - 0.72) * 1.8)
+			var sp := smoothstep(0.78, 0.95, ripple[i]) * smoothstep(0.45, 0.7, f)
+			c = c.lerp(Color("#c8d8e0"), sp * 0.6)
+			p.blend(x, y, c, 1.0)
+
+
+## 개울가 자갈밭: 젖은 검은 모래 위 둥근 자갈(셀 잡음 — 돌마다 위쪽이 밝고 아래 그늘), 사이사이 물기.
+static func _pebbles(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var cell := Seam.field(w, h, s + 5, 0.16, 1, true)
+	var tone := Seam.field(w, h, s + 6, 0.16, 1)
+	var hf := Seam.field(w, h, s, 0.08, 2)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var c := col.darkened(0.45).lerp(col.darkened(0.2), hf[i])
+			var k := smoothstep(0.08, 0.2, cell[i])  # 돌 안쪽
+			if k > 0.0:
+				var up := Seam.at(cell, w, h, x, y - 2) - cell[i]  # 위쪽이 더 안쪽이면 밝게
+				var stone := Color("#6a6c62").lerp(Color("#4a4c46"), tone[i]).lightened(clampf(-up * 4.0, -0.3, 0.3))
+				c = c.lerp(stone, k)
+			else:
+				c = c.lerp(Color("#9aa8b0"), smoothstep(0.7, 0.9, hf[i]) * 0.25)  # 물기
 			p.blend(x, y, c, 1.0)
 
 

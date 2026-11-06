@@ -604,6 +604,19 @@
     {
      "tile": "f2g_spike",
      "style": "spikepath"
+    },
+    {
+     "tile": "f2g_brook",
+     "style": "brook",
+     "dim": 0.8
+    },
+    {
+     "tile": "f2g_scree",
+     "style": "pebbles"
+    },
+    {
+     "tile": "f2g_slope",
+     "style": "stairs"
     }
    ],
    "walls": [],

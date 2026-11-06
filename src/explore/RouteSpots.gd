@@ -60,7 +60,7 @@ static func scatter(s: ExploreSession) -> void:
 				break
 
 
-## 지형 덫(고블린 숲 — FL21): route_spots "hazards": [{"zone", "on": 바닥 타일, "event"(요소 hazard 정의), "count", "gap": 칸}]
+## 지형 덫(고블린 숲 — FL21): route_spots "hazards": [{"zone" 또는 "node" · "edge"+"t"(+ "r" — 그 둘레에 몰아서, FL22), "on": 바닥 타일, "event"(요소 hazard 정의), "count", "gap": 칸}]
 ## — 그 구역 · 그 바닥 칸에 숨은 덫 묶음(RiftHazards — FieldFeatures.hazards)을 흩뿌린다. 도착 칸 8칸 안 · 포탈 칸은 피한다. 원정마다 자리가 바뀐다.
 static func scatter_hazards(s: ExploreSession) -> void:
 	for f: Variant in JsonUtil.get_array(JsonUtil.get_dict(s.floor_def, "route_spots"), "hazards"):
@@ -68,13 +68,18 @@ static func scatter_hazards(s: ExploreSession) -> void:
 		var hd := JsonUtil.get_dict(s.db.get_entry("events", JsonUtil.get_str(fd, "event")), "hazard")
 		if hd.is_empty():
 			continue
-		var zi := s.map.zone_ids.find(JsonUtil.get_str(fd, "zone"))
+		var zi := s.map.zone_ids.find(JsonUtil.get_str(fd, "zone")) if fd.has("zone") else -1
 		var on := s.map.index_of(JsonUtil.get_str(fd, "on"))
 		var gap := JsonUtil.get_float(fd, "gap", 4.0)
+		var c := _anchor(s, fd) if fd.has("node") or fd.has("edge") or fd.has("mark") else Vector2i(-1, -1)  # 덫 밭: 그 자리 둘레 r칸에 몰아서(FL22)
+		var r := JsonUtil.get_int(fd, "r", 8)
 		var placed: Array[Vector2i] = []
 		for n in JsonUtil.get_int(fd, "count"):
 			for tries in 400:
-				var p := Vector2i(s.rng.randi_range(2, s.map.width - 3), s.rng.randi_range(2, s.map.height - 3))
+				var p := Vector2i(s.rng.randi_range(2, s.map.width - 3), s.rng.randi_range(2, s.map.height - 3)) if c.x < 0 \
+					else c + Vector2i(s.rng.randi_range(-r, r), s.rng.randi_range(-r, r))
+				if not s.map.in_bounds(p):
+					continue
 				var i := s.map.idx(p)
 				if s.map.tiles[i] != on or (zi >= 0 and s.map.zones[i] != zi) or Vector2(p - s.map.entry).length() < 8.0 \
 						or s.features.hazards.at.has(p) or placed.any(func(q: Vector2i) -> bool: return Vector2(q - p).length() < gap):

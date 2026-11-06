@@ -3,6 +3,13 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-06 고블린 숲 다시 짬(FL22)
+- 범위: 사용자 "비석 8개는 에바 — 하나로. 맵도 다시 기획" → 기획안(floor2.md §13-3 · f2_goblin_forest_plan.png) → "진행해". 완료 기준: 비석 하나 · 세 갈래가 모두 고목에 닿음(마을을 피해서도) · 덫이 골짜기에 몰림 · 망대 경보 · 족장 · 개울 사냥꾼. 테스트: tests/test_forest.gd 여섯 + 캡처(마을 · 골짜기 · 개울 · 고목).
+- 지움: gen steles · fields `_steles` · 포탈 hidden · FieldFeatureAct stele · 요소 forest_stele · 문구 stele_live/dead.
+- 더함: `RouteWatch`(망대) · scatter_hazards node/edge + r · 요소 chief_chest · forest_mushroom(1층 glow_mushroom을 실수로 덮어써 되돌리고 새 id로) · 타일 f2g_brook(개울 — 낮은 땅) · f2g_gravel_low(여울 자갈) · f2g_scree · f2g_slope · f2g_cache_v · 그림 _brook · _pebbles(BF에 rubble이 없어 벽돌로 나왔다 → 직접) · 소리 키 goblin_horn(파일 없음).
+- 처음 문 · 문 길이 마을 구역이라 큰 무리가 북문 길에 섰다 → 문 구간을 바깥 구역으로, 길 방향을 바꿔 바깥 구역으로.
+- 남은 것: 몬스터도 덫에 걸림 · 소리 파일(뿔피리 · 덫) · 칸 경계(풀밭 ↔ 오솔길 네모) · 줄기 벽 가장자리 잔무늬.
+
 ### 2026-11-06 2층 고블린 숲 1단계(FL21)
 - 범위: 사용자 "이제 다음 2층 진행해" → floor2.md §5 · §13-3 고블린 숲. 완료 기준: 1층 북쪽 포탈 → 숲 · 걸을 수 있는 칸 모두 닿음 · 비석 여덟 중 하나만 진짜(깨우면 3층 포탈) · 숨은 덫 · 마을 큰 무리 · 홉고블린 + 졸개 · 그림 · 전투 뒷그림. 테스트: tests/test_forest.gd 다섯 + 캡처(어귀 · 비석 · 마을).
 - 코드: fields `_steles`(run rng — 지도는 고정 시드, 진짜만 원정마다) · 포탈 `hidden` · FieldFeatureAct `stele` · RouteSpots `scatter_hazards` · features `object`가 포탈 칸에도 · `_anchor` edge · FieldMonsters `escort` · FieldsRouteBuild `landmarks_prefix` · ExploreDebug `go_up(dest)` + F1 "2층 고블린 숲으로".

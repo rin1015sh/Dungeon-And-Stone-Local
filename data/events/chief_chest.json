@@ -1,0 +1,52 @@
+{
+  "id": "chief_chest",
+  "name_ko": "족장 궤짝",
+  "type": "feature",
+  "tile": "f2g_cache_v",
+  "actions": [
+    {
+      "id": "open",
+      "name_ko": "연다",
+      "limit": "once",
+      "line": "field.chief_chest",
+      "give": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 1.0
+        },
+        {
+          "item": "magic_stone_9",
+          "count": [
+            3,
+            6
+          ],
+          "chance": 1.0
+        },
+        {
+          "item": "old_silver_coin",
+          "count": [
+            2,
+            5
+          ],
+          "chance": 0.8
+        },
+        {
+          "item": "hunting_bow",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.3
+        }
+      ],
+      "clear": true,
+      "clear_tile": "f2g_village"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 숲 족장 움막(FL22) — 홉고블린 족장 무리가 지킨다. 임시값"
+}

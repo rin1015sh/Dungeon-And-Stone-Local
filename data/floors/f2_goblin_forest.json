@@ -1,5 +1,5 @@
 {
-  "_comment": "2층 고블린 숲(docs/plans/floor2.md §5 · §13-3, FL21) — 1층 북쪽 포탈(dest floor2_north)에서 온다. 2층에서 가장 밝다. 길 그래프(fields route) · 덫 = 지형 · 포탈 비석 여덟(하나만 진짜) · 고블린 큰 무리 · 홉고블린 대장. 수치는 모두 임시값",
+  "_comment": "2층 고블린 숲(docs/plans/floor2.md §5 · §13-3 다시 기획, FL21 · FL22) — 1층 북쪽 포탈(dest floor2_north)에서 온다. 2층에서 가장 밝다. 세 갈래(마을 관통 · 덫 골짜기 · 개울 여울)가 북쪽 끝 늙은 고목의 비석 하나로. 망대 경보 · 덫 밭 · 홉고블린 족장 · 사냥꾼. 수치는 모두 임시값",
   "id": "f2_goblin_forest",
   "name_ko": "고블린 숲",
   "floor": 2,
@@ -123,11 +123,11 @@
     }
   },
   "gen": {
-    "_comment": "고블린 숲 길 그래프(floor2.md §13-3 — FL21): 숲 어귀(도착) → 덫 숲 우회로(올가미 오목) · 사냥꾼 쉼터 → 고블린 마을(지름길 · 큰 무리) → 큰 나무 빈터, 바깥 고리 비석 여덟(원정마다 하나만 진짜 — steles). 길 밖은 빽빽한 숲(솟은 외곽). [창작] 임시값",
+    "_comment": "고블린 숲 길 그래프(floor2.md §13-3 다시 기획 — 사용자 2026-11-06 \"비석 하나 · 맵 다시\", FL22): 숲 어귀 → 세 갈래가 북쪽 끝 늙은 고목(3층 비석 하나)으로 — 정면 마을 관통(남문 · 마을 · 북문, 망대 경보) · 서쪽 덫 골짜기(덫 밭 셋 · 족장 움막 · 뒷길) · 동쪽 개울 여울(낮은 땅 · 비탈 · 홉고블린 사냥꾼). [창작] 임시값",
     "grammar": "route",
     "size": [
-      240,
-      245
+      200,
+      240
     ],
     "seed": 2,
     "tiles": {
@@ -137,54 +137,105 @@
       "up": "f2g_portal_up"
     },
     "zone_fill": {
-      "f2g_traps": "f2g_rise",
+      "f2g_eaves": "f2g_rise",
+      "f2g_gully": "f2g_rise",
+      "f2g_chief": "f2g_rise",
       "f2g_village": "f2g_rise",
-      "f2g_outer": "f2g_rise"
+      "f2g_grove": "f2g_rise",
+      "f2g_brook": "f2g_rise"
     },
     "zone_floor": {
-      "f2g_traps": "f2g_floor",
+      "f2g_eaves": "f2g_floor",
+      "f2g_gully": "f2g_floor",
+      "f2g_chief": "f2g_village",
       "f2g_village": "f2g_village",
-      "f2g_outer": "f2g_floor"
+      "f2g_grove": "f2g_floor",
+      "f2g_brook": "f2g_floor"
     },
     "nodes": [
       {
         "id": "eaves",
         "at": [
-          120,
-          198
+          100,
+          214
         ],
         "r": 14,
-        "zone": "f2g_traps",
+        "zone": "f2g_eaves",
         "kind": "arrival"
-      },
-      {
-        "id": "snare_hollow",
-        "at": [
-          120,
-          160
-        ],
-        "r": 9,
-        "zone": "f2g_traps",
-        "kind": "place"
       },
       {
         "id": "hunter_camp",
         "at": [
-          64,
-          124
+          40,
+          190
         ],
         "r": 11,
-        "zone": "f2g_traps",
+        "zone": "f2g_gully",
         "kind": "pocket",
         "tile": "f2g_grass"
       },
       {
+        "id": "gully",
+        "at": [
+          34,
+          124
+        ],
+        "r": 9,
+        "zone": "f2g_gully",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -3,
+                8
+              ],
+              [
+                3,
+                8
+              ],
+              [
+                -3,
+                -8
+              ],
+              [
+                3,
+                -8
+              ]
+            ]
+          }
+        ],
+        "tile": "f2g_path"
+      },
+      {
+        "id": "chief",
+        "at": [
+          46,
+          60
+        ],
+        "r": 12,
+        "zone": "f2g_chief",
+        "kind": "pocket",
+        "tile": "f2g_village"
+      },
+      {
+        "id": "south_gate",
+        "at": [
+          100,
+          162
+        ],
+        "r": 6,
+        "zone": "f2g_eaves",
+        "kind": "place"
+      },
+      {
         "id": "village",
         "at": [
-          120,
-          100
+          100,
+          112
         ],
-        "r": 21,
+        "r": 23,
         "zone": "f2g_village",
         "kind": "place",
         "props": [
@@ -192,312 +243,246 @@
             "tile": "f2g_totem",
             "at": [
               [
-                -6,
-                -6
+                -5,
+                -4
               ],
               [
-                6,
-                -6
+                5,
+                -4
               ],
               [
                 0,
-                9
-              ],
-              [
-                -14,
-                2
-              ],
-              [
-                14,
-                2
+                6
               ]
             ]
           }
         ]
       },
       {
-        "id": "big_tree",
+        "id": "north_gate",
         "at": [
-          176,
-          124
+          100,
+          62
         ],
-        "r": 15,
-        "zone": "f2g_traps",
+        "r": 6,
+        "zone": "f2g_grove",
+        "kind": "place"
+      },
+      {
+        "id": "old_tree",
+        "at": [
+          100,
+          24
+        ],
+        "r": 13,
+        "zone": "f2g_grove",
+        "kind": "exit",
+        "tile": "f2g_grass",
+        "props": [
+          {
+            "tile": "f2g_stele",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mush",
+        "at": [
+          164,
+          192
+        ],
+        "r": 10,
+        "zone": "f2g_brook",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "ford",
+        "at": [
+          168,
+          126
+        ],
+        "r": 11,
+        "zone": "f2g_brook",
         "kind": "place",
-        "tile": "f2g_grass"
+        "level": "low"
       },
       {
-        "id": "s_s",
+        "id": "bridge",
         "at": [
-          120,
-          230
+          158,
+          62
         ],
         "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_se",
-        "at": [
-          189,
-          187
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_e",
-        "at": [
-          218,
-          118
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_ne",
-        "at": [
-          189,
-          49
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_n",
-        "at": [
-          120,
-          20
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_nw",
-        "at": [
-          51,
-          49
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_w",
-        "at": [
-          22,
-          118
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "s_sw",
-        "at": [
-          51,
-          187
-        ],
-        "r": 7,
-        "zone": "f2g_outer",
-        "kind": "pocket",
-        "tile": "f2g_grass"
+        "zone": "f2g_brook",
+        "kind": "place"
       }
     ],
     "edges": [
       {
         "a": "eaves",
-        "b": "hunter_camp",
+        "b": "south_gate",
         "width": 6,
         "tile": "f2g_path",
-        "wiggle": 8
+        "wiggle": 4
       },
       {
-        "a": "eaves",
-        "b": "snare_hollow",
-        "width": 5,
+        "a": "village",
+        "b": "south_gate",
+        "width": 7,
+        "tile": "f2g_village",
+        "wiggle": 2
+      },
+      {
+        "a": "village",
+        "b": "north_gate",
+        "width": 7,
+        "tile": "f2g_village",
+        "wiggle": 2
+      },
+      {
+        "a": "old_tree",
+        "b": "north_gate",
+        "width": 6,
         "tile": "f2g_path",
         "wiggle": 4
       },
       {
         "a": "eaves",
-        "b": "s_s",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 3
-      },
-      {
-        "a": "snare_hollow",
         "b": "hunter_camp",
+        "width": 6,
+        "tile": "f2g_path",
+        "wiggle": 5
+      },
+      {
+        "a": "hunter_camp",
+        "b": "gully",
         "width": 4,
         "tile": "f2g_path",
         "wiggle": 6
       },
       {
-        "a": "snare_hollow",
-        "b": "big_tree",
+        "a": "gully",
+        "b": "chief",
         "width": 4,
         "tile": "f2g_path",
         "wiggle": 6
       },
       {
-        "a": "hunter_camp",
-        "b": "village",
-        "width": 6,
-        "tile": "f2g_village",
-        "wiggle": 5
-      },
-      {
-        "a": "village",
-        "b": "big_tree",
-        "width": 6,
-        "tile": "f2g_village",
-        "wiggle": 5
-      },
-      {
-        "a": "hunter_camp",
-        "b": "s_w",
+        "a": "chief",
+        "b": "north_gate",
         "width": 5,
         "tile": "f2g_path",
         "wiggle": 5
       },
       {
-        "a": "big_tree",
-        "b": "s_e",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 5
-      },
-      {
-        "a": "village",
-        "b": "s_n",
+        "a": "eaves",
+        "b": "mush",
         "width": 5,
         "tile": "f2g_path",
         "wiggle": 6
       },
       {
-        "a": "s_s",
-        "b": "s_se",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
+        "a": "mush",
+        "b": "ford",
+        "width": 6,
+        "wiggle": 8,
+        "level": "low",
+        "ramp": true,
+        "tile": "f2g_brook"
       },
       {
-        "a": "s_se",
-        "b": "s_e",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
+        "a": "ford",
+        "b": "bridge",
+        "width": 6,
+        "wiggle": 8,
+        "level": "low",
+        "ramp": true,
+        "tile": "f2g_brook"
       },
       {
-        "a": "s_e",
-        "b": "s_ne",
+        "a": "bridge",
+        "b": "old_tree",
         "width": 5,
         "tile": "f2g_path",
-        "wiggle": 10
-      },
-      {
-        "a": "s_ne",
-        "b": "s_n",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
-      },
-      {
-        "a": "s_n",
-        "b": "s_nw",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
-      },
-      {
-        "a": "s_nw",
-        "b": "s_w",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
-      },
-      {
-        "a": "s_w",
-        "b": "s_sw",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
-      },
-      {
-        "a": "s_sw",
-        "b": "s_s",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 10
+        "wiggle": 6
       }
     ],
     "props": [
       {
-        "zone": "f2g_traps",
+        "zone": "f2g_eaves",
         "tile": "f2g_tree",
-        "count": 55
-      },
-      {
-        "zone": "f2g_outer",
-        "tile": "f2g_tree",
-        "count": 60
-      },
-      {
-        "zone": "f2g_traps",
-        "tile": "f2g_bush",
-        "count": 40
-      },
-      {
-        "zone": "f2g_outer",
-        "tile": "f2g_bush",
-        "count": 35
-      },
-      {
-        "zone": "f2g_traps",
-        "tile": "f2g_stump",
-        "count": 18
-      },
-      {
-        "zone": "f2g_outer",
-        "tile": "f2g_stump",
         "count": 14
       },
       {
-        "zone": "f2g_traps",
-        "tile": "f2g_log",
-        "count": 12
+        "zone": "f2g_eaves",
+        "tile": "f2g_bush",
+        "count": 10
       },
       {
-        "zone": "f2g_outer",
-        "tile": "f2g_log",
-        "count": 12
-      },
-      {
-        "zone": "f2g_outer",
-        "tile": "f2g_mush",
+        "zone": "f2g_gully",
+        "tile": "f2g_tree",
         "count": 18
       },
       {
-        "zone": "f2g_traps",
+        "zone": "f2g_gully",
+        "tile": "f2g_bush",
+        "count": 14
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_log",
+        "count": 6
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_stump",
+        "count": 6
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_tree",
+        "count": 18
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_bush",
+        "count": 12
+      },
+      {
+        "zone": "f2g_brook",
         "tile": "f2g_mush",
-        "count": 8
+        "count": 14
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_log",
+        "count": 5
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_mush",
+        "count": 6
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_stump",
+        "count": 4
       },
       {
         "zone": "f2g_village",
         "tile": "f2g_totem",
-        "count": 4
+        "count": 3
+      },
+      {
+        "zone": "f2g_chief",
+        "tile": "f2g_totem",
+        "count": 3
       }
     ],
     "fence": [
@@ -505,6 +490,12 @@
         "node": "village",
         "tile": "f2g_stakes",
         "pad": 3,
+        "along": "f2g_rise"
+      },
+      {
+        "node": "chief",
+        "tile": "f2g_stakes",
+        "pad": 2,
         "along": "f2g_rise"
       }
     ],
@@ -516,10 +507,10 @@
     },
     "landmarks": [
       {
-        "node": "big_tree",
+        "node": "old_tree",
         "at": [
           0,
-          -3
+          -4
         ],
         "kind": "bigtree",
         "foot": [
@@ -530,36 +521,12 @@
       {
         "node": "village",
         "at": [
-          -11,
-          -9
-        ],
-        "kind": "hut",
-        "foot": [
-          4,
-          2
-        ]
-      },
-      {
-        "node": "village",
-        "at": [
-          10,
-          -10
-        ],
-        "kind": "hut",
-        "foot": [
-          4,
-          2
-        ]
-      },
-      {
-        "node": "village",
-        "at": [
           -12,
-          8
+          -8
         ],
-        "kind": "tent",
+        "kind": "hut",
         "foot": [
-          3,
+          4,
           2
         ]
       },
@@ -567,7 +534,19 @@
         "node": "village",
         "at": [
           12,
-          8
+          -6
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          -14,
+          9
         ],
         "kind": "tent",
         "foot": [
@@ -578,12 +557,48 @@
       {
         "node": "village",
         "at": [
-          0,
-          -14
+          14,
+          10
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          -10,
+          16
         ],
         "kind": "watch",
         "foot": [
           3,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          10,
+          -16
+        ],
+        "kind": "watch",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "chief",
+        "at": [
+          0,
+          -4
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
           2
         ]
       },
@@ -600,18 +615,12 @@
         ]
       }
     ],
-    "steles": {
-      "nodes": [
-        "s_s",
-        "s_se",
-        "s_e",
-        "s_ne",
-        "s_n",
-        "s_nw",
-        "s_w",
-        "s_sw"
-      ],
-      "tile": "f2g_stele"
+    "zone_low": {
+      "f2g_brook": "f2g_gravel_low"
+    },
+    "levels": {
+      "scree": "f2g_scree",
+      "ramp": "f2g_slope"
     }
   },
   "regions": [
@@ -636,9 +645,9 @@
       "horde": true
     },
     {
-      "id": "f2g_traps_lone",
-      "zone": "f2g_traps",
-      "name_ko": "덫 숲",
+      "id": "f2g_eaves",
+      "zone": "f2g_eaves",
+      "name_ko": "숲 어귀",
       "monsters": [
         "goblin",
         "goblin_archer"
@@ -654,43 +663,31 @@
       "pack": [
         1,
         1
-      ],
-      "entry_dist": [
-        12,
-        60
       ]
     },
     {
-      "id": "f2g_traps",
-      "zone": "f2g_traps",
-      "name_ko": "덫 숲",
+      "id": "f2g_gully",
+      "zone": "f2g_gully",
+      "name_ko": "덫 골짜기",
       "monsters": [
-        "goblin",
-        "goblin_swordsman",
-        "goblin_archer"
+        "goblin"
       ],
       "weights": {
-        "goblin": 4,
-        "goblin_swordsman": 1,
-        "goblin_archer": 2
+        "goblin": 1
       },
       "groups": [
-        5,
-        6
+        1,
+        2
       ],
       "pack": [
         1,
-        3
-      ],
-      "entry_dist": [
-        45,
-        0
+        1
       ]
     },
     {
-      "id": "f2g_outer",
-      "zone": "f2g_outer",
-      "name_ko": "바깥 숲",
+      "id": "f2g_brook",
+      "zone": "f2g_brook",
+      "name_ko": "개울",
       "monsters": [
         "hobgoblin"
       ],
@@ -698,8 +695,8 @@
         "hobgoblin": 1
       },
       "groups": [
-        5,
-        6
+        2,
+        2
       ],
       "pack": [
         1,
@@ -707,10 +704,10 @@
       ],
       "escort": {
         "hobgoblin": {
-          "monster": "goblin",
+          "monster": "goblin_archer",
           "count": [
             2,
-            3
+            2
           ]
         }
       }
@@ -780,60 +777,24 @@
     }
   ],
   "route_spots": {
-    "_comment": "지키는 무리 · 동굴 요소 · 지형 덫(hazards — 숨은 덫 묶음, 원정마다 자리가 바뀐다) · 포탈 비석 여덟(forest_stele — object). [창작] 임시값",
+    "_comment": "지키는 무리(족장 · 망대 궁수) · 동굴 요소 · 지형 덫(덫 밭 — node/edge 둘레 r칸에 몰아서) · 망대(watch — 들키면 마을 큰 무리가 쫓아온다, RouteWatch). [창작] 임시값",
     "guards": [
       {
-        "node": "village",
+        "node": "chief",
+        "at": [
+          0,
+          2
+        ],
         "monsters": [
           "hobgoblin",
           "goblin",
           "goblin",
-          "goblin_archer",
-          "goblin_swordsman"
+          "goblin_swordsman",
+          "goblin_archer"
         ]
       }
     ],
     "features": [
-      {
-        "node": "s_s",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_se",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_e",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_ne",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_n",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_nw",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_w",
-        "event": "forest_stele",
-        "object": true
-      },
-      {
-        "node": "s_sw",
-        "event": "forest_stele",
-        "object": true
-      },
       {
         "node": "hunter_camp",
         "event": "dead_campfire",
@@ -851,15 +812,6 @@
           -3
         ],
         "tile": "f2g_cache"
-      },
-      {
-        "node": "big_tree",
-        "event": "dead_campfire",
-        "at": [
-          4,
-          4
-        ],
-        "tile": "f2g_campfire"
       },
       {
         "node": "village",
@@ -880,79 +832,175 @@
         "tile": "f2g_camp"
       },
       {
-        "edge": [
-          "snare_hollow",
-          "big_tree"
+        "node": "village",
+        "event": "goblin_camp",
+        "at": [
+          0,
+          -10
         ],
-        "t": 0.5,
+        "tile": "f2g_camp"
+      },
+      {
+        "node": "chief",
+        "event": "chief_chest",
+        "at": [
+          4,
+          1
+        ],
+        "tile": "f2g_cache_v"
+      },
+      {
+        "edge": [
+          "gully",
+          "chief"
+        ],
+        "t": 0.75,
         "event": "explorer_corpse",
         "tile": "f2g_corpse"
       },
       {
         "edge": [
-          "snare_hollow",
-          "hunter_camp"
+          "hunter_camp",
+          "gully"
         ],
-        "t": 0.5,
+        "t": 0.3,
         "event": "explorer_corpse",
         "tile": "f2g_corpse"
       },
       {
-        "edge": [
-          "s_w",
-          "s_sw"
-        ],
-        "t": 0.5,
-        "event": "explorer_corpse",
-        "tile": "f2g_corpse"
+        "node": "mush",
+        "event": "forest_mushroom",
+        "at": [
+          3,
+          -2
+        ]
       },
       {
-        "edge": [
-          "s_ne",
-          "s_n"
+        "node": "mush",
+        "event": "forest_mushroom",
+        "at": [
+          -4,
+          3
+        ]
+      },
+      {
+        "node": "old_tree",
+        "event": "dead_campfire",
+        "at": [
+          -6,
+          4
         ],
-        "t": 0.5,
-        "event": "explorer_corpse",
-        "tile": "f2g_corpse"
+        "tile": "f2g_campfire"
       }
     ],
     "hazards": [
       {
-        "zone": "f2g_traps",
+        "edge": [
+          "hunter_camp",
+          "gully"
+        ],
+        "t": 0.55,
+        "r": 9,
         "on": "f2g_path",
         "event": "forest_snare",
-        "count": 12,
-        "gap": 5
+        "count": 4,
+        "gap": 3
       },
       {
-        "zone": "f2g_traps",
-        "on": "f2g_path",
-        "event": "forest_pit",
-        "count": 9,
-        "gap": 5
-      },
-      {
-        "zone": "f2g_traps",
+        "edge": [
+          "hunter_camp",
+          "gully"
+        ],
+        "t": 0.55,
+        "r": 9,
         "on": "f2g_path",
         "event": "forest_spike",
-        "count": 8,
-        "gap": 5
+        "count": 3,
+        "gap": 3
       },
       {
-        "zone": "f2g_outer",
-        "on": "f2g_path",
-        "event": "forest_snare",
-        "count": 8,
-        "gap": 8
-      },
-      {
-        "zone": "f2g_outer",
+        "node": "gully",
+        "r": 10,
         "on": "f2g_path",
         "event": "forest_pit",
-        "count": 6,
-        "gap": 8
+        "count": 4,
+        "gap": 3
+      },
+      {
+        "node": "gully",
+        "r": 10,
+        "on": "f2g_path",
+        "event": "forest_snare",
+        "count": 3,
+        "gap": 3
+      },
+      {
+        "edge": [
+          "gully",
+          "chief"
+        ],
+        "t": 0.45,
+        "r": 9,
+        "on": "f2g_path",
+        "event": "forest_spike",
+        "count": 4,
+        "gap": 3
+      },
+      {
+        "edge": [
+          "gully",
+          "chief"
+        ],
+        "t": 0.45,
+        "r": 9,
+        "on": "f2g_path",
+        "event": "forest_pit",
+        "count": 3,
+        "gap": 3
+      },
+      {
+        "node": "south_gate",
+        "r": 8,
+        "on": "f2g_path",
+        "event": "forest_snare",
+        "count": 2,
+        "gap": 3
+      },
+      {
+        "node": "north_gate",
+        "r": 8,
+        "on": "f2g_path",
+        "event": "forest_spike",
+        "count": 2,
+        "gap": 3
       }
-    ]
+    ],
+    "watch": [
+      {
+        "node": "village",
+        "at": [
+          -10,
+          17
+        ],
+        "radius": 13,
+        "archer": "goblin_archer"
+      },
+      {
+        "node": "village",
+        "at": [
+          10,
+          -15
+        ],
+        "radius": 13,
+        "archer": "goblin_archer"
+      }
+    ],
+    "watch_alarm": {
+      "region": "f2g_village",
+      "hours": 1.0,
+      "sound": "goblin_horn",
+      "line": "field.watch_alarm"
+    }
   },
   "source": "placeholder"
 }

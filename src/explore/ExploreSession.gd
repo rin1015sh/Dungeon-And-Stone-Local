@@ -49,6 +49,7 @@ var blades: GrooveBlades = null
 var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — FL15)
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
+var watch: RouteWatch = null            ## 망대 경보(route_spots.watch — 고블린 숲, FL22)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 5일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
@@ -134,6 +135,7 @@ func start() -> void:
 		features.spawn_guards(self)
 		RouteSpots.place_guards(self)
 		parties.start(self)
+	watch = RouteWatch.build(self)
 	refresh_view()
 
 
@@ -225,6 +227,8 @@ func enter_cell(cell: Vector2i) -> void:
 		terrain.on_enter(self, from, cell)
 	if ambush != null:
 		ambush.on_enter(self, cell)
+	if watch != null:
+		watch.on_enter(self, cell)
 
 
 func wait(hours: float = -1.0) -> void:
@@ -573,7 +577,7 @@ func _discover() -> void:
 			var lm := db.get_entry("landmarks", str(rec["id"]))
 			_say("explore.landmark_found", {"name": JsonUtil.get_str(lm, "name_ko"), "desc": JsonUtil.get_str(lm, "desc_ko")}, "good")
 	for portal: Dictionary in map.portals:
-		if not bool(portal["found"]) and not bool(portal.get("hidden", false)) and map.visible_now[map.idx(portal["pos"])] != 0:  # hidden = 아직 잠든 진짜 비석(FL21)
+		if not bool(portal["found"]) and map.visible_now[map.idx(portal["pos"])] != 0:
 			portal["found"] = true
 			ExploreInteract.portal_found(self, portal)
 
