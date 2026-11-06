@@ -26,6 +26,7 @@
       "memory_desat": 0.3,
       "keep_hue": true
     },
+    "torch_color": "#b8ccf0",
     "post": {
       "saturation": 0.45,
       "vignette_strength": 0.5,

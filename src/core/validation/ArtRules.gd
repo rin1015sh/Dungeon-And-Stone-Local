@@ -50,6 +50,8 @@ static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
 			if pd.has(key) and JsonUtil.get_array(pd, key).size() != 2:
 				v.err(pw, "%s는 [두 수]" % key)
 	check_battleback(v, w + ".battleback", art.get("battleback"))
+	if art.has("torch_color"):  # 그 층 횃불 빛(FloorView — 없으면 render lighting.torch_color, FL20)
+		v.check_color(w + ".torch_color", JsonUtil.get_str(art, "torch_color"))
 	_decor(v, w + ".decor", JsonUtil.get_dict(art, "decor"))
 	_macro(v, w + ".macro", JsonUtil.get_dict(art, "macro"))
 	_abyss(v, w + ".abyss", JsonUtil.get_dict(art, "abyss"))

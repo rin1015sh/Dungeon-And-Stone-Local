@@ -218,7 +218,8 @@ func refresh(full: bool = false) -> void:
 	_light_center = Vector2(session.pos) + Vector2(0.5, 0.5)
 	var kind := session.light_kind()
 	if kind == "torch":
-		_light_color = Color.from_string(JsonUtil.get_str(JsonUtil.get_dict(session.db.render, "lighting"), "torch_color"), Color.WHITE)
+		var torch := JsonUtil.get_str(JsonUtil.get_dict(session.db.render, "lighting"), "torch_color")
+		_light_color = Color.from_string(JsonUtil.get_str(JsonUtil.get_dict(session.floor_def, "art"), "torch_color", torch), Color.WHITE)  # 층 art.torch_color가 이긴다(망자의 땅 차가운 빛 — FL20)
 	else:
 		_light_color = Color.from_string(JsonUtil.get_str(session.floor_def, "ambient_color"), Color.WHITE)
 	# 걸을 때는 화면 안만 갱신한다(밝은 균열은 시야 = 지도 전체) — 화면 밖은 들어오기 전에 갱신된다.
