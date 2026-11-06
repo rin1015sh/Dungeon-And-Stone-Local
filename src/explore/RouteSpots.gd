@@ -2,10 +2,10 @@ class_name RouteSpots
 extends RefCounted
 ## 길 그래프 구간에 놓는 것(floor2.md §13 — 층 JSON "route_spots"): 입장 때 한 번.
 ##   guards: [{"node", "monsters": [..]}] — 그 구간 가운데에 지키는 무리(관문 · 엘리트 — 고정 무리, 리스폰 없음)
-##   features: [{"node", "event", "at": [dx, dy], "tile"(없으면 요소의 tile)}] — 그 구간 가운데에서 at만큼 떨어진 칸에 동굴 요소(쉼터 모닥불 · 곁길 보상)
+##   features: [{"node", "event", "at": [dx, dy], "tile"(없으면 요소의 tile), "object": true(타일을 바꾸지 않는다 — 닫힌 쇠문)}] — 그 구간 가운데에서 at만큼 떨어진 칸에 동굴 요소(쉼터 모닥불 · 곁길 보상)
 ##   scatter: [{"zone" | "node"(+ "r"), "event", "count"}] — 그 구역(또는 구간 반지름 r 안)의 둘레 8칸이 트인 칸 count곳에 무작위로
 ##     (원정마다 자리가 바뀐다 — 파헤칠 무덤 · 비문, FL13)
-## 자리는 "node"(map.anchors["nodes"] — FieldsRoute) 또는 "mark"(map.anchors["marks"] — 지하 묘실 등, FL14) + "at". 자리가 걸을 수 없으면 둘레 빈 칸.
+## 자리는 "edge" + "t"(길 위 — FL18), "node"(map.anchors["nodes"] — FieldsRoute) 또는 "mark"(map.anchors["marks"] — 지하 묘실 등, FL14) + "at". 자리가 걸을 수 없으면 둘레 빈 칸.
 
 
 static func place_features(s: ExploreSession) -> void:
@@ -17,9 +17,11 @@ static func place_features(s: ExploreSession) -> void:
 			continue
 		var p := c + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO)
 		var def := s.db.get_entry("events", JsonUtil.get_str(fd, "event"))
-		if def.is_empty() or not s.map.is_walkable(p) or not s.map.portal_at(p).is_empty():
+		var obj := JsonUtil.get_bool(fd, "object")  # 이미 있는 물체 칸에(닫힌 쇠문 — 타일을 바꾸지 않고 걷지 못하는 칸도 된다)
+		if def.is_empty() or (not obj and not s.map.is_walkable(p)) or not s.map.portal_at(p).is_empty():
 			continue
-		s.map.set_tile(p, JsonUtil.get_str(fd, "tile", JsonUtil.get_str(def, "tile")))  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
+		if not obj:
+			s.map.set_tile(p, JsonUtil.get_str(fd, "tile", JsonUtil.get_str(def, "tile")))  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
 		s.features.add_at(s, JsonUtil.get_str(fd, "event"), p)
 
 
@@ -70,6 +72,11 @@ static func place_guards(s: ExploreSession) -> void:
 
 ## 자리 기준 칸: "node" 또는 "mark". 없으면 (-1, -1).
 static func _anchor(s: ExploreSession, d: Dictionary) -> Vector2i:
+	var e := JsonUtil.get_array(d, "edge")  # 길 위: "edge": [구간 a, 구간 b], "t": 0~1 — 곧은 선의 그 지점에서 가장 가까운 걸을 수 있는 칸(FL18)
+	var nodes: Dictionary = s.map.anchors.get("nodes", {})
+	if e.size() == 2 and nodes.has(str(e[0])) and nodes.has(str(e[1])):
+		var p := Vector2i(Vector2(nodes[str(e[0])] as Vector2i).lerp(Vector2(nodes[str(e[1])] as Vector2i), JsonUtil.get_float(d, "t", 0.5)).round())
+		return RouteAmbush._walkable_near(s.map, p)
 	if d.has("mark"):
 		return (s.map.anchors.get("marks", {}) as Dictionary).get(JsonUtil.get_str(d, "mark"), Vector2i(-1, -1))
 	return (s.map.anchors.get("nodes", {}) as Dictionary).get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))

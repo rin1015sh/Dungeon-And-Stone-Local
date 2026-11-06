@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1009줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1017줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -340,6 +340,7 @@
 - `explore.maw_caught` 발밑의 땅이 입을 벌려 다리를 물었다.
 - `explore.maw_escape` 이빨이 다물리기 직전에 다리를 빼냈다.
 - `explore.maw_swallowed` 끈적한 어둠이 몸을 삼켰다. 축축한 살 위로 굴러떨어졌다.
+- `explore.hud_bells` 종 {n}/{need}
 
 ### `explore.boss_notice`
 
@@ -1291,6 +1292,8 @@
 - `field.drowned_chest` 갯벌에 반쯤 묻힌 궤짝이다. 물에 불은 뚜껑을 비틀어 열었다.
 - `field.throat_wall` 벽에서 굵은 힘줄이 늘어져 있다. 위쪽에서 희미하게 바깥바람이 새어 든다.
 - `field.throat_climb` 미끄러운 힘줄을 붙잡고 기어올랐다. 입술 사이로 몸을 밀어내자 차가운 공기가 닿았다.
+- `field.pass_gate` 쇠창살 문 가운데 종 세 개가 새겨진 판이 박혀 있다. 셋 다 녹이 슬어 검다.
+- `field.gate_open` 멀리 고개 쪽에서 쇠사슬 풀리는 소리가 길게 이어진다.
 
 ### `field.corpse`
 
@@ -1380,6 +1383,17 @@
 - `field.epitaph.6` 「망루에 오른 자만이 길을 안다.」 돌 귀퉁이에 화살표가 새겨져 있다.
 - `field.epitaph.7` 비문 대신 손톱자국이 빼곡하다.
 - `field.epitaph.8` 「구덩이에 내려가지 마라. 내려간 자는 올라오는 법을 잊는다.」
+
+### `field.bell_ring`
+
+- `field.bell_ring.1` 녹슨 종이 무겁게 흔들린다. 울림이 늪 너머까지 길게 번진다.
+- `field.bell_ring.2` 종 혀가 몇 번 헛돌다 맞는다. 낮은 울림에 땅속 어딘가가 들썩인다.
+
+### `field.ambush`
+
+- `field.ambush.1` 길가 흙이 들썩이더니 썩은 손이 솟아오른다.
+- `field.ambush.2` 발밑 진흙에서 뼈마디가 일어선다.
+- `field.ambush.3` 쓰러져 있던 시체들이 일제히 고개를 든다.
 
 <a id="dir8"></a>
 ## dir8 `dir8`

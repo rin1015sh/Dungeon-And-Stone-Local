@@ -31,6 +31,7 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 		map.portals.append({"id": JsonUtil.get_str(sd, "id"), "pos": map.center, "dir": JsonUtil.get_str(sd, "dir", "north"),
 			"to_floor": JsonUtil.get_int(sd, "to_floor"), "dest": JsonUtil.get_str(sd, "dest"), "found": false})
 	_seal_unreachable(map, JsonUtil.get_str(t, "rise"))
+	FloorGoal.place_gate(map, g)  # 고개 쇠문(층 목표 — 메운 뒤에, 문 너머가 메워지지 않게, FL18)
 	map.dark = FloorMap._zeros(w * h)
 	FieldsRouteBuild.crypts(map, g)
 	FieldsRouteBuild.maws(map, g, map.anchors.get("nodes", {}))  # 닿지 않는 따로 된 방(지하 묘실) — 메운 뒤에 판다(FL14)
@@ -82,6 +83,8 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 	for key in ["props", "ruins", "fence", "outer_props", "crumble", "drops"]:
 		for pd: Variant in JsonUtil.get_array(g, key):
 			tiles.append(JsonUtil.get_str(pd if pd is Dictionary else {}, "tile"))
+	if g.has("gate"):
+		tiles.append(JsonUtil.get_str(JsonUtil.get_dict(g, "gate"), "tile"))
 	for z: Variant in JsonUtil.get_dict(g, "zone_low").values():
 		tiles.append(str(z))
 	for k: Variant in JsonUtil.get_dict(g, "levels").values():

@@ -11,6 +11,7 @@ var _fatigue_label: Label
 var _light_label: Label
 var _zone_label: Label
 var _found_label: Label
+var _goal_label: Label  ## 층 목표(FloorGoal — 종 n/3)
 
 
 func bind(session: ExploreSession) -> void:
@@ -42,6 +43,9 @@ func refresh() -> void:
 	_found_label.text = Strings.t("explore.hud_found", {
 		"landmarks": s.found_count(s.map.landmarks), "landmarks_total": s.map.landmarks.size(),
 		"portals": s.found_count(s.map.portals), "portals_total": s.map.portals.size()})
+	_goal_label.visible = s.goal != null and not s.goal.hud_text().is_empty()
+	if _goal_label.visible:
+		_goal_label.text = Strings.t(s.goal.hud_text(), {"n": s.goal.count, "need": s.goal.need})
 
 
 func _build() -> void:
@@ -60,6 +64,7 @@ func _build() -> void:
 	_light_label = _add(top, UiTheme.label("", "small", "text"))
 	_zone_label = _add(top, UiTheme.label(Strings.t("explore.hud_safe"), "small", "good"))
 	_found_label = _add(top, UiTheme.label("", "small", "text_dim"))
+	_goal_label = _add(top, UiTheme.label("", "small", "text"))
 
 
 

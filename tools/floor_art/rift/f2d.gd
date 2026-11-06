@@ -101,6 +101,10 @@ static func stand(tile: String, w: int, h: int, seed_value: int) -> Paint:
 			_epitaph(p)
 		"f2d_tomb_door":
 			_tomb_door(p)
+		"f2d_bell":
+			_bell(p)
+		"f2d_gate":
+			_gate(p)
 		_:
 			return BF.stand(tile, w, h, seed_value)
 	return p
@@ -386,6 +390,71 @@ static func _tomb_door(p: Paint) -> void:
 	for k in 7:  # 사슬
 		Cave._dot(p, Vector2(l + (18 + k * 4.5) * u, f.y - (38 + (k % 2) * 3) * u), 2.0 * u, Color("#4a4640"), 1.0)
 	Kit.box(p, Vector2(f.x, f.y - 30 * u), 9 * u, 4 * u, 10 * u, Color("#5a4a30"))
+
+
+## 종틀(층 목표 — FL18): 기운 나무 기둥 둘 + 가로대에 매단 녹슨 청동 종 + 기둥에 건 작은 등. 멀리서 등불로 보인다.
+static func _bell(p: Paint) -> void:
+	var u := p.w / 128.0
+	var f := Vector2(p.w * 0.5, p.h - p.w * 0.14)
+	var wood := Color("#4e3c2a")
+	Kit.shadow(p, f + Vector2(0, 2 * u), 34 * u, 6 * u, 0.4)
+	Kit.box(p, f, 60 * u, 14 * u, 6 * u, Color("#55524a"))
+	var l := f + Vector2(-24, -4) * u
+	var r := f + Vector2(24, -4) * u
+	Kit.post(p, l, l + Vector2(4, -100) * u, 5.0 * u, wood)
+	Kit.post(p, r, r + Vector2(-4, -100) * u, 5.0 * u, wood)
+	var bar := f + Vector2(0, -98) * u
+	Kit.post(p, bar + Vector2(-30, 0) * u, bar + Vector2(30, -2) * u, 5.0 * u, wood.lightened(0.08))
+	Ink.line(p, bar + Vector2(-6, 0) * u, bar + Vector2(-6, 8) * u, 1.6 * u, IRON, 1.0, 0.1)
+	Ink.line(p, bar + Vector2(6, 0) * u, bar + Vector2(6, 8) * u, 1.6 * u, IRON, 1.0, 0.1)
+	var top := bar + Vector2(0, 8) * u
+	var body := PackedVector2Array()
+	for k in 13:  # 종 몸: 둥근 어깨 → 벌어진 입
+		var t := float(k) / 12.0
+		var y := top.y + t * 42.0 * u
+		var hw := (9.0 + 4.0 * sin(t * PI * 0.5) + 9.0 * pow(t, 3.0)) * u
+		body.append(Vector2(top.x - hw, y))
+	for k in range(12, -1, -1):
+		var t := float(k) / 12.0
+		var y := top.y + t * 42.0 * u
+		var hw := (9.0 + 4.0 * sin(t * PI * 0.5) + 9.0 * pow(t, 3.0)) * u
+		body.append(Vector2(top.x + hw, y))
+	var bronze := Color("#6a5a3a")
+	p.fill_poly(body, func(x: int, y: int) -> Color:
+		var lit := 0.18 - (x - top.x) / (22.0 * u) * 0.22
+		var c := bronze.lightened(lit) if lit > 0.0 else bronze.darkened(-lit)
+		return p.vary(c.lerp(Color("#4a6a5a"), 0.25 * Paint.hash01(int(x / (3.0 * u)), int(y / (3.0 * u)), 5)), x, y, 0.06))
+	Ink.path(p, body, 1.6 * u, true, Ink.INK, 0.9, 0.2)
+	Ink.line(p, Vector2(top.x - 16 * u, top.y + 30 * u), Vector2(top.x + 16 * u, top.y + 30 * u), 1.2 * u, Color("#3a3226"), 0.8, 0.2)
+	Cave._dot(p, Vector2(top.x, top.y + 44 * u), 3.0 * u, IRON, 1.0)  # 추
+	var lamp := l + Vector2(9, -64) * u
+	Kit.glow(p, lamp, 22 * u, Color("#ff7a3a"), 0.45)
+	Cave._dot(p, lamp, 3.4 * u, Color("#ffd890"), 1.0)
+	Ink.line(p, lamp + Vector2(0, -4) * u, lamp + Vector2(-5, -8) * u, 1.2 * u, IRON, 1.0, 0.1)
+	Decals._blob(p, l + Vector2(2, -20) * u, 5 * u, MOSS, 0.5, 0.4)
+
+
+## 고개 쇠문(층 목표 — FL18): 굵은 쇠창살 문짝 한 칸 폭(이웃 칸과 이어져 길을 막는다) + 가로 띠 + 위 끝 창날 + 가운데 종 문양 판.
+static func _gate(p: Paint) -> void:
+	var u := p.w / 128.0
+	var f := Vector2(p.w * 0.5, p.h - p.w * 0.14)
+	var l := f.x - 32.0 * u
+	Kit.shadow(p, f + Vector2(0, 2 * u), 36 * u, 5 * u, 0.4)
+	for ry: float in [12.0, 52.0, 86.0]:
+		Ink.line(p, Vector2(l, f.y - ry * u), Vector2(l + 64 * u, f.y - ry * u), 3.4 * u, IRON, 1.0, 0.1)
+		Ink.line(p, Vector2(l, f.y - ry * u - 1.2 * u), Vector2(l + 64 * u, f.y - ry * u - 1.2 * u), 1.0 * u, Color("#6a5848"), 0.5, 0.2)
+	for k in 6:
+		var x := l + (k + 0.5) * 64.0 * u / 6.0
+		var hh := 96.0 * u
+		Ink.line(p, Vector2(x, f.y), Vector2(x, f.y - hh), 3.0 * u, IRON, 1.0, 0.1)
+		Ink.line(p, Vector2(x - 0.9 * u, f.y - 4 * u), Vector2(x - 0.9 * u, f.y - hh + 4 * u), 0.8 * u, Color("#7a6050"), 0.45, 0.2)
+		var tip := Vector2(x, f.y - hh)
+		p.fill_poly(PackedVector2Array([tip + Vector2(-3.5, 2) * u, tip + Vector2(0, -9) * u, tip + Vector2(3.5, 2) * u]), func(_x: int, _y: int) -> Color: return IRON)
+	var c := Vector2(f.x, f.y - 52 * u)
+	Kit.box(p, c + Vector2(0, 10) * u, 18 * u, 3 * u, 20 * u, Color("#3a342c"))
+	var bell := PackedVector2Array([c + Vector2(-4, -6) * u, c + Vector2(4, -6) * u, c + Vector2(7, 4) * u, c + Vector2(-7, 4) * u])
+	p.fill_poly(bell, func(_x: int, _y: int) -> Color: return Color("#7a6a48"))
+	Ink.path(p, bell, 1.0 * u, true, Ink.INK, 0.8, 0.1)
 
 
 ## 무른 땅의 금: 가운데에서 갈라져 나가는 굵은 검은 금 + 가장자리 꺼진 그늘.

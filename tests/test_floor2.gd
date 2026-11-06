@@ -27,14 +27,15 @@ func test_fields_route_map() -> void:
 		var p := queue[head]
 		head += 1
 		for d in FloorMap.DIRS4:
-			if map.in_bounds(p + d) and not seen.has(p + d) and map.is_walkable(p + d):
+			if map.in_bounds(p + d) and not seen.has(p + d) and (map.is_walkable(p + d) or map.tile_id_at(p + d) == "f2d_gate"):  # 고개 쇠문(FL18)은 열릴 길
 				seen[p + d] = true
 				queue.append(p + d)
 	var walk := 0
 	for i in map.tiles.size():
-		if map.defs[map.tiles[i]].walkable and map.dark[i] == 0 and map.defs[map.tiles[i]].id != "f2d_flesh":
+		if map.defs[map.tiles[i]].walkable and map.dark[i] == 0:
 			walk += 1
-	assert_eq(seen.size(), walk, "걸을 수 있는 칸은 모두 시작에서 닿는다(지하 묘실 — 어둠 — 은 계단으로만, 목구멍 방은 아귀 입으로만)")
+	var gate_n: int = (map.anchors["gate"]["cells"] as Array).size()  # 쇠문 칸은 지나며 세었다
+	assert_eq(seen.size() - gate_n, walk, "걸을 수 있는 칸은 모두 시작에서 닿는다(지하 묘실 — 어둠 — 은 계단으로만, 고개 너머는 쇠문을 지나)")
 	for id: String in nodes:
 		assert_true(seen.has(nodes[id]) or not map.is_walkable(nodes[id]), "구간 %s까지 걸어 닿는다" % id)
 	assert_true(seen.size() < map.width * map.height / 4, "열린 들판이 아니라 길(걸을 수 있는 칸이 지도의 4분의 1 미만): %d" % seen.size())
@@ -221,7 +222,7 @@ func test_tide_floods_mire_and_cuts_isle() -> void:
 	var isle := Vector2i(-1, -1)
 	var mire := Vector2i(-1, -1)
 	for q: Vector2i in tide:
-		if str(tide[q]) == "deep" and isle.x < 0 and Vector2(q - (nodes["bell_isle"] as Vector2i)).length() < 4.0:
+		if str(tide[q]) == "deep" and isle.x < 0 and s.map.is_walkable(q) and Vector2(q - (nodes["bell_isle"] as Vector2i)).length() < 4.0:  # 소품이 선 칸은 빼고
 			isle = q
 		if str(tide[q]) == "flood" and mire.x < 0 and Vector2(q - (nodes["mire"] as Vector2i)).length() < 4.0:
 			mire = q
@@ -270,29 +271,57 @@ func test_procession_walks_at_night() -> void:
 
 
 
-func test_maws_open_catch_and_swallow() -> void:
+## 층 목표(FL18): 종 셋을 울리기 전엔 고개 쇠문이 길을 막고, 셋을 울리면 열려 3층 포탈까지 걸어 닿는다.
+func test_bells_open_the_pass_gate() -> void:
+	var s := _f2_session(4, false)
+	var gate: Dictionary = s.map.anchors["gate"]
+	var cells: Array = gate["cells"]
+	assert_true(cells.size() >= 3, "쇠문이 길을 가로지른다: %d칸" % cells.size())
+	assert_false(_reaches(s.map, s.map.center), "종을 울리기 전 — 3층 포탈에 닿지 못한다")
+	var bells := s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "bell")
+	assert_eq(bells.size(), 3, "종 셋(묘역 · 납골당 · 듀라한 폐허)")
+	assert_eq(s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "pass_gate").size(), 1, "쇠문을 살필 수 있다")
+	for b: Dictionary in bells:
+		assert_true(FloorMap.DIRS4.any(func(d: Vector2i) -> bool: return _reaches(s.map, (b["pos"] as Vector2i) + d)), "종 %s 옆까지 걸어 닿는다" % b["pos"])
+	for i in bells.size():
+		var b: Dictionary = bells[i]
+		s.features.act(s, b["pos"], "ring")
+		assert_eq(s.goal.count, i + 1)
+		assert_eq(s.map.tile_id_at(b["pos"]), "f2d_bell_rung", "울린 종은 푸른 불")
+		assert_eq(s.goal.opened, i == 2, "셋째 종에서 열린다")
+	for c: Vector2i in cells:
+		assert_true(s.map.is_walkable(c), "열린 문 칸은 걷는다")
+	assert_true(_reaches(s.map, s.map.center), "3층 포탈까지 걸어 닿는다")
+
+
+## 길목 매복(FL18): 그 자리에 처음 들어서면 길가에서 무리가 일어나 쫓아온다(한 번만).
+func test_ambush_rises_once() -> void:
 	var s := _f2_session(4, true)
-	assert_true(s.maws != null and s.maws.cells.size() >= 6, "아귀 입이 곳곳에: %d" % (0 if s.maws == null else s.maws.cells.size()))
-	var seen_open := false
-	var seen_shut := false
-	for k in 60:
-		s.maws.t = k * 0.1
-		seen_open = seen_open or s.maws.openness(0) >= 1.0
-		seen_shut = seen_shut or s.maws.openness(0) <= 0.0
-	assert_true(seen_open and seen_shut, "입은 벌어졌다 다문다")
-	var c := s.maws.cells[0]
-	s.maws._resolve(s, 0, true)
-	assert_true(Vector2(s.pos - c).length() <= 3.5 and not s.map.is_dark(s.pos), "앞면 — 입 옆으로 빠져나온다")
-	s.maws.swallow(s, 0)
-	var marks: Dictionary = s.map.anchors["marks"]
-	assert_eq(s.map.tile_id_at(s.pos), "f2d_flesh", "뒷면 — 목구멍 방에 떨어진다")
-	assert_true(s.in_combat, "떨어지면 바로 무작위 무리와 싸운다")
-	s.in_combat = false
-	var wall: Dictionary = s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "throat_wall")[0]
-	var climb: Dictionary = JsonUtil.get_array(wall["def"], "actions").filter(func(a: Dictionary) -> bool: return a["id"] == "climb")[0]
-	FieldFeatureAct.run(s, wall, climb)
-	assert_eq(s.pos, marks["maw_return"], "힘줄을 타고 삼킨 입 옆으로 올라온다")
-	assert_true(Vector2(s.pos - c).length() <= 3.5, "그 입 옆")
+	var spots := s.ambush.spots()
+	assert_true(spots.size() >= 5, "길목 매복 여럿: %d" % spots.size())
+	var n := s.monsters.groups.size()
+	s.ambush.on_enter(s, spots[0])
+	assert_eq(s.monsters.groups.size(), n + 1, "무리가 일어난다")
+	assert_eq(s.monsters.groups[-1].state, FieldMonsters.STATE_CHASE, "곧장 쫓아온다")
+	s.ambush.on_enter(s, spots[0])
+	assert_eq(s.monsters.groups.size(), n + 1, "한 번만")
+	s.detach()
+
+
+func _reaches(map: FloorMap, target: Vector2i) -> bool:
+	var seen := {map.entry: true}
+	var queue: Array[Vector2i] = [map.entry]
+	var head := 0
+	while head < queue.size():
+		var p := queue[head]
+		head += 1
+		if p == target:
+			return true
+		for d in FloorMap.DIRS4:
+			if map.in_bounds(p + d) and not seen.has(p + d) and map.is_walkable(p + d):
+				seen[p + d] = true
+				queue.append(p + d)
+	return false
 
 
 func test_debug_go_up_to_floor2() -> void:

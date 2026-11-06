@@ -270,8 +270,8 @@
     "_comment": "fields 생성기 route 문법(FieldsRoute — floor2.md §13-2): 손으로 설계한 길 그래프. 남(도착) → 북(3층 포탈). 본길: 나루터 → (둑길 | 진창 지름길) → 무너진 예배당 → 석조 회랑 → 묘역 문 → 기사의 다리 → 굳은 땅 갈림목 → 고갯길 → 3층 포탈. 곁길: 비석 터 · 납골당 · 듀라한의 폐허 · 무너진 망루. seed 고정 = 원정마다 같은 지도. 임시값",
     "grammar": "route",
     "size": [
-      220,
-      520
+      200,
+      345
     ],
     "seed": 1,
     "tiles": {
@@ -294,8 +294,8 @@
       {
         "id": "ferry",
         "at": [
-          110,
-          488
+          100,
+          309
         ],
         "r": 18,
         "zone": "f2d_marsh",
@@ -328,7 +328,7 @@
         "id": "levee_bend",
         "at": [
           42,
-          425
+          270
         ],
         "r": 10,
         "zone": "f2d_marsh",
@@ -348,8 +348,8 @@
       {
         "id": "mire",
         "at": [
-          152,
-          420
+          136,
+          267
         ],
         "r": 16,
         "zone": "f2d_marsh",
@@ -374,8 +374,8 @@
       {
         "id": "chapel",
         "at": [
-          100,
-          360
+          92,
+          230
         ],
         "r": 22,
         "zone": "f2d_marsh",
@@ -570,8 +570,8 @@
       {
         "id": "graveyard",
         "at": [
-          34,
-          322
+          35,
+          206
         ],
         "r": 17,
         "zone": "f2d_ruins",
@@ -620,8 +620,8 @@
       {
         "id": "corridor",
         "at": [
-          126,
-          298
+          114,
+          191
         ],
         "r": 8,
         "zone": "f2d_ruins",
@@ -636,8 +636,8 @@
       {
         "id": "tomb_gate",
         "at": [
-          110,
-          245
+          100,
+          158
         ],
         "r": 16,
         "zone": "f2d_ruins",
@@ -688,8 +688,8 @@
       {
         "id": "ossuary",
         "at": [
-          188,
-          262
+          166,
+          169
         ],
         "r": 14,
         "zone": "f2d_ruins",
@@ -713,8 +713,8 @@
       {
         "id": "bridge",
         "at": [
-          110,
-          198
+          100,
+          129
         ],
         "r": 6,
         "zone": "f2d_ruins",
@@ -724,8 +724,8 @@
       {
         "id": "crossroads",
         "at": [
-          110,
-          150
+          100,
+          99
         ],
         "r": 20,
         "zone": "f2d_hard",
@@ -780,8 +780,8 @@
       {
         "id": "dullahan_ruin",
         "at": [
-          36,
-          112
+          37,
+          76
         ],
         "r": 18,
         "zone": "f2d_hard",
@@ -822,8 +822,8 @@
       {
         "id": "watchtower",
         "at": [
-          186,
-          128
+          165,
+          86
         ],
         "r": 11,
         "zone": "f2d_hard",
@@ -833,8 +833,8 @@
       {
         "id": "pass",
         "at": [
-          96,
-          88
+          88,
+          61
         ],
         "r": 8,
         "zone": "f2d_hard",
@@ -849,8 +849,8 @@
       {
         "id": "summit",
         "at": [
-          110,
-          38
+          100,
+          30
         ],
         "r": 16,
         "zone": "f2d_hard",
@@ -883,8 +883,8 @@
       {
         "id": "bell_isle",
         "at": [
-          96,
-          432
+          88,
+          274
         ],
         "r": 7,
         "zone": "f2d_marsh",
@@ -1480,8 +1480,8 @@
     "crypts": [
       {
         "at": [
-          166,
-          300
+          150,
+          302
         ],
         "legend": {
           "#": "f2d_crypt",
@@ -1520,105 +1520,6 @@
             2
           ]
         }
-      },
-      {
-        "at": [
-          150,
-          330
-        ],
-        "lit": true,
-        "legend": {
-          "#": "f2d_fleshwall",
-          ".": "f2d_flesh"
-        },
-        "rows": [
-          "##################",
-          "####..........####",
-          "##..............##",
-          "#................#",
-          "#................#",
-          "#................#",
-          "#................#",
-          "##..............##",
-          "####..........####",
-          "######......######",
-          "##################"
-        ],
-        "marks": {
-          "throat_in": [
-            9,
-            6
-          ],
-          "throat_wall": [
-            9,
-            1
-          ]
-        }
-      }
-    ],
-    "maws": [
-      {
-        "node": "levee_bend",
-        "at": [
-          0,
-          0
-        ]
-      },
-      {
-        "node": "chapel",
-        "at": [
-          -14,
-          14
-        ]
-      },
-      {
-        "node": "graveyard",
-        "at": [
-          4,
-          8
-        ]
-      },
-      {
-        "node": "tomb_gate",
-        "at": [
-          -6,
-          6
-        ]
-      },
-      {
-        "node": "crossroads",
-        "at": [
-          12,
-          -8
-        ]
-      },
-      {
-        "node": "dullahan_ruin",
-        "at": [
-          -6,
-          -6
-        ]
-      },
-      {
-        "node": "watchtower",
-        "at": [
-          -6,
-          4
-        ]
-      },
-      {
-        "node": "summit",
-        "at": [
-          8,
-          4
-        ]
-      },
-      {
-        "node": "ferry",
-        "at": [
-          10,
-          -10
-        ]
       }
     ],
     "landmarks_under": {
@@ -1784,7 +1685,13 @@
           3
         ]
       }
-    ]
+    ],
+    "gate": {
+      "a": "pass",
+      "b": "summit",
+      "t": 0.45,
+      "tile": "f2d_gate"
+    }
   },
   "regions": [
     {
@@ -2006,7 +1913,7 @@
     "stand_at": "tomb_gate"
   },
   "route_spots": {
-    "_comment": "구간에 놓는 지키는 무리(guards — 관문 · 엘리트, 입장 때 그 구간 가운데에)와 동굴 요소(features — 쉼터 · 곁길 보상). RouteSpots. 임시값",
+    "_comment": "구간에 놓는 지키는 무리(guards — 관문 · 엘리트, 입장 때 그 구간 가운데에)와 동굴 요소(features — 쉼터 · 곁길 보상). RouteSpots. 임시값 · ambush = 길목 매복(RouteAmbush — FL18), features \"edge\"+\"t\" = 길 위 자리, \"object\" = 이미 있는 물체 칸(닫힌 쇠문)",
     "guards": [
       {
         "node": "bridge",
@@ -2239,12 +2146,78 @@
         "tile": "f2d_cache"
       },
       {
-        "mark": "throat_wall",
-        "event": "throat_wall",
+        "node": "graveyard",
+        "event": "bell",
         "at": [
-          0,
-          0
+          3,
+          -4
         ]
+      },
+      {
+        "node": "ossuary",
+        "event": "bell",
+        "at": [
+          -4,
+          2
+        ]
+      },
+      {
+        "node": "dullahan_ruin",
+        "event": "bell",
+        "at": [
+          3,
+          3
+        ]
+      },
+      {
+        "mark": "gate_mid",
+        "event": "pass_gate",
+        "object": true
+      },
+      {
+        "edge": [
+          "levee_bend",
+          "chapel"
+        ],
+        "t": 0.35,
+        "event": "explorer_corpse",
+        "tile": "f2d_corpse_g"
+      },
+      {
+        "edge": [
+          "chapel",
+          "graveyard"
+        ],
+        "t": 0.5,
+        "event": "offering_pile",
+        "tile": "f2d_offering"
+      },
+      {
+        "edge": [
+          "corridor",
+          "tomb_gate"
+        ],
+        "t": 0.5,
+        "event": "explorer_corpse",
+        "tile": "f2d_corpse_g"
+      },
+      {
+        "edge": [
+          "crossroads",
+          "watchtower"
+        ],
+        "t": 0.5,
+        "event": "dead_campfire",
+        "tile": "f2d_campfire"
+      },
+      {
+        "edge": [
+          "crossroads",
+          "dullahan_ruin"
+        ],
+        "t": 0.4,
+        "event": "offering_pile",
+        "tile": "f2d_offering"
       }
     ],
     "scatter": [
@@ -2257,6 +2230,107 @@
         "zone": "f2d_ruins",
         "event": "dig_grave",
         "count": 10
+      }
+    ],
+    "ambush": [
+      {
+        "edge": [
+          "levee_bend",
+          "chapel"
+        ],
+        "t": 0.6,
+        "monsters": [
+          "ghoul",
+          "ghoul"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
+      },
+      {
+        "edge": [
+          "ferry",
+          "mire"
+        ],
+        "t": 0.6,
+        "monsters": [
+          "ghoul",
+          "ghoul",
+          "ghoul"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
+      },
+      {
+        "edge": [
+          "chapel",
+          "corridor"
+        ],
+        "t": 0.5,
+        "monsters": [
+          "skeleton",
+          "skeleton",
+          "skeleton_archer"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
+      },
+      {
+        "edge": [
+          "chapel",
+          "graveyard"
+        ],
+        "t": 0.75,
+        "monsters": [
+          "skeleton",
+          "skeleton"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
+      },
+      {
+        "edge": [
+          "tomb_gate",
+          "ossuary"
+        ],
+        "t": 0.5,
+        "monsters": [
+          "skeleton_warrior",
+          "skeleton"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
+      },
+      {
+        "edge": [
+          "crossroads",
+          "pass"
+        ],
+        "t": 0.5,
+        "monsters": [
+          "deathfiend"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
+      },
+      {
+        "edge": [
+          "crossroads",
+          "dullahan_ruin"
+        ],
+        "t": 0.7,
+        "monsters": [
+          "ghoul_lord",
+          "ghoul"
+        ],
+        "radius": 3,
+        "line": "field.ambush",
+        "sound": "undead_moan"
       }
     ]
   },
@@ -2365,37 +2439,12 @@
       "to": 4
     }
   },
-  "maws": {
-    "_comment": "아귀 입 함정(MawTraps — FL15, 사용자 2026-11-05). 실제 초 주기로 벌어졌다 닫힌다, 벌어졌을 때(openness > 0.6) 입 안(reach 칸)에 들어서면 잡힘 → 동전(coin.maw.heads) 앞면 = 빠져나옴, 뒷면 = 목구멍 방 + throat_monsters 중 한 무리와 전투. 임시값",
-    "period_sec": 5.0,
-    "open_sec": 1.8,
-    "phase_step": 0.37,
-    "reach": 0.85,
-    "cooldown_sec": 4.0,
-    "throat_monsters": [
-      [
-        "ghoul",
-        "ghoul",
-        "ghoul"
-      ],
-      [
-        "skeleton",
-        "skeleton_warrior"
-      ],
-      [
-        "banshee"
-      ],
-      [
-        "elder_ghoul",
-        "ghoul"
-      ],
-      [
-        "deathfiend"
-      ],
-      [
-        "chimera_wolf",
-        "ghoul"
-      ]
-    ]
+  "goal": {
+    "_comment": "층 목표(FloorGoal — FL18, 사용자 2026-11-06): 종 셋(묘역 · 납골당 · 듀라한 폐허 — route_spots features bell)을 울리면 고개의 쇠문(gen.gate)이 열린다",
+    "flag": "bell",
+    "need": 3,
+    "hud": "explore.hud_bells",
+    "open_line": "field.gate_open",
+    "open_sound": "gate_open"
   }
 }

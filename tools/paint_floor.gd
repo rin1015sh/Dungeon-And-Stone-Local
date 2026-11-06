@@ -118,7 +118,7 @@ func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, sca
 			var sc: Array = spec["stand_cell"]
 			var cw := int(sc[0]) * cell
 			var ch := int(sc[1]) * cell
-			var cols := int(spec["stand_cols"])
+			var cols := int(pd.get("stand_cols", spec["stand_cols"]))  # 곳마다 칸 수를 넓힐 수 있다(망자의 땅 10 — 종 · 쇠문, FL18)
 			var stands: Array = pd["stands"]
 			var img := Image.create_empty(cols * cw, ceili(stands.size() / float(cols)) * ch, false, Image.FORMAT_RGBA8)
 			for k in stands.size():

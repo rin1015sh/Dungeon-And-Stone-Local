@@ -1,0 +1,27 @@
+{
+  "id": "bell",
+  "name_ko": "녹슨 종",
+  "type": "feature",
+  "tile": "f2d_bell",
+  "actions": [
+    {
+      "id": "ring",
+      "name_ko": "종을 울린다",
+      "limit": "once",
+      "hours": 0.1,
+      "line": "field.bell_ring",
+      "sound": "bell_toll",
+      "goal": "bell",
+      "clear": true,
+      "clear_tile": "f2d_bell_rung",
+      "alert": {
+        "monster": "skeleton",
+        "radius": 24,
+        "hours": 0.5
+      }
+    }
+  ],
+  "standing": true,
+  "source": "placeholder",
+  "notes": "망자의 땅 층 목표(FL18 — FloorGoal): 묘역 · 납골당 · 듀라한 폐허에 하나씩. 셋을 울리면 고개 쇠문이 열린다. 울리면 둘레 스켈레톤이 몰려온다. 임시값"
+}

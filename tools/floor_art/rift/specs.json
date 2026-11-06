@@ -529,6 +529,7 @@
      "face_px": 48
     }
    ],
+   "stand_cols": 10,
    "stands": [
     "f2d_fence",
     "f2d_lantern",
@@ -537,7 +538,9 @@
     "f2d_epitaph",
     "f2d_tomb_door",
     "f2d_wisp",
-    "f2d_sinew"
+    "f2d_sinew",
+    "f2d_bell",
+    "f2d_gate"
    ],
    "cliff": {
     "kind": "rock",

@@ -1,0 +1,17 @@
+{
+  "id": "pass_gate",
+  "name_ko": "닫힌 쇠문",
+  "type": "feature",
+  "tile": "f2d_gate",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.pass_gate"
+    }
+  ],
+  "standing": true,
+  "source": "placeholder",
+  "notes": "망자의 땅 고개 쇠문(FL18 — gen.gate · FloorGoal). 종 셋을 울리기 전까지 닫혀 있다"
+}
