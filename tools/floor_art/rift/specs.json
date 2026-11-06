@@ -617,6 +617,10 @@
     {
      "tile": "f2g_slope",
      "style": "stairs"
+    },
+    {
+     "tile": "f2g_plank",
+     "style": "planks"
     }
    ],
    "walls": [

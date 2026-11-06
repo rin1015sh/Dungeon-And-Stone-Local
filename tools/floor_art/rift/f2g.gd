@@ -47,6 +47,8 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 				_undergrowth(p, col, s)
 		"pebbles":
 			_pebbles(p, col, s)
+		"planks":
+			_planks(p, col, s)
 		_:
 			BF.base(p, style, part, col, s)
 
@@ -55,7 +57,7 @@ static func detail(p: Paint, style: String, part: String, v: int, col: Color) ->
 	var u := p.w / 64.0
 	var c := Vector2(p.w * 0.5, p.h * 0.5)
 	match style:
-		"brook", "undergrowth":
+		"brook", "undergrowth", "planks":
 			return
 		"pebbles":
 			return
@@ -162,6 +164,29 @@ static func _brook(p: Paint, col: Color, s: int) -> void:
 				c = c.lerp(Color("#5a5c52"), (stones[i] - 0.72) * 1.8)
 			var sp := smoothstep(0.78, 0.95, ripple[i]) * smoothstep(0.45, 0.7, f)
 			c = c.lerp(Color("#c8d8e0"), sp * 0.6)
+			p.blend(x, y, c, 1.0)
+
+
+## 나무 다리 널빤지: 가로 판자 줄(판마다 밝기 · 결 · 못), 판 사이 검은 틈, 이끼 낀 가장자리.
+static func _planks(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var grain := Seam.field(w, h, s + 4, 0.3, 1)
+	var moss := Seam.field(w, h, s + 5, 0.07, 2)
+	var board := h / 4.0
+	for y in h:
+		var row := int(y / board)
+		var tone := Paint.hash01(row, s % 97, 3) - 0.5
+		for x in w:
+			var i := y * w + x
+			var c := col.lightened(tone * 0.25).darkened((Seam.at(grain, w, h, x, y / 6) - 0.5) * 0.3)
+			var gy := fmod(float(y), board)
+			if gy < 1.5:
+				c = Color("#14100a")
+			elif gy < 3.0:
+				c = c.lightened(0.15)  # 판 위쪽 빛
+			if moss[i] > 0.7:
+				c = c.lerp(MOSS, (moss[i] - 0.7) * 2.0)
 			p.blend(x, y, c, 1.0)
 
 

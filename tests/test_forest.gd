@@ -46,11 +46,13 @@ func test_route_map_one_stele() -> void:
 	var ups := map.portals.filter(func(p: Dictionary) -> bool: return int(p.get("to_floor", 0)) == 3)
 	assert_eq(ups.size(), 1, "3층 비석은 하나")
 	var nodes: Dictionary = map.anchors["nodes"]
-	assert_eq(ups[0]["pos"], nodes["old_tree"], "북쪽 끝 늙은 고목 아래")
+	assert_eq(ups[0]["pos"], nodes["grove"], "북쪽 끝 늙은 고목 아래")
 	assert_true(seen.has(ups[0]["pos"]), "걸어서 닿는다")
-	for id in ["chief", "gully", "ford", "bridge", "mush", "hunter_camp"]:
-		assert_true(seen.has(nodes[id]) or not map.is_walkable(nodes[id]), "구간 %s까지 걷는다" % id)
-	assert_true(map.def_at(nodes["ford"]).sunk, "개울 여울은 낮은 땅")
+	var marks: Dictionary = map.anchors["marks"]
+	for id in ["chief", "hunter", "gully_ring", "gully_corpse", "gully_snared", "root_a", "root_b", "mush_ring", "glade", "outcrop", "hunters_camp", "valley_corpse", "valley_cache"]:
+		assert_true(seen.has(marks[id]), "%s까지 걸어 닿는다" % id)
+	assert_true(map.def_at(marks["valley_corpse"]).sunk, "개울 골짜기는 낮은 땅")
+	assert_eq(map.tile_id_at(Vector2i(126, 104)), "f2g_plank", "골짜기를 건너는 나무 다리")
 
 
 ## 세 갈래가 모두 고목에 닿는다 — 마을을 지나지 않고도(서 · 동).
@@ -71,19 +73,21 @@ func test_three_ways_north() -> void:
 			if map.in_bounds(q) and not seen.has(q) and map.is_walkable(q) and avoid_village.call(q):
 				seen[q] = true
 				queue.append(q)
-	assert_true(seen.has(nodes["old_tree"]), "마을을 피해서도 고목까지 간다(덫 골짜기 · 개울)")
+	assert_true(seen.has(nodes["grove"]), "마을을 피해서도 고목까지 간다(덫 골짜기 · 개울)")
 
 
 func test_trap_fields_are_clustered() -> void:
 	var s := _session(4, false)
 	var hz := s.features.hazards
-	var gz := s.map.zone_ids.find("f2g_gully")
-	var in_gully := 0
+	var marks: Dictionary = s.map.anchors["marks"]
+	var near_field := 0
 	for p: Vector2i in hz.at:
-		if s.map.zones[s.map.idx(p)] == gz:
-			in_gully += 1
-	assert_true(hz.at.size() >= 40, "덫 칸: %d" % hz.at.size())
-	assert_true(in_gully * 10 >= hz.at.size() * 7, "덫은 덫 골짜기에 몰려 있다: %d / %d" % [in_gully, hz.at.size()])
+		for f in ["trap1", "trap2", "trap3", "gate_s", "gate_n"]:
+			if Vector2(p - (marks[f] as Vector2i)).length() <= 9.5:
+				near_field += 1
+				break
+	assert_true(hz.at.size() >= 25, "덫 칸: %d" % hz.at.size())
+	assert_eq(near_field, hz.at.size(), "덫은 덫 밭(골짜기 셋 · 문 앞)에만")
 	var cell: Vector2i = hz.at.keys()[0]
 	var r: Variant = hz.on_step(s, cell)
 	assert_true(r is bool, "밟으면 판정한다")
@@ -119,7 +123,8 @@ func test_chief_and_brook_hunters() -> void:
 	assert_eq(chief.size(), 1, "족장 무리")
 	assert_true(Vector2((chief[0] as FieldMonsters.Group).pos - (nodes["chief"] as Vector2i)).length() <= 6.0, "족장 움막에")
 	var brook := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region == "f2g_brook")
-	assert_eq(brook.size(), 2, "개울 사냥꾼 무리 둘")
+	assert_eq(brook.size(), 1, "개울을 도는 사냥꾼 무리 하나(+ 골짜기 야영지 지키는 무리)")
+	assert_true(s.ambush != null and s.ambush.spots().size() == 3, "매복 셋(뿌리 곁방 · 버섯 고리 · 둔덕길)")
 	for g: FieldMonsters.Group in brook:
 		assert_eq(g.monster_ids, ["hobgoblin", "goblin_archer", "goblin_archer"] as Array[String], "홉고블린 + 궁수 둘")
 	assert_true(s.features.list.any(func(e: Dictionary) -> bool: return e["id"] == "chief_chest"), "족장 궤짝")

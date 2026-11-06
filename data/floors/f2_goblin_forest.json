@@ -142,7 +142,8 @@
         "f2g_grass",
         "f2g_path",
         "f2g_village",
-        "f2g_gravel_low"
+        "f2g_gravel_low",
+        "f2g_floor_low"
       ],
       "rules": [
         {
@@ -331,11 +332,11 @@
     }
   },
   "gen": {
-    "_comment": "고블린 숲 길 그래프(floor2.md §13-3 다시 기획 — 사용자 2026-11-06 \"비석 하나 · 맵 다시\", FL22): 숲 어귀 → 세 갈래가 북쪽 끝 늙은 고목(3층 비석 하나)으로 — 정면 마을 관통(남문 · 마을 · 북문, 망대 경보) · 서쪽 덫 골짜기(덫 밭 셋 · 족장 움막 · 뒷길) · 동쪽 개울 여울(낮은 땅 · 비탈 · 홉고블린 사냥꾼). [창작] 임시값",
+    "_comment": "고블린 숲 손으로 짠 지도(tools/f2g_layout.py — floor2.md §15, FL25): 지도 전체 = stamps 하나, 자리 = marks. 다시 만들려면 스크립트를 고쳐 다시 돌린다. [창작] 임시값",
     "grammar": "route",
     "size": [
-      200,
-      240
+      150,
+      182
     ],
     "seed": 2,
     "tiles": {
@@ -364,357 +365,418 @@
       {
         "id": "eaves",
         "at": [
-          100,
-          214
+          75,
+          160
         ],
-        "r": 14,
+        "r": 1,
         "zone": "f2g_eaves",
-        "kind": "arrival"
-      },
-      {
-        "id": "hunter_camp",
-        "at": [
-          40,
-          190
-        ],
-        "r": 11,
-        "zone": "f2g_gully",
-        "kind": "pocket",
-        "tile": "f2g_grass"
-      },
-      {
-        "id": "gully",
-        "at": [
-          34,
-          124
-        ],
-        "r": 9,
-        "zone": "f2g_gully",
-        "kind": "place",
+        "kind": "arrival",
         "props": [
+          {
+            "tile": "f2g_bush",
+            "at": [
+              [
+                -7,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_stump",
+            "at": [
+              [
+                6,
+                4
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                7,
+                -4
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_log",
+            "at": [
+              [
+                -6,
+                5
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_log",
+            "at": [
+              [
+                10,
+                -26
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                7,
+                -23
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                9,
+                -24
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -9,
+                -111
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -5,
+                -111
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -7,
+                -108
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -9,
+                -108
+              ]
+            ]
+          },
           {
             "tile": "f2g_totem",
             "at": [
               [
-                -3,
-                8
-              ],
-              [
-                3,
-                8
-              ],
-              [
-                -3,
-                -8
-              ],
-              [
-                3,
-                -8
+                -4,
+                -67
               ]
             ]
-          }
-        ],
-        "tile": "f2g_path"
-      },
-      {
-        "id": "chief",
-        "at": [
-          46,
-          60
-        ],
-        "r": 12,
-        "zone": "f2g_chief",
-        "kind": "pocket",
-        "tile": "f2g_village"
-      },
-      {
-        "id": "south_gate",
-        "at": [
-          100,
-          162
-        ],
-        "r": 6,
-        "zone": "f2g_eaves",
-        "kind": "place"
-      },
-      {
-        "id": "village",
-        "at": [
-          100,
-          112
-        ],
-        "r": 23,
-        "zone": "f2g_village",
-        "kind": "place",
-        "props": [
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                4,
+                -67
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -13,
+                -71
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                13,
+                -70
+              ]
+            ]
+          },
           {
             "tile": "f2g_totem",
             "at": [
               [
                 -5,
-                -4
-              ],
-              [
-                5,
-                -4
-              ],
-              [
-                0,
-                6
+                -75
               ]
             ]
-          }
-        ]
-      },
-      {
-        "id": "north_gate",
-        "at": [
-          100,
-          62
-        ],
-        "r": 6,
-        "zone": "f2g_grove",
-        "kind": "place"
-      },
-      {
-        "id": "old_tree",
-        "at": [
-          100,
-          24
-        ],
-        "r": 13,
-        "zone": "f2g_grove",
-        "kind": "exit",
-        "tile": "f2g_grass",
-        "props": [
+          },
           {
-            "tile": "f2g_stele",
+            "tile": "f2g_totem",
             "at": [
               [
-                0,
-                -2
+                6,
+                -73
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -64,
+                -70
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -60,
+                -70
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                -64,
+                -66
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -50,
+                -27
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -48,
+                -27
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -61,
+                -56
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -57,
+                -56
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -48,
+                -81
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -44,
+                -81
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -44,
+                -110
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -38,
+                -110
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -36,
+                -115
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                45,
+                -16
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                53,
+                -14
+              ]
+            ]
+          },
+          {
+            "tile": "f2g_mush",
+            "at": [
+              [
+                51,
+                -9
               ]
             ]
           }
         ]
       },
       {
-        "id": "mush",
+        "id": "hunter",
         "at": [
-          164,
-          192
+          28,
+          146
         ],
-        "r": 10,
-        "zone": "f2g_brook",
-        "kind": "pocket",
-        "tile": "f2g_grass"
+        "r": 1,
+        "zone": "f2g_gully",
+        "kind": "place"
       },
       {
-        "id": "ford",
+        "id": "gully_ring",
         "at": [
-          168,
-          126
+          13,
+          92
         ],
-        "r": 11,
-        "zone": "f2g_brook",
-        "kind": "place",
-        "level": "low"
+        "r": 1,
+        "zone": "f2g_gully",
+        "kind": "place"
       },
       {
-        "id": "bridge",
+        "id": "chief",
         "at": [
-          158,
-          62
+          34,
+          46
         ],
-        "r": 7,
+        "r": 1,
+        "zone": "f2g_chief",
+        "kind": "place"
+      },
+      {
+        "id": "village",
+        "at": [
+          75,
+          90
+        ],
+        "r": 1,
+        "zone": "f2g_village",
+        "kind": "place"
+      },
+      {
+        "id": "grove",
+        "at": [
+          75,
+          22
+        ],
+        "r": 1,
+        "zone": "f2g_grove",
+        "kind": "exit"
+      },
+      {
+        "id": "mush_ring",
+        "at": [
+          68,
+          50
+        ],
+        "r": 1,
+        "zone": "f2g_grove",
+        "kind": "place"
+      },
+      {
+        "id": "glade",
+        "at": [
+          124,
+          148
+        ],
+        "r": 1,
+        "zone": "f2g_brook",
+        "kind": "place"
+      },
+      {
+        "id": "hunters_camp",
+        "at": [
+          130,
+          82
+        ],
+        "r": 1,
+        "zone": "f2g_brook",
+        "kind": "place"
+      },
+      {
+        "id": "valley_corpse",
+        "at": [
+          122,
+          128
+        ],
+        "r": 1,
+        "zone": "f2g_brook",
+        "kind": "place"
+      },
+      {
+        "id": "outcrop",
+        "at": [
+          144,
+          104
+        ],
+        "r": 1,
         "zone": "f2g_brook",
         "kind": "place"
       }
     ],
-    "edges": [
-      {
-        "a": "eaves",
-        "b": "south_gate",
-        "width": 6,
-        "tile": "f2g_path",
-        "wiggle": 4
-      },
-      {
-        "a": "village",
-        "b": "south_gate",
-        "width": 7,
-        "tile": "f2g_village",
-        "wiggle": 2
-      },
-      {
-        "a": "village",
-        "b": "north_gate",
-        "width": 7,
-        "tile": "f2g_village",
-        "wiggle": 2
-      },
-      {
-        "a": "old_tree",
-        "b": "north_gate",
-        "width": 6,
-        "tile": "f2g_path",
-        "wiggle": 4
-      },
-      {
-        "a": "eaves",
-        "b": "hunter_camp",
-        "width": 6,
-        "tile": "f2g_path",
-        "wiggle": 5
-      },
-      {
-        "a": "hunter_camp",
-        "b": "gully",
-        "width": 4,
-        "tile": "f2g_path",
-        "wiggle": 6
-      },
-      {
-        "a": "gully",
-        "b": "chief",
-        "width": 4,
-        "tile": "f2g_path",
-        "wiggle": 6
-      },
-      {
-        "a": "chief",
-        "b": "north_gate",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 5
-      },
-      {
-        "a": "eaves",
-        "b": "mush",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 6
-      },
-      {
-        "a": "mush",
-        "b": "ford",
-        "width": 6,
-        "wiggle": 8,
-        "level": "low",
-        "ramp": true,
-        "tile": "f2g_brook"
-      },
-      {
-        "a": "ford",
-        "b": "bridge",
-        "width": 6,
-        "wiggle": 8,
-        "level": "low",
-        "ramp": true,
-        "tile": "f2g_brook"
-      },
-      {
-        "a": "bridge",
-        "b": "old_tree",
-        "width": 5,
-        "tile": "f2g_path",
-        "wiggle": 6
-      }
-    ],
-    "props": [
-      {
-        "zone": "f2g_eaves",
-        "tile": "f2g_bush",
-        "count": 10
-      },
-      {
-        "zone": "f2g_eaves",
-        "tile": "f2g_stump",
-        "count": 4
-      },
-      {
-        "zone": "f2g_eaves",
-        "tile": "f2g_log",
-        "count": 3
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_bush",
-        "count": 10
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_stump",
-        "count": 4
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_log",
-        "count": 3
-      },
-      {
-        "zone": "f2g_grove",
-        "tile": "f2g_bush",
-        "count": 10
-      },
-      {
-        "zone": "f2g_grove",
-        "tile": "f2g_stump",
-        "count": 4
-      },
-      {
-        "zone": "f2g_grove",
-        "tile": "f2g_log",
-        "count": 3
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_bush",
-        "count": 10
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_stump",
-        "count": 4
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_log",
-        "count": 3
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_mush",
-        "count": 14
-      },
-      {
-        "zone": "f2g_grove",
-        "tile": "f2g_mush",
-        "count": 6
-      },
-      {
-        "zone": "f2g_village",
-        "tile": "f2g_totem",
-        "count": 3
-      },
-      {
-        "zone": "f2g_chief",
-        "tile": "f2g_totem",
-        "count": 3
-      }
-    ],
+    "edges": [],
+    "props": [],
     "fence": [
       {
         "node": "village",
         "tile": "f2g_stakes",
-        "pad": 3,
-        "along": "f2g_rise"
+        "pad": 19,
+        "along": "f2g_thicket"
       },
       {
         "node": "chief",
         "tile": "f2g_stakes",
-        "pad": 2,
-        "along": "f2g_rise"
+        "pad": 8,
+        "along": "f2g_thicket"
       }
     ],
     "landmarks_prefix": "f2g",
@@ -725,10 +787,10 @@
     },
     "landmarks": [
       {
-        "node": "old_tree",
+        "node": "eaves",
         "at": [
           0,
-          -4
+          -146
         ],
         "kind": "bigtree",
         "foot": [
@@ -737,82 +799,10 @@
         ]
       },
       {
-        "node": "village",
-        "at": [
-          -12,
-          -8
-        ],
-        "kind": "hut",
-        "foot": [
-          4,
-          2
-        ]
-      },
-      {
-        "node": "village",
-        "at": [
-          12,
-          -6
-        ],
-        "kind": "hut",
-        "foot": [
-          4,
-          2
-        ]
-      },
-      {
-        "node": "village",
-        "at": [
-          -14,
-          9
-        ],
-        "kind": "tent",
-        "foot": [
-          3,
-          2
-        ]
-      },
-      {
-        "node": "village",
-        "at": [
-          14,
-          10
-        ],
-        "kind": "tent",
-        "foot": [
-          3,
-          2
-        ]
-      },
-      {
-        "node": "village",
+        "node": "eaves",
         "at": [
           -10,
-          16
-        ],
-        "kind": "watch",
-        "foot": [
-          3,
-          2
-        ]
-      },
-      {
-        "node": "village",
-        "at": [
-          10,
-          -16
-        ],
-        "kind": "watch",
-        "foot": [
-          3,
-          2
-        ]
-      },
-      {
-        "node": "chief",
-        "at": [
-          0,
-          -4
+          -77
         ],
         "kind": "hut",
         "foot": [
@@ -821,12 +811,144 @@
         ]
       },
       {
-        "node": "hunter_camp",
+        "node": "eaves",
         "at": [
-          5,
-          -4
+          10,
+          -76
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          -9,
+          -64
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          11,
+          -64
         ],
         "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          -3,
+          -80
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          5,
+          -60
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          -8,
+          -58
+        ],
+        "kind": "watch",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          9,
+          -81
+        ],
+        "kind": "watch",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          0,
+          -73
+        ],
+        "kind": "bigtree",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          -42,
+          -19
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          -41,
+          -117
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          -46,
+          -111
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "eaves",
+        "at": [
+          65,
+          -59
+        ],
+        "kind": "watch",
         "foot": [
           3,
           2
@@ -834,7 +956,7 @@
       }
     ],
     "zone_low": {
-      "f2g_brook": "f2g_gravel_low"
+      "f2g_brook": "f2g_floor_low"
     },
     "levels": {
       "scree": "f2g_scree",
@@ -1181,6 +1303,420 @@
           11
         ]
       }
+    ],
+    "stamps": [
+      {
+        "node": "eaves",
+        "at": [
+          -75,
+          -160
+        ],
+        "legend": {
+          ".": "f2g_floor",
+          ",": "f2g_grass",
+          "=": "f2g_path",
+          "v": "f2g_village",
+          "b": "f2g_plank",
+          "l": "f2g_floor_low",
+          "w": "f2g_brook",
+          "g": "f2g_gravel_low",
+          "/": "f2g_slope"
+        },
+        "rows": [
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                          ,                                                                           ",
+          "                                                                        ,,,,,                                                                         ",
+          "                                                                       ,,,,,,,                                                                        ",
+          "                                                                      ,,,,,,,,,                                                                       ",
+          "                                                                      ,,,,,,,,,,                                                                      ",
+          "                                                                     ,,,,,,,,,,,,,,                                                                   ",
+          "                                                                   ,,,,,,,,,,,,,,,,,                                                                  ",
+          "                                                                  ,,,,,,,,,,,,,,,,,,                                                                  ",
+          "                                                                  ,,,,,,,,,,,,,,,,,,,                                                                 ",
+          "                                                                 ,,,,,,,,,,,,,,,,,,,,                                                                 ",
+          "                                                                 ,,,,,,,,,,,,,,,,,,,,                                                                 ",
+          "                                                                  ,,,,,,,,,,,,,,,,,,,,                                                                ",
+          "                                                                  ,,,,,,,,,,,,,,,,,,,,,                                                               ",
+          "                                                                 ,,,,,,,,,,,,,,,,,,,,,,,                                                              ",
+          "                                                                ,,,,,,,,,,,,,,,,,,,,,,,,                                                              ",
+          "                                                                ,,,,,,,,,,,,,,,,,,,===,,,                                                             ",
+          "                                                               ,,,,,,,,,,,,,,,,,,,,====,,                                                             ",
+          "                                                               ,,,,,,,,,,,,,,,,,,,,=====,                                                             ",
+          "                                                               ,,,,,,,,,,,,,,,,,,,,,=====                                                             ",
+          "                                                               ,,,,,,,,.......,,,,,,,=====                                                            ",
+          "                                                               ,,,,,,,,..........,,,,,=====                                                           ",
+          "                                                                ,,,,,,,..........,,,,  =====                                                          ",
+          "                                                                  ,,,,..........,,,,,   ====                                                          ",
+          "                                                                   ,,,..........,,,,     ====                                                         ",
+          "                                                                    ,,,.........,,,       ====                                                        ",
+          "                                                                     ,,,........           ===                                                        ",
+          "                                                                        .......            ====                                                       ",
+          "                                                                        ......              ====                                                      ",
+          "                                                                          ....               ====                                                     ",
+          "                                                                         ======               ===                                                     ",
+          "                                                                   ============               ====                                                    ",
+          "                                                             ===================               ====                                                   ",
+          "                             vvvvvvvv                  ==================   ====                ===                                                   ",
+          "                             vvvvvvvvvv            ================         ====                ====                                                  ",
+          "                            vvvvvvvvvvvvvv       =============              ====                 ====                                                 ",
+          "                            vvvvvvvvvvvvvv     =========                    ====                  ===                                                 ",
+          "                            vvvvvvvvvvvvvv  ========                        ====                  ====                                                ",
+          "                           vvvvvvvvvvvvvvv=======                           ====                   ====                                               ",
+          "                           vvvvvvvvvvvvvv =====                             =====                   ====                                              ",
+          "                            vvvvvvvvvvvvv ===                               ====                     ===                                              ",
+          "                             vvvvvvvvvvvv                         ,,,,      ====                     ====                                             ",
+          "                             vvvvvvvvvvvv                         ,,=,,,   =====                      ====                                            ",
+          "                             vvvvvvvvvv                           ,====,  ======                       ===                                            ",
+          "                             vvvvvvvvv                            ,,===========                        ====                                           ",
+          "                              vvvvvvv                             ,,,, =======                          ====                                          ",
+          "                               ==vvvv                               ,   =====                            ====                                         ",
+          "                               ===                                      ====                              ====                                        ",
+          "                              ====                                      ====                               ====                                       ",
+          "                              ===                                      =====                                ====                                      ",
+          "                             ====                                       ====                                 ====                                     ",
+          "                             ===                                        =====                                 ====                                    ",
+          "                            ====                                         ====                                  ====                                   ",
+          "                            ===                                          ====                                   ====                                  ",
+          "                           ====                                          ====                                    ====                                 ",
+          "                           ===                                           ====                                     ====                                ",
+          "                          ====                                          ====                                       ===                                ",
+          "                          ===                                            ====                                     /===/                               ",
+          "                         ====                                            ====                                  === ////                               ",
+          "                         ===                                             =====                                 === /////                              ",
+          "                         ===                                             =====                                 ===  /////                             ",
+          "                          ===                                            =====                                ===    ////                             ",
+          "                          ===                                            =====                                ===    /////                            ",
+          "                           ===                                           =====                                ===   ll/////lwwwwlllllllll             ",
+          "                           ===                                           =====                                ===   lll////lwwwwlllllllll             ",
+          "                           ===                                           =====                               ===     ll/////lwwwwlllllllll            ",
+          "                            ===                                          =====                               ===      ll///llwwwwllllllll             ",
+          "                            ===                                          =====                               ===       ll/llllwwwwllllllll            ",
+          "                             ===                                         =====                              ===        lllllllwwwwllllllll            ",
+          "                            ====                                         =====                              ===         lllllllwwwwllllllll           ",
+          "                           =====                                     vvvvv===vvvvv                          ===         lllllllwwwwllllllll           ",
+          "                          =====                                    vvvvvvvv=vvvvvvvv                        ===           llllllwwwwlllllll           ",
+          "                          ====                                   vvvvvvvvvvvvvvvvvvvvv                     ===            llllllwwgglllllll           ",
+          "                        =====                                   vvvvvvvvvvvvvvvvvvvvvvv                    ===            llllllwggglllllll           ",
+          "                       ====    ..                             vvvvvvvvvvvvvvvvvvvvvvvvvvv                  ===             lllllggggglllllll          ",
+          "                      =====   .....                           vvvvvvvvvvvvvvvvvvvvvvvvvvv                  ===             llllgggggglllllll          ",
+          "                     =====    ..=..                          vvvvvvvvvvvvvvvvvvvvvvvvvvvvv                 ===             lllllggggglllllll          ",
+          "                     =============..                        vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv                ===             lllllggggglllllll          ",
+          "                    =============...                        vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv       ====    ====             llllllwwwwlllllll          ",
+          "                    ====      .....                        vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv  =========   ===              llllllwwwwlllllll          ",
+          "                   ====        .                           vvvvvvvvvvvvvv,,,,,vvvvvvvvvvvvv=============  ===              llllllwwwwlllllll          ",
+          "            ,,     ===                                     vvvvvvvvvvvvvv,,,,,vvvvvvvvvvvvv======== ===== ===             lllllllwwwwllllllll         ",
+          "           ,,,,,  ====                       ===============vvvvvvvvvvvv,,,,,,vvvvvvvvvvvvv====      ========             lllllllwwwwllllllll         ",
+          "          ,,,,,,, ===              =========================vvvvvvvvvvvvv,,,,,vvvvvvvvvvvvvvv         =======             lllllllwwwwllllllll         ",
+          "          ,,,,,,,====        ===============================vvvvvvvvvvvvvv,,,vvvvvvvvvvvvvvv           ======             lllllllwwwwllllllll         ",
+          "          ,,,,,,,,==         =================             vvvvvvvvvvvvvvvv,,vvvvvvvvvvvvvvv            =====             lllllllwwwwllllllll         ",
+          "         ,,,,,,,,,==         =======                       vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv             ====            llllllllwwwwlllllllll        ",
+          "         ,,,,,,,,==                                        vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv              ===         ggggglllllwwwwlllllllll         ",
+          "           ,,,,,===                                         vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv              ====        gggggglllllwwwwlllllllll         ",
+          "               ===                                          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv              ===         gggggglllllwwwwlllllllll         ",
+          "               ====                                          vvvvvvvvvvvvvvvvvvvvvvvvvvvvv               ===          gggggllllwwwwlllllllll          ",
+          "                ====                                          vvvvvvvvvvvvvvvvvvvvvvvvvvv                ===           ggggllllwwwwlllllllll          ",
+          "                 ====                                         vvvvvvvvvvvvvvvvvvvvvvvvvvv                ===          llggllllwwwwlllllllll           ",
+          "                  ====                                          vvvvvvvvvvvvvvvvvvvvvvv                  ===          llllllllwwwwlllllllll           ",
+          "                   ===                                           vvvvvvvvvv=vvvvvvvvvv                   ===         llllllllwwwwlllllllll            ",
+          "                   ====                                            vvvvvvv===vvvvvvv                     ===         llllllllwwwwlllllllll    .....   ",
+          "                    ====                                             vvvv=====vvvv                       ==bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.....   ",
+          "                     ====                                                =====                           ==bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb......   ",
+          "                      ====                                               =====                           ==bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.....   ",
+          "                       ===                                               =====                           ===         lllllllwwwwllllllll       ...    ",
+          "                       ====                                              =====                           ===        lllllllwwwwllllllll         ..    ",
+          "                        ===                                              =====                           ===         llllllwwwwlllllll                ",
+          "                         ===                                             =====                           ===        llllllwwwwlllllll                 ",
+          "                         ====                                            =====                           ===        llllllwwwwllllgll                 ",
+          "                          ===                                            =====                           ===       llllllwwwwlllllggg                 ",
+          "                          ====                                           =====                           ===       llllllwwwwlllllgggg                ",
+          "                           ===                                           =====                           ===      llllllwwwwllllllggg                 ",
+          "                            ===   .....                                  =====                           ===      llllllwwwwlllllllg                  ",
+          "                            ======......                                 =====                           ===      llllllwwwwlllllll                   ",
+          "                            =====......                                  =====                           ===     llllllwwwwlllllll                    ",
+          "                            ======.....                                   ===                            ===     llllllwwwwlllllll                    ",
+          "                           ====   ....                                    ===                            ===    lllllllwwwwllllllll                   ",
+          "                          ====      ..                                    ====                           ===    lllllllwwwwllllllll                   ",
+          "                         ====                                              ===                           ===    lllllllwwwwllllllll                   ",
+          "                         ===                                               ===                           ===    lllllllwwwwllllllll                   ",
+          "                        ====                                               ===                           ===    lllllllwwwwllllllll                   ",
+          "                       ====                                                ===                           ===   llllllllwwwwlllllllll                  ",
+          "                      ====                                                 ===                           ===   llllllllwwwwlllllllll                  ",
+          "                     ====                                                 ====                            ===  llllllllwwgglllllllll                  ",
+          "                     ===                                                  ===                             ===  llllllllwggggglllllll                  ",
+          "                     ===                                                 ====                             ===  llllllllwggggglllllll                  ",
+          "                      ===                                                ===                              ===  llllllllwggggggllllll                  ",
+          "                      ===                                               ====                              ===   lllllllggggggglllllll                 ",
+          "                      ===                                               ===                               ===   llllllllgggggllllllll                 ",
+          "                       ===                                             ====                               ===   llllllllwgwwlllllllll                 ",
+          "                       ===                                             ===        ..                      ===    llllllllwwwwlllllllll                ",
+          "                       ===                                             ====      .....                    ===     lllllllwwwwllllllll                 ",
+          "                        ===                                             ====     ..=..                     ===     lllllllwwwwllllllll                ",
+          "                        ===                                              ===     ====..                    ===     lllllllww/wllllllll                ",
+          "                        ===                                              ====  =====...                    ===      lllllll///wllllllll               ",
+          "                         ===,                                             =======.....                     ===      llllll/////llllllll               ",
+          "                         ===,,                                             ====   .                        ====       llll/////wlllllll               ",
+          "                         ===,,,                                            ====                            =====      llll/////wlllllll               ",
+          "                        ,,,,,,,,,                                           ====                            =====         /////,,                     ",
+          "                      ,,,,,,,,,,,,                                           ===                             ====        ,/////,,,                    ",
+          "                      ,,,,,,,,,,,,,                                         ====                              =====      ,,///,,,,                    ",
+          "                      ,,,,,,,,,,,,,                               .....     ===                                 ====    ,,,,/,,,,,                    ",
+          "                      ,,,,,,,,,,,,,                              ...=..    ===                                  ===== ,,,,,,,,,,,,                    ",
+          "                      ,,,,,,,,,,,,,,                             ..=====   ===                                   =====,,,,,,,,,,,,,                   ",
+          "                     ,,,,,,,,,,,,,,,,                            ...=========                                     ====,,,,,,,,,,,,,,                  ",
+          "                    ,,,,,,,,,,,,,,,,,                              ....======                                      ===,,,,,,,,,,,,,,                  ",
+          "                    ,,,,,,,,,,,,,,,,,                               ..   ===                                        ,,,,,,,,,,,,,,,,                  ",
+          "                    ,,,,,,,,,,,,,,,,,                                   ====                                        ,,,,,,,,,,,,,,,,                  ",
+          "                    ,,,,,,,,,,,,,,,,===                                 ====                                        ,,,,,,,,,,,,,,,                   ",
+          "                      ,,,,,,,,,,,,,======                             ..=====                                     ==,,,,,,,,,,,,,,,,                  ",
+          "                       ,,,,,,,,,,,  ========                         ....====..                               =======,,,,,,,,,,,,,,,                  ",
+          "                        ,,,,   ,,     =========                      .....===...                          ===========,,,,,,,,,,,,,,,                  ",
+          "                                         ==========                 .............                     ============        ,,,,,,,,,,                  ",
+          "                                           ============             ...............               ============            ,,,,,,,,,                   ",
+          "                                              =============        ..................         =============                 ,                         ",
+          "                                                  ============     ...................    =============                                               ",
+          "                                                      ============ ...................=============                                                   ",
+          "                                                          ===========..,,.........=============                                                       ",
+          "                                                              =======.,,,,,.......========                                                            ",
+          "                                                                  ===,,,,,,.......====                                                                ",
+          "                                                                    .,,,,,,,........                                                                  ",
+          "                                                                    .,,,,,,,,.......                                                                  ",
+          "                                                                    .,,,,,,,,.......                                                                  ",
+          "                                                                    ,,,,,,,,.......                                                                   ",
+          "                                                                    ..,,,,,......                                                                     ",
+          "                                                                     ..,.......                                                                       ",
+          "                                                                      ........                                                                        ",
+          "                                                                         ....                                                                         ",
+          "                                                                           .                                                                          ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      ",
+          "                                                                                                                                                      "
+        ]
+      }
+    ],
+    "marks": [
+      {
+        "name": "eaves",
+        "node": "eaves",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "root_a",
+        "node": "eaves",
+        "at": [
+          -7,
+          -15
+        ]
+      },
+      {
+        "name": "root_b",
+        "node": "eaves",
+        "at": [
+          8,
+          -25
+        ]
+      },
+      {
+        "name": "village",
+        "node": "eaves",
+        "at": [
+          0,
+          -70
+        ]
+      },
+      {
+        "name": "gate_s",
+        "node": "eaves",
+        "at": [
+          0,
+          -53
+        ]
+      },
+      {
+        "name": "gate_n",
+        "node": "eaves",
+        "at": [
+          0,
+          -90
+        ]
+      },
+      {
+        "name": "gate_w",
+        "node": "eaves",
+        "at": [
+          -22,
+          -70
+        ]
+      },
+      {
+        "name": "gate_e",
+        "node": "eaves",
+        "at": [
+          22,
+          -73
+        ]
+      },
+      {
+        "name": "mush_ring",
+        "node": "eaves",
+        "at": [
+          -7,
+          -110
+        ]
+      },
+      {
+        "name": "grove",
+        "node": "eaves",
+        "at": [
+          0,
+          -138
+        ]
+      },
+      {
+        "name": "watch_s",
+        "node": "eaves",
+        "at": [
+          -8,
+          -57
+        ]
+      },
+      {
+        "name": "watch_n",
+        "node": "eaves",
+        "at": [
+          9,
+          -80
+        ]
+      },
+      {
+        "name": "hunter",
+        "node": "eaves",
+        "at": [
+          -47,
+          -14
+        ]
+      },
+      {
+        "name": "gully_snared",
+        "node": "eaves",
+        "at": [
+          -39,
+          -44
+        ]
+      },
+      {
+        "name": "gully_ring",
+        "node": "eaves",
+        "at": [
+          -62,
+          -68
+        ]
+      },
+      {
+        "name": "gully_corpse",
+        "node": "eaves",
+        "at": [
+          -43,
+          -76
+        ]
+      },
+      {
+        "name": "trap1",
+        "node": "eaves",
+        "at": [
+          -53,
+          -33
+        ]
+      },
+      {
+        "name": "trap2",
+        "node": "eaves",
+        "at": [
+          -56,
+          -61
+        ]
+      },
+      {
+        "name": "trap3",
+        "node": "eaves",
+        "at": [
+          -46,
+          -88
+        ]
+      },
+      {
+        "name": "chief",
+        "node": "eaves",
+        "at": [
+          -41,
+          -114
+        ]
+      },
+      {
+        "name": "glade",
+        "node": "eaves",
+        "at": [
+          49,
+          -12
+        ]
+      },
+      {
+        "name": "valley_corpse",
+        "node": "eaves",
+        "at": [
+          47,
+          -32
+        ]
+      },
+      {
+        "name": "valley_cache",
+        "node": "eaves",
+        "at": [
+          56,
+          -49
+        ]
+      },
+      {
+        "name": "hunters_camp",
+        "node": "eaves",
+        "at": [
+          55,
+          -78
+        ]
+      },
+      {
+        "name": "ridge_view",
+        "node": "eaves",
+        "at": [
+          31,
+          -50
+        ]
+      },
+      {
+        "name": "outcrop",
+        "node": "eaves",
+        "at": [
+          69,
+          -56
+        ]
+      }
     ]
   },
   "regions": [
@@ -1217,8 +1753,8 @@
         "goblin_archer": 1
       },
       "groups": [
-        3,
-        4
+        2,
+        3
       ],
       "pack": [
         1,
@@ -1236,7 +1772,7 @@
         "goblin": 1
       },
       "groups": [
-        1,
+        2,
         2
       ],
       "pack": [
@@ -1255,8 +1791,8 @@
         "hobgoblin": 1
       },
       "groups": [
-        2,
-        2
+        1,
+        1
       ],
       "pack": [
         1,
@@ -1340,10 +1876,10 @@
     "_comment": "지키는 무리(족장 · 망대 궁수) · 동굴 요소 · 지형 덫(덫 밭 — node/edge 둘레 r칸에 몰아서) · 망대(watch — 들키면 마을 큰 무리가 쫓아온다, RouteWatch). [창작] 임시값",
     "guards": [
       {
-        "node": "chief",
+        "mark": "chief",
         "at": [
           0,
-          2
+          3
         ],
         "monsters": [
           "hobgoblin",
@@ -1352,11 +1888,19 @@
           "goblin_swordsman",
           "goblin_archer"
         ]
+      },
+      {
+        "mark": "hunters_camp",
+        "monsters": [
+          "hobgoblin",
+          "goblin_archer",
+          "goblin_archer"
+        ]
       }
     ],
     "features": [
       {
-        "node": "hunter_camp",
+        "mark": "hunter",
         "event": "dead_campfire",
         "at": [
           -3,
@@ -1365,25 +1909,45 @@
         "tile": "f2g_campfire"
       },
       {
-        "node": "hunter_camp",
+        "mark": "hunter",
         "event": "hunter_cache",
         "at": [
-          -6,
-          -3
+          -5,
+          -2
         ],
         "tile": "f2g_cache"
       },
       {
-        "node": "village",
+        "mark": "root_a",
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse_f"
+      },
+      {
+        "mark": "gully_snared",
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse_f"
+      },
+      {
+        "mark": "gully_ring",
+        "event": "hunter_cache",
+        "tile": "f2g_cache"
+      },
+      {
+        "mark": "gully_corpse",
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse_f"
+      },
+      {
+        "mark": "village",
         "event": "goblin_camp",
         "at": [
           -6,
-          3
+          1
         ],
         "tile": "f2g_camp"
       },
       {
-        "node": "village",
+        "mark": "village",
         "event": "goblin_camp",
         "at": [
           7,
@@ -1392,16 +1956,16 @@
         "tile": "f2g_camp"
       },
       {
-        "node": "village",
+        "mark": "village",
         "event": "goblin_camp",
         "at": [
           0,
-          -10
+          8
         ],
         "tile": "f2g_camp"
       },
       {
-        "node": "chief",
+        "mark": "chief",
         "event": "chief_chest",
         "at": [
           4,
@@ -1410,148 +1974,125 @@
         "tile": "f2g_cache_v"
       },
       {
-        "edge": [
-          "gully",
-          "chief"
-        ],
-        "t": 0.75,
-        "event": "explorer_corpse",
-        "tile": "f2g_corpse"
+        "mark": "glade",
+        "event": "forest_mushroom",
+        "at": [
+          -3,
+          1
+        ]
       },
       {
-        "edge": [
-          "hunter_camp",
-          "gully"
-        ],
-        "t": 0.3,
-        "event": "explorer_corpse",
-        "tile": "f2g_corpse"
-      },
-      {
-        "node": "mush",
+        "mark": "glade",
         "event": "forest_mushroom",
         "at": [
           3,
-          -2
+          -3
         ]
       },
       {
-        "node": "mush",
-        "event": "forest_mushroom",
+        "mark": "valley_corpse",
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse_low"
+      },
+      {
+        "mark": "valley_cache",
+        "event": "hunter_cache",
+        "tile": "f2g_cache_low"
+      },
+      {
+        "mark": "outcrop",
+        "event": "hunter_cache",
         "at": [
-          -4,
-          3
-        ]
+          1,
+          0
+        ],
+        "tile": "f2g_cache_f"
       },
       {
-        "node": "old_tree",
+        "mark": "grove",
         "event": "dead_campfire",
         "at": [
           -6,
-          4
+          6
         ],
         "tile": "f2g_campfire"
       }
     ],
     "hazards": [
       {
-        "edge": [
-          "hunter_camp",
-          "gully"
-        ],
-        "t": 0.55,
-        "r": 9,
-        "on": "f2g_path",
-        "event": "forest_snare",
-        "count": 4,
-        "gap": 3
-      },
-      {
-        "edge": [
-          "hunter_camp",
-          "gully"
-        ],
-        "t": 0.55,
-        "r": 9,
-        "on": "f2g_path",
-        "event": "forest_spike",
-        "count": 3,
-        "gap": 3
-      },
-      {
-        "node": "gully",
-        "r": 10,
-        "on": "f2g_path",
-        "event": "forest_pit",
-        "count": 4,
-        "gap": 3
-      },
-      {
-        "node": "gully",
-        "r": 10,
+        "mark": "trap1",
+        "r": 5,
         "on": "f2g_path",
         "event": "forest_snare",
         "count": 3,
-        "gap": 3
+        "gap": 2
       },
       {
-        "edge": [
-          "gully",
-          "chief"
-        ],
-        "t": 0.45,
-        "r": 9,
-        "on": "f2g_path",
-        "event": "forest_spike",
-        "count": 4,
-        "gap": 3
-      },
-      {
-        "edge": [
-          "gully",
-          "chief"
-        ],
-        "t": 0.45,
-        "r": 9,
-        "on": "f2g_path",
-        "event": "forest_pit",
-        "count": 3,
-        "gap": 3
-      },
-      {
-        "node": "south_gate",
-        "r": 8,
-        "on": "f2g_path",
-        "event": "forest_snare",
-        "count": 2,
-        "gap": 3
-      },
-      {
-        "node": "north_gate",
-        "r": 8,
+        "mark": "trap1",
+        "r": 5,
         "on": "f2g_path",
         "event": "forest_spike",
         "count": 2,
-        "gap": 3
+        "gap": 2
+      },
+      {
+        "mark": "trap2",
+        "r": 6,
+        "on": "f2g_path",
+        "event": "forest_pit",
+        "count": 3,
+        "gap": 2
+      },
+      {
+        "mark": "trap2",
+        "r": 6,
+        "on": "f2g_path",
+        "event": "forest_snare",
+        "count": 2,
+        "gap": 2
+      },
+      {
+        "mark": "trap3",
+        "r": 5,
+        "on": "f2g_path",
+        "event": "forest_spike",
+        "count": 3,
+        "gap": 2
+      },
+      {
+        "mark": "trap3",
+        "r": 5,
+        "on": "f2g_path",
+        "event": "forest_pit",
+        "count": 2,
+        "gap": 2
+      },
+      {
+        "mark": "gate_s",
+        "r": 4,
+        "on": "f2g_path",
+        "event": "forest_snare",
+        "count": 2,
+        "gap": 2
+      },
+      {
+        "mark": "gate_n",
+        "r": 4,
+        "on": "f2g_path",
+        "event": "forest_spike",
+        "count": 2,
+        "gap": 2
       }
     ],
     "watch": [
       {
-        "node": "village",
-        "at": [
-          -10,
-          17
-        ],
-        "radius": 13,
+        "mark": "watch_s",
+        "radius": 12,
         "archer": "goblin_archer"
       },
       {
-        "node": "village",
-        "at": [
-          10,
-          -15
-        ],
-        "radius": 13,
+        "mark": "watch_n",
+        "radius": 12,
         "archer": "goblin_archer"
       }
     ],
@@ -1560,7 +2101,40 @@
       "hours": 1.0,
       "sound": "goblin_horn",
       "line": "field.watch_alarm"
-    }
+    },
+    "ambush": [
+      {
+        "mark": "root_b",
+        "monsters": [
+          "goblin",
+          "goblin",
+          "goblin_archer"
+        ],
+        "radius": 3,
+        "line": "field.ambush_goblin",
+        "sound": "goblin_shout"
+      },
+      {
+        "mark": "mush_ring",
+        "monsters": [
+          "goblin_swordsman",
+          "goblin"
+        ],
+        "radius": 3,
+        "line": "field.ambush_goblin",
+        "sound": "goblin_shout"
+      },
+      {
+        "mark": "ridge_view",
+        "monsters": [
+          "goblin_archer",
+          "goblin_archer"
+        ],
+        "radius": 3,
+        "line": "field.ambush_goblin",
+        "sound": "goblin_shout"
+      }
+    ]
   },
   "source": "placeholder"
 }

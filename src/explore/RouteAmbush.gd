@@ -1,7 +1,7 @@
 class_name RouteAmbush
 extends RefCounted
 ## 길목 매복(망자의 땅 — 사용자 2026-11-06 "통로에 사건", FL18): 층 JSON route_spots.ambush
-##   [{"edge": [구간 a, 구간 b], "t": 0~1(길 위 자리), "monsters": [id …], "radius": 칸, "line": 문구 키, "sound": 소리 키}]
+##   [{"edge": [구간 a, 구간 b], "t": 0~1(길 위 자리) 또는 "node" · "mark", "monsters": [id …], "radius": 칸, "line": 문구 키, "sound": 소리 키}]
 ##   그 자리에서 radius칸 안에 처음 들어서면 길가 땅에서 무리가 일어나 바로 쫓아온다(한 원정에 한 번). 자리는 a → b 곧은 선의 t 지점에서
 ##   가장 가까운 걸을 수 있는 칸. 순수 로직(오토로드 비의존).
 
@@ -12,14 +12,12 @@ static func build(s: ExploreSession) -> RouteAmbush:
 	var list := JsonUtil.get_array(JsonUtil.get_dict(s.floor_def, "route_spots"), "ambush")
 	if list.is_empty():
 		return null
-	var nodes: Dictionary = s.map.anchors.get("nodes", {})
 	var r := RouteAmbush.new()
 	for v: Variant in list:
 		var d: Dictionary = v if v is Dictionary else {}
-		var e := JsonUtil.get_array(d, "edge")
-		if e.size() != 2 or not nodes.has(str(e[0])) or not nodes.has(str(e[1])):
+		var p := RouteSpots._anchor(s, d)  # "edge"+"t" · "node" · "mark"(손으로 짠 지도 — FL25)
+		if p.x < 0:
 			continue
-		var p := Vector2i(Vector2(nodes[str(e[0])] as Vector2i).lerp(Vector2(nodes[str(e[1])] as Vector2i), JsonUtil.get_float(d, "t", 0.5)).round())
 		var at := _walkable_near(s.map, p)
 		if at.x >= 0:
 			r._spots.append({"at": at, "def": d})
