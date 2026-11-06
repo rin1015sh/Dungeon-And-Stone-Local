@@ -50,7 +50,7 @@ var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — 
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
-var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 7일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
+## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
@@ -124,9 +124,6 @@ func start() -> void:
 	maws = MawTraps.build(self)
 	goal = FloorGoal.setup(self)
 	ambush = RouteAmbush.build(self)
-	if floor_def.has("grave_wake"):
-		grave = GraveWake.new()
-		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))
 	_was_safe = in_safe_zone()
 	if monsters_enabled:
 		monsters.spawn_initial(pos)
@@ -332,8 +329,6 @@ func pass_time(hours: float) -> void:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
 		lord.update(self, h)
-		if grave != null:
-			grave.update(self)
 		rifts.update(self, h)
 		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))

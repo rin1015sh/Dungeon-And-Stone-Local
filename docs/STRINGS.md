@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1017줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1010줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -263,7 +263,6 @@
 - `explore.rest_unsafe` 벽에 기대 {hours}시간을 졸았다. 쉰 것 같지 않다.
 - `explore.no_item` {item}이(가) 없다.
 - `explore.no_category` 가진 {category}이(가) 없다.
-- `explore.grave_wakes` 늪 어딘가의 비석 아래에서 무언가가 일어났다.
 - `explore.portal_locked` {floor}층으로 가는 포탈이다. 소용돌이가 아직 닫혀 있어 그 너머로 갈 수 없다.
 - `explore.monument` 대현자 기념비. 이 근처에는 아무것도 다가오지 않는다.
 - `explore.monument_opt_offer` {item} {n}개를 바친다
@@ -1260,9 +1259,6 @@
 - `field.mud_tracks` 진흙 바닥에 무리가 지나간 발자국이 깊게 패어 있다. 아직 축축하다.
 - `field.breeze` 바위 틈에서 서늘한 바람이 새어 나온다. 어딘가 큰 공간이 있다.
 - `field.cairn` 누군가 납작한 돌을 쌓아 탑을 세웠다. 맨 위의 돌에는 아직 먼지가 앉지 않았다.
-- `field.grave_stone` 진창 위에 갓 깎은 듯한 비석이 서 있다. 새겨진 이름은 없고, 손을 대면 돌이 차갑게 떨린다.
-- `field.grave_stone_break` 비석을 걷어차 쓰러뜨렸다. 진창에 처박힌 돌 아래에서 차가운 기운이 빠져나가 흩어졌다.
-- `field.grave_stone_break_fail` 한참을 내리쳐도 비석은 꿈쩍하지 않는다.
 - `field.blood_well_pour` 손바닥을 그어 우물에 피를 흘려 넣었다. 바닥에서 검붉은 잔이 떠오른다.
 - `field.blood_well_done` 우물은 더 이상 피를 받지 않는다.
 - `field.blood_well_look` 우물 바닥에서 비릿한 냄새가 올라온다. 무언가가 목마른 것 같다.
@@ -1281,9 +1277,6 @@
 - `field.sealed_tomb_open` 자물쇠가 비명처럼 돌아갔다. 안쪽 관대 위에 부장품이 그대로 놓여 있다.
 - `field.sealed_tomb_guard` 관대 둘레의 뼈들이 하나씩 일어섰다.
 - `field.sacristy` 무너진 제단 뒤 작은 함 안에 녹슨 열쇠 하나와 타다 남은 초가 들어 있다.
-- `field.journal_1` 쥔 손 안에 일지 한 장이 구겨져 있다. 「나루터에서 넷이 출발. 진창길이 빠르다고 했지만 구울이 너무 많다. 둑으로 돌아간다.」
-- `field.journal_2` 품속에 젖은 일지 한 장. 「묘역의 새 비석. 손을 대면 떨린다. 대장은 내버려 두자고 했다. 이레째에 무언가 깬다는 걸 우리는 몰랐다.」
-- `field.journal_3` 마지막 장이다. 「영묘 열쇠는 예배당 제단 뒤에 있다. 문을 연 건 실수였다. 남은 건 나 혼자다.」
 - `field.watch_post` 무너진 계단을 딛고 망루 위에 섰다. 안개 너머로 길과 불빛이 내려다보인다.
 - `field.sarcophagus` 돌 뚜껑에 누운 기사의 모습이 새겨져 있다. 얼굴만 누군가 망치로 뭉개 놓았다.
 - `field.sarcophagus_fail` 뚜껑이 손가락 한 마디만큼 밀리다 멈췄다.

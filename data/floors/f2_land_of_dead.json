@@ -1,5 +1,5 @@
 {
-  "_comment": "2층 망자의 땅(docs/plans/floor2.md §3 · §13-2) — 1층 남쪽 포탈(dest floor2_south)에서 온다. 길 그래프(fields route) · 진창(move_mult) · 둔덕 · 비석 데스나이트(grave_wake) · 관문 · 곁길(route_spots). 수치는 모두 임시값",
+  "_comment": "2층 망자의 땅(docs/plans/floor2.md §3 · §13-2) — 1층 남쪽 포탈(dest floor2_south)에서 온다. 길 그래프(fields route) · 진창(move_mult) · 둔덕 · 묘역 문 데스나이트(route_spots.guards — 처음부터 선다, FL19) · 관문 · 곁길(route_spots). 수치는 모두 임시값",
   "id": "f2_land_of_dead",
   "name_ko": "망자의 땅",
   "floor": 2,
@@ -1902,19 +1902,15 @@
     }
   ],
   "source": "placeholder",
-  "grave_wake": {
-    "_comment": "비석(GraveWake — floor2.md §13-2): 비석 터(node) 안 무작위 자리에 서고, 원정 day일 차에 monster가 묘역 문(stand_at)에 깨어나 길을 막는다. 그 전에 부수면 없음. 임시값",
-    "event": "grave_stone",
-    "day": 7,
-    "monster": "death_knight",
-    "line": "explore.grave_wakes",
-    "sound": "boss_reveal",
-    "node": "graveyard",
-    "stand_at": "tomb_gate"
-  },
   "route_spots": {
     "_comment": "구간에 놓는 지키는 무리(guards — 관문 · 엘리트, 입장 때 그 구간 가운데에)와 동굴 요소(features — 쉼터 · 곁길 보상). RouteSpots. 임시값 · ambush = 길목 매복(RouteAmbush — FL18), features \"edge\"+\"t\" = 길 위 자리, \"object\" = 이미 있는 물체 칸(닫힌 쇠문)",
     "guards": [
+      {
+        "node": "tomb_gate",
+        "monsters": [
+          "death_knight"
+        ]
+      },
       {
         "node": "bridge",
         "monsters": [
@@ -2001,15 +1997,6 @@
       },
       {
         "node": "graveyard",
-        "event": "journal_2",
-        "at": [
-          -25,
-          -1
-        ],
-        "tile": "f2d_corpse"
-      },
-      {
-        "node": "graveyard",
         "event": "old_skeleton",
         "at": [
           -23,
@@ -2027,15 +2014,6 @@
         "tile": "f2d_offering"
       },
       {
-        "node": "ossuary",
-        "event": "journal_3",
-        "at": [
-          0,
-          18
-        ],
-        "tile": "f2d_corpse"
-      },
-      {
         "node": "dullahan_ruin",
         "event": "offering_pile",
         "at": [
@@ -2043,15 +2021,6 @@
           -28
         ],
         "tile": "f2d_offering"
-      },
-      {
-        "node": "ferry",
-        "event": "journal_1",
-        "at": [
-          -29,
-          4
-        ],
-        "tile": "f2d_corpse"
       },
       {
         "node": "watchtower",

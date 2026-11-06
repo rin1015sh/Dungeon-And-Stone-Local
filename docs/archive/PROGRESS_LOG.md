@@ -3,6 +3,10 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-06 데스나이트 처음부터 · 일지 뺌(FL19) · 상호작용 지도
+- 사용자 "2층 관련 이벤트 상호작용 전부 정리 — 새 지도로" → `docs/plans/f2_interactions_map.png`(실제 세션 자리). 이어서 "데스나이트 항상 위치시키고 앞서간 일지 제거".
+- 데스나이트 = route_spots.guards tomb_gate(첫날부터, 보스 무리). GraveWake · grave_wake · grave_stone · f2d_grave · 문구 지움. journal_1~3 · f2d_corpse · 문구 지움. 테스트: 비석 테스트 → 지키는 무리 테스트에 데스나이트 자리 · 일지 없음.
+
 ### 2026-11-06 망자의 땅 층 목표 · 길 줄이기 · 길목 사건 · 아귀 입 뺌(FL18)
 - 범위: 사용자 "2 3번 하고 맵에서 아귀입 제거"(피드백 2 = 층 목표 — 종 셋 → 고개 문, 3 = 통로를 줄이고 사건). 완료 기준: 종 셋 전엔 3층 포탈에 걸어 닿지 못하고 셋 뒤엔 닿는다 · 길이 짧다 · 매복이 한 번 터진다 · 아귀 입 없음. 테스트: test_floor2(종 · 쇠문 · 매복 · 도달) + 캡처(종 · 쇠문).
 - 한 일: `FloorGoal`(goal · gate) · `RouteAmbush` · RouteSpots edge/object · FieldFeatureAct goal · HUD 종 n/3 · 요소 bell · pass_gate · 타일 f2d_bell · f2d_bell_rung · f2d_gate(그림 f2d.gd _bell · _gate, stand.webp 10칸) · 문구 field.bell_ring · pass_gate · gate_open · ambush · explore.hud_bells · 소리 키 bell_toll · gate_open(파일 없음).

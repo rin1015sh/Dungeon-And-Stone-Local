@@ -54,7 +54,7 @@ static func _feature(v: ValidatorBase, w: String, ev: Dictionary) -> void:
 	if not tile.is_empty():
 		v.ref(w + ".tile", "tiles", tile)
 		if v.db.has_entry("tiles", tile) and not JsonUtil.get_bool(v.db.get_entry("tiles", tile), "walkable") and not JsonUtil.get_bool(ev, "standing"):
-			v.err(w + ".tile", "동굴 요소 타일은 걸을 수 있어야 한다(길을 막지 않게 — 둘레를 비워 세우는 요소만 \"standing\": true, GraveWake)")
+			v.err(w + ".tile", "동굴 요소 타일은 걸을 수 있어야 한다(길을 막지 않게 — 둘레를 비워 세우는 요소만 \"standing\": true — 비문석 · 종)")
 	var actions := JsonUtil.get_array(ev, "actions")
 	if actions.is_empty() and not ev.has("near") and not ev.has("hazard"):
 		v.err(w, "actions·near·hazard 중 하나는 있어야 한다")
