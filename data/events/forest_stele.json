@@ -1,0 +1,24 @@
+{
+  "id": "forest_stele",
+  "name_ko": "포탈 비석",
+  "type": "feature",
+  "tile": "f2g_stele",
+  "standing": true,
+  "actions": [
+    {
+      "id": "wake",
+      "name_ko": "비석에 손을 댄다",
+      "limit": "once",
+      "hours": 0.1,
+      "stele": {
+        "live_tile": "f2g_portal_up",
+        "dead_tile": "f2g_stele_dead",
+        "live_line": "field.stele_live",
+        "dead_line": "field.stele_dead",
+        "sound": "gate_open"
+      }
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 숲 포탈 비석 여덟(FL21 — gen.steles · FieldFeatureAct stele). 원정마다 하나만 진짜 — 손을 대면 3층 포탈이 열리고, 가짜는 금 간 돌덩이가 된다"
+}

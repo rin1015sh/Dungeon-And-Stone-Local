@@ -1,0 +1,97 @@
+{
+  "id": "hobgoblin",
+  "name_ko": "홉고블린",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "goblin",
+  "floor": 2,
+  "floor_tags": [
+    "f2g_outer"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.25,
+  "color": "#5e6a3e",
+  "immunities": [],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 24,
+    "agi": 26,
+    "p_res": 40,
+    "m_res": 22,
+    "int": 14
+  },
+  "resources": {
+    "hp": 150,
+    "soul": 50
+  },
+  "natural_weapon": {
+    "attack": 19,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "calls": true,
+      "tenacity": 1.4
+    },
+    "alert_sfx": "goblin_shout",
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 7,
+  "essence_drops": [
+    {
+      "essence": "hobgoblin",
+      "chance": 0.01
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "hob_club_smash",
+    "hob_mine_command"
+  ],
+  "passives": [
+    {
+      "id": "hob_chief",
+      "name_ko": "졸개 부리기",
+      "desc_ko": "곁에 고블린이 있으면 더 사납게 휘두른다.",
+      "modifiers": [
+        {
+          "target": "str",
+          "percent": 0.1
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "hob_mine_command",
+      "also": [
+        {
+          "if": "allies_at_least",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "if": "chance",
+      "value": 0.45,
+      "use": "hob_club_smash"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "2층 고블린 숲 바깥 고리 대장(floor2.md §5 — 고블린 둘셋을 데리고 다닌다, regions escort). 듀라한과 같은 7등급 엘리트 — 2층 곡선 혼자 이길 확률 절반쯤을 노림. 그림은 홉고블린 광부 바탕. 임시값"
+}

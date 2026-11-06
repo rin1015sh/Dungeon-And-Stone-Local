@@ -8,6 +8,7 @@ extends SceneTree
 const SCENES := {
 	"f1_crystal_cave": "res://tools/battle_art/SceneCave.gd",
 	"f2_land_of_dead": "res://tools/battle_art/SceneDead.gd",
+	"f2_goblin_forest": "res://tools/battle_art/SceneForest.gd",
 	"blood_fortress": "res://tools/battle_art/SceneFortress.gd",
 	"glacier_cave": "res://tools/battle_art/SceneGlacier.gd",
 	"green_mine": "res://tools/battle_art/SceneMine.gd",

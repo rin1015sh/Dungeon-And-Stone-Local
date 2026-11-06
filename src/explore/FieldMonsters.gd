@@ -7,7 +7,7 @@ extends RefCounted
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
 ## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}, "groups": [최소, 최대](선택 — 없으면 spawn.groups_per_region),
-##   "pack": [최소, 최대](선택 — 한 무리 마릿수를 못 박는다), "entry_dist": [최소, 최대](선택 — 도착 칸에서 그 거리 안 칸에만, 최대 0 = 끝없음)}
+##   "pack": [최소, 최대](선택 — 한 무리 마릿수를 못 박는다), "escort": {대장 id: {"monster", "count": [최소, 최대]}}(선택 — 그 몬스터 무리에 졸개를 붙인다), "entry_dist": [최소, 최대](선택 — 도착 칸에서 그 거리 안 칸에만, 최대 0 = 끝없음)}
 ##   한 구역(zone)에 지역이 여럿이어도 된다(2층 늪: 큰 무리 + 초입 외톨이).
 ##   — 몬스터 표는 층 JSON에만 둔다. 시간이 지나 늘어나는 무리는 지역의 groups 평균에 비례해 나뉜다.
 ##   zone이 있고 지도에 구역 층(FloorMap.zones)이 있으면 그 구역 칸에만(1층 십자가), 없으면 중심에서 본 방향(dir) 원뿔.
@@ -155,6 +155,11 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 		pack_count(mid, not JsonUtil.get_str(region, "id").is_empty(), JsonUtil.get_bool(region, "horde"))
 	for i in count:
 		g.monster_ids.append(mid)
+	var esc := JsonUtil.get_dict(JsonUtil.get_dict(region, "escort"), mid)  # 대장이 데리고 다니는 졸개(홉고블린 + 고블린 — FL21)
+	if not esc.is_empty():
+		var er := JsonUtil.get_array(esc, "count")
+		for i in (_rng.randi_range(int(er[0]), int(er[1])) if er.size() == 2 else 1):
+			g.monster_ids.append(JsonUtil.get_str(esc, "monster"))
 	if monster_id.is_empty():
 		_mix_variants(g, region, cell)
 	g.region = JsonUtil.get_str(region, "id")

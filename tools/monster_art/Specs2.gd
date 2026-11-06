@@ -8,6 +8,12 @@ static func C(hex: String) -> Color:
 
 static func spec_of(id: String) -> Dictionary:
 	match id:
+		# ── 2층 고블린 숲(floor2.md §5 — FL21): 홉고블린 = 광부 몸 바탕, 곡괭이 대신 큰 몽둥이 · 가죽 어깨 · 깃털 단 머리띠 ──
+		"hobgoblin":
+			return {"height": 620, "skin": C("#6a7a46"), "mottle": C("#3c4a28"), "eyes": C("#f0c040"), "grime": 0.5,
+				"pose": {"hunch": 0.3, "knee": 0.28, "arm_l": "hang", "arm_r": "rest", "sh": 0.15, "head": 1.1, "weight": 0.4, "arms": 1.08},
+				"body": {"build": "muscular", "hands": "claw"}, "head": {"type": "goblin", "mouth": "fangs", "ears": "pointed"},
+				"kit": {"weapon": "club", "weapon_c": C("#5a4632"), "armor": C("#4a3a2a"), "plates": ["shoulders"], "belt": C("#2a1e14"), "loin": C("#4a3a28"), "straps": C("#3a2a1a")}}
 		# ── 2층 망자의 땅(floor2.md §3 — 원작 묘사 없음: 이름 · 등급에서 모습을 정함) ──
 		"skeleton":  # 맨손에 녹슨 칼 하나 든 해골(궁수 · 메이지와 같은 뼈, 무장은 가볍게)
 			return {"skin": C("#d4cab0"), "eyes": C("#c8d8ff"), "glow": 0.5, "pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.11, "weight": 0.3, "tilt": 0.05},

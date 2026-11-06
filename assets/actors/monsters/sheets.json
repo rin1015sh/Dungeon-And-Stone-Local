@@ -57,10 +57,10 @@
 	},
 	"death_knight": {
 		"cell": [
-			66,
-			121
+			66.0,
+			121.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"deathfiend": {
 		"cell": [
@@ -71,10 +71,10 @@
 	},
 	"dullahan": {
 		"cell": [
-			58,
-			103
+			58.0,
+			103.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"frost_wolf": {
 		"cell": [
@@ -131,6 +131,13 @@
 			44.0
 		],
 		"foot": 4.0
+	},
+	"hobgoblin": {
+		"cell": [
+			66,
+			106
+		],
+		"foot": 4
 	},
 	"hobgoblin_miner": {
 		"cell": [
@@ -211,10 +218,10 @@
 	},
 	"skeleton": {
 		"cell": [
-			48,
-			90
+			48.0,
+			90.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"skeleton_archer": {
 		"cell": [
@@ -232,10 +239,10 @@
 	},
 	"skeleton_warrior": {
 		"cell": [
-			48,
-			92
+			48.0,
+			92.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"skull_rat": {
 		"cell": [

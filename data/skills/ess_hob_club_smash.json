@@ -1,0 +1,26 @@
+{
+  "id": "ess_hob_club_smash",
+  "name_ko": "몽둥이 내려치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.6,
+      "damage_type": "blunt",
+      "accuracy": 85
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.25
+    }
+  ],
+  "essence_of": "hob_club_smash",
+  "source": "placeholder"
+}

@@ -1,0 +1,52 @@
+{
+  "id": "hunter_cache",
+  "name_ko": "사냥꾼 궤짝",
+  "type": "feature",
+  "tile": "f2g_cache",
+  "actions": [
+    {
+      "id": "open",
+      "name_ko": "연다",
+      "limit": "once",
+      "line": "field.hunter_cache",
+      "give": [
+        {
+          "item": "ration",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.8
+        },
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.6
+        },
+        {
+          "item": "magic_stone_9",
+          "count": [
+            2,
+            4
+          ],
+          "chance": 0.8
+        },
+        {
+          "item": "hunting_bow",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.15
+        }
+      ],
+      "clear": true,
+      "clear_tile": "f2g_grass"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 숲 사냥꾼 쉼터 궤짝(FL21). 임시값"
+}

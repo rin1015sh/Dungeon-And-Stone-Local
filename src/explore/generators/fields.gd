@@ -5,7 +5,7 @@ extends FloorGenerator
 ## 사용자 결정(2026-11-05 "의도된 경로가 있는 느낌으로")으로 없앴다.
 ## 공통 gen: {"size": [w, h], "seed": 고정 시드(있으면 원정마다 같은 지도 — 길을 익힌다), "tiles": {"rise", "floor", "down", "up"}}.
 ## 시작 = 구간 kind "arrival" 가운데, 도착 비석(아래층 — 포탈 kind "floor_down") = 시작 두 칸 남쪽,
-## 위층 포탈 = 구간 kind "exit" 가운데(층 JSON portals[0]). 불변식: 걸을 수 있는 칸은 모두 시작에서 닿는다(닿지 않는 칸은 외곽으로 메운다).
+## 위층 포탈 = 구간 kind "exit" 가운데(층 JSON portals[0]) — gen.steles가 있으면 그중 원정마다 하나(_steles). 불변식: 걸을 수 있는 칸은 모두 시작에서 닿는다(닿지 않는 칸은 외곽으로 메운다).
 
 
 func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
@@ -14,6 +14,7 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	var size := JsonUtil.get_array(g, "size")
 	var w := int(size[0])
 	var h := int(size[1])
+	var run_rng := rng  # 원정마다 바뀌는 것(진짜 포탈 비석 — FL21). 지도 모양은 고정 시드
 	if g.has("seed"):
 		rng = Rng.new(JsonUtil.get_int(g, "seed"))
 	var map := FloorMap.new(db, w, h, JsonUtil.get_str(t, "rise"))
@@ -25,11 +26,13 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	map.portals.append({"id": "to_below", "pos": down, "dir": "south", "to_floor": JsonUtil.get_int(floor_def, "floor", 2) - 1,
 		"kind": "floor_down", "found": true})
 	var spec := JsonUtil.get_array(floor_def, "portals")
+	var steles := _steles(map, g, run_rng)
 	if not spec.is_empty():
 		var sd: Dictionary = spec[0]
-		map.set_tile(map.center, JsonUtil.get_str(t, "up"))
+		if not steles:
+			map.set_tile(map.center, JsonUtil.get_str(t, "up"))
 		map.portals.append({"id": JsonUtil.get_str(sd, "id"), "pos": map.center, "dir": JsonUtil.get_str(sd, "dir", "north"),
-			"to_floor": JsonUtil.get_int(sd, "to_floor"), "dest": JsonUtil.get_str(sd, "dest"), "found": false})
+			"to_floor": JsonUtil.get_int(sd, "to_floor"), "dest": JsonUtil.get_str(sd, "dest"), "found": false, "hidden": steles})
 	_seal_unreachable(map, JsonUtil.get_str(t, "rise"))
 	FloorGoal.place_gate(map, g)  # 고개 쇠문(층 목표 — 메운 뒤에, 문 너머가 메워지지 않게, FL18)
 	map.dark = FloorMap._zeros(w * h)
@@ -68,8 +71,14 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 				tiles.append(JsonUtil.get_str(d, k))
 		for pd: Variant in JsonUtil.get_array(d, "props"):
 			tiles.append(JsonUtil.get_str(pd if pd is Dictionary else {}, "tile"))
-	if not kinds.has("arrival") or not kinds.has("exit"):
-		out.append("fields: 구간 kind arrival · exit가 하나씩 있어야 한다")
+	var stl := JsonUtil.get_dict(g, "steles")
+	if not kinds.has("arrival") or (not kinds.has("exit") and stl.is_empty()):
+		out.append("fields: 구간 kind arrival · exit(또는 gen.steles)가 있어야 한다")
+	for id: Variant in JsonUtil.get_array(stl, "nodes"):
+		if not ids.has(str(id)):
+			out.append("fields: 포탈 비석 — 없는 구간 '%s'" % id)
+	if not stl.is_empty():
+		tiles.append(JsonUtil.get_str(stl, "tile"))
 	for e: Variant in JsonUtil.get_array(g, "edges"):
 		var d: Dictionary = e if e is Dictionary else {}
 		if not ids.has(JsonUtil.get_str(d, "a")) or not ids.has(JsonUtil.get_str(d, "b")):
@@ -112,6 +121,21 @@ func validate(floor_def: Dictionary, db: GameDatabase) -> PackedStringArray:
 		if not db.has_entry("tiles", tid):
 			out.append("fields: 타일 '%s' 없음" % tid)
 	return out
+
+
+## 포탈 비석(고블린 숲 — FL21): gen "steles": {"nodes": [구간 id …], "tile": 잠든 비석 타일} — 구간마다 가운데에 비석을 세우고
+## 원정마다 하나를 굴려 진짜(= 3층 포탈 자리, map.center · anchors "stele_real")로. 포탈은 숨김(hidden) — 살펴 깨우면 드러난다(FieldFeatureAct stele).
+func _steles(map: FloorMap, g: Dictionary, run_rng: Rng) -> bool:
+	var st := JsonUtil.get_dict(g, "steles")
+	var ids := JsonUtil.get_array(st, "nodes")
+	var nodes: Dictionary = map.anchors.get("nodes", {})
+	if ids.is_empty():
+		return false
+	for id: Variant in ids:
+		map.set_tile(nodes[str(id)], JsonUtil.get_str(st, "tile"))
+	map.center = nodes[str(ids[run_rng.randi_range(0, ids.size() - 1)])]
+	map.anchors["stele_real"] = map.center
+	return true
 
 
 ## 시작에서 닿지 않는 걸을 수 있는 칸은 외곽으로 메운다(소품 · 벽이 막아 만든 섬).

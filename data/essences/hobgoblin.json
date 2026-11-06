@@ -1,0 +1,39 @@
+{
+  "id": "hobgoblin",
+  "name_ko": "홉고블린의 정수",
+  "grade": 7,
+  "source_monster": "hobgoblin",
+  "family": "goblin",
+  "rank": "normal",
+  "passive": {
+    "id": "hob_chief",
+    "name_ko": "졸개 부리기",
+    "desc_ko": "무리를 이끄는 자의 완력.",
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.08
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_hob_club_smash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_hob_mine_command"
+    }
+  ],
+  "stats": {
+    "str": 8,
+    "p_res": 12
+  },
+  "resources": {
+    "hp": 20
+  },
+  "source": "placeholder",
+  "notes": "2층 고블린 숲(FL21) — 홉고블린 광부의 지휘 스킬을 함께 쓴다. 임시값"
+}

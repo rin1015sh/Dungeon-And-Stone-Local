@@ -360,8 +360,9 @@
     "later": "다음 마일스톤에서: {list}",
     "spawn_monster": "몬스터 소환(바로 전투)",
     "give_essence": "정수 흡수(무작위)",
-    "go_up": "위층으로(2층)",
-    "go_up_none": "오를 위층이 없다."
+    "go_up": "2층 망자의 땅으로",
+    "go_up_none": "오를 위층이 없다.",
+    "go_up_forest": "2층 고블린 숲으로"
   },
   "pause": {
     "resume": "계속",
@@ -1249,7 +1250,22 @@
     },
     "grave_stone": "진창 위에 갓 깎은 듯한 비석이 서 있다. 새겨진 이름은 없고, 손을 대면 돌이 차갑게 떨린다.",
     "grave_stone_break": "비석을 걷어차 쓰러뜨렸다. 진창에 처박힌 돌 아래에서 차가운 기운이 빠져나가 흩어졌다.",
-    "grave_stone_break_fail": "한참을 내리쳐도 비석은 꿈쩍하지 않는다."
+    "grave_stone_break_fail": "한참을 내리쳐도 비석은 꿈쩍하지 않는다.",
+    "forest_snare_detected": "낙엽 아래 밧줄 고리가 비친다.",
+    "forest_snare_disarmed": "밧줄을 끊어 고리를 풀어 두었다.",
+    "forest_snare_pass": "발목에 감기려던 고리를 비켜 디뎠다.",
+    "forest_snare_fail": "고리가 발목을 낚아채 몸이 거꾸로 들렸다가 땅에 처박혔다.",
+    "forest_pit_detected": "길 한가운데 나뭇가지가 너무 가지런히 덮여 있다.",
+    "forest_pit_disarmed": "가지를 걷어 구덩이 가장자리로 돌아갔다.",
+    "forest_pit_pass": "꺼지는 가지를 밟자마자 몸을 뒤로 던졌다.",
+    "forest_pit_fail": "발밑이 꺼지며 진흙 구덩이 바닥에 떨어졌다.",
+    "forest_spike_detected": "흙 사이로 깎은 말뚝 끝이 솟아 있다.",
+    "forest_spike_disarmed": "말뚝을 하나씩 뽑아 길가에 던졌다.",
+    "forest_spike_pass": "말뚝 사이로 발을 골라 디뎠다.",
+    "forest_spike_fail": "덮어 둔 말뚝이 발바닥을 꿰뚫었다.",
+    "stele_live": "룬이 차가운 빛으로 깨어나더니 비석 앞 땅이 열린다.",
+    "stele_dead": "손을 대자 비석에 금이 가며 빛 없는 돌덩이로 주저앉는다.",
+    "hunter_cache": "이끼 낀 궤짝 안에 사냥꾼이 남긴 짐이 그대로 있다."
   },
   "dir8": {
     "0": "북쪽",

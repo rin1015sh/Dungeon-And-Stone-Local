@@ -42,20 +42,20 @@
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 
 ## 2층 (필드 등급 8 · 파티 2)
-- ● 층 정의 data/floors — f2_land_of_dead
+- ● 층 정의 data/floors — f2_goblin_forest
 - ● 생성기 src/explore/generators — fields
 - ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
 - ○ 데칼 시트·굽기(bake_decor) — art.decor 없음
-- ● 전투 뒷그림 — res://assets/battle/f2_land_of_dead.webp
+- ● 전투 뒷그림 — res://assets/battle/f2_goblin_forest.webp
 - ● 환경음 audio.ambience — f1_cave
-- ● 지역 스폰 regions — 3지역
+- ● 지역 스폰 regions — 4지역
 - ○ 동굴 요소 features — 0종 0곳
 - ○ 다른 탐험가 explorers
 - ● 위층 포탈 portals — 1개
 - ○ 계층군주 lord(+패턴)
-- ● 필드 몬스터 — 4종 · 등급 [6, 7, 9] (목표 8)
-- ● 몬스터 그림 assets/monsters — 4장
-- ● 정수 data/essences — 4종
+- ● 필드 몬스터 — 5종 · 등급 [6, 7, 9] (목표 8)
+- ● 몬스터 그림 assets/monsters — 5장
+- ● 정수 data/essences — 5종
 - ○ 균열 data/rifts
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 

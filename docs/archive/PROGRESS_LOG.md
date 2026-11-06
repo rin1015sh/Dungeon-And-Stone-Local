@@ -3,6 +3,14 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-06 2층 고블린 숲 1단계(FL21)
+- 범위: 사용자 "이제 다음 2층 진행해" → floor2.md §5 · §13-3 고블린 숲. 완료 기준: 1층 북쪽 포탈 → 숲 · 걸을 수 있는 칸 모두 닿음 · 비석 여덟 중 하나만 진짜(깨우면 3층 포탈) · 숨은 덫 · 마을 큰 무리 · 홉고블린 + 졸개 · 그림 · 전투 뒷그림. 테스트: tests/test_forest.gd 다섯 + 캡처(어귀 · 비석 · 마을).
+- 코드: fields `_steles`(run rng — 지도는 고정 시드, 진짜만 원정마다) · 포탈 `hidden` · FieldFeatureAct `stele` · RouteSpots `scatter_hazards` · features `object`가 포탈 칸에도 · `_anchor` edge · FieldMonsters `escort` · FieldsRouteBuild `landmarks_prefix` · ExploreDebug `go_up(dest)` + F1 "2층 고블린 숲으로".
+- 데이터: f2_goblin_forest.json(240×245, 구간 13 · 길 18) · 타일 f2g 44 · 요소 forest_snare · forest_pit · forest_spike · forest_stele · hunter_cache · 몬스터 hobgoblin(7등급 — hp 150 · 몽둥이 내려치기 15% 기절 · 갱도 지휘) · 정수 hobgoblin(56종) · 스킬 hob_club_smash · ess_hob_club_smash.
+- 그림: tools/floor_art/rift/f2g.gd(숲 바닥 · 오솔길 · 빈터 · 짓밟힌 진창 · 덫 셋 · 소품 아홉) · f2g_big.gd · Rise kind forest(줄기 벽 · 잎 지붕) · SceneForest.gd · 홉고블린 전투 · 지도 그림(Specs2 · MapMonster). 처음 바닥은 회반죽처럼 보여 기복을 줄이고 낙엽 · 풀잎을 칸 전체에 흩뿌림, 줄기 벽은 껍질 결 · 이끼.
+- 테스트 고침: test_floor_decor — 그 타일만 쓰는 바닥 그림(덫이 그려진 오솔길)은 소품 없이 통과, ess_hob_club_smash 기절 0.25(정수 행동 방해 하한).
+- 남은 것: 다른 무리 비석 경주(§5) · 몬스터도 덫에 걸림 · 덫 소리 · 칸 경계(풀밭 ↔ 오솔길이 네모로 갈림).
+
 ### 2026-11-06 데스나이트 5일 차로 되돌림 · 전투 그림 색감 리텍스처(FL19 · FL20)
 - 데스나이트 "항상" → 사용자 "롤백하되 5일차": GraveWake · grave_stone · f2d_grave · 문구 · 테스트 되살림, grave_wake.day 5(테스트 4일 차 아님 · 5일 차 깨어남). 일지는 뺀 채.
 - 리텍스처: 전투 뒷그림(assets/battle/f2_land_of_dead.webp — 거의 무채 차가운 잿빛, 젖은 진흙 은빛, 푸른 등, 재 · 안개)에 맞춰 f2d 타일 색 81개 · 그림 상수 · `_wetmud` · `_sheen` · 등불 · art(post · palette · particles · abyss) · rise/cliff 색. paint_floor --only=f2d 다시. 캡처(나루터 · 묘역 · 예배당)로 확인 — 처음 _wetmud는 큰 모양이 칸마다 같아 격자로 보여 변형마다 다르게 · 잘게 고침.

@@ -1,0 +1,39 @@
+{
+  "id": "forest_pit",
+  "name_ko": "가린 구덩이",
+  "type": "feature",
+  "hazard": {
+    "id": "forest_pit",
+    "tile": "f2g_pit",
+    "hidden": true,
+    "detect": {
+      "stat": "int",
+      "dc": 9
+    },
+    "disarm": {
+      "stat": "agi",
+      "dc": 6
+    },
+    "check": {
+      "stat": "agi",
+      "dc": 14
+    },
+    "fail": [
+      {
+        "type": "restore_resource",
+        "resource": "hp",
+        "amount": "-floor({max_hp} * 0.1)"
+      },
+      {
+        "type": "fatigue",
+        "amount": 6
+      }
+    ],
+    "detect_message": "field.forest_pit_detected",
+    "disarm_message": "field.forest_pit_disarmed",
+    "pass_message": "field.forest_pit_pass",
+    "fail_message": "field.forest_pit_fail"
+  },
+  "source": "placeholder",
+  "notes": "고블린 숲 지형 덫(FL21 — route_spots hazards, RiftHazards). 숨은 덫: 옆에 오면 정신력 탐지, 드러나면 민첩 해제, 못 보면 민첩 피하기. 임시값"
+}

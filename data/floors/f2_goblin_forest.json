@@ -1,0 +1,958 @@
+{
+  "_comment": "2층 고블린 숲(docs/plans/floor2.md §5 · §13-3, FL21) — 1층 북쪽 포탈(dest floor2_north)에서 온다. 2층에서 가장 밝다. 길 그래프(fields route) · 덫 = 지형 · 포탈 비석 여덟(하나만 진짜) · 고블린 큰 무리 · 홉고블린 대장. 수치는 모두 임시값",
+  "id": "f2_goblin_forest",
+  "name_ko": "고블린 숲",
+  "floor": 2,
+  "arrival": "floor2_north",
+  "generator": "fields",
+  "close_hours": 240,
+  "visibility_cap_m": 9.5,
+  "visibility_source": "placeholder",
+  "ambient_light_m": 8.0,
+  "ambient_source": "placeholder",
+  "ambient_color": "#c0ccd0",
+  "art": {
+    "_comment": "그림: 바닥 · 소품 · 큰 구조물 · 외곽(나무 벽 · 잎 지붕) = assets/floor/f2g(paint_floor.gd --only=f2g — tools/floor_art/rift/f2g.gd · f2g_big.gd), 전투 뒷그림 = tools/battle_art/SceneForest.gd. 팔레트 = 짙은 초록 + 별빛 은색(§8)을 망자의 땅처럼 채도를 눌러. [창작] 임시값",
+    "battleback": {
+      "image": "res://assets/battle/f2_goblin_forest.webp",
+      "half_width": 3.6
+    },
+    "palette": {
+      "unexplored": "#000000",
+      "near_black": "#2c322c",
+      "tone": "#dce4dc",
+      "memory_tint": "#86908a",
+      "memory_brightness": 0.5,
+      "memory_desat": 0.3,
+      "keep_hue": true
+    },
+    "post": {
+      "saturation": 0.6,
+      "vignette_strength": 0.45,
+      "vignette_radius": 0.5,
+      "grain_strength": 0.05
+    },
+    "particles": [
+      {
+        "id": "star",
+        "amount": 40,
+        "lifetime": 14.0,
+        "color": "#dce8f0",
+        "alpha": 0.25,
+        "scale": [
+          1.0,
+          2.0
+        ],
+        "velocity": [
+          0.5,
+          2.0
+        ],
+        "direction": [
+          0.0,
+          1.0
+        ],
+        "spread": 180.0,
+        "gravity": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "id": "mist",
+        "amount": 12,
+        "lifetime": 18.0,
+        "color": "#b8c8c0",
+        "alpha": 0.06,
+        "scale": [
+          40.0,
+          90.0
+        ],
+        "velocity": [
+          2.0,
+          5.0
+        ],
+        "direction": [
+          1.0,
+          -0.1
+        ],
+        "spread": 40.0,
+        "gravity": [
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "ambience": {
+      "loop": "f1_cave"
+    },
+    "abyss": {
+      "cliff": "res://assets/floor/f2g/chasm.webp",
+      "cliff_tiles": 8,
+      "cliff_depth": 2.25,
+      "jag": 0.35,
+      "abyss_color": "#0c100c",
+      "mist_color": "#2a342c",
+      "rim_color": "#8a9a88",
+      "rise": {
+        "face": "res://assets/floor/f2g/rise_face.webp",
+        "top": "res://assets/floor/f2g/rise_top.webp",
+        "face_tiles": 8,
+        "face_depth": 3,
+        "top_tiles": 8,
+        "jag": 0.3,
+        "fog": 4,
+        "dark": "#141a14"
+      },
+      "bank": {
+        "depth_tiles": 1.3,
+        "shadow_tiles": 0.9,
+        "shadow_alpha": 0.6
+      }
+    },
+    "macro": {
+      "_comment": "구역마다 살짝 다른 빛(마을 = 흙빛, 덫 숲 = 짙은 초록, 바깥 = 차갑게)",
+      "zones": {
+        "f2g_village": "#ece4d8",
+        "f2g_traps": "#dce6d8",
+        "f2g_outer": "#d6dee0"
+      },
+      "noise": {
+        "freq": 0.06,
+        "amount": 0.24
+      }
+    }
+  },
+  "gen": {
+    "_comment": "고블린 숲 길 그래프(floor2.md §13-3 — FL21): 숲 어귀(도착) → 덫 숲 우회로(올가미 오목) · 사냥꾼 쉼터 → 고블린 마을(지름길 · 큰 무리) → 큰 나무 빈터, 바깥 고리 비석 여덟(원정마다 하나만 진짜 — steles). 길 밖은 빽빽한 숲(솟은 외곽). [창작] 임시값",
+    "grammar": "route",
+    "size": [
+      240,
+      245
+    ],
+    "seed": 2,
+    "tiles": {
+      "rise": "f2g_rise",
+      "floor": "f2g_floor",
+      "down": "f2g_stone_down",
+      "up": "f2g_portal_up"
+    },
+    "zone_fill": {
+      "f2g_traps": "f2g_rise",
+      "f2g_village": "f2g_rise",
+      "f2g_outer": "f2g_rise"
+    },
+    "zone_floor": {
+      "f2g_traps": "f2g_floor",
+      "f2g_village": "f2g_village",
+      "f2g_outer": "f2g_floor"
+    },
+    "nodes": [
+      {
+        "id": "eaves",
+        "at": [
+          120,
+          198
+        ],
+        "r": 14,
+        "zone": "f2g_traps",
+        "kind": "arrival"
+      },
+      {
+        "id": "snare_hollow",
+        "at": [
+          120,
+          160
+        ],
+        "r": 9,
+        "zone": "f2g_traps",
+        "kind": "place"
+      },
+      {
+        "id": "hunter_camp",
+        "at": [
+          64,
+          124
+        ],
+        "r": 11,
+        "zone": "f2g_traps",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "village",
+        "at": [
+          120,
+          100
+        ],
+        "r": 21,
+        "zone": "f2g_village",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f2g_totem",
+            "at": [
+              [
+                -6,
+                -6
+              ],
+              [
+                6,
+                -6
+              ],
+              [
+                0,
+                9
+              ],
+              [
+                -14,
+                2
+              ],
+              [
+                14,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "big_tree",
+        "at": [
+          176,
+          124
+        ],
+        "r": 15,
+        "zone": "f2g_traps",
+        "kind": "place",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_s",
+        "at": [
+          120,
+          230
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_se",
+        "at": [
+          189,
+          187
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_e",
+        "at": [
+          218,
+          118
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_ne",
+        "at": [
+          189,
+          49
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_n",
+        "at": [
+          120,
+          20
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_nw",
+        "at": [
+          51,
+          49
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_w",
+        "at": [
+          22,
+          118
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      },
+      {
+        "id": "s_sw",
+        "at": [
+          51,
+          187
+        ],
+        "r": 7,
+        "zone": "f2g_outer",
+        "kind": "pocket",
+        "tile": "f2g_grass"
+      }
+    ],
+    "edges": [
+      {
+        "a": "eaves",
+        "b": "hunter_camp",
+        "width": 6,
+        "tile": "f2g_path",
+        "wiggle": 8
+      },
+      {
+        "a": "eaves",
+        "b": "snare_hollow",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 4
+      },
+      {
+        "a": "eaves",
+        "b": "s_s",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 3
+      },
+      {
+        "a": "snare_hollow",
+        "b": "hunter_camp",
+        "width": 4,
+        "tile": "f2g_path",
+        "wiggle": 6
+      },
+      {
+        "a": "snare_hollow",
+        "b": "big_tree",
+        "width": 4,
+        "tile": "f2g_path",
+        "wiggle": 6
+      },
+      {
+        "a": "hunter_camp",
+        "b": "village",
+        "width": 6,
+        "tile": "f2g_village",
+        "wiggle": 5
+      },
+      {
+        "a": "village",
+        "b": "big_tree",
+        "width": 6,
+        "tile": "f2g_village",
+        "wiggle": 5
+      },
+      {
+        "a": "hunter_camp",
+        "b": "s_w",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 5
+      },
+      {
+        "a": "big_tree",
+        "b": "s_e",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 5
+      },
+      {
+        "a": "village",
+        "b": "s_n",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 6
+      },
+      {
+        "a": "s_s",
+        "b": "s_se",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_se",
+        "b": "s_e",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_e",
+        "b": "s_ne",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_ne",
+        "b": "s_n",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_n",
+        "b": "s_nw",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_nw",
+        "b": "s_w",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_w",
+        "b": "s_sw",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      },
+      {
+        "a": "s_sw",
+        "b": "s_s",
+        "width": 5,
+        "tile": "f2g_path",
+        "wiggle": 10
+      }
+    ],
+    "props": [
+      {
+        "zone": "f2g_traps",
+        "tile": "f2g_tree",
+        "count": 55
+      },
+      {
+        "zone": "f2g_outer",
+        "tile": "f2g_tree",
+        "count": 60
+      },
+      {
+        "zone": "f2g_traps",
+        "tile": "f2g_bush",
+        "count": 40
+      },
+      {
+        "zone": "f2g_outer",
+        "tile": "f2g_bush",
+        "count": 35
+      },
+      {
+        "zone": "f2g_traps",
+        "tile": "f2g_stump",
+        "count": 18
+      },
+      {
+        "zone": "f2g_outer",
+        "tile": "f2g_stump",
+        "count": 14
+      },
+      {
+        "zone": "f2g_traps",
+        "tile": "f2g_log",
+        "count": 12
+      },
+      {
+        "zone": "f2g_outer",
+        "tile": "f2g_log",
+        "count": 12
+      },
+      {
+        "zone": "f2g_outer",
+        "tile": "f2g_mush",
+        "count": 18
+      },
+      {
+        "zone": "f2g_traps",
+        "tile": "f2g_mush",
+        "count": 8
+      },
+      {
+        "zone": "f2g_village",
+        "tile": "f2g_totem",
+        "count": 4
+      }
+    ],
+    "fence": [
+      {
+        "node": "village",
+        "tile": "f2g_stakes",
+        "pad": 3,
+        "along": "f2g_rise"
+      }
+    ],
+    "landmarks_prefix": "f2g",
+    "landmarks_under": {
+      "g": "f2g_grass",
+      "v": "f2g_village",
+      "f": "f2g_floor"
+    },
+    "landmarks": [
+      {
+        "node": "big_tree",
+        "at": [
+          0,
+          -3
+        ],
+        "kind": "bigtree",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          -11,
+          -9
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          10,
+          -10
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          -12,
+          8
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          12,
+          8
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "village",
+        "at": [
+          0,
+          -14
+        ],
+        "kind": "watch",
+        "foot": [
+          3,
+          2
+        ]
+      },
+      {
+        "node": "hunter_camp",
+        "at": [
+          5,
+          -4
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ]
+      }
+    ],
+    "steles": {
+      "nodes": [
+        "s_s",
+        "s_se",
+        "s_e",
+        "s_ne",
+        "s_n",
+        "s_nw",
+        "s_w",
+        "s_sw"
+      ],
+      "tile": "f2g_stele"
+    }
+  },
+  "regions": [
+    {
+      "id": "f2g_village",
+      "zone": "f2g_village",
+      "name_ko": "고블린 마을",
+      "monsters": [
+        "goblin",
+        "goblin_swordsman",
+        "goblin_archer"
+      ],
+      "weights": {
+        "goblin": 5,
+        "goblin_swordsman": 2,
+        "goblin_archer": 2
+      },
+      "groups": [
+        3,
+        3
+      ],
+      "horde": true
+    },
+    {
+      "id": "f2g_traps_lone",
+      "zone": "f2g_traps",
+      "name_ko": "덫 숲",
+      "monsters": [
+        "goblin",
+        "goblin_archer"
+      ],
+      "weights": {
+        "goblin": 3,
+        "goblin_archer": 1
+      },
+      "groups": [
+        3,
+        4
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "entry_dist": [
+        12,
+        60
+      ]
+    },
+    {
+      "id": "f2g_traps",
+      "zone": "f2g_traps",
+      "name_ko": "덫 숲",
+      "monsters": [
+        "goblin",
+        "goblin_swordsman",
+        "goblin_archer"
+      ],
+      "weights": {
+        "goblin": 4,
+        "goblin_swordsman": 1,
+        "goblin_archer": 2
+      },
+      "groups": [
+        5,
+        6
+      ],
+      "pack": [
+        1,
+        3
+      ],
+      "entry_dist": [
+        45,
+        0
+      ]
+    },
+    {
+      "id": "f2g_outer",
+      "zone": "f2g_outer",
+      "name_ko": "바깥 숲",
+      "monsters": [
+        "hobgoblin"
+      ],
+      "weights": {
+        "hobgoblin": 1
+      },
+      "groups": [
+        5,
+        6
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "escort": {
+        "hobgoblin": {
+          "monster": "goblin",
+          "count": [
+            2,
+            3
+          ]
+        }
+      }
+    }
+  ],
+  "spawn": {
+    "_comment": "망자의 땅과 같은 키(원정 날짜 10일). 마을 큰 무리는 horde",
+    "groups_per_region": [
+      6,
+      8
+    ],
+    "pack_by_day": [
+      [
+        4,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        7,
+        11
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        9,
+        13
+      ],
+      [
+        10,
+        14
+      ],
+      [
+        12,
+        15
+      ]
+    ],
+    "respawn_hours": 24,
+    "growth_every_hours": 24,
+    "max_extra_groups": 3
+  },
+  "features_gap": 6,
+  "features": [],
+  "landmarks": [],
+  "portals": [
+    {
+      "id": "to_f3_forest",
+      "dir": "north",
+      "to_floor": 3,
+      "dest": "floor3_from_forest"
+    }
+  ],
+  "route_spots": {
+    "_comment": "지키는 무리 · 동굴 요소 · 지형 덫(hazards — 숨은 덫 묶음, 원정마다 자리가 바뀐다) · 포탈 비석 여덟(forest_stele — object). [창작] 임시값",
+    "guards": [
+      {
+        "node": "village",
+        "monsters": [
+          "hobgoblin",
+          "goblin",
+          "goblin",
+          "goblin_archer",
+          "goblin_swordsman"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "node": "s_s",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_se",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_e",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_ne",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_n",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_nw",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_w",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "s_sw",
+        "event": "forest_stele",
+        "object": true
+      },
+      {
+        "node": "hunter_camp",
+        "event": "dead_campfire",
+        "at": [
+          -3,
+          2
+        ],
+        "tile": "f2g_campfire"
+      },
+      {
+        "node": "hunter_camp",
+        "event": "hunter_cache",
+        "at": [
+          -6,
+          -3
+        ],
+        "tile": "f2g_cache"
+      },
+      {
+        "node": "big_tree",
+        "event": "dead_campfire",
+        "at": [
+          4,
+          4
+        ],
+        "tile": "f2g_campfire"
+      },
+      {
+        "node": "village",
+        "event": "goblin_camp",
+        "at": [
+          -6,
+          3
+        ],
+        "tile": "f2g_camp"
+      },
+      {
+        "node": "village",
+        "event": "goblin_camp",
+        "at": [
+          7,
+          2
+        ],
+        "tile": "f2g_camp"
+      },
+      {
+        "edge": [
+          "snare_hollow",
+          "big_tree"
+        ],
+        "t": 0.5,
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse"
+      },
+      {
+        "edge": [
+          "snare_hollow",
+          "hunter_camp"
+        ],
+        "t": 0.5,
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse"
+      },
+      {
+        "edge": [
+          "s_w",
+          "s_sw"
+        ],
+        "t": 0.5,
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse"
+      },
+      {
+        "edge": [
+          "s_ne",
+          "s_n"
+        ],
+        "t": 0.5,
+        "event": "explorer_corpse",
+        "tile": "f2g_corpse"
+      }
+    ],
+    "hazards": [
+      {
+        "zone": "f2g_traps",
+        "on": "f2g_path",
+        "event": "forest_snare",
+        "count": 12,
+        "gap": 5
+      },
+      {
+        "zone": "f2g_traps",
+        "on": "f2g_path",
+        "event": "forest_pit",
+        "count": 9,
+        "gap": 5
+      },
+      {
+        "zone": "f2g_traps",
+        "on": "f2g_path",
+        "event": "forest_spike",
+        "count": 8,
+        "gap": 5
+      },
+      {
+        "zone": "f2g_outer",
+        "on": "f2g_path",
+        "event": "forest_snare",
+        "count": 8,
+        "gap": 8
+      },
+      {
+        "zone": "f2g_outer",
+        "on": "f2g_path",
+        "event": "forest_pit",
+        "count": 6,
+        "gap": 8
+      }
+    ]
+  },
+  "source": "placeholder"
+}

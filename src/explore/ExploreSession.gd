@@ -120,6 +120,7 @@ func start() -> void:
 		rifts.begin(self)
 	RouteSpots.place_features(self)
 	RouteSpots.scatter(self)
+	RouteSpots.scatter_hazards(self)
 	terrain = FieldTerrain.setup(self)
 	maws = MawTraps.build(self)
 	goal = FloorGoal.setup(self)
@@ -572,7 +573,7 @@ func _discover() -> void:
 			var lm := db.get_entry("landmarks", str(rec["id"]))
 			_say("explore.landmark_found", {"name": JsonUtil.get_str(lm, "name_ko"), "desc": JsonUtil.get_str(lm, "desc_ko")}, "good")
 	for portal: Dictionary in map.portals:
-		if not bool(portal["found"]) and map.visible_now[map.idx(portal["pos"])] != 0:
+		if not bool(portal["found"]) and not bool(portal.get("hidden", false)) and map.visible_now[map.idx(portal["pos"])] != 0:  # hidden = 아직 잠든 진짜 비석(FL21)
 			portal["found"] = true
 			ExploreInteract.portal_found(self, portal)
 

@@ -12,6 +12,8 @@ extends RefCounted
 ##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound),
 ##    "spawn": {"monsters": [id …], "chance", "line"}(그 확률로 바로 옆에 그 무리가 일어나 쫓아온다 — 무덤 파기, FL13),
 ##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13), "goto": 표시 이름(map.anchors.marks — 계단으로 옮겨 선다, FL14),
+##    "stele": {live_tile, dead_tile, live_line, dead_line, sound} — 포탈 비석 깨우기(고블린 숲 FL21): 이 칸이 진짜(map.anchors stele_real)면
+##      live_tile(걸을 수 있는 3층 포탈 칸)로 바꾸고 숨긴 포탈을 드러낸다, 아니면 dead_tile(금 간 돌덩이). 요소는 사라진다.
 ##    "goal": 층 목표 이름(FloorGoal — 하나 센다, 망자의 땅 종 울리기 FL18),
 ##    "hours": 해 보는 데 드는 시간(성공 · 실패 모두 흐른다), "check": {stat, dc}(성공 확률 = RiftHazards.success_chance — 실패면 "fail_line"을 말하고
 ##    횟수를 쓰지 않는다 — 다시 해 볼 수 있다: 망자의 땅 비석 부수기 GraveWake)}.
@@ -74,8 +76,27 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		s.map.set_tile(e["pos"], JsonUtil.get_str(a, "clear_tile", floor_tile))
 		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))  # 테두리·소품을 다시 그린다
 	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"))
+	if a.has("stele"):
+		_stele(s, e, JsonUtil.get_dict(a, "stele"))
 	if a.has("goal") and s.goal != null:  # 층 목표 하나(종 울리기 — FloorGoal, FL18)
 		s.goal.advance(s, JsonUtil.get_str(a, "goal"))
+	s.refresh_view()
+
+
+static func _stele(s: ExploreSession, e: Dictionary, st: Dictionary) -> void:
+	var pos: Vector2i = e["pos"]
+	var live: bool = s.map.anchors.get("stele_real", Vector2i(-1, -1)) == pos
+	s.map.set_tile(pos, JsonUtil.get_str(st, "live_tile" if live else "dead_tile"))
+	e["cleared"] = true
+	s.tiles_changed.emit(Rect2i(pos, Vector2i.ONE))
+	say_line(s, JsonUtil.get_str(st, "live_line" if live else "dead_line"), e, "good" if live else "info")
+	if live:
+		var portal := s.map.portal_at(pos)
+		if not portal.is_empty():
+			portal["hidden"] = false
+			portal["found"] = true
+		if st.has("sound"):
+			s.sound.emit(JsonUtil.get_str(st, "sound"), pos)
 	s.refresh_view()
 
 

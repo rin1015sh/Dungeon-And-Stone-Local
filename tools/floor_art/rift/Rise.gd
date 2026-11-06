@@ -13,7 +13,12 @@ const Seam := preload("res://tools/floor_art/Seam.gd")
 
 
 static func face(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
-	return _ice_face(w, h, seed_value, cfg) if str(cfg.get("kind", "castle")) == "ice" else _castle_face(w, h, seed_value, cfg)
+	match str(cfg.get("kind", "castle")):
+		"ice":
+			return _ice_face(w, h, seed_value, cfg)
+		"forest":
+			return _trunks(w, h, seed_value, cfg)
+	return _castle_face(w, h, seed_value, cfg)
 
 
 static func top(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
@@ -22,7 +27,77 @@ static func top(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
 			return _snowfield(w, h, seed_value, cfg)
 		"grave":
 			return _deadfield(w, h, seed_value, cfg)
+		"forest":
+			return _canopy_top(w, h, seed_value, cfg)
 	return _roofs(w, h, seed_value, cfg)
+
+
+## 숲 가장자리 면(고블린 숲 — FL21): 빽빽한 나무줄기(굵기 · 밝기 다르게, 사이 틈은 검게), 위는 늘어진 잎 그늘, 밑동에 뿌리 · 덤불.
+static func _trunks(w: int, h: int, s: int, cfg: Dictionary) -> Paint:
+	var p := Paint.new(w, h, s)
+	var bark := Color(str(cfg.get("bark", "#352d26")))
+	var leaf := Color(str(cfg.get("leaf", "#2c3828")))
+	var grain := Seam.field(w, h, s + 1, 0.08, 2)
+	var moss := Seam.field(w, h, s + 2, 0.05, 2)
+	for y in h:  # 줄기 사이 깊은 어둠(아래로 갈수록 덤불 빛)
+		for x in w:
+			p.blend(x, y, Color("#060807").lerp(leaf.darkened(0.5), clampf(float(y) / h, 0.0, 1.0) * 0.35), 1.0)
+	var rng := p.rng
+	var trunks: Array[Vector3] = []  # x, 반폭, 밝기
+	var x := 0.0
+	while x < w:
+		trunks.append(Vector3(x, rng.randf_range(6.0, 16.0), rng.randf_range(-0.15, 0.2)))
+		x += rng.randf_range(14.0, 34.0)
+	trunks.sort_custom(func(a: Vector3, b2: Vector3) -> bool: return a.y < b2.y)  # 가는 줄기(멀리)부터
+	for t in trunks:
+		var far := 1.0 - (t.y - 6.0) / 10.0  # 가늘수록 멀다 — 어둡게
+		for yy in h:
+			var flare := 1.0 + smoothstep(h * 0.7, float(h), float(yy)) * 0.5  # 밑동이 벌어진다
+			var hw := t.y * flare
+			for dx in range(-int(hw), int(hw) + 1):
+				var u := float(dx) / hw
+				if absf(u) > 1.0:
+					continue
+				var xx := posmod(int(t.x) + dx, w)
+				var g := Seam.at(grain, w, h, xx * 3, yy / 3)  # 세로로 늘인 껍질 결
+				var c := bark.lerp(bark.lightened(0.4), clampf(0.55 - u * 0.55 + t.z, 0.0, 1.0))
+				c = c.darkened(clampf((g - 0.5) * 0.9 + absf(u) * 0.35 + far * 0.35, 0.0, 0.9))
+				var mk := smoothstep(0.55, 0.75, moss[yy * w + xx]) * smoothstep(0.4, 1.0, float(yy) / h)
+				c = c.lerp(leaf.lightened(0.15), mk * 0.6)
+				p.blend(xx, yy, c, 1.0)
+			p.blend(posmod(int(t.x + hw), w), yy, Ink.INK, 0.5)
+			p.blend(posmod(int(t.x - hw), w), yy, Ink.INK, 0.35)
+	var top := int(h * 0.35)
+	for yy in top:  # 위로 늘어진 잎
+		for xx in w:
+			var k := 1.0 - float(yy) / top
+			var n := Seam.at(moss, w, h, xx, yy * 2)
+			if n * 0.7 + k * 0.8 > 0.75:
+				p.blend(xx, yy, leaf.darkened(0.3).lerp(leaf.lightened(0.2), n), clampf(k * 1.3, 0.0, 1.0))
+	for xx in w:
+		for d in 10:
+			p.blend(xx, h - 1 - d, Color("#0a0c08"), 0.4 * (1.0 - d / 10.0))
+	Ink.finish(p, 0.025, 0.0)
+	return p
+
+
+## 숲 지붕(위에서 내려다본 잎 덩어리): 겹친 둥근 잎 뭉치(검은 틈 · 밝은 위쪽 가장자리), 드문드문 별빛 은빛 점.
+static func _canopy_top(w: int, h: int, s: int, cfg: Dictionary) -> Paint:
+	var p := Paint.new(w, h, s)
+	var leaf := Color(str(cfg.get("leaf", "#2c3828")))
+	var hf := Seam.field(w, h, s, 0.04, 3)
+	var cl := Seam.field(w, h, s + 2, 0.09, 2)
+	var fine := Seam.field(w, h, s + 3, 0.35, 1)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var r := Seam.relief(cl, w, h, x, y, 5.0)
+			var c := leaf.darkened(0.6).lerp(leaf.lightened(0.1), clampf(0.35 + cl[i] * 0.5 + r * 0.8 + (hf[i] - 0.5) * 0.3, 0.0, 1.0))
+			c = c.lerp(leaf.lightened(0.45), clampf(r * 1.5, 0.0, 1.0) * 0.6 * fine[i])
+			if r > 0.25 and fine[i] > 0.93:
+				c = c.lerp(Color("#c4d0d8"), 0.5)
+			p.blend(x, y, c, 1.0)
+	return p
 
 
 ## 담 너머 묘지 들판(위에서 내려다본 3/4): 검푸른 덤불 바탕 + 안개 얼룩, 묘비(작은 둥근 머리 판) · 마른 나무(가지 선) 실루엣이 흩어져 있다.

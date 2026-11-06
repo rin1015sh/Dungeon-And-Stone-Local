@@ -61,6 +61,8 @@ func test_props_cover_feature_tiles() -> void:
 		var prop := JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("tiles", tile), "art"), "prop")
 		if prop.is_empty() and not JsonUtil.get_dict(JsonUtil.get_dict(db.get_entry("tiles", tile), "art"), "stand").is_empty():
 			continue  # 서 있는 소품 그림(art.stand — 망자의 땅 비석 standing 요소)
+		if prop.is_empty() and _own_atlas(tile):
+			continue  # 바닥 그림에 직접 그린 요소(고블린 숲 덫 — 올가미 · 구덩이 · 말뚝이 그려진 오솔길, FL21)
 		if prop.is_empty():
 			missing.append(tile)
 		else:
@@ -68,6 +70,17 @@ func test_props_cover_feature_tiles() -> void:
 	assert_eq(missing.size(), 0, "소품 그림 없는 동굴 요소: " + ", ".join(missing))
 	for t in ["portal", "monument", "square_crystal", "boulder"]:
 		assert_false(JsonUtil.get_dict(db.get_entry("tiles", t), "art").is_empty(), "랜드마크 그림: " + t)
+
+
+## 그 타일만 쓰는 바닥 그림(atlas)인가.
+func _own_atlas(tile: String) -> bool:
+	var atlas := JsonUtil.get_str(JsonUtil.get_dict(db.get_entry("tiles", tile), "art"), "atlas")
+	if atlas.is_empty():
+		return false
+	for t: String in db.get_collection("tiles"):
+		if t != tile and JsonUtil.get_str(JsonUtil.get_dict(db.get_entry("tiles", t), "art"), "atlas") == atlas:
+			return false
+	return true
 
 
 ## 거시 색조: 기념비 안전지대 둘레는 한 단계 어둡고, 구역마다 색조가 다르다.
