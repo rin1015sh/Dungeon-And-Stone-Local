@@ -120,6 +120,208 @@
         "freq": 0.06,
         "amount": 0.24
       }
+    },
+    "decor": {
+      "_comment": "숲 바닥(FloorDecor — 실행 중 계산, 시트 assets/floor/f2g/decals.webp, 사용자 2026-11-06 \"잡초나 잡돌 같은 표현\", FL23): 잡초 · 고사리는 잡음 덩어리로 몰아서(dense), 나무 · 덤불 둘레 뿌리 · 낙엽, 숲 가장자리(벽 아래) 잡초, 잡돌은 드문드문 + 개울가, 빈터 들꽃, 마을 진흙 · 뼈. [창작] 임시값",
+      "sheet": "res://assets/floor/f2g/decals.webp",
+      "variants": 4,
+      "kinds": [
+        "weeds",
+        "fern",
+        "stones",
+        "roots",
+        "litter",
+        "flowers",
+        "moss",
+        "mud",
+        "bones",
+        "gravel"
+      ],
+      "on_tiles": [
+        "f2g_floor",
+        "f2g_grass",
+        "f2g_path",
+        "f2g_village",
+        "f2g_gravel_low"
+      ],
+      "rules": [
+        {
+          "kind": "weeds",
+          "wall_north": true,
+          "dense": true,
+          "chance": 0.55,
+          "size": 1.4
+        },
+        {
+          "kind": "roots",
+          "near_tiles": {
+            "tiles": [
+              "f2g_oak_f",
+              "f2g_pine_f",
+              "f2g_birch_f",
+              "f2g_dead_f",
+              "f2g_bush",
+              "f2g_stump",
+              "f2g_log",
+              "f2g_thicket"
+            ],
+            "radius": 1
+          },
+          "chance": 0.6,
+          "size": 1.5
+        },
+        {
+          "kind": "litter",
+          "near_tiles": {
+            "tiles": [
+              "f2g_oak_f",
+              "f2g_pine_f",
+              "f2g_birch_f",
+              "f2g_dead_f",
+              "f2g_bush",
+              "f2g_stump"
+            ],
+            "radius": 2
+          },
+          "chance": 0.5,
+          "size": 1.4
+        },
+        {
+          "kind": "stones",
+          "near_tiles": {
+            "tiles": [
+              "f2g_brook",
+              "f2g_scree"
+            ],
+            "radius": 2
+          },
+          "dense": true,
+          "chance": 0.35,
+          "size": 1.2
+        },
+        {
+          "kind": "weeds",
+          "zones": [
+            "f2g_eaves",
+            "f2g_gully",
+            "f2g_brook",
+            "f2g_grove"
+          ],
+          "noise": {
+            "key": "weed",
+            "freq": 0.08,
+            "above": 0.45
+          },
+          "dense": true,
+          "chance": 0.55,
+          "size": 1.35
+        },
+        {
+          "kind": "fern",
+          "zones": [
+            "f2g_eaves",
+            "f2g_gully",
+            "f2g_brook",
+            "f2g_grove"
+          ],
+          "noise": {
+            "key": "fern",
+            "freq": 0.06,
+            "above": 0.55
+          },
+          "dense": true,
+          "chance": 0.45,
+          "size": 1.6
+        },
+        {
+          "kind": "litter",
+          "zones": [
+            "f2g_eaves",
+            "f2g_gully",
+            "f2g_brook",
+            "f2g_grove"
+          ],
+          "noise": {
+            "key": "litter",
+            "freq": 0.05,
+            "above": 0.5
+          },
+          "chance": 0.6,
+          "size": 1.4
+        },
+        {
+          "kind": "flowers",
+          "zones": [
+            "f2g_eaves",
+            "f2g_brook",
+            "f2g_grove",
+            "f2g_gully"
+          ],
+          "noise": {
+            "key": "flower",
+            "freq": 0.07,
+            "above": 0.6
+          },
+          "chance": 0.6,
+          "size": 1.3
+        },
+        {
+          "kind": "stones",
+          "chance": 0.12,
+          "size": 1.2
+        },
+        {
+          "kind": "moss",
+          "zones": [
+            "f2g_eaves",
+            "f2g_gully",
+            "f2g_brook",
+            "f2g_grove"
+          ],
+          "noise": {
+            "key": "moss",
+            "freq": 0.05,
+            "above": 0.6
+          },
+          "chance": 0.4,
+          "size": 1.5
+        },
+        {
+          "kind": "mud",
+          "zones": [
+            "f2g_village",
+            "f2g_chief"
+          ],
+          "noise": {
+            "key": "mud",
+            "freq": 0.06,
+            "above": 0.45
+          },
+          "chance": 0.6,
+          "size": 1.4
+        },
+        {
+          "kind": "bones",
+          "zones": [
+            "f2g_village",
+            "f2g_chief"
+          ],
+          "chance": 0.1
+        },
+        {
+          "kind": "weeds",
+          "zones": [
+            "f2g_village",
+            "f2g_chief"
+          ],
+          "chance": 0.15,
+          "size": 1.2
+        },
+        {
+          "kind": "gravel",
+          "chance": 0.06
+        }
+      ]
     }
   },
   "gen": {
@@ -137,12 +339,12 @@
       "up": "f2g_portal_up"
     },
     "zone_fill": {
-      "f2g_eaves": "f2g_rise",
-      "f2g_gully": "f2g_rise",
-      "f2g_chief": "f2g_rise",
-      "f2g_village": "f2g_rise",
-      "f2g_grove": "f2g_rise",
-      "f2g_brook": "f2g_rise"
+      "f2g_eaves": "f2g_thicket",
+      "f2g_gully": "f2g_thicket",
+      "f2g_chief": "f2g_thicket",
+      "f2g_village": "f2g_thicket",
+      "f2g_grove": "f2g_thicket",
+      "f2g_brook": "f2g_thicket"
     },
     "zone_floor": {
       "f2g_eaves": "f2g_floor",
@@ -416,8 +618,18 @@
     "props": [
       {
         "zone": "f2g_eaves",
-        "tile": "f2g_tree",
-        "count": 14
+        "tile": "f2g_oak_f",
+        "count": 5
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_pine_f",
+        "count": 4
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_birch_f",
+        "count": 3
       },
       {
         "zone": "f2g_eaves",
@@ -425,53 +637,118 @@
         "count": 10
       },
       {
+        "zone": "f2g_eaves",
+        "tile": "f2g_stump",
+        "count": 4
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_log",
+        "count": 3
+      },
+      {
         "zone": "f2g_gully",
-        "tile": "f2g_tree",
-        "count": 18
+        "tile": "f2g_oak_f",
+        "count": 5
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_pine_f",
+        "count": 4
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_birch_f",
+        "count": 3
       },
       {
         "zone": "f2g_gully",
         "tile": "f2g_bush",
-        "count": 14
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_log",
-        "count": 6
+        "count": 10
       },
       {
         "zone": "f2g_gully",
         "tile": "f2g_stump",
-        "count": 6
+        "count": 4
       },
       {
-        "zone": "f2g_brook",
-        "tile": "f2g_tree",
-        "count": 18
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_bush",
-        "count": 12
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_mush",
-        "count": 14
-      },
-      {
-        "zone": "f2g_brook",
+        "zone": "f2g_gully",
         "tile": "f2g_log",
+        "count": 3
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_oak_f",
         "count": 5
       },
       {
         "zone": "f2g_grove",
-        "tile": "f2g_mush",
-        "count": 6
+        "tile": "f2g_pine_f",
+        "count": 4
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_birch_f",
+        "count": 3
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_bush",
+        "count": 10
       },
       {
         "zone": "f2g_grove",
         "tile": "f2g_stump",
+        "count": 4
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_log",
+        "count": 3
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_oak_f",
+        "count": 5
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_pine_f",
+        "count": 4
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_birch_f",
+        "count": 3
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_bush",
+        "count": 10
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_stump",
+        "count": 4
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_log",
+        "count": 3
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_mush",
+        "count": 14
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_mush",
+        "count": 6
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_dead_f",
         "count": 4
       },
       {
@@ -621,7 +898,349 @@
     "levels": {
       "scree": "f2g_scree",
       "ramp": "f2g_slope"
-    }
+    },
+    "outer_props": [
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_giant_oak_t",
+        "count": 66,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_giant_pine_t",
+        "count": 48,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_giant_pale_t",
+        "count": 24,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_oak_t",
+        "count": 78,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_pine_t",
+        "count": 66,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_birch_t",
+        "count": 42,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_eaves",
+        "tile": "f2g_dead_t",
+        "count": 18,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_giant_oak_t",
+        "count": 66,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_giant_pine_t",
+        "count": 48,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_giant_pale_t",
+        "count": 24,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_oak_t",
+        "count": 78,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_pine_t",
+        "count": 66,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_birch_t",
+        "count": 42,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_gully",
+        "tile": "f2g_dead_t",
+        "count": 18,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_giant_oak_t",
+        "count": 66,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_giant_pine_t",
+        "count": 48,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_giant_pale_t",
+        "count": 24,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_oak_t",
+        "count": 78,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_pine_t",
+        "count": 66,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_birch_t",
+        "count": 42,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_grove",
+        "tile": "f2g_dead_t",
+        "count": 18,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_giant_oak_t",
+        "count": 66,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_giant_pine_t",
+        "count": 48,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_giant_pale_t",
+        "count": 24,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_oak_t",
+        "count": 78,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_pine_t",
+        "count": 66,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_birch_t",
+        "count": 42,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_brook",
+        "tile": "f2g_dead_t",
+        "count": 18,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_village",
+        "tile": "f2g_giant_oak_t",
+        "count": 30,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_village",
+        "tile": "f2g_pine_t",
+        "count": 36,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_village",
+        "tile": "f2g_oak_t",
+        "count": 30,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_chief",
+        "tile": "f2g_giant_oak_t",
+        "count": 30,
+        "near": 9,
+        "clear": [
+          1,
+          15
+        ]
+      },
+      {
+        "zone": "f2g_chief",
+        "tile": "f2g_pine_t",
+        "count": 36,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      },
+      {
+        "zone": "f2g_chief",
+        "tile": "f2g_oak_t",
+        "count": 30,
+        "near": 6,
+        "clear": [
+          3,
+          9
+        ]
+      }
+    ]
   },
   "regions": [
     {

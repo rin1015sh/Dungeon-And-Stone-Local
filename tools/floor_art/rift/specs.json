@@ -619,7 +619,13 @@
      "style": "stairs"
     }
    ],
-   "walls": [],
+   "walls": [
+    {
+     "tile": "f2g_thicket",
+     "style": "undergrowth",
+     "face_px": 40
+    }
+   ],
    "stand_cols": 10,
    "stands": [
     "f2g_tree",
@@ -643,15 +649,22 @@
     "script": "res://tools/floor_art/rift/f2g_big.gd",
     "cell": [
      8,
-     10
+     18
     ],
-    "cols": 5,
+    "cols": 6,
     "order": [
      "bigtree",
      "hut",
      "tent",
      "watch",
-     "blank"
+     "blank",
+     "oak",
+     "pine",
+     "birch",
+     "dead",
+     "giant_oak",
+     "giant_pine",
+     "giant_pale"
     ]
    }
   }

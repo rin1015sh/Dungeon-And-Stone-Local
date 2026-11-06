@@ -104,6 +104,7 @@ static func fences(map: FloorMap, g: Dictionary, nodes: Dictionary, radii: Dicti
 						break
 
 
+## 길 밖 소품: gen "outer_props": [{zone, tile, count, near(걸을 수 있는 칸에서 2 ~ near칸), clear: [반폭, 높이](선택)}].
 static func outer_props(map: FloorMap, rng: Rng, g: Dictionary) -> void:
 	var list := JsonUtil.get_array(g, "outer_props")
 	if list.is_empty():
@@ -121,11 +122,21 @@ static func outer_props(map: FloorMap, rng: Rng, g: Dictionary) -> void:
 		for i in dist.size():
 			if dist[i] >= 2 and dist[i] <= near and map.zones[i] == zi and map.tile_id_at(Vector2i(i % map.width, i / map.width)) == under:
 				cand.append(i)
+		var clear := JsonUtil.get_array(o, "clear")  # [반폭, 높이](칸): 그림이 덮는 위쪽 사각에 걸을 수 있는 칸이 있으면 세우지 않는다(키 큰 나무가 길 · 사람을 가리지 않게, FL23)
 		for n in mini(JsonUtil.get_int(o, "count"), cand.size()):
 			var i := cand[rng.randi_range(0, cand.size() - 1)]
 			var q := Vector2i(i % map.width, i / map.width)
-			if map.tile_id_at(q) == under:
+			if map.tile_id_at(q) == under and (clear.size() != 2 or _clear_above(map, q, int(clear[0]), int(clear[1]))):
 				map.set_tile(q, tile)
+
+
+static func _clear_above(map: FloorMap, q: Vector2i, hw: int, h: int) -> bool:
+	for y in range(q.y - h, q.y + 1):
+		for x in range(q.x - hw, q.x + hw + 1):
+			var c := Vector2i(x, y)
+			if map.in_bounds(c) and map.is_walkable(c):
+				return false
+	return true
 
 
 ## 걸을 수 있는 칸에서의 칸 거리(상하좌우, cap까지 — 넘으면 cap + 1).

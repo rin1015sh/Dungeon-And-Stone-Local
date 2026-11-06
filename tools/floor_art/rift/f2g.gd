@@ -40,6 +40,11 @@ static func base(p: Paint, style: String, part: String, col: Color, s: int) -> v
 			_floor(p, col, s, 0.15, 0.5)
 		"brook":
 			_brook(p, col, s)
+		"undergrowth":  # 길 밖 덤불 둔덕(벽 — 윗면 = 덤불 · 고사리 덮인 숲 바닥, 앞면 = 뿌리 드러난 흙 벼랑, FL23)
+			if part == "face":
+				F2D._bank_face(p, col, s)
+			else:
+				_undergrowth(p, col, s)
 		"pebbles":
 			_pebbles(p, col, s)
 		_:
@@ -50,7 +55,7 @@ static func detail(p: Paint, style: String, part: String, v: int, col: Color) ->
 	var u := p.w / 64.0
 	var c := Vector2(p.w * 0.5, p.h * 0.5)
 	match style:
-		"brook":
+		"brook", "undergrowth":
 			return
 		"pebbles":
 			return
@@ -121,6 +126,23 @@ static func _floor(p: Paint, col: Color, s: int, litter: float, wet: float) -> v
 				c = c.lerp(MOSS, (moss[i] - 0.62) * 1.6)
 			if wet > 0.0:
 				c = c.lerp(SILVER, pow(clampf(r * 1.8, 0.0, 1.0), 2.5) * wet * 0.45)
+			p.blend(x, y, c, 1.0)
+
+
+## 덤불 둔덕 윗면: 검은 틈 사이로 겹친 잎 · 고사리 덩어리(위쪽이 밝다), 드문드문 밝은 잎끝.
+static func _undergrowth(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var cl := Seam.field(w, h, s + 2, 0.12, 2)
+	var fine := Seam.field(w, h, s + 3, 0.45, 1)
+	var hf := Seam.field(w, h, s, 0.05, 3)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var r := Seam.relief(cl, w, h, x, y, 4.0)
+			var c := col.darkened(0.6).lerp(col.lightened(0.25), clampf(0.35 + cl[i] * 0.5 + r * 0.8 + (hf[i] - 0.5) * 0.3, 0.0, 1.0))
+			if fine[i] > 0.82 and r > 0.0:
+				c = c.lerp(LEAF_L, 0.5)
 			p.blend(x, y, c, 1.0)
 
 

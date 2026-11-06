@@ -62,8 +62,103 @@ static func paint(kind: String, v: int, w: int, seed_value: int) -> Paint:
 			_trash(p, c, s)
 		"bones":
 			_bones(p, c, s)
+		"weeds":
+			_weeds(p, c, s, p.rng.randi_range(3, 6))
+		"fern":
+			_fern(p, c, s)
+		"stones":
+			_stones(p, c, s)
+		"roots":
+			_roots(p, c, s)
+		"litter":
+			_litter(p, c, s)
+		"flowers":
+			_weeds(p, c, s, p.rng.randi_range(2, 3))
+			for k in p.rng.randi_range(6, 11):
+				var q := c + Vector2(p.rng.randf_range(-15, 15), p.rng.randf_range(-12, 12)) * s
+				_spot(p, q, p.rng.randf_range(0.9, 1.5) * s, Color("#c8c4d8") if p.rng.randf() < 0.6 else Color("#d8c890"), 0.9)
 	_soft_edge(p)
 	return p
+
+
+## ── 숲(고블린 숲 — 사용자 2026-11-06 "잡초나 잡돌 같은 표현", FL23) ──
+
+## 잡초 덤불 n개: 뿌리 자리에서 부채꼴로 뻗는 가는 잎(어두운 밑 → 밝은 끝), 덤불 밑 그늘.
+static func _weeds(p: Paint, c: Vector2, s: float, n: int) -> void:
+	for t in n:
+		var root := c + Vector2(p.rng.randf_range(-15, 15), p.rng.randf_range(-10, 13)) * s
+		_blob(p, root + Vector2(0, 1) * s, 4.0 * s, Color("#141810"), 0.45, 0.3)
+		for k in p.rng.randi_range(7, 13):
+			var a := -PI * 0.5 + p.rng.randf_range(-1.1, 1.1)
+			var ln := p.rng.randf_range(5.0, 11.0) * s
+			var tip := root + Vector2.from_angle(a) * ln + Vector2(p.rng.randf_range(-1.5, 1.5), 0) * s
+			var col := Color("#2a3424").lerp(Color("#6a7a50"), p.rng.randf())
+			Ink.line(p, root, root.lerp(tip, 0.55), 1.3 * s, col.darkened(0.3), 0.95, 0.3)
+			Ink.line(p, root.lerp(tip, 0.5), tip, 0.9 * s, col, 0.95, 0.3)
+
+
+## 고사리: 가운데에서 휘어 뻗는 잎줄기 다섯여섯, 줄기마다 양옆 작은 잎.
+static func _fern(p: Paint, c: Vector2, s: float) -> void:
+	_blob(p, c + Vector2(0, 2) * s, 8.0 * s, Color("#121610"), 0.5, 0.3)
+	for k in p.rng.randi_range(5, 7):
+		var a := -PI * 0.5 + (k - 3) * 0.45 + p.rng.randf_range(-0.15, 0.15)
+		var ln := p.rng.randf_range(14.0, 20.0) * s
+		var bend := p.rng.randf_range(-0.25, 0.25)
+		var prev := c
+		for j in 8:
+			var t := float(j + 1) / 8.0
+			var q := c + Vector2.from_angle(a + bend * t) * ln * t + Vector2(0, t * t * 6.0) * s  # 끝이 처진다
+			Ink.line(p, prev, q, 1.0 * s, Color("#2e3a26"), 0.95, 0.2)
+			var side := Vector2.from_angle(a + bend * t + PI * 0.5) * (1.0 - t * 0.7) * 3.5 * s
+			var leaf := Color("#3e4c32").lerp(Color("#6a7a52"), t)
+			Ink.line(p, q, q + side, 1.2 * s, leaf, 0.9, 0.2)
+			Ink.line(p, q, q - side, 1.2 * s, leaf.darkened(0.2), 0.9, 0.2)
+			prev = q
+
+
+## 잡돌: 크고 작은 돌 몇 개(이끼 낀 윗면), 사이에 잔자갈.
+static func _stones(p: Paint, c: Vector2, s: float) -> void:
+	for k in p.rng.randi_range(2, 4):
+		var q := c + Vector2(p.rng.randf_range(-12, 12), p.rng.randf_range(-9, 10)) * s
+		var r := p.rng.randf_range(3.0, 6.5) * s
+		Cave._stone(p, q, r, r * p.rng.randf_range(0.6, 0.8), Color("#5c5e58").lightened(p.rng.randf_range(-0.12, 0.1)))
+		if p.rng.randf() < 0.6:
+			_blob(p, q + Vector2(-r * 0.2, -r * 0.35), r * 0.5, Color("#3e4c34"), 0.7, 0.4)
+	for k in p.rng.randi_range(5, 9):
+		var q := c + Vector2(p.rng.randf_range(-16, 16), p.rng.randf_range(-13, 13)) * s
+		var r := p.rng.randf_range(0.9, 1.8) * s
+		Cave._stone(p, q, r, r * 0.7, Color("#4e504a"))
+
+
+## 땅 위로 드러난 뿌리: 굵게 시작해 가늘어지는 굽은 줄 둘셋(위쪽 밝은 테).
+static func _roots(p: Paint, c: Vector2, s: float) -> void:
+	for k in p.rng.randi_range(2, 3):
+		var a := c + Vector2(p.rng.randf_range(-16, -6), p.rng.randf_range(-10, 10)) * s
+		var d := Vector2.from_angle(p.rng.randf_range(-0.5, 0.5))
+		var prev := a
+		for j in 9:
+			var t := float(j + 1) / 9.0
+			var q := a + d * 32.0 * s * t + Vector2(0, sin(t * PI * 2.0 + k) * 3.0) * s
+			var wd := (3.2 - t * 2.4) * s
+			Ink.line(p, prev, q, wd, Color("#2e261e"), 1.0, 0.2)
+			Ink.line(p, prev + Vector2(0, -wd * 0.3), q + Vector2(0, -wd * 0.3), wd * 0.35, Color("#5a4c3c"), 0.7, 0.2)
+			prev = q
+
+
+## 낙엽 무더기: 겹친 잎(갈색 · 붉은 갈색 · 마른 노랑) + 잎맥.
+static func _litter(p: Paint, c: Vector2, s: float) -> void:
+	_blob(p, c, 14.0 * s, Color("#2a241a"), 0.4, 0.3)
+	for k in p.rng.randi_range(14, 24):
+		var q := c + Vector2(p.rng.randf_range(-15, 15), p.rng.randf_range(-11, 11)) * s
+		var a := p.rng.randf() * TAU
+		var r := p.rng.randf_range(2.0, 3.6) * s
+		var col: Color = [Color("#6a4a2a"), Color("#7a5a30"), Color("#5a3a24"), Color("#7a6a3a")][p.rng.randi_range(0, 3)]
+		var pts := PackedVector2Array()
+		for j in 10:
+			var t := TAU * j / 10.0
+			pts.append(q + Vector2(cos(t) * r, sin(t) * r * 0.45).rotated(a))
+		p.fill_poly(pts, func(x: int, y: int) -> Color: return p.vary(col, x, y, 0.1))
+		Ink.line(p, q - Vector2(r, 0).rotated(a), q + Vector2(r, 0).rotated(a), 0.5 * s, Color("#1e160e"), 0.5, 0.2)
 
 
 ## 물가: 위쪽(물 쪽)에 젖어 검은 바위 둑이 울퉁불퉁 튀어나오고, 아래로 갈수록 젖은 자국이 옅어진다.
