@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1010줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1014줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -340,6 +340,7 @@
 - `explore.maw_escape` 이빨이 다물리기 직전에 다리를 빼냈다.
 - `explore.maw_swallowed` 끈적한 어둠이 몸을 삼켰다. 축축한 살 위로 굴러떨어졌다.
 - `explore.hud_bells` 종 {n}/{need}
+- `explore.grave_wakes` 늪 어딘가의 비석 아래에서 무언가가 일어났다.
 
 ### `explore.boss_notice`
 
@@ -1287,6 +1288,9 @@
 - `field.throat_climb` 미끄러운 힘줄을 붙잡고 기어올랐다. 입술 사이로 몸을 밀어내자 차가운 공기가 닿았다.
 - `field.pass_gate` 쇠창살 문 가운데 종 세 개가 새겨진 판이 박혀 있다. 셋 다 녹이 슬어 검다.
 - `field.gate_open` 멀리 고개 쪽에서 쇠사슬 풀리는 소리가 길게 이어진다.
+- `field.grave_stone` 진창 위에 갓 깎은 듯한 비석이 서 있다. 새겨진 이름은 없고, 손을 대면 돌이 차갑게 떨린다.
+- `field.grave_stone_break` 비석을 걷어차 쓰러뜨렸다. 진창에 처박힌 돌 아래에서 차가운 기운이 빠져나가 흩어졌다.
+- `field.grave_stone_break_fail` 한참을 내리쳐도 비석은 꿈쩍하지 않는다.
 
 ### `field.corpse`
 

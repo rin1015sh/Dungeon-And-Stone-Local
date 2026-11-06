@@ -14,17 +14,46 @@ const BF := preload("res://tools/floor_art/rift/bf.gd")
 const Common := preload("res://tools/floor_art/rift/Common.gd")
 
 const WATER_DEEP := Color("#0a0e0e")
-const GLOSS := Color("#9ab0b0")
-const MOSS := Color("#5a5a3c")       # 사용자 2026-11-05 "초록은 에바" — 바랜 올리브 · 잿빛(FL11)
-const MOSS_DARK := Color("#2e2e22")
-const GRASS := Color("#6e6a4a")
-const DRY := Color("#8a7a4a")
-const LEAF := Color("#7a3a1e")
-const IRON := Color("#24221f")
+const GLOSS := Color("#c8d2dc")  # 젖은 진흙 은빛(전투 그림 — FL20)
+const MOSS := Color("#4a4e50")       # 사용자 2026-11-05 "초록은 에바"(FL11) → 2026-11-06 전투 그림처럼 차가운 잿빛(FL20)
+const MOSS_DARK := Color("#24272a")
+const GRASS := Color("#5a5e62")
+const DRY := Color("#6c6e70")
+const LEAF := Color("#3e3c3c")
+const IRON := Color("#202226")
 
 
 static func base(p: Paint, style: String, part: String, col: Color, s: int) -> void:
+	_base(p, style, part, col, s)
+	var wet: float = {"mudroad": 0.0, "graveearth": 0.22, "dryearth": 0.15, "crackearth": 0.22, "flagstone": 0.3, "crackstone": 0.3, "rubble": 0.2, "stairs": 0.2}.get(style, 0.0)
+	if wet > 0.0 and part == "floor":
+		_sheen(p, s, wet)
+
+
+## 젖은 땅의 은빛 번들거림(전투 그림의 진흙 — 사용자 2026-11-06, FL20): 기복의 밝은 쪽 등성이에만 차가운 흰빛, 골은 더 어둡게.
+static func _sheen(p: Paint, s: int, amt: float) -> void:
+	var w := p.w
+	var h := p.h
+	var rf := Seam.field(w, h, s + 77, 0.05, 3)
+	var patch := Seam.field(w, h, s + 78, 0.03, 2)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var r := Seam.relief(rf, w, h, x, y, 3.0)
+			var c := p.get_c(x, y)
+			var k := smoothstep(0.45, 0.8, patch[i]) * amt
+			c = c.lerp(GLOSS, pow(clampf(r * 1.8, 0.0, 1.0), 2.0) * k)
+			c = c.darkened(clampf(-r * 1.2, 0.0, 1.0) * k * 0.5)
+			p.blend(x, y, c, 1.0)
+
+
+static func _base(p: Paint, style: String, part: String, col: Color, s: int) -> void:
 	match style:
+		"mudroad":
+			if part == "floor":
+				_wetmud(p, col, s)
+			else:
+				BF.base(p, style, part, col, s)
 		"blackwater", "flood":
 			_water(p, col, s)
 		"graveearth":
@@ -127,6 +156,26 @@ static func _water(p: Paint, col: Color, s: int) -> void:
 			var gloss := pow(clampf(r * 1.6, 0.0, 1.0), 3.0) * smoothstep(0.5, 0.85, sh[i])
 			c = c.lerp(GLOSS, gloss * 0.22)
 			c = c.lerp(Color("#050607"), pow(clampf(-r * 1.6, 0.0, 1.0), 2.0) * 0.25)
+			p.blend(x, y, c, 1.0)
+
+
+## 젖은 진흙(전투 그림의 땅 — 사용자 2026-11-06, FL20): 칸을 넘는 큰 기복(물결처럼 밀린 진흙) + 잔 주름,
+## 빛 받은 등성이에 차가운 은빛 번들거림, 골은 검게. 자갈 · 돌 무늬 없이 매끈하게.
+static func _wetmud(p: Paint, col: Color, s: int) -> void:
+	var w := p.w
+	var h := p.h
+	var big := Seam.field(w, h, s + 271, 0.045, 3)  # 변형마다 다르게(같은 큰 모양이 칸마다 찍히면 격자로 보인다)
+	var mid := Seam.field(w, h, s, 0.09, 2)
+	var fine := Seam.field(w, h, s + 3, 0.25, 1)
+	var sh := Seam.field(w, h, s + 1, 0.06, 2)
+	for y in h:
+		for x in w:
+			var i := y * w + x
+			var r := Seam.relief(big, w, h, x, y, 2.0) + Seam.relief(mid, w, h, x, y, 1.2) * 0.5
+			var c := col.darkened(0.3).lerp(col.lightened(0.05), clampf(0.5 + (big[i] - 0.5) * 0.15 + r * 0.45 + (fine[i] - 0.5) * 0.06, 0.0, 1.0))
+			var gloss := pow(clampf(r * 1.7, 0.0, 1.0), 2.5) * smoothstep(0.35, 0.75, sh[i])
+			c = c.lerp(GLOSS, gloss * 0.55)
+			c = c.lerp(Color("#08090b"), pow(clampf(-r * 1.5, 0.0, 1.0), 2.0) * 0.4)
 			p.blend(x, y, c, 1.0)
 
 
@@ -316,11 +365,11 @@ static func _lantern(p: Paint) -> void:
 	Ink.line(p, arm, arm + Vector2(14, 0) * u, 2.4 * u, IRON, 1.0, 0.2)
 	Ink.line(p, arm + Vector2(14, 0) * u, arm + Vector2(14, 6) * u, 1.2 * u, IRON, 1.0, 0.1)
 	var c := arm + Vector2(14, 16) * u
-	Kit.glow(p, c, 30 * u, Color("#ff6a2a"), 0.5)
+	Kit.glow(p, c, 30 * u, Color("#7aa8ff"), 0.5)  # 차가운 푸른 등(전투 그림 — FL20)
 	var body := PackedVector2Array([c + Vector2(-6, -9) * u, c + Vector2(6, -9) * u, c + Vector2(7, 8) * u, c + Vector2(-7, 8) * u])
 	p.fill_poly(body, func(x: int, y: int) -> Color:
 		var d := Vector2(x - c.x, y - c.y).length() / (9.0 * u)
-		return Color("#fff0b0").lerp(Color("#e0501c"), clampf(d, 0.0, 1.0)))
+		return Color("#f0f6ff").lerp(Color("#4a78d0"), clampf(d, 0.0, 1.0)))
 	Ink.path(p, body, 1.6 * u, true, IRON, 1.0, 0.1)
 	Ink.line(p, c + Vector2(0, -9) * u, c + Vector2(0, 8) * u, 1.0 * u, IRON, 0.8, 0.1)
 	p.fill_poly(PackedVector2Array([c + Vector2(-8, -9) * u, c + Vector2(0, -15) * u, c + Vector2(8, -9) * u]), func(_x: int, _y: int) -> Color: return IRON)

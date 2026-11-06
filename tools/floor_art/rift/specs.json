@@ -447,13 +447,13 @@
     "face_tiles": 8,
     "face_depth": 3,
     "top_tiles": 8,
-    "stone": "#6e6c60",
-    "stone_dark": "#2c2c26",
-    "roof": "#5a5854",
-    "roof_dark": "#2a2926",
-    "lane": "#1a1a1c",
-    "ground": "#1e2418",
-    "fog_color": "#4a5050"
+    "stone": "#666a72",
+    "stone_dark": "#292b2e",
+    "roof": "#54575d",
+    "roof_dark": "#27282b",
+    "lane": "#191a1c",
+    "ground": "#1f2023",
+    "fog_color": "#4a4d53"
    },
    "floors": [
     {
@@ -544,9 +544,9 @@
    ],
    "cliff": {
     "kind": "rock",
-    "top": "#6e6656",
-    "mid": "#36322a",
-    "deep": "#0c0b09",
+    "top": "#61656d",
+    "mid": "#303235",
+    "deep": "#0b0b0c",
     "strata": 18
    },
    "bigs": {

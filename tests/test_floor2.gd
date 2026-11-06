@@ -126,17 +126,44 @@ func test_mud_slows_and_mounds_block_sight() -> void:
 	assert_true(JsonUtil.get_bool(JsonUtil.get_dict(db.get_entry("monsters", "ghoul"), "behavior"), "mud_walker"), "구울은 진창에서 느려지지 않는다")
 
 
+func test_grave_wakes_on_day_five_unless_broken() -> void:
+	var s := _f2_session(4, true)
+	assert_true(s.grave != null and s.grave.pos.x >= 0, "비석이 섰다")
+	var nodes: Dictionary = s.map.anchors["nodes"]
+	assert_true(Vector2(s.grave.pos - (nodes["graveyard"] as Vector2i)).length() <= 17.0, "비석 터 구간 안")
+	var n := s.monsters.groups.size()
+	s.clock.advance(3.0 * 24.0)
+	assert_false(s.grave.update(s), "4일 차엔 아직 깨어나지 않는다")
+	s.clock.advance(1.0 * 24.0)
+	assert_true(s.grave.update(s), "원정 5일 차에 깨어난다(사용자 2026-11-06)")
+	assert_eq(s.monsters.groups.size(), n + 1)
+	var dk: FieldMonsters.Group = s.monsters.groups[-1]
+	assert_true(dk.monster_ids.has("death_knight") and dk.boss == "death_knight", "데스나이트 — 보스 무리")
+	assert_true(Vector2(dk.pos - (nodes["tomb_gate"] as Vector2i)).length() <= 4.0, "묘역 문을 막고 선다")
+	var s2 := _f2_session(9, false)
+	var e: Dictionary = s2.features._by_cell[s2.grave.pos]
+	var brk: Dictionary = JsonUtil.get_array(e["def"], "actions").filter(func(a: Dictionary) -> bool: return a["id"] == "break")[0]
+	var b2 := brk.duplicate(true)
+	b2["check"] = {"stat": "str", "dc": 1}
+	var t0 := s2.clock.total_hours
+	for tries in 10:  # 성공 확률은 상한이 있다(RiftHazards.success_chance) — 난수 하나에 기대지 않는다
+		FieldFeatureAct.run(s2, e, b2)
+		if s2.grave.broken(s2):
+			break
+	assert_true(s2.clock.total_hours > t0, "부수는 데 시간이 든다")
+	assert_true(s2.grave.broken(s2), "비석을 부쉈다")
+	s2.monsters_enabled = true
+	s2.clock.advance(7.0 * 24.0)
+	assert_false(s2.grave.update(s2), "부순 비석에서는 아무것도 깨어나지 않는다")
+
+
 func test_route_guards_and_features() -> void:
 	var s := _f2_session(4, true)
 	var nodes: Dictionary = s.map.anchors["nodes"]
 	var at_bridge := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return Vector2(g.pos - (nodes["bridge"] as Vector2i)).length() <= 4.0 and g.monster_ids.has("deathfiend"))
 	assert_eq(at_bridge.size(), 1, "기사의 다리 관문 무리")
 	assert_true(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("dullahan")), "듀라한의 폐허 엘리트")
-	var dk := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("death_knight"))
-	assert_eq(dk.size(), 1, "데스나이트는 처음부터 서 있다(FL19)")
-	assert_true(Vector2((dk[0] as FieldMonsters.Group).pos - (nodes["tomb_gate"] as Vector2i)).length() <= 4.0, "묘역 문을 지킨다")
-	assert_eq((dk[0] as FieldMonsters.Group).boss, "death_knight", "보스 무리")
-	assert_false(s.features.list.any(func(e: Dictionary) -> bool: return str(e["id"]).begins_with("journal_") or e["id"] == "grave_stone"), "일지 · 새 비석 없음")
+	assert_false(s.features.list.any(func(e: Dictionary) -> bool: return str(e["id"]).begins_with("journal_")), "일지 없음(FL19)")
 	assert_true(s.features.list.any(func(e: Dictionary) -> bool: return e["id"] == "dead_campfire"), "예배당 쉼터 모닥불")
 
 

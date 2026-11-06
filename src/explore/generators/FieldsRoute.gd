@@ -11,7 +11,7 @@ extends RefCounted
 ##   "buildings" · "ruins" · "fence" · "outer_props"(석조 건물 · 숨은 방 · 무너진 벽 · 울타리 · 길 밖 풍경 — FieldsRouteBuild),
 ##   높낮이(FL12): "zone_low" {구역: 낮은 땅 타일(art.sunk 바닥)}, 구간 · 길 "level": "low", 길 "ramp": true(높낮이가 바뀌는 곳이 비탈),
 ##   구간 "terraces" [{at, r, level, ramp: [dx, dy](비탈 방향)}], "stamps"(손으로 그린 장소 조각), "levels" {scree, ramp}(절벽 밑 · 비탈 타일)}
-## 지도 표시: map.anchors["nodes"] = {id: Vector2i 가운데}, ["node_r"] = {id: 반지름} — 지키는 무리(RouteSpots)가 쓴다.
+## 지도 표시: map.anchors["nodes"] = {id: Vector2i 가운데}, ["node_r"] = {id: 반지름} — 지키는 무리(RouteGuards) · 비석(GraveWake)이 쓴다.
 ## 구역(map.zones) = 걸을 수 있는 칸은 가장 가까운 구간의 zone, 메움 칸도 같게(구역별 메움 지형).
 
 const BLOCK := 4  ## 구역 나누기를 이 칸 묶음으로(지도 전체 × 구간 수 계산을 줄인다)

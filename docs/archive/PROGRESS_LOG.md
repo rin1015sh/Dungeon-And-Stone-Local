@@ -3,6 +3,10 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-06 데스나이트 5일 차로 되돌림 · 전투 그림 색감 리텍스처(FL19 · FL20)
+- 데스나이트 "항상" → 사용자 "롤백하되 5일차": GraveWake · grave_stone · f2d_grave · 문구 · 테스트 되살림, grave_wake.day 5(테스트 4일 차 아님 · 5일 차 깨어남). 일지는 뺀 채.
+- 리텍스처: 전투 뒷그림(assets/battle/f2_land_of_dead.webp — 거의 무채 차가운 잿빛, 젖은 진흙 은빛, 푸른 등, 재 · 안개)에 맞춰 f2d 타일 색 81개 · 그림 상수 · `_wetmud` · `_sheen` · 등불 · art(post · palette · particles · abyss) · rise/cliff 색. paint_floor --only=f2d 다시. 캡처(나루터 · 묘역 · 예배당)로 확인 — 처음 _wetmud는 큰 모양이 칸마다 같아 격자로 보여 변형마다 다르게 · 잘게 고침.
+
 ### 2026-11-06 데스나이트 처음부터 · 일지 뺌(FL19) · 상호작용 지도
 - 사용자 "2층 관련 이벤트 상호작용 전부 정리 — 새 지도로" → `docs/plans/f2_interactions_map.png`(실제 세션 자리). 이어서 "데스나이트 항상 위치시키고 앞서간 일지 제거".
 - 데스나이트 = route_spots.guards tomb_gate(첫날부터, 보스 무리). GraveWake · grave_wake · grave_stone · f2d_grave · 문구 지움. journal_1~3 · f2d_corpse · 문구 지움. 테스트: 비석 테스트 → 지키는 무리 테스트에 데스나이트 자리 · 일지 없음.
