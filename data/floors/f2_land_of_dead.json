@@ -1803,7 +1803,11 @@
         7,
         9
       ],
-      "horde": true
+      "horde": true,
+      "entry_dist": [
+        45,
+        0
+      ]
     },
     {
       "id": "f2d_ruins",
@@ -1849,6 +1853,81 @@
       "groups": [
         8,
         10
+      ]
+    },
+    {
+      "id": "f2d_marsh_lone",
+      "zone": "f2d_marsh",
+      "name_ko": "검은 늪",
+      "monsters": [
+        "ghoul",
+        "skeleton"
+      ],
+      "weights": {
+        "ghoul": 3,
+        "skeleton": 2
+      },
+      "groups": [
+        4,
+        5
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "entry_dist": [
+        10,
+        60
+      ]
+    },
+    {
+      "id": "f2d_marsh_lone_far",
+      "zone": "f2d_marsh",
+      "name_ko": "검은 늪",
+      "monsters": [
+        "ghoul",
+        "skeleton"
+      ],
+      "weights": {
+        "ghoul": 3,
+        "skeleton": 2
+      },
+      "groups": [
+        4,
+        5
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "entry_dist": [
+        60,
+        0
+      ]
+    },
+    {
+      "id": "f2d_ruins_lone",
+      "zone": "f2d_ruins",
+      "name_ko": "석조 잔해",
+      "monsters": [
+        "skeleton",
+        "skeleton_archer",
+        "skeleton_warrior",
+        "ghoul"
+      ],
+      "weights": {
+        "skeleton": 4,
+        "skeleton_archer": 2,
+        "skeleton_warrior": 1,
+        "ghoul": 2
+      },
+      "groups": [
+        7,
+        9
+      ],
+      "pack": [
+        1,
+        1
       ]
     }
   ],

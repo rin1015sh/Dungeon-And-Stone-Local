@@ -138,6 +138,12 @@ static func _floors(v: ValidatorBase) -> void:
 			var groups := JsonUtil.get_array(rd, "groups")
 			if rd.has("groups") and (groups.size() != 2 or float(groups[0]) < 0.0 or float(groups[0]) > float(groups[1])):
 				v.err(w, "regions.groups는 [최소, 최대] (0 ≤ 최소 ≤ 최대)")
+			var pack := JsonUtil.get_array(rd, "pack")
+			if rd.has("pack") and (pack.size() != 2 or float(pack[0]) < 1.0 or float(pack[0]) > float(pack[1])):
+				v.err(w, "regions.pack은 [최소, 최대] (1 ≤ 최소 ≤ 최대)")
+			var band := JsonUtil.get_array(rd, "entry_dist")
+			if rd.has("entry_dist") and (band.size() != 2 or float(band[0]) < 0.0 or (float(band[1]) > 0.0 and float(band[1]) < float(band[0]))):
+				v.err(w, "regions.entry_dist는 [최소, 최대] (최대 0 = 끝없음)")
 		var lord := JsonUtil.get_dict(f, "lord")
 		if not lord.is_empty():
 			v.ref(w + ".lord", "monsters", lord.get("monster"))

@@ -6,7 +6,9 @@ extends RefCounted
 ## 화면 밖으로 놓치면 기억(마지막으로 본 칸 · 움직이던 쪽)으로 쫓다 수색 → 귀환, 동료의 외침은 조사. 쫓지 않을 때는 순찰(MonsterPatrol).
 ## 이동은 부드럽다: 칸 길찾기(거리 장·귀환·배회)로 다음 칸 중심(waypoint)을 정하고 그쪽으로 연속으로 걷는다.
 ## 플레이어가 direct_chase_tiles 안에서 보이면 곧장 플레이어 쪽으로 다가가 닿는 거리에서 멈춘다.
-## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}, "groups": [최소, 최대](선택 — 없으면 spawn.groups_per_region)}
+## 지역(regions): {"id", "zone" 또는 "dir", "monsters", "weights": {id: 가중치}, "groups": [최소, 최대](선택 — 없으면 spawn.groups_per_region),
+##   "pack": [최소, 최대](선택 — 한 무리 마릿수를 못 박는다), "entry_dist": [최소, 최대](선택 — 도착 칸에서 그 거리 안 칸에만, 최대 0 = 끝없음)}
+##   한 구역(zone)에 지역이 여럿이어도 된다(2층 늪: 큰 무리 + 초입 외톨이).
 ##   — 몬스터 표는 층 JSON에만 둔다. 시간이 지나 늘어나는 무리는 지역의 groups 평균에 비례해 나뉜다.
 ##   zone이 있고 지도에 구역 층(FloorMap.zones)이 있으면 그 구역 칸에만(1층 십자가), 없으면 중심에서 본 방향(dir) 원뿔.
 ## 변이종(명세 §6.0): 지역 variants {monsters, min_day, outer_ratio, chance} — min_day일 차부터 지역 바깥쪽
@@ -116,7 +118,7 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 			into.append(p)
 	for region in _regions():
 		var found: Array[Vector2i] = by_area[_region_area(region)]
-		var cells: Array[Vector2i] = found.duplicate()
+		var cells: Array[Vector2i] = _within_entry(found, JsonUtil.get_array(region, "entry_dist"))
 		_region_cells[JsonUtil.get_str(region, "id")] = cells
 		var far := 0.0
 		for c in cells:
@@ -148,7 +150,10 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	var g := Group.new()
 	g.id = _next_id
 	_next_id += 1
-	for i in pack_count(mid, not JsonUtil.get_str(region, "id").is_empty(), JsonUtil.get_bool(region, "horde")):
+	var own := JsonUtil.get_array(region, "pack")  # 지역이 정한 마릿수 [최소, 최대](초입 외톨이 = [1, 1]) — 날짜별 마릿수보다 먼저
+	var count := _rng.randi_range(int(own[0]), int(own[1])) if own.size() == 2 else \
+		pack_count(mid, not JsonUtil.get_str(region, "id").is_empty(), JsonUtil.get_bool(region, "horde"))
+	for i in count:
 		g.monster_ids.append(mid)
 	if monster_id.is_empty():
 		_mix_variants(g, region, cell)
@@ -158,6 +163,21 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	_steer.face_open(g)
 	groups.append(g)
 	return g
+
+
+## 지역 entry_dist [최소, 최대](도착 칸에서 곧은 거리, 칸 — 최대 0 = 끝없음)에 드는 칸만. 없으면 그대로.
+## 2층: 도착 나루터 둘레엔 큰 무리를 두지 않고(최소), 초입엔 혼자 다니는 몬스터(최대 — pack [1, 1])를 둔다(사용자 2026-11-06).
+func _within_entry(cells: Array[Vector2i], band: Array) -> Array[Vector2i]:
+	if band.size() != 2:
+		return cells.duplicate()
+	var lo := float(band[0])
+	var hi := float(band[1])
+	var out: Array[Vector2i] = []
+	for c in cells:
+		var d := Vector2(c - _map.entry).length()
+		if d >= lo and (hi <= 0.0 or d <= hi):
+			out.append(c)
+	return out
 
 
 ## 한 무리(= 한 번의 전투)에 몇 마리인가. 층 필드 무리(field)는 층 JSON spawn.pack_by_day[날짜] [최소, 최대]를 따르되

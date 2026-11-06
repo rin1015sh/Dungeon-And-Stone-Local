@@ -3,6 +3,11 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-06 망자의 땅 초입 외톨이 몬스터(FL17)
+- 사용자 "무리 말고도 초입에 1마리씩 전투할 수 있게". 전엔 나루터 11칸 옆에 구울 4~6마리 무리가 섰다.
+- 지역 키 `pack`·`entry_dist`(`FieldMonsters._within_entry`), 검증 `WorldRules`. 늪 큰 무리 45칸 밖, 늪 외톨이 10~60칸 4~5 + 60칸 밖 4~5, 석조 잔해 외톨이 7~9. 시드 3: 나루터 12~17칸에 외톨이 넷.
+- 테스트 `test_lone_monsters_near_arrival_and_no_horde_at_ferry`.
+
 ### 2026-11-05 전투: 출혈 피해가 공격 몸짓을 끊던 것
 - 사용자 "2층 전투에서 적 공격할 때 피격 애니메이션이 나온다". 화면은 1층과 같다 — 원인은 2층 스켈레톤 녹슨 베기(15%)·데스나이트 저주 베기(30%)가 거는 출혈: 행동할 때마다 생명력 1을 흘리고(`StatusSet.on_acted`) `BattleRules.report_dot`가 보통 피해 사건을 내 `CombatScreen`이 방금 시작한 공격 몸짓을 피격 몸짓으로 덮었다.
 - 고침: `report_dot` 사건에 `dot: true`, 화면은 dot 피해에 몸짓 없이 숫자만. 테스트 `test_bleed_damage_event_is_marked_dot`.

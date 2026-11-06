@@ -312,3 +312,20 @@ func test_debug_go_up_to_floor2() -> void:
 	s2.detach()
 	s2.below = null  # 위층이 아래층을 붙잡는 고리를 끊는다(테스트가 끝나면 둘 다 풀리게)
 	got.clear()
+
+
+## 초입엔 혼자 다니는 몬스터(한 마리씩 싸울 수 있게), 도착 나루터 둘레엔 큰 무리가 없다(사용자 2026-11-06).
+func test_lone_monsters_near_arrival_and_no_horde_at_ferry() -> void:
+	for seed_value in [3, 8]:
+		var s := _f2_session(seed_value, true)
+		var lone_near := 0
+		for g in s.monsters.groups:
+			var d := Vector2(g.pos - s.map.entry).length()
+			if g.region == "f2d_marsh":
+				assert_true(d >= 45.0, "큰 무리는 나루터에서 떨어져 선다: %d칸" % int(d))
+			if g.region.ends_with("_lone") or g.region.ends_with("_lone_far"):
+				assert_eq(g.monster_ids.size(), 1, "외톨이는 한 마리")
+				if d <= 60.0:
+					lone_near += 1
+		assert_true(lone_near >= 3, "초입(60칸 안)에 외톨이 셋 이상: %d" % lone_near)
+		s.detach()
