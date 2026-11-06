@@ -10,48 +10,48 @@
   "visibility_source": "placeholder",
   "ambient_light_m": 8.0,
   "ambient_source": "placeholder",
-  "ambient_color": "#c0ccd0",
+  "ambient_color": "#d0e4bc",
   "art": {
-    "_comment": "그림: 바닥 · 소품 · 큰 구조물 · 외곽(나무 벽 · 잎 지붕) = assets/floor/f2g(paint_floor.gd --only=f2g — tools/floor_art/rift/f2g.gd · f2g_big.gd), 전투 뒷그림 = tools/battle_art/SceneForest.gd. 팔레트 = 짙은 초록 + 별빛 은색(§8)을 망자의 땅처럼 채도를 눌러. [창작] 임시값",
+    "_comment": "그림: 바닥 · 소품 · 큰 구조물 · 외곽(나무 벽 · 잎 지붕) = assets/floor/f2g(paint_floor.gd --only=f2g — tools/floor_art/rift/f2g.gd · f2g_big.gd), 전투 뒷그림 = tools/battle_art/SceneForest.gd. 팔레트 = 짙은 초록 + 별빛 은색(§8)을 망자의 땅처럼 채도를 눌러. [창작] 임시값 · 2026-11-06 사용자 첨부(이끼 덮인 거목 · 덩굴 · 버섯 · 빛줄기 · 청록 안개 숲)대로 — 밝은 이끼 초록 · 햇빛 노란 초록 · 청록 안개 · 떠도는 포자(FL24)",
     "battleback": {
       "image": "res://assets/battle/f2_goblin_forest.webp",
       "half_width": 3.6
     },
     "palette": {
       "unexplored": "#000000",
-      "near_black": "#2c322c",
-      "tone": "#dce4dc",
-      "memory_tint": "#86908a",
+      "near_black": "#22301e",
+      "tone": "#eef4e0",
+      "memory_tint": "#7e9478",
       "memory_brightness": 0.5,
       "memory_desat": 0.3,
       "keep_hue": true
     },
     "post": {
-      "saturation": 0.6,
-      "vignette_strength": 0.45,
+      "saturation": 1.0,
+      "vignette_strength": 0.4,
       "vignette_radius": 0.5,
       "grain_strength": 0.05
     },
     "particles": [
       {
-        "id": "star",
-        "amount": 40,
-        "lifetime": 14.0,
-        "color": "#dce8f0",
-        "alpha": 0.25,
+        "id": "spore",
+        "amount": 60,
+        "lifetime": 10.0,
+        "color": "#e0f0a0",
+        "alpha": 0.45,
         "scale": [
           1.0,
-          2.0
+          2.2
         ],
         "velocity": [
-          0.5,
-          2.0
+          1.0,
+          3.0
         ],
         "direction": [
-          0.0,
-          1.0
+          0.2,
+          -1.0
         ],
-        "spread": 180.0,
+        "spread": 60.0,
         "gravity": [
           0.0,
           0.0
@@ -59,13 +59,13 @@
       },
       {
         "id": "mist",
-        "amount": 12,
+        "amount": 16,
         "lifetime": 18.0,
-        "color": "#b8c8c0",
-        "alpha": 0.06,
+        "color": "#8ac8b4",
+        "alpha": 0.08,
         "scale": [
           40.0,
-          90.0
+          100.0
         ],
         "velocity": [
           2.0,
@@ -135,7 +135,7 @@
         "moss",
         "mud",
         "bones",
-        "gravel"
+        "sunpatch"
       ],
       "on_tiles": [
         "f2g_floor",
@@ -318,8 +318,14 @@
           "size": 1.2
         },
         {
-          "kind": "gravel",
-          "chance": 0.06
+          "kind": "sunpatch",
+          "noise": {
+            "key": "sun",
+            "freq": 0.04,
+            "above": 0.62
+          },
+          "chance": 0.5,
+          "size": 2.2
         }
       ]
     }
@@ -618,21 +624,6 @@
     "props": [
       {
         "zone": "f2g_eaves",
-        "tile": "f2g_oak_f",
-        "count": 5
-      },
-      {
-        "zone": "f2g_eaves",
-        "tile": "f2g_pine_f",
-        "count": 4
-      },
-      {
-        "zone": "f2g_eaves",
-        "tile": "f2g_birch_f",
-        "count": 3
-      },
-      {
-        "zone": "f2g_eaves",
         "tile": "f2g_bush",
         "count": 10
       },
@@ -644,21 +635,6 @@
       {
         "zone": "f2g_eaves",
         "tile": "f2g_log",
-        "count": 3
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_oak_f",
-        "count": 5
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_pine_f",
-        "count": 4
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_birch_f",
         "count": 3
       },
       {
@@ -678,21 +654,6 @@
       },
       {
         "zone": "f2g_grove",
-        "tile": "f2g_oak_f",
-        "count": 5
-      },
-      {
-        "zone": "f2g_grove",
-        "tile": "f2g_pine_f",
-        "count": 4
-      },
-      {
-        "zone": "f2g_grove",
-        "tile": "f2g_birch_f",
-        "count": 3
-      },
-      {
-        "zone": "f2g_grove",
         "tile": "f2g_bush",
         "count": 10
       },
@@ -704,21 +665,6 @@
       {
         "zone": "f2g_grove",
         "tile": "f2g_log",
-        "count": 3
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_oak_f",
-        "count": 5
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_pine_f",
-        "count": 4
-      },
-      {
-        "zone": "f2g_brook",
-        "tile": "f2g_birch_f",
         "count": 3
       },
       {
@@ -745,11 +691,6 @@
         "zone": "f2g_grove",
         "tile": "f2g_mush",
         "count": 6
-      },
-      {
-        "zone": "f2g_gully",
-        "tile": "f2g_dead_f",
-        "count": 4
       },
       {
         "zone": "f2g_village",
@@ -906,8 +847,8 @@
         "count": 66,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -916,8 +857,8 @@
         "count": 48,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -926,8 +867,8 @@
         "count": 24,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -937,7 +878,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -947,7 +888,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -957,7 +898,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -967,7 +908,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -976,8 +917,8 @@
         "count": 66,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -986,8 +927,8 @@
         "count": 48,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -996,8 +937,8 @@
         "count": 24,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1007,7 +948,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1017,7 +958,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1027,7 +968,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1037,7 +978,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1046,8 +987,8 @@
         "count": 66,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1056,8 +997,8 @@
         "count": 48,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1066,8 +1007,8 @@
         "count": 24,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1077,7 +1018,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1087,7 +1028,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1097,7 +1038,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1107,7 +1048,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1116,8 +1057,8 @@
         "count": 66,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1126,8 +1067,8 @@
         "count": 48,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1136,8 +1077,8 @@
         "count": 24,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1147,7 +1088,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1157,7 +1098,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1167,7 +1108,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1177,7 +1118,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1186,8 +1127,8 @@
         "count": 30,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1197,7 +1138,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1207,7 +1148,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1216,8 +1157,8 @@
         "count": 30,
         "near": 9,
         "clear": [
-          1,
-          15
+          3,
+          19
         ]
       },
       {
@@ -1227,7 +1168,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       },
       {
@@ -1237,7 +1178,7 @@
         "near": 6,
         "clear": [
           3,
-          9
+          11
         ]
       }
     ]

@@ -66,6 +66,10 @@ static func paint(kind: String, v: int, w: int, seed_value: int) -> Paint:
 			_weeds(p, c, s, p.rng.randi_range(3, 6))
 		"fern":
 			_fern(p, c, s)
+		"sunpatch":  # 잎 사이로 떨어진 햇빛 얼룩(밝은 노란 초록 — 숲, FL24)
+			for k in p.rng.randi_range(5, 9):
+				var q := c + Vector2(p.rng.randf_range(-14, 14), p.rng.randf_range(-11, 11)) * s
+				_blob(p, q, p.rng.randf_range(3.0, 7.0) * s, Color("#e8f4a0"), 0.28, 0.4)
 		"stones":
 			_stones(p, c, s)
 		"roots":
@@ -92,7 +96,7 @@ static func _weeds(p: Paint, c: Vector2, s: float, n: int) -> void:
 			var a := -PI * 0.5 + p.rng.randf_range(-1.1, 1.1)
 			var ln := p.rng.randf_range(5.0, 11.0) * s
 			var tip := root + Vector2.from_angle(a) * ln + Vector2(p.rng.randf_range(-1.5, 1.5), 0) * s
-			var col := Color("#2a3424").lerp(Color("#6a7a50"), p.rng.randf())
+			var col := Color("#2a4a1c").lerp(Color("#8ab43a"), p.rng.randf())
 			Ink.line(p, root, root.lerp(tip, 0.55), 1.3 * s, col.darkened(0.3), 0.95, 0.3)
 			Ink.line(p, root.lerp(tip, 0.5), tip, 0.9 * s, col, 0.95, 0.3)
 
@@ -108,9 +112,9 @@ static func _fern(p: Paint, c: Vector2, s: float) -> void:
 		for j in 8:
 			var t := float(j + 1) / 8.0
 			var q := c + Vector2.from_angle(a + bend * t) * ln * t + Vector2(0, t * t * 6.0) * s  # 끝이 처진다
-			Ink.line(p, prev, q, 1.0 * s, Color("#2e3a26"), 0.95, 0.2)
+			Ink.line(p, prev, q, 1.0 * s, Color("#2a4a1e"), 0.95, 0.2)
 			var side := Vector2.from_angle(a + bend * t + PI * 0.5) * (1.0 - t * 0.7) * 3.5 * s
-			var leaf := Color("#3e4c32").lerp(Color("#6a7a52"), t)
+			var leaf := Color("#3e6a2a").lerp(Color("#8ab43a"), t)
 			Ink.line(p, q, q + side, 1.2 * s, leaf, 0.9, 0.2)
 			Ink.line(p, q, q - side, 1.2 * s, leaf.darkened(0.2), 0.9, 0.2)
 			prev = q

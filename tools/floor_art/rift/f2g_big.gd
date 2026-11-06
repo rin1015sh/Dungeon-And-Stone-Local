@@ -8,15 +8,15 @@ const Cave := preload("res://tools/floor_art/Cave.gd")
 const Decals := preload("res://tools/floor_art/Decals.gd")
 const Big := preload("res://tools/floor_art/rift/f2d_big.gd")
 
-const BARK := Color("#352d26")
+const BARK := Color("#3a3028")
 const BARK_L := Color("#5c5044")
-const LEAF_D := Color("#1e281e")
-const LEAF := Color("#34422e")
-const LEAF_L := Color("#56664a")
+const LEAF_D := Color("#1a3418")
+const LEAF := Color("#3a6428")
+const LEAF_L := Color("#9ac040")
 const MUD := Color("#5a4e3e")
 const THATCH := Color("#7a6a46")
 const HIDE := Color("#6e5a44")
-const SILVER := Color("#c4d0d8")
+const SILVER := Color("#eef6a8")
 const INK := Color("#100c0a")
 const LW := 1.4
 
@@ -141,7 +141,7 @@ static func _watch(p: Paint, f: Vector2, T: float) -> void:
 ## 잎은 맨 위에만 조금). 발 = 아래 가운데, 밑동은 뿌리로 벌어진다. 빛은 왼쪽 위, 줄기 결 · 이끼 · 옹이.
 
 const PALE := Color("#9a9a90")
-const NEEDLE := Color("#26322a")
+const NEEDLE := Color("#1e3a26")
 
 
 static func _tree(p: Paint, f: Vector2, T: float, kind: String, s: int) -> void:
@@ -184,9 +184,22 @@ static func _tree(p: Paint, f: Vector2, T: float, kind: String, s: int) -> void:
 			Ink.line(p, Vector2(x - half * 0.3, y), Vector2(x + half * 0.25, y + T * 0.05), LW * 1.6, Color("#2a2a26"), 0.8, 0.4)
 		else:
 			Ink.line(p, Vector2(x, y), Vector2(x + rng.randf_range(-0.1, 0.1) * T, y - T * rng.randf_range(0.6, 1.6)), LW, bark.darkened(0.45), 0.6, 0.7)
-	for k in (4 if giant else 2):
-		var t := rng.randf_range(0.0, 0.35)
-		Decals._blob(p, Vector2(f.x + lean * t - half * 0.4, lerpf(f.y, top_y, t)), half * 0.6, Color("#3e4c38"), 0.7, 0.4)
+	for k in (16 if giant else 6):  # 두꺼운 이끼(빛 받는 왼쪽 · 아래쪽에 많이 — 첨부 그림처럼 줄기를 덮는다, FL24)
+		var t := pow(rng.randf(), 1.6) * 0.9
+		var cx := f.x + lean * t + rng.randf_range(-0.8, 0.2) * half
+		var cy := lerpf(f.y, top_y, t)
+		var rr := half * rng.randf_range(0.35, 0.8)
+		Decals._blob(p, Vector2(cx, cy), rr, Color("#3a6424"), 0.9, 0.45)
+		Decals._blob(p, Vector2(cx - rr * 0.2, cy - rr * 0.25), rr * 0.6, LEAF_L, 0.75, 0.5)
+	if kind != "dead":
+		_vines(p, f, top_y, lean, half, T, giant, rng)
+	for k in rng.randi_range(2, 5):  # 밑동 버섯
+		var q := f + Vector2(rng.randf_range(-1.6, 1.6) * half, rng.randf_range(-0.3, 0.1) * T)
+		var hh := T * rng.randf_range(0.15, 0.4)
+		Ink.line(p, q, q + Vector2(0, -hh), LW * 2.2, Color("#d8ccb0"), 1.0, 0.2)
+		var cap := Cave._ellipse(q + Vector2(0, -hh), T * rng.randf_range(0.14, 0.26), T * 0.09, 14)
+		p.fill_poly(cap, func(_x: int, _y: int) -> Color: return Color("#c88a48").lerp(Color("#e0b070"), rng.randf()))
+		Ink.path(p, cap, LW * 0.6, true, INK, 0.5, 0.3)
 	match kind:
 		"oak":
 			_leaves(p, Vector2(f.x + lean, top_y + T * 1.0), T * rng.randf_range(2.7, 3.1), T * 2.5, 52, s)
@@ -244,3 +257,19 @@ static func _needles(p: Paint, tri: PackedVector2Array, cx: float, hw: float, T:
 		var a := tri[1].lerp(tri[0].lerp(tri[2], Paint.hash01(k, 1, s)), Paint.hash01(k, 2, s) * 0.8 + 0.2)
 		Ink.line(p, a, a + Vector2((a.x - cx) * 0.15, T * 0.4), LW * 0.8, NEEDLE.darkened(0.35), 0.5, 0.4)
 	Ink.path(p, jag, LW * 0.7, true, INK, 0.45, 0.4)
+
+
+## 늘어진 덩굴: 잎 지붕 아래 · 줄기 위쪽에서 내려오는 가는 덩굴(끝이 살짝 말리고, 잎 점이 붙는다).
+static func _vines(p: Paint, f: Vector2, top_y: float, lean: float, half: float, T: float, giant: bool, rng: RandomNumberGenerator) -> void:
+	for k in (10 if giant else 5):
+		var t := rng.randf_range(0.55, 1.0) if not giant else rng.randf_range(0.35, 0.95)
+		var a := Vector2(f.x + lean * t + rng.randf_range(-3.0, 3.0) * T * (0.4 if giant else 0.7), lerpf(f.y, top_y, t) + rng.randf_range(0.0, 1.0) * T)
+		var ln := T * rng.randf_range(1.5, 5.0)
+		var prev := a
+		for j in 10:
+			var u := float(j + 1) / 10.0
+			var q := a + Vector2(sin(u * 3.0 + k) * T * 0.2, ln * u)
+			Ink.line(p, prev, q, LW * 1.3, Color("#2a4a1e"), 0.95, 0.3)
+			if j % 2 == 0:
+				Cave._dot(p, q + Vector2(LW * 2.0, 0), LW * 1.6, LEAF_L.darkened(0.2), 0.9)
+			prev = q

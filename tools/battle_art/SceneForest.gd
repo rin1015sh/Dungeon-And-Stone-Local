@@ -10,14 +10,14 @@ const Mats := preload("res://tools/battle_art/Mats.gd")
 const Kit := preload("res://tools/battle_art/Kit.gd")
 const Kit2 := preload("res://tools/battle_art/Kit2.gd")
 
-const SOIL := Color("#3e4034")
-const PATH := Color("#5a5444")
-const LITTER := Color("#5a4c36")
+const SOIL := Color("#2a4420")
+const PATH := Color("#54482e")
+const LITTER := Color("#6a5432")
 const BARK := Color("#3a332c")
-const LEAF := Color("#26302a")
-const SKY_TOP := Color("#0e1214")
-const SKY_LOW := Color("#2e3a3a")
-const CLOUD := Color("#1e2626")
+const LEAF := Color("#3a6a26")
+const SKY_TOP := Color("#3a6a50")
+const SKY_LOW := Color("#8ac0a0")
+const CLOUD := Color("#6aa080")
 
 
 static func paint(w: int, h: int, seed_value: int) -> Paint:
@@ -27,22 +27,23 @@ static func paint(w: int, h: int, seed_value: int) -> Paint:
 	room.f = 900.0
 	room.hy = 270.0
 	room.z_end = 40.0
-	room.fog_k = 0.08
-	room.fog_c = Color("#2e3a36")
-	room.ambient = Color(0.28, 0.31, 0.3)
+	room.fog_k = 0.07
+	room.fog_c = Color("#6aa890")  # 청록 안개(첨부 그림)
+	room.ambient = Color(0.36, 0.44, 0.36)
 	room.shape(func(_z: float) -> float: return 30.0, func(_z: float) -> float: return 30.0, func(_z: float) -> float: return 80.0)
 	room.lights = [
-		{"p": Vector3(0.0, 25.0, 18.0), "c": Color("#a8b8c0"), "s": 1.8, "r": 40.0},
+		{"p": Vector3(-6.0, 30.0, 16.0), "c": Color("#f0f0b0"), "s": 2.4, "r": 45.0},  # 잎 사이 햇빛
 		{"p": Vector3(-6.0, 1.0, 26.0), "c": Color("#ff8a4a"), "s": 0.9, "r": 5.0},
 		{"p": Vector3(7.0, 1.0, 30.0), "c": Color("#ff8a4a"), "s": 0.8, "r": 5.0},
-		{"p": Vector3(-1.0, 5.0, 1.0), "c": Color("#9aaab4"), "s": 1.1, "r": 9.0},  # 앞 줄기를 비추는 차가운 빛(별빛)
+		{"p": Vector3(-1.0, 5.0, 1.0), "c": Color("#b0d0a0"), "s": 1.2, "r": 9.0},  # 앞 줄기를 비추는 빛
 	]
 	room.material = func(kind: int, P: Vector3, _N: Vector3) -> Dictionary:
 		if kind == Room.FLOOR:
 			var d := m.rock(P.x * 1.6, P.z * 1.6, SOIL, 0.12)
 			var lane := 1.0 - smoothstep(1.2, 2.4, absf(P.x + sin(P.z * 0.25) * 0.8))  # 가운데 다져진 길
 			var leaf := smoothstep(0.55, 0.75, m.nz("hi", P.x * 3.0, P.z * 3.0)) * (1.0 - lane)
-			var c := (d["c"] as Color).lerp(PATH, lane * 0.8).lerp(LITTER, leaf * 0.6)
+			var mossf := smoothstep(0.4, 0.7, m.nz("lo", P.x * 0.8, P.z * 0.8)) * (1.0 - lane * 0.7)  # 이끼 융단
+			var c := (d["c"] as Color).lerp(PATH, lane * 0.8).lerp(LITTER, leaf * 0.5).lerp(Color("#4a7a26"), mossf * 0.6)
 			d["c"] = c
 			d["h"] = float(d["h"]) * 0.5
 			return d
@@ -52,32 +53,33 @@ static func paint(w: int, h: int, seed_value: int) -> Paint:
 	_trees(p, room, m)
 	_canopy(p, w, room)
 	_ground(p, room)
+	_bridge(p, room)
+	_vines(p, w, room)
 	_props(p, room)
-	Kit.grime(p, 0.16, Color("#141814"))
+	Kit.grime(p, 0.1, Color("#0e1a10"))
 	Kit.hatch_dark(p, 8000, 60.0, 0.03, 0.14, 0.35)
 	Kit.brush(p, 1.0)
-	Kit.finish(p, Color("#141814"), Color("#dce4dc"), 0.5, 0.5)
-	Kit2.sparkle(p, Rect2(0, 0, w, room.hy), 90, Color("#d0dcff"), 1.2)  # 잎 틈의 별빛
+	Kit.finish(p, Color("#0e1a10"), Color("#f0f6d8"), 0.12, 0.45)
+	_shafts(p, w, h)
+	Kit2.sparkle(p, Rect2(0, 0, w, h * 0.7), 160, Color("#e8f4a0"), 1.4)  # 떠도는 포자 · 햇빛 반짝임
 	Kit.glow(p, room, Vector3(-6.0, 0.6, 26.0), 2.5, Color("#ff7a3a"), 0.5)
 	Kit.glow(p, room, Vector3(7.0, 0.6, 30.0), 2.2, Color("#ff7a3a"), 0.45)
 	return p
 
 
-## 지평선 숲(먼 줄기 · 잎 덩어리) — 안개 낀 검은 실루엣.
+## 지평선 숲: 안개 속에 겹겹이 선 먼 줄기들(멀수록 안개색) — 위는 잎 지붕에 묻힌다.
 static func _far_trees(p: Paint, room: Room) -> void:
-	var z := 55.0
-	var pts: Array = [Vector3(-45.0, 0.0, z)]
-	var x := -45.0
-	var i := 0
-	while x < 45.0:
-		var top := 7.0 + float((i * 7) % 5) * 1.4
-		pts.append(Vector3(x, top - 2.0, z))
-		pts.append(Vector3(x + 1.2, top, z))
-		pts.append(Vector3(x + 2.6, top - 1.2, z))
-		x += 3.0 + float(i % 3)
-		i += 1
-	pts.append(Vector3(45.0, 0.0, z))
-	Kit2.silhouette(p, Kit.proj(room, pts), Color("#141a18"), Color("#2e3a36"))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = p.rng.seed + 13
+	for layer in 3:
+		var z := 50.0 - layer * 8.0
+		var tone := Color("#6a9a84").lerp(Color("#2e4a34"), layer / 2.0)
+		var x := -40.0
+		while x < 40.0:
+			var r := rng.randf_range(0.4, 1.0) * (1.0 + layer * 0.3)
+			var q := Kit.proj(room, [Vector3(x - r, 30.0, z), Vector3(x + r, 0.0, z)])
+			p.fill_rect(q[0].x, q[0].y, q[1].x - q[0].x, q[1].y - q[0].y, func(_x: int, _y: int) -> Color: return tone, 0.9)
+			x += rng.randf_range(3.0, 7.0)
 
 
 ## 길 양옆 줄기(멀리서 가까이로 — 가까운 줄기가 위에): 어두운 참나무 · 흰 줄기(검은 띠) · 이끼 낀 줄기, 가까운 거목은 화면 위로 뚫고 나간다(사용자 2026-11-06, FL23).
@@ -99,12 +101,14 @@ static func _trees(p: Paint, room: Room, m: Mats) -> void:
 		var r := float(it["r"])
 		var kind := int(it["kind"])
 		var base_c: Color = [BARK, Color("#8a8a80"), Color("#3a3a2c")][kind]
+		var mossy := 0.5 if kind != 1 else 0.25
 		var bark := func(P: Vector3) -> Color:
 			var c := m.vary(base_c, P.y * 2.0, P.x * 5.0 + P.z * 3.0, 0.3)
 			if kind == 1 and m.nz("hi", P.x * 6.0 + P.z, P.y * 9.0) > 0.72:
 				c = c.darkened(0.65)  # 흰 줄기의 검은 껍질 조각
-			if kind == 2:
-				c = c.lerp(Color("#3e4c34"), clampf(0.6 - P.y * 0.12, 0.0, 0.6) * m.nz("lo", P.x * 3.0, P.y * 2.0))  # 이끼(아래쪽)
+			var mz := m.nz("lo", P.x * 3.0 + P.z, P.y * 1.5)  # 두꺼운 이끼(첨부 그림 — 줄기를 덮는다)
+			if mz > 0.45:
+				c = c.lerp(Color("#5a8a2a").lerp(Color("#9ac040"), m.nz("hi", P.x * 9.0, P.y * 9.0)), clampf((mz - 0.45) * 3.0, 0.0, 1.0) * (mossy + (0.3 if kind == 2 else 0.0)))
 			return c
 		Kit.floor_shadow(p, room, x, z, r * 2.4, 0.45)
 		Kit.pillar(p, room, x, z, r, 0.0, 40.0, bark)
@@ -153,7 +157,7 @@ static func _ground(p: Paint, room: Room) -> void:
 				pts.append(base + Vector2(cos(a) * rr * (1.0 + 0.15 * sin(a * 3.0 + k)), sin(a) * rr * 0.55 - rr * 0.3))
 			p.fill_poly(pts, func(_x: int, py: int) -> Color: return Color("#5c5e58").darkened(clampf((py - base.y + rr) / (rr * 1.2), 0.0, 0.5)))
 			Ink.path(p, pts, 1.0, true, Ink.INK, 0.6, 0.3)
-		elif z > 9.0:  # 쓰러진 통나무(멀리만 — 가까우면 화면을 가로지른다)
+		elif false:  # 쓰러진 통나무(멀리서 공중에 뜬 것처럼 보여 뺐다)
 			var q := Kit.proj(room, [Vector3(x - 1.0, 0.25, z), Vector3(x + 1.0, 0.25, z + 0.3)])
 			Ink.line(p, q[0], q[1], clampf(room.px(0.45, z), 2.0, 30.0), BARK.darkened(0.1), 1.0, 0.3)
 			Ink.line(p, q[0] + Vector2(0, -room.px(0.12, z)), q[1] + Vector2(0, -room.px(0.12, z)), clampf(room.px(0.1, z), 1.0, 8.0), Color("#3e4c34"), 0.7, 0.4)
@@ -208,3 +212,55 @@ static func _props(p: Paint, room: Room) -> void:
 		var a := TAU * k / 12.0
 		ring.append(loop + Vector2(cos(a) * room.px(0.22, 9.0), sin(a) * room.px(0.16, 9.0) + room.px(0.2, 9.0)))
 	Ink.path(p, ring, 1.6, true, Color("#8a7a58"), 0.9, 0.3)
+
+
+
+## 잎 틈으로 비스듬히 떨어지는 햇빛 기둥(옅은 노란 초록 — 위가 진하고 아래로 흐려진다).
+static func _shafts(p: Paint, w: int, h: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = p.rng.seed + 77
+	for k in 7:
+		var x0 := rng.randf_range(-0.1, 0.9) * w
+		var wd := rng.randf_range(30.0, 90.0)
+		var slope := 0.35
+		var poly := PackedVector2Array([Vector2(x0, 0), Vector2(x0 + wd, 0), Vector2(x0 + wd + h * slope * 1.4, h), Vector2(x0 + h * slope, h)])
+		var a := rng.randf_range(0.06, 0.13)
+		p.fill_poly(poly, func(_x: int, y: int) -> Color:
+			return Color(0.92, 0.96, 0.66, a * (1.0 - float(y) / h * 0.85)), 1.0, true)
+
+
+## 늘어진 덩굴(잎 지붕에서 화면 위쪽 절반으로) — 앞쪽은 굵고 진하게.
+static func _vines(p: Paint, w: int, room: Room) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = p.rng.seed + 91
+	for k in 26:
+		var x := rng.randf() * w
+		var top := rng.randf_range(-10.0, room.hy * 0.25)
+		var ln := rng.randf_range(80.0, 300.0)
+		var near := rng.randf()
+		var wd := 1.2 + near * 3.0
+		var col := Color("#1e3418").lerp(Color("#3e6a24"), rng.randf() * 0.6)
+		var prev := Vector2(x, top)
+		for j in 14:
+			var u := float(j + 1) / 14.0
+			var q := Vector2(x + sin(u * 3.0 + k) * 10.0, top + ln * u)
+			Ink.line(p, prev, q, wd, col, 0.95, 0.3)
+			if j % 2 == 0:
+				Ink.line(p, q, q + Vector2(4.0 + near * 5.0, 3.0), wd * 1.2, Color("#5a8a2a"), 0.9, 0.2)
+			prev = q
+
+
+## 먼 두 줄기 사이 고블린 밧줄 다리(널빤지 · 난간 줄) — 숲 위 길(첨부 그림의 나무 위 다리).
+static func _bridge(p: Paint, room: Room) -> void:
+	var a := room.pt(-9.0, 7.5, 24.0)
+	var b := room.pt(5.0, 8.2, 28.0)
+	var n := 18
+	var prev := a
+	for j in n + 1:
+		var u := float(j) / n
+		var q := a.lerp(b, u) + Vector2(0, sin(u * PI) * 26.0)  # 처진 다리
+		if j > 0:
+			Ink.line(p, prev, q, 5.0, Color("#4a3a26"), 1.0, 0.2)
+			Ink.line(p, prev + Vector2(0, -22), q + Vector2(0, -22 + sin(u * PI) * 4.0), 1.4, Color("#8a7a58"), 0.8, 0.3)
+		Ink.line(p, q, q + Vector2(0, -22), 1.2, Color("#5a4a34"), 0.8, 0.2)
+		prev = q

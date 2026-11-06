@@ -14,15 +14,15 @@ const BF := preload("res://tools/floor_art/rift/bf.gd")
 const F2D := preload("res://tools/floor_art/rift/f2d.gd")
 
 const LOAM := Color("#24261f")
-const LEAF_D := Color("#232c22")
-const LEAF := Color("#36442f")
-const LEAF_L := Color("#56664a")
-const MOSS := Color("#3e4c38")
+const LEAF_D := Color("#1e3a1c")
+const LEAF := Color("#3e6a2a")
+const LEAF_L := Color("#8ab43a")
+const MOSS := Color("#4a7a2a")
 const LITTER := Color("#5a4c36")
 const BARK := Color("#352d26")
 const BARK_L := Color("#5c5044")
 const ROOT := Color("#2a2219")
-const SILVER := Color("#c4d0d8")
+const SILVER := Color("#e0eca0")  # 햇빛 반짝임(FL24)
 const STRAW := Color("#7e7250")
 const IRON := Color("#1e2022")
 const ROPE := Color("#8a7a58")
@@ -122,8 +122,8 @@ static func _floor(p: Paint, col: Color, s: int, litter: float, wet: float) -> v
 			var lk := smoothstep(0.45, 0.8, lm[i]) * litter * 0.5
 			if lk > 0.0:
 				c = c.lerp(LITTER.lerp(Color("#7a5a3a"), leaf[(i * 7) % (w * h)]), lk)
-			if moss[i] > 0.62:
-				c = c.lerp(MOSS, (moss[i] - 0.62) * 1.6)
+			if moss[i] > 0.5:  # 이끼 융단(FL24 — 숲 바닥 곳곳을 덮는다)
+				c = c.lerp(MOSS.lerp(LEAF_L, fine_at(leaf, i)), clampf((moss[i] - 0.5) * 2.2, 0.0, 0.85))
 			if wet > 0.0:
 				c = c.lerp(SILVER, pow(clampf(r * 1.8, 0.0, 1.0), 2.5) * wet * 0.45)
 			p.blend(x, y, c, 1.0)
@@ -242,6 +242,10 @@ static func _blades(p: Paint, v: int) -> void:
 		var b := Vector2(Paint.hash01(k, 41, v) * p.w, Paint.hash01(k, 42, v) * p.h)
 		var t := b + Vector2((Paint.hash01(k, 43, v) - 0.5) * 4, -(3 + Paint.hash01(k, 44, v) * 4)) * u
 		Ink.line(p, b, t, 0.8 * u, LEAF.lerp(LEAF_L, Paint.hash01(k, 45, v)), 0.8, 0.3)
+
+
+static func fine_at(f: PackedFloat32Array, i: int) -> float:
+	return f[i] * 0.4
 
 
 static func _dots(p: Paint, c: Vector2, v: int, n: int, col: Color, size: float) -> void:

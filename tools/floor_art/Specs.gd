@@ -24,7 +24,7 @@ const DECALS := [
 	{"place": "f1", "path": "res://assets/floor/f1/decals.webp", "style": "decals", "variants": 4, "seed": 701,
 		"kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"]},
 	{"place": "f2g", "path": "res://assets/floor/f2g/decals.webp", "style": "decals_f2g", "variants": 4, "seed": 731,  # 고블린 숲 바닥(FL23)
-		"kinds": ["weeds", "fern", "stones", "roots", "litter", "flowers", "moss", "mud", "bones", "gravel"]},
+		"kinds": ["weeds", "fern", "stones", "roots", "litter", "flowers", "moss", "mud", "bones", "sunpatch"]},
 ]
 
 
