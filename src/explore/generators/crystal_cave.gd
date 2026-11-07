@@ -6,6 +6,8 @@ extends FloorGenerator
 ## 절차(시드): 동굴 지형(CrossTerrain) → 타일·구역·암흑지대 → 공동 꾸밈(수정·호수·바위) → 기념비 → 포탈 → 무작위 랜드마크
 ##       → 통로 폭 다시 맞추기 → 막다른 곳 메우기 → 수정벽(암흑지대 제외) → 동굴 요소(FieldFeaturePlacer)
 ##       → 암흑지대 벽 걷기(DarkClearing — 트인 굴) → 시작 위치.
+## gen.terrain_dark_depth가 있으면 그 앞 단계는 그 깊이(옛 암흑지대)로 만들고, 걷기 · 시야는 dark_depth로(CR27 — 암흑지대를 줄여도
+## 나머지 지도는 한 칸도 바뀌지 않고, 밝아진 띠에는 옛 미로가 그대로 남는다. 경계 요소 dark_edge는 새 경계로 옮긴다).
 ## 불변식(테스트가 확인): 걷는 칸은 모두 이어져 있고, 기념비 옆에서 네 포탈 모두 그 팔 방향으로만(뒤로 가지 않고) 걸어 닿는다.
 
 const STAMP_TRIES := 60
@@ -47,7 +49,8 @@ static func procedural(floor_def: Dictionary) -> Dictionary:
 ## 절차 생성(시드). 같은 시드면 같은 지도.
 func build(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	var g := JsonUtil.get_dict(floor_def, "gen")
-	var lay := CrossLayout.new(g)
+	var real := CrossLayout.new(g)
+	var lay := CrossLayout.new(DarkClearing.terrain_gen(g))  # 지형 · 수정 · 요소는 옛 암흑지대 깊이로(옛 지도 유지 — CR27)
 	var terrain := CrossTerrain.build(lay, g, rng)
 	var tiles := JsonUtil.get_dict(g, "tiles")
 	var map := _to_map(db, floor_def, lay, terrain["cells"], tiles, rng)
@@ -60,7 +63,13 @@ func build(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 	_place_crystals(map, lay, g, tiles, rng)
 	FieldFeaturePlacer.place(db, map, lay, floor_def, g, rng)
 	FieldFeaturePlacer.apply_tiles(db, map)
-	if DarkClearing.apply(map, lay, g, tiles):
+	var old_lay := lay
+	lay = real
+	lay.mark_dark(map)
+	var cleared := DarkClearing.apply(map, lay, g, tiles)
+	if old_lay.dark_depth != lay.dark_depth:
+		DarkClearing.shift_edge_features(db, map, old_lay, lay, floor_def, tiles)
+	if cleared:
 		_widen_map(map, g, tiles)  # 걷어낸 가장자리 물결에 생긴 한 칸 폭 목·작은 홈
 		_trim_dead_ends(map, g, tiles)
 	lay.mark_mixed_center(map)

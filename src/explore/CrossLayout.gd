@@ -152,6 +152,13 @@ func mark_zones(map: FloorMap) -> void:
 		_fill(map.dark, map.width, dark_rect(dir), 1)
 
 
+## 암흑지대만 다시 적는다(지형을 옛 깊이로 만든 뒤 지금 깊이로 — DarkClearing.terrain_gen).
+func mark_dark(map: FloorMap) -> void:
+	map.dark.fill(0)
+	for dir in ARMS:
+		_fill(map.dark, map.width, dark_rect(dir), 1)
+
+
 ## 몬스터 지역용: 구역 층의 정사각형 중심부 중 mixed_radius 원 밖을 가까운 팔로 바꾼다(region_of).
 ## 생성이 끝난 뒤에 부른다 — 생성(동굴 요소 자리 등)은 정사각형 구역을 써서 고정 지도가 시드 결과와 같게 남는다.
 func mark_mixed_center(map: FloorMap) -> void:

@@ -43,3 +43,55 @@ static func apply(map: FloorMap, lay: CrossLayout, g: Dictionary, tiles: Diction
 static func _wave(t: int, phase: float, amp: float) -> int:
 	var s := 0.5 + 0.3 * sin(t * 0.19 + phase) + 0.2 * sin(t * 0.47 + phase * 2.3)
 	return int(round(clampf(s, 0.0, 1.0) * amp))
+
+
+## 지형을 만들 때 쓰는 gen(CR27 — 사용자 2026-11-07 "암흑지대 2/3, 옛 지도를 잘라 붙여"): terrain_dark_depth가 있으면
+## 그 깊이로 굴 · 수정 · 요소를 만들어(옛 지도와 같은 무작위 흐름) 지금 dark_depth보다 바깥 띠는 걷어내지 않은 옛 미로로 남는다.
+static func terrain_gen(g: Dictionary) -> Dictionary:
+	if not g.has("terrain_dark_depth"):
+		return g
+	var d := g.duplicate()
+	d["dark_depth"] = JsonUtil.get_int(g, "terrain_dark_depth")
+	return d
+
+
+## 옛 경계에 놓인 경계 요소(층 JSON features spot "dark_edge" — 타다 남은 횃불 · 썩은 고기 무더기)를 팔 바깥쪽으로 경계가 옮겨 간 만큼 밀어
+## 새 경계 안쪽 5칸의 가장 가까운 빈 바닥에 둔다(무작위 없음). 자리가 없으면 그대로.
+static func shift_edge_features(db: GameDatabase, map: FloorMap, old_lay: CrossLayout, lay: CrossLayout, floor_def: Dictionary, tiles: Dictionary) -> void:
+	var ids := {}
+	for s: Variant in JsonUtil.get_array(floor_def, "features"):
+		if s is Dictionary and JsonUtil.get_str(s, "spot") == "dark_edge":
+			ids[JsonUtil.get_str(s, "event")] = true
+	var floor_index := map.index_of(JsonUtil.get_str(tiles, "floor"))
+	var taken := {}
+	for f: Dictionary in map.features:
+		taken[f["pos"]] = true
+	var shift := lay.dark_start() - old_lay.dark_start()
+	for f: Dictionary in map.features:
+		var p: Vector2i = f["pos"]
+		var dir := lay.zone_of(p)
+		if not ids.has(str(f["id"])) or not CrossLayout.ARMS.has(dir):
+			continue
+		var want := p + CrossLayout.axis(dir) * shift
+		var best := Vector2i(-1, -1)
+		var best_d := INF
+		for dy in range(-8, 9):
+			for dx in range(-8, 9):
+				var q := want + Vector2i(dx, dy)
+				if not map.in_bounds(q) or map.tiles[map.idx(q)] != floor_index or taken.has(q) or not map.portal_at(q).is_empty():
+					continue
+				var depth := lay.arm_depth(q) - lay.dark_start()
+				if depth < 1 or depth > 5 or FieldFeaturePlacer.hidden_by_wall(map, q):
+					continue
+				var d := float((q - want).length_squared())
+				if d < best_d:
+					best = q
+					best_d = d
+		if best.x < 0:
+			continue
+		var tile := map.tiles[map.idx(p)]
+		map.tiles[map.idx(p)] = floor_index
+		map.tiles[map.idx(best)] = tile
+		taken.erase(p)
+		taken[best] = true
+		f["pos"] = best

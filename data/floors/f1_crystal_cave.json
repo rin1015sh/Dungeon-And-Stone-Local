@@ -111,7 +111,9 @@
       ]
     },
     "roughen_chance": 0.08,
-    "dark_depth": 54,
+    "dark_depth": 36,
+    "terrain_dark_depth": 54,
+    "_terrain_dark_depth": "지형 · 수정 · 요소를 만들 때 쓰는 옛 암흑지대 깊이(CR27 — 사용자 2026-11-07 암흑지대 2/3: 밝아진 띠에 옛 미로가 남고 나머지 지도는 그대로). 지우면 지도 전체가 새로 바뀐다",
     "dark_open": {"_comment": "암흑지대 벽 걷기(DarkClearing, 사용자 결정 2026-11-01 CR26 — 미로 없이 트인 굴). border = 팔 옆·팔 끝에 남기는 벽 두께, wobble = 벽 가장자리 물결 폭(밝은 쪽 경계도 이만큼 남긴다). 바꾸면 bake_floor·bake_decor 다시 굽기", "border": 3, "wobble": 3},
     "portal_inset": 18,
     "portal_room_radius": 3.5,
