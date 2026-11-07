@@ -566,7 +566,8 @@
     ]
    }
   },
-  "f2g": {
+  "f2b": {"name_ko": "짐승의 소굴(2층 — floor2.md §2, LD13 — 외곽만, 바닥은 f2d 그림을 쓴다)", "rise": {"kind": "mesa", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "rock": "#9a6a4a", "rock_dark": "#4a2e20", "ground": "#8a6a4c", "ground_dark": "#5a4232"}, "floors": [], "walls": [], "stands": []},
+    "f2g": {
    "name_ko": "고블린 숲(2층 — floor2.md §5 · §13-3, FL21)",
    "rise": {
     "kind": "forest",

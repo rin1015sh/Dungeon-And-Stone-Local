@@ -1,0 +1,26 @@
+{
+  "id": "ess_bear_maul",
+  "name_ko": "앞발 후려치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.6,
+      "damage_type": "slash",
+      "accuracy": 85
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.5
+    }
+  ],
+  "essence_of": "bear_maul",
+  "source": "placeholder"
+}

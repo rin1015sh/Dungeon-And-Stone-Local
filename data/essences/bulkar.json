@@ -1,0 +1,38 @@
+{
+  "id": "bulkar",
+  "source_monster": "bulkar",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "불카르의 정수",
+  "grade": 9,
+  "family": "bulkar",
+  "passive": {
+    "id": "bulkar_camo",
+    "name_ko": "그늘 털",
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.06
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_bulkar_rend"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_bulkar_blend"
+    }
+  ],
+  "stats": {
+    "agi": 8,
+    "str": 3
+  },
+  "resources": {
+    "hp": 14
+  },
+  "notes": "짐승의 소굴(LD13). 임시값"
+}

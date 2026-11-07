@@ -28,6 +28,8 @@ static func place_features(s: ExploreSession) -> void:
 		if not obj and not tile.is_empty():  # 그림 없는 요소(다가가면 한 줄 — near만)는 바닥을 그대로
 			s.map.set_tile(p, tile)  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
 		s.features.add_at(s, JsonUtil.get_str(fd, "event"), p)
+		if def.has("near") and tile.is_empty():  # 그림 없는 단서(소굴 흙이 흘러내리는 벽)는 바닥 데칼 규칙이 둘레를 칠한다(LD13)
+			s.map.features.append({"id": JsonUtil.get_str(fd, "event"), "pos": p})
 
 
 static func _free(s: ExploreSession, p: Vector2i) -> bool:

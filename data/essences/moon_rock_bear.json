@@ -1,0 +1,38 @@
+{
+  "id": "moon_rock_bear",
+  "source_monster": "moon_rock_bear",
+  "rank": "elite",
+  "source": "placeholder",
+  "name_ko": "반달바위곰의 정수",
+  "grade": 9,
+  "family": "bear",
+  "passive": {
+    "id": "bear_hide",
+    "name_ko": "바위 같은 가죽",
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.1
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_bear_maul"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_giant_body_slam"
+    }
+  ],
+  "stats": {
+    "str": 6,
+    "p_res": 10
+  },
+  "resources": {
+    "hp": 26
+  },
+  "notes": "짐승의 소굴 곰굴(LD13). 거대 칼날늑대의 몸통 박치기를 함께 쓴다. 임시값"
+}

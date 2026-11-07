@@ -1,0 +1,38 @@
+{
+  "id": "wall_mole",
+  "source_monster": "wall_mole",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "벽두더지의 정수",
+  "grade": 9,
+  "family": "mole",
+  "passive": {
+    "id": "mole_claws",
+    "name_ko": "흙 파는 손톱",
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.05
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_mole_burrow_bite"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_mole_dig_in"
+    }
+  ],
+  "stats": {
+    "agi": 6,
+    "str": 4
+  },
+  "resources": {
+    "hp": 14
+  },
+  "notes": "짐승의 소굴(LD13). 임시값"
+}

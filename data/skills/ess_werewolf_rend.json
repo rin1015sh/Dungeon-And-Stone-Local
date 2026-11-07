@@ -1,0 +1,26 @@
+{
+  "id": "ess_werewolf_rend",
+  "name_ko": "찢어발기기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.7,
+      "damage_type": "slash",
+      "accuracy": 85
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.5
+    }
+  ],
+  "essence_of": "werewolf_rend",
+  "source": "placeholder"
+}

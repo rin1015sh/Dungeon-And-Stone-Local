@@ -11,7 +11,12 @@
   "shape": "beast",
   "immunities": [],
   "magic_stone_grade": 9,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "bulkar",
+      "chance": 0.005
+    }
+  ],
   "passives": [],
   "source": "placeholder",
   "name_ko": "불카르",

@@ -12,9 +12,9 @@
   "ambient_source": "placeholder",
   "ambient_color": "#e0c8a8",
   "art": {
-    "_comment": "1단계: 망자의 땅 바닥 · 외곽 그림(assets/floor/f2d)을 붉은 사암 색조로. 전투 뒷그림도 망자의 땅 것을 잠시 쓴다(2단계에서 협곡 그림). [창작] 임시값",
+    "_comment": "바닥 = 망자의 땅 흙 그림(assets/floor/f2d) + 붉은 사암 색조, 외곽 = 사암 절벽 · 메사 꼭대기(assets/floor/f2b — paint_floor.gd --only=f2b:rise, RiseMesa, LD13), 전투 뒷그림 = 사암 협곡(tools/battle_art/SceneCanyon.gd). [창작] 임시값",
     "battleback": {
-      "image": "res://assets/battle/f2_land_of_dead.webp",
+      "image": "res://assets/battle/f2_beast_den.webp",
       "half_width": 3.6
     },
     "palette": {
@@ -62,6 +62,18 @@
     "ambience": {
       "loop": "f2_den"
     },
+    "macro": {
+      "_comment": "바닥 색조(FloorTint): 망자의 땅 잿빛 흙 그림을 사암빛으로 — 깊을수록 짙게. [창작] 임시값",
+      "zones": {
+        "f2b_outer": "#f6d2a4",
+        "f2b_wall": "#eec49a",
+        "f2b_deep": "#d8ae8a"
+      },
+      "noise": {
+        "freq": 0.03,
+        "amount": 0.1
+      }
+    },
     "abyss": {
       "cliff": "res://assets/floor/f2d/chasm.webp",
       "cliff_tiles": 8,
@@ -71,8 +83,8 @@
       "mist_color": "#3e342a",
       "rim_color": "#b09a80",
       "rise": {
-        "face": "res://assets/floor/f2d/rise_face.webp",
-        "top": "res://assets/floor/f2d/rise_top.webp",
+        "face": "res://assets/floor/f2b/rise_face.webp",
+        "top": "res://assets/floor/f2b/rise_top.webp",
         "face_tiles": 8,
         "face_depth": 3,
         "top_tiles": 8,
@@ -109,6 +121,54 @@
         "f2d_mound"
       ],
       "rules": [
+        {
+          "kind": "gravel",
+          "near_features": {
+            "ids": [
+              "den_draft"
+            ],
+            "radius": 3
+          },
+          "dense": true,
+          "chance": 0.85,
+          "size": 1.3
+        },
+        {
+          "kind": "mud",
+          "near_features": {
+            "ids": [
+              "den_burrowed",
+              "den_mole_holes"
+            ],
+            "radius": 2
+          },
+          "dense": true,
+          "chance": 0.9,
+          "size": 1.25
+        },
+        {
+          "kind": "bones",
+          "near_features": {
+            "ids": [
+              "den_tracks_out"
+            ],
+            "radius": 2
+          },
+          "chance": 0.7
+        },
+        {
+          "kind": "claws",
+          "near_features": {
+            "ids": [
+              "den_tracks_in",
+              "den_tracks_out"
+            ],
+            "radius": 3
+          },
+          "dense": true,
+          "chance": 0.85,
+          "orient": "toward"
+        },
         {
           "kind": "gravel",
           "wall_north": true,

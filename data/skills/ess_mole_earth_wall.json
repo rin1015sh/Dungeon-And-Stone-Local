@@ -1,0 +1,17 @@
+{
+  "id": "ess_mole_earth_wall",
+  "name_ko": "흙벽 두르기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "iron_wall"
+    }
+  ],
+  "source": "placeholder"
+}

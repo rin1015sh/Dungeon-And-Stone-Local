@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 레벨 디자인 8차(LD13) — 짐승의 소굴 그림 · 단서 그림 · 새 정수
+- **한 일**: RiseMesa(외곽 kind mesa) · specs.json places.f2b(외곽만) · SceneCanyon(전투 뒷그림) · 층 art 바꿈(f2b_layout.py) · macro 색조 · 단서 데칼 규칙 넷 + 단서 요소를 map.features에(RouteForks · RouteSpots) · 정수 다섯 + 정수 스킬 여덟 · 몬스터 essence_drops.
+- **고친 것**: 전투 뒷그림 끝벽이 하늘에 회색 네모로 보여 끝을 멀리(z 160) — 남은 밝은 띠는 협곡 위 하늘. specs.json을 json.dump로 다시 쓰면 서식이 다 바뀌어 되돌리고 글자로 끼움.
+- **검증**: check.sh 모든 검증 통과(테스트 579) · test_essence · test_skill_value 통과 · 캡처(갈림길 터 — 사암 절벽 · 흙먼지 결, 전투 뒷그림).
+- **남은 것**: 소굴 높낮이 · 바위사막 · 사람 플레이.
+
 ### 2026-11-07 레벨 디자인 7차(LD12) — 짐승의 소굴 새 몬스터 다섯
 - **한 일**: 몬스터 다섯 · 스킬 여섯 · 그림(paint_monsters · paint_actors — Specs2 짐승 · 라이칸스로프 설계, 곰 머리 · 여왕 머리 크기 한 번 고침) · 소굴 배치(f2b_layout.py — 지키는 무리 · 지역 무리 · 벽 매복 셋 · 단서 셋) · RouteAmbush `stops_if_gone` · RouteSpots 그림 없는 요소.
 - **수치**: restat_monsters의 엘리트 규칙이 보스 평균을 써 여왕 · 곰이 칼날늑대보다 약하게 나와 손으로(2층 9등급 = 칼날늑대 · 해골 전사 규모).

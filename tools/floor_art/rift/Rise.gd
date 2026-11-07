@@ -5,11 +5,13 @@ extends RefCounted
 ## 장소마다 specs.json places.<장소>.rise = {kind, stone, stone_dark, roof, roof_dark, ...}:
 ##   kind castle — 성벽(성가퀴·돌출 받침·마름돌·버팀벽·화살 구멍) + 너머 성 지붕들(경사 지붕·둥근 탑·굴뚝·좁은 골목)
 ##   kind ice    — 솟은 빙벽(세로 홈·눈 덮인 꼭대기·고드름) + 너머 설원(바람 결·바위·눈 덮인 전나무)
+##   kind mesa   — 붉은 사암 절벽 + 너머 메사 꼭대기(RiseMesa — 짐승의 소굴, LD13)
 ##   kind grave  — 성벽 면(마름돌 — 묘지 담) + 너머 안개 낀 묘지 들판(덤불 · 마른 나무 · 묘비 실루엣 — 망자의 땅, 사용자 2026-11-05 첨부 그림, FL10)
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
 const Seam := preload("res://tools/floor_art/Seam.gd")
+const Mesa := preload("res://tools/floor_art/rift/RiseMesa.gd")
 
 
 static func face(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
@@ -18,6 +20,8 @@ static func face(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
 			return _ice_face(w, h, seed_value, cfg)
 		"forest":
 			return _trunks(w, h, seed_value, cfg)
+		"mesa":
+			return Mesa.face(w, h, seed_value, cfg)
 	return _castle_face(w, h, seed_value, cfg)
 
 
@@ -29,6 +33,8 @@ static func top(w: int, h: int, seed_value: int, cfg: Dictionary) -> Paint:
 			return _deadfield(w, h, seed_value, cfg)
 		"forest":
 			return _canopy_top(w, h, seed_value, cfg)
+		"mesa":
+			return Mesa.top(w, h, seed_value, cfg)
 	return _roofs(w, h, seed_value, cfg)
 
 

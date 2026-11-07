@@ -1,0 +1,18 @@
+{
+  "id": "ess_werewolf_change",
+  "name_ko": "늑대 변신(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 5,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "troll_frenzy"
+    }
+  ],
+  "essence_of": "werewolf_change",
+  "source": "placeholder"
+}

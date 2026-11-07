@@ -1,0 +1,17 @@
+{
+  "id": "ess_mole_dig_in",
+  "name_ko": "땅속 웅크리기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "hidden"
+    }
+  ],
+  "source": "placeholder"
+}

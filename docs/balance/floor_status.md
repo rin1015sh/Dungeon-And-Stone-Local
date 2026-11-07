@@ -46,7 +46,7 @@
 - ● 생성기 src/explore/generators — fields
 - ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
 - ○ 데칼 시트·굽기(bake_decor) — res://assets/floor/f1/decals.webp
-- ● 전투 뒷그림 — res://assets/battle/f2_land_of_dead.webp
+- ● 전투 뒷그림 — res://assets/battle/f2_beast_den.webp
 - ● 환경음 audio.ambience — f2_den
 - ● 지역 스폰 regions — 4지역
 - ○ 동굴 요소 features — 0종 0곳
@@ -55,7 +55,7 @@
 - ○ 계층군주 lord(+패턴)
 - ● 필드 몬스터 — 10종 · 등급 [6, 7, 8, 9] (목표 8)
 - ● 몬스터 그림 assets/monsters — 10장
-- ● 정수 data/essences — 5종
+- ● 정수 data/essences — 10종
 - ○ 균열 data/rifts
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 

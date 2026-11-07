@@ -11,7 +11,12 @@
   "shape": "beast",
   "immunities": [],
   "magic_stone_grade": 9,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "moon_rock_bear",
+      "chance": 0.01
+    }
+  ],
   "passives": [],
   "source": "placeholder",
   "name_ko": "반달바위곰",

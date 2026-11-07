@@ -1,0 +1,38 @@
+{
+  "id": "mole_queen",
+  "source_monster": "mole_queen",
+  "rank": "elite",
+  "source": "placeholder",
+  "name_ko": "벽두더지 여왕의 정수",
+  "grade": 9,
+  "family": "mole",
+  "passive": {
+    "id": "mole_mother",
+    "name_ko": "굴의 어미",
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.08
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_mole_burrow_bite"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_mole_earth_wall"
+    }
+  ],
+  "stats": {
+    "p_res": 8,
+    "int": 3
+  },
+  "resources": {
+    "hp": 22
+  },
+  "notes": "짐승의 소굴 여왕 굴(LD13). 벽두더지 정수와 땅굴 물기를 함께 쓴다(공유 이능). 임시값"
+}

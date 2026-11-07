@@ -5,7 +5,7 @@ extends RefCounted
 ##   "block_tile": 타일, "block_r": 칸}] — 입장마다(원정마다 — 외워서 뚫지 못하게) 갈래 하나를 바른 길로 고르고,
 ##   나머지 갈래는 block 표시 둘레(block_r — 체비셰프 거리) 걸을 수 있는 칸을 무너진 돌(block_tile)로 막는다(막다른 길 — 시간 손해).
 ##   갈래 입구(mouth)에는 바른 길이면 right, 아니면 wrong 요소를 놓는다(바람이 불어온다 / 공기가 고였다 … 다가가면 한 줄 — near).
-##   높은 바위턱(망루 요소)에서 내려다보면 막힌 갈래가 보인다.
+##   높은 바위턱(망루 요소)에서 내려다보면 막힌 갈래가 보인다. 단서 요소는 map.features에도 넣어 층 데칼 규칙(near_features)이 그림으로도 보인다.
 
 var right: Array[int] = []  ## 갈림길마다 고른 바른 갈래 번호
 
@@ -30,7 +30,9 @@ static func setup(s: ExploreSession) -> RouteForks:
 			var b: Dictionary = branches[i] if branches[i] is Dictionary else {}
 			var mouth: Vector2i = marks.get(JsonUtil.get_str(b, "mouth"), Vector2i(-1, -1))
 			if mouth.x >= 0:
-				s.features.add_at(s, JsonUtil.get_str(fd, "right" if i == pick else "wrong"), mouth)
+				var ev := JsonUtil.get_str(fd, "right" if i == pick else "wrong")
+				s.features.add_at(s, ev, mouth)
+				s.map.features.append({"id": ev, "pos": mouth})  # 바닥 데칼 규칙이 단서 둘레를 칠한다(흙먼지 결 · 굴 흙 · 발톱 — LD13)
 			if i == pick:
 				continue
 			var at: Vector2i = marks.get(JsonUtil.get_str(b, "block"), Vector2i(-1, -1))
