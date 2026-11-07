@@ -810,8 +810,24 @@
       }
     ]
   },
-  "bgm": {
-    "title": "res://assets/audio/bgm/night_piano.ogg",
-    "night_piano": "res://assets/audio/bgm/night_piano.ogg"
+  "bgm": {},
+  "inventory": {
+    "_comment": "소지품 소리(InventoryPage · ExploreScreen._use_item — 사용자 2026-11-07 \"인벤토리에서 효과음\"): 커서 · 집기 · 놓기 · 못 놓음 · 내려놓기 취소 · 버리기 · 정렬 · 입기 · 벗기, use = 아이템 종류(category)별 사용 소리",
+    "move": "ui_move",
+    "pick": "item_pick",
+    "place": "item_pick",
+    "denied": "ui_denied",
+    "cancel": "ui_back",
+    "discard": "body_fall",
+    "sort": "metal_rattle",
+    "equip": "armor_rustle",
+    "unequip": "armor_rustle",
+    "use": {
+      "potion": "surface",
+      "food": "item_pick",
+      "light": "fireball",
+      "tool": "metal_rattle"
+    },
+    "use_default": "item_pick"
   }
 }

@@ -111,11 +111,13 @@ func focus() -> Dictionary:
 func _process(delta: float) -> void:
 	if paused or _town == null:
 		_held.clear()
+		AudioBus.set_loop("steps", "steps", "")
 		return
 	var dir := _input_dir()
+	var was := pos
 	if dir != Vector2.ZERO:
 		walk(dir, delta)
-	AudioBus.set_loop("steps", "steps", "step_stone2" if dir != Vector2.ZERO else "", -6.0)  # 동네 돌길 걸음
+	_steps(pos.distance_to(was) > 0.01, delta, "step_stone2")  # 동네 돌길 걸음 — 실제로 움직일 때만(벽에 막히면 조용)
 	_sync_view()
 
 
@@ -188,6 +190,15 @@ func interact() -> void:
 			travel_requested.emit()
 	elif t.has("ring"):
 		told.emit("city.town.portal_closed")
+
+
+var _step_t := 0.0  ## 남은 걸음 소리(실제 초) — 실제로 움직인 프레임에만 채운다
+
+
+## 걸음 고리: 이번 프레임에 몸이 움직였으면 잠깐(0.15초) 이어 두고, 아니면 줄어 끊긴다.
+func _steps(moved: bool, delta: float, key: String) -> void:
+	_step_t = 0.15 if moved else maxf(0.0, _step_t - delta)
+	AudioBus.set_loop("steps", "steps", key if _step_t > 0.0 else "", -6.0)
 
 
 func _exit_tree() -> void:

@@ -248,7 +248,12 @@ func codex() -> CodexMenu:
 func _use_item(item_id: String) -> void:
 	if _ended or _combat != null or is_paused():
 		return
+	var before := session.player.inventory.count(item_id)
 	session.use_item(item_id, _menu.shown())  # Tab에서 고른 아군에게(동료도 먹는다)
+	if session.player.inventory.count(item_id) < before:  # 썼다 — 종류별 소리(물약 꿀꺽 · 횃불 화르륵 …)
+		var inv := SoundData.section(session.db, "inventory")
+		AudioBus.play_sfx(JsonUtil.get_str(JsonUtil.get_dict(inv, "use"), JsonUtil.get_str(ItemInfo.def(session.db, item_id), "category"),
+			JsonUtil.get_str(inv, "use_default")))
 	_menu.refresh()
 
 

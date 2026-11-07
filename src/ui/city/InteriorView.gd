@@ -104,14 +104,16 @@ static func _num(render: Dictionary, key: String, fallback: float) -> float:
 func _process(delta: float) -> void:
 	if paused or _inner == null:
 		_held.clear()
+		AudioBus.set_loop("steps", "steps", "")
 		return
+	var was := pos
 	if _leaving or _acting or _dialog.busy():
 		_held.clear()
 	else:
 		var dir := _input_dir()
 		if dir != Vector2.ZERO:
 			walk(dir, delta)
-		AudioBus.set_loop("steps", "steps", "step_wood" if dir != Vector2.ZERO else "", -6.0)  # 실내 마루 걸음
+	_steps(pos.distance_to(was) > 0.01, delta, "step_wood")  # 실내 마루 걸음 — 실제로 움직일 때만(대화 · 가구 · 벽이면 조용)
 	_sync_view()
 
 
@@ -330,6 +332,15 @@ func _sync_menu() -> void:
 
 func _refresh_info() -> void:
 	pass
+
+
+var _step_t := 0.0  ## 남은 걸음 소리(실제 초) — 실제로 움직인 프레임에만 채운다
+
+
+## 걸음 고리: 이번 프레임에 몸이 움직였으면 잠깐(0.15초) 이어 두고, 아니면 줄어 끊긴다.
+func _steps(moved: bool, delta: float, key: String) -> void:
+	_step_t = 0.15 if moved else maxf(0.0, _step_t - delta)
+	AudioBus.set_loop("steps", "steps", key if _step_t > 0.0 else "", -6.0)
 
 
 func _exit_tree() -> void:

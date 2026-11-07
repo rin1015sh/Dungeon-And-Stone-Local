@@ -191,6 +191,7 @@ func nav(d: Vector2i) -> bool:
 		return d.x == 0 or carrying()  # 위아래는 끝에서 멈추고, 좌우 끝이면 옆 쪽으로(옮기는 중엔 멈춤)
 	_cursor = targets[i]["at"]
 	_show_cursor()
+	_sound("move")
 	return true
 
 
@@ -222,6 +223,7 @@ func confirm() -> void:
 func back() -> bool:
 	if not carrying():
 		return false
+	_sound("cancel")
 	_carry = {}
 	grid.set_preview({}, Vector2i.ZERO)
 	_show_cursor()
@@ -237,6 +239,7 @@ func sort() -> void:
 		var sa := ItemInfo.size(actor.db, a["id"])
 		var sb := ItemInfo.size(actor.db, b["id"])
 		return sa.x * sa.y > sb.x * sb.y if sa.x * sa.y != sb.x * sb.y else str(a["id"]) < str(b["id"]))
+	_sound("sort")
 	var saved := actor.inventory.to_dict()
 	actor.inventory.load_dict({"w": actor.inventory.width, "h": actor.inventory.height, "money": actor.inventory.money})
 	for it in items:
@@ -253,7 +256,7 @@ func activate(i: int) -> void:
 		if not InventoryActions.equip_stack(wearer, i, "", actor.inventory):
 			EventBus.notice.emit("inventory.no_room_swap", {"item": DataNames.entry(actor.db, "items", id)}, "warn")
 		else:
-			AudioBus.play_sfx("armor_rustle")  # 입고 벗는 소리
+			_sound("equip")  # 입는 소리
 	elif _usable(id):
 		use_requested.emit(id)
 	refresh()
@@ -264,6 +267,7 @@ func discard(i: int) -> bool:
 	if i < 0 or i >= actor.inventory.stacks().size():
 		return false
 	var st := actor.inventory.take_stack(i)
+	_sound("discard", -8.0)
 	EventBus.notice.emit("inventory.discarded", {"item": DataNames.entry(actor.db, "items", str(st.get("id", ""))),
 		"count": int(st.get("count", 1))}, "warn")
 	refresh()
@@ -275,13 +279,22 @@ func carry(i: int) -> void:
 	var s: Dictionary = actor.inventory.stacks()[i]
 	_carry = {"type": "item", "from": "grid", "index": i, "id": str(s["id"])}
 	_cursor = {"kind": "cell", "cell": Vector2i(s["pos"])}
+	_sound("pick")
 	_show_cursor()
 
 
 func _place() -> void:
 	if grid.drop(_carry, _cursor["cell"]):
 		_carry = {}
+		_sound("place")
 		refresh()
+	else:
+		_sound("denied")
+
+
+## 소지품 소리(data/audio.json inventory).
+func _sound(what: String, db: float = 0.0) -> void:
+	AudioBus.play_sfx(JsonUtil.get_str(SoundData.section(actor.db, "inventory"), what), db)
 
 
 func _usable(id: String) -> bool:
@@ -321,6 +334,8 @@ func _slot_menu(slot: String) -> void:
 		if k == 0:
 			if not InventoryActions.unequip_to_bag(wearer, slot, Vector2i(-1, -1), actor.inventory):
 				EventBus.notice.emit("inventory.no_room_unequip", {"item": DataNames.entry(actor.db, "items", worn)}, "warn")
+			else:
+				_sound("unequip")
 			refresh()
 		return
 	var fits: Array[int] = []
@@ -336,6 +351,8 @@ func _slot_menu(slot: String) -> void:
 	if k >= 0:
 		if not InventoryActions.equip_stack(wearer, fits[k], slot, actor.inventory):
 			EventBus.notice.emit("inventory.no_room_swap", {"item": opts[k]["text"]}, "warn")
+		else:
+			_sound("equip")
 		refresh()
 
 

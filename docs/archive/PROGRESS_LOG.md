@@ -3,6 +3,11 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 배경음악 없앰 · 소지품 소리 · 발소리 고침(UI57)
+- **한 일**: 타이틀 · 도시 play_bgm 지움 · audio.json bgm {} · night_piano 파일 지움(표 docs/AUDIO.md "쓰지 않은 것") · InventoryPage 소리(_sound — audio.json inventory) · ExploreScreen 아이템 쓰기 소리(종류별) · 발소리 판정 = 실제 위치 변화(탐험 ExploreAudio · 동네 TownView · 실내 InteriorView, 0.01칸 넘게 움직였을 때만, 0.15초 이어 둠, 멈춤 · 대화 중엔 끔).
+- **원인**: 탐험은 "마지막 걸음 뒤 게임 시간"으로 걷는 중을 봤는데 대화 · Tab으로 시간이 멈추면 계속 걷는 중. 동네 · 실내는 누른 키로 봐서 벽에 막혀도 소리.
+- **검증**: check.sh 모든 검증 통과(테스트 616). 소리는 직접 듣지 못함.
+
 ### 2026-11-07 정수 시너지 구현(ES1~ES6) — 반응 패시브 여섯 · 상한 · 은신 · 처치 게이지 · 연계 표시 · 새 정수 규칙
 - **범위 / 완료 기준 / 테스트**: 사용자 "교체하고 다른 추가 정수를 만들 때도 프롬프트 내용이 반영되도록". 기준: 설계안 B1~B6 · C1~C4 + 앞으로의 규칙이 테스트로 막힘 · check.sh. 테스트 = test_essence_synergy 9 · 기존 정수 테스트 · 캡처(Tab 정수 카드 연계 줄).
 - **한 일**: 정수 JSON 아홉(B1~B6 · 불카르 · 웨어울프 · 구울로드) · `Passives`(상한 · while_self_status) · `PassiveRules` 반응 키 검증 · `EssenceLinks` · `EssencePanel` 연계 줄 · `CombatDrops` 획득 창 한 줄 · ko.json 문구 · 캡처 `--essence=id:색,…` · CLAUDE.md 정수 연계 규칙 · essence_synergy.md §10 · §11.

@@ -38,7 +38,6 @@ func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) 
 
 func _ready() -> void:
 	AudioBus.stop_ambience()
-	AudioBus.play_bgm("title")  # 도시 = 타이틀과 같은 밤 피아노(이어서 — 같은 키)
 	_town = TownView.new()
 	_town.setup(state, pc)
 	_town.facility_chosen.connect(choose_facility)
