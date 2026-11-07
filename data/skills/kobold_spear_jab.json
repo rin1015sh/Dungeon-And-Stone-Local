@@ -1,0 +1,17 @@
+{
+  "id": "kobold_spear_jab",
+  "name_ko": "창 찌르기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.0,
+      "damage_type": "pierce"
+    }
+  ],
+  "source": "placeholder"
+}

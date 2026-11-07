@@ -127,6 +127,39 @@ static func spec_of(id: String) -> Dictionary:
 			return {"kind": "beast", "height": 560, "color": C("#d8ccb4"), "belly": C("#ece4d4"), "head": "cat", "fur": 0.3, "stripes": C("#3a2a1e"), "tail": "thin", "bulk": 1.1, "eyes": C("#e0d040")}
 		"owlbear":
 			return {"kind": "beast", "height": 620, "color": C("#9a8a70"), "belly": C("#c8b898"), "head": "owl", "fur": 0.8, "bulk": 1.4, "tail": "stub", "legs": 0.85, "eyes": C("#e8b030")}
+		# ── 2층 바위사막(floor2.md §4 — 창작, LD15) ──
+		"kobold":  # 작은 도마뱀 머리 창잡이
+			return {"height": 440, "skin": C("#8a6a4a"), "shade": C("#3a2a1e"), "mottle": C("#5a4430"), "eyes": C("#f0c040"),
+				"pose": {"hunch": 0.35, "knee": 0.3, "arm_l": "hang", "arm_r": "rest", "sh": 0.105, "head": 1.3, "legs": 0.85, "weight": 0.3},
+				"body": {"build": "thin", "hands": "claw", "feet": "claw"}, "head": {"type": "lizard", "mouth": "fangs", "ears": "none", "eye_style": "beast"},
+				"extras": {"tail": C("#7a5a3e")}, "kit": {"loin": C("#5a4428"), "belt": C("#3a2a1a"), "weapon": "spear", "weapon_c": C("#8a7a60")}}
+		"kobold_shield":  # 둥근 나무 방패 · 가죽 조끼
+			return {"height": 460, "skin": C("#7a5a40"), "shade": C("#3a2a1e"), "mottle": C("#4a3628"), "eyes": C("#f0c040"),
+				"pose": {"hunch": 0.3, "knee": 0.32, "arm_l": "hang", "arm_r": "rest", "sh": 0.11, "head": 1.3, "legs": 0.85, "weight": 0.4},
+				"body": {"build": "normal", "hands": "claw", "feet": "claw"}, "head": {"type": "lizard", "mouth": "shut", "ears": "none", "eye_style": "beast"},
+				"extras": {"tail": C("#6a4a34")}, "kit": {"shirt": C("#5a4430"), "shirt_len": 0.8, "belt": C("#3a2a1a"), "weapon": "club", "weapon_c": C("#5a4632"), "shield": C("#6a5034"), "shield_kind": "round", "shield_mat": "wood"}}
+		"kobold_slinger":  # 투석병 — 허리에 돌 주머니
+			return {"height": 430, "skin": C("#9a7a5a"), "shade": C("#3a2a1e"), "mottle": C("#6a5040"), "eyes": C("#f0d060"),
+				"pose": {"hunch": 0.35, "knee": 0.3, "arm_l": "hang", "arm_r": "claw", "sh": 0.105, "head": 1.3, "legs": 0.85, "weight": -0.3},
+				"body": {"build": "thin", "hands": "claw", "feet": "claw"}, "head": {"type": "lizard", "mouth": "open", "ears": "none", "eye_style": "beast"},
+				"extras": {"tail": C("#8a6a4e")}, "kit": {"loin": C("#5a4428"), "belt": C("#3a2a1a"), "straps": C("#4a3622")}}
+		"stone_golem":  # 바위 덩어리 몸 · 이끼 낀 어깨
+			return {"height": 660, "width": 1.05, "skin": C("#8a8478"), "skin_kind": "stone", "shade": C("#3a3630"), "mottle": C("#6a6a4a"), "mottle_amt": 0.4, "eyes": C("#f0c070"), "glow": 0.8,
+				"pose": {"knee": 0.2, "arm_l": "hang", "arm_r": "hang", "sh": 0.17, "hip": 0.085, "neck": 0.25, "arms": 1.15, "weight": 0.2},
+				"body": {"build": "brute", "hands": "fist", "feet": "bare"}, "head": {"type": "block", "size": 1.1}, "extras": {"lumps": 10}}
+		"monolith_soldier":  # 돌로 깎은 병사 — 돌칼 · 돌 방패
+			return {"height": 640, "skin": C("#9a948a"), "skin_kind": "stone", "shade": C("#3e3a34"), "eyes": C("#e0d0a0"), "glow": 0.6,
+				"pose": {"knee": 0.1, "arm_l": "hang", "arm_r": "rest", "sh": 0.15, "weight": 0.0},
+				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "block", "size": 0.95},
+				"kit": {"armor": C("#8a8478"), "plates": ["chest", "shoulders"], "weapon": "sword", "weapon_c": C("#7a746a"), "shield": C("#8a8478"), "shield_kind": "kite", "shield_mat": "metal"}}
+		"sandman":  # 모래로 빚은 마른 몸 · 흘러내리는 모래
+			return {"height": 600, "skin": C("#c8a878"), "skin_kind": "stone", "shade": C("#6a5032"), "eyes": C("#ffe0a0"), "glow": 1.0,
+				"pose": {"hunch": 0.2, "arm_l": "claw", "arm_r": "claw", "sh": 0.12, "weight": -0.2, "tilt": 0.05},
+				"body": {"build": "thin", "hands": "claw"}, "head": {"type": "gaunt", "mouth": "open"}, "kit": {"robe": C("#a88a60"), "torn": 0.6}}
+		"sandworm":
+			return {"kind": "worm", "height": 600, "color": C("#b89a70")}
+		"deathworm":
+			return {"kind": "worm", "height": 760, "color": C("#6a3a2a")}
 		# ── 2층 짐승의 소굴(floor2.md §2 — 창작, LD12) ──
 		"wall_mole":  # 협곡 벽을 파고 사는 두더지 — 쥐 머리 · 짧은 다리 · 흙빛 털
 			return {"kind": "beast", "height": 420, "color": C("#5a4a3c"), "belly": C("#7a6650"), "head": "rat", "fur": 0.75, "tail": "stub", "bulk": 0.95, "legs": 0.6, "eyes": C("#d07040"), "head_k": 1.2}

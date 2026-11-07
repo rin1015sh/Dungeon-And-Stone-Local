@@ -1,0 +1,73 @@
+{
+  "id": "stone_golem",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rock_desert"
+  ],
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "스톤 골렘",
+  "grade": 8,
+  "rank": "normal",
+  "size": 1.6,
+  "color": "#8a8478",
+  "weaknesses": {
+    "blunt": 1.5
+  },
+  "stats": {
+    "str": 12,
+    "agi": 7,
+    "p_res": 24,
+    "m_res": 14,
+    "int": 4
+  },
+  "resources": {
+    "hp": 52,
+    "soul": 24
+  },
+  "natural_weapon": {
+    "attack": 10,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.0,
+      "calls": true
+    },
+    "move_mult": 0.75,
+    "alert_sfx": "monster_alert",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "golem_crush",
+    "golem_suppress"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "golem_suppress"
+    },
+    {
+      "if": "always",
+      "use": "golem_crush"
+    }
+  ],
+  "notes": "잔해 사이 한 마리 — 둔기에 약함, 짓누르기(기절). 임시값"
+}

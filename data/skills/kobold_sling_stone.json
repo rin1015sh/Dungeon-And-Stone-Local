@@ -1,0 +1,19 @@
+{
+  "id": "kobold_sling_stone",
+  "name_ko": "돌팔매",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.95,
+      "damage_type": "blunt",
+      "ranged": true,
+      "accuracy": 95
+    }
+  ],
+  "source": "placeholder"
+}

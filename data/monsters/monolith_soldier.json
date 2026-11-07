@@ -1,0 +1,77 @@
+{
+  "id": "monolith_soldier",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rock_desert"
+  ],
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "거석병",
+  "grade": 8,
+  "rank": "normal",
+  "size": 1.5,
+  "color": "#9a948a",
+  "weaknesses": {
+    "blunt": 1.4
+  },
+  "stats": {
+    "str": 11,
+    "agi": 9,
+    "p_res": 22,
+    "m_res": 14,
+    "int": 4
+  },
+  "resources": {
+    "hp": 46,
+    "soul": 24
+  },
+  "natural_weapon": {
+    "attack": 9,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.0,
+      "calls": true
+    },
+    "move_mult": 0.8,
+    "alert_sfx": "monster_alert",
+    "aggressive": false,
+    "aggro_radius_m": 2.5,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 2.5,
+    "row": "front"
+  },
+  "skills": [
+    "monolith_cleave",
+    "golem_suppress"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "monolith_cleave"
+    },
+    {
+      "if": "chance",
+      "value": 0.25,
+      "use": "golem_suppress"
+    },
+    {
+      "if": "always",
+      "use": "monolith_cleave"
+    }
+  ],
+  "notes": "횃불 길 곁 서 있는 돌 병사 — 가까이(2.5m) 가기 전엔 장식처럼 서 있다. 임시값"
+}

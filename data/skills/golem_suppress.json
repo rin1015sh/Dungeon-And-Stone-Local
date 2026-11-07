@@ -1,0 +1,24 @@
+{
+  "id": "golem_suppress",
+  "name_ko": "짓누르기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.35
+    }
+  ],
+  "source": "placeholder"
+}

@@ -76,6 +76,13 @@
 		],
 		"foot": 4.0
 	},
+	"deathworm": {
+		"cell": [
+			132,
+			196
+		],
+		"foot": 4
+	},
 	"dullahan": {
 		"cell": [
 			58.0,
@@ -188,6 +195,27 @@
 		],
 		"foot": 4.0
 	},
+	"kobold": {
+		"cell": [
+			52,
+			76
+		],
+		"foot": 4
+	},
+	"kobold_shield": {
+		"cell": [
+			58,
+			76
+		],
+		"foot": 4
+	},
+	"kobold_slinger": {
+		"cell": [
+			48,
+			73
+		],
+		"foot": 4
+	},
 	"mineral_slime": {
 		"cell": [
 			94.0,
@@ -197,17 +225,24 @@
 	},
 	"mole_queen": {
 		"cell": [
-			174,
-			110
+			174.0,
+			110.0
+		],
+		"foot": 4.0
+	},
+	"monolith_soldier": {
+		"cell": [
+			74,
+			128
 		],
 		"foot": 4
 	},
 	"moon_rock_bear": {
 		"cell": [
-			152,
-			122
+			152.0,
+			122.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"mummy": {
 		"cell": [
@@ -236,6 +271,20 @@
 			73.0
 		],
 		"foot": 4.0
+	},
+	"sandman": {
+		"cell": [
+			48,
+			98
+		],
+		"foot": 4
+	},
+	"sandworm": {
+		"cell": [
+			82,
+			107
+		],
+		"foot": 4
 	},
 	"skeleton": {
 		"cell": [
@@ -285,6 +334,13 @@
 			91.0
 		],
 		"foot": 4.0
+	},
+	"stone_golem": {
+		"cell": [
+			88,
+			129
+		],
+		"foot": 4
 	},
 	"wall_mole": {
 		"cell": [

@@ -1,0 +1,18 @@
+{
+  "id": "sand_blind",
+  "name_ko": "모래 뿌리기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

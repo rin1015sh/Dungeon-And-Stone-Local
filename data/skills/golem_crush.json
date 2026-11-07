@@ -1,0 +1,19 @@
+{
+  "id": "golem_crush",
+  "name_ko": "바위 주먹",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.25,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

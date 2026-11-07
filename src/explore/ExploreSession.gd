@@ -370,6 +370,8 @@ func refresh_view() -> void:
 		vision_m = minf(vision_m, lord.vision_cap_m())
 	if terrain != null:
 		vision_m = terrain.vision_cap(self, vision_m)
+	if desert != null:
+		vision_m = desert.vision_cap(self, vision_m)  # 데쓰웜 모래 폭풍(LD15)
 	var radius := vision_m / _mpt
 	map.visible_now = Fov.compute(map, pos, radius)
 	var r := ceili(radius) + 1
@@ -507,6 +509,8 @@ func resolve_encounter(group: FieldMonsters.Group, result: String, turns: int, k
 	var chained := result == Battle.RESULT_VICTORY and group != null and not group.waves.is_empty()  # 연전: 다음 웨이브까지 맵 시간 없이(RF7)
 	if not _rewarded:
 		grant_battle_rewards(group, killed)
+	if desert != null:
+		desert.on_kills(self, killed)  # 샌드웜 셋 → 데쓰웜(LD15)
 	_rewarded = false
 	parties.on_battle_end(self, group, result)
 	if lord.on_battle_end(self, group, result) or (rift_run != null and rift_run.on_battle_end(self, group, result, killed)):

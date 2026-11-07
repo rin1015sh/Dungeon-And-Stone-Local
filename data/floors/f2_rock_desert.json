@@ -1,5 +1,5 @@
 {
-  "_comment": "2층 바위사막(docs/plans/floor2.md §4 · §13-5, level_design_review.md B-2 D — 1단계 LD14): 1층 서쪽 포탈(dest floor2_west)에서 온다. 횃불 옛길(돌 화로 — 빛 · 그늘)은 멀고 안전, 모래 바다(진동 — 샌드웜)는 곧다. 낮 열기(그늘 밖 — 허기 · 피로, 샘물로 식힌다) · 오후 모래 폭풍(시야). 새 몬스터(코볼트 셋 · 스톤 골렘 · 거석병 · 샌드맨 · 샌드웜 · 데쓰웜)는 2단계 — 지금은 노움 · 타락한 노움 · 석상 가고일(거석병 자리) · 웜스톤(샌드웜 자리). 수치는 모두 임시값",
+  "_comment": "2층 바위사막(docs/plans/floor2.md §4 · §13-5, level_design_review.md B-2 D — 1단계 LD14): 1층 서쪽 포탈(dest floor2_west)에서 온다. 횃불 옛길(돌 화로 — 빛 · 그늘)은 멀고 안전, 모래 바다(진동 — 샌드웜)는 곧다. 낮 열기(그늘 밖 — 허기 · 피로, 샘물로 식힌다) · 오후 모래 폭풍(시야). 2단계(LD15): 코볼트 굴(방패병 · 창잡이 · 투석병) · 거석병(광장 · 옛길 — 가까이 가야 깨어나는 돌 병사) · 스톤 골렘(열주) · 샌드맨(모래 언덕) · 샌드웜(모래 바다 진동) · 데쓰웜(샌드웜 셋 → 모래 폭풍 · 보스) + 옛길 노움 무리. 수치는 모두 임시값",
   "id": "f2_rock_desert",
   "name_ko": "바위사막",
   "floor": 2,
@@ -600,12 +600,14 @@
       "zone": "f2r_cave",
       "name_ko": "코볼트 굴",
       "monsters": [
-        "corrupted_gnome",
-        "gnome"
+        "kobold",
+        "kobold_shield",
+        "kobold_slinger"
       ],
       "weights": {
-        "corrupted_gnome": 2,
-        "gnome": 3
+        "kobold": 3,
+        "kobold_shield": 1,
+        "kobold_slinger": 2
       },
       "groups": [
         2,
@@ -696,6 +698,17 @@
       "shade_radius": 2,
       "cool_status": "refreshed"
     },
+    "deathworm": {
+      "kill_id": "sandworm",
+      "after_kills": 3,
+      "monster": "deathworm",
+      "at_mark": "sea_mid",
+      "storm_hours": 2.0,
+      "storm_cap_m": 3.0,
+      "line": "field.deathworm_rise",
+      "sound": "boss_reveal",
+      "sink_line": "field.deathworm_sink"
+    },
     "sand_sea": {
       "tiles": [
         "f2r_sand"
@@ -705,7 +718,7 @@
       "threshold": 14.0,
       "warn_at": 0.6,
       "monsters": [
-        "wormstone"
+        "sandworm"
       ],
       "line": "field.sandworm",
       "warn_line": "field.sand_tremor",
@@ -735,7 +748,7 @@
           2
         ],
         "monsters": [
-          "gargoyle_statue"
+          "monolith_soldier"
         ]
       },
       {
@@ -745,16 +758,58 @@
           2
         ],
         "monsters": [
-          "gargoyle_statue"
+          "monolith_soldier"
+        ]
+      },
+      {
+        "mark": "road_east",
+        "at": [
+          0,
+          -2
+        ],
+        "monsters": [
+          "monolith_soldier"
+        ]
+      },
+      {
+        "mark": "colonnade",
+        "at": [
+          2,
+          -3
+        ],
+        "monsters": [
+          "stone_golem"
         ]
       },
       {
         "mark": "cave",
         "monsters": [
-          "corrupted_gnome",
-          "gnome",
-          "gnome",
-          "gnome"
+          "kobold_shield",
+          "kobold",
+          "kobold",
+          "kobold_slinger",
+          "kobold_slinger"
+        ]
+      },
+      {
+        "mark": "dune_w",
+        "at": [
+          0,
+          -2
+        ],
+        "monsters": [
+          "sandman"
+        ]
+      },
+      {
+        "mark": "dune_e",
+        "at": [
+          0,
+          -2
+        ],
+        "monsters": [
+          "sandman",
+          "kobold_slinger"
         ]
       }
     ],

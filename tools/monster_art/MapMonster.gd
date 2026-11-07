@@ -44,7 +44,7 @@ static func spec_of(id: String) -> Dictionary:
 			return {"kind": "crawler", "spec": {"height": 420, "color": C("#5a6a48"), "bulk": 1.25, "blood": 1.0, "crown": C("#9a7a32"), "horns": C("#2a2820"), "eyes": C("#ff6030"), "elbow_h": 0.34, "elbow_w": 0.22, "reach": 0.3}}
 		"gnome":
 			return {"kind": "mound", "size": 0.8, "spec": Specs.More.spec_of("gnome")}
-		"slime", "mineral_slime", "wormstone", "guardian_eye":
+		"slime", "mineral_slime", "wormstone", "guardian_eye", "sandworm", "deathworm":
 			return {"kind": "blob", "spec": Specs.More.spec_of(id)}
 	if FIGURES.has(id):
 		return _from_figure(id)
@@ -57,7 +57,7 @@ const FIGURES := {
 	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
 	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
 	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
-	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "werewolf": {"spec": {"hair": "ragged", "hair_c": Color("#5a5450")}, "map": {"head": 1.8, "bulk": 1.15}}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
+	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "kobold": {}, "kobold_shield": {}, "kobold_slinger": {}, "stone_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "monolith_soldier": {}, "sandman": {}, "werewolf": {"spec": {"hair": "ragged", "hair_c": Color("#5a5450")}, "map": {"head": 1.8, "bulk": 1.15}}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
 	"mummy": {}, "buried_one": {}, "iron_lizardman": {}, "iron_cavalry": {}, "riddle_gatekeeper": {"map": {"head": 1.8}},
 }
 ## 보스·중간보스가 방 가운데서 기다리는 자세(BackPose rest — 플레이어가 방에 들어오면 바로 전투). 앞모습 한 장.

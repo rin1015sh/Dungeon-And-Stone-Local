@@ -1,0 +1,67 @@
+{
+  "id": "kobold",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rock_desert"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "코볼트",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.8,
+  "color": "#8a6a4a",
+  "weaknesses": {
+    "cold": 1.3
+  },
+  "stats": {
+    "str": 6,
+    "agi": 11,
+    "p_res": 11,
+    "m_res": 8,
+    "int": 5
+  },
+  "resources": {
+    "hp": 16,
+    "soul": 12
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.0,
+      "calls": true
+    },
+    "move_mult": 1.0,
+    "alert_sfx": "goblin_shout",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      2
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "kobold_spear_jab"
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "kobold_spear_jab"
+    }
+  ],
+  "notes": "바위사막 코볼트 굴(floor2.md §4 — LD15): 작은 도마뱀 머리 창잡이. 임시값"
+}

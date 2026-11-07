@@ -1,0 +1,24 @@
+{
+  "id": "deathworm_quake",
+  "name_ko": "모래 지진",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.25
+    }
+  ],
+  "source": "placeholder"
+}

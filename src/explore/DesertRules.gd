@@ -8,12 +8,19 @@ extends RefCounted
 ##     모래 바다 칸을 걸을 때마다 진동이 per_step 쌓이고, 서 있거나 바다 밖이면 시간당 decay_per_hour 빠진다.
 ##     warn_at(비율)을 넘으면 한 번 경고(발밑이 떨린다 — 소리), threshold를 넘으면 바로 옆 모래에서 무리가 솟아 쫓아오고 진동은 0으로.
 ##     천천히(멈췄다 걷기) 가면 덜 쌓인다 — 걷는 동안 시간이 흘러 진동이 빠지는 틈이 생긴다.
+##   deathworm {"kill_id", "after_kills", "monster", "at_mark", "storm_hours", "storm_cap_m", "line", "sound", "sink_line"}(floor2.md §4 사건 — LD15):
+##     한 원정에 kill_id(샌드웜)를 after_kills마리 잡으면 모래 폭풍(storm_hours — 시야 storm_cap_m)이 일고 at_mark 자리에 monster(데쓰웜 —
+##     보스 무리, 보이면 등장 연출 뒤 전투)가 솟는다. 폭풍이 그치면 데쓰웜은 모래 속으로 돌아간다(그 사이 바다를 벗어나면 끝 — 도주). 한 원정에 한 번.
 
 var vibration: float = 0.0
 var _cfg: Dictionary = {}
 var _warned: bool = false
 var _heat_zones: Array = []
 var _sand: Dictionary = {}  ## 타일 id → true
+var kills: int = 0           ## 이번 원정에 잡은 샌드웜
+var storm_until: float = -1.0
+var _worm: FieldMonsters.Group = null
+var _risen: bool = false
 
 
 static func setup(s: ExploreSession) -> DesertRules:
@@ -57,8 +64,42 @@ func on_enter(s: ExploreSession, cell: Vector2i) -> void:
 	FieldFeatureAct.say_line(s, JsonUtil.get_str(sea, "line"), {"pos": cell}, "danger")
 
 
-## 시간이 흘렀다: 진동이 빠지고(서 있거나 바다 밖), 열기를 걸거나 푼다.
+## 전투가 끝났다: 잡은 샌드웜을 센다 — 다 차면 데쓰웜.
+func on_kills(s: ExploreSession, killed: Array[String]) -> void:
+	var dw := JsonUtil.get_dict(_cfg, "deathworm")
+	if dw.is_empty() or _risen:
+		return
+	kills += killed.count(JsonUtil.get_str(dw, "kill_id", "sandworm"))
+	if kills < JsonUtil.get_int(dw, "after_kills", 3):
+		return
+	_risen = true
+	storm_until = s.clock.total_hours + JsonUtil.get_float(dw, "storm_hours", 2.0)
+	var marks: Dictionary = s.map.anchors.get("marks", {})
+	var at: Vector2i = marks.get(JsonUtil.get_str(dw, "at_mark"), s.pos + Vector2i(6, 0))
+	if s.monsters_enabled:
+		_worm = s.monsters.add_fixed([JsonUtil.get_str(dw, "monster", "deathworm")], at)
+	if dw.has("sound"):
+		s.sound.emit(JsonUtil.get_str(dw, "sound"), at)
+	FieldFeatureAct.say_line(s, JsonUtil.get_str(dw, "line"), {"pos": at}, "danger")
+	s.refresh_view()
+
+
+## 모래 폭풍 중이면 시야 상한(데쓰웜 사건).
+func vision_cap(s: ExploreSession, vision_m: float) -> float:
+	if s.clock.total_hours >= storm_until:
+		return vision_m
+	return minf(vision_m, JsonUtil.get_float(JsonUtil.get_dict(_cfg, "deathworm"), "storm_cap_m", 3.0))
+
+
+## 시간이 흘렀다: 진동이 빠지고(서 있거나 바다 밖), 열기를 걸거나 푼다. 폭풍이 그치면 데쓰웜이 가라앉는다.
 func update(s: ExploreSession, hours: float) -> void:
+	if _worm != null and s.clock.total_hours >= storm_until:
+		if s.monsters.groups.has(_worm):
+			s.monsters.groups.erase(_worm)
+			s.monsters.changed.emit()
+			FieldFeatureAct.say_line(s, JsonUtil.get_str(JsonUtil.get_dict(_cfg, "deathworm"), "sink_line"), {"pos": _worm.pos}, "info")
+		_worm = null
+		s.refresh_view()
 	var sea := JsonUtil.get_dict(_cfg, "sand_sea")
 	if not sea.is_empty() and (not FieldStealth.moving(s) or not _sand.has(s.map.tile_id_at(s.pos))):
 		vibration = maxf(0.0, vibration - JsonUtil.get_float(sea, "decay_per_hour", 20.0) * hours)

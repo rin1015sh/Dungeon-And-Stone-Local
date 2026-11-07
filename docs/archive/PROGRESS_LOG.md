@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 레벨 디자인 10차(LD15) — 바위사막 새 몬스터 · 데쓰웜
+- **한 일**: 몬스터 여덟 · 스킬 열둘 · 그림(Specs2 · MapMonster — paint_monsters · paint_actors) · 사막 배치(f2r_layout.py) · DesertRules 데쓰웜 사건(on_kills · vision_cap · 폭풍 뒤 가라앉음) · 문구.
+- **고친 것**: shape worm · family ability가 등록되지 않은 값 → beast · phantasm. 새 몬스터에 영혼력이 없어 영혼력 스킬이 안 나감(test_monster_skills) → soul. 기다리는 보스 문구(boss_notice.deathworm) · 보스 면역 둘(속박 · 출혈 — test_status_immunity).
+- **검증**: test_rock_desert 4(새 몬스터 자리 · 샌드웜 셋 → 데쓰웜 · 폭풍 시야 3m · 가라앉음 · 한 번만) · check.sh 모든 검증 통과(테스트 583) · 캡처(그림 여덟, 전투 — 데쓰웜 첫 물기 106).
+- **남은 것**: 사막 바닥 그림 · 진동 화면 표시 · 새 몬스터 정수 · sim_battle로 수치 확인.
+
 ### 2026-11-07 레벨 디자인 9차(LD14) — 바위사막 1단계
 - **한 일**: `tools/f2r_layout.py` → `data/floors/f2_rock_desert.json`(1층 서쪽 포탈 열림), `DesertRules`(새 — 열기 · 모래 바다 진동), 상태 heat · refreshed(+아이콘), 샘물 병 · 맑은 샘 = refreshed, 타일 f2r_sand(기존 눈밭 그림), 요소 buried_pack, 외곽 f2r(RiseMesa 검은 색), 전투 뒷그림 SceneDesert(SceneCanyon을 넓힘 — 끝벽 · 옆벽이 판처럼 보여 멀리), 문구 · 환경음 키 f2_desert.
 - **고친 것**: 화로가 길 밖에 떨어져 4개뿐 → 길 양쪽 가장자리 중 바닥인 쪽. 열기 상태에 지속시간(−1 hour)을 줘 test_status_audit 실패 → 지속시간 없이(규칙이 푼다). 1층 포탈이 모두 열려 "잠긴 포탈" 시험 셋(test_floor2 · test_floor1_layout · test_explore_rules)을 없는 층 dest로.

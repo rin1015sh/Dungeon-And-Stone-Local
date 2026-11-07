@@ -1,0 +1,83 @@
+{
+  "id": "sandman",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rock_desert"
+  ],
+  "type": "body",
+  "family": [
+    "phantasm"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "샌드맨",
+  "grade": 8,
+  "rank": "normal",
+  "size": 1.1,
+  "color": "#c8a878",
+  "weaknesses": {
+    "cold": 1.3
+  },
+  "stats": {
+    "str": 7,
+    "agi": 13,
+    "p_res": 12,
+    "m_res": 16,
+    "int": 12
+  },
+  "resources": {
+    "hp": 36,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.0,
+      "calls": true
+    },
+    "move_mult": 1.0,
+    "alert_sfx": "monster_alert",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "skills": [
+    "sand_blind",
+    "sand_lull",
+    "kobold_sling_stone"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "sand_blind"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "sand_lull"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "sand_blind"
+    },
+    {
+      "if": "always",
+      "use": "kobold_sling_stone"
+    }
+  ],
+  "notes": "모래 언덕 — 모래를 뿌려 실명 · 혼미. 임시값"
+}

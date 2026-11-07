@@ -1,0 +1,24 @@
+{
+  "id": "deathworm_devour",
+  "name_ko": "집어삼키기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.6,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

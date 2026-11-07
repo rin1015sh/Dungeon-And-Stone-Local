@@ -164,9 +164,13 @@ gen = {
 route_spots = {
     "_comment": "관문(돌 거인 광장 — 서 있는 석상 병사) · 곁길 보상 · 모래에 묻힌 짐(위험한 바다 한가운데) · 매복. [창작] 임시값",
     "guards": [
-        {"mark": "plaza", "at": [-4, 2], "monsters": ["gargoyle_statue"]},
-        {"mark": "plaza", "at": [4, 2], "monsters": ["gargoyle_statue"]},
-        {"mark": "cave", "monsters": ["corrupted_gnome", "gnome", "gnome", "gnome"]},
+        {"mark": "plaza", "at": [-4, 2], "monsters": ["monolith_soldier"]},
+        {"mark": "plaza", "at": [4, 2], "monsters": ["monolith_soldier"]},
+        {"mark": "road_east", "at": [0, -2], "monsters": ["monolith_soldier"]},
+        {"mark": "colonnade", "at": [2, -3], "monsters": ["stone_golem"]},
+        {"mark": "cave", "monsters": ["kobold_shield", "kobold", "kobold", "kobold_slinger", "kobold_slinger"]},
+        {"mark": "dune_w", "at": [0, -2], "monsters": ["sandman"]},
+        {"mark": "dune_e", "at": [0, -2], "monsters": ["sandman", "kobold_slinger"]},
     ],
     "features": [
         {"mark": "seep", "event": "clear_spring", "tile": "f2d_cairn"},
@@ -187,7 +191,7 @@ route_spots = {
     ],
 }
 d = {
-    "_comment": "2층 바위사막(docs/plans/floor2.md §4 · §13-5, level_design_review.md B-2 D — 1단계 LD14): 1층 서쪽 포탈(dest floor2_west)에서 온다. 횃불 옛길(돌 화로 — 빛 · 그늘)은 멀고 안전, 모래 바다(진동 — 샌드웜)는 곧다. 낮 열기(그늘 밖 — 허기 · 피로, 샘물로 식힌다) · 오후 모래 폭풍(시야). 새 몬스터(코볼트 셋 · 스톤 골렘 · 거석병 · 샌드맨 · 샌드웜 · 데쓰웜)는 2단계 — 지금은 노움 · 타락한 노움 · 석상 가고일(거석병 자리) · 웜스톤(샌드웜 자리). 수치는 모두 임시값",
+    "_comment": "2층 바위사막(docs/plans/floor2.md §4 · §13-5, level_design_review.md B-2 D — 1단계 LD14): 1층 서쪽 포탈(dest floor2_west)에서 온다. 횃불 옛길(돌 화로 — 빛 · 그늘)은 멀고 안전, 모래 바다(진동 — 샌드웜)는 곧다. 낮 열기(그늘 밖 — 허기 · 피로, 샘물로 식힌다) · 오후 모래 폭풍(시야). 2단계(LD15): 코볼트 굴(방패병 · 창잡이 · 투석병) · 거석병(광장 · 옛길 — 가까이 가야 깨어나는 돌 병사) · 스톤 골렘(열주) · 샌드맨(모래 언덕) · 샌드웜(모래 바다 진동) · 데쓰웜(샌드웜 셋 → 모래 폭풍 · 보스) + 옛길 노움 무리. 수치는 모두 임시값",
     "id": "f2_rock_desert", "name_ko": "바위사막", "floor": 2, "arrival": "floor2_west", "generator": "fields", "close_hours": 240,
     "visibility_cap_m": 9.5, "visibility_source": "placeholder", "ambient_light_m": 8.0, "ambient_source": "placeholder", "ambient_color": "#f0dcb4",
     "art": {
@@ -213,7 +217,7 @@ d = {
     "regions": [
         {"id": "f2r_road", "zone": "f2r_road", "name_ko": "횃불 옛길", "monsters": ["gnome", "corrupted_gnome"], "weights": {"gnome": 5, "corrupted_gnome": 1}, "groups": [5, 6], "horde": True, "entry_dist": [25, 0]},
         {"id": "f2r_road_lone", "zone": "f2r_road", "name_ko": "횃불 옛길", "monsters": ["gnome"], "weights": {"gnome": 1}, "groups": [3, 4], "pack": [1, 1], "entry_dist": [8, 35]},
-        {"id": "f2r_cave", "zone": "f2r_cave", "name_ko": "코볼트 굴", "monsters": ["corrupted_gnome", "gnome"], "weights": {"corrupted_gnome": 2, "gnome": 3}, "groups": [2, 3]},
+        {"id": "f2r_cave", "zone": "f2r_cave", "name_ko": "코볼트 굴", "monsters": ["kobold", "kobold_shield", "kobold_slinger"], "weights": {"kobold": 3, "kobold_shield": 1, "kobold_slinger": 2}, "groups": [2, 3]},
     ],
     "spawn": {"_comment": "망자의 땅과 같은 키. 모래 바다엔 지역 무리가 없다(샌드웜 매복만)", "groups_per_region": [4, 5],
               "pack_by_day": [[4, 6], [4, 7], [5, 8], [6, 9], [6, 10], [7, 11], [8, 12], [9, 13], [10, 14], [12, 15]],
@@ -222,7 +226,9 @@ d = {
     "desert": {
         "_comment": "DesertRules(LD14): 낮 열기 · 모래 바다 진동. [창작] 임시값",
         "heat": {"zones": ["f2r_road", "f2r_sea"], "from": 8, "to": 18, "status": "heat", "fatigue_per_hour": 2.0, "shade_tiles": ["f2d_fire", "f2d_ruin", "f2d_statue"], "shade_radius": 2, "cool_status": "refreshed"},
-        "sand_sea": {"tiles": ["f2r_sand"], "per_step": 1.0, "decay_per_hour": 25.0, "threshold": 14.0, "warn_at": 0.6, "monsters": ["wormstone"],
+        "deathworm": {"kill_id": "sandworm", "after_kills": 3, "monster": "deathworm", "at_mark": "sea_mid", "storm_hours": 2.0, "storm_cap_m": 3.0,
+                      "line": "field.deathworm_rise", "sound": "boss_reveal", "sink_line": "field.deathworm_sink"},
+        "sand_sea": {"tiles": ["f2r_sand"], "per_step": 1.0, "decay_per_hour": 25.0, "threshold": 14.0, "warn_at": 0.6, "monsters": ["sandworm"],
                      "line": "field.sandworm", "warn_line": "field.sand_tremor", "sound": "crumble", "warn_sound": "crumble"},
     },
     "features_gap": 6, "features": [], "landmarks": [],

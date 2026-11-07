@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1091줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1094줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -357,6 +357,7 @@
 - `explore.boss_notice.goblin_bomber` 폭약 주머니를 주렁주렁 단 고블린이 당신을 발견하고 누런 이를 드러낸다.
 - `explore.boss_notice.king_slime` 공동 한가운데의 거대한 점액 덩어리가 출렁임을 멈춘다. 당신 쪽으로 몸을 기울인다.
 - `explore.boss_notice.ildium` 강철 거인이 투구를 들어 올린다. 텅 빈 눈구멍이 당신을 응시한다.
+- `explore.boss_notice.deathworm` 누런 폭풍 속에서 둥근 아가리가 천천히 이쪽으로 기울어진다.
 
 ### `explore.party`
 
@@ -1351,6 +1352,8 @@
 - `field.den_mole_holes` 벽 틈에서 흙부스러기가 쉬지 않고 흘러내린다. 틈마다 새로 판 자국이 있다.
 - `field.buried_pack` 모래 속에서 끈 하나가 손에 걸린다. 당기자 반쯤 삭은 짐 자루가 딸려 나온다.
 - `field.sand_tremor` 발밑 모래가 가늘게 떨리며 흘러내린다.
+- `field.deathworm_rise` 모래가 하늘로 치솟으며 사방이 누렇게 가려진다. 바다 한가운데서 산만 한 몸뚱이가 솟아오른다.
+- `field.deathworm_sink` 폭풍이 잦아들자 거대한 몸뚱이가 모래 속으로 미끄러져 사라진다.
 
 ### `field.corpse`
 

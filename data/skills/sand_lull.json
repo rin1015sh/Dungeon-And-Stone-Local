@@ -1,0 +1,18 @@
+{
+  "id": "sand_lull",
+  "name_ko": "잠재우는 모래",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

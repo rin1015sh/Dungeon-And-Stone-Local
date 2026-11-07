@@ -91,3 +91,28 @@ func test_sand_sea_vibration_raises_worm() -> void:
 	s.desert.update(s, 1.0)
 	assert_eq(s.desert.vibration, 0.0, "서 있으면 진동이 가라앉는다")
 	s.detach()
+
+
+## 2단계(LD15): 새 몬스터 자리 · 샌드웜 셋 → 모래 폭풍 · 데쓰웜, 폭풍이 그치면 가라앉는다.
+func test_new_monsters_and_deathworm() -> void:
+	var s := _session(2, true)
+	for id: String in ["monolith_soldier", "stone_golem", "kobold_shield", "kobold_slinger", "sandman"]:
+		assert_true(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has(id)), "%s가 지도에 있다" % id)
+	var killed: Array[String] = ["sandworm"]
+	s.desert.on_kills(s, killed)
+	s.desert.on_kills(s, killed)
+	assert_false(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("deathworm")), "둘로는 아직")
+	var v0 := s.vision_m
+	s.desert.on_kills(s, killed)
+	var dw := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("deathworm"))
+	assert_eq(dw.size(), 1, "셋째 샌드웜 — 데쓰웜이 솟는다")
+	assert_eq((dw[0] as FieldMonsters.Group).boss, "deathworm", "보스 무리(보이면 등장 연출)")
+	assert_true(s.vision_m <= 3.0 + 0.001 and s.vision_m <= v0, "모래 폭풍 — 시야 3m")
+	s.clock.advance(2.5)
+	s.desert.update(s, 0.1)
+	assert_false(s.monsters.groups.has(dw[0]), "폭풍이 그치면 모래 속으로")
+	s.refresh_view()
+	assert_true(s.vision_m > 3.0, "시야가 돌아온다")
+	s.desert.on_kills(s, killed)
+	assert_false(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("deathworm")), "한 원정에 한 번")
+	s.detach()
