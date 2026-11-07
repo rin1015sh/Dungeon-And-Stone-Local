@@ -176,6 +176,11 @@ func _run() -> void:
 			var xy := str(_args["at"]).split(",")
 			ExploreDebug.teleport(explore.session, Vector2i(xy[0].to_int(), xy[1].to_int()))
 			await _frames(2)
+		if _args.has("vibration") and explore.session.desert != null:  # --vibration=<0~1>: 모래 바다 진동을 문턱의 그 비율로(발밑 떨림 SandTremor 확인)
+			var sea := JsonUtil.get_dict(JsonUtil.get_dict(explore.session.floor_def, "desert"), "sand_sea")
+			explore.session.desert.vibration = str(_args["vibration"]).to_float() * JsonUtil.get_float(sea, "threshold", 12.0)
+			await _frames(40)
+			print("[vibration] tremor %.2f" % explore.session.desert.tremor(explore.session))
 		if _args.has("monument"):  # --monument[=ready|lord]: 기념비 아래 칸에서 살피기 — 마석 넷(ready면 네 종 처치, lord면 수호자 넷도) — 고르기 창(RF22·DF17)
 			var ms := explore.session
 			for lm: Dictionary in ms.map.landmarks:

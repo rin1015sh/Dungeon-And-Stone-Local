@@ -90,6 +90,13 @@ func test_sand_sea_vibration_raises_worm() -> void:
 	s.last_move_hours = -1.0
 	s.desert.update(s, 1.0)
 	assert_eq(s.desert.vibration, 0.0, "서 있으면 진동이 가라앉는다")
+	# 화면 표시 세기(SandTremor): 바다 위에서만 진동 / 문턱
+	s.relocate(sand)
+	s.desert.vibration = 7.0
+	assert_near(s.desert.tremor(s), 0.5, 0.001, "발밑 떨림 = 진동 / 문턱")
+	var hard := _find(s, func(p: Vector2i) -> bool: return s.map.is_walkable(p) and s.map.tile_id_at(p) != "f2r_sand")
+	s.relocate(hard)
+	assert_eq(s.desert.tremor(s), 0.0, "바다 밖이면 떨리지 않는다")
 	s.detach()
 
 

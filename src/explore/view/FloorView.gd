@@ -131,6 +131,11 @@ func _ready() -> void:
 	player_view.calm = art.low_quality
 	add_child(player_view)
 	player_view.position = feet_of(session.fpos)
+	if session.floor_def.has("desert"):  # 모래 바다 진동이 발밑에 보인다(DesertRules는 session.start에서 생긴다 — 층 데이터로 정한다)
+		var tremor := SandTremor.new()
+		tremor.setup(self)
+		add_child(tremor)
+		move_child(tremor, player_view.get_index())  # 몸 아래(발밑)에
 	_build_particles()
 	session.body_moved.connect(_on_body_moved)
 	session.monsters.changed.connect(sync_monsters)

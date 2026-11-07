@@ -15,6 +15,7 @@
     "raider_tint": "#b0a090",
     "occluded_actor_alpha": 0.4,
     "cover_actor_alpha": 0.55,
+    "sand_tremor": {"_comment": "모래 바다 진동 표시(SandTremor — 발밑 둘레 알갱이 · 고리, 세기 = 진동 / 문턱)", "radius_tiles": 1.8, "color": "#5a3c1e", "grain_color": "#7a5530", "grain_px": 1.4, "ring_width": 2.0, "grains": 36, "hop_px": 4.0, "grain_rate": 12.0, "ring_speed": 0.6, "ring_speed_k": 1.4, "ring_alpha": 0.7, "follow": 1.5},
     "texture_filter": "linear",
     "art_scale": 2,
     "wall_skirt_px": 4,

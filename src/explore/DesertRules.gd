@@ -35,6 +35,14 @@ static func setup(s: ExploreSession) -> DesertRules:
 	return r
 
 
+## 화면 표시용 진동 세기 0~1(진동 / threshold — 모래 바다 위에 있을 때만, SandTremor가 발밑 모래를 떨게 그린다).
+func tremor(s: ExploreSession) -> float:
+	var sea := JsonUtil.get_dict(_cfg, "sand_sea")
+	if sea.is_empty() or not _sand.has(s.map.tile_id_at(s.pos)):
+		return 0.0
+	return clampf(vibration / maxf(0.001, JsonUtil.get_float(sea, "threshold", 12.0)), 0.0, 1.0)
+
+
 ## 칸에 들어섰다: 모래 바다면 진동이 쌓인다.
 func on_enter(s: ExploreSession, cell: Vector2i) -> void:
 	var sea := JsonUtil.get_dict(_cfg, "sand_sea")
