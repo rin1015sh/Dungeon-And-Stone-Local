@@ -50,6 +50,7 @@ var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — 
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
 var _was_cover: bool = false
+var forks: RouteForks = null              ## 갈림길 규칙(route_spots.forks — 야수의 소굴, LD11)
 var watch: RouteWatch = null            ## 망대 경보(route_spots.watch — 고블린 숲, FL22)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 5일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
@@ -123,6 +124,7 @@ func start() -> void:
 	RouteSpots.place_features(self)
 	RouteSpots.scatter(self)
 	RouteSpots.scatter_hazards(self)
+	forks = RouteForks.setup(self)  # 갈림길 규칙(야수의 소굴 — LD11)
 	terrain = FieldTerrain.setup(self)
 	maws = MawTraps.build(self)
 	goal = FloorGoal.setup(self)

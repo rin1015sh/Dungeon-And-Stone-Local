@@ -20,7 +20,8 @@
   "ambience": {
     "f1_cave": "res://assets/audio/ambience/f1_cave.ogg",
     "f2_forest": "res://assets/audio/ambience/f2_forest.ogg",
-    "f2_dead": "res://assets/audio/ambience/f2_dead.ogg"
+    "f2_dead": "res://assets/audio/ambience/f2_dead.ogg",
+    "f2_den": "res://assets/audio/ambience/f2_den.ogg"
   },
   "bgm": {
     "title": "res://assets/audio/bgm/title.ogg"

@@ -30,7 +30,7 @@
 - ● 전투 뒷그림 — res://assets/battle/f1_crystal_cave.webp
 - ● 환경음 audio.ambience — f1_cave
 - ● 지역 스폰 regions — 5지역
-- ● 동굴 요소 features — 25종 203곳
+- ● 동굴 요소 features — 33종 234곳
 - ● 다른 탐험가 explorers
 - ● 위층 포탈 portals — 4개
 - ● 계층군주 lord(+패턴) — dreadfear · 패턴 dreadfear
@@ -42,12 +42,12 @@
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 
 ## 2층 (필드 등급 8 · 파티 2)
-- ● 층 정의 data/floors — f2_goblin_forest
+- ● 층 정의 data/floors — f2_beast_den
 - ● 생성기 src/explore/generators — fields
 - ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
-- ○ 데칼 시트·굽기(bake_decor) — art.decor 없음
-- ● 전투 뒷그림 — res://assets/battle/f2_goblin_forest.webp
-- ● 환경음 audio.ambience — f1_cave
+- ○ 데칼 시트·굽기(bake_decor) — res://assets/floor/f1/decals.webp
+- ● 전투 뒷그림 — res://assets/battle/f2_land_of_dead.webp
+- ● 환경음 audio.ambience — f2_den
 - ● 지역 스폰 regions — 4지역
 - ○ 동굴 요소 features — 0종 0곳
 - ○ 다른 탐험가 explorers

@@ -277,7 +277,8 @@ func test_portal_has_destination_and_placeholder_message() -> void:
 	assert_eq(dests, {"east": "floor2_east", "west": "floor2_west", "south": "floor2_south", "north": "floor2_north"})
 	var keys: Array[String] = []
 	s.message.connect(func(k: String, _a: Dictionary, _kind: String) -> void: keys.append(k))
-	assert_true(ExploreDebug.teleport(s, map.portals[0]["pos"]))
+	var west: Dictionary = map.portals.filter(func(p: Dictionary) -> bool: return str(p["dest"]) == "floor2_west")[0]  # 아직 없는 길(동쪽은 소굴 — LD11)
+	assert_true(ExploreDebug.teleport(s, west["pos"]))
 	assert_true(keys.has("explore.dark_enter"), "포탈 주변은 암흑지대")
 	s.interact()
 	assert_true(keys.has("explore.portal_locked"), "2층이 없으면 안내 메시지")

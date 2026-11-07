@@ -1,0 +1,12 @@
+{
+  "id": "den_quiet_wall",
+  "name_ko": "조용한 벽",
+  "type": "feature",
+  "near": {
+    "radius": 2,
+    "line": "field.den_quiet_wall",
+    "kind": "info"
+  },
+  "source": "placeholder",
+  "notes": "야수의 소굴 갈림길 단서(LD11 — RouteForks right/wrong): 갈래 입구에 원정마다 놓인다. 바른 갈래와 막힌 갈래의 한 줄을 견주어 읽는다. 임시값"
+}

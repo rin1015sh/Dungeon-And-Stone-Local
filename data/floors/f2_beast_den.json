@@ -1,0 +1,1243 @@
+{
+  "_comment": "2층 야수의 소굴(docs/plans/floor2.md §2 · §13-4, level_design_review.md B-2 C — 1단계 LD11): 1층 동쪽 포탈(dest floor2_east)에서 온다. 메사 사이 협곡 고리 셋 · 갈림길 셋(원정마다 바른 갈래 — 바람 · 벽의 굴 · 발톱 자국) · 바위턱. 새 몬스터 다섯(벽두더지 · 여왕 · 반달바위곰 · 불카르 · 웨어울프)은 2단계 — 지금은 칼날늑대 무리 · 샤벨타이거 · 키메라 울프. 그림은 망자의 땅 흙 · 바위 + 붉은 사암 색조. 수치는 모두 임시값",
+  "id": "f2_beast_den",
+  "name_ko": "짐승의 소굴",
+  "floor": 2,
+  "arrival": "floor2_east",
+  "generator": "fields",
+  "close_hours": 240,
+  "visibility_cap_m": 9.5,
+  "visibility_source": "placeholder",
+  "ambient_light_m": 7.5,
+  "ambient_source": "placeholder",
+  "ambient_color": "#e0c8a8",
+  "art": {
+    "_comment": "1단계: 망자의 땅 바닥 · 외곽 그림(assets/floor/f2d)을 붉은 사암 색조로. 전투 뒷그림도 망자의 땅 것을 잠시 쓴다(2단계에서 협곡 그림). [창작] 임시값",
+    "battleback": {
+      "image": "res://assets/battle/f2_land_of_dead.webp",
+      "half_width": 3.6
+    },
+    "palette": {
+      "unexplored": "#000000",
+      "near_black": "#2e241c",
+      "tone": "#f4dcc0",
+      "memory_tint": "#9a8670",
+      "memory_brightness": 0.5,
+      "memory_desat": 0.3,
+      "keep_hue": true
+    },
+    "torch_color": "#ffc890",
+    "post": {
+      "saturation": 0.75,
+      "vignette_strength": 0.45,
+      "vignette_radius": 0.5,
+      "grain_strength": 0.05
+    },
+    "particles": [
+      {
+        "id": "dust",
+        "amount": 40,
+        "lifetime": 10.0,
+        "color": "#e8c8a0",
+        "alpha": 0.25,
+        "scale": [
+          1.0,
+          2.0
+        ],
+        "velocity": [
+          6.0,
+          12.0
+        ],
+        "direction": [
+          1.0,
+          0.1
+        ],
+        "spread": 20.0,
+        "gravity": [
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "ambience": {
+      "loop": "f2_den"
+    },
+    "abyss": {
+      "cliff": "res://assets/floor/f2d/chasm.webp",
+      "cliff_tiles": 8,
+      "cliff_depth": 2.25,
+      "jag": 0.35,
+      "abyss_color": "#1a1410",
+      "mist_color": "#3e342a",
+      "rim_color": "#b09a80",
+      "rise": {
+        "face": "res://assets/floor/f2d/rise_face.webp",
+        "top": "res://assets/floor/f2d/rise_top.webp",
+        "face_tiles": 8,
+        "face_depth": 3,
+        "top_tiles": 8,
+        "jag": 0.3,
+        "fog": 6,
+        "dark": "#241c16"
+      },
+      "bank": {
+        "depth_tiles": 1.3,
+        "shadow_tiles": 0.9,
+        "shadow_alpha": 0.6
+      }
+    },
+    "decor": {
+      "_comment": "바닥 잔해(1층 데칼 시트 — 실행 중 계산): 협곡 자갈 · 발톱 자국 · 뼈. [창작] 임시값",
+      "sheet": "res://assets/floor/f1/decals.webp",
+      "variants": 4,
+      "kinds": [
+        "shore",
+        "gravel",
+        "moss",
+        "wet",
+        "crystal_bits",
+        "claws",
+        "mud",
+        "rot",
+        "trash",
+        "bones"
+      ],
+      "on_tiles": [
+        "f2d_hard",
+        "f2d_mud",
+        "f2d_hard_low",
+        "f2d_mound"
+      ],
+      "rules": [
+        {
+          "kind": "gravel",
+          "wall_north": true,
+          "dense": true,
+          "chance": 0.35
+        },
+        {
+          "kind": "claws",
+          "near_features": {
+            "ids": [
+              "wolf_den",
+              "wolf_tracks"
+            ],
+            "radius": 6
+          },
+          "chance": 0.6
+        },
+        {
+          "kind": "bones",
+          "near_features": {
+            "ids": [
+              "explorer_corpse",
+              "old_skeleton",
+              "wolf_den"
+            ],
+            "radius": 5
+          },
+          "chance": 0.5
+        },
+        {
+          "kind": "claws",
+          "zones": [
+            "f2b_deep"
+          ],
+          "noise": {
+            "key": "claws",
+            "freq": 0.06,
+            "above": 0.5
+          },
+          "chance": 0.5
+        },
+        {
+          "kind": "mud",
+          "zones": [
+            "f2b_deep"
+          ],
+          "chance": 0.12
+        },
+        {
+          "kind": "bones",
+          "zones": [
+            "f2b_wall"
+          ],
+          "noise": {
+            "key": "bones",
+            "freq": 0.05,
+            "above": 0.55
+          },
+          "chance": 0.4
+        },
+        {
+          "kind": "gravel",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  "gen": {
+    "_comment": "야수의 소굴 손으로 짠 지도(tools/f2b_layout.py — floor2.md §2, LD11): 지도 전체 = stamps 하나, 자리 = marks. 다시 만들려면 스크립트를 고쳐 다시 돌린다. [창작] 임시값",
+    "grammar": "route",
+    "size": [
+      140,
+      132
+    ],
+    "seed": 3,
+    "tiles": {
+      "rise": "f2d_rise",
+      "floor": "f2d_hard",
+      "down": "f2_stone_down",
+      "up": "f2_portal_up"
+    },
+    "zone_fill": {
+      "f2b_outer": "f2d_rise",
+      "f2b_wall": "f2d_rise",
+      "f2b_deep": "f2d_rise"
+    },
+    "zone_floor": {
+      "f2b_outer": "f2d_hard",
+      "f2b_wall": "f2d_hard",
+      "f2b_deep": "f2d_mud"
+    },
+    "zone_low": {
+      "f2b_outer": "f2d_hard_low",
+      "f2b_wall": "f2d_hard_low",
+      "f2b_deep": "f2d_hard_low"
+    },
+    "levels": {
+      "scree": "f2d_scree",
+      "ramp": "f2d_slope"
+    },
+    "nodes": [
+      {
+        "id": "arrival",
+        "at": [
+          10,
+          114
+        ],
+        "r": 1,
+        "zone": "f2b_outer",
+        "kind": "arrival",
+        "props": [
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                26,
+                -7
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                34,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                50,
+                -48
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                56,
+                -41
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                90,
+                -51
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                48,
+                -94
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                56,
+                -90
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                20,
+                -48
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_rock",
+            "at": [
+              [
+                94,
+                -54
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_deadtree",
+            "at": [
+              [
+                5,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_deadtree",
+            "at": [
+              [
+                32,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_deadtree",
+            "at": [
+              [
+                54,
+                -45
+              ]
+            ]
+          },
+          {
+            "tile": "f2d_deadtree",
+            "at": [
+              [
+                100,
+                -49
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "outer_hub",
+        "at": [
+          40,
+          110
+        ],
+        "r": 1,
+        "zone": "f2b_outer",
+        "kind": "place"
+      },
+      {
+        "id": "bear_cave",
+        "at": [
+          77,
+          122
+        ],
+        "r": 1,
+        "zone": "f2b_outer",
+        "kind": "place"
+      },
+      {
+        "id": "fork1",
+        "at": [
+          58,
+          103
+        ],
+        "r": 1,
+        "zone": "f2b_outer",
+        "kind": "place"
+      },
+      {
+        "id": "ledge1",
+        "at": [
+          26,
+          92
+        ],
+        "r": 1,
+        "zone": "f2b_outer",
+        "kind": "place"
+      },
+      {
+        "id": "wall_hub",
+        "at": [
+          62,
+          70
+        ],
+        "r": 1,
+        "zone": "f2b_wall",
+        "kind": "place"
+      },
+      {
+        "id": "bone_pit",
+        "at": [
+          28,
+          64
+        ],
+        "r": 1,
+        "zone": "f2b_wall",
+        "kind": "place"
+      },
+      {
+        "id": "wolf_lair",
+        "at": [
+          108,
+          62
+        ],
+        "r": 1,
+        "zone": "f2b_wall",
+        "kind": "place"
+      },
+      {
+        "id": "fork2",
+        "at": [
+          62,
+          54
+        ],
+        "r": 1,
+        "zone": "f2b_wall",
+        "kind": "place"
+      },
+      {
+        "id": "ledge2",
+        "at": [
+          86,
+          52
+        ],
+        "r": 1,
+        "zone": "f2b_wall",
+        "kind": "place"
+      },
+      {
+        "id": "deep_hub",
+        "at": [
+          62,
+          22
+        ],
+        "r": 1,
+        "zone": "f2b_deep",
+        "kind": "place"
+      },
+      {
+        "id": "fork3",
+        "at": [
+          80,
+          20
+        ],
+        "r": 1,
+        "zone": "f2b_deep",
+        "kind": "place"
+      },
+      {
+        "id": "exit",
+        "at": [
+          125,
+          14
+        ],
+        "r": 1,
+        "zone": "f2b_deep",
+        "kind": "exit"
+      },
+      {
+        "id": "ledge3",
+        "at": [
+          42,
+          10
+        ],
+        "r": 1,
+        "zone": "f2b_deep",
+        "kind": "place"
+      }
+    ],
+    "edges": [],
+    "props": [],
+    "stamps": [
+      {
+        "node": "arrival",
+        "at": [
+          -10,
+          -114
+        ],
+        "legend": {
+          ".": "f2d_hard",
+          ":": "f2d_mud",
+          "l": "f2d_hard_low",
+          "/": "f2d_slope",
+          "m": "f2d_mound"
+        },
+        "rows": [
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                           .                                                                                                ",
+          "                                         ....                                                   ::::::      ::::::                          ",
+          "                                       ......                                                :::::::::::::::::::::::      ...               ",
+          "                                       ......                                              ::::::::::::::::::::::::::     .....             ",
+          "                                       .......                                            ::::::      ::::::      ::::   .......            ",
+          "                                        ........                                         ::::                      :::: ........            ",
+          "                                          . .....                                        :::                        ::::.........           ",
+          "                                              ....          ::                         ::::                          :::..........          ",
+          "                                                ...         ::::                    :::::::                            ...........          ",
+          "                                                 .......   ::::::             ::  ::::::::                             ...........          ",
+          "                                                 ........ :::::::::           ::::::::::                                .........           ",
+          "                                                    .. ......:::::::         ::::::::                                  ::.... ..            ",
+          "                                                        .....:::::::         ::::::::                                  :::.                 ",
+          "                                                         ::...:::::::      ::::::::::                                :::::                  ",
+          "                                                         :::..::::::::::::::::::::::                               ::::::                   ",
+          "                                                        ::::..:::::::::::::::::::::::                             ::::::                    ",
+          "                                                        :::::::::::::::::::  :::::::::                           ::::                       ",
+          "                                                       :::::::::::::::         :: ::::::                        :::                         ",
+          "                                                       ::::::::::::::                :::::::::                :::::                         ",
+          "                                                        ::::::::::::....              ::::::::::  :::::    ::::::::                         ",
+          "                                                        .:::::::::::.....              ::::::::::::::::::::::::::                           ",
+          "                                                       ...:::::  ::.......                    ::::::::::::::::                              ",
+          "                                                      .... ::::         ...                     ::     :::::                                ",
+          "                                                .........   :::         ....                                                                ",
+          "                                                ........     ::          ......                                                             ",
+          "                                               .......       :::          ......                                                            ",
+          "                                               ...            ::           .....                                                            ",
+          "                                               ...            ::             ...                                                            ",
+          "                                               ...                           ....                                                           ",
+          "                                               ...                            ...                                                           ",
+          "                                               ...                             ...                                                          ",
+          "                                               ...                             ...                                                          ",
+          "                                               ...                             ...                                                          ",
+          "                                             ....                              ...                                                          ",
+          "                                             ...                              ...                                                           ",
+          "                                             ...                              ...                                                           ",
+          "                                             ...                             .....                                                          ",
+          "                                             .......                        ......                                                          ",
+          "                                              .......                      ......                                                           ",
+          "                                                .....                     ....                                                              ",
+          "                                                   ...                   ....                                                               ",
+          "                                                   ....                .....                                                                ",
+          "                                                    ......       ..........            .                                                    ",
+          "                                                     ........   ..........           ....                                                   ",
+          "                                                       ................            ......                                                   ",
+          "                                                          .........                ......                                                   ",
+          "                                                          ........            ..   ......                                                   ",
+          "                                                          ........          .............                                                   ",
+          "                                                          ........         ........ ...                                                     ",
+          "                                                            .....         ...                          ::   :::                             ",
+          "                                                            .....   ........                          :::::::::::::                         ",
+          "                                                             ..............                           ::::::::::::::                        ",
+          "                          ...                                 ....... ..                              ::::::::::::::                        ",
+          "                         ......                               ... ...                                 ::::::::::::::                        ",
+          "                         .......                              ...                                    ::::::::::::::                         ",
+          "                        .........                             ...                                ....::::::::::::::                         ",
+          "                        ................                      ...         ..                .........::::::::::::::                         ",
+          "                        ...................                  .........................................:::::::::::::                         ",
+          "                        .........................................................................       ::::::::::                          ",
+          "                        .........       ..................................  ................            :::::::::                           ",
+          "                        .........          ..........................                                   ::::::::                            ",
+          "                         ....                          ..............                                   ::::::::                            ",
+          "                          ..                           ..............                                      :::::                            ",
+          "                                                       ..............                                                                       ",
+          "                                                       ...............                                                                      ",
+          "                                                        ..............                                                                      ",
+          "                                                      .................                                                                     ",
+          "                                                    ...............  ...                                                                    ",
+          "                                                   .....   ........   ...                                                                   ",
+          "                                                  .....    ........   ....                                                                  ",
+          "                                              ........      ......     ....                                                                 ",
+          "                                            .........                   .....                                                               ",
+          "                                           .......                       .......                                                            ",
+          "                                          ....                            ........                                                          ",
+          "                                          ....                               .....                                                          ",
+          "                                         ....                                  ....                                                         ",
+          "                                         ...                                    ...                                                         ",
+          "                                          ...                                    ...                                                        ",
+          "                                           ...                                    ...                                                       ",
+          "                                           ...                                     ...                                                      ",
+          "                                           ...                                    ...                                                       ",
+          "                                          ...                                     ...                                                       ",
+          "                       .......            ...                                     ...                                                       ",
+          "                       ........           ...                                     ...                                                       ",
+          "                       ........           ....                                  .....                                                       ",
+          "                      ........             .....                               .....                                                        ",
+          "                       .......              ....                              ....                                                          ",
+          "                        .....                ....                             ...                                                           ",
+          "                        .....                 ...                           ....                                                            ",
+          "                         .....                 ...                         .....                                                            ",
+          "                            ..                 ........         .....   .......                                                             ",
+          "                            ...                 ........       ...............                                                              ",
+          "                            .....                 ......     ..............                                                                 ",
+          "                             .....                    ...........    ...                                                                    ",
+          "                              .....                    ........                                                                             ",
+          "                                ...                    ........                                                                             ",
+          "                                 ..    ....           ........                                                                              ",
+          "                                 ................... .........                                                                              ",
+          "                                 .............................                                                                              ",
+          "                                 ...................... ....                                                                                ",
+          "                                 ...............   ..     ..                                                                                ",
+          "                                 ...............                                                                                            ",
+          "                                ................                                                                                            ",
+          "      .......                   ................                                                                                            ",
+          "      ..........                ................                                                                                            ",
+          "      ..........                 ................                                                                                           ",
+          "     ...........             .....................                                                                                          ",
+          "     ............          .........................                                                                                        ",
+          "      ............         ..................   .....                                                                                       ",
+          "       ............ ...  .......    .........     .....                                                                                     ",
+          "       ......  ...............      .........      ................         ...                                                             ",
+          "       ......   ............          .......        ...............      .....                                                             ",
+          "         ...      ........                             ...............   .......                                                            ",
+          "                                                                  ...... ........                                                           ",
+          "                                                                    .............                                                           ",
+          "                                                                      ...........                                                           ",
+          "                                                                       ..........                                                           ",
+          "                                                                        .........                                                           ",
+          "                                                                        ..........                                                          ",
+          "                                                                         . ......                                                           ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            ",
+          "                                                                                                                                            "
+        ]
+      }
+    ],
+    "marks": [
+      {
+        "name": "arrival",
+        "node": "arrival",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "outer_hub",
+        "node": "arrival",
+        "at": [
+          30,
+          -4
+        ]
+      },
+      {
+        "name": "outer_spring",
+        "node": "arrival",
+        "at": [
+          35,
+          -9
+        ]
+      },
+      {
+        "name": "bear_cave",
+        "node": "arrival",
+        "at": [
+          67,
+          8
+        ]
+      },
+      {
+        "name": "fork1",
+        "node": "arrival",
+        "at": [
+          48,
+          -11
+        ]
+      },
+      {
+        "name": "f1_w_mouth",
+        "node": "arrival",
+        "at": [
+          43,
+          -15
+        ]
+      },
+      {
+        "name": "f1_w_block",
+        "node": "arrival",
+        "at": [
+          37,
+          -36
+        ]
+      },
+      {
+        "name": "f1_e_mouth",
+        "node": "arrival",
+        "at": [
+          53,
+          -15
+        ]
+      },
+      {
+        "name": "f1_e_block",
+        "node": "arrival",
+        "at": [
+          66,
+          -36
+        ]
+      },
+      {
+        "name": "ledge1",
+        "node": "arrival",
+        "at": [
+          16,
+          -22
+        ]
+      },
+      {
+        "name": "wall_hub",
+        "node": "arrival",
+        "at": [
+          52,
+          -44
+        ]
+      },
+      {
+        "name": "bone_pit",
+        "node": "arrival",
+        "at": [
+          18,
+          -50
+        ]
+      },
+      {
+        "name": "wolf_lair",
+        "node": "arrival",
+        "at": [
+          98,
+          -52
+        ]
+      },
+      {
+        "name": "lair_tracks",
+        "node": "arrival",
+        "at": [
+          82,
+          -50
+        ]
+      },
+      {
+        "name": "fork2",
+        "node": "arrival",
+        "at": [
+          52,
+          -60
+        ]
+      },
+      {
+        "name": "f2_w_mouth",
+        "node": "arrival",
+        "at": [
+          48,
+          -64
+        ]
+      },
+      {
+        "name": "f2_w_block",
+        "node": "arrival",
+        "at": [
+          40,
+          -83
+        ]
+      },
+      {
+        "name": "f2_e_mouth",
+        "node": "arrival",
+        "at": [
+          56,
+          -64
+        ]
+      },
+      {
+        "name": "f2_e_block",
+        "node": "arrival",
+        "at": [
+          65,
+          -83
+        ]
+      },
+      {
+        "name": "ledge2",
+        "node": "arrival",
+        "at": [
+          76,
+          -62
+        ]
+      },
+      {
+        "name": "deep_hub",
+        "node": "arrival",
+        "at": [
+          52,
+          -92
+        ]
+      },
+      {
+        "name": "fork3",
+        "node": "arrival",
+        "at": [
+          70,
+          -94
+        ]
+      },
+      {
+        "name": "f3_n_mouth",
+        "node": "arrival",
+        "at": [
+          74,
+          -98
+        ]
+      },
+      {
+        "name": "f3_n_block",
+        "node": "arrival",
+        "at": [
+          102,
+          -105
+        ]
+      },
+      {
+        "name": "f3_s_mouth",
+        "node": "arrival",
+        "at": [
+          74,
+          -90
+        ]
+      },
+      {
+        "name": "f3_s_block",
+        "node": "arrival",
+        "at": [
+          103,
+          -88
+        ]
+      },
+      {
+        "name": "exit",
+        "node": "arrival",
+        "at": [
+          115,
+          -100
+        ]
+      },
+      {
+        "name": "ledge3",
+        "node": "arrival",
+        "at": [
+          32,
+          -104
+        ]
+      }
+    ]
+  },
+  "regions": [
+    {
+      "id": "f2b_outer",
+      "zone": "f2b_outer",
+      "name_ko": "바깥 협곡",
+      "monsters": [
+        "blade_wolf",
+        "giant_blade_wolf"
+      ],
+      "weights": {
+        "blade_wolf": 6,
+        "giant_blade_wolf": 1
+      },
+      "groups": [
+        5,
+        6
+      ],
+      "horde": true,
+      "entry_dist": [
+        30,
+        0
+      ]
+    },
+    {
+      "id": "f2b_outer_lone",
+      "zone": "f2b_outer",
+      "name_ko": "바깥 협곡",
+      "monsters": [
+        "blade_wolf"
+      ],
+      "weights": {
+        "blade_wolf": 1
+      },
+      "groups": [
+        3,
+        4
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "entry_dist": [
+        10,
+        40
+      ]
+    },
+    {
+      "id": "f2b_wall",
+      "zone": "f2b_wall",
+      "name_ko": "두더지 벽",
+      "monsters": [
+        "blade_wolf",
+        "blood_blade_wolf",
+        "sabertooth"
+      ],
+      "weights": {
+        "blade_wolf": 4,
+        "blood_blade_wolf": 2,
+        "sabertooth": 1
+      },
+      "groups": [
+        4,
+        5
+      ]
+    },
+    {
+      "id": "f2b_deep",
+      "zone": "f2b_deep",
+      "name_ko": "깊은 굴",
+      "monsters": [
+        "blood_blade_wolf",
+        "giant_blade_wolf",
+        "sabertooth",
+        "chimera_wolf"
+      ],
+      "weights": {
+        "blood_blade_wolf": 3,
+        "giant_blade_wolf": 2,
+        "sabertooth": 1,
+        "chimera_wolf": 1
+      },
+      "groups": [
+        4,
+        5
+      ]
+    }
+  ],
+  "spawn": {
+    "_comment": "망자의 땅과 같은 키(원정 날짜 10일). 바깥 협곡 늑대 큰 무리는 horde",
+    "groups_per_region": [
+      4,
+      5
+    ],
+    "pack_by_day": [
+      [
+        4,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        7,
+        11
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        9,
+        13
+      ],
+      [
+        10,
+        14
+      ],
+      [
+        12,
+        15
+      ]
+    ],
+    "respawn_hours": 24,
+    "growth_every_hours": 24,
+    "max_extra_groups": 3
+  },
+  "features_gap": 6,
+  "features": [],
+  "landmarks": [],
+  "portals": [
+    {
+      "id": "to_f3_den",
+      "dir": "north",
+      "to_floor": 3,
+      "dest": "floor3_from_den"
+    }
+  ],
+  "source": "original",
+  "route_spots": {
+    "_comment": "갈림길 셋(forks — RouteForks: 원정마다 바른 갈래 하나, 나머지는 끝이 무너진 돌로 막힘 · 입구 단서 요소) · 바위턱(망루 — 내려다보기) · 곁길 보상 · 지키는 무리 · 협곡 매복. [창작] 임시값",
+    "forks": [
+      {
+        "block_tile": "f2d_scree",
+        "block_r": 2,
+        "branches": [
+          {
+            "mouth": "f1_w_mouth",
+            "block": "f1_w_block"
+          },
+          {
+            "mouth": "f1_e_mouth",
+            "block": "f1_e_block"
+          }
+        ],
+        "right": "den_draft",
+        "wrong": "den_still"
+      },
+      {
+        "block_tile": "f2d_scree",
+        "block_r": 2,
+        "branches": [
+          {
+            "mouth": "f2_w_mouth",
+            "block": "f2_w_block"
+          },
+          {
+            "mouth": "f2_e_mouth",
+            "block": "f2_e_block"
+          }
+        ],
+        "right": "den_quiet_wall",
+        "wrong": "den_burrowed"
+      },
+      {
+        "block_tile": "f2d_scree",
+        "block_r": 2,
+        "branches": [
+          {
+            "mouth": "f3_n_mouth",
+            "block": "f3_n_block"
+          },
+          {
+            "mouth": "f3_s_mouth",
+            "block": "f3_s_block"
+          }
+        ],
+        "right": "den_tracks_in",
+        "wrong": "den_tracks_out"
+      }
+    ],
+    "guards": [
+      {
+        "mark": "wolf_lair",
+        "monsters": [
+          "giant_blade_wolf",
+          "blood_blade_wolf",
+          "blade_wolf",
+          "blade_wolf",
+          "blade_wolf"
+        ]
+      },
+      {
+        "mark": "deep_hub",
+        "at": [
+          0,
+          -3
+        ],
+        "monsters": [
+          "chimera_wolf",
+          "blood_blade_wolf",
+          "blood_blade_wolf",
+          "giant_blade_wolf"
+        ]
+      },
+      {
+        "mark": "bear_cave",
+        "monsters": [
+          "sabertooth"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "mark": "outer_spring",
+        "event": "clear_spring",
+        "tile": "f2d_cairn"
+      },
+      {
+        "mark": "outer_hub",
+        "event": "dead_campfire",
+        "at": [
+          -4,
+          3
+        ],
+        "tile": "f2d_campfire"
+      },
+      {
+        "mark": "bear_cave",
+        "event": "explorer_corpse",
+        "at": [
+          3,
+          1
+        ],
+        "tile": "f2d_corpse_g"
+      },
+      {
+        "mark": "bear_cave",
+        "event": "hidden_cache",
+        "at": [
+          -3,
+          -2
+        ]
+      },
+      {
+        "mark": "ledge1",
+        "event": "watch_post",
+        "tile": "f2d_cairn"
+      },
+      {
+        "mark": "ledge2",
+        "event": "watch_post",
+        "tile": "f2d_cairn"
+      },
+      {
+        "mark": "ledge3",
+        "event": "watch_post",
+        "tile": "f2d_cairn"
+      },
+      {
+        "mark": "bone_pit",
+        "event": "old_skeleton",
+        "at": [
+          1,
+          1
+        ],
+        "tile": "f2d_skeleton"
+      },
+      {
+        "mark": "bone_pit",
+        "event": "explorer_corpse",
+        "at": [
+          -2,
+          -1
+        ],
+        "tile": "f2d_corpse_g"
+      },
+      {
+        "mark": "wolf_lair",
+        "event": "wolf_den",
+        "at": [
+          3,
+          0
+        ]
+      },
+      {
+        "mark": "lair_tracks",
+        "event": "wolf_tracks"
+      },
+      {
+        "mark": "deep_hub",
+        "event": "explorer_corpse",
+        "at": [
+          0,
+          11
+        ],
+        "tile": "f2d_corpse_g"
+      },
+      {
+        "mark": "deep_hub",
+        "event": "hidden_cache",
+        "at": [
+          1,
+          12
+        ]
+      },
+      {
+        "mark": "f1_w_block",
+        "event": "explorer_corpse",
+        "at": [
+          0,
+          3
+        ],
+        "tile": "f2d_corpse_g"
+      },
+      {
+        "mark": "f2_e_block",
+        "event": "old_skeleton",
+        "at": [
+          0,
+          3
+        ],
+        "tile": "f2d_skeleton"
+      }
+    ],
+    "ambush": [
+      {
+        "mark": "f1_w_mouth",
+        "at": [
+          -6,
+          -6
+        ],
+        "monsters": [
+          "blade_wolf",
+          "blade_wolf"
+        ],
+        "radius": 3,
+        "line": "field.ambush_wolf",
+        "sound": "wolf_growl"
+      },
+      {
+        "mark": "f2_e_mouth",
+        "at": [
+          8,
+          -4
+        ],
+        "monsters": [
+          "blood_blade_wolf",
+          "blade_wolf"
+        ],
+        "radius": 3,
+        "line": "field.ambush_wolf",
+        "sound": "wolf_growl"
+      },
+      {
+        "mark": "f3_s_mouth",
+        "at": [
+          8,
+          3
+        ],
+        "monsters": [
+          "sabertooth"
+        ],
+        "radius": 3,
+        "line": "field.ambush_wolf",
+        "sound": "wolf_growl"
+      }
+    ]
+  }
+}
