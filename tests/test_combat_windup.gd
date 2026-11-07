@@ -180,3 +180,21 @@ func test_off_balance_doubles_stun_chance() -> void:
 	var king := kb.side_units(Combatant.SIDE_ENEMY)[0]
 	BossHooks.apply_effects(kb, king, kb.side_units(Combatant.SIDE_PARTY)[0], JsonUtil.get_array(db.get_entry("skills", "king_jump_crush"), "effects"))
 	assert_false(king.actor.has_meta(BattleDelayed.OFF_BALANCE), "보스 예고는 해당 없음")
+
+
+## 행동 순서(CB7): 앞으로의 차례 목록 · 큰 몸짓이 터지는 그 적의 차례 자리.
+func test_turn_order_marks_windup_turn() -> void:
+	var b := _battle(["hobgoblin"])
+	var pair := _cast(b, "hob_club_smash")
+	var hob: Combatant = pair[0]
+	var to := TurnOrder.new()
+	to.setup(b)
+	var list := to.order()
+	assert_eq(list.size(), 6, "여섯 차례")
+	var boom := to.fires(list)
+	assert_eq(boom.size(), 1, "터지는 자리 하나")
+	var at: int = boom.keys()[0]
+	assert_eq(list[at], hob, "큰 몸짓을 준비한 적의 차례")
+	assert_eq(list.find(hob), at, "그 적의 다음 차례")
+	assert_eq(int(to.first_index()[hob]), at + 1, "무대 이름 앞 번호")
+	to.free()

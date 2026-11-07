@@ -180,6 +180,12 @@ func refresh() -> void:
 	queue_redraw()
 
 
+## 다음 차례 번호(TurnOrder — 같은 이름 무리를 가린다). 0이면 이름만.
+func set_order(n: int) -> void:
+	if _name != null:
+		_name.text = Strings.t("combat.order_name", {"n": n, "name": unit.label()}) if n > 0 else unit.label()
+
+
 func set_current(on: bool) -> void:
 	if _current != on:
 		_current = on

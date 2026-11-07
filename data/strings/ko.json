@@ -508,6 +508,8 @@
     "delayed_fire": "{name}이(가) 불러 모은 기억이 쏟아진다!",
     "delayed_dropped": "{name}이(가) 준비하던 공격이 흩어졌다.",
     "windup_broken": "{name}의 큰 몸짓이 끊겼다.",
+    "order_row": "{n}  {name}",
+    "order_name": "{n} · {name}",
     "deathworm_rage": "{name}이(가) 몸부림치며 피 냄새를 좇아 고개를 돌린다.",
     "cav_charge_warn": "{name}이(가) 창끝을 낮추고 거리를 잰다.",
     "cav_charge_fire": "{name}이(가) 돌격해 온다!",

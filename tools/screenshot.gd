@@ -331,6 +331,14 @@ func _run() -> void:
 						BossHooks.turn_end(cb, boss, false)
 			if _args.has("summon"):
 				await _summon()
+			if _args.has("windup"):  # --windup=<스킬>: 첫 적이 그 큰 몸짓을 준비 중(행동 순서의 붉은 별 · 머리 위 아이콘 확인 — CB7)
+				await _frames(3)
+				for n: Node in _main.find_children("*", "", true, false):
+					if n is CombatScreen:
+						var wb := (n as CombatScreen).battle
+						BossHooks.apply_effects(wb, wb.side_units(Combatant.SIDE_ENEMY)[0], wb.side_units(Combatant.SIDE_PARTY)[0],
+							JsonUtil.get_array(wb.db.get_entry("skills", str(_args["windup"])), "effects"))
+						(n as CombatScreen).call("_refresh")
 		if _args.has("summon") and _args.has("engage") and not _args.has("combat"):  # 균열 조우 전투에도 증원(줄 배치 확인)
 			await _summon()
 		if _args.has("mate"):  # 동료를 하나 붙여 "행동 정하기"(첫 사람 방어 → 동료 차례)를 본다

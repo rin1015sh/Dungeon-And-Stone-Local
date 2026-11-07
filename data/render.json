@@ -85,6 +85,7 @@
     "hud_panel_width": 360,
     "debug_panel_width": 300, "riddle_width": 600,
     "end_delay_sec": 1.2,
+    "turn_order": {"_comment": "행동 순서(TurnOrder — CB7): 무대 왼쪽 위 여백 x·y, 보일 차례 수 count, 줄 사이 gap, 큰 몸짓 아이콘 px, 둘째 줄부터 흐림 later_alpha", "x": 20, "y": 20, "count": 6, "gap": 2, "icon_px": 18, "later_alpha": 0.8},
     "horde_count": {"_comment": "큰 무리 전투의 뒤에 남은 적 수(HordeCount — floor2.md §1-2): 무대 오른쪽 위 여백 x·y, 글자 크기", "x": 24, "y": 20, "font_size": 24, "outline": 5},
     "condition_toast": {"_comment": "허기·피로 단계 알림(사용자 2026-11-04 — 엔터로 넘기지 않는 좌하단 알림, 몇 초 뒤 저절로 사라진다. ConditionToast): sec = 떠 있는 시간, fade_sec = 흐려지는 시간, max = 한꺼번에 쌓이는 수, x·y = 화면 왼쪽·아래 여백, font_size·pad_x·pad_y = 글자 크기·판 안쪽 여백(사용자 2026-11-04 \"더 크게 잘 보이게\" — 17 → 26, 3.5초 → 5초)", "sec": 5.0, "fade_sec": 1.0, "max": 3, "x": 16, "y": 16, "font_size": 26, "pad_x": 22, "pad_y": 12}, "combat_banner_sec": 1.2, "combat_banner_fade_sec": 0.3, "combat_banner_y": 20, "combat_ai_delay_sec": 0.45,
     "combat_turn_gap_sec": 0.7, "combat_strike_gap_sec": 0.75,

@@ -33,6 +33,7 @@ var _menu: CommandMenu
 var _route: NoticeRoute
 var _dialog: DialogueBox
 var _banner: SkillBanner
+var _order: TurnOrder  # 행동 순서(CB7 — 사용자 2026-11-07)
 var _strike_delay: float = 0.0  # 이번 행동의 두 번째 타격 이후 사건을 미루는 초(_on_event)
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 한다)
@@ -73,6 +74,9 @@ func _ready() -> void:
 		var hc := HordeCount.new()
 		add_child(hc)
 		hc.setup(battle)
+	_order = TurnOrder.new()
+	_order.setup(battle)
+	add_child(_order)
 	_banner = SkillBanner.new()
 	add_child(_banner)
 	_banner.place_top()
@@ -344,6 +348,11 @@ func _refresh() -> void:
 		v.set_current(u == now)
 	_roster.set_current(now)
 	_roster.refresh()
+	_order.refresh()
+	var nth := _order.first_index()
+	for u: Combatant in _stage.views():
+		if u.side == Combatant.SIDE_ENEMY:
+			(_stage.views()[u] as BattlerView).set_order(int(nth.get(u, 0)))
 
 
 ## 행동을 정하던 중에 누가 쓰러졌다(밖에서 생명력이 0이 됨): 그 사람을 목록에서 빼고,
