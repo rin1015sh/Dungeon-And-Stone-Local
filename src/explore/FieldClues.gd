@@ -6,6 +6,8 @@ extends RefCounted
 ##     — 늑대 발자국 → 늑대 굴, 노움 긁힌 표식 → 노움 은닉처. 화면(밝혀진 지도)이 알려 주므로 따로 글을 띄우지 않는다.
 ##   행동 "hours_window": {"from": 시, "to": 시, "missing": 문구}: 그 시각(0~24, from > to면 자정을 넘는다) 안에서만 할 수 있다
 ##     — 밤에만 우는 종(망자의 땅 듀라한 폐허).
+##   행동 "reveal_traps": 칸 반경 — 그 안의 숨은 함정 묶음을 모두 드러낸다(강철의 묘 벽화 — 그림이 피해 걷는 자리, LD10).
+##   행동 "crush": {"radius", "hours"} — 그 안의 무리(보스 · 탐험가 빼고)가 무너진 천장에 깔려 hours 동안 걷지 못한다(녹색 탄광 버팀목, LD10).
 ##   행동 "line_day": true: line 대신 line_d<원정 날짜>(없으면 그보다 이른 날 중 가장 늦은 것, 그것도 없으면 line) — 날마다 달라지는 비석.
 
 
@@ -64,3 +66,36 @@ static func day_key(s: ExploreSession, key: String) -> String:
 		if Strings.has(k):
 			return k
 	return key
+
+
+## reveal_traps: 반경 안 숨은 함정 묶음을 드러낸다(균열이면 챕터 함정, 아니면 층 덫). 드러낸 묶음 수.
+static func reveal_traps(s: ExploreSession, from: Vector2i, radius: float) -> int:
+	if radius <= 0.0:
+		return 0
+	var hz: RiftHazards = s.rift_run.hazards if s.rift_run != null else s.features.hazards
+	var seen: Array = []
+	for q: Vector2i in hz.at:
+		var hd: Dictionary = hz.at[q]
+		if seen.has(hd) or not JsonUtil.get_bool(hd, "hidden") or bool(hd.get("detected", false)) or Vector2(q - from).length() > radius:
+			continue
+		seen.append(hd)
+		hd["detected"] = true
+		hd["rolled"] = true
+		hz.show_group(s, hd)
+	if not seen.is_empty():
+		s.refresh_view()
+	return seen.size()
+
+
+## crush: 반경 안 무리를 묶는다. 묶은 무리 수.
+static func crush(s: ExploreSession, from: Vector2i, d: Dictionary) -> int:
+	if d.is_empty() or not s.monsters_enabled:
+		return 0
+	var n := 0
+	var until := s.clock.total_hours + JsonUtil.get_float(d, "hours", 1.0)
+	for g: FieldMonsters.Group in s.monsters.groups:
+		if g.boss != "" or not g.party.is_empty() or Vector2(g.pos - from).length() > JsonUtil.get_float(d, "radius", 4.0):
+			continue
+		g.held_until = until
+		n += 1
+	return n

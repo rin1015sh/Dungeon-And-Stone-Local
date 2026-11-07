@@ -1,0 +1,19 @@
+{
+  "id": "tomb_mural",
+  "name_ko": "복도 벽화",
+  "type": "feature",
+  "tile": "it_banner_wall",
+  "standing": true,
+  "actions": [
+    {
+      "id": "read",
+      "name_ko": "벽화를 들여다본다",
+      "limit": "once",
+      "hours": 0.2,
+      "line": "field.tomb_mural",
+      "reveal_traps": 75
+    }
+  ],
+  "source": "placeholder",
+  "notes": "강철의 묘 1챕터 함정 복도 어귀(LD10 — 관찰 · 추론, level_design_review.md B-3): 행렬이 피해 걷는 바닥 그림 — 들여다보면 복도의 숨은 함정이 드러난다. 임시값"
+}

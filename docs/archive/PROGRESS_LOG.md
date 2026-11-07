@@ -3,6 +3,11 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 레벨 디자인 5차(LD10) — 균열 장치 셋(벽화 · 얼음 속 탐험가 · 버팀목)
+- **한 일**: `FieldClues.reveal_traps` · `crush`(요소 행동), 이벤트 셋(tomb_mural · frozen_explorer · mine_support), 균열 셋 챕터 features(텍스트 한 줄씩 — 파일 서식 그대로), 문구 7.
+- **검증**: test_level_design 12(균열 장치 포함) · sim_rift 모두 통과 · check.sh 모든 검증 통과(테스트 575).
+- **남은 것**: 소굴(1단계 = 지도 + 다시 쓰는 몬스터 + 바람 규칙) · 사람 플레이.
+
 ### 2026-11-07 레벨 디자인 4차(LD8 · LD9) — 엄폐 · 핏빛성채 다리목 보초
 - **한 일**: `FieldStealth` 엄폐(타일 cover 옆에 서 있으면 은신 0.6) · 숨으면 몸 흐림(FloorView, `ExploreSession`이 들고 날 때 다시 그림) · 타일 19개 cover. `rampart_watch` 요소(bf_post) · `RouteWatch` guard_at · `RiftRun`이 챕터 요소 뒤 watch를 짓고 보초를 remaining에. 처음 넣은 자리는 보초가 다리 위에 서서 `test_bridge_is_empty_until_the_middle`이 실패 → guard_at [-2, 0]. sim_rift는 보초가 조우 목록 밖이라 멈췄다 → remaining에 넣어 해결("모두 통과"). 그러자 `test_posts_spread_into_empty_places`가 보초를 대기 무리로 셌다 → 시험에서 보초를 뺐다.
 - **검증**: test_level_design(엄폐) · test_rift_ambush(보초) · sim_rift 모두 통과 · check.sh(PROGRESS 한 줄).

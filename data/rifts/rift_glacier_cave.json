@@ -193,7 +193,7 @@
     {
       "id": "ch2",
       "battleback": {"image": "res://assets/battle/glacier_cave_ch2.webp", "half_width": 5.0},
-      "name_ko": "얼음 계단과 토템",
+      "name_ko": "얼음 계단과 토템", "features": [{"id": "frozen_explorer", "at": [48, 22]}, {"id": "frozen_explorer", "at": [39, 25]}],
       "desc_ko": "얼음 계단 아래 중심 토템에서 끝없이 쏟아지는 무리 — 아홉 물결 뒤 설원의 군주. 길잡이 기둥 하나에 금이 가 있다.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_glacier_cave_ch2.json"

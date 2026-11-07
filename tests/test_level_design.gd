@@ -220,3 +220,54 @@ func test_cover_hides_when_still() -> void:
 	assert_true(FieldStealth.in_cover(s), "서 있으면 숨는다")
 	assert_near(FieldStealth.of(s), float(db.bal("explore.cover_stealth")), 0.001, "엄폐만큼 알아채는 반경이 준다")
 	s.detach()
+
+
+func _rift(rift_id: String, chapter: int) -> ExploreSession:
+	if _reg == null:
+		_reg = ContentRegistries.new()
+	var def := db.get_entry("floors", "f1_crystal_cave")
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 18, "agi": 16, "p_res": 14, "m_res": 8, "int": 10})
+	var s := ExploreSession.new(db, def, _reg.generator("crystal_cave").generate(db, def, Rng.new(3)), pc, GameClock.new(), Rng.new(5), _reg.effects)
+	s.monsters_enabled = false
+	s.start()
+	s.rifts.force_open(s, rift_id, s.pos)
+	var cs := s.rifts.enter(s, s.map.portals.filter(func(q: Dictionary) -> bool: return str(q.get("kind", "")) == "rift")[0])
+	return cs if chapter == 0 else cs.rift_run.build_chapter(chapter)
+
+
+## 균열 장치(LD10): 강철의 묘 벽화 → 복도 함정이 드러난다 · 빙하굴 얼음을 깨면 길이 열린다 · 탄광 버팀목을 차면 둘레 무리가 깔린다.
+func test_rift_set_pieces() -> void:
+	var it := _rift("rift_iron_tomb", 0)
+	var mural := _feats(it, "tomb_mural")
+	assert_eq(mural.size(), 1, "벽화")
+	var hidden_before := 0
+	for q: Vector2i in it.rift_run.hazards.at:
+		if JsonUtil.get_bool(it.rift_run.hazards.at[q], "hidden") and not bool(it.rift_run.hazards.at[q].get("detected", false)):
+			hidden_before += 1
+	assert_true(hidden_before > 0, "복도에 숨은 함정")
+	it.features.act(it, mural[0]["pos"], "read")
+	var still := 0
+	for q: Vector2i in it.rift_run.hazards.at:
+		if JsonUtil.get_bool(it.rift_run.hazards.at[q], "hidden") and not bool(it.rift_run.hazards.at[q].get("detected", false)):
+			still += 1
+	assert_eq(still, 0, "벽화를 보면 숨은 함정이 모두 드러난다")
+	var gc := _rift("rift_glacier_cave", 1)
+	var ice := _feats(gc, "frozen_explorer")
+	assert_eq(ice.size(), 2, "얼음에 갇힌 형체 둘")
+	var at: Vector2i = ice[0]["pos"]
+	assert_false(gc.map.is_walkable(at))
+	for tries in 30:
+		gc.features.act(gc, at, "break")
+		if gc.map.is_walkable(at):
+			break
+	assert_true(gc.map.is_walkable(at), "깨면 얼음 칸이 열린다")
+	var gm := _rift("rift_green_mine", 1)
+	var sup := _feats(gm, "mine_support")
+	assert_eq(sup.size(), 2, "버팀목 둘")
+	gm.monsters_enabled = true
+	var sp: Vector2i = sup[0]["pos"]
+	var g := gm.monsters.add_fixed(["goblin_miner"], sp + Vector2i(-3, 0))
+	assert_true(g != null)
+	gm.features.act(gm, sp, "kick")
+	assert_true(g.held_until > gm.clock.total_hours, "무너진 천장에 깔렸다")
+	assert_eq(gm.map.tile_id_at(sp), "gm_rock", "버팀목 자리는 돌무더기")

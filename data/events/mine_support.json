@@ -1,0 +1,36 @@
+{
+  "id": "mine_support",
+  "name_ko": "삭은 버팀목",
+  "type": "feature",
+  "tile": "gm_support",
+  "standing": true,
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.mine_support"
+    },
+    {
+      "id": "kick",
+      "name_ko": "걷어찬다",
+      "limit": "once",
+      "hours": 0.05,
+      "line": "field.mine_support_kick",
+      "sound": "crumble",
+      "crush": {
+        "radius": 5,
+        "hours": 1.0
+      },
+      "alert": {
+        "monster": "goblin_miner",
+        "radius": 45,
+        "hours": 0.5
+      },
+      "clear": true,
+      "clear_tile": "gm_rock"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "녹색 탄광 2챕터 위쪽 비탈길(LD10 — 지형 조작): 걷어차면 천장이 무너져 둘레 5칸 무리가 한 시간 깔린다(쫓기던 무리를 떼어 놓는다) — 대신 소리에 먼 광부 고블린이 몰려온다. 임시값"
+}

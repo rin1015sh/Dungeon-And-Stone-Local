@@ -69,6 +69,8 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		s.message.emit("field.learned", {"monster": DataNames.entry(s.db, "monsters", learn)}, "good")
 	_alert(s, e["pos"], JsonUtil.get_dict(a, "alert"))
 	FieldClues.point_to(s, e["pos"], JsonUtil.get_dict(a, "point_to"))
+	FieldClues.reveal_traps(s, e["pos"], JsonUtil.get_float(a, "reveal_traps"))
+	FieldClues.crush(s, e["pos"], JsonUtil.get_dict(a, "crush"))
 	var goto := JsonUtil.get_str(a, "goto")  # 계단(지하 묘실 — FL14): map.anchors.marks의 그 자리로 옮겨 선다
 	if not goto.is_empty() and (s.map.anchors.get("marks", {}) as Dictionary).has(goto):
 		s.relocate((s.map.anchors["marks"] as Dictionary)[goto])

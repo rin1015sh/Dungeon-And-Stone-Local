@@ -1,0 +1,69 @@
+{
+  "id": "frozen_explorer",
+  "name_ko": "얼음에 갇힌 형체",
+  "type": "feature",
+  "tile": "gc_crystal",
+  "standing": true,
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.frozen_explorer"
+    },
+    {
+      "id": "break",
+      "name_ko": "얼음을 깬다",
+      "limit": "once",
+      "hours": 0.3,
+      "check": {
+        "stat": "str",
+        "dc": 12
+      },
+      "fail_line": "field.frozen_explorer_fail",
+      "line": "field.frozen_explorer_break",
+      "sound": "crumble",
+      "give": [
+        {
+          "item": "magic_stone_7",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.6
+        },
+        {
+          "item": "glacier_oil_cake",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.7
+        },
+        {
+          "one_of": [
+            "glacier_frost_herb",
+            "glacier_yeti_salve",
+            "glacier_blue_crystal"
+          ],
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.8
+        }
+      ],
+      "spawn": {
+        "monsters": [
+          "frost_wolf"
+        ],
+        "chance": 0.4,
+        "line": "field.frozen_explorer_thaw"
+      },
+      "clear": true,
+      "clear_tile": "ice_floor"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "빙하굴 2챕터(LD10 — 환경 탐험): 얼음 결정 속에 짐을 진 탐험가와 그를 문 짐승이 함께 얼어 있다. 깨면 짐 · 가끔 짐승이 깨어난다(살피면 둘 다 보인다 — 단서). 임시값"
+}

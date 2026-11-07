@@ -120,7 +120,7 @@
   "chapters": [
     {
       "id": "ch1",
-      "name_ko": "함정 복도",
+      "name_ko": "함정 복도", "features": [{"id": "tomb_mural", "at": [21, 13]}],
       "desc_ko": "사방이 어둡고 좁은 금속 복도. 벽에는 벽화 같은 문양이 새겨져 있고, 바닥 어딘가에 압력판과 화살 함정이 숨어 있다.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_iron_tomb_ch1.json"

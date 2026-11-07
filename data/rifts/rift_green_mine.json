@@ -229,7 +229,7 @@
     {
       "id": "ch2",
       "battleback": {"image": "res://assets/battle/green_mine_ch2.webp", "half_width": 1.8},
-      "name_ko": "무너진 다리",
+      "name_ko": "무너진 다리", "features": [{"id": "mine_support", "at": [42, 6]}, {"id": "mine_support", "at": [51, 6]}],
       "desc_ko": "3분의 2가 무너진 다리. 옆 통로로 돌거나 건너뛸 수 있다. 다리 너머에서 폭약 냄새가 난다.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_green_mine_ch2.json"
