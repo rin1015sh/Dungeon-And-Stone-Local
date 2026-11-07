@@ -201,3 +201,22 @@ func test_chapel_pews_and_tower() -> void:
 	s.features.act(s, t[0]["pos"], "climb")
 	assert_eq(int(s.map.explored[s.map.idx(far)]), 1, "종탑에 오르면 30칸 밖도 밝혀진다")
 	s.detach()
+
+
+## 엄폐(LD8): 묘비 · 긴 의자 옆에 서 있으면 숨는다(장례 행렬을 지나보낸다), 움직이면 풀린다.
+func test_cover_hides_when_still() -> void:
+	var s := _f2("f2_land_of_dead", false)
+	var spot := Vector2i(-1, -1)
+	for i in s.map.tiles.size():
+		var p := s.map.pos_of(i)
+		if s.map.tile_id_at(p) == "f2d_pew" and s.map.is_walkable(p + Vector2i.DOWN):
+			spot = p + Vector2i.DOWN
+			break
+	assert_true(spot.x >= 0 and s.relocate(spot), "긴 의자 옆")
+	s.last_move_hours = s.clock.total_hours
+	assert_false(FieldStealth.in_cover(s), "움직이는 중엔 숨지 못한다")
+	assert_eq(FieldStealth.of(s), 0.0)
+	s.clock.advance(0.1)
+	assert_true(FieldStealth.in_cover(s), "서 있으면 숨는다")
+	assert_near(FieldStealth.of(s), float(db.bal("explore.cover_stealth")), 0.001, "엄폐만큼 알아채는 반경이 준다")
+	s.detach()

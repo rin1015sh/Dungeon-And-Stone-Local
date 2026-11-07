@@ -250,6 +250,7 @@ func refresh(full: bool = false) -> void:
 		_particles.set_radius(_vision * tile)
 	var tint_k := JsonUtil.get_float(_cfg, "actor_light_tint", 0.5)
 	player_view.self_modulate = Color.WHITE.lerp(_light_color, tint_k)
+	player_view.modulate.a = JsonUtil.get_float(_cfg, "cover_actor_alpha", 0.55) if FieldStealth.in_cover(session) else 1.0  # 엄폐(LD8)
 
 
 ## 원정 중에 타일이 바뀐 칸(새 시체 등 — ExploreSession.tiles_changed): 소품 칸에 넣고 그 둘레를 다시 그린다.

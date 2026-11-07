@@ -258,7 +258,8 @@ func test_posts_spread_into_empty_places() -> void:
 			for e: Variant in JsonUtil.get_array(run.chapters()[i], "encounters"):
 				if JsonUtil.get_str(e, "kind") == "posts":
 					want += JsonUtil.get_int(e, "count")
-			var posts: Array = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.guard and g.monster_ids.size() < 8)
+			var sentries: Array = cs.watch.towers().map(func(tw: Dictionary) -> Variant: return tw["guard"]) if cs.watch != null else []  # 다리목 보초(LD9)는 대기 무리가 아니다
+			var posts: Array = run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.guard and g.monster_ids.size() < 8 and not sentries.has(g))
 			assert_eq(posts.size(), want, "%s %d챕터 대기 무리 수" % [rift_id, i + 1])
 			var near := float(db.bal("rift.post_min_tiles"))
 			for g: FieldMonsters.Group in posts:

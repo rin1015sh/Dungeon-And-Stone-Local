@@ -14,6 +14,7 @@
     "raider_sprite": "res://assets/actors/looks/r0_raider.webp",
     "raider_tint": "#b0a090",
     "occluded_actor_alpha": 0.4,
+    "cover_actor_alpha": 0.55,
     "texture_filter": "linear",
     "art_scale": 2,
     "wall_skirt_px": 4,

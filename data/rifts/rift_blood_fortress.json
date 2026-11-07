@@ -213,7 +213,7 @@
     {
       "id": "ch2",
       "battleback": {"image": "res://assets/battle/blood_fortress_ch2.webp", "half_width": 4.0},
-      "name_ko": "도개교",
+      "name_ko": "도개교", "features": [{"id": "rampart_watch", "at": [44, 17]}, {"id": "rampart_watch", "at": [44, 22]}],
       "desc_ko": "내려진 도개교 너머로 성채의 문이 보인다.",
       "map": {
         "blueprint": "res://data/maps/rifts/rift_blood_fortress_ch2.json"

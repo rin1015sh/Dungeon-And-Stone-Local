@@ -67,3 +67,23 @@ func test_roaming_packs_are_placed_in_every_chapter() -> void:
 			var cs := _chapter(rid, i)
 			var roam := cs.rift_run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.tag == "roam" and not g.guard)
 			assert_eq(roam.size(), want, "%s %d챕터: 떠도는 무리 수" % [rid, i + 1])
+
+
+## 다리목 보초(LD9): 도개교 앞 기둥 둘에 보초 — 다가가다 들키면 둘레 망자 병사가 쫓아온다, 보초를 먼저 쓰러뜨리면 조용.
+func test_bridge_sentries() -> void:
+	var cs := _chapter("rift_blood_fortress", 1)
+	assert_true(cs.watch != null and cs.watch.towers().size() == 2, "다리목 보초 둘")
+	var t: Dictionary = cs.watch.towers()[0]
+	var at: Vector2i = t["at"]
+	if t["guard"] == null:  # 이 시험 세션은 몬스터를 끈다 — 보초를 손으로 세운다
+		t["guard"] = cs.monsters.add_fixed(["soldier_deadman"], at + Vector2i(-2, 1))
+	var g := cs.monsters.add_fixed(["deadman"], at + Vector2i(-14, 3))
+	assert_true(g != null)
+	cs.map.visible_now[cs.map.idx(at)] = 1
+	cs.watch.on_enter(cs, at + Vector2i(-6, 3))
+	assert_true(g.alert_until > cs.clock.total_hours, "들키면 둘레 망자가 쫓아온다")
+	var t2: Dictionary = cs.watch.towers()[1]
+	t2["guard"] = null  # 먼저 쓰러뜨렸다
+	g.alert_until = -1.0
+	cs.watch.on_enter(cs, (t2["at"] as Vector2i) + Vector2i(-4, 0))
+	assert_true(g.alert_until < 0.0, "보초가 없으면 조용하다")

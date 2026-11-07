@@ -175,6 +175,7 @@
   },
   "explore": {
     "stealth_still_hours": 0.02,
+    "cover_stealth": 0.6,
     "start_floor": "f1_crystal_cave",
     "meters_per_tile": 1.0,
     "_move_comment": "한 칸 걷는 게임 시간(플레이어·몬스터 같은 기본값 — 몬스터는 ÷ behavior move_mult). 0.0225 → 0.0321(사용자 2026-11-01 \"이동속도 지금의 70%\" — 실제 초당 4.4칸 → 3.1칸, V22)",

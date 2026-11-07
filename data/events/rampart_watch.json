@@ -1,0 +1,33 @@
+{
+  "id": "rampart_watch",
+  "name_ko": "다리목 보초",
+  "type": "feature",
+  "tile": "bf_post",
+  "watch": {
+    "radius": 10,
+    "guard": "soldier_deadman",
+    "monster": [
+      "deadman",
+      "soldier_deadman"
+    ],
+    "alarm_radius": 40,
+    "hours": 0.5,
+    "sound": "bell_toll",
+    "line": "field.rampart_alarm",
+    "guard_at": [
+      -2,
+      0
+    ]
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.rampart_watch"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "핏빛성채 2챕터 도개교(LD9 — level_design_review.md B-3 공성 · 잠입): 다리목 기둥(bf_post) 곁 해골 병사 보초. 10칸 안에서 보이면 40칸 안 망자 병사가 쫓아온다. 보초를 먼저 꾀어내 쓰러뜨리면 조용. 임시값 standing = 이미 서 있는 다리목 기둥(bf_post — 챕터 요소는 타일을 바꾸지 않는다)",
+  "standing": true
+}

@@ -125,6 +125,11 @@ func build_chapter(i: int) -> ExploreSession:
 		var fd: Dictionary = f if f is Dictionary else {}
 		var fa := JsonUtil.get_array(fd, "at")
 		cs.features.add_at(cs, JsonUtil.get_str(fd, "id"), Vector2i(int(fa[0]), int(fa[1])))
+	if cs.watch == null:
+		cs.watch = RouteWatch.build(cs)  # 챕터 요소 망루(핏빛성채 다리목 보초 — LD9) — 보초도 그 챕터의 조우로 센다
+		for tw: Dictionary in (cs.watch.towers() if cs.watch != null else []):
+			if tw["guard"] != null and not remaining.has(tw["guard"]):
+				remaining.append(tw["guard"])
 	var fx := JsonUtil.get_array(ch, "on_enter")
 	if not fx.is_empty():
 		var ctx := EffectContext.new(db, null, outer.player, outer.rng)

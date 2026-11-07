@@ -4,7 +4,7 @@ extends RefCounted
 ##   "watch": [{"node" | "edge"+"t" | "mark", "at": [dx, dy], "radius": 칸, "archer": 몬스터 id}] — 망대 자리 둘레에 궁수 하나(지키는 무리)를 세운다.
 ##   "watch_alarm": {"region": 지역 id, "hours", "sound", "line"} — 망대 궁수가 살아 있고 플레이어가 radius칸 안에서 망대를 볼 수 있으면(서로 보인다)
 ##   그 지역 무리 모두가 hours시간 동안 보지 못해도 쫓아온다(뿔피리). 망대마다 한 번. 궁수를 먼저 쓰러뜨리면 그 망대는 조용하다.
-## 동굴 요소 망루(1층 북쪽 고블린 망루 — 레벨 디자인 LD): data/events의 "watch": {"radius", "guard": 몬스터 id, "monster": [쫓아올 몬스터 id …],
+## 동굴 요소 망루(1층 북쪽 고블린 망루 — 레벨 디자인 LD): data/events의 "watch": {"radius", "guard": 몬스터 id, "guard_at": [dx, dy](기본 [0, 1]), "monster": [쫓아올 몬스터 id …],
 ##   "alarm_radius": 칸, "hours", "sound", "line"} — 그 요소 자리 둘레에 망꾼 하나(제자리에서 둘러본다)를 세우고, 울리면 alarm_radius 안의
 ##   monster 무리만 쫓아온다(넓은 1층 북쪽 팔 전체가 몰려오지 않게). 망꾼이 없으면(쓰러뜨림) 조용하다.
 ## 순수 로직(오토로드 비의존).
@@ -34,7 +34,9 @@ static func build(s: ExploreSession) -> RouteWatch:
 			continue
 		var g: FieldMonsters.Group = null
 		if s.monsters_enabled and s.db.has_entry("monsters", JsonUtil.get_str(wd, "guard")):
-			g = s.monsters.add_fixed([JsonUtil.get_str(wd, "guard")], (e["pos"] as Vector2i) + Vector2i.DOWN)
+			var ga := JsonUtil.get_array(wd, "guard_at")  # 망꾼 자리(요소에서 — 기본 한 칸 아래)
+			var off := Vector2i(int(ga[0]), int(ga[1])) if ga.size() == 2 else Vector2i.DOWN
+			g = s.monsters.add_fixed([JsonUtil.get_str(wd, "guard")], (e["pos"] as Vector2i) + off)
 			if g != null:
 				g.guard = true  # 순찰하지 않고 망루 밑에서 둘러본다
 		w._towers.append({"at": e["pos"], "radius": JsonUtil.get_float(wd, "radius", 9.0), "guard": g, "rang": false, "alarm": wd})

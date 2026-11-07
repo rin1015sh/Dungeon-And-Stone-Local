@@ -49,6 +49,7 @@ var blades: GrooveBlades = null
 var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — FL15)
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
+var _was_cover: bool = false
 var watch: RouteWatch = null            ## 망대 경보(route_spots.watch — 고블린 숲, FL22)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 5일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
@@ -342,6 +343,10 @@ func pass_time(hours: float) -> void:
 		rifts.update(self, h)
 		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))
+		var hid := FieldStealth.in_cover(self)
+		if hid != _was_cover:  # 엄폐에 들거나 나왔다 — 몸 흐림을 다시 그린다(LD8)
+			_was_cover = hid
+			refresh_view()
 		monsters.set_player_marks(player.statuses.ids())
 		monsters.set_player_moving(FieldStealth.moving(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
