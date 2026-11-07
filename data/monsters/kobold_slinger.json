@@ -60,13 +60,19 @@
     "row": "back"
   },
   "skills": [
-    "kobold_sling_stone"
+    "kobold_sling_stone",
+    "flee"
   ],
   "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.3,
+      "use": "flee"
+    },
     {
       "if": "always",
       "use": "kobold_sling_stone"
     }
   ],
-  "notes": "뒤줄에서 돌을 던진다(창작). 임시값"
+  "notes": "뒤줄에서 돌을 던진다(창작). 임시값 · 전투 개선 CB5: 체력 30% 아래면 달아난다(겁 많은 무리 — 고블린과 같은 규칙)"
 }

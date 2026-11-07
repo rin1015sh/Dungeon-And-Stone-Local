@@ -61,9 +61,21 @@
   },
   "skills": [
     "bear_maul",
-    "giant_body_slam"
+    "giant_body_slam",
+    "giant_menacing_roar"
   ],
   "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.4,
+      "also": [
+        {
+          "if": "chance",
+          "value": 0.5
+        }
+      ],
+      "use": "giant_menacing_roar"
+    },
     {
       "if": "chance",
       "value": 0.4,
@@ -74,5 +86,5 @@
       "use": "bear_maul"
     }
   ],
-  "notes": "짐승의 소굴 곰굴(floor2.md §2 — 창작, LD12): 혼자 다니는 큰 짐승 — 물리내성 높고 느리다. 임시값 수치는 손으로(같은 층 · 등급 몬스터 — 칼날늑대 · 키메라 울프 · 해골 전사 — 곁에 맞춤, restat_monsters의 엘리트 규칙은 보스 평균을 써 너무 약하게 나와 쓰지 않음)"
+  "notes": "짐승의 소굴 곰굴(floor2.md §2 — 창작, LD12): 혼자 다니는 큰 짐승 — 물리내성 높고 느리다. 임시값 수치는 손으로(같은 층 · 등급 몬스터 — 칼날늑대 · 키메라 울프 · 해골 전사 — 곁에 맞춤, restat_monsters의 엘리트 규칙은 보스 평균을 써 너무 약하게 나와 쓰지 않음) · 전투 개선 CB5: 체력 40% 아래면 가끔 위협 포효(궁지에 몰린 곰)"
 }

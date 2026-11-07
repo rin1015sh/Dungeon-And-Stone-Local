@@ -221,7 +221,7 @@ d = {
     "regions": [
         {"id": "f2r_road", "zone": "f2r_road", "name_ko": "횃불 옛길", "monsters": ["gnome", "corrupted_gnome"], "weights": {"gnome": 5, "corrupted_gnome": 1}, "groups": [5, 6], "horde": True, "entry_dist": [25, 0]},
         {"id": "f2r_road_lone", "zone": "f2r_road", "name_ko": "횃불 옛길", "monsters": ["gnome"], "weights": {"gnome": 1}, "groups": [3, 4], "pack": [1, 1], "entry_dist": [8, 35]},
-        {"id": "f2r_cave", "zone": "f2r_cave", "name_ko": "코볼트 굴", "monsters": ["kobold", "kobold_shield", "kobold_slinger"], "weights": {"kobold": 3, "kobold_shield": 1, "kobold_slinger": 2}, "groups": [2, 3]},
+        {"id": "f2r_cave", "zone": "f2r_cave", "name_ko": "코볼트 굴", "monsters": ["kobold", "kobold_shield", "kobold_slinger"], "weights": {"kobold": 3, "kobold_shield": 1, "kobold_slinger": 2}, "groups": [2, 3], "escort": {"kobold_shield": {"monster": "kobold_slinger", "count": [1, 2]}}},
     ],
     "spawn": {"_comment": "망자의 땅과 같은 키. 모래 바다엔 지역 무리가 없다(샌드웜 매복만)", "groups_per_region": [4, 5],
               "pack_by_day": [[4, 6], [4, 7], [5, 8], [6, 9], [6, 10], [7, 11], [8, 12], [9, 13], [10, 14], [12, 15]],

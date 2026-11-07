@@ -614,7 +614,16 @@
       "groups": [
         2,
         3
-      ]
+      ],
+      "escort": {
+        "kobold_shield": {
+          "monster": "kobold_slinger",
+          "count": [
+            1,
+            2
+          ]
+        }
+      }
     }
   ],
   "spawn": {

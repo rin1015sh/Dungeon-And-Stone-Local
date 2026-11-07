@@ -993,7 +993,16 @@
       "entry_dist": [
         30,
         0
-      ]
+      ],
+      "escort": {
+        "giant_blade_wolf": {
+          "monster": "blade_wolf",
+          "count": [
+            1,
+            1
+          ]
+        }
+      }
     },
     {
       "id": "f2b_outer_lone",
@@ -1058,7 +1067,16 @@
       "groups": [
         4,
         5
-      ]
+      ],
+      "escort": {
+        "giant_blade_wolf": {
+          "monster": "blood_blade_wolf",
+          "count": [
+            1,
+            1
+          ]
+        }
+      }
     }
   ],
   "spawn": {

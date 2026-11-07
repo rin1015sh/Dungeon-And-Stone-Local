@@ -60,9 +60,26 @@
     "row": "front"
   },
   "skills": [
-    "bulkar_rend"
+    "bulkar_rend",
+    "rat_hide"
   ],
   "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "also": [
+        {
+          "if": "self_status",
+          "status": "hidden",
+          "not": true
+        },
+        {
+          "if": "chance",
+          "value": 0.5
+        }
+      ],
+      "use": "rat_hide"
+    },
     {
       "if": "first_turn",
       "use": "bulkar_rend"
@@ -73,5 +90,5 @@
       "use": "bulkar_rend"
     }
   ],
-  "notes": "짐승의 소굴(floor2.md §2 — 창작, LD12): 협곡 그늘 바위에 붙어 위장한 털 짐승 — 가까이(2m) 와야 드러나 덮친다. 불 약점. 임시값 수치는 손으로(같은 층 · 등급 몬스터 — 칼날늑대 · 키메라 울프 · 해골 전사 — 곁에 맞춤, restat_monsters의 엘리트 규칙은 보스 평균을 써 너무 약하게 나와 쓰지 않음)"
+  "notes": "짐승의 소굴(floor2.md §2 — 창작, LD12): 협곡 그늘 바위에 붙어 위장한 털 짐승 — 가까이(2m) 와야 드러나 덮친다. 불 약점. 임시값 수치는 손으로(같은 층 · 등급 몬스터 — 칼날늑대 · 키메라 울프 · 해골 전사 — 곁에 맞춤, restat_monsters의 엘리트 규칙은 보스 평균을 써 너무 약하게 나와 쓰지 않음) · 전투 개선 CB5: 체력 절반 아래면 바위 그늘로 숨었다가 다시 덮친다"
 }

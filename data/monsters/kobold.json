@@ -60,13 +60,19 @@
     "row": "front"
   },
   "skills": [
-    "kobold_spear_jab"
+    "kobold_spear_jab",
+    "flee"
   ],
   "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.3,
+      "use": "flee"
+    },
     {
       "if": "always",
       "use": "kobold_spear_jab"
     }
   ],
-  "notes": "바위사막 코볼트 굴(floor2.md §4 — LD15): 작은 도마뱀 머리 창잡이. 임시값"
+  "notes": "바위사막 코볼트 굴(floor2.md §4 — LD15): 작은 도마뱀 머리 창잡이. 임시값 · 전투 개선 CB5: 체력 30% 아래면 달아난다(겁 많은 무리 — 고블린과 같은 규칙)"
 }

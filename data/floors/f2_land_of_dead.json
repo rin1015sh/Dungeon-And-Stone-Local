@@ -1792,7 +1792,8 @@
       "groups": [
         10,
         12
-      ]
+      ],
+      "escort": {"skeleton_warrior": {"monster": "skeleton_archer", "count": [1, 1]}, "skeleton_mage": {"monster": "skeleton", "count": [2, 2]}, "ghoul_lord": {"monster": "ghoul", "count": [1, 1]}}
     },
     {
       "id": "f2d_hard",
@@ -1813,7 +1814,8 @@
       "groups": [
         8,
         10
-      ]
+      ],
+      "escort": {"ghoul_lord": {"monster": "ghoul", "count": [1, 1]}}
     },
     {
       "id": "f2d_marsh_lone",

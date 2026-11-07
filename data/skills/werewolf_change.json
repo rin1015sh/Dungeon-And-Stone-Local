@@ -4,7 +4,7 @@
   "target": "self",
   "cost": {},
   "delay_cost": 0,
-  "cooldown": 0,
+  "cooldown": 99,
   "effects": [
     {
       "type": "apply_status",
@@ -18,6 +18,6 @@
   ],
   "unique": true,
   "uses_per_battle": 1,
-  "notes": "웨어울프(LD12) — 생명력 절반 아래에서 한 번(2페이즈)",
+  "notes": "웨어울프(LD12) — 생명력 절반 아래에서 한 번(2페이즈) · 몬스터판은 한 판에 한 번(쿨타임 99 — 절반 아래에서 매 차례 15% 회복하던 것을 고침, CB5). 정수판은 따로",
   "source": "placeholder"
 }

@@ -287,10 +287,10 @@ d = {
     },
     "gen": gen,
     "regions": [
-        {"id": "f2b_outer", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf", "giant_blade_wolf"], "weights": {"blade_wolf": 6, "giant_blade_wolf": 1}, "groups": [5, 6], "horde": True, "entry_dist": [30, 0]},
+        {"id": "f2b_outer", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf", "giant_blade_wolf"], "weights": {"blade_wolf": 6, "giant_blade_wolf": 1}, "groups": [5, 6], "horde": True, "entry_dist": [30, 0], "escort": {"giant_blade_wolf": {"monster": "blade_wolf", "count": [1, 1]}}},
         {"id": "f2b_outer_lone", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf"], "weights": {"blade_wolf": 1}, "groups": [3, 4], "pack": [1, 1], "entry_dist": [10, 40]},
         {"id": "f2b_wall", "zone": "f2b_wall", "name_ko": "두더지 벽", "monsters": ["blade_wolf", "blood_blade_wolf", "sabertooth", "wall_mole"], "weights": {"blade_wolf": 4, "blood_blade_wolf": 2, "sabertooth": 1, "wall_mole": 3}, "groups": [4, 5]},
-        {"id": "f2b_deep", "zone": "f2b_deep", "name_ko": "깊은 굴", "monsters": ["blood_blade_wolf", "giant_blade_wolf", "sabertooth", "chimera_wolf"], "weights": {"blood_blade_wolf": 3, "giant_blade_wolf": 2, "sabertooth": 1, "chimera_wolf": 1}, "groups": [4, 5]},
+        {"id": "f2b_deep", "zone": "f2b_deep", "name_ko": "깊은 굴", "monsters": ["blood_blade_wolf", "giant_blade_wolf", "sabertooth", "chimera_wolf"], "weights": {"blood_blade_wolf": 3, "giant_blade_wolf": 2, "sabertooth": 1, "chimera_wolf": 1}, "groups": [4, 5], "escort": {"giant_blade_wolf": {"monster": "blood_blade_wolf", "count": [1, 1]}}},
     ],
     "spawn": {"_comment": "망자의 땅과 같은 키(원정 날짜 10일). 바깥 협곡 늑대 큰 무리는 horde", "groups_per_region": [4, 5],
               "pack_by_day": [[4, 6], [4, 7], [5, 8], [6, 9], [6, 10], [7, 11], [8, 12], [9, 13], [10, 14], [12, 15]],
