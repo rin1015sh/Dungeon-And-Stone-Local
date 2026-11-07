@@ -179,7 +179,7 @@ func next_turn() -> Combatant:
 			c.actor.advance_turns(1.0)
 			BattleRules.report_dot(self, c, hp_before)
 			c.tick_cooldowns()
-		BattleDelayed.tick(self, c)
+		BattleDelayed.tick(self, c, stunned)
 		_after_effects()
 		if _finish_req.is_empty() and c.is_active() and stunned:
 			message.emit("combat.skip", {"name": c.label()}, "warn")

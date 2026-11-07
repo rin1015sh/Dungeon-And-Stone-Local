@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1094줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1108줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -616,6 +616,20 @@
 - `combat.delayed_warn` {name}의 주위로 죽은 자들의 기억이 모여든다…
 - `combat.delayed_fire` {name}이(가) 불러 모은 기억이 쏟아진다!
 - `combat.delayed_dropped` {name}이(가) 준비하던 공격이 흩어졌다.
+- `combat.windup_broken` {name}의 큰 몸짓이 끊겼다.
+- `combat.deathworm_rage` {name}이(가) 몸부림치며 피 냄새를 좇아 고개를 돌린다.
+- `combat.cav_charge_warn` {name}이(가) 창끝을 낮추고 거리를 잰다.
+- `combat.cav_charge_fire` {name}이(가) 돌격해 온다!
+- `combat.ghoul_pounce_warn` {name}이(가) 몸을 낮게 웅크린다.
+- `combat.ghoul_pounce_fire` {name}이(가) 덮쳐 온다!
+- `combat.hob_club_smash_warn` {name}이(가) 몽둥이를 머리 위로 치켜든다.
+- `combat.hob_club_smash_fire` {name}이(가) 몽둥이를 내리꽂는다!
+- `combat.chimera_frenzy_charge_warn` {name}이(가) 앞발로 땅을 긁으며 머리를 숙인다.
+- `combat.chimera_frenzy_charge_fire` {name}이(가) 미친 듯이 돌진한다!
+- `combat.yeti_ice_smash_warn` {name}이(가) 두 주먹을 맞잡아 머리 위로 든다.
+- `combat.yeti_ice_smash_fire` {name}이(가) 맞잡은 주먹을 내리친다!
+- `combat.deathworm_devour_warn` {name}이(가) 모래 속으로 가라앉는다.
+- `combat.deathworm_devour_fire` {name}이(가) 발밑 모래를 가르며 아가리를 벌린다!
 - `combat.tarun_collapse_warn` {name}이(가) 얼음몽둥이를 높이 쳐든다 — 천장과 바닥에 금이 쩍쩍 간다!
 - `combat.tarun_collapse_fire` {name}의 몽둥이가 지면을 내리찍는다 — 발밑이 무너진다!
 - `combat.blater_sentence_warn` {name}이(가) 대검으로 한 사람을 가리킨다 — 사형 선고.

@@ -3,23 +3,33 @@ extends RefCounted
 ## 예고 공격(효과 delayed): 시전자의 차례 시작을 rounds번 지나면 터진다. 대기열은 Combatant.memo["delayed"].
 ## 대상: 찍힌 대상(marked, 예고 — delayed target cast)이 아직 있으면 그쪽, 아니면 상대 진영에서 끌어들이는 상태
 ## (flag draws_attacks)가 있으면 그중, 없으면 무작위 — hits번 따로 고른다.
+## 예고가 남은 동안 시전자에게 [기세 모음](winding_up — 머리 위 아이콘)을 걸어 누가 준비하는지 보인다(전투 개선 CB1).
+## "interruptible": true인 예고는 시전자가 차례를 잃으면(기절 · 빙결 — flag skip_turn, 공포로 굳음) 흩어진다(큰 몸짓은 끊긴다 — 보스 예고는 끊기지 않는다).
+
+
+const WINDUP := "winding_up"
 
 
 static func schedule(c: Combatant, e: Dictionary) -> void:
 	var q: Array = c.memo.get("delayed", [])
 	q.append({"left": int(e.get("rounds", 1)), "hits": int(e.get("hits", 1)), "effects": e.get("effects", []), "marked": e.get("marked"),
-		"guarded_mult": float(e.get("guarded_mult", 1.0)), "fire": str(e.get("fire", "combat.delayed_fire"))})
+		"guarded_mult": float(e.get("guarded_mult", 1.0)), "fire": str(e.get("fire", "combat.delayed_fire")),
+		"interruptible": bool(e.get("interruptible", false))})
 	c.memo["delayed"] = q
+	c.actor.statuses.apply(WINDUP)
 
 
 ## 시전자 c의 차례가 시작됐다. 추가 행동(같은 라운드의 두 번째 차례)에서는 세지 않는다 — 예고를 받고 대응할 틈을 준다.
-static func tick(b: Battle, c: Combatant) -> void:
+## stunned = 이 차례를 잃는다(기절 · 빙결 — 차례 시작 처리 전에 본 값): 끊기는 예고(interruptible)는 흩어진다.
+static func tick(b: Battle, c: Combatant, stunned: bool = false) -> void:
 	var q: Array = c.memo.get("delayed", [])
 	if q.is_empty() or bool(c.memo.get("in_extra", false)):
 		return
 	if not c.is_active():
 		drop(b, c)
 		return
+	if stunned:
+		q = _break(b, c, q)
 	var keep: Array = []
 	for item: Dictionary in q:
 		item["left"] = int(item["left"]) - 1
@@ -42,6 +52,26 @@ static func tick(b: Battle, c: Combatant) -> void:
 				BossHooks.apply_effects(b, c, t, fx)
 	c.memo["delayed"] = keep
 	c.memo.erase("fired_now")
+	if keep.is_empty():
+		c.actor.statuses.remove(WINDUP)
+
+
+## 끊기는 예고를 거둔다(표식도 푼다). 남은 예고를 돌려준다.
+static func _break(b: Battle, c: Combatant, q: Array) -> Array:
+	var keep: Array = []
+	var broke := false
+	for item: Dictionary in q:
+		if not bool(item.get("interruptible", false)):
+			keep.append(item)
+			continue
+		broke = true
+		item["left"] = 0
+		var mk: Combatant = b.unit_of(item["marked"] as Actor) if item.get("marked") is Actor else null
+		if mk != null and not _marked_elsewhere(b, mk.actor, item):
+			mk.actor.statuses.remove("telegraphed")
+	if broke:
+		b.message.emit("combat.windup_broken", {"name": c.label()}, "good")
+	return keep
 
 
 ## 시전자가 쓰러지거나 물러났다: 예고를 거두고 찍힌 표식도 푼다.
@@ -50,6 +80,7 @@ static func drop(b: Battle, c: Combatant) -> void:
 	if q.is_empty():
 		return
 	c.memo["delayed"] = []
+	c.actor.statuses.remove(WINDUP)
 	for item: Dictionary in q:
 		var mk: Combatant = b.unit_of(item["marked"] as Actor) if item.get("marked") is Actor else null
 		if mk != null and not _marked_elsewhere(b, mk.actor, item):

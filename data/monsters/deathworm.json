@@ -69,9 +69,21 @@
       "use": "deathworm_devour"
     }
   ],
-  "notes": "샌드웜 상위 변이종(floor2.md §4 사건 — LD15): 샌드웜 셋을 잡으면 모래 폭풍과 함께 바다 한가운데서 몸 위쪽만 솟는다. 2층 파티로는 거의 못 잡는다 — 바다 밖으로 벗어나면 끝. 임시값",
+  "notes": "샌드웜 상위 변이종(floor2.md §4 사건 — LD15): 샌드웜 셋을 잡으면 모래 폭풍과 함께 바다 한가운데서 몸 위쪽만 솟는다. 2층 파티로는 거의 못 잡는다 — 바다 밖으로 벗어나면 끝. 임시값 · 전투 개선 CB2: 집어삼키기 = 한 차례 앞서 가라앉는 큰 몸짓(방어 ×0.5 · 기절로 끊김), 체력 절반 아래면 가장 약한 사람을 노린다(p2)",
   "status_immune": [
     "snare",
     "bleeding"
+  ],
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.deathworm_rage",
+      "target_rule": "lowest_hp"
+    }
   ]
 }

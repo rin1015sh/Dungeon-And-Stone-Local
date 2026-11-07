@@ -49,6 +49,7 @@ var blades: GrooveBlades = null
 var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — FL15)
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
+var first_side: int = -1  ## 다음 전투에서 먼저 움직이는 쪽(Battle.FIRST_NONE = 정정당당 — 숨어 기다린 매복이면 플레이어, CB3). 화면이 읽고 되돌린다
 var _was_cover: bool = false
 var desert: DesertRules = null            ## 바위사막 열기 · 모래 바다 진동(층 JSON desert — LD14)
 var forks: RouteForks = null              ## 갈림길 규칙(route_spots.forks — 야수의 소굴, LD11)
@@ -360,6 +361,7 @@ func pass_time(hours: float) -> void:
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
 		MonsterSnares.update(self)
 		if g != null:
+			first_side = Combatant.SIDE_PARTY if FieldStealth.springs_ambush(self, g) else Battle.FIRST_NONE
 			engage(g, false)
 
 
@@ -398,6 +400,8 @@ func relocate(to: Vector2i) -> bool:
 
 ## 몬스터 무리와 전투를 시작한다(화면이 encounter를 받아 전투 화면을 연다). party_first: 플레이어가 먼저 발견.
 func engage(group: FieldMonsters.Group, party_first: bool) -> void:
+	var side := first_side
+	first_side = Battle.FIRST_NONE  # 매복 선공은 이번 조우에만(CB3)
 	if in_combat or ended or group == null:
 		return
 	if rift_run != null and rift_run.riddle != null and rift_run.riddle.blocks(group):
@@ -405,6 +409,7 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 		return
 	if parties.meets(self, group):
 		return
+	first_side = side
 	in_combat = true
 	_rewarded = false
 	realtime.tick(self, 0.0)

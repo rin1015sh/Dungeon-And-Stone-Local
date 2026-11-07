@@ -1011,6 +1011,14 @@
     "notes": "예고 공격(delayed target cast)의 대상 표시 — 터지면 풀린다"
   },
   {
+    "id": "winding_up",
+    "name_ko": "큰 몸짓",
+    "kind": "buff",
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "예고 공격을 준비하는 시전자 표시(머리 위 아이콘 — 누가 노리는지 보인다, 전투 개선 CB1). 예고가 터지거나 흩어지면 풀린다(BattleDelayed)"
+  },
+  {
     "id": "march_order",
     "name_ko": "진군 명령",
     "kind": "buff",

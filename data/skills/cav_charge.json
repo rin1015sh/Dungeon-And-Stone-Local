@@ -6,16 +6,28 @@
     "soul": 6
   },
   "delay_cost": 0,
-  "cooldown": 0,
+  "cooldown": 2,
   "effects": [
     {
-      "type": "damage",
-      "scaling": "phys",
-      "power": 1.5,
-      "damage_type": "pierce",
-      "accuracy": 80
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "guarded_mult": 0.5,
+      "warn": "combat.cav_charge_warn",
+      "fire": "combat.cav_charge_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 1.5,
+          "damage_type": "pierce",
+          "accuracy": 80
+        }
+      ]
     }
   ],
   "source": "placeholder",
-  "notes": "첫 라운드 우선도 +1 → 패시브 start_gauge"
+  "notes": "첫 라운드 우선도 +1 → 패시브 start_gauge · 큰 몸짓(전투 개선 CB2): 한 차례 앞서 예고 — 다음 자기 차례 시작에 터진다. 방어하면 ×0.5(방어 태세와 합쳐 ×0.25), 그사이 기절·빙결이면 끊긴다. 위력은 그대로"
 }

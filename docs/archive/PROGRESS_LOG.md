@@ -3,6 +3,14 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 전투 점검 · 개선 1차(CB1~CB3) — 큰 몸짓 · 끊기 · 숨어 기다린 매복
+- **범위 / 완료 기준 / 테스트**: 전투 시스템(CTB · AI · 보스 · 상태 · 조우 · UI)을 코드와 데이터로 점검하고(`docs/plans/combat_review.md` A~J), 기존 장치로 되는 최우선 개선만 작게 넣는다 — 기준: 난이도(sim_party) 거의 그대로 · 테스트 · check.sh 통과. 테스트 = `test_combat_windup` 8 · sim_party 전후 · sim_skills · 캡처.
+- **한 일**: 예고 공격 중 시전자 머리 위 `winding_up` 아이콘 · `interruptible` 예고는 기절 · 빙결 · 공포로 굳으면 흩어짐(CB1). 몬스터판 강한 일격 6개(돌격 · 달려들기 · 몽둥이 · 광폭 돌진 · 얼음 강타 · 집어삼키기)를 같은 위력의 큰 몸짓으로(방어 ×0.5 · 쿨타임 2, 정수판 그대로), 데쓰웜 50% 아래 가장 약한 사람(CB2). 엄폐 · 은신으로 숨어 기다리다 모르는 무리가 닿으면 플레이어 게이지 +50(CB3 — C11의 특수 기습). `sim_party --ai`.
+- **수치(sim_party 5인 200판, 2층 곡선, 남은 생명력 전 → 뒤 naive / smart)**: 철기병×2 86 → 88/89 · 홉고블린×3 91 → 94/95 · 예티 72 → 74/74 · 듀라한×2 91 → 93/95 · 구울×3 · 키메라 그대로. 데쓰웜(3층 곡선) 쓰러짐 0.14 → 무시 0.30 / 방어 0.02.
+- **찾은 것(손대지 않음)**: 순서 막대는 사용자 결정(UI7)으로 지운 상태 — 요청과 부딪쳐 결정 필요. 데스나이트는 패턴이 없어 망자의 맹세를 안 씀(sim_skills — 전부터). 한 가지 공격만 하는 졸개 다섯.
+- **검증**: test_combat_windup 8 · test_skill_value · test_monster_skills · test_mine · test_fortress 통과, sim_skills(데스나이트만 — 전부터), 캡처(홉고블린 큰 몸짓 아이콘 · 파티 창 예고), check.sh 모든 검증 통과(테스트 591).
+- **남은 것**: combat_review.md J(순서 표시 결정 · 엘리트 행동 · 졸개 · 데스나이트 · 기절 노리는 아군 시뮬 · 큰 몸짓 소리 키).
+
 ### 2026-11-07 레벨 디자인 10차(LD15) — 바위사막 새 몬스터 · 데쓰웜
 - **한 일**: 몬스터 여덟 · 스킬 열둘 · 그림(Specs2 · MapMonster — paint_monsters · paint_actors) · 사막 배치(f2r_layout.py) · DesertRules 데쓰웜 사건(on_kills · vision_cap · 폭풍 뒤 가라앉음) · 문구.
 - **고친 것**: shape worm · family ability가 등록되지 않은 값 → beast · phantasm. 새 몬스터에 영혼력이 없어 영혼력 스킬이 안 나감(test_monster_skills) → soul. 기다리는 보스 문구(boss_notice.deathworm) · 보스 면역 둘(속박 · 출혈 — test_status_immunity).

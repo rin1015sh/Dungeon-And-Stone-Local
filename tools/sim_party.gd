@@ -11,6 +11,7 @@ extends SceneTree
 ## 시나리오 "party_statuses": [..] — 전투 전에 아군 전원에게 건다(빙하굴 3·4챕터 저체온증).
 ## 공격은 쓸 수 있는 정수 액티브 중 위력 합이 가장 큰 것, 없으면 기본 공격.
 ## --members=0,2: sim_parties.json party 중 그 번호만(혼자 = --members=1 — 2층 무리 확인), --sc=a*12;b,c: 시나리오를 직접(;로 판, ,로 몬스터,
+## --ai=smart: --sc 시나리오의 아군 AI(기본 naive — [예고]가 찍히면 방어하는 smart와 비교).
 ##   id*n = n마리 — 목표 없음). 적이 진영 상한보다 많으면 큰 무리 예비대(BattleHorde)로 줄 선다.
 ## --curve=<층>: 파티를 10층 곡선의 그 층 기준 탐험가로(docs/balance/curve.json — 첫 전사 = 탱커, 나머지 = 딜러: 정수를 흡수한 뒤
 ##   주 스탯·생명력·공격력을 곡선 값에 맞춘다 — 이능은 1층 정수 그대로). 보스가 "몇 층 위 파티용"인지 확인할 때(docs/plans/balance_10floors.md §4).
@@ -54,7 +55,7 @@ func _initialize() -> void:
 				var bits := tok.split("*")
 				for k in (bits[1].to_int() if bits.size() == 2 else 1):
 					ids.append(bits[0])
-			list.append({"name": part, "monsters": ids, "ai": "naive", "min": 0.0, "max": 1.0})
+			list.append({"name": part, "monsters": ids, "ai": str(args.get("ai", "naive")), "min": 0.0, "max": 1.0})
 		cfg["scenarios"] = list
 	var custom := args.has("essences") or args.has("base") or args.has("essence_mult") or args.has("curve") or args.has("rev") or args.has("members") or args.has("sc")
 	var n := str(args["n"]).to_int()

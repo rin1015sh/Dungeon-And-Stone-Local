@@ -46,7 +46,7 @@ const MAP := {
 	"dread_buff_echo": ["waves", "#9a80c0"], "petrify": ["stone", "#9a9890"], "suppress": ["weight", "#7a7068"],
 	"frost": ["snowflake", "#e0f4ff"], "frozen": ["ice_block", "#8ac8f0"], "confusion": ["spiral", "#c080d0"],
 	"grudge_mark": ["sigil", "#a0c8d0"], "sacrifice_mark": ["sigil", "#c82828"], "seal": ["lock", "#c0a050"],
-	"heal_block": ["broken_heart", "#9a2a3a"], "telegraphed": ["exclamation", "#e8c040"], "march_order": ["sword", "#d8a040"],
+	"heal_block": ["broken_heart", "#9a2a3a"], "telegraphed": ["exclamation", "#e8c040"], "winding_up": ["burst", "#d84a30"], "march_order": ["sword", "#d8a040"],
 	"daze": ["spiral", "#a0a0c0"], "shield_arm": ["shield", "#a08060"], "vitality_drain": ["fang", "#c02040"],
 	"golem_burned": ["flame", "#a04020"], "golem_skeleton": ["bone", "#b8b0a0"], "blater_grudge": ["broken_heart", "#5a2a6a"],
 	"blater_grudge_weak": ["broken_heart", "#8a6a8a"], "guardian_frenzy": ["burst", "#e06020"], "vamp_blood_feast": ["fang", "#8a1010"],

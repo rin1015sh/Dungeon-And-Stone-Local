@@ -6,6 +6,8 @@ extends RefCounted
 ##   칼날늑대처럼 behavior.ignores_stealth인 몬스터에게는 듣지 않는다(MonsterSteering).
 ##   엄폐(레벨 디자인 LD8): 서 있고 옆(4방향)에 타일 data "cover": true인 칸(묘비 · 긴 의자 · 울타리 · 수레 · 덤불 …)이 있으면
 ##   explore.cover_stealth만큼 숨는다 — 정수 이능이 없어도 장례 행렬 · 순찰을 묘비 뒤에서 지나보낸다. 숨은 동안 몸이 흐려진다(FloorView).
+##   숨어 기다린 매복(전투 개선 CB3 — C11의 "플레이어가 기습하는 특수 경우"): 숨은 채 서 있는데 플레이어를 모르는 무리
+##   (쫓기 · 찾기가 아니고 경보 시각도 지난 — 보스 제외)가 몸에 닿으면 플레이어 쪽이 먼저 움직인다(combat.first_strike_gauge).
 
 
 ## 방금 움직였는가(마지막 이동 뒤 explore.stealth_still_hours 안 — 몬스터가 소리를 듣는다).
@@ -35,3 +37,12 @@ static func next_to_cover(s: ExploreSession) -> bool:
 ## 지금 엄폐물 뒤에 숨어 있는가(서 있고 옆에 엄폐물 — 몸이 흐려진다).
 static func in_cover(s: ExploreSession) -> bool:
 	return not moving(s) and next_to_cover(s)
+
+
+## 숨은 채 기다리다 모르고 다가온 무리와 맞닥뜨렸는가(그러면 플레이어 선공 — CB3). 걷는 중 · 쫓기던 중 · 보스는 아니다.
+static func springs_ambush(s: ExploreSession, g: FieldMonsters.Group) -> bool:
+	if g == null or not g.boss.is_empty() or moving(s) or of(s) <= 0.0:
+		return false
+	if g.state == FieldMonsters.STATE_CHASE or g.state == FieldMonsters.STATE_SEARCH:
+		return false
+	return s.clock.total_hours >= g.alert_until
