@@ -367,8 +367,9 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var first := session.first_side  # 정정당당하게(C11) — 숨어 기다리다 모르고 다가온 무리만 플레이어 선공(CB3)
 	session.first_side = Battle.FIRST_NONE
 	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, first,
-		BattleTerrain.cap(session.db, p_tile, e_tile))
+		BattleFloor.merge_cap(BattleTerrain.cap(session.db, p_tile, e_tile), BattleFloor.cap(session)))
 	BattleTerrain.apply(battle, p_tile, e_tile)
+	BattleFloor.apply(battle, session, group)  # 층 전투 기믹(CB10 — 망자의 밤 · 흥분 · 모래바람)
 	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_menu.close()

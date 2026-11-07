@@ -291,6 +291,8 @@ func _handle_event(e: Dictionary) -> void:
 	var u: Combatant = e.get("unit")
 	var v: BattlerView = _stage.view(u) if u != null else null
 	match str(e.get("type")):
+		"windup", "windup_broken":  # 큰 몸짓 준비 · 끊김 — 소리로(UI20, 파일이 없으면 조용하다)
+			AudioBus.play_sfx(str(e["type"]))
 		"act":
 			if v != null:
 				v.act(battle.db, e.get("action", {}))

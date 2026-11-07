@@ -138,3 +138,71 @@ func test_floor1_mixes_from_day3() -> void:
 	var g := s.monsters.spawn_group(north, s.pos, Vector2i(-1, -1), "goblin")
 	assert_true(g != null and g.monster_ids.has("blade_wolf"), "3일 차 뒤 새 고블린 무리는 늑대를 데리고 다닌다")
 	s.detach()
+
+
+func _floor_session(floor_id: String) -> ExploreSession:
+	var reg := ContentRegistries.new()
+	var def := db.get_entry("floors", floor_id)
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 12, "agi": 8})
+	var s := ExploreSession.new(db, def, reg.generator("fields").generate(db, def, Rng.new(2)), pc, GameClock.new(), Rng.new(3), reg.effects)
+	s.monsters_enabled = false
+	s.start()
+	return s
+
+
+func _at_hour(s: ExploreSession, hour: float) -> void:
+	for i in 48:
+		if absf(s.clock.hour_of_day() - hour) < 0.6:
+			return
+		s.clock.advance(0.5)
+
+
+func _fight(s: ExploreSession, ids: Array) -> Battle:
+	var party: Array[Actor] = [s.player]
+	return Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5), party, ids)
+
+
+## 층별 전투 기믹(CB10): 망자의 밤 · 흥분 · 모래바람 · 좁은 협곡.
+func test_floor_battle_gimmicks() -> void:
+	var dead := _floor_session("f2_land_of_dead")
+	_at_hour(dead, 21.0)
+	var b := _fight(dead, ["skeleton", "banshee"])
+	BattleFloor.apply(b, dead, null)
+	for u in b.side_units(Combatant.SIDE_ENEMY):
+		assert_true(u.actor.statuses.has("grave_night"), "밤엔 망자가 세다: %s" % u.label())
+	assert_false(b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.has("grave_night"))
+	_at_hour(dead, 12.0)
+	var b2 := _fight(dead, ["skeleton"])
+	BattleFloor.apply(b2, dead, null)
+	assert_false(b2.side_units(Combatant.SIDE_ENEMY)[0].actor.statuses.has("grave_night"), "낮엔 없다")
+	dead.detach()
+	var forest := _floor_session("f2_goblin_forest")
+	var g := FieldMonsters.Group.new()
+	g.alert_until = forest.clock.total_hours + 1.0
+	var b3 := _fight(forest, ["goblin"])
+	BattleFloor.apply(b3, forest, g)
+	assert_true(b3.side_units(Combatant.SIDE_ENEMY)[0].actor.statuses.has("roused"), "경보로 몰려온 무리는 흥분")
+	g.alert_until = -1.0
+	var b4 := _fight(forest, ["goblin"])
+	BattleFloor.apply(b4, forest, g)
+	assert_false(b4.side_units(Combatant.SIDE_ENEMY)[0].actor.statuses.has("roused"), "들키지 않았으면 없다")
+	forest.detach()
+	var desert := _floor_session("f2_rock_desert")
+	_at_hour(desert, 14.0)
+	var road := Vector2i(-1, -1)
+	for i in desert.map.tiles.size():
+		var p := desert.map.pos_of(i)
+		if desert.map.zone_at(p) == "f2r_road" and desert.map.is_walkable(p):
+			road = p
+			break
+	desert.relocate(road)
+	var b5 := _fight(desert, ["kobold"])
+	BattleFloor.apply(b5, desert, null)
+	for u in b5.units:
+		assert_true(u.actor.statuses.has("sandblown"), "모래 폭풍 속엔 양쪽 다: %s" % u.label())
+	desert.detach()
+	var den := _floor_session("f2_beast_den")
+	assert_eq(BattleFloor.cap(den), 3, "좁은 협곡 — 적 셋까지")
+	assert_eq(BattleFloor.merge_cap(2, 3), 2)
+	assert_eq(BattleFloor.merge_cap(0, 3), 3)
+	den.detach()

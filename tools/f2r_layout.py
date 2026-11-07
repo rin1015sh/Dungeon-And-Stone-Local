@@ -218,6 +218,7 @@ d = {
                             {"kind": "bones", "chance": 0.02}, {"kind": "gravel", "chance": 0.08}]},
     },
     "gen": gen,
+    "battle": {"_comment": "층 전투 기믹(CB10): 모래 폭풍(13~16시 옛길 · 바다, 데쓰웜 폭풍) 속 전투는 양쪽 모두 모래바람(명중 −15)", "rules": [{"status": "sandblown", "side": "all", "zones": ["f2r_road", "f2r_sea"], "from": 13, "to": 16}, {"status": "sandblown", "side": "all", "storm": True}]},
     "regions": [
         {"id": "f2r_road", "zone": "f2r_road", "name_ko": "횃불 옛길", "monsters": ["gnome", "corrupted_gnome"], "weights": {"gnome": 5, "corrupted_gnome": 1}, "groups": [5, 6], "horde": True, "entry_dist": [25, 0]},
         {"id": "f2r_road_lone", "zone": "f2r_road", "name_ko": "횃불 옛길", "monsters": ["gnome"], "weights": {"gnome": 1}, "groups": [3, 4], "pack": [1, 1], "entry_dist": [8, 35]},

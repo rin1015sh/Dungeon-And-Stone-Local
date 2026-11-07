@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 전투 점검 · 개선 4차(CB10) — 층별 전투 기믹 · 큰 몸짓 소리 키
+- **범위 / 완료 기준 / 테스트**: 사용자 "진행해줘" — 남은 전투 항목 중 결정 없이 되는 것(층별 기믹 · 소리 키). 동료는 결정이 필요해 남김. 테스트 = test_combat_encounters `test_floor_battle_gimmicks` · 캡처(상태 아이콘 셋).
+- **한 일**: `BattleFloor` + 층 JSON `battle`(망자의 땅 · 고블린 숲 직접, 소굴 · 사막은 layout 스크립트) · 상태 셋 + 아이콘 · ExploreScreen 연결(상한 merge) · 전투 사건 windup / windup_broken → AudioBus.
+- **검증**: 위 테스트 · check.sh 모든 검증 통과(테스트 602).
+- **남은 것**: 소리 파일 · 기믹 수치(사람 플레이) · 동료.
+
 ### 2026-11-07 전투 점검 · 개선 3차(CB7~CB9) — 행동 순서 표시 · 정수 효율 하한 · 1층 무리 섞기 3일 차부터
 - **범위 / 완료 기준 / 테스트**: 사용자 "누가 행동할지 보이게 · 효율이 낮은 스킬도 올리게 · 1층 무리 섞는 건 3일 차부터". 기준: 캡처로 직접 보고, 테스트 · check.sh 통과. 테스트 = test_combat_windup(순서 · 터질 자리) · test_skill_value(효율 하한) · test_combat_encounters(1층 3일 차).
 - **한 일**: `TurnOrder`(왼쪽 위 여섯 차례 · 붉은 별 · `BattlerView.set_order`) · 캡처 `--windup` · 정수 셋 올림 + 하한 테스트 · `FieldEscorts`(escort_day · escort_share) + 1층 지역 escort.

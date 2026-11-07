@@ -268,7 +268,7 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 				BattleSpawns.absorb(b, c, e)
 				continue
 			"delayed":
-				BattleDelayed.schedule(c, e)
+				BattleDelayed.schedule(c, e, b)
 				continue
 			"smite":
 				smite(b, c, e)

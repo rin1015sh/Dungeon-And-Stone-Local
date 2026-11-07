@@ -551,6 +551,26 @@
       }
     ]
   },
+  "battle": {
+    "_comment": "층 전투 기믹(CB10): 모래 폭풍(13~16시 옛길 · 바다, 데쓰웜 폭풍) 속 전투는 양쪽 모두 모래바람(명중 −15)",
+    "rules": [
+      {
+        "status": "sandblown",
+        "side": "all",
+        "zones": [
+          "f2r_road",
+          "f2r_sea"
+        ],
+        "from": 13,
+        "to": 16
+      },
+      {
+        "status": "sandblown",
+        "side": "all",
+        "storm": true
+      }
+    ]
+  },
   "regions": [
     {
       "id": "f2r_road",

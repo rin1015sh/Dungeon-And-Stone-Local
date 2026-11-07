@@ -286,6 +286,7 @@ d = {
                             {"kind": "gravel", "chance": 0.1}]},
     },
     "gen": gen,
+    "battle": {"_comment": "층 전투 기믹(CB10): 좁은 협곡 — 적이 한 번에 셋까지(나머지는 뒤에 줄 선다, BattleHorde). 큰 무리를 좁은 데서 받으면 나눠 싸운다", "cap_zones": {"f2b_outer": 3, "f2b_wall": 3, "f2b_deep": 3}},
     "regions": [
         {"id": "f2b_outer", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf", "giant_blade_wolf"], "weights": {"blade_wolf": 6, "giant_blade_wolf": 1}, "groups": [5, 6], "horde": True, "entry_dist": [30, 0], "escort": {"giant_blade_wolf": {"monster": "blade_wolf", "count": [1, 1]}}},
         {"id": "f2b_outer_lone", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf"], "weights": {"blade_wolf": 1}, "groups": [3, 4], "pack": [1, 1], "entry_dist": [10, 40]},

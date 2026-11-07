@@ -11,13 +11,15 @@ const WINDUP := "winding_up"
 const OFF_BALANCE := "off_balance"  ## 끊기는 예고를 준비 중(actor 메타) — 기절 · 빙결 확률 × combat.windup_stun_mult(apply_status, CB6)
 
 
-static func schedule(c: Combatant, e: Dictionary) -> void:
+static func schedule(c: Combatant, e: Dictionary, b: Battle = null) -> void:
 	var q: Array = c.memo.get("delayed", [])
 	q.append({"left": int(e.get("rounds", 1)), "hits": int(e.get("hits", 1)), "effects": e.get("effects", []), "marked": e.get("marked"),
 		"guarded_mult": float(e.get("guarded_mult", 1.0)), "fire": str(e.get("fire", "combat.delayed_fire")),
 		"interruptible": bool(e.get("interruptible", false))})
 	c.memo["delayed"] = q
 	c.actor.statuses.apply(WINDUP)
+	if b != null:
+		b.event.emit({"type": "windup", "unit": c})  # 화면: 큰 몸짓 소리(audio sfx windup)
 	if bool(e.get("interruptible", false)):
 		c.actor.set_meta(OFF_BALANCE, true)
 
@@ -76,6 +78,7 @@ static func _break(b: Battle, c: Combatant, q: Array) -> Array:
 			mk.actor.statuses.remove("telegraphed")
 	if broke:
 		b.message.emit("combat.windup_broken", {"name": c.label()}, "good")
+		b.event.emit({"type": "windup_broken", "unit": c})
 	return keep
 
 

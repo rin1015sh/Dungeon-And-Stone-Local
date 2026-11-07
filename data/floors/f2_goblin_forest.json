@@ -1719,6 +1719,7 @@
       }
     ]
   },
+  "battle": {"_comment": "층 전투 기믹(CB10): 망대 경보 · 뿔피리로 몰려온 무리는 흥분(민첩 +12%) — 망대를 피하면 없다", "rules": [{"status": "roused", "side": "enemy", "alerted": true}]},
   "regions": [
     {
       "id": "f2g_village",

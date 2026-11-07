@@ -1746,6 +1746,7 @@
       "tile": "f2d_gate"
     }
   },
+  "battle": {"_comment": "층 전투 기믹(CB10): 밤(19~5시)엔 언데드 · 원령 적이 망자의 밤(힘 +15% · 받는 피해 −10%) — 낮에 싸울지 밤을 피할지", "rules": [{"status": "grave_night", "side": "enemy", "from": 19, "to": 5, "families": ["undead", "wraith"]}]},
   "regions": [
     {
       "id": "f2d_marsh",
