@@ -50,6 +50,7 @@ var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — 
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
 var _was_cover: bool = false
+var desert: DesertRules = null            ## 바위사막 열기 · 모래 바다 진동(층 JSON desert — LD14)
 var forks: RouteForks = null              ## 갈림길 규칙(route_spots.forks — 야수의 소굴, LD11)
 var watch: RouteWatch = null            ## 망대 경보(route_spots.watch — 고블린 숲, FL22)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
@@ -125,6 +126,7 @@ func start() -> void:
 	RouteSpots.scatter(self)
 	RouteSpots.scatter_hazards(self)
 	forks = RouteForks.setup(self)  # 갈림길 규칙(야수의 소굴 — LD11)
+	desert = DesertRules.setup(self)  # 바위사막(LD14)
 	terrain = FieldTerrain.setup(self)
 	maws = MawTraps.build(self)
 	goal = FloorGoal.setup(self)
@@ -232,6 +234,8 @@ func enter_cell(cell: Vector2i) -> void:
 		ambush.on_enter(self, cell)
 	if watch != null:
 		watch.on_enter(self, cell)
+	if desert != null:
+		desert.on_enter(self, cell)
 
 
 func wait(hours: float = -1.0) -> void:
@@ -336,6 +340,8 @@ func pass_time(hours: float) -> void:
 		time_passed.emit(h)
 		if terrain != null:
 			terrain.update(self)
+		if desert != null:
+			desert.update(self, h)
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:

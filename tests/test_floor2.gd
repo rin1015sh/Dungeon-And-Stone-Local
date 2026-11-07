@@ -54,7 +54,7 @@ func test_floor_travel_up_and_down() -> void:
 	var south: Dictionary = s1.map.portals.filter(func(p: Dictionary) -> bool: return str(p.get("dest", "")) == "floor2_south")[0]
 	assert_eq(FloorTravel.floor_for(db, "floor2_south"), F2, "1층 남쪽 포탈 → 망자의 땅")
 	assert_eq(FloorTravel.floor_for(db, "floor2_east"), "f2_beast_den", "1층 동쪽 포탈 → 짐승의 소굴(LD11)")
-	assert_eq(FloorTravel.floor_for(db, "floor2_west"), "", "아직 없는 길은 잠김")
+	assert_eq(FloorTravel.floor_for(db, "floor2_west"), "f2_rock_desert", "1층 서쪽 포탈 → 바위사막(LD14)")
 	s1.clock.advance(30.0)
 	var s2 := FloorTravel.up(s1, south)
 	assert_true(s2 != null and JsonUtil.get_int(s2.floor_def, "floor") == 2, "2층 세션")
@@ -62,8 +62,7 @@ func test_floor_travel_up_and_down() -> void:
 	assert_true(s1.ended, "1층 세션은 떼어 둔다")
 	s2.start()
 	assert_near(s2.hours_until_close(), 210.0, 0.001, "남은 시간은 층과 무관하게 하나(240 − 30)")
-	var west: Dictionary = s1.map.portals.filter(func(p: Dictionary) -> bool: return str(p.get("dest", "")) == "floor2_west")[0]
-	assert_true(FloorTravel.up(s1, west) == null, "만들지 않은 층은 오르지 못한다(바위사막 — 소굴은 LD11에 생겼다)")
+	assert_true(FloorTravel.up(s1, {"dest": "floor2_nowhere"}) == null, "만들지 않은 층은 오르지 못한다(1층 네 포탈은 모두 열렸다 — LD14)")
 	var back := FloorTravel.down(s2)
 	assert_true(back == s1 and not s1.ended, "도착 비석에서 내려가면 같은 1층 세션")
 	assert_eq(s1.pos, south["pos"], "올라갔던 포탈 자리에 선다")

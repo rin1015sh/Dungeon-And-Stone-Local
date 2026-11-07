@@ -13,6 +13,10 @@
         {
           "type": "fatigue",
           "amount": -8
+        },
+        {
+          "type": "apply_status",
+          "status": "refreshed"
         }
       ],
       "done": "field.spring_full"

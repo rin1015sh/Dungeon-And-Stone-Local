@@ -199,7 +199,11 @@ func test_discovery_and_interaction() -> void:
 	s.message.connect(func(k: String, _a: Dictionary, _kind: String) -> void: keys.append(k))
 	assert_true(s.map.explored.count(1) > 0, "입장하자마자 주변을 본다")
 	assert_eq(s.map.visible_now[s.map.idx(s.pos)], 1)
-	assert_true(ExploreDebug.teleport(s, ExploreDebug.nearest_portal(s)))
+	var near := ExploreDebug.nearest_portal(s)
+	for p: Dictionary in s.map.portals:
+		if p["pos"] == near:
+			p["dest"] = "floor2_nowhere"  # 아직 없는 층으로 가는 포탈(1층 네 포탈은 모두 열렸다 — LD14)
+	assert_true(ExploreDebug.teleport(s, near))
 	assert_true(keys.has("explore.portal_found"))
 	assert_true(keys.has("explore.portal_here"))
 	s.interact()

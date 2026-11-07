@@ -51,7 +51,7 @@ const MAP := {
 	"golem_burned": ["flame", "#a04020"], "golem_skeleton": ["bone", "#b8b0a0"], "blater_grudge": ["broken_heart", "#5a2a6a"],
 	"blater_grudge_weak": ["broken_heart", "#8a6a8a"], "guardian_frenzy": ["burst", "#e06020"], "vamp_blood_feast": ["fang", "#8a1010"],
 	"vamp_blood_veil": ["shield", "#8a1a2a"], "regen_stopped": ["broken_heart", "#7a7a7a"], "tear_sealed": ["lock", "#a8d8f0"],
-	"haste": ["boot_wing", "#d0e0b0"], "mired": ["weight", "#6a5638"], "soaked": ["waves", "#6a9ac0"], "high_ground": ["arrow_up", "#c8c0a0"], "ambush_hunter": ["dagger", "#d8d8d8"], "ambush_hunter_weak": ["dagger", "#9a9a9a"],
+	"haste": ["boot_wing", "#d0e0b0"], "mired": ["weight", "#6a5638"], "heat": ["flame", "#e8a040"], "refreshed": ["drop", "#8ab8e0"], "soaked": ["waves", "#6a9ac0"], "high_ground": ["arrow_up", "#c8c0a0"], "ambush_hunter": ["dagger", "#d8d8d8"], "ambush_hunter_weak": ["dagger", "#9a9a9a"],
 	"steel_ice_wall": ["shield", "#a8d8f8"], "troll_frenzy": ["fist", "#6a8a4a"], "miner_helmet": ["helmet", "#c8a040"],
 	"miner_helmet_weak": ["helmet", "#907e50"], "venom_weapon": ["dagger_drop", "#6aa832"], "overheat": ["flame", "#f08030"],
 	"acid_corrosion": ["broken_shield", "#a0c030"], "shield_wall": ["shield", "#8a7a60"], "ildium_overheat": ["flame", "#d05020"],

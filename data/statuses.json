@@ -1682,5 +1682,34 @@
     ],
     "source": "placeholder",
     "notes": "전투 지형(LD6 — high): 둔덕 위에서 싸운다"
+  },
+  {
+    "id": "heat",
+    "name_ko": "열기",
+    "kind": "debuff",
+    "modifiers": [
+      {
+        "target": "regen:hunger",
+        "percent": 0.3
+      },
+      {
+        "target": "agi",
+        "percent": -0.05
+      }
+    ],
+    "source": "placeholder",
+    "notes": "바위사막 낮 · 그늘 밖(DesertRules — LD14): 허기가 빨리 준다 + 시간당 피로(DesertRules). 그늘 · 밤이면 풀린다"
+  },
+  {
+    "id": "refreshed",
+    "name_ko": "목을 축임",
+    "kind": "buff",
+    "duration": {
+      "amount": 3,
+      "unit": "hour"
+    },
+    "modifiers": [],
+    "source": "placeholder",
+    "notes": "샘물을 마셨다(LD14) — 그동안 사막 열기를 받지 않는다"
   }
 ]

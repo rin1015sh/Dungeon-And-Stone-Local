@@ -16,6 +16,10 @@
     {
       "type": "fatigue",
       "amount": -6
+    },
+    {
+      "type": "apply_status",
+      "status": "refreshed"
     }
   ],
   "consumable": true
