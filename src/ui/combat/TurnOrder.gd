@@ -26,7 +26,10 @@ func setup(b: Battle) -> void:
 
 ## 앞으로의 차례 n개.
 func order() -> Array[Combatant]:
-	return _battle.preview(int(JsonUtil.get_float(_cfg, "count", 6))) if _battle != null and _battle.result.is_empty() else []
+	if _battle == null or not _battle.result.is_empty():
+		var none: Array[Combatant] = []
+		return none
+	return _battle.preview(int(JsonUtil.get_float(_cfg, "count", 6)))
 
 
 ## 차례 목록에서 큰 몸짓이 터지는 자리(목록 번호 → true). 예고는 그 적의 차례 시작을 left번 지나면 터진다 —
