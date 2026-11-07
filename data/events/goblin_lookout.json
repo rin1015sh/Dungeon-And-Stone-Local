@@ -2,7 +2,7 @@
   "id": "goblin_lookout",
   "name_ko": "고블린 봉화대",
   "type": "feature",
-  "tile": "feat_goblin_camp",
+  "tile": "feat_goblin_lookout",
   "watch": {
     "radius": 9,
     "guard": "goblin",

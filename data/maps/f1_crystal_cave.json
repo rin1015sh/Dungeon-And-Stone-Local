@@ -30,7 +30,11 @@
     "o": "feat_torch_stubs",
     "p": "feat_old_skeleton",
     "q": "feat_cairn",
-    "r": "feat_mud"
+    "r": "feat_wolf_kill",
+    "s": "feat_gnome_marker",
+    "t": "feat_goblin_lookout",
+    "u": "feat_wolf_tracks",
+    "v": "feat_mud"
   },
   "landmarks": [
     {

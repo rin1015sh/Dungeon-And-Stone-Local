@@ -2,7 +2,7 @@
   "id": "wolf_tracks",
   "name_ko": "늑대 발자국",
   "type": "feature",
-  "tile": "feat_mud",
+  "tile": "feat_wolf_tracks",
   "near": {
     "radius": 2,
     "line": "field.wolf_tracks"

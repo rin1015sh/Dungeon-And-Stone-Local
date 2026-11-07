@@ -18,11 +18,30 @@ static func place_features(s: ExploreSession) -> void:
 		var p := c + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO)
 		var def := s.db.get_entry("events", JsonUtil.get_str(fd, "event"))
 		var obj := JsonUtil.get_bool(fd, "object")  # 이미 있는 물체 칸에(닫힌 쇠문 — 타일을 바꾸지 않고 걷지 못하는 칸도 된다)
-		if def.is_empty() or (not obj and (not s.map.is_walkable(p) or not s.map.portal_at(p).is_empty())):  # 물체 칸은 포탈 자리여도 된다(진짜 비석)
+		if def.is_empty():
 			continue
+		if not obj and not _free(s, p):  # 물체 칸은 포탈 자리여도 된다(진짜 비석)
+			p = _free_near(s, p)  # 무작위 소품이 그 칸에 섰다 — 둘레 빈 칸으로(종 · 궤짝이 사라지지 않게)
+			if p.x < 0:
+				continue
 		if not obj:
 			s.map.set_tile(p, JsonUtil.get_str(fd, "tile", JsonUtil.get_str(def, "tile")))  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
 		s.features.add_at(s, JsonUtil.get_str(fd, "event"), p)
+
+
+static func _free(s: ExploreSession, p: Vector2i) -> bool:
+	return s.map.is_walkable(p) and s.map.portal_at(p).is_empty() and not s.features.has_at(p)
+
+
+## p 둘레(1~3칸, 가까운 고리부터) 걸을 수 있고 포탈 · 요소가 없는 칸. 없으면 (-1, -1).
+static func _free_near(s: ExploreSession, p: Vector2i) -> Vector2i:
+	for r in range(1, 4):
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				var q := p + Vector2i(dx, dy)
+				if maxi(absi(dx), absi(dy)) == r and s.map.in_bounds(q) and _free(s, q):
+					return q
+	return Vector2i(-1, -1)
 
 
 static func scatter(s: ExploreSession) -> void:

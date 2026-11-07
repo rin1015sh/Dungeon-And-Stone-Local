@@ -2,7 +2,7 @@
   "id": "wolf_kill",
   "name_ko": "먹다 남은 사냥감",
   "type": "feature",
-  "tile": "feat_ghoul_feast",
+  "tile": "feat_wolf_kill",
   "guard": {
     "monster": "ghoul"
   },

@@ -2,7 +2,7 @@
   "id": "gnome_marks",
   "name_ko": "작은 돌 표지",
   "type": "feature",
-  "tile": "feat_cairn",
+  "tile": "feat_gnome_marker",
   "actions": [
     {
       "id": "look",

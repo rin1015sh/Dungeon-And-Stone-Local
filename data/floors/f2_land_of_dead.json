@@ -580,7 +580,7 @@
         "props": [
           {
             "tile": "f2d_tomb_g",
-            "count": 11
+            "count": 3
           },
           {
             "tile": "f2d_sack",
@@ -1395,23 +1395,37 @@
       {
         "node": "graveyard",
         "at": [
-          -14,
-          -3
+          -17,
+          -9
         ],
         "legend": {
+          "T": "f2d_tomb_g",
           "F": "f2d_fence"
         },
         "rows": [
-          "FFFFF  FFFF  FFFFFFF  FFFF",
+          "",
+          "    TTT  TTTTTTT   TTT       TT",
+          "",
+          "",
+          "   T  TTTTTTTTTTT            TT",
+          "",
+          "",
+          "   FFFFFFFF  FFFF  FFF         FF",
           "",
           "",
           "",
-          "           F",
-          "           F",
           "",
-          "           F",
-          "           F"
-        ]
+          "    TTT         TTT  T",
+          "",
+          "",
+          "   T  T         TTT  TTTTTT   T",
+          "",
+          "",
+          "     TT           TTTTT  TTTTT",
+          "",
+          "       TT  TTTTTTTTTT  TTTTT"
+        ],
+        "_comment": "묘지 골목(LD5 — floor2.md §15-4): 묘비 줄 · 쇠 울타리 줄 사이 폭 2~3칸 골목, 가운데 4칸 길(장례 행렬 · 넋불), 낮은 무덤 터 둘은 트인 채. tools 없이 손으로(level_design_review.md)"
       },
       {
         "node": "chapel",

@@ -14,7 +14,8 @@ const Solid := preload("res://tools/floor_art/Solid.gd")
 ## 시트 칸 순서(tiles.json art.prop.cell이 이 번호를 가리킨다).
 const ORDER := ["corpse", "ghoul_feast", "stone_heap", "dead_campfire", "broken_gear", "offering", "spring", "drip",
 	"stalagmites", "mushroom", "wolf_den", "gnome_trinkets", "gnome_stash", "goblin_camp", "torch_stubs", "old_skeleton",
-	"cairn", "cache", "goblin_snare", "wet_slope", "portal", "rift_portal", "rift_gate"]
+	"cairn", "cache", "goblin_snare", "wet_slope", "portal", "rift_portal", "rift_gate",
+	"wolf_kill", "gnome_marker", "goblin_lookout", "wolf_tracks"]  # 레벨 디자인 LD2(2026-11-07)
 
 const SKIN := Color("#8a7a6a")
 const CLOTH := Color("#4a4236")
@@ -195,6 +196,57 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 			Solid.shadow(p, c + Vector2(-13, 6) * u, 5 * u, 2 * u)
 			Solid.drum(p, c + Vector2(-13, 6) * u, 2.4 * u, 16 * u, WOOD, WOOD.lightened(0.25), u * 0.7)
 			Ink.line(p, c + Vector2(-12, -8) * u, c + Vector2(-6, 2) * u, 1.3 * u, Color("#8a7450"), 0.9, 0.8)
+		"wolf_kill":  # 반쯤 뜯긴 짐승 — 드러난 갈비뼈 · 털가죽 · 핏자국 · 뜯긴 다리(LD2)
+			Solid.shadow(p, c + Vector2(0, 6) * u, 30 * u, 10 * u)
+			Decals._blob(p, c + Vector2(-4, 6) * u, 20 * u, BLOOD, 0.55, 0.35)
+			Solid.lump(p, c + Vector2(-8, 6) * u, 16 * u, 8 * u, 8 * u, Color("#5a4a3a"), 0.6, 0.0, u)  # 털가죽 몸통
+			for k in 30:
+				var q := c + Vector2(p.rng.randf_range(-22, 6), p.rng.randf_range(-2, 12)) * u
+				Ink.line(p, q, q + Vector2.from_angle(p.rng.randf() * TAU) * 4 * u, 0.8 * u, Color("#7a6a52"), 0.7, 0.4)
+			for k in 6:  # 갈비뼈 — 몸통 위로 휘어 솟는다
+				var x := -2.0 + k * 3.2
+				var b := c + Vector2(x, 6) * u
+				Ink.path(p, PackedVector2Array([b, b + Vector2(1.5, -7) * u, b + Vector2(4, -10) * u]), 1.6 * u, false, BONE, 0.95, 0.3)
+			Decals._blob(p, c + Vector2(8, 2) * u, 6 * u, Color("#6a1a14"), 0.85, 0.3)  # 뜯긴 살
+			Decals._stick(p, c + Vector2(14, 10) * u, c + Vector2(28, 4) * u, 2.2 * u, BONE)  # 뜯겨 나온 다리뼈
+			Solid.lump(p, c + Vector2(29, 4) * u, 3 * u, 2 * u, 3 * u, BONE, 0.2, 0.0, u * 0.7)
+		"gnome_marker":  # 손바닥만 한 돌 셋을 포갠 길표지 — 맨 위 돌이 한쪽으로 길쭉, 둘레에 작은 손자국(LD2)
+			Solid.shadow(p, foot, 12 * u, 4 * u)
+			Solid.lump(p, foot, 9 * u, 4 * u, 5 * u, STONE.darkened(0.1), 0.35, 0.0, u)
+			Solid.lump(p, foot - Vector2(0, 5) * u, 7 * u, 3.2 * u, 4.5 * u, STONE, 0.35, 0.0, u)
+			var top := PackedVector2Array([foot + Vector2(-5, -10) * u, foot + Vector2(12, -12) * u, foot + Vector2(13, -9) * u, foot + Vector2(-4, -7) * u])
+			p.fill_poly(top, func(x: int, y: int) -> Color: return p.vary(STONE.lightened(0.12), x, y, 0.08))
+			Ink.path(p, top, 1.0 * u, true, Ink.INK, 0.8, 0.5)
+			for k in 3:  # 작은 손자국(진흙)
+				var h := foot + Vector2(-16 + k * 7, 4 + (k % 2) * 3) * u
+				Decals._blob(p, h, 2.2 * u, Color("#3a2e22"), 0.8, 0.2)
+				for f in 4:
+					Decals._spot(p, h + Vector2(-2.2 + f * 1.5, -2.6) * u, 0.6 * u, Color("#3a2e22"), 0.85)
+			Decals._spot(p, foot + Vector2(10, -11) * u, 0.9 * u, Color("#ffe8a0"), 0.9)  # 끝에 박은 반짝이(노움 표시)
+		"goblin_lookout":  # 말뚝 넷 위 발판 + 봉화 바구니 — 서 있는 망루(멀리서 불빛이 보인다, LD2)
+			Ink.glow(p, foot.x, foot.y - 58 * u, 38 * u, Color("#ff9a40"), 0.45, false)
+			Solid.shadow(p, foot, 22 * u, 7 * u)
+			for s: float in [-1.0, 1.0]:
+				Decals._stick(p, foot + Vector2(s * 14, 0) * u, foot + Vector2(s * 9, -44) * u, 3.0 * u, WOOD)
+				Decals._stick(p, foot + Vector2(s * 8, -4) * u, foot + Vector2(s * 6, -44) * u, 2.4 * u, WOOD.darkened(0.25))
+			Ink.line(p, foot + Vector2(-13, -12) * u, foot + Vector2(11, -26) * u, 1.6 * u, WOOD.lightened(0.1), 0.9, 0.4)  # 엇댄 버팀목
+			Ink.line(p, foot + Vector2(13, -12) * u, foot + Vector2(-11, -26) * u, 1.6 * u, WOOD.lightened(0.1), 0.9, 0.4)
+			Solid.block(p, foot + Vector2(0, -42) * u, 26 * u, 10 * u, 4 * u, func(x: int, y: int) -> Color: return p.vary(WOOD, x, y, 0.12),
+				func(x: int, y: int) -> Color: return p.vary(WOOD.lightened(0.18), x, y, 0.12), func(x: int, y: int) -> Color: return p.vary(WOOD.darkened(0.4), x, y, 0.1), u)
+			Solid.drum(p, foot + Vector2(5, -50) * u, 4.5 * u, 5 * u, METAL.darkened(0.3), Color("#2a2018"), u * 0.7)  # 봉화 바구니
+			_flame(p, foot + Vector2(5, -55) * u, 9 * u)
+			var rag := PackedVector2Array([foot + Vector2(-11, -52) * u, foot + Vector2(-11, -66) * u, foot + Vector2(-2, -62) * u])
+			Decals._stick(p, foot + Vector2(-11, -46) * u, foot + Vector2(-11, -68) * u, 1.4 * u, WOOD)
+			p.fill_poly(rag, func(x: int, y: int) -> Color: return p.vary(Color("#6a2a1e"), x, y, 0.15))  # 찢긴 깃발
+		"wolf_tracks":  # 젖은 바닥에 줄지어 찍힌 발자국(발바닥 + 발가락 넷 + 발톱 점, LD2)
+			Decals._blob(p, c + Vector2(0, 2) * u, 26 * u, Color("#2e2620"), 0.35, 0.4)
+			for k in 6:
+				var q := c + Vector2(-24 + k * 9.5, (4 if k % 2 == 0 else -4)) * u
+				Decals._blob(p, q, 2.4 * u, Color("#1e1814"), 0.85, 0.2)
+				for f in 4:
+					var toe := q + Vector2(3.6 - absf(f - 1.5) * 0.5, 0).rotated((f - 1.5) * 0.55) * u  # 가는 쪽(+x) 앞에 발가락
+					Decals._spot(p, toe, 1.0 * u, Color("#1e1814"), 0.9)
+					Decals._spot(p, toe + (toe - q).normalized() * 1.6 * u, 0.45 * u, Color("#0e0a08"), 0.9)
 		"wet_slope":
 			for k in 6:
 				var a := c + Vector2(p.rng.randf_range(-24, 24), p.rng.randf_range(-14, 10)) * u
