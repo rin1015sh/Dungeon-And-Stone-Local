@@ -18,7 +18,7 @@ const BY_ID := {
 	"leftovers": "meat", "crystal_mushroom": "mushroom", "bandage": "bandage", "torch": "torch", "torch_stub": "stub",
 	"lantern": "lantern", "necronomicon": "book", "copper_ring": "ring", "bone_amulet": "amulet",
 	"dread_bone_greatsword": "bone_greatsword",
-	"tomb_oil": "vial", "steel_relic": "orb", "death_mask": "tablet", "tomb_gold": "gem", "fortress_key": "tag", "silver_chest": "tablet",
+	"tomb_oil": "vial", "steel_relic": "orb", "death_mask": "tablet", "tomb_gold": "gem", "fortress_key": "tag", "silver_chest": "tablet", "bell_clapper": "pebble",
 	"blood_chalice": "flask", "snow_lotus": "mushroom", "eternal_ice": "shard", "mine_heart": "cluster", "green_vein": "crystal",
 	"ice_chips": "shard", "copper_ore": "pebble", "shroud_rag": "bandage",
 	"mine_bitter_tea": "flask", "mine_moss_salve": "vial", "mine_lunchbox": "tin", "mine_green_tonic": "flask",

@@ -8,7 +8,8 @@
       "id": "look",
       "name_ko": "살핀다",
       "limit": "always",
-      "line": "field.grave_stone"
+      "line": "field.grave_stone",
+      "line_day": true
     },
     {
       "id": "break",

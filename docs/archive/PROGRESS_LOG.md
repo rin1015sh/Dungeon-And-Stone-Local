@@ -3,6 +3,16 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 레벨 디자인 1차(LD1~LD4) — 1층 흔적 · 봉화대 · 다른 종 자리, 망자의 땅 종 셋 · 징조, 몬스터도 덫에
+- **범위**: 사용자 요청(레벨 디자인 점검 · 개선 — 탐험 · 전투 · 위험 · 보상 · 공간 선택을 잇기). 실제 데이터 · 코드로 점검 → 문제 · 기획 문서 `docs/plans/level_design_review.md`(A 문제 · B 층별 기획 · 균열 · 3~10층 · E 다음) → 최우선(1층 단조로움 · 숲 경보/덫 · 망자의 땅 탐험) 중 기존 장치로 되는 것부터.
+- **완료 기준**: check.sh 통과 · 새 규칙마다 단위 테스트 · 1층 지도 다시 구워도 옛 요소 자리 유지 · 캡처로 확인.
+- **테스트 방법**: `tests/test_level_design.gd`(8) · `test_floor2 test_bells_open_the_pass_gate`(종 셋 조건) · `test_field_features`(숨은 은닉처 · 늑대 굴 행동 둘) · PLAYTEST 맨 위.
+- **한 일 — 코드**: `FieldClues`(새 — 요소 행동 `point_to` · `hours_window` · `line_day`), `FieldFeatures.reveal`(숨은 요소 드러내기 — 탐지와 흔적이 같이 씀), `RouteWatch`(동굴 요소 `watch`로도 망루 — 망꾼 Group.guard, 경보는 alarm_radius 안 그 몬스터만), `MonsterSnares`(새 — 쫓는 무리가 `snares_monsters` 덫을 밟으면 터지고 `Group.held_until`까지 묶임, `ExploreSession.pass_time`이 부른다), `GraveWake.omens`(날짜별 징조 — 요소 · 그림 · 소리), `RiftHazards.show_group`.
+- **한 일 — 데이터**: 1층 새 요소 8종 31곳(늑대 발자국 8 · 먹다 남은 사냥감 3 · 돌 표지 8 · 뜯긴 은닉처 2 · 썩은 고기 무더기 2(3을 넣었더니 자리가 2뿐) · 썩은 짐승 사체 2 · 봉화대 4 · 늑대 묶던 말뚝 2), 늑대 굴 "뒤진다" · 노움 은닉처 숨김(정신력 9), 데칼 규칙(발톱 · 썩음 · 쓰레기 · 뼈를 새 요소 둘레에도) → `bake_floor` · `bake_decor` 다시(옛 204곳 중 맑은 샘 하나만 5칸 옮김, 손으로 넣은 dark_crystal은 맨 앞에 되돌림). 망자의 땅 종 셋(`bell` 근력 판정 + 해골 · `bell_crypt` 종 혀 · `bell_night` 밤에만 + 듀라한) · `ringer_coffin`(석관 하나 바꿈) · 새 아이템 `bell_clapper`(그림 paint_items) · `grave_wake.omens` · 비석 날짜 문구 · 비문 9~11 · 비문 5 이레째 → 닷새째. 덫 넷에 `snares_monsters`. 환경음 키 `f2_forest` · `f2_dead` · 소리 키 `snare_snap` · `armor_clank`(파일 없음).
+- **기존에 미치는 영향**: 1층 팔 지역 몬스터 표 그대로(사용자 2026-10-22 결정 유지 — LD1). 일반 몬스터 드롭 · 경험치 · 정수 손대지 않음. 저장: 요소 상태는 입장마다 새로라 옛 저장 영향 없음. 1층 북쪽에서 망꾼 고블린 4마리가 늘었다(고정 무리).
+- **검증**: `tools/check.sh` 모든 검증 통과(클라우드 리눅스 Godot 4.7.2 — 단위 570 · UI 스모크 · 메인 씬). 캡처: 1층 동쪽 발자국(진흙 칸) · 북쪽 봉화대 둘레, 요소 칸으로 순간이동하면 지키는 무리(동쪽 구울 · 북쪽 망꾼)와 바로 전투가 걸리는 것까지 확인. `strings_md` · `balance_sheet` 다시.
+- **남은 것 · 못 한 것**: 사람 플레이 확인 없음 · `sim_walk`로 전투 간격 다시 재지 않음(망꾼 4 · 지키는 무리 9가 늘었다) · `tools/texts_md.py`는 이번 작업 전부터 `data/city_info/dungeon.json`이 없어 실패(고치지 않음) · 봉화대 · 돌 표지 · 사냥감 전용 그림 없음(모닥불 · 돌탑 · 갉아먹힌 시체 그림을 같이 씀) · 소리 파일 없음 · 숲 개울 · 다리 전투 지형, 망자의 땅 골목(§15-4), 소굴 · 사막, 균열 기믹은 기획만(`level_design_review.md` B · E).
+
 ### 2026-11-06 고블린 숲 손으로 짠 지도(FL25)
 - 사용자 "이속은 내버려 두고 레벨 디자인부터". floor2.md §15 원칙(8~10칸마다 볼 것 · 장면 · 두 겹 길 · 촘촘하게)대로 tools/f2g_layout.py가 지도 전체를 그린다. 타일 f2g_plank · f2g_floor_low · f2g_corpse_f/_low · f2g_cache_f/_low, 그림 _planks, RouteAmbush mark, 문구 field.ambush_goblin. 테스트 test_forest 갱신(곁방 · 시체 · 다리까지 걸어 닿음, 덫은 덫 밭에만, 매복 셋).
 - 처음: 곁방이 길과 떨어져 샛길을 더함 · 골짜기 북쪽 비탈이 길에 안 닿음 · 남문 길이 뿌리 길과 끊김 · 마을 · 족장 터가 넓고 비어 줄여 채움 · 둔덕 위 작은 소품이 검은 네모로 나와 뺌.

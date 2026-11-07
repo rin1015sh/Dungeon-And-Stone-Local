@@ -13,6 +13,7 @@ extends RefCounted
 ##    "spawn": {"monsters": [id …], "chance", "line"}(그 확률로 바로 옆에 그 무리가 일어나 쫓아온다 — 무덤 파기, FL13),
 ##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13), "goto": 표시 이름(map.anchors.marks — 계단으로 옮겨 선다, FL14),
 ##    "goal": 층 목표 이름(FloorGoal — 하나 센다, 망자의 땅 종 울리기 FL18),
+##    "point_to" · "hours_window" · "line_day": 흔적이 가리키는 요소 · 그 시각에만 · 날마다 다른 문구(FieldClues — 레벨 디자인 LD),
 ##    "hours": 해 보는 데 드는 시간(성공 · 실패 모두 흐른다), "check": {stat, dc}(성공 확률 = RiftHazards.success_chance — 실패면 "fail_line"을 말하고
 ##    횟수를 쓰지 않는다 — 다시 해 볼 수 있다: 망자의 땅 비석 부수기 GraveWake)}.
 
@@ -28,6 +29,9 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	var need := JsonUtil.get_str(a, "needs_status")
 	if not need.is_empty() and not s.player.statuses.has(need):
 		s.message.emit(JsonUtil.get_str(a, "missing", "field.missing"), {"status": DataNames.entry(s.db, "statuses", need)}, "info")
+		return
+	if not FieldClues.in_window(s, JsonUtil.get_dict(a, "hours_window")):
+		s.message.emit(JsonUtil.get_str(JsonUtil.get_dict(a, "hours_window"), "missing", "field.missing"), {}, "info")
 		return
 	var after := JsonUtil.get_dict(a, "after")  # {"action", "hours"}: 그 행동을 하고 hours시간이 지나야(공물의 답례)
 	if not after.is_empty():
@@ -54,7 +58,8 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		return
 	used[aid] = today if limit == "day" else true
 	used["@" + aid] = s.clock.total_hours  # 한 시각(after가 본다)
-	say_line(s, JsonUtil.get_str(a, "line"), e, "info", JsonUtil.get_bool(a, "line_zone"))
+	var line := JsonUtil.get_str(a, "line")
+	say_line(s, FieldClues.day_key(s, line) if JsonUtil.get_bool(a, "line_day") else line, e, "info", JsonUtil.get_bool(a, "line_zone"))
 	if a.has("sound"):
 		s.sound.emit(JsonUtil.get_str(a, "sound"), e["pos"])
 	_give(s, JsonUtil.get_array(a, "give"))
@@ -63,11 +68,12 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	if not learn.is_empty() and s.player.knowledge.learn_stats(learn):
 		s.message.emit("field.learned", {"monster": DataNames.entry(s.db, "monsters", learn)}, "good")
 	_alert(s, e["pos"], JsonUtil.get_dict(a, "alert"))
+	FieldClues.point_to(s, e["pos"], JsonUtil.get_dict(a, "point_to"))
 	var goto := JsonUtil.get_str(a, "goto")  # 계단(지하 묘실 — FL14): map.anchors.marks의 그 자리로 옮겨 선다
 	if not goto.is_empty() and (s.map.anchors.get("marks", {}) as Dictionary).has(goto):
 		s.relocate((s.map.anchors["marks"] as Dictionary)[goto])
 	if JsonUtil.get_float(a, "reveal") > 0.0:
-		_reveal(s, e["pos"], JsonUtil.get_float(a, "reveal"))
+		FieldClues.reveal_around(s, e["pos"], JsonUtil.get_float(a, "reveal"))
 	if JsonUtil.get_bool(a, "clear"):
 		e["cleared"] = true
 		var floor_tile := JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor")
@@ -90,17 +96,6 @@ static func _spawn(s: ExploreSession, pos: Vector2i, sp: Dictionary) -> void:
 	g.alert_until = s.clock.total_hours + 1.0
 	g.state = FieldMonsters.STATE_CHASE
 	say_line(s, JsonUtil.get_str(sp, "line"), {"pos": pos}, "danger")
-
-
-## 둘레 radius칸 지도를 밝힌다(망루에 오르기 — FL13).
-static func _reveal(s: ExploreSession, c: Vector2i, radius: float) -> void:
-	var ri := ceili(radius)
-	for y in range(c.y - ri, c.y + ri + 1):
-		for x in range(c.x - ri, c.x + ri + 1):
-			var q := Vector2i(x, y)
-			if s.map.in_bounds(q) and Vector2(q - c).length() <= radius:
-				s.map.explored[s.map.idx(q)] = 1
-	s.view_changed.emit()
 
 
 ## 문구 하나: key.1, key.2 …가 있으면 그중 하나(zone이면 key.<구역>.n), 없으면 key 그대로.

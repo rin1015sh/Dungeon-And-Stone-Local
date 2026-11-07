@@ -83,7 +83,7 @@
       }
     ],
     "ambience": {
-      "loop": "f1_cave"
+      "loop": "f2_forest"
     },
     "abyss": {
       "cliff": "res://assets/floor/f2g/chasm.webp",

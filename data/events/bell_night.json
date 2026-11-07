@@ -1,0 +1,32 @@
+{
+  "id": "bell_night",
+  "name_ko": "폐허의 종",
+  "type": "feature",
+  "tile": "f2d_bell",
+  "actions": [
+    {
+      "id": "ring",
+      "name_ko": "종을 울린다",
+      "limit": "once",
+      "hours": 0.1,
+      "hours_window": {
+        "from": 19,
+        "to": 5,
+        "missing": "field.bell_day"
+      },
+      "line": "field.bell_ring",
+      "sound": "bell_toll",
+      "goal": "bell",
+      "clear": true,
+      "clear_tile": "f2d_bell_rung",
+      "alert": {
+        "monster": "dullahan",
+        "radius": 40,
+        "hours": 1.0
+      }
+    }
+  ],
+  "standing": true,
+  "source": "placeholder",
+  "notes": "망자의 땅 듀라한 폐허 종(LD3): 밤(19~5시)에만 운다 — 낮엔 둔한 쇳소리뿐(비문이 귀띔한다). 울리면 폐허의 듀라한이 달려온다. 임시값"
+}

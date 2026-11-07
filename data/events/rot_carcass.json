@@ -1,0 +1,19 @@
+{
+  "id": "rot_carcass",
+  "name_ko": "썩은 짐승 사체",
+  "type": "feature",
+  "tile": "feat_corpse",
+  "guard": {
+    "monster": "blade_wolf"
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.rot_carcass"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1층 남쪽(LD2). 썩은 냄새에 꼬인 칼날늑대가 지킨다(다른 종이 끼어드는 자리). 임시값"
+}

@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1030줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1064줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -1307,6 +1307,31 @@
 - `field.hunter_cache` 이끼 낀 궤짝 안에 사냥꾼이 남긴 짐이 그대로 있다.
 - `field.watch_alarm` 망대 위에서 누군가 손가락으로 이쪽을 가리킨다.
 - `field.chief_chest` 짐승 가죽을 덮은 궤짝 안에 고블린들이 긁어모은 것이 쌓여 있다.
+- `field.wolf_tracks` 젖은 바닥에 발톱 넷 달린 발자국이 줄지어 찍혀 있다.
+- `field.wolf_tracks_none` 발자국은 바위 틈에서 흐지부지 끊겼다.
+- `field.wolf_kill` 반쯤 뜯긴 짐승 뼈 사이에서 쓸 만한 것을 골라냈다.
+- `field.wolf_kill_back` 등 뒤에서 낮게 그르렁거리는 기척이 다가온다.
+- `field.wolf_kill_done` 남은 것은 핥아 낸 뼈뿐이다.
+- `field.wolf_den_search` 물어다 놓은 것들 틈에 사람의 물건이 섞여 있다.
+- `field.gnome_marks_none` 표지가 가리키던 곳은 이미 비어 있다.
+- `field.gnome_stash_found` 벽 밑 돌 하나가 다른 것보다 반들반들하다. 그 뒤가 비어 있다.
+- `field.raided_stash` 누군가 먼저 헤집어 놓았다. 구석에 굴러다니던 것만 남았다.
+- `field.carrion_near` 숨을 쉴 때마다 목구멍에 썩은 내가 들러붙는다.
+- `field.carrion_heap` 썩은 고기를 헤치자 그 밑에 깔려 있던 꾸러미가 손에 걸린다.
+- `field.rot_carcass` 썩어 가는 짐승 사체다. 구울의 이빨 자국이 아니라 칼날 같은 발톱 자국이 나 있다.
+- `field.goblin_lookout` 돌을 쌓아 올린 봉화대다. 꺼지지 않게 누군가 장작을 계속 넣었다.
+- `field.lookout_alarm` 봉화대 위에서 뿔피리를 입에 무는 그림자가 보인다.
+- `field.lookout_climb` 봉화대 꼭대기에 올라섰다. 굴 너머로 불빛 몇 점이 흩어져 있다.
+- `field.goblin_kennel` 말뚝에 끊긴 사슬이 감겨 있다. 사슬 끝에 늑대 털이 뭉쳐 있다.
+- `field.bell_stuck` 녹이 엉겨 붙은 종은 꿈쩍도 하지 않는다.
+- `field.bell_risers` 울림이 가라앉기도 전에 둘레 무덤의 흙이 갈라진다.
+- `field.bell_no_clapper` 종 안이 텅 비어 있다. 종 혀가 빠져 있다.
+- `field.bell_day` 종을 밀어도 둔한 쇳덩이처럼 아무 울림이 없다.
+- `field.ringer_coffin` 뚜껑에 종 모양이 새겨진 석관이다.
+- `field.ringer_coffin_open` 뼈만 남은 팔이 무언가를 가슴에 꼭 끌어안고 있다.
+- `field.grave_stone_d2` 비석 밑동의 진흙이 안에서 밀려 나온 듯 부풀어 있다.
+- `field.grave_stone_d3` 비석에 어제는 없던 금이 갔다. 금 사이로 차가운 김이 샌다.
+- `field.grave_stone_d4` 비석 틈새로 푸른 빛이 맥박처럼 새어 나온다. 돌이 손바닥 밑에서 꿈틀거린다.
 
 ### `field.corpse`
 
@@ -1392,10 +1417,13 @@
 - `field.epitaph.2` 「열쇠는 기도하는 자의 등 뒤에 두었다. 우리는 다시 열지 않으리라.」
 - `field.epitaph.3` 「물이 빠지는 날에만 종탑이 보인다.」 아래 글줄은 깎여 나갔다.
 - `field.epitaph.4` 이름이 셋 새겨져 있고, 그중 둘은 누군가 칼로 긁어 지웠다.
-- `field.epitaph.5` 「검은 기사는 이레째 아침에 일어난다. 그 전에 돌을 깨뜨려라.」
+- `field.epitaph.5` 「검은 기사는 닷새째 아침에 일어난다. 그 전에 돌을 깨뜨려라.」
 - `field.epitaph.6` 「망루에 오른 자만이 길을 안다.」 돌 귀퉁이에 화살표가 새겨져 있다.
 - `field.epitaph.7` 비문 대신 손톱자국이 빼곡하다.
 - `field.epitaph.8` 「구덩이에 내려가지 마라. 내려간 자는 올라오는 법을 잊는다.」
+- `field.epitaph.9` 「혀 잃은 종은 종지기와 함께 아래로 내려갔다.」
+- `field.epitaph.10` 「폐허의 종은 해가 진 뒤에야 제 목소리를 되찾는다.」
+- `field.epitaph.11` 「묘역의 종은 녹이 슬어 장정 둘이 매달려야 울었다.」
 
 ### `field.bell_ring`
 
@@ -1407,6 +1435,21 @@
 - `field.ambush.1` 길가 흙이 들썩이더니 썩은 손이 솟아오른다.
 - `field.ambush.2` 발밑 진흙에서 뼈마디가 일어선다.
 - `field.ambush.3` 쓰러져 있던 시체들이 일제히 고개를 든다.
+
+### `field.ambush_goblin`
+
+- `field.ambush_goblin.1` 덤불이 흔들리더니 고블린들이 튀어나온다.
+- `field.ambush_goblin.2` 나무 뒤에서 낄낄거리는 소리와 함께 고블린이 덮친다.
+
+### `field.wolf_tracks_follow`
+
+- `field.wolf_tracks_follow.1` 발자국은 한 방향으로 겹겹이 쌓여 있다. 무리가 늘 다니는 길이다.
+- `field.wolf_tracks_follow.2` 발자국 사이에 끌린 자국이 섞여 있다. 먹이를 물고 돌아간 길이다.
+
+### `field.gnome_marks`
+
+- `field.gnome_marks.1` 손바닥만 한 돌을 세 개 포개 놓았다. 맨 위 돌이 한쪽을 가리킨다.
+- `field.gnome_marks.2` 돌 표지 밑에 작은 손자국이 찍혀 있다. 자주 드나든 자리다.
 
 <a id="dir8"></a>
 ## dir8 `dir8`

@@ -1,0 +1,17 @@
+{
+  "id": "bell_clapper",
+  "name_ko": "종 혀",
+  "category": "tool",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 0,
+  "icon": "pouch",
+  "color": "#4a4640",
+  "rarity": "numbers",
+  "desc_ko": "주먹만 한 쇳덩이에 닳은 고리가 달렸다. 수백 번 같은 자리를 때린 쪽만 반들반들하다.\n이것을 품고 누운 자는 종소리를 데려가고 싶었던 모양이다.",
+  "source": "placeholder",
+  "notes": "망자의 땅 지하 묘실 종지기의 석관 → 납골당 혀 없는 종(LD3)"
+}

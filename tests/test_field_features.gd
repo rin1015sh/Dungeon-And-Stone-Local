@@ -179,6 +179,8 @@ func test_guards_and_gnome_alert() -> void:
 				spot = stash + d * r
 	var g := s.monsters.add_fixed(["gnome"], spot)
 	assert_true(g != null and _stand_at(s, stash))
+	assert_false(s.features.live_at(stash), "은닉처는 숨어 있다(돌 표지가 가리킨다 — LD2)")
+	s.features.reveal(s, FieldClues.nearest(s, stash, "gnome_stash", 0.5), false)
 	s.interact()
 	assert_true(g.alert_until > s.clock.total_hours, "은닉처를 건드리면 노움이 쫓아온다")
 	assert_eq(g.state, FieldMonsters.STATE_CHASE)
@@ -188,7 +190,7 @@ func test_wolf_den_teaches_bestiary_and_campfire_rest_bonus() -> void:
 	var s := _session()
 	var den := _first(s, "wolf_den")
 	assert_true(_stand_at(s, den))
-	s.interact()
+	s.features.act(s, den, "look")
 	assert_true(s.player.knowledge.knows_stats("blade_wolf"), "늑대 잠자리를 살피면 도감에 습성")
 	var fire := _first(s, "dead_campfire")
 	assert_true(s.features.rest_bonus(fire) < 0.0)

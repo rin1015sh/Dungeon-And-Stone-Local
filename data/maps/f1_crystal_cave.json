@@ -616,8 +616,8 @@
     {
       "id": "clear_spring",
       "pos": [
-        612,
-        401
+        607,
+        394
       ]
     },
     {
@@ -1500,6 +1500,223 @@
       "pos": [
         557,
         377
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        523,
+        346
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        522,
+        395
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        566,
+        396
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        623,
+        348
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        668,
+        399
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        610,
+        403
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        445,
+        339
+      ]
+    },
+    {
+      "id": "wolf_tracks",
+      "pos": [
+        678,
+        329
+      ]
+    },
+    {
+      "id": "wolf_kill",
+      "pos": [
+        704,
+        326
+      ]
+    },
+    {
+      "id": "wolf_kill",
+      "pos": [
+        478,
+        352
+      ]
+    },
+    {
+      "id": "wolf_kill",
+      "pos": [
+        614,
+        394
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        248,
+        320
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        86,
+        427
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        53,
+        301
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        131,
+        418
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        91,
+        349
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        151,
+        307
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        27,
+        356
+      ]
+    },
+    {
+      "id": "gnome_marks",
+      "pos": [
+        51,
+        423
+      ]
+    },
+    {
+      "id": "raided_stash",
+      "pos": [
+        213,
+        318
+      ]
+    },
+    {
+      "id": "raided_stash",
+      "pos": [
+        255,
+        415
+      ]
+    },
+    {
+      "id": "carrion_heap",
+      "pos": [
+        342,
+        677
+      ]
+    },
+    {
+      "id": "carrion_heap",
+      "pos": [
+        404,
+        677
+      ]
+    },
+    {
+      "id": "rot_carcass",
+      "pos": [
+        367,
+        512
+      ]
+    },
+    {
+      "id": "rot_carcass",
+      "pos": [
+        336,
+        638
+      ]
+    },
+    {
+      "id": "goblin_lookout",
+      "pos": [
+        392,
+        78
+      ]
+    },
+    {
+      "id": "goblin_lookout",
+      "pos": [
+        330,
+        61
+      ]
+    },
+    {
+      "id": "goblin_lookout",
+      "pos": [
+        331,
+        234
+      ]
+    },
+    {
+      "id": "goblin_lookout",
+      "pos": [
+        311,
+        167
+      ]
+    },
+    {
+      "id": "goblin_kennel",
+      "pos": [
+        398,
+        54
+      ]
+    },
+    {
+      "id": "goblin_kennel",
+      "pos": [
+        408,
+        257
       ]
     }
   ],

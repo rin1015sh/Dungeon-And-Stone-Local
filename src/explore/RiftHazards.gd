@@ -137,6 +137,11 @@ func _detect_near(cs: ExploreSession, p: Vector2i) -> void:
 			cs.refresh_view()
 
 
+## 묶음을 드러낸다(몬스터가 덫을 밟았다 — MonsterSnares).
+func show_group(cs: ExploreSession, hd: Dictionary) -> void:
+	_show(cs, hd)
+
+
 ## 묶음의 칸을 함정 타일로 칠하고(이미 그렇다면 그대로) 화면에 다시 그리라고 알린다.
 func _show(cs: ExploreSession, hd: Dictionary) -> void:
 	var tile := JsonUtil.get_str(hd, "tile")

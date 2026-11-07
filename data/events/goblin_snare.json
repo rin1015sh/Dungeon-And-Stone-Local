@@ -33,7 +33,11 @@
     "detect_message": "field.snare_detected",
     "disarm_message": "field.snare_disarmed",
     "pass_message": "field.snare_pass",
-    "fail_message": "field.snare_fail"
+    "fail_message": "field.snare_fail",
+    "snares_monsters": {
+      "hours": 0.4,
+      "sound": "snare_snap"
+    }
   },
   "source": "placeholder"
 }

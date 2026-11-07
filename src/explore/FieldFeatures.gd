@@ -180,9 +180,18 @@ func _detect(s: ExploreSession, e: Dictionary) -> void:
 		e["rolled"] = true
 		if not s.rng.chance(RiftHazards.success_chance(s.db, s.player, check)):
 			return
+	reveal(s, e, true)
+
+
+## 숨은 요소를 드러낸다(탐지 성공 · 흔적이 가리킴 — FieldClues). say = 찾은 문구(hidden.line)를 띄울지.
+func reveal(s: ExploreSession, e: Dictionary, say: bool) -> void:
+	if bool(e["found"]):
+		return
 	e["found"] = true
 	var tile := JsonUtil.get_str(e["def"], "tile")
 	if not tile.is_empty():
 		s.map.set_tile(e["pos"], tile)
-	FieldFeatureAct.say_line(s, JsonUtil.get_str(check, "line", "field.found_hidden"), e, "good")
+		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))
+	if say:
+		FieldFeatureAct.say_line(s, JsonUtil.get_str(JsonUtil.get_dict(e["def"], "hidden"), "line", "field.found_hidden"), e, "good")
 	s.refresh_view()

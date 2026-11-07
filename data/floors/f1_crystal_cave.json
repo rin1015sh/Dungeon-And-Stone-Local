@@ -45,10 +45,11 @@
         {"kind": "moss", "near_tiles": {"tiles": ["pond_water", "feat_spring", "feat_wet_slope"], "radius": 4}, "noise": {"key": "moss", "freq": 0.08, "above": 0.45}, "chance": 0.7},
         {"kind": "wet", "near_tiles": {"tiles": ["pond_water", "feat_spring", "feat_wet_slope"], "radius": 3}, "chance": 0.6},
         {"kind": "claws", "zones": ["east"], "near_features": {"ids": ["wolf_den"], "radius": 7}, "chance": 0.85},
+        {"kind": "claws", "zones": ["east"], "near_features": {"ids": ["wolf_tracks", "wolf_kill"], "radius": 3}, "chance": 0.6},
         {"kind": "mud", "zones": ["west"], "near_features": {"ids": ["mud_tracks", "gnome_stash", "gnome_trinkets"], "radius": 6}, "chance": 0.8},
-        {"kind": "rot", "zones": ["south"], "near_features": {"ids": ["ghoul_feast", "old_skeleton"], "radius": 7}, "chance": 0.8},
-        {"kind": "trash", "zones": ["north"], "near_features": {"ids": ["goblin_camp", "goblin_snare"], "radius": 7}, "chance": 0.7},
-        {"kind": "bones", "near_features": {"ids": ["ghoul_feast", "wolf_den", "old_skeleton", "explorer_corpse"], "radius": 5}, "chance": 0.35},
+        {"kind": "rot", "zones": ["south"], "near_features": {"ids": ["ghoul_feast", "old_skeleton", "carrion_heap", "rot_carcass"], "radius": 7}, "chance": 0.8},
+        {"kind": "trash", "zones": ["north"], "near_features": {"ids": ["goblin_camp", "goblin_snare", "goblin_lookout", "goblin_kennel"], "radius": 7}, "chance": 0.7},
+        {"kind": "bones", "near_features": {"ids": ["ghoul_feast", "wolf_den", "old_skeleton", "explorer_corpse", "wolf_kill", "carrion_heap"], "radius": 5}, "chance": 0.35},
         {"kind": "claws", "zones": ["east"], "chance": 0.06},
         {"kind": "mud", "zones": ["west"], "chance": 0.07},
         {"kind": "rot", "zones": ["south"], "chance": 0.06},
@@ -712,6 +713,78 @@
       "count": 6,
       "spot": "room",
       "gap": 80
+    },
+    {
+      "event": "wolf_tracks",
+      "count": 8,
+      "spot": "corridor",
+      "gap": 40,
+      "zones": [
+        "east"
+      ]
+    },
+    {
+      "event": "wolf_kill",
+      "count": 3,
+      "spot": "room",
+      "gap": 70,
+      "zones": [
+        "east"
+      ]
+    },
+    {
+      "event": "gnome_marks",
+      "count": 8,
+      "spot": "wall",
+      "gap": 35,
+      "zones": [
+        "west"
+      ]
+    },
+    {
+      "event": "raided_stash",
+      "count": 2,
+      "spot": "wall",
+      "gap": 80,
+      "zones": [
+        "west"
+      ]
+    },
+    {
+      "event": "carrion_heap",
+      "count": 2,
+      "spot": "dark_edge",
+      "gap": 60,
+      "zones": [
+        "south"
+      ]
+    },
+    {
+      "event": "rot_carcass",
+      "count": 2,
+      "spot": "room",
+      "gap": 80,
+      "zones": [
+        "south"
+      ]
+    },
+    {
+      "event": "goblin_lookout",
+      "count": 4,
+      "spot": "room",
+      "gap": 60,
+      "zones": [
+        "north"
+      ]
+    },
+    {
+      "event": "goblin_kennel",
+      "count": 2,
+      "spot": "room",
+      "gap": 80,
+      "zones": [
+        "north"
+      ]
     }
   ]
 }

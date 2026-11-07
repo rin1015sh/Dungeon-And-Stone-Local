@@ -1,0 +1,22 @@
+{
+  "id": "gnome_marks",
+  "name_ko": "작은 돌 표지",
+  "type": "feature",
+  "tile": "feat_cairn",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "once",
+      "line": "field.gnome_marks",
+      "point_to": {
+        "event": "gnome_stash",
+        "within": 45,
+        "radius": 3,
+        "none_line": "field.gnome_marks_none"
+      }
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1층 서쪽(LD2). 노움이 쌓은 길표지 — 살피면 가까운 숨은 은닉처가 드러난다(은닉처는 hidden). 임시값"
+}

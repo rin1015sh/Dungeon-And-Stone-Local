@@ -1,0 +1,32 @@
+{
+  "id": "bell_crypt",
+  "name_ko": "혀 없는 종",
+  "type": "feature",
+  "tile": "f2d_bell",
+  "actions": [
+    {
+      "id": "ring",
+      "name_ko": "종 혀를 끼워 울린다",
+      "limit": "once",
+      "hours": 0.1,
+      "cost": {
+        "item": "bell_clapper",
+        "count": 1
+      },
+      "missing": "field.bell_no_clapper",
+      "line": "field.bell_ring",
+      "sound": "bell_toll",
+      "goal": "bell",
+      "clear": true,
+      "clear_tile": "f2d_bell_rung",
+      "alert": {
+        "monster": "skeleton",
+        "radius": 24,
+        "hours": 0.5
+      }
+    }
+  ],
+  "standing": true,
+  "source": "placeholder",
+  "notes": "망자의 땅 납골당 종(LD3): 종 혀가 빠져 있다 — 지하 묘실 종지기의 석관(ringer_coffin)에서 종 혀를 찾아 와야 울린다(영묘 열쇠와 같은 찾기). 임시값"
+}

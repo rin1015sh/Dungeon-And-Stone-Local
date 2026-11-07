@@ -345,6 +345,7 @@ func pass_time(hours: float) -> void:
 		monsters.set_player_marks(player.statuses.ids())
 		monsters.set_player_moving(FieldStealth.moving(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
+		MonsterSnares.update(self)
 		if g != null:
 			engage(g, false)
 

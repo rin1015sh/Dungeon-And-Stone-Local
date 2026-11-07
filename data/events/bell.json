@@ -8,12 +8,25 @@
       "id": "ring",
       "name_ko": "종을 울린다",
       "limit": "once",
-      "hours": 0.1,
+      "hours": 0.25,
+      "check": {
+        "stat": "str",
+        "dc": 9
+      },
+      "fail_line": "field.bell_stuck",
       "line": "field.bell_ring",
       "sound": "bell_toll",
       "goal": "bell",
       "clear": true,
       "clear_tile": "f2d_bell_rung",
+      "spawn": {
+        "monsters": [
+          "skeleton",
+          "skeleton"
+        ],
+        "chance": 1.0,
+        "line": "field.bell_risers"
+      },
       "alert": {
         "monster": "skeleton",
         "radius": 24,
@@ -23,5 +36,5 @@
   ],
   "standing": true,
   "source": "placeholder",
-  "notes": "망자의 땅 층 목표(FL18 — FloorGoal): 묘역 · 납골당 · 듀라한 폐허에 하나씩. 셋을 울리면 고개 쇠문이 열린다. 울리면 둘레 스켈레톤이 몰려온다. 임시값"
+  "notes": "망자의 땅 층 목표(FL18 — FloorGoal) 묘역 종(LD3 — 종마다 다르게): 녹이 슬어 근력 판정(실패 = 시간만 흐르고 다시), 울리면 둘레 무덤에서 해골이 일어나고 스켈레톤이 몰려온다. 임시값"
 }

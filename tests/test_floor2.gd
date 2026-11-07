@@ -279,17 +279,31 @@ func test_bells_open_the_pass_gate() -> void:
 	var cells: Array = gate["cells"]
 	assert_true(cells.size() >= 3, "쇠문이 길을 가로지른다: %d칸" % cells.size())
 	assert_false(_reaches(s.map, s.map.center), "종을 울리기 전 — 3층 포탈에 닿지 못한다")
-	var bells := s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "bell")
+	var kinds := ["bell", "bell_crypt", "bell_night"]  # 묘역(근력) · 납골당(종 혀) · 듀라한 폐허(밤에만) — LD3
+	var bells := s.features.list.filter(func(e: Dictionary) -> bool: return kinds.has(e["id"]))
 	assert_eq(bells.size(), 3, "종 셋(묘역 · 납골당 · 듀라한 폐허)")
 	assert_eq(s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "pass_gate").size(), 1, "쇠문을 살필 수 있다")
+	assert_eq(s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "ringer_coffin").size(), 1, "종 혀를 품은 석관")
 	for b: Dictionary in bells:
 		assert_true(FloorMap.DIRS4.any(func(d: Vector2i) -> bool: return _reaches(s.map, (b["pos"] as Vector2i) + d)), "종 %s 옆까지 걸어 닿는다" % b["pos"])
-	for i in bells.size():
-		var b: Dictionary = bells[i]
-		s.features.act(s, b["pos"], "ring")
-		assert_eq(s.goal.count, i + 1)
+	s.pass_time(fposmod(12.0 - s.clock.hour_of_day(), 24.0))  # 한낮
+	for b: Dictionary in bells:
+		if b["id"] != "bell":
+			s.features.act(s, b["pos"], "ring")
+	assert_eq(s.goal.count, 0, "종 혀 없이 · 낮에는 울지 않는다")
+	s.player.inventory.add("bell_clapper", 1)
+	s.pass_time(fposmod(21.0 - s.clock.hour_of_day(), 24.0))  # 밤
+	var rung := 0
+	for b: Dictionary in bells:
+		for tries in 30:  # 묘역 종은 근력 판정 — 실패하면 다시
+			if s.map.tile_id_at(b["pos"]) == "f2d_bell_rung":
+				break
+			s.features.act(s, b["pos"], "ring")
+		rung += 1
+		assert_eq(s.goal.count, rung, "%s를 울렸다" % b["id"])
 		assert_eq(s.map.tile_id_at(b["pos"]), "f2d_bell_rung", "울린 종은 푸른 불")
-		assert_eq(s.goal.opened, i == 2, "셋째 종에서 열린다")
+		assert_eq(s.goal.opened, rung == 3, "셋째 종에서 열린다")
+	assert_eq(s.player.inventory.count("bell_clapper"), 0, "종 혀는 종에 끼웠다")
 	for c: Vector2i in cells:
 		assert_true(s.map.is_walkable(c), "열린 문 칸은 걷는다")
 	assert_true(_reaches(s.map, s.map.center), "3층 포탈까지 걸어 닿는다")

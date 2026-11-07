@@ -1,0 +1,35 @@
+{
+  "id": "goblin_lookout",
+  "name_ko": "고블린 봉화대",
+  "type": "feature",
+  "tile": "feat_goblin_camp",
+  "watch": {
+    "radius": 9,
+    "guard": "goblin",
+    "monster": [
+      "goblin"
+    ],
+    "alarm_radius": 35,
+    "hours": 1.0,
+    "sound": "goblin_horn",
+    "line": "field.lookout_alarm"
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.goblin_lookout"
+    },
+    {
+      "id": "climb",
+      "name_ko": "올라 둘러본다",
+      "limit": "day",
+      "hours": 0.25,
+      "reveal": 28,
+      "line": "field.lookout_climb"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1층 북쪽(LD2 — RouteWatch 동굴 요소 망루). 봉화 밑 망꾼이 9칸 안에서 플레이어를 보면 뿔피리 — 35칸 안 고블린 무리가 쫓아온다. 망꾼을 먼저 쓰러뜨리거나 시야 밖으로 돌면 조용하다. 차지하면 올라 둘레를 본다. 임시값"
+}

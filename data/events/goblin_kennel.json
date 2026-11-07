@@ -1,0 +1,19 @@
+{
+  "id": "goblin_kennel",
+  "name_ko": "늑대 묶던 말뚝",
+  "type": "feature",
+  "tile": "feat_broken_gear",
+  "guard": {
+    "monster": "blade_wolf"
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.goblin_kennel"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1층 북쪽(LD2). 고블린이 길들이려 묶어 둔 칼날늑대(다른 종이 끼어드는 자리). 임시값"
+}

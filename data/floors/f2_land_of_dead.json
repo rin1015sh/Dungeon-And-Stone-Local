@@ -84,7 +84,7 @@
       }
     ],
     "ambience": {
-      "loop": "f1_cave"
+      "loop": "f2_dead"
     },
     "abyss": {
       "cliff": "res://assets/floor/f2d/chasm.webp",
@@ -1904,14 +1904,33 @@
   ],
   "source": "placeholder",
   "grave_wake": {
-    "_comment": "비석(GraveWake — floor2.md §13-2): 비석 터(node) 안 무작위 자리에 서고, 원정 day일 차(5 — 사용자 2026-11-06 \"5일차가 되면 서있게\")에 monster가 묘역 문(stand_at)에 깨어나 길을 막는다. 그 전에 부수면 없음. 임시값",
+    "_comment": "비석(GraveWake — floor2.md §13-2): 비석 터(node) 안 무작위 자리에 서고, 원정 day일 차(5 — 사용자 2026-11-06 \"5일차가 되면 서있게\")에 monster가 묘역 문(stand_at)에 깨어나 길을 막는다. 그 전에 부수면 없음. 임시값 · omens = 깨어나기 전 날마다 단서(LD3): 3일 차 묘역 문 둘레 새 시체 · 비석 곁 파헤친 무덤, 4일 차 비석 곁 넋불 · 갑옷 소리. 비석 살피기 문구는 날마다(field.grave_stone_d2~d4)",
     "event": "grave_stone",
     "day": 5,
     "monster": "death_knight",
     "line": "explore.grave_wakes",
     "sound": "boss_reveal",
     "node": "graveyard",
-    "stand_at": "tomb_gate"
+    "stand_at": "tomb_gate",
+    "omens": [
+      {
+        "day": 3,
+        "event": "explorer_corpse",
+        "tile": "f2d_corpse_g",
+        "near": "stand_at"
+      },
+      {
+        "day": 3,
+        "tile": "f2d_dug",
+        "near": "grave"
+      },
+      {
+        "day": 4,
+        "tile": "f2d_wisp",
+        "near": "grave",
+        "sound": "armor_clank"
+      }
+    ]
   },
   "route_spots": {
     "_comment": "구간에 놓는 지키는 무리(guards — 관문 · 엘리트, 입장 때 그 구간 가운데에)와 동굴 요소(features — 쉼터 · 곁길 보상). RouteSpots. 임시값 · ambush = 길목 매복(RouteAmbush — FL18), features \"edge\"+\"t\" = 길 위 자리, \"object\" = 이미 있는 물체 칸(닫힌 쇠문)",
@@ -2088,7 +2107,7 @@
       },
       {
         "mark": "crypt_in",
-        "event": "sarcophagus",
+        "event": "ringer_coffin",
         "at": [
           27,
           2
@@ -2129,7 +2148,7 @@
       },
       {
         "node": "ossuary",
-        "event": "bell",
+        "event": "bell_crypt",
         "at": [
           -4,
           2
@@ -2137,7 +2156,7 @@
       },
       {
         "node": "dullahan_ruin",
-        "event": "bell",
+        "event": "bell_night",
         "at": [
           3,
           3

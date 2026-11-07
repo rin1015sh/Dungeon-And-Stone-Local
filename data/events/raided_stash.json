@@ -1,0 +1,38 @@
+{
+  "id": "raided_stash",
+  "name_ko": "뜯긴 은닉처",
+  "type": "feature",
+  "tile": "feat_gnome_stash",
+  "guard": {
+    "monster": "goblin"
+  },
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "남은 것을 뒤진다",
+      "limit": "once",
+      "line": "field.raided_stash",
+      "give": [
+        {
+          "item": "gnome_trinket",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.6
+        },
+        {
+          "item": "magic_stone_9",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.5
+        }
+      ],
+      "done": "field.gnome_stash_done"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1층 서쪽(LD2). 고블린 털이꾼이 먼저 찾은 은닉처 — 고블린이 지킨다(다른 종이 끼어드는 자리). 임시값"
+}

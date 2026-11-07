@@ -1,0 +1,27 @@
+{
+  "id": "wolf_tracks",
+  "name_ko": "늑대 발자국",
+  "type": "feature",
+  "tile": "feat_mud",
+  "near": {
+    "radius": 2,
+    "line": "field.wolf_tracks"
+  },
+  "actions": [
+    {
+      "id": "follow",
+      "name_ko": "발자국을 짚어 본다",
+      "limit": "once",
+      "hours": 0.1,
+      "line": "field.wolf_tracks_follow",
+      "point_to": {
+        "event": "wolf_den",
+        "within": 70,
+        "radius": 7,
+        "none_line": "field.wolf_tracks_none"
+      }
+    }
+  ],
+  "source": "placeholder",
+  "notes": "1층 동쪽(레벨 디자인 LD2 — docs/plans/level_design_review.md). 짚어 보면 가장 가까운 늑대 굴 둘레 지도가 밝혀진다(FieldClues point_to). 임시값"
+}

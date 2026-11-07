@@ -14,7 +14,56 @@
       "line": "field.wolf_den",
       "learn_stats": "blade_wolf",
       "done": "field.wolf_den_done"
+    },
+    {
+      "id": "search",
+      "name_ko": "뼈 사이를 뒤진다",
+      "limit": "once",
+      "hours": 0.25,
+      "line": "field.wolf_den_search",
+      "give": [
+        {
+          "item": "magic_stone_9",
+          "count": [
+            2,
+            5
+          ],
+          "chance": 0.9
+        },
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.4
+        },
+        {
+          "item": "explorer_tag",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.5
+        },
+        {
+          "one_of": [
+            "hunting_dagger",
+            "leather_gloves",
+            "leather_hood",
+            "leather_boots",
+            "leather_belt"
+          ],
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.2
+        }
+      ],
+      "done": "field.wolf_den_done"
     }
   ],
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "늑대 굴: 살피면 도감, 뒤지면 물어다 놓은 탐험가 유품(LD2 — 발자국 wolf_tracks가 가리킨다). 임시값"
 }

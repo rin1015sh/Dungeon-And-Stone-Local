@@ -59,6 +59,7 @@ class Group extends RefCounted:
 	var points: Array[Vector2i] = []      ## 남은 수색 지점
 	var called: bool = false              ## 동료의 외침을 듣고 달려오는 중(조사)
 	var guard: bool = false               ## 대기 무리(균열 posts — RiftPosts): 순찰하지 않고 제자리에서 둘러본다
+	var held_until: float = -1.0          ## 이 시각까지 덫에 걸려 걷지 못한다(MonsterSnares — 쫓다가 덫을 밟았다)
 
 	func leader() -> String:
 		return monster_ids[0] if not monster_ids.is_empty() else ""
@@ -303,7 +304,8 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		near.append(g)
 		var started := _steer.decide(g, player, pcell, hours, now)
 		_steer.turn(g, hours, now)
-		var budget := minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g) * _steer.ground_mult(g), max_moves)
+		var budget := 0.0 if g.held_until > now \
+			else minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g) * _steer.ground_mult(g), max_moves)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
 			moved = true
 		if _steer.decide(g, player, pcell, 0.0, now) or started:

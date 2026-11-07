@@ -1,0 +1,54 @@
+{
+  "id": "ringer_coffin",
+  "name_ko": "종지기의 석관",
+  "type": "feature",
+  "tile": "f2d_sarcophagus",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.ringer_coffin"
+    },
+    {
+      "id": "open",
+      "name_ko": "뚜껑을 민다",
+      "limit": "once",
+      "hours": 0.5,
+      "check": {
+        "stat": "str",
+        "dc": 10
+      },
+      "fail_line": "field.sarcophagus_fail",
+      "line": "field.ringer_coffin_open",
+      "give": [
+        {
+          "item": "bell_clapper",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 1.0
+        },
+        {
+          "item": "old_silver_coin",
+          "count": [
+            1,
+            3
+          ],
+          "chance": 0.7
+        }
+      ],
+      "spawn": {
+        "monsters": [
+          "skeleton_warrior"
+        ],
+        "chance": 0.5,
+        "line": "field.sarcophagus_wake"
+      }
+    }
+  ],
+  "standing": true,
+  "source": "placeholder",
+  "notes": "망자의 땅 지하 묘실(LD3). 종지기가 종 혀를 안고 묻혔다 — 납골당 종(bell_crypt)을 울릴 것. 임시값"
+}
