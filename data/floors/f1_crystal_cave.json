@@ -298,6 +298,9 @@
         "ghoul": 1,
         "goblin": 1
       },
+      "escort_day": 3,
+      "escort_share": 0.5,
+      "escort": {"goblin": {"monster": "blade_wolf", "count": [1, 1]}, "blade_wolf": {"monster": "ghoul", "count": [1, 1]}, "ghoul": {"monster": "goblin", "count": [1, 1]}, "gnome": {"monster": "goblin", "count": [1, 1]}},
       "groups": [21, 25]
     },
     {
@@ -310,7 +313,10 @@
       ],
       "weights": {
         "blade_wolf": 1
-      }
+      },
+      "escort_day": 3,
+      "escort_share": 0.5,
+      "escort": {"blade_wolf": {"monster": "ghoul", "count": [1, 1]}}
     },
     {
       "id": "f1_west",
@@ -322,7 +328,10 @@
       ],
       "weights": {
         "gnome": 1
-      }
+      },
+      "escort_day": 3,
+      "escort_share": 0.5,
+      "escort": {"gnome": {"monster": "goblin", "count": [1, 1]}}
     },
     {
       "id": "f1_south",
@@ -334,7 +343,10 @@
       ],
       "weights": {
         "ghoul": 1
-      }
+      },
+      "escort_day": 3,
+      "escort_share": 0.5,
+      "escort": {"ghoul": {"monster": "goblin", "count": [1, 1]}}
     },
     {
       "id": "f1_north",
@@ -346,7 +358,10 @@
       ],
       "weights": {
         "goblin": 1
-      }
+      },
+      "escort_day": 3,
+      "escort_share": 0.5,
+      "escort": {"goblin": {"monster": "blade_wolf", "count": [1, 1]}}
     }
   ],
   "portals": [
@@ -377,7 +392,7 @@
   ],
   "source": "original",
   "spawn": {
-    "_comment": "groups_per_region = 입장 때 지역마다 무리 수(지역 groups가 있으면 그것 — 팔은 중심부 모서리를 받아 넓어진 만큼 48~56에서 52~61로, CR25), pack_by_day = 그날 새로 생기는 무리(= 한 번의 전투)의 [최소, 최대] 마릿수(몬스터 pack_size 최대를 넘지 않음 — 3일 차까지 한 마리, 사용자 결정 2026-10-22), 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
+    "_comment": "groups_per_region = 입장 때 지역마다 무리 수(지역 groups가 있으면 그것 — 팔은 중심부 모서리를 받아 넓어진 만큼 48~56에서 52~61로, CR25), pack_by_day = 그날 새로 생기는 무리(= 한 번의 전투)의 [최소, 최대] 마릿수(몬스터 pack_size 최대를 넘지 않음 — 3일 차까지 한 마리, 사용자 결정 2026-10-22), 팔 끝은 한 종씩(중심부만 네 종 — 사용자 결정 2026-10-22) — 3일 차부터 무리에 다른 종 졸개가 섞인다(지역 escort_day · escort_share — 사용자 2026-11-07, CB9). cluster = 그중 share만큼 소굴(동굴 요소 자리) 둘레에(FieldSpawnBias). growth_bias = min_day일 차부터 regions 지역에 늘어나는 무리가 chance로 그 몬스터(3일 차부터 남쪽·중심부에 구울이 모인다). 모두 임시값",
     "groups_per_region": [
       52,
       61

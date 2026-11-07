@@ -106,3 +106,35 @@ func test_death_knight_oath_every_four_rounds() -> void:
 		dk.memo["round"] = int(dk.memo["round"]) + 1
 		BossHooks.pattern(b, dk).on_round_end(b, dk, false)
 	assert_true(b.side_units(Combatant.SIDE_ENEMY).size() > n, "4라운드째에 병사를 부른다")
+
+
+## 1층 무리 섞기(CB9 — 사용자 "3일 차부터"): 1 · 2일 차엔 팔마다 한 종, 3일 차가 되면 있던 무리 절반쯤이 다른 종 졸개를 데려오고
+## 그 뒤로 새로 생기는 무리에도 붙는다.
+func test_floor1_mixes_from_day3() -> void:
+	var reg := ContentRegistries.new()
+	var def := db.get_entry("floors", "f1_crystal_cave")
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 12, "agi": 8})
+	var s := ExploreSession.new(db, def, reg.generator("crystal_cave").generate(db, def, Rng.new(3)), pc, GameClock.new(), Rng.new(4), reg.effects)
+	s.start()
+	var mixed := func() -> int:
+		var n := 0
+		for g in s.monsters.groups:
+			if g.boss.is_empty() and g.region.begins_with("f1_") and g.monster_ids.size() > 1 and g.monster_ids.any(func(m: String) -> bool: return m != g.monster_ids[0]):
+				n += 1
+		return n
+	assert_eq(mixed.call(), 0, "처음엔 한 종씩")
+	s.monsters.update(Kinematics.center_of(s.pos), 0.0, 30.0, false)
+	assert_eq(mixed.call(), 0, "2일 차도 한 종씩")
+	var total := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region.begins_with("f1_")).size()  # 약탈자 · 탐험가 무리 빼고
+	s.monsters.update(Kinematics.center_of(s.pos), 0.0, 49.0, false)
+	var m: int = mixed.call()
+	assert_true(m > total * 0.25 and m < total * 0.75, "3일 차 — 있던 무리 절반쯤이 섞인다 %d / %d" % [m, total])
+	s.monsters.update(Kinematics.center_of(s.pos), 0.0, 60.0, false)
+	assert_eq(mixed.call(), m, "한 번만")
+	var north := {}
+	for r: Variant in JsonUtil.get_array(def, "regions"):
+		if JsonUtil.get_str(r, "id") == "f1_north":
+			north = r
+	var g := s.monsters.spawn_group(north, s.pos, Vector2i(-1, -1), "goblin")
+	assert_true(g != null and g.monster_ids.has("blade_wolf"), "3일 차 뒤 새 고블린 무리는 늑대를 데리고 다닌다")
+	s.detach()

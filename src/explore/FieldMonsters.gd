@@ -89,6 +89,7 @@ var _next_id: int = 1
 var _mpt: float = 1.0
 var _steer: MonsterSteering
 var _now: float = 0.0
+var _mixed_regions: Dictionary = {}  ## escort_day가 지나 이미 섞은 지역 id → true(FieldEscorts)
 var _region_far: Dictionary = {}  # 지역 id -> 중심에서 가장 먼 칸까지의 거리
 var _active: float = 0.0  # monsters.active_radius_tiles(0 = 모두 움직임)
 
@@ -157,7 +158,7 @@ func spawn_group(region: Dictionary, avoid: Vector2i, near: Vector2i = Vector2i(
 	for i in count:
 		g.monster_ids.append(mid)
 	var esc := JsonUtil.get_dict(JsonUtil.get_dict(region, "escort"), mid)  # 대장이 데리고 다니는 졸개(홉고블린 + 고블린 — FL21)
-	if not esc.is_empty():
+	if not esc.is_empty() and FieldEscorts.applies(region, _now):  # escort_day 전에는 붙지 않는다(1층 — 3일 차부터, CB9)
 		var er := JsonUtil.get_array(esc, "count")
 		for i in (_rng.randi_range(int(er[0]), int(er[1])) if er.size() == 2 else 1):
 			g.monster_ids.append(JsonUtil.get_str(esc, "monster"))
@@ -294,6 +295,8 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 	_now = now
 	var pcell := Kinematics.cell_of(player)
 	_process_respawns(pcell, now)
+	if FieldEscorts.mix_by_day(groups, _regions(), _mixed_regions, now, _rng):  # n일 차가 되면 있던 무리 일부가 섞인다(CB9)
+		changed.emit()
 	var max_moves := float(_db.bal("monsters.update_max_moves", 12))
 	var moved := false
 	var near: Array[Group] = []
