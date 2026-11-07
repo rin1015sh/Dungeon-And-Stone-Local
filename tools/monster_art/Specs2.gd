@@ -172,7 +172,7 @@ static func spec_of(id: String) -> Dictionary:
 		"werewolf":  # 늑대 무리의 우두머리 — 잿빛 털의 라이칸스로프(타룬바스 몸 — 무기 없이 발톱)
 			return {"height": 700, "width": 1.0, "skin": C("#6a6460"), "skin_kind": "fur", "shade": C("#2a2624"), "eyes": C("#ffb030"), "glow": 0.9, "fur_len": 1.4,
 				"pose": {"hunch": 0.45, "knee": 0.42, "arm_l": "claw", "arm_r": "claw", "sh": 0.16, "hip": 0.085, "neck": 0.45, "arms": 1.2, "weight": -0.4, "tilt": 0.05},
-				"body": {"build": "brute", "bulk": 1.15, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "ape", "mouth": "fangs", "ears": "long", "size": 1.0},
+				"body": {"build": "brute", "bulk": 1.15, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "wolf", "mouth": "fangs", "size": 1.05},
 				"kit": {"belt": C("#2a221c"), "loin": C("#3a3028")}}
 		"skull_rat":
 			return {"kind": "beast", "height": 440, "color": C("#6a5a50"), "head": "rat", "fur": 0.6, "tail": "thin", "bulk": 0.85, "legs": 0.7, "eyes": C("#ff6030"), "head_k": 1.4}

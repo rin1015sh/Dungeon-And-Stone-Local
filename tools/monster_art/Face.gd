@@ -70,7 +70,7 @@ static func head(cl: Clay, j: Dictionary, hd: Dictionary, skin: int, mats: Dicti
 			var n0: Vector2 = R.call(0.0, -0.02)
 			var n1: Vector2 = R.call(0.0, 0.2)
 			cl.cap(g, _v3(n0, c.z + hh * 0.45), _v3(n1, c.z + hh * 0.62), hh * 0.05, hh * 0.08, skin, 3.0)
-		"lizard", "bird":
+		"lizard", "bird", "wolf":
 			pass
 		_:
 			var n0: Vector2 = R.call(0.0, -0.02)
@@ -89,6 +89,21 @@ static func head(cl: Clay, j: Dictionary, hd: Dictionary, skin: int, mats: Dicti
 				cl.groove(g, R.call(-0.3, -0.35 + k * 0.1), R.call(0.3, -0.33 + k * 0.1), hh * 0.015, hh * 0.02)
 			hd = hd.duplicate()
 			hd["mouth"] = hd.get("mouth", "fangs")
+		"wolf":  # 늑대 주둥이(웨어울프 — 레벨 디자인 11차): 앞 · 아래로 좁아지는 주둥이 + 검은 코끝 + 콧등 골
+			var w0: Vector2 = R.call(0.0, 0.04)
+			var w1: Vector2 = R.call(0.0, 0.5)
+			cl.cap(g, _v3(w0, c.z + hh * 0.3), _v3(w1, c.z + hh * 0.7), hh * 0.27, hh * 0.15, skin, 6.0)
+			var lj: Vector2 = R.call(0.0, 0.66)  # 아래턱
+			cl.ell(g, Vector3(lj.x, lj.y, c.z + hh * 0.45), hh * 0.17, hh * 0.09, hh * 0.25, skin, 5.0, tilt)
+			var nz: Vector2 = R.call(0.0, 0.47)
+			cl.ell(g, Vector3(nz.x, nz.y, c.z + hh * 0.8), hh * 0.11, hh * 0.075, hh * 0.08, dark, 1.0, tilt)
+			for s: float in [-1.0, 1.0]:
+				cl.carve(g, R.call(s * 0.05, 0.49), hh * 0.022, hh * 0.016, hh * 0.03)
+			cl.groove(g, R.call(0.0, -0.06), R.call(0.0, 0.4), hh * 0.014, hh * 0.025)
+			hd = hd.duplicate()
+			hd["mouth"] = hd.get("mouth", "fangs")
+			if not hd.has("ears") or str(hd["ears"]) in ["pointed", "long"]:
+				hd["ears"] = "wolf"
 		"ape":  # 앞으로 튀어나온 입 · 넓적한 코
 			var mz: Vector2 = R.call(0.0, 0.24)
 			cl.ell(g, Vector3(mz.x, mz.y, c.z + hh * 0.32), hh * 0.3, hh * 0.2, hh * 0.3, skin, 6.0, tilt)
@@ -114,8 +129,8 @@ static func head(cl: Clay, j: Dictionary, hd: Dictionary, skin: int, mats: Dicti
 
 
 static func _mouth(cl: Clay, g: int, R: Callable, hh: float, z: float, mouth: String, type: String, bone: int, dark: int, skin: int, out: Dictionary) -> void:
-	var my := 0.3 if type != "goblin" else 0.3
-	var mw := 0.16 if type != "goblin" else 0.24
+	var my := 0.58 if type == "wolf" else 0.3  # 늑대는 코끝 아래
+	var mw := 0.24 if type == "goblin" else (0.13 if type == "wolf" else 0.16)
 	var open := 0.0
 	match mouth:
 		"open":
@@ -157,6 +172,12 @@ static func _ears(cl: Clay, g: int, R: Callable, hh: float, z: float, ears: Stri
 			"human":
 				var e: Vector2 = R.call(s * 0.4, 0.05)
 				cl.ell(g, Vector3(e.x, e.y, z - hh * 0.16), hh * 0.035, hh * 0.085, hh * 0.08, skin, 3.0, tilt)
+			"wolf":  # 머리 위로 곧게 선 세모 귀
+				var e0: Vector2 = R.call(s * 0.16, -0.42)
+				var e1: Vector2 = R.call(s * 0.42, -0.3)
+				var tip: Vector2 = R.call(s * 0.34, -0.9)
+				cl.slab(g, PackedVector2Array([e0, tip, e1]), z - hh * 0.02, hh * 0.07, skin, 2.0, hh * 0.05)
+				cl.groove(g, R.call(s * 0.28, -0.4), tip.lerp(R.call(s * 0.28, -0.4), 0.3), hh * 0.03, hh * 0.04)
 			"pointed", "long":
 				var ln := 0.55 if ears == "long" else 0.3
 				var b0: Vector2 = R.call(s * 0.38, -0.05)
