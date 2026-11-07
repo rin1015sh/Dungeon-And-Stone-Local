@@ -157,3 +157,47 @@ func test_night_bell_only_at_night() -> void:
 	s.pass_time(fposmod(22.0 - s.clock.hour_of_day(), 24.0))
 	s.features.act(s, b["pos"], "ring")
 	assert_eq(s.goal.count, 1, "밤에는 운다")
+
+
+## 전투 지형(LD6): 진창 · 물에 선 쪽은 느려지고(구울은 진창에 익숙하다), 둔덕 위는 유리, 좁은 다리에선 적이 둘씩만 선다.
+func test_battle_terrain() -> void:
+	var pc := PlayerCharacter.create(db, "human", "warrior", "시험", {})
+	var party: Array[Actor] = [pc]
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["ghoul", "goblin"])
+	BattleTerrain.apply(b, "f2d_mud", "f2d_mud")
+	assert_true(pc.statuses.has("mired"), "진창에 선 플레이어는 진창 상태")
+	for u in b.side_units(Combatant.SIDE_ENEMY):
+		var ghoul := (u.actor as Monster).id == "ghoul"
+		assert_eq(u.actor.statuses.has("mired"), not ghoul, "구울(mud_walker)만 진창을 타지 않는다: %s" % (u.actor as Monster).id)
+	assert_true(pc.statuses.clear_temporary().has("mired"), "전투가 끝나면 풀린다")
+	var b2 := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["goblin"])
+	BattleTerrain.apply(b2, "f2d_mound", "f2d_hard")
+	assert_true(pc.statuses.has("high_ground"), "둔덕 위 = 높은 자리")
+	assert_false(b2.side_units(Combatant.SIDE_ENEMY)[0].actor.statuses.has("high_ground"), "아래의 적은 아니다")
+	pc.statuses.clear_temporary()
+	assert_eq(BattleTerrain.cap(db, "f2g_plank", "f2g_floor"), 2, "다리 위 — 적은 둘씩")
+	assert_eq(BattleTerrain.cap(db, "f2g_floor", "f2g_floor"), 0, "그냥 숲 바닥은 제한 없음")
+	var five := ["goblin", "goblin", "goblin", "goblin", "goblin"]
+	var b3 := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, five, Battle.FIRST_NONE, 2)
+	assert_eq(b3.side_units(Combatant.SIDE_ENEMY).size(), 2, "둘만 선다")
+	assert_eq(b3.horde.size(), 3, "나머지 셋은 예비대")
+
+
+## 망자의 땅 예배당(LD7): 긴 의자 줄 사이 가운데 통로, 종탑에 오르면 둘레 지도.
+func test_chapel_pews_and_tower() -> void:
+	var s := _f2("f2_land_of_dead", false)
+	var c: Vector2i = s.map.anchors["nodes"]["chapel"]
+	var pews := 0
+	for dy in range(-19, 6):
+		for dx in range(-11, 12):
+			if s.map.tile_id_at(c + Vector2i(dx, dy)) == "f2d_pew":
+				pews += 1
+	assert_true(pews >= 40, "예배당 안 긴 의자 줄: %d칸" % pews)
+	assert_true(s.map.is_walkable(c), "가운데 통로는 걷는다")
+	var t := _feats(s, "tower_stairs")
+	assert_eq(t.size(), 1, "종탑 계단")
+	var far: Vector2i = (t[0]["pos"] as Vector2i) + Vector2i(30, 0)
+	s.map.explored[s.map.idx(far)] = 0
+	s.features.act(s, t[0]["pos"], "climb")
+	assert_eq(int(s.map.explored[s.map.idx(far)]), 1, "종탑에 오르면 30칸 밖도 밝혀진다")
+	s.detach()

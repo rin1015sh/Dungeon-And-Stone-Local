@@ -6,8 +6,9 @@ extends RefCounted
 
 
 ## monster_ids를 [지금 설 몬스터, 예비대]로 나눈다.
-static func split(db: GameDatabase, monster_ids: Array) -> Array:
-	var cap := maxi(1, int(db.bal("combat.max_side_units", 6)))
+## cap > 0 = 지형이 정한 상한(좁은 다리 — BattleTerrain).
+static func split(db: GameDatabase, monster_ids: Array, cap_override: int = 0) -> Array:
+	var cap := cap_override if cap_override > 0 else maxi(1, int(db.bal("combat.max_side_units", 6)))
 	var front: Array = monster_ids.slice(0, cap)
 	var rest: Array[String] = []
 	for id: Variant in monster_ids.slice(cap):
@@ -17,7 +18,7 @@ static func split(db: GameDatabase, monster_ids: Array) -> Array:
 
 ## 빈자리만큼 예비대를 들인다. 들어온 수.
 static func refill(b: Battle) -> int:
-	var cap := int(b.db.bal("combat.max_side_units", 6))
+	var cap := b.enemy_cap if b.enemy_cap > 0 else int(b.db.bal("combat.max_side_units", 6))
 	var n := 0
 	while not b.horde.is_empty() and b.side_units(Combatant.SIDE_ENEMY).size() < cap:
 		var m := Monster.create(b.db, b.horde.pop_front())

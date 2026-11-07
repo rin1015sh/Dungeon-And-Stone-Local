@@ -38,6 +38,7 @@ var killed_colors: Array[String] = []  ## killed와 같은 순서: 타입이 정
 var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
 var objective: Dictionary = {}       ## 전투 목표(BattleObjective — 생존 웨이브). 비면 없음
 var horde: Array[String] = []        ## 큰 무리의 예비대(BattleHorde — 쓰러진 자리에 차례로 들어온다)
+var enemy_cap: int = 0               ## 적이 한 번에 설 수 있는 수(0 = combat.max_side_units — 좁은 다리 BattleTerrain)
 ## 지금까지 나온 메시지 {key, args, kind} — 화면이 시그널을 잇기 전(전투 시작 안내·수호자 대사)의 것도 다시 보여 준다.
 var history: Array[Dictionary] = []
 
@@ -66,11 +67,12 @@ const FIRST_NONE := -1  ## 아무도 먼저 움직이지 않는다(맵 조우 �
 
 ## 탐험 조우로 전투를 꾸린다. 같은 몬스터가 여럿이어도 이름에 A·B를 붙이지 않는다 — 시작 안내에서 "데드맨 무리"로 묶는다(사용자 2026-11-02).
 static func from_encounter(p_db: GameDatabase, regs: ContentRegistries, p_rng: Rng, party: Array[Actor],
-		monster_ids: Array, first_side: int = FIRST_NONE) -> Battle:
+		monster_ids: Array, first_side: int = FIRST_NONE, cap: int = 0) -> Battle:
 	var b := Battle.new(p_db, regs.effects, regs.ai_conditions, p_rng)
+	b.enemy_cap = cap
 	for a in party:
 		b.add(a, Combatant.SIDE_PARTY, (a as PlayerCharacter).get_row() if a is PlayerCharacter else "front")  # 전위·후위(사용자 2026-10-25)
-	var parts := BattleHorde.split(p_db, monster_ids)
+	var parts := BattleHorde.split(p_db, monster_ids, cap)
 	for id: Variant in parts[0]:
 		var m := Monster.create(p_db, str(id))
 		b.add(m, Combatant.SIDE_ENEMY, JsonUtil.get_str(m.behavior(), "row", "front"))

@@ -1443,6 +1443,44 @@
           "     W",
           "WW WWW"
         ]
+      },
+      {
+        "node": "chapel",
+        "at": [
+          -11,
+          -19
+        ],
+        "legend": {
+          "p": "f2d_pew"
+        },
+        "rows": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "  ppppppp     ppppppp",
+          "",
+          "  ppppppp     ppppppp",
+          "",
+          "  ppppppp     ppppppp",
+          "",
+          "  ppppppp       ppppp",
+          "",
+          "",
+          ""
+        ],
+        "_comment": "예배당 안 부서진 긴 의자 줄(LD7 — floor2.md §15-4 '장의자 사이'): 가운데 통로(장례 행렬) · 꺼진 모닥불 자리는 비움"
       }
     ],
     "crumble": [
@@ -2225,6 +2263,15 @@
         "t": 0.4,
         "event": "offering_pile",
         "tile": "f2d_offering"
+      },
+      {
+        "node": "chapel",
+        "event": "tower_stairs",
+        "at": [
+          18,
+          8
+        ],
+        "tile": "f2d_cairn"
       }
     ],
     "scatter": [

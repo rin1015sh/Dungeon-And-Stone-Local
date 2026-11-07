@@ -1623,5 +1623,64 @@
     "battle_only": true,
     "source": "placeholder",
     "notes": "갱도 폭약(히든 피스 H) — 분열하지 못한다(BattleSpawns.split)"
+  },
+  {
+    "id": "mired",
+    "name_ko": "진창",
+    "kind": "debuff",
+    "duration": {
+      "amount": 99,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.15
+      }
+    ],
+    "source": "placeholder",
+    "notes": "전투 지형(LD6 — balance combat.terrain mud): 진창에 선 채 싸운다. 전투가 끝나면 풀린다(차례 단위)"
+  },
+  {
+    "id": "soaked",
+    "name_ko": "물에 잠김",
+    "kind": "debuff",
+    "duration": {
+      "amount": 99,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:cold",
+        "percent": 0.2
+      }
+    ],
+    "source": "placeholder",
+    "notes": "전투 지형(LD6 — water): 개울 · 얕은 물에 선 채 싸운다"
+  },
+  {
+    "id": "high_ground",
+    "name_ko": "높은 자리",
+    "kind": "buff",
+    "duration": {
+      "amount": 99,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": 15
+      },
+      {
+        "target": "dmg_dealt:all",
+        "percent": 0.1
+      }
+    ],
+    "source": "placeholder",
+    "notes": "전투 지형(LD6 — high): 둔덕 위에서 싸운다"
   }
 ]

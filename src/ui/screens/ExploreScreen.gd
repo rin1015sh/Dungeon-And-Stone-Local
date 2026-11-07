@@ -362,7 +362,11 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var party: Array[Actor] = []
 	party.append_array(_party())
 	var battle_rng := Rng.new(session.rng.randi_range(1, 1 << 30))
-	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids)  # 정정당당하게(C11)
+	var p_tile := session.map.tile_id_at(session.pos)  # 전투 지형(LD6): 선 칸 — 진창 · 물 · 둔덕 · 다리
+	var e_tile := session.map.tile_id_at(group.pos)
+	var battle := Battle.from_encounter(session.db, DataRegistry.registries, battle_rng, party, group.monster_ids, Battle.FIRST_NONE,
+		BattleTerrain.cap(session.db, p_tile, e_tile))  # 정정당당하게(C11)
+	BattleTerrain.apply(battle, p_tile, e_tile)
 	BattleRules.set_objective(battle, group.battle_rules)
 	_debug.visible = false
 	_menu.close()

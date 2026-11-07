@@ -111,6 +111,13 @@
     "_chain_comment": "여러 무리 조우(chain — RiftRun._place_packs, 사용자 2026-10-26 \"무리별로 따로 돌아다니게\"): 보스가 낀 구성은 조우 자리, 나머지는 그 둘레 chain_spread_tiles칸 안에 서로 chain_gap_tiles칸 넘게", "chain_spread_tiles": 22, "chain_gap_tiles": 7
   },
   "combat": {
+    "_terrain_comment": "전투 지형(LD6 — 사용자 2026-11-07 \"지형이 전투에 영향 주게\"): 타일 data battle = 지형 id. 플레이어가 선 칸 → 아군 모두, 무리가 선 칸 → 적 모두에게 status(전투 동안 — 차례 단위라 끝나면 풀린다, skip_behavior가 있는 몬스터는 빼고). cap = 어느 쪽이든 그 칸이면 적이 한 번에 그만큼만 서고 나머지는 예비대(BattleHorde — 좁은 다리). 임시값",
+    "terrain": {
+      "mud": {"status": "mired", "skip_behavior": "mud_walker"},
+      "water": {"status": "soaked", "skip_behavior": "mud_walker"},
+      "high": {"status": "high_ground"},
+      "bridge": {"cap": 2}
+    },
     "gauge_threshold": 100,
     "min_speed": 1,
     "_speed_base_comment": "CTB 속도 = (민첩 + speed_base)^speed_exp × rank_speed[몬스터 rank]. speed_exp 0.75 = 민첩 3배여도 행동 약 2.2배. 한 사람이 연달아 max_streak번 움직이면 다음은 다른 사람(10층 비율 공식 — docs/plans/balance_10floors.md §7)",

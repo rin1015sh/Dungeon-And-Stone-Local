@@ -1,0 +1,18 @@
+{
+  "id": "tower_stairs",
+  "name_ko": "무너진 종탑 계단",
+  "type": "feature",
+  "tile": "f2d_cairn",
+  "actions": [
+    {
+      "id": "climb",
+      "name_ko": "종탑에 오른다",
+      "limit": "day",
+      "hours": 0.3,
+      "reveal": 40,
+      "line": "field.tower_climb"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "망자의 땅 예배당 종탑(LD7 — floor2.md §15-4 '종탑에 올라 둘레 보기'). 하루 한 번 올라 둘레 40칸 지도를 밝힌다(망루 watch_post보다 넓고 늪 한가운데). 임시값"
+}

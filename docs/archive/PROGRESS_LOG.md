@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-07 레벨 디자인 3차(LD6 · LD7) — 전투 지형 · 예배당 긴 의자 · 종탑
+- **범위**: 사용자 결정 "지형이 전투에 영향 — 예, 봉화대 망꾼 둔하게 — 아니오" + 다음 단계(망자의 땅 나머지 장면).
+- **한 일**: `BattleTerrain`(새 — 타일 battle → balance combat.terrain: 선 칸의 상태 · 다리 적 상한), `Battle.enemy_cap` · `from_encounter(cap)` · `BattleHorde.split/refill` 상한, `ExploreScreen._on_encounter`가 플레이어 칸 · 무리 칸으로 부른다. 상태 셋(mired · soaked · high_ground) + 아이콘(paint_status_icons). 타일 여덟에 battle. 예배당 긴 의자 stamp · 종탑 계단 요소(tower_stairs).
+- **검증**: `test_level_design` 10(전투 지형 · 예배당) · check.sh(PROGRESS 한 줄) · 캡처(전투 화면 지형 아이콘, 예배당 floor_map).
+- **남은 것**: 다리 밑 숨기 · 시뮬레이터(sim_walk/sim_battle)는 전투 지형을 모른다 · 사람 플레이.
+
 ### 2026-11-07 레벨 디자인 2차(LD5) — 전투 간격 재기 · 새 요소 그림 · 묘지 골목
 - **범위**: 1차 E 목록 "다음 단계" — 3(sim_walk) · 4(전용 그림) · 5(묘지 골목 · 숲 개울) · 6(균열 — 점검만).
 - **한 일**: `sim_walk` 전 · 후(깨끗한 worktree): 전투 177 → 194(12.3 → 11.3초마다), 요소 111 → 128 — 수치 그대로. 소품 그림 넷(`Props.gd` ORDER 23~26) + 타일 넷 → 요소 tile 교체 → `paint_floor --only=props` · 1층 다시 구움(rows 그대로, legend만). 망자의 땅 묘역 stamp = 묘비 줄 · 울타리 줄 골목(무작위 묘비 11 → 3), floor_map · 게임 캡처로 확인. 숲 개울(×0.6) · 다리는 이미 이동 지형으로 일함 — 전투 규칙 바꾸기는 사용자 결정. 녹색 탄광 "폭약으로 길 열기"는 이미 있어(3챕터) 기획을 고침.
