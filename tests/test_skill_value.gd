@@ -62,3 +62,35 @@ func _grade9_only_skills() -> Dictionary:
 		if g.size() == 1 and g.has(9):
 			out[sid] = true
 	return out
+
+
+## 효율 하한(CB8 — 사용자 2026-11-07 "효율이 낮은 스킬도 올려"): 영혼력을 쓰는 피해 스킬(위력 0.6 넘게)의 위력 ÷ 영혼력이
+## 같은 등급 이하(더 낮은 정수 포함) 같은 종류(단일 · 전체) 정수 스킬 중앙값의 70% 이상 — 높은 등급 정수가 낮은 정수보다 눈에 띄게 손해가 아니게.
+func test_essence_skill_efficiency_floor() -> void:
+	var grade := {}
+	for eid: String in db.get_collection("essences"):
+		var e := db.get_entry("essences", eid)
+		for a: Dictionary in JsonUtil.get_array(e, "actives"):
+			var sid := JsonUtil.get_str(a, "skill")
+			grade[sid] = maxi(int(grade.get(sid, 0)), JsonUtil.get_int(e, "grade"))
+	var rows: Array = []
+	for sid: String in grade:
+		var sk := db.get_entry("skills", sid)
+		var p := 0.0
+		for e: Dictionary in JsonUtil.get_array(sk, "effects"):
+			if JsonUtil.get_str(e, "type") == "damage":
+				p += JsonUtil.get_float(e, "power", 1.0) * maxi(1, JsonUtil.get_int(e, "hits", 1))
+		var soul := JsonUtil.get_float(JsonUtil.get_dict(sk, "cost"), "soul", 0.0)
+		if p <= 0.6 + 0.001 or soul <= 0.0:
+			continue
+		rows.append({"id": sid, "g": int(grade[sid]), "aoe": JsonUtil.get_str(sk, "target") in ["enemy_all", "enemy_row"], "e": p / soul})
+	for r: Dictionary in rows:
+		var ref: Array = []
+		for o: Dictionary in rows:
+			if o["id"] != r["id"] and o["aoe"] == r["aoe"] and int(o["g"]) >= int(r["g"]):
+				ref.append(float(o["e"]))
+		if ref.is_empty():
+			continue
+		ref.sort()
+		var med: float = ref[ref.size() / 2] if ref.size() % 2 == 1 else (float(ref[ref.size() / 2 - 1]) + float(ref[ref.size() / 2])) / 2.0
+		assert_true(float(r["e"]) >= med * 0.7 - 0.001, "%s 효율 %.3f < 중앙 %.3f × 0.7" % [r["id"], r["e"], med])

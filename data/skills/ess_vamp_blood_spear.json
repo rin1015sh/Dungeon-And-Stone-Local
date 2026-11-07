@@ -11,12 +11,13 @@
     {
       "type": "damage",
       "scaling": "magic",
-      "power": 1.35,
+      "power": 2.2,
       "damage_type": "dark",
       "base": 20,
       "drain": 0.3
     }
   ],
   "essence_of": "vamp_blood_spear",
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "효율 하한(CB8 — 사용자 2026-11-07 \"효율이 낮은 스킬도 올려\"): 위력 1.35 → 2.2(영혼 18 — 5등급인데 9등급보다 영혼력당 피해가 절반이던 것)"
 }

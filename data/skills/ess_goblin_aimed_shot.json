@@ -3,7 +3,7 @@
   "name_ko": "조준 사격(정수)",
   "target": "enemy_single",
   "cost": {
-    "soul": 9
+    "soul": 8
   },
   "delay_cost": 30,
   "cooldown": 0,
@@ -20,5 +20,5 @@
   ],
   "essence_of": "goblin_aimed_shot",
   "source": "placeholder",
-  "notes": "정수 재기획 2026-10-19(J17)"
+  "notes": "정수 재기획 2026-10-19(J17) · 효율 하한(CB8): 영혼 9 → 8"
 }
