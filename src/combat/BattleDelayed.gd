@@ -8,6 +8,7 @@ extends RefCounted
 
 
 const WINDUP := "winding_up"
+const OFF_BALANCE := "off_balance"  ## 끊기는 예고를 준비 중(actor 메타) — 기절 · 빙결 확률 × combat.windup_stun_mult(apply_status, CB6)
 
 
 static func schedule(c: Combatant, e: Dictionary) -> void:
@@ -17,6 +18,8 @@ static func schedule(c: Combatant, e: Dictionary) -> void:
 		"interruptible": bool(e.get("interruptible", false))})
 	c.memo["delayed"] = q
 	c.actor.statuses.apply(WINDUP)
+	if bool(e.get("interruptible", false)):
+		c.actor.set_meta(OFF_BALANCE, true)
 
 
 ## 시전자 c의 차례가 시작됐다. 추가 행동(같은 라운드의 두 번째 차례)에서는 세지 않는다 — 예고를 받고 대응할 틈을 준다.
@@ -54,6 +57,8 @@ static func tick(b: Battle, c: Combatant, stunned: bool = false) -> void:
 	c.memo.erase("fired_now")
 	if keep.is_empty():
 		c.actor.statuses.remove(WINDUP)
+	if not keep.any(func(it: Dictionary) -> bool: return bool(it.get("interruptible", false))):
+		c.actor.remove_meta(OFF_BALANCE)
 
 
 ## 끊기는 예고를 거둔다(표식도 푼다). 남은 예고를 돌려준다.
@@ -81,6 +86,7 @@ static func drop(b: Battle, c: Combatant) -> void:
 		return
 	c.memo["delayed"] = []
 	c.actor.statuses.remove(WINDUP)
+	c.actor.remove_meta(OFF_BALANCE)
 	for item: Dictionary in q:
 		var mk: Combatant = b.unit_of(item["marked"] as Actor) if item.get("marked") is Actor else null
 		if mk != null and not _marked_elsewhere(b, mk.actor, item):

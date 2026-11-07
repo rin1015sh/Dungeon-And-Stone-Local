@@ -11,7 +11,8 @@ extends SceneTree
 ## 시나리오 "party_statuses": [..] — 전투 전에 아군 전원에게 건다(빙하굴 3·4챕터 저체온증).
 ## 공격은 쓸 수 있는 정수 액티브 중 위력 합이 가장 큰 것, 없으면 기본 공격.
 ## --members=0,2: sim_parties.json party 중 그 번호만(혼자 = --members=1 — 2층 무리 확인), --sc=a*12;b,c: 시나리오를 직접(;로 판, ,로 몬스터,
-## --ai=smart: --sc 시나리오의 아군 AI(기본 naive — [예고]가 찍히면 방어하는 smart와 비교).
+## --ai=smart: --sc 시나리오의 아군 AI(기본 naive — [예고]가 찍히면 방어하는 smart와 비교). tactical = 큰 몸짓을 준비하는 적을
+##   기절 스킬로 끊고(없으면 smart), --grant=<스킬>로 모두에게 그 스킬을 준다(끊기 값 재기 — 예 ess_yeti_ice_smash).
 ##   id*n = n마리 — 목표 없음). 적이 진영 상한보다 많으면 큰 무리 예비대(BattleHorde)로 줄 선다.
 ## --curve=<층>: 파티를 10층 곡선의 그 층 기준 탐험가로(docs/balance/curve.json — 첫 전사 = 탱커, 나머지 = 딜러: 정수를 흡수한 뒤
 ##   주 스탯·생명력·공격력을 곡선 값에 맞춘다 — 이능은 1층 정수 그대로). 보스가 "몇 층 위 파티용"인지 확인할 때(docs/plans/balance_10floors.md §4).
@@ -37,6 +38,7 @@ func _initialize() -> void:
 	cfg["race_base"] = str(args.get("base", "race")) == "race"
 	cfg["essence_mult"] = str(args.get("essence_mult", "1")).to_float()
 	cfg["rev"] = str(args.get("rev", "none"))
+	cfg["grant"] = str(args.get("grant", ""))
 	var curve_floor := str(args.get("curve", cfg.get("curve_floor", "")))
 	if not curve_floor.is_empty() and curve_floor != "none":  # 기본 = sim_parties.json curve_floor(균열 = 3층 파티용), --curve=none이면 예전처럼 1층 정수 파티
 		var refs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://docs/balance/curve.json"))
@@ -121,6 +123,8 @@ func _fight(db: GameDatabase, cfg: Dictionary, sc: Dictionary, i: int) -> Dictio
 			pc.inventory.add(item, int(cfg["items"][item]))
 		for st: Variant in sc.get("party_statuses", []):
 			pc.statuses.apply(str(st))
+		if not str(cfg["grant"]).is_empty():  # --grant=<스킬>: 모두에게 그 스킬(끊기 값 재기 — 기절 정수)
+			pc.learn_skill(str(cfg["grant"]))
 		pc.pool.fill_all()
 		party.append(pc)
 		b.add(pc, Combatant.SIDE_PARTY, str(m["row"]))
@@ -159,9 +163,14 @@ func _party_action(b: Battle, c: Combatant, cfg: Dictionary, ai: String) -> Dict
 	var a := c.actor
 	if a.pool.get_ratio("hp") < float(cfg["potion_hp_ratio"]) and a.inventory.count("minor_potion") > 0:
 		return {"kind": "item", "item": "minor_potion"}
-	if ai == "smart" and a.statuses.has("telegraphed"):
-		return {"kind": "guard"}
 	var foes := BattleRules.targetable(b, c)
+	if ai == "tactical":  # 큰 몸짓을 준비하는 적이 있으면 기절 스킬로 끊는다(CB1 — 끊을 수 있는 예고만), 없으면 smart처럼
+		var stun := _stun_skill(b, c)
+		for f in foes:
+			if not stun.is_empty() and f.actor.statuses.has(BattleDelayed.WINDUP) and _breakable(f):
+				return {"kind": "skill", "skill": stun, "target": f}
+	if ai in ["smart", "tactical"] and a.statuses.has("telegraphed"):
+		return {"kind": "guard"}
 	var bosses := foes.filter(func(f: Combatant) -> bool:
 		return f.actor is Monster and JsonUtil.get_str((f.actor as Monster).def, "rank") in BOSS_RANKS)
 	# 수호자·중간 보스를 먼저 치되, 졸개가 셋 이상 쌓이면 졸개부터 정리한다.
@@ -180,6 +189,25 @@ func _party_action(b: Battle, c: Combatant, cfg: Dictionary, ai: String) -> Dict
 	elif rev == "build":
 		act["skill"] = Battle.BASIC_ATTACK  # 기세를 모은다
 	return act
+
+
+## 쓸 수 있는 기절 · 빙결 스킬(단일 대상) — 없으면 "".
+func _stun_skill(b: Battle, c: Combatant) -> String:
+	for sid in c.actor.skills:
+		var sk := b.db.get_entry("skills", sid)
+		if JsonUtil.get_str(sk, "target") != "enemy_single" or not b.can_use(c, sid).is_empty():
+			continue
+		for e: Variant in JsonUtil.get_array(sk, "effects"):
+			if e is Dictionary and JsonUtil.get_str(e, "type") == "apply_status" and JsonUtil.get_str(e, "status") in ["stun", "frozen"]:
+				return sid
+	return ""
+
+
+func _breakable(f: Combatant) -> bool:
+	for item: Dictionary in f.memo.get("delayed", []):
+		if bool(item.get("interruptible", false)):
+			return true
+	return false
 
 
 ## 종족 stat_ranges의 가운데(반올림).

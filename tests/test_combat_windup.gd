@@ -151,3 +151,32 @@ func test_first_strike_battle_starts_ahead() -> void:
 	var foe := b.side_units(Combatant.SIDE_ENEMY)[0]
 	assert_true(me.gauge > foe.gauge, "플레이어 쪽이 게이지를 앞서 받는다")
 	assert_true(_said(b, "combat.start_first"))
+
+
+## 큰 몸짓 중(끊기는 예고)이면 기절 · 빙결 확률 × combat.windup_stun_mult(CB6) — 보스 예고는 해당 없음.
+func test_off_balance_doubles_stun_chance() -> void:
+	var b := _battle(["hobgoblin"])
+	var pair := _cast(b, "hob_club_smash")
+	var hob: Combatant = pair[0]
+	assert_true(hob.actor.has_meta(BattleDelayed.OFF_BALANCE), "큰 몸짓 중 — 중심을 잃었다")
+	var stun := [{"type": "apply_status", "status": "stun", "chance": 0.3}]
+	var mult := float(db.bal("combat.windup_stun_mult", 1.0))
+	assert_true(mult > 1.0)
+	var hits := [0, 0]
+	for i in 400:
+		for k in 2:
+			var target: Actor = Monster.create(db, "hobgoblin")  # 매번 새로(기절은 풀린 뒤 잠깐 면역 — after_immune)
+			if k == 0:
+				target.set_meta(BattleDelayed.OFF_BALANCE, true)
+			var ctx := EffectContext.new(db, pair[1].actor, target, Rng.new(1000 + i))
+			var reg := ContentRegistries.new()
+			ctx.registry = reg.effects
+			reg.effects.apply_all(ctx, stun)
+			hits[k] += 1 if target.statuses.has("stun") else 0
+	assert_true(hits[0] > hits[1] * 1.4, "큰 몸짓 중이 더 잘 걸린다 %d vs %d" % hits)
+	BattleDelayed.tick(b, hob)
+	assert_false(hob.actor.has_meta(BattleDelayed.OFF_BALANCE), "터지면 풀린다")
+	var kb := _battle(["king_slime"])
+	var king := kb.side_units(Combatant.SIDE_ENEMY)[0]
+	BossHooks.apply_effects(kb, king, kb.side_units(Combatant.SIDE_PARTY)[0], JsonUtil.get_array(db.get_entry("skills", "king_jump_crush"), "effects"))
+	assert_false(king.actor.has_meta(BattleDelayed.OFF_BALANCE), "보스 예고는 해당 없음")
