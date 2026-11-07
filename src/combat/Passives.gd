@@ -9,7 +9,8 @@ extends RefCounted
 ##   skip_bonus_vs {status, bonus} — 상대가 그 상태(공포)면 행동을 건너뛸 확률 + bonus(BattleRules.fear_skip, 벤시)
 ##   on_crit          [효과] — 치명타를 냈을 때 대상에게(예: 어설픈 검술의 출혈)
 ##   crit_bonus       {value, damage_types} — 치명타율 보정(피해 유형이 맞을 때)
-##   power_vs_status  {status, mult} — 그 상태의 대상에게 피해 배율(피 냄새)
+##   power_vs_status  {status, mult} — 그 상태의 대상에게 피해 배율(피 냄새). 패시브끼리 곱하되 combat.status_payoff_cap까지(정수 시너지 ES2)
+##   while_self_status {status, crit_bonus, mult} — 자기가 그 상태(은신 …)인 동안 치명타율 + · 피해 ×(불카르 그늘 사냥 — ES3)
 ##   reflect_melee    비율 — 근접 공격을 받으면 받은 피해의 그만큼을 공격자에게(두꺼운 칼날털)
 ##   status_immune    [상태이상 id] — 걸리지 않는다(썩은 거구의 출혈 면역)
 ##   start_gauge      전투 시작 때 행동 게이지 보너스(네 발 짐승의 첫 차례 선공)
@@ -52,16 +53,28 @@ static func crit_bonus(a: Actor, dtype: String) -> float:
 		var types := JsonUtil.get_array(cb, "damage_types")
 		if types.is_empty() or types.has(dtype):
 			v += JsonUtil.get_float(cb, "value")
+	for p in a.passives:
+		var ws := JsonUtil.get_dict(p, "while_self_status")
+		if not ws.is_empty() and a.statuses.has(JsonUtil.get_str(ws, "status")):
+			v += JsonUtil.get_float(ws, "crit_bonus")
 	return v
 
 
-## 공격자 패시브의 대상 상태별 피해 배율.
+## 공격자 패시브의 대상 상태별 피해 배율(곱 — 상한 combat.status_payoff_cap, 0이면 없음) × 자기 상태 배율(while_self_status — 상한 밖).
+## 상한이 있어 출혈 반응 패시브를 여럿 모아도 한 대상에 대한 반응 배율이 끝없이 커지지 않는다(정수 시너지 ES2).
 static func damage_mult_vs(attacker: Actor, defender: Actor) -> float:
 	var m := 1.0
 	for p in attacker.passives:
 		var pv := JsonUtil.get_dict(p, "power_vs_status")
 		if not pv.is_empty() and defender.statuses.has(JsonUtil.get_str(pv, "status")):
 			m *= JsonUtil.get_float(pv, "mult", 1.0)
+	var cap := float(attacker.db.bal("combat.status_payoff_cap", 0.0)) if attacker.db != null else 0.0
+	if cap > 0.0:
+		m = minf(m, cap)
+	for p in attacker.passives:
+		var ws := JsonUtil.get_dict(p, "while_self_status")
+		if not ws.is_empty() and attacker.statuses.has(JsonUtil.get_str(ws, "status")):
+			m *= JsonUtil.get_float(ws, "mult", 1.0)
 	return m
 
 

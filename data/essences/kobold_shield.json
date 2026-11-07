@@ -8,13 +8,17 @@
   "family": "kobold_shield",
   "passive": {
     "id": "kobold_brace",
-    "name_ko": "방패 버릇",
+    "name_ko": "방패 뒤 찌르기",
     "modifiers": [
       {
         "target": "dmg_taken:pierce",
         "percent": -0.08
       }
     ],
+    "counter_while": {
+      "status": "taunt",
+      "power": 0.4
+    },
     "implemented": true
   },
   "actives": [
@@ -34,5 +38,5 @@
   "resources": {
     "hp": 16
   },
-  "notes": "바위사막(레벨 디자인 11차). 임시값"
+  "notes": "바위사막(레벨 디자인 11차). 임시값 · 정수 시너지(ES1 — docs/plans/essence_synergy.md 4-B): 관통 −8%에 끌어들이는 동안 반격 0.4"
 }

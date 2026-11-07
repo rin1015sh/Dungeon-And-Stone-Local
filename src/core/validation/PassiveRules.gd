@@ -40,6 +40,9 @@ static func _damage_filters(v: ValidatorBase, w: String, p: Dictionary) -> void:
 static func _statuses(v: ValidatorBase, w: String, p: Dictionary) -> void:
 	if p.has("power_vs_status"):
 		v.ref(w + ".power_vs_status", "statuses", JsonUtil.get_dict(p, "power_vs_status").get("status"))
+	for key: String in ["counter_while", "hit_vs_status", "skip_bonus_vs", "while_self_status"]:  # 반응 키(정수 시너지)도 상태가 있어야 한다
+		if p.has(key):
+			v.ref(w + "." + key, "statuses", JsonUtil.get_dict(p, key).get("status"))
 	if p.has("mark_first_attacker"):
 		v.ref(w + ".mark_first_attacker", "statuses", p["mark_first_attacker"])
 	if p.has("turn_end_foe_status"):

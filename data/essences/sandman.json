@@ -8,13 +8,11 @@
   "family": "sandman",
   "passive": {
     "id": "sand_body",
-    "name_ko": "흩어지는 몸",
-    "modifiers": [
-      {
-        "target": "m_res",
-        "percent": 0.08
-      }
-    ],
+    "name_ko": "잠든 자의 꿈",
+    "power_vs_status": {
+      "status": "daze",
+      "mult": 1.2
+    },
     "implemented": true
   },
   "actives": [
@@ -34,5 +32,5 @@
   "resources": {
     "hp": 14
   },
-  "notes": "바위사막(레벨 디자인 11차). 임시값"
+  "notes": "바위사막(레벨 디자인 11차). 임시값 · 정수 시너지(ES1 — docs/plans/essence_synergy.md 4-B): 정신 내성 +8% → 혼미한 대상 ×1.2"
 }

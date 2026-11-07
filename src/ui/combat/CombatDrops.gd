@@ -69,6 +69,10 @@ static func _offer(screen: Control, db: GameDatabase, d: Dictionary, takers: Arr
 	if able.is_empty():
 		return leaver.call(d, first_reason if not first_reason.is_empty() else "combat.drop_cannot")
 	var ask := Strings.t("combat.drop_ask", {"what": DropPickup.label(db, d)})
+	if str(d.get("kind")) == "essence" and not able.is_empty():  # 연계(ES4): 지금 가진 정수와 상태로 이어지면 한 줄
+		var ls := EssencePanel.link_texts(db, d["inst"], able[0].essences.absorbed)
+		if not ls.is_empty():
+			ask += "\n" + Strings.t("essence.link_head", {"list": ", ".join(ls)})
 	var yes_no: Array[Dictionary] = [{"text": Strings.t("combat.drop_take")}, {"text": Strings.t("combat.drop_leave")}]
 	while true:
 		var pick: int = await ChoicePopup.ask(screen, ask, yes_no, false, near, true)

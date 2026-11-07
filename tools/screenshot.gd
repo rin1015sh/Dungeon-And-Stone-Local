@@ -237,7 +237,13 @@ func _run() -> void:
 		if _args.has("essence"):
 			var epc := explore.session.player
 			epc.set_level(3)
-			epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "agi": 2}})
+			if str(_args["essence"]) != "true":  # --essence=<id>:<색>,…: 그 정수들을 흡수(연계 줄 확인 — 정수 시너지 ES4)
+				epc.set_level(6)
+				for part: String in str(_args["essence"]).split(","):
+					var kv := part.split(":")
+					epc.essences.absorb(epc, {"essence": kv[0], "color": kv[1] if kv.size() > 1 else "red", "stats": {}})
+			else:
+				epc.essences.absorb(epc, {"essence": "gnome", "color": "blue", "stats": {"p_res": 3, "m_res": 1, "agi": 2}})
 			if _args.has("many"):  # 만렙 + 수호자 정수 여럿(스킬이 많은 행동창 확인)
 				epc.set_level(11)
 				for id: String in ["goblin", "ghoul", "blade_wolf", "chimera_wolf", "blater", "bone_knight"]:

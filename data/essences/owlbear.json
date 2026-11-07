@@ -7,15 +7,13 @@
   "rank": "normal",
   "passive": {
     "id": "night_sight",
-    "name_ko": "야행 시각",
-    "desc_ko": "숨은 적도 겨눌 수 있고, 조금 더 잘 맞힌다.",
+    "name_ko": "어둠 속 사냥꾼",
     "see_hidden": true,
-    "modifiers": [
-      {
-        "target": "accuracy",
-        "flat": 5
-      }
-    ]
+    "power_vs_status": {
+      "status": "blind",
+      "mult": 1.2
+    },
+    "implemented": true
   },
   "actives": [
     {
@@ -35,5 +33,5 @@
     "hp": 15
   },
   "source": "placeholder",
-  "notes": "명세 §10"
+  "notes": "명세 §10 · 정수 시너지(ES1 — docs/plans/essence_synergy.md 4-B): 명중 +5 → 실명한 대상 ×1.2(은신 간파는 그대로)"
 }

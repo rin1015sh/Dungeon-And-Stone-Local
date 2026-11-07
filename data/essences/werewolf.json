@@ -8,11 +8,18 @@
   "family": "blade_wolf",
   "passive": {
     "id": "werewolf_blood",
-    "name_ko": "짐승의 피",
+    "name_ko": "피 맛",
     "modifiers": [
       {
         "target": "str",
-        "percent": 0.08
+        "percent": 0.04
+      }
+    ],
+    "on_kill": [
+      {
+        "type": "gauge",
+        "amount": 40,
+        "to": "self"
       }
     ],
     "implemented": true
@@ -34,5 +41,5 @@
   "resources": {
     "hp": 22
   },
-  "notes": "짐승의 소굴 깊은 굴 우두머리(LD13). 임시값"
+  "notes": "짐승의 소굴 깊은 굴 우두머리(LD13). 임시값 · 정수 시너지(ES3 — essence_synergy.md 4-C): 근력 +8% → 근력 +4% · 쓰러뜨리면 게이지 +40(처치 연쇄 — 다음 차례가 빨리)"
 }

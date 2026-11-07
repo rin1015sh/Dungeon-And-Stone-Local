@@ -8,13 +8,11 @@
   "family": "bulkar",
   "passive": {
     "id": "bulkar_camo",
-    "name_ko": "그늘 털",
-    "modifiers": [
-      {
-        "target": "agi",
-        "percent": 0.06
-      }
-    ],
+    "name_ko": "그늘 사냥",
+    "while_self_status": {
+      "status": "hidden",
+      "crit_bonus": 0.25
+    },
     "implemented": true
   },
   "actives": [
@@ -34,5 +32,5 @@
   "resources": {
     "hp": 14
   },
-  "notes": "짐승의 소굴(LD13). 임시값"
+  "notes": "짐승의 소굴(LD13). 임시값 · 정수 시너지(ES3 — essence_synergy.md 4-C): 민첩 +6% → 은신한 동안 치명 +25%(바위 빛 털 · 노움 일체화 · 쥐 숨기 · 웜스톤 잠복 · 두더지 웅크리기 · 고블린 도둑걸음)"
 }

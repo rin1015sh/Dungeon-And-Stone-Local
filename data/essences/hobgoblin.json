@@ -7,14 +7,11 @@
   "rank": "normal",
   "passive": {
     "id": "hob_chief",
-    "name_ko": "졸개 부리기",
-    "desc_ko": "무리를 이끄는 자의 완력.",
-    "modifiers": [
-      {
-        "target": "str",
-        "percent": 0.08
-      }
-    ],
+    "name_ko": "쓰러진 자 짓밟기",
+    "power_vs_status": {
+      "status": "stun",
+      "mult": 1.25
+    },
     "implemented": true
   },
   "actives": [
@@ -35,5 +32,5 @@
     "hp": 20
   },
   "source": "placeholder",
-  "notes": "2층 고블린 숲(FL21) — 홉고블린 광부의 지휘 스킬을 함께 쓴다. 임시값"
+  "notes": "2층 고블린 숲(FL21) — 홉고블린 광부의 지휘 스킬을 함께 쓴다. 임시값 · 정수 시너지(ES1 — docs/plans/essence_synergy.md 4-B): 근력 +8% → 기절한 대상 ×1.25"
 }

@@ -91,7 +91,11 @@ func _card(db: GameDatabase, inst: Dictionary, i: int) -> PanelContainer:
 	head.add_child(UiTheme.label(Strings.t("essence.grade", {"n": JsonUtil.get_int(def, "grade")}), "small", "text_dim"))
 	var p := JsonUtil.get_dict(def, "passive")
 	if not p.is_empty():
-		_row(v, Strings.t("essence.row_passive"), JsonUtil.get_str(p, "name_ko"), JsonUtil.get_str(p, "desc_ko")
+		var pdesc := JsonUtil.get_str(p, "desc_ko")
+		var react := EssenceLinks.passive_brief(db, p)  # 반응 효과(기절 대상 ×1.25 …) — 설명 글이 없어도 수치로 보인다
+		if not react.is_empty():
+			pdesc = (pdesc + " " if not pdesc.is_empty() else "") + ", ".join(react)
+		_row(v, Strings.t("essence.row_passive"), JsonUtil.get_str(p, "name_ko"), pdesc
 			+ ("" if JsonUtil.get_bool(p, "implemented", true) else " " + Strings.t("essence.not_implemented")))
 	for sid: String in EssenceSet.granted_skills(db, inst):
 		var sk := db.get_entry("skills", sid)
@@ -100,7 +104,21 @@ func _card(db: GameDatabase, inst: Dictionary, i: int) -> PanelContainer:
 	var stats := _stat_list(db, inst)
 	if not stats.is_empty():
 		_row(v, Strings.t("essence.row_stats"), ", ".join(stats), "")
+	if not locked:  # 연계(정수 시너지 ES4): 이 정수와 다른 정수가 상태로 이어지는 곳
+		var ls := link_texts(db, inst, pc.essences.absorbed)
+		if not ls.is_empty():
+			_row(v, Strings.t("essence.row_link"), ", ".join(ls), "")
 	return card
+
+
+## 연계 한 줄씩("출혈: 물어뜯기 → 피 냄새"). held = 가진 정수(잠긴 것은 EssenceLinks가 뺀다).
+static func link_texts(db: GameDatabase, inst: Dictionary, held: Array[Dictionary]) -> PackedStringArray:
+	var out := PackedStringArray()
+	for l: Dictionary in EssenceLinks.links(db, inst, held):
+		var st := str(l["status"])
+		out.append(Strings.t("essence.link", {"status": Strings.t("essence.link_ranged") if st == EssenceLinks.RANGED else DataNames.entry(db, "statuses", st),
+			"from": str(l["from"]).trim_suffix(Strings.t("essence.skill_suffix")), "to": str(l["to"]).trim_suffix(Strings.t("essence.skill_suffix"))}))
+	return out
 
 
 ## 한 줄: 왼쪽 칸 이름(어둡게, 폭 고정) · 이름(밝게) · 아래 작은 설명.

@@ -19,6 +19,10 @@
           "percent": 0.1
         }
       ]
+    },
+    "power_vs_status": {
+      "status": "rot",
+      "mult": 1.15
     }
   },
   "actives": [
@@ -39,5 +43,5 @@
     "hp": 15
   },
   "source": "placeholder",
-  "notes": "명세 §9"
+  "notes": "명세 §9 · 정수 시너지(ES5): 부패 대상 ×1.15를 더함(부패를 거는 정수 둘 — 엘더 구울 초록 · 자기 파랑 — 에 반응이 없었다). 구울 오러는 그대로"
 }

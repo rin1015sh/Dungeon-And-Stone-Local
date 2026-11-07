@@ -7,8 +7,7 @@
   "rank": "normal",
   "passive": {
     "id": "ice_skin",
-    "name_ko": "얼음 피부",
-    "desc_ko": "냉기에 조금 강하지만 불에 조금 약해진다.",
+    "name_ko": "얼어붙은 먹잇감",
     "modifiers": [
       {
         "target": "dmg_taken:cold",
@@ -18,7 +17,12 @@
         "target": "dmg_taken:fire",
         "percent": 0.12
       }
-    ]
+    ],
+    "power_vs_status": {
+      "status": "frost",
+      "mult": 1.15
+    },
+    "implemented": true
   },
   "actives": [
     {
@@ -40,5 +44,5 @@
     "hp": 23
   },
   "source": "placeholder",
-  "notes": "명세 §10 · 2026-11-02 주 스탯 합 16 → 27(7등급 기준 — 물리내성 +8·항마력 +3, J19)"
+  "notes": "명세 §10 · 2026-11-02 주 스탯 합 16 → 27(7등급 기준 — 물리내성 +8·항마력 +3, J19) · 정수 시너지(ES1 — docs/plans/essence_synergy.md 4-B): 얼음 피부에 서리 대상 ×1.15"
 }
