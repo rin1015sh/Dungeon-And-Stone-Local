@@ -1,0 +1,42 @@
+{
+  "id": "stone_golem",
+  "source_monster": "stone_golem",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "스톤 골렘의 정수",
+  "grade": 8,
+  "family": "stone_golem",
+  "passive": {
+    "id": "golem_stone_body",
+    "name_ko": "바위 몸",
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.1
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_golem_crush"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_golem_suppress"
+    }
+  ],
+  "stats": {
+    "p_res": 10,
+    "str": 6
+  },
+  "resources": {
+    "hp": 22
+  },
+  "notes": "바위사막(레벨 디자인 11차). 임시값"
+}

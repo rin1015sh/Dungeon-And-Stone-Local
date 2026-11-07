@@ -1,0 +1,38 @@
+{
+  "id": "monolith_soldier",
+  "source_monster": "monolith_soldier",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "거석병의 정수",
+  "grade": 8,
+  "family": "monolith_soldier",
+  "passive": {
+    "id": "monolith_patience",
+    "name_ko": "돌의 인내",
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 0.08
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_monolith_cleave"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_golem_suppress"
+    }
+  ],
+  "stats": {
+    "str": 9,
+    "p_res": 7
+  },
+  "resources": {
+    "hp": 18
+  },
+  "notes": "바위사막(레벨 디자인 11차). 임시값"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "ess_kobold_shield_bash",
+  "name_ko": "방패 밀치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.25
+    }
+  ],
+  "essence_of": "kobold_shield_bash",
+  "source": "placeholder"
+}

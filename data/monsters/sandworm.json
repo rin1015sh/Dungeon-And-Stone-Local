@@ -11,7 +11,12 @@
   "shape": "beast",
   "immunities": [],
   "magic_stone_grade": 8,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "sandworm",
+      "chance": 0.01
+    }
+  ],
   "passives": [],
   "source": "placeholder",
   "name_ko": "샌드웜",

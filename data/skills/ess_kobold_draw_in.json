@@ -1,0 +1,22 @@
+{
+  "id": "ess_kobold_draw_in",
+  "name_ko": "방패 세우기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "taunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "shield_wall"
+    }
+  ],
+  "essence_of": "kobold_draw_in",
+  "source": "placeholder"
+}

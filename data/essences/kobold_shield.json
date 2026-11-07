@@ -1,0 +1,38 @@
+{
+  "id": "kobold_shield",
+  "source_monster": "kobold_shield",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "코볼트 방패병의 정수",
+  "grade": 9,
+  "family": "kobold_shield",
+  "passive": {
+    "id": "kobold_brace",
+    "name_ko": "방패 버릇",
+    "modifiers": [
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.08
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_kobold_shield_bash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_kobold_draw_in"
+    }
+  ],
+  "stats": {
+    "p_res": 7,
+    "str": 4
+  },
+  "resources": {
+    "hp": 16
+  },
+  "notes": "바위사막(레벨 디자인 11차). 임시값"
+}

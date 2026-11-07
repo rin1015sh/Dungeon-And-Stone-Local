@@ -1,0 +1,19 @@
+{
+  "id": "ess_sand_blind",
+  "name_ko": "모래 뿌리기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "sand_blind",
+  "source": "placeholder"
+}

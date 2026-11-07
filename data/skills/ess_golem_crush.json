@@ -1,0 +1,20 @@
+{
+  "id": "ess_golem_crush",
+  "name_ko": "바위 주먹(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.5,
+      "damage_type": "blunt"
+    }
+  ],
+  "essence_of": "golem_crush",
+  "source": "placeholder"
+}

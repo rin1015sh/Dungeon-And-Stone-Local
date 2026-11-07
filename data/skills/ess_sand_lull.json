@@ -1,0 +1,19 @@
+{
+  "id": "ess_sand_lull",
+  "name_ko": "잠재우는 모래(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "sand_lull",
+  "source": "placeholder"
+}

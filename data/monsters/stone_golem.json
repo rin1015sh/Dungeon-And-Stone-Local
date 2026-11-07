@@ -11,7 +11,12 @@
   "shape": "humanoid",
   "immunities": [],
   "magic_stone_grade": 8,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "stone_golem",
+      "chance": 0.01
+    }
+  ],
   "passives": [],
   "source": "placeholder",
   "name_ko": "스톤 골렘",

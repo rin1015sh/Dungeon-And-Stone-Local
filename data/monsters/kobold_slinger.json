@@ -11,7 +11,12 @@
   "shape": "humanoid",
   "immunities": [],
   "magic_stone_grade": 9,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "kobold_slinger",
+      "chance": 0.005
+    }
+  ],
   "passives": [],
   "source": "placeholder",
   "name_ko": "코볼트 투석병",

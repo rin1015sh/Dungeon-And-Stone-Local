@@ -1,0 +1,21 @@
+{
+  "id": "ess_kobold_twin_sling",
+  "name_ko": "연달아 던지기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "blunt",
+      "ranged": true,
+      "hits": 2
+    }
+  ],
+  "source": "placeholder"
+}

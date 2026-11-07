@@ -1,0 +1,20 @@
+{
+  "id": "ess_kobold_spear_jab",
+  "name_ko": "창 찌르기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "pierce"
+    }
+  ],
+  "essence_of": "kobold_spear_jab",
+  "source": "placeholder"
+}

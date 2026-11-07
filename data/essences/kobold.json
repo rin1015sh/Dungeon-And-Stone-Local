@@ -1,0 +1,38 @@
+{
+  "id": "kobold",
+  "source_monster": "kobold",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "코볼트의 정수",
+  "grade": 9,
+  "family": "kobold",
+  "passive": {
+    "id": "kobold_pack",
+    "name_ko": "무리 근성",
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.05
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_kobold_spear_jab"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_goblin_sand"
+    }
+  ],
+  "stats": {
+    "agi": 6,
+    "str": 4
+  },
+  "resources": {
+    "hp": 12
+  },
+  "notes": "바위사막(레벨 디자인 11차). 임시값"
+}

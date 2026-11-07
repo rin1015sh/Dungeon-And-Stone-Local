@@ -1,0 +1,38 @@
+{
+  "id": "kobold_slinger",
+  "source_monster": "kobold_slinger",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "코볼트 투석병의 정수",
+  "grade": 9,
+  "family": "kobold_slinger",
+  "passive": {
+    "id": "kobold_eye",
+    "name_ko": "돌팔매질",
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.06
+      }
+    ],
+    "implemented": true
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_kobold_sling_stone"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_kobold_twin_sling"
+    }
+  ],
+  "stats": {
+    "agi": 7,
+    "str": 3
+  },
+  "resources": {
+    "hp": 11
+  },
+  "notes": "바위사막(레벨 디자인 11차). 임시값"
+}

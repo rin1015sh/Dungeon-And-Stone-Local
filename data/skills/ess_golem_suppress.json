@@ -1,0 +1,25 @@
+{
+  "id": "ess_golem_suppress",
+  "name_ko": "짓누르기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.35
+    }
+  ],
+  "essence_of": "golem_suppress",
+  "source": "placeholder"
+}

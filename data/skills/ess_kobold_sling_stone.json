@@ -1,0 +1,22 @@
+{
+  "id": "ess_kobold_sling_stone",
+  "name_ko": "돌팔매(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "blunt",
+      "ranged": true,
+      "accuracy": 95
+    }
+  ],
+  "essence_of": "kobold_sling_stone",
+  "source": "placeholder"
+}
