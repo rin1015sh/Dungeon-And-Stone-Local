@@ -1,0 +1,23 @@
+{
+  "id": "mole_burrow_bite",
+  "name_ko": "땅굴 물기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.2
+    }
+  ],
+  "notes": "벽두더지(LD12) — 발목을 물고 늘어진다",
+  "source": "placeholder"
+}

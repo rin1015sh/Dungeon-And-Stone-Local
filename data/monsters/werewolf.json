@@ -1,0 +1,79 @@
+{
+  "id": "werewolf",
+  "floor": 2,
+  "floor_tags": [
+    "f2_beast_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "웨어울프",
+  "grade": 8,
+  "rank": "elite",
+  "size": 1.5,
+  "color": "#4a4440",
+  "weaknesses": {
+    "holy": 1.4
+  },
+  "stats": {
+    "str": 13,
+    "agi": 22,
+    "p_res": 16,
+    "m_res": 11,
+    "int": 6
+  },
+  "resources": {
+    "hp": 55,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 11,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.5,
+      "calls": true
+    },
+    "move_mult": 1.2,
+    "alert_sfx": "wolf_growl",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "wolf_bite",
+    "werewolf_rend",
+    "werewolf_change"
+  ],
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "werewolf_change"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "werewolf_rend"
+    },
+    {
+      "if": "always",
+      "use": "wolf_bite"
+    }
+  ],
+  "notes": "짐승의 소굴 깊은 굴 늑대 무리 우두머리(floor2.md §2 — LD12): 생명력 절반 아래에서 한 번 변신(트롤의 광분 — 근력 · 민첩 · 물리내성 +40%). 임시값 수치는 손으로(같은 층 · 등급 몬스터 — 칼날늑대 · 키메라 울프 · 해골 전사 — 곁에 맞춤, restat_monsters의 엘리트 규칙은 보스 평균을 써 너무 약하게 나와 쓰지 않음)"
+}

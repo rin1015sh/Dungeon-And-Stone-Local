@@ -20,6 +20,13 @@
 		],
 		"foot": 4.0
 	},
+	"bulkar": {
+		"cell": [
+			124.0,
+			84.0
+		],
+		"foot": 4.0
+	},
 	"buried_one": {
 		"cell": [
 			46.0,
@@ -134,10 +141,10 @@
 	},
 	"hobgoblin": {
 		"cell": [
-			66,
-			106
+			66.0,
+			106.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"hobgoblin_miner": {
 		"cell": [
@@ -187,6 +194,20 @@
 			55.0
 		],
 		"foot": 4.0
+	},
+	"mole_queen": {
+		"cell": [
+			174,
+			110
+		],
+		"foot": 4
+	},
+	"moon_rock_bear": {
+		"cell": [
+			152,
+			122
+		],
+		"foot": 4
 	},
 	"mummy": {
 		"cell": [
@@ -262,6 +283,20 @@
 		"cell": [
 			48.0,
 			91.0
+		],
+		"foot": 4.0
+	},
+	"wall_mole": {
+		"cell": [
+			84.0,
+			54.0
+		],
+		"foot": 4.0
+	},
+	"werewolf": {
+		"cell": [
+			82.0,
+			124.0
 		],
 		"foot": 4.0
 	},

@@ -137,9 +137,20 @@ for (x, y) in [(15, 112), (42, 116), (72, 120), (64, 69), (110, 65)]:
     if grid[y][x] in ".:":
         props.append(("f2d_deadtree", x, y))
 
+# 불카르(바위에 붙은 위장 짐승) · 벽두더지 매복 자리와 그 앞 단서(흙이 흘러내리는 벽)
+mark("bulkar_outer", 35, 108)
+mark("bulkar_wall", 99, 62)
+mark("bulkar_deep", 66, 25)
+mark("mole_a", 42, 65)
+mark("mole_a_sign", 48, 66)
+mark("mole_b", 84, 64)
+mark("mole_b_sign", 78, 65)
+mark("mole_c", 62, 59)
+mark("mole_c_sign", 62, 63)
+
 # 갈래 입구 · 막는 자리는 협곡 칸 위로(흔들린 길에서 벗어나지 않게 — 가장 가까운 바닥 칸)
 for nm in list(marks):
-    if "mouth" in nm or "block" in nm or "ledge" in nm:
+    if "mouth" in nm or "block" in nm or "ledge" in nm or "mole" in nm or "bulkar" in nm:
         x0, y0 = marks[nm]
         if grid[y0][x0] == " ":
             best = min(((x, y) for y in range(y0 - 6, y0 + 7) for x in range(x0 - 6, x0 + 7) if grid[y][x] != " "),
@@ -187,8 +198,12 @@ route_spots = {
     ],
     "guards": [
         {"mark": "wolf_lair", "monsters": ["giant_blade_wolf", "blood_blade_wolf", "blade_wolf", "blade_wolf", "blade_wolf"]},
-        {"mark": "deep_hub", "at": [0, -3], "monsters": ["chimera_wolf", "blood_blade_wolf", "blood_blade_wolf", "giant_blade_wolf"]},
-        {"mark": "bear_cave", "monsters": ["sabertooth"]},
+        {"mark": "deep_hub", "at": [0, -3], "monsters": ["werewolf", "blood_blade_wolf", "blood_blade_wolf", "giant_blade_wolf"]},
+        {"mark": "bear_cave", "monsters": ["moon_rock_bear"]},
+        {"mark": "bone_pit", "monsters": ["mole_queen", "wall_mole", "wall_mole"]},
+        {"mark": "bulkar_outer", "monsters": ["bulkar"]},
+        {"mark": "bulkar_wall", "monsters": ["bulkar"]},
+        {"mark": "bulkar_deep", "monsters": ["bulkar"]},
     ],
     "features": [
         {"mark": "outer_spring", "event": "clear_spring", "tile": "f2d_cairn"},
@@ -206,15 +221,21 @@ route_spots = {
         {"mark": "deep_hub", "event": "hidden_cache", "at": [1, 12]},
         {"mark": "f1_w_block", "event": "explorer_corpse", "at": [0, 3], "tile": "f2d_corpse_g"},
         {"mark": "f2_e_block", "event": "old_skeleton", "at": [0, 3], "tile": "f2d_skeleton"},
+        {"mark": "mole_a_sign", "event": "den_mole_holes"},
+        {"mark": "mole_b_sign", "event": "den_mole_holes"},
+        {"mark": "mole_c_sign", "event": "den_mole_holes"},
     ],
     "ambush": [
+        {"mark": "mole_a", "monsters": ["wall_mole", "wall_mole"], "radius": 2, "line": "field.ambush_mole", "sound": "crumble", "stops_if_gone": "mole_queen"},
+        {"mark": "mole_b", "monsters": ["wall_mole", "wall_mole"], "radius": 2, "line": "field.ambush_mole", "sound": "crumble", "stops_if_gone": "mole_queen"},
+        {"mark": "mole_c", "monsters": ["wall_mole", "wall_mole", "wall_mole"], "radius": 2, "line": "field.ambush_mole", "sound": "crumble", "stops_if_gone": "mole_queen"},
         {"mark": "f1_w_mouth", "at": [-6, -6], "monsters": ["blade_wolf", "blade_wolf"], "radius": 3, "line": "field.ambush_wolf", "sound": "wolf_growl"},
         {"mark": "f2_e_mouth", "at": [8, -4], "monsters": ["blood_blade_wolf", "blade_wolf"], "radius": 3, "line": "field.ambush_wolf", "sound": "wolf_growl"},
         {"mark": "f3_s_mouth", "at": [8, 3], "monsters": ["sabertooth"], "radius": 3, "line": "field.ambush_wolf", "sound": "wolf_growl"},
     ],
 }
 d = {
-    "_comment": "2층 야수의 소굴(docs/plans/floor2.md §2 · §13-4, level_design_review.md B-2 C — 1단계 LD11): 1층 동쪽 포탈(dest floor2_east)에서 온다. 메사 사이 협곡 고리 셋 · 갈림길 셋(원정마다 바른 갈래 — 바람 · 벽의 굴 · 발톱 자국) · 바위턱. 새 몬스터 다섯(벽두더지 · 여왕 · 반달바위곰 · 불카르 · 웨어울프)은 2단계 — 지금은 칼날늑대 무리 · 샤벨타이거 · 키메라 울프. 그림은 망자의 땅 흙 · 바위 + 붉은 사암 색조. 수치는 모두 임시값",
+    "_comment": "2층 야수의 소굴(docs/plans/floor2.md §2 · §13-4, level_design_review.md B-2 C — 1단계 LD11): 1층 동쪽 포탈(dest floor2_east)에서 온다. 메사 사이 협곡 고리 셋 · 갈림길 셋(원정마다 바른 갈래 — 바람 · 벽의 굴 · 발톱 자국) · 바위턱. 새 몬스터 다섯(LD12 — 2단계): 벽두더지(두더지 벽 무리 · 벽 매복) · 여왕(뼈 무덤 굴 — 쓰러뜨리면 매복이 멈춤) · 반달바위곰(곰굴) · 불카르(바위 곁 위장 셋) · 웨어울프(깊은 굴 우두머리) + 칼날늑대 무리 · 샤벨타이거. 그림은 망자의 땅 흙 · 바위 + 붉은 사암 색조. 수치는 모두 임시값",
     "id": "f2_beast_den", "name_ko": "짐승의 소굴", "floor": 2, "arrival": "floor2_east", "generator": "fields", "close_hours": 240,
     "visibility_cap_m": 9.5, "visibility_source": "placeholder", "ambient_light_m": 7.5, "ambient_source": "placeholder", "ambient_color": "#e0c8a8",
     "art": {
@@ -242,7 +263,7 @@ d = {
     "regions": [
         {"id": "f2b_outer", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf", "giant_blade_wolf"], "weights": {"blade_wolf": 6, "giant_blade_wolf": 1}, "groups": [5, 6], "horde": True, "entry_dist": [30, 0]},
         {"id": "f2b_outer_lone", "zone": "f2b_outer", "name_ko": "바깥 협곡", "monsters": ["blade_wolf"], "weights": {"blade_wolf": 1}, "groups": [3, 4], "pack": [1, 1], "entry_dist": [10, 40]},
-        {"id": "f2b_wall", "zone": "f2b_wall", "name_ko": "두더지 벽", "monsters": ["blade_wolf", "blood_blade_wolf", "sabertooth"], "weights": {"blade_wolf": 4, "blood_blade_wolf": 2, "sabertooth": 1}, "groups": [4, 5]},
+        {"id": "f2b_wall", "zone": "f2b_wall", "name_ko": "두더지 벽", "monsters": ["blade_wolf", "blood_blade_wolf", "sabertooth", "wall_mole"], "weights": {"blade_wolf": 4, "blood_blade_wolf": 2, "sabertooth": 1, "wall_mole": 3}, "groups": [4, 5]},
         {"id": "f2b_deep", "zone": "f2b_deep", "name_ko": "깊은 굴", "monsters": ["blood_blade_wolf", "giant_blade_wolf", "sabertooth", "chimera_wolf"], "weights": {"blood_blade_wolf": 3, "giant_blade_wolf": 2, "sabertooth": 1, "chimera_wolf": 1}, "groups": [4, 5]},
     ],
     "spawn": {"_comment": "망자의 땅과 같은 키(원정 날짜 10일). 바깥 협곡 늑대 큰 무리는 horde", "groups_per_region": [4, 5],

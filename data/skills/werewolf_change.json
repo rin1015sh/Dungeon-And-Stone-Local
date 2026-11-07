@@ -1,0 +1,23 @@
+{
+  "id": "werewolf_change",
+  "name_ko": "늑대 변신",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "troll_frenzy"
+    },
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "floor({max_hp} * 0.15)"
+    }
+  ],
+  "unique": true,
+  "uses_per_battle": 1,
+  "notes": "웨어울프(LD12) — 생명력 절반 아래에서 한 번(2페이즈)",
+  "source": "placeholder"
+}

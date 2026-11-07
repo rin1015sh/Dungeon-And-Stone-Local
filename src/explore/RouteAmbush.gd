@@ -3,7 +3,8 @@ extends RefCounted
 ## 길목 매복(망자의 땅 — 사용자 2026-11-06 "통로에 사건", FL18): 층 JSON route_spots.ambush
 ##   [{"edge": [구간 a, 구간 b], "t": 0~1(길 위 자리) 또는 "node" · "mark", "monsters": [id …], "radius": 칸, "line": 문구 키, "sound": 소리 키}]
 ##   그 자리에서 radius칸 안에 처음 들어서면 길가 땅에서 무리가 일어나 바로 쫓아온다(한 원정에 한 번). 자리는 a → b 곧은 선의 t 지점에서
-##   가장 가까운 걸을 수 있는 칸. 순수 로직(오토로드 비의존).
+##   가장 가까운 걸을 수 있는 칸. "stops_if_gone": 몬스터 id — 그 몬스터가 든 무리가 지도에 하나도 없으면(쓰러뜨렸다) 터지지 않는다
+##   (짐승의 소굴 벽두더지 매복 ↔ 여왕 굴 — LD12). 순수 로직(오토로드 비의존).
 
 var _spots: Array[Dictionary] = []  ## {at: Vector2i, def: Dictionary}
 
@@ -39,6 +40,10 @@ func on_enter(s: ExploreSession, cell: Vector2i) -> void:
 		var sp := _spots[i]
 		var d: Dictionary = sp["def"]
 		if Vector2(cell - (sp["at"] as Vector2i)).length() > JsonUtil.get_float(d, "radius", 3.0):
+			continue
+		var boss := JsonUtil.get_str(d, "stops_if_gone")
+		if not boss.is_empty() and not s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has(boss)):
+			_spots.remove_at(i)  # 여왕이 쓰러졌다 — 벽 속 무리도 흩어졌다
 			continue
 		_spots.remove_at(i)
 		var g := s.monsters.add_fixed(JsonUtil.get_array(d, "monsters"), _beside(s, cell))

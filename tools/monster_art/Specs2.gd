@@ -127,6 +127,20 @@ static func spec_of(id: String) -> Dictionary:
 			return {"kind": "beast", "height": 560, "color": C("#d8ccb4"), "belly": C("#ece4d4"), "head": "cat", "fur": 0.3, "stripes": C("#3a2a1e"), "tail": "thin", "bulk": 1.1, "eyes": C("#e0d040")}
 		"owlbear":
 			return {"kind": "beast", "height": 620, "color": C("#9a8a70"), "belly": C("#c8b898"), "head": "owl", "fur": 0.8, "bulk": 1.4, "tail": "stub", "legs": 0.85, "eyes": C("#e8b030")}
+		# ── 2층 짐승의 소굴(floor2.md §2 — 창작, LD12) ──
+		"wall_mole":  # 협곡 벽을 파고 사는 두더지 — 쥐 머리 · 짧은 다리 · 흙빛 털
+			return {"kind": "beast", "height": 420, "color": C("#5a4a3c"), "belly": C("#7a6650"), "head": "rat", "fur": 0.75, "tail": "stub", "bulk": 0.95, "legs": 0.6, "eyes": C("#d07040"), "head_k": 1.2}
+		"mole_queen":  # 몸집이 몇 배인 여왕 — 짙은 털 · 붉은 눈
+			return {"kind": "beast", "height": 580, "color": C("#3e3028"), "belly": C("#6a5444"), "head": "rat", "fur": 0.85, "tail": "stub", "bulk": 1.25, "legs": 0.65, "eyes": C("#ff5030"), "glow": 0.6, "head_k": 1.7}
+		"moon_rock_bear":  # 가슴에 흰 반달 무늬 · 바위처럼 거친 검은 털
+			return {"kind": "beast", "height": 640, "color": C("#2e2a28"), "belly": C("#d8d0b8"), "fur": 0.9, "head_k": 1.15, "tail": "stub", "bulk": 1.55, "legs": 0.8, "eyes": C("#c09040")}
+		"bulkar":  # 바위 그늘에 붙어 위장하는 털 짐승 — 바위색 털에 짙은 얼룩
+			return {"kind": "beast", "height": 520, "color": C("#8a8278"), "belly": C("#a8a094"), "fur": 1.0, "stripes": C("#4a443e"), "tail": "thin", "bulk": 1.05, "legs": 0.85, "eyes": C("#e0e0a0")}
+		"werewolf":  # 늑대 무리의 우두머리 — 잿빛 털의 라이칸스로프(타룬바스 몸 — 무기 없이 발톱)
+			return {"height": 700, "width": 1.0, "skin": C("#6a6460"), "skin_kind": "fur", "shade": C("#2a2624"), "eyes": C("#ffb030"), "glow": 0.9, "fur_len": 1.4,
+				"pose": {"hunch": 0.45, "knee": 0.42, "arm_l": "claw", "arm_r": "claw", "sh": 0.16, "hip": 0.085, "neck": 0.45, "arms": 1.2, "weight": -0.4, "tilt": 0.05},
+				"body": {"build": "brute", "bulk": 1.15, "hands": "claw", "claws": 0.9, "feet": "claw"}, "head": {"type": "ape", "mouth": "fangs", "ears": "long", "size": 1.0},
+				"kit": {"belt": C("#2a221c"), "loin": C("#3a3028")}}
 		"skull_rat":
 			return {"kind": "beast", "height": 440, "color": C("#6a5a50"), "head": "rat", "fur": 0.6, "tail": "thin", "bulk": 0.85, "legs": 0.7, "eyes": C("#ff6030"), "head_k": 1.4}
 		# ── 기는 것·벌레 ──

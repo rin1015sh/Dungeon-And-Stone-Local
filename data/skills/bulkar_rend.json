@@ -1,0 +1,25 @@
+{
+  "id": "bulkar_rend",
+  "name_ko": "등 뒤 할퀴기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.25,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "vulnerable",
+      "chance": 0.35
+    }
+  ],
+  "notes": "불카르(LD12) — 위장한 채 덮친다",
+  "source": "placeholder"
+}

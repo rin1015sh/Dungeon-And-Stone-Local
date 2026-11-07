@@ -1,5 +1,5 @@
 {
-  "_comment": "2층 야수의 소굴(docs/plans/floor2.md §2 · §13-4, level_design_review.md B-2 C — 1단계 LD11): 1층 동쪽 포탈(dest floor2_east)에서 온다. 메사 사이 협곡 고리 셋 · 갈림길 셋(원정마다 바른 갈래 — 바람 · 벽의 굴 · 발톱 자국) · 바위턱. 새 몬스터 다섯(벽두더지 · 여왕 · 반달바위곰 · 불카르 · 웨어울프)은 2단계 — 지금은 칼날늑대 무리 · 샤벨타이거 · 키메라 울프. 그림은 망자의 땅 흙 · 바위 + 붉은 사암 색조. 수치는 모두 임시값",
+  "_comment": "2층 야수의 소굴(docs/plans/floor2.md §2 · §13-4, level_design_review.md B-2 C — 1단계 LD11): 1층 동쪽 포탈(dest floor2_east)에서 온다. 메사 사이 협곡 고리 셋 · 갈림길 셋(원정마다 바른 갈래 — 바람 · 벽의 굴 · 발톱 자국) · 바위턱. 새 몬스터 다섯(LD12 — 2단계): 벽두더지(두더지 벽 무리 · 벽 매복) · 여왕(뼈 무덤 굴 — 쓰러뜨리면 매복이 멈춤) · 반달바위곰(곰굴) · 불카르(바위 곁 위장 셋) · 웨어울프(깊은 굴 우두머리) + 칼날늑대 무리 · 샤벨타이거. 그림은 망자의 땅 흙 · 바위 + 붉은 사암 색조. 수치는 모두 임시값",
   "id": "f2_beast_den",
   "name_ko": "짐승의 소굴",
   "floor": 2,
@@ -846,6 +846,78 @@
           32,
           -104
         ]
+      },
+      {
+        "name": "bulkar_outer",
+        "node": "arrival",
+        "at": [
+          25,
+          -6
+        ]
+      },
+      {
+        "name": "bulkar_wall",
+        "node": "arrival",
+        "at": [
+          89,
+          -52
+        ]
+      },
+      {
+        "name": "bulkar_deep",
+        "node": "arrival",
+        "at": [
+          56,
+          -89
+        ]
+      },
+      {
+        "name": "mole_a",
+        "node": "arrival",
+        "at": [
+          32,
+          -49
+        ]
+      },
+      {
+        "name": "mole_a_sign",
+        "node": "arrival",
+        "at": [
+          38,
+          -48
+        ]
+      },
+      {
+        "name": "mole_b",
+        "node": "arrival",
+        "at": [
+          74,
+          -50
+        ]
+      },
+      {
+        "name": "mole_b_sign",
+        "node": "arrival",
+        "at": [
+          68,
+          -49
+        ]
+      },
+      {
+        "name": "mole_c",
+        "node": "arrival",
+        "at": [
+          52,
+          -55
+        ]
+      },
+      {
+        "name": "mole_c_sign",
+        "node": "arrival",
+        "at": [
+          52,
+          -51
+        ]
       }
     ]
   },
@@ -902,12 +974,14 @@
       "monsters": [
         "blade_wolf",
         "blood_blade_wolf",
-        "sabertooth"
+        "sabertooth",
+        "wall_mole"
       ],
       "weights": {
         "blade_wolf": 4,
         "blood_blade_wolf": 2,
-        "sabertooth": 1
+        "sabertooth": 1,
+        "wall_mole": 3
       },
       "groups": [
         4,
@@ -1070,7 +1144,7 @@
           -3
         ],
         "monsters": [
-          "chimera_wolf",
+          "werewolf",
           "blood_blade_wolf",
           "blood_blade_wolf",
           "giant_blade_wolf"
@@ -1079,7 +1153,33 @@
       {
         "mark": "bear_cave",
         "monsters": [
-          "sabertooth"
+          "moon_rock_bear"
+        ]
+      },
+      {
+        "mark": "bone_pit",
+        "monsters": [
+          "mole_queen",
+          "wall_mole",
+          "wall_mole"
+        ]
+      },
+      {
+        "mark": "bulkar_outer",
+        "monsters": [
+          "bulkar"
+        ]
+      },
+      {
+        "mark": "bulkar_wall",
+        "monsters": [
+          "bulkar"
+        ]
+      },
+      {
+        "mark": "bulkar_deep",
+        "monsters": [
+          "bulkar"
         ]
       }
     ],
@@ -1194,9 +1294,55 @@
           3
         ],
         "tile": "f2d_skeleton"
+      },
+      {
+        "mark": "mole_a_sign",
+        "event": "den_mole_holes"
+      },
+      {
+        "mark": "mole_b_sign",
+        "event": "den_mole_holes"
+      },
+      {
+        "mark": "mole_c_sign",
+        "event": "den_mole_holes"
       }
     ],
     "ambush": [
+      {
+        "mark": "mole_a",
+        "monsters": [
+          "wall_mole",
+          "wall_mole"
+        ],
+        "radius": 2,
+        "line": "field.ambush_mole",
+        "sound": "crumble",
+        "stops_if_gone": "mole_queen"
+      },
+      {
+        "mark": "mole_b",
+        "monsters": [
+          "wall_mole",
+          "wall_mole"
+        ],
+        "radius": 2,
+        "line": "field.ambush_mole",
+        "sound": "crumble",
+        "stops_if_gone": "mole_queen"
+      },
+      {
+        "mark": "mole_c",
+        "monsters": [
+          "wall_mole",
+          "wall_mole",
+          "wall_mole"
+        ],
+        "radius": 2,
+        "line": "field.ambush_mole",
+        "sound": "crumble",
+        "stops_if_gone": "mole_queen"
+      },
       {
         "mark": "f1_w_mouth",
         "at": [

@@ -1,0 +1,20 @@
+{
+  "id": "mole_queen_call",
+  "name_ko": "굴 울림",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "wall_mole"
+    }
+  ],
+  "unique": true,
+  "uses_per_battle": 3,
+  "notes": "벽두더지 여왕(LD12) — 벽 속 새끼를 부른다. 고유",
+  "source": "placeholder"
+}

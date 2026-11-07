@@ -36,7 +36,7 @@ static func spec_of(id: String) -> Dictionary:
 				"map": {"hunch": 0.38, "knee": 0.16, "head": 2.3, "legs": 0.72, "wide": 1.0, "bulk": 1.05, "stance": 0.07}}
 		"skull_rat":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
 			return {"kind": "beast", "size": 0.9, "spec": Specs.More.spec_of(id)}
-		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear":
+		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar":
 			return {"kind": "beast", "spec": Specs.More.spec_of(id)}
 		"ghoul":
 			return {"kind": "crawler", "size": 1.0, "spec": {"height": 420, "color": C("#8a947c"), "blood": 0.5, "eyes": C("#e0d8a0"), "elbow_h": 0.32, "elbow_w": 0.2, "reach": 0.3}}
@@ -57,7 +57,7 @@ const FIGURES := {
 	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
 	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
 	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
-	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
+	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "werewolf": {"spec": {"hair": "ragged", "hair_c": Color("#5a5450")}, "map": {"head": 1.8, "bulk": 1.15}}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
 	"mummy": {}, "buried_one": {}, "iron_lizardman": {}, "iron_cavalry": {}, "riddle_gatekeeper": {"map": {"head": 1.8}},
 }
 ## 보스·중간보스가 방 가운데서 기다리는 자세(BackPose rest — 플레이어가 방에 들어오면 바로 전투). 앞모습 한 장.

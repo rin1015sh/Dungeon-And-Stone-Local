@@ -68,3 +68,27 @@ func test_wolves_and_ledges() -> void:
 	for e: Dictionary in ledges:
 		assert_true(FloorMap.DIRS4.any(func(d: Vector2i) -> bool: return seen.has((e["pos"] as Vector2i) + d)) or seen.has(e["pos"]), "바위턱에 오른다")
 	s.detach()
+
+
+## 2단계(LD12): 새 몬스터 다섯이 제자리에 · 여왕을 쓰러뜨리면 벽두더지 매복이 멈춘다.
+func test_new_beasts_and_queen_stops_moles() -> void:
+	var s := _session(3, true)
+	for id: String in ["moon_rock_bear", "mole_queen", "werewolf", "bulkar"]:
+		assert_true(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has(id)), "%s가 지도에 있다" % id)
+	assert_eq(s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("bulkar")).size(), 3, "불카르 셋(바위 곁)")
+	var holes := s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "den_mole_holes")
+	assert_eq(holes.size(), 3, "매복 앞 단서 셋")
+	var spots := s.ambush.spots()
+	var marks: Dictionary = s.map.anchors["marks"]
+	var a: Vector2i = spots.filter(func(p: Vector2i) -> bool: return Vector2(p - (marks["mole_a"] as Vector2i)).length() < 4.0)[0]
+	var n := s.monsters.groups.size()
+	s.ambush.on_enter(s, a)
+	assert_eq(s.monsters.groups.size(), n + 1, "여왕이 살아 있으면 벽에서 튀어나온다")
+	for g: FieldMonsters.Group in s.monsters.groups.duplicate():
+		if g.monster_ids.has("mole_queen"):
+			s.monsters.groups.erase(g)  # 여왕을 쓰러뜨렸다
+	var b: Vector2i = spots.filter(func(p: Vector2i) -> bool: return Vector2(p - (marks["mole_b"] as Vector2i)).length() < 4.0)[0]
+	n = s.monsters.groups.size()
+	s.ambush.on_enter(s, b)
+	assert_eq(s.monsters.groups.size(), n, "여왕이 쓰러지면 매복도 멈춘다")
+	s.detach()

@@ -1,0 +1,72 @@
+{
+  "id": "bulkar",
+  "floor": 2,
+  "floor_tags": [
+    "f2_beast_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "불카르",
+  "grade": 9,
+  "rank": "normal",
+  "size": 1.1,
+  "color": "#7a7068",
+  "weaknesses": {
+    "fire": 1.6
+  },
+  "stats": {
+    "str": 10,
+    "agi": 15,
+    "p_res": 10,
+    "m_res": 7,
+    "int": 4
+  },
+  "resources": {
+    "hp": 28,
+    "soul": 16
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.2,
+      "calls": true
+    },
+    "move_mult": 1.1,
+    "alert_sfx": "wolf_growl",
+    "aggressive": false,
+    "aggro_radius_m": 2.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 2.0,
+    "row": "front"
+  },
+  "skills": [
+    "bulkar_rend"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "bulkar_rend"
+    },
+    {
+      "if": "chance",
+      "value": 0.5,
+      "use": "bulkar_rend"
+    }
+  ],
+  "notes": "짐승의 소굴(floor2.md §2 — 창작, LD12): 협곡 그늘 바위에 붙어 위장한 털 짐승 — 가까이(2m) 와야 드러나 덮친다. 불 약점. 임시값 수치는 손으로(같은 층 · 등급 몬스터 — 칼날늑대 · 키메라 울프 · 해골 전사 — 곁에 맞춤, restat_monsters의 엘리트 규칙은 보스 평균을 써 너무 약하게 나와 쓰지 않음)"
+}

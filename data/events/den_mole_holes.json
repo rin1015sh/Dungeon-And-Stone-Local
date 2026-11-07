@@ -1,0 +1,12 @@
+{
+  "id": "den_mole_holes",
+  "name_ko": "흙이 흘러내리는 벽",
+  "type": "feature",
+  "near": {
+    "radius": 3,
+    "line": "field.den_mole_holes",
+    "kind": "warn"
+  },
+  "source": "placeholder",
+  "notes": "짐승의 소굴 벽두더지 매복 앞 단서(LD12): 다가가면 한 줄 — 그 앞 몇 칸에서 벽 속 무리가 튀어나온다. 여왕을 쓰러뜨리면 매복은 멈춘다. 임시값"
+}
