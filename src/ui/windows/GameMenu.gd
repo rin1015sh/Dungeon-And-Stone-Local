@@ -56,6 +56,7 @@ func open(start: String = "inventory") -> void:
 	if is_open():
 		focus(start)
 		return
+	AudioBus.play_sfx("whoosh_faint")  # 가방을 여는 소리
 	var dim := ColorRect.new()
 	dim.color = Color(UiTheme.color("bg"), MenuPage.cfg("dim", 0.6))
 	add_child(dim)

@@ -38,6 +38,7 @@ var killed_colors: Array[String] = []  ## killed와 같은 순서: 타입이 정
 var patterns: ScriptRegistry = null  ## 보스 패턴(src/combat/patterns/) — 없으면 BossHooks가 만든다
 var objective: Dictionary = {}       ## 전투 목표(BattleObjective — 생존 웨이브). 비면 없음
 var horde: Array[String] = []        ## 큰 무리의 예비대(BattleHorde — 쓰러진 자리에 차례로 들어온다)
+var opened_by: int = FIRST_NONE  ## 먼저 움직인 쪽(start의 first_side — 화면 소리 · 연출)
 var enemy_cap: int = 0               ## 적이 한 번에 설 수 있는 수(0 = combat.max_side_units — 좁은 다리 BattleTerrain)
 ## 지금까지 나온 메시지 {key, args, kind} — 화면이 시그널을 잇기 전(전투 시작 안내·수호자 대사)의 것도 다시 보여 준다.
 var history: Array[Dictionary] = []
@@ -92,6 +93,7 @@ func add(actor: Actor, side: int, row: String = "front") -> Combatant:
 ## 전투 시작. 맵에서 마주친 전투는 늘 정정당당하게(FIRST_NONE — 사용자 결정 2026-10-22, C11): 누구도 게이지를 앞서 받지 않는다.
 ## first_side(Combatant.SIDE_PARTY|SIDE_ENEMY)를 주면 그쪽이 combat.first_strike_gauge만큼 앞서 시작한다(특수한 기습 — 앞으로 넣을 자리).
 func start(first_side: int = FIRST_NONE) -> void:
+	opened_by = first_side
 	for u in units:
 		u.gauge = 0.0
 	var names := enemy_names()

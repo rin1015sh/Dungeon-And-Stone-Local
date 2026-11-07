@@ -112,8 +112,8 @@ static func _action(v: ValidatorBase, w: String, a: Dictionary) -> void:
 	var al := JsonUtil.get_dict(a, "alert")
 	if not al.is_empty():
 		v.ref(w + ".alert", "monsters", al.get("monster"))
-	if a.has("sound") and not JsonUtil.get_dict(JsonUtil.get_dict(v.db.singletons, "audio"), "sfx").has(JsonUtil.get_str(a, "sound")):
-		v.err(w + ".sound", "'%s'가 data/audio.json sfx에 없다" % a.get("sound"))
+	if a.has("sound") and not sound_known(v.db, JsonUtil.get_str(a, "sound")):
+		v.err(w + ".sound", "'%s'가 data/audio.json sfx · alias · cues에 없다" % a.get("sound"))
 	if a.has("line"):  # 문구는 없어도 된다(얻은 물건은 item.got이 알린다 — UI19)
 		_line(v, w + ".line", JsonUtil.get_str(a, "line"), JsonUtil.get_bool(a, "line_zone"))
 	for key: String in ["done", "missing"]:
@@ -134,3 +134,12 @@ static func _line(v: ValidatorBase, w: String, key: String, zone: bool) -> void:
 	for b in bases:
 		if not Strings.has(b) and not Strings.has(b + ".1"):
 			v.err(w, "문구 키 '%s' 없음(data/strings/ko.json)" % b)
+
+
+## 소리 키가 풀리는가(파일 sfx · 무작위 alias · 묶음 cues — AudioBus).
+static func sound_known(db: GameDatabase, key: String) -> bool:
+	var audio := JsonUtil.get_dict(db.singletons, "audio")
+	for sec: String in ["sfx", "alias", "cues"]:
+		if JsonUtil.get_dict(audio, sec).has(key):
+			return true
+	return false

@@ -38,6 +38,7 @@ func toggle() -> void:
 func open(section: String = CodexIndexPage.MONSTERS) -> void:
 	if is_open():
 		return
+	AudioBus.play_sfx("page_turn")
 	var dim := ColorRect.new()
 	dim.color = Color(UiTheme.color("bg"), MenuPage.cfg("dim", 0.6))
 	add_child(dim)

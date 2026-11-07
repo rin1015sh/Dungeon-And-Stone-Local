@@ -111,6 +111,7 @@ func _process(delta: float) -> void:
 		var dir := _input_dir()
 		if dir != Vector2.ZERO:
 			walk(dir, delta)
+		AudioBus.set_loop("steps", "steps", "step_wood" if dir != Vector2.ZERO else "", -6.0)  # 실내 마루 걸음
 	_sync_view()
 
 
@@ -329,3 +330,7 @@ func _sync_menu() -> void:
 
 func _refresh_info() -> void:
 	pass
+
+
+func _exit_tree() -> void:
+	AudioBus.set_loop("steps", "steps", "")

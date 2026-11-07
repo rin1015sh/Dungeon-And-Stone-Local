@@ -252,6 +252,8 @@ func activate(i: int) -> void:
 	if not ItemInfo.equip(actor.db, id).is_empty():
 		if not InventoryActions.equip_stack(wearer, i, "", actor.inventory):
 			EventBus.notice.emit("inventory.no_room_swap", {"item": DataNames.entry(actor.db, "items", id)}, "warn")
+		else:
+			AudioBus.play_sfx("armor_rustle")  # 입고 벗는 소리
 	elif _usable(id):
 		use_requested.emit(id)
 	refresh()

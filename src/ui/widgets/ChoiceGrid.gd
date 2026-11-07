@@ -206,7 +206,9 @@ func confirm() -> void:
 		return
 	var o := _options[_cursor]
 	if not bool(o.get("enabled", true)):
+		AudioBus.play_sfx("ui_denied")
 		return
+	AudioBus.play_sfx("ui_click")
 	var cb: Callable = o.get("on_pick", Callable())
 	if cb.is_valid():
 		cb.call()
@@ -223,6 +225,7 @@ func _adjust(dir: int) -> bool:
 
 func go_back() -> void:
 	if _back.is_valid():
+		AudioBus.play_sfx("ui_back")
 		_back.call()
 
 
@@ -231,6 +234,7 @@ func _set_cursor(i: int) -> void:
 		return
 	_cursor = i
 	_render()
+	AudioBus.play_sfx("ui_move")
 	cursor_moved.emit(i)
 
 

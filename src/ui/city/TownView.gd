@@ -115,6 +115,7 @@ func _process(delta: float) -> void:
 	var dir := _input_dir()
 	if dir != Vector2.ZERO:
 		walk(dir, delta)
+	AudioBus.set_loop("steps", "steps", "step_stone2" if dir != Vector2.ZERO else "", -6.0)  # 동네 돌길 걸음
 	_sync_view()
 
 
@@ -187,3 +188,7 @@ func interact() -> void:
 			travel_requested.emit()
 	elif t.has("ring"):
 		told.emit("city.town.portal_closed")
+
+
+func _exit_tree() -> void:
+	AudioBus.set_loop("steps", "steps", "")

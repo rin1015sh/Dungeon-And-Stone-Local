@@ -557,7 +557,11 @@ func _build_world() -> void:
 		rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		vp.add_child(layer)
 	_ambience = art.ambience
+	AudioBus.stop_bgm()  # 미궁에서는 음악 없이 분위기음 · 효과음만
 	AudioBus.play_ambience(_ambience)
+	var ea := ExploreAudio.new()  # 걸음 · 분위기 효과음 · 문구 소리 · 심장 박동(data/audio.json)
+	ea.setup(session, _ambience)
+	add_child(ea)
 
 
 func _apply_post(art: FloorArt) -> void:
@@ -602,6 +606,8 @@ func _end(kind: String) -> void:
 		return
 	_ended = true
 	set_paused(false)
+	if kind == "died":
+		AudioBus.play_sfx("death")  # 심장 박동 → 쓰러짐 → 어두운 울림
 	var pc := session.player
 	var base := session.rift_run.outer if session.rift_run != null and session.rift_run.outer != null else session  # 균열 안이면 바깥 층 기준
 	var info := {

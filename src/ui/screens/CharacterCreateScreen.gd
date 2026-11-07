@@ -164,5 +164,5 @@ func _limit_classes(race_id: String) -> void:
 func _on_enter() -> void:
 	var name_text := _name_edit.text.strip_edges()
 	_pc.display_name = name_text if not name_text.is_empty() else Strings.t("create.default_name")
-	AudioBus.play_sfx("ui_click")
+	AudioBus.play_sfx("confirm_big")  # 탐험가가 정해졌다
 	confirmed.emit(_pc)

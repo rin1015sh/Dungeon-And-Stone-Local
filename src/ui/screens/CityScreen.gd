@@ -37,6 +37,8 @@ func setup(p_state: CityState, p_pc: PlayerCharacter, registry: ScriptRegistry) 
 
 
 func _ready() -> void:
+	AudioBus.stop_ambience()
+	AudioBus.play_bgm("title")  # 도시 = 타이틀과 같은 밤 피아노(이어서 — 같은 키)
 	_town = TownView.new()
 	_town.setup(state, pc)
 	_town.facility_chosen.connect(choose_facility)
@@ -115,6 +117,7 @@ func choose_facility(id: String) -> void:
 	if not why.is_empty():
 		say(Strings.t(why))
 		return
+	AudioBus.play_sfx("old_door")  # 시설 문을 연다
 	_facility = InteriorView.new() if interiors and CityInterior.load_for(state, id) != null else FacilityView.new()  # 실내가 있으면 걸어 다니는 실내(CT106)
 	_facility.setup(state, pc, _registry, id)
 	_facility.leave_requested.connect(leave_facility)
@@ -147,6 +150,7 @@ func visit_house(house_id: String, design: String) -> void:
 func leave_facility() -> void:
 	if _facility == null:
 		return
+	AudioBus.play_sfx("door_open")
 	for line in _facility.summary():
 		say(line)
 	var id := _facility.facility_id()

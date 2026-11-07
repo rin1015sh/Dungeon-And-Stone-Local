@@ -88,6 +88,8 @@ func _ready() -> void:
 		_notify(str(h["key"]), h["args"], str(h["kind"]))
 	battle.message.connect(_notify)
 	battle.event.connect(_on_event)
+	for k: String in CombatSounds.start_keys(battle.db, battle, battle.opened_by):  # 맞닥뜨림 + 처음 보는 적의 울음
+		AudioBus.play_sfx(k)
 	_refresh()
 	_loop.call_deferred()
 
@@ -104,6 +106,9 @@ func _on_dialog_shown(on: bool) -> void:
 
 ## 전투 안내(문구 키): 기록에는 늘, 대화창에는 화면으로 알 수 없는 것만(피해·회피·쓰러짐·상태는 떠오르는 숫자·무대로 보인다 — NoticeRoute).
 func _notify(key: String, args: Dictionary, kind: String) -> void:
+	AudioBus.play_sfx(MessageSounds.key_for(battle.db, key))  # 문구에 붙은 소리(방어 · 레벨 업 · 획득 …)
+	if key == "effect.status_on_named":
+		AudioBus.play_sfx(CombatSounds.status_key(battle.db, str(args.get("status", ""))))
 	var text := Strings.t(key, args)
 	match _route.of(key):
 		NoticeRoute.SILENT:
@@ -208,6 +213,7 @@ func _open_plan() -> void:
 func _on_chosen(action: Dictionary) -> void:
 	if _planning.is_empty():
 		return
+	AudioBus.play_sfx("ui_confirm")  # 행동을 정했다
 	var u: Combatant = _planning[_plan_i]
 	var why := ActionCheck.reason(battle, u, action)
 	if not why.is_empty():
@@ -288,11 +294,11 @@ func _later(sec: float, f: Callable) -> void:
 
 
 func _handle_event(e: Dictionary) -> void:
+	for k: String in CombatSounds.event_keys(battle.db, e):  # 타격 · 헛침 · 시전 · 쓰러짐 · 큰 몸짓 소리(data/audio.json combat)
+		AudioBus.play_sfx(k)
 	var u: Combatant = e.get("unit")
 	var v: BattlerView = _stage.view(u) if u != null else null
 	match str(e.get("type")):
-		"windup", "windup_broken":  # 큰 몸짓 준비 · 끊김 — 소리로(UI20, 파일이 없으면 조용하다)
-			AudioBus.play_sfx(str(e["type"]))
 		"act":
 			if v != null:
 				v.act(battle.db, e.get("action", {}))
@@ -350,6 +356,7 @@ func _refresh() -> void:
 		v.set_current(u == now)
 	_roster.set_current(now)
 	_roster.refresh()
+	AudioBus.set_loop("heart", "sfx", JsonUtil.get_str(SoundData.section(battle.db, "combat"), "heart") if CombatSounds.heart_on(battle.db, battle) else "")
 	_order.refresh()
 	var nth := _order.first_index()
 	for u: Combatant in _stage.views():
@@ -420,6 +427,7 @@ func _finish() -> void:
 	if _finished:
 		return
 	_finished = true
+	AudioBus.set_loop("heart", "sfx", "")  # 심장 박동은 전투 안에서만(탐험은 ExploreScreen이 다시 본다)
 	finished.emit(battle.result, battle.turns, battle.killed)
 
 

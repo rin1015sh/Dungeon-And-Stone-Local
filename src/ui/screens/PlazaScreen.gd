@@ -133,6 +133,7 @@ func _settle() -> void:
 		await _dialog.wait()  # 다 읊은 뒤 다음 쪽에서 스톤을 건넨다(소지금이 그때 오른다)
 		if not is_inside_tree():
 			return
+		AudioBus.play_sfx("settle_stones")  # 마석이 스톤으로 — 쏟아지는 동전
 		_dialog.say(Strings.t("plaza.settle_total", {"n": GuildSettle.settle(db, pc.inventory)}))
 	await _dialog.wait()
 	if is_inside_tree():

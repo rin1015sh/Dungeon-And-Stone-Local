@@ -9,6 +9,7 @@ signal quit_requested
 
 
 func _ready() -> void:
+	AudioBus.play_bgm("title")
 	var center := CenterContainer.new()
 	add_child(center)
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

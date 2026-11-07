@@ -1,30 +1,817 @@
 {
-  "version": 1,
-  "_comment": "효과음/BGM 키 → 파일 경로. 파일이 없으면 AudioBus가 조용히 건너뛴다.",
-  "sfx_voices": 4,
+  "version": 2,
+  "_comment": "소리(사용자 음원 2026-11-07 — tools/import_sounds.py, 제목별 쓰인 곳 docs/AUDIO.md). sfx = 파일, alias = 무작위 하나, cues = 겹치기 · 잇기(at 초 · db), volume = 키별 크기, steps = 걸음 고리(바닥 갈래 · 쫓길 땐 달리기), combat = 전투 사건별, cries = 몬스터 울음(전투 시작), on_message = 문구 키(앞부분 * 허용) → 소리, ambience_cues = 층 분위기 효과음(가끔). AudioBus · CombatSounds · StepSounds · AmbientCues · MessageSounds",
+  "sfx_voices": 10,
   "sfx": {
-    "ui_click": "res://assets/audio/sfx/ui_click.ogg",
+    "armor_rustle": "res://assets/audio/sfx/armor_rustle.ogg",
+    "arrow_shot": "res://assets/audio/sfx/arrow_shot.ogg",
+    "bell_low": "res://assets/audio/sfx/bell_low.ogg",
+    "bell_ominous": "res://assets/audio/sfx/bell_ominous.ogg",
+    "blade_draw": "res://assets/audio/sfx/blade_draw.ogg",
+    "boar_cry": "res://assets/audio/sfx/boar_cry.ogg",
+    "boar_sniff": "res://assets/audio/sfx/boar_sniff.ogg",
+    "body_fall": "res://assets/audio/sfx/body_fall.ogg",
+    "bone_snap": "res://assets/audio/sfx/bone_snap.ogg",
+    "bow_draw": "res://assets/audio/sfx/bow_draw.ogg",
+    "chest_open": "res://assets/audio/sfx/chest_open.ogg",
+    "church_bell": "res://assets/audio/sfx/church_bell.ogg",
+    "coin_drop": "res://assets/audio/sfx/coin_drop.ogg",
+    "confirm_big": "res://assets/audio/sfx/confirm_big.ogg",
+    "crow": "res://assets/audio/sfx/crow.ogg",
+    "dark_sting": "res://assets/audio/sfx/dark_sting.ogg",
+    "door_open": "res://assets/audio/sfx/door_open.ogg",
+    "dragon_long": "res://assets/audio/sfx/dragon_long.ogg",
+    "dragon_short": "res://assets/audio/sfx/dragon_short.ogg",
+    "dread_rise": "res://assets/audio/sfx/dread_rise.ogg",
+    "fear_appear": "res://assets/audio/sfx/fear_appear.ogg",
+    "fear_ghost": "res://assets/audio/sfx/fear_ghost.ogg",
+    "fireball": "res://assets/audio/sfx/fireball.ogg",
+    "freeze": "res://assets/audio/sfx/freeze.ogg",
+    "glass_break": "res://assets/audio/sfx/glass_break.ogg",
+    "gravity_magic": "res://assets/audio/sfx/gravity_magic.ogg",
+    "growl_low": "res://assets/audio/sfx/growl_low.ogg",
+    "guard": "res://assets/audio/sfx/guard.ogg",
+    "heartbeat": "res://assets/audio/sfx/heartbeat.ogg",
+    "hit_blunt": "res://assets/audio/sfx/hit_blunt.ogg",
+    "hit_blunt_heavy": "res://assets/audio/sfx/hit_blunt_heavy.ogg",
+    "hit_heavy": "res://assets/audio/sfx/hit_heavy.ogg",
+    "hit_metal": "res://assets/audio/sfx/hit_metal.ogg",
+    "hit_pierce": "res://assets/audio/sfx/hit_pierce.ogg",
+    "hit_slash": "res://assets/audio/sfx/hit_slash.ogg",
+    "hit_slash_double": "res://assets/audio/sfx/hit_slash_double.ogg",
+    "hit_slash_light": "res://assets/audio/sfx/hit_slash_light.ogg",
+    "hit_slime": "res://assets/audio/sfx/hit_slime.ogg",
+    "hit_whip": "res://assets/audio/sfx/hit_whip.ogg",
+    "horse": "res://assets/audio/sfx/horse.ogg",
+    "iron_door_close": "res://assets/audio/sfx/iron_door_close.ogg",
+    "iron_door_open": "res://assets/audio/sfx/iron_door_open.ogg",
+    "item_pick": "res://assets/audio/sfx/item_pick.ogg",
+    "key_unlock": "res://assets/audio/sfx/key_unlock.ogg",
+    "lightning": "res://assets/audio/sfx/lightning.ogg",
+    "magic_circle": "res://assets/audio/sfx/magic_circle.ogg",
+    "memory_sting": "res://assets/audio/sfx/memory_sting.ogg",
+    "metal_rattle": "res://assets/audio/sfx/metal_rattle.ogg",
+    "miss": "res://assets/audio/sfx/miss.ogg",
+    "miss_light": "res://assets/audio/sfx/miss_light.ogg",
+    "monster_burp": "res://assets/audio/sfx/monster_burp.ogg",
+    "monster_low": "res://assets/audio/sfx/monster_low.ogg",
+    "monster_threat": "res://assets/audio/sfx/monster_threat.ogg",
+    "old_door": "res://assets/audio/sfx/old_door.ogg",
+    "page_turn": "res://assets/audio/sfx/page_turn.ogg",
+    "roar_1": "res://assets/audio/sfx/roar_1.ogg",
+    "roar_2": "res://assets/audio/sfx/roar_2.ogg",
+    "rock_break": "res://assets/audio/sfx/rock_break.ogg",
+    "scream_man": "res://assets/audio/sfx/scream_man.ogg",
+    "scream_woman": "res://assets/audio/sfx/scream_woman.ogg",
+    "scream_young": "res://assets/audio/sfx/scream_young.ogg",
+    "shriek_angry": "res://assets/audio/sfx/shriek_angry.ogg",
+    "shriek_high": "res://assets/audio/sfx/shriek_high.ogg",
+    "skill_get": "res://assets/audio/sfx/skill_get.ogg",
+    "stone_door": "res://assets/audio/sfx/stone_door.ogg",
+    "surface": "res://assets/audio/sfx/surface.ogg",
+    "thunder": "res://assets/audio/sfx/thunder.ogg",
+    "treasure": "res://assets/audio/sfx/treasure.ogg",
     "ui_back": "res://assets/audio/sfx/ui_back.ogg",
+    "ui_click": "res://assets/audio/sfx/ui_click.ogg",
+    "ui_confirm": "res://assets/audio/sfx/ui_confirm.ogg",
     "ui_denied": "res://assets/audio/sfx/ui_denied.ogg",
-    "scream": "res://assets/audio/sfx/scream.ogg",
-    "fight_far": "res://assets/audio/sfx/fight_far.ogg",
-    "rift_open": "res://assets/audio/sfx/rift_open.ogg",
-    "gnome_alarm": "res://assets/audio/sfx/gnome_alarm.ogg",
-    "monster_alert": "res://assets/audio/sfx/monster_alert.ogg",
-    "wolf_growl": "res://assets/audio/sfx/wolf_growl.ogg",
-    "goblin_shout": "res://assets/audio/sfx/goblin_shout.ogg",
-    "undead_moan": "res://assets/audio/sfx/undead_moan.ogg",
-    "slime_squelch": "res://assets/audio/sfx/slime_squelch.ogg",
-    "raider_shout": "res://assets/audio/sfx/raider_shout.ogg", "boss_reveal": "res://assets/audio/sfx/boss_reveal.ogg", "boss_gate": "res://assets/audio/sfx/boss_gate.ogg", "coin_toss": "res://assets/audio/sfx/coin_toss.ogg", "coin_land": "res://assets/audio/sfx/coin_land.ogg", "chest_open": "res://assets/audio/sfx/chest_open.ogg", "lord_rise": "res://assets/audio/sfx/lord_rise.ogg", "crumble": "res://assets/audio/sfx/crumble.ogg", "maw_snap": "res://assets/audio/sfx/maw_snap.ogg", "goblin_horn": "res://assets/audio/sfx/goblin_horn.ogg", "bell_toll": "res://assets/audio/sfx/bell_toll.ogg", "gate_open": "res://assets/audio/sfx/gate_open.ogg", "snare_snap": "res://assets/audio/sfx/snare_snap.ogg", "armor_clank": "res://assets/audio/sfx/armor_clank.ogg", "windup": "res://assets/audio/sfx/windup.ogg", "windup_broken": "res://assets/audio/sfx/windup_broken.ogg"
+    "ui_move": "res://assets/audio/sfx/ui_move.ogg",
+    "war_drum": "res://assets/audio/sfx/war_drum.ogg",
+    "water_drip": "res://assets/audio/sfx/water_drip.ogg",
+    "whoosh_faint": "res://assets/audio/sfx/whoosh_faint.ogg",
+    "wind_magic": "res://assets/audio/sfx/wind_magic.ogg",
+    "wind_rush": "res://assets/audio/sfx/wind_rush.ogg",
+    "wing_flap": "res://assets/audio/sfx/wing_flap.ogg",
+    "wolf_howl": "res://assets/audio/sfx/wolf_howl.ogg",
+    "zombie_howl": "res://assets/audio/sfx/zombie_howl.ogg"
+  },
+  "alias": {
+    "scream": [
+      "scream_man",
+      "scream_young",
+      "scream_woman"
+    ],
+    "rift_open": [
+      "magic_circle"
+    ],
+    "gnome_alarm": [
+      "shriek_high"
+    ],
+    "monster_alert": [
+      "monster_threat",
+      "monster_low"
+    ],
+    "wolf_growl": [
+      "growl_low",
+      "wolf_howl"
+    ],
+    "goblin_shout": [
+      "monster_burp"
+    ],
+    "undead_moan": [
+      "zombie_howl"
+    ],
+    "slime_squelch": [
+      "hit_slime"
+    ],
+    "raider_shout": [
+      "blade_draw"
+    ],
+    "boss_gate": [
+      "iron_door_close"
+    ],
+    "coin_toss": [
+      "item_pick"
+    ],
+    "coin_land": [
+      "coin_drop"
+    ],
+    "crumble": [
+      "rock_break"
+    ],
+    "maw_snap": [
+      "bone_snap"
+    ],
+    "goblin_horn": [
+      "war_drum"
+    ],
+    "bell_toll": [
+      "church_bell"
+    ],
+    "gate_open": [
+      "stone_door"
+    ],
+    "armor_clank": [
+      "armor_rustle"
+    ],
+    "windup": [
+      "blade_draw"
+    ],
+    "hit_slash_any": [
+      "hit_slash",
+      "hit_slash_light"
+    ],
+    "hit_blunt_any": [
+      "hit_blunt_heavy",
+      "hit_blunt"
+    ],
+    "miss_any": [
+      "miss",
+      "miss_light",
+      "whoosh_faint"
+    ],
+    "beast_roar": [
+      "roar_1",
+      "roar_2",
+      "growl_low"
+    ]
+  },
+  "cues": {
+    "fight_far": [
+      {
+        "sfx": "hit_slash_double",
+        "db": -8
+      },
+      {
+        "sfx": "hit_metal",
+        "at": 0.6,
+        "db": -10
+      }
+    ],
+    "boss_reveal": [
+      {
+        "sfx": "dread_rise"
+      },
+      {
+        "sfx": "bell_low",
+        "at": 1.9
+      }
+    ],
+    "lord_rise": [
+      {
+        "sfx": "bell_low"
+      },
+      {
+        "sfx": "dark_sting",
+        "at": 1.2
+      },
+      {
+        "sfx": "dragon_long",
+        "at": 2.8,
+        "db": -4
+      }
+    ],
+    "snare_snap": [
+      {
+        "sfx": "iron_door_close"
+      },
+      {
+        "sfx": "metal_rattle",
+        "at": 0.15,
+        "db": -4
+      }
+    ],
+    "windup_broken": [
+      {
+        "sfx": "bone_snap"
+      },
+      {
+        "sfx": "hit_metal",
+        "at": 0.1,
+        "db": -6
+      }
+    ],
+    "arrow_volley": [
+      {
+        "sfx": "bow_draw",
+        "db": -4
+      },
+      {
+        "sfx": "arrow_shot",
+        "at": 0.45
+      }
+    ],
+    "essence_absorb": [
+      {
+        "sfx": "magic_circle",
+        "db": -4
+      },
+      {
+        "sfx": "skill_get",
+        "at": 0.9
+      }
+    ],
+    "risers": [
+      {
+        "sfx": "bell_ominous"
+      },
+      {
+        "sfx": "surface",
+        "at": 1.2
+      },
+      {
+        "sfx": "zombie_howl",
+        "at": 1.8,
+        "db": -6
+      }
+    ],
+    "worm_rise": [
+      {
+        "sfx": "rock_break",
+        "db": -4
+      },
+      {
+        "sfx": "surface",
+        "at": 0.3
+      },
+      {
+        "sfx": "dragon_short",
+        "at": 0.8
+      }
+    ],
+    "deathworm_rise": [
+      {
+        "sfx": "thunder"
+      },
+      {
+        "sfx": "rock_break",
+        "at": 1.0
+      },
+      {
+        "sfx": "dragon_long",
+        "at": 1.6
+      }
+    ],
+    "settle_stones": [
+      {
+        "sfx": "treasure"
+      },
+      {
+        "sfx": "coin_drop",
+        "at": 0.9,
+        "db": -6
+      }
+    ],
+    "trap_arrows": [
+      {
+        "sfx": "arrow_shot"
+      },
+      {
+        "sfx": "hit_pierce",
+        "at": 0.25
+      },
+      {
+        "sfx": "hit_pierce",
+        "at": 0.45,
+        "db": -4
+      }
+    ],
+    "trap_spike": [
+      {
+        "sfx": "metal_rattle"
+      },
+      {
+        "sfx": "hit_pierce",
+        "at": 0.2
+      }
+    ],
+    "trap_blades": [
+      {
+        "sfx": "metal_rattle"
+      },
+      {
+        "sfx": "hit_slash",
+        "at": 0.25
+      }
+    ],
+    "battle_start_horde": [
+      {
+        "sfx": "fear_appear"
+      },
+      {
+        "sfx": "war_drum",
+        "at": 0.6,
+        "db": -4
+      }
+    ],
+    "victory": [
+      {
+        "sfx": "confirm_big",
+        "db": -4
+      }
+    ],
+    "death": [
+      {
+        "sfx": "heartbeat",
+        "db": -2
+      },
+      {
+        "sfx": "body_fall",
+        "at": 1.5
+      },
+      {
+        "sfx": "dark_sting",
+        "at": 2.0
+      }
+    ]
+  },
+  "volume": {
+    "heartbeat": -6,
+    "whoosh_faint": -6,
+    "ui_move": -12,
+    "ui_click": -8,
+    "ui_back": -8,
+    "ui_denied": -8,
+    "ui_confirm": -6,
+    "page_turn": -6,
+    "item_pick": -4,
+    "water_drip": -10,
+    "crow": -10,
+    "wind_rush": -10,
+    "boar_sniff": -14,
+    "wolf_howl": -2,
+    "dread_loop": -14,
+    "night_piano": -8,
+    "scream": -4,
+    "title": -6
+  },
+  "steps": {
+    "run_dirt": "res://assets/audio/steps/run_dirt.ogg",
+    "run_grass": "res://assets/audio/steps/run_grass.ogg",
+    "run_gravel": "res://assets/audio/steps/run_gravel.ogg",
+    "run_snow": "res://assets/audio/steps/run_snow.ogg",
+    "run_stone": "res://assets/audio/steps/run_stone.ogg",
+    "run_tallgrass": "res://assets/audio/steps/run_tallgrass.ogg",
+    "run_water": "res://assets/audio/steps/run_water.ogg",
+    "run_wood": "res://assets/audio/steps/run_wood.ogg",
+    "step_dirt": "res://assets/audio/steps/step_dirt.ogg",
+    "step_grass": "res://assets/audio/steps/step_grass.ogg",
+    "step_gravel": "res://assets/audio/steps/step_gravel.ogg",
+    "step_snow": "res://assets/audio/steps/step_snow.ogg",
+    "step_stone": "res://assets/audio/steps/step_stone.ogg",
+    "step_stone2": "res://assets/audio/steps/step_stone2.ogg",
+    "step_tallgrass": "res://assets/audio/steps/step_tallgrass.ogg",
+    "step_water": "res://assets/audio/steps/step_water.ogg",
+    "step_wood": "res://assets/audio/steps/step_wood.ogg"
+  },
+  "step_sounds": {
+    "_comment": "걸음 고리(StepSounds): 선 칸 타일의 그림 경로 · id에 match 글자가 있으면 그 갈래(위에서부터), 없으면 default. 몬스터가 쫓는 중이면 run.",
+    "db": -4,
+    "classes": [
+      {
+        "class": "water",
+        "match": [
+          "mud",
+          "flood",
+          "brook",
+          "frozenlake",
+          "slick"
+        ]
+      },
+      {
+        "class": "snow",
+        "match": [
+          "snow",
+          "dunesand",
+          "f2r_sand",
+          "ice.webp",
+          "icegravel"
+        ]
+      },
+      {
+        "class": "tallgrass",
+        "match": [
+          "f2g/forestfloor",
+          "f2g/clearing",
+          "f2g/trampled",
+          "snarepath"
+        ]
+      },
+      {
+        "class": "grass",
+        "match": [
+          "graveearth",
+          "grass"
+        ]
+      },
+      {
+        "class": "wood",
+        "match": [
+          "plank",
+          "ropespan",
+          "woodstairs",
+          "rails",
+          "carpet"
+        ]
+      },
+      {
+        "class": "stone",
+        "match": [
+          "cobble",
+          "flagstone",
+          "crackstone",
+          "stairs",
+          "grate",
+          "bluestone",
+          "steelplates",
+          "it/",
+          "bf/bones",
+          "bloodcrack",
+          "pressureplate",
+          "bladegroove",
+          "arrowtrap",
+          "bladetrap",
+          "sunbeam",
+          "town",
+          "interior"
+        ]
+      },
+      {
+        "class": "gravel",
+        "match": [
+          "rubble",
+          "gravel",
+          "pebbles",
+          "hardpan",
+          "sandflag",
+          "ash",
+          "frozenbones",
+          "rockstairs",
+          "limestone",
+          "crackearth",
+          "spikepath",
+          "pitpath"
+        ]
+      }
+    ],
+    "default": "dirt",
+    "walk": {
+      "dirt": "step_dirt",
+      "grass": "step_grass",
+      "tallgrass": "step_tallgrass",
+      "gravel": "step_gravel",
+      "snow": "step_snow",
+      "water": "step_water",
+      "stone": "step_stone",
+      "wood": "step_wood"
+    },
+    "run": {
+      "dirt": "run_dirt",
+      "grass": "run_grass",
+      "tallgrass": "run_tallgrass",
+      "gravel": "run_gravel",
+      "snow": "run_snow",
+      "water": "run_water",
+      "stone": "run_stone",
+      "wood": "run_wood"
+    }
+  },
+  "combat": {
+    "_comment": "전투 사건 → 소리(CombatSounds). hit = 피해 유형별, cast = 마법 스킬(scaling magic)을 쓸 때 피해 유형별, ranged = 원거리 스킬을 쓸 때",
+    "hit": {
+      "slash": "hit_slash_any",
+      "pierce": "hit_pierce",
+      "blunt": "hit_blunt_any",
+      "fire": "fireball",
+      "cold": "freeze",
+      "lightning": "lightning",
+      "earth": "rock_break",
+      "poison": "hit_slime",
+      "holy": "magic_circle",
+      "dark": "gravity_magic",
+      "sun": "fireball",
+      "arcane": "magic_circle",
+      "weapon": "hit_slash_any"
+    },
+    "hit_default": "hit_slash_any",
+    "miss": "miss_any",
+    "blocked": "hit_metal",
+    "immune": "hit_metal",
+    "crit": "hit_heavy",
+    "whip": "hit_whip",
+    "slime": "hit_slime",
+    "cast": {
+      "fire": "magic_circle",
+      "cold": "magic_circle",
+      "lightning": "magic_circle",
+      "dark": "gravity_magic",
+      "holy": "magic_circle",
+      "arcane": "magic_circle",
+      "earth": "gravity_magic",
+      "poison": "wind_magic"
+    },
+    "ranged": "arrow_volley",
+    "fall": "body_fall",
+    "party_down": "scream",
+    "guard": "guard",
+    "start": "fear_appear",
+    "start_ambushed": "dread_rise",
+    "start_first": "blade_draw",
+    "start_horde": "battle_start_horde",
+    "victory": "victory",
+    "phase": "bell_low",
+    "summon": "monster_threat",
+    "heart": "heartbeat",
+    "heart_below": 0.3,
+    "status": {
+      "fear": "fear_ghost",
+      "confusion": "fear_ghost",
+      "dread_seeping": "fear_ghost",
+      "frozen": "glass_break",
+      "frost": "freeze",
+      "stun": "bone_snap",
+      "petrify": "rock_break",
+      "bleeding": "hit_slash_light",
+      "burn": "fireball",
+      "blind": "wind_magic"
+    },
+    "slime_lineages": [
+      "slime",
+      "parasite"
+    ],
+    "whip_skills": [
+      "liz_tail_whip",
+      "mummy_bandage_wrap",
+      "ess_liz_tail_whip",
+      "ess_mummy_bandage_wrap",
+      "worm_coil",
+      "ess_worm_coil"
+    ]
+  },
+  "cries": {
+    "_comment": "몬스터 울음(전투 시작 — 처음 보는 적 하나, CombatSounds): id가 먼저, 없으면 family",
+    "by_id": {
+      "dullahan": "horse",
+      "iron_cavalry": "horse",
+      "gargoyle_statue": "wing_flap",
+      "banshee": "shriek_high",
+      "goblin_bomber": "shriek_angry",
+      "deathworm": "dragon_short",
+      "sandworm": "dragon_short",
+      "wormstone": "dragon_short",
+      "moon_rock_bear": "roar_1",
+      "werewolf": "roar_1",
+      "chimera_wolf": "roar_2",
+      "sabertooth": "roar_2",
+      "bulkar": "growl_low",
+      "owlbear": "roar_1",
+      "yeti": "monster_low",
+      "mole_queen": "boar_cry",
+      "wall_mole": "boar_cry",
+      "hobgoblin": "monster_burp",
+      "dreadfear": "dragon_long",
+      "kirdui": "monster_low",
+      "katumba": "monster_low",
+      "skull_rat": "monster_threat",
+      "sandman": "wind_magic"
+    },
+    "by_family": {
+      "beast": "growl_low",
+      "undead": "zombie_howl",
+      "humanoid": "monster_burp",
+      "construct": "monster_low",
+      "slime": "hit_slime",
+      "troll": "monster_low",
+      "flying": "wing_flap",
+      "wraith": "shriek_high",
+      "phantasm": "wind_magic",
+      "parasite": "hit_slime",
+      "orc": "monster_threat"
+    }
+  },
+  "on_message": {
+    "_comment": "문구 키 → 소리(MessageSounds — 화면에 띄우지 않는 문구도). 끝이 *면 앞부분이 같은 키 모두",
+    "item.got*": "item_pick",
+    "reward.level_up": "skill_get",
+    "reward.level_down": "dark_sting",
+    "reward.essence_absorbed": "essence_absorb",
+    "reward.first_kill": "skill_get",
+    "reward.guardian_bonus": "skill_get",
+    "reward.lord_bonus": "skill_get",
+    "reward.essence_left": "whoosh_faint",
+    "combat.guard": "guard",
+    "combat.telegraph_guarded": "guard",
+    "combat.flee_ok": "whoosh_faint",
+    "combat.flee_fail": "ui_denied",
+    "combat.skip": "bone_snap",
+    "combat.guardian_frenzy": "monster_low",
+    "combat.delayed_dropped": "bone_snap",
+    "explore.rift_next_wave": "war_drum",
+    "explore.rift_opened": "rift_open",
+    "explore.rift_forced": "rift_open",
+    "explore.rift_enter": "magic_circle",
+    "explore.rift_left": "door_open",
+    "explore.rift_exit_used": "key_unlock",
+    "explore.rift_exit_forced": "rock_break",
+    "explore.ambush": "dread_rise",
+    "explore.trap_detected": "metal_rattle",
+    "explore.trap_disarmed": "metal_rattle",
+    "explore.trap_crushed": "rock_break",
+    "explore.trap_plate_fail": "trap_spike",
+    "explore.trap_arrow_fail": "trap_arrows",
+    "explore.trap_blades_fail": "trap_blades",
+    "field.snare_detected": "metal_rattle",
+    "field.snare_disarmed": "metal_rattle",
+    "field.snare_fail": "snare_snap",
+    "field.cache": "chest_open",
+    "field.bell_risers": "risers",
+    "field.bell_stuck": "ui_denied",
+    "field.bell_no_clapper": "ui_denied",
+    "field.sandworm": "worm_rise",
+    "explore.chest_nothing": "chest_open",
+    "field.deathworm_rise": "deathworm_rise",
+    "field.deathworm_sink": "surface",
+    "field.sand_tremor": "rock_break",
+    "combat.delayed_warn": "memory_sting",
+    "explore.riddle_pass": "memory_sting",
+    "explore.riddle_weaken": "memory_sting",
+    "explore.riddle_wrong": "fear_ghost",
+    "explore.monument_lord_call": "memory_sting",
+    "explore.rift_offer": "memory_sting",
+    "explore.lord_summoned": "lord_rise",
+    "explore.fortress_tear": "glass_break",
+    "explore.mine_quartz": "glass_break",
+    "explore.groove_blade_break": "glass_break",
+    "combat.barrier_absorb": "glass_break",
+    "field.gate_open": "iron_door_open",
+    "field.sealed_tomb": "metal_rattle",
+    "field.pass_gate": "metal_rattle"
   },
   "ambience": {
-    "f1_cave": "res://assets/audio/ambience/f1_cave.ogg",
-    "f2_forest": "res://assets/audio/ambience/f2_forest.ogg",
-    "f2_dead": "res://assets/audio/ambience/f2_dead.ogg",
-    "f2_den": "res://assets/audio/ambience/f2_den.ogg",
-    "f2_desert": "res://assets/audio/ambience/f2_desert.ogg"
+    "dread_loop": "res://assets/audio/ambience/dread_loop.ogg",
+    "f2_dead": "res://assets/audio/ambience/dread_loop.ogg"
+  },
+  "ambience_cues": {
+    "_comment": "층 분위기 효과음(AmbientCues): 층 art.ambience.loop 키마다 [{sfx, every [최소, 최대] 초, db}] — 탐험 중 가끔",
+    "f1_cave": [
+      {
+        "sfx": "water_drip",
+        "every": [
+          5,
+          11
+        ]
+      },
+      {
+        "sfx": "wind_rush",
+        "every": [
+          25,
+          50
+        ],
+        "db": -6
+      },
+      {
+        "sfx": "wolf_howl",
+        "every": [
+          50,
+          110
+        ],
+        "db": -14
+      }
+    ],
+    "f2_dead": [
+      {
+        "sfx": "crow",
+        "every": [
+          14,
+          30
+        ]
+      },
+      {
+        "sfx": "bell_ominous",
+        "every": [
+          60,
+          120
+        ],
+        "db": -12
+      },
+      {
+        "sfx": "zombie_howl",
+        "every": [
+          40,
+          90
+        ],
+        "db": -16
+      }
+    ],
+    "f2_forest": [
+      {
+        "sfx": "crow",
+        "every": [
+          10,
+          24
+        ]
+      },
+      {
+        "sfx": "monster_burp",
+        "every": [
+          35,
+          80
+        ],
+        "db": -16
+      }
+    ],
+    "f2_den": [
+      {
+        "sfx": "wolf_howl",
+        "every": [
+          20,
+          45
+        ],
+        "db": -8
+      },
+      {
+        "sfx": "boar_sniff",
+        "every": [
+          40,
+          90
+        ]
+      },
+      {
+        "sfx": "growl_low",
+        "every": [
+          45,
+          100
+        ],
+        "db": -14
+      }
+    ],
+    "f2_desert": [
+      {
+        "sfx": "wind_rush",
+        "every": [
+          8,
+          18
+        ]
+      },
+      {
+        "sfx": "wind_magic",
+        "every": [
+          30,
+          70
+        ],
+        "db": -12
+      }
+    ],
+    "rift": [
+      {
+        "sfx": "water_drip",
+        "every": [
+          6,
+          14
+        ]
+      },
+      {
+        "sfx": "monster_low",
+        "every": [
+          45,
+          100
+        ],
+        "db": -16
+      }
+    ]
   },
   "bgm": {
-    "title": "res://assets/audio/bgm/title.ogg"
+    "title": "res://assets/audio/bgm/night_piano.ogg",
+    "night_piano": "res://assets/audio/bgm/night_piano.ogg"
   }
 }

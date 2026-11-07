@@ -58,8 +58,9 @@ static func check_art(v: ValidatorBase, w: String, art: Dictionary) -> void:
 	if art.has("backdrop"):
 		v.err(w, "backdrop(화면 고정 뒷배경)은 없어졌다 — abyss(절벽 면 + 어둠, AM49)")
 	var loop := JsonUtil.get_str(JsonUtil.get_dict(art, "ambience"), "loop")
-	if not loop.is_empty() and not JsonUtil.get_dict(JsonUtil.get_dict(v.db.singletons, "audio"), "ambience").has(loop):
-		v.err(w + ".ambience", "'%s'가 data/audio.json ambience에 없다" % loop)
+	var audio := JsonUtil.get_dict(v.db.singletons, "audio")
+	if not loop.is_empty() and not JsonUtil.get_dict(audio, "ambience").has(loop) and not JsonUtil.get_dict(audio, "ambience_cues").has(loop):
+		v.err(w + ".ambience", "'%s'가 data/audio.json ambience · ambience_cues에 없다" % loop)
 
 
 ## 전투 뒷그림(BattleStage): 없으면 어둠, 있으면 {image(파일이 있어야), half_width(양수 m)}.
