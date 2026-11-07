@@ -92,3 +92,22 @@ func test_new_beasts_and_queen_stops_moles() -> void:
 	s.ambush.on_enter(s, b)
 	assert_eq(s.monsters.groups.size(), n, "여왕이 쓰러지면 매복도 멈춘다")
 	s.detach()
+
+
+## 높낮이(레벨 디자인 11차): 뼈 무덤 구덩이 · 곰굴 마른 개울은 낮은 땅 — 비탈로 내려가 닿는다(돌무더기에 막히지 않는다).
+func test_sunken_pit_and_wash_reachable() -> void:
+	var s := _session(3, false)
+	var seen := _reach(s.map)
+	var low := 0
+	var ramps := 0
+	for p: Vector2i in seen:
+		var d := s.map.def_at(p)
+		low += 1 if d.sunk else 0
+		ramps += 1 if d.ramp else 0
+	assert_true(low > 60, "닿는 낮은 땅 %d칸" % low)
+	assert_true(ramps >= 8, "비탈 %d칸" % ramps)
+	var marks: Dictionary = s.map.anchors.get("marks", {})
+	for nm: String in ["bone_pit", "bear_cave"]:
+		assert_true(seen.has(marks[nm]), "%s에 닿는다" % nm)
+	assert_true(s.map.def_at(marks["bone_pit"]).sunk, "뼈 무덤은 구덩이 바닥")
+	s.detach()
