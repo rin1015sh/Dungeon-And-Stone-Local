@@ -18,7 +18,7 @@ import random
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FLOOR = os.path.join(ROOT, "data/floors/f2_rock_desert.json")
 W, H = 150, 120
-LEGEND = {".": "f2d_hard", "~": "f2r_sand", "n": "f2d_mound", "R": "f2d_ruin", "F": "f2d_fire", "S": "f2d_statue"}
+LEGEND = {".": "f2r_hardpan", "=": "f2r_flag", "~": "f2r_sand", "n": "f2r_dune", "R": "f2r_ruin", "F": "f2r_fire", "S": "f2r_statue"}
 
 rng = random.Random(23)
 grid = [[" "] * W for _ in range(H)]
@@ -85,6 +85,10 @@ mark("seep", 85, 106)
 path([(38, 62), (30, 44), (24, 28)], 3, ".")
 disk(22, 24, 6, ".")
 mark("cave", 22, 24)
+# 옛길 가운데 · 장소 바닥 = 모래에 묻힌 판석(레벨 디자인 11차 — 길이 길로 보이게, 가장자리는 갈라진 흙판 — 화로는 가장자리 흙판에)
+path(road, 1, "=", wig=1.5)
+for (cx, cy, r) in [(38, 62, 5), (70, 84, 6), (134, 28, 4)]:
+    disk(cx, cy, r, "=", rough=0.3)
 # 모래 바다로 들어서는 어귀 둘(열주 북동 · 옛길 동쪽) — 바다를 건너면 앞뜰 곧장
 path([(44, 56), (50, 50)], 3, ".")
 path([(118, 56), (114, 42)], 3, ".")
@@ -153,9 +157,9 @@ for nm, z in zone_of.items():
 gen = {
     "_comment": "바위사막 손으로 짠 지도(tools/f2r_layout.py — floor2.md §4, LD14): 지도 전체 = stamps 하나, 자리 = marks. [창작] 임시값",
     "grammar": "route", "size": [W, H], "seed": 4,
-    "tiles": {"rise": "f2d_rise", "floor": "f2d_hard", "down": "f2_stone_down", "up": "f2_portal_up"},
+    "tiles": {"rise": "f2d_rise", "floor": "f2r_hardpan", "down": "f2_stone_down", "up": "f2_portal_up"},
     "zone_fill": {"f2r_road": "f2d_rise", "f2r_sea": "f2d_rise", "f2r_cave": "f2d_rise"},
-    "zone_floor": {"f2r_road": "f2d_hard", "f2r_sea": "f2r_sand", "f2r_cave": "f2d_hard"},
+    "zone_floor": {"f2r_road": "f2r_hardpan", "f2r_sea": "f2r_sand", "f2r_cave": "f2r_hardpan"},
     "levels": {"scree": "f2d_scree", "ramp": "f2d_slope"},
     "nodes": nodes, "edges": [], "props": [],
     "stamps": [{"node": "arrival", "at": [-ex, -ey], "legend": LEGEND, "rows": ["".join(r) for r in grid]}],
@@ -173,17 +177,17 @@ route_spots = {
         {"mark": "dune_e", "at": [0, -2], "monsters": ["sandman", "kobold_slinger"]},
     ],
     "features": [
-        {"mark": "seep", "event": "clear_spring", "tile": "f2d_cairn"},
-        {"mark": "colonnade", "event": "dead_campfire", "at": [0, 2], "tile": "f2d_campfire"},
-        {"mark": "colonnade", "event": "explorer_corpse", "at": [4, -2], "tile": "f2d_corpse_g"},
-        {"mark": "plaza", "event": "offering_pile", "at": [0, -4], "tile": "f2d_offering"},
+        {"mark": "seep", "event": "clear_spring", "tile": "f2r_cairn"},
+        {"mark": "colonnade", "event": "dead_campfire", "at": [0, 2], "tile": "f2r_campfire"},
+        {"mark": "colonnade", "event": "explorer_corpse", "at": [4, -2], "tile": "f2r_corpse"},
+        {"mark": "plaza", "event": "offering_pile", "at": [0, -4], "tile": "f2r_offering"},
         {"mark": "cave", "event": "hidden_cache", "at": [3, -2]},
-        {"mark": "cave", "event": "explorer_corpse", "at": [-3, 2], "tile": "f2d_corpse_g"},
+        {"mark": "cave", "event": "explorer_corpse", "at": [-3, 2], "tile": "f2r_corpse"},
         {"mark": "buried_a", "event": "buried_pack"},
         {"mark": "buried_b", "event": "buried_pack"},
-        {"mark": "dune_w", "event": "explorer_corpse", "tile": "f2d_corpse_g"},
+        {"mark": "dune_w", "event": "explorer_corpse", "tile": "f2r_corpse"},
         {"mark": "dune_e", "event": "hidden_cache"},
-        {"mark": "exit", "event": "dead_campfire", "at": [-4, 4], "tile": "f2d_campfire"},
+        {"mark": "exit", "event": "dead_campfire", "at": [-4, 4], "tile": "f2r_campfire"},
     ],
     "ambush": [
         {"mark": "dune_w", "at": [3, -3], "monsters": ["gnome", "gnome"], "radius": 3, "line": "field.ambush_gnome", "sound": "gnome_alarm"},
@@ -195,20 +199,20 @@ d = {
     "id": "f2_rock_desert", "name_ko": "바위사막", "floor": 2, "arrival": "floor2_west", "generator": "fields", "close_hours": 240,
     "visibility_cap_m": 9.5, "visibility_source": "placeholder", "ambient_light_m": 8.0, "ambient_source": "placeholder", "ambient_color": "#f0dcb4",
     "art": {
-        "_comment": "1단계: 바닥 = 망자의 땅 흙 · 빙하굴 눈밭(모래 바다) 그림 + 모래빛 색조(macro), 외곽 = 검은 바위산(assets/floor/f2r — RiseMesa 검은 색), 화로 = 핏빛성채 화로, 전투 뒷그림 = tools/battle_art/SceneDesert.gd. [창작] 임시값",
+        "_comment": "바닥 = 사막 전용 그림(assets/floor/f2r — 갈라진 흙판 · 묻힌 판석 · 바람 결 모래, 레벨 디자인 11차) + 옅은 색조(macro), 외곽 = 검은 바위산(assets/floor/f2r — RiseMesa 검은 색), 화로 = 핏빛성채 화로, 전투 뒷그림 = tools/battle_art/SceneDesert.gd. [창작] 임시값",
         "battleback": {"image": "res://assets/battle/f2_rock_desert.webp", "half_width": 3.6},
         "palette": {"unexplored": "#000000", "near_black": "#2a2218", "tone": "#fae6c4", "memory_tint": "#a08c6c", "memory_brightness": 0.5, "memory_desat": 0.3, "keep_hue": True},
         "torch_color": "#ffd090",
         "post": {"saturation": 0.8, "vignette_strength": 0.4, "vignette_radius": 0.5, "grain_strength": 0.05},
         "particles": [{"id": "dust", "amount": 60, "lifetime": 9.0, "color": "#f0d8a8", "alpha": 0.3, "scale": [1.0, 2.4], "velocity": [10.0, 18.0], "direction": [1.0, 0.15], "spread": 15.0, "gravity": [0.0, 0.0]}],
         "ambience": {"loop": "f2_desert"},
-        "macro": {"_comment": "바닥 색조: 흙 · 눈밭 그림을 모래빛으로. [창작] 임시값", "zones": {"f2r_road": "#f4d8a8", "f2r_sea": "#f0c888", "f2r_cave": "#c8b090"}, "noise": {"freq": 0.025, "amount": 0.1}},
+        "macro": {"_comment": "바닥 색조: 사막 그림 위 옅은 얼룩(곳마다 볕 · 그늘 차이). [창작] 임시값", "zones": {"f2r_road": "#fff4e4", "f2r_sea": "#fff0dc", "f2r_cave": "#e4d8c8"}, "noise": {"freq": 0.025, "amount": 0.1}},
         "abyss": {"cliff": "res://assets/floor/f2d/chasm.webp", "cliff_tiles": 8, "cliff_depth": 2.25, "jag": 0.35, "abyss_color": "#141010", "mist_color": "#3a3028", "rim_color": "#a09078",
                   "rise": {"face": "res://assets/floor/f2r/rise_face.webp", "top": "res://assets/floor/f2r/rise_top.webp", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "jag": 0.3, "fog": 6, "dark": "#1a1612"},
                   "bank": {"depth_tiles": 1.3, "shadow_tiles": 0.9, "shadow_alpha": 0.6}},
         "decor": {"_comment": "바닥 잔해(1층 데칼 시트): 잔해 둘레 자갈 · 뼈. [창작] 임시값", "sheet": "res://assets/floor/f1/decals.webp", "variants": 4,
-                  "kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"], "on_tiles": ["f2d_hard", "f2d_mound"],
-                  "rules": [{"kind": "gravel", "near_tiles": {"tiles": ["f2d_ruin", "f2d_statue"], "radius": 2}, "dense": True, "chance": 0.5},
+                  "kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"], "on_tiles": ["f2r_hardpan", "f2r_flag", "f2r_dune"],
+                  "rules": [{"kind": "gravel", "near_tiles": {"tiles": ["f2r_ruin", "f2r_statue"], "radius": 2}, "dense": True, "chance": 0.5},
                             {"kind": "bones", "near_features": {"ids": ["explorer_corpse", "buried_pack"], "radius": 4}, "chance": 0.5},
                             {"kind": "gravel", "wall_north": True, "dense": True, "chance": 0.3},
                             {"kind": "bones", "chance": 0.02}, {"kind": "gravel", "chance": 0.08}]},
@@ -225,7 +229,7 @@ d = {
     "terrain": {"_comment": "모래 폭풍(FieldTerrain night_fog를 오후로): 13~16시 옛길 · 바다 시야 4m. [창작] 임시값", "night_fog": {"zones": ["f2r_road", "f2r_sea"], "from": 13, "to": 16, "cap_m": 4.0}},
     "desert": {
         "_comment": "DesertRules(LD14): 낮 열기 · 모래 바다 진동. [창작] 임시값",
-        "heat": {"zones": ["f2r_road", "f2r_sea"], "from": 8, "to": 18, "status": "heat", "fatigue_per_hour": 2.0, "shade_tiles": ["f2d_fire", "f2d_ruin", "f2d_statue"], "shade_radius": 2, "cool_status": "refreshed"},
+        "heat": {"zones": ["f2r_road", "f2r_sea"], "from": 8, "to": 18, "status": "heat", "fatigue_per_hour": 2.0, "shade_tiles": ["f2r_fire", "f2r_ruin", "f2r_statue"], "shade_radius": 2, "cool_status": "refreshed"},
         "deathworm": {"kill_id": "sandworm", "after_kills": 3, "monster": "deathworm", "at_mark": "sea_mid", "storm_hours": 2.0, "storm_cap_m": 3.0,
                       "line": "field.deathworm_rise", "sound": "boss_reveal", "sink_line": "field.deathworm_sink"},
         "sand_sea": {"tiles": ["f2r_sand"], "per_step": 1.0, "decay_per_hour": 25.0, "threshold": 14.0, "warn_at": 0.6, "monsters": ["sandworm"],
@@ -241,7 +245,7 @@ open(FLOOR, "a").write("\n")
 
 try:
     from PIL import Image, ImageDraw
-    col = {" ": (40, 34, 30), ".": (200, 170, 120), "~": (230, 200, 130), "n": (170, 140, 100), "R": (110, 100, 90), "F": (255, 150, 60), "S": (140, 130, 120)}
+    col = {" ": (40, 34, 30), ".": (200, 170, 120), "=": (170, 150, 125), "~": (230, 200, 130), "n": (170, 140, 100), "R": (110, 100, 90), "F": (255, 150, 60), "S": (140, 130, 120)}
     S = 4
     im = Image.new("RGB", (W * S, H * S))
     dr = ImageDraw.Draw(im)

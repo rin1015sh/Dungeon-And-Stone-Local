@@ -567,7 +567,7 @@
    }
   },
   "f2b": {"name_ko": "짐승의 소굴(2층 — floor2.md §2, LD13 — 외곽만, 바닥은 f2d 그림을 쓴다)", "rise": {"kind": "mesa", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "rock": "#9a6a4a", "rock_dark": "#4a2e20", "ground": "#8a6a4c", "ground_dark": "#5a4232"}, "floors": [], "walls": [], "stands": []},
-    "f2r": {"name_ko": "바위사막(2층 — floor2.md §4, LD14 — 외곽만: 검은 바위산)", "rise": {"kind": "mesa", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "rock": "#4a423c", "rock_dark": "#1e1a18", "ground": "#6a5a48", "ground_dark": "#3a3028"}, "floors": [], "walls": [], "stands": []},
+    "f2r": {"name_ko": "바위사막(2층 — floor2.md §4, LD14 — 검은 바위산 외곽 · 레벨 디자인 11차 바닥 셋 · 사암 잔해)", "rise": {"kind": "mesa", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "rock": "#4a423c", "rock_dark": "#1e1a18", "ground": "#6a5a48", "ground_dark": "#3a3028"}, "floors": [{"tile": "f2r_hardpan", "style": "hardpan"}, {"tile": "f2r_sand", "style": "dunesand"}, {"tile": "f2r_flag", "style": "sandflag"}], "walls": [{"tile": "f2r_ruin", "style": "sandstone", "face_px": 48}], "stands": []},
     "f2g": {
    "name_ko": "고블린 숲(2층 — floor2.md §5 · §13-3, FL21)",
    "rise": {

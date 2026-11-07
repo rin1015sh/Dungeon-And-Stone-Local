@@ -42,7 +42,7 @@ func test_map_road_and_sea() -> void:
 	var sand := 0
 	for i in s.map.tiles.size():
 		var id := s.map.tile_id_at(s.map.pos_of(i))
-		fires += 1 if id == "f2d_fire" else 0
+		fires += 1 if id == "f2r_fire" else 0
 		sand += 1 if id == "f2r_sand" else 0
 	assert_true(fires >= 10, "옛길 돌 화로 줄: %d" % fires)
 	assert_true(sand > 1000, "모래 바다: %d칸" % sand)
@@ -51,7 +51,7 @@ func test_map_road_and_sea() -> void:
 
 func test_heat_shade_and_water() -> void:
 	var s := _session(2, false)
-	var open := _find(s, func(p: Vector2i) -> bool: return s.map.zone_at(p) == "f2r_road" and s.map.tile_id_at(p) == "f2d_hard" and not s.desert.shaded(s, p))
+	var open := _find(s, func(p: Vector2i) -> bool: return s.map.zone_at(p) == "f2r_road" and s.map.tile_id_at(p) in ["f2r_hardpan", "f2r_flag"] and not s.desert.shaded(s, p))
 	assert_true(open.x >= 0 and s.relocate(open))
 	s.pass_time(fposmod(12.0 - s.clock.hour_of_day(), 24.0))
 	assert_true(s.player.statuses.has("heat"), "한낮 그늘 밖 = 열기")
