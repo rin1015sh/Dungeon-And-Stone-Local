@@ -5,7 +5,7 @@
 
 ## 시뮬레이터 · 점검
 
-- 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--floor=<층 id>] [--seeds=1,2,3] [--day=n] [--no-parties]`(2층 = `--floor=f2_land_of_dead`) → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다.
+- 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--floor=<층 id>] [--seeds=1,2,3] [--day=n] [--no-parties]`(2층 = `--floor=f2_land_of_dead`) → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다. `--use` = 지나는 요소를 한 번씩 쓰고 얻은 물건 · 키별 소리(경보 · 덫)까지 센다(도착 바로 옆 포탈은 목표에서 뺀다).
 - 전투 수치(헤드리스): `sim_battle.gd -- [--level=n] [--sc=a,b;c]`(Lv n 무작위 탐험가 · 기본 공격만 — 잃은 생명력 · 맞은 수) · `sim_party.gd -- [--curve=<층>] [--members=1] [--sc=ghoul*12;dullahan]`(층 곡선 기준 탐험가 · `id*n` = n마리 · 6마리를 넘으면 큰 무리 예비대 — 남은 생명력). 2층 큰 무리 · 엘리트를 맞출 때.
 - 균열 통과 점검(헤드리스, 1~2분): `godot --headless --path . --script res://tools/sim_rift.gd -- [--rift=<id>] [--seeds=1,2,3]` → 모든 균열을 실제 이동(충돌)으로 걸어 조우·출구 물건·길목 앞뒤·탈출까지. 균열 지도·길목·조우·출구 조건을 바꿨으면 돌려 본다("모두 통과"여야 한다).
 - 균열 줄무늬 바닥 어긋남(파이썬, 1초): `python3 tools/rift_strip_check.py [타일id,…]` — 카펫·레일·발판·계단·홈이 이웃 줄에서 폭·위치가 갑자기 바뀌는 곳(벽이 아닌 칸만)을 적는다. 광차·분기·잔해처럼 일부러 끊은 곳도 나오니 지도를 보고 판단. 설계도를 고쳤으면 돌려 본다.

@@ -6,11 +6,14 @@ extends SceneTree
 ## --floor=<층 id>: 그 층에서 잰다(2층 — floor2.md · M6-0 F). 포탈 = 그 층의 층 포탈 모두(아래층 비석 · 위층 포탈).
 ## --day=n: n일 차 아침에 출발한다(그 전까지 시작 자리에서 시간만 흘린다 — 시체·약탈자·구울이 늘어난 뒤).
 ## --no-parties: 층 JSON explorers를 빼고(다른 탐험가 없음) 잰다 — 비교용.
+## --use: 길에서 바로 옆(4방향 · 1칸)에 온 요소마다 첫 행동을 한 번 쓴다(살피기 · 뒤지기 · 종 치기 …) — 요소를 쓰면
+##   전투 · 경보 · 덫이 얼마나 늘고 무엇을 얻는지(레벨 디자인 E-8). 소리는 키별로(소리:alarm · 소리:snare_snap …), 얻은 물건은 "획득".
 
 var _events: Array[Dictionary] = []  # {"t": 실제 초, "kind"}
 var _pending: FieldMonsters.Group = null
 var _met: FieldMonsters.Group = null
 var _t0: float = 0.0
+var _used: Dictionary = {}  # --use: 이미 쓴 요소 칸
 
 
 func _initialize() -> void:
@@ -31,7 +34,7 @@ func _initialize() -> void:
 	for sv: String in str(args["seeds"]).split(","):
 		var seed_value := sv.to_int()
 		for k in 4:
-			var r := _walk(db, def, seed_value, k, maxi(1, str(args.get("day", "1")).to_int()))
+			var r := _walk(db, def, seed_value, k, maxi(1, str(args.get("day", "1")).to_int()), args.has("use"))
 			total_sec += float(r["sec"])
 			all_gaps.append_array(r["gaps"])
 			for kind: String in r["counts"]:
@@ -46,22 +49,29 @@ func _initialize() -> void:
 	quit(0)
 
 
-func _walk(db: GameDatabase, def: Dictionary, seed_value: int, portal_index: int, day: int) -> Dictionary:
+func _walk(db: GameDatabase, def: Dictionary, seed_value: int, portal_index: int, day: int, use: bool = false) -> Dictionary:
 	var reg := ContentRegistries.new()
 	var map := reg.generator(JsonUtil.get_str(def, "generator")).generate(db, def, Rng.new(seed_value))
 	var pc := PlayerCharacter.create(db, "human", "warrior", "측정", {})
 	var s := ExploreSession.new(db, def, map, pc, GameClock.new(), Rng.new(seed_value * 7 + portal_index), reg.effects)
 	_events.clear()
+	_used.clear()
 	s.encounter.connect(func(g: FieldMonsters.Group, _f: bool) -> void: _pending = g)
 	s.party_met.connect(func(g: FieldMonsters.Group) -> void: _met = g)
-	s.sound.connect(func(_key: String, _at: Vector2i) -> void: _add(s, "소리"))
+	s.sound.connect(func(key: String, _at: Vector2i) -> void: _add(s, "소리:" + key if use else "소리"))
+	if use:
+		s.message.connect(func(key: String, _a: Dictionary, _k: String) -> void:
+			if key.begins_with("item.got"):
+				_add(s, "획득"))
 	s.start()
 	for h in (day - 1) * 24:
 		s.pass_time(1.0)
 		_resolve(s)
 	_events.clear()
 	var t0 := s.clock.total_hours
-	var portals := map.portals.filter(func(p: Dictionary) -> bool: return int(p.get("to_floor", 0)) > 0)
+	var start := s.pos  # 도착 자리 바로 옆 포탈(돌아가는 비석)은 빼고 — 2층은 그 층을 가로지르는 길을 잰다
+	var portals := map.portals.filter(func(p: Dictionary) -> bool:
+		return int(p.get("to_floor", 0)) > 0 and (p["pos"] as Vector2i).distance_to(start) > 12.0)
 	var goal: Vector2i = portals[portal_index % portals.size()]["pos"]
 	var path := FieldRoutes.path(map, s.pos, goal, 100000)
 	var seen := {}
@@ -73,6 +83,8 @@ func _walk(db: GameDatabase, def: Dictionary, seed_value: int, portal_index: int
 		_resolve(s)
 		s.pass_time(step_h)
 		_resolve(s)
+		if use:
+			_use_near(s)
 		for f: Dictionary in map.features:
 			var key: Vector2i = f["pos"]
 			if not seen.has(key) and map.visible_now[map.idx(key)] != 0:
@@ -92,6 +104,21 @@ func _walk(db: GameDatabase, def: Dictionary, seed_value: int, portal_index: int
 	gaps.append(sec - last)
 	s.detach()
 	return {"sec": sec, "gaps": gaps, "counts": counts}
+
+
+## 바로 옆(4방향 · 1칸) · 선 자리의 요소를 한 번씩 쓴다(첫 행동).
+func _use_near(s: ExploreSession) -> void:
+	for d: Vector2i in [Vector2i.ZERO, Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+		var at := s.pos + d
+		if _used.has(at) or not s.features.has_at(at):
+			continue
+		_used[at] = true
+		var acts := s.features.actions_at(at)
+		if acts.is_empty():
+			continue
+		_add(s, "사용")
+		s.features.act(s, at, str(acts[0]["id"]))
+		_resolve(s)
 
 
 func _resolve(s: ExploreSession) -> void:
