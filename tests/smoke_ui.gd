@@ -546,14 +546,20 @@ func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
 	await _action("menu_back")
 	_expect(combat._plan_i == 0 and combat._plan.is_empty(), "뒤로 → 앞사람 다시 고르기")
 	b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.apply("stun", 2.0)  # 탐험가 다음 차례를 건너뛰어 동료 차례가 오게
+	var mate_turn: Array[bool] = [false]  # 동료 차례가 한 번이라도 왔는가 — 정해 둔 행동은 바로 끝나 b.current가 프레임 사이에 지나갈 수 있다(느린 CI에서 놓쳤다)
+	var on_turn := func(e: Dictionary) -> void:
+		if str(e.get("type", "")) == "turn" and e.get("unit") == mu:
+			mate_turn[0] = true
+	b.event.connect(on_turn)
 	_press(combat, Strings.t("combat.cmd_guard"))
 	_press(combat, Strings.t("combat.cmd_guard"))
 	await _frames(2)
 	_expect(b.turns > turns or not b.result.is_empty(), "모두 정하면 차례대로 움직인다")
 	var dl := Time.get_ticks_msec() + WAIT_LIMIT_MS
-	while Time.get_ticks_msec() < dl and b.current != mu and b.result.is_empty():
+	while Time.get_ticks_msec() < dl and not mate_turn[0] and b.current != mu and b.result.is_empty():
 		await get_tree().process_frame
-	_expect(b.current == mu or not b.result.is_empty(), "탐험가가 기절해 동료 차례")
+	b.event.disconnect(on_turn)
+	_expect(mate_turn[0] or b.current == mu or not b.result.is_empty(), "탐험가가 기절해 동료 차례")
 	mate.pool.set_current("hp", 0.0)  # 동료가 자기 차례(행동 정하기 중)에 쓰러진다 — 전투가 멈추지 않고 다음 차례로 가야 한다
 	combat._refresh()
 	await _frames(2)

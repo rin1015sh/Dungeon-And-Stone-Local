@@ -5,6 +5,7 @@
 
 ### 2026-11-08 웹 자동 배포 — itch 빼고 GitHub Pages로
 - 사용자 "itch.io는 기각, 저장소 공개로 Pages". 첫 실행에서 itch 단계는 itch 계정 이메일 미인증으로 실패했었다(빌드는 4분에 통과). web.yml에서 itch 작업을 지우고 pages를 늘 돌린다(DEPLOY_PAGES 변수 없앰). DEPLOY.md §6을 Pages 기준으로. 그림 손실 압축 시험: 품질 0.9면 pck 198MB → 61MB, 동네 화면 캡처로 눈에 띄는 차이 없음(적용은 안 함).
+- GitHub Actions에서 UI 스모크 "탐험가가 기절해 동료 차례"가 실패(이 항목은 원래 가끔 실패) — 동료는 행동을 미리 정해 둬서 차례가 오자마자 끝나, 프레임마다 `b.current`를 보는 검사가 놓칠 수 있다. Battle `event`의 `turn`(동료)을 기록해 보게 바꿨다. 로컬 3번 · check.sh 통과.
 
 ### 2026-11-08 웹 자동 배포(GitHub Actions) · 웹 빌드 시작 오류 고침
 - **범위 / 기준 / 테스트**: 사용자 "웹에서 플레이 테스트 — GitHub와 이어져 올리면 바로 바뀌게". 기준: main push → 검증 → 웹 내보내기 → 배포가 사람 손 없이. 테스트: 클라우드 리눅스에서 export_web.sh → Playwright(크로미움)로 타이틀 → 새 탐험가 → 동네 지도까지.
