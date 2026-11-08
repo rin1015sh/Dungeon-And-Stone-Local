@@ -548,7 +548,7 @@ func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
 	b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.apply("stun", 2.0)  # 탐험가 다음 차례를 건너뛰어 동료 차례가 오게
 	var mate_turn: Array[bool] = [false]  # 동료 차례가 한 번이라도 왔는가 — 정해 둔 행동은 바로 끝나 b.current가 프레임 사이에 지나갈 수 있다(느린 CI에서 놓쳤다)
 	var on_turn := func(e: Dictionary) -> void:
-		if str(e.get("type", "")) == "turn" and e.get("unit") == mu:
+		if str(e.get("type", "")) in ["turn", "turn_end"] and e.get("unit") == mu:  # turn_end = 차례가 왔지만 적에게 기절당해 건너뜀(적 스킬은 무작위 — CI에서 그랬다)
 			mate_turn[0] = true
 	b.event.connect(on_turn)
 	_press(combat, Strings.t("combat.cmd_guard"))
