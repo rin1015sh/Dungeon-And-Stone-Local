@@ -74,6 +74,8 @@ func ring(s: ExploreSession, at: Vector2i, own: Dictionary = {}) -> void:
 		if hit:
 			g.alert_until = until
 			g.state = FieldMonsters.STATE_CHASE
+			s.fx.emit("bang", g.pos, g.id)
+	s.fx.emit("rings", at, -1)  # 경보를 낸 자리에서 퍼지는 고리
 	if cfg.has("sound"):
 		s.sound.emit(JsonUtil.get_str(cfg, "sound"), at)
 	FieldFeatureAct.say_line(s, JsonUtil.get_str(cfg, "line"), {"pos": at}, "danger")

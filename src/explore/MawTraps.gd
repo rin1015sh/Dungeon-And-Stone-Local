@@ -65,6 +65,7 @@ func tick(s: ExploreSession, sec: float) -> void:
 func _catch(s: ExploreSession, i: int) -> void:
 	busy = true
 	shut_until[i] = t + JsonUtil.get_float(def, "cooldown_sec", 4.0)
+	s.fx.emit("snap", cells[i], -1)
 	s.message.emit("explore.maw_caught", {}, "danger")
 	s.sound.emit("maw_snap", cells[i])
 	var heads := CoinToss.flip(s.db, s.rng, "maw")

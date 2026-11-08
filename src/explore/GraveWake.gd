@@ -61,6 +61,7 @@ func update(s: ExploreSession) -> bool:
 	var g := s.monsters.add_fixed([mid], at)
 	if g == null:
 		return false
+	s.fx.emit("burst", at, -1)
 	s.message.emit(JsonUtil.get_str(_def, "line", "explore.grave_wakes"), {}, "danger")
 	s.sound.emit(JsonUtil.get_str(_def, "sound", "boss_reveal"), pos)
 	return true

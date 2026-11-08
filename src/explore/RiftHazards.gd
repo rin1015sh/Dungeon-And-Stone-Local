@@ -77,6 +77,7 @@ func on_step(cs: ExploreSession, p: Vector2i) -> Variant:
 	for q: Variant in hd["cells"]:
 		at.erase(q)
 	_show(cs, hd)  # 판정이 끝나도 함정·위험은 보이는 채로 남는다
+	cs.fx.emit("snap", p, -1)  # 덫 · 위험이 튀는 순간(글 대신 — 결과 문구는 남는다: 무엇에 다쳤는지 화면으론 모른다)
 	var ok := true
 	var how := "pass"
 	var key := JsonUtil.get_str(hd, "pass_message", "explore.hazard_pass")

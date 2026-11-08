@@ -63,6 +63,7 @@ func on_enter(s: ExploreSession, cell: Vector2i) -> void:
 		return
 	var at := _sand_beside(s, cell)
 	var g := s.monsters.add_fixed(JsonUtil.get_array(sea, "monsters"), at)
+	s.fx.emit("burst", at, -1)  # 모래가 솟구친다
 	if g == null:
 		return
 	g.alert_until = s.clock.total_hours + 1.0
@@ -86,6 +87,7 @@ func on_kills(s: ExploreSession, killed: Array[String]) -> void:
 	var at: Vector2i = marks.get(JsonUtil.get_str(dw, "at_mark"), s.pos + Vector2i(6, 0))
 	if s.monsters_enabled:
 		_worm = s.monsters.add_fixed([JsonUtil.get_str(dw, "monster", "deathworm")], at)
+	s.fx.emit("burst", at, -1)
 	if dw.has("sound"):
 		s.sound.emit(JsonUtil.get_str(dw, "sound"), at)
 	FieldFeatureAct.say_line(s, JsonUtil.get_str(dw, "line"), {"pos": at}, "danger")

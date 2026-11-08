@@ -82,6 +82,11 @@ func _build() -> void:
 	queue_redraw()
 
 
+## 앞장선 마리의 그림 키(px — 머리 위 표시 FieldFx).
+func head_px() -> float:
+	return _members[0].size().y if not _members.is_empty() else 40.0
+
+
 ## 등불을 든 몬스터(behavior.light {radius_m, color} — 2층 묘지기): 어둠 속에서도 멀리서 빛이 보인다.
 func _add_light() -> void:
 	var old := get_node_or_null("CarriedLight")

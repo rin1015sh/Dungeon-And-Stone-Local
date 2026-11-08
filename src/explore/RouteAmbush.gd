@@ -91,6 +91,8 @@ static func _spring(s: ExploreSession, cell: Vector2i, d: Dictionary) -> void:
 		return
 	g.alert_until = s.clock.total_hours + 1.0
 	g.state = FieldMonsters.STATE_CHASE
+	s.fx.emit("burst", g.pos, -1)  # 땅 · 벽 · 덤불이 터지며 솟아오른다(글 대신 — 문구는 silent)
+	s.fx.emit("bang", g.pos, g.id)
 	if d.has("sound"):
 		s.sound.emit(JsonUtil.get_str(d, "sound"), g.pos)
 	FieldFeatureAct.say_line(s, JsonUtil.get_str(d, "line"), {"pos": cell}, "danger")

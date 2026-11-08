@@ -202,6 +202,15 @@ func _run() -> void:
 			await _frames(4)
 		if _args.has("reveal"):
 			ExploreDebug.reveal(explore.session)
+		if _args.has("fx"):  # --fx=<monster id>: 곁에 매복을 일으켜 지도 위 움직임(FieldFx — 흙먼지 · "!" · 고리 · 별)을 본다
+			var fs := explore.session
+			fs.monsters_enabled = true
+			fs.monsters.hold_contacts(fs.clock.total_hours + 50.0)  # 그림만 본다(전투로 넘어가지 않게)
+			RouteAmbush._spring(fs, fs.pos, {"monsters": [str(_args["fx"])]})
+			var ng: FieldMonsters.Group = fs.monsters.groups[fs.monsters.groups.size() - 1]
+			fs.fx.emit("rings", fs.pos + Vector2i(-3, 0), -1)
+			fs.fx.emit("stars", ng.pos, ng.id)
+			await _frames(int(_args.get("fx_frames", "10")))
 		if _args.has("parties"):  # 곁에 신참 파티·약탈자·갓 죽은 탐험가(FieldParties 맵 그림 확인)
 			var ps := explore.session
 			var seen := func(c: Vector2i) -> bool: return ps.map.visible_now[ps.map.idx(c)] != 0 and (c - ps.pos).length_squared() >= 6

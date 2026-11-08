@@ -125,6 +125,8 @@ func _follow_run(s: ExploreSession, g: FieldMonsters.Group, beh: Dictionary) -> 
 				g.set_meta(STUNNED, s.clock.total_hours + JsonUtil.get_float(d, "stun_hours", 0.15))
 				g.held_until = s.clock.total_hours + JsonUtil.get_float(d, "stun_hours", 0.15)
 				FieldFeatureAct.say_line(s, JsonUtil.get_str(d, "line", "field.boar_wall"), {"pos": g.pos}, "info")
+				s.fx.emit("burst", g.pos, -1)
+				s.fx.emit("stars", g.pos, g.id)
 	g.state = FieldMonsters.STATE_CHASE
 	g.alert_until = s.clock.total_hours + 0.3
 
@@ -143,6 +145,8 @@ func _caw(s: ExploreSession, g: FieldMonsters.Group, d: Dictionary) -> void:
 		if fams.is_empty() or fams.any(func(f: Variant) -> bool: return fam.has(f)):
 			o.alert_until = until
 			o.state = FieldMonsters.STATE_CHASE
+			s.fx.emit("bang", o.pos, o.id)
+	s.fx.emit("rings", g.pos, -1)
 	if d.has("sound"):
 		s.sound.emit(JsonUtil.get_str(d, "sound"), g.pos)
 	FieldFeatureAct.say_line(s, JsonUtil.get_str(d, "line"), {"pos": g.pos}, "danger")

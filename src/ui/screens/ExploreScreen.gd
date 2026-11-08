@@ -92,6 +92,9 @@ func _ready() -> void:
 	session.party_met.connect(_on_party_met)
 	session.tiles_changed.connect(_view.cells_changed)
 	session.sound.connect(func(key: String, _at: Vector2i) -> void: AudioBus.play_sfx(key))
+	session.fx.connect(func(kind: String, at: Vector2i, gid: int) -> void:
+		if _view != null:
+			_view.play_fx(kind, at, gid))
 	session.coin_toss.connect(_on_coin_toss)
 	session.coin_guess.connect(_on_coin_guess)
 	session.lord_rising.connect(_on_lord_rising)

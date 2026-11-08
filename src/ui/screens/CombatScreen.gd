@@ -116,8 +116,19 @@ func _notify(key: String, args: Dictionary, kind: String) -> void:
 		NoticeRoute.BANNER:  # 스킬·아이템 이름 = 위쪽 작은 알림창(넘기지 않는다)
 			EventBus.log_message.emit(text, kind)
 			_banner.show_text(Strings.t(_route.banner_key(key), args))
+		NoticeRoute.FLOAT:  # 저항 · 면역 · 효과 없음 = 그 개체 위에 짧은 글(회피 숫자처럼)
+			EventBus.log_message.emit(text, kind)
+			_float_on(_route.float_of(key), args)
 		_:
 			_say(text, kind)
+
+
+func _float_on(f: Dictionary, args: Dictionary) -> void:
+	var who := str(args.get(JsonUtil.get_str(f, "on", "name"), ""))
+	for u: Combatant in _stage.views():
+		if u.label() == who:
+			(_stage.views()[u] as BattlerView).float_text(Strings.t(JsonUtil.get_str(f, "text")), UiTheme.color("dmg_none"), true)
+			return
 
 
 ## 전투 안내: 아래 대화창 + 탐험 기록.

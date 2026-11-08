@@ -268,6 +268,22 @@ func cells_changed(r: Rect2i) -> void:
 	stream.redraw_rect(r.grow(1))
 
 
+## 짧은 움직임(FieldFx — 세션 신호 fx): 무리에 붙는 것(bang · stars)은 그 무리 그림을 따라가고, 나머지는 그 칸에.
+func play_fx(kind: String, at: Vector2i, group_id: int = -1) -> void:
+	var colors := JsonUtil.get_dict(_cfg, "field_fx")
+	var fx := FieldFx.new()
+	var mv := monster_view(group_id) if group_id >= 0 else null
+	if mv == null and group_id >= 0:
+		sync_monsters()  # 방금 생긴 무리(매복 · 무덤) — 그림을 먼저 만든다
+		mv = monster_view(group_id)
+	fx.setup(kind, tile, mv.head_px() if mv != null else tile * 1.2, colors)
+	if mv != null and kind in ["bang", "stars"]:
+		mv.add_child(fx)
+	else:
+		fx.position = feet_of(Kinematics.center_of(at)) if mv == null else mv.position
+		add_child(fx)
+
+
 ## 무리 그림(없으면 null — 보스 등장 연출).
 func monster_view(group_id: int) -> MonsterView:
 	return _monster_views.get(group_id) as MonsterView

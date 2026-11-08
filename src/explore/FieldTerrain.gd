@@ -62,6 +62,7 @@ func on_enter(s: ExploreSession, from: Vector2i, to: Vector2i) -> void:
 		var marks: Dictionary = s.map.anchors.get("marks", {})
 		if marks.has(mark):
 			_collapse(s, to)
+			s.fx.emit("burst", to, -1)
 			s.message.emit("explore.ground_gives", {}, "danger")
 			s.sound.emit("crumble", to)
 			s.relocate(marks[mark])

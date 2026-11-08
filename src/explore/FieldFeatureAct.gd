@@ -97,6 +97,8 @@ static func _spawn(s: ExploreSession, pos: Vector2i, sp: Dictionary) -> void:
 		return
 	g.alert_until = s.clock.total_hours + 1.0
 	g.state = FieldMonsters.STATE_CHASE
+	s.fx.emit("burst", g.pos, -1)
+	s.fx.emit("bang", g.pos, g.id)
 	say_line(s, JsonUtil.get_str(sp, "line"), {"pos": pos}, "danger")
 
 

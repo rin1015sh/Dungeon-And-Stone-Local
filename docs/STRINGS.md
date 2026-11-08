@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1137줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1139줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -541,10 +541,10 @@
 - `combat.reason_unknown` 그 기술은 모른다.
 - `combat.reason_no_target` 대상이 더는 그 자리에 없다.
 - `combat.talk_no_reply` {source}이(가) 말을 건넸지만 {target}은(는) 알아듣는 기색이 없다.
-- `combat.talk_no_reply_beast` {source}의 목소리에 {target}이(가) 이빨을 드러내며 낮게 으르렁거린다.
+- `combat.talk_no_reply_beast` {source}의 말에 {target}이(가) 이빨을 드러낸다.
 - `combat.talk_no_reply_undead` {target}의 텅 빈 눈은 {source}을(를) 먹잇감으로만 본다.
 - `combat.talk_no_reply_construct` {target}은(는) 돌처럼 아무 대답이 없다.
-- `combat.talk_no_reply_humanoid` {target}이(가) 알 수 없는 소리로 끽끽대며 단검을 고쳐 쥔다.
+- `combat.talk_no_reply_humanoid` {target}이(가) 알아듣지 못한 듯 단검을 고쳐 쥔다.
 - `combat.talk_waver` {source}의 말에 {target}이(가) 머뭇거린다.
 - `combat.talk_ignore` {target}은(는) {source}의 말을 흘려듣는다.
 - `combat.talk_provoke` {source}의 말이 {target}을(를) 자극했다. 서둘러 덤벼든다!
@@ -553,6 +553,8 @@
 - `combat.info_monster` [조사] {name} — {grade}등급 {family}. 근력 {str} · 민첩 {agi} · 물리내성 {p_res} · 항마력 {m_res}. {desc}
 - `combat.info_ally` [조사] {name} — 생명력 {hp}%.
 - `combat.float_immune` 면역
+- `combat.float_resist` 저항
+- `combat.float_no_effect` 효과 없음
 - `combat.float_blocked` 막힘
 - `combat.float_miss` 회피
 - `combat.horde_left` +{n}
@@ -675,7 +677,7 @@
 - `combat.bomber_fuse_fire` {name}의 지연 폭탄이 터진다!
 - `combat.king_jump_warn` {name}이(가) 몸을 잔뜩 웅크린다 — 천장까지 뛰어오를 기세다!
 - `combat.king_jump_fire` {name}이(가) 떨어져 내리며 모두를 짓누른다!
-- `combat.bomber_intro` {name}이(가) 폭약 주머니를 흔들며 낄낄댄다.
+- `combat.bomber_intro` {name}이(가) 폭약 주머니를 흔들며 이를 드러낸다.
 - `combat.king_slime_intro` 공동 한가운데에서 {name}이(가) 출렁인다.
 - `combat.king_slime_split` {name}의 몸이 찢어지며 슬라임들이 떨어져 나온다!
 - `combat.revive` {name}이(가) 다시 일어난다!
@@ -1311,7 +1313,7 @@
 - `field.dig_grave_wake` 흙 속에서 손이 먼저 올라왔다.
 - `field.sealed_tomb` 쇠창살 문에 사슬이 몇 겹으로 감겨 있다. 자물쇠 구멍만 새것처럼 반들거린다.
 - `field.sealed_tomb_locked` 사슬이 단단히 잠겨 있다. 맞는 열쇠가 있어야 한다.
-- `field.sealed_tomb_open` 자물쇠가 비명처럼 돌아갔다. 안쪽 관대 위에 부장품이 그대로 놓여 있다.
+- `field.sealed_tomb_open` 자물쇠가 뻑뻑하게 돌아갔다. 안쪽 관대 위에 부장품이 그대로 놓여 있다.
 - `field.sealed_tomb_guard` 관대 둘레의 뼈들이 하나씩 일어섰다.
 - `field.sacristy` 무너진 제단 뒤 작은 함 안에 녹슨 열쇠 하나와 타다 남은 초가 들어 있다.
 - `field.watch_post` 무너진 계단을 딛고 망루 위에 섰다. 안개 너머로 길과 불빛이 내려다보인다.
@@ -1323,7 +1325,7 @@
 - `field.throat_wall` 벽에서 굵은 힘줄이 늘어져 있다. 위쪽에서 희미하게 바깥바람이 새어 든다.
 - `field.throat_climb` 미끄러운 힘줄을 붙잡고 기어올랐다. 입술 사이로 몸을 밀어내자 차가운 공기가 닿았다.
 - `field.pass_gate` 쇠창살 문 가운데 종 세 개가 새겨진 판이 박혀 있다. 셋 다 녹이 슬어 검다.
-- `field.gate_open` 멀리 고개 쪽에서 쇠사슬 풀리는 소리가 길게 이어진다.
+- `field.gate_open` 고개를 막고 있던 쇠문이 열렸다.
 - `field.grave_stone` 진창 위에 갓 깎은 듯한 비석이 서 있다. 새겨진 이름은 없고, 손을 대면 돌이 차갑게 떨린다.
 - `field.grave_stone_break` 비석을 걷어차 쓰러뜨렸다. 진창에 처박힌 돌 아래에서 차가운 기운이 빠져나가 흩어졌다.
 - `field.grave_stone_break_fail` 한참을 내리쳐도 비석은 꿈쩍하지 않는다.
@@ -1354,7 +1356,7 @@
 - `field.wolf_tracks` 젖은 바닥에 발톱 넷 달린 발자국이 줄지어 찍혀 있다.
 - `field.wolf_tracks_none` 발자국은 바위 틈에서 흐지부지 끊겼다.
 - `field.wolf_kill` 반쯤 뜯긴 짐승 뼈 사이에서 쓸 만한 것을 골라냈다.
-- `field.wolf_kill_back` 등 뒤에서 낮게 그르렁거리는 기척이 다가온다.
+- `field.wolf_kill_back` 등 뒤로 무언가 다가오는 기척이 느껴진다.
 - `field.wolf_kill_done` 남은 것은 핥아 낸 뼈뿐이다.
 - `field.wolf_den_search` 물어다 놓은 것들 틈에 사람의 물건이 섞여 있다.
 - `field.gnome_marks_none` 표지가 가리키던 곳은 이미 비어 있다.
@@ -1368,9 +1370,9 @@
 - `field.lookout_climb` 봉화대 꼭대기에 올라섰다. 굴 너머로 불빛 몇 점이 흩어져 있다.
 - `field.goblin_kennel` 말뚝에 끊긴 사슬이 감겨 있다. 사슬 끝에 늑대 털이 뭉쳐 있다.
 - `field.bell_stuck` 녹이 엉겨 붙은 종은 꿈쩍도 하지 않는다.
-- `field.bell_risers` 울림이 가라앉기도 전에 둘레 무덤의 흙이 갈라진다.
+- `field.bell_risers` 종이 멈추기도 전에 둘레 무덤의 흙이 갈라진다.
 - `field.bell_no_clapper` 종 안이 텅 비어 있다. 종 혀가 빠져 있다.
-- `field.bell_day` 종을 밀어도 둔한 쇳덩이처럼 아무 울림이 없다.
+- `field.bell_day` 종을 밀어도 둔한 쇳덩이처럼 흔들리기만 한다.
 - `field.ringer_coffin` 뚜껑에 종 모양이 새겨진 석관이다.
 - `field.ringer_coffin_open` 뼈만 남은 팔이 무언가를 가슴에 꼭 끌어안고 있다.
 - `field.grave_stone_d2` 비석 밑동의 진흙이 안에서 밀려 나온 듯 부풀어 있다.
@@ -1492,8 +1494,8 @@
 
 ### `field.bell_ring`
 
-- `field.bell_ring.1` 녹슨 종이 무겁게 흔들린다. 울림이 늪 너머까지 길게 번진다.
-- `field.bell_ring.2` 종 혀가 몇 번 헛돌다 맞는다. 낮은 울림에 땅속 어딘가가 들썩인다.
+- `field.bell_ring.1` 녹슨 종이 무겁게 흔들린다.
+- `field.bell_ring.2` 종 혀가 몇 번 헛돌다 맞는다. 발밑 땅이 가늘게 들썩인다.
 
 ### `field.ambush`
 
@@ -1504,7 +1506,7 @@
 ### `field.ambush_goblin`
 
 - `field.ambush_goblin.1` 덤불이 흔들리더니 고블린들이 튀어나온다.
-- `field.ambush_goblin.2` 나무 뒤에서 낄낄거리는 소리와 함께 고블린이 덮친다.
+- `field.ambush_goblin.2` 나무 뒤에서 고블린이 이를 드러내며 덮친다.
 
 ### `field.wolf_tracks_follow`
 
@@ -1518,7 +1520,7 @@
 
 ### `field.ambush_wolf`
 
-- `field.ambush_wolf.1` 협곡 벽 그늘에서 낮은 그르렁거림과 함께 그림자가 튀어나온다.
+- `field.ambush_wolf.1` 협곡 벽 그늘에서 그림자가 튀어나온다.
 - `field.ambush_wolf.2` 바위 뒤에 엎드려 있던 짐승들이 한꺼번에 몸을 일으킨다.
 
 ### `field.ambush_mole`

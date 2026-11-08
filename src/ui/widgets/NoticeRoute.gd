@@ -9,15 +9,18 @@ extends RefCounted
 const SILENT := "silent"
 const DIALOG := "dialog"
 const BANNER := "banner"
+const FLOAT := "float"  ## 전투 무대에서 그 개체 위에 짧은 글로 떠오른다(render.json ui.notice.float — 저항 · 면역 · 효과 없음, 2026-11-08)
 
 var _silent: Dictionary = {}
 var _banner: Dictionary = {}  # 문구 키 -> 알림창에 띄울 문구 키(render.json ui.notice.banner)
+var _float: Dictionary = {}  # 문구 키 -> {"text": 떠오를 문구 키, "on": 개체 이름 인자}(render.json ui.notice.float)
 
 
 func _init(db: GameDatabase) -> void:
 	for k: Variant in JsonUtil.get_array(UiTheme.ui_dict("notice"), "silent"):
 		_silent[str(k)] = true
 	_banner = JsonUtil.get_dict(UiTheme.ui_dict("notice"), "banner")
+	_float = JsonUtil.get_dict(UiTheme.ui_dict("notice"), "float")
 	if db == null:
 		return
 	for e: Variant in db.get_collection("events").values():
@@ -31,6 +34,8 @@ func of(key: String) -> String:
 	var base := key.get_slice(".", 0) + "." + key.get_slice(".", 1) if key.count(".") >= 2 else key  # 번호 변형(field.x.2)은 앞 두 마디로
 	if _banner.has(key):
 		return BANNER
+	if _float.has(key):
+		return FLOAT
 	return SILENT if _silent.has(key) or _silent.has(base) else DIALOG
 
 
@@ -39,5 +44,11 @@ func banner_key(key: String) -> String:
 	return str(_banner.get(key, ""))
 
 
+## 떠오를 문구 {"text", "on"}(float가 아니면 빈 사전).
+func float_of(key: String) -> Dictionary:
+	return JsonUtil.get_dict(_float, key)
+
+
+## 대화창에 띄우지 않는가(silent · 전투 무대 위 짧은 글 — 전투 밖에서는 기록에만).
 func silent(key: String) -> bool:
-	return of(key) == SILENT
+	return of(key) in [SILENT, FLOAT]
