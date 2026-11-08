@@ -16,7 +16,9 @@
           "amount": 4
         }
       ],
-      "done": "field.drip_done"
+      "done": "field.drip_done",
+      "fx": "splash",
+      "sound": "water_drip"
     }
   ],
   "source": "placeholder"

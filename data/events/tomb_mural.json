@@ -11,7 +11,8 @@
       "limit": "once",
       "hours": 0.2,
       "line": "field.tomb_mural",
-      "reveal_traps": 75
+      "reveal_traps": 75,
+      "sound": "page_turn"
     }
   ],
   "source": "placeholder",

@@ -28,7 +28,8 @@
         "hours": 0.5
       },
       "clear": true,
-      "clear_tile": "gm_rock"
+      "clear_tile": "gm_rock",
+      "fx": "burst"
     }
   ],
   "source": "placeholder",

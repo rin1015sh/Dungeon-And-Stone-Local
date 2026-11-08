@@ -16,7 +16,8 @@
       "limit": "day",
       "hours": 0.25,
       "reveal": 48,
-      "line": "field.watch_post"
+      "line": "field.watch_post",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

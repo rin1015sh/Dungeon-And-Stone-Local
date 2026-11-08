@@ -44,7 +44,9 @@
         }
       ],
       "clear": true,
-      "clear_tile": "f2g_grass"
+      "clear_tile": "f2g_grass",
+      "fx": "dust",
+      "sound": "chest_open"
     }
   ],
   "source": "placeholder",

@@ -52,7 +52,9 @@
         ],
         "chance": 0.35,
         "line": "field.sarcophagus_wake"
-      }
+      },
+      "fx": "dust",
+      "sound": "stone_door"
     }
   ],
   "source": "placeholder",

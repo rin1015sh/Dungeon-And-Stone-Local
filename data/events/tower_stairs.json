@@ -10,7 +10,8 @@
       "limit": "day",
       "hours": 0.3,
       "reveal": 40,
-      "line": "field.tower_climb"
+      "line": "field.tower_climb",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

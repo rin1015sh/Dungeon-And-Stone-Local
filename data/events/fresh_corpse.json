@@ -79,7 +79,9 @@
           "chance": 0.85
         }
       ],
-      "done": "field.corpse_done"
+      "done": "field.corpse_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

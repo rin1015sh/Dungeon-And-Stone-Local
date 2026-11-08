@@ -30,7 +30,8 @@
         "hours": 0.5
       },
       "done": "field.gnome_stash_done",
-      "sound": "gnome_alarm"
+      "sound": "gnome_alarm",
+      "fx": "dust"
     }
   ],
   "source": "placeholder",

@@ -58,7 +58,9 @@
         "line": "field.dig_grave_wake"
       },
       "clear": true,
-      "clear_tile": "f2d_dug"
+      "clear_tile": "f2d_dug",
+      "fx": "dig",
+      "sound": "surface"
     }
   ],
   "source": "placeholder",

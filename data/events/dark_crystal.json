@@ -22,7 +22,9 @@
           "max_times": 1
         }
       ],
-      "clear": true
+      "clear": true,
+      "fx": "glint",
+      "sound": "magic_circle"
     }
   ],
   "source": "original",

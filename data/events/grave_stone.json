@@ -22,7 +22,9 @@
       },
       "line": "field.grave_stone_break",
       "fail_line": "field.grave_stone_break_fail",
-      "clear": true
+      "clear": true,
+      "fx": "burst",
+      "sound": "rock_break"
     }
   ],
   "source": "placeholder",

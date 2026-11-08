@@ -23,7 +23,8 @@
         "monster": "dullahan",
         "radius": 40,
         "hours": 1.0
-      }
+      },
+      "fx": "rings"
     }
   ],
   "standing": true,

@@ -45,7 +45,9 @@
         ],
         "chance": 0.5,
         "line": "field.sarcophagus_wake"
-      }
+      },
+      "fx": "dust",
+      "sound": "stone_door"
     }
   ],
   "standing": true,

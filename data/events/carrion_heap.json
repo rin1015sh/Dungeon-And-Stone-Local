@@ -68,7 +68,8 @@
         "hours": 0.5
       },
       "sound": "undead_moan",
-      "done": "field.ghoul_feast_done"
+      "done": "field.ghoul_feast_done",
+      "fx": "dust"
     }
   ],
   "source": "placeholder",

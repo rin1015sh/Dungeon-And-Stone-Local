@@ -61,7 +61,9 @@
           "chance": 0.2
         }
       ],
-      "done": "field.wolf_den_done"
+      "done": "field.wolf_den_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

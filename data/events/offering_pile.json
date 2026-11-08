@@ -14,7 +14,9 @@
         "count": 1
       },
       "missing": "field.offering_no_stone",
-      "done": "field.offering_offered"
+      "done": "field.offering_offered",
+      "fx": "glint",
+      "sound": "coin_drop"
     },
     {
       "id": "take",
@@ -38,7 +40,9 @@
           "chance": 0.25
         }
       ],
-      "done": "field.offering_taken"
+      "done": "field.offering_taken",
+      "fx": "glint",
+      "sound": "coin_drop"
     },
     {
       "id": "offer_mushroom",
@@ -50,7 +54,9 @@
         "count": 3
       },
       "missing": "field.offering_no_mushroom",
-      "done": "field.offering_mushroom_done"
+      "done": "field.offering_mushroom_done",
+      "fx": "glint",
+      "sound": "item_pick"
     },
     {
       "id": "answer",
@@ -72,7 +78,9 @@
       ],
       "missing": "field.offering_nothing",
       "wait": "field.offering_wait",
-      "done": "field.offering_answered"
+      "done": "field.offering_answered",
+      "fx": "glint",
+      "sound": "magic_circle"
     }
   ],
   "source": "placeholder",

@@ -8,7 +8,8 @@
       "id": "read",
       "name_ko": "읽는다",
       "limit": "always",
-      "line": "field.epitaph"
+      "line": "field.epitaph",
+      "sound": "page_turn"
     }
   ],
   "source": "placeholder",

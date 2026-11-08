@@ -23,7 +23,8 @@
         "monster": "skeleton",
         "radius": 24,
         "hours": 0.5
-      }
+      },
+      "fx": "rings"
     }
   ],
   "standing": true,

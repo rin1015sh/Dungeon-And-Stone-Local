@@ -17,7 +17,8 @@
       "limit": "always",
       "hours": 0.25,
       "line": "field.throat_climb",
-      "goto": "maw_return"
+      "goto": "maw_return",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

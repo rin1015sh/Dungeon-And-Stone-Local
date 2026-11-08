@@ -27,7 +27,8 @@
       "limit": "day",
       "hours": 0.25,
       "reveal": 28,
-      "line": "field.lookout_climb"
+      "line": "field.lookout_climb",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

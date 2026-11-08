@@ -39,7 +39,9 @@
           ],
           "chance": 0.6
         }
-      ]
+      ],
+      "fx": "dust",
+      "sound": "chest_open"
     }
   ],
   "source": "placeholder",

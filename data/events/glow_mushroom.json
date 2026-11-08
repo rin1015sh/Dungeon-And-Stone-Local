@@ -18,7 +18,9 @@
           ]
         }
       ],
-      "clear": true
+      "clear": true,
+      "fx": "glint",
+      "sound": "item_pick"
     }
   ],
   "source": "placeholder"

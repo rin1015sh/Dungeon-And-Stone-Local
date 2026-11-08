@@ -9,7 +9,7 @@ extends RefCounted
 ##    "learn_stats": 몬스터 id(도감에 생명력·스탯이 드러난다), "alert": {"monster", "radius", "hours"}(근처 그 몬스터 무리가 쫓아온다),
 ##    "clear": true(하고 나면 요소가 사라진다 — 줍는 것), "done"·"missing" 문구 키(못 하는 이유),
 ##    "after": {"action", "hours"}(그 행동을 하고 그만큼 지나야 — 아직이면 "wait" 문구, 안 했으면 missing),
-##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound),
+##    "sound": 소리 키(data/audio.json sfx — 글 대신 소리로, ExploreSession.sound), "fx": 대상 쪽 움직임(FieldFx — dust · dig · splash · glint · rings · burst),
 ##    "spawn": {"monsters": [id …], "chance", "line"}(그 확률로 바로 옆에 그 무리가 일어나 쫓아온다 — 무덤 파기, FL13),
 ##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13), "goto": 표시 이름(map.anchors.marks — 계단으로 옮겨 선다, FL14),
 ##    "goal": 층 목표 이름(FloorGoal — 하나 센다, 망자의 땅 종 울리기 FL18),
@@ -62,6 +62,8 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 	say_line(s, FieldClues.day_key(s, line) if JsonUtil.get_bool(a, "line_day") else line, e, "info", JsonUtil.get_bool(a, "line_zone"))
 	if a.has("sound"):
 		s.sound.emit(JsonUtil.get_str(a, "sound"), e["pos"])
+	if a.has("fx"):  # 대상 쪽 변화(FieldFx — 먼지 · 흙 · 물보라 · 반짝임 · 고리): 글 대신 화면으로(2026-11-08, UI59)
+		s.fx.emit(JsonUtil.get_str(a, "fx"), e["pos"], -1)
 	_give(s, JsonUtil.get_array(a, "give"))
 	_effects(s, JsonUtil.get_array(a, "effects"))
 	var learn := JsonUtil.get_str(a, "learn_stats")

@@ -46,7 +46,9 @@
           "chance": 0.05
         }
       ],
-      "done": "field.goblin_camp_done"
+      "done": "field.goblin_camp_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder"

@@ -50,7 +50,9 @@
           "chance": 0.35
         }
       ],
-      "done": "field.ghoul_feast_done"
+      "done": "field.ghoul_feast_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder"

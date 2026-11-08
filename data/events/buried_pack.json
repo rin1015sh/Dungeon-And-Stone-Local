@@ -49,7 +49,9 @@
           ],
           "chance": 0.3
         }
-      ]
+      ],
+      "fx": "dig",
+      "sound": "surface"
     }
   ],
   "source": "placeholder",

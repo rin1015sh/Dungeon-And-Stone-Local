@@ -22,7 +22,9 @@
           "item": "blood_chalice"
         }
       ],
-      "done": "field.blood_well_done"
+      "done": "field.blood_well_done",
+      "fx": "glint",
+      "sound": "dark_sting"
     },
     {
       "id": "look",

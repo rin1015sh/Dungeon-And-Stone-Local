@@ -45,7 +45,9 @@
         "chance": 0.3,
         "line": "field.wolf_kill_back"
       },
-      "done": "field.wolf_kill_done"
+      "done": "field.wolf_kill_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

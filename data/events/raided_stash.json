@@ -30,7 +30,9 @@
           "chance": 0.5
         }
       ],
-      "done": "field.gnome_stash_done"
+      "done": "field.gnome_stash_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder",

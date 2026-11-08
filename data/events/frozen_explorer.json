@@ -61,7 +61,8 @@
         "line": "field.frozen_explorer_thaw"
       },
       "clear": true,
-      "clear_tile": "ice_floor"
+      "clear_tile": "ice_floor",
+      "fx": "burst"
     }
   ],
   "source": "placeholder",

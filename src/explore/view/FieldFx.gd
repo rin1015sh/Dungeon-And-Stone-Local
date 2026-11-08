@@ -6,9 +6,10 @@ extends Node2D
 ##   burst = 땅 · 벽 · 모래가 터지며 흙먼지(매복 · 무덤에서 일어남 · 샌드웜 · 발밑이 꺼짐)
 ##   snap  = 덫이 튐(바닥에서 솟는 날 · 먼지)
 ##   stars = 머리 위를 도는 별(멧돼지가 벽에 박혀 비틀거림)
+##   dust · dig · splash · glint = 동굴 요소를 살핀 대상 쪽 변화(뒤지기 · 열기 먼지 / 파낸 흙덩이 / 샘 물보라 / 마석 · 버섯 · 수정 반짝임 — UI59)
 ## 그림은 코드로(텍스처 없음), 색은 render.json view.field_fx. 끝나면 스스로 사라진다.
 
-const LIFE := {"bang": 1.4, "rings": 1.6, "burst": 0.9, "snap": 0.6, "stars": 1.8}
+const LIFE := {"bang": 1.4, "rings": 1.6, "burst": 0.9, "snap": 0.6, "stars": 1.8, "dust": 0.7, "dig": 0.9, "splash": 0.7, "glint": 1.0}
 
 var kind: String = "bang"
 var head_px: float = 40.0   ## 머리 높이(무리 그림 키 — bang · stars)
@@ -67,6 +68,28 @@ func _draw() -> void:
 				var x := (i - 2) * tile * 0.18
 				draw_line(Vector2(x, 0), Vector2(x * 1.2, -tile * 0.55 * up), Color(col, 1.0 - k), 2.5)
 			draw_circle(Vector2.ZERO, tile * 0.5 * k, Color(col.darkened(0.5), 0.5 * (1.0 - k)))
+		"dust":  # 뒤지기 · 뚜껑 열기: 작은 먼지가 피어오른다
+			for s in _seeds:
+				var d := Vector2(s.x * 0.8, -s.y * 0.7) * tile * (0.2 + 0.6 * k)
+				draw_circle(d, tile * 0.16 * (1.0 - k * 0.5), Color(col, 0.75 * (1.0 - k)))
+		"dig":  # 파낸 흙덩이가 튀었다 떨어진다
+			for s in _seeds:
+				var x := s.x * tile * 0.7 * k
+				var y := -tile * 0.9 * s.y * sin(k * PI)
+				draw_circle(Vector2(x, y), tile * 0.07, Color(col.darkened(0.3), 1.0 - k * 0.6))
+		"splash":  # 물보라: 바깥으로 퍼지는 물방울과 고리
+			draw_arc(Vector2.ZERO, tile * 0.6 * k, 0.0, TAU, 24, Color(col, 0.7 * (1.0 - k)), 1.5)
+			for s in _seeds:
+				var d := Vector2(s.x, -s.y) * tile * 0.5 * sin(k * PI)
+				draw_circle(d + Vector2(0, -tile * 0.1), 2.4, Color(col, 1.0 - k))
+		"glint":  # 반짝임: 십자 빛이 피어올라 사라진다
+			for i in 3:
+				var kk := clampf(k * 1.5 - i * 0.2, 0.0, 1.0)
+				var c := Vector2((i - 1) * tile * 0.25, -tile * (0.3 + 0.5 * kk))
+				var r := 8.0 * sin(kk * PI)
+				draw_line(c - Vector2(r, 0), c + Vector2(r, 0), Color(col, 1.0 - kk), 2.0)
+				draw_line(c - Vector2(0, r), c + Vector2(0, r), Color(col, 1.0 - kk), 2.0)
+				draw_circle(c, 2.0 * sin(kk * PI), Color(col, 1.0 - kk))
 		"stars":
 			var a2 := 1.0 if k < 0.8 else (1.0 - k) / 0.2
 			for i in 3:

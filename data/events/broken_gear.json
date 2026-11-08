@@ -67,7 +67,9 @@
           "chance": 0.03
         }
       ],
-      "done": "field.gear_done"
+      "done": "field.gear_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
     }
   ],
   "source": "placeholder"

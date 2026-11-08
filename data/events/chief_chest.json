@@ -44,7 +44,9 @@
         }
       ],
       "clear": true,
-      "clear_tile": "f2g_village"
+      "clear_tile": "f2g_village",
+      "fx": "dust",
+      "sound": "chest_open"
     }
   ],
   "source": "placeholder",

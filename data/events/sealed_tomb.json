@@ -61,7 +61,9 @@
         "line": "field.sealed_tomb_guard"
       },
       "clear": true,
-      "clear_tile": "f2d_bridge"
+      "clear_tile": "f2d_bridge",
+      "fx": "dust",
+      "sound": "iron_door_open"
     }
   ],
   "source": "placeholder",

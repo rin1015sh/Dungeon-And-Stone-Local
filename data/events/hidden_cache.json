@@ -40,7 +40,9 @@
           "chance": 0.25
         }
       ],
-      "done": "field.cache_done"
+      "done": "field.cache_done",
+      "fx": "dust",
+      "sound": "rock_break"
     }
   ],
   "source": "placeholder"

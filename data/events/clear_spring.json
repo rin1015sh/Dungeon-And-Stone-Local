@@ -19,7 +19,9 @@
           "status": "refreshed"
         }
       ],
-      "done": "field.spring_full"
+      "done": "field.spring_full",
+      "fx": "splash",
+      "sound": "water_drip"
     },
     {
       "id": "wash",
@@ -33,7 +35,9 @@
           "status": "bleeding"
         }
       ],
-      "missing": "field.spring_no_wound"
+      "missing": "field.spring_no_wound",
+      "fx": "splash",
+      "sound": "water_drip"
     },
     {
       "id": "fill",
@@ -49,7 +53,9 @@
           ]
         }
       ],
-      "done": "field.spring_filled"
+      "done": "field.spring_filled",
+      "fx": "splash",
+      "sound": "water_drip"
     }
   ],
   "source": "placeholder"
