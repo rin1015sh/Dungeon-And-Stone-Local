@@ -3,6 +3,13 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 웹 자동 배포(GitHub Actions) · 웹 빌드 시작 오류 고침
+- **범위 / 기준 / 테스트**: 사용자 "웹에서 플레이 테스트 — GitHub와 이어져 올리면 바로 바뀌게". 기준: main push → 검증 → 웹 내보내기 → 배포가 사람 손 없이. 테스트: 클라우드 리눅스에서 export_web.sh → Playwright(크로미움)로 타이틀 → 새 탐험가 → 동네 지도까지.
+- **한 일**: `.github/workflows/web.yml`(Godot · 웹 템플릿 캐시, check.sh, export_web.sh, artifact `web`, itch.io butler(`secrets.BUTLER_API_KEY` · `vars.ITCH_TARGET`) · GitHub Pages(`vars.DEPLOY_PAGES`)). DEPLOY.md §6.
+- **고친 것**: 웹 빌드가 시작하자마자 "데이터 검증 실패 24건"으로 멈췄다 — CityRules 요리 그림 검사가 `FileAccess.file_exists`(꾸러미에는 원본 .webp가 없다) → `ResourceLoader.exists`. 내보내기 include_filter에 `assets/*.json`(동네 바닥 · 실내 · 집 가림 색인이 빠져 있었다 — 동네 바닥이 안 나왔을 것). test_web 검사도 바꿈.
+- **확인**: check.sh 모두 통과, 웹 빌드로 동네 지도까지 캡처 확인. **워크플로 자체는 GitHub에서 아직 돌려 보지 않았다**(main에 들어간 뒤 사용자 설정과 함께).
+- **남은 것**: pck 198MB(itch.io 한 파일 200MB 한도에 거의 닿음 — 그림 가져오기를 손실 압축으로 바꾸면 크게 준다, 그림 질 확인 필요) · 첫 로딩이 길다.
+
 ### 2026-11-08 함정만 스탯 판정으로 되돌림(V29)
 - 사용자 "함정만 원래대로 스탯 판정으로 롤백". RiftHazards · 숲 덫 5종 · 균열 함정(빙하굴 · 탄광 다리/계단 · 묘) 데이터 · balance `rift.hazard_*` · 검증기 · 테스트(test_tomb · test_glacier · test_sub_stats)를 보스 동전 기술 커밋 때로 되돌렸다. 살피기 동전 · 광차 · 아귀 입 · 은닉처 조용한 동전은 그대로. check.sh 통과.
 

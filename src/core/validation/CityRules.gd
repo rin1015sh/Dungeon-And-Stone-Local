@@ -223,5 +223,5 @@ static func _meals(v: ValidatorBase) -> void:
 		elif not JsonUtil.get_str(dur, "unit") in MEAL_UNITS or JsonUtil.get_float(dur, "amount") <= 0.0:
 			v.err(w, "duration {amount > 0, unit: %s}" % [MEAL_UNITS])
 		var art := JsonUtil.get_str(m, "art")
-		if not art.is_empty() and not FileAccess.file_exists(art):
+		if not art.is_empty() and not ResourceLoader.exists(art):  # 웹 꾸러미에는 원본 .webp가 없다(가져온 그림만)
 			v.err(w, "요리 그림 '%s'이(가) 없다(tools/paint_meals.gd)" % art)

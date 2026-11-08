@@ -1,0 +1,101 @@
+# 웹 테스트 빌드: main에 올리면 검증 → 웹 내보내기 → itch.io(또는 GitHub Pages)에 자동 배포.
+# 설정법은 docs/DEPLOY.md §6. 저장소 변수(Settings → Secrets and variables → Actions):
+#   secrets.BUTLER_API_KEY + vars.ITCH_TARGET("계정/게임주소:html5")  → itch.io에 올린다
+#   vars.DEPLOY_PAGES = "true"                                          → GitHub Pages에 올린다(비공개 저장소는 유료 요금제 필요)
+#   vars.SKIP_CHECK = "true"                                            → 검증(tools/check.sh)을 건너뛴다
+name: web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Godot · 웹 템플릿 캐시
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-web-nothreads
+
+      - name: Godot 내려받기
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          base=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          mkdir -p ~/godot && cd ~/godot
+          curl -sSL -o g.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q g.zip && rm g.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+          T=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$T"
+          curl -sSL -o t.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -qoj t.tpz templates/web_nothreads_release.zip templates/web_nothreads_debug.zip templates/version.txt -d "$T"
+          rm t.tpz
+
+      - name: 검증(tools/check.sh)
+        if: vars.SKIP_CHECK != 'true'
+        run: GODOT=~/godot/godot bash tools/check.sh
+
+      - name: 웹 내보내기
+        run: |
+          GODOT=~/godot/godot bash tools/export_web.sh
+          echo "${GITHUB_SHA::7} $(date -u +%F' '%H:%M)UTC" > build/web/version.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: build/web
+          retention-days: 7
+
+  itch:
+    needs: build
+    if: vars.ITCH_TARGET != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: web
+          path: web
+      - name: butler로 itch.io에 올리기
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          curl -sSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d butler && chmod +x butler/butler
+          ./butler/butler push web "${{ vars.ITCH_TARGET }}" --userversion "${GITHUB_SHA::7}"
+
+  pages:
+    needs: build
+    if: vars.DEPLOY_PAGES == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: web
+          path: web
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deploy
+        uses: actions/deploy-pages@v4

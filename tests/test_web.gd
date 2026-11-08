@@ -46,8 +46,7 @@ func test_web_export_preset() -> void:
 	if web.is_empty():
 		return
 	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("data/*.json"), "데이터 JSON을 싣는다")
-	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("assets/monsters/index.json"), "몬스터 그림 몸 높이 색인을 싣는다")
-	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("assets/party/index.json"), "탐험가 그림 몸 높이 색인을 싣는다")
+	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("assets/*.json"), "그림 색인 JSON(몸 높이 · 동네 바닥 · 실내 · 집 가림)을 싣는다")
 	assert_false(bool(cfg.get_value(web + ".options", "variant/thread_support", true)), "스레드 끔(SharedArrayBuffer 불필요)")
 
 

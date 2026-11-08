@@ -71,4 +71,4 @@ func test_monster_walk_sheets_load() -> void:
 
 ## 웹 내보내기에 몬스터 시트 색인이 들어간다(FileAccess로 읽는 json은 include_filter에 있어야 한다).
 func test_sheet_index_exported() -> void:
-	assert_true(FileAccess.get_file_as_string("res://export_presets.cfg").contains("assets/actors/monsters/sheets.json"), "export_presets include_filter")
+	assert_true(FileAccess.get_file_as_string("res://export_presets.cfg").contains("assets/*.json"), "export_presets include_filter(시트 색인 sheets.json)")
