@@ -1,6 +1,7 @@
 extends RefCounted
 ## 2층 새 몬스터의 몸(Clay — docs/plans/floor2_monsters.md): vine(가시넝쿨) · swarm(박쥐 · 까마귀 떼) · scorpion(사막 전갈) · bird(사막 독수리).
-## 공통 spec 키: height · color · eyes · glow. swarm: count(마리 수) · beak(true면 까마귀 — 부리 · 깃 날개, 없으면 박쥐 막 날개).
+## 공통 spec 키: height · color · eyes · glow. swarm: count(마리 수) · beak(true면 까마귀 — 부리 · 깃 날개, 없으면 박쥐 막 날개) · insect(말벌 — 침).
+## shroom(포자 버섯): cap(갓 색) · spots(점 색).
 ## 눈은 Things2.after가 eyes2 목록으로 찍는다(glow > 0이면 빛나는 눈).
 
 const Clay := preload("res://tools/monster_art/Clay.gd")
@@ -58,6 +59,8 @@ static func swarm(cl: Clay, foot: Vector2, H: float, sp: Dictionary, rng: Random
 		cl.ell(g, hd, 0.028 * H * s, 0.026 * H * s, 0.028 * H * s, body, 0.008 * H)
 		if crow:
 			cl.cap(g, hd + Vector3(0, 0.005 * H, 0.02 * H * s), hd + Vector3(rng.randf_range(-0.01, 0.01) * H, 0.02 * H, 0.06 * H * s), 0.01 * H * s, 0.002 * H, beak, 0.002 * H)
+		elif bool(sp.get("insect", false)):  # 말벌: 귀 대신 배 끝 침
+			cl.cap(g, p + Vector3(0, 0.04 * H * s, -0.01 * H), p + Vector3(0, 0.08 * H * s, 0.0), 0.012 * H * s, 0.002 * H, beak, 0.002 * H)
 		else:
 			for e: float in [-1.0, 1.0]:  # 박쥐 귀
 				cl.cap(g, hd + Vector3(e * 0.015 * H * s, -0.015 * H * s, 0), hd + Vector3(e * 0.025 * H * s, -0.05 * H * s, 0), 0.01 * H * s, 0.002 * H, body, 0.002 * H)
@@ -153,3 +156,31 @@ static func bird(cl: Clay, foot: Vector2, H: float, sp: Dictionary, rng: RandomN
 		[0.02 * H, 0.014 * H, 0.004 * H], beak, 0.003 * H)
 	return {"eyes2": [Vector2(hd.x - 0.025 * H, hd.y - 0.008 * H), Vector2(hd.x + 0.025 * H, hd.y - 0.008 * H)],
 		"j": {"chest": c + Vector3(0, -0.1 * H, 0), "waist": c}}
+
+
+## 포자 버섯: 굵은 대 위 넓은 갓(점박이), 대에 파인 눈 · 입, 밑동 뿌리.
+static func shroom(cl: Clay, foot: Vector2, H: float, sp: Dictionary, rng: RandomNumberGenerator) -> Dictionary:
+	var stalk := cl.mat(sp.get("color", Color("#c8b8a0")), "skin", {"mottle": Color("#8a7a68"), "mottle_amt": 0.4})
+	var capc: Color = sp.get("cap", Color("#a04a5a"))
+	var cap := cl.mat(capc, "skin", {"mottle": capc.darkened(0.4), "mottle_amt": 0.5, "spec": 0.3})
+	var spot := cl.mat(sp.get("spots", Color("#e8dcc0")), "bone")
+	var g := cl.group()
+	var base := Vector3(foot.x, foot.y - 0.05 * H, 0.0)
+	cl.cap(g, base, base + Vector3(0, -0.45 * H, 0.0), 0.13 * H, 0.1 * H, stalk, 0.03 * H)
+	for k in 5:  # 밑동 뿌리
+		var a := lerpf(-1.2, 1.2, k / 4.0)
+		cl.cap(g, base + Vector3(sin(a) * 0.08 * H, 0, 0.02 * H), base + Vector3(sin(a) * 0.2 * H, 0.04 * H, 0.04 * H), 0.03 * H, 0.008 * H, stalk, 0.01 * H)
+	var c := Vector3(foot.x, foot.y - 0.25 * H, 0.0)
+	for s2: float in [-1.0, 1.0]:
+		cl.carve(g, Vector2(c.x + s2 * 0.045 * H, c.y - 0.02 * H), 0.025 * H, 0.02 * H, 0.03 * H)
+	cl.carve(g, Vector2(c.x, c.y + 0.06 * H), 0.05 * H, 0.016 * H, 0.03 * H)
+	var gc := cl.group()
+	var top := Vector3(foot.x, foot.y - 0.56 * H, 0.0)
+	cl.ell(gc, top, 0.36 * H, 0.17 * H, 0.26 * H, cap, 0.04 * H)
+	for k in 11:  # 갓 점
+		var a := rng.randf_range(-PI, 0.0)
+		var rr := rng.randf_range(0.2, 0.85)
+		var q := Vector2(top.x + cos(a) * 0.3 * H * rr, top.y + sin(a) * 0.13 * H * rr)
+		cl.bump(gc, q, rng.randf_range(0.02, 0.035) * H, rng.randf_range(0.015, 0.025) * H, 0.01 * H, spot, 0.004 * H, 0.0)
+	return {"eyes2": [Vector2(c.x - 0.045 * H, c.y - 0.02 * H), Vector2(c.x + 0.045 * H, c.y - 0.02 * H)], "mouth2": Vector2(c.x, c.y + 0.06 * H),
+		"j": {"chest": c, "waist": base}}

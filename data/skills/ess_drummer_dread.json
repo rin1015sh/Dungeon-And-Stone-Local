@@ -1,0 +1,19 @@
+{
+  "id": "ess_drummer_dread",
+  "name_ko": "겁주는 북(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.3
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "drummer_dread"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "ess_wasp_swarm_buzz",
+  "name_ko": "윙윙 덮치기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "wasp_swarm_buzz"
+}

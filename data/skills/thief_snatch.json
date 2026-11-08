@@ -1,0 +1,25 @@
+{
+  "id": "thief_snatch",
+  "name_ko": "슬쩍하기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.4,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "steal_item",
+      "categories": [
+        "food",
+        "potion"
+      ],
+      "chance": 0.8
+    }
+  ],
+  "source": "placeholder"
+}

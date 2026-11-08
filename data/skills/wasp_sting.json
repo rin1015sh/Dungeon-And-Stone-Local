@@ -1,0 +1,24 @@
+{
+  "id": "wasp_sting",
+  "name_ko": "독침",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

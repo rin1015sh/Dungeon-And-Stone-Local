@@ -1,0 +1,85 @@
+{
+  "id": "goblin_thief",
+  "floor": 2,
+  "floor_tags": [
+    "f2_goblin_forest"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "goblin_thief",
+      "chance": 0.005
+    }
+  ],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "고블린 도둑",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.7,
+  "color": "#5a6a40",
+  "weaknesses": {},
+  "stats": {
+    "str": 5,
+    "agi": 16,
+    "p_res": 9,
+    "m_res": 8,
+    "int": 7
+  },
+  "resources": {
+    "hp": 15,
+    "soul": 15
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 3.0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "ai": {
+      "calls": false
+    },
+    "alert_sfx": "goblin_shout",
+    "move_mult": 1.4
+  },
+  "skills": [
+    "thief_snatch",
+    "thief_cut",
+    "flee"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "thief_snatch"
+    },
+    {
+      "if": "self_status",
+      "status": "hidden",
+      "use": "thief_cut"
+    },
+    {
+      "if": "chance",
+      "value": 0.6,
+      "use": "flee"
+    },
+    {
+      "if": "always",
+      "use": "thief_cut"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 가까이 와야 보인다(reveal_radius_m 3) · 먹을 것 · 물약을 슬쩍하고 달아난다(놓치면 잃는다)"
+}

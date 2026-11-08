@@ -1,0 +1,17 @@
+{
+  "id": "shroom_slam",
+  "name_ko": "갓 내려치기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

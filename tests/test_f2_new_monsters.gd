@@ -3,7 +3,8 @@ extends TestCase
 ## 지도 행동(MonsterTraits — 덫 깔기 · 망대로 달리기 · 돌진 · 까마귀 · 밤 지역, RouteAmbush 타일 · 횃불 매복).
 
 const NEW := ["goblin_trapper", "goblin_shaman", "goblin_wolf_rider", "goblin_hound", "thorn_creeper", "spine_boar", "canyon_bat", "bone_hyena",
-	"drowned", "grave_keeper", "carrion_crow", "wraith", "dune_scorpion", "desert_vulture", "dried_pilgrim"]
+	"drowned", "grave_keeper", "carrion_crow", "wraith", "dune_scorpion", "desert_vulture", "dried_pilgrim",
+	"forest_wasp", "goblin_drummer", "spore_shroom", "goblin_thief"]
 
 
 func _session(floor_id: String, seed_value: int, monsters: bool = true) -> ExploreSession:
@@ -214,3 +215,30 @@ func test_bats_wake_only_for_torch() -> void:
 	s.player.light.ignite("torch", 4.0, 1.0)
 	amb.on_enter(s, s.pos)
 	assert_eq(s.monsters.groups.size(), n + 1, "횃불을 켜면 깬다")
+
+
+## 포자 버섯이 쓰러지면 포자가 터져 상대가 중독된다(death_effects).
+func test_shroom_bursts_poison() -> void:
+	var t := _battle("spore_shroom")
+	var b: Battle = t[0]
+	var p: Combatant = t[1]
+	var e: Combatant = t[2]
+	b.start()
+	var hit := false
+	for i in 10:
+		p.actor.statuses.remove("poison")
+		BattlePassives.on_down(b, e)
+		hit = hit or p.actor.statuses.has("poison")
+	assert_true(hit, "포자 중독")
+
+
+## 북잡이: 들키면 둘레 고블린을 부르고 자기는 그대로 쫓는다.
+func test_drummer_calls_and_stays() -> void:
+	var s := _session("f2_goblin_forest", 3)
+	var d := s.monsters.add_fixed(["goblin_drummer"], s.map.entry)
+	var gob := s.monsters.add_fixed(["goblin"], s.map.entry + Vector2i(2, 0) if s.map.is_walkable(s.map.entry + Vector2i(2, 0)) else s.map.entry)
+	gob.state = FieldMonsters.STATE_IDLE
+	d.state = FieldMonsters.STATE_CHASE
+	s.traits.tick(s)
+	assert_eq(gob.state, FieldMonsters.STATE_CHASE, "둘레 고블린이 쫓아온다")
+	assert_false(d.has_meta(MonsterTraits.RUN), "북잡이는 떠나지 않는다")

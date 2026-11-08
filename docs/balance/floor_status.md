@@ -53,9 +53,9 @@
 - ○ 다른 탐험가 explorers
 - ● 위층 포탈 portals — 1개
 - ○ 계층군주 lord(+패턴)
-- ● 필드 몬스터 — 33종 · 등급 [5, 6, 7, 8, 9] (목표 8)
-- ● 몬스터 그림 assets/monsters — 33장
-- ● 정수 data/essences — 32종
+- ● 필드 몬스터 — 37종 · 등급 [5, 6, 7, 8, 9] (목표 8)
+- ● 몬스터 그림 assets/monsters — 37장
+- ● 정수 data/essences — 36종
 - ○ 균열 data/rifts
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 

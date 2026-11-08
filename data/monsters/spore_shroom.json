@@ -1,0 +1,95 @@
+{
+  "id": "spore_shroom",
+  "floor": 2,
+  "floor_tags": [
+    "f2_goblin_forest"
+  ],
+  "type": "body",
+  "family": [
+    "plant"
+  ],
+  "shape": "blob",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "spore_shroom",
+      "chance": 0.005
+    }
+  ],
+  "passives": [
+    {
+      "id": "shroom_burst",
+      "name_ko": "터지는 갓",
+      "death_effects": [
+        {
+          "type": "apply_status",
+          "status": "poison",
+          "chance": 0.6
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "name_ko": "포자 버섯",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.8,
+  "color": "#a07a8a",
+  "weaknesses": {
+    "fire": 1.5,
+    "slash": 1.25
+  },
+  "stats": {
+    "str": 7,
+    "agi": 3,
+    "p_res": 12,
+    "m_res": 10,
+    "int": 2
+  },
+  "resources": {
+    "hp": 26,
+    "soul": 12
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "ai": {
+      "tenacity": 0.0
+    },
+    "alert_sfx": "crumble",
+    "move_mult": 0.0,
+    "wander_radius": 0
+  },
+  "skills": [
+    "shroom_spores",
+    "shroom_slam"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "shroom_spores"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "shroom_spores"
+    },
+    {
+      "if": "always",
+      "use": "shroom_slam"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 버섯 고리에 서 있다(움직이지 않음) · 쓰러지면 포자가 터져 중독"
+}

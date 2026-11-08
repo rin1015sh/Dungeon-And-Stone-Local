@@ -28,6 +28,20 @@ static func spec_of(id: String) -> Dictionary:
 			return {"kind": "beast", "height": 460, "color": C("#5a5040"), "belly": C("#7a6a54"), "fur": 0.45, "tail": "thin", "bulk": 0.8, "legs": 1.05, "eyes": C("#e0a040")}
 		"thorn_creeper":
 			return {"kind": "vine", "height": 520, "color": C("#4a6a3a"), "bud": C("#7a2a3a"), "eyes": C("#f0c040"), "glow": 0.7}
+		"forest_wasp":
+			return {"kind": "swarm", "height": 420, "color": C("#c8a030"), "count": 9, "insect": true, "eyes": C("#1a1408")}
+		"goblin_drummer":  # 배에 북을 단 고블린 — 몽둥이(북채) · 털 어깨
+			return {"height": 490, "skin": C("#6a7a48"), "mottle": C("#3e4a28"), "eyes": C("#e8c850"),
+				"pose": {"hunch": 0.3, "knee": 0.35, "arm_l": "hang", "arm_r": "rest", "sh": 0.12, "head": 1.3, "legs": 0.88, "weight": 0.3},
+				"body": {"build": "fat", "hands": "claw"}, "head": {"type": "goblin", "mouth": "scream", "ears": "long"},
+				"kit": {"fur": C("#5a4a36"), "belt": C("#2a1e14"), "loin": C("#4a3a26"), "shield": C("#8a6a40"), "shield_kind": "round", "shield_mat": "wood", "weapon": "club", "weapon_c": C("#5a4630")}}
+		"spore_shroom":
+			return {"kind": "shroom", "height": 460, "color": C("#c8b8a0"), "cap": C("#a07a8a"), "spots": C("#e8dcc0"), "eyes": C("#f0e070"), "glow": 0.8}
+		"goblin_thief":  # 두건 쓴 마른 고블린 — 짧은 칼 · 허리 주머니
+			return {"height": 460, "skin": C("#5a6a40"), "mottle": C("#344026"), "eyes": C("#f0e080"), "glow": 0.4,
+				"pose": {"hunch": 0.5, "knee": 0.45, "arm_l": "claw", "arm_r": "rest", "sh": 0.1, "stance": 0.13, "head": 1.35, "legs": 0.9, "weight": -0.3},
+				"body": {"build": "thin", "hands": "claw"}, "head": {"type": "goblin", "mouth": "grin", "ears": "long", "hood": C("#2e2a24")},
+				"kit": {"shirt": C("#3a342a"), "shirt_len": 0.7, "belt": C("#2a1e14"), "straps": C("#4a3a26"), "weapon": "dagger", "weapon_c": C("#8a8478")}}
 		# ── 짐승의 소굴 ──
 		"spine_boar":  # 등에 가시 털이 솟은 멧돼지 — 엄니 · 낮은 몸
 			return {"kind": "beast", "height": 520, "color": C("#6a5040"), "belly": C("#8a7058"), "fur": 0.9, "blades": C("#3a2e24"), "tail": "stub", "bulk": 1.3, "legs": 0.7,

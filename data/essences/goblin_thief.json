@@ -1,0 +1,33 @@
+{
+  "id": "goblin_thief",
+  "source_monster": "goblin_thief",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "고블린 도둑의 정수",
+  "grade": 9,
+  "family": "goblin_thief",
+  "passive": {
+    "id": "goblin_thief_p",
+    "name_ko": "도둑 걸음",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.06
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_thief_cut"
+    }
+  ],
+  "stats": {
+    "agi": 5
+  },
+  "resources": {
+    "hp": 8
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

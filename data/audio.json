@@ -187,6 +187,10 @@
     "beast_grunt": [
       "boar_cry",
       "boar_sniff"
+    ],
+    "wasp_buzz": [
+      "wind_rush",
+      "whoosh_faint"
     ]
   },
   "cues": {
@@ -637,7 +641,11 @@
       "goblin_wolf_rider": "wolf_howl",
       "goblin_hound": "growl_low",
       "thorn_creeper": "monster_low",
-      "grave_keeper": "zombie_howl"
+      "grave_keeper": "zombie_howl",
+      "forest_wasp": "wind_rush",
+      "goblin_drummer": "war_drum",
+      "spore_shroom": "monster_low",
+      "goblin_thief": "shriek_angry"
     },
     "by_family": {
       "beast": "growl_low",

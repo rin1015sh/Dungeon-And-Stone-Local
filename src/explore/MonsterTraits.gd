@@ -4,8 +4,8 @@ extends RefCounted
 ##   lays_traps {event, every_tiles, max, zones}   고블린 덫꾼 — 걸어온 칸 뒤에 지형 덫(event의 hazard)을 하나씩. 무리마다 max까지.
 ##   runs_to_alarm {radius, monster, alarm_radius, hours, sound, line}  늑대 기수 — 플레이어를 보면 싸우러 오지 않고 radius 안
 ##       가장 가까운 망대로 달려가 닿으면 그 망대 경보(RouteWatch.ring — monster 무리만 alarm_radius 안). 닿기 전에 잡으면 조용하다.
-##   alarm_caller {radius, hours, families, line, sound}  시체 까마귀 — 보면 radius 안의 그 가족 무리가 hours 동안 쫓아오게 하고
-##       자기는 쫓지 않는다(한 번 울면 그 뒤로는 떠돈다).
+##   alarm_caller {radius, hours, families, line, sound, stay}  시체 까마귀 — 보면 radius 안의 그 가족 무리가 hours 동안 쫓아오게 하고
+##       자기는 쫓지 않는다(한 번 울면 그 뒤로는 떠돈다). stay면 자기도 그대로 쫓는다(고블린 북잡이).
 ##   charge_line {speed_mult, tiles}               가시등 멧돼지 — 보면 그쪽으로 일직선 돌진(빠르게, 방향을 바꾸지 않는다).
 ##       벽에 막혀 멈추면 잠깐 비틀거리고, 그 사이 맞닥뜨리면 멧돼지가 기절한 채 전투가 시작된다(STUNNED — BattleFloor).
 ##   trails [몬스터 id …]                          뼈 하이에나 — 그 몬스터 무리를 8~12칸 뒤에서 따라다닌다.
@@ -146,6 +146,8 @@ func _caw(s: ExploreSession, g: FieldMonsters.Group, d: Dictionary) -> void:
 	if d.has("sound"):
 		s.sound.emit(JsonUtil.get_str(d, "sound"), g.pos)
 	FieldFeatureAct.say_line(s, JsonUtil.get_str(d, "line"), {"pos": g.pos}, "danger")
+	if JsonUtil.get_bool(d, "stay"):  # 고블린 북잡이: 북을 치고 자기도 그대로 쫓아온다
+		return
 	# 자기는 쫓지 않고 둘레를 떠돈다
 	g.route = FieldRoutes.path(s.map, g.pos, _away(s, g, 8), 30)
 	g.state = FieldMonsters.STATE_IDLE

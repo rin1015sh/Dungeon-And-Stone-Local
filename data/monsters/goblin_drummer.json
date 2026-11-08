@@ -1,0 +1,88 @@
+{
+  "id": "goblin_drummer",
+  "floor": 2,
+  "floor_tags": [
+    "f2_goblin_forest"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [
+    {
+      "essence": "goblin_drummer",
+      "chance": 0.01
+    }
+  ],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "고블린 북잡이",
+  "grade": 8,
+  "rank": "normal",
+  "size": 0.85,
+  "color": "#6a7a48",
+  "weaknesses": {},
+  "stats": {
+    "str": 8,
+    "agi": 10,
+    "p_res": 14,
+    "m_res": 10,
+    "int": 8
+  },
+  "resources": {
+    "hp": 36,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "back",
+    "pack_size": [
+      1,
+      1
+    ],
+    "ai": {
+      "calls": true
+    },
+    "alert_sfx": "war_drum",
+    "alarm_caller": {
+      "radius": 28,
+      "hours": 0.5,
+      "families": [
+        "humanoid"
+      ],
+      "stay": true,
+      "sound": "war_drum",
+      "line": "field.drum_alarm"
+    }
+  },
+  "skills": [
+    "drummer_beat",
+    "drummer_dread"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "drummer_beat"
+    },
+    {
+      "if": "chance",
+      "value": 0.5,
+      "use": "drummer_dread"
+    },
+    {
+      "if": "always",
+      "use": "drummer_beat"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 들키면 북을 쳐 둘레 고블린을 부른다(alarm_caller stay — 자기는 그 자리)"
+}

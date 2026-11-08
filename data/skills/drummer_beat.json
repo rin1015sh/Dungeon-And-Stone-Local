@@ -1,0 +1,17 @@
+{
+  "id": "drummer_beat",
+  "name_ko": "전쟁 북",
+  "target": "ally_all",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "gauge",
+      "amount": 25
+    }
+  ],
+  "source": "placeholder"
+}

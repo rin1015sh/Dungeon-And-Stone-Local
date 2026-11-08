@@ -1,0 +1,31 @@
+{
+  "id": "forest_wasp",
+  "source_monster": "forest_wasp",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "숲 말벌 떼의 정수",
+  "grade": 9,
+  "family": "forest_wasp",
+  "passive": {
+    "id": "forest_wasp_p",
+    "name_ko": "독 냄새",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "poison",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_wasp_swarm_buzz"
+    }
+  ],
+  "stats": {
+    "agi": 5
+  },
+  "resources": {
+    "hp": 6
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

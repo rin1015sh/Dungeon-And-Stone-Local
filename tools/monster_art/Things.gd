@@ -46,6 +46,8 @@ static func paint(kind: String, sp: Dictionary, seed_value: int) -> Paint:
 			post = Things3.scorpion(cl, foot, H, sp, rng)
 		"bird":
 			post = Things3.bird(cl, foot, H, sp, rng)
+		"shroom":
+			post = Things3.shroom(cl, foot, H, sp, rng)
 	Render.render(cl, p, H)
 	if post.has("face"):
 		FaceInk.ink(p, post["face"], sp.get("eyes", Color("#d8d0b0")), float(sp.get("glow", 0.0)))

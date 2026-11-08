@@ -1,0 +1,38 @@
+{
+  "id": "goblin_drummer",
+  "source_monster": "goblin_drummer",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "고블린 북잡이의 정수",
+  "grade": 8,
+  "family": "goblin_drummer",
+  "passive": {
+    "id": "goblin_drummer_p",
+    "name_ko": "북 장단",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.05
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_drummer_dread"
+    },
+    {
+      "color": "green",
+      "skill": "ess_drummer_beat"
+    }
+  ],
+  "stats": {
+    "str": 3,
+    "p_res": 3
+  },
+  "resources": {
+    "hp": 12
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

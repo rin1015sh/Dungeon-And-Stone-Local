@@ -1,0 +1,19 @@
+{
+  "id": "ess_shroom_spores",
+  "name_ko": "포자 뿜기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.4
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "shroom_spores"
+}

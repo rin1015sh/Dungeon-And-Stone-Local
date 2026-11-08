@@ -1,0 +1,34 @@
+{
+  "id": "spore_shroom",
+  "source_monster": "spore_shroom",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "포자 버섯의 정수",
+  "grade": 9,
+  "family": "spore_shroom",
+  "passive": {
+    "id": "spore_shroom_p",
+    "name_ko": "포자 몸",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "m_res",
+        "percent": 0.06
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_shroom_spores"
+    }
+  ],
+  "stats": {
+    "m_res": 4,
+    "p_res": 2
+  },
+  "resources": {
+    "hp": 12
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}
