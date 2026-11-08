@@ -55,17 +55,12 @@
 
 ## 6. 자동 배포 — main에 올리면 웹 테스트 빌드가 바뀐다(2026-11-08)
 
-`.github/workflows/web.yml`: main에 push(또는 Actions 탭에서 "Run workflow") → 리눅스 Godot 4.7.2로 `tools/check.sh` → `tools/export_web.sh` → 배포. 15~25분 걸린다. 결과 폴더는 Actions 실행 화면 "Artifacts"의 `web`으로도 7일 동안 받을 수 있다. 화면 빌드 번호는 `version.txt`(커밋 7자리 · 시각).
+**주소: https://rin1015sh.github.io/Dungeon-And-Stone-Local/** (저장소를 공개로 돌리고 GitHub Pages로 — 사용자 결정 2026-11-08, itch.io 자동 배포는 기각)
 
-**itch.io(추천 — 무료, 비공개 저장소여도 된다)** — 처음 한 번:
-1. itch.io에 HTML 프로젝트를 만든다(§2와 같은 Embed 설정). **Visibility = Draft**(나만 보임) 또는 **Restricted**(비밀번호 · 초대한 사람만). 첫 업로드는 butler가 하므로 파일은 안 올려도 된다 — 처음 올라온 뒤 업로드에서 "This file will be played in the browser"를 한 번 켠다.
-2. itch.io → Settings → API keys → "Generate new API key"를 복사.
-3. GitHub 저장소 → Settings → Secrets and variables → Actions:
-   - Secrets 탭 **`BUTLER_API_KEY`** = 2의 키
-   - Variables 탭 **`ITCH_TARGET`** = `itch계정/게임주소:html5`(예: 게임 주소가 `https://abc.itch.io/dungeon-and-stone`면 `abc/dungeon-and-stone:html5`)
-4. Actions 탭 → web → Run workflow로 한 번 돌린다. 이후로는 main에 올릴 때마다 바뀐다(butler는 바뀐 부분만 올린다).
+`.github/workflows/web.yml`: main에 push(또는 Actions 탭 → web → "Run workflow") → 리눅스 Godot 4.7.2로 `tools/check.sh` → `tools/export_web.sh` → GitHub Pages. 5분 안팎(첫 실행은 Godot을 받아 조금 더). 결과 폴더는 Actions 실행 화면 "Artifacts"의 `web`으로도 7일 받을 수 있다. 빌드 번호는 `version.txt`(커밋 7자리 · 시각 — 주소 뒤에 `/version.txt`).
 
-**GitHub Pages(다른 길)**: 비공개 저장소는 유료 요금제(Pro 등)여야 하고, 페이지 주소는 공개다. Settings → Pages → Source = GitHub Actions, Variables에 **`DEPLOY_PAGES`** = `true`. 주소는 `https://<계정>.github.io/<저장소>/`.
-
+- 처음 한 번: 저장소 Settings → Pages → Build and deployment → Source = **GitHub Actions**(저장소가 공개여야 무료).
 - 검증이 실패하면 배포하지 않는다(그 커밋의 Actions 기록에 실패 단계가 남는다). 급할 때만 Variables **`SKIP_CHECK`** = `true`.
-- 새로 배포된 뒤 브라우저가 옛 파일을 들고 있으면 새로고침(Ctrl+Shift+R). 저장은 같은 주소면 남는다.
+- 새로 배포된 뒤 브라우저가 옛 파일을 들고 있으면 강력 새로고침(Ctrl+Shift+R). 저장은 같은 주소면 남는다.
+- Pages는 git 파일 크기 제한(100MB)과 상관없다(Actions가 묶음으로 올린다). 사이트 전체 1GB까지.
+- itch.io에 손으로 올리는 법(§2)은 그대로 쓸 수 있다.

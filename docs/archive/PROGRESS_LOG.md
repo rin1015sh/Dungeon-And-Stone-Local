@@ -3,6 +3,9 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 웹 자동 배포 — itch 빼고 GitHub Pages로
+- 사용자 "itch.io는 기각, 저장소 공개로 Pages". 첫 실행에서 itch 단계는 itch 계정 이메일 미인증으로 실패했었다(빌드는 4분에 통과). web.yml에서 itch 작업을 지우고 pages를 늘 돌린다(DEPLOY_PAGES 변수 없앰). DEPLOY.md §6을 Pages 기준으로. 그림 손실 압축 시험: 품질 0.9면 pck 198MB → 61MB, 동네 화면 캡처로 눈에 띄는 차이 없음(적용은 안 함).
+
 ### 2026-11-08 웹 자동 배포(GitHub Actions) · 웹 빌드 시작 오류 고침
 - **범위 / 기준 / 테스트**: 사용자 "웹에서 플레이 테스트 — GitHub와 이어져 올리면 바로 바뀌게". 기준: main push → 검증 → 웹 내보내기 → 배포가 사람 손 없이. 테스트: 클라우드 리눅스에서 export_web.sh → Playwright(크로미움)로 타이틀 → 새 탐험가 → 동네 지도까지.
 - **한 일**: `.github/workflows/web.yml`(Godot · 웹 템플릿 캐시, check.sh, export_web.sh, artifact `web`, itch.io butler(`secrets.BUTLER_API_KEY` · `vars.ITCH_TARGET`) · GitHub Pages(`vars.DEPLOY_PAGES`)). DEPLOY.md §6.

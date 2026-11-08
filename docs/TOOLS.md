@@ -69,5 +69,5 @@
 
 ## 웹 내보내기
 
-- **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다. **main에 올리면 GitHub Actions(`.github/workflows/web.yml`)가 검증 → 내보내기 → itch.io/Pages 배포를 자동으로 한다**(설정 `docs/DEPLOY.md` §6).
+- **웹(itch.io) 내보내기**: `GODOT=<godot 경로> bash tools/export_web.sh` → `build/web/`·`build/dungeon_and_stone_web.zip`(내보내기 템플릿 필요, 설정 `export_presets.cfg` "Web" — 스레드 끔). 올리는 법·웹에서 다른 점은 `docs/DEPLOY.md`. 브라우저 확인은 `build/web`을 `python3 -m http.server`로 띄워 Playwright(크로미움)로 누른다. **main에 올리면 GitHub Actions(`.github/workflows/web.yml`)가 검증 → 내보내기 → GitHub Pages 배포를 자동으로 한다(https://rin1015sh.github.io/Dungeon-And-Stone-Local/)**(설정 `docs/DEPLOY.md` §6).
   - 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 글꼴(Noto Sans KR)에 있는 것만(▸ ✕ 같은 기호 금지, `tests/test_web.gd`가 검사). `OS.has_feature("web")`에서 종료 버튼 숨김.
