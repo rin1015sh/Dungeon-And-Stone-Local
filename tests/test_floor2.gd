@@ -358,6 +358,41 @@ func test_debug_go_up_to_floor2() -> void:
 	got.clear()
 
 
+## 디버그 미궁 이동(F1): 층 JSON으로 길을 찾는다 — 1층 → 2층 넷, 2층 → 다른 2층(1층을 거쳐), 2층 → 1층.
+func test_debug_travel_between_floors() -> void:
+	var list := ExploreDebug.travel_floors(db)
+	assert_eq(list[0], "f1_crystal_cave", "1층이 맨 앞")
+	for fid in ["f2_land_of_dead", "f2_goblin_forest", "f2_beast_den", "f2_rock_desert"]:
+		assert_true(list.has(fid), "%s로 갈 수 있다" % fid)
+		assert_eq(ExploreDebug.floor_path(db, fid), ["f1_crystal_cave", fid] as Array[String], "길: 1층 → " + fid)
+	var reg := ContentRegistries.new()
+	var def1 := db.get_entry("floors", "f1_crystal_cave")
+	var s1 := ExploreSession.new(db, def1, reg.generator("crystal_cave").generate(db, def1, Rng.new(5)), PlayerCharacter.create(db, "human", "warrior", "시험", {"agi": 8}), GameClock.new(), Rng.new(6), reg.effects)
+	s1.monsters_enabled = false
+	s1.start()
+	var got: Array = []
+	var cb := func(t: ExploreSession) -> void: got.append(t)
+	s1.transfer.connect(cb)
+	assert_false(ExploreDebug.travel_to(s1, "f1_crystal_cave"), "같은 층이면 그대로")
+	assert_true(ExploreDebug.travel_to(s1, "f2_beast_den"), "1층 → 짐승의 소굴")
+	s1.transfer.disconnect(cb)
+	var s2: ExploreSession = got[0]
+	assert_eq(JsonUtil.get_str(s2.floor_def, "id"), "f2_beast_den")
+	got.clear()
+	s2.transfer.connect(cb)
+	assert_true(ExploreDebug.travel_to(s2, "f2_rock_desert"), "소굴 → 바위사막(1층을 거쳐)")
+	s2.transfer.disconnect(cb)
+	var s3: ExploreSession = got[0]
+	assert_eq(JsonUtil.get_str(s3.floor_def, "id"), "f2_rock_desert")
+	assert_true(s3.below == s1, "아래층은 처음 1층 세션")
+	got.clear()
+	s3.transfer.connect(cb)
+	assert_true(ExploreDebug.travel_to(s3, "f1_crystal_cave"), "사막 → 1층")
+	s3.transfer.disconnect(cb)
+	assert_true(got[0] == s1, "1층 세션으로 돌아온다")
+	got.clear()
+
+
 ## 초입엔 혼자 다니는 몬스터(한 마리씩 싸울 수 있게), 도착 나루터 둘레엔 큰 무리가 없다(사용자 2026-11-06).
 func test_lone_monsters_near_arrival_and_no_horde_at_ferry() -> void:
 	for seed_value in [3, 8]:

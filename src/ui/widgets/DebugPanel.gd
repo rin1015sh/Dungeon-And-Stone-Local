@@ -1,6 +1,8 @@
 class_name DebugPanel
 extends PanelContainer
 ## 디버그 패널(F1). 테스트 플레이를 빠르게 하는 치트 모음.
+## 화면보다 길면 안에서 스크롤된다(키보드로 아래 버튼에 가면 따라 내려간다 — follow_focus, 사용자 2026-11-08).
+## 미궁 이동: 층 JSON에서 갈 수 있는 층을 모두 버튼으로(ExploreDebug.travel_floors — 새 층을 더하면 저절로 생긴다).
 ## 다음 마일스톤 항목(포탈 개방일)은 자리만 있고 비활성이다.
 
 signal regenerate_requested(seed_value: int)
@@ -20,8 +22,14 @@ func _ready() -> void:
 	add_theme_stylebox_override("panel", UiTheme.translucent_panel())
 	UiTheme.keyboard_panel(self)
 	custom_minimum_size.x = UiTheme.metric("debug_panel_width", 300)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true  # 키보드로 아래 끝 버튼에 닿으면 저절로 내려간다
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(scroll)
 	var v := VBoxContainer.new()
-	add_child(v)
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(v)
 	v.add_child(UiTheme.label(Strings.t("debug.title"), "header", "warn"))
 	var grid := GridContainer.new()
 	grid.columns = 2
@@ -36,18 +44,13 @@ func _ready() -> void:
 	_btn(grid, Strings.t("debug.reveal"), func() -> void: ExploreDebug.reveal(_session))
 	_btn(grid, Strings.t("debug.to_monument"), func() -> void: ExploreDebug.to_monument(_session))
 	_btn(grid, Strings.t("debug.to_portal"), func() -> void: ExploreDebug.teleport(_session, ExploreDebug.nearest_portal(_session)))
-	_btn(grid, Strings.t("debug.go_up"), func() -> void:
-		if not ExploreDebug.go_up(_session, "floor2_south"):
-			_session.message.emit("debug.go_up_none", {}, "system"))
-	_btn(grid, Strings.t("debug.go_up_forest"), func() -> void:
-		if not ExploreDebug.go_up(_session, "floor2_north"):
-			_session.message.emit("debug.go_up_none", {}, "system"))
 	_btn(grid, Strings.t("debug.level_up"), func() -> void: _change_level(1))
 	_btn(grid, Strings.t("debug.level_down"), func() -> void: _change_level(-1))
 	_btn(grid, Strings.t("debug.stat_up", {"stat": DataNames.entry(db, "stats", "str"), "amount": bump}), func() -> void: _bump("str", bump))
 	_btn(grid, Strings.t("debug.stat_up", {"stat": DataNames.entry(db, "stats", "agi"), "amount": bump}), func() -> void: _bump("agi", bump))
 	_btn(grid, Strings.t("debug.hunger_zero"), func() -> void: _session.player.pool.set_current("hunger", 0.0, "debug"))
 	_btn(grid, Strings.t("debug.restore"), func() -> void: _session.player.pool.fill_all())
+	_add_travel(v)
 	var invuln := CheckButton.new()
 	invuln.text = Strings.t("debug.invulnerable")
 	invuln.button_pressed = GameState.debug_invulnerable
@@ -72,6 +75,23 @@ func _ready() -> void:
 	var later_label := UiTheme.label(Strings.t("debug.later", {"list": " · ".join(later)}), "small", "text_dim")
 	later_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(later_label)
+
+
+## 미궁 이동: 갈 수 있는 층마다 버튼("1층 수정동굴" · "2층 망자의 땅" …). 지금 층은 누를 수 없다.
+func _add_travel(v: VBoxContainer) -> void:
+	v.add_child(UiTheme.label(Strings.t("debug.travel_title"), "small", "text_dim"))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	v.add_child(grid)
+	var here := JsonUtil.get_str(_session.floor_def, "id")
+	for fid in ExploreDebug.travel_floors(_session.db):
+		var fd := _session.db.get_entry("floors", fid)
+		var nm := JsonUtil.get_str(fd, "name_ko")
+		var label := nm if nm.begins_with("%d층" % JsonUtil.get_int(fd, "floor")) else Strings.t("debug.travel", {"floor": JsonUtil.get_int(fd, "floor"), "name": nm})  # 1층은 이름에 이미 "1층"
+		var b := _btn(grid, label, func() -> void:
+			if not ExploreDebug.travel_to(_session, fid):
+				_session.message.emit("debug.go_up_none", {}, "system"))
+		b.disabled = fid == here or _session.rift_run != null
 
 
 func _btn(parent: Control, text: String, cb: Callable) -> Button:

@@ -78,6 +78,8 @@ func _ready() -> void:
 	_debug.offset_left = -m - UiTheme.metric("debug_panel_width", 300)
 	_debug.offset_right = -m
 	_debug.offset_top = m
+	_debug.anchor_bottom = 1.0  # 화면 아래까지 — 넘치면 패널 안에서 스크롤(DebugPanel)
+	_debug.offset_bottom = -m
 	_debug.regenerate_requested.connect(func(s: int) -> void: regenerate_requested.emit(s))
 	session.message.connect(_on_message)
 	session.view_changed.connect(_view.refresh)

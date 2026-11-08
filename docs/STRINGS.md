@@ -462,9 +462,9 @@
 - `debug.later` 다음 마일스톤에서: {list}
 - `debug.spawn_monster` 몬스터 소환(바로 전투)
 - `debug.give_essence` 정수 흡수(무작위)
-- `debug.go_up` 2층 망자의 땅으로
-- `debug.go_up_none` 오를 위층이 없다.
-- `debug.go_up_forest` 2층 고블린 숲으로
+- `debug.go_up_none` 그 층으로 갈 수 없다.
+- `debug.travel_title` 미궁 이동
+- `debug.travel` {floor}층 {name}
 
 <a id="pause"></a>
 ## 일시정지 `pause`

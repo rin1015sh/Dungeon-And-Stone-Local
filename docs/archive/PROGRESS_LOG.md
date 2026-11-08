@@ -3,6 +3,9 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 F1 디버그 패널 — 스크롤 · 미궁 이동(UI60)
+- **한 일**: DebugPanel을 ScrollContainer(follow_focus)로, ExploreScreen이 패널을 화면 아래까지. ExploreDebug.travel_to · floor_path · travel_floors. 테스트 test_debug_travel_between_floors(1층 → 소굴 → 사막(1층 거쳐) → 1층). 캡처로 스크롤 막대 · 이동 버튼 확인.
+
 ### 2026-11-08 살피기 — 대상 쪽 움직임 · 소리(UI59)
 - **범위**: 사용자 "상호작용 애니메이션 · 텍스트 제거 · 효과음으로 — 1번(플레이어 몸짓) 빼고 진행".
 - **한 일**: 요소 행동 48개에 fx · sound, FieldFx dust · dig · splash · glint, FieldFeatureAct가 성공하면 fx, 장면 문구 30개 silent. 캡처 `--fx`에 네 가지 함께.

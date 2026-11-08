@@ -45,6 +45,68 @@ static func go_up(s: ExploreSession, dest: String = "") -> bool:
 	return false
 
 
+## 디버그 미궁 이동(F1): 층 JSON으로 길을 찾아 그 층으로 간다(새 층이 생기면 저절로 — 1층 포탈 dest → 2층 arrival → 2층 포탈 dest → 3층 …).
+## 지금 층이 길 위에 없으면 아래층으로 내려가(below) 길에 닿은 뒤, 길을 따라 그 층 포탈로 오른다. 같은 층이면 false.
+static func travel_to(s: ExploreSession, floor_id: String) -> bool:
+	if s.rift_run != null or JsonUtil.get_str(s.floor_def, "id") == floor_id:
+		return false
+	var path := floor_path(s.db, floor_id)
+	if path.is_empty():
+		return false
+	var cur := s
+	while not path.has(JsonUtil.get_str(cur.floor_def, "id")):
+		if cur.below == null:
+			return false
+		cur = FloorTravel.down(cur)
+	for i in range(path.find(JsonUtil.get_str(cur.floor_def, "id")) + 1, path.size()):
+		var dest := JsonUtil.get_str(s.db.get_entry("floors", path[i]), "arrival")
+		var next: ExploreSession = null
+		for portal: Dictionary in cur.map.portals:
+			if str(portal.get("dest", "")) == dest:
+				next = FloorTravel.up(cur, portal)
+				break
+		if next == null:
+			break
+		cur = next
+	if cur == s:
+		return false
+	s.transfer.emit(cur)
+	return true
+
+
+## 맨 아래층(도착 arrival이 없는 층)에서 floor_id까지 거치는 층 id들(못 가면 빈 배열).
+static func floor_path(db: GameDatabase, floor_id: String) -> Array[String]:
+	var out: Array[String] = []
+	var cur := floor_id
+	for guard in 32:
+		out.push_front(cur)
+		var a := JsonUtil.get_str(db.get_entry("floors", cur), "arrival")
+		if a.is_empty():
+			return out
+		var parent := ""
+		for fid: String in db.get_collection("floors"):
+			for p: Variant in JsonUtil.get_array(db.get_entry("floors", fid), "portals"):
+				if p is Dictionary and JsonUtil.get_str(p, "dest") == a:
+					parent = fid
+		if parent.is_empty():
+			return []
+		cur = parent
+	return []
+
+
+## 디버그 미궁 이동 목록: 층 번호 · id 순.
+static func travel_floors(db: GameDatabase) -> Array[String]:
+	var out: Array[String] = []
+	for fid: String in db.get_collection("floors"):
+		if not floor_path(db, fid).is_empty():
+			out.append(fid)
+	out.sort_custom(func(a: String, b: String) -> bool:
+		var fa := JsonUtil.get_int(db.get_entry("floors", a), "floor")
+		var fb := JsonUtil.get_int(db.get_entry("floors", b), "floor")
+		return fa < fb or (fa == fb and a < b))
+	return out
+
+
 static func nearest_portal(s: ExploreSession) -> Vector2i:
 	var best := Vector2i(-1, -1)
 	for portal: Dictionary in s.map.portals:
