@@ -193,7 +193,11 @@ func test_hazards_in_chapter3() -> void:
 	assert_false(run.hazards.at.has(cell), "한 번만")
 	assert_eq(run.hazards.on_step(cs, cell), null)
 	assert_true(cs.map.is_walkable(cell) and cs.map.tile_id_at(cell) == tile, "판정 뒤에도 그 자리에 남는다(걸을 수 있다)")
-	assert_false(group.has("check"), "판정은 동전(V29) — 스탯 판정 없음")
+	var nimble := Actor.new(db, {"agi": 500})  # 비율 공식: 난이도의 수십 배여야 상한에 닿는다
+	var clumsy := Actor.new(db, {"agi": 2})
+	var chk := {"stat": "agi", "dc": 12}
+	assert_true(RiftHazards.success_chance(db, nimble, chk) > RiftHazards.success_chance(db, clumsy, chk))
+	assert_near(RiftHazards.success_chance(db, nimble, chk), float(db.bal("rift.hazard_max")), 0.001)
 
 
 func test_shared_chill_and_exp() -> void:

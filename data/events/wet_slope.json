@@ -5,6 +5,10 @@
   "hazard": {
     "id": "wet_slope",
     "tile": "feat_wet_slope",
+    "check": {
+      "stat": "agi",
+      "dc": 8
+    },
     "fail": [
       {
         "type": "restore_resource",

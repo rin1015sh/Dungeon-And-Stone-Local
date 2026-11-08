@@ -650,7 +650,7 @@ func lord_rise(group: FieldMonsters.Group, then: Callable) -> void:
 
 
 ## 동전 앞뒤를 고르게 한다: 받는 화면이 없으면(테스트·시뮬) 앞면(0)을 고른 것으로.
-## can_back = 화면이 Esc(그만둠 -1)를 받는가(밟은 함정처럼 피할 수 없으면 false — coin_can_back로 화면이 본다).
+## can_back = 화면이 Esc(그만둠 -1)를 받는가(아귀 입처럼 피할 수 없으면 false — coin_can_back로 화면이 본다).
 func guess(then: Callable, can_back: bool = true) -> void:
 	coin_can_back = can_back
 	if coin_guess.get_connections().is_empty():

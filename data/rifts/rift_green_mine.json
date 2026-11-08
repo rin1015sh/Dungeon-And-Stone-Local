@@ -297,6 +297,10 @@
           "id": "bridge",
           "tile": "broken_bridge",
           "count": 1,
+          "check": {
+            "stat": "agi",
+            "dc": 13
+          },
           "fail": [
             {
               "type": "restore_resource",
@@ -360,6 +364,10 @@
           "id": "stairs",
           "tile": "cliff_stairs",
           "count": 2,
+          "check": {
+            "stat": "agi",
+            "dc": 11
+          },
           "fail": [
             {
               "type": "restore_resource",

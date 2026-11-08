@@ -1,6 +1,6 @@
 extends TestCase
 ## 스탯 판정 → 동전(사용자 2026-11-08, V29 — CoinBet): 살피기 행동 coin gate · risk, Esc로 그만둠,
-## 밟은 함정(그만둘 수 없다), 아귀 입 고르기, 데이터에 스탯 판정이 남지 않았는가.
+## 아귀 입 고르기(그만둘 수 없다), 살피기에 스탯 판정이 남지 않았는가. 함정은 스탯 판정 그대로(되돌림 — RiftHazards).
 
 const FLOOR := "f1_crystal_cave"
 
@@ -119,28 +119,25 @@ func test_quit_spends_nothing() -> void:
 	assert_true((e["used"] as Dictionary).is_empty())
 	_unrig(s)
 
-func test_hazard_cannot_be_quit() -> void:
+func test_maw_guess_cannot_be_quit() -> void:
 	var s := _session(false)
 	var asked := [false]
+	var can_back := [true]
 	s.coin_guess.connect(func(then: Callable) -> void:
 		asked[0] = true
-		assert_false(s.coin_can_back, "밟은 함정은 그만둘 수 없다")
+		can_back[0] = s.coin_can_back
 		then.call(-1))
-	var hz := s.features.hazards
-	var hd := {"id": "t", "tile": "feat_wet_slope", "fail": [{"type": "apply_status", "status": "curse"}]}
-	hz.at[s.pos] = hd.merged({"cells": [s.pos]})
-	assert_eq(hz.on_step(s, s.pos), true)
+	CoinBet.bet(s, "maw", func(_right: bool) -> void: pass, false)
 	assert_true(asked[0], "앞뒤를 묻는다")
-	assert_false(hz.at.has(s.pos), "한 번만")
+	assert_false(can_back[0], "아귀 입은 그만둘 수 없다")
 	_unrig(s)
+
 
 func test_no_stat_checks_left_in_data() -> void:
 	for id: String in db.get_collection("events"):
 		var ev := db.get_entry("events", id)
 		for a: Variant in JsonUtil.get_array(ev, "actions"):
 			assert_false((a as Dictionary).has("check"), "%s: 스탯 판정 없음" % id)
-		var hz := JsonUtil.get_dict(ev, "hazard")
-		assert_false(hz.has("check") or hz.has("detect"), "%s: 함정 판정은 동전" % id)
 		assert_false(JsonUtil.get_dict(ev, "hidden").has("dc"), "%s: 알아채기는 동전" % id)
 	for id: String in ["sarcophagus", "ringer_coffin", "dig_grave", "ghoul_feast", "carrion_heap", "offering_pile", "blood_well"]:
 		var risky := JsonUtil.get_array(db.get_entry("events", id), "actions").filter(func(a: Variant) -> bool: return JsonUtil.get_str(a, "coin") == "risk")

@@ -77,7 +77,6 @@ static func _feature(v: ValidatorBase, w: String, ev: Dictionary) -> void:
 		var hz := JsonUtil.get_dict(ev, "hazard")
 		v.ref(w + ".hazard.tile", "tiles", hz.get("tile"))
 		EffectRules.check(v, w + ".hazard.fail", JsonUtil.get_array(hz, "fail"), true)
-		_no_stat_check(v, w + ".hazard", hz)
 		for key: String in ["detect_message", "disarm_message", "pass_message", "fail_message"]:
 			if hz.has(key):
 				_line(v, w + ".hazard." + key, JsonUtil.get_str(hz, key), false)
@@ -156,11 +155,3 @@ static func sound_known(db: GameDatabase, key: String) -> bool:
 			return true
 	return false
 
-
-## 함정 · 위험의 스탯 판정(check · detect · disarm {stat, dc})은 없어졌다 — 동전(V29). disarm은 true/false.
-static func _no_stat_check(v: ValidatorBase, w: String, hd: Dictionary) -> void:
-	for key: String in ["check", "detect"]:
-		if hd.has(key):
-			v.err(w + "." + key, "스탯 판정은 없어졌다 — 동전(V29)")
-	if hd.has("disarm") and not hd["disarm"] is bool:
-		v.err(w + ".disarm", "disarm은 true/false(동전 — V29)")

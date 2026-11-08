@@ -6,7 +6,18 @@
     "id": "forest_spike",
     "tile": "f2g_spike",
     "hidden": true,
-    "disarm": true,
+    "detect": {
+      "stat": "int",
+      "dc": 8
+    },
+    "disarm": {
+      "stat": "agi",
+      "dc": 6
+    },
+    "check": {
+      "stat": "agi",
+      "dc": 14
+    },
     "fail": [
       {
         "type": "restore_resource",

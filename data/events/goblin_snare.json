@@ -6,7 +6,18 @@
     "id": "goblin_snare",
     "tile": "feat_goblin_snare",
     "hidden": true,
-    "disarm": true,
+    "detect": {
+      "stat": "int",
+      "dc": 7
+    },
+    "disarm": {
+      "stat": "agi",
+      "dc": 4
+    },
+    "check": {
+      "stat": "agi",
+      "dc": 14
+    },
     "fail": [
       {
         "type": "restore_resource",

@@ -3,6 +3,9 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 함정만 스탯 판정으로 되돌림(V29)
+- 사용자 "함정만 원래대로 스탯 판정으로 롤백". RiftHazards · 숲 덫 5종 · 균열 함정(빙하굴 · 탄광 다리/계단 · 묘) 데이터 · balance `rift.hazard_*` · 검증기 · 테스트(test_tomb · test_glacier · test_sub_stats)를 보스 동전 기술 커밋 때로 되돌렸다. 살피기 동전 · 광차 · 아귀 입 · 은닉처 조용한 동전은 그대로. check.sh 통과.
+
 ### 2026-11-08 스탯 판정 → 동전(V29) · 도시 사건 없앰(CT114)
 - **범위 / 기준 / 테스트**: 사용자 "스탯 판정 전부 동전 던지기로 · 넣으면 좋은 곳(석관 · 무덤 · 시체 더미 · 아귀 입 · 공물 · 우물)에도 동전 · 도시 이벤트는 전부 제거". 기준: 데이터에 `check`·`detect`·`{stat, dc}` 판정이 없고(검증기가 오류로) 도시 사건 데이터 · 코드가 없다. 테스트: test_coin_checks(7) · test_city_life · 고친 test_tomb · test_glacier · test_sub_stats · test_field_features.
 - **한 일(동전)**: `CoinBet`(bet · quiet), `ExploreSession.guess(then, can_back)`. FieldFeatureAct `coin` gate · risk + `risk_effects`(Esc면 값 · 시간 안 씀), FieldFeatures 알아채기 = 조용한 동전, RiftHazards 밟으면 그만둘 수 없는 동전(`disarm: true` = 해제 문구) · 알아채기 조용한 동전 · 수호자의 눈이 살아 있으면 못 알아챔 · `success_chance` 삭제, RiftHidden 광차 `coin: true`, MawTraps 앞뒤 고르기. 데이터 events 15개 · rifts 3개 · balance `coin.field/hazard/detect`(rift.hazard_base 등 삭제). 테스트 람다가 세션을 잡아 생긴 누수는 `_unrig`로 끊었다.

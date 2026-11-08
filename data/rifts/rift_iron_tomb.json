@@ -176,7 +176,18 @@
           "tile": "trap_pressure_plate",
           "count": 2,
           "hidden": true,
-          "disarm": true,
+          "detect": {
+            "stat": "int",
+            "dc": 9
+          },
+          "disarm": {
+            "stat": "agi",
+            "dc": 4
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
           "bypass": {
             "stat": "p_res",
             "at_least": 30,
@@ -197,7 +208,18 @@
           "tile": "trap_arrow",
           "count": 1,
           "hidden": true,
-          "disarm": true,
+          "detect": {
+            "stat": "int",
+            "dc": 9
+          },
+          "disarm": {
+            "stat": "agi",
+            "dc": 4
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
           "bypass": {
             "stat": "p_res",
             "at_least": 30,
@@ -334,7 +356,18 @@
           "tile": "trap_pressure_plate",
           "count": 1,
           "hidden": true,
-          "disarm": true,
+          "detect": {
+            "stat": "int",
+            "dc": 9
+          },
+          "disarm": {
+            "stat": "agi",
+            "dc": 4
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
           "bypass": {
             "stat": "p_res",
             "at_least": 30,
@@ -355,7 +388,18 @@
           "tile": "trap_arrow",
           "count": 1,
           "hidden": true,
-          "disarm": true,
+          "detect": {
+            "stat": "int",
+            "dc": 9
+          },
+          "disarm": {
+            "stat": "agi",
+            "dc": 4
+          },
+          "check": {
+            "stat": "agi",
+            "dc": 18
+          },
           "bypass": {
             "stat": "p_res",
             "at_least": 30,

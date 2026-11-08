@@ -165,10 +165,16 @@ static func _riddle(v: ValidatorBase, w: String, rd: Dictionary) -> void:
 		v.err(w, "essence_mult는 양수")
 
 
-## 탐험 위험·함정: tile, disarm(true/false), bypass {stat, at_least}, fail [효과]. 판정은 동전(V29 — 스탯 판정 키는 없어졌다).
+## 탐험 위험·함정: tile, 판정 {stat, dc}(check·detect·disarm), bypass {stat, at_least}, fail [효과].
 static func _hazard(v: ValidatorBase, w: String, hd: Dictionary) -> void:
 	v.ref(w + ".tile", "tiles", hd.get("tile"))
-	FeatureRules._no_stat_check(v, w, hd)
+	for key in ["check", "detect", "disarm"]:
+		if hd.has(key):
+			var ck := JsonUtil.get_dict(hd, key)
+			if not v.db.stats.has(JsonUtil.get_str(ck, "stat", "agi")):
+				v.err(w + "." + key, "스탯 '%s' 없음" % ck.get("stat"))
+			if ck.has("dc") and not JsonUtil.is_number(ck["dc"]):
+				v.err(w + "." + key, "dc는 숫자")
 	if hd.has("bypass"):
 		_stat_at_least(v, w + ".bypass", JsonUtil.get_dict(hd, "bypass"))
 	if hd.has("hidden") and not hd["hidden"] is bool:

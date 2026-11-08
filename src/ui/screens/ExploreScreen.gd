@@ -447,7 +447,7 @@ func _on_coin_guess(then: Callable) -> void:
 	session.realtime.set_paused("coin", true)
 	_coin_busy = true
 	var opts: Array[Dictionary] = [{"text": Strings.t("explore.coin_heads")}, {"text": Strings.t("explore.coin_tails")}]
-	var i := await ChoicePopup.ask(self, "", opts, session.coin_can_back)  # 질문 없이 앞면·뒷면만(밟은 함정은 그만둘 수 없다)
+	var i := await ChoicePopup.ask(self, "", opts, session.coin_can_back)  # 질문 없이 앞면·뒷면만(아귀 입은 그만둘 수 없다)
 	_coin_busy = false
 	if not is_inside_tree():
 		return
