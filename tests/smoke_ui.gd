@@ -559,7 +559,12 @@ func _plan_flow(combat: CombatScreen, menu: CommandMenu) -> void:
 	while Time.get_ticks_msec() < dl and not mate_turn[0] and b.current != mu and b.result.is_empty():
 		await get_tree().process_frame
 	b.event.disconnect(on_turn)
-	_expect(mate_turn[0] or b.current == mu or not b.result.is_empty(), "탐험가가 기절해 동료 차례")
+	if not _expect(mate_turn[0] or b.current == mu or not b.result.is_empty(), "탐험가가 기절해 동료 차례"):
+		var me_u: Combatant = b.side_units(Combatant.SIDE_PARTY)[0]
+		print("  진단: 지금 차례=%s turns=%d→%d 탐험가 기절=%s 정하는 중=%d/%d 동료 hp=%d" % [b.current.actor.display_name if b.current != null else "-", turns, b.turns,
+			me_u.actor.statuses.has("stun"), combat._plan_i, combat._planning.size(), int(mate.pool.get_current("hp"))])
+		for line in _logs.slice(maxi(0, _logs.size() - 8)):
+			print("  진단 기록: " + line)
 	mate.pool.set_current("hp", 0.0)  # 동료가 자기 차례(행동 정하기 중)에 쓰러진다 — 전투가 멈추지 않고 다음 차례로 가야 한다
 	combat._refresh()
 	await _frames(2)
