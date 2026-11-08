@@ -62,14 +62,9 @@ static func price(db: GameDatabase, item_id: String) -> int:
 	return maxi(0, JsonUtil.get_int(db.get_entry("items", item_id), "price"))
 
 
-## 사는 값: 제값 × 이번 순 배율(거리 사건 — CityState.price_mods "buy:<분류>").
+## 사는 값: 제값.
 static func buy_price(state: CityState, item_id: String) -> int:
-	return floori(price(state.db, item_id) * state.price_mult("buy:" + _category(state, item_id)))
-
-
-static func _category(state: CityState, item_id: String) -> String:
-	return JsonUtil.get_str(state.db.get_entry("items", item_id), "category")
-
+	return price(state.db, item_id)
 
 
 ## 소재 단계 t의 장비: 종류(item_types 순서)마다 그 종류가 쓰는 소재 중 단계 t의 첫 소재(materials 순서, buyable이 false면 뺀다) 하나.
@@ -114,10 +109,10 @@ static func can_sell(state: CityState, item_id: String, act_id: String = "") -> 
 	return JsonUtil.get_str(e, "category") != MAGIC_STONE  # 마석은 길드 정산으로만(CT58)
 
 
-## 판매가: sell_ratio(창구 것이 먼저) × 이번 순 배율("sell:<분류>").
+## 판매가: 제값 × sell_ratio(창구 것이 먼저).
 static func sell_price(state: CityState, item_id: String, act_id: String = "") -> int:
 	var ratio := sell_ratio(state, act_id)
-	return floori(price(state.db, item_id) * ratio * state.price_mult("sell:" + _category(state, item_id)))
+	return floori(price(state.db, item_id) * ratio)
 
 
 ## 가방에서 이 창구에 팔 수 있는 아이템 id.

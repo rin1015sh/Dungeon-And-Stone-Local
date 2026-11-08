@@ -2,8 +2,8 @@ class_name CityInterior
 extends RefCounted
 ## 시설 실내(CT106 — data/interiors): 칸 글자 지도 하나에 방 몇 개(벽 · 벽 장식 · 방 사이 문으로 나뉜 칸 덩어리). 단층.
 ## 칸 종류(kind): wall('#') · floor('.') · exit('D' — 밟으면 나간다) · 범례 kind — wallart(벽에 붙은 것) · furniture(가구, 같은 글자 덩어리 = 그림 하나) ·
-##   low(지나가는 낮은 것) · door(방 사이 문 — opens 사건 순이 아니거나 locked면 닫힘) · back(카운터 안쪽 — 못 들어감) · npc(사람 자리 — 막힘).
-## needs가 걸린 가구 · 사람은 그 활동이 이번 순에 있을 때만 선다(없으면 빈 바닥). 활동 자리(spots)는 그 칸을 바라보고 Enter.
+##   low(지나가는 낮은 것) · door(방 사이 문 — locked면 닫힘) · back(카운터 안쪽 — 못 들어감) · npc(사람 자리 — 막힘).
+## needs가 걸린 가구 · 사람은 그 시설에 그 활동이 있을 때만 선다(없으면 빈 바닥). 활동 자리(spots)는 그 칸을 바라보고 Enter.
 ## 오토로드를 참조하지 않는다.
 
 const WALK := ["floor", "exit", "low", "door"]
@@ -24,7 +24,7 @@ var furniture: Array[Dictionary] = []
 var npcs: Array[Dictionary] = []
 ## 지금 할 수 있는 활동 자리 {cells: Array[Vector2i], acts: Array[String], name_ko}.
 var spots: Array[Dictionary] = []
-var _kind: Dictionary = {}  # Vector2i → 지금 kind(needs·opens 반영)
+var _kind: Dictionary = {}  # Vector2i → 지금 kind(needs·locked 반영)
 var _room: Dictionary = {}  # Vector2i → 방 번호(방 바닥 칸만)
 
 
@@ -34,7 +34,7 @@ static func load_for(state: CityState, facility_id: String) -> CityInterior:
 	if iid.is_empty() or not state.db.has_entry("interiors", iid):
 		return null
 	var r := CityInterior.new()
-	r._build(state.db, iid, CityActions.activities_of(state, facility_id), state.happenings)
+	r._build(state.db, iid, CityActions.activities_of(state, facility_id))
 	return r
 
 
@@ -43,7 +43,7 @@ static func load_id(state: CityState, iid: String) -> CityInterior:
 	if iid.is_empty() or not state.db.has_entry("interiors", iid):
 		return null
 	var r := CityInterior.new()
-	r._build(state.db, iid, [] as Array[String], state.happenings)
+	r._build(state.db, iid, [] as Array[String])
 	return r
 
 
@@ -87,7 +87,7 @@ static func groups(p_rows: PackedStringArray, p_legend: Dictionary, kinds: Array
 	return out
 
 
-## 방 나누기: 나누는 칸(벽 · 벽 장식 · 문 · 바깥 문)이 아닌 칸 덩어리 [[칸 …] …] (위→아래, 왼→오른쪽). 범례만 본다(사건과 무관).
+## 방 나누기: 나누는 칸(벽 · 벽 장식 · 문 · 바깥 문)이 아닌 칸 덩어리 [[칸 …] …] (위→아래, 왼→오른쪽). 범례만 본다(needs·locked와 무관).
 static func room_cells(p_rows: PackedStringArray, p_legend: Dictionary) -> Array[Array]:
 	var out: Array[Array] = []
 	var seen := {}
@@ -114,7 +114,7 @@ static func room_cells(p_rows: PackedStringArray, p_legend: Dictionary) -> Array
 	return out
 
 
-func _build(db: GameDatabase, iid: String, open: Array[String], happenings: Array[String]) -> void:
+func _build(db: GameDatabase, iid: String, open: Array[String]) -> void:
 	id = iid
 	def = db.get_entry("interiors", iid)
 	legend = JsonUtil.get_dict(def, "legend")
@@ -132,7 +132,7 @@ func _build(db: GameDatabase, iid: String, open: Array[String], happenings: Arra
 			var needs := JsonUtil.get_str(d, "needs")
 			if not needs.is_empty() and not open.has(needs):
 				k = "floor"
-			if k == "door" and (JsonUtil.get_bool(d, "locked") or (d.has("opens") and not happenings.has(JsonUtil.get_str(d, "opens")))):
+			if k == "door" and JsonUtil.get_bool(d, "locked"):
 				k = "wallart"  # 닫힌 문 = 벽(바라보고 Enter = 잠겨 있다)
 			_kind[Vector2i(x, y)] = k
 			if k in WALK:

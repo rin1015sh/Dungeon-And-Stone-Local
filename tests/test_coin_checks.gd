@@ -33,6 +33,13 @@ func _rig(s: ExploreSession, right: bool, kind: String, quit: bool = false) -> v
 
 
 ## 걸을 수 있고 바로 아래도 걸을 수 있는 칸(spawn이 그 아래에 무리를 세운다)의 가짜 요소.
+## 세션 신호에 붙인 람다(세션을 잡고 있다)를 떼어 순환 참조를 끊는다 — 테스트 끝마다.
+func _unrig(s: ExploreSession) -> void:
+	for sig: Signal in [s.coin_guess, s.coin_toss, s.message]:
+		for c: Dictionary in sig.get_connections():
+			sig.disconnect(c["callable"])
+
+
 func _feature(s: ExploreSession) -> Dictionary:
 	var at := s.pos
 	for r in range(0, 12):
@@ -67,7 +74,7 @@ func test_gate_wrong_fails_and_can_retry() -> void:
 	assert_false((e["used"] as Dictionary).has("lift"), "횟수를 쓰지 않는다 — 다시 해 볼 수 있다")
 	assert_eq(s.player.inventory.count("magic_stone_9"), 0)
 	assert_near(s.clock.total_hours - t0, 0.5, 0.001, "시간은 흐른다")
-
+	_unrig(s)
 
 func test_gate_right_succeeds() -> void:
 	var s := _session(false)
@@ -76,7 +83,7 @@ func test_gate_right_succeeds() -> void:
 	FieldFeatureAct.run(s, e, GATE)
 	assert_true((e["used"] as Dictionary).has("lift"), "맞히면 해낸다")
 	assert_eq(s.player.inventory.count("magic_stone_9"), 1)
-
+	_unrig(s)
 
 func test_risk_wrong_brings_danger() -> void:
 	var s := _session(true)
@@ -86,7 +93,7 @@ func test_risk_wrong_brings_danger() -> void:
 	assert_eq(s.player.inventory.count("magic_stone_9"), 1, "risk는 틀려도 해낸다")
 	assert_true(s.player.statuses.has("curse"), "틀리면 risk_effects")
 	assert_eq(s.monsters.groups.size(), n0 + 1, "틀리면 spawn이 반드시 일어난다")
-
+	_unrig(s)
 
 func test_risk_right_is_safe() -> void:
 	var s := _session(true)
@@ -96,7 +103,7 @@ func test_risk_right_is_safe() -> void:
 	assert_eq(s.player.inventory.count("magic_stone_9"), 1)
 	assert_false(s.player.statuses.has("curse"), "맞히면 위험 없음")
 	assert_eq(s.monsters.groups.size(), n0, "맞히면 아무것도 일어나지 않는다")
-
+	_unrig(s)
 
 func test_quit_spends_nothing() -> void:
 	var s := _session(false)
@@ -110,7 +117,7 @@ func test_quit_spends_nothing() -> void:
 	assert_eq(s.player.inventory.count("magic_stone_9"), 1, "그만두면 값을 치르지 않는다")
 	assert_near(s.clock.total_hours, t0, 0.001, "시간도 흐르지 않는다")
 	assert_true((e["used"] as Dictionary).is_empty())
-
+	_unrig(s)
 
 func test_hazard_cannot_be_quit() -> void:
 	var s := _session(false)
@@ -125,7 +132,7 @@ func test_hazard_cannot_be_quit() -> void:
 	assert_eq(hz.on_step(s, s.pos), true)
 	assert_true(asked[0], "앞뒤를 묻는다")
 	assert_false(hz.at.has(s.pos), "한 번만")
-
+	_unrig(s)
 
 func test_no_stat_checks_left_in_data() -> void:
 	for id: String in db.get_collection("events"):

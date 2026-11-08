@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1139줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1086줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -160,8 +160,6 @@
 - `collection.landmarks` 랜드마크
 - `collection.activities` 도시 활동
 - `collection.city_info` 소문·정보
-- `collection.city_events` 오늘의 거리
-- `collection.street_events` 거리 사건
 - `collection.meals` 여관 요리
 - `collection.scavenge` 균열 잡템 표
 - `collection.interiors` 시설 실내
@@ -975,13 +973,10 @@
 - `city.travel_title` 어디로 갈까
 - `city.travel_cancel` 그만둔다
 - `city.reason_no_books` 이 분야는 다 읽었다
-- `city.debug_reroll` 사건 다시
 - `city.debug_tax_due` 세금 기한으로
-- `city.debug_life` 사건 {events} · 거리 {street} · 세금 {tax}(냄 {paid})
+- `city.debug_life` 세금 {tax}(냄 {paid})
 - `city.shop_tab_buy` 구매
 - `city.shop_tab_sell` 판매
-- `city.reason_closed` 문이 닫혀 있다
-- `city.debug_street` 거리 사건
 - `city.reason_no_item` 필요한 물건이 없다.
 - `city.reason_read_this_visit` 오늘은 이 분야를 이미 읽었다
 
@@ -1013,9 +1008,6 @@
 - `city.fx.item_no_room` {name}을(를) 넣을 자리가 없다.
 - `city.fx.item_undecided` 받을 것이 정해지지 않았다. (미정)
 - `city.fx.tax_paid` 세금 {n} 스톤을 냈다. 납부 증서에 붉은 인장이 찍힌다.
-- `city.fx.money_lost` {n} 스톤을 잃었다.
-- `city.fx.money_got` {n} 스톤을 받았다.
-- `city.fx.closed` {name}이(가) 문을 닫았다.
 - `city.fx.no_tags` 신원패가 없다.
 - `city.fx.tags_returned` 신원패 {n}장을 넘기고 {stones} 스톤을 받았다.
 - `city.fx.no_records` 넘길 기록이 없다.
@@ -1101,115 +1093,6 @@
 - `city.tax_execution.1` 포탈 광장으로 가는 길목에서 경비대가 앞을 막는다. 대장이 장부를 펼친다.
 - `city.tax_execution.2` "올해 세금 납부 기록이 없군." 대답을 기다리는 사람은 아무도 없다.
 - `city.tax_execution.3` 광장 끝 교수대에 밧줄이 하나 더 걸린다.
-
-### `city.street`
-
-> 거리 사건(CityAmbient, data/street_events) — intro.<n> 장면(차례로 모두), <결과>.<n> 결과 장면(결과 = result 또는 선택지 id, 판정이 있으면 _ok·_fail), choice.<선택지 id> 선택지 이름. 결과 장면에는 효과 인자({n} 스톤, {name} 시설)를 쓸 수 있다.
-
-#### `city.street.hanging`
-
-- `city.street.hanging.intro.1` 광장 끝 교수대 앞에 사람들이 모여 있다. 지난해 세금을 내지 못한 자들이다.
-- `city.street.hanging.intro.2` 인간도, 수인도, 드워프도 같은 줄에 서 있다. 밧줄은 종족을 묻지 않는다.
-- `city.street.hanging.intro.3` 발판이 빠지는 소리가 몇 번 나고, 구경꾼들은 곧 제 갈 길로 흩어진다.
-
-#### `city.street.tax_notice`
-
-- `city.street.tax_notice.intro.1` 광장에 관리가 올라서서 두루마리를 편다.
-- `city.street.tax_notice.intro.2` "올해 세금은 이번 달 하순이 끝나기 전까지 은행에 납부하라. 기한을 넘긴 자는 교수대에 오른다."
-
-#### `city.street.pickpocket`
-
-- `city.street.pickpocket.intro.1` 붐비는 골목에서 누군가 어깨를 세게 스치고 지나간다.
-
-- `city.street.pickpocket.result_ok.1` 허리춤으로 뻗어 온 손목을 붙잡았다. 소년이 몸을 비틀어 빠져나가 인파 속으로 사라진다.
-
-- `city.street.pickpocket.result_fail.1` 몇 걸음 뒤에야 허리춤이 가볍다는 것을 알았다. {n} 스톤어치 동전이 사라졌다.
-
-#### `city.street.checkpoint`
-
-- `city.street.checkpoint.intro.1` 경비대가 거리를 가로막고 지나가는 사람들의 얼굴을 하나하나 살핀다.
-
-- `city.street.checkpoint.result.1` 수배자를 찾는다며 {name} 앞 골목을 통째로 막아 버렸다.
-
-#### `city.street.wanted`
-
-- `city.street.wanted.intro.1` 게시판에 새 현상수배 전단이 붙었다. 미궁 안에서 동료를 베고 혼자 돌아온 탐험가라고 한다.
-- `city.street.wanted.intro.2` 전단 아래 적힌 현상금 액수를 두고 사람들이 수군거린다.
-
-#### `city.street.stone_glut`
-
-- `city.street.stone_glut.intro.1` 큰 원정대가 한꺼번에 돌아왔다. 짐수레마다 마석 자루가 실려 있다.
-- `city.street.stone_glut.intro.2` 상점 주인들은 마석 값을 깎을 핑계가 생겼다며 웃는다.
-
-#### `city.street.stone_demand`
-
-- `city.street.stone_demand.intro.1` 마도 공방 사람들이 거리마다 다니며 마석을 사들인다.
-- `city.street.stone_demand.intro.2` 상점 앞에 마석 값을 올려 받는다는 쪽지가 붙었다.
-
-#### `city.street.potion_shortage`
-
-- `city.street.potion_shortage.intro.1` 신전에서 내려오는 포션 물량이 끊겼다는 소문이 돈다.
-- `city.street.potion_shortage.intro.2` 상점 진열대의 포션 앞에 새 가격표가 붙어 있다.
-
-#### `city.street.dubious_peddler`
-
-- `city.street.dubious_peddler.intro.1` 골목 그늘에서 사내가 손짓한다. 품속에서 붉은 물약 병을 꺼내 보인다.
-- `city.street.dubious_peddler.intro.2` "신전 것과 똑같은 물건이오. 값은 반의반이고."
-
-- `city.street.dubious_peddler.choice.buy` 산다
-- `city.street.dubious_peddler.choice.pass` 지나친다
-
-- `city.street.dubious_peddler.buy_ok.1` 병을 따 냄새를 맡아 보니 진짜 포션이다. 사내는 이미 자리를 떴다.
-
-- `city.street.dubious_peddler.buy_fail.1` 병 속에는 붉게 물들인 물뿐이었다. 사내가 있던 자리는 비어 있다.
-
-- `city.street.dubious_peddler.pass.1` 사내는 혀를 차고 다음 사람을 부른다.
-
-#### `city.street.beggar`
-
-- `city.street.beggar.intro.1` 한쪽 팔이 없는 사내가 담벼락에 기대 앉아 있다. 옆에 찌그러진 투구가 엎어져 있다.
-
-- `city.street.beggar.choice.give` 동전을 넣는다
-- `city.street.beggar.choice.pass` 지나친다
-
-- `city.street.beggar.give.1` 투구에 동전이 떨어지는 소리에 사내가 고개를 든다. "미궁에서 살아 돌아오길."
-
-- `city.street.beggar.pass.1` 사내는 고개를 숙인 채 움직이지 않는다.
-
-#### `city.street.drunk`
-
-- `city.street.drunk.intro.1` 술 냄새를 풍기는 덩치가 길을 막아선다. "어이, 거기. 어깨를 쳤으면 사과를 해야지."
-
-- `city.street.drunk.choice.fight` 맞붙는다
-- `city.street.drunk.choice.avoid` 돌아간다
-
-- `city.street.drunk.fight_ok.1` 덩치가 진흙탕에 나뒹굴자 구경꾼들이 환호하며 동전을 던진다. {n} 스톤이 모였다.
-
-- `city.street.drunk.fight_fail.1` 주먹다짐 끝에 둘 다 진흙탕에 나뒹굴었다. 온몸이 쑤신다.
-
-- `city.street.drunk.avoid.1` 뒤에서 비웃음이 들리지만 돌아보지 않았다.
-
-#### `city.street.errand`
-
-- `city.street.errand.intro.1` 짐수레를 끌던 노인이 바퀴가 빠졌다며 도움을 청한다.
-
-- `city.street.errand.choice.accept` 돕는다
-- `city.street.errand.choice.decline` 거절한다
-
-- `city.street.errand.accept.1` 짐을 다 옮기고 나니 해가 기울었다. 노인이 {n} 스톤을 손에 쥐여 준다.
-
-- `city.street.errand.decline.1` 노인은 다른 사람을 부르러 간다.
-
-#### `city.street.fire`
-
-- `city.street.fire.intro.1` 밤사이 불이 났다. 매캐한 연기가 아직 골목에 남아 있다.
-
-- `city.street.fire.result.1` {name} 쪽이 그을음투성이다. 오늘은 문을 열지 못할 것 같다.
-
-#### `city.street.plague`
-
-- `city.street.plague.intro.1` 기침하는 사람이 부쩍 늘었다. 역병이 돈다는 소문에 신전 앞에 줄이 길다.
-- `city.street.plague.intro.2` 여관들도 식사와 잠자리 값을 슬그머니 올렸다.
 
 ### `city.meal`
 

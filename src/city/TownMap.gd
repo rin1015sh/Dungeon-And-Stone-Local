@@ -43,7 +43,7 @@ var house_doors: Dictionary = {}
 var gates: Dictionary = {}
 ## 광장 돌 단 {center: Vector2i, r, at: Vector2(칸), base(밑 땅 높이), ring: {칸: true}(선 돌 고리 칸 — 소품 dais_ring)}
 var dais: Dictionary = {}
-## 퀘스트 · 거리 사건 자리(data places — 지금은 자리만, CT95): [{id, name_ko, at: [Vector2(칸)]}]
+## 퀘스트 등 자리(data places — 지금은 자리만, CT95): [{id, name_ko, at: [Vector2(칸)]}]
 var places: Array[Dictionary] = []
 ## 물 위에 뜨는 소품(물 칸에만 놓는다 — 칸 종류는 물 그대로).
 const FLOATING := ["boat"]

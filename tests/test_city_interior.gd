@@ -1,11 +1,10 @@
 extends TestCase
-## 시설 실내(CT106 — data/interiors, CityInterior): 방 나누기 · 자리 · 사건으로만 서는 것 · 잠긴 문 · 들어온 자리.
+## 시설 실내(CT106 — data/interiors, CityInterior): 방 나누기 · 자리 · 옛 사건 전용이던 것(늘 — CT114) · 잠긴 문 · 들어온 자리.
 
 
-func _state(happen: Array[String] = []) -> CityState:
+func _state() -> CityState:
 	var s := CityState.new(db, 7)
 	s.start()
-	s.happenings.assign(happen)
 	return s
 
 
@@ -40,28 +39,21 @@ func test_spots_and_targets() -> void:
 	var r := CityInterior.load_for(_state(), "inn")
 	var at := r.target(Vector2(4.5, 10.5), Vector2i.UP)
 	assert_true((at.get("acts", []) as Array).has("inn_meal"), "바 앞에서 위를 보면 바(식사)")
-	assert_false((at.get("acts", []) as Array).has("inn_feast"), "특식은 사건 순에만")
+	assert_true((at.get("acts", []) as Array).has("inn_feast"), "바에 특식도 늘(CT114)")
 	var bed := r.target(Vector2(16.5, 3.5), Vector2i.UP)
 	assert_eq(bed.get("acts", []), ["inn_rest"], "내 방 침대 = 휴식")
 	assert_true(bool(r.target(Vector2(3.5, 5.5), Vector2i.UP).get("locked", false)), "다른 객실 문 = 잠겨 있다")
 	assert_true(r.target(Vector2(10.5, 12.5), Vector2i.DOWN).is_empty(), "바닥을 보면 아무것도 없다")
-	var feast := CityInterior.load_for(_state(["inn_special"] as Array[String]), "inn")
-	assert_true((feast.target(Vector2(4.5, 10.5), Vector2i.UP).get("acts", []) as Array).has("inn_feast"), "여관 특식 순 = 바에 특식")
 
 
-func test_event_only_things() -> void:
+## 옛 사건 전용이던 것(희귀서 서고 · 떠돌이 상인)은 늘 열려 있다(도시 사건을 없앰 — CT114).
+func test_former_event_things_always_there() -> void:
 	var lib := CityInterior.load_for(_state(), "library")
-	assert_eq(lib.kind_at(Vector2i(8, 3)), "wallart", "희귀서 서고 문은 평소 닫힘")
-	assert_false(lib.map.is_walkable(Vector2i(8, 3)), "닫힌 문은 못 지나간다")
-	var open := CityInterior.load_for(_state(["rare_books"] as Array[String]), "library")
-	assert_eq(open.kind_at(Vector2i(8, 3)), "door", "희귀서 입고 순 = 서고 문이 열린다")
-	assert_true(open.map.is_walkable(Vector2i(8, 3)), "열린 문은 지나간다")
+	assert_eq(lib.kind_at(Vector2i(8, 3)), "door", "희귀서 서고 문은 늘 열림")
+	assert_true(lib.map.is_walkable(Vector2i(8, 3)), "열린 문은 지나간다")
 	var shop := CityInterior.load_for(_state(), "shop")
-	assert_eq(shop.npcs.size(), 1, "평소 상점 = 상인 하나")
-	assert_eq(shop.kind_at(Vector2i(3, 4)), "floor", "떠돌이 노점은 그 순에만(평소 빈 바닥)")
-	var peddler := CityInterior.load_for(_state(["peddler"] as Array[String]), "shop")
-	assert_eq(peddler.npcs.size(), 2, "떠돌이 상인 순 = 떠돌이 상인이 선다")
-	assert_true((peddler.target(Vector2(3.5, 5.5), Vector2i.UP).get("acts", []) as Array).has("shop_peddler"), "노점 앞 = 떠돌이 상인")
+	assert_eq(shop.npcs.size(), 2, "상점 = 상인 + 떠돌이 상인")
+	assert_true((shop.target(Vector2(3.5, 5.5), Vector2i.UP).get("acts", []) as Array).has("shop_peddler"), "노점 앞 = 떠돌이 상인")
 
 
 func test_temple_rooms_and_side_spots() -> void:

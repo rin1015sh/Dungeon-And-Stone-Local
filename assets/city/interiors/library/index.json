@@ -75,19 +75,6 @@
    "room": 1
   },
   {
-   "file": "w_8_3.webp",
-   "origin": [
-    7.8,
-    0.8
-   ],
-   "cell": [
-    8,
-    3
-   ],
-   "room": 1,
-   "closed_door": true
-  },
-  {
    "file": "w_10_3.webp",
    "origin": [
     9.8,

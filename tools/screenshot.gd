@@ -6,8 +6,7 @@ extends Node
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
 ## city: --house=<집 실내 id> 일반 집 실내(CT110) · --facility=<id> --in_at=x,y [--face=…] 실내(CT106)에서 그 칸에 선다(그 방만 보인다) ·
 ##   --town_at=x,y(칸) [--face=up|down|left|right] 동네 지도에서 선 자리 · --door=<시설 id> 그 문 앞(CT82), --facility=<id> 시설 안, --activity=<id> 그 활동 한 번(패널형은 패널 열기 — --tab=buy|sell 상점 탭), --debug 도시 디버그 패널, --weather=<clear|overcast|fog> 날씨, --look=<1~4> 도시 그림 등급, --travel 특별 시설 가는 창
-##   --happen=<사건 id,…> 오늘의 거리 사건을 건다(등롱), --month=<달> --period=<0~2> 날짜(세금 기한 등),
-##   --street=<거리 사건 id> 그 거리 사건을 일으킨다(--dialog와 함께 — 없으면 거리 사건은 꺼 둔다)
+##   --month=<달> --period=<0~2> 날짜(세금 기한 등)
 ## --seed: 탐험 층 시드 고정, --walk: 입장 후 오른쪽·아래로 몇 걸음 걸을지, --debug: 디버그 패널 열기,
 ## --portal: 가장 가까운 2층 포탈로 순간이동(1층 팔 끝 암흑지대 확인), --at=x,y: 그 칸으로 순간이동(고정 지도 좌표 — 공동·이벤트 자리 확인), --interact: 그 자리에서 살피기(E), --torch: 횃불 켜기, --reveal: 안개 걷기, --combat: 옆에 몬스터를 불러 전투 화면, --pause: 일시정지 화면
 ## --monster=<id>: --combat에서 부를 몬스터(--god = 무적), --mate: 동료를 붙여 행동 정하기 화면, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
@@ -55,7 +54,6 @@ func _ready() -> void:
 			var kv := arg.trim_prefix("--").split("=", true, 1)
 			_args[kv[0]] = kv[1] if kv.size() > 1 else "true"
 	GameState.debug_seed_override = str(_args["seed"]).to_int()
-	CityAmbient.enabled = false
 	DialogueBox.auto_skip = not _args.has("dialog")  # --dialog: 하단 대화창(알림·전투 안내·시설 결과)을 넘기지 않고 띄운 채 찍는다
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
 	add_child(_main)
@@ -557,8 +555,6 @@ func _city(city: CityScreen) -> void:
 	if _args.has("month"):
 		st.month = str(_args["month"]).to_int()
 		st.period = str(_args.get("period", "0")).to_int()
-	if _args.has("happen"):
-		st.happenings.assign(str(_args["happen"]).split(","))
 	if _args.has("look"):  # --look=<1~4>: 도시 그림 등급(CT63 — 디버그 임시값)
 		st.set_override("city/district/look", str(_args["look"]).to_int())
 	st.changed.emit()
@@ -619,9 +615,6 @@ func _city(city: CityScreen) -> void:
 				await get_tree().create_timer(1.5).timeout  # 글자가 다 나올 때까지
 	if _args.has("debug"):
 		city.debug_panel().visible = true
-	if _args.has("street"):
-		city.street_event(str(_args["street"]))
-		await get_tree().create_timer(0.5).timeout  # 일러스트가 다 나타날 때까지(StreetEventView fade)
 	await _frames(4)
 
 

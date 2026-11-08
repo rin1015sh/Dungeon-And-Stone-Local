@@ -6,7 +6,8 @@
   "x": 2248,
   "building": "res://assets/city/buildings/shop.webp",
   "activities": [
-    "shop_trade"
+    "shop_trade",
+    "shop_peddler"
   ],
   "shows": [],
   "source": "original"

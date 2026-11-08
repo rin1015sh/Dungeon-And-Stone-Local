@@ -1,5 +1,5 @@
 extends RefCounted
-## 거리 사건 일러스트 공통 부품(Events·Events2·Events3 — CT45): 하늘 · 뒤 집 줄 · 젖은 포석 · 사람 · 군중 옷차림 · 종이(벽보) · 화로.
+## 바깥 장면 일러스트 공통 부품(귀환 정산 Settle — 옛 거리 사건 그림에서 남긴 것, CT45): 하늘 · 뒤 집 줄 · 젖은 포석 · 사람 · 군중 옷차림 · 종이(벽보) · 화로 · 마석 무더기.
 ## 960×540 화면 좌표. tools/paint_city.gd 전용.
 
 const Paint := preload("res://tools/city_art/Paint.gd")
@@ -18,6 +18,7 @@ const WARM := Color("#ffb45c")
 const FIRE := Color("#ff7a2a")
 const WALLS := [Color("#575142"), Color("#4b473b"), Color("#5e5341"), Color("#4f362c"), Color("#514e44")]
 const PAPER := Color("#cbbd98")
+const STONE := Color("#6fc8b4")  ## 마석 빛(탁한 청록)
 ## 군중 옷차림(Plaza.LOOKS와 같은 결): 0 짐꾼 · 1 여자 · 2 뚱뚱한 대머리 · 3 두건 쓴 여자 · 4 상투 · 5 창 든 남자.
 const CROWD := [
 	{"body": "male", "top": Color("#5a4632"), "bottom": Color("#3e362c"), "hair": "short", "hair_c": Color("#2c2016")},
@@ -138,3 +139,16 @@ static func brazier(p: Paint, cx: float, ground_y: float, s: float = 1.0) -> voi
 	Bits.torch(p, Vector2(cx, ground_y - 84 * s))
 
 
+## 마석 한 무더기: 각진 작은 돌 n개(밑은 넓고 위로 좁게) + 빛.
+static func stones(p: Paint, cx: float, base: float, wide: float, n: int) -> void:
+	for i in n:
+		var t := p.rng.randf()
+		var q := Vector2(cx + p.rng.randf_range(-wide, wide) * (1.0 - t * 0.7), base - t * wide * 0.55 - p.rng.randf_range(0, 4))
+		var r := p.rng.randf_range(4.0, 7.5)
+		var pts := PackedVector2Array()
+		for k in 6:
+			pts.append(q + Vector2.from_angle(TAU * k / 6.0 + p.rng.randf()) * r * p.rng.randf_range(0.7, 1.1))
+		p.fill_poly(pts, p.flat(STONE.darkened(p.rng.randf_range(0.2, 0.6)), 0.15))
+		Ink.path(p, pts, 1.0, true, Ink.INK, 0.7, 0.2)
+		Ink.line(p, q + Vector2(-2, -2), q + Vector2(1, -3), 1.2, STONE.lightened(0.4), 0.7, 0.1)
+	Ink.glow(p, cx, base - wide * 0.2, wide * 1.6, STONE, 0.35, false)

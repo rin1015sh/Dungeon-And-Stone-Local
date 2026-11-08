@@ -13,10 +13,9 @@ static func stone_cost(act: Dictionary) -> int:
 	return maxi(0, int(CityValues.num(act, "cost_stones")))
 
 
-## 지금 낼 이용료(× 이번 순 배율 "fee:<시설>" — 거리 사건).
+## 지금 낼 이용료.
 static func cost(state: CityState, act_id: String) -> int:
-	var act := state.activity(act_id)
-	return floori(stone_cost(act) * state.price_mult("fee:" + JsonUtil.get_str(act, "facility")))
+	return stone_cost(state.activity(act_id))
 
 
 ## 지금 이 활동을 할 수 있는가. 할 수 있으면 "", 아니면 이유(문자열 키). extra_stones = 거래 금액 등 추가로 필요한 돈.
@@ -94,11 +93,9 @@ static func perform(state: CityState, pc: PlayerCharacter, act_id: String, regis
 	return ctx
 
 
-## 이 시설의 활동 id: 이번 순 사건(CityHappenings — 맨 앞) + 데이터 순서.
+## 이 시설의 활동 id(데이터 순서).
 static func activities_of(state: CityState, facility_id: String) -> Array[String]:
 	var out: Array[String] = []
-	for id in CityHappenings.activities_at(state, facility_id):
-		out.append(id)
 	for v: Variant in JsonUtil.get_array(state.db.get_entry("facilities", facility_id), "activities"):
 		if state.db.has_entry("activities", str(v)) and not out.has(str(v)):
 			out.append(str(v))

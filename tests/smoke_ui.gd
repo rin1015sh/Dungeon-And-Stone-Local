@@ -25,7 +25,6 @@ var _failed: bool = false
 func _ready() -> void:
 	GameState.save_path = TEST_SAVE  # 실제 저장(한 칸)을 덮지 않는다
 	DialogueBox.auto_skip = true  # 대화창(알림)은 기다리지 않는다 — 대화창 자체는 _dialog_checks에서 따로 본다
-	CityAmbient.enabled = false  # 거리 사건은 _street_flow에서만(선택 창이 다른 흐름을 막지 않게)
 	SaveGame.delete(TEST_SAVE)
 	EventBus.log_message.connect(func(text: String, _kind: String) -> void: _logs.append(text))
 	_main = (load("res://src/Main.tscn") as PackedScene).instantiate()
@@ -44,7 +43,6 @@ func _run() -> void:
 	await _riddle_flow()
 	await _city_flow()
 	await _tax_flow()
-	await _street_flow()
 	await _library_flow()
 	CityScreen.interiors = true
 	await _interior_flow()
@@ -826,7 +824,6 @@ func _interior_flow() -> void:
 	if city == null:
 		return
 	var st := city.state
-	st.happenings.clear()
 	city.pc.inventory.money = 5000
 	await _enter_door(city, "inn")
 	var iv := city.facility_view() as InteriorView
@@ -930,7 +927,6 @@ func _library_flow() -> void:
 	if city == null:
 		return
 	var st := city.state
-	st.happenings.clear()
 	var town := city.town()
 	if not _expect(town != null and town.town().is_walkable(Kinematics.cell_of(town.pos)), "도시 = 걸어 다니는 동네 지도(CT82)"):
 		return
@@ -1166,7 +1162,6 @@ func _city_flow() -> void:
 	await _frames(2)
 	var cash := pc.inventory.money
 	pc.inventory.money = 0
-	st.happenings.clear()  # 오늘의 거리 사건이 있으면 할 게 남는다
 	DialogueBox.auto_skip = false
 	city.choose_facility("inn")
 	await _frames(3)
@@ -1251,53 +1246,6 @@ func _tax_flow() -> void:
 	city.facility_view().try_leave()
 	var title := (await _screen(TitleScreen)) as TitleScreen
 	_expect(title != null and not GameState.has_save(), "세금을 못 내고 기한을 넘기면 처형 → 타이틀(기록 삭제)")
-
-
-## 거리 사건(CityAmbient): 장면은 대화창, 선택지는 작은 창(Enter), 닫힌 시설은 못 들어간다, 행동력은 그대로.
-func _street_flow() -> void:
-	_main.call("_show_title")
-	var city := await _new_city("거리")
-	if city == null:
-		return
-	var st := city.state
-	var pc := city.pc
-	var ap := st.ap
-	DialogueBox.auto_skip = false
-	st.month = CityTax.due_month(st) + 1
-	st.period = 0
-	st.ambient_pending = true
-	CityAmbient.enabled = true
-	city.street_event()
-	await _frames(1)
-	_expect(city.dialog().page_text().contains(Strings.t("city.street.hanging.intro.1").left(8)), "세금 기한 다음 달 상순 = 교수형 장면")
-	_expect(city.event_view() != null and city.event_view().has_picture(), "거리 사건 = 일러스트가 도시를 덮는다(CT45)")
-	city.choose_facility(st.facility_ids()[0])
-	await _action("menu")
-	await _frames(1)
-	_expect(city.facility_view() == null and not city.menu().is_open(), "사건 중엔 시설·Tab 메뉴를 쓸 수 없다")
-	city.dialog().clear()
-	await _frames(1)
-	_expect(city.event_view() == null, "다 넘기면 일러스트가 사라진다")
-	DialogueBox.auto_skip = true
-	var money := pc.inventory.money
-	city.street_event("beggar")
-	await _frames(2)
-	_expect(city.has_node("StreetChoice"), "선택지가 있는 사건은 작은 창")
-	await _action("menu_confirm")
-	await _frames(2)
-	_expect(not city.has_node("StreetChoice") and pc.inventory.money == money - 10, "Enter로 고르면 효과(동전)")
-	city.street_event("checkpoint")
-	await _frames(2)
-	if _expect(st.closed.size() == 1, "검문 — 시설 하나가 닫힌다"):
-		DialogueBox.auto_skip = false
-		city.choose_facility(st.closed[0])
-		await _frames(1)
-		_expect(city.facility_view() == null and city.dialog().page_text().contains(Strings.t("city.reason_closed")), "닫힌 시설은 못 들어간다")
-		city.dialog().clear()
-		DialogueBox.auto_skip = true
-	_expect(st.ap == ap, "거리 사건은 행동력을 쓰지 않는다")
-	CityAmbient.enabled = false
-	_main.call("_show_title")
 
 
 func _press_prefix(screen: Node, prefix: String) -> void:

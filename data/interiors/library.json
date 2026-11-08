@@ -35,9 +35,8 @@
   },
   "%": {
    "kind": "door",
-   "name_ko": "서고 문(희귀서 입고 순에만 열림)",
-   "art": "door",
-   "opens": "rare_books"
+   "name_ko": "서고 문",
+   "art": "door"
   },
   "1": {
    "kind": "wallart",

@@ -3,6 +3,13 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 스탯 판정 → 동전(V29) · 도시 사건 없앰(CT114)
+- **범위 / 기준 / 테스트**: 사용자 "스탯 판정 전부 동전 던지기로 · 넣으면 좋은 곳(석관 · 무덤 · 시체 더미 · 아귀 입 · 공물 · 우물)에도 동전 · 도시 이벤트는 전부 제거". 기준: 데이터에 `check`·`detect`·`{stat, dc}` 판정이 없고(검증기가 오류로) 도시 사건 데이터 · 코드가 없다. 테스트: test_coin_checks(7) · test_city_life · 고친 test_tomb · test_glacier · test_sub_stats · test_field_features.
+- **한 일(동전)**: `CoinBet`(bet · quiet), `ExploreSession.guess(then, can_back)`. FieldFeatureAct `coin` gate · risk + `risk_effects`(Esc면 값 · 시간 안 씀), FieldFeatures 알아채기 = 조용한 동전, RiftHazards 밟으면 그만둘 수 없는 동전(`disarm: true` = 해제 문구) · 알아채기 조용한 동전 · 수호자의 눈이 살아 있으면 못 알아챔 · `success_chance` 삭제, RiftHidden 광차 `coin: true`, MawTraps 앞뒤 고르기. 데이터 events 15개 · rifts 3개 · balance `coin.field/hazard/detect`(rift.hazard_base 등 삭제). 테스트 람다가 세션을 잡아 생긴 누수는 `_unrig`로 끊었다.
+- **한 일(도시 사건)**: 하위 작업으로 거리 사건(street_events 14 · CityAmbient · StreetEventView · 일러스트 14장 · close_facility/money/price_mod 효과 · 가격 배율 · 닫힌 시설)과 오늘의 거리(city_events 5 · CityHappenings · 등롱 불빛 · 문 `opens`)를 지웠다. 사건 활동 6개(신전 정화 · 축일 미사 · 여관 든든한 식사 · 잔칫상 · 행상 · 희귀서)는 시설 목록 끝에 붙여 늘 열림, 도서관 서고 문은 늘 열림(다시 구움). 옛 저장의 사건 키는 무시하고 읽는다. 기록 CT114.
+- **확인**: check.sh 모두 통과(클라우드 리눅스). 고르기 창이 함정 · 석관에서 뜨는 모습은 캡처하지 않았다(캡처 모드는 고르기를 건너뜀) — **미검증(직접 플레이 필요)**.
+- **남은 것**: 지능 · 민첩이 함정에서 쓸모를 잃음(메울지 사용자 결정) · `tools/texts_md.py`가 없는 data/city_info/dungeon.json 때문에 멈춘다(예전부터) · docs/plans · archive의 옛 거리 사건 글은 그대로.
+
 ### 2026-11-08 보스 동전 기술(C27)
 - **범위 / 기준 / 테스트**: 사용자 "상자 동전을 전투 패턴에 — 맞추면 덜 아프게 · 피하고, 틀리면 그대로" → "예고 빼고 동전 바로" → "나눠서". 기준: 동전 기술은 예고 없이 쓰는 순간 묻고, 나머지 예고는 그대로. 테스트: test_battle_coin(6) + 예고 테스트를 다른 보스 예고로 갈아 끼움.
 - **한 일**: `BattleCoin`(wants · roll · resolve · effects_for — 맞히면 hit_mult, 0이면 피해 효과에 dodged → 반드시 빗나감, 방어 중이면 guarded_mult), `Battle._use_skill`에 동전 결과 인자, `damage` 효과 `dodged`, 검증기 skills `coin`. 화면 `CombatCoin`(스킬 이름 → 앞뒤 고르기 ChoicePopup → CoinFlip) — CombatScreen이 적 행동 전에 부른다. 받는 화면이 없으면 Battle이 던진다(시뮬). 데이터: 사형 선고 `coin {hit_mult 0, guarded_mult 0.3}` · 점프 압살 `coin {hit_mult 0.3, guarded_mult 0.4}`, 효과는 delayed를 벗기고 위력 그대로. balance `coin.boss.heads` 0.5. all_stats 다시 만듦.

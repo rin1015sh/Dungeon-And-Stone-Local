@@ -2,7 +2,6 @@
   "id": "inn_feast",
   "name_ko": "특식",
   "facility": "inn",
-  "extra": true,
   "cost_stones": 4000,
   "effects": [
     {
@@ -16,5 +15,5 @@
     }
   ],
   "source": "placeholder",
-  "notes": "특식: 오늘의 거리 '여관 특식'이 걸린 순에만(extra — 2026-10-31 거주 등급을 없애며 CT63)"
+  "notes": "특식: 늘 고를 수 있다(옛 오늘의 거리 '여관 특식' 전용 — 도시 사건을 없애며 시설 목록에, CT114)"
 }

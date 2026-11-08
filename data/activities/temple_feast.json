@@ -3,7 +3,6 @@
   "name_ko": "축일 미사",
   "facility": "temple",
   "cost_stones": 0,
-  "extra": true,
   "effects": [
     {
       "type": "temple_merit",

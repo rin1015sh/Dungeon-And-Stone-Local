@@ -1,5 +1,5 @@
 extends TestCase
-## 도시 생활(2026-10-20): 오늘의 거리(CityHappenings) · 세금(CityTax) · 저장.
+## 도시 생활(2026-10-20): 세금(CityTax) · 저장 · 도시 사건 없음(CT114).
 
 
 func _pc(race: String = "human", stats: Dictionary = {}) -> PlayerCharacter:
@@ -20,33 +20,19 @@ func _reg() -> ScriptRegistry:
 	return ContentRegistries.new().city_effects
 
 
-func test_happenings_roll_by_rules_and_open_activities() -> void:
-	var a := _state(11)
-	var b := _state(11)
-	assert_eq(a.happenings, b.happenings, "같은 시드면 같은 사건")
-	var seen := {}
-	for i in 30:
-		a.next_period()
-		var facs: Array[String] = []
-		for id in a.happenings:
-			var f := CityHappenings.facility_of(db, id)
-			assert_false(facs.has(f), "한 시설에 사건 둘은 없다")
-			facs.append(f)
-			seen[id] = true
-			assert_true(CityHappenings.lit(a, f), "걸린 시설은 등롱")
-		assert_true(a.happenings.size() >= 1 and a.happenings.size() <= 2, "순마다 1~2개")
+## 도시 사건은 없다(사용자 결정 2026-11-08, CT114): 옛 사건 전용 활동은 늘 그 시설에 있다.
+func test_no_city_events_and_former_event_activities_always_open() -> void:
+	assert_false(db.collections.has("city_events") or db.collections.has("street_events"), "도시 사건 데이터 없음")
 	var s := _state()
-	s.weather = "fog"
-	assert_false(CityHappenings.eligible(s).has("feast_day"), "축일은 맑은 날만")
-	s.weather = "clear"
-	assert_true(CityHappenings.eligible(s).has("feast_day"))
-	s.happenings.assign(["rare_books"])
-	s.facility = "library"
 	var pc := _pc()
-	assert_eq(CityActions.activities_of(s, "library")[0], "library_rare", "사건 활동이 맨 앞")
+	for pair: Array in [["temple", "temple_cleanse"], ["temple", "temple_feast"], ["inn", "inn_hearty"], ["inn", "inn_feast"],
+			["shop", "shop_peddler"], ["library", "library_rare"]]:
+		assert_true(CityActions.activities_of(s, str(pair[0])).has(str(pair[1])), "늘 있다: " + str(pair[1]))
+	s.facility = "library"
 	assert_eq(CityActions.check(s, pc, "library_rare"), "")
-	s.happenings.clear()
-	assert_eq(CityActions.check(s, pc, "library_rare"), "city.reason_not_here", "사건이 없으면 고를 수 없다")
+	for i in 6:
+		s.next_period()
+	assert_true(CityActions.activities_of(s, "library").has("library_rare"), "순이 바뀌어도 그대로")
 
 
 func test_tax_by_race_year_and_deadline() -> void:
@@ -84,13 +70,18 @@ func test_tax_by_race_year_and_deadline() -> void:
 func test_life_state_round_trip() -> void:
 	var s := _state()
 	s.tax_paid_year = 1
-	s.seen_once.assign(["peddler"])
 	var t := CityState.new(db, 1)
 	t.start()
 	t.load_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
 	assert_eq(t.tax_paid_year, 1)
-	assert_eq(t.happenings, s.happenings, "이번 순 사건")
-	assert_eq(t.seen_once, s.seen_once)
+	assert_false(s.to_dict().has("happenings") or s.to_dict().has("ambient"), "사건은 저장하지 않는다")
+	var old := s.to_dict()  # 옛 저장(사건 키가 남은 것)도 읽는다
+	old.merge({"happenings": ["rare_books"], "seen_once": ["peddler"], "ambient": "fire", "ambient_pending": true,
+		"ambient_seen": {"fire": 1}, "closed": ["shop"], "price_mods": {"sell:magic_stone": 0.8}})
+	var u := CityState.new(db, 1)
+	u.load_dict(JSON.parse_string(JSON.stringify(old)))
+	assert_eq(u.tax_paid_year, 1)
+	assert_eq(u.enter_facility("shop"), "", "옛 저장의 닫힌 시설도 들어간다")
 
 
 func test_equipment_only_at_smithy() -> void:

@@ -25,8 +25,6 @@ var _route: NoticeRoute
 var _menu: GameMenu
 var _codex: CodexMenu  ## 도감(B — UI32)
 var _debug: CityDebugPanel
-var _event_running := false  # 거리 사건 장면·선택 중 — 일러스트가 덮고 도시 조작을 막는다
-var _event_view: StreetEventView
 var _moving := false  # 특별 시설로 가는 창이 떠 있다
 
 
@@ -70,7 +68,6 @@ func _ready() -> void:
 	_debug = CityDebugPanel.new()
 	_debug.setup(state, pc)
 	_debug.dungeon_requested.connect(func() -> void: dungeon_requested.emit())
-	_debug.street_event_requested.connect(street_event.bind(""))
 	_debug.visible = false
 	add_child(_debug)
 	_debug.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -78,20 +75,18 @@ func _ready() -> void:
 	_debug.offset_right = m + UiTheme.render_float("city.debug_width", 420.0)
 	_debug.offset_top = UiTheme.render_float("city.hud_height", 104.0) + m
 	state.expedition_due.connect(_on_expedition_due)
-	state.period_started.connect(func(_m: int, _p: int) -> void: street_event.call_deferred(""))
 	state.period_started.connect(func(_m: int, _p: int) -> void: _town.refresh_weather())
 	state.advance_if_spent.call_deferred()  # 행동력이 0인 채로 왔으면 바로 다음 순(하순이면 미궁으로)
-	street_event.call_deferred("")  # 시작·귀환한 순의 거리 사건
 
 
 func town() -> TownView:
 	return _town
 
 
-## 동네 걷기를 멈출지: 시설 창·메뉴·도감·대화창·거리 사건·작은 창이 떠 있으면 멈춘다.
+## 동네 걷기를 멈출지: 시설 창·메뉴·도감·대화창·작은 창이 떠 있으면 멈춘다.
 func _process(_delta: float) -> void:
-	_town.paused = _facility != null or _menu.is_open() or _codex.is_open() or _dialog.busy() or _event_running or _moving \
-		or has_node("PauseChoice") or has_node("StreetChoice") or _debug.visible
+	_town.paused = _facility != null or _menu.is_open() or _codex.is_open() or _dialog.busy() or _moving \
+		or has_node("PauseChoice") or _debug.visible
 	if _facility is InteriorView:  # 실내(CT106): Tab 메뉴 · 도감 · 디버그가 떠 있는 동안 걷지 않는다
 		(_facility as InteriorView).paused = _menu.is_open() or _codex.is_open() or _debug.visible or has_node("PauseChoice")
 
@@ -110,7 +105,7 @@ func is_debug_open() -> bool:
 
 ## 동네에서 시설 문을 골랐다: 시설 창으로(행동력은 들어갈 때 1 — CT72). 못 들어가면 안내.
 func choose_facility(id: String) -> void:
-	if _facility != null or _event_running:
+	if _facility != null:
 		return
 	var why := state.enter_facility(id)
 	if not why.is_empty():
@@ -130,7 +125,7 @@ func choose_facility(id: String) -> void:
 
 ## 일반 집 문(CT110): city.json interior.houses_locked면 TownView가 '잠겨 있다.'만 — 풀렸으면 그 집 바리에이션의 실내(행동력은 쓰지 않는다).
 func visit_house(house_id: String, design: String) -> void:
-	if _facility != null or _event_running:
+	if _facility != null:
 		return
 	var iid := TownHouseDoors.interior_of(CityValues.city_section(state.db, state.overrides, "interior"), design)
 	if CityInterior.load_id(state, iid) == null:
@@ -182,78 +177,10 @@ func _on_expedition_due() -> void:
 	dungeon_requested.emit()
 
 
-## 거리 사건(CityAmbient — 행동력 없이 순마다): 일러스트(StreetEventView — 도시를 덮는다) + 장면 → (선택지가 있으면 고르기) → 결과 장면.
-## 다 넘기면 일러스트가 사라지고 도시 조작이 돌아온다(그동안 거리 넘기기·들어가기·Tab·Esc 막음, CT45).
-## 결과는 장면 글과 화면(소지금·닫힌 건물 흐림)으로 보이고, 효과 문구는 못 받은 것(가방 자리)만 띄운다.
-## force_id = 굴리지 않고 그 사건(디버그·테스트·캡처).
-func street_event(force_id: String = "") -> void:
-	if _event_running or not is_inside_tree():
-		return
-	var id := CityAmbient.force(state, force_id) if not force_id.is_empty() else CityAmbient.roll(state, pc.race_id)
-	if id.is_empty():
-		return
-	_event_running = true
-	_menu.close()
-	_event_view = StreetEventView.new()
-	add_child(_event_view)
-	move_child(_event_view, _dialog.get_index())  # 대화창·선택 창은 그림 위
-	_event_view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_event_view.setup(JsonUtil.get_str(CityAmbient.entry(state, id), "art"))
-	for k in CityAmbient.line_keys(id, "intro"):
-		say(Strings.t(k))
-	var pick := -1
-	var choices := CityAmbient.choices(state)
-	if not choices.is_empty():
-		await _dialog.wait()
-		if not is_inside_tree():
-			return
-		pick = await _street_choice(id, choices)
-	var r := CityAmbient.resolve(state, pc, pick, _registry)
-	var ctx: CityContext = r["ctx"]
-	var args := {}
-	for m: Dictionary in ctx.messages:
-		args.merge(m["args"] as Dictionary, true)
-	for k in CityAmbient.line_keys(id, str(r["outcome"])):
-		say(Strings.t(k, args))
-	for m: Dictionary in ctx.messages:
-		if str(m["key"]) in CityAmbient.SHOWN_FX:
-			say(Strings.t(str(m["key"]), m["args"]), str(m["kind"]))
-	_hud.refresh()
-	await _dialog.wait()
-	if not is_inside_tree():
-		return
-	_event_view.close()
-	_event_view = null
-	_event_running = false
-
-
-func event_view() -> StreetEventView:
-	return _event_view
-
-
-func _street_choice(id: String, choices: Array) -> int:
-	var opts: Array[Dictionary] = []
-	for c: Variant in choices:
-		var d: Dictionary = c
-		var cost := int(CityValues.num(d, "cost_stones"))
-		var can := CityAmbient.can_choose(pc, d)
-		opts.append({"text": Strings.t("city.street.%s.choice.%s" % [id, JsonUtil.get_str(d, "id")]),
-			"sub": Strings.t("city.cost_stones", {"n": cost}) if cost > 0 else "", "enabled": can,
-			"desc": "" if can else Strings.t("city.reason_no_money")})
-	var pop := ChoicePopup.new()
-	pop.name = "StreetChoice"
-	add_child(pop)
-	pop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	pop.open(JsonUtil.get_str(CityAmbient.entry(state, id), "name_ko"), opts, false, Vector2(-1, -1))
-	var i: int = await pop.picked
-	pop.queue_free()
-	return i
-
-
 ## 구역문을 바라보고 Enter: 특별 시설(동네에 서지 않는 곳)로 가는 작은 창(CT63). 고르면 그 시설에 바로 들어간다
 ## (행동력은 다른 시설처럼 들어갈 때 1). 특별 시설이 없으면 아무 일도 없다.
 func offer_travel() -> void:
-	if _facility != null or _event_running or _moving or _menu.is_open() or _dialog.busy():
+	if _facility != null or _moving or _menu.is_open() or _dialog.busy():
 		return
 	var ids := CityDistrict.special_ids(state.db)
 	if ids.is_empty():
@@ -262,9 +189,7 @@ func offer_travel() -> void:
 	var opts: Array[Dictionary] = []
 	for id in ids:
 		var f := state.db.get_entry("facilities", id)
-		var shut := state.closed.has(id)
-		opts.append({"text": JsonUtil.get_str(f, "name_ko", id), "sub": JsonUtil.get_str(f, "place_ko"), "enabled": not shut,
-			"desc": Strings.t("city.reason_closed") if shut else ""})
+		opts.append({"text": JsonUtil.get_str(f, "name_ko", id), "sub": JsonUtil.get_str(f, "place_ko")})
 	opts.append({"text": Strings.t("city.travel_cancel")})
 	var i: int = await ChoicePopup.ask(self, Strings.t("city.travel_title"), opts, true)
 	_moving = false
@@ -327,7 +252,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_debug.visible = not _debug.visible
 		get_viewport().set_input_as_handled()
 		return
-	if get_viewport().gui_get_focus_owner() is LineEdit or has_node("StreetChoice") or _event_running:  # 거리 사건 중엔 도시 조작 없음
+	if get_viewport().gui_get_focus_owner() is LineEdit:
 		return
 	var pause_pop := get_node_or_null("PauseChoice") as ChoicePopup
 	if pause_pop != null:  # 정지 창: W/S·Enter는 창이 먼저 받는다, Esc = 계속

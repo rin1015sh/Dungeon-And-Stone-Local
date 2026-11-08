@@ -240,22 +240,17 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
     os.makedirs(out_dir, exist_ok=True)
     entry = {"bg": {"file": "r%d_bg.webp" % i, "origin": [cv.ox, cv.oy]}, "front": []}
     finish(cv, os.path.join(out_dir, entry["bg"]["file"]))
-    # 활동 자리 벽 장식(책장) · 사건 순에만 열리는 문의 닫힌 그림 — 따로
+    # 활동 자리 벽 장식(책장) — 따로
     for g in groups:
         k = plan.legend[g["char"]]["kind"]
-        if k not in ("wallart", "door") or not all(c in full and role(R, *c) == "north" for c in g["cells"]):
-            continue
-        is_closed = k == "door" and plan.legend[g["char"]].get("opens")
-        if not (g["char"] in hot and k == "wallart") and not is_closed:
+        if k != "wallart" or g["char"] not in hot or not all(c in full and role(R, *c) == "north" for c in g["cells"]):
             continue
         wc = Canvas(g["x0"] - 0.2, g["y1"] - WALL_H - 0.2, g["x1"] - g["x0"] + 0.4, WALL_H + 0.5, seed)
-        W.draw(wc, "door_closed" if is_closed else plan.legend[g["char"]].get("art", ""), g["x0"], g["x1"], g["y1"], WALL_H, seed + g["x0"])
+        W.draw(wc, plan.legend[g["char"]].get("art", ""), g["x0"], g["x1"], g["y1"], WALL_H, seed + g["x0"])
         wc.light(amb, lights)
         name = "w_%d_%d.webp" % (g["x0"], g["y0"])
         finish(wc, os.path.join(out_dir, name))
         e = {"file": name, "origin": [wc.ox, wc.oy], "cell": [g["x0"], g["y0"]], "room": i}
-        if is_closed:
-            e["closed_door"] = True
         index["wallart"].append(e)
     # 낮게 자른 남벽(줄마다 한 장 — 발 높이로 앞뒤)
     south = sorted(c for c in ring if role(R, *c) == "south" and plan.kind(*c) not in ("door", "exit"))

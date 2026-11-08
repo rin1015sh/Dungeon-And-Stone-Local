@@ -12,7 +12,8 @@
     "library_monsters",
     "library_survival",
     "library_society",
-    "library_decode"
+    "library_decode",
+    "library_rare"
   ],
   "shows": [
     "lore"

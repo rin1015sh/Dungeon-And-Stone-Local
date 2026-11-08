@@ -2,7 +2,7 @@ class_name CityInteriorRules
 extends RefCounted
 ## 검사 규칙: 시설 실내(data/interiors — CityInterior, CT106).
 ## 시설 interior가 있는 실내를 가리키는가 · 범례에 없는 글자 · kind · 그림 이름 · 사람 자리(npc 칸 · 몸 그림) · 방마다 이름과 크기 상한 ·
-## 그 시설 활동(사건으로 열리는 것까지)이 모두 어느 자리에 있는가 · 바깥 문에서 모든 자리 앞에 걸어서 닿는가(사건 문은 열린 것으로) · 구운 그림(index.json).
+## 그 시설 활동이 모두 어느 자리에 있는가 · 바깥 문에서 모든 자리 앞에 걸어서 닿는가 · 구운 그림(index.json).
 
 const KINDS := ["wallart", "furniture", "low", "door", "back", "npc"]
 
@@ -42,7 +42,7 @@ static func _one(v: ValidatorBase, iid: String, max_room: Array) -> void:
 		if k in ["wallart", "furniture", "low"] and JsonUtil.get_str(e, "art").is_empty():
 			v.err(w, "legend %s에 art(그림 이름)가 없다" % ch)
 		if e.has("opens"):
-			v.ref(w + ".legend." + ch + ".opens", "city_events", JsonUtil.get_str(e, "opens"))
+			v.err(w, "legend %s opens(사건 순에만 열리는 문)는 없앴다(CT114) — 늘 잠그려면 locked" % ch)
 		if e.has("needs"):
 			v.ref(w + ".legend." + ch + ".needs", "activities", JsonUtil.get_str(e, "needs"))
 	for y in rows.size():
@@ -79,7 +79,7 @@ static func _one(v: ValidatorBase, iid: String, max_room: Array) -> void:
 		v.warn(w, "구운 그림이 없다(python3 tools/interior_bake.py %s): %s" % [iid, art])
 
 
-## 활동 자리: 활동이 있는가 · 그 시설 활동(사건이 여는 것 포함)이 모두 자리에 있는가 · 바깥 문에서 자리 앞까지 닿는가.
+## 활동 자리: 활동이 있는가 · 그 시설 활동이 모두 자리에 있는가 · 바깥 문에서 자리 앞까지 닿는가.
 static func _spots(v: ValidatorBase, w: String, d: Dictionary, fac: String, rows: PackedStringArray, legend: Dictionary) -> void:
 	var placed := {}
 	var reach := _reach(rows, legend)
@@ -104,17 +104,12 @@ static func _spots(v: ValidatorBase, w: String, d: Dictionary, fac: String, rows
 			v.err(w, "자리 %s 앞에 바깥 문에서 걸어서 닿지 못한다" % [JsonUtil.get_array(sd, "activities")])
 	if fac.is_empty():
 		return
-	var all: Array = JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities").duplicate()
-	for eid: String in v.entries("city_events"):
-		var e := v.db.get_entry("city_events", eid)
-		if JsonUtil.get_str(e, "facility") == fac:
-			all.append_array(JsonUtil.get_array(e, "activities"))
-	for a: Variant in all:
+	for a: Variant in JsonUtil.get_array(v.db.get_entry("facilities", fac), "activities"):
 		if not placed.has(str(a)):
 			v.err(w, "시설 활동 %s를 할 자리가 없다(spots)" % str(a))
 
 
-## 바깥 문(D)에서 걸어서 닿는 칸(사건 문은 열린 것으로, 잠긴 문은 닫힌 것으로).
+## 바깥 문(D)에서 걸어서 닿는 칸(잠긴 문은 닫힌 것으로).
 static func _reach(rows: PackedStringArray, legend: Dictionary) -> Dictionary:
 	var walk := func(c: Vector2i) -> bool:
 		if c.y < 0 or c.y >= rows.size() or c.x < 0 or c.x >= rows[c.y].length():

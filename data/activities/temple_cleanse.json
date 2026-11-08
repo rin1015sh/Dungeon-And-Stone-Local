@@ -3,7 +3,6 @@
   "name_ko": "정화 의식",
   "facility": "temple",
   "cost_stones": 80,
-  "extra": true,
   "effects": [
     {
       "type": "fatigue",

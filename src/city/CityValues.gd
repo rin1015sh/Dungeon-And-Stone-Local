@@ -9,7 +9,7 @@ extends RefCounted
 const COLLECTIONS := ["activities", "facilities"]
 ## 디버그로 바꿀 값이 아닌 것(이름·설명·연결·그림·배치).
 const FIXED_KEYS := ["id", "name_ko", "desc_ko", "facility", "panel", "source", "type", "notes", "order", "version",
-	"place", "street", "facility_order", "periods", "building", "x", "activities", "shows", "extra", "stock", "deals", "equipment_categories",
+	"place", "street", "facility_order", "periods", "building", "x", "activities", "shows", "stock", "deals", "equipment_categories",
 	"fields", "tabs", "town", "map", "special", "place_ko", "look"]
 
 

@@ -1,6 +1,6 @@
 extends TestCase
 ## 도시 구역 하나(사용자 결정 2026-10-31, CT63 — 거주 등급·이사를 없애고 통일 → CT64 라비기온 7구역, 거래소 없음): 이름·그림 등급 · 여관 식사 ·
-## 상점·대장간 · 거리 사건 · 특별 시설 · 그림 · 저장.
+## 상점·대장간 · 특별 시설 · 그림 · 저장.
 
 
 func _state() -> CityState:
@@ -19,14 +19,10 @@ func test_one_district_no_moving() -> void:
 			assert_true(JsonUtil.get_str(e as Dictionary, "type") != "residence_up", "이사 효과 없음: " + id)
 
 
-func test_inn_meals_hearty_and_feast_on_event() -> void:
+func test_inn_meals_hearty_and_feast() -> void:
 	var s := _state()
-	s.happenings.clear()
-	assert_eq(CityActions.activities_of(s, "inn"), ["inn_rest", "inn_snack", "inn_meal"] as Array[String], "7구역 여관 = 휴식·요기·식사")
-	s.happenings.assign(["inn_special"])
-	var acts := CityActions.activities_of(s, "inn")
-	assert_true(acts.has("inn_feast") and acts.has("inn_hearty"), "여관 특식 사건이 걸린 순에 든든한 식사·특식")
-	assert_true(CityHappenings.eligible(_state()).has("inn_special"), "여관 특식 사건은 언제든 걸릴 수 있다")
+	assert_eq(CityActions.activities_of(s, "inn"), ["inn_rest", "inn_snack", "inn_meal", "inn_hearty", "inn_feast"] as Array[String],
+		"7구역 여관 = 휴식·요기·식사·든든한 식사·특식(도시 사건을 없애 늘 — CT114)")
 
 
 func test_shop_and_smithy_stock() -> void:
@@ -39,14 +35,6 @@ func test_shop_and_smithy_stock() -> void:
 	assert_eq(top, CityDistrict.smithy_material_tier(s), "대장간 소재 단계 상한 = district.smithy_material_tier")
 	assert_eq(CityDistrict.smithy_material_tier(s), 2, "대장간 = 라이티늄까지(7구역)")
 	assert_true(CityShop.stock(s, "smithy_trade").has("lightium_sword"), "라이티늄 검")
-
-
-func test_street_events_have_no_district_condition() -> void:
-	var s := _state()
-	assert_true(CityAmbient._ok(s, CityAmbient.entry(s, "pickpocket"), "pickpocket", "human"), "소매치기는 그대로 일어난다")
-	for id: String in db.get_collection("street_events"):
-		var w := JsonUtil.get_dict(db.get_entry("street_events", id), "when")
-		assert_false(w.has("residence_max") or w.has("residence_min"), "구역 조건 없음: " + id)
 
 
 ## 특별 시설(시설 special — 거리 끝 D로 따로 간다)은 지금 없다 — 거래소를 없앴다(CT64). 거리는 데이터 x 그대로.

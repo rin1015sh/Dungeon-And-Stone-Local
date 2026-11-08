@@ -45,12 +45,12 @@
   },
   "Y": {
    "kind": "npc",
-   "name_ko": "떠돌이 상인(순에만)",
+   "name_ko": "떠돌이 상인",
    "needs": "shop_peddler"
   },
   "y": {
    "kind": "furniture",
-   "name_ko": "떠돌이 노점(순에만)",
+   "name_ko": "떠돌이 노점",
    "art": "peddler_stall",
    "needs": "shop_peddler"
   },

@@ -1,7 +1,7 @@
 extends RefCounted
 ## 귀환 정산 일러스트(사용자 2026-10-28 "차원광장 공터에 천막, 천막 안에 저울, 탐험가 길드 직원 — 마석 환전소 같은 일러스트 한 장, 화면 가득", CT58).
-## 960×540(거리 사건·요리 그림과 같은 크기 — 화면을 덮게 늘린다). 칠은 거리 사건과 같다: 장면을 다 칠한 뒤 Interiors.light로
-## 어둡게 내리고 광원만 밝힌 다음 색 보정·그레인(Events.paint와 같은 마감).
+## 960×540(요리 그림과 같은 크기 — 화면을 덮게 늘린다). 칠: 장면을 다 칠한 뒤 Interiors.light로
+## 어둡게 내리고 광원만 밝힌 다음 색 보정·그레인.
 ##   뒤 = 저녁 하늘 · 뿌연 반원 열주 회랑 · 왼쪽 먼 곳에 차원광장 돌 고리 · 판석 공터
 ##   가운데 = 천 천막(기둥 둘, 걷어 묶은 앞자락, 길드 방패 간판, 매단 등) — 안쪽 어둠 속 선반(장부·마석 상자)
 ##   천막 앞 = 판자 계산대: 큰 놋쇠 저울(한쪽 접시에 마석) · 마석 쟁반 · 펼친 장부 · 스톤 꾸러미 — 그 뒤 길드 직원(안경·깃·소매 덧댄 외투)
@@ -14,7 +14,6 @@ const Props := preload("res://tools/city_art/Props.gd")
 const Bits := preload("res://tools/city_art/InteriorBits.gd")
 const Interiors := preload("res://tools/city_art/Interiors.gd")
 const K := preload("res://tools/city_art/EventKit.gd")
-const E2 := preload("res://tools/city_art/Events2.gd")
 
 const W := K.W
 const H := K.H
@@ -23,7 +22,7 @@ const GROUND := 400.0              ## 천막 기둥·계산대가 서는 바닥 
 const CANVAS := Color("#8a7a5c")   ## 천막 천(바랜 아마포)
 const CANVAS_IN := Color("#3a3226")
 const BRASS := Color("#a88a4a")
-const STONE := E2.STONE
+const STONE := K.STONE
 const LAMP := Color("#ffc070")
 
 
@@ -212,7 +211,7 @@ static func _scale(p: Paint, c: Vector2, s: float) -> void:
 		Ink.shade(p, pan, pan_c, pan_c + Vector2(0, 7) * s, 0.0, 0.4)
 		Ink.path(p, pan, 1.4)
 		if side[1]:
-			E2.stones(p, pan_c.x, pan_c.y - 1.0, 12.0 * s, 9)
+			K.stones(p, pan_c.x, pan_c.y - 1.0, 12.0 * s, 9)
 		else:  # 추
 			var wt := Paint.rect_poly(pan_c.x - 6 * s, pan_c.y - 9 * s, 12 * s, 9 * s)
 			p.fill_poly(wt, p.flat(Color("#4a4a46"), 0.1))
@@ -240,7 +239,7 @@ static func _tray(p: Paint, c: Vector2) -> void:
 	var tray := Paint.poly([c + Vector2(-50, -6), c + Vector2(50, -6), c + Vector2(44, 4), c + Vector2(-44, 4)])
 	p.fill_poly(tray, Mat.planks(p, Color("#5a4430"), 0, 0, false, 6))
 	Ink.path(p, tray, 1.6)
-	E2.stones(p, c.x, c.y - 6, 40, 46)
+	K.stones(p, c.x, c.y - 6, 40, 46)
 
 
 ## 스톤 꾸러미(묶은 가죽 주머니 + 앞에 흘린 동전 몇 닢).

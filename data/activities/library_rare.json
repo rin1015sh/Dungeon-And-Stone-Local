@@ -4,7 +4,6 @@
   "facility": "library",
   "quiet": ["stat_up", "stat_fail", "fatigue_up"],
   "cost_stones": 0,
-  "extra": true,
   "effects": [
     {
       "type": "stat_chance",
@@ -23,5 +22,5 @@
   ],
   "source": "placeholder",
   "lines": "library_read",
-  "notes": "희귀서 입고(오늘의 거리) — 아무 분야에서(CT52 — 거주 등급을 없애 등급 덤은 없앰, CT63)"
+  "notes": "희귀서 서고 — 아무 분야에서, 늘 열람(옛 오늘의 거리 '희귀서 입고' 전용 — CT114)"
 }
