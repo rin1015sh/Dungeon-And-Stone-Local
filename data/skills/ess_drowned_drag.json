@@ -1,0 +1,26 @@
+{
+  "id": "ess_drowned_drag",
+  "name_ko": "끌어들이기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "blunt",
+      "power_if_status": {
+        "status": [
+          "snare"
+        ],
+        "power": 1.7
+      }
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "drowned_drag"
+}

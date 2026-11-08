@@ -1,0 +1,37 @@
+{
+  "id": "scorpion_tail",
+  "name_ko": "꼬리 독침",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "guarded_mult": 0.5,
+      "warn": "combat.scorpion_tail_warn",
+      "fire": "combat.scorpion_tail_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 1.2,
+          "damage_type": "pierce",
+          "accuracy": 90
+        },
+        {
+          "type": "apply_status",
+          "status": "paralysis",
+          "chance": 0.6
+        }
+      ]
+    }
+  ],
+  "source": "placeholder"
+}

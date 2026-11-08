@@ -1,0 +1,26 @@
+{
+  "id": "ess_boar_gore",
+  "name_ko": "들이받기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.4,
+      "damage_type": "pierce",
+      "accuracy": 85
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.4
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "boar_gore"
+}

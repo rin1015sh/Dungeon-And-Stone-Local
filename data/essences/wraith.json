@@ -1,0 +1,33 @@
+{
+  "id": "wraith",
+  "source_monster": "wraith",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "원한령의 정수",
+  "grade": 8,
+  "family": "wraith",
+  "passive": {
+    "id": "wraith_p",
+    "name_ko": "원한",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "curse",
+      "mult": 1.2
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_wraith_wail"
+    }
+  ],
+  "stats": {
+    "int": 5,
+    "agi": 3
+  },
+  "resources": {
+    "soul": 14,
+    "hp": 8
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

@@ -1,0 +1,93 @@
+{
+  "id": "goblin_trapper",
+  "floor": 2,
+  "floor_tags": [
+    "f2_goblin_forest"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "goblin_trapper",
+      "chance": 0.005
+    }
+  ],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "고블린 덫꾼",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.75,
+  "color": "#6a8a50",
+  "weaknesses": {},
+  "stats": {
+    "str": 6,
+    "agi": 11,
+    "p_res": 11,
+    "m_res": 9,
+    "int": 7
+  },
+  "resources": {
+    "hp": 16,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "back",
+    "pack_size": [
+      1,
+      2
+    ],
+    "ai": {
+      "calls": true
+    },
+    "alert_sfx": "goblin_shout",
+    "lays_traps": {
+      "event": "forest_snare",
+      "every_tiles": 6,
+      "max": 3,
+      "zones": [
+        "f2g_gully",
+        "f2g_eaves",
+        "f2g_village"
+      ]
+    }
+  },
+  "skills": [
+    "trapper_snare_set",
+    "goblin_vile_stab",
+    "flee"
+  ],
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.3,
+      "use": "flee"
+    },
+    {
+      "if": "foe_status",
+      "status": "snare",
+      "not": true,
+      "use": "trapper_snare_set",
+      "target": "without_status",
+      "target_status": "snare"
+    },
+    {
+      "if": "always",
+      "use": "goblin_vile_stab"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 지나간 길에 덫(lays_traps)"
+}

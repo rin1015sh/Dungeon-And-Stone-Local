@@ -85,6 +85,12 @@ static func turn_end(b: Battle, c: Combatant) -> void:
 
 ## u가 쓰러졌다: death_effects를 상대 전원에게. 무언가 했으면 true.
 static func on_down(b: Battle, u: Combatant) -> bool:
+	_give_back(b, u)
+	var allies := _list(u.actor, "death_allies_effects")  # 고블린 주술사: 쓰러지면 같은 편이 겁먹는다
+	if not allies.is_empty():
+		for f in b.side_units(u.side):
+			if f != u and f.is_active():
+				BossHooks.apply_effects(b, u, f, allies, {"skill_name": ""})
 	var fx := _list(u.actor, "death_effects")
 	if fx.is_empty():
 		return false
@@ -93,6 +99,17 @@ static func on_down(b: Battle, u: Combatant) -> bool:
 	for f in b.opponents(u):
 		BossHooks.apply_effects(b, u, f, fx, info)
 	return true
+
+
+## 빼앗긴 물건(효과 steal_item)을 쓰러뜨린 그 전투에서 되찾는다.
+static func _give_back(b: Battle, u: Combatant) -> void:
+	for v: Variant in u.actor.get_meta("stolen_items", []):
+		var d: Dictionary = v
+		var to: Actor = d["from"]
+		if to != null and to.inventory != null and to.inventory.add(str(d["item"]), 1) > 0:
+			b.message.emit(ItemInfo.got_key(1), {"item": DataNames.entry(b.db, "items", str(d["item"]))}, "good")
+	if u.actor.has_meta("stolen_items"):
+		u.actor.remove_meta("stolen_items")
 
 
 static func _low_hp_summons(b: Battle) -> void:

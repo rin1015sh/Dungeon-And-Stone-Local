@@ -1,0 +1,25 @@
+{
+  "id": "ess_hound_bite",
+  "name_ko": "사냥개 물기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "marked",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "hound_bite"
+}

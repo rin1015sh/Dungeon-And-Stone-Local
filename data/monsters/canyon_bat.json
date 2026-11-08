@@ -1,0 +1,83 @@
+{
+  "id": "canyon_bat",
+  "floor": 2,
+  "floor_tags": [
+    "f2_beast_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast",
+    "flying"
+  ],
+  "shape": "beast",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "canyon_bat",
+      "chance": 0.005
+    }
+  ],
+  "passives": [
+    {
+      "id": "bat_swarm_body",
+      "name_ko": "떼",
+      "aoe_taken_mult": 1.5
+    }
+  ],
+  "source": "placeholder",
+  "name_ko": "협곡 박쥐 떼",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.8,
+  "color": "#3a3036",
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 4,
+    "agi": 18,
+    "p_res": 5,
+    "m_res": 6,
+    "int": 2
+  },
+  "resources": {
+    "hp": 12,
+    "soul": 10
+  },
+  "natural_weapon": {
+    "attack": 4,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      2
+    ],
+    "alert_sfx": "bat_screech",
+    "move_mult": 1.4
+  },
+  "skills": [
+    "bat_swarm",
+    "bat_screech"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "bat_screech"
+    },
+    {
+      "if": "always",
+      "use": "bat_swarm",
+      "target": "without_status",
+      "target_status": "blind"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 깊은 굴 천장 — 횃불을 켰을 때만 매복(ambush lit_only). 광역에 약하다(aoe_taken_mult)"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "ess_scorpion_tail",
+  "name_ko": "꼬리 독침(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "pierce",
+      "accuracy": 90
+    },
+    {
+      "type": "apply_status",
+      "status": "paralysis",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "scorpion_tail"
+}

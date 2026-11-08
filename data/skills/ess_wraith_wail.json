@@ -1,0 +1,19 @@
+{
+  "id": "ess_wraith_wail",
+  "name_ko": "통곡(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "fear",
+      "chance": 0.35
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "wraith_wail"
+}

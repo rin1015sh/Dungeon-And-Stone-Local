@@ -1,0 +1,19 @@
+{
+  "id": "ess_bat_screech",
+  "name_ko": "날카로운 울음(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.35
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "bat_screech"
+}

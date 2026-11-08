@@ -1,0 +1,19 @@
+{
+  "id": "creeper_thorns",
+  "name_ko": "가시 채찍",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.45,
+      "damage_type": "pierce"
+    }
+  ],
+  "source": "placeholder"
+}

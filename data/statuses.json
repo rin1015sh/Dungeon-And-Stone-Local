@@ -1015,7 +1015,16 @@
     "name_ko": "망자의 밤",
     "kind": "buff",
     "battle_only": true,
-    "modifiers": [{"target": "str", "percent": 0.15}, {"target": "dmg_taken:all", "percent": -0.1}],
+    "modifiers": [
+      {
+        "target": "str",
+        "percent": 0.15
+      },
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.1
+      }
+    ],
     "source": "placeholder",
     "notes": "층 전투 기믹(망자의 땅 — CB10): 밤(19~5시)에 싸우는 언데드 · 원령 적. 낮에 싸우면 없다"
   },
@@ -1024,7 +1033,12 @@
     "name_ko": "흥분",
     "kind": "buff",
     "battle_only": true,
-    "modifiers": [{"target": "agi", "percent": 0.12}],
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.12
+      }
+    ],
     "source": "placeholder",
     "notes": "층 전투 기믹(고블린 숲 — CB10): 망대 경보 · 뿔피리로 몰려와 싸우는 무리. 들키지 않으면 없다"
   },
@@ -1033,7 +1047,12 @@
     "name_ko": "모래바람",
     "kind": "debuff",
     "battle_only": true,
-    "modifiers": [{"target": "accuracy", "flat": -15}],
+    "modifiers": [
+      {
+        "target": "accuracy",
+        "flat": -15
+      }
+    ],
     "source": "placeholder",
     "notes": "층 전투 기믹(바위사막 — CB10): 모래 폭풍 시간(13~16시 · 데쓰웜 폭풍) 속 전투 — 양쪽 모두 명중이 떨어진다"
   },
@@ -1746,5 +1765,32 @@
     "modifiers": [],
     "source": "placeholder",
     "notes": "샘물을 마셨다(LD14) — 그동안 사막 열기를 받지 않는다"
+  },
+  {
+    "id": "parched",
+    "name_ko": "목마름",
+    "kind": "debuff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": -0.1
+      },
+      {
+        "target": "dmg_taken:all",
+        "percent": 0.1
+      }
+    ],
+    "battle_only": true,
+    "resist": {
+      "stats": [
+        "p_res"
+      ]
+    },
+    "source": "placeholder",
+    "notes": "2층 새 몬스터(말라붙은 순례자 — 사막 독수리가 반응). 임시값"
   }
 ]

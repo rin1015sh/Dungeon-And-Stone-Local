@@ -78,7 +78,33 @@ func _build() -> void:
 	_offsets.resize(_members.size())
 	for i in _members.size():
 		_offsets[i] = _target(i)
+	_add_light()
 	queue_redraw()
+
+
+## 등불을 든 몬스터(behavior.light {radius_m, color} — 2층 묘지기): 어둠 속에서도 멀리서 빛이 보인다.
+func _add_light() -> void:
+	var old := get_node_or_null("CarriedLight")
+	if old != null:
+		old.queue_free()
+	if group.monster_ids.is_empty():
+		return
+	var ld := JsonUtil.get_dict(JsonUtil.get_dict(_db.get_entry("monsters", group.leader()), "behavior"), "light")
+	if ld.is_empty():
+		return
+	var cfg := JsonUtil.get_dict(_db.render, "view")
+	var ft := JsonUtil.get_array(cfg, "floor_tile_px")
+	var tile := float(ft[0]) if ft.size() == 2 else 32.0
+	var mpt := maxf(0.01, float(_db.bal("explore.meters_per_tile", 1.0)))
+	var glow := PointLight2D.new()
+	glow.name = "CarriedLight"
+	glow.texture = ActorView._make_glow_texture()
+	glow.blend_mode = Light2D.BLEND_MODE_ADD
+	glow.color = Color.from_string(JsonUtil.get_str(ld, "color", "#e0b060"), Color.ORANGE)
+	glow.energy = JsonUtil.get_float(JsonUtil.get_dict(_db.render, "lighting"), "torch_glow_energy", 0.35)
+	glow.texture_scale = maxf(0.1, JsonUtil.get_float(ld, "radius_m", 3.0) / mpt * tile / (ActorView.GLOW_TEXTURE_SIZE * 0.5))
+	glow.position = Vector2(0, -tile * 0.8)
+	add_child(glow)
 
 
 ## i번째 마리의 대형 자리(노드 좌표): 0 = 앞장, 나머지는 걷는 쪽 뒤로 두 마리씩 줄을 짓는다(가운데를 비워 엇갈리게).

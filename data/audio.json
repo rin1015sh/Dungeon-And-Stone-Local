@@ -164,6 +164,29 @@
       "roar_1",
       "roar_2",
       "growl_low"
+    ],
+    "hyena_laugh": [
+      "shriek_angry",
+      "growl_low"
+    ],
+    "bat_screech": [
+      "shriek_high",
+      "wing_flap"
+    ],
+    "crow_caw": [
+      "crow"
+    ],
+    "vulture_cry": [
+      "crow",
+      "wing_flap"
+    ],
+    "scorpion_click": [
+      "metal_rattle",
+      "bone_snap"
+    ],
+    "beast_grunt": [
+      "boar_cry",
+      "boar_sniff"
     ]
   },
   "cues": {
@@ -603,7 +626,18 @@
       "kirdui": "monster_low",
       "katumba": "monster_low",
       "skull_rat": "monster_threat",
-      "sandman": "wind_magic"
+      "sandman": "wind_magic",
+      "spine_boar": "boar_cry",
+      "canyon_bat": "shriek_high",
+      "bone_hyena": "shriek_angry",
+      "carrion_crow": "crow",
+      "desert_vulture": "crow",
+      "dune_scorpion": "metal_rattle",
+      "wraith": "fear_ghost",
+      "goblin_wolf_rider": "wolf_howl",
+      "goblin_hound": "growl_low",
+      "thorn_creeper": "monster_low",
+      "grave_keeper": "zombie_howl"
     },
     "by_family": {
       "beast": "growl_low",

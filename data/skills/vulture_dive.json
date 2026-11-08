@@ -1,0 +1,25 @@
+{
+  "id": "vulture_dive",
+  "name_ko": "내리꽂기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.1,
+      "damage_type": "pierce",
+      "power_if_status": {
+        "status": [
+          "parched"
+        ],
+        "power": 1.45
+      }
+    }
+  ],
+  "source": "placeholder"
+}

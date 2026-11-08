@@ -1,0 +1,25 @@
+{
+  "id": "ess_vulture_peck",
+  "name_ko": "눈 쪼기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "vulture_peck"
+}

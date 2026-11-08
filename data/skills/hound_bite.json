@@ -1,0 +1,22 @@
+{
+  "id": "hound_bite",
+  "name_ko": "사냥개 물기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "marked",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

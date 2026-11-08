@@ -1,0 +1,32 @@
+{
+  "id": "spine_boar",
+  "source_monster": "spine_boar",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "가시등 멧돼지의 정수",
+  "grade": 9,
+  "family": "spine_boar",
+  "passive": {
+    "id": "spine_boar_p",
+    "name_ko": "들이받는 힘",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "daze",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_boar_gore"
+    }
+  ],
+  "stats": {
+    "str": 4,
+    "p_res": 3
+  },
+  "resources": {
+    "hp": 14
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

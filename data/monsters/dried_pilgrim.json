@@ -1,0 +1,80 @@
+{
+  "id": "dried_pilgrim",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rock_desert"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "dried_pilgrim",
+      "chance": 0.005
+    }
+  ],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "말라붙은 순례자",
+  "grade": 9,
+  "rank": "normal",
+  "size": 1.0,
+  "color": "#a08a68",
+  "weaknesses": {
+    "fire": 1.5,
+    "holy": 1.5
+  },
+  "stats": {
+    "str": 7,
+    "agi": 6,
+    "p_res": 14,
+    "m_res": 10,
+    "int": 6
+  },
+  "resources": {
+    "hp": 24,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": false,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      3,
+      4
+    ],
+    "ai": {
+      "tenacity": 1.0
+    },
+    "alert_sfx": "undead_moan",
+    "move_mult": 0.6
+  },
+  "skills": [
+    "pilgrim_parch",
+    "pilgrim_grasp"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "pilgrim_grasp"
+    },
+    {
+      "if": "always",
+      "use": "pilgrim_parch",
+      "target": "without_status",
+      "target_status": "parched"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 옛길을 줄지어 걷는다(공격적이지 않다) · 물 부대를 빼앗는다(steal_item — 잡으면 되찾는다)"
+}

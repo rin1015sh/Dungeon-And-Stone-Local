@@ -1,0 +1,19 @@
+{
+  "id": "ess_shaman_mend",
+  "name_ko": "풀뿌리 찜질(정수)",
+  "target": "ally_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "restore_resource",
+      "resource": "hp",
+      "amount": "floor({max_hp} * 0.25)"
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "shaman_mend"
+}

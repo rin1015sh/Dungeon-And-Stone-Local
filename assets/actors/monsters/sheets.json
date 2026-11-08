@@ -13,6 +13,13 @@
 		],
 		"foot": 4.0
 	},
+	"bone_hyena": {
+		"cell": [
+			96,
+			66
+		],
+		"foot": 4
+	},
 	"bone_knight": {
 		"cell": [
 			56.0,
@@ -83,6 +90,20 @@
 		],
 		"foot": 4.0
 	},
+	"dried_pilgrim": {
+		"cell": [
+			48,
+			89
+		],
+		"foot": 4
+	},
+	"drowned": {
+		"cell": [
+			46,
+			87
+		],
+		"foot": 4
+	},
 	"dullahan": {
 		"cell": [
 			58.0,
@@ -132,12 +153,47 @@
 		],
 		"foot": 4.0
 	},
+	"goblin_hound": {
+		"cell": [
+			80,
+			58
+		],
+		"foot": 4
+	},
 	"goblin_miner": {
 		"cell": [
 			54.0,
 			82.0
 		],
 		"foot": 4.0
+	},
+	"goblin_shaman": {
+		"cell": [
+			44,
+			72
+		],
+		"foot": 4
+	},
+	"goblin_trapper": {
+		"cell": [
+			44,
+			70
+		],
+		"foot": 4
+	},
+	"goblin_wolf_rider": {
+		"cell": [
+			58,
+			104
+		],
+		"foot": 4
+	},
+	"grave_keeper": {
+		"cell": [
+			50,
+			91
+		],
+		"foot": 4
 	},
 	"guardian_eye": {
 		"cell": [
@@ -335,6 +391,13 @@
 		],
 		"foot": 4.0
 	},
+	"spine_boar": {
+		"cell": [
+			94,
+			71
+		],
+		"foot": 4
+	},
 	"stone_golem": {
 		"cell": [
 			88.0,
@@ -351,10 +414,10 @@
 	},
 	"werewolf": {
 		"cell": [
-			82,
-			124
+			82.0,
+			124.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"wormstone": {
 		"cell": [
@@ -362,6 +425,13 @@
 			81.0
 		],
 		"foot": 4.0
+	},
+	"wraith": {
+		"cell": [
+			44,
+			90
+		],
+		"foot": 4
 	},
 	"yeti": {
 		"cell": [

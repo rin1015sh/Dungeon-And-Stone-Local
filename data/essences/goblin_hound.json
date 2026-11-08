@@ -1,0 +1,32 @@
+{
+  "id": "goblin_hound",
+  "source_monster": "goblin_hound",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "고블린 사냥개의 정수",
+  "grade": 9,
+  "family": "goblin_hound",
+  "passive": {
+    "id": "goblin_hound_p",
+    "name_ko": "놓치지 않는 코",
+    "implemented": true,
+    "hit_vs_status": {
+      "status": "blind",
+      "bonus": 10
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_hound_bite"
+    }
+  ],
+  "stats": {
+    "agi": 4,
+    "sight": 3
+  },
+  "resources": {
+    "hp": 8
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

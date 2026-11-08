@@ -130,7 +130,7 @@ static func fear_skip(b: Battle, c: Combatant) -> bool:
 static func cleanup(b: Battle) -> void:
 	for u in b.units:
 		u.actor.meters.clear()
-		for meta: String in [Passives.REVIVED_META, Passives.MARKED_META]:
+		for meta: String in [Passives.REVIVED_META, Passives.MARKED_META, "stolen_items"]:
 			if u.actor.has_meta(meta):
 				u.actor.remove_meta(meta)
 		u.actor.stats.remove_source_prefix(BattlePassives.AURA_SOURCE)
@@ -240,7 +240,10 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 	for e: Dictionary in ctx.events:
 		match str(e.get("type")):
 			"flee":
-				b.try_flee(c)
+				if held_by_pack(b, c):
+					b.message.emit("combat.flee_fail", {"name": c.label()}, "info")
+				else:
+					b.try_flee(c)
 				continue
 			"gauge":
 				var gu := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
@@ -288,3 +291,13 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 		ev["unit"] = b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
 		ev.erase("target")
 		b.event.emit(ev)
+
+
+## 같은 편에 무리를 붙잡아 두는 몬스터(behavior.holds_pack — 고블린 주술사)가 살아 있으면 몬스터는 달아나지 못한다.
+static func held_by_pack(b: Battle, c: Combatant) -> bool:
+	if not (c.actor is Monster):
+		return false
+	for f in b.side_units(c.side):
+		if f != c and f.is_active() and f.actor is Monster and JsonUtil.get_bool((f.actor as Monster).behavior(), "holds_pack"):
+			return true
+	return false

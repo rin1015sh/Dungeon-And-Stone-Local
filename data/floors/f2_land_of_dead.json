@@ -1746,7 +1746,21 @@
       "tile": "f2d_gate"
     }
   },
-  "battle": {"_comment": "층 전투 기믹(CB10): 밤(19~5시)엔 언데드 · 원령 적이 망자의 밤(힘 +15% · 받는 피해 −10%) — 낮에 싸울지 밤을 피할지", "rules": [{"status": "grave_night", "side": "enemy", "from": 19, "to": 5, "families": ["undead", "wraith"]}]},
+  "battle": {
+    "_comment": "층 전투 기믹(CB10): 밤(19~5시)엔 언데드 · 원령 적이 망자의 밤(힘 +15% · 받는 피해 −10%) — 낮에 싸울지 밤을 피할지",
+    "rules": [
+      {
+        "status": "grave_night",
+        "side": "enemy",
+        "from": 19,
+        "to": 5,
+        "families": [
+          "undead",
+          "wraith"
+        ]
+      }
+    ]
+  },
   "regions": [
     {
       "id": "f2d_marsh",
@@ -1794,7 +1808,29 @@
         10,
         12
       ],
-      "escort": {"skeleton_warrior": {"monster": "skeleton_archer", "count": [1, 1]}, "skeleton_mage": {"monster": "skeleton", "count": [2, 2]}, "ghoul_lord": {"monster": "ghoul", "count": [1, 1]}}
+      "escort": {
+        "skeleton_warrior": {
+          "monster": "skeleton_archer",
+          "count": [
+            1,
+            1
+          ]
+        },
+        "skeleton_mage": {
+          "monster": "skeleton",
+          "count": [
+            2,
+            2
+          ]
+        },
+        "ghoul_lord": {
+          "monster": "ghoul",
+          "count": [
+            1,
+            1
+          ]
+        }
+      }
     },
     {
       "id": "f2d_hard",
@@ -1816,7 +1852,15 @@
         8,
         10
       ],
-      "escort": {"ghoul_lord": {"monster": "ghoul", "count": [1, 1]}}
+      "escort": {
+        "ghoul_lord": {
+          "monster": "ghoul",
+          "count": [
+            1,
+            1
+          ]
+        }
+      }
     },
     {
       "id": "f2d_marsh_lone",
@@ -1891,6 +1935,126 @@
       "pack": [
         1,
         1
+      ]
+    },
+    {
+      "id": "f2d_keepers",
+      "zone": "f2d_ruins",
+      "name_ko": "석조 잔해",
+      "monsters": [
+        "grave_keeper"
+      ],
+      "weights": {
+        "grave_keeper": 1
+      },
+      "groups": [
+        2,
+        2
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "escort": {
+        "grave_keeper": {
+          "monster": "skeleton",
+          "count": [
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "id": "f2d_crows",
+      "zone": "f2d_marsh",
+      "name_ko": "검은 늪",
+      "monsters": [
+        "carrion_crow"
+      ],
+      "weights": {
+        "carrion_crow": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "entry_dist": [
+        30,
+        0
+      ]
+    },
+    {
+      "id": "f2d_crows_ruins",
+      "zone": "f2d_ruins",
+      "name_ko": "석조 잔해",
+      "monsters": [
+        "carrion_crow"
+      ],
+      "weights": {
+        "carrion_crow": 1
+      },
+      "groups": [
+        2,
+        2
+      ],
+      "pack": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "f2d_wraiths",
+      "zone": "f2d_marsh",
+      "name_ko": "검은 늪",
+      "monsters": [
+        "wraith"
+      ],
+      "weights": {
+        "wraith": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "hours": [
+        19,
+        5
+      ],
+      "entry_dist": [
+        30,
+        0
+      ]
+    },
+    {
+      "id": "f2d_wraiths_ruins",
+      "zone": "f2d_ruins",
+      "name_ko": "석조 잔해",
+      "monsters": [
+        "wraith"
+      ],
+      "weights": {
+        "wraith": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "hours": [
+        19,
+        5
       ]
     }
   ],
@@ -2388,6 +2552,21 @@
         "radius": 3,
         "line": "field.ambush",
         "sound": "undead_moan"
+      },
+      {
+        "on_tiles": [
+          "f2d_mud",
+          "f2d_flood"
+        ],
+        "chance": 0.012,
+        "max": 4,
+        "monsters": [
+          "drowned",
+          "drowned"
+        ],
+        "line": "field.ambush_drowned",
+        "sound": "undead_moan",
+        "new_monsters": true
       }
     ]
   },

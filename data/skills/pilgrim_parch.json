@@ -1,0 +1,24 @@
+{
+  "id": "pilgrim_parch",
+  "name_ko": "목마름",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.5,
+      "damage_type": "dark"
+    },
+    {
+      "type": "apply_status",
+      "status": "parched",
+      "chance": 0.8
+    }
+  ],
+  "source": "placeholder"
+}

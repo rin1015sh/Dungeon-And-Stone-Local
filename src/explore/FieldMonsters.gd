@@ -264,7 +264,7 @@ func group_at(p: Vector2i) -> Group:
 ## 쓰러뜨린 무리: 지도에서 지우고, 정해진 시간 뒤 같은 지역에 다시 나타난다.
 func remove(g: Group, now: float) -> void:
 	groups.erase(g)
-	if not g.region.is_empty():  # 지역 무리만 다시 나타난다(균열 고정 조우·탐험가 무리는 아니다)
+	if not g.region.is_empty() and not _region(g.region).has("hours"):  # 지역 무리만 다시 나타난다(균열 고정 조우·탐험가 무리는 아니다 · 시간대 지역은 MonsterTraits)
 		_respawns.append({"region": g.region, "at": now + JsonUtil.get_float(_spawn(), "respawn_hours", 24.0)})
 	changed.emit()
 
@@ -305,13 +305,15 @@ func update(player: Vector2, hours: float, now: float, player_safe: bool) -> Gro
 		if not is_awake(g, pcell):
 			continue  # 멀리(시야·화면 밖) 있는 무리는 쉰다 — 큰 지도에서 계산량이 무리 수에 비례해 늘지 않게
 		near.append(g)
-		var started := _steer.decide(g, player, pcell, hours, now)
+		var scripted := g.has_meta(MonsterTraits.RUN)  # 돌진 · 망대로 달리기 · 날아가기(MonsterTraits) — 생각하지 않고 route만 걷는다
+		var started := false if scripted else _steer.decide(g, player, pcell, hours, now)
 		_steer.turn(g, hours, now)
+		var speed := float(g.get_meta(MonsterTraits.SPEED, 1.0))
 		var budget := 0.0 if g.held_until > now \
-			else minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g) * _steer.ground_mult(g), max_moves)
+			else minf(hours / _steer.move_hours(g.leader()) * _steer.mind.speed(g) * _steer.ground_mult(g) * speed, max_moves * speed)
 		if budget > 0.0 and _steer.walk(g, player, pcell, budget):
 			moved = true
-		if _steer.decide(g, player, pcell, 0.0, now) or started:
+		if not scripted and (_steer.decide(g, player, pcell, 0.0, now) or started):
 			alerted.emit(g)
 	if moved:
 		changed.emit()
@@ -507,7 +509,7 @@ func _spawn() -> Dictionary:
 func _regions() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for r: Variant in JsonUtil.get_array(_floor_def, "regions"):
-		if r is Dictionary:
+		if r is Dictionary and not (r as Dictionary).has("hours"):  # 시간대 지역(밤에만)은 MonsterTraits가 깔고 거둔다
 			out.append(r)
 	return out
 
@@ -519,8 +521,8 @@ func _group_range(region: Dictionary) -> Array:
 
 
 func _region(id: String) -> Dictionary:
-	for r in _regions():
-		if JsonUtil.get_str(r, "id") == id:
+	for r: Variant in JsonUtil.get_array(_floor_def, "regions"):
+		if r is Dictionary and JsonUtil.get_str(r, "id") == id:
 			return r
 	return {}
 

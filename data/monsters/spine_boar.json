@@ -1,0 +1,82 @@
+{
+  "id": "spine_boar",
+  "floor": 2,
+  "floor_tags": [
+    "f2_beast_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "spine_boar",
+      "chance": 0.005
+    }
+  ],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "가시등 멧돼지",
+  "grade": 9,
+  "rank": "normal",
+  "size": 1.0,
+  "color": "#6a5040",
+  "weaknesses": {
+    "blunt": 1.25
+  },
+  "stats": {
+    "str": 10,
+    "agi": 8,
+    "p_res": 18,
+    "m_res": 6,
+    "int": 2
+  },
+  "resources": {
+    "hp": 30,
+    "soul": 10
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      2
+    ],
+    "alert_sfx": "beast_grunt",
+    "move_mult": 1.0,
+    "charge_line": {
+      "speed_mult": 2.5,
+      "tiles": 14
+    }
+  },
+  "skills": [
+    "boar_gore",
+    "boar_tusk"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "boar_gore"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "boar_gore"
+    },
+    {
+      "if": "always",
+      "use": "boar_tusk"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 보면 일직선 돌진, 벽에 박으면 기절한 채 전투(charge_line)"
+}

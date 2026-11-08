@@ -1,0 +1,38 @@
+{
+  "id": "thorn_creeper",
+  "source_monster": "thorn_creeper",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "가시넝쿨의 정수",
+  "grade": 9,
+  "family": "thorn_creeper",
+  "passive": {
+    "id": "thorn_creeper_p",
+    "name_ko": "가시 껍질",
+    "implemented": true,
+    "counter_while": {
+      "status": "guarding",
+      "power": 0.4
+    },
+    "modifiers": [
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.08
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_creeper_entangle"
+    }
+  ],
+  "stats": {
+    "p_res": 5,
+    "str": 2
+  },
+  "resources": {
+    "hp": 14
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

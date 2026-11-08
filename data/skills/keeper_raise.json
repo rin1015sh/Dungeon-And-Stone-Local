@@ -1,0 +1,18 @@
+{
+  "id": "keeper_raise",
+  "name_ko": "일으키기",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "skeleton"
+    }
+  ],
+  "source": "placeholder",
+  "uses_per_battle": 2
+}

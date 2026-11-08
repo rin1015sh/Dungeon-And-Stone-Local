@@ -1,0 +1,36 @@
+{
+  "id": "goblin_wolf_rider",
+  "source_monster": "goblin_wolf_rider",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "늑대 기수의 정수",
+  "grade": 8,
+  "family": "goblin_wolf_rider",
+  "passive": {
+    "id": "goblin_wolf_rider_p",
+    "name_ko": "사냥 몰이",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "snare",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_rider_charge"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_rider_mark"
+    }
+  ],
+  "stats": {
+    "agi": 6,
+    "str": 3
+  },
+  "resources": {
+    "hp": 12
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

@@ -1,6 +1,6 @@
 extends RefCounted
 ## 사람형·네발짐승이 아닌 몬스터(Clay): crawler(네발로 기는 구울) · worm(바위 벌레) · slime(점액 덩어리) · mound(흙더미 노움)
-## · eye(촉수 달린 큰 눈) · maggot(구더기). 공통 spec 키: height · color · eyes · glow · blood · crown(색) · horns(색)
+## · eye(촉수 달린 큰 눈) · maggot(구더기) · vine · swarm · scorpion · bird(2층 새 몬스터 — Things3). 공통 spec 키: height · color · eyes · glow · blood · crown(색) · horns(색)
 
 const Paint := preload("res://tools/city_art/Paint.gd")
 const Ink := preload("res://tools/city_art/Ink.gd")
@@ -12,6 +12,7 @@ const Headgear := preload("res://tools/monster_art/Headgear.gd")
 const Hair := preload("res://tools/monster_art/Hair.gd")
 const Finish := preload("res://tools/monster_art/Finish.gd")
 const Things2 := preload("res://tools/monster_art/Things2.gd")
+const Things3 := preload("res://tools/monster_art/Things3.gd")
 
 
 static func paint(kind: String, sp: Dictionary, seed_value: int) -> Paint:
@@ -37,6 +38,14 @@ static func paint(kind: String, sp: Dictionary, seed_value: int) -> Paint:
 			post = Things2.eye(cl, foot, H, sp, rng)
 		"maggot":
 			post = Things2.maggot(cl, foot, H, sp, rng)
+		"vine":
+			post = Things3.vine(cl, foot, H, sp, rng)
+		"swarm":
+			post = Things3.swarm(cl, foot, H, sp, rng)
+		"scorpion":
+			post = Things3.scorpion(cl, foot, H, sp, rng)
+		"bird":
+			post = Things3.bird(cl, foot, H, sp, rng)
 	Render.render(cl, p, H)
 	if post.has("face"):
 		FaceInk.ink(p, post["face"], sp.get("eyes", Color("#d8d0b0")), float(sp.get("glow", 0.0)))

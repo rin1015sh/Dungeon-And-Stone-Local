@@ -1,0 +1,34 @@
+{
+  "id": "dune_scorpion",
+  "source_monster": "dune_scorpion",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "사막 전갈의 정수",
+  "grade": 8,
+  "family": "dune_scorpion",
+  "passive": {
+    "id": "dune_scorpion_p",
+    "name_ko": "단단한 껍데기",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:slash",
+        "percent": -0.08
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_scorpion_tail"
+    }
+  ],
+  "stats": {
+    "p_res": 6,
+    "str": 3
+  },
+  "resources": {
+    "hp": 16
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

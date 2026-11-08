@@ -1,0 +1,28 @@
+{
+  "id": "drowned_grasp",
+  "name_ko": "발목 잡기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.8
+    },
+    {
+      "type": "gauge",
+      "amount": -20
+    }
+  ],
+  "source": "placeholder"
+}

@@ -124,7 +124,7 @@ func test_chief_and_brook_hunters() -> void:
 	assert_true(Vector2((chief[0] as FieldMonsters.Group).pos - (nodes["chief"] as Vector2i)).length() <= 6.0, "족장 움막에")
 	var brook := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region == "f2g_brook")
 	assert_eq(brook.size(), 1, "개울을 도는 사냥꾼 무리 하나(+ 골짜기 야영지 지키는 무리)")
-	assert_true(s.ambush != null and s.ambush.spots().size() == 3, "매복 셋(뿌리 곁방 · 버섯 고리 · 둔덕길)")
+	assert_true(s.ambush != null and s.ambush.spots().size() == 7, "매복 일곱(뿌리 곁방 · 버섯 고리 · 둔덕길 + 가시넝쿨 넷 — 2층 새 몬스터)")
 	for g: FieldMonsters.Group in brook:
 		assert_eq(g.monster_ids, ["hobgoblin", "goblin_archer", "goblin_archer"] as Array[String], "홉고블린 + 궁수 둘")
 	assert_true(s.features.list.any(func(e: Dictionary) -> bool: return e["id"] == "chief_chest"), "족장 궤짝")

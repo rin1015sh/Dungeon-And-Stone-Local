@@ -1,0 +1,18 @@
+{
+  "id": "hound_howl",
+  "name_ko": "사냥개 울음",
+  "target": "self",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "goblin",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

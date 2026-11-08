@@ -1,0 +1,97 @@
+{
+  "id": "goblin_shaman",
+  "floor": 2,
+  "floor_tags": [
+    "f2_goblin_forest"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [
+    {
+      "essence": "goblin_shaman",
+      "chance": 0.01
+    }
+  ],
+  "passives": [
+    {
+      "id": "shaman_hold",
+      "name_ko": "주술사의 끈",
+      "death_allies_effects": [
+        {
+          "type": "apply_status",
+          "status": "fear",
+          "chance": 0.9
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "name_ko": "고블린 주술사",
+  "grade": 8,
+  "rank": "normal",
+  "size": 0.8,
+  "color": "#5a7a48",
+  "weaknesses": {
+    "holy": 1.25
+  },
+  "stats": {
+    "str": 6,
+    "agi": 12,
+    "p_res": 12,
+    "m_res": 16,
+    "int": 14
+  },
+  "resources": {
+    "hp": 34,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 5,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "back",
+    "pack_size": [
+      1,
+      1
+    ],
+    "ai": {
+      "calls": true
+    },
+    "alert_sfx": "goblin_shout",
+    "holds_pack": true
+  },
+  "skills": [
+    "shaman_hex",
+    "shaman_war_chant",
+    "shaman_mend"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "shaman_war_chant"
+    },
+    {
+      "if": "ally_hp_below",
+      "value": 0.5,
+      "use": "shaman_mend",
+      "target": "ally_lowest_hp"
+    },
+    {
+      "if": "always",
+      "use": "shaman_hex",
+      "target": "without_status",
+      "target_status": "curse"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 무리를 붙잡아 둔다(holds_pack — 같은 무리 도주 없음), 쓰러지면 같은 편 모두 공포(death_allies_effects)"
+}

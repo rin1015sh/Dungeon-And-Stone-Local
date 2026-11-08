@@ -1,0 +1,23 @@
+{
+  "id": "ess_keeper_lantern",
+  "name_ko": "등불 비추기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "remove_status",
+      "status": "hidden"
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.3
+    }
+  ],
+  "source": "placeholder",
+  "notes": "정수판만의 스킬(몬스터판 삽 · 일으키기 대신 — 같은 정수가 저주를 걸고 반응하면 혼자 완결이라)"
+}

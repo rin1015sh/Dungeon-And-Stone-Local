@@ -2,6 +2,9 @@ extends RefCounted
 ## 몬스터 그림 설계 2부: 악마·흡혈귀·유령·골렘·석상·기사 · 네발짐승 · 구울 · 벌레 · 슬라임 · 노움 · 눈 · 구더기.
 
 
+const Specs3 := preload("res://tools/monster_art/Specs3.gd")
+
+
 static func C(hex: String) -> Color:
 	return Color(hex)
 
@@ -200,4 +203,4 @@ static func spec_of(id: String) -> Dictionary:
 			return {"kind": "eye", "height": 440, "color": C("#b89070"), "iris": C("#d0c060")}
 		"dreadfear_maggot":
 			return {"kind": "maggot", "height": 280, "color": C("#d9cfa8")}
-	return {}
+	return Specs3.spec_of(id)

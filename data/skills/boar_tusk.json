@@ -1,0 +1,17 @@
+{
+  "id": "boar_tusk",
+  "name_ko": "엄니 걸기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "slash"
+    }
+  ],
+  "source": "placeholder"
+}

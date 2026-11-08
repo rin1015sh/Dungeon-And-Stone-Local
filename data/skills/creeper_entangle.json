@@ -1,0 +1,24 @@
+{
+  "id": "creeper_entangle",
+  "name_ko": "휘감기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.7,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.85
+    }
+  ],
+  "source": "placeholder"
+}

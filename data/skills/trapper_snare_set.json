@@ -1,0 +1,38 @@
+{
+  "id": "trapper_snare_set",
+  "name_ko": "덫 놓기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "guarded_mult": 0.5,
+      "warn": "combat.trap_set_warn",
+      "fire": "combat.trap_set_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 0.8,
+          "damage_type": "pierce",
+          "accuracy": 90
+        },
+        {
+          "type": "apply_status",
+          "status": "snare",
+          "chance": 0.8
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "notes": "한 차례 뒤 발밑 덫이 닫힌다(큰 몸짓 — 기절로 끊긴다)"
+}

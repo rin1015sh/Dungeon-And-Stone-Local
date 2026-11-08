@@ -1,0 +1,25 @@
+{
+  "id": "rider_mark",
+  "name_ko": "사냥 표식",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "pierce",
+      "ranged": true
+    },
+    {
+      "type": "apply_status",
+      "status": "marked",
+      "chance": 0.9
+    }
+  ],
+  "source": "placeholder"
+}

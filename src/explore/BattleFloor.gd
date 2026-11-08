@@ -30,6 +30,10 @@ static func merge_cap(a: int, b: int) -> int:
 ## 전투가 꾸려진 뒤: 맞는 규칙의 상태를 건다. 건 수.
 static func apply(b: Battle, s: ExploreSession, g: FieldMonsters.Group) -> int:
 	var n := 0
+	if g != null and s.clock.total_hours < float(g.get_meta(MonsterTraits.STUNNED, -1.0)):  # 벽에 박은 멧돼지 — 기절한 채 시작
+		for u in b.side_units(Combatant.SIDE_ENEMY):
+			u.actor.statuses.apply("stun")
+			n += 1
 	var zone := s.map.zone_at(s.pos)
 	for v: Variant in JsonUtil.get_array(_cfg(s), "rules"):
 		var r: Dictionary = v if v is Dictionary else {}

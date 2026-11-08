@@ -1,0 +1,34 @@
+{
+  "id": "grave_keeper",
+  "source_monster": "grave_keeper",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "묘지기의 정수",
+  "grade": 8,
+  "family": "grave_keeper",
+  "passive": {
+    "id": "grave_keeper_p",
+    "name_ko": "묘지기의 저주 읽기",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "curse",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_keeper_lantern"
+    }
+  ],
+  "stats": {
+    "int": 4,
+    "m_res": 4,
+    "sight": 2
+  },
+  "resources": {
+    "soul": 12,
+    "hp": 8
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

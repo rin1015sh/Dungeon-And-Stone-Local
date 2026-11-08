@@ -1,0 +1,37 @@
+{
+  "id": "canyon_bat",
+  "source_monster": "canyon_bat",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "협곡 박쥐 떼의 정수",
+  "grade": 9,
+  "family": "canyon_bat",
+  "passive": {
+    "id": "canyon_bat_p",
+    "name_ko": "흩어지는 날개",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "agi",
+        "percent": 0.06
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_bat_swarm"
+    },
+    {
+      "color": "green",
+      "skill": "ess_bat_screech"
+    }
+  ],
+  "stats": {
+    "agi": 5
+  },
+  "resources": {
+    "hp": 6
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

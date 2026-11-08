@@ -1,0 +1,30 @@
+{
+  "id": "pilgrim_grasp",
+  "name_ko": "움켜 빼앗기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.6,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "steal_item",
+      "items": [
+        "spring_water"
+      ],
+      "categories": [
+        "potion",
+        "food"
+      ],
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

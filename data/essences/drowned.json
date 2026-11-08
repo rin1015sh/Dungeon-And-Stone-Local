@@ -1,0 +1,34 @@
+{
+  "id": "drowned",
+  "source_monster": "drowned",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "익사자의 정수",
+  "grade": 9,
+  "family": "drowned",
+  "passive": {
+    "id": "drowned_p",
+    "name_ko": "늪의 몸",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:blunt",
+        "percent": -0.06
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_drowned_drag"
+    }
+  ],
+  "stats": {
+    "str": 3,
+    "p_res": 4
+  },
+  "resources": {
+    "hp": 14
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

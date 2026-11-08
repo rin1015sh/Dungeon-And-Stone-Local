@@ -1,0 +1,85 @@
+{
+  "id": "bone_hyena",
+  "floor": 2,
+  "floor_tags": [
+    "f2_beast_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "bone_hyena",
+      "chance": 0.005
+    }
+  ],
+  "passives": [
+    {
+      "id": "hyena_scavenge",
+      "name_ko": "썩은 것 먹이",
+      "power_vs_status": {
+        "status": "paralysis",
+        "mult": 1.2
+      }
+    }
+  ],
+  "source": "placeholder",
+  "name_ko": "뼈 하이에나",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.85,
+  "color": "#8a7a5a",
+  "weaknesses": {},
+  "stats": {
+    "str": 8,
+    "agi": 13,
+    "p_res": 10,
+    "m_res": 6,
+    "int": 3
+  },
+  "resources": {
+    "hp": 22,
+    "soul": 12
+  },
+  "natural_weapon": {
+    "attack": 7,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      2,
+      2
+    ],
+    "alert_sfx": "hyena_laugh",
+    "move_mult": 1.2,
+    "trails": [
+      "blade_wolf",
+      "giant_blade_wolf",
+      "blood_blade_wolf"
+    ]
+  },
+  "skills": [
+    "hyena_cripple",
+    "hyena_laugh"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "hyena_laugh"
+    },
+    {
+      "if": "always",
+      "use": "hyena_cripple"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 늑대 무리를 뒤따른다(지역 trail)"
+}

@@ -104,6 +104,11 @@ static func head(cl: Clay, g: int, c: Vector3, L: float, type: String, sp: Dicti
 				for s: float in [-1.0, 1.0]:
 					var b: Vector3 = P.call(0.0, s * 0.035, 0.06)
 					cl.chain(g, [b, b + UP * 0.06 * L - FWD * 0.04 * L, b + UP * 0.08 * L - FWD * 0.11 * L + UP * -0.02 * L], [0.016 * L, 0.01 * L, 0.002 * L], hm, 0.005 * L)
+			if sp.has("tusks"):  # 멧돼지 엄니(2층 가시등 멧돼지): 아래턱 끝에서 위로 휘어 솟는다
+				var tm := cl.mat(sp["tusks"], "bone")
+				for s: float in [-1.0, 1.0]:
+					var b: Vector3 = j1 + SIDE * s * 0.028 * L + FWD * -0.01 * L
+					cl.chain(g, [b, b + UP * 0.03 * L + SIDE * s * 0.02 * L, b + UP * 0.065 * L + SIDE * s * 0.012 * L - FWD * 0.01 * L], [0.012 * L, 0.009 * L, 0.002 * L], tm, 0.003 * L)
 			out["eye_r"] = 0.0075 * L
 	return out
 

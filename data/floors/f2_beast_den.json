@@ -1043,13 +1043,15 @@
         "blade_wolf",
         "blood_blade_wolf",
         "sabertooth",
-        "wall_mole"
+        "wall_mole",
+        "spine_boar"
       ],
       "weights": {
         "blade_wolf": 4,
         "blood_blade_wolf": 2,
         "sabertooth": 1,
-        "wall_mole": 3
+        "wall_mole": 3,
+        "spine_boar": 2
       },
       "groups": [
         4,
@@ -1085,6 +1087,71 @@
           ]
         }
       }
+    },
+    {
+      "id": "f2b_boars",
+      "zone": "f2b_outer",
+      "name_ko": "바깥 협곡",
+      "monsters": [
+        "spine_boar"
+      ],
+      "weights": {
+        "spine_boar": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        1,
+        2
+      ],
+      "entry_dist": [
+        20,
+        0
+      ]
+    },
+    {
+      "id": "f2b_hyenas",
+      "zone": "f2b_outer",
+      "name_ko": "바깥 협곡",
+      "monsters": [
+        "bone_hyena"
+      ],
+      "weights": {
+        "bone_hyena": 1
+      },
+      "groups": [
+        2,
+        2
+      ],
+      "pack": [
+        2,
+        2
+      ],
+      "entry_dist": [
+        30,
+        0
+      ]
+    },
+    {
+      "id": "f2b_hyenas_wall",
+      "zone": "f2b_wall",
+      "name_ko": "두더지 벽",
+      "monsters": [
+        "bone_hyena"
+      ],
+      "weights": {
+        "bone_hyena": 1
+      },
+      "groups": [
+        1,
+        2
+      ],
+      "pack": [
+        2,
+        2
+      ]
     }
   ],
   "spawn": {
@@ -1460,6 +1527,71 @@
         "radius": 3,
         "line": "field.ambush_wolf",
         "sound": "wolf_growl"
+      },
+      {
+        "mark": "f2_w_block",
+        "at": [
+          0,
+          4
+        ],
+        "monsters": [
+          "canyon_bat",
+          "canyon_bat"
+        ],
+        "radius": 6,
+        "lit_only": true,
+        "line": "field.ambush_bats",
+        "sound": "bat_screech",
+        "new_monsters": true
+      },
+      {
+        "mark": "f2_e_block",
+        "at": [
+          0,
+          4
+        ],
+        "monsters": [
+          "canyon_bat",
+          "canyon_bat"
+        ],
+        "radius": 6,
+        "lit_only": true,
+        "line": "field.ambush_bats",
+        "sound": "bat_screech",
+        "new_monsters": true
+      },
+      {
+        "mark": "deep_hub",
+        "at": [
+          -6,
+          4
+        ],
+        "monsters": [
+          "canyon_bat",
+          "canyon_bat",
+          "canyon_bat"
+        ],
+        "radius": 6,
+        "lit_only": true,
+        "line": "field.ambush_bats",
+        "sound": "bat_screech",
+        "new_monsters": true
+      },
+      {
+        "mark": "fork3",
+        "at": [
+          0,
+          3
+        ],
+        "monsters": [
+          "canyon_bat",
+          "canyon_bat"
+        ],
+        "radius": 6,
+        "lit_only": true,
+        "line": "field.ambush_bats",
+        "sound": "bat_screech",
+        "new_monsters": true
       }
     ]
   }

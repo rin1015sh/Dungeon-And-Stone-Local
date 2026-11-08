@@ -1,0 +1,24 @@
+{
+  "id": "hyena_cripple",
+  "name_ko": "다리 물기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "paralysis",
+      "chance": 0.25
+    }
+  ],
+  "source": "placeholder"
+}

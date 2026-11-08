@@ -1,0 +1,82 @@
+{
+  "id": "drowned",
+  "floor": 2,
+  "floor_tags": [
+    "f2_land_of_dead"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "drowned",
+      "chance": 0.005
+    }
+  ],
+  "passives": [],
+  "source": "placeholder",
+  "name_ko": "익사자",
+  "grade": 9,
+  "rank": "normal",
+  "size": 1.0,
+  "color": "#5a6a6a",
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25,
+    "blunt": 1.2
+  },
+  "stats": {
+    "str": 8,
+    "agi": 6,
+    "p_res": 12,
+    "m_res": 5,
+    "int": 2
+  },
+  "resources": {
+    "hp": 22,
+    "soul": 12
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      2
+    ],
+    "ai": {
+      "tenacity": 1.5
+    },
+    "alert_sfx": "undead_moan",
+    "move_mult": 0.7,
+    "mud_walker": true
+  },
+  "skills": [
+    "drowned_grasp",
+    "drowned_drag"
+  ],
+  "ai": [
+    {
+      "if": "foe_status",
+      "status": "snare",
+      "use": "drowned_drag",
+      "target": "with_status",
+      "target_status": "snare"
+    },
+    {
+      "if": "always",
+      "use": "drowned_grasp"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 진창을 걸을 때만 매복(ambush on_tiles)"
+}

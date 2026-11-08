@@ -1,0 +1,31 @@
+{
+  "id": "goblin_trapper",
+  "source_monster": "goblin_trapper",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "고블린 덫꾼의 정수",
+  "grade": 9,
+  "family": "goblin_trapper",
+  "passive": {
+    "id": "goblin_trapper_p",
+    "name_ko": "덫꾼의 눈",
+    "implemented": true,
+    "hit_vs_status": {
+      "status": "snare",
+      "bonus": 12
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_trapper_snare_set"
+    }
+  ],
+  "stats": {
+    "agi": 5
+  },
+  "resources": {
+    "hp": 10
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

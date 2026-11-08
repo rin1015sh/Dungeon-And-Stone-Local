@@ -1,0 +1,25 @@
+{
+  "id": "ess_pilgrim_parch",
+  "name_ko": "목마름(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.6,
+      "damage_type": "dark"
+    },
+    {
+      "type": "apply_status",
+      "status": "parched",
+      "chance": 0.8
+    }
+  ],
+  "source": "placeholder",
+  "essence_of": "pilgrim_parch"
+}

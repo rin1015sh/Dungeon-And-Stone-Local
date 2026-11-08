@@ -1,0 +1,32 @@
+{
+  "id": "desert_vulture",
+  "source_monster": "desert_vulture",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "사막 독수리의 정수",
+  "grade": 9,
+  "family": "desert_vulture",
+  "passive": {
+    "id": "desert_vulture_p",
+    "name_ko": "지친 먹이",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "parched",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_vulture_peck"
+    }
+  ],
+  "stats": {
+    "agi": 4,
+    "sight": 3
+  },
+  "resources": {
+    "hp": 8
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

@@ -1,0 +1,84 @@
+{
+  "id": "carrion_crow",
+  "floor": 2,
+  "floor_tags": [
+    "f2_land_of_dead"
+  ],
+  "type": "body",
+  "family": [
+    "beast",
+    "flying"
+  ],
+  "shape": "beast",
+  "immunities": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [
+    {
+      "essence": "carrion_crow",
+      "chance": 0.005
+    }
+  ],
+  "passives": [
+    {
+      "id": "crow_swarm_body",
+      "name_ko": "떼",
+      "aoe_taken_mult": 1.5
+    }
+  ],
+  "source": "placeholder",
+  "name_ko": "시체 까마귀 떼",
+  "grade": 9,
+  "rank": "normal",
+  "size": 0.7,
+  "color": "#2a2628",
+  "weaknesses": {},
+  "stats": {
+    "str": 4,
+    "agi": 16,
+    "p_res": 6,
+    "m_res": 6,
+    "int": 4
+  },
+  "resources": {
+    "hp": 14,
+    "soul": 10
+  },
+  "natural_weapon": {
+    "attack": 4,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "crow_caw",
+    "move_mult": 0.9,
+    "alarm_caller": {
+      "radius": 20,
+      "hours": 0.5,
+      "families": [
+        "undead"
+      ],
+      "line": "field.crow_alarm",
+      "sound": "crow_caw"
+    }
+  },
+  "skills": [
+    "crow_peck"
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "crow_peck",
+      "target": "without_status",
+      "target_status": "blind"
+    }
+  ],
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 임시값. 보면 울어 둘레 언데드를 부르고 자기는 쫓지 않는다(alarm_caller)"
+}

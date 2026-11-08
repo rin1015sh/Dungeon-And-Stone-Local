@@ -54,6 +54,7 @@ var _was_cover: bool = false
 var desert: DesertRules = null            ## 바위사막 열기 · 모래 바다 진동(층 JSON desert — LD14)
 var forks: RouteForks = null              ## 갈림길 규칙(route_spots.forks — 야수의 소굴, LD11)
 var watch: RouteWatch = null            ## 망대 경보(route_spots.watch — 고블린 숲, FL22)
+var traits: MonsterTraits = MonsterTraits.new()  ## 몬스터 지도 행동(덫 깔기 · 망대로 달리기 · 돌진 · 까마귀 · 따라다니기 · 밤 지역 — 2층 새 몬스터)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 5일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
@@ -359,6 +360,7 @@ func pass_time(hours: float) -> void:
 		monsters.set_player_marks(player.statuses.ids())
 		monsters.set_player_moving(FieldStealth.moving(self))
 		var g := monsters.update(fpos, h, clock.total_hours, in_safe_zone())
+		traits.tick(self)
 		MonsterSnares.update(self)
 		if g != null:
 			first_side = Combatant.SIDE_PARTY if FieldStealth.springs_ambush(self, g) else Battle.FIRST_NONE

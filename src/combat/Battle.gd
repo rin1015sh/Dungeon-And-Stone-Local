@@ -317,7 +317,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
 	var said := history.size()
 	var info := {"skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
-		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size()}
+		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size(), "aoe": kind == "enemy_all"}
 	for s in strikes:
 		if s > 0:
 			if c.actor.dead or not targets.any(func(t: Combatant) -> bool: return t.is_active()):

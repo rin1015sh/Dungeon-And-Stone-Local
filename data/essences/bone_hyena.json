@@ -1,0 +1,32 @@
+{
+  "id": "bone_hyena",
+  "source_monster": "bone_hyena",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "뼈 하이에나의 정수",
+  "grade": 9,
+  "family": "bone_hyena",
+  "passive": {
+    "id": "bone_hyena_p",
+    "name_ko": "썩은 것 먹이",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "paralysis",
+      "mult": 1.2
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_hyena_laugh"
+    }
+  ],
+  "stats": {
+    "agi": 3,
+    "str": 3
+  },
+  "resources": {
+    "hp": 10
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

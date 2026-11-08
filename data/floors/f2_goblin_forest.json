@@ -1719,7 +1719,16 @@
       }
     ]
   },
-  "battle": {"_comment": "층 전투 기믹(CB10): 망대 경보 · 뿔피리로 몰려온 무리는 흥분(민첩 +12%) — 망대를 피하면 없다", "rules": [{"status": "roused", "side": "enemy", "alerted": true}]},
+  "battle": {
+    "_comment": "층 전투 기믹(CB10): 망대 경보 · 뿔피리로 몰려온 무리는 흥분(민첩 +12%) — 망대를 피하면 없다",
+    "rules": [
+      {
+        "status": "roused",
+        "side": "enemy",
+        "alerted": true
+      }
+    ]
+  },
   "regions": [
     {
       "id": "f2g_village",
@@ -1728,18 +1737,35 @@
       "monsters": [
         "goblin",
         "goblin_swordsman",
-        "goblin_archer"
+        "goblin_archer",
+        "goblin_shaman"
       ],
       "weights": {
         "goblin": 5,
         "goblin_swordsman": 2,
-        "goblin_archer": 2
+        "goblin_archer": 2,
+        "goblin_shaman": 1
       },
       "groups": [
         3,
         3
       ],
-      "escort": {"goblin_swordsman": {"monster": "goblin_archer", "count": [1, 1]}},
+      "escort": {
+        "goblin_swordsman": {
+          "monster": "goblin_archer",
+          "count": [
+            1,
+            1
+          ]
+        },
+        "goblin_shaman": {
+          "monster": "goblin",
+          "count": [
+            2,
+            2
+          ]
+        }
+      },
       "horde": true
     },
     {
@@ -1748,11 +1774,13 @@
       "name_ko": "숲 어귀",
       "monsters": [
         "goblin",
-        "goblin_archer"
+        "goblin_archer",
+        "goblin_trapper"
       ],
       "weights": {
         "goblin": 3,
-        "goblin_archer": 1
+        "goblin_archer": 1,
+        "goblin_trapper": 1
       },
       "groups": [
         2,
@@ -1768,10 +1796,12 @@
       "zone": "f2g_gully",
       "name_ko": "덫 골짜기",
       "monsters": [
-        "goblin"
+        "goblin",
+        "goblin_trapper"
       ],
       "weights": {
-        "goblin": 1
+        "goblin": 1,
+        "goblin_trapper": 2
       },
       "groups": [
         2,
@@ -1809,6 +1839,48 @@
           ]
         }
       }
+    },
+    {
+      "id": "f2g_riders",
+      "zone": "f2g_eaves",
+      "name_ko": "숲 어귀",
+      "monsters": [
+        "goblin_wolf_rider"
+      ],
+      "weights": {
+        "goblin_wolf_rider": 1
+      },
+      "groups": [
+        2,
+        2
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "entry_dist": [
+        25,
+        0
+      ]
+    },
+    {
+      "id": "f2g_hounds",
+      "zone": "f2g_brook",
+      "name_ko": "개울",
+      "monsters": [
+        "goblin_hound"
+      ],
+      "weights": {
+        "goblin_hound": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        2,
+        2
+      ]
     }
   ],
   "spawn": {
@@ -1898,6 +1970,31 @@
           "goblin_archer",
           "goblin_archer"
         ]
+      },
+      {
+        "mark": "hunters_camp",
+        "at": [
+          3,
+          2
+        ],
+        "monsters": [
+          "goblin_hound",
+          "goblin_hound"
+        ],
+        "new_monsters": true
+      },
+      {
+        "mark": "village",
+        "at": [
+          0,
+          -6
+        ],
+        "monsters": [
+          "goblin_shaman",
+          "goblin",
+          "goblin"
+        ],
+        "new_monsters": true
       }
     ],
     "features": [
@@ -2135,6 +2232,63 @@
         "radius": 3,
         "line": "field.ambush_goblin",
         "sound": "goblin_shout"
+      },
+      {
+        "mark": "root_a",
+        "at": [
+          3,
+          -4
+        ],
+        "monsters": [
+          "thorn_creeper"
+        ],
+        "radius": 2,
+        "line": "field.ambush_creeper",
+        "sound": "crumble",
+        "new_monsters": true
+      },
+      {
+        "mark": "gully_ring",
+        "at": [
+          4,
+          3
+        ],
+        "monsters": [
+          "thorn_creeper",
+          "thorn_creeper"
+        ],
+        "radius": 2,
+        "line": "field.ambush_creeper",
+        "sound": "crumble",
+        "new_monsters": true
+      },
+      {
+        "mark": "valley_corpse",
+        "at": [
+          -3,
+          2
+        ],
+        "monsters": [
+          "thorn_creeper"
+        ],
+        "radius": 2,
+        "line": "field.ambush_creeper",
+        "sound": "crumble",
+        "new_monsters": true
+      },
+      {
+        "mark": "outcrop",
+        "at": [
+          -4,
+          3
+        ],
+        "monsters": [
+          "thorn_creeper"
+        ],
+        "radius": 2,
+        "line": "field.ambush_creeper",
+        "sound": "crumble",
+        "new_monsters": true
       }
     ]
   },

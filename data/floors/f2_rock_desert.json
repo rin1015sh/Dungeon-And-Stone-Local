@@ -644,6 +644,94 @@
           ]
         }
       }
+    },
+    {
+      "id": "f2r_pilgrims",
+      "zone": "f2r_road",
+      "name_ko": "횃불 옛길",
+      "monsters": [
+        "dried_pilgrim"
+      ],
+      "weights": {
+        "dried_pilgrim": 1
+      },
+      "groups": [
+        2,
+        2
+      ],
+      "pack": [
+        3,
+        4
+      ],
+      "entry_dist": [
+        20,
+        0
+      ]
+    },
+    {
+      "id": "f2r_vultures",
+      "zone": "f2r_road",
+      "name_ko": "횃불 옛길",
+      "monsters": [
+        "desert_vulture"
+      ],
+      "weights": {
+        "desert_vulture": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "f2r_vultures_sea",
+      "zone": "f2r_sea",
+      "name_ko": "모래 바다",
+      "monsters": [
+        "desert_vulture"
+      ],
+      "weights": {
+        "desert_vulture": 1
+      },
+      "groups": [
+        2,
+        2
+      ],
+      "pack": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "f2r_scorpions",
+      "zone": "f2r_road",
+      "name_ko": "횃불 옛길",
+      "monsters": [
+        "dune_scorpion"
+      ],
+      "weights": {
+        "dune_scorpion": 1
+      },
+      "groups": [
+        2,
+        3
+      ],
+      "pack": [
+        1,
+        1
+      ],
+      "hours": [
+        18,
+        8
+      ],
+      "entry_dist": [
+        20,
+        0
+      ]
     }
   ],
   "spawn": {
@@ -949,6 +1037,26 @@
         "radius": 3,
         "line": "field.ambush_gnome",
         "sound": "gnome_alarm"
+      },
+      {
+        "on_tiles": [
+          "f2r_ruin",
+          "f2r_statue",
+          "f2r_fire"
+        ],
+        "near": 2,
+        "hours": [
+          8,
+          18
+        ],
+        "chance": 0.05,
+        "max": 3,
+        "monsters": [
+          "dune_scorpion"
+        ],
+        "line": "field.ambush_scorpion",
+        "sound": "scorpion_click",
+        "new_monsters": true
       }
     ]
   }

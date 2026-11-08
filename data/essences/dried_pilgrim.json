@@ -1,0 +1,35 @@
+{
+  "id": "dried_pilgrim",
+  "source_monster": "dried_pilgrim",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "말라붙은 순례자의 정수",
+  "grade": 9,
+  "family": "dried_pilgrim",
+  "passive": {
+    "id": "dried_pilgrim_p",
+    "name_ko": "마른 갈증",
+    "implemented": true,
+    "on_kill": [
+      {
+        "type": "restore_resource",
+        "resource": "soul",
+        "amount": "8"
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_pilgrim_parch"
+    }
+  ],
+  "stats": {
+    "m_res": 4,
+    "p_res": 3
+  },
+  "resources": {
+    "hp": 12
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

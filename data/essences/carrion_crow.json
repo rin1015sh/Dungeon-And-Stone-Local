@@ -1,0 +1,32 @@
+{
+  "id": "carrion_crow",
+  "source_monster": "carrion_crow",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "시체 까마귀 떼의 정수",
+  "grade": 9,
+  "family": "carrion_crow",
+  "passive": {
+    "id": "carrion_crow_p",
+    "name_ko": "썩은 표식",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "marked",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_crow_peck"
+    }
+  ],
+  "stats": {
+    "agi": 4,
+    "sight": 2
+  },
+  "resources": {
+    "hp": 6
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}

@@ -1,0 +1,43 @@
+{
+  "id": "goblin_shaman",
+  "source_monster": "goblin_shaman",
+  "rank": "normal",
+  "source": "placeholder",
+  "name_ko": "고블린 주술사의 정수",
+  "grade": 8,
+  "family": "goblin_shaman",
+  "passive": {
+    "id": "goblin_shaman_p",
+    "name_ko": "겁주는 주문",
+    "implemented": true,
+    "skip_bonus_vs": {
+      "status": "fear",
+      "bonus": 0.1
+    },
+    "modifiers": [
+      {
+        "target": "int",
+        "percent": 0.05
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_shaman_hex"
+    },
+    {
+      "color": "green",
+      "skill": "ess_shaman_mend"
+    }
+  ],
+  "stats": {
+    "int": 6,
+    "m_res": 4
+  },
+  "resources": {
+    "soul": 14,
+    "hp": 8
+  },
+  "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
+}
