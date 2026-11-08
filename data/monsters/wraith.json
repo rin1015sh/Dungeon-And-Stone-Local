@@ -72,7 +72,7 @@
     "ai": {
       "tenacity": 2.0
     },
-    "alert_sfx": "banshee_wail",
+    "alert_sfx": "undead_moan",
     "move_mult": 1.0
   },
   "skills": [

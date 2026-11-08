@@ -3,7 +3,7 @@
   "name_ko": "늑대 돌격(정수)",
   "target": "enemy_single",
   "cost": {
-    "soul": 7
+    "soul": 8
   },
   "delay_cost": 0,
   "cooldown": 2,

@@ -3,7 +3,7 @@
   "name_ko": "끌어들이기(정수)",
   "target": "enemy_single",
   "cost": {
-    "soul": 6
+    "soul": 7
   },
   "delay_cost": 0,
   "cooldown": 1,

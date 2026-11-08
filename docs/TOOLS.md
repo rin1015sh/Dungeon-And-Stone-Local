@@ -6,6 +6,7 @@
 ## 시뮬레이터 · 점검
 
 - 층 정리 그림 재료: `godot --headless --path . --script res://tools/map_digest.gd -- --floor=<층 id> --out=<폴더> [--seed=4]` → `<층>.png`(구역 색 지도 1칸 = 1px) + `<층>.json`(무리 · 요소 · 망대 · 매복 · 덫 · 포탈 · 표시 위치). 변경 정리 페이지(기믹 · 적 위치)를 만들 때.
+- 2층 새 몬스터 자리(F2M1): `python3 tools/f2_new_monsters.py` — 층 JSON 넷의 지역 · 매복 · 지키는 무리에 새 몬스터 15종을 넣는다(몇 번 돌려도 같다). 층 배치 스크립트(`tools/f2g_layout.py` · `f2b_layout.py` · `f2r_layout.py`)를 다시 돌렸으면 이것도 다시.
 - 소리 들이기: `python3 tools/import_sounds.py <음원 폴더>`(한글 제목 mp3 → `assets/audio/<갈래>/<키>.ogg` · `docs/AUDIO.md` 표 — 새 음원은 MAP에 한 줄, 쓰는 곳은 `data/audio.json`) · `--doc`(표만). ffmpeg 필요. `--import` 뒤 `tests/test_audio.gd`.
 - 1층 걷기 리듬(헤드리스): `godot --headless --path . --script res://tools/sim_walk.gd -- [--floor=<층 id>] [--seeds=1,2,3] [--day=n] [--no-parties]`(2층 = `--floor=f2_land_of_dead`) → 포탈까지 걸으며 전투·탐험가·동굴 요소·소리를 만나는 간격(실제 초). 밀도·탐험가 수치를 바꿨으면 돌려 본다. `--use` = 지나는 요소를 한 번씩 쓰고 얻은 물건 · 키별 소리(경보 · 덫)까지 센다(도착 바로 옆 포탈은 목표에서 뺀다).
 - 전투 수치(헤드리스): `sim_battle.gd -- [--level=n] [--sc=a,b;c]`(Lv n 무작위 탐험가 · 기본 공격만 — 잃은 생명력 · 맞은 수) · `sim_party.gd -- [--curve=<층>] [--members=1] [--sc=ghoul*12;dullahan]`(층 곡선 기준 탐험가 · `id*n` = n마리 · 6마리를 넘으면 큰 무리 예비대 — 남은 생명력). 2층 큰 무리 · 엘리트를 맞출 때.

@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1121줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1135줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -622,6 +622,13 @@
 - `combat.deathworm_rage` {name}이(가) 몸부림치며 피 냄새를 좇아 고개를 돌린다.
 - `combat.cav_charge_warn` {name}이(가) 창끝을 낮추고 거리를 잰다.
 - `combat.cav_charge_fire` {name}이(가) 돌격해 온다!
+- `combat.trap_set_warn` {name}이(가) 발밑에 무언가를 묻는다.
+- `combat.trap_set_fire` 덫이 닫힌다!
+- `combat.boar_gore_warn` {name}이(가) 앞발로 땅을 긁는다.
+- `combat.boar_gore_fire` {name}이(가) 들이받는다!
+- `combat.scorpion_tail_warn` {name}이(가) 꼬리를 높이 든다.
+- `combat.scorpion_tail_fire` {name}의 독침이 내리꽂힌다!
+- `combat.item_stolen` {name}이(가) {item}을(를) 빼앗았다.
 - `combat.ghoul_pounce_warn` {name}이(가) 몸을 낮게 웅크린다.
 - `combat.ghoul_pounce_fire` {name}이(가) 덮쳐 온다!
 - `combat.hob_club_smash_warn` {name}이(가) 몽둥이를 머리 위로 치켜든다.
@@ -1334,6 +1341,13 @@
 - `field.forest_spike_fail` 덮어 둔 말뚝이 발바닥을 꿰뚫었다.
 - `field.hunter_cache` 이끼 낀 궤짝 안에 사냥꾼이 남긴 짐이 그대로 있다.
 - `field.watch_alarm` 망대 위에서 누군가 손가락으로 이쪽을 가리킨다.
+- `field.rider_alarm` 늑대 기수가 망대 밑에 닿아 이쪽을 가리킨다.
+- `field.crow_alarm` 까마귀 떼가 이쪽 하늘을 낮게 맴돈다.
+- `field.ambush_creeper` 길가 덤불이 꿈틀거리며 다리를 휘감는다.
+- `field.ambush_drowned` 진창 속에서 손이 발목을 움켜쥔다.
+- `field.ambush_bats` 횃불 빛을 향해 천장에서 검은 떼가 쏟아진다.
+- `field.ambush_scorpion` 그늘 밑 모래가 갈라지며 집게가 솟는다.
+- `field.boar_wall` 멧돼지가 바위에 머리를 처박고 비틀거린다.
 - `field.chief_chest` 짐승 가죽을 덮은 궤짝 안에 고블린들이 긁어모은 것이 쌓여 있다.
 - `field.wolf_tracks` 젖은 바닥에 발톱 넷 달린 발자국이 줄지어 찍혀 있다.
 - `field.wolf_tracks_none` 발자국은 바위 틈에서 흐지부지 끊겼다.

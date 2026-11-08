@@ -88,13 +88,12 @@ func test_shaman_holds_and_frightens() -> void:
 func test_swarm_takes_more_from_aoe() -> void:
 	var t := _battle("canyon_bat")
 	var p: Combatant = t[1]
-	var e: Combatant = t[2]
-	var dmg := {"type": "damage", "scaling": "phys", "power": 1.0, "damage_type": "blunt", "accuracy": 1000}
+	var dmg := {"type": "damage", "scaling": "phys", "power": 0.3, "damage_type": "blunt", "accuracy": 1000}
 	var one := 0
 	var many := 0
 	for k in 6:
 		for aoe: bool in [false, true]:
-			e.actor.pool.fill_all()
+			var e := b_unit(t)
 			var ctx := EffectContext.new(db, p.actor, e.actor, Rng.new(40 + k))
 			ctx.registry = (t[3] as ContentRegistries).effects
 			ctx.info = {"aoe": aoe}
@@ -107,10 +106,17 @@ func test_swarm_takes_more_from_aoe() -> void:
 	assert_true(many > one, "광역 %d > 단일 %d" % [many, one])
 
 
+func b_unit(t: Array) -> Combatant:
+	return (t[0] as Battle).add(Monster.create(db, "canyon_bat"), Combatant.SIDE_ENEMY)
+
+
 ## 덫꾼은 걸어온 길 뒤에 덫을 깐다(무리마다 최대 3).
 func test_trapper_lays_traps() -> void:
 	var s := _session("f2_goblin_forest", 3)
-	var before := s.features.hazards.at.size()
+	var first := {}
+	for c: Variant in s.features.hazards.at:
+		first[s.features.hazards.at[c]] = true
+	var before := first.size()
 	var g := s.monsters.add_fixed(["goblin_trapper"], s.map.entry)
 	assert_true(g != null)
 	var region := s.map.zone_ids.find("f2g_eaves")
@@ -123,9 +129,13 @@ func test_trapper_lays_traps() -> void:
 	for q in cells.slice(0, 60):
 		g.place(q)
 		s.traits.tick(s)
-	var laid := s.features.hazards.at.size() - before
+	var groups_before := before
+	var uniq := {}
+	for c: Variant in s.features.hazards.at:
+		uniq[s.features.hazards.at[c]] = true
+	var laid := uniq.size() - groups_before
 	assert_true(laid > 0, "덫이 생겼다")
-	assert_true(laid <= 3 * 4, "무리 하나 덫 3개 이하(덫 묶음 칸 수 포함): %d" % laid)
+	assert_true(laid <= 3, "무리 하나 덫 3개 이하: %d" % laid)
 
 
 ## 늑대 기수: 쫓기 시작하면 망대로 달려간다(생각하지 않고 길만 걷는다).

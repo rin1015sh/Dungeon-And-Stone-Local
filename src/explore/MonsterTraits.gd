@@ -88,6 +88,7 @@ func _start_alarm_run(s: ExploreSession, g: FieldMonsters.Group, d: Dictionary) 
 			best_d = dist
 	if best.x < 0:
 		return
+	best = RouteAmbush._walkable_near(s.map, best)  # 망대 칸 자체는 걸을 수 없는 소품일 수 있다
 	var route := FieldRoutes.path(s.map, g.pos, best, int(s.db.bal("monsters.route_radius", 90)))
 	if route.is_empty():
 		return

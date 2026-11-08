@@ -9,7 +9,7 @@
 | 고정 지도(bake_floor) | ● | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 데칼 시트·굽기(bake_decor) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 전투 뒷그림 | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 환경음 audio.ambience | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 환경음 audio.ambience | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 지역 스폰 regions | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 동굴 요소 features | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 다른 탐험가 explorers | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
@@ -28,7 +28,7 @@
 - ● 고정 지도(bake_floor) — res://data/maps/f1_crystal_cave.json
 - ● 데칼 시트·굽기(bake_decor) — res://assets/floor/f1/decals.webp
 - ● 전투 뒷그림 — res://assets/battle/f1_crystal_cave.webp
-- ● 환경음 audio.ambience — f1_cave
+- ○ 환경음 audio.ambience — f1_cave
 - ● 지역 스폰 regions — 5지역
 - ● 동굴 요소 features — 33종 234곳
 - ● 다른 탐험가 explorers
@@ -47,15 +47,15 @@
 - ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
 - ○ 데칼 시트·굽기(bake_decor) — res://assets/floor/f1/decals.webp
 - ● 전투 뒷그림 — res://assets/battle/f2_beast_den.webp
-- ● 환경음 audio.ambience — f2_den
-- ● 지역 스폰 regions — 4지역
+- ○ 환경음 audio.ambience — f2_den
+- ● 지역 스폰 regions — 7지역
 - ○ 동굴 요소 features — 0종 0곳
 - ○ 다른 탐험가 explorers
 - ● 위층 포탈 portals — 1개
 - ○ 계층군주 lord(+패턴)
-- ● 필드 몬스터 — 18종 · 등급 [5, 6, 7, 8, 9] (목표 8)
-- ● 몬스터 그림 assets/monsters — 18장
-- ● 정수 data/essences — 17종
+- ● 필드 몬스터 — 33종 · 등급 [5, 6, 7, 8, 9] (목표 8)
+- ● 몬스터 그림 assets/monsters — 33장
+- ● 정수 data/essences — 32종
 - ○ 균열 data/rifts
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 

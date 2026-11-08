@@ -107,7 +107,7 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 		keep_out = maxf(keep_out, float(z["radius"]) + 3.0)
 	# 지도를 한 번만 훑어 구역(area)별로 칸을 모은다(큰 지도에서 지역마다 다시 훑지 않게).
 	var by_area := {}
-	for region in _regions():
+	for region in _all_regions():
 		var bucket: Array[Vector2i] = []
 		by_area[_region_area(region)] = bucket
 	for i in map.tiles.size():
@@ -118,7 +118,7 @@ func _init(db: GameDatabase, map: FloorMap, floor_def: Dictionary, rng: Rng) -> 
 		if by_area.has(area) and Vector2(p - map.center).length() > keep_out and map.portal_at(p).is_empty():
 			var into: Array[Vector2i] = by_area[area]
 			into.append(p)
-	for region in _regions():
+	for region in _all_regions():
 		var found: Array[Vector2i] = by_area[_region_area(region)]
 		var cells: Array[Vector2i] = _within_entry(found, JsonUtil.get_array(region, "entry_dist"))
 		_region_cells[JsonUtil.get_str(region, "id")] = cells
@@ -504,6 +504,15 @@ func _behavior(monster_id: String) -> Dictionary:
 
 func _spawn() -> Dictionary:
 	return JsonUtil.get_dict(_floor_def, "spawn")
+
+
+## 시간대 지역까지 모두(칸 모으기 — MonsterTraits가 밤에 깔 때도 칸이 있게).
+func _all_regions() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for r: Variant in JsonUtil.get_array(_floor_def, "regions"):
+		if r is Dictionary:
+			out.append(r)
+	return out
 
 
 func _regions() -> Array[Dictionary]:
