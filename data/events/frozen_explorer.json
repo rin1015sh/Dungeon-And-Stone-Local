@@ -16,10 +16,7 @@
       "name_ko": "얼음을 깬다",
       "limit": "once",
       "hours": 0.3,
-      "check": {
-        "stat": "str",
-        "dc": 12
-      },
+      "coin": "gate",
       "fail_line": "field.frozen_explorer_fail",
       "line": "field.frozen_explorer_break",
       "sound": "crumble",

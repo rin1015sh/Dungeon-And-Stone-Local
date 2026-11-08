@@ -36,8 +36,6 @@
   ],
   "source": "placeholder",
   "hidden": {
-    "stat": "int",
-    "dc": 9,
     "line": "field.gnome_stash_found"
   },
   "notes": "노움 은닉처: 숨어 있다(정신력 판정) — 둘레의 돌 표지(gnome_marks)를 살피면 드러난다(LD2). 손을 넣으면 둘레 노움이 몰려온다. 임시값"

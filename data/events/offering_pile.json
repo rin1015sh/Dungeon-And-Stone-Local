@@ -42,7 +42,14 @@
       ],
       "done": "field.offering_taken",
       "fx": "glint",
-      "sound": "coin_drop"
+      "sound": "coin_drop",
+      "coin": "risk",
+      "risk_effects": [
+        {
+          "type": "apply_status",
+          "status": "curse"
+        }
+      ]
     },
     {
       "id": "offer_mushroom",

@@ -105,24 +105,11 @@ func test_removed_stats_moved_to_core() -> void:
 	# 종족: 야만인 근질량 → 근력, 드워프 골강도 → 물리내성
 	var barb := JsonUtil.get_dict(db.get_entry("races", "barbarian"), "stat_ranges")
 	assert_false(barb.has("muscle_mass"))
-	# 함정 판정: 탐지 = 정신력, 해제 = 민첩
+	# 함정 판정: 동전(V29)
 	var tomb := db.get_entry("rifts", "rift_iron_tomb")
 	for ch: Variant in JsonUtil.get_array(tomb, "chapters"):
 		for hz: Variant in JsonUtil.get_array(ch as Dictionary, "hazards"):
 			var h := hz as Dictionary
-			if h.has("detect"):
-				assert_eq(JsonUtil.get_str(JsonUtil.get_dict(h, "detect"), "stat"), "int")
+			assert_false(h.has("detect") or h.has("check"), "함정 판정은 동전(V29)")
 			if h.has("disarm"):
-				assert_eq(JsonUtil.get_str(JsonUtil.get_dict(h, "disarm"), "stat"), "agi")
-	var avg := _actor({"int": 7, "agi": 10})
-	var checked := 0
-	for ch: Variant in JsonUtil.get_array(tomb, "chapters"):
-		for hz: Variant in JsonUtil.get_array(ch as Dictionary, "hazards"):
-			var h := hz as Dictionary
-			if h.has("detect") and h.has("disarm"):
-				for kv: Array in [["detect", 7.0], ["disarm", 10.0]]:  # 탐지 = 정신력, 해제 = 민첩(옛 육감·손재주 자리)
-					var dc := JsonUtil.get_float(JsonUtil.get_dict(h, str(kv[0])), "dc")
-					var want := clampf(0.5 + 0.5 * (float(kv[1]) - dc) / (float(kv[1]) + dc), float(db.bal("rift.hazard_min")), float(db.bal("rift.hazard_max")))
-					assert_near(RiftHazards.success_chance(db, avg, JsonUtil.get_dict(h, str(kv[0]))), want, 0.001, "평균 캐릭터 %s 확률(비율 공식)" % kv[0])
-				checked += 1
-	assert_true(checked > 0, "강철의 묘 함정을 확인했다")
+				assert_true(h["disarm"] is bool, "disarm은 true/false")

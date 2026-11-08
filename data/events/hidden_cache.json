@@ -4,8 +4,6 @@
   "type": "feature",
   "tile": "feat_cache",
   "hidden": {
-    "stat": "int",
-    "dc": 6,
     "line": "field.cache_found"
   },
   "actions": [

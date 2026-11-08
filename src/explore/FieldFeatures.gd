@@ -178,7 +178,7 @@ func _detect(s: ExploreSession, e: Dictionary) -> void:
 			return
 	else:
 		e["rolled"] = true
-		if not s.rng.chance(RiftHazards.success_chance(s.db, s.player, check)):
+		if not CoinBet.quiet(s, "detect"):  # 알아채기 = 묻지 않는 동전(V29 — 띄우면 숨은 것이 드러난다)
 			return
 	reveal(s, e, true)
 

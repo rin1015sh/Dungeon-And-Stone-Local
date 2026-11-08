@@ -9,10 +9,7 @@
       "name_ko": "종을 울린다",
       "limit": "once",
       "hours": 0.25,
-      "check": {
-        "stat": "str",
-        "dc": 9
-      },
+      "coin": "gate",
       "fail_line": "field.bell_stuck",
       "line": "field.bell_ring",
       "sound": "bell_toll",

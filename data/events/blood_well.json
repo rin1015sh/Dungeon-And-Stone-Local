@@ -13,7 +13,7 @@
         {
           "type": "restore_resource",
           "resource": "hp",
-          "amount": "-floor({max_hp} * 0.3)",
+          "amount": "-floor({max_hp} * 0.15)",
           "non_lethal": true
         }
       ],
@@ -24,7 +24,16 @@
       ],
       "done": "field.blood_well_done",
       "fx": "glint",
-      "sound": "dark_sting"
+      "sound": "dark_sting",
+      "coin": "risk",
+      "risk_effects": [
+        {
+          "type": "restore_resource",
+          "resource": "hp",
+          "amount": "-floor({max_hp} * 0.15)",
+          "non_lethal": true
+        }
+      ]
     },
     {
       "id": "look",

@@ -48,7 +48,6 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 	assert_true(JsonUtil.get_bool(group, "hidden"))
 	assert_true(cs.map.tile_id_at(cell) != JsonUtil.get_str(group, "tile"), "숨은 함정은 원래 바닥처럼 보인다")
 	assert_true(cs.map.is_walkable(cell))
-	cs.player.stats.set_base("int", 60.0)
 	var beside := Vector2i(-1, -1)  # 묶음 바로 옆(함정이 아닌 걸을 수 있는 칸)
 	for q: Variant in group["cells"]:
 		for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
@@ -56,17 +55,31 @@ func test_hidden_traps_detect_disarm_and_watcher() -> void:
 			if beside.x < 0 and cs.map.is_walkable(b) and not hz.at.has(b):
 				beside = b
 	assert_true(beside.x >= 0, "함정 옆 칸")
-	hz.on_step(cs, beside)
-	assert_true(bool(group.get("detected", false)), "정신력이 높으면 옆에서 알아챈다(옛 육감)")
+	for tries in 30:  # 알아채기 = 묻지 않는 동전(V29) — 한 번 굴리면 끝이라 다시 굴리게 지운다
+		group.erase("rolled")
+		hz.on_step(cs, beside)
+		if bool(group.get("detected", false)):
+			break
+	assert_true(bool(group.get("detected", false)), "옆에 오면 동전으로 알아챈다")
 	assert_eq(cs.map.tile_id_at(cell), JsonUtil.get_str(group, "tile"), "드러난다")
-	var nimble := Actor.new(db, {"agi": 500})  # 비율 공식: 난이도의 수십 배여야 상한
-	assert_near(RiftHazards.success_chance(db, nimble, JsonUtil.get_dict(group, "disarm")), float(db.bal("rift.hazard_max")), 0.001, "민첩으로 해제(옛 손재주)")
+	assert_true(JsonUtil.get_bool(group, "disarm"), "드러난 함정은 동전을 맞히면 해제")
 	assert_true(hz.watcher_bonus(cs) == 0.0, "1챕터엔 수호자의 눈이 없다")
 	run.debug_clear()
 	cs = run.use_exit(cs)
 	var eyes := run.remaining.filter(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("guardian_eye")).size()
 	assert_true(eyes >= 1, "2챕터에 수호자의 눈")
-	assert_near(run.hazards.watcher_bonus(cs), 0.5 * eyes, 0.001, "수호자의 눈이 살아 있으면 하나마다 함정 발동 +50%")
+	assert_near(run.hazards.watcher_bonus(cs), 0.5 * eyes, 0.001, "수호자의 눈이 살아 있다")
+	var hidden_seen := 0
+	for q: Vector2i in run.hazards.at:
+		var hd: Dictionary = run.hazards.at[q]
+		if JsonUtil.get_bool(hd, "hidden"):
+			for i in 10:
+				hd.erase("rolled")
+				for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+					if not run.hazards.at.has(q + d):
+						run.hazards._detect_near(cs, q + d)
+			hidden_seen += 1 if bool(hd.get("detected", false)) else 0
+	assert_eq(hidden_seen, 0, "수호자의 눈이 살아 있으면 숨은 함정을 알아채지 못한다")
 	var tank := _pc()
 	tank.stats.set_base("p_res", 40.0)
 	var cs2 := _enter(tank, 7)

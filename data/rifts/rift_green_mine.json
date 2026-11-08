@@ -217,10 +217,7 @@
           "id": "mine_heart",
           "item": "mine_heart",
           "tile": "mine_cart_push",
-          "check": {
-            "stat": "str",
-            "dc": 14
-          },
+          "coin": true,
           "fail_message": "explore.hidden.cart_fail",
           "message": "explore.hidden.mine_heart"
         }
@@ -300,10 +297,6 @@
           "id": "bridge",
           "tile": "broken_bridge",
           "count": 1,
-          "check": {
-            "stat": "agi",
-            "dc": 13
-          },
           "fail": [
             {
               "type": "restore_resource",
@@ -367,10 +360,6 @@
           "id": "stairs",
           "tile": "cliff_stairs",
           "count": 2,
-          "check": {
-            "stat": "agi",
-            "dc": 11
-          },
           "fail": [
             {
               "type": "restore_resource",

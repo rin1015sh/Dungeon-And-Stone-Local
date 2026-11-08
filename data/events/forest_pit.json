@@ -6,18 +6,7 @@
     "id": "forest_pit",
     "tile": "f2g_pit",
     "hidden": true,
-    "detect": {
-      "stat": "int",
-      "dc": 9
-    },
-    "disarm": {
-      "stat": "agi",
-      "dc": 6
-    },
-    "check": {
-      "stat": "agi",
-      "dc": 14
-    },
+    "disarm": true,
     "fail": [
       {
         "type": "restore_resource",

@@ -6,18 +6,7 @@
     "id": "forest_snare",
     "tile": "f2g_snare",
     "hidden": true,
-    "detect": {
-      "stat": "int",
-      "dc": 8
-    },
-    "disarm": {
-      "stat": "agi",
-      "dc": 5
-    },
-    "check": {
-      "stat": "agi",
-      "dc": 13
-    },
+    "disarm": true,
     "fail": [
       {
         "type": "restore_resource",

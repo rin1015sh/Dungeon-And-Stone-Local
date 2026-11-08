@@ -16,10 +16,7 @@
       "name_ko": "부순다",
       "limit": "once",
       "hours": 1.0,
-      "check": {
-        "stat": "str",
-        "dc": 14
-      },
+      "coin": "gate",
       "line": "field.grave_stone_break",
       "fail_line": "field.grave_stone_break_fail",
       "clear": true,

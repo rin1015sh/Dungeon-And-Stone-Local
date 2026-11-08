@@ -121,17 +121,28 @@ func take(cs: ExploreSession, p: Vector2i, floor_tile: String, riddle: RiftRiddl
 		cs.message.emit(JsonUtil.get_str(decoy, "message", "explore.hidden_decoy"), {}, "danger")
 		cs.refresh_view()
 		return true
-	var check := JsonUtil.get_dict(hd, "check")
-	if not check.is_empty() and not cs.rng.chance(RiftHazards.success_chance(cs.db, cs.player, check)):
-		taken[id] = true  # 한 번뿐 — 물체는 그 자리에 남지만 다시 살펴도 아무것도 없다
-		at.erase(p)
-		cs.message.emit(JsonUtil.get_str(hd, "fail_message", "explore.hidden_failed"), {}, "warn")
+	if JsonUtil.get_bool(hd, "coin"):  # 동전 한 번(광차 밀기 — V29): 틀리면 다시 못 한다
+		CoinBet.bet(cs, "field", func(right: bool) -> void:
+			if cs.ended or taken.has(id) or not at.has(p):
+				return
+			if right:
+				_take(cs, p, floor_tile, hd)
+				return
+			taken[id] = true  # 한 번뿐 — 물체는 그 자리에 남지만 다시 살펴도 아무것도 없다
+			at.erase(p)
+			cs.message.emit(JsonUtil.get_str(hd, "fail_message", "explore.hidden_failed"), {}, "warn"))
 		return true
+	_take(cs, p, floor_tile, hd)
+	return true
+
+
+## 히든 피스를 얻는다(가방이 찼으면 그 자리에 둔다).
+func _take(cs: ExploreSession, p: Vector2i, floor_tile: String, hd: Dictionary) -> void:
 	var item := JsonUtil.get_str(hd, "item")
 	var count := JsonUtil.get_int(hd, "count", 1)
 	if not cs.player.inventory.fits(item, count):  # 가방이 찼으면 그 자리에 둔다(탈출에 필요한 물건을 잃지 않게)
 		cs.message.emit("explore.hidden_no_room", {"item": DataNames.entry(cs.db, "items", item)}, "warn")
-		return true
+		return
 	var need := JsonUtil.get_dict(hd, "needs")
 	if JsonUtil.get_bool(need, "consume"):
 		cs.player.inventory.remove(JsonUtil.get_str(need, "item"), 1)
@@ -141,7 +152,6 @@ func take(cs: ExploreSession, p: Vector2i, floor_tile: String, riddle: RiftRiddl
 		cs.message.emit(JsonUtil.get_str(hd, "message"), {}, "info")
 	cs.message.emit(ItemInfo.got_key(count), {"item": DataNames.entry(cs.db, "items", item), "n": count}, "good")
 	cs.refresh_view()
-	return true
 
 
 func _needs_ok(cs: ExploreSession, hd: Dictionary, riddle: RiftRiddle) -> bool:

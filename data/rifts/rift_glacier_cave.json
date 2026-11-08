@@ -386,10 +386,6 @@
           "id": "slick",
           "tile": "ice_slick",
           "count": 2,
-          "check": {
-            "stat": "agi",
-            "dc": 12
-          },
           "fail": [
             {
               "type": "restore_resource",
@@ -404,10 +400,6 @@
           "id": "slope",
           "tile": "ice_slope",
           "count": 1,
-          "check": {
-            "stat": "agi",
-            "dc": 14
-          },
           "fail": [
             {
               "type": "restore_resource",
@@ -422,10 +414,6 @@
           "id": "rope",
           "tile": "rope_span",
           "count": 1,
-          "check": {
-            "stat": "str",
-            "dc": 14
-          },
           "fail": [
             {
               "type": "restore_resource",

@@ -15,6 +15,7 @@
       "name_ko": "파헤친다",
       "limit": "once",
       "hours": 1.0,
+      "coin": "risk",
       "line": "field.dig_grave_dig",
       "give": [
         {
@@ -54,7 +55,6 @@
           "ghoul",
           "ghoul"
         ],
-        "chance": 0.3,
         "line": "field.dig_grave_wake"
       },
       "clear": true,

@@ -165,16 +165,10 @@ static func _riddle(v: ValidatorBase, w: String, rd: Dictionary) -> void:
 		v.err(w, "essence_mult는 양수")
 
 
-## 탐험 위험·함정: tile, 판정 {stat, dc}(check·detect·disarm), bypass {stat, at_least}, fail [효과].
+## 탐험 위험·함정: tile, disarm(true/false), bypass {stat, at_least}, fail [효과]. 판정은 동전(V29 — 스탯 판정 키는 없어졌다).
 static func _hazard(v: ValidatorBase, w: String, hd: Dictionary) -> void:
 	v.ref(w + ".tile", "tiles", hd.get("tile"))
-	for key in ["check", "detect", "disarm"]:
-		if hd.has(key):
-			var ck := JsonUtil.get_dict(hd, key)
-			if not v.db.stats.has(JsonUtil.get_str(ck, "stat", "agi")):
-				v.err(w + "." + key, "스탯 '%s' 없음" % ck.get("stat"))
-			if ck.has("dc") and not JsonUtil.is_number(ck["dc"]):
-				v.err(w + "." + key, "dc는 숫자")
+	FeatureRules._no_stat_check(v, w, hd)
 	if hd.has("bypass"):
 		_stat_at_least(v, w + ".bypass", JsonUtil.get_dict(hd, "bypass"))
 	if hd.has("hidden") and not hd["hidden"] is bool:
@@ -185,6 +179,8 @@ static func _hazard(v: ValidatorBase, w: String, hd: Dictionary) -> void:
 ## 히든 피스(item) 또는 벽화(mural: true — 균열에 riddle이 있어야 한다).
 static func _hidden(v: ValidatorBase, w: String, hd: Dictionary, has_riddle: bool) -> void:
 	v.ref(w + ".tile", "tiles", hd.get("tile"))
+	if hd.has("check"):
+		v.err(w, "check(스탯 판정)는 없어졌다 — \"coin\": true(V29)")
 	if JsonUtil.get_bool(hd, "mural"):
 		if not has_riddle:
 			v.err(w, "벽화(mural)는 균열에 riddle 정의가 있어야 한다")

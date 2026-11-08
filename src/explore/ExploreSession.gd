@@ -28,6 +28,7 @@ signal lord_rising(group: FieldMonsters.Group, then: Callable)  ## 계층군주 
 signal coin_guess(then: Callable)  ## 동전 앞뒤 고르기(상자 — RiftChest): 화면이 W/S 선택 창을 띄우고 then(0 앞면 · 1 뒷면 · -1 그만둠)을 부른다
 signal coin_toss(heads: bool, then: Callable)  ## 동전 던지기(CoinToss — 상자 등): 화면이 동전 연출(CoinFlip)을 보인 뒤 then을 부른다
 
+var coin_can_back := true  ## 지금 묻는 동전 고르기에서 Esc(그만둠)를 받는가(guess가 정한다 — 화면이 본다)
 var db: GameDatabase
 var floor_def: Dictionary
 var map: FloorMap
@@ -649,7 +650,9 @@ func lord_rise(group: FieldMonsters.Group, then: Callable) -> void:
 
 
 ## 동전 앞뒤를 고르게 한다: 받는 화면이 없으면(테스트·시뮬) 앞면(0)을 고른 것으로.
-func guess(then: Callable) -> void:
+## can_back = 화면이 Esc(그만둠 -1)를 받는가(밟은 함정처럼 피할 수 없으면 false — coin_can_back로 화면이 본다).
+func guess(then: Callable, can_back: bool = true) -> void:
+	coin_can_back = can_back
 	if coin_guess.get_connections().is_empty():
 		then.call(0)
 	else:

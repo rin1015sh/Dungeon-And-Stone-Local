@@ -98,11 +98,7 @@
     "waterfall_ratio": 0.1,
     "fall_ratio": 0.16,
     "_fall_comment": "빙하굴 3챕터: 폭포(최대 생명력 10%) + 낙하(명세 '위력 40' → 최대 생명력 16%, 1층 생명력 약 120에서 20)",
-    "_hazard_comment": "챕터 탐험 위험(RiftHazards, 10층 비율 공식): 성공 확률 = clamp(base + share × (스탯 − dc)/(스탯 + dc), min, max). min_gap = 묶음 사이·시작·조우 자리와의 거리(칸). near_entry_m = 히든 피스 near_entry 반경",
-    "hazard_base": 0.5,
-    "hazard_share": 0.5,
-    "hazard_min": 0.1,
-    "hazard_max": 0.95,
+    "_hazard_comment": "챕터 탐험 위험(RiftHazards — 판정은 동전 coin.hazard, V29). min_gap = 묶음 사이·시작·조우 자리와의 거리(칸). near_entry_m = 히든 피스 near_entry 반경",
     "hazard_min_gap": 5,
     "near_entry_m": 8,
     "_passage_comment": "챕터 사이 길목(RiftPassage, 사용자 요청 2026-10-20): 출구·(2챕터부터)시작 자리 둘레 passage_zone칸에 걸어 들어가면 다음·이전 챕터로. 넘어간 쪽에서는 길목에서 passage_arrive_steps걸음 안쪽에 선다. 균열에는 안전지대가 없다(사용자 2026-11-04 — entry_safe_radius 없앰)",
@@ -222,6 +218,9 @@
     "heads": 0.5,
     "chest": {"heads": 0.5},
     "maw": {"heads": 0.5, "_comment": "아귀 입(MawTraps — FL15): 앞면 = 빠져나온다, 뒷면 = 목구멍 방"},
+    "field": {"heads": 0.5, "_comment": "살피기 행동 \"coin\"(FieldFeatureAct gate · risk) · 히든 피스 \"coin\"(광차 밀기) — 스탯 판정을 모두 동전으로(사용자 2026-11-08, V29)"},
+    "hazard": {"heads": 0.5, "_comment": "밟은 함정 · 위험(RiftHazards) — 고르고 던진다, 그만둘 수 없다"},
+    "detect": {"heads": 0.5, "_comment": "숨은 함정 · 은닉처 알아채기 — 묻지도 보이지도 않는 동전(CoinBet.quiet — 띄우면 숨은 것이 드러난다)"},
     "boss": {"heads": 0.5, "_comment": "보스 동전 기술(BattleCoin — C27, 사용자 2026-11-08): 적이 스킬 \"coin\"을 쓰는 순간 앞뒤를 고르고 던진다 — 맞히면 피해 × hit_mult(0 = 피함), 틀리면 그대로"}
   },
   "chest": {

@@ -43,16 +43,16 @@
           "chance": 0.5
         }
       ],
-      "effects": [
-        {
-          "type": "apply_status",
-          "status": "rot",
-          "chance": 0.35
-        }
-      ],
       "done": "field.ghoul_feast_done",
       "fx": "dust",
-      "sound": "armor_rustle"
+      "sound": "armor_rustle",
+      "coin": "risk",
+      "risk_effects": [
+        {
+          "type": "apply_status",
+          "status": "rot"
+        }
+      ]
     }
   ],
   "source": "placeholder"

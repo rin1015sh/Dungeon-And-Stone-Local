@@ -14,8 +14,11 @@ extends RefCounted
 ##    "clear_tile": 타일(clear 뒤 그 칸 — 없으면 층 기본 바닥), "reveal": 칸 반경(그 둘레 지도를 밝힌다 — 망루, FL13), "goto": 표시 이름(map.anchors.marks — 계단으로 옮겨 선다, FL14),
 ##    "goal": 층 목표 이름(FloorGoal — 하나 센다, 망자의 땅 종 울리기 FL18),
 ##    "point_to" · "hours_window" · "line_day": 흔적이 가리키는 요소 · 그 시각에만 · 날마다 다른 문구(FieldClues — 레벨 디자인 LD),
-##    "hours": 해 보는 데 드는 시간(성공 · 실패 모두 흐른다), "check": {stat, dc}(성공 확률 = RiftHazards.success_chance — 실패면 "fail_line"을 말하고
-##    횟수를 쓰지 않는다 — 다시 해 볼 수 있다: 망자의 땅 비석 부수기 GraveWake)}.
+##    "hours": 해 보는 데 드는 시간(맞히든 틀리든 흐른다),
+##    "coin": 동전(CoinBet — 앞뒤를 고르고 던진다, Esc면 그만둠 · 아무것도 쓰지 않음. 사용자 2026-11-08 "스탯 판정 전부 동전", V29):
+##      "gate" = 틀리면 "fail_line"을 말하고 횟수를 쓰지 않는다(다시 해 볼 수 있다 — 비석 부수기 · 종 · 얼음 깨기),
+##      "risk" = 어느 쪽이든 해내고, 틀리면 위험이 따른다 — spawn이 반드시 일어나고 "risk_effects"를 받는다
+##               (맞히면 둘 다 없다 — 석관 · 무덤 · 시체 더미 · 공물 · 핏빛 우물)}.
 
 
 static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
@@ -44,15 +47,32 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 			return
 	var cost := JsonUtil.get_dict(a, "cost")
 	var cost_item := JsonUtil.get_str(cost, "item")
+	if not cost_item.is_empty() and s.player.inventory.count(cost_item) < JsonUtil.get_int(cost, "count", 1):
+		s.message.emit(JsonUtil.get_str(a, "missing", "field.no_cost"), {"item": DataNames.entry(s.db, "items", cost_item)}, "info")
+		return
+	var mode := JsonUtil.get_str(a, "coin")
+	if mode.is_empty():
+		_go(s, e, a, -1)
+		return
+	CoinBet.bet(s, "field", func(right: bool) -> void:
+		if not s.ended:
+			_go(s, e, a, 1 if right else 0))
+
+
+## 해낸다. right = 동전(-1 없음 · 0 틀림 · 1 맞힘).
+static func _go(s: ExploreSession, e: Dictionary, a: Dictionary, right: int) -> void:
+	var aid := JsonUtil.get_str(a, "id")
+	var limit := JsonUtil.get_str(a, "limit", "once")
+	var used: Dictionary = e["used"]
+	var today := floori(s.clock.total_hours / 24.0)
+	var cost := JsonUtil.get_dict(a, "cost")
+	var cost_item := JsonUtil.get_str(cost, "item")
 	if not cost_item.is_empty():
-		if s.player.inventory.count(cost_item) < JsonUtil.get_int(cost, "count", 1):
-			s.message.emit(JsonUtil.get_str(a, "missing", "field.no_cost"), {"item": DataNames.entry(s.db, "items", cost_item)}, "info")
-			return
 		s.player.inventory.remove(cost_item, JsonUtil.get_int(cost, "count", 1))
 	if a.has("hours"):
 		s.pass_time(JsonUtil.get_float(a, "hours"))
-	var check := JsonUtil.get_dict(a, "check")
-	if not check.is_empty() and not s.rng.chance(RiftHazards.success_chance(s.db, s.player, check)):
+	var risk := JsonUtil.get_str(a, "coin") == "risk"
+	if right == 0 and not risk:  # gate: 틀렸다 — 다시 해 볼 수 있다
 		say_line(s, JsonUtil.get_str(a, "fail_line"), e, "info")
 		s.refresh_view()
 		return
@@ -66,6 +86,8 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		s.fx.emit(JsonUtil.get_str(a, "fx"), e["pos"], -1)
 	_give(s, JsonUtil.get_array(a, "give"))
 	_effects(s, JsonUtil.get_array(a, "effects"))
+	if risk and right == 0:
+		_effects(s, JsonUtil.get_array(a, "risk_effects"))
 	var learn := JsonUtil.get_str(a, "learn_stats")
 	if not learn.is_empty() and s.player.knowledge.learn_stats(learn):
 		s.message.emit("field.learned", {"monster": DataNames.entry(s.db, "monsters", learn)}, "good")
@@ -83,16 +105,18 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		var floor_tile := JsonUtil.get_str(JsonUtil.get_dict(JsonUtil.get_dict(s.floor_def, "gen"), "tiles"), "floor", "cave_floor")
 		s.map.set_tile(e["pos"], JsonUtil.get_str(a, "clear_tile", floor_tile))
 		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))  # 테두리·소품을 다시 그린다
-	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"))
+	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"), right if risk else -1)
 	if a.has("goal") and s.goal != null:  # 층 목표 하나(종 울리기 — FloorGoal, FL18)
 		s.goal.advance(s, JsonUtil.get_str(a, "goal"))
 	s.refresh_view()
 
 
-## 무덤에서 일어나는 무리(FL13): chance로 pos 바로 옆에 세우고 곧장 쫓아오게.
-static func _spawn(s: ExploreSession, pos: Vector2i, sp: Dictionary) -> void:
+## 무덤에서 일어나는 무리(FL13): pos 바로 옆에 세우고 곧장 쫓아오게. right = 동전(risk) — 0 틀림(반드시) · 1 맞힘(없음) · -1 chance로.
+static func _spawn(s: ExploreSession, pos: Vector2i, sp: Dictionary, right: int = -1) -> void:
 	var ids := JsonUtil.get_array(sp, "monsters")
-	if ids.is_empty() or not s.monsters_enabled or not s.rng.chance(JsonUtil.get_float(sp, "chance", 1.0)):
+	if ids.is_empty() or not s.monsters_enabled or right == 1:
+		return
+	if right < 0 and not s.rng.chance(JsonUtil.get_float(sp, "chance", 1.0)):
 		return
 	var g := s.monsters.add_fixed(ids, pos + Vector2i.DOWN)
 	if g == null:

@@ -178,6 +178,7 @@ func test_guards_and_gnome_alert() -> void:
 			if spot.x < 0 and s.map.is_walkable(stash + d * r):
 				spot = stash + d * r
 	var g := s.monsters.add_fixed(["gnome"], spot)
+	(s.features._by_cell[stash] as Dictionary)["rolled"] = true  # 알아채기 동전(V29)은 굴리지 않는다 — 돌 표지로만 찾게
 	assert_true(g != null and _stand_at(s, stash))
 	assert_false(s.features.live_at(stash), "은닉처는 숨어 있다(돌 표지가 가리킨다 — LD2)")
 	s.features.reveal(s, FieldClues.nearest(s, stash, "gnome_stash", 0.5), false)

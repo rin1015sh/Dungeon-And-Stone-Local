@@ -15,11 +15,7 @@
       "name_ko": "뚜껑을 민다",
       "limit": "once",
       "hours": 0.5,
-      "check": {
-        "stat": "str",
-        "dc": 10
-      },
-      "fail_line": "field.sarcophagus_fail",
+      "coin": "risk",
       "line": "field.sarcophagus_open",
       "give": [
         {
@@ -50,7 +46,6 @@
           "skeleton_warrior",
           "skeleton"
         ],
-        "chance": 0.35,
         "line": "field.sarcophagus_wake"
       },
       "fx": "dust",

@@ -69,14 +69,15 @@ static func _feature(v: ValidatorBase, w: String, ev: Dictionary) -> void:
 		_line(v, w + ".near", JsonUtil.get_str(JsonUtil.get_dict(ev, "near"), "line"), false)
 	if ev.has("hidden"):
 		var h := JsonUtil.get_dict(ev, "hidden")
-		if not JsonUtil.get_bool(h, "dark") and not v.db.stats.has(JsonUtil.get_str(h, "stat")):  # dark: 불을 끈 채 와야 보인다(판정 없음)
-			v.err(w + ".hidden", "stat '%s' 없음" % h.get("stat"))
+		if h.has("stat") or h.has("dc"):  # 알아채기는 묻지 않는 동전(V29) — 스탯 판정은 없어졌다
+			v.err(w + ".hidden", "stat · dc는 없어졌다(동전 — V29)")
 		if h.has("line"):
 			_line(v, w + ".hidden", JsonUtil.get_str(h, "line"), false)
 	if ev.has("hazard"):
 		var hz := JsonUtil.get_dict(ev, "hazard")
 		v.ref(w + ".hazard.tile", "tiles", hz.get("tile"))
 		EffectRules.check(v, w + ".hazard.fail", JsonUtil.get_array(hz, "fail"), true)
+		_no_stat_check(v, w + ".hazard", hz)
 		for key: String in ["detect_message", "disarm_message", "pass_message", "fail_message"]:
 			if hz.has(key):
 				_line(v, w + ".hazard." + key, JsonUtil.get_str(hz, key), false)
@@ -107,6 +108,17 @@ static func _action(v: ValidatorBase, w: String, a: Dictionary) -> void:
 		if gd.has("chance"):
 			v.check_chance(w + ".give", gd["chance"])
 	EffectRules.check(v, w + ".effects", JsonUtil.get_array(a, "effects"), true)
+	if a.has("check"):
+		v.err(w, "check(스탯 판정)는 없어졌다 — \"coin\": \"gate\" | \"risk\"(V29)")
+	if a.has("coin"):
+		var mode := JsonUtil.get_str(a, "coin")
+		if not mode in ["gate", "risk"]:
+			v.err(w + ".coin", "coin은 gate · risk")
+		if mode == "gate":
+			_line(v, w + ".fail_line", JsonUtil.get_str(a, "fail_line"), false)
+		EffectRules.check(v, w + ".risk_effects", JsonUtil.get_array(a, "risk_effects"), true)
+	elif a.has("risk_effects"):
+		v.err(w, "risk_effects는 \"coin\": \"risk\"와 함께")
 	if a.has("learn_stats"):
 		v.ref(w + ".learn_stats", "monsters", a["learn_stats"])
 	var al := JsonUtil.get_dict(a, "alert")
@@ -143,3 +155,12 @@ static func sound_known(db: GameDatabase, key: String) -> bool:
 		if JsonUtil.get_dict(audio, sec).has(key):
 			return true
 	return false
+
+
+## 함정 · 위험의 스탯 판정(check · detect · disarm {stat, dc})은 없어졌다 — 동전(V29). disarm은 true/false.
+static func _no_stat_check(v: ValidatorBase, w: String, hd: Dictionary) -> void:
+	for key: String in ["check", "detect"]:
+		if hd.has(key):
+			v.err(w + "." + key, "스탯 판정은 없어졌다 — 동전(V29)")
+	if hd.has("disarm") and not hd["disarm"] is bool:
+		v.err(w + ".disarm", "disarm은 true/false(동전 — V29)")

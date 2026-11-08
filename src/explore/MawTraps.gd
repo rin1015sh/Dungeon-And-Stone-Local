@@ -2,7 +2,7 @@ class_name MawTraps
 extends RefCounted
 ## 아귀 입 함정(망자의 땅 — 사용자 2026-11-05 "맵 곳곳에 커다란 아귀입 함정 · 입을 벌리고 닫는 애니메이션 · 잡히면 동전 · 실패하면 목구멍 방",
 ## FL15): 땅에 박힌 거대한 입이 실제 초 주기로 벌어졌다 닫힌다. 벌어져 있을 때 몸이 입 안(reach)에 들어서면 입이 닫히며 잡는다 →
-## 동전(CoinToss "maw" — 앞면이면 빠져나온다, 뒷면이면 삼켜진다). 삼켜지면 목구멍 방(map.anchors.marks "throat_in" — 모든 입이 같은 방)에 떨어지고
+## 동전(CoinBet "maw" — 앞뒤를 고르고 던져 맞히면 빠져나온다, 틀리면 삼켜진다). 삼켜지면 목구멍 방(map.anchors.marks "throat_in" — 모든 입이 같은 방)에 떨어지고
 ## 무작위 무리(throat_monsters 중 하나)와 바로 싸운다. 방의 힘줄 벽(요소 throat_wall — goto "maw_return")을 살펴 삼킨 입 옆으로 올라온다.
 ## 층 JSON "maws": {"period_sec", "open_sec", "phase_step", "reach", "cooldown_sec", "throat_monsters": [[id …] …]}. 자리 = map.anchors["maws"](FieldsRouteBuild).
 ## 몬스터는 잡지 않는다. 그리기 = MawView. 시간은 실제 초(탐험이 멈추면 입도 멈춘다 — ExploreSession.tick_realtime).
@@ -68,15 +68,14 @@ func _catch(s: ExploreSession, i: int) -> void:
 	s.fx.emit("snap", cells[i], -1)
 	s.message.emit("explore.maw_caught", {}, "danger")
 	s.sound.emit("maw_snap", cells[i])
-	var heads := CoinToss.flip(s.db, s.rng, "maw")
-	s.toss(heads, func() -> void: _resolve(s, i, heads))
+	CoinBet.bet(s, "maw", func(right: bool) -> void: _resolve(s, i, right), false)  # 앞뒤를 고르고(그만둘 수 없다) 동전 — V29
 
 
-func _resolve(s: ExploreSession, i: int, heads: bool) -> void:
+func _resolve(s: ExploreSession, i: int, right: bool) -> void:
 	busy = false
 	if s.ended:
 		return
-	if heads:
+	if right:
 		s.message.emit("explore.maw_escape", {}, "good")
 		var out := _outside(s, cells[i])
 		if out.x >= 0:
