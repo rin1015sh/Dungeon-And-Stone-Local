@@ -3,6 +3,9 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 웹: iPad에서 키가 안 먹음
+- 사용자 "iPad로 GitHub Pages 플레이 — 엔터가 안 먹어 시작이 안 됨". Godot 웹은 키를 canvas에서만 듣는데 iPad Safari에서 canvas 포커스가 안 잡힌 것으로 본다. `html/head_include`에 canvas 밖 키를 canvas로 다시 보내는 스크립트 + 터치하면 canvas 포커스. 크로미움에서 포커스를 body로 뺀 채 Enter로 타이틀 → 동네 확인. **실제 iPad Safari는 미검증**(WebKit 없음). DEPLOY.md §3.
+
 ### 2026-11-08 웹 자동 배포 — itch 빼고 GitHub Pages로
 - 사용자 "itch.io는 기각, 저장소 공개로 Pages". 첫 실행에서 itch 단계는 itch 계정 이메일 미인증으로 실패했었다(빌드는 4분에 통과). web.yml에서 itch 작업을 지우고 pages를 늘 돌린다(DEPLOY_PAGES 변수 없앰). DEPLOY.md §6을 Pages 기준으로. 그림 손실 압축 시험: 품질 0.9면 pck 198MB → 61MB, 동네 화면 캡처로 눈에 띄는 차이 없음(적용은 안 함).
 - GitHub Actions에서 UI 스모크 "탐험가가 기절해 동료 차례"가 실패(이 항목은 원래 가끔 실패) — 동료는 행동을 미리 정해 둬서 차례가 오자마자 끝나, 프레임마다 `b.current`를 보는 검사가 놓칠 수 있다. Battle `event`의 `turn`(동료)을 기록해 보게 바꿨다. 그래도 CI에서 실패 → 실패 때 진단을 찍게 해서 보니 **적(고블린 비열한 찌르기 등)이 동료를 기절시켜 동료 차례가 건너뛰어졌다**(적 스킬 무작위). 건너뛴 차례(`turn_end`)도 "동료 차례가 왔다"로 센다.

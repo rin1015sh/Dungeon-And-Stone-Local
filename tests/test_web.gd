@@ -48,6 +48,7 @@ func test_web_export_preset() -> void:
 	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("data/*.json"), "데이터 JSON을 싣는다")
 	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("assets/*.json"), "그림 색인 JSON(몸 높이 · 동네 바닥 · 실내 · 집 가림)을 싣는다")
 	assert_false(bool(cfg.get_value(web + ".options", "variant/thread_support", true)), "스레드 끔(SharedArrayBuffer 불필요)")
+	assert_true(str(cfg.get_value(web + ".options", "html/head_include", "")).contains("dispatchEvent"), "게임 화면에 포커스가 없을 때 키를 게임 화면으로 넘긴다(iPad Safari — DEPLOY.md §3)")
 
 
 func _files(dir: String, ext: String) -> PackedStringArray:
