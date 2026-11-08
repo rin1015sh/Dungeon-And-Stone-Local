@@ -271,8 +271,8 @@
     "_comment": "fields 생성기 route 문법(FieldsRoute — floor2.md §13-2): 손으로 설계한 길 그래프. 남(도착) → 북(3층 포탈). 본길: 나루터 → (둑길 | 진창 지름길) → 무너진 예배당 → 석조 회랑 → 묘역 문 → 기사의 다리 → 굳은 땅 갈림목 → 고갯길 → 3층 포탈. 곁길: 비석 터 · 납골당 · 듀라한의 폐허 · 무너진 망루. seed 고정 = 원정마다 같은 지도. 임시값",
     "grammar": "route",
     "size": [
-      200,
-      345
+      192,
+      248
     ],
     "seed": 1,
     "tiles": {
@@ -295,10 +295,10 @@
       {
         "id": "ferry",
         "at": [
-          100,
-          309
+          97,
+          220
         ],
-        "r": 18,
+        "r": 14,
         "zone": "f2d_marsh",
         "kind": "arrival",
         "props": [
@@ -328,10 +328,10 @@
       {
         "id": "levee_bend",
         "at": [
-          42,
-          270
+          49,
+          193
         ],
-        "r": 10,
+        "r": 8,
         "zone": "f2d_marsh",
         "kind": "place",
         "tile": "f2d_hard",
@@ -349,10 +349,10 @@
       {
         "id": "mire",
         "at": [
-          136,
-          267
+          127,
+          191
         ],
-        "r": 16,
+        "r": 13,
         "zone": "f2d_marsh",
         "kind": "place",
         "props": [
@@ -375,10 +375,10 @@
       {
         "id": "chapel",
         "at": [
-          92,
-          230
+          90,
+          166
         ],
-        "r": 22,
+        "r": 18,
         "zone": "f2d_marsh",
         "kind": "place",
         "tile": "f2d_bridge",
@@ -571,10 +571,10 @@
       {
         "id": "graveyard",
         "at": [
-          35,
-          206
+          44,
+          150
         ],
-        "r": 17,
+        "r": 14,
         "zone": "f2d_ruins",
         "kind": "pocket",
         "props": [
@@ -621,10 +621,10 @@
       {
         "id": "corridor",
         "at": [
-          114,
-          191
+          108,
+          139
         ],
-        "r": 8,
+        "r": 6,
         "zone": "f2d_ruins",
         "kind": "place",
         "props": [
@@ -637,10 +637,10 @@
       {
         "id": "tomb_gate",
         "at": [
-          100,
-          158
+          97,
+          117
         ],
-        "r": 16,
+        "r": 13,
         "zone": "f2d_ruins",
         "kind": "place",
         "tile": "f2d_bridge",
@@ -689,10 +689,10 @@
       {
         "id": "ossuary",
         "at": [
-          166,
-          169
+          151,
+          125
         ],
-        "r": 14,
+        "r": 11,
         "zone": "f2d_ruins",
         "kind": "pocket",
         "props": [
@@ -714,10 +714,10 @@
       {
         "id": "bridge",
         "at": [
-          100,
-          129
+          97,
+          97
         ],
-        "r": 6,
+        "r": 5,
         "zone": "f2d_ruins",
         "kind": "place",
         "tile": "f2d_bridge"
@@ -725,10 +725,10 @@
       {
         "id": "crossroads",
         "at": [
-          100,
-          99
+          97,
+          77
         ],
-        "r": 20,
+        "r": 16,
         "zone": "f2d_hard",
         "kind": "place",
         "beacon": "f2d_fire",
@@ -781,10 +781,10 @@
       {
         "id": "dullahan_ruin",
         "at": [
-          37,
-          76
+          45,
+          61
         ],
-        "r": 18,
+        "r": 14,
         "zone": "f2d_hard",
         "kind": "pocket",
         "props": [
@@ -823,10 +823,10 @@
       {
         "id": "watchtower",
         "at": [
-          165,
-          86
+          150,
+          68
         ],
-        "r": 11,
+        "r": 9,
         "zone": "f2d_hard",
         "kind": "pocket",
         "tile": "f2d_mound"
@@ -834,10 +834,10 @@
       {
         "id": "pass",
         "at": [
-          88,
-          61
+          87,
+          51
         ],
-        "r": 8,
+        "r": 6,
         "zone": "f2d_hard",
         "kind": "place",
         "props": [
@@ -850,10 +850,10 @@
       {
         "id": "summit",
         "at": [
-          100,
+          97,
           30
         ],
-        "r": 16,
+        "r": 13,
         "zone": "f2d_hard",
         "kind": "exit",
         "props": [
@@ -884,10 +884,10 @@
       {
         "id": "bell_isle",
         "at": [
-          88,
-          274
+          87,
+          196
         ],
-        "r": 7,
+        "r": 6,
         "zone": "f2d_marsh",
         "kind": "pocket",
         "level": "low",
@@ -900,21 +900,21 @@
         "b": "levee_bend",
         "width": 8,
         "tile": "f2d_hard",
-        "wiggle": 10
+        "wiggle": 8
       },
       {
         "a": "levee_bend",
         "b": "chapel",
         "width": 8,
         "tile": "f2d_hard",
-        "wiggle": 12
+        "wiggle": 9
       },
       {
         "a": "ferry",
         "b": "mire",
         "width": 9,
         "tile": "f2d_mud",
-        "wiggle": 8,
+        "wiggle": 6,
         "level": "low",
         "ramp": true,
         "tide": "flood"
@@ -924,7 +924,7 @@
         "b": "chapel",
         "width": 9,
         "tile": "f2d_mud",
-        "wiggle": 10,
+        "wiggle": 8,
         "level": "low",
         "ramp": true,
         "tide": "flood"
@@ -933,7 +933,7 @@
         "a": "chapel",
         "b": "graveyard",
         "width": 7,
-        "wiggle": 6
+        "wiggle": 4
       },
       {
         "a": "chapel",
@@ -941,7 +941,7 @@
         "width": 8,
         "tile": "f2d_hard",
         "walls": "f2d_ruin",
-        "wiggle": 6
+        "wiggle": 4
       },
       {
         "a": "corridor",
@@ -949,14 +949,14 @@
         "width": 8,
         "tile": "f2d_hard",
         "walls": "f2d_ruin",
-        "wiggle": 6
+        "wiggle": 4
       },
       {
         "a": "tomb_gate",
         "b": "ossuary",
         "width": 7,
         "walls": "f2d_ruin",
-        "wiggle": 8,
+        "wiggle": 6,
         "level": "low",
         "ramp": true
       },
@@ -979,34 +979,34 @@
         "a": "crossroads",
         "b": "dullahan_ruin",
         "width": 8,
-        "wiggle": 12,
+        "wiggle": 9,
         "ramp": true
       },
       {
         "a": "crossroads",
         "b": "watchtower",
         "width": 7,
-        "wiggle": 8,
+        "wiggle": 6,
         "ramp": true
       },
       {
         "a": "crossroads",
         "b": "pass",
         "width": 8,
-        "wiggle": 8,
+        "wiggle": 6,
         "ramp": true
       },
       {
         "a": "pass",
         "b": "summit",
         "width": 7,
-        "wiggle": 6
+        "wiggle": 4
       },
       {
         "a": "ferry",
         "b": "bell_isle",
         "width": 4,
-        "wiggle": 6,
+        "wiggle": 4,
         "level": "low",
         "ramp": true,
         "tide": "deep"
@@ -1016,97 +1016,97 @@
       {
         "zone": "f2d_marsh",
         "tile": "f2d_deadtree",
-        "count": 35
+        "count": 21
       },
       {
         "zone": "f2d_marsh",
         "tile": "f2d_stake",
-        "count": 15
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_tomb_g",
-        "count": 55
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_statue",
-        "count": 8
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_rock",
-        "count": 22
-      },
-      {
-        "zone": "f2d_marsh",
-        "tile": "f2d_tomb",
-        "count": 20
-      },
-      {
-        "zone": "f2d_marsh",
-        "tile": "f2d_post",
-        "count": 12
-      },
-      {
-        "zone": "f2d_marsh",
-        "tile": "f2d_cage",
-        "count": 3
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_banner",
-        "count": 10
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_armor",
-        "count": 7
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_barricade",
-        "count": 6
-      },
-      {
-        "zone": "f2d_hard",
-        "tile": "f2d_wagon",
-        "count": 3
-      },
-      {
-        "zone": "f2d_ruins",
-        "tile": "f2d_sack",
         "count": 9
       },
       {
         "zone": "f2d_ruins",
+        "tile": "f2d_tomb_g",
+        "count": 33
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_statue",
+        "count": 5
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_rock",
+        "count": 13
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_tomb",
+        "count": 12
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_post",
+        "count": 7
+      },
+      {
+        "zone": "f2d_marsh",
+        "tile": "f2d_cage",
+        "count": 2
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_banner",
+        "count": 6
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_armor",
+        "count": 4
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_barricade",
+        "count": 4
+      },
+      {
+        "zone": "f2d_hard",
+        "tile": "f2d_wagon",
+        "count": 2
+      },
+      {
+        "zone": "f2d_ruins",
+        "tile": "f2d_sack",
+        "count": 5
+      },
+      {
+        "zone": "f2d_ruins",
         "tile": "f2d_lantern",
-        "count": 11
+        "count": 7
       },
       {
         "zone": "f2d_marsh",
         "tile": "f2d_lantern_m",
-        "count": 8
+        "count": 5
       },
       {
         "zone": "f2d_hard",
         "tile": "f2d_lantern_h",
-        "count": 7
+        "count": 4
       },
       {
         "zone": "f2d_ruins",
         "tile": "f2d_deadtree_g",
-        "count": 15
+        "count": 9
       },
       {
         "zone": "f2d_ruins",
         "tile": "f2d_bush",
-        "count": 20
+        "count": 12
       },
       {
         "zone": "f2d_hard",
         "tile": "f2d_bush",
-        "count": 15
+        "count": 9
       }
     ],
     "buildings": [
@@ -1294,17 +1294,17 @@
       {
         "zone": "f2d_ruins",
         "tile": "f2d_crypt",
-        "count": 28
+        "count": 17
       },
       {
         "zone": "f2d_hard",
         "tile": "f2d_crypt",
-        "count": 30
+        "count": 18
       },
       {
         "zone": "f2d_marsh",
         "tile": "f2d_crypt",
-        "count": 8
+        "count": 5
       }
     ],
     "fence": [
@@ -1533,8 +1533,8 @@
     "crypts": [
       {
         "at": [
-          150,
-          302
+          148,
+          230
         ],
         "legend": {
           "#": "f2d_crypt",
