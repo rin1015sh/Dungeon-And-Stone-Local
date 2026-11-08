@@ -221,7 +221,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	var delay := 0.0
 	match str(action.get("kind", "")):
 		"skill":
-			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), int(action.get("rev", 0)))
+			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), int(action.get("rev", 0)), action.get("coin", {}))
 		"guard":
 			c.actor.statuses.apply("guarding")
 			BattleRev.on_guard(self, c)
@@ -290,7 +290,8 @@ func unit_of(actor: Actor) -> Combatant:
 	return null
 
 
-func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -> float:
+## coin = 화면이 미리 던진 보스 동전 결과(BattleCoin.roll — 없으면 동전 스킬일 때 여기서 던진다).
+func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0, coin_in: Dictionary = {}) -> float:
 	var sk := db.get_entry("skills", skill_id)
 	var why := can_use(c, skill_id)
 	if sk.is_empty() or not why.is_empty():
@@ -315,6 +316,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 		targets.append(mis["target"] as Combatant)
 		fx = BattleTargets.boosted(fx, mis)
 		message.emit("combat.misdirect", {"name": c.label(), "target": (mis["target"] as Combatant).label()}, "danger")
+	var coin := BattleCoin.resolve(self, c, skill_id, coin_in)  # 보스 동전 기술(C27): 맞히면 피하거나 덜 아프게
 	var said := history.size()
 	var info := {"skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
 		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size(), "aoe": kind == "enemy_all"}
@@ -331,7 +333,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0) -
 			var ctx := EffectContext.new(db, c.actor, t.actor, rng)
 			ctx.info = info
 			ctx.registry = effects
-			effects.apply_all(ctx, fx)
+			effects.apply_all(ctx, fx if coin.is_empty() else BattleCoin.effects_for(fx, coin, t))
 			_relay(ctx, c)
 	if fx.any(func(e: Variant) -> bool: return e is Dictionary and JsonUtil.get_str(e, "type") == "damage"):
 		BattleRules.consume_on_attack(self, c)  # 진군 명령 등: 스킬 한 번(광역·연타 전체)에 쓰고 사라진다

@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-08 보스 동전 기술(C27)
+- **범위 / 기준 / 테스트**: 사용자 "상자 동전을 전투 패턴에 — 맞추면 덜 아프게 · 피하고, 틀리면 그대로" → "예고 빼고 동전 바로" → "나눠서". 기준: 동전 기술은 예고 없이 쓰는 순간 묻고, 나머지 예고는 그대로. 테스트: test_battle_coin(6) + 예고 테스트를 다른 보스 예고로 갈아 끼움.
+- **한 일**: `BattleCoin`(wants · roll · resolve · effects_for — 맞히면 hit_mult, 0이면 피해 효과에 dodged → 반드시 빗나감, 방어 중이면 guarded_mult), `Battle._use_skill`에 동전 결과 인자, `damage` 효과 `dodged`, 검증기 skills `coin`. 화면 `CombatCoin`(스킬 이름 → 앞뒤 고르기 ChoicePopup → CoinFlip) — CombatScreen이 적 행동 전에 부른다. 받는 화면이 없으면 Battle이 던진다(시뮬). 데이터: 사형 선고 `coin {hit_mult 0, guarded_mult 0.3}` · 점프 압살 `coin {hit_mult 0.3, guarded_mult 0.4}`, 효과는 delayed를 벗기고 위력 그대로. balance `coin.boss.heads` 0.5. all_stats 다시 만듦.
+- **확인**: check.sh 모두 통과(클라우드 리눅스). 고르기 창 · 동전 연출이 실제 보스 차례에 뜨는 모습은 캡처하지 않았다(캡처 모드는 고르기를 건너뜀) — **미검증(직접 플레이 필요)**.
+- **남은 것**: 세기 조절(블레이터 사형 선고는 이제 대비 차례가 없다 — 3번째 행동마다라 방어로 대비는 된다) · 다른 보스 기술을 더 옮길지 · 소리 파일.
+
 ### 2026-11-08 F1 디버그 패널 — 스크롤 · 미궁 이동(UI60)
 - **한 일**: DebugPanel을 ScrollContainer(follow_focus)로, ExploreScreen이 패널을 화면 아래까지. ExploreDebug.travel_to · floor_path · travel_floors. 테스트 test_debug_travel_between_floors(1층 → 소굴 → 사막(1층 거쳐) → 1층). 캡처로 스크롤 막대 · 이동 버튼 확인.
 

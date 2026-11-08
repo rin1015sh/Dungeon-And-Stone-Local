@@ -9,23 +9,16 @@
   "cooldown": 0,
   "effects": [
     {
-      "type": "delayed",
-      "rounds": 1,
-      "hits": 1,
-      "target": "cast",
-      "guarded_mult": 0.4,
-      "warn": "combat.king_jump_warn",
-      "fire": "combat.king_jump_fire",
-      "effects": [
-        {
-          "type": "damage",
-          "scaling": "phys",
-          "power": 3.9,
-          "damage_type": "blunt"
-        }
-      ]
+      "type": "damage",
+      "scaling": "phys",
+      "power": 3.9,
+      "damage_type": "blunt"
     }
   ],
+  "coin": {
+    "hit_mult": 0.3,
+    "guarded_mult": 0.4
+  },
   "source": "placeholder",
-  "notes": "1라운드 전 예고. [방어]하면 절반(방어 태세 −50%) [명세] · 조정(GM5): 명세 위력 150(방어하면 절반) → 300, 방어하면 ×0.4(방어 태세 −50%와 합쳐 ×0.2)"
+  "notes": "보스 동전 기술(C27 — 사용자 2026-11-08): 쓰는 순간 동전 하나(모두 같은 결과) — 맞히면 ×0.3, 틀리면 그대로(방어 중이면 ×0.4 — 방어 태세 −50%와 겹친다). 예전: 1라운드 예고 · 조정(GM5) 명세 위력 150 → 300"
 }

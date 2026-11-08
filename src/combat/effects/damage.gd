@@ -12,6 +12,7 @@ extends EffectHandler
 ## 빗나가거나 면역이면 ctx.landed = 0 — 같은 대상에게 뒤따르는 효과(상태·밀치기)는 걸리지 않는다(EffectRegistry).
 ## "ranged"가 없으면 마법은 원거리, 무기 공격은 무기(활)를 따른다(is_ranged — 반사·반격·근접 적중 효과가 본다).
 ## 맞힌 뒤 Passives.after_hit(적중 시 효과·반사·반격), 흡혈.
+## "dodged": true = 반드시 빗나간다(보스 동전을 맞혀 피함 — BattleCoin).
 
 
 func apply(ctx: EffectContext, data: Dictionary) -> bool:
@@ -20,6 +21,8 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	if target == null or source == null or target.dead:
 		return false  # 시전자가 쓰러져도 남은 효과(자폭 death_effects)는 들어간다 — 스킬 도중 쓰러지면 Battle이 멈춘다
 	var rolls := {"hit": ctx.rng.randf(), "crit": ctx.rng.randf(), "var": ctx.rng.randf(), "lethal": ctx.rng.randf()}
+	if JsonUtil.get_bool(data, "dodged"):
+		rolls["hit"] = INF  # 명중 확률이 얼마든 빗나간다
 	var per_summon := JsonUtil.get_float(data, "power_per_summon")  # 구울로드 포식자의 손톱: 내 소환수 하나마다 위력 +
 	if per_summon > 0.0 and int(ctx.info.get("summons", 0)) > 0:
 		data = data.duplicate()

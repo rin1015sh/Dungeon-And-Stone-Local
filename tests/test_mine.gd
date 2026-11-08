@@ -138,8 +138,7 @@ func test_king_slime_pattern_and_splits() -> void:
 	king.actor.pool.set_current("hp", king.actor.pool.get_max("hp") * 0.45)
 	BossHooks.check_all(b)
 	assert_eq(b.side_units(Combatant.SIDE_ENEMY).size(), 5, "또 25%")
-	BossHooks.apply_effects(b, king, b.side_units(Combatant.SIDE_PARTY)[0], JsonUtil.get_array(db.get_entry("skills", "king_jump_crush"), "effects"))
-	assert_true(b.side_units(Combatant.SIDE_PARTY)[0].actor.statuses.has("telegraphed"), "점프 압살 예고")
+	assert_true(BattleCoin.wants(b, king, {"kind": "skill", "skill": "king_jump_crush"}), "점프 압살 = 동전 기술(C27)")
 	assert_true(king.actor.stats.apply_modifiers("dmg_taken:blunt", 1.0) < 1.0, "둔기 −40%")
 
 

@@ -154,6 +154,15 @@ static func _skills(v: ValidatorBase) -> void:
 			elif not JsonUtil.is_number(cost[r]) or float(cost[r]) < 0.0:
 				v.err(w, "cost 값은 0 이상의 숫자")
 		EffectRules.check(v, w, JsonUtil.get_array(s, "effects"), v.check_skill_effects)
+		if s.has("coin"):  # 보스 동전 기술(BattleCoin — C27)
+			var coin: Variant = s["coin"]
+			if not coin is Dictionary:
+				v.err(w, "coin은 {hit_mult, guarded_mult}")
+			else:
+				for k: String in ["hit_mult", "guarded_mult"]:
+					var m: Variant = (coin as Dictionary).get(k, 0.0)
+					if not JsonUtil.is_number(m) or float(m) < 0.0 or float(m) > 1.0:
+						v.err(w, "coin.%s는 0~1" % k)
 		if s.has("innate") and not s["innate"] is bool:
 			v.err(w, "innate는 true/false")
 		if s.has("essence_of") and JsonUtil.get_str(s, "essence_of").is_empty():

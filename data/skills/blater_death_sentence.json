@@ -9,24 +9,17 @@
   "cooldown": 0,
   "effects": [
     {
-      "type": "delayed",
-      "rounds": 1,
-      "hits": 1,
-      "target": "cast",
-      "effects": [
-        {
-          "type": "damage",
-          "scaling": "phys",
-          "power": 5.85,
-          "damage_type": "slash",
-          "accuracy": 120
-        }
-      ],
-      "guarded_mult": 0.3,
-      "warn": "combat.blater_sentence_warn",
-      "fire": "combat.blater_sentence_fire"
+      "type": "damage",
+      "scaling": "phys",
+      "power": 5.85,
+      "damage_type": "slash",
+      "accuracy": 120
     }
   ],
+  "coin": {
+    "hit_mult": 0.0,
+    "guarded_mult": 0.3
+  },
   "source": "placeholder",
-  "notes": "1라운드 전에 대상을 예고하고 다음 라운드에 발동. [방어]로 대응 · 시뮬레이터 조정: 위력 2.2→4.5, 방어하면 ×0.3(guarded_mult) — \"[방어]로 대응하는 패턴\"이 결정적이 되게"
+  "notes": "보스 동전 기술(C27 — 사용자 2026-11-08 \"예고 빼고 동전 바로\"): 쓰는 순간 앞면·뒷면을 고르고 동전 — 맞히면 피함, 틀리면 그대로(방어 중이면 ×0.3). 예전: 1라운드 예고 → [방어]로 대응(위력 2.2→4.5 → C24 ×1.3)"
 }

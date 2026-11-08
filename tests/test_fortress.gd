@@ -184,8 +184,7 @@ func test_blater_pattern() -> void:
 	bl.actor.pool.set_current("hp", bl.actor.pool.get_max("hp") * 0.4)
 	BossHooks.check_all(b)
 	assert_true(pat.wants_extra_action(b, bl), "생명력 50% 이하 라운드당 2회")
-	BossHooks.apply_effects(b, bl, me, JsonUtil.get_array(db.get_entry("skills", "blater_death_sentence"), "effects"))
-	assert_true(me.actor.statuses.has("telegraphed"), "사형 선고 예고")
+	assert_true(BattleCoin.wants(b, bl, {"kind": "skill", "skill": "blater_death_sentence"}), "사형 선고 = 동전 기술(C27)")
 
 
 func test_kambormir_feast() -> void:
@@ -264,7 +263,7 @@ func test_telegraph_waits_through_extra_action() -> void:
 	var b := _battle(["blater"], 2)
 	var bl := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
-	BossHooks.apply_effects(b, bl, me, JsonUtil.get_array(db.get_entry("skills", "blater_death_sentence"), "effects"))
+	BossHooks.apply_effects(b, bl, me, JsonUtil.get_array(db.get_entry("skills", "ild_tomb_trap"), "effects"))
 	bl.memo["in_extra"] = true
 	BattleDelayed.tick(b, bl)
 	assert_true(me.actor.statuses.has("telegraphed"), "추가 행동 차례에는 예고가 터지지 않는다")

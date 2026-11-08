@@ -128,7 +128,7 @@ func test_telegraph_hits_marked_target() -> void:
 	var boss := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var party := b.side_units(Combatant.SIDE_PARTY)
 	var mark := party[2]
-	BossHooks.apply_effects(b, boss, mark, JsonUtil.get_array(db.get_entry("skills", "blater_death_sentence"), "effects"))
+	BossHooks.apply_effects(b, boss, mark, JsonUtil.get_array(db.get_entry("skills", "ild_tomb_trap"), "effects"))
 	assert_true(mark.actor.statuses.has("telegraphed"), "찍힌 대상에 [예고]")
 	var hp := []
 	for u in party:

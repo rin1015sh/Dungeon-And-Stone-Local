@@ -180,7 +180,12 @@ func _loop() -> void:
 		await get_tree().create_timer(_ai_delay()).timeout
 		if not is_inside_tree():
 			return
-		if not battle.act(c, battle.ai_action(c)):
+		var ai := battle.ai_action(c)
+		if BattleCoin.wants(battle, c, ai):  # 보스 동전 기술(C27): 쓰기 직전에 앞뒤를 고르고 동전
+			ai["coin"] = await CombatCoin.ask(self, _banner, battle, c, ai)
+			if not is_inside_tree():
+				return
+		if not battle.act(c, ai):
 			if not battle.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null}):
 				battle.act(c, {"kind": "guard"})
 		_refresh()

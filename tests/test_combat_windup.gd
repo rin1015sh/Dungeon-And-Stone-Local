@@ -77,13 +77,13 @@ func test_stun_breaks_windup() -> void:
 
 
 func test_boss_telegraph_is_not_broken_by_stun() -> void:
-	var b := _battle(["king_slime"])
-	var king := b.side_units(Combatant.SIDE_ENEMY)[0]
+	var b := _battle(["tarunbas"])
+	var boss := b.side_units(Combatant.SIDE_ENEMY)[0]
 	var me := b.side_units(Combatant.SIDE_PARTY)[0]
-	BossHooks.apply_effects(b, king, me, JsonUtil.get_array(db.get_entry("skills", "king_jump_crush"), "effects"))
-	BattleDelayed.tick(b, king, true)
+	BossHooks.apply_effects(b, boss, me, JsonUtil.get_array(db.get_entry("skills", "tarun_ground_collapse"), "effects"))
+	BattleDelayed.tick(b, boss, true)
 	assert_false(_said(b, "combat.windup_broken"), "보스 예고는 끊기지 않는다")
-	assert_true(_said(b, "combat.king_jump_fire"), "그대로 터진다")
+	assert_true(_said(b, "combat.tarun_collapse_fire"), "그대로 터진다")
 
 
 func test_guard_softens_windup() -> void:
@@ -176,10 +176,10 @@ func test_off_balance_doubles_stun_chance() -> void:
 	assert_true(hits[0] > hits[1] * 1.4, "큰 몸짓 중이 더 잘 걸린다 %d vs %d" % hits)
 	BattleDelayed.tick(b, hob)
 	assert_false(hob.actor.has_meta(BattleDelayed.OFF_BALANCE), "터지면 풀린다")
-	var kb := _battle(["king_slime"])
-	var king := kb.side_units(Combatant.SIDE_ENEMY)[0]
-	BossHooks.apply_effects(kb, king, kb.side_units(Combatant.SIDE_PARTY)[0], JsonUtil.get_array(db.get_entry("skills", "king_jump_crush"), "effects"))
-	assert_false(king.actor.has_meta(BattleDelayed.OFF_BALANCE), "보스 예고는 해당 없음")
+	var kb := _battle(["tarunbas"])
+	var boss := kb.side_units(Combatant.SIDE_ENEMY)[0]
+	BossHooks.apply_effects(kb, boss, kb.side_units(Combatant.SIDE_PARTY)[0], JsonUtil.get_array(db.get_entry("skills", "tarun_ground_collapse"), "effects"))
+	assert_false(boss.actor.has_meta(BattleDelayed.OFF_BALANCE), "보스 예고는 해당 없음")
 
 
 ## 행동 순서(CB7): 앞으로의 차례 목록 · 큰 몸짓이 터지는 그 적의 차례 자리.
