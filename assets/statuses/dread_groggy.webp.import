@@ -15,9 +15,9 @@ dest_files=["res://.godot/imported/dread_groggy.webp-6b0f763fe5c4b1ab2e0f2a070e2
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

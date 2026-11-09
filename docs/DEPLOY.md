@@ -11,7 +11,7 @@
      윈도우는 `%APPDATA%\Godot\export_templates\4.7.2.stable\`, 리눅스는 `~/.local/share/godot/export_templates/4.7.2.stable/`에 둔다.
 2. 내보내기: `GODOT=<godot 경로> bash tools/export_web.sh`
    - 결과: `build/web/`(index.html · index.js · index.wasm · index.pck …)와 `build/dungeon_and_stone_web.zip`(그대로 올리는 파일).
-   - 크기(2026-11-08): wasm 38MB + **pck 198MB**, zip 204MB — 그림이 늘어 커졌다(가져온 그림이 무손실 ctex). 첫 로딩이 길다. itch.io는 압축을 푼 파일 하나가 200MB를 넘으면 받지 않는다 — pck가 넘으면 그림 가져오기를 손실 압축으로 바꾸는 등 줄여야 한다.
+   - 크기(2026-11-09): wasm 38MB + pck 73MB, zip 80MB. 그림 가져오기를 원본에 맞춰 손실 0.9로 바꿔(`tools/texture_compress.py` — 전에는 손실 원본을 무손실로 다시 저장해 pck 198MB) 줄였다.
    - 편집기에서 하려면: 프로젝트 → 내보내기 → "Web" → 프로젝트 내보내기(`build/web/index.html`).
 3. 내 컴퓨터에서 먼저 보기: `cd build/web && python3 -m http.server 8000` → 브라우저로 `http://localhost:8000`.
    (`index.html`을 더블클릭해 `file://`로 열면 동작하지 않는다.)

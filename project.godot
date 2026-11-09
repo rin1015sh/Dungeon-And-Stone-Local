@@ -38,6 +38,13 @@ window/stretch/aspect="expand"
 
 enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
 
+[importer_defaults]
+
+texture={
+"compress/lossy_quality": 0.9,
+"compress/mode": 1
+}
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

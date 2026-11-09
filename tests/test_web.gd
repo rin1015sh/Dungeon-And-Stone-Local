@@ -59,3 +59,26 @@ func _files(dir: String, ext: String) -> PackedStringArray:
 	for d in DirAccess.get_directories_at(dir):
 		out.append_array(_files(dir.path_join(d), ext))
 	return out
+
+
+## 그림 가져오기 압축(2026-11-09): 원본이 손실 .webp면 손실 0.9, 무손실(VP8L — 동작 시트 · 바닥 타일)이면 무손실.
+## 어긋나면 python3 tools/texture_compress.py 로 맞춘다(새 그림은 project.godot importer_defaults가 손실로 만든다).
+func test_texture_import_matches_source() -> void:
+	var bad := PackedStringArray()
+	for path in _files("res://assets", ".webp"):
+		var cfg := ConfigFile.new()
+		if cfg.load(path + ".import") != OK:
+			continue
+		var head := FileAccess.get_file_as_bytes(path).slice(0, 256)
+		var lossless := _has_bytes(head, "VP8L".to_ascii_buffer())
+		var mode := int(cfg.get_value("params", "compress/mode", 0))
+		if mode != (0 if lossless else 1):
+			bad.append(path)
+	assert_true(bad.is_empty(), "압축 설정이 원본과 어긋남(tools/texture_compress.py): %s" % [", ".join(bad.slice(0, 5))])
+
+
+func _has_bytes(hay: PackedByteArray, needle: PackedByteArray) -> bool:
+	for i in hay.size() - needle.size() + 1:
+		if hay.slice(i, i + needle.size()) == needle:
+			return true
+	return false

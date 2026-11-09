@@ -15,9 +15,9 @@ dest_files=["res://.godot/imported/idium_buckler.webp-e74faadb3a1f765ce03dd2d0dc
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
