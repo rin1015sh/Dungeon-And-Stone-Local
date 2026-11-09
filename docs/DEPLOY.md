@@ -38,7 +38,7 @@
 | 기반 점검 | 릴리스 빌드에서 숨김(개발용) | `TitleScreen` `OS.is_debug_build()` |
 | 저장 | `user://dungeon_and_stone/save.json` → 브라우저 IndexedDB. 같은 주소의 다른 Godot 게임과 겹치지 않게 게임 이름 폴더를 둔다. 파일을 닫을 때 저장소로 동기화된다 | `SaveGame` |
 | 글꼴 | 웹에는 시스템 글꼴이 없다 → 화면 글자는 동봉 Noto Sans KR에 있는 것만. 없던 기호 ▸ ✕를 › ×로 바꿨고 테스트가 지킨다 | `tests/test_web.gd` |
-| 키 넘기기 | iPad Safari 등에서 게임 화면(canvas)에 포커스가 없으면 키가 페이지로 가 게임이 못 받는다(엔터가 안 먹음) → `html/head_include` 스크립트가 canvas 밖으로 간 키를 canvas로 다시 보내고, 화면을 누르면 canvas에 포커스를 준다(2026-11-08). 크로미움에서 포커스를 뺀 채 Enter로 타이틀 → 동네까지 확인, 실제 iPad는 사용자 확인 | `export_presets.cfg` head_include · `tests/test_web.gd` |
+| 키 넘기기 | iPad Safari 등에서 키가 게임에 안 닿는다(엔터 · ` 안 먹음) → `html/head_include`(원본 `tools/web_key_shim.js`)가 ① canvas 밖으로 간 키를 canvas로 다시 보내고 ② `code`가 빈 키는 `key`로 채우고(iOS `UIKeyInput…` 이름 · `₩`/`~` → `) ③ 한글 자판 글자를 같은 자리 영문 키로(ㅈ → W) 바꾼다. 화면을 누르면 canvas 포커스. **주소 뒤 `?keys`**를 붙이면 받은 키(key · code · 대상)를 화면 아래에 보인다 — 안 먹는 키를 알아낼 때. 크로미움에서 code 없는 Enter · ₩ · ㄴ으로 확인, 실제 iPad는 사용자 확인 | `export_presets.cfg` head_include · `tools/web_key_shim.js` · `tests/test_web.gd` |
 | iPad 키보드 | Magic Keyboard 등에는 Esc 키가 없다 → 설정 → 일반 → 키보드 → 하드웨어 키보드 → 보조 키에서 Caps Lock(또는 Globe)을 Escape로 | — |
 | Esc | 전체 화면에서 Esc는 브라우저가 먼저 가져가 전체 화면만 풀린다. 미궁 정지는 P, 창 닫기·선택 창 뒤로·창구에서 나가기도 Esc라 전체 화면에서는 한 번 더 눌러야 한다(UI43 — Backspace는 전투 행동창 뒤로만) | `data/input.json` |
 
