@@ -442,7 +442,7 @@
 - `debug.lord_ready` 수호자 넷 처치로 표시
 - `debug.summon_lord` 계층군주 소환(드레드피어)
 - `debug.add_companion` 동료 들이기(무작위 탐험가)
-- `debug.title` 디버그 (F1 · `)
+- `debug.title` 디버그 (F1 · ])
 - `debug.skip` +{hours}시간
 - `debug.close_soon` 폐쇄 1시간 전
 - `debug.reveal` 안개 걷기
@@ -945,7 +945,7 @@
 - `city.essence_remove` 제거
 - `city.essence_confirm` 정말 제거 ({cost})
 - `city.essence_removed` {name} 정수가 몸에서 빠져나갔다. {cost} 스톤을 치렀다.
-- `city.debug_title` 도시 디버그 (F1 · `)
+- `city.debug_title` 도시 디버그 (F1 · ])
 - `city.debug_set_date` 날짜 바꾸기
 - `city.debug_next_period` 다음 순
 - `city.debug_ap` 행동력

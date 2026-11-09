@@ -4,7 +4,7 @@
 var HAN='ㅂqㅈwㄷeㄱrㅅtㅛyㅕuㅑiㅐoㅔpㅁaㄴsㅇdㄹfㅎgㅗhㅓjㅏkㅣlㅋzㅌxㅊcㅍvㅠbㅜnㅡmㅃqㅉwㄸeㄲrㅆtㅒoㅖp';
 var NAMED={'Enter':'Enter','Escape':'Escape','Esc':'Escape','UIKeyInputEscape':'Escape','Tab':'Tab',' ':'Space','Spacebar':'Space','Backspace':'Backspace',
 'ArrowUp':'ArrowUp','UIKeyInputUpArrow':'ArrowUp','ArrowDown':'ArrowDown','UIKeyInputDownArrow':'ArrowDown','ArrowLeft':'ArrowLeft','UIKeyInputLeftArrow':'ArrowLeft',
-'ArrowRight':'ArrowRight','UIKeyInputRightArrow':'ArrowRight','`':'Backquote','~':'Backquote','₩':'Backquote','F1':'F1','UIKeyInputF1':'F1'};
+'ArrowRight':'ArrowRight','UIKeyInputRightArrow':'ArrowRight','`':'Backquote','~':'Backquote','₩':'Backquote','F1':'F1','UIKeyInputF1':'F1','[':'BracketLeft','{':'BracketLeft',']':'BracketRight','}':'BracketRight'};
 var mine=new WeakSet();
 var cv=function(){return document.getElementById('canvas');};
 var fix=function(e){
