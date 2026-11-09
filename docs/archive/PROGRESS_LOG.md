@@ -3,6 +3,9 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-09 디버그 패널 키 ` 추가
+- 사용자 "F1이 키보드에 없다(iPad) — 다른 키, Shift는 안 됨". `debug_toggle`에 `QuoteLeft`(` — 숫자 1 왼쪽, 조합 키 없이) 추가, 패널 제목 "(F1 · `)". strings_md 다시 만듦.
+
 ### 2026-11-08 웹: iPad에서 키가 안 먹음
 - 사용자 "iPad로 GitHub Pages 플레이 — 엔터가 안 먹어 시작이 안 됨". Godot 웹은 키를 canvas에서만 듣는데 iPad Safari에서 canvas 포커스가 안 잡힌 것으로 본다. `html/head_include`에 canvas 밖 키를 canvas로 다시 보내는 스크립트 + 터치하면 canvas 포커스. 크로미움에서 포커스를 body로 뺀 채 Enter로 타이틀 → 동네 확인. **실제 iPad Safari는 미검증**(WebKit 없음). DEPLOY.md §3.
 
