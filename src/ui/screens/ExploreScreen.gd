@@ -528,6 +528,7 @@ func _build_pause_overlay() -> void:
 
 func _build_world() -> void:
 	var container := SubViewportContainer.new()
+	container.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR  # 화면 크기가 1280×720이 아니면(iPad 웹 등) 이 그림이 늘거나 줄어든다 — 가장 가까운 화소로 늘이면 테두리가 들쭉날쭉하다
 	container.stretch = true
 	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(container)

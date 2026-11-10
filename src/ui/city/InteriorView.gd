@@ -72,6 +72,7 @@ func world() -> InteriorWorld:
 
 func _build_world(view: Dictionary) -> void:
 	var box := SubViewportContainer.new()
+	box.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR  # 화면 크기가 1280×720이 아니면(iPad 웹 등) 이 그림이 늘거나 줄어든다 — 가장 가까운 화소로 늘이면 테두리가 들쭉날쭉하다
 	box.stretch = true
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(box)
