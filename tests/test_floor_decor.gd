@@ -17,7 +17,7 @@ func test_decor_rules_follow_map() -> void:
 	var map: FloorMap = f[0]
 	var decor := FloorDecor.compile(map, f[1])
 	assert_false(decor.is_empty())
-	var rect := Rect2i(300, 380, 32, 24)  # 이끼 물웅덩이 둘레
+	var rect := Rect2i(238, 290, 32, 24)  # 이끼 물웅덩이 둘레(1층 줄인 지도 — 2026-11-10)
 	var a := decor.cells(rect)
 	var b := decor.cells(rect)
 	assert_eq(a.size(), b.size(), "같은 칸 = 같은 데칼")
@@ -92,8 +92,8 @@ func test_macro_tint() -> void:
 	assert_true(tint.enabled)
 	var c: Vector2i = map.safe_zones[0]["center"]
 	assert_true(tint.at(c.x, c.y).get_luminance() < tint.at(c.x + 40, c.y).get_luminance() * 0.9, "안전지대 둘레가 어둡다")
-	var east := tint.at(600, 366)
-	var west := tint.at(130, 366)
+	var east := tint.at(c.x + 200, c.y)
+	var west := tint.at(c.x - 200, c.y)
 	assert_true(east.b > east.r and west.r > west.b, "동 = 차가운 색, 서 = 따뜻한 색")
 
 

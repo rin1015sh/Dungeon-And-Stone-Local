@@ -110,7 +110,7 @@ assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ bat
 
 - **"1점당 몇 %" 공식을 새로 만들지 않는다** — 스탯이 10층에서 수백~천이 된다(10층 비율 공식, `docs/plans/balance_10floors.md`).
 - **정수 스킬의 위력을 줄이지 않는다**(사용자 결정 2026-10-24, C15 — 몬스터판보다 약하게 만들지 않고, 하한은 `tests/test_skill_value.gd`). 예외: 9등급 정수 스킬은 1.2(사용자 2026-11-04, C26).
-- **큰 지도(1층 733×733)에서 지도 전체를 매 프레임 훑는 코드를 넣지 않는다** — 화면은 플레이어 둘레 청크만, 80칸 밖 무리는 쉰다.
+- **큰 지도(1층 541×541)에서 지도 전체를 매 프레임 훑는 코드를 넣지 않는다** — 화면은 플레이어 둘레 청크만, 80칸 밖 무리는 쉰다.
 - **아이템은 Tab 메뉴에서만**, 장비 수치는 JSON에 손으로 쓰지 않는다(종류 × 소재 → `ItemForge`, IT1). 새 아이템은 그림(`assets/items/<id>.webp`)까지.
 - **정수를 얻는 길은 전투 드롭 "획득할까?"뿐**(UI13). 마석은 어느 상점도 사지 않는다 — 귀환 정산(CT58).
 - **새 콘텐츠**: JSON 한 파일/한 항목 추가 → `tools/validate_data.gd`로 확인. 새 효과 타입 = `src/combat/effects/<type>.gd`, 새 층 생성기 = `src/explore/generators/<id>.gd` 파일 하나, 새 도시 활동 효과 = `src/city/effects/<type>.gd`, 새 시설·활동 = `data/facilities`·`data/activities` JSON.
