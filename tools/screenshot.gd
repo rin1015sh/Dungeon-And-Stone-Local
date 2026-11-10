@@ -2,6 +2,7 @@ extends Node
 ## 화면 캡처 도구(시각 확인용). 창이 잠깐 떴다가 PNG를 저장하고 닫힌다. 헤드리스에서는 렌더링이 없어 쓸 수 없다.
 ##   godot --path . res://tools/screenshot.tscn -- --screen=explore --out=C:/tmp/shot.png [--seed=123] [--walk=6] [--debug]
 ## --prof=<초>: (--rift 등으로 자리를 잡은 뒤) W/A/S/D를 돌려 누르며 걷고 프레임 시간(평균·95%·99%·최대·16.7ms·50ms 넘는 수)·그리기 호출을 찍고 끝(렉 찾기 — CT73)
+##   --tree = 탐험 화면 노드 종류별 수, --hide=<종류,…> = 그 종류(class_name · 엔진 클래스)를 숨기고 끈 채로 잰다
 ## --screen=coin [--tails] [--frames=N] --out=<폴더>: 동전 연출을 N 시각마다 찍는다(V25)
 ## --screen: title(기본) / foundation / create / city / plaza(차원광장 — --opening이면 포탈이 반쯤 열린 순간, --weather 가능) / explore(차원광장을 거쳐 들어간다)
 ## city: --house=<집 실내 id> 일반 집 실내(CT110) · --facility=<id> --in_at=x,y [--face=…] 실내(CT106)에서 그 칸에 선다(그 방만 보인다) ·
@@ -312,6 +313,14 @@ func _run() -> void:
 		if _args.has("rift"):
 			explore = await _enter_rift(explore)
 		if _args.has("prof"):  # --prof=<초>: 그 자리에서 W/A/S/D를 돌려 누르며 걷고 프레임 시간을 찍는다(렉 찾기 — CT73)
+			if _args.has("tree"):  # --tree: 탐험 화면 노드를 종류(스크립트 class_name · 엔진 클래스)별로 센다
+				_print_tree_counts(explore)
+			if _args.has("hide"):  # --hide=<종류,…>: 그 종류 노드를 숨기고 잰다(무엇이 무거운지 하나씩 빼 보기)
+				for n: Node in explore.find_children("*", "", true, false):
+					if _kind(n) in str(_args["hide"]).split(","):
+						if n is CanvasItem:
+							(n as CanvasItem).visible = false
+						n.process_mode = Node.PROCESS_MODE_DISABLED
 			await _profile_walk(float(str(_args["prof"])))
 			get_tree().quit(0)
 			return
@@ -783,6 +792,24 @@ func _summon() -> void:
 
 
 ## 걷기 프레임 시간: 키 넷을 1.2초씩 돌려 누르며 sec초 — 평균·95%·최대·느린 프레임 수와 그리기 호출·노드 수.
+func _kind(n: Node) -> String:
+	var sc: Script = n.get_script() as Script
+	if sc != null and not sc.get_global_name().is_empty():
+		return sc.get_global_name()
+	return n.get_class()
+
+
+func _print_tree_counts(root: Node) -> void:
+	var counts := {}
+	for n: Node in root.find_children("*", "", true, false):
+		var k := _kind(n)
+		counts[k] = int(counts.get(k, 0)) + 1
+	var keys := counts.keys()
+	keys.sort_custom(func(a: Variant, b: Variant) -> bool: return int(counts[a]) > int(counts[b]))
+	for k: Variant in keys.slice(0, 25):
+		print("노드 %s %d" % [k, counts[k]])
+
+
 func _profile_walk(sec: float) -> void:
 	var keys := ["move_right", "move_down", "move_left", "move_up"]
 	var times: Array[float] = []

@@ -3,6 +3,11 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-10 바위사막 렉(웹 · iPad)
+- 사용자 "바위사막에서 렉 — 사막인지 2층인지 모름". 잼(xvfb 소프트웨어 렌더, --prof): 1층 24ms · 망자의 땅 22ms · **바위사막 35ms**(몬스터 있으면 41). 헤드리스(스크립트만)는 셋 다 7ms — 그리기 문제. `--hide`로 하나씩 꺼 보니 `VoidChunk`(외곽 바위산 · 절벽 셰이더 abyss.gdshader) -15ms, 셰이더를 상수로 바꾸면 -12ms(그중 솟은 외곽 rise_color 6ms). 사막은 도착 자리부터 화면 절반이 바위산.
+- **고친 것**: 웹은 레티나로 그리지 않는다(`display/window/dpi/allow_hidpi.web=false` — 크로미움 dpr 2에서 canvas 2360×1640 → 1180×820, 화소 1/4). iPad의 렉 대부분은 이것(셰이더 화소 수 4배)으로 본다. 셰이더 탐색 걸음을 2배로 넓혀 봤지만 1ms뿐이라 되돌렸다.
+- 도구: screenshot `--tree` · `--hide=<종류>`. **실제 iPad 미검증** — 남으면 abyss 셰이더의 솟은 외곽을 미리 구워 두는 쪽(큰 작업).
+
 ### 2026-11-09 그림 가져오기 압축
 - **범위 / 기준 / 테스트**: 사용자 "그림 압축 진행 · 앞으로 새로 그릴 때도". 기준: 웹 pck 크게 줄고 그림이 눈에 띄게 달라지지 않는다. 테스트: test_web `test_texture_import_matches_source` · 전후 캡처 5장(전투 · Tab 메뉴 · 탐험 · 여관 실내 · 도감).
 - **한 일**: `tools/texture_compress.py` — 원본이 손실 WebP(VP8 · VP8X+VP8)면 `.import` compress/mode=1 · lossy_quality 0.9, 무손실(VP8L — 몬스터 동작 시트 · 탐험가 모습 · 미궁 바닥 타일 · 동네 소품 375장)은 무손실. 1131장 바꿈. `project.godot [importer_defaults] texture` = 손실 0.9(새 .import가 손실로 생기는 것 확인). 무손실 원본이 손실로 잡히면 test_web이 실패(확인함).

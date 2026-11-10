@@ -48,6 +48,9 @@ func test_web_export_preset() -> void:
 	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("data/*.json"), "데이터 JSON을 싣는다")
 	assert_true(str(cfg.get_value(web, "include_filter", "")).contains("assets/*.json"), "그림 색인 JSON(몸 높이 · 동네 바닥 · 실내 · 집 가림)을 싣는다")
 	assert_false(bool(cfg.get_value(web + ".options", "variant/thread_support", true)), "스레드 끔(SharedArrayBuffer 불필요)")
+	var proj := ConfigFile.new()
+	assert_eq(proj.load("res://project.godot"), OK, "project.godot")
+	assert_false(bool(proj.get_value("display", "window/dpi/allow_hidpi.web", true)), "웹은 레티나 2배로 그리지 않는다(iPad 렉 — 화소 4배, DEPLOY.md §3)")
 	assert_true(str(cfg.get_value(web + ".options", "html/head_include", "")).contains("HAN="), "키 넘기기 스크립트(tools/web_key_shim.js — 포커스 · iPad 키 이름 · 한글 자판, DEPLOY.md §3)")
 
 
