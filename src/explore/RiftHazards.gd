@@ -12,6 +12,8 @@ extends RefCounted
 ##   "disarm": {stat, dc} — 드러난 함정을 밟으면 해제 판정(성공 = 무사, 실패 = 발동). 드러나지 않았으면 check(피하기)
 ##   "bypass": {stat, at_least} — 그만큼 단단하면 밟아 부순다(고렙). 살아 있는 조우에 패시브 trap_watcher(수호자의 눈)가
 ##   있으면 발동 확률 × (1 + 그 값).
+## 곰덫(2026-11-10 — 고블린 숲 · 1층 고블린 덫): "single": true = 묶음 대신 그 칸 하나, "always": true = 판정 없이 밟으면 발동,
+##   "sprung_tile" = 터진 뒤(플레이어 · 몬스터가 밟음) 그 칸에 남는 타일(닫힌 덫). 드러난 덫(hidden 아님)은 처음부터 보인다.
 
 var at: Dictionary = {}  ## 칸 -> 아직 판정하지 않은 묶음 정의(같은 묶음은 같은 Dictionary)
 
@@ -42,9 +44,13 @@ func place(cs: ExploreSession, ch: Dictionary, rng: Rng) -> void:
 func add_group(cs: ExploreSession, hd: Dictionary, c: Vector2i) -> void:
 	var group := hd.duplicate()
 	group["cells"] = fit_cells(cs, c)
+	if JsonUtil.get_bool(hd, "single") and not group["cells"].is_empty():
+		var one: Array[Vector2i] = [c]
+		group["cells"] = one
 	for p: Vector2i in group["cells"]:
 		if not JsonUtil.get_bool(hd, "hidden"):  # 숨은 함정은 원래 바닥처럼 보인다
 			cs.map.set_tile(p, JsonUtil.get_str(hd, "tile"))
+			cs.tiles_changed.emit(Rect2i(p, Vector2i.ONE))  # 화면이 먼저 생겼으면 소품(곰덫) 칸으로 알린다
 		at[p] = group
 
 
@@ -76,13 +82,16 @@ func on_step(cs: ExploreSession, p: Vector2i) -> Variant:
 	var hd: Dictionary = at[p]
 	for q: Variant in hd["cells"]:
 		at.erase(q)
-	_show(cs, hd)  # 판정이 끝나도 함정·위험은 보이는 채로 남는다
+	_show(cs, hd, true)  # 판정이 끝나도 함정·위험은 보이는 채로 남는다(곰덫은 닫힌 그림 — sprung_tile)
 	cs.fx.emit("snap", p, -1)  # 덫 · 위험이 튀는 순간(글 대신 — 결과 문구는 남는다: 무엇에 다쳤는지 화면으론 모른다)
 	var ok := true
 	var how := "pass"
 	var key := JsonUtil.get_str(hd, "pass_message", "explore.hazard_pass")
 	var strong := JsonUtil.get_dict(hd, "bypass")
-	if not strong.is_empty() and cs.player.stats.get_value(JsonUtil.get_str(strong, "stat")) >= JsonUtil.get_float(strong, "at_least"):
+	if JsonUtil.get_bool(hd, "always"):  # 곰덫: 보이는 덫을 밟으면 피할 판정 없이 문다
+		ok = false
+		how = "fail"
+	elif not strong.is_empty() and cs.player.stats.get_value(JsonUtil.get_str(strong, "stat")) >= JsonUtil.get_float(strong, "at_least"):
 		key = JsonUtil.get_str(strong, "message", "explore.trap_crushed")
 		how = "bypass"
 	else:
@@ -140,12 +149,12 @@ func _detect_near(cs: ExploreSession, p: Vector2i) -> void:
 
 ## 묶음을 드러낸다(몬스터가 덫을 밟았다 — MonsterSnares).
 func show_group(cs: ExploreSession, hd: Dictionary) -> void:
-	_show(cs, hd)
+	_show(cs, hd, true)
 
 
-## 묶음의 칸을 함정 타일로 칠하고(이미 그렇다면 그대로) 화면에 다시 그리라고 알린다.
-func _show(cs: ExploreSession, hd: Dictionary) -> void:
-	var tile := JsonUtil.get_str(hd, "tile")
+## 묶음의 칸을 함정 타일로 칠하고(이미 그렇다면 그대로) 화면에 다시 그리라고 알린다. sprung = 터졌다(sprung_tile이 있으면 그것으로).
+func _show(cs: ExploreSession, hd: Dictionary, sprung: bool = false) -> void:
+	var tile := JsonUtil.get_str(hd, "sprung_tile", JsonUtil.get_str(hd, "tile")) if sprung else JsonUtil.get_str(hd, "tile")
 	var box := Rect2i()
 	for c: Vector2i in hd["cells"]:
 		if cs.map.tile_id_at(c) == tile:

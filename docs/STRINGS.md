@@ -1,6 +1,6 @@
 # 게임 글 (`data/strings/ko.json`)
 
-> 게임 화면·대화창·기록에 나오는 글 전부(1086줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
+> 게임 화면·대화창·기록에 나오는 글 전부(1071줄). **이 파일을 고친 뒤 적용하면 게임에 들어간다.**
 > - 한 줄 = ``- `키` 글``. **키(`` ` `` 안)는 바꾸지 말고 뒤의 글만** 고친다. 줄을 지우거나 새 키를 쓰면 무시된다(키는 코드가 부른다).
 > - `{이름}`은 자리표시자(게임이 값으로 바꿔 넣는다 — 그대로 둔다). 번호 키(`.1` `.2` …)가 여럿이면 차례로 모두 나오거나(장면) 하나를 고른다(묶음 설명 참고).
 > - 적용: `godot --headless --path . --script res://tools/strings_md.gd -- --apply` → `data/strings/ko.json`이 바뀐다(그 뒤 `tools/check.sh`).
@@ -1169,10 +1169,7 @@
 - `field.rot_smell` 썩은 고기 냄새가 바람을 타고 온다. 가까운 곳에 구울이 있다.
 - `field.goblin_camp` 고블린들의 모닥불이다. 꼬치에 꿴 고기와 훔쳐 온 물건이 널려 있다.
 - `field.goblin_camp_done` 어지럽게 흩어진 뼈다귀만 남았다.
-- `field.snare_detected` 발밑에 엉성하게 덮은 올가미가 보인다.
-- `field.snare_disarmed` 올가미를 조심스레 풀어 치운다.
-- `field.snare_pass` 발이 올가미를 스쳤지만 걸리지 않았다.
-- `field.snare_fail` 올가미가 발목을 낚아챈다. 숨겨 둔 날붙이가 살을 파고든다.
+- `field.bear_trap_fail` 쇠 이빨이 발목을 물었다.
 - `field.slope_pass` 젖은 비탈을 조심스레 내려간다.
 - `field.slope_fail` 물기에 발이 미끄러져 바위에 몸을 부딪는다.
 - `field.portal_footprints` 포탈 쪽으로 수많은 발자국이 이어진다. 돌아 나온 발자국은 드물다.
@@ -1212,18 +1209,6 @@
 - `field.grave_stone` 진창 위에 갓 깎은 듯한 비석이 서 있다. 새겨진 이름은 없고, 손을 대면 돌이 차갑게 떨린다.
 - `field.grave_stone_break` 비석을 걷어차 쓰러뜨렸다. 진창에 처박힌 돌 아래에서 차가운 기운이 빠져나가 흩어졌다.
 - `field.grave_stone_break_fail` 한참을 내리쳐도 비석은 꿈쩍하지 않는다.
-- `field.forest_snare_detected` 낙엽 아래 밧줄 고리가 비친다.
-- `field.forest_snare_disarmed` 밧줄을 끊어 고리를 풀어 두었다.
-- `field.forest_snare_pass` 발목에 감기려던 고리를 비켜 디뎠다.
-- `field.forest_snare_fail` 고리가 발목을 낚아채 몸이 거꾸로 들렸다가 땅에 처박혔다.
-- `field.forest_pit_detected` 길 한가운데 나뭇가지가 너무 가지런히 덮여 있다.
-- `field.forest_pit_disarmed` 가지를 걷어 구덩이 가장자리로 돌아갔다.
-- `field.forest_pit_pass` 꺼지는 가지를 밟자마자 몸을 뒤로 던졌다.
-- `field.forest_pit_fail` 발밑이 꺼지며 진흙 구덩이 바닥에 떨어졌다.
-- `field.forest_spike_detected` 흙 사이로 깎은 말뚝 끝이 솟아 있다.
-- `field.forest_spike_disarmed` 말뚝을 하나씩 뽑아 길가에 던졌다.
-- `field.forest_spike_pass` 말뚝 사이로 발을 골라 디뎠다.
-- `field.forest_spike_fail` 덮어 둔 말뚝이 발바닥을 꿰뚫었다.
 - `field.hunter_cache` 이끼 낀 궤짝 안에 사냥꾼이 남긴 짐이 그대로 있다.
 - `field.watch_alarm` 망대 위에서 누군가 손가락으로 이쪽을 가리킨다.
 - `field.drum_alarm` 나무 사이로 북 치는 고블린이 보이더니 둘레 덤불이 일제히 술렁인다.

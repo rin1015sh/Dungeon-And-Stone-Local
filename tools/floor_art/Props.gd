@@ -15,7 +15,8 @@ const Solid := preload("res://tools/floor_art/Solid.gd")
 const ORDER := ["corpse", "ghoul_feast", "stone_heap", "dead_campfire", "broken_gear", "offering", "spring", "drip",
 	"stalagmites", "mushroom", "wolf_den", "gnome_trinkets", "gnome_stash", "goblin_camp", "torch_stubs", "old_skeleton",
 	"cairn", "cache", "goblin_snare", "wet_slope", "portal", "rift_portal", "rift_gate",
-	"wolf_kill", "gnome_marker", "goblin_lookout", "wolf_tracks"]  # 레벨 디자인 LD2(2026-11-07)
+	"wolf_kill", "gnome_marker", "goblin_lookout", "wolf_tracks",  # 레벨 디자인 LD2(2026-11-07)
+	"bear_trap", "bear_trap_shut"]  # 곰덫(2026-11-10 — 덫을 바닥 타일 대신 소품 한 칸으로)
 
 const SKIN := Color("#8a7a6a")
 const CLOTH := Color("#4a4236")
@@ -191,6 +192,47 @@ static func paint(kind: String, w: int, seed_value: int) -> Paint:
 			Ink.line(p, c + Vector2(3, 5) * u, c + Vector2(21, 5) * u, 1.4 * u, METAL, 0.8, 0.3)
 			Solid.lump(p, c + Vector2(-6, 10) * u, 11 * u, 6 * u, 15 * u, CLOTH.lightened(0.08), 0.25, -0.3, u)  # 자루
 			Ink.line(p, c + Vector2(-10, -3) * u, c + Vector2(-3, -3) * u, 1.6 * u, LEATHER, 0.9, 0.4)
+		"bear_trap", "bear_trap_shut":  # 곰덫 — 쇠 고리 받침 · 톱니 턱 둘(벌림 = 납작하게 누운 반원 둘, 닫힘 = 맞물려 선 턱) · 말뚝에 맨 사슬
+			var shut := kind == "bear_trap_shut"
+			var iron := Color("#5c5a56")
+			var rust := Color("#7a4a2c")
+			Solid.shadow(p, c + Vector2(0, 4) * u, 22 * u, 8 * u)
+			for k in 7:  # 사슬: 받침에서 말뚝까지
+				var q := c + Vector2(14 + k * 2.6, 2 - k * 1.2) * u
+				Ink.path(p, Cave._ellipse(q, 1.7 * u, 1.1 * u, 10), 1.0 * u, true, iron.darkened(0.2), 0.9, 0.3)
+			Solid.drum(p, c + Vector2(33, -6) * u, 2.0 * u, 7 * u, WOOD, WOOD.lightened(0.25), u * 0.6)  # 말뚝
+			Ink.path(p, Cave._ellipse(c + Vector2(0, 2) * u, 9 * u, 4 * u, 22), 3.0 * u, true, Ink.INK, 0.9, 0.3)
+			Ink.path(p, Cave._ellipse(c + Vector2(0, 2) * u, 9 * u, 4 * u, 22), 1.8 * u, true, iron.lightened(0.15), 0.95, 0.4)  # 받침 고리
+			Solid.lump(p, c + Vector2(0, 2) * u, 4 * u, 2 * u, 2 * u, iron.lightened(0.1), 0.2, 0.0, u)  # 밟는 판
+			if not shut:
+				for side in [-1.0, 1.0]:  # 바닥에 벌려 눕힌 턱(타원 반쪽) + 안쪽을 보는 이빨
+					var arc := PackedVector2Array()
+					for k in 13:
+						var a := PI * k / 12.0
+						arc.append(c + Vector2(side * (6 + sin(a) * 13), -cos(a) * 9 + 2) * u)
+					for k in range(1, 12, 2):  # 이빨(턱 안쪽 — 턱보다 먼저 칠해 밑동이 턱에 묻힌다)
+						var a := PI * k / 12.0
+						var b := c + Vector2(side * (6 + sin(a) * 13), -cos(a) * 9 + 2) * u
+						var tip := b + Vector2(-side * sin(a) * 5.5, cos(a) * 3.8) * u
+						var tri := PackedVector2Array([b + Vector2(0, -2.0) * u, b + Vector2(0, 2.0) * u, tip])
+						p.fill_poly(tri, p.flat(Color("#d8d4ca"), 0.05))
+						Ink.path(p, tri, 0.8 * u, true, Ink.INK, 0.8, 0.2)
+					Ink.path(p, arc, 4.2 * u, false, Ink.INK, 0.95, 0.3)
+					Ink.path(p, arc, 2.6 * u, false, iron.lightened(0.3), 1.0, 0.3)
+					Ink.path(p, arc, 1.0 * u, false, rust, 0.6, 0.6)
+			else:
+				for side in [-1.0, 1.0]:  # 맞물려 선 턱(앞 · 뒤 반원이 위로 서서 닫힘)
+					var arc := PackedVector2Array()
+					for k in 13:
+						var a := PI * k / 12.0
+						arc.append(c + Vector2(-cos(a) * 13, side * 1.4 - sin(a) * 11 + 2) * u)
+					Ink.path(p, arc, 4.2 * u, false, Ink.INK, 0.95, 0.3)
+					Ink.path(p, arc, 2.6 * u, false, iron.lightened(0.3 if side > 0 else 0.05), 1.0, 0.3)
+				for k in range(1, 12, 2):  # 맞물린 이빨
+					var a := PI * k / 12.0
+					var b := c + Vector2(-cos(a) * 13, -sin(a) * 11 + 2) * u
+					Ink.line(p, b + Vector2(0, -2.6) * u, b + Vector2(0, 2.6) * u, 1.6 * u, Color("#d8d4ca"), 1.0, 0.2)
+				Decals._blob(p, c + Vector2(-4, 6) * u, 5 * u, BLOOD, 0.5, 0.35)
 		"goblin_snare":  # 박아 세운 말뚝 + 바닥에 깐 올가미 고리(입체 말뚝 — V27)
 			Ink.path(p, Cave._ellipse(c + Vector2(4, 4) * u, 12 * u, 6 * u, 18), 1.6 * u, true, Color("#8a7450"), 0.9, 1.0)
 			Solid.shadow(p, c + Vector2(-13, 6) * u, 5 * u, 2 * u)

@@ -76,7 +76,7 @@ func test_three_ways_north() -> void:
 	assert_true(seen.has(nodes["grove"]), "마을을 피해서도 고목까지 간다(덫 골짜기 · 개울)")
 
 
-func test_trap_fields_are_clustered() -> void:
+func test_trap_fields_are_clustered() -> void:  # 곰덫 한 칸씩(2026-11-10)
 	var s := _session(4, false)
 	var hz := s.features.hazards
 	var marks: Dictionary = s.map.anchors["marks"]
@@ -86,12 +86,12 @@ func test_trap_fields_are_clustered() -> void:
 			if Vector2(p - (marks[f] as Vector2i)).length() <= 9.5:
 				near_field += 1
 				break
-	assert_true(hz.at.size() >= 25, "덫 칸: %d" % hz.at.size())
+	assert_true(hz.at.size() >= 9, "덫 칸: %d" % hz.at.size())
 	assert_eq(near_field, hz.at.size(), "덫은 덫 밭(골짜기 셋 · 문 앞)에만")
 	var cell: Vector2i = hz.at.keys()[0]
 	var r: Variant = hz.on_step(s, cell)
-	assert_true(r is bool, "밟으면 판정한다")
-	assert_true(str(s.map.tile_id_at(cell)) in ["f2g_snare", "f2g_pit", "f2g_spike"], "밟은 덫은 드러난다")
+	assert_true(r is bool and not bool(r), "곰덫은 밟으면 문다(판정 없음)")
+	assert_eq(str(s.map.tile_id_at(cell)), "f2g_bear_trap_shut", "밟은 곰덫은 닫힌 채 남는다")
 
 
 ## 망대 경보(FL22): 궁수가 살아 있는 망대 둘레에서 들키면 마을 큰 무리가 쫓아온다. 궁수를 먼저 잡으면 조용하다.

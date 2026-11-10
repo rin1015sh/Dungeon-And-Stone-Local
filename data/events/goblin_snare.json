@@ -1,23 +1,13 @@
 {
   "id": "goblin_snare",
-  "name_ko": "고블린 덫",
+  "name_ko": "곰덫",
   "type": "feature",
   "hazard": {
     "id": "goblin_snare",
     "tile": "feat_goblin_snare",
-    "hidden": true,
-    "detect": {
-      "stat": "int",
-      "dc": 7
-    },
-    "disarm": {
-      "stat": "agi",
-      "dc": 4
-    },
-    "check": {
-      "stat": "agi",
-      "dc": 14
-    },
+    "sprung_tile": "feat_goblin_snare_shut",
+    "single": true,
+    "always": true,
     "fail": [
       {
         "type": "restore_resource",
@@ -30,14 +20,12 @@
         "chance": 0.5
       }
     ],
-    "detect_message": "field.snare_detected",
-    "disarm_message": "field.snare_disarmed",
-    "pass_message": "field.snare_pass",
-    "fail_message": "field.snare_fail",
+    "fail_message": "field.bear_trap_fail",
     "snares_monsters": {
       "hours": 0.4,
       "sound": "snare_snap"
     }
   },
-  "source": "placeholder"
+  "source": "placeholder",
+  "notes": "1층 북쪽 고블린 곰덫(사용자 2026-11-10 — 한 칸 · 처음부터 보임 · 밟으면 판정 없이 생명력). 임시값"
 }

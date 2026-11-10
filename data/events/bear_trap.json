@@ -1,0 +1,31 @@
+{
+  "id": "bear_trap",
+  "name_ko": "곰덫",
+  "type": "feature",
+  "hazard": {
+    "id": "bear_trap",
+    "tile": "f2g_bear_trap",
+    "sprung_tile": "f2g_bear_trap_shut",
+    "single": true,
+    "always": true,
+    "fail": [
+      {
+        "type": "restore_resource",
+        "resource": "hp",
+        "amount": "-floor({max_hp} * 0.08)"
+      },
+      {
+        "type": "apply_status",
+        "status": "bleeding",
+        "chance": 0.5
+      }
+    ],
+    "fail_message": "field.bear_trap_fail",
+    "snares_monsters": {
+      "hours": 0.5,
+      "sound": "snare_snap"
+    }
+  },
+  "source": "placeholder",
+  "notes": "고블린 숲 곰덫(사용자 2026-11-10 — 바닥 타일 묶음 대신 소품 한 칸, 처음부터 보이고 밟으면 판정 없이 생명력이 깎인다). route_spots hazards · 고블린 덫꾼 lays_traps. 임시값"
+}

@@ -6,18 +6,12 @@
     "enabled": true,
     "desc_ko": "어디에나 있는 종족. 모든 면에서 무난하다.",
     "stat_ranges": {
-      "str": [
-        8,
-        12
-      ],
+      "str": [6, 9],
       "agi": [
         8,
         12
       ],
-      "p_res": [
-        5,
-        8
-      ],
+      "p_res": [4, 7],
       "m_res": [
         4,
         7
@@ -37,18 +31,12 @@
     "enabled": true,
     "desc_ko": "거구의 전사 종족. 힘과 맷집은 타고났지만 이능에는 둔하다.",
     "stat_ranges": {
-      "str": [
-        15,
-        20
-      ],
+      "str": [12, 16],
       "agi": [
         7,
         11
       ],
-      "p_res": [
-        9,
-        13
-      ],
+      "p_res": [8, 12],
       "m_res": [
         2,
         4
@@ -71,18 +59,12 @@
     "name_ko": "엘프",
     "enabled": true,
     "stat_ranges": {
-      "str": [
-        5,
-        8
-      ],
+      "str": [4, 6],
       "agi": [
         10,
         14
       ],
-      "p_res": [
-        3,
-        6
-      ],
+      "p_res": [2, 5],
       "m_res": [
         8,
         12
@@ -101,18 +83,12 @@
     "name_ko": "드워프",
     "enabled": true,
     "stat_ranges": {
-      "str": [
-        8,
-        12
-      ],
+      "str": [6, 9],
       "agi": [
         3,
         7
       ],
-      "p_res": [
-        10,
-        15
-      ],
+      "p_res": [9, 14],
       "m_res": [
         4,
         8
@@ -131,18 +107,12 @@
     "name_ko": "요정",
     "enabled": false,
     "stat_ranges": {
-      "str": [
-        3,
-        6
-      ],
+      "str": [2, 5],
       "agi": [
         8,
         12
       ],
-      "p_res": [
-        2,
-        5
-      ],
+      "p_res": [1, 4],
       "m_res": [
         8,
         12
@@ -161,18 +131,12 @@
     "name_ko": "수인",
     "enabled": true,
     "stat_ranges": {
-      "str": [
-        7,
-        11
-      ],
+      "str": [5, 9],
       "agi": [
         9,
         13
       ],
-      "p_res": [
-        5,
-        8
-      ],
+      "p_res": [4, 7],
       "m_res": [
         3,
         6
@@ -191,18 +155,12 @@
     "name_ko": "용인",
     "enabled": false,
     "stat_ranges": {
-      "str": [
-        9,
-        13
-      ],
+      "str": [7, 10],
       "agi": [
         5,
         9
       ],
-      "p_res": [
-        8,
-        12
-      ],
+      "p_res": [7, 11],
       "m_res": [
         6,
         10

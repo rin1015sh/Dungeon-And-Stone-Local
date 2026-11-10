@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-10 곰덫(CR29) · 1레벨 공격력 · 물리내성(BL11)
+- **곰덫**: Props `bear_trap`(벌린 톱니 턱 · 사슬 · 말뚝) · `bear_trap_shut`(맞물린 턱 · 피) → paint_floor --only=props. 타일 f2g_bear_trap(_shut) · feat_goblin_snare(_shut). RiftHazards `single` · `always` · `sprung_tile`, 드러난 덫을 깔 때 tiles_changed(화면이 먼저 생겨 소품이 안 그려지던 것). 숲 forest_snare/spike/pit 이벤트 · 문구 삭제 → bear_trap. 캡처 `--up=floor2_north --nomon --near_trap[=step]`로 확인(곰덫 둘이 길에 보임).
+- **1레벨**: 종족 근력 × 0.78 · 물리내성 −1 · 전사 물리내성 덤 −1. 인간 전사 공 35 → 30, 물내 18 → 17. sim_battle --level=1 목표 미달 0.
+- UI 스모크 폐쇄 시험: 포탈로 옮기기 전에 무리를 치운다(1층을 줄인 뒤 포탈 옆 무리와 전투가 열려 한 번 실패).
+- **남은 것**: 직접 플레이(곰덫 크기 · 밝기, 1레벨 전투 체감).
+
 ### 2026-11-10 1층 줄임(CR28)
 - **범위 / 기준 / 테스트**: 사용자 "수정동굴 크기 줄여 — 요소 없는 공간 지우기(적당히 남기고)". 기준: 지도가 작아지고 빈 구간이 짧아지되 전투 간격은 비슷. 테스트: check.sh · floor_map 검사 · sim_walk 시드 1~3 전후 비교.
 - **한 일**: gen `arm_length` 288 → 192 · `branches.density` 0.32 → 0.27 · 팔 공동 10 → 7 · 방 22 → 15 → bake_floor(541×541, 요소 234곳 모두 놓임) · dark_crystal [31,264] 되돌려 넣음 · decor spot [256,300] → bake_decor. 팔 무리 52~61 → 29~34, max_extra_groups 18 → 12. test_floor_decor 좌표를 새 지도로.

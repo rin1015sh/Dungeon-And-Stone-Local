@@ -595,7 +595,7 @@
   },
   {
     "id": "feat_goblin_snare",
-    "name_ko": "고블린 덫",
+    "name_ko": "곰덫",
     "kind": "floor",
     "walkable": true,
     "blocks_sight": false,
@@ -603,9 +603,11 @@
       "floor": "#57505f",
       "mark": "#c06040"
     },
-    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 18, "cols": 8, "size": 1.5}},
-    "source": "placeholder"
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 27, "cols": 8, "size": 1.8}},
+    "source": "placeholder",
+    "notes": "1층 고블린 곰덫(2026-11-10 — 한 칸 · 처음부터 보임)"
   },
+  {"id": "feat_goblin_snare_shut", "name_ko": "닫힌 곰덫", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#57505f", "mark": "#806060"}, "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 28, "cols": 8, "size": 1.8}}, "source": "placeholder", "notes": "터진 곰덫(RiftHazards sprung_tile)"},
   {
     "id": "feat_wet_slope",
     "name_ko": "물기 젖은 비탈",
@@ -859,6 +861,8 @@
   {"id": "f2g_snare", "name_ko": "올가미", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5e5038"}, "art": {"atlas": "res://assets/floor/f2g/snarepath.webp", "variants": 6}, "source": "placeholder", "notes": "고블린 숲(FL21) — 드러난 덫(RiftHazards tile)"},
   {"id": "f2g_pit", "name_ko": "가린 구덩이", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5e5038"}, "art": {"atlas": "res://assets/floor/f2g/pitpath.webp", "variants": 6}, "source": "placeholder", "notes": "고블린 숲(FL21) — 드러난 덫"},
   {"id": "f2g_spike", "name_ko": "말뚝 덫", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5e5038"}, "art": {"atlas": "res://assets/floor/f2g/spikepath.webp", "variants": 6}, "source": "placeholder", "notes": "고블린 숲(FL21) — 드러난 덫"},
+  {"id": "f2g_bear_trap", "name_ko": "곰덫", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5e5038", "mark": "#a0a0a0"}, "art": {"atlas": "res://assets/floor/f2g/dirtpath.webp", "variants": 6, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 27, "cols": 8, "size": 1.8}}, "source": "placeholder", "notes": "고블린 숲 곰덫(2026-11-10 — 한 칸 · 처음부터 보임, 소품 Props bear_trap)"},
+  {"id": "f2g_bear_trap_shut", "name_ko": "닫힌 곰덫", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#5e5038", "mark": "#806060"}, "art": {"atlas": "res://assets/floor/f2g/dirtpath.webp", "variants": 6, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 28, "cols": 8, "size": 1.8}}, "source": "placeholder", "notes": "터진 곰덫(RiftHazards sprung_tile)"},
   {"id": "f2g_stone_down", "name_ko": "내려가는 비석", "kind": "floor", "walkable": true, "blocks_sight": false, "interact": "portal", "colors": {"floor": "#3a5a2c", "mark": "#c8b8e8"}, "light": {"radius_m": 2.0, "color": "#b9a2e8", "intensity": 0.7}, "art": {"atlas": "res://assets/floor/f2g/forestfloor.webp", "variants": 6, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 20, "cols": 8, "size": 1.5}}, "source": "placeholder", "notes": "고블린 숲 도착 비석 — 1층으로(FloorTravel)"},
   {"id": "f2g_portal_up", "name_ko": "깨어난 포탈 비석", "kind": "floor", "walkable": true, "blocks_sight": false, "interact": "portal", "colors": {"floor": "#4a7432", "mark": "#c8dcff"}, "light": {"radius_m": 4.5, "color": "#9ec0ff", "intensity": 1.0}, "art": {"atlas": "res://assets/floor/f2g/clearing.webp", "variants": 6, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 20, "cols": 8, "size": 1.7}}, "source": "placeholder", "notes": "고블린 숲 3층 포탈(진짜 비석을 깨우면 이 칸으로 — FieldFeatureAct stele, FL21)"},
   {"id": "f2g_camp", "name_ko": "고블린 모닥불", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#554634", "mark": "#c89060"}, "art": {"atlas": "res://assets/floor/f2g/trampled.webp", "variants": 6, "prop": {"sheet": "res://assets/floor/f1/props.webp", "cell": 13, "cols": 8, "size": 1.9}}, "source": "placeholder", "notes": "고블린 숲 동굴 요소 칸(FL21) — 고블린 야영지"},

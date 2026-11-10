@@ -55,7 +55,7 @@
     },
     "alert_sfx": "goblin_shout",
     "lays_traps": {
-      "event": "forest_snare",
+      "event": "bear_trap",
       "every_tiles": 6,
       "max": 3,
       "zones": [
