@@ -22,14 +22,14 @@
     "fire": 1.25
   },
   "stats": {
-    "str": 8,
+    "str": 5,
     "agi": 10,
     "p_res": 11,
     "m_res": 6,
     "int": 2
   },
   "resources": {
-    "hp": 23,
+    "hp": 30,
     "soul": 10
   },
   "natural_weapon": {

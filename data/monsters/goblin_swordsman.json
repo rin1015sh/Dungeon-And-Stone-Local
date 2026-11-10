@@ -19,14 +19,14 @@
   "immunities": [],
   "weaknesses": {},
   "stats": {
-    "str": 7,
+    "str": 4,
     "agi": 9,
     "p_res": 14,
     "m_res": 8,
     "int": 5
   },
   "resources": {
-    "hp": 21,
+    "hp": 29,
     "soul": 20
   },
   "natural_weapon": {

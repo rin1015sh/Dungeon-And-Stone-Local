@@ -3,6 +3,9 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-10 1층 9등급 2방 · 받는 피해 낮게(BL12)
+- 사용자 "9레벨 몬스터 넉넉하게 2방컷 · 입는 피해량은 다시 낮게". 평균 1레벨 탐험가 기본 공격 대 9등급 대수를 DamageCalc.resolve로 쟀다(분산 가운데 · 치명타 없음). 고블린 · 고블린 궁수 · 고블린 검사 · 구울 · 칼날늑대 생명력 ↑(30/27/29/30/28), 근력 ↓(4/3/4/5/4), 종족 물리내성 되돌림. 인간 전사 · 검사 1.4~1.8대, 한 대 피해 약 −40%. sim_battle --level=1 목표 미달 0, 단일 전투 잃은 생명력 2~8%. balance_sheet 다시 만듦. check.sh 통과.
+
 ### 2026-11-10 곰덫(CR29) · 1레벨 공격력 · 물리내성(BL11)
 - **곰덫**: Props `bear_trap`(벌린 톱니 턱 · 사슬 · 말뚝) · `bear_trap_shut`(맞물린 턱 · 피) → paint_floor --only=props. 타일 f2g_bear_trap(_shut) · feat_goblin_snare(_shut). RiftHazards `single` · `always` · `sprung_tile`, 드러난 덫을 깔 때 tiles_changed(화면이 먼저 생겨 소품이 안 그려지던 것). 숲 forest_snare/spike/pit 이벤트 · 문구 삭제 → bear_trap. 캡처 `--up=floor2_north --nomon --near_trap[=step]`로 확인(곰덫 둘이 길에 보임).
 - **1레벨**: 종족 근력 × 0.78 · 물리내성 −1 · 전사 물리내성 덤 −1. 인간 전사 공 35 → 30, 물내 18 → 17. sim_battle --level=1 목표 미달 0.

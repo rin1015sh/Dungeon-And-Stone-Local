@@ -20,14 +20,14 @@
     "lightning": 1.5
   },
   "stats": {
-    "str": 7,
+    "str": 4,
     "agi": 14,
     "p_res": 12,
     "m_res": 6,
     "int": 4
   },
   "resources": {
-    "hp": 19,
+    "hp": 28,
     "soul": 20
   },
   "natural_weapon": {
