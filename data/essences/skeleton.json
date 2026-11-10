@@ -1,7 +1,7 @@
 {
   "id": "skeleton",
   "name_ko": "스켈레톤의 정수",
-  "grade": 9,
+  "grade": 8,
   "source_monster": "skeleton",
   "family": "skeleton",
   "rank": "normal",
@@ -32,11 +32,11 @@
     }
   ],
   "stats": {
-    "agi": 4,
-    "p_res": 6
+    "agi": 6,
+    "p_res": 9
   },
   "resources": {
-    "hp": 5
+    "hp": 7
   },
   "source": "placeholder",
   "notes": "2층 망자의 땅(floor2.md §6) — 데드맨 병사 정수판 스킬을 함께 쓴다. 임시값"

@@ -1,7 +1,7 @@
 {
   "id": "skeleton_archer",
   "name_ko": "스켈레톤 아처",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "floor": 1,
   "floor_tags": [
@@ -27,7 +27,7 @@
     "int": 6
   },
   "resources": {
-    "hp": 17,
+    "hp": 52,
     "soul": 15
   },
   "natural_weapon": {
@@ -71,7 +71,7 @@
       ]
     }
   ],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "ai": [
     {
       "if": "allies_at_least",

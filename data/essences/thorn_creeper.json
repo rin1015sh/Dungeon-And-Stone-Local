@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "가시넝쿨의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "thorn_creeper",
   "passive": {
     "id": "thorn_creeper_p",
@@ -28,11 +28,11 @@
     }
   ],
   "stats": {
-    "p_res": 5,
-    "str": 2
+    "p_res": 8,
+    "str": 3
   },
   "resources": {
-    "hp": 14
+    "hp": 20
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

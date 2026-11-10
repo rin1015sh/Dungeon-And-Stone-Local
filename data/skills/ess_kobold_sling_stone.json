@@ -11,7 +11,7 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 1.2,
+      "power": 1.5,
       "damage_type": "blunt",
       "ranged": true,
       "accuracy": 95

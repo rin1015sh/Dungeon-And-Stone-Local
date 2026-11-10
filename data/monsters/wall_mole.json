@@ -10,7 +10,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "wall_mole",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "벽두더지",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.7,
   "color": "#5a4a3c",
@@ -35,7 +35,7 @@
     "int": 3
   },
   "resources": {
-    "hp": 18,
+    "hp": 55,
     "soul": 12
   },
   "natural_weapon": {

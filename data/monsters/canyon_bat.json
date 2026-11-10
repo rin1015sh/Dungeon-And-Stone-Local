@@ -11,7 +11,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "canyon_bat",
@@ -27,7 +27,7 @@
   ],
   "source": "placeholder",
   "name_ko": "협곡 박쥐 떼",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.8,
   "color": "#3a3036",
@@ -42,7 +42,7 @@
     "int": 2
   },
   "resources": {
-    "hp": 12,
+    "hp": 37,
     "soul": 10
   },
   "natural_weapon": {

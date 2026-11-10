@@ -4,7 +4,7 @@
   "rank": "elite",
   "source": "placeholder",
   "name_ko": "벽두더지 여왕의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "mole",
   "passive": {
     "id": "mole_mother",
@@ -28,11 +28,11 @@
     }
   ],
   "stats": {
-    "p_res": 8,
-    "int": 3
+    "p_res": 12,
+    "int": 4
   },
   "resources": {
-    "hp": 22
+    "hp": 32
   },
   "notes": "짐승의 소굴 여왕 굴(LD13). 벽두더지 정수와 땅굴 물기를 함께 쓴다(공유 이능). 임시값"
 }

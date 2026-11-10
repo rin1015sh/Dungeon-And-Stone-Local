@@ -1,7 +1,7 @@
 {
   "id": "goblin_swordsman",
   "name_ko": "고블린 검사의 정수",
-  "grade": 9,
+  "grade": 8,
   "source_monster": "goblin_swordsman",
   "family": "goblin",
   "passive": {
@@ -43,11 +43,11 @@
     }
   ],
   "stats": {
-    "str": 8,
-    "agi": 4
+    "str": 12,
+    "agi": 6
   },
   "resources": {
-    "hp": 11
+    "hp": 16
   },
   "source": "placeholder",
   "notes": "§6.2"

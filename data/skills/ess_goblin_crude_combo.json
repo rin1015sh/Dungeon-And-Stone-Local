@@ -11,13 +11,13 @@
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.6,
+      "power": 0.68,
       "damage_type": "slash"
     },
     {
       "type": "damage",
       "scaling": "phys",
-      "power": 0.6,
+      "power": 0.68,
       "damage_type": "slash"
     },
     {

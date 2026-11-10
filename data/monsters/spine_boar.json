@@ -10,7 +10,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "spine_boar",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "가시등 멧돼지",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 1.0,
   "color": "#6a5040",
@@ -35,7 +35,7 @@
     "int": 2
   },
   "resources": {
-    "hp": 30,
+    "hp": 92,
     "soul": 10
   },
   "natural_weapon": {

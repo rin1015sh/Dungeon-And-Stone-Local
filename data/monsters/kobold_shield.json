@@ -10,7 +10,7 @@
   ],
   "shape": "humanoid",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "kobold_shield",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "코볼트 방패병",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.85,
   "color": "#7a5a40",
@@ -35,7 +35,7 @@
     "int": 5
   },
   "resources": {
-    "hp": 22,
+    "hp": 67,
     "soul": 16
   },
   "natural_weapon": {

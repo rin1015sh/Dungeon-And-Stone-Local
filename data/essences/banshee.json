@@ -1,7 +1,7 @@
 {
   "id": "banshee",
   "name_ko": "벤시의 정수",
-  "grade": 9,
+  "grade": 8,
   "source_monster": "banshee",
   "family": "banshee",
   "rank": "normal",
@@ -32,11 +32,11 @@
     }
   ],
   "stats": {
-    "m_res": 6,
-    "int": 6
+    "m_res": 9,
+    "int": 9
   },
   "resources": {
-    "hp": 5
+    "hp": 7
   },
   "source": "placeholder",
   "notes": "명세 §9"

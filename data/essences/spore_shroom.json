@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "포자 버섯의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "spore_shroom",
   "passive": {
     "id": "spore_shroom_p",
@@ -24,11 +24,11 @@
     }
   ],
   "stats": {
-    "m_res": 4,
-    "p_res": 2
+    "m_res": 6,
+    "p_res": 3
   },
   "resources": {
-    "hp": 12
+    "hp": 17
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

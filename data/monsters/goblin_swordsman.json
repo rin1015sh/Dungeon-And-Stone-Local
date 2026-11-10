@@ -1,7 +1,7 @@
 {
   "id": "goblin_swordsman",
   "name_ko": "고블린 검사",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "lineage": "goblin",
   "variant_of": "goblin",
@@ -26,7 +26,7 @@
     "int": 5
   },
   "resources": {
-    "hp": 29,
+    "hp": 64,
     "soul": 20
   },
   "natural_weapon": {
@@ -46,7 +46,7 @@
     "reveal_radius_m": 0,
     "row": "front"
   },
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [],
   "skills": [
     "goblin_downward_slash",

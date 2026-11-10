@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "익사자의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "drowned",
   "passive": {
     "id": "drowned_p",
@@ -24,11 +24,11 @@
     }
   ],
   "stats": {
-    "str": 3,
-    "p_res": 4
+    "str": 4,
+    "p_res": 6
   },
   "resources": {
-    "hp": 14
+    "hp": 20
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

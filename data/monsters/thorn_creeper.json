@@ -10,7 +10,7 @@
   ],
   "shape": "blob",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "thorn_creeper",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "가시넝쿨",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.9,
   "color": "#4a6a3a",
@@ -37,7 +37,7 @@
     "int": 2
   },
   "resources": {
-    "hp": 30,
+    "hp": 92,
     "soul": 10
   },
   "natural_weapon": {

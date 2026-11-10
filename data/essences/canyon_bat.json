@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "협곡 박쥐 떼의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "canyon_bat",
   "passive": {
     "id": "canyon_bat_p",
@@ -28,10 +28,10 @@
     }
   ],
   "stats": {
-    "agi": 5
+    "agi": 8
   },
   "resources": {
-    "hp": 6
+    "hp": 9
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

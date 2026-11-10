@@ -11,7 +11,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "carrion_crow",
@@ -27,7 +27,7 @@
   ],
   "source": "placeholder",
   "name_ko": "시체 까마귀 떼",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.7,
   "color": "#2a2628",
@@ -40,7 +40,7 @@
     "int": 4
   },
   "resources": {
-    "hp": 14,
+    "hp": 43,
     "soul": 10
   },
   "natural_weapon": {

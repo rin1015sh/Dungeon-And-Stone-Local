@@ -10,7 +10,7 @@
   ],
   "shape": "humanoid",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "goblin_trapper",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "고블린 덫꾼",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.75,
   "color": "#6a8a50",
@@ -33,7 +33,7 @@
     "int": 7
   },
   "resources": {
-    "hp": 16,
+    "hp": 49,
     "soul": 20
   },
   "natural_weapon": {

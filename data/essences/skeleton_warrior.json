@@ -1,7 +1,7 @@
 {
   "id": "skeleton_warrior",
   "name_ko": "스켈레톤 전사의 정수",
-  "grade": 9,
+  "grade": 8,
   "source_monster": "skeleton_warrior",
   "family": "skeleton_warrior",
   "rank": "normal",
@@ -28,11 +28,11 @@
     }
   ],
   "stats": {
-    "str": 4,
-    "p_res": 8
+    "str": 6,
+    "p_res": 12
   },
   "resources": {
-    "hp": 6
+    "hp": 9
   },
   "source": "placeholder",
   "notes": "2층 망자의 땅. 임시값"

@@ -1,7 +1,7 @@
 {
   "id": "skeleton",
   "name_ko": "스켈레톤",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "lineage": "skeleton",
   "floor": 2,
@@ -29,7 +29,7 @@
     "int": 2
   },
   "resources": {
-    "hp": 15,
+    "hp": 46,
     "soul": 0
   },
   "natural_weapon": {
@@ -51,7 +51,7 @@
     "reveal_radius_m": 0,
     "row": "front"
   },
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "skeleton",

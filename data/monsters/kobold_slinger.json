@@ -10,7 +10,7 @@
   ],
   "shape": "humanoid",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "kobold_slinger",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "코볼트 투석병",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.8,
   "color": "#9a7a5a",
@@ -35,7 +35,7 @@
     "int": 6
   },
   "resources": {
-    "hp": 14,
+    "hp": 43,
     "soul": 12
   },
   "natural_weapon": {

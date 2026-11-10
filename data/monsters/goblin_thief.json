@@ -10,7 +10,7 @@
   ],
   "shape": "humanoid",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "goblin_thief",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "고블린 도둑",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.7,
   "color": "#5a6a40",
@@ -33,7 +33,7 @@
     "int": 7
   },
   "resources": {
-    "hp": 15,
+    "hp": 46,
     "soul": 15
   },
   "natural_weapon": {

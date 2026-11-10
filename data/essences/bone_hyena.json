@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "뼈 하이에나의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "bone_hyena",
   "passive": {
     "id": "bone_hyena_p",
@@ -22,11 +22,11 @@
     }
   ],
   "stats": {
-    "agi": 3,
-    "str": 3
+    "agi": 4,
+    "str": 4
   },
   "resources": {
-    "hp": 10
+    "hp": 14
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

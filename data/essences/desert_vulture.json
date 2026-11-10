@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "사막 독수리의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "desert_vulture",
   "passive": {
     "id": "desert_vulture_p",
@@ -22,11 +22,11 @@
     }
   ],
   "stats": {
-    "agi": 4,
-    "sight": 3
+    "agi": 6,
+    "sight": 4
   },
   "resources": {
-    "hp": 8
+    "hp": 12
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

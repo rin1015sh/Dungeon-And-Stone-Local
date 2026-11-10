@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "말라붙은 순례자의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "dried_pilgrim",
   "passive": {
     "id": "dried_pilgrim_p",
@@ -25,11 +25,11 @@
     }
   ],
   "stats": {
-    "m_res": 4,
-    "p_res": 3
+    "m_res": 6,
+    "p_res": 4
   },
   "resources": {
-    "hp": 12
+    "hp": 17
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

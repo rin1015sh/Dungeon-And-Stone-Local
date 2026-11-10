@@ -1,7 +1,7 @@
 {
   "id": "skeleton_archer",
   "name_ko": "스켈레톤 아처의 정수",
-  "grade": 9,
+  "grade": 8,
   "source_monster": "skeleton_archer",
   "family": "skeleton_archer",
   "rank": "normal",
@@ -35,11 +35,11 @@
     }
   ],
   "stats": {
-    "agi": 8,
-    "sight": 6
+    "agi": 12,
+    "sight": 9
   },
   "resources": {
-    "hp": 5
+    "hp": 7
   },
   "source": "placeholder",
   "notes": "명세 §9"

@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "시체 까마귀 떼의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "carrion_crow",
   "passive": {
     "id": "carrion_crow_p",
@@ -22,11 +22,11 @@
     }
   ],
   "stats": {
-    "agi": 4,
-    "sight": 2
+    "agi": 6,
+    "sight": 3
   },
   "resources": {
-    "hp": 6
+    "hp": 9
   },
   "notes": "2층 새 몬스터(docs/plans/floor2_monsters.md §6 연계). 임시값"
 }

@@ -1,7 +1,7 @@
 {
   "id": "banshee",
   "name_ko": "벤시",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "floor": 1,
   "floor_tags": [
@@ -30,7 +30,7 @@
     "int": 11
   },
   "resources": {
-    "hp": 13,
+    "hp": 40,
     "soul": 40
   },
   "natural_weapon": {
@@ -65,7 +65,7 @@
       "mark_first_attacker": "grudge_mark"
     }
   ],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "ai": [
     {
       "if": "chance",

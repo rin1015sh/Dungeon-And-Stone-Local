@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "벽두더지의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "mole",
   "passive": {
     "id": "mole_claws",
@@ -28,11 +28,11 @@
     }
   ],
   "stats": {
-    "agi": 6,
-    "str": 4
+    "agi": 9,
+    "str": 6
   },
   "resources": {
-    "hp": 14
+    "hp": 20
   },
   "notes": "짐승의 소굴(LD13). 임시값"
 }

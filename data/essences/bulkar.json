@@ -4,7 +4,7 @@
   "rank": "normal",
   "source": "placeholder",
   "name_ko": "불카르의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "bulkar",
   "passive": {
     "id": "bulkar_camo",
@@ -26,11 +26,11 @@
     }
   ],
   "stats": {
-    "agi": 8,
-    "str": 3
+    "agi": 12,
+    "str": 4
   },
   "resources": {
-    "hp": 14
+    "hp": 20
   },
   "notes": "짐승의 소굴(LD13). 임시값 · 정수 시너지(ES3 — essence_synergy.md 4-C): 민첩 +6% → 은신한 동안 치명 +25%(바위 빛 털 · 노움 일체화 · 쥐 숨기 · 웜스톤 잠복 · 두더지 웅크리기 · 고블린 도둑걸음)"
 }

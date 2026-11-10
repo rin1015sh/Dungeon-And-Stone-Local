@@ -10,7 +10,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "bone_hyena",
@@ -29,7 +29,7 @@
   ],
   "source": "placeholder",
   "name_ko": "뼈 하이에나",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.85,
   "color": "#8a7a5a",
@@ -42,7 +42,7 @@
     "int": 3
   },
   "resources": {
-    "hp": 22,
+    "hp": 67,
     "soul": 12
   },
   "natural_weapon": {

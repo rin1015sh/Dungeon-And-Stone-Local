@@ -11,7 +11,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "desert_vulture",
@@ -21,7 +21,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "사막 독수리",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 1.0,
   "color": "#5a4a3a",
@@ -36,7 +36,7 @@
     "int": 3
   },
   "resources": {
-    "hp": 20,
+    "hp": 61,
     "soul": 12
   },
   "natural_weapon": {

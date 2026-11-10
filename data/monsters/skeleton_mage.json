@@ -1,7 +1,7 @@
 {
   "id": "skeleton_mage",
   "name_ko": "스켈레톤 메이지",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "floor": 1,
   "floor_tags": [
@@ -27,7 +27,7 @@
     "int": 10
   },
   "resources": {
-    "hp": 15,
+    "hp": 46,
     "soul": 40
   },
   "natural_weapon": {
@@ -71,7 +71,7 @@
       ]
     }
   ],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "ai": [
     {
       "if": "chance",

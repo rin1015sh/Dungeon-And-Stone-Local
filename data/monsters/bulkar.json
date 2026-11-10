@@ -10,7 +10,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "bulkar",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "불카르",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 1.1,
   "color": "#7a7068",
@@ -35,7 +35,7 @@
     "int": 4
   },
   "resources": {
-    "hp": 28,
+    "hp": 86,
     "soul": 16
   },
   "natural_weapon": {

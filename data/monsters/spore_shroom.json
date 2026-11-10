@@ -10,7 +10,7 @@
   ],
   "shape": "blob",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "spore_shroom",
@@ -32,7 +32,7 @@
   ],
   "source": "placeholder",
   "name_ko": "포자 버섯",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 0.8,
   "color": "#a07a8a",
@@ -48,7 +48,7 @@
     "int": 2
   },
   "resources": {
-    "hp": 26,
+    "hp": 79,
     "soul": 12
   },
   "natural_weapon": {

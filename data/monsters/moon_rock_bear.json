@@ -10,7 +10,7 @@
   ],
   "shape": "beast",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "moon_rock_bear",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "반달바위곰",
-  "grade": 9,
+  "grade": 8,
   "rank": "elite",
   "size": 1.7,
   "color": "#3a3430",
@@ -35,7 +35,7 @@
     "int": 3
   },
   "resources": {
-    "hp": 60,
+    "hp": 110,
     "soul": 20
   },
   "natural_weapon": {

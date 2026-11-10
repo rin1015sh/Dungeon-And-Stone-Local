@@ -1,7 +1,7 @@
 {
   "id": "goblin_archer",
   "name_ko": "고블린 궁수",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "lineage": "goblin",
   "variant_of": "goblin",
@@ -26,7 +26,7 @@
     "int": 6
   },
   "resources": {
-    "hp": 27,
+    "hp": 46,
     "soul": 25
   },
   "natural_weapon": {
@@ -47,7 +47,7 @@
     "reveal_radius_m": 0,
     "row": "back"
   },
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [],
   "skills": [
     "goblin_thief_step",

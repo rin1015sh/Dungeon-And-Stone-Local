@@ -4,7 +4,7 @@
   "rank": "elite",
   "source": "placeholder",
   "name_ko": "반달바위곰의 정수",
-  "grade": 9,
+  "grade": 8,
   "family": "bear",
   "passive": {
     "id": "bear_hide",
@@ -28,11 +28,11 @@
     }
   ],
   "stats": {
-    "str": 6,
-    "p_res": 10
+    "str": 9,
+    "p_res": 15
   },
   "resources": {
-    "hp": 26
+    "hp": 38
   },
   "notes": "짐승의 소굴 곰굴(LD13). 거대 칼날늑대의 몸통 박치기를 함께 쓴다. 임시값"
 }

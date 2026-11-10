@@ -10,7 +10,7 @@
   ],
   "shape": "humanoid",
   "immunities": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 8,
   "essence_drops": [
     {
       "essence": "dried_pilgrim",
@@ -20,7 +20,7 @@
   "passives": [],
   "source": "placeholder",
   "name_ko": "말라붙은 순례자",
-  "grade": 9,
+  "grade": 8,
   "rank": "normal",
   "size": 1.0,
   "color": "#a08a68",
@@ -36,7 +36,7 @@
     "int": 6
   },
   "resources": {
-    "hp": 24,
+    "hp": 73,
     "soul": 20
   },
   "natural_weapon": {
