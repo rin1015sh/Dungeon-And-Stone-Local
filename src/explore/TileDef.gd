@@ -43,6 +43,11 @@ var art_directional: bool = false  ## 한 방향 무늬(art.directional — 철�
 var ramp: bool = false          ## 높은 땅 ↔ 낮은 땅(sunk) 사이 비탈 · 계단(art.ramp — 물가 절벽을 그리지 않는다, FieldsRouteBuild.levels — FL12)
 var sunk: bool = false          ## 땅보다 낮은 물(art.sunk — 핏물 해자): 그 위를 건너는 나무 발판(void_edge "beam")은 낭떠러지 위처럼 들보 면·그림자·받침·난간(VoidChunk)
 var move_mult: float = 1.0       ## 이 칸에서 걷는 빠르기 배율(진창 0.7 — 망자의 땅, floor2.md §3). 몬스터 behavior.mud_walker면 무시
+var art_span: int = 0          ## 넓은 재질 그림(art.span — 아틀라스 한 장이 span × span 칸을 덮는 이어지는 그림, 칸 좌표로 자른다): 칸마다 같은 무늬가 되풀이되지 않는다(AM64)
+var fringe: int = 0            ## 바닥 재질 번짐 순위(art.fringe — 0 = 없음, art.span 재질만): 맞닿은 순위 높은 재질이 이 칸으로 들쭉날쭉 스며든다(FloorFringe)
+var fringe_style: int = 0      ## 번짐 띠 생김새(art.fringe_style — 0 흙 · 1 풀 · 2 깨진 돌 · 3 모래, 띠 그림 fringe_mask.webp의 줄 묶음)
+var ground_around: bool = false ## 바닥 그림을 둘레 바닥에서 빌린다(art.ground "around" — 포탈 · 동굴 요소 칸이 네모나게 뜨지 않게)
+var art_overlay: bool = false  ## 이 타일의 아틀라스는 투명 덧그림(art.overlay — 올가미 · 금 간 자리): 둘레 바닥 위에 얹는다(ground "around"와 함께)
 var art_salt: int = 0           ## 변형 고르기 해시 소금(id에서 — 타일 순서를 바꿔도 그림이 그대로)
 
 
@@ -79,6 +84,11 @@ static func from_dict(d: Dictionary, p_index: int) -> TileDef:
 	t.void_edge = JsonUtil.get_str(art, "void_edge")
 	t.sunk = JsonUtil.get_bool(art, "sunk")
 	t.ramp = JsonUtil.get_bool(art, "ramp")
+	t.art_span = JsonUtil.get_int(art, "span", 0)
+	t.fringe = JsonUtil.get_int(art, "fringe", 0)
+	t.fringe_style = JsonUtil.get_int(art, "fringe_style", 0)
+	t.art_overlay = JsonUtil.get_bool(art, "overlay")
+	t.ground_around = t.art_overlay or JsonUtil.get_str(art, "ground") == "around"
 	t.art_directional = JsonUtil.get_bool(art, "directional")
 	for k: Variant in JsonUtil.get_array(art, "doors"):
 		t.art_doors.append(str(k))

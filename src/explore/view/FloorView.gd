@@ -64,6 +64,8 @@ var smooth_by_def: PackedByteArray = PackedByteArray()  # map.defs 번호 -> 부
 var smooth_any: bool = false
 var blend_by_def: PackedByteArray = PackedByteArray()   # map.defs 번호 -> 가장자리를 사선으로 다듬는 바닥(물 — FloorChunk)이면 1
 var blend_any: bool = false
+var stand_rect: Array[Rect2] = []  # map.defs 번호 -> 서 있는 소품 그림이 칸 안에서 차지하는 네모(칸 비율 — 시트 옆 json, 없으면 칸 전체): 투명한 곳은 그리지 않는다
+var fringe_material: ShaderMaterial  # 재질 번짐 띠(FloorFringe — 번짐 순위 art.fringe를 쓰는 층만, 없으면 null)
 var base_floor: int = -1             # 층의 기본 바닥 타일 번호(깎은 벽 모서리 아래를 채운다 — gen.tiles.floor)
 var wall_round: float = 0.5          # 암벽 모서리를 깎는 폭(칸 비율 — view.wall_round)
 var wall_bulge: float = 0.06         # 깎은 사선 가운데가 모서리 쪽으로 휘는 정도(칸 비율 — view.wall_bulge)

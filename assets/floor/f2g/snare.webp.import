@@ -2,22 +2,22 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chvn6tv2cbon0"
-path="res://.godot/imported/pitpath.webp-23f888a8f56001d77b1a0141abf9bc1b.ctex"
+uid="uid://g0jf3sovo7pe"
+path="res://.godot/imported/snare.webp-4c895991d964596f9b617cd723797b9c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2g/pitpath.webp"
-dest_files=["res://.godot/imported/pitpath.webp-23f888a8f56001d77b1a0141abf9bc1b.ctex"]
+source_file="res://assets/floor/f2g/snare.webp"
+dest_files=["res://.godot/imported/snare.webp-4c895991d964596f9b617cd723797b9c.ctex"]
 
 [params]
 
 compress/mode=0
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

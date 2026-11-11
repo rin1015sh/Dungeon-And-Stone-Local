@@ -2,22 +2,22 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7ync8dm5pcec"
-path="res://.godot/imported/crackstone.webp-20dd36c8583a503066c443b7e404fe8e.ctex"
+uid="uid://c1kxppphhiqao"
+path="res://.godot/imported/fringe_mask.webp-ef1d0853b121f3251545db43e41f08fa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2d/crackstone.webp"
-dest_files=["res://.godot/imported/crackstone.webp-20dd36c8583a503066c443b7e404fe8e.ctex"]
+source_file="res://assets/floor/fringe_mask.webp"
+dest_files=["res://.godot/imported/fringe_mask.webp-ef1d0853b121f3251545db43e41f08fa.ctex"]
 
 [params]
 
 compress/mode=0
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

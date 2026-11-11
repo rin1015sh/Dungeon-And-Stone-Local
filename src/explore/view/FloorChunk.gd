@@ -14,6 +14,8 @@ var _pts := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector
 var _uvs := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
 var _mesh := ChunkMesh.new()  # 칸들을 그림마다 한 번에(draw_polygon 칸마다 부르면 느리다) — 모양은 두고 색만 다시
 var _shape := PackedInt32Array()  # 모양을 만들 때 칸마다(탐험했으면 타일 번호, 아니면 -1) — 달라지면 모양을 다시 만든다
+var _over := ChunkMesh.new()  # 투명 덧그림 칸(art.overlay — 올가미 · 금 간 자리): 바닥 칸을 다 그린 뒤 그 위에
+var _fringe: FloorFringe.Layer  # 재질 번짐 띠(자식 노드 — 번짐 셰이더, 띠가 있는 청크만)
 var _marks: Array[Array] = []  # [x, y, 표식 색] — 표식 마름모는 바닥을 다 그린 뒤 위에
 var _blends: Array[Array] = []  # [x, y, 모서리 방향, 칠할 타일] — 물 가장자리 사선(setup에서 한 번, 물·바닥 타일은 바뀌지 않는다)
 
@@ -33,6 +35,10 @@ func _draw() -> void:
 		_shape = now
 		_build()
 	_mesh.draw(self, view)
+	if not _over.is_empty():
+		_over.draw(self, view)
+	if _fringe != null:
+		_fringe.queue_redraw()
 	for m in _marks:
 		_draw_mark(m[0], m[1], t, view.vertex_color(m[0], m[1], m[2]))
 	var r := view.wall_round * t
@@ -60,19 +66,31 @@ func _build() -> void:
 	var map := view.map
 	var t := view.tile
 	_mesh.clear()
+	_over.clear()
 	_marks.clear()
+	if view.fringe_material != null:
+		if _fringe == null:
+			_fringe = FloorFringe.Layer.new()
+			_fringe.setup(view)
+			add_child(_fringe)
+		FloorFringe.build(view, cells, _fringe.mesh)
 	for y in range(cells.position.y, cells.end.y):
 		for x in range(cells.position.x, cells.end.x):
 			var i := y * map.width + x
 			if map.explored[i] == 0:
 				continue
 			var def := map.defs[map.tiles[i]]
+			var own := def
 			if def.is_wall():
 				if view.stand_by_def[def.index] == null:
 					continue
-				def = map.defs[view.under_by_def[def.index]]  # 서 있는 소품 밑 바닥(WallRow가 위에 그림을 세운다)
+				def = FloorFringe.ground_def(view, Vector2i(x, y))  # 서 있는 소품 밑 바닥(WallRow가 위에 그림을 세운다)
+				if def.is_wall():
+					continue  # 둔덕 위에 선 나무: 밑은 둔덕 윗면(WallRow가 그린다)
 			elif def.is_void and view.void_layer != null:
 				continue  # 낭떠러지: 아래 층(VoidChunk)의 뒷배경이 비친다
+			else:
+				def = FloorFringe.ground_def(view, Vector2i(x, y))  # 포탈 · 동굴 요소 · 덧그림 칸: 둘레 바닥 그림을 빌린다
 			_pts[0] = Vector2(x * t, y * t)
 			_pts[1] = Vector2((x + 1) * t, y * t)
 			_pts[2] = Vector2((x + 1) * t, (y + 1) * t)
@@ -80,7 +98,10 @@ func _build() -> void:
 			var tex := view.tile_tex[def.index]
 			if tex != null:
 				var v := FloorArtLayer.variant(x, y, def.art_variants, def.art_salt)
-				set_uv_cell(_uvs, tex, v, def.art_variants, 0.0, 1.0)
+				if def.art_span > 0:  # 넓은 재질: 그림 한 장이 span × span 칸 — 칸 좌표로 자른다
+					set_uv_turned(_uvs, tex, posmod(x, def.art_span), def.art_span, posmod(y, def.art_span), def.art_span, 0, false)
+				else:
+					set_uv_cell(_uvs, tex, v, def.art_variants, 0.0, 1.0)
 				if def.art_directional and _vertical(map, x, y, def):  # 세로 철로: 그림의 가로 방향을 화면 세로로
 					var tr := _uvs[1]
 					_uvs[1] = _uvs[3]
@@ -88,6 +109,10 @@ func _build() -> void:
 				_mesh.add_tex(_pts, _uvs, tex, x, y, def.color_floor, def.index)
 			else:
 				_mesh.add_plain(_pts, x, y, def.color_floor * view.cell_jitter(x, y))
+			if own.art_overlay and view.tile_tex[own.index] != null:
+				var ot := view.tile_tex[own.index]
+				set_uv_cell(_uvs, ot, FloorArtLayer.variant(x, y, own.art_variants, own.art_salt), own.art_variants, 0.0, 1.0)
+				_over.add_tex(_pts, _uvs, ot, x, y, def.color_floor, def.index)
 			if def.color_mark.a > 0.0 and view.prop_by_def[def.index] == null and tex == null:  # 그림이 있으면 표식 마름모는 그리지 않는다
 				_marks.append([x, y, def.color_mark])
 
@@ -139,8 +164,6 @@ func _corner_tri(x: int, y: int, t: int, r: float, c: Vector2i, def: TileDef) ->
 	var pts := PackedVector2Array([corner])
 	WallShape._cut(pts, corner + Vector2(0, -c.y * r), corner + Vector2(-c.x * r, 0), corner, view.tile * view.wall_bulge)
 	var tex := view.tile_tex[def.index]
-	var n := def.art_variants
-	var col := float(FloorArtLayer.variant(x, y, n, def.art_salt))
 	var uvs := PackedVector2Array()
 	var cols := PackedColorArray()
 	var c00 := view.vertex_mul(x, y, def.color_floor)
@@ -149,9 +172,16 @@ func _corner_tri(x: int, y: int, t: int, r: float, c: Vector2i, def: TileDef) ->
 	var c11 := view.vertex_mul(x + 1, y + 1, def.color_floor)
 	for q in pts:
 		var f := (q - o) / t
-		uvs.append(Vector2((col + clampf(f.x, 0.0, 1.0)) / n, clampf(f.y, 0.0, 1.0)))
+		uvs.append(floor_uv(def, x, y, clampf(f.x, 0.0, 1.0), clampf(f.y, 0.0, 1.0)))
 		cols.append(c00.lerp(c10, f.x).lerp(c01.lerp(c11, f.x), f.y))
 	draw_polygon(pts, cols, uvs, tex)
+
+
+## 바닥 타일 def의 칸 (x, y) 안 자리 (fx, fy)(0~1)의 UV: 넓은 재질(art.span)은 칸 좌표로 자른 자리, 아니면 그 칸의 변형 칸.
+static func floor_uv(def: TileDef, x: int, y: int, fx: float, fy: float) -> Vector2:
+	if def.art_span > 0:
+		return Vector2((posmod(x, def.art_span) + fx) / def.art_span, (posmod(y, def.art_span) + fy) / def.art_span)
+	return Vector2((FloorArtLayer.variant(x, y, def.art_variants, def.art_salt) + fx) / def.art_variants, fy)
 
 
 ## 아틀라스 칸 v(가로 n칸)의 세로 구간 [v0, v1](0~1) UV를 사각형 네 꼭짓점(왼위·오위·오아래·왼아래)에 넣는다.

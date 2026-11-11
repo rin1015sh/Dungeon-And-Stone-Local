@@ -114,7 +114,8 @@ func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, sca
 				img.blit_rect(fr, Rect2i(0, 0, n * cell, fh), Vector2i(0, cell))
 				img.save_webp("%s/%s.webp" % [dir, wd["style"]], false)
 				print("그림: %s/%s.webp" % [dir, wd["style"]])
-		if part_only.is_empty() or part_only == "stand":
+		var py_props := str(pd.get("props", "")) == "python"  # 2층(f2d · f2g): 소품 · 큰 구조물은 tools/f2_art/props.py가 그린다(AM64)
+		if (part_only.is_empty() or part_only == "stand") and not py_props:
 			var sc: Array = spec["stand_cell"]
 			var cw := int(sc[0]) * cell
 			var ch := int(sc[1]) * cell
@@ -127,7 +128,7 @@ func _rift(db: GameDatabase, only: String, cell: int, face: int, skirt: int, sca
 				img.blit_rect(p.to_image(), Rect2i(0, 0, cw, ch), Vector2i((k % cols) * cw, (k / cols) * ch))
 			img.save_webp(dir + "/stand.webp", false)
 			print("그림: %s/stand.webp %dx%d (소품 %d)" % [dir, img.get_width(), img.get_height(), stands.size()])
-		if (part_only.is_empty() or part_only == "big") and pd.has("bigs"):  # 큰 구조물 시트(FL16 — places.<장소>.bigs {script, cell [칸, 칸], cols, order})
+		if (part_only.is_empty() or part_only == "big") and pd.has("bigs") and not py_props:  # 큰 구조물 시트(FL16 — places.<장소>.bigs {script, cell [칸, 칸], cols, order})
 			var bg: Dictionary = pd["bigs"]
 			var bmod := load(str(bg["script"])) as GDScript
 			var bc: Array = bg["cell"]

@@ -2,22 +2,22 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c00c7ukrn1m4x"
-path="res://.godot/imported/spikepath.webp-51695855e902a0f24879d26703578fcc.ctex"
+uid="uid://1s2v7dcna7pp"
+path="res://.godot/imported/pitcover.webp-e125239b7ddd3b0571b16718985ad35a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2g/spikepath.webp"
-dest_files=["res://.godot/imported/spikepath.webp-51695855e902a0f24879d26703578fcc.ctex"]
+source_file="res://assets/floor/f2g/pitcover.webp"
+dest_files=["res://.godot/imported/pitcover.webp-e125239b7ddd3b0571b16718985ad35a.ctex"]
 
 [params]
 
 compress/mode=0
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

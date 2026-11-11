@@ -89,6 +89,12 @@ func test_atlas_sizes() -> void:
 		if tex == null:
 			continue
 		seen += 1
+		var span := JsonUtil.get_int(art, "span", 0)
+		if span > 0:  # 넓은 재질(AM64): 그림 한 장이 span × span 칸
+			assert_eq(tex.get_width(), span * cell, "넓은 재질 가로: " + id)
+			assert_eq(tex.get_height(), span * cell, "넓은 재질 세로: " + id)
+			continue
+		assert_true(JsonUtil.get_int(art, "fringe", 0) == 0, "번짐 순위는 넓은 재질(art.span)에만: " + id)
 		assert_eq(tex.get_width(), JsonUtil.get_int(art, "variants") * cell, "아틀라스 가로: " + id)
 		var wall := JsonUtil.get_str(t, "kind") == "wall"
 		var fh := JsonUtil.get_int(t, "face_px", -1) * k + skirt if JsonUtil.get_int(t, "face_px", -1) >= 0 else face + skirt

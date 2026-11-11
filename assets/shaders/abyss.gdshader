@@ -30,6 +30,7 @@ uniform float rise_w = 256.0;    // 솟은 면 그림 한 장의 가로 px(세�
 uniform float rise_h = 96.0;     // 솟은 면 높이 px(세계)
 uniform float rise_top_w = 256.0;  // 꼭대기 풍경 그림 한 장의 크기 px(세계)
 uniform float rise_fog = 6.0;    // 꼭대기 풍경이 어둠에 묻히는 거리(칸)
+uniform float rise_soft = 0.0;   // 솟은 면 윗부분(이 비율)이 꼭대기 어둠으로 들쭉날쭉 녹는다(자연 암벽 — 칸 모양 계단 윗선이 보이지 않게, AM64). 0 = 또렷한 윗선(성벽)
 uniform float rise_jag = 0.0;    // 솟은 외곽 쪽 땅 가장자리를 깎는 깊이(성벽은 0 = 곧게)
 uniform vec4 rise_dark : source_color = vec4(0.05, 0.04, 0.04, 1.0);
 uniform float rise_band = 22.0;  // 땅 남쪽 솟은 외곽의 꼭대기 가장자리 띠 px(세계)
@@ -152,16 +153,23 @@ vec3 rise_color(vec2 p, float px, vec2 w) {
 			break;
 		}
 	}
+	vec3 face_rgb = vec3(0.0);
+	float melt = -1.0;  // 0 이상 = 면 픽셀(그 비율만큼 꼭대기 어둠에 녹인다)
 	if (d >= 0.0) {
 		vec4 face = texture(rise_face, vec2(w.x / rise_w, 1.0 - d / rise_h));
 		if (face.a > 0.5) {
-			return face.rgb;
+			if (rise_soft <= 0.0) {
+				return face.rgb;
+			}
+			float rag = (vnoise(p * vec2(0.9, 0.45)) - 0.5) * 0.9 + (vnoise(p * vec2(3.1, 1.3) + 7.0) - 0.5) * 0.35;
+			face_rgb = face.rgb;
+			melt = smoothstep(1.0 - rise_soft, 1.0, d / rise_h + rag * rise_soft);
 		}
 	}
 	// 꼭대기 풍경: 땅(위·아래·옆)까지의 거리로 어둡게(칸 거리 그림으로 — 예전엔 네 방향을 걸어 쟀다)
 	float far = clamp(min(min(dd.g - 1.0 + fy, dd.b - fy - rise_h / tile), side_far(p) - 0.5), 0.0, rise_fog);
 	for (int s = 1; s <= 3; s++) {  // 옆(동·서) 면: 땅 옆에서 비스듬히 보이는 좁은 벽(옆 칸에 땅이 있을 때만)
-		if (dd.r > 1.5) {
+		if (dd.r > 1.5 || melt >= 0.0) {
 			break;
 		}
 		float o = side_px * float(s) / 3.0;
@@ -173,7 +181,7 @@ vec3 rise_color(vec2 p, float px, vec2 w) {
 	// 땅 남쪽에 솟은 외곽: 면은 보이지 않고 꼭대기 가장자리(성가퀴·눈 처마)를 위에서 본다 — 면 그림 윗부분을 rise_band px에 눌러 담는다
 	for (int k = 1; k <= 8; k++) {
 		float u = float(k) * rise_band / 8.0;
-		if (dd.g > 1.5 || u > fy * tile + rise_band) {  // 바로 위 칸이 땅일 때만
+		if (dd.g > 1.5 || u > fy * tile + rise_band || melt >= 0.0 || rise_soft > 0.0) {  // 바로 위 칸이 땅일 때만(자연 암벽은 띠 없이 어둠으로 — 칸 모양 띠가 계단으로 보인다)
 			break;
 		}
 		if (!is_void(p - vec2(0.0, u * px))) {
@@ -185,7 +193,8 @@ vec3 rise_color(vec2 p, float px, vec2 w) {
 		}
 	}
 	vec3 top = texture(rise_top, w / rise_top_w).rgb * 0.8;
-	return mix(top, rise_dark.rgb, smoothstep(0.3, rise_fog, far) * 0.92);
+	vec3 beyond = mix(top, rise_dark.rgb, smoothstep(0.3, rise_fog, far) * 0.92);
+	return melt >= 0.0 ? mix(face_rgb, beyond, melt) : beyond;
 }
 
 void fragment() {

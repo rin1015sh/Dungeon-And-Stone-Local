@@ -9,7 +9,7 @@ extends RefCounted
 ##   jag          땅 가장자리를 깎는 깊이(칸 비율, 0~0.45)
 ##   abyss_color · mist_color · rim_color(절벽 위 턱의 부스러진 테두리) · beam_color(발판 들보)
 ##   rail         {post, rope, every, height} — 허공 위 나무 발판의 난간(색·기둥 간격 칸·높이 칸)
-##   rise         {face, top, face_tiles, face_depth, top_tiles, fog, jag, dark} — 솟은 외곽(타일 "rise": true — 지도 바깥 둘레):
+##   rise         {face, top, face_tiles, face_depth, top_tiles, fog, jag, dark, soft(면 윗부분이 꼭대기 어둠에 녹는 비율 — 자연 암벽)} — 솟은 외곽(타일 "rise": true — 지도 바깥 둘레):
 ##                내려가는 대신 위로 솟은 벽·절벽 면(face — 위 = 꼭대기, 성가퀴 틈 투명)과 그 너머 꼭대기 풍경(top — 사방으로 이어 붙임)
 
 const SHADER := "res://assets/shaders/abyss.gdshader"
@@ -48,6 +48,7 @@ static func material(art: FloorArt, map: FloorMap, tile: int) -> ShaderMaterial:
 		m.set_shader_parameter("rise_fog", JsonUtil.get_float(r, "fog", 6.0))
 		m.set_shader_parameter("rise_jag", clampf(JsonUtil.get_float(r, "jag", 0.0), 0.0, 0.45))
 		m.set_shader_parameter("rise_dark", _c(r, "dark", "#0c0a0a"))
+		m.set_shader_parameter("rise_soft", clampf(JsonUtil.get_float(r, "soft", 0.0), 0.0, 0.9))
 	return m
 
 

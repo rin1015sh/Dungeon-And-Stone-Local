@@ -2,22 +2,22 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw4j25m3jlbim"
-path="res://.godot/imported/crackearth.webp-59daa82a2992be1535439ee030764a3b.ctex"
+uid="uid://diju7roxcb03l"
+path="res://.godot/imported/crack.webp-a782ca7a64c29ebbe8e5893746a17b8c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/floor/f2d/crackearth.webp"
-dest_files=["res://.godot/imported/crackearth.webp-59daa82a2992be1535439ee030764a3b.ctex"]
+source_file="res://assets/floor/f2d/crack.webp"
+dest_files=["res://.godot/imported/crack.webp-a782ca7a64c29ebbe8e5893746a17b8c.ctex"]
 
 [params]
 
 compress/mode=0
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.9
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

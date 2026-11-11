@@ -72,6 +72,10 @@ func _draw() -> void:
 			continue
 		var stand := view.stand_by_def[def.index]
 		if stand != null:
+			var under := map.defs[view.under_by_def[def.index]]
+			if under.is_wall() and under.art_top_tex and view.tile_tex[under.index] != null:  # 둔덕 위에 선 나무: 둔덕 윗면이 그 칸만 비지 않게(AM64)
+				var top := PackedVector2Array([Vector2(x * t, row * t), Vector2((x + 1) * t, row * t), Vector2((x + 1) * t, (row + 1) * t), Vector2(x * t, (row + 1) * t)])
+				_draw_top_tex(self, top, Vector2(0, (row + 1) * t + view.wall_face_of(under)), x, under, t)
 			_draw_stand(x, t, def, stand)
 			continue
 		var h := view.wall_face_of(def)
@@ -121,16 +125,14 @@ func _draw_shape(cv: CanvasItem, t: int, piece: int, at: Vector2) -> void:
 		if tex == null:
 			continue
 		var fdef := map.defs[fi if fi >= 0 else view.base_floor]
-		var n := fdef.art_variants
 		var poly: PackedVector2Array = fl["poly"]
 		var x := int(fl["x"])
-		var col := float(FloorArtLayer.variant(x, row, n, fdef.art_salt))
 		var pts := PackedVector2Array()
 		var uvs := PackedVector2Array()
 		var cols := PackedColorArray()
 		for q in poly:
 			pts.append(q - lift)
-			uvs.append(Vector2((col + clampf(q.x / t - x, 0.0, 1.0)) / n, clampf(q.y / t - row, 0.0, 1.0)))
+			uvs.append(FloorChunk.floor_uv(fdef, x, row, clampf(q.x / t - x, 0.0, 1.0), clampf(q.y / t - row, 0.0, 1.0)))
 			var v := Vector2i(clampi(roundi(q.x / t), 0, map.width), clampi(roundi(q.y / t), 0, map.height))
 			cols.append(view.vertex_mul(v.x, v.y, fdef.color_floor))
 		cv.draw_polygon(pts, cols, uvs, tex)
@@ -253,8 +255,20 @@ func _draw_stand(x: int, t: int, def: TileDef, tex: Texture2D) -> void:
 	var rows := def.stand_rows
 	var w := def.stand_size.x * t
 	var h := def.stand_size.y * t
-	_quad(x * t + t * 0.5 - w * 0.5, -h, w, h)
-	FloorChunk.set_uv_turned(_uvs, tex, def.stand_cell % cols, cols, def.stand_cell / cols, rows, 0, false)
+	var r := view.stand_rect[def.index]
+	if r.size.x <= 0.0 or r.size.y <= 0.0:
+		return  # 빈 칸(발자리 막음 타일)
+	if r.size.x < 1.0 or r.size.y < 1.0:  # 그림이 있는 네모만 그린다(큰 나무 · 구조물 칸은 대부분 투명 — 겹쳐 그리는 넓이를 줄인다)
+		_quad(x * t + t * 0.5 - w * 0.5 + r.position.x * w, -h + r.position.y * h, r.size.x * w, r.size.y * h)
+		var u0 := (def.stand_cell % cols + r.position.x) / cols
+		var v0 := (def.stand_cell / cols + r.position.y) / rows
+		_uvs[0] = Vector2(u0, v0)
+		_uvs[1] = Vector2(u0 + r.size.x / cols, v0)
+		_uvs[2] = Vector2(u0 + r.size.x / cols, v0 + r.size.y / rows)
+		_uvs[3] = Vector2(u0, v0 + r.size.y / rows)
+	else:
+		_quad(x * t + t * 0.5 - w * 0.5, -h, w, h)
+		FloorChunk.set_uv_turned(_uvs, tex, def.stand_cell % cols, cols, def.stand_cell / cols, rows, 0, false)
 	var c := view.vertex_mul(x, row + 1, def.color_face).lerp(view.vertex_mul(x + 1, row + 1, def.color_face), 0.5)
 	c = c.lerp(view.vertex_mul(x, row, def.color_face).lerp(view.vertex_mul(x + 1, row, def.color_face), 0.5), 0.5)
 	for k in 4:

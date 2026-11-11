@@ -89,6 +89,7 @@
         "face_depth": 3,
         "top_tiles": 8,
         "jag": 0.3,
+        "soft": 0.55,
         "fog": 6,
         "dark": "#1a1612"
       },

@@ -1,5 +1,5 @@
 {
- "_comment": "균열 그림 계약(A5): tools/paint_floor.gd가 읽어 assets/floor/<place>/에 그린다. 바닥 = <style>.webp(한 줄 변형 6칸), 벽 = 윗면 줄 + 앞면 줄, 서 있는 소품 = stand.webp(칸 [2, 3] 바닥 칸 — 아래 가운데가 발, order 순서), 낭떠러지 절벽 면 = chasm.webp(cliff_size — 가로로 이어지는 띠, 장소마다 places.<장소>.cliff, 칠은 공통 Cliff.gd), 솟은 외곽 = rise_face.webp·rise_top.webp(places.<장소>.rise — 공통 Rise.gd). 그리는 코드는 tools/floor_art/rift/<place>.gd.",
+ "_comment": "균열 그림 계약(A5): tools/paint_floor.gd가 읽어 assets/floor/<place>/에 그린다. 바닥 = <style>.webp(한 줄 변형 6칸), 벽 = 윗면 줄 + 앞면 줄, 서 있는 소품 = stand.webp(칸 [2, 3] 바닥 칸 — 아래 가운데가 발, order 순서), 낭떠러지 절벽 면 = chasm.webp(cliff_size — 가로로 이어지는 띠, 장소마다 places.<장소>.cliff, 칠은 공통 Cliff.gd), 솟은 외곽 = rise_face.webp·rise_top.webp(places.<장소>.rise — 공통 Rise.gd). 그리는 코드는 tools/floor_art/rift/<place>.gd. places.<장소>.props \"python\"(f2d · f2g, AM64) = 서 있는 소품 · 큰 구조물 시트는 tools/f2_art/props.py가 그린다(칸 순서 stands · bigs는 여기서 읽는다 — paint_floor.gd는 건너뛴다). 2층 바닥 재질(넓은 그림 art.span)은 tools/f2_art/ground.py.",
  "stand_cell": [
   2,
   3
@@ -457,45 +457,13 @@
    },
    "floors": [
     {
-     "tile": "f2d_mud",
-     "style": "mudroad"
-    },
-    {
-     "tile": "f2d_hard",
-     "style": "dryearth"
-    },
-    {
-     "tile": "f2d_grass",
-     "style": "graveearth"
-    },
-    {
-     "tile": "f2d_mound",
-     "style": "rubble"
-    },
-    {
      "tile": "f2d_deep",
      "style": "blackwater",
      "dim": 0.45
     },
     {
-     "tile": "f2d_bridge",
-     "style": "flagstone"
-    },
-    {
      "tile": "f2d_slope",
      "style": "stairs"
-    },
-    {
-     "tile": "f2d_crack",
-     "style": "crackstone"
-    },
-    {
-     "tile": "f2d_crack_g",
-     "style": "crackearth"
-    },
-    {
-     "tile": "f2d_hole",
-     "style": "pit"
     },
     {
      "tile": "f2d_flood",
@@ -564,11 +532,48 @@
      "knight",
      "blank"
     ]
-   }
+   },
+   "props": "python"
   },
-  "f2b": {"name_ko": "짐승의 소굴(2층 — floor2.md §2, LD13 — 외곽만, 바닥은 f2d 그림을 쓴다)", "rise": {"kind": "mesa", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "rock": "#9a6a4a", "rock_dark": "#4a2e20", "ground": "#8a6a4c", "ground_dark": "#5a4232"}, "floors": [], "walls": [], "stands": []},
-    "f2r": {"name_ko": "바위사막(2층 — floor2.md §4, LD14 — 검은 바위산 외곽 · 레벨 디자인 11차 바닥 셋 · 사암 잔해)", "rise": {"kind": "mesa", "face_tiles": 8, "face_depth": 3, "top_tiles": 8, "rock": "#4a423c", "rock_dark": "#1e1a18", "ground": "#6a5a48", "ground_dark": "#3a3028"}, "floors": [{"tile": "f2r_hardpan", "style": "hardpan"}, {"tile": "f2r_sand", "style": "dunesand"}, {"tile": "f2r_flag", "style": "sandflag"}], "walls": [{"tile": "f2r_ruin", "style": "sandstone", "face_px": 48}], "stands": []},
-    "f2g": {
+  "f2b": {
+   "name_ko": "짐승의 소굴(2층 — floor2.md §2, LD13 — 외곽만, 바닥은 f2d 그림을 쓴다)",
+   "rise": {
+    "kind": "mesa",
+    "face_tiles": 8,
+    "face_depth": 3,
+    "top_tiles": 8,
+    "rock": "#9a6a4a",
+    "rock_dark": "#4a2e20",
+    "ground": "#8a6a4c",
+    "ground_dark": "#5a4232"
+   },
+   "floors": [],
+   "walls": [],
+   "stands": []
+  },
+  "f2r": {
+   "name_ko": "바위사막(2층 — floor2.md §4, LD14 — 검은 바위산 외곽 · 레벨 디자인 11차 바닥 셋 · 사암 잔해)",
+   "rise": {
+    "kind": "mesa",
+    "face_tiles": 8,
+    "face_depth": 3,
+    "top_tiles": 8,
+    "rock": "#4a423c",
+    "rock_dark": "#1e1a18",
+    "ground": "#6a5a48",
+    "ground_dark": "#3a3028"
+   },
+   "floors": [],
+   "walls": [
+    {
+     "tile": "f2r_ruin",
+     "style": "sandstone",
+     "face_px": 48
+    }
+   ],
+   "stands": []
+  },
+  "f2g": {
    "name_ko": "고블린 숲(2층 — floor2.md §5 · §13-3, FL21)",
    "rise": {
     "kind": "forest",
@@ -580,41 +585,9 @@
    },
    "floors": [
     {
-     "tile": "f2g_floor",
-     "style": "forestfloor"
-    },
-    {
-     "tile": "f2g_path",
-     "style": "dirtpath"
-    },
-    {
-     "tile": "f2g_grass",
-     "style": "clearing"
-    },
-    {
-     "tile": "f2g_village",
-     "style": "trampled"
-    },
-    {
-     "tile": "f2g_snare",
-     "style": "snarepath"
-    },
-    {
-     "tile": "f2g_pit",
-     "style": "pitpath"
-    },
-    {
-     "tile": "f2g_spike",
-     "style": "spikepath"
-    },
-    {
      "tile": "f2g_brook",
      "style": "brook",
      "dim": 0.8
-    },
-    {
-     "tile": "f2g_scree",
-     "style": "pebbles"
     },
     {
      "tile": "f2g_slope",
@@ -672,7 +645,8 @@
      "giant_pine",
      "giant_pale"
     ]
-   }
+   },
+   "props": "python"
   }
  }
 }

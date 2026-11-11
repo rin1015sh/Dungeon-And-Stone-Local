@@ -17,6 +17,8 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 	v.stand_by_def.resize(n)
 	v.under_by_def.resize(n)
 	v.blend_by_def.resize(n)
+	v.stand_rect.resize(n)
+	var bounds := {}  # 시트 경로 -> 칸마다 그림이 있는 네모(tools/sheet_bounds.py가 만든 <시트>.json)
 	var any := false
 	for i in n:
 		var def := map.defs[i]
@@ -30,6 +32,10 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 			if not v.prop_tex.has(def.stand_sheet):
 				v.prop_tex[def.stand_sheet] = load(def.stand_sheet) as Texture2D
 			v.stand_by_def[i] = v.prop_tex[def.stand_sheet]
+			if not bounds.has(def.stand_sheet):
+				bounds[def.stand_sheet] = _sheet_bounds(def.stand_sheet, def.stand_cols, def.stand_rows)
+			var bl: Array = bounds[def.stand_sheet]
+			v.stand_rect[i] = bl[def.stand_cell] if def.stand_cell < bl.size() else Rect2(0, 0, 1, 1)
 			any = true
 		v.under_by_def[i] = map.index_of(def.stand_under) if not def.stand_under.is_empty() else -1
 		v.smooth_by_def[i] = WALL_SHAPES.get(def.art_shape, 0) if def.is_wall() and v.tile_tex[i] != null else 0
@@ -61,6 +67,22 @@ static func load_into(v: FloorView, cfg: Dictionary) -> void:
 		v.tex_material.shader = load(TEX_SHADER) as Shader
 		v.memory_desat = v.art.memory_desat if v.art.memory_desat >= 0.0 else JsonUtil.get_float(cfg, "memory_desat", 0.65)
 		v.tex_material.set_shader_parameter("memory_desat", v.memory_desat)
+		v.fringe_material = FloorFringe.material(v)
+
+
+## 서 있는 소품 시트의 칸마다 그림이 있는 네모(칸 비율). 시트 옆 json이 없거나 칸 수가 다르면 빈 목록(칸 전체를 그린다).
+static func _sheet_bounds(sheet: String, cols: int, rows: int) -> Array:
+	var path := sheet.get_basename() + ".json"
+	if not FileAccess.file_exists(path):
+		return []
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not d is Dictionary or int((d as Dictionary).get("cols", 0)) != cols or int((d as Dictionary).get("rows", 0)) != rows:
+		return []
+	var out: Array = []
+	for b: Variant in (d as Dictionary).get("bounds", []):
+		var a: Array = b
+		out.append(Rect2(float(a[0]), float(a[1]), float(a[2]) - float(a[0]), float(a[3]) - float(a[1])) if a.size() == 4 else Rect2(0, 0, 1, 1))
+	return out
 
 
 ## 그래픽 품질 low면 데칼을 그리지 않는다(소품·재질 그림은 남긴다 — 상호작용 대상이 보여야 한다).
