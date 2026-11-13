@@ -57,3 +57,23 @@ func test_tileset_and_sets_build() -> void:
 		var floor_layer := room.get_child(0) as TileMapLayer
 		assert_eq(floor_layer.get_used_cells().size(), int(s["size"][0]) * int(s["size"][1]), set_name + " 바닥 칸")
 		room.free()
+
+
+func test_game_prop_tiles_point_at_kit_sheet() -> void:
+	## 게임 소품 시트(AM66 — tools/dungeon_kit/game_props.py): 소품 타일이 가리키는 칸이 시트 안에 있다.
+	var tex := load("res://assets/floor/kit/props.webp") as Texture2D
+	assert_true(tex != null, "assets/floor/kit/props.webp")
+	if tex == null:
+		return
+	var bad: Array[String] = []
+	var n := 0
+	for t: Dictionary in db.get_collection("tiles").values():
+		var prop: Dictionary = JsonUtil.get_dict(JsonUtil.get_dict(t, "art"), "prop")
+		if prop.is_empty() or not str(prop.get("sheet", "")).ends_with("kit/props.webp"):
+			continue
+		n += 1
+		var cols := int(prop.get("cols", 8))
+		if int(prop.get("cell", 0)) >= cols * (tex.get_height() / (tex.get_width() / cols)):
+			bad.append(str(t.get("id", "")))
+	assert_true(n >= 50, "키트 시트를 쓰는 소품 타일: %d" % n)
+	assert_true(bad.is_empty(), "시트 밖 칸: %s" % [", ".join(bad)])

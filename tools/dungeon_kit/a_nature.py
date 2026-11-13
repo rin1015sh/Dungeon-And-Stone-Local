@@ -497,29 +497,35 @@ def wall_roots(c, seed=1):
 def puddle(c, size=1.0, tint="water", ripple=False, f=0, seed=1):
     r = c.rng
     cx, cy = 85, 70
-    rx, ry = 68 * size, 52 * size
-    m = c.blob(cx, cy, rx, ry, 0.3, 30 * size + 6, 0.05, r.uniform(-0.4, 0.4))
-    m = np.maximum(m, c.blob(cx + r.uniform(-0.5, 0.5) * rx, cy + r.uniform(-0.5, 0.5) * ry, rx * 0.55, ry * 0.5, 0.4, 16 * size + 4, 0.06))
-    deep, shallow, hi = {"water": ("#0c1318", "#1c2a32", "#9ab4c4"), "murky": ("#12160c", "#2a321c", "#a0aa80"), "blood": ("#1c0808", "#421414", "#c09a94")}[tint]
-    wet = sstep(gblur(m, 5.0) * 1.6 + (c.noise(9.0) - 0.5) * 0.3, 0.25, 0.7)
-    c.paint(wet * (1 - m), "#0e1012", 0.4)                                # 젖은 둘레
-    inner = gblur(m, 6.0 * size + 2) ** 2
-    c.paint(m, _tone(c, shallow, 0.85, 1.15, 12.0), 0.86)
-    c.paint(m * inner, deep, 0.85)                                         # 깊은 가운데
-    edge = c.rim(m, 1.3)
-    lit = sstep((c.xx - cx) / rx + (c.yy - cy) / ry, -0.2, 0.9)           # 빛을 마주 보는 오른쪽 아래 물가가 밝다
-    c.paint(edge * lit, hi, 0.55)
-    c.paint(edge * (1 - lit), "#06080a", 0.7)
-    for _ in range(int(4 + 5 * size)):                                     # 차가운 비침 줄
-        x, y, ln = cx + r.uniform(-0.6, 0.5) * rx, cy + r.uniform(-0.55, 0.4) * ry, r.uniform(5, 16) * size + 3
-        c.paint(c.seg([(x - ln, y + r.uniform(-0.6, 0.6)), (x, y), (x + ln, y + r.uniform(-0.6, 0.6))], 1.4, True, 0.6) * m * inner ** 0.4, hi, 0.4)
+    rx, ry = 64 * size, 46 * size
+    # 물 모양: 크고 작은 덩이 넷이 이어진 얕은 물(돌바닥의 낮은 곳을 따라 번졌다)
+    m = c.blob(cx, cy, rx * 0.8, ry * 0.8, 0.38, 26 * size + 6, 0.06, r.uniform(-0.5, 0.5))
+    for _ in range(3):
+        a = r.uniform(0, 6.28)
+        m = np.maximum(m, c.blob(cx + np.cos(a) * rx * 0.55, cy + np.sin(a) * ry * 0.5, rx * r.uniform(0.3, 0.5), ry * r.uniform(0.3, 0.5), 0.42, 14 * size + 4, 0.08, r.uniform(0, 3)))
+    deep, shallow, hi = {"water": ("#070c10", "#172026", "#aebcc4"), "murky": ("#0b0f08", "#20281a", "#a8ae8c"), "blood": ("#160606", "#3a1210", "#c4a09a")}[tint]
+    c.graded = False
+    wet = sstep(gblur(m, 4.5) * 1.5 + (c.noise(8.0) - 0.5) * 0.35, 0.22, 0.75)
+    c.paint(wet * (1 - m), "#0c0d0e", 0.3)                                # 젖어 어두워진 둘레(바닥이 비친다)
+    inner = np.clip(gblur(m, 5.0 * size + 2.5) * 1.25 - 0.25, 0, 1) ** 1.4  # 가운데로 갈수록 깊다
+    c.paint(m, shallow, 0.42)                                             # 얕은 가장자리 — 비쳐서 바닥 돌 · 줄눈이 보인다
+    c.paint(m * inner, deep, 0.62)
+    shade = np.clip(m - np.roll(m, (4, 4), (0, 1)), 0, 1)                 # 왼쪽 위 물가: 돌 턱이 드리운 그늘
+    c.paint(gblur(shade, 1.0) * m, "#030506", 0.55)
+    lit = sstep((c.xx - cx) / rx + (c.yy - cy) / ry, -0.25, 0.7)          # 빛을 마주 보는 오른쪽 아래 물가가 가늘게 반짝인다
+    edge = c.rim(m, 1.1)
+    c.paint(edge * lit * sstep(c.noise(9.0), 0.3, 0.5), hi, 0.62)
+    glare = c.blob(cx + rx * 0.18, cy + ry * 0.2, rx * 0.42, ry * 0.2, 0.3, 12 * size + 4, 0.5, -0.25)   # 물낯에 길게 누운 희미한 빛
+    c.paint(gblur(glare, 2.5 * size + 1) * m * inner, hi, 0.16)
+    glare2 = c.blob(cx - rx * 0.25, cy - ry * 0.22, rx * 0.2, ry * 0.08, 0.3, 8 * size + 3, 0.5, -0.25)
+    c.paint(gblur(glare2, 1.5) * m * inner, hi, 0.2)
     if ripple:                                                             # 떨어진 물방울의 번지는 고리
         for k, r0 in enumerate((3.0, 12.0)):
             rad = r0 + f * 6.5
             fade = max(0.0, 1.0 - rad / (40.0 * size + 8)) * (1.0 if k == 0 else 0.6)
             ring = c.ring(cx - 4, cy - 2, rad, 1.6, 0.7, rad * 0.78)
-            c.paint(ring * m * lit.clip(0.35, 1), hi, 0.75 * fade)
-            c.paint(np.roll(ring, (2, 0), (0, 1)) * m, "#04070a", 0.5 * fade)
+            c.paint(ring * m * lit.clip(0.35, 1), hi, 0.5 * fade)
+            c.paint(np.roll(ring, (2, 0), (0, 1)) * m, "#04070a", 0.35 * fade)
         if f == 0:
             c.paint(_dots(c, [(cx - 4, cy - 2, 1.8)]), hi, 0.9)
     c.graded = False

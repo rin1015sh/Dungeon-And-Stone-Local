@@ -66,7 +66,9 @@ func test_props_cover_feature_tiles() -> void:
 		if prop.is_empty():
 			missing.append(tile)
 		else:
-			assert_true(JsonUtil.get_int(prop, "cell") < Props.ORDER.size(), "소품 칸 번호: " + tile)
+			# 키트 소품 시트(assets/floor/kit/props.webp — 8열 5줄, AM66)는 옛 시트 칸 뒤에 새 칸(32~)이 있다
+			var limit := 40 if JsonUtil.get_str(prop, "sheet").ends_with("kit/props.webp") else Props.ORDER.size()
+			assert_true(JsonUtil.get_int(prop, "cell") < limit, "소품 칸 번호: " + tile)
 	assert_eq(missing.size(), 0, "소품 그림 없는 동굴 요소: " + ", ".join(missing))
 	for t in ["portal", "monument", "square_crystal", "boulder"]:
 		assert_false(JsonUtil.get_dict(db.get_entry("tiles", t), "art").is_empty(), "랜드마크 그림: " + t)

@@ -28,6 +28,7 @@
   - 동네 지도(`data/town` — 블록 도시 `tools/town_v4.py` 배치 → `town_v3_export.py`로 만든다, CT100)·`TownMap` 집 크기·`render.json city.town` 집 높이·지붕 → 집 그림 다시 굽기(`paint_town_hand.gd` 넷 동시 `--part` → `town_hand_bake.py` → `paint_town_houses.gd --pack` — 손그림 집 키트, CT97) + 바닥 다시 굽기(`town_cells.gd` → `town_ground_bake.py` — CT99)
   - 시설 실내 지도(`data/interiors` — 칸 · 범례 · 빛 · 방 재질, CT106) → `python3 tools/interior_bake.py <id>`(손그림 방 그림) + `--import` 뒤 캡처 `--screen=city --facility=<id> --in_at=x,y`
   - 2층 바닥 재질 · 소품(`tools/f2_art/` — AM64) → `ground.py` · `ground_extra.py` · `props.py`(→ `sheet_bounds.py`) → `texture_compress.py` → `--import` → 캡처. 소품 시트(stand · big)를 다시 그렸으면 `python3 tools/sheet_bounds.py`
+  - 던전 에셋 키트(`tools/dungeon_kit/a_*.py`) → `build.py` → `game_props.py`(게임 소품 시트 `assets/floor/kit/props.webp` — AM66) → `texture_compress.py` → `--import` → 캡처(`docs/DUNGEON_KIT.md`)
   - 층·몬스터·정수·균열·서적을 더함 → `python3 tools/floor_status.py`(2~10층 찍는 틀 `docs/plans/floors_2_10.md`)
   - 밀도·탐험가 → `sim_walk` · 균열 지도·조우·길목 → `sim_rift`("모두 통과") · 값·드롭 → `sim_income`(→ `docs/balance/city.md`)
   - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.
