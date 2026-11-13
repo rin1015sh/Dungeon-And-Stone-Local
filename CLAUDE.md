@@ -99,6 +99,7 @@ src/combat/     Battle·Timeline·DamageCalc·Passives·MonsterAi(+ai/)·BossHoo
 src/explore/    지도·생성기(generators/)·ExploreSession·이동·시야·몬스터·균열(Rift*)·동굴 요소, view/ = 탐험 화면 그리기
 src/progress/   성장·정수·전리품·드롭·저장      src/items/  가방·장비      src/city/  도시 규칙(+effects/)
 src/ui/         InputSetup·theme/·widgets/·windows/(Tab 메뉴)·city/·combat/·screens/
+src/kit/        DungeonKit(던전 에셋 키트 창구 — 재사용 바닥 · 벽 · 물건 그림 `assets/dungeon_kit`, 생성기 `tools/dungeon_kit`, `docs/DUNGEON_KIT.md`)
 tests/          test_*.gd(단위) · smoke_ui(UI 스모크)
 tools/          check.sh · validate_data · screenshot · bake_floor/bake_decor · paint_*(그림 도구 — paint_items + item_art/, paint_battlebacks + battle_art/, paint_books + book_art/, paint_town(동네 지도 재질), paint_town_hand + town_kit/HouseFit(동네 집 손그림 굽기) · paint_town_houses(그림판 묶기 · 소품)) · sim_*(밸런스 시뮬레이터)
 assets/         fonts/ shaders/ floor/ city/ monsters/ party/ actors/ items/ battle/(전투 뒷그림) (그림은 코드가 그린 WebP)

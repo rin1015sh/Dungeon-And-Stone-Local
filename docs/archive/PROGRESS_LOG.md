@@ -3,6 +3,12 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-13 던전 에셋 키트(AM65)
+- **범위 / 기준 / 테스트**: 사용자 "재사용 가능한 던전 에셋 라이브러리를 코드로 — 바닥 · 벽 · 구조물 · 가구 · 조명 · 흔적 · 자연물 · 특수 · 함정, 테마 세트, Godot에서 바로 쓰게. 화풍 · 기존 맵 · 게임플레이는 건드리지 않는다. 기존 파일과 분리된 디렉터리". 기준 = 분류 아홉 모두 그림이 있고 엔진에서 TileSet · 스프라이트 · 충돌로 쌓인다. 테스트 = 모음 그림을 눈으로 · `kit_demo.gd` 캡처 · `tests/test_dungeon_kit.gd` · check.sh.
+- **한 일**: ① 생성기 `tools/dungeon_kit/`(kit · paint2d · fx · surf · build · sets · compose + 에셋 모듈 a_*.py 아홉 — 2층 소품 기법 sdf · solid · mats · tex를 그대로 불러 쓴다) ② 에셋 181종 · 변형 628 · 그림 829장 → `assets/dungeon_kit/` 묶음 그림 11장(7.9MB) + `kit.json`(원점 · 층 · 충돌 · 빛 · 상태 짝 · 프레임) ③ 테마 세트 7(의식 · 야영지 · 감옥 · 연구실 · 전투 흔적 · 유적 · 수로) ④ `src/kit/DungeonKit.gd`(make · tileset · put_floor · put_walls · build_set) · `tools/kit_demo.gd` · 테스트 ⑤ `docs/DUNGEON_KIT.md` · 그림 `docs/screens/dungeon_kit/`.
+- **수치**: 전부 굽기 약 4분(4코어) · 다시 굽기는 바뀐 것만. 엔진 캡처가 파이썬 미리보기와 같은 것 확인(xvfb opengl3).
+- **남은 것**: 게임 지도에 연결하지 않았다(`DUNGEON_KIT.md` §5) · 북쪽 벽면만 · 재질 사이 번짐 띠 없음 · 일부 그림은 다듬을 여지(쓰러진 탁자 · 닫힌 보물상자 앞면 · 물 얼룩 · 먼지 · 빛나는 룬이 흰빛에 가깝다) · 사용자 그림 확인 전.
+
 ### 2026-11-11 2층 그림 마감(AM64)
 - **범위 / 기준 / 테스트**: 사용자 "2층 이미지가 각지고 타일 같다 — 1층 · 균열처럼 마감, 갈아엎어도 됨. 건물 · 상호작용 요소가 ppt 도형 같다. 렉도 걸리지 않게". 기준: 캡처에서 칸 격자 · 네모 경계 · 평면 도형이 보이지 않고 걷기 프레임이 전보다 나빠지지 않는다. 테스트: check.sh · 네 길 캡처(도착 자리 + `--cam`) · `--prof`.
 - **한 일**: ① 바닥 13재질을 4 × 4칸 넓은 그림으로(`tools/f2_art/ground.py` — 타일 `art.span`) ② 재질 번짐(`FloorFringe` · `floor_fringe.gdshader` · `fringe_mask.webp`, 타일 `art.fringe`) ③ 소품 · 포탈 칸이 둘레 바닥을 빌림 + 덫 · 금 덧그림 5장(`art.overlay`) ④ 소품 19 · 큰 구조물 16장을 거리장 덩어리 + 손그림 마감으로 다시(`tools/f2_art/props.py` · sdf · solid · mats · models_dead · models_forest · trees) ⑤ 소굴 · 사막 암벽 윗선 녹임(`rise.soft`) ⑥ 서 있는 소품은 그림 네모만 그림(`tools/sheet_bounds.py` → 시트 옆 json — 균열 시트 넷도), 번짐 띠도 덮는 폭만 ⑦ 둔덕 위 나무 밑이 검게 비던 것(둔덕 윗면을 그 칸에도) · 깎은 모서리 바닥 UV(`FloorChunk.floor_uv`). 옛 아틀라스 5장(snarepath · pitpath · spikepath · crackstone · crackearth) 지움, specs.json에서 파이썬이 그리는 바닥 뺌 · `props: "python"`.
