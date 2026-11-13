@@ -21,8 +21,7 @@ OLD = os.path.join(kit.ROOT, "assets", "floor", "f1", "props.webp")
 OUT = os.path.join(kit.ROOT, "assets", "floor", "kit", "props.webp")
 # 칸 번호 → (키트 id, 변형, 프레임, 칸에 맞출 가장 큰 폭 px) — 옛 그림과 같은 뜻의 것만 바꾼다(포탈 · 덫 · 노움 물건 · 발자국은 옛 그림 그대로)
 PROPS = {
-    0: ("corpse", "explorer", 0, 124),          # 탐험가의 시체
-    1: ("corpse", "rotten", 0, 116),            # 갉아먹힌 시체 더미
+    # 0 탐험가의 시체 · 1 갉아먹힌 시체 더미 = 옛 그림(사용자 2026-11-13 "시체는 원래 거로 롤백해")
     3: ("firepit", "cold", 0, 84),              # 꺼진 모닥불 자리
     4: ("broken_weapon", "pile", 0, 96),        # 부서진 장비 더미
     8: ("stalagmite", "cluster", 0, 96),        # 석순 숲
