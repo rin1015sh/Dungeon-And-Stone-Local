@@ -13,6 +13,13 @@
 		],
 		"foot": 4.0
 	},
+	"blood_blade_wolf": {
+		"cell": [
+			96,
+			69
+		],
+		"foot": 4
+	},
 	"bone_hyena": {
 		"cell": [
 			96.0,
@@ -41,6 +48,20 @@
 		],
 		"foot": 4.0
 	},
+	"canyon_bat": {
+		"cell": [
+			130,
+			104
+		],
+		"foot": 4
+	},
+	"carrion_crow": {
+		"cell": [
+			98,
+			80
+		],
+		"foot": 4
+	},
 	"chimera_wolf": {
 		"cell": [
 			96.0,
@@ -54,6 +75,13 @@
 			114.0
 		],
 		"foot": 4.0
+	},
+	"corrupted_gnome": {
+		"cell": [
+			68,
+			54
+		],
+		"foot": 4
 	},
 	"deadman": {
 		"cell": [
@@ -90,6 +118,13 @@
 		],
 		"foot": 4.0
 	},
+	"desert_vulture": {
+		"cell": [
+			86,
+			95
+		],
+		"foot": 4
+	},
 	"dried_pilgrim": {
 		"cell": [
 			48.0,
@@ -110,6 +145,27 @@
 			103.0
 		],
 		"foot": 4.0
+	},
+	"dune_scorpion": {
+		"cell": [
+			76,
+			55
+		],
+		"foot": 4
+	},
+	"elder_ghoul": {
+		"cell": [
+			92,
+			95
+		],
+		"foot": 4
+	},
+	"forest_wasp": {
+		"cell": [
+			128,
+			90
+		],
+		"foot": 4
 	},
 	"frost_wolf": {
 		"cell": [
@@ -139,6 +195,13 @@
 		],
 		"foot": 4.0
 	},
+	"giant_blade_wolf": {
+		"cell": [
+			146,
+			103
+		],
+		"foot": 4
+	},
 	"gnome": {
 		"cell": [
 			68.0,
@@ -153,12 +216,19 @@
 		],
 		"foot": 4.0
 	},
-	"goblin_drummer": {
+	"goblin_archer": {
 		"cell": [
-			48,
-			74
+			40,
+			64
 		],
 		"foot": 4
+	},
+	"goblin_drummer": {
+		"cell": [
+			48.0,
+			74.0
+		],
+		"foot": 4.0
 	},
 	"goblin_hound": {
 		"cell": [
@@ -181,12 +251,19 @@
 		],
 		"foot": 4.0
 	},
-	"goblin_thief": {
+	"goblin_swordsman": {
 		"cell": [
-			40,
-			64
+			44,
+			69
 		],
 		"foot": 4
+	},
+	"goblin_thief": {
+		"cell": [
+			40.0,
+			64.0
+		],
+		"foot": 4.0
 	},
 	"goblin_trapper": {
 		"cell": [
@@ -412,12 +489,26 @@
 		],
 		"foot": 4.0
 	},
+	"spore_shroom": {
+		"cell": [
+			58,
+			65
+		],
+		"foot": 4
+	},
 	"stone_golem": {
 		"cell": [
 			88.0,
 			129.0
 		],
 		"foot": 4.0
+	},
+	"thorn_creeper": {
+		"cell": [
+			76,
+			88
+		],
+		"foot": 4
 	},
 	"wall_mole": {
 		"cell": [
