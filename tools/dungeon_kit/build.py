@@ -134,6 +134,10 @@ def write_pack(done):
                 e["interact"] = a.interact
             if a.meta:
                 e["meta"] = a.meta
+            if a.reuse != "common":
+                e["reuse"] = a.reuse
+            if a.base:
+                e["base"] = a.base
             v = e["variants"].setdefault(vname, {"frames": []})
             x, y, w, h = pos[(id, vname, frame)]
             ox, oy = done[(id, vname, frame)][1]
@@ -147,8 +151,11 @@ def write_pack(done):
     if os.path.exists(sets_path):
         import sets
         manifest["sets"] = sets.export(manifest)
-    with open(os.path.join(kit.OUT, "kit.json"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(manifest, ensure_ascii=False, separators=(",", ":")).replace('},"', '},\n"'))
+    import regions
+    manifest["regions"] = regions.export(manifest)
+    text = (json.dumps(manifest, ensure_ascii=False, separators=(",", ":"), default=lambda o: o.item()).replace('},"', '},\n"'))
+    with open(os.path.join(kit.OUT, "kit.json"), "w", encoding="utf-8") as f:   # 다 만든 뒤에 쓴다(중간에 깨져도 옛 파일이 남게)
+        f.write(text)
     n_img = sum(len(v["frames"]) for e in manifest["assets"].values() for v in e["variants"].values())
     print("kit.json: 에셋 %d종 · 변형 %d개 · 그림 %d장" % (len(manifest["assets"]), sum(len(e["variants"]) for e in manifest["assets"].values()), n_img))
     return manifest

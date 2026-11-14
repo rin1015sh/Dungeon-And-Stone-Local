@@ -21,7 +21,7 @@ func test_manifest_regions_fit_their_sheets() -> void:
 
 func test_every_category_and_layer_is_present() -> void:
 	var kit := DungeonKit.open()
-	for cat: String in ["floor", "wall", "structure", "furniture", "light", "trace", "nature", "special", "trap"]:
+	for cat: String in ["floor", "wall", "structure", "furniture", "light", "trace", "nature", "special", "trap", "terrain", "flora"]:
 		assert_true(kit.ids(cat).size() >= 10, "%s 분류: %d종" % [cat, kit.ids(cat).size()])
 	for layer: String in ["floor", "wall", "decal", "wall_decal", "stand", "over"]:
 		assert_true(kit.ids("", layer).size() > 0, "%s 층" % layer)
@@ -57,6 +57,35 @@ func test_tileset_and_sets_build() -> void:
 		var floor_layer := room.get_child(0) as TileMapLayer
 		assert_eq(floor_layer.get_used_cells().size(), int(s["size"][0]) * int(s["size"][1]), set_name + " 바닥 칸")
 		room.free()
+
+
+func test_regions_point_at_real_assets() -> void:
+	## 에셋 라이브러리(docs/asset_library): 지역 표가 가리키는 바닥 · 벽 · 에셋 · 변형이 모두 있고, 지역 확장형은 틀이 되는 공용 에셋을 가리킨다.
+	var kit := DungeonKit.open()
+	assert_true(kit.region_names().size() >= 40, "지역 수: %d" % kit.region_names().size())
+	var bad: Array[String] = []
+	for rid in kit.region_names():
+		var r := kit.region(rid)
+		if not ["specific", "partial", "none"].has(str(r.get("lore", ""))) or not kit.has("wall_" + str(r.get("wall", ""))) or kit.region_assets(rid, "floor").is_empty():
+			bad.append(rid)
+		for ref in kit.region_assets(rid):
+			var id := ref.get_slice(".", 0)
+			if not kit.has(id) or (ref.contains(".") and not kit.variants(id).has(ref.get_slice(".", 1))):
+				bad.append("%s: %s" % [rid, ref])
+	assert_true(bad.is_empty(), "지역 표 오류: %s" % [", ".join(bad.slice(0, 5))])
+	var n_ext := 0
+	for id in kit.ids():
+		var reuse := kit.reuse_of(id)
+		assert_true(["common", "ext", "region"].has(reuse), "%s reuse" % id)
+		if reuse == "ext":
+			n_ext += 1
+			assert_true(kit.has(str(kit.info(id).get("base", ""))), "%s: 틀이 되는 공용 에셋" % id)
+	assert_true(n_ext >= 8, "지역 확장형 에셋: %d" % n_ext)
+	var node := kit.make_ref("rock_ice.pillar_frozen")
+	assert_true(node.get_child(0) is Sprite2D, "참조로 만들기")
+	node.free()
+	assert_eq(kit.frame_count("ground_lava", "flow"), 4, "용암 4프레임")
+	assert_true(not kit.light_of("crystal_wall", "a").is_empty() and kit.light_of("crystal_wall", "dim").is_empty(), "수정 광원")
 
 
 func test_game_prop_tiles_point_at_kit_sheet() -> void:

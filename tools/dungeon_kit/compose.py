@@ -74,11 +74,11 @@ def compose(name, s, dark=False):
     for (x, y), (fid, fv) in floor_of.items():
         img, _ = _img(fid, fv)
         _paste(cv, img[(y % 4) * U:(y % 4 + 1) * U, (x % 4) * U:(x % 4 + 1) * U], x * U, y * U)
-    top, _ = _img("wall_top", "a")
+    kind = s.get("wall", "stone")
+    top, _ = _img("wall_top", kind if kind in kit.REG["wall_top"].variants else "a")
     for (x, y) in walls:
         m = sum(bit for bit, (dx, dy) in ((1, (0, -1)), (2, (1, 0)), (4, (0, 1)), (8, (-1, 0))) if (x + dx, y + dy) in walls or not (0 <= x + dx < gw and 0 <= y + dy < gh))
         _paste(cv, top[(m // 4) * U:(m // 4 + 1) * U, (m % 4) * U:(m % 4 + 1) * U], x * U, y * U)
-    kind = s.get("wall", "stone")
     states = s.get("wall_states", {})
     skip = set(s.get("exits_n", []))
     for (x, y) in sorted(walls, key=lambda c: c[1]):

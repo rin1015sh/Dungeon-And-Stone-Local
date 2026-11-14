@@ -32,7 +32,8 @@ WALL_H = 2.5           # 벽 높이(칸) — 벽면 그림 160px
 CACHE = os.path.join(HERE, ".cache")
 OUT = os.path.join(ROOT, "assets", "dungeon_kit")
 LAYERS = ("floor", "wall", "decal", "wall_decal", "stand", "over")
-CATS = ("floor", "wall", "structure", "furniture", "light", "trace", "nature", "special", "trap")
+CATS = ("floor", "wall", "structure", "furniture", "light", "trace", "nature", "special", "trap", "terrain", "flora", "fx")
+REUSE = ("common", "ext", "region")   # 공용 · 지역 확장형(공용 에셋의 틀을 지역 재질 · 형태로 넓힌 것) · 지역 전용 — docs/asset_library
 
 REG = {}               # id → Asset
 
@@ -53,6 +54,9 @@ class Asset:
         self.interact = kw.pop("interact", None)    # 쓰임새 귀띔(예: "container", "door", "lever", "trap")
         self.seed = kw.pop("seed", None)
         self.meta = kw.pop("meta", None)            # 그대로 manifest에 실리는 덧붙임(타일 크기 등)
+        self.reuse = kw.pop("reuse", "common")      # 재사용성: common 공용 · ext 지역 확장형 · region 지역 전용
+        self.base = kw.pop("base", None)            # ext: 어느 공용 에셋(틀)을 넓힌 것인지
+        assert self.reuse in REUSE, self.reuse
         assert not kw, "모르는 인자: %s" % list(kw)
 
     def jobs(self):

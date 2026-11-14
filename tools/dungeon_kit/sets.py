@@ -147,3 +147,8 @@ SETS["sewer"] = {
         _i("rubble", 9.2, 5.3, "brick_large"), _i("nest", 0.9, 1.3, "eggs"), _i("web_cocoon", 9.4, 4.2, "standing"), _i("railing", 4.5, 4.4, "straight"), _i("railing", 5.5, 4.4, "broken"),
     ],
 }
+
+# 지역 본보기 세트(에셋 라이브러리 — docs/asset_library): 야외 · 지역 에셋의 조합 본보기
+from sets_wild import WILD  # noqa: E402
+
+SETS.update(WILD)

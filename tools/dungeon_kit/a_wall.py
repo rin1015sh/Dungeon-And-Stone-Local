@@ -18,16 +18,91 @@ KINDS = {
     "brick": {"name": "벽돌벽", "base": "#64544b", "gap": "#1e1917", "mean": "#4c433d", "rows": 16, "len": (58, 74), "wob": 1.3, "var": 0.18, "hue": 0.03},
     "sewer": {"name": "지하수로 벽", "base": "#52534b", "gap": "#121412", "mean": "#3d3f3a", "rows": 16, "len": (64, 96), "wob": 1.6, "var": 0.18, "hue": 0.03},
     "ancient": {"name": "고대 유적 벽", "base": "#787060", "gap": "#1c1a16", "mean": "#5c574b", "rows": 4, "len": (150, 230), "wob": 1.4, "var": 0.08, "hue": 0.015},
+    # 자연 암벽 · 지역 벽(에셋 라이브러리 — docs/asset_library): natural = 돌 쌓기 대신 암반 결. moss = "mossy" 상태에 덮이는 것의 색(이끼 · 눈 · 재 · 녹).
+    "cave": {"name": "동굴 암벽", "base": "#62625e", "gap": "#141414", "mean": "#4a4a48", "var": 0.12, "hue": 0.012, "natural": "chunk"},
+    "sandstone": {"name": "사암 절벽", "base": "#84705a", "gap": "#2a2018", "mean": "#5c4e3e", "var": 0.1, "hue": 0.02, "natural": "strata", "moss": ("#9a8a66", "#8a7a58", "#a89870", "#b4a47c")},
+    "ice": {"name": "얼음벽", "base": "#6a88a0", "gap": "#d0e2ee", "mean": "#5c788e", "var": 0.1, "hue": 0.01, "natural": "ice", "moss": ("#aab8c6", "#98a8b8", "#b8c6d2", "#ccd8e2")},
+    "basalt": {"name": "검은 현무암 절벽", "base": "#3a3634", "gap": "#0a0808", "mean": "#2c2a29", "var": 0.14, "hue": 0.01, "natural": "column", "moss": ("#5a5654", "#4a4644", "#666260", "#74706c")},
+    "metal": {"name": "문양 새긴 금속 벽", "base": "#4e5258", "gap": "#101214", "mean": "#3c4046", "rows": 2, "len": (120, 136), "wob": 0.3, "var": 0.05, "hue": 0.008, "moss": ("#6a4630", "#5a3a28", "#7a5236", "#8a5e3c")},
 }
+MOSS = ("#3a4628", "#36441f", "#48562c", "#5a6636")   # 덮개 바탕 + 붓 줄 셋
 STATES = {"clean": {}, "cracked": {"state": "cracked"}, "mossy": {"state": "mossy"}, "damaged": {"state": "damaged"}}
+
+
+def _natural(kind, seed):
+    """자연 암벽의 조각 배치 → (조각 번호, 경계까지 거리, 그림, 틈, 높이). 가로로 이어진다(W 주기)."""
+    kd = KINDS[kind]
+    yy, xx = np.mgrid[0:W, 0:W].astype(F)
+    how = kd["natural"]
+    if how == "chunk":      # 동굴 · 협곡: 크고 작은 암괴가 불규칙하게
+        cell, d1, edge = tex.voronoi(34, seed, 1.0)
+        edge = edge + (fbm(30, seed + 2, 2) - 0.5) * 6.0
+        img, gap, h = surf.stonework(cell, edge, hexc(kd["base"]), hexc(kd["gap"]), seed, 3.4, kd["var"], 1.3, kd["hue"], 0.9)
+        img = img * (0.86 + fbm(5, seed + 3, 3)[..., None] * 0.3) * surf.relief(fbm(16, seed + 4, 3), 1.8)[..., None]
+    elif how == "strata":   # 사암: 물결치는 가로 지층 + 드문 세로 틈, 바람에 패인 홈
+        cell, edge, row = surf.courses(seed, 9, 190, 380, 7.0, True, 0.3)
+        img, gap, h = surf.stonework(cell, edge, hexc(kd["base"]), hexc(kd["gap"]), seed, 2.4, kd["var"], 1.5, kd["hue"], 0.8)
+        band = np.sin(yy / 5.5 + (fbm(4, seed + 2, 2) - 0.5) * 9.0)          # 가는 지층 줄
+        img = img * (1.0 + band[..., None] * 0.07) * (0.9 + fbm(3, seed + 3, 3)[..., None] * 0.22)
+        hollow = np.clip((fbm(9, seed + 5, 3) - 0.64) * 9.0, 0, 1)             # 풍화 구멍
+        img = img * (1 - hollow[..., None] * 0.5) * (1.0 + np.clip(np.roll(hollow, (3, 3), (0, 1)) - hollow, -1, 0)[..., None] * 0.4)
+    elif how == "column":   # 현무암: 세로로 쪼개진 기둥 다발, 군데군데 가로로 끊겼다
+        wcol = 34.0
+        shift = (fbm(3, seed + 1, 2)[0:1, :] - 0.5) * 0 + (pnoise(6, seed + 2)[:, 0:1] - 0.5) * 10.0
+        u = (xx + shift) / wcol
+        ci = np.floor(u).astype(np.int64) % int(round(W / wcol))
+        rng = np.random.default_rng(seed + 3)
+        nb = int(round(W / wcol))
+        vshift = rng.random(nb).astype(F)[ci] * 130.0
+        v = (yy + vshift) / 130.0
+        cell = (ci + (np.floor(v).astype(np.int64) % 4) * nb).astype(np.int64)
+        edge = np.minimum(np.minimum(u % 1.0, 1.0 - u % 1.0) * wcol, np.minimum(v % 1.0, 1.0 - v % 1.0) * 130.0 * 0.6)
+        img, gap, h = surf.stonework(cell, edge, hexc(kd["base"]), hexc(kd["gap"]), seed, 2.6, kd["var"], 1.2, kd["hue"], 0.5)
+        round_ = np.sin(np.clip(u % 1.0, 0, 1) * np.pi) ** 0.5                 # 기둥마다 둥근 배
+        img = img * (0.72 + round_[..., None] * 0.36)
+    else:                   # 얼음: 큰 덩이 몇 개, 흰 금과 속에 비치는 세로 결 · 공기층
+        cell, d1, edge = tex.voronoi(12, seed, 1.0)
+        edge = edge + (fbm(20, seed + 2, 2) - 0.5) * 8.0
+        base = hexc(kd["base"])[None, None, :] * (0.7 + fbm(4, seed + 3, 3)[..., None] * 0.6)
+        streak = np.clip((fbm(90, seed + 4, 1)[0:1, :] * 0.6 + fbm(40, seed + 5, 2) * 0.4 - 0.5) * 3.0, 0, 1)
+        img = base * (1.0 + streak[..., None] * 0.22)
+        deep = np.clip((fbm(6, seed + 6, 3) - 0.55) * 4.0, 0, 1)
+        img = img * (1 - deep[..., None] * 0.35)
+        gap = np.clip(1.0 - edge / 2.2, 0, 1)
+        img = surf.mix(img, gap * 0.85, hexc(kd["gap"]))
+        img = img + (np.clip(1.0 - edge / 9.0, 0, 1) * 0.1)[..., None]
+        h = np.clip(edge / 9.0, 0, 1)
+    return cell, edge, img, gap, h
 
 
 def _face_base(kind, seed):
     kd = KINDS[kind]
-    cell, edge, row = surf.courses(seed, kd["rows"], kd["len"][0], kd["len"][1], kd["wob"], True, 0.0)
-    img, gap, h = surf.stonework(cell, edge, hexc(kd["base"]), hexc(kd["gap"]), seed, 2.8, kd["var"], 1.0, kd["hue"], 0.6)
     yy, xx = np.mgrid[0:W, 0:W].astype(F)
     t = yy / HF                                                    # 0 벽 머리 → 1 바닥
+    if kd.get("natural"):
+        cell, edge, img, gap, h = _natural(kind, seed)
+        return img, gap, h, cell, edge, t
+    cell, edge, row = surf.courses(seed, kd["rows"], kd["len"][0], kd["len"][1], kd["wob"], True, 0.0)
+    img, gap, h = surf.stonework(cell, edge, hexc(kd["base"]), hexc(kd["gap"]), seed, 2.8, kd["var"], 1.0, kd["hue"], 0.6)
+    if kind == "metal":     # 금속판: 판마다 벽화 같은 새김 문양(지어낸 도안) + 판 둘레 못 + 녹물
+        pw, ph = 128.0, 160.0
+        lx, ly = (xx % pw) / pw - 0.5, (yy % ph) / ph - 0.5
+        gx, gy = np.floor(xx / pw), np.floor(yy / ph)
+        hs = sdf._hash(gx, gy, gx * 0, seed + 3)
+        r, ang = np.hypot(lx, ly * 1.25), np.arctan2(ly, lx)
+        line = lambda d, w=0.012: np.clip(1.0 - np.abs(d) / w, 0, 1)
+        g = np.maximum.reduce([
+            line(np.maximum(np.abs(lx), np.abs(ly)) - 0.42), line(r - 0.3), line(r - 0.12, 0.016),
+            line(np.abs(np.sin(ang * (3 + np.floor(hs * 3)))) * r, 0.014) * (r > 0.12) * (r < 0.3),
+            line(np.abs(lx) - 0.36, 0.01) * (np.abs(ly) < 0.3) * (np.abs(((ly + 0.5) * 9.0) % 1.0 - 0.5) < 0.3),
+        ])
+        rivet = np.clip(1.0 - np.hypot(((xx + 8) % 32) - 16, ((yy + 8) % 32) - 16) / 3.2, 0, 1) * ((np.abs(lx) > 0.44) | (np.abs(ly) > 0.45))
+        img = img * (1 - g[..., None] * 0.55) + np.clip(np.roll(g, (2, 2), (0, 1)) - g, 0, 1)[..., None] * 0.14
+        img = img * (1 + rivet[..., None] * 0.5)
+        sheen = np.clip(surf.relief(fbm(4, seed + 6, 2), 3.0) - 1.0, 0, 1)
+        img = img + sheen[..., None] * 0.1
+        rust = np.clip((fbm(70, seed + 7, 1)[0:1, :] - 0.55) * 4.0, 0, 1) * np.clip((fbm(5, seed + 8, 3) - 0.4) * 3, 0, 1) * np.clip(t * 1.4, 0, 1)
+        img = surf.mix(img, rust * 0.55, hexc("#5a3826"))
     if kind == "ancient":   # 머리띠: 돋을새김 글줄(지어낸 글자) + 띠 아래위 홈
         band = (yy > 26) & (yy < 74)
         gx, gy = np.floor(xx / 21.0), np.floor((yy - 32) / 18.0)
@@ -108,17 +183,19 @@ def _wall(kind):
             n = fbm(6, seed + 30, 4)
             moss = np.clip((n - 0.62) * 5.0 + np.clip((t - 0.55) * 1.6, 0, 1) + np.clip(0.12 - t, 0, 1) * 3.0 + gap * 0.5, 0, 1)
             tone = 0.65 + fbm(36, seed + 31, 2) * 0.7
-            img = surf.mix(img, moss * 0.88, hexc("#3a4628")[None, None, :] * tone[..., None])
+            mc = kd.get("moss", MOSS)
+            img = surf.mix(img, moss * 0.88, hexc(mc[0])[None, None, :] * tone[..., None])
             mold = np.clip((fbm(9, seed + 32, 3) - 0.6) * 7.0, 0, 1) * (1 - moss)
-            img = surf.mix(img, mold * 0.6, hexc("#1a1e16"))
             drip = np.clip((fbm(80, seed + 33, 1)[0:1, :] - 0.62) * 6.0, 0, 1) * np.clip(n * 2 - 0.5, 0, 1) * np.clip(1 - t, 0, 1)
-            img = surf.mix(img, drip * 0.5, hexc("#2e3a22"))
+            if "moss" not in kd:   # 이끼 낀 벽에만 곰팡이 · 녹색 물줄기
+                img = surf.mix(img, mold * 0.6, hexc("#1a1e16"))
+                img = surf.mix(img, drip * 0.5, hexc("#2e3a22"))
             ly = tex.Layer()
-            ground.strokes(ly, rng, 2400, 4, 9, [hexc("#36441f"), hexc("#48562c"), hexc("#5a6636")], 3.14, 0.5, 1.6, 0.85, np.clip(moss * 1.3 - 0.4, 0, 1))
+            ground.strokes(ly, rng, 2400, 4, 9, [hexc(mc[1]), hexc(mc[2]), hexc(mc[3])], 3.14, 0.5, 1.6, 0.85, np.clip(moss * 1.3 - 0.4, 0, 1))
             img = ly.over(img)
         elif state == "damaged":
             n_cell = int(cell.max()) + 1
-            gone = (rng.random(n_cell) < (0.09 if kind != "ancient" else 0.0))[cell].astype(F)
+            gone = (rng.random(n_cell) < (0.09 if kind not in ("ancient", "metal", "ice") else 0.0))[cell].astype(F)
             hole = gone * np.clip((edge - 1.5 + (fbm(30, seed + 41, 2) - 0.5) * 5.0) * 1.2, 0, 1)   # 통째로 빠진 돌(가장자리가 또렷하다)
             pn = fbm(5, seed + 40, 3) + (fbm(26, seed + 43, 2) - 0.5) * 0.12
             hole = np.maximum(hole, np.clip((pn - (0.69 if kind != "ancient" else 0.64)) * 45.0, 0, 1))   # 뜯겨 나간 자리
@@ -139,16 +216,24 @@ for _k in KINDS:
     _wall(_k)
 
 
-@flat("wall_top", "wall", layer="wall", cell=(256, 256), variants={"a": {"seed": 1}, "b": {"seed": 2}}, name_ko="벽 윗면(자동 연결 16가지)", tags=["wall", "autotile"],
+TOPS = {"cave": ("#2a2a2a", "#62625e", "#565654", "v"), "sandstone": ("#32291f", "#84705a", "#5e5040", "v"), "ice": ("#34465a", "#7e9cb2", "#647e92", "v"),
+    "basalt": ("#1a1818", "#3a3634", "#343130", "v"), "metal": ("#202326", "#4e5258", "#44484e", "c")}   # 종류 → (속 · 테 돌 · 테 평균 색, 테 쌓기 v 암괴/c 줄)
+
+
+@flat("wall_top", "wall", layer="wall", cell=(256, 256), variants=dict({"a": {"seed": 1}, "b": {"seed": 2}}, **{k: {"seed": 1, "kind": k} for k in TOPS}), name_ko="벽 윗면(자동 연결 16가지)", tags=["wall", "autotile"],
     meta={"tile": [64, 64], "autotile": "nesw4", "sheet": "wall_tops", "note": "칸 번호 = 이웃 벽 비트(북 1 · 동 2 · 남 4 · 서 8) → 열 = 번호 % 4, 줄 = 번호 // 4. 이웃이 없는 변에 테가 생긴다(모서리 · 끝 · T자 · 십자)."})
-def wall_top(c, seed=1):
+def wall_top(c, seed=1, kind=None):
     """벽 윗면: 어두운 돌 속 + 이웃 벽이 없는 변에 밝은 돌 테. 벽면 타일 위(벽 높이만큼 올린 층)에 깐다."""
     cell, d1, edge = tex.voronoi(60, seed + 500, 0.8)
-    img, gap, h = surf.stonework(cell, edge, hexc("#34322f"), hexc("#0e0d0d"), seed, 3.0, 0.16, 0.8, 0.012, 0.5)
-    core = surf.finish(img, "#262422", seed).astype(F) / 255.0
-    cell2, edge2, _ = surf.courses(seed + 510, 16, 50, 80, 1.5, True, 0.0)
-    rim_img, _, _ = surf.stonework(cell2, edge2, hexc("#6b6962"), hexc("#191817"), seed, 2.6, 0.14, 1.0)
-    rimtex = surf.finish(rim_img, "#5e5c56", seed).astype(F) / 255.0
+    core_c, rim_c, rim_mean, lay = TOPS.get(kind, ("#34322f", "#6b6962", "#5e5c56", "c"))
+    img, gap, h = surf.stonework(cell, edge, hexc(core_c), hexc("#0e0d0d"), seed, 3.0, 0.16, 0.8, 0.012, 0.5)
+    core = surf.finish(img, "#262422" if kind is None else core_c, seed).astype(F) / 255.0
+    if lay == "c":
+        cell2, edge2, _ = surf.courses(seed + 510, 16, 50, 80, 1.5, True, 0.0)
+    else:   # 자연 암벽: 테도 불규칙한 암괴
+        cell2, _, edge2 = tex.voronoi(90, seed + 510, 1.0)
+    rim_img, _, _ = surf.stonework(cell2, edge2, hexc(rim_c), hexc("#191817"), seed, 2.6, 0.14, 1.0)
+    rimtex = surf.finish(rim_img, rim_mean, seed).astype(F) / 255.0
     out = np.zeros((256, 256, 4), F)
     yy, xx = np.mgrid[0:64, 0:64].astype(F)
     wob = lambda s: (surf.tex.pnoise(8, seed + s)[:64, :64] - 0.5) * 3.0

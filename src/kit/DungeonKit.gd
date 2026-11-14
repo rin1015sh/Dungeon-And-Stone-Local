@@ -209,7 +209,7 @@ func put_floor(layer: TileMapLayer, cell: Vector2i, id: String, variant: String 
 ## walls = {칸: true}, states = {칸: "cracked" …}(없으면 clean), skip_face = 벽면을 그리지 않을 칸(문 · 통로 에셋 자리).
 func put_walls(tops: TileMapLayer, faces: TileMapLayer, walls: Dictionary, kind: String = "stone", states: Dictionary = {}, skip_face: Dictionary = {}, bounds: Rect2i = Rect2i()) -> void:
 	tileset()
-	var top: Dictionary = _tiles.get("wall_top.a", {})
+	var top: Dictionary = _tiles.get("wall_top.%s" % kind, _tiles.get("wall_top.a", {}))  # 자연 암벽은 종류별 윗면
 	for cell: Vector2i in walls:
 		var mask := 0
 		for b: Array in [[1, Vector2i.UP], [2, Vector2i.RIGHT], [4, Vector2i.DOWN], [8, Vector2i.LEFT]]:
@@ -224,6 +224,38 @@ func put_walls(tops: TileMapLayer, faces: TileMapLayer, walls: Dictionary, kind:
 		var face: Dictionary = _tiles.get("wall_%s.%s" % [kind, String(states.get(cell, "clean"))], {})
 		if not face.is_empty():
 			faces.set_cell(cell, SRC_FACE, (face["base"] as Vector2i) + Vector2i(posmod(cell.x, (face["span"] as Vector2i).x), 0))
+
+
+## ── 지역 표(에셋 라이브러리 — tools/dungeon_kit/regions.py · docs/asset_library/REGIONAL_ASSET_PLAN.md) ──
+## 지역 = 미궁 설정 문서의 층 · 필드 · 균열 · 히든 필드. lore가 "none"인 지역의 에셋은 확장 후보다(확정 설정이 아니다).
+func region_names() -> PackedStringArray:
+	return PackedStringArray((data.get("regions", {}) as Dictionary).keys())
+
+
+func region(id: String) -> Dictionary:
+	var r: Variant = (data.get("regions", {}) as Dictionary).get(id, {})
+	return r if r is Dictionary else {}
+
+
+## 그 지역에 쓸 수 있는 에셋 참조("id" 또는 "id.변형") 목록. cat으로 거른다(빈 문자열 = 전부, "floor" = 바닥 타일).
+func region_assets(id: String, cat: String = "") -> PackedStringArray:
+	var r := region(id)
+	var out := PackedStringArray()
+	for ref: String in (r.get("floor", []) as Array) + (r.get("assets", []) as Array):
+		if cat.is_empty() or info(ref.get_slice(".", 0)).get("cat", "") == cat:
+			out.append(ref)
+	return out
+
+
+## 참조("id" 또는 "id.변형")로 노드를 만든다 — 변형이 없으면 seed로 고른다(되풀이 배치).
+func make_ref(ref: String, seed: int = 0, opts: Dictionary = {}) -> Node2D:
+	var id := ref.get_slice(".", 0)
+	return make(id, ref.get_slice(".", 1) if ref.contains(".") else pick(id, seed), opts)
+
+
+## 재사용성: "common" 공용 · "ext" 지역 확장형(공용 에셋의 틀을 넓힌 것 — info(id)["base"]) · "region" 지역 전용.
+func reuse_of(id: String) -> String:
+	return String(info(id).get("reuse", "common"))
 
 
 func set_names() -> PackedStringArray:
