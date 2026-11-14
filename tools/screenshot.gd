@@ -899,7 +899,8 @@ func _floor3(explore: ExploreScreen, what: String) -> void:
 					z = nodes[id]
 			if _args.has("node"):
 				z = nodes.get(str(_args["node"]), z)
-			if z.x >= 0:
-				s.relocate(z)
+			for d: Vector2i in [Vector2i.ZERO, Vector2i(0, 2), Vector2i(0, -2), Vector2i(2, 0), Vector2i(-2, 0), Vector2i(0, 4), Vector2i(3, 3)]:
+				if z.x >= 0 and s.relocate(z + d):  # 장면 가운데에 소품이 있으면 옆 칸에
+					break
 	s.refresh_view()
 	await _frames(30)

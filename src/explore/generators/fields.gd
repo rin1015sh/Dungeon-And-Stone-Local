@@ -30,6 +30,7 @@ func generate(db: GameDatabase, floor_def: Dictionary, rng: Rng) -> FloorMap:
 		map.set_tile(map.center, JsonUtil.get_str(t, "up"))
 		map.portals.append({"id": JsonUtil.get_str(sd, "id"), "pos": map.center, "dir": JsonUtil.get_str(sd, "dir", "north"),
 			"to_floor": JsonUtil.get_int(sd, "to_floor"), "dest": JsonUtil.get_str(sd, "dest"), "found": false})
+	_unblock(map, db, floor_def)  # 소품이 출발점 · 출구 사이 길을 끊었으면 그 소품을 치운다(3층 — 출발점이 여럿)
 	_seal_unreachable(map, JsonUtil.get_str(t, "rise"))
 	FloorGoal.place_gate(map, g)  # 고개 쇠문(층 목표 — 메운 뒤에, 문 너머가 메워지지 않게, FL18)
 	map.dark = FloorMap._zeros(w * h)
@@ -133,3 +134,62 @@ func _seal_unreachable(map: FloorMap, rise_tile: String) -> void:
 	for i in map.tiles.size():
 		if seen[i] == 0 and map.defs[map.tiles[i]].walkable:
 			map.tiles[i] = ri
+
+
+
+## 출발점(구간 kind arrival — 여럿일 수 있다) · 출구가 시작에서 모두 닿는지 보고, 닿지 않으면 서 있는 소품(밑 바닥 stand_under가 있는 칸)을
+## 지나갈 수 있다고 치고 가장 적은 소품을 지나는 길(0-1 너비 우선)을 찾아 그 길 위 소품만 밑 바닥으로 되돌린다. 소품은 둘레 8칸이 트인 곳에만 서지만,
+## 장면(구간 props at)이 좁은 둑에서 줄로 서면 길을 끊을 수 있다(3층 강어귀 — 출발점이 여럿).
+func _unblock(map: FloorMap, db: GameDatabase, floor_def: Dictionary) -> void:
+	var targets: Array[Vector2i] = [map.center]
+	for nd: Variant in JsonUtil.get_array(JsonUtil.get_dict(floor_def, "gen"), "nodes"):
+		var d: Dictionary = nd
+		if JsonUtil.get_str(d, "kind") == "arrival":
+			var at := JsonUtil.get_array(d, "at")
+			targets.append(Vector2i(int(at[0]), int(at[1])))
+	var prop := func(q: Vector2i) -> bool:
+		var d := map.def_at(q)
+		return not d.walkable and not d.stand_under.is_empty() and db.has_entry("tiles", d.stand_under)
+	for q in targets:
+		if not map.in_bounds(q) or not map.is_walkable(q) or map.entry == q:
+			continue
+		var n := map.width * map.height
+		var cost := PackedInt32Array()
+		cost.resize(n)
+		cost.fill(1 << 30)
+		var prev := PackedInt32Array()
+		prev.resize(n)
+		prev.fill(-1)
+		var dq: Array[Vector2i] = [map.entry]
+		cost[map.idx(map.entry)] = 0
+		var head := 0
+		var front: Array[Vector2i] = []  # 비용 0 칸은 앞에(두 줄 대기열)
+		while head < dq.size() or not front.is_empty():
+			var p: Vector2i = front.pop_back() if not front.is_empty() else dq[head]
+			if front.is_empty() and head < dq.size() and dq[head] == p:
+				head += 1
+			if p == q:
+				break
+			for dd in FloorMap.DIRS4:
+				var r := p + dd
+				if not map.in_bounds(r):
+					continue
+				var w := 0 if map.is_walkable(r) else (1 if prop.call(r) else -1)
+				if w < 0:
+					continue
+				var c := cost[map.idx(p)] + w
+				if c < cost[map.idx(r)]:
+					cost[map.idx(r)] = c
+					prev[map.idx(r)] = map.idx(p)
+					if w == 0:
+						front.append(r)
+					else:
+						dq.append(r)
+		if cost[map.idx(q)] <= 0 or cost[map.idx(q)] >= (1 << 30):
+			continue
+		var i := map.idx(q)
+		while i >= 0:
+			var c := map.pos_of(i)
+			if prop.call(c):
+				map.set_tile(c, map.def_at(c).stand_under)
+			i = prev[i]

@@ -13,6 +13,13 @@
 		],
 		"foot": 4.0
 	},
+	"blood_blade_wolf": {
+		"cell": [
+			96.0,
+			69.0
+		],
+		"foot": 4.0
+	},
 	"bone_hyena": {
 		"cell": [
 			96.0,
@@ -41,6 +48,27 @@
 		],
 		"foot": 4.0
 	},
+	"canavaro": {
+		"cell": [
+			48,
+			90
+		],
+		"foot": 4
+	},
+	"canyon_bat": {
+		"cell": [
+			130.0,
+			104.0
+		],
+		"foot": 4.0
+	},
+	"carrion_crow": {
+		"cell": [
+			98.0,
+			80.0
+		],
+		"foot": 4.0
+	},
 	"chimera_wolf": {
 		"cell": [
 			96.0,
@@ -52,6 +80,13 @@
 		"cell": [
 			74.0,
 			114.0
+		],
+		"foot": 4.0
+	},
+	"corrupted_gnome": {
+		"cell": [
+			68.0,
+			54.0
 		],
 		"foot": 4.0
 	},
@@ -90,6 +125,20 @@
 		],
 		"foot": 4.0
 	},
+	"desert_vulture": {
+		"cell": [
+			86.0,
+			95.0
+		],
+		"foot": 4.0
+	},
+	"dirouter": {
+		"cell": [
+			44,
+			89
+		],
+		"foot": 4
+	},
 	"dried_pilgrim": {
 		"cell": [
 			48.0,
@@ -104,12 +153,54 @@
 		],
 		"foot": 4.0
 	},
+	"dryad": {
+		"cell": [
+			44,
+			92
+		],
+		"foot": 4
+	},
 	"dullahan": {
 		"cell": [
 			58.0,
 			103.0
 		],
 		"foot": 4.0
+	},
+	"dune_scorpion": {
+		"cell": [
+			76.0,
+			55.0
+		],
+		"foot": 4.0
+	},
+	"elder_ghoul": {
+		"cell": [
+			92.0,
+			95.0
+		],
+		"foot": 4.0
+	},
+	"fairy": {
+		"cell": [
+			106,
+			102
+		],
+		"foot": 4
+	},
+	"forest_wasp": {
+		"cell": [
+			128.0,
+			90.0
+		],
+		"foot": 4.0
+	},
+	"frogman": {
+		"cell": [
+			40,
+			71
+		],
+		"foot": 4
 	},
 	"frost_wolf": {
 		"cell": [
@@ -139,6 +230,13 @@
 		],
 		"foot": 4.0
 	},
+	"giant_blade_wolf": {
+		"cell": [
+			146.0,
+			103.0
+		],
+		"foot": 4.0
+	},
 	"gnome": {
 		"cell": [
 			68.0,
@@ -153,12 +251,19 @@
 		],
 		"foot": 4.0
 	},
+	"goblin_archer": {
+		"cell": [
+			40.0,
+			64.0
+		],
+		"foot": 4.0
+	},
 	"goblin_drummer": {
 		"cell": [
-			48,
-			74
+			48.0,
+			74.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"goblin_hound": {
 		"cell": [
@@ -181,12 +286,19 @@
 		],
 		"foot": 4.0
 	},
+	"goblin_swordsman": {
+		"cell": [
+			44.0,
+			69.0
+		],
+		"foot": 4.0
+	},
 	"goblin_thief": {
 		"cell": [
-			40,
-			64
+			40.0,
+			64.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"goblin_trapper": {
 		"cell": [
@@ -216,6 +328,13 @@
 		],
 		"foot": 4.0
 	},
+	"half_troll": {
+		"cell": [
+			84,
+			128
+		],
+		"foot": 4
+	},
 	"hobgoblin": {
 		"cell": [
 			66.0,
@@ -229,6 +348,20 @@
 			104.0
 		],
 		"foot": 4.0
+	},
+	"homunculus": {
+		"cell": [
+			42,
+			81
+		],
+		"foot": 4
+	},
+	"iantro": {
+		"cell": [
+			66,
+			100
+		],
+		"foot": 4
 	},
 	"ice_golem": {
 		"cell": [
@@ -258,6 +391,13 @@
 		],
 		"foot": 4.0
 	},
+	"iron_falcon": {
+		"cell": [
+			70,
+			78
+		],
+		"foot": 4
+	},
 	"iron_lizardman": {
 		"cell": [
 			56.0,
@@ -285,6 +425,13 @@
 			73.0
 		],
 		"foot": 4.0
+	},
+	"lizardman": {
+		"cell": [
+			62,
+			93
+		],
+		"foot": 4
 	},
 	"mineral_slime": {
 		"cell": [
@@ -320,6 +467,41 @@
 			90.0
 		],
 		"foot": 4.0
+	},
+	"mutant_spirit": {
+		"cell": [
+			56,
+			56
+		],
+		"foot": 4
+	},
+	"nameless_statue": {
+		"cell": [
+			40,
+			69
+		],
+		"foot": 4
+	},
+	"orc_archer": {
+		"cell": [
+			58,
+			100
+		],
+		"foot": 4
+	},
+	"orc_shaman": {
+		"cell": [
+			58,
+			100
+		],
+		"foot": 4
+	},
+	"orc_warrior": {
+		"cell": [
+			58,
+			104
+		],
+		"foot": 4
 	},
 	"owlbear": {
 		"cell": [
@@ -398,6 +580,13 @@
 		],
 		"foot": 4.0
 	},
+	"snetree": {
+		"cell": [
+			112,
+			127
+		],
+		"foot": 4
+	},
 	"soldier_deadman": {
 		"cell": [
 			48.0,
@@ -412,10 +601,31 @@
 		],
 		"foot": 4.0
 	},
+	"spore_shroom": {
+		"cell": [
+			58.0,
+			65.0
+		],
+		"foot": 4.0
+	},
+	"steel_hill_guard": {
+		"cell": [
+			66,
+			123
+		],
+		"foot": 4
+	},
 	"stone_golem": {
 		"cell": [
 			88.0,
 			129.0
+		],
+		"foot": 4.0
+	},
+	"thorn_creeper": {
+		"cell": [
+			76.0,
+			88.0
 		],
 		"foot": 4.0
 	},
@@ -432,6 +642,27 @@
 			124.0
 		],
 		"foot": 4.0
+	},
+	"witch_lamp": {
+		"cell": [
+			60,
+			38
+		],
+		"foot": 4
+	},
+	"witch_wraith": {
+		"cell": [
+			40,
+			81
+		],
+		"foot": 4
+	},
+	"woodman": {
+		"cell": [
+			48,
+			91
+		],
+		"foot": 4
 	},
 	"wormstone": {
 		"cell": [

@@ -105,8 +105,16 @@ def E(a, b, width=10, wiggle=4, tile=None, **extra):
     edges.append(d)
 
 
+def KD(g, aid, var):
+    """던전 에셋 키트 소품(tools/dungeon_kit/f3_stand.py — 칸 4 × 3 그림): 타일 f3d_<id>_<변형>_<바닥 약자>."""
+    return "f3d_%s_%s_%s" % (aid, var, g)
+
+
 def K(g, src):
     """에셋 모음 소품(tools/f3_tiles.py KIT — 1층 균열 넷 · 2층 소품을 3층 바닥 위에). "@f3s_…"면 3층 전용 소품(models_f3 — f3s_<이름>_<약자>)."""
+    if src.startswith("#"):  # "#<키트 id>/<변형>" = 던전 에셋 키트
+        aid, var = src[1:].split("/")
+        return KD(g, aid, var)
     return "%s_%s" % (src[1:], g) if src.startswith("@") else "f3k_%s_%s" % (g, src)
 
 
@@ -230,13 +238,16 @@ N("es_arrival", 215, 424, 8, "f3_estuary", kind="arrival", dest="floor3_from_dea
 N("es_reach", 214, 352, 5, "f3_estuary", props=EP)
 N("es_west", 168, 384, 6, "f3_estuary", props=EP)
 N("es_east", 266, 380, 6, "f3_estuary", props=EP)
-for i, x in enumerate(range(150, 296, 11)):   # 남북으로 흐르는 깊은 도랑(넘을 수 없다) — 틈(여울)으로만 건넌다
-    top = 350 + RNG.uniform(0, 10)
-    pts = [(x + RNG.uniform(-3, 3), top), (x + RNG.uniform(-6, 6), 375), (x + RNG.uniform(-6, 6), 400), (x + RNG.uniform(-3, 3), 432)]
-    t0 = RNG.uniform(0.15, 0.75)
+RE = random.Random(31)  # 도랑 자리 난수는 따로(다른 장면을 더해도 도랑이 옮겨 다니지 않게)
+for i, x in enumerate(range(150, 296, 11)):
+    if 200 <= x <= 232:
+        continue  # 출발 둑(망자의 땅 길) 앞은 비운다   # 남북으로 흐르는 깊은 도랑(넘을 수 없다) — 틈(여울)으로만 건넌다
+    top = 350 + RE.uniform(0, 10)
+    pts = [(x + RE.uniform(-3, 3), top), (x + RE.uniform(-6, 6), 375), (x + RE.uniform(-6, 6), 400), (x + RE.uniform(-3, 3), 432)]
+    t0 = RE.uniform(0.15, 0.75)
     S(pts, 3, "f3_black_water", 2, gaps=[[round(t0, 2), round(t0 + 0.07, 2)]])
 for y in (366, 392, 414):                      # 동서로 가로지르는 얕은 도랑(건널 수 있지만 느리다)
-    S([(148, y + RNG.uniform(-4, 4)), (220, y + RNG.uniform(-6, 6)), (296, y + RNG.uniform(-4, 4))], 3, "f3_ditch", 4)
+    S([(148, y + RE.uniform(-4, 4)), (220, y + RE.uniform(-6, 6)), (296, y + RE.uniform(-4, 4))], 3, "f3_ditch", 4)
 S([(205, 432), (212, 400), (216, 360)], 4, "f3_estuary_mud", 3)   # 가운데 둑길(마른 길 — 도랑을 가로질러 북으로)
 
 # ── 오크 군락지(남동 — 방벽 고리 안 야영지 · 감시탑 · 무기고 · 제단) ─────────────
@@ -397,6 +408,74 @@ BIG_EXTRA = [
     {"node": "gt_east", "at": [4, -4], "kind": "bigtree", "foot": [3, 2], "prefix": "f3g", "unders": {"m": "f3_marsh_floor"}},
 ]
 
+# ── 던전 에셋 키트(docs/DUNGEON_KIT.md)로 장면 다듬기 · 더 채우기 ─────────────────
+SC("or_forge", 404, 360, "f3_orc", "f3_orc_ground", [("og", "#anvil/hammer", [[-3, 0]]), ("og", "#grindstone/base", [[2, 0]]), ("og", "#workbench/tools", [[-2, -3]]),
+                                                    ("og", "#weapon_rack/full", [[3, -3]]), ("og", "#armor_stand/armor", [[5, 1]]), ("og", "#brazier/lit", [[0, 3]])], 6)
+SC("or_cook", 352, 392, "f3_orc", "f3_orc_ground", [("og", "#cooking_pot/stew", [[0, 0]]), ("og", "#straw_pile/a", [[-4, -2], [4, -2], [-4, 3]]),
+                                                   ("og", "#supply_pile/a", [[4, 3]]), ("og", "#barrel/stack", [[-1, -4]])], 6)
+SC("or_cells", 318, 382, "f3_orc", "f3_orc_ground", [("og", "#gibbet/skeleton", [[-3, 0], [3, 0]]), ("og", "#skull/pike", [[0, -3], [0, 3]]),
+                                                    ("og", "#broken_weapon/pile", [[-5, 3]])], 5)
+for i, (x, y) in enumerate([(360, 352), (392, 352), (360, 414), (396, 414)]):   # 방벽 안 세운 횃불
+    SC("or_torch%d" % i, x, y, "f3_orc", "f3_orc_ground", [("og", "#torch_stand/lit", [[0, 0]])], 3)
+ZP("f3_orc", "og", "#crate/stack", 12)
+ZP("f3_orc", "og", "#barrel/stack", 10)
+ZP("f3_orc", "oe", "#skull/pike", 10)
+ZP("f3_orc", "oe", "#broken_weapon/pile", 8)
+SC("tp_pillars", 70, 28, "f3_temple", "f3_temple_floor", [("tf", "#pillar/mossy", [[-6, -2], [-2, -2], [6, -2]]), ("tf", "#pillar/broken", [[2, -2]]),
+                                                        ("tf", "#pillar/fallen", [[-3, 3]]), ("tf", "#pillar/stump", [[4, 3]])], 7)
+SC("tp_altar", 30, 72, "f3_temple", "f3_temple_grass", [("tg", "#altar/ritual", [[0, -2]]), ("tg", "#statue_robed/weeping", [[-4, -1], [4, -1]]),
+                                                     ("tg", "#sarcophagus/ajar", [[0, 3]])], 5)
+ZP("f3_temple", "tg", "#statue/headless", 15)
+ZP("f3_temple", "tg", "#statue/ruined", 10)
+ZP("f3_temple", "tg", "#pillar/stump", 20)
+ZP("f3_temple", "tg", "#pillar/fallen", 12)
+ZP("f3_temple", "tg", "#rubble/large", 20)
+ZP("f3_temple", "tg", "#stone_tablet/mossy", 8)
+for i, a in enumerate(range(45, 360, 60)):   # 마녀의 숲 의식 흔적(촛불 고리 · 뼈 배열 · 제물 · 보랏빛 등)
+    x, y = polar(a, 76)
+    SC("wk%d" % i, x, y, "f3_witch", "f3_witch_floor", [("wf", "#ritual_remains/candle_ring", [[0, 0]]), ("wf", "#ritual_remains/bone_circle", [[-4, 2]]),
+                                                       ("wf", "#ritual_remains/offering", [[4, 2]]), ("wf", "#magic_lamp/violet", [[-3, -3], [3, -3]])], 5)
+ZP("f3_witch", "wf", "#web_cocoon/standing", 40)
+ZP("f3_witch", "wf", "#toadstool/glow_violet", 60)
+ZP("f3_witch", "wf", "#roots/knot", 50)
+ZP("f3_witch", "wf", "#skull/heap", 15)
+ZP("f3_witch", "wf", "#rune_stone/violet_c", 12)
+ZP("f3_witch", "wf", "#crystal/violet_small", 12)
+ZP("f3_witch", "wf", "#gibbet/skeleton", 8)
+ZP("f3_witch", "wf", "#nest/eggs", 8)
+ZP("f3_steel", "hr", "#rock/large_a", 40)
+ZP("f3_steel", "hg", "#rock/medium_a", 40)
+ZP("f3_steel", "hr", "#column_natural/a", 15)
+ZP("f3_steel", "hg", "#boulder_mossy/a", 20)
+ZP("f3_steel", "hg", "#weeds/fern", 30)
+ZP("f3_windpass", "hr", "#rock/large_a", 30)
+ZP("f3_windpass", "hr", "#column_natural/a", 10)
+ZP("f3_dusk", "dg", "#column_natural/a", 25)
+ZP("f3_dusk", "dg", "#rock/large_a", 30)
+ZP("f3_dusk", "dg", "#weeds/dead_bush", 30)
+ZP("f3_dusk", "dg", "#stone_tablet/mossy", 6)
+ZP("f3_dusk", "dg", "#rune_stone/dormant", 4)
+ZP("f3_estuary", "eb", "#roots/a", 30)
+ZP("f3_estuary", "eb", "#weeds/bramble", 30)
+ZP("f3_estuary", "eb", "#debris_wood/planks", 20)
+ZP("f3_estuary", "eb", "#mushroom/big", 15)
+ZP("f3_greentail", "mf", "#boulder_mossy/a", 25)
+ZP("f3_greentail", "mf", "#weeds/fern", 60)
+ZP("f3_greentail", "mf", "#toadstool/red_a", 30)
+ZP("f3_greentail", "mf", "#roots/a", 30)
+ZP("f3_greentail", "mf", "#nest/eggs", 6)
+ZP("f3_reeds", "rp", "#weeds/dead_bush", 40)
+ZP("f3_reeds", "rp", "#weeds/bramble", 30)
+ZP("f3_reeds", "rp", "#skull/heap", 6)
+ZP("f3_reeds", "rp", "#ritual_remains/bone_circle", 4)
+ZP("f3_reeds", "rp", "#statue/headless", 3)
+ZP("f3_riverbed", "rb", "#rock/large_a", 15)
+ZP("f3_riverbed", "rb", "#debris_wood/planks", 6)
+for nid, x, y, g, zone, tile in (("kc_steel", 380, 268, "hg", "f3_steel", "f3_hill_grass"), ("kc_dusk", 84, 404, "dg", "f3_dusk", "f3_dusk_ground"),
+                                 ("kc_est", 160, 414, "eb", "f3_estuary", "f3_estuary_bank"), ("kc_rb", 118, 372, "rb", "f3_riverbed", "f3_riverbed")):
+    SC(nid, x, y, zone, tile, [(g, "#firepit/lit", [[0, 0]]), (g, "#bedroll/out", [[-3, 1], [3, 2]]), (g, "#backpack/standing", [[-2, -2]]),
+                               (g, "#supply_pile/b", [[3, -2]]), (g, "#lantern/lit", [[0, 3]])], 4)   # 다른 탐험가가 쉬어 간 자리
+
 # ── 필드를 건너는 길(고개 · 둑길 · 숲 어귀 — 경계 띠를 넘는 곳만) ──────────────
 for a, b, w, t in [
     ("gt_south", outer[9], 9, None), ("gt_west", outer[8], 7, None), ("gt_west", "tp_gate", 8, None), ("gt_east", "wp_west", 8, None),
@@ -439,10 +518,13 @@ HUT = {"at": list(HUT_AT), "lit": True, "legend": {"m": "f3_hut_meadow", "W": "f
        "rows": HUT_ROWS, "marks": {"hut_in": [29, 16], "hut_door": [28, 10], "hut_hearth": [28, 4], "hut_shelf_a": [24, 4], "hut_shelf_b": [33, 4],
                                    "hut_table": [29, 6], "hut_bonfire": [29, 13], "hut_center": [28, 9],
                                    "hut_bed": [34, 7], "hut_candles": [23, 5], "hut_barrel": [23, 8], "hut_urn": [34, 4], "hut_well": [40, 12],
-                                   "hut_crates": [17, 12], "hut_bench": [36, 14]}}
+                                   "hut_crates": [17, 12], "hut_bench": [36, 14],
+                                   "hut_chair": [29, 8], "hut_books": [31, 4], "hut_bottles": [26, 4], "hut_light": [23, 7]}}
 # 오두막 안 · 둘레 고정 소품(WitchHut이 입장 때 놓는다 — 설원이면 다른 그림)
 HUT_PROPS = {
-    "fixed": {"hut_bed": "f3k_hu_bf_bed", "hut_candles": "f3k_hu_bf_candles", "hut_barrel": "f3k_hu_bf_barrel", "hut_urn": "f3k_hu_it_urn",
+    "fixed": {"hut_shelf_a": "f3d_bookshelf_full_hu", "hut_shelf_b": "f3d_cabinet_closed_hu", "hut_table": "f3d_table_set_hu",
+              "hut_chair": "f3d_chair_s_hu", "hut_books": "f3d_books_stack_hu", "hut_bottles": "f3d_bottles_potion_blue_hu", "hut_light": "f3d_candelabra_lit_hu",
+              "hut_bed": "f3d_bed_made_hu", "hut_candles": "f3d_candles_lit_hu", "hut_barrel": "f3k_hu_bf_barrel", "hut_urn": "f3k_hu_it_urn",
               "hut_well": "f3k_hm_bf_well", "hut_crates": "f3k_hm_bf_crate", "hut_bench": "f3k_hm_gm_bench"},
     "spring": {"trees": "f3_hut_oak", "trees2": "f3_hut_birch", "ground": "f3_hut_meadow", "bonfire": "f3_hut_bonfire"},
     "winter": {"trees": "f3_hut_bare", "trees2": "f3_hut_pine_snow", "ground": "f3_hut_snow", "bonfire": "f3_hut_bonfire_snow", "drift": "f3_hut_drift"},

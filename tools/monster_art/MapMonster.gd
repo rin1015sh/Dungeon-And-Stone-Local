@@ -15,6 +15,7 @@ const Beast := preload("res://tools/monster_art/Beast.gd")
 const Party := preload("res://tools/monster_art/Party.gd")
 const Specs := preload("res://tools/monster_art/Specs.gd")
 const Things := preload("res://tools/monster_art/Things.gd")
+const MapThings := preload("res://tools/monster_art/MapThings.gd")
 
 const PITCH := 0.3  ## 짐승·기는 것·흙더미를 위에서 내려다보는 정도
 const SIDE_FACE := 0.25  ## 옆모습을 보는 사람 쪽으로 살짝 돌리는 정도(라디안 — 완전한 옆보다 3/4에 가깝게)
@@ -36,14 +37,21 @@ static func spec_of(id: String) -> Dictionary:
 				"map": {"hunch": 0.38, "knee": 0.16, "head": 2.3, "legs": 0.72, "wide": 1.0, "bulk": 1.05, "stance": 0.07}}
 		"skull_rat":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
 			return {"kind": "beast", "size": 0.9, "spec": Specs.More.spec_of(id)}
-		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena":
+		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena", "blood_blade_wolf", "giant_blade_wolf":
 			return {"kind": "beast", "spec": Specs.More.spec_of(id)}
 		"ghoul":
 			return {"kind": "crawler", "size": 1.0, "spec": {"height": 420, "color": C("#8a947c"), "blood": 0.5, "eyes": C("#e0d8a0"), "elbow_h": 0.32, "elbow_w": 0.2, "reach": 0.3}}
 		"ghoul_lord":
 			return {"kind": "crawler", "spec": {"height": 420, "color": C("#5a6a48"), "bulk": 1.25, "blood": 1.0, "crown": C("#9a7a32"), "horns": C("#2a2820"), "eyes": C("#ff6030"), "elbow_h": 0.34, "elbow_w": 0.22, "reach": 0.3}}
-		"gnome":
-			return {"kind": "mound", "size": 0.8, "spec": Specs.More.spec_of("gnome")}
+		"elder_ghoul":  # 전투 그림: 구울보다 크고 검푸른 살갗 · 헝클어진 머리
+			return {"kind": "crawler", "spec": {"height": 420, "color": C("#6e7a66"), "bulk": 1.15, "blood": 0.8, "hair": "ragged", "hair_c": C("#2a2a24"), "eyes": C("#e8e0a0"), "elbow_h": 0.33, "elbow_w": 0.21, "reach": 0.3}}
+		"gnome", "corrupted_gnome":
+			return {"kind": "mound", "size": 0.8, "spec": Specs.More.spec_of(id)}
+		"dune_scorpion", "desert_vulture", "spore_shroom", "thorn_creeper", "canyon_bat", "carrion_crow", "forest_wasp", "iron_falcon", "fairy", "snetree":  # 2 · 3층 — 돌릴 수 있는 몸(MapThings)
+			var t := _combat(id)
+			return {"kind": str(t["kind"]), "size": {"canyon_bat": 1.0, "carrion_crow": 1.0, "forest_wasp": 1.0, "fairy": 0.9}.get(id, 0.0), "spec": t}
+		"mutant_spirit", "witch_lamp":  # 3층 영체 — 떠 있는 덩어리(전투 설계 그대로)
+			return {"kind": "blob", "spec": _combat(id)}
 		"slime", "mineral_slime", "wormstone", "guardian_eye", "sandworm", "deathworm":
 			return {"kind": "blob", "spec": Specs.More.spec_of(id)}
 	if FIGURES.has(id):
@@ -58,8 +66,12 @@ const FIGURES := {
 	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
 	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
 	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "kobold": {}, "kobold_shield": {}, "kobold_slinger": {}, "stone_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "monolith_soldier": {}, "sandman": {}, "werewolf": {"spec": {"hair": "ragged", "hair_c": Color("#5a5450")}, "map": {"head": 1.8, "bulk": 1.15}}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
-	"goblin_trapper": {}, "goblin_shaman": {}, "goblin_drummer": {}, "goblin_thief": {}, "goblin_wolf_rider": {}, "drowned": {}, "grave_keeper": {}, "wraith": {}, "dried_pilgrim": {},
+	"goblin_archer": {}, "goblin_swordsman": {}, "goblin_trapper": {}, "goblin_shaman": {}, "goblin_drummer": {}, "goblin_thief": {}, "goblin_wolf_rider": {}, "drowned": {}, "grave_keeper": {}, "wraith": {}, "dried_pilgrim": {},
 	"mummy": {}, "buried_one": {}, "iron_lizardman": {}, "iron_cavalry": {}, "riddle_gatekeeper": {"map": {"head": 1.8}},
+	# 3층 순례자의 길(Specs4)
+	"canavaro": {}, "dirouter": {}, "dryad": {}, "frogman": {}, "homunculus": {}, "lizardman": {}, "witch_wraith": {}, "woodman": {"map": {"head": 1.6, "bulk": 1.15}},
+	"orc_archer": {}, "orc_shaman": {}, "orc_warrior": {"map": {"bulk": 1.15}}, "iantro": {"map": {"bulk": 1.2, "wide": 1.1}}, "steel_hill_guard": {"map": {"head": 1.6}},
+	"half_troll": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "nameless_statue": {"map": {"head": 1.8}},
 }
 ## 보스·중간보스가 방 가운데서 기다리는 자세(BackPose rest — 플레이어가 방에 들어오면 바로 전투). 앞모습 한 장.
 ## 고른 까닭: 블라터(저주받은 기사) = 무릎 꿇고 칼을 짚은 채 · 캠보르미어(공작) = 왕좌 · 타룬바스(폭군 — 털 라이칸스로프) = 얼음몽둥이를 짚고 선 채
@@ -178,6 +190,8 @@ static func paint(id: String, dir: String, phase: float, height: float, seed_val
 			return Party._crawler(sp, seed_value).to_image()
 		"mound":
 			return _mound(sp, {"down": PI, "left": -PI * 0.5 - SIDE_FACE, "up": 0.0}[dir], phase, seed_value).to_image()
+		"scorpion", "bird", "shroom", "vine", "swarm":
+			return MapThings.paint(str(m["kind"]), sp, {"down": PI, "left": -PI * 0.5 - SIDE_FACE, "up": 0.0}[dir], phase, seed_value).to_image()
 		"blob":  # 방향이 없는 덩어리(슬라임·웜스톤·수호자의 눈): 같은 그림을 걸음마다 눌렀다 폈다
 			sp.erase("pitch")
 			sp.erase("walk")

@@ -72,3 +72,18 @@ func test_monster_walk_sheets_load() -> void:
 ## 웹 내보내기에 몬스터 시트 색인이 들어간다(FileAccess로 읽는 json은 include_filter에 있어야 한다).
 func test_sheet_index_exported() -> void:
 	assert_true(FileAccess.get_file_as_string("res://export_presets.cfg").contains("assets/*.json"), "export_presets include_filter(시트 색인 sheets.json)")
+
+
+## 돌아다니는 몬스터(rank normal)는 모두 걷기 시트가 있다(AM67 — 보스 · 중간보스는 기다리는 자세 한 장, 사람 약탈자는 탐험가 시트).
+func test_roaming_monsters_have_walk_sheets() -> void:
+	var index: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://assets/actors/monsters/sheets.json"))
+	assert_true(index is Dictionary, "sheets.json")
+	if not (index is Dictionary):
+		return
+	var missing := PackedStringArray()
+	for id: String in db.get_collection("monsters"):
+		if JsonUtil.get_str(db.get_entry("monsters", id), "rank") != "normal":
+			continue
+		if not (index as Dictionary).has(id) or not FileAccess.file_exists("res://assets/actors/monsters/%s_walk.webp" % id):
+			missing.append(id)
+	assert_eq(missing.size(), 0, "걷기 시트 없는 몬스터: " + ", ".join(missing))

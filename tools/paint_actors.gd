@@ -80,7 +80,7 @@ const EXPLORER_ARMS := 2.0  ## 탐험가만 팔 자세(2 = 몸 옆으로 곧게 
 const SEED := 4242
 
 ## 몬스터 맵 키(사람 키 × size 대비): 사람형은 몸 그대로, 나머지는 서 있는 앞모습 높이를 이만큼으로
-const MONSTER_H := {"beast": 0.72, "crawler": 0.6, "mound": 0.7}
+const MONSTER_H := {"beast": 0.72, "crawler": 0.6, "mound": 0.7, "scorpion": 0.5, "bird": 0.85, "shroom": 0.85, "vine": 0.95, "swarm": 0.8}
 const MONSTER_RENDER := 2.0  ## 몬스터 그림을 맵 키의 이 배로 그려 줄인다(사람형은 RENDER_H)
 
 var _cfg: Dictionary = {}
@@ -244,6 +244,8 @@ func _monster_sheet(id: String, data_size: float) -> void:
 	var m := MapMonster.spec_of(id)
 	var kind := str(m["kind"])
 	var size := float(m.get("size", data_size))
+	if size <= 0.0:
+		size = data_size
 	var body := JsonUtil.get_float(_cfg, "body_px", 84.0)
 	var frames := {}  # [줄, 칸] → 그림(발 = 아래 가운데)
 	var f := 0.0

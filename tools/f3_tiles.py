@@ -271,11 +271,34 @@ def big_tiles():
     return out
 
 
+# ── 던전 에셋 키트(docs/DUNGEON_KIT.md — tools/dungeon_kit/f3_stand.py → assets/floor/f3/kit_stand.webp, 칸 4 × 3) ──
+def kit_stand_tiles():
+    path = os.path.join(ROOT, "assets", "floor", "f3", "kit_stand_items.json")
+    if not os.path.exists(path):
+        return []
+    d = json.load(open(path, encoding="utf-8"))
+    out = []
+    for it in d["items"]:
+        for g in it["grounds"]:
+            t = {"id": "f3d_%s_%s_%s" % (it["id"], it["variant"], g), "name_ko": it["name_ko"], "kind": "wall", "walkable": False,
+                 "blocks_sight": bool(it["sight"]), "face_px": 40, "colors": {"top": "#2a2826", "face": "#4a4640"},
+                 "art": {"stand": {"sheet": "res://assets/floor/f3/kit_stand.webp", "cell": it["cell"], "cols": d["cols"], "rows": d["rows"],
+                                   "size": [4, 3], "under": KIT_GROUND[g]}},
+                 "source": "placeholder", "notes": "3층 — 던전 에셋 키트 %s/%s(tools/dungeon_kit/f3_stand.py)" % (it["id"], it["variant"])}
+            if it["cover"]:
+                t["cover"] = True
+            lt = it.get("light")
+            if lt:
+                t["light"] = {"radius_m": float(lt.get("radius", 3.0)), "color": lt.get("colors", {}).get(it["variant"], lt.get("color", "#f0a040")), "intensity": 0.8}
+            out.append(t)
+    return out
+
+
 def main():
     global SRC
     data = json.load(open(PATH, encoding="utf-8"))
     SRC = {t["id"]: t for t in data}
-    new = tiles() + kit_tiles() + f3_stand_tiles() + big_tiles()
+    new = tiles() + kit_tiles() + f3_stand_tiles() + big_tiles() + kit_stand_tiles()
     for t in new:
         if t.pop("ramp_art", False):
             t["art"]["ramp"] = True

@@ -5,6 +5,7 @@
 
 ## 시뮬레이터 · 점검
 
+- 던전 에셋 키트(AM65 — `docs/DUNGEON_KIT.md`): `python3 tools/dungeon_kit/build.py`(전부 굽기 → `assets/dungeon_kit`) · `build.py <분류|id> --sheet=<png>`(모음 그림만) · `compose.py [세트] [--dark]`(세트 미리보기) · 엔진 캡처 `--script res://tools/kit_demo.gd -- --set=all --out=<폴더> [--shapes]`. 게임 소품 시트(AM66) = `python3 tools/dungeon_kit/game_props.py`(→ `assets/floor/kit/props.webp` — 키트를 다시 구웠으면 이것도). 구운 뒤 `texture_compress.py` → `--import`.
 - 층 정리 그림 재료: `godot --headless --path . --script res://tools/map_digest.gd -- --floor=<층 id> --out=<폴더> [--seed=4]` → `<층>.png`(구역 색 지도 1칸 = 1px) + `<층>.json`(무리 · 요소 · 망대 · 매복 · 덫 · 포탈 · 표시 위치). 변경 정리 페이지(기믹 · 적 위치)를 만들 때.
 - 2층 새 몬스터 자리(F2M1): `python3 tools/f2_new_monsters.py` — 층 JSON 넷의 지역 · 매복 · 지키는 무리에 새 몬스터 15종을 넣는다(몇 번 돌려도 같다). 층 배치 스크립트(`tools/f2g_layout.py` · `f2b_layout.py` · `f2r_layout.py`)를 다시 돌렸으면 이것도 다시.
 - 소리 들이기: `python3 tools/import_sounds.py <음원 폴더>`(한글 제목 mp3 → `assets/audio/<갈래>/<키>.ogg` · `docs/AUDIO.md` 표 — 새 음원은 MAP에 한 줄, 쓰는 곳은 `data/audio.json`) · `--doc`(표만). ffmpeg 필요. `--import` 뒤 `tests/test_audio.gd`.

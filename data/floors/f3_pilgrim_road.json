@@ -9602,6 +9602,933 @@
         ]
       },
       {
+        "id": "or_forge",
+        "at": [
+          404,
+          360
+        ],
+        "r": 6,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_anvil_hammer_og",
+            "at": [
+              [
+                -3,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_grindstone_base_og",
+            "at": [
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_workbench_tools_og",
+            "at": [
+              [
+                -2,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_weapon_rack_full_og",
+            "at": [
+              [
+                3,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_armor_stand_armor_og",
+            "at": [
+              [
+                5,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_brazier_lit_og",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_cook",
+        "at": [
+          352,
+          392
+        ],
+        "r": 6,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_cooking_pot_stew_og",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_straw_pile_a_og",
+            "at": [
+              [
+                -4,
+                -2
+              ],
+              [
+                4,
+                -2
+              ],
+              [
+                -4,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_supply_pile_a_og",
+            "at": [
+              [
+                4,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_barrel_stack_og",
+            "at": [
+              [
+                -1,
+                -4
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_cells",
+        "at": [
+          318,
+          382
+        ],
+        "r": 5,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_gibbet_skeleton_og",
+            "at": [
+              [
+                -3,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_skull_pike_og",
+            "at": [
+              [
+                0,
+                -3
+              ],
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_broken_weapon_pile_og",
+            "at": [
+              [
+                -5,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_torch0",
+        "at": [
+          360,
+          352
+        ],
+        "r": 3,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_torch_stand_lit_og",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_torch1",
+        "at": [
+          392,
+          352
+        ],
+        "r": 3,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_torch_stand_lit_og",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_torch2",
+        "at": [
+          360,
+          414
+        ],
+        "r": 3,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_torch_stand_lit_og",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_torch3",
+        "at": [
+          396,
+          414
+        ],
+        "r": 3,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3d_torch_stand_lit_og",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_pillars",
+        "at": [
+          70,
+          28
+        ],
+        "r": 7,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_floor",
+        "props": [
+          {
+            "tile": "f3d_pillar_mossy_tf",
+            "at": [
+              [
+                -6,
+                -2
+              ],
+              [
+                -2,
+                -2
+              ],
+              [
+                6,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_pillar_broken_tf",
+            "at": [
+              [
+                2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_pillar_fallen_tf",
+            "at": [
+              [
+                -3,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_pillar_stump_tf",
+            "at": [
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_altar",
+        "at": [
+          30,
+          72
+        ],
+        "r": 5,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_grass",
+        "props": [
+          {
+            "tile": "f3d_altar_ritual_tg",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_statue_robed_weeping_tg",
+            "at": [
+              [
+                -4,
+                -1
+              ],
+              [
+                4,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_sarcophagus_ajar_tg",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wk0",
+        "at": [
+          274,
+          274
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3d_ritual_remains_candle_ring_wf",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_bone_circle_wf",
+            "at": [
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_offering_wf",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_magic_lamp_violet_wf",
+            "at": [
+              [
+                -3,
+                -3
+              ],
+              [
+                3,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wk1",
+        "at": [
+          200,
+          293
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3d_ritual_remains_candle_ring_wf",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_bone_circle_wf",
+            "at": [
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_offering_wf",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_magic_lamp_violet_wf",
+            "at": [
+              [
+                -3,
+                -3
+              ],
+              [
+                3,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wk2",
+        "at": [
+          147,
+          240
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3d_ritual_remains_candle_ring_wf",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_bone_circle_wf",
+            "at": [
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_offering_wf",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_magic_lamp_violet_wf",
+            "at": [
+              [
+                -3,
+                -3
+              ],
+              [
+                3,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wk3",
+        "at": [
+          166,
+          166
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3d_ritual_remains_candle_ring_wf",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_bone_circle_wf",
+            "at": [
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_offering_wf",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_magic_lamp_violet_wf",
+            "at": [
+              [
+                -3,
+                -3
+              ],
+              [
+                3,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wk4",
+        "at": [
+          240,
+          147
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3d_ritual_remains_candle_ring_wf",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_bone_circle_wf",
+            "at": [
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_offering_wf",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_magic_lamp_violet_wf",
+            "at": [
+              [
+                -3,
+                -3
+              ],
+              [
+                3,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wk5",
+        "at": [
+          293,
+          200
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3d_ritual_remains_candle_ring_wf",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_bone_circle_wf",
+            "at": [
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_ritual_remains_offering_wf",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_magic_lamp_violet_wf",
+            "at": [
+              [
+                -3,
+                -3
+              ],
+              [
+                3,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kc_steel",
+        "at": [
+          380,
+          268
+        ],
+        "r": 4,
+        "zone": "f3_steel",
+        "kind": "place",
+        "tile": "f3_hill_grass",
+        "props": [
+          {
+            "tile": "f3d_firepit_lit_hg",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_bedroll_out_hg",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_backpack_standing_hg",
+            "at": [
+              [
+                -2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_supply_pile_b_hg",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_lantern_lit_hg",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kc_dusk",
+        "at": [
+          84,
+          404
+        ],
+        "r": 4,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3d_firepit_lit_dg",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_bedroll_out_dg",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_backpack_standing_dg",
+            "at": [
+              [
+                -2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_supply_pile_b_dg",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_lantern_lit_dg",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kc_est",
+        "at": [
+          160,
+          414
+        ],
+        "r": 4,
+        "zone": "f3_estuary",
+        "kind": "place",
+        "tile": "f3_estuary_bank",
+        "props": [
+          {
+            "tile": "f3d_firepit_lit_eb",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_bedroll_out_eb",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_backpack_standing_eb",
+            "at": [
+              [
+                -2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_supply_pile_b_eb",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_lantern_lit_eb",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kc_rb",
+        "at": [
+          118,
+          372
+        ],
+        "r": 4,
+        "zone": "f3_riverbed",
+        "kind": "place",
+        "tile": "f3_riverbed",
+        "props": [
+          {
+            "tile": "f3d_firepit_lit_rb",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_bedroll_out_rb",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_backpack_standing_rb",
+            "at": [
+              [
+                -2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_supply_pile_b_rb",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3d_lantern_lit_rb",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
         "id": "hut",
         "at": [
           40,
@@ -11776,19 +12703,19 @@
       {
         "points": [
           [
-            149,
-            358
+            148,
+            350
           ],
           [
-            151,
+            149,
             375
           ],
           [
-            147,
+            152,
             400
           ],
           [
-            152,
+            148,
             432
           ]
         ],
@@ -11797,8 +12724,8 @@
         "wiggle": 2,
         "gaps": [
           [
-            0.35,
-            0.42
+            0.22,
+            0.29
           ]
         ]
       },
@@ -11806,18 +12733,134 @@
         "points": [
           [
             163,
+            352
+          ],
+          [
+            157,
+            375
+          ],
+          [
+            164,
+            400
+          ],
+          [
+            162,
+            432
+          ]
+        ],
+        "width": 3,
+        "tile": "f3_black_water",
+        "wiggle": 2,
+        "gaps": [
+          [
+            0.23,
+            0.3
+          ]
+        ]
+      },
+      {
+        "points": [
+          [
+            172,
+            355
+          ],
+          [
+            171,
+            375
+          ],
+          [
+            178,
+            400
+          ],
+          [
+            170,
+            432
+          ]
+        ],
+        "width": 3,
+        "tile": "f3_black_water",
+        "wiggle": 2,
+        "gaps": [
+          [
+            0.16,
+            0.23
+          ]
+        ]
+      },
+      {
+        "points": [
+          [
+            182,
+            359
+          ],
+          [
+            179,
+            375
+          ],
+          [
+            181,
+            400
+          ],
+          [
+            182,
+            432
+          ]
+        ],
+        "width": 3,
+        "tile": "f3_black_water",
+        "wiggle": 2,
+        "gaps": [
+          [
+            0.72,
+            0.79
+          ]
+        ]
+      },
+      {
+        "points": [
+          [
+            192,
+            352
+          ],
+          [
+            195,
+            375
+          ],
+          [
+            195,
+            400
+          ],
+          [
+            197,
+            432
+          ]
+        ],
+        "width": 3,
+        "tile": "f3_black_water",
+        "wiggle": 2,
+        "gaps": [
+          [
+            0.65,
+            0.72
+          ]
+        ]
+      },
+      {
+        "points": [
+          [
+            236,
             354
           ],
           [
-            156,
+            242,
             375
           ],
           [
-            155,
+            244,
             400
           ],
           [
-            161,
+            235,
             432
           ]
         ],
@@ -11826,85 +12869,27 @@
         "wiggle": 2,
         "gaps": [
           [
-            0.42,
-            0.49
+            0.59,
+            0.66
           ]
         ]
       },
       {
         "points": [
           [
-            171,
-            351
+            250,
+            359
           ],
           [
-            175,
+            246,
             375
           ],
           [
-            177,
+            253,
             400
           ],
           [
-            175,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.63,
-            0.7
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            182,
-            351
-          ],
-          [
-            182,
-            375
-          ],
-          [
-            177,
-            400
-          ],
-          [
-            185,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.32,
-            0.39
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            195,
-            358
-          ],
-          [
-            191,
-            375
-          ],
-          [
-            192,
-            400
-          ],
-          [
-            194,
+            250,
             432
           ]
         ],
@@ -11921,160 +12906,15 @@
       {
         "points": [
           [
-            205,
-            350
-          ],
-          [
-            202,
-            375
-          ],
-          [
-            202,
-            400
-          ],
-          [
-            207,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.6,
-            0.67
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            213,
-            354
-          ],
-          [
-            219,
-            375
-          ],
-          [
-            213,
-            400
-          ],
-          [
-            214,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.6,
-            0.67
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            226,
-            359
-          ],
-          [
-            228,
-            375
-          ],
-          [
-            232,
-            400
-          ],
-          [
-            227,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.36,
-            0.43
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            235,
-            352
-          ],
-          [
-            243,
-            375
-          ],
-          [
-            242,
-            400
-          ],
-          [
-            236,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.54,
-            0.61
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            250,
-            352
-          ],
-          [
-            248,
-            375
-          ],
-          [
-            251,
-            400
-          ],
-          [
-            249,
-            432
-          ]
-        ],
-        "width": 3,
-        "tile": "f3_black_water",
-        "wiggle": 2,
-        "gaps": [
-          [
-            0.2,
-            0.27
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
-            261,
+            258,
             356
           ],
           [
-            255,
+            254,
             375
           ],
           [
-            254,
+            258,
             400
           ],
           [
@@ -12087,27 +12927,27 @@
         "wiggle": 2,
         "gaps": [
           [
-            0.58,
-            0.65
+            0.39,
+            0.46
           ]
         ]
       },
       {
         "points": [
           [
-            271,
-            360
+            273,
+            356
           ],
           [
-            275,
+            277,
             375
+          ],
+          [
+            277,
+            400
           ],
           [
             274,
-            400
-          ],
-          [
-            270,
             432
           ]
         ],
@@ -12116,27 +12956,27 @@
         "wiggle": 2,
         "gaps": [
           [
-            0.42,
-            0.49
+            0.62,
+            0.69
           ]
         ]
       },
       {
         "points": [
           [
-            282,
-            358
+            280,
+            353
           ],
           [
-            282,
+            283,
             375
           ],
           [
-            285,
+            283,
             400
           ],
           [
-            280,
+            283,
             432
           ]
         ],
@@ -12145,27 +12985,27 @@
         "wiggle": 2,
         "gaps": [
           [
-            0.43,
-            0.5
+            0.21,
+            0.28
           ]
         ]
       },
       {
         "points": [
           [
-            293,
-            355
+            296,
+            352
+          ],
+          [
+            294,
+            375
           ],
           [
             295,
-            375
-          ],
-          [
-            290,
             400
           ],
           [
-            293,
+            291,
             432
           ]
         ],
@@ -12174,8 +13014,8 @@
         "wiggle": 2,
         "gaps": [
           [
-            0.43,
-            0.5
+            0.39,
+            0.46
           ]
         ]
       },
@@ -12183,11 +13023,11 @@
         "points": [
           [
             148,
-            363
+            369
           ],
           [
             220,
-            369
+            368
           ],
           [
             296,
@@ -12202,7 +13042,7 @@
         "points": [
           [
             148,
-            392
+            390
           ],
           [
             220,
@@ -12210,7 +13050,7 @@
           ],
           [
             296,
-            391
+            394
           ]
         ],
         "width": 3,
@@ -12225,11 +13065,11 @@
           ],
           [
             220,
-            412
+            417
           ],
           [
             296,
-            412
+            414
           ]
         ],
         "width": 3,
@@ -12772,6 +13612,236 @@
         "zone": "f3_temple",
         "tile": "f3s_head_tg",
         "count": 20
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3d_crate_stack_og",
+        "count": 12
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3d_barrel_stack_og",
+        "count": 10
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3d_skull_pike_oe",
+        "count": 10
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3d_broken_weapon_pile_oe",
+        "count": 8
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3d_statue_headless_tg",
+        "count": 15
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3d_statue_ruined_tg",
+        "count": 10
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3d_pillar_stump_tg",
+        "count": 20
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3d_pillar_fallen_tg",
+        "count": 12
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3d_rubble_large_tg",
+        "count": 20
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3d_stone_tablet_mossy_tg",
+        "count": 8
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_web_cocoon_standing_wf",
+        "count": 40
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_toadstool_glow_violet_wf",
+        "count": 60
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_roots_knot_wf",
+        "count": 50
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_skull_heap_wf",
+        "count": 15
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_rune_stone_violet_c_wf",
+        "count": 12
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_crystal_violet_small_wf",
+        "count": 12
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_gibbet_skeleton_wf",
+        "count": 8
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3d_nest_eggs_wf",
+        "count": 8
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3d_rock_large_a_hr",
+        "count": 40
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3d_rock_medium_a_hg",
+        "count": 40
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3d_column_natural_a_hr",
+        "count": 15
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3d_boulder_mossy_a_hg",
+        "count": 20
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3d_weeds_fern_hg",
+        "count": 30
+      },
+      {
+        "zone": "f3_windpass",
+        "tile": "f3d_rock_large_a_hr",
+        "count": 30
+      },
+      {
+        "zone": "f3_windpass",
+        "tile": "f3d_column_natural_a_hr",
+        "count": 10
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3d_column_natural_a_dg",
+        "count": 25
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3d_rock_large_a_dg",
+        "count": 30
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3d_weeds_dead_bush_dg",
+        "count": 30
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3d_stone_tablet_mossy_dg",
+        "count": 6
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3d_rune_stone_dormant_dg",
+        "count": 4
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3d_roots_a_eb",
+        "count": 30
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3d_weeds_bramble_eb",
+        "count": 30
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3d_debris_wood_planks_eb",
+        "count": 20
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3d_mushroom_big_eb",
+        "count": 15
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3d_boulder_mossy_a_mf",
+        "count": 25
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3d_weeds_fern_mf",
+        "count": 60
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3d_toadstool_red_a_mf",
+        "count": 30
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3d_roots_a_mf",
+        "count": 30
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3d_nest_eggs_mf",
+        "count": 6
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3d_weeds_dead_bush_rp",
+        "count": 40
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3d_weeds_bramble_rp",
+        "count": 30
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3d_skull_heap_rp",
+        "count": 6
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3d_ritual_remains_bone_circle_rp",
+        "count": 4
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3d_statue_headless_rp",
+        "count": 3
+      },
+      {
+        "zone": "f3_riverbed",
+        "tile": "f3d_rock_large_a_rb",
+        "count": 15
+      },
+      {
+        "zone": "f3_riverbed",
+        "tile": "f3d_debris_wood_planks_rb",
+        "count": 6
       }
     ],
     "outer_props": [
@@ -14359,6 +15429,158 @@
         ]
       },
       {
+        "name": "or_forge",
+        "node": "or_forge",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_cook",
+        "node": "or_cook",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_cells",
+        "node": "or_cells",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_torch0",
+        "node": "or_torch0",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_torch1",
+        "node": "or_torch1",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_torch2",
+        "node": "or_torch2",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_torch3",
+        "node": "or_torch3",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "tp_pillars",
+        "node": "tp_pillars",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "tp_altar",
+        "node": "tp_altar",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wk0",
+        "node": "wk0",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wk1",
+        "node": "wk1",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wk2",
+        "node": "wk2",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wk3",
+        "node": "wk3",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wk4",
+        "node": "wk4",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wk5",
+        "node": "wk5",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "kc_steel",
+        "node": "kc_steel",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "kc_dusk",
+        "node": "kc_dusk",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "kc_est",
+        "node": "kc_est",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "kc_rb",
+        "node": "kc_rb",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
         "name": "hut",
         "node": "hut",
         "at": [
@@ -14462,6 +15684,22 @@
           "hut_bench": [
             36,
             14
+          ],
+          "hut_chair": [
+            29,
+            8
+          ],
+          "hut_books": [
+            31,
+            4
+          ],
+          "hut_bottles": [
+            26,
+            4
+          ],
+          "hut_light": [
+            23,
+            7
           ]
         }
       }
@@ -15167,7 +16405,13 @@
       "wv2",
       "wv3",
       "wv4",
-      "wv5"
+      "wv5",
+      "wk0",
+      "wk1",
+      "wk2",
+      "wk3",
+      "wk4",
+      "wk5"
     ]
   },
   "witch_hut": {
@@ -15201,8 +16445,15 @@
     },
     "props": {
       "fixed": {
-        "hut_bed": "f3k_hu_bf_bed",
-        "hut_candles": "f3k_hu_bf_candles",
+        "hut_shelf_a": "f3d_bookshelf_full_hu",
+        "hut_shelf_b": "f3d_cabinet_closed_hu",
+        "hut_table": "f3d_table_set_hu",
+        "hut_chair": "f3d_chair_s_hu",
+        "hut_books": "f3d_books_stack_hu",
+        "hut_bottles": "f3d_bottles_potion_blue_hu",
+        "hut_light": "f3d_candelabra_lit_hu",
+        "hut_bed": "f3d_bed_made_hu",
+        "hut_candles": "f3d_candles_lit_hu",
         "hut_barrel": "f3k_hu_bf_barrel",
         "hut_urn": "f3k_hu_it_urn",
         "hut_well": "f3k_hm_bf_well",

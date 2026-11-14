@@ -220,7 +220,7 @@ func test_hut_after_riakis_turns_winter_and_hidden_piece_once() -> void:
 	assert_true(hut.inside())
 	var snow := _find(s, func(p: Vector2i) -> bool: return s.map.tile_id_at(p) == "f3_hut_snow")
 	assert_true(snow.x >= 0, "바깥은 설원")
-	assert_true(_find(s, func(p: Vector2i) -> bool: return s.map.tile_id_at(p) == "f3_hut_shelf").x >= 0, "안은 그대로(책장)")
+	assert_true(_find(s, func(p: Vector2i) -> bool: return s.map.tile_id_at(p) == "f3d_bookshelf_full_hu").x >= 0, "안은 그대로(책장)")
 	var marks: Dictionary = s.map.anchors["marks"]
 	assert_true(s.relocate(marks["hut_hearth"] + Vector2i.DOWN))
 	s.interact()
