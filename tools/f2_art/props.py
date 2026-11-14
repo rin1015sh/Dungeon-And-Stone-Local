@@ -24,6 +24,8 @@ try:
     MODELS["f2g"] = models_forest
 except ImportError:
     pass
+import models_f3  # noqa: E402  — 3층 소품(시트 칸 순서 = models_f3.STAND 순서, specs.json에 없다)
+MODELS["f3"] = models_f3
 
 
 def paint(fn, cw, ch, seed):
@@ -44,9 +46,11 @@ def main():
     only = next((a[7:].split(",") for a in sys.argv if a.startswith("--only=")), None)
     preview = next((a[10:] for a in sys.argv if a.startswith("--preview=")), None)
     for place, mod in MODELS.items():
-        pd = spec["places"][place]
+        pd = spec["places"].get(place) or {"stands": list(mod.STAND), "stand_cols": 10, "bigs": {"order": [], "cell": [8, 10], "cols": 6}}
         for part in ("stand", "big"):
             if args and not any(a == place or a == place + ":" + part for a in args):
+                continue
+            if part == "big" and not mod.BIG:
                 continue
             if part == "stand":
                 names, table = pd["stands"], mod.STAND

@@ -227,17 +227,61 @@ def kit_tiles():
     return out
 
 
+# ── 3층 전용 소품(tools/f2_art/models_f3.py → assets/floor/f3/stand.webp, 칸 순서 = STAND 순서) ──
+F3_STAND = ["f3a_reeds", "f3a_reeds_low", "f3a_vines", "f3a_vine_tree", "f3a_orc_tent", "f3a_orc_totem", "f3a_hide_rack", "f3a_head", "f3a_headless", "f3a_column"]
+F3_STAND_USE = {  # 그림: (이름, 시야를 가리나, 엄폐, 쓰는 바닥 약자들)
+    "f3a_reeds": ("가시갈대 덤불", True, True, ["rp"]), "f3a_reeds_low": ("가시갈대", False, True, ["rp", "mf"]),
+    "f3a_vines": ("꿈틀대는 가시덩굴", False, True, ["wf"]), "f3a_vine_tree": ("덩굴 감긴 가시나무", False, False, ["wf"]),
+    "f3a_orc_tent": ("오크 가죽 천막", True, False, ["og", "oe"]), "f3a_orc_totem": ("오크 토템", False, False, ["og", "oe"]),
+    "f3a_hide_rack": ("가죽 말림대", False, True, ["og", "oe"]), "f3a_head": ("부서진 석상 머리", False, True, ["tg", "tf", "rp"]),
+    "f3a_headless": ("목이 부러진 석상", False, True, ["tg", "tf"]), "f3a_column": ("쓰러진 기둥", False, True, ["tg", "tf"]),
+}
+
+
+def f3_stand_tiles():
+    out = []
+    for k, name in enumerate(F3_STAND):
+        nm, sight, cover, grounds = F3_STAND_USE[name]
+        for g in grounds:
+            t = {"id": "%s_%s" % (name.replace("f3a_", "f3s_"), g), "name_ko": nm, "kind": "wall", "walkable": False, "blocks_sight": sight,
+                 "face_px": 40, "colors": {"top": "#2a2826", "face": "#4a4640"},
+                 "art": {"stand": {"sheet": "res://assets/floor/f3/stand.webp", "cell": k, "cols": 10, "rows": 1, "size": [2, 3], "under": KIT_GROUND[g]}},
+                 "source": "placeholder", "notes": "3층 전용 소품(tools/f2_art/models_f3.py %s)" % name}
+            if cover:
+                t["cover"] = True
+            out.append(t)
+    return out
+
+
+# ── 큰 구조물을 3층 바닥 위에(FieldsRouteBuild.landmarks — 구조물마다 "prefix"/"unders"): <앞>_big_<종류>_<접미> · <앞>_block_<접미> ──
+BIG_F2D = ["mausoleum", "angel", "tower", "tree", "knight"]   # f2d/big.webp → 앞 "f3b"
+BIG_F2G = ["bigtree", "hut", "tent", "watch"]                # f2g/big.webp → 앞 "f3g"
+BIG_UNDER = {"f3b": {"w": "f3_witch_floor", "r": "f3_hill_rock", "h": "f3_hill_grass", "d": "f3_dusk_ground", "t": "f3_temple_grass", "f": "f3_temple_floor", "e": "f3_estuary_bank"},
+             "f3g": {"o": "f3_orc_earth", "h": "f3_hill_grass", "m": "f3_marsh_floor", "d": "f3_dusk_ground"}}
+
+
+def big_tiles():
+    out = []
+    for pre, kinds, src_pre, src_suf in (("f3b", BIG_F2D, "f2d", "g"), ("f3g", BIG_F2G, "f2g", "g")):
+        for suf, under in BIG_UNDER[pre].items():
+            for kind in kinds + ["block"]:
+                src = "%s_block_%s" % (src_pre, src_suf) if kind == "block" else "%s_big_%s_%s" % (src_pre, kind, src_suf)
+                tid = "%s_block_%s" % (pre, suf) if kind == "block" else "%s_big_%s_%s" % (pre, kind, suf)
+                out.append(prop(tid, src, under))
+    return out
+
+
 def main():
     global SRC
     data = json.load(open(PATH, encoding="utf-8"))
     SRC = {t["id"]: t for t in data}
-    new = tiles() + kit_tiles()
+    new = tiles() + kit_tiles() + f3_stand_tiles() + big_tiles()
     for t in new:
         if t.pop("ramp_art", False):
             t["art"]["ramp"] = True
     # 있는 글은 그대로 두고 맨 끝에 한 줄씩 붙인다(전에 붙인 f3_ 줄은 지운다 — 다른 타일의 줄 모양을 건드리지 않게)
     text = open(PATH, encoding="utf-8").read()
-    lines = [ln for ln in text.rstrip().split("\n") if not ln.startswith('  {"id": "f3_')]
+    lines = [ln for ln in text.rstrip().split("\n") if not ln.startswith('  {"id": "f3')]
     assert lines[-1].strip() == "]"
     body = "\n".join(lines[:-1]).rstrip().rstrip(",")
     text = body + ",\n" + ",\n".join("  " + json.dumps(t, ensure_ascii=False) for t in new) + "\n]\n"

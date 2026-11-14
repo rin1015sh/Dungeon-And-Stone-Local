@@ -6347,7 +6347,7 @@
             "count": 3
           },
           {
-            "tile": "f3_temple_head",
+            "tile": "f3s_head_tg",
             "count": 3
           }
         ]
@@ -6367,7 +6367,7 @@
             "count": 8
           },
           {
-            "tile": "f3_temple_head",
+            "tile": "f3s_head_tg",
             "count": 6
           },
           {
@@ -6452,7 +6452,7 @@
             "count": 6
           },
           {
-            "tile": "f3_temple_head",
+            "tile": "f3s_head_tg",
             "count": 5
           }
         ]
@@ -7046,6 +7046,295 @@
           {
             "tile": "f3_orc_tent_post",
             "count": 3
+          },
+          {
+            "tile": "f3k_oe_bf_palisade",
+            "at": [
+              [
+                31,
+                0
+              ],
+              [
+                31,
+                2
+              ],
+              [
+                31,
+                4
+              ],
+              [
+                30,
+                6
+              ],
+              [
+                30,
+                9
+              ],
+              [
+                29,
+                11
+              ],
+              [
+                28,
+                13
+              ],
+              [
+                22,
+                22
+              ],
+              [
+                21,
+                23
+              ],
+              [
+                19,
+                24
+              ],
+              [
+                17,
+                26
+              ],
+              [
+                16,
+                27
+              ],
+              [
+                14,
+                28
+              ],
+              [
+                12,
+                29
+              ],
+              [
+                10,
+                29
+              ],
+              [
+                7,
+                30
+              ],
+              [
+                5,
+                31
+              ],
+              [
+                3,
+                31
+              ],
+              [
+                1,
+                31
+              ],
+              [
+                -1,
+                31
+              ],
+              [
+                -3,
+                31
+              ],
+              [
+                -5,
+                31
+              ],
+              [
+                -7,
+                30
+              ],
+              [
+                -19,
+                24
+              ],
+              [
+                -21,
+                23
+              ],
+              [
+                -22,
+                22
+              ],
+              [
+                -24,
+                20
+              ],
+              [
+                -25,
+                18
+              ],
+              [
+                -26,
+                16
+              ],
+              [
+                -27,
+                15
+              ],
+              [
+                -28,
+                13
+              ],
+              [
+                -29,
+                11
+              ],
+              [
+                -30,
+                9
+              ],
+              [
+                -30,
+                6
+              ],
+              [
+                -31,
+                4
+              ],
+              [
+                -31,
+                2
+              ],
+              [
+                -31,
+                0
+              ],
+              [
+                -31,
+                -2
+              ],
+              [
+                -31,
+                -4
+              ],
+              [
+                -30,
+                -6
+              ],
+              [
+                -30,
+                -9
+              ],
+              [
+                -29,
+                -11
+              ],
+              [
+                -28,
+                -13
+              ],
+              [
+                -27,
+                -15
+              ],
+              [
+                -26,
+                -16
+              ],
+              [
+                -17,
+                -26
+              ],
+              [
+                -16,
+                -27
+              ],
+              [
+                -14,
+                -28
+              ],
+              [
+                -12,
+                -29
+              ],
+              [
+                -10,
+                -29
+              ],
+              [
+                -7,
+                -30
+              ],
+              [
+                -5,
+                -31
+              ],
+              [
+                -3,
+                -31
+              ],
+              [
+                -1,
+                -31
+              ],
+              [
+                1,
+                -31
+              ],
+              [
+                3,
+                -31
+              ],
+              [
+                5,
+                -31
+              ],
+              [
+                7,
+                -30
+              ],
+              [
+                10,
+                -29
+              ],
+              [
+                12,
+                -29
+              ],
+              [
+                14,
+                -28
+              ],
+              [
+                24,
+                -20
+              ],
+              [
+                25,
+                -18
+              ],
+              [
+                26,
+                -16
+              ],
+              [
+                27,
+                -15
+              ],
+              [
+                28,
+                -13
+              ],
+              [
+                29,
+                -11
+              ],
+              [
+                30,
+                -9
+              ],
+              [
+                30,
+                -6
+              ],
+              [
+                31,
+                -4
+              ],
+              [
+                31,
+                -2
+              ]
+            ]
           }
         ]
       },
@@ -7343,7 +7632,7 @@
         "tile": "f3_orc_ground",
         "props": [
           {
-            "tile": "f3k_og_bf_tent",
+            "tile": "f3s_orc_tent_og",
             "at": [
               [
                 -5,
@@ -7549,7 +7838,7 @@
         "tile": "f3_orc_ground",
         "props": [
           {
-            "tile": "f3k_og_bf_torture",
+            "tile": "f3s_hide_rack_og",
             "at": [
               [
                 -3,
@@ -7653,7 +7942,7 @@
         "tile": "f3_orc_ground",
         "props": [
           {
-            "tile": "f3k_og_gc_totem",
+            "tile": "f3s_orc_totem_og",
             "at": [
               [
                 -4,
@@ -8993,6 +9282,320 @@
               [
                 4,
                 6
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_heads",
+        "at": [
+          108,
+          100
+        ],
+        "r": 6,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_grass",
+        "props": [
+          {
+            "tile": "f3s_headless_tg",
+            "at": [
+              [
+                -4,
+                -3
+              ],
+              [
+                0,
+                -4
+              ],
+              [
+                4,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_head_tg",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                5,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_column_tg",
+            "at": [
+              [
+                -1,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wv0",
+        "at": [
+          322,
+          238
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3s_vine_tree_wf",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_vines_wf",
+            "at": [
+              [
+                0,
+                2
+              ],
+              [
+                -4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wv1",
+        "at": [
+          256,
+          318
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3s_vine_tree_wf",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_vines_wf",
+            "at": [
+              [
+                0,
+                2
+              ],
+              [
+                -4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wv2",
+        "at": [
+          153,
+          300
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3s_vine_tree_wf",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_vines_wf",
+            "at": [
+              [
+                0,
+                2
+              ],
+              [
+                -4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wv3",
+        "at": [
+          118,
+          202
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3s_vine_tree_wf",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_vines_wf",
+            "at": [
+              [
+                0,
+                2
+              ],
+              [
+                -4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wv4",
+        "at": [
+          184,
+          122
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3s_vine_tree_wf",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_vines_wf",
+            "at": [
+              [
+                0,
+                2
+              ],
+              [
+                -4,
+                2
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wv5",
+        "at": [
+          287,
+          140
+        ],
+        "r": 5,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3s_vine_tree_wf",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3s_vines_wf",
+            "at": [
+              [
+                0,
+                2
+              ],
+              [
+                -4,
+                2
+              ],
+              [
+                4,
+                3
               ]
             ]
           }
@@ -11655,215 +12258,6 @@
       {
         "points": [
           [
-            407,
-            384
-          ],
-          [
-            407,
-            388
-          ],
-          [
-            406,
-            393
-          ],
-          [
-            404,
-            397
-          ],
-          [
-            402,
-            400
-          ],
-          [
-            400,
-            404
-          ],
-          [
-            397,
-            407
-          ],
-          [
-            393,
-            410
-          ],
-          [
-            390,
-            412
-          ],
-          [
-            386,
-            413
-          ],
-          [
-            381,
-            415
-          ],
-          [
-            377,
-            415
-          ],
-          [
-            373,
-            415
-          ],
-          [
-            369,
-            414
-          ],
-          [
-            364,
-            413
-          ],
-          [
-            360,
-            411
-          ],
-          [
-            357,
-            408
-          ],
-          [
-            354,
-            406
-          ],
-          [
-            351,
-            402
-          ],
-          [
-            349,
-            399
-          ],
-          [
-            347,
-            395
-          ],
-          [
-            346,
-            390
-          ],
-          [
-            345,
-            386
-          ],
-          [
-            345,
-            382
-          ],
-          [
-            346,
-            378
-          ],
-          [
-            347,
-            373
-          ],
-          [
-            349,
-            369
-          ],
-          [
-            351,
-            366
-          ],
-          [
-            354,
-            362
-          ],
-          [
-            357,
-            360
-          ],
-          [
-            360,
-            357
-          ],
-          [
-            364,
-            355
-          ],
-          [
-            369,
-            354
-          ],
-          [
-            373,
-            353
-          ],
-          [
-            377,
-            353
-          ],
-          [
-            381,
-            353
-          ],
-          [
-            386,
-            355
-          ],
-          [
-            390,
-            356
-          ],
-          [
-            393,
-            358
-          ],
-          [
-            397,
-            361
-          ],
-          [
-            400,
-            364
-          ],
-          [
-            402,
-            368
-          ],
-          [
-            404,
-            371
-          ],
-          [
-            406,
-            375
-          ],
-          [
-            407,
-            380
-          ],
-          [
-            407,
-            384
-          ]
-        ],
-        "width": 2,
-        "tile": "f3_orc_palisade",
-        "wiggle": 0,
-        "gaps": [
-          [
-            0.3,
-            0.37
-          ],
-          [
-            0.6,
-            0.66
-          ],
-          [
-            0.07,
-            0.11
-          ],
-          [
-            0.86,
-            0.9
-          ]
-        ]
-      },
-      {
-        "points": [
-          [
             322,
             318
           ],
@@ -12111,7 +12505,7 @@
       },
       {
         "zone": "f3_temple",
-        "tile": "f3_temple_head",
+        "tile": "f3s_head_tg",
         "count": 60
       },
       {
@@ -12318,23 +12712,73 @@
         "zone": "f3_witch",
         "tile": "f3k_wf_bf_candles",
         "count": 15
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3s_reeds_rp",
+        "count": 140
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3s_reeds_low_rp",
+        "count": 120
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3s_head_rp",
+        "count": 6
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3s_reeds_low_mf",
+        "count": 40
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3s_vines_wf",
+        "count": 220
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3s_vine_tree_wf",
+        "count": 160
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3s_orc_tent_oe",
+        "count": 12
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3s_hide_rack_oe",
+        "count": 10
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3s_orc_totem_oe",
+        "count": 8
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3s_headless_tg",
+        "count": 25
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3s_column_tg",
+        "count": 20
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3s_head_tg",
+        "count": 20
       }
     ],
     "outer_props": [
       {
         "zone": "f3_witch",
         "tile": "f3_witch_twisted",
-        "count": 420,
-        "near": 10,
-        "clear": [
-          3,
-          19
-        ]
-      },
-      {
-        "zone": "f3_witch",
-        "tile": "f3_witch_pale",
-        "count": 140,
+        "count": 560,
         "near": 10,
         "clear": [
           3,
@@ -12619,6 +13063,278 @@
         "prefix": "f2d",
         "unders": {
           "s": "f2d_bridge"
+        }
+      },
+      {
+        "node": "wo1",
+        "at": [
+          0,
+          -5
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "w": "f3_witch_floor"
+        }
+      },
+      {
+        "node": "wo4",
+        "at": [
+          3,
+          -4
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "w": "f3_witch_floor"
+        }
+      },
+      {
+        "node": "wo7",
+        "at": [
+          -3,
+          -4
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "w": "f3_witch_floor"
+        }
+      },
+      {
+        "node": "wo10",
+        "at": [
+          0,
+          -5
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "w": "f3_witch_floor"
+        }
+      },
+      {
+        "node": "w_well",
+        "at": [
+          0,
+          -6
+        ],
+        "kind": "mausoleum",
+        "foot": [
+          4,
+          3
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "w": "f3_witch_floor"
+        }
+      },
+      {
+        "node": "st_post",
+        "at": [
+          0,
+          -5
+        ],
+        "kind": "knight",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "r": "f3_hill_rock"
+        }
+      },
+      {
+        "node": "st_lookout",
+        "at": [
+          -4,
+          -5
+        ],
+        "kind": "knight",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "r": "f3_hill_rock"
+        }
+      },
+      {
+        "node": "st_meadow",
+        "at": [
+          6,
+          -6
+        ],
+        "kind": "bigtree",
+        "foot": [
+          3,
+          2
+        ],
+        "prefix": "f3g",
+        "unders": {
+          "h": "f3_hill_grass"
+        }
+      },
+      {
+        "node": "du_pillars",
+        "at": [
+          0,
+          -7
+        ],
+        "kind": "tower",
+        "foot": [
+          4,
+          3
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "d": "f3_dusk_ground"
+        }
+      },
+      {
+        "node": "du_graves",
+        "at": [
+          0,
+          -6
+        ],
+        "kind": "angel",
+        "foot": [
+          3,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "d": "f3_dusk_ground"
+        }
+      },
+      {
+        "node": "es_west",
+        "at": [
+          0,
+          -4
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "e": "f3_estuary_bank"
+        }
+      },
+      {
+        "node": "es_east",
+        "at": [
+          0,
+          -4
+        ],
+        "kind": "tree",
+        "foot": [
+          2,
+          2
+        ],
+        "prefix": "f3b",
+        "unders": {
+          "e": "f3_estuary_bank"
+        }
+      },
+      {
+        "node": "or_watch",
+        "at": [
+          4,
+          -3
+        ],
+        "kind": "watch",
+        "foot": [
+          3,
+          2
+        ],
+        "prefix": "f3g",
+        "unders": {
+          "o": "f3_orc_earth"
+        }
+      },
+      {
+        "node": "or_hunt",
+        "at": [
+          -5,
+          -4
+        ],
+        "kind": "tent",
+        "foot": [
+          3,
+          2
+        ],
+        "prefix": "f3g",
+        "unders": {
+          "o": "f3_orc_earth"
+        }
+      },
+      {
+        "node": "or_armory",
+        "at": [
+          6,
+          4
+        ],
+        "kind": "hut",
+        "foot": [
+          4,
+          2
+        ],
+        "prefix": "f3g",
+        "unders": {
+          "o": "f3_orc_earth"
+        }
+      },
+      {
+        "node": "gt_west",
+        "at": [
+          0,
+          -5
+        ],
+        "kind": "bigtree",
+        "foot": [
+          3,
+          2
+        ],
+        "prefix": "f3g",
+        "unders": {
+          "m": "f3_marsh_floor"
+        }
+      },
+      {
+        "node": "gt_east",
+        "at": [
+          4,
+          -4
+        ],
+        "kind": "bigtree",
+        "foot": [
+          3,
+          2
+        ],
+        "prefix": "f3g",
+        "unders": {
+          "m": "f3_marsh_floor"
         }
       }
     ],
@@ -13587,6 +14303,62 @@
         ]
       },
       {
+        "name": "tp_heads",
+        "node": "tp_heads",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wv0",
+        "node": "wv0",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wv1",
+        "node": "wv1",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wv2",
+        "node": "wv2",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wv3",
+        "node": "wv3",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wv4",
+        "node": "wv4",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wv5",
+        "node": "wv5",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
         "name": "hut",
         "node": "hut",
         "at": [
@@ -14389,7 +15161,13 @@
       "wr4",
       "wr5",
       "w_gallows",
-      "w_well"
+      "w_well",
+      "wv0",
+      "wv1",
+      "wv2",
+      "wv3",
+      "wv4",
+      "wv5"
     ]
   },
   "witch_hut": {

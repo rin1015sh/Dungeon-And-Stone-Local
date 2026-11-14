@@ -23,7 +23,7 @@ JOBS = {
     "steelrock": ("f2d/dryearth", 0.6, 0.4, 0.8, 1.12),        # 강철바위 — 푸른 잿빛
     "marshfloor": ("f2g/forestfloor", 0.25, 0.4, 1.15, 1.05),  # 녹빛꼬리 습지 — 밝은 녹빛
     "reeds_floor": ("f2g/forestfloor", 0.12, 0.9, 0.8, 1.35),  # 성긴 갈대(헤치고 지나가는 땅 — 짚 · 줄기)
-    "witchroot": ("f2g/forestfloor", 0.8, 0.6, 1.0, 0.85),     # 마녀의 숲 엉킨 뿌리
+    "witchroot": ("f2g/forestfloor", 0.74, 0.5, 0.55, 0.7),     # 마녀의 숲 엉킨 뿌리
     "steelgrass": ("f2g/clearing", 0.28, 0.3, 0.9, 1.05),      # 언덕 풀밭
 }
 
