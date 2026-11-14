@@ -1,0 +1,32 @@
+{
+  "id": "statue_unanswered_prayer",
+  "name_ko": "응답 없는 기도",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste",
+      "chance": 0.45,
+      "to": "self"
+    },
+    {
+      "type": "apply_status",
+      "status": "iron_wall",
+      "chance": 0.45,
+      "to": "self"
+    },
+    {
+      "type": "apply_status",
+      "status": "rally",
+      "chance": 0.45,
+      "to": "self"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "원작: 성공하면 5등급 이하 무작위 정수를 잠시 얻는다 — 정수 일시 획득은 구현하지 않고 무작위 자기 강화(신속 · 철벽 · 격앙 각각 45%)로 대신했다"
+}

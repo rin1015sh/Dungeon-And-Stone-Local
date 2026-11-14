@@ -1,0 +1,24 @@
+{
+  "id": "woodman_root_snare",
+  "name_ko": "뿌리 옭아매기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.6,
+      "damage_type": "earth"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.4
+    }
+  ],
+  "source": "placeholder"
+}

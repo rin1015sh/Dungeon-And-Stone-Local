@@ -3,6 +3,13 @@
 > 2026-10-20 문서 정리 때 옛 `docs/PROGRESS.md`를 그대로 옮긴 것이다(내용은 바꾸지 않았다 — 안의 "다음 할 일"·"현재 상태 기준" 문장은 그날 기준으로 낡았다).
 > **지금 상태와 다음 할 일은 `docs/PROGRESS.md`가 정본이다.** 새 작업의 자세한 기록은 이 문서의 "## 작업 기록" 맨 위에 쓴다(PROGRESS.md에는 한 줄만).
 
+### 2026-11-14 3층 순례자의 길(F3 — `plans/floor3.md`)
+- **범위 / 기준 / 테스트**: 사용자 명세 "3층 '순례자의 길' 실제 개발"(필드 10곳 이상 · 출발점 넷 · 마녀의 숲 필드 효과 · 마녀의 눈 · 카나바로 · 마녀의 오두막 · 리아키스 뒤 설원 · 밤하늘 · 4층 포탈 · 몬스터) + 도중 "동굴형보다 오픈필드에 가깝게". 기준: 2층 네 길 각 포탈에서 서로 다른 출발점으로 오르고, 어디서든 중심 4층 포탈까지 걸어 닿으며, 마녀의 숲 · 오두막 · 밤하늘 · 오크 제단이 규칙대로. 테스트: `tests/test_floor3.gd`(10개) · check.sh · 캡처(지역 · 첨탑 · 밤하늘 · 전조 · 오두막 · 설원).
+- **지도**: `tools/f3_tiles.py`(3층 타일 90 — 1 · 2층 그림 재사용 + 소품 사본 밑 바닥만 3층) · `tools/f3_art.py`(재질 10장 다시 칠하기 → `assets/floor/f3`) · `tools/f3_layout.py`(440 × 470, 필드 11 + 오두막). 생성기에 오픈 필드용 `cover` 구간 · `strokes` · `zone_seeds`, 큰 구조물 `prefix`/`unders`, 출발점 여럿(`arrivals` · 구간 `dest` · `_arrive`). 2층은 바뀌지 않음(키가 없으면 예전대로). 생성 약 2초.
+- **규칙**: `PilgrimRoad`(묶음 — 지역 이름 · 구역 시야 · 환각 무리 조우 막기) · `WitchForest`(필드 효과 넷 · 마녀의 눈 단계 · 한곳 판정 · 전조 · 카나바로 1마리 · 환각 무리/나무 · 환청 · 방향치 걸음 틀기/기억 없음) · `WitchHut`(보랏빛 나무 확률 생성 · 정원 5 · 따로 된 방 · 안전지대 · 시신 제물 +8시간 · 만료 추방 · 리아키스 뒤 설원 · 난로 히든 피스 · `Progression.flags` 저장) · `SkyLanterns` · `OrcAltar`. 화면 `Floor3Overlay`(지역명 띠 · 첨탑 원경 · 밤하늘 · 전조 · 오두막 안개 · 남은 시간), 전투 통각강화 흔들림(`CombatScreen.pain`), HUD 지역 이름. 상태 5(f3_disoriented · f3_hallucination · f3_auditory · f3_pain · f3_witch_eye) + 아이콘, 새 아이템 `wrapped_corpse`(그림) · 이벤트 `f3_explorer_corpse`, 소리 별칭 8, 디버그 버튼 3, 캡처 `--up=a,b` · `--f3=…`.
+- **몬스터**: 별도 작업(아래 몬스터 절) — 3층 지역 표 · 지키는 무리 · 매복에 연결.
+- **남은 것**: `plans/floor3.md` §7(리아키스 · 4층 · 황혼/갈대 몬스터 · 히든 피스 보상 · 777 · 마녀의 눈 실시간 체감 · 3층 손그림 재질 · 전투 뒷그림 · 서적 · 시뮬레이터).
+
 ### 2026-11-11 2층 그림 마감(AM64)
 - **범위 / 기준 / 테스트**: 사용자 "2층 이미지가 각지고 타일 같다 — 1층 · 균열처럼 마감, 갈아엎어도 됨. 건물 · 상호작용 요소가 ppt 도형 같다. 렉도 걸리지 않게". 기준: 캡처에서 칸 격자 · 네모 경계 · 평면 도형이 보이지 않고 걷기 프레임이 전보다 나빠지지 않는다. 테스트: check.sh · 네 길 캡처(도착 자리 + `--cam`) · `--prof`.
 - **한 일**: ① 바닥 13재질을 4 × 4칸 넓은 그림으로(`tools/f2_art/ground.py` — 타일 `art.span`) ② 재질 번짐(`FloorFringe` · `floor_fringe.gdshader` · `fringe_mask.webp`, 타일 `art.fringe`) ③ 소품 · 포탈 칸이 둘레 바닥을 빌림 + 덫 · 금 덧그림 5장(`art.overlay`) ④ 소품 19 · 큰 구조물 16장을 거리장 덩어리 + 손그림 마감으로 다시(`tools/f2_art/props.py` · sdf · solid · mats · models_dead · models_forest · trees) ⑤ 소굴 · 사막 암벽 윗선 녹임(`rise.soft`) ⑥ 서 있는 소품은 그림 네모만 그림(`tools/sheet_bounds.py` → 시트 옆 json — 균열 시트 넷도), 번짐 띠도 덮는 폭만 ⑦ 둔덕 위 나무 밑이 검게 비던 것(둔덕 윗면을 그 칸에도) · 깎은 모서리 바닥 UV(`FloorChunk.floor_uv`). 옛 아틀라스 5장(snarepath · pitpath · spikepath · crackstone · crackearth) 지움, specs.json에서 파이썬이 그리는 바닥 뺌 · `props: "python"`.

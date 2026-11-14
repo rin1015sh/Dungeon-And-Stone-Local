@@ -1,11 +1,11 @@
 extends EffectHandler
 ## 순서 밀기(방패 밀치기): {"type": "push_back", "amount": 60, "chance": 0.5} — 대상의 행동 게이지를 amount만큼 깎는다(다음 차례가 늦어진다).
-## 전투 중에만(Battle이 gauge 사건을 반영한다).
+## 전투 중에만(Battle이 gauge 사건을 반영한다). 대상 패시브 push_immune(아이안트로 균형추)이면 밀리지 않는다.
 
 
 func apply(ctx: EffectContext, data: Dictionary) -> bool:
 	var t := ctx.subject()
-	if t == null or t.dead:
+	if t == null or t.dead or Passives.has_flag(t, "push_immune"):
 		return false
 	if data.has("chance") and not ctx.rng.chance(JsonUtil.get_float(data, "chance", 1.0)):
 		return false

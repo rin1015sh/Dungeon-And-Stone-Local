@@ -1,0 +1,19 @@
+{
+  "id": "hillguard_halberd",
+  "name_ko": "미늘창 휩쓸기",
+  "target": "enemy_row",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "slash"
+    }
+  ],
+  "source": "placeholder"
+}

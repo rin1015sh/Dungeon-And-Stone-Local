@@ -1,0 +1,24 @@
+{
+  "id": "falcon_steel_feathers",
+  "name_ko": "강철 깃털 흩뿌리기",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.55,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.2
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,70 @@
+{
+  "id": "witch_wraith",
+  "name_ko": "레이스",
+  "grade": 9,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_witch_forest"
+  ],
+  "type": "spirit",
+  "family": [
+    "wraith",
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 0.9,
+  "color": "#8a7aa0",
+  "immunities": [
+    "physical"
+  ],
+  "weaknesses": {
+    "holy": 1.75
+  },
+  "stats": {
+    "str": 3,
+    "agi": 13,
+    "p_res": 0,
+    "m_res": 14,
+    "int": 12
+  },
+  "resources": {
+    "hp": 28,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 4,
+    "damage_type": "dark"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "undead_moan",
+    "ai": {
+      "tenacity": 1.5
+    }
+  },
+  "skills": [
+    "corpse_flame"
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "corpse_flame",
+      "target": "without_status",
+      "target_status": "burn"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 영체류 · 물리 면역. 어둠 + 화염 [시체불꽃]. 2층의 원한령(wraith, 8등급)과 다른 항목"
+}

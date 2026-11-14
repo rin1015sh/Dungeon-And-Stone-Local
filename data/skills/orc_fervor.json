@@ -1,0 +1,18 @@
+{
+  "id": "orc_fervor",
+  "name_ko": "열광",
+  "target": "ally_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "orc_fervor"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "원작: 10초간 물리 내성 3배(상한 300) → 물리내성 +200%(×3) 2차례. 상한 300은 따로 두지 않았다(3층 몬스터 물리내성이 100 아래)"
+}

@@ -1,0 +1,104 @@
+{
+  "id": "f3_explorer_corpse",
+  "name_ko": "탐험가의 시체",
+  "type": "feature",
+  "tile": "feat_corpse",
+  "actions": [
+    {
+      "id": "search",
+      "name_ko": "뒤진다",
+      "limit": "once",
+      "line": "field.f3_corpse",
+      "give": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            1,
+            3
+          ],
+          "chance": 0.8
+        },
+        {
+          "item": "ration",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.25
+        },
+        {
+          "item": "leftovers",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.2
+        },
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.15
+        },
+        {
+          "item": "minor_potion",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.08
+        },
+        {
+          "item": "hunting_dagger",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.04
+        },
+        {
+          "item": "leather_gloves",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.03
+        },
+        {
+          "item": "explorer_tag",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.4
+        }
+      ],
+      "done": "field.corpse_done",
+      "fx": "dust",
+      "sound": "armor_rustle"
+    },
+    {
+      "id": "carry",
+      "name_ko": "수습한다",
+      "limit": "once",
+      "line": "field.f3_corpse_carry",
+      "give": [
+        {
+          "item": "wrapped_corpse",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 1.0
+        }
+      ],
+      "done": "field.f3_corpse_carried",
+      "fx": "dust",
+      "sound": "armor_rustle"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "3층(순례자의 길) 탐험가 시체 — 뒤지기 + 시신 수습(마녀의 오두막 모닥불 제물, WitchHut)"
+}

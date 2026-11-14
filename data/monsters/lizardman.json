@@ -1,0 +1,71 @@
+{
+  "id": "lizardman",
+  "name_ko": "리자드맨",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_greentail_marsh"
+  ],
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#5e6e42",
+  "immunities": [],
+  "weaknesses": {
+    "cold": 1.5
+  },
+  "stats": {
+    "str": 10,
+    "agi": 12,
+    "p_res": 16,
+    "m_res": 9,
+    "int": 5
+  },
+  "resources": {
+    "hp": 70,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 9,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      2,
+      3
+    ],
+    "alert_sfx": "beast_grunt",
+    "ai": {
+      "calls": true
+    }
+  },
+  "skills": [
+    "lizard_spear_thrust",
+    "liz_tail_whip"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "liz_tail_whip"
+    },
+    {
+      "if": "always",
+      "use": "lizard_spear_thrust"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 1층 균열의 아이언 리자드맨과 다른 몬스터"
+}

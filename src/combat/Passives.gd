@@ -35,6 +35,7 @@ extends RefCounted
 ##   death_effects [효과] — 쓰러지면 상대 전원에게(폭탄병 자폭). low_hp_summons {ratio, monsters} — 처음 비율 이하가 되면 한 번 소환(킹 슬라임 정수)
 ##   revive_once {ratio | hp, message} — 전투당 한 번, 쓰러질 피해를 받으면 그 생명력으로 버틴다(배리드언 30%, 정수판 1)
 ##   trap_watcher 비율 — 살아 있는 동안 그 균열 챕터 함정 발동 확률 ×(1+값)(수호자의 눈, RiftHazards)
+##   push_immune      true — 밀치기(push_back)에 밀리지 않는다(아이안트로 균형추)
 ##   걸린 상태 정의의 on_hit [효과]도 적중 시 대상에게 적용한다(독성부여)
 ##   meter_on_damaged에 damage_types·per_point를 주면 그 유형 피해량 × per_point(시체골렘 화염 누적)
 

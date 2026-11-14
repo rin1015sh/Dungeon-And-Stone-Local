@@ -1,0 +1,78 @@
+{
+  "id": "iantro",
+  "name_ko": "아이안트로",
+  "grade": 7,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_steel_hills"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "humanoid",
+  "size": 1.2,
+  "color": "#5a5248",
+  "immunities": [],
+  "weaknesses": {
+    "cold": 1.25
+  },
+  "stats": {
+    "str": 22,
+    "agi": 26,
+    "p_res": 44,
+    "m_res": 22,
+    "int": 8
+  },
+  "resources": {
+    "hp": 150,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 18,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      2,
+      3
+    ],
+    "alert_sfx": "beast_grunt",
+    "move_mult": 0.9,
+    "ai": {
+      "calls": true
+    }
+  },
+  "skills": [
+    "iantro_ram",
+    "iantro_mandible"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "iantro_mandible"
+    },
+    {
+      "if": "always",
+      "use": "iantro_ram"
+    }
+  ],
+  "passives": [
+    {
+      "id": "iantro_counterweight",
+      "name_ko": "균형추",
+      "push_immune": true
+    }
+  ],
+  "magic_stone_grade": 7,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 무리 생활(pack 2~3) — 7등급 무리라 생명력을 같은 등급 일반보다 조금 낮췄다. [균형추] = 밀치기(push_back) 면역(패시브 push_immune). 원작 묘사 없음 — 무거운 등딱지의 땅딸막한 짐승 사람으로 그렸다"
+}

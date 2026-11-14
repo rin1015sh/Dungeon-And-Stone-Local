@@ -1,0 +1,18 @@
+{
+  "id": "hillguard_brace",
+  "name_ko": "언덕 버티기",
+  "target": "self",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "iron_wall",
+      "to": "self"
+    }
+  ],
+  "source": "placeholder"
+}

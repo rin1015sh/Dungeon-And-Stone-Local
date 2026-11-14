@@ -1,0 +1,18 @@
+{
+  "id": "witch_lantern",
+  "name_ko": "마녀의 등불",
+  "target": "self",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "witch_lamp"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "원작: 자기 자신을 소환 — 같은 편 최대 수(combat.max_side_units)에서 막힌다"
+}

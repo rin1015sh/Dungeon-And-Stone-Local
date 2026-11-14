@@ -1,0 +1,24 @@
+{
+  "id": "frog_slime_spit",
+  "name_ko": "썩은 점액 뱉기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.7,
+      "damage_type": "poison"
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1792,5 +1792,85 @@
     },
     "source": "placeholder",
     "notes": "2층 새 몬스터(말라붙은 순례자 — 사막 독수리가 반응). 임시값"
+  },
+  {
+    "id": "orc_fervor",
+    "name_ko": "열광",
+    "kind": "buff",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "modifiers": [
+      {
+        "target": "p_res",
+        "percent": 2.0
+      }
+    ],
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "3층 오크 주술사 [열광](원작: 10초간 물리 내성 3배, 상한 300) — 2차례 물리내성 ×3"
+  },
+  {
+    "id": "charm",
+    "name_ko": "매혹",
+    "kind": "debuff",
+    "duration": {
+      "amount": 2,
+      "unit": "turn"
+    },
+    "misdirect": {
+      "chance": 0.5,
+      "power_mult": 1.0,
+      "ignore_defense": false
+    },
+    "mental": true,
+    "resist": {
+      "stats": [
+        "int"
+      ]
+    },
+    "source": "placeholder",
+    "notes": "3층 드라이어드 [매혹] — 홀려서 절반 확률로 제 편을 친다(혼란과 달리 늘 제 편 — misdirect 기본 pool). 임시값"
+  },
+  {
+    "id": "f3_disoriented",
+    "name_ko": "방향치",
+    "kind": "debuff",
+    "modifiers": [],
+    "source": "original",
+    "notes": "마녀의 숲 필드 효과(WitchForest — 3층): 지나온 길이 기억(지도 안개)에 남지 않고, 이따금 발걸음이 엉뚱한 쪽으로 틀어진다. 숲을 나가면 풀린다"
+  },
+  {
+    "id": "f3_hallucination",
+    "name_ko": "환각",
+    "kind": "debuff",
+    "modifiers": [],
+    "source": "original",
+    "notes": "마녀의 숲 필드 효과(WitchForest): 없는 무리 · 보랏빛 나무가 보였다가 다가가면 사라진다(충돌 · 길은 그대로)"
+  },
+  {
+    "id": "f3_auditory",
+    "name_ko": "환청",
+    "kind": "debuff",
+    "modifiers": [],
+    "source": "original",
+    "notes": "마녀의 숲 필드 효과(WitchForest): 불규칙한 소리 · 목소리(소리 키 — 실제 몬스터 자리와 무관)"
+  },
+  {
+    "id": "f3_pain",
+    "name_ko": "통각강화",
+    "kind": "debuff",
+    "modifiers": [],
+    "source": "original",
+    "notes": "마녀의 숲 필드 효과(WitchForest): 맞을 때 화면 흔들림 · 붉은 번쩍임이 커진다(통증의 체감). 피해량은 그대로(층 witch_forest.pain.damage_mult)"
+  },
+  {
+    "id": "f3_witch_eye",
+    "name_ko": "마녀의 눈",
+    "kind": "debuff",
+    "modifiers": [],
+    "source": "original",
+    "notes": "마녀의 숲에 든 지 12시간 — 단계가 오를수록 한곳에 머물 수 있는 시간이 짧아진다(WitchForest). 3층을 떠나면 풀린다"
   }
 ]

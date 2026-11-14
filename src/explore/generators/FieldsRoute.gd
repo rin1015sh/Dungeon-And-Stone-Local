@@ -60,23 +60,33 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 			FieldsRouteBuild.terrace(map, rng, nodes[id], td, JsonUtil.get_str(td, "tile", JsonUtil.get_str(zf, str(zone_of[id]), JsonUtil.get_str(t, "floor"))), walk, ramps)
 	FieldsRouteBuild.buildings(map, g, nodes, walk)
 	FieldsRouteBuild.stamps(map, g, nodes, walk)
+	FieldsRouteBuild.strokes(map, rng, g, walk)  # 트인 들판 위 장애물 줄(강 · 도랑 · 능선 · 갈대 · 방벽 — 3층 오픈 필드)
 	var ei := 0
 	for e: Dictionary in JsonUtil.get_array(g, "edges"):
 		var wt := JsonUtil.get_str(e, "walls")
 		if not wt.is_empty():
 			_walls(map, edge_cells[ei], wt, walk)
 		ei += 1
-	_zones_and_fill(map, nodes, zone_of, JsonUtil.get_dict(g, "zone_fill"), JsonUtil.get_str(t, "rise"), walk)
+	var seeds := _zone_seeds(g, nodes, zone_of)  # 구역 나누기 기준점(gen "zone_seeds" — 없으면 구간 전부)
+	_zones_and_fill(map, seeds[0], seeds[1], JsonUtil.get_dict(g, "zone_fill"), JsonUtil.get_str(t, "rise"), walk)
 	FieldsRouteBuild.ruins(map, rng, g, walk)
 	FieldsRouteBuild.levels(map, g, ramps)
+	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		if JsonUtil.get_str(nd, "kind") == "cover":  # 들판을 덮는 터(오픈 필드) — 이름 붙은 자리가 아니다(소품 · 표시 계산에서 뺀다)
+			nodes.erase(JsonUtil.get_str(nd, "id"))
+			radii.erase(JsonUtil.get_str(nd, "id"))
 	_tide_marks(map, g, nodes, radii, edge_cells)
 	FieldsRouteBuild.landmarks(map, g, nodes)  # 큰 구조물(소품보다 먼저 — 소품이 그 둘레를 피한다)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		if not nodes.has(JsonUtil.get_str(nd, "id")):
+			continue
 		var bt := JsonUtil.get_str(nd, "beacon")
 		if not bt.is_empty():
 			map.set_tile(nodes[JsonUtil.get_str(nd, "id")] + Vector2i(0, -int(float(radii[JsonUtil.get_str(nd, "id")]) * 0.5)), bt)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
 		var id := JsonUtil.get_str(nd, "id")
+		if not nodes.has(id):
+			continue
 		for pd: Dictionary in JsonUtil.get_array(nd, "props"):
 			_node_props(map, rng, nodes[id], float(radii[id]), pd)
 	for pd: Dictionary in JsonUtil.get_array(g, "props"):
@@ -87,14 +97,34 @@ static func build(map: FloorMap, db: GameDatabase, floor_def: Dictionary, g: Dic
 	FieldsRouteBuild.marks(map, g, nodes)
 	map.anchors["nodes"] = nodes
 	map.anchors["node_r"] = radii
+	var arrive := JsonUtil.get_str(floor_def, "_arrive")  # 출발점이 여럿인 층: 올라온 포탈 dest와 같은 "dest"의 arrival 구간(없으면 첫 arrival)
 	for nd: Dictionary in JsonUtil.get_array(g, "nodes"):
+		if not nodes.has(JsonUtil.get_str(nd, "id")):
+			continue
 		match JsonUtil.get_str(nd, "kind"):
 			"arrival":
-				map.entry = nodes[JsonUtil.get_str(nd, "id")]
+				if map.entry.x < 0 or (not arrive.is_empty() and JsonUtil.get_str(nd, "dest") == arrive):
+					map.entry = nodes[JsonUtil.get_str(nd, "id")]
 			"exit":
 				map.center = nodes[JsonUtil.get_str(nd, "id")]
 	if map.center.x < 0:
 		map.center = map.entry
+
+
+## 구역 기준점: gen "zone_seeds": [[x, y, 구역], …]가 있으면 그것(구간이 수백 개인 오픈 필드 — 칸마다 가까운 점 찾기를 줄인다), 없으면 구간 전부.
+static func _zone_seeds(g: Dictionary, nodes: Dictionary, zone_of: Dictionary) -> Array:
+	var list := JsonUtil.get_array(g, "zone_seeds")
+	if list.is_empty():
+		return [nodes, zone_of]
+	var pts := {}
+	var zs := {}
+	var k := 0
+	for sd: Variant in list:
+		var a: Array = sd
+		pts["seed%d" % k] = Vector2i(int(a[0]), int(a[1]))
+		zs["seed%d" % k] = str(a[2])
+		k += 1
+	return [pts, zs]
 
 
 ## 물때 칸(FieldTerrain): 길 · 구간 "tide": "flood" | "deep" — 그 길 칸 · 구간 반지름 안의 걸을 수 있는 낮은 땅(비탈 · 돌무더기 제외).

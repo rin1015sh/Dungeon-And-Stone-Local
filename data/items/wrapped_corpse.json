@@ -1,0 +1,16 @@
+{
+  "id": "wrapped_corpse",
+  "name_ko": "수습한 시신",
+  "category": "misc",
+  "size": [
+    2,
+    3
+  ],
+  "stack": 1,
+  "price": 0,
+  "color": "#8a7e6a",
+  "rarity": "common",
+  "desc_ko": "망토로 감싸 끈으로 묶은 탐험가의 몸. 누구의 것이었는지는 신원패만 안다.",
+  "source": "placeholder",
+  "notes": "3층 마녀의 오두막 모닥불 제물(WitchHut corpse_items — 원문 '시신'을 아이템으로). 3층 탐험가 시체에서 수습한다(f3_explorer_corpse)"
+}

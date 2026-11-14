@@ -58,6 +58,7 @@ var forks: RouteForks = null              ## 갈림길 규칙(route_spots.forks 
 var watch: RouteWatch = null            ## 망대 경보(route_spots.watch — 고블린 숲, FL22)
 var traits: MonsterTraits = MonsterTraits.new()  ## 몬스터 지도 행동(덫 깔기 · 망대로 달리기 · 돌진 · 까마귀 · 따라다니기 · 밤 지역 — 2층 새 몬스터)
 var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain — 물때 · 밤 안개 · 무른 땅 · 넋불 · 장례 행렬, FL14)
+var pilgrim: PilgrimRoad = null         ## 3층 규칙(지역 이름 · 마녀의 숲 · 오두막 · 밤하늘 · 오크 제단 — PilgrimRoad)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 5일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
@@ -136,6 +137,7 @@ func start() -> void:
 	maws = MawTraps.build(self)
 	goal = FloorGoal.setup(self)
 	ambush = RouteAmbush.build(self)
+	pilgrim = PilgrimRoad.setup(self)
 	if floor_def.has("grave_wake"):
 		grave = GraveWake.new()
 		grave.setup(self, JsonUtil.get_dict(floor_def, "grave_wake"))
@@ -200,6 +202,8 @@ func tick_realtime(real_sec: float) -> void:
 		blades.tick(self, realtime.frame_sec(self, real_sec))
 	if maws != null:
 		maws.tick(self, realtime.frame_sec(self, real_sec))
+	if pilgrim != null:
+		pilgrim.tick_real(self, realtime.frame_sec(self, real_sec))
 	realtime.tick(self, real_sec)
 	if _view_dirty and not ended:
 		_view_dirty = false
@@ -212,6 +216,8 @@ func move_dir(dir: Vector2, real_sec: float) -> void:
 	var sec := realtime.frame_sec(self, real_sec)
 	if dir == Vector2.ZERO or sec <= 0.0:
 		return
+	if pilgrim != null:
+		dir = pilgrim.steer(self, dir)  # 마녀의 숲 방향치 — 발걸음이 틀어진다
 	PlayerMotion.move_by(self, dir.normalized() * sec * realtime.hours_per_sec(self) / move_hours() * map.def_at(pos).move_mult)  # 진창은 느리다(타일 move_mult)
 
 
@@ -241,6 +247,8 @@ func enter_cell(cell: Vector2i) -> void:
 		watch.on_enter(self, cell)
 	if desert != null:
 		desert.on_enter(self, cell)
+	if pilgrim != null:
+		pilgrim.on_enter(self, cell)
 
 
 func wait(hours: float = -1.0) -> void:
@@ -347,6 +355,8 @@ func pass_time(hours: float) -> void:
 			terrain.update(self)
 		if desert != null:
 			desert.update(self, h)
+		if pilgrim != null:
+			pilgrim.update(self, h)
 	if not ended:
 		_check_closing()
 	if monsters_enabled and not ended and not in_combat and h > 0.0:
@@ -379,10 +389,13 @@ func refresh_view() -> void:
 		vision_m = terrain.vision_cap(self, vision_m)
 	if desert != null:
 		vision_m = desert.vision_cap(self, vision_m)  # 데쓰웜 모래 폭풍(LD15)
+	if pilgrim != null:
+		vision_m = pilgrim.vision(self, vision_m)  # 3층 구역 시야(언덕 멀리 · 갈대 가깝게) · 밤하늘
 	var radius := vision_m / _mpt
 	map.visible_now = Fov.compute(map, pos, radius)
 	var r := ceili(radius) + 1
-	map.remember_visible(Rect2i(pos - Vector2i(r, r), Vector2i(r * 2 + 1, r * 2 + 1)))
+	if pilgrim == null or pilgrim.remembers(self):  # 마녀의 숲 방향치 — 본 칸이 기억에 남지 않는다
+		map.remember_visible(Rect2i(pos - Vector2i(r, r), Vector2i(r * 2 + 1, r * 2 + 1)))
 	_discover()
 	view_changed.emit()
 
@@ -396,6 +409,8 @@ func relocate(to: Vector2i) -> bool:
 	fpos = Kinematics.center_of(to)
 	body_moved.emit(fpos)
 	moved.emit(from, to)
+	if pilgrim != null:
+		pilgrim.on_enter(self, to)  # 지역이 바뀌었을 수 있다(오두막 · 순간이동)
 	refresh_view()
 	_on_enter_cell(from)
 	return true
@@ -414,6 +429,8 @@ func engage(group: FieldMonsters.Group, party_first: bool) -> void:
 		return
 	if parties.meets(self, group):
 		return
+	if pilgrim != null and pilgrim.blocks(self, group):
+		return  # 환각 무리 — 닿자 사라졌다
 	first_side = side
 	in_combat = true
 	_rewarded = false

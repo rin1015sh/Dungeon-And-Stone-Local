@@ -133,3 +133,16 @@ static func spawn_and_engage(s: ExploreSession, monster_id: String = "") -> bool
 	s.monsters.changed.emit()
 	s.engage(g, true)
 	return true
+
+
+## 3층: 보랏빛 나무(마녀의 오두막 입구)를 하나 세우고 그 곁에 선다.
+static func f3_hut_tree(s: ExploreSession) -> bool:
+	if s.pilgrim == null or s.pilgrim.hut == null:
+		return false
+	var at := s.pilgrim.hut.spawn(s)
+	if at.x < 0 and not s.pilgrim.hut.entrances.is_empty():
+		at = s.pilgrim.hut.entrances[0]["pos"]
+	for d: Vector2i in [Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP]:
+		if at.x >= 0 and s.relocate(at + d):
+			return true
+	return false

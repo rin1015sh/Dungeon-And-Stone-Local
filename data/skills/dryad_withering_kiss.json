@@ -1,0 +1,20 @@
+{
+  "id": "dryad_withering_kiss",
+  "name_ko": "시드는 입맞춤",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.9,
+      "damage_type": "dark",
+      "drain": 0.3
+    }
+  ],
+  "source": "placeholder"
+}

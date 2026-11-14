@@ -1,0 +1,30 @@
+{
+  "id": "fairy_dust",
+  "name_ko": "환각 가루",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.35,
+      "damage_type": "poison"
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.4
+    },
+    {
+      "type": "apply_status",
+      "status": "confusion",
+      "chance": 0.12
+    }
+  ],
+  "source": "placeholder",
+  "notes": "원작: 마약 성분 독가루 → 독 + 낮은 확률 혼란"
+}

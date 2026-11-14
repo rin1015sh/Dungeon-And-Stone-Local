@@ -9,12 +9,13 @@ extends RefCounted
 ## 오토로드를 쓰지 않는다(도서관 서적 floor는 Main이 세션을 띄울 때 센다).
 
 
-## 포탈 dest에 도착하는 층 id(층 JSON "arrival"). 없으면 "".
+## 포탈 dest에 도착하는 층 id(층 JSON "arrival" — 출발점이 여럿인 층(3층)은 "arrivals" 중 하나). 없으면 "".
 static func floor_for(db: GameDatabase, dest: String) -> String:
 	if dest.is_empty():
 		return ""
 	for fid: String in db.get_collection("floors"):
-		if JsonUtil.get_str(db.get_entry("floors", fid), "arrival") == dest:
+		var fd := db.get_entry("floors", fid)
+		if JsonUtil.get_str(fd, "arrival") == dest or JsonUtil.get_array(fd, "arrivals").has(dest):
 			return fid
 	return ""
 
@@ -25,6 +26,9 @@ static func up(s: ExploreSession, portal: Dictionary) -> ExploreSession:
 	if fid.is_empty():
 		return null
 	var fdef := s.db.get_entry("floors", fid)
+	if JsonUtil.get_array(fdef, "arrivals").size() > 1:  # 출발점이 여럿(3층 — 길마다 다른 필드): 생성기가 그 dest의 구간에서 시작한다
+		fdef = fdef.duplicate()
+		fdef["_arrive"] = str(portal.get("dest", ""))
 	var gen := ContentRegistries.new().generator(JsonUtil.get_str(fdef, "generator"))
 	if gen == null:
 		return null

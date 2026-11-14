@@ -1,0 +1,78 @@
+{
+  "id": "orc_lord",
+  "name_ko": "오크 로드",
+  "grade": 2,
+  "rank": "variant_guardian",
+  "floor": 3,
+  "floor_tags": [
+    "f3_orc_camp"
+  ],
+  "type": "body",
+  "family": [
+    "orc",
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.7,
+  "color": "#46583a",
+  "immunities": [],
+  "weaknesses": {},
+  "stats": {
+    "str": 64,
+    "agi": 56,
+    "p_res": 88,
+    "m_res": 28,
+    "int": 26
+  },
+  "resources": {
+    "hp": 9500,
+    "soul": 200
+  },
+  "natural_weapon": {
+    "attack": 52,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 7.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "boss_reveal",
+    "ai": {
+      "tenacity": 3.0
+    }
+  },
+  "skills": [
+    "orc_great_sweep",
+    "orc_crushing_blow",
+    "orc_war_cry"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "orc_war_cry"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "orc_great_sweep"
+    },
+    {
+      "if": "always",
+      "use": "orc_crushing_blow"
+    }
+  ],
+  "passives": [],
+  "essence_drops": [],
+  "status_immune": [
+    "fear",
+    "stun"
+  ],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 히든 보스(오크 히어로 의식에서 드물게). 능력 · 수치는 원작에 정해지지 않았다 — 자리만 잡은 임시 항목(능력 미정). 원작 메모: 항마력이 낮은 편 → 마법내성을 일부러 낮게. 2등급 마석 아이템이 없어 magic_stone_grade를 비워 뒀다(만들면 2). 보스 패턴 없음"
+}

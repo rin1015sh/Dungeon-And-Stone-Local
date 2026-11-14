@@ -1,0 +1,24 @@
+{
+  "id": "statue_warp",
+  "name_ko": "뒤틀린 기도문",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.9,
+      "damage_type": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "daze",
+      "chance": 0.3
+    }
+  ],
+  "source": "placeholder"
+}

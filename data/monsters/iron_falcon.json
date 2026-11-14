@@ -1,0 +1,77 @@
+{
+  "id": "iron_falcon",
+  "name_ko": "아이언팔콘",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_steel_hills"
+  ],
+  "type": "body",
+  "family": [
+    "beast",
+    "flying"
+  ],
+  "shape": "beast",
+  "size": 0.8,
+  "color": "#6e727c",
+  "immunities": [],
+  "weaknesses": {
+    "lightning": 1.5
+  },
+  "stats": {
+    "str": 8,
+    "agi": 18,
+    "p_res": 15,
+    "m_res": 6,
+    "int": 3
+  },
+  "resources": {
+    "hp": 58,
+    "soul": 14
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      2
+    ],
+    "alert_sfx": "vulture_cry",
+    "move_mult": 1.4
+  },
+  "skills": [
+    "falcon_dive",
+    "falcon_steel_feathers"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "falcon_steel_feathers"
+    },
+    {
+      "if": "always",
+      "use": "falcon_dive",
+      "target": "lowest_hp"
+    }
+  ],
+  "passives": [
+    {
+      "id": "falcon_swoop",
+      "name_ko": "높은 하늘",
+      "start_gauge": 30
+    }
+  ],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 강철 깃털의 매. 하늘에서 먼저 덮친다(start_gauge)"
+}

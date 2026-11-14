@@ -1,0 +1,17 @@
+{
+  "id": "canavaro_hound",
+  "name_ko": "하운드",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 5,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "canavaro_hound"
+    }
+  ],
+  "source": "placeholder"
+}

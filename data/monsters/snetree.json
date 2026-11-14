@@ -1,0 +1,75 @@
+{
+  "id": "snetree",
+  "name_ko": "스네트리",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_witch_forest"
+  ],
+  "type": "body",
+  "family": [
+    "plant"
+  ],
+  "shape": "blob",
+  "size": 1.5,
+  "color": "#5a4a32",
+  "immunities": [],
+  "weaknesses": {
+    "fire": 1.5,
+    "slash": 1.25
+  },
+  "stats": {
+    "str": 10,
+    "agi": 6,
+    "p_res": 18,
+    "m_res": 8,
+    "int": 4
+  },
+  "resources": {
+    "hp": 90,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "crumble",
+    "move_mult": 0.4,
+    "ai": {
+      "tenacity": 0.5
+    }
+  },
+  "skills": [
+    "snetree_branch_sweep",
+    "snetree_thorn_bind"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "snetree_branch_sweep"
+    },
+    {
+      "if": "always",
+      "use": "snetree_thorn_bind",
+      "target": "without_status",
+      "target_status": "snare"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 뿌리내린 채 움직이는 나무 · 촉수 같은 가지. 물리로 잡을 수 있다(면역 없음)"
+}

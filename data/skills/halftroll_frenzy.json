@@ -1,0 +1,19 @@
+{
+  "id": "halftroll_frenzy",
+  "name_ko": "광분",
+  "target": "self",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 6,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "troll_frenzy",
+      "to": "self"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "트롤의 광분 상태를 그대로 쓴다(통증 무시 + 육체 상승, 공포 · 기절 면역)"
+}

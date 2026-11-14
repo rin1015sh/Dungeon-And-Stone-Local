@@ -27,6 +27,8 @@ static func run(s: ExploreSession) -> void:
 		return
 	if s.features.interact(s):
 		return
+	if s.pilgrim != null and s.pilgrim.interact(s):  # 3층 — 보랏빛 나무 · 오두막 모닥불 · 난로 · 안개 · 오크 제단
+		return
 	if RiftLoot.run(s):
 		return
 	for d in FloorMap.DIRS4:
@@ -54,6 +56,8 @@ static func target_name(s: ExploreSession) -> String:
 	var feature := s.features.target_name(s)
 	if not feature.is_empty():
 		return feature
+	if s.pilgrim != null and not s.pilgrim.target_name(s).is_empty():
+		return s.pilgrim.target_name(s)
 	var loot := RiftLoot.target_name(s)
 	if not loot.is_empty():
 		return loot

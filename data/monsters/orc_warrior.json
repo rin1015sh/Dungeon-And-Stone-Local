@@ -1,0 +1,69 @@
+{
+  "id": "orc_warrior",
+  "name_ko": "오크 전사",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_orc_camp"
+  ],
+  "type": "body",
+  "family": [
+    "orc",
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.2,
+  "color": "#6a8048",
+  "immunities": [],
+  "weaknesses": {},
+  "stats": {
+    "str": 12,
+    "agi": 9,
+    "p_res": 17,
+    "m_res": 8,
+    "int": 4
+  },
+  "resources": {
+    "hp": 80,
+    "soul": 20
+  },
+  "natural_weapon": {
+    "attack": 10,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      2,
+      3
+    ],
+    "alert_sfx": "raider_shout",
+    "ai": {
+      "calls": true
+    }
+  },
+  "skills": [
+    "orc_cleave",
+    "orc_war_cry"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "orc_war_cry"
+    },
+    {
+      "if": "always",
+      "use": "orc_cleave"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 피지컬 전사"
+}

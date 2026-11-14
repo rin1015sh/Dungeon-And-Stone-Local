@@ -1,0 +1,19 @@
+{
+  "id": "snetree_branch_sweep",
+  "name_ko": "가지 휘두르기",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.55,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

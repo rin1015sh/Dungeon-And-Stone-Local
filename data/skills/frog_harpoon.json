@@ -1,0 +1,26 @@
+{
+  "id": "frog_harpoon",
+  "name_ko": "작살 던지기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "pierce",
+      "ranged": true,
+      "accuracy": 95
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.3
+    }
+  ],
+  "source": "placeholder"
+}

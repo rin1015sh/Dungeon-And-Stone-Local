@@ -69,6 +69,11 @@ func _ready() -> void:
 	_btn(v, Strings.t("debug.give_essence"), _give_essence)
 	_btn(v, Strings.t("debug.summon_lord"), func() -> void: _session.lord.summon(_session))
 	_btn(v, Strings.t("debug.add_companion"), _add_companion)
+	if _session.pilgrim != null:  # 3층(순례자의 길): 보랏빛 나무 곁으로 · 리아키스를 쓰러뜨린 것으로 · 밤하늘 지금
+		_btn(v, Strings.t("debug.f3_hut_tree"), func() -> void: ExploreDebug.f3_hut_tree(_session))
+		_btn(v, Strings.t("debug.f3_riakis"), func() -> void: _session.player.progression.lords_defeated["riakis"] = true)
+		if _session.pilgrim.sky != null:
+			_btn(v, Strings.t("debug.f3_sky"), func() -> void: _session.pilgrim.sky.start(_session))
 	_add_rift_row(v)
 	for key: String in ["debug.portal_open_locked"]:
 		later.append(Strings.t(key))

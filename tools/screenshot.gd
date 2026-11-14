@@ -122,19 +122,20 @@ func _run() -> void:
 				explore = await _enter_rift(explore)
 			get_tree().quit(await ShotList.run(self, explore, str(_args["shots"]), str(_args["out"])))
 			return
-		if _args.has("up"):  # --up=<포탈 dest>(예 floor2_south): 그 1층 포탈로 올라가 위층 도착 자리에서 찍는다(FloorTravel)
-			var ps := explore.session
-			for p: Dictionary in ps.map.portals:
-				if str(p.get("dest", "")) == str(_args["up"]):
-					ps.relocate(p["pos"])
-					ps.interact()
-			for f in 60:
-				await get_tree().process_frame
-				if _main.current_screen() is ExploreScreen and (_main.current_screen() as ExploreScreen).session != ps:
-					break
-			await _frames(4)
-			explore = _main.current_screen() as ExploreScreen
-			explore.dialog().clear()
+		if _args.has("up"):  # --up=<포탈 dest>[,<다음 dest>…](예 floor2_south 또는 floor2_north,floor3_from_forest): 그 포탈로 차례로 올라가 위층 도착 자리에서 찍는다(FloorTravel)
+			for dest: String in str(_args["up"]).split(","):
+				var ps := explore.session
+				for p: Dictionary in ps.map.portals:
+					if str(p.get("dest", "")) == dest:
+						ps.relocate(p["pos"])
+						ps.interact()
+				for f in 120:
+					await get_tree().process_frame
+					if _main.current_screen() is ExploreScreen and (_main.current_screen() as ExploreScreen).session != ps:
+						break
+				await _frames(4)
+				explore = _main.current_screen() as ExploreScreen
+				explore.dialog().clear()
 			print("[up] %s" % JsonUtil.get_str(explore.session.floor_def, "id"))
 			if _args.has("nomon"):  # --nomon: 위층 몬스터를 모두 치운다(장식 · 지형만 찍기 — 순간이동한 자리에서 전투가 걸리지 않게)
 				explore.session.monsters.groups.clear()
@@ -172,6 +173,8 @@ func _run() -> void:
 					cam.top_level = true
 					cam.global_position = Vector2(cxy[0].to_float(), cxy[1].to_float()) * float(explore.session.db.render["view"]["floor_tile_px"][0])
 				await _frames(4)
+		if _args.has("f3"):  # --f3=sky[=초]|hut|winter|omen|witch: 3층 연출(Floor3Overlay) — 밤하늘 중간 · 오두막 안 · 리아키스 뒤 설원 · 카나바로 전조 · 마녀의 숲 안
+			await _floor3(explore, str(_args["f3"]))
 		if _args.has("torch"):
 			explore.session.use_category("light")
 		var steps := str(_args["walk"]).to_int()
@@ -850,3 +853,53 @@ func _profile_walk(sec: float) -> void:
 	print("프레임 %d · 평균 %.1f ms · 95%% %.1f ms · 99%% %.1f ms · 최대 %.1f ms · 16.7ms 넘는 프레임 %d · 50ms 넘는 프레임 %d" % [times.size(), avg,
 		times[int(times.size() * 0.95)], times[int(times.size() * 0.99)], times.back(), hitch, slow])
 	print("그리기 호출 %d · 노드 %d · 처리 %.1f ms" % [Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME), Performance.get_monitor(Performance.OBJECT_NODE_COUNT), Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0])
+
+
+
+## --f3: 3층 장면을 만든다(test_floor3과 같은 규칙 호출).
+func _floor3(explore: ExploreScreen, what: String) -> void:
+	var s := explore.session
+	if s.pilgrim == null:
+		return
+	var find := func(pred: Callable) -> Vector2i:
+		for i in s.map.tiles.size():
+			if pred.call(s.map.pos_of(i)):
+				return s.map.pos_of(i)
+		return Vector2i(-1, -1)
+	match what:
+		"sky", "sky_steel":
+			if what == "sky_steel":
+				s.relocate((s.map.anchors.get("nodes", {}) as Dictionary).get("st_crest", s.pos))
+			if s.pilgrim.sky != null:
+				s.pilgrim.sky.start(s)
+				s.pilgrim.sky.tick_real(s, str(_args.get("sky_t", "24")).to_float())
+		"hut", "winter":
+			if what == "winter":
+				s.player.progression.lords_defeated["riakis"] = true
+			var tree := s.pilgrim.hut.spawn(s)
+			for d: Vector2i in [Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP]:
+				if s.relocate(tree + d):
+					break
+			s.interact()
+			var marks: Dictionary = s.map.anchors.get("marks", {})
+			if _args.has("hut_at"):
+				s.relocate(marks.get(str(_args["hut_at"]), s.pos))
+		"omen", "witch":
+			var w: Vector2i = find.call(func(p: Vector2i) -> bool: return s.map.zone_at(p) == "f3_witch" and s.map.is_walkable(p) and Vector2(p - s.map.center).length() > 85.0)
+			s.relocate(w)
+			s.pass_time(0.02)
+			if what == "omen":
+				s.pilgrim.witch.set("_hunter_ready", 1.0e9)  # 카나바로는 부르지 않고 전조만 보인다
+				s.pilgrim.witch.dwell = s.pilgrim.witch.wait_hours() * 0.95
+		_:
+			var nodes: Dictionary = s.map.anchors.get("nodes", {})
+			var z := Vector2i(-1, -1)
+			for id: String in nodes:  # 그 구역의 이름 붙은 구간 가운데(가장자리가 아니라 필드 안쪽)
+				if z.x < 0 and s.map.zone_at(nodes[id]) == what and s.map.is_walkable(nodes[id]):
+					z = nodes[id]
+			if _args.has("node"):
+				z = nodes.get(str(_args["node"]), z)
+			if z.x >= 0:
+				s.relocate(z)
+	s.refresh_view()
+	await _frames(30)

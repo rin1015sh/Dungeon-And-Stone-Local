@@ -1,0 +1,21 @@
+{
+  "id": "orc_heavy_arrow",
+  "name_ko": "무거운 화살",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.3,
+      "damage_type": "pierce",
+      "ranged": true,
+      "accuracy": 100
+    }
+  ],
+  "source": "placeholder"
+}

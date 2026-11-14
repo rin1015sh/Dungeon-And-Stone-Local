@@ -1,0 +1,19 @@
+{
+  "id": "mutant_burst",
+  "name_ko": "마력 폭주",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.5,
+      "damage_type": "lightning"
+    }
+  ],
+  "source": "placeholder"
+}

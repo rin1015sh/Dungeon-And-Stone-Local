@@ -1,0 +1,18 @@
+{
+  "id": "dryad_charm",
+  "name_ko": "매혹",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "charm",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder"
+}

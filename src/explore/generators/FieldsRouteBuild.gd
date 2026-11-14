@@ -368,16 +368,18 @@ static func _open9(map: FloorMap, q: Vector2i) -> bool:  # 입 그림 폭(가로
 
 
 ## 큰 구조물(FL16 — 사용자 "커다란 구조물 · 토핑 뿌린 느낌"): gen "landmarks": [{"node", "at": [dx, dy](발 줄 가운데), "kind", "foot": [폭, 깊이]}],
-## "landmarks_under": {접미: 바닥 타일}. 발 칸(맨 아래 줄 가운데)에 큰 그림 타일 <앞>_big_<kind>_<접미>, 발자리 나머지는 <앞>_block_<접미>(그림 없음). <앞> = "landmarks_prefix"(기본 f2d).
+## "landmarks_under": {접미: 바닥 타일}(구조물마다 "prefix" · "unders"로 바꿀 수 있다 — 3층은 두 층의 구조물을 섞는다). 발 칸(맨 아래 줄 가운데)에 큰 그림 타일 <앞>_big_<kind>_<접미>, 발자리 나머지는 <앞>_block_<접미>(그림 없음). <앞> = "landmarks_prefix"(기본 f2d).
 ## 자리는 발자리와 둘레 한 칸이 모두 걸을 수 있는 칸(비탈 아님)이어야 — 아니면 4칸 안에서 가장 가까운 그런 자리(길을 막지 않는다).
 ## 밑 바닥 = 발 칸 바닥과 같은 그림(FieldsRoute.under_ok)인 접미, 없으면 건너뛴다.
 static func landmarks(map: FloorMap, g: Dictionary, nodes: Dictionary) -> void:
-	var unders := JsonUtil.get_dict(g, "landmarks_under")
-	var pre := JsonUtil.get_str(g, "landmarks_prefix", "f2d")  # 타일 이름 앞(고블린 숲 f2g — FL21)
+	var unders0 := JsonUtil.get_dict(g, "landmarks_under")
+	var pre0 := JsonUtil.get_str(g, "landmarks_prefix", "f2d")  # 타일 이름 앞(고블린 숲 f2g — FL21)
 	for d: Dictionary in JsonUtil.get_array(g, "landmarks"):
 		var n: Vector2i = nodes.get(JsonUtil.get_str(d, "node"), Vector2i(-1, -1))
 		if n.x < 0:
 			continue
+		var pre := JsonUtil.get_str(d, "prefix", pre0)
+		var unders: Dictionary = JsonUtil.get_dict(d, "unders") if d.has("unders") else unders0
 		var at := JsonUtil.get_array(d, "at")
 		var ft := JsonUtil.get_array(d, "foot")
 		var fw := int(ft[0])
@@ -412,3 +414,45 @@ static func _foot_ok(map: FloorMap, c: Vector2i, fw: int, fd: int) -> bool:
 			if not map.in_bounds(q) or not map.is_walkable(q) or map.def_at(q).ramp:
 				return false
 	return true
+
+
+## 장애물 줄(3층 오픈 필드 — 트인 들판 위에 강 · 도랑 · 능선 · 갈대 · 방벽을 긋는다): gen "strokes": [{"points": [[x, y], …](지도 칸),
+## "width", "tile", "wiggle"(굽이 폭, 기본 0), "gaps": [[t0, t1], …](0~1 — 그 구간은 긋지 않는다: 여울 · 문)}].
+## 구간 터를 판 뒤에 긋는다. 걸을 수 있는 타일은 판 칸, 아니면 벽 칸(메움으로 덮지 않는다). 지도 가장자리 3칸은 건드리지 않는다.
+static func strokes(map: FloorMap, rng: Rng, g: Dictionary, walk: PackedByteArray) -> void:
+	for sd: Dictionary in JsonUtil.get_array(g, "strokes"):
+		var pts := JsonUtil.get_array(sd, "points")
+		if pts.size() < 2:
+			continue
+		var ti := map.index_of(JsonUtil.get_str(sd, "tile"))
+		var mark := 1 if map.defs[ti].walkable else 2
+		var r := JsonUtil.get_float(sd, "width", 3.0) * 0.5
+		var wig := JsonUtil.get_float(sd, "wiggle", 0.0)
+		var gaps := JsonUtil.get_array(sd, "gaps")
+		var total := 0.0
+		for i in range(1, pts.size()):
+			total += Vector2(float(pts[i][0]) - float(pts[i - 1][0]), float(pts[i][1]) - float(pts[i - 1][1])).length()
+		var p1 := rng.randf_range(0.0, TAU)
+		var run := 0.0
+		for i in range(1, pts.size()):
+			var a := Vector2(float(pts[i - 1][0]), float(pts[i - 1][1]))
+			var b := Vector2(float(pts[i][0]), float(pts[i][1]))
+			var n := maxi(1, ceili(a.distance_to(b)))
+			var side := (b - a).normalized().orthogonal()
+			for k in n + 1:
+				var u := float(k) / float(n)
+				var t := (run + a.distance_to(b) * u) / maxf(1.0, total)
+				var skip := false
+				for gp: Variant in gaps:
+					skip = skip or (t >= float(gp[0]) and t <= float(gp[1]))
+				if skip:
+					continue
+				var c := a.lerp(b, u) + side * sin(t * total * 0.12 + p1) * wig
+				var ri := ceili(r)
+				for y in range(int(c.y) - ri, int(c.y) + ri + 1):
+					for x in range(int(c.x) - ri, int(c.x) + ri + 1):
+						var q := Vector2i(x, y)
+						if Vector2(q).distance_to(c) <= r and _ok(map, q):
+							map.tiles[map.idx(q)] = ti
+							walk[map.idx(q)] = mark
+			run += a.distance_to(b)

@@ -1,0 +1,24 @@
+{
+  "id": "dirouter_misguide",
+  "name_ko": "길 비틀기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.7,
+      "damage_type": "dark"
+    },
+    {
+      "type": "apply_status",
+      "status": "confusion",
+      "chance": 0.35
+    }
+  ],
+  "source": "placeholder"
+}

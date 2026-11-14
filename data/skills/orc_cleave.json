@@ -1,0 +1,19 @@
+{
+  "id": "orc_cleave",
+  "name_ko": "오크 도끼질",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.3,
+      "damage_type": "slash"
+    }
+  ],
+  "source": "placeholder"
+}

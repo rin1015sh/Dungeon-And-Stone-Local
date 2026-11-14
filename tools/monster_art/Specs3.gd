@@ -2,6 +2,9 @@ extends RefCounted
 ## 몬스터 그림 설계 3부: 2층 새 몬스터 15종(docs/plans/floor2_monsters.md — 사용자 2026-11-08). 모습은 이름 · 데이터 색 · 크기에서 정했다(창작).
 
 
+const Specs4 := preload("res://tools/monster_art/Specs4.gd")
+
+
 static func C(hex: String) -> Color:
 	return Color(hex)
 
@@ -78,4 +81,4 @@ static func spec_of(id: String) -> Dictionary:
 				"pose": {"hunch": 0.45, "knee": 0.2, "arm_l": "staff", "arm_r": "hang", "sh": 0.11, "weight": -0.3},
 				"body": {"build": "bones", "hands": "claw"}, "head": {"type": "gaunt", "mouth": "open", "hood": C("#8a7656")},
 				"kit": {"robe": C("#9a8460"), "torn": 0.7, "wraps": C("#c8b890"), "wraps_amt": 0.5, "weapon": "staff", "staff_c": C("#5a4630")}}
-	return {}
+	return Specs4.spec_of(id)

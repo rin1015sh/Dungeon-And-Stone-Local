@@ -1,0 +1,19 @@
+{
+  "id": "orc_great_sweep",
+  "name_ko": "대전사의 휩쓸기",
+  "target": "enemy_row",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.0,
+      "damage_type": "slash"
+    }
+  ],
+  "source": "placeholder"
+}

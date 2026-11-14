@@ -1,0 +1,28 @@
+{
+  "id": "lamp_will_o_flame",
+  "name_ko": "도깨비불",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.8,
+      "damage_type": "fire",
+      "rider": {
+        "damage_type": "dark",
+        "ratio": 0.3
+      }
+    },
+    {
+      "type": "apply_status",
+      "status": "burn",
+      "chance": 0.25
+    }
+  ],
+  "source": "placeholder"
+}

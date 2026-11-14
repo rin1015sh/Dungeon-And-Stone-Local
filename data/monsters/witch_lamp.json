@@ -1,0 +1,72 @@
+{
+  "id": "witch_lamp",
+  "name_ko": "위치스램프",
+  "grade": 9,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_witch_forest"
+  ],
+  "type": "spirit",
+  "family": [
+    "phantasm"
+  ],
+  "shape": "blob",
+  "size": 0.5,
+  "color": "#e0a040",
+  "immunities": [
+    "physical"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "cold": 1.25
+  },
+  "stats": {
+    "str": 2,
+    "agi": 15,
+    "p_res": 0,
+    "m_res": 12,
+    "int": 11
+  },
+  "resources": {
+    "hp": 20,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 3,
+    "damage_type": "fire"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "undead_moan",
+    "move_mult": 1.2
+  },
+  "skills": [
+    "witch_lantern",
+    "lamp_will_o_flame"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "witch_lantern"
+    },
+    {
+      "if": "always",
+      "use": "lamp_will_o_flame"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 9,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 영체류 도깨비불 · 물리 면역. [마녀의 등불]로 자기 자신을 소환(summon — 같은 편 최대 수에서 막힌다)"
+}

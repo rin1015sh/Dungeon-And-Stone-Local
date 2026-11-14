@@ -1,0 +1,78 @@
+{
+  "id": "orc_hero",
+  "name_ko": "오크 히어로",
+  "grade": 5,
+  "rank": "midboss",
+  "floor": 3,
+  "floor_tags": [
+    "f3_orc_camp"
+  ],
+  "type": "body",
+  "family": [
+    "orc",
+    "humanoid"
+  ],
+  "shape": "humanoid",
+  "size": 1.5,
+  "color": "#4e6438",
+  "immunities": [],
+  "weaknesses": {},
+  "stats": {
+    "str": 46,
+    "agi": 44,
+    "p_res": 64,
+    "m_res": 38,
+    "int": 22
+  },
+  "resources": {
+    "hp": 4800,
+    "soul": 150
+  },
+  "natural_weapon": {
+    "attack": 38,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 7.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "boss_reveal",
+    "ai": {
+      "tenacity": 3.0
+    }
+  },
+  "skills": [
+    "orc_great_sweep",
+    "orc_crushing_blow",
+    "orc_war_cry"
+  ],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "orc_war_cry"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "orc_great_sweep"
+    },
+    {
+      "if": "always",
+      "use": "orc_crushing_blow"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 5,
+  "essence_drops": [],
+  "status_immune": [
+    "fear"
+  ],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 히든 보스(오크 군락지 제단 — 대전사 마석 777개, 3체). 능력 · 수치는 원작에 정해지지 않았다 — 자리만 잡은 임시 항목(능력 미정). 원작 메모: 이름을 가진 상위 변이종, 4등급 정수 보유, 도끼 · 망치 · 검을 나눠 들고 서로 보완하는 정수 조합 + 넘버스. 보스 패턴 없음"
+}

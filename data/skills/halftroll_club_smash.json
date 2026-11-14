@@ -1,0 +1,24 @@
+{
+  "id": "halftroll_club_smash",
+  "name_ko": "몽둥이 내려치기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.4,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "stun",
+      "chance": 0.25
+    }
+  ],
+  "source": "placeholder"
+}

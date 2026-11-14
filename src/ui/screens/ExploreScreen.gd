@@ -54,6 +54,12 @@ func _ready() -> void:
 	add_child(_hud)
 	_hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_hud.bind(session)
+	if session.floor_def.has("zones_ko"):  # 3층 연출(지역명 · 밤하늘 · 전조 · 오두막 · 첨탑 — 규칙 묶음은 start()에서 생긴다, 그리기는 매 프레임 본다)
+		var f3 := Floor3Overlay.new()
+		add_child(f3)
+		move_child(f3, _hud.get_index())  # HUD 아래(글씨를 덮지 않게)
+		f3.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		f3.bind(session)
 	var m := UiTheme.metric("margin", 16)
 	# 하단 바(생명력·영혼력·허기·상태)는 없다 — Tab 메뉴 왼쪽 쪽에서 본다(UI26)
 	_menu = GameMenu.new()
@@ -401,6 +407,8 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var art := FloorArt.resolve(session.db.render, session.floor_def)
 	_combat.backdrop = art.battleback
 	_combat.backdrop_width = art.battleback_width
+	if session.pilgrim != null and session.pilgrim.witch != null and session.player.statuses.has("f3_pain"):
+		_combat.pain = session.pilgrim.witch.pain_shake()  # 통각강화(마녀의 숲)
 	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.
 	# 정수·전리품은 쓰러진 자리에 남기고 전투 장면에서 하나씩 묻는다(CombatDrops — 받을 사람 고르기).
 	var cs := _combat

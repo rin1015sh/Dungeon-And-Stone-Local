@@ -1,0 +1,77 @@
+{
+  "id": "dirouter",
+  "name_ko": "다이로우터",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_witch_forest"
+  ],
+  "type": "spirit",
+  "family": [
+    "phantasm",
+    "dark"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#5a5070",
+  "immunities": [
+    "physical"
+  ],
+  "weaknesses": {
+    "holy": 1.5
+  },
+  "stats": {
+    "str": 4,
+    "agi": 14,
+    "p_res": 0,
+    "m_res": 16,
+    "int": 14
+  },
+  "resources": {
+    "hp": 48,
+    "soul": 50
+  },
+  "natural_weapon": {
+    "attack": 6,
+    "damage_type": "dark"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "alert_sfx": "undead_moan",
+    "ai": {
+      "tenacity": 1.5
+    }
+  },
+  "skills": [
+    "dirouter_misguide",
+    "dirouter_shadow_grasp"
+  ],
+  "ai": [
+    {
+      "if": "foe_status",
+      "status": "confusion",
+      "not": true,
+      "use": "dirouter_misguide",
+      "target": "without_status",
+      "target_status": "confusion"
+    },
+    {
+      "if": "always",
+      "use": "dirouter_shadow_grasp"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 원작은 이름뿐 — 숲길을 비트는 그림자 영체로 만들었다(창작). 영체류 · 물리 면역 · 어둠"
+}

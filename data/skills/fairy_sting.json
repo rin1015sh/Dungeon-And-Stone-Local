@@ -1,0 +1,19 @@
+{
+  "id": "fairy_sting",
+  "name_ko": "독침",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 3
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.6,
+      "damage_type": "poison"
+    }
+  ],
+  "source": "placeholder"
+}

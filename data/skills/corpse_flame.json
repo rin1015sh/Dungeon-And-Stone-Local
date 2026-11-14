@@ -1,0 +1,28 @@
+{
+  "id": "corpse_flame",
+  "name_ko": "시체불꽃",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 7
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.8,
+      "damage_type": "dark",
+      "rider": {
+        "damage_type": "fire",
+        "ratio": 0.5
+      }
+    },
+    {
+      "type": "apply_status",
+      "status": "burn",
+      "chance": 0.3
+    }
+  ],
+  "source": "placeholder"
+}

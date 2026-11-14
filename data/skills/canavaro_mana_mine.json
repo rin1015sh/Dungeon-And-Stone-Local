@@ -1,0 +1,24 @@
+{
+  "id": "canavaro_mana_mine",
+  "name_ko": "마력지뢰",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.8,
+      "damage_type": "arcane"
+    },
+    {
+      "type": "apply_status",
+      "status": "trap_set"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "발밑에 마력 덫 — 맞으면 덫(trap_set) 상태로 다음 차례에 한 번 더 아프다"
+}

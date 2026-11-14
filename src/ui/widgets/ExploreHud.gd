@@ -29,6 +29,9 @@ func refresh() -> void:
 	var s := _session
 	var pc := s.player
 	_floor_label.text = s.floor_name()
+	if s.pilgrim != null and not s.pilgrim.zone_name.is_empty():  # 3층: 지금 지역(마녀의 숲 방향치 중에는 알 수 없다)
+		var lost := s.pilgrim.witch != null and s.pilgrim.witch.inside and pc.statuses.has("f3_disoriented")
+		_floor_label.text = Strings.t("explore.hud_floor_zone", {"floor": s.floor_name(), "zone": Strings.t("f3.zone_lost") if lost else s.pilgrim.zone_name})
 	_time_label.text = Strings.t("explore.hud_time", {"day": s.clock.day(), "time": s.clock.hhmm(), "left": ceili(s.hours_until_close())})
 	_fatigue_label.text = Strings.t("explore.hud_fatigue", {"value": CityContext.fmt(pc.fatigue.value)})
 	var vision := "%.1f" % s.vision_m

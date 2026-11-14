@@ -23,6 +23,7 @@ var drop_leaver: Callable = Callable()
 var drop_stones: Callable = Callable()  ## (마석 {id: 개수}) -> 한 줄 안내 — 없으면 StoneTally로 대화창에만(CombatDrops)
 ## 전투 뒷그림 경로와 통로 반 폭 m(층·균열 그림 설정 battleback — ExploreScreen이 채운다). 경로가 비면 어둠.
 var backdrop: String = ""
+var pain: float = 0.0  ## 통각강화(3층 마녀의 숲 — WitchForest.pain_shake): 0보다 크면 아군이 맞을 때 무대가 이만큼 세게 흔들리고 붉게 번쩍인다
 var backdrop_width: float = 0.0
 
 var _stage: BattleStage
@@ -330,6 +331,8 @@ func _handle_event(e: Dictionary) -> void:
 					v.float_text(Strings.t("combat.float_blocked"), UiTheme.color("dmg_none"), true)
 				else:
 					var foe := u.side != Combatant.SIDE_PARTY  # 적이 입은 피해 = 밝은 금빛, 아군이 입은 피해 = 붉게
+					if not foe and pain > 0.0:
+						_pain_hit()
 					v.float_text(str(int(e.get("lost", e.get("amount", 0)))) + ("!" if bool(e.get("crit")) else ""), UiTheme.color("dmg_foe" if foe else "dmg_party"), true)
 		"down", "fled":
 			if str(e.get("type")) == "down" and u != null and u.side == Combatant.SIDE_ENEMY and u.actor is Monster:
@@ -475,3 +478,23 @@ func _turn_gap() -> bool:
 	if sec > 0.0:
 		await get_tree().create_timer(sec).timeout
 	return is_inside_tree()
+
+
+
+## 통각강화: 아군이 맞으면 무대가 흔들리고 화면이 붉게 번쩍인다(세기 = pain — render.json ui.pain_hit).
+func _pain_hit() -> void:
+	var cfg := UiTheme.ui_dict("pain_hit")
+	var amp := JsonUtil.get_float(cfg, "shake_px", 6.0) * pain
+	var tw := create_tween()
+	for i in 6:
+		tw.tween_property(_stage, "position", Vector2(randf_range(-amp, amp), randf_range(-amp, amp)) * (1.0 - i / 6.0), 0.035)
+	tw.tween_property(_stage, "position", Vector2.ZERO, 0.04)
+	var flash := ColorRect.new()
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	flash.color = Color(JsonUtil.get_str(cfg, "color", "#a01020"))
+	flash.color.a = JsonUtil.get_float(cfg, "alpha", 0.28)
+	add_child(flash)
+	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var tf := create_tween()
+	tf.tween_property(flash, "color:a", 0.0, JsonUtil.get_float(cfg, "fade_sec", 0.45))
+	tf.finished.connect(flash.queue_free)

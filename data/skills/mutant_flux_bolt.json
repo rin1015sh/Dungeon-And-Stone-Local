@@ -1,0 +1,23 @@
+{
+  "id": "mutant_flux_bolt",
+  "name_ko": "뒤틀린 마력탄",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.9,
+      "damage_type": "dark",
+      "rider": {
+        "damage_type": "cold",
+        "ratio": 0.3
+      }
+    }
+  ],
+  "source": "placeholder"
+}

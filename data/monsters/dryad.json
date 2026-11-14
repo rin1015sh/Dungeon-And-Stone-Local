@@ -1,0 +1,75 @@
+{
+  "id": "dryad",
+  "name_ko": "드라이어드",
+  "grade": 8,
+  "rank": "normal",
+  "floor": 3,
+  "floor_tags": [
+    "f3_witch_forest"
+  ],
+  "type": "spirit",
+  "family": [
+    "plant",
+    "phantasm"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#7a9a5a",
+  "immunities": [
+    "physical"
+  ],
+  "weaknesses": {
+    "fire": 1.5,
+    "holy": 1.25
+  },
+  "stats": {
+    "str": 4,
+    "agi": 13,
+    "p_res": 0,
+    "m_res": 18,
+    "int": 15
+  },
+  "resources": {
+    "hp": 48,
+    "soul": 60
+  },
+  "natural_weapon": {
+    "attack": 4,
+    "damage_type": "earth"
+  },
+  "behavior": {
+    "aggressive": false,
+    "aggro_radius_m": 3.0,
+    "leash_tiles": 0,
+    "reveal_radius_m": 0,
+    "row": "front",
+    "pack_size": [
+      1,
+      1
+    ],
+    "move_mult": 0.8
+  },
+  "skills": [
+    "dryad_charm",
+    "dryad_withering_kiss"
+  ],
+  "ai": [
+    {
+      "if": "foe_status",
+      "status": "charm",
+      "not": true,
+      "use": "dryad_charm",
+      "target": "without_status",
+      "target_status": "charm"
+    },
+    {
+      "if": "always",
+      "use": "dryad_withering_kiss"
+    }
+  ],
+  "passives": [],
+  "magic_stone_grade": 8,
+  "essence_drops": [],
+  "source": "placeholder",
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 마녀의 숲에 극히 드물게(배치 가중치를 낮게). [매혹] — 새 상태 charm(절반 확률로 제 편을 친다). 영체류로 두었다"
+}

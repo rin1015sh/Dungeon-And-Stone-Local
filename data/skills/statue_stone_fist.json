@@ -1,0 +1,19 @@
+{
+  "id": "statue_stone_fist",
+  "name_ko": "돌주먹",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "blunt"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -6,7 +6,7 @@ const F := preload("res://tools/item_art/Frame.gd")
 const Clay := preload("res://tools/monster_art/Clay.gd")
 
 const BY_ID := {"iron_scrap": "scrap", "rusty_nails": "nails", "broken_blade": "broken_blade", "loose_pages": "pages", "torn_bounty": "pages",
-	"candle_stub": "candle", "twine": "twine", "broken_arrowhead": "arrowheads"}
+	"candle_stub": "candle", "twine": "twine", "broken_arrowhead": "arrowheads", "wrapped_corpse": "shroud"}
 
 
 static func paint(id: String, ctx: Dictionary) -> bool:
@@ -25,6 +25,8 @@ static func paint(id: String, ctx: Dictionary) -> bool:
 			twine(ctx)
 		"arrowheads":
 			arrowheads(ctx)
+		"shroud":
+			shroud(ctx)
 		_:
 			return false
 	return true
@@ -127,3 +129,27 @@ static func arrowheads(ctx: Dictionary) -> void:
 		var g := cl.group()
 		cl.cap(g, F.Q3(ctx, base.x, base.y, 0.05), F.Q3(ctx, head.x, head.y, 0.05), 0.022 * W, 0.022 * W, wood, 2.0)
 		cl.slab(g, F.poly(ctx, [tip, head + side, head - side]), 0.06 * W, 0.03 * W, m, 1.0, 0.02 * W)
+
+
+## 수습한 시신(3층 — 오두막 제물): 망토로 감싼 길쭉한 몸 + 묶은 끈 세 줄.
+static func shroud(ctx: Dictionary) -> void:
+	var cl: Clay = ctx["cl"]
+	var W: float = ctx["W"]
+	var m := cl.mat(Color(ctx["c"]), "cloth")
+	var rope := cl.mat(Color("#5a4630"), "cloth")
+	var g := cl.group()
+	var pts: Array = []
+	var radii: Array = []
+	for i in 9:
+		var u := i / 8.0
+		pts.append(F.Q3(ctx, 0.5 + sin(u * PI) * 0.04, 0.12 + u * 0.76, 0.08))
+		radii.append((0.13 + 0.05 * sin(u * PI) - (0.03 if i == 0 or i == 8 else 0.0)) * W)
+	cl.chain(g, pts, radii, m, 2.0)
+	for v: float in [0.3, 0.5, 0.72]:
+		var rp: Array = []
+		var rr: Array = []
+		for k in 9:
+			var a := PI * k / 8.0
+			rp.append(F.Q3(ctx, 0.5 - cos(a) * 0.2, 0.12 + v * 0.76, 0.08 + sin(a) * 0.2))
+			rr.append(0.014 * W)
+		cl.chain(g, rp, rr, rope, 2.0)
