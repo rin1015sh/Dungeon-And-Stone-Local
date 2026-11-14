@@ -58,7 +58,7 @@ def render_all(ids, force, jobs):
 
 def pack(items, pad):
     """선반 쌓기: [(key, img)] → (판, {key: (x, y, w, h)}). 높이순으로 줄을 채운다."""
-    order = sorted(items, key=lambda kv: (-kv[1].shape[0], -kv[1].shape[1]))
+    order = sorted(items, key=lambda kv: (-kv[1].shape[0], -kv[1].shape[1], kv[0][0], kv[0][1], kv[0][2] or 0))   # 크기가 같으면 이름순 — 굽을 때마다 같은 자리
     x = y = row_h = 0
     width = 0
     pos = {}

@@ -32,7 +32,8 @@ WALL_H = 2.5           # 벽 높이(칸) — 벽면 그림 160px
 CACHE = os.path.join(HERE, ".cache")
 OUT = os.path.join(ROOT, "assets", "dungeon_kit")
 LAYERS = ("floor", "wall", "decal", "wall_decal", "stand", "over")
-CATS = ("floor", "wall", "structure", "furniture", "light", "trace", "nature", "special", "trap", "terrain", "flora", "fx")
+CATS = ("floor", "wall", "structure", "furniture", "light", "trace", "nature", "special", "trap", "terrain", "flora", "fx",
+    "city", "interior", "smithy", "inn", "shrine", "shop", "bank", "item", "icon")   # 뒤 아홉 = 도시 · 건물 실내 라이브러리(AM69 — docs/asset_library/CITY_LIBRARY.md)
 REUSE = ("common", "ext", "region")   # 공용 · 지역 확장형(공용 에셋의 틀을 지역 재질 · 형태로 넓힌 것) · 지역 전용 — docs/asset_library
 
 REG = {}               # id → Asset
@@ -325,7 +326,8 @@ def render(id, vname, frame, params, force=False):
 def load_all():
     """에셋 모듈을 모두 읽어 REG를 채운다."""
     import importlib
+    only = [m for m in os.environ.get("KIT_MODULES", "").split(",") if m]   # 시험용: 이 모듈만 읽는다(KIT_MODULES=a_inn,a_smithy)
     for name in sorted(os.listdir(HERE)):
-        if name.startswith("a_") and name.endswith(".py"):
+        if name.startswith("a_") and name.endswith(".py") and (not only or name[:-3] in only):
             importlib.import_module(name[:-3])
     return REG

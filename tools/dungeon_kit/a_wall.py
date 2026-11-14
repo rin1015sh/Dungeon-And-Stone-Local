@@ -24,6 +24,10 @@ KINDS = {
     "ice": {"name": "얼음벽", "base": "#6a88a0", "gap": "#d0e2ee", "mean": "#5c788e", "var": 0.1, "hue": 0.01, "natural": "ice", "moss": ("#aab8c6", "#98a8b8", "#b8c6d2", "#ccd8e2")},
     "basalt": {"name": "검은 현무암 절벽", "base": "#3a3634", "gap": "#0a0808", "mean": "#2c2a29", "var": 0.14, "hue": 0.01, "natural": "column", "moss": ("#5a5654", "#4a4644", "#666260", "#74706c")},
     "metal": {"name": "문양 새긴 금속 벽", "base": "#4e5258", "gap": "#101214", "mean": "#3c4046", "rows": 2, "len": (120, 136), "wob": 0.3, "var": 0.05, "hue": 0.008, "moss": ("#6a4630", "#5a3a28", "#7a5236", "#8a5e3c")},
+    # 건물 실내 벽(도시 라이브러리 AM69): lining = 돌 쌓기 대신 안감(판자 · 회벽과 뼈대 · 새김 판벽). mossy 상태 = 눅눅한 물때 · 그을음. whole = 통째로 빠지는 조각이 없다.
+    "wood": {"name": "목재 벽", "base": "#6a5038", "gap": "#17110d", "mean": "#4c3a2a", "var": 0.13, "hue": 0.025, "lining": "plank", "moss": ("#2c2620", "#241f1b", "#38302a", "#463c32")},
+    "plaster": {"name": "회벽", "base": "#a39a84", "gap": "#1c1612", "mean": "#766d5c", "var": 0.04, "hue": 0.01, "lining": "plaster", "whole": True, "moss": ("#5e5644", "#4c4638", "#6c624e", "#3e3a30")},
+    "panel": {"name": "장식 판벽", "base": "#5a4130", "gap": "#140e0b", "mean": "#43322a", "var": 0.06, "hue": 0.015, "lining": "panel", "whole": True, "moss": ("#2a2420", "#221d1a", "#342c26", "#3e342c")},
 }
 MOSS = ("#3a4628", "#36441f", "#48562c", "#5a6636")   # 덮개 바탕 + 붓 줄 셋
 STATES = {"clean": {}, "cracked": {"state": "cracked"}, "mossy": {"state": "mossy"}, "damaged": {"state": "damaged"}}
@@ -75,10 +79,119 @@ def _natural(kind, seed):
     return cell, edge, img, gap, h
 
 
+def _aniso(cx, cy, seed):
+    """한쪽으로 길게 늘인 이어지는 잡음 0~1(W × W, 격자 가로 cx · 세로 cy칸) — 나뭇결."""
+    g = np.random.default_rng(seed).random((cy, cx)).astype(F)
+
+    def ax(n):
+        x = np.arange(W) * n / W
+        i = np.floor(x).astype(int)
+        f = (x - i).astype(F)
+        return i % n, (i + 1) % n, f * f * (3 - 2 * f)
+    x0, x1, fx = ax(cx)
+    y0, y1, fy = ax(cy)
+    a = g[y0][:, x0] * (1 - fx)[None, :] + g[y0][:, x1] * fx[None, :]
+    b = g[y1][:, x0] * (1 - fx)[None, :] + g[y1][:, x1] * fx[None, :]
+    return a * (1 - fy)[:, None] + b * fy[:, None]
+
+
+def _lining(kind, seed):
+    """실내 벽 안감 → (조각 번호, 경계까지 거리, 그림, 틈, 높이). 가로로 이어진다(W 주기)."""
+    kd = KINDS[kind]
+    yy, xx = np.mgrid[0:W, 0:W].astype(F)
+    how = kd["lining"]
+    base, gapc = hexc(kd["base"]), hexc(kd["gap"])
+    vgrain = _aniso(150, 9, seed + 4) * 0.6 + _aniso(70, 5, seed + 5) * 0.4          # 세로 결
+    hgrain = _aniso(9, 150, seed + 6) * 0.6 + _aniso(5, 70, seed + 7) * 0.4          # 가로 결
+    if how == "plank":      # 세로 널판 + 허리 띠 + 걸레받이
+        pw, nb = 32.0, 16
+        u = (xx + (pnoise(5, seed + 1)[:, 0:1] - 0.5) * 2.0) / pw
+        ci = np.floor(u).astype(np.int64) % nb
+        rng = np.random.default_rng(seed + 3)
+        vshift = rng.random(nb).astype(F)[ci] * 300.0
+        v = (yy + vshift) / 300.0
+        cell = (ci + (np.floor(v).astype(np.int64) % 3) * nb).astype(np.int64)
+        edge = np.minimum(np.minimum(u % 1.0, 1.0 - u % 1.0) * pw, np.minimum(v % 1.0, 1.0 - v % 1.0) * 300.0)
+        img, gap, h = surf.stonework(cell, edge, base, gapc, seed, 1.8, kd["var"], 0.7, kd["hue"], 0.15)
+        img = img * (0.78 + vgrain[..., None] * 0.44)
+        knot = np.clip((pnoise(40, seed + 8) - 0.93) * 30.0, 0, 1)
+        img = img * (1 - knot[..., None] * 0.5)
+        for y0, hh in ((HF * 0.55, 9.0), (HF - 30.0, 30.0), (0.0, 20.0)):   # 허리 띠 · 걸레받이 · 머리 띠(가로 널)
+            band = (yy >= y0) & (yy < y0 + hh)
+            col = base[None, None, :] * (0.72 if hh > 12 else 0.9) * (0.8 + hgrain[..., None] * 0.4)
+            img = np.where(band[..., None], col, img)
+            top = np.clip(1.0 - np.abs(yy - y0 - 1.5) / 1.5, 0, 1)
+            bot = np.clip(1.0 - np.abs(yy - y0 - hh) / 2.0, 0, 1)
+            img = img * (1 + top[..., None] * 0.3) * (1 - bot[..., None] * 0.6)
+            gap = np.where(band, 0.0, gap)
+            edge = np.where(band, 20.0, edge)
+            cell = np.where(band, cell.max() + 1, cell)
+        nail = np.clip(1.0 - np.hypot((xx % pw) - pw / 2, yy - HF * 0.55 - 4.5) / 2.2, 0, 1)
+        img = img * (1 - nail[..., None] * 0.6)
+    elif how == "plaster":  # 회반죽 + 나무 뼈대(머리 들보 · 밑 도리 · 두 칸마다 기둥 · 한 칸 건너 가새)
+        trowel = fbm(7, seed + 2, 3)
+        img = base[None, None, :] * (0.9 + trowel[..., None] * 0.2) * (1.0 + (fbm(3, seed + 3, 2) - 0.5)[..., None] * np.array([0.06, 0.0, -0.06], F))
+        h = trowel * 0.5 + fbm(40, seed + 8, 2) * 0.2
+        img = img * surf.relief(h, 1.1)[..., None]
+        chipm = np.clip((fbm(11, seed + 9, 3) - 0.66) * 9.0, 0, 1) * 0.25                    # 살짝 뜬 자리
+        img = img * (1 - chipm[..., None])
+        lx = xx % 256.0
+        bay = np.floor(xx / 256.0)
+        ly = np.clip((yy - 22.0) / (HF - 50.0), 0, 1)
+        d_post = np.abs(lx - 128.0 + (pnoise(4, seed + 1)[:, 0:1] - 0.5) * 3.0) - 11.0
+        d_top, d_sill = yy - 22.0, (HF - 28.0) - yy
+        bx = np.where(bay % 2 == 0, 256.0 - lx, lx)                                           # 기둥은 lx = 128, 가새는 칸 가운데를 가로지른다
+        d_brace = np.where((lx > 139) | (lx < 117), np.abs(((bx - 128.0) % 256.0) - (20.0 + (1 - ly) * 96.0)) * 0.78 - 7.0, 99.0)
+        d_brace = np.where(ly > 0.42, d_brace, 99.0)
+        d = np.minimum.reduce([d_post, d_top, d_sill, d_brace])
+        beam = d < 0
+        horiz = (np.minimum(d_top, d_sill) < np.minimum(d_post, d_brace))
+        wood = hexc("#4a382a")[None, None, :] * np.where(horiz[..., None], 0.75 + hgrain[..., None] * 0.5, 0.75 + vgrain[..., None] * 0.5)
+        img = np.where(beam[..., None], wood, img)
+        edge = np.abs(d)
+        gap = np.clip(1.0 - edge / 2.0, 0, 1)
+        img = img * (1 - np.clip(1.0 - np.maximum(d, 0) / 9.0, 0, 1)[..., None] * 0.22 * (~beam)[..., None])   # 뼈대 옆 그늘
+        img = surf.mix(img, gap, gapc)
+        cell = np.where(beam, 1, 0).astype(np.int64)
+        h = h + beam * 0.5
+    else:                   # 새김 판벽: 칸마다 위 큰 판(마름모 + 둥근 새김) · 아래 작은 판, 틀 · 허리 띠 · 걸레받이
+        pw = 128.0
+        lx = xx % pw
+        mid, top, bot = HF * 0.6, 22.0, HF - 28.0
+        upper = yy < mid
+        y0 = np.where(upper, top + 9.0, mid + 9.0)
+        y1 = np.where(upper, mid - 9.0, bot - 8.0)
+        d = np.minimum(np.minimum(lx - 13.0, pw - 13.0 - lx), np.minimum(yy - y0, y1 - yy))  # 판 안쪽이 +
+        field = d > 0
+        cell = np.where(field, 1 + np.floor(xx / pw) + upper * 4, 0).astype(np.int64)
+        edge = np.abs(d)
+        img, gap, h = surf.stonework(cell, np.where(field, edge, 30.0), base, gapc, seed, 2.0, kd["var"], 0.5, kd["hue"], 0.1)
+        frame_g = np.where((yy < top) | (yy > bot) | ((np.abs(yy - mid) < 9) & True), hgrain, vgrain)
+        img = img * np.where(field[..., None], 0.8 + vgrain[..., None] * 0.36, (0.66 + frame_g[..., None] * 0.4))
+        bev = np.clip(d / 9.0, 0, 1) * field                                                   # 판 둘레 빗면(돋움 판)
+        img = img * surf.relief(bev * 1.4, 2.2)[..., None]
+        gap = np.clip(1.0 - np.abs(d) / 1.6, 0, 1)
+        img = surf.mix(img, gap * 0.8, gapc)
+        cx_, cy_ = lx - pw / 2, yy - (top + 9.0 + mid - 9.0) / 2
+        line = lambda dd, w=1.6: np.clip(1.0 - np.abs(dd) / w, 0, 1)
+        r = np.hypot(cx_, cy_)
+        dia = np.abs(cx_) / 34.0 + np.abs(cy_) / 58.0
+        g = np.maximum.reduce([line((dia - 1.0) * 30.0), line(r - 17.0), line(r - 7.0, 1.3),
+            line(np.abs(np.sin(np.arctan2(cy_, cx_) * 4.0)) * r, 1.4) * (r > 7.0) * (r < 17.0)]) * upper * (d > 12)
+        lo = np.minimum(np.minimum(lx - 30.0, pw - 30.0 - lx), np.minimum(yy - mid - 22.0, bot - 21.0 - yy))
+        g = np.maximum(g, line(lo, 1.5) * (~upper) * field)
+        img = img * (1 - g[..., None] * 0.5) + np.clip(np.roll(g, (2, 2), (0, 1)) - g, 0, 1)[..., None] * 0.07
+        img = img * (1.0 + np.clip(surf.relief(fbm(5, seed + 6, 2), 2.0) - 1.0, 0, 1)[..., None] * 0.12)   # 밀랍 먹인 윤
+    return cell, edge, img, gap, h
+
+
 def _face_base(kind, seed):
     kd = KINDS[kind]
     yy, xx = np.mgrid[0:W, 0:W].astype(F)
     t = yy / HF                                                    # 0 벽 머리 → 1 바닥
+    if kd.get("lining"):
+        cell, edge, img, gap, h = _lining(kind, seed)
+        return img, gap, h, cell, edge, t
     if kd.get("natural"):
         cell, edge, img, gap, h = _natural(kind, seed)
         return img, gap, h, cell, edge, t
@@ -195,7 +308,7 @@ def _wall(kind):
             img = ly.over(img)
         elif state == "damaged":
             n_cell = int(cell.max()) + 1
-            gone = (rng.random(n_cell) < (0.09 if kind not in ("ancient", "metal", "ice") else 0.0))[cell].astype(F)
+            gone = (rng.random(n_cell) < (0.09 if kind not in ("ancient", "metal", "ice") and not kd.get("whole") else 0.0))[cell].astype(F)
             hole = gone * np.clip((edge - 1.5 + (fbm(30, seed + 41, 2) - 0.5) * 5.0) * 1.2, 0, 1)   # 통째로 빠진 돌(가장자리가 또렷하다)
             pn = fbm(5, seed + 40, 3) + (fbm(26, seed + 43, 2) - 0.5) * 0.12
             hole = np.maximum(hole, np.clip((pn - (0.69 if kind != "ancient" else 0.64)) * 45.0, 0, 1))   # 뜯겨 나간 자리
