@@ -75,8 +75,8 @@
 - 묘사 정도: **구체적** — 고지대 — 산과 들, 강, 울창한 수풀림, 천장까지 이어진 첨탑(원경), 땅에서 떠오르는 은색 빛 구체
 - 바닥: `ground_grass` `ground_rock` `ground_water.clear` · 벽: `wall_cave`
 - 지역 확장 · 전용: `light_orb`
-- 공용: `tree_broadleaf` `tree_pine` `bush` `grass_tall` `rock` `boulder_mossy`
-- 남은 것: 천장까지 이어진 첨탑(원경 구조물)
+- 공용: `ledge` `ramp` `tree_broadleaf` `tree_pine` `bush` `grass_tall` `rock` `boulder_mossy`
+- 남은 것: 천장까지 이어진 첨탑(원경 — 게임 3층에 이미 실루엣이 있다)
 
 ### 칠흑의 강어귀 (`f3_black_estuary`) — 3층
 
@@ -191,10 +191,10 @@
 ### 대해 (`f6_great_sea`) — 6층
 
 - 묘사 정도: **구체적** — 백색에 가까운 모래사장, 에메랄드빛 바다, 자국이 새겨진 큰 바위, 암초, 붉은 바위섬
-- 바닥: `floor_sand` `ground_water.clear` · 벽: `wall_sandstone`
-- 지역 확장 · 전용: `rock_sandstone`
-- 공용: `rock` `scratches`
-- 남은 것: 백색 모래 · 깊은 바다 · 암초 · 배 · 붉은 바위
+- 바닥: `ground_beach` `ground_water.sea` `ground_water.clear` · 벽: `wall_sandstone`
+- 지역 확장 · 전용: `reef` `boat` `rock_sandstone`
+- 공용: `flotsam` `shore_rim` `rock` `scratches`
+- 남은 것: 유령선 · 마력 추진 장치
 
 ### 아노스섬 · 인간섬(밀림) (`f6_jungle_isle`) — 6층 · 지하 1층
 
@@ -224,9 +224,8 @@
 
 - 묘사 정도: **구체적** — 석유가 덮인 듯 검게 물든 바다, 불길하고 음울한 안개
 - 바닥: `ground_water.black` · 벽: `wall_basalt`
-- 지역 확장 · 전용: —
-- 공용: `mist.grey` `mist.black`
-- 남은 것: 배
+- 지역 확장 · 전용: `boat`
+- 공용: `mist.grey` `mist.black` `cliff_drop.basalt`
 
 ### 아리베오나 강어귀 (`f7_red_estuary`) — 7층 암흑대륙
 
@@ -246,9 +245,9 @@
 
 - 묘사 정도: **일부** — 조각 사원과 비슷한 무너진 석조 잔해, 기계 몬스터 / 정글 속 사원 안의 공장(드론 · 레일 · 변환 장치)
 - 바닥: `floor_old` `floor_broken` · 벽: `wall_ancient`
-- 지역 확장 · 전용: `mine_track`
+- 지역 확장 · 전용: `overhead_rail` `drone_wreck` `mine_track`
 - 공용: `ruin_wall` `pillar.broken` `rubble` `ancient_machine` `gear_pile` `valve_wheel`
-- 남은 것: 드론 · 공장 레일 전용 그림
+- 남은 것: 드론의 생김새는 문서에 없다(지어낸 꼴)
 
 ### 회색 벌판 (`f7_grey_field`) — 7층 암흑대륙
 
@@ -293,8 +292,7 @@
 - 묘사 정도: **구체적** — 우뚝 솟은 초록색 동산, 드넓은 초원, 가까이 보이는 균열 포탈
 - 바닥: `ground_grass` `ground_meadow` · 벽: `wall_cave`
 - 지역 확장 · 전용: —
-- 공용: `portal` `grass_tall` `flowers` `bush` `tree_broadleaf`
-- 남은 것: 동산(높낮이)
+- 공용: `ledge.grass` `ledge.grass_b` `ledge.grass_end_l` `ledge.grass_end_r` `ramp.grass` `portal` `grass_tall` `flowers` `bush` `tree_broadleaf`
 
 ## 9층
 
@@ -329,8 +327,8 @@
 
 - 묘사 정도: **구체적** — 수은 같은 은색 바다, 비석처럼 생긴 거대한 문, 수호자 석상이 늘어선 복도, 원기둥 둘로 선 신전, 천장까지 닿는 책장, 테이블 같은 석판
 - 바닥: `ground_water.silver` `floor_flag` · 벽: `wall_ancient`
-- 지역 확장 · 전용: `pillar_white`
-- 공용: `sealed_door` `statue` `bookshelf` `stone_tablet.glowing` `stairs_down`
+- 지역 확장 · 전용: `statue_gem` `pillar_white` `bookshelf_tall`
+- 공용: `sealed_door` `statue` `flotsam` `stone_tablet.glowing` `stairs_down`
 - 남은 것: 곡선 책장 · 200단 계단
 
 ## 균열
@@ -339,25 +337,23 @@
 
 - 묘사 정도: **일부** — 시커먼 포탈, 붉은 하늘, 흑빛 성채, 도개교, 핏물이 찬 해자, 가고일 석상
 - 바닥: `floor_flag` `ground_water.red` · 벽: `wall_stone`
-- 지역 확장 · 전용: —
-- 공용: `portal.violet` `gateway` `doorway.portcullis` `bridge.wood_h` `shore_rim` `statue_robed` `magic_circle`
-- 남은 것: 도개교(지금은 나무 다리로 대신) · 까마귀
+- 지역 확장 · 전용: `drawbridge` `drawbridge_raised` `crows`
+- 공용: `portal.violet` `gateway` `doorway.portcullis` `shore_rim` `statue_robed` `magic_circle`
 
 ### 빙하굴 (`rift_glacier_cave`) — 1층 균열
 
 - 묘사 정도: **구체적** — 얼음 동굴, 일정 간격의 기둥(부술 수 있다), 얼음 계단, 얼음벽, 미끄러운 얼음 지면, 로프로 넘는 곳, 몬스터가 갇힌 얼음 기둥, 천장에서 떨어지는 얼음 가루
 - 바닥: `ground_ice` `ground_ice.clear` `ground_snow.thin` · 벽: `wall_ice`
-- 지역 확장 · 전용: `rock_ice.pillar` `rock_ice.pillar_frozen` `rock_ice.pillar_broken` `rock_ice` `icicles`
-- 공용: `drift.frost` `rope_crossing` `snow_drift` `waterfall.clear` `cliff_drop.ice`
-- 남은 것: 얼음 계단
+- 지역 확장 · 전용: `rock_ice.pillar` `rock_ice.pillar_frozen` `rock_ice.pillar_broken` `rock_ice` `icicles` `stairs_ice.ice` `stairs_ice.ice_cracked`
+- 공용: `drift.frost` `rope_crossing` `snow_drift` `waterfall.clear` `cliff_drop.ice` `ledge.ice` `ramp.ice`
 
 ### 녹색 탄광 (`rift_green_mine`) — 1층 균열
 
 - 묘사 정도: **구체적** — 바닥의 철로, 나무 폐자재, 무너져 막힌 천장, 부술 수 있는 벽 너머 초록색 보석, 무너진 다리, 광물, 폭발물
 - 바닥: `ground_rock` `floor_dirt` · 벽: `wall_cave`
 - 지역 확장 · 전용: `mine_track` `mine_cart` `mine_support` `ore_vein`
-- 공용: `bridge.wood_broken` `bridge.wood_h` `cliff_drop.cave` `debris_wood` `rubble` `wall_breach` `lantern_hanging`
-- 남은 것: 원형 계단 · 폭발물
+- 공용: `bridge.wood_broken` `bridge.wood_h` `cliff_drop.cave` `powder_keg` `cracked_wall` `debris_wood` `rubble` `wall_breach` `lantern_hanging`
+- 남은 것: 원형 계단
 
 ### 강철의 묘 (`rift_steel_tomb`) — 1층 균열
 
@@ -377,8 +373,8 @@
 
 - 묘사 정도: **구체적** — 높은 천장, 새하얀 대리석 기둥, 벽을 따라 선 석상, 석상 손의 푸른 보석에서 안개처럼 퍼지는 빛, 돔 안의 인공 정원(수풀 · 과실이 맺힌 나무)
 - 바닥: `floor_flag` `ground_grass` · 벽: `wall_stone`
-- 지역 확장 · 전용: `pillar_white`
-- 공용: `statue` `statue_robed` `mist.blue` `magic_lamp.blue` `tree_broadleaf.fruit` `grass_tall` `bush` `doorway`
+- 지역 확장 · 전용: `pillar_white` `statue_gem.white` `statue_gem.broken`
+- 공용: `statue` `mist.blue` `tree_broadleaf.fruit` `grass_tall` `bush` `doorway`
 
 ### 도플갱어 숲 (`rift_doppel_forest`) — 4층 균열
 
@@ -391,9 +387,9 @@
 
 - 묘사 정도: **구체적** — 세 갈래 미로, 정사각형 석실의 큰 마석, 저택 복도와 상자, 투명한 계단의 피라미드와 눈 모양 마석
 - 바닥: `floor_flag` `floor_brick` · 벽: `wall_brick`
-- 지역 확장 · 전용: —
-- 공용: `chest` `crystal.violet_large` `pedestal.orb`
-- 남은 것: 저택 복도 · 투명한 계단 피라미드 · 살덩이 공간
+- 지역 확장 · 전용: `stairs_ice.glass`
+- 공용: `chest` `crystal.violet_large` `pedestal.orb` `carpet`
+- 남은 것: 저택 복도 · 살덩이 공간
 
 ### 낙원의 섬 (`rift_paradise_isle`) — 5층 균열
 
@@ -423,17 +419,16 @@
 
 - 묘사 정도: **구체적** — 거울 너머 세계 — 드넓은 황야, 흑색 불꽃에 싸여 타는 나무(간격이 넓다), 거대한 비석, 검게 그을린 2층 벽돌집
 - 바닥: `ground_ash` `ground_hardpan` · 벽: `wall_basalt`
-- 지역 확장 · 전용: `great_mirror` `tree_burning`
-- 공용: `portal_stele.giant` `stump.burnt` `log.burnt` `scorch`
-- 남은 것: 2층 벽돌집
+- 지역 확장 · 전용: `great_mirror` `tree_burning` `burnt_house`
+- 공용: `burnt_furniture` `portal_stele.giant` `stump.burnt` `log.burnt` `scorch`
 
 ### 아틀란테 (`hidden_atlante`) — 6층 히든
 
 - 묘사 정도: **구체적** — 물에 잠겨 부식된 유적, 다가가면 빛나는 기둥, 피라미드 구조 사원, 원형으로 선 거대한 기둥
 - 바닥: `floor_old` `floor_wet` · 벽: `wall_ancient`
-- 지역 확장 · 전용: `pillar_white.sunken` `pillar_white.glowing`
+- 지역 확장 · 전용: `pyramid_temple` `pillar_white.sunken` `pillar_white.glowing`
 - 공용: `ruin_wall.mossy` `rubble` `portal`
-- 남은 것: 피라미드 사원 · 푸른 알
+- 남은 것: 푸른 알 · 소용돌이
 
 ### 종말의 기억 (`hidden_end_memory`) — 6층 히든
 

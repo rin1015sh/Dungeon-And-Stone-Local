@@ -287,21 +287,38 @@ def ground_lava(c, f=0, poison=False, seed=1):
     return _lava(730, f, "#2a2422", "#b8380e", "#f0b050", "#342826")
 
 
+@_ground("ground_beach", "흰 모래사장", {"a": {"seed": 1}, "b": {"seed": 2}, "wet": {"seed": 1, "wet": True}}, tags=["sand", "beach"])
+def ground_beach(c, seed=1, wet=False):
+    """백색에 가까운 고운 모래: 옅은 물결 자국 + 조개 조각. wet = 물이 막 빠진 젖은 모래."""
+    rng = np.random.default_rng(seed + 760)
+    base = hexc("#8e8672" if wet else "#b4ac98")
+    yy, xx = np.mgrid[0:W, 0:W].astype(F)
+    h = (np.sin(TAU * (2 * xx + 9 * yy) / W + (fbm(3, seed + 760, 3) - 0.5) * 6.0) * 0.5 + 0.5) ** 2 * 0.25 + fbm(6, seed + 761, 3) * 0.75
+    img = base[None, None, :] * (1.0 + (fbm(4, seed + 762, 3) - 0.5) * 0.14)[..., None] * tex.relief(h, 1.3)[..., None]
+    img = img * (1.0 + (pnoise(128, seed + 763) - 0.5) * 0.07)[..., None]
+    if wet:
+        img = img + (np.clip(tex.relief(h, 4.0) - 1.12, 0, 1) * 0.5)[..., None] * hexc("#c8d4d8")
+    ly = tex.Layer()
+    ground.stones(ly, rng, 26, 1.4, 3.2, hexc("#d8d2c4"), 0.6)       # 조개 조각
+    ground.stones(ly, rng, 10, 1.6, 3.6, hexc("#7a766c"))
+    return _rgba(surf.finish(ly.over(np.clip(img, 0, 1)), "#7c7566" if wet else "#9c9584", seed, 0.12))
+
+
 # ── 물 ───────────────────────────────────────────────────────────────────────
 
-_WATER = {"clear": ("#33505a", "#a8c8d0", "#3a5560"), "black": ("#101418", "#7c8c9c", "#14181c"), "red": ("#5a1c1c", "#d89080", "#56201e"), "silver": ("#7c848e", "#eef2f6", "#727a84")}
+_WATER = {"clear": ("#33505a", "#a8c8d0", "#3a5560"), "black": ("#101418", "#7c8c9c", "#14181c"), "red": ("#5a1c1c", "#d89080", "#56201e"), "silver": ("#7c848e", "#eef2f6", "#727a84"), "sea": ("#1f5a56", "#c8eee0", "#1f5650")}
 
 
 @_ground("ground_water", "얕은 물", {k: {"kind": k, "frames": 4} for k in _WATER}, tags=["water", "animated"], hazard="water")
 def ground_water(c, kind="clear", f=0, seed=1):
-    """얕은 물(4프레임 잔물결). clear 맑은 물(강 · 얕은 도랑) · black 검은 물 · red 붉은 물 · silver 수은 같은 은빛 물."""
+    """얕은 물(4프레임 잔물결). clear 맑은 물(강 · 얕은 도랑) · black 검은 물 · red 붉은 물 · silver 수은 같은 은빛 물 · sea 에메랄드빛 깊은 바다."""
     body, shine, mean = _WATER[kind]
     seed = 740
     bed, _ = ground.slabs(seed, 150, 1.0, hexc(body) * 1.5, hexc(body) * 0.8, 3.0, 0.2, 0.15)      # 물 밑 자갈이 흐릿하게 비친다
     bed = np.stack([tex.blur(bed[..., i], 3) for i in range(3)], -1)
     depth = fbm(3, seed + 1, 3)
     img = bed * (0.3 * (1 - depth[..., None]) ** 2) + hexc(body)[None, None, :] * (0.75 + depth[..., None] * 0.3)
-    if kind in ("black", "silver"):
+    if kind in ("black", "silver", "sea"):
         img = hexc(body)[None, None, :] * (0.8 + depth[..., None] * 0.5)
     out = surf.finish(np.clip(img, 0, 1), mean, seed, 0.1)
     n = _loop(7, seed + 2, f) * 0.6 + _loop(15, seed + 4, (f + 1) % 4, 4, 2) * 0.4

@@ -175,3 +175,43 @@ WILD["witch_hut"] = {
         _i("basket", 6.4, 5.4), _i("mist", 2.6, 5.6, "violet"),
     ],
 }
+
+WILD["sea_shore"] = {
+    "fringe": True, "name_ko": "대해 — 모래사장과 암초", "region": "f6_great_sea", "size": [14, 9], "floor": "ground_beach", "wall": "sandstone",
+    "floor_patches": [{"id": "ground_water", "v": "sea", "rect": [0, 5, 14, 4]}, {"id": "ground_water", "v": "clear", "rect": [0, 4, 9, 1]}, {"id": "ground_beach", "v": "wet", "rect": [9, 4, 5, 1]},
+        {"id": "ground_grass", "rect": [0, 0, 5, 2]}, {"id": "ground_thicket", "rect": [10, 0, 4, 2]}],
+    "wall_states": {"3": "mossy", "8": "cracked"},
+    "items": [
+        _i("ledge", 1.0, 2.2, "grass"), _i("ledge", 3.0, 2.2, "grass_b"), _i("ledge", 4.5, 2.2, "grass_end_r"), _i("ramp", 6.2, 1.6, "sand"),
+        _i("boat", 7.6, 3.6, "oars"), _i("boat", 11.6, 7.4, "mast"), _i("boat", 2.6, 4.0, "wreck"),
+        _i("reef", 2.4, 6.6, "large"), _i("reef", 5.6, 8.0, "a"), _i("reef", 8.6, 6.2, "red"), _i("reef", 12.8, 5.8, "red_large"), _i("reef", 0.9, 8.4, "b"),
+        _i("flotsam", 6.6, 6.2, "mixed"), _i("flotsam", 10.4, 8.4, "planks"), _i("flotsam", 3.8, 8.0, "barrel"),
+        _i("rock_sandstone", 12.6, 3.0, "strata_a"), _i("tree_giant", 12.0, 1.6, "a"), _i("tree_broadleaf", 1.4, 1.2, "fruit"), _i("bush", 3.4, 1.0, "flowering"), _i("grass_tall", 10.6, 1.4, "wide"),
+        _i("crows", 5.0, 5.4, "few", up=2.4), _i("skeleton", 9.8, 3.2, "lying"), _i("crate", 5.6, 3.4, "broken"), _i("barrel", 4.8, 3.6, "toppled"),
+    ],
+}
+
+WILD["fire_mirror"] = {
+    "fringe": True, "name_ko": "불의 거울 — 불타는 숲", "region": "hidden_fire_mirror", "size": [14, 9], "floor": "ground_ash", "wall": "basalt",
+    "floor_patches": [{"id": "ground_hardpan", "rect": [0, 6, 6, 3]}, {"id": "ground_ash", "v": "ember", "rect": [9, 6, 5, 3]}],
+    "wall_states": {"2": "mossy", "9": "cracked"},
+    "items": [
+        _i("burnt_house", 7.0, 3.0, "ruin"), _i("tree_burning", 1.6, 2.4, "black_flame"), _i("tree_burning", 12.4, 2.6, "black_flame_b"), _i("tree_burning", 3.2, 6.0, "charred"), _i("tree_burning", 11.2, 7.4, "black_flame"),
+        _i("portal_stele", 1.4, 7.2, "giant"), _i("great_mirror", 12.8, 5.2, "active"), _i("burnt_furniture", 4.6, 4.8, "table"), _i("burnt_furniture", 9.6, 5.0, "bed"), _i("burnt_furniture", 6.4, 5.6, "chair"),
+        _i("burnt_furniture", 8.0, 6.6, "shelf"), _i("stump", 5.2, 7.6, "burnt"), _i("log", 9.6, 8.2, "burnt"), _i("scorch", 7.0, 4.4, "blast"), _i("ash_pile", 3.0, 3.6),
+        _i("drift", 2.0, 2.0, "ash"), _i("drift", 10.0, 6.0, "ember"), _i("crows", 6.0, 1.0, "flock", up=1.5), _i("books", 7.4, 7.6, "open"),
+    ],
+}
+
+WILD["archive"] = {
+    "name_ko": "기록 보관소 — 도서관과 공장", "region": "b1_archive_sea", "size": [14, 8], "floor": "floor_flag", "wall": "ancient",
+    "floor_patches": [{"id": "floor_old", "rect": [8, 0, 6, 8]}, {"id": "ground_water", "v": "silver", "rect": [0, 6, 5, 2]}, {"id": "floor_ritual", "rect": [2, 2, 4, 4]}],
+    "wall_states": {"3": "cracked", "11": "damaged"},
+    "items": [
+        _i("bookshelf_tall", 0.9, 0.5, "full"), _i("bookshelf_tall", 2.2, 0.5, "ladder"), _i("bookshelf_tall", 3.5, 0.5, "full_b"), _i("bookshelf_tall", 4.8, 0.5, "half"), _i("bookshelf_tall", 6.1, 0.5, "empty"),
+        _i("stone_tablet", 4.0, 4.0, "glowing"), _i("statue_gem", 1.0, 4.4, "lit"), _i("statue_gem", 7.0, 4.4, "white"), _i("statue_gem", 7.0, 6.8, "broken"), _i("stairs_ice", 6.4, 7.0, "glass"),
+        _i("cracked_wall", 8.5, 0.0, "cracked"), _i("cracked_wall", 10.5, 0.0, "broken"), _i("powder_keg", 9.4, 1.4, "hidden"), _i("powder_keg", 11.6, 1.6, "lit"), _i("powder_keg", 13.0, 3.0, "exploded"),
+        _i("overhead_rail", 9.6, 4.4, "carriage"), _i("overhead_rail", 11.6, 4.4, "hook"), _i("overhead_rail", 13.2, 4.4, "broken"), _i("drone_wreck", 9.6, 5.6, "sparking"), _i("drone_wreck", 12.2, 6.6, "b"),
+        _i("ancient_machine", 12.4, 3.2, "active"), _i("gear_pile", 10.4, 7.0, "a"), _i("mine_track", 9.6, 3.0, "straight_h"), _i("mine_track", 11.6, 3.0, "broken"), _i("flotsam", 2.4, 7.0, "mixed"), _i("books", 5.6, 2.4, "stack"),
+    ],
+}

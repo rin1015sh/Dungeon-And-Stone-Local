@@ -16,7 +16,7 @@ import kit as K
 from paint2d import gblur, hexc, sstep
 
 # 번짐 순위: 뒤에 올수록 위를 덮는다. 여기 없는 바닥(실내 석재 바닥)은 순위 1(물보다 위 · 자연 바닥보다 아래)이고 스며들지 않는다.
-ORDER = ["ground_ice", "ground_rock", "ground_ash", "ground_hardpan", "ground_redsoil", "floor_dirt", "ground_mud", "ground_swamp", "floor_sand", "ground_bones",
+ORDER = ["ground_ice", "ground_rock", "ground_ash", "ground_hardpan", "ground_redsoil", "floor_dirt", "ground_mud", "ground_swamp", "floor_sand", "ground_beach", "ground_bones",
     "ground_forest", "ground_thicket", "ground_grass", "ground_meadow", "ground_snow"]
 RANK = dict({"ground_water": 0, "ground_lava": 0}, **{g: i + 2 for i, g in enumerate(ORDER)})
 LIQUID = {"ground_water": "water", "ground_lava": "lava"}
