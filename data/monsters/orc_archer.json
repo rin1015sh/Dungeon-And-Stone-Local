@@ -1,7 +1,7 @@
 {
   "id": "orc_archer",
   "name_ko": "오크 궁수",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -18,18 +18,18 @@
   "immunities": [],
   "weaknesses": {},
   "stats": {
-    "str": 9,
-    "agi": 12,
-    "p_res": 12,
-    "m_res": 8,
-    "int": 5
+    "str": 21,
+    "agi": 26,
+    "p_res": 30,
+    "m_res": 20,
+    "int": 12
   },
   "resources": {
-    "hp": 56,
+    "hp": 174,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 19,
     "damage_type": "pierce",
     "ranged": true
   },
@@ -67,8 +67,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 뒷줄 활잡이"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 뒷줄 활잡이 · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

@@ -1,7 +1,7 @@
 {
   "id": "homunculus",
   "name_ko": "호문쿨루스",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -19,18 +19,18 @@
     "fire": 1.25
   },
   "stats": {
-    "str": 9,
-    "agi": 12,
-    "p_res": 12,
-    "m_res": 14,
-    "int": 12
+    "str": 21,
+    "agi": 26,
+    "p_res": 30,
+    "m_res": 35,
+    "int": 28
   },
   "resources": {
-    "hp": 60,
+    "hp": 186,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 19,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -63,8 +63,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 사람 비슷한 형상(원작). 산성 침(독)"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 사람 비슷한 형상(원작). 산성 침(독) · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

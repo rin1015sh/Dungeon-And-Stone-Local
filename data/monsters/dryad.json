@@ -1,7 +1,7 @@
 {
   "id": "dryad",
   "name_ko": "드라이어드",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -23,18 +23,18 @@
     "holy": 1.25
   },
   "stats": {
-    "str": 4,
-    "agi": 13,
+    "str": 9,
+    "agi": 28,
     "p_res": 0,
-    "m_res": 18,
-    "int": 15
+    "m_res": 45,
+    "int": 35
   },
   "resources": {
-    "hp": 48,
+    "hp": 149,
     "soul": 60
   },
   "natural_weapon": {
-    "attack": 4,
+    "attack": 9,
     "damage_type": "earth"
   },
   "behavior": {
@@ -68,8 +68,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 마녀의 숲에 극히 드물게(배치 가중치를 낮게). [매혹] — 새 상태 charm(절반 확률로 제 편을 친다). 영체류로 두었다"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 마녀의 숲에 극히 드물게(배치 가중치를 낮게). [매혹] — 새 상태 charm(절반 확률로 제 편을 친다). 영체류로 두었다 · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

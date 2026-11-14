@@ -1,7 +1,7 @@
 {
   "id": "dirouter",
   "name_ko": "다이로우터",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -22,18 +22,18 @@
     "holy": 1.5
   },
   "stats": {
-    "str": 4,
-    "agi": 14,
+    "str": 9,
+    "agi": 30,
     "p_res": 0,
-    "m_res": 16,
-    "int": 14
+    "m_res": 40,
+    "int": 33
   },
   "resources": {
-    "hp": 48,
+    "hp": 149,
     "soul": 50
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 14,
     "damage_type": "dark"
   },
   "behavior": {
@@ -70,8 +70,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 원작은 이름뿐 — 숲길을 비트는 그림자 영체로 만들었다(창작). 영체류 · 물리 면역 · 어둠"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 원작은 이름뿐 — 숲길을 비트는 그림자 영체로 만들었다(창작). 영체류 · 물리 면역 · 어둠 · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

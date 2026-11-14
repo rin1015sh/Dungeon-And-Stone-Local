@@ -1,7 +1,7 @@
 {
   "id": "fairy",
   "name_ko": "페어리",
-  "grade": 9,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -23,18 +23,18 @@
     "holy": 1.25
   },
   "stats": {
-    "str": 2,
-    "agi": 18,
+    "str": 5,
+    "agi": 44,
     "p_res": 0,
-    "m_res": 14,
-    "int": 10
+    "m_res": 40,
+    "int": 27
   },
   "resources": {
-    "hp": 22,
+    "hp": 79,
     "soul": 30
   },
   "natural_weapon": {
-    "attack": 2,
+    "attack": 5,
     "damage_type": "poison"
   },
   "behavior": {
@@ -65,8 +65,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 손바닥만 한 날개 인형. 비선공 · 물리 면역 · 마약 성분 독가루"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 손바닥만 한 날개 인형. 비선공 · 물리 면역 · 마약 성분 독가루 · 원작 9등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

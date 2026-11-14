@@ -1,7 +1,7 @@
 {
   "id": "mutant_spirit",
   "name_ko": "돌연변이 하급 정령",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -21,18 +21,18 @@
     "holy": 1.5
   },
   "stats": {
-    "str": 3,
-    "agi": 16,
+    "str": 7,
+    "agi": 34,
     "p_res": 0,
-    "m_res": 18,
-    "int": 13
+    "m_res": 45,
+    "int": 31
   },
   "resources": {
-    "hp": 46,
+    "hp": 143,
     "soul": 60
   },
   "natural_weapon": {
-    "attack": 5,
+    "attack": 12,
     "damage_type": "dark"
   },
   "behavior": {
@@ -64,8 +64,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 원작은 이름뿐 — 뒤틀린 마력 덩어리 정령(창작). 영체류 · 물리 면역"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 원작은 이름뿐 — 뒤틀린 마력 덩어리 정령(창작). 영체류 · 물리 면역 · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

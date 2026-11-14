@@ -1,7 +1,7 @@
 {
   "id": "lizardman",
   "name_ko": "리자드맨",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -19,18 +19,18 @@
     "cold": 1.5
   },
   "stats": {
-    "str": 10,
-    "agi": 12,
-    "p_res": 16,
-    "m_res": 9,
-    "int": 5
+    "str": 24,
+    "agi": 26,
+    "p_res": 40,
+    "m_res": 22,
+    "int": 12
   },
   "resources": {
-    "hp": 70,
+    "hp": 217,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 9,
+    "attack": 21,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -64,8 +64,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 1층 균열의 아이언 리자드맨과 다른 몬스터"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 1층 균열의 아이언 리자드맨과 다른 몬스터 · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

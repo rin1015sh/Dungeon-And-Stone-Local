@@ -1,7 +1,7 @@
 {
   "id": "witch_lamp",
   "name_ko": "위치스램프",
-  "grade": 9,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -22,18 +22,18 @@
     "cold": 1.25
   },
   "stats": {
-    "str": 2,
-    "agi": 15,
+    "str": 5,
+    "agi": 37,
     "p_res": 0,
-    "m_res": 12,
-    "int": 11
+    "m_res": 34,
+    "int": 30
   },
   "resources": {
-    "hp": 20,
+    "hp": 71,
     "soul": 40
   },
   "natural_weapon": {
-    "attack": 3,
+    "attack": 8,
     "damage_type": "fire"
   },
   "behavior": {
@@ -65,8 +65,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 영체류 도깨비불 · 물리 면역. [마녀의 등불]로 자기 자신을 소환(summon — 같은 편 최대 수에서 막힌다)"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 영체류 도깨비불 · 물리 면역. [마녀의 등불]로 자기 자신을 소환(summon — 같은 편 최대 수에서 막힌다) · 원작 9등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

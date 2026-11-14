@@ -1,7 +1,7 @@
 {
   "id": "woodman",
   "name_ko": "우드맨",
-  "grade": 9,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -21,18 +21,18 @@
     "slash": 1.25
   },
   "stats": {
-    "str": 8,
-    "agi": 6,
-    "p_res": 16,
-    "m_res": 6,
-    "int": 3
+    "str": 22,
+    "agi": 15,
+    "p_res": 46,
+    "m_res": 17,
+    "int": 8
   },
   "resources": {
-    "hp": 36,
+    "hp": 129,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 6,
+    "attack": 16,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -66,8 +66,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 걷는 나무 인형. 대지 [뿌리 옭아매기]"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 걷는 나무 인형. 대지 [뿌리 옭아매기] · 원작 9등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

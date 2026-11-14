@@ -1,7 +1,7 @@
 {
   "id": "orc_shaman",
   "name_ko": "오크 주술사",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -20,18 +20,18 @@
     "holy": 1.25
   },
   "stats": {
-    "str": 7,
-    "agi": 11,
-    "p_res": 12,
-    "m_res": 18,
-    "int": 15
+    "str": 16,
+    "agi": 23,
+    "p_res": 30,
+    "m_res": 45,
+    "int": 35
   },
   "resources": {
-    "hp": 50,
+    "hp": 155,
     "soul": 50
   },
   "natural_weapon": {
-    "attack": 5,
+    "attack": 12,
     "damage_type": "blunt"
   },
   "behavior": {
@@ -68,8 +68,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. [열광] — 아군 하나 물리내성 ×3(2차례, 상태 orc_fervor)"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. [열광] — 아군 하나 물리내성 ×3(2차례, 상태 orc_fervor) · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

@@ -1,7 +1,7 @@
 {
   "id": "frogman",
   "name_ko": "프로그맨",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -22,18 +22,18 @@
     "fire": 1.25
   },
   "stats": {
-    "str": 8,
-    "agi": 17,
-    "p_res": 10,
-    "m_res": 10,
-    "int": 6
+    "str": 19,
+    "agi": 36,
+    "p_res": 25,
+    "m_res": 25,
+    "int": 14
   },
   "resources": {
-    "hp": 52,
+    "hp": 162,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 19,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -78,8 +78,8 @@
       ]
     }
   ],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 작살 · 작고 민첩. [썩은점액] = 둔기(blunt) 공격 완전 회피 → immunities blunt + 미끄러워 속박 면역"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 작살 · 작고 민첩. [썩은점액] = 둔기(blunt) 공격 완전 회피 → immunities blunt + 미끄러워 속박 면역 · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

@@ -1,7 +1,7 @@
 {
   "id": "iron_falcon",
   "name_ko": "아이언팔콘",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -20,18 +20,18 @@
     "lightning": 1.5
   },
   "stats": {
-    "str": 8,
-    "agi": 18,
-    "p_res": 15,
-    "m_res": 6,
-    "int": 3
+    "str": 19,
+    "agi": 38,
+    "p_res": 37,
+    "m_res": 15,
+    "int": 7
   },
   "resources": {
-    "hp": 58,
+    "hp": 180,
     "soul": 14
   },
   "natural_weapon": {
-    "attack": 8,
+    "attack": 19,
     "damage_type": "pierce"
   },
   "behavior": {
@@ -70,8 +70,8 @@
       "start_gauge": 30
     }
   ],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 강철 깃털의 매. 하늘에서 먼저 덮친다(start_gauge)"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 강철 깃털의 매. 하늘에서 먼저 덮친다(start_gauge) · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

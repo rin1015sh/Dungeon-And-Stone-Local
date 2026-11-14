@@ -1,7 +1,7 @@
 {
   "id": "witch_wraith",
   "name_ko": "레이스",
-  "grade": 9,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -22,18 +22,18 @@
     "holy": 1.75
   },
   "stats": {
-    "str": 3,
-    "agi": 13,
+    "str": 8,
+    "agi": 32,
     "p_res": 0,
-    "m_res": 14,
-    "int": 12
+    "m_res": 40,
+    "int": 33
   },
   "resources": {
-    "hp": 28,
+    "hp": 100,
     "soul": 40
   },
   "natural_weapon": {
-    "attack": 4,
+    "attack": 11,
     "damage_type": "dark"
   },
   "behavior": {
@@ -63,8 +63,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 9,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 영체류 · 물리 면역. 어둠 + 화염 [시체불꽃]. 2층의 원한령(wraith, 8등급)과 다른 항목"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 영체류 · 물리 면역. 어둠 + 화염 [시체불꽃]. 2층의 원한령(wraith, 8등급)과 다른 항목 · 원작 9등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }

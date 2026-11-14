@@ -1,7 +1,7 @@
 {
   "id": "steel_hill_guard",
   "name_ko": "강철언덕 수호병",
-  "grade": 8,
+  "grade": 7,
   "rank": "normal",
   "floor": 3,
   "floor_tags": [
@@ -20,18 +20,18 @@
     "blunt": 1.25
   },
   "stats": {
-    "str": 11,
-    "agi": 7,
-    "p_res": 24,
-    "m_res": 12,
-    "int": 4
+    "str": 26,
+    "agi": 15,
+    "p_res": 60,
+    "m_res": 30,
+    "int": 9
   },
   "resources": {
-    "hp": 76,
+    "hp": 236,
     "soul": 20
   },
   "natural_weapon": {
-    "attack": 9,
+    "attack": 21,
     "damage_type": "slash"
   },
   "behavior": {
@@ -67,8 +67,8 @@
     }
   ],
   "passives": [],
-  "magic_stone_grade": 8,
+  "magic_stone_grade": 7,
   "essence_drops": [],
   "source": "placeholder",
-  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 언덕을 지키는 쇠 병사. 먼저 덤비지 않는다(가까이 가면)"
+  "notes": "3층 새 몬스터(사용자 2026-11-14 — 순례자의 길). 임시값. 언덕을 지키는 쇠 병사. 먼저 덤비지 않는다(가까이 가면) · 원작 8등급 — 3층 필드는 7등급으로(사용자 2026-11-14, F3-12 · tools/f3_regrade.py)"
 }
