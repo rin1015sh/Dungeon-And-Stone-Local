@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/witchearth.webp-d8157abdf66b574ad79051ecce183
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.9
 compress/uastc_level=0

@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/marshfloor.webp-4d2f297c4c2efe5b7af8c3c02f910
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.9
 compress/uastc_level=0

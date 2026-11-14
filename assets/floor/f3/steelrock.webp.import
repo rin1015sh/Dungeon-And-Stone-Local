@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/steelrock.webp-7510f94c68138b26d6c9bd9eb39837
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.9
 compress/uastc_level=0

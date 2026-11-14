@@ -104,7 +104,7 @@ def tiles():
         floor("f3_reed_path", "갈대 사이 흙길", "f3/reedground.webp", "#5a5a3a", fringe=6, style=1, notes="가시갈대 밭 좁은 길"),
         floor("f3_reed_thin", "성긴 갈대", "f3/reeds_floor.webp", "#5e5c3a", sight=True, move=0.8, fringe=6, style=1,
               notes="가시갈대 밭 — 헤치고 지나갈 수 있지만 시야를 가린다(어깨 높이)", cover=True),
-        wall("f3_reed_wall", "가시갈대", "f3/reeds.webp", "#5a5634", "#4a4430", sight=True, face_px=46, notes="어깨 높이 가시갈대 숲(지나갈 수 없다 · 시야를 가린다)"),
+        wall("f3_reed_wall", "가시갈대", "f3/reeds.webp", "#5a5634", "#4a4430", sight=True, face_px=40, notes="어깨 높이 가시갈대 숲(지나갈 수 없다 · 시야를 가린다)"),
         # ── 황혼의 비탈길 ──
         floor("f3_dusk_ground", "황혼 비탈", "f3/duskearth.webp", "#6a5650", notes="황혼의 비탈길 바위 땅"),
         floor("f3_dusk_low", "비탈 아래 협곡", "f3/duskearth.webp", "#584844", sunk=True, notes="황혼의 비탈길 낮은 협곡(절벽 아래)"),

@@ -191,7 +191,15 @@
     "wasp_buzz": [
       "wind_rush",
       "whoosh_faint"
-    ]
+    ],
+    "f3_whisper": ["memory_sting", "whoosh_faint", "scream_woman"],
+    "f3_laugh": ["shriek_high", "scream_young"],
+    "f3_branch": ["bone_snap", "rock_break"],
+    "f3_footsteps": ["armor_rustle", "whoosh_faint"],
+    "f3_hunter_omen": ["heartbeat", "dark_sting"],
+    "f3_hut_mist": ["wind_magic", "magic_circle"],
+    "f3_sky": ["magic_circle"],
+    "f3_crossbow": ["arrow_shot", "bow_draw"]
   },
   "cues": {
     "fight_far": [

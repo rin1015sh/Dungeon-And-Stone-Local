@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/steelgrass.webp-e14b216ae5f54858ed53be44e9a61
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.9
 compress/uastc_level=0

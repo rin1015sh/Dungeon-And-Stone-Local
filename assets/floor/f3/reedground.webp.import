@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/reedground.webp-9e471ce3dfc91d47cd54d8ec0e70d
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.9
 compress/uastc_level=0
