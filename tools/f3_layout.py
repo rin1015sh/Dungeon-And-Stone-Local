@@ -105,6 +105,23 @@ def E(a, b, width=10, wiggle=4, tile=None, **extra):
     edges.append(d)
 
 
+def K(g, src):
+    """에셋 모음 소품(tools/f3_tiles.py KIT — 1층 균열 넷 · 2층 소품을 3층 바닥 위에)."""
+    return "f3k_%s_%s" % (g, src)
+
+
+def SC(nid, x, y, zone, tile, items, r=4):
+    """장면: 작은 터 하나에 소품을 정해진 자리로(items = [(약자, 원본, [[dx, dy], …])]) — 생활 흔적 · 초소 · 의식 자리."""
+    return N(nid, x, y, r, zone, tile=tile, props=[{"tile": K(g, src), "at": at} for g, src, at in items])
+
+
+ZPROPS = []  # 구역 무작위 소품(에셋 모음)
+
+
+def ZP(zone, g, src, count):
+    ZPROPS.append({"zone": zone, "tile": K(g, src), "count": count})
+
+
 def S(points, width, tile, wiggle=0.0, gaps=None):
     d = {"points": [[int(round(x)), int(round(y))] for x, y in points], "width": width, "tile": tile, "wiggle": wiggle}
     if gaps:
@@ -257,6 +274,84 @@ N("wp_saddle", 360, 36, 9, "f3_windpass", props=HP, view=True)
 N("wp_down", 410, 92, 6, "f3_windpass", tile="f3_hill_grass")
 S([(340, 60), (380, 66)], 3, "f3_rise", 2)
 
+# ── 에셋 모음으로 채우기(장면 · 무작위 소품) ─────────────────────
+# 오크 군락지: 야영지 고리 안 = 잠자리 · 모닥불 · 우물 · 좌판, 무기고 = 대장간(공구대 · 작업대 · 무기대 · 갑옷), 사냥터 = 무두질 · 꿰인 사냥감, 구덩이 = 포로 우리 · 교수대
+SC("or_sleep", 362, 372, "f3_orc", "f3_orc_ground", [("og", "bf_tent", [[-5, -2], [0, -4], [5, -2]]), ("og", "gm_fire", [[0, 1]]), ("og", "bf_sack", [[-3, 3], [4, 3]])], 7)
+SC("or_well", 388, 392, "f3_orc", "f3_orc_ground", [("og", "bf_well", [[0, 0]]), ("og", "bf_barrel", [[-3, 1], [3, 1]]), ("og", "bf_stall", [[0, 4]])], 6)
+SC("or_feast", 384, 368, "f3_orc", "f3_orc_ground", [("og", "bf_table", [[-2, 0], [2, 0]]), ("og", "bf_brazier", [[0, -3]]), ("og", "gm_crate", [[4, 2]])], 5)
+SC("or_smithy", 418, 352, "f3_orc", "f3_orc_ground", [("og", "gm_toolrack", [[-4, -2]]), ("og", "gm_bench", [[0, -2]]), ("og", "bf_rack", [[4, -2], [-4, 2]]),
+                                                     ("og", "bf_armor", [[0, 3], [3, 3]]), ("og", "bf_brazier", [[4, 1]])], 6)
+SC("or_tanning", 306, 322, "f3_orc", "f3_orc_ground", [("og", "bf_torture", [[-3, 0], [3, 0]]), ("og", "bf_stake", [[0, -3], [-5, 3], [5, 3]]), ("og", "gm_fire", [[0, 2]])], 6)
+SC("or_prison", 330, 414, "f3_orc", "f3_orc_ground", [("og", "bf_cage", [[-4, -1], [0, -2], [4, -1]]), ("og", "bf_gallows", [[0, 3]]), ("og", "bf_flag", [[-5, 3], [5, 3]])], 6)
+SC("or_totems", 398, 410, "f3_orc", "f3_orc_ground", [("og", "gc_totem", [[-4, 0], [4, 0]]), ("og", "bf_flag", [[0, -3]])], 5)
+for i, (x, y) in enumerate([(342, 300), (296, 364), (300, 392), (404, 304), (424, 392)]):   # 외곽 경계 초소(방책 · 깃발 · 랜턴)
+    SC("or_post%d" % i, x, y, "f3_orc", None, [("oe", "bf_barricade", [[-2, 0], [2, 0]]), ("oe", "bf_flag", [[0, -2]]), ("oe", "gm_lantern", [[3, -2]])], 4)
+ZP("f3_orc", "oe", "bf_stake", 25)
+ZP("f3_orc", "oe", "bf_crate", 20)
+ZP("f3_orc", "oe", "bf_barrel", 20)
+ZP("f3_orc", "oe", "gm_tent", 10)
+ZP("f3_orc", "oe", "bf_wagon", 6)
+# 강철바위 언덕 · 바람결 고개: 옛 수호병 초소(녹슨 석상 · 갑옷) · 광석 더미 · 탐험가 야영 흔적
+SC("st_post", 372, 186, "f3_steel", "f3_hill_rock", [("hr", "it_statue", [[-3, -2], [3, -2]]), ("hr", "it_armor", [[0, 2]]), ("hr", "it_debris", [[-4, 3], [4, 2]])], 6)
+SC("st_ore", 336, 160, "f3_steel", "f3_hill_rock", [("hr", "gm_ore", [[-2, 0], [2, 1]]), ("hr", "gm_crystal", [[0, -3]]), ("hr", "gm_rock", [[4, -2]])], 5)
+SC("st_camp", 408, 228, "f3_steel", "f3_hill_grass", [("hg", "gm_tent", [[-2, -2]]), ("hg", "gm_fire", [[1, 1]]), ("hg", "bf_crate", [[3, -1]])], 4)
+SC("wp_cairn", 384, 48, "f3_windpass", "f3_hill_rock", [("hr", "bf_flag", [[0, -2]]), ("hr", "gm_rock", [[-2, 1], [2, 1]])], 4)
+ZP("f3_steel", "hr", "gm_rock", 60)
+ZP("f3_steel", "hr", "bf_rock", 60)
+ZP("f3_steel", "hr", "gm_ore", 12)
+ZP("f3_steel", "hg", "bf_deadtree", 10)
+ZP("f3_windpass", "hr", "gm_rock", 50)
+ZP("f3_windpass", "hr", "it_debris", 10)
+# 조각 사원: 분수 · 석관 · 촛대 · 항아리 · 쓰러진 기사상
+SC("tp_fountain", 78, 86, "f3_temple", "f3_temple_grass", [("tg", "fountain_statue", [[0, 0]]), ("tg", "it_urn", [[-3, 2], [3, 2]]), ("tg", "bf_statue", [[-4, -2], [4, -2]])], 6)
+SC("tp_crypt", 46, 28, "f3_temple", "f3_temple_floor", [("tf", "it_sarcophagus", [[-3, 0], [3, 0]]), ("tf", "it_candelabra", [[0, -3]]), ("tf", "it_debris", [[0, 3]])], 5)
+SC("tp_shrine", 128, 40, "f3_temple", "f3_temple_floor", [("tf", "bf_altar", [[0, -2]]), ("tf", "bf_candles", [[-2, -2], [2, -2]]), ("tf", "it_statue", [[-4, 1], [4, 1]])], 5)
+SC("tp_hallway", 52, 50, "f3_temple", "f3_temple_floor", [("tf", "it_statue", [[-6, -4], [-6, 0], [-6, 4], [6, -4], [6, 0], [6, 4]]), ("tf", "bf_altar", [[0, -7]]),
+                                                         ("tf", "it_candelabra", [[-3, -7], [3, -7]]), ("tf", "it_urn", [[-8, 7], [8, 7]])], 8)
+ZP("f3_temple", "tg", "it_debris", 40)
+ZP("f3_temple", "tg", "bf_statue", 20)
+ZP("f3_temple", "tg", "it_urn", 10)
+ZP("f3_temple", "tg", "bf_grave", 8)
+# 칠흑의 강어귀: 가라앉은 짐수레 · 썩은 나무 · 잠긴 우리
+SC("es_wreck", 190, 360, "f3_estuary", "f3_estuary_bank", [("eb", "bf_wagon", [[0, 0]]), ("eb", "bf_sack", [[-2, 2], [3, 1]]), ("eb", "bf_crate", [[2, -2]])], 4)
+SC("es_cage", 250, 410, "f3_estuary", "f3_estuary_bank", [("eb", "bf_cage", [[0, 0]]), ("eb", "bf_stake", [[-3, 1], [3, 1]])], 4)
+ZP("f3_estuary", "eb", "bf_deadtree", 40)
+ZP("f3_estuary", "eb", "bf_post", 40)
+ZP("f3_estuary", "eb", "bf_rock", 30)
+ZP("f3_estuary", "eb", "bf_stake", 15)
+# 녹빛꼬리 습지: 커다란 늪버섯 · 낡은 말뚝
+ZP("f3_greentail", "mf", "gm_mushroom", 50)
+ZP("f3_greentail", "mf", "bf_post", 15)
+# 황혼의 비탈길: 순례자 무덤 · 길잡이 기둥 · 바위 · 광석
+SC("du_graves", 70, 350, "f3_dusk", "f3_dusk_ground", [("dg", "bf_grave", [[-3, 0], [0, -1], [3, 0], [-2, 3], [2, 3]]), ("dg", "bf_flag", [[0, 4]])], 5)
+SC("du_camp", 100, 330, "f3_dusk", "f3_dusk_ground", [("dg", "gm_tent", [[-2, -1]]), ("dg", "gm_fire", [[1, 1]]), ("dg", "bf_crate", [[3, -1]])], 4)
+for i, (x, y) in enumerate([(52, 392), (86, 376), (40, 334), (80, 312), (104, 292)]):   # 비탈을 오르는 길잡이 기둥
+    SC("du_guide%d" % i, x, y, "f3_dusk", "f3_dusk_ground", [("dg", "gc_totem", [[0, 0]])], 3)
+ZP("f3_dusk", "dg", "gm_rock", 60)
+ZP("f3_dusk", "dg", "bf_rock", 50)
+ZP("f3_dusk", "dg", "it_debris", 20)
+ZP("f3_riverbed", "rb", "gm_rock", 30)
+ZP("f3_riverbed", "rb", "bf_wagon", 3)
+# 가시갈대 밭: 길 잃은 이의 무덤 · 갈대에 걸린 깃발 · 말뚝(어디나 비슷하다 — 길잡이가 되지 못한다)
+ZP("f3_reeds", "rp", "bf_post", 25)
+ZP("f3_reeds", "rp", "bf_flag", 10)
+ZP("f3_reeds", "rp", "bf_grave", 12)
+ZP("f3_reeds", "rp", "bf_rock", 20)
+# 마녀의 숲: 의식 자리(촛대 · 제단 · 뼈 기둥) · 매달린 새장 · 마녀의 등불 · 교수대 · 썩은 책장 · 우물
+for i, a in enumerate(range(20, 360, 60)):
+    x, y = polar(a, 92)
+    SC("wr%d" % i, x, y, "f3_witch", "f3_witch_floor", [("wf", "bf_altar", [[0, -2]]), ("wf", "bf_candles", [[-3, -1], [3, -1], [-2, 2], [2, 2]]), ("wf", "gc_totem", [[0, 3]])], 4)
+SC("w_gallows", *polar(140, 108), "f3_witch", "f3_witch_floor", [("wf", "bf_gallows", [[0, 0]]), ("wf", "bf_cage", [[-3, 1], [3, 1]])], 4)
+SC("w_well", *polar(300, 66), "f3_witch", "f3_witch_floor", [("wf", "bf_well", [[0, 0]]), ("wf", "bookshelf", [[-3, -1]]), ("wf", "bf_grave", [[3, 1]])], 4)
+ZP("f3_witch", "wf", "f2d_wisp", 70)
+ZP("f3_witch", "wf", "bf_cage", 30)
+ZP("f3_witch", "wf", "bf_stake", 25)
+ZP("f3_witch", "wf", "bf_grave", 20)
+ZP("f3_witch", "wf", "bf_candles", 15)
+# 첨탑 공터: 화로 · 기사상 고리
+SC("heart_ring", 220, 232, "f3_heart", "f3_heart_floor", [("hf", "it_brazier", [[-8, -4], [8, -4], [-8, 4], [8, 4]]), ("hf", "it_statue", [[-11, 0], [11, 0]]),
+                                                         ("hf", "it_candelabra", [[-4, 6], [4, 6]])], 4)
+
 # ── 필드를 건너는 길(고개 · 둑길 · 숲 어귀 — 경계 띠를 넘는 곳만) ──────────────
 for a, b, w, t in [
     ("gt_south", outer[9], 9, None), ("gt_west", outer[8], 7, None), ("gt_west", "tp_gate", 8, None), ("gt_east", "wp_west", 8, None),
@@ -297,9 +392,13 @@ HUT_ROWS = [
 HUT_AT = (12, 444)
 HUT = {"at": list(HUT_AT), "lit": True, "legend": {"m": "f3_hut_meadow", "W": "f3_hut_wall", "f": "f3_hut_floor", "c": "f3_hut_carpet", "M": "f3_hut_mist"},
        "rows": HUT_ROWS, "marks": {"hut_in": [29, 16], "hut_door": [28, 10], "hut_hearth": [28, 4], "hut_shelf_a": [24, 4], "hut_shelf_b": [33, 4],
-                                   "hut_table": [29, 6], "hut_bonfire": [29, 13], "hut_center": [28, 9]}}
+                                   "hut_table": [29, 6], "hut_bonfire": [29, 13], "hut_center": [28, 9],
+                                   "hut_bed": [34, 7], "hut_candles": [23, 5], "hut_barrel": [23, 8], "hut_urn": [34, 4], "hut_well": [40, 12],
+                                   "hut_crates": [17, 12], "hut_bench": [36, 14]}}
 # 오두막 안 · 둘레 고정 소품(WitchHut이 입장 때 놓는다 — 설원이면 다른 그림)
 HUT_PROPS = {
+    "fixed": {"hut_bed": "f3k_hu_bf_bed", "hut_candles": "f3k_hu_bf_candles", "hut_barrel": "f3k_hu_bf_barrel", "hut_urn": "f3k_hu_it_urn",
+              "hut_well": "f3k_hm_bf_well", "hut_crates": "f3k_hm_bf_crate", "hut_bench": "f3k_hm_gm_bench"},
     "spring": {"trees": "f3_hut_oak", "trees2": "f3_hut_birch", "ground": "f3_hut_meadow", "bonfire": "f3_hut_bonfire"},
     "winter": {"trees": "f3_hut_bare", "trees2": "f3_hut_pine_snow", "ground": "f3_hut_snow", "bonfire": "f3_hut_bonfire_snow", "drift": "f3_hut_drift"},
 }
@@ -333,6 +432,7 @@ def floor_json():
             {"zone": "f3_orc", "tile": "f3_orc_palisade", "count": 30}, {"zone": "f3_orc", "tile": "f3_orc_sack", "count": 30},
             {"zone": "f3_orc", "tile": "f3_orc_fire", "count": 12}, {"zone": "f3_orc", "tile": "f3_orc_armor", "count": 10},
             {"zone": "f3_riverbed", "tile": "f3_hill_boulder_d", "count": 40},
+        ] + ZPROPS + [
         ],
         "outer_props": [
             {"zone": "f3_witch", "tile": "f3_witch_twisted", "count": 420, "near": 10, "clear": [3, 19]},

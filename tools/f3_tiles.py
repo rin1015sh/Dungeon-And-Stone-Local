@@ -185,11 +185,53 @@ def tiles():
     return out
 
 
+# ── 에셋 모음(1층 균열 넷 · 2층 소품)을 3층 바닥 위에: 바닥 약자 → 바닥 타일, 바닥마다 쓸 소품 ──
+# 타일 id = f3k_<바닥 약자>_<원본 id>(밑 바닥만 3층 — 소품 그림은 원본 그대로). tools/f3_layout.py가 K(약자, 원본)으로 부른다.
+KIT_GROUND = {"og": "f3_orc_ground", "oe": "f3_orc_earth", "hr": "f3_hill_rock", "hg": "f3_hill_grass", "tf": "f3_temple_floor",
+              "tg": "f3_temple_grass", "eb": "f3_estuary_bank", "em": "f3_estuary_mud", "mf": "f3_marsh_floor", "dg": "f3_dusk_ground",
+              "rp": "f3_reed_thin", "wf": "f3_witch_floor", "hf": "f3_heart_floor", "hu": "f3_hut_floor", "hm": "f3_hut_meadow", "rb": "f3_riverbed"}
+KIT = {
+    "og": ["bf_tent", "bf_rack", "bf_armor", "bf_barrel", "bf_crate", "bf_brazier", "bf_flag", "bf_sack", "bf_cage", "bf_stake", "gm_fire", "gm_tent",
+           "gm_toolrack", "gm_bench", "gc_totem", "bf_torture", "bf_gallows", "bf_well", "bf_table", "gm_crate", "gm_barrel", "bf_stall"],
+    "oe": ["bf_palisade", "bf_barricade", "bf_wagon", "bf_rack", "bf_flag", "bf_stake", "bf_cage", "gm_tent", "gm_fire", "bf_crate", "bf_barrel", "gm_lantern", "bf_post"],
+    "hr": ["bf_rock", "gm_rock", "gm_ore", "it_debris", "it_statue", "it_armor", "bf_flag", "gm_tent", "gm_fire", "bf_crate", "gm_crystal"],
+    "hg": ["bf_rock", "gm_rock", "bf_deadtree", "gm_tent", "gm_fire", "bf_crate"],
+    "tf": ["it_statue", "it_debris", "it_urn", "it_candelabra", "it_sarcophagus", "bf_statue", "fountain_statue", "bf_candles", "bf_altar", "it_brazier", "it_railing"],
+    "tg": ["it_debris", "bf_statue", "fountain_statue", "it_urn", "bf_grave", "bf_well", "it_statue"],
+    "eb": ["bf_deadtree", "bf_post", "bf_rock", "bf_wagon", "bf_cage", "bf_sack", "bf_stake", "bf_crate"],
+    "em": ["bf_deadtree", "bf_post", "bf_stake", "bf_wagon", "bf_cage"],
+    "mf": ["gm_mushroom", "bf_rock", "bf_post"],
+    "dg": ["bf_rock", "gm_rock", "it_debris", "gm_ore", "bf_grave", "bf_flag", "gm_tent", "gm_fire", "gc_totem", "bf_crate"],
+    "rp": ["bf_post", "bf_rock", "bf_flag", "bf_grave"],
+    "wf": ["bf_deadtree", "bf_cage", "bf_candles", "bf_gallows", "f2d_wisp", "bf_stake", "bf_grave", "gc_totem", "bf_well", "bf_altar", "bookshelf"],
+    "hf": ["it_brazier", "it_statue", "it_candelabra", "bf_statue"],
+    "hu": ["bf_bed", "bf_bookcase", "bf_table", "bf_candles", "bf_barrel", "it_urn", "gm_bench", "bf_crate"],
+    "hm": ["bf_well", "bf_barrel", "bf_crate", "gm_bench"],
+    "rb": ["bf_rock", "gm_rock", "bf_wagon", "it_debris"],
+}
+KIT_NAME = {  # 3층에서 다른 이름으로 부를 것
+    ("og", "bf_stake"): "말뚝에 꿰인 사냥감", ("og", "gc_totem"): "오크 토템", ("og", "bf_torture"): "가죽 무두질 틀", ("og", "bf_stall"): "전리품 좌판",
+    ("og", "bf_gallows"): "전리품 걸이", ("og", "bf_well"): "야영지 우물", ("hr", "it_statue"): "녹슨 수호병 석상", ("hr", "it_armor"): "버려진 강철 갑옷",
+    ("hr", "gm_ore"): "강철 광석 더미", ("hr", "gm_crystal"): "쇳빛 결정", ("wf", "f2d_wisp"): "마녀의 등불", ("wf", "bf_cage"): "매달린 새장",
+    ("wf", "bf_candles"): "녹아내린 촛대", ("wf", "gc_totem"): "뼈 장식 기둥", ("wf", "bookshelf"): "썩은 책장", ("tf", "it_statue"): "목이 부러진 기사상",
+    ("tg", "it_statue"): "목이 부러진 기사상", ("tg", "bf_statue"): "목이 부러진 석상", ("tf", "bf_statue"): "목이 부러진 석상", ("dg", "bf_grave"): "순례자 무덤",
+    ("dg", "gc_totem"): "길잡이 기둥", ("rp", "bf_flag"): "갈대에 걸린 깃발", ("rp", "bf_grave"): "길 잃은 이의 무덤", ("mf", "gm_mushroom"): "커다란 늪버섯",
+}
+
+
+def kit_tiles():
+    out = []
+    for g, srcs in KIT.items():
+        for src in srcs:
+            out.append(prop("f3k_%s_%s" % (g, src), src, KIT_GROUND[g], name=KIT_NAME.get((g, src))))
+    return out
+
+
 def main():
     global SRC
     data = json.load(open(PATH, encoding="utf-8"))
     SRC = {t["id"]: t for t in data}
-    new = tiles()
+    new = tiles() + kit_tiles()
     for t in new:
         if t.pop("ramp_art", False):
             t["art"]["ramp"] = True

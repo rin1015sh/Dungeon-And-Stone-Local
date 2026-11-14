@@ -7332,6 +7332,1673 @@
         "tile": "f3_hill_grass"
       },
       {
+        "id": "or_sleep",
+        "at": [
+          362,
+          372
+        ],
+        "r": 7,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_bf_tent",
+            "at": [
+              [
+                -5,
+                -2
+              ],
+              [
+                0,
+                -4
+              ],
+              [
+                5,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_gm_fire",
+            "at": [
+              [
+                0,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_sack",
+            "at": [
+              [
+                -3,
+                3
+              ],
+              [
+                4,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_well",
+        "at": [
+          388,
+          392
+        ],
+        "r": 6,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_bf_well",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_barrel",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_stall",
+            "at": [
+              [
+                0,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_feast",
+        "at": [
+          384,
+          368
+        ],
+        "r": 5,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_bf_table",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_brazier",
+            "at": [
+              [
+                0,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_gm_crate",
+            "at": [
+              [
+                4,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_smithy",
+        "at": [
+          418,
+          352
+        ],
+        "r": 6,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_gm_toolrack",
+            "at": [
+              [
+                -4,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_gm_bench",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_rack",
+            "at": [
+              [
+                4,
+                -2
+              ],
+              [
+                -4,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_armor",
+            "at": [
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_brazier",
+            "at": [
+              [
+                4,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_tanning",
+        "at": [
+          306,
+          322
+        ],
+        "r": 6,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_bf_torture",
+            "at": [
+              [
+                -3,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_stake",
+            "at": [
+              [
+                0,
+                -3
+              ],
+              [
+                -5,
+                3
+              ],
+              [
+                5,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_gm_fire",
+            "at": [
+              [
+                0,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_prison",
+        "at": [
+          330,
+          414
+        ],
+        "r": 6,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_bf_cage",
+            "at": [
+              [
+                -4,
+                -1
+              ],
+              [
+                0,
+                -2
+              ],
+              [
+                4,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_gallows",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_flag",
+            "at": [
+              [
+                -5,
+                3
+              ],
+              [
+                5,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_totems",
+        "at": [
+          398,
+          410
+        ],
+        "r": 5,
+        "zone": "f3_orc",
+        "kind": "place",
+        "tile": "f3_orc_ground",
+        "props": [
+          {
+            "tile": "f3k_og_gc_totem",
+            "at": [
+              [
+                -4,
+                0
+              ],
+              [
+                4,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_og_bf_flag",
+            "at": [
+              [
+                0,
+                -3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_post0",
+        "at": [
+          342,
+          300
+        ],
+        "r": 4,
+        "zone": "f3_orc",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f3k_oe_bf_barricade",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_bf_flag",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_gm_lantern",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_post1",
+        "at": [
+          296,
+          364
+        ],
+        "r": 4,
+        "zone": "f3_orc",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f3k_oe_bf_barricade",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_bf_flag",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_gm_lantern",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_post2",
+        "at": [
+          300,
+          392
+        ],
+        "r": 4,
+        "zone": "f3_orc",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f3k_oe_bf_barricade",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_bf_flag",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_gm_lantern",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_post3",
+        "at": [
+          404,
+          304
+        ],
+        "r": 4,
+        "zone": "f3_orc",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f3k_oe_bf_barricade",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_bf_flag",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_gm_lantern",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "or_post4",
+        "at": [
+          424,
+          392
+        ],
+        "r": 4,
+        "zone": "f3_orc",
+        "kind": "place",
+        "props": [
+          {
+            "tile": "f3k_oe_bf_barricade",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_bf_flag",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_oe_gm_lantern",
+            "at": [
+              [
+                3,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "st_post",
+        "at": [
+          372,
+          186
+        ],
+        "r": 6,
+        "zone": "f3_steel",
+        "kind": "place",
+        "tile": "f3_hill_rock",
+        "props": [
+          {
+            "tile": "f3k_hr_it_statue",
+            "at": [
+              [
+                -3,
+                -2
+              ],
+              [
+                3,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hr_it_armor",
+            "at": [
+              [
+                0,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hr_it_debris",
+            "at": [
+              [
+                -4,
+                3
+              ],
+              [
+                4,
+                2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "st_ore",
+        "at": [
+          336,
+          160
+        ],
+        "r": 5,
+        "zone": "f3_steel",
+        "kind": "place",
+        "tile": "f3_hill_rock",
+        "props": [
+          {
+            "tile": "f3k_hr_gm_ore",
+            "at": [
+              [
+                -2,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hr_gm_crystal",
+            "at": [
+              [
+                0,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hr_gm_rock",
+            "at": [
+              [
+                4,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "st_camp",
+        "at": [
+          408,
+          228
+        ],
+        "r": 4,
+        "zone": "f3_steel",
+        "kind": "place",
+        "tile": "f3_hill_grass",
+        "props": [
+          {
+            "tile": "f3k_hg_gm_tent",
+            "at": [
+              [
+                -2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hg_gm_fire",
+            "at": [
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hg_bf_crate",
+            "at": [
+              [
+                3,
+                -1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wp_cairn",
+        "at": [
+          384,
+          48
+        ],
+        "r": 4,
+        "zone": "f3_windpass",
+        "kind": "place",
+        "tile": "f3_hill_rock",
+        "props": [
+          {
+            "tile": "f3k_hr_bf_flag",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hr_gm_rock",
+            "at": [
+              [
+                -2,
+                1
+              ],
+              [
+                2,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_fountain",
+        "at": [
+          78,
+          86
+        ],
+        "r": 6,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_grass",
+        "props": [
+          {
+            "tile": "f3k_tg_fountain_statue",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tg_it_urn",
+            "at": [
+              [
+                -3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tg_bf_statue",
+            "at": [
+              [
+                -4,
+                -2
+              ],
+              [
+                4,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_crypt",
+        "at": [
+          46,
+          28
+        ],
+        "r": 5,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_floor",
+        "props": [
+          {
+            "tile": "f3k_tf_it_sarcophagus",
+            "at": [
+              [
+                -3,
+                0
+              ],
+              [
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_it_candelabra",
+            "at": [
+              [
+                0,
+                -3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_it_debris",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_shrine",
+        "at": [
+          128,
+          40
+        ],
+        "r": 5,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_floor",
+        "props": [
+          {
+            "tile": "f3k_tf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_bf_candles",
+            "at": [
+              [
+                -2,
+                -2
+              ],
+              [
+                2,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_it_statue",
+            "at": [
+              [
+                -4,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tp_hallway",
+        "at": [
+          52,
+          50
+        ],
+        "r": 8,
+        "zone": "f3_temple",
+        "kind": "place",
+        "tile": "f3_temple_floor",
+        "props": [
+          {
+            "tile": "f3k_tf_it_statue",
+            "at": [
+              [
+                -6,
+                -4
+              ],
+              [
+                -6,
+                0
+              ],
+              [
+                -6,
+                4
+              ],
+              [
+                6,
+                -4
+              ],
+              [
+                6,
+                0
+              ],
+              [
+                6,
+                4
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_bf_altar",
+            "at": [
+              [
+                0,
+                -7
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_it_candelabra",
+            "at": [
+              [
+                -3,
+                -7
+              ],
+              [
+                3,
+                -7
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_tf_it_urn",
+            "at": [
+              [
+                -8,
+                7
+              ],
+              [
+                8,
+                7
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "es_wreck",
+        "at": [
+          190,
+          360
+        ],
+        "r": 4,
+        "zone": "f3_estuary",
+        "kind": "place",
+        "tile": "f3_estuary_bank",
+        "props": [
+          {
+            "tile": "f3k_eb_bf_wagon",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_eb_bf_sack",
+            "at": [
+              [
+                -2,
+                2
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_eb_bf_crate",
+            "at": [
+              [
+                2,
+                -2
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "es_cage",
+        "at": [
+          250,
+          410
+        ],
+        "r": 4,
+        "zone": "f3_estuary",
+        "kind": "place",
+        "tile": "f3_estuary_bank",
+        "props": [
+          {
+            "tile": "f3k_eb_bf_cage",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_eb_bf_stake",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_graves",
+        "at": [
+          70,
+          350
+        ],
+        "r": 5,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_bf_grave",
+            "at": [
+              [
+                -3,
+                0
+              ],
+              [
+                0,
+                -1
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                -2,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_dg_bf_flag",
+            "at": [
+              [
+                0,
+                4
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_camp",
+        "at": [
+          100,
+          330
+        ],
+        "r": 4,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_gm_tent",
+            "at": [
+              [
+                -2,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_dg_gm_fire",
+            "at": [
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_dg_bf_crate",
+            "at": [
+              [
+                3,
+                -1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_guide0",
+        "at": [
+          52,
+          392
+        ],
+        "r": 3,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_gc_totem",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_guide1",
+        "at": [
+          86,
+          376
+        ],
+        "r": 3,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_gc_totem",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_guide2",
+        "at": [
+          40,
+          334
+        ],
+        "r": 3,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_gc_totem",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_guide3",
+        "at": [
+          80,
+          312
+        ],
+        "r": 3,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_gc_totem",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "du_guide4",
+        "at": [
+          104,
+          292
+        ],
+        "r": 3,
+        "zone": "f3_dusk",
+        "kind": "place",
+        "tile": "f3_dusk_ground",
+        "props": [
+          {
+            "tile": "f3k_dg_gc_totem",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wr0",
+        "at": [
+          306,
+          251
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_candles",
+            "at": [
+              [
+                -3,
+                -1
+              ],
+              [
+                3,
+                -1
+              ],
+              [
+                -2,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_gc_totem",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wr1",
+        "at": [
+          236,
+          311
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_candles",
+            "at": [
+              [
+                -3,
+                -1
+              ],
+              [
+                3,
+                -1
+              ],
+              [
+                -2,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_gc_totem",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wr2",
+        "at": [
+          150,
+          279
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_candles",
+            "at": [
+              [
+                -3,
+                -1
+              ],
+              [
+                3,
+                -1
+              ],
+              [
+                -2,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_gc_totem",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wr3",
+        "at": [
+          134,
+          189
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_candles",
+            "at": [
+              [
+                -3,
+                -1
+              ],
+              [
+                3,
+                -1
+              ],
+              [
+                -2,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_gc_totem",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wr4",
+        "at": [
+          204,
+          129
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_candles",
+            "at": [
+              [
+                -3,
+                -1
+              ],
+              [
+                3,
+                -1
+              ],
+              [
+                -2,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_gc_totem",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wr5",
+        "at": [
+          290,
+          161
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_altar",
+            "at": [
+              [
+                0,
+                -2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_candles",
+            "at": [
+              [
+                -3,
+                -1
+              ],
+              [
+                3,
+                -1
+              ],
+              [
+                -2,
+                2
+              ],
+              [
+                2,
+                2
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_gc_totem",
+            "at": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w_gallows",
+        "at": [
+          137,
+          289
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_gallows",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_cage",
+            "at": [
+              [
+                -3,
+                1
+              ],
+              [
+                3,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w_well",
+        "at": [
+          253,
+          163
+        ],
+        "r": 4,
+        "zone": "f3_witch",
+        "kind": "place",
+        "tile": "f3_witch_floor",
+        "props": [
+          {
+            "tile": "f3k_wf_bf_well",
+            "at": [
+              [
+                0,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bookshelf",
+            "at": [
+              [
+                -3,
+                -1
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_wf_bf_grave",
+            "at": [
+              [
+                3,
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "heart_ring",
+        "at": [
+          220,
+          232
+        ],
+        "r": 4,
+        "zone": "f3_heart",
+        "kind": "place",
+        "tile": "f3_heart_floor",
+        "props": [
+          {
+            "tile": "f3k_hf_it_brazier",
+            "at": [
+              [
+                -8,
+                -4
+              ],
+              [
+                8,
+                -4
+              ],
+              [
+                -8,
+                4
+              ],
+              [
+                8,
+                4
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hf_it_statue",
+            "at": [
+              [
+                -11,
+                0
+              ],
+              [
+                11,
+                0
+              ]
+            ]
+          },
+          {
+            "tile": "f3k_hf_it_candelabra",
+            "at": [
+              [
+                -4,
+                6
+              ],
+              [
+                4,
+                6
+              ]
+            ]
+          }
+        ]
+      },
+      {
         "id": "hut",
         "at": [
           40,
@@ -10476,6 +12143,181 @@
         "zone": "f3_riverbed",
         "tile": "f3_hill_boulder_d",
         "count": 40
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3k_oe_bf_stake",
+        "count": 25
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3k_oe_bf_crate",
+        "count": 20
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3k_oe_bf_barrel",
+        "count": 20
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3k_oe_gm_tent",
+        "count": 10
+      },
+      {
+        "zone": "f3_orc",
+        "tile": "f3k_oe_bf_wagon",
+        "count": 6
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3k_hr_gm_rock",
+        "count": 60
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3k_hr_bf_rock",
+        "count": 60
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3k_hr_gm_ore",
+        "count": 12
+      },
+      {
+        "zone": "f3_steel",
+        "tile": "f3k_hg_bf_deadtree",
+        "count": 10
+      },
+      {
+        "zone": "f3_windpass",
+        "tile": "f3k_hr_gm_rock",
+        "count": 50
+      },
+      {
+        "zone": "f3_windpass",
+        "tile": "f3k_hr_it_debris",
+        "count": 10
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3k_tg_it_debris",
+        "count": 40
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3k_tg_bf_statue",
+        "count": 20
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3k_tg_it_urn",
+        "count": 10
+      },
+      {
+        "zone": "f3_temple",
+        "tile": "f3k_tg_bf_grave",
+        "count": 8
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3k_eb_bf_deadtree",
+        "count": 40
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3k_eb_bf_post",
+        "count": 40
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3k_eb_bf_rock",
+        "count": 30
+      },
+      {
+        "zone": "f3_estuary",
+        "tile": "f3k_eb_bf_stake",
+        "count": 15
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3k_mf_gm_mushroom",
+        "count": 50
+      },
+      {
+        "zone": "f3_greentail",
+        "tile": "f3k_mf_bf_post",
+        "count": 15
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3k_dg_gm_rock",
+        "count": 60
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3k_dg_bf_rock",
+        "count": 50
+      },
+      {
+        "zone": "f3_dusk",
+        "tile": "f3k_dg_it_debris",
+        "count": 20
+      },
+      {
+        "zone": "f3_riverbed",
+        "tile": "f3k_rb_gm_rock",
+        "count": 30
+      },
+      {
+        "zone": "f3_riverbed",
+        "tile": "f3k_rb_bf_wagon",
+        "count": 3
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3k_rp_bf_post",
+        "count": 25
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3k_rp_bf_flag",
+        "count": 10
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3k_rp_bf_grave",
+        "count": 12
+      },
+      {
+        "zone": "f3_reeds",
+        "tile": "f3k_rp_bf_rock",
+        "count": 20
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3k_wf_f2d_wisp",
+        "count": 70
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3k_wf_bf_cage",
+        "count": 30
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3k_wf_bf_stake",
+        "count": 25
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3k_wf_bf_grave",
+        "count": 20
+      },
+      {
+        "zone": "f3_witch",
+        "tile": "f3k_wf_bf_candles",
+        "count": 15
       }
     ],
     "outer_props": [
@@ -11441,6 +13283,310 @@
         ]
       },
       {
+        "name": "or_sleep",
+        "node": "or_sleep",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_well",
+        "node": "or_well",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_feast",
+        "node": "or_feast",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_smithy",
+        "node": "or_smithy",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_tanning",
+        "node": "or_tanning",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_prison",
+        "node": "or_prison",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_totems",
+        "node": "or_totems",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_post0",
+        "node": "or_post0",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_post1",
+        "node": "or_post1",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_post2",
+        "node": "or_post2",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_post3",
+        "node": "or_post3",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "or_post4",
+        "node": "or_post4",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "st_post",
+        "node": "st_post",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "st_ore",
+        "node": "st_ore",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "st_camp",
+        "node": "st_camp",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wp_cairn",
+        "node": "wp_cairn",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "tp_fountain",
+        "node": "tp_fountain",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "tp_crypt",
+        "node": "tp_crypt",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "tp_shrine",
+        "node": "tp_shrine",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "tp_hallway",
+        "node": "tp_hallway",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "es_wreck",
+        "node": "es_wreck",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "es_cage",
+        "node": "es_cage",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_graves",
+        "node": "du_graves",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_camp",
+        "node": "du_camp",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_guide0",
+        "node": "du_guide0",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_guide1",
+        "node": "du_guide1",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_guide2",
+        "node": "du_guide2",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_guide3",
+        "node": "du_guide3",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "du_guide4",
+        "node": "du_guide4",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wr0",
+        "node": "wr0",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wr1",
+        "node": "wr1",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wr2",
+        "node": "wr2",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wr3",
+        "node": "wr3",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wr4",
+        "node": "wr4",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "wr5",
+        "node": "wr5",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "w_gallows",
+        "node": "w_gallows",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "w_well",
+        "node": "w_well",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
+        "name": "heart_ring",
+        "node": "heart_ring",
+        "at": [
+          0,
+          0
+        ]
+      },
+      {
         "name": "hut",
         "node": "hut",
         "at": [
@@ -11516,6 +13662,34 @@
           "hut_center": [
             28,
             9
+          ],
+          "hut_bed": [
+            34,
+            7
+          ],
+          "hut_candles": [
+            23,
+            5
+          ],
+          "hut_barrel": [
+            23,
+            8
+          ],
+          "hut_urn": [
+            34,
+            4
+          ],
+          "hut_well": [
+            40,
+            12
+          ],
+          "hut_crates": [
+            17,
+            12
+          ],
+          "hut_bench": [
+            36,
+            14
           ]
         }
       }
@@ -12207,7 +14381,15 @@
       "wi4",
       "wi5",
       "wi6",
-      "wi7"
+      "wi7",
+      "wr0",
+      "wr1",
+      "wr2",
+      "wr3",
+      "wr4",
+      "wr5",
+      "w_gallows",
+      "w_well"
     ]
   },
   "witch_hut": {
@@ -12240,6 +14422,15 @@
       "winter": "f3.hut_winter"
     },
     "props": {
+      "fixed": {
+        "hut_bed": "f3k_hu_bf_bed",
+        "hut_candles": "f3k_hu_bf_candles",
+        "hut_barrel": "f3k_hu_bf_barrel",
+        "hut_urn": "f3k_hu_it_urn",
+        "hut_well": "f3k_hm_bf_well",
+        "hut_crates": "f3k_hm_bf_crate",
+        "hut_bench": "f3k_hm_gm_bench"
+      },
       "spring": {
         "trees": "f3_hut_oak",
         "trees2": "f3_hut_birch",

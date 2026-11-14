@@ -249,6 +249,12 @@ func _decorate(s: ExploreSession) -> void:
 	put.call("hut_shelf_a", "f3_hut_shelf")
 	put.call("hut_shelf_b", "f3_hut_shelf")
 	put.call("hut_table", "f3_hut_table")
+	var fixed := JsonUtil.get_dict(JsonUtil.get_dict(_cfg, "props"), "fixed")  # 침상 · 촛대 · 통 · 항아리 · 우물 · 상자 · 작업대(에셋 모음)
+	for mark: String in fixed:
+		var tile := str(fixed[mark])
+		if season == "winter" and tile.begins_with("f3k_hm_"):
+			continue  # 설원 바깥에는 봄 소품을 두지 않는다
+		put.call(mark, tile)
 	s.tiles_changed.emit(box)
 
 
