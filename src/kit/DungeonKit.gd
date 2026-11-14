@@ -12,6 +12,8 @@ const DEFAULT_PATH := "res://assets/dungeon_kit/kit.json"
 const SRC_FLOOR := 0
 const SRC_TOP := 1
 const SRC_FACE := 2
+const SRC_FRINGE := 3  ## 번짐 띠 · 물가 테 · 낭떠러지 턱(64 × 64 — KitEdges)
+const SRC_DROP := 4  ## 낭떠러지 벽(64 × 160 — 칸 윗변에서 아래로)
 const Z := {"floor": -10, "wall": -8, "decal": -5, "wall_decal": 0, "stand": 0, "over": 20}
 const NORTH := 3  ## 세트 방의 북쪽 벽 두께(칸) — tools/dungeon_kit/compose.py와 같다
 
@@ -165,7 +167,10 @@ func tileset() -> TileSet:
 	ts.set_custom_data_layer_type(0, TYPE_STRING)
 	var half := px * 0.5
 	var square := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)])
-	for spec: Array in [[SRC_FLOOR, "floors", Vector2i(px, px)], [SRC_TOP, "wall_tops", Vector2i(px, px)], [SRC_FACE, "wall_faces", Vector2i(px, int(float(data.get("wall_h", 2.5)) * px))]]:
+	for spec: Array in [[SRC_FLOOR, "floors", Vector2i(px, px)], [SRC_TOP, "wall_tops", Vector2i(px, px)], [SRC_FACE, "wall_faces", Vector2i(px, int(float(data.get("wall_h", 2.5)) * px))],
+			[SRC_FRINGE, "fringes", Vector2i(px, px)], [SRC_DROP, "cliff_drops", Vector2i(px, int(float(data.get("wall_h", 2.5)) * px))]]:
+		if _sheet(spec[1]) == null:
+			continue
 		var src := TileSetAtlasSource.new()
 		src.texture = _sheet(spec[1])
 		src.texture_region_size = spec[2]
@@ -188,11 +193,19 @@ func tileset() -> TileSet:
 						td.set_custom_data("kit", "%s.%s" % [id, vname])
 						if int(spec[0]) == SRC_FACE:
 							td.texture_origin = Vector2i(0, (size.y - px) / 2)
+						elif int(spec[0]) == SRC_DROP:
+							td.texture_origin = Vector2i(0, -(size.y - px) / 2)
 						elif int(spec[0]) == SRC_TOP:
 							td.add_collision_polygon(0)
 							td.set_collision_polygon_points(0, 0, square)
 	_tileset = ts
 	return ts
+
+
+## 타일 표: "id.변형" → {source, base, span}(KitEdges가 쓴다).
+func tile_of(key: String) -> Dictionary:
+	tileset()
+	return _tiles.get(key, {})
 
 
 ## 바닥 한 칸. 넓은 그림(span 4)이라 칸 좌표를 4로 나눈 나머지 조각을 깐다 — 이웃 칸과 그림이 이어진다.
@@ -295,6 +308,7 @@ func build_set(set_name: String, opts: Dictionary = {}) -> Node2D:
 				var cell := Vector2i(int(p["rect"][0]) + x + 1, int(p["rect"][1]) + y + NORTH)
 				if not walls.has(cell):
 					put_floor(layers[0], cell, String(p["id"]), String(p.get("v", "")))
+	_set_edges(s, layers[0], w, h, walls)
 	var states := {}
 	for x: String in s.get("wall_states", {}):
 		states[Vector2i(int(x) + 1, NORTH - 1)] = s["wall_states"][x]
@@ -316,6 +330,32 @@ func build_set(set_name: String, opts: Dictionary = {}) -> Node2D:
 		room.add_child(node)
 	room.scale = Vector2.ONE * float(opts.get("scale", 1.0))
 	return room
+
+
+## 세트의 낭떠러지(voids — 빈 칸 네모들) · 바닥 번짐(fringe: true): 가장자리 층들을 바닥 층의 자식으로 단다.
+func _set_edges(s: Dictionary, floor_layer: TileMapLayer, w: int, h: int, walls: Dictionary) -> void:
+	var voids := {}
+	for r: Array in s.get("voids", []):
+		for y in int(r[3]):
+			for x in int(r[2]):
+				var cell := Vector2i(int(r[0]) + x + 1, int(r[1]) + y + NORTH)
+				voids[cell] = true
+				floor_layer.erase_cell(cell)
+	var floor_of := {}
+	for cell: Vector2i in floor_layer.get_used_cells():
+		var key := String(floor_layer.get_cell_tile_data(cell).get_custom_data("kit"))
+		floor_of[cell] = key.trim_suffix(".a").trim_suffix(".b") if not (key.ends_with(".poison") or key.contains("ground_water")) else key
+	var made: Array[TileMapLayer] = []
+	for i in (8 if bool(s.get("fringe", false)) else 0) + (2 if not voids.is_empty() else 0):
+		var tl := TileMapLayer.new()
+		tl.tile_set = tileset()
+		tl.collision_enabled = false
+		floor_layer.add_child(tl)
+		made.append(tl)
+	if bool(s.get("fringe", false)):
+		KitEdges.put_fringe(self, made.slice(4, 8), floor_of, made.slice(0, 4))
+	if not voids.is_empty():
+		KitEdges.put_cliffs(self, made[-2], made[-1], voids, floor_of, String(s.get("wall", "cave")) if has("cliff_drop") and variants("cliff_drop").has(String(s.get("wall", "cave"))) else "cave")
 
 
 func _assets() -> Dictionary:

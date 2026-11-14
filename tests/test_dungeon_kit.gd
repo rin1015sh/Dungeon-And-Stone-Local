@@ -46,7 +46,7 @@ func test_make_builds_sprite_animation_and_collision() -> void:
 func test_tileset_and_sets_build() -> void:
 	var kit := DungeonKit.open()
 	var ts := kit.tileset()
-	assert_eq(ts.get_source_count(), 3)
+	assert_eq(ts.get_source_count(), 5)
 	assert_true((ts.get_source(DungeonKit.SRC_FLOOR) as TileSetAtlasSource).get_tiles_count() >= 14 * 16, "바닥 타일")
 	assert_true((ts.get_source(DungeonKit.SRC_TOP) as TileSetAtlasSource).get_tiles_count() >= 16, "벽 윗면 16가지")
 	assert_true(kit.set_names().size() >= 6, "테마 세트")
@@ -55,7 +55,10 @@ func test_tileset_and_sets_build() -> void:
 		var s: Dictionary = kit.data["sets"][set_name]
 		assert_eq(room.get_child_count(), 3 + (s["items"] as Array).size(), set_name)
 		var floor_layer := room.get_child(0) as TileMapLayer
-		assert_eq(floor_layer.get_used_cells().size(), int(s["size"][0]) * int(s["size"][1]), set_name + " 바닥 칸")
+		var gone := 0  # 낭떠러지(voids)로 비운 칸
+		for r: Array in s.get("voids", []):
+			gone += int(r[2]) * int(r[3])
+		assert_eq(floor_layer.get_used_cells().size(), int(s["size"][0]) * int(s["size"][1]) - gone, set_name + " 바닥 칸")
 		room.free()
 
 
@@ -86,6 +89,31 @@ func test_regions_point_at_real_assets() -> void:
 	node.free()
 	assert_eq(kit.frame_count("ground_lava", "flow"), 4, "용암 4프레임")
 	assert_true(not kit.light_of("crystal_wall", "a").is_empty() and kit.light_of("crystal_wall", "dim").is_empty(), "수정 광원")
+
+
+func test_edges_fringe_shore_and_cliffs() -> void:
+	## 가장자리 깔기(KitEdges): 순위가 높은 바닥이 낮은 바닥 칸으로 스며들고, 물 칸에는 물가 테, 빈 칸에는 낭떠러지.
+	var kit := DungeonKit.open()
+	assert_true(KitEdges.rank(kit, "ground_grass") > KitEdges.rank(kit, "ground_rock") and KitEdges.rank(kit, "ground_rock") > KitEdges.rank(kit, "ground_water.clear"), "번짐 순위")
+	assert_true(KitEdges.fringe_ids(kit).size() >= 12, "번짐 띠가 있는 바닥: %d" % KitEdges.fringe_ids(kit).size())
+	var layers: Array = []
+	for i in 10:
+		var tl := TileMapLayer.new()
+		tl.tile_set = kit.tileset()
+		layers.append(tl)
+	var floor_of := {Vector2i(0, 0): "ground_grass", Vector2i(1, 0): "ground_rock", Vector2i(2, 0): "ground_water.clear", Vector2i(1, 1): "ground_rock"}
+	KitEdges.put_fringe(kit, layers.slice(0, 4), floor_of, layers.slice(4, 8))
+	assert_eq((layers[3] as TileMapLayer).get_cell_source_id(Vector2i(1, 0)), DungeonKit.SRC_FRINGE, "풀이 서쪽에서 암반 칸으로 스며든다")
+	assert_eq((layers[1] as TileMapLayer).get_cell_source_id(Vector2i(0, 0)), -1, "높은 쪽 칸에는 띠가 없다")
+	assert_eq((layers[3] as TileMapLayer).get_cell_source_id(Vector2i(2, 0)), DungeonKit.SRC_FRINGE, "암반이 물 칸으로 스며든다")
+	assert_eq((layers[7] as TileMapLayer).get_cell_source_id(Vector2i(2, 0)), DungeonKit.SRC_FRINGE, "물 칸의 뭍 쪽 변에 물가 테")
+	KitEdges.put_cliffs(kit, layers[8], layers[9], {Vector2i(0, 1): true, Vector2i(0, 2): true}, floor_of, "cave")
+	assert_eq((layers[8] as TileMapLayer).get_cell_source_id(Vector2i(0, 1)), DungeonKit.SRC_DROP, "바닥 아래 빈 칸에 낭떠러지 벽")
+	assert_eq((layers[9] as TileMapLayer).get_cell_source_id(Vector2i(0, 2)), -1, "더 아래는 어둠")
+	assert_eq((layers[9] as TileMapLayer).get_cell_source_id(Vector2i(0, 1)), -1, "벽이 선 칸에는 턱을 겹치지 않는다")
+	for tl: TileMapLayer in layers:
+		tl.free()
+	assert_true(bool((kit.info("bridge").get("meta", {}) as Dictionary).get("walkable", false)) and kit.info("bridge").get("collide", []) == [], "다리는 막지 않는다")
 
 
 func test_game_prop_tiles_point_at_kit_sheet() -> void:

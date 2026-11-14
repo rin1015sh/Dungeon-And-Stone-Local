@@ -111,8 +111,8 @@
 - 묘사 정도: **구체적** — 껍질에서 보라색 광채가 나는 나무(입구), 보라색 안개, 들꽃 만개한 잔디밭, 잎이 풍성한 가시나무, 책장 · 식탁 · 카페트 · 난로 / 뒤에는 설원 · 마른 나무 · 눈
 - 바닥: `ground_meadow` `ground_snow` · 벽: `wall_cave`
 - 지역 확장 · 전용: `tree_thorn.glow` `tree_thorn.leafy`
-- 공용: `mist.violet` `flowers` `bookshelf` `table` `chair` `firepit` `tree_broadleaf.bare` `drift.snow` `snow_drift`
-- 남은 것: 카페트 · 벽난로(지금은 모닥불로 대신), 오두막 겉모습
+- 공용: `mist.violet` `flowers` `bookshelf` `table` `chair` `carpet` `fireplace` `tree_broadleaf.bare` `drift.snow` `snow_drift`
+- 남은 것: 오두막 겉모습
 
 ### 오크 군락지 (`f3_orc_colony`) — 3층
 
@@ -155,7 +155,7 @@
 - 묘사 정도: **구체적** — 쟁반 모양 넓적한 바위와 끊긴 길, 로프로 넘는 곳, 필드마다 선 거울, 협곡, 절벽에 난 동굴
 - 바닥: `ground_rock` `ground_rock.dark` · 벽: `wall_cave`
 - 지역 확장 · 전용: `great_mirror`
-- 공용: `rope_crossing` `rock` `rubble` `ground_crack`
+- 공용: `rope_crossing` `cliff_drop.cave` `cliff_lip` `bridge.rope_h` `bridge.wood_h` `rock` `rubble` `ground_crack`
 
 ### 스타트 포인트 (`f5_start_point`) — 5층
 
@@ -169,7 +169,7 @@
 - 묘사 정도: **구체적** — 열기, 10m 너비의 길, 용암이 흐르는 낭떠러지
 - 바닥: `ground_ash` `ground_lava` · 벽: `wall_basalt`
 - 지역 확장 · 전용: `rock_basalt`
-- 공용: `drift.ember` `drift.ash` `scorch`
+- 공용: `cliff_drop.basalt` `cliff_lip` `shore_rim` `drift.ember` `drift.ash` `scorch`
 
 ### 서리 협곡 (`f5_frost_canyon`) — 5층
 
@@ -233,8 +233,7 @@
 - 묘사 정도: **구체적** — 드넓은 호수, 벽면에 쏟아지는 폭포, 피를 연상케 하는 적색 물
 - 바닥: `ground_water.red` `ground_rock` · 벽: `wall_cave`
 - 지역 확장 · 전용: —
-- 공용: `rock` `cattail`
-- 남은 것: 폭포
+- 공용: `waterfall.red` `shore_rim` `rock` `cattail`
 
 ### 대수림 (`f7_great_forest`) — 7층 암흑대륙
 
@@ -284,7 +283,7 @@
 - 묘사 정도: **구체적** — 사방이 유리처럼 투명한 얼음, 미로, 원기둥 싱크홀의 외벽 샛길(나선), 절벽에 난 동굴
 - 바닥: `ground_ice.clear` `ground_ice` · 벽: `wall_ice`
 - 지역 확장 · 전용: `rock_ice` `icicles`
-- 공용: `rope_crossing`
+- 공용: `rope_crossing` `cliff_drop.ice` `cliff_lip`
 - 남은 것: 나선 샛길 · 싱크홀
 
 ## 8층
@@ -341,24 +340,24 @@
 - 묘사 정도: **일부** — 시커먼 포탈, 붉은 하늘, 흑빛 성채, 도개교, 핏물이 찬 해자, 가고일 석상
 - 바닥: `floor_flag` `ground_water.red` · 벽: `wall_stone`
 - 지역 확장 · 전용: —
-- 공용: `portal.violet` `gateway` `doorway.portcullis` `statue_robed` `magic_circle`
-- 남은 것: 도개교 · 까마귀
+- 공용: `portal.violet` `gateway` `doorway.portcullis` `bridge.wood_h` `shore_rim` `statue_robed` `magic_circle`
+- 남은 것: 도개교(지금은 나무 다리로 대신) · 까마귀
 
 ### 빙하굴 (`rift_glacier_cave`) — 1층 균열
 
 - 묘사 정도: **구체적** — 얼음 동굴, 일정 간격의 기둥(부술 수 있다), 얼음 계단, 얼음벽, 미끄러운 얼음 지면, 로프로 넘는 곳, 몬스터가 갇힌 얼음 기둥, 천장에서 떨어지는 얼음 가루
 - 바닥: `ground_ice` `ground_ice.clear` `ground_snow.thin` · 벽: `wall_ice`
 - 지역 확장 · 전용: `rock_ice.pillar` `rock_ice.pillar_frozen` `rock_ice.pillar_broken` `rock_ice` `icicles`
-- 공용: `drift.frost` `rope_crossing` `snow_drift`
-- 남은 것: 얼음 계단 · 폭포
+- 공용: `drift.frost` `rope_crossing` `snow_drift` `waterfall.clear` `cliff_drop.ice`
+- 남은 것: 얼음 계단
 
 ### 녹색 탄광 (`rift_green_mine`) — 1층 균열
 
 - 묘사 정도: **구체적** — 바닥의 철로, 나무 폐자재, 무너져 막힌 천장, 부술 수 있는 벽 너머 초록색 보석, 무너진 다리, 광물, 폭발물
 - 바닥: `ground_rock` `floor_dirt` · 벽: `wall_cave`
 - 지역 확장 · 전용: `mine_track` `mine_cart` `mine_support` `ore_vein`
-- 공용: `debris_wood` `rubble` `wall_breach` `lantern_hanging`
-- 남은 것: 무너진 다리 · 원형 계단 · 폭발물
+- 공용: `bridge.wood_broken` `bridge.wood_h` `cliff_drop.cave` `debris_wood` `rubble` `wall_breach` `lantern_hanging`
+- 남은 것: 원형 계단 · 폭발물
 
 ### 강철의 묘 (`rift_steel_tomb`) — 1층 균열
 

@@ -55,6 +55,55 @@ def layout(s):
     return gw, gh, walls
 
 
+def _edges(cv, s, floor_of, voids):
+    """바닥 번짐 띠 · 물가 테 · 낭떠러지 — 게임 쪽 KitEdges와 같은 규칙."""
+    import a_edge
+    rank = lambda fid: a_edge.RANK.get(fid, 1)
+    fr = {a.meta["of"]: i for i, a in kit.REG.items() if a.meta and a.meta.get("of")}
+    N4 = (("n", (0, -1)), ("e", (1, 0)), ("s", (0, 1)), ("w", (-1, 0)))
+    D4 = (("ne", (1, -1), 0, 1), ("se", (1, 1), 1, 2), ("sw", (-1, 1), 2, 3), ("nw", (-1, -1), 3, 0))
+    if s.get("fringe"):
+        rims, bands = [], []
+        for (x, y), (fid, fv) in floor_of.items():
+            wet = a_edge.LIQUID.get(fid)
+            wet = "poison" if (wet == "lava" and fv == "poison") else wet
+            edge, shore = [False] * 4, [False] * 4
+            for i, (d, (dx, dy)) in enumerate(N4):
+                o = floor_of.get((x + dx, y + dy))
+                if not o:
+                    continue
+                if wet and o[0] != fid:
+                    shore[i] = True
+                    rims.append(("shore_rim", "%s_%s" % (wet, d), x, y))
+                if rank(o[0]) > rank(fid) and o[0] in fr:
+                    edge[i] = True
+                    bands.append((fr[o[0]], "%s_%s" % (d, "ab"[(x * 7 + y * 13) % 2]), x, y))
+            for d, (dx, dy), i0, i1 in D4:
+                o = floor_of.get((x + dx, y + dy))
+                if not o:
+                    continue
+                if wet and o[0] != fid and not shore[i0] and not shore[i1]:
+                    rims.append(("shore_rim", "%s_%s" % (wet, d), x, y))
+                if rank(o[0]) > rank(fid) and o[0] in fr and not edge[i0] and not edge[i1]:
+                    bands.append((fr[o[0]], d, x, y))
+        for aid, v, x, y in rims + bands:
+            _paste(cv, _img(aid, v)[0], x * U, y * U)
+    kind = s.get("wall", "cave")
+    kind = kind if kind in kit.REG["cliff_drop"].variants else "cave"
+    for (x, y) in sorted(voids):
+        cv[y * U:(y + 1) * U, x * U:(x + 1) * U, :3] = np.array([0x0c, 0x0b, 0x0b], np.float32) / 255.0
+    for (x, y) in sorted(voids):
+        if (x, y - 1) in floor_of:
+            _paste(cv, _img("cliff_drop", kind)[0][:, (x % 4) * U:(x % 4 + 1) * U], x * U, y * U)
+    for (x, y) in sorted(voids):
+        if (x, y - 1) in floor_of:
+            continue
+        ab = "ab"[(x * 5 + y * 11) % 2]
+        v = "e_" + ab if (x + 1, y) in floor_of else "w_" + ab if (x - 1, y) in floor_of else "ne" if ((x + 1, y - 1) in floor_of and (x, y - 1) not in voids) else "nw" if ((x - 1, y - 1) in floor_of and (x, y - 1) not in voids) else None
+        if v:
+            _paste(cv, _img("cliff_lip", v)[0], x * U, y * U)
+
+
 def compose(name, s, dark=False):
     gw, gh, walls = layout(s)
     cv = np.zeros((gh * U, gw * U, 4), np.float32)
@@ -71,9 +120,16 @@ def compose(name, s, dark=False):
             for y in range(y0, y0 + ph):
                 if (x + 1, y + NORTH) in floor_of:
                     floor_of[(x + 1, y + NORTH)] = (p["id"], p.get("v"))
+    voids = set()
+    for x0, y0, pw, ph in s.get("voids", []):          # 낭떠러지: 바닥을 비운 칸
+        for x in range(x0, x0 + pw):
+            for y in range(y0, y0 + ph):
+                if floor_of.pop((x + 1, y + NORTH), None):
+                    voids.add((x + 1, y + NORTH))
     for (x, y), (fid, fv) in floor_of.items():
         img, _ = _img(fid, fv)
         _paste(cv, img[(y % 4) * U:(y % 4 + 1) * U, (x % 4) * U:(x % 4 + 1) * U], x * U, y * U)
+    _edges(cv, s, floor_of, voids)
     kind = s.get("wall", "stone")
     top, _ = _img("wall_top", kind if kind in kit.REG["wall_top"].variants else "a")
     for (x, y) in walls:

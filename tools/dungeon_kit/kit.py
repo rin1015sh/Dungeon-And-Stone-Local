@@ -310,7 +310,7 @@ def render(id, vname, frame, params, force=False):
         im = Image.open(path)
         return np.asarray(im.convert("RGBA")), tuple(float(v) for v in im.info.get("origin", "0,0").split(","))
     img, origin = (render_prop if a.kind == "prop" else render_flat)(a, params)
-    if a.layer not in ("floor", "wall"):
+    if a.layer not in ("floor", "wall") and not (a.meta or {}).get("grid") and not (a.meta or {}).get("span"):   # 격자에 맞춰 까는 조각(번짐 띠 · 낭떠러지)은 자르지 않는다
         img, origin = trim(img, origin)
     from PIL import PngImagePlugin
     meta = PngImagePlugin.PngInfo()

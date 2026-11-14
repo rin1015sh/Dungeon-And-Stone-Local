@@ -41,7 +41,7 @@ _r("f3_thorn_reeds", "가시갈대 밭", "3층", "specific", "어깨까지 올�
 _r("f3_witch_forest", "마녀의 숲", "3층 중심부", "specific", "매마른 가시나무와 그 위를 휘감은 덩굴, 모든 것이 살아 움직인다, 지형지물은 나무뿐",
     "ground_forest", "cave", "tree_thorn.a tree_thorn.b tree_thorn.c tree_thorn.vined tree_thorn.vined_b tree_thorn.stir roots vines")
 _r("f3_witch_hut", "마녀의 오두막", "3층", "specific", "껍질에서 보라색 광채가 나는 나무(입구), 보라색 안개, 들꽃 만개한 잔디밭, 잎이 풍성한 가시나무, 책장 · 식탁 · 카페트 · 난로 / 뒤에는 설원 · 마른 나무 · 눈",
-    "ground_meadow ground_snow", "cave", "tree_thorn.glow tree_thorn.leafy mist.violet flowers bookshelf table chair firepit tree_broadleaf.bare drift.snow snow_drift", "카페트 · 벽난로(지금은 모닥불로 대신), 오두막 겉모습")
+    "ground_meadow ground_snow", "cave", "tree_thorn.glow tree_thorn.leafy mist.violet flowers bookshelf table chair carpet fireplace tree_broadleaf.bare drift.snow snow_drift", "오두막 겉모습")
 _r("f3_orc_colony", "오크 군락지", "3층", "none", "(외형 묘사 없음)", "floor_dirt ground_grass.dry", "cave", "palisade tent.hide weapon_rack skull.pike brazier firepit supply_pile", "확장 후보 — 문서에 생김새가 없다")
 _r("f3_greentail_swamp", "녹빛꼬리 습지", "3층", "none", "(이름뿐)", "ground_swamp ground_mud", "cave", "cattail grass_tall log.mossy puddle.murky roots", "확장 후보")
 _r("f3_twilight_slope", "황혼의 비탈길", "3층", "none", "(이름뿐)", "ground_hardpan floor_sand", "sandstone", "rock_sandstone rubble", "확장 후보")
@@ -50,11 +50,11 @@ _r("f4_sky_tower", "천공의 탑", "4층", "partial", "40평 석실, 벽마다 
     "floor_flag floor_old", "stone", "sealed_door.courage sealed_door.wisdom sealed_door.fate sealed_door.patience sealed_door.open stairs_up portal.violet portal.blue portal_stele chest torch_wall", "문양 도안은 문서에 없다(지어낸 도안)")
 # ── 5층 ──
 _r("f5_great_mirror", "대마경", "5층", "specific", "쟁반 모양 넓적한 바위와 끊긴 길, 로프로 넘는 곳, 필드마다 선 거울, 협곡, 절벽에 난 동굴",
-    "ground_rock ground_rock.dark", "cave", "rope_crossing great_mirror rock rubble ground_crack")
+    "ground_rock ground_rock.dark", "cave", "rope_crossing great_mirror cliff_drop.cave cliff_lip bridge.rope_h bridge.wood_h rock rubble ground_crack")
 _r("f5_start_point", "스타트 포인트", "5층", "partial", "캠핑장 같은 모습, 정육점처럼 내리쬐는 빨간 조명",
     "ground_rock", "cave", "tent bedroll firepit backpack supply_pile magic_lamp.red crate barrel")
 _r("f5_hellfire_canyon", "지옥불 협곡", "5층", "specific", "열기, 10m 너비의 길, 용암이 흐르는 낭떠러지",
-    "ground_ash ground_lava", "basalt", "rock_basalt drift.ember drift.ash scorch")
+    "ground_ash ground_lava", "basalt", "rock_basalt cliff_drop.basalt cliff_lip shore_rim drift.ember drift.ash scorch")
 _r("f5_frost_canyon", "서리 협곡", "5층", "none", "(이름뿐)", "ground_ice ground_snow", "ice", "rock_ice snow_drift icicles drift.frost", "확장 후보")
 _r("f5_wraith_canyon", "망령의 협곡", "5층", "partial", "몇 분마다 땅이 흔들린다", "ground_rock.dark", "cave", "ground_crack rubble rock")
 # ── 6층 ──
@@ -66,7 +66,7 @@ _r("f6_treasure_isle", "피오네섬", "6층", "specific", "평평한 들판, �
 _r("f6_arta_isle", "아르타 섬", "6층", "partial", "이상한 기둥 구조물 3개, 제단(피를 바치면 포탈)", "floor_sand ground_rock", "sandstone", "altar.bloody portal", "기둥 구조물의 생김새는 문서에 없다")
 # ── 7층 ──
 _r("f7_wraith_strait", "원귀의 협곡", "7층 암흑대륙", "specific", "석유가 덮인 듯 검게 물든 바다, 불길하고 음울한 안개", "ground_water.black", "basalt", "mist.grey mist.black", "배")
-_r("f7_red_estuary", "아리베오나 강어귀", "7층 암흑대륙", "specific", "드넓은 호수, 벽면에 쏟아지는 폭포, 피를 연상케 하는 적색 물", "ground_water.red ground_rock", "cave", "rock cattail", "폭포")
+_r("f7_red_estuary", "아리베오나 강어귀", "7층 암흑대륙", "specific", "드넓은 호수, 벽면에 쏟아지는 폭포, 피를 연상케 하는 적색 물", "ground_water.red ground_rock", "cave", "waterfall.red shore_rim rock cattail")
 _r("f7_great_forest", "대수림", "7층 암흑대륙", "partial", "넓은 정글", "ground_thicket", "cave", "tree_giant bush grass_tall vines roots")
 _r("f7_pantelion", "판텔리온 유적지", "7층 암흑대륙 · 지하 1층", "partial", "조각 사원과 비슷한 무너진 석조 잔해, 기계 몬스터 / 정글 속 사원 안의 공장(드론 · 레일 · 변환 장치)",
     "floor_old floor_broken", "ancient", "ruin_wall pillar.broken rubble ancient_machine gear_pile mine_track valve_wheel", "드론 · 공장 레일 전용 그림")
@@ -75,7 +75,7 @@ _r("f7_losers_rest", "패자의 안식처", "7층 암흑대륙", "specific", "�
 _r("f7_dragon_depth", "용의 심처", "7층 암흑대륙", "specific", "널린 거대한 척추뼈, 두개골과 뼛조각으로 가득 찬 평야, 빛이 없다", "ground_bones", "cave", "giant_bone skull bones")
 _r("f7_icerock", "아이스록", "7층", "partial", "추위, 주기적인 눈보라, 평야지대, 얼음산", "ground_snow ground_ice", "ice", "drift.snow snow_drift rock_ice.snowcap rock_ice.shards_a rock_ice.block tree_pine.snowy bush.snowy")
 _r("f7_ice_cave", "얼음 동굴 · 빙하의 눈", "7층 아이스록", "specific", "사방이 유리처럼 투명한 얼음, 미로, 원기둥 싱크홀의 외벽 샛길(나선), 절벽에 난 동굴",
-    "ground_ice.clear ground_ice", "ice", "rock_ice icicles rope_crossing", "나선 샛길 · 싱크홀")
+    "ground_ice.clear ground_ice", "ice", "rock_ice icicles rope_crossing cliff_drop.ice cliff_lip", "나선 샛길 · 싱크홀")
 # ── 8~10층 ──
 _r("f8_dawn_land", "여명의 땅", "8층", "specific", "우뚝 솟은 초록색 동산, 드넓은 초원, 가까이 보이는 균열 포탈", "ground_grass ground_meadow", "cave", "portal grass_tall flowers bush tree_broadleaf", "동산(높낮이)")
 _r("f9_star_tomb", "별무덤", "9층", "partial", "운석 낙하 — 위에서 쏟아지는 붉은 빛 → 크레이터 → 벼락 줄기", "ground_rock.dark ground_ash", "basalt", "red_beam crater meteorite lightning")
@@ -85,11 +85,11 @@ _r("f10_abyss", "심연", "10층", "partial", "심연의 문, 문 근처에 즐�
 _r("b1_archive_sea", "기록의 바다 · 석문섬 · 도서관섬", "지하 1층", "specific", "수은 같은 은색 바다, 비석처럼 생긴 거대한 문, 수호자 석상이 늘어선 복도, 원기둥 둘로 선 신전, 천장까지 닿는 책장, 테이블 같은 석판",
     "ground_water.silver floor_flag", "ancient", "sealed_door statue pillar_white bookshelf stone_tablet.glowing stairs_down", "곡선 책장 · 200단 계단")
 # ── 균열 ──
-_r("rift_bloody_castle", "핏빛성채", "1층 균열", "partial", "시커먼 포탈, 붉은 하늘, 흑빛 성채, 도개교, 핏물이 찬 해자, 가고일 석상", "floor_flag ground_water.red", "stone", "portal.violet gateway doorway.portcullis statue_robed magic_circle", "도개교 · 까마귀")
+_r("rift_bloody_castle", "핏빛성채", "1층 균열", "partial", "시커먼 포탈, 붉은 하늘, 흑빛 성채, 도개교, 핏물이 찬 해자, 가고일 석상", "floor_flag ground_water.red", "stone", "portal.violet gateway doorway.portcullis bridge.wood_h shore_rim statue_robed magic_circle", "도개교(지금은 나무 다리로 대신) · 까마귀")
 _r("rift_glacier_cave", "빙하굴", "1층 균열", "specific", "얼음 동굴, 일정 간격의 기둥(부술 수 있다), 얼음 계단, 얼음벽, 미끄러운 얼음 지면, 로프로 넘는 곳, 몬스터가 갇힌 얼음 기둥, 천장에서 떨어지는 얼음 가루",
-    "ground_ice ground_ice.clear ground_snow.thin", "ice", "rock_ice.pillar rock_ice.pillar_frozen rock_ice.pillar_broken rock_ice icicles drift.frost rope_crossing snow_drift", "얼음 계단 · 폭포")
+    "ground_ice ground_ice.clear ground_snow.thin", "ice", "rock_ice.pillar rock_ice.pillar_frozen rock_ice.pillar_broken rock_ice icicles drift.frost rope_crossing snow_drift waterfall.clear cliff_drop.ice", "얼음 계단")
 _r("rift_green_mine", "녹색 탄광", "1층 균열", "specific", "바닥의 철로, 나무 폐자재, 무너져 막힌 천장, 부술 수 있는 벽 너머 초록색 보석, 무너진 다리, 광물, 폭발물",
-    "ground_rock floor_dirt", "cave", "mine_track mine_cart mine_support ore_vein debris_wood rubble wall_breach lantern_hanging", "무너진 다리 · 원형 계단 · 폭발물")
+    "ground_rock floor_dirt", "cave", "mine_track mine_cart mine_support ore_vein bridge.wood_broken bridge.wood_h cliff_drop.cave debris_wood rubble wall_breach lantern_hanging", "원형 계단 · 폭발물")
 _r("rift_steel_tomb", "강철의 묘", "1층 균열", "partial", "어둡고 좁은 복도, 벽화 같은 문양이 새겨진 금속 벽, 함정, 묘실", "floor_flag", "metal", "sarcophagus spear_wall dart_holes pressure_plate blade_trap")
 _r("rift_gun_desert", "총포 사막", "2층 균열", "partial", "끝이 보이지 않는 드넓은 사막", "floor_sand ground_hardpan", "sandstone", "rock_sandstone")
 _r("rift_white_temple", "백색신전", "3층 균열", "specific", "높은 천장, 새하얀 대리석 기둥, 벽을 따라 선 석상, 석상 손의 푸른 보석에서 안개처럼 퍼지는 빛, 돔 안의 인공 정원(수풀 · 과실이 맺힌 나무)",

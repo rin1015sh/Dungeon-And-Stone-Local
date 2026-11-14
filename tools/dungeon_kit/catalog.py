@@ -27,14 +27,10 @@ GROUP = {"A. 공용 기본 · 지형": ["floor", "wall", "terrain", "nature"], "
 
 # 아직 없는 에셋(기획) — (이름, 분류, 쓸 지역, 형태, 기능, 재사용성, 제작 방식, 우선순위)
 BACKLOG = [
-    ("절벽 턱 · 낭떠러지 가장자리", "지형", "5층 대마경 · 지옥불 협곡 · 7층 해안 절벽 · 빙하의 눈", "바닥이 끊기는 가장자리 조각(직선 · 안팎 모서리) + 아래로 떨어지는 암벽", "이동 방해", "공용", "코드 생성(타일)", "높음"),
-    ("바닥 재질 번짐 띠", "바닥", "모든 야외 지역", "서로 다른 바닥(풀 ↔ 흙 ↔ 물) 사이를 잇는 띠 — 게임의 FloorFringe 값", "장식", "공용", "게임 데이터(fringe)", "높음"),
-    ("물가 · 용암가 테", "바닥", "강어귀 · 호수 · 용암 협곡 · 대해", "물 · 용암 타일과 땅 사이의 젖은 테 · 달아오른 테", "장식", "공용", "코드 생성(타일)", "높음"),
-    ("다리(돌 · 나무 · 무너진)", "구조물", "녹색 탄광(무너진 다리) · 핏빛성채(도개교) · 강", "2칸 조각을 잇는 다리 + 끊긴 끝", "이동 통로", "공용", "조합형", "높음"),
-    ("폭포", "환경 연출", "아리베오나 강어귀 · 빙하굴 3챕터 · 꿈결 폭포", "벽면을 타고 쏟아지는 물(4프레임) + 떨어지는 자리 물보라", "장식", "공용", "코드 생성", "중간"),
+    ("경사면 · 높낮이 단", "지형", "8층 동산 · 강철바위 언덕 · 급경사(빙하굴 3챕터)", "바닥이 한 단 올라가는 턱(오르는 비탈 조각 + 단 옆면)", "이동 통로 · 방해", "공용", "코드 생성(타일)", "높음"),
+    ("도개교 · 해자", "구조물", "핏빛성채", "내려오는 도개교(올림 · 내림), 핏물이 찬 해자 가장자리", "상호작용", "지역 전용", "조합형", "중간"),
     ("깊은 바다 · 백색 모래사장 · 암초", "바닥 · 지형", "6층 대해", "흰 모래 바닥, 에메랄드빛 깊은 물, 물 위로 솟은 암초 · 붉은 바위", "이동 방해", "지역 확장형", "코드 생성", "중간"),
     ("배 · 부서진 배 · 선착장", "구조물", "6층 대해 · 원귀의 협곡 · 유령섬", "현지에서 만든 작은 배, 난파선 조각", "상호작용", "지역 전용", "개별 제작", "중간"),
-    ("벽난로 · 카페트", "가구", "마녀의 오두막 · 저택 복도", "벽에 붙은 난로(장작불 4프레임 · 꺼져 감), 바닥 깔개", "장식 · 상호작용", "공용", "코드 생성", "중간"),
     ("천장까지 닿는 책장 · 곡선 책장", "가구", "도서관섬", "벽 높이를 넘는 큰 책장, 원형 방 둘레에 맞는 굽은 조각", "이동 방해", "지역 전용", "조합형", "낮음"),
     ("얼음 계단 · 투명한 계단", "구조물", "빙하굴 2챕터 · 영혼의 요새", "아래로 내려가는 얼음 계단, 유리 같은 계단", "이동 통로", "지역 확장형", "코드 생성", "중간"),
     ("나선 샛길 · 원형 계단", "지형", "빙하의 눈 · 녹색 탄광 3챕터", "원기둥 벽을 따라 도는 좁은 길", "이동 통로", "지역 전용", "조합형", "낮음"),
@@ -204,7 +200,8 @@ def sheets():
     os.makedirs(SHOTS, exist_ok=True)
     tmp = os.path.join(HERE, ".cache", "_sheet.png")
     for name, sel in (("ground", ["ground_"]), ("wall_nature", ["wall_cave", "wall_sandstone", "wall_ice", "wall_basalt", "wall_metal", "wall_top", "sealed_door"]), ("terrain", ["terrain"]), ("flora", ["flora"]),
-            ("structure", ["ruin_wall", "portal_stele", "monument", "pillar_white", "palisade", "tent", "mine_", "great_mirror"]), ("fx", ["fx", "death_tile"])):
+            ("structure", ["ruin_wall", "portal_stele", "monument", "pillar_white", "palisade", "tent", "mine_", "great_mirror"]), ("fx", ["drift", "mist", "light_orb", "collapse_crack", "red_beam", "lightning", "death_tile"]),
+            ("edge", ["fringe_grass", "fringe_snow", "fringe_sand", "fringe_mud", "shore_rim", "cliff_", "bridge", "waterfall", "fireplace", "carpet"])):
         subprocess.run([sys.executable, os.path.join(HERE, "build.py")] + sel + ["--sheet=" + tmp], check=True, stdout=subprocess.DEVNULL)
         Image.open(tmp).convert("RGB").save(os.path.join(SHOTS, "sheet_%s.jpg" % name), quality=84)
         print("모음 그림: docs/screens/asset_library/sheet_%s.jpg" % name)

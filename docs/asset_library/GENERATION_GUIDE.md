@@ -10,7 +10,7 @@
 | 이 문서 | 쓰는 법 · 새 에셋 · 새 지역 더하는 법 · 이름 규칙 · 검증 |
 | `docs/screens/asset_library/` | `sheet_<분류>.jpg` 이름표 붙은 모음 그림 · `set_<세트>.jpg` 지역 본보기 장면 |
 
-## 1. 무엇이 더해졌나 (65종 — 키트 181 → 246종 · 그림 1218장)
+## 1. 무엇이 더해졌나 (87종 — 키트 181 → 268종 · 그림 1474장)
 
 | 묶음 | 파일 | 에셋 |
 |---|---|---|
@@ -19,6 +19,7 @@
 | 지형 14 | `a_terrain.py` | 사암 바위 · 얼음 덩이(기둥 · 속에 갇힌 그림자 · 부서진 밑동) · 현무암 바위(달아오른 것) · 수정 박힌 바위 · 벽에 붙은 수정 · 천장 수정 · 눈 더미 · 고드름 · 운석 구덩이 · 운석 · 거대한 뼈 · 땅에 박힌 낡은 검 · 로프 건널목 · (+ `a_ruin.py`의 굳은 둔덕 · 광맥 바위) |
 | 식생 13 | `a_flora.py` | 활엽수 · 침엽수 · 매마른 가시나무(덩굴 · 잎 · 살아 움직임 · 보랏빛 광채) · 밀림의 거목(옹이구멍) · 검은 불에 타는 나무 · 덤불 · 키 큰 풀 · 가시갈대 · 들꽃 무더기 · 부들 · 그루터기 · 통나무 |
 | 구조물 11 | `a_ruin.py` | 폐허 담(모듈 9조각) · 포탈 비석(켜짐 · 돌덩이 · 거대) · 기념비 · 문양 새긴 석문(용기 · 지혜 · 운명 · 인내 · 빛남 · 열림) · 흰 대리석 기둥 · 말뚝 울타리(모듈) · 천막 · 철로 · 광차 · 갱도 버팀목 · 거울 |
+| 가장자리 · 이음 22 | `a_edge.py` | **바닥 번짐 띠 15**(`fringe_<바닥>` — 변 넷 × 2 + 대각 넷) · 물가 · 용암가 테 · 낭떠러지 벽(암벽 5종) · 낭떠러지 턱 · 다리(나무 · 돌 · 흔들다리 · 끊긴 것) · 폭포(4프레임) · 벽난로(타오름 · 꺼져 감 · 식음) · 깔개 |
 | 환경 연출 7 + 함정 1 | `a_fx.py` | 안개(잿빛 · 검은 · 보랏빛 · 푸른) · 은빛 구체 · 흩날리는 입자(눈 · 얼음 가루 · 불티 · 재 · 먼지) · 퍼지는 공간 균열 · 붉은 빛(낙하 예고) · 벼락 줄기 · 즉사 함정 타일 |
 
 **공용 → 지역 확장의 틀**(색만 바꾸지 않는다 — 덩어리의 꼴이 다르다):
@@ -31,6 +32,7 @@
 | `pillar` 기둥 | `pillar_white`(배흘림 · 홈 · 빛남 · 물에 삭음) |
 | `wall_stone` 등 돌 쌓기 벽 | `wall_cave` · `wall_sandstone` · `wall_ice` · `wall_basalt` · `wall_metal`(같은 상태 넷 · 같은 `put_walls`) |
 | `floor_*` 실내 바닥 | `ground_*` 야외 바닥(같은 4 × 4칸 넓은 그림 · 같은 `put_floor`) |
+| `wall_<종류>` 벽면 | `cliff_drop.<종류>` 낭떠러지 벽(같은 암반 결을 아래로 — 어둠에 잠긴다) |
 
 ## 2. 게임에서 쓰기
 
@@ -48,13 +50,19 @@ kit.reuse_of("tree_thorn")                           # "ext" (틀 = kit.info("tr
 add_child(kit.build_set("witch_forest"))             # 지역 본보기 세트 11(아래) — 시험 장면
 ```
 
+- **가장자리 깔기(`KitEdges`)** — 지역을 잇는 기반:
+  ```gdscript
+  KitEdges.put_fringe(kit, [n, e, s, w], floor_of, [rn, re, rs, rw])   # floor_of = {칸: "ground_grass" …} · 층 넷(+ 물가 테 층 넷)
+  KitEdges.put_cliffs(kit, drops, lips, voids, floor_of, "cave")        # voids = {빈 칸: true} — 바닥 아래 빈 칸에 낭떠러지 벽(2.5칸), 옆 빈 칸에 턱
+  ```
+  번짐 순위(`kit.json fringe.rank` ← `a_edge.py ORDER`): 물 · 용암 < 실내 석재 < 얼음 < 암반 < 재 < 마른 땅 < 붉은 땅 < 흙 < 진흙 < 습지 < 모래 < 뼈밭 < 숲 < 밀림 < 풀 < 들꽃 < 눈. 높은 바닥이 낮은 바닥 칸으로 스며들어 칸 경계가 풀린다 — 물가는 뭍이 덮고 그 아래 물가 테가 깔린다. 세트에서는 `"fringe": True` · `"voids": [[x, y, 폭, 높이]]`. 다리(`bridge`)는 몸 아래에 그리고 막지 않는다(`meta.walkable`) — 끊긴 다리는 놓는 쪽에서 막는다.
 - **장식 / 막는 것 / 상호작용 구분**: `kit.info(id)`의 `collide`(없으면 지나간다) · `interact`(portal · door · altar · rope · trap · container · breakable · entrance) · `light` · `meta.states`(idle → active → spent 변형 짝) · `meta.blocks`(닫힌 석문처럼 변형에 따라 가운데가 막힌다) · `meta.cover`(가시갈대 — 막지 않고 시야만 가린다) · `meta.hazard`(용암 · 물 바닥 — 지나갈 수 있는지는 놓는 쪽 지도가 정한다).
 - **애니메이션 바닥**(용암 · 물)은 TileSet에 첫 프레임만 실린다. 움직이게 하려면 `kit.texture(id, 변형, 프레임)` 4장을 직접 돌린다(탐험 화면이면 셰이더의 시간 값으로 프레임 고르기 — 타일마다 노드를 만들지 않는다).
 - **환경 연출**(`fx`)은 그림 몇 장이 도는 낱 그림이다. 화면에 보이는 칸에만 놓고, `drift`(눈 · 불티)는 2 × 2칸 한 장을 화면 크기만큼만 깐다. 큰 지도 전체에 깔지 않는다(CLAUDE.md 함정 — 화면 둘레 청크만).
 - 탐험 화면(`src/explore/view/` — `QuadBatch`)에 넣을 때는 노드를 만들지 말고 `kit.texture()` · `kit.origin()` · `collide`만 꺼내 기존 그리기에 태운다(`DUNGEON_KIT.md` §3). 게임 소품 시트로 옮기는 본보기 = `tools/dungeon_kit/f3_stand.py`.
 - **지금 게임 지도에는 새 에셋이 연결되어 있지 않다** — 기존 맵 · 전투 · 저장은 그대로다. 층을 만들 때 그 지역 표에서 꺼내 쓴다.
 
-지역 본보기 세트(`kit.json` `sets` — 설계 `tools/dungeon_kit/sets_wild.py`): `crystal_cave` · `dead_land` · `desert_ruins` · `witch_forest` · `thorn_reeds` · `hellfire` · `ice_cave` · `bone_plain` · `green_mine` · `trial_hall` · `dawn_meadow`.
+지역 본보기 세트 13(`kit.json` `sets` — 설계 `tools/dungeon_kit/sets_wild.py`): `canyon`(낭떠러지 · 다리 · 폭포) · `witch_hut`(오두막 안) · `crystal_cave` · `dead_land` · `desert_ruins` · `witch_forest` · `thorn_reeds` · `hellfire` · `ice_cave` · `bone_plain` · `green_mine` · `trial_hall` · `dawn_meadow`.
 
 ## 3. 이름 규칙
 
@@ -90,7 +98,7 @@ add_child(kit.build_set("witch_forest"))             # 지역 본보기 세트 1
 
 ## 6. 검증 (2026-11-14 클라우드 리눅스)
 
-- `catalog.py --check` 통과(246종 — 같은 이름 · 같은 그림 없음. 처음에 `rift`와 이름이 겹친 새 균열을 잡아 `collapse_crack`으로 나눴다).
-- Godot 4.7.2에서 `kit_demo.gd --set=all`: 세트 18개(옛 7 + 지역 11)가 TileSet · 스프라이트 · 애니메이션 · 충돌로 쌓인다. `tests/test_dungeon_kit.gd`가 지역 표 · 재사용성 · 참조로 만들기 · 용암 4프레임 · 수정 광원을 본다.
+- `catalog.py --check` 통과(268종 — 같은 이름 · 같은 그림 없음. 처음에 `rift`와 이름이 겹친 새 균열을 잡아 `collapse_crack`으로 나눴다).
+- Godot 4.7.2에서 `kit_demo.gd --set=all`: 세트 20개(옛 7 + 지역 13)가 TileSet · 스프라이트 · 애니메이션 · 충돌로 쌓인다. `tests/test_dungeon_kit.gd`가 지역 표 · 재사용성 · 참조로 만들기 · 용암 4프레임 · 수정 광원 · 번짐 띠 · 물가 테 · 낭떠러지 깔기를 본다. 번짐 띠 · 낭떠러지는 파이썬 미리보기와 엔진 캡처가 같은 것을 확인했다(`canyon` · `dawn_meadow`).
 - 옛 에셋 181종은 다시 구워도 그림이 같다(829장 중 758장 픽셀 일치, 나머지 71장은 테두리 1px — numpy 판이 달라 생긴 차이, 눈으로 같다). 묶음 그림 안의 자리는 바뀌었다(`kit.json`이 가리킨다 — 게임 소품 시트 `assets/floor/kit/props.webp` · 3층 `kit_stand.webp`는 따로 구운 그림이라 그대로).
 - **게임 화면(탐험 지도) 안에서의 모습은 확인하지 못했다** — 아직 어느 층에도 연결하지 않았다. 빛은 게임의 빛 계산 몫이라 어둠 속 모습도 층에 넣을 때 본다.

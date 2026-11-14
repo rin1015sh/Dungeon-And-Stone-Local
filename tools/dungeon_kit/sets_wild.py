@@ -27,7 +27,7 @@ WILD["crystal_cave"] = {
 }
 
 WILD["dead_land"] = {
-    "name_ko": "망자의 땅", "region": "f2_land_of_dead", "size": [12, 8], "floor": "ground_mud", "wall": "stone",
+    "fringe": True, "name_ko": "망자의 땅", "region": "f2_land_of_dead", "size": [12, 8], "floor": "ground_mud", "wall": "stone",
     "floor_patches": [{"id": "ground_rock", "v": "dark", "rect": [7, 0, 5, 5]}, {"id": "ground_bones", "rect": [0, 5, 4, 3]}],
     "wall_states": {"1": "damaged", "4": "cracked", "8": "mossy", "10": "damaged"},
     "items": [
@@ -40,7 +40,7 @@ WILD["dead_land"] = {
 }
 
 WILD["desert_ruins"] = {
-    "name_ko": "바위사막", "region": "f2_rock_desert", "size": [12, 8], "floor": "floor_sand", "wall": "sandstone",
+    "fringe": True, "name_ko": "바위사막", "region": "f2_rock_desert", "size": [12, 8], "floor": "floor_sand", "wall": "sandstone",
     "floor_patches": [{"id": "ground_hardpan", "rect": [0, 0, 5, 4]}, {"id": "ground_hardpan", "v": "b", "rect": [8, 5, 4, 3]}],
     "wall_states": {"3": "cracked", "7": "mossy", "10": "damaged"},
     "items": [
@@ -52,7 +52,7 @@ WILD["desert_ruins"] = {
 }
 
 WILD["witch_forest"] = {
-    "name_ko": "마녀의 숲과 오두막 앞", "region": "f3_witch_forest", "size": [13, 9], "floor": "ground_forest", "wall": "cave",
+    "fringe": True, "name_ko": "마녀의 숲과 오두막 앞", "region": "f3_witch_forest", "size": [13, 9], "floor": "ground_forest", "wall": "cave",
     "floor_patches": [{"id": "ground_meadow", "rect": [8, 4, 5, 5]}, {"id": "ground_forest", "v": "b", "rect": [0, 4, 4, 5]}],
     "wall_states": {"2": "mossy", "5": "mossy", "9": "cracked"},
     "items": [
@@ -65,7 +65,7 @@ WILD["witch_forest"] = {
 }
 
 WILD["thorn_reeds"] = {
-    "name_ko": "가시갈대 밭 · 강어귀", "region": "f3_thorn_reeds", "size": [12, 8], "floor": "ground_grass", "floor_variant": "dry", "wall": "cave",
+    "fringe": True, "name_ko": "가시갈대 밭 · 강어귀", "region": "f3_thorn_reeds", "size": [12, 8], "floor": "ground_grass", "floor_variant": "dry", "wall": "cave",
     "floor_patches": [{"id": "ground_water", "v": "black", "rect": [8, 0, 4, 8]}, {"id": "ground_swamp", "rect": [6, 0, 2, 8]}, {"id": "ground_mud", "rect": [5, 5, 1, 3]}],
     "wall_states": {"7": "mossy", "8": "mossy"},
     "items": [_i("reed_thorn", 0.8 + (i % 5) * 1.05 + (0.4 if (i // 5) % 2 else 0), 1.0 + (i // 5) * 1.05, ("a", "b", "c", "dense", "a", "sparse", "b")[i % 7]) for i in range(30) if i not in (12, 13, 17, 18)] + [
@@ -76,7 +76,7 @@ WILD["thorn_reeds"] = {
 }
 
 WILD["hellfire"] = {
-    "name_ko": "지옥불 협곡", "region": "f5_hellfire_canyon", "size": [12, 8], "floor": "ground_ash", "wall": "basalt",
+    "fringe": True, "name_ko": "지옥불 협곡", "region": "f5_hellfire_canyon", "size": [12, 8], "floor": "ground_ash", "wall": "basalt",
     "floor_patches": [{"id": "ground_lava", "rect": [0, 5, 12, 3]}, {"id": "ground_ash", "v": "ember", "rect": [0, 4, 12, 1]}, {"id": "ground_lava", "rect": [9, 0, 3, 2]}],
     "wall_states": {"2": "cracked", "6": "damaged", "8": "mossy"},
     "items": [
@@ -88,7 +88,7 @@ WILD["hellfire"] = {
 }
 
 WILD["ice_cave"] = {
-    "name_ko": "빙하굴 · 아이스록", "region": "rift_glacier_cave", "size": [12, 8], "floor": "ground_ice", "wall": "ice",
+    "fringe": True, "name_ko": "빙하굴 · 아이스록", "region": "rift_glacier_cave", "size": [12, 8], "floor": "ground_ice", "wall": "ice",
     "floor_patches": [{"id": "ground_snow", "rect": [0, 0, 5, 4]}, {"id": "ground_ice", "v": "clear", "rect": [7, 3, 5, 5]}, {"id": "ground_snow", "v": "thin", "rect": [0, 4, 4, 4]}],
     "wall_states": {"3": "cracked", "6": "mossy", "9": "mossy", "10": "damaged"},
     "items": [
@@ -101,7 +101,7 @@ WILD["ice_cave"] = {
 }
 
 WILD["bone_plain"] = {
-    "name_ko": "용의 심처 · 패자의 안식처", "region": "f7_dragon_depth", "size": [13, 8], "floor": "ground_bones", "wall": "basalt",
+    "fringe": True, "name_ko": "용의 심처 · 패자의 안식처", "region": "f7_dragon_depth", "size": [13, 8], "floor": "ground_bones", "wall": "basalt",
     "floor_patches": [{"id": "ground_rock", "v": "dark", "rect": [8, 0, 5, 8]}, {"id": "ground_bones", "v": "b", "rect": [0, 4, 5, 4]}],
     "wall_states": {"4": "cracked", "9": "damaged"},
     "items": [
@@ -139,7 +139,7 @@ WILD["trial_hall"] = {
 }
 
 WILD["dawn_meadow"] = {
-    "name_ko": "초원 · 밀림 · 운석", "region": "f8_dawn_land", "size": [14, 9], "floor": "ground_grass", "wall": "cave",
+    "fringe": True, "name_ko": "초원 · 밀림 · 운석", "region": "f8_dawn_land", "size": [14, 9], "floor": "ground_grass", "wall": "cave",
     "floor_patches": [{"id": "ground_meadow", "rect": [0, 4, 5, 5]}, {"id": "ground_thicket", "rect": [9, 0, 5, 5]}, {"id": "ground_redsoil", "rect": [9, 5, 5, 4]}, {"id": "ground_water", "v": "clear", "rect": [5, 7, 4, 2]}],
     "wall_states": {"2": "mossy", "10": "mossy", "12": "mossy"},
     "items": [
@@ -148,5 +148,30 @@ WILD["dawn_meadow"] = {
         _i("flowers", 2.2, 6.2, "mixed_a"), _i("flowers", 3.8, 7.6, "red"), _i("flowers", 1.0, 8.0, "mixed_b"), _i("flowers", 4.2, 5.2, "yellow"),
         _i("stump", 8.0, 6.2, "axe"), _i("log", 3.4, 4.6, "a"), _i("cattail", 5.6, 6.8, "a"), _i("cattail", 8.4, 7.6, "b"), _i("portal", 0.0 + 7.2, 0.6, "violet"),
         _i("red_beam", 11.4, 7.0, "pulse"), _i("crater", 11.4, 7.0, "small"), _i("meteorite", 11.4, 6.9, "glowing"), _i("meteorite", 13.0, 8.2, "shards"), _i("lightning", 9.6, 8.4, "strike"), _i("tent", 6.8, 4.2, "canvas"), _i("palisade", 9.4, 5.6, "broken"),
+    ],
+}
+
+WILD["canyon"] = {
+    "fringe": True, "name_ko": "대마경 — 끊긴 길과 낭떠러지", "region": "f5_great_mirror", "size": [14, 9], "floor": "ground_rock", "wall": "cave",
+    "floor_patches": [{"id": "ground_rock", "v": "dark", "rect": [9, 0, 5, 9]}, {"id": "floor_dirt", "rect": [0, 0, 4, 3]}, {"id": "ground_water", "v": "red", "rect": [0, 7, 4, 2]}],
+    "voids": [[5, 0, 3, 3], [5, 4, 3, 5], [9, 5, 5, 4], [0, 4, 3, 1]],
+    "wall_states": {"2": "cracked", "10": "damaged"},
+    "items": [
+        _i("bridge", 6.5, 3.5, "wood_h"), _i("bridge", 4.6, 3.5, "wood_end", flip=True), _i("bridge", 11.5, 6.5, "stone_v"), _i("bridge", 11.5, 8.4, "stone_broken"),
+        _i("rope_crossing", 4.4, 6.2, "taut_e"), _i("rope_crossing", 8.6, 6.4, "anchor"), _i("rope_crossing", 9.6, 3.6, "cut"),
+        _i("great_mirror", 11.6, 2.2, "active"), _i("great_mirror", 2.0, 1.6, "dormant"), _i("waterfall", 1.5, 0.0, "red"), _i("waterfall", 12.5, 0.0, "clear_wide"),
+        _i("rock", 3.4, 2.4, "large_a"), _i("rock", 9.6, 1.2, "medium_a"), _i("rubble", 13.0, 4.2, "small"), _i("stalagmite", 0.8, 5.6, "cluster"), _i("ground_crack", 3.0, 6.0, "wide"),
+        _i("tent", 2.4, 6.0, "canvas"), _i("firepit", 4.0, 7.8, "lit"), _i("magic_lamp", 0.8, 3.4, "red"), _i("skeleton", 12.6, 3.4, "lying"),
+    ],
+}
+
+WILD["witch_hut"] = {
+    "name_ko": "마녀의 오두막 안", "region": "f3_witch_hut", "size": [9, 6], "floor": "floor_brick", "floor_variant": "b", "wall": "brick",
+    "wall_states": {"1": "cracked", "7": "mossy"},
+    "items": [
+        _i("fireplace", 4.5, 0.25, "lit"), _i("bookshelf", 1.2, 0.9, "full"), _i("wall_shelf", 7.4, 0.0, "bottles", up=1.15), _i("candelabra", 8.2, 1.2, "lit"),
+        _i("carpet", 4.5, 3.4, "red"), _i("table", 4.5, 3.4, "set"), _i("chair", 3.3, 3.5, "e"), _i("chair", 5.7, 3.5, "w"), _i("carpet", 1.6, 4.8, "round"),
+        _i("bed", 7.6, 4.8, "made"), _i("cabinet", 0.8, 2.6, "closed"), _i("books", 2.4, 1.8, "stack"), _i("cooking_pot", 6.2, 1.4, "stew"), _i("bottles", 1.6, 4.7, "potion_blue"),
+        _i("basket", 6.4, 5.4), _i("mist", 2.6, 5.6, "violet"),
     ],
 }

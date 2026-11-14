@@ -114,7 +114,7 @@ def write_pack(done):
         sheet = (a.meta or {}).get("sheet") or ("floors" if a.layer == "floor" else a.cat)
         groups.setdefault(sheet, []).append(((id, vname, frame), img))
     for sheet, items in sorted(groups.items()):
-        tiles = sheet in ("floors", "wall_faces", "wall_tops")
+        tiles = sheet in ("floors", "wall_faces", "wall_tops", "fringes", "cliff_drops")
         img, pos = pack(items, 0 if tiles else PAD)
         path = os.path.join(kit.OUT, sheet + ".webp")
         Image.fromarray(img, "RGBA").save(path, lossless=True, quality=100, exact=True)
@@ -151,6 +151,8 @@ def write_pack(done):
     if os.path.exists(sets_path):
         import sets
         manifest["sets"] = sets.export(manifest)
+    import a_edge
+    manifest["fringe"] = {"rank": a_edge.RANK, "liquid": a_edge.LIQUID, "default_rank": 1}
     import regions
     manifest["regions"] = regions.export(manifest)
     text = (json.dumps(manifest, ensure_ascii=False, separators=(",", ":"), default=lambda o: o.item()).replace('},"', '},\n"'))
