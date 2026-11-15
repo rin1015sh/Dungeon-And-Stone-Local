@@ -101,7 +101,7 @@
     },
     "decor": {
       "_comment": "바닥 잔해(1층 데칼 시트): 잔해 둘레 자갈 · 뼈. [창작] 임시값",
-      "sheet": "res://assets/floor/f1/decals.webp",
+      "sheet": "res://assets/floor/kit/decals_cave.webp",
       "variants": 4,
       "kinds": [
         "shore",

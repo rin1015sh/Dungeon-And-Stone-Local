@@ -123,7 +123,7 @@
     },
     "decor": {
       "_comment": "숲 바닥(FloorDecor — 실행 중 계산, 시트 assets/floor/f2g/decals.webp, 사용자 2026-11-06 \"잡초나 잡돌 같은 표현\", FL23): 잡초 · 고사리는 잡음 덩어리로 몰아서(dense), 나무 · 덤불 둘레 뿌리 · 낙엽, 숲 가장자리(벽 아래) 잡초, 잡돌은 드문드문 + 개울가, 빈터 들꽃, 마을 진흙 · 뼈. [창작] 임시값",
-      "sheet": "res://assets/floor/f2g/decals.webp",
+      "sheet": "res://assets/floor/kit/decals_forest.webp",
       "variants": 4,
       "kinds": [
         "weeds",

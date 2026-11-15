@@ -1,0 +1,80 @@
+{
+ "_comment": "tools/dungeon_kit/stand_swap.py가 만든 칸 표(AM71) — kit = 키트 그림, kept = 옛 그림 유지",
+ "from": "it/stand.webp",
+ "cells": [
+  {
+   "cell": 0,
+   "kit": "railing.straight",
+   "scale": 1.0
+  },
+  {
+   "cell": 1,
+   "kit": "rubble.large",
+   "scale": 0.97
+  },
+  {
+   "cell": 2,
+   "kit": "candelabra.lit",
+   "scale": 1.0
+  },
+  {
+   "cell": 3,
+   "kit": "statue.intact",
+   "scale": 1.0
+  },
+  {
+   "cell": 4,
+   "kit": "sarcophagus.closed",
+   "scale": 0.958
+  },
+  {
+   "cell": 5,
+   "kit": "armor_stand.armor",
+   "scale": 1.0
+  },
+  {
+   "cell": 6,
+   "kit": "chandelier_fallen.base",
+   "scale": 0.681
+  },
+  {
+   "cell": 7,
+   "kit": "brazier.lit",
+   "scale": 1.0
+  },
+  {
+   "cell": 8,
+   "kit": "storage_jar.amphora",
+   "scale": 1.0
+  },
+  {
+   "cell": 9,
+   "kit": "coin_piles.heap",
+   "scale": 1.0
+  },
+  {
+   "cell": 10,
+   "kept": true
+  },
+  {
+   "cell": 11,
+   "kept": true
+  },
+  {
+   "cell": 12,
+   "kept": true
+  },
+  {
+   "cell": 13,
+   "kept": true
+  },
+  {
+   "cell": 14,
+   "kept": true
+  },
+  {
+   "cell": 15,
+   "kept": true
+  }
+ ]
+}

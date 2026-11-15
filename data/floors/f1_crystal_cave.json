@@ -30,7 +30,7 @@
     },
     "decor": {
       "_comment": "데칼 배치(FloorDecor, map_design.md §4.2). kinds = 시트 줄 순서(tools/floor_art/Specs.gd DECALS와 같게). 규칙은 위에서부터 처음 맞는 하나. dense가 아니면 맞닿은 칸에 함께 놓이지 않는다. spots = 손으로 정한 자리(이끼 물웅덩이 — AM6). baked = 미리 구운 자리(tools/bake_decor.gd — 규칙을 바꾸면 다시 굽는다). 모두 [창작] 임시값",
-      "sheet": "res://assets/floor/f1/decals.webp",
+      "sheet": "res://assets/floor/kit/decals_cave.webp",
       "baked": "res://data/maps/f1_crystal_cave_decor.json",
       "variants": 4,
       "kinds": ["shore", "gravel", "moss", "wet", "crystal_bits", "claws", "mud", "rot", "trash", "bones"],

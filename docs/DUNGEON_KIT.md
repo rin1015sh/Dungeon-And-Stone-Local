@@ -75,6 +75,10 @@ kit.ids("trap") · kit.ids("", "wall_decal") · kit.variants(id) · kit.texture(
 - 더 바꾸려면: `PROPS`에 `칸: (키트 id, 변형, 프레임, 폭 px)` 한 줄 → `python3 tools/dungeon_kit/game_props.py` → `texture_compress.py` → `--import` → 캡처(`--screen=explore --at=x,y --torch --reveal` — 자리는 `data/maps/f1_crystal_cave.json` features). 되돌리기 = tiles.json의 `kit/props.webp`를 `f1/props.webp`로(궤짝 칸은 17).
 - 키트 에셋 함수를 고쳤으면 `build.py` 뒤에 `game_props.py`도 다시 돌린다.
 
+### 3.2 게임 전체에 적용(AM71, 2026-11-15)
+
+서 있는 소품(균열 넷 · 2층 · 3층) · 바닥 자국 · 바닥 재질(1층 · 균열) · 동네 소품 · 실내 가구 · 벽 장식 · 실내 바닥 · 벽에 키트 그림을 옮겼다 — 도구 `stand_swap.py` · `decal_swap.py` · `ground_swap.py` · `town_swap.py`(이 폴더) · `tools/interior_kit.py`. 옛 그림이 나은 곳 · 키트에 없는 것은 표에서 빠져 있다(이유는 표 줄 주석 · ASSUMPTIONS AM71). 키트 에셋을 고쳐 `build.py`를 돌렸으면 이 도구들도 다시 돌린다.
+
 ## 4. 다시 굽기 · 새 에셋 더하기
 
 ```

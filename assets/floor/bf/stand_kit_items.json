@@ -1,0 +1,159 @@
+{
+ "_comment": "tools/dungeon_kit/stand_swap.py가 만든 칸 표(AM71) — kit = 키트 그림, kept = 옛 그림 유지",
+ "from": "bf/stand.webp",
+ "cells": [
+  {
+   "cell": 0,
+   "kit": "palisade.spiked",
+   "scale": 1.0
+  },
+  {
+   "cell": 1,
+   "kit": "bars.rusty",
+   "scale": 0.947
+  },
+  {
+   "cell": 2,
+   "kit": "table.set",
+   "scale": 1.0
+  },
+  {
+   "cell": 3,
+   "kit": "weapon_rack.full",
+   "scale": 1.0
+  },
+  {
+   "cell": 4,
+   "kit": "armor_stand.armor",
+   "scale": 1.0
+  },
+  {
+   "cell": 5,
+   "kit": "barrel.intact",
+   "scale": 1.0
+  },
+  {
+   "cell": 6,
+   "kit": "crate.stack",
+   "scale": 1.0
+  },
+  {
+   "cell": 7,
+   "kit": "cart.empty",
+   "scale": 0.976
+  },
+  {
+   "cell": 8,
+   "kit": "tent.canvas",
+   "scale": 0.667
+  },
+  {
+   "cell": 9,
+   "kept": true
+  },
+  {
+   "cell": 10,
+   "kit": "brazier.lit",
+   "scale": 1.0
+  },
+  {
+   "cell": 11,
+   "kept": true
+  },
+  {
+   "cell": 12,
+   "kit": "well.plain",
+   "scale": 1.0
+  },
+  {
+   "cell": 13,
+   "kit": "market_stall.empty",
+   "scale": 1.0
+  },
+  {
+   "cell": 14,
+   "kept": true
+  },
+  {
+   "cell": 15,
+   "kit": "statue_robed.intact",
+   "scale": 1.0
+  },
+  {
+   "cell": 16,
+   "kit": "altar.bloody",
+   "scale": 0.97
+  },
+  {
+   "cell": 17,
+   "kit": "bookshelf.full",
+   "scale": 1.0
+  },
+  {
+   "cell": 18,
+   "kit": "pew.facing_s",
+   "scale": 1.0
+  },
+  {
+   "cell": 19,
+   "kit": "gibbet.skeleton",
+   "scale": 0.814
+  },
+  {
+   "cell": 20,
+   "kit": "tree_thorn.c",
+   "scale": 0.736
+  },
+  {
+   "cell": 21,
+   "kit": "bed.messy",
+   "scale": 0.78
+  },
+  {
+   "cell": 22,
+   "kit": "candelabra.lit",
+   "scale": 1.0
+  },
+  {
+   "cell": 23,
+   "kit": "rock.large_a",
+   "scale": 1.0
+  },
+  {
+   "cell": 24,
+   "kept": true
+  },
+  {
+   "cell": 25,
+   "kept": true
+  },
+  {
+   "cell": 26,
+   "kit": "flag_pole.tattered",
+   "scale": 0.664
+  },
+  {
+   "cell": 27,
+   "kit": "sack.pile",
+   "scale": 1.0
+  },
+  {
+   "cell": 28,
+   "kept": true
+  },
+  {
+   "cell": 29,
+   "kit": "fountain.dry",
+   "scale": 0.833
+  },
+  {
+   "cell": 30,
+   "kit": "bookshelf_tall.full",
+   "scale": 0.653
+  },
+  {
+   "cell": 31,
+   "kept": true
+  }
+ ]
+}

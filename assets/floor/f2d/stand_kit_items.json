@@ -1,0 +1,47 @@
+{
+ "_comment": "tools/dungeon_kit/stand_swap.py가 만든 칸 표(AM71) — kit = 키트 그림, kept = 옛 그림 유지",
+ "from": "f2d/stand.webp",
+ "cells": [
+  {
+   "cell": 0,
+   "kept": true
+  },
+  {
+   "cell": 1,
+   "kept": true
+  },
+  {
+   "cell": 2,
+   "kit": "bush.dry",
+   "scale": 1.0
+  },
+  {
+   "cell": 3,
+   "kept": true
+  },
+  {
+   "cell": 4,
+   "kept": true
+  },
+  {
+   "cell": 5,
+   "kept": true
+  },
+  {
+   "cell": 6,
+   "kept": true
+  },
+  {
+   "cell": 7,
+   "kept": true
+  },
+  {
+   "cell": 8,
+   "kept": true
+  },
+  {
+   "cell": 9,
+   "kept": true
+  }
+ ]
+}

@@ -1,0 +1,269 @@
+{
+ "_comment": "tools/dungeon_kit/town_swap.py가 바꾼 동네 소품(AM71) — 없는 종류는 옛 그림",
+ "props": {
+  "barrel": {
+   "kit": "barrel.intact",
+   "scale": 1.6,
+   "size": [
+    70,
+    122
+   ],
+   "old": [
+    69,
+    150
+   ]
+  },
+  "bench": {
+   "kit": "bench.base",
+   "scale": 1.6,
+   "size": [
+    163,
+    62
+   ],
+   "old": [
+    177,
+    134
+   ]
+  },
+  "board": {
+   "kit": "notice_board.notices",
+   "scale": 1.229,
+   "size": [
+    120,
+    209
+   ],
+   "old": [
+    214,
+    209
+   ]
+  },
+  "boat": {
+   "kit": "boat.oars",
+   "scale": 1.079,
+   "size": [
+    177,
+    123
+   ],
+   "old": [
+    267,
+    123
+   ]
+  },
+  "bollard": {
+   "kit": "bollard.stone",
+   "scale": 1.6,
+   "size": [
+    38,
+    86
+   ],
+   "old": [
+    40,
+    94
+   ]
+  },
+  "bush": {
+   "kit": "bush.wide",
+   "scale": 1.458,
+   "size": [
+    192,
+    141
+   ],
+   "old": [
+    154,
+    146
+   ]
+  },
+  "cart": {
+   "kit": "cart.sacks",
+   "scale": 1.113,
+   "size": [
+    254,
+    126
+   ],
+   "old": [
+    203,
+    146
+   ]
+  },
+  "crate": {
+   "kit": "crate.intact",
+   "scale": 1.6,
+   "size": [
+    70,
+    112
+   ],
+   "old": [
+    73,
+    132
+   ]
+  },
+  "fountain": {
+   "kit": "fountain.running",
+   "scale": 1.6,
+   "size": [
+    266,
+    309
+   ],
+   "old": [
+    288,
+    357
+   ]
+  },
+  "goods": {
+   "kit": "supply_pile.b",
+   "scale": 1.543,
+   "size": [
+    198,
+    160
+   ],
+   "old": [
+    158,
+    177
+   ]
+  },
+  "household": {
+   "kit": "junk_pile.alley",
+   "scale": 1.544,
+   "size": [
+    158,
+    113
+   ],
+   "old": [
+    126,
+    183
+   ]
+  },
+  "lamp": {
+   "kit": "street_lamp.lit",
+   "scale": 1.21,
+   "size": [
+    88,
+    248
+   ],
+   "old": [
+    83,
+    248
+   ]
+  },
+  "laundry": {
+   "kit": "clothesline.laundry",
+   "scale": 1.302,
+   "size": [
+    281,
+    159
+   ],
+   "old": [
+    225,
+    185
+   ]
+  },
+  "planter": {
+   "kit": "planter.flowers",
+   "scale": 1.6,
+   "size": [
+    74,
+    93
+   ],
+   "old": [
+    88,
+    128
+   ]
+  },
+  "sacks": {
+   "kit": "sack.pile",
+   "scale": 1.6,
+   "size": [
+    93,
+    98
+   ],
+   "old": [
+    99,
+    163
+   ]
+  },
+  "signpost": {
+   "kit": "signpost.two",
+   "scale": 1.572,
+   "size": [
+    154,
+    228
+   ],
+   "old": [
+    175,
+    228
+   ]
+  },
+  "statue": {
+   "kit": "statue.intact",
+   "scale": 1.6,
+   "size": [
+    106,
+    286
+   ],
+   "old": [
+    148,
+    346
+   ]
+  },
+  "tent": {
+   "kit": "market_awning.striped",
+   "scale": 1.589,
+   "size": [
+    318,
+    321
+   ],
+   "old": [
+    340,
+    321
+   ]
+  },
+  "tree": {
+   "kit": "tree_broadleaf.a",
+   "scale": 1.376,
+   "size": [
+    358,
+    421
+   ],
+   "old": [
+    292,
+    421
+   ]
+  },
+  "trough": {
+   "kit": "horse_trough.stone",
+   "scale": 1.6,
+   "size": [
+    154,
+    86
+   ],
+   "old": [
+    168,
+    153
+   ]
+  },
+  "wagon": {
+   "kit": "cart.barrels",
+   "scale": 1.6,
+   "size": [
+    365,
+    187
+   ],
+   "old": [
+    300,
+    218
+   ]
+  },
+  "woodpile": {
+   "kit": "firewood",
+   "scale": 1.6,
+   "size": [
+    134,
+    115
+   ],
+   "old": [
+    211,
+    213
+   ]
+  }
+ }
+}

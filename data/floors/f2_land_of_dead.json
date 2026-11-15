@@ -112,7 +112,7 @@
     },
     "decor": {
       "_comment": "바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트, 실행 중 계산). 깊은 늪 가장자리 물기(shore) · 늪 웅덩이·썩은 물 · 잔해 구역 뼈 · 굳은 땅 옛 싸움터(쓰레기·뼈·자갈). 사용자 2026-11-05 \"황량하다\". [창작] 임시값",
-      "sheet": "res://assets/floor/f1/decals.webp",
+      "sheet": "res://assets/floor/kit/decals_cave.webp",
       "variants": 4,
       "kinds": [
         "shore",

@@ -1,0 +1,114 @@
+{
+ "_comment": "tools/dungeon_kit/stand_swap.py가 만든 칸 표(AM71) — kit = 키트 그림, kept = 옛 그림 유지",
+ "from": "gm/stand.webp",
+ "cells": [
+  {
+   "cell": 0,
+   "kit": "mine_support.intact",
+   "scale": 1.0
+  },
+  {
+   "cell": 1,
+   "kept": true
+  },
+  {
+   "cell": 2,
+   "kit": "mine_cart.ore",
+   "scale": 1.0
+  },
+  {
+   "cell": 3,
+   "kit": "barrel.intact",
+   "scale": 1.0
+  },
+  {
+   "cell": 4,
+   "kit": "crate.stack",
+   "scale": 1.0
+  },
+  {
+   "cell": 5,
+   "kept": true
+  },
+  {
+   "cell": 6,
+   "kept": true
+  },
+  {
+   "cell": 7,
+   "kit": "mushroom.big",
+   "scale": 1.0
+  },
+  {
+   "cell": 8,
+   "kit": "powder_keg.intact",
+   "scale": 1.0
+  },
+  {
+   "cell": 9,
+   "kit": "workbench.tools",
+   "scale": 1.0
+  },
+  {
+   "cell": 10,
+   "kept": true
+  },
+  {
+   "cell": 11,
+   "kit": "ore_vein.green_b",
+   "scale": 1.0
+  },
+  {
+   "cell": 12,
+   "kit": "rock.large_a",
+   "scale": 1.0
+  },
+  {
+   "cell": 13,
+   "kit": "tent.canvas_b",
+   "scale": 0.667
+  },
+  {
+   "cell": 14,
+   "kit": "firepit.lit",
+   "scale": 1.0
+  },
+  {
+   "cell": 15,
+   "kept": true
+  },
+  {
+   "cell": 16,
+   "kit": "powder_keg.cluster",
+   "scale": 1.0
+  },
+  {
+   "cell": 17,
+   "kept": true
+  },
+  {
+   "cell": 18,
+   "kept": true
+  },
+  {
+   "cell": 19,
+   "kept": true
+  },
+  {
+   "cell": 20,
+   "kept": true
+  },
+  {
+   "cell": 21,
+   "kept": true
+  },
+  {
+   "cell": 22,
+   "kept": true
+  },
+  {
+   "cell": 23,
+   "kept": true
+  }
+ ]
+}

@@ -1,0 +1,53 @@
+{
+ "_comment": "tools/dungeon_kit/stand_swap.py가 만든 칸 표(AM71) — kit = 키트 그림, kept = 옛 그림 유지",
+ "from": "f3/stand.webp",
+ "cells": [
+  {
+   "cell": 0,
+   "kit": "reed_thorn.dense",
+   "scale": 1.0
+  },
+  {
+   "cell": 1,
+   "kit": "reed_thorn.sparse",
+   "scale": 1.0
+  },
+  {
+   "cell": 2,
+   "kept": true
+  },
+  {
+   "cell": 3,
+   "kit": "tree_thorn.vined",
+   "scale": 0.897
+  },
+  {
+   "cell": 4,
+   "kit": "tent.hide",
+   "scale": 0.667
+  },
+  {
+   "cell": 5,
+   "kept": true
+  },
+  {
+   "cell": 6,
+   "kept": true
+  },
+  {
+   "cell": 7,
+   "kit": "skull.pike",
+   "scale": 1.0
+  },
+  {
+   "cell": 8,
+   "kit": "statue.headless",
+   "scale": 0.889
+  },
+  {
+   "cell": 9,
+   "kit": "pillar.fallen",
+   "scale": 0.811
+  }
+ ]
+}

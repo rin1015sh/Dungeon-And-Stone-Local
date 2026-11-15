@@ -44,7 +44,7 @@
       },
       "decor": {
         "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
-        "sheet": "res://assets/floor/f1/decals.webp",
+        "sheet": "res://assets/floor/kit/decals_cave.webp",
         "variants": 4,
         "kinds": [
           "shore",

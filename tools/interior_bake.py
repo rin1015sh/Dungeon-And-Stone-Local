@@ -18,6 +18,7 @@ import interior_furn as F  # noqa: E402
 import interior_mats as M  # noqa: E402
 import interior_walldeco as W  # noqa: E402
 import interior_fine as IF  # noqa: E402
+import interior_kit as IK  # noqa: E402  — 에셋 라이브러리 그림(바닥 · 벽 · 가구 · 벽 장식 — AM71, 끄기 INTERIOR_KIT=0)
 import town_handdrawn as th  # noqa: E402
 from interior_canvas import Canvas, P, hexc  # noqa: E402
 
@@ -25,6 +26,26 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WALL_H = 3.0  # 북벽 · 옆벽 높이(칸 — 사람 키의 1.5배쯤)
 CAP_IN = 0.5  # 벽 윗면 두께(칸 — 바깥쪽 반은 비운다, 벽이 덩어리처럼 무겁지 않게)
 LOW = 0.42  # 남벽(잘라 낸 낮은 벽) 높이(칸)
+
+
+def wall_mat(name, seed, base_y):
+    """벽 앞면 재질: 라이브러리 벽면이 있으면 그것(AM71), 없으면 옛 재질."""
+    if IK.ON and name in IK.WALLS:
+        return IK.wall_tex(name, base_y, WALL_H, old=M.wall(name, seed, base_y))
+    return M.wall(name, seed, base_y)
+
+
+def floor_mat(name, seed):
+    if IK.ON and name in IK.FLOORS:
+        return IK.floor_tex(name, old=M.floor(name, seed))
+    return M.floor(name, seed)
+
+
+def wall_art(cv, art, x0, x1, y, seed):
+    if IK.ON and art in IK.WALLART:
+        IK.wallart(cv, art, x0, x1, y, P)
+    else:
+        W.draw(cv, art, x0, x1, y, WALL_H, seed)
 SPLIT = ("wall", "wallart", "door", "exit", "void")
 CAP = hexc("#2c2520")
 RIM = hexc("#7a6c5a")
@@ -157,7 +178,7 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
                 if n not in R and plan.kind(*n) in SPLIT:
                     ring.add(n)
     cv = Canvas(bx0 - 1.3, by0 - 1 - WALL_H - 0.35, bx1 - bx0 + 3.6, by1 - by0 + 3 + WALL_H + 0.7, seed)
-    ftex = M.floor(rd.get("floor", "oak"), seed)
+    ftex = floor_mat(rd.get("floor", "oak"), seed)
     fid = cv.new_id()
     for (x, y) in sorted(R):
         cv.ground(x, y, x + 1, y + 1, tex=ftex, cid=fid)
@@ -208,7 +229,7 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
                 face_rows[fy] = (cv.new_id(), cv.new_id(), cv.new_id())
             fid_w, fid_b, fid_c = face_rows[fy]
             if r == "north":
-                cv.front(cx0, cx1, fy, 0, WALL_H, None, tex=M.wall(wname, seed + fy, fy), cid=fid_w, shade=(0.92, 0.66))  # 옆벽 윗면 폭까지만(삐져나오지 않게 — CT111)
+                cv.front(cx0, cx1, fy, 0, WALL_H, None, tex=wall_mat(wname, seed + fy, fy), cid=fid_w, shade=(0.92, 0.66))  # 옆벽 윗면 폭까지만(삐져나오지 않게 — CT111)
                 cv.front(cx0, cx1, fy, 0, 0.2, M.base_color(wname), cid=fid_b, shade=(0.8, 0.55))  # 걸레받이
                 cv.front(cx0, cx1, fy, WALL_H - 0.16, WALL_H, M.base_color(wname) * 1.15, cid=fid_c, shade=(1.0, 0.8))  # 처마 띠
             else:  # 옆벽 끝 = 잘린 단면(어두운 돌 — 벽 두께만큼)
@@ -233,7 +254,7 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
         art = plan.legend[g["char"]].get("art", "")
         if g["char"] in hot:
             continue  # 활동 자리(책장 …)는 따로(검은 테두리)
-        W.draw(cv, art, g["x0"], g["x1"], g["y1"], WALL_H, seed + g["x0"] * 7)
+        wall_art(cv, art, g["x0"], g["x1"], g["y1"], seed + g["x0"] * 7)
     lights = lights_of(plan, R, ring, groups)
     amb = float(rd.get("ambient", 0.65))
     cv.light(amb, lights)
@@ -246,7 +267,7 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
         if k != "wallart" or g["char"] not in hot or not all(c in full and role(R, *c) == "north" for c in g["cells"]):
             continue
         wc = Canvas(g["x0"] - 0.2, g["y1"] - WALL_H - 0.2, g["x1"] - g["x0"] + 0.4, WALL_H + 0.5, seed)
-        W.draw(wc, plan.legend[g["char"]].get("art", ""), g["x0"], g["x1"], g["y1"], WALL_H, seed + g["x0"])
+        wall_art(wc, plan.legend[g["char"]].get("art", ""), g["x0"], g["x1"], g["y1"], seed + g["x0"])
         wc.light(amb, lights)
         name = "w_%d_%d.webp" % (g["x0"], g["y0"])
         finish(wc, os.path.join(out_dir, name))
@@ -262,13 +283,13 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
         for (x, y) in row:
             sx0 = x + (1 - CAP_IN if (x - 1, y) not in inside else 0)  # 모서리는 옆벽 두께만큼(CT111)
             sx1 = x + 1 - (1 - CAP_IN if (x + 1, y) not in inside else 0)
-            fc.front(sx0, sx1, y + 1, 0, LOW, None, tex=M.wall(wname, seed + 5, y + 1), cid=sid, shade=(0.9, 0.62))
+            fc.front(sx0, sx1, y + 1, 0, LOW, None, tex=wall_mat(wname, seed + 5, y + 1), cid=sid, shade=(0.9, 0.62))
             fc.ground(sx0, y, sx1, y + 1, CAP, z=LOW, cid=cid2, tex=M.grainy("#2c2520", seed, 0.25, 6))
             fc.ground(sx0, y, sx1, y + 0.12, RIM, z=LOW, cid=cid2)
             for side in (-1, 1):  # 문 곁 기둥(낮은 벽보다 높게 — 통로 들머리가 보이게)
                 if plan.kind(x + side, y) in ("door", "exit") and (x + side, y) in ring:
                     px0 = x + 1 - 0.22 if side > 0 else x
-                    fc.front(px0, px0 + 0.22, y + 1, 0, LOW + 0.5, None, tex=M.wall(wname, seed + 9, y + 1), cid=pid, shade=(1.0, 0.7))
+                    fc.front(px0, px0 + 0.22, y + 1, 0, LOW + 0.5, None, tex=wall_mat(wname, seed + 9, y + 1), cid=pid, shade=(1.0, 0.7))
                     fc.ground(px0, y + 0.55, px0 + 0.22, y + 1, RIM * 1.1, z=LOW + 0.5, cid=pid)
         fc.light(amb, lights)
         name = "r%d_f%d.webp" % (i, yy)
@@ -280,9 +301,13 @@ def bake_room(plan, i, R, groups, out_dir, seed, index):
             continue
         art = plan.legend[g["char"]].get("art", "")
         gw, gd = g["x1"] - g["x0"], g["y1"] - g["y0"]
-        zmax = F.HEIGHT.get(art, 1.3)
+        kitf = IK.ON and art in IK.FURN
+        zmax = F.HEIGHT.get(art, 1.3) if not kitf else max(F.HEIGHT.get(art, 1.3), IK.need_height(IK.FURN[art], gw, P))
         fc = Canvas(-0.45, -zmax - 0.45, gw + 0.9, gd + zmax + 0.9, seed + g["x0"] * 31 + g["y0"])
-        F.draw(fc, art, gw, gd, seed + g["x0"] * 13 + g["y0"])
+        if kitf:
+            IK.furniture(fc, art, gw, gd, P)
+        else:
+            F.draw(fc, art, gw, gd, seed + g["x0"] * 13 + g["y0"])
         fc.light(amb, [(lx - g["x0"], ly - g["y0"], r, c, pw) for (lx, ly, r, c, pw) in lights])
         name = "f_%d_%d.webp" % (g["x0"], g["y0"])
         finish(fc, os.path.join(out_dir, name))

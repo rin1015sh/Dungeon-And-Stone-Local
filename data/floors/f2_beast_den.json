@@ -101,7 +101,7 @@
     },
     "decor": {
       "_comment": "바닥 잔해(1층 데칼 시트 — 실행 중 계산): 협곡 자갈 · 발톱 자국 · 뼈. [창작] 임시값",
-      "sheet": "res://assets/floor/f1/decals.webp",
+      "sheet": "res://assets/floor/kit/decals_cave.webp",
       "variants": 4,
       "kinds": [
         "shore",

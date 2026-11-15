@@ -1,0 +1,54 @@
+{
+ "_comment": "tools/dungeon_kit/stand_swap.py가 만든 칸 표(AM71) — kit = 키트 그림, kept = 옛 그림 유지",
+ "from": "f2g/stand.webp",
+ "cells": [
+  {
+   "cell": 0,
+   "kit": "tree_broadleaf.a",
+   "scale": 0.555
+  },
+  {
+   "cell": 1,
+   "kit": "bush.a",
+   "scale": 0.865
+  },
+  {
+   "cell": 2,
+   "kit": "stump.a",
+   "scale": 1.0
+  },
+  {
+   "cell": 3,
+   "kit": "log.mossy",
+   "scale": 1.0
+  },
+  {
+   "cell": 4,
+   "kit": "mushroom.pale",
+   "scale": 1.0
+  },
+  {
+   "cell": 5,
+   "kept": true
+  },
+  {
+   "cell": 6,
+   "kit": "portal_stele.active",
+   "scale": 1.0
+  },
+  {
+   "cell": 7,
+   "kit": "portal_stele.dead",
+   "scale": 1.0
+  },
+  {
+   "cell": 8,
+   "kit": "palisade.spiked",
+   "scale": 1.0
+  },
+  {
+   "cell": 9,
+   "kept": true
+  }
+ ]
+}
