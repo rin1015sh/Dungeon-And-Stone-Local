@@ -28,7 +28,7 @@ def _mats(k):
 
 def _heap(k, n, rx, ry, h, mat, r0=0.05, r1=0.09, cx=0.0, cy=0.0, mat2=None):
     """덩이 더미: 원뿔꼴 속 + 겉에 낱덩이 n개."""
-    k.add(rough(lambda p: ell(p, v3(cx, cy, 0), (rx * 0.9, ry * 0.9, h * 0.9)), 0.05, 0.1, k.seed), mat)
+    k.add(rough(lambda p: ell(p, v3(cx, cy, 0), (rx * 0.9, ry * 0.9, h * 0.9)), 0.05, 0.1, getattr(k, "seed", getattr(getattr(k, "k", None), "seed", 1))), mat)
     for i in range(n):
         a, rho = k.rng.uniform(0, 2 * PI), np.sqrt(k.rng.uniform(0.02, 1.0))
         r = k.rng.uniform(r0, r1)
