@@ -82,8 +82,8 @@ CITY["shrine_room"] = {
 
 # 여관: 술집 홀 — 바 · 술통 · 탁자 · 화덕 · 부엌
 CITY["inn_room"] = {
-    "name_ko": "여관 내부 일부", "size": [12, 8], "floor": "floor_old", "wall": "brick",
-    "floor_patches": [{"id": "floor_flag", "rect": [8, 0, 4, 3]}],
+    "name_ko": "여관 내부 일부", "size": [12, 8], "floor": "room_wood", "wall": "plaster",
+    "floor_patches": [{"id": "room_tile", "rect": [8, 0, 4, 3]}],
     "items": [
         _i("keg_rack", 1.2, 0.9, "tapped"), _i("wine_rack", 2.9, 0.8, "full"), _i("dish_hutch", 4.4, 0.8, "full"), _i("kitchen_hangings", 6.0, 0.0, "sausages"), _i("key_rack", 7.0, 0.0, "full"),
         _i("spit_hearth", 9.8, 1.2, "lit"), _i("kitchen_table", 9.6, 2.9, "messy"), _i("coat_pegs", 11.4, 0.0, "cloaks"),

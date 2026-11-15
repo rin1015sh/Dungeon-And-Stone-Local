@@ -107,7 +107,7 @@ def tapestry(k, pat="bands", worn=False, torn=False, seed=1):
     m = k.mat("weave", _weave(base, fn, hw, hz, z0, worn, seed))
     cloth = lambda p: box(p + np.stack([p[:, 0] * 0, 0.012 * np.sin(p[:, 0] * 14), p[:, 0] * 0], 1), v3(0, -0.03, z0 + hz / 2), (hw, 0.008, hz / 2), 0.004)
     if torn:   # 오른쪽 아래가 찢겨 나가고 한 귀퉁이가 처졌다
-        cloth = (lambda b: lambda p: np.maximum(b(p), -((p[:, 0] - 0.2) * 0.9 - (p[:, 2] - z0 - 0.5) + (sdf.fbm(p, 0.08, seed, 3) - 0.5) * 0.25)))(cloth)
+        cloth = (lambda b: lambda p: np.maximum(b(p), (p[:, 0] - 0.2) * 0.9 - (p[:, 2] - z0 - 0.5) + (sdf.fbm(p, 0.08, seed, 3) - 0.5) * 0.25))(cloth)
     k.add(rough(cloth, 0.006, 0.1, seed), m)
     k.add(lambda p: hcyl(p, (-hw - 0.1, -0.05, z0 + hz + 0.03), (hw + 0.1, -0.05, z0 + hz + 0.03), 0.022), "wood_d")
     k.add(lambda p: np.minimum(sphere(p, v3(-hw - 0.11, -0.05, z0 + hz + 0.03), 0.035), sphere(p, v3(hw + 0.11, -0.05, z0 + hz + 0.03), 0.035)), "brass")
