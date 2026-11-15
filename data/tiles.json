@@ -8,7 +8,7 @@
     "colors": {
       "floor": "#57505f"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8},
     "source": "placeholder"
   },
   {
@@ -123,7 +123,7 @@
       "color": "#c58cff",
       "intensity": 0.9
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 20, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 20, "cols": 8, "size": 1.5}},
     "source": "original"
   },
   {
@@ -142,7 +142,7 @@
       "color": "#ff4a5a",
       "intensity": 1.0
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 21, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 21, "cols": 8, "size": 1.5}},
     "source": "original",
     "notes": "원작: 균열이 열리면 층 전역에 포탈이 생긴다(명세 §8.1)"
   },
@@ -290,7 +290,7 @@
       "floor": "#57505f",
       "mark": "#c8b8a0"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 0, "cols": 8, "size": 1.9}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 0, "cols": 8, "size": 1.9}},
     "source": "placeholder"
   },
   {
@@ -303,7 +303,7 @@
       "floor": "#57505f",
       "mark": "#8a9a6a"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 1, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 1, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -316,7 +316,7 @@
       "floor": "#57505f",
       "mark": "#8fa0c8"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 2, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 2, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -329,7 +329,7 @@
       "floor": "#57505f",
       "mark": "#7a6a5a"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 3, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 3, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -342,7 +342,7 @@
       "floor": "#57505f",
       "mark": "#9a9a9a"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 4, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 4, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -355,7 +355,7 @@
       "floor": "#57505f",
       "mark": "#a89a80"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 17, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 17, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -368,7 +368,7 @@
       "floor": "#57505f",
       "mark": "#e0c890"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 5, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 5, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -381,7 +381,7 @@
       "floor": "#3a5a78",
       "mark": "#a8d8ff"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 6, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 6, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -394,7 +394,7 @@
       "floor": "#57505f",
       "mark": "#b8c8ff"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 7, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 7, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -407,7 +407,7 @@
       "floor": "#57505f",
       "mark": "#b0a8a0"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 8, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 8, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -420,7 +420,7 @@
       "floor": "#57505f",
       "mark": "#7af0e0"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 9, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 9, "cols": 8, "size": 1.5}},
     "source": "placeholder",
     "light": {
       "radius_m": 1.5,
@@ -438,7 +438,7 @@
       "floor": "#57505f",
       "mark": "#d8d0c0"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 10, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 10, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -451,7 +451,7 @@
       "floor": "#57505f",
       "mark": "#c0a060"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 11, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 11, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -464,7 +464,7 @@
       "floor": "#57505f",
       "mark": "#e8d070"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 12, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 12, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -477,7 +477,7 @@
       "floor": "#57505f",
       "mark": "#ff9a40"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 13, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 13, "cols": 8, "size": 1.5}},
     "source": "placeholder",
     "light": {
       "radius_m": 3.0,
@@ -495,7 +495,7 @@
       "floor": "#57505f",
       "mark": "#a0703a"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 14, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 14, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -508,7 +508,7 @@
       "floor": "#57505f",
       "mark": "#e0dcc8"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 15, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 15, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -521,7 +521,7 @@
       "floor": "#57505f",
       "mark": "#a0a0a8"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 16, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 16, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {
@@ -534,7 +534,7 @@
       "floor": "#57505f",
       "mark": "#a05a48"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 23, "cols": 8, "size": 1.6}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 23, "cols": 8, "size": 1.6}},
     "source": "placeholder",
     "notes": "1층 레벨 디자인 LD2(2026-11-07) — 그림 tools/floor_art/Props.gd"
   },
@@ -548,7 +548,7 @@
       "floor": "#57505f",
       "mark": "#a0a0a8"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 24, "cols": 8, "size": 1.3}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 24, "cols": 8, "size": 1.3}},
     "source": "placeholder",
     "notes": "1층 레벨 디자인 LD2(2026-11-07) — 그림 tools/floor_art/Props.gd"
   },
@@ -562,7 +562,7 @@
       "floor": "#57505f",
       "mark": "#ff9a40"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 25, "cols": 8, "size": 2.2}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 25, "cols": 8, "size": 2.2}},
     "source": "placeholder",
     "light": {"radius_m": 3.5, "color": "#ffa050", "intensity": 0.85},
     "notes": "1층 레벨 디자인 LD2(2026-11-07) — 그림 tools/floor_art/Props.gd"
@@ -577,7 +577,7 @@
       "floor": "#57505f",
       "mark": "#6a5a48"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 26, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 26, "cols": 8, "size": 1.5}},
     "source": "placeholder",
     "notes": "1층 레벨 디자인 LD2(2026-11-07) — 그림 tools/floor_art/Props.gd"
   },
@@ -603,11 +603,11 @@
       "floor": "#57505f",
       "mark": "#c06040"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 27, "cols": 8, "size": 1.8}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 27, "cols": 8, "size": 1.8}},
     "source": "placeholder",
     "notes": "1층 고블린 곰덫(2026-11-10 — 한 칸 · 처음부터 보임)"
   },
-  {"id": "feat_goblin_snare_shut", "name_ko": "닫힌 곰덫", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#57505f", "mark": "#806060"}, "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 28, "cols": 8, "size": 1.8}}, "source": "placeholder", "notes": "터진 곰덫(RiftHazards sprung_tile)"},
+  {"id": "feat_goblin_snare_shut", "name_ko": "닫힌 곰덫", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#57505f", "mark": "#806060"}, "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 28, "cols": 8, "size": 1.8}}, "source": "placeholder", "notes": "터진 곰덫(RiftHazards sprung_tile)"},
   {
     "id": "feat_wet_slope",
     "name_ko": "물기 젖은 비탈",
@@ -618,7 +618,7 @@
       "floor": "#4a5a6a",
       "mark": "#9ab8d0"
     },
-    "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 19, "cols": 8, "size": 1.5}},
+    "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 19, "cols": 8, "size": 1.5}},
     "source": "placeholder"
   },
   {"id": "bf_void", "name_ko": "붉은 안개 낭떠러지", "kind": "floor", "walkable": false, "blocks_sight": false, "colors": {"floor": "#28080a"}, "void": true, "source": "original"},
@@ -760,7 +760,7 @@
   {"id": "glacier_ice_core", "name_ko": "고드름 기둥", "kind": "wall", "walkable": false, "blocks_sight": false, "colors": {"top": "#687e89", "face": "#bee6fa"}, "face_px": 30, "light": {"radius_m": 1.5, "color": "#bfe8ff", "intensity": 0.35}, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gc/stand_kit.webp", "cell": 0, "cols": 8, "rows": 2, "size": [4, 3]}}, "interact": "hidden_piece", "notes": "히든 피스 물체(2026-10-24, rift_hidden_pieces §6) — 그림은 gc_icicle 그대로"},
   {"id": "mine_cart_push", "name_ko": "광차", "kind": "wall", "walkable": false, "blocks_sight": false, "colors": {"top": "#31261b", "face": "#5a4632"}, "face_px": 14, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gm/stand_kit.webp", "cell": 2, "cols": 8, "rows": 3, "size": [4, 3], "under": "gm_rail"}}, "interact": "hidden_piece", "notes": "히든 피스 물체(2026-10-24, rift_hidden_pieces §6) — 그림은 gm_cart 그대로"},
   {"id": "mine_bridge_vein", "name_ko": "드러난 광맥", "kind": "wall", "walkable": false, "blocks_sight": false, "colors": {"top": "#375d31", "face": "#64aa5a"}, "face_px": 8, "light": {"radius_m": 1.2, "color": "#8aff6a", "intensity": 0.3}, "source": "original", "art": {"stand": {"sheet": "res://assets/floor/gm/stand_kit.webp", "cell": 11, "cols": 8, "rows": 3, "size": [4, 3]}}, "interact": "hidden_piece", "notes": "히든 피스 물체(2026-10-24, rift_hidden_pieces §6) — 그림은 gm_ore 그대로"},
-  {"id": "feat_dark_crystal", "name_ko": "희미하게 빛나는 수정", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#57505f", "mark": "#b8c8ff"}, "art": {"atlas": "res://assets/floor/kit/ground_cave.webp", "variants": 8, "span": 4, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 7, "cols": 8, "size": 1.5}}, "source": "original", "notes": "1층 히든 피스 O(2026-10-24) — 그림은 feat_drip 그대로"},
+  {"id": "feat_dark_crystal", "name_ko": "희미하게 빛나는 수정", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#57505f", "mark": "#b8c8ff"}, "art": {"atlas": "res://assets/floor/f1/limestone.webp", "variants": 8, "prop": {"sheet": "res://assets/floor/kit/props.webp", "cell": 7, "cols": 8, "size": 1.5}}, "source": "original", "notes": "1층 히든 피스 O(2026-10-24) — 그림은 feat_drip 그대로"},
   {"id": "f2d_rise", "name_ko": "무너진 성벽 너머", "kind": "floor", "walkable": false, "blocks_sight": false, "colors": {"floor": "#252629"}, "void": true, "rise": true, "source": "original", "notes": "2층 망자의 땅 바깥 둘레(솟은 외곽) — 그림은 층 art.abyss.rise"},
   {"id": "f2d_mud", "name_ko": "검은 진창", "battle": "mud", "kind": "floor", "walkable": true, "blocks_sight": false, "move_mult": 0.7, "colors": {"floor": "#424449"}, "art": {"atlas": "res://assets/floor/f2d/mudroad.webp", "variants": 6, "span": 4, "fringe": 3}, "source": "placeholder", "notes": "2층 망자의 땅 1·2구역 — 걸음 ×0.7(move_mult, 구울 · 벤시 등 mud_walker는 그대로)"},
   {"id": "f2d_hard", "name_ko": "굳은 흙", "kind": "floor", "walkable": true, "blocks_sight": false, "colors": {"floor": "#51545b"}, "art": {"atlas": "res://assets/floor/f2d/dryearth.webp", "variants": 6, "span": 4, "fringe": 4}, "source": "placeholder", "notes": "2층 망자의 땅 굳은 땅(옛 싸움터) — 마른 풀 · 잔돌 — 사용자 2026-11-05 \"땅이 벽돌 같다 · 묘지 느낌 · 무채색\"(FL10)"},
