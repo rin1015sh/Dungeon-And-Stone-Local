@@ -14,6 +14,11 @@ var _seed: int
 var keep: PackedFloat32Array
 ## 부품 자리(Parts가 남긴다 — 거주 구역 꾸밈 Dress가 창 밑 꽃상자·금테·문 현관을 단다): 종류(window·door·ledge) → [[Rect2, 모양] …].
 var marks: Dictionary = {}
+## 재질 번호 기록(동네 집 리터칭 — tools/paint_town_hand.gd만 켠다, AM70): 켜면 fill_poly가 덮은 픽셀에 next_mat(Mat가 정한다)을 남긴다.
+## 0 = 기타(틀 · 단색) · 1 회벽 · 2 돌 · 3 벽돌 · 4 나무 · 5 유리 · 6 지붕 · 7 금속 · 8 천.
+static var track_mat := false
+var next_mat := 0
+var mat_id: PackedByteArray
 
 
 func _init(p_w: int, p_h: int, seed_value: int) -> void:
@@ -26,6 +31,9 @@ func _init(p_w: int, p_h: int, seed_value: int) -> void:
 	buf.resize(w * h * 4)
 	_stroke = PackedFloat32Array()
 	_stroke.resize(w * h)
+	if track_mat:
+		mat_id = PackedByteArray()
+		mat_id.resize(w * h)
 
 
 ## 잃는 압축(WebP)으로 저장 — 붓결·그레인은 PNG로는 매우 커진다. quality 0~1.
@@ -170,8 +178,11 @@ func fill_poly(poly: PackedVector2Array, shader: Callable, opacity: float = 1.0,
 	var y1 := mini(h - 1, int(ceil(r.end.y)))
 	var x0 := maxi(0, int(floor(r.position.x)))
 	var x1 := mini(w - 1, int(ceil(r.end.x)))
+	var m := next_mat
+	next_mat = 0
 	if x1 < x0:
 		return
+	var rec := track_mat and not tint_only and opacity >= 0.5 and not mat_id.is_empty()
 	var cov := PackedFloat32Array()
 	cov.resize(x1 - x0 + 2)
 	for y in range(y0, y1 + 1):
@@ -195,6 +206,8 @@ func fill_poly(poly: PackedVector2Array, shader: Callable, opacity: float = 1.0,
 				tint(x, y, c, c.a * minf(1.0, cv) * opacity)
 			else:
 				blend(x, y, c, c.a * minf(1.0, cv) * opacity)
+				if rec and c.a * cv * opacity >= 0.5:
+					mat_id[y * w + x] = m
 
 
 func fill_rect(x: float, y: float, rw: float, rh: float, shader: Callable, opacity: float = 1.0) -> void:

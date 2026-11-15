@@ -1,0 +1,257 @@
+{
+	"_comment": "tools/town_doors.gd가 만든다(손으로 고치지 않는다). 일반 집 문 자리(집 칸 — 아래 칸이 문 앞) · 바리에이션(실내 고르기 — city.json interior.house_kinds, CT110).",
+	"houses": {
+		"h0": {
+			"design": "_mansard",
+			"door": [
+				19,
+				15
+			]
+		},
+		"h1": {
+			"design": "_tall_hip",
+			"door": [
+				26,
+				15
+			]
+		},
+		"h11": {
+			"design": "_manor",
+			"door": [
+				30,
+				29
+			]
+		},
+		"h13": {
+			"design": "_manor",
+			"door": [
+				50,
+				29
+			]
+		},
+		"h14": {
+			"design": "_step_gable",
+			"door": [
+				56,
+				29
+			]
+		},
+		"h17": {
+			"design": "_tall_hip",
+			"door": [
+				73,
+				29
+			]
+		},
+		"h18": {
+			"design": "_mansard",
+			"door": [
+				66,
+				24
+			]
+		},
+		"h20": {
+			"design": "_workshop",
+			"door": [
+				3,
+				49
+			]
+		},
+		"h28": {
+			"design": "_mansard",
+			"door": [
+				5,
+				63
+			]
+		},
+		"h29": {
+			"design": "_shop_house2",
+			"door": [
+				15,
+				63
+			]
+		},
+		"h3": {
+			"design": "_mansard",
+			"door": [
+				26,
+				6
+			]
+		},
+		"h30": {
+			"design": "_row_timber",
+			"door": [
+				9,
+				63
+			]
+		},
+		"h31": {
+			"design": "_arch_house",
+			"door": [
+				25,
+				63
+			]
+		},
+		"h33": {
+			"design": "_arch_house",
+			"door": [
+				12,
+				58
+			]
+		},
+		"h36": {
+			"design": "_arch_house",
+			"door": [
+				56,
+				49
+			]
+		},
+		"h38": {
+			"design": "_gallery_house",
+			"door": [
+				70,
+				46
+			]
+		},
+		"h39": {
+			"design": "_arch_house",
+			"door": [
+				77,
+				44
+			]
+		},
+		"h4": {
+			"design": "_tall_hip",
+			"door": [
+				52,
+				5
+			]
+		},
+		"h42": {
+			"design": "_shop_house2",
+			"door": [
+				73,
+				63
+			]
+		},
+		"h43": {
+			"design": "_eaves_dormers",
+			"door": [
+				58,
+				63
+			]
+		},
+		"h44": {
+			"design": "_arch_house",
+			"door": [
+				64,
+				63
+			]
+		},
+		"h46": {
+			"design": "_gallery_house",
+			"door": [
+				58,
+				56
+			]
+		},
+		"h47": {
+			"design": "_arch_house",
+			"door": [
+				64,
+				55
+			]
+		},
+		"h48": {
+			"design": "_arch_house",
+			"door": [
+				67,
+				54
+			]
+		},
+		"h50": {
+			"design": "_eaves_dormers",
+			"door": [
+				10,
+				74
+			]
+		},
+		"h51": {
+			"design": "_row_timber",
+			"door": [
+				18,
+				76
+			]
+		},
+		"h52": {
+			"design": "_arch_house",
+			"door": [
+				22,
+				76
+			]
+		},
+		"h53": {
+			"design": "_arch_house",
+			"door": [
+				29,
+				72
+			]
+		},
+		"h54": {
+			"design": "_eaves_dormers",
+			"door": [
+				4,
+				91
+			]
+		},
+		"h56": {
+			"design": "_cross_gable",
+			"door": [
+				8,
+				83
+			]
+		},
+		"h6": {
+			"design": "_step_gable",
+			"door": [
+				3,
+				29
+			]
+		},
+		"h60": {
+			"design": "_row_timber",
+			"door": [
+				33,
+				91
+			]
+		},
+		"h67": {
+			"design": "_workshop",
+			"door": [
+				45,
+				91
+			]
+		},
+		"h68": {
+			"design": "_row_timber",
+			"door": [
+				57,
+				91
+			]
+		},
+		"h69": {
+			"design": "_row_timber",
+			"door": [
+				77,
+				91
+			]
+		},
+		"h7": {
+			"design": "_tall_hip",
+			"door": [
+				20,
+				29
+			]
+		}
+	}
+}

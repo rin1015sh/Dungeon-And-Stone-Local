@@ -162,6 +162,7 @@ static func roof(ci: int, small: bool = false) -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
 		var tw := int(P * (0.12 if small else 0.17))  # 기와 — CT103 크게 → CT108 사람 대비 2배 동네에서 실제 크기쯤(사람 키의 1/6)
 		var th := int(P * (0.08 if small else 0.11))
+		p.next_mat = 6
 		Parts.roof(p, poly, _tiles(ROOF[ci % ROOF.size()], tw, th))
 
 
@@ -233,6 +234,7 @@ static func tower(ci: int, floors: int, belfry: bool, door: bool = false) -> Cal
 static func awning() -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
 		var band := int(P * 0.22)
+		p.next_mat = 8
 		p.fill_poly(poly, func(x: int, y: int) -> Color: return p.vary(Color("#7a2e28") if (x / band) % 2 == 0 else Color("#cdbf9c"), x, y, 0.12))
 		Ink.path(p, poly, 1.8)
 
@@ -250,6 +252,7 @@ static func gallery() -> Callable:
 static func banner() -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
 		var r := _box(poly)
+		p.next_mat = 8
 		p.fill_poly(poly, func(x: int, y: int) -> Color: return p.vary(Color("#5a2622"), x, y, 0.1))
 		var c := Vector2(r.get_center().x, r.position.y + r.size.y * 0.42)
 		var rad := minf(r.size.x, r.size.y) * 0.3

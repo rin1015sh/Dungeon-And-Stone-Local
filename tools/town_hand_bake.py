@@ -1,7 +1,9 @@
 """게임 동네 집 그림 손그림 마감(CT97): tools/paint_town_hand.gd가 찍은 user://town_hand/<id>_raw.png · _id.png · .json을
 tools/town_handdrawn.finish(sprite=True, fine=True)로 마감해 배경을 투명하게 → user://town_bake/<id>.png · .json(off · key)
 — 그다음 paint_town_houses.gd --pack이 그림판(assets/town/houses/p<k>.webp + index.json)으로 묶는다.
-  python3 tools/town_hand_bake.py [h3 h7 …]
+  python3 tools/town_hand_bake.py [h3 h7 …] [--orig]
+리터칭(AM70): 자료 그림(_mat · _geo · _nrm — paint_town_hand.gd)이 있으면 마감 앞에 tools/town_retouch.py로 입체감 · 빛 · 재질을 덧칠한다.
+--orig = 리터칭 없이(리터칭 전 그림 그대로 — 되돌리기 · 비교용).
 """
 import json
 import os
@@ -14,6 +16,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import town_handdrawn as th  # noqa: E402
+import town_retouch as tr  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -55,7 +58,9 @@ def main():
     dst = os.path.join(user_dir(), "town_bake")
     os.makedirs(dst, exist_ok=True)
     want = set(a for a in sys.argv[1:] if not a.startswith("--"))
+    orig = "--orig" in sys.argv
     n = 0
+    n_rt = 0
     for f in sorted(os.listdir(src)):
         if not f.endswith("_raw.png"):
             continue
@@ -65,12 +70,20 @@ def main():
         raw = np.asarray(Image.open(os.path.join(src, f)).convert("RGB")).astype(float) / 255.0
         ids = np.asarray(Image.open(os.path.join(src, hid + "_id.png")).convert("RGB")).astype(np.int64)
         code = ids[..., 0] * 65536 + ids[..., 1] * 256 + ids[..., 2]
+        meta = json.load(open(os.path.join(src, hid + ".json"), encoding="utf-8"))
+        geo_p = os.path.join(src, hid + "_geo.png")
+        if not orig and os.path.exists(geo_p) and "zc" in meta:
+            mat = np.rint(np.asarray(Image.open(os.path.join(src, hid + "_mat.png")).convert("RGB"))[..., 0] / 30.0).astype(np.int64)
+            geo = np.asarray(Image.open(geo_p).convert("RGB"))
+            nrm = np.asarray(Image.open(os.path.join(src, hid + "_nrm.png")).convert("RGB"))
+            raw = tr.retouch(raw, code, mat, geo, nrm, meta, hid)
+            n_rt += 1
         img, alpha = th.finish(raw, code, sprite=True, fine=True)
         rgba = np.dstack([img, alpha])
         Image.fromarray((rgba * 255).astype(np.uint8), "RGBA").save(os.path.join(dst, hid + ".png"))
         shutil.copyfile(os.path.join(src, hid + ".json"), os.path.join(dst, hid + ".json"))
         n += 1
-    print("손그림 마감: 집 %d채 → %s" % (n, dst))
+    print("손그림 마감: 집 %d채(리터칭 %d) → %s" % (n, n_rt, dst))
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ const Paint := preload("res://tools/city_art/Paint.gd")
 ## 회벽: 붓결 + 빗물 자국(세로) + 큰 때 얼룩. peel > 0이면 얼룩이 짙은 곳에서 벗겨져 벽돌이 드러난다.
 static func plaster(p: Paint, base: Color, peel: float = 0.0, brick_c: Color = Color("#6a3d2e")) -> Callable:
 	var brick_sh := brick(p, brick_c, 0, 0)
+	p.next_mat = 1
 	return func(x: int, y: int) -> Color:
 		var c := p.vary(base, x, y, 0.2)
 		var s := p.nz("vs", x, y)
@@ -24,6 +25,7 @@ static func plaster(p: Paint, base: Color, peel: float = 0.0, brick_c: Color = C
 
 ## 벽돌: 줄마다 반 장 엇갈림, 장마다 다른 색, 위 밝게·아래 어둡게, 줄눈.
 static func brick(p: Paint, base: Color, ox: int, oy: int, bw: int = 22, bh: int = 9, mortar: Color = Color("#2c2620")) -> Callable:
+	p.next_mat = 3
 	return func(x: int, y: int) -> Color:
 		var ly := y - oy
 		var row := floori(float(ly) / bh)
@@ -43,6 +45,7 @@ static func brick(p: Paint, base: Color, ox: int, oy: int, bw: int = 22, bh: int
 
 ## 다듬은 돌(마름돌): 큰 블록, 위·왼쪽 모서리 밝게, 아래·오른쪽 어둡게, 정 자국(세포 잡음).
 static func ashlar(p: Paint, base: Color, ox: int, oy: int, bw: int = 46, bh: int = 22, mortar: Color = Color("#24221f")) -> Callable:
+	p.next_mat = 2
 	return func(x: int, y: int) -> Color:
 		var ly := y - oy
 		var row := floori(float(ly) / bh)
@@ -65,6 +68,7 @@ static func ashlar(p: Paint, base: Color, ox: int, oy: int, bw: int = 46, bh: in
 
 ## 막돌(쌓은 자연석): 세포 잡음 경계 = 줄눈.
 static func rubble(p: Paint, base: Color, mortar: Color = Color("#221f1b")) -> Callable:
+	p.next_mat = 2
 	return func(x: int, y: int) -> Color:
 		var e := p.nz("cell", x, y)
 		if e < 0.06:
@@ -78,6 +82,7 @@ static func rubble(p: Paint, base: Color, mortar: Color = Color("#221f1b")) -> C
 
 ## 판자: 세로(vertical) 또는 가로. 나뭇결(늘인 잡음) + 판자마다 색 + 틈.
 static func planks(p: Paint, base: Color, ox: int, oy: int, vertical: bool = true, pw: int = 13) -> Callable:
+	p.next_mat = 4
 	return func(x: int, y: int) -> Color:
 		var along := y - oy if vertical else x - ox
 		var across := x - ox if vertical else y - oy
@@ -99,6 +104,7 @@ static func planks(p: Paint, base: Color, ox: int, oy: int, vertical: bool = tru
 
 ## 들보(목조 뼈대): 짙은 나무 + 결.
 static func beam(p: Paint, base: Color = Color("#2e2118")) -> Callable:
+	p.next_mat = 4
 	return func(x: int, y: int) -> Color:
 		var g := (p.nz("vs", x, y) + p.nz("hs", x, y)) * 0.5
 		return p.vary(base.darkened(absf(g - 0.5) * 0.4), x, y, 0.2)
@@ -106,6 +112,7 @@ static func beam(p: Paint, base: Color = Color("#2e2118")) -> Callable:
 
 ## 점판암 지붕: 줄마다 엇갈린 비늘, 아래 가장자리 그늘, 장마다 색, 이끼.
 static func slate(p: Paint, base: Color, ox: int, oy: int, tw: int = 16, th: int = 10, moss: float = 0.3) -> Callable:
+	p.next_mat = 6
 	return func(x: int, y: int) -> Color:
 		var ly := y - oy
 		var row := floori(float(ly) / th)
@@ -128,6 +135,7 @@ static func slate(p: Paint, base: Color, ox: int, oy: int, tw: int = 16, th: int
 
 ## 기와(점토): 아래가 둥근 비늘.
 static func clay(p: Paint, base: Color, ox: int, oy: int, tw: int = 14, th: int = 11) -> Callable:
+	p.next_mat = 6
 	return func(x: int, y: int) -> Color:
 		var ly := y - oy
 		var row := floori(float(ly) / th)
@@ -149,6 +157,7 @@ static func clay(p: Paint, base: Color, ox: int, oy: int, tw: int = 14, th: int 
 
 ## 초가: 경사 방향 짚 줄무늬.
 static func thatch(p: Paint, base: Color) -> Callable:
+	p.next_mat = 6
 	return func(x: int, y: int) -> Color:
 		var s := p.nz("vs", x, y)
 		var c := base.darkened(absf(s - 0.5) * 0.7)
@@ -163,6 +172,7 @@ static var glass_dark := [Color("#5a6458"), Color("#121614")]
 
 
 static func glass(p: Paint, top: float, bottom: float, lit: bool) -> Callable:
+	p.next_mat = 5
 	return func(x: int, y: int) -> Color:
 		var t := clampf((y - top) / maxf(1.0, bottom - top), 0.0, 1.0)
 		var c := Color("#e9b25c").lerp(Color("#9a4f1f"), t * 0.8) if lit else (glass_dark[0] as Color).lerp(glass_dark[1] as Color, t)

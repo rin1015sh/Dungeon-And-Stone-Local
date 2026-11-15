@@ -19,6 +19,7 @@ const IRON := Color("#22201d")
 
 ## 거친 돌(1층 — 줄눈이 깊은 큰 돌, 위아래 그늘이 짙다).
 static func _rustic(p: Paint) -> Callable:
+	p.next_mat = 2  # 리터칭 재질 번호 = 돌(AM70)
 	var bh := int(F.P * 0.22)
 	var bw := int(F.P * 0.5)
 	return func(x: int, y: int) -> Color:

@@ -224,6 +224,7 @@ static func dome(k: Kit, c: Vector3, r: float, h: float, painter: Callable, segs
 ## 녹슨 구리 · 납 지붕(차분한 청록 잿빛 — 채도 낮게).
 static func _copper() -> Callable:
 	return func(p: Paint, poly: PackedVector2Array, _size: Vector2) -> void:
+		p.next_mat = 7
 		p.fill_poly(poly, p.flat(Color("#2e3836"), 0.06))  # 납 · 녹슨 구리(무늬 없이 — 면 먹선은 갈빗대만)
 
 

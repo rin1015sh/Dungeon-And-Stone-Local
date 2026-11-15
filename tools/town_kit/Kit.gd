@@ -105,6 +105,8 @@ func face(pts: PackedVector3Array, hint: Vector3, painter: Callable) -> void:
 	mi.material_override = mat
 	if _roof:
 		mi.set_meta("roof", true)
+	if Paint.track_mat and not p.mat_id.is_empty():  # 재질 번호 그림(리터칭 — tools/paint_town_hand.gd, AM70)
+		mi.set_meta("mat_img", Image.create_from_data(p.w, p.h, false, Image.FORMAT_L8, p.mat_id))
 	root.add_child(mi)
 
 
