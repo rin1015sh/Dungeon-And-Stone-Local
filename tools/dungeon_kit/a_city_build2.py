@@ -322,7 +322,7 @@ def balcony(k, kind="wood", plants=False, broken=False, seed=1):
     return {"foot": 1.0, "shadow": 0.0}
 
 
-@prop("wood_railing", "city", cell=(2, 3), collide=(1.0, 0.16), tags=["house", "railing", "wood"], name_ko="나무 난간",
+@prop("wood_railing", "city", cell=(2, 3), collide=(1.0, 0.16), tags=["house", "railing", "wood"], name_ko="집 나무 난간",
     variants={"straight": {}, "post": {"kind": "post"}, "corner": {"kind": "corner"}, "broken": {"kind": "broken"}},
     meta=meta(tile_w=1, note="현관 · 다리 · 마당 가의 나무 난간 한 칸 — 칸 가운데 원점, 옆으로 이어진다. post = 끝 기둥 · corner = 꺾이는 칸(동 · 북으로 팔)"))
 def wood_railing(k, kind="straight", seed=1):

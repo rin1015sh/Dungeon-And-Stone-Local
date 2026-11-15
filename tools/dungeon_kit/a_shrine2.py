@@ -23,7 +23,7 @@ def many(fns):
 def _bowl_censer(k, z, r=0.13):
     """뚜껑에 구멍 뚫린 둥근 향로 몸통(가운데 z)."""
     k.add(lambda p: smin(sub(sphere(p, v3(0, 0, z), r), box(p, v3(0, 0, z + r * 0.15), (r * 2, r * 2, 0.008))), cap(p, v3(0, 0, z + r * 0.8), v3(0, 0, z + r * 1.3), 0.02, 0.008), 0.02), "gilt")
-    k.add(many([lambda p, a=a: sphere(p, v3(np.cos(a) * r * 0.62, np.sin(a) * r * 0.62 - 0.0, z + r * 0.75), 0.016) for a in np.linspace(0, 2 * PI, 7)[:-1]]), "void")
+    k.add(lambda p: torus(p, v3(0, 0, z + r * 0.12), r * 0.99, 0.012), "brass")
 
 
 @prop("censer", "shrine", cell=(2, 3), collide=(0.45, 0.45), tags=["temple", "metal", "smoke"], name_ko="세운 향로",
@@ -104,7 +104,10 @@ def _panes(c, m, glow, seed, ring=None):
     if ring is not None:   # 장미창: 고리 따라 꽃잎 색
         rr, aa = ring
         idx = np.where(rr < 1.0, ((aa * 8 / (2 * PI)).astype(np.int64) + (rr * 3).astype(np.int64)) % len(GLASS), idx)
-        lead = np.maximum(lead * (rr > 1.0), np.maximum(sstep(0.06 - np.abs((aa * 8 / (2 * PI)) % 1 - 0.5) * 0.12, 0, 0.02), sstep(0.04 - np.abs(rr * 3 % 1 - 0.5) * 0.08, 0, 0.02)) * (rr < 1.0))
+        fa, fr = (aa * 8 / (2 * PI)) % 1, (rr * 3) % 1
+        da = np.minimum(fa, 1 - fa) * (2 * PI / 8) * rr * 40      # 고리 둘레 px쯤
+        dr = np.minimum(fr, 1 - fr) * 14
+        lead = np.where(rr < 1.0, np.maximum(sstep(1.2 - da, 0, 0.6), sstep(1.2 - dr, 0, 0.6)), lead)
     col = np.zeros(c.xx.shape + (3,), F)
     from paint2d import hexc
     pal = np.stack([hexc(g) for g in GLASS])
