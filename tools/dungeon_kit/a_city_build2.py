@@ -75,7 +75,6 @@ def _roof(k, kind="wood", end="", state="", seed=1):
         for x in (-0.25, 0.0, 0.25, 0.5):          # 서까래
             k.add(lambda p, x=x: np.maximum(box(p, v3(x, 0.5, 0), (0.035, 2, 9)), np.maximum(np.abs(_roof_plane(p) + 0.13) - 0.035, bound(p))), "rafter")
         k.add(lambda p: np.maximum(np.abs(_roof_plane(p) + 0.3) - 0.02, bound(p)), "void")
-        k.rubble([(0.35, -0.5), (-0.2, -0.55), (0.1, -0.62)], "roof", 0.05, 0.09)
     else:
         k.add(slab, "roof")
         k.add(lambda p: np.maximum(np.abs(_roof_plane(p) + 0.25) - 0.02, bound(p)), "void")   # 밑 그늘(옆에서 비칠 때)

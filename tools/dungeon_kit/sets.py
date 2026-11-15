@@ -152,3 +152,8 @@ SETS["sewer"] = {
 from sets_wild import WILD  # noqa: E402
 
 SETS.update(WILD)
+
+# 도시 · 건물 실내 배치 시험 세트(AM69 — 도시 라이브러리)
+from sets_city import CITY  # noqa: E402
+
+SETS.update(CITY)
