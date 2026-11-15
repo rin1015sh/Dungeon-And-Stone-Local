@@ -266,6 +266,9 @@ def hand_stele(k, state="idle", seed=1, f=0):
     k.add(lambda p: sub(box(T(p), v3(0, 0.0, 0.56), (0.34, 0.04, 0.24), 0.02), hand(p)), "carved")
     if state == "glowing":
         k.add(lambda p: np.maximum(hand(p), np.abs(T(p)[:, 1] + 0.01) - 0.012), "glow_b")
+    if state == "spent":     # 다 쓴 비석: 손자국 가운데로 금이 가고 그을렸다
+        k.add(lambda p: np.maximum(cap(T(p), v3(-0.3, -0.045, 0.72), v3(0.25, -0.045, 0.36), 0.012), -(np.abs(T(p)[:, 1] + 0.04) - 0.01)), "coal")
+        k.add(lambda p: np.maximum(hand(p) - 0.004, np.abs(T(p)[:, 1] + 0.012) - 0.01), "ash")
     post = []
     for i, x in enumerate((-0.26, -0.18, 0.18, 0.26)):
         post.append(rune_post(x, -0.04, 0.5 + 0.06 * (i % 2), 7, 10 + i, "blue" if state == "glowing" else None, f))
