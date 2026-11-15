@@ -531,7 +531,7 @@ def smithy_wall_hang(k, state="horseshoes", seed=1):
         k.add(lambda p: np.maximum(ring_x(p, v3(0.24, -0.08, 1.14), 0.05, 0.014), 0), "iron")
     else:                      # 못에 건 가죽 앞치마 + 장갑
         k.add(lambda p: hcyl(p, v3(0, -0.01, 1.62), v3(0, -0.1, 1.64), 0.014), "iron")
-        k.add(rough(lambda p: np.maximum(box(p, v3(0, -0.06, 1.12), (0.24 - (p[:, 2] > 1.38) * 0.1, 0.02, 0.44), 0.02) + np.sin(p[:, 0] * 26.0) * 0.006, -1), 0.02, 0.12, seed), "leather")
+        k.add(rough(lambda p: np.maximum(box(p, v3(0, -0.06, 1.12), (0.24, 0.02, 0.44), 0.02), np.abs(p[:, 0]) - 0.24 + (p[:, 2] > 1.38) * 0.1) + np.sin(p[:, 0] * 26.0) * 0.006, 0.02, 0.12, seed), "leather")
         k.add(lambda p: np.maximum(ring_x(p, v3(0, -0.06, 1.6), 0.07, 0.01), 1.56 - p[:, 2]), "leather_d")
         k.add(rough(lambda p: smin(ell(p, v3(0.3, -0.05, 1.42), (0.06, 0.03, 0.1)), cap(p, v3(0.3, -0.05, 1.5), v3(0.3, -0.05, 1.58), 0.05, 0.06), 0.02), 0.01, 0.06, seed), "leather_d")
         k.add(lambda p: hcyl(p, v3(0.3, -0.01, 1.6), v3(0.3, -0.08, 1.61), 0.01), "iron")

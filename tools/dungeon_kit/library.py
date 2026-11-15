@@ -39,7 +39,7 @@ GROUPS = [   # (id, 이름, 고르는 규칙)
     ("bank", "은행", lambda i, a: a["cat"] == "bank"),
     ("traces", "환경 흔적", lambda i, a: a["cat"] == "trace" and not _damaged(i, a)),
     ("damaged", "파손 · 폐허", lambda i, a: _damaged(i, a)),
-    ("interactive", "상호작용 오브젝트", lambda i, a: bool(a.get("interact")) and a["cat"] not in ("trap", "item", "icon")),
+    ("interactive", "상호작용 오브젝트", lambda i, a: bool(a.get("interact")) and a["cat"] in ("special", "furniture", "structure", "wall")),   # 시설 가구(계산대 · 금고 …)는 각 시설 쪽에
     ("magic_fx", "마법 · 환경 효과", lambda i, a: a["cat"] == "fx" or (a["cat"] in ("special", "light") and "magic" in a.get("tags", []) and not a.get("interact")) or a.get("lib") == "fx"),
     ("items", "아이템", lambda i, a: a["cat"] == "item"),
     ("icons", "UI 아이콘", lambda i, a: a["cat"] == "icon"),
@@ -73,7 +73,7 @@ def is_new(id, fn_module):
 def _damaged(i, a):
     if a["cat"] in ("item", "icon", "fx", "trap", "floor", "wall"):
         return False
-    return "ruin" in a.get("tags", []) or (a.get("lib") and any(any(w in v for w in BROKEN) for v in a["variants"]) and sum(any(w in v for w in BROKEN) for v in a["variants"]) * 2 >= len(a["variants"]))
+    return "ruin" in a.get("tags", []) and a["cat"] not in ("special", "light")
 
 
 def export(manifest):

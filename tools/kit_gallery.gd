@@ -165,7 +165,7 @@ func _fill_set(set_name: String) -> float:
 	var room := _kit.build_set(set_name, {"scale": k, "collision": false})
 	room.position = Vector2((VIEW.x - full.x * k) * 0.5, PAD)
 	_page.add_child(room)
-	return full.y * k + PAD * 2.0
+	return full.y * k
 
 
 ## 분류마다(길면 화면 단위로 내려 가며) 찍는다 → <폴더>/<번호>_<id>[_<쪽>].png
