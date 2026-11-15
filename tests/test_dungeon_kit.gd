@@ -134,3 +134,27 @@ func test_game_prop_tiles_point_at_kit_sheet() -> void:
 			bad.append(str(t.get("id", "")))
 	assert_true(n >= 50, "키트 시트를 쓰는 소품 타일: %d" % n)
 	assert_true(bad.is_empty(), "시트 밖 칸: %s" % [", ".join(bad)])
+
+
+func test_city_library_groups_and_gallery() -> void:
+	## 도시 · 건물 실내 라이브러리(AM69 — docs/asset_library/CITY_LIBRARY.md): 갤러리 분류마다 에셋이 있고, 배치 시험 세트가 있으며, 갤러리 씬이 열린다.
+	var kit := DungeonKit.open()
+	var lib: Dictionary = kit.data.get("library", {})
+	var groups: Array = lib.get("groups", [])
+	assert_true(groups.size() >= 13, "갤러리 분류: %d" % groups.size())
+	for g: Dictionary in groups:
+		assert_true(int(g.get("new", 0)) > 0, "%s: 새 에셋 없음" % g.get("id", ""))
+		for id: String in g["ids"]:
+			assert_true(kit.has(id), "%s: 없는 에셋 %s" % [g["id"], id])
+	assert_true((lib.get("tests", []) as Array).size() >= 6, "배치 시험 세트")
+	for id in kit.ids("item"):
+		var f: Array = kit.info(id)["variants"].values()[0]["frames"][0]
+		assert_true(int(f[2]) == 80 and int(f[3]) == 80, "아이템 그림 80 × 80: %s" % id)
+	for id in kit.ids("icon"):
+		var f2: Array = kit.info(id)["variants"].values()[0]["frames"][0]
+		assert_true(int(f2[2]) == 96 and int(f2[3]) == 96, "아이콘 96 × 96: %s" % id)
+	var scene := load("res://tools/kit_gallery.tscn") as PackedScene
+	assert_true(scene != null, "갤러리 씬")
+	var node := scene.instantiate()
+	assert_true(node.has_method("_fill_assets"), "갤러리 스크립트")
+	node.free()
