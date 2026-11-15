@@ -265,8 +265,8 @@ def round_table(k, state="plain", seed=1, f=0):
     for a in (0.3, 2.4, 4.5):
         k.add(lambda p, a=a: cap(p, v3(0, 0, 0.06), v3(np.cos(a) * 0.26, np.sin(a) * 0.22, 0.02), 0.03, 0.022), "wood_d")
     if state == "cloth":
-        k.add(rough(lambda p: sub(_frustum(p, v3(0, 0, h - 0.2), 0.45, 0.39, 0.21), cyl(p, v3(0, 0, h - 0.24), 0.37, 0.22)), 0.012, 0.08, seed), "linen")
-        k.add(lambda p: cyl(p, v3(0, 0, h - 0.002), 0.39, 0.01, 0.004), "linen")
+        k.add(rough(lambda p: sub(_frustum(p, v3(0, 0, h - 0.2), 0.45, 0.39, 0.21), cyl(p, v3(0, 0, h - 0.24), 0.37, 0.22)), 0.012, 0.08, seed), "cloth_r")
+        k.add(lambda p: cyl(p, v3(0, 0, h - 0.002), 0.39, 0.01, 0.004), "cloth_r")
         _flask(k, 0.1, 0.06, h, 0.05, "glass_b")
     if state == "candle":
         k.add(lambda p: cyl(p, v3(0, 0, h), 0.06, 0.012, 0.004), "brass")
@@ -347,6 +347,10 @@ def counter(k, state="straight", seed=1):
 
 
 def _curio(k, kind, x, y, z, seed):
+    s = 1.5
+    x, y, z = x, y, z
+    k = _Scaled(k, x, y, z, s)
+    x, y, z = 0.0, 0.0, 0.0
     if kind == 0:
         k.add(lambda p: smin(ell(p, v3(x, y, z + 0.06), (0.045, 0.045, 0.06)), cap(p, v3(x, y, z + 0.1), v3(x, y, z + 0.16), 0.02, 0.028), 0.02), k.mat("glaze", M.plain("#4a5a62", 0.3, 0.08, 43)))
     elif kind == 1:
@@ -356,6 +360,19 @@ def _curio(k, kind, x, y, z, seed):
         k.add(lambda p: box(p, v3(x, y - 0.042, z + 0.04), (0.012, 0.004, 0.012)), "brass")
     else:
         k.add(lambda p: np.maximum(disc_like(p, x, y + 0.02, z + 0.1, 0.09), np.abs(p[:, 1] - y - 0.02) - 0.008), "steel")
+
+
+class _Scaled:
+    """작은 물건을 (x, y, z) 둘레로 s배 키워 넣는다(진열장 속 장식이 보이게)."""
+
+    def __init__(self, k, x, y, z, s):
+        self.k, self.c, self.s, self.mats = k, v3(x, y, z), s, k.mats
+
+    def add(self, fn, mat):
+        self.k.add(lambda p, fn=fn: fn((p - self.c) / self.s) * self.s, mat)
+
+    def mat(self, name, fn):
+        return self.k.mat(name, fn)
 
 
 def disc_like(p, x, y, z, r):
@@ -377,7 +394,7 @@ def display_cabinet(k, state="curios", seed=1):
         rng = np.random.default_rng(seed)
         for si, z in enumerate(shelves):
             for j, x in enumerate((-0.25, 0.0, 0.25)):
-                _curio(k, (si * 3 + j + int(rng.integers(3))) % 4, x, 0.04, z + 0.012, seed)
+                _curio(k, (si * 3 + j + int(rng.integers(3))) % 4, x, -0.05, z + 0.012, seed)
     doorf = lambda p: np.minimum(np.minimum(box(p, v3(0, -d + 0.01, h / 2 + 0.02), (0.02, 0.012, h / 2 - 0.08)), box(p, v3(0, -d + 0.01, 1.28), (w - 0.04, 0.012, 0.018))),
         np.minimum(box(p, v3(-w + 0.06, -d + 0.01, h / 2 + 0.02), (0.02, 0.012, h / 2 - 0.08)), box(p, v3(w - 0.06, -d + 0.01, h / 2 + 0.02), (0.02, 0.012, h / 2 - 0.08))))
     if state == "broken":                                           # 오른쪽 문이 떨어져 기울었다 · 유리 조각

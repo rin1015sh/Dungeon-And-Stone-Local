@@ -76,7 +76,36 @@ CITY["shrine_room"] = {
            _i("candelabra", 2.4, 2.2, "lit"), _i("candelabra", 8.6, 2.2, "lit"),
            _i("pew", 3.4, 4.0, "facing_n"), _i("pew", 7.6, 4.0, "facing_n"), _i("pew", 3.4, 5.4, "books"), _i("pew", 7.6, 5.4, "facing_n"),
            _i("prayer_kneeler", 5.5, 3.0, "cushion"), _i("offering_box", 0.8, 6.6, "post"), _i("shrine_statuette", 10.2, 6.6, "pair"), _i("chalice_stand", 4.6, 2.6, "set"),
-           _i("carpet", 5.5, 6.2, "red"), _i("prayer_books", 9.6, 4.4, "stack"), _i("pillar_white", 0.6, 3.6, "intact"), _i("pillar_white", 10.4, 3.6, "intact")]),
+           _i("carpet", 5.5, 6.2, "red"), _i("stained_glass", 3.0, 0.0, "glowing"), _i("stained_glass", 8.0, 0.0, "glowing"), _i("rose_window", 5.5, 0.0, "glowing"),
+           _i("votive_rack", 1.2, 4.8, "lit"), _i("censer", 9.8, 2.8, "smoking"), _i("temple_font", 0.9, 2.6, "water"), _i("offerings", 6.6, 2.5, "flowers"), _i("prayer_books", 9.6, 4.4, "stack"), _i("pillar_white", 0.6, 3.6, "intact"), _i("pillar_white", 10.4, 3.6, "intact")]),
+}
+
+# 여관: 술집 홀 — 바 · 술통 · 탁자 · 화덕 · 부엌
+CITY["inn_room"] = {
+    "name_ko": "여관 내부 일부", "size": [12, 8], "floor": "floor_old", "wall": "brick",
+    "floor_patches": [{"id": "floor_flag", "rect": [8, 0, 4, 3]}],
+    "items": [
+        _i("keg_rack", 1.2, 0.9, "tapped"), _i("wine_rack", 2.9, 0.8, "full"), _i("dish_hutch", 4.4, 0.8, "full"), _i("kitchen_hangings", 6.0, 0.0, "sausages"), _i("key_rack", 7.0, 0.0, "full"),
+        _i("spit_hearth", 9.8, 1.2, "lit"), _i("kitchen_table", 9.6, 2.9, "messy"), _i("coat_pegs", 11.4, 0.0, "cloaks"),
+        _i("inn_bar", 1.5, 3.2, "taps"), _i("inn_bar", 2.5, 3.2, "mugs"), _i("inn_bar", 3.5, 3.2, "straight"), _i("inn_keg", 4.6, 3.0, "tapped"),
+        _i("tavern_table", 3.0, 5.6, "meal"), _i("tavern_table", 6.6, 4.6, "candle"), _i("tavern_table", 9.4, 5.8, "after"),
+        _i("stool", 2.2, 5.6), _i("stool", 3.8, 5.8), _i("chair", 6.6, 5.6, "n"), _i("chair", 5.7, 4.6, "e"), _i("bench", 9.4, 6.8, "base"),
+        _i("barrel", 0.6, 6.8, "intact"), _i("bedding", 11.3, 6.9, "stack"), _i("blanket", 10.8, 4.2, "folded"), _i("washstand", 11.4, 4.0, "jug"), _i("carpet", 6.6, 6.4, "worn"),
+    ],
+}
+
+# 은행: 접수대와 창살 너머 금고실
+CITY["bank_room"] = {
+    "name_ko": "은행 내부 일부", "size": [12, 8], "floor": "floor_flag", "wall": "stone",
+    "items": [
+        _i("vault_door", 2.0, 0.0, "ajar"), _i("deposit_lockers", 5.0, 0.0, "one_open"), _i("security_door", 9.0, 0.0, "closed"), _i("bank_emblem", 7.0, 0.0, "plaque"),
+        _i("big_safe", 0.8, 1.4, "open"), _i("coin_piles", 3.4, 1.6, "heap"), _i("coin_piles", 4.2, 1.8, "sack"), _i("strongbox", 6.4, 1.6, "open"), _i("gem_case", 7.6, 1.6, "tray"), _i("bank_documents", 10.8, 1.2, "pigeonholes"),
+        _i("bank_grille", 0.75, 3.0, "panel"), _i("bank_grille", 2.25, 3.0, "slot"), _i("bank_grille", 3.75, 3.0, "gate"), _i("bank_grille", 5.25, 3.0, "panel"),
+        _i("teller_counter", 7.0, 3.6, "open"), _i("teller_counter", 8.0, 3.6, "closed"), _i("teller_counter", 9.0, 3.6, "end"), _i("lock_mechanism", 10.8, 3.2, "dial"),
+        _i("scale", 7.0, 3.4, "coins", z=30), _i("ledger", 8.0, 3.4, "open", z=30), _i("sealing_kit", 9.0, 3.4, "tray", z=30),
+        _i("bank_inlay", 6.0, 6.0, "bright"), _i("queue_posts", 4.0, 5.2, "rope"), _i("queue_posts", 8.0, 5.2, "rope"), _i("valuables_case", 1.4, 6.0, "full"), _i("valuables_case", 10.6, 6.0, "empty"),
+        _i("bank_documents", 11.0, 4.6, "stacks"), _i("bench", 2.4, 7.0, "base"), _i("candelabra", 5.0, 3.6, "lit"),
+    ],
 }
 
 TESTS = ["city_street", "smithy_room", "inn_room", "shrine_room", "shop_room", "bank_room"]
