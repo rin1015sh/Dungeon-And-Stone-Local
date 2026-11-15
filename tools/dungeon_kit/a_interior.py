@@ -141,7 +141,7 @@ def room_window(k, state="day", seed=1):
     if state == "curtained":                                        # 반쯤 친 커튼 둘 + 막대
         k.add(lambda p: hcyl(p, (-hw - 0.14, -0.08, z1 + 0.04), (hw + 0.14, -0.08, z1 + 0.04), 0.016), "brass")
         for s in (-1, 1):
-            k.add(rough(lambda p, s=s: box(p, v3(s * (hw - 0.06), -0.1, zc), (0.14 + 0.02 * np.sin(p[:, 2] * 9), 0.025 + 0.015 * np.sin(p[:, 0] * 40), (z1 - z0) / 2 + 0.03), 0.01), 0.01, 0.1, seed), "cloth_r")
+            k.add(rough(lambda p, s=s: box(p, v3(s * (hw - 0.06), -0.1, zc), (0.14, 0.03, (z1 - z0) / 2 + 0.03), 0.01) + 0.012 * np.sin(p[:, 0] * 45), 0.01, 0.1, seed), "cloth_r")
     if state == "shuttered":                                        # 닫힌 덧문 두 짝
         for s in (-1, 1):
             k.add(lambda p, s=s: box(p, v3(s * hw / 2, -0.05, zc), (hw / 2 - 0.006, 0.016, (z1 - z0) / 2), 0.004), "plank_y")
