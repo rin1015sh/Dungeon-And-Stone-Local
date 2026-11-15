@@ -40,7 +40,7 @@ def loaf(x, y, z, a=0.0, s=1.0):
 
 def wheel(x, y, z, r=0.07, h=0.045):
     """치즈 덩이(한 조각 잘라 낸)."""
-    return lambda p: np.maximum(cyl(p, v3(x, y, z), r, h, 0.008), -np.maximum(p[:, 0] - x - 0.012 + (p[:, 1] - y) * 0.9, -(p[:, 1] - y) - 0.004) * 0 - np.minimum(p[:, 0] - x - 0.01, -(p[:, 1] - y) + 0.0))
+    return lambda p: sub(cyl(p, v3(x, y, z), r, h, 0.008), np.maximum(-(p[:, 0] - x) + 0.012, (p[:, 1] - y) + (p[:, 0] - x) * 0.5))
 
 
 def heap(x, y, z, rx, ry, n, r, seed):
@@ -492,7 +492,6 @@ def herb_tray(k, state="fresh", seed=1):
     h = 0.3
     k.add(many([lambda p, sx=sx: np.minimum(cap(p, v3(sx * 0.28, -0.12, 0), v3(sx * 0.22, 0.12, h - 0.03), 0.02), cap(p, v3(sx * 0.28, 0.12, 0), v3(sx * 0.22, -0.12, h - 0.03), 0.02)) for sx in (-1, 1)]), "wood_d")
     k.add(lambda p: sub(cyl(p, v3(0, 0, h - 0.02), 0.34, 0.05, 0.012), cyl(p, v3(0, 0, h), 0.31, 0.06)) * 1.0, k.mat("wicker", M.thatch("#7a643c", 0.03, 5)))
-    k.sq = None
     z = h + 0.0
     if state == "sorted":
         for i, (a, m) in enumerate(((0.3, "herb"), (2.4, "herb_dry"), (4.5, "herb_v"))):

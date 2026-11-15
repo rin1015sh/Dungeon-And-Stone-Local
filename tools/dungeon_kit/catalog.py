@@ -19,11 +19,13 @@ OUT = os.path.join(ROOT, "docs", "asset_library")
 SHOTS = os.path.join(ROOT, "docs", "screens", "asset_library")
 
 CAT_KO = {"floor": "바닥", "wall": "벽 · 절벽", "terrain": "지형", "flora": "식생", "nature": "자연물", "structure": "구조물", "furniture": "가구 · 생활", "light": "조명",
-    "trace": "환경 흔적", "special": "특수 · 기믹", "trap": "함정", "fx": "환경 연출"}
+    "trace": "환경 흔적", "special": "특수 · 기믹", "trap": "함정", "fx": "환경 연출",
+    "city": "도시 외부", "interior": "공통 실내", "smithy": "대장간", "inn": "여관", "shrine": "신전", "shop": "상점", "bank": "은행", "item": "아이템", "icon": "UI 아이콘"}
 REUSE_KO = {"common": "공용", "ext": "지역 확장형", "region": "지역 전용"}
 LORE_KO = {"specific": "구체적", "partial": "일부", "none": "없음(확장 후보)"}
 GROUP = {"A. 공용 기본 · 지형": ["floor", "wall", "terrain", "nature"], "B. 식생": ["flora"], "C. 건축 · 구조물": ["structure"], "D. 장식 · 환경 흔적": ["furniture", "trace", "light"],
-    "E. 상호작용 · 기믹": ["special", "trap"], "F. 환경 연출": ["fx"]}
+    "E. 상호작용 · 기믹": ["special", "trap"], "F. 환경 연출": ["fx"],
+    "G. 도시 · 건물 실내(AM69 — 자세한 표는 CITY_LIBRARY.md)": ["city", "interior", "smithy", "inn", "shrine", "shop", "bank"], "H. 아이템 · 아이콘": ["item", "icon"]}
 
 # 아직 없는 에셋(기획) — (이름, 분류, 쓸 지역, 형태, 기능, 재사용성, 제작 방식, 우선순위)
 BACKLOG = [

@@ -20,6 +20,7 @@ from PIL import Image, ImageDraw
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import kit  # noqa: E402
+import library  # noqa: E402
 
 PAD = 2
 MAX_W = 2048
@@ -138,6 +139,8 @@ def write_pack(done):
                 e["reuse"] = a.reuse
             if a.base:
                 e["base"] = a.base
+            if library.is_new(id, a.fn.__module__):
+                e["lib"] = "fx" if a.fn.__module__ == "a_env_fx" else True      # 도시 · 실내 라이브러리(AM69)에서 새로 만든 것
             v = e["variants"].setdefault(vname, {"frames": []})
             x, y, w, h = pos[(id, vname, frame)]
             ox, oy = done[(id, vname, frame)][1]
@@ -155,6 +158,7 @@ def write_pack(done):
     manifest["fringe"] = {"rank": a_edge.RANK, "liquid": a_edge.LIQUID, "default_rank": 1}
     import regions
     manifest["regions"] = regions.export(manifest)
+    manifest["library"] = library.export(manifest)
     text = (json.dumps(manifest, ensure_ascii=False, separators=(",", ":"), default=lambda o: o.item()).replace('},"', '},\n"'))
     with open(os.path.join(kit.OUT, "kit.json"), "w", encoding="utf-8") as f:   # 다 만든 뒤에 쓴다(중간에 깨져도 옛 파일이 남게)
         f.write(text)
