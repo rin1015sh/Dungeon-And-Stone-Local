@@ -132,7 +132,7 @@ def wall_cloth(k, col="#6a2e2a", chev=False, worn=False, seed=1):
             m = (np.abs(z - 1.15) < 0.035) | (np.abs(z - 0.95) < 0.02)
         return np.where(m[:, None], hexc("#a89468"), c)
     m = k.mat("drop", _weave(col, pat, hw, z1 - z0, z0, worn, seed))
-    k.add(rough(lambda p: np.maximum(box(p, v3(0, -0.03, (z0 + z1) / 2), (hw, 0.008, (z1 - z0) / 2), 0.004), -(p[:, 2] - z0 - 0.16 + np.abs(p[:, 0]) * 0.9 - 0.2 * (np.abs(p[:, 0]) > 0.0))), 0.005, 0.1, seed), m)
+    k.add(rough(lambda p: np.maximum(box(p, v3(0, -0.03, (z0 + z1) / 2), (hw, 0.008, (z1 - z0) / 2), 0.004), -(p[:, 2] - z0 - 0.2 + np.abs(p[:, 0]) * 0.9)), 0.005, 0.1, seed), m)
     k.add(lambda p: hcyl(p, (-hw - 0.06, -0.05, z1 + 0.02), (hw + 0.06, -0.05, z1 + 0.02), 0.018), "brass")
     return {"shadow": 0.0}
 
@@ -492,7 +492,7 @@ def drinkware(k, kind="tankards", seed=1):
         k.add(lambda p: sub(cyl(rot_y(p, PI / 2, (0, 0, 0.045)), v3(0, 0, -0.015), 0.045, 0.12, 0.01), cyl(rot_y(p, PI / 2, (0, 0, 0.045)), v3(0, 0, 0.005), 0.035, 0.2)), "wood")
         k.add(lambda p: np.minimum(torus(rot_y(p, PI / 2, (0, 0, 0.045)), v3(0, 0, 0.015), 0.046, 0.007), torus(rot_y(p, PI / 2, (0, 0, 0.045)), v3(0, 0, 0.085), 0.046, 0.007)), "iron")
         k.add(lambda p: pool(p, v3(-0.17, -0.03, 0.004), 0.12, 0.07, 0.004) + (sdf.noise(p, 0.03, seed) - 0.5) * 0.02, k.mat("spill", M.plain("#4a3020", 0.3, 0.05, 56)))
-    return {"scale": 2.0}
+    return {}
 
 
 @prop("served_food", "interior", cell=(1.8, 1.4), tags=["food", "kitchen", "dining", "small"], name_ko="차린 음식",
@@ -508,8 +508,9 @@ def served_food(k, kind="loaves", seed=1):
             k.add(lambda p, i=i: box(rot_z(p, 0.5, (0.0, 0, 0)), v3(-0.07 + i * 0.03, -0.0, 0.088), (0.006, 0.03, 0.004)), "coal")
     elif kind == "cheese":
         ch = k.mat("cheese", M.plain("#c8a85a", 0.25, 0.04, 58))
-        k.add(lambda p: np.maximum(cyl(p, v3(0, 0, 0), 0.12, 0.07, 0.015), -np.minimum(p[:, 0] - 0.0, -p[:, 1] + 0.0) * 1.0 - 0.0 + 0.0 * p[:, 2] - np.maximum(-p[:, 0], p[:, 1])), ch)
-        k.add(lambda p: np.maximum(cyl(rot_z(p, -0.3), v3(0.16, -0.05, 0), 0.12, 0.06, 0.01), np.maximum(-(rot_z(p, -0.3)[:, 0] - 0.04), rot_z(p, -0.3)[:, 1] + 0.05) - 0.0), ch)
+        wedge = lambda q: np.maximum(-q[:, 0], q[:, 1])                       # x > 0 · y < 0 쪽 부채꼴
+        k.add(lambda p: sub(cyl(p, v3(0, 0, 0), 0.12, 0.07, 0.015), wedge(p)), ch)
+        k.add(lambda p: np.maximum(cyl(p - v3(0.07, -0.08, 0), v3(0, 0, 0), 0.12, 0.06, 0.01), wedge(p - v3(0.07, -0.08, 0)) + 0.0), ch)
     elif kind == "roast":
         _plate(k, 0, 0, 0, 0.16, "steel")
         k.add(rough(lambda p: smin(ell(p, v3(0, 0, 0.06), (0.1, 0.07, 0.055)), np.minimum(cap(p, v3(0.06, 0.03, 0.06), v3(0.14, 0.06, 0.04), 0.02), cap(p, v3(0.06, -0.03, 0.06), v3(0.14, -0.06, 0.04), 0.02)), 0.02), 0.008, 0.03, seed), k.mat("roast", M.plain("#6a3a1e", 0.4, 0.03, 59)))
@@ -528,7 +529,7 @@ def served_food(k, kind="loaves", seed=1):
         for i in range(-2, 3):
             k.add(lambda p, i=i: np.minimum(cap(p, v3(i * 0.04, -0.09, 0.075), v3(i * 0.04, 0.09, 0.075), 0.008), cap(p, v3(-0.09, i * 0.04, 0.078), v3(0.09, i * 0.04, 0.078), 0.008)) + np.maximum(np.hypot(p[:, 0], p[:, 1]) - 0.1, 0), crust)
         k.add(lambda p: np.maximum(box(p, v3(0.07, -0.02, 0.05), (0.04, 0.05, 0.03)), -np.maximum(p[:, 0] - 0.04, 0)), k.mat("filling", M.plain("#5a2030", 0.3, 0.03, 63)))
-    return {"scale": 2.0}
+    return {}
 
 
 @prop("trinket", "interior", cell=(1.2, 1.4), tags=["decor", "small"], name_ko="작은 장식품",
@@ -559,4 +560,4 @@ def trinket(k, kind="vase", seed=1):
         k.add(lambda p: box(p, v3(0, 0, 0.035), (0.07, 0.045, 0.035), 0.006), "wood_l")
         k.add(lambda p: box(p, v3(0, 0, 0.074), (0.072, 0.047, 0.008), 0.004), "wood_d")
         k.add(lambda p: np.minimum(box(p, v3(0, -0.047, 0.05), (0.012, 0.004, 0.014)), np.minimum(box(p, v3(-0.07, 0, 0.035), (0.004, 0.047, 0.006)), box(p, v3(0.07, 0, 0.035), (0.004, 0.047, 0.006)))), "brass")
-    return {"scale": 2.0}
+    return {}

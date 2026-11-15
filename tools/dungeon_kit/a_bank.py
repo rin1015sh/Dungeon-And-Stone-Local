@@ -277,7 +277,7 @@ def gem_case(k, state="tray", seed=1):
         for j in range(2):
             for i in range(4):
                 k.add(lambda p, i=i, j=j: np.maximum(np.abs(p[:, 0] + 0.18 - i * 0.12) + np.abs(p[:, 1] + 0.06 - j * 0.12) - 0.035, np.abs(p[:, 2] - 0.07) - 0.018), mats_[(i + j) % 3])
-        k.add(lambda p: box(p, v3(0, 0, 0.1), (0.29, 0.19, 0.004)), "glass")
+        k.add(lambda p: sub(box(p, v3(0, 0, 0.1), (0.29, 0.19, 0.008)), box(p, v3(0, 0, 0.1), (0.27, 0.17, 0.02))), "brass")   # 유리 뚜껑의 놋 테(유리는 비친다 — 그리지 않는다)
         return {"glow": [(0, 0, 0.08, 18, "#c0a0d0", 0.15)]}
     k.add(rough(lambda p: box(p, v3(0, 0, 0.09), (0.2, 0.14, 0.09), 0.012), 0.003, 0.2, seed), "dark_wood")
     k.add(many([lambda p, x=x: box(p, v3(x, 0, 0.09), (0.014, 0.145, 0.092), 0.003) for x in (-0.13, 0.13)]), "gold")
@@ -385,7 +385,8 @@ def valuables_case(k, state="full", seed=1):
         k.add(lambda p: sphere(p, v3(0.05, -0.08, h + 0.02), 0.02), "gem_r")
         k.add(lambda p: smin(_frustum(p, v3(0.32, 0.05, h), 0.035, 0.015, 0.03), sub(_frustum(p, v3(0.32, 0.05, h + 0.06), 0.02, 0.04, 0.05), cyl(p, v3(0.32, 0.05, h + 0.07), 0.032, 0.06)), 0.01), "silver")
         k.add(many([lambda p, x=x, y=y: sphere(p, v3(x, y, h + 0.012), 0.013) for x, y in ((-0.35, 0.1), (-0.25, 0.12), (0.2, -0.12))]), "gem_b")
-    k.add(lambda p: np.maximum(box(rot_x(p, 0.18, (0, d, h + 0.06)), v3(0, 0, h + 0.07), (w - 0.02, d - 0.02, 0.004)), -1e9 + 0 * p[:, 0]), "glass")
+    lid = lambda p: box(rot_x(p, 0.18, (0, d, h + 0.06)), v3(0, 0, h + 0.07), (w - 0.02, d - 0.02, 0.008))
+    k.add(lambda p: sub(lid(p), box(rot_x(p, 0.18, (0, d, h + 0.06)), v3(0, 0, h + 0.07), (w - 0.05, d - 0.05, 0.03))), "brass")   # 유리 뚜껑 테만
     k.add(lambda p: box(p, v3(0, -d - 0.005, h - 0.03), (0.025, 0.008, 0.025), 0.004), "brass")
     return {}
 
