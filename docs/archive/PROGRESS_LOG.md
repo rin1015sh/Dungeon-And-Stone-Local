@@ -361,6 +361,8 @@
 
 ## 작업 기록 (2026-10-20 이후 — 위가 최신)
 
+- **1~3층 확장 · 2층 균열 · 후회의 군주 재기획 (2026-11-19, 기획만 — 코드 · 데이터 안 고침)**: 범위 = 사용자 요청 문서 A~E. 완료 기준 = 실제 데이터 대조 + 새 문서 다섯 + 요약. 테스트 = 해당 없음(코드 변경 없음 — Godot 실행 안 함). 결과 `docs/plans/expansion_f1_3.md`(요약 · 미결정 U1~U10 · 변경 제안 CP-1~13 · 우선순위) + A 분석 · B 2층 균열 넷/후회의 군주 · C 몬스터 · 경험치 · D 사건 덱과 사건 32 · E 반복 탐험. 찾은 것: 실제 1회성 경험치 합 286(1~4층 목표 640의 43% — `exp_budget`은 `floor` 칸으로 세고 목표치를 대신 더해 98%로 보였다), 포탈 경험치는 게임에서 안 부름, 2층에 나오는 종 54(2층 데이터 37 + 1층 항목 17), 데스나이트 5일 차 vs floor2.md 7일 차, 2 · 3층 `explorers` 없음, 몬스터끼리 싸움 · 필드 도주 없음. 제안 경험치: 1층 113 · 2층 191 · 3층 228(리아키스 원문 100일 때) → 1~4층 642 = 5레벨의 97%. 남은 것 = 사용자 결정(U1~U10) 뒤 구현.
+
 - **망자의 땅 큰 구조물 (2026-11-05, FL16)**: `tools/floor_art/rift/f2d_big.gd`(영묘 · 천사상 · 종탑 · 고목 · 기사상 + 빈 칸), paint_floor `bigs`(→ big.webp 3072×640), 타일 24개, `FieldsRouteBuild.landmarks`(발자리 + 둘레 검사, 4칸 안에서 자리 찾기), FieldsRoute가 소품보다 먼저 세운다. 작은 소품 count 절반. 남은 것: 큰 그림 뒤(북쪽)를 걷는 캐릭터가 그림에 가린다(실루엣 없음), 그림이 납작한 편(손그림 질감 더 — 그림 작업이면 docs/ART.md 기준으로 다듬기).
 
 - **아귀 입 함정 · 목구멍 방 (2026-11-05, FL15)**: `src/explore/MawTraps.gd`(실제 초 — tick_realtime, 잡기 · 동전 `toss` · 삼킴 · 돌아올 자리), `src/explore/view/MawView.gd`(FloorView — 층에 maws가 있으면 start 전에 만든다), `FieldsRouteBuild.maws`, crypts `lit`, 새 타일 `f2d_flesh · fleshwall · sinew`(그림 flesh · fleshwall · 힘줄 — f2d.gd), 요소 `throat_wall`, 문구 `explore.maw_*` · `field.throat_*`. 흩뿌림(scatter)은 아귀 입 둘레 · 어둠 · 소품 밑 바닥이 다른 칸을 피한다. 장식 테두리 world_px 0.6. 테스트 `test_maws_open_catch_and_swallow`. 남은 것: 잡힐 때 입이 닫히는 순간 연출(지금은 문구 + 동전), 소리 파일.
