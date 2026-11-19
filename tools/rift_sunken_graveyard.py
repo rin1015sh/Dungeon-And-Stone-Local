@@ -108,6 +108,39 @@ CH3_MARKS = {"entry": [28, 21], "exit": [28, 4], "slots": [[22, 11], [28, 6]],
 
 CHAPTERS = [("ch1", CH1, CH1_MARKS), ("ch2", CH2, CH2_MARKS), ("ch3", CH3, CH3_MARKS)]
 
+# 둘레 덧대기(위, 아래, 왼, 오른, 글자) — 챕터는 2000칸 넘게(test_rift_blueprint), 입구 · 출구에서 가장자리까지 길을 판다
+# (앞 챕터 출구 · 뒤 챕터 입구는 지도 가장자리 — 길목 RiftPassage, test_rift_passage). EDGE = {표시: 방향}
+PAD = {"ch1": (2, 3, 0, 0, " "), "ch2": (0, 3, 0, 0, "#"), "ch3": (6, 6, 2, 2, "#")}
+EDGE = {"ch1": {"exit": "right"}, "ch2": {"entry": "left", "exit": "right"}, "ch3": {"entry": "left"}}
+DIRS = {"right": (1, 0), "left": (-1, 0), "down": (0, 1), "up": (0, -1)}
+
+
+def pad(rows, marks, cfg):
+    top, bottom, left, right, ch = cfg
+    w = len(rows[0]) + left + right
+    out = [ch * w for _ in range(top)] + [ch * left + r + ch * right for r in rows] + [ch * w for _ in range(bottom)]
+    for k, v in marks.items():
+        if k in ("entry", "exit"):
+            marks[k] = [v[0] + left, v[1] + top]
+        else:
+            marks[k] = [[p[0] + left, p[1] + top] for p in v]
+    return out
+
+
+def carve(rows, marks, edges):
+    rows = [list(r) for r in rows]
+    h, w = len(rows), len(rows[0])
+    for key, d in edges.items():
+        dx, dy = DIRS[d]
+        x, y = marks[key]
+        while 0 <= x + dx < w and 0 <= y + dy < h:
+            x, y = x + dx, y + dy
+            for ox, oy in ((0, 0), (dy, dx), (-dy, -dx)):  # 폭 3칸 길(가로 길은 남쪽 벽 윗면이 한 줄을 덮는다)
+                if 0 <= x + ox < w and 0 <= y + oy < h and rows[y + oy][x + ox] not in WALK:
+                    rows[y + oy][x + ox] = ","
+        marks[key] = [x, y]
+    return ["".join(r) for r in rows]
+
 
 def rows_of(art):
     lines = [l for l in art.split("\n")[1:-1]]
@@ -149,7 +182,7 @@ def check(cid, rows, marks):
 
 def main():
     for cid, art, marks in CHAPTERS:
-        rows = rows_of(art)
+        rows = carve(pad(rows_of(art), marks, PAD[cid]), marks, EDGE[cid])
         check(cid, rows, marks)
         d = {
             "_comment": "균열 챕터 설계도 — tools/rift_sunken_graveyard.py가 만든다(손으로 고치지 말고 그 파일의 그림을 고친다). 형식은 1층 균열과 같다.",

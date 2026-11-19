@@ -15,10 +15,10 @@
 	},
 	"goblin_bomber": {
 		"cell": [
-			114,
-			204
+			114.0,
+			204.0
 		],
-		"frames": 5
+		"frames": 5.0
 	},
 	"ildium": {
 		"cell": [
@@ -47,6 +47,13 @@
 			301.0
 		],
 		"frames": 5.0
+	},
+	"sleepless_knight": {
+		"cell": [
+			120,
+			219
+		],
+		"frames": 5
 	},
 	"tarunbas": {
 		"cell": [
