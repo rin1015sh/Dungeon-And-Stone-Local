@@ -23,8 +23,9 @@ static func rifts_for(s: ExploreSession) -> Array[String]:
 	var ids: Array = s.db.get_collection("rifts").keys()
 	ids.sort()
 	for id: Variant in ids:
-		if JsonUtil.get_int(s.db.get_entry("rifts", str(id)), "host_floor") == fl and fl > 0:
-			out.append(str(id))
+		var rd := s.db.get_entry("rifts", str(id))
+		if JsonUtil.get_int(rd, "host_floor") == fl and fl > 0 and JsonUtil.get_bool(rd, "natural", true):
+			out.append(str(id))  # natural false = 조건으로만 여는 균열(2층 — RiftGates)은 자연 개방 · 무작위 고르기에서 뺀다
 	return out
 
 

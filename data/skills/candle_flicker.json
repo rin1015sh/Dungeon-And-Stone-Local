@@ -1,0 +1,17 @@
+{
+  "id": "candle_flicker",
+  "name_ko": "깜빡임",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "guarding",
+      "chance": 1.0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "장례 촛불 토큰의 차례(아무것도 하지 않는 것과 같다)"
+}

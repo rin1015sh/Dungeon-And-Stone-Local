@@ -60,8 +60,10 @@ F3 = {
     },
 }
 
+F2_DEAD = dict(F2, corpse_items=["wrapped_corpse"])  # 시신을 지면 구울이 꼬인다(가라앉은 묘역 여는 과정 — RiftGates)
+
 TARGETS = {
-    "f2_beast_den": F2, "f2_goblin_forest": F2, "f2_land_of_dead": F2, "f2_rock_desert": F2,
+    "f2_beast_den": F2, "f2_goblin_forest": F2, "f2_land_of_dead": F2_DEAD, "f2_rock_desert": F2,
     "f3_pilgrim_road": F3,
 }
 

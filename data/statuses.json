@@ -1185,6 +1185,19 @@
     "notes": "블라터 정수판 오오라"
   },
   {
+    "id": "knight_vigil",
+    "name_ko": "장례의 불",
+    "kind": "buff",
+    "desc_ko": "곁의 촛불이 타는 동안 기사는 쓰러지지 않는다.",
+    "stackable": true,
+    "battle_only": true,
+    "modifiers": [
+      {"target": "p_res", "percent": 0.15},
+      {"target": "m_res", "percent": 0.15}
+    ],
+    "source": "placeholder"
+  },
+  {
     "id": "guardian_frenzy",
     "name_ko": "광분",
     "kind": "buff",

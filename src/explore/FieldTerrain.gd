@@ -138,6 +138,17 @@ func _place_wisps(s: ExploreSession) -> void:
 			var q := c + Vector2i(int(pa[1]), int(pa[2]))
 			if c.x >= 0 and s.map.is_walkable(q):
 				pts.append(q)
+		var ends := JsonUtil.get_array(wd, "ends")  # 원정마다 끝 하나(가라앉은 묘역 — 종자의 시신이 있는 곳, expansion_f1_3_B §3)
+		if not ends.is_empty():
+			var pa: Array = ends[s.side_rng().randi_range(0, ends.size() - 1)]
+			var c: Vector2i = nodes.get(str(pa[0]), Vector2i(-1, -1))
+			var q := RouteAmbush._walkable_near(s.map, c + Vector2i(int(pa[1]), int(pa[2]))) if c.x >= 0 else c
+			if q.x >= 0:
+				pts.append(q)
+				if wd.has("end_feature"):
+					var at := RouteAmbush._walkable_near(s.map, q + Vector2i(1, 0))
+					if at.x >= 0:
+						RouteSpots.place_feature(s, {"event": JsonUtil.get_str(wd, "end_feature")}, at)
 		if pts.size() < 2:
 			continue
 		var e := {"points": pts, "at": 0, "under": s.map.tiles[s.map.idx(pts[0])], "tile": JsonUtil.get_str(wd, "tile")}

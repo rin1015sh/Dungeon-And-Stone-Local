@@ -117,6 +117,14 @@ static func spec_of(id: String) -> Dictionary:
 				"body": {"build": "thin", "hands": "claw"}, "head": {"type": "gaunt", "mouth": "shut", "hood": C("#2a2420")},
 				"kit": {"shirt": C("#3a3028"), "shirt_len": 1.0, "torn": 0.4, "cape": C("#241e1a"), "belt": C("#1e1812"), "straps": C("#3a2a1a"),
 					"boots": C("#241e18"), "weapon": "bow", "weapon_hand": "l"}}
+		"sleepless_knight":  # 가라앉은 묘역 수호자 — 진흙에 젖은 녹슨 갑주 · 해진 군청 망토 · 푸른 넋빛(데스나이트 계열)
+			return {"height": 700, "skin": C("#3a3e36"), "mottle": C("#4a4a30"), "mottle_amt": 0.4, "eyes": C("#9ad0ff"), "glow": 1.0, "horn": C("#1a1c18"), "blood": 0.1,
+				"pose": {"knee": 0.18, "arm_l": "hang", "arm_r": "rest", "sh": 0.145, "weight": 0.5, "tilt": -0.05},
+				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "helm": C("#33362e"), "horns": true, "horn_len": 0.45},
+				"kit": {"armor": C("#3c3f34"), "plates": ["chest", "shoulders", "legs"], "boots": C("#1e2018"), "cape": C("#1e2a3a"), "torn": 0.5,
+					"weapon": "greatsword", "weapon_c": C("#6a6e66")}}
+		"funeral_candle":  # 장례 촛불 — 작은 흰 촛농 덩이 위 푸른 불꽃
+			return {"kind": "slime", "height": 170, "color": C("#e8dcc0"), "inside": 0, "eyes": C("#b0e0ff"), "glow": 1.0, "fade": 0.3, "desat": 0.2}
 		"canavaro_hound":  # 카나바로의 들개 — 마른 언데드 개 · 붉은 눈
 			return {"kind": "beast", "height": 440, "color": C("#4a4440"), "belly": C("#6a5a50"), "fur": 0.4, "tail": "thin", "bulk": 0.8, "legs": 1.05,
 				"eyes": C("#ff5030"), "glow": 0.8, "mouth": "snarl"}

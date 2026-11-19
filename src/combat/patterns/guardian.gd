@@ -6,12 +6,14 @@ extends BossPattern
 ##   force_phase   {"status": "<상태>", "phase": "<페이즈>"} — 그 상태가 되면 체력과 무관하게 그 페이즈로
 ##   per_foe_status {"status": "sacrifice_mark", "buff": "<중첩 상태>"} — 그 상태인 적 수만큼 자기 버프 중첩(캠보르미어 제물)
 ##   intro         문자열 키 — 전투 시작 대사
+##   per_ally_monster {"monster", "buff"} — 그 몬스터 아군 수만큼 자기 버프 중첩(장례 촛불 — 끄면 약해진다)
 
 
 func on_start(b: Battle, c: Combatant) -> void:
 	var intro := JsonUtil.get_str(BossHooks.params(c), "intro")
 	if not intro.is_empty():
 		b.message.emit(intro, {"name": c.label()}, "danger")
+	update_allies(b, c)  # 함께 나온 장례 촛불(start_summons — 이미 섰다)만큼
 
 
 func wants_extra_action(_b: Battle, c: Combatant) -> bool:
@@ -34,6 +36,20 @@ func on_round_end(b: Battle, c: Combatant, skipped: bool = false) -> void:
 	if not fp.is_empty() and c.actor.statuses.has(JsonUtil.get_str(fp, "status")):
 		BossHooks.enter_phase(b, c, JsonUtil.get_str(fp, "phase"))
 	update_feast(b, c)
+	update_allies(b, c)
+
+
+## 아군 중 그 몬스터 수만큼 버프 중첩을 맞춘다(per_ally_monster).
+func update_allies(b: Battle, c: Combatant) -> void:
+	var pa := JsonUtil.get_dict(BossHooks.params(c), "per_ally_monster")
+	if pa.is_empty():
+		return
+	var mid := JsonUtil.get_str(pa, "monster")
+	var n := b.side_units(c.side).filter(func(u: Combatant) -> bool: return u != c and u.actor is Monster and (u.actor as Monster).monster_id == mid).size()
+	var buff := JsonUtil.get_str(pa, "buff")
+	c.actor.statuses.remove(buff)
+	for i in n:
+		c.actor.statuses.apply(buff)
 
 
 ## 제물 수만큼 버프 중첩을 맞춘다(낙인을 찍은 직후에도 부른다).

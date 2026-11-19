@@ -108,6 +108,8 @@ static func _go(s: ExploreSession, e: Dictionary, a: Dictionary, right: int) -> 
 	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"), right if risk else -1)
 	if a.has("goal") and s.goal != null:  # 층 목표 하나(종 울리기 — FloorGoal, FL18)
 		s.goal.advance(s, JsonUtil.get_str(a, "goal"))
+	if a.has("goal") and s.rift_gates != null:  # 2층 균열 여는 문(RiftGates — 같은 키, expansion_f1_3_B)
+		s.rift_gates.advance(s, JsonUtil.get_str(a, "goal"), e["pos"])
 	s.refresh_view()
 
 

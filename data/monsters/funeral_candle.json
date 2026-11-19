@@ -1,0 +1,54 @@
+{
+  "id": "funeral_candle",
+  "name_ko": "장례 촛불",
+  "grade": 9,
+  "rank": "token",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sunken_graveyard"
+  ],
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "shape": "blob",
+  "size": 0.45,
+  "color": "#f0d890",
+  "immunities": [],
+  "weaknesses": {},
+  "stats": {
+    "str": 1,
+    "agi": 1,
+    "p_res": 4,
+    "m_res": 4,
+    "int": 1
+  },
+  "resources": {
+    "hp": 60,
+    "soul": 0
+  },
+  "natural_weapon": {
+    "attack": 0,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": false,
+    "aggro_radius_m": 0.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "candle_flicker"
+  ],
+  "passives": [],
+  "ai": [],
+  "source": "placeholder",
+  "notes": "잠들지 못한 기사 곁 장례 촛불(토큰 — 경험치 · 마석 없음). 살아 있는 만큼 기사가 단단해진다(knight_vigil). 끄려면 친다. 행동은 깜빡이기뿐"
+}

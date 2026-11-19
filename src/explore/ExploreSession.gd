@@ -51,6 +51,7 @@ var blades: GrooveBlades = null
 var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — FL15)
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
+var rift_gates: RiftGates = null        ## 2층 균열 여는 문(층 JSON rift_gates — 그 길에서 해낸 일, expansion_f1_3_B)
 var incidents: FloorIncidents = null    ## 사건 덱(층 JSON incidents — 원정마다 뽑는 사건, expansion_f1_3_D)
 var _side_rng: Rng = null
 var first_side: int = -1  ## 다음 전투에서 먼저 움직이는 쪽(Battle.FIRST_NONE = 정정당당 — 숨어 기다린 매복이면 플레이어, CB3). 화면이 읽고 되돌린다
@@ -139,6 +140,7 @@ func start() -> void:
 	terrain = FieldTerrain.setup(self)
 	maws = MawTraps.build(self)
 	goal = FloorGoal.setup(self)
+	rift_gates = RiftGates.setup(self) if rift_run == null else null
 	ambush = RouteAmbush.build(self)
 	pilgrim = PilgrimRoad.setup(self)
 	if floor_def.has("grave_wake"):

@@ -22,9 +22,26 @@
       "clear": true,
       "fx": "burst",
       "sound": "rock_break"
+    },
+    {
+      "id": "bury",
+      "name_ko": "시신을 묻는다",
+      "limit": "once",
+      "cost": {
+        "item": "wrapped_corpse",
+        "count": 1
+      },
+      "missing": "field.grave_stone_no_body",
+      "hours": 1.0,
+      "line": "field.grave_stone_bury",
+      "goal": "sunken_graveyard",
+      "clear": true,
+      "clear_tile": "f2d_dug",
+      "fx": "dig",
+      "sound": "surface"
     }
   ],
   "source": "placeholder",
-  "notes": "망자의 땅 비석(floor2.md §3 · GraveWake) — 원정 5일 차 전에 부수면 데스나이트가 깨어나지 않는다. 판정 실패면 한 시간이 흐르고 다시 해 볼 수 있다. 임시값 standing = 서 있는 묘비(걷지 못함) — GraveWake가 사방이 트인 칸에만 세운다",
+  "notes": "망자의 땅 비석(floor2.md §3 · GraveWake) — 원정 5일 차 전에 부수면 데스나이트가 깨어나지 않는다. 판정 실패면 한 시간이 흐르고 다시 해 볼 수 있다. 임시값 standing = 서 있는 묘비(걷지 못함) — GraveWake가 사방이 트인 칸에만 세운다 · bury = 넋불 끝 종자의 시신을 묻는다 → 가라앉은 묘역 균열(RiftGates, expansion_f1_3_B §3)",
   "standing": true
 }

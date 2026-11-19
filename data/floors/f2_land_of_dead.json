@@ -2675,6 +2675,44 @@
             12
           ]
         ]
+      },
+      {
+        "tile": "f2d_wisp",
+        "points": [
+          [
+            "ferry",
+            6,
+            -6
+          ],
+          [
+            "mire",
+            -6,
+            6
+          ],
+          [
+            "mire",
+            2,
+            -2
+          ]
+        ],
+        "ends": [
+          [
+            "bell_isle",
+            3,
+            2
+          ],
+          [
+            "levee_bend",
+            -8,
+            6
+          ],
+          [
+            "mire",
+            12,
+            -8
+          ]
+        ],
+        "end_feature": "squire_corpse"
       }
     ],
     "procession": {
@@ -2832,7 +2870,10 @@
         }
       ]
     },
-    "stone": "magic_stone_8"
+    "stone": "magic_stone_8",
+    "corpse_items": [
+      "wrapped_corpse"
+    ]
   },
   "incidents": {
     "_comment": "사건 덱(FloorIncidents — tools/floor_incidents.py가 넣는다, plans/expansion_f1_3_D): 원정마다 per_expedition장을 가중 무작위로 뽑아 any 후보 자리 중 하나(다른 사건과 gap칸 · 도착 칸과 entry_gap칸 떨어진)에 days 날에 놓는다. 모두 임시값",
@@ -2950,5 +2991,17 @@
         ]
       }
     ]
-  }
+  },
+  "rift_gates": [
+    {
+      "_comment": "가라앉은 묘역(RiftGates — expansion_f1_3_B §3): 넋불 끝 종자의 시신을 수습해 비석 곁에 묻으면(grave_stone 행동 bury — goal sunken_graveyard) 비석이 가라앉으며 균열 포탈. 기사가 깨는 5일 차 전(until_day 4)까지. 묻은 비석은 부순 비석처럼 기사를 깨우지 않는다. [창작] 임시값",
+      "rift": "rift_sunken_graveyard",
+      "flag": "sunken_graveyard",
+      "need": 1,
+      "until_day": 4,
+      "line": "field.rift_sunken_open",
+      "sound": "rift_open",
+      "late_line": "field.rift_gate_late"
+    }
+  ]
 }

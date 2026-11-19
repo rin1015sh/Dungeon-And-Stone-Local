@@ -118,6 +118,14 @@ func drop_corpse(s: ExploreSession, at: Vector2i, scream: bool) -> void:
 		s.refresh_view()
 
 
+## 가방에 시체 냄새가 나는 물건(층 explorers.corpse_items — 수습한 시신)이 있는가.
+func carries_corpse(s: ExploreSession) -> bool:
+	for id: String in JsonUtil.get_array(def, "corpse_items"):
+		if s.player.inventory.count(id) > 0:
+			return true
+	return false
+
+
 ## 플레이어 자리에서 본 방향 낱말(8방향, data/strings dir8).
 static func dir_word(from: Vector2i, to: Vector2i) -> String:
 	var d := Vector2(to - from)
@@ -130,6 +138,8 @@ static func dir_word(from: Vector2i, to: Vector2i) -> String:
 # ── 내부 ─────────────────────────────────────────────────
 
 func _tick_hour(s: ExploreSession) -> void:
+	if carries_corpse(s):  # 수습한 시신을 진 탐험가에게 시체 냄새(구울이 꼬인다 — 가라앉은 묘역, expansion_f1_3_B §3)
+		_attract(s, s.pos)
 	var day := floori(s.clock.total_hours / 24.0)
 	if day != _day:
 		_day = day

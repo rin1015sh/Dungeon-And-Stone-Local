@@ -4,29 +4,29 @@
 
 | 부품 | 1층 | 2층 | 3층 | 4층 | 5층 | 6층 | 7층 | 8층 | 9층 | 10층 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 층 정의 data/floors | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 생성기 src/explore/generators | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 고정 지도(bake_floor) | ● | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 층 정의 data/floors | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 생성기 src/explore/generators | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 고정 지도(bake_floor) | ● | ◐ | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 데칼 시트·굽기(bake_decor) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 전투 뒷그림 | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 전투 뒷그림 | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 환경음 audio.ambience | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 지역 스폰 regions | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 지역 스폰 regions | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 동굴 요소 features | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 다른 탐험가 explorers | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 위층 포탈 portals | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 다른 탐험가 explorers | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 위층 포탈 portals | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 계층군주 lord(+패턴) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 군주 등장 문구 explore.boss_notice | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 필드 몬스터 | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 몬스터 그림 assets/monsters | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 필드 몬스터 | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 몬스터 그림 assets/monsters | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 정수 data/essences | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 균열 data/rifts | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 균열 data/rifts | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 도서관 서적(floor n) | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 
 ## 1층 (필드 등급 9 · 파티 1)
 - ● 층 정의 data/floors — f1_crystal_cave
 - ● 생성기 src/explore/generators — crystal_cave
 - ● 고정 지도(bake_floor) — res://data/maps/f1_crystal_cave.json
-- ● 데칼 시트·굽기(bake_decor) — res://assets/floor/f1/decals.webp
+- ● 데칼 시트·굽기(bake_decor) — res://assets/floor/kit/decals_cave.webp
 - ● 전투 뒷그림 — res://assets/battle/f1_crystal_cave.webp
 - ○ 환경음 audio.ambience — f1_cave
 - ● 지역 스폰 regions — 5지역
@@ -35,7 +35,7 @@
 - ● 위층 포탈 portals — 4개
 - ● 계층군주 lord(+패턴) — dreadfear · 패턴 dreadfear
 - ◐ 군주 등장 문구 explore.boss_notice — dreadfear — 전용 문구 없음(any를 씀)
-- ● 필드 몬스터 — 10종 · 등급 [9] (목표 9)
+- ● 필드 몬스터 — 12종 · 등급 [8, 9] (목표 9)
 - ● 몬스터 그림 assets/monsters — 51장
 - ● 정수 data/essences — 51종
 - ● 균열 data/rifts — 핏빛성채 5챕터 / 빙하굴 4챕터 / 녹색 탄광 4챕터 / 강철의 묘 4챕터
@@ -45,24 +45,34 @@
 - ● 층 정의 data/floors — f2_beast_den
 - ● 생성기 src/explore/generators — fields
 - ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
-- ○ 데칼 시트·굽기(bake_decor) — res://assets/floor/f1/decals.webp
+- ○ 데칼 시트·굽기(bake_decor) — res://assets/floor/kit/decals_cave.webp
 - ● 전투 뒷그림 — res://assets/battle/f2_beast_den.webp
 - ○ 환경음 audio.ambience — f2_den
 - ● 지역 스폰 regions — 7지역
 - ○ 동굴 요소 features — 0종 0곳
-- ○ 다른 탐험가 explorers
+- ● 다른 탐험가 explorers
 - ● 위층 포탈 portals — 1개
 - ○ 계층군주 lord(+패턴)
-- ● 필드 몬스터 — 37종 · 등급 [5, 6, 7, 8, 9] (목표 8)
-- ● 몬스터 그림 assets/monsters — 37장
+- ● 필드 몬스터 — 37종 · 등급 [5, 6, 7, 8] (목표 8)
+- ● 몬스터 그림 assets/monsters — 38장
 - ● 정수 data/essences — 36종
-- ○ 균열 data/rifts
+- ● 균열 data/rifts — 가라앉은 묘역 3챕터
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 
 ## 3층 (필드 등급 7 · 파티 5)
-- ○ 층 정의 data/floors — f3_<id>.json 없음
-- ○ 필드 몬스터 — 0종 · 등급 [] (목표 7)
-- ○ 몬스터 그림 assets/monsters — 0장
+- ● 층 정의 data/floors — f3_pilgrim_road
+- ● 생성기 src/explore/generators — fields
+- ◐ 고정 지도(bake_floor) — fixed_map 없음 — 입장마다 생성
+- ○ 데칼 시트·굽기(bake_decor) — art.decor 없음
+- ● 전투 뒷그림 — res://assets/battle/f2_goblin_forest.webp
+- ○ 환경음 audio.ambience — f2_forest
+- ● 지역 스폰 regions — 13지역
+- ○ 동굴 요소 features — 0종 0곳
+- ● 다른 탐험가 explorers
+- ● 위층 포탈 portals — 1개
+- ○ 계층군주 lord(+패턴)
+- ● 필드 몬스터 — 23종 · 등급 [2, 5, 7] (목표 7)
+- ● 몬스터 그림 assets/monsters — 23장
 - ○ 정수 data/essences — 0종
 - ○ 균열 data/rifts
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society

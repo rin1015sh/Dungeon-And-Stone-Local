@@ -1,0 +1,35 @@
+{
+  "id": "squire_corpse",
+  "name_ko": "늪에 엎드린 시신",
+  "type": "feature",
+  "tile": "f2d_corpse_g",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.squire_corpse"
+    },
+    {
+      "id": "take",
+      "name_ko": "수습한다",
+      "limit": "once",
+      "hours": 0.5,
+      "line": "field.squire_corpse_take",
+      "give": [
+        {
+          "item": "wrapped_corpse",
+          "count": [
+            1,
+            1
+          ]
+        }
+      ],
+      "clear": true,
+      "fx": "dust"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 여는 과정(expansion_f1_3_B §3): 넋불 한 줄의 끝(원정마다 굴림)에 놓이는 기사의 종자. 수습하면 수습한 시신 — 지고 다니면 구울이 꼬인다(explorers.corpse_items). 임시값",
+  "standing": true
+}
