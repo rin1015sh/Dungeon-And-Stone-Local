@@ -268,7 +268,7 @@
         "raider": "약탈자 {n}명"
       },
       "opt": {
-        "trade": "{item} {n}개 ↔ 9등급 마석 {price}개",
+        "trade": "{item} {n}개 ↔ {stone} {price}개",
         "rumor": "소문을 묻는다",
         "follow": "함께 다닌다",
         "leave": "지나간다",
@@ -615,6 +615,7 @@
     "level_up": "영혼이 한 겹 더 단단해졌다. 레벨 {level} (정수 슬롯 {slots}).",
     "guardian_bonus": "수호자 {name}을(를) 쓰러뜨렸다 — 공적 {exp}.",
     "lord_bonus": "계층군주 {name}을(를) 처음으로 쓰러뜨렸다 — 공적 {exp}.",
+    "portal_first": "이번 달 처음 지나는 포탈 — 공적 {exp}.",
     "level_down": "영혼이 깎여 나갔다. 레벨 {level} — 정수 {locked}개가 잠들었다."
   },
   "inventory": {
@@ -1109,6 +1110,15 @@
       "3": "흙만 한가득이다. 누가 먼저 다녀간 모양이다."
     },
     "dig_grave_wake": "흙 속에서 손이 먼저 올라왔다.",
+    "knocking_grave": "덮은 지 하루도 안 된 무덤이다.",
+    "knocking_grave_dig": "흙을 걷어 내자 관 뚜껑이 안쪽에서 들려 올라왔다.",
+    "knocking_grave_wake": "관 속의 사람은 이미 사람이 아니었다.",
+    "parched_traveler": "그늘에 쓰러진 사람이 아직 숨을 쉰다.",
+    "parched_traveler_drink": "물을 다 마신 그가 모래 바다 한가운데를 가리키고 떠났다.",
+    "parched_no_water": "건넬 물이 없다.",
+    "warm_campfire": "재 밑의 불씨가 아직 따뜻하다.",
+    "warm_campfire_search": "누군가 급히 두고 간 짐이다.",
+    "warm_campfire_back": "짐 주인들이 돌아왔다.",
     "epitaph": {
       "1": "「여기 잠든 이는 늪을 건너지 못했다. 다리는 북쪽에 있었다.」",
       "2": "「열쇠는 기도하는 자의 등 뒤에 두었다. 우리는 다시 열지 않으리라.」",

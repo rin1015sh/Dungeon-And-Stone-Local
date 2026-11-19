@@ -73,11 +73,29 @@ static func target_name(s: ExploreSession) -> String:
 
 ## 층 포탈: portal["dest"](예: floor2_east)에 도착하는 층(층 JSON "arrival")이 있으면 오른다(FloorTravel), 없으면 잠김 안내. 도착 비석(kind "floor_down")은 아래층으로.
 static func _use_floor_portal(s: ExploreSession, portal: Dictionary) -> void:
-	var next := FloorTravel.down(s) if str(portal.get("kind", "")) == "floor_down" else FloorTravel.up(s, portal)
+	var up := str(portal.get("kind", "")) != "floor_down"
+	var next := FloorTravel.up(s, portal) if up else FloorTravel.down(s)
 	if next != null:
+		if up:
+			portal_exp(s, portal, next)
 		s.transfer.emit(next)
 		return
 	s.message.emit("explore.portal_locked", {"floor": int(portal.get("to_floor", 0))}, "system")
+
+
+## 층 포탈 공적(명세 §5.1 — 포탈마다 달마다 첫 통과 +portal_monthly, 1~5층은 달마다 리셋): 오른 층(next)에 남긴다.
+static func portal_exp(s: ExploreSession, portal: Dictionary, next: ExploreSession) -> void:
+	var key := "%s>%s" % [JsonUtil.get_str(s.floor_def, "id"), str(portal.get("dest", ""))]
+	var pr := s.player.progression
+	var got := pr.record_portal(s.db, key, JsonUtil.get_int(s.floor_def, "floor", 1), s.month)
+	if got <= 0:
+		return
+	var before := s.player.get_level()
+	pr.gain(s.player, got, s.rng)
+	next.pending_messages.append({"key": "reward.portal_first", "args": {"exp": got}, "kind": "gain"})
+	if s.player.get_level() > before:
+		next.pending_messages.append({"key": "reward.level_up", "args": {"level": s.player.get_level(),
+			"slots": Progression.essence_slots(s.db, s.player.get_level())}, "kind": "gain"})
 
 
 static func portal_found(s: ExploreSession, portal: Dictionary) -> void:

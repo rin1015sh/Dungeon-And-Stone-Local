@@ -16513,5 +16513,274 @@
       "rise_lord": "f3.altar_rise_lord"
     }
   },
-  "source": "placeholder"
+  "source": "placeholder",
+  "explorers": {
+    "_comment": "다른 탐험가(FieldParties · FieldPartyMeet — tools/floor_explorers.py가 1층 블록을 바탕으로 넣는다). stone = 거래 · 사례 마석(그 층 마석). 다친 탐험가 · 싸우는 탐험가는 1층처럼 0. 수는 원정 날(10일)마다. 모두 임시값",
+    "rookies_by_day": [
+      2,
+      2,
+      3,
+      3,
+      3,
+      2,
+      2,
+      2,
+      1,
+      1
+    ],
+    "raiders_by_day": [
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3
+    ],
+    "portal_from_day": 7,
+    "members": [
+      4,
+      5
+    ],
+    "looks": [
+      "human",
+      "human",
+      "barbarian"
+    ],
+    "raider_looks": [
+      "human"
+    ],
+    "raider_pack": [
+      "raider_cutthroat",
+      "raider_cutthroat",
+      "raider_cutthroat",
+      "raider_archer",
+      "raider_archer"
+    ],
+    "raider_member_chance": 0.85,
+    "death_per_hour": 0.012,
+    "dark_mult": 2.5,
+    "day_add": 0.15,
+    "raider_kill_tiles": 3,
+    "raider_kill_chance": 0.5,
+    "raider_hunt_tiles": 90,
+    "travel_chance": 0.5,
+    "near_tiles": [
+      25,
+      50
+    ],
+    "wounded_per_hour": 0,
+    "wounded_hours": 10,
+    "fight_per_hour": 0,
+    "fight_hours": 1.5,
+    "fight_death": 0.6,
+    "unseen_corpse_per_hour": 0.027,
+    "scream_tiles": 140,
+    "corpse_seekers": 2,
+    "follow_hours": 12,
+    "follow_path_tiles": 30,
+    "watch_ambush_mult": 0.3,
+    "talk_grace_hours": 0.3,
+    "trades": [
+      {
+        "give": "ration",
+        "n": 4,
+        "price": 1
+      },
+      {
+        "give": "torch_stub",
+        "n": 3,
+        "price": 1
+      },
+      {
+        "give": "minor_potion",
+        "n": 1,
+        "price": 5
+      },
+      {
+        "give": "medium_potion",
+        "n": 1,
+        "price": 12
+      }
+    ],
+    "rewards": {
+      "give_potion": [
+        {
+          "item": "magic_stone_7",
+          "count": [
+            2,
+            3
+          ]
+        }
+      ],
+      "give_food": [
+        {
+          "item": "magic_stone_7",
+          "count": [
+            1,
+            2
+          ]
+        }
+      ],
+      "help": [
+        {
+          "item": "magic_stone_7",
+          "count": [
+            2,
+            4
+          ]
+        },
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            2
+          ],
+          "chance": 0.5
+        }
+      ]
+    },
+    "stone": "magic_stone_7"
+  },
+  "incidents": {
+    "_comment": "사건 덱(FloorIncidents — tools/floor_incidents.py가 넣는다, plans/expansion_f1_3_D): 원정마다 per_expedition장을 가중 무작위로 뽑아 any 후보 자리 중 하나(다른 사건과 gap칸 · 도착 칸과 entry_gap칸 떨어진)에 days 날에 놓는다. 모두 임시값",
+    "per_expedition": [
+      2,
+      3
+    ],
+    "gap": 60,
+    "pool": [
+      {
+        "id": "orc_scouts",
+        "weight": 2,
+        "days": [
+          1,
+          10
+        ],
+        "any": [
+          {
+            "zone": "f3_steel"
+          },
+          {
+            "zone": "f3_estuary"
+          },
+          {
+            "zone": "f3_riverbed"
+          }
+        ],
+        "guards": [
+          {
+            "monsters": [
+              "orc_warrior",
+              "orc_archer",
+              "orc_archer"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "abandoned_rest",
+        "weight": 2,
+        "days": [
+          1,
+          9
+        ],
+        "any": [
+          {
+            "zone": "f3_greentail"
+          },
+          {
+            "zone": "f3_reeds"
+          },
+          {
+            "zone": "f3_dusk"
+          }
+        ],
+        "features": [
+          {
+            "event": "dead_campfire",
+            "tile": "f2g_campfire"
+          },
+          {
+            "event": "f3_explorer_corpse",
+            "tile": "f2d_corpse_g",
+            "at": [
+              2,
+              1
+            ]
+          }
+        ],
+        "ambush": [
+          {
+            "monsters": [
+              "lizardman",
+              "lizardman"
+            ],
+            "radius": 3,
+            "line": "field.ambush",
+            "sound": "beast_grunt"
+          }
+        ]
+      },
+      {
+        "id": "troll_wanderer",
+        "weight": 1,
+        "days": [
+          3,
+          10
+        ],
+        "any": [
+          {
+            "zone": "f3_reeds"
+          },
+          {
+            "zone": "f3_dusk"
+          }
+        ],
+        "guards": [
+          {
+            "monsters": [
+              "half_troll"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "falcon_roost",
+        "weight": 1,
+        "days": [
+          1,
+          10
+        ],
+        "any": [
+          {
+            "zone": "f3_windpass"
+          },
+          {
+            "zone": "f3_steel"
+          }
+        ],
+        "features": [
+          {
+            "event": "hidden_cache"
+          }
+        ],
+        "guards": [
+          {
+            "monsters": [
+              "iron_falcon",
+              "iron_falcon"
+            ],
+            "at": [
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

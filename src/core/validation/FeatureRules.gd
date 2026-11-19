@@ -66,7 +66,9 @@ static func _feature(v: ValidatorBase, w: String, ev: Dictionary) -> void:
 	for a: Variant in actions:
 		_action(v, w + ".actions", a if a is Dictionary else {})
 	if ev.has("near"):
-		_line(v, w + ".near", JsonUtil.get_str(JsonUtil.get_dict(ev, "near"), "line"), false)
+		var nd := JsonUtil.get_dict(ev, "near")
+		if not (nd.has("sound") and not nd.has("line")):  # 글 없이 소리만이면 문구는 없어도 된다(UI20 — 사건 덱 무덤 두드림)
+			_line(v, w + ".near", JsonUtil.get_str(nd, "line"), false)
 	if ev.has("hidden"):
 		var h := JsonUtil.get_dict(ev, "hidden")
 		if h.has("stat") or h.has("dc"):  # 알아채기는 묻지 않는 동전(V29) — 스탯 판정은 없어졌다

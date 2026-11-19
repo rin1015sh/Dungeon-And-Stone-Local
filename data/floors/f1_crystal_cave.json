@@ -803,5 +803,126 @@
         "north"
       ]
     }
-  ]
+  ],
+  "incidents": {
+    "_comment": "사건 덱(FloorIncidents — tools/floor_incidents.py가 넣는다, plans/expansion_f1_3_D): 원정마다 per_expedition장을 가중 무작위로 뽑아 any 후보 자리 중 하나(다른 사건과 gap칸 · 도착 칸과 entry_gap칸 떨어진)에 days 날에 놓는다. 모두 임시값",
+    "per_expedition": [
+      1,
+      2
+    ],
+    "pool": [
+      {
+        "id": "warm_campfire",
+        "weight": 2,
+        "days": [
+          1,
+          5
+        ],
+        "any": [
+          {
+            "feature": "dead_campfire",
+            "at": [
+              5,
+              0
+            ]
+          },
+          {
+            "feature": "dead_campfire",
+            "at": [
+              -5,
+              1
+            ]
+          },
+          {
+            "feature": "broken_gear",
+            "at": [
+              4,
+              3
+            ]
+          }
+        ],
+        "features": [
+          {
+            "event": "warm_campfire"
+          }
+        ]
+      },
+      {
+        "id": "ghoul_feast",
+        "weight": 1,
+        "days": [
+          3,
+          10
+        ],
+        "any": [
+          {
+            "feature": "carrion_heap",
+            "at": [
+              3,
+              2
+            ]
+          },
+          {
+            "feature": "rot_carcass",
+            "at": [
+              -3,
+              2
+            ]
+          }
+        ],
+        "guards": [
+          {
+            "monsters": [
+              "ghoul",
+              "ghoul",
+              "ghoul",
+              "ghoul"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "wolves_on_kill",
+        "weight": 1,
+        "days": [
+          2,
+          8
+        ],
+        "any": [
+          {
+            "feature": "wolf_tracks",
+            "at": [
+              6,
+              0
+            ]
+          },
+          {
+            "feature": "wolf_kill",
+            "at": [
+              -6,
+              2
+            ]
+          }
+        ],
+        "features": [
+          {
+            "event": "fresh_corpse"
+          }
+        ],
+        "guards": [
+          {
+            "monsters": [
+              "blade_wolf",
+              "blade_wolf",
+              "blade_wolf"
+            ],
+            "at": [
+              2,
+              1
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

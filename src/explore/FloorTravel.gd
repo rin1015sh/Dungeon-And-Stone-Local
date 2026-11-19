@@ -35,6 +35,7 @@ static func up(s: ExploreSession, portal: Dictionary) -> ExploreSession:
 	var map := gen.generate(s.db, fdef, Rng.new(s.rng.randi_range(1, 1 << 30)))
 	var next := ExploreSession.new(s.db, fdef, map, s.player, s.clock, s.rng, s.effects)
 	next.companions = s.companions
+	next.month = s.month
 	next.monsters_enabled = s.monsters_enabled
 	next.below = s
 	next.below_at = portal["pos"]

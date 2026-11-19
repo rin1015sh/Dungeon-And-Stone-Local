@@ -148,6 +148,7 @@ func _enter_floor(floor_id: String, seed_override: int = 0) -> void:
 	session.rifts.calendar = GameState.rift_calendar
 	session.companions = GameState.companions  # 같은 배열 — Tab 메뉴에서 내보내면 탐험에서도 빠진다
 	if GameState.city != null:
+		session.month = GameState.city.month  # 층 포탈 공적(달마다 첫 통과)
 		GameState.city.reach_floor(JsonUtil.get_int(def, "floor", 1))  # 도서관 서적 floor(CT52)
 	_show_session(session, floor_id)
 

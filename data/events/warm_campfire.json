@@ -1,0 +1,57 @@
+{
+  "id": "warm_campfire",
+  "name_ko": "불씨 남은 모닥불",
+  "type": "feature",
+  "tile": "feat_dead_campfire",
+  "rest": {
+    "radius": 3,
+    "fatigue_per_hour": -3.0
+  },
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.warm_campfire"
+    },
+    {
+      "id": "search",
+      "name_ko": "짐을 뒤진다",
+      "limit": "once",
+      "line": "field.warm_campfire_search",
+      "give": [
+        {
+          "one_of": [
+            "ration",
+            "torch_stub",
+            "stone_bread"
+          ],
+          "count": [
+            1,
+            2
+          ]
+        },
+        {
+          "item": "magic_stone_9",
+          "count": [
+            2,
+            4
+          ],
+          "chance": 0.5
+        }
+      ],
+      "spawn": {
+        "monsters": [
+          "raider_cutthroat",
+          "raider_cutthroat"
+        ],
+        "chance": 0.3,
+        "line": "field.warm_campfire_back"
+      },
+      "fx": "dust"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "사건 덱(expansion_f1_3_D D1-A1 꺼져 가는 모닥불): 다른 탐험가가 방금 떠난 모닥불 — 곁에서 쉬면 피로가 더 빨리 풀린다. 짐을 뒤지면 30%로 주인(약탈자)이 돌아온다. 임시값",
+  "standing": true
+}

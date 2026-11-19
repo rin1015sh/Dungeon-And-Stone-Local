@@ -96,6 +96,7 @@ func build_chapter(i: int) -> ExploreSession:
 	var map := gen.generate(db, fdef, Rng.new(outer.rng.randi_range(1, 1 << 30)))
 	var cs := ExploreSession.new(db, fdef, map, outer.player, outer.clock, outer.rng, outer.effects)
 	cs.companions = outer.companions
+	cs.month = outer.month
 	_session_ref = weakref(cs)
 	cs.rift_run = self
 	RiftPassage.setup(cs, is_last_chapter(), i > 0, _floor_tile())

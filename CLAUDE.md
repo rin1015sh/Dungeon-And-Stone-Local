@@ -29,6 +29,7 @@
   - 시설 실내 지도(`data/interiors` — 칸 · 범례 · 빛 · 방 재질, CT106) → `python3 tools/interior_bake.py <id>`(손그림 방 그림) + `--import` 뒤 캡처 `--screen=city --facility=<id> --in_at=x,y`
   - 2층 바닥 재질 · 소품(`tools/f2_art/` — AM64) → `ground.py` · `ground_extra.py` · `props.py`(→ `sheet_bounds.py`) → `texture_compress.py` → `--import` → 캡처. 소품 시트(stand · big)를 다시 그렸으면 `python3 tools/sheet_bounds.py`
   - 던전 에셋 키트(`tools/dungeon_kit/a_*.py`) → `build.py` → `game_props.py`(게임 소품 시트 `assets/floor/kit/props.webp` — AM66) → `texture_compress.py` → `--import` → 캡처(`docs/DUNGEON_KIT.md`)
+  - 2 · 3층 배치 스크립트(`f2*_layout.py` · `f3_layout.py`)를 다시 돌림 → `f2_new_monsters.py` → `route_variety.py` → `floor_explorers.py` → `floor_incidents.py`(층 JSON 덧입히기 — 안 하면 매복 자리 굴림 · 위층 탐험가 · 사건 덱이 지워진다, XP3~XP5)
   - 층·몬스터·정수·균열·서적을 더함 → `python3 tools/floor_status.py`(2~10층 찍는 틀 `docs/plans/floors_2_10.md`)
   - 밀도·탐험가 → `sim_walk` · 균열 지도·조우·길목 → `sim_rift`("모두 통과") · 값·드롭 → `sim_income`(→ `docs/balance/city.md`)
   - **그림·렌더링을 바꿨으면 반드시 캡처해서 직접 본다**(헤드리스 테스트는 그림을 검증하지 못한다 — 명령은 `docs/ART.md` §0·TOOLS.md). `--script` 도구가 출력 없이 멈추면 `--check-only --script <파일>`로 파싱 오류를 찾는다.

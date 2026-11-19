@@ -66,6 +66,8 @@ func add_at(s: ExploreSession, id: String, cell: Vector2i) -> void:
 	var e := {"id": id, "pos": cell, "def": def, "found": true, "used": {}, "cleared": false, "noticed": false}
 	list.append(e)
 	_by_cell[cell] = e
+	if def.has("near"):  # 원정 중에 놓인 요소도 다가가면 단서(사건 덱 — 무덤 안 두드림)
+		_near.append(e)
 
 
 ## 입장 직후(몬스터가 나타난 뒤): 지키는 무리를 세운다.
@@ -157,6 +159,8 @@ func on_step(s: ExploreSession, p: Vector2i) -> void:
 		var near := JsonUtil.get_dict(e["def"], "near")
 		if not bool(e["noticed"]) and Vector2(p - (e["pos"] as Vector2i)).length() <= JsonUtil.get_float(near, "radius", 3.0):
 			e["noticed"] = true
+			if near.has("sound"):  # 글 대신 소리로(UI20 — 무덤 안에서 두드리는 소리)
+				s.sound.emit(JsonUtil.get_str(near, "sound"), e["pos"])
 			FieldFeatureAct.say_line(s, JsonUtil.get_str(near, "line"), e, JsonUtil.get_str(near, "kind", "info"))
 	hazards.on_step(s, p)
 

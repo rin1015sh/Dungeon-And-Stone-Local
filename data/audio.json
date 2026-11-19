@@ -141,6 +141,9 @@
     "gate_open": [
       "stone_door"
     ],
+    "grave_knock": [
+      "old_door"
+    ],
     "armor_clank": [
       "armor_rustle"
     ],

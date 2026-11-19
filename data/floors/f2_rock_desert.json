@@ -1023,7 +1023,8 @@
         ],
         "radius": 3,
         "line": "field.ambush_gnome",
-        "sound": "gnome_alarm"
+        "sound": "gnome_alarm",
+        "appear": 0.75
       },
       {
         "mark": "dune_e",
@@ -1037,7 +1038,8 @@
         ],
         "radius": 3,
         "line": "field.ambush_gnome",
-        "sound": "gnome_alarm"
+        "sound": "gnome_alarm",
+        "appear": 0.75
       },
       {
         "on_tiles": [
@@ -1058,6 +1060,248 @@
         "line": "field.ambush_scorpion",
         "sound": "scorpion_click",
         "new_monsters": true
+      }
+    ]
+  },
+  "explorers": {
+    "_comment": "다른 탐험가(FieldParties · FieldPartyMeet — tools/floor_explorers.py가 1층 블록을 바탕으로 넣는다). stone = 거래 · 사례 마석(그 층 마석). 다친 탐험가 · 싸우는 탐험가는 1층처럼 0. 수는 원정 날(10일)마다. 모두 임시값",
+    "rookies_by_day": [
+      1,
+      1,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      0,
+      0
+    ],
+    "raiders_by_day": [
+      0,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "portal_from_day": 5,
+    "members": [
+      3,
+      5
+    ],
+    "looks": [
+      "human",
+      "human",
+      "barbarian"
+    ],
+    "raider_looks": [
+      "human"
+    ],
+    "raider_pack": [
+      "raider_cutthroat",
+      "raider_cutthroat",
+      "raider_archer",
+      "raider_archer"
+    ],
+    "raider_member_chance": 0.8,
+    "death_per_hour": 0.015,
+    "dark_mult": 2.5,
+    "day_add": 0.15,
+    "raider_kill_tiles": 3,
+    "raider_kill_chance": 0.5,
+    "raider_hunt_tiles": 60,
+    "travel_chance": 0.5,
+    "near_tiles": [
+      25,
+      50
+    ],
+    "wounded_per_hour": 0,
+    "wounded_hours": 10,
+    "fight_per_hour": 0,
+    "fight_hours": 1.5,
+    "fight_death": 0.6,
+    "unseen_corpse_per_hour": 0.027,
+    "scream_tiles": 140,
+    "corpse_seekers": 2,
+    "follow_hours": 12,
+    "follow_path_tiles": 30,
+    "watch_ambush_mult": 0.3,
+    "talk_grace_hours": 0.3,
+    "trades": [
+      {
+        "give": "ration",
+        "n": 2,
+        "price": 1
+      },
+      {
+        "give": "torch_stub",
+        "n": 2,
+        "price": 1
+      },
+      {
+        "give": "minor_potion",
+        "n": 1,
+        "price": 12
+      },
+      {
+        "give": "stone_bread",
+        "n": 4,
+        "price": 1
+      }
+    ],
+    "rewards": {
+      "give_potion": [
+        {
+          "item": "magic_stone_7",
+          "count": [
+            1,
+            2
+          ]
+        }
+      ],
+      "give_food": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            2,
+            3
+          ]
+        }
+      ],
+      "help": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            3,
+            5
+          ]
+        },
+        {
+          "item": "torch_stub",
+          "count": [
+            1,
+            1
+          ],
+          "chance": 0.5
+        }
+      ]
+    },
+    "stone": "magic_stone_8"
+  },
+  "incidents": {
+    "_comment": "사건 덱(FloorIncidents — tools/floor_incidents.py가 넣는다, plans/expansion_f1_3_D): 원정마다 per_expedition장을 가중 무작위로 뽑아 any 후보 자리 중 하나(다른 사건과 gap칸 · 도착 칸과 entry_gap칸 떨어진)에 days 날에 놓는다. 모두 임시값",
+    "per_expedition": [
+      1,
+      2
+    ],
+    "pool": [
+      {
+        "id": "parched_traveler",
+        "weight": 2,
+        "days": [
+          2,
+          7
+        ],
+        "any": [
+          {
+            "mark": "colonnade",
+            "at": [
+              4,
+              3
+            ]
+          },
+          {
+            "mark": "road_east",
+            "at": [
+              -3,
+              3
+            ]
+          },
+          {
+            "mark": "plaza",
+            "at": [
+              -6,
+              4
+            ]
+          }
+        ],
+        "features": [
+          {
+            "event": "parched_traveler"
+          }
+        ]
+      },
+      {
+        "id": "night_spring",
+        "weight": 1,
+        "days": [
+          3,
+          10
+        ],
+        "any": [
+          {
+            "mark": "seep",
+            "at": [
+              3,
+              2
+            ]
+          }
+        ],
+        "guards": [
+          {
+            "monsters": [
+              "dune_scorpion",
+              "dune_scorpion",
+              "dune_scorpion"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pack_raiders",
+        "weight": 1,
+        "days": [
+          2,
+          9
+        ],
+        "any": [
+          {
+            "mark": "dune_w",
+            "at": [
+              5,
+              2
+            ]
+          },
+          {
+            "mark": "dune_e",
+            "at": [
+              -5,
+              2
+            ]
+          }
+        ],
+        "features": [
+          {
+            "event": "buried_pack"
+          }
+        ],
+        "ambush": [
+          {
+            "monsters": [
+              "kobold",
+              "kobold",
+              "kobold_slinger"
+            ],
+            "radius": 3,
+            "line": "field.ambush",
+            "sound": "goblin_shout"
+          }
+        ]
       }
     ]
   }

@@ -67,6 +67,19 @@ func test_floor_travel_up_and_down() -> void:
 	assert_true(back == s1 and not s1.ended, "도착 비석에서 내려가면 같은 1층 세션")
 	assert_eq(s1.pos, south["pos"], "올라갔던 포탈 자리에 선다")
 	assert_true(s2.ended and s2.below == null, "2층은 버린다(다시 오르면 새 지도)")
+	# 층 포탈 공적(CP-5 — 포탈마다 달마다 첫 통과 +2, 1~5층은 달마다 새로)
+	var exp0 := pc.progression.exp_total
+	s1.month = 3
+	var s3 := FloorTravel.up(s1, south)
+	ExploreInteract.portal_exp(s1, south, s3)
+	assert_eq(pc.progression.exp_total, exp0 + 2, "이번 달 처음 지나는 포탈 +2")
+	assert_eq(str(s3.pending_messages[-1]["key"]), "reward.portal_first", "공적은 오른 층 화면에서 보인다")
+	ExploreInteract.portal_exp(s1, south, s3)
+	assert_eq(pc.progression.exp_total, exp0 + 2, "같은 달 두 번째는 없다")
+	s1.month = 4
+	ExploreInteract.portal_exp(s1, south, s3)
+	assert_eq(pc.progression.exp_total, exp0 + 4, "다음 달엔 다시")
+	assert_eq(s3.month, 3, "오른 층도 같은 달을 안다")
 
 
 func test_horde_reserve_fills_in() -> void:

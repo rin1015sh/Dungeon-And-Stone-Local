@@ -18,7 +18,9 @@ static func build(s: ExploreSession) -> RouteAmbush:
 		return null
 	var r := RouteAmbush.new()
 	for v: Variant in list:
-		var d: Dictionary = v if v is Dictionary else {}
+		var d := RouteSpots.pick(s, v if v is Dictionary else {})  # 원정마다 자리 · 나올지(any · appear)
+		if d.is_empty():
+			continue
 		if d.has("on_tiles"):
 			r._tile_rules.append({"def": d, "left": JsonUtil.get_int(d, "max", 2)})
 			continue
@@ -29,6 +31,15 @@ static func build(s: ExploreSession) -> RouteAmbush:
 		if at.x >= 0:
 			r._spots.append({"at": at, "def": d})
 	return r
+
+
+## 입장 뒤에 매복 자리 하나를 더한다(사건 덱 — FloorIncidents). 못 놓았으면 false.
+func add_spot(s: ExploreSession, p: Vector2i, d: Dictionary) -> bool:
+	var at := _walkable_near(s.map, p)
+	if at.x < 0:
+		return false
+	_spots.append({"at": at, "def": d})
+	return true
 
 
 func spots() -> Array[Vector2i]:

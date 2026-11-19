@@ -51,6 +51,7 @@ var blades: GrooveBlades = null
 var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — FL15)
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
+var incidents: FloorIncidents = null    ## 사건 덱(층 JSON incidents — 원정마다 뽑는 사건, expansion_f1_3_D)
 var first_side: int = -1  ## 다음 전투에서 먼저 움직이는 쪽(Battle.FIRST_NONE = 정정당당 — 숨어 기다린 매복이면 플레이어, CB3). 화면이 읽고 되돌린다
 var _was_cover: bool = false
 var desert: DesertRules = null            ## 바위사막 열기 · 모래 바다 진동(층 JSON desert — LD14)
@@ -61,6 +62,7 @@ var terrain: FieldTerrain = null         ## 변하는 지형(층 JSON terrain �
 var pilgrim: PilgrimRoad = null         ## 3층 규칙(지역 이름 · 마녀의 숲 · 오두막 · 밤하늘 · 오크 제단 — PilgrimRoad)
 var grave: GraveWake = null             ## 망자의 땅 비석(층 JSON grave_wake — 원정 5일 차에 데스나이트)         ## 칼날 홈을 오가는 칼날(강철의 묘 — 챕터 "groove_blades", RiftRun이 놓는다)
 var ambushes: Array = []                ## 균열 매복 중 아직 터지지 않은 것(RiftAmbush — 조우 정의)
+var month: int = 0                      ## 도시 달(층 포탈 공적 — 1~5층은 달마다 새로, Progression.record_portal). Main이 넣는다
 var kills: Dictionary = {}              ## 이번 원정에서 잡은 몬스터 id → 마리 수(기념비 마석 바치기 — Monument)
 var parties: FieldParties = FieldParties.new()  ## 다른 탐험가 무리·약탈자·새로 생기는 시체(층 JSON explorers)
 var features: FieldFeatures = FieldFeatures.new()  ## 동굴 요소(시체·샘·모닥불·함정 … — data/events, 자리 = map.features)
@@ -147,6 +149,8 @@ func start() -> void:
 		features.spawn_guards(self)
 		RouteSpots.place_guards(self)
 		parties.start(self)
+	if rift_run == null:
+		incidents = FloorIncidents.build(self)
 	watch = RouteWatch.build(self)
 	refresh_view()
 
@@ -363,6 +367,8 @@ func pass_time(hours: float) -> void:
 		lord.update(self, h)
 		if grave != null:
 			grave.update(self)
+		if incidents != null:
+			incidents.update(self)
 		rifts.update(self, h)
 		parties.update(self, h)
 		monsters.set_player_stealth(FieldStealth.of(self))

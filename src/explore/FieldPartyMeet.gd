@@ -8,7 +8,12 @@ extends RefCounted
 ## 고르지 않고 물러나면(취소) 지나가기와 같다. 약탈자는 취소할 수 없다.
 ## 값은 층 JSON explorers(rewards 등).
 
-const STONE := "magic_stone_9"
+const STONE := "magic_stone_9"  ## 거래 마석 기본값 — 층 JSON explorers.stone이 있으면 그것(그 층 마석, floors_2_10 M6-0 H)
+
+
+## 이 층 거래 마석 id.
+static func stone(s: ExploreSession) -> String:
+	return JsonUtil.get_str(s.parties.def, "stone", STONE)
 
 
 ## 선택 창 제목.
@@ -26,7 +31,8 @@ static func options(s: ExploreSession, g: FieldMonsters.Group) -> Array[Dictiona
 			if not t.is_empty() and not bool(g.party.get("traded", false)):
 				var price := JsonUtil.get_int(t, "price")
 				out.append(_opt("trade", Strings.t("explore.party.opt.trade", {"item": DataNames.entry(s.db, "items", JsonUtil.get_str(t, "give")),
-					"n": JsonUtil.get_int(t, "n", 1), "price": price}), inv.count(STONE) >= price, "explore.party.no_stones"))
+					"n": JsonUtil.get_int(t, "n", 1), "price": price, "stone": DataNames.entry(s.db, "items", stone(s))}),
+					inv.count(stone(s)) >= price, "explore.party.no_stones"))
 			if not bool(g.party.get("rumor_told", false)) and not _rumor_target(s).is_empty():
 				out.append(_opt("rumor", Strings.t("explore.party.opt.rumor")))
 			if not bool(g.party.get("followed", false)):
@@ -54,8 +60,8 @@ static func act(s: ExploreSession, g: FieldMonsters.Group, id: String) -> void:
 	match id:
 		"trade":
 			var t := JsonUtil.get_dict(g.party, "trade")
-			if s.player.inventory.count(STONE) >= JsonUtil.get_int(t, "price"):
-				s.player.inventory.remove(STONE, JsonUtil.get_int(t, "price"))
+			if s.player.inventory.count(stone(s)) >= JsonUtil.get_int(t, "price"):
+				s.player.inventory.remove(stone(s), JsonUtil.get_int(t, "price"))
 				g.party["traded"] = true
 				FieldFeatureAct.give_items(s, [{"item": JsonUtil.get_str(t, "give"), "count": [JsonUtil.get_int(t, "n", 1), JsonUtil.get_int(t, "n", 1)]}])
 		"rumor":

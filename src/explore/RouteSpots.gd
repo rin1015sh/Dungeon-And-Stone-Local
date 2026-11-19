@@ -6,30 +6,55 @@ extends RefCounted
 ##   scatter: [{"zone" | "node"(+ "r"), "event", "count"}] — 그 구역(또는 구간 반지름 r 안)의 둘레 8칸이 트인 칸 count곳에 무작위로
 ##     (원정마다 자리가 바뀐다 — 파헤칠 무덤 · 비문, FL13)
 ## 자리는 "edge" + "t"(길 위 — FL18), "node"(map.anchors["nodes"] — FieldsRoute) 또는 "mark"(map.anchors["marks"] — 지하 묘실 등, FL14) + "at". 자리가 걸을 수 없으면 둘레 빈 칸.
+## 원정마다 바뀌는 자리(2026-11-19 — plans/expansion_f1_3_E §3 ②): guards · features · ambush 항목에
+##   "any": [{자리 키("edge"+"t" · "node" · "mark", "at") …}, …] — 원정마다 그중 하나, "appear": 0~1 — 그 확률로만 놓는다(pick).
 
 
 static func place_features(s: ExploreSession) -> void:
 	for f: Variant in JsonUtil.get_array(JsonUtil.get_dict(s.floor_def, "route_spots"), "features"):
-		var fd: Dictionary = f if f is Dictionary else {}
+		var fd := pick(s, f if f is Dictionary else {})
+		if fd.is_empty():
+			continue
 		var at := JsonUtil.get_array(fd, "at")
 		var c := _anchor(s, fd)
 		if c.x < 0:
 			continue
-		var p := c + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO)
-		var def := s.db.get_entry("events", JsonUtil.get_str(fd, "event"))
-		var obj := JsonUtil.get_bool(fd, "object")  # 이미 있는 물체 칸에(닫힌 쇠문 — 타일을 바꾸지 않고 걷지 못하는 칸도 된다)
-		if def.is_empty():
-			continue
-		if not obj and not _free(s, p):  # 물체 칸은 포탈 자리여도 된다(진짜 비석)
-			p = _free_near(s, p)  # 무작위 소품이 그 칸에 섰다 — 둘레 빈 칸으로(종 · 궤짝이 사라지지 않게)
-			if p.x < 0:
-				continue
-		var tile := JsonUtil.get_str(fd, "tile", JsonUtil.get_str(def, "tile"))
-		if not obj and not tile.is_empty():  # 그림 없는 요소(다가가면 한 줄 — near만)는 바닥을 그대로
-			s.map.set_tile(p, tile)  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
-		s.features.add_at(s, JsonUtil.get_str(fd, "event"), p)
-		if def.has("near") and tile.is_empty():  # 그림 없는 단서(소굴 흙이 흘러내리는 벽)는 바닥 데칼 규칙이 둘레를 칠한다(LD13)
-			s.map.features.append({"id": JsonUtil.get_str(fd, "event"), "pos": p})
+		place_feature(s, fd, c + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO))
+
+
+## 요소 하나를 p에 놓는다(fd = {"event", "tile", "object"}). 놓은 칸(못 놓았으면 (-1, -1)). 사건 덱(FloorIncidents)도 쓴다.
+static func place_feature(s: ExploreSession, fd: Dictionary, p: Vector2i) -> Vector2i:
+	var def := s.db.get_entry("events", JsonUtil.get_str(fd, "event"))
+	var obj := JsonUtil.get_bool(fd, "object")  # 이미 있는 물체 칸에(닫힌 쇠문 — 타일을 바꾸지 않고 걷지 못하는 칸도 된다)
+	if def.is_empty() or not s.map.in_bounds(p):
+		return Vector2i(-1, -1)
+	if not obj and not _free(s, p):  # 물체 칸은 포탈 자리여도 된다(진짜 비석)
+		p = _free_near(s, p)  # 무작위 소품이 그 칸에 섰다 — 둘레 빈 칸으로(종 · 궤짝이 사라지지 않게)
+		if p.x < 0:
+			return p
+	var tile := JsonUtil.get_str(fd, "tile", JsonUtil.get_str(def, "tile"))
+	if not obj and not tile.is_empty():  # 그림 없는 요소(다가가면 한 줄 — near만)는 바닥을 그대로
+		s.map.set_tile(p, tile)  # "tile": 그 층 바닥에 맞춘 요소 칸(망자의 땅 — 1층 바닥 네모가 비치지 않게)
+	s.features.add_at(s, JsonUtil.get_str(fd, "event"), p)
+	if def.has("near") and tile.is_empty():  # 그림 없는 단서(소굴 흙이 흘러내리는 벽)는 바닥 데칼 규칙이 둘레를 칠한다(LD13)
+		s.map.features.append({"id": JsonUtil.get_str(fd, "event"), "pos": p})
+	return p
+
+
+## 원정마다 자리 고르기: "appear"(없으면 1)에 지면 빈 사전, "any"가 있으면 그중 하나의 자리 키를 덮어쓴 사본. 없으면 d 그대로.
+static func pick(s: ExploreSession, d: Dictionary) -> Dictionary:
+	if d.has("appear") and not s.rng.chance(JsonUtil.get_float(d, "appear", 1.0)):
+		return {}
+	var alts := JsonUtil.get_array(d, "any")
+	if alts.is_empty():
+		return d
+	var out := d.duplicate()
+	for k: String in ["edge", "t", "node", "mark", "at"]:
+		out.erase(k)
+	var a: Variant = alts[s.rng.randi_range(0, alts.size() - 1)]
+	if a is Dictionary:
+		out.merge(a, true)
+	return out
 
 
 static func _free(s: ExploreSession, p: Vector2i) -> bool:
@@ -113,7 +138,9 @@ static func scatter_hazards(s: ExploreSession) -> void:
 
 static func place_guards(s: ExploreSession) -> void:
 	for gd: Variant in JsonUtil.get_array(JsonUtil.get_dict(s.floor_def, "route_spots"), "guards"):
-		var d: Dictionary = gd if gd is Dictionary else {}
+		var d := pick(s, gd if gd is Dictionary else {})
+		if d.is_empty():
+			continue
 		var at := JsonUtil.get_array(d, "at")
 		var c := _anchor(s, d) + (Vector2i(int(at[0]), int(at[1])) if at.size() == 2 else Vector2i.ZERO)
 		var ids := JsonUtil.get_array(d, "monsters")

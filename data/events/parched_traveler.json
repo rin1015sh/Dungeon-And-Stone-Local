@@ -1,0 +1,43 @@
+{
+  "id": "parched_traveler",
+  "name_ko": "쓰러진 순례자",
+  "type": "feature",
+  "tile": "f2r_corpse",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.parched_traveler"
+    },
+    {
+      "id": "give_water",
+      "name_ko": "물을 건넨다",
+      "limit": "once",
+      "cost": {
+        "item": "spring_water",
+        "count": 1
+      },
+      "missing": "field.parched_no_water",
+      "line": "field.parched_traveler_drink",
+      "give": [
+        {
+          "item": "magic_stone_8",
+          "count": [
+            2,
+            3
+          ]
+        }
+      ],
+      "point_to": {
+        "event": "buried_pack",
+        "within": 160,
+        "radius": 6
+      },
+      "clear": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": "사건 덱(expansion_f1_3_D 사막-3 목마른 순례자): 그늘에 쓰러진 산 사람. 물 부대를 주면 마석과 모래 바다 묻힌 짐 자리를 알려 주고 떠난다. 임시값",
+  "standing": true
+}
