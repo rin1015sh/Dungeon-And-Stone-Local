@@ -326,7 +326,7 @@ func test_bells_open_the_pass_gate() -> void:
 func test_ambush_rises_once() -> void:
 	var s := _f2_session(4, true)
 	var spots := s.ambush.spots()
-	assert_true(spots.size() >= 5, "길목 매복 여럿: %d" % spots.size())
+	assert_true(spots.size() >= 3, "길목 매복 여럿(다섯은 원정마다 75% — XP3): %d" % spots.size())
 	var n := s.monsters.groups.size()
 	s.ambush.on_enter(s, spots[0])
 	assert_eq(s.monsters.groups.size(), n + 1, "무리가 일어난다")

@@ -20,7 +20,7 @@ static func build(s: ExploreSession) -> FloorIncidents:
 		return null
 	var fi := FloorIncidents.new()
 	var nr := JsonUtil.get_array(cfg, "per_expedition")
-	var want := s.rng.randi_range(int(nr[0]), int(nr[1])) if nr.size() == 2 else 2
+	var want := s.side_rng().randi_range(int(nr[0]), int(nr[1])) if nr.size() == 2 else 2
 	var left: Array = pool.duplicate()
 	var gap := JsonUtil.get_float(cfg, "gap", 40.0)
 	var entry_gap := JsonUtil.get_float(cfg, "entry_gap", 20.0)
@@ -61,7 +61,7 @@ static func _weighted(s: ExploreSession, list: Array) -> Dictionary:
 	var total := 0.0
 	for d: Variant in list:
 		total += JsonUtil.get_float(d as Dictionary, "weight", 1.0)
-	var r := s.rng.randf() * total
+	var r := s.side_rng().randf() * total
 	for d: Variant in list:
 		r -= JsonUtil.get_float(d as Dictionary, "weight", 1.0)
 		if r <= 0.0:
@@ -75,7 +75,7 @@ func _spot(s: ExploreSession, d: Dictionary, gap: float, entry_gap: float) -> Ve
 	if alts.is_empty():
 		alts = [d]
 	for i in range(alts.size() - 1, 0, -1):  # 섞기(Rng를 거친다)
-		var j := s.rng.randi_range(0, i)
+		var j := s.side_rng().randi_range(0, i)
 		var t: Variant = alts[i]
 		alts[i] = alts[j]
 		alts[j] = t
@@ -100,11 +100,11 @@ static func _base(s: ExploreSession, ad: Dictionary) -> Vector2i:
 	if ad.has("feature"):
 		var fid := JsonUtil.get_str(ad, "feature")
 		var hits: Array = s.features.list.filter(func(e: Dictionary) -> bool: return str(e["id"]) == fid and not bool(e.get("cleared", false)))
-		return (s.rng.pick(hits) as Dictionary)["pos"] if not hits.is_empty() else Vector2i(-1, -1)
+		return (s.side_rng().pick(hits) as Dictionary)["pos"] if not hits.is_empty() else Vector2i(-1, -1)
 	if ad.has("zone"):
 		var zi := s.map.zone_ids.find(JsonUtil.get_str(ad, "zone"))
 		for tries in 400:
-			var p := Vector2i(s.rng.randi_range(3, s.map.width - 4), s.rng.randi_range(3, s.map.height - 4))
+			var p := Vector2i(s.side_rng().randi_range(3, s.map.width - 4), s.side_rng().randi_range(3, s.map.height - 4))
 			if zi >= 0 and s.map.zones[s.map.idx(p)] == zi and _open3(s, p):
 				return p
 		return Vector2i(-1, -1)

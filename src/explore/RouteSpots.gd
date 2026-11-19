@@ -43,7 +43,7 @@ static func place_feature(s: ExploreSession, fd: Dictionary, p: Vector2i) -> Vec
 
 ## 원정마다 자리 고르기: "appear"(없으면 1)에 지면 빈 사전, "any"가 있으면 그중 하나의 자리 키를 덮어쓴 사본. 없으면 d 그대로.
 static func pick(s: ExploreSession, d: Dictionary) -> Dictionary:
-	if d.has("appear") and not s.rng.chance(JsonUtil.get_float(d, "appear", 1.0)):
+	if d.has("appear") and not s.side_rng().chance(JsonUtil.get_float(d, "appear", 1.0)):
 		return {}
 	var alts := JsonUtil.get_array(d, "any")
 	if alts.is_empty():
@@ -51,7 +51,7 @@ static func pick(s: ExploreSession, d: Dictionary) -> Dictionary:
 	var out := d.duplicate()
 	for k: String in ["edge", "t", "node", "mark", "at"]:
 		out.erase(k)
-	var a: Variant = alts[s.rng.randi_range(0, alts.size() - 1)]
+	var a: Variant = alts[s.side_rng().randi_range(0, alts.size() - 1)]
 	if a is Dictionary:
 		out.merge(a, true)
 	return out

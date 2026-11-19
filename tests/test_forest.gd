@@ -119,12 +119,12 @@ func test_watchtower_alarm() -> void:
 func test_chief_and_brook_hunters() -> void:
 	var s := _session(5, true)
 	var nodes: Dictionary = s.map.anchors["nodes"]
-	var chief := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region == "" and g.monster_ids[0] == "hobgoblin" and g.monster_ids.size() == 5)
+	var chief := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.party.is_empty() and g.region == "" and g.monster_ids.size() == 5 and g.monster_ids[0] == "hobgoblin")
 	assert_eq(chief.size(), 1, "족장 무리")
 	assert_true(Vector2((chief[0] as FieldMonsters.Group).pos - (nodes["chief"] as Vector2i)).length() <= 6.0, "족장 움막에")
 	var brook := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.region == "f2g_brook")
 	assert_eq(brook.size(), 1, "개울을 도는 사냥꾼 무리 하나(+ 골짜기 야영지 지키는 무리)")
-	assert_true(s.ambush != null and s.ambush.spots().size() == 10, "매복 열(뿌리 곁방 · 버섯 고리 · 둔덕길 + 가시넝쿨 넷 · 말벌 셋 — 2층 새 몬스터)")
+	assert_true(s.ambush != null and s.ambush.spots().size() >= 7 and s.ambush.spots().size() <= 10, "매복 열(뿌리 곁방 · 버섯 고리 · 둔덕길 + 가시넝쿨 넷 · 말벌 셋 — 말벌은 원정마다 67%, XP3)")
 	for g: FieldMonsters.Group in brook:
 		assert_eq(g.monster_ids, ["hobgoblin", "goblin_archer", "goblin_archer"] as Array[String], "홉고블린 + 궁수 둘")
 	assert_true(s.features.list.any(func(e: Dictionary) -> bool: return e["id"] == "chief_chest"), "족장 궤짝")

@@ -75,7 +75,8 @@ func test_new_beasts_and_queen_stops_moles() -> void:
 	var s := _session(3, true)
 	for id: String in ["moon_rock_bear", "mole_queen", "werewolf", "bulkar"]:
 		assert_true(s.monsters.groups.any(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has(id)), "%s가 지도에 있다" % id)
-	assert_eq(s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("bulkar")).size(), 3, "불카르 셋(바위 곁)")
+	var nb := s.monsters.groups.filter(func(g: FieldMonsters.Group) -> bool: return g.monster_ids.has("bulkar")).size()
+	assert_true(nb >= 1 and nb <= 3, "불카르는 바위 곁 셋 중 원정마다 몇(appear — XP3): %d" % nb)
 	var holes := s.features.list.filter(func(e: Dictionary) -> bool: return e["id"] == "den_mole_holes")
 	assert_eq(holes.size(), 3, "매복 앞 단서 셋")
 	var spots := s.ambush.spots()

@@ -52,6 +52,7 @@ var maws: MawTraps = null                ## 아귀 입 함정(층 JSON maws — 
 var goal: FloorGoal = null              ## 층 목표(층 JSON goal — 종 셋 → 고개 쇠문, FL18)
 var ambush: RouteAmbush = null          ## 길목 매복(route_spots.ambush — FL18)
 var incidents: FloorIncidents = null    ## 사건 덱(층 JSON incidents — 원정마다 뽑는 사건, expansion_f1_3_D)
+var _side_rng: Rng = null
 var first_side: int = -1  ## 다음 전투에서 먼저 움직이는 쪽(Battle.FIRST_NONE = 정정당당 — 숨어 기다린 매복이면 플레이어, CB3). 화면이 읽고 되돌린다
 var _was_cover: bool = false
 var desert: DesertRules = null            ## 바위사막 열기 · 모래 바다 진동(층 JSON desert — LD14)
@@ -153,6 +154,13 @@ func start() -> void:
 		incidents = FloorIncidents.build(self)
 	watch = RouteWatch.build(self)
 	refresh_view()
+
+
+## 자리 굴림 · 사건 덱 전용 난수(세션 시드에서 갈라 낸 것) — 세션 rng를 먹지 않아 그 뒤의 무작위(균열 · 무리)가 바뀌지 않는다.
+func side_rng() -> Rng:
+	if _side_rng == null:
+		_side_rng = Rng.new(absi(hash([rng.seed_value, "side"])) % 2000000000 + 1)
+	return _side_rng
 
 
 func floor_name() -> String:
