@@ -1208,6 +1208,18 @@
     "source": "placeholder"
   },
   {
+    "id": "moon_frenzy",
+    "name_ko": "달빛 광분",
+    "kind": "buff",
+    "duration": {
+      "amount": 3,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "source": "placeholder",
+    "notes": "늑대왕(울부짖는 바람굴 수호자) 달을 향한 고개 — 끊지 못하면 3차례 동안 차례마다 두 번 움직인다(pattern_params extra_status). 임시값"
+  },
+  {
     "id": "guardian_frenzy",
     "name_ko": "광분",
     "kind": "buff",

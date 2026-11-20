@@ -187,13 +187,26 @@ static func _effects(s: ExploreSession, list: Array) -> void:
 		s.message.emit(str(m["key"]), m["args"], str(m["kind"]))
 
 
-## 근처(radius칸) 그 몬스터 무리가 hours시간 동안 쫓아온다(노움 은닉처).
+## 근처(radius칸) 그 몬스터 무리가 hours시간 동안 쫓아온다(노움 은닉처). "monster" 대신 "families": [family]면 그 계열이 이끄는 무리,
+## "nearest": true면 그중 가장 가까운 하나만(바람 틈을 뚫으면 냄새가 퍼진다 — 울부짖는 바람굴, expansion_f1_3_B §2).
 static func _alert(s: ExploreSession, at: Vector2i, al: Dictionary) -> void:
 	var mid := JsonUtil.get_str(al, "monster")
-	if mid.is_empty():
+	var fams := JsonUtil.get_array(al, "families")
+	if mid.is_empty() and fams.is_empty():
 		return
 	var until := s.clock.total_hours + JsonUtil.get_float(al, "hours", 0.5)
+	var radius := JsonUtil.get_float(al, "radius", 20.0)
+	var hit: Array[FieldMonsters.Group] = []
 	for g: FieldMonsters.Group in s.monsters.groups:
-		if g.leader() == mid and Vector2(g.pos - at).length() <= JsonUtil.get_float(al, "radius", 20.0):
-			g.alert_until = until
-			g.state = FieldMonsters.STATE_CHASE
+		if g.monster_ids.is_empty() or Vector2(g.pos - at).length() > radius:
+			continue
+		var ok := g.leader() == mid if not mid.is_empty() else \
+			JsonUtil.get_array(s.db.get_entry("monsters", g.leader()), "family").any(func(f: Variant) -> bool: return fams.has(f))
+		if ok:
+			hit.append(g)
+	if JsonUtil.get_bool(al, "nearest") and hit.size() > 1:
+		hit.sort_custom(func(a: FieldMonsters.Group, b: FieldMonsters.Group) -> bool: return (a.pos - at).length_squared() < (b.pos - at).length_squared())
+		hit.resize(1)
+	for g in hit:
+		g.alert_until = until
+		g.state = FieldMonsters.STATE_CHASE

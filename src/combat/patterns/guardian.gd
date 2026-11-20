@@ -1,6 +1,7 @@
 extends BossPattern
 ## 범용 수호자·중간 보스 패턴(G5~). 수치는 몬스터 "pattern_params", 페이즈는 "phases"(BossHooks).
-##   every         [{"rounds": 3, "skill": "<스킬>"}] — n라운드마다 그 스킬(적 전체 스킬이면 적 전원, 아니면 자기에게)
+##   every         [{"rounds": 3, "skill": "<스킬>", "times": 3}] — n라운드마다 그 스킬(적 전체 스킬이면 적 전원, 아니면 자기에게).
+##                 times(선택) = 한 전투에 그 횟수까지(늑대왕의 부르는 울음 — 증원이 끝없지 않게)
 ##   extra_status  이 상태면 라운드당 2회 행동(예: 체력 50% 이하 페이즈의 self_statuses)
 ##   mumbles       [문자열 키] — 라운드마다 하나를 무작위로 띄운다(시체골렘 웅얼거림)
 ##   force_phase   {"status": "<상태>", "phase": "<페이즈>"} — 그 상태가 되면 체력과 무관하게 그 페이즈로
@@ -24,10 +25,13 @@ func wants_extra_action(_b: Battle, c: Combatant) -> bool:
 func on_round_end(b: Battle, c: Combatant, skipped: bool = false) -> void:
 	var p := BossHooks.params(c)
 	var r := int(c.memo["round"])
-	for e: Variant in JsonUtil.get_array(p, "every"):
-		var ed: Dictionary = e if e is Dictionary else {}
+	var every := JsonUtil.get_array(p, "every")
+	for i in every.size():
+		var ed: Dictionary = every[i] if every[i] is Dictionary else {}
 		var n := JsonUtil.get_int(ed, "rounds", 0)
-		if n > 0 and r % n == 0 and not skipped:
+		var used := int(c.memo.get("every_%d" % i, 0))
+		if n > 0 and r % n == 0 and not skipped and (not ed.has("times") or used < JsonUtil.get_int(ed, "times")):
+			c.memo["every_%d" % i] = used + 1
 			BossHooks.use_skill(b, c, JsonUtil.get_str(ed, "skill"))
 	var mumbles := JsonUtil.get_array(p, "mumbles")
 	if not mumbles.is_empty():

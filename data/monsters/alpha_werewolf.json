@@ -1,0 +1,103 @@
+{
+  "id": "alpha_werewolf",
+  "name_ko": "우두머리 웨어울프",
+  "grade": 6,
+  "rank": "midboss",
+  "upper_variant": true,
+  "lineage": "werewolf",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_wind_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "humanoid",
+  "size": 1.7,
+  "color": "#3a3430",
+  "immunities": [],
+  "status_immune": [
+    "fear"
+  ],
+  "weaknesses": {
+    "holy": 1.4
+  },
+  "stats": {
+    "str": 46,
+    "agi": 48,
+    "p_res": 52,
+    "m_res": 30,
+    "int": 12
+  },
+  "resources": {
+    "hp": 3400,
+    "soul": 120
+  },
+  "natural_weapon": {
+    "attack": 34,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 3.0
+    },
+    "alert_sfx": "wolf_growl",
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 6,
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "wolf_bite",
+    "werewolf_rend",
+    "werewolf_change",
+    "alpha_howl"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "werewolf_change"
+    },
+    {
+      "if": "hp_below",
+      "value": 0.5,
+      "use": "alpha_howl"
+    },
+    {
+      "if": "chance",
+      "value": 0.5,
+      "use": "werewolf_rend"
+    },
+    {
+      "if": "always",
+      "use": "wolf_bite"
+    }
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.alpha_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 2장 뼈 둥지 중간 보스(expansion_f1_3_B §2 9번): 웨어울프 상위 변이 — 생명력 절반 아래에서 변신(트롤의 광분) + 둥지 구멍 늑대 둘을 부른다. 수치는 목 없는 기수 곁 임시값"
+}

@@ -49,7 +49,7 @@ const MAP := {
 	"heal_block": ["broken_heart", "#9a2a3a"], "telegraphed": ["exclamation", "#e8c040"], "winding_up": ["burst", "#d84a30"], "grave_night": ["ghost", "#8a94b0"], "roused": ["fist", "#c87a40"], "sandblown": ["cloud", "#c8a870"], "march_order": ["sword", "#d8a040"],
 	"daze": ["spiral", "#a0a0c0"], "shield_arm": ["shield", "#a08060"], "vitality_drain": ["fang", "#c02040"],
 	"golem_burned": ["flame", "#a04020"], "golem_skeleton": ["bone", "#b8b0a0"], "blater_grudge": ["broken_heart", "#5a2a6a"],
-	"blater_grudge_weak": ["broken_heart", "#8a6a8a"], "guardian_frenzy": ["burst", "#e06020"], "knight_vigil": ["flame", "#a8d0f0"], "bone_brace": ["bone", "#d8ccaa"], "vamp_blood_feast": ["fang", "#8a1010"],
+	"blater_grudge_weak": ["broken_heart", "#8a6a8a"], "guardian_frenzy": ["burst", "#e06020"], "moon_frenzy": ["fang", "#d8dce8"], "knight_vigil": ["flame", "#a8d0f0"], "bone_brace": ["bone", "#d8ccaa"], "vamp_blood_feast": ["fang", "#8a1010"],
 	"vamp_blood_veil": ["shield", "#8a1a2a"], "regen_stopped": ["broken_heart", "#7a7a7a"], "tear_sealed": ["lock", "#a8d8f0"],
 	"f3_disoriented": ["spiral", "#9a80c0"], "f3_hallucination": ["eye_cross", "#b080e0"], "f3_auditory": ["waves", "#8a70b0"], "f3_pain": ["broken_heart", "#c04060"], "f3_witch_eye": ["eye", "#b060ff"], "orc_fervor": ["shield", "#c05030"], "charm": ["broken_heart", "#e070b0"],
 	"haste": ["boot_wing", "#d0e0b0"], "mired": ["weight", "#6a5638"], "heat": ["flame", "#e8a040"], "parched": ["drop", "#b08a50"], "refreshed": ["drop", "#8ab8e0"], "soaked": ["waves", "#6a9ac0"], "high_ground": ["arrow_up", "#c8c0a0"], "ambush_hunter": ["dagger", "#d8d8d8"], "ambush_hunter_weak": ["dagger", "#9a9a9a"],

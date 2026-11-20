@@ -123,7 +123,7 @@ static func _action(v: ValidatorBase, w: String, a: Dictionary) -> void:
 	if a.has("learn_stats"):
 		v.ref(w + ".learn_stats", "monsters", a["learn_stats"])
 	var al := JsonUtil.get_dict(a, "alert")
-	if not al.is_empty():
+	if not al.is_empty() and not al.has("families"):
 		v.ref(w + ".alert", "monsters", al.get("monster"))
 	if a.has("sound") and not sound_known(v.db, JsonUtil.get_str(a, "sound")):
 		v.err(w + ".sound", "'%s'가 data/audio.json sfx · alias · cues에 없다" % a.get("sound"))

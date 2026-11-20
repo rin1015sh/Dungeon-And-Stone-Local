@@ -1,0 +1,17 @@
+{
+  "id": "silver_mane_pelt",
+  "name_ko": "은빛 갈기 가죽",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 50000,
+  "icon": "pouch",
+  "color": "#c8ccd4",
+  "rarity": "numbers",
+  "flavor_ko": "바람을 맞으면 갈기 한 올 한 올이 따로 선다. 아무리 털어도 굴의 냄새가 빠지지 않는다.",
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 3장 히든 피스 — 늑대왕을 쓰러뜨린 뒤 굴 안쪽"
+}

@@ -54,9 +54,9 @@
 - ● 위층 포탈 portals — 1개
 - ○ 계층군주 lord(+패턴)
 - ● 필드 몬스터 — 37종 · 등급 [5, 6, 7, 8] (목표 8)
-- ● 몬스터 그림 assets/monsters — 42장
+- ● 몬스터 그림 assets/monsters — 44장
 - ● 정수 data/essences — 41종
-- ● 균열 data/rifts — 가라앉은 묘역 3챕터
+- ● 균열 data/rifts — 가라앉은 묘역 3챕터 / 울부짖는 바람굴 3챕터
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society
 
 ## 3층 (필드 등급 7 · 파티 5)

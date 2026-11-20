@@ -15,7 +15,7 @@ static func schedule(c: Combatant, e: Dictionary, b: Battle = null) -> void:
 	var q: Array = c.memo.get("delayed", [])
 	q.append({"left": int(e.get("rounds", 1)), "hits": int(e.get("hits", 1)), "effects": e.get("effects", []), "marked": e.get("marked"),
 		"guarded_mult": float(e.get("guarded_mult", 1.0)), "fire": str(e.get("fire", "combat.delayed_fire")),
-		"interruptible": bool(e.get("interruptible", false))})
+		"interruptible": bool(e.get("interruptible", false)), "self": bool(e.get("self", false))})
 	c.memo["delayed"] = q
 	c.actor.statuses.apply(WINDUP)
 	if b != null:
@@ -48,7 +48,7 @@ static func tick(b: Battle, c: Combatant, stunned: bool = false) -> void:
 		if mk != null and not _marked_elsewhere(b, mk.actor, item):
 			mk.actor.statuses.remove("telegraphed")
 		for i in int(item["hits"]):
-			var t := mk if mk != null and mk.is_active() else pick_target(b, c)
+			var t := c if bool(item.get("self", false)) else mk if mk != null and mk.is_active() else pick_target(b, c)
 			if t != null:
 				var fx: Array = item["effects"]
 				if t.actor.statuses.has("guarding") and float(item.get("guarded_mult", 1.0)) < 1.0:

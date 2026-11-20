@@ -1,0 +1,115 @@
+{
+  "id": "wolf_king",
+  "name_ko": "늑대왕",
+  "grade": 6,
+  "rank": "guardian",
+  "status_immune": [
+    "fear",
+    "poison"
+  ],
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_wind_den"
+  ],
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "shape": "beast",
+  "size": 1.6,
+  "color": "#b8bcc4",
+  "immunities": [],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 46,
+    "agi": 58,
+    "p_res": 50,
+    "m_res": 34,
+    "int": 20
+  },
+  "resources": {
+    "hp": 5400,
+    "soul": 150
+  },
+  "natural_weapon": {
+    "attack": 36,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front",
+    "ignores_stealth": true
+  },
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "wolf_king_mark",
+    "wolf_king_maul",
+    "wolf_bite",
+    "wolf_king_moon"
+  ],
+  "passives": [],
+  "magic_stone_grade": 6,
+  "ai": [
+    {
+      "if": "phase",
+      "value": [
+        "p2"
+      ],
+      "use": "wolf_king_moon"
+    },
+    {
+      "if": "always",
+      "use": "wolf_king_mark",
+      "target": "without_status",
+      "target_status": "marked"
+    },
+    {
+      "if": "foe_status",
+      "status": "marked",
+      "use": "wolf_king_maul",
+      "target": "with_status",
+      "target_status": "marked"
+    },
+    {
+      "if": "always",
+      "use": "wolf_bite",
+      "target": "with_status",
+      "target_status": "marked"
+    }
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.wolf_king_intro",
+    "every": [
+      {
+        "rounds": 3,
+        "skill": "wolf_king_howl",
+        "times": 3
+      }
+    ],
+    "extra_status": "moon_frenzy"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.wolf_king_p2"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 수호자(expansion_f1_3_B §2 10~11번): 사냥감 표식(3차례마다 하나 — 표식 대상을 목덜미 물기 ×2.0), 3바퀴마다 부르는 울음(칼날늑대 둘, 전투당 셋 번 = 여섯까지), 50% 아래 달을 향한 고개(큰 몸짓 — 끊지 못하면 3차례 두 번 행동). 수치는 잠들지 못한 기사 곁 임시값(빠르고 덜 단단하다). 정수 없음(2차)"
+}

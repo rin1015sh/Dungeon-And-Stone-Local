@@ -1,0 +1,17 @@
+{
+  "id": "alpha_fang_necklace",
+  "name_ko": "우두머리의 송곳니",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 40000,
+  "icon": "amulet",
+  "color": "#e0d4b8",
+  "rarity": "numbers",
+  "flavor_ko": "힘줄로 꿴 송곳니 일곱. 가장 큰 것만 끝이 부러져 있다.",
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 2장 히든 피스 — 뼈피리를 불어 둥지 뒤 새끼들을 흩으면"
+}

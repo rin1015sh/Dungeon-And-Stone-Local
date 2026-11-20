@@ -1,0 +1,33 @@
+{
+  "id": "wind_gap",
+  "name_ko": "막힌 바람 틈",
+  "type": "feature",
+  "tile": "f2d_cairn",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.wind_gap"
+    },
+    {
+      "id": "clear",
+      "name_ko": "틈을 뚫는다",
+      "limit": "once",
+      "hours": 1.0,
+      "line": "field.wind_gap_clear",
+      "goal": "wind_den",
+      "alert": {
+        "families": ["beast"],
+        "nearest": true,
+        "radius": 45.0,
+        "hours": 0.5
+      },
+      "clear": true,
+      "fx": "burst",
+      "sound": "wind_rush"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 여는 과정(expansion_f1_3_B §2 · RiftGates): 짐승의 소굴 갈림길 셋의 바른 갈래 안쪽 끝에 하나씩(RouteForks right_feature). 셋을 다 뚫으면 깊은 굴 쪽에 균열 포탈. 뚫을 때 가장 가까운 짐승 무리 하나가 냄새를 맡고 30분 쫓아온다. 임시값"
+}

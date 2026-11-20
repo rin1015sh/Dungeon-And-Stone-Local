@@ -1,0 +1,22 @@
+{
+  "id": "alpha_howl",
+  "name_ko": "우두머리의 울음",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "blood_blade_wolf"
+    },
+    {
+      "type": "summon",
+      "monster": "blade_wolf"
+    }
+  ],
+  "unique": true,
+  "uses_per_battle": 1,
+  "source": "placeholder",
+  "notes": "우두머리 웨어울프(바람굴 2장 중간 보스): 생명력 절반 아래에서 한 번 둥지 구멍의 늑대 둘을 부른다. 고유"
+}

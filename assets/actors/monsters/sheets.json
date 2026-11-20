@@ -36,10 +36,10 @@
 	},
 	"bone_mason": {
 		"cell": [
-			46,
-			85
+			46.0,
+			85.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"bulkar": {
 		"cell": [
@@ -85,10 +85,10 @@
 	},
 	"coffin_bearer": {
 		"cell": [
-			54,
-			89
+			54.0,
+			89.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"copper_golem": {
 		"cell": [
@@ -456,10 +456,10 @@
 	},
 	"mire_shade": {
 		"cell": [
-			42,
-			86
+			42.0,
+			86.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"mole_queen": {
 		"cell": [
@@ -677,6 +677,13 @@
 			81.0
 		],
 		"foot": 4.0
+	},
+	"wolf_king": {
+		"cell": [
+			158,
+			114
+		],
+		"foot": 4
 	},
 	"woodman": {
 		"cell": [

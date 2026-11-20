@@ -134,9 +134,9 @@ func test_exp_budget_report() -> void:
 	var r := ExpBudget.report(db)
 	var floors: Dictionary = r["floors"]
 	assert_eq(int(floors[1]["actual"]), 109, "1층 = 처음 나오는 곳 기준(CP-6, 2026-11-19): 필드 4 + 드레드피어 15 + 균열 넷 90(변종 수호자 제외) — 2층 필드에도 나오는 1층 항목은 1층에서 센다")
-	assert_eq(int(floors[2]["actual"]), 102, "2층 네 길에서 처음 만나는 종(데쓰웜 — 변종 수호자 제외) + 가라앉은 묘역 18(수호자 5 · 목 없는 기수 5 · 관 짐꾼 3 · 뼈 장인 3 · 진흙 망령 2)")
+	assert_eq(int(floors[2]["actual"]), 111, "2층 네 길에서 처음 만나는 종(데쓰웜 — 변종 수호자 제외) + 가라앉은 묘역 18(수호자 5 · 목 없는 기수 5 · 관 짐꾼 3 · 뼈 장인 3 · 진흙 망령 2) + 울부짖는 바람굴 9(늑대왕 4 · 우두머리 웨어울프 5)")
 	assert_eq(int(r["lv5_need"]), 660)
 	assert_eq(int(r["lv5_total"]), 640, "1~4층 계획값(층마다 max(실제, 목표)) — 110 + 190 + 230 + 110")
 	assert_true(bool(r["ok"]), "640 / 660 = 97% — 93~99% 범위")
-	assert_eq(int(r["real_total"]), 279, "지금 게임에 있는 것만 — 109 + 102 + 68")
+	assert_eq(int(r["real_total"]), 288, "지금 게임에 있는 것만 — 109 + 111 + 68")
 	assert_true(str(r["markdown"]).contains("경험치 예산"))

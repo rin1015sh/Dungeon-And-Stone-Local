@@ -1,0 +1,26 @@
+{
+  "id": "wolf_king_maul",
+  "name_ko": "목덜미 물기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 2.0,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.5
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "늑대왕 가장 큰 한 방(×2.0) — 표식 대상에게만(AI target with_status marked). 고유"
+}

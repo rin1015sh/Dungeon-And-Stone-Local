@@ -1,0 +1,25 @@
+{
+  "id": "wolf_king_mark",
+  "name_ko": "사냥감 표식",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "slash"
+    },
+    {
+      "type": "apply_status",
+      "status": "marked"
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "늑대왕(expansion_f1_3_B §2 11번): 하나를 할퀴어 표식 — 늑대왕은 표식 대상을 물어뜯는다(wolf_king_maul). 덮기 · 방어로 받는다. 고유"
+}

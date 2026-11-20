@@ -1,0 +1,27 @@
+{
+  "id": "wolf_king_howl",
+  "name_ko": "부르는 울음",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "pick": [
+        "blade_wolf",
+        "blood_blade_wolf"
+      ]
+    },
+    {
+      "type": "summon",
+      "pick": [
+        "blade_wolf",
+        "giant_blade_wolf"
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "늑대왕 3바퀴마다(pattern every — times 3, 전투당 여섯까지) 칼날늑대 둘을 부른다. 고유"
+}

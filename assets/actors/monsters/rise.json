@@ -1,4 +1,11 @@
 {
+	"alpha_werewolf": {
+		"cell": [
+			134,
+			201
+		],
+		"frames": 5
+	},
 	"blater": {
 		"cell": [
 			120.0,
@@ -15,10 +22,10 @@
 	},
 	"dullahan_rider": {
 		"cell": [
-			108,
-			227
+			108.0,
+			227.0
 		],
-		"frames": 5
+		"frames": 5.0
 	},
 	"goblin_bomber": {
 		"cell": [

@@ -1236,7 +1236,11 @@
           }
         ],
         "right": "den_draft",
-        "wrong": "den_still"
+        "wrong": "den_still",
+        "right_feature": {
+          "event": "wind_gap",
+          "tile": "f2d_cairn"
+        }
       },
       {
         "block_tile": "f2d_scree",
@@ -1252,7 +1256,11 @@
           }
         ],
         "right": "den_quiet_wall",
-        "wrong": "den_burrowed"
+        "wrong": "den_burrowed",
+        "right_feature": {
+          "event": "wind_gap",
+          "tile": "f2d_cairn"
+        }
       },
       {
         "block_tile": "f2d_scree",
@@ -1268,7 +1276,11 @@
           }
         ],
         "right": "den_tracks_in",
-        "wrong": "den_tracks_out"
+        "wrong": "den_tracks_out",
+        "right_feature": {
+          "event": "wind_gap",
+          "tile": "f2d_cairn"
+        }
       }
     ],
     "guards": [
@@ -1864,5 +1876,24 @@
         ]
       }
     ]
-  }
+  },
+  "rift_gates": [
+    {
+      "_comment": "울부짖는 바람굴(RiftGates — expansion_f1_3_B §2): 갈림길 셋의 바른 갈래 안쪽 끝 막힌 바람 틈(wind_gap — RouteForks right_feature)을 다 뚫으면(goal wind_den × 3) 깊은 굴 아래 벽이 갈라져 균열 포탈. 7일 차까지. [창작] 임시값",
+      "rift": "rift_wind_den",
+      "flag": "wind_den",
+      "need": 3,
+      "until_day": 7,
+      "at": {
+        "mark": "deep_hub",
+        "at": [
+          0,
+          4
+        ]
+      },
+      "line": "field.rift_wind_den_open",
+      "sound": "wolf_howl",
+      "late_line": "field.rift_gate_late"
+    }
+  ]
 }

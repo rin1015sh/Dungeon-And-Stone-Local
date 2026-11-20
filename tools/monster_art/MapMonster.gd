@@ -37,7 +37,7 @@ static func spec_of(id: String) -> Dictionary:
 				"map": {"hunch": 0.38, "knee": 0.16, "head": 2.3, "legs": 0.72, "wide": 1.0, "bulk": 1.05, "stance": 0.07}}
 		"skull_rat":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
 			return {"kind": "beast", "size": 0.9, "spec": Specs.More.spec_of(id)}
-		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena", "blood_blade_wolf", "giant_blade_wolf":
+		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena", "blood_blade_wolf", "giant_blade_wolf", "wolf_king":
 			return {"kind": "beast", "spec": Specs.More.spec_of(id)}
 		"ghoul":
 			return {"kind": "crawler", "size": 1.0, "spec": {"height": 420, "color": C("#8a947c"), "blood": 0.5, "eyes": C("#e0d8a0"), "elbow_h": 0.32, "elbow_w": 0.2, "reach": 0.3}}
@@ -84,6 +84,7 @@ const BOSSES := {
 	"kambormir": {"size": 1.5, "spec": {"rest": "throne", "seat_c": Color("#3e3438")}, "map": {"head": 2.0}},
 	"tarunbas": {"spec": {"rest": "stand", "plant": true, "hair": "ragged", "hair_c": Color("#c8c8c0")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
 	"kirdui": {"spec": {"rest": "squat"}, "map": {"head": 1.6, "bulk": 1.2}},
+	"alpha_werewolf": {"spec": {"rest": "squat", "hair": "ragged", "hair_c": Color("#1e1a18")}, "map": {"head": 1.8, "bulk": 1.25}},  # 뼈 둥지 위에 웅크린 우두머리(바람굴)
 	"ildium": {"spec": {"rest": "stand"}, "map": {"head": 1.6, "bulk": 1.2}},
 	"corpse_golem": {"spec": {"rest": "floor", "legs_out": true}, "map": {"head": 1.6, "bulk": 1.2}},
 	"katumba": {"spec": {"rest": "seat", "free_hang": true, "seat_c": Color("#8a96a2"), "hair": "ragged", "hair_c": Color("#e0e6ea")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},

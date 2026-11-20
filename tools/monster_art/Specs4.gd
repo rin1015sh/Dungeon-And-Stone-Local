@@ -144,6 +144,14 @@ static func spec_of(id: String) -> Dictionary:
 					"weapon": "lance", "weapon_c": C("#6a6a74"), "belt": C("#1a1a1e")}}
 		"funeral_candle":  # 장례 촛불 — 작은 흰 촛농 덩이 위 푸른 불꽃
 			return {"kind": "slime", "height": 170, "color": C("#e8dcc0"), "inside": 0, "eyes": C("#b0e0ff"), "glow": 1.0, "fade": 0.3, "desat": 0.2}
+		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
+			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
+				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"alpha_werewolf":  # 우두머리 웨어울프 — 웨어울프보다 크고 검은 털, 뼈 장식 허리끈(바람굴 2장 중간 보스)
+			return {"height": 760, "width": 1.05, "skin": C("#3a3430"), "skin_kind": "fur", "shade": C("#16120f"), "eyes": C("#ff9020"), "glow": 1.0, "fur_len": 1.6, "blood": 0.4,
+				"pose": {"hunch": 0.45, "knee": 0.42, "arm_l": "claw", "arm_r": "claw", "sh": 0.17, "hip": 0.088, "neck": 0.45, "arms": 1.22, "weight": -0.4, "tilt": 0.05},
+				"body": {"build": "brute", "bulk": 1.25, "hands": "claw", "claws": 1.0, "feet": "claw"}, "head": {"type": "wolf", "mouth": "fangs", "size": 1.1},
+				"kit": {"belt": C("#d8ccaa"), "loin": C("#2a2420")}}
 		"canavaro_hound":  # 카나바로의 들개 — 마른 언데드 개 · 붉은 눈
 			return {"kind": "beast", "height": 440, "color": C("#4a4440"), "belly": C("#6a5a50"), "fur": 0.4, "tail": "thin", "bulk": 0.8, "legs": 1.05,
 				"eyes": C("#ff5030"), "glow": 0.8, "mouth": "snarl"}

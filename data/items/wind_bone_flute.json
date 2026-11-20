@@ -1,0 +1,17 @@
+{
+  "id": "wind_bone_flute",
+  "name_ko": "바람 뼈피리",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 30000,
+  "icon": "horn",
+  "color": "#d8ccaa",
+  "rarity": "numbers",
+  "flavor_ko": "늑대 넓적다리뼈에 구멍 셋을 뚫었다. 입을 대지 않아도 바람이 지나가면 낮게 운다.",
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 1장 히든 피스 — 바위 그늘 끝. 2장 둥지 뒤 굴을 여는 열쇠"
+}
