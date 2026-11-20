@@ -1,0 +1,17 @@
+{
+  "id": "coffin_open",
+  "name_ko": "관 열기",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "uses_per_battle": 1,
+  "effects": [
+    {
+      "type": "summon",
+      "monster": "ghoul_lord"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "관 짐꾼 — 같은 편이 둘 아래면(AI allies_at_least not) 관을 내던져 연다"
+}

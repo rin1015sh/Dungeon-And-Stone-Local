@@ -1,0 +1,32 @@
+{
+  "id": "dullahan_rider",
+  "name_ko": "목 없는 기수의 정수",
+  "grade": 6,
+  "source_monster": "dullahan_rider",
+  "family": "dullahan",
+  "rank": "midboss",
+  "passive": {
+    "id": "dullahan_rider_p",
+    "name_ko": "짓밟는 말발굽",
+    "implemented": true,
+    "hit_vs_status": {
+      "status": "mired",
+      "bonus": 10
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_cav_shield_wall"
+    }
+  ],
+  "stats": {
+    "p_res": 14,
+    "agi": 6
+  },
+  "resources": {
+    "hp": 30
+  },
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 중간 보스(ES 연계 — 진창에 빠진 적을 놓치지 않는다). 임시값"
+}

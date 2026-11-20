@@ -1,0 +1,84 @@
+{
+  "id": "bone_mason",
+  "name_ko": "뼈 장인",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "skeleton",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sunken_graveyard"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 0.95,
+  "color": "#c8bc9c",
+  "immunities": [],
+  "status_immune": [
+    "fear",
+    "bleeding"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "blunt": 1.25
+  },
+  "stats": {
+    "str": 18,
+    "agi": 26,
+    "p_res": 32,
+    "m_res": 30,
+    "int": 24
+  },
+  "resources": {
+    "hp": 150,
+    "soul": 50
+  },
+  "natural_weapon": {
+    "attack": 15,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.5
+    },
+    "alert_sfx": "undead_moan",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "magic_stone_grade": 7,
+  "essence_drops": [
+    {
+      "essence": "bone_mason",
+      "chance": 0.01
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "mason_bone_brace",
+    "mason_chisel"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "ally_hp_below",
+      "value": 0.75,
+      "use": "mason_bone_brace",
+      "target": "ally_lowest_hp"
+    },
+    {
+      "if": "always",
+      "use": "mason_chisel"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 2장(expansion_f1_3_C §4-1): 뒷줄에서 쓰러진 해골 뼈로 아군에게 방어막을 덧댄다 — 묘지기(일으킴)와 같이 나오면 누구 먼저가 바뀐다. 임시값"
+}

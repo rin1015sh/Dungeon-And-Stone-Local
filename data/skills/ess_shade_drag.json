@@ -1,0 +1,26 @@
+{
+  "id": "ess_shade_drag",
+  "name_ko": "끌어내리기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 1.35,
+      "damage_type": "dark"
+    },
+    {
+      "type": "apply_status",
+      "status": "mired",
+      "chance": 0.6,
+      "duration": 2
+    }
+  ],
+  "essence_of": "shade_drag",
+  "source": "placeholder"
+}

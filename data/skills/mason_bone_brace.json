@@ -1,0 +1,18 @@
+{
+  "id": "mason_bone_brace",
+  "name_ko": "뼈 덧대기",
+  "target": "ally_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "barrier",
+      "status": "bone_brace",
+      "amount": "{int} * 3"
+    }
+  ],
+  "source": "placeholder"
+}

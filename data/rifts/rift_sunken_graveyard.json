@@ -193,15 +193,17 @@
         {
           "kind": "battle",
           "monsters": [
-            "skeleton",
-            "skeleton",
-            "skeleton_archer"
+            "coffin_bearer",
+            "coffin_bearer",
+            "coffin_bearer",
+            "coffin_bearer"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
-            "ghoul",
+            "mire_shade",
+            "mire_shade",
             "ghoul",
             "elder_ghoul"
           ]
@@ -211,8 +213,8 @@
           "count": 3,
           "packs": [
             [
-              "drowned",
-              "drowned"
+              "mire_shade",
+              "mire_shade"
             ],
             [
               "skeleton",
@@ -220,7 +222,8 @@
             ],
             [
               "ghoul",
-              "ghoul"
+              "ghoul",
+              "mire_shade"
             ]
           ]
         },
@@ -233,7 +236,7 @@
               "ghoul"
             ],
             [
-              "skeleton",
+              "mire_shade",
               "skeleton"
             ]
           ]
@@ -260,6 +263,41 @@
           "item": "bone_amulet",
           "count": 1
         }
+      ],
+      "hidden": [
+        {
+          "id": "squire_signet_1",
+          "item": "squire_signet",
+          "tile": "bf_grave",
+          "one_of": "sunken_graves",
+          "decoy": {
+            "status": "curse",
+            "message": "explore.hidden.sunken_grave_cursed"
+          },
+          "message": "explore.hidden.squire_signet"
+        },
+        {
+          "id": "squire_signet_2",
+          "item": "squire_signet",
+          "tile": "bf_grave",
+          "one_of": "sunken_graves",
+          "decoy": {
+            "status": "curse",
+            "message": "explore.hidden.sunken_grave_cursed"
+          },
+          "message": "explore.hidden.squire_signet"
+        },
+        {
+          "id": "squire_signet_3",
+          "item": "squire_signet",
+          "tile": "bf_grave",
+          "one_of": "sunken_graves",
+          "decoy": {
+            "status": "curse",
+            "message": "explore.hidden.sunken_grave_cursed"
+          },
+          "message": "explore.hidden.squire_signet"
+        }
       ]
     },
     {
@@ -274,7 +312,7 @@
           "kind": "battle",
           "monsters": [
             "skeleton_warrior",
-            "skeleton",
+            "bone_mason",
             "skeleton_mage"
           ]
         },
@@ -282,6 +320,7 @@
           "kind": "battle",
           "monsters": [
             "grave_keeper",
+            "bone_mason",
             "skeleton",
             "skeleton"
           ]
@@ -289,7 +328,7 @@
         {
           "kind": "battle",
           "monsters": [
-            "dullahan"
+            "dullahan_rider"
           ],
           "midboss": true
         },
@@ -298,11 +337,13 @@
           "count": 2,
           "packs": [
             [
-              "skeleton",
-              "skeleton_archer"
+              "coffin_bearer",
+              "coffin_bearer",
+              "coffin_bearer"
             ],
             [
-              "wraith"
+              "wraith",
+              "bone_mason"
             ]
           ]
         },
@@ -346,6 +387,18 @@
           "item": "magic_stone_8",
           "count": 1
         }
+      ],
+      "hidden": [
+        {
+          "id": "crypt_reliquary",
+          "item": "crypt_reliquary",
+          "tile": "bf_altar",
+          "needs": {
+            "item": "squire_signet"
+          },
+          "locked": "explore.hidden.reliquary_locked",
+          "message": "explore.hidden.crypt_reliquary"
+        }
       ]
     },
     {
@@ -360,6 +413,7 @@
           "kind": "battle",
           "monsters": [
             "wraith",
+            "bone_mason",
             "skeleton_warrior"
           ]
         },
@@ -384,9 +438,37 @@
           "item": "medium_potion",
           "count": 1
         }
+      ],
+      "hidden": [
+        {
+          "id": "knight_oath_scroll",
+          "item": "knight_oath_scroll",
+          "tile": "bf_bookcase",
+          "needs": {
+            "guardian": true
+          },
+          "locked": "explore.hidden.oath_locked",
+          "message": "explore.hidden.knight_oath_scroll"
+        }
       ]
     }
   ],
-  "hidden_pieces": [],
-  "notes": "2층 균열(expansion_f1_3_B §3) — 망자의 땅 비석에 종자의 시신을 묻으면 열린다(RiftGates, 자연 개방 없음 natural false). 잡몹은 망자의 땅 몬스터를 빌림 · 균열만의 몬스터(관 짐꾼 · 뼈 장인 · 진흙 망령) · 중간 보스 목 없는 기수 · 히든 피스 · 전용 타일은 다음 단계. 핏빛성채 타일을 빌린다. 임시값"
+  "hidden_pieces": [
+    {
+      "id": "squire_signet",
+      "name_ko": "기사단 문장 반지",
+      "chapter": "ch1"
+    },
+    {
+      "id": "crypt_reliquary",
+      "name_ko": "봉인된 성물함",
+      "chapter": "ch2"
+    },
+    {
+      "id": "knight_oath_scroll",
+      "name_ko": "기사의 맹세문",
+      "chapter": "ch3"
+    }
+  ],
+  "notes": "2층 균열(expansion_f1_3_B §3) — 망자의 땅 비석에 종자의 시신을 묻으면 열린다(RiftGates, natural false). 균열 몬스터 관 짐꾼 · 뼈 장인 · 진흙 망령 · 중간 보스 목 없는 기수(2차, 2026-11-20) · 히든 피스 셋(잠긴 묘비 셋 중 하나 → 반지로 성물함 → 수호자 뒤 맹세문). 핏빛성채 타일을 빌린다(전용 타일은 다음). 임시값"
 }

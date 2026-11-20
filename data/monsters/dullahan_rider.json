@@ -1,0 +1,114 @@
+{
+  "id": "dullahan_rider",
+  "name_ko": "목 없는 기수",
+  "grade": 6,
+  "rank": "midboss",
+  "upper_variant": true,
+  "lineage": "dullahan",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sunken_graveyard"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.4,
+  "color": "#2e2e36",
+  "immunities": [],
+  "status_immune": [
+    "fear",
+    "bleeding"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "lightning": 1.25
+  },
+  "stats": {
+    "str": 44,
+    "agi": 44,
+    "p_res": 80,
+    "m_res": 34,
+    "int": 22
+  },
+  "resources": {
+    "hp": 3600,
+    "soul": 120
+  },
+  "natural_weapon": {
+    "attack": 34,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 3.0
+    },
+    "alert_sfx": "boss_reveal",
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 6,
+  "essence_drops": [
+    {
+      "essence": "dullahan_rider",
+      "chance": 0.25
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "cav_charge",
+    "rider_trample",
+    "deadman_chop"
+  ],
+  "passives": [
+    {
+      "id": "dullahan_armor",
+      "name_ko": "목 없는 갑주",
+      "desc_ko": "빈 갑옷이 칼날을 받아 낸다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:slash",
+          "percent": -0.2
+        },
+        {
+          "target": "dmg_taken:pierce",
+          "percent": -0.2
+        }
+      ]
+    }
+  ],
+  "ai": [],
+  "ai_cycle": [
+    "rider_trample",
+    "cav_charge",
+    "deadman_chop"
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.rider_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.rider_dismount",
+      "self_statuses": [
+        "roused"
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 2장 중간 보스(expansion_f1_3_B §3 9번): 듀라한 상위 변이 — 말 짓밟기(앞 · 뒷줄 뒤섞기) · 돌격(큰 몸짓) · 물리내성 매우 높음. 생명력 절반에서 낙마해 흥분(민첩 +12%). 수치는 곡선 중간 보스(2층) 근처 임시값"
+}

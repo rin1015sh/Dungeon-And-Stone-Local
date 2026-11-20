@@ -1,0 +1,23 @@
+{
+  "id": "rider_trample",
+  "name_ko": "말발굽",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "blunt",
+      "accuracy": 80
+    },
+    {
+      "type": "shuffle_rows"
+    }
+  ],
+  "source": "placeholder"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "bone_mason",
+  "name_ko": "뼈 장인의 정수",
+  "grade": 7,
+  "source_monster": "bone_mason",
+  "family": "bone_mason",
+  "rank": "normal",
+  "passive": {
+    "id": "bone_mason_p",
+    "name_ko": "맞대기",
+    "implemented": true,
+    "counter_while": {
+      "status": "guarding",
+      "power": 0.5
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_mason_bone_brace"
+    }
+  ],
+  "stats": {
+    "int": 5,
+    "p_res": 4
+  },
+  "resources": {
+    "soul": 14,
+    "hp": 12
+  },
+  "source": "placeholder",
+  "notes": "가라앉은 묘역(ES 연계 — 방어 중 반격, 방어 반응 셋째). 액티브 방어막은 INHERENT. 임시값"
+}

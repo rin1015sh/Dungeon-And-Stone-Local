@@ -123,6 +123,25 @@ static func spec_of(id: String) -> Dictionary:
 				"body": {"build": "muscular", "hands": "fist"}, "head": {"type": "human", "helm": C("#33362e"), "horns": true, "horn_len": 0.45},
 				"kit": {"armor": C("#3c3f34"), "plates": ["chest", "shoulders", "legs"], "boots": C("#1e2018"), "cape": C("#1e2a3a"), "torn": 0.5,
 					"weapon": "greatsword", "weapon_c": C("#6a6e66")}}
+		"coffin_bearer":  # 관 짐꾼 — 검은 상복 두건을 쓴 굽은 해골, 어깨에 관 멜빵
+			return {"skin": C("#c8bea2"), "eyes": C("#c8d8ff"), "glow": 0.4, "pose": {"hunch": 0.35, "arm_l": "hang", "arm_r": "hang", "sh": 0.12, "weight": 0.3},
+				"body": {"build": "bones"}, "head": {"type": "skull", "mouth": "grin", "hood": C("#1e1c1a")},
+				"kit": {"robe": C("#24221e"), "torn": 0.6, "straps": C("#3a2e20"), "belt": C("#2a2016"), "weapon": "club", "weapon_c": C("#4a3a2a")}}
+		"bone_mason":  # 뼈 장인 — 등이 굽은 해골, 가죽 앞치마 · 끌
+			return {"skin": C("#d6cbaa"), "eyes": C("#d8e0ff"), "glow": 0.5, "pose": {"hunch": 0.5, "knee": 0.2, "arm_l": "claw", "arm_r": "rest", "sh": 0.11, "weight": -0.2},
+				"body": {"build": "bones", "hands": "claw"}, "head": {"type": "skull", "mouth": "grin"},
+				"kit": {"shirt": C("#5a4632"), "shirt_len": 0.8, "belt": C("#2a2016"), "weapon": "dagger", "weapon_c": C("#8a8070")}}
+		"mire_shade":  # 진흙 망령 — 검은 물에 녹아내리는 사람 꼴, 흐린 초록 눈
+			return {"skin": C("#5a6250"), "shade": C("#1e2418"), "eyes": C("#b0e0a0"), "glow": 0.9, "fade": 0.55, "desat": 0.3,
+				"pose": {"hunch": 0.3, "arm_l": "claw", "arm_r": "claw", "sh": 0.1, "weight": 0.1, "tilt": 0.08},
+				"body": {"build": "thin", "hands": "claw", "claws": 0.5}, "head": {"type": "gaunt", "mouth": "open"},
+				"kit": {"robe": C("#3a4234"), "torn": 1.0}}
+		"dullahan_rider":  # 목 없는 기수 — 듀라한보다 크고 긴 창 · 찢긴 군청 망토
+			return {"height": 680, "skin": C("#2a2a30"), "eyes": C("#80c8ff"), "glow": 1.0,
+				"pose": {"arm_l": "hang", "arm_r": "rest", "sh": 0.14, "weight": 0.5, "tilt": -0.05, "head": 0.25},
+				"body": {"build": "normal", "bulk": 1.3, "hands": "fist"}, "head": {"type": "skull", "mouth": "shut", "size": 0.35},
+				"kit": {"armor": C("#2e2e36"), "plates": ["chest", "shoulders", "legs"], "boots": C("#1a1a20"), "cape": C("#1e2638"), "torn": 0.4,
+					"weapon": "lance", "weapon_c": C("#6a6a74"), "belt": C("#1a1a1e")}}
 		"funeral_candle":  # 장례 촛불 — 작은 흰 촛농 덩이 위 푸른 불꽃
 			return {"kind": "slime", "height": 170, "color": C("#e8dcc0"), "inside": 0, "eyes": C("#b0e0ff"), "glow": 1.0, "fade": 0.3, "desat": 0.2}
 		"canavaro_hound":  # 카나바로의 들개 — 마른 언데드 개 · 붉은 눈

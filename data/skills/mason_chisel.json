@@ -1,0 +1,20 @@
+{
+  "id": "mason_chisel",
+  "name_ko": "뼈 끌",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.2,
+      "damage_type": "pierce",
+      "accuracy": 90
+    }
+  ],
+  "source": "placeholder"
+}

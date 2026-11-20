@@ -62,7 +62,7 @@ static func spec_of(id: String) -> Dictionary:
 ## 사람형 몬스터(전투 설계를 옮긴다)와 손볼 값(tweak — spec·map에 덮어쓴다).
 const FIGURES := {
 	"deadman": {}, "soldier_deadman": {}, "deadman_commander": {}, "skeleton_archer": {}, "skeleton_mage": {},
-	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
+	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "coffin_bearer": {}, "bone_mason": {}, "mire_shade": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
 	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
 	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
 	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "kobold": {}, "kobold_shield": {}, "kobold_slinger": {}, "stone_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "monolith_soldier": {}, "sandman": {}, "werewolf": {"spec": {"hair": "ragged", "hair_c": Color("#5a5450")}, "map": {"head": 1.8, "bulk": 1.15}}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},
@@ -79,7 +79,8 @@ const FIGURES := {
 ## 카툼바(설원의 군주) = 바위에 걸터앉음(몽둥이 안 든 팔은 늘어뜨림 — 사용자 2026-10-18) · 고블린 폭탄병 = 책상다리로 폭탄 만지작.
 const BOSSES := {
 	"blater": {"spec": {"rest": "kneel"}, "map": {"head": 1.8}},
-	"sleepless_knight": {"spec": {"rest": "kneel"}, "map": {"head": 1.8}},  # 제단 앞에 무릎 꿇은 기사(가라앉은 묘역)
+	"sleepless_knight": {"spec": {"rest": "kneel"}, "map": {"head": 1.8}},
+	"dullahan_rider": {"spec": {"rest": "stand"}, "map": {"head": 1.6, "bulk": 1.2}},  # 가라앉은 묘역 중간 보스  # 제단 앞에 무릎 꿇은 기사(가라앉은 묘역)
 	"kambormir": {"size": 1.5, "spec": {"rest": "throne", "seat_c": Color("#3e3438")}, "map": {"head": 2.0}},
 	"tarunbas": {"spec": {"rest": "stand", "plant": true, "hair": "ragged", "hair_c": Color("#c8c8c0")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
 	"kirdui": {"spec": {"rest": "squat"}, "map": {"head": 1.6, "bulk": 1.2}},

@@ -1,0 +1,17 @@
+{
+  "id": "crypt_reliquary",
+  "name_ko": "봉인된 성물함",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 60000,
+  "icon": "gem",
+  "color": "#b8a070",
+  "rarity": "numbers",
+  "flavor_ko": "기사단이 마지막까지 지킨 함이다. 흔들면 안에서 마른 꽃잎 소리가 난다.",
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 2장 히든 피스 — 기사단 문장 반지가 있어야 열린다"
+}

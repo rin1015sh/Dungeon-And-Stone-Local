@@ -1,0 +1,34 @@
+{
+  "id": "mire_shade",
+  "name_ko": "진흙 망령의 정수",
+  "grade": 8,
+  "source_monster": "mire_shade",
+  "family": "mire_shade",
+  "rank": "normal",
+  "passive": {
+    "id": "mire_shade_p",
+    "name_ko": "젖은 몸",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:physical",
+        "percent": -0.08
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_shade_drag"
+    }
+  ],
+  "stats": {
+    "agi": 3,
+    "int": 3
+  },
+  "resources": {
+    "hp": 8
+  },
+  "source": "placeholder",
+  "notes": "가라앉은 묘역(ES 연계 — 진창을 건다: 관 짐꾼 · 목 없는 기수 정수가 반응). 임시값"
+}

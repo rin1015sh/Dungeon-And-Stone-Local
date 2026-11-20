@@ -1,0 +1,17 @@
+{
+  "id": "knight_oath_scroll",
+  "name_ko": "기사의 맹세문",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 50000,
+  "icon": "book",
+  "color": "#8a7a5a",
+  "rarity": "numbers",
+  "flavor_ko": "진흙에 젖었다 마른 양피지. 마지막 줄의 서명만 피로 덧쓰여 있다.",
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 3장 히든 피스 — 수호자를 쓰러뜨린 뒤 제단에서"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "sleepless_knight",
+  "name_ko": "잠들지 못한 기사의 정수",
+  "grade": 6,
+  "source_monster": "sleepless_knight",
+  "family": "sleepless_knight",
+  "rank": "guardian",
+  "passive": {
+    "id": "sleepless_knight_p",
+    "name_ko": "끝나지 않은 장례",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "curse",
+      "mult": 1.2
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_blater_cursed_slash"
+    },
+    {
+      "color": "green",
+      "skill": "ess_blater_death_sentence"
+    }
+  ],
+  "stats": {
+    "str": 20,
+    "p_res": 16,
+    "resist_dark": 20
+  },
+  "resources": {
+    "hp": 34
+  },
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 수호자 정수(무지갯빛 — 블라터와 같은 데스나이트 정수판 스킬). 저주 반응 셋째(묘지기 · 원한령 다음). 임시값"
+}

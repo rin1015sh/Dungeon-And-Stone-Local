@@ -13,6 +13,13 @@
 		],
 		"frames": 5.0
 	},
+	"dullahan_rider": {
+		"cell": [
+			108,
+			227
+		],
+		"frames": 5
+	},
 	"goblin_bomber": {
 		"cell": [
 			114.0,
@@ -50,10 +57,10 @@
 	},
 	"sleepless_knight": {
 		"cell": [
-			120,
-			219
+			120.0,
+			219.0
 		],
-		"frames": 5
+		"frames": 5.0
 	},
 	"tarunbas": {
 		"cell": [

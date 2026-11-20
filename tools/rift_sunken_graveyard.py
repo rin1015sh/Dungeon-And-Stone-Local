@@ -46,7 +46,7 @@ CH1 = r"""
 """
 CH1_MARKS = {"entry": [3, 12], "exit": [71, 12], "slots": [[30, 7], [52, 17]],
              "posts": [[18, 3], [46, 13], [62, 20]], "loot": [[5, 4], [33, 10], [24, 19], [60, 4], [66, 16]],
-             "hidden": [], "hazards": []}
+             "hidden": [[10, 6], [40, 9], [60, 19]], "hazards": []}
 
 # 2장 무너진 납골당 — 폭 2칸 통로가 굽이지고, 곁방(긴 의자 · 촛대 · 관)이 붙는다. 끝 넓은 방에 중간 보스
 CH2 = r"""
@@ -75,7 +75,7 @@ CH2 = r"""
 """
 CH2_MARKS = {"entry": [2, 3], "exit": [79, 7], "slots": [[20, 9], [44, 18], [62, 13]],
              "posts": [[8, 13], [36, 13]], "loot": [[3, 5], [40, 3], [7, 14], [33, 12], [75, 5], [60, 18]],
-             "hidden": [], "hazards": []}
+             "hidden": [[53, 13]], "hazards": []}
 
 # 3장 기사의 무덤 — 대기실(꺼진 촛대) → 긴 의자가 늘어선 큰 영묘, 안쪽 제단 앞에 기사
 CH3 = r"""
@@ -104,7 +104,7 @@ CH3 = r"""
 ########################################################
 """
 CH3_MARKS = {"entry": [28, 21], "exit": [28, 4], "slots": [[22, 11], [28, 6]],
-             "posts": [], "loot": [[24, 16], [32, 18], [22, 5], [34, 9]], "hidden": [], "hazards": []}
+             "posts": [], "loot": [[24, 16], [32, 18], [22, 5], [34, 9]], "hidden": [[33, 4]], "hazards": []}
 
 CHAPTERS = [("ch1", CH1, CH1_MARKS), ("ch2", CH2, CH2_MARKS), ("ch3", CH3, CH3_MARKS)]
 
@@ -169,7 +169,9 @@ def check(cid, rows, marks):
     if tuple(marks["exit"]) not in seen:
         raise SystemExit("%s 출구 %s가 입구에서 닿지 않는다" % (cid, marks["exit"]))
     taken = set()
-    for k in ["slots", "posts", "loot"]:
+    taken.add(tuple(marks["entry"]))
+    taken.add(tuple(marks["exit"]))
+    for k in ["slots", "posts", "loot", "hidden"]:
         for i, p in enumerate(marks[k]):
             if tuple(p) in seen and tuple(p) not in taken:
                 taken.add(tuple(p))

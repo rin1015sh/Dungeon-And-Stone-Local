@@ -1,0 +1,25 @@
+{
+  "id": "ess_coffin_shove",
+  "name_ko": "관 밀치기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "blunt",
+      "accuracy": 85
+    },
+    {
+      "type": "push_back",
+      "amount": 25
+    }
+  ],
+  "essence_of": "coffin_shove",
+  "source": "placeholder"
+}

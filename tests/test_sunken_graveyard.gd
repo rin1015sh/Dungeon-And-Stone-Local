@@ -98,3 +98,24 @@ func test_guardian_candles_harden_the_knight() -> void:
 	var def := (knight.actor as Monster).def
 	assert_eq(Progression.first_kill_exp(db, def), 5, "6등급 + 상위 변이 = 5")
 	assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", "funeral_candle")), 0, "촛불은 토큰 — 경험치 없음")
+
+
+## 2차(2026-11-20): 균열 몬스터 셋 · 목 없는 기수 · 히든 피스 셋(잠긴 묘비 셋 중 하나 → 반지로 성물함 → 수호자 뒤 맹세문).
+func test_second_pass_monsters_and_hidden_pieces() -> void:
+	var exp := {"coffin_bearer": 3, "bone_mason": 3, "mire_shade": 2, "dullahan_rider": 5}
+	for id: String in exp:
+		assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", id)), int(exp[id]), "%s 첫 처치" % id)
+		assert_true(db.has_entry("essences", id), "%s 정수" % id)
+	assert_true(db.has_entry("essences", "sleepless_knight"), "수호자 정수")
+	var s := _session(4, false)
+	var stone := _feature(s, "grave_stone")
+	s.player.inventory.add("wrapped_corpse", 1)
+	FieldFeatureAct.run(s, stone, _action(stone, "bury"))
+	var cs := s.rifts.enter(s, _rift_portals(s)[0])
+	var run := cs.rift_run
+	assert_eq(run.hidden.at.size(), 3, "1장 잠긴 묘비 셋(그중 하나가 진짜)")
+	var cs2 := run.build_chapter(1)
+	assert_eq(run.hidden.at.size(), 1, "2장 성물함")
+	var def: Dictionary = run.hidden.at.values()[0]
+	assert_eq(JsonUtil.get_str(JsonUtil.get_dict(def, "needs"), "item"), "squire_signet", "반지가 있어야 열린다")
+	assert_true(cs2.map.width * cs2.map.height >= 2000)

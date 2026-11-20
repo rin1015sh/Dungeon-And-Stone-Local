@@ -50,7 +50,12 @@
     "reveal_radius_m": 0,
     "row": "front"
   },
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "sleepless_knight",
+      "chance": 0.33
+    }
+  ],
   "drops": [],
   "skills": [
     "blater_cursed_slash",

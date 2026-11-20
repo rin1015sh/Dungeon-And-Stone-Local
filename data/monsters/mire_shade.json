@@ -1,0 +1,91 @@
+{
+  "id": "mire_shade",
+  "name_ko": "진흙 망령",
+  "grade": 8,
+  "rank": "normal",
+  "lineage": "wraith",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sunken_graveyard"
+  ],
+  "type": "spirit",
+  "family": [
+    "wraith",
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 0.95,
+  "color": "#4a5446",
+  "immunities": [],
+  "status_immune": [
+    "fear",
+    "bleeding",
+    "poison"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 9,
+    "agi": 16,
+    "p_res": 14,
+    "m_res": 10,
+    "int": 12
+  },
+  "resources": {
+    "hp": 50,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 8,
+    "damage_type": "dark"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.2
+    },
+    "alert_sfx": "undead_moan",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 8,
+  "essence_drops": [
+    {
+      "essence": "mire_shade",
+      "chance": 0.01
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "shade_drag"
+  ],
+  "passives": [
+    {
+      "id": "mire_shade_body",
+      "name_ko": "진흙 몸",
+      "desc_ko": "베고 찌르는 것이 진흙처럼 빠져나간다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:physical",
+          "percent": -0.4
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "shade_drag"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 1장(expansion_f1_3_C §4-1): 검은 물가에서 일어나 발을 끌어내린다(진창 2차례). 물리 −40%. 임시값"
+}

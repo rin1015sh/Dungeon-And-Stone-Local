@@ -1,0 +1,17 @@
+{
+  "id": "squire_signet",
+  "name_ko": "기사단 문장 반지",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 40000,
+  "icon": "ring",
+  "color": "#7a8aa0",
+  "rarity": "numbers",
+  "flavor_ko": "엎드린 사자 문장이 닳아 거의 남지 않았다. 반지 안쪽에 이름 대신 날짜 하나가 새겨져 있다.",
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 1장 히든 피스 — 잠긴 묘비 셋 중 하나(one_of). 2장 성물함을 여는 열쇠"
+}

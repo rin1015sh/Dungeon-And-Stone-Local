@@ -1,0 +1,86 @@
+{
+  "id": "coffin_bearer",
+  "name_ko": "관 짐꾼",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "skeleton",
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sunken_graveyard"
+  ],
+  "type": "body",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#4a4436",
+  "immunities": [],
+  "status_immune": [
+    "fear",
+    "bleeding"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "blunt": 1.25
+  },
+  "stats": {
+    "str": 24,
+    "agi": 22,
+    "p_res": 36,
+    "m_res": 26,
+    "int": 10
+  },
+  "resources": {
+    "hp": 170,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 18,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.5
+    },
+    "alert_sfx": "undead_moan",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "magic_stone_grade": 7,
+  "essence_drops": [
+    {
+      "essence": "coffin_bearer",
+      "chance": 0.01
+    }
+  ],
+  "drops": [],
+  "skills": [
+    "coffin_shove",
+    "deadman_chop",
+    "coffin_open"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "allies_at_least",
+      "use": "coffin_open",
+      "value": 2,
+      "not": true
+    },
+    {
+      "if": "always",
+      "use": "coffin_shove",
+      "target": "lowest_hp"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "가라앉은 묘역 1 · 2장(expansion_f1_3_C §4-1): 넷이 관을 지고 다닌다. 같은 편이 둘 아래로 줄면 관을 내던져 열어 구울로드를 꺼낸다(전투당 한 번) — 너무 빨리 잡으면 더 나쁜 것이 나온다. 둔기 약점. 임시값"
+}

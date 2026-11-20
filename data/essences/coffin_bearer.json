@@ -1,0 +1,32 @@
+{
+  "id": "coffin_bearer",
+  "name_ko": "관 짐꾼의 정수",
+  "grade": 7,
+  "source_monster": "coffin_bearer",
+  "family": "coffin_bearer",
+  "rank": "normal",
+  "passive": {
+    "id": "coffin_bearer_p",
+    "name_ko": "무거운 짐",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "mired",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_coffin_shove"
+    }
+  ],
+  "stats": {
+    "str": 5,
+    "p_res": 5
+  },
+  "resources": {
+    "hp": 20
+  },
+  "source": "placeholder",
+  "notes": "가라앉은 묘역(ES 연계 — 진창 mired에 반응: 진흙 망령 정수 · 진창 지형이 건다). 임시값"
+}

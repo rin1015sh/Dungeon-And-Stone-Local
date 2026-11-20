@@ -1185,6 +1185,16 @@
     "notes": "블라터 정수판 오오라"
   },
   {
+    "id": "bone_brace",
+    "name_ko": "뼈 덧대기",
+    "kind": "buff",
+    "desc_ko": "덧댄 뼈가 피해를 먼저 받아 낸다.",
+    "duration": {"amount": 3, "unit": "turn"},
+    "barrier": true,
+    "battle_only": true,
+    "source": "placeholder"
+  },
+  {
     "id": "knight_vigil",
     "name_ko": "장례의 불",
     "kind": "buff",

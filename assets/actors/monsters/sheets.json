@@ -34,6 +34,13 @@
 		],
 		"foot": 4.0
 	},
+	"bone_mason": {
+		"cell": [
+			46,
+			85
+		],
+		"foot": 4
+	},
 	"bulkar": {
 		"cell": [
 			124.0,
@@ -50,10 +57,10 @@
 	},
 	"canavaro": {
 		"cell": [
-			48,
-			90
+			48.0,
+			90.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"canyon_bat": {
 		"cell": [
@@ -75,6 +82,13 @@
 			79.0
 		],
 		"foot": 4.0
+	},
+	"coffin_bearer": {
+		"cell": [
+			54,
+			89
+		],
+		"foot": 4
 	},
 	"copper_golem": {
 		"cell": [
@@ -134,10 +148,10 @@
 	},
 	"dirouter": {
 		"cell": [
-			44,
-			89
+			44.0,
+			89.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"dried_pilgrim": {
 		"cell": [
@@ -155,10 +169,10 @@
 	},
 	"dryad": {
 		"cell": [
-			44,
-			92
+			44.0,
+			92.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"dullahan": {
 		"cell": [
@@ -183,10 +197,10 @@
 	},
 	"fairy": {
 		"cell": [
-			106,
-			102
+			106.0,
+			102.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"forest_wasp": {
 		"cell": [
@@ -197,10 +211,10 @@
 	},
 	"frogman": {
 		"cell": [
-			40,
-			71
+			40.0,
+			71.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"frost_wolf": {
 		"cell": [
@@ -330,10 +344,10 @@
 	},
 	"half_troll": {
 		"cell": [
-			84,
-			128
+			84.0,
+			128.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"hobgoblin": {
 		"cell": [
@@ -351,17 +365,17 @@
 	},
 	"homunculus": {
 		"cell": [
-			42,
-			81
+			42.0,
+			81.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"iantro": {
 		"cell": [
-			66,
-			100
+			66.0,
+			100.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"ice_golem": {
 		"cell": [
@@ -393,10 +407,10 @@
 	},
 	"iron_falcon": {
 		"cell": [
-			70,
-			78
+			70.0,
+			78.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"iron_lizardman": {
 		"cell": [
@@ -428,10 +442,10 @@
 	},
 	"lizardman": {
 		"cell": [
-			62,
-			93
+			62.0,
+			93.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"mineral_slime": {
 		"cell": [
@@ -439,6 +453,13 @@
 			55.0
 		],
 		"foot": 4.0
+	},
+	"mire_shade": {
+		"cell": [
+			42,
+			86
+		],
+		"foot": 4
 	},
 	"mole_queen": {
 		"cell": [
@@ -470,38 +491,38 @@
 	},
 	"mutant_spirit": {
 		"cell": [
-			56,
-			56
+			56.0,
+			56.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"nameless_statue": {
 		"cell": [
-			40,
-			69
+			40.0,
+			69.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"orc_archer": {
 		"cell": [
-			58,
-			100
+			58.0,
+			100.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"orc_shaman": {
 		"cell": [
-			58,
-			100
+			58.0,
+			100.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"orc_warrior": {
 		"cell": [
-			58,
-			104
+			58.0,
+			104.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"owlbear": {
 		"cell": [
@@ -582,10 +603,10 @@
 	},
 	"snetree": {
 		"cell": [
-			112,
-			127
+			112.0,
+			127.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"soldier_deadman": {
 		"cell": [
@@ -610,10 +631,10 @@
 	},
 	"steel_hill_guard": {
 		"cell": [
-			66,
-			123
+			66.0,
+			123.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"stone_golem": {
 		"cell": [
@@ -645,24 +666,24 @@
 	},
 	"witch_lamp": {
 		"cell": [
-			60,
-			38
+			60.0,
+			38.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"witch_wraith": {
 		"cell": [
-			40,
-			81
+			40.0,
+			81.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"woodman": {
 		"cell": [
-			48,
-			91
+			48.0,
+			91.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"wormstone": {
 		"cell": [
