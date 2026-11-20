@@ -29,6 +29,7 @@ const BY_ID := {
 	"tomb_seal_charm": "tag", "tomb_lamp_oil": "vial", "tomb_silver_ring": "ring", "tomb_mask_shard": "tablet",
 	"dog_eared_book": "book", "ink_pot": "vial", "stale_crust": "bread", "flat_ale": "flask", "incense_stick": "incense", "holy_drops": "vial",
 	"empty_bottle": "flask", "wrist_wrap": "bandage",  # 도시 건물 잡템(CT74)
+	"sundial_gnomon": "shard", "undying_ember": "orb",  # 꺼진 태양의 신전 히든 피스
 }
 const BY_ICON := {"potion": "flask", "stone": "crystal", "gem": "gem", "bomb": "pot_bomb", "food": "bundle", "bread": "bread",
 	"torch": "torch", "lantern": "lantern", "book": "book", "horn": "horn", "ring": "ring", "amulet": "amulet", "pouch": "bundle"}

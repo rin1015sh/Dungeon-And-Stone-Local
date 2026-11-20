@@ -1,0 +1,26 @@
+{
+  "id": "colossus_sand_spray",
+  "name_ko": "모래 뿌리기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.8,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "거상: 모래를 끼얹어 실명"
+}

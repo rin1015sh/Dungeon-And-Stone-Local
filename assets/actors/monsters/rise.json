@@ -1,10 +1,17 @@
 {
 	"alpha_werewolf": {
 		"cell": [
-			134,
-			201
+			134.0,
+			201.0
 		],
-		"frames": 5
+		"frames": 5.0
+	},
+	"ancient_stone_giant": {
+		"cell": [
+			166.0,
+			209.0
+		],
+		"frames": 5.0
 	},
 	"blater": {
 		"cell": [
@@ -61,6 +68,13 @@
 			301.0
 		],
 		"frames": 5.0
+	},
+	"sand_colossus": {
+		"cell": [
+			166,
+			208
+		],
+		"frames": 5
 	},
 	"sleepless_knight": {
 		"cell": [

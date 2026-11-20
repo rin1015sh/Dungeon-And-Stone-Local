@@ -147,6 +147,14 @@ static func spec_of(id: String) -> Dictionary:
 		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
 			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
 				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"sand_colossus":  # 모래 왕의 거상 — 사암 거구, 가슴에 박힌 화로가 붉게 빛난다(꺼진 태양의 신전 수호자)
+			return {"height": 760, "width": 1.12, "skin": C("#b89a6a"), "skin_kind": "stone", "shade": C("#4a3a26"), "mottle": C("#8a6a40"), "mottle_amt": 0.45, "eyes": C("#ffb040"), "glow": 1.0,
+				"pose": {"knee": 0.18, "arm_l": "hang", "arm_r": "hang", "sh": 0.18, "hip": 0.09, "neck": 0.25, "arms": 1.2, "weight": 0.3},
+				"body": {"build": "brute", "bulk": 1.2, "hands": "fist", "feet": "bare"}, "head": {"type": "block", "size": 1.0, "crown": C("#c89a40")}, "extras": {"lumps": 8, "crystals": C("#ff7020")}}
+		"ancient_stone_giant":  # 오래된 돌 거인 — 스톤 골렘보다 크고 모래에 깎인 몸
+			return {"height": 740, "width": 1.1, "skin": C("#7a7266"), "skin_kind": "stone", "shade": C("#302c26"), "mottle": C("#a08a60"), "mottle_amt": 0.5, "eyes": C("#f0c070"), "glow": 0.9,
+				"pose": {"knee": 0.22, "arm_l": "hang", "arm_r": "hang", "sh": 0.18, "hip": 0.088, "neck": 0.22, "arms": 1.2, "weight": 0.2},
+				"body": {"build": "brute", "bulk": 1.25, "hands": "fist", "feet": "bare"}, "head": {"type": "block", "size": 1.05}, "extras": {"lumps": 14}}
 		"gale_wolf":  # 질풍 늑대 — 털이 한쪽으로 누운 마른 회색 늑대(바람굴)
 			return {"kind": "beast", "height": 560, "color": C("#8a8a8e"), "belly": C("#b8b6b0"), "fur": 0.95, "bulk": 0.85, "legs": 1.1, "eyes": C("#d8e0f0"), "glow": 0.5}
 		"silvermane_wolf":  # 은빛 갈기 늑대 — 늑대왕을 닮은 은빛 갈기 · 칼날 등지느러미(친위)

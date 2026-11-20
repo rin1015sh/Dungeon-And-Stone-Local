@@ -1,0 +1,94 @@
+{
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "immunities": [],
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sun_temple"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "shape": "humanoid",
+  "magic_stone_grade": 6,
+  "essence_drops": [],
+  "passives": [],
+  "id": "ancient_stone_giant",
+  "name_ko": "오래된 돌 거인",
+  "grade": 6,
+  "rank": "midboss",
+  "upper_variant": true,
+  "lineage": "stone_golem",
+  "size": 1.9,
+  "color": "#7a7266",
+  "status_immune": [
+    "fear"
+  ],
+  "weaknesses": {
+    "blunt": 1.5
+  },
+  "stats": {
+    "str": 46,
+    "agi": 26,
+    "p_res": 70,
+    "m_res": 30,
+    "int": 8
+  },
+  "resources": {
+    "hp": 3600,
+    "soul": 100
+  },
+  "natural_weapon": {
+    "attack": 34,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 3.0
+    },
+    "alert_sfx": "boss_reveal",
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "golem_crush",
+    "golem_suppress",
+    "giant_sink",
+    "giant_rise"
+  ],
+  "ai": [
+    {
+      "if": "self_status",
+      "status": "half_buried",
+      "use": "giant_rise"
+    }
+  ],
+  "ai_cycle": [
+    "golem_crush",
+    "golem_suppress",
+    "giant_sink"
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.giant_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0
+    }
+  ],
+  "notes": "꺼진 태양의 신전 1장 끝 중간 보스(expansion_f1_3_B §4 9번): 스톤 골렘 상위 변이 — 진압(기절) · 세 차례마다 모래에 잠김(받는 피해 −50%) → 다음 차례 솟구치기(전체). 둔기 약점. 수치는 목 없는 기수 곁 임시값"
+}

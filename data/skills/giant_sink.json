@@ -1,0 +1,17 @@
+{
+  "id": "giant_sink",
+  "name_ko": "모래에 잠기기",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "half_buried"
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "오래된 돌 거인: 반쯤 모래에 잠긴다(받는 피해 −50%) — 다음 차례 솟구치기(예고 대신 몸이 잠기는 것이 보인다)"
+}

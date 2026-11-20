@@ -1,0 +1,401 @@
+{
+  "id": "rift_sun_temple",
+  "name_ko": "꺼진 태양의 신전",
+  "host_floor": 2,
+  "natural": false,
+  "weight": 1,
+  "guardian": "sand_colossus",
+  "variant": null,
+  "guardian_drops": [
+    {
+      "item": "rift_stone",
+      "chance": 0.66
+    },
+    {
+      "item": "magic_stone_6",
+      "chance": 1.0
+    }
+  ],
+  "numbers": [],
+  "numbers_chance": 0.33,
+  "source": "placeholder",
+  "desc_ko": "모래 바다 밑에 잠긴 옛 태양 신전. 천장 틈마다 모래와 빛이 함께 흘러내린다.",
+  "look": {
+    "tiles": {
+      "floor": "metal_floor",
+      "wall": "metal_wall",
+      "exit": "rift_gate_metal_floor"
+    },
+    "ambient_color": "#f0d8a8",
+    "art": {
+      "battleback": {
+        "image": "res://assets/battle/f2_rock_desert.webp",
+        "half_width": 3.2
+      },
+      "palette": {
+        "near_black": "#14100a",
+        "tone": "#f4ecd8"
+      },
+      "post": {
+        "saturation": 0.7,
+        "vignette_strength": 0.65
+      },
+      "abyss": {
+        "_comment": "낭떠러지·구덩이(Abyss — 화면 고정 그림 없이 세계 좌표의 절벽 면 + 어둠, 사용자 결정 2026-10-29 AM49). 땅 가장자리는 jag만큼 들쭉날쭉 깎인다. [창작] 임시값",
+        "cliff": "res://assets/floor/it/chasm.webp",
+        "cliff_tiles": 8,
+        "cliff_depth": 2.25,
+        "jag": 0.3,
+        "abyss_color": "#040405",
+        "mist_color": "#121216",
+        "rim_color": "#8e8e96"
+      },
+      "decor": {
+        "_comment": "균열 바닥 잔해(FloorDecor 규칙 — 1층 데칼 시트를 같이 쓴다, 실행 중 계산). [창작] 임시값",
+        "sheet": "res://assets/floor/kit/decals_cave.webp",
+        "variants": 4,
+        "kinds": [
+          "shore",
+          "gravel",
+          "moss",
+          "wet",
+          "crystal_bits",
+          "claws",
+          "mud",
+          "rot",
+          "trash",
+          "bones"
+        ],
+        "on_tiles": [
+          "metal_floor",
+          "it_flagstone",
+          "it_rubble",
+          "f2r_sand"
+        ],
+        "rules": [
+          {
+            "kind": "gravel",
+            "chance": 0.35,
+            "wall_north": true,
+            "dense": true
+          },
+          {
+            "kind": "bones",
+            "chance": 0.7,
+            "noise": {
+              "key": "bones",
+              "freq": 0.07,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "rot",
+            "chance": 0.65,
+            "noise": {
+              "key": "rot",
+              "freq": 0.05,
+              "above": 0.47
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "trash",
+            "chance": 0.5,
+            "noise": {
+              "key": "trash",
+              "freq": 0.09,
+              "above": 0.5
+            },
+            "size": 1.2
+          },
+          {
+            "kind": "gravel",
+            "chance": 0.22
+          }
+        ]
+      },
+      "macro": {
+        "_comment": "균열 거시 변화: 저주파 밝기 얼룩(넓은 바닥이 한 장 그림처럼 밋밋하지 않게). [창작] 임시값",
+        "noise": {
+          "freq": 0.07,
+          "amount": 0.24
+        }
+      },
+      "particles": [
+        {
+          "id": "sand_fall",
+          "amount": 30,
+          "lifetime": 6.0,
+          "color": "#c8a870",
+          "alpha": 0.35,
+          "scale": [
+            1.0,
+            2.0
+          ],
+          "velocity": [
+            2.0,
+            6.0
+          ],
+          "direction": [
+            0.1,
+            1.0
+          ],
+          "spread": 15.0,
+          "gravity": [
+            0.0,
+            6.0
+          ]
+        }
+      ]
+    },
+    "ambient_light_m": 100.0,
+    "visibility_cap_m": 100.0
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "name_ko": "모래 묻힌 회랑",
+      "desc_ko": "기둥이 늘어선 회랑이 한쪽으로 기울었다. 틈마다 모래가 흘러내려 쌓였다.",
+      "map": {
+        "blueprint": "res://data/maps/rifts/rift_sun_temple_ch1.json"
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "monolith_soldier",
+            "monolith_soldier",
+            "sandman"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "stone_golem",
+            "kobold_shield",
+            "kobold_slinger"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "ancient_stone_giant"
+          ],
+          "midboss": true
+        },
+        {
+          "kind": "posts",
+          "count": 2,
+          "packs": [
+            [
+              "sandman",
+              "sandman"
+            ],
+            [
+              "dune_scorpion",
+              "dune_scorpion"
+            ]
+          ]
+        },
+        {
+          "kind": "roam",
+          "count": 2,
+          "packs": [
+            [
+              "dune_scorpion",
+              "dune_scorpion"
+            ],
+            [
+              "sandman"
+            ]
+          ]
+        }
+      ],
+      "loot": [
+        {
+          "item": "torch_stub",
+          "count": 1
+        },
+        {
+          "item": "ration",
+          "count": 1
+        },
+        {
+          "item": "minor_potion",
+          "count": 1
+        },
+        {
+          "item": "magic_stone_8",
+          "count": 2
+        },
+        {
+          "item": "magic_stone_8",
+          "count": 1
+        }
+      ],
+      "hidden": [
+        {
+          "id": "sun_disc",
+          "item": "sun_disc",
+          "tile": "it_urn",
+          "message": "explore.hidden.sun_disc"
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "name_ko": "해시계 뜰",
+      "desc_ko": "천장 틈으로 빛줄기 하나가 들어와 뜰 한가운데를 비춘다. 네 귀퉁이에 거울 기둥이 섰다.",
+      "map": {
+        "blueprint": "res://data/maps/rifts/rift_sun_temple_ch2.json"
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "monolith_soldier",
+            "stone_golem",
+            "sandman"
+          ]
+        },
+        {
+          "kind": "battle",
+          "monsters": [
+            "kobold_shield",
+            "kobold_shield",
+            "kobold_slinger",
+            "kobold"
+          ]
+        },
+        {
+          "kind": "posts",
+          "count": 2,
+          "packs": [
+            [
+              "monolith_soldier",
+              "monolith_soldier"
+            ],
+            [
+              "sandman",
+              "dune_scorpion"
+            ]
+          ]
+        },
+        {
+          "kind": "roam",
+          "count": 2,
+          "packs": [
+            [
+              "dune_scorpion",
+              "dune_scorpion"
+            ],
+            [
+              "kobold",
+              "kobold"
+            ]
+          ]
+        }
+      ],
+      "loot": [
+        {
+          "item": "minor_potion",
+          "count": 1
+        },
+        {
+          "item": "magic_stone_8",
+          "count": 2
+        },
+        {
+          "item": "old_silver_coin",
+          "count": 1
+        },
+        {
+          "item": "torch_stub",
+          "count": 1
+        },
+        {
+          "item": "magic_stone_8",
+          "count": 1
+        }
+      ],
+      "hidden": [
+        {
+          "id": "sundial_gnomon",
+          "item": "sundial_gnomon",
+          "tile": "it_statue",
+          "needs": {
+            "item": "sun_disc"
+          },
+          "locked": "explore.hidden.gnomon_locked",
+          "message": "explore.hidden.sundial_gnomon"
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "name_ko": "지하 성소",
+      "desc_ko": "둥근 성소 둘레에 꺼진 화로 넷. 한가운데 가슴에 화로를 품은 돌 거인이 앉아 있다.",
+      "map": {
+        "blueprint": "res://data/maps/rifts/rift_sun_temple_ch3.json"
+      },
+      "encounters": [
+        {
+          "kind": "battle",
+          "monsters": [
+            "stone_golem",
+            "monolith_soldier",
+            "monolith_soldier"
+          ]
+        },
+        {
+          "kind": "guardian"
+        }
+      ],
+      "loot": [
+        {
+          "item": "minor_potion",
+          "count": 1
+        },
+        {
+          "item": "magic_stone_8",
+          "count": 3
+        },
+        {
+          "item": "medium_potion",
+          "count": 1
+        }
+      ],
+      "hidden": [
+        {
+          "id": "undying_ember",
+          "item": "undying_ember",
+          "tile": "it_brazier",
+          "needs": {
+            "guardian": true
+          },
+          "locked": "explore.hidden.ember_locked",
+          "message": "explore.hidden.undying_ember"
+        }
+      ]
+    }
+  ],
+  "hidden_pieces": [
+    {
+      "id": "sun_disc",
+      "name_ko": "해의 원반",
+      "chapter": "ch1"
+    },
+    {
+      "id": "sundial_gnomon",
+      "name_ko": "해시계 바늘",
+      "chapter": "ch2"
+    },
+    {
+      "id": "undying_ember",
+      "name_ko": "꺼지지 않는 불씨",
+      "chapter": "ch3"
+    }
+  ],
+  "notes": "2층 균열(expansion_f1_3_B §4) — 바위사막 모래 바다 한가운데 첨탑 끝에 오후 모래 폭풍(13~16시)에만 횃불로 불을 붙이면 열린다(RiftGates, natural false). 중간 보스 오래된 돌 거인(1장 끝) · 수호자 모래 왕의 거상(열기 게이지 · 태양의 가슴). 히든 피스 셋(항아리 원반 → 해시계 바늘 → 성소 불씨). 강철의 묘 타일을 빌린다(전용 타일 · 모래 흐름 · 거울 빛 잇기 · 빛 받을 때만 피해 · 무너짐 게이지 · 균열 몬스터 셋 · 정수는 다음). 임시값"
+}

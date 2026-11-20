@@ -1,0 +1,36 @@
+{
+  "id": "sun_spire",
+  "name_ko": "모래에 묻힌 첨탑 끝",
+  "type": "feature",
+  "tile": "f2r_cairn",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.sun_spire"
+    },
+    {
+      "id": "light",
+      "name_ko": "화로에 불을 붙인다",
+      "limit": "once",
+      "hours_window": {
+        "from": 13,
+        "to": 16,
+        "missing": "field.sun_spire_buried"
+      },
+      "cost": {
+        "item": "torch",
+        "count": 1
+      },
+      "missing": "field.sun_spire_no_fire",
+      "hours": 0.5,
+      "line": "field.sun_spire_light",
+      "goal": "sun_temple",
+      "fx": "spark",
+      "sound": "fireball"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전 여는 과정(expansion_f1_3_B §4 · RiftGates): 모래 바다 한가운데 첨탑 끝. 오후 모래 폭풍(13~16시)에만 모래가 벗겨져 화로에 닿는다 — 횃불 하나를 넣어 불을 붙이면 균열. 데쓰웜 폭풍 길 · 빛 기둥 그림은 다음. 임시값"
+}

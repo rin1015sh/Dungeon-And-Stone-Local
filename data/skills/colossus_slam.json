@@ -1,0 +1,21 @@
+{
+  "id": "colossus_slam",
+  "name_ko": "내려찍기",
+  "target": "enemy_row",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.3,
+      "damage_type": "blunt"
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "거상: 앞줄 내려찍기"
+}

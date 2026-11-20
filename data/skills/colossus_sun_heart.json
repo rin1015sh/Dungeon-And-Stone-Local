@@ -1,0 +1,37 @@
+{
+  "id": "colossus_sun_heart",
+  "name_ko": "태양의 가슴",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "guarded_mult": 0.5,
+      "warn": "combat.colossus_heart_warn",
+      "fire": "combat.colossus_heart_fire",
+      "effects": [
+        {
+          "type": "meter_damage",
+          "meter": "sun_heat",
+          "mult": 3.0
+        },
+        {
+          "type": "meter",
+          "meter": "sun_heat",
+          "amount": -100
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "모래 왕의 거상 예고 기술(C24 틀): 한 차례 뒤 열기 게이지 ×3 피해 후 게이지 0. 기절 · 빙결로 끊으면 흩어진다. 1페이즈 4차례마다"
+}

@@ -1208,6 +1208,24 @@
     "source": "placeholder"
   },
   {
+    "id": "half_buried",
+    "name_ko": "모래에 잠김",
+    "kind": "buff",
+    "duration": {
+      "amount": 1,
+      "unit": "turn"
+    },
+    "battle_only": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:all",
+        "percent": -0.5
+      }
+    ],
+    "source": "placeholder",
+    "notes": "오래된 돌 거인(꺼진 태양의 신전 1장 중간 보스): 모래에 반쯤 잠겨 받는 피해 −50%, 다음 차례 솟구친다. 임시값"
+  },
+  {
     "id": "moon_frenzy",
     "name_ko": "달빛 광분",
     "kind": "buff",

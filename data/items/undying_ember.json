@@ -1,0 +1,17 @@
+{
+  "id": "undying_ember",
+  "name_ko": "꺼지지 않는 불씨",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 50000,
+  "icon": "stone",
+  "color": "#e07030",
+  "rarity": "numbers",
+  "flavor_ko": "유리 같은 껍질 안에서 불씨 한 점이 숨 쉬듯 밝아졌다 어두워진다.",
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전 3장 히든 피스 — 거상을 쓰러뜨린 뒤 성소 안쪽 화로에서"
+}

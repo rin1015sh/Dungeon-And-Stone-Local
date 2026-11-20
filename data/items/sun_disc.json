@@ -1,0 +1,17 @@
+{
+  "id": "sun_disc",
+  "name_ko": "해의 원반",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 30000,
+  "icon": "amulet",
+  "color": "#d8b060",
+  "rarity": "numbers",
+  "flavor_ko": "얇게 두드린 금박 원반. 가장자리 빛살 하나가 비틀려 있다.",
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전 1장 히든 피스 — 항아리 밑. 2장 해시계 바늘 받침을 여는 열쇠"
+}

@@ -1,0 +1,119 @@
+{
+  "type": "body",
+  "family": [
+    "construct"
+  ],
+  "immunities": [],
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sun_temple"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "shape": "humanoid",
+  "magic_stone_grade": 6,
+  "essence_drops": [],
+  "passives": [],
+  "id": "sand_colossus",
+  "name_ko": "모래 왕의 거상",
+  "grade": 6,
+  "rank": "guardian",
+  "size": 1.8,
+  "color": "#b89a6a",
+  "status_immune": [
+    "fear",
+    "poison",
+    "bleeding"
+  ],
+  "weaknesses": {
+    "blunt": 1.3,
+    "cold": 1.25
+  },
+  "stats": {
+    "str": 48,
+    "agi": 30,
+    "p_res": 62,
+    "m_res": 40,
+    "int": 20
+  },
+  "resources": {
+    "hp": 6200,
+    "soul": 160
+  },
+  "natural_weapon": {
+    "attack": 38,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "colossus_sun_heart",
+    "colossus_sun_heart_storm",
+    "colossus_slam",
+    "colossus_sand_spray"
+  ],
+  "ai": [
+    {
+      "if": "phase",
+      "value": [
+        "p1"
+      ],
+      "use": "colossus_sun_heart"
+    },
+    {
+      "if": "phase",
+      "value": [
+        "p2"
+      ],
+      "use": "colossus_sun_heart_storm"
+    },
+    {
+      "if": "chance",
+      "value": 0.35,
+      "use": "colossus_sand_spray"
+    },
+    {
+      "if": "always",
+      "use": "colossus_slam"
+    }
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.colossus_intro"
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5,
+      "round_effects": [
+        {
+          "type": "meter",
+          "meter": "sun_heat",
+          "amount": 12
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.colossus_p2",
+      "round_effects": [
+        {
+          "type": "meter",
+          "meter": "sun_heat",
+          "amount": 7
+        }
+      ]
+    }
+  ],
+  "notes": "꺼진 태양의 신전 수호자(expansion_f1_3_B §4 10~11번): 가슴 화로 — 바퀴마다 아군 모두에게 열기 게이지(1페이즈 12 · 2페이즈 7), 태양의 가슴(예고 · 끊기 가능 — 게이지 ×3 피해 후 0, 방어면 ×0.5) 1페이즈 4차례 · 2페이즈 3차례마다, 내려찍기(앞줄) · 모래 뿌리기(실명). 무너짐 게이지 · 화로 미리 켜기는 다음. 수치는 잠들지 못한 기사 곁 임시값(느리고 단단하다)"
+}

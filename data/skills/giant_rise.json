@@ -1,0 +1,21 @@
+{
+  "id": "giant_rise",
+  "name_ko": "솟구치기",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.1,
+      "damage_type": "blunt"
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "오래된 돌 거인: 모래 속에서 솟구치며 둘레 전체 피해"
+}

@@ -1008,6 +1008,14 @@
           4
         ],
         "tile": "f2r_campfire"
+      },
+      {
+        "mark": "sea_mid",
+        "at": [
+          5,
+          -4
+        ],
+        "event": "sun_spire"
       }
     ],
     "ambush": [
@@ -1304,5 +1312,17 @@
         ]
       }
     ]
-  }
+  },
+  "rift_gates": [
+    {
+      "_comment": "꺼진 태양의 신전(RiftGates — expansion_f1_3_B §4): 모래 바다 한가운데 첨탑 끝(sun_spire — 아래 FEATURES)에 오후 모래 폭풍(13~16시)에만 닿아 횃불로 화로에 불을 붙이면(goal sun_temple) 그 자리에 균열 포탈. 7일 차까지. [창작] 임시값",
+      "rift": "rift_sun_temple",
+      "flag": "sun_temple",
+      "need": 1,
+      "until_day": 7,
+      "line": "field.rift_sun_temple_open",
+      "sound": "rift_open",
+      "late_line": "field.rift_gate_late"
+    }
+  ]
 }

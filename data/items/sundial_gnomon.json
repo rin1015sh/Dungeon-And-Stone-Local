@@ -1,0 +1,17 @@
+{
+  "id": "sundial_gnomon",
+  "name_ko": "해시계 바늘",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 40000,
+  "icon": "stone",
+  "color": "#c8b088",
+  "rarity": "numbers",
+  "flavor_ko": "끝이 닳은 청동 바늘. 그림자를 드리울 해가 없는데도 바늘 밑이 따뜻하다.",
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전 2장 히든 피스 — 해의 원반을 받침에 끼우면"
+}

@@ -18,11 +18,21 @@ GATES = {
         "rift": "rift_sunken_graveyard", "flag": "sunken_graveyard", "need": 1, "until_day": 4,
         "line": "field.rift_sunken_open", "sound": "rift_open", "late_line": "field.rift_gate_late",
     }],
+    "f2_rock_desert": [{
+        "_comment": "꺼진 태양의 신전(RiftGates — expansion_f1_3_B §4): 모래 바다 한가운데 첨탑 끝(sun_spire — 아래 FEATURES)에 오후 모래 폭풍(13~16시)에만 닿아 횃불로 화로에 불을 붙이면(goal sun_temple) 그 자리에 균열 포탈. 7일 차까지. [창작] 임시값",
+        "rift": "rift_sun_temple", "flag": "sun_temple", "need": 1, "until_day": 7,
+        "line": "field.rift_sun_temple_open", "sound": "rift_open", "late_line": "field.rift_gate_late",
+    }],
     "f2_beast_den": [{
         "_comment": "울부짖는 바람굴(RiftGates — expansion_f1_3_B §2): 갈림길 셋의 바른 갈래 안쪽 끝 막힌 바람 틈(wind_gap — RouteForks right_feature)을 다 뚫으면(goal wind_den × 3) 깊은 굴 아래 벽이 갈라져 균열 포탈. 7일 차까지. [창작] 임시값",
         "rift": "rift_wind_den", "flag": "wind_den", "need": 3, "until_day": 7, "at": {"mark": "deep_hub", "at": [0, 4]},
         "line": "field.rift_wind_den_open", "sound": "wolf_howl", "late_line": "field.rift_gate_late",
     }],
+}
+
+# 문을 여는 요소(route_spots.features에 덧붙인다 — 같은 event가 있으면 갈아 끼운다)
+FEATURES = {
+    "f2_rock_desert": [{"mark": "sea_mid", "at": [5, -4], "event": "sun_spire"}],
 }
 
 
@@ -32,6 +42,11 @@ def main():
         with open(path, encoding="utf-8") as f:
             d = json.load(f)
         d["rift_gates"] = gates
+        add = FEATURES.get(fid, [])
+        if add:
+            feats = d.setdefault("route_spots", {}).setdefault("features", [])
+            names = {f["event"] for f in add}
+            feats[:] = [f for f in feats if f.get("event") not in names] + add
         with open(path, "w", encoding="utf-8") as f:
             f.write(json.dumps(d, ensure_ascii=False, indent=2) + "\n")
         print("%s: 문 %d" % (fid, len(gates)))

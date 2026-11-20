@@ -1,0 +1,37 @@
+{
+  "id": "colossus_sun_heart_storm",
+  "name_ko": "폭풍 속 태양",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "guarded_mult": 0.5,
+      "warn": "combat.colossus_heart_warn",
+      "fire": "combat.colossus_heart_fire",
+      "effects": [
+        {
+          "type": "meter_damage",
+          "meter": "sun_heat",
+          "mult": 3.0
+        },
+        {
+          "type": "meter",
+          "meter": "sun_heat",
+          "amount": -100
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "거상 2페이즈 — 같은 기술을 3차례마다(화로가 깨져 게이지는 느리게 찬다)"
+}

@@ -76,5 +76,18 @@
     "color": "#e07a3a",
     "source": "original",
     "notes": "명세 §9.3 화염 피해 누적 150"
+  },
+  {
+    "id": "sun_heat",
+    "name_ko": "열기",
+    "desc_ko": "가슴 화로의 열이 몸에 쌓인다. 가득 차면 탈진한다.",
+    "max": 100,
+    "on_full": {
+      "status": "exhaustion"
+    },
+    "reset_on_full": true,
+    "color": "#e0a040",
+    "source": "placeholder",
+    "notes": "모래 왕의 거상(꺼진 태양의 신전 수호자 — expansion_f1_3_B §4 11번): 바퀴마다 아군 모두에게 찬다. 태양의 가슴이 게이지만큼 피해 후 0으로"
   }
 ]
