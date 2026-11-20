@@ -1,0 +1,24 @@
+{
+  "id": "ess_gale_ride",
+  "name_ko": "바람 타기(정수)",
+  "target": "self",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "gauge",
+      "amount": 40,
+      "to": "self"
+    },
+    {
+      "type": "apply_status",
+      "status": "haste"
+    }
+  ],
+  "essence_of": "gale_ride",
+  "source": "placeholder",
+  "notes": "질풍 늑대 정수"
+}

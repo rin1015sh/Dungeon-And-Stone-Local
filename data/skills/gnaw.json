@@ -1,0 +1,23 @@
+{
+  "id": "gnaw",
+  "name_ko": "갉기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "vulnerable",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder",
+  "notes": "뼈 갉는 쥐 떼: 갉아 틈을 낸다(취약 50%)"
+}

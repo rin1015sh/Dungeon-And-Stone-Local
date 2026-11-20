@@ -1,0 +1,18 @@
+{
+  "id": "silvermane_guard",
+  "name_ko": "감싸기",
+  "target": "ally_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "cover",
+      "duration": 2
+    }
+  ],
+  "source": "placeholder",
+  "notes": "은빛 갈기 늑대: 다친 늑대(또는 늑대왕)를 2차례 대신 맞는다"
+}

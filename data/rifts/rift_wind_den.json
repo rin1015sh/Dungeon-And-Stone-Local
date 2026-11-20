@@ -182,17 +182,18 @@
         {
           "kind": "battle",
           "monsters": [
+            "gale_wolf",
+            "gale_wolf",
             "blade_wolf",
-            "blade_wolf",
-            "blood_blade_wolf",
-            "giant_blade_wolf"
+            "blood_blade_wolf"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
             "bulkar",
-            "sabertooth"
+            "gale_wolf",
+            "gale_wolf"
           ]
         },
         {
@@ -200,8 +201,8 @@
           "count": 3,
           "packs": [
             [
-              "blade_wolf",
-              "blade_wolf",
+              "gale_wolf",
+              "gale_wolf",
               "blade_wolf"
             ],
             [
@@ -209,7 +210,7 @@
             ],
             [
               "giant_blade_wolf",
-              "blood_blade_wolf"
+              "gale_wolf"
             ]
           ]
         },
@@ -218,8 +219,8 @@
           "count": 2,
           "packs": [
             [
-              "blade_wolf",
-              "blade_wolf"
+              "gale_wolf",
+              "gale_wolf"
             ],
             [
               "canyon_bat",
@@ -272,17 +273,18 @@
           "kind": "battle",
           "monsters": [
             "werewolf",
-            "blood_blade_wolf",
-            "blood_blade_wolf"
+            "bone_gnawer",
+            "bone_gnawer",
+            "bone_gnawer"
           ]
         },
         {
           "kind": "battle",
           "monsters": [
             "giant_blade_wolf",
-            "giant_blade_wolf",
-            "blade_wolf",
-            "blade_wolf"
+            "blood_blade_wolf",
+            "bone_gnawer",
+            "bone_gnawer"
           ]
         },
         {
@@ -297,12 +299,13 @@
           "count": 2,
           "packs": [
             [
-              "werewolf"
+              "werewolf",
+              "bone_gnawer"
             ],
             [
-              "blade_wolf",
-              "blade_wolf",
-              "blood_blade_wolf"
+              "bone_gnawer",
+              "bone_gnawer",
+              "bone_gnawer"
             ]
           ]
         },
@@ -311,11 +314,12 @@
           "count": 2,
           "packs": [
             [
-              "blade_wolf",
-              "blade_wolf"
+              "bone_gnawer",
+              "bone_gnawer"
             ],
             [
-              "giant_blade_wolf"
+              "blade_wolf",
+              "blood_blade_wolf"
             ]
           ]
         }
@@ -366,9 +370,9 @@
         {
           "kind": "battle",
           "monsters": [
-            "werewolf",
-            "giant_blade_wolf",
-            "blood_blade_wolf"
+            "silvermane_wolf",
+            "silvermane_wolf",
+            "gale_wolf"
           ]
         },
         {
@@ -420,5 +424,5 @@
       "chapter": "ch3"
     }
   ],
-  "notes": "2층 균열(expansion_f1_3_B §2) — 짐승의 소굴 갈림길 셋의 바른 갈래 끝 막힌 바람 틈을 다 뚫으면 열린다(RiftGates, natural false). 중간 보스 우두머리 웨어울프 · 수호자 늑대왕(표식 · 부르는 울음 · 달을 향한 고개). 히든 피스 셋(바위 그늘 뼈피리 → 둥지 뒤 송곳니 → 수호자 뒤 갈기). 녹색 탄광 타일을 빌린다(전용 타일 · 바람 방향 규칙 · 균열 몬스터 셋 · 정수는 다음). 임시값"
+  "notes": "2층 균열(expansion_f1_3_B §2) — 짐승의 소굴 갈림길 셋의 바른 갈래 끝 막힌 바람 틈을 다 뚫으면 열린다(RiftGates, natural false). 중간 보스 우두머리 웨어울프 · 수호자 늑대왕(표식 · 부르는 울음 · 달을 향한 고개). 히든 피스 셋(바위 그늘 뼈피리 → 둥지 뒤 송곳니 → 수호자 뒤 갈기). 녹색 탄광 타일을 빌린다· 균열 몬스터 질풍 늑대 · 뼈 갉는 쥐 떼 · 은빛 갈기 늑대와 정수 다섯(2차, 2026-11-20). 전용 타일 · 바람 방향 규칙은 다음. 임시값"
 }

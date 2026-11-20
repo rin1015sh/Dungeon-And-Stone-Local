@@ -1,0 +1,38 @@
+{
+  "id": "silvermane_wolf",
+  "name_ko": "은빛 갈기 늑대의 정수",
+  "grade": 7,
+  "source_monster": "silvermane_wolf",
+  "family": "silvermane_wolf",
+  "rank": "normal",
+  "passive": {
+    "id": "silvermane_wolf_p",
+    "name_ko": "친위의 이빨",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:pierce",
+        "percent": -0.08
+      }
+    ],
+    "counter_while": {
+      "status": "taunt",
+      "power": 0.45
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_silvermane_guard"
+    }
+  ],
+  "stats": {
+    "p_res": 10,
+    "str": 4
+  },
+  "resources": {
+    "hp": 22
+  },
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴(ES 연계 — 끌어들이기 중 반격: 끌어들이기를 거는 큰 칼날늑대 · 얼음 골렘 · 코볼트 방패병 · 가고일 · 노움 정수와 이어짐, 반응 둘째). 임시값"
+}

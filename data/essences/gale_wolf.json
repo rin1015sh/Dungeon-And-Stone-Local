@@ -1,0 +1,31 @@
+{
+  "id": "gale_wolf",
+  "name_ko": "질풍 늑대의 정수",
+  "grade": 7,
+  "source_monster": "gale_wolf",
+  "family": "gale_wolf",
+  "rank": "normal",
+  "passive": {
+    "id": "gale_wolf_p",
+    "name_ko": "바람 아래 사냥",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "marked",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_gale_ride"
+    }
+  ],
+  "stats": {
+    "agi": 8
+  },
+  "resources": {
+    "hp": 10
+  },
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴(ES 연계 — 표식에 반응: 표식을 거는 늑대 기수 · 사냥개 · 해골 궁수 · 늑대왕 정수와 이어짐). 임시값"
+}

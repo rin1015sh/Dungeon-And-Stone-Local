@@ -1,0 +1,26 @@
+{
+  "id": "ess_wolf_king_maul",
+  "name_ko": "목덜미 물기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 14
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 2.0,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "bleeding",
+      "chance": 0.5
+    }
+  ],
+  "essence_of": "wolf_king_maul",
+  "source": "placeholder",
+  "notes": "늑대왕 정수"
+}

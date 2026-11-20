@@ -35,9 +35,9 @@ static func spec_of(id: String) -> Dictionary:
 				"hair": "none", "ears": "long", "eye_glow": C("#e8d060"),
 				"kit": {"loin": C("#4a3a2a"), "belt": C("#3a2a1e"), "weapon": "dagger", "weapon_c": C("#7a7468")}},
 				"map": {"hunch": 0.38, "knee": 0.16, "head": 2.3, "legs": 0.72, "wide": 1.0, "bulk": 1.05, "stance": 0.07}}
-		"skull_rat":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
+		"skull_rat", "bone_gnawer":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
 			return {"kind": "beast", "size": 0.9, "spec": Specs.More.spec_of(id)}
-		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena", "blood_blade_wolf", "giant_blade_wolf", "wolf_king":
+		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena", "blood_blade_wolf", "giant_blade_wolf", "wolf_king", "gale_wolf", "silvermane_wolf":
 			return {"kind": "beast", "spec": Specs.More.spec_of(id)}
 		"ghoul":
 			return {"kind": "crawler", "size": 1.0, "spec": {"height": 420, "color": C("#8a947c"), "blood": 0.5, "eyes": C("#e0d8a0"), "elbow_h": 0.32, "elbow_w": 0.2, "reach": 0.3}}

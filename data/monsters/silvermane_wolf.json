@@ -1,0 +1,85 @@
+{
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "immunities": [],
+  "magic_stone_grade": 7,
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_wind_den"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "id": "silvermane_wolf",
+  "name_ko": "은빛 갈기 늑대",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "blade_wolf",
+  "shape": "beast",
+  "size": 1.15,
+  "color": "#b0b4bc",
+  "status_immune": [],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 22,
+    "agi": 24,
+    "p_res": 40,
+    "m_res": 26,
+    "int": 8
+  },
+  "resources": {
+    "hp": 190,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 16,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 2.0
+    },
+    "alert_sfx": "wolf_growl",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      2
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [
+    {
+      "essence": "silvermane_wolf",
+      "chance": 0.01
+    }
+  ],
+  "skills": [
+    "silvermane_guard",
+    "silvermane_growl",
+    "wolf_bite"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "ally_hp_below",
+      "value": 0.6,
+      "use": "silvermane_guard",
+      "target": "ally_lowest_hp"
+    },
+    {
+      "if": "first_turn",
+      "use": "silvermane_growl"
+    },
+    {
+      "if": "always",
+      "use": "wolf_bite"
+    }
+  ],
+  "notes": "울부짖는 바람굴 3장 늑대왕 친위(expansion_f1_3_C §4-1): 다친 늑대를 감싸고(cover) 으르렁(끌어들이기) — 지금 늑대 중 아군을 지키는 유일한 늑대. 수치는 관 짐꾼 곁 7등급 임시값(단단하다)"
+}

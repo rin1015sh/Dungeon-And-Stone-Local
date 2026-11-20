@@ -105,3 +105,21 @@ func test_wolf_king_howls_marks_and_moon() -> void:
 	assert_true(BossHooks.pattern(b, king).wants_extra_action(b, king), "두 번 움직인다")
 	assert_eq(Progression.first_kill_exp(db, (king.actor as Monster).def), 4, "6등급 수호자 = 4")
 	assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", "alpha_werewolf")), 5, "6등급 + 상위 변이 = 5")
+
+
+## 2차(2026-11-20): 균열 몬스터 셋 · 정수 다섯.
+func test_second_pass_monsters_and_essences() -> void:
+	var exp := {"gale_wolf": 3, "silvermane_wolf": 3, "bone_gnawer": 2, "alpha_werewolf": 5, "wolf_king": 4}
+	for id: String in exp:
+		assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", id)), int(exp[id]), "%s 첫 처치" % id)
+		assert_true(db.has_entry("essences", id), "%s 정수" % id)
+	var party: Array[Actor] = [PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 12})]
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5), party, ["gale_wolf", "silvermane_wolf"])
+	var foes := b.side_units(Combatant.SIDE_ENEMY)
+	var gale: Combatant = foes.filter(func(u: Combatant) -> bool: return (u.actor as Monster).monster_id == "gale_wolf")[0]
+	var mane: Combatant = foes.filter(func(u: Combatant) -> bool: return (u.actor as Monster).monster_id == "silvermane_wolf")[0]
+	assert_eq(str(MonsterAi.choose(b, gale)["skill"]), "gale_ride", "질풍 늑대는 첫 차례에 바람을 탄다")
+	gale.actor.pool.set_current("hp", gale.actor.pool.get_max("hp") * 0.3)
+	var act := MonsterAi.choose(b, mane)
+	assert_eq(str(act["skill"]), "silvermane_guard", "다친 늑대를 감싼다")
+	assert_eq(act["target"], gale)

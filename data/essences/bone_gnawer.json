@@ -1,0 +1,31 @@
+{
+  "id": "bone_gnawer",
+  "name_ko": "뼈 갉는 쥐 떼의 정수",
+  "grade": 8,
+  "source_monster": "bone_gnawer",
+  "family": "bone_gnawer",
+  "rank": "normal",
+  "passive": {
+    "id": "bone_gnawer_p",
+    "name_ko": "벌어진 틈",
+    "implemented": true,
+    "hit_vs_status": {
+      "status": "vulnerable",
+      "bonus": 12
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_gnaw"
+    }
+  ],
+  "stats": {
+    "agi": 4
+  },
+  "resources": {
+    "hp": 6
+  },
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴(ES 연계 — 취약에 반응: 취약을 거는 광물 슬라임 · 철 리자드맨 · 불카르 · 홉고블린 광부 정수와 이어짐, 반응 첫째). 임시값"
+}

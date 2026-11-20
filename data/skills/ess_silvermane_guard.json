@@ -1,0 +1,19 @@
+{
+  "id": "ess_silvermane_guard",
+  "name_ko": "감싸기(정수)",
+  "target": "ally_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "cover",
+      "duration": 2
+    }
+  ],
+  "essence_of": "silvermane_guard",
+  "source": "placeholder",
+  "notes": "은빛 갈기 늑대 정수"
+}

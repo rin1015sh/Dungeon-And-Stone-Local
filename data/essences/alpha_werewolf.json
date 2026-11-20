@@ -1,0 +1,32 @@
+{
+  "id": "alpha_werewolf",
+  "name_ko": "우두머리 웨어울프의 정수",
+  "grade": 6,
+  "source_monster": "alpha_werewolf",
+  "family": "alpha_werewolf",
+  "rank": "midboss",
+  "passive": {
+    "id": "alpha_werewolf_p",
+    "name_ko": "무리의 우두머리",
+    "implemented": true,
+    "while_self_status": {
+      "status": "haste",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_alpha_howl"
+    }
+  ],
+  "stats": {
+    "str": 12,
+    "agi": 8
+  },
+  "resources": {
+    "hp": 32
+  },
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 중간 보스 정수(ES 연계 — 신속 중이면 근력: 신속을 거는 서리늑대 · 질풍 늑대 정수와 이어짐). 임시값"
+}

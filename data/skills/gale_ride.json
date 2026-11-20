@@ -1,0 +1,23 @@
+{
+  "id": "gale_ride",
+  "name_ko": "바람 타기",
+  "target": "self",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "gauge",
+      "amount": 40,
+      "to": "self"
+    },
+    {
+      "type": "apply_status",
+      "status": "haste"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "질풍 늑대: 바람을 타고 다음 차례를 당긴다(게이지 +40) · 신속. 첫 차례에 쓴다"
+}

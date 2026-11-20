@@ -1,0 +1,81 @@
+{
+  "type": "body",
+  "family": [
+    "beast"
+  ],
+  "immunities": [],
+  "magic_stone_grade": 7,
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_wind_den"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "id": "gale_wolf",
+  "name_ko": "질풍 늑대",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "blade_wolf",
+  "shape": "beast",
+  "size": 1.0,
+  "color": "#8a8a8e",
+  "status_immune": [],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 20,
+    "agi": 34,
+    "p_res": 24,
+    "m_res": 18,
+    "int": 8
+  },
+  "resources": {
+    "hp": 120,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 16,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.4,
+      "calls": true
+    },
+    "move_mult": 1.4,
+    "alert_sfx": "wolf_growl",
+    "aggressive": true,
+    "aggro_radius_m": 5.5,
+    "leash_tiles": 0,
+    "pack_size": [
+      2,
+      3
+    ],
+    "reveal_radius_m": 0,
+    "row": "front",
+    "ignores_stealth": true
+  },
+  "essence_drops": [
+    {
+      "essence": "gale_wolf",
+      "chance": 0.01
+    }
+  ],
+  "skills": [
+    "gale_ride",
+    "wolf_bite"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "gale_ride"
+    },
+    {
+      "if": "always",
+      "use": "wolf_bite"
+    }
+  ],
+  "notes": "울부짖는 바람굴 1 · 3장(expansion_f1_3_C §4-1): 첫 차례 바람 타기(게이지 당김 · 신속) — 차례 순서를 흔든다. 수치는 관 짐꾼 곁 7등급 임시값(빠르고 무르다)"
+}

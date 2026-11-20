@@ -1,0 +1,19 @@
+{
+  "id": "ess_alpha_howl",
+  "name_ko": "우두머리의 울음(정수)",
+  "target": "ally_all",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "haste"
+    }
+  ],
+  "essence_of": "alpha_howl",
+  "source": "placeholder",
+  "notes": "우두머리 웨어울프 정수 — 몬스터판(늑대 부르기)은 아군이 없는 탐험가에게 소환이 맞지 않아 무리 전체 신속으로"
+}

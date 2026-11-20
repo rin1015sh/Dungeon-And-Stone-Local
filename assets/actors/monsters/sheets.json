@@ -20,6 +20,13 @@
 		],
 		"foot": 4.0
 	},
+	"bone_gnawer": {
+		"cell": [
+			120,
+			65
+		],
+		"foot": 4
+	},
 	"bone_hyena": {
 		"cell": [
 			96.0,
@@ -220,6 +227,13 @@
 		"cell": [
 			100.0,
 			71.0
+		],
+		"foot": 4.0
+	},
+	"gale_wolf": {
+		"cell": [
+			106.0,
+			77.0
 		],
 		"foot": 4.0
 	},
@@ -559,6 +573,13 @@
 		],
 		"foot": 4.0
 	},
+	"silvermane_wolf": {
+		"cell": [
+			108.0,
+			78.0
+		],
+		"foot": 4.0
+	},
 	"skeleton": {
 		"cell": [
 			48.0,
@@ -680,10 +701,10 @@
 	},
 	"wolf_king": {
 		"cell": [
-			158,
-			114
+			158.0,
+			114.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"woodman": {
 		"cell": [

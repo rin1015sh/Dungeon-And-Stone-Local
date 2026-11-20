@@ -54,7 +54,12 @@
     "row": "front"
   },
   "magic_stone_grade": 6,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "alpha_werewolf",
+      "chance": 0.25
+    }
+  ],
   "drops": [],
   "skills": [
     "wolf_bite",

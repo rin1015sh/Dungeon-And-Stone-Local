@@ -147,6 +147,12 @@ static func spec_of(id: String) -> Dictionary:
 		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
 			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
 				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"gale_wolf":  # 질풍 늑대 — 털이 한쪽으로 누운 마른 회색 늑대(바람굴)
+			return {"kind": "beast", "height": 560, "color": C("#8a8a8e"), "belly": C("#b8b6b0"), "fur": 0.95, "bulk": 0.85, "legs": 1.1, "eyes": C("#d8e0f0"), "glow": 0.5}
+		"silvermane_wolf":  # 은빛 갈기 늑대 — 늑대왕을 닮은 은빛 갈기 · 칼날 등지느러미(친위)
+			return {"kind": "beast", "height": 620, "color": C("#b0b4bc"), "belly": C("#d8dade"), "fur": 1.0, "blades": C("#c8d0d8"), "bulk": 1.15, "eyes": C("#e8ecf8"), "glow": 0.7, "blood": 0.2}
+		"bone_gnawer":  # 뼈 갉는 쥐 떼 — 잿빛 쥐(해골 쥐 몸)
+			return {"kind": "beast", "height": 400, "color": C("#6a645c"), "head": "rat", "fur": 0.7, "tail": "thin", "bulk": 0.8, "legs": 0.7, "eyes": C("#e0c080"), "head_k": 1.3}
 		"alpha_werewolf":  # 우두머리 웨어울프 — 웨어울프보다 크고 검은 털, 뼈 장식 허리끈(바람굴 2장 중간 보스)
 			return {"height": 760, "width": 1.05, "skin": C("#3a3430"), "skin_kind": "fur", "shade": C("#16120f"), "eyes": C("#ff9020"), "glow": 1.0, "fur_len": 1.6, "blood": 0.4,
 				"pose": {"hunch": 0.45, "knee": 0.42, "arm_l": "claw", "arm_r": "claw", "sh": 0.17, "hip": 0.088, "neck": 0.45, "arms": 1.22, "weight": -0.4, "tilt": 0.05},

@@ -1,0 +1,26 @@
+{
+  "id": "ess_gnaw",
+  "name_ko": "갉기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "apply_status",
+      "status": "vulnerable",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "gnaw",
+  "source": "placeholder",
+  "notes": "뼈 갉는 쥐 떼 정수"
+}

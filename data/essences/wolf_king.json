@@ -1,0 +1,36 @@
+{
+  "id": "wolf_king",
+  "name_ko": "늑대왕의 정수",
+  "grade": 6,
+  "source_monster": "wolf_king",
+  "family": "wolf_king",
+  "rank": "guardian",
+  "passive": {
+    "id": "wolf_king_p",
+    "name_ko": "왕의 사냥",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "marked",
+      "mult": 1.2
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_wolf_king_maul"
+    },
+    {
+      "color": "green",
+      "skill": "ess_wolf_king_mark"
+    }
+  ],
+  "stats": {
+    "str": 16,
+    "agi": 18
+  },
+  "resources": {
+    "hp": 30
+  },
+  "source": "placeholder",
+  "notes": "울부짖는 바람굴 수호자 정수(무지갯빛 33%, expansion_f1_3_B §2 12번 — 표식 ×1.2, 표식을 스스로도 건다). 임시값"
+}

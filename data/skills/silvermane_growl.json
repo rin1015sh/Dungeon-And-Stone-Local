@@ -1,0 +1,18 @@
+{
+  "id": "silvermane_growl",
+  "name_ko": "으르렁",
+  "target": "self",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "taunt"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "은빛 갈기 늑대: 공격을 끌어들인다"
+}
