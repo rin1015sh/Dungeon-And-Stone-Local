@@ -35,7 +35,7 @@ static func spec_of(id: String) -> Dictionary:
 				"hair": "none", "ears": "long", "eye_glow": C("#e8d060"),
 				"kit": {"loin": C("#4a3a2a"), "belt": C("#3a2a1e"), "weapon": "dagger", "weapon_c": C("#7a7468")}},
 				"map": {"hunch": 0.38, "knee": 0.16, "head": 2.3, "legs": 0.72, "wide": 1.0, "bulk": 1.05, "stance": 0.07}}
-		"skull_rat", "bone_gnawer":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
+		"skull_rat", "bone_gnawer", "tunnel_rat":  # 데이터 크기(0.4)로는 맵에서 점처럼 작다
 			return {"kind": "beast", "size": 0.9, "spec": Specs.More.spec_of(id)}
 		"blade_wolf", "chimera_wolf", "frost_wolf", "sabertooth", "owlbear", "wall_mole", "mole_queen", "moon_rock_bear", "bulkar", "goblin_hound", "spine_boar", "bone_hyena", "blood_blade_wolf", "giant_blade_wolf", "wolf_king", "gale_wolf", "silvermane_wolf":
 			return {"kind": "beast", "spec": Specs.More.spec_of(id)}
@@ -62,7 +62,7 @@ static func spec_of(id: String) -> Dictionary:
 ## 사람형 몬스터(전투 설계를 옮긴다)와 손볼 값(tweak — spec·map에 덮어쓴다).
 const FIGURES := {
 	"deadman": {}, "soldier_deadman": {}, "deadman_commander": {}, "skeleton_archer": {}, "skeleton_mage": {},
-	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "coffin_bearer": {}, "bone_mason": {}, "mire_shade": {}, "shade_eater": {}, "gnomon_guardian": {}, "sand_drift": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
+	"deathfiend": {"map": {"head": 1.9}}, "banshee": {}, "gargoyle_statue": {"map": {"head": 2.0}}, "bone_knight": {}, "skeleton": {}, "skeleton_warrior": {}, "coffin_bearer": {}, "bone_mason": {}, "mire_shade": {}, "shade_eater": {}, "gnomon_guardian": {}, "sand_drift": {}, "goblin_sapper": {}, "goblin_venomer": {}, "dullahan": {}, "death_knight": {"map": {"head": 1.8}},
 	"yeti": {"spec": {"hair": "ragged", "hair_c": Color("#d4dadf")}, "map": {"head": 1.8, "bulk": 1.25, "wide": 1.1}},
 	"ice_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "ice_orc_shaman": {}, "ice_orc_warrior": {},
 	"goblin_miner": {}, "hobgoblin_miner": {}, "hobgoblin": {}, "kobold": {}, "kobold_shield": {}, "kobold_slinger": {}, "stone_golem": {"map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}}, "monolith_soldier": {}, "sandman": {}, "werewolf": {"spec": {"hair": "ragged", "hair_c": Color("#5a5450")}, "map": {"head": 1.8, "bulk": 1.15}}, "copper_golem": {"spec": {"skin": Color("#9a6634")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},

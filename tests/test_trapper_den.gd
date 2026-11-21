@@ -77,3 +77,16 @@ func test_trap_king_lines_and_calls() -> void:
 	assert_eq(int(king.memo.get("every_0", 0)), 2, "고블린 부르기는 두 번(넷)까지")
 	assert_eq(Progression.first_kill_exp(db, (king.actor as Monster).def), 4, "6등급 수호자 = 4")
 	assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", "hobgoblin_chief")), 5, "6등급 + 상위 변이 = 5")
+
+
+## 2차(2026-11-21): 균열 몬스터 셋 · 정수 다섯.
+func test_second_pass_monsters_and_essences() -> void:
+	var exp := {"goblin_sapper": 3, "goblin_venomer": 3, "tunnel_rat": 2, "goblin_trap_king": 4, "hobgoblin_chief": 5}
+	for id: String in exp:
+		assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", id)), int(exp[id]), "%s 첫 처치" % id)
+		assert_true(db.has_entry("essences", id), "%s 정수" % id)
+	var party: Array[Actor] = [PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 12})]
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(5), party, ["goblin_venomer", "goblin_sapper"])
+	var ven: Combatant = b.side_units(Combatant.SIDE_ENEMY).filter(func(u: Combatant) -> bool: return (u.actor as Monster).monster_id == "goblin_venomer")[0]
+	assert_eq(str(MonsterAi.choose(b, ven)["skill"]), "venomer_coat", "독술사는 먼저 아군 무기에 독을 바른다")
+	assert_eq(ven.row, "back", "뒷줄")

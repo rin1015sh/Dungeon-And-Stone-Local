@@ -1,0 +1,22 @@
+{
+  "id": "rat_leg_bite",
+  "name_ko": "다리 물기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "push_back",
+      "amount": 25
+    }
+  ],
+  "source": "placeholder",
+  "notes": "굴 쥐 떼: 다리를 물어 차례를 늦춘다"
+}

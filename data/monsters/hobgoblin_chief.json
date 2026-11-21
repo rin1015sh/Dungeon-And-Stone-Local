@@ -12,7 +12,12 @@
   "source": "placeholder",
   "shape": "humanoid",
   "magic_stone_grade": 6,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "hobgoblin_chief",
+      "chance": 0.25
+    }
+  ],
   "passives": [],
   "id": "hobgoblin_chief",
   "name_ko": "홉고블린 대장",

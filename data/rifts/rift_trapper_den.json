@@ -183,8 +183,8 @@
           "kind": "battle",
           "monsters": [
             "goblin_trapper",
-            "goblin_trapper",
-            "goblin",
+            "tunnel_rat",
+            "tunnel_rat",
             "goblin"
           ]
         },
@@ -193,7 +193,8 @@
           "monsters": [
             "goblin_hound",
             "goblin_hound",
-            "goblin_archer"
+            "tunnel_rat",
+            "tunnel_rat"
           ]
         },
         {
@@ -202,11 +203,12 @@
           "packs": [
             [
               "goblin_trapper",
-              "goblin"
+              "tunnel_rat"
             ],
             [
-              "goblin_thief",
-              "goblin_thief"
+              "tunnel_rat",
+              "tunnel_rat",
+              "tunnel_rat"
             ]
           ]
         },
@@ -215,12 +217,12 @@
           "count": 2,
           "packs": [
             [
-              "goblin",
-              "goblin"
+              "tunnel_rat",
+              "tunnel_rat"
             ],
             [
               "goblin_hound",
-              "goblin_hound"
+              "goblin"
             ]
           ]
         }
@@ -302,7 +304,7 @@
           "kind": "battle",
           "monsters": [
             "goblin_drummer",
-            "goblin_swordsman",
+            "goblin_sapper",
             "goblin",
             "goblin"
           ]
@@ -310,9 +312,9 @@
         {
           "kind": "battle",
           "monsters": [
-            "goblin_shaman",
-            "goblin_archer",
-            "goblin_archer",
+            "goblin_venomer",
+            "goblin_swordsman",
+            "goblin_sapper",
             "goblin"
           ]
         },
@@ -328,10 +330,11 @@
           "count": 2,
           "packs": [
             [
-              "hobgoblin"
+              "hobgoblin",
+              "goblin_venomer"
             ],
             [
-              "goblin_swordsman",
+              "goblin_sapper",
               "goblin_archer"
             ]
           ]
@@ -341,12 +344,12 @@
           "count": 2,
           "packs": [
             [
-              "goblin",
-              "goblin",
-              "goblin"
+              "tunnel_rat",
+              "tunnel_rat",
+              "tunnel_rat"
             ],
             [
-              "goblin_hound",
+              "goblin_sapper",
               "goblin"
             ]
           ]
@@ -399,8 +402,8 @@
           "kind": "battle",
           "monsters": [
             "hobgoblin",
-            "goblin_trapper",
-            "goblin_shaman"
+            "goblin_venomer",
+            "goblin_sapper"
           ]
         },
         {
@@ -452,5 +455,5 @@
       "chapter": "ch3"
     }
   ],
-  "notes": "2층 균열(expansion_f1_3_B §5) — 고블린 숲 덫 밭 셋의 덫에 걸린 사냥꾼 매듭 끈을 다 풀면 열린다(RiftGates, natural false). 1장 숨은 곰덫 다섯 · 중간 보스 홉고블린 대장 · 수호자 고블린 덫왕(덫 줄 · 증원). 히든 피스 셋(통 더미 열쇠 → 대장의 궤짝 → 덫 더미 꾸러미). 녹색 탄광 타일을 빌린다(뒤밟기 길 · 경보 날 닫힘 · 달아나는 수호자 · 해체한 덫 다시 놓기 · 북 웨이브 · 균열 몬스터 셋 · 정수 · 전용 타일은 다음). 임시값"
+  "notes": "2층 균열(expansion_f1_3_B §5) — 고블린 숲 덫 밭 셋의 덫에 걸린 사냥꾼 매듭 끈을 다 풀면 열린다(RiftGates, natural false). 1장 숨은 곰덫 다섯 · 중간 보스 홉고블린 대장 · 수호자 고블린 덫왕(덫 줄 · 증원). 히든 피스 셋(통 더미 열쇠 → 대장의 궤짝 → 덫 더미 꾸러미). 녹색 탄광 타일을 빌린다(뒤밟기 길 · 경보 날 닫힘 · 달아나는 수호자 · 해체한 덫 다시 놓기 · 북 웨이브 · 전용 타일은 다음) · 균열 몬스터 고블린 땅꾼 · 고블린 독술사 · 굴 쥐 떼와 정수 다섯(2차, 2026-11-21). 임시값"
 }

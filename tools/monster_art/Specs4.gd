@@ -147,6 +147,18 @@ static func spec_of(id: String) -> Dictionary:
 		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
 			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
 				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"goblin_sapper":  # 고블린 땅꾼 — 귀에 흙이 잔뜩, 곡괭이
+			return {"height": 480, "skin": C("#6a7048"), "shade": C("#2a3018"), "mottle": C("#5a4a30"), "mottle_amt": 0.5, "eyes": C("#e8d060"), "glow": 0.5,
+				"pose": {"hunch": 0.35, "knee": 0.15, "arm_l": "hang", "arm_r": "rest", "sh": 0.1, "weight": -0.1},
+				"body": {"build": "thin", "hands": "fist"}, "head": {"type": "goblin", "mouth": "grin", "ears": "long", "cap": C("#5a4a30")},
+				"kit": {"shirt": C("#5a4a34"), "shirt_len": 0.8, "torn": 0.4, "belt": C("#2a2016"), "weapon": "pick", "weapon_c": C("#6a6a66")}}
+		"goblin_venomer":  # 고블린 독술사 — 목에 작은 병을 주렁주렁, 초록 두건
+			return {"height": 460, "skin": C("#5a7a40"), "shade": C("#1e2a12"), "eyes": C("#b0ff60"), "glow": 0.7,
+				"pose": {"hunch": 0.3, "arm_l": "claw", "arm_r": "rest", "sh": 0.1, "weight": -0.2, "tilt": 0.05},
+				"body": {"build": "thin", "hands": "claw"}, "head": {"type": "goblin", "mouth": "grin", "ears": "long", "hood": C("#3a5a28")},
+				"kit": {"robe": C("#3a4a2a"), "torn": 0.5, "straps": C("#6a8a50"), "belt": C("#2a2016"), "weapon": "dagger", "weapon_c": C("#6a8a50")}}
+		"tunnel_rat":  # 굴 쥐 떼 — 갈색 쥐(해골 쥐 몸)
+			return {"kind": "beast", "height": 400, "color": C("#6a5440"), "head": "rat", "fur": 0.7, "tail": "thin", "bulk": 0.8, "legs": 0.7, "eyes": C("#ff8040"), "head_k": 1.3}
 		"goblin_trap_king":  # 고블린 덫왕 — 등 굽은 늙은 홉고블린, 허리에 쇠 이빨 덫을 주렁주렁
 			return {"height": 600, "skin": C("#6a7a48"), "shade": C("#2a3018"), "mottle": C("#4a5a30"), "mottle_amt": 0.4, "eyes": C("#ffd040"), "glow": 0.6,
 				"hair": "ragged", "hair_c": C("#c8c8b8"),

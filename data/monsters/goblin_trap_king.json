@@ -12,7 +12,12 @@
   "source": "placeholder",
   "shape": "humanoid",
   "magic_stone_grade": 6,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "goblin_trap_king",
+      "chance": 0.33
+    }
+  ],
   "passives": [],
   "id": "goblin_trap_king",
   "name_ko": "고블린 덫왕",

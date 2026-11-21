@@ -1,0 +1,85 @@
+{
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "immunities": [],
+  "magic_stone_grade": 7,
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_trapper_den"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "shape": "humanoid",
+  "id": "goblin_venomer",
+  "name_ko": "고블린 독술사",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "goblin",
+  "size": 0.8,
+  "color": "#5a7a40",
+  "status_immune": [
+    "poison"
+  ],
+  "weaknesses": {},
+  "stats": {
+    "str": 12,
+    "agi": 26,
+    "p_res": 20,
+    "m_res": 28,
+    "int": 26
+  },
+  "resources": {
+    "hp": 110,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 12,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.0
+    },
+    "alert_sfx": "goblin_shout",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "back"
+  },
+  "essence_drops": [
+    {
+      "essence": "goblin_venomer",
+      "chance": 0.01
+    }
+  ],
+  "skills": [
+    "venomer_coat",
+    "venomer_flask"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "first_turn",
+      "use": "venomer_coat",
+      "target": "ally_lowest_hp"
+    },
+    {
+      "if": "chance",
+      "value": 0.3,
+      "use": "venomer_coat",
+      "target": "ally_lowest_hp"
+    },
+    {
+      "if": "always",
+      "use": "venomer_flask"
+    }
+  ],
+  "notes": "덫꾼의 굴 2 · 3장(expansion_f1_3_C §4-1): 뒷줄 — 아군 무기에 독 바르기 · 독 병 던지기(중독). 수치는 관 짐꾼 곁 7등급 임시값(무르다)"
+}

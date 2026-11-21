@@ -1,0 +1,36 @@
+{
+  "id": "ess_trap_line",
+  "name_ko": "덫 줄(정수)",
+  "target": "enemy_row",
+  "cost": {
+    "soul": 18
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 0.3,
+      "warn": "combat.trap_line_warn",
+      "fire": "combat.trap_line_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 1.6,
+          "damage_type": "pierce"
+        },
+        {
+          "type": "apply_status",
+          "status": "snare"
+        }
+      ]
+    }
+  ],
+  "essence_of": "trap_line",
+  "source": "placeholder",
+  "notes": "고블린 덫왕 정수(영혼력은 광역 정수 효율 중앙값을 흔들지 않게)"
+}

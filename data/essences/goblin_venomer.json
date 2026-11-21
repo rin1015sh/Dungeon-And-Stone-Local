@@ -1,0 +1,32 @@
+{
+  "id": "goblin_venomer",
+  "name_ko": "고블린 독술사의 정수",
+  "grade": 7,
+  "source_monster": "goblin_venomer",
+  "family": "goblin_venomer",
+  "rank": "normal",
+  "passive": {
+    "id": "goblin_venomer_p",
+    "name_ko": "독 묻은 손",
+    "implemented": true,
+    "while_self_status": {
+      "status": "venom_weapon",
+      "mult": 1.12
+    }
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_venomer_coat"
+    }
+  ],
+  "stats": {
+    "agi": 5,
+    "int": 5
+  },
+  "resources": {
+    "hp": 8
+  },
+  "source": "placeholder",
+  "notes": "덫꾼의 굴(ES 연계 — 독 바른 무기 중이면 피해 ×1.12: 독 바르기를 거는 홉고블린 광부 정수와 이어짐, 반응 첫째). 임시값"
+}

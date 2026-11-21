@@ -1,0 +1,36 @@
+{
+  "id": "goblin_trap_king",
+  "name_ko": "고블린 덫왕의 정수",
+  "grade": 6,
+  "source_monster": "goblin_trap_king",
+  "family": "goblin_trap_king",
+  "rank": "guardian",
+  "passive": {
+    "id": "goblin_trap_king_p",
+    "name_ko": "물린 사냥감",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "paralysis",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_trap_line"
+    },
+    {
+      "color": "green",
+      "skill": "ess_goblin_poison_shot"
+    }
+  ],
+  "stats": {
+    "agi": 18,
+    "int": 10
+  },
+  "resources": {
+    "hp": 30
+  },
+  "source": "placeholder",
+  "notes": "덫꾼의 굴 수호자 정수(무지갯빛 33%, expansion_f1_3_B §5 12번 — 마비 ×1.15: 마비를 거는 수호자의 눈 · 사막 전갈 정수와 이어짐, 반응 셋째로 꽉 참). 임시값"
+}

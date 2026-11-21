@@ -1,0 +1,31 @@
+{
+  "id": "tunnel_rat",
+  "name_ko": "굴 쥐 떼의 정수",
+  "grade": 8,
+  "source_monster": "tunnel_rat",
+  "family": "tunnel_rat",
+  "rank": "normal",
+  "passive": {
+    "id": "tunnel_rat_p",
+    "name_ko": "덫 사이 길",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "trap_set",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_rat_leg_bite"
+    }
+  ],
+  "stats": {
+    "agi": 5
+  },
+  "resources": {
+    "hp": 6
+  },
+  "source": "placeholder",
+  "notes": "덫꾼의 굴(ES 연계 — 덫이 놓인 적에 피해 ×1.15: 덫을 거는 고블린 정수와 이어짐, 반응 첫째). 임시값"
+}

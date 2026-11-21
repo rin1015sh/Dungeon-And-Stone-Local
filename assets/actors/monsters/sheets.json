@@ -274,10 +274,10 @@
 	},
 	"gnomon_guardian": {
 		"cell": [
-			56,
-			109
+			56.0,
+			109.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"goblin": {
 		"cell": [
@@ -314,6 +314,13 @@
 		],
 		"foot": 4.0
 	},
+	"goblin_sapper": {
+		"cell": [
+			52,
+			77
+		],
+		"foot": 4
+	},
 	"goblin_shaman": {
 		"cell": [
 			44.0,
@@ -341,6 +348,13 @@
 			70.0
 		],
 		"foot": 4.0
+	},
+	"goblin_venomer": {
+		"cell": [
+			44,
+			73
+		],
+		"foot": 4
 	},
 	"goblin_wolf_rider": {
 		"cell": [
@@ -568,10 +582,10 @@
 	},
 	"sand_drift": {
 		"cell": [
-			46,
-			89
+			46.0,
+			89.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"sandman": {
 		"cell": [
@@ -589,10 +603,10 @@
 	},
 	"shade_eater": {
 		"cell": [
-			44,
-			89
+			44.0,
+			89.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"silvermane_wolf": {
 		"cell": [
@@ -691,6 +705,13 @@
 			88.0
 		],
 		"foot": 4.0
+	},
+	"tunnel_rat": {
+		"cell": [
+			120,
+			65
+		],
+		"foot": 4
 	},
 	"wall_mole": {
 		"cell": [

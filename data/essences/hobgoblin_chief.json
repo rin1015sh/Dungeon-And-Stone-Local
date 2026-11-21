@@ -1,0 +1,36 @@
+{
+  "id": "hobgoblin_chief",
+  "name_ko": "홉고블린 대장의 정수",
+  "grade": 6,
+  "source_monster": "hobgoblin_chief",
+  "family": "hobgoblin_chief",
+  "rank": "midboss",
+  "passive": {
+    "id": "hobgoblin_chief_p",
+    "name_ko": "앞장서는 몽둥이",
+    "implemented": true,
+    "while_self_status": {
+      "status": "rally",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_hob_club_smash"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_hob_mine_command"
+    }
+  ],
+  "stats": {
+    "str": 14,
+    "p_res": 12
+  },
+  "resources": {
+    "hp": 34
+  },
+  "source": "placeholder",
+  "notes": "덫꾼의 굴 중간 보스 정수(ES 연계 — 기세 중이면 피해 ×1.15: 기세를 거는 칼날늑대 · 홉고블린 · 예티 … 정수와 이어짐, 반응 첫째). 임시값"
+}

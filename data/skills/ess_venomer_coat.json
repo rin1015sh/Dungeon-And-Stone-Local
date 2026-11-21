@@ -1,0 +1,19 @@
+{
+  "id": "ess_venomer_coat",
+  "name_ko": "독 바르기(정수)",
+  "target": "ally_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "venom_weapon"
+    }
+  ],
+  "essence_of": "venomer_coat",
+  "source": "placeholder",
+  "notes": "고블린 독술사 정수"
+}

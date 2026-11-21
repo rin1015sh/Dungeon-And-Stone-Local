@@ -1,0 +1,37 @@
+{
+  "id": "sapper_ceiling",
+  "name_ko": "천장 두드리기",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "guarded_mult": 0.5,
+      "warn": "combat.sapper_ceiling_warn",
+      "fire": "combat.sapper_ceiling_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 0.7,
+          "damage_type": "blunt"
+        },
+        {
+          "type": "apply_status",
+          "status": "stun",
+          "chance": 0.25
+        }
+      ]
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 땅꾼: 곡괭이로 천장을 두드린다 — 한 차례 뒤 돌이 쏟아진다(전체 · 기절 25%, 끊기 가능)"
+}

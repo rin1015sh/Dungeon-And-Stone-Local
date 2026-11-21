@@ -1,0 +1,18 @@
+{
+  "id": "venomer_coat",
+  "name_ko": "독 바르기",
+  "target": "ally_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "venom_weapon"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 독술사: 아군 무기에 독을 바른다"
+}

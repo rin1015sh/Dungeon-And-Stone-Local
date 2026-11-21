@@ -1,0 +1,18 @@
+{
+  "id": "sapper_pick",
+  "name_ko": "곡괭이 찍기",
+  "target": "enemy_single",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.0,
+      "damage_type": "pierce"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 땅꾼: 곡괭이 찍기"
+}

@@ -1,0 +1,34 @@
+{
+  "id": "goblin_sapper",
+  "name_ko": "고블린 땅꾼의 정수",
+  "grade": 7,
+  "source_monster": "goblin_sapper",
+  "family": "goblin_sapper",
+  "rank": "normal",
+  "passive": {
+    "id": "goblin_sapper_p",
+    "name_ko": "굴 파는 팔",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:blunt",
+        "percent": -0.08
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_sapper_ceiling"
+    }
+  ],
+  "stats": {
+    "str": 6,
+    "p_res": 4
+  },
+  "resources": {
+    "hp": 14
+  },
+  "source": "placeholder",
+  "notes": "덫꾼의 굴(ES 연계 — 기절을 건다: 기절에 반응하는 홉고블린 · 오래된 돌 거인 정수와 이어짐). 임시값"
+}

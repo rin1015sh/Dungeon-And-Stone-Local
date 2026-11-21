@@ -542,6 +542,8 @@
     "trap_king_p2": "덫왕이 연기를 뿌리고 덫 더미 뒤로 물러섰다.",
     "trap_line_warn": "{name}이(가) 한 줄 발밑에 덫을 숨겼다.",
     "trap_line_fire": "발밑의 쇠 이빨이 한꺼번에 닫혔다.",
+    "sapper_ceiling_warn": "{name}이(가) 곡괭이로 천장을 두드리기 시작한다.",
+    "sapper_ceiling_fire": "천장에서 돌과 흙이 쏟아졌다.",
     "chief_intro": "대장이 몽둥이로 망루 기둥을 내리친다.",
     "colossus_p2": "가슴 화로가 금 가며 모래가 성소 안으로 쏟아진다.",
     "colossus_heart_warn": "{name}의 가슴 화로가 하얗게 달아오른다.",

@@ -1,0 +1,25 @@
+{
+  "id": "ess_rat_leg_bite",
+  "name_ko": "다리 물기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "pierce"
+    },
+    {
+      "type": "push_back",
+      "amount": 30
+    }
+  ],
+  "essence_of": "rat_leg_bite",
+  "source": "placeholder",
+  "notes": "굴 쥐 떼 정수"
+}

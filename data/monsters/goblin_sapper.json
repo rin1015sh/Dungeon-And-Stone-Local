@@ -1,0 +1,78 @@
+{
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "immunities": [],
+  "magic_stone_grade": 7,
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_trapper_den"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "shape": "humanoid",
+  "id": "goblin_sapper",
+  "name_ko": "고블린 땅꾼",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "goblin",
+  "size": 0.85,
+  "color": "#6a7048",
+  "status_immune": [],
+  "weaknesses": {},
+  "stats": {
+    "str": 22,
+    "agi": 24,
+    "p_res": 30,
+    "m_res": 20,
+    "int": 10
+  },
+  "resources": {
+    "hp": 150,
+    "soul": 30
+  },
+  "natural_weapon": {
+    "attack": 16,
+    "damage_type": "pierce"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.3,
+      "calls": true
+    },
+    "alert_sfx": "goblin_shout",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      2
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [
+    {
+      "essence": "goblin_sapper",
+      "chance": 0.01
+    }
+  ],
+  "skills": [
+    "sapper_ceiling",
+    "sapper_pick"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.5,
+      "use": "sapper_ceiling"
+    },
+    {
+      "if": "always",
+      "use": "sapper_pick"
+    }
+  ],
+  "notes": "덫꾼의 굴 2장(expansion_f1_3_C §4-1): 천장 두드리기(예고 · 끊기 가능 — 전체 약한 피해 + 기절 25%) · 곡괭이. 쫓길 때 굴을 무너뜨리는 필드 행동 · 땅굴로 뒷줄 옮기기는 다음. 수치는 관 짐꾼 곁 7등급 임시값"
+}

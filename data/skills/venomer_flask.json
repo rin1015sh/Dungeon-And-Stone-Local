@@ -1,0 +1,26 @@
+{
+  "id": "venomer_flask",
+  "name_ko": "독 병 던지기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 5
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.8,
+      "damage_type": "poison",
+      "ranged": true
+    },
+    {
+      "type": "apply_status",
+      "status": "poison",
+      "chance": 0.6
+    }
+  ],
+  "source": "placeholder",
+  "notes": "고블린 독술사: 독 병을 던진다(중독 60%)"
+}
