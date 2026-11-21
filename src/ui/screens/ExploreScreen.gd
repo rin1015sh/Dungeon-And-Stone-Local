@@ -407,6 +407,10 @@ func _on_encounter(group: FieldMonsters.Group, _party_first: bool) -> void:
 	var art := FloorArt.resolve(session.db.render, session.floor_def)
 	_combat.backdrop = art.battleback
 	_combat.backdrop_width = art.battleback_width
+	var lord_back := JsonUtil.get_dict(session.lord.def, "battleback")  # 후회의 군주 — 그 길 뒷그림에 잿빛 안개(regret_battlebacks.py)
+	if group == session.lord.group and not lord_back.is_empty():
+		_combat.backdrop = JsonUtil.get_str(lord_back, "image")
+		_combat.backdrop_width = JsonUtil.get_float(lord_back, "half_width", art.battleback_width)
 	if session.pilgrim != null and session.pilgrim.witch != null and session.player.statuses.has("f3_pain"):
 		_combat.pain = session.pilgrim.witch.pain_shake()  # 통각강화(마녀의 숲)
 	# 보상은 결과가 정해질 때 바로 준다 — 전투 결과 칸에 보이고(웨이브가 이어져도 놓치지 않게) 기록에도 남는다.

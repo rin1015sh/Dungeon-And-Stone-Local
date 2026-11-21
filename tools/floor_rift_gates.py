@@ -63,6 +63,7 @@ def main():
             mask, dest, tile = LORDS[fid]
             d["lord"] = {"_comment": LORD_COMMENT, "monster": "regret_lord", "mask": mask, "guardians": GUARDIANS,
                          "altar": {"event": "regret_altar", "tile": tile, "near_dest": dest, "at": [3, 2]},
+                         "battleback": {"image": "res://assets/battle/regret_%s.webp" % fid[3:], "half_width": 3.0},
                          "respawn_hours": 999.0, "vision_m": 4.0, "rise_fx": False, "rise_sound": "boss_reveal", "summoned_line": "explore.regret_summoned", "spawn_distance_tiles": 4, "tint": "#b8b8b0", "source": "placeholder"}
         add = FEATURES.get(fid, [])
         if add:

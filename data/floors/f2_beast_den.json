@@ -1915,6 +1915,10 @@
         2
       ]
     },
+    "battleback": {
+      "image": "res://assets/battle/regret_beast_den.webp",
+      "half_width": 3.0
+    },
     "respawn_hours": 999.0,
     "vision_m": 4.0,
     "rise_fx": false,
