@@ -29,8 +29,8 @@
     "ambient_color": "#a8bcb0",
     "art": {
       "battleback": {
-        "image": "res://assets/battle/f2_land_of_dead.webp",
-        "half_width": 3.2
+        "image": "res://assets/battle/rift_sunken_graveyard.webp",
+        "half_width": 3.0
       },
       "palette": {
         "near_black": "#0d1210",

@@ -28,6 +28,10 @@ const SCENES := {
 	"iron_tomb_ch2": "res://tools/battle_art/SceneIt2.gd",
 	"iron_tomb_ch3": "res://tools/battle_art/SceneIt3.gd",
 	"iron_tomb_ch4": "res://tools/battle_art/SceneIt4.gd",
+	"rift_sunken_graveyard": "res://tools/battle_art/SceneSunken.gd",  # 2층 균열 넷(AM72)
+	"rift_wind_den": "res://tools/battle_art/SceneWindDen.gd",
+	"rift_sun_temple": "res://tools/battle_art/SceneSunTemple.gd",
+	"rift_trapper_den": "res://tools/battle_art/SceneTrapperDen.gd",
 }
 const SEED := 4417
 const W := 1280

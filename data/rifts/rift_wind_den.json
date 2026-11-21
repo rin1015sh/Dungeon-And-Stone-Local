@@ -29,8 +29,8 @@
     "ambient_color": "#d8d0c0",
     "art": {
       "battleback": {
-        "image": "res://assets/battle/f2_beast_den.webp",
-        "half_width": 3.2
+        "image": "res://assets/battle/rift_wind_den.webp",
+        "half_width": 3.0
       },
       "palette": {
         "near_black": "#12100d",

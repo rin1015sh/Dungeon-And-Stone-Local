@@ -29,8 +29,8 @@
     "ambient_color": "#f0d8a8",
     "art": {
       "battleback": {
-        "image": "res://assets/battle/f2_rock_desert.webp",
-        "half_width": 3.2
+        "image": "res://assets/battle/rift_sun_temple.webp",
+        "half_width": 2.5
       },
       "palette": {
         "near_black": "#14100a",
