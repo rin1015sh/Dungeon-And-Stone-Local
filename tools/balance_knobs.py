@@ -49,7 +49,6 @@ SECTIONS = [
         ("combat.taken_build_min / taken_total_min / taken_total_max / dealt_total_max", "피해 수정자 곱연산의 상·하한(정수·장비 곱 최소 ×0.4 등)", "상한 완화 = 방어 빌드 쏠림 ↑", f"{PARTY}"),
         ("combat.regen_per_round_max", "정수 차례당 재생 합 상한(최대 생명력 비율)", "장기전 회복 ↑", ""),
         ("combat.element_resist_per_point / element_resist_max / affinity_per_point", "속성 내성·감응도 1점당 효과", "속성 빌드 ↑", ""),
-        ("combat.rev.max / power / basic_bonus / guard_bonus", "기세: 최대 개수·개수별 위력 배율·기본 공격·방어로 쌓이는 양", "플레이어 화력 ↑(보스 승률 ↑)", f"{PARTY} --rev=full"),
         ("combat.flee_base / flee_agi_share", "도주 확률", "도망이 쉬워짐 → 위험 회피 ↑", ""),
     ]),
     ("상태이상·시간 압박", [

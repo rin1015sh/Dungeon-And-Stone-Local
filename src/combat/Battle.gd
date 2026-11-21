@@ -172,8 +172,6 @@ func next_turn() -> Combatant:
 		turns += 1
 		c.extra_turn = _is_extra(c)
 		c.last_turn = turns
-		if not bool(c.memo.get("in_extra", false)):
-			BattleRev.on_turn_start(self, c)  # 기세(C20): 자기 차례마다 하나
 		_busy += 1
 		var stunned := c.actor.statuses.has_flag("skip_turn") or BattleRules.fear_skip(self, c)
 		if not bool(c.memo.get("in_extra", false)):  # 추가 행동(같은 라운드의 두 번째 차례)은 지속시간·쿨타임을 다시 세지 않는다
@@ -205,7 +203,7 @@ func next_turn() -> Combatant:
 	return null
 
 
-## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant, "rev": 얹을 기세 개수(BattleRev)}
+## 행동 적용. {"kind": "skill", "skill": id, "target": Combatant}
 ##          | {"kind": "guard"} | {"kind": "item", "item": id, "target": Combatant(하나만 치는 아이템)} | {"kind": "flee"}
 ## 적용했으면 true. 현재 차례가 아니거나 이미 처리했거나 행동이 잘못됐으면 false(차례를 쓰지 않는다).
 func act(c: Combatant, action: Dictionary) -> bool:
@@ -222,10 +220,9 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	match str(action.get("kind", "")):
 		"skill":
 			BattleHabits.record(self, c, str(action.get("skill", BASIC_ATTACK)))  # 습관 기록(후회의 군주 흉내)
-			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), int(action.get("rev", 0)), action.get("coin", {}))
+			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), action.get("coin", {}))
 		"guard":
 			c.actor.statuses.apply("guarding")
-			BattleRev.on_guard(self, c)
 			message.emit("combat.guard", {"name": c.label()}, "info")
 		"item":
 			if not _use_item(c, str(action.get("item", "")), action.get("target")):
@@ -292,7 +289,7 @@ func unit_of(actor: Actor) -> Combatant:
 
 
 ## coin = 화면이 미리 던진 보스 동전 결과(BattleCoin.roll — 없으면 동전 스킬일 때 여기서 던진다).
-func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0, coin_in: Dictionary = {}) -> float:
+func _use_skill(c: Combatant, skill_id: String, chosen: Variant, coin_in: Dictionary = {}) -> float:
 	var sk := db.get_entry("skills", skill_id)
 	var why := can_use(c, skill_id)
 	if sk.is_empty() or not why.is_empty():
@@ -306,9 +303,7 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0, c
 	if skill_id != BASIC_ATTACK:
 		message.emit("combat.use_skill", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "system")
 	var kind := JsonUtil.get_str(sk, "target")
-	var rev_before := c.rev
-	var strikes := BattleRev.strikes(self, c, skill_id, sk, rev)  # 기세를 다 얹은 기본 공격 = 두 번 친다(타격마다 따로)
-	var fx := BattleRev.use(self, c, skill_id, sk, BattlePassives.skill_effects(self, c, skill_id, sk), rev)
+	var fx := BattlePassives.skill_effects(self, c, skill_id, sk)
 	var targets := BattleTargets.resolve(self, c, kind, chosen)
 	BattleRules.apply_cover(self, c, kind, targets)  # 대신 맞기
 	var mis := BattleTargets.misdirect(self, c, kind) if not targets.is_empty() else {}
@@ -321,27 +316,18 @@ func _use_skill(c: Combatant, skill_id: String, chosen: Variant, rev: int = 0, c
 	var said := history.size()
 	var info := {"skill_id": skill_id, "skill_name": JsonUtil.get_str(sk, "name_ko", skill_id),  # 대상들이 함께 쓴다(예고 안내 한 번)
 		"summons": side_units(c.side).filter(func(u: Combatant) -> bool: return u.summoned and u.is_active()).size(), "aoe": kind == "enemy_all"}
-	for s in strikes:
-		if s > 0:
-			if c.actor.dead or not targets.any(func(t: Combatant) -> bool: return t.is_active()):
-				break  # 반격으로 쓰러졌거나 칠 상대가 없다 — 두 번째 타격은 하지 않는다
-			event.emit({"type": "strike", "unit": c, "n": s, "of": strikes, "action": {"kind": "skill", "skill": skill_id}})  # 화면: 몸짓을 한 번 더
-		for t in targets:
-			if c.actor.dead:
-				break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다
-			if s > 0 and not t.is_active():
-				continue
-			var ctx := EffectContext.new(db, c.actor, t.actor, rng)
-			ctx.info = info
-			ctx.registry = effects
-			effects.apply_all(ctx, fx if coin.is_empty() else BattleCoin.effects_for(fx, coin, t))
-			_relay(ctx, c)
+	for t in targets:
+		if c.actor.dead:
+			break  # 반사·반격으로 쓰러졌다 — 남은 대상은 치지 못한다
+		var ctx := EffectContext.new(db, c.actor, t.actor, rng)
+		ctx.info = info
+		ctx.registry = effects
+		effects.apply_all(ctx, fx if coin.is_empty() else BattleCoin.effects_for(fx, coin, t))
+		_relay(ctx, c)
 	if fx.any(func(e: Variant) -> bool: return e is Dictionary and JsonUtil.get_str(e, "type") == "damage"):
 		BattleRules.consume_on_attack(self, c)  # 진군 명령 등: 스킬 한 번(광역·연타 전체)에 쓰고 사라진다
 	if skill_id != BASIC_ATTACK and history.size() == said:  # 확률 상태가 안 걸리는 등 조용히 끝났다 — 썼다는 것은 알린다
 		message.emit("combat.no_effect", {"name": c.label(), "skill": JsonUtil.get_str(sk, "name_ko", skill_id)}, "info")
-	if skill_id == BASIC_ATTACK and c.rev == rev_before:
-		BattleRev.on_basic(self, c)  # 기세를 얹지 않은 기본 공격은 기세를 하나 채운다(사용자 2026-11-02)
 	return JsonUtil.get_float(sk, "delay_cost")
 
 

@@ -60,7 +60,7 @@ func _works(mid: String, sid: String, seed: int) -> bool:
 	mon.actor.pool.set_current("hp", mon.actor.pool.get_max("hp") * 0.6)  # 회복 스킬도 차이가 보이게
 	var tgt: Variant = mate if JsonUtil.get_str(db.get_entry("skills", sid), "target") == "ally_single" else null
 	var before := _snap(b, mon)
-	b._use_skill(mon, sid, tgt, false)
+	b._use_skill(mon, sid, tgt)
 	b._after_effects()
 	return _snap(b, mon) != before
 
@@ -97,7 +97,7 @@ func test_deathfiend_does_not_only_shield() -> void:
 		df.was_hit = true
 		var a := b.ai_action(df)
 		seq.append(str(a.get("skill", "")))
-		b._use_skill(df, str(a["skill"]), a.get("target"), false)
+		b._use_skill(df, str(a["skill"]), a.get("target"))
 		df.actor.advance_turns(1.0)
 		df.tick_cooldowns()
 		df.acted += 1

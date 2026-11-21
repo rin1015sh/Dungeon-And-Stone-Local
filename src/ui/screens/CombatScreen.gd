@@ -6,7 +6,6 @@ extends Control
 ##   안내(방금 일어난 일·결과·보상) = 대화창(DialogueBox) — 아래 창 전체를 덮고(2026-10-20) 한 쪽씩 Enter로 넘긴다(사용자 결정 2026-10-18).
 ##   대화창이 떠 있는 동안은 차례가 멈추고 아래 창은 숨어 조작되지 않는다(다 넘기면 다음 차례). 결과·보상도 대화창으로 보이고, 다 넘기면 탐험으로 돌아간다.
 ## 아군 행동은 피어 앤 헝거처럼 먼저 전원 정하고(행동 정하기) 차례가 오면 실행한다(_loop).
-## 행동을 정하는 동안 E/Q = 그 사람의 기세 올리기·내리기(BattleRev — C20, 파티 창 삼각형). 피해를 주는 스킬을 고르면 행동에 "rev"로 얹힌다.
 ## 전투 규칙은 Battle, 이 화면은 차례 진행과 연출만. 행동 순서는 Battle/Timeline이 정하고, 지금 차례인 사람의 줄·발밑이 밝다.
 
 signal finished(result: String, turns: int, killed: Array[String])
@@ -35,7 +34,6 @@ var _route: NoticeRoute
 var _dialog: DialogueBox
 var _banner: SkillBanner
 var _order: TurnOrder  # 행동 순서(CB7 — 사용자 2026-11-07)
-var _strike_delay: float = 0.0  # 이번 행동의 두 번째 타격 이후 사건을 미루는 초(_on_event)
 var _finished: bool = false  # 계속을 두 번 눌러도 한 번만 끝낸다
 var _plan: Dictionary = {}  # Combatant -> 정해 둔 행동(차례가 오면 한다)
 var _planning: Array[Combatant] = []  # 지금 행동을 정하는 사람들(파티 창 순서)
@@ -171,11 +169,10 @@ func _loop() -> void:
 			_just_planned = null
 			var action: Dictionary = _plan[c]
 			_plan.erase(c)
-			_roster.set_rev_pick(c, 0)
 			if not battle.act(c, action):
 				_fallback(c, action)
 			_refresh()
-			if not await _strike_wait() or not await _turn_gap():
+			if not await _turn_gap():
 				return
 			continue
 		await get_tree().create_timer(_ai_delay()).timeout
@@ -190,7 +187,7 @@ func _loop() -> void:
 			if not battle.act(c, {"kind": "skill", "skill": Battle.BASIC_ATTACK, "target": null}):
 				battle.act(c, {"kind": "guard"})
 		_refresh()
-		if not await _strike_wait() or not await _turn_gap():
+		if not await _turn_gap():
 			return
 	_looping = false
 	_show_result()
@@ -219,7 +216,6 @@ func _begin_planning(first: Combatant) -> void:
 
 func _open_plan() -> void:
 	var u: Combatant = _planning[_plan_i]
-	_roster.set_rev_pick(u, mini(_roster.rev_pick(u), BattleRev.plan_max(battle, u)))
 	_roster.set_current(u)
 	for v: Combatant in _stage.views():
 		(_stage.views()[v] as BattlerView).set_current(v == u)
@@ -240,11 +236,6 @@ func _on_chosen(action: Dictionary) -> void:
 			return
 		_menu.open(battle, u)
 		return
-	if str(action.get("kind")) == "skill" and BattleRev.applies(battle.db.get_entry("skills", str(action.get("skill", Battle.BASIC_ATTACK)))) \
-			and _roster.rev_pick(u) > 0:
-		action["rev"] = _roster.rev_pick(u)
-	else:
-		_roster.set_rev_pick(u, 0)  # 피해가 없는 행동에는 얹지 않는다
 	_plan[u] = action
 	_plan_i += 1
 	if _plan_i < _planning.size():
@@ -255,59 +246,17 @@ func _on_chosen(action: Dictionary) -> void:
 	_loop()
 
 
-## 행동을 정하는 동안 E/Q: 지금 정하는 사람의 기세를 하나 올리고 내린다(얹을 수 있는 만큼 — BattleRev.plan_max).
-func _input(event: InputEvent) -> void:
-	if _planning.is_empty() or not _menu.is_open() or not _menu.is_visible_in_tree() or not event.is_pressed() or event.is_echo():
-		return
-	var d := 0
-	if InputMap.has_action("rev_up") and event.is_action_pressed("rev_up"):
-		d = 1
-	elif InputMap.has_action("rev_down") and event.is_action_pressed("rev_down"):
-		d = -1
-	if d == 0:
-		return
-	get_viewport().set_input_as_handled()
-	var u: Combatant = _planning[_plan_i]
-	_roster.set_rev_pick(u, clampi(_roster.rev_pick(u) + d, 0, BattleRev.plan_max(battle, u)))
-
-
 ## 명령 칸에서 뒤로(Enter): 앞사람의 행동을 다시 고른다.
 func _on_root_back() -> void:
 	if _planning.is_empty() or _plan_i == 0:
 		return
 	_plan_i -= 1
-	_roster.set_rev_pick(_planning[_plan_i], int((_plan.get(_planning[_plan_i], {}) as Dictionary).get("rev", 0)))
 	_plan.erase(_planning[_plan_i])
 	_open_plan()
 
 
-## 한 행동이 여러 번 칠 때(기세 3개 기본 공격 — Battle "strike" 사건): 두 번째 타격부터는 몸짓·피해 숫자를 그만큼 늦춰 따로 보인다.
-## 규칙은 한꺼번에 끝나 있으니 화면만 늦춘다(_strike_delay = 이번 행동에서 지금 사건을 미룰 초).
 func _on_event(e: Dictionary) -> void:
-	var kind := str(e.get("type"))
-	if kind == "act":
-		_strike_delay = 0.0
-	elif kind == "strike":
-		_strike_delay = float(e.get("n", 1)) * _strike_gap()
-		_later(_strike_delay, _handle_event.bind({"type": "act", "unit": e.get("unit"), "action": e.get("action", {})}))
-		return
-	if _strike_delay > 0.0 and kind in ["damage", "down", "fled", "summon"]:
-		_later(_strike_delay, _handle_event.bind(e))
-		return
 	_handle_event(e)
-
-
-func _strike_gap() -> float:
-	return 0.0 if GameState.debug_fast_combat or DialogueBox.auto_skip else UiTheme.ui_float("combat_strike_gap_sec", 0.75)
-
-
-func _later(sec: float, f: Callable) -> void:
-	if sec <= 0.0:
-		f.call()
-		return
-	get_tree().create_timer(sec).timeout.connect(func() -> void:
-		if is_inside_tree():
-			f.call())
 
 
 func _handle_event(e: Dictionary) -> void:
@@ -391,7 +340,6 @@ func _drop_fallen() -> void:
 		if not u.is_active():
 			_planning.erase(u)
 			_plan.erase(u)
-			_roster.set_rev_pick(u, 0)
 	if _planning.is_empty() or battle.current == null or not battle.current.is_active():
 		_planning.clear()
 		_menu.close()
@@ -462,14 +410,6 @@ func _read() -> bool:
 
 
 ## 여러 번 친 행동이면 마지막 타격이 보일 때까지 기다린다(그 뒤 지운다). 화면이 사라졌으면 false.
-func _strike_wait() -> bool:
-	var sec := _strike_delay
-	_strike_delay = 0.0
-	if sec > 0.0:
-		await get_tree().create_timer(sec).timeout
-	return is_inside_tree()
-
-
 ## 차례가 넘어가기 전 쉼: 안내가 떠 있으면 다 넘길 때까지, 없으면 잠깐(피해 숫자를 볼 틈). 화면이 사라졌으면 false.
 func _turn_gap() -> bool:
 	if _dialog.busy():
