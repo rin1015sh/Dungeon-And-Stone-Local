@@ -206,7 +206,7 @@ gen = {
     "marks": [{"name": nm, "node": "arrival", "at": rel(x, y)} for nm, (x, y) in marks.items()],
 }
 fork_common = {"block_tile": "f2d_scree", "block_r": 2,
-               "right_feature": {"event": "wind_gap", "tile": "f2d_cairn"}}  # 막힌 바람 틈(울부짖는 바람굴 — floor_rift_gates.py)
+               "right_feature": {"event": "wind_gap", "tile": "r2f_windgap"}}  # 막힌 바람 틈(울부짖는 바람굴 — floor_rift_gates.py)
 route_spots = {
     "_comment": "갈림길 셋(forks — RouteForks: 원정마다 바른 갈래 하나, 나머지는 끝이 무너진 돌로 막힘 · 입구 단서 요소) · 바위턱(망루 — 내려다보기) · 곁길 보상 · 지키는 무리 · 협곡 매복. [창작] 임시값",
     "forks": [

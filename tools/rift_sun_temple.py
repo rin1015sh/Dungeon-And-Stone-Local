@@ -15,8 +15,8 @@ import rift_sunken_graveyard as base  # noqa: E402
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
 LEGEND = {
-    " ": "metal_wall", "#": "metal_wall", ".": "metal_floor", ",": "it_flagstone", ":": "it_rubble", "~": "f2r_sand",
-    "l": "it_sunbeam", "O": "it_pillar", "S": "it_statue", "B": "it_brazier", "X": "it_debris", "o": "it_urn",
+    " ": "r2st_wall", "#": "r2st_wall", ".": "r2st_flag", ",": "r2st_flag", ":": "it_rubble", "~": "r2st_sand",
+    "l": "it_sunbeam", "O": "r2p_st_pillar", "S": "r2p_st_statue", "B": "r2p_st_brazier", "X": "r2p_st_hoodoo", "P": "r2p_st_pedestal", "o": "it_urn",
 }
 WALK = {".", ",", ":", "~", "l"}
 
@@ -84,6 +84,11 @@ CH3_MARKS = {"entry": [1, 7], "exit": [40, 7], "slots": [[12, 7], [37, 7]],
              "posts": [], "loot": [[20, 2], [20, 12], [36, 4]], "hidden": [[42, 6]], "hazards": []}
 
 CHAPTERS = [("ch1", CH1, CH1_MARKS), ("ch2", CH2, CH2_MARKS), ("ch3", CH3, CH3_MARKS)]
+# 2층 균열 전용 소품(rift2_props.py): 모래에 깎인 바위 · 부서진 받침돌
+PLACE = {"ch1": [(12, 10, "X"), (26, 3, "X"), (72, 11, "X"), (88, 6, "P")],
+         "ch2": [(6, 5, "P"), (6, 9, "P"), (40, 2, "X"), (40, 12, "X")],
+         "ch3": [(20, 3, "P"), (30, 3, "P"), (20, 11, "P"), (30, 11, "P")]}
+
 PAD = {"ch1": (6, 6, 0, 0, "#"), "ch2": (8, 8, 0, 0, "#"), "ch3": (14, 14, 0, 0, "#")}
 EDGE = {"ch1": {"exit": "right"}, "ch2": {"entry": "left", "exit": "right"}, "ch3": {"entry": "left"}}
 
@@ -92,11 +97,11 @@ def main():
     base.WALK.clear()
     base.WALK.update(WALK)
     for cid, art, marks in CHAPTERS:
-        rows = base.carve(base.pad(base.rows_of(art), marks, PAD[cid]), marks, EDGE[cid])
+        rows = base.carve(base.pad(base.place(base.rows_of(art), PLACE.get(cid, [])), marks, PAD[cid]), marks, EDGE[cid])
         base.check(cid, rows, marks)
         d = {
             "_comment": "균열 챕터 설계도 — tools/rift_sun_temple.py가 만든다(손으로 고치지 말고 그 파일의 그림을 고친다). 형식은 1층 균열과 같다.",
-            "rift": "rift_sun_temple", "chapter": cid, "width": len(rows[0]), "height": len(rows), "floor": "metal_floor",
+            "rift": "rift_sun_temple", "chapter": cid, "width": len(rows[0]), "height": len(rows), "floor": "r2st_flag",
             "legend": {k: v for k, v in LEGEND.items() if any(k in r for r in rows)}, "marks": marks, "rows": rows,
         }
         path = os.path.join(ROOT, "data", "maps", "rifts", "rift_sun_temple_%s.json" % cid)

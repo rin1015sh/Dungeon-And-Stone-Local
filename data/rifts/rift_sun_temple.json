@@ -22,9 +22,9 @@
   "desc_ko": "모래 바다 밑에 잠긴 옛 태양 신전. 천장 틈마다 모래와 빛이 함께 흘러내린다.",
   "look": {
     "tiles": {
-      "floor": "metal_floor",
-      "wall": "metal_wall",
-      "exit": "rift_gate_metal_floor"
+      "floor": "r2st_flag",
+      "wall": "r2st_wall",
+      "exit": "rift_gate_r2st_flag"
     },
     "ambient_color": "#f0d8a8",
     "art": {
@@ -70,7 +70,9 @@
           "metal_floor",
           "it_flagstone",
           "it_rubble",
-          "f2r_sand"
+          "f2r_sand",
+          "r2st_flag",
+          "r2st_sand"
         ],
         "rules": [
           {
@@ -397,5 +399,5 @@
       "chapter": "ch3"
     }
   ],
-  "notes": "2층 균열(expansion_f1_3_B §4) — 바위사막 모래 바다 한가운데 첨탑 끝에 오후 모래 폭풍(13~16시)에만 횃불로 불을 붙이면 열린다(RiftGates, natural false). 중간 보스 오래된 돌 거인(1장 끝) · 수호자 모래 왕의 거상(열기 게이지 · 태양의 가슴). 히든 피스 셋(항아리 원반 → 해시계 바늘 → 성소 불씨). 강철의 묘 타일을 빌린다(전용 타일 · 모래 흐름 · 거울 빛 잇기 · 빛 받을 때만 피해 · 무너짐 게이지 ) · 균열 몬스터 그늘 삼키는 자 · 해시계 수호상 · 흐르는 모래와 정수 다섯(2차, 2026-11-21). 임시값"
+  "notes": "2층 균열(expansion_f1_3_B §4) — 바위사막 모래 바다 한가운데 첨탑 끝에 오후 모래 폭풍(13~16시)에만 횃불로 불을 붙이면 열린다(RiftGates, natural false). 중간 보스 오래된 돌 거인(1장 끝) · 수호자 모래 왕의 거상(열기 게이지 · 태양의 가슴). 히든 피스 셋. 전용 바닥 · 벽 · 소품(AM72 — tools/dungeon_kit/rift2_tiles.py · rift2_props.py). 모래 흐름 · 거울 빛 잇기 · 빛 받을 때만 피해 · 무너짐 게이지는 다음. 임시값"
 }

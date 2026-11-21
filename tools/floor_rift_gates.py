@@ -46,10 +46,10 @@ GUARDIANS = ["wolf_king", "sleepless_knight", "sand_colossus", "goblin_trap_king
 LORD_COMMENT = ("계층군주 후회의 군주(LordWatch altar — expansion_f1_3_B §6): 그 길 끝(3층 포탈 곁) 제단에서 2층 균열 수호자 넷을 모두 쓰러뜨린 적이 있으면 부른다. "
                 "mask = 이 길의 탈(첫 페이즈 — RegretMasks). 원정마다 한 번(respawn_hours가 원정보다 길다). 소환 중 시야 vision_m. [창작] 임시값")
 LORDS = {
-    "f2_beast_den": ("beast", "floor3_from_den", "f2d_offering"),
-    "f2_land_of_dead": ("dead", "floor3_from_dead", "f2d_offering"),
-    "f2_rock_desert": ("sand", "floor3_from_desert", "f2r_offering"),
-    "f2_goblin_forest": ("goblin", "floor3_from_forest", "f2d_offering"),
+    "f2_beast_den": ("beast", "floor3_from_den", "r2f_altar"),
+    "f2_land_of_dead": ("dead", "floor3_from_dead", "r2f_altar"),
+    "f2_rock_desert": ("sand", "floor3_from_desert", "r2f_altar"),
+    "f2_goblin_forest": ("goblin", "floor3_from_forest", "r2f_altar"),
 }
 
 

@@ -12,9 +12,9 @@ from collections import deque
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
 LEGEND = {
-    " ": "bf_rise", ".": "fortress_floor", ",": "bf_dirt", ":": "bf_ash", "z": "bf_bones", "#": "fortress_wall",
-    "t": "bf_grave", "y": "bf_deadtree", "u": "bf_cage", "f": "bf_brazier", "p": "bf_pew", "a": "bf_altar",
-    "c": "bf_candles", "S": "bf_statue", "~": "f2d_deep", "i": "bf_stake", "R": "bf_rock", "s": "bf_sack",
+    " ": "bf_rise", ".": "r2sg_flag", ",": "r2sg_mud", ":": "bf_ash", "z": "bf_bones", "#": "r2sg_wall",
+    "t": "bf_grave", "y": "bf_deadtree", "u": "r2p_sg_skeleton", "f": "bf_brazier", "p": "bf_pew", "a": "bf_altar",
+    "c": "r2p_sg_candles", "S": "r2p_sg_statue", "~": "f2d_deep", "i": "bf_stake", "R": "bf_rock", "s": "bf_sack", "K": "r2p_sg_sarcophagus", "k": "r2p_sg_sarcophagus_b", "j": "r2p_sg_skeleton",
 }
 WALK = {".", ",", ":", "z"}
 
@@ -110,6 +110,11 @@ CHAPTERS = [("ch1", CH1, CH1_MARKS), ("ch2", CH2, CH2_MARKS), ("ch3", CH3, CH3_M
 
 # 둘레 덧대기(위, 아래, 왼, 오른, 글자) — 챕터는 2000칸 넘게(test_rift_blueprint), 입구 · 출구에서 가장자리까지 길을 판다
 # (앞 챕터 출구 · 뒤 챕터 입구는 지도 가장자리 — 길목 RiftPassage, test_rift_passage). EDGE = {표시: 방향}
+# 2층 균열 전용 소품(rift2_props.py — 2026-11-21): 석관 · 유골
+PLACE = {"ch1": [(5, 3, "k"), (54, 3, "K"), (18, 7, "k"), (39, 9, "K"), (41, 15, "k"), (26, 19, "K")],
+         "ch2": [(68, 4, "K"), (72, 4, "K"), (11, 12, "K"), (59, 12, "k"), (11, 14, "K"), (35, 13, "j")],
+         "ch3": [(22, 10, "K"), (32, 10, "K")]}
+
 PAD = {"ch1": (2, 3, 0, 0, " "), "ch2": (0, 3, 0, 0, "#"), "ch3": (6, 6, 2, 2, "#")}
 EDGE = {"ch1": {"exit": "right"}, "ch2": {"entry": "left", "exit": "right"}, "ch3": {"entry": "left"}}
 DIRS = {"right": (1, 0), "left": (-1, 0), "down": (0, 1), "up": (0, -1)}
@@ -139,6 +144,24 @@ def carve(rows, marks, edges):
                 if 0 <= x + ox < w and 0 <= y + oy < h and rows[y + oy][x + ox] not in WALK:
                     rows[y + oy][x + ox] = ","
         marks[key] = [x, y]
+    return ["".join(r) for r in rows]
+
+
+def place(rows, items, over=""):
+    """그림 위에 소품 글자를 더 얹는다(바닥 칸에만 — items = [(x, y, 글자)], 덧대기 전 그림 좌표)."""
+    rows = [list(r) for r in rows]
+    h = len(rows)
+    def open_at(x, y):  # 길을 막지 않게 자기와 둘레 8칸이 모두 걸을 수 있는 칸(좁은 통로 · 문간 · 다른 소품 곁에는 놓지 않는다)
+        return 0 < y < h - 1 and 0 < x < len(rows[y]) - 1 and all(
+            rows[y + dy][x + dx] in WALK for dy in (-1, 0, 1) for dx in (-1, 0, 1))
+    for x, y, ch in items:
+        if 0 <= y < h and 0 <= x < len(rows[y]) and rows[y][x] in over:  # 이미 소품인 칸은 바꿔 얹는다(길이 그대로)
+            rows[y][x] = ch
+            continue
+        spot = next(((x + dx, y + dy) for r in range(4) for dy in range(-r, r + 1) for dx in range(-r, r + 1)
+                     if max(abs(dx), abs(dy)) == r and open_at(x + dx, y + dy)), None)  # 가장 가까운 트인 칸(3칸 안)
+        if spot:
+            rows[spot[1]][spot[0]] = ch
     return ["".join(r) for r in rows]
 
 
@@ -184,11 +207,11 @@ def check(cid, rows, marks):
 
 def main():
     for cid, art, marks in CHAPTERS:
-        rows = carve(pad(rows_of(art), marks, PAD[cid]), marks, EDGE[cid])
+        rows = carve(pad(place(rows_of(art), PLACE.get(cid, []), over="tp"), marks, PAD[cid]), marks, EDGE[cid])
         check(cid, rows, marks)
         d = {
             "_comment": "균열 챕터 설계도 — tools/rift_sunken_graveyard.py가 만든다(손으로 고치지 말고 그 파일의 그림을 고친다). 형식은 1층 균열과 같다.",
-            "rift": "rift_sunken_graveyard", "chapter": cid, "width": len(rows[0]), "height": len(rows), "floor": "fortress_floor",
+            "rift": "rift_sunken_graveyard", "chapter": cid, "width": len(rows[0]), "height": len(rows), "floor": "r2sg_flag",
             "legend": {k: v for k, v in LEGEND.items() if any(k in r for r in rows)}, "marks": marks, "rows": rows,
         }
         path = os.path.join(ROOT, "data", "maps", "rifts", "rift_sunken_graveyard_%s.json" % cid)

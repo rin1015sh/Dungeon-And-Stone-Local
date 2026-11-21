@@ -13,7 +13,7 @@ extends Node
 ## --monster=<id>: --combat에서 부를 몬스터(--god = 무적), --mate: 동료를 붙여 행동 정하기 화면, --summon: 전투 화면에서 적 진영에 고블린 증원(카드가 붙는지 확인)
 ## --up=<포탈 dest>: 1층 그 포탈로 올라가 위층(2층) 도착 자리에서 찍는다(--reveal · --ezoom · --nomon(몬스터 치움) · --near_trap[=step](첫 곰덫 곁 · 밟기)과 함께) · --spotted: (--near=boss|guardian과 함께) 그 보스가 알아채 전투 직전 한 줄이 뜬다(--dialog로 띄운 채), --rift_open=<균열 id>: 옆에 균열 포탈, --rift=<균열 id> [--chapter=n] [--engage[=guardian|riddle]] [--near=guardian|boss|<x>,<y>]: 들어가서 n번째 챕터로(riddle = 수수께끼 대화창, near = 그 무리 몇 칸 앞에 선다)
 ## (앞 챕터는 디버그로 치움, 출구 조건 아이템은 지급), 첫 조우(또는 그 종류의 조우)와 전투, --trap = 그 챕터 첫 함정을 밟는다(--trap=all = 모두 드러내기만), --murals = 벽화 힌트를 다 본 상태
-## --near=mon:<id>: 그 몬스터가 낀 무리 앞에 선다 · --near=chest [--open_chest=<초>] [--pick=0|1]: 첫 상자 아래 칸(열고 그 초 뒤 — 앞뒤 고르기 창, --pick이면 고른 뒤 동전 연출, --dialog와 함께)
+## --near_feature=<요소 id>: (--up과 함께) 그 동굴 요소 곁에 선다 · --near=mon:<id>: 그 몬스터가 낀 무리 앞에 선다 · --near=chest [--open_chest=<초>] [--pick=0|1]: 첫 상자 아래 칸(열고 그 초 뒤 — 앞뒤 고르기 창, --pick이면 고른 뒤 동전 연출, --dialog와 함께)
 ## --slay: (균열 마지막 챕터, --near=guardian과 함께) 수호자를 쓰러뜨린 것으로 해 그 자리에 생긴 탈출 포탈을 본다
 ## --lord: 맵에 계층군주 소환(붉은 수정·시야 2m) — --lord_at=<초> --dialog: 소환 연출을 그 시각에 멈춰 찍는다, --meters: 전투 화면에서 탐험가 게이지를 채우고 보스를 P2로(게이지 표시 확인)
 ## --dialog: 하단 대화창을 넘기지 않고 띄운 채(없으면 모든 대화창이 기다리지 않는다), --advance=N: 도시 활동 결과 대화창을 N쪽 넘겨서
@@ -153,6 +153,15 @@ func _run() -> void:
 					print("[near_trap] prop %s %s · explored %d" % [fv.prop_by_def[df.index], df.prop_sheet, explore.session.map.explored[explore.session.map.idx(tp)]])
 					if str(_args["near_trap"]) == "step":
 						explore.session.relocate(tp)
+			if _args.has("near_feature"):  # --near_feature=<요소 id>: 그 동굴 요소 두 칸 아래에 선다(제단 · 첨탑 끝 · 바람 틈 그림 확인)
+				for e: Dictionary in explore.session.features.list:
+					if str(e["id"]) == str(_args["near_feature"]):
+						var fp: Vector2i = e["pos"]
+						for d: Vector2i in [Vector2i(0, 2), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(0, -2), Vector2i(2, 0), Vector2i(-2, 0)]:
+							if explore.session.relocate(fp + d):
+								break
+						print("[near_feature] %s %s" % [e["id"], fp])
+						break
 			if _args.has("reveal"):
 				ExploreDebug.reveal(explore.session)
 				explore.session.refresh_view()

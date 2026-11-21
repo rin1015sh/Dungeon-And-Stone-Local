@@ -22,9 +22,9 @@
   "desc_ko": "숲 땅 밑에 판 고블린 덫꾼들의 은신처. 굴 바닥마다 쇠 냄새가 난다.",
   "look": {
     "tiles": {
-      "floor": "mine_floor",
-      "wall": "mine_wall",
-      "exit": "rift_gate_mine_floor"
+      "floor": "r2td_dirt",
+      "wall": "r2td_wall",
+      "exit": "rift_gate_r2td_dirt"
     },
     "ambient_color": "#c8d0b0",
     "art": {
@@ -104,7 +104,9 @@
           "mine_floor",
           "gm_stone",
           "gm_rubble",
-          "bf_bones"
+          "bf_bones",
+          "r2td_dirt",
+          "r2td_root"
         ],
         "rules": [
           {
@@ -455,5 +457,5 @@
       "chapter": "ch3"
     }
   ],
-  "notes": "2층 균열(expansion_f1_3_B §5) — 고블린 숲 덫 밭 셋의 덫에 걸린 사냥꾼 매듭 끈을 다 풀면 열린다(RiftGates, natural false). 1장 숨은 곰덫 다섯 · 중간 보스 홉고블린 대장 · 수호자 고블린 덫왕(덫 줄 · 증원). 히든 피스 셋(통 더미 열쇠 → 대장의 궤짝 → 덫 더미 꾸러미). 녹색 탄광 타일을 빌린다(뒤밟기 길 · 경보 날 닫힘 · 달아나는 수호자 · 해체한 덫 다시 놓기 · 북 웨이브 · 전용 타일은 다음) · 균열 몬스터 고블린 땅꾼 · 고블린 독술사 · 굴 쥐 떼와 정수 다섯(2차, 2026-11-21). 임시값"
+  "notes": "2층 균열(expansion_f1_3_B §5) — 고블린 숲 덫 밭 셋의 덫에 걸린 사냥꾼 매듭 끈을 다 풀면 열린다(RiftGates, natural false). 1장 숨은 곰덫 다섯 · 중간 보스 홉고블린 대장 · 수호자 고블린 덫왕(덫 줄 · 증원). 히든 피스 셋. 전용 바닥 · 벽 · 소품(AM72 — tools/dungeon_kit/rift2_tiles.py · rift2_props.py). 뒤밟기 길 · 경보 날 닫힘 · 달아나는 수호자 · 해체한 덫 다시 놓기 · 북 웨이브는 다음. 임시값"
 }

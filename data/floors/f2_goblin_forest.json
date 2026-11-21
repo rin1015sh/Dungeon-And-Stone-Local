@@ -2719,7 +2719,7 @@
     ],
     "altar": {
       "event": "regret_altar",
-      "tile": "f2d_offering",
+      "tile": "r2f_altar",
       "near_dest": "floor3_from_forest",
       "at": [
         3,

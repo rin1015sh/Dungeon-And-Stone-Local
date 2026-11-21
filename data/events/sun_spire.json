@@ -2,7 +2,7 @@
   "id": "sun_spire",
   "name_ko": "모래에 묻힌 첨탑 끝",
   "type": "feature",
-  "tile": "f2r_cairn",
+  "tile": "r2f_spire",
   "actions": [
     {
       "id": "look",

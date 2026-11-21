@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/trap_king_bundle.webp-48c829c9ed316f90f1701f2
 
 [params]
 
-compress/mode=1
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.9
 compress/uastc_level=0

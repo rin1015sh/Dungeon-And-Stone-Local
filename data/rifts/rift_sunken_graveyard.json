@@ -22,9 +22,9 @@
   "desc_ko": "진창 밑으로 가라앉은 기사단 묘역. 물이 빠진 자리마다 묘비 끝이 솟아 있다.",
   "look": {
     "tiles": {
-      "floor": "fortress_floor",
-      "wall": "fortress_wall",
-      "exit": "rift_gate_fortress_floor"
+      "floor": "r2sg_flag",
+      "wall": "r2sg_wall",
+      "exit": "rift_gate_r2sg_flag"
     },
     "ambient_color": "#a8bcb0",
     "art": {
@@ -105,7 +105,9 @@
           "fortress_floor",
           "bf_dirt",
           "bf_ash",
-          "bf_bones"
+          "bf_bones",
+          "r2sg_flag",
+          "r2sg_mud"
         ],
         "rules": [
           {
@@ -470,5 +472,5 @@
       "chapter": "ch3"
     }
   ],
-  "notes": "2층 균열(expansion_f1_3_B §3) — 망자의 땅 비석에 종자의 시신을 묻으면 열린다(RiftGates, natural false). 균열 몬스터 관 짐꾼 · 뼈 장인 · 진흙 망령 · 중간 보스 목 없는 기수(2차, 2026-11-20) · 히든 피스 셋(잠긴 묘비 셋 중 하나 → 반지로 성물함 → 수호자 뒤 맹세문). 핏빛성채 타일을 빌린다(전용 타일은 다음). 임시값"
+  "notes": "2층 균열(expansion_f1_3_B §3) — 망자의 땅 비석에 종자의 시신을 묻으면 열린다(RiftGates, natural false). 균열 몬스터 관 짐꾼 · 뼈 장인 · 진흙 망령 · 중간 보스 목 없는 기수(2차, 2026-11-20) · 히든 피스 셋. 전용 바닥 · 벽 · 소품(AM72 — tools/dungeon_kit/rift2_tiles.py · rift2_props.py). 임시값"
 }

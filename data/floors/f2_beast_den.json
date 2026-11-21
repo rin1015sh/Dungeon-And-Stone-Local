@@ -1239,7 +1239,7 @@
         "wrong": "den_still",
         "right_feature": {
           "event": "wind_gap",
-          "tile": "f2d_cairn"
+          "tile": "r2f_windgap"
         }
       },
       {
@@ -1259,7 +1259,7 @@
         "wrong": "den_burrowed",
         "right_feature": {
           "event": "wind_gap",
-          "tile": "f2d_cairn"
+          "tile": "r2f_windgap"
         }
       },
       {
@@ -1279,7 +1279,7 @@
         "wrong": "den_tracks_out",
         "right_feature": {
           "event": "wind_gap",
-          "tile": "f2d_cairn"
+          "tile": "r2f_windgap"
         }
       }
     ],
@@ -1908,7 +1908,7 @@
     ],
     "altar": {
       "event": "regret_altar",
-      "tile": "f2d_offering",
+      "tile": "r2f_altar",
       "near_dest": "floor3_from_den",
       "at": [
         3,

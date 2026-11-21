@@ -25,8 +25,13 @@ func _init() -> void:
 	var n := 0
 	var missing: Array[String] = []
 	var t0 := Time.get_ticks_msec()
+	var kit_items: Array = []  # 에셋 라이브러리 그림을 옮겨 쓰는 아이템(tools/dungeon_kit/item_kit.py) — 여기서는 덮어쓰지 않는다
+	if FileAccess.file_exists(OUT_DIR.path_join("kit_items.json")):
+		kit_items = JSON.parse_string(FileAccess.get_file_as_string(OUT_DIR.path_join("kit_items.json")))
 	for id: String in ids:
 		if not only.is_empty() and not only.has(id):
+			continue
+		if kit_items.has(id):
 			continue
 		if not kind.is_empty() and JsonUtil.get_str(JsonUtil.get_dict(db.get_entry("items", id), "forged"), "type") != kind:
 			continue

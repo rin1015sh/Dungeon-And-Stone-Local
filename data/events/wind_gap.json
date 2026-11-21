@@ -2,7 +2,7 @@
   "id": "wind_gap",
   "name_ko": "막힌 바람 틈",
   "type": "feature",
-  "tile": "f2d_cairn",
+  "tile": "r2f_windgap",
   "actions": [
     {
       "id": "look",

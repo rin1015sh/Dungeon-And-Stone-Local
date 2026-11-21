@@ -11,13 +11,14 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import rift_sunken_graveyard as base  # noqa: E402
 from rift_sunken_graveyard import carve, check, pad, rows_of  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
 LEGEND = {
-    " ": "mine_wall", "#": "mine_wall", ".": "mine_floor", ",": "gm_stone", ":": "gm_rubble", "z": "bf_bones",
-    "R": "gm_rock", "X": "gm_cavein",
+    " ": "r2wd_wall", "#": "r2wd_wall", ".": "r2wd_rock", ",": "r2wd_dirt", ":": "gm_rubble", "z": "r2wd_bones",
+    "R": "r2p_wd_boulder", "X": "r2p_wd_column", "N": "r2p_wd_nest", "G": "r2p_wd_bone", "^": "r2p_wd_stalagmite",
 }
 WALK = {".", ",", ":", "z"}
 
@@ -94,20 +95,24 @@ CH3_MARKS = {"entry": [6, 7], "exit": [54, 8], "slots": [[14, 8], [44, 7]],
              "posts": [], "loot": [[25, 2], [30, 13], [52, 5]], "hidden": [[53, 4]], "hazards": []}
 
 CHAPTERS = [("ch1", CH1, CH1_MARKS), ("ch2", CH2, CH2_MARKS), ("ch3", CH3, CH3_MARKS)]
+# 2층 균열 전용 소품(rift2_props.py): 돌기둥 · 석순 · 둥지 · 거대한 뼈
+PLACE = {"ch1": [(12, 3, "X"), (36, 2, "^"), (66, 4, "X"), (88, 3, "^"), (20, 10, "^"), (52, 9, "X"), (80, 11, "^"), (30, 17, "X"), (70, 18, "^"), (90, 16, "G")],
+         "ch2": [(38, 5, "N"), (46, 9, "N"), (56, 6, "N"), (30, 3, "G"), (50, 11, "G"), (9, 6, "^"), (74, 8, "^")],
+         "ch3": [(16, 4, "^"), (48, 5, "^"), (20, 10, "G"), (40, 11, "G"), (30, 2, "X"), (33, 8, "N")]}
+
 PAD = {"ch1": (2, 2, 0, 0, "#"), "ch2": (6, 6, 0, 0, "#"), "ch3": (10, 10, 0, 0, "#")}
 EDGE = {"ch1": {"exit": "right"}, "ch2": {"entry": "left", "exit": "right"}, "ch3": {"entry": "left"}}
 
 
 def main():
-    import rift_sunken_graveyard as base
     base.WALK.clear()
     base.WALK.update(WALK)
     for cid, art, marks in CHAPTERS:
-        rows = carve(pad(rows_of(art), marks, PAD[cid]), marks, EDGE[cid])
+        rows = carve(pad(base.place(rows_of(art), PLACE.get(cid, [])), marks, PAD[cid]), marks, EDGE[cid])
         check(cid, rows, marks)
         d = {
             "_comment": "균열 챕터 설계도 — tools/rift_wind_den.py가 만든다(손으로 고치지 말고 그 파일의 그림을 고친다). 형식은 1층 균열과 같다.",
-            "rift": "rift_wind_den", "chapter": cid, "width": len(rows[0]), "height": len(rows), "floor": "mine_floor",
+            "rift": "rift_wind_den", "chapter": cid, "width": len(rows[0]), "height": len(rows), "floor": "r2wd_rock",
             "legend": {k: v for k, v in LEGEND.items() if any(k in r for r in rows)}, "marks": marks, "rows": rows,
         }
         path = os.path.join(ROOT, "data", "maps", "rifts", "rift_wind_den_%s.json" % cid)

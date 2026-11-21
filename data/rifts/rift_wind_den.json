@@ -22,9 +22,9 @@
   "desc_ko": "협곡 밑동으로 바람이 빨려 드는 굴. 바람이 지날 때마다 굴 전체가 길게 운다.",
   "look": {
     "tiles": {
-      "floor": "mine_floor",
-      "wall": "mine_wall",
-      "exit": "rift_gate_mine_floor"
+      "floor": "r2wd_rock",
+      "wall": "r2wd_wall",
+      "exit": "rift_gate_r2wd_rock"
     },
     "ambient_color": "#d8d0c0",
     "art": {
@@ -104,7 +104,10 @@
           "mine_floor",
           "gm_stone",
           "gm_rubble",
-          "bf_bones"
+          "bf_bones",
+          "r2wd_rock",
+          "r2wd_dirt",
+          "r2wd_bones"
         ],
         "rules": [
           {
@@ -424,5 +427,5 @@
       "chapter": "ch3"
     }
   ],
-  "notes": "2층 균열(expansion_f1_3_B §2) — 짐승의 소굴 갈림길 셋의 바른 갈래 끝 막힌 바람 틈을 다 뚫으면 열린다(RiftGates, natural false). 중간 보스 우두머리 웨어울프 · 수호자 늑대왕(표식 · 부르는 울음 · 달을 향한 고개). 히든 피스 셋(바위 그늘 뼈피리 → 둥지 뒤 송곳니 → 수호자 뒤 갈기). 녹색 탄광 타일을 빌린다· 균열 몬스터 질풍 늑대 · 뼈 갉는 쥐 떼 · 은빛 갈기 늑대와 정수 다섯(2차, 2026-11-20). 전용 타일 · 바람 방향 규칙은 다음. 임시값"
+  "notes": "2층 균열(expansion_f1_3_B §2) — 짐승의 소굴 갈림길 셋의 바른 갈래 끝 막힌 바람 틈을 다 뚫으면 열린다(RiftGates, natural false). 중간 보스 우두머리 웨어울프 · 수호자 늑대왕(표식 · 부르는 울음 · 달을 향한 고개). 히든 피스 셋. 전용 바닥 · 벽 · 소품(AM72 — tools/dungeon_kit/rift2_tiles.py · rift2_props.py). 바람 방향 규칙은 다음. 임시값"
 }

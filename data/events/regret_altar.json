@@ -2,7 +2,7 @@
   "id": "regret_altar",
   "name_ko": "후회의 제단",
   "type": "feature",
-  "tile": "f2d_offering",
+  "tile": "r2f_altar",
   "actions": [
     {
       "id": "look",
