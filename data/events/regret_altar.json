@@ -1,0 +1,22 @@
+{
+  "id": "regret_altar",
+  "name_ko": "후회의 제단",
+  "type": "feature",
+  "tile": "f2d_offering",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.regret_altar"
+    },
+    {
+      "id": "summon",
+      "name_ko": "손을 얹는다",
+      "limit": "always",
+      "summon_lord": true
+    }
+  ],
+  "source": "placeholder",
+  "notes": "후회의 군주 제단(expansion_f1_3_B §6-1 · LordWatch altar): 2층 네 길 끝(3층 포탈 곁)에 하나씩. 균열 수호자 넷을 모두 쓰러뜨린 적이 있으면 손을 얹어 군주를 부른다(아니면 차갑다). 홈 넷 그림(진행 표시)은 다음. 임시값"
+}

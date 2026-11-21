@@ -30,6 +30,7 @@ static func merge_cap(a: int, b: int) -> int:
 ## 전투가 꾸려진 뒤: 맞는 규칙의 상태를 건다. 건 수.
 static func apply(b: Battle, s: ExploreSession, g: FieldMonsters.Group) -> int:
 	var n := 0
+	s.lord.prepare_battle(b, g)  # 후회의 군주 — 부른 제단의 탈(RegretMasks)
 	if g != null and s.clock.total_hours < float(g.get_meta(MonsterTraits.STUNNED, -1.0)):  # 벽에 박은 멧돼지 — 기절한 채 시작
 		for u in b.side_units(Combatant.SIDE_ENEMY):
 			u.actor.statuses.apply("stun")

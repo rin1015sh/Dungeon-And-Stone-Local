@@ -84,6 +84,7 @@ const BOSSES := {
 	"kambormir": {"size": 1.5, "spec": {"rest": "throne", "seat_c": Color("#3e3438")}, "map": {"head": 2.0}},
 	"tarunbas": {"spec": {"rest": "stand", "plant": true, "hair": "ragged", "hair_c": Color("#c8c8c0")}, "map": {"head": 1.7, "bulk": 1.25, "wide": 1.1}},
 	"kirdui": {"spec": {"rest": "squat"}, "map": {"head": 1.6, "bulk": 1.2}},
+	"regret_lord": {"size": 1.4, "spec": {"rest": "stand"}, "map": {"head": 1.7, "bulk": 1.2}},  # 제단 앞에 선 후회의 군주(2층 계층군주)
 	"goblin_trap_king": {"spec": {"rest": "squat"}, "map": {"head": 2.1}},  # 덫 더미 위에 웅크린 덫왕
 	"hobgoblin_chief": {"spec": {"rest": "stand", "plant": true}, "map": {"head": 1.9, "bulk": 1.2}},  # 몽둥이를 짚고 선 대장
 	"sand_colossus": {"spec": {"rest": "seat", "seat_c": Color("#8a7a5a")}, "map": {"head": 1.6, "bulk": 1.3, "wide": 1.15}},  # 성소 한가운데 앉은 거상

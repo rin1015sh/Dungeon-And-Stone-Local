@@ -133,6 +133,7 @@ func start() -> void:
 	if rift_run == null:
 		rifts.begin(self)
 	RouteSpots.place_features(self)
+	lord.place_altar(self)  # 2층 길 끝 후회의 제단(LordWatch)
 	RouteSpots.scatter(self)
 	RouteSpots.scatter_hazards(self)
 	forks = RouteForks.setup(self)  # 갈림길 규칙(야수의 소굴 — LD11)

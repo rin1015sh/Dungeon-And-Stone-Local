@@ -1,0 +1,19 @@
+{
+  "id": "regret_mourn",
+  "name_ko": "곡소리",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 12
+  },
+  "delay_cost": 0,
+  "cooldown": 4,
+  "effects": [
+    {
+      "type": "apply_status",
+      "status": "blater_grudge"
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "망자 탈 — 회복에 기대는 것을 벌한다: 모두에게 원한(치유 · 재생 반감)"
+}

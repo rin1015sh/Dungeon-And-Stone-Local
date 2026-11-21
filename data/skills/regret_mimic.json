@@ -1,0 +1,19 @@
+{
+  "id": "regret_mimic",
+  "name_ko": "흉내",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "seal_skill",
+      "rounds": 3
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "고블린 탈 — 같은 기술만 쓰는 것을 벌한다: 스킬 하나 봉인(3차례). 가장 많이 쓴 스킬을 고르는 것은 다음(지금은 무작위)"
+}

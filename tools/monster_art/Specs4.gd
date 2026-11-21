@@ -147,6 +147,11 @@ static func spec_of(id: String) -> Dictionary:
 		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
 			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
 				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"regret_lord":  # 후회의 군주 — 잿빛 수의를 걸친 얼굴 없는 거인, 얼굴 자리에 탈(2층 계층군주)
+			return {"height": 780, "width": 1.08, "skin": C("#8a8a86"), "shade": C("#2a2a28"), "eyes": C("#e8e8e0"), "glow": 0.6, "fade": 0.2, "desat": 0.4,
+				"pose": {"hunch": 0.15, "arm_l": "wide", "arm_r": "hang", "sh": 0.17, "hip": 0.09, "arms": 1.2, "weight": 0.1, "tilt": -0.04},
+				"body": {"build": "thin", "bulk": 1.2, "hands": "claw", "claws": 0.6}, "head": {"type": "block", "size": 0.9, "hood": C("#6a6a66")},
+				"kit": {"robe": C("#7a7a74"), "torn": 0.8, "cape": C("#5a5a56")}}
 		"goblin_sapper":  # 고블린 땅꾼 — 귀에 흙이 잔뜩, 곡괭이
 			return {"height": 480, "skin": C("#6a7048"), "shade": C("#2a3018"), "mottle": C("#5a4a30"), "mottle_amt": 0.5, "eyes": C("#e8d060"), "glow": 0.5,
 				"pose": {"hunch": 0.35, "knee": 0.15, "arm_l": "hang", "arm_r": "rest", "sh": 0.1, "weight": -0.1},

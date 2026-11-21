@@ -1,0 +1,41 @@
+{
+  "id": "regret_hourglass",
+  "name_ko": "모래시계를 뒤집는다",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "interruptible": true,
+      "warn": "combat.regret_hourglass_warn",
+      "fire": "combat.regret_hourglass_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 0.6,
+          "damage_type": "blunt"
+        },
+        {
+          "type": "push_back",
+          "amount": 60
+        },
+        {
+          "type": "apply_status",
+          "status": "blind",
+          "chance": 0.4
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "모래 탈 — 차례 순서에 기대는 것을 벌한다: 한 차례 뒤 모두의 차례를 크게 늦추고 모래(실명). 아군 순서를 거꾸로 뒤집는 효과는 다음(지금은 모두 늦추기)"
+}

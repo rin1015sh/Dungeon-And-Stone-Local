@@ -5,6 +5,9 @@ extends RefCounted
 ## 원작의 머묾 소환(3일 차 이후 5인 이상이 한곳에 머물면)은 사용자 결정으로 없앴다(2026-10-27).
 ## 소환되면 전조(수정이 붉어짐)·결속 해제·시야 vision_m. 군주는 필드 무리로 나타나 다가온다. 쓰러뜨리면 respawn_hours 뒤 다시 부를 수 있다.
 ## 패배하면 군주를 부른 탐험가만 죽고 나머지는 생명력 1로 산다.
+## 2층(후회의 군주 — plans/expansion_f1_3_B §6): "altar": {"event", "tile", "near_dest": 포탈 dest, "at": [dx, dy]} — 그 길 끝(3층 포탈) 곁에
+##   제단 요소를 놓는다(place_altar). 제단 행동 summon_lord(FieldFeatureAct)가 "guardians"(수호자 id 목록 — 모두 쓰러뜨린 적이 있어야)를
+##   보고 부른다(altar_summon). "mask" = 이 길의 탈 — 전투가 시작되면 군주 액터에 메타로 남긴다(prepare_battle → RegretMasks).
 
 const IDLE := "idle"
 const ACTIVE := "active"
@@ -55,9 +58,14 @@ func summon(s: ExploreSession) -> bool:
 	s.monsters.changed.emit()
 	s.refresh_view()
 	var g := group
-	s.lord_rise(g, func() -> void:  # 화면이 소환 연출(구더기가 모여 군주를 이룬다 — LordRiseFx)을 보인 뒤 알린다(V27)
-		s.message.emit("explore.lord_summoned", {"name": DataNames.entry(s.db, "monsters", mid)}, "danger")
-		s.message.emit("explore.lord_bond", {}, "warn"))
+	var say := func() -> void:
+		s.message.emit(JsonUtil.get_str(def, "summoned_line", "explore.lord_summoned"), {"name": DataNames.entry(s.db, "monsters", mid)}, "danger")
+		s.message.emit("explore.lord_bond", {}, "warn")
+	if JsonUtil.get_bool(def, "rise_fx", true):  # 화면이 소환 연출(구더기가 모여 군주를 이룬다 — LordRiseFx, 드레드피어 전용)을 보인 뒤 알린다(V27)
+		s.lord_rise(g, say)
+	else:  # 후회의 군주: 구더기 연출 없이 등장 소리만(잿빛 불이 빨려 드는 연출은 다음)
+		s.sound.emit(JsonUtil.get_str(def, "rise_sound", "boss_reveal"), at)
+		say.call()
 	return true
 
 
@@ -75,6 +83,50 @@ func on_battle_end(s: ExploreSession, g: FieldMonsters.Group, result: String) ->
 	else:
 		s.message.emit("explore.lord_vanished", {}, "warn")
 	return true
+
+
+## 길 끝 제단을 놓는다(입장 때 한 번 — ExploreSession.start).
+func place_altar(s: ExploreSession) -> void:
+	var al := JsonUtil.get_dict(def, "altar")
+	if al.is_empty():
+		return
+	var dest := JsonUtil.get_str(al, "near_dest")
+	for pt: Dictionary in s.map.portals:
+		if str(pt.get("dest", "")) == dest:
+			var off := JsonUtil.get_array(al, "at")
+			RouteSpots.place_feature(s, al, (pt["pos"] as Vector2i) + (Vector2i(int(off[0]), int(off[1])) if off.size() == 2 else Vector2i.ZERO))
+			return
+
+
+## 그 길의 수호자 기록이 모두 찼는가(guardians — 플레이어 처치 기록, 1층 Monument.guardians_cleared와 같은 방식).
+func guardians_cleared(s: ExploreSession) -> bool:
+	var ids := JsonUtil.get_array(def, "guardians")
+	if ids.is_empty():
+		return false
+	for g: Variant in ids:
+		if s.player.progression.kill_count(str(g)) <= 0:
+			return false
+	return true
+
+
+## 제단에서 부르기(요소 행동 summon_lord). 불렀으면 true. 못 부르면 짧은 한 줄.
+func altar_summon(s: ExploreSession) -> bool:
+	if not enabled() or not guardians_cleared(s):
+		s.message.emit(JsonUtil.get_str(JsonUtil.get_dict(def, "altar"), "cold_line", "field.regret_altar_cold"), {}, "info")
+		return false
+	if state != IDLE:
+		s.message.emit("explore.monument_why_lord", {}, "info")
+		return false
+	return summon(s)
+
+
+## 군주 전투가 시작됐다(BattleFloor.apply): 이 길의 탈을 군주 액터에 남긴다(첫 페이즈 탈 — RegretMasks).
+func prepare_battle(b: Battle, g: FieldMonsters.Group) -> void:
+	if g == null or g != group or not def.has("mask"):
+		return
+	for u in b.side_units(Combatant.SIDE_ENEMY):
+		if u.actor is Monster and (u.actor as Monster).monster_id == JsonUtil.get_str(def, "monster"):
+			u.actor.set_meta(RegretMasks.LEAD, JsonUtil.get_str(def, "mask"))
 
 
 func _spawn_cell(s: ExploreSession) -> Vector2i:

@@ -1,0 +1,32 @@
+{
+  "id": "regret_sniff",
+  "name_ko": "킁킁거린다",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 15
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 1.0,
+      "warn": "combat.regret_sniff_warn",
+      "fire": "combat.regret_sniff_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 2.0,
+          "damage_type": "pierce"
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "짐승 탈 — 뒤로 숨는 것을 벌한다: 방어 중인 아군을 찍어 한 차례 뒤 ×2.0(방어로 줄지 않는다 — 덮기 · 끊기로 받는다)"
+}

@@ -50,10 +50,10 @@
 	},
 	"hobgoblin_chief": {
 		"cell": [
-			122,
-			203
+			122.0,
+			203.0
 		],
-		"frames": 5
+		"frames": 5.0
 	},
 	"ildium": {
 		"cell": [
@@ -82,6 +82,13 @@
 			301.0
 		],
 		"frames": 5.0
+	},
+	"regret_lord": {
+		"cell": [
+			106,
+			200
+		],
+		"frames": 5
 	},
 	"sand_colossus": {
 		"cell": [

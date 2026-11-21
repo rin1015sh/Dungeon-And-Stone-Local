@@ -1,0 +1,31 @@
+{
+  "id": "regret_rewind",
+  "name_ko": "돌아본다",
+  "target": "self",
+  "cost": {
+    "soul": 20
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "self",
+      "interruptible": true,
+      "warn": "combat.regret_rewind_warn",
+      "fire": "combat.regret_rewind_fire",
+      "effects": [
+        {
+          "type": "restore_resource",
+          "resource": "hp",
+          "percent": 0.06
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "민낯 — 되감기: 한 차례 뒤 생명력 6% 되돌림. 예고 차례에 기절 · 빙결로 끊으면 흩어진다(받은 피해의 절반을 되돌리는 셈은 다음)"
+}

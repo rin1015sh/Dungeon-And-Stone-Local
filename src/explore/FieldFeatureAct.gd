@@ -106,6 +106,8 @@ static func _go(s: ExploreSession, e: Dictionary, a: Dictionary, right: int) -> 
 		s.map.set_tile(e["pos"], JsonUtil.get_str(a, "clear_tile", floor_tile))
 		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))  # 테두리·소품을 다시 그린다
 	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"), right if risk else -1)
+	if JsonUtil.get_bool(a, "summon_lord"):  # 후회의 제단(LordWatch.altar_summon — 수호자 넷 기록)
+		s.lord.altar_summon(s)
 	if a.has("goal") and s.goal != null:  # 층 목표 하나(종 울리기 — FloorGoal, FL18)
 		s.goal.advance(s, JsonUtil.get_str(a, "goal"))
 	if a.has("goal") and s.rift_gates != null:  # 2층 균열 여는 문(RiftGates — 같은 키, expansion_f1_3_B)

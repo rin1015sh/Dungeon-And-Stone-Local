@@ -14,8 +14,8 @@
 | 동굴 요소 features | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 다른 탐험가 explorers | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 위층 포탈 portals | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 계층군주 lord(+패턴) | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
-| 군주 등장 문구 explore.boss_notice | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 계층군주 lord(+패턴) | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
+| 군주 등장 문구 explore.boss_notice | ◐ | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 필드 몬스터 | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 몬스터 그림 assets/monsters | ● | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
 | 정수 data/essences | ● | ● | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ |
@@ -52,9 +52,10 @@
 - ○ 동굴 요소 features — 0종 0곳
 - ● 다른 탐험가 explorers
 - ● 위층 포탈 portals — 1개
-- ○ 계층군주 lord(+패턴)
-- ● 필드 몬스터 — 37종 · 등급 [5, 6, 7, 8] (목표 8)
-- ● 몬스터 그림 assets/monsters — 57장
+- ● 계층군주 lord(+패턴) — regret_lord · 패턴 regret_lord
+- ◐ 군주 등장 문구 explore.boss_notice — regret_lord — 전용 문구 없음(any를 씀)
+- ● 필드 몬스터 — 38종 · 등급 [5, 6, 7, 8] (목표 8)
+- ● 몬스터 그림 assets/monsters — 58장
 - ● 정수 data/essences — 56종
 - ● 균열 data/rifts — 꺼진 태양의 신전 3챕터 / 가라앉은 묘역 3챕터 / 덫꾼의 굴 3챕터 / 울부짖는 바람굴 3챕터
 - ○ 도서관 서적(floor n) — 0권 · 빠진 분야 dungeon, arms, ailments, monsters, survival, society

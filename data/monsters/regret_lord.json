@@ -1,0 +1,192 @@
+{
+  "id": "regret_lord",
+  "name_ko": "후회의 군주",
+  "grade": 5,
+  "rank": "lord",
+  "floor": 2,
+  "floor_tags": [
+    "f2_beast_den",
+    "f2_land_of_dead",
+    "f2_rock_desert",
+    "f2_goblin_forest"
+  ],
+  "type": "spirit",
+  "family": [
+    "undead"
+  ],
+  "shape": "humanoid",
+  "size": 1.9,
+  "color": "#8a8a86",
+  "immunities": [],
+  "status_immune": [
+    "poison",
+    "rot",
+    "fear",
+    "confusion",
+    "seal"
+  ],
+  "weaknesses": {
+    "holy": 1.25
+  },
+  "stats": {
+    "str": 56,
+    "agi": 52,
+    "p_res": 76,
+    "m_res": 60,
+    "int": 40
+  },
+  "resources": {
+    "hp": 9800,
+    "soul": 600
+  },
+  "natural_weapon": {
+    "attack": 44,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 40.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front",
+    "ignores_stealth": true
+  },
+  "magic_stone_grade": 5,
+  "essence_drops": [],
+  "drops": [],
+  "skills": [
+    "regret_claw",
+    "regret_sniff",
+    "regret_mourn",
+    "regret_wail",
+    "regret_hourglass",
+    "regret_mimic",
+    "regret_pilfer",
+    "regret_rewind"
+  ],
+  "passives": [],
+  "ai": [
+    {
+      "if": "mask",
+      "value": [
+        "beast"
+      ],
+      "use": "regret_sniff",
+      "target": "with_status",
+      "target_status": "guarding"
+    },
+    {
+      "if": "mask",
+      "value": [
+        "dead"
+      ],
+      "use": "regret_mourn"
+    },
+    {
+      "if": "mask",
+      "value": [
+        "dead"
+      ],
+      "use": "regret_wail"
+    },
+    {
+      "if": "mask",
+      "value": [
+        "sand"
+      ],
+      "use": "regret_hourglass"
+    },
+    {
+      "if": "mask",
+      "value": [
+        "goblin"
+      ],
+      "use": "regret_mimic"
+    },
+    {
+      "if": "mask",
+      "value": [
+        "goblin"
+      ],
+      "use": "regret_pilfer"
+    },
+    {
+      "if": "mask",
+      "value": [
+        "face"
+      ],
+      "use": "regret_rewind"
+    },
+    {
+      "if": "always",
+      "use": "regret_claw"
+    }
+  ],
+  "pattern": "regret_lord",
+  "pattern_params": {
+    "intro": "combat.regret_intro",
+    "masks": [
+      "beast",
+      "dead",
+      "sand",
+      "goblin"
+    ],
+    "mask_lines": {
+      "beast": "combat.regret_mask_beast",
+      "dead": "combat.regret_mask_dead",
+      "sand": "combat.regret_mask_sand",
+      "goblin": "combat.regret_mask_goblin",
+      "face": "combat.regret_mask_face"
+    },
+    "mask_summons": {
+      "beast": [
+        "blade_wolf",
+        "blade_wolf"
+      ],
+      "dead": [
+        "skeleton",
+        "skeleton"
+      ],
+      "sand": [
+        "kobold",
+        "kobold"
+      ],
+      "goblin": [
+        "goblin",
+        "goblin"
+      ]
+    },
+    "summon_on": [
+      2,
+      4
+    ]
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.8
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.6
+    },
+    {
+      "id": "p3",
+      "hp_above": 0.4
+    },
+    {
+      "id": "p4",
+      "hp_above": 0.2
+    },
+    {
+      "id": "p5",
+      "hp_above": 0.0
+    }
+  ],
+  "source": "placeholder",
+  "notes": "2층 계층군주(expansion_f1_3_B §6): 탈 넷(부른 제단의 길 탈이 맨 앞 · 셋은 굴림 — RegretMasks) + 민낯. 짐승 = 방어 중인 아군을 찍어 ×2.0 · 망자 = 원한(치유 반감) · 통곡 · 모래 = 모두 차례 늦추기 · 실명 · 고블린 = 스킬 봉인 · 소모품 훔치기 · 민낯 = 되감기(끊기 가능). 탈이 깨질 때(3 · 5번째 페이즈로) 깨진 탈의 길 몬스터 둘. 무너짐 게이지 · 탈 약점 · 습관 기록(최근 방어 · 치유 · 가장 많이 쓴 스킬) · 순서 뒤집기는 다음. 수치는 드레드피어 ×1.25 근처 임시값(5등급 · 5층 5인 기준)"
+}
