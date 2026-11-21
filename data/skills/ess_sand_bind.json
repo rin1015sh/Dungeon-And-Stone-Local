@@ -1,0 +1,26 @@
+{
+  "id": "ess_sand_bind",
+  "name_ko": "휘감기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "sand_bind",
+  "source": "placeholder",
+  "notes": "흐르는 모래 정수"
+}

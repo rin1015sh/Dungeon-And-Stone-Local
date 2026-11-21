@@ -100,3 +100,22 @@ func test_giant_sinks_then_rises() -> void:
 	assert_eq(Progression.first_kill_exp(db, (g.actor as Monster).def), 5, "6등급 + 상위 변이 = 5")
 	g.actor.statuses.apply("half_buried")
 	assert_eq(str(MonsterAi.choose(b, g)["skill"]), "giant_rise", "잠겼으면 다음 차례 솟구친다")
+
+
+## 2차(2026-11-21): 균열 몬스터 셋 · 정수 다섯.
+func test_second_pass_monsters_and_essences() -> void:
+	var exp := {"shade_eater": 3, "gnomon_guardian": 3, "sand_drift": 2, "sand_colossus": 4, "ancient_stone_giant": 5}
+	for id: String in exp:
+		assert_eq(Progression.first_kill_exp(db, db.get_entry("monsters", id)), int(exp[id]), "%s 첫 처치" % id)
+		assert_true(db.has_entry("essences", id), "%s 정수" % id)
+	var rift := db.get_entry("rifts", RIFT)
+	var seen := {}
+	for ch: Variant in JsonUtil.get_array(rift, "chapters"):
+		for en: Variant in JsonUtil.get_array(ch, "encounters"):
+			for m: Variant in JsonUtil.get_array(en, "monsters"):
+				seen[str(m)] = true
+			for pk: Variant in JsonUtil.get_array(en, "packs"):
+				for m: Variant in pk:
+					seen[str(m)] = true
+	for id in ["shade_eater", "gnomon_guardian", "sand_drift"]:
+		assert_true(seen.has(id), "%s가 균열 조우에 나온다" % id)

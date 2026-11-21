@@ -1,0 +1,33 @@
+{
+  "id": "sand_drift",
+  "name_ko": "흐르는 모래의 정수",
+  "grade": 8,
+  "source_monster": "sand_drift",
+  "family": "sand_drift",
+  "rank": "normal",
+  "passive": {
+    "id": "sand_drift_p",
+    "name_ko": "모래 몸",
+    "implemented": true,
+    "modifiers": [
+      {
+        "target": "dmg_taken:blunt",
+        "percent": -0.08
+      }
+    ]
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_sand_bind"
+    }
+  ],
+  "stats": {
+    "str": 3
+  },
+  "resources": {
+    "hp": 8
+  },
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전(ES 연계 — 속박을 건다: 속박에 반응하는 고블린 덫꾼 · 늑대 기수 · 고블린 정수와 이어짐). 임시값"
+}

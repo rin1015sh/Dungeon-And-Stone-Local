@@ -1,0 +1,24 @@
+{
+  "id": "gnomon_shadow",
+  "name_ko": "바늘 그림자",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 0.9,
+      "damage_type": "dark"
+    },
+    {
+      "type": "push_back",
+      "amount": 40
+    }
+  ],
+  "source": "placeholder",
+  "notes": "해시계 수호상: 바늘 그림자로 대상의 차례를 늦춘다"
+}

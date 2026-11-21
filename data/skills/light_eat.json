@@ -1,0 +1,26 @@
+{
+  "id": "light_eat",
+  "name_ko": "빛 먹기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 6
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 1.0,
+      "damage_type": "dark",
+      "drain": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.5
+    }
+  ],
+  "source": "placeholder",
+  "notes": "그늘 삼키는 자: 눈앞의 빛을 삼킨다(실명 50% · 피해 절반 흡수)"
+}

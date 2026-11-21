@@ -1,0 +1,21 @@
+{
+  "id": "ess_colossus_slam",
+  "name_ko": "내려찍기(정수)",
+  "target": "enemy_row",
+  "cost": {
+    "soul": 18
+  },
+  "delay_cost": 0,
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "blunt"
+    }
+  ],
+  "essence_of": "colossus_slam",
+  "source": "placeholder",
+  "notes": "모래 왕의 거상 정수 — 영혼력은 광역 정수 효율 중앙값을 흔들지 않게 높였다(test_skill_value)"
+}

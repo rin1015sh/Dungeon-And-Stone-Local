@@ -1,0 +1,32 @@
+{
+  "id": "ancient_stone_giant",
+  "name_ko": "오래된 돌 거인의 정수",
+  "grade": 6,
+  "source_monster": "ancient_stone_giant",
+  "family": "ancient_stone_giant",
+  "rank": "midboss",
+  "passive": {
+    "id": "ancient_stone_giant_p",
+    "name_ko": "쓰러진 자를 짓밟기",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "stun",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_giant_rise"
+    }
+  ],
+  "stats": {
+    "str": 12,
+    "p_res": 16
+  },
+  "resources": {
+    "hp": 34
+  },
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전 중간 보스 정수(ES 연계 — 기절에 반응: 기절을 거는 정수 열둘과 이어짐, 반응 둘째). 임시값"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "sand_colossus",
+  "name_ko": "모래 왕의 거상의 정수",
+  "grade": 6,
+  "source_monster": "sand_colossus",
+  "family": "sand_colossus",
+  "rank": "guardian",
+  "passive": {
+    "id": "sand_colossus_p",
+    "name_ko": "마른 땅의 왕",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "parched",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_colossus_slam"
+    },
+    {
+      "color": "green",
+      "skill": "ess_colossus_sand_spray"
+    }
+  ],
+  "stats": {
+    "str": 18,
+    "p_res": 18
+  },
+  "resources": {
+    "hp": 36
+  },
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전 수호자 정수(무지갯빛 33%, expansion_f1_3_B §4 12번 — 목마름 ×1.15: 순례자 정수가 걸고 사막 독수리와 같이 반응). 임시값"
+}

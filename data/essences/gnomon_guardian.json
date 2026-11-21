@@ -1,0 +1,32 @@
+{
+  "id": "gnomon_guardian",
+  "name_ko": "해시계 수호상의 정수",
+  "grade": 7,
+  "source_monster": "gnomon_guardian",
+  "family": "gnomon_guardian",
+  "rank": "normal",
+  "passive": {
+    "id": "gnomon_guardian_p",
+    "name_ko": "갈라진 그림자",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "vulnerable",
+      "mult": 1.15
+    }
+  },
+  "actives": [
+    {
+      "color": "green",
+      "skill": "ess_gnomon_shadow"
+    }
+  ],
+  "stats": {
+    "p_res": 8,
+    "int": 4
+  },
+  "resources": {
+    "hp": 18
+  },
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전(ES 연계 — 취약에 반응: 취약을 거는 광물 슬라임 · 철 리자드맨 · 불카르 · 홉고블린 광부 · 뼈 갉는 쥐 떼 정수와 이어짐, 반응 둘째). 임시값"
+}

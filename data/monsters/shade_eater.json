@@ -1,0 +1,90 @@
+{
+  "family": [
+    "wraith"
+  ],
+  "immunities": [],
+  "magic_stone_grade": 7,
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sun_temple"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "id": "shade_eater",
+  "name_ko": "그늘 삼키는 자",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "wraith",
+  "type": "spirit",
+  "shape": "humanoid",
+  "size": 1.0,
+  "color": "#1e1a18",
+  "status_immune": [
+    "fear",
+    "bleeding",
+    "poison"
+  ],
+  "weaknesses": {
+    "holy": 1.5,
+    "fire": 1.5
+  },
+  "stats": {
+    "str": 12,
+    "agi": 28,
+    "p_res": 22,
+    "m_res": 30,
+    "int": 26
+  },
+  "resources": {
+    "hp": 140,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 14,
+    "damage_type": "dark"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 1.4
+    },
+    "alert_sfx": "undead_moan",
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      2
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [
+    {
+      "essence": "shade_eater",
+      "chance": 0.01
+    }
+  ],
+  "skills": [
+    "light_eat"
+  ],
+  "passives": [
+    {
+      "id": "shade_eater_body",
+      "name_ko": "그늘 몸",
+      "desc_ko": "베고 찌르는 것이 천 자락처럼 흘러 지나간다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:physical",
+          "percent": -0.3
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "light_eat"
+    }
+  ],
+  "notes": "꺼진 태양의 신전 1 · 2장(expansion_f1_3_C §4-1): 빛 먹기(실명 · 흡혈) · 물리 −30% · 불 · 신성 약점. 광원을 끄는 필드 행동은 다음. 수치는 관 짐꾼 곁 7등급 임시값"
+}

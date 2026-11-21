@@ -1,0 +1,26 @@
+{
+  "id": "ess_colossus_sand_spray",
+  "name_ko": "모래 뿌리기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.35,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "colossus_sand_spray",
+  "source": "placeholder",
+  "notes": "모래 왕의 거상 정수"
+}

@@ -12,7 +12,12 @@
   "source": "placeholder",
   "shape": "humanoid",
   "magic_stone_grade": 6,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "ancient_stone_giant",
+      "chance": 0.25
+    }
+  ],
   "passives": [],
   "id": "ancient_stone_giant",
   "name_ko": "오래된 돌 거인",

@@ -22,10 +22,10 @@
 	},
 	"bone_gnawer": {
 		"cell": [
-			120,
-			65
+			120.0,
+			65.0
 		],
-		"foot": 4
+		"foot": 4.0
 	},
 	"bone_hyena": {
 		"cell": [
@@ -271,6 +271,13 @@
 			54.0
 		],
 		"foot": 4.0
+	},
+	"gnomon_guardian": {
+		"cell": [
+			56,
+			109
+		],
+		"foot": 4
 	},
 	"goblin": {
 		"cell": [
@@ -559,6 +566,13 @@
 		],
 		"foot": 4.0
 	},
+	"sand_drift": {
+		"cell": [
+			46,
+			89
+		],
+		"foot": 4
+	},
 	"sandman": {
 		"cell": [
 			48.0,
@@ -572,6 +586,13 @@
 			107.0
 		],
 		"foot": 4.0
+	},
+	"shade_eater": {
+		"cell": [
+			44,
+			89
+		],
+		"foot": 4
 	},
 	"silvermane_wolf": {
 		"cell": [

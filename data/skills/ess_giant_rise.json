@@ -1,0 +1,21 @@
+{
+  "id": "ess_giant_rise",
+  "name_ko": "솟구치기(정수)",
+  "target": "enemy_all",
+  "cost": {
+    "soul": 18
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.1,
+      "damage_type": "blunt"
+    }
+  ],
+  "essence_of": "giant_rise",
+  "source": "placeholder",
+  "notes": "오래된 돌 거인 정수 — 영혼력은 광역 정수 효율 중앙값을 흔들지 않게 높였다(test_skill_value)"
+}

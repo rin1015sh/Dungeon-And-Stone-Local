@@ -1,0 +1,27 @@
+{
+  "id": "ess_light_eat",
+  "name_ko": "빛 먹기(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 8
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "magic",
+      "power": 1.35,
+      "damage_type": "dark",
+      "drain": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "light_eat",
+  "source": "placeholder",
+  "notes": "그늘 삼키는 자 정수"
+}

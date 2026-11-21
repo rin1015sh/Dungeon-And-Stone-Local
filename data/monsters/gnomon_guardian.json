@@ -1,0 +1,89 @@
+{
+  "family": [
+    "construct"
+  ],
+  "immunities": [],
+  "magic_stone_grade": 7,
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_sun_temple"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "id": "gnomon_guardian",
+  "name_ko": "해시계 수호상",
+  "grade": 7,
+  "rank": "normal",
+  "lineage": "monolith_soldier",
+  "type": "body",
+  "shape": "humanoid",
+  "size": 1.2,
+  "color": "#a89a80",
+  "status_immune": [
+    "bleeding",
+    "poison"
+  ],
+  "weaknesses": {
+    "blunt": 1.5
+  },
+  "stats": {
+    "str": 20,
+    "agi": 16,
+    "p_res": 46,
+    "m_res": 36,
+    "int": 22
+  },
+  "resources": {
+    "hp": 200,
+    "soul": 40
+  },
+  "natural_weapon": {
+    "attack": 16,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 2.0
+    },
+    "move_mult": 0.5,
+    "alert_sfx": "monster_alert",
+    "aggressive": true,
+    "aggro_radius_m": 4.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "essence_drops": [
+    {
+      "essence": "gnomon_guardian",
+      "chance": 0.01
+    }
+  ],
+  "skills": [
+    "gnomon_shadow"
+  ],
+  "passives": [
+    {
+      "id": "gnomon_stone",
+      "name_ko": "그늘 속 돌",
+      "desc_ko": "빛이 닿지 않는 돌은 쉽게 깎이지 않는다.",
+      "modifiers": [
+        {
+          "target": "dmg_taken:all",
+          "percent": -0.4
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "if": "always",
+      "use": "gnomon_shadow"
+    }
+  ],
+  "notes": "꺼진 태양의 신전 2장(expansion_f1_3_C §4-1): 바늘 그림자(차례 늦추기). 받는 피해 −40%(빛을 받을 때만 제대로 맞는 규칙 lit_vulnerable · 거울 빛 잇기는 다음 — 그때 −80% ↔ 빛줄기 칸 ×1로). 수치는 관 짐꾼 곁 임시값(단단하고 느리다)"
+}

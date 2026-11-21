@@ -12,7 +12,12 @@
   "source": "placeholder",
   "shape": "humanoid",
   "magic_stone_grade": 6,
-  "essence_drops": [],
+  "essence_drops": [
+    {
+      "essence": "sand_colossus",
+      "chance": 0.33
+    }
+  ],
   "passives": [],
   "id": "sand_colossus",
   "name_ko": "모래 왕의 거상",

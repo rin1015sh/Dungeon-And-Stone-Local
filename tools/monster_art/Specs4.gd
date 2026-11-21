@@ -147,6 +147,20 @@ static func spec_of(id: String) -> Dictionary:
 		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
 			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
 				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"shade_eater":  # 그늘 삼키는 자 — 빛 가장자리에만 보이는 검은 천 덩어리, 흐린 금빛 눈
+			return {"skin": C("#2a2420"), "shade": C("#0a0806"), "eyes": C("#e0c070"), "glow": 0.8, "fade": 0.5, "desat": 0.3,
+				"pose": {"hunch": 0.35, "arm_l": "claw", "arm_r": "wide", "sh": 0.11, "weight": 0.1, "tilt": 0.1},
+				"body": {"build": "thin", "hands": "claw", "claws": 0.6}, "head": {"type": "gaunt", "mouth": "open", "hood": C("#16120e")},
+				"kit": {"robe": C("#1e1a16"), "torn": 1.0}}
+		"gnomon_guardian":  # 해시계 수호상 — 손에 청동 바늘을 든 돌 사제상
+			return {"height": 640, "skin": C("#a89a80"), "skin_kind": "stone", "shade": C("#4a4232"), "eyes": C("#f0d890"), "glow": 0.7,
+				"pose": {"knee": 0.05, "arm_l": "hang", "arm_r": "rest", "sh": 0.14, "weight": 0.0},
+				"body": {"build": "normal", "hands": "fist"}, "head": {"type": "block", "size": 0.95, "hood": C("#8a7c62")},
+				"kit": {"robe": C("#948670"), "torn": 0.2, "weapon": "spear", "weapon_c": C("#a07a40")}}
+		"sand_drift":  # 흐르는 모래 — 사람 키만큼 소용돌이치는 모래 덩어리(샌드맨 몸을 더 흐리게)
+			return {"height": 560, "skin": C("#c8a870"), "skin_kind": "stone", "shade": C("#7a5a32"), "eyes": C("#ffe8b0"), "glow": 0.9, "fade": 0.45,
+				"pose": {"hunch": 0.3, "arm_l": "wide", "arm_r": "claw", "sh": 0.12, "weight": -0.1, "tilt": 0.12},
+				"body": {"build": "thin", "hands": "claw"}, "head": {"type": "gaunt", "mouth": "open"}, "kit": {"robe": C("#b8955c"), "torn": 1.0}}
 		"sand_colossus":  # 모래 왕의 거상 — 사암 거구, 가슴에 박힌 화로가 붉게 빛난다(꺼진 태양의 신전 수호자)
 			return {"height": 760, "width": 1.12, "skin": C("#b89a6a"), "skin_kind": "stone", "shade": C("#4a3a26"), "mottle": C("#8a6a40"), "mottle_amt": 0.45, "eyes": C("#ffb040"), "glow": 1.0,
 				"pose": {"knee": 0.18, "arm_l": "hang", "arm_r": "hang", "sh": 0.18, "hip": 0.09, "neck": 0.25, "arms": 1.2, "weight": 0.3},

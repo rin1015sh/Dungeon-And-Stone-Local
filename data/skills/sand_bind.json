@@ -1,0 +1,30 @@
+{
+  "id": "sand_bind",
+  "name_ko": "휘감기",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 4
+  },
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 0.9,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "apply_status",
+      "status": "snare",
+      "chance": 0.5
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.15
+    }
+  ],
+  "source": "placeholder",
+  "notes": "흐르는 모래: 휘감아 속박 · 모래가 눈에 든다(낮은 확률)"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "shade_eater",
+  "name_ko": "그늘 삼키는 자의 정수",
+  "grade": 7,
+  "source_monster": "shade_eater",
+  "family": "shade_eater",
+  "rank": "normal",
+  "passive": {
+    "id": "shade_eater_p",
+    "name_ko": "어둠 속 손",
+    "implemented": true,
+    "hit_vs_status": {
+      "status": "blind",
+      "bonus": 12
+    }
+  },
+  "actives": [
+    {
+      "color": "blue",
+      "skill": "ess_light_eat"
+    }
+  ],
+  "stats": {
+    "int": 6,
+    "agi": 4
+  },
+  "resources": {
+    "hp": 10
+  },
+  "source": "placeholder",
+  "notes": "꺼진 태양의 신전(ES 연계 — 실명에 반응: 실명을 거는 정수 열셋과 이어짐, 반응 셋째로 꽉 참). 임시값"
+}
