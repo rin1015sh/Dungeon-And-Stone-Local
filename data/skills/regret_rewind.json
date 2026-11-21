@@ -18,14 +18,13 @@
       "fire": "combat.regret_rewind_fire",
       "effects": [
         {
-          "type": "restore_resource",
-          "resource": "hp",
-          "percent": 0.06
+          "type": "rewind",
+          "ratio": 0.5
         }
       ]
     }
   ],
   "unique": true,
   "source": "placeholder",
-  "notes": "민낯 — 되감기: 한 차례 뒤 생명력 6% 되돌림. 예고 차례에 기절 · 빙결로 끊으면 흩어진다(받은 피해의 절반을 되돌리는 셈은 다음)"
+  "notes": "민낯 — 되감기: 한 차례 뒤 직전 한 바퀴 동안 받은 피해의 절반을 되돌린다(rewind). 예고 차례에 기절 · 빙결로 끊으면 흩어진다 — 큰 피해는 끊은 다음에"
 }

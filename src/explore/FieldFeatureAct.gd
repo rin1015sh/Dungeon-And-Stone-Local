@@ -45,6 +45,9 @@ static func run(s: ExploreSession, e: Dictionary, a: Dictionary) -> void:
 		if s.clock.total_hours - float(t) < JsonUtil.get_float(after, "hours"):
 			s.message.emit(JsonUtil.get_str(a, "wait", "field.done"), {}, "info")
 			return
+	if JsonUtil.get_bool(a, "force_rift_gate") and (s.rift_gates == null or not s.rift_gates.can_force()):  # 계층석 — 열 문이 없으면 돌을 쓰지 않는다
+		s.message.emit("field.done", {}, "info")
+		return
 	var cost := JsonUtil.get_dict(a, "cost")
 	var cost_item := JsonUtil.get_str(cost, "item")
 	if not cost_item.is_empty() and s.player.inventory.count(cost_item) < JsonUtil.get_int(cost, "count", 1):
@@ -106,6 +109,8 @@ static func _go(s: ExploreSession, e: Dictionary, a: Dictionary, right: int) -> 
 		s.map.set_tile(e["pos"], JsonUtil.get_str(a, "clear_tile", floor_tile))
 		s.tiles_changed.emit(Rect2i(e["pos"], Vector2i.ONE))  # 테두리·소품을 다시 그린다
 	_spawn(s, e["pos"], JsonUtil.get_dict(a, "spawn"), right if risk else -1)
+	if JsonUtil.get_bool(a, "force_rift_gate") and s.rift_gates != null and s.rift_gates.force(s, e["pos"]):  # 후회의 계층석
+		s.message.emit("field.regret_altar_stone", {}, "danger")
 	if JsonUtil.get_bool(a, "summon_lord"):  # 후회의 제단(LordWatch.altar_summon — 수호자 넷 기록)
 		s.lord.altar_summon(s)
 	if a.has("goal") and s.goal != null:  # 층 목표 하나(종 울리기 — FloorGoal, FL18)

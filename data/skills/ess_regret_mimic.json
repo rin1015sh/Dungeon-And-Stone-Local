@@ -1,0 +1,20 @@
+{
+  "id": "ess_regret_mimic",
+  "name_ko": "흉내(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "seal_skill",
+      "rounds": 3,
+      "pick": "most_used"
+    }
+  ],
+  "essence_of": "regret_mimic",
+  "source": "placeholder",
+  "notes": "후회의 군주 정수 — 적이 가장 많이 쓴 스킬을 봉인"
+}

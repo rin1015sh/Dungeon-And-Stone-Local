@@ -1195,6 +1195,8 @@
     "rift_trapper_den_open": "끈이 가리킨 수풀 밑에서 나뭇가지로 덮은 구덩이가 드러났다.",
     "regret_altar": "잿빛 돌 제단에 탈 모양 홈 넷이 패여 있다.",
     "regret_altar_cold": "제단은 차갑다.",
+    "regret_altar_no_stone": "바칠 돌이 없다.",
+    "regret_altar_stone": "계층석이 제단 홈에 녹아들고, 길 깊은 곳에서 무언가 열리는 기척이 났다.",
     "knocking_grave": "덮은 지 하루도 안 된 무덤이다.",
     "knocking_grave_dig": "흙을 걷어 내자 관 뚜껑이 안쪽에서 들려 올라왔다.",
     "knocking_grave_wake": "관 속의 사람은 이미 사람이 아니었다.",

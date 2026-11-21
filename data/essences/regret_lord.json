@@ -1,0 +1,41 @@
+{
+  "id": "regret_lord",
+  "name_ko": "후회의 군주의 정수",
+  "grade": 5,
+  "source_monster": "regret_lord",
+  "family": "regret_lord",
+  "rank": "lord",
+  "passive": {
+    "id": "regret_lord_p",
+    "name_ko": "멈춰 세운 후회",
+    "implemented": true,
+    "power_vs_status": {
+      "status": "stun",
+      "mult": 1.2
+    }
+  },
+  "actives": [
+    {
+      "color": "red",
+      "skill": "ess_regret_claw"
+    },
+    {
+      "color": "blue",
+      "skill": "ess_regret_hourglass"
+    },
+    {
+      "color": "green",
+      "skill": "ess_regret_mimic"
+    }
+  ],
+  "stats": {
+    "str": 20,
+    "agi": 16,
+    "m_res": 16
+  },
+  "resources": {
+    "hp": 44
+  },
+  "source": "placeholder",
+  "notes": "2층 계층정수(무지갯빛 — expansion_f1_3_B §6-5). 문서의 '어떤 상태든 터뜨리기'는 범용 키가 없어(consume_status는 상태 하나) 기절 ×1.2 반응으로(기절을 거는 정수 열셋과 이어짐, 반응 셋째로 꽉 참 — 홉고블린 · 돌 거인 · 후회의 군주). 임시값"
+}

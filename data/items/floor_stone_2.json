@@ -1,0 +1,18 @@
+{
+  "id": "floor_stone_2",
+  "name_ko": "후회의 계층석",
+  "category": "material",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 5,
+  "price": 0,
+  "icon": "stone",
+  "color": "#a8a8a0",
+  "rarity": "floor_relic",
+  "opens_floor_rift": 2,
+  "flavor_ko": "잿빛 돌 속에 탈 넷의 윤곽이 겹쳐 비친다. 쥔 손이 잠깐 무거워진다.",
+  "source": "placeholder",
+  "notes": "2층 계층석(expansion_f1_3_B §6-5): 후회의 군주 보상. 2층 길 끝 후회의 제단에 바치면 그 길의 균열이 조건 없이 열린다(RiftGates.force — 한 번 쓰면 사라진다)"
+}

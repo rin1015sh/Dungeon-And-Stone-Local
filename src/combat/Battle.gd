@@ -221,6 +221,7 @@ func act(c: Combatant, action: Dictionary) -> bool:
 	var delay := 0.0
 	match str(action.get("kind", "")):
 		"skill":
+			BattleHabits.record(self, c, str(action.get("skill", BASIC_ATTACK)))  # 습관 기록(후회의 군주 흉내)
 			delay = _use_skill(c, str(action.get("skill", BASIC_ATTACK)), action.get("target"), int(action.get("rev", 0)), action.get("coin", {}))
 		"guard":
 			c.actor.statuses.apply("guarding")

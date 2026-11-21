@@ -1,0 +1,29 @@
+{
+  "id": "ess_regret_hourglass",
+  "name_ko": "모래시계를 뒤집는다(정수)",
+  "target": "enemy_single",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 3,
+  "effects": [
+    {
+      "type": "damage",
+      "scaling": "phys",
+      "power": 1.5,
+      "damage_type": "blunt"
+    },
+    {
+      "type": "reverse_order"
+    },
+    {
+      "type": "apply_status",
+      "status": "blind",
+      "chance": 0.6
+    }
+  ],
+  "essence_of": "regret_hourglass",
+  "source": "placeholder",
+  "notes": "후회의 군주 정수 — 예고 없이 바로(탐험가 쪽): 적 편의 행동 순서를 거꾸로"
+}

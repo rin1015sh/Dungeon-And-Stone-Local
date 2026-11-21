@@ -282,6 +282,11 @@ static func relay(b: Battle, ctx: EffectContext, c: Combatant) -> void:
 					var sid := str(e.get("skill", ""))
 					lu.cooldowns[sid] = maxi(int(lu.cooldowns.get(sid, 0)), int(e.get("rounds", 2)) + 1)
 				continue
+			"reverse_order":
+				var ru := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
+				if ru != null:
+					BattleHabits.reverse_order(b, ru.side)
+				continue
 			"shuffle_rows":
 				var su := b.unit_of(e.get("target") as Actor) if e.get("target") is Actor else null
 				if su != null:

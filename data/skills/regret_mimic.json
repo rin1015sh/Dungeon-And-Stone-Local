@@ -10,10 +10,11 @@
   "effects": [
     {
       "type": "seal_skill",
-      "rounds": 3
+      "rounds": 3,
+      "pick": "most_used"
     }
   ],
   "unique": true,
   "source": "placeholder",
-  "notes": "고블린 탈 — 같은 기술만 쓰는 것을 벌한다: 스킬 하나 봉인(3차례). 가장 많이 쓴 스킬을 고르는 것은 다음(지금은 무작위)"
+  "notes": "고블린 탈 — 같은 기술만 쓰는 것을 벌한다: 이번 전투에 가장 많이 쓴 스킬을 봉인(3차례 — BattleHabits, 쓴 것이 없으면 무작위)"
 }

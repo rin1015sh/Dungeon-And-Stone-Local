@@ -1,5 +1,6 @@
 extends EffectHandler
 ## 봉인: {"type": "seal_skill", "rounds": 2} — 대상의 액티브(기본 스킬 제외) 하나를 무작위로 골라 rounds 차례 쓰지 못하게 한다.
+## "pick": "most_used"면 이번 전투에 가장 많이 쓴 스킬(BattleHabits — 후회의 군주 흉내, 쓴 것이 없으면 무작위).
 ## 상태 [봉인]을 함께 건다(면역·저항은 apply_status와 같다 — 걸리지 않으면 스킬도 막히지 않는다). 전투 중에만(Battle이 사건을 받아 쿨타임으로 막는다).
 
 
@@ -22,7 +23,9 @@ func apply(ctx: EffectContext, data: Dictionary) -> bool:
 			return false
 		"failed":
 			return false
-	var sid := str(ctx.rng.pick(pool))
+	var sid := BattleHabits.most_used(t, pool) if JsonUtil.get_str(data, "pick") == "most_used" else ""
+	if sid.is_empty():
+		sid = str(ctx.rng.pick(pool))
 	ctx.events.append({"type": "seal", "target": t, "skill": sid, "rounds": JsonUtil.get_int(data, "rounds", 2)})
 	ctx.say("combat.sealed", {"name": t.display_name, "skill": DataNames.entry(ctx.db, "skills", sid)}, "warn")
 	return true

@@ -81,3 +81,51 @@ func test_lead_mask_and_breaks() -> void:
 	assert_eq(b.side_units(Combatant.SIDE_ENEMY).size(), before + 2, "두 번째 탈이 깨질 때 그 길 몬스터 둘")
 	assert_eq(RegretMasks.current(b, lord), str(ord[2]))
 	assert_eq(int(db.prog("exp.lord_bonus")), 15, "군주 보너스 15")
+
+
+## 2차(2026-11-21): 가장 많이 쓴 스킬 봉인 · 아군 순서 뒤집기 · 받은 피해 절반 되감기 · 계층석 2 · 정수.
+func test_habits_reverse_and_rewind() -> void:
+	var a := PlayerCharacter.create(db, "human", "warrior", "시험", {"str": 12})
+	var c2 := PlayerCharacter.create(db, "human", "warrior", "동료", {"str": 12})
+	var party: Array[Actor] = [a, c2]
+	var b := Battle.from_encounter(db, ContentRegistries.new(), Rng.new(3), party, ["regret_lord"])
+	var lord: Combatant = b.side_units(Combatant.SIDE_ENEMY)[0]
+	var me: Combatant = b.unit_of(a)
+	a.skills.append_array(["ess_regret_claw", "ess_regret_mimic"])
+	for i in 3:
+		BattleHabits.record(b, me, "ess_regret_claw")
+	BattleHabits.record(b, me, "ess_regret_mimic")
+	assert_eq(BattleHabits.most_used(a, a.skills), "ess_regret_claw", "가장 많이 쓴 스킬")
+	BossHooks.apply_effects(b, lord, me, [{"type": "seal_skill", "rounds": 3, "pick": "most_used"}])
+	if a.statuses.has("seal"):
+		assert_true(int(me.cooldowns.get("ess_regret_claw", 0)) >= 3, "흉내 — 가장 많이 쓴 스킬이 막힌다")
+	var you: Combatant = b.unit_of(c2)
+	me.gauge = 80.0
+	you.gauge = 10.0
+	BossHooks.apply_effects(b, lord, me, [{"type": "reverse_order"}])
+	assert_eq(int(me.gauge), 10, "빠른 쪽이 늦게")
+	assert_eq(int(you.gauge), 80, "늦은 쪽이 빠르게")
+	var mx := lord.actor.pool.get_max("hp")
+	lord.memo["hp_mark"] = mx
+	lord.actor.pool.set_current("hp", mx - 1000.0)
+	BossHooks.turn_end(b, lord, false)
+	BossHooks.apply_effects(b, lord, lord, [{"type": "rewind", "ratio": 0.5}])
+	assert_eq(int(lord.actor.pool.get_current("hp")), int(mx - 500.0), "직전 바퀴에 받은 1000의 절반을 되돌린다")
+
+
+func test_floor_stone_two_opens_the_road_rift() -> void:
+	var s := _session("f2_beast_den")
+	var al := _altar(s)
+	var offer := {}
+	for x: Variant in JsonUtil.get_array(al["def"], "actions"):
+		if str((x as Dictionary)["id"]) == "offer_stone":
+			offer = x
+	FieldFeatureAct.run(s, al, offer)
+	assert_false(s.rift_gates.opened("rift_wind_den"), "돌이 없으면 아무 일도 없다")
+	s.player.inventory.add("floor_stone_2", 1)
+	FieldFeatureAct.run(s, al, offer)
+	assert_true(s.rift_gates.opened("rift_wind_den"), "계층석을 바치면 그 길 균열이 조건 없이")
+	assert_eq(s.player.inventory.count("floor_stone_2"), 0, "돌은 사라진다")
+	assert_true(db.has_entry("essences", "regret_lord"), "계층정수")
+	assert_true(JsonUtil.get_array(db.get_entry("monsters", "regret_lord"), "lord_drops").any(func(d: Variant) -> bool: return str((d as Dictionary)["item"]) == "floor_stone_2"), "군주가 계층석 2를 떨군다")
+	s.detach()

@@ -60,3 +60,20 @@ func count(flag: String) -> int:
 
 func opened(rift_id: String) -> bool:
 	return _gates.any(func(g: Dictionary) -> bool: return bool(g["opened"]) and JsonUtil.get_str(g["def"], "rift") == rift_id)
+
+
+## 계층석으로 조건 없이 열 수 있는 문이 있는가(아직 안 열린 첫 문 — 날짜 무관).
+func can_force() -> bool:
+	return _gates.any(func(g: Dictionary) -> bool: return not bool(g["opened"]))
+
+
+## 후회의 계층석(제단 행동 force_rift_gate): 아직 안 열린 첫 문의 균열을 at 곁에 연다. 열었으면 true.
+func force(s: ExploreSession, at: Vector2i) -> bool:
+	for g in _gates:
+		if bool(g["opened"]):
+			continue
+		if not s.rifts.force_open(s, JsonUtil.get_str(g["def"], "rift"), at):
+			return false
+		g["opened"] = true
+		return true
+	return false

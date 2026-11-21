@@ -15,8 +15,20 @@
       "name_ko": "손을 얹는다",
       "limit": "always",
       "summon_lord": true
+    },
+    {
+      "id": "offer_stone",
+      "name_ko": "계층석을 바친다",
+      "limit": "always",
+      "cost": {
+        "item": "floor_stone_2",
+        "count": 1
+      },
+      "missing": "field.regret_altar_no_stone",
+      "force_rift_gate": true,
+      "sound": "rift_open"
     }
   ],
   "source": "placeholder",
-  "notes": "후회의 군주 제단(expansion_f1_3_B §6-1 · LordWatch altar): 2층 네 길 끝(3층 포탈 곁)에 하나씩. 균열 수호자 넷을 모두 쓰러뜨린 적이 있으면 손을 얹어 군주를 부른다(아니면 차갑다). 홈 넷 그림(진행 표시)은 다음. 임시값"
+  "notes": "후회의 군주 제단(expansion_f1_3_B §6-1 · LordWatch altar): 2층 네 길 끝(3층 포탈 곁)에 하나씩. 균열 수호자 넷을 모두 쓰러뜨린 적이 있으면 손을 얹어 군주를 부른다(아니면 차갑다). 홈 넷 그림(진행 표시)은 다음. 임시값 · offer_stone = 후회의 계층석을 바치면 그 길 균열이 조건 없이 열린다(RiftGates.force)"
 }
