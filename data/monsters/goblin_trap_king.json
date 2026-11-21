@@ -1,0 +1,110 @@
+{
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "immunities": [],
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_trapper_den"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "shape": "humanoid",
+  "magic_stone_grade": 6,
+  "essence_drops": [],
+  "passives": [],
+  "id": "goblin_trap_king",
+  "name_ko": "고블린 덫왕",
+  "grade": 6,
+  "rank": "guardian",
+  "size": 1.3,
+  "color": "#5a6a3a",
+  "status_immune": [
+    "fear",
+    "poison"
+  ],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 40,
+    "agi": 50,
+    "p_res": 48,
+    "m_res": 34,
+    "int": 30
+  },
+  "resources": {
+    "hp": 5600,
+    "soul": 160
+  },
+  "natural_weapon": {
+    "attack": 34,
+    "damage_type": "slash"
+  },
+  "behavior": {
+    "aggressive": true,
+    "aggro_radius_m": 5.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "trap_line",
+    "trap_line_fast",
+    "goblin_poison_shot",
+    "goblin_vile_stab"
+  ],
+  "ai": [
+    {
+      "if": "phase",
+      "value": [
+        "p1"
+      ],
+      "use": "trap_line"
+    },
+    {
+      "if": "phase",
+      "value": [
+        "p2"
+      ],
+      "use": "trap_line_fast"
+    },
+    {
+      "if": "chance",
+      "value": 0.4,
+      "use": "goblin_poison_shot"
+    },
+    {
+      "if": "always",
+      "use": "goblin_vile_stab"
+    }
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.trap_king_intro",
+    "every": [
+      {
+        "rounds": 3,
+        "skill": "trap_king_call",
+        "times": 2
+      }
+    ]
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.4
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0,
+      "message": "combat.trap_king_p2"
+    }
+  ],
+  "notes": "덫꾼의 굴 수호자(expansion_f1_3_B §5 10~11번): 덫 줄(예고 — 한 줄 피해 + 속박, 방어면 ×0.3) 1페이즈 3차례 · 40% 아래 2차례마다, 독 던지기 · 비열한 찌르기, 3바퀴마다 고블린 둘(전투당 넷). 40%에서 달아나 다음 방에서 다시 싸우는 것 · 줄 바꾸기 대응은 다음. 수치는 잠들지 못한 기사 곁 임시값(빠르다)"
+}

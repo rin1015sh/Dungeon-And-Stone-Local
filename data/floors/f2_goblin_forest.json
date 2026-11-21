@@ -2213,6 +2213,18 @@
           6
         ],
         "tile": "f2g_campfire"
+      },
+      {
+        "mark": "trap1",
+        "event": "trapper_knot"
+      },
+      {
+        "mark": "trap2",
+        "event": "trapper_knot"
+      },
+      {
+        "mark": "trap3",
+        "event": "trapper_knot"
       }
     ],
     "hazards": [
@@ -2682,5 +2694,17 @@
         ]
       }
     ]
-  }
+  },
+  "rift_gates": [
+    {
+      "_comment": "덫꾼의 굴(RiftGates — expansion_f1_3_B §5): 덫 밭 셋 한가운데 덫에 걸린 사냥꾼(trapper_knot — 아래 FEATURES)의 매듭 끈을 셋 다 풀면(goal trapper_den × 3) 마지막 끈 곁 덮은 구덩이가 균열 포탈. 7일 차까지. [창작] 임시값",
+      "rift": "rift_trapper_den",
+      "flag": "trapper_den",
+      "need": 3,
+      "until_day": 7,
+      "line": "field.rift_trapper_den_open",
+      "sound": "rift_open",
+      "late_line": "field.rift_gate_late"
+    }
+  ]
 }

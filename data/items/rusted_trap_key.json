@@ -1,0 +1,17 @@
+{
+  "id": "rusted_trap_key",
+  "name_ko": "녹슨 덫 열쇠",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 30000,
+  "icon": "stone",
+  "color": "#8a7a5a",
+  "rarity": "numbers",
+  "flavor_ko": "이빨 모양 홈이 팬 쇠막대. 고블린 손때가 손잡이에 검게 앉았다.",
+  "source": "placeholder",
+  "notes": "덫꾼의 굴 1장 히든 피스 — 곁방 통 더미. 2장 대장의 궤짝을 여는 열쇠"
+}

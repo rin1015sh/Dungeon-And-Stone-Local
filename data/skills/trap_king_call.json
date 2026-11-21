@@ -1,0 +1,27 @@
+{
+  "id": "trap_king_call",
+  "name_ko": "덫왕의 휘파람",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "pick": [
+        "goblin",
+        "goblin_archer"
+      ]
+    },
+    {
+      "type": "summon",
+      "pick": [
+        "goblin",
+        "goblin_trapper"
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "덫왕: 고블린 둘을 부른다(pattern every 3바퀴 · times 2 = 넷까지)"
+}

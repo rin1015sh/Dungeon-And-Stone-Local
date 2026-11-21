@@ -1,0 +1,26 @@
+{
+  "id": "trapper_knot",
+  "name_ko": "덫에 걸린 사냥꾼",
+  "type": "feature",
+  "tile": "f2d_corpse_g",
+  "actions": [
+    {
+      "id": "look",
+      "name_ko": "살핀다",
+      "limit": "always",
+      "line": "field.trapper_knot"
+    },
+    {
+      "id": "untie",
+      "name_ko": "매듭 끈을 푼다",
+      "limit": "once",
+      "hours": 0.5,
+      "line": "field.trapper_knot_read",
+      "goal": "trapper_den",
+      "fx": "dust",
+      "sound": "surface"
+    }
+  ],
+  "source": "placeholder",
+  "notes": "덫꾼의 굴 여는 과정(expansion_f1_3_B §5 (나) 매듭 읽기를 줄인 것 · RiftGates): 덫 골짜기 덫 밭 셋 한가운데 하나씩 — 덫에 걸려 죽은 사냥꾼의 발목 매듭 끈. 셋을 다 풀면 끈 끝 흙이 가리키는 곳(마지막 끈 곁)에 덮은 구덩이 = 균열. 뒤밟기 길 · 경보 날 닫힘은 다음. 임시값"
+}

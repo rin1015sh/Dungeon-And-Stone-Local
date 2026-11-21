@@ -1,0 +1,17 @@
+{
+  "id": "chief_tooth_charm",
+  "name_ko": "대장의 이빨 부적",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 40000,
+  "icon": "amulet",
+  "color": "#d8c8a0",
+  "rarity": "numbers",
+  "flavor_ko": "이빨마다 다른 짐승 것이다. 가장 작은 하나는 사람 어금니다.",
+  "source": "placeholder",
+  "notes": "덫꾼의 굴 2장 히든 피스 — 녹슨 덫 열쇠로 대장의 궤짝을 열면"
+}

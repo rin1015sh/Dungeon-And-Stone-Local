@@ -1,0 +1,36 @@
+{
+  "id": "trap_line_fast",
+  "name_ko": "덫 줄",
+  "target": "enemy_row",
+  "cost": {
+    "soul": 10
+  },
+  "delay_cost": 0,
+  "cooldown": 2,
+  "effects": [
+    {
+      "type": "delayed",
+      "rounds": 1,
+      "hits": 1,
+      "target": "cast",
+      "guarded_mult": 0.3,
+      "warn": "combat.trap_line_warn",
+      "fire": "combat.trap_line_fire",
+      "effects": [
+        {
+          "type": "damage",
+          "scaling": "phys",
+          "power": 1.6,
+          "damage_type": "pierce"
+        },
+        {
+          "type": "apply_status",
+          "status": "snare"
+        }
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "고블린 덫왕 2페이즈 — 같은 덫 줄을 2차례마다"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "chief_call",
+  "name_ko": "대장의 호령",
+  "target": "self",
+  "cost": {},
+  "delay_cost": 0,
+  "cooldown": 0,
+  "effects": [
+    {
+      "type": "summon",
+      "pick": [
+        "goblin",
+        "goblin_swordsman"
+      ]
+    },
+    {
+      "type": "summon",
+      "pick": [
+        "goblin",
+        "goblin_archer"
+      ]
+    }
+  ],
+  "unique": true,
+  "source": "placeholder",
+  "notes": "홉고블린 대장: 고블린 둘을 부른다(pattern every 3바퀴 · times 2)"
+}

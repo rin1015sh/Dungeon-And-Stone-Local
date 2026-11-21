@@ -147,6 +147,18 @@ static func spec_of(id: String) -> Dictionary:
 		"wolf_king":  # 늑대왕 — 칼날늑대보다 훨씬 큰 은빛 갈기 늑대, 하얗게 타는 눈(울부짖는 바람굴 수호자)
 			return {"kind": "beast", "height": 760, "color": C("#b8bcc4"), "belly": C("#e0e2e6"), "fur": 1.0, "blades": C("#d0d8e0"), "bulk": 1.4,
 				"eyes": C("#f0f4ff"), "glow": 1.0, "blood": 0.3, "mouth": "snarl"}
+		"goblin_trap_king":  # 고블린 덫왕 — 등 굽은 늙은 홉고블린, 허리에 쇠 이빨 덫을 주렁주렁
+			return {"height": 600, "skin": C("#6a7a48"), "shade": C("#2a3018"), "mottle": C("#4a5a30"), "mottle_amt": 0.4, "eyes": C("#ffd040"), "glow": 0.6,
+				"hair": "ragged", "hair_c": C("#c8c8b8"),
+				"pose": {"hunch": 0.45, "knee": 0.25, "arm_l": "claw", "arm_r": "rest", "sh": 0.13, "weight": -0.3, "tilt": 0.06},
+				"body": {"build": "thin", "hands": "claw"}, "head": {"type": "goblin", "mouth": "grin", "ears": "long"},
+				"kit": {"shirt": C("#4a3a28"), "shirt_len": 0.9, "torn": 0.5, "belt": C("#2a2016"), "straps": C("#5a5a60"), "cape": C("#3a3024"),
+					"weapon": "dagger", "weapon_c": C("#7a7468")}}
+		"hobgoblin_chief":  # 홉고블린 대장 — 홉고블린보다 크고 뼈 장식 어깨, 큰 몽둥이
+			return {"height": 680, "width": 1.05, "skin": C("#7a6a40"), "shade": C("#302816"), "mottle": C("#5a4a28"), "mottle_amt": 0.35, "eyes": C("#ff9030"), "glow": 0.6,
+				"pose": {"hunch": 0.2, "knee": 0.15, "arm_l": "hang", "arm_r": "rest", "sh": 0.16, "hip": 0.085, "weight": 0.2},
+				"body": {"build": "brute", "bulk": 1.15, "hands": "fist"}, "head": {"type": "goblin", "mouth": "fangs", "ears": "long", "size": 0.95},
+				"kit": {"armor": C("#5a4a32"), "plates": ["shoulders"], "loin": C("#4a3a26"), "belt": C("#2a2016"), "weapon": "club", "wood": C("#5a4630")}}
 		"shade_eater":  # 그늘 삼키는 자 — 빛 가장자리에만 보이는 검은 천 덩어리, 흐린 금빛 눈
 			return {"skin": C("#2a2420"), "shade": C("#0a0806"), "eyes": C("#e0c070"), "glow": 0.8, "fade": 0.5, "desat": 0.3,
 				"pose": {"hunch": 0.35, "arm_l": "claw", "arm_r": "wide", "sh": 0.11, "weight": 0.1, "tilt": 0.1},

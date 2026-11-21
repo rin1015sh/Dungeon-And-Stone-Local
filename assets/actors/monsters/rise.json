@@ -41,6 +41,20 @@
 		],
 		"frames": 5.0
 	},
+	"goblin_trap_king": {
+		"cell": [
+			116.0,
+			209.0
+		],
+		"frames": 5.0
+	},
+	"hobgoblin_chief": {
+		"cell": [
+			122,
+			203
+		],
+		"frames": 5
+	},
 	"ildium": {
 		"cell": [
 			128.0,
@@ -71,10 +85,10 @@
 	},
 	"sand_colossus": {
 		"cell": [
-			166,
-			208
+			166.0,
+			208.0
 		],
-		"frames": 5
+		"frames": 5.0
 	},
 	"sleepless_knight": {
 		"cell": [

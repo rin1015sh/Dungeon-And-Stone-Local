@@ -1,0 +1,98 @@
+{
+  "type": "body",
+  "family": [
+    "humanoid"
+  ],
+  "immunities": [],
+  "floor": 2,
+  "floor_tags": [
+    "f2_rift_trapper_den"
+  ],
+  "drops": [],
+  "source": "placeholder",
+  "shape": "humanoid",
+  "magic_stone_grade": 6,
+  "essence_drops": [],
+  "passives": [],
+  "id": "hobgoblin_chief",
+  "name_ko": "홉고블린 대장",
+  "grade": 6,
+  "rank": "midboss",
+  "upper_variant": true,
+  "lineage": "hobgoblin",
+  "size": 1.5,
+  "color": "#6a5a3a",
+  "status_immune": [
+    "fear"
+  ],
+  "weaknesses": {
+    "fire": 1.25
+  },
+  "stats": {
+    "str": 46,
+    "agi": 38,
+    "p_res": 56,
+    "m_res": 28,
+    "int": 16
+  },
+  "resources": {
+    "hp": 3500,
+    "soul": 120
+  },
+  "natural_weapon": {
+    "attack": 34,
+    "damage_type": "blunt"
+  },
+  "behavior": {
+    "ai": {
+      "tenacity": 3.0
+    },
+    "alert_sfx": "goblin_shout",
+    "aggressive": true,
+    "aggro_radius_m": 6.0,
+    "leash_tiles": 0,
+    "pack_size": [
+      1,
+      1
+    ],
+    "reveal_radius_m": 0,
+    "row": "front"
+  },
+  "skills": [
+    "hob_club_smash",
+    "hob_mine_command"
+  ],
+  "ai": [
+    {
+      "if": "chance",
+      "value": 0.5,
+      "use": "hob_club_smash"
+    },
+    {
+      "if": "always",
+      "use": "hob_mine_command"
+    }
+  ],
+  "pattern": "guardian",
+  "pattern_params": {
+    "intro": "combat.chief_intro",
+    "every": [
+      {
+        "rounds": 3,
+        "skill": "chief_call",
+        "times": 2
+      }
+    ]
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "hp_above": 0.5
+    },
+    {
+      "id": "p2",
+      "hp_above": 0.0
+    }
+  ],
+  "notes": "덫꾼의 굴 2장 지하 부락 중간 보스(expansion_f1_3_B §5 9번): 홉고블린 상위 변이 — 무거운 몽둥이(예고 · 끊기 가능) · 호령(무리 기세) · 3바퀴마다 고블린 둘(전투당 넷). 수치는 목 없는 기수 곁 임시값"
+}

@@ -23,6 +23,11 @@ GATES = {
         "rift": "rift_sun_temple", "flag": "sun_temple", "need": 1, "until_day": 7,
         "line": "field.rift_sun_temple_open", "sound": "rift_open", "late_line": "field.rift_gate_late",
     }],
+    "f2_goblin_forest": [{
+        "_comment": "덫꾼의 굴(RiftGates — expansion_f1_3_B §5): 덫 밭 셋 한가운데 덫에 걸린 사냥꾼(trapper_knot — 아래 FEATURES)의 매듭 끈을 셋 다 풀면(goal trapper_den × 3) 마지막 끈 곁 덮은 구덩이가 균열 포탈. 7일 차까지. [창작] 임시값",
+        "rift": "rift_trapper_den", "flag": "trapper_den", "need": 3, "until_day": 7,
+        "line": "field.rift_trapper_den_open", "sound": "rift_open", "late_line": "field.rift_gate_late",
+    }],
     "f2_beast_den": [{
         "_comment": "울부짖는 바람굴(RiftGates — expansion_f1_3_B §2): 갈림길 셋의 바른 갈래 안쪽 끝 막힌 바람 틈(wind_gap — RouteForks right_feature)을 다 뚫으면(goal wind_den × 3) 깊은 굴 아래 벽이 갈라져 균열 포탈. 7일 차까지. [창작] 임시값",
         "rift": "rift_wind_den", "flag": "wind_den", "need": 3, "until_day": 7, "at": {"mark": "deep_hub", "at": [0, 4]},
@@ -33,6 +38,7 @@ GATES = {
 # 문을 여는 요소(route_spots.features에 덧붙인다 — 같은 event가 있으면 갈아 끼운다)
 FEATURES = {
     "f2_rock_desert": [{"mark": "sea_mid", "at": [5, -4], "event": "sun_spire"}],
+    "f2_goblin_forest": [{"mark": "trap1", "event": "trapper_knot"}, {"mark": "trap2", "event": "trapper_knot"}, {"mark": "trap3", "event": "trapper_knot"}],
 }
 
 

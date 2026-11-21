@@ -1,0 +1,17 @@
+{
+  "id": "trap_king_bundle",
+  "name_ko": "덫왕의 덫 꾸러미",
+  "category": "misc",
+  "size": [
+    1,
+    1
+  ],
+  "stack": 1,
+  "price": 50000,
+  "icon": "pouch",
+  "color": "#6a5a3a",
+  "rarity": "numbers",
+  "flavor_ko": "기름 먹인 가죽에 접힌 쇠 이빨 여섯. 펼칠 때마다 손가락 하나를 조심해야 한다.",
+  "source": "placeholder",
+  "notes": "덫꾼의 굴 3장 히든 피스 — 덫왕을 쓰러뜨린 뒤 덫 더미에서"
+}
